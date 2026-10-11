@@ -6,7 +6,7 @@ import { readShape } from "./read-shape";
 import { selectElement } from "./select-element";
 import { writeStoredFreeShape } from "./write-stored-free-shape";
 
-import type { FreeShape, Point } from "../src";
+import type { FreeShape, Point, RegularPolygon } from "../src";
 
 /** Which point moves, and along which axis. */
 type Target = {
@@ -61,8 +61,36 @@ function writeMovedPoint(document: Document, shape: FreeShape, target: Target): 
 }
 
 /**
- * Moves the one point selected to the coordinate typed; a regular polygon is converted first,
- * its fields greyed (F08.AC2).
+ * Reads the free shape whose points may be typed: the one shown, when it is valid and not a
+ * regular polygon (converted first).
+ *
+ * @kind procedure
+ * @param document - page document
+ * @returns the free shape, `undefined` when none can be edited
+ * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
+ */
+function readEditedFreeShape(document: Document): FreeShape | undefined {
+  const { isValid, model } = readShape(document);
+
+  return isValid && !("anchor" in model) ? model : undefined;
+}
+
+/**
+ * Reads the number of the point selected, when exactly one is.
+ *
+ * @kind procedure
+ * @param document - page document
+ * @returns its number from 0, `undefined` when none or several are selected
+ * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
+ */
+function readOnlySelected(document: Document): number | undefined {
+  const { selected } = readSelection(document);
+
+  return selected.length === 1 ? selected[0] : undefined;
+}
+
+/**
+ * Moves the one point selected of a valid free shape to the coordinate typed (F08.AC2).
  *
  * @kind procedure
  * @param document - page document
@@ -70,27 +98,43 @@ function writeMovedPoint(document: Document, shape: FreeShape, target: Target): 
  * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
  */
 function movePointTyped(document: Document, axis: "x" | "y"): void {
-  const { model } = readShape(document);
-  const index = readSelection(document).selected.at(0) ?? -1;
+  const shape = readEditedFreeShape(document);
+  const index = readOnlySelected(document);
 
-  if (!("anchor" in model)) {
-    writeMovedPoint(document, model, { axis, index });
+  if (shape === undefined || index === undefined) {
+    return;
   }
+
+  writeMovedPoint(document, shape, { axis, index });
 }
 
 /**
- * Converts the regular polygon shown into a free shape, unmoved, and keeps it on the page
- * (F08.AC1, ADR-0033).
+ * Reads the regular polygon shown, when it is valid.
+ *
+ * @kind procedure
+ * @param document - page document
+ * @returns the polygon, `undefined` for another shape or a refused one
+ * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
+ */
+function readValidPolygon(document: Document): RegularPolygon | undefined {
+  const { isValid, model } = readShape(document);
+
+  return isValid && "anchor" in model ? model : undefined;
+}
+
+/**
+ * Converts the valid regular polygon shown into a free shape, unmoved, and keeps it on the page;
+ * a polygon of width or height 0 has no box to stretch and is not converted (F08.AC1, ADR-0033).
  *
  * @kind procedure
  * @param document - page document
  * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
  */
 function writeConvertedPolygon(document: Document): void {
-  const { model } = readShape(document);
+  const polygon = readValidPolygon(document);
 
-  if ("anchor" in model) {
-    writeStoredFreeShape(document, regularPolygonAsFreeShape(model));
+  if (polygon !== undefined && polygon.width * polygon.height > 0) {
+    writeStoredFreeShape(document, regularPolygonAsFreeShape(polygon));
   }
 }
 
@@ -105,7 +149,8 @@ function writeConvertedPolygon(document: Document): void {
  */
 export function listenToPointFields(document: Document, update: () => void): void {
   for (const axis of ["x", "y"] as const) {
-    selectElement(document, `point-${axis}`).addEventListener("input", () => {
+    // On "change" (Enter or leaving the field): typing "-" or clearing it moves nothing yet.
+    selectElement(document, `point-${axis}`).addEventListener("change", () => {
       movePointTyped(document, axis);
       update();
     });
