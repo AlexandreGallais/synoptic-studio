@@ -37,6 +37,13 @@ function writeShapeValue(document: Document, shape: string): void {
 function writeStepValues(document: Document, step: GuidedStep): void {
   // A step types one radius for every vertex (F03.AC2), and selects no vertex.
   delete selectElement(document, "radius").dataset["radii"];
+  // A step draws a rectangle or a polygon: the free shape kept goes (F08).
+  delete selectElement(document, "shape").dataset["freeShape"];
+
+  selectElement(document, "shape")
+    .querySelector('option[value="free"]')
+    ?.setAttribute("hidden", "");
+
   writeSelection(document, NO_VERTEX_SELECTION);
   writeShapeValue(document, step.values.shape);
   writeAnchorValue(document, step.values.anchor);
