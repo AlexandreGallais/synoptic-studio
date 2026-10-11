@@ -102,6 +102,7 @@ Functional reference: Inkscape's Star/Polygon tool.
 - `min` puts the polygon's smallest coordinate on the box's (left or top), `max` its largest (right or bottom): a triangle in 100 × 100 anchored at the bottom has its base written at y = 100, its apex at 13.39746. In floating point the vertices of an anchored edge are on it within a rounding error, and written as the integer edge (Q10).
 - The anchor is an **intention, always stored**: on the axis the polygon fills, the three alignments give the same drawing, and the chosen one is still kept and shown.
 - The anchor places the **sharp-cornered** polygon; the corner radius then rounds inwards without moving it: a flat face on the anchored side keeps touching it, a rounded vertex leaves it (a triangle anchored at the top with radius 10 has its top at y = 10). No "always touch" option (Product Owner, 2026-10-11).
+- The grid keeps its **nine places** (Product Owner, 2026-10-11, left to the agent at `VAL-003`). In a given box only one axis has room, so only three places give different drawings. A corner place is not a duplicate: it holds both alignments, and the one that counts follows the proportions of the box. A triangle anchored bottom left sits at the bottom of a 100 × 100 box; a square anchored bottom left sits on the left of a 100 × 50 box. The layout box (Q21) uses the same grid for elements with room on both axes.
 - Rotation (F04) comes after: the box turns with its content.
 
 ### Text
