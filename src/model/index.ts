@@ -5,6 +5,7 @@ export * from "./common-radius";
 export * from "./corners-with-radii";
 export * from "./effective-corner-radius";
 export type * from "./free-shape";
+export * from "./free-shape-around-corners";
 export * from "./free-shape-contour";
 export * from "./free-shape-corners";
 export * from "./free-shape-radii";
