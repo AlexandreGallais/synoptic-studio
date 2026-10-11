@@ -7,6 +7,7 @@ export * from "./is-model-size";
 export * from "./is-regular-polygon-corner-count";
 export * from "./is-valid-rectangle";
 export * from "./is-valid-regular-polygon";
+export * from "./radii-with-selection";
 export type * from "./rectangle";
 export * from "./rectangle-contour";
 export * from "./rectangle-corner-count";
