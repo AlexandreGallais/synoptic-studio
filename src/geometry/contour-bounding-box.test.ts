@@ -92,7 +92,25 @@ describe("contourBoundingBox (DERIV-arc-bounding-box)", () => {
       }
 
       expect(box.minX).toBeGreaterThanOrEqual(sharp.minX - 1e-9);
+      expect(box.minY).toBeGreaterThanOrEqual(sharp.minY - 1e-9);
+      expect(box.maxX).toBeLessThanOrEqual(sharp.maxX + 1e-9);
       expect(box.maxY).toBeLessThanOrEqual(sharp.maxY + 1e-9);
     },
   );
+
+  it("counts an arc without length by its ends only", () => {
+    // A corner on a straight line keeps no fillet: center = start = end, radius 10.
+    expect(
+      contourBoundingBox([
+        {
+          center: { x: 5, y: 5 },
+          end: { x: 5, y: 5 },
+          kind: "arc",
+          positive: true,
+          radius: 10,
+          start: { x: 5, y: 5 },
+        },
+      ]),
+    ).toEqual({ maxX: 5, maxY: 5, minX: 5, minY: 5 });
+  });
 });

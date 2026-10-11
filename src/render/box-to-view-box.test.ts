@@ -15,9 +15,20 @@ describe("boxToViewBox", () => {
     });
   });
 
-  it("ignores a rounding error just below 0", () => {
+  it("ignores a rounding error just below 0, on both axes", () => {
     // −1.8e-15 + 1e-9 > 0: floor gives 0.
-    expect(boxToViewBox({ maxX: 100, maxY: 100, minX: -1.8e-15, minY: 0 }, CANVAS, 10).x).toBe(-10);
+    const view = boxToViewBox({ maxX: 100, maxY: 100, minX: -1.8e-15, minY: -1.8e-15 }, CANVAS, 10);
+
+    expect(view.x).toBe(-10);
+    expect(view.y).toBe(-10);
+  });
+
+  it("keeps the origin for a shape placed at a positive position", () => {
+    // min(0, 30) = 0: the view does not follow the shape away from the origin.
+    const view = boxToViewBox({ maxX: 130, maxY: 90, minX: 30, minY: 40 }, CANVAS, 10);
+
+    expect(view.x).toBe(-10);
+    expect(view.y).toBe(-10);
   });
 
   it("[F04.AC3] shows a turned shape with negative coordinates, from a whole unit", () => {
