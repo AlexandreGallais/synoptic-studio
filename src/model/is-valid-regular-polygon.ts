@@ -7,7 +7,8 @@ import type { RegularPolygon } from "./regular-polygon";
 
 /**
  * Whether a regular polygon can enter the model: an integer number of corners from 3 to 12
- * (Q19), width and height integers ≥ 0, one corner radius per corner, integer ≥ 0 (ADR-0029), and an anchor of `min`, `mid` or `max`
+ * (Q19), width and height integers ≥ 0, one corner radius per corner, integer ≥ 0 (ADR-0029),
+ * and an anchor of `min`, `mid` or `max`
  * on each axis (F07).
  *
  * A size of 0 gives a degenerate polygon, allowed (Q15); a negative or fractional value is
