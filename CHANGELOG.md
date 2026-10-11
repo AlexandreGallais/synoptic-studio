@@ -1,5 +1,45 @@
 # Changelog
 
+## [0.9.0](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.8.6...v0.9.0) (2026-10-11)
+
+
+### Features
+
+* **geometry:** fit a shape in its box at one of nine anchors ([49398e7](https://github.com/AlexandreGallais/synoptic-studio/commit/49398e7478c3c8967e297245f7da62d45085465c))
+* **model:** anchor a regular polygon in its box ([0d46a48](https://github.com/AlexandreGallais/synoptic-studio/commit/0d46a48e5e079b364c0cba15f199da71b987d481))
+* **playground:** choose the polygon's anchor on a 3 × 3 grid ([3c9fc2f](https://github.com/AlexandreGallais/synoptic-studio/commit/3c9fc2f4b781fb563311fef695d0c648ca5070f6))
+* **playground:** guided test of F07, the corner button in a wide box ([0bdf2c7](https://github.com/AlexandreGallais/synoptic-studio/commit/0bdf2c7126c3d920114d7a8e6f1f979c26f3319d))
+* **playground:** open the guided test on the step the address asks ([a1a4284](https://github.com/AlexandreGallais/synoptic-studio/commit/a1a4284c3ab141e154af5ae14b4e539cd9fe6de6))
+
+
+### Bug fixes
+
+* **playground:** keep Next in place from one guided step to the next ([f812078](https://github.com/AlexandreGallais/synoptic-studio/commit/f812078e3266606e286948015ace9b79fc6227f0))
+* **playground:** large guide buttons at the top of the panel ([050f01b](https://github.com/AlexandreGallais/synoptic-studio/commit/050f01b20de0b99ff815a149a160b2783d95bea9))
+
+
+### Documentation
+
+* **backlog:** audit of F07; set AUD-003 done ([33469e3](https://github.com/AlexandreGallais/synoptic-studio/commit/33469e3abc0859e302a6e18d80681b909e3bbaf3))
+* **backlog:** checkpoint of F07; set CHK-003 done ([ac3b5e7](https://github.com/AlexandreGallais/synoptic-studio/commit/ac3b5e787a78fabe77c190ce647b366be3b91945))
+* **backlog:** research note 0005; F07 stories cite their sources ([e858d1b](https://github.com/AlexandreGallais/synoptic-studio/commit/e858d1b9867e01adaf8f2a453c290a04966de77f))
+* **backlog:** set EN-009 done ([8b8ec1b](https://github.com/AlexandreGallais/synoptic-studio/commit/8b8ec1b22ece37633ba8595022ae3375a15a7f9a))
+* **backlog:** set SP-003 done ([fd79d40](https://github.com/AlexandreGallais/synoptic-studio/commit/fd79d40f5c211d050cba7fd0e05dbac9a1e1c115))
+* **backlog:** set US-009 done ([e9ed86f](https://github.com/AlexandreGallais/synoptic-studio/commit/e9ed86f1abe45e6267f4de4d7bcf7f856b8f67af))
+* **backlog:** set US-010 done ([584649d](https://github.com/AlexandreGallais/synoptic-studio/commit/584649d052af119289d356dc3b0713118416ee79))
+* **backlog:** test card of US-010 for the Product Owner; happy-dom pitfall ([ab0391c](https://github.com/AlexandreGallais/synoptic-studio/commit/ab0391cc4af5ea7a4edf0e9709882a65b01d48d3))
+* **backlog:** tests per criterion of F07 ([39b9ca3](https://github.com/AlexandreGallais/synoptic-studio/commit/39b9ca3ba667a78f350b1b8310f81f92ec73251f))
+* **backlog:** validation of F07 by the Product Owner; set VAL-003 and F07 done ([462db08](https://github.com/AlexandreGallais/synoptic-studio/commit/462db0876ea6c0ba88302a364fb1694afe04c2e8))
+* **docs:** demo page of F07, the polygon anchored in its box ([4d61eae](https://github.com/AlexandreGallais/synoptic-studio/commit/4d61eae35f3864791d898c15581685d6668b5e8b))
+* **geometry:** a box of size 0 sends the polygon to its anchored place ([2cadb3a](https://github.com/AlexandreGallais/synoptic-studio/commit/2cadb3aa123bb96008e97acc4e5e1e310ceeb1bb))
+* **geometry:** anchored edges within rounding; one SVG reference ([5f731db](https://github.com/AlexandreGallais/synoptic-studio/commit/5f731db4ed5279975e81fd4a7db9d2c99459cb67))
+* **geometry:** name alignmentFactor in step 5; anchor in the glossary ([178aec3](https://github.com/AlexandreGallais/synoptic-studio/commit/178aec319ce51d55bf3554449556975604e6bc36))
+* **geometry:** place the fitted polygon by nine alignments ([bfdcdf6](https://github.com/AlexandreGallais/synoptic-studio/commit/bfdcdf6c33117a2eb8b2229d158a9d33a41e4645))
+* **geometry:** same written drawing on the filled axis, but at a boundary ([35386e2](https://github.com/AlexandreGallais/synoptic-studio/commit/35386e26290a4fd37e81190ec9bbe4d8a29c5edd))
+* **model:** keep the nine anchor places, a corner holds both choices ([529ffeb](https://github.com/AlexandreGallais/synoptic-studio/commit/529ffeb3e7f791f34974189c0d89c29fa0ff25e0))
+* **model:** no option to push a rounded polygon onto its box, and why ([f04c6b9](https://github.com/AlexandreGallais/synoptic-studio/commit/f04c6b93ad57a852e30e0a271a87a856d0cdb406))
+* **model:** the anchor of a regular polygon in the domain ([f4a5e53](https://github.com/AlexandreGallais/synoptic-studio/commit/f4a5e53d39ccee93ace66c9df3263563a00d50d2))
+
 ## [0.8.6](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.8.5...v0.8.6) (2026-10-11)
 
 
