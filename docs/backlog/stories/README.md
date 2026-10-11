@@ -41,7 +41,7 @@
 | [US-013](./E01-F03-US-013-points-list-selection.md)             | F03     | List of points, selection, radius per vertex         | done   |
 | [AUD-004](./E01-F03-AUD-004-audit-f03.md)                       | F03     | Audit F03: per-vertex corner radius                  | done   |
 | [VAL-004](./E01-F03-VAL-004-validate-radius-per-vertex.md)      | F03     | Validate F03 on the reference cases                  | done   |
-| [SP-005](./E01-F08-SP-005-research-f08.md)                      | F08     | Research for F08                                     | ready  |
+| [SP-005](./E01-F08-SP-005-research-f08.md)                      | F08     | Research for F08                                     | done   |
 | [EN-011](./E01-F08-EN-011-free-shape.md)                        | F08     | A free shape in the model                            | draft  |
 | [US-014](./E01-F08-US-014-convert-and-move.md)                  | F08     | Convert a polygon, move a point by its x, y          | draft  |
 | [CHK-005](./E01-F08-CHK-005-checkpoint-f08.md)                  | F08     | Checkpoint in the middle of F08                      | draft  |
@@ -57,12 +57,3 @@
 | [VAL-006](./E01-F09-VAL-006-validate-stretchable-free-shape.md) | F09     | Validate F09                                         | done   |
 | [REV-001](./E01-REV-001-review-e01.md)                          | E01     | Review E01 with the Product Owner                    | draft  |
 | [RET-001](./E01-RET-001-retrospective-e01.md)                   | E01     | Retrospective of E01                                 | draft  |
-| -----------------------------------------------------------     | ------- | ------------------------------------------------     | ------ |
-| [SP-005](./E01-F08-SP-005-research-f08.md)                      | F08     | Research for F08                                     | done   |
-| [EN-011](./E01-F08-EN-011-free-shape.md)                        | F08     | A free shape in the model                            | ready  |
-| [US-014](./E01-F08-US-014-convert-and-move.md)                  | F08     | Convert a polygon, move a point by its x, y          | ready  |
-| [CHK-005](./E01-F08-CHK-005-checkpoint-f08.md)                  | F08     | Checkpoint in the middle of F08                      | ready  |
-| [US-015](./E01-F08-US-015-add-middle-point.md)                  | F08     | Add a point in the middle of an edge                 | ready  |
-| [US-016](./E01-F08-US-016-delete-points.md)                     | F08     | Delete points                                        | ready  |
-| [AUD-005](./E01-F08-AUD-005-audit-f08.md)                       | F08     | Audit F08: node editing                              | ready  |
-| [VAL-005](./E01-F08-VAL-005-validate-node-editing.md)           | F08     | Validate F08 on the reference cases                  | ready  |

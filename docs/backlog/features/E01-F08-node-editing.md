@@ -40,7 +40,7 @@ Refined with the Product Owner on 2026-10-11 (started with `/run`). Since F09 th
 
 1. A regular polygon is turned into a free shape by a button: the same vertices, the same radii, the same drawing; it no longer has a number of corners nor an anchor.
 2. A point of a rectangle or of a free shape is moved by typing its x and y, integers; a rectangle whose point moves becomes a free shape of 4 points with its radii; width and height show the bounding box.
-3. With two neighbouring points selected, a button adds a point exactly in the middle of their edge, without rounding; the straight contour is unchanged, a neighbouring corner's rounding may shrink.
+3. With two neighbouring points selected, a button adds a point exactly in the middle of their edge, without rounding, the edge unchanged.
 4. Selected points of a rectangle or a free shape are deleted by a button or the Delete key, their neighbours joined; at least 3 points remain, otherwise the deletion is refused with a message; on a regular polygon it is refused with a message to convert it first.
 
 ## Stories
@@ -49,7 +49,7 @@ In delivery order.
 
 | ID                                                             | Type       | Title                                       | Status |
 | -------------------------------------------------------------- | ---------- | ------------------------------------------- | ------ |
-| [SP-005](../stories/E01-F08-SP-005-research-f08.md)            | Spike      | Research for F08                            | ready  |
+| [SP-005](../stories/E01-F08-SP-005-research-f08.md)            | Spike      | Research for F08                            | done   |
 | [EN-011](../stories/E01-F08-EN-011-free-shape.md)              | Enabler    | A free shape in the model                   | draft  |
 | [US-014](../stories/E01-F08-US-014-convert-and-move.md)        | User story | Convert a polygon, move a point by its x, y | draft  |
 | [CHK-005](../stories/E01-F08-CHK-005-checkpoint-f08.md)        | Checkpoint | Checkpoint in the middle of F08             | draft  |
@@ -57,14 +57,6 @@ In delivery order.
 | [US-016](../stories/E01-F08-US-016-delete-points.md)           | User story | Delete points                               | draft  |
 | [AUD-005](../stories/E01-F08-AUD-005-audit-f08.md)             | Audit      | Audit F08: node editing                     | draft  |
 | [VAL-005](../stories/E01-F08-VAL-005-validate-node-editing.md) | Validation | Validate F08 on the reference cases         | draft  |
-| [SP-005](../stories/E01-F08-SP-005-research-f08.md)            | Spike      | Research for F08                            | done   |
-| [EN-011](../stories/E01-F08-EN-011-free-shape.md)              | Enabler    | A free shape in the model                   | ready  |
-| [US-014](../stories/E01-F08-US-014-convert-and-move.md)        | User story | Convert a polygon, move a point by its x, y | ready  |
-| [CHK-005](../stories/E01-F08-CHK-005-checkpoint-f08.md)        | Checkpoint | Checkpoint in the middle of F08             | ready  |
-| [US-015](../stories/E01-F08-US-015-add-middle-point.md)        | User story | Add a point in the middle of an edge        | ready  |
-| [US-016](../stories/E01-F08-US-016-delete-points.md)           | User story | Delete points                               | ready  |
-| [AUD-005](../stories/E01-F08-AUD-005-audit-f08.md)             | Audit      | Audit F08: node editing                     | ready  |
-| [VAL-005](../stories/E01-F08-VAL-005-validate-node-editing.md) | Validation | Validate F08 on the reference cases         | ready  |
 
 ## Feature plan
 
