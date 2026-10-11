@@ -1,0 +1,38 @@
+import { edgeOfSelection } from "../src";
+
+import { selectElement } from "./select-element";
+
+import type { ShapeReading } from "./shape-reading";
+import type { VertexSelection } from "../src";
+
+/**
+ * Shows the buttons acting on the points: for a regular polygon, the conversion (greyed when it
+ * has no width or height) and a line saying it is converted first; for a free shape (the
+ * rectangle included), adding a point, greyed unless two neighbouring points are selected
+ * (F08.AC1, F08.AC3).
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param reading - valid shape
+ * @param selection - vertices selected
+ * @see docs/backlog/stories/E01-F08-US-015-add-middle-point.md
+ */
+export function showPointButtons(
+  document: Document,
+  reading: ShapeReading,
+  selection: VertexSelection,
+): void {
+  const { model } = reading;
+  const isPolygon = "anchor" in model;
+  const edge = edgeOfSelection(selection.selected, reading.corners.length);
+  const convert = selectElement(document, "convert");
+
+  convert.hidden = !isPolygon;
+  convert.toggleAttribute("disabled", model.width === 0 || model.height === 0);
+  selectElement(document, "convert-hint").hidden = !isPolygon;
+
+  selectElement(document, "add-midpoint").toggleAttribute(
+    "disabled",
+    isPolygon || edge === undefined,
+  );
+}

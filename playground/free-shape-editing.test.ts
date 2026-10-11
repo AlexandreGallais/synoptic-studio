@@ -84,6 +84,35 @@ function modelNumber(key: string): number {
   return Number(match?.[1]);
 }
 
+/**
+ * Adds a point of the list to the selection, as Ctrl + click does.
+ *
+ * @param vertex - number of the point, from 1
+ */
+function addPoint(vertex: number): void {
+  document
+    .querySelector(`#points [data-vertex="${CSS.escape(String(vertex))}"]`)
+    ?.dispatchEvent(new MouseEvent("click", { bubbles: true, ctrlKey: true }));
+}
+
+/**
+ * The texts of the rows of the list of points.
+ *
+ * @returns one text per point, in contour order
+ */
+function rows(): readonly string[] {
+  return [...document.querySelectorAll("#points [data-vertex]")].map((row) => row.textContent);
+}
+
+/**
+ * Whether the button adding a point is greyed.
+ *
+ * @returns `true` when it cannot be clicked
+ */
+function isAddGreyed(): boolean {
+  return document.querySelector<HTMLButtonElement>("#add-midpoint")?.disabled ?? false;
+}
+
 describe("editing the points of a free shape", () => {
   it("[F08.AC1] shows the x and y of a polygon's point greyed, and the conversion button", () => {
     // Step 10: a hexagon in 100 × 100.
@@ -223,5 +252,80 @@ describe("editing the points of a free shape", () => {
     expect(document.querySelector<HTMLOptionElement>('#shape option[value="free"]')?.hidden).toBe(
       true,
     );
+  });
+
+  it("[F08.AC3] adds a sharp point in the middle of the edge of two neighbours, selected alone", () => {
+    // Step 1: a 120 × 80 rectangle, radius 10; points 1 (0, 0) and 2 (120, 0): middle (60, 0).
+    openOnStep(1);
+    clickPoint(1);
+    addPoint(2);
+    document.querySelector<HTMLButtonElement>("#add-midpoint")?.click();
+
+    expect(rows()).toEqual([
+      "1 · x 0 · y 0 · radius 10",
+      "2 · x 60 · y 0 · radius 0",
+      "3 · x 120 · y 0 · radius 10",
+      "4 · x 120 · y 80 · radius 10",
+      "5 · x 0 · y 80 · radius 10",
+    ]);
+
+    expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("free");
+    expect(field("point-x").value).toBe("60");
+  });
+
+  it("[F08.AC3] adds the point of the closing edge, between the last point and the first, at the end", () => {
+    // Points 4 (0, 80) and 1 (0, 0): middle (0, 40), numbered 5.
+    openOnStep(1);
+    clickPoint(4);
+    addPoint(1);
+    document.querySelector<HTMLButtonElement>("#add-midpoint")?.click();
+
+    expect(rows().at(-1)).toBe("5 · x 0 · y 40 · radius 0");
+    expect(rows()).toHaveLength(5);
+  });
+
+  it("[F08.AC3] halves the room of the corners at the ends of the edge", () => {
+    // A 100 square, radius 1000 drawn 100; a point in the middle of the top edge leaves 50.
+    openOnStep(1);
+    type("width", "100");
+    type("height", "100");
+    clickPoint(1);
+    addPoint(2);
+    // Points 1 and 2 selected: the radius goes to both.
+    type("radius", "1000");
+    document.querySelector<HTMLButtonElement>("#add-midpoint")?.click();
+
+    expect(rows()[0]).toBe("1 · x 0 · y 0 · radius 1000 (effective 50)");
+  });
+
+  it("[F08.AC3] greys the button unless two neighbouring points are selected", () => {
+    openOnStep(1);
+    clickPoint(1);
+
+    const isOneGreyed = isAddGreyed();
+
+    addPoint(3);
+
+    expect([isOneGreyed, isAddGreyed()]).toEqual([true, true]);
+  });
+
+  it("[F08.AC3] greys the button on a polygon and says to convert it first", () => {
+    openOnStep(10);
+    clickPoint(1);
+    addPoint(2);
+
+    expect(isAddGreyed()).toBe(true);
+    expect(document.querySelector<HTMLElement>("#convert-hint")?.hidden).toBe(false);
+  });
+
+  it("[F08.AC3] adds no point while the shape is refused", () => {
+    openOnStep(1);
+    clickPoint(1);
+    addPoint(2);
+    type("width", "");
+    document.querySelector<HTMLButtonElement>("#add-midpoint")?.click();
+    type("width", "120");
+
+    expect(rows()).toHaveLength(4);
   });
 });

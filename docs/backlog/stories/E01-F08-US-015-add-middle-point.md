@@ -19,7 +19,18 @@ As a symbol designer, I want to add a point in the middle of an edge, so that I 
 
 ## Product Owner test
 
-Written with the story.
+Run `npm run dev` and open `http://localhost:5173/?step=1` (a 120 × 80 rectangle, rounding 10), then click **Points**. **Neighbouring points** are two points joined by a side of the shape; the last point and the first are neighbours too. A **sharp** point has no rounding.
+
+| Step | Do                                                                      | You should see                                                                                                       |
+| ---- | ----------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| 1    | Click point 1 in the list, then Ctrl + click point 3 (Cmd on a Mac)     | **Add a point in the middle** is greyed: points 1 and 3 are not neighbours                                           |
+| 2    | Click point 1, then Ctrl + click point 2                                | the button can be clicked                                                                                            |
+| 3    | Click **Add a point in the middle**                                     | a new point 2 at x 60, y 0, sharp, selected alone; the old points 2, 3, 4 are now 3, 4, 5; the drawing does not move |
+| 4    | Type Y -20 and press Enter                                              | the top side gets a peak pointing up, 20 above the rectangle                                                         |
+| 5    | Click point 5, Ctrl + click point 1, then **Add a point in the middle** | a point 6 at x 0, y 40, in the middle of the left side, at the end of the list                                       |
+| 6    | Open `?step=10` (a hexagon), Points, select points 1 and 2              | the button is greyed, and a line says to convert the polygon first                                                   |
+
+Look closely at: whether the new point lands where you expect, and whether its number makes sense.
 
 ## Tasks
 
