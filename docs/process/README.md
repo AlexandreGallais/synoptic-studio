@@ -7,6 +7,7 @@ How the project inspects itself and adapts (ADR-0023). The backlog method is in 
 | When                             | What                                                                                                                                                                      | Who                       | Output                                                                             |
 | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- | ---------------------------------------------------------------------------------- |
 | any time                         | raise an idea, an irritant or a lesson (the agent writes it, quoting the Product Owner)                                                                                   | both                      | a row in the [improvement log](./improvements.md)                                  |
+| any time                         | a critique of how the agent worked: quoted, with what it should have done and what now prevents it                                                                        | agent                     | a row in the [feedback log](./feedback.md)                                         |
 | start of each story, each review | triage of open GitHub issues (`/triage`): each presented with a recommendation                                                                                            | agent, then Product Owner | decisions, backlog items, replies (ADR-0026)                                       |
 | start of a feature               | refinement interview, research spike `SP`                                                                                                                                 | both, then agent          | stories, sources                                                                   |
 | during a run (ADR-0028)          | stories chain on the feature branch; checkpoint `CHK` mid-feature; a test card per user story                                                                             | agent                     | stories merged into the feature branch, cards to run                               |
@@ -29,11 +30,12 @@ Questions asked as the project grows — each answer is "nothing yet", a story, 
 
 ## Folders
 
-| Page                                 | Content                                                          |
-| ------------------------------------ | ---------------------------------------------------------------- |
-| [improvements.md](./improvements.md) | improvement log, fed continuously, emptied by each retrospective |
-| [retrospectives](./retrospectives/)  | one record per retrospective                                     |
-| [journal.md](./journal.md)           | what each session dealt with, newest first (ADR-0024)            |
+| Page                                 | Content                                                                                                   |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| [improvements.md](./improvements.md) | improvement log, fed continuously, emptied by each retrospective                                          |
+| [feedback.md](./feedback.md)         | the Product Owner's critiques of the agent's work, turned into the playbook's sheet at each retrospective |
+| [retrospectives](./retrospectives/)  | one record per retrospective                                                                              |
+| [journal.md](./journal.md)           | what each session dealt with, newest first (ADR-0024)                                                     |
 
 ## Coming from the V-model
 

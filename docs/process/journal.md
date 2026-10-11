@@ -2,6 +2,12 @@
 
 What each working session dealt with, in the agent's words: requests of the Product Owner (paraphrased), decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`). The full conversations stay in the local transcripts (see [agent configuration](../tooling/agent.md#searching-past-conversations)).
 
+## 2026-10-11 — F07 released, feedback log, F03 next
+
+- `#release` F07 merged into `main` by the Product Owner (#73), released as v0.9.0; branches deleted, only `main` left.
+- `#process` New [feedback log](./feedback.md): every critique of the agent's work, quoted, with what should have been done and what now prevents it; grouped at each retrospective into the playbook's sheet. Asked by the Product Owner: « tu vas pouvoir, à la fin, te faire une petite fiche de "Quand je fais les choses de telle manière, il faut que je fasse ça" ».
+- `#run` `/run` received with no scope: the next feature in order is F03, which starts with its refinement interview.
+
 ## 2026-10-11 — F07 validated
 
 - `#review` The Product Owner finished the guided test (steps 20 to 28): « OK, super, voilà, c'est parfait. » VAL-003 and F07 set `done` on `feat/val-003-validate-anchor`.

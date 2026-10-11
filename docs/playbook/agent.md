@@ -26,3 +26,7 @@ Sources: `REF-CC-BEST-PRACTICES`, `REF-CC-MEMORY`, `REF-CC-SKILLS`, `REF-CC-HOOK
 ## The Product Owner's role
 
 The agent designs, implements, tests and documents; the Product Owner sets priorities, answers business questions, sets stories `ready`, tests the demos, merges pull requests, and writes in the improvement log. The Product Owner calls this mode "vibe coding"; in its original sense the term means accepting code without reading it, whereas here every change is reviewed, tested and sourced — through checks rather than line-by-line reading. The Product Owner may never touch the repository: the agent reads their messages for intent, asks when a decision is ambiguous, and writes their feedback into the repository, quoting them.
+
+## Lessons from the Product Owner
+
+"When I do this, do that instead": the [feedback log](../process/feedback.md) grouped at each retrospective, one line per habit. Empty until the first retrospective (E01).
