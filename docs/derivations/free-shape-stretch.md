@@ -1,6 +1,6 @@
 # DERIV-free-shape-stretch — Stretching a free shape by its width and height, without loss
 
-Used by: ADR-0032, F09. Sources: `REF-CSS-TRANSFORMS` (§3 transform rendering model, §9.1 `scale(sx, sy)`).
+Used by: ADR-0032, F09. Sources: `REF-SVG2-COORDS` §8.2 (the viewBox transform with `align = none`: one scale per axis, then a translation), `REF-CSS-TRANSFORMS` §3 (a transform about an origin). `fitInBox` (`DERIV-regular-polygon-fit`) is the same map with one scale for both axes.
 
 ## Notation
 
@@ -14,17 +14,17 @@ Used by: ADR-0032, F09. Sources: `REF-CSS-TRANSFORMS` (§3 transform rendering m
 
 ## Step 1 — A scale about a fixed point
 
-The transform rendering model of CSS (`REF-CSS-TRANSFORMS` §3) builds a transform about an origin in three steps: translate by the origin, apply the transform, translate by the negated origin. With the scale `scale(sx, sy)` (§9.1) and the origin `o`:
+SVG maps a box onto another with one scale per axis when `align` is `none`: scale-x = target width / box width, scale-y likewise, then a translation (`REF-SVG2-COORDS` §8.2). CSS builds a transform about an origin by translating by the origin, applying the transform, and translating back (`REF-CSS-TRANSFORMS` §3). With the origin `o`:
 
 `p' = o + (sx · (pₓ − oₓ), sy · (p_y − o_y))`
 
 ## Step 2 — The factors that give the asked size, the top-left fixed
 
-`sx = w / nₓ`, `sy = h / n_y` when `nₓ, n_y > 0`. The point `o` maps to itself, so the top-left of the box stays fixed (Product Owner, F09).
+`sx = w / nₓ`, `sy = h / n_y` when `nₓ, n_y > 0`. Computed as `p'ₓ = oₓ + w · (pₓ − oₓ) / nₓ`, multiplying first: with integers the product is exact below 2⁵³, and one correctly rounded division gives `w` exactly at the far edge (`(29 / 7) · 7` is 29.000000000000004, `(29 · 7) / 7` is 29). Likewise for y. The point `o` maps to itself, so the top-left of the box stays fixed (Product Owner, F09).
 
 The drawn box has width `sx · nₓ = w` and height `sy · n_y = h`: the point at the smallest x maps to `oₓ`, the one at the largest to `oₓ + sx · nₓ = oₓ + w`, and a scale with `sx ≥ 0` keeps the order of the coordinates. Likewise for y.
 
-Degenerate box: when `nₓ = 0` (every point on one vertical line), no factor gives a width; every point is drawn at `oₓ`. Same for `n_y`. The rectangle tool never gives such a box (step 4).
+Degenerate box: when `nₓ = 0` (every point on one vertical line), no factor gives a width (`w / 0` is infinite). Such a shape is refused: the stored points must span a box of positive width and height (ADR-0032). The rectangle tool never gives one (step 4).
 
 ## Step 3 — Without loss
 
