@@ -124,3 +124,24 @@ describe("freeShapeCorners", () => {
     ]);
   });
 });
+
+describe("freeShapeCorners (at a position, F04)", () => {
+  it("[F04.AC3] draws the rectangle tool's shape with the top-left of its box at its position", () => {
+    // The unit square stretched to 100 × 50, its top-left (0, 0) moved to (10, 20).
+    const shape = rectangleAsFreeShape({
+      angle: 0,
+      height: 50,
+      radii: [0, 0, 0, 0],
+      width: 100,
+      x: 10,
+      y: 20,
+    });
+
+    expect(freeShapeCorners(shape).map((corner) => corner.point)).toEqual([
+      { x: 10, y: 20 },
+      { x: 110, y: 20 },
+      { x: 110, y: 70 },
+      { x: 10, y: 70 },
+    ]);
+  });
+});
