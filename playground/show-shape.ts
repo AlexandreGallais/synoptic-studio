@@ -1,5 +1,6 @@
 import {
   EPSILON,
+  commonRadius,
   contourPiecesToPathData,
   createPathElement,
   createSvgElement,
@@ -9,8 +10,8 @@ import {
 } from "../src";
 
 import { createBoxElements } from "./create-box-elements";
-import { readNumber } from "./read-number";
 import { selectElement } from "./select-element";
+import { writeRadiusField } from "./write-radius-field";
 import { writeText } from "./write-text";
 
 import type { ShapeReading } from "./shape-reading";
@@ -20,6 +21,9 @@ const MARGIN = 10;
 
 /** Indentation of the JSON shown in the pipeline panel. */
 const JSON_INDENT = 2;
+
+/** Text shown instead of one effective radius when the vertices have different radii. */
+const MIXED_EFFECTIVE = "Effective radius: mixed, shown for each point in Points mode.";
 
 /**
  * Reads the size of the drawing area in CSS pixels.
@@ -37,7 +41,8 @@ function readCanvasSize(document: Document): { readonly height: number; readonly
 
 /**
  * Shows the effective corner radius next to the requested one, and says when it was reduced to
- * fit the shape (Q8: the requested value is kept, the effective one is derived).
+ * fit the shape (Q8: the requested value is kept, the effective one is derived); when the
+ * vertices have different radii, says where each one is shown (F03.AC2).
  *
  * @kind procedure
  * @param document - page document
@@ -45,8 +50,15 @@ function readCanvasSize(document: Document): { readonly height: number; readonly
  * @see docs/backlog/stories/E01-F01-US-003-round-rectangle-corners.md
  */
 function writeEffectiveRadius(document: Document, reading: ShapeReading): void {
+  const radius = commonRadius(reading.model.radii);
+
+  if (radius === undefined) {
+    writeText(document, "effective", MIXED_EFFECTIVE);
+
+    return;
+  }
+
   const effective = effectiveCornerRadius(reading.corners);
-  const radius = readNumber(document, "radius");
   const isReduced = radius - effective >= EPSILON;
   const text = isReduced
     ? `Effective radius: ${formatSvgNumber(effective)} (requested ${String(radius)}, reduced to fit)`
@@ -76,6 +88,7 @@ export function showShape(document: Document, reading: ShapeReading): void {
   writeText(document, "model", JSON.stringify(reading.model, undefined, JSON_INDENT));
   writeText(document, "contour", JSON.stringify(contour, undefined, JSON_INDENT));
   writeText(document, "pieces", JSON.stringify(pieces, undefined, JSON_INDENT));
+  writeRadiusField(document, reading.model.radii);
   writeEffectiveRadius(document, reading);
   writeText(document, "path-data", pathData);
 }
