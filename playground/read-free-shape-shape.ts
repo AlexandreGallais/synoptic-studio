@@ -17,7 +17,7 @@ import type { FreeShape } from "../src";
 
 /** Message shown when a value of the free shape is not allowed. */
 const INVALID_FREE_SHAPE =
-  "Width, height and radius typed must be integers ≥ 0, and the points must span some width and height.";
+  "Width, height and radius typed must be integers ≥ 0, the angle an integer, and the points must span some width and height.";
 
 /**
  * Reads the text typed in an input.
