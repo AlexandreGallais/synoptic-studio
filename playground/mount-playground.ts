@@ -4,9 +4,9 @@ import { readShape } from "./read-shape";
 import { readStepFromAddress } from "./read-step-from-address";
 import { selectElement } from "./select-element";
 import { showGuidedStep } from "./show-guided-step";
+import { showRefusedShape } from "./show-refused-shape";
 import { showShape } from "./show-shape";
 import { writeCappedSizes } from "./write-capped-sizes";
-import { writeText } from "./write-text";
 import { writeValidity } from "./write-validity";
 
 /**
@@ -30,8 +30,7 @@ function updatePlayground(document: Document): void {
   if (reading.isValid) {
     showShape(document, reading);
   } else {
-    // The effective radius of the last valid shape would no longer match the inputs (Q8).
-    writeText(document, "effective", "");
+    showRefusedShape(document);
   }
 }
 
