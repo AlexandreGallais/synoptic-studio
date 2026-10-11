@@ -3,7 +3,7 @@ id: CHK-005
 epic: E01
 feature: F08
 title: Checkpoint in the middle of F08
-status: ready
+status: done
 points: 1
 ---
 
@@ -21,8 +21,8 @@ Pause between moving points and adding or deleting them: bring documentation and
 
 One task = one commit, referenced as `CHK-005.Tn`.
 
-- [ ] T1 — Consistency of code, docs and agent configuration; fixes (0.5 h)
-- [ ] T2 — Light evolvability check; improvement log; test cards listed (0.5 h)
+- [x] T1 — Consistency of code, docs and agent configuration; fixes (0.5 h)
+- [x] T2 — Light evolvability check; improvement log; test cards listed (0.5 h)
 
 ## Light evolvability check (2026-10-11)
 
