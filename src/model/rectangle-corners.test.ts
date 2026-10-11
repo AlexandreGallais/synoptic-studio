@@ -5,7 +5,7 @@ import { effectiveRadii, roundedContour } from "../geometry";
 import { rectangleCorners } from "./rectangle-corners";
 
 describe("rectangleCorners", () => {
-  it("gives the four vertices of the contour, each with the requested radius (global radius)", () => {
+  it("[F03.AC1] gives the four vertices of the contour the same radius when the radii are equal", () => {
     expect(rectangleCorners({ height: 50, radii: [10, 10, 10, 10], width: 100 })).toEqual([
       { point: { x: 0, y: 0 }, radius: 10 },
       { point: { x: 100, y: 0 }, radius: 10 },
@@ -57,5 +57,16 @@ describe("rectangleCorners (one radius per vertex)", () => {
     expect(
       effectiveRadii(rectangleCorners({ height: 100, radii: [30, 10, 0, 0], width: 20 })),
     ).toEqual([expect.closeTo(15, 9), expect.closeTo(5, 9), 0, 0]);
+
+    // 100 × 30, radii 40, 20, 0, 0: left edge 30 < 40, f = 3/4, top-left 30; top-right 20 fits.
+    expect(
+      effectiveRadii(rectangleCorners({ height: 30, radii: [40, 20, 0, 0], width: 100 })),
+    ).toEqual([expect.closeTo(30, 9), expect.closeTo(20, 9), 0, 0]);
+
+    // 30 × 20, radii 30, 10, 0, 0: left f = 2/3, top f = 3/4; top-left takes the smaller of its
+    // two edges, 20; top-right 7.5, leaving 2.5 of the top edge unused (known limit).
+    expect(
+      effectiveRadii(rectangleCorners({ height: 20, radii: [30, 10, 0, 0], width: 30 })),
+    ).toEqual([expect.closeTo(20, 9), expect.closeTo(7.5, 9), 0, 0]);
   });
 });
