@@ -1,8 +1,6 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
-import { EPSILON } from "../math";
-
 import { unitRegularPolygon } from "./unit-regular-polygon";
 
 import type { Point } from "../math";
@@ -47,40 +45,44 @@ function doubleSignedArea(points: readonly Point[]): number {
 }
 
 describe("unitRegularPolygon (DERIV-regular-polygon-fit steps 1–2)", () => {
-  it("[F02.AC3] gives a triangle pointing up, from its apex, clockwise on screen", () => {
-    // n = 3, start k = ⌊3/2⌋ = 1: β = π/2, −π/6, −5π/6; SVG point (cos β, −sin β).
+  it("[F08.AC5] gives a triangle pointing up, from the right end of its base, clockwise on screen", () => {
+    // n = 3, βⱼ = −π/2 + (1 − 2j) π/3: −π/6, −5π/6, −3π/2; SVG point (cos β, −sin β).
     expectPoints(unitRegularPolygon(3), [
-      { x: 0, y: -1 },
       { x: HALF_SQRT_3, y: 0.5 },
       { x: -HALF_SQRT_3, y: 0.5 },
+      { x: 0, y: -1 },
     ]);
   });
 
-  it("[F02.AC3] gives a square with horizontal edges, not a diamond, from its top-left vertex", () => {
-    // n = 4, start k = 2: β = 3π/4, π/4, −π/4, −3π/4.
+  it("[F08.AC5] gives a square with horizontal edges, not a diamond, from its bottom-right vertex", () => {
+    // n = 4: β = −π/4, −3π/4, −5π/4, −7π/4.
     expectPoints(unitRegularPolygon(4), [
-      { x: -HALF_SQRT_2, y: -HALF_SQRT_2 },
-      { x: HALF_SQRT_2, y: -HALF_SQRT_2 },
       { x: HALF_SQRT_2, y: HALF_SQRT_2 },
       { x: -HALF_SQRT_2, y: HALF_SQRT_2 },
+      { x: -HALF_SQRT_2, y: -HALF_SQRT_2 },
+      { x: HALF_SQRT_2, y: -HALF_SQRT_2 },
     ]);
   });
 
-  it("[F02.AC3] gives a hexagon with flat top and bottom, from the left end of its top edge", () => {
-    // n = 6, start k = 3: β = 2π/3, π/3, 0, −π/3, −2π/3, −π.
+  it("[F08.AC5] gives a hexagon with flat top and bottom, from the right end of its base", () => {
+    // n = 6: β = −π/3, −2π/3, −π, −4π/3, −5π/3, −2π.
     expectPoints(unitRegularPolygon(6), [
-      { x: -0.5, y: -HALF_SQRT_3 },
-      { x: 0.5, y: -HALF_SQRT_3 },
-      { x: 1, y: 0 },
       { x: 0.5, y: HALF_SQRT_3 },
       { x: -0.5, y: HALF_SQRT_3 },
       { x: -1, y: 0 },
+      { x: -0.5, y: -HALF_SQRT_3 },
+      { x: 0.5, y: -HALF_SQRT_3 },
+      { x: 1, y: 0 },
     ]);
   });
 
-  it("writes the zero ordinate of the hexagon's right vertex as +0, never −0 (ADR-0025)", () => {
-    // β₂ = −π/2 + 3π/6 is exactly 0 in floating point for n = 6 (3π/6 === π/2): −sin(0) would be −0.
-    expect(Object.is(unitRegularPolygon(6)[2]?.y, 0)).toBe(true);
+  it("never writes a coordinate as −0 (ADR-0025)", () => {
+    // y = 0 − sin β is +0 when sin β is ±0, and cos never gives −0.
+    for (const corners of [3, 4, 5, 6, 7, 8, 9, 10, 11, 12]) {
+      const coordinates = unitRegularPolygon(corners).flatMap((point) => [point.x, point.y]);
+
+      expect(coordinates.some((value) => Object.is(value, -0))).toBe(false);
+    }
   });
 });
 
@@ -103,18 +105,17 @@ describe("unitRegularPolygon (properties)", () => {
   );
 
   test.prop({ corners: fc.integer({ max: 64, min: 3 }) })(
-    "[F02.AC3] runs clockwise on screen from the topmost vertex, the leftmost on a tie",
+    "[F08.AC5] runs clockwise on screen from the right end of the base, then its left end",
     ({ corners }) => {
       const polygon = unitRegularPolygon(corners);
-      const [start] = polygon;
-      const top = Math.min(...polygon.map((point) => point.y));
-      const topLeft = Math.min(
-        ...polygon.filter((point) => point.y - top < EPSILON).map((point) => point.x),
-      );
+      const [right, left] = polygon;
+      const bottom = Math.max(...polygon.map((point) => point.y));
 
       expect(doubleSignedArea(polygon)).toBeGreaterThan(0);
-      expect(start?.y).toBeCloseTo(top, DECIMALS);
-      expect(start?.x).toBeCloseTo(topLeft, DECIMALS);
+      expect(right?.y).toBeCloseTo(bottom, DECIMALS);
+      expect(left?.y).toBeCloseTo(bottom, DECIMALS);
+      expect(right?.x).toBeCloseTo(Math.sin(Math.PI / corners), DECIMALS);
+      expect(left?.x).toBeCloseTo(-Math.sin(Math.PI / corners), DECIMALS);
     },
   );
 
