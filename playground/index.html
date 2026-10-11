@@ -47,6 +47,17 @@
         height: 1.25rem;
         margin: 0;
       }
+      /* Large targets, clicked over and over during the guided test (VAL-003). */
+      #guide-buttons {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0;
+      }
+      #guide-buttons button {
+        flex: 1;
+        min-height: 3rem;
+        font-size: 1.1rem;
+      }
       #guide {
         padding: 0.5rem 0.75rem;
         margin-bottom: 1rem;
@@ -80,12 +91,12 @@
     <main id="canvas"></main>
     <aside>
       <section id="guide" aria-label="Guided test">
-        <h2>Guided test — step <span id="guide-number"></span> / <span id="guide-count"></span></h2>
-        <!-- Above the texts of varying length: Next stays in place from step to step (VAL-003). -->
-        <p>
+        <!-- First in the panel, above every text of varying length: Next stays in place (VAL-003). -->
+        <p id="guide-buttons">
           <button id="guide-previous" type="button">Previous</button>
           <button id="guide-next" type="button">Next</button>
         </p>
+        <h2>Guided test — step <span id="guide-number"></span> / <span id="guide-count"></span></h2>
         <h3 id="guide-title"></h3>
         <p id="guide-explanation"></p>
         <p><strong>Look at:</strong> <span id="guide-look"></span></p>
