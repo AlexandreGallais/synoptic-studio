@@ -163,10 +163,11 @@
             <strong>Y</strong> can be typed (whole numbers): the rectangle then becomes a free
             shape; a polygon is first turned into one with <strong>Convert to free shape</strong>,
             which does not move it. With two neighbouring points selected,
-            <strong>Add a point in the middle</strong> adds a sharp one between them. The
-            <strong>anchor</strong> says where the polygon sits in the room the box leaves: one of
-            nine places, from top left to bottom right; the center by default. Sizes are screen
-            pixels: a value above 100 000 becomes 100 000.
+            <strong>Add a point in the middle</strong> adds a sharp one between them;
+            <strong>Delete points</strong> (or the Delete key) removes the selected points, at least
+            3 staying. The <strong>anchor</strong> says where the polygon sits in the room the box
+            leaves: one of nine places, from top left to bottom right; the center by default. Sizes
+            are screen pixels: a value above 100 000 becomes 100 000.
           </p>
         </details>
       </section>
@@ -215,6 +216,8 @@
         <label>X <input id="point-x" type="number" step="1" /></label>
         <label>Y <input id="point-y" type="number" step="1" /></label>
         <button id="add-midpoint" type="button">Add a point in the middle</button>
+        <button id="delete-points" type="button">Delete points</button>
+        <p id="delete-message" hidden></p>
         <p id="convert-hint" hidden>
           A polygon keeps its points: convert it to a free shape to move, add or delete them.
         </p>

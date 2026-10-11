@@ -1,11 +1,13 @@
 import { freeShapeCorners, freeShapeWithPoint, regularPolygonAsFreeShape } from "../src";
 
+import { listenToDeleteKey } from "./listen-to-delete-key";
 import { readEditedFreeShape } from "./read-edited-free-shape";
 import { readNumber } from "./read-number";
 import { readSelection } from "./read-selection";
 import { readShape } from "./read-shape";
 import { selectElement } from "./select-element";
 import { writeAddedMidpoint } from "./write-added-midpoint";
+import { writeDeletedPoints } from "./write-deleted-points";
 import { writeStoredFreeShape } from "./write-stored-free-shape";
 
 import type { FreeShape, Point, RegularPolygon } from "../src";
@@ -127,7 +129,7 @@ function writeConvertedPolygon(document: Document): void {
 
 /**
  * Listens to the x and y fields of the point selected and to the buttons converting a polygon
- * and adding a point, then calls back (F08.AC1, F08.AC2, F08.AC3).
+ * adding and deleting points, and to the Delete key, then calls back (F08.AC1 to F08.AC4).
  *
  * @kind procedure
  * @param document - page document
@@ -152,4 +154,11 @@ export function listenToPointFields(document: Document, update: () => void): voi
     writeAddedMidpoint(document);
     update();
   });
+
+  selectElement(document, "delete-points").addEventListener("click", () => {
+    writeDeletedPoints(document);
+    update();
+  });
+
+  listenToDeleteKey(document, update);
 }
