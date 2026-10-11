@@ -13,3 +13,4 @@ paths:
 - Backlog: a status change is written in the item file, its folder index and its parent's table (`backlog.test.ts` checks all three).
 - A reference is cited only after it was read: add its row to `docs/references.md` with `[verified] YYYY-MM-DD` first.
 - Derivations use the commit scope `docs(geometry)`; body lines ≤ 100 characters.
+- A local address (`http://localhost:5173/...`) goes in code font, never as a link: the docs build reports it as a dead link (US-018).
