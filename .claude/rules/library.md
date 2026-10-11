@@ -27,3 +27,4 @@ paths:
 - `expect.closeTo` inside `toMatchObject` / `toEqual` of objects is an `any` for the lint (`no-unsafe-assignment`): assert numbers one by one with `toBeCloseTo` (EN-010).
 - Scaling to an integer size: write `o + size · (p − o) / span`, multiplying first — `(29 / 7) · 7` is 29.000000000000004, `29 · 7 / 7` is 29 (F09, `DERIV-free-shape-stretch`).
 - A decision kept on a paused feature branch (ADR-0031 on `feature/f08-node-editing`) is not on `main` yet: cite it only from that branch, or say it is paused.
+- A playground control acting on the shape (button, field) is tested on a **refused** shape too: hide it or guard its handler, or a `NaN` gets stored and crashes later redraws (US-014).
