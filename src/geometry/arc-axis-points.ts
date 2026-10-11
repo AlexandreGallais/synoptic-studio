@@ -16,10 +16,11 @@ const AXES: readonly Vector[] = [
  * direction `d` it sweeps through (`DERIV-arc-bounding-box` steps 2–3).
  *
  * Test: `σ (s × d) ≥ 0` and `σ (d × e) ≥ 0`, `s` and `e` from the center to the ends, `σ` the
- * sign of the arc's direction; valid because a fillet sweeps less than half a turn.
+ * sign of the arc's direction; valid for a sweep strictly between 0 and half a turn, as a fillet
+ * of a rounded contour (`hasLength`), not for an arc without length.
  *
  * @kind geometry
- * @param arc - fillet arc of a rounded contour
+ * @param arc - fillet arc of a rounded contour, with a length
  * @returns its axis points, in the order right, down, left, up
  * @see DERIV-arc-bounding-box
  */
