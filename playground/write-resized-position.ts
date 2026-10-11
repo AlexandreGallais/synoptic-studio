@@ -1,7 +1,8 @@
 import { positionAfterResize } from "../src";
 
-import { readNumber } from "./read-number";
+import { readShape } from "./read-shape";
 import { selectElement } from "./select-element";
+import { writeCappedSizes } from "./write-capped-sizes";
 import { writeShapePosition } from "./write-shape-position";
 
 import type { Size, TurnedBox } from "../src";
@@ -22,23 +23,26 @@ function readDrawnBox(document: Document): TurnedBox | undefined {
 }
 
 /**
- * Reads the width and height typed.
+ * Reads the width and height of the shape as it will be drawn: capped at 100 000 (Q20), and a
+ * kept free shape's exact size while its field still shows it rounded.
  *
  * @kind procedure
  * @param document - page document
- * @returns them, nothing when one is not a number ≥ 0
+ * @returns them, nothing for a refused shape
  * @see docs/backlog/stories/E01-F04-US-019-edit-a-turned-shape.md
  */
 function readTypedSize(document: Document): Size | undefined {
-  const size = { height: readNumber(document, "height"), width: readNumber(document, "width") };
+  writeCappedSizes(document);
 
-  return [size.width, size.height].every((value) => value >= 0) ? size : undefined;
+  const { isValid, model } = readShape(document);
+
+  return isValid ? { height: model.height, width: model.width } : undefined;
 }
 
 /**
  * Places a turned shape whose width or height was just typed so that its turned top-left corner
  * stays where it was drawn, as Figma (F04, `positionAfterResize`). A straight shape keeps its
- * position, its top-left fixed (F09); a size that is not a number ≥ 0 moves nothing.
+ * position, its top-left fixed (F09); a refused shape moves nothing.
  *
  * @kind procedure
  * @param document - page document
