@@ -36,7 +36,7 @@
 | [SP-004](./E01-F03-SP-004-research-f03.md)                  | F03     | Research for F03                                 | done   |
 | [EN-010](./E01-F03-EN-010-radius-per-vertex.md)             | F03     | One requested radius per vertex in the model     | done   |
 | [US-011](./E01-F03-US-011-radius-field-mixed.md)            | F03     | Radius field for every corner, Mixed             | done   |
-| [CHK-004](./E01-F03-CHK-004-checkpoint-f03.md)              | F03     | Checkpoint in the middle of F03                  | ready  |
+| [CHK-004](./E01-F03-CHK-004-checkpoint-f03.md)              | F03     | Checkpoint in the middle of F03                  | done   |
 | [US-012](./E01-F03-US-012-points-mode.md)                   | F03     | Points mode: handles, first and second marked    | ready  |
 | [US-013](./E01-F03-US-013-points-list-selection.md)         | F03     | List of points, selection, radius per vertex     | ready  |
 | [AUD-004](./E01-F03-AUD-004-audit-f03.md)                   | F03     | Audit F03: per-vertex corner radius              | ready  |
