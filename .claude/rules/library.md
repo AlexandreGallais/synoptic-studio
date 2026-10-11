@@ -19,3 +19,5 @@ paths:
 - Zero vectors and signed zeros (ADR-0025): `atan2(+0, −0) = π`, `Math.sign(−0) = −0`, and `toEqual` tells `−0` from `0`. State the intended result for zero-length edges explicitly (see `turningAngle`, `unit`).
 - More than three parameters: group them in a named type (`CornerPoints`); tests with many columns use `it.each` over objects.
 - Playground visibility: page rules such as `label { display: block }` override the `hidden` attribute; keep the `[hidden] { display: none }` rule, and test what is displayed (`getComputedStyle`), the page head loaded (US-007).
+- A test refusing a value outside a string union (data read from outside) needs a cast: `// eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- <reason>` (US-009). A complexity limit in a test callback counts `?.` and `??`: destructure with one fallback instead.
+- Mutation checks by hand: save the file's content and copy it back; `git checkout` neither restores an untracked file nor keeps uncommitted work in a tracked one (F07).
