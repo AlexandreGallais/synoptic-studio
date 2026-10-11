@@ -64,7 +64,7 @@ describe("vertex selection by click", () => {
     });
   });
 
-  it("[F03.AC5] on the drawing: Shift or Ctrl adds or removes, no range", () => {
+  it("[F03.AC5] on the drawing: Shift or Ctrl adds or removes, no range; Shift keeps the start", () => {
     expect(selectionAfterHandleClick(fromTwo, 4, plain)).toEqual({ selected: [4], start: 4 });
 
     expect(selectionAfterHandleClick(fromTwo, 4, withToggle)).toEqual({
@@ -72,9 +72,25 @@ describe("vertex selection by click", () => {
       start: 4,
     });
 
+    // Shift on the drawing adds vertex 4, and a range still starts at vertex 2 (note 0006).
     expect(selectionAfterHandleClick(fromTwo, 4, withShift)).toEqual({
       selected: [2, 4],
-      start: 4,
+      start: 2,
     });
   });
+});
+
+describe("vertex range", () => {
+  test.prop([fc.nat({ max: 11 }), fc.nat({ max: 11 })])(
+    "selects every vertex from the start to the one clicked, both included, the start kept",
+    (start, vertex) => {
+      const { selected, start: kept } = selectionAfterRange(selectionAfterClick(start), vertex);
+      const first = Math.min(start, vertex);
+
+      expect(kept).toBe(start);
+      expect(selected).toHaveLength(Math.abs(vertex - start) + 1);
+      expect(selected).toEqual(selected.map((unused, index) => first + index));
+      expect(selected).toContain(vertex);
+    },
+  );
 });
