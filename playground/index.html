@@ -175,6 +175,7 @@
         <select id="shape">
           <option value="rectangle" selected>Rectangle</option>
           <option value="polygon">Polygon</option>
+          <option value="free" hidden>Free shape</option>
         </select>
       </label>
       <label id="corners-field" hidden
@@ -204,6 +205,12 @@
         >Radius <input id="radius" type="number" min="0" max="100000" step="1" value="10"
       /></label>
       <ol id="points" aria-label="Points" hidden></ol>
+      <fieldset id="point-fields" hidden>
+        <legend>Selected point</legend>
+        <label>X <input id="point-x" type="number" step="1" /></label>
+        <label>Y <input id="point-y" type="number" step="1" /></label>
+        <button id="convert" type="button">Convert to free shape</button>
+      </fieldset>
       <p id="effective"></p>
       <p id="status" role="status"></p>
       <h2>Model (integers)</h2>

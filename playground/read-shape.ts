@@ -11,7 +11,9 @@ import {
 } from "../src";
 
 import { readAnchor } from "./read-anchor";
+import { readFreeShapeShape } from "./read-free-shape-shape";
 import { readNumber } from "./read-number";
+import { readStoredFreeShape } from "./read-stored-free-shape";
 import { selectElement } from "./select-element";
 import { updateKeptRadii } from "./update-kept-radii";
 
@@ -115,15 +117,13 @@ function readPolygonShape(document: Document): ShapeReading {
  *
  * @kind procedure
  * @param document - page document
- * @returns `polygon` or `rectangle`
+ * @returns `rectangle`, `polygon` or `free`
  * @see docs/backlog/stories/E01-F02-US-007-shape-selector-playground.md
  */
 function readShapeKind(document: Document): string {
   const select = selectElement(document, "shape");
 
-  return select instanceof HTMLSelectElement && select.value === "polygon"
-    ? "polygon"
-    : "rectangle";
+  return select instanceof HTMLSelectElement ? select.value : "rectangle";
 }
 
 /**
@@ -131,10 +131,16 @@ function readShapeKind(document: Document): string {
  *
  * @kind procedure
  * @param document - page document
- * @returns the reading of the rectangle or of the polygon
+ * @returns the reading of the rectangle, the polygon or the free shape kept (F08)
  * @see docs/backlog/stories/E01-F02-US-007-shape-selector-playground.md
  */
 export function readShape(document: Document): ShapeReading {
+  const kept = readStoredFreeShape(document);
+
+  if (kept !== undefined) {
+    return readFreeShapeShape(document, kept);
+  }
+
   return readShapeKind(document) === "polygon"
     ? readPolygonShape(document)
     : readRectangleShape(document);
