@@ -3,7 +3,7 @@ id: VAL-003
 epic: E01
 feature: F07
 title: Validate F07 on the reference cases
-status: ready
+status: done
 points: 2
 ---
 
@@ -24,7 +24,7 @@ One task = one commit, referenced as `VAL-003.Tn`. This story is not merged auto
 - [x] T1 — One test per criterion `[F07.AC1]`…`[F07.AC5]`, the playground ones in `playground/mount-playground.test.ts` (1 h)
 - [x] T2 — Guided test in the playground: the steps of the US-010 card (1.5 h)
 - [x] T3 — Demo page in `docs/guide/` in plain language (1 h)
-- [ ] T4 — Product Owner runs the guided test and validates; feedback recorded; feature pull request into `main` (0.5 h)
+- [x] T4 — Product Owner runs the guided test and validates; feedback recorded; feature pull request into `main` (0.5 h)
 
 ## Tests per criterion (2026-10-11)
 
@@ -51,3 +51,19 @@ Compared with what the feature meant to show: in a given box only three places d
 | -------------------------------------------- | ------------------------------------------- |
 | Only five of the nine places seem useful     | nine kept, `docs/domain/shapes.md`, step 26 |
 | Polygon filling its box completely (earlier) | draft feature F06, unchanged                |
+
+Then, after the guided test (steps 20 to 28), quoted in French:
+
+- « Ça a l'air d'être bon, parce qu'il n'y a rien qui me choque là. »
+- Step 26: « je vois que c'est à gauche, pas que c'est en bas à gauche. Pour moi, c'est bon. »
+- « Parfait, tu peux passer à la suite et faire la demande de MR. »
+
+Compared with what the steps meant to show: step 26 meant that the bottom-left place acts as "left" in a wide box, which is what the Product Owner saw. No misunderstanding left. Further remarks:
+
+| Remark                                                                    | Where it goes                                                          |
+| ------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Next should stay in place from step to step, to click it without moving   | fixed: large buttons at the top of the panel (`playground/index.html`) |
+| The "always touch" option is not useful: it breaks measures from the face | recorded as rejected, F07 and `docs/domain/shapes.md`                  |
+| A link that opens the guided test on a given step                         | done: `?step=N` in the address, which follows the step shown           |
+
+After the buttons were moved to the top and enlarged: « OK, super, voilà, c'est parfait. »
