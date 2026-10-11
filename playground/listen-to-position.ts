@@ -4,6 +4,7 @@ import { moveShape } from "./move-shape";
 import { readNumber } from "./read-number";
 import { readShape } from "./read-shape";
 import { selectElement } from "./select-element";
+import { writeResizedPosition } from "./write-resized-position";
 
 /** Axis of a position field. */
 type Axis = "x" | "y";
@@ -69,7 +70,9 @@ function listenToAxis(document: Document, axis: Axis, update: () => void): void 
 /**
  * Makes the x and y fields move the shape (F04): an integer typed puts the top-left of the
  * shape's straight box there, as in Inkscape; the stored position, the top-left of the box
- * before it turns, moves by the difference (ADR-0035). Another value moves nothing.
+ * before it turns, moves by the difference (ADR-0035). Another value moves nothing. A width or
+ * height typed on a turned shape moves its position so that its turned top-left stays in place.
+ * Called before the inputs redraw the page.
  *
  * @kind procedure
  * @param document - page document
@@ -79,6 +82,13 @@ function listenToAxis(document: Document, axis: Axis, update: () => void): void 
 export function listenToPosition(document: Document, update: () => void): void {
   listenToAxis(document, "x", update);
   listenToAxis(document, "y", update);
+
+  // Before the page redraws: a turned shape keeps its turned top-left when resized (US-019).
+  for (const id of ["width", "height"]) {
+    selectElement(document, id).addEventListener("input", () => {
+      writeResizedPosition(document);
+    });
+  }
 
   // Once a field is left, it shows the straight box again, a value that moved nothing included.
   for (const id of ["shape-x", "shape-y"]) {
