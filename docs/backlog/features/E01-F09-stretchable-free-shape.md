@@ -2,7 +2,7 @@
 id: F09
 epic: E01
 title: Stretchable free shape
-status: in-progress
+status: done
 ---
 
 # E01 · F09 — Stretchable free shape
@@ -37,7 +37,7 @@ In delivery order.
 | [CHK-006](../stories/E01-F09-CHK-006-checkpoint-f09.md)                  | Checkpoint | Checkpoint in the middle of F09                      | done   |
 | [US-017](../stories/E01-F09-US-017-rectangle-as-free-shape.md)           | User story | The rectangle as a free shape, stretched by its size | done   |
 | [AUD-006](../stories/E01-F09-AUD-006-audit-f09.md)                       | Audit      | Audit F09                                            | done   |
-| [VAL-006](../stories/E01-F09-VAL-006-validate-stretchable-free-shape.md) | Validation | Validate F09                                         | ready  |
+| [VAL-006](../stories/E01-F09-VAL-006-validate-stretchable-free-shape.md) | Validation | Validate F09                                         | done   |
 
 ## Feature plan
 
