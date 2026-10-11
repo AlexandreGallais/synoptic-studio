@@ -24,15 +24,15 @@ No pen tool and no freehand drawing (see `shapes.md` §3).
 ## 3. Node editing
 
 - Entered by an **explicit mode** (the Node tool, a large button; Points mode in the playground, next to Shape mode), never only by a double-click: the target users are not power users (Product Owner, 2026-10-11, F03). Vertex handles are large enough to click easily.
-- Moving, adding or deleting a vertex of a rectangle or a regular polygon turns it into a free contour, by a voluntary action: it loses its number of corners and its anchor (F08). Giving a vertex its own radius (F03) keeps the shape what it is.
+- A regular polygon becomes a free shape by a dedicated button (a voluntary action): it loses its number of corners and its anchor, and does not move. A rectangle needs no conversion: moving or deleting one of its vertices makes it a free shape, as it loses nothing. Giving a vertex its own radius (F03) keeps the shape what it is (Product Owner, 2026-10-11).
 
 - Shows every vertex of the **selected shape only**, never those of the other shapes. Its vertex 1 (the first of the contour, Q11) is marked red, vertex 2 green, so that the direction of the contour can be read (Product Owner, 2026-10-11); when handles coincide, the red one is on top (agent's choice, note 0006).
 - A **list of the vertices** in contour order (Q11): number, x, y (at most 5 decimals), corner radius requested, and the effective one when it was reduced (Q8). A row is clicked to select its vertex, as its handle is on the drawing; useful when a handle is hard to hit.
 - Selection of one or several vertices, on the drawing or in the list: click selects one; Shift + click or Ctrl + click (Cmd on macOS) on the drawing adds / removes; in the list, Shift + click selects a range and Ctrl + click (Cmd) adds / removes, as in any list (Product Owner, 2026-10-11). A range starts at the last row or handle clicked without Shift, and replaces the selection; with no start yet, Shift + click acts as a plain click (agent's choice, note 0006).
 - The radius field applies to the selected vertices; it shows their common radius or Mixed, and is disabled when none is selected. The selection is cleared when the number of corners changes or when Shape mode is chosen (agent's choice, note 0006).
-- Moving a vertex: integer, typed or dragged (F08).
-- **Adding a vertex** between two existing vertices (on an edge).
-- Deleting a vertex.
+- Moving a vertex: typed x and y, integers (F08); dragged in the editor applications (E02). Only the vertices moved land on integers: a polygon converted to a free shape keeps its fractional vertices (Product Owner, 2026-10-11).
+- **Adding a vertex**: with two neighbouring vertices selected, a button adds one exactly in the middle of their edge, fractions allowed, no rounding (F08).
+- Deleting vertices: a button or the Delete key, on a rectangle or a free shape; at least 3 vertices remain; a regular polygon is converted first (F08).
 - **Corner radius per vertex**: numeric field, applied to the selected vertices.
 
 ## 4. Snapping

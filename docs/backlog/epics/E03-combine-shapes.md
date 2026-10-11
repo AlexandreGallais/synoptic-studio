@@ -30,3 +30,7 @@ status: draft
 | Intersection and exclusion | to refine |
 | Division and cut path      | to refine |
 | Shape builder              | to refine |
+
+## Ideas from the Product Owner (2026-10-11, refinement of F08)
+
+- Operations on edges: cut the contour between two points, join two points, delete an edge, add a connection drawn over the shape; then rebuild shapes from the pieces (« on peut recréer les shapes à partir d'autres shapes »), with the intersections of this epic.

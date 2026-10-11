@@ -31,3 +31,9 @@ status: draft
 | Snapping                   | to refine |
 | Align and constant spacing | to refine |
 | History and navigation     | to refine |
+
+## Ideas from the Product Owner (2026-10-11, refinement of F08)
+
+- Dragging points on the drawing, several selected points moving together, on integers.
+- Stretching a shape by its width and height from a fixed point chosen in the 3 × 3 grid, as Inkscape: « Quand je clique sur l'ancrage de droite et que je l'augmente, le width grandit, mais vers la gauche »; strokes keep their width in pixels.
+- When a polygon is converted to a free shape, a message saying what happens, with a « do not show again » box.
