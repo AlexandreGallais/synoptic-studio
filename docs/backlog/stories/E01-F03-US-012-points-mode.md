@@ -20,6 +20,8 @@ As a symbol designer, I want a Points mode that shows the vertices of my shape a
 
 ## Product Owner test
 
+Since F08 (EN-013), a regular polygon is numbered from the right end of its base: point 1 (red) is the bottom-right corner, point 2 (green) the bottom-left one. The card below is the one run at the time.
+
 Run `npm run dev` and open `http://localhost:5173/?step=10`. A **handle** is the small round mark drawn on a corner (a **point**) of the shape; **point 1** is where the outline of the shape starts, **point 2** the next one, which shows the way it goes (clockwise).
 
 | Step | Do                                       | You should see                                                                                                                                              |
