@@ -4,8 +4,8 @@ import type { FreeShape } from "./free-shape";
 import type { Point } from "../math";
 
 /**
- * Contour of a free shape: its points stretched to its width and height, the top-left of their
- * box fixed (`DERIV-free-shape-stretch`). Derived, never stored (ADR-0003).
+ * Contour of a free shape: the points of its corners stretched to its width and height, the
+ * top-left of their box fixed (`DERIV-free-shape-stretch`). Derived, never stored (ADR-0003).
  *
  * @kind domain
  * @param shape - valid free shape (`isValidFreeShape`)
@@ -13,5 +13,8 @@ import type { Point } from "../math";
  * @see DERIV-free-shape-stretch
  */
 export function freeShapeContour(shape: FreeShape): readonly Point[] {
-  return stretchToSize(shape.points, shape);
+  return stretchToSize(
+    shape.corners.map((corner) => corner.point),
+    shape,
+  );
 }

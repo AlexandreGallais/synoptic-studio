@@ -1,6 +1,7 @@
 import {
   RECTANGLE_CORNER_COUNT,
   freeShapeCorners,
+  freeShapeRadii,
   isRegularPolygonCornerCount,
   isValidFreeShape,
   isValidRegularPolygon,
@@ -82,6 +83,7 @@ function readRectangleShape(document: Document): ShapeReading {
     isValid,
     message: INVALID_RECTANGLE,
     model,
+    radii: freeShapeRadii(model),
   };
 }
 
@@ -102,6 +104,7 @@ function readPolygonShape(document: Document): ShapeReading {
     isValid,
     message: INVALID_POLYGON,
     model,
+    radii: model.radii,
   };
 }
 
