@@ -15,7 +15,7 @@ const HANDLE_RADIUS = 8;
  * @returns a closed `d` made of two arcs
  * @see REF-SVG2-PATHS
  */
-function writeCirclePathData(center: Point, radius: number): string {
+function createCirclePathData(center: Point, radius: number): string {
   const left = `${formatSvgNumber(center.x - radius)} ${formatSvgNumber(center.y)}`;
   const right = `${formatSvgNumber(center.x + radius)} ${formatSvgNumber(center.y)}`;
   const arc = `A${String(radius)} ${String(radius)} 0 1 1`;
@@ -39,7 +39,7 @@ export function createHandleElements(
   vertices: readonly Point[],
 ): readonly SVGPathElement[] {
   const handles = vertices.map((vertex, index) => {
-    const handle = createPathElement(document, writeCirclePathData(vertex, HANDLE_RADIUS));
+    const handle = createPathElement(document, createCirclePathData(vertex, HANDLE_RADIUS));
 
     handle.classList.add("handle");
     handle.dataset["vertex"] = String(index + 1);
