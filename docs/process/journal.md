@@ -2,6 +2,12 @@
 
 What each working session dealt with, in the agent's words: requests of the Product Owner (paraphrased), decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`). The full conversations stay in the local transcripts (see [agent configuration](../tooling/agent.md#searching-past-conversations)).
 
+## 2026-10-11 — F03 validated
+
+- `#review` The Product Owner tested F03 from the cards: « C'est bien, j'ai bien mon premier point et tout. Ça, c'est trop cool. Comme ça, c'est le sens. » VAL-004 and F03 set `done` on `feat/val-004-validate-radius-per-vertex`, with the guided test (steps 29 to 33) and the demo page.
+- `#domain` Q26 opened: a memory of the radii of removed corners (12 → 3 → 12), against F03.AC3 as decided.
+- `#backlog` The free contour, with x and y typed in the list of points, confirmed for F08 (next).
+
 ## 2026-10-11 — F03 run stopped at VAL-004
 
 - `#run` Merged into `feature/f03-radius-per-vertex`: SP-004 (#79), EN-010 (#80), US-011 (#81), CHK-004 (#82), US-012 (#84), US-013 (#87), AUD-004 (#90). Stop: the next story is VAL-004, with the Product Owner.
