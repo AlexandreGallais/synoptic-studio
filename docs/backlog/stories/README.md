@@ -33,7 +33,7 @@
 | [US-010](./E01-F07-US-010-anchor-picker-playground.md)      | F07     | Choose the anchor in the playground              | done   |
 | [AUD-003](./E01-F07-AUD-003-audit-f07.md)                   | F07     | Audit F07: polygon aligned in its box            | done   |
 | [VAL-003](./E01-F07-VAL-003-validate-anchor.md)             | F07     | Validate F07 on the reference cases              | done   |
-| [SP-004](./E01-F03-SP-004-research-f03.md)                  | F03     | Research for F03                                 | ready  |
+| [SP-004](./E01-F03-SP-004-research-f03.md)                  | F03     | Research for F03                                 | done   |
 | [EN-010](./E01-F03-EN-010-radius-per-vertex.md)             | F03     | One requested radius per vertex in the model     | ready  |
 | [US-011](./E01-F03-US-011-radius-field-mixed.md)            | F03     | Radius field for every corner, Mixed             | ready  |
 | [CHK-004](./E01-F03-CHK-004-checkpoint-f03.md)              | F03     | Checkpoint in the middle of F03                  | ready  |
