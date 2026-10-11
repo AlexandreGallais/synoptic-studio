@@ -3,7 +3,7 @@ id: US-015
 epic: E01
 feature: F08
 title: Add a point in the middle of an edge
-status: ready
+status: done
 points: 2
 ---
 
@@ -36,5 +36,5 @@ Look closely at: whether the new point lands where you expect, and whether its n
 
 One task = one commit, referenced as `US-015.Tn`.
 
-- [ ] T1 — Inserting the middle vertex (`REF-MATHWORLD-MIDPOINT`, `REF-INKSCAPE-NODE-OPS`), pure function; tests (1 h)
-- [ ] T2 — Playground button; Product Owner test card (1 h)
+- [x] T1 — Inserting the middle vertex (`REF-MATHWORLD-MIDPOINT`, `REF-INKSCAPE-NODE-OPS`), pure function; tests (1 h)
+- [x] T2 — Playground button; Product Owner test card (1 h)
