@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.9.5](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.9.4...v0.9.5) (2026-10-11)
+
+
+### Documentation
+
+* **adr:** a finished free V1, local only, then a paid pro edition ([9cdf8e5](https://github.com/AlexandreGallais/synoptic-studio/commit/9cdf8e5feadacb1a7c7ce53dd3e1948c1d0e07c9))
+* **backlog:** every epic makes the free V1; application shell open ([45ce191](https://github.com/AlexandreGallais/synoptic-studio/commit/45ce1913e32efd81692fb559d9c133d4db9d67ff))
+
 ## [0.9.4](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.9.3...v0.9.4) (2026-10-11)
 
 
