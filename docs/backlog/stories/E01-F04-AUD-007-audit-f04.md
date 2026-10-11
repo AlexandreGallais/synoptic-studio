@@ -3,7 +3,7 @@ id: AUD-007
 epic: E01
 feature: F04
 title: "Audit F04: free rotation of shapes"
-status: ready
+status: done
 points: 2
 ---
 
@@ -58,7 +58,7 @@ F05 (text), next in E01's order, needs for its spike:
 
 | Question            | Answer                                                                                                                                 |
 | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| Size                | 103 modules in `src/` (model 46, geometry 30, math 15, io 6, render 5), 627 tests; the subfolders of `model` are due (improvement log) |
+| Size                | 105 modules in `src/` (model 49, geometry 30, math 15, io 6, render 5), 627 tests; the subfolders of `model` are due (improvement log) |
 | Tools               | StrykerJS still blocked; 14 mutations by hand, all caught                                                                              |
 | Fitness functions   | the playground coverage threshold of CHK-007 still to do                                                                               |
 | Patterns            | `boxCenter` now the one center of a turn: the movable center of E02 changes one place                                                  |
