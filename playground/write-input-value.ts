@@ -1,7 +1,10 @@
+import { formatSvgNumber } from "../src";
+
 import { selectElement } from "./select-element";
 
 /**
- * Types a value into an input of the page, without firing any event.
+ * Types a value into an input of the page, without firing any event; a fraction (a converted
+ * polygon, Q27) shows with the decimals of the SVG.
  *
  * @kind procedure
  * @param document - page document
@@ -13,6 +16,6 @@ export function writeInputValue(document: Document, id: string, value: number): 
   const input = selectElement(document, id);
 
   if (input instanceof HTMLInputElement) {
-    input.value = String(value);
+    input.value = formatSvgNumber(value);
   }
 }

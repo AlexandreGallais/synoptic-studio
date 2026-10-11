@@ -1,22 +1,9 @@
 import { isValidFreeShape } from "../src";
 
+import { readShapeKind } from "./read-shape-kind";
 import { selectElement } from "./select-element";
 
 import type { FreeShape } from "../src";
-
-/**
- * Reads the value chosen in the shape selector.
- *
- * @kind procedure
- * @param document - page document
- * @returns `rectangle`, `polygon` or `free`; empty when the element is no selector
- * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
- */
-function readShapeValue(document: Document): string {
-  const select = selectElement(document, "shape");
-
-  return select instanceof HTMLSelectElement ? select.value : "";
-}
 
 /**
  * Reads back the free shape kept as text, checked again: a value lost on the way (`NaN` written
@@ -46,7 +33,7 @@ function readKeptText(kept: string): FreeShape | undefined {
 export function readStoredFreeShape(document: Document): FreeShape | undefined {
   const { freeShape } = selectElement(document, "shape").dataset;
 
-  return freeShape !== undefined && readShapeValue(document) === "free"
+  return freeShape !== undefined && readShapeKind(document) === "free"
     ? readKeptText(freeShape)
     : undefined;
 }
