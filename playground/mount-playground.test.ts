@@ -179,7 +179,10 @@ describe("playground", () => {
   it("refuses a negative radius and clears the effective radius", () => {
     type("radius", "-3");
 
-    expect(text("status")).toBe("Width, height and radius must be integers ≥ 0.");
+    expect(text("status")).toBe(
+      "Width, height and radius must be integers ≥ 0, and the angle an integer.",
+    );
+
     expect(text("effective")).toBe("");
   });
 
@@ -342,7 +345,7 @@ describe("playground", () => {
     type("corners", "13");
 
     expect(text("status")).toBe(
-      "Width, height and radius must be integers ≥ 0, and corners an integer from 3 to 12.",
+      "Width, height and radius must be integers ≥ 0, corners an integer from 3 to 12, and the angle an integer.",
     );
 
     expect(document.querySelector("#corners")?.getAttribute("aria-invalid")).toBe("true");
