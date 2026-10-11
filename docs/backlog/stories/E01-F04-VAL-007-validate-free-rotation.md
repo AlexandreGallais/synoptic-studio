@@ -22,6 +22,6 @@ Replay every acceptance criterion of F04 in the playground.
 One task = one commit, referenced as `VAL-007.Tn`. This story is not merged automatically (ADR-0028).
 
 - [x] T0 — The view stays put: the Product Owner's first try saw a turned shape slide (the view followed it into negative coordinates) (0.5 h)
-- [ ] T1 — One test per criterion `[F04.AC1]`…`[F04.AC5]` (1 h)
-- [ ] T2 — Guided test in the playground: the steps of the US-018 and US-019 cards (1.5 h)
+- [x] T1 — One test per criterion `[F04.AC1]`…`[F04.AC5]`: written with the stories (AC1 in 7 test files, AC2 in 2, AC3 in 12, AC4 in 6, AC5 in the playground) (1 h)
+- [x] T2 — Guided test in the playground: the steps of the US-018 and US-019 cards, steps 47 to 57 (1.5 h)
 - [ ] T3 — Demo page in `docs/guide/` (1 h)
