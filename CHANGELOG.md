@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.3](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.10.2...v0.10.3) (2026-10-11)
+
+
+### Documentation
+
+* **backlog:** stretchable free shape (F09) before F08, which pauses after its spike ([fd972cc](https://github.com/AlexandreGallais/synoptic-studio/commit/fd972cc72a5f3a578b90edd5486f2e5fbe571ea5))
+
 ## [0.10.2](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.10.1...v0.10.2) (2026-10-11)
 
 
