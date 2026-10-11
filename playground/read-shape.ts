@@ -1,4 +1,5 @@
 import {
+  RECTANGLE_CORNER_COUNT,
   isRegularPolygonCornerCount,
   isValidRectangle,
   isValidRegularPolygon,
@@ -8,6 +9,7 @@ import {
 
 import { readAnchor } from "./read-anchor";
 import { readNumber } from "./read-number";
+import { readRadii } from "./read-radii";
 import { selectElement } from "./select-element";
 
 import type { ShapeReading } from "./shape-reading";
@@ -21,7 +23,7 @@ const INVALID_POLYGON =
   "Width, height and radius must be integers ≥ 0, and corners an integer from 3 to 12.";
 
 /**
- * Reads the rectangle typed in the width, height and radius inputs: the radius typed goes to
+ * Reads the rectangle typed in the width, height and radius inputs, with the radius of each of
  * its four corners (ADR-0029).
  *
  * @kind procedure
@@ -30,11 +32,9 @@ const INVALID_POLYGON =
  * @see docs/backlog/stories/E01-F01-US-003-round-rectangle-corners.md
  */
 function readRectangle(document: Document): Rectangle {
-  const radius = readNumber(document, "radius");
-
   return {
     height: readNumber(document, "height"),
-    radii: [radius, radius, radius, radius],
+    radii: readRadii(document, RECTANGLE_CORNER_COUNT),
     width: readNumber(document, "width"),
   };
 }
@@ -70,10 +70,8 @@ function readRectangleShape(document: Document): ShapeReading {
 function readPolygonShape(document: Document): ShapeReading {
   const anchor = readAnchor(document);
   const corners = readNumber(document, "corners");
-  const radius = readNumber(document, "radius");
-  // The radius typed goes to every corner (ADR-0029); no list for a number of corners refused.
-  const count = isRegularPolygonCornerCount(corners) ? corners : 0;
-  const radii = Array.from({ length: count }, () => radius);
+  // One radius per corner (ADR-0029); none for a number of corners refused.
+  const radii = readRadii(document, isRegularPolygonCornerCount(corners) ? corners : 0);
   const model = { ...readRectangle(document), anchor, corners, radii };
   const isValid = isValidRegularPolygon(model);
 
