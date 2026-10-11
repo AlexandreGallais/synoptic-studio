@@ -16,6 +16,7 @@ As a symbol designer, I want to delete the selected points of a shape, so that I
 - Given selected points of a free shape or a rectangle, when Delete is clicked or the Delete key pressed, then they are removed and their neighbours joined by a straight edge (F08.AC4).
 - Given a deletion that would leave fewer than 3 points, when it is asked, then it is refused with a message (F08.AC4).
 - Given a regular polygon, when a deletion is asked, then it is refused with a message to convert it first (F08.AC4).
+- Given no point selected, when the shape is shown, then Delete is disabled; given the first and the last points deleted together, then their neighbours wrap round the contour (F08.AC4).
 
 ## Product Owner test
 

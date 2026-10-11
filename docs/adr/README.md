@@ -64,11 +64,12 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0029](./0029-one-radius-per-vertex.md) | One requested corner radius per vertex in the model | Accepted |
 | [0030](./0030-free-v1-then-pro-edition.md) | A finished free V1, then new features in a paid edition | Accepted |
 | [0030](./0030-free-v1-then-pro-edition.md) | A finished free V1, then new features in a paid edition | Accepted |
-| 0031 | A free shape keeps the fractional vertices of a converted polygon — on `feature/f08-node-editing`, paused until F09 is done | Accepted (paused) |
 | [0031](./0031-free-shape-keeps-fractional-vertices.md) | A free shape keeps the fractional vertices of a converted polygon | Accepted |
 | [0032](./0032-rectangle-is-a-free-shape.md) | The rectangle is a free shape, stretched by its width and height | Accepted |
 
-| ADR                                                        | Title                                                                                                        | Status                 |
-| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ---------------------- |
-| ADR                                                        | Title                                                                                                        | Status                 |
-| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ---------------------- |
+| ADR                                                        | Title                                                                                                        | Status                              |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ----------------------------------- |
+| ADR                                                        | Title                                                                                                        | Status                              |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ----------------------              |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ----------------------------------- |
+| [0003](./0003-integer-model.md)                            | Integer model, derived geometry                                                                              | Accepted, partly superseded by 0031 |
