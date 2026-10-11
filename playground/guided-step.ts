@@ -1,4 +1,4 @@
-/** One step of the guided test of the playground (VAL-001 to VAL-004): what to try and what to look at. */
+/** One step of the guided test of the playground (VAL-001 to VAL-006): what to try and what to look at. */
 export type GuidedStep = {
   /** Short name of the step. */
   readonly title: string;
