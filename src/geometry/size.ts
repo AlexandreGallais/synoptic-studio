@@ -1,4 +1,4 @@
-/** Width and height of a box (glossary: bounding box), integers >= 0 in the model. */
+/** Width and height of the box a shape is placed in (not its bounding box), integers >= 0 in the model. */
 export type Size = {
   /** Height, >= 0. */
   readonly height: number;
