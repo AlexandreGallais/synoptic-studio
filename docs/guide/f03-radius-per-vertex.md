@@ -49,3 +49,5 @@ Run `npm run dev` and open `http://localhost:5173/?step=29`: the **Guided test**
 Said by the Product Owner during `VAL-004` (2026-10-11), quoted by the agent: « C'est bien, j'ai bien mon premier point et tout. Ça, c'est trop cool. Comme ça, c'est le sens. J'adore. »
 
 One remark, kept for later: a polygon could remember the rounding of the points that went away — 12 corners with different roundings, then a triangle, then 12 again would get the 9 roundings back. It changes a rule decided at the refinement (Q26).
+
+Also: « J'ai rien à dire, tout est trop bien. » The free contour, with x and y typed in the list of points, comes with F08.
