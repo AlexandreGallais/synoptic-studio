@@ -360,6 +360,22 @@ describe("playground", () => {
 
     expect(cells).toHaveLength(9);
     expect([...cells].every((cell) => cell.name === "anchor")).toBe(true);
+
+    // Reading order, rows top to bottom: the arrow keys follow it.
+    expect([...cells].map((cell) => cell.value)).toEqual([
+      "min min",
+      "mid min",
+      "max min",
+      "min mid",
+      "mid mid",
+      "max mid",
+      "min max",
+      "mid max",
+      "max max",
+    ]);
+
+    expect(cells[0]?.getAttribute("aria-label")).toBe("Top left");
+    expect(cells[8]?.getAttribute("aria-label")).toBe("Bottom right");
   });
 
   it("[F07.AC5] draws the box in grey behind the polygon", () => {
@@ -394,8 +410,11 @@ describe("playground", () => {
   it("[F07.AC4] lets the radius round the triangle without moving its base", () => {
     type("radius", "10");
 
-    // The base stays on y = 100 between its two fillets.
-    expect(text("path-data")).toMatch(/L[\d.]+ 100 /u);
+    // The base stays on y = 100 between its fillets' tangent points, r / tan(30°) = 17.32051
+    // from each base vertex (it would rise if the rounded shape were anchored instead).
+    expect(text("path-data")).toContain("L17.32051 100 ");
+    expect(text("path-data")).toContain("82.67949 100");
+    expect(text("path-data")).not.toBe("M50 13.39746 L100 100 L0 100 Z");
   });
 
   it("[F07.AC1] puts the anchor back on the center at each step of the guided test", () => {
