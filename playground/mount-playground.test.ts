@@ -290,22 +290,22 @@ describe("playground", () => {
     expect([valueOf("width"), valueOf("height"), valueOf("radius")]).toEqual(["100", "100", "0"]);
 
     expect(text("path-data")).toBe(
-      "M25 6.69873 L75 6.69873 L100 50 L75 93.30127 L25 93.30127 L0 50 Z",
+      "M75 93.30127 L25 93.30127 L0 50 L25 6.69873 L75 6.69873 L100 50 Z",
     );
   });
 
-  it("[F02.AC3] writes the polygon with at most 5 decimals, clockwise from its top-left vertex", () => {
+  it("[F02.AC3] writes the polygon with at most 5 decimals, clockwise from the right end of its base", () => {
     // Hexagon of the previous step: 6.69873 is (100 − 50√3)/2 = 6.698729… rounded to 5 decimals.
     const numbers = text("path-data").match(/-?\d+(?:\.\d+)?/gu) ?? [];
 
     expect(numbers.every((number) => (number.split(".", 2)[1] ?? "").length <= 5)).toBe(true);
-    expect(text("path-data").startsWith("M25 6.69873 L75 6.69873")).toBe(true);
+    expect(text("path-data").startsWith("M75 93.30127 L25 93.30127")).toBe(true);
   });
 
   it("[F02.AC4] follows the number of corners: a triangle pointing up", () => {
     type("corners", "3");
 
-    expect(text("path-data")).toBe("M50 6.69873 L100 93.30127 L0 93.30127 Z");
+    expect(text("path-data")).toBe("M100 93.30127 L0 93.30127 L50 6.69873 Z");
   });
 
   it("[F02.AC2] shows the incircle radius when the radius is too big", () => {
@@ -314,8 +314,12 @@ describe("playground", () => {
 
     // Inradius of the hexagon: 50 cos(π/6) = 43.30127.
     expect(text("effective")).toBe("Effective radius: 43.30127 (requested 1000, reduced to fit)");
-    // The circle of the hexagon: six arcs of radius 43.30127 and no line, from the top middle.
-    expect(text("path-data")).toMatch(/^M50 6\.69873 (?:A43\.30127 43\.30127 0 0 1 [\d. ]+){6}Z$/u);
+
+    // The circle of the hexagon: six arcs of radius 43.30127 and no line, from the middle of the
+    // base, where the first fillet ends.
+    expect(text("path-data")).toMatch(
+      /^M50 93\.30127 (?:A43\.30127 43\.30127 0 0 1 [\d. ]+){6}Z$/u,
+    );
   });
 
   it("[F02.AC1] refuses 13, 2, 2.5 and no corners", () => {
@@ -400,7 +404,7 @@ describe("playground", () => {
 
     expect(isAnchorFieldHidden()).toBe(false);
     expect(checkedAnchor()).toBe("mid mid");
-    expect(text("path-data")).toBe("M50 6.69873 L100 93.30127 L0 93.30127 Z");
+    expect(text("path-data")).toBe("M100 93.30127 L0 93.30127 L50 6.69873 Z");
   });
 
   it("[F07.AC5] offers nine cells in one radio group, for the arrow keys", () => {
@@ -440,19 +444,19 @@ describe("playground", () => {
 
     // Room 100 − 86.60254 = 13.39746, all of it above the triangle.
     expect(checkedAnchor()).toBe("mid max");
-    expect(text("path-data")).toBe("M50 13.39746 L100 100 L0 100 Z");
+    expect(text("path-data")).toBe("M100 100 L0 100 L50 13.39746 Z");
     expect(text("model")).toContain('"vertical": "max"');
   });
 
   it("[F07.AC3] keeps the triangle in place from left to right, the anchor still shown", () => {
     chooseAnchor("min max");
 
-    expect(text("path-data")).toBe("M50 13.39746 L100 100 L0 100 Z");
+    expect(text("path-data")).toBe("M100 100 L0 100 L50 13.39746 Z");
     expect(text("model")).toContain('"horizontal": "min"');
 
     chooseAnchor("max max");
 
-    expect(text("path-data")).toBe("M50 13.39746 L100 100 L0 100 Z");
+    expect(text("path-data")).toBe("M100 100 L0 100 L50 13.39746 Z");
     expect(text("model")).toContain('"horizontal": "max"');
   });
 
@@ -463,7 +467,7 @@ describe("playground", () => {
     // from each base vertex (it would rise if the rounded shape were anchored instead).
     expect(text("path-data")).toContain("L17.32051 100 ");
     expect(text("path-data")).toContain("82.67949 100");
-    expect(text("path-data")).not.toBe("M50 13.39746 L100 100 L0 100 Z");
+    expect(text("path-data")).not.toBe("M100 100 L0 100 L50 13.39746 Z");
   });
 
   it("[F07.AC1] puts the anchor back on the center at each step of the guided test", () => {
@@ -473,7 +477,7 @@ describe("playground", () => {
     expect(checkedAnchor()).toBe("mid mid");
 
     expect(text("path-data")).toBe(
-      "M25 6.69873 L75 6.69873 L100 50 L75 93.30127 L25 93.30127 L0 50 Z",
+      "M75 93.30127 L25 93.30127 L0 50 L25 6.69873 L75 6.69873 L100 50 Z",
     );
   });
 
@@ -482,21 +486,22 @@ describe("playground", () => {
     clickTimes("guide-previous", GUIDED_STEPS.length);
     clickTimes("guide-next", 20);
 
-    expect(text("path-data")).toBe("M50 13.39746 L100 100 L0 100 Z");
+    expect(text("path-data")).toBe("M100 100 L0 100 L50 13.39746 Z");
 
     clickTimes("guide-next", 2);
 
-    expect(text("path-data")).toBe("M50 0 L100 86.60254 L0 86.60254 Z");
+    expect(text("path-data")).toBe("M100 86.60254 L0 86.60254 L50 0 Z");
 
-    // The square of 50 in a 100 × 50 box: right (50 to 100), then left (0 to 50) by a corner button.
+    // The square of 50 in a 100 × 50 box: right (50 to 100), then left (0 to 50) by a corner button;
+    // its path starts where the fillet of point 1, the right end of the base, ends on the base.
     clickTimes("guide-next", 2);
 
     expect(checkedAnchor()).toBe("max mid");
-    expect(text("path-data")).toContain("M60 0 L90 0 ");
+    expect(text("path-data")).toContain("M90 50 L60 50 ");
 
     click("guide-next");
 
     expect(checkedAnchor()).toBe("min max");
-    expect(text("path-data")).toContain("M10 0 L40 0 ");
+    expect(text("path-data")).toContain("M40 50 L10 50 ");
   });
 });

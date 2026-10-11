@@ -82,8 +82,8 @@ describe("list of points and selection", () => {
 
   it("[F03.AC4] lists the points in contour order with x, y and radius, in Points mode only", () => {
     expect(document.querySelectorAll("#points li")).toHaveLength(6);
-    expect(text('#points [data-vertex="1"]')).toBe("1 · x 25 · y 6.69873 · radius 0");
-    expect(text('#points [data-vertex="3"]')).toBe("3 · x 100 · y 50 · radius 0");
+    expect(text('#points [data-vertex="1"]')).toBe("1 · x 75 · y 93.30127 · radius 0");
+    expect(text('#points [data-vertex="3"]')).toBe("3 · x 0 · y 50 · radius 0");
 
     clickOn("#mode-shape", {});
 
@@ -130,8 +130,8 @@ describe("list of points and selection", () => {
 
     expect(radiusField().dataset["radii"]).toBe("10 3 0 10 0 0");
     expect(text("#path-data").match(/A10 10/gu)).toHaveLength(2);
-    expect(text('#points [data-vertex="1"]')).toBe("1 · x 25 · y 6.69873 · radius 10");
-    expect(text('#points [data-vertex="2"]')).toBe("2 · x 75 · y 6.69873 · radius 3");
+    expect(text('#points [data-vertex="1"]')).toBe("1 · x 75 · y 93.30127 · radius 10");
+    expect(text('#points [data-vertex="2"]')).toBe("2 · x 25 · y 93.30127 · radius 3");
 
     // Vertices 1 and 2 differ (10 and 3): Mixed.
     clickOn('#points [data-vertex="2"]', { ctrlKey: true });
@@ -147,7 +147,7 @@ describe("list of points and selection", () => {
     type("radius", "1000");
 
     expect(text('#points [data-vertex="1"]')).toBe(
-      "1 · x 25 · y 6.69873 · radius 1000 (effective 86.60254)",
+      "1 · x 75 · y 93.30127 · radius 1000 (effective 86.60254)",
     );
   });
 
