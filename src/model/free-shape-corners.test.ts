@@ -28,16 +28,28 @@ type SideBySide = {
  */
 function shapeOf(shape: SideBySide): FreeShape {
   return {
+    angle: 0,
     corners: cornersWithRadii(shape.points, shape.radii),
     height: shape.height,
     width: shape.width,
+    x: Math.min(...shape.points.map((point) => point.x)),
+    y: Math.min(...shape.points.map((point) => point.y)),
   };
 }
 
 describe("freeShapeCorners", () => {
   it("[F09.AC1] draws the rectangle tool's free shape as the rectangle of F01, with its radii", () => {
     expect(
-      freeShapeCorners(rectangleAsFreeShape({ height: 50, radii: [10, 0, 5, 0], width: 100 })),
+      freeShapeCorners(
+        rectangleAsFreeShape({
+          angle: 0,
+          x: 0,
+          y: 0,
+          height: 50,
+          radii: [10, 0, 5, 0],
+          width: 100,
+        }),
+      ),
     ).toEqual([
       { point: { x: 0, y: 0 }, radius: 10 },
       { point: { x: 100, y: 0 }, radius: 0 },
@@ -86,7 +98,14 @@ describe("freeShapeCorners", () => {
   });
 
   it("[F09.AC3] gives back the same corners after a width of 0", () => {
-    const rectangle = rectangleAsFreeShape({ height: 50, radii: [10, 10, 10, 10], width: 100 });
+    const rectangle = rectangleAsFreeShape({
+      angle: 0,
+      x: 0,
+      y: 0,
+      height: 50,
+      radii: [10, 10, 10, 10],
+      width: 100,
+    });
     const flat = freeShapeCorners({ ...rectangle, width: 0 });
 
     expect(flat.map((corner) => corner.point.x)).toEqual([0, 0, 0, 0]);
@@ -94,7 +113,10 @@ describe("freeShapeCorners", () => {
   });
 
   it("[F08.AC5] keeps each radius with its point in the stored free shape", () => {
-    expect(rectangleAsFreeShape({ height: 50, radii: [10, 0, 5, 0], width: 100 }).corners).toEqual([
+    expect(
+      rectangleAsFreeShape({ angle: 0, x: 0, y: 0, height: 50, radii: [10, 0, 5, 0], width: 100 })
+        .corners,
+    ).toEqual([
       { point: { x: 0, y: 0 }, radius: 10 },
       { point: { x: 1, y: 0 }, radius: 0 },
       { point: { x: 1, y: 1 }, radius: 5 },

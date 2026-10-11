@@ -42,6 +42,9 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
 
     expectPoints(
       regularPolygonContour({
+        angle: 0,
+        x: 0,
+        y: 0,
         anchor: CENTER,
         corners: 3,
         height: 100,
@@ -60,6 +63,9 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
     // s = min(100/√2, 50/√2): a 50 × 50 square, left margin 25.
     expectPoints(
       regularPolygonContour({
+        angle: 0,
+        x: 0,
+        y: 0,
         anchor: CENTER,
         corners: 4,
         height: 50,
@@ -81,6 +87,9 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
 
     expectPoints(
       regularPolygonContour({
+        angle: 0,
+        x: 0,
+        y: 0,
         anchor: CENTER,
         corners: 6,
         height: 100,
@@ -105,6 +114,9 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
 
     expectPoints(
       regularPolygonContour({
+        angle: 0,
+        x: 0,
+        y: 0,
         anchor: CENTER,
         corners: 5,
         height: 100,
@@ -125,6 +137,9 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
     // n = 12 is divisible by 4: flat sides on all four axes, both sizes reached.
     const box = boundingBox(
       regularPolygonContour({
+        angle: 0,
+        x: 0,
+        y: 0,
         anchor: CENTER,
         corners: 12,
         height: 100,
@@ -141,6 +156,9 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
     // Unit span 2 cos(π/8) on both axes; first vertex, the right end of the base, at
     // x = 50 + 50 tan(π/8) = 70.71068, y = 100.
     const contour = regularPolygonContour({
+      angle: 0,
+      x: 0,
+      y: 0,
       anchor: CENTER,
       corners: 8,
       height: 100,
@@ -158,6 +176,9 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
   it("collapses a polygon of width 0 to the center of its box (Q15)", () => {
     expect(
       regularPolygonContour({
+        angle: 0,
+        x: 0,
+        y: 0,
         anchor: CENTER,
         corners: 5,
         height: 40,
@@ -169,13 +190,25 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
 
   it("collapses a polygon of height 0 to the middle of its top edge (Q15)", () => {
     expect(
-      regularPolygonContour({ anchor: CENTER, corners: 3, height: 0, radii: [0, 0, 0], width: 40 }),
+      regularPolygonContour({
+        angle: 0,
+        x: 0,
+        y: 0,
+        anchor: CENTER,
+        corners: 3,
+        height: 0,
+        radii: [0, 0, 0],
+        width: 40,
+      }),
     ).toEqual(Array.from({ length: 3 }, () => ({ x: 20, y: 0 })));
   });
 
   it("derives the vertices without changing the model (ADR-0003)", () => {
     const polygon = Object.freeze({
       anchor: CENTER,
+      angle: 0,
+      x: 0,
+      y: 0,
       corners: 6,
       height: 100,
       radii: [10, 10, 10, 10, 10, 10],
@@ -186,7 +219,10 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
 
     expect(polygon).toEqual({
       anchor: CENTER,
+      angle: 0,
       corners: 6,
+      x: 0,
+      y: 0,
       height: 100,
       radii: [10, 10, 10, 10, 10, 10],
       width: 100,
@@ -201,6 +237,9 @@ describe("regularPolygonContour (anchored, F07)", () => {
 
     expectPoints(
       regularPolygonContour({
+        angle: 0,
+        x: 0,
+        y: 0,
         anchor: CENTER,
         corners: 3,
         height: 100,
@@ -220,7 +259,16 @@ describe("regularPolygonContour (anchored, F07)", () => {
     const anchor = { horizontal: "mid", vertical: "max" } as const;
 
     expectPoints(
-      regularPolygonContour({ anchor, corners: 3, height: 100, radii: [0, 0, 0], width: 100 }),
+      regularPolygonContour({
+        angle: 0,
+        x: 0,
+        y: 0,
+        anchor,
+        corners: 3,
+        height: 100,
+        radii: [0, 0, 0],
+        width: 100,
+      }),
       [
         { x: 100, y: 100 },
         { x: 0, y: 100 },
@@ -236,6 +284,9 @@ describe("regularPolygonContour (anchored, F07)", () => {
 
     expectPoints(
       regularPolygonContour({
+        angle: 0,
+        x: 0,
+        y: 0,
         anchor,
         corners: 6,
         height: 100,
@@ -258,7 +309,16 @@ describe("regularPolygonContour (anchored, F07)", () => {
     const anchor = { horizontal: "max", vertical: "mid" } as const;
 
     expectPoints(
-      regularPolygonContour({ anchor, corners: 4, height: 50, radii: [0, 0, 0, 0], width: 100 }),
+      regularPolygonContour({
+        angle: 0,
+        x: 0,
+        y: 0,
+        anchor,
+        corners: 4,
+        height: 50,
+        radii: [0, 0, 0, 0],
+        width: 100,
+      }),
       [
         { x: 100, y: 50 },
         { x: 50, y: 50 },
@@ -272,7 +332,10 @@ describe("regularPolygonContour (anchored, F07)", () => {
     // The width is reached: no room on that axis. The anchor itself is kept by the model type.
     const left = {
       anchor: { horizontal: "min", vertical: "max" },
+      angle: 0,
       corners: 3,
+      x: 0,
+      y: 0,
       height: 100,
       radii: [0, 0, 0],
       width: 100,
@@ -293,6 +356,9 @@ describe("regularPolygonContour (properties)", () => {
     ({ corners, height, width }) => {
       const box = boundingBox(
         regularPolygonContour({
+          angle: 0,
+          x: 0,
+          y: 0,
           anchor: CENTER,
           corners,
           height,
@@ -320,6 +386,9 @@ describe("regularPolygonContour (properties)", () => {
 describe("regularPolygonContour (numbered from its base, F08)", () => {
   it("[F08.AC5] starts a triangle and a square at the right end of their base, clockwise", () => {
     const triangle = regularPolygonContour({
+      angle: 0,
+      x: 0,
+      y: 0,
       anchor: CENTER,
       corners: 3,
       height: 100,
@@ -327,6 +396,9 @@ describe("regularPolygonContour (numbered from its base, F08)", () => {
       width: 100,
     });
     const square = regularPolygonContour({
+      angle: 0,
+      x: 0,
+      y: 0,
       anchor: CENTER,
       corners: 4,
       height: 100,
@@ -356,6 +428,9 @@ describe("regularPolygonContour (numbered from its base, F08)", () => {
     // Points 1 and 2 are the base at any number of corners: radii kept by number stay there.
     const radii = resizeRadii([10, 10, 0, 0, 0, 0], 5);
     const corners = regularPolygonCorners({
+      angle: 0,
+      x: 0,
+      y: 0,
       anchor: CENTER,
       corners: 5,
       height: 100,
@@ -380,6 +455,9 @@ describe("regularPolygonContour (numbered from its base, F08)", () => {
     "[F08.AC5] puts points 1 and 2 at the two ends of the flat base",
     ({ anchor, corners, size }) => {
       const contour = regularPolygonContour({
+        angle: 0,
+        x: 0,
+        y: 0,
         anchor,
         corners,
         height: size,

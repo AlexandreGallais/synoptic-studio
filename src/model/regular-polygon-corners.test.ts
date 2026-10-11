@@ -43,6 +43,9 @@ describe("regularPolygonCorners (DERIV-regular-polygon-fit step 6)", () => {
   it("[F02.AC2] turns a hexagon in 100 × 100 with radius 1000 into its incircle: diameter 86.60254", () => {
     // s = 50, inradius 50 cos(π/6) = 43.30127; every arc centered at the center of the box.
     const corners = regularPolygonCorners({
+      angle: 0,
+      x: 0,
+      y: 0,
       anchor: CENTER,
       corners: 6,
       height: 100,
@@ -66,6 +69,9 @@ describe("regularPolygonCorners (DERIV-regular-polygon-fit step 6)", () => {
   it("[F02.AC2] gives a triangle in 100 × 100 with radius 1000 its incircle, below the center of the box", () => {
     // s = 100/√3, inradius s cos(π/3) = 28.86751; center 28.86751 above the base 93.30127: y = 64.43376.
     const corners = regularPolygonCorners({
+      angle: 0,
+      x: 0,
+      y: 0,
       anchor: CENTER,
       corners: 3,
       height: 100,
@@ -92,6 +98,9 @@ describe("regularPolygonCorners (DERIV-regular-polygon-fit step 6)", () => {
   it("[F02.AC2] keeps radius 10 on a hexagon in 100 × 100: two setbacks of 5.7735 fit an edge of 50", () => {
     // Turn of π/3: setback 10 · tan(π/6) = 5.7735; 2 × 5.7735 = 11.547 ≤ 50, no reduction.
     const corners = regularPolygonCorners({
+      angle: 0,
+      x: 0,
+      y: 0,
       anchor: CENTER,
       corners: 6,
       height: 100,
@@ -104,6 +113,9 @@ describe("regularPolygonCorners (DERIV-regular-polygon-fit step 6)", () => {
 
   it("keeps the requested radius on a polygon of size 0, which draws nothing (Q17)", () => {
     const corners = regularPolygonCorners({
+      angle: 0,
+      x: 0,
+      y: 0,
       anchor: CENTER,
       corners: 6,
       height: 0,
@@ -117,6 +129,9 @@ describe("regularPolygonCorners (DERIV-regular-polygon-fit step 6)", () => {
 
   it("[F02.AC2] keeps the requested radius on every corner (Q8)", () => {
     const corners = regularPolygonCorners({
+      angle: 0,
+      x: 0,
+      y: 0,
       anchor: CENTER,
       corners: 5,
       height: 100,
@@ -134,6 +149,9 @@ describe("regularPolygonCorners (anchored, F07)", () => {
     const anchor = { horizontal: "max", vertical: "mid" } as const;
     const pieces = roundedContour(
       regularPolygonCorners({
+        angle: 0,
+        x: 0,
+        y: 0,
         anchor,
         corners: 4,
         height: 50,
@@ -155,7 +173,16 @@ describe("regularPolygonCorners (anchored, F07)", () => {
     const anchor = { horizontal: "mid", vertical: "min" } as const;
     const arcs = arcsOf(
       roundedContour(
-        regularPolygonCorners({ anchor, corners: 3, height: 100, radii: [10, 10, 10], width: 100 }),
+        regularPolygonCorners({
+          angle: 0,
+          x: 0,
+          y: 0,
+          anchor,
+          corners: 3,
+          height: 100,
+          radii: [10, 10, 10],
+          width: 100,
+        }),
       ),
     );
     // The path starts where the arc of point 1, the right end of the base, ends, and closes with it (DERIV-fillet-arc step 7).
@@ -187,6 +214,9 @@ describe("regularPolygonCorners (properties)", () => {
     "[F02.AC2] at the maximal radius, gives every corner the inradius s · cos(π/n), one common center",
     ({ corners, height, width }) => {
       const polygon = regularPolygonCorners({
+        angle: 0,
+        x: 0,
+        y: 0,
         anchor: CENTER,
         corners,
         height,
@@ -216,6 +246,9 @@ describe("regularPolygonCorners (properties)", () => {
     size: fc.integer({ max: 1000, min: 1 }),
   })("never exceeds the requested radius", ({ corners, radius, size }) => {
     const polygon = regularPolygonCorners({
+      angle: 0,
+      x: 0,
+      y: 0,
       anchor: CENTER,
       corners,
       height: size,
@@ -233,6 +266,9 @@ describe("regularPolygonCorners (properties)", () => {
   })("gives every corner the same effective radius (AUD-002)", ({ corners, radius, width }) => {
     const radii = effectiveRadii(
       regularPolygonCorners({
+        angle: 0,
+        x: 0,
+        y: 0,
         anchor: CENTER,
         corners,
         height: width,
@@ -259,6 +295,9 @@ describe("regularPolygonCorners (anchored, properties)", () => {
       const anchor = { horizontal: "mid", vertical: "max" } as const;
       const pieces = roundedContour(
         regularPolygonCorners({
+          angle: 0,
+          x: 0,
+          y: 0,
           anchor,
           corners,
           height,
@@ -277,9 +316,12 @@ describe("regularPolygonCorners (one radius per vertex)", () => {
   it("[F03.AC1] gives every vertex the same radius as F02 when the radii are equal", () => {
     const polygon = {
       anchor: CENTER,
+      angle: 0,
       corners: 6,
       height: 100,
       radii: [7, 7, 7, 7, 7, 7],
+      x: 0,
+      y: 0,
       width: 100,
     };
 
@@ -293,6 +335,9 @@ describe("regularPolygonCorners (one radius per vertex)", () => {
     // F08): one quarter circle of radius 20 centered at (80, 80) — at (20, 80) it would be vertex 2.
     const pieces = roundedContour(
       regularPolygonCorners({
+        angle: 0,
+        x: 0,
+        y: 0,
         anchor: CENTER,
         corners: 4,
         height: 100,
@@ -323,6 +368,9 @@ describe("regularPolygonCorners (one radius per vertex, properties)", () => {
       const anchor = { horizontal: "mid", vertical: "max" } as const;
       const pieces = roundedContour(
         regularPolygonCorners({
+          angle: 0,
+          x: 0,
+          y: 0,
           anchor,
           corners: sides,
           height,
@@ -345,6 +393,9 @@ describe("regularPolygonCorners (unequal radii, closed outline)", () => {
   })("[F03.AC1] is a closed chain whatever the radius of each corner", ({ radii, sides, size }) => {
     const pieces = roundedContour(
       regularPolygonCorners({
+        angle: 0,
+        x: 0,
+        y: 0,
         anchor: CENTER,
         corners: sides,
         height: size,

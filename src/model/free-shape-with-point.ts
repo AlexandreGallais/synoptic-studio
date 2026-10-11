@@ -24,5 +24,6 @@ export function freeShapeWithPoint(shape: FreeShape, index: number, point: Point
     freeShapeCorners(shape).map((corner, other) =>
       other === index ? { ...corner, point } : corner,
     ),
+    shape.angle,
   );
 }

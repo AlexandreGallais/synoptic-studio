@@ -42,20 +42,34 @@ type SideBySide = {
  */
 function shapeOf(shape: SideBySide): FreeShape {
   return {
+    angle: 0,
     corners: cornersWithRadii(shape.points, shape.radii),
     height: shape.height,
     width: shape.width,
+    x: Math.min(...shape.points.map((point) => point.x)),
+    y: Math.min(...shape.points.map((point) => point.y)),
   };
 }
 
 describe("isValidFreeShape", () => {
   it("[F09.AC1] accepts the free shape of the rectangle tool, size 0 included (Q15)", () => {
     expect(
-      isValidFreeShape(rectangleAsFreeShape({ height: 50, radii: [10, 0, 0, 0], width: 100 })),
+      isValidFreeShape(
+        rectangleAsFreeShape({
+          angle: 0,
+          x: 0,
+          y: 0,
+          height: 50,
+          radii: [10, 0, 0, 0],
+          width: 100,
+        }),
+      ),
     ).toBe(true);
 
     expect(
-      isValidFreeShape(rectangleAsFreeShape({ height: 0, radii: [0, 0, 0, 0], width: 0 })),
+      isValidFreeShape(
+        rectangleAsFreeShape({ angle: 0, x: 0, y: 0, height: 0, radii: [0, 0, 0, 0], width: 0 }),
+      ),
     ).toBe(true);
 
     expect(isValidFreeShape(shapeOf(TRIANGLE))).toBe(true);
@@ -127,9 +141,19 @@ describe("isValidFreeShape", () => {
   })(
     "accepts the rectangle tool's free shape exactly when the rectangle is valid",
     ({ height, radius, width }) => {
-      const rectangle = { height, radii: [radius, 0, radius, 0], width };
+      const rectangle = { angle: 0, height, radii: [radius, 0, radius, 0], width, x: 0, y: 0 };
 
       expect(isValidFreeShape(rectangleAsFreeShape(rectangle))).toBe(isValidRectangle(rectangle));
     },
   );
+
+  it.each([
+    { angle: 360, isValid: false, x: 0, y: 0 },
+    { angle: -1, isValid: false, x: 0, y: 0 },
+    { angle: 0, isValid: false, x: NaN, y: 0 },
+    // A fractional position is allowed (ADR-0035).
+    { angle: 45, isValid: true, x: 0.5, y: -3.25 },
+  ])("[F04.AC3] checks the angle $angle and the position ($x, $y)", ({ isValid, ...placement }) => {
+    expect(isValidFreeShape({ ...shapeOf(TRIANGLE), ...placement })).toBe(isValid);
+  });
 });
