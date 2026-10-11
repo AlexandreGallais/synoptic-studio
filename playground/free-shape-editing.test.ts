@@ -202,7 +202,7 @@ describe("editing the points of a free shape", () => {
     type("width", "12.5");
 
     expect(text("#status")).toBe(
-      "Width, height and radius typed must be integers ≥ 0, and the points must span some width and height.",
+      "Width, height and radius typed must be integers ≥ 0, the angle an integer, and the points must span some width and height.",
     );
   });
 
