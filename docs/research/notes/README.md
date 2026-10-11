@@ -11,3 +11,4 @@ Content: summary in our own words (no copy of source text), formulas, references
 | [0004](./0004-f02-regular-polygon.md)              | Sources of F02: regular polygon fit, starting vertex, maximal rounding, polygons in process symbols (Q19)           |
 | [0005](./0005-f07-polygon-anchor.md)               | Sources of F07: nine alignments of SVG `preserveAspectRatio`, anchored edges, names, anchor picker                  |
 | [0006](./0006-f03-radius-per-vertex.md)            | Sources of F03: clamping with unequal radii, Mixed value, node tool, selection in a list and on a drawing           |
+| [0008](./0008-f09-stretchable-free-shape.md)       | Sources of F09: a scale about the top-left of the box, without loss, the rectangle tool                             |
