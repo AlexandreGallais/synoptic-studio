@@ -46,7 +46,7 @@
 | [EN-011](./E01-F08-EN-011-free-shape.md)                        | F08     | A free shape of corners, fractions until edited      | done   |
 | [US-014](./E01-F08-US-014-convert-and-move.md)                  | F08     | Convert a polygon, move a point by its x, y          | done   |
 | [CHK-005](./E01-F08-CHK-005-checkpoint-f08.md)                  | F08     | Checkpoint in the middle of F08                      | done   |
-| [US-015](./E01-F08-US-015-add-middle-point.md)                  | F08     | Add a point in the middle of an edge                 | ready  |
+| [US-015](./E01-F08-US-015-add-middle-point.md)                  | F08     | Add a point in the middle of an edge                 | done   |
 | [US-016](./E01-F08-US-016-delete-points.md)                     | F08     | Delete points                                        | ready  |
 | [AUD-005](./E01-F08-AUD-005-audit-f08.md)                       | F08     | Audit F08: node editing                              | ready  |
 | [VAL-005](./E01-F08-VAL-005-validate-node-editing.md)           | F08     | Validate F08 on the reference cases                  | ready  |
