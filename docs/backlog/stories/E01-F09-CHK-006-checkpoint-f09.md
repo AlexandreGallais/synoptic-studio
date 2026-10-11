@@ -3,7 +3,7 @@ id: CHK-006
 epic: E01
 feature: F09
 title: Checkpoint in the middle of F09
-status: ready
+status: done
 points: 1
 ---
 
