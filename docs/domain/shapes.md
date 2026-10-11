@@ -85,8 +85,8 @@ Storing the value (Q8, settled):
 
 - The rectangle is a **free shape** of 4 points made by the rectangle tool (Product Owner, 2026-10-11, F09): « En soi, en arrière, ça devrait être une forme libre tout le temps ». Width and height of any free shape stretch its points, the top-left of its box fixed; a rectangle stays a rectangle; stretching is without loss (0 then back gives the same shape). The eight handles of the box, the opposite side fixed as in Inkscape, come with E02.
 
-- Model (ADR-0032, ADR-0033): a **free shape** stores its **corners** — each a point in the shape's own box and its radius (integer ≥ 0) — and its `width` and `height`; points and size are finite numbers, fractional when a regular polygon was converted (Q27), integers when typed. At least 3 corners whose points span a box of positive width and height (contour order Q11). The points drawn are the stored ones stretched from the top-left of their box (`DERIV-free-shape-stretch`). The rectangle tool stores the unit square. A point typed in the SVG's coordinates: the corners are kept as drawn, that point replaced, the box fitted around them.
-- Rectangle tool parameters: `width`, `height` (integers ≥ 0; negative forbidden, 0 allowed — Q15) and `radii`, the requested corner radius of each of its 4 vertices in contour order (integers ≥ 0; 0 = sharp corner; ADR-0029). A radius larger than the rectangle is valid: it is clamped, not refused (ADR-0007); the requested value is kept (Q8).
+- Model (ADR-0032, ADR-0033): a **free shape** stores its **corners** — each a point in the shape's own box and its radius (integer ≥ 0) — its `width` and `height`, its `angle` and its position `x`, `y` (ADR-0035); points, size and position are finite numbers, fractional when a regular polygon was converted (Q27), integers when typed. At least 3 corners whose points span a box of positive width and height (contour order Q11). The points drawn are the stored ones stretched from the top-left of their box (`DERIV-free-shape-stretch`), moved so that this top-left is at the position, then turned by the angle (ADR-0035, `DERIV-turned-shape`). The rectangle tool stores the unit square. A point typed in the SVG's coordinates: the corners are kept as drawn, that point replaced, the box fitted around them, its top-left the new position.
+- Rectangle tool parameters: `width`, `height` (integers ≥ 0; negative forbidden, 0 allowed — Q15), `angle` (0 to 359), `x`, `y` (integers, ADR-0035) and `radii`, the requested corner radius of each of its 4 vertices in contour order (integers ≥ 0; 0 = sharp corner; ADR-0029). A radius larger than the rectangle is valid: it is clamped, not refused (ADR-0007); the requested value is kept (Q8).
 - Result: contour of 4 vertices.
 
 ### Regular polygon
@@ -96,7 +96,7 @@ Functional reference: Inkscape's Star/Polygon tool.
 - Parameters: number of corners, an integer `3 ≤ n ≤ 12` (Q19); `width` and `height` of the box, integers ≥ 0 (negative forbidden, 0 allowed — Q15); `radii`, the requested corner radius of each of its `n` vertices in contour order, integers ≥ 0 (0 = sharp corner, ADR-0029), clamped rather than refused (ADR-0007), the requested values kept (Q8).
 - Examples: `n=3` equilateral triangle, `n=4` square, `n=5` pentagon, `n=6` hexagon.
 - Rule: the shape fills as much of the `width × height` box as possible **without exceeding it**.
-- Derived vertices (cos/sin): not integers. They are **computed**, not stored (ADR-0003). `n`, `width`, `height`, the requested `radii` and the `anchor` are stored (`RegularPolygon`).
+- Derived vertices (cos/sin): not integers. They are **computed**, not stored (ADR-0003). `n`, `width`, `height`, the requested `radii`, the `anchor`, the `angle` and the position `x`, `y` of its box (ADR-0035) are stored (`RegularPolygon`).
 
 **Chosen mode: uniform** (`DERIV-regular-polygon-fit`).
 
