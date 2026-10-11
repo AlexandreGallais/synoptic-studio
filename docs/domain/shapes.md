@@ -16,6 +16,7 @@ Consequence: every shape is described by numbers. The drawing is **determined**,
 
 - Contours are listed **clockwise on screen** (SVG frame, y pointing down), **starting at the top-left vertex**; a regular polygon starts at the right end of its flat base, then its left end, so that the base keeps points 1 and 2 when the number of corners changes (Q18 amended, F08).
 - For other shapes, where no vertex is both topmost and leftmost, the contour starts at the topmost vertex, the leftmost on a tie (Q18): the start is a natural one, not a strict rule; only the clockwise order matters to the geometry.
+- **Point numbers never change** once a shape exists, wherever its points move or however it turns: « mon premier point, c'est mon premier point, peu importe où il est » (F08); « on ne renumérote jamais » (F04). Only adding or deleting a point shifts the numbers after it by one (`interaction.md` §3). The top-left, clockwise start holds at creation only.
 - A contour is **cyclic**: the last vertex joins the first; every per-vertex computation (corner radius, clamping) wraps around, so the first vertex sees the last edge and the last vertex sees the first edge.
 - Once its corners are rounded, the top-left vertex is no longer on the drawn outline: the written path starts where the first corner's arc ends and closes with that arc, keeping the clockwise order (`DERIV-fillet-arc` step 7).
 
@@ -35,6 +36,11 @@ Consequence: every shape is described by numbers. The drawing is **determined**,
 ### Rotation of shapes
 
 - In the Symbol Editor, a shape may be rotated by **any integer angle in degrees** (e.g. a rectangle tilted by 45°). The angle is stored; the rotated vertices are derived (ADR-0003).
+- A shape turns about the **center of its box**; only shapes turn, never a single point (Product Owner, 2026-10-11, F04).
+- A positive angle turns **clockwise** on screen; the angle is kept **from 0 to 359**: 370 becomes 10, −90 becomes 270 (Product Owner, 2026-10-11, F04).
+- Turning keeps the shape, as in Figma: its width and height stay those before it turned, its corner radii, anchor (the box turns with its content) and point numbers do not change; back to 0 the shape is straight again. In Points mode, x and y are those of the turned point in the SVG (Q27). A turned polygon converted to a free shape keeps its angle (F04).
+- Two boxes (Product Owner, 2026-10-11, F04): the **turned box**, the shape's box turned with it, shown as its selection (a turned square does not seem to grow); the **straight box**, the smallest upright rectangle around the drawn shape, rounded corners included, as a browser's `getBBox`, which grows at 45°; it is shown discreetly, with its x, y, width and height.
+- **Position**: every shape has one, the x and y of the top-left of its straight box, typed to move it, as in Inkscape. Turning does not move the center of the box, so a square turned by 45° has smaller x and y. A width typed on a turned shape keeps its turned top-left corner in place, as Figma; a point typed leaves the others where they are (F04).
 - Instances in the View Editor only rotate by quarter turns (ADR-0008).
 
 ## 2. Corner radius
