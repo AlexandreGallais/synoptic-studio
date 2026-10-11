@@ -31,7 +31,7 @@ Refinement started on 2026-10-11 (started with `/run`).
 1. Each vertex of a rectangle or a regular polygon stores its own requested corner radius, clamped locally (ADR-0007); a shape whose vertices all have the same radius is drawn exactly as in F01 and F02.
 2. In Shape mode, the radius field gives one radius to every vertex, and shows "Mixed" when the radii differ.
 3. Changing the number of corners of a polygon keeps the radii by vertex number; new vertices have radius 0.
-4. In the playground, a tool bar with two large buttons, Shape and Points; in Points mode, the vertices of the shape have large handles, the first red and the second green, and a list shows them in contour order with x, y and radius.
+4. In the playground, a tool bar with two large buttons, Shape and Points; in Points mode, the vertices of the shape have large handles, vertex 1 of the contour red and vertex 2 green, and a list shows them in contour order with x, y and radius.
 5. In Points mode, vertices are selected by their handle or their list row (Shift and Ctrl / Cmd as in `docs/domain/interaction.md` §3), and the radius field applies to the selected vertices only.
 
 ## Stories

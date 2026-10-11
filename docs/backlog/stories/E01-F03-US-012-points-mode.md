@@ -14,7 +14,8 @@ As a symbol designer, I want a Points mode that shows the vertices of my shape a
 ## Acceptance criteria
 
 - Given the playground, when it opens, then a tool bar shows two large buttons, Shape and Points, Shape chosen (F03.AC4).
-- Given Points mode, when the shape is drawn, then each vertex has a large handle, the first vertex of the path data red, the second green, the others neutral (F03.AC4).
+- Given Points mode, when the shape is drawn, then each vertex has a large handle, vertex 1 of the contour (Q11) red, vertex 2 green, the others neutral (F03.AC4).
+- Given a 0 × 50 rectangle in Points mode, when its handles coincide, then the red one is on top (F03.AC4).
 - Given Shape mode, when the shape is drawn, then no handle is shown (F03.AC4).
 
 ## Product Owner test
