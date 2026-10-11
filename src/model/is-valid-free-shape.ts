@@ -10,7 +10,7 @@ import type { FreeShape } from "./free-shape";
  * (`areFreeShapePoints`), and their radii integers ≥ 0 (ADR-0029).
  *
  * @kind domain
- * @param shape - points, width, height and radii to check
+ * @param shape - corners, width and height to check
  * @returns `true` when every value is allowed
  * @see docs/domain/shapes.md#rectangle
  */

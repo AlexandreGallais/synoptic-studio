@@ -5,7 +5,7 @@
 Processing chain: typed numbers → integer model → computed geometry → `<path>` (ADR-0005).
 
 - A shape = one or more **closed contours** (the first is the outside, the next ones are holes, produced by booleans).
-- A contour = ordered list of **vertices**: integer coordinates when they are stored (a free shape's points, ADR-0032, the rectangle's included), fractional when they are derived from it (a regular polygon, later booleans), never written back (ADR-0003).
+- A contour = ordered list of **vertices**: coordinates stored by a free shape (ADR-0032, ADR-0033: integers when typed, fractional as a conversion leaves them), fractional when they are derived from it (a regular polygon, later booleans), never written back (ADR-0003).
 - Each vertex carries an integer **corner radius** (0 = sharp corner); a free shape keeps it with its point, as a corner (ADR-0033), a regular polygon in its list `radii` (ADR-0029); their number is the number of vertices, otherwise the shape is refused.
 - The shape is rendered as a single `<path>` (ADR-0002).
 - Geometric primitives: segments and circular arcs only (ADR-0001).

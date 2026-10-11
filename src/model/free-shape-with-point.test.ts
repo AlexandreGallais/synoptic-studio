@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { freeShapeCorners } from "./free-shape-corners";
 import { freeShapeWithPoint } from "./free-shape-with-point";
+import { isValidFreeShape } from "./is-valid-free-shape";
 import { rectangleAsFreeShape } from "./rectangle-as-free-shape";
 import { regularPolygonAsFreeShape } from "./regular-polygon-as-free-shape";
 
@@ -58,5 +59,30 @@ describe("freeShapeWithPoint", () => {
     ]);
 
     expect(freeShapeCorners({ ...shape, width: 120 })).toEqual(freeShapeCorners(shape));
+  });
+
+  it("refuses, through its validity, a point that puts every point on one line", () => {
+    const flat = freeShapeWithPoint(
+      rectangleAsFreeShape({ height: 50, radii: [0, 0, 0, 0], width: 0 }),
+      2,
+      { x: 0, y: 60 },
+    );
+
+    expect(isValidFreeShape(flat)).toBe(false);
+  });
+
+  it("accepts a point typed onto another one, or far to the left and above", () => {
+    const rectangle = rectangleAsFreeShape({ height: 50, radii: [0, 0, 0, 0], width: 100 });
+
+    expect(isValidFreeShape(freeShapeWithPoint(rectangle, 2, { x: 100, y: 0 }))).toBe(true);
+
+    const far = freeShapeWithPoint(rectangle, 0, { x: -1_000_000, y: -5 });
+
+    expect(freeShapeCorners(far).map((corner) => corner.point)).toEqual([
+      { x: -1_000_000, y: -5 },
+      { x: 100, y: 0 },
+      { x: 100, y: 50 },
+      { x: 0, y: 50 },
+    ]);
   });
 });

@@ -92,4 +92,13 @@ describe("freeShapeCorners", () => {
     expect(flat.map((corner) => corner.point.x)).toEqual([0, 0, 0, 0]);
     expect(freeShapeCorners({ ...rectangle, width: 100 })).toEqual(freeShapeCorners(rectangle));
   });
+
+  it("[F08.AC5] keeps each radius with its point in the stored free shape", () => {
+    expect(rectangleAsFreeShape({ height: 50, radii: [10, 0, 5, 0], width: 100 }).corners).toEqual([
+      { point: { x: 0, y: 0 }, radius: 10 },
+      { point: { x: 1, y: 0 }, radius: 0 },
+      { point: { x: 1, y: 1 }, radius: 5 },
+      { point: { x: 0, y: 1 }, radius: 0 },
+    ]);
+  });
 });
