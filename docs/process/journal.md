@@ -2,6 +2,15 @@
 
 What each working session dealt with, in the agent's words: requests of the Product Owner (paraphrased), decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`). The full conversations stay in the local transcripts (see [agent configuration](../tooling/agent.md#searching-past-conversations)).
 
+## 2026-10-11 — F03 run stopped at VAL-004
+
+- `#run` Merged into `feature/f03-radius-per-vertex`: SP-004 (#79), EN-010 (#80), US-011 (#81), CHK-004 (#82), US-012 (#84), US-013 (#87), AUD-004 (#90). Stop: the next story is VAL-004, with the Product Owner.
+- `#model` One requested radius per vertex (`radii`, ADR-0029), radii kept by vertex number, the common radius or Mixed; the selection of vertices (click, Ctrl / Cmd, Shift range in the list) as pure model functions.
+- `#playground` Shape and Points modes, handles (point 1 red, point 2 green), a list of points, the radius field for the selected points.
+- `#review` Every review changed its story; three real defects caught: a removed vertex's radius coming back, radii lost while a polygon was briefly refused, a radius typed in Points mode not capped (Q20). 14 of 14 audit mutations caught.
+- `#process` The run picked up `main` before AUD-004 (parallel session, PR #83): no change to F03.
+- `#domain` Q25 opened: one radius or one per corner for a layout box (E13).
+
 ## 2026-10-11 — Agenda for the E01 retrospective
 
 - `#process` Raised by the Product Owner for RET-001 (improvement log): local library of read sources searched by content, expert subagents, a cleaner log without diffs, a setup portable to other AI tools and offline skills, a complete experience report; parallel work only after several epics.
