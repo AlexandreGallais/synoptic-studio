@@ -42,7 +42,7 @@ In delivery order.
 | [US-009](../stories/E01-F07-US-009-anchored-polygon.md)         | User story | Polygon anchored in its box           | done   |
 | [CHK-003](../stories/E01-F07-CHK-003-checkpoint-f07.md)         | Checkpoint | Checkpoint in the middle of F07       | done   |
 | [US-010](../stories/E01-F07-US-010-anchor-picker-playground.md) | User story | Choose the anchor in the playground   | done   |
-| [AUD-003](../stories/E01-F07-AUD-003-audit-f07.md)              | Audit      | Audit F07: polygon aligned in its box | ready  |
+| [AUD-003](../stories/E01-F07-AUD-003-audit-f07.md)              | Audit      | Audit F07: polygon aligned in its box | done   |
 | [VAL-003](../stories/E01-F07-VAL-003-validate-anchor.md)        | Validation | Validate F07 on the reference cases   | ready  |
 
 ## Feature plan

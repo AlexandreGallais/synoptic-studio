@@ -31,7 +31,7 @@
 | [US-009](./E01-F07-US-009-anchored-polygon.md)              | F07     | Polygon anchored in its box                      | done   |
 | [CHK-003](./E01-F07-CHK-003-checkpoint-f07.md)              | F07     | Checkpoint in the middle of F07                  | done   |
 | [US-010](./E01-F07-US-010-anchor-picker-playground.md)      | F07     | Choose the anchor in the playground              | done   |
-| [AUD-003](./E01-F07-AUD-003-audit-f07.md)                   | F07     | Audit F07: polygon aligned in its box            | ready  |
+| [AUD-003](./E01-F07-AUD-003-audit-f07.md)                   | F07     | Audit F07: polygon aligned in its box            | done   |
 | [VAL-003](./E01-F07-VAL-003-validate-anchor.md)             | F07     | Validate F07 on the reference cases              | ready  |
 | [REV-001](./E01-REV-001-review-e01.md)                      | E01     | Review E01 with the Product Owner                | draft  |
 | [RET-001](./E01-RET-001-retrospective-e01.md)               | E01     | Retrospective of E01                             | draft  |
