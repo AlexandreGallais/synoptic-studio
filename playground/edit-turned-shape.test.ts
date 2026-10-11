@@ -134,4 +134,12 @@ describe("editing a turned shape (US-019)", () => {
     // The width typed while the shape was refused moved nothing: a 200 × 80 rectangle at (0, 0).
     expect(text("straight-box")).toBe("Straight box: x 0, y 0, width 200, height 80");
   });
+
+  it("[F04.AC4] keeps the turned top-left in place when the width is emptied, then retyped", () => {
+    type("width", "");
+    type("width", "2");
+    type("width", "200");
+
+    expect(text("path-data")).toMatch(/^M100 -20 /u);
+  });
 });

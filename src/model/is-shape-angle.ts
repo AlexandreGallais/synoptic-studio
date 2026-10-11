@@ -1,5 +1,4 @@
-/** Degrees in a whole turn. */
-const TURN = 360;
+import { DEGREES_PER_TURN } from "../math";
 
 /**
  * Whether an angle can be stored by a shape: an integer from 0 to 359 (ADR-0035).
@@ -13,5 +12,5 @@ const TURN = 360;
  * @see docs/domain/shapes.md#rotation-of-shapes
  */
 export function isShapeAngle(angle: number): boolean {
-  return Number.isSafeInteger(angle) && angle >= 0 && angle < TURN;
+  return Number.isSafeInteger(angle) && angle >= 0 && angle < DEGREES_PER_TURN;
 }
