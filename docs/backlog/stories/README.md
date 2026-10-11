@@ -51,7 +51,7 @@
 | [VAL-005](./E01-F08-VAL-005-validate-node-editing.md)           | F08     | Validate F08 on the reference cases                  | draft  |
 | [SP-006](./E01-F09-SP-006-research-f09.md)                      | F09     | Research for F09                                     | done   |
 | [EN-012](./E01-F09-EN-012-free-shape-in-its-box.md)             | F09     | A free shape and its box in the model                | done   |
-| [CHK-006](./E01-F09-CHK-006-checkpoint-f09.md)                  | F09     | Checkpoint in the middle of F09                      | ready  |
+| [CHK-006](./E01-F09-CHK-006-checkpoint-f09.md)                  | F09     | Checkpoint in the middle of F09                      | done   |
 | [US-017](./E01-F09-US-017-rectangle-as-free-shape.md)           | F09     | The rectangle as a free shape, stretched by its size | ready  |
 | [AUD-006](./E01-F09-AUD-006-audit-f09.md)                       | F09     | Audit F09                                            | ready  |
 | [VAL-006](./E01-F09-VAL-006-validate-stretchable-free-shape.md) | F09     | Validate F09                                         | ready  |

@@ -34,7 +34,7 @@ In delivery order.
 | ------------------------------------------------------------------------ | ---------- | ---------------------------------------------------- | ------ |
 | [SP-006](../stories/E01-F09-SP-006-research-f09.md)                      | Spike      | Research for F09                                     | done   |
 | [EN-012](../stories/E01-F09-EN-012-free-shape-in-its-box.md)             | Enabler    | A free shape and its box in the model                | done   |
-| [CHK-006](../stories/E01-F09-CHK-006-checkpoint-f09.md)                  | Checkpoint | Checkpoint in the middle of F09                      | ready  |
+| [CHK-006](../stories/E01-F09-CHK-006-checkpoint-f09.md)                  | Checkpoint | Checkpoint in the middle of F09                      | done   |
 | [US-017](../stories/E01-F09-US-017-rectangle-as-free-shape.md)           | User story | The rectangle as a free shape, stretched by its size | ready  |
 | [AUD-006](../stories/E01-F09-AUD-006-audit-f09.md)                       | Audit      | Audit F09                                            | ready  |
 | [VAL-006](../stories/E01-F09-VAL-006-validate-stretchable-free-shape.md) | Validation | Validate F09                                         | ready  |
