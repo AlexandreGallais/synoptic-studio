@@ -14,8 +14,8 @@ import type { Point } from "../math";
  * @param index - number of the point, from 0
  * @param point - its new place: each coordinate typed is an integer, one not typed keeps its
  * drawn value
- * @returns the free shape with the point moved, to check with `isValidFreeShape` (all points on
- * one line are refused); an index out of range moves nothing but rebases the shape on its
+ * @returns the free shape with the point moved, to check with `isValidFreeShape` (points with no
+ * width or no height between them are refused); an index out of range moves nothing but rebases the shape on its
  * drawn corners
  * @see docs/domain/interaction.md#_3-node-editing
  */

@@ -1,3 +1,4 @@
+import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { freeShapeCorners } from "./free-shape-corners";
@@ -85,4 +86,37 @@ describe("freeShapeWithPoint", () => {
       { x: 0, y: 50 },
     ]);
   });
+
+  it("[F08.AC5] moves a point with its radius", () => {
+    // Point 1 of a 100 × 50 rectangle, radius 10, moved to (-20, -10): it keeps its radius 10.
+    const shape = freeShapeWithPoint(
+      rectangleAsFreeShape({ height: 50, radii: [10, 0, 0, 0], width: 100 }),
+      0,
+      { x: -20, y: -10 },
+    );
+
+    expect(freeShapeCorners(shape)[0]).toEqual({ point: { x: -20, y: -10 }, radius: 10 });
+  });
+
+  const coordinate = fc.integer({ max: 1000, min: -1000 });
+
+  test.prop({ index: fc.nat({ max: 3 }), x: coordinate, y: coordinate })(
+    "[F08.AC2] puts the point where it is typed, the others unchanged, the box around them",
+    ({ index, x, y }) => {
+      const rectangle = rectangleAsFreeShape({ height: 50, radii: [1, 2, 3, 4], width: 100 });
+      const before = freeShapeCorners(rectangle);
+      const shape = freeShapeWithPoint(rectangle, index, { x, y });
+      const after = freeShapeCorners(shape);
+      const xs = after.map((corner) => corner.point.x);
+      const ys = after.map((corner) => corner.point.y);
+
+      expect(after.toSpliced(index, 1)).toEqual(before.toSpliced(index, 1));
+      expect(after[index]).toEqual({ point: { x, y }, radius: index + 1 });
+
+      expect([shape.width, shape.height]).toEqual([
+        Math.max(...xs) - Math.min(...xs),
+        Math.max(...ys) - Math.min(...ys),
+      ]);
+    },
+  );
 });

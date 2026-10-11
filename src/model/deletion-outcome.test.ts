@@ -1,7 +1,10 @@
+import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { deletionOutcome } from "./deletion-outcome";
 import { freeShapeWithMidpoint } from "./free-shape-with-midpoint";
+import { freeShapeWithoutPoints } from "./free-shape-without-points";
+import { isValidFreeShape } from "./is-valid-free-shape";
 import { rectangleAsFreeShape } from "./rectangle-as-free-shape";
 
 /** A 100 square, sharp. */
@@ -25,4 +28,16 @@ describe("deletionOutcome", () => {
 
     expect(deletionOutcome(five, [3, 4])).toBe("flat");
   });
+
+  test.prop({ removed: fc.uniqueArray(fc.nat({ max: 4 }), { maxLength: 5 }) })(
+    "[F08.AC4] allows a deletion exactly when the points left make a valid free shape",
+    ({ removed }) => {
+      const five = freeShapeWithMidpoint(SQUARE, 1);
+      const left = freeShapeWithoutPoints(five, removed);
+      const outcome = deletionOutcome(five, removed);
+
+      expect(outcome === "too-few").toBe(left.corners.length < 3);
+      expect(outcome === "allowed").toBe(left.corners.length >= 3 && isValidFreeShape(left));
+    },
+  );
 });
