@@ -1,3 +1,4 @@
+import { moveRadiusField } from "./move-radius-field";
 import { selectElement } from "./select-element";
 import { writeText } from "./write-text";
 
@@ -24,6 +25,7 @@ export function showRefusedShape(document: Document): void {
 
   // Nothing to convert nor to move on a refused shape.
   selectElement(document, "point-fields").hidden = true;
+  moveRadiusField(document, false);
 
   if (field instanceof HTMLInputElement) {
     field.disabled = false;
