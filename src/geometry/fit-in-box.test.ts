@@ -124,18 +124,18 @@ describe("fitInBox (DERIV-regular-polygon-fit steps 3–5)", () => {
     expectPoints(
       fitInBox(triangle, { height: 100, width: 100 }, { horizontal: "mid", vertical: "max" }),
       [
-        { x: 50, y: room },
         { x: 100, y: 100 },
         { x: 0, y: 100 },
+        { x: 50, y: room },
       ],
     );
 
     expectPoints(
       fitInBox(triangle, { height: 100, width: 100 }, { horizontal: "mid", vertical: "min" }),
       [
-        { x: 50, y: 0 },
         { x: 100, y: HEIGHT_3 },
         { x: 0, y: HEIGHT_3 },
+        { x: 50, y: 0 },
       ],
     );
   });

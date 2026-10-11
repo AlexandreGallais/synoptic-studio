@@ -1,10 +1,12 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
-import { boundingBox } from "../geometry";
+import { ALIGNMENTS, boundingBox } from "../geometry";
 import { EPSILON } from "../math";
 
 import { regularPolygonContour } from "./regular-polygon-contour";
+import { regularPolygonCorners } from "./regular-polygon-corners";
+import { resizeRadii } from "./resize-radii";
 
 import type { Anchor } from "../geometry";
 import type { Point } from "../math";
@@ -47,9 +49,9 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
         width: 100,
       }),
       [
-        { x: 50, y: margin },
         { x: 100, y: 100 - margin },
         { x: 0, y: 100 - margin },
+        { x: 50, y: margin },
       ],
     );
   });
@@ -65,15 +67,15 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
         width: 100,
       }),
       [
-        { x: 25, y: 0 },
-        { x: 75, y: 0 },
         { x: 75, y: 50 },
         { x: 25, y: 50 },
+        { x: 25, y: 0 },
+        { x: 75, y: 0 },
       ],
     );
   });
 
-  it("[F02.AC3] fits a hexagon in 100 × 100 with flat top and bottom, from the top-left vertex", () => {
+  it("[F02.AC3] fits a hexagon in 100 × 100 with flat top and bottom, from the right end of its base", () => {
     // s = 50: 100 wide, 50√3 = 86.60254 high; top and bottom edges at 6.69873 and 93.30127.
     const margin = (100 - HEIGHT_3) / 2;
 
@@ -86,17 +88,17 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
         width: 100,
       }),
       [
-        { x: 25, y: margin },
-        { x: 75, y: margin },
-        { x: 100, y: 50 },
         { x: 75, y: 100 - margin },
         { x: 25, y: 100 - margin },
         { x: 0, y: 50 },
+        { x: 25, y: margin },
+        { x: 75, y: margin },
+        { x: 100, y: 50 },
       ],
     );
   });
 
-  it("[F02.AC3] fits a pentagon in 100 × 100 from its apex (odd n above 3, AUD-002)", () => {
+  it("[F02.AC3] fits a pentagon in 100 × 100 from the right end of its base (odd n above 3, AUD-002)", () => {
     // Unit span 2 cos(π/10) × (1 + cos(π/5)); s = 100 / (2 cos(π/10)) = 52.57311: width reached.
     const s = 50 / Math.cos(Math.PI / 10);
     const top = (100 - s * (1 + Math.cos(Math.PI / 5))) / 2;
@@ -110,11 +112,11 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
         width: 100,
       }),
       [
-        { x: 50, y: top },
-        { x: 100, y: top + s * (1 - Math.sin(Math.PI / 10)) },
         { x: 50 + s * Math.sin(Math.PI / 5), y: top + s * (1 + Math.cos(Math.PI / 5)) },
         { x: 50 - s * Math.sin(Math.PI / 5), y: top + s * (1 + Math.cos(Math.PI / 5)) },
         { x: 0, y: top + s * (1 - Math.sin(Math.PI / 10)) },
+        { x: 50, y: top },
+        { x: 100, y: top + s * (1 - Math.sin(Math.PI / 10)) },
       ],
     );
   });
@@ -136,7 +138,8 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
   });
 
   it("[F02.AC1] fits an octagon in 100 × 100: both sizes reached", () => {
-    // Unit span 2 cos(π/8) on both axes; first vertex at x = 50 − 50 tan(π/8) = 29.28932.
+    // Unit span 2 cos(π/8) on both axes; first vertex, the right end of the base, at
+    // x = 50 + 50 tan(π/8) = 70.71068, y = 100.
     const contour = regularPolygonContour({
       anchor: CENTER,
       corners: 8,
@@ -146,8 +149,8 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
     });
     const box = boundingBox(contour);
 
-    expect(contour[0]?.x).toBeCloseTo(50 - 50 * Math.tan(Math.PI / 8), DECIMALS);
-    expect(contour[0]?.y).toBeCloseTo(0, DECIMALS);
+    expect(contour[0]?.x).toBeCloseTo(50 + 50 * Math.tan(Math.PI / 8), DECIMALS);
+    expect(contour[0]?.y).toBeCloseTo(100, DECIMALS);
     expect(box.maxX - box.minX).toBeCloseTo(100, DECIMALS);
     expect(box.maxY - box.minY).toBeCloseTo(100, DECIMALS);
   });
@@ -205,9 +208,9 @@ describe("regularPolygonContour (anchored, F07)", () => {
         width: 100,
       }),
       [
-        { x: 50, y: margin },
         { x: 100, y: 100 - margin },
         { x: 0, y: 100 - margin },
+        { x: 50, y: margin },
       ],
     );
   });
@@ -219,9 +222,9 @@ describe("regularPolygonContour (anchored, F07)", () => {
     expectPoints(
       regularPolygonContour({ anchor, corners: 3, height: 100, radii: [0, 0, 0], width: 100 }),
       [
-        { x: 50, y: 100 - HEIGHT_3 },
         { x: 100, y: 100 },
         { x: 0, y: 100 },
+        { x: 50, y: 100 - HEIGHT_3 },
       ],
     );
   });
@@ -240,12 +243,12 @@ describe("regularPolygonContour (anchored, F07)", () => {
         width: 100,
       }),
       [
-        { x: 25, y: top },
-        { x: 75, y: top },
-        { x: 100, y: top + HEIGHT_3 / 2 },
         { x: 75, y: 100 },
         { x: 25, y: 100 },
         { x: 0, y: top + HEIGHT_3 / 2 },
+        { x: 25, y: top },
+        { x: 75, y: top },
+        { x: 100, y: top + HEIGHT_3 / 2 },
       ],
     );
   });
@@ -257,10 +260,10 @@ describe("regularPolygonContour (anchored, F07)", () => {
     expectPoints(
       regularPolygonContour({ anchor, corners: 4, height: 50, radii: [0, 0, 0, 0], width: 100 }),
       [
-        { x: 50, y: 0 },
-        { x: 100, y: 0 },
         { x: 100, y: 50 },
         { x: 50, y: 50 },
+        { x: 50, y: 0 },
+        { x: 100, y: 0 },
       ],
     );
   });
@@ -310,6 +313,86 @@ describe("regularPolygonContour (properties)", () => {
         Math.abs(box.maxX - box.minX - width) < tolerance ||
           Math.abs(box.maxY - box.minY - height) < tolerance,
       ).toBe(true);
+    },
+  );
+});
+
+describe("regularPolygonContour (numbered from its base, F08)", () => {
+  it("[F08.AC5] starts a triangle and a square at the right end of their base, clockwise", () => {
+    const triangle = regularPolygonContour({
+      anchor: CENTER,
+      corners: 3,
+      height: 100,
+      radii: [0, 0, 0],
+      width: 100,
+    });
+    const square = regularPolygonContour({
+      anchor: CENTER,
+      corners: 4,
+      height: 100,
+      radii: [0, 0, 0, 0],
+      width: 100,
+    });
+
+    expect(
+      triangle.map((point) => [point.x, point.y].map((value) => Number(value.toFixed(5)))),
+    ).toEqual([
+      [100, 93.30127],
+      [0, 93.30127],
+      [50, 6.69873],
+    ]);
+
+    expect(
+      square.map((point) => [point.x, point.y].map((value) => Number(value.toFixed(5)))),
+    ).toEqual([
+      [100, 100],
+      [0, 100],
+      [0, 0],
+      [100, 0],
+    ]);
+  });
+
+  it("[F08.AC5] keeps the radii of the base on the base when the number of corners changes", () => {
+    // Points 1 and 2 are the base at any number of corners: radii kept by number stay there.
+    const radii = resizeRadii([10, 10, 0, 0, 0, 0], 5);
+    const corners = regularPolygonCorners({
+      anchor: CENTER,
+      corners: 5,
+      height: 100,
+      radii,
+      width: 100,
+    });
+    const lowest = Math.max(...corners.map((corner) => corner.point.y));
+
+    expect(
+      corners.filter((corner) => corner.radius === 10).map((corner) => corner.point.y),
+    ).toEqual([lowest, lowest]);
+  });
+
+  test.prop({
+    anchor: fc.record({
+      horizontal: fc.constantFrom(...ALIGNMENTS),
+      vertical: fc.constantFrom(...ALIGNMENTS),
+    }),
+    corners: fc.integer({ max: 12, min: 3 }),
+    size: fc.integer({ max: 1000, min: 1 }),
+  })(
+    "[F08.AC5] puts points 1 and 2 at the two ends of the flat base",
+    ({ anchor, corners, size }) => {
+      const contour = regularPolygonContour({
+        anchor,
+        corners,
+        height: size,
+        radii: Array.from({ length: corners }, () => 0),
+        width: size,
+      });
+      const [right = { x: NaN, y: NaN }, left = { x: NaN, y: NaN }] = contour;
+      const lowest = Math.max(...contour.map((point) => point.y));
+      const tolerance = EPSILON * Math.max(1, size);
+
+      expect(Math.abs(right.y - lowest)).toBeLessThan(tolerance);
+      expect(Math.abs(left.y - lowest)).toBeLessThan(tolerance);
+      expect(right.x - left.x).toBeGreaterThan(0);
     },
   );
 });
