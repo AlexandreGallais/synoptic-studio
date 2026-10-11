@@ -1,6 +1,7 @@
 import { turnAbout } from "../geometry";
 import { turnDirection } from "../math";
 
+import { boxCenter } from "./box-center";
 import { positionKeepingPoint } from "./position-keeping-point";
 
 import type { TurnedBox } from "./turned-corners";
@@ -23,7 +24,7 @@ export function positionAfterResize(box: TurnedBox, size: Size): Point {
     return { x: box.x, y: box.y };
   }
 
-  const center = { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+  const center = boxCenter(box);
   const corner = turnAbout({ x: box.x, y: box.y }, center, turnDirection(box.angle));
 
   return positionKeepingPoint({ ...size, angle: box.angle }, { x: 0, y: 0 }, corner);

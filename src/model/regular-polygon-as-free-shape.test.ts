@@ -96,4 +96,33 @@ describe("regularPolygonAsFreeShape", () => {
       expect(value).toBeCloseTo(expected[index] ?? NaN, 9);
     }
   });
+
+  test.prop({ angle: fc.integer({ max: 359, min: 1 }), corners: fc.integer({ max: 12, min: 3 }) })(
+    "[F04.AC4] converts a polygon turned by any angle without moving it",
+    ({ angle, corners }) => {
+      const polygon = {
+        anchor: { horizontal: "min", vertical: "max" },
+        angle,
+        corners,
+        height: 80,
+        radii: Array.from({ length: corners }, () => 0),
+        width: 120,
+        x: 5,
+        y: -7,
+      } as const;
+      const shape = regularPolygonAsFreeShape(polygon);
+      const drawn = turnedCorners(freeShapeCorners(shape), shape).flatMap((corner) => [
+        corner.point.x,
+        corner.point.y,
+      ]);
+      const expected = turnedCorners(regularPolygonCorners(polygon), polygon).flatMap((corner) => [
+        corner.point.x,
+        corner.point.y,
+      ]);
+
+      for (const [index, value] of drawn.entries()) {
+        expect(value).toBeCloseTo(expected[index] ?? NaN, 9);
+      }
+    },
+  );
 });

@@ -1,3 +1,4 @@
+import { clearDrawnBox } from "./clear-drawn-box";
 import { selectElement } from "./select-element";
 import { writeText } from "./write-text";
 
@@ -22,8 +23,7 @@ export function showRefusedShape(document: Document): void {
     mark.remove();
   }
 
-  // A refused shape keeps no turned box: the next width typed places nothing (US-019).
-  delete selectElement(document, "shape").dataset["drawnBox"];
+  clearDrawnBox(document);
 
   // Nothing to convert nor to move on a refused shape.
   selectElement(document, "point-fields").hidden = true;

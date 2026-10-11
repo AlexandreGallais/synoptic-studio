@@ -1,6 +1,7 @@
 import { turnAbout } from "../geometry";
 import { turnDirection } from "../math";
 
+import { boxCenter } from "./box-center";
 import { freeShapeAroundCorners } from "./free-shape-around-corners";
 import { freeShapeCorners } from "./free-shape-corners";
 import { freeShapeKeptInPlace } from "./free-shape-kept-in-place";
@@ -28,7 +29,7 @@ import type { Point } from "../math";
  * @see docs/domain/interaction.md#_3-node-editing
  */
 export function freeShapeWithPoint(shape: FreeShape, index: number, point: Point): FreeShape {
-  const center = { x: shape.x + shape.width / 2, y: shape.y + shape.height / 2 };
+  const center = boxCenter(shape);
   const straight =
     shape.angle === 0 ? point : turnAbout(point, center, turnDirection(-shape.angle));
   const edited = freeShapeAroundCorners(
