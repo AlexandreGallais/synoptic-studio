@@ -2,6 +2,14 @@
 
 What each working session dealt with, in the agent's words: requests of the Product Owner (paraphrased), decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`). The full conversations stay in the local transcripts (see [agent configuration](../tooling/agent.md#searching-past-conversations)).
 
+## 2026-10-12 — F04 run stopped at VAL-007
+
+- `#run` Merged into `feature/f04-free-rotation`: SP-007 (#122), EN-014 (#123), EN-015 (#124), US-018 (#125), CHK-007 (#126), US-019 (#127), AUD-007 (#128; #129, a duplicate opened by an interrupted command, closed). Stop: the next story is VAL-007, with the Product Owner.
+- `#model` Every shape has an angle (0 to 359, clockwise, about the center of its box) and a position (ADR-0035); the straight box counts the arcs (`DERIV-arc-bounding-box`); edits of a turned shape keep it in place (`DERIV-turned-shape` step 5).
+- `#playground` Angle field, −90° and +90° buttons, X and Y of the straight box, the turned box as a frame and the straight box dashed; width, points and conversion of a turned shape.
+- `#review` Reviews caught a moved free shape losing its typed width, a frame covering a 1 × 1 shape, a width over 100 000 making a turned shape jump, a test card describing the boxes the wrong way round; the audit a width retyped, ADR-0034 changed silently, "as drawn" for straight corners.
+- `#process` The Product Owner relaunched the run twice, seeing no token move during long scripts; asked for a live view of what runs, and for a count of the commands run most, to make runs faster (improvement log).
+
 ## 2026-10-11 — F04 run authorized
 
 - `#run` Scope: F04 from SP-007 up to VAL-007, started with `/run` right after the proposed stories (« si je te fais des /run, ça veut dire oui », 2026-10-09). F04 set `in-progress`, its stories `ready`, on `feature/f04-free-rotation`.
