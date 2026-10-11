@@ -85,7 +85,7 @@ Functional reference: Inkscape's Star/Polygon tool.
 - Parameters: number of corners, an integer `3 ≤ n ≤ 12` (Q19); `width` and `height` of the box, integers ≥ 0 (negative forbidden, 0 allowed — Q15); a global corner `radius`, integer ≥ 0 (0 = sharp corners), clamped rather than refused (ADR-0007), the requested value kept (Q8).
 - Examples: `n=3` equilateral triangle, `n=4` square, `n=5` pentagon, `n=6` hexagon.
 - Rule: the shape fills as much of the `width × height` box as possible **without exceeding it**.
-- Derived vertices (cos/sin): not integers. They are **computed**, not stored (ADR-0003). `n`, `width`, `height` and the requested `radius` are stored (`RegularPolygon`).
+- Derived vertices (cos/sin): not integers. They are **computed**, not stored (ADR-0003). `n`, `width`, `height`, the requested `radius` and the `anchor` are stored (`RegularPolygon`).
 
 **Chosen mode: uniform** (`DERIV-regular-polygon-fit`).
 
@@ -95,6 +95,14 @@ Functional reference: Inkscape's Star/Polygon tool.
 - Fitted on the sharp-cornered polygon; the corner radius then rounds inwards, clamped exactly as for the rectangle (same geometry, no rule of its own). At the maximal radius the shape is its inscribed circle and may no longer touch the box (a hexagon in 100 × 100 becomes a circle of diameter 86.6): accepted by the Product Owner (2026-10-09) — removing the radius makes it touch again; a shape filling its box whatever its rounding would be a separate "fill the parent" option.
 - Number of corners: integer `3 ≤ n ≤ 12` (Q19): process and electrical symbols use triangles, squares, diamonds, hexagons and one octagon (note 0004); beyond 12 sides a polygon is hardly told from a circle, and the circle is already a rounded square.
 - Other orientations (a diamond is a square turned by 45°, the IEC hexagon stands on a vertex: 30°) come from rotation (F04), applied to the flat-based polygon.
+
+**Anchor** (F07, Product Owner 2026-10-10 and 2026-10-11):
+
+- The polygon is placed in the room its box leaves by an **anchor**, one of 9 places on a 3 × 3 grid: a horizontal alignment (left, center, right) and a vertical one (top, center, bottom), stored as `min`, `mid`, `max` (SVG's `preserveAspectRatio`, `DERIV-regular-polygon-fit` step 5). Default: center on both axes, F02's placement.
+- `min` puts the polygon's smallest coordinate on the box's (left or top), `max` its largest (right or bottom): a triangle in 100 × 100 anchored at the bottom has its base written at y = 100, its apex at 13.39746. In floating point the vertices of an anchored edge are on it within a rounding error, and written as the integer edge (Q10).
+- The anchor is an **intention, always stored**: on the axis the polygon fills, the three alignments give the same drawing, and the chosen one is still kept and shown.
+- The anchor places the **sharp-cornered** polygon; the corner radius then rounds inwards without moving it: a flat face on the anchored side keeps touching it, a rounded vertex leaves it (a triangle anchored at the top with radius 10 has its top at y = 10). No "always touch" option (Product Owner, 2026-10-11).
+- Rotation (F04) comes after: the box turns with its content.
 
 ### Text
 
