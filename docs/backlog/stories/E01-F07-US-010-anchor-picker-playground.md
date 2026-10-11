@@ -28,5 +28,5 @@ Written with the story.
 
 One task = one commit, referenced as `US-010.Tn`.
 
-- [ ] T1 — Anchor grid in the playground, keyboard, hidden for the rectangle; playground tests (2 h)
+- [ ] T1 — Anchor grid of nine native radio buttons (`REF-FIGMA-AUTO-LAYOUT` as functional reference, note 0005), keyboard, hidden for the rectangle; playground tests (2 h)
 - [ ] T2 — Product Owner test card; playground help text (0.5 h)

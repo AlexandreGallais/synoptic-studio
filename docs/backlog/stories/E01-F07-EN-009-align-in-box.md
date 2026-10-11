@@ -23,5 +23,5 @@ The uniform fit of F02 (`fitInBox`) takes a horizontal and a vertical alignment 
 
 One task = one commit, referenced as `EN-009.Tn`.
 
-- [ ] T1 — Alignment type and `fitInBox` with two alignments: hand-computed cases, exact edges, properties, mutations (2 h)
-- [ ] T2 — Derivation step 5 and its check table brought up to date (0.5 h)
+- [ ] T1 — `Alignment` type (`"min" | "mid" | "max"`, SVG's names, `REF-SVG2-PRESERVE-ASPECT-RATIO`) and `fitInBox` with two alignments, `@see DERIV-regular-polygon-fit`: hand-computed cases of the check table, exact edges, properties, mutations (2 h)
+- [ ] T2 — Derivation step 5 and its check table brought up to date — done in SP-003; check the code matches (0.5 h)
