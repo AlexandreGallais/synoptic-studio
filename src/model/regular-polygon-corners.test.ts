@@ -158,7 +158,7 @@ describe("regularPolygonCorners (anchored, F07)", () => {
         regularPolygonCorners({ anchor, corners: 3, height: 100, radii: [10, 10, 10], width: 100 }),
       ),
     );
-    // The path starts where the apex's arc ends and closes with it (DERIV-fillet-arc step 7).
+    // The path starts where the arc of point 1, the right end of the base, ends, and closes with it (DERIV-fillet-arc step 7).
     const [apex, ...others] = arcs.filter((arc) => arc.center.y < 50);
 
     expect(others).toHaveLength(0);

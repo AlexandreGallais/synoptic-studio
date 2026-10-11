@@ -77,7 +77,8 @@ describe("unitRegularPolygon (DERIV-regular-polygon-fit steps 1–2)", () => {
   });
 
   it("never writes a coordinate as −0 (ADR-0025)", () => {
-    // y = 0 − sin β is +0 when sin β is ±0, and cos never gives −0.
+    // No β is a multiple of π for n ≥ 3, so no coordinate is exactly 0 today; this guards later
+    // formulas: y is written 0 − sin β, which gives +0 when sin β is ±0.
     for (const corners of [3, 4, 5, 6, 7, 8, 9, 10, 11, 12]) {
       const coordinates = unitRegularPolygon(corners).flatMap((point) => [point.x, point.y]);
 

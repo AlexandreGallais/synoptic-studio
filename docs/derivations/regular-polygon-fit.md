@@ -1,6 +1,6 @@
 # DERIV-regular-polygon-fit — Regular polygon fitted uniformly in a box
 
-Used by: `docs/domain/shapes.md` §3 (Q1: uniform mode), EN-008, US-005, US-006, EN-009, US-009. Sources read in SP-002 (note 0004) and SP-003 (note 0005).
+Used by: `docs/domain/shapes.md` §3 (Q1: uniform mode), EN-008, US-005, US-006, EN-009, US-009. Sources read in SP-002 (note 0004) and SP-003 (note 0005); EN-013 (F08, the start at the base).
 
 ## Inputs (model, integers)
 
