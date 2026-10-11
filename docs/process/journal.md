@@ -2,6 +2,14 @@
 
 What each working session dealt with, in the agent's words: requests of the Product Owner (paraphrased), decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`). The full conversations stay in the local transcripts (see [agent configuration](../tooling/agent.md#searching-past-conversations)).
 
+## 2026-10-11 — F09 run stopped at VAL-006
+
+- `#run` Merged into `feature/f09-stretchable-free-shape`: SP-006 (#99), EN-012 (#100), CHK-006 (#101), US-017 (#102), AUD-006 (#103). Stop: the next story is VAL-006, with the Product Owner. F08's spike SP-005 (#97) is on its paused branch.
+- `#model` The rectangle is a free shape (ADR-0032): its points stored in their own box, stretched by width and height from the top-left, without loss (`DERIV-free-shape-stretch`); every F01 and F03 rectangle test now runs through it.
+- `#review` Reviews caught a far edge off by 4e-15 (`(29 / 7) · 7`) before code, a test that could not fail on loss, `boundingBox` throwing past 100 000 points; 10 of 10 audit mutations caught.
+- `#domain` Q27 opened: integer points and size of F09 against the fractional vertices F08 decided — to settle before F08 resumes.
+- `#tooling` Personal settings for the Product Owner: focus view and a status line showing the current step; files written through the shell.
+
 ## 2026-10-11 — F09 inserted before F08, F08 paused
 
 - `#review` The review of SP-005 raised the rectangle's width and height once its points move. The Product Owner decided that the rectangle is a free shape, stretchable by its width and height without loss, in a feature of its own: « tu peux faire une feature ». F09 comes before F08 in E01; F08 is paused after SP-005 (#97), its other stories back to `draft`.
