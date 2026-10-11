@@ -16,7 +16,8 @@ A free shape stores its points in its own box and its width and height; the poin
 - Given width 100, height 50 and radii, when the rectangle tool makes a free shape, then its points drawn are (0, 0), (100, 0), (100, 50), (0, 50) with those radii, the corners of F01 and F03 (F09.AC1).
 - Given a free shape, when its width or height changes, then every point is stretched from the top-left of the box, in proportion (F09.AC2).
 - Given a free shape, when its width goes to 0 and back, then its points are exactly those of before (F09.AC3).
-- Given a free shape, when it is checked, then sizes and radii are integers ≥ 0, one radius per point, at least 3 points, otherwise it is refused.
+- Given a free shape, when it is checked, then sizes and radii are integers ≥ 0, one radius per point, at least 3 points, stored points spanning a box of positive width and height, otherwise it is refused.
+- Given points (0, 0), (7, 0), (7, 1) stretched to 29 × 1, when they are drawn, then the far edge is exactly 29 (`DERIV-free-shape-stretch`).
 
 ## Product Owner test
 
@@ -26,5 +27,5 @@ None of its own: shown by US-017's card.
 
 One task = one commit, referenced as `EN-012.Tn`.
 
-- [ ] T1 — `FreeShape` (ADR-0032), its validity, its drawn points (`DERIV-free-shape-stretch`, its check table) and corners, the rectangle tool; tests and properties (2 h)
+- [ ] T1 — `FreeShape` (ADR-0032), its validity, its drawn points (`DERIV-free-shape-stretch`, its check table, one box-to-box map shared with `fitInBox`) and corners, the rectangle tool; the F01 and F03 rectangle tests moved onto it (note 0008, migration); properties (2 h)
 - [ ] T2 — Domain (`shapes.md`), re-exports (0.5 h)
