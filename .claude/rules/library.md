@@ -26,7 +26,7 @@ paths:
 - `data-*` attributes: the autofix turns `removeAttribute("data-x")` into `delete el.dataset.x`, which `tsc` refuses (TS4111): write `delete el.dataset["x"]` (US-011).
 - `expect.closeTo` inside `toMatchObject` / `toEqual` of objects is an `any` for the lint (`no-unsafe-assignment`): assert numbers one by one with `toBeCloseTo` (EN-010).
 - Scaling to an integer size: write `o + size · (p − o) / span`, multiplying first — `(29 / 7) · 7` is 29.000000000000004, `29 · 7 / 7` is 29 (F09, `DERIV-free-shape-stretch`).
-- A decision kept on a paused feature branch (ADR-0031 on `feature/f08-node-editing`) is not on `main` yet: cite it only from that branch, or say it is paused.
+- A decision kept on a paused feature branch is not on `main` yet: cite it only from that branch, or say it is paused (F08, 2026-10-11).
 - A playground control acting on the shape (button, field) is tested on a **refused** shape too: hide it or guard its handler, or a `NaN` gets stored and crashes later redraws (US-014).
 - A playground control that changes one value of a kept free shape (its position, US-018) writes only that value in the stored JSON: `writeStoredFreeShape` also rewrites the width, height and radii fields from the stored shape, undoing what was typed.
 - Playground frames and dashes are fills (a ring with `fill-rule: evenodd`, thin rectangles), never a native stroke; skip a frame on a box too small to hold it (US-018).
