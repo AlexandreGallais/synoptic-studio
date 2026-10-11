@@ -2,7 +2,7 @@ import {
   RECTANGLE_CORNER_COUNT,
   freeShapeCorners,
   isRegularPolygonCornerCount,
-  isValidRectangle,
+  isValidFreeShape,
   isValidRegularPolygon,
   rectangleAsFreeShape,
   regularPolygonCorners,
@@ -69,13 +69,13 @@ function readPolygon(document: Document): RegularPolygon {
  * @kind procedure
  * @param document - page document
  * @returns the reading of the rectangle
- * @see docs/backlog/stories/E01-F01-US-003-round-rectangle-corners.md
+ * @see docs/backlog/stories/E01-F09-US-017-rectangle-as-free-shape.md
  */
 function readRectangleShape(document: Document): ShapeReading {
   const rectangle = readRectangle(document);
-  const isValid = isValidRectangle(rectangle);
   // The rectangle tool makes a free shape (ADR-0032): its stored points, width, height, radii.
   const model = rectangleAsFreeShape(rectangle);
+  const isValid = isValidFreeShape(model);
 
   return {
     corners: isValid ? freeShapeCorners(model) : [],
