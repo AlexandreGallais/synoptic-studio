@@ -13,10 +13,11 @@ As a symbol designer, I want to select one or several vertices, on the drawing o
 
 ## Acceptance criteria
 
-- Given Points mode, when the shape is shown, then a list gives its vertices in contour order: number, x, y and radius (F03.AC4).
+- Given Points mode, when the shape is shown, then a list gives its vertices in contour order: number, x and y with at most 5 decimals, the requested radius, and the effective one when it was reduced (F03.AC4).
 - Given Points mode, when a handle or a list row is clicked, then that vertex alone is selected and highlighted on both (F03.AC5).
-- Given a selection, when Ctrl (Cmd) + click or, on the drawing, Shift + click hits a vertex, then it is added or removed; in the list, Shift + click selects the range from the last clicked row (F03.AC5).
-- Given selected vertices, when a radius is typed, then only they get it, and the others keep theirs (F03.AC5).
+- Given a selection, when Ctrl (Cmd) + click or, on the drawing, Shift + click hits a vertex, then it is added or removed; in the list, Shift + click replaces the selection by the range from the last row or handle clicked without Shift to the clicked row, and acts as a plain click when there is none (F03.AC5).
+- Given selected vertices, when a radius is typed, then only they get it, and the others keep theirs; the field shows their common radius or Mixed, and is disabled when no vertex is selected (F03.AC5).
+- Given a selection, when the number of corners changes or Shape mode is chosen, then the selection is cleared (F03.AC5).
 
 ## Product Owner test
 
