@@ -1,6 +1,8 @@
 import {
   EPSILON,
+  boxToViewBox,
   commonRadius,
+  contourBoundingBox,
   contourPiecesToPathData,
   createPathElement,
   createSvgElement,
@@ -16,7 +18,7 @@ import { writeText } from "./write-text";
 
 import type { ShapeReading } from "./shape-reading";
 
-/** Distance from the canvas top-left corner to the shape origin, in user units (= CSS pixels). */
+/** Room left around the shape and its origin in the canvas, in user units (= CSS pixels). */
 const MARGIN = 10;
 
 /** Indentation of the JSON shown in the pipeline panel. */
@@ -80,7 +82,7 @@ export function showShape(document: Document, reading: ShapeReading): void {
   const contour = reading.corners.map((corner) => corner.point);
   const pieces = roundedContour(reading.corners);
   const pathData = contourPiecesToPathData(pieces);
-  const viewBox = { ...readCanvasSize(document), x: -MARGIN, y: -MARGIN };
+  const viewBox = boxToViewBox(contourBoundingBox(pieces), readCanvasSize(document), MARGIN);
   const svg = createSvgElement(document, viewBox);
   const handles = showPoints(document, reading);
 
