@@ -12,7 +12,7 @@ export const GUIDED_STEPS_F03: readonly GuidedStep[] = [
   {
     explanation:
       "In Points mode, click the red handle, type 20; then click row 4 with Ctrl (Cmd on a Mac) held; then type 10.",
-    look: "20 rounds the top-left corner only; with points 1 and 4 selected the field reads “Mixed” (20 and 0); 10 rounds both, the others stay sharp.",
+    look: "20 rounds point 1 only, the right end of the base; with points 1 and 4 selected the field reads “Mixed” (20 and 0); 10 rounds both, the others stay sharp.",
     title: "F03 · One corner, then two",
     values: { anchor: "mid mid", corners: 6, height: 100, radius: 0, shape: "polygon", width: 100 },
   },
