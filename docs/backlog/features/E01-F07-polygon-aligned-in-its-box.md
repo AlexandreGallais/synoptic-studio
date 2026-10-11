@@ -26,10 +26,10 @@ Refined with the Product Owner on 2026-10-10 and 2026-10-11 (started with `/run`
 ## Acceptance criteria
 
 1. A regular polygon stores a horizontal alignment (left, center, right) and a vertical alignment (top, center, bottom); a polygon drawn with center and center is exactly F02's; any other value is refused.
-2. The alignment places the sharp-cornered polygon in the room its box leaves: left puts its leftmost point at x = 0, right its rightmost at x = width, top its topmost at y = 0, bottom its base at y = height, exactly; a triangle in 100 × 100 anchored at the bottom has its base at y = 100 and its apex at y = 13.39746.
+2. The alignment places the sharp-cornered polygon in the room its box leaves: left puts its leftmost point at x = 0, right its rightmost at x = width, top its topmost at y = 0, bottom its base at y = height, as written in the output (5 decimals); a triangle in 100 × 100 anchored at the bottom has its base at y = 100 and its apex at y = 13.39746.
 3. On the axis the polygon fills, the alignment changes nothing in the drawing, and is still stored and shown.
 4. The corner radius rounds inwards without moving the polygon: a face on the anchored side keeps touching it at any radius, a rounded vertex leaves it.
-5. In the playground, a 3 × 3 grid shows and changes the polygon's anchor, usable with the keyboard; it starts at the center.
+5. In the playground, a 3 × 3 grid shows and changes the polygon's anchor, usable with the keyboard as a radio group; it starts at the center.
 
 ## Stories
 
@@ -50,7 +50,7 @@ In delivery order.
 | Acceptance criterion                     | Realized by            | Verified by                                      |
 | ---------------------------------------- | ---------------------- | ------------------------------------------------ |
 | 1 — alignments stored, center by default | US-009                 | `[F07.AC1]` tests (US-009), VAL-003              |
-| 2 — placement, exact edges               | SP-003, EN-009, US-009 | `[F07.AC2]` tests (EN-009, US-009), VAL-003      |
+| 2 — placement on the anchored edges      | SP-003, EN-009, US-009 | `[F07.AC2]` tests (EN-009, US-009), VAL-003      |
 | 3 — no move on the filled axis           | EN-009, US-009         | `[F07.AC3]` tests (EN-009, US-009), VAL-003      |
 | 4 — radius does not move the polygon     | US-009                 | `[F07.AC4]` tests (US-009), US-010 card, VAL-003 |
 | 5 — 3 × 3 anchor grid in the playground  | US-010                 | `[F07.AC5]` playground tests (US-010), VAL-003   |

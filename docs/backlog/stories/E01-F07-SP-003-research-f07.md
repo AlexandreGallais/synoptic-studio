@@ -19,20 +19,20 @@ Find, read and record the sources of every story of F07 before its implementatio
 ## Questions
 
 - Placement of a uniformly scaled box in a larger one with nine alignments: a normative source (SVG's `preserveAspectRatio` and its viewBox transform), and how `DERIV-regular-polygon-fit` step 5 changes.
-- Exact edges: which form of the placement keeps `x = 0`, `x = w`, `y = 0`, `y = h` exact in floating point.
+- Edges: whether the anchored vertices land exactly on `x = 0`, `x = w`, `y = 0`, `y = h` in floating point (answer: within rounding, written exactly; note 0005).
 - Names of the two settings and of their values (SVG, CSS box alignment, design tools), for the model and the glossary.
 - A flat face stays on the anchored side at any radius, a rounded vertex leaves it: what the derivation already proves (step 6, incircle tangent to every side).
 - The 3 × 3 anchor picker of design tools, as a functional reference for the playground.
 
 ## Inventory
 
-| Story   | Needs                                                                    |
-| ------- | ------------------------------------------------------------------------ |
-| EN-009  | placement per alignment, exact edges; `DERIV-regular-polygon-fit` step 5 |
-| US-009  | names of the settings; default; validity; F02 unchanged at center        |
-| US-010  | 3 × 3 picker behavior, keyboard; functional reference                    |
-| AUD-003 | the sources above, re-verified                                           |
-| VAL-003 | the check table of `DERIV-regular-polygon-fit`, anchored rows            |
+| Story   | Needs                                                                       |
+| ------- | --------------------------------------------------------------------------- |
+| EN-009  | placement per alignment, anchored edges; `DERIV-regular-polygon-fit` step 5 |
+| US-009  | names of the settings; default; validity; F02 unchanged at center           |
+| US-010  | 3 × 3 picker behavior, keyboard; functional reference                       |
+| AUD-003 | the sources above, re-verified                                              |
+| VAL-003 | the check table of `DERIV-regular-polygon-fit`, anchored rows               |
 
 ## Tasks
 
