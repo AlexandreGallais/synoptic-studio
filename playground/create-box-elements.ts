@@ -5,7 +5,7 @@ import {
   roundedContour,
 } from "../src";
 
-import type { Rectangle, RegularPolygon } from "../src";
+import type { FreeShape, RegularPolygon } from "../src";
 
 /**
  * Draws the box a polygon is placed in, a grey sharp rectangle from (0, 0) to (width, height)
@@ -19,7 +19,7 @@ import type { Rectangle, RegularPolygon } from "../src";
  */
 export function createBoxElements(
   document: Document,
-  model: Rectangle | RegularPolygon,
+  model: FreeShape | RegularPolygon,
 ): readonly SVGPathElement[] {
   if (!("anchor" in model)) {
     return [];

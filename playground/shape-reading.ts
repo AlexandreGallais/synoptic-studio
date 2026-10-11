@@ -1,4 +1,4 @@
-import type { Corner, Rectangle, RegularPolygon } from "../src";
+import type { Corner, FreeShape, RegularPolygon } from "../src";
 
 /** A shape read from the inputs, with what the page shows of it. */
 export type ShapeReading = {
@@ -9,5 +9,5 @@ export type ShapeReading = {
   /** Message shown when it cannot. */
   readonly message: string;
   /** Model of the shape: integers only. */
-  readonly model: Rectangle | RegularPolygon;
+  readonly model: FreeShape | RegularPolygon;
 };
