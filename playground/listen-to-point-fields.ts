@@ -1,9 +1,11 @@
 import { freeShapeCorners, freeShapeWithPoint, regularPolygonAsFreeShape } from "../src";
 
+import { readEditedFreeShape } from "./read-edited-free-shape";
 import { readNumber } from "./read-number";
 import { readSelection } from "./read-selection";
 import { readShape } from "./read-shape";
 import { selectElement } from "./select-element";
+import { writeAddedMidpoint } from "./write-added-midpoint";
 import { writeStoredFreeShape } from "./write-stored-free-shape";
 
 import type { FreeShape, Point, RegularPolygon } from "../src";
@@ -58,21 +60,6 @@ function writeMovedPoint(document: Document, shape: FreeShape, target: Target): 
   if (point !== undefined) {
     writeStoredFreeShape(document, freeShapeWithPoint(shape, target.index, point));
   }
-}
-
-/**
- * Reads the free shape whose points may be typed: the one shown, when it is valid and not a
- * regular polygon (converted first).
- *
- * @kind procedure
- * @param document - page document
- * @returns the free shape, `undefined` when none can be edited
- * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
- */
-function readEditedFreeShape(document: Document): FreeShape | undefined {
-  const { isValid, model } = readShape(document);
-
-  return isValid && !("anchor" in model) ? model : undefined;
 }
 
 /**
@@ -139,8 +126,8 @@ function writeConvertedPolygon(document: Document): void {
 }
 
 /**
- * Listens to the x and y fields of the point selected and to the conversion button, then calls
- * back (F08.AC1, F08.AC2).
+ * Listens to the x and y fields of the point selected and to the buttons converting a polygon
+ * and adding a point, then calls back (F08.AC1, F08.AC2, F08.AC3).
  *
  * @kind procedure
  * @param document - page document
@@ -158,6 +145,11 @@ export function listenToPointFields(document: Document, update: () => void): voi
 
   selectElement(document, "convert").addEventListener("click", () => {
     writeConvertedPolygon(document);
+    update();
+  });
+
+  selectElement(document, "add-midpoint").addEventListener("click", () => {
+    writeAddedMidpoint(document);
     update();
   });
 }
