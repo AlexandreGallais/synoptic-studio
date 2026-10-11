@@ -21,3 +21,4 @@ paths:
 - The `guard-bash` hook reads every line of a shell command, heredoc bodies included: a text quoting a guarded command (a test case, a commit body) is denied. Write such text with the Edit or Write tool, or rephrase it.
 - Delete a remote branch with `gh api -X DELETE repos/<owner>/<repo>/git/refs/heads/<branch>`: `git push --delete` runs the pre-push hook (`check:all`, about 30 s) each time.
 - Vite's `?raw` imports are typed by `vite/client` (tsconfig `types`); never add a `.d.ts` file for it.
+- Commit scopes are a closed list (`commitlint.config`): `docs/process/` changes use `docs(docs)`, not `docs(process)` — a refused commit leaves its files staged for the next one (F07).
