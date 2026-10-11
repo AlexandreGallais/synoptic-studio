@@ -1,22 +1,18 @@
-import type { Point } from "../math";
+import { freeShapeContour } from "./free-shape-contour";
+import { rectangleAsFreeShape } from "./rectangle-as-free-shape";
+
 import type { Rectangle } from "./rectangle";
+import type { Point } from "../math";
 
 /**
- * Contour of a rectangle placed at the origin: its four vertices, clockwise on screen from the
- * top-left one.
+ * Contour of a rectangle: the free shape the rectangle tool makes, drawn (ADR-0032), i.e.
+ * (0, 0), (width, 0), (width, height), (0, height), clockwise from the top-left vertex (Q11).
  *
  * @kind domain
- * @param rectangle - width and height of the rectangle
- * @returns top-left, top-right, bottom-right and bottom-left vertices
- * @see docs/domain/shapes.md#contour-orientation-q11
+ * @param rectangle - width and height, integers ≥ 0
+ * @returns its four vertices, in contour order
+ * @see DERIV-free-shape-stretch
  */
 export function rectangleContour(rectangle: Rectangle): readonly Point[] {
-  const { height, width } = rectangle;
-
-  return [
-    { x: 0, y: 0 },
-    { x: width, y: 0 },
-    { x: width, y: height },
-    { x: 0, y: height },
-  ];
+  return freeShapeContour(rectangleAsFreeShape(rectangle));
 }

@@ -1,11 +1,12 @@
-import { cornersWithRadii } from "./corners-with-radii";
-import { rectangleContour } from "./rectangle-contour";
+import { freeShapeCorners } from "./free-shape-corners";
+import { rectangleAsFreeShape } from "./rectangle-as-free-shape";
 
 import type { Rectangle } from "./rectangle";
 import type { Corner } from "../geometry";
 
 /**
- * Corners of a rectangle: the vertices of its contour, each with its requested radius (ADR-0029).
+ * Corners of a rectangle: those of the free shape the rectangle tool makes (ADR-0032), each
+ * vertex with its requested radius (ADR-0029).
  *
  * @kind domain
  * @param rectangle - width, height and the radius of each corner
@@ -13,5 +14,5 @@ import type { Corner } from "../geometry";
  * @see docs/domain/shapes.md#_2-corner-radius
  */
 export function rectangleCorners(rectangle: Rectangle): readonly Corner[] {
-  return cornersWithRadii(rectangleContour(rectangle), rectangle.radii);
+  return freeShapeCorners(rectangleAsFreeShape(rectangle));
 }
