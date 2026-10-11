@@ -15,7 +15,7 @@ Consequence: every shape is described by numbers. The drawing is **determined**,
 ### Contour orientation (Q11)
 
 - Contours are listed **clockwise on screen** (SVG frame, y pointing down), **starting at the top-left vertex**; a regular polygon starts at the right end of its flat base, then its left end, so that the base keeps points 1 and 2 when the number of corners changes (Q18 amended, F08).
-- Where no vertex is both topmost and leftmost (a triangle pointing up), the contour starts at the topmost vertex, the leftmost on a tie (Q18): the start is a natural one, not a strict rule; only the clockwise order matters to the geometry.
+- For other shapes, where no vertex is both topmost and leftmost, the contour starts at the topmost vertex, the leftmost on a tie (Q18): the start is a natural one, not a strict rule; only the clockwise order matters to the geometry.
 - A contour is **cyclic**: the last vertex joins the first; every per-vertex computation (corner radius, clamping) wraps around, so the first vertex sees the last edge and the last vertex sees the first edge.
 - Once its corners are rounded, the top-left vertex is no longer on the drawn outline: the written path starts where the first corner's arc ends and closes with that arc, keeping the clockwise order (`DERIV-fillet-arc` step 7).
 
