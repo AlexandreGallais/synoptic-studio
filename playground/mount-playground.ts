@@ -1,4 +1,4 @@
-import { listenToAnchor } from "./listen-to-anchor";
+import { listenToInputs } from "./listen-to-inputs";
 import { readGuidedStep } from "./read-guided-step";
 import { readShape } from "./read-shape";
 import { readStepFromAddress } from "./read-step-from-address";
@@ -8,9 +8,6 @@ import { showShape } from "./show-shape";
 import { writeCappedSizes } from "./write-capped-sizes";
 import { writeText } from "./write-text";
 import { writeValidity } from "./write-validity";
-
-/** Number inputs of the shapes, in display order. */
-const INPUTS = ["corners", "width", "height", "radius"];
 
 /**
  * Updates the page from the inputs: the selected shape is drawn when valid, refused otherwise;
@@ -70,13 +67,7 @@ export function mountPlayground(document: Document): void {
     updatePlayground(document);
   }
 
-  for (const id of INPUTS) {
-    selectElement(document, id).addEventListener("input", update);
-  }
-
-  selectElement(document, "shape").addEventListener("change", update);
-  listenToAnchor(document, update);
-  document.defaultView?.addEventListener("resize", update);
+  listenToInputs(document, update);
 
   listenToGuide(document, update);
 
