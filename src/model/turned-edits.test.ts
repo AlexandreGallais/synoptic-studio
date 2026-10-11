@@ -1,0 +1,100 @@
+import { fc, test } from "@fast-check/vitest";
+import { describe, expect, it } from "vitest";
+
+import { freeShapeCorners } from "./free-shape-corners";
+import { freeShapeWithMidpoint } from "./free-shape-with-midpoint";
+import { freeShapeWithPoint } from "./free-shape-with-point";
+import { freeShapeWithoutPoints } from "./free-shape-without-points";
+import { rectangleAsFreeShape } from "./rectangle-as-free-shape";
+import { turnedCorners } from "./turned-corners";
+
+import type { FreeShape } from "./free-shape";
+import type { Point } from "../math";
+
+/**
+ * Points of a free shape as drawn, turned.
+ *
+ * @param shape - free shape
+ * @returns its drawn points, in contour order
+ */
+function drawnPoints(shape: FreeShape): readonly Point[] {
+  return turnedCorners(freeShapeCorners(shape), shape).map((corner) => corner.point);
+}
+
+/**
+ * Checks that two lists of points are the same within rounding.
+ *
+ * @param actual - the points the edit gives
+ * @param expected - the points computed by hand
+ */
+function expectPoints(actual: readonly Point[], expected: readonly Point[]): void {
+  const wanted = expected.flatMap((point) => [point.x, point.y]);
+  const values = actual.flatMap((point) => [point.x, point.y]);
+
+  expect(actual).toHaveLength(expected.length);
+
+  for (const [index, value] of values.entries()) {
+    expect(value).toBeCloseTo(wanted[index] ?? NaN, 9);
+  }
+}
+
+/** The rectangle tool's 100 × 50 shape turned by 90°: drawn (75, −25), (75, 75), (25, 75), (25, −25). */
+const TURNED = rectangleAsFreeShape({
+  angle: 90,
+  height: 50,
+  radii: [0, 0, 0, 0],
+  width: 100,
+  x: 0,
+  y: 0,
+});
+
+describe("edits of a turned free shape (ADR-0035, DERIV-turned-shape step 5)", () => {
+  it("[F04.AC4] moves only the point typed: x 80 for point 1, the others drawn where they were", () => {
+    const edited = freeShapeWithPoint(TURNED, 0, { x: 80, y: -25 });
+
+    expectPoints(drawnPoints(edited), [
+      { x: 80, y: -25 },
+      { x: 75, y: 75 },
+      { x: 25, y: 75 },
+      { x: 25, y: -25 },
+    ]);
+
+    expect(edited.angle).toBe(90);
+  });
+
+  test.prop({
+    angle: fc.integer({ max: 359, min: 1 }),
+    index: fc.integer({ max: 3, min: 0 }),
+    x: fc.integer({ max: 300, min: -300 }),
+    y: fc.integer({ max: 300, min: -300 }),
+  })("[F04.AC4] lands the point typed on its integers and keeps every other point", (typed) => {
+    const shape = { ...TURNED, angle: typed.angle };
+    const before = drawnPoints(shape);
+    const edited = freeShapeWithPoint(shape, typed.index, { x: typed.x, y: typed.y });
+    const expected = before.map((point, index) =>
+      index === typed.index ? { x: typed.x, y: typed.y } : point,
+    );
+
+    expectPoints(drawnPoints(edited), expected);
+  });
+
+  it("[F04.AC4] adds a point in the middle of an edge without moving the others", () => {
+    // Between (75, −25) and (75, 75): (75, 25).
+    expectPoints(drawnPoints(freeShapeWithMidpoint(TURNED, 0)), [
+      { x: 75, y: -25 },
+      { x: 75, y: 25 },
+      { x: 75, y: 75 },
+      { x: 25, y: 75 },
+      { x: 25, y: -25 },
+    ]);
+  });
+
+  it("[F04.AC4] deletes a point without moving the others", () => {
+    // Point 1 removed: the triangle of the three others, drawn where they were.
+    expectPoints(drawnPoints(freeShapeWithoutPoints(TURNED, [0])), [
+      { x: 75, y: 75 },
+      { x: 25, y: 75 },
+      { x: 25, y: -25 },
+    ]);
+  });
+});

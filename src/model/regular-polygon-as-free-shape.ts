@@ -1,5 +1,7 @@
 import { freeShapeAroundCorners } from "./free-shape-around-corners";
+import { freeShapeKeptInPlace } from "./free-shape-kept-in-place";
 import { regularPolygonCorners } from "./regular-polygon-corners";
+import { turnedCorners } from "./turned-corners";
 
 import type { FreeShape } from "./free-shape";
 import type { RegularPolygon } from "./regular-polygon";
@@ -7,8 +9,8 @@ import type { RegularPolygon } from "./regular-polygon";
 /**
  * Free shape a regular polygon becomes by the conversion button (F08): its corners as drawn,
  * exact, and the size of the box around them, so that it draws the same and does not move
- * (ADR-0031, ADR-0033) — at angle 0; a turned polygon keeps its angle, and its placement so that
- * it does not move is US-019's (`DERIV-turned-shape` step 5). It no longer has a number of corners nor an anchor.
+ * (ADR-0031, ADR-0033); a turned polygon keeps its angle, its box placed so that it does not
+ * move either (ADR-0035, `DERIV-turned-shape` step 5). It no longer has a number of corners nor an anchor.
  *
  * @kind domain
  * @param polygon - valid polygon (`isValidRegularPolygon`) of width and height > 0: one of size 0
@@ -17,5 +19,11 @@ import type { RegularPolygon } from "./regular-polygon";
  * @see docs/domain/interaction.md#_3-node-editing
  */
 export function regularPolygonAsFreeShape(polygon: RegularPolygon): FreeShape {
-  return freeShapeAroundCorners(regularPolygonCorners(polygon), polygon.angle);
+  const corners = regularPolygonCorners(polygon);
+
+  return freeShapeKeptInPlace(
+    freeShapeAroundCorners(corners, polygon.angle),
+    turnedCorners(corners, polygon),
+    { after: 0, before: 0 },
+  );
 }
