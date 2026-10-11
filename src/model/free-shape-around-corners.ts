@@ -5,7 +5,9 @@ import type { Corner } from "../geometry";
 
 /**
  * Free shape fitted around corners as drawn: those corners, and the box around their points as
- * its position, width and height, so that it draws them where they are (ADR-0033, ADR-0035).
+ * its position, width and height, so that it draws them where they are (ADR-0033, ADR-0035). The
+ * corners are straight ones: on a turned shape the new box has another center, and placing it so
+ * that the shape does not move is `DERIV-turned-shape` step 5 (US-019).
  *
  * @kind domain
  * @param corners - points as drawn and their radii, in contour order
