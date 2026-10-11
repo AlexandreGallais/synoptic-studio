@@ -43,7 +43,7 @@ Run `npm run dev` and open `http://localhost:5173/?step=39`: the **Guided test**
 
 - One point moves at a time. Moving several selected points together, by typing `+10`, and simple arithmetic in every number field are noted for the editor applications.
 - Points are typed, not dragged: dragging comes with the editor applications (E02).
-- Two points at the same place, points on one slanted line, or sides that cross are allowed and may draw nothing: an open question (Q29).
+- Two points at the same place, points on one slanted line, or sides that cross are allowed and may draw nothing; the warnings you asked for come with the editor applications (Q29).
 
 ## Your feedback
 
