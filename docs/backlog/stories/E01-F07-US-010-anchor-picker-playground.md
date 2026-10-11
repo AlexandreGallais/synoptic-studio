@@ -14,7 +14,7 @@ As a symbol designer, I want a 3 × 3 grid next to the polygon's settings so tha
 ## Acceptance criteria
 
 - Given the polygon shape, when the playground opens, then a 3 × 3 anchor grid is shown with the center cell selected; it is hidden for the rectangle (F07.AC5).
-- Given the grid, when a cell is clicked or chosen with the keyboard, then the polygon moves to that place of its box and the cell is shown selected (F07.AC5).
+- Given the grid, when a cell is clicked or chosen with the arrow keys (radio group, reading order), then the polygon moves to that place of its box and the cell is shown selected (F07.AC5).
 - Given a triangle in 100 × 100, when left, center or right is chosen on the same row, then the drawing does not move but the selected cell changes (F07.AC3).
 
 ## Product Owner test
@@ -28,5 +28,5 @@ Written with the story.
 
 One task = one commit, referenced as `US-010.Tn`.
 
-- [ ] T1 — Anchor grid of nine native radio buttons (`REF-FIGMA-AUTO-LAYOUT` as functional reference, note 0005), keyboard, hidden for the rectangle; playground tests (2 h)
+- [ ] T1 — Anchor grid of nine native radio buttons (`REF-FIGMA-AUTO-LAYOUT` as functional reference, keyboard of `REF-WAI-APG-RADIO`, note 0005), hidden for the rectangle; playground tests (2 h)
 - [ ] T2 — Product Owner test card; playground help text (0.5 h)
