@@ -38,7 +38,7 @@ In delivery order.
 | ID                                                              | Type       | Title                                 | Status |
 | --------------------------------------------------------------- | ---------- | ------------------------------------- | ------ |
 | [SP-003](../stories/E01-F07-SP-003-research-f07.md)             | Spike      | Research for F07                      | done   |
-| [EN-009](../stories/E01-F07-EN-009-align-in-box.md)             | Enabler    | Align a fitted shape in its box       | ready  |
+| [EN-009](../stories/E01-F07-EN-009-align-in-box.md)             | Enabler    | Align a fitted shape in its box       | done   |
 | [US-009](../stories/E01-F07-US-009-anchored-polygon.md)         | User story | Polygon anchored in its box           | ready  |
 | [CHK-003](../stories/E01-F07-CHK-003-checkpoint-f07.md)         | Checkpoint | Checkpoint in the middle of F07       | ready  |
 | [US-010](../stories/E01-F07-US-010-anchor-picker-playground.md) | User story | Choose the anchor in the playground   | ready  |
