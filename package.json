@@ -75,7 +75,7 @@
     "husky": "9.1.7",
     "jiti": "2.7.0",
     "lint-staged": "17.6.0",
-    "npm-check-updates": "23.1.0",
+    "npm-check-updates": "23.1.1",
     "prettier": "3.9.10",
     "secretlint": "13.0.7",
     "typedoc": "0.28.20",
