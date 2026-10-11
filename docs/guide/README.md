@@ -20,5 +20,6 @@ Written at the end of each feature (`VAL`, demo page) and of each epic (`REV`, e
 | [F01 — A rectangle with rounded corners](./f01-rounded-rectangle.md)     | rounding corners, the radius reduced to fit, the guided test                |
 | [F02 — A regular polygon with rounded corners](./f02-regular-polygon.md) | the polygon fitted in its box, the inscribed circle, sizes, the guided test |
 | [F07 — A polygon anchored in its box](./f07-polygon-anchor.md)           | the nine anchor buttons, the intent kept, rounding inwards, the guided test |
+| [F03 — A rounding for each corner](./f03-radius-per-vertex.md)           | points mode, point 1 and 2, choosing corners, Mixed, the guided test        |
 
 Templates: `_feature-demo.md`, `_epic-report.md` (not published).
