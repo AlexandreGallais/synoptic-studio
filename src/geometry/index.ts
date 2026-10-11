@@ -21,6 +21,7 @@ export * from "./rounded-contour";
 export type * from "./segment";
 export type * from "./size";
 export * from "./stretch-to-size";
+export * from "./turn-about";
 export * from "./turning-angle";
 export * from "./turning-angles";
 export * from "./unit-regular-polygon";
