@@ -183,7 +183,7 @@ describe("playground", () => {
     expect(text("effective")).toBe("");
   });
 
-  it("[F02.AC1] walks the steps of the guided test (F01, F02 and F07), each showing what it tells to look at", () => {
+  it("[F02.AC1] walks the steps of the guided test (F01, F02, F07 and F03), each showing what it tells to look at", () => {
     // "Previous" on the first step stays there and types its values again.
     click("guide-previous");
 
@@ -219,6 +219,12 @@ describe("playground", () => {
       "Effective radius: 10 (as requested)",
       "Effective radius: 10 (as requested)",
       "Effective radius: 10 (as requested)",
+      // F03 (US-012 and US-013 cards): each step starts afresh, without rounding.
+      "Effective radius: 0 (as requested)",
+      "Effective radius: 0 (as requested)",
+      "Effective radius: 0 (as requested)",
+      "Effective radius: 0 (as requested)",
+      "Effective radius: 0 (as requested)",
     ];
 
     for (const [index, effective] of expected.entries()) {
@@ -227,7 +233,13 @@ describe("playground", () => {
       click("guide-next");
     }
 
-    // Past the last step, the guide stays on it: back to the rectangle, the anchor grid hidden.
+    // Past the last step, the guide stays on it: a rectangle 0 wide, not drawn (F03).
+    expect(text("guide-number")).toBe("33");
+    expect(text("path-data")).toBe("M0 0 L0 50 Z");
+
+    // The last step of F07: back to the rectangle, the anchor grid hidden.
+    clickTimes("guide-previous", 5);
+
     expect(text("guide-number")).toBe("28");
 
     expect(text("path-data")).toBe(
