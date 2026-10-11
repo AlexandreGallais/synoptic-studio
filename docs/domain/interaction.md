@@ -40,12 +40,12 @@ No pen tool and no freehand drawing (see `shapes.md` §3).
 
 Functional reference: Inkscape 1.2+ (`REF-INKSCAPE-SNAP`), Figma, draw.io.
 
-| Target       | Description                                                                                        |
-| ------------ | -------------------------------------------------------------------------------------------------- |
-| Integer grid | every position is rounded to an integer                                                            |
-| Objects      | edges, corners, centers, midpoints of bounding boxes; vertices; ports                              |
-| Alignment    | temporary horizontal / vertical guides when a point aligns with a point of another object          |
-| Distribution | stop at the position where the gap to a neighbor equals the existing gap between two other objects |
+| Target       | Description                                                                                                                                     |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Integer grid | every position is rounded to an integer: for a turned shape, the x and y of its straight box, its stored position staying fractional (ADR-0035) |
+| Objects      | edges, corners, centers, midpoints of bounding boxes; vertices; ports                                                                           |
+| Alignment    | temporary horizontal / vertical guides when a point aligns with a point of another object                                                       |
+| Distribution | stop at the position where the gap to a neighbor equals the existing gap between two other objects                                              |
 
 Rules:
 
