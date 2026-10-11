@@ -25,4 +25,4 @@ Typed x and y are safe integers, negative allowed (Product Owner, 2026-10-11). E
 
 ## Open
 
-- Deleting a vertex joins its neighbours: to confirm with the Product Owner at VAL-005 (F08, open in refinement).
+- Deleting a vertex joins its neighbours: confirmed by the Product Owner at VAL-005 (Q28).

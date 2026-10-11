@@ -41,7 +41,7 @@ Refined with the Product Owner on 2026-10-11 (started with `/run`). Since F09 th
 
 ## Open in refinement
 
-- Deleting a point of a free shape joins its two neighbours with a straight edge, so that the shape stays closed (a symbol's shape is a closed contour, `shapes.md` §1). To confirm with the Product Owner at the validation: « je n'ai pas envie que, si on supprime un point, les autres points se rattachent » was said about the regular polygon.
+- Deleting a point of a free shape joins its two neighbours with a straight edge, so that the shape stays closed (a symbol's shape is a closed contour, `shapes.md` §1). Confirmed by the Product Owner at the validation (Q28): « Je peux delete le point. Oh putain, c'est fait un triangle. C'est trop trop bien. »
 
 ## Acceptance criteria
 

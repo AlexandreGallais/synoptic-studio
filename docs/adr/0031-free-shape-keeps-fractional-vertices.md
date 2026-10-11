@@ -1,6 +1,6 @@
 # ADR-0031 — A free shape keeps the fractional vertices of a converted polygon
 
-**Status**: Accepted (Product Owner's refinement of F08, 2026-10-11)
+**Status**: Accepted (Product Owner's refinement of F08, 2026-10-11) — partly superseded by ADR-0034 (only the coordinate typed is an integer)
 
 ## Context
 
