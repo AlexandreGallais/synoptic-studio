@@ -70,9 +70,12 @@ export function readFreeShapeShape(document: Document, kept: FreeShape): ShapeRe
   const radii = updateKeptRadii(document, kept.corners.length);
   const points = kept.corners.map((corner) => corner.point);
   const model = {
+    angle: kept.angle,
     corners: cornersWithRadii(points, radii),
     height: height.size,
     width: width.size,
+    x: kept.x,
+    y: kept.y,
   };
   const isValid = [width.isValid, height.isValid, isValidFreeShape(model)].every(Boolean);
 

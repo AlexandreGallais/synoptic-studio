@@ -8,7 +8,14 @@ import { isValidFreeShape } from "./is-valid-free-shape";
 import { rectangleAsFreeShape } from "./rectangle-as-free-shape";
 
 /** A 100 square, sharp. */
-const SQUARE = rectangleAsFreeShape({ height: 100, radii: [0, 0, 0, 0], width: 100 });
+const SQUARE = rectangleAsFreeShape({
+  angle: 0,
+  x: 0,
+  y: 0,
+  height: 100,
+  radii: [0, 0, 0, 0],
+  width: 100,
+});
 
 describe("deletionOutcome", () => {
   it("[F08.AC4] allows deleting one point of a square: a triangle is left", () => {

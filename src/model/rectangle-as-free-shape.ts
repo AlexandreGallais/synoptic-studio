@@ -22,8 +22,11 @@ const UNIT_SQUARE = [
  */
 export function rectangleAsFreeShape(rectangle: Rectangle): FreeShape {
   return {
+    angle: rectangle.angle,
     corners: cornersWithRadii(UNIT_SQUARE, rectangle.radii),
     height: rectangle.height,
     width: rectangle.width,
+    x: rectangle.x,
+    y: rectangle.y,
   };
 }

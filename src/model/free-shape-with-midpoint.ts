@@ -33,5 +33,6 @@ export function freeShapeWithMidpoint(shape: FreeShape, edge: number): FreeShape
           ]
         : [corner],
     ),
+    shape.angle,
   );
 }
