@@ -3,7 +3,7 @@ id: AUD-006
 epic: E01
 feature: F09
 title: Audit F09
-status: ready
+status: done
 points: 2
 ---
 
@@ -21,8 +21,8 @@ Full check of F09 in depth and of the project in breadth, following [audit.md](.
 
 One task = one commit, referenced as `AUD-006.Tn`.
 
-- [ ] T1 — A. Independent review by the `auditor` subagent; mathematics, mutation spot-checks, missing properties (2 h)
-- [ ] T2 — B to H. Sources, provenance, duplicates, consistency, quality gates, next feature, light evolvability check; findings table (1.5 h)
+- [x] T1 — A. Independent review by the `auditor` subagent; mathematics, mutation spot-checks, missing properties (2 h)
+- [x] T2 — B to H. Sources, provenance, duplicates, consistency, quality gates, next feature, light evolvability check; findings table (1.5 h)
 
 ## Findings
 
