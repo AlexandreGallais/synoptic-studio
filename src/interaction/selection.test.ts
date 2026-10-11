@@ -3,7 +3,9 @@ import { describe, expect, it } from "vitest";
 
 import { NO_VERTEX_SELECTION } from "./no-vertex-selection";
 import { selectionAfterClick } from "./selection-after-click";
+import { selectionAfterHandleClick } from "./selection-after-handle-click";
 import { selectionAfterRange } from "./selection-after-range";
+import { selectionAfterRowClick } from "./selection-after-row-click";
 import { selectionAfterToggle } from "./selection-after-toggle";
 
 describe("vertex selection", () => {
@@ -44,4 +46,35 @@ describe("vertex selection", () => {
       expect(after.includes(vertex)).toBe(!sorted.includes(vertex));
     },
   );
+});
+
+describe("vertex selection by click", () => {
+  const plain = { shift: false, toggle: false };
+  const withShift = { shift: true, toggle: false };
+  const withToggle = { shift: false, toggle: true };
+  const fromTwo = selectionAfterClick(2);
+
+  it("[F03.AC5] in the list: a plain click, Ctrl for one more, Shift for a range", () => {
+    expect(selectionAfterRowClick(fromTwo, 4, plain)).toEqual({ selected: [4], start: 4 });
+    expect(selectionAfterRowClick(fromTwo, 4, withToggle)).toEqual({ selected: [2, 4], start: 4 });
+
+    expect(selectionAfterRowClick(fromTwo, 4, withShift)).toEqual({
+      selected: [2, 3, 4],
+      start: 2,
+    });
+  });
+
+  it("[F03.AC5] on the drawing: Shift or Ctrl adds or removes, no range", () => {
+    expect(selectionAfterHandleClick(fromTwo, 4, plain)).toEqual({ selected: [4], start: 4 });
+
+    expect(selectionAfterHandleClick(fromTwo, 4, withToggle)).toEqual({
+      selected: [2, 4],
+      start: 4,
+    });
+
+    expect(selectionAfterHandleClick(fromTwo, 4, withShift)).toEqual({
+      selected: [2, 4],
+      start: 4,
+    });
+  });
 });

@@ -34,7 +34,11 @@
       }
       /* Handles of the vertices in Points mode: vertex 1 red, vertex 2 green (F03). */
       #canvas path.handle {
+        cursor: pointer;
         fill: #333;
+      }
+      #canvas path.halo {
+        fill: #f5b700;
       }
       #canvas path.handle.second {
         fill: #2e9e5b;
@@ -81,6 +85,18 @@
       #tools button[aria-pressed="true"] {
         color: #fff;
         background: #4a7bd0;
+      }
+      #points {
+        padding-left: 0;
+        list-style: none;
+      }
+      #points button {
+        width: 100%;
+        min-height: 2.5rem;
+        text-align: left;
+      }
+      #points button[aria-pressed="true"] {
+        background: #f5b700;
       }
       #guide {
         padding: 0.5rem 0.75rem;
@@ -183,6 +199,7 @@
       <label
         >Radius <input id="radius" type="number" min="0" max="100000" step="1" value="10"
       /></label>
+      <ol id="points" aria-label="Points" hidden></ol>
       <p id="effective"></p>
       <p id="status" role="status"></p>
       <h2>Model (integers)</h2>
