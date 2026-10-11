@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.6](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.9.5...v0.9.6) (2026-10-11)
+
+
+### Documentation
+
+* **backlog:** agenda for the E01 retrospective; Q24 foreignObject ([bc7f6cb](https://github.com/AlexandreGallais/synoptic-studio/commit/bc7f6cb32442d33b3b93461c44156be1ade5a82e))
+
 ## [0.9.5](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.9.4...v0.9.5) (2026-10-11)
 
 
