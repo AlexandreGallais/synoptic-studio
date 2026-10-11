@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.3](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.12.2...v0.12.3) (2026-10-11)
+
+
+### Documentation
+
+* **docs:** journal of the F04 run stop; two requests of the Product Owner logged ([82c4f29](https://github.com/AlexandreGallais/synoptic-studio/commit/82c4f294522efb36eb8a50c0b8a54458664d03cd))
+
 ## [0.12.2](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.12.1...v0.12.2) (2026-10-11)
 
 
