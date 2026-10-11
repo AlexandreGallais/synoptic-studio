@@ -1,6 +1,6 @@
 # ADR-0032 — The rectangle is a free shape, stretched by its width and height
 
-**Status**: Accepted (Product Owner's decision, 2026-10-11, F09: the rectangle is a free shape, stretchable without loss; the model of stored points in their own box is the agent's, shown at VAL-006) — partly superseded by ADR-0033 (corners, fractional points and size)
+**Status**: Accepted (Product Owner's decision, 2026-10-11, F09: the rectangle is a free shape, stretchable without loss; the model of stored points in their own box is the agent's, shown at VAL-006) — partly superseded by ADR-0033 (corners, fractional points and size) and ADR-0035 (a free shape is drawn at its position)
 
 ## Context
 
