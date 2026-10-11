@@ -2,6 +2,11 @@
 
 What each working session dealt with, in the agent's words: requests of the Product Owner (paraphrased), decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`). The full conversations stay in the local transcripts (see [agent configuration](../tooling/agent.md#searching-past-conversations)).
 
+## 2026-10-11 — F07 validation prepared, Product Owner testing
+
+- `#review` The Product Owner tested from the US-010 card and stopped part-way: only five of the nine anchor places looked useful, and they left the choice to the agent. The nine are kept: a corner place holds both alignments, and the one that counts follows the box (`docs/domain/shapes.md`).
+- `#run` On `feat/val-003-validate-anchor`: tests per criterion counted, F07 guided test (steps 20 to 28, step 26 for the corner place), demo page `docs/guide/f07-polygon-anchor.md`. Waiting for the Product Owner to finish the guided test before the feature pull request.
+
 ## 2026-10-11 — F07 run stopped at VAL-003
 
 - `#run` Merged into `feature/f07-polygon-anchor`: SP-003 (#64), EN-009 (#65), US-009 (#66), CHK-003 (#67), US-010 (#68), AUD-003 (#69). Stop: the next story is VAL-003, with the Product Owner.
