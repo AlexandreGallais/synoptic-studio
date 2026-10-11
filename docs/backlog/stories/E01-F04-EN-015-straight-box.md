@@ -9,7 +9,7 @@ points: 2
 
 # E01 · F04 · EN-015 — The straight box of a drawn shape
 
-The smallest upright rectangle around a drawn contour of segments and arcs, rounded corners included, as a browser's `getBBox`; the view of the playground contains it.
+The smallest upright rectangle around a drawn contour of segments and arcs, rounded corners included, as a browser's `getBBox`; the view of the playground shows its top-left, even at negative coordinates.
 
 ## Acceptance criteria
 

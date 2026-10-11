@@ -1,5 +1,6 @@
 import { arcAxisPoints } from "./arc-axis-points";
 import { boundingBox } from "./bounding-box";
+import { hasLength } from "./has-length";
 
 import type { BoundingBox } from "./bounding-box";
 import type { ContourPiece } from "./contour-piece";
@@ -15,9 +16,11 @@ import type { ContourPiece } from "./contour-piece";
  * @see DERIV-arc-bounding-box
  */
 export function contourBoundingBox(pieces: readonly ContourPiece[]): BoundingBox {
+  // A piece without length (a corner that keeps no fillet) adds its ends only: an arc's axis test
+  // needs a sweep between 0 and half a turn.
   return boundingBox(
     pieces.flatMap((piece) =>
-      piece.kind === "arc"
+      piece.kind === "arc" && hasLength(piece)
         ? [piece.start, piece.end, ...arcAxisPoints(piece)]
         : [piece.start, piece.end],
     ),
