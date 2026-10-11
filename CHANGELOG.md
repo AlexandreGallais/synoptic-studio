@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.1](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.9.0...v0.9.1) (2026-10-11)
+
+
+### Documentation
+
+* **docs:** feedback log of the Product Owner's critiques, sheet at each retrospective ([30e3914](https://github.com/AlexandreGallais/synoptic-studio/commit/30e39148ec03c8fc6cd1b8d4d2b57096e11f8dbd))
+
 ## [0.9.0](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.8.6...v0.9.0) (2026-10-11)
 
 
