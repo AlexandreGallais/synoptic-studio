@@ -64,6 +64,20 @@ function drawn(name: string): number {
   return document.querySelectorAll(`#canvas path.${name}`).length;
 }
 
+/** Draws a square polygon in the 120 × 80 box and converts it to a free shape (F08). */
+function convertSquare(): void {
+  const select = document.querySelector<HTMLSelectElement>("#shape");
+
+  if (select !== null) {
+    select.value = "polygon";
+    select.dispatchEvent(new Event("change"));
+  }
+
+  type("corners", "4");
+  click("mode-points");
+  click("convert");
+}
+
 describe("turning and moving a shape (US-018)", () => {
   beforeEach(() => {
     // Step 1 of the guided test: a 120 × 80 rectangle, radius 10 (F01).
@@ -185,5 +199,47 @@ describe("turning and moving a shape (US-018)", () => {
     type("shape-x", "2.5");
 
     expect(text("straight-box")).toBe("Straight box: x 0, y 0, width 120, height 80");
+  });
+
+  it("[F04.AC5] draws the turned box as a frame: the box and the box inset by 1", () => {
+    // 120 × 80 at 90°: outer box from (20, −20) to (100, 100); inner one from (21, −19) to (99, 99).
+    type("angle", "90");
+
+    expect(document.querySelector("#canvas path.turned-box")?.getAttribute("d")).toBe(
+      "M100 -20 L100 100 L20 100 L20 -20 Z M99 -19 L99 99 L21 99 L21 -19 Z",
+    );
+  });
+
+  it("[F04.AC3] leaves the X field alone while it is typed in", () => {
+    const field = document.querySelector<HTMLInputElement>("#shape-x");
+
+    field?.focus();
+    type("angle", "90");
+
+    // The straight box starts at 20 now, but the field being typed keeps what it holds.
+    expect(field?.value).toBe("0");
+  });
+
+  it("[F04.AC3] moves a converted free shape without undoing the width typed", () => {
+    convertSquare();
+    type("width", "200");
+    type("shape-x", "10");
+
+    expect(text("straight-box")).toMatch(/^Straight box: x 10, y [^,]+, width 200,/u);
+  });
+
+  it("[F04.AC1] turns a converted free shape from the angle field", () => {
+    convertSquare();
+    // The square fitted in the 120 × 80 box is 80 × 80; at 45° its straight box is 80√2 wide.
+    type("angle", "45");
+
+    expect(text("straight-box")).toMatch(/width 113\.13708, height 113\.13708$/u);
+  });
+
+  it("[F04.AC5] turns from 0 with a button when the angle field is empty", () => {
+    type("angle", "");
+    click("turn-right");
+
+    expect(angleShown()).toBe("90");
   });
 });

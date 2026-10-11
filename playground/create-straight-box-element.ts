@@ -72,11 +72,14 @@ function readSideDashes(side: Side): string {
  * @see docs/backlog/stories/E01-F04-US-018-turn-a-shape.md
  */
 export function createStraightBoxElement(document: Document, box: BoundingBox): SVGPathElement {
+  // In a box thinner than two lines, the far dashes stay inside it.
+  const across = Math.min(LINE, (box.maxY - box.minY) / 2);
+  const along = Math.min(LINE, (box.maxX - box.minX) / 2);
   const sides: readonly Side[] = [
     { at: box.minY, end: box.maxX, isHorizontal: true, start: box.minX },
-    { at: box.maxY - LINE, end: box.maxX, isHorizontal: true, start: box.minX },
+    { at: box.maxY - across, end: box.maxX, isHorizontal: true, start: box.minX },
     { at: box.minX, end: box.maxY, isHorizontal: false, start: box.minY },
-    { at: box.maxX - LINE, end: box.maxY, isHorizontal: false, start: box.minY },
+    { at: box.maxX - along, end: box.maxY, isHorizontal: false, start: box.minY },
   ];
   const element = createPathElement(document, sides.map((side) => readSideDashes(side)).join(" "));
 

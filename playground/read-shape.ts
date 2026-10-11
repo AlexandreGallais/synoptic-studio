@@ -24,11 +24,12 @@ import type { ShapeReading } from "./shape-reading";
 import type { Rectangle, RegularPolygon } from "../src";
 
 /** Message shown when a value of the rectangle is not an integer ≥ 0. */
-const INVALID_RECTANGLE = "Width, height and radius must be integers ≥ 0.";
+const INVALID_RECTANGLE =
+  "Width, height and radius must be integers ≥ 0, and the angle an integer.";
 
 /** Message shown when a value of the polygon is not allowed (Q15, Q19). */
 const INVALID_POLYGON =
-  "Width, height and radius must be integers ≥ 0, and corners an integer from 3 to 12.";
+  "Width, height and radius must be integers ≥ 0, corners an integer from 3 to 12, and the angle an integer.";
 
 /**
  * Reads the rectangle typed in the width, height and radius inputs, with the radius of each of
