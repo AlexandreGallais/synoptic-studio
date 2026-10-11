@@ -44,7 +44,7 @@ The code (`unitRegularPolygon`, EN-008) hands the unit polygon over **already fl
 ## Step 4 — Uniform scale
 
 `s = min(w / Wᵤ, h / Hᵤ)`.
-At least one dimension is reached (`w` or `h`, or both), exactly in theory; in floating point within a rounding error relative to the box (about 1e-16 × its size: 1e-13 for a box of 1000, 0.5 for the largest safe integer). `Wᵤ` and `Hᵤ` are positive for `n ≥ 3`; a size of 0 gives `s = 0`: every vertex is at the anchored place of the box, its center for `mid` on both axes (Q15, step 5).
+At least one dimension is reached (`w` or `h`, or both), exactly in theory; in floating point within a rounding error relative to the box (about 1e-16 × its size: 1e-13 for a box of 1000, 3.7e-9 for 1e7, but a few units near the largest safe integer: 2 for a square of side 2⁵³ − 1, AUD-003). `Wᵤ` and `Hᵤ` are positive for `n ≥ 3`; a size of 0 gives `s = 0`: every vertex is at the anchored place of the box, its center for `mid` on both axes (Q15, step 5).
 
 ## Step 5 — Placement in the SVG frame
 
