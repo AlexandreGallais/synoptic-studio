@@ -61,7 +61,7 @@
 | [EN-015](./E01-F04-EN-015-straight-box.md)                      | F04     | The straight box of a drawn shape                    | done   |
 | [US-018](./E01-F04-US-018-turn-a-shape.md)                      | F04     | Turn and move a shape in the playground              | done   |
 | [CHK-007](./E01-F04-CHK-007-checkpoint-f04.md)                  | F04     | Checkpoint in the middle of F04                      | done   |
-| [US-019](./E01-F04-US-019-edit-a-turned-shape.md)               | F04     | Edit a turned shape                                  | ready  |
+| [US-019](./E01-F04-US-019-edit-a-turned-shape.md)               | F04     | Edit a turned shape                                  | done   |
 | [AUD-007](./E01-F04-AUD-007-audit-f04.md)                       | F04     | Audit F04: free rotation of shapes                   | ready  |
 | [VAL-007](./E01-F04-VAL-007-validate-free-rotation.md)          | F04     | Validate F04 on the reference cases                  | ready  |
 | [REV-001](./E01-REV-001-review-e01.md)                          | E01     | Review E01 with the Product Owner                    | draft  |
