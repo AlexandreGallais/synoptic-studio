@@ -59,7 +59,7 @@
 | [SP-007](./E01-F04-SP-007-research-f04.md)                      | F04     | Research for F04                                     | done   |
 | [EN-014](./E01-F04-EN-014-angle-and-position.md)                | F04     | An angle and a position for every shape              | done   |
 | [EN-015](./E01-F04-EN-015-straight-box.md)                      | F04     | The straight box of a drawn shape                    | done   |
-| [US-018](./E01-F04-US-018-turn-a-shape.md)                      | F04     | Turn and move a shape in the playground              | ready  |
+| [US-018](./E01-F04-US-018-turn-a-shape.md)                      | F04     | Turn and move a shape in the playground              | done   |
 | [CHK-007](./E01-F04-CHK-007-checkpoint-f04.md)                  | F04     | Checkpoint in the middle of F04                      | ready  |
 | [US-019](./E01-F04-US-019-edit-a-turned-shape.md)               | F04     | Edit a turned shape                                  | ready  |
 | [AUD-007](./E01-F04-AUD-007-audit-f04.md)                       | F04     | Audit F04: free rotation of shapes                   | ready  |
