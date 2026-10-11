@@ -50,6 +50,9 @@ export function listenToInputs(document: Document, update: () => void): void {
     });
   }
 
+  // First: a width typed places a turned shape before the page redraws (US-019).
+  listenToPosition(document, update);
+
   for (const id of INPUTS) {
     selectElement(document, id).addEventListener("input", update);
   }
@@ -60,6 +63,5 @@ export function listenToInputs(document: Document, update: () => void): void {
   listenToAnchor(document, update);
   listenToPoints(document, update);
   listenToTurn(document, update);
-  listenToPosition(document, update);
   document.defaultView?.addEventListener("resize", update);
 }
