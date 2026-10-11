@@ -20,7 +20,16 @@ As a symbol designer, I want the rectangle to be a free shape that I resize by i
 
 ## Product Owner test
 
-Written with the story.
+Run `npm run dev` and open `http://localhost:5173/?step=1` (a 120 × 80 rectangle, radius 10). A **free shape** is a shape kept as its points in a box of their own; its **width** and **height** stretch that box. The rectangle is now one.
+
+| Step | Do                                              | You should see                                                                                                                                      |
+| ---- | ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1    | Look at the drawing and "Model (integers)"      | the same rectangle as before; the model now shows `points` (0, 0), (1, 0), (1, 1), (0, 1) — a unit square — with width 120, height 80 and the radii |
+| 2    | Type width 0, then 120                          | the rectangle disappears (no width), then comes back exactly as it was                                                                              |
+| 3    | Type height 0, then 80                          | the same, in height                                                                                                                                 |
+| 4    | Click **Points**, click point 3, type radius 30 | only the bottom-right corner gets a bigger rounding, as in F03                                                                                      |
+
+Look closely at: whether anything about the rectangle behaves differently from before — it should not.
 
 ## Tasks
 
