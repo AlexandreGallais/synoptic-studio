@@ -16,7 +16,9 @@ import { createBoxElements } from "./create-box-elements";
 import { GUIDED_STEPS } from "./guided-steps";
 import { listenToAnchor } from "./listen-to-anchor";
 import { readAnchor } from "./read-anchor";
+import { readStepFromAddress } from "./read-step-from-address";
 import { writeAnchorValue } from "./write-anchor-value";
+import { writeStepToAddress } from "./write-step-to-address";
 
 import type { GuidedStep } from "./guided-step";
 import type { Corner, Rectangle, RegularPolygon } from "../src";
@@ -359,8 +361,8 @@ function readGuidedStep(document: Document): number {
 }
 
 /**
- * Shows one step of the guided test and types its values, so that the drawing follows (VAL-001,
- * VAL-002).
+ * Shows one step of the guided test, types its values, so that the drawing follows (VAL-001,
+ * VAL-002), and writes its number into the page address (VAL-003).
  *
  * @kind procedure
  * @param document - page document
@@ -381,6 +383,7 @@ function showGuidedStep(document: Document, index: number): void {
   writeText(document, "guide-title", step.title);
   writeText(document, "guide-explanation", step.explanation);
   writeText(document, "guide-look", step.look);
+  writeStepToAddress(document, position);
 
   writeStepValues(document, step);
 
@@ -389,7 +392,7 @@ function showGuidedStep(document: Document, index: number): void {
 
 /**
  * Mounts the playground: redraws on every input and window resize, wires the guided test, then
- * shows its first step.
+ * shows the step asked by the page address, or the first one.
  *
  * @kind procedure
  * @param document - page document
@@ -422,5 +425,5 @@ export function mountPlayground(document: Document): void {
     showGuidedStep(document, readGuidedStep(document) + 1);
   });
 
-  showGuidedStep(document, 0);
+  showGuidedStep(document, readStepFromAddress(document));
 }
