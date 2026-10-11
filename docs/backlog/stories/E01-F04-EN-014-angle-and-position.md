@@ -27,6 +27,6 @@ None of its own: shown by US-018's card.
 
 One task = one commit, referenced as `EN-014.Tn`. ADR-0035 was written by SP-007; `@see` `DERIV-turned-shape`, `REF-SVG11-TRANSFORM`, `REF-MDN-REMAINDER`.
 
-- [ ] T1 — Angle kept from 0 to 359; a point turned about a center; tests and properties (1.5 h)
-- [ ] T2 — Angle and position in the model, the drawn contour turned and placed; the earlier tests kept (2 h)
-- [ ] T3 — Domain (`shapes.md`, glossary), re-exports (0.5 h)
+- [x] T1 — Angle kept from 0 to 359; a point turned about a center; tests and properties (1.5 h)
+- [x] T2 — Angle and position in the model, the drawn contour turned and placed; the earlier tests kept (2 h)
+- [x] T3 — Domain (`shapes.md`, glossary), re-exports (0.5 h)
