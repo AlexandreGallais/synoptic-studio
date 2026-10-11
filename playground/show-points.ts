@@ -1,4 +1,5 @@
 import { createHandleElements } from "./create-handle-elements";
+import { moveRadiusField } from "./move-radius-field";
 import { readMode } from "./read-mode";
 import { readSelection } from "./read-selection";
 import { showPointFields } from "./show-point-fields";
@@ -24,6 +25,7 @@ export function showPoints(document: Document, reading: ShapeReading): readonly 
   const selection = readSelection(document);
   const shown = isPoints ? selection.selected : contour.map((point, vertex) => vertex);
 
+  moveRadiusField(document, isPoints);
   writeRadiusField(document, reading.radii, shown);
   showPointsList(document, reading, selection);
   showPointFields(document, reading, selection);

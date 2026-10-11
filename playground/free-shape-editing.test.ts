@@ -113,6 +113,15 @@ function isAddGreyed(): boolean {
   return document.querySelector<HTMLButtonElement>("#add-midpoint")?.disabled ?? false;
 }
 
+/**
+ * The fieldset holding the radius field.
+ *
+ * @returns its id, `undefined` when the field sits with the shape's fields
+ */
+function place(): string | undefined {
+  return document.querySelector("#radius")?.closest("fieldset")?.id;
+}
+
 describe("editing the points of a free shape", () => {
   it("[F08.AC1] shows the x and y of a polygon's point greyed, and the conversion button", () => {
     // Step 10: a hexagon in 100 × 100.
@@ -358,5 +367,20 @@ describe("editing the points of a free shape", () => {
     expect(rows()[1]).toBe("2 · x 0 · y 0 · radius 10");
     // Points 1 and 2 still selected: no single point to show.
     expect(field("point-x").value).toBe("");
+  });
+
+  it("[F08.AC5] puts the radius with the point fields in Points mode, with the shape's otherwise", () => {
+    openOnStep(1);
+
+    const inPoints = place();
+
+    type("width", "");
+
+    const whenRefused = place();
+
+    type("width", "120");
+    document.querySelector<HTMLButtonElement>("#mode-shape")?.click();
+
+    expect([inPoints, whenRefused, place()]).toEqual(["point-fields", undefined, undefined]);
   });
 });
