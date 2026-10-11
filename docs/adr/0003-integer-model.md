@@ -1,6 +1,6 @@
 # ADR-0003 — Integer model, derived geometry
 
-**Status**: Accepted — partly superseded by ADR-0031 (the vertices of a free shape may be fractional)
+**Status**: Accepted — partly superseded by ADR-0031 and ADR-0034 (the points and size of a free shape may be fractional after any edit)
 
 ## Context
 
