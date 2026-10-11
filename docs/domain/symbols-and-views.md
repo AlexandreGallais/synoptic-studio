@@ -70,4 +70,4 @@ Excluded in v1 (process diagram conventions, orthogonal routing algorithms). Can
 
 ## 6. Storage
 
-Files read through a local server (Q5, [configuration.md](./configuration.md) §6).
+Files in a working folder on the user's computer, saved one by one (Q5, [configuration.md](./configuration.md) §6).
