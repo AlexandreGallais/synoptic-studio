@@ -22,6 +22,9 @@ export function showRefusedShape(document: Document): void {
     mark.remove();
   }
 
+  // A refused shape keeps no turned box: the next width typed places nothing (US-019).
+  delete selectElement(document, "shape").dataset["drawnBox"];
+
   // Nothing to convert nor to move on a refused shape.
   selectElement(document, "point-fields").hidden = true;
 
