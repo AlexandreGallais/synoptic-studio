@@ -3,7 +3,7 @@ id: VAL-007
 epic: E01
 feature: F04
 title: Validate F04 on the reference cases
-status: draft
+status: ready
 points: 2
 ---
 
