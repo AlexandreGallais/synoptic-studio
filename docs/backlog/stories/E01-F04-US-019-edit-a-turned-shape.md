@@ -3,7 +3,7 @@ id: US-019
 epic: E01
 feature: F04
 title: Edit a turned shape
-status: ready
+status: done
 points: 3
 ---
 
