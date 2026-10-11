@@ -3,7 +3,7 @@ id: AUD-005
 epic: E01
 feature: F08
 title: "Audit F08: node editing"
-status: ready
+status: done
 points: 2
 ---
 
@@ -21,8 +21,8 @@ Full check of F08 in depth and of the project in breadth, following [audit.md](.
 
 One task = one commit, referenced as `AUD-005.Tn`.
 
-- [ ] T1 — A. Independent review by the `auditor` subagent; mathematics, mutation spot-checks, missing properties (2 h)
-- [ ] T2 — B to H. Sources, provenance, duplicates, consistency, quality gates, research list for the next feature, light evolvability check; findings table (1.5 h)
+- [x] T1 — A. Independent review by the `auditor` subagent; mathematics, mutation spot-checks, missing properties (2 h)
+- [x] T2 — B to H. Sources, provenance, duplicates, consistency, quality gates, research list for the next feature, light evolvability check; findings table (1.5 h)
 
 ## Findings (2026-10-11)
 
