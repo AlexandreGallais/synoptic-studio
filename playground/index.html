@@ -32,6 +32,15 @@
       #canvas path.box {
         fill: #8883;
       }
+      /* The turned box of a turned shape (F04): a thin frame, a fill between two contours. */
+      #canvas path.turned-box {
+        fill: #2563eb;
+        fill-rule: evenodd;
+      }
+      /* Its straight box, dashed: thin filled rectangles. */
+      #canvas path.straight-box {
+        fill: #555;
+      }
       /* Handles of the vertices in Points mode: vertex 1 red, vertex 2 green (F03). */
       #canvas path.handle {
         cursor: pointer;
@@ -207,6 +216,17 @@
       <label
         >Height <input id="height" type="number" min="0" max="100000" step="1" value="80"
       /></label>
+      <fieldset id="placement">
+        <legend>Angle and position</legend>
+        <p id="turn">
+          <label>Angle (°) <input id="angle" type="number" step="1" value="0" /></label>
+          <button id="turn-left" type="button">−90°</button>
+          <button id="turn-right" type="button">+90°</button>
+        </p>
+        <label>X <input id="shape-x" type="number" step="1" value="0" /></label>
+        <label>Y <input id="shape-y" type="number" step="1" value="0" /></label>
+        <p id="straight-box"></p>
+      </fieldset>
       <label id="radius-field"
         >Radius <input id="radius" type="number" min="0" max="100000" step="1" value="10"
       /></label>
