@@ -1,7 +1,7 @@
 import type { Alignment } from "./alignment";
 
 /** Share of the room placed before the shape, per alignment (`REF-SVG2-COORDS` §8.2). */
-const FACTORS = { max: 1, mid: 0.5, min: 0 } as const;
+const FACTORS: Readonly<Record<Alignment, number>> = { max: 1, mid: 0.5, min: 0 };
 
 /**
  * Share of the room left on an axis that goes before the shape: 0 for `min`, ½ for `mid`, 1 for
