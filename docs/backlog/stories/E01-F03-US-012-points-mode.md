@@ -3,7 +3,7 @@ id: US-012
 epic: E01
 feature: F03
 title: "Points mode: handles, first and second marked"
-status: ready
+status: done
 points: 2
 ---
 
@@ -36,5 +36,5 @@ Look closely at: whether the handles are easy to see and large enough to aim at,
 
 One task = one commit, referenced as `US-012.Tn`.
 
-- [ ] T1 — Tool bar Shape / Points (`REF-INKSCAPE-NODE-TOOL` as functional reference); handles drawn as paths over the vertices, first and second marked; playground tests (2 h)
-- [ ] T2 — Product Owner test card; playground help text (0.5 h)
+- [x] T1 — Tool bar Shape / Points (`REF-INKSCAPE-NODE-TOOL` as functional reference); handles drawn as paths over the vertices, first and second marked; playground tests (2 h)
+- [x] T2 — Product Owner test card; playground help text (0.5 h)
