@@ -25,3 +25,5 @@ One task = one commit, referenced as `VAL-005.Tn`. This story is not merged auto
 - [ ] T2 — Guided test in the playground: the steps of the US-014, US-015 and US-016 cards (1.5 h)
 - [ ] T3 — Demo page in `docs/guide/` in plain language (1 h)
 - [ ] T4 — Product Owner runs the guided test and validates; feedback recorded; feature pull request into `main` (0.5 h)
+      | A clickable zone laid over a symbol; a shared status zone on every symbol; the saved position of a symbol (Q30) | `docs/domain/symbols-and-views.md` §1, for later |
+      | A rotation mode with a movable center, snapping to points and centers, 90° buttons, an angle field | F04 feature file, for its refinement |

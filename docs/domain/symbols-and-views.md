@@ -7,6 +7,10 @@
 - No SVG `<symbol>` / `<use>` element: symbol behavior is carried by the model, rendering stays a `<g>`.
 - Symbol origin: integer reference point for placement.
 - Inside the Symbol Editor, shapes may be rotated by any integer angle in degrees ([shapes.md](./shapes.md) §1).
+- **For later** (Product Owner, VAL-005 of F08, 2026-10-11; epic or feature to choose):
+  - **Clickable zone**: a symbol may have a rectangle laid over it as the zone that receives the clicks and sends its event, instead of the shape itself; the designer chooses one or the other. Parts of a symbol may stick out of its working area while the click stays on the zone.
+  - **Shared status zone**: a rectangle defined on every symbol where a status common to all symbols is shown the same way (for example the loss of the network link to a device), its drawing computed from that zone.
+  - **Saved position**: when a symbol is saved, its shapes may be moved so that the top-left of their bounding box is at (0, 0), giving positive coordinates, integers when the points are; another choice would be its center at (0, 0) — open (Q30).
 
 ## 2. Ports (connection points)
 
