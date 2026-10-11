@@ -19,9 +19,9 @@ The repository is public under the Apache License 2.0, and only the agent writes
 ## Consequences
 
 - The free product shows the idea behind the project, and anyone may improve it under its licence.
-- The V1 line is still to draw: which epics and features it holds (Q22 in the [domain](../domain/)). The local server planned in epic E11 leaves V1: E11 is about files in a working folder.
+- Every epic of the backlog makes V1 (Q22 in the [domain](../domain/)); the local server planned in epic E11 leaves V1, E11 keeps files in a working folder; E07 publishes libraries locally only. The application shell is still open (Q23).
 - The free library must stay usable by another product: plain data, portable core (ADR-0025), public API documented. Nothing pro is written here first.
-- Pro ideas written in this public repository are visible to everyone; the Product Owner may move them to the private project once it exists.
+- Pro ideas are written in this public repository and visible to everyone, by the Product Owner's choice: this first project should go as far as possible, ideas included.
 
 ## References
 

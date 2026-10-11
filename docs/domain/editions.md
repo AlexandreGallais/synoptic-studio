@@ -5,14 +5,15 @@ Where the project stops (ADR-0030): a finished free V1, then new features only i
 ## 1. Free edition (V1)
 
 - Everything delivered before the V1 release, in this public repository, under the Apache License 2.0.
-- Its features are set by the Product Owner along the way; the backlog (`docs/backlog/`) lists the candidates. Which epics make V1 is still open (Q22).
+- **Every epic of the backlog** (`docs/backlog/epics/`) makes V1 (Q22, Product Owner, 2026-10-11): E11 saves and reloads files in the working folder, without any server; E07 publishes business libraries locally, never online. An epic for a design system may come later, once the Product Owner can describe it. Features inside each epic are still set along the way.
 - **Local only** (Product Owner, 2026-10-11): it runs on the user's computer; like a desktop vector editor, the user opens a **working folder** and saves files one by one. No server side at all — no local server, no online service (Q5): « pour la V1, on ne va sortir qu'un logiciel en local et point barre. »
 - Stays as simple as possible: synoptic views, not drawing.
+- **Application shell** (open, Q23): « Il y aura un serveur web à lancer, potentiellement. Ce sera juste une web view » — all computation in the web view, native code only for saving files; Electron or a Rust-based desktop framework, to compare when the time comes.
 - After V1: bug fixes only.
 
 ## 2. Pro edition — ideas kept, out of V1
 
-A private, paid product of the Product Owner, sold as a service or self-hosted, with every free feature and more. Nothing here is refined nor planned in this backlog; each idea is quoted when it was given.
+A private, paid product of the Product Owner, sold as a service or self-hosted, with every free feature and more. Nothing here is refined nor planned in this backlog; each idea is quoted when it was given. Pro ideas are written here, in the public repository, on purpose: « je m'en fous si je partage des trucs avancés » (Product Owner, 2026-10-11).
 
 | Idea                        | What it does                                                                                                                                                                                                                                                                                                               | Given      |
 | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |

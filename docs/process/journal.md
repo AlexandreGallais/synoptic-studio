@@ -5,7 +5,7 @@ What each working session dealt with, in the agent's words: requests of the Prod
 ## 2026-10-11 — Where the project stops: free V1, then pro edition
 
 - `#domain` The Product Owner sets a stop: a complete free V1, then bug fixes only; every new feature after V1 goes to a paid pro edition, private, as a service or self-hosted (ADR-0030, [editions](../domain/editions.md)). « Ouais, super, faire du libre, c'est cool, mais il faut vraiment mettre un stop. »
-- `#domain` Pro ideas kept out of V1: symbol change report, open API on every element, project management and servers, Rust and WebAssembly engine, maybe an online service. Storage in V1 is **local only** (Q5 replaced): a working folder, files saved one by one, no server at all; E11 renamed. Open: Q22 (which epics make V1).
+- `#domain` Pro ideas kept out of V1: symbol change report, open API on every element, project management and servers, Rust and WebAssembly engine, maybe an online service. Storage in V1 is **local only** (Q5 replaced): a working folder, files saved one by one, no server at all; E11 renamed. Q22 settled: every epic makes V1 (E11 as files, E07 local only); a design system epic may come later. Open: Q23 (application shell: web view in Electron or a Rust-based app). Pro ideas stay in this public repository, by the Product Owner's choice.
 - `#process` Parallel sessions: written in a second chat during the F03 run, in its own worktree; the run now picks up `main` before each story ([agent configuration](../tooling/agent.md#parallel-sessions)).
 
 ## 2026-10-11 — F03 refined, autonomous run authorized
