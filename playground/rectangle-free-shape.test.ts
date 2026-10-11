@@ -60,12 +60,28 @@ describe("rectangle as a free shape", () => {
     });
   });
 
-  it("[F09.AC3] comes back the same after a width of 0", () => {
+  it("[F09.AC3] keeps the stored points at width 0, and comes back the same", () => {
     const before = text("path-data");
+    const model = text("model");
 
     type("width", "0");
+
+    // Nothing drawn across, the stored unit square untouched.
+    expect(text("path-data")).toBe("M0 0 L0 80 Z");
+
+    expect(JSON.parse(text("model"))).toMatchObject({
+      points: [
+        { x: 0, y: 0 },
+        { x: 1, y: 0 },
+        { x: 1, y: 1 },
+        { x: 0, y: 1 },
+      ],
+      width: 0,
+    });
+
     type("width", "120");
 
+    expect(text("model")).toBe(model);
     expect(text("path-data")).toBe(before);
 
     expect(before).toBe(
@@ -87,5 +103,17 @@ describe("rectangle as a free shape", () => {
     );
 
     expect(text("path-data")).toContain("A30 30");
+  });
+
+  it("[F09.AC4] lists the drawn points of the rectangle, not the stored ones", () => {
+    document.querySelector<HTMLButtonElement>("#mode-points")?.click();
+
+    expect(document.querySelector('#points [data-vertex="1"]')?.textContent).toBe(
+      "1 · x 0 · y 0 · radius 10",
+    );
+
+    expect(document.querySelector('#points [data-vertex="3"]')?.textContent).toBe(
+      "3 · x 120 · y 80 · radius 10",
+    );
   });
 });
