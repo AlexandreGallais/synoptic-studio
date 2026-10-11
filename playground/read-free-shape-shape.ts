@@ -4,8 +4,10 @@ import {
   freeShapeCorners,
   isModelSize,
   isValidFreeShape,
+  turnedCorners,
 } from "../src";
 
+import { readAngle } from "./read-angle";
 import { readNumber } from "./read-number";
 import { selectElement } from "./select-element";
 import { updateKeptRadii } from "./update-kept-radii";
@@ -70,7 +72,7 @@ export function readFreeShapeShape(document: Document, kept: FreeShape): ShapeRe
   const radii = updateKeptRadii(document, kept.corners.length);
   const points = kept.corners.map((corner) => corner.point);
   const model = {
-    angle: kept.angle,
+    angle: readAngle(document),
     corners: cornersWithRadii(points, radii),
     height: height.size,
     width: width.size,
@@ -80,7 +82,7 @@ export function readFreeShapeShape(document: Document, kept: FreeShape): ShapeRe
   const isValid = [width.isValid, height.isValid, isValidFreeShape(model)].every(Boolean);
 
   return {
-    corners: isValid ? freeShapeCorners(model) : [],
+    corners: isValid ? turnedCorners(freeShapeCorners(model), model) : [],
     isValid,
     message: INVALID_FREE_SHAPE,
     model,

@@ -51,6 +51,10 @@ function writeStepValues(document: Document, step: GuidedStep): void {
   writeInputValue(document, "width", step.values.width);
   writeInputValue(document, "height", step.values.height);
   writeInputValue(document, "radius", step.values.radius);
+  // A step of F01 to F09 draws a straight shape at (0, 0) (F04).
+  writeInputValue(document, "angle", 0);
+  delete selectElement(document, "shape").dataset["x"];
+  delete selectElement(document, "shape").dataset["y"];
 }
 
 /**
