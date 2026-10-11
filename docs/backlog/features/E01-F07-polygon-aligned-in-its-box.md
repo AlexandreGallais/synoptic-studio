@@ -20,6 +20,7 @@ Refined with the Product Owner on 2026-10-10 and 2026-10-11 (started with `/run`
 - **The anchor is an intention, always stored**, even where it moves nothing: « il faudrait pouvoir indiquer l'intention qu'on veut mettre derrière ».
 - **The anchor places the sharp-cornered polygon**; the radius rounds inwards without moving it: « le but, c'est que ça touche toute la box en radius 0, et puis, si radius 10, ça touche plus, pas grave ». A flat face keeps touching at any radius (the incircle is tangent to every side); only a rounded vertex leaves the edge.
 - **No "always touch" option** (Product Owner, 2026-10-11, option A): left out of F07; it can be added later without breaking anything.
+- **Nine places kept** (validation, 2026-10-11): the Product Owner noted that only five places are useful for a polygon and left the choice to the agent, « À toi de choisir »; a corner place holds both alignments, the one that counts follows the box (`docs/domain/shapes.md`).
 - **Rotation comes after** the anchor: the box rotates with its content (recorded in F04).
 - Later, the anchor belongs to every element placed in a layout box (Q21, epic E13); F07 stays limited to the polygon in its own box, and E13 reuses its 3 × 3 anchor.
 
