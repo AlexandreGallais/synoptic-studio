@@ -1,5 +1,36 @@
 # Changelog
 
+## [0.11.0](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.10.5...v0.11.0) (2026-10-11)
+
+
+### Features
+
+* **model:** a free shape stretched by its width and height; the rectangle tool ([d087c2a](https://github.com/AlexandreGallais/synoptic-studio/commit/d087c2a184f2fe71a6397bc9c4a8e06828357d73))
+* **playground:** guided test of F09, the rectangle as a free shape ([8fc9a96](https://github.com/AlexandreGallais/synoptic-studio/commit/8fc9a965b350f2315ec036dd2fd40229b857e3bf))
+* **playground:** the rectangle is read and shown as a free shape ([48af569](https://github.com/AlexandreGallais/synoptic-studio/commit/48af5690c71b4e54ac4bf82a40311957c3373358))
+
+
+### Documentation
+
+* **adr:** review of SP-006, exact far edge, one box-to-box map, migration listed ([2da9afe](https://github.com/AlexandreGallais/synoptic-studio/commit/2da9afe189632222aba9f22c34f28e783224fa47))
+* **adr:** stretching a free shape without loss; the rectangle is a free shape ([f28c7fa](https://github.com/AlexandreGallais/synoptic-studio/commit/f28c7fab0bcb9d94df4747c23b1b55e256a78209))
+* **backlog:** findings of the F09 audit, next features, evolvability ([5b645c6](https://github.com/AlexandreGallais/synoptic-studio/commit/5b645c6671d609cdff650cb6eb885817d9867ba6))
+* **backlog:** light evolvability check in the middle of F09 ([a53bbf0](https://github.com/AlexandreGallais/synoptic-studio/commit/a53bbf014e74c458fc0dfb268347a8c6f39e32d4))
+* **backlog:** research note of F09; stories cite their sources ([513cfa3](https://github.com/AlexandreGallais/synoptic-studio/commit/513cfa377d79bdef5ab0790784699e91ec25ed82))
+* **backlog:** set AUD-006 done ([29d6dc6](https://github.com/AlexandreGallais/synoptic-studio/commit/29d6dc6385e36935933ad77b4ae162202589c6d2))
+* **backlog:** set CHK-006 done ([b418f6c](https://github.com/AlexandreGallais/synoptic-studio/commit/b418f6cca912617857809795fbd2a9831829ed41))
+* **backlog:** set EN-012 done ([5107ca3](https://github.com/AlexandreGallais/synoptic-studio/commit/5107ca32793bca462940afbd557c42da152f31cd))
+* **backlog:** set SP-006 done ([29b05f9](https://github.com/AlexandreGallais/synoptic-studio/commit/29b05f9d92b22239a678d6dadf7e97d61b19576e))
+* **backlog:** set US-017 done ([e685434](https://github.com/AlexandreGallais/synoptic-studio/commit/e685434f16d095ea291c8c8d06023a0547800c48))
+* **backlog:** test card of US-017 for the Product Owner; help text ([b84ec1a](https://github.com/AlexandreGallais/synoptic-studio/commit/b84ec1af85223a6d9969cd18a6e53bbce4007112))
+* **backlog:** tests per criterion of F09 ([926a31b](https://github.com/AlexandreGallais/synoptic-studio/commit/926a31bedf0431c6b14b3719e72f28115b2b0c69))
+* **backlog:** the Product Owner's remarks on F09, corners with F08 ([3848d54](https://github.com/AlexandreGallais/synoptic-studio/commit/3848d5482081dff2a88d4e2c0dbe629dec35e746))
+* **backlog:** validation of F09 by the Product Owner; set VAL-006 and F09 done ([5e4dbde](https://github.com/AlexandreGallais/synoptic-studio/commit/5e4dbde9e89d47b4e828d9d149da69f7e42ca0a6))
+* **docs:** demo page of F09, the rectangle as a free shape ([d2a77d9](https://github.com/AlexandreGallais/synoptic-studio/commit/d2a77d98b3abda49e25ae1e10b9ab64124178f84))
+* **model:** review of CHK-006, F08 rules marked to come, paused ADR and note indexed ([2e0f913](https://github.com/AlexandreGallais/synoptic-studio/commit/2e0f9135dd7d3275731f70c57e0f911652503164))
+* **model:** the free shape in the domain ([654da77](https://github.com/AlexandreGallais/synoptic-studio/commit/654da77674ca761959ec08d6254250e1c9d378e5))
+* **tooling:** two library pitfalls met in F09 ([02ebcc4](https://github.com/AlexandreGallais/synoptic-studio/commit/02ebcc41c4f9b54e98a5884ab35f2e5fcb33e174))
+
 ## [0.10.5](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.10.4...v0.10.5) (2026-10-11)
 
 
