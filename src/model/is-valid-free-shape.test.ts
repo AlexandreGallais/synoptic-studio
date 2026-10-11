@@ -86,6 +86,11 @@ describe("isValidFreeShape", () => {
 
     expect(isValidFreeShape(shapeOf({ ...TRIANGLE, points: notFinite }))).toBe(false);
 
+    // An infinite point still leaves a box of some width and height: only finiteness refuses it.
+    const infinite = [{ x: Infinity, y: 0 }, ...TRIANGLE.points.slice(1)];
+
+    expect(isValidFreeShape(shapeOf({ ...TRIANGLE, points: infinite }))).toBe(false);
+
     // All on the vertical line x = 0: no width can be drawn.
     expect(
       isValidFreeShape(
