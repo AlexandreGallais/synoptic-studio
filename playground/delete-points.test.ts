@@ -185,4 +185,12 @@ describe("deleting points", () => {
 
     expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("rectangle");
   });
+
+  it("[F08.AC4] deletes with Backspace too, the delete key of a Mac", () => {
+    openOnStep(1);
+    clickPoint(2, false);
+    document.body.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: "Backspace" }));
+
+    expect(rows()).toHaveLength(3);
+  });
 });
