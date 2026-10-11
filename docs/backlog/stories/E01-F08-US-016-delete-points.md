@@ -3,7 +3,7 @@ id: US-016
 epic: E01
 feature: F08
 title: Delete points
-status: ready
+status: done
 points: 2
 ---
 
@@ -38,5 +38,5 @@ Look closely at: whether the shape left is the one you expect, and whether the n
 
 One task = one commit, referenced as `US-016.Tn`.
 
-- [ ] T1 — Removing vertices and their radii (`REF-INKSCAPE-NODE-OPS`, note 0007), pure function; tests (1 h)
-- [ ] T2 — Playground button and key, messages; Product Owner test card (1 h)
+- [x] T1 — Removing vertices and their radii (`REF-INKSCAPE-NODE-OPS`, note 0007), pure function; tests (1 h)
+- [x] T2 — Playground button and key, messages; Product Owner test card (1 h)
