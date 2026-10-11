@@ -3,7 +3,7 @@ id: US-013
 epic: E01
 feature: F03
 title: List of points, selection, radius per vertex
-status: ready
+status: done
 points: 3
 ---
 
@@ -42,6 +42,6 @@ Look closely at: whether choosing points is easy, on the drawing and in the list
 
 One task = one commit, referenced as `US-013.Tn`.
 
-- [ ] T1 — Selection of vertices: pure functions for click, toggle and range (`REF-APPLE-SELECT`, `REF-WAI-APG-LISTBOX`, note 0006); tests (1.5 h)
-- [ ] T2 — Playground: list of points, selection on the handles and the rows, radius applied to the selection; tests (2 h)
-- [ ] T3 — Product Owner test card; playground help text (0.5 h)
+- [x] T1 — Selection of vertices: pure functions for click, toggle and range (`REF-APPLE-SELECT`, `REF-WAI-APG-LISTBOX`, note 0006); tests (1.5 h)
+- [x] T2 — Playground: list of points, selection on the handles and the rows, radius applied to the selection; tests (2 h)
+- [x] T3 — Product Owner test card; playground help text (0.5 h)
