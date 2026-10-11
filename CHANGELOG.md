@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.1](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.11.0...v0.11.1) (2026-10-11)
+
+
+### Documentation
+
+* **backlog:** node editing in progress again, run authorized ([12da99f](https://github.com/AlexandreGallais/synoptic-studio/commit/12da99f87cf776e2b40cb740d8804d2c8d0b3762))
+
 ## [0.11.0](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.10.5...v0.11.0) (2026-10-11)
 
 
