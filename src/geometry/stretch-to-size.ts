@@ -8,7 +8,7 @@ import type { Point } from "../math";
  * of their box fixed (`DERIV-free-shape-stretch`, SVG's viewBox transform with `align = none`).
  *
  * Computed as `o + width · (p − o) / span`, multiplying first, so that the far edge lands exactly
- * on the width asked for integer inputs below 2⁵³. The points must span both axes (`span > 0`):
+ * on the width asked while `width · span` and the far coordinate stay below 2⁵³ (integers). The points must span both axes (`span > 0`):
  * a size of 0 puts every point on the fixed side, and the stored points are never changed.
  *
  * @kind geometry
