@@ -3,7 +3,7 @@ id: EN-012
 epic: E01
 feature: F09
 title: A free shape and its box in the model
-status: ready
+status: done
 points: 2
 ---
 
@@ -27,5 +27,5 @@ None of its own: shown by US-017's card.
 
 One task = one commit, referenced as `EN-012.Tn`.
 
-- [ ] T1 — `FreeShape` (ADR-0032), its validity, its drawn points (`DERIV-free-shape-stretch`, its check table, a function of its own beside `fitInBox` (per-axis scale, multiplying first, top-left kept; `fitInBox` keeps one scale and its anchor)) and corners, the rectangle tool; the F01 and F03 rectangle tests moved onto it (note 0008, migration); properties (2 h)
-- [ ] T2 — Domain (`shapes.md`), re-exports (0.5 h)
+- [x] T1 — `FreeShape` (ADR-0032), its validity, its drawn points (`DERIV-free-shape-stretch`, its check table, a function of its own beside `fitInBox` (per-axis scale, multiplying first, top-left kept; `fitInBox` keeps one scale and its anchor)) and corners, the rectangle tool; the F01 and F03 rectangle tests moved onto it (note 0008, migration); properties (2 h)
+- [x] T2 — Domain (`shapes.md`), re-exports (0.5 h)
