@@ -19,14 +19,32 @@ Refinement started on 2026-10-11 (started with `/run`).
 - **An explicit points mode, not a double-click**: « dans Inkscape, pour modifier les points, il y a une option de modification de points \[…\] au lieu de double clic »; the target users are « pas autant expert que celui de Figma », so a power-user gesture is never the only way. A vertex is hard to hit: its handle must be easy to click.
 - **Playground**: a minimal tool bar with two large buttons, Shape and Points; in Points mode each vertex has a large handle, clicked to select it. The full tool menu (drawing, selection, points…) comes with the editor applications.
 
-## Open in refinement
-
-- How the radius is set in Points mode: the Radius field applied to the selected vertices (proposed, Inkscape), or a "independent corners" switch with one field per corner (Figma). The Product Owner leaned to the first, to be confirmed.
+- **The radius of one corner**: in Points mode, the same Radius field applies only to the selected vertices, as in Inkscape: « Oui, exactement, ça paraît bien ». No "independent corners" switch. In Shape mode the field applies to every vertex, and shows **Mixed** when the radii differ.
+- **Points of the selected shape only**, never those of the others. The first vertex of the path data is red, the second green, to read the direction: « le point rouge soit le premier \[…\] un point vert pour le deuxième, pour qu'on sache le sens ».
+- **A list of the vertices**, in the order of the path data: number, x, y, radius; a row clicked selects its vertex. Clicking the vertex on the drawing stays possible: « je veux qu'il y ait la liste, mais je veux qu'on puisse aussi cliquer sur le point dans le SVG ».
+- **Several vertices**: in the list, Shift + click is a range and Ctrl + click (Cmd) adds or removes; on the drawing, Shift + click or Ctrl + click adds or removes, no range: « C'est le plus simple à comprendre ».
+- **Number of corners changed**: radii kept by vertex number; new vertices at 0.
+- **Not everything in the playground**: « t'obliges pas à faire tout ce que je te dis, mais par contre, ça serait bien que tu le notes pour plus tard ». The rules are in `docs/domain/interaction.md` §3 for the editor applications; dragging a vertex to move it is F08.
 
 ## Acceptance criteria
 
-1. Each vertex has its own corner radius, clamped locally (ADR-0007).
+1. Each vertex of a rectangle or a regular polygon stores its own requested corner radius, clamped locally (ADR-0007); a shape whose vertices all have the same radius is drawn exactly as in F01 and F02.
+2. In Shape mode, the radius field gives one radius to every vertex, and shows "Mixed" when the radii differ.
+3. Changing the number of corners of a polygon keeps the radii by vertex number; new vertices have radius 0.
+4. In the playground, a tool bar with two large buttons, Shape and Points; in Points mode, the vertices of the shape have large handles, the first red and the second green, and a list shows them in contour order with x, y and radius.
+5. In Points mode, vertices are selected by their handle or their list row (Shift and Ctrl / Cmd as in `docs/domain/interaction.md` §3), and the radius field applies to the selected vertices only.
 
 ## Stories
 
-To be written in refinement.
+In delivery order, proposed (2026-10-11), to be set `ready` by the Product Owner.
+
+| ID      | Type       | Title                                         |
+| ------- | ---------- | --------------------------------------------- |
+| SP-004  | Spike      | Research for F03                              |
+| EN-010  | Enabler    | One requested radius per vertex in the model  |
+| US-011  | User story | Radius field for every corner, Mixed          |
+| CHK-004 | Checkpoint | Checkpoint in the middle of F03               |
+| US-012  | User story | Points mode: handles, first and second marked |
+| US-013  | User story | List of points, selection, radius per vertex  |
+| AUD-004 | Audit      | Audit F03                                     |
+| VAL-004 | Validation | Validate F03                                  |

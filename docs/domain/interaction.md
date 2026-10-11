@@ -16,7 +16,7 @@ No pen tool and no freehand drawing (see `shapes.md` §3).
 
 ## 2. Selector
 
-- Click: select an object; Shift + click: add / remove.
+- Click: select an object; Shift + click or Ctrl + click (Cmd on macOS): add / remove (Product Owner, 2026-10-11). No range on the drawing.
 - Selection rectangle (marquee).
 - Moving and resizing: **integer** values.
 - Properties panel: x, y, width, height typed on the keyboard.
@@ -26,9 +26,10 @@ No pen tool and no freehand drawing (see `shapes.md` §3).
 - Entered by an **explicit mode** (the Node tool, a large button), never only by a double-click: the target users are not power users (Product Owner, 2026-10-11, F03). Vertex handles are large enough to click easily.
 - Editing the vertices of a rectangle or a regular polygon turns it into a free contour, by a voluntary action: it loses its number of corners and its anchor (F08).
 
-- Shows every vertex of the selected shape.
-- Selection of one or several vertices.
-- Moving a vertex: integer.
+- Shows every vertex of the **selected shape only**, never those of the other shapes. Its first vertex (the first point of the path data) is marked red, the second green, so that the direction of the contour can be read (Product Owner, 2026-10-11).
+- A **list of the vertices** in contour order, the order of the path data: number, x, y, corner radius. A row is clicked to select its vertex, as its handle is on the drawing; useful when a handle is hard to hit.
+- Selection of one or several vertices, on the drawing or in the list: click selects one; Shift + click or Ctrl + click (Cmd on macOS) on the drawing adds / removes; in the list, Shift + click selects a range and Ctrl + click (Cmd) adds / removes, as in any list (Product Owner, 2026-10-11).
+- Moving a vertex: integer, typed or dragged (F08).
 - **Adding a vertex** between two existing vertices (on an edge).
 - Deleting a vertex.
 - **Corner radius per vertex**: numeric field, applied to the selected vertices.

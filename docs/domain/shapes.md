@@ -42,8 +42,10 @@ Consequence: every shape is described by numbers. The drawing is **determined**,
 Reference behavior: Figma.
 
 - Radius entered **numerically**, never with the mouse.
-- Radius **per vertex**: select one or more vertices → type a value.
-- Global radius: applied to every vertex of the shape.
+- Radius **per vertex**: select one or more vertices (node editing) → type a value (F03).
+- Global radius: in shape mode, the radius field applies to every vertex of the shape. When the vertices have different radii it shows **Mixed** and is empty; typing a value gives it to every vertex (Product Owner, 2026-10-11, as in Figma).
+- Changing the number of corners of a regular polygon keeps the radii **by vertex number**: vertex 1 keeps vertex 1's radius; removed vertices take their radius away; new vertices have radius 0 (Product Owner, 2026-10-11).
+- No "independent corners" switch: the radius of one corner is set in node editing only.
 - Geometry: arc tangent to both edges; setback `d = r / tan(θ/2)` (`DERIV-fillet-setback`).
 
 ### Radius clamping (ADR-0007)
