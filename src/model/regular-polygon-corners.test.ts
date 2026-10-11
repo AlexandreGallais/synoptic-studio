@@ -336,3 +336,30 @@ describe("regularPolygonCorners (one radius per vertex, properties)", () => {
     },
   );
 });
+
+describe("regularPolygonCorners (unequal radii, closed outline)", () => {
+  test.prop({
+    radii: fc.array(fc.nat({ max: 2000 }), { maxLength: 12, minLength: 12 }),
+    sides: fc.integer({ max: 12, min: 3 }),
+    size: fc.integer({ max: 1000, min: 0 }),
+  })("[F03.AC1] is a closed chain whatever the radius of each corner", ({ radii, sides, size }) => {
+    const pieces = roundedContour(
+      regularPolygonCorners({
+        anchor: CENTER,
+        corners: sides,
+        height: size,
+        radii: radii.slice(0, sides),
+        width: size,
+      }),
+    );
+
+    // Each piece starts where the previous one ends: the arcs of one edge never overlap.
+    for (const [index, piece] of pieces.entries()) {
+      const next = pieces[(index + 1) % pieces.length] ?? piece;
+
+      expect(Math.hypot(next.start.x - piece.end.x, next.start.y - piece.end.y)).toBeLessThan(
+        EPSILON * Math.max(1, size),
+      );
+    }
+  });
+});

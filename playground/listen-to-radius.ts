@@ -3,6 +3,7 @@ import { radiiWithSelection } from "../src";
 import { readMode } from "./read-mode";
 import { readSelection } from "./read-selection";
 import { selectElement } from "./select-element";
+import { writeCappedSizes } from "./write-capped-sizes";
 
 /**
  * Applies a radius typed: in Shape mode it goes to every vertex, the radii kept being dropped
@@ -16,6 +17,9 @@ export function listenToRadius(document: Document): void {
   const field = selectElement(document, "radius");
 
   field.addEventListener("input", () => {
+    // Capped first, as every size typed (Q20).
+    writeCappedSizes(document);
+
     const { radii = "" } = field.dataset;
     const typed = field instanceof HTMLInputElement ? field.valueAsNumber : NaN;
     const kept = radii.split(" ").map(Number);

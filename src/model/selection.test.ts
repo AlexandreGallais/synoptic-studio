@@ -94,3 +94,26 @@ describe("vertex range", () => {
     },
   );
 });
+
+describe("vertex selection on the drawing", () => {
+  test.prop({
+    isShift: fc.boolean(),
+    selected: fc.uniqueArray(fc.nat({ max: 11 })),
+    vertex: fc.nat({ max: 11 }),
+  })(
+    "adds or removes the vertex clicked with Shift, never a range; a plain click keeps it alone",
+    ({ isShift, selected, vertex }) => {
+      const before = { selected: selected.toSorted((left, right) => left - right), start: 0 };
+      const keys = { shift: isShift, toggle: !isShift };
+      const after = selectionAfterHandleClick(before, vertex, keys).selected;
+      const plain = selectionAfterHandleClick(before, vertex, { shift: false, toggle: false });
+
+      expect(after.filter((other) => other !== vertex)).toEqual(
+        before.selected.filter((other) => other !== vertex),
+      );
+
+      expect(after.includes(vertex)).toBe(!before.selected.includes(vertex));
+      expect(plain.selected).toEqual([vertex]);
+    },
+  );
+});
