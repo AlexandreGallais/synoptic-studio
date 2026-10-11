@@ -3,7 +3,7 @@ id: EN-011
 epic: E01
 feature: F08
 title: A free shape of corners, fractions until edited
-status: ready
+status: done
 points: 3
 ---
 
@@ -26,6 +26,6 @@ None of its own: shown by US-014's card.
 
 One task = one commit, referenced as `EN-011.Tn`.
 
-- [ ] T1 — ADR: corners stored, fractions until edited, points typed in the SVG's coordinates (supersedes ADR-0029 for free shapes, completes ADR-0031 and ADR-0032) (1 h)
-- [ ] T2 — `FreeShape` of corners, validity, conversion from a regular polygon, a point moved; tests and properties; the F09 tests kept (2 h)
-- [ ] T3 — Domain (`shapes.md`, glossary), re-exports (0.5 h)
+- [x] T1 — ADR: corners stored, fractions until edited, points typed in the SVG's coordinates (supersedes ADR-0029 for free shapes, completes ADR-0031 and ADR-0032) (1 h)
+- [x] T2 — `FreeShape` of corners, validity, conversion from a regular polygon, a point moved; tests and properties; the F09 tests kept (2 h)
+- [x] T3 — Domain (`shapes.md`, glossary), re-exports (0.5 h)
