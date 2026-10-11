@@ -3,7 +3,7 @@ id: US-011
 epic: E01
 feature: F03
 title: Radius field for every corner, Mixed
-status: ready
+status: done
 points: 2
 ---
 
@@ -33,5 +33,5 @@ Run `npm run dev` and open `http://localhost:5173/?step=10`. The **radius** is h
 
 One task = one commit, referenced as `US-011.Tn`.
 
-- [ ] T1 — Radii kept by vertex number when the number of corners changes; the common radius of a shape or none (Mixed, `REF-FIGMA-CR`); tests (1.5 h)
-- [ ] T2 — Playground: radius field showing Mixed, typing gives every vertex the value; Product Owner test card (1 h)
+- [x] T1 — Radii kept by vertex number when the number of corners changes; the common radius of a shape or none (Mixed, `REF-FIGMA-CR`); tests (1.5 h)
+- [x] T2 — Playground: radius field showing Mixed, typing gives every vertex the value; Product Owner test card (1 h)
