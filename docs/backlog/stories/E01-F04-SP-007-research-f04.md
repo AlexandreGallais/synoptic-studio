@@ -28,5 +28,5 @@ Find, read and record the sources of every story of F04 before its implementatio
 
 One task = one commit, referenced as `SP-007.Tn`.
 
-- [ ] T1 — Sources, derivations if no source states them, ADR (2 h)
-- [ ] T2 — Research note, stories updated (1 h)
+- [x] T1 — Sources, derivations if no source states them, ADR (2 h)
+- [x] T2 — Research note, stories updated (1 h)
