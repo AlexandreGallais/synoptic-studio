@@ -56,13 +56,13 @@
 | [US-017](./E01-F09-US-017-rectangle-as-free-shape.md)           | F09     | The rectangle as a free shape, stretched by its size | done   |
 | [AUD-006](./E01-F09-AUD-006-audit-f09.md)                       | F09     | Audit F09                                            | done   |
 | [VAL-006](./E01-F09-VAL-006-validate-stretchable-free-shape.md) | F09     | Validate F09                                         | done   |
-| [SP-007](./E01-F04-SP-007-research-f04.md)                      | F04     | Research for F04                                     | draft  |
-| [EN-014](./E01-F04-EN-014-angle-and-position.md)                | F04     | An angle and a position for every shape              | draft  |
-| [EN-015](./E01-F04-EN-015-straight-box.md)                      | F04     | The straight box of a drawn shape                    | draft  |
-| [US-018](./E01-F04-US-018-turn-a-shape.md)                      | F04     | Turn and move a shape in the playground              | draft  |
-| [CHK-007](./E01-F04-CHK-007-checkpoint-f04.md)                  | F04     | Checkpoint in the middle of F04                      | draft  |
-| [US-019](./E01-F04-US-019-edit-a-turned-shape.md)               | F04     | Edit a turned shape                                  | draft  |
-| [AUD-007](./E01-F04-AUD-007-audit-f04.md)                       | F04     | Audit F04: free rotation of shapes                   | draft  |
-| [VAL-007](./E01-F04-VAL-007-validate-free-rotation.md)          | F04     | Validate F04 on the reference cases                  | draft  |
+| [SP-007](./E01-F04-SP-007-research-f04.md)                      | F04     | Research for F04                                     | ready  |
+| [EN-014](./E01-F04-EN-014-angle-and-position.md)                | F04     | An angle and a position for every shape              | ready  |
+| [EN-015](./E01-F04-EN-015-straight-box.md)                      | F04     | The straight box of a drawn shape                    | ready  |
+| [US-018](./E01-F04-US-018-turn-a-shape.md)                      | F04     | Turn and move a shape in the playground              | ready  |
+| [CHK-007](./E01-F04-CHK-007-checkpoint-f04.md)                  | F04     | Checkpoint in the middle of F04                      | ready  |
+| [US-019](./E01-F04-US-019-edit-a-turned-shape.md)               | F04     | Edit a turned shape                                  | ready  |
+| [AUD-007](./E01-F04-AUD-007-audit-f04.md)                       | F04     | Audit F04: free rotation of shapes                   | ready  |
+| [VAL-007](./E01-F04-VAL-007-validate-free-rotation.md)          | F04     | Validate F04 on the reference cases                  | ready  |
 | [REV-001](./E01-REV-001-review-e01.md)                          | E01     | Review E01 with the Product Owner                    | draft  |
 | [RET-001](./E01-RET-001-retrospective-e01.md)                   | E01     | Retrospective of E01                                 | draft  |
