@@ -3,7 +3,7 @@ id: US-010
 epic: E01
 feature: F07
 title: Choose the anchor in the playground
-status: ready
+status: done
 points: 2
 ---
 
@@ -20,7 +20,7 @@ As a symbol designer, I want a 3 × 3 grid next to the polygon's settings so tha
 
 ## Product Owner test
 
-Run `npm run dev` and open <http://localhost:5173>. The **anchor** is where the polygon sits in its box: one of the nine small round buttons, from top left to bottom right. The grey rectangle is the **box** (the width × height you type).
+Run `npm run dev` and open `http://localhost:5173`. The **anchor** is where the polygon sits in its box: one of the nine small round buttons, from top left to bottom right. The grey rectangle is the **box** (the width × height you type).
 
 | Step | Do                                                                  | You should see                                                                                                          |
 | ---- | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
