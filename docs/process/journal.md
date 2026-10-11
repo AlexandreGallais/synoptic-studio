@@ -2,6 +2,11 @@
 
 What each working session dealt with, in the agent's words: requests of the Product Owner (paraphrased), decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`). The full conversations stay in the local transcripts (see [agent configuration](../tooling/agent.md#searching-past-conversations)).
 
+## 2026-10-11 — Agenda for the E01 retrospective
+
+- `#process` Raised by the Product Owner for RET-001 (improvement log): local library of read sources searched by content, expert subagents, a cleaner log without diffs, a setup portable to other AI tools and offline skills, a complete experience report; parallel work only after several epics.
+- `#domain` Q24 open: a `foreignObject` tool, free or pro, against ADR-0002.
+
 ## 2026-10-11 — Where the project stops: free V1, then pro edition
 
 - `#domain` The Product Owner sets a stop: a complete free V1, then bug fixes only; every new feature after V1 goes to a paid pro edition, private, as a service or self-hosted (ADR-0030, [editions](../domain/editions.md)). « Ouais, super, faire du libre, c'est cool, mais il faut vraiment mettre un stop. »

@@ -106,9 +106,10 @@ The French term is kept: it is the user's working vocabulary.
 
 ## Open questions
 
-| #   | Question                                                                                                                                                       | File             |
-| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
-| Q4  | Ellipses: needed? (elliptical arcs are outside the ADR-0001 scope)                                                                                             | `shapes.md`      |
-| Q7  | Undo / redo: command-based history, confirmed?                                                                                                                 | `interaction.md` |
-| Q9  | Corner radius on vertices created by a boolean                                                                                                                 | `shapes.md`      |
-| Q23 | Application shell of V1: a web view in a desktop app (Electron, or a Rust-based one), with all computation in the web view and native code only to save files? | `editions.md` §1 |
+| #   | Question                                                                                                                                                                                                       | File                   |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- |
+| Q4  | Ellipses: needed? (elliptical arcs are outside the ADR-0001 scope)                                                                                                                                             | `shapes.md`            |
+| Q7  | Undo / redo: command-based history, confirmed?                                                                                                                                                                 | `interaction.md`       |
+| Q9  | Corner radius on vertices created by a boolean                                                                                                                                                                 | `shapes.md`            |
+| Q23 | Application shell of V1: a web view in a desktop app (Electron, or a Rust-based one), with all computation in the web view and native code only to save files?                                                 | `editions.md` §1       |
+| Q24 | A `foreignObject` tool (e.g. an `iframe`) inside a given frame: in the free V1 (« un peu trop bête de mettre ça en pro ») or pro? It contradicts ADR-0002 and the allowed SVG primitives; a new ADR either way | `symbols-and-views.md` |
