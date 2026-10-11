@@ -99,4 +99,30 @@ describe("radius field", () => {
 
     expect(radiusField().dataset["radii"]).toBe("10 0 0 0 0 0 0 0");
   });
+
+  it("[F03.AC3] never gives a removed vertex its radius back, even while the shape is refused", () => {
+    keepRadii("10 0 0 0 0 6");
+    type("width", "");
+    type("corners", "5");
+    type("corners", "6");
+    type("width", "100");
+
+    expect(radiusField().dataset["radii"]).toBe("10 0 0 0 0 0");
+  });
+
+  it("[F03.AC2] types one radius for every vertex at each step of the guided test", () => {
+    keepRadii("10 0 0 0 0 6");
+    document.querySelector<HTMLButtonElement>("#guide-next")?.click();
+
+    expect(radiusField().dataset["radii"]).toBeUndefined();
+    expect(radiusField().placeholder).toBe("");
+    expect(radiusField().value).toBe("0");
+  });
+
+  it("[F03.AC2] stops reading Mixed as soon as the field is typed in", () => {
+    keepRadii("10 0 0 0 0 6");
+    type("radius", "-");
+
+    expect(radiusField().placeholder).toBe("");
+  });
 });
