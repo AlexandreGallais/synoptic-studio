@@ -10,7 +10,14 @@ import { regularPolygonAsFreeShape } from "./regular-polygon-as-free-shape";
 
 describe("freeShapeWithMidpoint", () => {
   it("[F08.AC3] adds a sharp point in the middle of the top edge of a square, after point 1", () => {
-    const square = rectangleAsFreeShape({ height: 100, radii: [1000, 0, 0, 0], width: 100 });
+    const square = rectangleAsFreeShape({
+      angle: 0,
+      x: 0,
+      y: 0,
+      height: 100,
+      radii: [1000, 0, 0, 0],
+      width: 100,
+    });
     const corners = freeShapeCorners(freeShapeWithMidpoint(square, 0));
 
     expect(corners).toEqual([
@@ -28,7 +35,14 @@ describe("freeShapeWithMidpoint", () => {
   });
 
   it("[F08.AC3] adds the point of the closing edge at the end: point 1 stays point 1", () => {
-    const square = rectangleAsFreeShape({ height: 100, radii: [0, 0, 0, 0], width: 100 });
+    const square = rectangleAsFreeShape({
+      angle: 0,
+      x: 0,
+      y: 0,
+      height: 100,
+      radii: [0, 0, 0, 0],
+      width: 100,
+    });
     const points = freeShapeCorners(freeShapeWithMidpoint(square, 3)).map((corner) => corner.point);
 
     expect(points).toEqual([
@@ -44,6 +58,9 @@ describe("freeShapeWithMidpoint", () => {
     // Hexagon in 100 × 100: the base runs from point 2 (25, 93.30127) to point 1 (75, 93.30127);
     // edge 0 goes from point 1 to point 2, its middle is (50, 50 + 25√3).
     const hexagon = regularPolygonAsFreeShape({
+      angle: 0,
+      x: 0,
+      y: 0,
       anchor: { horizontal: "mid", vertical: "mid" },
       corners: 6,
       height: 100,
@@ -64,7 +81,14 @@ describe("freeShapeWithMidpoint", () => {
   test.prop({ edge: fc.nat({ max: 3 }), height: side, width: side })(
     "[F08.AC3] adds one point on the edge, the others and the box kept",
     ({ edge, height, width }) => {
-      const shape = rectangleAsFreeShape({ height, radii: [1, 2, 3, 4], width });
+      const shape = rectangleAsFreeShape({
+        angle: 0,
+        x: 0,
+        y: 0,
+        height,
+        radii: [1, 2, 3, 4],
+        width,
+      });
       const before = freeShapeCorners(shape);
       const after = freeShapeCorners(freeShapeWithMidpoint(shape, edge));
       const added = after[edge + 1];

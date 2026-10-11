@@ -16,5 +16,5 @@ import type { RegularPolygon } from "./regular-polygon";
  * @see docs/domain/interaction.md#_3-node-editing
  */
 export function regularPolygonAsFreeShape(polygon: RegularPolygon): FreeShape {
-  return freeShapeAroundCorners(regularPolygonCorners(polygon));
+  return freeShapeAroundCorners(regularPolygonCorners(polygon), polygon.angle);
 }
