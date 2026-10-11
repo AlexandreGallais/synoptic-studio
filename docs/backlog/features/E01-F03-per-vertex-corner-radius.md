@@ -42,7 +42,7 @@ In delivery order.
 | ------------------------------------------------------------------- | ---------- | --------------------------------------------- | ------ |
 | [SP-004](../stories/E01-F03-SP-004-research-f03.md)                 | Spike      | Research for F03                              | done   |
 | [EN-010](../stories/E01-F03-EN-010-radius-per-vertex.md)            | Enabler    | One requested radius per vertex in the model  | done   |
-| [US-011](../stories/E01-F03-US-011-radius-field-mixed.md)           | User story | Radius field for every corner, Mixed          | ready  |
+| [US-011](../stories/E01-F03-US-011-radius-field-mixed.md)           | User story | Radius field for every corner, Mixed          | done   |
 | [CHK-004](../stories/E01-F03-CHK-004-checkpoint-f03.md)             | Checkpoint | Checkpoint in the middle of F03               | ready  |
 | [US-012](../stories/E01-F03-US-012-points-mode.md)                  | User story | Points mode: handles, first and second marked | ready  |
 | [US-013](../stories/E01-F03-US-013-points-list-selection.md)        | User story | List of points, selection, radius per vertex  | ready  |
