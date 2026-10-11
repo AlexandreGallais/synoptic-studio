@@ -5,7 +5,8 @@
  *
  * @kind domain
  * @param radii - requested radius of each vertex, in contour order
- * @param count - new number of vertices, an integer ≥ 0
+ * @param count - new number of vertices, an integer ≥ 0 (precondition: JavaScript would truncate
+ * a fraction and treat a negative count or `NaN` as 0)
  * @returns `count` radii
  * @see docs/domain/shapes.md#_2-corner-radius
  */

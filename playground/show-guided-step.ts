@@ -34,6 +34,7 @@ function writeShapeValue(document: Document, shape: string): void {
 function writeStepValues(document: Document, step: GuidedStep): void {
   // A step types one radius for every vertex (F03.AC2).
   delete selectElement(document, "radius").dataset["radii"];
+  selectElement(document, "radius").setAttribute("placeholder", "");
   writeShapeValue(document, step.values.shape);
   writeAnchorValue(document, step.values.anchor);
   writeInputValue(document, "corners", step.values.corners);
