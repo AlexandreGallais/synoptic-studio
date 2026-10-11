@@ -56,7 +56,7 @@ In delivery order.
 | [SP-007](../stories/E01-F04-SP-007-research-f04.md)             | Spike      | Research for F04                        | done   |
 | [EN-014](../stories/E01-F04-EN-014-angle-and-position.md)       | Enabler    | An angle and a position for every shape | done   |
 | [EN-015](../stories/E01-F04-EN-015-straight-box.md)             | Enabler    | The straight box of a drawn shape       | done   |
-| [US-018](../stories/E01-F04-US-018-turn-a-shape.md)             | User story | Turn and move a shape in the playground | ready  |
+| [US-018](../stories/E01-F04-US-018-turn-a-shape.md)             | User story | Turn and move a shape in the playground | done   |
 | [CHK-007](../stories/E01-F04-CHK-007-checkpoint-f04.md)         | Checkpoint | Checkpoint in the middle of F04         | ready  |
 | [US-019](../stories/E01-F04-US-019-edit-a-turned-shape.md)      | User story | Edit a turned shape                     | ready  |
 | [AUD-007](../stories/E01-F04-AUD-007-audit-f04.md)              | Audit      | Audit F04: free rotation of shapes      | ready  |
