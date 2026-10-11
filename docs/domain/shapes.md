@@ -6,7 +6,7 @@ Processing chain: typed numbers → integer model → computed geometry → `<pa
 
 - A shape = one or more **closed contours** (the first is the outside, the next ones are holes, produced by booleans).
 - A contour = ordered list of **vertices**: integer coordinates when they are stored (a free shape's points, ADR-0032, the rectangle's included), fractional when they are derived from it (a regular polygon, later booleans), never written back (ADR-0003).
-- Each vertex carries an integer **corner radius** (0 = sharp corner); a free shape and a regular polygon store one per vertex, `radii` (ADR-0029); their number is the number of vertices, otherwise the shape is refused.
+- Each vertex carries an integer **corner radius** (0 = sharp corner); a free shape keeps it with its point, as a corner (ADR-0033), a regular polygon in its list `radii` (ADR-0029); their number is the number of vertices, otherwise the shape is refused.
 - The shape is rendered as a single `<path>` (ADR-0002).
 - Geometric primitives: segments and circular arcs only (ADR-0001).
 
@@ -79,7 +79,7 @@ Storing the value (Q8, settled):
 
 - The rectangle is a **free shape** of 4 points made by the rectangle tool (Product Owner, 2026-10-11, F09): « En soi, en arrière, ça devrait être une forme libre tout le temps ». Width and height of any free shape stretch its points, the top-left of its box fixed; a rectangle stays a rectangle; stretching is without loss (0 then back gives the same shape). The eight handles of the box, the opposite side fixed as in Inkscape, come with E02.
 
-- Model (ADR-0032): a **free shape** stores its points in their own box (integers, at least 3, spanning a box of positive width and height, contour order Q11), its `width` and `height` (integers ≥ 0, Q15) and one radius per point (ADR-0029); the points drawn are the stored ones stretched from the top-left of their box (`DERIV-free-shape-stretch`). The rectangle tool stores the unit square.
+- Model (ADR-0032, ADR-0033): a **free shape** stores its **corners** — each a point in the shape's own box and its radius (integer ≥ 0) — and its `width` and `height`; points and size are finite numbers, fractional when a regular polygon was converted (Q27), integers when typed. At least 3 corners whose points span a box of positive width and height (contour order Q11). The points drawn are the stored ones stretched from the top-left of their box (`DERIV-free-shape-stretch`). The rectangle tool stores the unit square. A point typed in the SVG's coordinates: the corners are kept as drawn, that point replaced, the box fitted around them.
 - Rectangle tool parameters: `width`, `height` (integers ≥ 0; negative forbidden, 0 allowed — Q15) and `radii`, the requested corner radius of each of its 4 vertices in contour order (integers ≥ 0; 0 = sharp corner; ADR-0029). A radius larger than the rectangle is valid: it is clamped, not refused (ADR-0007); the requested value is kept (Q8).
 - Result: contour of 4 vertices.
 
