@@ -4,13 +4,13 @@ import type { FreeShape } from "./free-shape";
 import type { Corner } from "../geometry";
 
 /**
- * Free shape fitted around corners as drawn: those corners, and the box around their points as
- * its position, width and height, so that it draws them where they are (ADR-0033, ADR-0035). The
- * corners are straight ones: on a turned shape the new box has another center, and the edits place
- * it so that the shape does not move (`freeShapeKeptInPlace`).
+ * Free shape fitted around straight corners, placed in the SVG but not turned: those corners, and
+ * the box around their points as its position, width and height, so that at 0° it draws them
+ * where they are (ADR-0033, ADR-0035). On a turned shape the new box has another center: the edits
+ * then place it so that the shape does not move (`freeShapeKeptInPlace`).
  *
  * @kind domain
- * @param corners - points as drawn and their radii, in contour order
+ * @param corners - straight points, placed in the SVG, and their radii, in contour order
  * @param angle - angle kept, from 0 to 359 (ADR-0035)
  * @returns the free shape of those corners, at scale 1
  * @see DERIV-free-shape-stretch

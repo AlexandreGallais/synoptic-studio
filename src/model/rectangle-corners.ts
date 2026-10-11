@@ -5,8 +5,8 @@ import type { Rectangle } from "./rectangle";
 import type { Corner } from "../geometry";
 
 /**
- * Corners of a rectangle: those of the free shape the rectangle tool makes (ADR-0032), each
- * vertex with its requested radius (ADR-0029).
+ * Straight corners of a rectangle: those of the free shape the rectangle tool makes (ADR-0032),
+ * each vertex with its requested radius (ADR-0029); its angle is not applied (`turnedCorners`).
  *
  * @kind domain
  * @param rectangle - width, height and the radius of each corner

@@ -1,6 +1,6 @@
 # ADR-0035 — An angle and a position for every shape
 
-**Status**: Accepted (Product Owner's decisions of the F04 refinement, 2026-10-11; model chosen by the agent at SP-007) — partly supersedes ADR-0003 (the position of any shape may be fractional) and ADR-0032 and ADR-0033 (where a free shape is drawn).
+**Status**: Accepted (Product Owner's decisions of the F04 refinement, 2026-10-11; model chosen by the agent at SP-007) — partly supersedes ADR-0003 (the position of any shape may be fractional), ADR-0032 and ADR-0033 (where a free shape is drawn) and ADR-0034 (on a turned shape a coordinate typed is an integer in the drawing only, and the point is stored un-turned).
 
 ## Context
 
