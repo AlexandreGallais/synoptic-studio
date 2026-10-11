@@ -39,7 +39,7 @@
 | [CHK-004](./E01-F03-CHK-004-checkpoint-f03.md)              | F03     | Checkpoint in the middle of F03                  | done   |
 | [US-012](./E01-F03-US-012-points-mode.md)                   | F03     | Points mode: handles, first and second marked    | done   |
 | [US-013](./E01-F03-US-013-points-list-selection.md)         | F03     | List of points, selection, radius per vertex     | done   |
-| [AUD-004](./E01-F03-AUD-004-audit-f03.md)                   | F03     | Audit F03: per-vertex corner radius              | ready  |
+| [AUD-004](./E01-F03-AUD-004-audit-f03.md)                   | F03     | Audit F03: per-vertex corner radius              | done   |
 | [VAL-004](./E01-F03-VAL-004-validate-radius-per-vertex.md)  | F03     | Validate F03 on the reference cases              | ready  |
 | [REV-001](./E01-REV-001-review-e01.md)                      | E01     | Review E01 with the Product Owner                | draft  |
 | [RET-001](./E01-RET-001-retrospective-e01.md)               | E01     | Retrospective of E01                             | draft  |
