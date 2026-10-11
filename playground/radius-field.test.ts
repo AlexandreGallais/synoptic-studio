@@ -77,7 +77,7 @@ describe("radius field", () => {
     keepRadii("10 0 0 0 0 0");
     type("radius", "7");
 
-    expect(radiusField().dataset["radii"]).toBeUndefined();
+    expect(radiusField().dataset["radii"]).toBe("7 7 7 7 7 7");
     expect(radiusField().placeholder).toBe("");
     expect(text("path-data").match(/A7 7/gu)).toHaveLength(6);
   });
@@ -86,7 +86,7 @@ describe("radius field", () => {
     keepRadii("4 4 4 4 4 4");
 
     expect(radiusField().value).toBe("4");
-    expect(radiusField().dataset["radii"]).toBeUndefined();
+    expect(radiusField().placeholder).toBe("");
   });
 
   it("[F03.AC3] keeps the radii by vertex number when the number of corners changes", () => {
@@ -114,7 +114,8 @@ describe("radius field", () => {
     keepRadii("10 0 0 0 0 6");
     document.querySelector<HTMLButtonElement>("#guide-next")?.click();
 
-    expect(radiusField().dataset["radii"]).toBeUndefined();
+    // Step 11 is a triangle with radius 0: three radii, all 0.
+    expect(radiusField().dataset["radii"]).toBe("0 0 0");
     expect(radiusField().placeholder).toBe("");
     expect(radiusField().value).toBe("0");
   });

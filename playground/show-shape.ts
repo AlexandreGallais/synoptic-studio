@@ -10,10 +10,8 @@ import {
 } from "../src";
 
 import { createBoxElements } from "./create-box-elements";
-import { createHandleElements } from "./create-handle-elements";
-import { readMode } from "./read-mode";
 import { selectElement } from "./select-element";
-import { writeRadiusField } from "./write-radius-field";
+import { showPoints } from "./show-points";
 import { writeText } from "./write-text";
 
 import type { ShapeReading } from "./shape-reading";
@@ -84,8 +82,7 @@ export function showShape(document: Document, reading: ShapeReading): void {
   const pathData = contourPiecesToPathData(pieces);
   const viewBox = { ...readCanvasSize(document), x: -MARGIN, y: -MARGIN };
   const svg = createSvgElement(document, viewBox);
-
-  const handles = readMode(document) === "points" ? createHandleElements(document, contour) : [];
+  const handles = showPoints(document, reading);
 
   svg.append(
     ...createBoxElements(document, reading.model),
@@ -97,7 +94,6 @@ export function showShape(document: Document, reading: ShapeReading): void {
   writeText(document, "model", JSON.stringify(reading.model, undefined, JSON_INDENT));
   writeText(document, "contour", JSON.stringify(contour, undefined, JSON_INDENT));
   writeText(document, "pieces", JSON.stringify(pieces, undefined, JSON_INDENT));
-  writeRadiusField(document, reading.model.radii);
   writeEffectiveRadius(document, reading);
   writeText(document, "path-data", pathData);
 }
