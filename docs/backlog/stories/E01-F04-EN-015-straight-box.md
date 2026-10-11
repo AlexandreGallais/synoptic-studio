@@ -3,7 +3,7 @@ id: EN-015
 epic: E01
 feature: F04
 title: The straight box of a drawn shape
-status: draft
+status: ready
 points: 2
 ---
 

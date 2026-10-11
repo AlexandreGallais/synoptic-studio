@@ -3,7 +3,7 @@ id: AUD-007
 epic: E01
 feature: F04
 title: "Audit F04: free rotation of shapes"
-status: draft
+status: ready
 points: 2
 ---
 
