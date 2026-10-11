@@ -25,6 +25,13 @@ Refined with the Product Owner on 2026-10-11 (started with `/run`).
 - **Several points selected move together** (for the editor applications, with dragging).
 - **Not in F08**, written for later: dragging points, stretching a shape by its width and height from a fixed point chosen in the 3 × 3 grid (as Inkscape), the warning shown when converting with a « do not show again » box (E02, editor applications, « tout ce qui est truc du UX, pour moi, ça doit aller plus tard dans une epic »); cutting, joining or deleting edges and adding connections between points (E03).
 
+## Decided after the spike (Product Owner, 2026-10-11)
+
+- **Adding a point may change the drawing**: it splits the edge, so a big rounding of a neighbouring corner may shrink. Accepted, « on a rajouté un point explicitement. C'est nous qui l'avons demandé »; the straight contour does not change.
+- **Negative x and y are allowed**: « un x y négatif, c'est possible, parce que dans l'espace, ça se peut. C'est juste une taille négative, ça ne se peut pas ».
+- **Each point keeps its number**, wherever it moves: « mon premier point, c'est mon premier point, peu importe où il est »; the top-left, clockwise start of Q11 holds at creation only.
+- **The rectangle is a free shape**: « En soi, en arrière, ça devrait être une forme libre tout le temps »; the rectangle tool only creates it. Width and height of any free shape stay editable and stretch it, without loss. Done first, in F09; F08 resumes after it.
+
 ## Open in refinement
 
 - Deleting a point of a free shape joins its two neighbours with a straight edge, so that the shape stays closed (a symbol's shape is a closed contour, `shapes.md` §1). To confirm with the Product Owner at the validation: « je n'ai pas envie que, si on supprime un point, les autres points se rattachent » was said about the regular polygon.
@@ -33,7 +40,7 @@ Refined with the Product Owner on 2026-10-11 (started with `/run`).
 
 1. A regular polygon is turned into a free shape by a button: the same vertices, the same radii, the same drawing; it no longer has a number of corners nor an anchor.
 2. A point of a rectangle or of a free shape is moved by typing its x and y, integers; a rectangle whose point moves becomes a free shape of 4 points with its radii; width and height show the bounding box.
-3. With two neighbouring points selected, a button adds a point exactly in the middle of their edge, without rounding, the edge unchanged.
+3. With two neighbouring points selected, a button adds a point exactly in the middle of their edge, without rounding; the straight contour is unchanged, a neighbouring corner's rounding may shrink.
 4. Selected points of a rectangle or a free shape are deleted by a button or the Delete key, their neighbours joined; at least 3 points remain, otherwise the deletion is refused with a message; on a regular polygon it is refused with a message to convert it first.
 
 ## Stories
@@ -42,7 +49,7 @@ In delivery order.
 
 | ID                                                             | Type       | Title                                       | Status |
 | -------------------------------------------------------------- | ---------- | ------------------------------------------- | ------ |
-| [SP-005](../stories/E01-F08-SP-005-research-f08.md)            | Spike      | Research for F08                            | ready  |
+| [SP-005](../stories/E01-F08-SP-005-research-f08.md)            | Spike      | Research for F08                            | done   |
 | [EN-011](../stories/E01-F08-EN-011-free-shape.md)              | Enabler    | A free shape in the model                   | ready  |
 | [US-014](../stories/E01-F08-US-014-convert-and-move.md)        | User story | Convert a polygon, move a point by its x, y | ready  |
 | [CHK-005](../stories/E01-F08-CHK-005-checkpoint-f08.md)        | Checkpoint | Checkpoint in the middle of F08             | ready  |

@@ -41,7 +41,7 @@
 | [US-013](./E01-F03-US-013-points-list-selection.md)         | F03     | List of points, selection, radius per vertex     | done   |
 | [AUD-004](./E01-F03-AUD-004-audit-f03.md)                   | F03     | Audit F03: per-vertex corner radius              | done   |
 | [VAL-004](./E01-F03-VAL-004-validate-radius-per-vertex.md)  | F03     | Validate F03 on the reference cases              | done   |
-| [SP-005](./E01-F08-SP-005-research-f08.md)                  | F08     | Research for F08                                 | ready  |
+| [SP-005](./E01-F08-SP-005-research-f08.md)                  | F08     | Research for F08                                 | done   |
 | [EN-011](./E01-F08-EN-011-free-shape.md)                    | F08     | A free shape in the model                        | ready  |
 | [US-014](./E01-F08-US-014-convert-and-move.md)              | F08     | Convert a polygon, move a point by its x, y      | ready  |
 | [CHK-005](./E01-F08-CHK-005-checkpoint-f08.md)              | F08     | Checkpoint in the middle of F08                  | ready  |
