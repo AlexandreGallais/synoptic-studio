@@ -1,6 +1,6 @@
 # ADR-0034 — Only the coordinate typed is an integer; edits keep the fractions
 
-**Status**: Accepted (Product Owner, VAL-005, 2026-10-11, Q28) — partly supersedes ADR-0031 (a vertex typed is an integer as a whole) and ADR-0003 (fractions only for a converted polygon).
+**Status**: Accepted (Product Owner, VAL-005, 2026-10-11, Q28) — partly supersedes ADR-0031 (a vertex typed is an integer as a whole) and ADR-0003 (fractions only for a converted polygon); partly superseded by ADR-0035 (on a turned shape, the integer typed holds in the drawing only).
 
 ## Context
 
