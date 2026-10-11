@@ -64,7 +64,7 @@ In delivery order.
 | [CHK-005](../stories/E01-F08-CHK-005-checkpoint-f08.md)               | Checkpoint | Checkpoint in the middle of F08                 | done   |
 | [US-015](../stories/E01-F08-US-015-add-middle-point.md)               | User story | Add a point in the middle of an edge            | done   |
 | [US-016](../stories/E01-F08-US-016-delete-points.md)                  | User story | Delete points                                   | done   |
-| [AUD-005](../stories/E01-F08-AUD-005-audit-f08.md)                    | Audit      | Audit F08: node editing                         | ready  |
+| [AUD-005](../stories/E01-F08-AUD-005-audit-f08.md)                    | Audit      | Audit F08: node editing                         | done   |
 | [VAL-005](../stories/E01-F08-VAL-005-validate-node-editing.md)        | Validation | Validate F08 on the reference cases             | ready  |
 
 ## Feature plan
