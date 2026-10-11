@@ -1,0 +1,18 @@
+import { readStoredFreeShape } from "./read-stored-free-shape";
+import { writeStoredFreeShape } from "./write-stored-free-shape";
+
+/**
+ * Brings back the free shape kept when "Free shape" is chosen again in the selector: its own
+ * width, height and radii, not those of the shape shown before (VAL-005).
+ *
+ * @kind procedure
+ * @param document - page document
+ * @see docs/backlog/stories/E01-F08-VAL-005-validate-node-editing.md
+ */
+export function writeChosenFreeShape(document: Document): void {
+  const kept = readStoredFreeShape(document);
+
+  if (kept !== undefined) {
+    writeStoredFreeShape(document, kept);
+  }
+}

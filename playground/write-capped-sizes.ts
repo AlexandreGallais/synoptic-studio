@@ -5,7 +5,7 @@ import { writeInputValue } from "./write-input-value";
 const MAX_SIZE = 100_000;
 
 /** Inputs capped at `MAX_SIZE`. */
-const SIZE_INPUTS = ["width", "height", "radius"];
+const SIZE_INPUTS = ["width", "height", "radius", "point-radius"];
 
 /**
  * Caps the sizes typed above 100 000 at 100 000, in the inputs themselves (Q20); smaller values

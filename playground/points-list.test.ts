@@ -48,12 +48,23 @@ function pressedRows(): readonly string[] {
 }
 
 /**
- * The radius input of the page.
+ * The radius input of the points, in Points mode.
  *
  * @returns the input, or a detached one when the page has none
  */
 function radiusField(): HTMLInputElement {
-  return document.querySelector<HTMLInputElement>("#radius") ?? document.createElement("input");
+  return (
+    document.querySelector<HTMLInputElement>("#point-radius") ?? document.createElement("input")
+  );
+}
+
+/**
+ * The radii kept on the shape's radius field.
+ *
+ * @returns them as written, separated by spaces
+ */
+function keptRadii(): string | undefined {
+  return document.querySelector<HTMLInputElement>("#radius")?.dataset["radii"];
 }
 
 /**
@@ -123,12 +134,12 @@ describe("list of points and selection", () => {
   it("[F03.AC5] gives the radius typed to the selected points only", () => {
     // Vertex 2 first gets a radius of its own, which must stay.
     clickOn('#points [data-vertex="2"]', {});
-    type("radius", "3");
+    type("point-radius", "3");
     clickOn('#points [data-vertex="1"]', {});
     clickOn('#points [data-vertex="4"]', { ctrlKey: true });
-    type("radius", "10");
+    type("point-radius", "10");
 
-    expect(radiusField().dataset["radii"]).toBe("10 3 0 10 0 0");
+    expect(keptRadii()).toBe("10 3 0 10 0 0");
     expect(text("#path-data").match(/A10 10/gu)).toHaveLength(2);
     expect(text('#points [data-vertex="1"]')).toBe("1 · x 75 · y 93.30127 · radius 10");
     expect(text('#points [data-vertex="2"]')).toBe("2 · x 25 · y 93.30127 · radius 3");
@@ -144,7 +155,7 @@ describe("list of points and selection", () => {
     // Hexagon edge 50, turning angle 60°: setback 1000 · tan 30° = 577.35 per corner; the edge
     // allows 50, so r' = 1000 · 50 / 577.35 = 86.60254.
     clickOn('#points [data-vertex="1"]', {});
-    type("radius", "1000");
+    type("point-radius", "1000");
 
     expect(text('#points [data-vertex="1"]')).toBe(
       "1 · x 75 · y 93.30127 · radius 1000 (effective 86.60254)",
@@ -165,7 +176,7 @@ describe("list of points and selection", () => {
 
   it("[F03.AC5] keeps every radius while the shape is briefly refused", () => {
     clickOn('#points [data-vertex="6"]', {});
-    type("radius", "9");
+    type("point-radius", "9");
     type("width", "");
 
     // Refused: no list nor handle of the last valid shape.
@@ -174,7 +185,7 @@ describe("list of points and selection", () => {
 
     type("width", "100");
 
-    expect(radiusField().dataset["radii"]).toBe("0 0 0 0 0 9");
+    expect(keptRadii()).toBe("0 0 0 0 0 9");
   });
 
   it("[F03.AC5] clears the selection at each step of the guided test and when the shape changes", () => {
@@ -197,29 +208,29 @@ describe("list of points and selection", () => {
 
   it("[F02.AC5] caps a radius typed in Points mode at 100 000 (Q20)", () => {
     clickOn('#points [data-vertex="1"]', {});
-    type("radius", "200000");
+    type("point-radius", "200000");
 
     expect(radiusField().value).toBe("100000");
-    expect(radiusField().dataset["radii"]).toBe("100000 0 0 0 0 0");
+    expect(keptRadii()).toBe("100000 0 0 0 0 0");
   });
 
   it("[F03.AC3] keeps a radius given in Points mode by vertex number when the corners change", () => {
     clickOn('#points [data-vertex="1"]', {});
-    type("radius", "10");
+    type("point-radius", "10");
     clickOn('#points [data-vertex="6"]', {});
-    type("radius", "9");
+    type("point-radius", "9");
     type("corners", "5");
 
-    expect(radiusField().dataset["radii"]).toBe("10 0 0 0 0");
+    expect(keptRadii()).toBe("10 0 0 0 0");
 
     type("corners", "6");
 
-    expect(radiusField().dataset["radii"]).toBe("10 0 0 0 0 0");
+    expect(keptRadii()).toBe("10 0 0 0 0 0");
   });
 
   it("[F03.AC3] keeps the radii by vertex number when switching to the rectangle and back", () => {
     clickOn('#points [data-vertex="2"]', {});
-    type("radius", "7");
+    type("point-radius", "7");
 
     const select = document.querySelector<HTMLSelectElement>("#shape");
 
@@ -231,6 +242,6 @@ describe("list of points and selection", () => {
     }
 
     // Vertex 2 kept its 7 through the rectangle's four corners; vertices 5 and 6 come back sharp.
-    expect(radiusField().dataset["radii"]).toBe("0 7 0 0 0 0");
+    expect(keptRadii()).toBe("0 7 0 0 0 0");
   });
 });

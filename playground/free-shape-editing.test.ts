@@ -369,18 +369,51 @@ describe("editing the points of a free shape", () => {
     expect(field("point-x").value).toBe("");
   });
 
-  it("[F08.AC5] puts the radius with the point fields in Points mode, with the shape's otherwise", () => {
+  it("[F08.AC5] shows the shape's radius in both modes, and a radius of the points in Points mode", () => {
     openOnStep(1);
+    clickPoint(1);
+    type("point-radius", "30");
 
-    const inPoints = place();
+    // The shape's field still speaks for every corner: 30 and 10, Mixed.
+    expect([place(), field("radius").placeholder]).toEqual([undefined, "Mixed"]);
 
-    type("width", "");
+    type("radius", "5");
 
-    const whenRefused = place();
+    expect(rows().map((row) => row.endsWith("radius 5"))).toEqual([true, true, true, true]);
+  });
 
-    type("width", "120");
-    document.querySelector<HTMLButtonElement>("#mode-shape")?.click();
+  it("[F08.AC2] keeps the focus in a radius field while it is typed in", () => {
+    openOnStep(1);
+    clickPoint(1);
 
-    expect([inPoints, whenRefused, place()]).toEqual(["point-fields", undefined, undefined]);
+    for (const id of ["point-radius", "radius"]) {
+      field(id).focus();
+      type(id, "1");
+      type(id, "12");
+
+      expect(document.activeElement === field(id)).toBe(true);
+    }
+  });
+
+  it("[F08.AC2] brings the free shape back, its own size, when it is chosen again", () => {
+    // Step 1: point 3 typed at x 150, a free shape 150 wide; then the polygon, 100 wide, then back.
+    openOnStep(1);
+    clickPoint(3);
+    type("point-x", "150");
+
+    const select = document.querySelector<HTMLSelectElement>("#shape");
+
+    for (const value of ["polygon", "free"]) {
+      if (select !== null) {
+        select.value = value;
+        select.dispatchEvent(new Event("change"));
+      }
+
+      // The polygon gets a width of its own, which the free shape must not take.
+      type("width", value === "polygon" ? "100" : field("width").value);
+    }
+
+    expect(field("width").value).toBe("150");
+    expect(rows()[2]).toBe("3 · x 150 · y 80 · radius 10");
   });
 });
