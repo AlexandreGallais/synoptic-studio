@@ -113,23 +113,27 @@ describe("list of points and selection", () => {
 
     expect(pressedRows()).toEqual(["1", "2", "5"]);
 
-    // In the list, Shift selects from the start (vertex 1, clicked last) to vertex 4.
+    // In the list, Shift selects from the start, vertex 5 (the last clicked without Shift), to
+    // vertex 4, replacing the selection.
     clickOn('#points [data-vertex="4"]', { shiftKey: true });
 
-    expect(pressedRows()).toEqual(["1", "2", "3", "4"]);
+    expect(pressedRows()).toEqual(["4", "5"]);
   });
 
   it("[F03.AC5] gives the radius typed to the selected points only", () => {
+    // Vertex 2 first gets a radius of its own, which must stay.
+    clickOn('#points [data-vertex="2"]', {});
+    type("radius", "3");
     clickOn('#points [data-vertex="1"]', {});
     clickOn('#points [data-vertex="4"]', { ctrlKey: true });
     type("radius", "10");
 
-    expect(radiusField().dataset["radii"]).toBe("10 0 0 10 0 0");
+    expect(radiusField().dataset["radii"]).toBe("10 3 0 10 0 0");
     expect(text("#path-data").match(/A10 10/gu)).toHaveLength(2);
     expect(text('#points [data-vertex="1"]')).toBe("1 · x 25 · y 6.69873 · radius 10");
-    expect(text('#points [data-vertex="2"]')).toBe("2 · x 75 · y 6.69873 · radius 0");
+    expect(text('#points [data-vertex="2"]')).toBe("2 · x 75 · y 6.69873 · radius 3");
 
-    // Vertices 1 and 2 now differ: Mixed.
+    // Vertices 1 and 2 differ (10 and 3): Mixed.
     clickOn('#points [data-vertex="2"]', { ctrlKey: true });
 
     expect(radiusField().value).toBe("");
@@ -155,7 +159,38 @@ describe("list of points and selection", () => {
 
     clickOn('#points [data-vertex="2"]', {});
     clickOn("#mode-shape", {});
-    clickOn("#mode-points", {});
+
+    expect(document.querySelector<HTMLElement>("#points")?.dataset["selected"]).toBe("");
+  });
+
+  it("[F03.AC5] keeps every radius while the shape is briefly refused", () => {
+    clickOn('#points [data-vertex="6"]', {});
+    type("radius", "9");
+    type("width", "");
+
+    // Refused: no list nor handle of the last valid shape.
+    expect(document.querySelector<HTMLElement>("#points")?.hidden).toBe(true);
+    expect(document.querySelectorAll("#canvas path.handle")).toHaveLength(0);
+
+    type("width", "100");
+
+    expect(radiusField().dataset["radii"]).toBe("0 0 0 0 0 9");
+  });
+
+  it("[F03.AC5] clears the selection at each step of the guided test and when the shape changes", () => {
+    clickOn('#points [data-vertex="2"]', {});
+    document.querySelector<HTMLButtonElement>("#guide-next")?.click();
+
+    expect(pressedRows()).toEqual([]);
+
+    clickOn('#points [data-vertex="2"]', {});
+
+    const select = document.querySelector<HTMLSelectElement>("#shape");
+
+    if (select !== null) {
+      select.value = "rectangle";
+      select.dispatchEvent(new Event("change"));
+    }
 
     expect(pressedRows()).toEqual([]);
   });
