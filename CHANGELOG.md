@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.3](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.11.2...v0.11.3) (2026-10-11)
+
+
+### Documentation
+
+* **docs:** journal of the F08 validation ([977627f](https://github.com/AlexandreGallais/synoptic-studio/commit/977627ffee15407080225ae6d2a9774f29f058da))
+
 ## [0.11.2](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.11.1...v0.11.2) (2026-10-11)
 
 
