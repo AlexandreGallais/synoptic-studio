@@ -12,7 +12,7 @@ Spike SP-007, 2026-10-11. Claude Code's own research; every source below was rea
 ## Position (EN-014) — ADR-0035
 
 - A regular polygon has no position, a free shape only the top-left of its stored points. Every shape now stores an angle and a position, the top-left of its box before it turns; the x and y shown are those of the straight box, derived (the Product Owner's « vraie get bbox »). Storing the straight box's top-left instead would move a turned shape when its radius changes.
-- Functional references: Inkscape draws the straight box dashed and turns about the center of the box, a movable cross (`REF-INKSCAPE-SELECTOR`); Figma's `rotation` runs from −180 to 180 about the top-left (`REF-FIGMA-ROTATION`) — the Product Owner chose 0 to 359 about the center. Figma's help on width and height of a rotated layer could not be read (pages not found); the rule « width and height stay those before turning » is the Product Owner's decision, and it is also how a transform works in SVG: the shape's own numbers do not change, only its drawing (`REF-SVG11-TRANSFORM` §7.6).
+- Functional references: Inkscape draws the straight box dashed and turns about the center of the box, a movable cross (`REF-INKSCAPE-SELECTOR`); Figma's `rotation` runs from −180 to 180 about the top-left (`REF-FIGMA-ROTATION`) — the Product Owner chose 0 to 359 about the center. Figma's help on width and height of a rotated layer could not be read (pages not found); the rule « width and height stay those before turning » is the Product Owner's decision, attributed to them only.
 
 ## Straight box (EN-015)
 

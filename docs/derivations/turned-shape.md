@@ -32,7 +32,7 @@ A rotation about a point is translate, rotate, translate back (`REF-SVG11-TRANSF
 
 `D(l) = c + R(b + l − c) = b + k + R(l − k)`
 
-The center maps to itself (`l = k`), so turning never moves the center of the box (Product Owner, F04). At `α = 0` the straight shape is drawn as it is, without computing (`(x − c) + c` may differ from `x` by an ulp, and every earlier test expects the exact straight drawing).
+The center maps to itself (`l = k`), so turning never moves the center of the box (Product Owner, F04). At `α = 0` the straight shape is drawn as it is, without computing (`(x − c) + c` may differ from `x` by an ulp, and every earlier test expects the exact straight drawing). The same holds for the position: a free shape whose position `b` is the top-left `o` of its stored points is drawn by the earlier formula, as it is (`(p − o) + o` may also differ from `p` by an ulp); only `b ≠ o` adds `b − o`.
 
 ## Step 5 — Kept in place when the box changes
 
@@ -41,19 +41,20 @@ Editing a turned shape changes its box (`w, h` typed, a point moved). To keep a 
 `b' = P − k' − R(l' − k')`
 
 - **A width or height typed**: the turned top-left corner stays in place (Product Owner, F04, as Figma). It is `l = (0, 0)` before and after: `P = b + k − R(k)`, then `b' = P − k' + R(k')`.
-- **A point typed**: un-turn the point typed, `u = c + R⁻¹(T − c)` (`R⁻¹` turns by `−α`), edit the straight shape as at `α = 0` (ADR-0033), then place the new box so that a point not moved keeps its drawn place `P`.
+- **A point typed**: un-turn the point typed, `u = c + R⁻¹(T − c)` (`R⁻¹` turns by `−α`), edit the straight shape as at `α = 0` (ADR-0033), then place the new box so that a point not moved keeps its drawn place `P`. The stored `u` is fractional, and the drawn point is `T` within a rounding error (`R⁻¹` then `R` in floating point): the integer typed holds in the drawing, written at 5 decimals (Q10), not in the model (ADR-0035).
 - **A turned polygon converted**: its free shape has the box of its points, not the polygon's box; placed so that its first point keeps its drawn place.
 
 The shape is rigid under `R` (a rotation keeps distances): once one point is in place, every point not moved is too.
 
 ## Checks (test cases)
 
-| Case                                     | Computation                                             | Expected                                           |
-| ---------------------------------------- | ------------------------------------------------------- | -------------------------------------------------- |
-| Angles typed 370, −90, 360, −360, 45     | `((a % 360) + 360) % 360`                               | 10, 270, 0, 0, 45                                  |
-| Rectangle 100 × 50 at `b = (0, 0)`, 90°  | `c = (50, 25)`; `(−50, −25) ↦ (25, −50)`                | points (75, −25), (75, 75), (25, 75), (25, −25)    |
-| Same, straight box                       | x from 25 to 75, y from −25 to 75                       | x 25, y −25, 50 × 100                              |
-| Square 100 × 100 at `(0, 0)`, 45°        | `(−50, −50) ↦ (0, −70.71068)`                           | point 1 at (50, −20.71068); straight box 141.42136 |
-| Rectangle 100 × 50, 90°, width typed 200 | `P = (75, −25)`, `k' = (100, 25)`, `R(k') = (−25, 100)` | `b' = (−50, 50)`; point 1 still at (75, −25)       |
-| Any shape, 0°                            | not computed                                            | the straight drawing, bit for bit                  |
-| Any shape, 90° four times                | quarter turns exact                                     | back to the straight drawing exactly               |
+| Case                                                 | Computation                                             | Expected                                               |
+| ---------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------ |
+| Angles typed 370, −90, 360, −360, 45                 | `((a % 360) + 360) % 360`                               | 10, 270, 0, 0, 45                                      |
+| Rectangle 100 × 50 at `b = (0, 0)`, 90°              | `c = (50, 25)`; `(−50, −25) ↦ (25, −50)`                | points (75, −25), (75, 75), (25, 75), (25, −25)        |
+| Same, straight box                                   | x from 25 to 75, y from −25 to 75                       | x 25, y −25, 50 × 100                                  |
+| Square 100 × 100 at `(0, 0)`, 45°                    | `(−50, −50) ↦ (0, −70.71068)`                           | point 1 at (50, −20.71068); straight box 141.42136     |
+| Rectangle 100 × 50, 90°, width typed 200             | `P = (75, −25)`, `k' = (100, 25)`, `R(k') = (−25, 100)` | `b' = (−50, 50)`; point 1 still at (75, −25)           |
+| Any shape, 0°                                        | not computed                                            | the straight drawing, bit for bit                      |
+| Rectangle 100 × 50 at 90°, 180°, 270°                | quarter turns exact                                     | every coordinate exact, no rounding dust (`Object.is`) |
+| The 90° drawing map applied four times to the points | four exact quarter turns about `c`                      | the straight points exactly                            |
