@@ -1,3 +1,4 @@
+import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { cornersWithRadii } from "./corners-with-radii";
@@ -36,5 +37,20 @@ describe("cornersWithRadii", () => {
       { point: { x: 0, y: 0 }, radius: 5 },
       { point: { x: 10, y: 0 }, radius: 0 },
     ]);
+  });
+
+  const anyPoint = fc.record({ x: fc.integer(), y: fc.integer() });
+
+  test.prop([
+    fc.array(anyPoint, { maxLength: 12 }),
+    fc.array(fc.nat({ max: 100 }), { maxLength: 12 }),
+  ])("gives one corner per vertex, with the radius of its number or 0", (points, radii) => {
+    const corners = cornersWithRadii(points, radii);
+
+    expect(corners.map((corner) => corner.point)).toEqual(points);
+
+    expect(corners.map((corner) => corner.radius)).toEqual(
+      points.map((point, index) => radii[index] ?? 0),
+    );
   });
 });

@@ -194,4 +194,43 @@ describe("list of points and selection", () => {
 
     expect(pressedRows()).toEqual([]);
   });
+
+  it("[F02.AC5] caps a radius typed in Points mode at 100 000 (Q20)", () => {
+    clickOn('#points [data-vertex="1"]', {});
+    type("radius", "200000");
+
+    expect(radiusField().value).toBe("100000");
+    expect(radiusField().dataset["radii"]).toBe("100000 0 0 0 0 0");
+  });
+
+  it("[F03.AC3] keeps a radius given in Points mode by vertex number when the corners change", () => {
+    clickOn('#points [data-vertex="1"]', {});
+    type("radius", "10");
+    clickOn('#points [data-vertex="6"]', {});
+    type("radius", "9");
+    type("corners", "5");
+
+    expect(radiusField().dataset["radii"]).toBe("10 0 0 0 0");
+
+    type("corners", "6");
+
+    expect(radiusField().dataset["radii"]).toBe("10 0 0 0 0 0");
+  });
+
+  it("[F03.AC3] keeps the radii by vertex number when switching to the rectangle and back", () => {
+    clickOn('#points [data-vertex="2"]', {});
+    type("radius", "7");
+
+    const select = document.querySelector<HTMLSelectElement>("#shape");
+
+    if (select !== null) {
+      select.value = "rectangle";
+      select.dispatchEvent(new Event("change"));
+      select.value = "polygon";
+      select.dispatchEvent(new Event("change"));
+    }
+
+    // Vertex 2 kept its 7 through the rectangle's four corners; vertices 5 and 6 come back sharp.
+    expect(radiusField().dataset["radii"]).toBe("0 7 0 0 0 0");
+  });
 });

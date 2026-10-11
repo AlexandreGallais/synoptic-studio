@@ -1,3 +1,7 @@
+import { cyclicItem } from "../geometry";
+
+import { resizeRadii } from "./resize-radii";
+
 import type { Corner } from "../geometry";
 import type { Point } from "../math";
 
@@ -16,5 +20,7 @@ export function cornersWithRadii(
   points: readonly Point[],
   radii: readonly number[],
 ): readonly Corner[] {
-  return points.map((point, index) => ({ point, radius: radii.at(index) ?? 0 }));
+  const resized = resizeRadii(radii, points.length);
+
+  return points.map((point, index) => ({ point, radius: cyclicItem(resized, index, 0) }));
 }
