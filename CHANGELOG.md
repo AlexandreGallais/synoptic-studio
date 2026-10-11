@@ -1,5 +1,65 @@
 # Changelog
 
+## [0.12.0](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.11.3...v0.12.0) (2026-10-11)
+
+
+### Features
+
+* **geometry:** a regular polygon numbered from the right end of its base ([38bf76a](https://github.com/AlexandreGallais/synoptic-studio/commit/38bf76a476b0b59b161d7e984c8c8cf4e81dcb4b))
+* **model:** a free shape of corners; a polygon converted unmoved; a point typed ([5e27bcf](https://github.com/AlexandreGallais/synoptic-studio/commit/5e27bcfc63cd9683c46cec97e98e16cd7af40351))
+* **model:** add a sharp point in the middle of an edge ([e97344c](https://github.com/AlexandreGallais/synoptic-studio/commit/e97344c7d9422ec8ae805a75f0d0a0437fd08707))
+* **model:** remove points of a free shape, their neighbours joined ([e3a59a7](https://github.com/AlexandreGallais/synoptic-studio/commit/e3a59a7d4d8db5a3974677f6d204cdf67f38ea5b))
+* **playground:** add a point in the middle of the edge of two neighbours ([1b2a400](https://github.com/AlexandreGallais/synoptic-studio/commit/1b2a40026c1bc304ec3150ec18cc97d19822adef))
+* **playground:** convert a polygon unmoved; type the x and y of a point ([874490a](https://github.com/AlexandreGallais/synoptic-studio/commit/874490ae765f5ee2d02e3edc01616410d0adb4fb))
+* **playground:** delete the points selected, by a button or the Delete key ([6bce6bd](https://github.com/AlexandreGallais/synoptic-studio/commit/6bce6bd292b80f00b40e534daa90b47ee01d1c60))
+* **playground:** guided test of F08, steps 39 to 46 ([3660997](https://github.com/AlexandreGallais/synoptic-studio/commit/3660997646c46debc9a04baefb34a7c6565ead50))
+* **playground:** the radius field with the point fields in Points mode ([a2cad78](https://github.com/AlexandreGallais/synoptic-studio/commit/a2cad78c5dcaac0a0465fa0c9d6cc22fbb551d17))
+
+
+### Bug fixes
+
+* **model:** no edge for points outside the shape; review of US-015 ([41fe723](https://github.com/AlexandreGallais/synoptic-studio/commit/41fe723c1251e89ed6b0e896f6121d759161c719))
+* **playground:** a fractional width still refused for the rectangle; review of EN-011 ([7bbd17c](https://github.com/AlexandreGallais/synoptic-studio/commit/7bbd17c50387cfbd768a26cc272202dadec971c2))
+* **playground:** a radius field for the points, the shape's always shown; typing keeps the focus ([5c97f66](https://github.com/AlexandreGallais/synoptic-studio/commit/5c97f669ef7f373a5dd58716a8be0040164bb644))
+* **playground:** keep the free shape when an edit would leave it flat; audit of F08 ([b390b3c](https://github.com/AlexandreGallais/synoptic-studio/commit/b390b3cf46bce24d3462aa23966cbaf95fc7ae1e))
+* **playground:** no point typed nor polygon converted on a refused shape; review of US-014 ([e48cb6b](https://github.com/AlexandreGallais/synoptic-studio/commit/e48cb6b91cc076597d0573a0429d5cabfbc9cc15))
+* **playground:** the backspace key deletes too, as the delete key of a Mac ([515ddc6](https://github.com/AlexandreGallais/synoptic-studio/commit/515ddc64efdf806fb4fd92c7ca577ef2a55d946e))
+
+
+### Refactoring
+
+* **playground:** one reader of the shape kind, one input writer; rules of US-014 ([850703b](https://github.com/AlexandreGallais/synoptic-studio/commit/850703b5b26302b0ee6dda6d60acf50b1ca6a6d2))
+
+
+### Documentation
+
+* **adr:** a free shape of corners, fractions until edited, typed in the SVG frame ([33100b8](https://github.com/AlexandreGallais/synoptic-studio/commit/33100b899e91e33796119d50ab3e5fed8ea6aed6))
+* **adr:** only the coordinate typed is an integer; edits keep the fractions ([0f8b60b](https://github.com/AlexandreGallais/synoptic-studio/commit/0f8b60bbba67e2606d4f11a3730247c1383075b0))
+* **adr:** review of SP-005, ADR-0003 partly superseded, criteria made testable ([881deaa](https://github.com/AlexandreGallais/synoptic-studio/commit/881deaa18bd8c1abc384a88a1de6ab5f6d1a0e18))
+* **adr:** sources of F08; a free shape keeps fractional vertices ([80968f4](https://github.com/AlexandreGallais/synoptic-studio/commit/80968f4f169fc7cdd3cdf69f5114a6e3d0cbe2c1))
+* **backlog:** findings of the F08 audit; Q28 gathers the decisions for VAL-005 ([ee68b8f](https://github.com/AlexandreGallais/synoptic-studio/commit/ee68b8fef2d7075c3be544c3b675de52b5ead4ad))
+* **backlog:** light evolvability check of F08; test cards listed ([635d1f0](https://github.com/AlexandreGallais/synoptic-studio/commit/635d1f05e246e1a041272e5f34cdcb86a1714808))
+* **backlog:** node editing refined after Q27, corners and polygon numbering; run authorized ([35b3dff](https://github.com/AlexandreGallais/synoptic-studio/commit/35b3dff1c64026e0ce0f3f9028dc117024794b93))
+* **backlog:** node editing resumed on top of F09, its spike's decisions kept ([7b9add7](https://github.com/AlexandreGallais/synoptic-studio/commit/7b9add7dd2aa102977c9efc056b042cb10683231))
+* **backlog:** research note of F08; stories cite their sources ([c8a5c57](https://github.com/AlexandreGallais/synoptic-studio/commit/c8a5c57de520f68458028b67c209fa1217e5026e))
+* **backlog:** set AUD-005 done ([0bb1738](https://github.com/AlexandreGallais/synoptic-studio/commit/0bb1738ec7bc951f6cc318535cf79cf7ce17575c))
+* **backlog:** set CHK-005 done ([573c0ee](https://github.com/AlexandreGallais/synoptic-studio/commit/573c0ee7219f467a29972191249898e438784637))
+* **backlog:** set EN-011 done ([b0e67a3](https://github.com/AlexandreGallais/synoptic-studio/commit/b0e67a365af6abcf81296fc571042133f460729a))
+* **backlog:** set EN-013 done ([f85ad72](https://github.com/AlexandreGallais/synoptic-studio/commit/f85ad725a3f0d5c1a29fde2c095219d47d191533))
+* **backlog:** set SP-005 done ([ca47d38](https://github.com/AlexandreGallais/synoptic-studio/commit/ca47d38ad9be5a1ecaa88a7e634da721556d3f5e))
+* **backlog:** set US-014 done ([9fe1500](https://github.com/AlexandreGallais/synoptic-studio/commit/9fe1500568bbf0b5977609a5a76e2e7ff39c180c))
+* **backlog:** set US-015 done ([829eb47](https://github.com/AlexandreGallais/synoptic-studio/commit/829eb47c0a1c5cf68de0118d9315cca4651290cd))
+* **backlog:** set US-016 done ([2824b56](https://github.com/AlexandreGallais/synoptic-studio/commit/2824b56de9a6c6611558565001944e75d4c38924))
+* **backlog:** set VAL-005 and F08 done ([5caf9d7](https://github.com/AlexandreGallais/synoptic-studio/commit/5caf9d7d8c0a247a21b2ddbe8b170c9e1c494ed1))
+* **backlog:** test card of US-014 for the Product Owner; help text ([e513ce9](https://github.com/AlexandreGallais/synoptic-studio/commit/e513ce97415dd1bfbe029ed43d8f5e3b0fe19f33))
+* **backlog:** the Product Owner's answers to the review of SP-005 ([1686ab4](https://github.com/AlexandreGallais/synoptic-studio/commit/1686ab40a37cb74320f6bcd6b6f9aba24913f418))
+* **docs:** degenerate free shapes settled; ideas for symbols and rotation ([d3b1172](https://github.com/AlexandreGallais/synoptic-studio/commit/d3b1172c95cf19b88685381409dfb919db77aed1))
+* **docs:** demo page of F08, editing points ([58a5f98](https://github.com/AlexandreGallais/synoptic-studio/commit/58a5f98c15262ea4a7351396cac29dba790eb427))
+* **geometry:** identity at its own size comes from not computing, not from the formula ([53d1f35](https://github.com/AlexandreGallais/synoptic-studio/commit/53d1f353bf2f4fce1e1a10496f2fc87210ebc7f1))
+* **geometry:** review of EN-013, the polygon exception in Q11, CLAUDE.md and E01 ([e9d6adf](https://github.com/AlexandreGallais/synoptic-studio/commit/e9d6adfd286ba9735cc0d914313ceba3cd4980af))
+* **geometry:** the polygon's start at the right end of its base in the docs ([e14b783](https://github.com/AlexandreGallais/synoptic-studio/commit/e14b7834715e6cc88089113dc966fff99ac11532))
+* **model:** the free shape of corners in the domain ([5294a2e](https://github.com/AlexandreGallais/synoptic-studio/commit/5294a2ec052bac7ec8ac5ede75a3c5bcc45504ee))
+
 ## [0.11.3](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.11.2...v0.11.3) (2026-10-11)
 
 
