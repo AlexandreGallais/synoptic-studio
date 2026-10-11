@@ -3,6 +3,8 @@ import { midpoint } from "../math";
 
 import { freeShapeAroundCorners } from "./free-shape-around-corners";
 import { freeShapeCorners } from "./free-shape-corners";
+import { freeShapeKeptInPlace } from "./free-shape-kept-in-place";
+import { turnedCorners } from "./turned-corners";
 
 import type { FreeShape } from "./free-shape";
 
@@ -21,7 +23,7 @@ import type { FreeShape } from "./free-shape";
 export function freeShapeWithMidpoint(shape: FreeShape, edge: number): FreeShape {
   const corners = freeShapeCorners(shape);
 
-  return freeShapeAroundCorners(
+  const edited = freeShapeAroundCorners(
     corners.flatMap((corner, index) =>
       index === edge
         ? [
@@ -35,4 +37,7 @@ export function freeShapeWithMidpoint(shape: FreeShape, edge: number): FreeShape
     ),
     shape.angle,
   );
+
+  // Point 1 keeps its number: the new point comes after the edge's first point.
+  return freeShapeKeptInPlace(edited, turnedCorners(corners, shape), { after: 0, before: 0 });
 }
