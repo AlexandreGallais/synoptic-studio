@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.6](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.8.5...v0.8.6) (2026-10-11)
+
+
+### Documentation
+
+* **tooling:** clean up and ask the Product Owner before a feature pull request ([926cb13](https://github.com/AlexandreGallais/synoptic-studio/commit/926cb13779f0a9d71c1887303c883f86cf68626c))
+
 ## [0.8.5](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.8.4...v0.8.5) (2026-10-11)
 
 
