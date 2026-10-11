@@ -53,7 +53,7 @@ In delivery order.
 
 | ID                                                              | Type       | Title                                   | Status |
 | --------------------------------------------------------------- | ---------- | --------------------------------------- | ------ |
-| [SP-007](../stories/E01-F04-SP-007-research-f04.md)             | Spike      | Research for F04                        | ready  |
+| [SP-007](../stories/E01-F04-SP-007-research-f04.md)             | Spike      | Research for F04                        | done   |
 | [EN-014](../stories/E01-F04-EN-014-angle-and-position.md)       | Enabler    | An angle and a position for every shape | ready  |
 | [EN-015](../stories/E01-F04-EN-015-straight-box.md)             | Enabler    | The straight box of a drawn shape       | ready  |
 | [US-018](../stories/E01-F04-US-018-turn-a-shape.md)             | User story | Turn and move a shape in the playground | ready  |
