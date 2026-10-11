@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.10.1](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.10.0...v0.10.1) (2026-10-11)
+
+
+### Documentation
+
+* **backlog:** refinement of F08, node editing; later ideas to E02 and E03 ([a1a463e](https://github.com/AlexandreGallais/synoptic-studio/commit/a1a463e15e3ad238ce5f5b026d8d95e5e340ad52))
+
+
+### Build and dependencies
+
+* **deps:** update eslint-plugin-jsdoc to 65.3.0 ([c5945c8](https://github.com/AlexandreGallais/synoptic-studio/commit/c5945c8f687f479771c6027fba7c14ad76b56e8d))
+
 ## [0.10.0](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.9.10...v0.10.0) (2026-10-11)
 
 
