@@ -1,3 +1,4 @@
+import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { boxToViewBox } from "./box-to-view-box";
@@ -40,4 +41,20 @@ describe("boxToViewBox", () => {
       boxToViewBox({ maxX: 120.7, maxY: 120.7, minX: -20.71068, minY: -20.71068 }, CANVAS, 10).x,
     ).toBe(-31);
   });
+
+  test.prop({
+    margin: fc.integer({ max: 50, min: 0 }),
+    minX: fc.double({ max: 1e4, min: -1e4, noNaN: true }),
+    minY: fc.double({ max: 1e4, min: -1e4, noNaN: true }),
+  })(
+    "starts on whole units, at most a margin before the origin and the shape",
+    ({ margin, minX, minY }) => {
+      const view = boxToViewBox({ maxX: minX + 10, maxY: minY + 10, minX, minY }, CANVAS, margin);
+
+      expect(Number.isSafeInteger(view.x) && Number.isSafeInteger(view.y)).toBe(true);
+      expect(view.x).toBeLessThanOrEqual(-margin);
+      expect(view.x).toBeLessThanOrEqual(minX - margin + 1e-9);
+      expect(view.y).toBeLessThanOrEqual(minY - margin + 1e-9);
+    },
+  );
 });
