@@ -9,8 +9,8 @@ import {
 
 import { readAnchor } from "./read-anchor";
 import { readNumber } from "./read-number";
-import { readRadii } from "./read-radii";
 import { selectElement } from "./select-element";
+import { updateKeptRadii } from "./update-kept-radii";
 
 import type { ShapeReading } from "./shape-reading";
 import type { Rectangle } from "../src";
@@ -34,7 +34,7 @@ const INVALID_POLYGON =
 function readRectangle(document: Document): Rectangle {
   return {
     height: readNumber(document, "height"),
-    radii: readRadii(document, RECTANGLE_CORNER_COUNT),
+    radii: updateKeptRadii(document, RECTANGLE_CORNER_COUNT),
     width: readNumber(document, "width"),
   };
 }
@@ -71,7 +71,7 @@ function readPolygonShape(document: Document): ShapeReading {
   const anchor = readAnchor(document);
   const corners = readNumber(document, "corners");
   // One radius per corner (ADR-0029); none for a number of corners refused.
-  const radii = readRadii(document, isRegularPolygonCornerCount(corners) ? corners : 0);
+  const radii = updateKeptRadii(document, isRegularPolygonCornerCount(corners) ? corners : 0);
   const model = { ...readRectangle(document), anchor, corners, radii };
   const isValid = isValidRegularPolygon(model);
 
