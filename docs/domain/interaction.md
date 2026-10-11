@@ -23,13 +23,13 @@ No pen tool and no freehand drawing (see `shapes.md` §3).
 
 ## 3. Node editing
 
-- Entered by an **explicit mode** (the Node tool, a large button), never only by a double-click: the target users are not power users (Product Owner, 2026-10-11, F03). Vertex handles are large enough to click easily.
+- Entered by an **explicit mode** (the Node tool, a large button; Points mode in the playground, next to Shape mode), never only by a double-click: the target users are not power users (Product Owner, 2026-10-11, F03). Vertex handles are large enough to click easily.
 - Editing the vertices of a rectangle or a regular polygon turns it into a free contour, by a voluntary action: it loses its number of corners and its anchor (F08).
 
 - Shows every vertex of the **selected shape only**, never those of the other shapes. Its vertex 1 (the first of the contour, Q11) is marked red, vertex 2 green, so that the direction of the contour can be read (Product Owner, 2026-10-11).
 - A **list of the vertices** in contour order (Q11): number, x, y (at most 5 decimals), corner radius requested, and the effective one when it was reduced (Q8). A row is clicked to select its vertex, as its handle is on the drawing; useful when a handle is hard to hit.
 - Selection of one or several vertices, on the drawing or in the list: click selects one; Shift + click or Ctrl + click (Cmd on macOS) on the drawing adds / removes; in the list, Shift + click selects a range and Ctrl + click (Cmd) adds / removes, as in any list (Product Owner, 2026-10-11). A range starts at the last row or handle clicked without Shift, and replaces the selection; with no start yet, Shift + click acts as a plain click (agent's choice, note 0006).
-- The radius field applies to the selected vertices; it shows their common radius or Mixed, and is disabled when none is selected. The selection is cleared when the number of corners changes or when shape mode is chosen (agent's choice, note 0006).
+- The radius field applies to the selected vertices; it shows their common radius or Mixed, and is disabled when none is selected. The selection is cleared when the number of corners changes or when Shape mode is chosen (agent's choice, note 0006).
 - Moving a vertex: integer, typed or dragged (F08).
 - **Adding a vertex** between two existing vertices (on an edge).
 - Deleting a vertex.
