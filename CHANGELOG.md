@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.10](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.9.9...v0.9.10) (2026-10-11)
+
+
+### Documentation
+
+* **docs:** log the validation of F03 ([a183d28](https://github.com/AlexandreGallais/synoptic-studio/commit/a183d28a97280f21216cf9ca2bb36165bde91ffc))
+
 ## [0.9.9](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.9.8...v0.9.9) (2026-10-11)
 
 
