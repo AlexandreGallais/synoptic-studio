@@ -1,6 +1,6 @@
 {
   "name": "editor",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "private": true,
   "description": "Integer, orthogonal, path-only SVG editing library for synoptic-view symbols.",
   "license": "Apache-2.0",

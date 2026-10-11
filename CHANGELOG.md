@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.8.3](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.8.2...v0.8.3) (2026-10-11)
+
+
+### Documentation
+
+* **backlog:** refine F07 and set its stories ready ([d567529](https://github.com/AlexandreGallais/synoptic-studio/commit/d5675298f0b1f01c1c9d34bc5f631301fa904524))
+
+
+### Build and dependencies
+
+* **deps:** update npm-check-updates to 23.1.1 ([81c9a62](https://github.com/AlexandreGallais/synoptic-studio/commit/81c9a62d73992dbdd5d6ed3a3f1ee6ec40ec2fed))
+
 ## [0.8.2](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.8.1...v0.8.2) (2026-10-10)
 
 
