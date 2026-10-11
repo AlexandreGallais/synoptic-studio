@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.4](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.8.3...v0.8.4) (2026-10-11)
+
+
+### Documentation
+
+* **docs:** log the F07 run, stopped at VAL-003 ([72ae365](https://github.com/AlexandreGallais/synoptic-studio/commit/72ae3653ccc9fef771474f645c160962bb9c0b3a))
+
 ## [0.8.3](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.8.2...v0.8.3) (2026-10-11)
 
 
