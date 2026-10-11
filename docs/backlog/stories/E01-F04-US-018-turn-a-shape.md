@@ -3,7 +3,7 @@ id: US-018
 epic: E01
 feature: F04
 title: Turn and move a shape in the playground
-status: ready
+status: done
 points: 3
 ---
 
@@ -20,7 +20,7 @@ As a symbol designer, I want to turn a shape by an angle I type or by quarter tu
 
 ## Product Owner test
 
-Launch the playground with `npm run dev`, then open <http://localhost:5173/?step=1>: a rectangle 120 wide, 80 high, its corners rounded by 10. Words used: the **angle** turns the shape clockwise on screen about the center of its box; the **turned box** is the shape's box turned with it, drawn as a thin blue frame (the selection); the **straight box** is the smallest upright rectangle around the drawn shape, rounded corners included, drawn dashed, as a browser measures it.
+Launch the playground with `npm run dev`, then open `http://localhost:5173/?step=1`: a rectangle 120 wide, 80 high, its corners rounded by 10. Words used: the **angle** turns the shape clockwise on screen about the center of its box; the **turned box** is the shape's box turned with it, drawn as a thin blue frame (the selection); the **straight box** is the smallest upright rectangle around the drawn shape, rounded corners included, drawn dashed, as a browser measures it.
 
 | Step | Do                                                                               | You should see                                                                                                                                                                                                                     |
 | ---- | -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
