@@ -12,6 +12,7 @@ export * from "./free-shape-corners";
 export * from "./free-shape-radii";
 export * from "./free-shape-with-midpoint";
 export * from "./free-shape-with-point";
+export * from "./free-shape-without-points";
 export * from "./is-anchor";
 export * from "./is-model-size";
 export * from "./is-regular-polygon-corner-count";
