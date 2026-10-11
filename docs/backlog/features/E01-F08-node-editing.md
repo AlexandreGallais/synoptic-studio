@@ -61,7 +61,7 @@ In delivery order.
 | [EN-013](../stories/E01-F08-EN-013-polygon-numbered-from-its-base.md) | Enabler    | A regular polygon numbered from its base        | done   |
 | [EN-011](../stories/E01-F08-EN-011-free-shape.md)                     | Enabler    | A free shape of corners, fractions until edited | done   |
 | [US-014](../stories/E01-F08-US-014-convert-and-move.md)               | User story | Convert a polygon, move a point by its x, y     | done   |
-| [CHK-005](../stories/E01-F08-CHK-005-checkpoint-f08.md)               | Checkpoint | Checkpoint in the middle of F08                 | ready  |
+| [CHK-005](../stories/E01-F08-CHK-005-checkpoint-f08.md)               | Checkpoint | Checkpoint in the middle of F08                 | done   |
 | [US-015](../stories/E01-F08-US-015-add-middle-point.md)               | User story | Add a point in the middle of an edge            | ready  |
 | [US-016](../stories/E01-F08-US-016-delete-points.md)                  | User story | Delete points                                   | ready  |
 | [AUD-005](../stories/E01-F08-AUD-005-audit-f08.md)                    | Audit      | Audit F08: node editing                         | ready  |
