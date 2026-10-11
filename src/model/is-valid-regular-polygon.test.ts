@@ -10,49 +10,103 @@ const CENTER: Anchor = { horizontal: "mid", vertical: "mid" };
 describe("isValidRegularPolygon", () => {
   it("[F02.AC1] accepts 3 and 12 corners, the limits of Q19", () => {
     expect(
-      isValidRegularPolygon({ anchor: CENTER, corners: 3, height: 100, radius: 0, width: 100 }),
+      isValidRegularPolygon({
+        anchor: CENTER,
+        corners: 3,
+        height: 100,
+        radii: [0, 0, 0],
+        width: 100,
+      }),
     ).toBe(true);
 
     expect(
-      isValidRegularPolygon({ anchor: CENTER, corners: 12, height: 100, radius: 0, width: 100 }),
+      isValidRegularPolygon({
+        anchor: CENTER,
+        corners: 12,
+        height: 100,
+        radii: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        width: 100,
+      }),
     ).toBe(true);
   });
 
   it("[F02.AC1] refuses 2 corners, 13 corners and a fractional number of corners", () => {
     expect(
-      isValidRegularPolygon({ anchor: CENTER, corners: 2, height: 100, radius: 0, width: 100 }),
+      isValidRegularPolygon({ anchor: CENTER, corners: 2, height: 100, radii: [0, 0], width: 100 }),
     ).toBe(false);
 
     expect(
-      isValidRegularPolygon({ anchor: CENTER, corners: 13, height: 100, radius: 0, width: 100 }),
+      isValidRegularPolygon({
+        anchor: CENTER,
+        corners: 13,
+        height: 100,
+        radii: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        width: 100,
+      }),
     ).toBe(false);
 
     expect(
-      isValidRegularPolygon({ anchor: CENTER, corners: 4.5, height: 100, radius: 0, width: 100 }),
+      isValidRegularPolygon({
+        anchor: CENTER,
+        corners: 4.5,
+        height: 100,
+        radii: Array.from({ length: 4.5 }, () => 0),
+        width: 100,
+      }),
     ).toBe(false);
   });
 
   it("[F02.AC1] accepts a size of 0 and refuses a negative or fractional size (Q15)", () => {
     expect(
-      isValidRegularPolygon({ anchor: CENTER, corners: 6, height: 0, radius: 0, width: 0 }),
+      isValidRegularPolygon({
+        anchor: CENTER,
+        corners: 6,
+        height: 0,
+        radii: [0, 0, 0, 0, 0, 0],
+        width: 0,
+      }),
     ).toBe(true);
 
     expect(
-      isValidRegularPolygon({ anchor: CENTER, corners: 6, height: 100, radius: 0, width: -1 }),
+      isValidRegularPolygon({
+        anchor: CENTER,
+        corners: 6,
+        height: 100,
+        radii: [0, 0, 0, 0, 0, 0],
+        width: -1,
+      }),
     ).toBe(false);
 
     expect(
-      isValidRegularPolygon({ anchor: CENTER, corners: 6, height: 0.5, radius: 0, width: 100 }),
+      isValidRegularPolygon({
+        anchor: CENTER,
+        corners: 6,
+        height: 0.5,
+        radii: [0, 0, 0, 0, 0, 0],
+        width: 100,
+      }),
     ).toBe(false);
   });
 
   it("accepts a radius larger than the polygon and refuses a negative one (ADR-0007)", () => {
     expect(
-      isValidRegularPolygon({ anchor: CENTER, corners: 6, height: 100, radius: 1000, width: 100 }),
+      isValidRegularPolygon({
+        anchor: CENTER,
+        corners: 6,
+        height: 100,
+        radii: [1000, 1000, 1000, 1000, 1000, 1000],
+        width: 100,
+      }),
     ).toBe(true);
 
     expect(
-      isValidRegularPolygon({ anchor: CENTER, corners: 6, height: 100, radius: -1, width: 100 }),
+      isValidRegularPolygon({
+        anchor: CENTER,
+        corners: 6,
+        height: 100,
+        radii: [-1, -1, -1, -1, -1, -1],
+        width: 100,
+      }),
     ).toBe(false);
   });
 
@@ -64,7 +118,7 @@ describe("isValidRegularPolygon", () => {
         const anchor = { horizontal, vertical };
 
         expect(
-          isValidRegularPolygon({ anchor, corners: 3, height: 100, radius: 0, width: 100 }),
+          isValidRegularPolygon({ anchor, corners: 3, height: 100, radii: [0, 0, 0], width: 100 }),
         ).toBe(true);
       }
     }
@@ -79,7 +133,7 @@ describe("isValidRegularPolygon", () => {
         anchor: { horizontal: left, vertical: "mid" },
         corners: 3,
         height: 100,
-        radius: 0,
+        radii: [0, 0, 0],
         width: 100,
       }),
     ).toBe(false);
@@ -89,7 +143,39 @@ describe("isValidRegularPolygon", () => {
         anchor: { horizontal: "mid", vertical: left },
         corners: 3,
         height: 100,
-        radius: 0,
+        radii: [0, 0, 0],
+        width: 100,
+      }),
+    ).toBe(false);
+  });
+
+  it("[F03.AC1] accepts one radius per corner, different ones included, and refuses another count", () => {
+    expect(
+      isValidRegularPolygon({
+        anchor: CENTER,
+        corners: 3,
+        height: 100,
+        radii: [10, 0, 5],
+        width: 100,
+      }),
+    ).toBe(true);
+
+    expect(
+      isValidRegularPolygon({
+        anchor: CENTER,
+        corners: 3,
+        height: 100,
+        radii: [10, 0],
+        width: 100,
+      }),
+    ).toBe(false);
+
+    expect(
+      isValidRegularPolygon({
+        anchor: CENTER,
+        corners: 3,
+        height: 100,
+        radii: [10, 0, -1],
         width: 100,
       }),
     ).toBe(false);

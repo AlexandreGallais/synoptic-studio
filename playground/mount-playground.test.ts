@@ -347,7 +347,7 @@ describe("playground", () => {
     type("radius", "500000");
 
     expect(valueOf("radius")).toBe("100000");
-    expect(text("model")).toContain('"radius": 100000');
+    expect(text("model")).toContain('"radii": [\n    100000,');
   });
 
   it("[F02.AC5] keeps 100 000 and smaller values exactly", () => {

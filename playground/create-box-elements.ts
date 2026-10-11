@@ -25,7 +25,11 @@ export function createBoxElements(
     return [];
   }
 
-  const corners = rectangleCorners({ height: model.height, radius: 0, width: model.width });
+  const corners = rectangleCorners({
+    height: model.height,
+    radii: [0, 0, 0, 0],
+    width: model.width,
+  });
   const box = createPathElement(document, contourPiecesToPathData(roundedContour(corners)));
 
   box.classList.add("box");
