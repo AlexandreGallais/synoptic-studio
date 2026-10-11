@@ -7,6 +7,7 @@ import { freeShapeCorners } from "./free-shape-corners";
 import { isValidFreeShape } from "./is-valid-free-shape";
 import { regularPolygonAsFreeShape } from "./regular-polygon-as-free-shape";
 import { regularPolygonCorners } from "./regular-polygon-corners";
+import { turnedCorners } from "./turned-corners";
 
 /** F02's placement: centered on both axes. */
 const CENTER = { horizontal: "mid", vertical: "mid" } as const;
@@ -64,5 +65,35 @@ describe("regularPolygonAsFreeShape", () => {
     });
 
     expect(isValidFreeShape(flat)).toBe(false);
+  });
+
+  it("[F04.AC4] converts a turned triangle to a free shape that keeps its angle and its drawing", () => {
+    // The triangle's points do not fill its box: the free shape's box has another center, placed
+    // so that the drawing does not move (DERIV-turned-shape step 5).
+    const triangle = {
+      anchor: { horizontal: "mid", vertical: "max" },
+      angle: 90,
+      corners: 3,
+      height: 100,
+      radii: [0, 0, 0],
+      width: 100,
+      x: 0,
+      y: 0,
+    } as const;
+    const shape = regularPolygonAsFreeShape(triangle);
+    const drawn = turnedCorners(freeShapeCorners(shape), shape).flatMap((corner) => [
+      corner.point.x,
+      corner.point.y,
+    ]);
+    const expected = turnedCorners(regularPolygonCorners(triangle), triangle).flatMap((corner) => [
+      corner.point.x,
+      corner.point.y,
+    ]);
+
+    expect(shape.angle).toBe(90);
+
+    for (const [index, value] of drawn.entries()) {
+      expect(value).toBeCloseTo(expected[index] ?? NaN, 9);
+    }
   });
 });
