@@ -1,3 +1,5 @@
+export * from "./are-valid-radii";
+export * from "./corners-with-radii";
 export * from "./effective-corner-radius";
 export * from "./is-anchor";
 export * from "./is-model-size";
@@ -6,6 +8,7 @@ export * from "./is-valid-rectangle";
 export * from "./is-valid-regular-polygon";
 export type * from "./rectangle";
 export * from "./rectangle-contour";
+export * from "./rectangle-corner-count";
 export * from "./rectangle-corners";
 export type * from "./regular-polygon";
 export * from "./regular-polygon-contour";
