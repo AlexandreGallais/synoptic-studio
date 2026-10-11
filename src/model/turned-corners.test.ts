@@ -67,6 +67,15 @@ describe("turnedCorners (DERIV-turned-shape step 4)", () => {
     }
   });
 
+  it("[F04.AC1] gives an odd-sized rectangle back exactly after four quarter turns", () => {
+    // 101 × 51: the center (50.5, 25.5) is fractional, every product stays exact.
+    const shape = rectangleAsFreeShape({ ...RECTANGLE, angle: 90, height: 51, width: 101 });
+    const straight = freeShapeCorners(shape);
+    const turned = [1, 2, 3, 4].reduce((corners) => turnedCorners(corners, shape), straight);
+
+    expect(turned).toEqual(straight);
+  });
+
   it("[F04.AC3] turns about the center of the box at its position", () => {
     // At (10, 20) the center is (60, 45): (10, 20) ↦ (60 + 25, 45 − 50) = (85, −5).
     expect(drawnRectangle({ ...RECTANGLE, angle: 90, x: 10, y: 20 })[0]?.point).toEqual({
