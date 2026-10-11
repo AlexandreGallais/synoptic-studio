@@ -7,3 +7,6 @@
 ^https://library\.iec\.ch/
 ^https://webstore\.ansi\.org/
 ^https://www\.iso\.org/
+# GitLab merge request pages refuse automated clients (HTTP 403, 2026-10-11); the merge request
+# exists (GitLab API, HTTP 200). Cited in docs/references.md (REF-INKSCAPE-SNAP).
+^https://gitlab\.com/inkscape/inkscape/-/merge_requests/
