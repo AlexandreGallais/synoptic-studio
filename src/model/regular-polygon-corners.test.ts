@@ -2,6 +2,7 @@ import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { edgeLengths, effectiveRadii, roundedContour } from "../geometry";
+import { EPSILON } from "../math";
 
 import { effectiveCornerRadius } from "./effective-corner-radius";
 import { regularPolygonCorners } from "./regular-polygon-corners";
@@ -229,4 +230,26 @@ describe("regularPolygonCorners (properties)", () => {
 
     expect(Math.max(...radii) - Math.min(...radii)).toBeLessThan(1e-9 * Math.max(1, radius));
   });
+});
+
+describe("regularPolygonCorners (anchored, properties)", () => {
+  test.prop({
+    corners: fc.integer({ max: 12, min: 3 }),
+    height: fc.integer({ max: 1000, min: 1 }),
+    radius: fc.integer({ max: 2000, min: 0 }),
+    width: fc.integer({ max: 1000, min: 1 }),
+  })(
+    "[F07.AC4] keeps the flat base on the bottom of the box at any radius",
+    ({ corners, height, radius, width }) => {
+      // Every polygon has a flat base; its fillets stop on it, and at the maximal radius the
+      // incircle still touches it at its middle (DERIV-regular-polygon-fit step 6).
+      const anchor = { horizontal: "mid", vertical: "max" } as const;
+      const pieces = roundedContour(
+        regularPolygonCorners({ anchor, corners, height, radius, width }),
+      );
+      const lowest = Math.max(...pieces.flatMap((piece) => [piece.start.y, piece.end.y]));
+
+      expect(Math.abs(lowest - height)).toBeLessThan(EPSILON * Math.max(1, width, height));
+    },
+  );
 });
