@@ -27,5 +27,5 @@ None of its own: this story has no playground control yet; its cases are shown b
 
 One task = one commit, referenced as `US-009.Tn`.
 
-- [ ] T1 — `anchor` (`{ horizontal, vertical }`) in `RegularPolygon` (note 0005), validity, contour with the alignments; tests of the cases above (2 h)
+- [x] T1 — `anchor` (`{ horizontal, vertical }`) in `RegularPolygon` (note 0005), validity, contour with the alignments; tests of the cases above (2 h)
 - [ ] T2 — Domain (`shapes.md` §3, glossary: anchor, distinct from stroke alignment) and re-exports (0.5 h)
