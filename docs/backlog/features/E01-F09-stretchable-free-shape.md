@@ -32,7 +32,7 @@ In delivery order.
 
 | ID                                                                       | Type       | Title                                                | Status |
 | ------------------------------------------------------------------------ | ---------- | ---------------------------------------------------- | ------ |
-| [SP-006](../stories/E01-F09-SP-006-research-f09.md)                      | Spike      | Research for F09                                     | ready  |
+| [SP-006](../stories/E01-F09-SP-006-research-f09.md)                      | Spike      | Research for F09                                     | done   |
 | [EN-012](../stories/E01-F09-EN-012-free-shape-in-its-box.md)             | Enabler    | A free shape and its box in the model                | ready  |
 | [CHK-006](../stories/E01-F09-CHK-006-checkpoint-f09.md)                  | Checkpoint | Checkpoint in the middle of F09                      | ready  |
 | [US-017](../stories/E01-F09-US-017-rectangle-as-free-shape.md)           | User story | The rectangle as a free shape, stretched by its size | ready  |
