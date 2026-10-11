@@ -242,4 +242,11 @@ describe("turning and moving a shape (US-018)", () => {
 
     expect(angleShown()).toBe("90");
   });
+
+  it("[F04.AC1] keeps the view still while the shape turns, so that it turns about its center on screen", () => {
+    // 120 × 80 turned by 90° goes up to y −20: the view does not follow it (VAL-007).
+    type("angle", "90");
+
+    expect(document.querySelector("#canvas svg")?.getAttribute("viewBox")).toMatch(/^-10 -10 /u);
+  });
 });

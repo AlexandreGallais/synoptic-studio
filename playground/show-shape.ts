@@ -1,6 +1,5 @@
 import {
   EPSILON,
-  boxToViewBox,
   commonRadius,
   contourBoundingBox,
   contourPiecesToPathData,
@@ -19,7 +18,7 @@ import { writeText } from "./write-text";
 
 import type { ShapeReading } from "./shape-reading";
 
-/** Room left around the shape and its origin in the canvas, in user units (= CSS pixels). */
+/** Distance from the canvas top-left corner to the origin of the SVG, in user units (= CSS pixels). */
 const MARGIN = 10;
 
 /** Indentation of the JSON shown in the pipeline panel. */
@@ -84,7 +83,9 @@ export function showShape(document: Document, reading: ShapeReading): void {
   const pieces = roundedContour(reading.corners);
   const pathData = contourPiecesToPathData(pieces);
   const box = contourBoundingBox(pieces);
-  const viewBox = boxToViewBox(box, readCanvasSize(document), MARGIN);
+  // The view stays put, the origin a margin from the top-left: a turned shape turns about its
+  // center on screen, and may leave the canvas (Product Owner, VAL-007).
+  const viewBox = { ...readCanvasSize(document), x: -MARGIN, y: -MARGIN };
   const svg = createSvgElement(document, viewBox);
   const handles = showPoints(document, reading);
 
