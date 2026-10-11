@@ -59,7 +59,7 @@ In delivery order.
 | [US-018](../stories/E01-F04-US-018-turn-a-shape.md)             | User story | Turn and move a shape in the playground | done   |
 | [CHK-007](../stories/E01-F04-CHK-007-checkpoint-f04.md)         | Checkpoint | Checkpoint in the middle of F04         | done   |
 | [US-019](../stories/E01-F04-US-019-edit-a-turned-shape.md)      | User story | Edit a turned shape                     | done   |
-| [AUD-007](../stories/E01-F04-AUD-007-audit-f04.md)              | Audit      | Audit F04: free rotation of shapes      | ready  |
+| [AUD-007](../stories/E01-F04-AUD-007-audit-f04.md)              | Audit      | Audit F04: free rotation of shapes      | done   |
 | [VAL-007](../stories/E01-F04-VAL-007-validate-free-rotation.md) | Validation | Validate F04 on the reference cases     | ready  |
 
 ## Feature plan
