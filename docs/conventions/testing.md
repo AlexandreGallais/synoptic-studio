@@ -18,7 +18,7 @@ it("returns the height of an equilateral triangle", () => {
 
 - When the expected value cannot be computed by hand: **stop** (research request or derivation to validate).
 - Float comparisons: `toBeCloseTo` with a justified number of decimals, or the project's `EPSILON = 1e-9` (Q10, `src/math/epsilon.ts`).
-- DOM tests (`src/render/`, `src/interaction/`): start the file with `// @vitest-environment happy-dom`; the shell stays thin, the logic lives in the core.
+- DOM tests (`src/render/`, `src/interaction/` when it exists, `playground/`): start the file with `// @vitest-environment happy-dom`; the shell stays thin, the logic lives in the core.
 - The playground has its own test (`playground/mount-playground.test.ts`, happy-dom): it loads the page as served (`index.html?raw`), mounts it, types values and reads what the page shows. It carries the criteria that only the playground can show (`[F01.AC1]`, the display part of `[F01.AC2]`, `[F02.AC4]`, and the playground side of `[F02.AC1]`–`[F02.AC3]`). The playground stays outside the coverage threshold of `src/`.
 
 ## Properties (ADR-0022)

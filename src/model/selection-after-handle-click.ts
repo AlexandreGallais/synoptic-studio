@@ -7,7 +7,8 @@ import type { VertexSelection } from "./vertex-selection";
 /**
  * Selection after a click on the handle of a vertex on the drawing: Shift or Ctrl (Cmd) adds or
  * removes the vertex, as in Figma and Inkscape; a drawing has no range. A plain click selects
- * it alone (Product Owner, F03.AC5).
+ * it alone (Product Owner, F03.AC5). Only a click without Shift moves the start of the next
+ * range (note 0006).
  *
  * @kind domain
  * @param selection - selection before the click
@@ -21,7 +22,10 @@ export function selectionAfterHandleClick(
   vertex: number,
   keys: ClickKeys,
 ): VertexSelection {
-  return keys.shift || keys.toggle
-    ? selectionAfterToggle(selection, vertex)
-    : selectionAfterClick(vertex);
+  if (keys.shift) {
+    // Shift adds or removes the vertex, but a range still starts where it did.
+    return { ...selectionAfterToggle(selection, vertex), start: selection.start };
+  }
+
+  return keys.toggle ? selectionAfterToggle(selection, vertex) : selectionAfterClick(vertex);
 }
