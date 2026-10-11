@@ -24,14 +24,11 @@ Consequence: `n=3` triangle pointing up, `n=4` square (not a diamond), `n=6` hex
 
 Increasing angles turn counter-clockwise in the mathematical frame; the picture keeps its orientation when drawn in the SVG frame (step 5), so the vertices are listed by **decreasing** angle to run clockwise on screen.
 
-The topmost vertex has the largest sine: its angle is the closest to `π/2`. With `(2k + 1) π / n − π/2 = π/2`, i.e. `2k + 1 = n`:
+The start is the **right end of the flat base** (Q18, amended in F08 so that the base keeps points 1 and 2 whatever `n`). The base joins the angles `−π/2 ± π/n` (step 1); its right end has the positive cosine, at `−π/2 + π/n`, i.e. `k = 0`. Listed by decreasing angle, the next is `−π/2 − π/n`, the left end of the base, then the others clockwise. The `j`-th vertex in drawing order (`j = 0 … n−1`) has the angle
 
-- `n` odd: `k = (n − 1)/2` gives exactly `π/2`, a single topmost vertex (the apex);
-- `n` even: no `k` does; `k = n/2 − 1` and `k = n/2` give `π/2 ∓ π/n`, a flat top edge; the leftmost of the two has the smaller cosine, at `π/2 + π/n` (cosine negative), i.e. `k = n/2`.
+`βⱼ = −π/2 + (1 − 2j) π / n`.
 
-Both cases give `k = ⌊n/2⌋`. The `j`-th vertex in drawing order (`j = 0 … n−1`) has the angle
-
-`βⱼ = −π/2 + (2⌊n/2⌋ + 1 − 2j) π / n`.
+Before F08 the start was the topmost vertex, the leftmost on a tie (`βⱼ = −π/2 + (2⌊n/2⌋ + 1 − 2j) π / n`): the same vertices, the list turned by `⌊n/2⌋` places.
 
 The start is chosen by its index, never by comparing floating coordinates.
 
@@ -74,21 +71,21 @@ The fillet's center `D` is the point of the bisector at distance `ρ` from both 
 
 | `n` | Box       | `Wᵤ × Hᵤ`         | Result                 | Vertices in drawing order (5 decimals)                                                | Maximal radius |
 | --- | --------- | ----------------- | ---------------------- | ------------------------------------------------------------------------------------- | -------------- |
-| 3   | 100 × 100 | √3 × 1.5          | 100 × 86.60254 (width) | (50, 6.69873), (100, 93.30127), (0, 93.30127)                                         | 28.86751       |
-| 4   | 100 × 50  | √2 × √2           | 50 × 50 (height)       | (25, 0), (75, 0), (75, 50), (25, 50)                                                  | 25             |
-| 5   | 100 × 100 | 1.90211 × 1.80902 | 100 × 95.10565 (width) | (50, 2.44717), (100, 38.7743), (80.9017, 97.55283), (19.0983, 97.55283), (0, 38.7743) | 42.53254       |
-| 6   | 100 × 100 | 2 × √3            | 100 × 86.60254 (width) | (25, 6.69873), (75, 6.69873), (100, 50), (75, 93.30127), (25, 93.30127), (0, 50)      | 43.30127       |
-| 8   | 100 × 100 | 1.84776 × 1.84776 | 100 × 100 (both)       | (29.28932, 0), (70.71068, 0), (100, 29.28932), …, (0, 29.28932)                       | 50             |
+| 3   | 100 × 100 | √3 × 1.5          | 100 × 86.60254 (width) | (100, 93.30127), (0, 93.30127), (50, 6.69873)                                         | 28.86751       |
+| 4   | 100 × 50  | √2 × √2           | 50 × 50 (height)       | (75, 50), (25, 50), (25, 0), (75, 0)                                                  | 25             |
+| 5   | 100 × 100 | 1.90211 × 1.80902 | 100 × 95.10565 (width) | (80.9017, 97.55283), (19.0983, 97.55283), (0, 38.7743), (50, 2.44717), (100, 38.7743) | 42.53254       |
+| 6   | 100 × 100 | 2 × √3            | 100 × 86.60254 (width) | (75, 93.30127), (25, 93.30127), (0, 50), (25, 6.69873), (75, 6.69873), (100, 50)      | 43.30127       |
+| 8   | 100 × 100 | 1.84776 × 1.84776 | 100 × 100 (both)       | (70.71068, 100), (29.28932, 100), …, (100, 70.71068)                                  | 50             |
 
 Anchored (F07): the room is all before (`max`) or all after (`min`) the shape instead of split in two.
 
 | `n` | Box       | Alignment (horizontal, vertical) | Vertices in drawing order (5 decimals)                                               |
 | --- | --------- | -------------------------------- | ------------------------------------------------------------------------------------ |
-| 3   | 100 × 100 | any, `max` (bottom)              | (50, 13.39746), (100, 100), (0, 100)                                                 |
-| 3   | 100 × 100 | any, `min` (top)                 | (50, 0), (100, 86.60254), (0, 86.60254)                                              |
-| 4   | 100 × 50  | `min` (left), any                | (0, 0), (50, 0), (50, 50), (0, 50)                                                   |
-| 4   | 100 × 50  | `max` (right), any               | (50, 0), (100, 0), (100, 50), (50, 50)                                               |
-| 6   | 100 × 100 | any, `max` (bottom)              | (25, 13.39746), (75, 13.39746), (100, 56.69873), (75, 100), (25, 100), (0, 56.69873) |
+| 3   | 100 × 100 | any, `max` (bottom)              | (100, 100), (0, 100), (50, 13.39746)                                                 |
+| 3   | 100 × 100 | any, `min` (top)                 | (100, 86.60254), (0, 86.60254), (50, 0)                                              |
+| 4   | 100 × 50  | `min` (left), any                | (50, 50), (0, 50), (0, 0), (50, 0)                                                   |
+| 4   | 100 × 50  | `max` (right), any               | (100, 50), (50, 50), (50, 0), (100, 0)                                               |
+| 6   | 100 × 100 | any, `max` (bottom)              | (75, 100), (25, 100), (0, 56.69873), (25, 13.39746), (75, 13.39746), (100, 56.69873) |
 
 By hand: the triangle's room is `Δy = 100 − 86.60254 = 13.39746`; at the bottom the apex is at `y = 13.39746` and the base at `100`; at the top the apex is at `0` and the base at `86.60254`. The square of side 50 leaves `Δx = 50`: left from `x = 0`, right from `x = 50`. The hexagon is shifted down by `13.39746 − 6.69873 = 6.69873` from its centered place.
 

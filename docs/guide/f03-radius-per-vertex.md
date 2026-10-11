@@ -10,9 +10,9 @@ Each corner of a rectangle or a regular polygon can have its own **rounding** (i
 
 ![A 100 × 100 square, only its top-left corner rounded with radius 40](./images/f03-one-corner.svg)
 
-**Point 1 and point 2.** The outline of a shape starts at a corner and goes around it clockwise. In Points mode, the corner where it starts is **red** (point 1) and the next one **green** (point 2), so that you can read where it starts and which way it goes. The list of points follows the same order.
+**Point 1 and point 2.** The outline of a shape starts at a corner and goes around it clockwise. In Points mode, the corner where it starts is **red** (point 1) and the next one **green** (point 2); for a polygon, since F08, they are the two ends of its base, right then left, so that you can read where it starts and which way it goes. The list of points follows the same order.
 
-![The hexagon in Points mode: point 1 red at the left end of the top edge, point 2 green at its right end, the others dark](./images/f03-hexagon-points.svg)
+![The hexagon in Points mode: point 1 red at the right end of the base, point 2 green at its left end, the others dark](./images/f03-hexagon-points.svg)
 
 **Choosing corners.** A click selects one point. Ctrl + click (Cmd on a Mac) adds or removes one. In the list, Shift + click selects every point between the last one clicked and this one; on the drawing, Shift + click adds or removes one point, as there is no "between" on a drawing. Here points 1 and 4 got a radius of 20.
 

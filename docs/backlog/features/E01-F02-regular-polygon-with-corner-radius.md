@@ -15,7 +15,7 @@ Refined with the Product Owner on 2026-10-09 (Q18 settled, Q19 settled at 12 aft
 
 1. An n-gon (integer 3 ≤ n ≤ 12, Q19) fits a w × h box uniformly, regular, with a flat base, centered, reaching w or h or both (`DERIV-regular-polygon-fit`); any other number of corners and negative sizes are refused (Q15).
 2. A global corner radius rounds every corner, clamped as in F01 (ADR-0007); the requested value is kept and the effective value is shown when they differ (Q8); at the maximal radius the polygon is its inscribed circle: a hexagon in 100 × 100 becomes a circle of diameter 86.6.
-3. Output coordinates have at most 5 decimals (Q10); the contour is clockwise, from the topmost vertex, the leftmost on a tie (Q11, Q18).
+3. Output coordinates have at most 5 decimals (Q10); the contour is clockwise, from the topmost vertex, the leftmost on a tie (Q11, Q18). Since F08 (Q18 amended), a regular polygon starts at the right end of its base instead of its topmost vertex.
 4. In the playground, a shape selector switches between rectangle and polygon: width, height and radius are kept, the number of corners appears for the polygon only.
 5. In the playground, a width, height or radius above 100 000 becomes 100 000; the library keeps no upper limit (Q20, added 2026-10-09 at the Product Owner's request).
 
