@@ -1,4 +1,9 @@
-import { freeShapeCorners, freeShapeWithPoint, regularPolygonAsFreeShape } from "../src";
+import {
+  freeShapeCorners,
+  freeShapeWithPoint,
+  regularPolygonAsFreeShape,
+  turnedCorners,
+} from "../src";
 
 import { listenToDeleteKey } from "./listen-to-delete-key";
 import { readEditedFreeShape } from "./read-edited-free-shape";
@@ -56,7 +61,7 @@ function writeMovedPoint(document: Document, shape: FreeShape, target: Target): 
   const point = readTypedPoint(
     document,
     target.axis,
-    freeShapeCorners(shape).at(target.index)?.point,
+    turnedCorners(freeShapeCorners(shape), shape).at(target.index)?.point,
   );
 
   if (point !== undefined) {
