@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.4](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.12.3...v0.12.4) (2026-10-11)
+
+
+### Documentation
+
+* **backlog:** add F10, round shape, to E01 after F04 ([a6347ad](https://github.com/AlexandreGallais/synoptic-studio/commit/a6347ad0eb7d45cfc611b35c9a4d0508bc24e055))
+
 ## [0.12.3](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.12.2...v0.12.3) (2026-10-11)
 
 
