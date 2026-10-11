@@ -108,10 +108,12 @@
             corner; on a polygon it starts sooner at sharp corners, later at wide ones. The
             <strong>requested</strong> radius is the number you type; it is kept. The
             <strong>effective</strong> radius is the one drawn: smaller when the shape is too small
-            for the request. A <strong>polygon</strong> has 3 to 12 equal sides and a flat base; it
-            fills its width × height box without being stretched. The grey rectangle is that box.
-            The <strong>anchor</strong> says where the polygon sits in the room the box leaves: one
-            of nine places, from top left to bottom right; the center by default. Sizes are screen
+            for the request. Each corner has its own radius; when they differ, the Radius field is
+            empty and reads <strong>Mixed</strong>, and a number typed there rounds every corner. A
+            <strong>polygon</strong> has 3 to 12 equal sides and a flat base; it fills its width ×
+            height box without being stretched. The grey rectangle is that box. The
+            <strong>anchor</strong> says where the polygon sits in the room the box leaves: one of
+            nine places, from top left to bottom right; the center by default. Sizes are screen
             pixels: a value above 100 000 becomes 100 000.
           </p>
         </details>

@@ -32,6 +32,8 @@ function writeShapeValue(document: Document, shape: string): void {
  * @see docs/backlog/stories/E01-F02-VAL-002-validate-polygon.md
  */
 function writeStepValues(document: Document, step: GuidedStep): void {
+  // A step types one radius for every vertex (F03.AC2).
+  delete selectElement(document, "radius").dataset["radii"];
   writeShapeValue(document, step.values.shape);
   writeAnchorValue(document, step.values.anchor);
   writeInputValue(document, "corners", step.values.corners);
