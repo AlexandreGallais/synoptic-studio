@@ -115,4 +115,10 @@ describe("rectangle as a free shape", () => {
       "3 · x 120 · y 80 · radius 10",
     );
   });
+
+  it("[F09.AC4] still refuses a fractional width typed for the rectangle (Q15)", () => {
+    type("width", "2.5");
+
+    expect(text("status")).toBe("Width, height and radius must be integers ≥ 0.");
+  });
 });

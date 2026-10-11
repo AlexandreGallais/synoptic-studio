@@ -5,7 +5,7 @@ export const GUIDED_STEPS_F09: readonly GuidedStep[] = [
   {
     explanation:
       "F09 starts here: the rectangle is a free shape, its corners kept in a box of their own and stretched to the width and height typed.",
-    look: "The same rectangle as before; under “Model”, the points of a unit square (0, 0), (1, 0), (1, 1), (0, 1), then the radii and width 120.",
+    look: "The same rectangle as before; under “Model”, the corners of a unit square (0, 0), (1, 0), (1, 1), (0, 1), each with its radius 10, then height 80 and width 120.",
     title: "F09 · The rectangle is a free shape",
     values: {
       anchor: "mid mid",

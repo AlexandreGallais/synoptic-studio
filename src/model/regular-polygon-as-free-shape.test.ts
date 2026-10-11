@@ -2,7 +2,6 @@ import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { ALIGNMENTS } from "../geometry";
-import { EPSILON } from "../math";
 
 import { freeShapeCorners } from "./free-shape-corners";
 import { isValidFreeShape } from "./is-valid-free-shape";
@@ -42,14 +41,20 @@ describe("regularPolygonAsFreeShape", () => {
     const radii = Array.from({ length: polygon.corners }, (unused, index) => index);
     const before = regularPolygonCorners({ ...polygon, radii });
     const after = freeShapeCorners(regularPolygonAsFreeShape({ ...polygon, radii }));
-    const tolerance = EPSILON * Math.max(1, polygon.width, polygon.height);
-    const gaps = after.flatMap((corner, index) => {
-      const { point } = before.at(index) ?? corner;
 
-      return [Math.abs(corner.point.x - point.x), Math.abs(corner.point.y - point.y)];
+    // At its own size a free shape is drawn as stored: the same corners, bit for bit.
+    expect(after).toEqual(before);
+  });
+
+  it("gives no valid free shape for a polygon of size 0: it has no box to stretch (F08)", () => {
+    const flat = regularPolygonAsFreeShape({
+      anchor: CENTER,
+      corners: 6,
+      height: 100,
+      radii: [0, 0, 0, 0, 0, 0],
+      width: 0,
     });
 
-    expect(Math.max(...gaps)).toBeLessThan(tolerance);
-    expect(after.map((corner) => corner.radius)).toEqual(radii);
+    expect(isValidFreeShape(flat)).toBe(false);
   });
 });
