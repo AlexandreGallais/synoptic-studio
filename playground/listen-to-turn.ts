@@ -47,7 +47,7 @@ function listenToTurnButton(document: Document, button: TurnButton, update: () =
 /**
  * Makes the angle field and the −90° and +90° buttons turn the shape (F04): the shape turns as
  * the angle is typed; once typed (Enter or leaving the field) the field shows the angle kept
- * from 0 to 359; a button turns by a quarter turn.
+ * from 0 to 359, a refused value staying as typed; a button turns by a quarter turn.
  *
  * @kind procedure
  * @param document - page document
@@ -60,7 +60,9 @@ export function listenToTurn(document: Document, update: () => void): void {
   angle.addEventListener("input", update);
 
   angle.addEventListener("change", () => {
-    writeInputValue(document, "angle", readShownAngle(document));
+    if (Number.isSafeInteger(readNumber(document, "angle"))) {
+      writeInputValue(document, "angle", readAngle(document));
+    }
   });
 
   listenToTurnButton(document, { id: "turn-left", turn: -QUARTER_TURN }, update);

@@ -79,4 +79,9 @@ function listenToAxis(document: Document, axis: Axis, update: () => void): void 
 export function listenToPosition(document: Document, update: () => void): void {
   listenToAxis(document, "x", update);
   listenToAxis(document, "y", update);
+
+  // Once a field is left, it shows the straight box again, a value that moved nothing included.
+  for (const id of ["shape-x", "shape-y"]) {
+    selectElement(document, id).addEventListener("change", update);
+  }
 }

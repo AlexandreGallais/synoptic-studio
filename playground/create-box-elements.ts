@@ -48,6 +48,37 @@ function readPathData(corners: readonly Corner[]): string {
 }
 
 /**
+ * Draws the turned box of a turned shape as a thin frame, the selection (F04): a fill between
+ * the box and the box inset by one unit. A box too small to hold a frame gets none, as the frame
+ * would cover the shape.
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param model - shape read from the inputs
+ * @param outer - path data of its turned box
+ * @returns the frame, or nothing for a box 2 units wide or high at most
+ * @see docs/backlog/stories/E01-F04-US-018-turn-a-shape.md
+ */
+function createFrameElements(
+  document: Document,
+  model: FreeShape | RegularPolygon,
+  outer: string,
+): readonly SVGPathElement[] {
+  if (model.width <= 2 * LINE || model.height <= 2 * LINE) {
+    return [];
+  }
+
+  const frame = createPathElement(
+    document,
+    `${outer} ${readPathData(readBoxCorners(model, LINE))}`,
+  );
+
+  frame.classList.add("turned-box");
+
+  return [frame];
+}
+
+/**
  * Draws the boxes of a shape behind it. A polygon's box, grey, shows its anchor (F07) and turns
  * with it. A turned shape also gets its straight box, dashed, and its turned box as a thin frame,
  * the selection (F04): drawn by fills, never by a native stroke.
@@ -66,17 +97,16 @@ export function createBoxElements(
 ): readonly SVGPathElement[] {
   const outer = readPathData(readBoxCorners(model, 0));
   const box = createPathElement(document, outer);
-  const frame = createPathElement(
-    document,
-    `${outer} ${readPathData(readBoxCorners(model, LINE))}`,
-  );
 
   box.classList.add("box");
-  frame.classList.add("turned-box");
 
   const boxes = "anchor" in model ? [box] : [];
 
   return model.angle === 0
     ? boxes
-    : [createStraightBoxElement(document, straight), ...boxes, frame];
+    : [
+        createStraightBoxElement(document, straight),
+        ...boxes,
+        ...createFrameElements(document, model, outer),
+      ];
 }
