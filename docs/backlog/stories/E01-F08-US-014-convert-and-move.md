@@ -3,7 +3,7 @@ id: US-014
 epic: E01
 feature: F08
 title: Convert a polygon, move a point by its x, y
-status: ready
+status: done
 points: 3
 ---
 
@@ -40,6 +40,6 @@ Look closely at: whether the conversion really leaves the hexagon in place, and 
 
 One task = one commit, referenced as `US-014.Tn`.
 
-- [ ] T1 — Moving a vertex to the coordinates typed (`docs/domain/interaction.md` §3, ADR-0031), pure functions; tests (1 h) — done in EN-011 (`freeShapeWithPoint`, `regularPolygonAsFreeShape`)
-- [ ] T2 — Playground: the free shape, the conversion button, x and y editable in the list, width and height of the free shape; tests (2 h)
-- [ ] T3 — Product Owner test card; help text (0.5 h)
+- [x] T1 — Moving a vertex to the coordinates typed (`docs/domain/interaction.md` §3, ADR-0031), pure functions; tests (1 h) — done in EN-011 (`freeShapeWithPoint`, `regularPolygonAsFreeShape`)
+- [x] T2 — Playground: the free shape, the conversion button, x and y editable in the list, width and height of the free shape; tests (2 h)
+- [x] T3 — Product Owner test card; help text (0.5 h)
