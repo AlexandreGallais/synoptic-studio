@@ -1,3 +1,5 @@
+import { isValidFreeShape } from "../src";
+
 import { selectElement } from "./select-element";
 
 import type { FreeShape } from "../src";
@@ -17,6 +19,22 @@ function readShapeValue(document: Document): string {
 }
 
 /**
+ * Reads back the free shape kept as text, checked again: a value lost on the way (`NaN` written
+ * as `null`) makes it no shape.
+ *
+ * @kind procedure
+ * @param kept - text written by `writeStoredFreeShape`
+ * @returns the free shape, `undefined` when it is not valid
+ * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
+ */
+function readKeptText(kept: string): FreeShape | undefined {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- written by writeStoredFreeShape only, from a FreeShape; checked just below
+  const shape = JSON.parse(kept) as FreeShape;
+
+  return isValidFreeShape(shape) ? shape : undefined;
+}
+
+/**
  * Reads the free shape the page keeps once a polygon is converted or a point typed (ADR-0033),
  * kept on the shape selector (`data-free-shape`).
  *
@@ -26,11 +44,9 @@ function readShapeValue(document: Document): string {
  * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
  */
 export function readStoredFreeShape(document: Document): FreeShape | undefined {
-  const kept =
-    readShapeValue(document) === "free"
-      ? selectElement(document, "shape").dataset["freeShape"]
-      : undefined;
+  const { freeShape } = selectElement(document, "shape").dataset;
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- written by writeStoredFreeShape only, from a FreeShape
-  return kept === undefined ? undefined : (JSON.parse(kept) as FreeShape);
+  return freeShape !== undefined && readShapeValue(document) === "free"
+    ? readKeptText(freeShape)
+    : undefined;
 }
