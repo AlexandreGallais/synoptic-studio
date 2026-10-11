@@ -3,6 +3,7 @@ export * from "./are-valid-radii";
 export type * from "./click-keys";
 export * from "./common-radius";
 export * from "./corners-with-radii";
+export * from "./deletion-outcome";
 export * from "./edge-of-selection";
 export * from "./effective-corner-radius";
 export type * from "./free-shape";
