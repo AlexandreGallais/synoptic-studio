@@ -39,7 +39,13 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
     const margin = (100 - HEIGHT_3) / 2;
 
     expectPoints(
-      regularPolygonContour({ anchor: CENTER, corners: 3, height: 100, radius: 0, width: 100 }),
+      regularPolygonContour({
+        anchor: CENTER,
+        corners: 3,
+        height: 100,
+        radii: [0, 0, 0],
+        width: 100,
+      }),
       [
         { x: 50, y: margin },
         { x: 100, y: 100 - margin },
@@ -51,7 +57,13 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
   it("[F02.AC1] fits a square in 100 × 50: height reached, not width", () => {
     // s = min(100/√2, 50/√2): a 50 × 50 square, left margin 25.
     expectPoints(
-      regularPolygonContour({ anchor: CENTER, corners: 4, height: 50, radius: 0, width: 100 }),
+      regularPolygonContour({
+        anchor: CENTER,
+        corners: 4,
+        height: 50,
+        radii: [0, 0, 0, 0],
+        width: 100,
+      }),
       [
         { x: 25, y: 0 },
         { x: 75, y: 0 },
@@ -66,7 +78,13 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
     const margin = (100 - HEIGHT_3) / 2;
 
     expectPoints(
-      regularPolygonContour({ anchor: CENTER, corners: 6, height: 100, radius: 0, width: 100 }),
+      regularPolygonContour({
+        anchor: CENTER,
+        corners: 6,
+        height: 100,
+        radii: [0, 0, 0, 0, 0, 0],
+        width: 100,
+      }),
       [
         { x: 25, y: margin },
         { x: 75, y: margin },
@@ -84,7 +102,13 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
     const top = (100 - s * (1 + Math.cos(Math.PI / 5))) / 2;
 
     expectPoints(
-      regularPolygonContour({ anchor: CENTER, corners: 5, height: 100, radius: 0, width: 100 }),
+      regularPolygonContour({
+        anchor: CENTER,
+        corners: 5,
+        height: 100,
+        radii: [0, 0, 0, 0, 0],
+        width: 100,
+      }),
       [
         { x: 50, y: top },
         { x: 100, y: top + s * (1 - Math.sin(Math.PI / 10)) },
@@ -98,7 +122,13 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
   it("[F02.AC1] fits a polygon of 12 corners, the largest allowed (Q19)", () => {
     // n = 12 is divisible by 4: flat sides on all four axes, both sizes reached.
     const box = boundingBox(
-      regularPolygonContour({ anchor: CENTER, corners: 12, height: 100, radius: 0, width: 100 }),
+      regularPolygonContour({
+        anchor: CENTER,
+        corners: 12,
+        height: 100,
+        radii: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        width: 100,
+      }),
     );
 
     expect(box.maxX - box.minX).toBeCloseTo(100, DECIMALS);
@@ -111,7 +141,7 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
       anchor: CENTER,
       corners: 8,
       height: 100,
-      radius: 0,
+      radii: [0, 0, 0, 0, 0, 0, 0, 0],
       width: 100,
     });
     const box = boundingBox(contour);
@@ -124,13 +154,19 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
 
   it("collapses a polygon of width 0 to the center of its box (Q15)", () => {
     expect(
-      regularPolygonContour({ anchor: CENTER, corners: 5, height: 40, radius: 0, width: 0 }),
+      regularPolygonContour({
+        anchor: CENTER,
+        corners: 5,
+        height: 40,
+        radii: [0, 0, 0, 0, 0],
+        width: 0,
+      }),
     ).toEqual(Array.from({ length: 5 }, () => ({ x: 0, y: 20 })));
   });
 
   it("collapses a polygon of height 0 to the middle of its top edge (Q15)", () => {
     expect(
-      regularPolygonContour({ anchor: CENTER, corners: 3, height: 0, radius: 0, width: 40 }),
+      regularPolygonContour({ anchor: CENTER, corners: 3, height: 0, radii: [0, 0, 0], width: 40 }),
     ).toEqual(Array.from({ length: 3 }, () => ({ x: 20, y: 0 })));
   });
 
@@ -139,12 +175,19 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
       anchor: CENTER,
       corners: 6,
       height: 100,
-      radius: 10,
+      radii: [10, 10, 10, 10, 10, 10],
       width: 100,
     });
 
     expect(regularPolygonContour(polygon)).toEqual(regularPolygonContour(polygon));
-    expect(polygon).toEqual({ anchor: CENTER, corners: 6, height: 100, radius: 10, width: 100 });
+
+    expect(polygon).toEqual({
+      anchor: CENTER,
+      corners: 6,
+      height: 100,
+      radii: [10, 10, 10, 10, 10, 10],
+      width: 100,
+    });
   });
 });
 
@@ -154,7 +197,13 @@ describe("regularPolygonContour (anchored, F07)", () => {
     const margin = (100 - HEIGHT_3) / 2;
 
     expectPoints(
-      regularPolygonContour({ anchor: CENTER, corners: 3, height: 100, radius: 0, width: 100 }),
+      regularPolygonContour({
+        anchor: CENTER,
+        corners: 3,
+        height: 100,
+        radii: [0, 0, 0],
+        width: 100,
+      }),
       [
         { x: 50, y: margin },
         { x: 100, y: 100 - margin },
@@ -168,7 +217,7 @@ describe("regularPolygonContour (anchored, F07)", () => {
     const anchor = { horizontal: "mid", vertical: "max" } as const;
 
     expectPoints(
-      regularPolygonContour({ anchor, corners: 3, height: 100, radius: 0, width: 100 }),
+      regularPolygonContour({ anchor, corners: 3, height: 100, radii: [0, 0, 0], width: 100 }),
       [
         { x: 50, y: 100 - HEIGHT_3 },
         { x: 100, y: 100 },
@@ -183,7 +232,13 @@ describe("regularPolygonContour (anchored, F07)", () => {
     const top = 100 - HEIGHT_3;
 
     expectPoints(
-      regularPolygonContour({ anchor, corners: 6, height: 100, radius: 0, width: 100 }),
+      regularPolygonContour({
+        anchor,
+        corners: 6,
+        height: 100,
+        radii: [0, 0, 0, 0, 0, 0],
+        width: 100,
+      }),
       [
         { x: 25, y: top },
         { x: 75, y: top },
@@ -199,12 +254,15 @@ describe("regularPolygonContour (anchored, F07)", () => {
     // Room 100 − 50 = 50, all of it on the left of the square.
     const anchor = { horizontal: "max", vertical: "mid" } as const;
 
-    expectPoints(regularPolygonContour({ anchor, corners: 4, height: 50, radius: 0, width: 100 }), [
-      { x: 50, y: 0 },
-      { x: 100, y: 0 },
-      { x: 100, y: 50 },
-      { x: 50, y: 50 },
-    ]);
+    expectPoints(
+      regularPolygonContour({ anchor, corners: 4, height: 50, radii: [0, 0, 0, 0], width: 100 }),
+      [
+        { x: 50, y: 0 },
+        { x: 100, y: 0 },
+        { x: 100, y: 50 },
+        { x: 50, y: 50 },
+      ],
+    );
   });
 
   it("[F07.AC3] keeps the triangle in place when only its horizontal alignment changes", () => {
@@ -213,7 +271,7 @@ describe("regularPolygonContour (anchored, F07)", () => {
       anchor: { horizontal: "min", vertical: "max" },
       corners: 3,
       height: 100,
-      radius: 0,
+      radii: [0, 0, 0],
       width: 100,
     } as const;
     const right = { ...left, anchor: { horizontal: "max", vertical: "max" } } as const;
@@ -231,7 +289,13 @@ describe("regularPolygonContour (properties)", () => {
     "[F02.AC1] stays in its box, centered, reaching its width or its height",
     ({ corners, height, width }) => {
       const box = boundingBox(
-        regularPolygonContour({ anchor: CENTER, corners, height, radius: 0, width }),
+        regularPolygonContour({
+          anchor: CENTER,
+          corners,
+          height,
+          radii: Array.from({ length: corners }, () => 0),
+          width,
+        }),
       );
       const tolerance = EPSILON * Math.max(width, height);
 
