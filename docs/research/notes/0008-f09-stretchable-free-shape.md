@@ -4,7 +4,7 @@ Spike SP-006, 2026-10-11. Claude Code's own research; every source below was rea
 
 ## Stretch (EN-012)
 
-- SVG maps a box onto another with one scale per axis when `align` is `none` (`REF-SVG2-COORDS` §8.2), and CSS turns a transform about an origin into translate, transform, translate back (`REF-CSS-TRANSFORMS` §3). With the top-left of the box as origin, computed as `oₓ + w · (pₓ − oₓ) / nₓ` (multiplying first, so that the far edge is exactly `w`), the drawn box has the asked width and height and its top-left does not move (`DERIV-free-shape-stretch` steps 1–2). `fitInBox` is the same map with one scale: EN-012 shares one box-to-box map rather than adding a second one.
+- SVG maps a box onto another with one scale per axis when `align` is `none` (`REF-SVG2-COORDS` §8.2), and CSS turns a transform about an origin into translate, transform, translate back (`REF-CSS-TRANSFORMS` §3). With the top-left of the box as origin, computed as `oₓ + w · (pₓ − oₓ) / nₓ` (multiplying first, so that the far edge is exactly `w`), the drawn box has the asked width and height and its top-left does not move (`DERIV-free-shape-stretch` steps 1–2). `fitInBox` is the same map with one scale; it stays apart (one scale, scale first, an anchored place, exact values fixed by F02 and F07 tests), and `stretchToSize` computes per axis, multiplying first, the top-left kept.
 - Without loss: the stored points never change; the drawing depends on them and on the size only (step 3). A width of 0, then back, gives the same shape.
 - Stored points spanning no width or no height (all on one line) cannot be stretched: such a free shape is refused (ADR-0032). The rectangle tool never stores one.
 
