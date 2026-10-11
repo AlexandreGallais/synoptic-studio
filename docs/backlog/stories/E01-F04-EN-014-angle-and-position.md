@@ -3,7 +3,7 @@ id: EN-014
 epic: E01
 feature: F04
 title: An angle and a position for every shape
-status: draft
+status: ready
 points: 3
 ---
 

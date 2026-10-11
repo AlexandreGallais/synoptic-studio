@@ -3,7 +3,7 @@ id: US-018
 epic: E01
 feature: F04
 title: Turn and move a shape in the playground
-status: draft
+status: ready
 points: 3
 ---
 

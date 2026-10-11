@@ -2,7 +2,7 @@
 id: F04
 epic: E01
 title: Free rotation of shapes
-status: draft
+status: in-progress
 ---
 
 # E01 · F04 — Free rotation of shapes
@@ -53,14 +53,14 @@ In delivery order.
 
 | ID                                                              | Type       | Title                                   | Status |
 | --------------------------------------------------------------- | ---------- | --------------------------------------- | ------ |
-| [SP-007](../stories/E01-F04-SP-007-research-f04.md)             | Spike      | Research for F04                        | draft  |
-| [EN-014](../stories/E01-F04-EN-014-angle-and-position.md)       | Enabler    | An angle and a position for every shape | draft  |
-| [EN-015](../stories/E01-F04-EN-015-straight-box.md)             | Enabler    | The straight box of a drawn shape       | draft  |
-| [US-018](../stories/E01-F04-US-018-turn-a-shape.md)             | User story | Turn and move a shape in the playground | draft  |
-| [CHK-007](../stories/E01-F04-CHK-007-checkpoint-f04.md)         | Checkpoint | Checkpoint in the middle of F04         | draft  |
-| [US-019](../stories/E01-F04-US-019-edit-a-turned-shape.md)      | User story | Edit a turned shape                     | draft  |
-| [AUD-007](../stories/E01-F04-AUD-007-audit-f04.md)              | Audit      | Audit F04: free rotation of shapes      | draft  |
-| [VAL-007](../stories/E01-F04-VAL-007-validate-free-rotation.md) | Validation | Validate F04 on the reference cases     | draft  |
+| [SP-007](../stories/E01-F04-SP-007-research-f04.md)             | Spike      | Research for F04                        | ready  |
+| [EN-014](../stories/E01-F04-EN-014-angle-and-position.md)       | Enabler    | An angle and a position for every shape | ready  |
+| [EN-015](../stories/E01-F04-EN-015-straight-box.md)             | Enabler    | The straight box of a drawn shape       | ready  |
+| [US-018](../stories/E01-F04-US-018-turn-a-shape.md)             | User story | Turn and move a shape in the playground | ready  |
+| [CHK-007](../stories/E01-F04-CHK-007-checkpoint-f04.md)         | Checkpoint | Checkpoint in the middle of F04         | ready  |
+| [US-019](../stories/E01-F04-US-019-edit-a-turned-shape.md)      | User story | Edit a turned shape                     | ready  |
+| [AUD-007](../stories/E01-F04-AUD-007-audit-f04.md)              | Audit      | Audit F04: free rotation of shapes      | ready  |
+| [VAL-007](../stories/E01-F04-VAL-007-validate-free-rotation.md) | Validation | Validate F04 on the reference cases     | ready  |
 
 ## Feature plan
 
