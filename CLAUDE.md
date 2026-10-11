@@ -12,7 +12,7 @@ A library of small named functions, each backed by a verified source, composed s
 
 Non-negotiable principles: schematic, orthogonal, integer, documented, dependency-free.
 
-**State**: E01 · F01 (rectangle with corner radius) is done and released (v0.7.0); F02 (regular polygon) is done and released (v0.8.0); next in order is F07 (polygon anchored in its box), not started — wait for the Product Owner; epic E13 (shape tree, layout box) comes before E03. The backlog (`docs/backlog/`) says what is done and what is next; implement only stories the Product Owner (the user) has set to `ready`.
+**State**: E01 · F01 (rectangle with corner radius) is done and released (v0.7.0); F02 (regular polygon) is done and released (v0.8.0); F07 (polygon anchored in its box) is in an autonomous run on `feature/f07-polygon-anchor`, to stop at VAL-003; epic E13 (shape tree, layout box) comes before E03. The backlog (`docs/backlog/`) says what is done and what is next; implement only stories the Product Owner (the user) has set to `ready`.
 
 ## Where to read — BEFORE any task
 
