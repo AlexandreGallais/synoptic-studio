@@ -1,4 +1,7 @@
+import { NO_VERTEX_SELECTION } from "../src";
+
 import { selectElement } from "./select-element";
+import { writeSelection } from "./write-selection";
 
 /** Buttons of the tool bar, one per mode. */
 const MODES = ["mode-shape", "mode-points"];
@@ -29,6 +32,8 @@ export function listenToModes(document: Document, update: () => void): void {
   for (const id of MODES) {
     selectElement(document, id).addEventListener("click", () => {
       writePressedMode(document, id);
+      // Back to Shape mode: no vertex stays selected (F03.AC5).
+      writeSelection(document, NO_VERTEX_SELECTION);
       update();
     });
   }
