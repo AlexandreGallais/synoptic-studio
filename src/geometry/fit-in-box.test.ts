@@ -192,6 +192,44 @@ describe("fitInBox (properties)", () => {
     vertical: ALIGNMENT,
     width: fc.integer({ max: 1000, min: 0 }),
   })(
+    "[F07.AC2] puts every vertex of an anchored side on the box edge, within rounding",
+    ({ corners, height, horizontal, vertical, width }) => {
+      // Vertices on one edge come from cos and sin and may differ in their last bit (step 5).
+      const points = fitInBox(
+        unitRegularPolygon(corners),
+        { height, width },
+        { horizontal, vertical },
+      );
+      const tolerance = EPSILON * Math.max(1, width, height);
+      const sides = [
+        {
+          edge: { max: width, mid: undefined, min: 0 }[horizontal],
+          values: points.map((point) => point.x),
+        },
+        {
+          edge: { max: height, mid: undefined, min: 0 }[vertical],
+          values: points.map((point) => point.y),
+        },
+      ];
+
+      for (const { edge, values } of sides) {
+        if (edge !== undefined) {
+          const near = values.filter((value) => Math.abs(value - edge) < 1e-6 * Math.max(1, edge));
+
+          expect(near.length).toBeGreaterThan(0);
+          expect(Math.max(...near.map((value) => Math.abs(value - edge)))).toBeLessThan(tolerance);
+        }
+      }
+    },
+  );
+
+  test.prop({
+    corners: fc.integer({ max: 12, min: 3 }),
+    height: fc.integer({ max: 1000, min: 0 }),
+    horizontal: ALIGNMENT,
+    vertical: ALIGNMENT,
+    width: fc.integer({ max: 1000, min: 0 }),
+  })(
     "[F07.AC3] moves a polygon by a rounding error at most along the axis it fills",
     ({ corners, height, horizontal, vertical, width }) => {
       const polygon = unitRegularPolygon(corners);
