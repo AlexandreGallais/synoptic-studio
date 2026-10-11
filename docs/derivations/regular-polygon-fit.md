@@ -48,7 +48,7 @@ At least one dimension is reached (`w` or `h`, or both), exactly in theory; in f
 
 ## Step 5 — Placement in the SVG frame
 
-The scaled polygon spans `s·Wᵤ × s·Hᵤ` and leaves the room `Δx = w − s·Wᵤ ≥ 0` and `Δy = h − s·Hᵤ ≥ 0` (step 4), zero on the axis it fills. It is placed in that room by a horizontal and a vertical **alignment**, each `min`, `mid` or `max` (F07). This is SVG's `preserveAspectRatio` with `meet` (`REF-SVG2-PRESERVE-ASPECT-RATIO`): the scale is the smaller of the two ratios (§8.2 step 7), and the translation adds nothing for `xMin`, `Δx / 2` for `xMid` (step 11), `Δx` for `xMax` (step 12), the same for `YMin`, `YMid`, `YMax` (steps 13–14); `min` aligns the smallest coordinate with the box's, `max` the largest (§8.7). With the y axis flipped (y downwards, `REF-SVG2-COORDS`), `min` is the left or the top, `max` the right or the bottom.
+The scaled polygon spans `s·Wᵤ × s·Hᵤ` and leaves the room `Δx = w − s·Wᵤ ≥ 0` and `Δy = h − s·Hᵤ ≥ 0` (step 4), zero on the axis it fills. It is placed in that room by a horizontal and a vertical **alignment**, each `min`, `mid` or `max` (F07). This is SVG's `preserveAspectRatio` with `meet` (`REF-SVG2-COORDS` §8.2, §8.7): the scale is the smaller of the two ratios (§8.2 step 7), and the translation adds nothing for `xMin`, `Δx / 2` for `xMid` (step 11), `Δx` for `xMax` (step 12), the same for `YMin`, `YMid`, `YMax` (steps 13–14); `min` aligns the smallest coordinate with the box's, `max` the largest (§8.7). With the y axis flipped (y downwards, `REF-SVG2-COORDS`), `min` is the left or the top, `max` the right or the bottom.
 
 `x = tₓ + s · (xₖ − min xₖ)`, `y = t_y + s · (max yₖ − yₖ)`, with `tₓ ∈ {0, Δx / 2, Δx}` and `t_y ∈ {0, Δy / 2, Δy}`.
 
@@ -56,9 +56,9 @@ The highest vertex of the mathematical frame becomes the one with the smallest S
 
 With the flipped unit polygon of step 2 (`y′ₖ = −yₖ`, so `max yₖ − yₖ = y′ₖ − min y′ₖ`), the same placement reads `y = t_y + s · (y′ₖ − min y′ₖ)`: no second flip.
 
-**Exact edges.** For `max`, `Δx + s · (xₖ − min xₖ) = w − s · (max xₖ − min xₖ) + s · (xₖ − min xₖ) = w − s · (max xₖ − xₖ)`, since `Wᵤ = max xₖ − min xₖ` (step 3). The code uses this form: at the extreme vertex `max xₖ − xₖ = 0`, so `x = w − 0 = w` exactly, while the sum `Δx + s · Wᵤ` may miss `w` by a rounding error. For `min`, `x = 0 + s · 0 = 0` exactly. Each coordinate on an anchored side is therefore the integer edge of the box, with no rounding. For `mid`, the placement of F02 is kept unchanged: `x = Δx / 2 + s · (xₖ − min xₖ)`.
+**On the anchored side.** For `min`, the extreme vertex is at `x = 0 + s · 0 = 0`; for `max`, at `Δx + s · Wᵤ = w`. In floating point these hold within a rounding error relative to the box, like step 4: the unit vertices of one edge come from `cos` and `sin` and may differ in their last bit (the base of the unit triangle at y = 0.5 and 0.5000000000000003), so a base anchored at the bottom of a 100 box may be computed at 99.99999999999999. The output writes 5 decimals (Q10): every vertex of that edge is written `100`, the integer edge of the box. For `mid`, the placement of F02 is kept unchanged: `x = Δx / 2 + s · (xₖ − min xₖ)`.
 
-On the axis the polygon fills, `Δ = 0` in theory and the three alignments give the same points; in floating point they differ by a rounding error relative to the box (about 1e-16 × its size, step 4), far below what the output writes (5 decimals, Q10).
+On the axis the polygon fills, `Δ = 0` in theory and the three alignments give the same points; in floating point they differ by a rounding error relative to the box (about 1e-16 × its size, step 4), far below what the output writes (5 decimals, Q10): the written drawing is the same.
 
 The default is `mid` on both axes: F02's centering. In the code, steps 3–5 are `boundingBox` and `fitInBox`, and the whole fit is `regularPolygonContour` (US-005, US-009).
 
