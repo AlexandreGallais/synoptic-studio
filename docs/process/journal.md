@@ -2,6 +2,13 @@
 
 What each working session dealt with, in the agent's words: requests of the Product Owner (paraphrased), decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`). The full conversations stay in the local transcripts (see [agent configuration](../tooling/agent.md#searching-past-conversations)).
 
+## 2026-10-11 — F07 validated
+
+- `#review` The Product Owner finished the guided test (steps 20 to 28): « OK, super, voilà, c'est parfait. » VAL-003 and F07 set `done` on `feat/val-003-validate-anchor`.
+- `#domain` Rejected, with its reason: an option pushing a rounded polygon onto its box; measures are taken from the face that touches the box.
+- `#playground` Guided test: large Previous / Next at the top of the panel; `?step=N` opens a step and follows the step shown.
+- `#process` Before a feature pull request: clean-up, then the Product Owner's yes (run skill, VAL step 6).
+
 ## 2026-10-11 — F07 validation prepared, Product Owner testing
 
 - `#review` The Product Owner tested from the US-010 card and stopped part-way: only five of the nine anchor places looked useful, and they left the choice to the agent. The nine are kept: a corner place holds both alignments, and the one that counts follows the box (`docs/domain/shapes.md`).
