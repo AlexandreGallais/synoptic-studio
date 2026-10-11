@@ -40,7 +40,7 @@ In delivery order.
 
 | ID                                                                  | Type       | Title                                         | Status |
 | ------------------------------------------------------------------- | ---------- | --------------------------------------------- | ------ |
-| [SP-004](../stories/E01-F03-SP-004-research-f03.md)                 | Spike      | Research for F03                              | ready  |
+| [SP-004](../stories/E01-F03-SP-004-research-f03.md)                 | Spike      | Research for F03                              | done   |
 | [EN-010](../stories/E01-F03-EN-010-radius-per-vertex.md)            | Enabler    | One requested radius per vertex in the model  | ready  |
 | [US-011](../stories/E01-F03-US-011-radius-field-mixed.md)           | User story | Radius field for every corner, Mixed          | ready  |
 | [CHK-004](../stories/E01-F03-CHK-004-checkpoint-f03.md)             | Checkpoint | Checkpoint in the middle of F03               | ready  |
