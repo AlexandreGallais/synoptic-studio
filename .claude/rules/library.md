@@ -22,3 +22,6 @@ paths:
 - A test refusing a value outside a string union (data read from outside) needs a cast: `// eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- <reason>` (US-009). A complexity limit in a test callback counts `?.` and `??`: destructure with one fallback instead.
 - Mutation checks by hand: save the file's content and copy it back; `git checkout` neither restores an untracked file nor keeps uncommitted work in a tracked one (F07).
 - happy-dom: `:checked` follows the `checked` attribute, not the state, and the lint autofix wraps selector values in `CSS.escape` (a space becomes `\ `, which happy-dom does not match): find radio buttons by their `checked` and `value` properties (US-010).
+- Playground limits (`max-lines` 200, `import-x/max-dependencies` 10, procedure statements 15): split by role into one-export files (`read-shape`, `show-shape`, `show-guided-step`, `write-*`), pass `update` as a callback rather than importing the page's redraw (EN-010).
+- `data-*` attributes: the autofix turns `removeAttribute("data-x")` into `delete el.dataset.x`, which `tsc` refuses (TS4111): write `delete el.dataset["x"]` (US-011).
+- `expect.closeTo` inside `toMatchObject` / `toEqual` of objects is an `any` for the lint (`no-unsafe-assignment`): assert numbers one by one with `toBeCloseTo` (EN-010).
