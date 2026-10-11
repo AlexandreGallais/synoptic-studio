@@ -2,6 +2,7 @@ import { formatSvgNumber } from "../src";
 
 import { readMode } from "./read-mode";
 import { selectElement } from "./select-element";
+import { showPointButtons } from "./show-point-buttons";
 
 import type { ShapeReading } from "./shape-reading";
 import type { Point, VertexSelection } from "../src";
@@ -75,8 +76,8 @@ function writePointFields(document: Document, point: Point | undefined, isTyped:
 
 /**
  * Shows the x and y of the one point selected, typed for a free shape (the rectangle included)
- * and greyed for a regular polygon, which is converted first; the conversion button shows for a
- * polygon only, greyed when it has no width or height (F08.AC1, F08.AC2).
+ * and greyed for a regular polygon, which is converted first, with the buttons acting on the
+ * points (F08.AC1, F08.AC2, F08.AC3).
  *
  * @kind procedure
  * @param document - page document
@@ -89,12 +90,7 @@ export function showPointFields(
   reading: ShapeReading,
   selection: VertexSelection,
 ): void {
-  const { model } = reading;
-  const convert = selectElement(document, "convert");
-  const isPolygon = "anchor" in model;
-
   selectElement(document, "point-fields").hidden = readMode(document) !== "points";
-  writePointFields(document, readSelectedPoint(reading, selection), !isPolygon);
-  convert.hidden = !isPolygon;
-  convert.toggleAttribute("disabled", model.width === 0 || model.height === 0);
+  writePointFields(document, readSelectedPoint(reading, selection), !("anchor" in reading.model));
+  showPointButtons(document, reading, selection);
 }
