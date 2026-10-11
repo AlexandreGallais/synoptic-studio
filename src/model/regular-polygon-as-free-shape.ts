@@ -7,7 +7,8 @@ import type { RegularPolygon } from "./regular-polygon";
 /**
  * Free shape a regular polygon becomes by the conversion button (F08): its corners as drawn,
  * exact, and the size of the box around them, so that it draws the same and does not move
- * (ADR-0031, ADR-0033). It no longer has a number of corners nor an anchor.
+ * (ADR-0031, ADR-0033) — at angle 0; a turned polygon keeps its angle, and its placement so that
+ * it does not move is US-019's (`DERIV-turned-shape` step 5). It no longer has a number of corners nor an anchor.
  *
  * @kind domain
  * @param polygon - valid polygon (`isValidRegularPolygon`) of width and height > 0: one of size 0
