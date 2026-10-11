@@ -49,7 +49,7 @@
 | [US-015](./E01-F08-US-015-add-middle-point.md)                  | F08     | Add a point in the middle of an edge                 | done   |
 | [US-016](./E01-F08-US-016-delete-points.md)                     | F08     | Delete points                                        | done   |
 | [AUD-005](./E01-F08-AUD-005-audit-f08.md)                       | F08     | Audit F08: node editing                              | done   |
-| [VAL-005](./E01-F08-VAL-005-validate-node-editing.md)           | F08     | Validate F08 on the reference cases                  | ready  |
+| [VAL-005](./E01-F08-VAL-005-validate-node-editing.md)           | F08     | Validate F08 on the reference cases                  | done   |
 | [SP-006](./E01-F09-SP-006-research-f09.md)                      | F09     | Research for F09                                     | done   |
 | [EN-012](./E01-F09-EN-012-free-shape-in-its-box.md)             | F09     | A free shape and its box in the model                | done   |
 | [CHK-006](./E01-F09-CHK-006-checkpoint-f09.md)                  | F09     | Checkpoint in the middle of F09                      | done   |
