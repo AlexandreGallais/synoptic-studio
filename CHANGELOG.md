@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.9.3](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.9.2...v0.9.3) (2026-10-11)
+
+
+### Documentation
+
+* **backlog:** refinement of F03, per-vertex radius, points mode and list ([00cabdd](https://github.com/AlexandreGallais/synoptic-studio/commit/00cabdd33ee8dbf81d8a679454fb42b76a4851cb))
+* **docs:** feedback on the scope of refinement questions ([4d355b7](https://github.com/AlexandreGallais/synoptic-studio/commit/4d355b7d167298e22b1c12908e10c0db40b3549f))
+
 ## [0.9.2](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.9.1...v0.9.2) (2026-10-11)
 
 
