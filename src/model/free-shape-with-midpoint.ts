@@ -15,9 +15,9 @@ import type { FreeShape } from "./free-shape";
  * of width or height 0 the result is not valid (`isValidFreeShape`).
  *
  * @kind domain
- * @param shape - free shape, as drawn at its size
+ * @param shape - free shape, straight or turned
  * @param edge - number of the edge, the one of its first point, from 0
- * @returns the free shape with one more point, around its corners as drawn
+ * @returns the free shape with one more point, its box placed so that the other points stay where they are drawn
  * @see REF-INKSCAPE-NODE-OPS
  */
 export function freeShapeWithMidpoint(shape: FreeShape, edge: number): FreeShape {
