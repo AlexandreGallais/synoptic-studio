@@ -14,7 +14,7 @@ As a symbol designer, I want the radius field of a shape to round every corner a
 ## Acceptance criteria
 
 - Given a shape whose vertices have the same radius, when it is shown, then the radius field shows that radius (F03.AC2).
-- Given a shape whose vertices have different radii, when it is shown, then the radius field is empty and shows "Mixed"; typing a value gives it to every vertex (F03.AC2).
+- Given a shape whose vertices have different radii, when it is shown, then the radius field is empty and shows "Mixed"; typing a value gives it to every vertex; the effective radii are then shown per vertex in Points mode, not in one line (F03.AC2).
 - Given a hexagon with radii 10, 0, 0, 0, 0, 0, when it gets 5 corners, then its radii are 10, 0, 0, 0, 0; with 8 corners, 10 and seven 0 (F03.AC3).
 
 ## Product Owner test
