@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.4](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.9.3...v0.9.4) (2026-10-11)
+
+
+### Documentation
+
+* **backlog:** start of F03, stories ready and run authorized ([81866bc](https://github.com/AlexandreGallais/synoptic-studio/commit/81866bcbfa0738fe613ff46e4d1c38ca351d5ca3))
+
 ## [0.9.3](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.9.2...v0.9.3) (2026-10-11)
 
 
