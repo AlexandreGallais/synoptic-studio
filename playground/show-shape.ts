@@ -14,6 +14,7 @@ import {
 import { createBoxElements } from "./create-box-elements";
 import { selectElement } from "./select-element";
 import { showPoints } from "./show-points";
+import { writeStraightBox } from "./write-straight-box";
 import { writeText } from "./write-text";
 
 import type { ShapeReading } from "./shape-reading";
@@ -82,12 +83,13 @@ export function showShape(document: Document, reading: ShapeReading): void {
   const contour = reading.corners.map((corner) => corner.point);
   const pieces = roundedContour(reading.corners);
   const pathData = contourPiecesToPathData(pieces);
-  const viewBox = boxToViewBox(contourBoundingBox(pieces), readCanvasSize(document), MARGIN);
+  const box = contourBoundingBox(pieces);
+  const viewBox = boxToViewBox(box, readCanvasSize(document), MARGIN);
   const svg = createSvgElement(document, viewBox);
   const handles = showPoints(document, reading);
 
   svg.append(
-    ...createBoxElements(document, reading.model),
+    ...createBoxElements(document, reading.model, box),
     createPathElement(document, pathData),
     ...handles,
   );
@@ -98,4 +100,5 @@ export function showShape(document: Document, reading: ShapeReading): void {
   writeText(document, "pieces", JSON.stringify(pieces, undefined, JSON_INDENT));
   writeEffectiveRadius(document, reading);
   writeText(document, "path-data", pathData);
+  writeStraightBox(document, box);
 }

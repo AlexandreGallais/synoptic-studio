@@ -8,11 +8,14 @@ import {
   isValidRegularPolygon,
   rectangleAsFreeShape,
   regularPolygonCorners,
+  turnedCorners,
 } from "../src";
 
 import { readAnchor } from "./read-anchor";
+import { readAngle } from "./read-angle";
 import { readFreeShapeShape } from "./read-free-shape-shape";
 import { readNumber } from "./read-number";
+import { readPosition } from "./read-position";
 import { readShapeKind } from "./read-shape-kind";
 import { readStoredFreeShape } from "./read-stored-free-shape";
 import { updateKeptRadii } from "./update-kept-radii";
@@ -37,9 +40,9 @@ const INVALID_POLYGON =
  * @see docs/backlog/stories/E01-F01-US-003-round-rectangle-corners.md
  */
 function readRectangle(document: Document): Rectangle {
-  // Angle and position are typed from US-018 on; until then the shape is straight at (0, 0).
+  // The tool's position is a creation value; the page moves the free shape it makes (ADR-0035).
   return {
-    angle: 0,
+    angle: readAngle(document),
     height: readNumber(document, "height"),
     radii: updateKeptRadii(document, RECTANGLE_CORNER_COUNT),
     width: readNumber(document, "width"),
@@ -59,17 +62,17 @@ function readRectangle(document: Document): Rectangle {
  */
 function readPolygon(document: Document): RegularPolygon {
   const corners = readNumber(document, "corners");
+  const position = readPosition(document);
 
   return {
     anchor: readAnchor(document),
-    angle: 0,
+    angle: readAngle(document),
     corners,
     height: readNumber(document, "height"),
     // One radius per corner; none for a number of corners refused.
     radii: updateKeptRadii(document, isRegularPolygonCornerCount(corners) ? corners : 0),
     width: readNumber(document, "width"),
-    x: 0,
-    y: 0,
+    ...position,
   };
 }
 
@@ -85,12 +88,12 @@ function readPolygon(document: Document): RegularPolygon {
 function readRectangleShape(document: Document): ShapeReading {
   const rectangle = readRectangle(document);
   // The rectangle tool makes a free shape (ADR-0032, ADR-0033): its corners, width and height.
-  const model = rectangleAsFreeShape(rectangle);
+  const model = { ...rectangleAsFreeShape(rectangle), ...readPosition(document) };
   // The rectangle tool takes integers (Q15); the free shape it makes is then checked too.
   const isValid = isValidRectangle(rectangle) && isValidFreeShape(model);
 
   return {
-    corners: isValid ? freeShapeCorners(model) : [],
+    corners: isValid ? turnedCorners(freeShapeCorners(model), model) : [],
     isValid,
     message: INVALID_RECTANGLE,
     model,
@@ -111,7 +114,7 @@ function readPolygonShape(document: Document): ShapeReading {
   const isValid = isValidRegularPolygon(model);
 
   return {
-    corners: isValid ? regularPolygonCorners(model) : [],
+    corners: isValid ? turnedCorners(regularPolygonCorners(model), model) : [],
     isValid,
     message: INVALID_POLYGON,
     model,

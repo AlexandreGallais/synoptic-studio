@@ -3,7 +3,9 @@ import { NO_VERTEX_SELECTION } from "../src";
 import { listenToAnchor } from "./listen-to-anchor";
 import { listenToModes } from "./listen-to-modes";
 import { listenToPoints } from "./listen-to-points";
+import { listenToPosition } from "./listen-to-position";
 import { listenToRadius } from "./listen-to-radius";
+import { listenToTurn } from "./listen-to-turn";
 import { selectElement } from "./select-element";
 import { writeChosenFreeShape } from "./write-chosen-free-shape";
 import { writeSelection } from "./write-selection";
@@ -57,5 +59,7 @@ export function listenToInputs(document: Document, update: () => void): void {
   listenToModes(document, update);
   listenToAnchor(document, update);
   listenToPoints(document, update);
+  listenToTurn(document, update);
+  listenToPosition(document, update);
   document.defaultView?.addEventListener("resize", update);
 }
