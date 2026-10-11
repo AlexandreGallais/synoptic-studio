@@ -3,7 +3,7 @@ id: EN-013
 epic: E01
 feature: F08
 title: A regular polygon numbered from its base
-status: ready
+status: done
 points: 2
 ---
 
@@ -22,5 +22,5 @@ The contour of a regular polygon starts at the right end of its flat base and go
 
 One task = one commit, referenced as `EN-013.Tn`.
 
-- [ ] T1 — The polygon's contour from the right end of its base, clockwise (`DERIV-regular-polygon-fit`, the order step); the F02, F03 and F07 tests and guided steps updated to the new order; tests and property (2 h)
-- [ ] T2 — Domain (Q18), derivation, guide pages that name point 1 (0.5 h)
+- [x] T1 — The polygon's contour from the right end of its base, clockwise (`DERIV-regular-polygon-fit`, the order step); the F02, F03 and F07 tests and guided steps updated to the new order; tests and property (2 h)
+- [x] T2 — Domain (Q18), derivation, guide pages that name point 1 (0.5 h)
