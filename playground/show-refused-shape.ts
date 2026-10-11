@@ -22,6 +22,9 @@ export function showRefusedShape(document: Document): void {
     mark.remove();
   }
 
+  // Nothing to convert nor to move on a refused shape.
+  selectElement(document, "point-fields").hidden = true;
+
   if (field instanceof HTMLInputElement) {
     field.disabled = false;
   }
