@@ -9,4 +9,5 @@
 | [F05](./E01-F05-text.md)                               | E01  | Text                               | draft       |
 | [F06](./E01-F06-polygon-stretched-to-its-box.md)       | E01  | Polygon stretched to fill its box  | draft       |
 | [F07](./E01-F07-polygon-aligned-in-its-box.md)         | E01  | Polygon aligned in its box         | done        |
-| [F08](./E01-F08-node-editing.md)                       | E01  | Node editing                       | in-progress |
+| [F08](./E01-F08-node-editing.md)                       | E01  | Node editing                       | draft       |
+| [F09](./E01-F09-stretchable-free-shape.md)             | E01  | Stretchable free shape             | in-progress |

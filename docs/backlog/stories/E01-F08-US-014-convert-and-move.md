@@ -3,7 +3,7 @@ id: US-014
 epic: E01
 feature: F08
 title: Convert a polygon, move a point by its x, y
-status: ready
+status: draft
 points: 3
 ---
 

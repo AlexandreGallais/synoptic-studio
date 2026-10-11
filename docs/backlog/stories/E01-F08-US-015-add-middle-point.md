@@ -3,7 +3,7 @@ id: US-015
 epic: E01
 feature: F08
 title: Add a point in the middle of an edge
-status: ready
+status: draft
 points: 2
 ---
 

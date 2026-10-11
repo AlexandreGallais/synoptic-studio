@@ -3,7 +3,7 @@ id: EN-011
 epic: E01
 feature: F08
 title: A free shape in the model
-status: ready
+status: draft
 points: 2
 ---
 

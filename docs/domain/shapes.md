@@ -77,6 +77,8 @@ Storing the value (Q8, settled):
 
 ### Rectangle
 
+- The rectangle is a **free shape** of 4 points made by the rectangle tool (Product Owner, 2026-10-11, F09): « En soi, en arrière, ça devrait être une forme libre tout le temps ». Width and height of any free shape stretch its points, the top-left of its box fixed; a rectangle stays a rectangle; stretching is without loss (0 then back gives the same shape). The eight handles of the box, the opposite side fixed as in Inkscape, come with E02.
+
 - Parameters: `width`, `height` (integers ≥ 0; negative forbidden, 0 allowed — Q15) and `radii`, the requested corner radius of each of its 4 vertices in contour order (integers ≥ 0; 0 = sharp corner; ADR-0029). A radius larger than the rectangle is valid: it is clamped, not refused (ADR-0007); the requested value is kept (Q8).
 - Result: contour of 4 vertices.
 

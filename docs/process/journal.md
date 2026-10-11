@@ -2,6 +2,11 @@
 
 What each working session dealt with, in the agent's words: requests of the Product Owner (paraphrased), decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`). The full conversations stay in the local transcripts (see [agent configuration](../tooling/agent.md#searching-past-conversations)).
 
+## 2026-10-11 — F09 inserted before F08, F08 paused
+
+- `#review` The review of SP-005 raised the rectangle's width and height once its points move. The Product Owner decided that the rectangle is a free shape, stretchable by its width and height without loss, in a feature of its own: « tu peux faire une feature ». F09 comes before F08 in E01; F08 is paused after SP-005 (#97), its other stories back to `draft`.
+- `#run` F09 runs from SP-006 up to VAL-006 (« go »). `feature/f08-node-editing` stays on `origin` while F09 runs: a paused feature branch, deliberate exception to "one feature branch at a time".
+
 ## 2026-10-11 — F08 refined, autonomous run authorized
 
 - `#run` Scope: F08 (node editing), from SP-005 up to VAL-005. The Product Owner started it with `/run` after the proposed stories, F08 kept in E01.

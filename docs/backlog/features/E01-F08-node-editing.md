@@ -2,7 +2,7 @@
 id: F08
 epic: E01
 title: Node editing
-status: in-progress
+status: draft
 ---
 
 # E01 · F08 — Node editing
@@ -11,7 +11,7 @@ status: in-progress
 
 Split from F03 (Product Owner, 2026-10-11).
 
-Refined with the Product Owner on 2026-10-11 (started with `/run`).
+Refined with the Product Owner on 2026-10-11 (started with `/run`). **Paused after SP-005** (2026-10-11): F09 (stretchable free shape) comes first; the stories below go back to `draft`, to be rewritten on F09's free shape, then set `ready` again with the Product Owner.
 
 ## Decided in refinement (Product Owner, 2026-10-11)
 
@@ -43,13 +43,13 @@ In delivery order.
 | ID                                                             | Type       | Title                                       | Status |
 | -------------------------------------------------------------- | ---------- | ------------------------------------------- | ------ |
 | [SP-005](../stories/E01-F08-SP-005-research-f08.md)            | Spike      | Research for F08                            | ready  |
-| [EN-011](../stories/E01-F08-EN-011-free-shape.md)              | Enabler    | A free shape in the model                   | ready  |
-| [US-014](../stories/E01-F08-US-014-convert-and-move.md)        | User story | Convert a polygon, move a point by its x, y | ready  |
-| [CHK-005](../stories/E01-F08-CHK-005-checkpoint-f08.md)        | Checkpoint | Checkpoint in the middle of F08             | ready  |
-| [US-015](../stories/E01-F08-US-015-add-middle-point.md)        | User story | Add a point in the middle of an edge        | ready  |
-| [US-016](../stories/E01-F08-US-016-delete-points.md)           | User story | Delete points                               | ready  |
-| [AUD-005](../stories/E01-F08-AUD-005-audit-f08.md)             | Audit      | Audit F08: node editing                     | ready  |
-| [VAL-005](../stories/E01-F08-VAL-005-validate-node-editing.md) | Validation | Validate F08 on the reference cases         | ready  |
+| [EN-011](../stories/E01-F08-EN-011-free-shape.md)              | Enabler    | A free shape in the model                   | draft  |
+| [US-014](../stories/E01-F08-US-014-convert-and-move.md)        | User story | Convert a polygon, move a point by its x, y | draft  |
+| [CHK-005](../stories/E01-F08-CHK-005-checkpoint-f08.md)        | Checkpoint | Checkpoint in the middle of F08             | draft  |
+| [US-015](../stories/E01-F08-US-015-add-middle-point.md)        | User story | Add a point in the middle of an edge        | draft  |
+| [US-016](../stories/E01-F08-US-016-delete-points.md)           | User story | Delete points                               | draft  |
+| [AUD-005](../stories/E01-F08-AUD-005-audit-f08.md)             | Audit      | Audit F08: node editing                     | draft  |
+| [VAL-005](../stories/E01-F08-VAL-005-validate-node-editing.md) | Validation | Validate F08 on the reference cases         | draft  |
 
 ## Feature plan
 

@@ -3,7 +3,7 @@ id: US-016
 epic: E01
 feature: F08
 title: Delete points
-status: ready
+status: draft
 points: 2
 ---
 
