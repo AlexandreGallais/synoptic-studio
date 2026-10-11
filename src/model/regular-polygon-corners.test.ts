@@ -5,6 +5,7 @@ import { edgeLengths, effectiveRadii, roundedContour } from "../geometry";
 import { EPSILON } from "../math";
 
 import { effectiveCornerRadius } from "./effective-corner-radius";
+import { regularPolygonContour } from "./regular-polygon-contour";
 import { regularPolygonCorners } from "./regular-polygon-corners";
 
 import type { Anchor, Arc, ContourPiece, Corner } from "../geometry";
@@ -270,4 +271,40 @@ describe("regularPolygonCorners (anchored, properties)", () => {
       expect(Math.abs(lowest - height)).toBeLessThan(EPSILON * Math.max(1, width, height));
     },
   );
+});
+
+describe("regularPolygonCorners (one radius per vertex)", () => {
+  it("[F03.AC1] gives every vertex the same radius as F02 when the radii are equal", () => {
+    const polygon = {
+      anchor: CENTER,
+      corners: 6,
+      height: 100,
+      radii: [7, 7, 7, 7, 7, 7],
+      width: 100,
+    };
+
+    expect(regularPolygonCorners(polygon)).toEqual(
+      regularPolygonContour(polygon).map((point) => ({ point, radius: 7 })),
+    );
+  });
+
+  it("[F03.AC1] rounds only vertex 1 of a square with radii 50, 0, 0, 0", () => {
+    // A square with a flat base fills 100 × 100; vertex 1 is its top-left corner (Q11): one
+    // quarter circle of radius 50 centered at (50, 50), as for the rectangle.
+    const pieces = roundedContour(
+      regularPolygonCorners({
+        anchor: CENTER,
+        corners: 4,
+        height: 100,
+        radii: [50, 0, 0, 0],
+        width: 100,
+      }),
+    );
+    const [arc, ...others] = arcsOf(pieces);
+
+    expect(others).toEqual([]);
+    expect(arc?.radius).toBe(50);
+    expect(arc?.center.x).toBeCloseTo(50, DECIMALS);
+    expect(arc?.center.y).toBeCloseTo(50, DECIMALS);
+  });
 });
