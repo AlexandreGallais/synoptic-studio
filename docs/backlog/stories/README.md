@@ -28,7 +28,7 @@
 | [VAL-002](./E01-F02-VAL-002-validate-polygon.md)            | F02     | Validate F02 on the reference cases              | done   |
 | [SP-003](./E01-F07-SP-003-research-f07.md)                  | F07     | Research for F07                                 | done   |
 | [EN-009](./E01-F07-EN-009-align-in-box.md)                  | F07     | Align a fitted shape in its box                  | done   |
-| [US-009](./E01-F07-US-009-anchored-polygon.md)              | F07     | Polygon anchored in its box                      | ready  |
+| [US-009](./E01-F07-US-009-anchored-polygon.md)              | F07     | Polygon anchored in its box                      | done   |
 | [CHK-003](./E01-F07-CHK-003-checkpoint-f07.md)              | F07     | Checkpoint in the middle of F07                  | ready  |
 | [US-010](./E01-F07-US-010-anchor-picker-playground.md)      | F07     | Choose the anchor in the playground              | ready  |
 | [AUD-003](./E01-F07-AUD-003-audit-f07.md)                   | F07     | Audit F07: polygon aligned in its box            | ready  |
