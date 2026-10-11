@@ -6,14 +6,14 @@ import type { FreeShape } from "./free-shape";
 /**
  * Free shape without some of its points: each goes with its radius, and its two neighbours become
  * consecutive, joined by a straight edge, the contour staying closed; the others keep their place
- * and their order, numbered from the first one left (F08.AC4, note 0007). The caller keeps at
- * least 3 points.
+ * and their order, numbered from the first one left (F08.AC4, note 0007). Fewer than
+ * 3 points left give a free shape that is not valid (see `deletionOutcome`).
  *
  * @kind domain
  * @param shape - free shape, as drawn at its size
  * @param removed - numbers of the points to remove, from 0, in any order
  * @returns the free shape of the points left, around them as drawn
- * @see REF-INKSCAPE-NODE-OPS
+ * @see docs/domain/interaction.md#_3-node-editing
  */
 export function freeShapeWithoutPoints(shape: FreeShape, removed: readonly number[]): FreeShape {
   return freeShapeAroundCorners(
