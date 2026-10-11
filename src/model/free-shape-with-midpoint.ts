@@ -9,7 +9,8 @@ import type { FreeShape } from "./free-shape";
 /**
  * Free shape with a sharp point added in the middle of an edge, right after the edge's first
  * point: the points after it are numbered one more, point 1 stays point 1 (F08.AC3). The point
- * lies on the straight edge, so the outline keeps its place and its box; it keeps its fractions.
+ * lies on the straight edge, so the outline keeps its place and its box; it keeps its fractions. On a shape
+ * of width or height 0 the result is not valid (`isValidFreeShape`).
  *
  * @kind domain
  * @param shape - free shape, as drawn at its size

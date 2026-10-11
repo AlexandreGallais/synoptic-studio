@@ -5,8 +5,8 @@ import type { Point } from "../math";
 
 /**
  * Contour of a regular polygon: the largest one with a flat base fitting its `width × height`
- * box, placed by its anchor (centered by default, F07), clockwise on screen from the topmost vertex, the leftmost on a tie
- * (Q1, Q11, Q18). The vertices are derived, fractional, never stored (ADR-0003).
+ * box, placed by its anchor (centered by default, F07), clockwise on screen from the right end of
+ * its base (Q1, Q11, Q18 amended). The vertices are derived, fractional, never stored (ADR-0003).
  *
  * @kind domain
  * @param polygon - valid polygon (`isValidRegularPolygon`)

@@ -6,7 +6,7 @@ import type { FreeShape } from "./free-shape";
 
 /**
  * Whether a free shape can enter the model (ADR-0032, ADR-0033): width and height finite and
- * ≥ 0 (Q15; fractional only as a conversion leaves them, Q27), the points of its corners allowed
+ * ≥ 0 (Q15; fractional as a conversion or an edit of its points leaves them, Q27), the points of its corners allowed
  * (`areFreeShapePoints`), and their radii integers ≥ 0 (ADR-0029).
  *
  * @kind domain
