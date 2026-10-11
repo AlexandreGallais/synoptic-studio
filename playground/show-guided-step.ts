@@ -1,7 +1,10 @@
+import { NO_VERTEX_SELECTION } from "../src";
+
 import { GUIDED_STEPS } from "./guided-steps";
 import { selectElement } from "./select-element";
 import { writeAnchorValue } from "./write-anchor-value";
 import { writeInputValue } from "./write-input-value";
+import { writeSelection } from "./write-selection";
 import { writeStepToAddress } from "./write-step-to-address";
 import { writeText } from "./write-text";
 
@@ -32,9 +35,9 @@ function writeShapeValue(document: Document, shape: string): void {
  * @see docs/backlog/stories/E01-F02-VAL-002-validate-polygon.md
  */
 function writeStepValues(document: Document, step: GuidedStep): void {
-  // A step types one radius for every vertex (F03.AC2).
+  // A step types one radius for every vertex (F03.AC2), and selects no vertex.
   delete selectElement(document, "radius").dataset["radii"];
-  selectElement(document, "radius").setAttribute("placeholder", "");
+  writeSelection(document, NO_VERTEX_SELECTION);
   writeShapeValue(document, step.values.shape);
   writeAnchorValue(document, step.values.anchor);
   writeInputValue(document, "corners", step.values.corners);
