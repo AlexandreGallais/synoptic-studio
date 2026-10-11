@@ -1,6 +1,6 @@
 # ADR-0033 — A free shape of corners, fractions until edited, points typed in the SVG's coordinates
 
-**Status**: Accepted (Product Owner, 2026-10-11, Q27) — supersedes ADR-0029 for free shapes (radii in a list of their own), completes ADR-0031 and ADR-0032.
+**Status**: Accepted (Product Owner, 2026-10-11, Q27) — supersedes ADR-0029 for free shapes (radii in a list of their own) and ADR-0032 on integer points and size; completes ADR-0031.
 
 ## Context
 

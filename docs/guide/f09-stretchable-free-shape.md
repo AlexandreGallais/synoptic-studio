@@ -6,7 +6,7 @@ Nothing looks different in the playground, and that is the point: the rectangle 
 
 ## The ideas behind it
 
-**Points in a box of their own.** The rectangle tool keeps a square of side 1 — the points (0, 0), (1, 0), (1, 1), (0, 1) — and draws it stretched to your width and height. Under "Model", the playground shows that square, the radii, and the width and height.
+**Points in a box of their own.** The rectangle tool keeps a square of side 1 — the points (0, 0), (1, 0), (1, 1), (0, 1) — and draws it stretched to your width and height. Under "Model", the playground shows that square, the radii, and the width and height. Since F08, each point is shown with its radius, as a corner.
 
 ![The 120 × 80 rectangle with radius 10, drawn from its unit square](./images/f09-rectangle.svg)
 
