@@ -1,3 +1,6 @@
+export type * from "./alignment";
+export * from "./alignment-factor";
+export type * from "./anchor";
 export type * from "./arc";
 export * from "./bounding-box";
 export type * from "./contour-piece";
@@ -15,6 +18,7 @@ export * from "./fit-in-box";
 export * from "./has-length";
 export * from "./rounded-contour";
 export type * from "./segment";
+export type * from "./size";
 export * from "./turning-angle";
 export * from "./turning-angles";
 export * from "./unit-regular-polygon";

@@ -14,5 +14,8 @@ import type { Point } from "../math";
  * @see DERIV-regular-polygon-fit
  */
 export function regularPolygonContour(polygon: RegularPolygon): readonly Point[] {
-  return fitInBox(unitRegularPolygon(polygon.corners), polygon.width, polygon.height);
+  return fitInBox(unitRegularPolygon(polygon.corners), polygon, {
+    horizontal: "mid",
+    vertical: "mid",
+  });
 }
