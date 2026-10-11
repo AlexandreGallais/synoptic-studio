@@ -10,6 +10,16 @@ const COORDINATE = fc.integer({ max: 1000, min: -1000 });
 /** A point with integer coordinates. */
 const ANY_POINT = fc.record({ x: COORDINATE, y: COORDINATE });
 
+/**
+ * Rank of each value: how many values are smaller, so that equal values share a rank.
+ *
+ * @param values - numbers in any order
+ * @returns the rank of each, in the same order
+ */
+function ranksOf(values: readonly number[]): readonly number[] {
+  return values.map((value) => values.filter((other) => other < value).length);
+}
+
 describe("stretchToSize", () => {
   it("[F09.AC2] stretches each axis by its own factor, the top-left of the box fixed", () => {
     // DERIV-free-shape-stretch check rows: o = (0, 0), n = 2 × 2, sx = 5, sy = 2.
@@ -108,4 +118,48 @@ describe("stretchToSize", () => {
       });
     },
   );
+
+  test.prop({
+    points: fc.array(ANY_POINT, { minLength: 2 }),
+  })("gives back the same points when stretched to their own size", ({ points }) => {
+    const box = boundingBox(points);
+
+    fc.pre(box.maxX > box.minX && box.maxY > box.minY);
+
+    expect(
+      stretchToSize(points, { height: box.maxY - box.minY, width: box.maxX - box.minX }),
+    ).toEqual(points);
+  });
+
+  test.prop({
+    height: fc.integer({ max: 10_000, min: 1 }),
+    points: fc.array(ANY_POINT, { minLength: 2 }),
+    width: fc.integer({ max: 10_000, min: 1 }),
+  })(
+    "[F09.AC2] keeps the order of the x and of the y: a rectangle stays a rectangle",
+    ({ height, points, width }) => {
+      const box = boundingBox(points);
+
+      fc.pre(box.maxX > box.minX && box.maxY > box.minY);
+
+      const after = stretchToSize(points, { height, width });
+
+      expect(ranksOf(after.map((point) => point.x))).toEqual(
+        ranksOf(points.map((point) => point.x)),
+      );
+
+      expect(ranksOf(after.map((point) => point.y))).toEqual(
+        ranksOf(points.map((point) => point.y)),
+      );
+    },
+  );
+
+  it("does not throw on many points", () => {
+    const points = Array.from({ length: 200_000 }, (unused, index) => ({
+      x: index % 2,
+      y: index % 3,
+    }));
+
+    expect(stretchToSize(points, { height: 4, width: 2 })).toHaveLength(200_000);
+  });
 });

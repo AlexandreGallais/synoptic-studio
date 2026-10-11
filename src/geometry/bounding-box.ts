@@ -24,13 +24,14 @@ export type BoundingBox = {
  * @see DERIV-regular-polygon-fit
  */
 export function boundingBox(points: readonly Point[]): BoundingBox {
-  const xs = points.map((point) => point.x);
-  const ys = points.map((point) => point.y);
-
-  return {
-    maxX: Math.max(...xs),
-    maxY: Math.max(...ys),
-    minX: Math.min(...xs),
-    minY: Math.min(...ys),
-  };
+  // A fold rather than Math.max(...xs): engines cap the number of arguments of a call.
+  return points.reduce<BoundingBox>(
+    (box, point) => ({
+      maxX: Math.max(box.maxX, point.x),
+      maxY: Math.max(box.maxY, point.y),
+      minX: Math.min(box.minX, point.x),
+      minY: Math.min(box.minY, point.y),
+    }),
+    { maxX: -Infinity, maxY: -Infinity, minX: Infinity, minY: Infinity },
+  );
 }

@@ -29,7 +29,7 @@ const INVALID_POLYGON =
  *
  * @kind procedure
  * @param document - page document
- * @returns the rectangle, possibly invalid (checked by `isValidRectangle`)
+ * @returns the rectangle, possibly invalid (checked, as a free shape, by `isValidFreeShape`)
  * @see docs/backlog/stories/E01-F01-US-003-round-rectangle-corners.md
  */
 function readRectangle(document: Document): Rectangle {
