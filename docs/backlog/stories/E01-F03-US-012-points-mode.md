@@ -22,15 +22,15 @@ As a symbol designer, I want a Points mode that shows the vertices of my shape a
 
 Run `npm run dev` and open `http://localhost:5173/?step=10`. A **handle** is the small round mark drawn on a corner (a **point**) of the shape; **point 1** is where the outline of the shape starts, **point 2** the next one, which shows the way it goes (clockwise).
 
-| Step | Do                                       | You should see                                                                                          |
-| ---- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| 1    | Look under the guided test               | two large buttons, **Shape** (pressed, in blue) and **Points**; no handle on the hexagon                |
-| 2    | Click **Points**                         | a round handle on each of the 6 corners: the top-left one red, the top-right one green, the others dark |
-| 3    | Type 3 corners                           | 3 handles: the apex red, the bottom-right corner green (the outline goes clockwise)                     |
-| 4    | Choose **Rectangle**, width 0, height 50 | the rectangle is a vertical line; its two top handles are on the same spot, and the red one is on top   |
-| 5    | Click **Shape**                          | the handles disappear                                                                                   |
+| Step | Do                                       | You should see                                                                                                                                              |
+| ---- | ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1    | Look under the guided test               | two large buttons, **Shape** (pressed, in blue) and **Points**; no handle on the hexagon                                                                    |
+| 2    | Click **Points**                         | a round handle on each of the 6 corners: the left end of the top edge red, its right end green, the others dark                                             |
+| 3    | Type 3 corners                           | 3 handles: the apex red, the bottom-right corner green (the outline goes clockwise)                                                                         |
+| 4    | Choose **Rectangle**, width 0, height 50 | the rectangle has no width and is not drawn; only its handles show: the red one at the top (the green point 2 is hidden under it), a dark one at the bottom |
+| 5    | Click **Shape**                          | the handles disappear                                                                                                                                       |
 
-Look closely at: whether the handles are easy to see and large enough to aim at; clicking them comes with US-013.
+Look closely at: whether the handles are easy to see and large enough to aim at, and whether red and green are easy to tell apart (the point numbers come with the list of US-013); clicking them comes with US-013.
 
 ## Tasks
 

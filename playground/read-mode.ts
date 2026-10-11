@@ -9,7 +9,7 @@ import { selectElement } from "./select-element";
  * @returns `points` when the Points button is pressed, `shape` otherwise
  * @see docs/backlog/stories/E01-F03-US-012-points-mode.md
  */
-export function readMode(document: Document): string {
+export function readMode(document: Document): "points" | "shape" {
   return selectElement(document, "mode-points").getAttribute("aria-pressed") === "true"
     ? "points"
     : "shape";

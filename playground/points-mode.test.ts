@@ -85,6 +85,9 @@ describe("points mode", () => {
 
     expect(handles().at(-1)?.classList.contains("first")).toBe(true);
     expect(handles().at(-2)?.classList.contains("second")).toBe(true);
+    // Only one red and one green handle; vertices 3 to 6 neutral.
+    expect(document.querySelectorAll("#canvas path.handle.first")).toHaveLength(1);
+    expect(document.querySelectorAll("#canvas path.handle.second")).toHaveLength(1);
 
     // Vertex 1 of the hexagon in 100 × 100 is (25, 6.69873): a circle of radius 8 around it.
     expect(handles().at(-1)?.getAttribute("d")).toBe(
