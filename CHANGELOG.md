@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.2](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.12.1...v0.12.2) (2026-10-11)
+
+
+### Documentation
+
+* **docs:** journal of the F04 run authorization ([12ab0d2](https://github.com/AlexandreGallais/synoptic-studio/commit/12ab0d22e43a73f24a7707ca7f147042afc98cc0))
+
 ## [0.12.1](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.12.0...v0.12.1) (2026-10-11)
 
 
