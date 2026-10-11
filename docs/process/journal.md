@@ -2,6 +2,14 @@
 
 What each working session dealt with, in the agent's words: requests of the Product Owner (paraphrased), decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`). The full conversations stay in the local transcripts (see [agent configuration](../tooling/agent.md#searching-past-conversations)).
 
+## 2026-10-11 — F07 run stopped at VAL-003
+
+- `#run` Merged into `feature/f07-polygon-anchor`: SP-003 (#64), EN-009 (#65), US-009 (#66), CHK-003 (#67), US-010 (#68), AUD-003 (#69). Stop: the next story is VAL-003, with the Product Owner.
+- `#geometry` The placement follows SVG's `preserveAspectRatio` (meet, nine alignments); anchored vertices land on the box edge within rounding and are written as the integer edge.
+- `#review` Every review changed its story: a false "exact in floating point" claim caught in the spike, a vacuous playground test, a stale "center" in the derivation, a missing property for AC4; 8 of 8 audit mutations caught.
+- `#tooling` happy-dom's `:checked` follows the attribute, not the state: radio buttons read by property.
+- `#backlog` For F03: node editing of an anchored regular polygon is a business question.
+
 ## 2026-10-11 — F07 refined, autonomous run authorized
 
 - `#run` The Product Owner typed `/run` with no scope; the order guard gave F07 (next in E01). Refinement: five criteria, option « toucher dans tous les cas » left out (« le but, c'est que ça touche toute la box en radius 0, et puis, si radius 10, ça touche plus, pas grave »). Scope of the run: SP-003 to AUD-003, stop at VAL-003.
