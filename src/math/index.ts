@@ -1,6 +1,7 @@
 export * from "./add";
 export * from "./dot";
 export * from "./epsilon";
+export * from "./midpoint";
 export * from "./norm";
 export * from "./perp-dot";
 export type * from "./point";
