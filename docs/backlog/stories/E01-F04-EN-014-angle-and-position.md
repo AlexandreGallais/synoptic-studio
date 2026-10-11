@@ -17,7 +17,7 @@ Every shape (free shape, rectangle, regular polygon) stores an integer angle and
 - Given a shape turned by a positive angle, when it is drawn, then it turns clockwise on screen about the center of its box: a 100 × 50 rectangle turned by 90° is 50 wide and 100 high, about the same center (F04.AC1, F04.AC3).
 - Given a turned shape, when it is drawn, then its radii, anchor, width, height and point numbers are those of the straight shape; at 0 the drawing is the straight one (F04.AC2).
 - Given a shape with a position, when it is drawn, then the top-left of its box before turning is at that x and y; at angle 0 and the earlier position (0, 0 for a polygon, the top-left of its points for a free shape) the drawing is exactly the earlier one (F04.AC2, F04.AC3).
-- Given the angles 0, 90, 180, 270, when a shape is turned, then its points are exact: four quarter turns give back the straight drawing (`DERIV-turned-shape` step 3).
+- Given the angles 90, 180, 270, when a 100 × 50 rectangle is turned, then every coordinate is exact, with no rounding dust (`Object.is`); the 90° turn applied four times to its points gives them back exactly (`DERIV-turned-shape` step 3).
 
 ## Product Owner test
 
