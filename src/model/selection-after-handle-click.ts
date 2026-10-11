@@ -6,7 +6,7 @@ import type { VertexSelection } from "./vertex-selection";
 
 /**
  * Selection after a click on the handle of a vertex on the drawing: Shift or Ctrl (Cmd) adds or
- * removes the vertex, as in Figma and Inkscape; a drawing has no range. A plain click selects
+ * removes the vertex; a drawing has no range (`docs/domain/interaction.md` §2–3). A plain click selects
  * it alone (Product Owner, F03.AC5). Only a click without Shift moves the start of the next
  * range (note 0006).
  *

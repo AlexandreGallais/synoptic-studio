@@ -1,4 +1,4 @@
-import { createPathElement, formatSvgNumber } from "../src";
+import { createPathElement, formatCoordinatePair, formatSvgNumber } from "../src";
 
 import type { Point } from "../src";
 
@@ -19,9 +19,9 @@ const HALO_RADIUS = 13;
  * @see REF-SVG2-PATHS
  */
 function createCirclePathData(center: Point, radius: number): string {
-  const left = `${formatSvgNumber(center.x - radius)} ${formatSvgNumber(center.y)}`;
-  const right = `${formatSvgNumber(center.x + radius)} ${formatSvgNumber(center.y)}`;
-  const arc = `A${String(radius)} ${String(radius)} 0 1 1`;
+  const left = formatCoordinatePair({ x: center.x - radius, y: center.y });
+  const right = formatCoordinatePair({ x: center.x + radius, y: center.y });
+  const arc = `A${formatSvgNumber(radius)} ${formatSvgNumber(radius)} 0 1 1`;
 
   return `M${left} ${arc} ${right} ${arc} ${left} Z`;
 }
