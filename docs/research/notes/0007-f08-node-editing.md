@@ -21,7 +21,7 @@ Moving a vertex can make the contour concave. `DERIV-local-radius-clamp` notes t
 
 ## Coordinates
 
-Typed x and y are safe integers, negative allowed: a free shape may extend left of or above its first position, as a path in any editor (agent's choice, to show at VAL-005).
+Typed x and y are safe integers, negative allowed (Product Owner, 2026-10-11). Each vertex keeps its number wherever it moves (Product Owner). Adding a point splits an edge, so the rounding of a neighbouring corner may shrink: accepted by the Product Owner, as the point was asked for.
 
 ## Open
 
