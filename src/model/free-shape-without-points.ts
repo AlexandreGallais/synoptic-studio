@@ -18,5 +18,6 @@ import type { FreeShape } from "./free-shape";
 export function freeShapeWithoutPoints(shape: FreeShape, removed: readonly number[]): FreeShape {
   return freeShapeAroundCorners(
     freeShapeCorners(shape).filter((corner, index) => !removed.includes(index)),
+    shape.angle,
   );
 }
