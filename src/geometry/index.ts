@@ -1,5 +1,6 @@
 export type * from "./alignment";
 export * from "./alignment-factor";
+export * from "./alignments";
 export type * from "./anchor";
 export type * from "./arc";
 export * from "./bounding-box";
