@@ -1,6 +1,6 @@
 # ADR-0029 — One requested corner radius per vertex in the model
 
-**Status**: Accepted (agent, 2026-10-11, within the Product Owner's refinement of F03; shown to the Product Owner at VAL-004)
+**Status**: Accepted — superseded by ADR-0033 for free shapes (a radius kept with its point) (agent, 2026-10-11, within the Product Owner's refinement of F03; shown to the Product Owner at VAL-004)
 
 ## Context
 
