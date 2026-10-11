@@ -4,6 +4,8 @@ export type GuidedStep = {
   readonly title: string;
   /** Values the step types into the inputs. */
   readonly values: {
+    /** Anchor chosen, horizontal then vertical alignment (`mid max`), used by the polygon only. */
+    readonly anchor: string;
     /** Number of corners typed, used by the polygon only. */
     readonly corners: number;
     /** Height typed. */
