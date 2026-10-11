@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.2](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.11.1...v0.11.2) (2026-10-11)
+
+
+### Documentation
+
+* **docs:** journal of the F08 run, stopped at VAL-005 ([6bf563e](https://github.com/AlexandreGallais/synoptic-studio/commit/6bf563e4274eb97b378687e22764bb58d0b8ff1c))
+
 ## [0.11.1](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.11.0...v0.11.1) (2026-10-11)
 
 
