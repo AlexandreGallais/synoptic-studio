@@ -3,7 +3,7 @@ id: US-017
 epic: E01
 feature: F09
 title: The rectangle as a free shape, stretched by its size
-status: ready
+status: done
 points: 2
 ---
 
@@ -35,5 +35,5 @@ Look closely at: whether anything about the rectangle behaves differently from b
 
 One task = one commit, referenced as `US-017.Tn`.
 
-- [ ] T1 — Playground: the rectangle read and shown as a free shape; tests (1.5 h)
-- [ ] T2 — Product Owner test card; help text (0.5 h)
+- [x] T1 — Playground: the rectangle read and shown as a free shape; tests (1.5 h)
+- [x] T2 — Product Owner test card; help text (0.5 h)
