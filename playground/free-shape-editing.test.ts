@@ -328,4 +328,35 @@ describe("editing the points of a free shape", () => {
 
     expect(rows()).toHaveLength(4);
   });
+
+  it("[F08.AC2] keeps the free shape when a point typed would leave it no width", () => {
+    // A triangle (0, 0), (120, 80), (0, 80) once point 2 is deleted; point 2 typed at x 0 would put
+    // every point at x 0: refused, the triangle stays.
+    openOnStep(1);
+    clickPoint(2);
+    document.querySelector<HTMLButtonElement>("#delete-points")?.click();
+    clickPoint(2);
+    type("point-x", "0");
+
+    expect(rows()).toEqual([
+      "1 · x 0 · y 0 · radius 10",
+      "2 · x 120 · y 80 · radius 10",
+      "3 · x 0 · y 80 · radius 10",
+    ]);
+
+    expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("free");
+  });
+
+  it("[F08.AC3] greys adding a point on a shape of width 0, its radii kept", () => {
+    openOnStep(1);
+    type("width", "0");
+    clickPoint(1);
+    addPoint(2);
+    document.querySelector<HTMLButtonElement>("#add-midpoint")?.click();
+
+    expect(isAddGreyed()).toBe(true);
+    expect(rows()[1]).toBe("2 · x 0 · y 0 · radius 10");
+    // Points 1 and 2 still selected: no single point to show.
+    expect(field("point-x").value).toBe("");
+  });
 });
