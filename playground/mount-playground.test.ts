@@ -183,7 +183,7 @@ describe("playground", () => {
     expect(text("effective")).toBe("");
   });
 
-  it("[F02.AC1] walks the steps of the guided test (F01 and F02), each showing what it tells to look at", () => {
+  it("[F02.AC1] walks the steps of the guided test (F01, F02 and F07), each showing what it tells to look at", () => {
     // "Previous" on the first step stays there and types its values again.
     click("guide-previous");
 
@@ -209,6 +209,16 @@ describe("playground", () => {
       "",
       "Effective radius: 10 (as requested)",
       "Effective radius: 10 (as requested)",
+      // F07 (US-010 card).
+      "Effective radius: 0 (as requested)",
+      "Effective radius: 0 (as requested)",
+      "Effective radius: 0 (as requested)",
+      "Effective radius: 0 (as requested)",
+      "Effective radius: 10 (as requested)",
+      "Effective radius: 10 (as requested)",
+      "Effective radius: 10 (as requested)",
+      "Effective radius: 10 (as requested)",
+      "Effective radius: 10 (as requested)",
     ];
 
     for (const [index, effective] of expected.entries()) {
@@ -217,9 +227,20 @@ describe("playground", () => {
       click("guide-next");
     }
 
-    // Past the last step, the guide stays on it: the width typed is capped at 100 000.
+    // Past the last step, the guide stays on it: back to the rectangle, the anchor grid hidden.
+    expect(text("guide-number")).toBe("28");
+
+    expect(text("path-data")).toBe(
+      "M10 0 L90 0 A10 10 0 0 1 100 10 L100 40 A10 10 0 0 1 90 50 L10 50 A10 10 0 0 1 0 40 L0 10 A10 10 0 0 1 10 0 Z",
+    );
+
+    expect(document.querySelector("#anchor-field")?.hasAttribute("hidden")).toBe(true);
+
+    // The next tests start from the last step of F02: a rectangle, the anchor on the center.
+    clickTimes("guide-previous", 9);
+
     expect(text("guide-number")).toBe("19");
-    expect(document.querySelector<HTMLInputElement>("#width")?.value).toBe("100000");
+    expect(checkedAnchor()).toBe("mid mid");
   });
 
   it("[F02.AC4] stays on the rectangle after the steps of the F01 guided test", () => {
@@ -426,5 +447,28 @@ describe("playground", () => {
     expect(text("path-data")).toBe(
       "M25 6.69873 L75 6.69873 L100 50 L75 93.30127 L25 93.30127 L0 50 Z",
     );
+  });
+
+  it("[F07.AC2] places the polygon of each F07 step of the guided test where the step says", () => {
+    // Steps 20 to 28 are F07's; each path is the one its "Look at" announces.
+    clickTimes("guide-previous", GUIDED_STEPS.length);
+    clickTimes("guide-next", 20);
+
+    expect(text("path-data")).toBe("M50 13.39746 L100 100 L0 100 Z");
+
+    clickTimes("guide-next", 2);
+
+    expect(text("path-data")).toBe("M50 0 L100 86.60254 L0 86.60254 Z");
+
+    // The square of 50 in a 100 × 50 box: right (50 to 100), then left (0 to 50) by a corner button.
+    clickTimes("guide-next", 2);
+
+    expect(checkedAnchor()).toBe("max mid");
+    expect(text("path-data")).toContain("M60 0 L90 0 ");
+
+    click("guide-next");
+
+    expect(checkedAnchor()).toBe("min max");
+    expect(text("path-data")).toContain("M10 0 L40 0 ");
   });
 });

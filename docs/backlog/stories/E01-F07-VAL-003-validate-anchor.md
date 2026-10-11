@@ -22,7 +22,7 @@ Replay every acceptance criterion of F07 in the playground and against the deriv
 One task = one commit, referenced as `VAL-003.Tn`. This story is not merged automatically (ADR-0028).
 
 - [x] T1 — One test per criterion `[F07.AC1]`…`[F07.AC5]`, the playground ones in `playground/mount-playground.test.ts` (1 h)
-- [ ] T2 — Guided test in the playground: the steps of the US-010 card (1.5 h)
+- [x] T2 — Guided test in the playground: the steps of the US-010 card (1.5 h)
 - [ ] T3 — Demo page in `docs/guide/` in plain language (1 h)
 - [ ] T4 — Product Owner runs the guided test and validates; feedback recorded; feature pull request into `main` (0.5 h)
 
