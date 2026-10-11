@@ -23,6 +23,9 @@ No pen tool and no freehand drawing (see `shapes.md` §3).
 
 ## 3. Node editing
 
+- Entered by an **explicit mode** (the Node tool, a large button), never only by a double-click: the target users are not power users (Product Owner, 2026-10-11, F03). Vertex handles are large enough to click easily.
+- Editing the vertices of a rectangle or a regular polygon turns it into a free contour, by a voluntary action: it loses its number of corners and its anchor (F08).
+
 - Shows every vertex of the selected shape.
 - Selection of one or several vertices.
 - Moving a vertex: integer.
