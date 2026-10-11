@@ -5,6 +5,7 @@ What each working session dealt with, in the agent's words: requests of the Prod
 ## 2026-10-11 — Agenda for the E01 retrospective
 
 - `#process` Raised by the Product Owner for RET-001 (improvement log): local library of read sources searched by content, expert subagents, a cleaner log without diffs, a setup portable to other AI tools and offline skills, a complete experience report; parallel work only after several epics.
+- `#process` More for RET-001: rework the agile method in one clear page (US, EN, AUD, VAL), parallel documentation threads, a start-of-project interview with the agent as functional analyst, human-ready reports, Product Owner tests without help, a summary of all topics first.
 - `#domain` Pro ideas added: a Rust engine without the free edition's business limits, and a full drawing interface next to the synoptic editors (`editions.md` §2).
 - `#domain` Q24 open: a `foreignObject` tool, free or pro, against ADR-0002.
 
