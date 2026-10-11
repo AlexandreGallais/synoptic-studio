@@ -40,7 +40,7 @@ Run `npm run dev` and open `http://localhost:5173/?step=29`: the **Guided test**
 
 ## Limits
 
-- The points cannot be moved, added or deleted yet: that is node editing, F08, which also turns a rectangle or a polygon into a free contour by a deliberate action.
+- The points cannot be moved, added or deleted yet: that is node editing, F08, which also turns a regular polygon into a free shape by a deliberate action; the rectangle is one already (F09).
 - When the number of corners goes down then up, the points that went away do not get their rounding back (decided at the refinement; a "memory" is noted for later, see below).
 - The playground is a demonstration: the tools of the editor applications (drawing, selecting shapes, points) come with them.
 

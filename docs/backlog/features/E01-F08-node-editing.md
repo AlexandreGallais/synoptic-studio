@@ -11,7 +11,7 @@ status: draft
 
 Split from F03 (Product Owner, 2026-10-11).
 
-Refined with the Product Owner on 2026-10-11 (started with `/run`). **Paused after SP-005** (2026-10-11): F09 (stretchable free shape) comes first; the stories below go back to `draft`, to be rewritten on F09's free shape, then set `ready` again with the Product Owner.
+Refined with the Product Owner on 2026-10-11 (started with `/run`). Since F09 the rectangle is a free shape from the start and width and height are stored (ADR-0032): the decisions below that say otherwise are to revisit with Q27 when F08 resumes. **Paused after SP-005** (2026-10-11): F09 (stretchable free shape) comes first; the stories below go back to `draft`, to be rewritten on F09's free shape, then set `ready` again with the Product Owner.
 
 ## Decided in refinement (Product Owner, 2026-10-11)
 

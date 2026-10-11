@@ -1,6 +1,8 @@
+import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { isValidFreeShape } from "./is-valid-free-shape";
+import { isValidRectangle } from "./is-valid-rectangle";
 import { rectangleAsFreeShape } from "./rectangle-as-free-shape";
 
 /** A triangle stored in a 2 × 2 box, drawn 10 × 4. */
@@ -67,4 +69,17 @@ describe("isValidFreeShape", () => {
       }),
     ).toBe(false);
   });
+
+  test.prop({
+    height: fc.integer({ max: 1000, min: -10 }),
+    radius: fc.oneof(fc.integer({ max: 100, min: -5 }), fc.double({ max: 100, min: 0 })),
+    width: fc.integer({ max: 1000, min: -10 }),
+  })(
+    "accepts the rectangle tool's free shape exactly when the rectangle is valid",
+    ({ height, radius, width }) => {
+      const rectangle = { height, radii: [radius, 0, radius, 0], width };
+
+      expect(isValidFreeShape(rectangleAsFreeShape(rectangle))).toBe(isValidRectangle(rectangle));
+    },
+  );
 });
