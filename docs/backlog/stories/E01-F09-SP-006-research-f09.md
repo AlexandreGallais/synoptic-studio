@@ -26,5 +26,5 @@ Find, read and record the sources of every story of F09 before its implementatio
 
 One task = one commit, referenced as `SP-006.Tn`.
 
-- [ ] T1 — Sources, derivation of the stretch if no source states it, ADR (2 h)
-- [ ] T2 — Research note, stories updated (1 h)
+- [x] T1 — Sources, derivation of the stretch if no source states it, ADR (2 h)
+- [x] T2 — Research note, stories updated (1 h)
