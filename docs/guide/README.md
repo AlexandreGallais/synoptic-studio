@@ -23,5 +23,6 @@ Written at the end of each feature (`VAL`, demo page) and of each epic (`REV`, e
 | [F03 — A rounding for each corner](./f03-radius-per-vertex.md)                       | points mode, point 1 and 2, choosing corners, Mixed, the guided test                   |
 | [F09 — The rectangle, a free shape you can stretch](./f09-stretchable-free-shape.md) | points in a box of their own, stretching without loss, the guided test                 |
 | [F08 — Moving, adding and deleting points](./f08-node-editing.md)                    | converting a polygon, typing x and y, a point in the middle, deleting, the guided test |
+| [F04 — Turning a shape by any angle](./f04-free-rotation.md)                         | the angle, the two boxes, the position, editing a turned shape, the guided test        |
 
 Templates: `_feature-demo.md`, `_epic-report.md` (not published).
