@@ -25,5 +25,5 @@ Written with the story.
 
 One task = one commit, referenced as `US-015.Tn`.
 
-- [ ] T1 — Inserting the middle vertex, pure function; tests (1 h)
+- [ ] T1 — Inserting the middle vertex (`REF-MATHWORLD-MIDPOINT`, `REF-INKSCAPE-NODE-OPS`), pure function; tests (1 h)
 - [ ] T2 — Playground button; Product Owner test card (1 h)
