@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.7](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.9.6...v0.9.7) (2026-10-11)
+
+
+### Documentation
+
+* **adr:** pro ideas, Rust engine without limits and a drawing interface ([d00e840](https://github.com/AlexandreGallais/synoptic-studio/commit/d00e840534258094638d07d9c69b9cd70279f0ec))
+
 ## [0.9.6](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.9.5...v0.9.6) (2026-10-11)
 
 
