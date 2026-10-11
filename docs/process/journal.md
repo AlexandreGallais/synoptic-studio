@@ -2,6 +2,13 @@
 
 What each working session dealt with, in the agent's words: requests of the Product Owner (paraphrased), decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`). The full conversations stay in the local transcripts (see [agent configuration](../tooling/agent.md#searching-past-conversations)).
 
+## 2026-10-11 — F08 run stopped at VAL-005
+
+- `#run` Merged into `feature/f08-node-editing`: EN-013 (#109), EN-011 (#110), US-014 (#111), CHK-005 (#112), US-015 (#113), US-016 (#114), AUD-005 (#115). Stop: the next story is VAL-005, with the Product Owner.
+- `#playground` Points mode: a polygon converted to a free shape without moving; x and y of one point typed (on Enter); a point added in the middle of two neighbours; points deleted by a button, the Delete key or Backspace (at least 3 left).
+- `#review` Story reviews caught two crashes on a refused shape (US-014), a negative x that could not be typed, the Mac delete key (Backspace); the audit caught an edit leaving a flat shape and two surviving mutations — all fixed.
+- `#domain` Q28 opened: five decisions for VAL-005 (integer coordinate or whole point after a move, fractions kept after edits against ADR-0003, degenerate and crossing contours, neighbours joined on deletion, a cap on typed coordinates).
+
 ## 2026-10-11 — F08 resumed, autonomous run authorized
 
 - `#review` F09 merged by the Product Owner (#106). Q27 settled: fractions until edited, the x and y typed are the SVG's, each point kept with its radius (a corner); Q18 amended for the regular polygon, numbered from the right end of its base (the Product Owner's idea).
