@@ -60,7 +60,7 @@ With the flipped unit polygon of step 2 (`y′ₖ = −yₖ`, so `max yₖ − y
 
 On the axis the polygon fills, `Δ = 0` in theory and the three alignments give the same points; in floating point they differ by a rounding error relative to the box (about 1e-16 × its size, step 4), far below what the output writes (5 decimals, Q10): the written drawing is the same.
 
-The default is `mid` on both axes: F02's centering. In the code, steps 3–5 are `boundingBox` and `fitInBox`, and the whole fit is `regularPolygonContour` (US-005, US-009).
+The default is `mid` on both axes: F02's centering. In the code, steps 3–5 are `boundingBox` and `fitInBox` (its share of the room: `alignmentFactor`, EN-009), and the whole fit is `regularPolygonContour` (US-005, US-009).
 
 ## Step 6 — Maximal rounding: the incircle
 
