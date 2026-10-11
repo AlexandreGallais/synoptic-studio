@@ -19,16 +19,17 @@ Scope: $ARGUMENTS. Never without the Product Owner's explicit start in this conv
 
 ## For each story
 
-1. Branch from the up-to-date feature branch: `git switch feature/f<nn>-<topic> && git pull && git switch -c <type>/<id>-<topic>`.
-2. Follow `/story` steps 2 and 4–6 (read, `ready`, tests first, one commit per task, docs), then the review of step 5 below, then `/story` steps 7–8 (`done` in the last commit, `check:all`), with the feature branch as base everywhere `/story` says `main`.
-3. **User story** (`US`): write its **Product Owner test card** in the story file, section `## Product Owner test`: steps in the playground, expected result of each, terms explained in plain words, what to look at closely.
-4. **Checkpoint** (`CHK`): update docs and methods as the project grows; check consistency of code, docs, `CLAUDE.md` and rules; run the light evolvability check (`docs/process/README.md`); list the test cards written so far; log what deserves the retrospective.
-5. **Independent review**, before the `done` commit (so that it stays last): delegate to the `auditor` subagent the story's diff (`git diff feature/f<nn>-<topic>...HEAD`), its criteria, derivations and sources; fix correctness findings; record the rest in the pull request body.
-6. `gh pr create --base feature/f<nn>-<topic> --label autonomous …` (never the label for `VAL`, `REV`, `RET`).
-7. Wait for the merge by **reading the statuses**, never by waiting blindly (Product Owner, 2026-10-09): every 15 s, `gh pr view <n> --json state` (stop at `MERGED`) and `gh pr checks <n>` (stop at the first `fail`); give up after 12 minutes — the CI takes about 3 to 4. Branch behind its base: `gh pr update-branch <n> --rebase`.
+1. **Pick up `main`** (parallel sessions, `docs/tooling/agent.md`): `git fetch origin` and `git log --oneline feature/f<nn>-<topic>..origin/main -- CLAUDE.md .claude docs/domain docs/adr docs/backlog docs/conventions`. If it lists commits, the Product Owner decided something in another session: rebase the feature branch on `origin/main` (`git switch feature/f<nn>-<topic> && git pull && git rebase origin/main && git push --force-with-lease`), read those commits' diffs, and apply them from this story on — a changed skill or rule replaces what was loaded at the start of the run; a change that touches the run's stories or scope is a stop.
+2. Branch from the up-to-date feature branch: `git switch feature/f<nn>-<topic> && git pull && git switch -c <type>/<id>-<topic>`.
+3. Follow `/story` steps 2 and 4–6 (read, `ready`, tests first, one commit per task, docs), then the review of step 6 below, then `/story` steps 7–8 (`done` in the last commit, `check:all`), with the feature branch as base everywhere `/story` says `main`.
+4. **User story** (`US`): write its **Product Owner test card** in the story file, section `## Product Owner test`: steps in the playground, expected result of each, terms explained in plain words, what to look at closely.
+5. **Checkpoint** (`CHK`): update docs and methods as the project grows; check consistency of code, docs, `CLAUDE.md` and rules; run the light evolvability check (`docs/process/README.md`); list the test cards written so far; log what deserves the retrospective.
+6. **Independent review**, before the `done` commit (so that it stays last): delegate to the `auditor` subagent the story's diff (`git diff feature/f<nn>-<topic>...HEAD`), its criteria, derivations and sources; fix correctness findings; record the rest in the pull request body.
+7. `gh pr create --base feature/f<nn>-<topic> --label autonomous …` (never the label for `VAL`, `REV`, `RET`).
+8. Wait for the merge by **reading the statuses**, never by waiting blindly (Product Owner, 2026-10-09): every 15 s, `gh pr view <n> --json state` (stop at `MERGED`) and `gh pr checks <n>` (stop at the first `fail`); give up after 12 minutes — the CI takes about 3 to 4. Branch behind its base: `gh pr update-branch <n> --rebase`.
    - A failing check: read it at once (`gh run view <run> --log-failed`), fix on the story branch, push; after three failed attempts, stop.
    - "Dependencies not up-to-date": a patch was published meanwhile — update it on the story branch (`npm install -D --save-exact <pkg>@<version>`, `build(deps)` commit) and on `main` too.
-8. `git switch feature/f<nn>-<topic> && git pull --prune && git branch -D <branch>`; delete the merged story branch on GitHub too (auto-merges do not delete it): `gh api -X DELETE repos/<owner>/<repo>/git/refs/heads/<branch>` — not `git push --delete`, which runs the pre-push hook (`check:all`) for nothing; next story.
+9. `git switch feature/f<nn>-<topic> && git pull --prune && git branch -D <branch>`; delete the merged story branch on GitHub too (auto-merges do not delete it): `gh api -X DELETE repos/<owner>/<repo>/git/refs/heads/<branch>` — not `git push --delete`, which runs the pre-push hook (`check:all`) for nothing; next story.
 
 ## Stop when
 

@@ -21,6 +21,17 @@ The code is written by Claude Code under the Product Owner's review. Its configu
 | `.claude/hooks/guard-bash.ts`    | `PreToolUse`: denies `gh pr merge`, `--no-verify`, force push without lease              | every shell command                      |
 | `.claude/hooks/session-state.ts` | `SessionStart`: prints branch, uncommitted files, progress of started features           | session start, resume, clear, compaction |
 
+## Parallel sessions
+
+The Product Owner may talk to a second session while a run works in the background. Both share the same folder, and the run owns it (its branch, its uncommitted files). The second session:
+
+1. **Never touches the run's folder**: no `git switch`, `stash` nor commit there. It works in its own worktree from `main`, in its scratchpad: `git worktree add -b <type>/<topic> <scratchpad>/<topic> origin/main`, then `npm ci` in it (hooks and `check:all` need `node_modules`).
+2. **Puts each decision in the repository**, the only state both sessions read: domain, ADR, backlog, `CLAUDE.md`, skills. One branch, one pull request into `main` (or straight to `main` when the Product Owner allows it for tooling and backlog). Durable facts also go to the agent's memory, read by every new session.
+3. **Tells the run at once**: `ListAgents`, then `SendMessage` to the busy session with what changed, where it is written and what it changes for the run. A run never acts on a message alone: it waits for the change to reach `main`, as with any decision.
+4. **Removes its worktree** once the pull request is merged (`git worktree remove <path>`, then delete the branch).
+
+The run picks up `main` before every story (run skill, step 1): when `main` has new commits in `CLAUDE.md`, `.claude/`, `docs/domain/`, `docs/adr/`, `docs/backlog/` or `docs/conventions/`, it rebases the feature branch on `main`, reads them and follows them from that story on. A skill or rule loaded at the start of the run is replaced by the new version; a change to the run's scope or stories is a stop. So the Product Owner never has to repeat in one chat what was decided in the other.
+
 ## Searching past conversations
 
 Claude Code keeps each conversation as a JSONL file in `~/.claude/projects/<project-path>/` (local, never committed). The session journal ([journal](../process/journal.md), ADR-0024) is read first; the transcripts are the full archive:

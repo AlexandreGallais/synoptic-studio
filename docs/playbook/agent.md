@@ -22,6 +22,7 @@ Sources: `REF-CC-BEST-PRACTICES`, `REF-CC-MEMORY`, `REF-CC-SKILLS`, `REF-CC-HOOK
 - Prefer one task per conversation turn of work; let the agent compact, the hooks and the repository restore the state.
 - When the agent repeats a mistake, do not add a sentence: add a check (lint rule, test, hook) and a line in [lessons](./lessons.md).
 - Ask the agent for pushback: it should say when a request is a bad idea, with sources.
+- **Parallel sessions**: a second chat during a run works in its own worktree from `main`, writes every decision in the repository, messages the run; the run reads `main` before each story ([agent configuration](../tooling/agent.md#parallel-sessions)).
 
 ## The Product Owner's role
 

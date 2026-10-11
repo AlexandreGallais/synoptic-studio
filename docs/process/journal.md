@@ -2,6 +2,12 @@
 
 What each working session dealt with, in the agent's words: requests of the Product Owner (paraphrased), decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`). The full conversations stay in the local transcripts (see [agent configuration](../tooling/agent.md#searching-past-conversations)).
 
+## 2026-10-11 — Where the project stops: free V1, then pro edition
+
+- `#domain` The Product Owner sets a stop: a complete free V1, then bug fixes only; every new feature after V1 goes to a paid pro edition, private, as a service or self-hosted (ADR-0030, [editions](../domain/editions.md)). « Ouais, super, faire du libre, c'est cool, mais il faut vraiment mettre un stop. »
+- `#domain` Pro ideas kept out of V1: symbol change report, open API on every element, project management and servers, Rust and WebAssembly engine, maybe an online service. Storage in V1 is **local only** (Q5 replaced): a working folder, files saved one by one, no server at all; E11 renamed. Open: Q22 (which epics make V1).
+- `#process` Parallel sessions: written in a second chat during the F03 run, in its own worktree; the run now picks up `main` before each story ([agent configuration](../tooling/agent.md#parallel-sessions)).
+
 ## 2026-10-11 — F03 refined, autonomous run authorized
 
 - `#run` Scope: F03 (per-vertex corner radius), from SP-004 up to VAL-004. The Product Owner started it with `/run` after the proposed stories: « Fais ton run jusqu'à la fin et puis voilà, merci. »
