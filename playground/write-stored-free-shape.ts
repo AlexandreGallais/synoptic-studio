@@ -1,25 +1,7 @@
-import { formatSvgNumber } from "../src";
-
 import { selectElement } from "./select-element";
+import { writeInputValue } from "./write-input-value";
 
 import type { FreeShape } from "../src";
-
-/**
- * Writes a size into its input as text, fractions included (a converted polygon, Q27).
- *
- * @kind procedure
- * @param document - page document
- * @param id - `width` or `height`
- * @param size - the size to show
- * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
- */
-function writeSizeText(document: Document, id: string, size: number): void {
-  const input = selectElement(document, id);
-
-  if (input instanceof HTMLInputElement) {
-    input.value = formatSvgNumber(size);
-  }
-}
 
 /**
  * Chooses "Free shape" in the shape selector, shown from now on.
@@ -53,8 +35,8 @@ export function writeStoredFreeShape(document: Document, shape: FreeShape): void
 
   select.dataset["freeShape"] = JSON.stringify(shape);
   selectFreeShape(document);
-  writeSizeText(document, "width", shape.width);
-  writeSizeText(document, "height", shape.height);
+  writeInputValue(document, "width", shape.width);
+  writeInputValue(document, "height", shape.height);
 
   selectElement(document, "radius").dataset["radii"] = shape.corners
     .map((corner) => corner.radius)

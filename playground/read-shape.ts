@@ -13,8 +13,8 @@ import {
 import { readAnchor } from "./read-anchor";
 import { readFreeShapeShape } from "./read-free-shape-shape";
 import { readNumber } from "./read-number";
+import { readShapeKind } from "./read-shape-kind";
 import { readStoredFreeShape } from "./read-stored-free-shape";
-import { selectElement } from "./select-element";
 import { updateKeptRadii } from "./update-kept-radii";
 
 import type { ShapeReading } from "./shape-reading";
@@ -110,20 +110,6 @@ function readPolygonShape(document: Document): ShapeReading {
     model,
     radii: model.radii,
   };
-}
-
-/**
- * Reads the shape chosen in the selector.
- *
- * @kind procedure
- * @param document - page document
- * @returns `rectangle`, `polygon` or `free`
- * @see docs/backlog/stories/E01-F02-US-007-shape-selector-playground.md
- */
-function readShapeKind(document: Document): string {
-  const select = selectElement(document, "shape");
-
-  return select instanceof HTMLSelectElement ? select.value : "rectangle";
 }
 
 /**
