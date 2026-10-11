@@ -19,6 +19,7 @@ export function listenToInputs(document: Document, update: () => void): void {
 
   radius.addEventListener("input", () => {
     delete radius.dataset["radii"];
+    radius.setAttribute("placeholder", "");
   });
 
   for (const id of INPUTS) {

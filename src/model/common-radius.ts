@@ -4,8 +4,10 @@
  * shape has no vertex.
  *
  * @kind domain
- * @param radii - requested radius of each vertex
- * @returns the common radius, `undefined` when there is none
+ * @param radii - requested radius of each vertex, integers ≥ 0 (`areValidRadii`): compared with
+ * `===`, under which `NaN` equals nothing, and `-0` equals `0`
+ * @returns the common radius, `undefined` when there is none (an absent value, an option type in
+ * other languages, ADR-0025)
  * @see REF-FIGMA-CR
  */
 export function commonRadius(radii: readonly number[]): number | undefined {
