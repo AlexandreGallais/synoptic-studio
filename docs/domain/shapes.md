@@ -6,7 +6,7 @@ Processing chain: typed numbers → integer model → computed geometry → `<pa
 
 - A shape = one or more **closed contours** (the first is the outside, the next ones are holes, produced by booleans).
 - A contour = ordered list of **vertices**: integer coordinates when they are the model (a rectangle), fractional when they are derived from it (a regular polygon, later booleans), never written back (ADR-0003).
-- Each vertex carries an integer **corner radius** (0 = sharp corner).
+- Each vertex carries an integer **corner radius** (0 = sharp corner); a rectangle and a regular polygon store one per vertex, `radii` (ADR-0029).
 - The shape is rendered as a single `<path>` (ADR-0002).
 - Geometric primitives: segments and circular arcs only (ADR-0001).
 
@@ -77,17 +77,17 @@ Storing the value (Q8, settled):
 
 ### Rectangle
 
-- Parameters: `width`, `height` (integers ≥ 0; negative forbidden, 0 allowed — Q15) and a global corner `radius` (integer ≥ 0; 0 = sharp corners). A radius larger than the rectangle is valid: it is clamped, not refused (ADR-0007); the requested value is kept (Q8).
+- Parameters: `width`, `height` (integers ≥ 0; negative forbidden, 0 allowed — Q15) and `radii`, the requested corner radius of each of its 4 vertices in contour order (integers ≥ 0; 0 = sharp corner; ADR-0029). A radius larger than the rectangle is valid: it is clamped, not refused (ADR-0007); the requested value is kept (Q8).
 - Result: contour of 4 vertices.
 
 ### Regular polygon
 
 Functional reference: Inkscape's Star/Polygon tool.
 
-- Parameters: number of corners, an integer `3 ≤ n ≤ 12` (Q19); `width` and `height` of the box, integers ≥ 0 (negative forbidden, 0 allowed — Q15); a global corner `radius`, integer ≥ 0 (0 = sharp corners), clamped rather than refused (ADR-0007), the requested value kept (Q8).
+- Parameters: number of corners, an integer `3 ≤ n ≤ 12` (Q19); `width` and `height` of the box, integers ≥ 0 (negative forbidden, 0 allowed — Q15); `radii`, the requested corner radius of each of its `n` vertices in contour order, integers ≥ 0 (0 = sharp corner, ADR-0029), clamped rather than refused (ADR-0007), the requested values kept (Q8).
 - Examples: `n=3` equilateral triangle, `n=4` square, `n=5` pentagon, `n=6` hexagon.
 - Rule: the shape fills as much of the `width × height` box as possible **without exceeding it**.
-- Derived vertices (cos/sin): not integers. They are **computed**, not stored (ADR-0003). `n`, `width`, `height`, the requested `radius` and the `anchor` are stored (`RegularPolygon`).
+- Derived vertices (cos/sin): not integers. They are **computed**, not stored (ADR-0003). `n`, `width`, `height`, the requested `radii` and the `anchor` are stored (`RegularPolygon`).
 
 **Chosen mode: uniform** (`DERIV-regular-polygon-fit`).
 
