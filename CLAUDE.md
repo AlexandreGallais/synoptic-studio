@@ -12,7 +12,7 @@ A library of small named functions, each backed by a verified source, composed s
 
 Non-negotiable principles: schematic, orthogonal, integer, documented, dependency-free.
 
-**State**: E01 · F01 (rectangle with corner radius) is done and released (v0.7.0); F02 (regular polygon) is done and released (v0.8.0); F07 (polygon anchored in its box) is done and released (v0.9.0); F03 (per-vertex corner radius) is validated, its feature pull request into `main` waiting for the Product Owner's merge; F08 (node editing) is next; epic E13 (shape tree, layout box) comes before E03. **Scope** (ADR-0030): a finished free V1, then new features only in a paid pro edition; a request that looks pro → say so and ask, pro ideas go to `docs/domain/editions.md`, never into this backlog. The backlog (`docs/backlog/`) says what is done and what is next; implement only stories the Product Owner (the user) has set to `ready`.
+**State**: E01 · F01 (rectangle with corner radius) is done and released (v0.7.0); F02 (regular polygon) is done and released (v0.8.0); F07 (polygon anchored in its box) is done and released (v0.9.0); F03 (per-vertex corner radius) is done and released (v0.10.0); F08 (node editing) is in an autonomous run on `feature/f08-node-editing`, to stop at VAL-005; epic E13 (shape tree, layout box) comes before E03. **Scope** (ADR-0030): a finished free V1, then new features only in a paid pro edition; a request that looks pro → say so and ask, pro ideas go to `docs/domain/editions.md`, never into this backlog. The backlog (`docs/backlog/`) says what is done and what is next; implement only stories the Product Owner (the user) has set to `ready`.
 
 ## Where to read — BEFORE any task
 

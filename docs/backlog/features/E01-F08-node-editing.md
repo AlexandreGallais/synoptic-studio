@@ -2,7 +2,7 @@
 id: F08
 epic: E01
 title: Node editing
-status: draft
+status: in-progress
 ---
 
 # E01 · F08 — Node editing
@@ -38,15 +38,24 @@ Refined with the Product Owner on 2026-10-11 (started with `/run`).
 
 ## Stories
 
-In delivery order, proposed (2026-10-11), to be set `ready` by the Product Owner.
+In delivery order.
 
-| ID      | Type       | Title                                       |
-| ------- | ---------- | ------------------------------------------- |
-| SP-005  | Spike      | Research for F08                            |
-| EN-011  | Enabler    | A free shape in the model                   |
-| US-014  | User story | Convert a polygon, move a point by its x, y |
-| CHK-005 | Checkpoint | Checkpoint in the middle of F08             |
-| US-015  | User story | Add a point in the middle of an edge        |
-| US-016  | User story | Delete points                               |
-| AUD-005 | Audit      | Audit F08                                   |
-| VAL-005 | Validation | Validate F08                                |
+| ID                                                             | Type       | Title                                       | Status |
+| -------------------------------------------------------------- | ---------- | ------------------------------------------- | ------ |
+| [SP-005](../stories/E01-F08-SP-005-research-f08.md)            | Spike      | Research for F08                            | ready  |
+| [EN-011](../stories/E01-F08-EN-011-free-shape.md)              | Enabler    | A free shape in the model                   | ready  |
+| [US-014](../stories/E01-F08-US-014-convert-and-move.md)        | User story | Convert a polygon, move a point by its x, y | ready  |
+| [CHK-005](../stories/E01-F08-CHK-005-checkpoint-f08.md)        | Checkpoint | Checkpoint in the middle of F08             | ready  |
+| [US-015](../stories/E01-F08-US-015-add-middle-point.md)        | User story | Add a point in the middle of an edge        | ready  |
+| [US-016](../stories/E01-F08-US-016-delete-points.md)           | User story | Delete points                               | ready  |
+| [AUD-005](../stories/E01-F08-AUD-005-audit-f08.md)             | Audit      | Audit F08: node editing                     | ready  |
+| [VAL-005](../stories/E01-F08-VAL-005-validate-node-editing.md) | Validation | Validate F08 on the reference cases         | ready  |
+
+## Feature plan
+
+| Acceptance criterion                       | Realized by    | Verified by                      |
+| ------------------------------------------ | -------------- | -------------------------------- |
+| 1 — polygon converted by a button, unmoved | EN-011, US-014 | `[F08.AC1]` tests, card, VAL-005 |
+| 2 — a point moved by its x, y, on integers | EN-011, US-014 | `[F08.AC2]` tests, card, VAL-005 |
+| 3 — a point added in the middle of an edge | US-015         | `[F08.AC3]` tests, card, VAL-005 |
+| 4 — points deleted, 3 at least             | EN-011, US-016 | `[F08.AC4]` tests, card, VAL-005 |

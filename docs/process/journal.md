@@ -2,6 +2,12 @@
 
 What each working session dealt with, in the agent's words: requests of the Product Owner (paraphrased), decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`). The full conversations stay in the local transcripts (see [agent configuration](../tooling/agent.md#searching-past-conversations)).
 
+## 2026-10-11 — F08 refined, autonomous run authorized
+
+- `#run` Scope: F08 (node editing), from SP-005 up to VAL-005. The Product Owner started it with `/run` after the proposed stories, F08 kept in E01.
+- `#backlog` F08 `in-progress`, its eight stories `ready`. Later ideas went to E02 (dragging, stretching by the box, the conversion warning) and E03 (operations on edges).
+- `#tooling` The CI of release 0.10.0 failed on a plugin version published seconds before; updated to 65.3.0; a `--cooldown` proposal in the improvement log.
+
 ## 2026-10-11 — F03 validated
 
 - `#review` The Product Owner tested F03 from the cards: « C'est bien, j'ai bien mon premier point et tout. Ça, c'est trop cool. Comme ça, c'est le sens. » VAL-004 and F03 set `done` on `feat/val-004-validate-radius-per-vertex`, with the guided test (steps 29 to 33) and the demo page.
