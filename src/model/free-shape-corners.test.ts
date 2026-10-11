@@ -32,6 +32,26 @@ describe("freeShapeCorners", () => {
       { x: 10, y: 4 },
       { x: 0, y: 4 },
     ]);
+
+    // A rectangle stored 3 × 2 drawn 100 × 50: sx = 100 / 3 (multiplied first, exact edges).
+    const stored = {
+      height: 50,
+      points: [
+        { x: 0, y: 0 },
+        { x: 3, y: 0 },
+        { x: 3, y: 2 },
+        { x: 0, y: 2 },
+      ],
+      radii: [0, 0, 0, 0],
+      width: 100,
+    };
+
+    expect(freeShapeCorners(stored).map((corner) => corner.point)).toEqual([
+      { x: 0, y: 0 },
+      { x: 100, y: 0 },
+      { x: 100, y: 50 },
+      { x: 0, y: 50 },
+    ]);
   });
 
   it("[F09.AC3] gives back the same corners after a width of 0", () => {

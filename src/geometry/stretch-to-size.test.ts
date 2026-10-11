@@ -63,7 +63,7 @@ describe("stretchToSize", () => {
     ]);
   });
 
-  it("[F09.AC3] draws every point on one line at size 0, and gives them back exactly", () => {
+  it("[F09.AC3] draws every point on one line at width or height 0, and gives them back exactly", () => {
     const points = [
       { x: 0, y: 0 },
       { x: 1, y: 0 },
@@ -72,6 +72,10 @@ describe("stretchToSize", () => {
     ];
 
     expect(stretchToSize(points, { height: 50, width: 0 }).map((point) => point.x)).toEqual([
+      0, 0, 0, 0,
+    ]);
+
+    expect(stretchToSize(points, { height: 0, width: 100 }).map((point) => point.y)).toEqual([
       0, 0, 0, 0,
     ]);
 
