@@ -71,7 +71,7 @@ export const GUIDED_STEPS_F08: readonly GuidedStep[] = [
   {
     explanation:
       "Click Points, then point 1: a regular polygon keeps its points until it is converted.",
-    look: "X and Y greyed, adding and deleting greyed, a line saying to convert the polygon first; the Radius field sits with the points.",
+    look: "X and Y greyed, adding and deleting greyed, a line saying to convert the polygon first; the points have a Radius field of their own, the shape's Radius field still rounding every corner.",
     title: "F08 · A polygon is converted first",
     values: HEXAGON,
   },

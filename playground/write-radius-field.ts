@@ -19,32 +19,38 @@ function createPlaceholder(common: number | undefined, count: number): string {
   return common === undefined ? "Mixed" : "";
 }
 
+/** The radii of a shape and the vertices a radius field speaks for. */
+export type RadiiShown = {
+  /** Requested radius of each vertex, valid. */
+  readonly all: readonly number[];
+  /** Numbers of the vertices the field speaks for, from 0. */
+  readonly shown: readonly number[];
+};
+
 /**
- * Shows in the radius field the radii it speaks for (every vertex in Shape mode, the selected
- * ones in Points mode): their common value, or an empty field reading "Mixed" when they differ
- * (F03.AC2, F03.AC5, `REF-FIGMA-CR`); disabled when no vertex is selected. Every radius is kept
- * on the input (`data-radii`), as one typed value cannot hold them all.
+ * Shows in a radius field the radii it speaks for (every vertex for the shape's field, the
+ * selected ones for the points' field): their common value, or an empty field reading "Mixed"
+ * when they differ (F03.AC2, F03.AC5, `REF-FIGMA-CR`); disabled when it speaks for no vertex.
+ * Every radius is kept on the shape's field (`data-radii`), as one typed value cannot hold them
+ * all.
  *
  * @kind procedure
  * @param document - page document
- * @param radii - requested radius of each vertex, valid
- * @param shown - numbers of the vertices the field speaks for, from 0
+ * @param id - `radius` (the shape's field) or `point-radius` (the points' field)
+ * @param radii - requested radius of each vertex, and the vertices the field speaks for
  * @see docs/backlog/stories/E01-F03-US-011-radius-field-mixed.md
  */
-export function writeRadiusField(
-  document: Document,
-  radii: readonly number[],
-  shown: readonly number[],
-): void {
-  const field = selectElement(document, "radius");
+export function writeRadiusField(document: Document, id: string, radii: RadiiShown): void {
+  const field = selectElement(document, id);
 
   if (!(field instanceof HTMLInputElement)) {
     return;
   }
 
-  const common = commonRadius(radii.filter((radius, vertex) => shown.includes(vertex)));
+  const { all, shown } = radii;
+  const common = commonRadius(all.filter((radius, vertex) => shown.includes(vertex)));
 
-  field.dataset["radii"] = radii.join(" ");
+  selectElement(document, "radius").dataset["radii"] = all.join(" ");
   field.disabled = shown.length === 0;
   field.value = common === undefined ? "" : String(common);
   field.placeholder = createPlaceholder(common, shown.length);

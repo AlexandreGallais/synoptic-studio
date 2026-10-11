@@ -1,5 +1,4 @@
 import { createHandleElements } from "./create-handle-elements";
-import { moveRadiusField } from "./move-radius-field";
 import { readMode } from "./read-mode";
 import { readSelection } from "./read-selection";
 import { showPointFields } from "./show-point-fields";
@@ -10,8 +9,8 @@ import type { ShapeReading } from "./shape-reading";
 
 /**
  * Shows what the mode says about the vertices: in Points mode their handles, the selected ones
- * ringed, their list, and a radius field for the selected vertices; in Shape mode no handle,
- * and a radius field for every vertex (F03.AC4, F03.AC5).
+ * ringed, their list, and a radius field for the selected vertices; in both modes, the shape's
+ * radius field for every vertex (F03.AC4, F03.AC5, VAL-005).
  *
  * @kind procedure
  * @param document - page document
@@ -23,10 +22,13 @@ export function showPoints(document: Document, reading: ShapeReading): readonly 
   const contour = reading.corners.map((corner) => corner.point);
   const isPoints = readMode(document) === "points";
   const selection = readSelection(document);
-  const shown = isPoints ? selection.selected : contour.map((point, vertex) => vertex);
 
-  moveRadiusField(document, isPoints);
-  writeRadiusField(document, reading.radii, shown);
+  writeRadiusField(document, "radius", {
+    all: reading.radii,
+    shown: Object.keys(contour).map(Number),
+  });
+
+  writeRadiusField(document, "point-radius", { all: reading.radii, shown: selection.selected });
   showPointsList(document, reading, selection);
   showPointFields(document, reading, selection);
 

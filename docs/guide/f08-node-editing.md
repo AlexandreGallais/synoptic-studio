@@ -26,7 +26,7 @@ A rectangle can be edited straight away. A regular polygon is first turned into 
 
 ![The rectangle with its top-right point deleted: a triangle](./images/f08-deleted-point.svg)
 
-**The rounding follows its point.** Each point carries its own rounding when it moves; a point added in the middle is sharp. In Points mode the Radius field now sits with the point fields, for the points selected; in Shape mode it rounds every corner.
+**The rounding follows its point.** Each point carries its own rounding when it moves; a point added in the middle is sharp. In Points mode a Radius field of the points rounds the points selected, while the shape's Radius field, shown in both modes, rounds every corner.
 
 | Term           | In plain words                                                                    |
 | -------------- | --------------------------------------------------------------------------------- |
@@ -51,4 +51,6 @@ Said by the Product Owner during `VAL-005` (2026-10-11), quoted by the agent: «
 
 On deleting: « Je peux delete le point. Oh putain, c'est fait un triangle. C'est trop trop bien. » On a point moved after a stretch: « ça va mettre à jour tous les points. C'est génial, c'est exactement ça que je voulais. » On decimals: « Il reste à la virgule. C'est trop de la balle. \[…\] C'est non destructif. » These settled Q28 (ADR-0034).
 
-Remarks kept for later: moving three points at once by `+10` (« on ne peut pas modifier trois points en même temps, leur position »), and arithmetic in the fields, as in a spreadsheet, with parentheses (« dans les inputs, ce qui pourrait être craft cool, c'est de pouvoir faire des maths »). One remark acted on at once: the Radius field of the points now sits with the point fields (« pour moi, le radius, ce serait le radius commun dans shape, et puis tu aurais un autre truc radius dans point »).
+Remarks kept for later: moving three points at once by `+10` (« on ne peut pas modifier trois points en même temps, leur position »), and arithmetic in the fields, as in a spreadsheet, with parentheses (« dans les inputs, ce qui pourrait être craft cool, c'est de pouvoir faire des maths »). Acted on at once: the points have a Radius field of their own, and the shape's Radius field stays shown in Points mode (« pour moi, le radius, ce serait le radius commun dans shape, et puis tu aurais un autre truc radius dans point »).
+
+After a second look: a field lost the focus at each key (fixed: typing goes on, and the arrow keys repeat). Two points at the same place should not be refused nor merged, as some editors do, but flagged in the list of points, asking whether to delete one — a shape may pass several times at the same place on purpose (« je ne veux pas que ce soit destructif comme Figma »); points on one slanted line are not refused (Q29).

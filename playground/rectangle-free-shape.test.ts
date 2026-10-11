@@ -95,7 +95,7 @@ describe("rectangle as a free shape", () => {
       .querySelector('#points [data-vertex="3"]')
       ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
 
-    type("radius", "30");
+    type("point-radius", "30");
 
     expect(document.querySelector<HTMLInputElement>("#radius")?.dataset["radii"]).toBe(
       "10 10 30 10",
