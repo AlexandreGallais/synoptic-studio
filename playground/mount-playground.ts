@@ -15,7 +15,7 @@ import {
 import { GUIDED_STEPS } from "./guided-steps";
 
 import type { GuidedStep } from "./guided-step";
-import type { Corner, Rectangle, RegularPolygon } from "../src";
+import type { Anchor, Corner, Rectangle, RegularPolygon } from "../src";
 
 /** Distance from the canvas top-left corner to the shape origin, in user units (= CSS pixels). */
 const MARGIN = 10;
@@ -150,7 +150,8 @@ function readRectangleShape(document: Document): ShapeReading {
  * @see docs/backlog/stories/E01-F02-US-007-shape-selector-playground.md
  */
 function readPolygonShape(document: Document): ShapeReading {
-  const model = { ...readRectangle(document), corners: readNumber(document, "corners") };
+  const anchor: Anchor = { horizontal: "mid", vertical: "mid" };
+  const model = { ...readRectangle(document), anchor, corners: readNumber(document, "corners") };
   const isValid = isValidRegularPolygon(model);
 
   return {
