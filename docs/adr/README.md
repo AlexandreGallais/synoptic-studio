@@ -34,4 +34,5 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0026](./0026-contributions-through-issues.md)             | Contributions through issues only; the agent writes every change                                             | Accepted               |
 | [0027](./0027-requirements-and-traceability.md)            | Acceptance criteria as requirements, tests traced to them, a test report per release                         | Accepted               |
 | [0028](./0028-autonomous-runs.md)                          | Feature branches and autonomous runs: stories merge into their feature, the Product Owner merges the feature | Accepted               |
+| [0029](./0029-one-radius-per-vertex.md)                    | One requested corner radius per vertex in the model                                                          | Accepted               |
 | [0030](./0030-free-v1-then-pro-edition.md)                 | A finished free V1, then new features in a paid edition                                                      | Accepted               |
