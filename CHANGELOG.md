@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.4](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.10.3...v0.10.4) (2026-10-11)
+
+
+### Documentation
+
+* **docs:** log the F09 run, stopped at VAL-006 ([9b0f8f1](https://github.com/AlexandreGallais/synoptic-studio/commit/9b0f8f13c5551b5e6efc6b4d79eb61c61828aba6))
+
 ## [0.10.3](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.10.2...v0.10.3) (2026-10-11)
 
 
