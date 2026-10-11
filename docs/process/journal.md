@@ -2,6 +2,13 @@
 
 What each working session dealt with, in the agent's words: requests of the Product Owner (paraphrased), decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`). The full conversations stay in the local transcripts (see [agent configuration](../tooling/agent.md#searching-past-conversations)).
 
+## 2026-10-11 — F08 validated
+
+- `#review` The Product Owner tested F08 in the playground: « Putain, c'est génial, ça marche de fou. » VAL-005 and F08 set `done` on `feat/val-005-validate-node-editing`, with the guided test (steps 39 to 46) and the demo page.
+- `#domain` Q28 settled (ADR-0034): only the coordinate typed is an integer, edits keep the fractions, deleting joins the neighbours; Q29 opened (degenerate shapes, a cap on typed coordinates).
+- `#playground` The Radius field sits with the point fields in Points mode (the Product Owner's remark).
+- `#domain` For the editor applications: moving several points by `+10`, arithmetic in number fields.
+
 ## 2026-10-11 — F08 run stopped at VAL-005
 
 - `#run` Merged into `feature/f08-node-editing`: EN-013 (#109), EN-011 (#110), US-014 (#111), CHK-005 (#112), US-015 (#113), US-016 (#114), AUD-005 (#115). Stop: the next story is VAL-005, with the Product Owner.
