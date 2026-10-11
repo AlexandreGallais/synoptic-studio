@@ -1,3 +1,4 @@
+import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { effectiveRadii } from "../geometry";
@@ -57,4 +58,25 @@ describe("freeShapeWithMidpoint", () => {
     expect(shape.width).toBe(hexagon.width);
     expect(shape.height).toBe(hexagon.height);
   });
+
+  const side = fc.integer({ max: 10_000, min: 1 });
+
+  test.prop({ edge: fc.nat({ max: 3 }), height: side, width: side })(
+    "[F08.AC3] adds one point on the edge, the others and the box kept",
+    ({ edge, height, width }) => {
+      const shape = rectangleAsFreeShape({ height, radii: [1, 2, 3, 4], width });
+      const before = freeShapeCorners(shape);
+      const after = freeShapeCorners(freeShapeWithMidpoint(shape, edge));
+      const added = after[edge + 1];
+      const start = before[edge]?.point ?? { x: NaN, y: NaN };
+      const end = before[(edge + 1) % 4]?.point ?? { x: NaN, y: NaN };
+
+      expect(after.toSpliced(edge + 1, 1)).toEqual(before);
+
+      expect(added).toEqual({
+        point: { x: (start.x + end.x) / 2, y: (start.y + end.y) / 2 },
+        radius: 0,
+      });
+    },
+  );
 });
