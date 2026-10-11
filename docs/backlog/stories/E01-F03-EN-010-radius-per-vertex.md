@@ -27,4 +27,4 @@ None of its own: the radius of one corner is chosen in the playground by US-013.
 One task = one commit, referenced as `EN-010.Tn`.
 
 - [ ] T1 — `radii` in `Rectangle` and `RegularPolygon` (ADR-0029), validity, corners built from it; the unequal-radii rows of `DERIV-local-radius-clamp` as hand-computed cases, properties (2 h)
-- [ ] T2 — Domain (`shapes.md`), playground kept working with one radius for all; re-exports (0.5 h)
+- [ ] T2 — Domain (`shapes.md` §2–3: `radii` replaces `radius`), playground kept working with one radius for all; `effectiveCornerRadius` kept for a shape with one common radius; re-exports (0.5 h)
