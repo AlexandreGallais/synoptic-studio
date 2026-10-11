@@ -1,5 +1,56 @@
 # Changelog
 
+## [0.10.0](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.9.10...v0.10.0) (2026-10-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* **model:** Rectangle and RegularPolygon take radii, one radius per vertex, instead of radius.
+
+### Features
+
+* **interaction:** select vertices by click, toggle and range; radius on the selection ([100c9df](https://github.com/AlexandreGallais/synoptic-studio/commit/100c9df0b4d2ca1b6705c7852daad68434d34cb2))
+* **model:** one requested corner radius per vertex ([d781663](https://github.com/AlexandreGallais/synoptic-studio/commit/d781663d4170714a276081e30024db357060168f))
+* **model:** radii kept by vertex number; the common radius, or Mixed ([557d2ff](https://github.com/AlexandreGallais/synoptic-studio/commit/557d2ff3c572ee6a1fb8c0af1b34acc9fb2f3561))
+* **playground:** a points mode, a handle on each vertex, first red, second green ([bb81836](https://github.com/AlexandreGallais/synoptic-studio/commit/bb8183687179fcb07b6c33e8e6d26887c0d9b58e))
+* **playground:** guided test of F03, the points of a shape and their radii ([bcb5e96](https://github.com/AlexandreGallais/synoptic-studio/commit/bcb5e962d0ab0396de50340c6eff3887d997bdb4))
+* **playground:** list of points, selection on handles and rows, radius per point ([e1dfd11](https://github.com/AlexandreGallais/synoptic-studio/commit/e1dfd11afdec75eaa858a7aa38af950f844259d0))
+* **playground:** the radius field shows Mixed when the corners differ ([ff11160](https://github.com/AlexandreGallais/synoptic-studio/commit/ff111600af69948f2539b758335515c029aa0b0b))
+
+
+### Bug fixes
+
+* **playground:** a radius typed in Points mode is capped at 100 000; audit fixes ([544b5b9](https://github.com/AlexandreGallais/synoptic-studio/commit/544b5b9b9bf0d1dcf66e9df9c2f8fb4f85aa024e))
+* **playground:** a removed vertex never gets its radius back; review fixes ([463b58e](https://github.com/AlexandreGallais/synoptic-studio/commit/463b58e92193ce38059f778f5b420c35a69b2a92))
+* **playground:** one red and one green handle tested; card of a 0 x 50 rectangle ([e16e5f3](https://github.com/AlexandreGallais/synoptic-studio/commit/e16e5f315efa02116c883ee0b0989e409e8145e7))
+* **playground:** radii kept while a polygon is refused; Shift keeps the range start ([a74f23c](https://github.com/AlexandreGallais/synoptic-studio/commit/a74f23c8828b4805a1b66e5d68f88bde8cfb4cfb))
+
+
+### Documentation
+
+* **adr:** sources of F03, unequal radii checks, one radius per vertex ([f9711fa](https://github.com/AlexandreGallais/synoptic-studio/commit/f9711fa479f53ab7018be168896a27086abe7d18))
+* **backlog:** findings of the F03 audit, sources for F08, evolvability ([c1790e2](https://github.com/AlexandreGallais/synoptic-studio/commit/c1790e2952c9e261a0a6ddab04226d154f4d5c81))
+* **backlog:** idea of an agile workspace for working with the agent, for later ([e3270ca](https://github.com/AlexandreGallais/synoptic-studio/commit/e3270cae8b1246b61ea16108d778c12901bca49b))
+* **backlog:** light evolvability check in the middle of F03 ([afc9eb1](https://github.com/AlexandreGallais/synoptic-studio/commit/afc9eb173ff94d0be5af597f322a4eee642a6dd8))
+* **backlog:** research note of F03; stories cite their sources ([85927dc](https://github.com/AlexandreGallais/synoptic-studio/commit/85927dcfd2619874d32d68367cea94351a7dbbd9))
+* **backlog:** review of SP-004, vertex 1 and 2 of the contour, range start ([c49a54a](https://github.com/AlexandreGallais/synoptic-studio/commit/c49a54a7ab2347aa45bac2305e2d0b3065a95dbe))
+* **backlog:** set AUD-004 done ([2854965](https://github.com/AlexandreGallais/synoptic-studio/commit/28549656fa1be4aa80b969f401b0fbf2baa3039a))
+* **backlog:** set CHK-004 done ([4c940a4](https://github.com/AlexandreGallais/synoptic-studio/commit/4c940a44186a7b99dbd454adcddd8244e66cdb6b))
+* **backlog:** set EN-010 done ([a8dd9e8](https://github.com/AlexandreGallais/synoptic-studio/commit/a8dd9e831b2d8768cba786d94e9340f9059aef42))
+* **backlog:** set SP-004 done ([00af20a](https://github.com/AlexandreGallais/synoptic-studio/commit/00af20a002acfe9bf39fca128406dbc59eda08a9))
+* **backlog:** set US-011 done ([7ff5f7e](https://github.com/AlexandreGallais/synoptic-studio/commit/7ff5f7e7f520ea46e14076b61a960a0e1a982e68))
+* **backlog:** set US-012 done ([d87b946](https://github.com/AlexandreGallais/synoptic-studio/commit/d87b946c0e5ee8d9b6375decb659448075e73f5b))
+* **backlog:** set US-013 done ([42b27dd](https://github.com/AlexandreGallais/synoptic-studio/commit/42b27dd752589d7989a36e18aff4d71c4d63a4ea))
+* **backlog:** test card of US-012 for the Product Owner; help text ([58dd891](https://github.com/AlexandreGallais/synoptic-studio/commit/58dd8911f7aa014573b6cfbe5a2af033354eb5e0))
+* **backlog:** test card of US-013 for the Product Owner; help text ([a2ff130](https://github.com/AlexandreGallais/synoptic-studio/commit/a2ff1306533503b7aeb7c4c306fe426e8d0098e2))
+* **backlog:** tests per criterion of F03 ([4a45be4](https://github.com/AlexandreGallais/synoptic-studio/commit/4a45be45271ba751962fe14b3414a1d51a2a1435))
+* **backlog:** the Product Owner's remarks on F03, Q26 and the free contour of F08 ([fbf4877](https://github.com/AlexandreGallais/synoptic-studio/commit/fbf4877873919cf4b0079b253bece4bcfa3717bb))
+* **backlog:** validation of F03 by the Product Owner; set VAL-004 and F03 done ([1d8d8d9](https://github.com/AlexandreGallais/synoptic-studio/commit/1d8d8d96c44ebc2371aea426134b39d33c3d7b72))
+* **docs:** demo page of F03, a rounding for each corner ([d9041f2](https://github.com/AlexandreGallais/synoptic-studio/commit/d9041f2f6b6a39c9454362952c45b5f6977b11bd))
+* **model:** concave contours come with F08; Shape and Points modes named ([446004a](https://github.com/AlexandreGallais/synoptic-studio/commit/446004a288f101926674566abfb858cbe452ff17))
+* **model:** domain of the radius per vertex; glossary says arrondi ([a6f7d31](https://github.com/AlexandreGallais/synoptic-studio/commit/a6f7d3199b5be771e569032974ec08ddde09d2d6))
+* **tooling:** three library pitfalls met in F03 ([e8ffd8b](https://github.com/AlexandreGallais/synoptic-studio/commit/e8ffd8bd276e24bc0552bb3e472ae6bc7bce92a4))
+
 ## [0.9.10](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.9.9...v0.9.10) (2026-10-11)
 
 
