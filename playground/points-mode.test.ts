@@ -89,9 +89,10 @@ describe("points mode", () => {
     expect(document.querySelectorAll("#canvas path.handle.first")).toHaveLength(1);
     expect(document.querySelectorAll("#canvas path.handle.second")).toHaveLength(1);
 
-    // Vertex 1 of the hexagon in 100 × 100 is (25, 6.69873): a circle of radius 8 around it.
+    // Vertex 1 of the hexagon in 100 × 100, the right end of its base, is (75, 93.30127): a circle
+    // of radius 8 around it.
     expect(handles().at(-1)?.getAttribute("d")).toBe(
-      "M17 6.69873 A8 8 0 1 1 33 6.69873 A8 8 0 1 1 17 6.69873 Z",
+      "M67 93.30127 A8 8 0 1 1 83 93.30127 A8 8 0 1 1 67 93.30127 Z",
     );
   });
 

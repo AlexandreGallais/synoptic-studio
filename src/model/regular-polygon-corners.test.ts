@@ -289,8 +289,8 @@ describe("regularPolygonCorners (one radius per vertex)", () => {
   });
 
   it("[F03.AC1] rounds only vertex 1 of a square with radii 20, 0, 0, 0", () => {
-    // A square with a flat base fills 100 × 100; vertex 1 is its top-left corner (Q11): one
-    // quarter circle of radius 20 centered at (20, 20) — at (20, 80) it would be vertex 4.
+    // A square with a flat base fills 100 × 100; vertex 1 is the right end of its base (Q18,
+    // F08): one quarter circle of radius 20 centered at (80, 80) — at (20, 80) it would be vertex 2.
     const pieces = roundedContour(
       regularPolygonCorners({
         anchor: CENTER,
@@ -304,8 +304,8 @@ describe("regularPolygonCorners (one radius per vertex)", () => {
 
     expect(others).toEqual([]);
     expect(arc?.radius).toBe(20);
-    expect(arc?.center.x).toBeCloseTo(20, DECIMALS);
-    expect(arc?.center.y).toBeCloseTo(20, DECIMALS);
+    expect(arc?.center.x).toBeCloseTo(80, DECIMALS);
+    expect(arc?.center.y).toBeCloseTo(80, DECIMALS);
   });
 });
 
