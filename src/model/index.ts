@@ -1,5 +1,6 @@
 export * from "./are-free-shape-points";
 export * from "./are-valid-radii";
+export * from "./box-center";
 export type * from "./click-keys";
 export * from "./common-radius";
 export * from "./corners-with-radii";

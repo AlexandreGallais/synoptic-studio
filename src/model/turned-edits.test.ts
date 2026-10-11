@@ -97,4 +97,28 @@ describe("edits of a turned free shape (ADR-0035, DERIV-turned-shape step 5)", (
       { x: 25, y: -25 },
     ]);
   });
+
+  test.prop({ angle: fc.integer({ max: 359, min: 1 }), edge: fc.integer({ max: 3, min: 0 }) })(
+    "[F04.AC4] adds a point at any angle without moving the others",
+    ({ angle, edge }) => {
+      const shape = { ...TURNED, angle };
+      const before = drawnPoints(shape);
+      const after = drawnPoints(freeShapeWithMidpoint(shape, edge));
+
+      expectPoints(
+        after.filter((point, index) => index !== edge + 1),
+        before,
+      );
+    },
+  );
+
+  test.prop({ angle: fc.integer({ max: 359, min: 1 }), removed: fc.integer({ max: 3, min: 0 }) })(
+    "[F04.AC4] deletes a point at any angle without moving the others",
+    ({ angle, removed }) => {
+      const shape = { ...TURNED, angle };
+      const before = drawnPoints(shape).filter((point, index) => index !== removed);
+
+      expectPoints(drawnPoints(freeShapeWithoutPoints(shape, [removed])), before);
+    },
+  );
 });

@@ -1,3 +1,4 @@
+import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { arcAxisPoints } from "./arc-axis-points";
@@ -77,5 +78,34 @@ describe("arcAxisPoints (DERIV-arc-bounding-box step 3)", () => {
         start: onUnitCircle(200),
       }),
     ).toEqual([]);
+  });
+
+  test.prop({
+    from: fc.integer({ max: 359, min: 0 }),
+    radius: fc.integer({ max: 100, min: 1 }),
+    sweep: fc.integer({ max: 179, min: 1 }),
+  })("gives points on the circle, between the ends, at the axes", ({ from, radius, sweep }) => {
+    const start = onUnitCircle(from);
+    const end = onUnitCircle(from + sweep);
+    const points = arcAxisPoints({
+      center: { x: 0, y: 0 },
+      end: { x: radius * end.x, y: radius * end.y },
+      kind: "arc",
+      positive: true,
+      radius,
+      start: { x: radius * start.x, y: radius * start.y },
+    });
+    // The axis angles 0, 90, 180, 270 swept between from and from + sweep; an axis exactly at an
+    // end may fall on either side by rounding, and the end counts anyway.
+    const offsets = [0, 90, 180, 270].map((axis) => (axis - from + 360) % 360);
+    const inside = offsets.filter((offset) => offset > 0 && offset < sweep).length;
+    const reached = offsets.filter((offset) => offset <= sweep).length;
+
+    expect(points.length).toBeGreaterThanOrEqual(inside);
+    expect(points.length).toBeLessThanOrEqual(reached);
+
+    for (const point of points) {
+      expect(Math.hypot(point.x, point.y)).toBeCloseTo(radius, 9);
+    }
   });
 });
