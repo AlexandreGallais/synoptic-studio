@@ -19,7 +19,15 @@ As a symbol designer, I want the radius field of a shape to round every corner a
 
 ## Product Owner test
 
-Written with the story.
+Nothing new to see yet: corners get different radii only in Points mode, which comes with US-012 and US-013. "Mixed" and the radii kept when the number of corners changes are tried in US-013's card. Here, check that nothing changed.
+
+Run `npm run dev` and open `http://localhost:5173/?step=10`. The **radius** is how much each corner is rounded (the arrondi).
+
+| Step | Do                                        | You should see                                                      |
+| ---- | ----------------------------------------- | ------------------------------------------------------------------- |
+| 1    | On the hexagon of step 10, type radius 10 | every corner rounded alike; "Effective radius: 10 (as requested)"   |
+| 2    | Type 5 corners, then 8                    | the same rounding on every corner of the pentagon, then the octagon |
+| 3    | Open "Words" under the guided test        | a sentence explains "Mixed"                                         |
 
 ## Tasks
 
