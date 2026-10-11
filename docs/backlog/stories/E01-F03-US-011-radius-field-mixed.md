@@ -25,5 +25,5 @@ Written with the story.
 
 One task = one commit, referenced as `US-011.Tn`.
 
-- [ ] T1 — Radii kept by vertex number when the number of corners changes; the common radius of a shape or none (mixed); tests (1.5 h)
+- [ ] T1 — Radii kept by vertex number when the number of corners changes; the common radius of a shape or none (Mixed, `REF-FIGMA-CR`); tests (1.5 h)
 - [ ] T2 — Playground: radius field showing Mixed, typing gives every vertex the value; Product Owner test card (1 h)

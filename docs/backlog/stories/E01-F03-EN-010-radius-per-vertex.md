@@ -16,7 +16,7 @@ A rectangle and a regular polygon store one requested corner radius per vertex i
 - Given a rectangle or a polygon whose vertices all have the same radius, when its corners are built, then they are exactly those of F01 and F02 (F03.AC1).
 - Given a 100 × 100 rectangle with radii 50, 0, 0, 0, when it is drawn, then only its top-left corner is rounded, with radius 50 (F03.AC1).
 - Given radii whose number differs from the number of vertices, or a radius that is not an integer ≥ 0, when the shape is checked, then it is refused (F03.AC1).
-- Given two adjacent corners with unequal radii on a short edge, when they are clamped, then the edge is shared as `DERIV-local-radius-clamp` says (F03.AC1).
+- Given two adjacent corners with unequal radii on a short edge, when they are clamped, then the edge is shared as `DERIV-local-radius-clamp` says: a 100 × 20 rectangle with radii 30, 10, 0, 0 gets 20 and 10 (F03.AC1).
 
 ## Product Owner test
 
@@ -26,5 +26,5 @@ None of its own: the radius of one corner is chosen in the playground by US-013.
 
 One task = one commit, referenced as `EN-010.Tn`.
 
-- [ ] T1 — `radii` in `Rectangle` and `RegularPolygon`, validity, corners built from it; hand-computed cases, properties (2 h)
+- [ ] T1 — `radii` in `Rectangle` and `RegularPolygon` (ADR-0029), validity, corners built from it; the unequal-radii rows of `DERIV-local-radius-clamp` as hand-computed cases, properties (2 h)
 - [ ] T2 — Domain (`shapes.md`), playground kept working with one radius for all; re-exports (0.5 h)
