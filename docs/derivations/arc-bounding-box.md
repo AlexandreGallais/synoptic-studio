@@ -22,7 +22,7 @@ A point of the arc is `C + r (cos t, sin t)` (`REF-OPENSTAX-UNIT-CIRCLE`, scaled
 
 ## Step 3 — Whether the arc passes through an axis point
 
-A fillet sweeps the turning angle of its corner, less than π (`DERIV-fillet-arc`). The perp dot product has the sign of `sin θ`, `θ` the angle from one vector to the other (`REF-MATHWORLD-PERP-DOT`). For an arc of less than π, the direction `d` lies on it when it is reached from `s` and reaches `e` in the arc's direction:
+A fillet sweeps the turning angle of its corner, more than 0 and less than π (`DERIV-fillet-arc`); an arc without length (a corner that keeps no fillet, dropped by `hasLength`) has `s = e` and is counted by its ends only. The perp dot product has the sign of `sin θ`, `θ` the angle from one vector to the other (`REF-MATHWORLD-PERP-DOT`). For an arc of less than π, the direction `d` lies on it when it is reached from `s` and reaches `e` in the arc's direction:
 
 `σ · (s × d) ≥ 0` and `σ · (d × e) ≥ 0`
 
