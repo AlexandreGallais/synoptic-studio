@@ -37,3 +37,11 @@ status: draft
 - Dragging points on the drawing, several selected points moving together, on integers.
 - Stretching a shape by its width and height from a fixed point chosen in the 3 × 3 grid, as Inkscape: « Quand je clique sur l'ancrage de droite et que je l'augmente, le width grandit, mais vers la gauche »; strokes keep their width in pixels.
 - When a polygon is converted to a free shape, a message saying what happens, with a « do not show again » box.
+
+## Ideas from the Product Owner (2026-10-11, refinement of F04)
+
+- **A rotation mode**, entered by a button, showing the center of rotation (by default the center of the shape's box). The center is either **free**, fixed at an x and y; or one of the **nine anchors** of the shape's box, or a **point of the shape**, both following the shape when it moves or grows (« si on fixe ça à droite, ça reste à droite »); or a **point or the center of another shape**, which only places it, at that x and y, without following that shape (« ce n'est pas comme une vraie ancre »).
+- **One angle only**: changing the center does not move the shape, only the next turns go about the new center; turning about another center changes the angle and the position, never the shape, so that back to 0 the shape is straight again, maybe elsewhere (« si j'annule \[…\] elle se remet droite. Comme ça, je n'ai rien perdu comme info »).
+- **Handles on both boxes**: the corners of the turned box, as Figma shows them (the Product Owner's preference), and those of the straight box, dragged to resize the shape; a handle dragged changes width and height in the shape's own sides, and the straight box stays as computed.
+- **Reference point of x and y**: the place of the straight box whose x and y are shown and typed, chosen among its anchors, as in Inkscape.
+- Hiding the straight box, or showing it dashed, as an option.
