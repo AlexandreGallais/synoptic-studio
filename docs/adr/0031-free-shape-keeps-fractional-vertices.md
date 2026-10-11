@@ -21,7 +21,7 @@ A free shape stores its vertices as numbers: a vertex obtained by converting a p
 
 ## Consequences
 
-- ADR-0003 is amended on one point: the vertices of a free shape may be fractional; the user still types only integers.
+- ADR-0003 is partly superseded on one point, its rule "the model stores integers only": the vertices of a free shape may be fractional; the user still types only integers. ADR-0003's status says so.
 - Written with at most 5 decimals in the output (Q10), as every derived coordinate.
 - A free shape is never converted back into a regular polygon (as in Inkscape, `REF-INKSCAPE-OBJECT-TO-PATH`).
 

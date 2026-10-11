@@ -13,9 +13,9 @@ As a symbol designer, I want to add a point in the middle of an edge, so that I 
 
 ## Acceptance criteria
 
-- Given two neighbouring points selected (the last and the first count as neighbours), when "Add a point in the middle" is clicked, then a point is added exactly in the middle of their edge, fractions allowed, with no rounding, and the edge is unchanged (F08.AC3).
+- Given two neighbouring points selected (the last and the first count as neighbours), when "Add a point in the middle" is clicked, then a point with radius 0 is added in the middle of their edge, within rounding (`EPSILON`), fractions allowed, the straight edge of the contour unchanged (F08.AC3).
 - Given any other selection, when the shape is shown, then the button is disabled (F08.AC3).
-- Given a regular polygon, when a point is added, then it is a free shape first (the conversion of US-014), as a rectangle becomes one (F08.AC3).
+- Given a regular polygon, when a point is to be added, then the button is disabled and says to convert it first, as for deleting (US-016); a rectangle becomes a free shape (F08.AC3).
 
 ## Product Owner test
 

@@ -5,7 +5,7 @@
 Processing chain: typed numbers → integer model → computed geometry → `<path>` (ADR-0005).
 
 - A shape = one or more **closed contours** (the first is the outside, the next ones are holes, produced by booleans).
-- A contour = ordered list of **vertices**: integer coordinates when they are the model (a rectangle), fractional when they are derived from it (a regular polygon, later booleans), never written back (ADR-0003).
+- A contour = ordered list of **vertices**: integer coordinates when they are the model (a rectangle), fractional when they are derived from it (a regular polygon, later booleans), never written back (ADR-0003). A free shape (F08) stores its vertices: those of a converted polygon or added in the middle of an edge keep their fractions, those typed by the user are integers (ADR-0031).
 - Each vertex carries an integer **corner radius** (0 = sharp corner); a rectangle and a regular polygon store one per vertex, `radii` (ADR-0029); their number is the number of vertices, otherwise the shape is refused.
 - The shape is rendered as a single `<path>` (ADR-0002).
 - Geometric primitives: segments and circular arcs only (ADR-0001).
@@ -30,7 +30,7 @@ Consequence: every shape is described by numbers. The drawing is **determined**,
 
 - `SVG_DECIMALS = 5`: derived coordinates are written with at most 5 decimals, in their shortest form: no trailing zeros (`2.5`, not `2.50000`), never a negative zero (`-0.000001` is written `0`).
 - `EPSILON = 1e-9`: tolerance of floating-point comparisons.
-- The user only ever enters integers; decimals only appear in derived geometry and output.
+- The user only ever enters integers; decimals only appear in derived geometry, in the vertices a free shape keeps from a converted polygon (ADR-0031), and in output.
 
 ### Rotation of shapes
 

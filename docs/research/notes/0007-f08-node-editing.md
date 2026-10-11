@@ -11,9 +11,9 @@ Spike SP-005, 2026-10-11. Claude Code's own research; every source below was rea
 
 ## Adding and deleting (US-015, US-016)
 
-- Inkscape inserts a node with a button once several nodes are selected, and deletes the selected nodes with the button or the `Del` key (`REF-INKSCAPE-NODE-OPS`); the page does not say where the new node goes nor what the path becomes.
+- Inkscape inserts a node with a button once several nodes are selected, and deletes the selected nodes with the button or the `Del` key (`REF-INKSCAPE-NODE-OPS`); a node is inserted « right in the middle between two other nodes »; the page does not say what the path becomes after a deletion.
 - The new point is the midpoint of the edge, ((x₁ + x₂)/2, (y₁ + y₂)/2) (`REF-MATHWORLD-MIDPOINT`): on the edge, so the edge does not change; fractional when the sum is odd, which ADR-0031 allows. Its radius is 0, as a new vertex of F03. The last and the first vertices are neighbours too (the contour is cyclic, Q11).
-- Deleting a vertex removes it and its radius from the cyclic list: its two neighbours become consecutive, so they are joined by a straight edge and the shape stays closed. Kept at least 3 vertices: two would give a flat shape of no area.
+- Deleting a vertex removes it and its radius from the cyclic list: its two neighbours become consecutive, so they are joined by a straight edge and the shape stays closed. At least 3 vertices remain (Product Owner).
 
 ## Concave contours
 

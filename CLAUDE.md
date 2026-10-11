@@ -51,7 +51,7 @@ Non-negotiable principles: schematic, orthogonal, integer, documented, dependenc
 
 ## Key decisions (reminder — the ADR is the source)
 
-- **Numbers** (ADR-0003): every input is an integer; derived geometry is float and never written back into the model; `EPSILON = 1e-9`, `SVG_DECIMALS = 5` (Q10).
+- **Numbers** (ADR-0003, ADR-0031): every input is an integer; derived geometry is float and never written back into the model, except the vertices a free shape keeps from a converted polygon; `EPSILON = 1e-9`, `SVG_DECIMALS = 5` (Q10).
 - **Geometry** (ADR-0001, ADR-0002): segments and circular arcs only in symbols; an arc only exists as a fillet; everything is a `<path>` except text; strokes computed by offset. Béziers only in static drawings (ADR-0018).
 - **Portable core** (ADR-0025): ECMAScript only (no DOM, Node.js or host API), plain data, TSDoc states the mathematical intent where JavaScript differs from other languages.
 - Contours clockwise on screen from the top-left vertex, cyclic (Q11). Orthogonal pipes (ADR-0004). Non-destructive booleans (ADR-0006). Corner radius: local proportional reduction, requested value stored, effective value derived (ADR-0007). Instance rotation by quarter turns (ADR-0008).
