@@ -1,4 +1,4 @@
-/** Rectangle of the model: integer width, height and corner radii, ≥ 0 (ADR-0003, Q15). */
+/** Parameters of the rectangle tool: integer width, height and corner radii, ≥ 0 (ADR-0003, Q15); it makes a free shape (ADR-0032). */
 export type Rectangle = {
   /** Vertical size, integer ≥ 0. */
   readonly height: number;
