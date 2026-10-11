@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.5](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.8.4...v0.8.5) (2026-10-11)
+
+
+### Documentation
+
+* **docs:** log the F07 validation in progress ([41a4653](https://github.com/AlexandreGallais/synoptic-studio/commit/41a46534b2be57460ab0fc9787c0fe6e00793f67))
+
 ## [0.8.4](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.8.3...v0.8.4) (2026-10-11)
 
 
