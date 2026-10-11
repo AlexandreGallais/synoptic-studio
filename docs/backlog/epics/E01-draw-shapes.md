@@ -6,21 +6,21 @@ status: in-progress
 
 # E01 — Draw symbol shapes from numbers
 
-| Field                       | Content                                                                                                    |
-| --------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| For                         | symbol designers                                                                                           |
-| who                         | need logical, reproducible shapes                                                                          |
-| the solution                | shape model and creation tools                                                                             |
-| is a                        | integer shapes evaluated into segments and arcs, rendered as one `<path>`                                  |
-| that                        | exact shapes editable at any time                                                                          |
-| unlike                      | freehand drawing tools                                                                                     |
-| our solution                | every vertex, size, radius and angle is an integer                                                         |
-| Business outcomes           | rectangles and regular polygons with corner radius are created, edited, rotated and rendered from integers |
-| Leading indicators          | features accepted; Q10 and Q11 applied                                                                     |
-| Non-functional requirements | 5 decimals in output, `EPSILON = 1e-9`, clockwise contours from the top-left vertex                        |
-| In scope                    | rectangle, regular polygon, corner radius and clamping, node editing, free integer rotation, text          |
-| Out of scope                | ellipses (Q4), Bézier curves, pen                                                                          |
-| Closure criteria            | the cases of `shapes.md` §2–3 render as specified in the playground                                        |
+| Field                       | Content                                                                                                                                      |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| For                         | symbol designers                                                                                                                             |
+| who                         | need logical, reproducible shapes                                                                                                            |
+| the solution                | shape model and creation tools                                                                                                               |
+| is a                        | integer shapes evaluated into segments and arcs, rendered as one `<path>`                                                                    |
+| that                        | exact shapes editable at any time                                                                                                            |
+| unlike                      | freehand drawing tools                                                                                                                       |
+| our solution                | every vertex, size, radius and angle is an integer                                                                                           |
+| Business outcomes           | rectangles and regular polygons with corner radius are created, edited, rotated and rendered from integers                                   |
+| Leading indicators          | features accepted; Q10 and Q11 applied                                                                                                       |
+| Non-functional requirements | 5 decimals in output, `EPSILON = 1e-9`, clockwise contours from the top-left vertex (a regular polygon: from the right end of its base, Q18) |
+| In scope                    | rectangle, regular polygon, corner radius and clamping, node editing, free integer rotation, text                                            |
+| Out of scope                | ellipses (Q4), Bézier curves, pen                                                                                                            |
+| Closure criteria            | the cases of `shapes.md` §2–3 render as specified in the playground                                                                          |
 
 ## Features
 

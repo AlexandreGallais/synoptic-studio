@@ -21,6 +21,8 @@ As a symbol designer, I want to select one or several vertices, on the drawing o
 
 ## Product Owner test
 
+Since F08 (EN-013), a regular polygon is numbered from the right end of its base: point 1 (red) is the bottom-right corner, point 2 (green) the bottom-left one. The card below is the one run at the time.
+
 Run `npm run dev` and open `http://localhost:5173/?step=10` (a hexagon, no rounding). A **point** is a corner of the shape; **selecting** points says which ones the Radius field will round. **Mixed** means the selected points do not all have the same rounding.
 
 | Step | Do                                                          | You should see                                                                                                                                               |
