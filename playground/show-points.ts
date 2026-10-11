@@ -23,7 +23,7 @@ export function showPoints(document: Document, reading: ShapeReading): readonly 
   const selection = readSelection(document);
   const shown = isPoints ? selection.selected : contour.map((point, vertex) => vertex);
 
-  writeRadiusField(document, reading.model.radii, shown);
+  writeRadiusField(document, reading.radii, shown);
   showPointsList(document, reading, selection);
 
   return isPoints ? createHandleElements(document, contour, selection.selected) : [];
