@@ -11,3 +11,4 @@
 | [F07](./E01-F07-polygon-aligned-in-its-box.md)         | E01  | Polygon aligned in its box         | done   |
 | [F08](./E01-F08-node-editing.md)                       | E01  | Node editing                       | done   |
 | [F09](./E01-F09-stretchable-free-shape.md)             | E01  | Stretchable free shape             | done   |
+| [F10](./E01-F10-round-shape.md)                        | E01  | Round shape                        | draft  |

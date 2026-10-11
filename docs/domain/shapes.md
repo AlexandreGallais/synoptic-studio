@@ -70,7 +70,7 @@ Storing the value (Q8, settled):
 
 ### Useful special case
 
-- Square of side `c` + radius `c/2` on all 4 corners = **circle**. The circle is therefore not a primitive: it is a rounded square.
+- Square of side `c` + radius `c/2` on all 4 corners = **circle**. The circle is therefore not a primitive: it is a rounded square. A round-shape tool draws it without a radius field: a circle in a square box, a capsule otherwise (F10, Product Owner 2026-10-12).
 - Same for a regular polygon with maximal radius: every fillet stops at the middle of its edges, so the polygon becomes exactly its inscribed circle.
 
 ## 3. Creation tools

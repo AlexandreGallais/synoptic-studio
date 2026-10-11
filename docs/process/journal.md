@@ -2,6 +2,10 @@
 
 What each working session dealt with, in the agent's words: requests of the Product Owner (paraphrased), decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`). The full conversations stay in the local transcripts (see [agent configuration](../tooling/agent.md#searching-past-conversations)).
 
+## 2026-10-12 — Round shapes added to E01
+
+- `#backlog` The Product Owner's idea: « fais les formes circulaires ». F10 (round shape: a circle in a square box, a capsule otherwise, edited as the polygon, converted to a free shape of 4 points) added to E01 right after F04; the ellipse stays out (Q4).
+
 ## 2026-10-12 — F04 run stopped at VAL-007
 
 - `#run` Merged into `feature/f04-free-rotation`: SP-007 (#122), EN-014 (#123), EN-015 (#124), US-018 (#125), CHK-007 (#126), US-019 (#127), AUD-007 (#128; #129, a duplicate opened by an interrupted command, closed). Stop: the next story is VAL-007, with the Product Owner.
