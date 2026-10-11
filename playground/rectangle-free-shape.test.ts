@@ -44,18 +44,17 @@ describe("rectangle as a free shape", () => {
     mountPlayground(document);
   });
 
-  it("[F09.AC4] shows the rectangle as a free shape: the unit square, its width, height and radii", () => {
+  it("[F09.AC4] shows the rectangle as a free shape: the corners of the unit square with their radii, its size", () => {
     const model: unknown = JSON.parse(text("model"));
 
     expect(model).toEqual({
-      height: 80,
-      points: [
-        { x: 0, y: 0 },
-        { x: 1, y: 0 },
-        { x: 1, y: 1 },
-        { x: 0, y: 1 },
+      corners: [
+        { point: { x: 0, y: 0 }, radius: 10 },
+        { point: { x: 1, y: 0 }, radius: 10 },
+        { point: { x: 1, y: 1 }, radius: 10 },
+        { point: { x: 0, y: 1 }, radius: 10 },
       ],
-      radii: [10, 10, 10, 10],
+      height: 80,
       width: 120,
     });
   });
@@ -70,11 +69,11 @@ describe("rectangle as a free shape", () => {
     expect(text("path-data")).toBe("M0 0 L0 80 Z");
 
     expect(JSON.parse(text("model"))).toMatchObject({
-      points: [
-        { x: 0, y: 0 },
-        { x: 1, y: 0 },
-        { x: 1, y: 1 },
-        { x: 0, y: 1 },
+      corners: [
+        { point: { x: 0, y: 0 } },
+        { point: { x: 1, y: 0 } },
+        { point: { x: 1, y: 1 } },
+        { point: { x: 0, y: 1 } },
       ],
       width: 0,
     });

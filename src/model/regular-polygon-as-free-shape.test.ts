@@ -1,0 +1,55 @@
+import { fc, test } from "@fast-check/vitest";
+import { describe, expect, it } from "vitest";
+
+import { ALIGNMENTS } from "../geometry";
+import { EPSILON } from "../math";
+
+import { freeShapeCorners } from "./free-shape-corners";
+import { isValidFreeShape } from "./is-valid-free-shape";
+import { regularPolygonAsFreeShape } from "./regular-polygon-as-free-shape";
+import { regularPolygonCorners } from "./regular-polygon-corners";
+
+/** F02's placement: centered on both axes. */
+const CENTER = { horizontal: "mid", vertical: "mid" } as const;
+
+describe("regularPolygonAsFreeShape", () => {
+  it("[F08.AC1] keeps a hexagon's exact corners and the size of the box around them", () => {
+    const hexagon = {
+      anchor: CENTER,
+      corners: 6,
+      height: 100,
+      radii: [10, 0, 0, 0, 0, 0],
+      width: 100,
+    };
+    const shape = regularPolygonAsFreeShape(hexagon);
+
+    // 100 wide, 50√3 = 86.60254 high: fractional, as left by the conversion (Q27).
+    expect(shape.width).toBeCloseTo(100, 9);
+    expect(shape.height).toBeCloseTo(50 * Math.sqrt(3), 9);
+    expect(shape.corners).toEqual(regularPolygonCorners(hexagon));
+    expect(isValidFreeShape(shape)).toBe(true);
+  });
+
+  test.prop({
+    anchor: fc.record({
+      horizontal: fc.constantFrom(...ALIGNMENTS),
+      vertical: fc.constantFrom(...ALIGNMENTS),
+    }),
+    corners: fc.integer({ max: 12, min: 3 }),
+    height: fc.integer({ max: 1000, min: 1 }),
+    width: fc.integer({ max: 1000, min: 1 }),
+  })("[F08.AC1] draws the same corners once converted: the polygon does not move", (polygon) => {
+    const radii = Array.from({ length: polygon.corners }, (unused, index) => index);
+    const before = regularPolygonCorners({ ...polygon, radii });
+    const after = freeShapeCorners(regularPolygonAsFreeShape({ ...polygon, radii }));
+    const tolerance = EPSILON * Math.max(1, polygon.width, polygon.height);
+    const gaps = after.flatMap((corner, index) => {
+      const { point } = before.at(index) ?? corner;
+
+      return [Math.abs(corner.point.x - point.x), Math.abs(corner.point.y - point.y)];
+    });
+
+    expect(Math.max(...gaps)).toBeLessThan(tolerance);
+    expect(after.map((corner) => corner.radius)).toEqual(radii);
+  });
+});

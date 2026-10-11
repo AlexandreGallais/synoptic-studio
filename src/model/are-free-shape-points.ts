@@ -5,8 +5,8 @@ import { MIN_FREE_SHAPE_POINTS } from "./min-free-shape-points";
 import type { Point } from "../math";
 
 /**
- * Whether the stored points of a free shape can enter the model: at least 3, with integer
- * coordinates (ADR-0003), spanning a box of positive width and height, without which no size can
+ * Whether the stored points of a free shape can enter the model: at least 3, with finite
+ * coordinates (fractions allowed, ADR-0033), spanning a box of positive width and height, without which no size can
  * be drawn (`DERIV-free-shape-stretch` step 2, ADR-0032).
  *
  * @kind domain
@@ -21,7 +21,7 @@ export function areFreeShapePoints(points: readonly Point[]): boolean {
 
   return (
     points.length >= MIN_FREE_SHAPE_POINTS &&
-    coordinates.every((value) => Number.isSafeInteger(value)) &&
+    coordinates.every((value) => Number.isFinite(value)) &&
     hasArea
   );
 }
