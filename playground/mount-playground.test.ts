@@ -94,6 +94,46 @@ function clickTimes(id: string, count: number): void {
   clickTimes(id, count - 1);
 }
 
+/**
+ * Clicks a cell of the anchor grid, as a user would: it is checked and fires `change`.
+ *
+ * @param value - value of the cell, horizontal then vertical alignment (`mid max`)
+ * @throws {Error} when the page has no cell of this value
+ */
+function chooseAnchor(value: string): void {
+  const buttons = document.querySelectorAll<HTMLInputElement>('input[name="anchor"]');
+  const button = [...buttons].find((cell) => cell.value === value);
+
+  if (button === undefined) {
+    throw new Error(`No anchor cell ${value}`);
+  }
+
+  button.click();
+}
+
+/**
+ * Value of the checked cell of the anchor grid.
+ *
+ * @returns its value, empty when none is checked
+ */
+function checkedAnchor(): string {
+  const buttons = document.querySelectorAll<HTMLInputElement>('input[name="anchor"]');
+
+  // By property: happy-dom's `:checked` follows the `checked` attribute, not the state.
+  return [...buttons].find((button) => button.checked)?.value ?? "";
+}
+
+/**
+ * Whether the anchor grid is out of sight, as the browser computes it.
+ *
+ * @returns `true` when `#anchor-field` is not displayed
+ */
+function isAnchorFieldHidden(): boolean {
+  const field = document.querySelector("#anchor-field");
+
+  return field !== null && getComputedStyle(field).display === "none";
+}
+
 describe("playground", () => {
   beforeAll(() => {
     // The page as served, without its script tag: the test mounts the playground itself.
@@ -295,5 +335,77 @@ describe("playground", () => {
 
     expect([valueOf("height"), valueOf("width")]).toEqual(["100000", "99999"]);
     expect(text("model")).toContain('"width": 99999');
+  });
+
+  it("[F07.AC5] hides the anchor grid for the rectangle, shows it for the polygon on the center", () => {
+    chooseShape("rectangle");
+
+    expect(isAnchorFieldHidden()).toBe(true);
+    expect(document.querySelectorAll("#canvas path")).toHaveLength(1);
+
+    type("width", "100");
+    type("height", "100");
+    type("radius", "0");
+    type("corners", "3");
+    chooseShape("polygon");
+
+    expect(isAnchorFieldHidden()).toBe(false);
+    expect(checkedAnchor()).toBe("mid mid");
+    expect(text("path-data")).toBe("M50 6.69873 L100 93.30127 L0 93.30127 Z");
+  });
+
+  it("[F07.AC5] offers nine cells in one radio group, for the arrow keys", () => {
+    // One name: the browser moves the choice with the arrow keys (REF-WAI-APG-RADIO).
+    const cells = document.querySelectorAll<HTMLInputElement>('#anchor-grid input[type="radio"]');
+
+    expect(cells).toHaveLength(9);
+    expect([...cells].every((cell) => cell.name === "anchor")).toBe(true);
+  });
+
+  it("[F07.AC5] draws the box in grey behind the polygon", () => {
+    const paths = document.querySelectorAll("#canvas path");
+
+    expect(paths).toHaveLength(2);
+    expect(paths[0]?.classList.contains("box")).toBe(true);
+    expect(paths[0]?.getAttribute("d")).toBe("M0 0 L100 0 L100 100 L0 100 Z");
+  });
+
+  it("[F07.AC2] puts the triangle's base on the bottom of its box", () => {
+    chooseAnchor("mid max");
+
+    // Room 100 − 86.60254 = 13.39746, all of it above the triangle.
+    expect(checkedAnchor()).toBe("mid max");
+    expect(text("path-data")).toBe("M50 13.39746 L100 100 L0 100 Z");
+    expect(text("model")).toContain('"vertical": "max"');
+  });
+
+  it("[F07.AC3] keeps the triangle in place from left to right, the anchor still shown", () => {
+    chooseAnchor("min max");
+
+    expect(text("path-data")).toBe("M50 13.39746 L100 100 L0 100 Z");
+    expect(text("model")).toContain('"horizontal": "min"');
+
+    chooseAnchor("max max");
+
+    expect(text("path-data")).toBe("M50 13.39746 L100 100 L0 100 Z");
+    expect(text("model")).toContain('"horizontal": "max"');
+  });
+
+  it("[F07.AC4] lets the radius round the triangle without moving its base", () => {
+    type("radius", "10");
+
+    // The base stays on y = 100 between its two fillets.
+    expect(text("path-data")).toMatch(/L[\d.]+ 100 /u);
+  });
+
+  it("[F07.AC1] puts the anchor back on the center at each step of the guided test", () => {
+    clickTimes("guide-previous", GUIDED_STEPS.length);
+    clickTimes("guide-next", 9);
+
+    expect(checkedAnchor()).toBe("mid mid");
+
+    expect(text("path-data")).toBe(
+      "M25 6.69873 L75 6.69873 L100 50 L75 93.30127 L25 93.30127 L0 50 Z",
+    );
   });
 });
