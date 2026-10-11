@@ -26,7 +26,7 @@
 | [AUD-002](./E01-F02-AUD-002-audit-f02.md)                   | F02     | Audit F02: regular polygon with corner radius    | done   |
 | [US-008](./E01-F02-US-008-cap-playground-sizes.md)          | F02     | Cap the sizes typed in the playground at 100 000 | done   |
 | [VAL-002](./E01-F02-VAL-002-validate-polygon.md)            | F02     | Validate F02 on the reference cases              | done   |
-| [SP-003](./E01-F07-SP-003-research-f07.md)                  | F07     | Research for F07                                 | ready  |
+| [SP-003](./E01-F07-SP-003-research-f07.md)                  | F07     | Research for F07                                 | done   |
 | [EN-009](./E01-F07-EN-009-align-in-box.md)                  | F07     | Align a fitted shape in its box                  | ready  |
 | [US-009](./E01-F07-US-009-anchored-polygon.md)              | F07     | Polygon anchored in its box                      | ready  |
 | [CHK-003](./E01-F07-CHK-003-checkpoint-f07.md)              | F07     | Checkpoint in the middle of F07                  | ready  |
