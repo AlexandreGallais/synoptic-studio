@@ -42,13 +42,14 @@
 | [AUD-004](./E01-F03-AUD-004-audit-f03.md)                       | F03     | Audit F03: per-vertex corner radius                  | done   |
 | [VAL-004](./E01-F03-VAL-004-validate-radius-per-vertex.md)      | F03     | Validate F03 on the reference cases                  | done   |
 | [SP-005](./E01-F08-SP-005-research-f08.md)                      | F08     | Research for F08                                     | done   |
-| [EN-011](./E01-F08-EN-011-free-shape.md)                        | F08     | A free shape in the model                            | draft  |
-| [US-014](./E01-F08-US-014-convert-and-move.md)                  | F08     | Convert a polygon, move a point by its x, y          | draft  |
-| [CHK-005](./E01-F08-CHK-005-checkpoint-f08.md)                  | F08     | Checkpoint in the middle of F08                      | draft  |
-| [US-015](./E01-F08-US-015-add-middle-point.md)                  | F08     | Add a point in the middle of an edge                 | draft  |
-| [US-016](./E01-F08-US-016-delete-points.md)                     | F08     | Delete points                                        | draft  |
-| [AUD-005](./E01-F08-AUD-005-audit-f08.md)                       | F08     | Audit F08: node editing                              | draft  |
-| [VAL-005](./E01-F08-VAL-005-validate-node-editing.md)           | F08     | Validate F08 on the reference cases                  | draft  |
+| [EN-013](./E01-F08-EN-013-polygon-numbered-from-its-base.md)    | F08     | A regular polygon numbered from its base             | ready  |
+| [EN-011](./E01-F08-EN-011-free-shape.md)                        | F08     | A free shape of corners, fractions until edited      | ready  |
+| [US-014](./E01-F08-US-014-convert-and-move.md)                  | F08     | Convert a polygon, move a point by its x, y          | ready  |
+| [CHK-005](./E01-F08-CHK-005-checkpoint-f08.md)                  | F08     | Checkpoint in the middle of F08                      | ready  |
+| [US-015](./E01-F08-US-015-add-middle-point.md)                  | F08     | Add a point in the middle of an edge                 | ready  |
+| [US-016](./E01-F08-US-016-delete-points.md)                     | F08     | Delete points                                        | ready  |
+| [AUD-005](./E01-F08-AUD-005-audit-f08.md)                       | F08     | Audit F08: node editing                              | ready  |
+| [VAL-005](./E01-F08-VAL-005-validate-node-editing.md)           | F08     | Validate F08 on the reference cases                  | ready  |
 | [SP-006](./E01-F09-SP-006-research-f09.md)                      | F09     | Research for F09                                     | done   |
 | [EN-012](./E01-F09-EN-012-free-shape-in-its-box.md)             | F09     | A free shape and its box in the model                | done   |
 | [CHK-006](./E01-F09-CHK-006-checkpoint-f09.md)                  | F09     | Checkpoint in the middle of F09                      | done   |

@@ -11,7 +11,7 @@ status: in-progress
 
 Split from F03 (Product Owner, 2026-10-11).
 
-Refined with the Product Owner on 2026-10-11 (started with `/run`). Since F09 the rectangle is a free shape from the start and width and height are stored (ADR-0032): the decisions below that say otherwise are to revisit with Q27 when F08 resumes, together with the Product Owner's remark of VAL-006: store each point with its radius, as a corner (« mettre les radis ailleurs, je trouve ça trop chelou »). **Paused after SP-005** (2026-10-11): F09 (stretchable free shape) comes first; the stories below go back to `draft`, to be rewritten on F09's free shape, then set `ready` again with the Product Owner.
+Refined with the Product Owner on 2026-10-11 (started with `/run`). Since F09 the rectangle is a free shape from the start and width and height are stored (ADR-0032): the decisions below that say otherwise are to revisit with Q27 when F08 resumes, together with the Product Owner's remark of VAL-006: store each point with its radius, as a corner (« mettre les radis ailleurs, je trouve ça trop chelou »). Paused after SP-005 while F09 was done; resumed on 2026-10-11 once Q27 was settled.
 
 ## Decided in refinement (Product Owner, 2026-10-11)
 
@@ -32,37 +32,47 @@ Refined with the Product Owner on 2026-10-11 (started with `/run`). Since F09 th
 - **Each point keeps its number**, wherever it moves: « mon premier point, c'est mon premier point, peu importe où il est »; the top-left, clockwise start of Q11 holds at creation only.
 - **The rectangle is a free shape**: « En soi, en arrière, ça devrait être une forme libre tout le temps »; the rectangle tool only creates it. Width and height of any free shape stay editable and stretch it, without loss. Done first, in F09; F08 resumes after it.
 
+## Decided after F09 (Product Owner, 2026-10-11, Q27)
+
+- **Fractions until edited**: « on accepte les virgules. C'est que si la personne commence à changer les points, que ça revient à des entiers »; a converted polygon keeps its exact points and size (a hexagon in 100 × 100 is 100 × 86.60254) and does not move.
+- **The x and y typed are those of the SVG**: « Mon X et Y, ça doit être le vrai X et Y du SVG \[…\] Non, pas de la boîte interne »; once a point is typed, the free shape keeps its points as drawn and its box becomes the one around them, so stretching stays without loss.
+- **A point keeps its radius with it**: the free shape stores corners (a point and its radius), not two lists (VAL-006: « mettre les radis ailleurs, je trouve ça trop chelou »).
+- **A regular polygon is numbered from its base** (the Product Owner's idea, left to the agent: « le point rouge en bas à droite »): point 1 is the right end of the flat base, point 2 its left end, then clockwise; the base corners keep their numbers, and their radii (F03.AC3), when the number of corners changes.
+
 ## Open in refinement
 
 - Deleting a point of a free shape joins its two neighbours with a straight edge, so that the shape stays closed (a symbol's shape is a closed contour, `shapes.md` §1). To confirm with the Product Owner at the validation: « je n'ai pas envie que, si on supprime un point, les autres points se rattachent » was said about the regular polygon.
 
 ## Acceptance criteria
 
-1. A regular polygon is turned into a free shape by a button: the same vertices, the same radii, the same drawing; it no longer has a number of corners nor an anchor.
-2. A point of a rectangle or of a free shape is moved by typing its x and y, integers; a rectangle whose point moves becomes a free shape of 4 points with its radii; width and height show the bounding box.
+1. A regular polygon is turned into a free shape by a button: the same points, exact, the same radii, the same drawing, its size the box around its points; it no longer has a number of corners nor an anchor.
+2. A point of a free shape (the rectangle included) is moved by typing its x and y, integers, in the coordinates of the SVG; the shape then keeps its points as drawn, and its width and height are the box around them.
 3. With two neighbouring points selected, a button adds a point exactly in the middle of their edge, without rounding, the edge unchanged.
 4. Selected points of a rectangle or a free shape are deleted by a button or the Delete key, their neighbours joined; at least 3 points remain, otherwise the deletion is refused with a message; on a regular polygon it is refused with a message to convert it first.
+5. A free shape stores corners, each a point and its radius; a regular polygon is numbered from the right end of its base, clockwise.
 
 ## Stories
 
 In delivery order.
 
-| ID                                                             | Type       | Title                                       | Status |
-| -------------------------------------------------------------- | ---------- | ------------------------------------------- | ------ |
-| [SP-005](../stories/E01-F08-SP-005-research-f08.md)            | Spike      | Research for F08                            | done   |
-| [EN-011](../stories/E01-F08-EN-011-free-shape.md)              | Enabler    | A free shape in the model                   | draft  |
-| [US-014](../stories/E01-F08-US-014-convert-and-move.md)        | User story | Convert a polygon, move a point by its x, y | draft  |
-| [CHK-005](../stories/E01-F08-CHK-005-checkpoint-f08.md)        | Checkpoint | Checkpoint in the middle of F08             | draft  |
-| [US-015](../stories/E01-F08-US-015-add-middle-point.md)        | User story | Add a point in the middle of an edge        | draft  |
-| [US-016](../stories/E01-F08-US-016-delete-points.md)           | User story | Delete points                               | draft  |
-| [AUD-005](../stories/E01-F08-AUD-005-audit-f08.md)             | Audit      | Audit F08: node editing                     | draft  |
-| [VAL-005](../stories/E01-F08-VAL-005-validate-node-editing.md) | Validation | Validate F08 on the reference cases         | draft  |
+| ID                                                                    | Type       | Title                                           | Status |
+| --------------------------------------------------------------------- | ---------- | ----------------------------------------------- | ------ |
+| [SP-005](../stories/E01-F08-SP-005-research-f08.md)                   | Spike      | Research for F08                                | done   |
+| [EN-013](../stories/E01-F08-EN-013-polygon-numbered-from-its-base.md) | Enabler    | A regular polygon numbered from its base        | ready  |
+| [EN-011](../stories/E01-F08-EN-011-free-shape.md)                     | Enabler    | A free shape of corners, fractions until edited | ready  |
+| [US-014](../stories/E01-F08-US-014-convert-and-move.md)               | User story | Convert a polygon, move a point by its x, y     | ready  |
+| [CHK-005](../stories/E01-F08-CHK-005-checkpoint-f08.md)               | Checkpoint | Checkpoint in the middle of F08                 | ready  |
+| [US-015](../stories/E01-F08-US-015-add-middle-point.md)               | User story | Add a point in the middle of an edge            | ready  |
+| [US-016](../stories/E01-F08-US-016-delete-points.md)                  | User story | Delete points                                   | ready  |
+| [AUD-005](../stories/E01-F08-AUD-005-audit-f08.md)                    | Audit      | Audit F08: node editing                         | ready  |
+| [VAL-005](../stories/E01-F08-VAL-005-validate-node-editing.md)        | Validation | Validate F08 on the reference cases             | ready  |
 
 ## Feature plan
 
-| Acceptance criterion                       | Realized by    | Verified by                      |
-| ------------------------------------------ | -------------- | -------------------------------- |
-| 1 — polygon converted by a button, unmoved | EN-011, US-014 | `[F08.AC1]` tests, card, VAL-005 |
-| 2 — a point moved by its x, y, on integers | EN-011, US-014 | `[F08.AC2]` tests, card, VAL-005 |
-| 3 — a point added in the middle of an edge | US-015         | `[F08.AC3]` tests, card, VAL-005 |
-| 4 — points deleted, 3 at least             | EN-011, US-016 | `[F08.AC4]` tests, card, VAL-005 |
+| Acceptance criterion                               | Realized by    | Verified by                      |
+| -------------------------------------------------- | -------------- | -------------------------------- |
+| 1 — polygon converted by a button, unmoved         | EN-011, US-014 | `[F08.AC1]` tests, card, VAL-005 |
+| 2 — a point moved by its x, y, on integers         | EN-011, US-014 | `[F08.AC2]` tests, card, VAL-005 |
+| 3 — a point added in the middle of an edge         | US-015         | `[F08.AC3]` tests, card, VAL-005 |
+| 4 — points deleted, 3 at least                     | EN-011, US-016 | `[F08.AC4]` tests, card, VAL-005 |
+| 5 — corners stored, polygon numbered from its base | EN-011, EN-013 | `[F08.AC5]` tests, VAL-005       |
