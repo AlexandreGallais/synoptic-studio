@@ -1,10 +1,10 @@
 # DERIV-regular-polygon-fit — Regular polygon fitted uniformly in a box
 
-Used by: `docs/domain/shapes.md` §3 (Q1: uniform mode), EN-008, US-005, US-006. Sources read in SP-002 (note 0004).
+Used by: `docs/domain/shapes.md` §3 (Q1: uniform mode), EN-008, US-005, US-006, EN-009, US-009. Sources read in SP-002 (note 0004) and SP-003 (note 0005).
 
 ## Inputs (model, integers)
 
-`n ≥ 3` corners, width `w ≥ 0`, height `h ≥ 0`.
+`n ≥ 3` corners, width `w ≥ 0`, height `h ≥ 0`; a horizontal and a vertical alignment, each `min`, `mid` or `max` (F07, step 5).
 
 ## Step 1 — Unit polygon
 
@@ -48,13 +48,19 @@ At least one dimension is reached (`w` or `h`, or both), exactly in theory; in f
 
 ## Step 5 — Placement in the SVG frame
 
-Center the `s·Wᵤ × s·Hᵤ` box in the `w × h` box and flip the y axis (y downwards):
+The scaled polygon spans `s·Wᵤ × s·Hᵤ` and leaves the room `Δx = w − s·Wᵤ ≥ 0` and `Δy = h − s·Hᵤ ≥ 0` (step 4), zero on the axis it fills. It is placed in that room by a horizontal and a vertical **alignment**, each `min`, `mid` or `max` (F07). This is SVG's `preserveAspectRatio` with `meet` (`REF-SVG2-PRESERVE-ASPECT-RATIO`): the scale is the smaller of the two ratios (§8.2 step 7), and the translation adds nothing for `xMin`, `Δx / 2` for `xMid` (step 11), `Δx` for `xMax` (step 12), the same for `YMin`, `YMid`, `YMax` (steps 13–14); `min` aligns the smallest coordinate with the box's, `max` the largest (§8.7). With the y axis flipped (y downwards, `REF-SVG2-COORDS`), `min` is the left or the top, `max` the right or the bottom.
 
-`x = (w − s·Wᵤ) / 2 + s · (xₖ − min xₖ)`, `y = (h − s·Hᵤ) / 2 + s · (max yₖ − yₖ)`.
+`x = tₓ + s · (xₖ − min xₖ)`, `y = t_y + s · (max yₖ − yₖ)`, with `tₓ ∈ {0, Δx / 2, Δx}` and `t_y ∈ {0, Δy / 2, Δy}`.
 
 The highest vertex of the mathematical frame becomes the one with the smallest SVG y: the picture is unchanged, only its coordinates are.
 
-With the flipped unit polygon of step 2 (`y′ₖ = −yₖ`, so `max yₖ − yₖ = y′ₖ − min y′ₖ`), the same placement reads `y = (h − s·Hᵤ) / 2 + s · (y′ₖ − min y′ₖ)`: no second flip. In the code, steps 3–5 are `boundingBox` and `fitInBox`, and the whole fit is `regularPolygonContour` (US-005).
+With the flipped unit polygon of step 2 (`y′ₖ = −yₖ`, so `max yₖ − yₖ = y′ₖ − min y′ₖ`), the same placement reads `y = t_y + s · (y′ₖ − min y′ₖ)`: no second flip.
+
+**Exact edges.** For `max`, `Δx + s · (xₖ − min xₖ) = w − s · (max xₖ − min xₖ) + s · (xₖ − min xₖ) = w − s · (max xₖ − xₖ)`, since `Wᵤ = max xₖ − min xₖ` (step 3). The code uses this form: at the extreme vertex `max xₖ − xₖ = 0`, so `x = w − 0 = w` exactly, while the sum `Δx + s · Wᵤ` may miss `w` by a rounding error. For `min`, `x = 0 + s · 0 = 0` exactly. Each coordinate on an anchored side is therefore the integer edge of the box, with no rounding. For `mid`, the placement of F02 is kept unchanged: `x = Δx / 2 + s · (xₖ − min xₖ)`.
+
+On the axis the polygon fills, `Δ = 0` in theory and the three alignments give the same points; in floating point they differ by a rounding error relative to the box (about 1e-16 × its size, step 4), far below what the output writes (5 decimals, Q10).
+
+The default is `mid` on both axes: F02's centering. In the code, steps 3–5 are `boundingBox` and `fitInBox`, and the whole fit is `regularPolygonContour` (US-005, US-009).
 
 ## Step 6 — Maximal rounding: the incircle
 
@@ -73,6 +79,18 @@ The fillet's center `D` is the point of the bisector at distance `ρ` from both 
 | 5   | 100 × 100 | 1.90211 × 1.80902 | 100 × 95.10565 (width) | (50, 2.44717), (100, 38.7743), (80.9017, 97.55283), (19.0983, 97.55283), (0, 38.7743) | 42.53254       |
 | 6   | 100 × 100 | 2 × √3            | 100 × 86.60254 (width) | (25, 6.69873), (75, 6.69873), (100, 50), (75, 93.30127), (25, 93.30127), (0, 50)      | 43.30127       |
 | 8   | 100 × 100 | 1.84776 × 1.84776 | 100 × 100 (both)       | (29.28932, 0), (70.71068, 0), (100, 29.28932), …, (0, 29.28932)                       | 50             |
+
+Anchored (F07): the room is all before (`max`) or all after (`min`) the shape instead of split in two.
+
+| `n` | Box       | Alignment (horizontal, vertical) | Vertices in drawing order (5 decimals)                                               |
+| --- | --------- | -------------------------------- | ------------------------------------------------------------------------------------ |
+| 3   | 100 × 100 | any, `max` (bottom)              | (50, 13.39746), (100, 100), (0, 100)                                                 |
+| 3   | 100 × 100 | any, `min` (top)                 | (50, 0), (100, 86.60254), (0, 86.60254)                                              |
+| 4   | 100 × 50  | `min` (left), any                | (0, 0), (50, 0), (50, 50), (0, 50)                                                   |
+| 4   | 100 × 50  | `max` (right), any               | (50, 0), (100, 0), (100, 50), (50, 50)                                               |
+| 6   | 100 × 100 | any, `max` (bottom)              | (25, 13.39746), (75, 13.39746), (100, 56.69873), (75, 100), (25, 100), (0, 56.69873) |
+
+By hand: the triangle's room is `Δy = 100 − 86.60254 = 13.39746`; at the bottom the apex is at `y = 13.39746` and the base at `100`; at the top the apex is at `0` and the base at `86.60254`. The square of side 50 leaves `Δx = 50`: left from `x = 0`, right from `x = 50`. The hexagon is shifted down by `13.39746 − 6.69873 = 6.69873` from its centered place.
 
 By hand: `n = 3`, `s = 100/√3 = 57.73503`, height `1.5 s = 86.60254`, top margin `(100 − 86.60254)/2 = 6.69873`; maximal radius `s cos(π/3) = 28.86751`. `n = 6`, `s = 50`, maximal radius `50 cos(π/6) = 43.30127`, a circle of diameter 86.60254.
 
