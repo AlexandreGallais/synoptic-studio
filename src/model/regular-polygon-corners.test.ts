@@ -137,7 +137,9 @@ describe("regularPolygonCorners (anchored, F07)", () => {
 
     expect(right).toHaveLength(1);
     expect(right[0]?.start.x).toBeCloseTo(100, DECIMALS);
+    expect(right[0]?.start.y).toBeCloseTo(10, DECIMALS);
     expect(right[0]?.end.x).toBeCloseTo(100, DECIMALS);
+    expect(right[0]?.end.y).toBeCloseTo(40, DECIMALS);
   });
 
   it("[F07.AC4] moves the rounded apex of a triangle anchored top to y = 10 with radius 10", () => {
@@ -149,11 +151,22 @@ describe("regularPolygonCorners (anchored, F07)", () => {
       ),
     );
     // The path starts where the apex's arc ends and closes with it (DERIV-fillet-arc step 7).
-    const apex = arcs.find((arc) => arc.center.y < 50);
+    const [apex, ...others] = arcs.filter((arc) => arc.center.y < 50);
 
-    expect(apex?.center.x).toBeCloseTo(50, DECIMALS);
-    expect(apex?.center.y).toBeCloseTo(20, DECIMALS);
-    expect(apex?.radius).toBeCloseTo(10, DECIMALS);
+    expect(others).toHaveLength(0);
+
+    const { center, radius } = apex ?? {
+      center: { x: NaN, y: NaN },
+      radius: NaN,
+    };
+
+    expect(center.x).toBeCloseTo(50, DECIMALS);
+    expect(center.y).toBeCloseTo(20, DECIMALS);
+    expect(radius).toBeCloseTo(10, DECIMALS);
+
+    // The apex arc starts and ends at y = 15 and turns over the top, center.y − radius = 10.
+    expect(Math.min(...arcs.map((arc) => arc.center.y - arc.radius))).toBeCloseTo(10, DECIMALS);
+    expect(Math.min(...arcs.flatMap((arc) => [arc.start.y, arc.end.y]))).toBeCloseTo(15, DECIMALS);
   });
 });
 

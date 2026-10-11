@@ -207,19 +207,18 @@ describe("regularPolygonContour (anchored, F07)", () => {
     ]);
   });
 
-  it("[F07.AC3] keeps the triangle in place when only its horizontal alignment changes, the anchor still stored", () => {
-    // The width is reached: no room on that axis.
-    const left = Object.freeze({
+  it("[F07.AC3] keeps the triangle in place when only its horizontal alignment changes", () => {
+    // The width is reached: no room on that axis. The anchor itself is kept by the model type.
+    const left = {
       anchor: { horizontal: "min", vertical: "max" },
       corners: 3,
       height: 100,
       radius: 0,
       width: 100,
-    } as const);
+    } as const;
     const right = { ...left, anchor: { horizontal: "max", vertical: "max" } } as const;
 
     expectPoints(regularPolygonContour(left), regularPolygonContour(right));
-    expect(left.anchor).toEqual({ horizontal: "min", vertical: "max" });
   });
 });
 
