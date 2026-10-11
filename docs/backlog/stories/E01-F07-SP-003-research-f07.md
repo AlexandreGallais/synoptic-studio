@@ -3,7 +3,7 @@ id: SP-003
 epic: E01
 feature: F07
 title: Research for F07
-status: ready
+status: done
 points: 1
 ---
 
@@ -38,5 +38,5 @@ Find, read and record the sources of every story of F07 before its implementatio
 
 One task = one commit, referenced as `SP-003.Tn`.
 
-- [ ] T1 — Find, read and record the sources; update the derivation (2 h)
-- [ ] T2 — Write the research note and update the stories (1 h)
+- [x] T1 — Find, read and record the sources; update the derivation (2 h)
+- [x] T2 — Write the research note and update the stories (1 h)
