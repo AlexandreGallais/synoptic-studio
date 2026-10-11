@@ -2,6 +2,10 @@
 
 What each working session dealt with, in the agent's words: requests of the Product Owner (paraphrased), decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`). The full conversations stay in the local transcripts (see [agent configuration](../tooling/agent.md#searching-past-conversations)).
 
+## 2026-10-11 — F04 run authorized
+
+- `#run` Scope: F04 from SP-007 up to VAL-007, started with `/run` right after the proposed stories (« si je te fais des /run, ça veut dire oui », 2026-10-09). F04 set `in-progress`, its stories `ready`, on `feature/f04-free-rotation`.
+
 ## 2026-10-11 — F08 merged, F04 refinement
 
 - `#review` F08 merged by the Product Owner (#118), released in 0.12.0; the validation branch deleted, only `main` left.
