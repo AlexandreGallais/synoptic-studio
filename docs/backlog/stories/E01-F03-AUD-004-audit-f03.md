@@ -3,7 +3,7 @@ id: AUD-004
 epic: E01
 feature: F03
 title: "Audit F03: per-vertex corner radius"
-status: ready
+status: done
 points: 2
 ---
 
@@ -21,8 +21,8 @@ Full check of F03 in depth and of the project in breadth, following [audit.md](.
 
 One task = one commit, referenced as `AUD-004.Tn`.
 
-- [ ] T1 — A. Independent review by the `auditor` subagent; mathematics, mutation spot-checks, missing properties (2 h)
-- [ ] T2 — B to G. Sources, provenance, duplicates, consistency, quality gates, research list for the next feature; findings table (1.5 h)
+- [x] T1 — A. Independent review by the `auditor` subagent; mathematics, mutation spot-checks, missing properties (2 h)
+- [x] T2 — B to G. Sources, provenance, duplicates, consistency, quality gates, research list for the next feature; findings table (1.5 h)
 
 ## Findings
 
