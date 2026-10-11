@@ -1,5 +1,6 @@
 import { selectionAfterHandleClick, selectionAfterRowClick } from "../src";
 
+import { listenToPointFields } from "./listen-to-point-fields";
 import { readSelection } from "./read-selection";
 import { selectElement } from "./select-element";
 import { writeSelection } from "./write-selection";
@@ -86,4 +87,6 @@ export function listenToPoints(document: Document, update: () => void): void {
     "click",
     createClickListener(document, selectionAfterRowClick, update),
   );
+
+  listenToPointFields(document, update);
 }

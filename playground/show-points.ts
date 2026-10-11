@@ -1,6 +1,7 @@
 import { createHandleElements } from "./create-handle-elements";
 import { readMode } from "./read-mode";
 import { readSelection } from "./read-selection";
+import { showPointFields } from "./show-point-fields";
 import { showPointsList } from "./show-points-list";
 import { writeRadiusField } from "./write-radius-field";
 
@@ -25,6 +26,7 @@ export function showPoints(document: Document, reading: ShapeReading): readonly 
 
   writeRadiusField(document, reading.radii, shown);
   showPointsList(document, reading, selection);
+  showPointFields(document, reading, selection);
 
   return isPoints ? createHandleElements(document, contour, selection.selected) : [];
 }
