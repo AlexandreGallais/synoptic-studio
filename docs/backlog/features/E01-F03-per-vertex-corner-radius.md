@@ -2,7 +2,7 @@
 id: F03
 epic: E01
 title: Per-vertex corner radius
-status: in-progress
+status: done
 ---
 
 # E01 · F03 — Per-vertex corner radius
@@ -47,7 +47,7 @@ In delivery order.
 | [US-012](../stories/E01-F03-US-012-points-mode.md)                  | User story | Points mode: handles, first and second marked | done   |
 | [US-013](../stories/E01-F03-US-013-points-list-selection.md)        | User story | List of points, selection, radius per vertex  | done   |
 | [AUD-004](../stories/E01-F03-AUD-004-audit-f03.md)                  | Audit      | Audit F03: per-vertex corner radius           | done   |
-| [VAL-004](../stories/E01-F03-VAL-004-validate-radius-per-vertex.md) | Validation | Validate F03 on the reference cases           | ready  |
+| [VAL-004](../stories/E01-F03-VAL-004-validate-radius-per-vertex.md) | Validation | Validate F03 on the reference cases           | done   |
 
 ## Feature plan
 
