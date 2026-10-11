@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.2](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.9.1...v0.9.2) (2026-10-11)
+
+
+### Documentation
+
+* **backlog:** split F03, per-vertex radius first, node editing as F08 ([e6cfa01](https://github.com/AlexandreGallais/synoptic-studio/commit/e6cfa01f8d102cdb3e82c1953c6d0d587ed1c70a))
+
 ## [0.9.1](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.9.0...v0.9.1) (2026-10-11)
 
 
