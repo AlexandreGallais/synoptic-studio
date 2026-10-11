@@ -1,10 +1,6 @@
-import { selectElement } from "./select-element";
 import { writeText } from "./write-text";
 
 import type { ShapeReading } from "./shape-reading";
-
-/** Number inputs of the shapes, outlined when the shape is refused. */
-const INPUTS = ["corners", "width", "height", "radius"];
 
 /**
  * Shows the validity of the inputs: invalid ones are outlined and a message explains why.
@@ -15,8 +11,9 @@ const INPUTS = ["corners", "width", "height", "radius"];
  * @see docs/backlog/stories/E01-F01-US-002-sharp-rectangle-in-playground.md
  */
 export function writeValidity(document: Document, reading: ShapeReading): void {
-  for (const id of INPUTS) {
-    selectElement(document, id).setAttribute("aria-invalid", String(!reading.isValid));
+  // Every number input of the page is a value of the shape.
+  for (const input of document.querySelectorAll('input[type="number"]')) {
+    input.setAttribute("aria-invalid", String(!reading.isValid));
   }
 
   writeText(document, "status", reading.isValid ? "" : reading.message);
