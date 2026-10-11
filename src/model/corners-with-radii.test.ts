@@ -22,4 +22,19 @@ describe("cornersWithRadii", () => {
   it("gives no corner to no vertex", () => {
     expect(cornersWithRadii([], [])).toEqual([]);
   });
+
+  it("leaves a vertex without radius sharp, as a new vertex is (ADR-0029)", () => {
+    expect(
+      cornersWithRadii(
+        [
+          { x: 0, y: 0 },
+          { x: 10, y: 0 },
+        ],
+        [5],
+      ),
+    ).toEqual([
+      { point: { x: 0, y: 0 }, radius: 5 },
+      { point: { x: 10, y: 0 }, radius: 0 },
+    ]);
+  });
 });
