@@ -2,7 +2,7 @@
 
 ## What you can do now
 
-In the playground, choose **Polygon** instead of Rectangle and type a number of corners, from 3 to 12. You get the largest **regular** polygon — all its sides and all its corners equal — that fits the box of the width and height you typed, without being stretched, centered in it, always with a flat side at the bottom. The corner radius works as for the rectangle: too big, it is reduced to fit, and your number is kept.
+In the playground, choose **Polygon** instead of Rectangle and type a number of corners, from 3 to 12. You get the largest **regular** polygon — all its sides and all its corners equal — that fits the box of the width and height you typed, without being stretched, centered in it (F07 lets you choose another place), always with a flat side at the bottom. The corner radius works as for the rectangle: too big, it is reduced to fit, and your number is kept.
 
 ## The ideas behind it
 
