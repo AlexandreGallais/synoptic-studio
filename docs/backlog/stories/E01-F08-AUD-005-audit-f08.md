@@ -3,7 +3,7 @@ id: AUD-005
 epic: E01
 feature: F08
 title: "Audit F08: node editing"
-status: draft
+status: ready
 points: 2
 ---
 
