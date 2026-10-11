@@ -58,7 +58,7 @@ With the flipped unit polygon of step 2 (`y′ₖ = −yₖ`, so `max yₖ − y
 
 **On the anchored side.** For `min`, the extreme vertex is at `x = 0 + s · 0 = 0`; for `max`, at `Δx + s · Wᵤ = w`. In floating point these hold within a rounding error relative to the box, like step 4: the unit vertices of one edge come from `cos` and `sin` and may differ in their last bit (the base of the unit triangle at y = 0.5 and 0.5000000000000003), so a base anchored at the bottom of a 100 box may be computed at 99.99999999999999. The output writes 5 decimals (Q10): every vertex of that edge is written `100`, the integer edge of the box. For `mid`, the placement of F02 is kept unchanged: `x = Δx / 2 + s · (xₖ − min xₖ)`.
 
-On the axis the polygon fills, `Δ = 0` in theory and the three alignments give the same points; in floating point they differ by a rounding error relative to the box (about 1e-16 × its size, step 4), far below what the output writes (5 decimals, Q10): the written drawing is the same.
+On the axis the polygon fills, `Δ = 0` in theory and the three alignments give the same points; in floating point they differ by a rounding error relative to the box (about 1e-16 × its size, step 4), far below what the output writes (5 decimals, Q10): the written drawing is the same, unless a coordinate falls on a rounding boundary of the 5th decimal (none in boxes from 0 to 1000 for n = 3 … 12, review of EN-009).
 
 The default is `mid` on both axes: F02's centering. In the code, steps 3–5 are `boundingBox` and `fitInBox` (its share of the room: `alignmentFactor`, EN-009), and the whole fit is `regularPolygonContour` (US-005, US-009).
 
