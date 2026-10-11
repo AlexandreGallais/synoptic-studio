@@ -35,3 +35,5 @@ Run `npm run dev` and open `http://localhost:5173/?step=34`: the **Guided test**
 ## Your feedback
 
 Said by the Product Owner during `VAL-006` (2026-10-11), quoted by the agent: « Le `height`, `width`, la façon où tu fais les points, c'est parfait. Pour le rectangle, là, c'est vraiment parfait. » One remark: the radii should be attached to their points, « mettre les radis ailleurs, je trouve ça trop chelou » — a point with its radius is a corner, planned with F08.
+
+Also: « Je suis très content de voir à quel point ça fonctionne bien. »
