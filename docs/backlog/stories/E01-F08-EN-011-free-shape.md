@@ -26,5 +26,5 @@ None of its own: the free shape is shown by US-014's card.
 
 One task = one commit, referenced as `EN-011.Tn`.
 
-- [ ] T1 — `FreeShape`, validity, corners, bounding box, conversion from a polygon and a rectangle; tests (2 h)
+- [ ] T1 — `FreeShape` (ADR-0031, `REF-INKSCAPE-OBJECT-TO-PATH`, note 0007), validity, corners, bounding box, conversion from a polygon and a rectangle; tests (2 h)
 - [ ] T2 — Domain (`shapes.md`), re-exports (0.5 h)

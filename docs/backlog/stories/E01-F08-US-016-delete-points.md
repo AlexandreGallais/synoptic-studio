@@ -25,5 +25,5 @@ Written with the story.
 
 One task = one commit, referenced as `US-016.Tn`.
 
-- [ ] T1 — Removing vertices and their radii, pure function; tests (1 h)
+- [ ] T1 — Removing vertices and their radii (`REF-INKSCAPE-NODE-OPS`, note 0007), pure function; tests (1 h)
 - [ ] T2 — Playground button and key, messages; Product Owner test card (1 h)
