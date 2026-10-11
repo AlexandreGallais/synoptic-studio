@@ -2,6 +2,12 @@
 
 What each working session dealt with, in the agent's words: requests of the Product Owner (paraphrased), decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`). The full conversations stay in the local transcripts (see [agent configuration](../tooling/agent.md#searching-past-conversations)).
 
+## 2026-10-11 — F09 validated
+
+- `#review` The Product Owner tested F09 from the card: « Pour le rectangle, là, c'est vraiment parfait. » VAL-006 and F09 set `done` on `feat/val-006-validate-stretchable-free-shape`, with the guided test (steps 34 to 38) and the demo page.
+- `#domain` Remark routed to Q27 and F08: keep each point with its radius, as a corner, rather than two lists.
+- `#process` A domain-modelling expert agent, for RET-001 (improvement log).
+
 ## 2026-10-11 — F09 run stopped at VAL-006
 
 - `#run` Merged into `feature/f09-stretchable-free-shape`: SP-006 (#99), EN-012 (#100), CHK-006 (#101), US-017 (#102), AUD-006 (#103). Stop: the next story is VAL-006, with the Product Owner. F08's spike SP-005 (#97) is on its paused branch.
