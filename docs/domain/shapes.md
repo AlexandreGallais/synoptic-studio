@@ -24,7 +24,7 @@ Consequence: every shape is described by numbers. The drawing is **determined**,
 - No upper limit chosen in the model nor in the calculations: a size is any safe integer ≥ 0 (up to 2⁵³ − 1, the largest integer a double holds exactly); coordinates lose precision long before that bound.
 - Good practice: one user unit is one screen pixel. Draw a view at the size of its screen — even a wall of 8K screens stays far below 100 000 pixels — and let the SVG scale for a screen seen from far.
 - The interface caps a width, height or radius typed above 100 000 at 100 000 (US-008).
-- `EPSILON` stays absolute. Rounding errors are about 1e-16 × the size: 1e-11 at 100 000, 1e-10 at a million, so under `EPSILON` = 1e-9 up to a few million units. Beyond, tiny segments of rounding may remain, and near the largest safe integer an output coordinate can be off by 0.5 (AUD-002): a relative tolerance is not needed for real screens.
+- `EPSILON` stays absolute. Rounding errors are about 1e-16 × the size: 1e-11 at 100 000, 1e-10 at a million, so under `EPSILON` = 1e-9 up to a few million units. Beyond, tiny segments of rounding may remain, and near the largest safe integer an output coordinate can be off by a few units (0.5 measured in AUD-002, 2 for a square of side 2⁵³ − 1 in AUD-003): a relative tolerance is not needed for real screens.
 
 ### Precision (Q10)
 
@@ -107,7 +107,7 @@ Functional reference: Inkscape's Star/Polygon tool.
 ### Text
 
 - Exception to "everything is a path": native `<text>` (ADR-0002).
-- Parameters: content, font, integer size, anchor (start / middle / end), color.
+- Parameters: content, font, integer size, text anchor (start / middle / end, SVG's `text-anchor`; not the anchor of a shape in its box), color.
 - Reason: converting text to paths requires reading font files, hence a library or a heavy home-made parser.
 
 ### Layout box (Q21)
