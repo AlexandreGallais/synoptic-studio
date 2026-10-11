@@ -1,4 +1,5 @@
 export * from "./add";
+export * from "./degrees-in-turn";
 export * from "./dot";
 export * from "./epsilon";
 export * from "./midpoint";
@@ -8,5 +9,6 @@ export type * from "./point";
 export * from "./quarter-turn";
 export * from "./scale";
 export * from "./subtract";
+export * from "./turn-direction";
 export * from "./unit";
 export type * from "./vector";
