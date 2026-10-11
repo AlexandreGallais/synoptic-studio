@@ -26,5 +26,5 @@ None of its own: shown by US-017's card.
 
 One task = one commit, referenced as `EN-012.Tn`.
 
-- [ ] T1 — `FreeShape`, its validity, its drawn points and corners, the rectangle tool; tests and properties (2 h)
+- [ ] T1 — `FreeShape` (ADR-0032), its validity, its drawn points (`DERIV-free-shape-stretch`, its check table) and corners, the rectangle tool; tests and properties (2 h)
 - [ ] T2 — Domain (`shapes.md`), re-exports (0.5 h)
