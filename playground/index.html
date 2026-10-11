@@ -28,6 +28,25 @@
       #canvas path {
         fill: #4a7bd0;
       }
+      /* The box the shape is placed in, behind it (F07): a fill only, never a native stroke. */
+      #canvas path.box {
+        fill: #8883;
+      }
+      #anchor-field {
+        border: none;
+        margin: 0.5rem 0;
+        padding: 0;
+      }
+      #anchor-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1.5rem);
+        gap: 0.25rem;
+      }
+      #anchor-grid input {
+        width: 1.25rem;
+        height: 1.25rem;
+        margin: 0;
+      }
       #guide {
         padding: 0.5rem 0.75rem;
         margin-bottom: 1rem;
@@ -78,8 +97,10 @@
             <strong>requested</strong> radius is the number you type; it is kept. The
             <strong>effective</strong> radius is the one drawn: smaller when the shape is too small
             for the request. A <strong>polygon</strong> has 3 to 12 equal sides and a flat base; it
-            fills its width × height box without being stretched. Sizes are screen pixels: a value
-            above 100 000 becomes 100 000.
+            fills its width × height box without being stretched. The grey rectangle is that box.
+            The <strong>anchor</strong> says where the polygon sits in the room the box leaves: one
+            of nine places, from top left to bottom right; the center by default. Sizes are screen
+            pixels: a value above 100 000 becomes 100 000.
           </p>
         </details>
       </section>
@@ -94,6 +115,20 @@
       <label id="corners-field" hidden
         >Corners <input id="corners" type="number" min="3" max="12" step="1" value="6"
       /></label>
+      <fieldset id="anchor-field" hidden>
+        <legend>Anchor</legend>
+        <div id="anchor-grid">
+          <input type="radio" name="anchor" value="min min" aria-label="Top left" />
+          <input type="radio" name="anchor" value="mid min" aria-label="Top center" />
+          <input type="radio" name="anchor" value="max min" aria-label="Top right" />
+          <input type="radio" name="anchor" value="min mid" aria-label="Center left" />
+          <input type="radio" name="anchor" value="mid mid" aria-label="Center" checked />
+          <input type="radio" name="anchor" value="max mid" aria-label="Center right" />
+          <input type="radio" name="anchor" value="min max" aria-label="Bottom left" />
+          <input type="radio" name="anchor" value="mid max" aria-label="Bottom center" />
+          <input type="radio" name="anchor" value="max max" aria-label="Bottom right" />
+        </div>
+      </fieldset>
       <label
         >Width <input id="width" type="number" min="0" max="100000" step="1" value="120"
       /></label>

@@ -12,10 +12,14 @@ import {
   roundedContour,
 } from "../src";
 
+import { createBoxElements } from "./create-box-elements";
 import { GUIDED_STEPS } from "./guided-steps";
+import { listenToAnchor } from "./listen-to-anchor";
+import { readAnchor } from "./read-anchor";
+import { writeAnchorValue } from "./write-anchor-value";
 
 import type { GuidedStep } from "./guided-step";
-import type { Anchor, Corner, Rectangle, RegularPolygon } from "../src";
+import type { Corner, Rectangle, RegularPolygon } from "../src";
 
 /** Distance from the canvas top-left corner to the shape origin, in user units (= CSS pixels). */
 const MARGIN = 10;
@@ -150,7 +154,7 @@ function readRectangleShape(document: Document): ShapeReading {
  * @see docs/backlog/stories/E01-F02-US-007-shape-selector-playground.md
  */
 function readPolygonShape(document: Document): ShapeReading {
-  const anchor: Anchor = { horizontal: "mid", vertical: "mid" };
+  const anchor = readAnchor(document);
   const model = { ...readRectangle(document), anchor, corners: readNumber(document, "corners") };
   const isValid = isValidRegularPolygon(model);
 
@@ -257,7 +261,7 @@ function showShape(document: Document, reading: ShapeReading): void {
   const viewBox = { ...readCanvasSize(document), x: -MARGIN, y: -MARGIN };
   const svg = createSvgElement(document, viewBox);
 
-  svg.append(createPathElement(document, pathData));
+  svg.append(...createBoxElements(document, reading.model), createPathElement(document, pathData));
   selectElement(document, "canvas").replaceChildren(svg);
   writeText(document, "model", JSON.stringify(reading.model, undefined, JSON_INDENT));
   writeText(document, "contour", JSON.stringify(contour, undefined, JSON_INDENT));
@@ -281,6 +285,7 @@ function updatePlayground(document: Document): void {
   const reading = isPolygon ? readPolygonShape(document) : readRectangleShape(document);
 
   selectElement(document, "corners-field").hidden = !isPolygon;
+  selectElement(document, "anchor-field").hidden = !isPolygon;
   setValidity(document, reading);
 
   if (reading.isValid) {
@@ -334,6 +339,7 @@ function writeShapeValue(document: Document, shape: string): void {
  */
 function writeStepValues(document: Document, step: GuidedStep): void {
   writeShapeValue(document, step.values.shape);
+  writeAnchorValue(document, step.values.anchor);
   writeInputValue(document, "corners", step.values.corners);
   writeInputValue(document, "width", step.values.width);
   writeInputValue(document, "height", step.values.height);
@@ -397,6 +403,10 @@ export function mountPlayground(document: Document): void {
   }
 
   selectElement(document, "shape").addEventListener("change", () => {
+    updatePlayground(document);
+  });
+
+  listenToAnchor(document, () => {
     updatePlayground(document);
   });
 
