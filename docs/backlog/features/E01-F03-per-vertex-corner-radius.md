@@ -2,7 +2,7 @@
 id: F03
 epic: E01
 title: Per-vertex corner radius
-status: draft
+status: in-progress
 ---
 
 # E01 · F03 — Per-vertex corner radius
@@ -36,15 +36,25 @@ Refinement started on 2026-10-11 (started with `/run`).
 
 ## Stories
 
-In delivery order, proposed (2026-10-11), to be set `ready` by the Product Owner.
+In delivery order.
 
-| ID      | Type       | Title                                         |
-| ------- | ---------- | --------------------------------------------- |
-| SP-004  | Spike      | Research for F03                              |
-| EN-010  | Enabler    | One requested radius per vertex in the model  |
-| US-011  | User story | Radius field for every corner, Mixed          |
-| CHK-004 | Checkpoint | Checkpoint in the middle of F03               |
-| US-012  | User story | Points mode: handles, first and second marked |
-| US-013  | User story | List of points, selection, radius per vertex  |
-| AUD-004 | Audit      | Audit F03                                     |
-| VAL-004 | Validation | Validate F03                                  |
+| ID                                                                  | Type       | Title                                         | Status |
+| ------------------------------------------------------------------- | ---------- | --------------------------------------------- | ------ |
+| [SP-004](../stories/E01-F03-SP-004-research-f03.md)                 | Spike      | Research for F03                              | ready  |
+| [EN-010](../stories/E01-F03-EN-010-radius-per-vertex.md)            | Enabler    | One requested radius per vertex in the model  | ready  |
+| [US-011](../stories/E01-F03-US-011-radius-field-mixed.md)           | User story | Radius field for every corner, Mixed          | ready  |
+| [CHK-004](../stories/E01-F03-CHK-004-checkpoint-f03.md)             | Checkpoint | Checkpoint in the middle of F03               | ready  |
+| [US-012](../stories/E01-F03-US-012-points-mode.md)                  | User story | Points mode: handles, first and second marked | ready  |
+| [US-013](../stories/E01-F03-US-013-points-list-selection.md)        | User story | List of points, selection, radius per vertex  | ready  |
+| [AUD-004](../stories/E01-F03-AUD-004-audit-f03.md)                  | Audit      | Audit F03: per-vertex corner radius           | ready  |
+| [VAL-004](../stories/E01-F03-VAL-004-validate-radius-per-vertex.md) | Validation | Validate F03 on the reference cases           | ready  |
+
+## Feature plan
+
+| Acceptance criterion                          | Realized by    | Verified by                       |
+| --------------------------------------------- | -------------- | --------------------------------- |
+| 1 — a requested radius per vertex, clamped    | SP-004, EN-010 | `[F03.AC1]` tests, VAL-004        |
+| 2 — radius field for every vertex, Mixed      | US-011         | `[F03.AC2]` tests, card, VAL-004  |
+| 3 — radii kept by vertex number               | US-011         | `[F03.AC3]` tests, VAL-004        |
+| 4 — tool bar, handles, first and second, list | US-012, US-013 | `[F03.AC4]` tests, cards, VAL-004 |
+| 5 — selection, radius on the selection        | US-013         | `[F03.AC5]` tests, card, VAL-004  |

@@ -2,6 +2,12 @@
 
 What each working session dealt with, in the agent's words: requests of the Product Owner (paraphrased), decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`). The full conversations stay in the local transcripts (see [agent configuration](../tooling/agent.md#searching-past-conversations)).
 
+## 2026-10-11 — F03 refined, autonomous run authorized
+
+- `#run` Scope: F03 (per-vertex corner radius), from SP-004 up to VAL-004. The Product Owner started it with `/run` after the proposed stories: « Fais ton run jusqu'à la fin et puis voilà, merci. »
+- `#backlog` F03 split: node editing is F08. F03 `in-progress`, its eight stories `ready`.
+- `#process` To review at the end of each epic, at the Product Owner's request: versions, branches, and the small releases made by documentation pushes to `main` (improvement log).
+
 ## 2026-10-11 — F07 released, feedback log, F03 next
 
 - `#release` F07 merged into `main` by the Product Owner (#73), released as v0.9.0; branches deleted, only `main` left.
