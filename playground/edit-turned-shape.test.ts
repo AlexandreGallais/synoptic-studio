@@ -118,4 +118,20 @@ describe("editing a turned shape (US-019)", () => {
     expect(text("path-data")).toBe(before);
     expect(document.querySelector<HTMLInputElement>("#angle")?.value).toBe("30");
   });
+
+  it("[F04.AC4] keeps the turned top-left in place when a width above 100 000 is capped", () => {
+    type("width", "150000");
+
+    // Capped at 100 000 (Q20) before the shape is placed: point 1 still at (100, −20).
+    expect(text("path-data")).toMatch(/^M100 -20 /u);
+  });
+
+  it("[F04.AC4] places nothing after a refused shape: turned back straight, the top-left is fixed", () => {
+    type("angle", "");
+    type("width", "200");
+    type("angle", "0");
+
+    // The width typed while the shape was refused moved nothing: a 200 × 80 rectangle at (0, 0).
+    expect(text("straight-box")).toBe("Straight box: x 0, y 0, width 200, height 80");
+  });
 });
