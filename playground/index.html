@@ -32,6 +32,16 @@
       #canvas path.box {
         fill: #8883;
       }
+      /* Handles of the vertices in Points mode: vertex 1 red, vertex 2 green (F03). */
+      #canvas path.handle {
+        fill: #333;
+      }
+      #canvas path.handle.second {
+        fill: #2e9e5b;
+      }
+      #canvas path.handle.first {
+        fill: #d04a4a;
+      }
       #anchor-field {
         border: none;
         margin: 0.5rem 0;
@@ -57,6 +67,20 @@
         flex: 1;
         min-height: 3rem;
         font-size: 1.1rem;
+      }
+      /* Two large mode buttons, the pressed one highlighted (F03). */
+      #tools {
+        display: flex;
+        gap: 0.5rem;
+      }
+      #tools button {
+        flex: 1;
+        min-height: 3rem;
+        font-size: 1.1rem;
+      }
+      #tools button[aria-pressed="true"] {
+        color: #fff;
+        background: #4a7bd0;
       }
       #guide {
         padding: 0.5rem 0.75rem;
@@ -118,6 +142,10 @@
           </p>
         </details>
       </section>
+      <p id="tools" role="group" aria-label="Mode">
+        <button id="mode-shape" type="button" aria-pressed="true">Shape</button>
+        <button id="mode-points" type="button" aria-pressed="false">Points</button>
+      </p>
       <h1>Shape</h1>
       <label
         >Shape
