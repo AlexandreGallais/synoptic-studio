@@ -14,7 +14,7 @@ import {
 import { createBoxElements } from "./create-box-elements";
 import { selectElement } from "./select-element";
 import { showPoints } from "./show-points";
-import { writeStraightBox } from "./write-straight-box";
+import { writeShapeBoxes } from "./write-shape-boxes";
 import { writeText } from "./write-text";
 
 import type { ShapeReading } from "./shape-reading";
@@ -100,5 +100,5 @@ export function showShape(document: Document, reading: ShapeReading): void {
   writeText(document, "pieces", JSON.stringify(pieces, undefined, JSON_INDENT));
   writeEffectiveRadius(document, reading);
   writeText(document, "path-data", pathData);
-  writeStraightBox(document, box);
+  writeShapeBoxes(document, box, reading.model);
 }
