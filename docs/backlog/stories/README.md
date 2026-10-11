@@ -26,5 +26,12 @@
 | [AUD-002](./E01-F02-AUD-002-audit-f02.md)                   | F02     | Audit F02: regular polygon with corner radius    | done   |
 | [US-008](./E01-F02-US-008-cap-playground-sizes.md)          | F02     | Cap the sizes typed in the playground at 100 000 | done   |
 | [VAL-002](./E01-F02-VAL-002-validate-polygon.md)            | F02     | Validate F02 on the reference cases              | done   |
+| [SP-003](./E01-F07-SP-003-research-f07.md)                  | F07     | Research for F07                                 | ready  |
+| [EN-009](./E01-F07-EN-009-align-in-box.md)                  | F07     | Align a fitted shape in its box                  | ready  |
+| [US-009](./E01-F07-US-009-anchored-polygon.md)              | F07     | Polygon anchored in its box                      | ready  |
+| [CHK-003](./E01-F07-CHK-003-checkpoint-f07.md)              | F07     | Checkpoint in the middle of F07                  | ready  |
+| [US-010](./E01-F07-US-010-anchor-picker-playground.md)      | F07     | Choose the anchor in the playground              | ready  |
+| [AUD-003](./E01-F07-AUD-003-audit-f07.md)                   | F07     | Audit F07: polygon aligned in its box            | ready  |
+| [VAL-003](./E01-F07-VAL-003-validate-anchor.md)             | F07     | Validate F07 on the reference cases              | ready  |
 | [REV-001](./E01-REV-001-review-e01.md)                      | E01     | Review E01 with the Product Owner                | draft  |
 | [RET-001](./E01-RET-001-retrospective-e01.md)               | E01     | Retrospective of E01                             | draft  |

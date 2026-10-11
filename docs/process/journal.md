@@ -2,6 +2,11 @@
 
 What each working session dealt with, in the agent's words: requests of the Product Owner (paraphrased), decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`). The full conversations stay in the local transcripts (see [agent configuration](../tooling/agent.md#searching-past-conversations)).
 
+## 2026-10-11 — F07 refined, autonomous run authorized
+
+- `#run` The Product Owner typed `/run` with no scope; the order guard gave F07 (next in E01). Refinement: five criteria, option « toucher dans tous les cas » left out (« le but, c'est que ça touche toute la box en radius 0, et puis, si radius 10, ça touche plus, pas grave »). Scope of the run: SP-003 to AUD-003, stop at VAL-003.
+- `#backlog` F07 `in-progress`, seven stories `ready`; rotation-after rule recorded in F04.
+
 ## 2026-10-10 — Polygon anchor (F07), shape tree and layout box (E13)
 
 - `#backlog` Product Owner's idea after F02: choose where a polygon sits in its box. Draft feature F07, right after F02 in E01: anchor on a 3 × 3 grid, default center (F02 unchanged), stored as an intention, placing the sharp-cornered polygon, rotation after; the "always touch" option is left to the spike.
