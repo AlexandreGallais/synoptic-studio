@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.1](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.12.0...v0.12.1) (2026-10-11)
+
+
+### Documentation
+
+* **docs:** journal of the F08 merge and the F04 refinement; a critique logged ([4e969fa](https://github.com/AlexandreGallais/synoptic-studio/commit/4e969fad8e912d7736053726733a2552527f36df))
+
 ## [0.12.0](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.11.3...v0.12.0) (2026-10-11)
 
 
