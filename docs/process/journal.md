@@ -2,6 +2,13 @@
 
 What each working session dealt with, in the agent's words: requests of the Product Owner (paraphrased), decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`). The full conversations stay in the local transcripts (see [agent configuration](../tooling/agent.md#searching-past-conversations)).
 
+## 2026-10-11 — F08 merged, F04 refinement
+
+- `#review` F08 merged by the Product Owner (#118), released in 0.12.0; the validation branch deleted, only `main` left.
+- `#run` `/run` without a scope: no feature in progress, the next in E01's order is F04 (free rotation), so its refinement interview first, on `feature/f04-free-rotation`.
+- `#domain` Decided: a shape turns about the center of its box by an integer angle, clockwise, kept from 0 to 359; width and height stay those before turning; points keep their numbers; every shape gets a position, the x and y of its straight box (« la vraie get bbox »), the turned box drawn as the selection.
+- `#process` Critique: point numbering asked again although settled at F08 (« on en a déjà parlé, c'est dingue »); the rule is now in `shapes.md` §1.
+
 ## 2026-10-11 — F08 validated
 
 - `#review` The Product Owner tested F08 in the playground: « Putain, c'est génial, ça marche de fou. » VAL-005 and F08 set `done` on `feat/val-005-validate-node-editing`, with the guided test (steps 39 to 46) and the demo page.
