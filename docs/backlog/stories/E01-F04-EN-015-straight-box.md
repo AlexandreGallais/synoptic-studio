@@ -25,5 +25,5 @@ None of its own: shown by US-018's card.
 
 One task = one commit, referenced as `EN-015.Tn`. `@see` `DERIV-arc-bounding-box`, `REF-SVG2-COORDS`.
 
-- [ ] T1 — Extreme points of an arc; straight box of a contour of segments and arcs; tests and properties (2 h)
-- [ ] T2 — The view fitted to the straight box; domain, glossary (0.5 h)
+- [x] T1 — Extreme points of an arc; straight box of a contour of segments and arcs; tests and properties (2 h)
+- [x] T2 — The view fitted to the straight box; domain, glossary (0.5 h)
