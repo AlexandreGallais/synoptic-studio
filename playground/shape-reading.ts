@@ -8,6 +8,8 @@ export type ShapeReading = {
   readonly isValid: boolean;
   /** Message shown when it cannot. */
   readonly message: string;
-  /** Model of the shape: integers only. */
+  /** Requested radius of each corner, in contour order. */
+  readonly radii: readonly number[];
+  /** Model of the shape. */
   readonly model: FreeShape | RegularPolygon;
 };

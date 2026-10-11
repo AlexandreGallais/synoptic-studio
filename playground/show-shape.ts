@@ -50,7 +50,7 @@ function readCanvasSize(document: Document): { readonly height: number; readonly
  * @see docs/backlog/stories/E01-F01-US-003-round-rectangle-corners.md
  */
 function writeEffectiveRadius(document: Document, reading: ShapeReading): void {
-  const radius = commonRadius(reading.model.radii);
+  const radius = commonRadius(reading.radii);
 
   if (radius === undefined) {
     writeText(document, "effective", MIXED_EFFECTIVE);

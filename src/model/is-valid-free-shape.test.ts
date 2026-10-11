@@ -1,9 +1,13 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
+import { cornersWithRadii } from "./corners-with-radii";
 import { isValidFreeShape } from "./is-valid-free-shape";
 import { isValidRectangle } from "./is-valid-rectangle";
 import { rectangleAsFreeShape } from "./rectangle-as-free-shape";
+
+import type { FreeShape } from "./free-shape";
+import type { Point } from "../math";
 
 /** A triangle stored in a 2 × 2 box, drawn 10 × 4. */
 const TRIANGLE = {
@@ -17,6 +21,33 @@ const TRIANGLE = {
   width: 10,
 };
 
+/** Points and radii side by side, as F09 stored them. */
+type SideBySide = {
+  /** Height drawn. */
+  readonly height: number;
+  /** Points as stored. */
+  readonly points: readonly Point[];
+  /** Radius of each point. */
+  readonly radii: readonly number[];
+  /** Width drawn. */
+  readonly width: number;
+};
+
+/**
+ * Free shape from its points and radii side by side, as the tests write them (ADR-0033 keeps
+ * each radius with its point).
+ *
+ * @param shape - points, radii, width and height
+ * @returns the free shape of corners
+ */
+function shapeOf(shape: SideBySide): FreeShape {
+  return {
+    corners: cornersWithRadii(shape.points, shape.radii),
+    height: shape.height,
+    width: shape.width,
+  };
+}
+
 describe("isValidFreeShape", () => {
   it("[F09.AC1] accepts the free shape of the rectangle tool, size 0 included (Q15)", () => {
     expect(
@@ -27,46 +58,60 @@ describe("isValidFreeShape", () => {
       isValidFreeShape(rectangleAsFreeShape({ height: 0, radii: [0, 0, 0, 0], width: 0 })),
     ).toBe(true);
 
-    expect(isValidFreeShape(TRIANGLE)).toBe(true);
+    expect(isValidFreeShape(shapeOf(TRIANGLE))).toBe(true);
   });
 
-  it("refuses a negative or fractional size, and radii not one per point (Q15, ADR-0029)", () => {
-    expect(isValidFreeShape({ ...TRIANGLE, width: -1 })).toBe(false);
-    expect(isValidFreeShape({ ...TRIANGLE, height: 2.5 })).toBe(false);
-    expect(isValidFreeShape({ ...TRIANGLE, radii: [0, 0] })).toBe(false);
+  it("[F08.AC1] accepts fractional sizes and points, as a converted polygon leaves them (Q27)", () => {
+    expect(isValidFreeShape(shapeOf({ ...TRIANGLE, height: 86.60254 }))).toBe(true);
+
+    const halfPoint = [{ x: 0.5, y: 0 }, ...TRIANGLE.points.slice(1)];
+
+    expect(isValidFreeShape(shapeOf({ ...TRIANGLE, points: halfPoint }))).toBe(true);
   });
 
-  it("refuses fewer than 3 points, fractional points, and points on one line (ADR-0032)", () => {
-    expect(
-      isValidFreeShape({ ...TRIANGLE, points: TRIANGLE.points.slice(0, 2), radii: [0, 0] }),
-    ).toBe(false);
+  it("refuses a negative or infinite size, a radius not an integer ≥ 0 (Q15, ADR-0029)", () => {
+    expect(isValidFreeShape(shapeOf({ ...TRIANGLE, width: -1 }))).toBe(false);
+    expect(isValidFreeShape(shapeOf({ ...TRIANGLE, height: Infinity }))).toBe(false);
+    expect(isValidFreeShape(shapeOf({ ...TRIANGLE, radii: [0, -1, 0] }))).toBe(false);
+    expect(isValidFreeShape(shapeOf({ ...TRIANGLE, radii: [0, 2.5, 0] }))).toBe(false);
+  });
 
-    expect(
-      isValidFreeShape({ ...TRIANGLE, points: [{ x: 0.5, y: 0 }, ...TRIANGLE.points.slice(1)] }),
-    ).toBe(false);
+  it("refuses fewer than 3 points, a point not finite, and points on one line (ADR-0032)", () => {
+    const twoPoints = TRIANGLE.points.slice(0, 2);
+    const notFinite = [{ x: NaN, y: 0 }, ...TRIANGLE.points.slice(1)];
+
+    expect(isValidFreeShape(shapeOf({ ...TRIANGLE, points: twoPoints, radii: [0, 0] }))).toBe(
+      false,
+    );
+
+    expect(isValidFreeShape(shapeOf({ ...TRIANGLE, points: notFinite }))).toBe(false);
 
     // All on the vertical line x = 0: no width can be drawn.
     expect(
-      isValidFreeShape({
-        ...TRIANGLE,
-        points: [
-          { x: 0, y: 0 },
-          { x: 0, y: 1 },
-          { x: 0, y: 2 },
-        ],
-      }),
+      isValidFreeShape(
+        shapeOf({
+          ...TRIANGLE,
+          points: [
+            { x: 0, y: 0 },
+            { x: 0, y: 1 },
+            { x: 0, y: 2 },
+          ],
+        }),
+      ),
     ).toBe(false);
 
     // All on the horizontal line y = 0: no height can be drawn.
     expect(
-      isValidFreeShape({
-        ...TRIANGLE,
-        points: [
-          { x: 0, y: 0 },
-          { x: 1, y: 0 },
-          { x: 2, y: 0 },
-        ],
-      }),
+      isValidFreeShape(
+        shapeOf({
+          ...TRIANGLE,
+          points: [
+            { x: 0, y: 0 },
+            { x: 1, y: 0 },
+            { x: 2, y: 0 },
+          ],
+        }),
+      ),
     ).toBe(false);
   });
 
