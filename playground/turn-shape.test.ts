@@ -249,4 +249,26 @@ describe("turning and moving a shape (US-018)", () => {
 
     expect(document.querySelector("#canvas svg")?.getAttribute("viewBox")).toMatch(/^-10 -10 /u);
   });
+
+  it("[F04.AC5] opens the guided test of F04 at step 47, each step starting straight", () => {
+    globalThis.history.replaceState(undefined, "", "/?step=47");
+
+    const parser = new DOMParser();
+    const parsed = parser.parseFromString(page, "text/html");
+
+    parsed.querySelector("script")?.remove();
+    document.body.replaceChildren(...parsed.body.childNodes);
+    mountPlayground(document);
+
+    expect(text("guide-title")).toBe("F04 · Turn by 90°");
+
+    type("angle", "90");
+
+    expect(text("straight-box")).toBe("Straight box: x 20, y -20, width 80, height 120");
+
+    click("guide-next");
+
+    expect(angleShown()).toBe("0");
+    expect(text("guide-title")).toBe("F04 · Tilt by 45°");
+  });
 });
