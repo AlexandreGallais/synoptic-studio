@@ -36,4 +36,4 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0028](./0028-autonomous-runs.md)                          | Feature branches and autonomous runs: stories merge into their feature, the Product Owner merges the feature | Accepted               |
 | [0029](./0029-one-radius-per-vertex.md)                    | One requested corner radius per vertex in the model                                                          | Accepted               |
 | [0030](./0030-free-v1-then-pro-edition.md)                 | A finished free V1, then new features in a paid edition                                                      | Accepted               |
-| [0032](./0032-every-shape-is-a-free-shape.md)              | The rectangle is a free shape, stretched by its width and height                                             | Accepted               |
+| [0032](./0032-rectangle-is-a-free-shape.md)                | The rectangle is a free shape, stretched by its width and height                                             | Accepted               |

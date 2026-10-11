@@ -15,7 +15,7 @@ As a symbol designer, I want the rectangle to be a free shape that I resize by i
 
 - Given the playground on the rectangle, when width, height and radius are typed, then the drawing is that of F01 and F03 (F09.AC4).
 - Given the rectangle, when its width is typed 0 then 100, then it comes back the same (F09.AC3).
-- Given the rectangle, when the model is shown, then it is a free shape: its points in its box, its width and height, its radii (F09.AC4).
+- Given the rectangle, when the model is shown, then it is a free shape: its stored points, its width and height, its radii (F09.AC4); the list of points shows the drawn points.
 - Given Points mode on the rectangle, when points are selected and rounded, then it works as in F03 (F09.AC4).
 
 ## Product Owner test
