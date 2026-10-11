@@ -37,10 +37,14 @@ const INVALID_POLYGON =
  * @see docs/backlog/stories/E01-F01-US-003-round-rectangle-corners.md
  */
 function readRectangle(document: Document): Rectangle {
+  // Angle and position are typed from US-018 on; until then the shape is straight at (0, 0).
   return {
+    angle: 0,
     height: readNumber(document, "height"),
     radii: updateKeptRadii(document, RECTANGLE_CORNER_COUNT),
     width: readNumber(document, "width"),
+    x: 0,
+    y: 0,
   };
 }
 
@@ -58,11 +62,14 @@ function readPolygon(document: Document): RegularPolygon {
 
   return {
     anchor: readAnchor(document),
+    angle: 0,
     corners,
     height: readNumber(document, "height"),
     // One radius per corner; none for a number of corners refused.
     radii: updateKeptRadii(document, isRegularPolygonCornerCount(corners) ? corners : 0),
     width: readNumber(document, "width"),
+    x: 0,
+    y: 0,
   };
 }
 

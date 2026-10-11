@@ -48,6 +48,7 @@ describe("rectangle as a free shape", () => {
     const model: unknown = JSON.parse(text("model"));
 
     expect(model).toEqual({
+      angle: 0,
       corners: [
         { point: { x: 0, y: 0 }, radius: 10 },
         { point: { x: 1, y: 0 }, radius: 10 },
@@ -56,6 +57,8 @@ describe("rectangle as a free shape", () => {
       ],
       height: 80,
       width: 120,
+      x: 0,
+      y: 0,
     });
   });
 

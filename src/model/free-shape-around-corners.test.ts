@@ -14,7 +14,7 @@ describe("freeShapeAroundCorners", () => {
   test.prop({ corners: fc.array(corner, { maxLength: 8, minLength: 3 }) })(
     "[F08.AC1] draws the corners where they are, bit for bit, at the size of their box",
     ({ corners }) => {
-      expect(freeShapeCorners(freeShapeAroundCorners(corners))).toEqual(corners);
+      expect(freeShapeCorners(freeShapeAroundCorners(corners, 0))).toEqual(corners);
     },
   );
 });
