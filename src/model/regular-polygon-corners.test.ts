@@ -45,7 +45,7 @@ describe("regularPolygonCorners (DERIV-regular-polygon-fit step 6)", () => {
       anchor: CENTER,
       corners: 6,
       height: 100,
-      radius: 1000,
+      radii: [1000, 1000, 1000, 1000, 1000, 1000],
       width: 100,
     });
     const pieces = roundedContour(corners);
@@ -68,7 +68,7 @@ describe("regularPolygonCorners (DERIV-regular-polygon-fit step 6)", () => {
       anchor: CENTER,
       corners: 3,
       height: 100,
-      radius: 1000,
+      radii: [1000, 1000, 1000],
       width: 100,
     });
     const inradius = 50 / Math.sqrt(3);
@@ -94,7 +94,7 @@ describe("regularPolygonCorners (DERIV-regular-polygon-fit step 6)", () => {
       anchor: CENTER,
       corners: 6,
       height: 100,
-      radius: 10,
+      radii: [10, 10, 10, 10, 10, 10],
       width: 100,
     });
 
@@ -106,7 +106,7 @@ describe("regularPolygonCorners (DERIV-regular-polygon-fit step 6)", () => {
       anchor: CENTER,
       corners: 6,
       height: 0,
-      radius: 10,
+      radii: [10, 10, 10, 10, 10, 10],
       width: 0,
     });
 
@@ -119,7 +119,7 @@ describe("regularPolygonCorners (DERIV-regular-polygon-fit step 6)", () => {
       anchor: CENTER,
       corners: 5,
       height: 100,
-      radius: 1000,
+      radii: [1000, 1000, 1000, 1000, 1000],
       width: 100,
     });
 
@@ -132,7 +132,13 @@ describe("regularPolygonCorners (anchored, F07)", () => {
     // A flat face keeps its straight part on the edge: the segment from (100, 10) to (100, 40).
     const anchor = { horizontal: "max", vertical: "mid" } as const;
     const pieces = roundedContour(
-      regularPolygonCorners({ anchor, corners: 4, height: 50, radius: 10, width: 100 }),
+      regularPolygonCorners({
+        anchor,
+        corners: 4,
+        height: 50,
+        radii: [10, 10, 10, 10],
+        width: 100,
+      }),
     );
     const right = pieces.filter((piece) => piece.kind === "segment" && piece.start.x > 99);
 
@@ -148,7 +154,7 @@ describe("regularPolygonCorners (anchored, F07)", () => {
     const anchor = { horizontal: "mid", vertical: "min" } as const;
     const arcs = arcsOf(
       roundedContour(
-        regularPolygonCorners({ anchor, corners: 3, height: 100, radius: 10, width: 100 }),
+        regularPolygonCorners({ anchor, corners: 3, height: 100, radii: [10, 10, 10], width: 100 }),
       ),
     );
     // The path starts where the apex's arc ends and closes with it (DERIV-fillet-arc step 7).
@@ -183,7 +189,7 @@ describe("regularPolygonCorners (properties)", () => {
         anchor: CENTER,
         corners,
         height,
-        radius: 100_000,
+        radii: Array.from({ length: corners }, () => 100_000),
         width,
       });
       const arcs = arcsOf(roundedContour(polygon));
@@ -212,7 +218,7 @@ describe("regularPolygonCorners (properties)", () => {
       anchor: CENTER,
       corners,
       height: size,
-      radius,
+      radii: Array.from({ length: corners }, () => radius),
       width: size,
     });
 
@@ -225,7 +231,13 @@ describe("regularPolygonCorners (properties)", () => {
     width: fc.integer({ max: 1000, min: 1 }),
   })("gives every corner the same effective radius (AUD-002)", ({ corners, radius, width }) => {
     const radii = effectiveRadii(
-      regularPolygonCorners({ anchor: CENTER, corners, height: width, radius, width }),
+      regularPolygonCorners({
+        anchor: CENTER,
+        corners,
+        height: width,
+        radii: Array.from({ length: corners }, () => radius),
+        width,
+      }),
     );
 
     expect(Math.max(...radii) - Math.min(...radii)).toBeLessThan(1e-9 * Math.max(1, radius));
@@ -245,7 +257,13 @@ describe("regularPolygonCorners (anchored, properties)", () => {
       // incircle still touches it at its middle (DERIV-regular-polygon-fit step 6).
       const anchor = { horizontal: "mid", vertical: "max" } as const;
       const pieces = roundedContour(
-        regularPolygonCorners({ anchor, corners, height, radius, width }),
+        regularPolygonCorners({
+          anchor,
+          corners,
+          height,
+          radii: Array.from({ length: corners }, () => radius),
+          width,
+        }),
       );
       const lowest = Math.max(...pieces.flatMap((piece) => [piece.start.y, piece.end.y]));
 
