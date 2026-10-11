@@ -20,5 +20,16 @@ Pause between the free shape in the model and the rectangle in the playground: b
 
 One task = one commit, referenced as `CHK-006.Tn`.
 
-- [ ] T1 — Consistency of code, docs and agent configuration; fixes (0.5 h)
-- [ ] T2 — Light evolvability check; improvement log (0.5 h)
+- [x] T1 — Consistency of code, docs and agent configuration; fixes (0.5 h)
+- [x] T2 — Light evolvability check; improvement log (0.5 h)
+
+## Light evolvability check (2026-10-11)
+
+| Question            | Answer                                                                                                                                                                                                                     |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Size                | 82 modules in `src/` (model 34, geometry 27, math 11, io 6, render 4); 414 tests; `model` now holds shapes, radii and the selection of points: split it into subfolders when the free shape grows in F08 (improvement log) |
+| Tools               | StrykerJS still blocked; mutations by hand; `knip` left to the E01 retrospective                                                                                                                                           |
+| Fitness functions   | the rectangle tests now run through the free shape: a regression net for the model change of ADR-0032                                                                                                                      |
+| Patterns            | `stretchToSize` and `fitInBox` are two box-to-box maps on purpose (note 0008); a shared helper only if a third one comes                                                                                                   |
+| Agent configuration | two library pitfalls added (multiply first for exact edges; decisions on a paused branch)                                                                                                                                  |
+| Process             | a feature inserted mid-run (F09 before F08) after the Product Owner's decision; F08 paused with its spike merged on its own branch                                                                                         |
