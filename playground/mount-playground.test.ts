@@ -183,7 +183,7 @@ describe("playground", () => {
     expect(text("effective")).toBe("");
   });
 
-  it("[F02.AC1] walks the steps of the guided test (F01, F02, F07, F03 and F09), each showing what it tells to look at", () => {
+  it("[F02.AC1] walks the steps of the guided test (F01, F02, F07, F03, F09 and F08), each showing what it tells to look at", () => {
     // "Previous" on the first step stays there and types its values again.
     click("guide-previous");
 
@@ -232,6 +232,16 @@ describe("playground", () => {
       "Effective radius: 10 (as requested)",
       "Effective radius: 10 (as requested)",
       "Effective radius: 10 (as requested)",
+      // F08 (US-014, US-015 and US-016 cards): the sharp hexagon, then the rectangle rounded by 10;
+      // each step types its shape afresh, the clicks being the Product Owner's.
+      "Effective radius: 0 (as requested)",
+      "Effective radius: 0 (as requested)",
+      "Effective radius: 0 (as requested)",
+      "Effective radius: 10 (as requested)",
+      "Effective radius: 10 (as requested)",
+      "Effective radius: 10 (as requested)",
+      "Effective radius: 10 (as requested)",
+      "Effective radius: 0 (as requested)",
     ];
 
     for (const [index, effective] of expected.entries()) {
@@ -240,7 +250,13 @@ describe("playground", () => {
       click("guide-next");
     }
 
-    // Past the last step, the guide stays on it: the 120 × 80 rectangle, a free shape (F09).
+    // Past the last step, the guide stays on it: the hexagon of F08.
+    expect(text("guide-number")).toBe("46");
+    expect(text("effective")).toBe("Effective radius: 0 (as requested)");
+
+    // The last step of F09: the 120 × 80 rectangle, a free shape.
+    clickTimes("guide-previous", 8);
+
     expect(text("guide-number")).toBe("38");
 
     expect(text("path-data")).toBe(
