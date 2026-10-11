@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.8](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.9.7...v0.9.8) (2026-10-11)
+
+
+### Documentation
+
+* **backlog:** more topics for the E01 retrospective ([1a9cbd8](https://github.com/AlexandreGallais/synoptic-studio/commit/1a9cbd8fc30a65ea008476d6efe912e6a7a41fe6))
+
 ## [0.9.7](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.9.6...v0.9.7) (2026-10-11)
 
 
