@@ -2,6 +2,11 @@
 
 What each working session dealt with, in the agent's words: requests of the Product Owner (paraphrased), decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`). The full conversations stay in the local transcripts (see [agent configuration](../tooling/agent.md#searching-past-conversations)).
 
+## 2026-10-11 — F08 resumed, autonomous run authorized
+
+- `#review` F09 merged by the Product Owner (#106). Q27 settled: fractions until edited, the x and y typed are the SVG's, each point kept with its radius (a corner); Q18 amended for the regular polygon, numbered from the right end of its base (the Product Owner's idea).
+- `#run` Scope: F08 from EN-013 up to VAL-005, started with `/run` after the proposed stories. Its refinement and stories are on `feature/f08-node-editing` (with SP-005), merged into `main` with the feature.
+
 ## 2026-10-11 — F09 validated
 
 - `#review` The Product Owner tested F09 from the card: « Pour le rectangle, là, c'est vraiment parfait. » VAL-006 and F09 set `done` on `feat/val-006-validate-stretchable-free-shape`, with the guided test (steps 34 to 38) and the demo page.

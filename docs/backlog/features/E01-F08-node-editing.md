@@ -2,7 +2,7 @@
 id: F08
 epic: E01
 title: Node editing
-status: draft
+status: in-progress
 ---
 
 # E01 · F08 — Node editing
