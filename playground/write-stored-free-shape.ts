@@ -1,3 +1,5 @@
+import { freeShapeRadii, isValidFreeShape } from "../src";
+
 import { selectElement } from "./select-element";
 import { writeInputValue } from "./write-input-value";
 
@@ -22,8 +24,9 @@ function selectFreeShape(document: Document): void {
 }
 
 /**
- * Keeps a free shape on the page (ADR-0033): stored on the shape selector, which shows "Free
- * shape", its width and height written in their inputs and its radii kept on the radius input.
+ * Keeps a valid free shape on the page (ADR-0033), leaving the one kept when it is not: stored
+ * on the shape selector, which shows "Free shape", its width and height written in their inputs
+ * and its radii kept on the radius input.
  *
  * @kind procedure
  * @param document - page document
@@ -31,6 +34,11 @@ function selectFreeShape(document: Document): void {
  * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
  */
 export function writeStoredFreeShape(document: Document, shape: FreeShape): void {
+  // A move that leaves no width or no height is no shape: the one kept stays (AUD-005).
+  if (!isValidFreeShape(shape)) {
+    return;
+  }
+
   const select = selectElement(document, "shape");
 
   select.dataset["freeShape"] = JSON.stringify(shape);
@@ -38,7 +46,5 @@ export function writeStoredFreeShape(document: Document, shape: FreeShape): void
   writeInputValue(document, "width", shape.width);
   writeInputValue(document, "height", shape.height);
 
-  selectElement(document, "radius").dataset["radii"] = shape.corners
-    .map((corner) => corner.radius)
-    .join(" ");
+  selectElement(document, "radius").dataset["radii"] = freeShapeRadii(shape).join(" ");
 }

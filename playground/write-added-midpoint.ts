@@ -17,9 +17,11 @@ import { writeStoredFreeShape } from "./write-stored-free-shape";
  */
 export function writeAddedMidpoint(document: Document): void {
   const shape = readEditedFreeShape(document);
+  const { corners, model } = readShape(document);
+  // No point is added to a shape of width or height 0: it would lie on its one line (AUD-005).
   const edge = edgeOfSelection(
     readSelection(document).selected,
-    readShape(document).corners.length,
+    corners.length * Math.sign(model.width * model.height),
   );
 
   if (shape === undefined || edge === undefined) {

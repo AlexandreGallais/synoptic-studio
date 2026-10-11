@@ -25,7 +25,10 @@ export function showPointButtons(
 ): void {
   const { model } = reading;
   const isPolygon = "anchor" in model;
-  const edge = edgeOfSelection(selection.selected, reading.corners.length);
+  const edge = edgeOfSelection(
+    selection.selected,
+    reading.corners.length * Math.sign(model.width * model.height),
+  );
   const convert = selectElement(document, "convert");
 
   convert.hidden = !isPolygon;
