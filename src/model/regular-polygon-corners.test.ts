@@ -288,23 +288,51 @@ describe("regularPolygonCorners (one radius per vertex)", () => {
     );
   });
 
-  it("[F03.AC1] rounds only vertex 1 of a square with radii 50, 0, 0, 0", () => {
+  it("[F03.AC1] rounds only vertex 1 of a square with radii 20, 0, 0, 0", () => {
     // A square with a flat base fills 100 × 100; vertex 1 is its top-left corner (Q11): one
-    // quarter circle of radius 50 centered at (50, 50), as for the rectangle.
+    // quarter circle of radius 20 centered at (20, 20) — at (20, 80) it would be vertex 4.
     const pieces = roundedContour(
       regularPolygonCorners({
         anchor: CENTER,
         corners: 4,
         height: 100,
-        radii: [50, 0, 0, 0],
+        radii: [20, 0, 0, 0],
         width: 100,
       }),
     );
     const [arc, ...others] = arcsOf(pieces);
 
     expect(others).toEqual([]);
-    expect(arc?.radius).toBe(50);
-    expect(arc?.center.x).toBeCloseTo(50, DECIMALS);
-    expect(arc?.center.y).toBeCloseTo(50, DECIMALS);
+    expect(arc?.radius).toBe(20);
+    expect(arc?.center.x).toBeCloseTo(20, DECIMALS);
+    expect(arc?.center.y).toBeCloseTo(20, DECIMALS);
   });
+});
+
+describe("regularPolygonCorners (one radius per vertex, properties)", () => {
+  test.prop({
+    height: fc.integer({ max: 1000, min: 1 }),
+    radii: fc.array(fc.nat({ max: 2000 }), { maxLength: 12, minLength: 12 }),
+    sides: fc.integer({ max: 12, min: 3 }),
+    width: fc.integer({ max: 1000, min: 1 }),
+  })(
+    "[F03.AC1] keeps the flat base on the bottom of the box whatever the radius of each corner",
+    ({ height, radii, sides, width }) => {
+      // The anchor places the sharp polygon; fillets only cut inwards, and the base's straight
+      // part, or the point where its two fillets meet, stays on it (DERIV-local-radius-clamp).
+      const anchor = { horizontal: "mid", vertical: "max" } as const;
+      const pieces = roundedContour(
+        regularPolygonCorners({
+          anchor,
+          corners: sides,
+          height,
+          radii: radii.slice(0, sides),
+          width,
+        }),
+      );
+      const lowest = Math.max(...pieces.flatMap((piece) => [piece.start.y, piece.end.y]));
+
+      expect(Math.abs(lowest - height)).toBeLessThan(EPSILON * Math.max(1, width, height));
+    },
+  );
 });
