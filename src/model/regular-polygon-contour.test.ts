@@ -474,3 +474,25 @@ describe("regularPolygonContour (numbered from its base, F08)", () => {
     },
   );
 });
+
+describe("regularPolygonContour (at a position, F04)", () => {
+  it("[F04.AC3] places the polygon's box at its position: the F07 contour moved by (10, 20)", () => {
+    // A triangle anchored at the bottom of 100 × 100 has its base at y = 100, from x = 0 to 100
+    // (the width is reached); at (10, 20) the base runs from (10, 120) to (110, 120).
+    const contour = regularPolygonContour({
+      anchor: { horizontal: "mid", vertical: "max" },
+      angle: 0,
+      corners: 3,
+      height: 100,
+      radii: [0, 0, 0],
+      width: 100,
+      x: 10,
+      y: 20,
+    });
+
+    expect(contour[0]?.x).toBeCloseTo(110, 12);
+    expect(contour[0]?.y).toBeCloseTo(120, 12);
+    expect(contour[1]?.x).toBeCloseTo(10, 12);
+    expect(contour[1]?.y).toBeCloseTo(120, 12);
+  });
+});

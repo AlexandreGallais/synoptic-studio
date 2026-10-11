@@ -1,4 +1,4 @@
-/** Parameters of the rectangle tool: integer width, height and corner radii, ≥ 0 (ADR-0003, Q15); it makes a free shape (ADR-0032). */
+/** Parameters of the rectangle tool, typed at creation: integer width, height and corner radii, ≥ 0 (ADR-0003, Q15), angle and position; it makes a free shape, which is what is edited afterwards (ADR-0032, ADR-0035). */
 export type Rectangle = {
   /** Angle in degrees, an integer from 0 to 359, clockwise on screen, about the center of its box (ADR-0035). */
   readonly angle: number;
