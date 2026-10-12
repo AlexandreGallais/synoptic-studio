@@ -21,5 +21,20 @@ Pause between the model of the round shape and its playground: bring documentati
 
 One task = one commit, referenced as `CHK-008.Tn`.
 
-- [ ] T1 — Consistency of code, docs and agent configuration; fixes (0.5 h)
-- [ ] T2 — Light evolvability check; improvement log; test cards listed (0.5 h)
+- [x] T1 — Consistency of code, docs and agent configuration; fixes (0.5 h)
+- [x] T2 — Light evolvability check; improvement log; test cards listed (0.5 h)
+
+## Light evolvability check (2026-10-12)
+
+| Question            | Answer                                                                                                                                                                  |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Size                | 109 modules in `src/` (model 54, geometry 30, math 15, io 6, render 4); 642 tests; `model` holds three kinds of shape now: its subfolders are overdue (improvement log) |
+| Tools               | StrykerJS still blocked; seven mutations of EN-016 caught by the review                                                                                                 |
+| Fitness functions   | `shapeKind` is the one place that tells shapes apart: the playground's `"anchor" in model` tests must go through it in US-020                                           |
+| Patterns            | the round shape reuses `rectangleCorners` and `rectangleAsFreeShape`: no new geometry                                                                                   |
+| Agent configuration | state line updated; nothing new                                                                                                                                         |
+| Process             | F10 started on the validation branch of F04 while its pull request waits for the Product Owner's merge: rebased on `main` afterwards                                    |
+
+## Test cards so far
+
+None yet: US-020 comes next.
