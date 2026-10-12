@@ -2,6 +2,10 @@
 
 What each working session dealt with, in the agent's words: requests of the Product Owner (paraphrased), decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`). The full conversations stay in the local transcripts (see [agent configuration](../tooling/agent.md#searching-past-conversations)).
 
+## 2026-10-12 — F10 run started
+
+- `#run` Scope: F10 from SP-008 up to VAL-008, on the Product Owner's word after F04's validation: « Si jamais t'as assez d'infos pour continuer la suite là avec le cercle, lance-toi sur ça aussi directement ». Stories written and set `ready` on that word; `feature/f10-round-shape` branched from F04's validation branch while its pull request (#133) waits for the merge, rebased on `main` afterwards.
+
 ## 2026-10-12 — F04 validated
 
 - `#review` The Product Owner tested F04, freely then with the guided test (steps 47 to 57): « OK, pour moi, tout a l'air bon. En tout cas, j'ai un peu tout testé. » The view of the playground stays put while a shape turns (their first try saw it slide). VAL-007 and F04 set `done` on `feat/val-007-validate-free-rotation`, with the demo page.
