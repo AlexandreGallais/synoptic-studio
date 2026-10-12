@@ -62,11 +62,11 @@ npm run metrics:session -- --markdown # the same as a Markdown table, for the ch
 npm run metrics:session -- --all      # the whole conversation
 ```
 
-It gives the duration (wall and active), the tokens by kind (written by the model, read from and written to the cache, new input), model requests, tool calls and failures, and the commits made meanwhile. A turn starts at the first prompt after the agent last ended its turn; messages sent while it works stay in the turn.
+It gives one row: the duration (wall and active), the tokens, the part the model wrote, the tool calls and failures, the commits (listed when there are eight or fewer). Each report is also saved as one line in `.git/metrics/turns.jsonl`; the **Turns** section of `npm run metrics` lists every turn, so that a retrospective compares them. A turn starts at the first prompt after the agent last ended its turn; messages sent while it works stay in the turn.
 
 ## At each retrospective
 
-`RET` reads `npm run metrics` and answers, with figures (retro skill):
+`RET` reads `npm run metrics` — commands, slowest calls, sessions, features, stories, tasks, **turns** and **sources** — and answers, with figures (retro skill):
 
 - which commands run most and which cost most time: is one worth a script, a cache or a check run less often?
 - which stories and tasks took longest: read their commits (`git show <hash>`) to see why;

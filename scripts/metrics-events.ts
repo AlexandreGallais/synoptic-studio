@@ -90,7 +90,7 @@ export function callSummary(input: unknown): string {
  * @param key - property name
  * @returns the property when it is a number, else 0
  */
-function count(value: unknown, key: string): number {
+export function count(value: unknown, key: string): number {
   const property = field(value, key);
 
   return typeof property === "number" ? property : 0;

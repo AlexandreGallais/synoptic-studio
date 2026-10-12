@@ -55,14 +55,18 @@ describe("session report", () => {
 
   it("lists the total of every kind of token", () => {
     // 4 + 200 + 3000 + 75 = 3279.
-    expect(reportRows(figures)[1]).toEqual(["Tokens, total", "3,279"]);
+    expect(reportRows(figures)[1]).toEqual(["Tokens", "3,279"]);
   });
 
   it("writes a Markdown table and the commits", () => {
     const report = markdownReport(figures);
 
-    expect(report).toContain("| Duration | 10 min 00 s (active 6 min 00 s) |");
-    expect(report).toContain("| Tool calls | 1 (1 failed) |");
+    expect(report.split("\n").slice(0, 3)).toEqual([
+      "| Duration | Tokens | Written | Tool calls | Commits |",
+      "| --- | --- | --- | --- | --- |",
+      "| 10 min 00 s (active 6 min 00 s) | 3,279 | 75 | 1 (1 failed) | 1 |",
+    ]);
+
     expect(report).toContain("- `abc1234 docs: x`");
   });
 

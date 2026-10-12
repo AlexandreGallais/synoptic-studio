@@ -19,6 +19,7 @@ import {
   statsTable,
 } from "./metrics-tables.ts";
 import { taskCommits, taskOf, unitOf, workStats } from "./metrics-work.ts";
+import { savedTurns, turnsTable } from "./turns.ts";
 
 import type { ModelRequest, ToolCall } from "./metrics-events.ts";
 import type { TimedCall } from "./metrics-tables.ts";
@@ -282,6 +283,8 @@ if (import.meta.main) {
     summary,
     ...commandSections(calls),
     ...workSections(moments),
+    "## Turns",
+    turnsTable(savedTurns()),
     "## Sources",
     usageReport(library, 0),
   ];
