@@ -3,7 +3,7 @@ id: EN-016
 epic: E01
 feature: F10
 title: The round shape in the model
-status: ready
+status: done
 points: 2
 ---
 
