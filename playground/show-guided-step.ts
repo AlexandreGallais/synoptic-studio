@@ -49,7 +49,7 @@ function writeStepValues(document: Document, step: GuidedStep): void {
   writeShapeValue(document, step.values.shape);
   writeAnchorValue(document, step.values.anchor);
   // The polygons of F02 to F08 are not stretched (F06).
-  writeStretchedValue(document, false);
+  writeStretchedValue(document, step.values.stretched === true);
   writeInputValue(document, "corners", step.values.corners);
   writeInputValue(document, "width", step.values.width);
   writeInputValue(document, "height", step.values.height);

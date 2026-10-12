@@ -186,7 +186,7 @@ describe("playground", () => {
     expect(text("effective")).toBe("");
   });
 
-  it("[F02.AC1] walks the steps of the guided test (F01, F02, F07, F03, F09, F08 and F04), each showing what it tells to look at", () => {
+  it("[F02.AC1] walks the steps of the guided test (F01, F02, F07, F03, F09, F08, F04 and F06), each showing what it tells to look at", () => {
     // "Previous" on the first step stays there and types its values again.
     click("guide-previous");
 
@@ -248,6 +248,11 @@ describe("playground", () => {
       // F04 (US-018 and US-019 cards): each step starts straight, sharp; the angles are typed by
       // the Product Owner.
       ...Array.from({ length: 11 }, () => "Effective radius: 0 (as requested)"),
+      // F06 (US-021 card): sharp polygons, but the pentagon rounded by 1000, its corners clamped
+      // differently.
+      ...Array.from({ length: 3 }, () => "Effective radius: 0 (as requested)"),
+      "Effective radius: mixed, shown for each point in Points mode.",
+      ...Array.from({ length: 5 }, () => "Effective radius: 0 (as requested)"),
     ];
 
     for (const [index, effective] of expected.entries()) {
@@ -256,13 +261,17 @@ describe("playground", () => {
       click("guide-next");
     }
 
-    // Past the last step, the guide stays on it: the triangle of F04, straight.
-    expect(text("guide-number")).toBe("57");
-    expect(text("effective")).toBe("Effective radius: 0 (as requested)");
+    // Past the last step, the guide stays on it: the stretched hexagon of F06, straight.
+    expect(text("guide-number")).toBe("66");
+
+    expect(text("path-data")).toBe(
+      "M77.42919 100 L22.57081 100 L0 50 L22.57081 0 L77.42919 0 L100 50 Z",
+    );
+
     expect(document.querySelector<HTMLInputElement>("#angle")?.value).toBe("0");
 
     // The last step of F09: the 120 × 80 rectangle, a free shape.
-    clickTimes("guide-previous", 19);
+    clickTimes("guide-previous", 28);
 
     expect(text("guide-number")).toBe("38");
 
