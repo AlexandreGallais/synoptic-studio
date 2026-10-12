@@ -20,7 +20,7 @@ status: in-progress
 | Non-functional requirements | 5 decimals in output, `EPSILON = 1e-9`, clockwise contours from the top-left vertex (a regular polygon: from the right end of its base, Q18) |
 | In scope                    | rectangle, regular polygon, corner radius and clamping, node editing, free integer rotation, polygon stretched to its box                    |
 | Out of scope                | round shape, ellipses (Q4) and Bézier curves (E14); text (E15); pen                                                                          |
-| Closure criteria            | the cases of `shapes.md` §2–3 render as specified in the playground                                                                          |
+| Closure criteria            | the cases of `shapes.md` §2 and of §3 Rectangle and Regular polygon render as specified in the playground (Product Owner, REV-001)           |
 
 ## Features
 
@@ -43,5 +43,5 @@ After its last feature is validated (ADR-0023).
 
 | Story                                                                               | Status |
 | ----------------------------------------------------------------------------------- | ------ |
-| [REV-001](../stories/E01-REV-001-review-e01.md) — Review E01 with the Product Owner | ready  |
+| [REV-001](../stories/E01-REV-001-review-e01.md) — Review E01 with the Product Owner | done   |
 | [RET-001](../stories/E01-RET-001-retrospective-e01.md) — Retrospective of E01       | draft  |
