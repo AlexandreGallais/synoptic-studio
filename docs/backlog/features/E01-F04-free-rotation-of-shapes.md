@@ -2,7 +2,7 @@
 id: F04
 epic: E01
 title: Free rotation of shapes
-status: in-progress
+status: done
 ---
 
 # E01 · F04 — Free rotation of shapes
@@ -60,7 +60,7 @@ In delivery order.
 | [CHK-007](../stories/E01-F04-CHK-007-checkpoint-f04.md)         | Checkpoint | Checkpoint in the middle of F04         | done   |
 | [US-019](../stories/E01-F04-US-019-edit-a-turned-shape.md)      | User story | Edit a turned shape                     | done   |
 | [AUD-007](../stories/E01-F04-AUD-007-audit-f04.md)              | Audit      | Audit F04: free rotation of shapes      | done   |
-| [VAL-007](../stories/E01-F04-VAL-007-validate-free-rotation.md) | Validation | Validate F04 on the reference cases     | ready  |
+| [VAL-007](../stories/E01-F04-VAL-007-validate-free-rotation.md) | Validation | Validate F04 on the reference cases     | done   |
 
 ## Feature plan
 
