@@ -96,6 +96,7 @@ describe("turnedCorners (DERIV-turned-shape step 4)", () => {
     // (50, 50), (x, 100) ↦ (50 − 50, 50 + (x − 50)) = (0, x): the base is on the left.
     const triangle = {
       anchor: { horizontal: "mid", vertical: "max" },
+      stretched: false,
       angle: 90,
       corners: 3,
       height: 100,
