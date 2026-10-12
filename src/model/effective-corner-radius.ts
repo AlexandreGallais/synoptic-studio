@@ -10,7 +10,9 @@ import type { Corner } from "../geometry";
  * Derived at every evaluation, never stored (Q8). The corners of a rectangle or of a regular
  * polygon are clamped alike; those of a stretched polygon (F06) or of a stretched free shape have
  * different angles and may be clamped differently: there is then no one effective radius, and
- * each is shown per vertex. Radii closer than `EPSILON` are the same. No corner gives `+∞`.
+ * each is shown per vertex. Radii closer than `EPSILON` are the same: the corners of a regular polygon, clamped alike in
+ * exact arithmetic, differ by at most about 1e-10 in doubles up to sizes and radii of 100 000
+ * (review of US-021), ten times below. No corner gives `+∞`.
  *
  * @kind domain
  * @param corners - corners of the shape, the same requested radius on each

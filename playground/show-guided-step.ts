@@ -6,6 +6,7 @@ import { writeAnchorValue } from "./write-anchor-value";
 import { writeInputValue } from "./write-input-value";
 import { writeSelection } from "./write-selection";
 import { writeStepToAddress } from "./write-step-to-address";
+import { writeStretchedValue } from "./write-stretched-value";
 import { writeText } from "./write-text";
 
 import type { GuidedStep } from "./guided-step";
@@ -47,6 +48,8 @@ function writeStepValues(document: Document, step: GuidedStep): void {
   writeSelection(document, NO_VERTEX_SELECTION);
   writeShapeValue(document, step.values.shape);
   writeAnchorValue(document, step.values.anchor);
+  // The polygons of F02 to F08 are not stretched (F06).
+  writeStretchedValue(document, false);
   writeInputValue(document, "corners", step.values.corners);
   writeInputValue(document, "width", step.values.width);
   writeInputValue(document, "height", step.values.height);
