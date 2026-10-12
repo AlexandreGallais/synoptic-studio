@@ -2,6 +2,13 @@
 
 What each working session dealt with, in the agent's words: requests of the Product Owner (paraphrased), decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`). The full conversations stay in the local transcripts (see [agent configuration](../tooling/agent.md#searching-past-conversations)).
 
+## 2026-10-12 — F10 cancelled in E01; epics E14 (curves) and E15 (text)
+
+- `#review` F04 merged by the Product Owner (#133), released in 0.13.0. The F10 run merged SP-008 (#134), EN-016 (#135), CHK-008 (#136), US-020 (#138) and AUD-008 (#139) into `feature/f10-round-shape`, then stopped at VAL-008.
+- `#review` At VAL-008 the Product Owner found no other problem, but wants an ellipse in a long box, as Figma and Inkscape draw it, not a capsule, and points on the curve with handles after conversion, besides the box corners.
+- `#backlog` Both need curves outside ADR-0001 (Q4): the Product Owner cancelled F10 in E01 and asked for two epics after E01: E14 (Bézier curves with two handles in Figma's three modes, typed as numbers; ellipse; round shape F10) and E15 (text F05: native text or `foreignObject`, fonts, measured size, Q31). E04 keeps the strokes only. E01 ends with F06.
+- `#docs` F10's code is kept on the tag `archive/f10-round-shape` and summed up in research note 0010, with the Product Owner's account; its derivation and two references came to `main`. Its branches were deleted.
+
 ## 2026-10-12 — F04 validated
 
 - `#review` The Product Owner tested F04, freely then with the guided test (steps 47 to 57): « OK, pour moi, tout a l'air bon. En tout cas, j'ai un peu tout testé. » The view of the playground stays put while a shape turns (their first try saw it slide). VAL-007 and F04 set `done` on `feat/val-007-validate-free-rotation`, with the demo page.
