@@ -1,6 +1,6 @@
 # Research request 0011 — A polygon stretched to its box with sides as even as possible
 
-**Status**: open
+**Status**: done (→ `notes/0011-f06-stretched-polygon.md`) — run by the Product Owner in claude.ai on 2026-10-12
 
 ## Precise question
 
