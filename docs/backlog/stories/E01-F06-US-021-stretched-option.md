@@ -3,7 +3,7 @@ id: US-021
 epic: E01
 feature: F06
 title: Stretch a polygon to its box in the playground
-status: ready
+status: done
 points: 2
 ---
 
