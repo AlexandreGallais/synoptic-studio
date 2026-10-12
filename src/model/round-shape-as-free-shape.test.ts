@@ -37,6 +37,21 @@ describe("roundShapeAsFreeShape (DERIV-round-shape step 2)", () => {
 
     expect(freeShapeCorners(shape).map((corner) => corner.radius)).toEqual([41, 41, 41, 41]);
 
+    // The same circle: every piece ends where the round shape's does, within rounding.
+    const drawn = roundedContour(freeShapeCorners(shape)).flatMap((piece) => [
+      piece.end.x,
+      piece.end.y,
+    ]);
+    const expected = roundedContour(
+      roundShapeCorners({ ...CAPSULE, height: 81, width: 81 }),
+    ).flatMap((piece) => [piece.end.x, piece.end.y]);
+
+    expect(drawn).toHaveLength(expected.length);
+
+    for (const [index, value] of drawn.entries()) {
+      expect(value).toBeCloseTo(expected[index] ?? NaN, 9);
+    }
+
     // 41 · 81 / 82 = 40.5, within rounding (40.50000000000001).
     const radii = effectiveRadii(freeShapeCorners(shape));
 
@@ -45,7 +60,20 @@ describe("roundShapeAsFreeShape (DERIV-round-shape step 2)", () => {
     }
   });
 
-  it("[F10.AC3] converts a round shape of 0 × 50 to a valid free shape, the same line", () => {
-    expect(isValidFreeShape(roundShapeAsFreeShape({ ...CAPSULE, width: 0 }))).toBe(true);
+  it("[F10.AC3] converts a round shape of 0 × 80 to a valid free shape, the same line", () => {
+    const shape = roundShapeAsFreeShape({ ...CAPSULE, width: 0 });
+
+    expect(isValidFreeShape(shape)).toBe(true);
+
+    // The rectangle tool's unit square, stretched to 0 × 80, sharp.
+    expect(shape.corners.map((corner) => corner.point)).toEqual([
+      { x: 0, y: 0 },
+      { x: 1, y: 0 },
+      { x: 1, y: 1 },
+      { x: 0, y: 1 },
+    ]);
+
+    expect(shape.corners.map((corner) => corner.radius)).toEqual([0, 0, 0, 0]);
+    expect([shape.width, shape.height]).toEqual([0, 80]);
   });
 });

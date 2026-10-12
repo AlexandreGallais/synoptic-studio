@@ -71,6 +71,12 @@ describe("roundShapeCorners (DERIV-round-shape step 1)", () => {
     ]);
   });
 
+  it("[F10.AC1] draws a line for a round shape of 0 × 50, as a rectangle of width 0", () => {
+    const pieces = roundedContour(roundShapeCorners(round(0, 50)));
+
+    expect(summary(pieces)).toEqual(["segment 0 50", "segment 0 0"]);
+  });
+
   it("[F10.AC2] reduces no radius: every corner keeps half the smaller side", () => {
     const radii = effectiveRadii(roundShapeCorners(round(80, 120)));
 

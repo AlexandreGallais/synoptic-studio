@@ -4,7 +4,7 @@ import { rectangleAsFreeShape } from "./rectangle-as-free-shape";
 import { shapeKind } from "./shape-kind";
 
 describe("shapeKind (ADR-0036)", () => {
-  it("tells a free shape, a regular polygon and a round shape apart", () => {
+  it("[F10.AC1] tells a free shape, a regular polygon and a round shape apart", () => {
     const free = rectangleAsFreeShape({
       angle: 0,
       height: 50,
