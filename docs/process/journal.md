@@ -2,6 +2,14 @@
 
 What each working session dealt with, in the agent's words: requests of the Product Owner (paraphrased), decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`). The full conversations stay in the local transcripts (see [agent configuration](../tooling/agent.md#searching-past-conversations)).
 
+## 2026-10-12 — F06 run stopped at VAL-009
+
+- `#run` Resumed with `/run` after the Product Owner chose rule C. Merged into `feature/f06-stretched-polygon`: SP-009 (#143), EN-017 (#144), CHK-009 (#146), US-021 (#147), AUD-009 (#148). VAL-009 prepared on `feat/val-009-validate-stretched-polygon`: guided test steps 58 to 66, demo page with rules C and B side by side. Stop: the Product Owner tests.
+- `#model` The stretched option of the regular polygon (ADR-0037, `DERIV-stretched-polygon`): the λ family, the corner guard `π/n`, three bisections; `effectiveCornerRadius` gives no value when the corners draw different radii.
+- `#review` Reviews caught: the octagon counted as unique among equal-sided polygons, the pentagon's highest scale untested (a bracket of 1.8 survived), an unobservable clamp, guided steps leaving « Stretched » ticked, sizes tested only up to 1000.
+- `#product` Mid-run, the Product Owner asked to compare rule C with rule B (equal sides at any cost) before deciding for good: the demo page shows both, generated outside the library; rule B is one value away if chosen.
+- `#tooling` Patches published during the run on `main`: typescript-eslint 8.71.2, eslint-plugin-unicorn 78.0.0 (two new rules enabled, no violation).
+
 ## 2026-10-12 — F06 run started, stopped at its spike
 
 - `#run` Scope: F06 (polygon stretched to fill its box), the last feature of E01, from its refinement up to VAL-009; started by the Product Owner with `/run` after the reorganization of E01.
