@@ -1,21 +1,16 @@
-import {
-  freeShapeCorners,
-  freeShapeWithPoint,
-  regularPolygonAsFreeShape,
-  turnedCorners,
-} from "../src";
+import { freeShapeCorners, freeShapeWithPoint, turnedCorners } from "../src";
 
 import { listenToDeleteKey } from "./listen-to-delete-key";
 import { readEditedFreeShape } from "./read-edited-free-shape";
 import { readNumber } from "./read-number";
 import { readSelection } from "./read-selection";
-import { readShape } from "./read-shape";
 import { selectElement } from "./select-element";
 import { writeAddedMidpoint } from "./write-added-midpoint";
+import { writeConvertedShape } from "./write-converted-shape";
 import { writeDeletedPoints } from "./write-deleted-points";
 import { writeStoredFreeShape } from "./write-stored-free-shape";
 
-import type { FreeShape, Point, RegularPolygon } from "../src";
+import type { FreeShape, Point } from "../src";
 
 /** Which point moves, and along which axis. */
 type Target = {
@@ -103,36 +98,6 @@ function movePointTyped(document: Document, axis: "x" | "y"): void {
 }
 
 /**
- * Reads the regular polygon shown, when it is valid.
- *
- * @kind procedure
- * @param document - page document
- * @returns the polygon, `undefined` for another shape or a refused one
- * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
- */
-function readValidPolygon(document: Document): RegularPolygon | undefined {
-  const { isValid, model } = readShape(document);
-
-  return isValid && "anchor" in model ? model : undefined;
-}
-
-/**
- * Converts the valid regular polygon shown into a free shape, unmoved, and keeps it on the page;
- * a polygon of width or height 0 has no box to stretch and is not converted (F08.AC1, ADR-0033).
- *
- * @kind procedure
- * @param document - page document
- * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
- */
-function writeConvertedPolygon(document: Document): void {
-  const polygon = readValidPolygon(document);
-
-  if (polygon !== undefined && polygon.width * polygon.height > 0) {
-    writeStoredFreeShape(document, regularPolygonAsFreeShape(polygon));
-  }
-}
-
-/**
  * Listens to the x and y fields of the point selected and to the buttons converting a polygon
  * adding and deleting points, and to the Delete key, then calls back (F08.AC1 to F08.AC4).
  *
@@ -151,7 +116,7 @@ export function listenToPointFields(document: Document, update: () => void): voi
   }
 
   selectElement(document, "convert").addEventListener("click", () => {
-    writeConvertedPolygon(document);
+    writeConvertedShape(document);
     update();
   });
 

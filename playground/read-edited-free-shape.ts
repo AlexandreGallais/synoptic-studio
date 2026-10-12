@@ -1,3 +1,5 @@
+import { isFreeShape } from "../src";
+
 import { readShape } from "./read-shape";
 
 import type { FreeShape } from "../src";
@@ -14,5 +16,5 @@ import type { FreeShape } from "../src";
 export function readEditedFreeShape(document: Document): FreeShape | undefined {
   const { isValid, model } = readShape(document);
 
-  return isValid && !("anchor" in model) ? model : undefined;
+  return isValid && isFreeShape(model) ? model : undefined;
 }

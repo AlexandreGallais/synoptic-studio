@@ -6,8 +6,8 @@ import { selectElement } from "./select-element";
 import { showGuidedStep } from "./show-guided-step";
 import { showRefusedShape } from "./show-refused-shape";
 import { showShape } from "./show-shape";
+import { showShapeFields } from "./show-shape-fields";
 import { writeCappedSizes } from "./write-capped-sizes";
-import { writeValidity } from "./write-validity";
 
 /**
  * Updates the page from the inputs: the selected shape is drawn when valid, refused otherwise;
@@ -21,11 +21,8 @@ function updatePlayground(document: Document): void {
   writeCappedSizes(document);
 
   const reading = readShape(document);
-  const isPolygon = "anchor" in reading.model;
 
-  selectElement(document, "corners-field").hidden = !isPolygon;
-  selectElement(document, "anchor-field").hidden = !isPolygon;
-  writeValidity(document, reading);
+  showShapeFields(document, reading);
 
   if (reading.isValid) {
     showShape(document, reading);

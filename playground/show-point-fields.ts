@@ -1,4 +1,4 @@
-import { formatSvgNumber } from "../src";
+import { formatSvgNumber, isFreeShape } from "../src";
 
 import { readMode } from "./read-mode";
 import { selectElement } from "./select-element";
@@ -91,6 +91,6 @@ export function showPointFields(
   selection: VertexSelection,
 ): void {
   selectElement(document, "point-fields").hidden = readMode(document) !== "points";
-  writePointFields(document, readSelectedPoint(reading, selection), !("anchor" in reading.model));
+  writePointFields(document, readSelectedPoint(reading, selection), isFreeShape(reading.model));
   showPointButtons(document, reading, selection);
 }
