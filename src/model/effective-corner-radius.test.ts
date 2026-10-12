@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { effectiveCornerRadius } from "./effective-corner-radius";
 import { rectangleCorners } from "./rectangle-corners";
+import { regularPolygonCorners } from "./regular-polygon-corners";
 
 /** Decimals compared, from `EPSILON = 1e-9` (Q10). */
 const DECIMALS = 9;
@@ -90,8 +91,44 @@ describe("effectiveCornerRadius (Q8, ADR-0007)", () => {
         }),
       );
 
-      expect(narrow).toBeLessThanOrEqual(radius * (1 + 1e-9));
-      expect(wide).toBeGreaterThanOrEqual(narrow * (1 - 1e-9));
+      expect(narrow ?? NaN).toBeLessThanOrEqual(radius * (1 + 1e-9));
+      expect(wide ?? NaN).toBeGreaterThanOrEqual((narrow ?? NaN) * (1 - 1e-9));
     },
   );
+});
+
+describe("effectiveCornerRadius (stretched polygon, F06)", () => {
+  it("[F06.AC5] gives no one effective radius when the corners of a stretched pentagon are clamped differently", () => {
+    // Pentagon in 300 × 50 (DERIV-stretched-polygon, checks): its apex, turning 36°, keeps a larger
+    // fillet than its other corners: radius 1000 is clamped to about 42.8 there, 21.8 elsewhere.
+    const corners = regularPolygonCorners({
+      anchor: { horizontal: "mid", vertical: "mid" },
+      angle: 0,
+      corners: 5,
+      height: 50,
+      radii: [1000, 1000, 1000, 1000, 1000],
+      stretched: true,
+      width: 300,
+      x: 0,
+      y: 0,
+    });
+
+    expect(effectiveCornerRadius(corners)).toBeUndefined();
+  });
+
+  it("[F06.AC5] gives the one radius when it fits every corner of a stretched hexagon", () => {
+    const corners = regularPolygonCorners({
+      anchor: { horizontal: "mid", vertical: "mid" },
+      angle: 0,
+      corners: 6,
+      height: 50,
+      radii: [5, 5, 5, 5, 5, 5],
+      stretched: true,
+      width: 300,
+      x: 0,
+      y: 0,
+    });
+
+    expect(effectiveCornerRadius(corners)).toBeCloseTo(5, DECIMALS);
+  });
 });

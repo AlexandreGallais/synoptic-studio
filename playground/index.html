@@ -175,8 +175,11 @@
             <strong>Add a point in the middle</strong> adds a sharp one between them;
             <strong>Delete points</strong> (or the Delete key) removes the selected points, at least
             3 staying. The <strong>anchor</strong> says where the polygon sits in the room the box
-            leaves: one of nine places, from top left to bottom right; the center by default. Sizes
-            are screen pixels: a value above 100 000 becomes 100 000.
+            leaves: one of nine places, from top left to bottom right; the center by default.
+            <strong>Stretched to its box</strong> makes the polygon touch the four sides of its box:
+            its sides stay equal as long as every corner keeps at least half of its usual turn, then
+            it is simply stretched; the anchor then has no effect. Sizes are screen pixels: a value
+            above 100 000 becomes 100 000.
           </p>
         </details>
       </section>
@@ -196,6 +199,9 @@
       <label id="corners-field" hidden
         >Corners <input id="corners" type="number" min="3" max="12" step="1" value="6"
       /></label>
+      <label id="stretched-field" hidden
+        ><input id="stretched" type="checkbox" /> Stretched to its box</label
+      >
       <fieldset id="anchor-field" hidden>
         <legend>Anchor</legend>
         <div id="anchor-grid">
