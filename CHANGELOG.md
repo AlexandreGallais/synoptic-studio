@@ -1,5 +1,55 @@
 # Changelog
 
+## [0.13.0](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.12.5...v0.13.0) (2026-10-12)
+
+
+### Features
+
+* **geometry:** straight box of a contour of segments and fillet arcs ([16ccec6](https://github.com/AlexandreGallais/synoptic-studio/commit/16ccec68f78bd41b9835d29e2dfd9765530337ba))
+* **math:** angle kept from 0 to 359, exact turn direction, point turned about a center ([72a4537](https://github.com/AlexandreGallais/synoptic-studio/commit/72a45376a50effda55e9a4c0e8f192bac36f5da5))
+* **model:** an angle and a position for every shape, corners turned about the center of the box ([b53b3e4](https://github.com/AlexandreGallais/synoptic-studio/commit/b53b3e42ec36ae97717cc501589d3e7a50263844))
+* **model:** edits of a turned shape keep it in place ([df2a539](https://github.com/AlexandreGallais/synoptic-studio/commit/df2a53984ccdc150f1dfbe360a924234476f7708))
+* **playground:** edit a turned shape without moving it ([9ce088e](https://github.com/AlexandreGallais/synoptic-studio/commit/9ce088e0f5101ed2da5fc482fd2f800a31f05392))
+* **playground:** guided test of F04, steps 47 to 57 ([a223469](https://github.com/AlexandreGallais/synoptic-studio/commit/a223469d31933eb98621d2eb2bf798ba02397298))
+* **playground:** turn a shape by an angle or quarter turns, move it by its straight box ([cf8a884](https://github.com/AlexandreGallais/synoptic-studio/commit/cf8a884aaf6dafe5a72b364e909ab75358d2bbaf))
+* **render:** the view fitted to the straight box of the shape ([497f27e](https://github.com/AlexandreGallais/synoptic-studio/commit/497f27e963973860b0c67f835974e59348dde725))
+
+
+### Bug fixes
+
+* **geometry:** review fixes of EN-015 ([14d609f](https://github.com/AlexandreGallais/synoptic-studio/commit/14d609f06d14f55c85b5ce5803fb75cfeeaf9322))
+* **model:** audit fixes of F04: one box center, one turn of degrees, properties ([c52eb1a](https://github.com/AlexandreGallais/synoptic-studio/commit/c52eb1a62530a248b2deec2546ddf12ec7453d9f))
+* **playground:** review fixes of US-018 ([9706b3c](https://github.com/AlexandreGallais/synoptic-studio/commit/9706b3c369c74032408bb369d27e4c2b8a0c1be9))
+* **playground:** review fixes of US-019 ([4907d4a](https://github.com/AlexandreGallais/synoptic-studio/commit/4907d4a72e09f9536c7bf0b2a214b27e3ca0dd01))
+* **playground:** the view stays put while a shape turns ([9718e7b](https://github.com/AlexandreGallais/synoptic-studio/commit/9718e7b71cb852abcda0e757d9a7a2f956b6266e))
+
+
+### Documentation
+
+* **backlog:** refine F04, free rotation of shapes ([7908900](https://github.com/AlexandreGallais/synoptic-studio/commit/790890032ebd92b6d3617574cb4eeef6db718267))
+* **backlog:** set AUD-007 done ([8900314](https://github.com/AlexandreGallais/synoptic-studio/commit/890031485de7a78a5321562fadc8df12f6d56b8a))
+* **backlog:** set CHK-007 done ([92e772e](https://github.com/AlexandreGallais/synoptic-studio/commit/92e772eaf2de90fb829dd8a7bb83b09f41f4e781))
+* **backlog:** set EN-014 done ([9ee3f5c](https://github.com/AlexandreGallais/synoptic-studio/commit/9ee3f5c79da0424512d2fb3f44bbdce1ca82c484))
+* **backlog:** set EN-015 done ([5b50967](https://github.com/AlexandreGallais/synoptic-studio/commit/5b509678644bcf506a4ec3e1b82235f7e9f37360))
+* **backlog:** set F04 in progress and its stories ready ([79f4886](https://github.com/AlexandreGallais/synoptic-studio/commit/79f48864e1fcca2b67c748d5d8d31daf3f3c39ab))
+* **backlog:** set SP-007 done ([869a3d6](https://github.com/AlexandreGallais/synoptic-studio/commit/869a3d6de3da82cd8201fe9f002b0e9abfd31b81))
+* **backlog:** set US-018 done ([c13fc55](https://github.com/AlexandreGallais/synoptic-studio/commit/c13fc55d008b92d3c09cb6438fd8ca4542ef4175))
+* **backlog:** set US-019 done ([8cbb1e6](https://github.com/AlexandreGallais/synoptic-studio/commit/8cbb1e6a5e4834248342bf114001a6334329b344))
+* **backlog:** set VAL-007 and F04 done ([1c426c3](https://github.com/AlexandreGallais/synoptic-studio/commit/1c426c317411f42ad8521c0eae37df7d4095849e))
+* **backlog:** test card of US-018 for the Product Owner ([de4c84a](https://github.com/AlexandreGallais/synoptic-studio/commit/de4c84a3ede82c675ef36be3b150d21fbf091fb1))
+* **backlog:** test card of US-019 for the Product Owner ([1d50bac](https://github.com/AlexandreGallais/synoptic-studio/commit/1d50bacd13e4d5c101f2a564b90ef3b9aea58b4e))
+* **docs:** a critique logged: the branch to test was not said ([aa79149](https://github.com/AlexandreGallais/synoptic-studio/commit/aa79149d45682994f1b1076f49936b98ea8b1102))
+* **docs:** angle and position of every shape in the domain and the glossary ([ba2cf25](https://github.com/AlexandreGallais/synoptic-studio/commit/ba2cf2526dc9df969c35174ef12937bd961b8459))
+* **docs:** audit of F04, findings, next feature, evolvability ([1b7e5ab](https://github.com/AlexandreGallais/synoptic-studio/commit/1b7e5abf603573757ff582b2e14f75f270383113))
+* **docs:** checkpoint of F04, state line and pitfalls ([aa867de](https://github.com/AlexandreGallais/synoptic-studio/commit/aa867dea034b0a167d3b8a825c3cabaec9b425d1))
+* **docs:** demo page of F04, turning a shape ([ed170e4](https://github.com/AlexandreGallais/synoptic-studio/commit/ed170e46095460e356983fbdf43ec340d7d0882a))
+* **docs:** evolvability check of F04, improvement log, test cards ([6597df9](https://github.com/AlexandreGallais/synoptic-studio/commit/6597df96b9a43f919f299fd610125c1be97ddac7))
+* **docs:** research note of F04, stories updated ([6ab55ac](https://github.com/AlexandreGallais/synoptic-studio/commit/6ab55ac4385454fd45c6b39c4fd6231e3c8d90af))
+* **docs:** review fixes of CHK-007 ([30c4073](https://github.com/AlexandreGallais/synoptic-studio/commit/30c407309ce33c2092ca2b28aff187c3b1d1fd57))
+* **docs:** three requests of the Product Owner for the end of E01 ([7bdda9c](https://github.com/AlexandreGallais/synoptic-studio/commit/7bdda9c1d5cfc5c895cdc47d151495a4b59fc56c))
+* **geometry:** review fixes of the F04 research ([d41cac6](https://github.com/AlexandreGallais/synoptic-studio/commit/d41cac6f14d5684238ae1e47e9314efb6e873cd4))
+* **geometry:** sources, derivations and ADR of F04 ([0705f1c](https://github.com/AlexandreGallais/synoptic-studio/commit/0705f1c6465247f604a81d3d1ecbd6ce8e3cab59))
+
 ## [0.12.5](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.12.4...v0.12.5) (2026-10-12)
 
 
