@@ -2,6 +2,12 @@
 
 What each working session dealt with, in the agent's words: requests of the Product Owner (paraphrased), decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`). The full conversations stay in the local transcripts (see [agent configuration](../tooling/agent.md#searching-past-conversations)).
 
+## 2026-10-12 — E01 reviewed
+
+- `#review` REV-001 set `ready` by the Product Owner, then held: the guided tests of E01 re-run on `main` without regression; epic report `docs/guide/e01-draw-shapes.md`; a user test crossing the features, steps 67 to 72, which the Product Owner ran, every step as announced. Merged by them (#152).
+- `#backlog` Their answers: the closure criterion of E01 keeps the rectangle and the regular polygon only (§3 still held text and the layout box); nothing built that they did not mean; E14 stays next, before E15.
+- `#process` To the improvement log, for later: at step 72 the shape seemed to leave the canvas (first reading: its grey box and a vertex lie left of the fixed view); the steps say to press Enter where the drawing already follows the typing. The Product Owner holds RET-001 in another conversation, with notes already written there.
+
 ## 2026-10-12 — F06 merged, run stopped before E01's review
 
 - `#review` F06 merged by the Product Owner (#149), released in 0.14.0; the validation branch deleted, only `main` left.
