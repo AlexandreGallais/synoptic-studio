@@ -26,5 +26,5 @@ Find, read and record the sources of every story of F10 before its implementatio
 
 One task = one commit, referenced as `SP-008.Tn`.
 
-- [ ] T1 — Sources, derivation if needed, ADR (1 h)
-- [ ] T2 — Research note, stories updated (0.5 h)
+- [x] T1 — Sources, derivation if needed, ADR (1 h)
+- [x] T2 — Research note, stories updated (0.5 h)
