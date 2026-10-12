@@ -14,6 +14,8 @@ export type GuidedStep = {
     readonly radius: number;
     /** Shape chosen: `rectangle` or `polygon`. */
     readonly shape: string;
+    /** Whether the polygon is stretched to its box (F06); unticked when absent. */
+    readonly stretched?: boolean;
     /** Width typed. */
     readonly width: number;
   };
