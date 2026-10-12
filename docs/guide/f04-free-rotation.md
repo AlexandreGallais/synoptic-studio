@@ -43,4 +43,6 @@ Run `npm run dev` and open `http://localhost:5173/?step=47`: the **Guided test**
 
 Said by the Product Owner on a first try, before the guided test (2026-10-12), quoted by the agent: « Oh putain, c'est trop stylé. Regarde, y a toutes les fonctionnalités qui fonctionnent ensemble, là, c'est vraiment chouette à regarder. » On moving and resizing a turned shape: « ça marchait exactement comme je le voulais au niveau du déplacement \[…\] Le width, c'est super. »
 
+After the guided test (steps 47 to 57): « OK, pour moi, tout a l'air bon. En tout cas, j'ai un peu tout testé. »
+
 Fixed at once: the shape did not seem to turn about its center — « ça essaye d'avoir le point en haut à gauche » — because the view followed a turned shape into negative coordinates; the view now stays put (« si ça sort de l'écran, c'est pas grave »).

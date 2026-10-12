@@ -2,6 +2,11 @@
 
 What each working session dealt with, in the agent's words: requests of the Product Owner (paraphrased), decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`). The full conversations stay in the local transcripts (see [agent configuration](../tooling/agent.md#searching-past-conversations)).
 
+## 2026-10-12 — F04 validated
+
+- `#review` The Product Owner tested F04, freely then with the guided test (steps 47 to 57): « OK, pour moi, tout a l'air bon. En tout cas, j'ai un peu tout testé. » The view of the playground stays put while a shape turns (their first try saw it slide). VAL-007 and F04 set `done` on `feat/val-007-validate-free-rotation`, with the demo page.
+- `#domain` F10 refined in part: no anchor (the round shape always fills its box), the radii of a converted round shape are half the smaller side rounded up, its points numbered as the rectangle's; the point order is the order of the path's `d`, never changed.
+
 ## 2026-10-12 — Round shapes added to E01
 
 - `#backlog` The Product Owner's idea: « fais les formes circulaires ». F10 (round shape: a circle in a square box, a capsule otherwise, edited as the polygon, converted to a free shape of 4 points) added to E01 right after F04; the ellipse stays out (Q4).
