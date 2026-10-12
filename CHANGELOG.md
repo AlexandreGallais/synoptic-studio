@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.3](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.13.2...v0.13.3) (2026-10-12)
+
+
+### Build and dependencies
+
+* **deps:** typescript-eslint 8.71.2 ([0c38842](https://github.com/AlexandreGallais/synoptic-studio/commit/0c38842378f7694683b005e2e8bd4ef025044df1))
+
 ## [0.13.2](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.13.1...v0.13.2) (2026-10-12)
 
 
