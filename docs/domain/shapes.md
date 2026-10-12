@@ -96,7 +96,7 @@ Functional reference: Inkscape's Star/Polygon tool.
 - Parameters: number of corners, an integer `3 ≤ n ≤ 12` (Q19); `width` and `height` of the box, integers ≥ 0 (negative forbidden, 0 allowed — Q15); `radii`, the requested corner radius of each of its `n` vertices in contour order, integers ≥ 0 (0 = sharp corner, ADR-0029), clamped rather than refused (ADR-0007), the requested values kept (Q8).
 - Examples: `n=3` equilateral triangle, `n=4` square, `n=5` pentagon, `n=6` hexagon.
 - Rule: the shape fills as much of the `width × height` box as possible **without exceeding it**.
-- Derived vertices (cos/sin): not integers. They are **computed**, not stored (ADR-0003). `n`, `width`, `height`, the requested `radii`, the `anchor`, the `angle` and the position `x`, `y` of its box (ADR-0035) are stored (`RegularPolygon`).
+- Derived vertices (cos/sin): not integers. They are **computed**, not stored (ADR-0003). `n`, `width`, `height`, the requested `radii`, the `anchor`, the `stretched` option (ADR-0037), the `angle` and the position `x`, `y` of its box (ADR-0035) are stored (`RegularPolygon`).
 
 **Chosen mode: uniform** (`DERIV-regular-polygon-fit`).
 
@@ -110,6 +110,7 @@ Functional reference: Inkscape's Star/Polygon tool.
 **Stretched option** (F06, Product Owner 2026-10-12):
 
 - A « stretched » option of the regular polygon, off by default: the polygon then touches the **four sides** of its box, its base flat at the bottom, symmetric about the vertical axis of the box. Stretching makes some sides longer than others; the growth is spread over all the sides so that their lengths stay **as even as possible**. The rule (Product Owner, 2026-10-12, from research note 0011, rule C): all sides equal as long as every corner turns at least half of its regular turn (`π/n`); past that, that limit polygon is stretched on each axis to the box. The triangle stays isosceles and the square a rectangle: they have no freedom.
+- In the code: `stretchedPolygon` (`DERIV-stretched-polygon`); the scale of rule C is found by bisection (`stretchScale`).
 - It stays a polygon: its number of corners, radii (one per corner, the effective ones may differ since its corners no longer share one angle), angle and position work as for any polygon. Its anchor has no effect: it fills its box. Converted to a free shape, it does not move.
 - Figma's polygon does not fill its box (the Product Owner tried it): no functional reference.
 
