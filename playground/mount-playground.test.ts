@@ -186,7 +186,7 @@ describe("playground", () => {
     expect(text("effective")).toBe("");
   });
 
-  it("[F02.AC1] walks the steps of the guided test (F01, F02, F07, F03, F09, F08, F04 and F06), each showing what it tells to look at", () => {
+  it("[F02.AC1] walks the steps of the guided test (F01, F02, F07, F03, F09, F08, F04, F06, then E01), each showing what it tells to look at", () => {
     // "Previous" on the first step stays there and types its values again.
     click("guide-previous");
 
@@ -253,6 +253,13 @@ describe("playground", () => {
       ...Array.from({ length: 3 }, () => "Effective radius: 0 (as requested)"),
       "Effective radius: mixed, shown for each point in Points mode.",
       ...Array.from({ length: 5 }, () => "Effective radius: 0 (as requested)"),
+      // The user test of E01 (REV-001), before the clicks and values the Product Owner adds.
+      "Effective radius: 12 (as requested)",
+      "Effective radius: 20 (requested 1000, reduced to fit)",
+      "Effective radius: 0 (as requested)",
+      "Effective radius: 0 (as requested)",
+      "Effective radius: 0 (as requested)",
+      "Effective radius: 50 (requested 1000, reduced to fit)",
     ];
 
     for (const [index, effective] of expected.entries()) {
@@ -261,14 +268,23 @@ describe("playground", () => {
       click("guide-next");
     }
 
-    // Past the last step, the guide stays on it: the stretched hexagon of F06, straight.
+    // Past the last step, the guide stays on it: the stretched hexagon of E01, rounded, straight.
+    expect(text("guide-number")).toBe("72");
+
+    expect(text("path-data")).toBe(
+      "M92.04396 100 L67.95604 100 A50 50 0 0 1 31.16755 83.86159 A50 50 0 0 1 31.16755 16.13841 A50 50 0 0 1 67.95604 0 L92.04396 0 A50 50 0 0 1 128.83245 16.13841 A50 50 0 0 1 128.83245 83.86159 A50 50 0 0 1 92.04396 100 Z",
+    );
+
+    expect(document.querySelector<HTMLInputElement>("#angle")?.value).toBe("0");
+
+    // The last step of F06: the stretched hexagon, straight.
+    clickTimes("guide-previous", 6);
+
     expect(text("guide-number")).toBe("66");
 
     expect(text("path-data")).toBe(
       "M77.42919 100 L22.57081 100 L0 50 L22.57081 0 L77.42919 0 L100 50 Z",
     );
-
-    expect(document.querySelector<HTMLInputElement>("#angle")?.value).toBe("0");
 
     // The last step of F09: the 120 × 80 rectangle, a free shape.
     clickTimes("guide-previous", 28);
