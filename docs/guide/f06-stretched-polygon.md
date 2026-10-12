@@ -21,13 +21,13 @@ In the playground, a polygon has a new check box, **Stretched to its box**. Tick
 | Turn of a corner | the angle between the two sides meeting there; a regular hexagon turns 60° at each corner |
 | Rule C           | sides equal while every corner keeps half of its usual turn, then a plain stretch         |
 
-## Compare the two rules
+## Rule C in five boxes
 
-You asked to compare your choice with rule B, **equal sides at any cost**, before deciding for good. Below, the same polygons (5 to 8 corners) in the same boxes, drawn by each rule; under each one, its shortest and longest sides. With rule B the sides stay equal in more boxes, but corners become nearly flat; with rule C the corners stay marked, and the sides become uneven in the most elongated boxes. Only rule C is in the playground; if you prefer rule B, it is a change of one value in the library.
+The same polygons (5 to 8 corners) in five boxes, drawn by rule C; under each one, its shortest and longest sides. In the square box the sides are equal; in the most elongated boxes the corners keep their limit and the sides become uneven.
 
-![Rule C, chosen: equal sides while every corner keeps half of its turn, then stretched](./images/f06-rule-c.svg)
+![Rule C: equal sides while every corner keeps half of its turn, then stretched](./images/f06-rule-c.svg)
 
-![Rule B, for comparison: equal sides at any cost](./images/f06-rule-b.svg)
+At the validation you compared it with rule B, equal sides at any cost, drawn in the same boxes: its nearly flat corners ruled it out, and rule C, the one chosen at the start, stays. Rule B was only an image; it is gone.
 
 ## Try it
 
@@ -41,4 +41,4 @@ Run `npm run dev` and open `http://localhost:5173/?step=58`: the **Guided test**
 
 ## Your feedback
 
-To be written after your test.
+At the validation (2026-10-12), the Product Owner compared the two galleries and confirmed rule C: rule B's shapes are not acceptable, and rule C, the one planned from the start, is what they want; they found the comparison worth seeing. They are pleased with the result and want nothing else for F06; rule B's material is removed before the feature pull request.
