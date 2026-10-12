@@ -42,31 +42,44 @@ function readCanvasSize(document: Document): { readonly height: number; readonly
 }
 
 /**
+ * Shows the one effective radius of a shape, saying whether it was reduced to fit (Q8).
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param radius - requested radius of every corner
+ * @param effective - radius drawn at every corner
+ * @see docs/backlog/stories/E01-F01-US-003-round-rectangle-corners.md
+ */
+function writeOneEffectiveRadius(document: Document, radius: number, effective: number): void {
+  const text =
+    radius - effective >= EPSILON
+      ? `Effective radius: ${formatSvgNumber(effective)} (requested ${String(radius)}, reduced to fit)`
+      : `Effective radius: ${formatSvgNumber(effective)} (as requested)`;
+
+  writeText(document, "effective", text);
+}
+
+/**
  * Shows the effective corner radius next to the requested one, and says when it was reduced to
  * fit the shape (Q8: the requested value is kept, the effective one is derived); when the
- * vertices have different radii, says where each one is shown (F03.AC2).
+ * vertices request or draw different radii, says where each one is shown (F03.AC2, F06.AC5).
  *
  * @kind procedure
  * @param document - page document
  * @param reading - valid shape
- * @see docs/backlog/stories/E01-F01-US-003-round-rectangle-corners.md
+ * @see docs/backlog/stories/E01-F06-US-021-stretched-option.md
  */
 function writeEffectiveRadius(document: Document, reading: ShapeReading): void {
   const radius = commonRadius(reading.radii);
+  const effective = effectiveCornerRadius(reading.corners);
 
-  if (radius === undefined) {
+  if (radius === undefined || effective === undefined) {
     writeText(document, "effective", MIXED_EFFECTIVE);
 
     return;
   }
 
-  const effective = effectiveCornerRadius(reading.corners);
-  const isReduced = radius - effective >= EPSILON;
-  const text = isReduced
-    ? `Effective radius: ${formatSvgNumber(effective)} (requested ${String(radius)}, reduced to fit)`
-    : `Effective radius: ${formatSvgNumber(effective)} (as requested)`;
-
-  writeText(document, "effective", text);
+  writeOneEffectiveRadius(document, radius, effective);
 }
 
 /**
