@@ -1,0 +1,38 @@
+import type { TSESLint } from "@typescript-eslint/utils";
+
+/** Objects, classes and properties. */
+export const UNICORN_OBJECTS: TSESLint.FlatConfig.Config = {
+  name: "unicorn/objects",
+  rules: {
+    "unicorn/class-reference-in-static-methods": "error",
+    "unicorn/consistent-class-member-order": "error",
+    "unicorn/consistent-destructuring": "error",
+    "unicorn/new-for-builtins": "error",
+    "unicorn/no-accessor-recursion": "error",
+    "unicorn/no-computed-property-existence-check": "error",
+    "unicorn/no-incomplete-accessor-override": "error",
+    "unicorn/no-instanceof-builtins": "error",
+    "unicorn/no-invalid-property-descriptor": "error",
+    "unicorn/no-invalid-well-known-symbol-methods": "error",
+    "unicorn/no-nonstandard-builtin-properties": "error",
+    "unicorn/no-static-only-class": "error",
+    "unicorn/no-this-assignment": "error",
+    "unicorn/no-this-outside-of-class": "error",
+    "unicorn/no-undeclared-class-members": "error",
+    "unicorn/no-unreadable-new-expression": "error",
+    "unicorn/no-unreadable-object-destructuring": "error",
+    "unicorn/no-unsafe-property-key": "error",
+    "unicorn/no-unused-builtin-method-return": "error",
+    "unicorn/no-unused-properties": "error",
+    "unicorn/no-useless-override": "error",
+    "unicorn/prefer-class-fields": "error",
+    "unicorn/prefer-object-define-properties": "error",
+    "unicorn/prefer-object-destructuring-defaults": "error",
+    "unicorn/prefer-object-from-entries": "error",
+    "unicorn/prefer-private-class-fields": "error",
+    "unicorn/prefer-prototype-methods": "error",
+    "unicorn/prefer-reflect-apply": "error",
+    "unicorn/prefer-single-object-destructuring": "error",
+    "unicorn/require-proxy-trap-boolean-return": "error",
+  },
+};

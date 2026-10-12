@@ -1,0 +1,16 @@
+name: Idea or source
+description: A feature idea, or a better source for a formula.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: Need
+      description: Who needs what, and why; for a source, which function or derivation it concerns.
+    validations:
+      required: true
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: Links to specifications, papers or documentation (the project only cites sources it has read).

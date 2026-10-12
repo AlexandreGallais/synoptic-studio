@@ -1,0 +1,37 @@
+import type { TSESLint } from "@typescript-eslint/utils";
+
+/** DOM nodes, selectors and events. */
+export const UNICORN_DOM: TSESLint.FlatConfig.Config = {
+  name: "unicorn/dom",
+  rules: {
+    "unicorn/better-dom-traversing": "error",
+    "unicorn/dom-node-dataset": "error",
+    "unicorn/no-canvas-to-image": "error",
+    "unicorn/no-incorrect-query-selector": "error",
+    "unicorn/no-invalid-dom-token": "error",
+    "unicorn/no-invalid-remove-event-listener": "error",
+    "unicorn/no-invalid-style-set-property": "error",
+    "unicorn/no-late-current-target-access": "error",
+    "unicorn/no-late-event-control": "error",
+    "unicorn/no-prevent-default-in-passive-listener": "error",
+    "unicorn/no-selector-as-dom-name": "error",
+    "unicorn/no-unsafe-dom-html": "error",
+    "unicorn/prefer-add-event-listener": "error",
+    "unicorn/prefer-add-event-listener-options": "error",
+    "unicorn/prefer-classlist-toggle": "error",
+    "unicorn/prefer-dom-node-append": "error",
+    "unicorn/prefer-dom-node-html-methods": "error",
+    "unicorn/prefer-dom-node-remove": "error",
+    "unicorn/prefer-dom-node-replace-children": "error",
+    "unicorn/prefer-dom-node-text-content": "error",
+    "unicorn/prefer-event-target": "error",
+    "unicorn/prefer-keyboard-event-key": "error",
+    "unicorn/prefer-modern-dom-apis": "error",
+    "unicorn/prefer-observer-apis": "error",
+    "unicorn/prefer-path2d": "error",
+    "unicorn/prefer-query-selector": "error",
+    "unicorn/prefer-scoped-selector": "error",
+    "unicorn/prefer-toggle-attribute": "error",
+    "unicorn/require-passive-events": "error",
+  },
+};

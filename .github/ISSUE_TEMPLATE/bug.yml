@@ -1,0 +1,23 @@
+name: Bug report
+description: Something renders or behaves differently from the documentation.
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: Input values (shape, sizes, radius…), what you saw, ideally the path data or a screenshot.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+      description: The expected result, and the page of the documentation or the source that says so.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Release number, or the commit of the playground you used.

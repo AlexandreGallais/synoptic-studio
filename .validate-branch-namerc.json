@@ -1,0 +1,4 @@
+{
+  "pattern": "^(main|develop|feature/f[0-9]{2}-[a-z0-9]+(-[a-z0-9]+)*|(feat|fix|docs|refactor|test|chore|build|ci|perf|style|revert)/[a-z0-9]+(-[a-z0-9]+)*|dependabot/.+|release-please--.+)$",
+  "errorMsg": "Branch name must be `main`, `develop`, `feature/f01-<kebab-case-topic>` or `<type>/<kebab-case-topic>` (docs/tooling/git-workflow.md)."
+}

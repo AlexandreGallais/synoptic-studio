@@ -1,0 +1,12 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": [
+    ".claude/hooks/{guard-bash,session-state,log-tool-call,track-tool-call,status-line}.ts",
+    "scripts/{tool-versions,metrics-report,session-report,library-cli,library-mcp}.ts",
+    "docs/.vitepress/config.ts",
+    "docs/.vitepress/theme/index.ts",
+    ".ncurc.cjs"
+  ],
+  "project": ["**/*.ts"],
+  "ignoreDependencies": ["@secretlint/secretlint-rule-preset-recommend", "fast-check"]
+}

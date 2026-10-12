@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-10 -10 170 140" width="170" height="140">
+  <path d="M0 0 L120 0 L120 120" fill="none" stroke="#888" stroke-dasharray="3 3"/>
+  <path d="M0 0 L70 0 A50 50 0 0 1 120 49.99999999999999 L120 120" fill="none" stroke="#4a7bd0" stroke-width="3"/>
+  <path d="M70 50 L70 0 M70 50 L120 49.99999999999999" stroke="#d07a4a" stroke-dasharray="2 2"/>
+  <circle cx="70" cy="0" r="3" fill="#d07a4a"/>
+  <circle cx="120" cy="49.99999999999999" r="3" fill="#d07a4a"/>
+  <circle cx="70" cy="50" r="3" fill="#555"/>
+  <text x="30" y="-3" font-family="sans-serif" font-size="9" fill="#555">tangent point</text>
+  <text x="124" y="52.99999999999999" font-family="sans-serif" font-size="9" fill="#555">tangent point</text>
+  <text x="40" y="62" font-family="sans-serif" font-size="9" fill="#555">center (radius 50)</text>
+  <text x="96" y="-3" font-family="sans-serif" font-size="9" fill="#555">setback 50</text>
+</svg>

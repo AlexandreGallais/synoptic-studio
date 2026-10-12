@@ -1,0 +1,26 @@
+# Closes pull requests from outside contributors: every change is written by the agent and
+# reviewed by the owner; outside input comes through issues (ADR-0026, docs/tooling/ci.md).
+# pull_request_target runs in the base repository: it never checks out the pull request's code.
+name: External pull requests
+
+on:
+  pull_request_target:
+    types: [opened, reopened]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  close:
+    name: Close external pull request
+    if: >-
+      !contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.pull_request.author_association)
+      && github.event.pull_request.user.login != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comment and close
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: |
+          gh pr close "$PR_URL" --comment "Thank you for your interest. This project accepts input through issues only: every change is written by its coding agent and reviewed by the owner (see .github/CONTRIBUTING.md). Please open an issue with the bug, idea or source form; it will be read and answered."

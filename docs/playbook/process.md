@@ -1,0 +1,20 @@
+# Process
+
+The method on one page is in [agile.md](../process/agile.md); this page keeps what made it work, to reuse.
+
+| Level   | Opens with                                                        | Closes with                                                                                                      |
+| ------- | ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Epic    | vision and open questions answered by the Product Owner           | `REV` review (plain-language report, full guided recheck), `RET` retrospective (metrics, evolvability, playbook) |
+| Feature | refinement questionnaire, `SP` research spike for all its stories | `AUD` audit by independent agents, `VAL` demo page and a short guided test                                       |
+| Story   | `ready` set by the Product Owner, its own branch                  | one commit per task, `done` in the last commit, pull request into the feature                                    |
+
+What made it work:
+
+- **No iterations**: cadences triggered by deliveries instead of sprints (ADR-0017, `REF-KANBAN-GUIDE`).
+- **Write everything, then implement**: epics, features and stories exist before code; refinement adjusts them.
+- **Status in three places checked by a test**: the item, its folder index, its parent's table.
+- **Research before code, audit after**: a spike reads every source of a feature; an audit re-derives, recomputes and re-reads.
+- **Plain language at every demo**: the Product Owner tests what they understand, in a few short guided steps; the epic review reruns them all.
+- **Feature branches and autonomous runs**: stories chain on the feature's branch and merge themselves once checked locally and reviewed; the Product Owner validates the feature and merges it, then the release (ADR-0028, ADR-0038).
+- **Logs, emptied at each retrospective**: ideas in the improvement log, critiques in the feedback log; the retrospective opens with one table of them all, decided row by row.
+- **Every four to five epics, every rule questioned**: harden by default.

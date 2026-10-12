@@ -1,0 +1,47 @@
+# Autonomous runs (ADR-0028, ADR-0038), authorized by the Product Owner on 2026-10-08: merges story
+# pull requests labeled `autonomous` that target a feature branch (`feature/f01-…`). Their checks ran
+# locally before the push (pre-push hook, `check:all`): no CI runs on them, and `--auto` merges a pull
+# request that is already mergeable at once. Nothing reaches `develop` nor `main` this way: the
+# feature pull request is merged by the Product Owner. The agent never merges; removing the label
+# before the merge stops it.
+name: Story auto-merge
+
+on:
+  pull_request:
+    types: [labeled, opened, reopened, ready_for_review]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    name: Merge
+    if: >-
+      contains(github.event.pull_request.labels.*.name, 'autonomous')
+      && github.event.pull_request.author_association == 'OWNER'
+      && startsWith(github.event.pull_request.base.ref, 'feature/')
+      && !github.event.pull_request.draft
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check the branch is a story allowed in autonomous runs
+        env:
+          BRANCH: ${{ github.event.pull_request.head.ref }}
+        run: |
+          if ! printf '%s' "$BRANCH" | grep -Eq '^[a-z]+/(us|en|sp|chk|aud)-[0-9]{3}-'; then
+            echo "Branch $BRANCH is not a US, EN, SP, CHK or AUD story: no auto-merge (ADR-0028)."
+            exit 1
+          fi
+      - name: Merge (rebase)
+        env:
+          # Built-in token: merges into a feature branch need no release, hence no personal token.
+          GH_TOKEN: ${{ github.token }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        # GitHub computes the mergeability of a new pull request after a few seconds: retry.
+        run: |
+          for attempt in 1 2 3 4 5; do
+            gh pr merge "$PR_URL" --auto --rebase && exit 0
+            echo "Attempt $attempt: not mergeable yet."
+            sleep 10
+          done
+          exit 1

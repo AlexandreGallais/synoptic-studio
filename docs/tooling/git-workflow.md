@@ -1,0 +1,99 @@
+# Git workflow
+
+## Branches and pull requests
+
+Git-flow without release branches (ADR-0038, `REF-GITFLOW`):
+
+| Branch                      | Holds                                                     | Receives                                                                                   | Checked by                            |
+| --------------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------- |
+| `main`                      | released versions only                                    | pull requests from `develop` (merged by the Product Owner) and release-please's; no push   | the CI of the pull request (`ci.yml`) |
+| `develop`                   | the integration branch: validated features, tooling, docs | direct pushes of the agent (tooling, docs, backlog), feature pull requests (Product Owner) | local Git hooks                       |
+| `feature/f<nn>-<topic>`     | one feature while it is built (ADR-0028)                  | story pull requests (Product Owner, or GitHub in an autonomous run)                        | local Git hooks                       |
+| `<type>/<story-id>-<topic>` | one story, one commit per task                            | the agent's commits                                                                        | local Git hooks                       |
+
+- **One branch = one feature**: `feature/f<nn>-<topic>`, created from the up-to-date `develop` when the feature starts, merged into `develop` by the Product Owner at the feature's validation, then deleted.
+- **One branch = one story**: `<type>/<story-id>-<topic>`, e.g. `feat/us-004-rectangle-contour`, created from the up-to-date feature branch. The type is the Conventional Commits type of the story's main change.
+- **One commit = one task** of the story, with the task ID in a footer (`Refs: US-004.T2`).
+- When the story's Definition of Done is met, Claude Code pushes the branch (the pre-push hook runs `check:all`) and opens a pull request **into the feature branch** (template `.github/pull_request_template.md`). No CI runs on it and nobody waits for one. Merge: **rebase merge** — by the Product Owner, or, in an authorized autonomous run, by GitHub as soon as the pull request is labeled `autonomous` (`story-automerge.yml`, ADR-0028).
+- At the feature's validation (`VAL`), Claude Code does the validation work on a `VAL` branch made from the feature branch, and opens **one feature pull request** from that branch into `develop`; the Product Owner merges it with a **merge commit** (git-flow's `--no-ff`: the feature stays visible as one bridge in the history, `REF-GITFLOW`).
+- **A release**: Claude Code opens a pull request from `develop` into `main`, usually right after a feature pull request is merged. The CI runs on it (about 2 minutes); the Product Owner merges it with a **merge commit**, the only method `main` allows: a rebase would copy the commits under new SHAs and `develop` would no longer be an ancestor of `main` (`REF-GH-MERGE-METHODS`). release-please then opens its release pull request, which merges itself.
+- **After a release**, Claude Code brings `develop` up to `main`: `git switch develop && git pull && git merge --ff-only origin/main && git push` (a plain `git merge origin/main` if `develop` moved meanwhile).
+- No long-lived branch other than `main`, `develop` and the current feature's.
+- Branch names are checked by `validate-branch-name` (pattern in `.validate-branch-namerc.json`): `main`, `develop`, `feature/f<nn>-<kebab-case>`, `<type>/<kebab-case>`, plus the bots' `dependabot/…` and `release-please--…`.
+
+How the history reads (ADR-0038): stories line up on their feature, each feature joins `develop` by a merge commit, each release joins `main` by another, and `develop` catches up with the release commit.
+
+```mermaid
+gitGraph
+  commit id: "v0.1.0"
+  branch develop
+  checkout develop
+  commit id: "docs"
+  branch feature/f14-curves
+  checkout feature/f14-curves
+  commit id: "US-022.T1"
+  commit id: "US-022.T2"
+  commit id: "EN-019.T1"
+  checkout develop
+  merge feature/f14-curves id: "F14 merged"
+  checkout main
+  merge develop id: "release" tag: "v0.2.0"
+  checkout develop
+  merge main id: "catch up"
+```
+
+## After a merge
+
+```sh
+git switch feature/f<nn>-<topic>   # or develop, after the feature pull request
+git pull --prune
+git branch -d <story-branch>
+```
+
+The remote branch is deleted by GitHub on merge; `fetch.prune` keeps local references clean.
+
+## Commit messages
+
+Conventional Commits (`REF-CONVENTIONAL-COMMITS`), checked by commitlint on every commit and in the CI of the pull requests into `main` (`commitlint.config.ts`):
+
+```text
+<type>(<scope>): <subject in imperative mood>
+
+<body: why, wrapped at 100 columns>
+
+<footers>
+```
+
+- Types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `build`, `ci`, `perf`, `style`, `revert`. They drive the version ([releases](./releases.md)).
+- Scopes: one per layer (`math`, `geometry`, `model`, `routing`, `io`, `render`, `interaction`), plus `playground`, `eslint`, `docs`, `adr`, `backlog`, `ci`, `deps`, `tooling`.
+- Header and body lines: 100 characters at most.
+- Breaking change: `feat(model)!: …` or a `BREAKING CHANGE:` footer.
+
+## Footers: links to the backlog and the docs
+
+Footers are Git trailers (`Key: value`) after a blank line:
+
+| Footer             | Meaning                                                                             | Example                                              |
+| ------------------ | ----------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| `Refs:`            | task, story, feature, ADR, domain question, research request this commit relates to | `Refs: US-004.T2, ADR-0007, Q11`                     |
+| `Closes:`          | story completed by this commit (last task of the branch)                            | `Closes: US-004`                                     |
+| `BREAKING CHANGE:` | incompatible API change, described                                                  | `BREAKING CHANGE: polygonToPathData takes a Contour` |
+| `Co-Authored-By:`  | co-author                                                                           | added on commits written by Claude Code              |
+
+```text
+feat(geometry): add fillet setback
+
+Setback of a corner fillet, d = r / tan(θ/2), with hand-computed tests.
+
+Refs: EN-001.T2, DERIV-local-radius-clamp
+```
+
+## Hooks (`.husky/`)
+
+| Hook         | Runs                                                                                                                                                                     |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `pre-commit` | `lint-staged` (`.lintstagedrc.json`): Prettier + ESLint `--fix` on staged TypeScript and Markdown, Prettier on JSON, HTML, CSS and YAML, secretlint on every staged file |
+| `commit-msg` | commitlint                                                                                                                                                               |
+| `pre-push`   | branch name (`.validate-branch-namerc.json`), `npm run check:all` (check, latest versions, docs and playground builds)                                                   |
+
+Hooks are installed by `npm install` (`prepare` script). Bypassing them (`--no-verify`) is not allowed.

@@ -1,0 +1,68 @@
+# Quality gate of the pull requests into main: the only CI run (ADR-0038, docs/tooling/ci.md).
+# Work branches (stories, features, develop) are checked locally by the Git hooks. On the release
+# pull request every job is skipped by its `if:`, which GitHub reports as a success.
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Format, lint, secrets, types, tests, audit, versions, docs, build
+    if: ${{ !startsWith(github.head_ref, 'release-please--') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run check:all
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          # Test report of the version, attached to its GitHub release by release.yml (ADR-0027).
+          VITEST_JUNIT: test-report.xml
+      - run: npm run build
+      - uses: actions/upload-artifact@v7
+        with:
+          name: test-report
+          path: test-report.xml
+          if-no-files-found: error
+
+  history:
+    name: Commit messages and branch name
+    if: ${{ !startsWith(github.head_ref, 'release-please--') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx validate-branch-name --test "${{ github.head_ref }}"
+      - run: >-
+          npx commitlint --verbose
+          --from ${{ github.event.pull_request.base.sha }}
+          --to ${{ github.event.pull_request.head.sha }}
+
+  dependencies:
+    name: Dependency review
+    if: ${{ !startsWith(github.head_ref, 'release-please--') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/dependency-review-action@v5
+        with:
+          fail-on-severity: low

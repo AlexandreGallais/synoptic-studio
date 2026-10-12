@@ -1,0 +1,12 @@
+# Link checker exclusions (ADR-0022): one regular expression per line, each with its reason.
+# Local development server, only up during `npm run dev`.
+^https?://localhost
+# Backlog templates (docs/backlog/_*.md) link as if copied into stories/: excluded by path in links.yml.
+# Standards publishers that refuse automated clients such as lychee and WebFetch (HTTP 403,
+# 2026-10-09); their pages are cited with that qualifier in docs/references.md.
+^https://library\.iec\.ch/
+^https://webstore\.ansi\.org/
+^https://www\.iso\.org/
+# GitLab merge request pages refuse automated clients (HTTP 403, 2026-10-11); the merge request
+# exists (GitLab API, HTTP 200). Cited in docs/references.md (REF-INKSCAPE-SNAP).
+^https://gitlab\.com/inkscape/inkscape/-/merge_requests/

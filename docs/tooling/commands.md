@@ -1,0 +1,40 @@
+# Commands
+
+| Command                                            | Role                                                                                                                                                                                                                        |
+| -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run dev`                                      | Vite server on `playground/` (`http://localhost:5173`)                                                                                                                                                                      |
+| `npm run build`                                    | `npm audit`, then library build (`dist/editor.js`) + declarations (`dist/types/`)                                                                                                                                           |
+| `npm run test` / `test:watch`                      | Vitest with coverage of `src/` (100 % required) and `playground/` (a floor): library, playground, custom rules, ESLint audit, `tests/` (backlog, bibliography, barrels, diagrams, dependencies, fitness), scripts and hooks |
+| `npm run lint` / `lint:fix`                        | ESLint, zero warning tolerated                                                                                                                                                                                              |
+| `npm run lint:secrets`                             | secretlint: no key, token or password in any file                                                                                                                                                                           |
+| `npm run format` / `format:check`                  | Prettier                                                                                                                                                                                                                    |
+| `npm run typecheck`                                | `tsc --noEmit`                                                                                                                                                                                                              |
+| `npm run fix`                                      | Prettier then ESLint `--fix`: **run before `check`**                                                                                                                                                                        |
+| `npm run check`                                    | Prettier + ESLint + secretlint + `tsc` + Vitest + `npm audit` + knip: **must be green to finish a task**                                                                                                                    |
+| `npm run deps:audit`                               | `npm audit`, any severity fails                                                                                                                                                                                             |
+| `npm run deps:outdated`                            | fails when a dependency is not on its latest version                                                                                                                                                                        |
+| `npm run deps:unused`                              | knip: unused files, exports and dependencies (`knip.json`)                                                                                                                                                                  |
+| `npm run deps:tools`                               | fails when a GitHub Action is not on its latest major version or `.nvmrc` not on the latest Node.js LTS                                                                                                                     |
+| `npm run check:all`                                | `check` + `deps:outdated` + `deps:tools` + docs build + playground build (what CI and the pre-push hook run)                                                                                                                |
+| `npm run docs:dev` / `docs:build` / `docs:preview` | documentation site (TypeDoc API generated first)                                                                                                                                                                            |
+| `npm run docs:api`                                 | regenerate `docs/api/` from the TSDoc                                                                                                                                                                                       |
+| `npm run metrics:session`                          | time and tokens of the current turn; `--markdown` for the chat, `--all` for the conversation ([metrics](./metrics.md#session-report))                                                                                       |
+| `npm run library -- …`                             | the local source library: `search`, `get`, `read`, `list` ([sources](./sources.md))                                                                                                                                         |
+| `npm run metrics`                                  | Markdown report of the agent's work: commands by count and time, slowest calls, time and tokens per session, feature, story and task ([metrics](./metrics.md))                                                              |
+| `npm run playground:build`                         | static build of the playground into the docs site (`docs/.vitepress/dist/playground/`)                                                                                                                                      |
+
+## Playground
+
+`playground/index.html` loads `playground/index.ts`, which may only import the public API (`../src`). It is published with the docs site on each release: <https://alexandregallais.github.io/synoptic-studio/playground/> (menu _Playground_). It will show each pipeline stage (integer model → `d` → `<path>`) as features arrive.
+
+## Build
+
+Vite library mode (`build.lib`), a single unminified ESM output; `tsc -p tsconfig.build.json` emits the `.d.ts`. `package.json`: `"sideEffects": false`, `exports` points to `dist/`.
+
+## CI
+
+See [ci.md](./ci.md).
+
+## IDE
+
+See [formatting](../conventions/formatting.md#format-on-save). WebStorm and VS Code settings are in the repository (`.idea/`, `.vscode/`).

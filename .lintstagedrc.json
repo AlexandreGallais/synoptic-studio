@@ -1,0 +1,5 @@
+{
+  "*.{ts,md}": ["prettier --write", "eslint --fix --max-warnings=0 --no-warn-ignored"],
+  "*.{json,html,css,scss,yml,yaml}": ["prettier --write"],
+  "*": ["secretlint"]
+}

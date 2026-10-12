@@ -1,0 +1,52 @@
+{
+  // Policy: ESLint carries every rule it can check. Only the options the compiler alone can
+  // guarantee (type system, module resolution) are here. See docs/conventions/typescript.md
+  // and ADR-0010.
+  "compilerOptions": {
+    // Target and modules
+    "target": "es2025",
+    "lib": ["es2025", "esnext.temporal", "dom"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "moduleDetection": "force",
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "noUncheckedSideEffectImports": true,
+    "resolveJsonModule": true,
+    // Node.js runs the hooks and scripts as they are (type stripping): relative imports name the .ts file.
+    "allowImportingTsExtensions": true,
+    "types": ["node", "vite/client"],
+
+    // Type system: out of ESLint's reach
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "useUnknownInCatchVariables": true,
+
+    // Delegated to ESLint (off here so that they never block the build)
+    // noUnusedLocals / noUnusedParameters -> unused-imports/no-unused-vars
+    // noFallthroughCasesInSwitch          -> no-fallthrough
+    // allowUnreachableCode                -> no-unreachable
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": false,
+
+    // Output: checking only; tsconfig.build.json emits the .d.ts
+    "noEmit": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": [
+    "src",
+    "playground",
+    "eslint",
+    "docs/.vitepress/**/*.ts",
+    ".claude/hooks",
+    "scripts",
+    "tests",
+    "*.ts"
+  ]
+}

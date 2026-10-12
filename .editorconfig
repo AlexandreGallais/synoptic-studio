@@ -1,0 +1,19 @@
+# EditorConfig — https://editorconfig.org
+# Single source of the shared editor settings. Prettier also reads end_of_line, indent_style,
+# indent_size and max_line_length (no duplicate in .prettierrc.json).
+# See docs/conventions/formatting.md.
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+max_line_length = 100
+
+[*.md]
+# Two trailing spaces are a Markdown line break.
+trim_trailing_whitespace = false

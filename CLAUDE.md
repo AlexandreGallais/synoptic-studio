@@ -1,0 +1,27 @@
+@AGENTS.md
+
+# Claude Code
+
+What only Claude Code uses; the rules above hold for every agent. Configuration: `docs/tooling/agent.md`.
+
+## Skills, agents, tools
+
+| Need                                | Use                                                                                                    |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| a story, a run, a spike, an audit   | `/story`, `/run` (only when the Product Owner starts one), `/spike`, `/audit`, `/derivation`           |
+| a demo, a review, a retrospective   | `/review` (VAL and REV), `/retro`                                                                      |
+| GitHub issues                       | `/triage`                                                                                              |
+| a second opinion, in the background | agents `auditor`, `math-expert`, `verifier`, `functional-analyst`, `doc-editor` (read-only)            |
+| a source                            | MCP `library_search`, then `library_get` and `library_read`; WebFetch only for a page they cannot read |
+| a choice for the Product Owner      | the questionnaire (AskUserQuestion), options with numeric examples, no drawings in characters          |
+
+## While working
+
+- Write the current step to `.git/metrics/step` (one short line, French): the status line shows it under the epic, feature and story.
+- During `/run`, say nothing between tool calls: the commits and the status line show the progress; one summary at the stop.
+- End every turn's last message with the session report: `npm run metrics:session -- --markdown`.
+- Before a pause, log the session in `docs/process/journal.md`.
+
+## Guards
+
+The `guard-bash` hook denies `gh pr merge`, `--no-verify` and force pushes without lease: never look for a workaround. Area pitfalls load with their files: `.claude/rules/library.md` (`src/`, `playground/`), `docs.md` (Markdown), `tooling.md` (lint, tests, CI, hooks).

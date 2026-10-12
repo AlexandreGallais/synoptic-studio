@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "library": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "--harmony-temporal",
+        "--no-warnings=ExperimentalWarning",
+        "${CLAUDE_PROJECT_DIR:-.}/scripts/library-mcp.ts"
+      ]
+    }
+  }
+}

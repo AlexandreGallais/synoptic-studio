@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://alexandregallais.github.io/synoptic-studio/
+    about: Domain, decisions, guide and API reference.
+  - name: Security vulnerability
+    url: https://github.com/AlexandreGallais/synoptic-studio/security/advisories/new
+    about: Report privately, never in a public issue.

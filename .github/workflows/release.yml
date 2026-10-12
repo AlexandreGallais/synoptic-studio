@@ -1,0 +1,90 @@
+# Versioning, changelog and documentation site (docs/tooling/releases.md).
+name: Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      releases_created: ${{ steps.release.outputs.releases_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - id: release
+        uses: googleapis/release-please-action@v5
+        with:
+          # Personal access token: pull requests it updates trigger the CI, whose skipped jobs report
+          # the required checks (docs/tooling/releases.md).
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+      # The release pull request merges itself (option B) once its CI has reported: every job skipped
+      # (ADR-0038). A merge commit, the only method on main, keeps develop an ancestor of main.
+      - if: steps.release.outputs.prs_created == 'true'
+        run: gh pr merge "${{ fromJSON(steps.release.outputs.pr).number }}" --auto --merge --repo "${{ github.repository }}"
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+
+  # Attaches to the GitHub release the test results of the released code (ADR-0027): the report of
+  # the CI of the last pull request merged into main, not a new run (ADR-0038).
+  test-report:
+    needs: release-please
+    if: needs.release-please.outputs.releases_created == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - name: Download the report of the last pull request into main
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          run_id=$(gh run list --workflow ci.yml --event pull_request --status success --limit 20 \
+            --json databaseId,headBranch \
+            --jq 'map(select(.headBranch | startswith("release-please--") | not))[0].databaseId')
+          gh run download "$run_id" --name test-report
+      - run: gh release upload "${{ needs.release-please.outputs.tag_name }}" test-report.xml --clobber
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+
+  # Publishes the documentation site when a version is released (or on manual run).
+  # Runs here because a release created with GITHUB_TOKEN triggers no other workflow.
+  docs:
+    needs: release-please
+    if: needs.release-please.outputs.releases_created == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run docs:build
+        env:
+          DOCS_BASE: /${{ github.event.repository.name }}/
+      - run: npm run playground:build
+        env:
+          PLAYGROUND_BASE: /${{ github.event.repository.name }}/playground/
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: docs/.vitepress/dist
+      - id: deploy
+        uses: actions/deploy-pages@v5
