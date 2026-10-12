@@ -12,7 +12,7 @@ flowchart LR
     AUD --> VAL[VAL<br/>guided test, demo]
     VAL --> REL[Release<br/>develop to main]
   end
-  subgraph epic [Once every feature of the epic is released]
+  subgraph epic [Every feature released]
     direction LR
     REV[REV<br/>epic review, user test] --> RET[RET<br/>retrospective, metrics]
   end

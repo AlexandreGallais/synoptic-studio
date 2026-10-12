@@ -6,13 +6,13 @@ The pages the agent reads online are kept on the machine, in a database it searc
 
 ```mermaid
 flowchart TD
-  Q[A question] --> S[library_search: best sections, with snippets]
-  S -->|found| RD[library_read: the sections needed]
+  Q[A question] --> S[library_search<br/>best sections, snippets]
+  S -->|found| RD[library_read<br/>the sections needed]
   S -->|not found| G[library_get url]
   G --> F{stored and fresh?}
   F -->|yes| T[table of contents]
   F -->|no| W[fetch, conditional when stored]
-  W --> M[Markdown, split at headings, indexed]
+  W --> M[Markdown, split<br/>at headings, indexed]
   M --> T
   T --> RD
 ```

@@ -1,6 +1,7 @@
 import DefaultTheme from "vitepress/theme";
 
 import { drawDiagrams } from "./draw-diagrams";
+import "./diagrams.css";
 
 import type { Theme } from "vitepress";
 

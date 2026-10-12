@@ -74,13 +74,22 @@ export async function drawDiagrams(): Promise<void> {
     block.classList.add("drawing");
   }
 
+  // Labels are measured with the page's font: wait for it, or the boxes are sized for the
+  // fallback font and the text overflows them.
+  await document.fonts.ready;
+
   const isDark = document.documentElement.classList.contains("dark");
 
-  mermaid.initialize({ startOnLoad: false, theme: isDark ? "dark" : "neutral" });
+  mermaid.initialize({
+    flowchart: { padding: 16, useMaxWidth: true, wrappingWidth: 180 },
+    startOnLoad: false,
+    theme: isDark ? "dark" : "neutral",
+    themeVariables: { fontFamily: getComputedStyle(document.body).fontFamily, fontSize: "14px" },
+  });
 
-  await Promise.all(
-    blocks.map(async (block, index) => {
-      await drawDiagram(block, index);
-    }),
-  );
+  // One at a time: Mermaid measures text in the page, and parallel drawings disturb it.
+  await blocks.reduce(async (previous, block, index) => {
+    await previous;
+    await drawDiagram(block, index);
+  }, Promise.resolve());
 }
