@@ -24,5 +24,6 @@ Written at the end of each feature (`VAL`, demo page) and of each epic (`REV`, e
 | [F09 — The rectangle, a free shape you can stretch](./f09-stretchable-free-shape.md) | points in a box of their own, stretching without loss, the guided test                 |
 | [F08 — Moving, adding and deleting points](./f08-node-editing.md)                    | converting a polygon, typing x and y, a point in the middle, deleting, the guided test |
 | [F04 — Turning a shape by any angle](./f04-free-rotation.md)                         | the angle, the two boxes, the position, editing a turned shape, the guided test        |
+| [F06 — A polygon stretched to its box](./f06-stretched-polygon.md)                   | the « Stretched to its box » check box, rule C, rule B for comparison, the guided test |
 
 Templates: `_feature-demo.md`, `_epic-report.md` (not published).

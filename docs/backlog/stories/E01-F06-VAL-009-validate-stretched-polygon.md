@@ -21,6 +21,6 @@ Replay every acceptance criterion of F06 in the playground.
 
 One task = one commit, referenced as `VAL-009.Tn`. This story is not merged automatically (ADR-0028).
 
-- [ ] T1 — One test per criterion `[F06.AC1]`…`[F06.AC5]` (0.5 h)
-- [ ] T2 — Guided test in the playground: the steps of the US-021 card (1 h)
-- [ ] T3 — Demo page in `docs/guide/` (0.5 h)
+- [x] T1 — One test per criterion `[F06.AC1]`…`[F06.AC5]`: written with the stories (AC1 in 4 tests, AC2 in 12, AC3 in 3, AC4 in 2, AC5 in 5) (0.5 h)
+- [x] T2 — Guided test in the playground: the steps of the US-021 card, steps 58 to 66 (1 h)
+- [x] T3 — Demo page in `docs/guide/`, with rules C and B side by side, as the Product Owner asked (0.5 h)
