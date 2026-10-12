@@ -1,3 +1,4 @@
+import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { edgeLengths } from "./edge-lengths";
@@ -58,4 +59,16 @@ describe("unitStretchedPolygon (DERIV-stretched-polygon step 6)", () => {
       expect(base).toBeCloseTo(width, DECIMALS);
     }
   });
+
+  test.prop([fc.integer({ max: 12, min: 3 }), fc.double({ max: 3, min: -3, noNaN: true })])(
+    "closes with sides of length 1 for every λ where it closes (DERIV-stretched-polygon step 2)",
+    (corners, log) => {
+      const lengths = edgeLengths(unitStretchedPolygon(corners, Math.exp(log)));
+
+      // An odd polygon does not close at some small λ: NaN coordinates, then NaN lengths.
+      expect(lengths.every((length) => Number.isNaN(length) || Math.abs(length - 1) < 1e-9)).toBe(
+        true,
+      );
+    },
+  );
 });

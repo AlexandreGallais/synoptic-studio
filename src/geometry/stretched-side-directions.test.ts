@@ -33,7 +33,7 @@ describe("stretchedSideDirections (DERIV-stretched-polygon steps 1–2)", () => 
   });
 
   it("gives NaN when no side closes an odd polygon: a pentagon flattened by λ = e⁻³", () => {
-    // φ₁ = atan2(e⁻³ sin 72°, cos 72°) ≈ 9.2°: −1/2 − cos φ₁ ≈ −1.49, outside [−1, 1].
+    // φ₁ = atan2(e⁻³ sin 72°, cos 72°) ≈ 8.7°: −1/2 − cos φ₁ ≈ −1.49, outside [−1, 1].
     expect(stretchedSideDirections(5, Math.exp(-3))[1]).toBeNaN();
   });
 });

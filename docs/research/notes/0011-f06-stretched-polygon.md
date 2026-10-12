@@ -22,7 +22,7 @@ No book, paper or tool documents such a polygon. The rule has to be a derivation
 - Minimizing it alone loses corners: a stretched square becomes a trapezoid; in a 300 × 50 box the pentagon's apex flattens; in 50 × 300 the hexagon's side corners vanish. Even when equal sides exist, corners can become almost flat: the equal-sided octagon of the λ family (below) in 100 × 50 has corners turning 13.6°, against 45° when regular.
 - So a rule must also protect the corners, measured by their **turning angle**, the angle between the directions of the two sides meeting there (`REF-CARROLL-2013`); a regular polygon turns `2π/n` at each corner.
 - A closed polygon is fixed, up to its place, by its side lengths and turning angles (`REF-CRANE-DISCRETE-CURVES`): the shape can be built from directions of sides of length 1.
-- Equal sides are unique only for `n = 5` and 6; from 7 on, a family of equal-sided polygons fills the box, and a choice is needed. The research answer counted the octagon as unique too, assuming a central symmetry; the review of SP-009 found other equal-sided octagons filling a square (sides turning 42°, 101.24°, 123.24°), so it is a family as well.
+- Equal sides are unique only for `n = 5` and 6; from 7 on, a family of equal-sided polygons fills the box, and a choice is needed. The research answer counted the octagon as unique too, assuming a central symmetry; the review of SP-009 found other equal-sided octagons filling a square (side directions 42°, 101.24°, 123.24°), so it is a family as well.
 
 ### The λ family
 
