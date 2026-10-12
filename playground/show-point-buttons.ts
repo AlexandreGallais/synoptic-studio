@@ -1,4 +1,4 @@
-import { edgeOfSelection } from "../src";
+import { edgeOfSelection, isFreeShape } from "../src";
 
 import { selectElement } from "./select-element";
 import { showDeleteButton } from "./show-delete-button";
@@ -24,21 +24,22 @@ export function showPointButtons(
   selection: VertexSelection,
 ): void {
   const { model } = reading;
-  const isPolygon = "anchor" in model;
+  // A polygon or a round shape keeps its points: it is converted first (F08, F10).
+  const isConvertible = !isFreeShape(model);
   const edge = edgeOfSelection(
     selection.selected,
     reading.corners.length * Math.sign(model.width * model.height),
   );
   const convert = selectElement(document, "convert");
 
-  convert.hidden = !isPolygon;
+  convert.hidden = !isConvertible;
   convert.toggleAttribute("disabled", model.width === 0 || model.height === 0);
-  selectElement(document, "convert-hint").hidden = !isPolygon;
+  selectElement(document, "convert-hint").hidden = !isConvertible;
 
   showDeleteButton(document, reading, selection);
 
   selectElement(document, "add-midpoint").toggleAttribute(
     "disabled",
-    isPolygon || edge === undefined,
+    isConvertible || edge === undefined,
   );
 }

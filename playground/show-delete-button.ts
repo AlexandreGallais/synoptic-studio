@@ -1,4 +1,4 @@
-import { deletionOutcome } from "../src";
+import { deletionOutcome, isFreeShape } from "../src";
 
 import { selectElement } from "./select-element";
 
@@ -29,9 +29,9 @@ function readDeletionOutcome(
 ): DeletionOutcome | "none" {
   const { model } = reading;
 
-  return "anchor" in model || selection.selected.length === 0
-    ? "none"
-    : deletionOutcome(model, selection.selected);
+  return isFreeShape(model) && selection.selected.length > 0
+    ? deletionOutcome(model, selection.selected)
+    : "none";
 }
 
 /**

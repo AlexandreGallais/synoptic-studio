@@ -190,6 +190,7 @@
         <select id="shape">
           <option value="rectangle" selected>Rectangle</option>
           <option value="polygon">Polygon</option>
+          <option value="round">Round</option>
           <option value="free" hidden>Free shape</option>
         </select>
       </label>
@@ -233,7 +234,7 @@
       <ol id="points" aria-label="Points" hidden></ol>
       <fieldset id="point-fields" hidden>
         <legend>Points</legend>
-        <label
+        <label id="point-radius-field"
           >Radius <input id="point-radius" type="number" min="0" max="100000" step="1"
         /></label>
         <label>X <input id="point-x" type="number" step="1" /></label>
@@ -242,7 +243,8 @@
         <button id="delete-points" type="button">Delete points</button>
         <p id="delete-message" hidden></p>
         <p id="convert-hint" hidden>
-          A polygon keeps its points: convert it to a free shape to move, add or delete them.
+          A polygon or a round shape keeps its points: convert it to a free shape to move, add or
+          delete them.
         </p>
         <button id="convert" type="button">Convert to free shape</button>
       </fieldset>
