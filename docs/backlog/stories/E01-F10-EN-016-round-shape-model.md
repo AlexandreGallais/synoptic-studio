@@ -25,7 +25,7 @@ None of its own: shown by US-020's card.
 
 ## Tasks
 
-One task = one commit, referenced as `EN-016.Tn`.
+One task = one commit, referenced as `EN-016.Tn`. ADR-0036 written by SP-008; `@see` `DERIV-round-shape`.
 
 - [ ] T1 — `RoundShape`, validity, corners; tests and properties (1.5 h)
 - [ ] T2 — Conversion to a free shape; tests; domain, glossary, re-exports (1 h)
