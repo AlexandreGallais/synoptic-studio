@@ -15,6 +15,7 @@ describe("isValidRegularPolygon", () => {
         x: 0,
         y: 0,
         anchor: CENTER,
+        stretched: false,
         corners: 3,
         height: 100,
         radii: [0, 0, 0],
@@ -28,6 +29,7 @@ describe("isValidRegularPolygon", () => {
         x: 0,
         y: 0,
         anchor: CENTER,
+        stretched: false,
         corners: 12,
         height: 100,
         radii: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -43,6 +45,7 @@ describe("isValidRegularPolygon", () => {
         x: 0,
         y: 0,
         anchor: CENTER,
+        stretched: false,
         corners: 2,
         height: 100,
         radii: [0, 0],
@@ -56,6 +59,7 @@ describe("isValidRegularPolygon", () => {
         x: 0,
         y: 0,
         anchor: CENTER,
+        stretched: false,
         corners: 13,
         height: 100,
         radii: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -69,6 +73,7 @@ describe("isValidRegularPolygon", () => {
         x: 0,
         y: 0,
         anchor: CENTER,
+        stretched: false,
         corners: 4.5,
         height: 100,
         radii: Array.from({ length: 4.5 }, () => 0),
@@ -84,6 +89,7 @@ describe("isValidRegularPolygon", () => {
         x: 0,
         y: 0,
         anchor: CENTER,
+        stretched: false,
         corners: 6,
         height: 0,
         radii: [0, 0, 0, 0, 0, 0],
@@ -97,6 +103,7 @@ describe("isValidRegularPolygon", () => {
         x: 0,
         y: 0,
         anchor: CENTER,
+        stretched: false,
         corners: 6,
         height: 100,
         radii: [0, 0, 0, 0, 0, 0],
@@ -110,6 +117,7 @@ describe("isValidRegularPolygon", () => {
         x: 0,
         y: 0,
         anchor: CENTER,
+        stretched: false,
         corners: 6,
         height: 0.5,
         radii: [0, 0, 0, 0, 0, 0],
@@ -125,6 +133,7 @@ describe("isValidRegularPolygon", () => {
         x: 0,
         y: 0,
         anchor: CENTER,
+        stretched: false,
         corners: 6,
         height: 100,
         radii: [1000, 1000, 1000, 1000, 1000, 1000],
@@ -138,6 +147,7 @@ describe("isValidRegularPolygon", () => {
         x: 0,
         y: 0,
         anchor: CENTER,
+        stretched: false,
         corners: 6,
         height: 100,
         radii: [-1, -1, -1, -1, -1, -1],
@@ -159,6 +169,7 @@ describe("isValidRegularPolygon", () => {
             x: 0,
             y: 0,
             anchor,
+            stretched: false,
             corners: 3,
             height: 100,
             radii: [0, 0, 0],
@@ -167,6 +178,24 @@ describe("isValidRegularPolygon", () => {
         ).toBe(true);
       }
     }
+  });
+
+  it("[F06.AC1] accepts a stretched polygon and refuses a stretched value that is not a boolean", () => {
+    const polygon = {
+      anchor: CENTER,
+      angle: 0,
+      corners: 6,
+      height: 50,
+      radii: [0, 0, 0, 0, 0, 0],
+      width: 300,
+      x: 0,
+      y: 0,
+    };
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- data read from outside may hold any value
+    const isText = "yes" as unknown as boolean;
+
+    expect(isValidRegularPolygon({ ...polygon, stretched: true })).toBe(true);
+    expect(isValidRegularPolygon({ ...polygon, stretched: isText })).toBe(false);
   });
 
   it("[F07.AC1] refuses an alignment other than min, mid and max", () => {
@@ -179,6 +208,7 @@ describe("isValidRegularPolygon", () => {
         x: 0,
         y: 0,
         anchor: { horizontal: left, vertical: "mid" },
+        stretched: false,
         corners: 3,
         height: 100,
         radii: [0, 0, 0],
@@ -192,6 +222,7 @@ describe("isValidRegularPolygon", () => {
         x: 0,
         y: 0,
         anchor: { horizontal: "mid", vertical: left },
+        stretched: false,
         corners: 3,
         height: 100,
         radii: [0, 0, 0],
@@ -207,6 +238,7 @@ describe("isValidRegularPolygon", () => {
         x: 0,
         y: 0,
         anchor: CENTER,
+        stretched: false,
         corners: 3,
         height: 100,
         radii: [10, 0, 5],
@@ -220,6 +252,7 @@ describe("isValidRegularPolygon", () => {
         x: 0,
         y: 0,
         anchor: CENTER,
+        stretched: false,
         corners: 3,
         height: 100,
         radii: [10, 0],
@@ -233,6 +266,7 @@ describe("isValidRegularPolygon", () => {
         x: 0,
         y: 0,
         anchor: CENTER,
+        stretched: false,
         corners: 3,
         height: 100,
         radii: [10, 0, -1],
@@ -252,6 +286,7 @@ describe("isValidRegularPolygon", () => {
       isValidRegularPolygon({
         ...placement,
         anchor: CENTER,
+        stretched: false,
         corners: 6,
         height: 100,
         radii: [0, 0, 0, 0, 0, 0],

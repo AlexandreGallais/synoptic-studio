@@ -16,6 +16,7 @@ describe("regularPolygonAsFreeShape", () => {
   it("[F08.AC1] keeps a hexagon's exact corners and the size of the box around them", () => {
     const hexagon = {
       anchor: CENTER,
+      stretched: false,
       angle: 0,
       x: 0,
       y: 0,
@@ -40,17 +41,21 @@ describe("regularPolygonAsFreeShape", () => {
     }),
     corners: fc.integer({ max: 12, min: 3 }),
     height: fc.integer({ max: 1000, min: 1 }),
+    stretched: fc.boolean(),
     width: fc.integer({ max: 1000, min: 1 }),
-  })("[F08.AC1] draws the same corners once converted: the polygon does not move", (polygon) => {
-    const radii = Array.from({ length: polygon.corners }, (unused, index) => index);
-    const before = regularPolygonCorners({ angle: 0, x: 0, y: 0, ...polygon, radii });
-    const after = freeShapeCorners(
-      regularPolygonAsFreeShape({ angle: 0, x: 0, y: 0, ...polygon, radii }),
-    );
+  })(
+    "[F08.AC1] [F06.AC4] draws the same corners once converted, stretched or not: the polygon does not move",
+    (polygon) => {
+      const radii = Array.from({ length: polygon.corners }, (unused, index) => index);
+      const before = regularPolygonCorners({ angle: 0, x: 0, y: 0, ...polygon, radii });
+      const after = freeShapeCorners(
+        regularPolygonAsFreeShape({ angle: 0, x: 0, y: 0, ...polygon, radii }),
+      );
 
-    // At its own size a free shape is drawn as stored: the same corners, bit for bit.
-    expect(after).toEqual(before);
-  });
+      // At its own size a free shape is drawn as stored: the same corners, bit for bit.
+      expect(after).toEqual(before);
+    },
+  );
 
   it("gives no valid free shape for a polygon of size 0: it has no box to stretch (F08)", () => {
     const flat = regularPolygonAsFreeShape({
@@ -58,6 +63,7 @@ describe("regularPolygonAsFreeShape", () => {
       x: 0,
       y: 0,
       anchor: CENTER,
+      stretched: false,
       corners: 6,
       height: 100,
       radii: [0, 0, 0, 0, 0, 0],
@@ -72,6 +78,7 @@ describe("regularPolygonAsFreeShape", () => {
     // so that the drawing does not move (DERIV-turned-shape step 5).
     const triangle = {
       anchor: { horizontal: "mid", vertical: "max" },
+      stretched: false,
       angle: 90,
       corners: 3,
       height: 100,
@@ -102,6 +109,7 @@ describe("regularPolygonAsFreeShape", () => {
     ({ angle, corners }) => {
       const polygon = {
         anchor: { horizontal: "min", vertical: "max" },
+        stretched: false,
         angle,
         corners,
         height: 80,
