@@ -1,6 +1,6 @@
 # DERIV-stretched-polygon — A polygon stretched to its box, sides equal while its corners stay sound
 
-Used by: ADR-0037, F06 (rule C chosen by the Product Owner, research note 0011). Sources: `REF-CRANE-DISCRETE-CURVES` (a plane polygon is fixed by its side lengths and turning angles), `REF-CARROLL-2013` (the turning angle), `REF-OPENSTAX-UNIT-CIRCLE`, `REF-MATHWORLD-VECTOR-ADDITION`, `REF-MATHWORLD-AFFINE`, `REF-MDN-ATAN2`, `REF-MDN-ACOS`, `REF-MATHWORLD-BISECTION`; `DERIV-regular-polygon-fit` steps 1–2, `DERIV-turning-angle`, `DERIV-free-shape-stretch`.
+Used by: ADR-0037, F06 (rule C chosen by the Product Owner, research note 0011). Sources: `REF-CRANE-DISCRETE-CURVES` (a plane polygon is fixed by its side lengths and turning angles), `REF-CARROLL-2013` (the turning angle), `REF-OPENSTAX-UNIT-CIRCLE`, `REF-MATHWORLD-VECTOR-ADDITION`, `REF-MATHWORLD-AFFINE`, `REF-MDN-ATAN2`, `REF-MDN-ACOS`, `REF-MATHWORLD-BISECTION`, `REF-SVG2-COORDS`; `DERIV-regular-polygon-fit` steps 1–2, `DERIV-turning-angle`, `DERIV-free-shape-stretch`.
 
 ## Inputs
 

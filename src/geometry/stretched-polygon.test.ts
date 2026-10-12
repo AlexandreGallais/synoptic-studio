@@ -165,8 +165,8 @@ describe("stretchedPolygon (DERIV-stretched-polygon, checks)", () => {
 
   test.prop([
     fc.integer({ max: 12, min: 3 }),
-    fc.integer({ max: 1000, min: 1 }),
-    fc.integer({ max: 1000, min: 1 }),
+    fc.integer({ max: 100_000, min: 1 }),
+    fc.integer({ max: 100_000, min: 1 }),
   ])(
     "[F06.AC2] touches the four sides of its box, symmetric about its vertical axis",
     (corners, width, height) => {
@@ -191,8 +191,8 @@ describe("stretchedPolygon (DERIV-stretched-polygon, checks)", () => {
 
   test.prop([
     fc.integer({ max: 12, min: 5 }),
-    fc.integer({ max: 1000, min: 1 }),
-    fc.integer({ max: 1000, min: 1 }),
+    fc.integer({ max: 100_000, min: 1 }),
+    fc.integer({ max: 100_000, min: 1 }),
   ])(
     "[F06.AC2] follows rule C: its sides are equal, or its sharpest corner turns π/n",
     (corners, width, height) => {
