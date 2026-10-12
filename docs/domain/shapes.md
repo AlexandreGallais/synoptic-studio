@@ -35,7 +35,7 @@ Consequence: every shape is described by numbers. The drawing is **determined**,
 
 ### Rotation of shapes
 
-- In the Symbol Editor, a shape may be rotated by **any integer angle in degrees** (e.g. a rectangle tilted by 45°). The angle is stored; the rotated vertices are derived (ADR-0003).
+- In the Symbol Editor, a shape — free shape, regular polygon or round shape — may be rotated by **any integer angle in degrees** (e.g. a rectangle tilted by 45°). The angle is stored; the rotated vertices are derived (ADR-0003).
 - A shape turns about the **center of its box**; only shapes turn, never a single point (Product Owner, 2026-10-11, F04).
 - A positive angle turns **clockwise** on screen; the angle is kept **from 0 to 359**: 370 becomes 10, −90 becomes 270 (Product Owner, 2026-10-11, F04).
 - Turning keeps the shape (the Product Owner's rule, compared by them with Figma): its width and height stay those before it turned, its corner radii, anchor (the box turns with its content) and point numbers do not change; back to 0 the shape is straight again. In Points mode, x and y are those of the turned point in the SVG (Q27). A turned polygon converted to a free shape keeps its angle (F04).
@@ -115,6 +115,15 @@ Functional reference: Inkscape's Star/Polygon tool.
 - The anchor places the **sharp-cornered** polygon; the corner radius then rounds inwards without moving it: a flat face on the anchored side keeps touching it, a rounded vertex leaves it (a triangle anchored at the top with radius 10 has its top at y = 10). No "always touch" option, which would push a rounded polygon until it touches its box (Product Owner, 2026-10-11, confirmed at `VAL-003`): a polygon is used to attach things to the face that touches its box, and a rounded polygon pushed off its sharp place would put that face, and the measures taken from it, at meaningless positions.
 - The grid keeps its **nine places** (Product Owner, 2026-10-11, left to the agent at `VAL-003`). In a given box only one axis has room, so only three places give different drawings. A corner place is not a duplicate: it holds both alignments, and the one that counts follows the proportions of the box. A triangle anchored bottom left sits at the bottom of a 100 × 100 box; a square anchored bottom left sits on the left of a 100 × 50 box. The layout box (Q21) uses the same grid for elements with room on both axes.
 - Rotation (F04) comes after: the box turns with its content.
+
+### Round shape
+
+Settled with the Product Owner (2026-10-12, F10, ADR-0036): « fais les formes circulaires ».
+
+- A **round shape** fills its box: a **circle** when width and height are equal, a **capsule** otherwise — two half circles whose diameter is the smaller side, joined by straight sides (a stadium, `REF-MATHWORLD-STADIUM`). Circular arcs only; the ellipse stays out (Q4).
+- It stores its width and height (integers ≥ 0, 0 allowed: a line), its angle and its position (ADR-0035); no anchor, as it always touches the four sides of its box (« il n'y a pas vraiment d'ancrage »); no radius, no points.
+- It is drawn as the rectangle of its box with every corner rounded by half the smaller side; no radius is reduced (`DERIV-round-shape`).
+- **Converted** to a free shape, it becomes the rectangle tool's free shape for its box, its 4 points numbered as the rectangle's (point 1 at the top left, clockwise), each with a radius of half the smaller side rounded up: the same drawing, at the same place; it then stays round until stretched.
 
 ### Text
 

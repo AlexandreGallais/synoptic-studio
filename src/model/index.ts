@@ -42,6 +42,7 @@ export * from "./regular-polygon-corner-range";
 export * from "./regular-polygon-corners";
 export * from "./resize-radii";
 export type * from "./round-shape";
+export * from "./round-shape-as-free-shape";
 export * from "./round-shape-corners";
 export * from "./selection-after-click";
 export * from "./selection-after-handle-click";
