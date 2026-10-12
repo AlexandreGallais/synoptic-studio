@@ -3,7 +3,7 @@ id: EN-017
 epic: E01
 feature: F06
 title: The stretched polygon in the model
-status: ready
+status: done
 points: 3
 ---
 
