@@ -33,7 +33,7 @@ Launch the playground with `npm run dev`, then open `http://localhost:5173`. Wor
 | 8    | Corners 6, tick « Stretched to its box », Points mode, « Convert to free shape »                            | The hexagon does not move: it is now a free shape with the same six points                                                                                             |
 | 9    | Shape mode, choose Polygon (the check box is still ticked: the polygon comes back stretched), then Angle 30 | The stretched polygon turns about the center of its box, like any shape                                                                                                |
 
-Look closely: at step 2 the six sides are equal while the box is square; at step 3 the pentagon can no longer have equal sides without a corner becoming almost flat, so it stops equalizing and is stretched. The Product Owner asked (2026-10-12) to compare rule C with rule B (equal sides at any cost) at the validation: the demo page of VAL-009 shows both side by side.
+Look closely: at step 2 the six sides are equal while the box is square; at step 3 the pentagon can no longer have equal sides without a corner becoming almost flat, so it stops equalizing and is stretched. The Product Owner compared rule C with rule B (equal sides at any cost) at the validation and kept rule C (VAL-009).
 
 ## Tasks
 
