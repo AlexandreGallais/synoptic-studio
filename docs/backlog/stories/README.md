@@ -70,5 +70,5 @@
 | [US-021](./E01-F06-US-021-stretched-option.md)                  | F06     | Stretch a polygon to its box in the playground       | done   |
 | [AUD-009](./E01-F06-AUD-009-audit-f06.md)                       | F06     | Audit F06: polygon stretched to fill its box         | done   |
 | [VAL-009](./E01-F06-VAL-009-validate-stretched-polygon.md)      | F06     | Validate F06 on the reference cases                  | done   |
-| [REV-001](./E01-REV-001-review-e01.md)                          | E01     | Review E01 with the Product Owner                    | draft  |
+| [REV-001](./E01-REV-001-review-e01.md)                          | E01     | Review E01 with the Product Owner                    | ready  |
 | [RET-001](./E01-RET-001-retrospective-e01.md)                   | E01     | Retrospective of E01                                 | draft  |

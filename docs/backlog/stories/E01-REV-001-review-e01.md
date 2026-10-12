@@ -2,7 +2,7 @@
 id: REV-001
 epic: E01
 title: Review E01 with the Product Owner
-status: draft
+status: ready
 points: 3
 ---
 
