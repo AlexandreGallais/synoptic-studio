@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.13.1](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.13.0...v0.13.1) (2026-10-12)
+
+
+### Documentation
+
+* **backlog:** epics E14 for curves and E15 for text, F10 and F05 moved out of E01 ([c573aac](https://github.com/AlexandreGallais/synoptic-studio/commit/c573aac9ef199d4bba858c92bc101f43a8d33e5c))
+* **docs:** round shape of E01 kept in research note 0010, with its account ([7a9f529](https://github.com/AlexandreGallais/synoptic-studio/commit/7a9f52973fa001286066a9e39fe2f2638999622a))
+
+
+### Build and dependencies
+
+* **deps:** vitest 5.0.4, coverage-v8 5.0.4, eslint-plugin-jsdoc 65.3.1 ([01a208d](https://github.com/AlexandreGallais/synoptic-studio/commit/01a208d434404758a636a826c1639bb7a7a20e9e))
+
 ## [0.13.0](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.12.5...v0.13.0) (2026-10-12)
 
 
