@@ -27,14 +27,14 @@ The polygon is symmetric about the vertical axis `x = 0`, its base on `y = 0` (F
 
 In the regular polygon of `DERIV-regular-polygon-fit` step 1, the vertices are `2π/n` apart on the circle; turning the polygon by `2π/n` maps each side onto the next, so the directions of the sides grow by `2π/n`: from the base (direction 0), `θⱼ = 2πj/n`.
 
-The stretched polygon keeps these directions scaled vertically by `λ`, the axis scaling `(x, y) ↦ (x, λy)`, an affine map that keeps the order of directions in the upper half plane but not the angles (`REF-MATHWORLD-AFFINE`): the side of direction `θⱼ`, `(cos θⱼ, sin θⱼ)`, becomes `(cos θⱼ, λ sin θⱼ)`, of direction
+The stretched polygon keeps these directions scaled vertically by `λ`, the axis scaling `(x, y) ↦ (x, λy)`, an affine map, which does not keep angles nor lengths (`REF-MATHWORLD-AFFINE`); the order of the directions is enforced by the corner guard of step 3, a negative turn failing it: the side of direction `θⱼ`, `(cos θⱼ, sin θⱼ)`, becomes `(cos θⱼ, λ sin θⱼ)`, of direction
 
 `φⱼ = atan2(λ sin θⱼ, cos θⱼ)` (`REF-MDN-ATAN2`: the angle in `[−π, π]` of the point `(x, y)`; here `sin θⱼ > 0`, so `φⱼ ∈ (0, π)`), and every side is given length 1 again.
 
 - **Even `n`**: `θⱼ` and `θ_{n/2 − j} = π − θⱼ` have opposite cosines and equal sines, so `φ_{n/2−j} = π − φⱼ`: their cosines cancel, and `θ_{n/4} = π/2` gives `φ = π/2`. The closure `Σ cos φⱼ = 0` of step 1 holds for every `λ`.
 - **Odd `n`**: the last side closes the half on the axis: `cos φₘ = −1/2 − Σ_{j<m} cos φⱼ`, `φₘ = acos(…)` in `[0, π]` (`REF-MDN-ACOS`); outside `[−1, 1]` no side closes it, and `acos` gives `NaN`: such a `λ` has no polygon.
 
-At `λ = 1` every `φⱼ = θⱼ` (the odd closure gives `θₘ` back, the regular polygon closing by symmetry): the regular polygon. For `n = 5`, 6 and 8 this family gives the only equal-sided polygon filling the box (note 0011); for the other `n`, one of several.
+At `λ = 1` every `φⱼ = θⱼ` (the odd closure gives `θₘ` back, the regular polygon closing by symmetry): the regular polygon. For `n = 5` and 6 (`m = 2`: the closure and the aspect fix both directions) this family gives the only equal-sided polygon filling the box; from 7 on, the octagon included (`m = 3`, one freedom left), it picks one of several (note 0011).
 
 ## Step 3 — Turning angles and the corner guard
 
@@ -46,17 +46,17 @@ In the code the turns are those of the whole polygon in the SVG frame (`turningA
 
 ## Step 4 — The aspect
 
-The unit polygon spans `2W` in width, `W` the largest `x` of the right half, and `H` in height, the largest `y` (the apex or the top side, `y` growing along the half): `A(λ) = H / (2W)`. `A` grows with `λ` (checked, step 5). The triangle (`m = 1`, `φ₁ = 2π/3` by closure) and the square (`φ₁ = π/2`) do not depend on `λ`: one shape each, `A = √3/2` and 1, always sound.
+The unit polygon spans `2W` in width, `W` the largest `x` of the right half, and `H` in height, the largest `y` (the apex or the top side, `y` growing along the half): `A(λ) = H / (2W)`. `A` grows with `λ` for `n ≥ 5` wherever the polygon closes (checked, step 5). The triangle (`m = 1`, `φ₁ = 2π/3` by closure) and the square (`φ₁ = π/2`) do not depend on `λ`: one shape each, `A = √3/2` and 1, always sound.
 
 ## Step 5 — Choosing λ (rule C)
 
-Bisection keeps a bracket `[a, b]` around the solution and halves it at each step; after `k` steps the error is at most `2⁻ᵏ (b − a)` (`REF-MATHWORLD-BISECTION`). It runs on `ln λ`, in `[−3, 3]`, which contains every sound `λ` of `n = 3 … 12` (note 0011's sound ratios), with 60 steps: an error below `3 · 2⁻⁶⁰ ≈ 2.6e-18`, under `EPSILON`.
+Bisection keeps a bracket `[a, b]` around the solution and halves it at each step; after `k` steps the error is at most `2⁻ᵏ (b − a)` (`REF-MATHWORLD-BISECTION`). It runs on `ln λ`, in `[−3, 3]`, which contains every sound `λ` of `n = 5 … 12`: from `λ_lo = 1/3` (hexagon) to `λ_hi = 6.74` (pentagon, `ln λ = 1.908`), found by the sweep below and confirmed by the review of SP-009; 60 steps: an error below `3 · 2⁻⁶⁰ ≈ 2.6e-18`, under `EPSILON`.
 
-1. `λ_lo`: the bisection in `[−3, 0]` on « not sound » (true at `−3`, false at 0).
+1. `λ_lo`: the bisection in `[−3, 0]` on « not sound » (true at `−3`, false at 0; for the triangle and the square, sound everywhere, it ends at `−3`, which gives their only shape).
 2. `λ_hi`: the bisection in `[0, 3]` on « sound ».
 3. If `r ≤ A(λ_lo)`, `λ = λ_lo`; if `r ≥ A(λ_hi)`, `λ = λ_hi` (the box is too wide or too tall for sound equal sides); otherwise the bisection in `[ln λ_lo, ln λ_hi]` on `A(λ) < r`.
 
-Each bisection needs its predicate to change once in its bracket: « sound » on each side of 1, and `A(λ) < r` between `λ_lo` and `λ_hi`. Neither is proved (note 0011); both are checked by the tests over `ln λ` from −3 to 3 in steps of 0.001 for every `n` from 3 to 12 (6 001 values each). The triangle and the square, independent of `λ`, give their only shape whatever the branch.
+Each bisection needs its predicate to change once in its bracket: « sound » on each side of 1, and `A(λ) < r` between `λ_lo` and `λ_hi`. Neither is proved (note 0011); both are checked by the tests over `ln λ` from −3 to 3 in steps of 0.001 (6 001 values): « sound » changes at most twice and holds at `λ = 1` for every `n` from 3 to 12 (never changes for 3 and 4); `A` never decreases where the polygon closes (`n = 5` and 9 do not close below `ln λ ≈ −0.58` and `−0.71`), constant for 3 and 4. The triangle and the square, independent of `λ`, give their only shape whatever the branch.
 
 A box of size 0 gives `r = 0`, `+∞` or `NaN` (`0/0`): every comparison with `NaN` is false, so the last bisection ends at `λ_lo`; any `λ` is right, the polygon being then flattened to a line or a point (step 6).
 
