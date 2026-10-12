@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.5](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.12.4...v0.12.5) (2026-10-12)
+
+
+### Build and dependencies
+
+* **deps:** happy-dom 21.0.1 ([c26f264](https://github.com/AlexandreGallais/synoptic-studio/commit/c26f2644019f2cc3f25321c5a9590bf5c72d9dac))
+
 ## [0.12.4](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.12.3...v0.12.4) (2026-10-11)
 
 
