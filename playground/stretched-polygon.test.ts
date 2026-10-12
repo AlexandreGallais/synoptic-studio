@@ -168,7 +168,10 @@ describe("playground: stretched polygon (US-021)", () => {
 
   it("unticks the check box when a step of the guided test draws a polygon of F02", () => {
     choosePolygon();
-    click("stretched");
+    click(isStretched() ? "shape" : "stretched");
+
+    expect(isStretched()).toBe(true);
+
     click("guide-next");
 
     expect(isStretched()).toBe(false);
