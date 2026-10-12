@@ -105,10 +105,25 @@ Run `npm run dev` and open `http://localhost:5173/?step=67`. Steps 67 to 72 each
 
 ## Questions for the review
 
-1. **Closure.** E01's closure criterion is "the cases of `shapes.md` §2–3 render as specified in the playground". §3 still holds text (now E15) and the layout box (E13). Should the criterion keep only the rectangle and the regular polygon?
+1. **Closure.** E01's closure criterion was "the cases of `shapes.md` §2–3 render as specified in the playground". §3 still holds text (now E15) and the layout box (E13). Should the criterion keep only the rectangle and the regular polygon?
 2. **Anything unwanted.** Is there something E01 built that you did not mean, or that works differently from what you had in mind?
 3. **Next epic.** Is E14 (curves, ellipse, round shape) still the right next step, before E15 (text)?
 
 ## Your feedback
 
-Said by the Product Owner during `REV-001`, recorded by the agent.
+Given by the Product Owner during `REV-001` (2026-10-12), spoken, written here by the agent in its own words.
+
+**Answers to the questions.** 1: yes, the closure criterion now keeps only the rectangle and the regular polygon. 2: nothing was built that they did not mean, and nothing works differently from what they had in mind. 3: yes, E14 (curves, ellipse, round shape) is the right next epic, before E15 (text).
+
+**The user test, step by step.**
+
+| Step | What they saw                                                                                                                                                             | Matches the step |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
+| 67   | the rectangle widened to 200 and kept its radius of 12                                                                                                                    | yes              |
+| 68   | the capsule with an effective radius of 20 stood up at 90°; trying radius 20 by hand, the "reduced to fit" message went away, and smaller radii rounded less, as expected | yes              |
+| 69   | only the two corners of the base were rounded by 15                                                                                                                       | yes              |
+| 70   | nothing moved on converting; the point added in the middle of the base went down to y 120 and the height became 120                                                       | yes              |
+| 71   | turned by 30°, converted and widened, point 3 did not move; going back undid it all without a change                                                                      | yes              |
+| 72   | every corner had an effective radius of 50; with X 0 the shape seemed to go partly off the canvas — not blocking, kept for later (improvement log)                        | yes, one doubt   |
+
+**What the demo meant and what they understood.** Each step showed what it meant to show. One wording to fix: the steps say "press Enter" after typing a point's X or Y, but the drawing already follows the typing, so Enter is not needed.
