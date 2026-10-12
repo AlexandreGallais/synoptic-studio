@@ -26,5 +26,10 @@ Find, read and record the sources of every story of F06 before its implementatio
 
 One task = one commit, referenced as `SP-009.Tn`.
 
-- [ ] T1 — Research request 0005 answered (by the Product Owner in claude.ai), sources read and recorded; derivation; ADR (2 h)
-- [ ] T2 — Research note, stories updated (1 h)
+- [x] T1 — Research request 0011 answered (by the Product Owner in claude.ai), sources read and recorded, research note; rule C chosen by the Product Owner (1 h)
+- [ ] T2 — Derivation `DERIV-stretched-polygon`: the λ family, its closed forms for 6 and 8, the corner guard, the plain stretch past it (2 h). Open points from the research, each a step to settle:
+  - the aspect grows with `λ` for each `n` from 5 to 12, and the sound range is one interval containing `λ = 1`: proved, or tested exhaustively;
+  - a read source for `a sin φ − b cos φ = c ⇒ φ = atan(b/a) + asin(c / √(a² + b²))`;
+  - `λ_lo` and `λ_hi` computed at run time or tabulated;
+  - ECMA-376 read before any citation of the PowerPoint presets (or the citation dropped).
+- [ ] T3 — ADR (the stretched option in the polygon's model), stories updated (1 h)

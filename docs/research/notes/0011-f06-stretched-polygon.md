@@ -75,11 +75,11 @@ Drawing order of F02: clockwise on screen from the right end of the base.
 
 Hand check, hexagon 100 × 100: `φ₁ = 45° + asin(1/(2√2)) = 65.7048°`; the unit half-width `1/2 + cos φ₁ = 0.91144`; scale `50 / 0.91144 = 54.85838`, the side. The agent's own value before the research was 54.858.
 
-## Decisions for the Product Owner
+## Decided by the Product Owner (2026-10-12)
 
-1. The rule: A, B or C.
-2. Rule C's corner guard: half of the regular turn (`π/n`), a design value, not a sourced one; larger keeps corners rounder and sides less even.
-3. The square stays a rectangle (not the trapezoid the edge ratio alone prefers).
+1. **Rule C**: equal sides while every corner keeps enough turn, then a plain stretch of that limit polygon.
+2. **The corner guard is half of the regular turn** (`π/n`, 30° for the hexagon): a design value, not a sourced one; one third and two thirds were offered.
+3. **The square stays a rectangle**, and the triangle isosceles: neither has freedom (not the trapezoid that the edge ratio alone prefers).
 
 ## Open, for the derivation
 
