@@ -62,6 +62,7 @@ describe("freeShapeWithMidpoint", () => {
       x: 0,
       y: 0,
       anchor: { horizontal: "mid", vertical: "mid" },
+      stretched: false,
       corners: 6,
       height: 100,
       radii: [0, 0, 0, 0, 0, 0],

@@ -1,7 +1,7 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
-import { ALIGNMENTS, boundingBox } from "../geometry";
+import { ALIGNMENTS, boundingBox, stretchedPolygon } from "../geometry";
 import { EPSILON } from "../math";
 
 import { regularPolygonContour } from "./regular-polygon-contour";
@@ -46,6 +46,7 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
         x: 0,
         y: 0,
         anchor: CENTER,
+        stretched: false,
         corners: 3,
         height: 100,
         radii: [0, 0, 0],
@@ -67,6 +68,7 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
         x: 0,
         y: 0,
         anchor: CENTER,
+        stretched: false,
         corners: 4,
         height: 50,
         radii: [0, 0, 0, 0],
@@ -91,6 +93,7 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
         x: 0,
         y: 0,
         anchor: CENTER,
+        stretched: false,
         corners: 6,
         height: 100,
         radii: [0, 0, 0, 0, 0, 0],
@@ -118,6 +121,7 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
         x: 0,
         y: 0,
         anchor: CENTER,
+        stretched: false,
         corners: 5,
         height: 100,
         radii: [0, 0, 0, 0, 0],
@@ -141,6 +145,7 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
         x: 0,
         y: 0,
         anchor: CENTER,
+        stretched: false,
         corners: 12,
         height: 100,
         radii: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -160,6 +165,7 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
       x: 0,
       y: 0,
       anchor: CENTER,
+      stretched: false,
       corners: 8,
       height: 100,
       radii: [0, 0, 0, 0, 0, 0, 0, 0],
@@ -180,6 +186,7 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
         x: 0,
         y: 0,
         anchor: CENTER,
+        stretched: false,
         corners: 5,
         height: 40,
         radii: [0, 0, 0, 0, 0],
@@ -195,6 +202,7 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
         x: 0,
         y: 0,
         anchor: CENTER,
+        stretched: false,
         corners: 3,
         height: 0,
         radii: [0, 0, 0],
@@ -206,6 +214,7 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
   it("derives the vertices without changing the model (ADR-0003)", () => {
     const polygon = Object.freeze({
       anchor: CENTER,
+      stretched: false,
       angle: 0,
       x: 0,
       y: 0,
@@ -219,6 +228,7 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
 
     expect(polygon).toEqual({
       anchor: CENTER,
+      stretched: false,
       angle: 0,
       corners: 6,
       x: 0,
@@ -241,6 +251,7 @@ describe("regularPolygonContour (anchored, F07)", () => {
         x: 0,
         y: 0,
         anchor: CENTER,
+        stretched: false,
         corners: 3,
         height: 100,
         radii: [0, 0, 0],
@@ -264,6 +275,7 @@ describe("regularPolygonContour (anchored, F07)", () => {
         x: 0,
         y: 0,
         anchor,
+        stretched: false,
         corners: 3,
         height: 100,
         radii: [0, 0, 0],
@@ -288,6 +300,7 @@ describe("regularPolygonContour (anchored, F07)", () => {
         x: 0,
         y: 0,
         anchor,
+        stretched: false,
         corners: 6,
         height: 100,
         radii: [0, 0, 0, 0, 0, 0],
@@ -314,6 +327,7 @@ describe("regularPolygonContour (anchored, F07)", () => {
         x: 0,
         y: 0,
         anchor,
+        stretched: false,
         corners: 4,
         height: 50,
         radii: [0, 0, 0, 0],
@@ -332,6 +346,7 @@ describe("regularPolygonContour (anchored, F07)", () => {
     // The width is reached: no room on that axis. The anchor itself is kept by the model type.
     const left = {
       anchor: { horizontal: "min", vertical: "max" },
+      stretched: false,
       angle: 0,
       corners: 3,
       x: 0,
@@ -360,6 +375,7 @@ describe("regularPolygonContour (properties)", () => {
           x: 0,
           y: 0,
           anchor: CENTER,
+          stretched: false,
           corners,
           height,
           radii: Array.from({ length: corners }, () => 0),
@@ -390,6 +406,7 @@ describe("regularPolygonContour (numbered from its base, F08)", () => {
       x: 0,
       y: 0,
       anchor: CENTER,
+      stretched: false,
       corners: 3,
       height: 100,
       radii: [0, 0, 0],
@@ -400,6 +417,7 @@ describe("regularPolygonContour (numbered from its base, F08)", () => {
       x: 0,
       y: 0,
       anchor: CENTER,
+      stretched: false,
       corners: 4,
       height: 100,
       radii: [0, 0, 0, 0],
@@ -432,6 +450,7 @@ describe("regularPolygonContour (numbered from its base, F08)", () => {
       x: 0,
       y: 0,
       anchor: CENTER,
+      stretched: false,
       corners: 5,
       height: 100,
       radii,
@@ -459,6 +478,7 @@ describe("regularPolygonContour (numbered from its base, F08)", () => {
         x: 0,
         y: 0,
         anchor,
+        stretched: false,
         corners,
         height: size,
         radii: Array.from({ length: corners }, () => 0),
@@ -481,6 +501,7 @@ describe("regularPolygonContour (at a position, F04)", () => {
     // (the width is reached); at (10, 20) the base runs from (10, 120) to (110, 120).
     const contour = regularPolygonContour({
       anchor: { horizontal: "mid", vertical: "max" },
+      stretched: false,
       angle: 0,
       corners: 3,
       height: 100,
@@ -494,5 +515,49 @@ describe("regularPolygonContour (at a position, F04)", () => {
     expect(contour[0]?.y).toBeCloseTo(120, 12);
     expect(contour[1]?.x).toBeCloseTo(10, 12);
     expect(contour[1]?.y).toBeCloseTo(120, 12);
+  });
+});
+
+describe("regularPolygonContour (stretched, F06)", () => {
+  it("[F06.AC2] [F06.AC3] stretches the hexagon to its box at its position, its anchor without effect", () => {
+    // DERIV-stretched-polygon, checks: the hexagon in 100 × 100, every side 54.85838, moved by
+    // (10, 20); the anchor bottom left would leave room only for a regular hexagon.
+    const expected = stretchedPolygon(6, { height: 100, width: 100 });
+
+    for (const anchor of [CENTER, { horizontal: "min", vertical: "max" } as const]) {
+      const contour = regularPolygonContour({
+        anchor,
+        angle: 0,
+        corners: 6,
+        height: 100,
+        radii: [0, 0, 0, 0, 0, 0],
+        stretched: true,
+        width: 100,
+        x: 10,
+        y: 20,
+      });
+
+      expectPoints(
+        contour,
+        expected.map((point) => ({ x: point.x + 10, y: point.y + 20 })),
+      );
+    }
+  });
+
+  it("[F06.AC1] keeps the regular polygon of F02 when not stretched: the hexagon leaves room", () => {
+    const contour = regularPolygonContour({
+      anchor: CENTER,
+      angle: 0,
+      corners: 6,
+      height: 100,
+      radii: [0, 0, 0, 0, 0, 0],
+      stretched: false,
+      width: 100,
+      x: 0,
+      y: 0,
+    });
+
+    // Regular hexagon fitted in 100 × 100: height 86.60254, centered, so its top is at 6.69873.
+    expect(boundingBox(contour).minY).toBeCloseTo(50 - HEIGHT_3 / 2, DECIMALS);
   });
 });
