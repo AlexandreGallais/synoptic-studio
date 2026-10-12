@@ -3,7 +3,7 @@ id: AUD-008
 epic: E01
 feature: F10
 title: "Audit F10: round shape"
-status: ready
+status: done
 points: 1
 ---
 

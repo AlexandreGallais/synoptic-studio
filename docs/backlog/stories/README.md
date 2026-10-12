@@ -68,7 +68,7 @@
 | [EN-016](./E01-F10-EN-016-round-shape-model.md)                 | F10     | The round shape in the model                         | done   |
 | [CHK-008](./E01-F10-CHK-008-checkpoint-f10.md)                  | F10     | Checkpoint in the middle of F10                      | done   |
 | [US-020](./E01-F10-US-020-round-shape-playground.md)            | F10     | Draw and convert a round shape in the playground     | done   |
-| [AUD-008](./E01-F10-AUD-008-audit-f10.md)                       | F10     | Audit F10: round shape                               | ready  |
+| [AUD-008](./E01-F10-AUD-008-audit-f10.md)                       | F10     | Audit F10: round shape                               | done   |
 | [VAL-008](./E01-F10-VAL-008-validate-round-shape.md)            | F10     | Validate F10 on the reference cases                  | ready  |
 | [REV-001](./E01-REV-001-review-e01.md)                          | E01     | Review E01 with the Product Owner                    | draft  |
 | [RET-001](./E01-RET-001-retrospective-e01.md)                   | E01     | Retrospective of E01                                 | draft  |
