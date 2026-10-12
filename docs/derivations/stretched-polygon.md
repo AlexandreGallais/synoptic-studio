@@ -50,11 +50,11 @@ The unit polygon spans `2W` in width, `W` the largest `x` of the right half, and
 
 ## Step 5 — Choosing λ (rule C)
 
-Bisection keeps a bracket `[a, b]` around the solution and halves it at each step; after `k` steps the error is at most `2⁻ᵏ (b − a)` (`REF-MATHWORLD-BISECTION`). It runs on `ln λ`, in `[−3, 3]`, which contains every sound `λ` of `n = 5 … 12`: from `λ_lo = 1/3` (hexagon) to `λ_hi = 6.74` (pentagon, `ln λ = 1.908`), found by the sweep below and confirmed by the review of SP-009; 60 steps: an error below `3 · 2⁻⁶⁰ ≈ 2.6e-18`, under `EPSILON`.
+Bisection keeps a bracket `[a, b]` around the solution and halves it at each step; after `k` steps the error is at most `2⁻ᵏ (b − a)` (`REF-MATHWORLD-BISECTION`). It runs on `ln λ`, in `[−3, 3]`, which contains every sound `λ` of `n = 5 … 12`: from `λ_lo = 1/3` (hexagon) to `λ_hi = 6.74` (pentagon, `ln λ = 1.908`), found by the sweep below and confirmed by the review of SP-009; 60 steps: an error below `3 · 2⁻⁶⁰ ≈ 2.6e-18` in exact arithmetic; in doubles the bracket stops shrinking at one unit in the last place of `ln λ` (about 4e-16, after some 54 steps), still far under `EPSILON`. A bound found this way may lie on the unsound side by that much: a clamped polygon's guard corner turns `π/n` within about 1e-16.
 
 1. `λ_lo`: the bisection in `[−3, 0]` on « not sound » (true at `−3`, false at 0; for the triangle and the square, sound everywhere, it ends at `−3`, which gives their only shape).
 2. `λ_hi`: the bisection in `[0, 3]` on « sound ».
-3. If `r ≤ A(λ_lo)`, `λ = λ_lo`; if `r ≥ A(λ_hi)`, `λ = λ_hi` (the box is too wide or too tall for sound equal sides); otherwise the bisection in `[ln λ_lo, ln λ_hi]` on `A(λ) < r`.
+3. The bisection in `[ln λ_lo, ln λ_hi]` on `A(λ) < r`. If `r ≤ A(λ_lo)`, the predicate is false everywhere and the bisection ends at `λ_lo`; if `r ≥ A(λ_hi)`, true everywhere, it ends at `λ_hi` (the box is too wide or too tall for sound equal sides): the clamp of rule C needs no step of its own.
 
 Each bisection needs its predicate to change once in its bracket: « sound » on each side of 1, and `A(λ) < r` between `λ_lo` and `λ_hi`. Neither is proved (note 0011); both are checked by the tests over `ln λ` from −3 to 3 in steps of 0.001 (6 001 values): « sound » changes at most twice and holds at `λ = 1` for every `n` from 3 to 12 (never changes for 3 and 4); `A` never decreases where the polygon closes (`n = 5` and 9 do not close below `ln λ ≈ −0.58` and `−0.71`), constant for 3 and 4. The triangle and the square, independent of `λ`, give their only shape whatever the branch.
 
@@ -62,7 +62,7 @@ A box of size 0 gives `r = 0`, `+∞` or `NaN` (`0/0`): every comparison with `N
 
 ## Step 6 — Placing it in the box
 
-The full polygon in drawing order (`DERIV-regular-polygon-fit` step 2, clockwise on screen from the right end of the base): `R₀`, its mirror `L₀`, `L₁ … Lₘ₋₁`, then the apex `Rₘ` (odd `n`) or `Lₘ, Rₘ` (even `n`), then `Rₘ₋₁ … R₁`; `n` points. It goes to the SVG frame with its box at the origin: `x = W + X`, `y = H − Y` (y down, `REF-SVG2-COORDS` §8.4). Then each axis is scaled to the box, the top-left fixed (`stretchToSize`, `DERIV-free-shape-stretch`): every side of the box is touched. When `r` lies within `[A(λ_lo), A(λ_hi)]`, `A(λ) = r` and both factors are equal: the sides stay equal; past the guard, the limit polygon is stretched on each axis (rule C). The triangle becomes isosceles and the square the rectangle of the box: the plain stretch, as they have no freedom.
+The full polygon in drawing order (`DERIV-regular-polygon-fit` step 2, clockwise on screen from the right end of the base): `R₀`, its mirror `L₀`, `L₁ … Lₘ₋₁`, then the apex `Rₘ` (odd `n`) or `Lₘ, Rₘ` (even `n`), then `Rₘ₋₁ … R₁`; `n` points. It goes to the SVG frame with its box at the origin: `x = W + X`, `y = H − Y` (y down, `REF-SVG2-COORDS` §8.4). Then each axis is scaled to the box, the top-left fixed (`stretchToSize`, `DERIV-free-shape-stretch`): every side of the box is touched, the far ones within one unit in the last place, since the span of the unit polygon is irrational (a base at `y = 6.000000000000001` in a box of height 6), far below the 5 decimals written (Q10). When `r` lies within `[A(λ_lo), A(λ_hi)]`, `A(λ) = r` and both factors are equal: the sides stay equal; past the guard, the limit polygon is stretched on each axis (rule C). The triangle becomes isosceles and the square the rectangle of the box: the plain stretch, as they have no freedom.
 
 ## Checks (test cases)
 

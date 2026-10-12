@@ -3,7 +3,10 @@ import { describe, expect, it } from "vitest";
 
 import { boundingBox } from "./bounding-box";
 import { edgeLengths } from "./edge-lengths";
+import { stretchScale } from "./stretch-scale";
 import { stretchedPolygon } from "./stretched-polygon";
+import { turningAngles } from "./turning-angles";
+import { unitStretchedPolygon } from "./unit-stretched-polygon";
 
 import type { Point } from "../math";
 
@@ -108,6 +111,17 @@ describe("stretchedPolygon (DERIV-stretched-polygon, checks)", () => {
     ]);
   });
 
+  it("[F06.AC2] stops equalizing the pentagon in 100 × 300 when its side corners turn 36°", () => {
+    // λ_hi = 6.74030, beyond ln λ = 1.9: the bracket [−3, 3] must hold it (review of EN-017).
+    expectPoints(stretchedPolygon(5, { height: 300, width: 100 }), [
+      [95.60798, 300],
+      [4.39202, 300],
+      [0, 136.7215],
+      [50, 0],
+      [100, 136.7215],
+    ]);
+  });
+
   it("[F06.AC2] gives the octagon in 100 × 50 and the heptagon in 100 × 100 the values of note 0011", () => {
     expectPoints(stretchedPolygon(8, { height: 50, width: 100 }), [
       [67.55767, 50],
@@ -164,11 +178,30 @@ describe("stretchedPolygon (DERIV-stretched-polygon, checks)", () => {
       expect(box.maxX).toBeCloseTo(width, 9);
       expect(box.maxY).toBeCloseTo(height, 9);
 
-      // The base (points 1 and 2) is flat and centered.
-      const base = polygon.slice(0, 2);
+      // Each point and its mirror image (the base: points 1 and 2; then k and n + 1 − k) are
+      // symmetric about the vertical axis of the box, at the same height.
+      for (const [index, point] of polygon.entries()) {
+        const mirror = polygon[(index < 2 ? 1 : corners + 1) - index] ?? point;
 
-      expect(base.every((point) => Math.abs(point.y - height) < 1e-9)).toBe(true);
-      expect(base.reduce((sum, point) => sum + point.x, 0)).toBeCloseTo(width, 9);
+        expect(point.x + mirror.x).toBeCloseTo(width, 9);
+        expect(point.y).toBeCloseTo(mirror.y, 9);
+      }
+    },
+  );
+
+  test.prop([
+    fc.integer({ max: 12, min: 5 }),
+    fc.integer({ max: 1000, min: 1 }),
+    fc.integer({ max: 1000, min: 1 }),
+  ])(
+    "[F06.AC2] follows rule C: its sides are equal, or its sharpest corner turns π/n",
+    (corners, width, height) => {
+      const lengths = edgeLengths(stretchedPolygon(corners, { height, width }));
+      const unit = unitStretchedPolygon(corners, stretchScale(corners, height / width));
+      const isEven = Math.max(...lengths) - Math.min(...lengths) < 1e-9 * Math.max(...lengths);
+      const isGuarded = Math.abs(Math.min(...turningAngles(unit)) - Math.PI / corners) < 1e-9;
+
+      expect(isEven || isGuarded).toBe(true);
     },
   );
 });
