@@ -25,5 +25,5 @@ Written when the story is done (ADR-0028).
 
 One task = one commit, referenced as `US-020.Tn`.
 
-- [ ] T1 — « Round » in the selector, fields shown and hidden, conversion; tests (1.5 h)
+- [ ] T1 — « Round » in the selector, fields shown and hidden, conversion; the tests of `"anchor" in model` replaced by the shape's kind (note 0010); tests (1.5 h)
 - [ ] T2 — Product Owner test card (0.5 h)
