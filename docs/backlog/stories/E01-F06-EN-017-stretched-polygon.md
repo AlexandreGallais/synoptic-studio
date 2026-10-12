@@ -26,6 +26,6 @@ None of its own: shown by US-021's card.
 
 One task = one commit, referenced as `EN-017.Tn`. ADR-0037; `@see` `DERIV-stretched-polygon`, `REF-MATHWORLD-BISECTION`.
 
-- [ ] T1 — The stretched corners of a polygon; examples computed by hand, degenerate cases, properties (2 h)
-- [ ] T2 — The option in the model, the drawing and the conversion; the earlier tests kept (1.5 h)
-- [ ] T3 — Domain (`shapes.md`, glossary), re-exports (0.5 h)
+- [x] T1 — The stretched corners of a polygon; examples computed by hand, degenerate cases, properties (2 h)
+- [x] T2 — The option in the model, the drawing and the conversion; the earlier tests kept (1.5 h)
+- [x] T3 — Domain (`shapes.md`, glossary), re-exports (0.5 h)
