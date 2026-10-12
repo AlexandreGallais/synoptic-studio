@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.13.2](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.13.1...v0.13.2) (2026-10-12)
+
+
+### Documentation
+
+* **backlog:** refine F06, the polygon stretched to its box, research request 0011 ([836fe2c](https://github.com/AlexandreGallais/synoptic-studio/commit/836fe2c1d733a923a03426969acb1aa8b7dd0f8b))
+* **docs:** journal of the F06 run stopped at its spike, critique logged ([c0e6fec](https://github.com/AlexandreGallais/synoptic-studio/commit/c0e6fecf44e9e084a53ec7854b06bc38cd22ea65))
+
 ## [0.13.1](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.13.0...v0.13.1) (2026-10-12)
 
 
