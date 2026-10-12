@@ -17,6 +17,8 @@ A round shape of the model: its width, height, angle and position; its corners d
 - Given a round shape of 120 × 80, when it is drawn, then it is a capsule: two half circles of radius 40 joined by straight sides of length 40 (F10.AC1, F10.AC2).
 - Given a round shape with an angle and a position, when it is drawn, then it is turned about the center of its box and placed as every shape (F10.AC2, F04).
 - Given a round shape of 81 × 81, when it is converted, then the free shape has 4 points numbered from the top left, clockwise, each with radius 41, and draws the same circle (F10.AC3).
+- Given a round shape of 0 × 50, when it is converted, then the free shape is valid: the rectangle tool's unit square stretched to 0 × 50 (F10.AC3).
+- Given a free shape, a regular polygon and a round shape, when their kind is asked, then each is told apart (ADR-0036).
 - Given width or height not an integer ≥ 0, an angle out of 0 to 359 or a position not finite, when it is checked, then the round shape is refused (F10.AC1).
 
 ## Product Owner test
