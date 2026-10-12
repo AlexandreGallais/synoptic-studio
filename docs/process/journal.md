@@ -2,6 +2,11 @@
 
 What each working session dealt with, in the agent's words: requests of the Product Owner (paraphrased), decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`). The full conversations stay in the local transcripts (see [agent configuration](../tooling/agent.md#searching-past-conversations)).
 
+## 2026-10-12 — F06 merged, run stopped before E01's review
+
+- `#review` F06 merged by the Product Owner (#149), released in 0.14.0; the validation branch deleted, only `main` left.
+- `#run` `/run` without a scope: no feature in progress and every feature of E01 is `done`; the next story is REV-001, the epic review, held with the Product Owner, so the run stops before any code. No open issue.
+
 ## 2026-10-12 — F06 validated
 
 - `#review` The Product Owner compared rules C and B on the demo page and kept rule C, the rule planned from the start; pleased with the result, nothing else wanted. Rule B's image removed; VAL-009 and F06 `done`; the feature pull request next, then E01's review and retrospective.
