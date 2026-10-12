@@ -16,6 +16,12 @@ export type RegularPolygon = {
    * the effective ones derived (Q8, ADR-0029).
    */
   readonly radii: readonly number[];
+
+  /**
+   * Whether it is stretched to touch the four sides of its box, its sides as even as its corners
+   * allow (rule C, F06, ADR-0037); `false` is the regular polygon of F02, placed by its anchor.
+   */
+  readonly stretched: boolean;
   /** Width of the box it fits in, integer ≥ 0. */
   readonly width: number;
   /** Abscissa of the top-left of its box before it turns, in the SVG (ADR-0035). */

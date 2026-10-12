@@ -72,6 +72,8 @@ function readPolygon(document: Document): RegularPolygon {
     height: readNumber(document, "height"),
     // One radius per corner; none for a number of corners refused.
     radii: updateKeptRadii(document, isRegularPolygonCornerCount(corners) ? corners : 0),
+    // The « Stretched » check box comes with US-021.
+    stretched: false,
     width: readNumber(document, "width"),
     ...position,
   };
