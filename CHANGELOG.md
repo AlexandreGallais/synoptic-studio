@@ -1,5 +1,44 @@
 # Changelog
 
+## [0.14.0](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.13.4...v0.14.0) (2026-10-12)
+
+
+### Features
+
+* **geometry:** the stretched polygon of rule C, sides equal while its corners stay sound ([25196d9](https://github.com/AlexandreGallais/synoptic-studio/commit/25196d962443fbe6d788d0c99450f754afe663bd))
+* **model:** a stretched option for the regular polygon, drawn by rule C ([89141ff](https://github.com/AlexandreGallais/synoptic-studio/commit/89141ff1135d6877e8115e87d9a47ce4eccd7e5a))
+* **playground:** a Stretched check box for the polygon, its anchor disabled ([db8a575](https://github.com/AlexandreGallais/synoptic-studio/commit/db8a5752df89f43415bc9f0da8f8f253865f9dfc))
+* **playground:** guided test of F06, steps 58 to 66 ([af96e15](https://github.com/AlexandreGallais/synoptic-studio/commit/af96e15a4ea389d557ebb26fdd3e20f508ed1a8f))
+
+
+### Bug fixes
+
+* **playground:** review fixes of US-021, guided steps untick Stretched ([1fe77e4](https://github.com/AlexandreGallais/synoptic-studio/commit/1fe77e490facfe69fd97b146d356adef20c52a54))
+
+
+### Documentation
+
+* **adr:** a stretched option for the regular polygon (ADR-0037) ([76665ad](https://github.com/AlexandreGallais/synoptic-studio/commit/76665adb9e3bf1d0a7da5702edb34cf17474d698))
+* **backlog:** audit of F06, findings, next steps, evolvability ([f4a0228](https://github.com/AlexandreGallais/synoptic-studio/commit/f4a02286d835d60c389dbf45b2cf4fd3b0d3f111))
+* **backlog:** light evolvability check of F06 ([e25b4b2](https://github.com/AlexandreGallais/synoptic-studio/commit/e25b4b27a4f929f64ab6e9aabf7861c91aef7843))
+* **backlog:** review fixes of the F06 checkpoint, bracket ends guarded ([b2d0da9](https://github.com/AlexandreGallais/synoptic-studio/commit/b2d0da99c93fab1217ae78beeddc178db081abca))
+* **backlog:** rule C chosen for the stretched polygon, derivation tasks ([828102d](https://github.com/AlexandreGallais/synoptic-studio/commit/828102dce3530a63724ad0c01c6f13a7e50ec860))
+* **backlog:** set AUD-009 done ([e4be463](https://github.com/AlexandreGallais/synoptic-studio/commit/e4be46311b006292d44dd189d6f55af5264b98b6))
+* **backlog:** set CHK-009 done ([33b4b5e](https://github.com/AlexandreGallais/synoptic-studio/commit/33b4b5e3492ce37bfac5cf92dafcb30cf576b942))
+* **backlog:** set EN-017 done ([457a86f](https://github.com/AlexandreGallais/synoptic-studio/commit/457a86fd722dbe7f21829f5e30d4065c4084f75b))
+* **backlog:** set SP-009 done ([3133d50](https://github.com/AlexandreGallais/synoptic-studio/commit/3133d505ac71180a1f99e7382c9d5ce801b56458))
+* **backlog:** set US-021 done ([1df98ee](https://github.com/AlexandreGallais/synoptic-studio/commit/1df98ee58beb5562438bca02298cf342cb475eb8))
+* **backlog:** set VAL-009 and F06 done ([c695bf6](https://github.com/AlexandreGallais/synoptic-studio/commit/c695bf6dd81853ebe487c73df878cc86648721c7))
+* **backlog:** test card of US-021 for the Product Owner ([724f5ef](https://github.com/AlexandreGallais/synoptic-studio/commit/724f5ef0bad21aad951f3e19064c6edfa8feeed9))
+* **docs:** demo page of F06, rules C and B side by side ([d671cbc](https://github.com/AlexandreGallais/synoptic-studio/commit/d671cbc480af1d5bb6e01b2233eda511af36460f))
+* **docs:** journal of the F06 run stopped at VAL-009 ([ad18ed0](https://github.com/AlexandreGallais/synoptic-studio/commit/ad18ed02928a4837e88da35240e835c64d26fc56))
+* **docs:** research note of F06, answer of request 0011 and its sources ([6db08bd](https://github.com/AlexandreGallais/synoptic-studio/commit/6db08bd3dbd1a0d2312e4418941967eef43fd8af))
+* **docs:** rule C kept, rule B removed from the demo page of F06 ([5c13b24](https://github.com/AlexandreGallais/synoptic-studio/commit/5c13b24fcaba344931b093b4136e36a72c4da247))
+* **geometry:** derivation of the stretched polygon, rule C ([66955aa](https://github.com/AlexandreGallais/synoptic-studio/commit/66955aae11816062ebbc2b849cbe415c0f8866bf))
+* **geometry:** review fixes of the F06 research, the octagon is a family ([31f9c21](https://github.com/AlexandreGallais/synoptic-studio/commit/31f9c21789451b7e53500b5dad3c0c80c00f4039))
+* **model:** the stretched option stored in the regular polygon ([05e99b7](https://github.com/AlexandreGallais/synoptic-studio/commit/05e99b744b5a048e1176dce670dbe4e100118560))
+* **tooling:** state line and pitfalls at the F06 checkpoint ([27d19ff](https://github.com/AlexandreGallais/synoptic-studio/commit/27d19ff5e1cbe29433f178bd686d3a0ceb1bc7f4))
+
 ## [0.13.4](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.13.3...v0.13.4) (2026-10-12)
 
 
