@@ -45,7 +45,7 @@ In delivery order.
 | ------------------------------------------------------------------- | ---------- | ---------------------------------------------- | ------ |
 | [SP-009](../stories/E01-F06-SP-009-research-f06.md)                 | Spike      | Research for F06                               | done   |
 | [EN-017](../stories/E01-F06-EN-017-stretched-polygon.md)            | Enabler    | The stretched polygon in the model             | done   |
-| [CHK-009](../stories/E01-F06-CHK-009-checkpoint-f06.md)             | Checkpoint | Checkpoint in the middle of F06                | ready  |
+| [CHK-009](../stories/E01-F06-CHK-009-checkpoint-f06.md)             | Checkpoint | Checkpoint in the middle of F06                | done   |
 | [US-021](../stories/E01-F06-US-021-stretched-option.md)             | User story | Stretch a polygon to its box in the playground | ready  |
 | [AUD-009](../stories/E01-F06-AUD-009-audit-f06.md)                  | Audit      | Audit F06: polygon stretched to fill its box   | ready  |
 | [VAL-009](../stories/E01-F06-VAL-009-validate-stretched-polygon.md) | Validation | Validate F06 on the reference cases            | ready  |
