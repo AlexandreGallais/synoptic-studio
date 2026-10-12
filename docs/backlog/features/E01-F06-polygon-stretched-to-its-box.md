@@ -47,7 +47,7 @@ In delivery order.
 | [EN-017](../stories/E01-F06-EN-017-stretched-polygon.md)            | Enabler    | The stretched polygon in the model             | done   |
 | [CHK-009](../stories/E01-F06-CHK-009-checkpoint-f06.md)             | Checkpoint | Checkpoint in the middle of F06                | done   |
 | [US-021](../stories/E01-F06-US-021-stretched-option.md)             | User story | Stretch a polygon to its box in the playground | done   |
-| [AUD-009](../stories/E01-F06-AUD-009-audit-f06.md)                  | Audit      | Audit F06: polygon stretched to fill its box   | ready  |
+| [AUD-009](../stories/E01-F06-AUD-009-audit-f06.md)                  | Audit      | Audit F06: polygon stretched to fill its box   | done   |
 | [VAL-009](../stories/E01-F06-VAL-009-validate-stretched-polygon.md) | Validation | Validate F06 on the reference cases            | ready  |
 
 Story numbers 008 (SP, CHK, AUD, VAL), EN-016 and US-020 were used by F10 before it moved to E14 (research note 0010): they are not reused.

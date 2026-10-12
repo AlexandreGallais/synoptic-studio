@@ -3,7 +3,7 @@ id: AUD-009
 epic: E01
 feature: F06
 title: "Audit F06: polygon stretched to fill its box"
-status: ready
+status: done
 points: 2
 ---
 
