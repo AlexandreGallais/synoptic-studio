@@ -67,7 +67,7 @@
 | [SP-009](./E01-F06-SP-009-research-f06.md)                      | F06     | Research for F06                                     | done   |
 | [EN-017](./E01-F06-EN-017-stretched-polygon.md)                 | F06     | The stretched polygon in the model                   | done   |
 | [CHK-009](./E01-F06-CHK-009-checkpoint-f06.md)                  | F06     | Checkpoint in the middle of F06                      | done   |
-| [US-021](./E01-F06-US-021-stretched-option.md)                  | F06     | Stretch a polygon to its box in the playground       | ready  |
+| [US-021](./E01-F06-US-021-stretched-option.md)                  | F06     | Stretch a polygon to its box in the playground       | done   |
 | [AUD-009](./E01-F06-AUD-009-audit-f06.md)                       | F06     | Audit F06: polygon stretched to fill its box         | ready  |
 | [VAL-009](./E01-F06-VAL-009-validate-stretched-polygon.md)      | F06     | Validate F06 on the reference cases                  | ready  |
 | [REV-001](./E01-REV-001-review-e01.md)                          | E01     | Review E01 with the Product Owner                    | draft  |
