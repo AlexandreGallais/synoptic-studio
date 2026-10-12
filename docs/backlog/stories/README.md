@@ -66,7 +66,7 @@
 | [VAL-007](./E01-F04-VAL-007-validate-free-rotation.md)          | F04     | Validate F04 on the reference cases                  | done   |
 | [SP-008](./E01-F10-SP-008-research-f10.md)                      | F10     | Research for F10                                     | done   |
 | [EN-016](./E01-F10-EN-016-round-shape-model.md)                 | F10     | The round shape in the model                         | done   |
-| [CHK-008](./E01-F10-CHK-008-checkpoint-f10.md)                  | F10     | Checkpoint in the middle of F10                      | ready  |
+| [CHK-008](./E01-F10-CHK-008-checkpoint-f10.md)                  | F10     | Checkpoint in the middle of F10                      | done   |
 | [US-020](./E01-F10-US-020-round-shape-playground.md)            | F10     | Draw and convert a round shape in the playground     | ready  |
 | [AUD-008](./E01-F10-AUD-008-audit-f10.md)                       | F10     | Audit F10: round shape                               | ready  |
 | [VAL-008](./E01-F10-VAL-008-validate-round-shape.md)            | F10     | Validate F10 on the reference cases                  | ready  |
