@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.4](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.13.3...v0.13.4) (2026-10-12)
+
+
+### Build and dependencies
+
+* **deps:** eslint-plugin-unicorn 78.0.0, its two new rules enabled ([2686e7d](https://github.com/AlexandreGallais/synoptic-studio/commit/2686e7df76688769c4d1608966085d13ae05aa69))
+
 ## [0.13.3](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.13.2...v0.13.3) (2026-10-12)
 
 
