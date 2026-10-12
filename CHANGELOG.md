@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.14.2](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.14.1...v0.14.2) (2026-10-12)
+
+
+### Documentation
+
+* **backlog:** guided tests of E01 re-run on main ([a5b443d](https://github.com/AlexandreGallais/synoptic-studio/commit/a5b443dfaee93f6e563c05ddb9a5044e50ef562b))
+* **backlog:** review of E01 with the Product Owner, REV-001 done ([fc9166f](https://github.com/AlexandreGallais/synoptic-studio/commit/fc9166f65bb067d6b8bbf43a08e2d1ac1e5b8ff2))
+* **backlog:** set REV-001 ready ([04ea03a](https://github.com/AlexandreGallais/synoptic-studio/commit/04ea03abec1d174978cb0c0eae8981f4ff61f483))
+* **docs:** epic report of E01 and its user test, steps 67 to 72 ([ca8fb92](https://github.com/AlexandreGallais/synoptic-studio/commit/ca8fb9284d8f57e20cd503487197f3103fff000f))
+
 ## [0.14.1](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.14.0...v0.14.1) (2026-10-12)
 
 
