@@ -19,17 +19,17 @@ No book, paper or tool documents such a polygon. The rule has to be a derivation
 ### Even sides alone are not enough
 
 - The usual measure of evenness is the **edge ratio**, the longest side over the shortest, 1 when all are equal (`REF-VTKM-EDGE-RATIO`, from the Verdict library, `REF-VERDICT-2007`, not read). Other measures (variance, least squares) agree when equal sides exist.
-- Minimizing it alone loses corners: a stretched square becomes a trapezoid; in a 300 × 50 box the pentagon's apex flattens; in 50 × 300 the hexagon's side corners vanish. Even when equal sides exist, corners can become almost flat: the equal-sided octagon in 100 × 50 has corners turning 13.6°, against 45° when regular.
+- Minimizing it alone loses corners: a stretched square becomes a trapezoid; in a 300 × 50 box the pentagon's apex flattens; in 50 × 300 the hexagon's side corners vanish. Even when equal sides exist, corners can become almost flat: the equal-sided octagon of the λ family (below) in 100 × 50 has corners turning 13.6°, against 45° when regular.
 - So a rule must also protect the corners, measured by their **turning angle**, the angle between the directions of the two sides meeting there (`REF-CARROLL-2013`); a regular polygon turns `2π/n` at each corner.
 - A closed polygon is fixed, up to its place, by its side lengths and turning angles (`REF-CRANE-DISCRETE-CURVES`): the shape can be built from directions of sides of length 1.
-- Equal sides are unique only for `n = 5`, 6 and 8; for 7 and from 9 on, a family of equal-sided polygons fills the box, and a choice is needed.
+- Equal sides are unique only for `n = 5` and 6; from 7 on, a family of equal-sided polygons fills the box, and a choice is needed. The research answer counted the octagon as unique too, assuming a central symmetry; the review of SP-009 found other equal-sided octagons filling a square (sides turning 42°, 101.24°, 123.24°), so it is a family as well.
 
 ### The λ family
 
 - Every side has length 1, and takes the direction of the matching side of the regular polygon after a vertical scaling by `λ`: `φⱼ = atan2(λ sin θⱼ, cos θⱼ)`, `θⱼ = 2πj/n`. For an odd `n`, the side reaching the apex takes the direction that closes the polygon. `λ = 1` is the regular polygon; `λ > 1` makes it taller.
-- It gives the unique equal-sided polygon for `n = 5`, 6, 8, and one member of the family for the others.
+- It gives the unique equal-sided polygon for `n = 5` and 6, and one member of the family for the others (for the octagon, the one with a central symmetry).
 - `λ` is the value for which the polygon's height over its width equals `h / w`, found by bisection on `ln λ` (`REF-MATHWORLD-BISECTION`: after `k` steps the error is at most `2^−k` times the interval); closed forms for the hexagon and the octagon (`φ₁ = atan r + asin(r / (2√(1 + r²)))` for the hexagon, `r = h/w`).
-- Bisection needs the aspect to grow with `λ`: checked on 601 values for every `n` from 5 to 12, **not proved**.
+- Bisection needs the aspect to grow with `λ`: checked on 601 values for every `n` from 5 to 12 by the research and on 6 001 values by the agent's tests, **not proved**.
 
 ### Where equal sides stop being sound
 
