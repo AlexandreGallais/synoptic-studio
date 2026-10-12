@@ -18,11 +18,13 @@ status: in-progress
 | Business outcomes           | rectangles and regular polygons with corner radius are created, edited, rotated and rendered from integers                                   |
 | Leading indicators          | features accepted; Q10 and Q11 applied                                                                                                       |
 | Non-functional requirements | 5 decimals in output, `EPSILON = 1e-9`, clockwise contours from the top-left vertex (a regular polygon: from the right end of its base, Q18) |
-| In scope                    | rectangle, regular polygon, corner radius and clamping, node editing, free integer rotation, text                                            |
-| Out of scope                | ellipses (Q4), Bézier curves, pen                                                                                                            |
+| In scope                    | rectangle, regular polygon, corner radius and clamping, node editing, free integer rotation, polygon stretched to its box                    |
+| Out of scope                | round shape, ellipses (Q4) and Bézier curves (E14); text (E15); pen                                                                          |
 | Closure criteria            | the cases of `shapes.md` §2–3 render as specified in the playground                                                                          |
 
 ## Features
+
+F10 (round shape) moved to E14 and F05 (text) to E15 on 2026-10-12 (Product Owner); F06 is the last feature of E01.
 
 | Feature                                                                                               | Status |
 | ----------------------------------------------------------------------------------------------------- | ------ |
@@ -33,8 +35,6 @@ status: in-progress
 | [F09](../features/E01-F09-stretchable-free-shape.md) — Stretchable free shape                         | done   |
 | [F08](../features/E01-F08-node-editing.md) — Node editing                                             | done   |
 | [F04](../features/E01-F04-free-rotation-of-shapes.md) — Free rotation of shapes                       | done   |
-| [F10](../features/E01-F10-round-shape.md) — Round shape                                               | draft  |
-| [F05](../features/E01-F05-text.md) — Text                                                             | draft  |
 | [F06](../features/E01-F06-polygon-stretched-to-its-box.md) — Polygon stretched to fill its box        | draft  |
 
 ## Closing

@@ -76,7 +76,7 @@ Storing the value (Q8, settled):
 
 ### Useful special case
 
-- Square of side `c` + radius `c/2` on all 4 corners = **circle**. The circle is therefore not a primitive: it is a rounded square. A round-shape tool draws it without a radius field: a circle in a square box, a capsule otherwise (F10, Product Owner 2026-10-12).
+- Square of side `c` + radius `c/2` on all 4 corners = **circle**. The circle is therefore not a primitive: it is a rounded square. A round-shape tool will draw it without a radius field: a circle in a square box, an ellipse otherwise, which needs curves outside ADR-0001 (F10, moved to E14 by the Product Owner on 2026-10-12, Q4). A capsule is a rectangle whose radius is half its smaller side.
 - Same for a regular polygon with maximal radius: every fillet stops at the middle of its edges, so the polygon becomes exactly its inscribed circle.
 
 ## 3. Creation tools
@@ -121,6 +121,7 @@ Functional reference: Inkscape's Star/Polygon tool.
 - Exception to "everything is a path": native `<text>` (ADR-0002).
 - Parameters: content, font, integer size, text anchor (start / middle / end, SVG's `text-anchor`; not the anchor of a shape in its box), color.
 - Reason: converting text to paths requires reading font files, hence a library or a heavy home-made parser.
+- Text has its own epic, E15 (Product Owner, 2026-10-12): native text or a `foreignObject`, fonts and measured size are studied first (Q31).
 
 ### Layout box (Q21)
 
