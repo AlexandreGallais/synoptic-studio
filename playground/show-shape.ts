@@ -8,6 +8,7 @@ import {
   effectiveCornerRadius,
   formatSvgNumber,
   roundedContour,
+  shapeKind,
 } from "../src";
 
 import { createBoxElements } from "./create-box-elements";
@@ -51,7 +52,7 @@ function readCanvasSize(document: Document): { readonly height: number; readonly
  * @param reading - valid shape
  * @see docs/backlog/stories/E01-F01-US-003-round-rectangle-corners.md
  */
-function writeEffectiveRadius(document: Document, reading: ShapeReading): void {
+function writeRequestedRadius(document: Document, reading: ShapeReading): void {
   const radius = commonRadius(reading.radii);
 
   if (radius === undefined) {
@@ -67,6 +68,25 @@ function writeEffectiveRadius(document: Document, reading: ShapeReading): void {
     : `Effective radius: ${formatSvgNumber(effective)} (as requested)`;
 
   writeText(document, "effective", text);
+}
+
+/**
+ * Shows the effective corner radius of a shape (`writeRequestedRadius`); nothing for a round
+ * shape, whose radius is derived and never requested (ADR-0036).
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param reading - valid shape
+ * @see docs/backlog/stories/E01-F10-US-020-round-shape-playground.md
+ */
+function writeEffectiveRadius(document: Document, reading: ShapeReading): void {
+  if (shapeKind(reading.model) === "round") {
+    writeText(document, "effective", "");
+
+    return;
+  }
+
+  writeRequestedRadius(document, reading);
 }
 
 /**

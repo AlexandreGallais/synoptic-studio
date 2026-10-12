@@ -7,7 +7,8 @@ import type { Shape } from "./shape-kind";
 
 /**
  * Free shape a shape becomes by the conversion button: a regular polygon's (F08) or a round
- * shape's (F10), unmoved; a free shape stays as it is.
+ * shape's (F10), unmoved; a free shape stays as it is. `shapeKind` is the rule (ADR-0036); the
+ * `anchor` test here only lets TypeScript narrow the polygon.
  *
  * @kind domain
  * @param shape - valid shape of the model; a polygon of width and height > 0
