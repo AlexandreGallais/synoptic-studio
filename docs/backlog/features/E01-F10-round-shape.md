@@ -34,7 +34,7 @@ In delivery order.
 | ------------------------------------------------------------- | ---------- | ------------------------------------------------ | ------ |
 | [SP-008](../stories/E01-F10-SP-008-research-f10.md)           | Spike      | Research for F10                                 | done   |
 | [EN-016](../stories/E01-F10-EN-016-round-shape-model.md)      | Enabler    | The round shape in the model                     | done   |
-| [CHK-008](../stories/E01-F10-CHK-008-checkpoint-f10.md)       | Checkpoint | Checkpoint in the middle of F10                  | ready  |
+| [CHK-008](../stories/E01-F10-CHK-008-checkpoint-f10.md)       | Checkpoint | Checkpoint in the middle of F10                  | done   |
 | [US-020](../stories/E01-F10-US-020-round-shape-playground.md) | User story | Draw and convert a round shape in the playground | ready  |
 | [AUD-008](../stories/E01-F10-AUD-008-audit-f10.md)            | Audit      | Audit F10: round shape                           | ready  |
 | [VAL-008](../stories/E01-F10-VAL-008-validate-round-shape.md) | Validation | Validate F10 on the reference cases              | ready  |
