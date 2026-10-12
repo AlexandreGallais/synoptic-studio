@@ -3,7 +3,7 @@ id: US-020
 epic: E01
 feature: F10
 title: Draw and convert a round shape in the playground
-status: ready
+status: done
 points: 2
 ---
 
