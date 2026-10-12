@@ -31,19 +31,15 @@ function type(id: string, value: string): void {
   input.dispatchEvent(new Event("input"));
 }
 
-/**
- * Chooses a shape in the selector and fires its `change` event.
- *
- * @param value - option value
- */
-function chooseShape(value: string): void {
+/** Chooses Polygon in the shape selector and fires its `change` event. */
+function choosePolygon(): void {
   const select = document.querySelector<HTMLSelectElement>("#shape");
 
   if (select === null) {
     return;
   }
 
-  select.value = value;
+  select.value = "polygon";
   select.dispatchEvent(new Event("change"));
 }
 
@@ -98,7 +94,7 @@ describe("playground: stretched polygon (US-021)", () => {
     type("height", "100");
     type("radius", "0");
     type("corners", "6");
-    chooseShape("polygon");
+    choosePolygon();
 
     expect(isStretchedFieldHidden()).toBe(false);
     expect(isStretched()).toBe(false);
@@ -153,5 +149,28 @@ describe("playground: stretched polygon (US-021)", () => {
     click("convert");
 
     expect(text("path-data")).toBe(STRETCHED_HEXAGON);
+  });
+
+  it("ticks and unticks safely on a refused polygon, then draws again once it is valid", () => {
+    choosePolygon();
+    type("radius", "-5");
+    click("stretched");
+    click("stretched");
+
+    expect(text("status")).not.toBe("");
+    expect(text("effective")).toBe("");
+
+    type("radius", "0");
+
+    expect(text("status")).toBe("");
+    expect(text("effective")).not.toBe("");
+  });
+
+  it("unticks the check box when a step of the guided test draws a polygon of F02", () => {
+    choosePolygon();
+    click("stretched");
+    click("guide-next");
+
+    expect(isStretched()).toBe(false);
   });
 });
