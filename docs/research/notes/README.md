@@ -15,3 +15,4 @@ Content: summary in our own words (no copy of source text), formulas, references
 | [0007](./0007-f08-node-editing.md)                 | Sources of F08: shape vs path, conversion, midpoint, deleting points, coordinates                                                    |
 | [0009](./0009-f04-free-rotation.md)                | Sources of F04: turning about the center of the box, angle from 0 to 359, exact quarter turns, position, straight box of arcs        |
 | [0010](./0010-f10-round-shape.md)                  | Sources of F10: the capsule (stadium), its conversion, the model of the round shape; F10 as built in E01, cancelled and kept for E14 |
+| [0011](./0011-f06-stretched-polygon.md)            | Sources of F06: a polygon stretched to its box, sides as even as possible, corners kept; rules A, B, C                               |
