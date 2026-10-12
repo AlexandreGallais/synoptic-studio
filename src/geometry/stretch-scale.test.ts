@@ -73,6 +73,8 @@ describe("stretchScale (DERIV-stretched-polygon step 5)", () => {
 
       // At most one change on each side of λ = 1 (index 3000): one bound each for the bisections.
       expect(sound[3000]).toBe(true);
+      // The bracket [−3, 3] holds every sound scale: its ends are unsound from 5 corners on.
+      expect(corners < 5 || (sound[0] === false && sound[6000] === false)).toBe(true);
       expect(changeCount(below)).toBeLessThanOrEqual(1);
       expect(changeCount(above)).toBeLessThanOrEqual(1);
     }
