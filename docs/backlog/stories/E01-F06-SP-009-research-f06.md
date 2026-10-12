@@ -3,7 +3,7 @@ id: SP-009
 epic: E01
 feature: F06
 title: Research for F06
-status: ready
+status: done
 points: 3
 ---
 
