@@ -1,0 +1,62 @@
+import { describe, expect, it } from "vitest";
+
+import { boxAspect } from "./box-aspect";
+import { isSoundStretch } from "./is-sound-stretch";
+import { stretchScale } from "./stretch-scale";
+import { unitStretchedPolygon } from "./unit-stretched-polygon";
+
+/** Every number of corners of a polygon (Q19). */
+const CORNERS = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
+/** Values of `ln λ` swept, from −3 to 3 in steps of 0.001 (`DERIV-stretched-polygon` step 5). */
+const LOGS = Array.from({ length: 6001 }, (empty, index) => (index - 3000) / 1000);
+
+describe("stretchScale (DERIV-stretched-polygon step 5)", () => {
+  it("gives λ = 1 when the box has the regular aspect: the octagon in a square", () => {
+    expect(stretchScale(8, 1)).toBeCloseTo(1, 12);
+  });
+
+  it("gives the hexagon in a square λ = tan φ₁ / √3 = 1.27898 (note 0011)", () => {
+    // φ₁ = 65.7048° makes 2 sin φ₁ = 1 + 2 cos φ₁ (step 4).
+    expect(stretchScale(6, 1)).toBeCloseTo(1.27898, 5);
+  });
+
+  it("stops at the corner guard in a box too wide or too tall: the hexagon's base corners turn 30° or its side corners 30°", () => {
+    // φ₁ = 30° is λ = tan 30° / √3 = 1/3; φ₁ = 75° is λ = tan 75° / √3.
+    expect(stretchScale(6, 50 / 300)).toBeCloseTo(1 / 3, 9);
+    expect(stretchScale(6, 300 / 50)).toBeCloseTo(Math.tan((75 * Math.PI) / 180) / Math.sqrt(3), 9);
+  });
+
+  it("gives the triangle and the square a scale whatever the box, their shape not depending on it", () => {
+    for (const ratio of [0, 0.1, 1, 10, Infinity, NaN]) {
+      expect(stretchScale(3, ratio)).toBeGreaterThan(0);
+      expect(stretchScale(4, ratio)).toBeGreaterThan(0);
+    }
+  });
+
+  it("gives a box of 0 × 0 (ratio NaN) the lowest sound scale", () => {
+    expect(stretchScale(6, NaN)).toBeCloseTo(1 / 3, 9);
+  });
+
+  it("checks what the bisections assume: the aspect grows with λ, wherever the polygon closes", () => {
+    for (const corners of CORNERS) {
+      const aspects = LOGS.map((log) => boxAspect(unitStretchedPolygon(corners, Math.exp(log))));
+      const closed = aspects.filter((aspect) => !Number.isNaN(aspect));
+      const isGrowing = closed.every(
+        (aspect, index) => index === 0 || aspect >= (closed[index - 1] ?? 0),
+      );
+
+      expect(isGrowing).toBe(true);
+    }
+  });
+
+  it("checks what the bisections assume: the sound scales form one interval containing λ = 1", () => {
+    for (const corners of CORNERS) {
+      const sound = LOGS.map((log) => isSoundStretch(unitStretchedPolygon(corners, Math.exp(log))));
+      const changes = sound.filter((isSound, index) => index > 0 && isSound !== sound[index - 1]);
+
+      expect(sound[3000]).toBe(true);
+      expect(changes.length).toBeLessThanOrEqual(2);
+    }
+  });
+});
