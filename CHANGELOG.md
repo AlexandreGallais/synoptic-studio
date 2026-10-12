@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.3](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.14.2...v0.14.3) (2026-10-12)
+
+
+### Documentation
+
+* **docs:** journal of the review of E01 ([5cecf66](https://github.com/AlexandreGallais/synoptic-studio/commit/5cecf664d006a0f2fa1829e1da46874e4de726d8))
+
 ## [0.14.2](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.14.1...v0.14.2) (2026-10-12)
 
 
