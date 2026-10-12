@@ -18,7 +18,7 @@ const SHAPE_READERS: Readonly<Record<string, (document: Document) => ShapeReadin
  *
  * @kind procedure
  * @param document - page document
- * @returns the reading of the rectangle, the polygon or the free shape kept (F08)
+ * @returns the reading of the rectangle, the polygon, the round shape or the free shape kept (F08, F10)
  * @see docs/backlog/stories/E01-F02-US-007-shape-selector-playground.md
  */
 export function readShape(document: Document): ShapeReading {

@@ -5,7 +5,7 @@ import type { RoundShape } from "./round-shape";
 
 /**
  * Whether a round shape can enter the model: width and height integers ≥ 0 (Q15, 0 allowed: a
- * line), an angle from 0 to 359 and a finite position (ADR-0035, ADR-0036).
+ * line, nothing at 0 × 0), an angle from 0 to 359 and a finite position (ADR-0035, ADR-0036).
  *
  * @kind domain
  * @param shape - width, height, angle and position to check

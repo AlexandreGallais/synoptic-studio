@@ -54,7 +54,7 @@ function readSelectedPoint(reading: ShapeReading, selection: VertexSelection): P
 
 /**
  * Writes the x and y fields for the point selected: its coordinates, typed for a free shape,
- * greyed for a regular polygon; empty and greyed when not exactly one point is selected.
+ * greyed for a regular polygon or a round shape; empty and greyed when not exactly one point is selected.
  *
  * @kind procedure
  * @param document - page document
@@ -76,7 +76,7 @@ function writePointFields(document: Document, point: Point | undefined, isTyped:
 
 /**
  * Shows the x and y of the one point selected, typed for a free shape (the rectangle included)
- * and greyed for a regular polygon, which is converted first, with the buttons acting on the
+ * and greyed for a regular polygon or a round shape, which is converted first, with the buttons acting on the
  * points (F08.AC1, F08.AC2, F08.AC3).
  *
  * @kind procedure

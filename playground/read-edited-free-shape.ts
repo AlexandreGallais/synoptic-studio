@@ -6,7 +6,7 @@ import type { FreeShape } from "../src";
 
 /**
  * Reads the free shape whose points may be typed: the one shown, when it is valid and not a
- * regular polygon (converted first).
+ * regular polygon nor a round shape (converted first).
  *
  * @kind procedure
  * @param document - page document

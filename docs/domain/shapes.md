@@ -121,7 +121,7 @@ Functional reference: Inkscape's Star/Polygon tool.
 Settled with the Product Owner (2026-10-12, F10, ADR-0036): « fais les formes circulaires ».
 
 - A **round shape** fills its box: a **circle** when width and height are equal, a **capsule** otherwise — two half circles whose diameter is the smaller side, joined by straight sides (a stadium, `REF-MATHWORLD-STADIUM`). Circular arcs only; the ellipse stays out (Q4).
-- It stores its width and height (integers ≥ 0, 0 allowed: a line), its angle and its position (ADR-0035); no anchor, as it always touches the four sides of its box (« il n'y a pas vraiment d'ancrage »); no radius, no points.
+- It stores its width and height (integers ≥ 0, 0 allowed: a line, nothing drawn at 0 × 0), its angle and its position (ADR-0035); no anchor, as it always touches the four sides of its box (« il n'y a pas vraiment d'ancrage »); no radius, no points.
 - It is drawn as the rectangle of its box with every corner rounded by half the smaller side; no radius is reduced (`DERIV-round-shape`).
 - **Converted** to a free shape, it becomes the rectangle tool's free shape for its box, its 4 points numbered as the rectangle's (point 1 at the top left, clockwise), each with a radius of half the smaller side rounded up: the same drawing, at the same place; it then stays round until stretched.
 

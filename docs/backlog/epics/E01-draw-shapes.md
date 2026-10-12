@@ -18,7 +18,7 @@ status: in-progress
 | Business outcomes           | rectangles and regular polygons with corner radius are created, edited, rotated and rendered from integers                                   |
 | Leading indicators          | features accepted; Q10 and Q11 applied                                                                                                       |
 | Non-functional requirements | 5 decimals in output, `EPSILON = 1e-9`, clockwise contours from the top-left vertex (a regular polygon: from the right end of its base, Q18) |
-| In scope                    | rectangle, regular polygon, corner radius and clamping, node editing, free integer rotation, text                                            |
+| In scope                    | rectangle, regular polygon, round shape, corner radius and clamping, node editing, free integer rotation, text                               |
 | Out of scope                | ellipses (Q4), Bézier curves, pen                                                                                                            |
 | Closure criteria            | the cases of `shapes.md` §2–3 render as specified in the playground                                                                          |
 

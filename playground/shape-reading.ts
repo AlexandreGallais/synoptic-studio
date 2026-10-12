@@ -8,7 +8,7 @@ export type ShapeReading = {
   readonly isValid: boolean;
   /** Message shown when it cannot. */
   readonly message: string;
-  /** Requested radius of each corner, in contour order. */
+  /** Radius of each corner: the one requested, or the derived one for a round shape (ADR-0036), in contour order. */
   readonly radii: readonly number[];
   /** Model of the shape. */
   readonly model: Shape;

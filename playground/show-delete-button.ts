@@ -14,7 +14,7 @@ const DELETION_MESSAGES: Readonly<Record<DeletionOutcome | "none", string>> = {
 };
 
 /**
- * Reads what deleting the points selected would give: `none` on a regular polygon (converted
+ * Reads what deleting the points selected would give: `none` on a regular polygon or a round shape (converted
  * first) or with no point selected.
  *
  * @kind procedure
