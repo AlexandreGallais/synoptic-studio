@@ -1,3 +1,4 @@
+import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { effectiveRadii, roundedContour } from "../geometry";
@@ -76,4 +77,32 @@ describe("roundShapeAsFreeShape (DERIV-round-shape step 2)", () => {
     expect(shape.corners.map((corner) => corner.radius)).toEqual([0, 0, 0, 0]);
     expect([shape.width, shape.height]).toEqual([0, 80]);
   });
+
+  test.prop({ height: fc.integer({ max: 300, min: 0 }), width: fc.integer({ max: 300, min: 0 }) })(
+    "[F10.AC3] gives a valid free shape, radii half the smaller side rounded up, drawn the same",
+    ({ height, width }) => {
+      const round = { ...CAPSULE, height, width };
+      const shape = roundShapeAsFreeShape(round);
+      const drawn = roundedContour(freeShapeCorners(shape)).flatMap((piece) => [
+        piece.end.x,
+        piece.end.y,
+      ]);
+      const expected = roundedContour(roundShapeCorners(round)).flatMap((piece) => [
+        piece.end.x,
+        piece.end.y,
+      ]);
+
+      expect(isValidFreeShape(shape)).toBe(true);
+
+      expect(shape.corners.map((corner) => corner.radius)).toEqual(
+        Array.from({ length: 4 }, () => Math.ceil(Math.min(width, height) / 2)),
+      );
+
+      expect(drawn).toHaveLength(expected.length);
+
+      for (const [index, value] of drawn.entries()) {
+        expect(value).toBeCloseTo(expected[index] ?? NaN, 9);
+      }
+    },
+  );
 });

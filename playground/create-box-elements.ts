@@ -3,6 +3,7 @@ import {
   createPathElement,
   rectangleCorners,
   roundedContour,
+  shapeKind,
   turnedCorners,
 } from "../src";
 
@@ -100,7 +101,7 @@ export function createBoxElements(
 
   box.classList.add("box");
 
-  const boxes = "anchor" in model ? [box] : [];
+  const boxes = shapeKind(model) === "polygon" ? [box] : [];
 
   return model.angle === 0
     ? boxes

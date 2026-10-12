@@ -17,6 +17,7 @@ export * from "./free-shape-with-midpoint";
 export * from "./free-shape-with-point";
 export * from "./free-shape-without-points";
 export * from "./is-anchor";
+export * from "./is-convertible";
 export * from "./is-free-shape";
 export * from "./is-model-size";
 export * from "./is-regular-polygon-corner-count";

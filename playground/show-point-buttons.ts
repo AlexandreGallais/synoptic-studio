@@ -1,4 +1,4 @@
-import { edgeOfSelection, isFreeShape } from "../src";
+import { edgeOfSelection, isConvertible, isFreeShape } from "../src";
 
 import { selectElement } from "./select-element";
 import { showDeleteButton } from "./show-delete-button";
@@ -25,22 +25,21 @@ export function showPointButtons(
 ): void {
   const { model } = reading;
   // A polygon or a round shape keeps its points: it is converted first (F08, F10).
-  const isConvertible = !isFreeShape(model);
+  const hasFixedPoints = !isFreeShape(model);
   const edge = edgeOfSelection(
     selection.selected,
     reading.corners.length * Math.sign(model.width * model.height),
   );
   const convert = selectElement(document, "convert");
 
-  convert.hidden = !isConvertible;
-  // Only a polygon of width or height 0 cannot be converted (ADR-0033, ADR-0036).
-  convert.toggleAttribute("disabled", "anchor" in model && model.width * model.height === 0);
-  selectElement(document, "convert-hint").hidden = !isConvertible;
+  convert.hidden = !hasFixedPoints;
+  convert.toggleAttribute("disabled", !isConvertible(model));
+  selectElement(document, "convert-hint").hidden = !hasFixedPoints;
 
   showDeleteButton(document, reading, selection);
 
   selectElement(document, "add-midpoint").toggleAttribute(
     "disabled",
-    isConvertible || edge === undefined,
+    hasFixedPoints || edge === undefined,
   );
 }

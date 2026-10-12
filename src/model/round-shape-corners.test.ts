@@ -77,6 +77,12 @@ describe("roundShapeCorners (DERIV-round-shape step 1)", () => {
     expect(summary(pieces)).toEqual(["segment 0 50", "segment 0 0"]);
   });
 
+  it("[F10.AC1] draws nothing for a round shape of 0 × 0", () => {
+    const corners = roundShapeCorners(round(0, 0));
+
+    expect(roundedContour(corners)).toEqual([]);
+  });
+
   it("[F10.AC2] reduces no radius: every corner keeps half the smaller side", () => {
     const radii = effectiveRadii(roundShapeCorners(round(80, 120)));
 
