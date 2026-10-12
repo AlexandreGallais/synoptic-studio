@@ -13,3 +13,4 @@ Each file: notation, steps, proof when needed, test cases, limits. ID: `DERIV-<f
 | [`DERIV-free-shape-stretch`](./free-shape-stretch.md)   | Free shape stretched by its width and height from the top-left of its box, without loss (F09)        |
 | [`DERIV-turned-shape`](./turned-shape.md)               | A shape turned about the center of its box, the angle from 0 to 359, kept in place when edited (F04) |
 | [`DERIV-arc-bounding-box`](./arc-bounding-box.md)       | Straight box of a contour of segments and fillet arcs, as `getBBox` (F04)                            |
+| [`DERIV-round-shape`](./round-shape.md)                 | A circle or a capsule as a rectangle rounded by half its smaller side; its conversion (F10)          |
