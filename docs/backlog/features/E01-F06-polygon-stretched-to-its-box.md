@@ -18,7 +18,7 @@ Refined with the Product Owner on 2026-10-12 (started with `/run` after E01's re
 ## Decided in refinement (Product Owner, 2026-10-12)
 
 - **Still needed after F09**: converting a polygon to a free shape and stretching it already fills a box, but the result is no longer a polygon. F06 gives a polygon that stays one (its number of corners can still change) and always fills its box, its width and its height both reached.
-- **The rule**: the polygon touches the four sides of its box. Stretching makes some sides longer than others; the growth is to be spread over all the sides, so that their lengths stay as even as possible, the shape staying as homogeneous as it can. The Product Owner left the exact rule to the agent; the spike finds it from sources (research request 0011).
+- **The rule**: the polygon touches the four sides of its box. Stretching makes some sides longer than others; the growth is to be spread over all the sides, so that their lengths stay as even as possible, the shape staying as homogeneous as it can. The Product Owner left the exact rule to the research (request 0011, [note 0011](../../research/notes/0011-f06-stretched-polygon.md)), then chose among its three rules (2026-10-12): **rule C**, equal sides as long as every corner keeps at least half of its regular turn, then the plain stretch of that limit polygon; the square stays a rectangle and the triangle isosceles.
 - **An option of the polygon**: a « Stretched » check box on the polygon, not a shape of its own: it stays a polygon, only its sides are no longer all equal.
 - **Figma** does not fill the box with its polygon (the Product Owner tried it): no functional reference for the rule.
 
