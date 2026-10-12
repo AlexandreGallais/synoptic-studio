@@ -81,7 +81,7 @@ Hand check, hexagon 100 × 100: `φ₁ = 45° + asin(1/(2√2)) = 65.7048°`; th
 2. **The corner guard is half of the regular turn** (`π/n`, 30° for the hexagon): a design value, not a sourced one; one third and two thirds were offered.
 3. **The square stays a rectangle**, and the triangle isosceles: neither has freedom (not the trapezoid that the edge ratio alone prefers).
 
-## Open, for the derivation
+## Open, for the derivation (settled in `DERIV-stretched-polygon`, SP-009)
 
 - Prove that the aspect of the λ family grows with `λ` for each `n`, and that the sound range contains `λ = 1` and is one interval; or test it exhaustively.
 - A source for the identity `a sin φ − b cos φ = c ⇒ φ = atan(b/a) + asin(c / √(a² + b²))` (closed forms of the hexagon and octagon).
