@@ -11,6 +11,16 @@ const CORNERS = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 /** Values of `ln λ` swept, from −3 to 3 in steps of 0.001 (`DERIV-stretched-polygon` step 5). */
 const LOGS = Array.from({ length: 6001 }, (empty, index) => (index - 3000) / 1000);
 
+/**
+ * Number of places where a list of booleans changes value.
+ *
+ * @param values - booleans in order
+ * @returns how many neighbours differ
+ */
+function changeCount(values: readonly boolean[]): number {
+  return values.filter((isValue, index) => index > 0 && isValue !== values[index - 1]).length;
+}
+
 describe("stretchScale (DERIV-stretched-polygon step 5)", () => {
   it("gives λ = 1 when the box has the regular aspect: the octagon in a square", () => {
     expect(stretchScale(8, 1)).toBeCloseTo(1, 12);
@@ -34,6 +44,11 @@ describe("stretchScale (DERIV-stretched-polygon step 5)", () => {
     }
   });
 
+  it("reaches the pentagon's highest sound scale, λ = 6.74030, beyond ln λ = 1.9", () => {
+    // Its side corners then turn exactly π/5 (review of EN-017).
+    expect(stretchScale(5, 300 / 100)).toBeCloseTo(6.7403, 4);
+  });
+
   it("gives a box of 0 × 0 (ratio NaN) the lowest sound scale", () => {
     expect(stretchScale(6, NaN)).toBeCloseTo(1 / 3, 9);
   });
@@ -53,10 +68,13 @@ describe("stretchScale (DERIV-stretched-polygon step 5)", () => {
   it("checks what the bisections assume: the sound scales form one interval containing λ = 1", () => {
     for (const corners of CORNERS) {
       const sound = LOGS.map((log) => isSoundStretch(unitStretchedPolygon(corners, Math.exp(log))));
-      const changes = sound.filter((isSound, index) => index > 0 && isSound !== sound[index - 1]);
+      const below = sound.slice(0, 3001);
+      const above = sound.slice(3000);
 
+      // At most one change on each side of λ = 1 (index 3000): one bound each for the bisections.
       expect(sound[3000]).toBe(true);
-      expect(changes.length).toBeLessThanOrEqual(2);
+      expect(changeCount(below)).toBeLessThanOrEqual(1);
+      expect(changeCount(above)).toBeLessThanOrEqual(1);
     }
   });
 });
