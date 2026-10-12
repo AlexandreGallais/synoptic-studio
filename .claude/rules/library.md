@@ -30,3 +30,6 @@ paths:
 - A playground control acting on the shape (button, field) is tested on a **refused** shape too: hide it or guard its handler, or a `NaN` gets stored and crashes later redraws (US-014).
 - A playground control that changes one value of a kept free shape (its position, US-018) writes only that value in the stored JSON: `writeStoredFreeShape` also rewrites the width, height and radii fields from the stored shape, undoing what was typed.
 - Playground frames and dashes are fills (a ring with `fill-rule: evenodd`, thin rectangles), never a native stroke; skip a frame on a box too small to hold it (US-018).
+- A required field added to a model type (ADR-0016, no optional field): `tsc` lists every literal to complete; in tests, add it where the other fields are written, and let a property draw it (`fc.boolean()`) where the test covers both values (EN-017).
+- A bisection in doubles stops shrinking at one unit in the last place, before its nominal step count; a bound it returns may sit on the wrong side of a `>=` by that much: state "within a rounding error", never "at least" (EN-017).
+- A clamp before a bisection on a monotone predicate is unobservable (false everywhere ends at the low end, true everywhere at the high end): a mutation survives it; drop it or say so (EN-017).
