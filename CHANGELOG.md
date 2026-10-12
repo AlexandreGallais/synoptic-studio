@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.1](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.14.0...v0.14.1) (2026-10-12)
+
+
+### Documentation
+
+* **docs:** journal of the run stopped before the review of E01 ([8aa97ef](https://github.com/AlexandreGallais/synoptic-studio/commit/8aa97ef29e1bab4925d5cc8515bc954a6bf58b3b))
+
 ## [0.14.0](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.13.4...v0.14.0) (2026-10-12)
 
 
