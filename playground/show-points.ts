@@ -1,3 +1,5 @@
+import { shapeKind } from "../src";
+
 import { createHandleElements } from "./create-handle-elements";
 import { readMode } from "./read-mode";
 import { readSelection } from "./read-selection";
@@ -23,12 +25,17 @@ export function showPoints(document: Document, reading: ShapeReading): readonly 
   const isPoints = readMode(document) === "points";
   const selection = readSelection(document);
 
-  writeRadiusField(document, "radius", {
-    all: reading.radii,
-    shown: Object.keys(contour).map(Number),
-  });
+  // A round shape's radius is derived, never requested: its fields keep the radii typed for the
+  // other shapes (ADR-0036).
+  if (shapeKind(reading.model) !== "round") {
+    writeRadiusField(document, "radius", {
+      all: reading.radii,
+      shown: Object.keys(contour).map(Number),
+    });
 
-  writeRadiusField(document, "point-radius", { all: reading.radii, shown: selection.selected });
+    writeRadiusField(document, "point-radius", { all: reading.radii, shown: selection.selected });
+  }
+
   showPointsList(document, reading, selection);
   showPointFields(document, reading, selection);
 

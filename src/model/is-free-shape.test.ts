@@ -10,8 +10,18 @@ describe("isFreeShape (ADR-0036)", () => {
     const shapes: readonly Shape[] = [
       rectangleAsFreeShape({ angle: 0, height: 50, radii: [0, 0, 0, 0], width: 100, x: 0, y: 0 }),
       { angle: 0, height: 80, kind: "round", width: 120, x: 0, y: 0 },
+      {
+        anchor: { horizontal: "mid", vertical: "mid" },
+        angle: 0,
+        corners: 6,
+        height: 100,
+        radii: [0, 0, 0, 0, 0, 0],
+        width: 100,
+        x: 0,
+        y: 0,
+      },
     ];
 
-    expect(shapes.map((shape) => isFreeShape(shape))).toEqual([true, false]);
+    expect(shapes.map((shape) => isFreeShape(shape))).toEqual([true, false, false]);
   });
 });

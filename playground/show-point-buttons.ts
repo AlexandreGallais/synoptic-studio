@@ -33,7 +33,8 @@ export function showPointButtons(
   const convert = selectElement(document, "convert");
 
   convert.hidden = !isConvertible;
-  convert.toggleAttribute("disabled", model.width === 0 || model.height === 0);
+  // Only a polygon of width or height 0 cannot be converted (ADR-0033, ADR-0036).
+  convert.toggleAttribute("disabled", "anchor" in model && model.width * model.height === 0);
   selectElement(document, "convert-hint").hidden = !isConvertible;
 
   showDeleteButton(document, reading, selection);

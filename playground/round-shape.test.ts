@@ -59,6 +59,13 @@ function chooseShape(value: string): void {
   select.dispatchEvent(new Event("change"));
 }
 
+/** Selects point 1 by clicking its row in the list of points. */
+function clickFirstPoint(): void {
+  document
+    .querySelector('#points [data-vertex="1"]')
+    ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+}
+
 describe("round shape in the playground (US-020)", () => {
   beforeEach(() => {
     // Step 1 of the guided test: a 120 × 80 box (F01).
@@ -125,10 +132,45 @@ describe("round shape in the playground (US-020)", () => {
     expect(isHidden("radius-field")).toBe(false);
   });
 
-  it("[F10.AC4] shows no point to edit before the conversion", () => {
+  it("[F10.AC4] shows no point to edit before the conversion, a point selected", () => {
     document.querySelector<HTMLButtonElement>("#mode-points")?.click();
+    clickFirstPoint();
 
     expect(document.querySelector<HTMLInputElement>("#point-x")?.disabled).toBe(true);
+    expect(document.querySelector<HTMLButtonElement>("#delete-points")?.disabled).toBe(true);
     expect(isHidden("point-radius-field")).toBe(true);
+  });
+
+  it("[F10.AC4] edits nothing of a round shape: the Delete key, a point added, an x typed", () => {
+    const before = text("path-data");
+
+    document.querySelector<HTMLButtonElement>("#mode-points")?.click();
+    clickFirstPoint();
+    document.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: "Delete" }));
+    document.querySelector<HTMLButtonElement>("#add-midpoint")?.click();
+    type("point-x", "5");
+
+    expect(text("path-data")).toBe(before);
+    expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("round");
+  });
+
+  it("[F10.AC4] keeps the radius typed for the rectangle after a round shape", () => {
+    // Step 1's rectangle is rounded by 10; the round shape's 40 is never requested (ADR-0036).
+    chooseShape("rectangle");
+
+    expect(document.querySelector<HTMLInputElement>("#radius")?.value).toBe("10");
+    expect(text("effective")).toBe("Effective radius: 10 (as requested)");
+  });
+
+  it("[F10.AC3] converts a round shape of height 0, which the rectangle tool's free shape allows", () => {
+    type("height", "0");
+    document.querySelector<HTMLButtonElement>("#mode-points")?.click();
+    document.querySelector<HTMLButtonElement>("#convert")?.click();
+
+    expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("free");
+  });
+
+  it("[F10.AC4] shows no effective radius for a round shape, none being requested", () => {
+    expect(text("effective")).toBe("");
   });
 });
