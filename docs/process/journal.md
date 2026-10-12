@@ -12,6 +12,8 @@ What each working session dealt with, in the agent's words: the Product Owner's 
 - `#playground` A floating toolbar, grouped panels, a pipeline column, a reset; a short guided test per feature, the full recheck with `?guide=epic`.
 - `#backlog` F11, a code base ready for curves, first in E14.
 - `#git` The history restarted as one commit at 0.1.0; the earlier commits are summarized in [history](./history.md).
+- `#git` GitHub reset: old releases and tags deleted, `v0.1.0` released, `develop` created, rulesets for `main` (merge commits, the CI's four checks), `develop` (no deletion, no force push) and `feature/*`. Deleting the old workflow runs and deployments waits for the Product Owner: a first loop failed silently (see the tooling pitfalls).
+- `#tooling` Every session report saved and compared in `npm run metrics`; library uses counted; diagram labels kept short enough to fit their boxes.
 
 ## 2026-10-07 to 2026-10-12 — E01: shapes from numbers
 
