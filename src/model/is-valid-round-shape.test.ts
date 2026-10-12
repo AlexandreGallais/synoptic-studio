@@ -10,6 +10,8 @@ describe("isValidRoundShape (ADR-0036)", () => {
     { angle: 0, height: 80.5, isValid: false, width: 120, x: 0, y: 0 },
     { angle: 360, height: 80, isValid: false, width: 120, x: 0, y: 0 },
     { angle: 0, height: 80, isValid: false, width: 120, x: NaN, y: 0 },
+    { angle: 0, height: 80, isValid: false, width: 120, x: 0, y: Infinity },
+    { angle: 0, height: 80, isValid: false, width: 120.5, x: 0, y: 0 },
   ])("[F10.AC1] checks $width × $height at $angle° and ($x, $y)", ({ isValid, ...values }) => {
     expect(isValidRoundShape({ ...values, kind: "round" })).toBe(isValid);
   });
