@@ -109,7 +109,7 @@ Functional reference: Inkscape's Star/Polygon tool.
 
 **Stretched option** (F06, Product Owner 2026-10-12):
 
-- A « stretched » option of the regular polygon, off by default: the polygon then touches the **four sides** of its box, its base flat at the bottom, symmetric about the vertical axis of the box. Stretching makes some sides longer than others; the growth is spread over all the sides so that their lengths stay **as even as possible**. The exact rule comes from research request 0011 (SP-009).
+- A « stretched » option of the regular polygon, off by default: the polygon then touches the **four sides** of its box, its base flat at the bottom, symmetric about the vertical axis of the box. Stretching makes some sides longer than others; the growth is spread over all the sides so that their lengths stay **as even as possible**. The rule (Product Owner, 2026-10-12, from research note 0011, rule C): all sides equal as long as every corner turns at least half of its regular turn (`π/n`); past that, that limit polygon is stretched on each axis to the box. The triangle stays isosceles and the square a rectangle: they have no freedom.
 - It stays a polygon: its number of corners, radii (one per corner, the effective ones may differ since its corners no longer share one angle), angle and position work as for any polygon. Its anchor has no effect: it fills its box. Converted to a free shape, it does not move.
 - Figma's polygon does not fill its box (the Product Owner tried it): no functional reference.
 
