@@ -64,5 +64,11 @@
 | [US-019](./E01-F04-US-019-edit-a-turned-shape.md)               | F04     | Edit a turned shape                                  | done   |
 | [AUD-007](./E01-F04-AUD-007-audit-f04.md)                       | F04     | Audit F04: free rotation of shapes                   | done   |
 | [VAL-007](./E01-F04-VAL-007-validate-free-rotation.md)          | F04     | Validate F04 on the reference cases                  | done   |
+| [SP-009](./E01-F06-SP-009-research-f06.md)                      | F06     | Research for F06                                     | ready  |
+| [EN-017](./E01-F06-EN-017-stretched-polygon.md)                 | F06     | The stretched polygon in the model                   | ready  |
+| [CHK-009](./E01-F06-CHK-009-checkpoint-f06.md)                  | F06     | Checkpoint in the middle of F06                      | ready  |
+| [US-021](./E01-F06-US-021-stretched-option.md)                  | F06     | Stretch a polygon to its box in the playground       | ready  |
+| [AUD-009](./E01-F06-AUD-009-audit-f06.md)                       | F06     | Audit F06: polygon stretched to fill its box         | ready  |
+| [VAL-009](./E01-F06-VAL-009-validate-stretched-polygon.md)      | F06     | Validate F06 on the reference cases                  | ready  |
 | [REV-001](./E01-REV-001-review-e01.md)                          | E01     | Review E01 with the Product Owner                    | draft  |
 | [RET-001](./E01-RET-001-retrospective-e01.md)                   | E01     | Retrospective of E01                                 | draft  |

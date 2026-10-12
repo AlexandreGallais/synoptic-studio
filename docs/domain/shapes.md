@@ -107,6 +107,12 @@ Functional reference: Inkscape's Star/Polygon tool.
 - Number of corners: integer `3 ≤ n ≤ 12` (Q19): process and electrical symbols use triangles, squares, diamonds, hexagons and one octagon (note 0004); beyond 12 sides a polygon is hardly told from a circle, and the circle is already a rounded square.
 - Other orientations (a diamond is a square turned by 45°, the IEC hexagon stands on a vertex: 30°) come from rotation (F04), applied to the flat-based polygon.
 
+**Stretched option** (F06, Product Owner 2026-10-12):
+
+- A « stretched » option of the regular polygon, off by default: the polygon then touches the **four sides** of its box, its base flat at the bottom, symmetric about the vertical axis of the box. Stretching makes some sides longer than others; the growth is spread over all the sides so that their lengths stay **as even as possible**. The exact rule comes from research request 0011 (SP-009).
+- It stays a polygon: its number of corners, radii (one per corner, the effective ones may differ since its corners no longer share one angle), angle and position work as for any polygon. Its anchor has no effect: it fills its box. Converted to a free shape, it does not move.
+- Figma's polygon does not fill its box (the Product Owner tried it): no functional reference.
+
 **Anchor** (F07, Product Owner 2026-10-10 and 2026-10-11):
 
 - The polygon is placed in the room its box leaves by an **anchor**, one of 9 places on a 3 × 3 grid: a horizontal alignment (left, center, right) and a vertical one (top, center, bottom), stored as `min`, `mid`, `max` (SVG's `preserveAspectRatio`, `DERIV-regular-polygon-fit` step 5). Default: center on both axes, F02's placement.
