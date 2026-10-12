@@ -2,6 +2,13 @@
 
 What each working session dealt with, in the agent's words: requests of the Product Owner (paraphrased), decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`). The full conversations stay in the local transcripts (see [agent configuration](../tooling/agent.md#searching-past-conversations)).
 
+## 2026-10-12 — F06 run started, stopped at its spike
+
+- `#run` Scope: F06 (polygon stretched to fill its box), the last feature of E01, from its refinement up to VAL-009; started by the Product Owner with `/run` after the reorganization of E01.
+- `#domain` Refined: F06 is still needed (a converted polygon stretches but is no longer a polygon); the polygon touches the four sides of its box with sides as even as possible, the growth spread over every side; a « Stretched » option of the polygon, not a shape of its own; no anchor, radii, angle, position and conversion as for any polygon. Figma's polygon does not fill its box.
+- `#backlog` Stories SP-009, EN-017, CHK-009, US-021, AUD-009, VAL-009 written and set `ready` on the `/run`.
+- `#research` Stop at SP-009: no source found for a polygon with sides as even as possible touching the four sides of a box; research request 0011 for the Product Owner to run in claude.ai.
+
 ## 2026-10-12 — F10 cancelled in E01; epics E14 (curves) and E15 (text)
 
 - `#review` F04 merged by the Product Owner (#133), released in 0.13.0. The F10 run merged SP-008 (#134), EN-016 (#135), CHK-008 (#136), US-020 (#138) and AUD-008 (#139) into `feature/f10-round-shape`, then stopped at VAL-008.
