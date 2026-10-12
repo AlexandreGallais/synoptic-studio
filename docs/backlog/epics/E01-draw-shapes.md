@@ -26,16 +26,16 @@ status: in-progress
 
 F10 (round shape) moved to E14 and F05 (text) to E15 on 2026-10-12 (Product Owner); F06 is the last feature of E01.
 
-| Feature                                                                                               | Status      |
-| ----------------------------------------------------------------------------------------------------- | ----------- |
-| [F01](../features/E01-F01-rectangle-with-corner-radius.md) — Rectangle with corner radius             | done        |
-| [F02](../features/E01-F02-regular-polygon-with-corner-radius.md) — Regular polygon with corner radius | done        |
-| [F07](../features/E01-F07-polygon-aligned-in-its-box.md) — Polygon aligned in its box                 | done        |
-| [F03](../features/E01-F03-per-vertex-corner-radius.md) — Per-vertex corner radius                     | done        |
-| [F09](../features/E01-F09-stretchable-free-shape.md) — Stretchable free shape                         | done        |
-| [F08](../features/E01-F08-node-editing.md) — Node editing                                             | done        |
-| [F04](../features/E01-F04-free-rotation-of-shapes.md) — Free rotation of shapes                       | done        |
-| [F06](../features/E01-F06-polygon-stretched-to-its-box.md) — Polygon stretched to fill its box        | in-progress |
+| Feature                                                                                               | Status |
+| ----------------------------------------------------------------------------------------------------- | ------ |
+| [F01](../features/E01-F01-rectangle-with-corner-radius.md) — Rectangle with corner radius             | done   |
+| [F02](../features/E01-F02-regular-polygon-with-corner-radius.md) — Regular polygon with corner radius | done   |
+| [F07](../features/E01-F07-polygon-aligned-in-its-box.md) — Polygon aligned in its box                 | done   |
+| [F03](../features/E01-F03-per-vertex-corner-radius.md) — Per-vertex corner radius                     | done   |
+| [F09](../features/E01-F09-stretchable-free-shape.md) — Stretchable free shape                         | done   |
+| [F08](../features/E01-F08-node-editing.md) — Node editing                                             | done   |
+| [F04](../features/E01-F04-free-rotation-of-shapes.md) — Free rotation of shapes                       | done   |
+| [F06](../features/E01-F06-polygon-stretched-to-its-box.md) — Polygon stretched to fill its box        | done   |
 
 ## Closing
 
