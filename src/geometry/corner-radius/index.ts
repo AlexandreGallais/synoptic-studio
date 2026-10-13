@@ -6,6 +6,7 @@ export * from "./edge-factors";
 export * from "./edge-lengths";
 export * from "./effective-radii";
 export * from "./fillet-arc";
+export * from "./fillet-arcs";
 export * from "./fillet-setback";
 export * from "./has-length";
 export * from "./rounded-contour";

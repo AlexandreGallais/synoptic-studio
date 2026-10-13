@@ -43,4 +43,26 @@ describe("freeShapeAroundCorners", () => {
     expect([shape.x, shape.y, shape.width, shape.height]).toEqual([0, -30, 100, 130]);
     expect(freeShapeCorners({ ...shape, height: 100 })[3]?.point).toEqual({ x: 0, y: 70 });
   });
+
+  it("[F12.AC6] stretches the handles by the curve's box too", () => {
+    // Fitted to height 100, the box 130 high scales by 100/130: the handle (0, −40) becomes (0, −400/13).
+    const shape = freeShapeAroundCorners(
+      rectangleCorners(100, 100, [0, 0, 0, 0]).map((stored, index) => ({
+        ...stored,
+        handles: {
+          ...NO_HANDLES,
+          after: { x: 0, y: index === 0 ? -40 : 0 },
+          before: { x: 0, y: index === 1 ? -40 : 0 },
+          isOn: index < 2,
+          mode: "none" as const,
+        },
+      })),
+      0,
+    );
+
+    expect(freeShapeCorners({ ...shape, height: 100 })[0]?.handles.after.y).toBeCloseTo(
+      -400 / 13,
+      9,
+    );
+  });
 });

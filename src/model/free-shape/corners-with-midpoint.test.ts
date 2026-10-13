@@ -85,4 +85,42 @@ describe("cornersWithMidpoint (DERIV-cubic-sides step 4)", () => {
       expect(cubicPoint(second, s).x).toBeCloseTo(cubicPoint(whole, (1 + s) / 2).x, 9);
     },
   );
+
+  it("[F12.AC3] splits the closing side, the first point's handle before halved, mirrored points set to angle", () => {
+    // Points 4 and 1 on, every handle (−40, 0): side 4 from (0, 100) to (0, 0) gives P₀₁ (−20, 100),
+    // P₂₃ (−20, 0), P₀₁₂ (−30, 75), P₁₂₃ (−30, 25), M (−30, 50).
+    const ends = new Set([0, 3]);
+    const left = { x: -40, y: 0 };
+    const square = rectangleCorners(100, 100, [0, 0, 0, 0]).map((corner, index) => ({
+      ...corner,
+      handles: { ...NO_HANDLES, after: left, before: left, isOn: ends.has(index) },
+    }));
+    const corners = cornersWithMidpoint(square, 3);
+    const half = { x: -20, y: 0 };
+
+    expect(corners.map((corner) => corner.point)).toEqual([
+      { x: 0, y: 0 },
+      { x: 100, y: 0 },
+      { x: 100, y: 100 },
+      { x: 0, y: 100 },
+      { x: -30, y: 50 },
+    ]);
+
+    expect(corners.map((corner) => corner.handles)).toEqual([
+      { ...NO_HANDLES, after: left, before: half, isOn: true, mode: "angle" },
+      { ...NO_HANDLES, after: left, before: left },
+      { ...NO_HANDLES, after: left, before: left },
+      { ...NO_HANDLES, after: half, before: left, isOn: true, mode: "angle" },
+      { ...NO_HANDLES, after: { x: 0, y: -25 }, before: { x: 0, y: 25 }, isOn: true },
+    ]);
+  });
+
+  it("leaves the stored handle of an off neighbour as it is", () => {
+    // Point 2 is off: its handle before (0, −40) is not drawn, so not halved.
+    const arched = archedSquare().map((corner, index) =>
+      index === 1 ? { ...corner, handles: { ...corner.handles, isOn: false } } : corner,
+    );
+
+    expect(cornersWithMidpoint(arched, 0)[2]?.handles).toEqual(arched[1]?.handles);
+  });
 });

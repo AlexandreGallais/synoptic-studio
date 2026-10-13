@@ -119,22 +119,27 @@ describe("freeShapeWithoutPoints", () => {
     expect(freeShapeCorners(edited)[0]?.handles.after).toEqual({ x: 20, y: 20 });
   });
 
-  it("[F12.AC3] keeps the outer handles when a point between curved sides is deleted", () => {
-    // Deleting point 2 of the arched square: point 1 keeps its handle after (0, −40).
+  it("[F12.AC3] keeps the outer handles when a point between two curved sides is deleted", () => {
+    // Point 1 after (0, −40), point 2 before (0, −40) and after (40, 0), point 3 before (40, 0):
+    // deleting point 2 joins points 1 and 3 by a cubic with their own handles.
+    const handles = [
+      { after: { x: 0, y: -40 }, before: { x: 0, y: 0 } },
+      { after: { x: 40, y: 0 }, before: { x: 0, y: -40 } },
+      { after: { x: 0, y: 0 }, before: { x: 40, y: 0 } },
+      { after: { x: 0, y: 0 }, before: { x: 0, y: 0 } },
+    ];
     const shape = freeShapeAroundCorners(
-      rectangleCorners(100, 100, [0, 0, 0, 0]).map((corner, index) => ({
-        ...corner,
-        handles: {
-          ...NO_HANDLES,
-          after: { x: 0, y: index === 0 ? -40 : 0 },
-          before: { x: 0, y: index === 1 ? -40 : 0 },
-          isOn: index < 2,
-          mode: "none" as const,
-        },
+      rectangleCorners(100, 100, [0, 0, 0, 0]).map((stored, index) => ({
+        ...stored,
+        handles: { ...NO_HANDLES, ...handles[index], isOn: index < 3, mode: "none" as const },
       })),
       0,
     );
+    const left = freeShapeWithoutPoints(shape, [1]);
 
-    expect(freeShapeWithoutPoints(shape, [1]).corners[0]?.handles.after).toEqual({ x: 0, y: -40 });
+    expect([left.corners[0]?.handles.after, left.corners[1]?.handles.before]).toEqual([
+      { x: 0, y: -40 },
+      { x: 40, y: 0 },
+    ]);
   });
 });
