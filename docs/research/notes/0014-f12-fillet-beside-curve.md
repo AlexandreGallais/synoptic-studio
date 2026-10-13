@@ -13,7 +13,7 @@ Spike SP-012, 2026-10-13, after the Product Owner asked at VAL-011 that a rounde
 ## How it is built
 
 - The fillet's centre is at distance `r` from both sides: on the straight side's parallel line and on the curve's parallel curve (`REF-WIKI-PARALLEL-CURVE`). The parallel of a cubic is no cubic (`REF-WIKI-BEZIER`, offsets), so the meeting point is found numerically.
-- Along the curve, the radius a circle reaches at parameter `t` has a closed form, `r(t)`; it grows while the curve moves away from the other side and bends less than the circle (`REF-WIKI-CURVATURE`). The library's `bisection` finds the `t` where it equals the radius.
+- Along the curve, the radius a circle reaches at parameter `t` has a closed form, `r(t)`; it grows while the curve moves away from the other side and bends less than the circle (`REF-WIKI-CURVATURE`). Candidates are found in a coarse table along the curve then by bisection (`DERIV-fillet-beside-curve` step 7), the first whose circle crosses neither side drawn.
 - The cubic is cut there by de Casteljau's split (`REF-WIKI-DE-CASTELJAU`): the piece kept lies exactly on the curve.
 - A straight side written as a cubic gives the same fillet as a segment (tangent half-angle, `REF-WIKI-TAN-HALF-ANGLE`).
 
