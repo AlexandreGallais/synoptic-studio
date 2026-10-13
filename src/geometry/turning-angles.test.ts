@@ -1,3 +1,4 @@
+import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { turningAngles } from "./turning-angles";
@@ -24,5 +25,34 @@ describe("turningAngles", () => {
 
   it("gives no angle for an empty contour", () => {
     expect(turningAngles([])).toEqual([]);
+  });
+});
+
+/** Arbitrary point with integer coordinates. */
+const POINT = fc.record({
+  x: fc.integer({ max: 1000, min: -1000 }),
+  y: fc.integer({ max: 1000, min: -1000 }),
+});
+
+/** Triangles of positive area: their three vertices are not aligned. */
+const TRIANGLE = fc
+  .tuple(POINT, POINT, POINT)
+  .filter(([a, b, c]) => (b.x - a.x) * (c.y - a.y) !== (b.y - a.y) * (c.x - a.x));
+
+describe("turningAngles (properties)", () => {
+  test.prop({
+    dx: fc.integer({ max: 1000, min: -1000 }),
+    dy: fc.integer({ max: 1000, min: -1000 }),
+    triangle: TRIANGLE,
+  })("turns a triangle by one full turn, the same wherever it is", ({ dx, dy, triangle }) => {
+    // A simple closed polygon turns by ±2π in all (turning number 1).
+    const angles = turningAngles(triangle);
+    const moved = turningAngles(triangle.map((point) => ({ x: point.x + dx, y: point.y + dy })));
+
+    expect(Math.abs(angles.reduce((sum, angle) => sum + angle, 0))).toBeCloseTo(2 * Math.PI, 9);
+
+    for (const [index, angle] of moved.entries()) {
+      expect(angle).toBeCloseTo(angles[index] ?? 0, 9);
+    }
   });
 });
