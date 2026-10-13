@@ -3,7 +3,7 @@ id: SP-011
 epic: E14
 feature: F12
 title: "Research for F12: curves in symbols, ways to type a handle, strokes"
-status: ready
+status: done
 points: 3
 ---
 
@@ -29,6 +29,6 @@ Find, read and record what tools and sources do for points on a curve with handl
 
 One task = one commit, referenced as `SP-011.Tn`.
 
-- [ ] T1 — Read the sources (library first, then online), record them (3 h)
-- [ ] T2 — Research note: ways to type a handle, the point's model, curves and strokes (2 h)
-- [ ] T3 — ADR proposal superseding ADR-0001 for symbols; the stories of F12 written (2 h)
+- [x] T1 — Read the sources (library first, then online), record them (3 h)
+- [x] T2 — Research note: ways to type a handle, the point's model, curves and strokes (2 h)
+- [x] T3 — ADR proposal superseding ADR-0001 for symbols; the stories of F12 written (2 h)
