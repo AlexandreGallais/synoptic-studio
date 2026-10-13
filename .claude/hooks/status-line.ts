@@ -1,6 +1,6 @@
 // Status line of Claude Code (docs/tooling/metrics.md), three lines: where the work stands
-// (epic, feature, story, step); the session (active or silent, running time, exact tokens,
-// how full the conversation memory is, model); the tool call running, if any. Input: the status line JSON on
+// (epic, feature, story, step); the current turn, from the person's prompt (active or silent,
+// time, exact tokens), with how full the conversation memory is and the model; the tool call running, if any. Input: the status line JSON on
 // stdin (`REF-CC-STATUSLINE`).
 
 // Temporal runs behind `--harmony-temporal` in Node.js 24: the status line command passes it.
@@ -10,7 +10,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, statSync } from "node
 import { join } from "node:path";
 
 import { placeOf, readRunningCall, runningLine } from "./status-place.ts";
-import { count, field, sessionTokens } from "./status-tokens.ts";
+import { count, field, turnTokens } from "./status-tokens.ts";
 
 import type { RunningCall } from "./status-place.ts";
 import type { TokenTally } from "./status-tokens.ts";
@@ -19,7 +19,7 @@ import type { TokenTally } from "./status-tokens.ts";
 export type Status = {
   /** Share of the context window used, in percent. */
   readonly contextPercent: number;
-  /** Running time of the session. */
+  /** Time since the current turn started. */
   readonly durationMs: number;
   /** Name of the model. */
   readonly model: string;
@@ -76,7 +76,7 @@ export function shortDuration(milliseconds: number): string {
 }
 
 /**
- * The session's line: activity, time, tokens, how full the conversation memory is, model.
+ * The turn's line: activity, time, tokens, how full the conversation memory is, model.
  *
  * @param status - what the status line shows
  * @returns one line with ANSI colors
@@ -90,8 +90,8 @@ function sessionLine(status: Status): string {
 
   return [
     activity,
-    `⏱ ${shortDuration(durationMs)}`,
-    `${tally.total.toLocaleString("en-US")} tokens (${tally.output.toLocaleString("en-US")} written)`,
+    `⏱ turn ${shortDuration(durationMs)}`,
+    `${tally.total.toLocaleString("en-US")} tokens this turn (${tally.output.toLocaleString("en-US")} written)`,
     `conversation memory ${String(Math.round(contextPercent))} % full`,
     `${COLOR.dim}${model}${COLOR.reset}`,
   ].join(SEPARATOR);
@@ -160,15 +160,21 @@ if (import.meta.main) {
 
   mkdirSync(folder, { recursive: true });
 
+  const tally = turnTokens(transcript, join(folder, "status-line-turn.json"));
   const status: Status = {
     contextPercent: count(field(input, "context_window"), "used_percentage"),
-    durationMs: count(field(input, "cost"), "total_duration_ms"),
+    durationMs: tally.start === 0 ? 0 : now - tally.start,
     model: typeof model === "string" ? model : "",
     place: placeOf(git(["branch", "--show-current"]), backlog),
-    running: runningLine(runningCalls(join(folder, "running")), now, shortDuration),
+    // A call started before the turn was interrupted and never finished: not shown.
+    running: runningLine(
+      runningCalls(join(folder, "running")).filter((call) => call.start >= tally.start),
+      now,
+      shortDuration,
+    ),
     silentMs: existsSync(transcript) ? now - statSync(transcript).mtimeMs : 0,
     step: textOf(join(folder, "step")),
-    tally: sessionTokens(transcript, join(folder, "status-line-cache.json")),
+    tally,
   };
 
   process.stdout.write(statusText(status));

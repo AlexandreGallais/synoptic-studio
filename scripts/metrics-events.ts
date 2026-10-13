@@ -225,6 +225,7 @@ function isPrompt(line: unknown): boolean {
   return (
     text(line, "type") === "user" &&
     field(line, "isMeta") !== true &&
+    field(line, "isCompactSummary") !== true &&
     (typeof content === "string" || blocks(line).some((block) => text(block, "type") === "text"))
   );
 }
