@@ -1,4 +1,4 @@
-import { HANDLE_MODES, freeShapeWithHandles, handlesAfterTyping, subtract } from "../../src";
+import { HANDLE_MODES, add, freeShapeWithHandles, handlesAfterTyping, subtract } from "../../src";
 import { readNumber, selectElement } from "../page";
 import { readEditedFreeShape, readShape, writeStoredFreeShape } from "../shape";
 
@@ -105,44 +105,57 @@ function writeChangedHandles(document: Document, change: HandlesChange, update: 
   update();
 }
 
-/**
- * The end of a handle typed as x and y on the page, when both are integers.
- *
- * @kind procedure
- * @param document - page document
- * @param end - which handle's fields
- * @returns the point typed, or `undefined`
- * @see docs/backlog/stories/E14-F12-US-022-handles-in-points-mode.md
- */
-function readTypedEnd(document: Document, end: "after" | "before"): Point | undefined {
-  const x = readNumber(document, `handle-${end}-x`);
-  const y = readNumber(document, `handle-${end}-y`);
-
-  return Number.isSafeInteger(x) && Number.isSafeInteger(y) ? { x, y } : undefined;
-}
+/** The field typed: which handle, and which coordinate of its end. */
+type TypedField = {
+  /** The coordinate typed. */
+  readonly axis: "x" | "y";
+  /** The handle. */
+  readonly end: "after" | "before";
+};
 
 /**
- * Handles once one end is typed: the vector from the point to that end, the other handle following
- * the mode (`handlesAfterTyping`); a value that is not an integer changes nothing.
+ * Handles once one coordinate of a handle's end is typed: the other coordinate kept where it is
+ * drawn, as the point's x and y (F08); the vector from the point to that end, the other handle
+ * following the mode (`handlesAfterTyping`); a value that is not an integer changes nothing.
  *
  * @kind procedure
  * @param handles - handles as drawn
  * @param document - page document
- * @param end - the handle typed
+ * @param field - which handle and which coordinate were typed
  * @returns the handles after the typing, or `undefined`
  * @see docs/backlog/stories/E14-F12-US-022-handles-in-points-mode.md
  */
 function readTypedHandles(
   handles: Handles,
   document: Document,
-  end: "after" | "before",
+  field: TypedField,
 ): Handles | undefined {
-  const typed = readTypedEnd(document, end);
+  const typed = readNumber(document, `handle-${field.end}-${field.axis}`);
   const selected = readSelectedCorner(document, readShape(document));
 
-  return typed === undefined || selected === undefined
+  return selected === undefined || !Number.isSafeInteger(typed)
     ? undefined
-    : handlesAfterTyping(handles, end, subtract(typed, selected.corner.point));
+    : readMovedEnd(handles, selected.corner.point, { ...field, typed });
+}
+
+/**
+ * Handles with one coordinate of a handle's end moved to the value typed.
+ *
+ * @kind procedure
+ * @param handles - handles as drawn
+ * @param point - the point of the handles, as drawn
+ * @param move - the handle, the coordinate and its new value
+ * @returns the handles after the move
+ * @see docs/backlog/stories/E14-F12-US-022-handles-in-points-mode.md
+ */
+function readMovedEnd(
+  handles: Handles,
+  point: Point,
+  move: TypedField & { readonly typed: number },
+): Handles {
+  const end = { ...add(point, handles[move.end]), [move.axis]: move.typed };
+
+  return handlesAfterTyping(handles, move.end, subtract(end, point));
 }
 
 /**
@@ -174,7 +187,7 @@ function readChosenMode(handles: Handles, document: Document): Handles | undefin
  */
 export function listenToHandleFields(document: Document, update: () => void): void {
   const fields = (["before", "after"] as const).flatMap((end) =>
-    ["x", "y"].map((axis) => ({ end, id: `handle-${end}-${axis}` })),
+    (["x", "y"] as const).map((axis) => ({ axis, end })),
   );
 
   selectElement(document, "handles-switch").addEventListener("click", () => {
@@ -185,11 +198,11 @@ export function listenToHandleFields(document: Document, update: () => void): vo
     writeChangedHandles(document, readChosenMode, update);
   });
 
-  for (const { end, id } of fields) {
-    selectElement(document, id).addEventListener("change", () => {
+  for (const field of fields) {
+    selectElement(document, `handle-${field.end}-${field.axis}`).addEventListener("change", () => {
       writeChangedHandles(
         document,
-        (handles, page) => readTypedHandles(handles, page, end),
+        (handles, page) => readTypedHandles(handles, page, field),
         update,
       );
     });

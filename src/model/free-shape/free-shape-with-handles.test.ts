@@ -50,6 +50,12 @@ describe("freeShapeWithHandles", () => {
     });
 
     expect(curved.y).toBeCloseTo(-160 / 9, 9);
+
+    expect(
+      drawn(curved)
+        .slice(1)
+        .map((corner) => corner.handles),
+    ).toEqual([NO_HANDLES, NO_HANDLES, NO_HANDLES]);
   });
 
   test.prop({ after: integerPoint(50), angle: fc.constantFrom(0, 45, 90, 200) })(
@@ -72,6 +78,12 @@ describe("freeShapeWithHandles", () => {
         drawn(shape).map((each) => each.point),
         6,
       );
+
+      expect(
+        drawn(curved)
+          .filter((each, index) => index !== 2)
+          .map((each) => each.handles.isOn),
+      ).toEqual([false, false, false]);
 
       expect(corner?.handles.after.x).toBeCloseTo(after.x, 6);
       expect(corner?.handles.after.y).toBeCloseTo(after.y, 6);
