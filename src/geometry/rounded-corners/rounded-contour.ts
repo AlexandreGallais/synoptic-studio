@@ -1,4 +1,4 @@
-import { cyclicItem } from "../cyclic-item";
+import { cyclicItem } from "../contour";
 
 import { clampedRadii } from "./clamped-radii";
 import { cornerTriples } from "./corner-triples";
@@ -6,9 +6,7 @@ import { filletArc } from "./fillet-arc";
 import { hasLength } from "./has-length";
 import { turningAngles } from "./turning-angles";
 
-import type { Arc } from "../arc";
-import type { ContourPiece } from "../contour-piece";
-import type { Corner } from "../corner";
+import type { Arc, ContourPiece, Corner } from "../contour";
 
 /**
  * Evaluated contour of a shape with corner radii: a closed sequence of segments and arcs.

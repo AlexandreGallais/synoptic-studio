@@ -1,6 +1,6 @@
 import { turningAngle } from "./turning-angle";
 
-import type { CornerPoints } from "../corner-points";
+import type { CornerPoints } from "../contour";
 
 /**
  * Turning angle at every corner of a cyclic contour (`τᵢ` of `DERIV-local-radius-clamp`), each

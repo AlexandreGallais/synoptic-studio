@@ -1,10 +1,10 @@
-import { boundingBox } from "../bounding-box";
 import { hasLength } from "../rounded-corners";
 
 import { arcAxisPoints } from "./arc-axis-points";
+import { boundingBox } from "./bounding-box";
 
-import type { BoundingBox } from "../bounding-box";
-import type { ContourPiece } from "../contour-piece";
+import type { BoundingBox } from "./bounding-box";
+import type { ContourPiece } from "../contour";
 
 /**
  * Straight box of a contour of segments and fillet arcs: the smallest upright rectangle around

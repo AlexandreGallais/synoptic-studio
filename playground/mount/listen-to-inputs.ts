@@ -1,10 +1,9 @@
-import { NO_VERTEX_SELECTION } from "../src";
-
-import { selectElement, writeSelection } from "./page";
-import { listenToPoints } from "./points";
-import { listenToPosition } from "./position";
-import { listenToAnchor, listenToRadius, listenToTurn, writeChosenFreeShape } from "./shape";
-import { listenToModes } from "./toolbar";
+import { NO_VERTEX_SELECTION } from "../../src";
+import { selectElement, writeSelection } from "../page";
+import { listenToPoints } from "../points";
+import { listenToPosition } from "../position";
+import { listenToAnchor, listenToRadius, listenToTurn, writeChosenFreeShape } from "../shape";
+import { listenToModes } from "../toolbar";
 
 /** Number inputs of the shapes, in display order. */
 const INPUTS = ["corners", "width", "height", "radius"];

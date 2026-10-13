@@ -8,7 +8,7 @@ import {
   readText,
   readValue,
   typeAndEnter,
-} from "./user-actions";
+} from "../user-actions";
 
 describe("playground: the user test of E01 (REV-001)", () => {
   it("step 67: the rounded body widens, its radius kept", () => {

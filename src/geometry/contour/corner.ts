@@ -1,4 +1,4 @@
-import type { Point } from "../math";
+import type { Point } from "../../math";
 
 /** Vertex of a shape's contour with the corner radius requested at it (glossary: corner radius). */
 export type Corner = {

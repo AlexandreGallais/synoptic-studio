@@ -9,7 +9,7 @@ import {
   readText,
   readValue,
   typeAndEnter,
-} from "./user-actions";
+} from "../user-actions";
 
 describe("editing a turned shape (US-019)", () => {
   beforeEach(() => {

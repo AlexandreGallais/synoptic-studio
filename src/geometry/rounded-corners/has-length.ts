@@ -1,6 +1,6 @@
 import { EPSILON, norm, subtract } from "../../math";
 
-import type { ContourPiece } from "../contour-piece";
+import type { ContourPiece } from "../contour";
 
 /**
  * Whether a contour piece is drawn: its ends are at least `EPSILON` apart (Q10).

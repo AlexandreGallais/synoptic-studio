@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { chooseOption, clickElement, openPage, readPressedState, typeValue } from "./user-actions";
+import { chooseOption, clickElement, openPage, readPressedState, typeValue } from "../user-actions";
 
 /**
  * Handles drawn on the canvas, in drawing order (the last one on top).

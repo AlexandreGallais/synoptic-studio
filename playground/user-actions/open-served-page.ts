@@ -1,5 +1,5 @@
 import { readGuidedTestSteps } from "../guided-test";
-import { mountPlayground } from "../mount-playground";
+import { mountPlayground } from "../mount";
 
 import { loadPage } from "./load-page";
 

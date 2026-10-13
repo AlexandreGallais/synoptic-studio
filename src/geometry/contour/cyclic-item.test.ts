@@ -1,7 +1,7 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
-import { rectanglePoints } from "../../tests";
+import { rectanglePoints } from "../../../tests";
 
 import { cyclicItem } from "./cyclic-item";
 

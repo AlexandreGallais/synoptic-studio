@@ -8,7 +8,7 @@ import {
   readText,
   selectInput,
   typeValue,
-} from "./user-actions";
+} from "../user-actions";
 
 /**
  * Gives each vertex its radius through the page, as a user would: in Points mode, each point

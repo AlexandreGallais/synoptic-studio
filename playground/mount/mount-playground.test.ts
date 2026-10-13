@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { GUIDED_STEPS } from "./guided-steps";
+import { GUIDED_STEPS } from "../guided-steps";
 import {
   chooseOption,
   chooseRadio,
@@ -12,7 +12,7 @@ import {
   readText,
   readValue,
   typeValue,
-} from "./user-actions";
+} from "../user-actions";
 
 /**
  * Clicks a button of the page several times.

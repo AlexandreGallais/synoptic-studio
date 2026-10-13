@@ -1,4 +1,4 @@
-import type { Point } from "../math";
+import type { Point } from "../../math";
 
 /**
  * Circular arc of an evaluated contour, the fillet of one corner (ADR-0001, `DERIV-fillet-arc`).

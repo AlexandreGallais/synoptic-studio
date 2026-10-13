@@ -1,14 +1,4 @@
-export type * from "./alignment";
-export * from "./alignments";
-export type * from "./anchor";
-export type * from "./arc";
-export * from "./bounding-box";
 export * from "./box";
-export type * from "./contour-piece";
-export type * from "./corner";
-export type * from "./corner-points";
-export * from "./cyclic-item";
+export * from "./contour";
 export * from "./polygon";
 export * from "./rounded-corners";
-export type * from "./segment";
-export type * from "./size";

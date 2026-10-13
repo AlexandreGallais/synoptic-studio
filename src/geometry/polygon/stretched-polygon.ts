@@ -4,7 +4,7 @@ import { stretchScale } from "./stretch-scale";
 import { unitStretchedPolygon } from "./unit-stretched-polygon";
 
 import type { Point } from "../../math";
-import type { Size } from "../size";
+import type { Size } from "../box";
 
 /**
  * Stretched polygon of `n` corners filling a `width × height` box from the origin: the unit

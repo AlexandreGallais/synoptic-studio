@@ -1,7 +1,12 @@
+export type * from "./alignment";
 export * from "./alignment-factor";
+export * from "./alignments";
+export type * from "./anchor";
 export * from "./arc-axis-points";
+export * from "./bounding-box";
 export * from "./box-aspect";
 export * from "./contour-bounding-box";
 export * from "./fit-in-box";
+export type * from "./size";
 export * from "./stretch-to-size";
 export * from "./turn-about";

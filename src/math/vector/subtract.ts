@@ -1,4 +1,4 @@
-import type { Point } from "../point";
+import type { Point } from "./point";
 import type { Vector } from "./vector";
 
 /**

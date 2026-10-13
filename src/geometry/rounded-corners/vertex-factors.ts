@@ -1,4 +1,4 @@
-import { cyclicItem } from "../cyclic-item";
+import { cyclicItem } from "../contour";
 
 /**
  * Factor of every vertex of a cyclic contour: the smaller factor of its two edges.

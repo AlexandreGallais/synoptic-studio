@@ -1,7 +1,8 @@
-import { degreesInTurn } from "./degrees-in-turn";
-import { quarterTurn } from "./vector";
+import { quarterTurn } from "../vector";
 
-import type { Vector } from "./vector";
+import { degreesInTurn } from "./degrees-in-turn";
+
+import type { Vector } from "../vector";
 
 /** Degrees in a quarter turn. */
 const QUARTER = 90;

@@ -1,10 +1,9 @@
-import { boundingBox } from "../bounding-box";
-
 import { alignmentFactor } from "./alignment-factor";
+import { boundingBox } from "./bounding-box";
 
+import type { Anchor } from "./anchor";
+import type { Size } from "./size";
 import type { Point } from "../../math";
-import type { Anchor } from "../anchor";
-import type { Size } from "../size";
 
 /**
  * Scales a set of points uniformly to the largest size fitting a `width × height` box, and

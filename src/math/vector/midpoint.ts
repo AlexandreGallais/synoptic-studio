@@ -1,4 +1,4 @@
-import type { Point } from "../point";
+import type { Point } from "./point";
 
 /**
  * Middle of a segment: the point dividing it into two segments of equal length.
