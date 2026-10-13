@@ -14,15 +14,6 @@ const DECIMALS = 9;
 const QUARTER_TURNS = [Math.PI / 2, Math.PI / 2, Math.PI / 2, Math.PI / 2];
 
 describe("clampedRadii (DERIV-local-radius-clamp)", () => {
-  it("[F01.AC3] reduces radius 1000 on every corner of a square of 100 to 50", () => {
-    // s = r · tan(π/4) = 1000 at each corner, S = 2000 on every edge → f = 100 / 2000 → r′ = 50.
-    const radii = clampedRadii(rectangleCorners(100, 100, [1000, 1000, 1000, 1000]), QUARTER_TURNS);
-
-    for (const radius of radii) {
-      expect(radius).toBeCloseTo(50, DECIMALS);
-    }
-  });
-
   it("clamps each corner by its own turn: radius 10 on a 3-4-5 triangle gives 1 at every corner", () => {
     // Setbacks 10 · tan(|τ|/2) = 10, 30, 20; every edge factor 0.1: r′ = 1, the inradius.
     const corners = [
@@ -35,6 +26,16 @@ describe("clampedRadii (DERIV-local-radius-clamp)", () => {
     for (const radius of clampedRadii(corners, angles)) {
       expect(radius).toBeCloseTo(1, DECIMALS);
     }
+  });
+
+  it("gives each corner the smaller factor of its two edges: 1000 and 10 on a square of 100", () => {
+    // Edge factors f = 100 / 1010 (top), 1, 1, 100 / 1000 (left); g₀ = min(f₃, f₀) = 100 / 1010,
+    // g₁ = min(f₀, f₁) = 100 / 1010: r′ = 100 000 / 1010 = 99.00990, 1000 / 1010 = 0.99010, 0, 0.
+    const radii = clampedRadii(rectangleCorners(100, 100, [1000, 10, 0, 0]), QUARTER_TURNS);
+
+    expect(radii[0]).toBeCloseTo(100_000 / 1010, DECIMALS);
+    expect(radii[1]).toBeCloseTo(1000 / 1010, DECIMALS);
+    expect(radii.slice(2)).toEqual([0, 0]);
   });
 
   it("keeps the radii when every corner is aligned (τ = 0): no setback to reduce", () => {

@@ -7,6 +7,7 @@ import {
   clickPoint,
   openPage,
   readText,
+  readValue,
   typeAndEnter,
 } from "./user-actions";
 
@@ -41,7 +42,7 @@ describe("editing a turned shape (US-019)", () => {
     clickPoint(1, false);
 
     // The field shows point 1 as drawn: x 100.
-    expect(document.querySelector<HTMLInputElement>("#point-x")?.value).toBe("100");
+    expect(readValue("point-x")).toBe("100");
 
     typeAndEnter("point-x", "110");
 
@@ -61,7 +62,7 @@ describe("editing a turned shape (US-019)", () => {
     clickElement("convert");
 
     expect(readText("#path-data")).toBe(before);
-    expect(document.querySelector<HTMLInputElement>("#angle")?.value).toBe("30");
+    expect(readValue("angle")).toBe("30");
   });
 
   it("[F04.AC4] keeps the turned top-left in place when a width above 100 000 is capped", () => {

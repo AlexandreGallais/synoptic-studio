@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import {
   chooseOption,
+  chooseRadio,
   clickElement,
   commitField,
   openPage,
@@ -112,14 +113,7 @@ describe("turning and moving a shape (US-018)", () => {
     typeValue("width", "100");
     typeValue("height", "100");
 
-    const bottom = [...document.querySelectorAll<HTMLInputElement>('input[name="anchor"]')].find(
-      (button) => button.value === "mid max",
-    );
-
-    if (bottom !== undefined) {
-      bottom.checked = true;
-      bottom.dispatchEvent(new Event("change"));
-    }
+    chooseRadio("anchor", "mid max");
 
     typeValue("angle", "90");
 

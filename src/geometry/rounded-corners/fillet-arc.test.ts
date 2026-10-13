@@ -1,12 +1,11 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
-import { integerPoint } from "../../../tests";
+import { expectPoints, integerPoint } from "../../../tests";
 
 import { filletArc } from "./fillet-arc";
 import { turningAngle } from "./turning-angle";
 
-import type { Point } from "../../math";
 import type { Arc } from "../arc";
 import type { CornerPoints } from "../corner-points";
 
@@ -26,17 +25,6 @@ const POINT = integerPoint(500);
 
 /** Decimals compared: tangents and square roots of doubles. */
 const DECIMALS = 9;
-
-/**
- * Checks a computed point against hand-computed coordinates.
- *
- * @param actual - computed point
- * @param expected - coordinates from the DERIV-fillet-arc check table
- */
-function expectPoint(actual: Point, expected: Point): void {
-  expect(actual.x).toBeCloseTo(expected.x, DECIMALS);
-  expect(actual.y).toBeCloseTo(expected.y, DECIMALS);
-}
 
 describe("filletArc (DERIV-fillet-arc)", () => {
   it.each([
@@ -70,9 +58,9 @@ describe("filletArc (DERIV-fillet-arc)", () => {
     (row) => {
       const arc = arcOf(row.corner, 10);
 
-      expectPoint(arc.start, row.start);
-      expectPoint(arc.end, row.end);
-      expectPoint(arc.center, row.center);
+      expectPoints([arc.start], [row.start], DECIMALS);
+      expectPoints([arc.end], [row.end], DECIMALS);
+      expectPoints([arc.center], [row.center], DECIMALS);
       expect(arc.radius).toBe(10);
       expect(arc.positive).toBe(true);
     },
@@ -85,9 +73,9 @@ describe("filletArc (DERIV-fillet-arc)", () => {
       5,
     );
 
-    expectPoint(arc.start, { x: 5, y: 0 });
-    expectPoint(arc.end, { x: 10, y: -5 });
-    expectPoint(arc.center, { x: 5, y: -5 });
+    expectPoints([arc.start], [{ x: 5, y: 0 }], DECIMALS);
+    expectPoints([arc.end], [{ x: 10, y: -5 }], DECIMALS);
+    expectPoints([arc.center], [{ x: 5, y: -5 }], DECIMALS);
     expect(arc.positive).toBe(false);
   });
 
@@ -111,9 +99,9 @@ describe("filletArc (DERIV-fillet-arc)", () => {
       10,
     );
 
-    expectPoint(arc.start, { x: 0, y: 0 });
-    expectPoint(arc.end, { x: 0, y: 0 });
-    expectPoint(arc.center, { x: 0, y: 0 });
+    expectPoints([arc.start], [{ x: 0, y: 0 }], DECIMALS);
+    expectPoints([arc.end], [{ x: 0, y: 0 }], DECIMALS);
+    expectPoints([arc.center], [{ x: 0, y: 0 }], DECIMALS);
   });
 
   it("keeps every center at the radius from both tangent points", () => {
@@ -137,7 +125,7 @@ describe("filletArc (DERIV-fillet-arc)", () => {
       DECIMALS,
     );
 
-    expectPoint(arc.start, { x: 100 - 10 / Math.sqrt(3), y: 0 });
+    expectPoints([arc.start], [{ x: 100 - 10 / Math.sqrt(3), y: 0 }], DECIMALS);
   });
 });
 
