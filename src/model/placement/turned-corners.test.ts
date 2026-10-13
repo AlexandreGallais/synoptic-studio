@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { boundingBox } from "../../geometry";
 import { freeShapeCorners } from "../free-shape";
+import { curveCornerOf } from "../handles";
 import { rectangleAsFreeShape } from "../rectangle";
 import { regularPolygonCorners } from "../regular-polygon";
 
@@ -29,12 +30,14 @@ describe("turnedCorners (DERIV-turned-shape step 4)", () => {
   it("[F04.AC1] turns a 100 × 50 rectangle by 90° about (50, 25), clockwise, exactly", () => {
     // DERIV-turned-shape checks: (0, 0) ↦ (75, −25), (100, 0) ↦ (75, 75), (100, 50) ↦ (25, 75),
     // (0, 50) ↦ (25, −25).
-    expect(drawnRectangle({ ...RECTANGLE, angle: 90 })).toMatchObject([
-      { point: { x: 75, y: -25 }, radius: 1 },
-      { point: { x: 75, y: 75 }, radius: 2 },
-      { point: { x: 25, y: 75 }, radius: 3 },
-      { point: { x: 25, y: -25 }, radius: 4 },
-    ]);
+    expect(drawnRectangle({ ...RECTANGLE, angle: 90 })).toEqual(
+      [
+        { point: { x: 75, y: -25 }, radius: 1 },
+        { point: { x: 75, y: 75 }, radius: 2 },
+        { point: { x: 25, y: 75 }, radius: 3 },
+        { point: { x: 25, y: -25 }, radius: 4 },
+      ].map((corner) => curveCornerOf(corner)),
+    );
   });
 
   it.each([

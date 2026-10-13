@@ -20,6 +20,17 @@ describe("stretchFactors (DERIV-free-shape-stretch)", () => {
     expect(stretchFactors(UNIT_SQUARE, { height: 80, width: 120 })).toEqual({ x: 120, y: 80 });
   });
 
+  it("takes each axis's own span", () => {
+    // Spans 2 and 5, size 10 × 10: factors 5 and 2.
+    const points = [
+      { x: 0, y: 0 },
+      { x: 2, y: 0 },
+      { x: 2, y: 5 },
+    ];
+
+    expect(stretchFactors(points, { height: 10, width: 10 })).toEqual({ x: 5, y: 2 });
+  });
+
   it("gives 1 on an axis already at its size, even of span 0", () => {
     // A flat shape of span 0 × 50 drawn 0 × 100: no division on x.
     const flat = [

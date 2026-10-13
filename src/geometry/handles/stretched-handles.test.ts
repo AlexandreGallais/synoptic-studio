@@ -17,7 +17,7 @@ const HANDLES = {
 const VECTOR = integerPoint(1e3);
 
 describe("stretchedHandles (REF-WIKI-BEZIER)", () => {
-  it("[F12.AC3] scales each handle on each axis as its point is", () => {
+  it("scales each handle on each axis as its point is", () => {
     // Stored 1 × 1, drawn 200 × 100: (30, −15) → (6000, −1500), (−10, 4) → (−2000, 400).
     expect(stretchedHandles(HANDLES, { x: 200, y: 100 })).toEqual({
       ...HANDLES,

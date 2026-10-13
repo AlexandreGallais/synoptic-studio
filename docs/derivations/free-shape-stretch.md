@@ -1,6 +1,6 @@
 # DERIV-free-shape-stretch — Stretching a free shape by its width and height, without loss
 
-Used by: ADR-0032, F09; ADR-0033, F08 (fractional points and size). Sources: `REF-SVG2-COORDS` §8.2 (the viewBox transform with `align = none`: one scale per axis, then a translation), `REF-CSS-TRANSFORMS` §3 (a transform about an origin). `fitInBox` (`DERIV-regular-polygon-fit`) shares the scale, with one factor for both axes, but not the translation: it places the box by its anchor, while this map keeps the top-left fixed.
+Used by: ADR-0032, F09; ADR-0033, F08 (fractional points and size); ADR-0046, F12 (handles, step 5). Sources: `REF-SVG2-COORDS` §8.2 (the viewBox transform with `align = none`: one scale per axis, then a translation), `REF-CSS-TRANSFORMS` §3 (a transform about an origin). `fitInBox` (`DERIV-regular-polygon-fit`) shares the scale, with one factor for both axes, but not the translation: it places the box by its anchor, while this map keeps the top-left fixed.
 
 ## Notation
 
@@ -33,6 +33,12 @@ The stored points never change: the drawn points are a function of the stored po
 ## Step 4 — The rectangle tool
 
 The rectangle tool stores the unit square `(0, 0), (1, 0), (1, 1), (0, 1)`, top-left first, clockwise (Q11): `o = (0, 0)`, `nₓ = n_y = 1`, so `sx = w`, `sy = h`, and the points drawn are `(0, 0), (w, 0), (w, h), (0, h)` — the rectangle of F01. The products `1 · w`, `0 · w` are exact in floating point: the drawing is the same as before, to the last bit.
+
+## Step 5 — Handles (F12, ADR-0046)
+
+A handle is a vector from its point, `h = c − p` with `c` its control point (`REF-FIGMA-VECTOR-NETWORK`). An affine map acts on a Bézier curve through its control points (`REF-WIKI-BEZIER`), so the control point is drawn `c' = o + S(c − o)` with `S = diag(sx, sy)` (step 1). Then `c' − p' = S(c − o) − S(p − o) = S(c − p)`: the handle drawn is `h' = (sx · hₓ, sy · h_y)` — the factors of step 2, no translation. On an axis where `w = nₓ` the points are drawn as stored (step 3), so the factor taken is 1 (`stretchFactors`, `stretchedHandles`).
+
+Check: the unit square drawn 200 × 100, a handle (0.1, −0.2) at (0, 0): drawn (20, −20).
 
 ## Checks (test cases)
 
