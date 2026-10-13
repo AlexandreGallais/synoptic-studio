@@ -22,5 +22,22 @@ As a symbol designer, I smooth a point by typing one tension, its handles comput
 
 One task = one commit, referenced as `US-026.Tn`.
 
-- [ ] T1 — Derivation and function of handles from a tension
-- [ ] T2 — The tension field in the panel; handles kept up to date; tests
+- [x] T1 — Derivation and function of handles from a tension
+- [x] T2 — The tension field in the panel; handles kept up to date; tests
+
+## Decisions during the story
+
+| Decision                                                                                                                                  | Reason                                                                                              |
+| ----------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| a fourth handle mode, `auto`, with a `tension` stored in the handles                                                                      | the handles are computed, so the point must say it is smoothed; the tension is the only value typed |
+| the automatic handles are computed from the points as drawn, never stored (`smoothedCorners`), in the drawing and in the box of the curve | they follow the neighbours, as an auto-smooth node; a stretch commutes with them (both linear)      |
+| a handle typed in mode `auto` turns the point to mode angle                                                                               | as Inkscape's auto-smooth node dragged becomes smooth (`REF-INKSCAPE-NODE-TYPES`)                   |
+
+## Product Owner test
+
+Open the page, type **Width** = 100: points 1 (0, 0), 2 (100, 0), 3 (100, 80).
+
+1. Click **Points**, point 2 (top right), **Handles**, then **Mode** = **Smooth by a tension**. A **Tension** field appears at 0: the corner is rounded smoothly from point 1 to point 3, its handles parallel to the line from point 1 to point 3.
+2. Type **Tension** = 50: the curve tightens; 100: the sides are straight again.
+3. Type **Tension** = 0, click point 3 and type its **X** = 150: point 2's curve follows, its handles turning towards the new place of point 3.
+4. Click point 2 and type a handle's **After x**: the mode becomes Mirror angle; the tension is left.
