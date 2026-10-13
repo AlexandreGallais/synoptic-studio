@@ -1,56 +1,16 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
 
-import { GUIDED_STEPS } from "./guided-steps";
 import page from "./index.html?raw";
-import { mountPlayground } from "./mount-playground";
-
-/**
- * Opens the playground on a step of the guided test, in Points mode.
- *
- * @param step - number of the step, from 1
- */
-function openOnStep(step: number): void {
-  globalThis.history.replaceState(undefined, "", `/?step=${String(step)}`);
-
-  const parser = new DOMParser();
-  const parsed = parser.parseFromString(page, "text/html");
-
-  parsed.querySelector("script")?.remove();
-  document.body.replaceChildren(...parsed.body.childNodes);
-  mountPlayground(document, GUIDED_STEPS);
-  document.querySelector<HTMLButtonElement>("#mode-points")?.click();
-}
-
-/**
- * Types a value into an input and fires its `input` then `change` events, as a user would who
- * types it and presses Enter.
- *
- * @param id - input id
- * @param value - typed text
- */
-function type(id: string, value: string): void {
-  const input = document.querySelector<HTMLInputElement>(`#${id}`);
-
-  if (input === null) {
-    return;
-  }
-
-  input.value = value;
-  input.dispatchEvent(new Event("input"));
-  input.dispatchEvent(new Event("change"));
-}
-
-/**
- * Clicks the row of a point in the list.
- *
- * @param vertex - number of the point, from 1
- */
-function clickPoint(vertex: number): void {
-  document
-    .querySelector(`#points [data-vertex="${CSS.escape(String(vertex))}"]`)
-    ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
-}
+import {
+  chooseOption,
+  clickElement,
+  clickPoint,
+  openOnStep,
+  readPointRows,
+  readText,
+  typeAndEnter,
+} from "./user-actions";
 
 /**
  * An input of the page.
@@ -63,16 +23,6 @@ function field(id: string): HTMLInputElement {
 }
 
 /**
- * Text shown in an element of the page.
- *
- * @param selector - CSS selector of the element
- * @returns its text content, empty when absent
- */
-function text(selector: string): string {
-  return document.querySelector(selector)?.textContent ?? "";
-}
-
-/**
  * A number of the model shown in the pipeline panel, written in full by `JSON.stringify`.
  *
  * @param key - name of a top-level number of the model
@@ -80,7 +30,7 @@ function text(selector: string): string {
  */
 function modelNumber(key: string): number {
   const pattern = new RegExp(String.raw`"${key}": (-?[\d.e+-]+)`, "u");
-  const match = pattern.exec(text("#model"));
+  const match = pattern.exec(readText("#model"));
 
   return Number(match?.[1]);
 }
@@ -94,15 +44,6 @@ function addPoint(vertex: number): void {
   document
     .querySelector(`#points [data-vertex="${CSS.escape(String(vertex))}"]`)
     ?.dispatchEvent(new MouseEvent("click", { bubbles: true, ctrlKey: true }));
-}
-
-/**
- * The texts of the rows of the list of points.
- *
- * @returns one text per point, in contour order
- */
-function rows(): readonly string[] {
-  return [...document.querySelectorAll("#points [data-vertex]")].map((row) => row.textContent);
 }
 
 /**
@@ -127,7 +68,8 @@ describe("editing the points of a free shape", () => {
   it("[F08.AC1] shows the x and y of a polygon's point greyed, and the conversion button", () => {
     // Step 10: a hexagon in 100 × 100.
     openOnStep(10);
-    clickPoint(1);
+    clickElement("mode-points");
+    clickPoint(1, false);
 
     expect(field("point-x").value).toBe("75");
     expect(field("point-y").value).toBe("93.30127");
@@ -137,13 +79,14 @@ describe("editing the points of a free shape", () => {
 
   it("[F08.AC1] converts the polygon into a free shape that does not move", () => {
     openOnStep(10);
+    clickElement("mode-points");
 
-    const before = text("#path-data");
+    const before = readText("#path-data");
 
     document.querySelector<HTMLButtonElement>("#convert")?.click();
 
     expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("free");
-    expect(text("#path-data")).toBe(before);
+    expect(readText("#path-data")).toBe(before);
     expect(field("width").value).toBe("100");
     expect(field("height").value).toBe("86.60254");
 
@@ -153,6 +96,7 @@ describe("editing the points of a free shape", () => {
 
   it("[F08.AC1] hides the anchor, the corners and the conversion of a free shape", () => {
     openOnStep(10);
+    clickElement("mode-points");
     document.querySelector<HTMLButtonElement>("#convert")?.click();
 
     const hidden = ["#anchor-field", "#corners-field", "#convert"].map(
@@ -164,52 +108,57 @@ describe("editing the points of a free shape", () => {
 
   it("[F08.AC2] moves a point of the converted polygon to the x typed, its y kept", () => {
     openOnStep(10);
+    clickElement("mode-points");
     document.querySelector<HTMLButtonElement>("#convert")?.click();
-    clickPoint(1);
-    type("point-x", "80");
+    clickPoint(1, false);
+    typeAndEnter("point-x", "80");
 
-    expect(text('#points [data-vertex="1"]')).toBe("1 · x 80 · y 93.30127 · radius 0");
-    expect(text('#points [data-vertex="3"]')).toBe("3 · x 0 · y 50 · radius 0");
+    expect(readText('#points [data-vertex="1"]')).toBe("1 · x 80 · y 93.30127 · radius 0");
+    expect(readText('#points [data-vertex="3"]')).toBe("3 · x 0 · y 50 · radius 0");
   });
 
   it("[F08.AC2] makes the rectangle a free shape when one of its points is typed", () => {
     // Step 1: a 120 × 80 rectangle with radius 10.
     openOnStep(1);
-    clickPoint(3);
-    type("point-x", "150");
+    clickElement("mode-points");
+    clickPoint(3, false);
+    typeAndEnter("point-x", "150");
 
     expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("free");
-    expect(text('#points [data-vertex="3"]')).toBe("3 · x 150 · y 80 · radius 10");
+    expect(readText('#points [data-vertex="3"]')).toBe("3 · x 150 · y 80 · radius 10");
     // The box around the points: 150 wide now.
     expect(field("width").value).toBe("150");
   });
 
   it("[F08.AC2] ignores a coordinate that is not an integer", () => {
     openOnStep(1);
-    clickPoint(3);
-    type("point-x", "150.5");
+    clickElement("mode-points");
+    clickPoint(3, false);
+    typeAndEnter("point-x", "150.5");
 
     expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("rectangle");
-    expect(text('#points [data-vertex="3"]')).toBe("3 · x 120 · y 80 · radius 10");
+    expect(readText('#points [data-vertex="3"]')).toBe("3 · x 120 · y 80 · radius 10");
   });
 
   it("[F08.AC1] stretches the converted polygon by an integer width, and refuses a fractional one", () => {
     openOnStep(10);
+    clickElement("mode-points");
     document.querySelector<HTMLButtonElement>("#convert")?.click();
-    type("width", "50");
+    typeAndEnter("width", "50");
 
-    expect(text('#points [data-vertex="1"]')).toBe("1 · x 37.5 · y 93.30127 · radius 0");
+    expect(readText('#points [data-vertex="1"]')).toBe("1 · x 37.5 · y 93.30127 · radius 0");
 
-    type("width", "12.5");
+    typeAndEnter("width", "12.5");
 
-    expect(text("#status")).toBe(
+    expect(readText("#status")).toBe(
       "Width, height and radius typed must be integers ≥ 0, the angle an integer, and the points must span some width and height.",
     );
   });
 
   it("[F08.AC1] greys the conversion of a polygon of width 0", () => {
     openOnStep(10);
-    type("width", "0");
+    clickElement("mode-points");
+    typeAndEnter("width", "0");
 
     expect(document.querySelector<HTMLButtonElement>("#convert")?.disabled).toBe(true);
   });
@@ -217,23 +166,25 @@ describe("editing the points of a free shape", () => {
   it("[F08.AC2] hides the point fields and moves nothing while the shape is refused", () => {
     // Step 1, point 3 typed: a free shape; its width then cleared, refused.
     openOnStep(1);
-    clickPoint(3);
-    type("point-x", "150");
-    type("width", "");
+    clickElement("mode-points");
+    clickPoint(3, false);
+    typeAndEnter("point-x", "150");
+    typeAndEnter("width", "");
 
     expect(document.querySelector<HTMLElement>("#point-fields")?.hidden).toBe(true);
 
-    type("point-x", "40");
-    type("width", "150");
+    typeAndEnter("point-x", "40");
+    typeAndEnter("width", "150");
 
     // The point stayed at 150: the shape kept is intact, drawn again.
-    expect(text('#points [data-vertex="3"]')).toBe("3 · x 150 · y 80 · radius 10");
+    expect(readText('#points [data-vertex="3"]')).toBe("3 · x 150 · y 80 · radius 10");
   });
 
   it("[F08.AC1] converts no refused polygon", () => {
     // Step 10 with 2 corners: no polygon.
     openOnStep(10);
-    type("corners", "2");
+    clickElement("mode-points");
+    typeAndEnter("corners", "2");
     document.querySelector<HTMLButtonElement>("#convert")?.click();
 
     expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("polygon");
@@ -241,17 +192,19 @@ describe("editing the points of a free shape", () => {
 
   it("[F08.AC2] moves nothing when no point is selected", () => {
     openOnStep(1);
-    clickPoint(3);
+    clickElement("mode-points");
+    clickPoint(3, false);
     document.querySelector<HTMLSelectElement>("#shape")?.dispatchEvent(new Event("change"));
-    type("point-x", "5");
+    typeAndEnter("point-x", "5");
 
     expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("rectangle");
   });
 
   it("[F08.AC2] drops the free shape kept when a guided step draws its own", () => {
     openOnStep(1);
-    clickPoint(3);
-    type("point-x", "150");
+    clickElement("mode-points");
+    clickPoint(3, false);
+    typeAndEnter("point-x", "150");
     document.querySelector<HTMLButtonElement>("#guide-next")?.click();
 
     // A step draws its own shape: the free shape goes, and so does its option.
@@ -267,11 +220,12 @@ describe("editing the points of a free shape", () => {
   it("[F08.AC3] adds a sharp point in the middle of the edge of two neighbours, selected alone", () => {
     // Step 1: a 120 × 80 rectangle, radius 10; points 1 (0, 0) and 2 (120, 0): middle (60, 0).
     openOnStep(1);
-    clickPoint(1);
+    clickElement("mode-points");
+    clickPoint(1, false);
     addPoint(2);
     document.querySelector<HTMLButtonElement>("#add-midpoint")?.click();
 
-    expect(rows()).toEqual([
+    expect(readPointRows()).toEqual([
       "1 · x 0 · y 0 · radius 10",
       "2 · x 60 · y 0 · radius 0",
       "3 · x 120 · y 0 · radius 10",
@@ -286,31 +240,34 @@ describe("editing the points of a free shape", () => {
   it("[F08.AC3] adds the point of the closing edge, between the last point and the first, at the end", () => {
     // Points 4 (0, 80) and 1 (0, 0): middle (0, 40), numbered 5.
     openOnStep(1);
-    clickPoint(4);
+    clickElement("mode-points");
+    clickPoint(4, false);
     addPoint(1);
     document.querySelector<HTMLButtonElement>("#add-midpoint")?.click();
 
-    expect(rows().at(-1)).toBe("5 · x 0 · y 40 · radius 0");
-    expect(rows()).toHaveLength(5);
+    expect(readPointRows().at(-1)).toBe("5 · x 0 · y 40 · radius 0");
+    expect(readPointRows()).toHaveLength(5);
   });
 
   it("[F08.AC3] halves the room of the corners at the ends of the edge", () => {
     // A 100 square, radius 1000 drawn 100; a point in the middle of the top edge leaves 50.
     openOnStep(1);
-    type("width", "100");
-    type("height", "100");
-    clickPoint(1);
+    clickElement("mode-points");
+    typeAndEnter("width", "100");
+    typeAndEnter("height", "100");
+    clickPoint(1, false);
     addPoint(2);
     // Points 1 and 2 selected: the radius goes to both.
-    type("radius", "1000");
+    typeAndEnter("radius", "1000");
     document.querySelector<HTMLButtonElement>("#add-midpoint")?.click();
 
-    expect(rows()[0]).toBe("1 · x 0 · y 0 · radius 1000 (effective 50)");
+    expect(readPointRows()[0]).toBe("1 · x 0 · y 0 · radius 1000 (effective 50)");
   });
 
   it("[F08.AC3] greys the button unless two neighbouring points are selected", () => {
     openOnStep(1);
-    clickPoint(1);
+    clickElement("mode-points");
+    clickPoint(1, false);
 
     const isOneGreyed = isAddGreyed();
 
@@ -321,7 +278,8 @@ describe("editing the points of a free shape", () => {
 
   it("[F08.AC3] greys the button on a polygon and says to convert it first", () => {
     openOnStep(10);
-    clickPoint(1);
+    clickElement("mode-points");
+    clickPoint(1, false);
     addPoint(2);
 
     expect(isAddGreyed()).toBe(true);
@@ -330,25 +288,27 @@ describe("editing the points of a free shape", () => {
 
   it("[F08.AC3] adds no point while the shape is refused", () => {
     openOnStep(1);
-    clickPoint(1);
+    clickElement("mode-points");
+    clickPoint(1, false);
     addPoint(2);
-    type("width", "");
+    typeAndEnter("width", "");
     document.querySelector<HTMLButtonElement>("#add-midpoint")?.click();
-    type("width", "120");
+    typeAndEnter("width", "120");
 
-    expect(rows()).toHaveLength(4);
+    expect(readPointRows()).toHaveLength(4);
   });
 
   it("[F08.AC2] keeps the free shape when a point typed would leave it no width", () => {
     // A triangle (0, 0), (120, 80), (0, 80) once point 2 is deleted; point 2 typed at x 0 would put
     // every point at x 0: refused, the triangle stays.
     openOnStep(1);
-    clickPoint(2);
+    clickElement("mode-points");
+    clickPoint(2, false);
     document.querySelector<HTMLButtonElement>("#delete-points")?.click();
-    clickPoint(2);
-    type("point-x", "0");
+    clickPoint(2, false);
+    typeAndEnter("point-x", "0");
 
-    expect(rows()).toEqual([
+    expect(readPointRows()).toEqual([
       "1 · x 0 · y 0 · radius 10",
       "2 · x 120 · y 80 · radius 10",
       "3 · x 0 · y 80 · radius 10",
@@ -359,38 +319,46 @@ describe("editing the points of a free shape", () => {
 
   it("[F08.AC3] greys adding a point on a shape of width 0, its radii kept", () => {
     openOnStep(1);
-    type("width", "0");
-    clickPoint(1);
+    clickElement("mode-points");
+    typeAndEnter("width", "0");
+    clickPoint(1, false);
     addPoint(2);
     document.querySelector<HTMLButtonElement>("#add-midpoint")?.click();
 
     expect(isAddGreyed()).toBe(true);
-    expect(rows()[1]).toBe("2 · x 0 · y 0 · radius 10");
+    expect(readPointRows()[1]).toBe("2 · x 0 · y 0 · radius 10");
     // Points 1 and 2 still selected: no single point to show.
     expect(field("point-x").value).toBe("");
   });
 
   it("[F08.AC5] shows the shape's radius in both modes, and a radius of the points in Points mode", () => {
     openOnStep(1);
-    clickPoint(1);
-    type("point-radius", "30");
+    clickElement("mode-points");
+    clickPoint(1, false);
+    typeAndEnter("point-radius", "30");
 
     // The shape's field still speaks for every corner: 30 and 10, Mixed.
     expect([place(), field("radius").placeholder]).toEqual([undefined, "Mixed"]);
 
-    type("radius", "5");
+    typeAndEnter("radius", "5");
 
-    expect(rows().map((row) => row.endsWith("radius 5"))).toEqual([true, true, true, true]);
+    expect(readPointRows().map((row) => row.endsWith("radius 5"))).toEqual([
+      true,
+      true,
+      true,
+      true,
+    ]);
   });
 
   it("[F08.AC2] keeps the focus in a radius field while it is typed in", () => {
     openOnStep(1);
-    clickPoint(1);
+    clickElement("mode-points");
+    clickPoint(1, false);
 
     for (const id of ["point-radius", "radius"]) {
       field(id).focus();
-      type(id, "1");
-      type(id, "12");
+      typeAndEnter(id, "1");
+      typeAndEnter(id, "12");
 
       expect(document.activeElement === field(id)).toBe(true);
     }
@@ -399,22 +367,18 @@ describe("editing the points of a free shape", () => {
   it("[F08.AC2] brings the free shape back, its own size, when it is chosen again", () => {
     // Step 1: point 3 typed at x 150, a free shape 150 wide; then the polygon, 100 wide, then back.
     openOnStep(1);
-    clickPoint(3);
-    type("point-x", "150");
-
-    const select = document.querySelector<HTMLSelectElement>("#shape");
+    clickElement("mode-points");
+    clickPoint(3, false);
+    typeAndEnter("point-x", "150");
 
     for (const value of ["polygon", "free"]) {
-      if (select !== null) {
-        select.value = value;
-        select.dispatchEvent(new Event("change"));
-      }
+      chooseOption("shape", value);
 
       // The polygon gets a width of its own, which the free shape must not take.
-      type("width", value === "polygon" ? "100" : field("width").value);
+      typeAndEnter("width", value === "polygon" ? "100" : field("width").value);
     }
 
     expect(field("width").value).toBe("150");
-    expect(rows()[2]).toBe("3 · x 150 · y 80 · radius 10");
+    expect(readPointRows()[2]).toBe("3 · x 150 · y 80 · radius 10");
   });
 });
