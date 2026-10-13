@@ -22,5 +22,24 @@ As a symbol designer, I type a handle as an angle and a length, measured from th
 
 One task = one commit, referenced as `US-024.Tn`.
 
-- [ ] T1 — Derivation of a handle from an angle along its side
-- [ ] T2 — The two angle methods in the panel; tests
+- [x] T1 — Derivation of a handle from an angle along its side
+- [x] T2 — The two angle methods in the panel; tests
+
+## Decisions during the story
+
+| Decision                                                                                                     | Reason                                                                                               |
+| ------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
+| the four ways to type a handle are a model list, `HANDLE_WAYS`, with `fieldValuesOfHandle` and `typedHandle` | the conversions are business rules, tested on their own; the playground only reads and writes fields |
+| an angle typed while the handle has no length stays in its field until the length is typed                   | a handle of length 0 has no angle; typing the angle first would otherwise be lost                    |
+| the handle before's angle from the side is mirrored                                                          | the same values at both ends make a symmetric arch (Product Owner, 2026-10-13)                       |
+
+## Product Owner test
+
+Open the page, type **Width** = 100: points 1 (0, 0), 2 (100, 0), 3 (100, 80).
+
+1. Click **Points**, point 1, then **Handles**; in **Typed as** choose **angle, length from the x axis**. The fields read angle and length.
+2. Type **After angle** = 330, then **After length** = 30: the top side bends upwards, the handle's end at about (25.98, −15). Angles turn clockwise on screen, as a shape's angle.
+3. Click point 2 (top right), **Handles**, then **Typed as** = **angle, length from the side**, and **Mode** = No mirroring. Type **Before angle** = 330, **Before length** = 30.
+4. Click point 1 again, **Typed as** = from the side, **Mode** = No mirroring, and type **After angle** = 330 (it reads already 330 from step 2: the top side goes right, as the x axis).
+
+What to look at: with the same angle and length at both ends, the top side is a symmetric arch above the shape. Type **After angle** = 370: it reads 10.
