@@ -1,5 +1,7 @@
-import { fc, test } from "@fast-check/vitest";
+import { test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
+
+import { integerPoint } from "../../tests";
 
 import { dot } from "./dot";
 import { norm } from "./norm";
@@ -17,23 +19,14 @@ describe("dot", () => {
 
 describe("dot (properties)", () => {
   test.prop({
-    a: fc.record({
-      x: fc.integer({ max: 1e4, min: -1e4 }),
-      y: fc.integer({ max: 1e4, min: -1e4 }),
-    }),
-    b: fc.record({
-      x: fc.integer({ max: 1e4, min: -1e4 }),
-      y: fc.integer({ max: 1e4, min: -1e4 }),
-    }),
+    a: integerPoint(1e4),
+    b: integerPoint(1e4),
   })("is symmetric", ({ a, b }) => {
     expect(dot(a, b)).toBe(dot(b, a));
   });
 
   test.prop({
-    v: fc.record({
-      x: fc.integer({ max: 1e4, min: -1e4 }),
-      y: fc.integer({ max: 1e4, min: -1e4 }),
-    }),
+    v: integerPoint(1e4),
   })("gives the squared length of a vector with itself", ({ v }) => {
     expect(dot(v, v)).toBeCloseTo(norm(v) ** 2, 4);
   });

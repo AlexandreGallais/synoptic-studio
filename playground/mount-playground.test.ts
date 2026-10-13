@@ -6,22 +6,11 @@ import {
   chooseOption,
   clickElement,
   openPage,
+  readDisplay,
   readText,
   readValue,
   typeValue,
 } from "./user-actions";
-
-/**
- * Whether the field of the number of corners is out of sight: its computed display, so that a
- * style rule overriding the `hidden` attribute is caught.
- *
- * @returns `true` when `#corners-field` is not displayed
- */
-function isCornersFieldHidden(): boolean {
-  const field = document.querySelector("#corners-field");
-
-  return field !== null && getComputedStyle(field).display === "none";
-}
 
 /**
  * Clicks a button of the page several times.
@@ -67,17 +56,6 @@ function checkedAnchor(): string {
   return [...buttons].find((button) => button.checked)?.value ?? "";
 }
 
-/**
- * Whether the anchor grid is out of sight, as the browser computes it.
- *
- * @returns `true` when `#anchor-field` is not displayed
- */
-function isAnchorFieldHidden(): boolean {
-  const field = document.querySelector("#anchor-field");
-
-  return field !== null && getComputedStyle(field).display === "none";
-}
-
 describe("playground", () => {
   beforeAll(() => {
     // The page as served, without its script tag: the test mounts the playground itself.
@@ -86,7 +64,7 @@ describe("playground", () => {
 
   it("[F02.AC4] opens on the rectangle, the selector on Rectangle, without the number of corners", () => {
     expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("rectangle");
-    expect(isCornersFieldHidden()).toBe(true);
+    expect(readDisplay("corners-field") === "none").toBe(true);
   });
 
   it("[F01.AC1] renders the rectangle as one <path>", () => {
@@ -260,7 +238,7 @@ describe("playground", () => {
     clickElement("guide-previous");
 
     expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("rectangle");
-    expect(isCornersFieldHidden()).toBe(true);
+    expect(readDisplay("corners-field") === "none").toBe(true);
   });
 
   it("[F02.AC4] draws a polygon in the same box, keeping width, height and radius", () => {
@@ -271,7 +249,7 @@ describe("playground", () => {
     chooseOption("shape", "polygon");
 
     // Hexagon (6 corners by default) in 100 × 100: flat top and bottom at (100 − 50√3)/2.
-    expect(isCornersFieldHidden()).toBe(false);
+    expect(readDisplay("corners-field") === "none").toBe(false);
 
     expect([readValue("width"), readValue("height"), readValue("radius")]).toEqual([
       "100",
@@ -336,7 +314,7 @@ describe("playground", () => {
     typeValue("radius", "0");
     chooseOption("shape", "rectangle");
 
-    expect(isCornersFieldHidden()).toBe(true);
+    expect(readDisplay("corners-field") === "none").toBe(true);
     expect(readText("#status")).toBe("");
     expect(readText("#path-data")).toBe("M0 0 L100 0 L100 100 L0 100 Z");
   });
@@ -346,13 +324,13 @@ describe("playground", () => {
     clickTimes("guide-previous", GUIDED_STEPS.length);
 
     expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("rectangle");
-    expect(isCornersFieldHidden()).toBe(true);
+    expect(readDisplay("corners-field") === "none").toBe(true);
 
     clickTimes("guide-next", 9);
 
     expect(readText("#guide-number")).toBe("10");
     expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("polygon");
-    expect(isCornersFieldHidden()).toBe(false);
+    expect(readDisplay("corners-field") === "none").toBe(false);
     expect(readValue("corners")).toBe("6");
   });
 
@@ -385,7 +363,7 @@ describe("playground", () => {
   it("[F07.AC5] hides the anchor grid for the rectangle, shows it for the polygon on the center", () => {
     chooseOption("shape", "rectangle");
 
-    expect(isAnchorFieldHidden()).toBe(true);
+    expect(readDisplay("anchor-field") === "none").toBe(true);
     expect(document.querySelectorAll("#canvas path")).toHaveLength(1);
 
     typeValue("width", "100");
@@ -394,7 +372,7 @@ describe("playground", () => {
     typeValue("corners", "3");
     chooseOption("shape", "polygon");
 
-    expect(isAnchorFieldHidden()).toBe(false);
+    expect(readDisplay("anchor-field") === "none").toBe(false);
     expect(checkedAnchor()).toBe("mid mid");
     expect(readText("#path-data")).toBe("M100 93.30127 L0 93.30127 L50 6.69873 Z");
   });

@@ -1,7 +1,7 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
-import { integerTriangle } from "../../tests";
+import { integerTriangle, rectangleCorners } from "../../tests";
 
 import { cornerSetbacks } from "./corner-setbacks";
 import { cornerTriples } from "./corner-triples";
@@ -24,27 +24,10 @@ function setbacksOf(corners: readonly Corner[]): readonly number[] {
 /** Decimals compared: tangents of doubles, correct to their last bits. */
 const DECIMALS = 9;
 
-/**
- * Corners of a square of side 100, clockwise from the top-left vertex.
- *
- * @param radii - radius requested at each corner, in drawing order
- * @returns the four corners
- */
-function square(radii: readonly [number, number, number, number]): Corner[] {
-  const points = [
-    { x: 0, y: 0 },
-    { x: 100, y: 0 },
-    { x: 100, y: 100 },
-    { x: 0, y: 100 },
-  ];
-
-  return points.map((point, index) => ({ point, radius: radii[index] ?? 0 }));
-}
-
 describe("cornerSetbacks (DERIV-local-radius-clamp step 1)", () => {
   it("equals the radius at the right corners of a square", () => {
     // s = r · tan(π/4) = r.
-    const setbacks = setbacksOf(square([1000, 0, 50, 10]));
+    const setbacks = setbacksOf(rectangleCorners(100, 100, [1000, 0, 50, 10]));
 
     expect(setbacks[0]).toBeCloseTo(1000, DECIMALS);
     expect(setbacks[1]).toBe(0);

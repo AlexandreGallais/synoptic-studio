@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { openPage, readText, typeValue } from "./user-actions";
+import { clickElement, clickPoint, openPage, readText, typeValue } from "./user-actions";
 
 describe("rectangle as a free shape", () => {
   beforeEach(() => {
@@ -57,11 +57,9 @@ describe("rectangle as a free shape", () => {
   });
 
   it("[F09.AC4] lets Points mode round one corner of the rectangle, as in F03", () => {
-    document.querySelector<HTMLButtonElement>("#mode-points")?.click();
+    clickElement("mode-points");
 
-    document
-      .querySelector('#points [data-vertex="3"]')
-      ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    clickPoint(3, false);
 
     typeValue("point-radius", "30");
 
@@ -73,7 +71,7 @@ describe("rectangle as a free shape", () => {
   });
 
   it("[F09.AC4] lists the drawn points of the rectangle, not the stored ones", () => {
-    document.querySelector<HTMLButtonElement>("#mode-points")?.click();
+    clickElement("mode-points");
 
     expect(document.querySelector('#points [data-vertex="1"]')?.textContent).toBe(
       "1 · x 0 · y 0 · radius 10",

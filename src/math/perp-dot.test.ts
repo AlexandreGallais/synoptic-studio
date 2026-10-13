@@ -1,5 +1,7 @@
-import { fc, test } from "@fast-check/vitest";
+import { test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
+
+import { integerPoint } from "../../tests";
 
 import { perpDot } from "./perp-dot";
 
@@ -21,23 +23,14 @@ describe("perpDot", () => {
 
 describe("perpDot (properties)", () => {
   test.prop({
-    a: fc.record({
-      x: fc.integer({ max: 1e4, min: -1e4 }),
-      y: fc.integer({ max: 1e4, min: -1e4 }),
-    }),
-    b: fc.record({
-      x: fc.integer({ max: 1e4, min: -1e4 }),
-      y: fc.integer({ max: 1e4, min: -1e4 }),
-    }),
+    a: integerPoint(1e4),
+    b: integerPoint(1e4),
   })("is antisymmetric", ({ a, b }) => {
     expect(perpDot(a, b) + perpDot(b, a)).toBeCloseTo(0, 9);
   });
 
   test.prop({
-    v: fc.record({
-      x: fc.integer({ max: 1e4, min: -1e4 }),
-      y: fc.integer({ max: 1e4, min: -1e4 }),
-    }),
+    v: integerPoint(1e4),
   })("is 0 for a vector with itself: no turn", ({ v }) => {
     expect(perpDot(v, v)).toBeCloseTo(0, 9);
   });

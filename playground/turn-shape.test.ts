@@ -1,21 +1,15 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { chooseOption, clickElement, openPage, readText, typeValue } from "./user-actions";
-
-/** Fires the `change` event of the angle field, as when Enter is pressed or the field is left. */
-function commitAngle(): void {
-  document.querySelector("#angle")?.dispatchEvent(new Event("change"));
-}
-
-/**
- * Angle shown in the angle field.
- *
- * @returns its value, empty when absent
- */
-function angleShown(): string {
-  return document.querySelector<HTMLInputElement>("#angle")?.value ?? "";
-}
+import {
+  chooseOption,
+  clickElement,
+  commitField,
+  openPage,
+  readText,
+  readValue,
+  typeValue,
+} from "./user-actions";
 
 /**
  * Number of paths of a class drawn on the canvas.
@@ -44,7 +38,7 @@ describe("turning and moving a shape (US-018)", () => {
   });
 
   it("[F04.AC5] shows a straight shape at 0°, its straight box being its box", () => {
-    expect(angleShown()).toBe("0");
+    expect(readValue("angle")).toBe("0");
     expect(readText("#straight-box")).toBe("Straight box: x 0, y 0, width 120, height 80");
     expect(drawn("turned-box")).toBe(0);
     expect(drawn("straight-box")).toBe(0);
@@ -68,29 +62,29 @@ describe("turning and moving a shape (US-018)", () => {
 
   it("[F04.AC1] shows the angle kept from 0 to 359 once typed", () => {
     typeValue("angle", "370");
-    commitAngle();
+    commitField("angle");
 
-    expect(angleShown()).toBe("10");
+    expect(readValue("angle")).toBe("10");
 
     typeValue("angle", "-90");
-    commitAngle();
+    commitField("angle");
 
-    expect(angleShown()).toBe("270");
+    expect(readValue("angle")).toBe("270");
   });
 
   it("[F04.AC5] turns by −90° and +90° with the buttons, wrapping at 0", () => {
     clickElement("turn-right");
 
-    expect(angleShown()).toBe("90");
+    expect(readValue("angle")).toBe("90");
 
     clickElement("turn-left");
     clickElement("turn-left");
 
-    expect(angleShown()).toBe("270");
+    expect(readValue("angle")).toBe("270");
 
     clickElement("turn-right");
 
-    expect(angleShown()).toBe("0");
+    expect(readValue("angle")).toBe("0");
   });
 
   it("[F04.AC3] moves the shape so that its straight box starts at the x and y typed", () => {
@@ -186,7 +180,7 @@ describe("turning and moving a shape (US-018)", () => {
     typeValue("angle", "");
     clickElement("turn-right");
 
-    expect(angleShown()).toBe("90");
+    expect(readValue("angle")).toBe("90");
   });
 
   it("[F04.AC1] keeps the view still while the shape turns, so that it turns about its center on screen", () => {
@@ -207,7 +201,7 @@ describe("turning and moving a shape (US-018)", () => {
 
     clickElement("guide-next");
 
-    expect(angleShown()).toBe("0");
+    expect(readValue("angle")).toBe("0");
     expect(readText("#guide-title")).toBe("F04 · Tilt by 45°");
   });
 });
