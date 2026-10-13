@@ -108,7 +108,10 @@ describe("turnedCorners (DERIV-turned-shape step 4)", () => {
       x: 0,
       y: 0,
     } as const;
-    const drawn = turnedCorners(regularPolygonCorners(triangle), triangle);
+    const drawn = turnedCorners(
+      regularPolygonCorners(triangle).map((corner) => curveCornerOf(corner)),
+      triangle,
+    );
 
     // Points 1 and 2 are the ends of the base (Q18 amended).
     expect(drawn[0]?.point.x).toBeCloseTo(0, 12);
@@ -132,4 +135,16 @@ describe("turnedCorners (DERIV-turned-shape step 4)", () => {
       expect((box.minY + box.maxY) / 2).toBeCloseTo(height / 2, 9);
     },
   );
+
+  it("[F12.AC3] turns the handles with their points", () => {
+    // At 90°, a handle (30, −15) is drawn (15, 30).
+    const shape = rectangleAsFreeShape({ ...RECTANGLE, angle: 90 });
+    const corners = freeShapeCorners(shape).map((corner, index) =>
+      index === 0
+        ? { ...corner, handles: { ...corner.handles, after: { x: 30, y: -15 }, isOn: true } }
+        : corner,
+    );
+
+    expect(turnedCorners(corners, shape)[0]?.handles.after).toEqual({ x: 15, y: 30 });
+  });
 });
