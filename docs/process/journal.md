@@ -2,6 +2,13 @@
 
 What each working session dealt with, in the agent's words: the Product Owner's requests in neutral words, decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`).
 
+## 2026-10-14 — F12 after its first validation, VAL-011 ready again
+
+- `#val` First session of VAL-011: the Product Owner kept x, y on the page and the angle from the side, the three mirror modes (Q32), and asked that a corner beside a curve keep its rounding and that a polygon's point take handles. Routed to EN-026 (#174), SP-012 (#175, ADR-0047), US-028 (#176), US-027 (#177), AUD-012 (#178); each reviewed, US-027 twice.
+- `#tooling` On `develop`: the status line waits for background tasks; the expert agents have the library's tools.
+- `#val` VAL-011 prepared again on `feat/val-011-validate-f12`: nine steps, one per option, and the demo page as a list. Open for the Product Owner: Q33, Q34, the reduced radius as built (47.7 and 46.9, not 48.6 and 36.3).
+- `#backlog` F13 (every calculation named, two passes over the code) drafted, to start once F12 is merged, as the Product Owner asked.
+
 ## 2026-10-13 — Run F12: stopped before VAL-011
 
 - `#run` Merged into `feature/f12-curves-with-handles`: SP-011 (#164), EN-024 (#165), EN-025 (#166), US-022 (#167), US-023 (#168), CHK-011 (#169), US-024 (#170), US-025 (#171), US-026 (#172), AUD-011 (#173); each story reviewed by the auditor (and the verifier or math-expert where it added math) before its last commit.

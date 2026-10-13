@@ -38,6 +38,7 @@ Decided by the Product Owner on 2026-10-12, at the validation of F10. The round 
 | --------------------------------------------------------------------------------------- | ----------- |
 | [F11](../features/E14-F11-code-base-ready-for-curves.md) — A code base ready for curves | done        |
 | [F12](../features/E14-F12-curves-with-handles.md) — Points on a curve with handles      | in-progress |
+| [F13](../features/E14-F13-every-calculation-named.md) — Every calculation named         | draft       |
 | [F10](../features/E14-F10-round-shape.md) — Round shape                                 | draft       |
 
 ## Closing
