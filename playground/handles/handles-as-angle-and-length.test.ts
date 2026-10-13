@@ -1,0 +1,101 @@
+// @vitest-environment happy-dom
+import { beforeEach, describe, expect, it } from "vitest";
+
+import {
+  chooseOption,
+  clickElement,
+  clickPoint,
+  openOnStep,
+  readText,
+  selectInput,
+  typeAndEnter,
+} from "../user-actions";
+
+/**
+ * The values of the four handle fields: before angle and length, after angle and length.
+ *
+ * @returns them as numbers
+ */
+function readHandleFields(): readonly number[] {
+  return ["before-x", "before-y", "after-x", "after-y"].map((field) =>
+    Number(selectInput(`handle-${field}`).value),
+  );
+}
+
+/**
+ * Switches the point selected to handles, typed as an angle and a length.
+ *
+ * @param way - from the x axis or from the side
+ */
+function openAngleFields(way: "axis" | "side"): void {
+  clickElement("handles-switch");
+  chooseOption("handle-method", way);
+}
+
+describe("handles typed as an angle and a length (US-024)", () => {
+  beforeEach(() => {
+    // The rectangle 100 × 80: point 1 (0, 0), point 2 (100, 0), point 3 (100, 80); Points mode.
+    openOnStep(1);
+    typeAndEnter("width", "100");
+    clickElement("mode-points");
+    clickPoint(1, false);
+  });
+
+  it("[F12.AC4] counts the angle from the x axis, clockwise on screen", () => {
+    // 330°, 30 from (0, 0): the end at (25.98076, −15).
+    openAngleFields("axis");
+    typeAndEnter("handle-after-x", "330");
+    typeAndEnter("handle-after-y", "30");
+
+    expect(readText("#path-data")).toContain("C25.98076 -15 ");
+    expect(readHandleFields().slice(2)).toEqual([330, 30]);
+  });
+
+  it("[F12.AC4] counts it from the side, so that a side going down bends the same way", () => {
+    // Point 2 (100, 0), its side going down to (100, 80): 330°, 30 from the side ends at (115, 25.98076).
+    clickPoint(2, false);
+    openAngleFields("side");
+    typeAndEnter("handle-after-x", "330");
+    typeAndEnter("handle-after-y", "30");
+
+    expect(readText("#path-data")).toContain("C115 25.98076 ");
+  });
+
+  it("[F12.AC4] makes a symmetric arch with the same values at both ends of a side", () => {
+    // Point 1 after and point 2 before, 330°, 30 from the side: both handles above the top side.
+    openAngleFields("side");
+    chooseOption("handle-mode", "none");
+    typeAndEnter("handle-after-x", "330");
+    typeAndEnter("handle-after-y", "30");
+    clickPoint(2, false);
+    openAngleFields("side");
+    chooseOption("handle-mode", "none");
+    typeAndEnter("handle-before-x", "330");
+    typeAndEnter("handle-before-y", "30");
+
+    expect(readText("#path-data")).toContain("C25.98076 -15 74.01924 -15 100 0");
+  });
+
+  it("[F12.AC4] brings 370° back to 10°, and refuses a negative length", () => {
+    openAngleFields("axis");
+    typeAndEnter("handle-after-y", "30");
+    typeAndEnter("handle-after-x", "370");
+
+    expect(readHandleFields()[2]).toBeCloseTo(10, 5);
+
+    typeAndEnter("handle-after-y", "-5");
+
+    expect(readHandleFields()[3]).toBe(-5);
+    expect(readText("#path-data")).toContain("C29.54423 5.20945 ");
+  });
+
+  it("labels the fields angle and length", () => {
+    openAngleFields("axis");
+
+    expect(
+      [...document.querySelectorAll("#handle-fields .handle-axis")].map(
+        (label) => label.textContent,
+      ),
+    ).toEqual(["angle", "length", "angle", "length"]);
+  });
+});

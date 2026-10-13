@@ -1,51 +1,93 @@
-import { add } from "../../src";
+import { fieldValuesOfHandle, isAngleUnknown } from "../../src";
 import { readMode, selectElement, writeInputValue } from "../page";
 
-import { readFieldShift } from "./read-field-shift";
+import { readHandleFrames } from "./read-handle-frames";
 import { readSelectedCorner } from "./read-selected-corner";
 import { readTypingWay } from "./read-typing-way";
 
-import type { CurveCorner } from "../../src";
+import type { CurveCorner, HandleWay } from "../../src";
 import type { ShapeReading } from "../shape";
+import type { SelectedCorner } from "./read-selected-corner";
+
+/** The two values of a handle to show, and whether its first field keeps what it shows. */
+type ShownValues = {
+  /** Whether the first field keeps its text: an angle typed before a length. */
+  readonly isKept: boolean;
+  /** The two values in the way chosen. */
+  readonly values: readonly [number, number];
+};
+
+/** Names of the two values of a handle, by the way it is typed. */
+const VALUE_NAMES: Readonly<Record<HandleWay, readonly [string, string]>> = {
+  axis: ["angle", "length"],
+  page: ["x", "y"],
+  point: ["dx", "dy"],
+  side: ["angle", "length"],
+};
 
 /**
- * Writes the axis of each handle field: x and y on the page, dx and dy from the point.
+ * Writes the name of each handle field's value: x and y, dx and dy, or angle and length.
  *
  * @kind procedure
  * @param document - page document
- * @param prefix - "d" for a step from the point, "" for a place on the page
- * @see docs/backlog/stories/E14-F12-US-023-handles-relative-to-point.md
+ * @param way - the way the handles are typed
+ * @see docs/backlog/stories/E14-F12-US-024-handles-as-angle-and-length.md
  */
-function writeAxisLabels(document: Document, prefix: "" | "d"): void {
-  for (const label of document.querySelectorAll("#handle-fields .handle-axis")) {
-    label.textContent = `${prefix}${label.textContent.replace("d", "")}`;
+function writeAxisLabels(document: Document, way: HandleWay): void {
+  for (const [index, label] of document.querySelectorAll("#handle-fields .handle-axis").entries()) {
+    label.textContent = VALUE_NAMES[way][index % 2] ?? "";
   }
 }
 
 /**
- * Writes the mode and each handle, as its end on the page (x, y) or as its vector from the point
- * (dx, dy), by the way chosen to type them.
+ * Writes the two values of one handle; a handle of length 0 typed as an angle keeps the angle
+ * typed before its length in its field (`isAngleUnknown`).
  *
  * @kind procedure
  * @param document - page document
- * @param corner - the corner selected, as drawn, in handles mode
- * @see docs/backlog/stories/E14-F12-US-022-handles-in-points-mode.md
+ * @param end - which handle
+ * @param shown - its two values in the way chosen, and whether the first field keeps what it shows
+ * @see docs/backlog/stories/E14-F12-US-024-handles-as-angle-and-length.md
  */
-function writeHandleValues(document: Document, corner: CurveCorner): void {
-  const mode = selectElement(document, "handle-mode");
-  const origin = readFieldShift(document, corner.point);
-  const before = add(origin, corner.handles.before);
-  const after = add(origin, corner.handles.after);
-
-  if (mode instanceof HTMLSelectElement) {
-    mode.value = corner.handles.mode;
+function writeEndValues(document: Document, end: "after" | "before", shown: ShownValues): void {
+  if (!shown.isKept) {
+    writeInputValue(document, `handle-${end}-x`, shown.values[0]);
   }
 
-  writeAxisLabels(document, readTypingWay(document) === "point" ? "d" : "");
-  writeInputValue(document, "handle-before-x", before.x);
-  writeInputValue(document, "handle-before-y", before.y);
-  writeInputValue(document, "handle-after-x", after.x);
-  writeInputValue(document, "handle-after-y", after.y);
+  writeInputValue(document, `handle-${end}-y`, shown.values[1]);
+}
+
+/**
+ * Writes the mode and the two values of each handle in the way chosen (`fieldValuesOfHandle`).
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param reading - the shape read from the inputs, its corners as drawn
+ * @param selected - the point selected, in handles mode
+ * @see docs/backlog/stories/E14-F12-US-024-handles-as-angle-and-length.md
+ */
+function writeHandleValues(
+  document: Document,
+  reading: ShapeReading,
+  selected: SelectedCorner,
+): void {
+  const mode = selectElement(document, "handle-mode");
+  const way = readTypingWay(document);
+  const frames = readHandleFrames(reading, selected);
+  const { handles } = selected.corner;
+
+  if (mode instanceof HTMLSelectElement) {
+    mode.value = handles.mode;
+  }
+
+  writeAxisLabels(document, way);
+
+  for (const end of ["before", "after"] as const) {
+    writeEndValues(document, end, {
+      isKept: isAngleUnknown(way, handles[end]),
+      values: fieldValuesOfHandle(way, handles[end], frames[end]),
+    });
+  }
 }
 
 /**
@@ -69,8 +111,8 @@ function showHandleSwitch(document: Document, corner: CurveCorner | undefined): 
 
 /**
  * Shows the handles of the one point selected in Points mode: the switch between radius and
- * handles, then the mode and each handle, as x and y on the page or dx and dy from the point
- * (`readFieldShift`; F12, domain: radius and handles on one point).
+ * handles, then the mode and each handle's two values in the way chosen to type them (F12,
+ * research note 0013; domain: radius and handles on one point).
  *
  * @kind procedure
  * @param document - page document
@@ -78,12 +120,12 @@ function showHandleSwitch(document: Document, corner: CurveCorner | undefined): 
  * @see docs/backlog/stories/E14-F12-US-022-handles-in-points-mode.md
  */
 export function showHandleFields(document: Document, reading: ShapeReading): void {
-  const corner =
-    readMode(document) === "points" ? readSelectedCorner(document, reading)?.corner : undefined;
+  const selected =
+    readMode(document) === "points" ? readSelectedCorner(document, reading) : undefined;
 
-  showHandleSwitch(document, corner);
+  showHandleSwitch(document, selected?.corner);
 
-  if (corner?.handles.isOn === true) {
-    writeHandleValues(document, corner);
+  if (selected?.corner.handles.isOn === true) {
+    writeHandleValues(document, reading, selected);
   }
 }
