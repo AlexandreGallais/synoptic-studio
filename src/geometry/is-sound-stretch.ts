@@ -1,3 +1,4 @@
+import { cornerTriples } from "./corner-triples";
 import { turningAngles } from "./turning-angles";
 
 import type { Point } from "../math";
@@ -15,5 +16,5 @@ import type { Point } from "../math";
 export function isSoundStretch(polygon: readonly Point[]): boolean {
   const guard = Math.PI / polygon.length;
 
-  return turningAngles(polygon).every((turn) => turn >= guard);
+  return turningAngles(cornerTriples(polygon)).every((turn) => turn >= guard);
 }

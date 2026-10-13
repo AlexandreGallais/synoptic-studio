@@ -4,8 +4,22 @@ import { describe, expect, it } from "vitest";
 import { integerTriangle } from "../../tests";
 
 import { cornerSetbacks } from "./corner-setbacks";
+import { cornerTriples } from "./corner-triples";
+import { turningAngles } from "./turning-angles";
 
 import type { Corner } from "./corner";
+
+/**
+ * Setbacks of the corners of a contour, their turning angles computed from their points.
+ *
+ * @param corners - vertices with their requested radii, in drawing order
+ * @returns one setback per corner
+ */
+function setbacksOf(corners: readonly Corner[]): readonly number[] {
+  const triples = cornerTriples(corners.map((corner) => corner.point));
+
+  return cornerSetbacks(corners, turningAngles(triples));
+}
 
 /** Decimals compared: tangents of doubles, correct to their last bits. */
 const DECIMALS = 9;
@@ -30,7 +44,7 @@ function square(radii: readonly [number, number, number, number]): Corner[] {
 describe("cornerSetbacks (DERIV-local-radius-clamp step 1)", () => {
   it("equals the radius at the right corners of a square", () => {
     // s = r · tan(π/4) = r.
-    const setbacks = cornerSetbacks(square([1000, 0, 50, 10]));
+    const setbacks = setbacksOf(square([1000, 0, 50, 10]));
 
     expect(setbacks[0]).toBeCloseTo(1000, DECIMALS);
     expect(setbacks[1]).toBe(0);
@@ -48,7 +62,7 @@ describe("cornerSetbacks (DERIV-local-radius-clamp step 1)", () => {
       { point: { x: 0, y: 50 }, radius: 0 },
     ];
 
-    expect(cornerSetbacks(corners)[1]).toBe(0);
+    expect(setbacksOf(corners)[1]).toBe(0);
   });
 
   it("is 0 everywhere on a rectangle of size 0, without NaN (Q15)", () => {
@@ -60,7 +74,7 @@ describe("cornerSetbacks (DERIV-local-radius-clamp step 1)", () => {
       { point: { x: 0, y: 50 }, radius: 10 },
     ];
 
-    expect(cornerSetbacks(corners)).toEqual([0, 0, 0, 0]);
+    expect(setbacksOf(corners)).toEqual([0, 0, 0, 0]);
   });
 });
 
@@ -79,9 +93,9 @@ describe("cornerSetbacks (properties)", () => {
     "gives the same setback at each corner when the contour is drawn the other way",
     ({ corners }) => {
       // Reversing the order flips the sign of each turn, not its size: s = r · tan(|τ| / 2).
-      const reversed = cornerSetbacks(corners.toReversed());
+      const reversed = setbacksOf(corners.toReversed());
 
-      for (const [index, setback] of cornerSetbacks(corners).toReversed().entries()) {
+      for (const [index, setback] of setbacksOf(corners).toReversed().entries()) {
         expect(reversed[index]).toBeCloseTo(setback, 6);
       }
     },
@@ -103,7 +117,7 @@ describe("cornerSetbacks (properties)", () => {
         { x: x + width, y: y + height },
         { x, y: y + height },
       ];
-      const setbacks = cornerSetbacks(
+      const setbacks = setbacksOf(
         points.map((point, index) => ({ point, radius: radii[index] ?? 0 })),
       );
 

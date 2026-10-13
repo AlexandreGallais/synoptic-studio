@@ -1,16 +1,12 @@
-import { cornerSetbacks } from "./corner-setbacks";
-import { cyclicItem } from "./cyclic-item";
-import { edgeFactors } from "./edge-factors";
-import { edgeLengths } from "./edge-lengths";
-import { vertexFactors } from "./vertex-factors";
+import { clampedRadii } from "./clamped-radii";
+import { cornerTriples } from "./corner-triples";
+import { turningAngles } from "./turning-angles";
 
 import type { Corner } from "./corner";
 
 /**
  * Effective radius of every corner: requested radii reduced locally and proportionally so that
- * the arcs of an edge never overlap (ADR-0007).
- *
- * Formula: r′ᵢ = gᵢ · rᵢ, with gᵢ = min(fᵢ₋₁, fᵢ) and fᵢ = edgeFactor(Lᵢ, sᵢ + sᵢ₊₁).
+ * the arcs of an edge never overlap (ADR-0007), the turning angles computed from the corners.
  *
  * @kind geometry
  * @param corners - vertices with their requested radii, in drawing order
@@ -18,8 +14,7 @@ import type { Corner } from "./corner";
  * @see DERIV-local-radius-clamp
  */
 export function effectiveRadii(corners: readonly Corner[]): readonly number[] {
-  const lengths = edgeLengths(corners.map((corner) => corner.point));
-  const factors = vertexFactors(edgeFactors(lengths, cornerSetbacks(corners)));
+  const triples = cornerTriples(corners.map((corner) => corner.point));
 
-  return corners.map((corner, index) => corner.radius * cyclicItem(factors, index, 1));
+  return clampedRadii(corners, turningAngles(triples));
 }

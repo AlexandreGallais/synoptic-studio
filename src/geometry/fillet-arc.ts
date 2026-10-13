@@ -1,7 +1,6 @@
 import { add, quarterTurn, scale, subtract, unit } from "../math";
 
 import { filletSetback } from "./fillet-setback";
-import { turningAngle } from "./turning-angle";
 
 import type { Arc } from "./arc";
 import type { CornerPoints } from "./corner-points";
@@ -16,15 +15,15 @@ import type { CornerPoints } from "./corner-points";
  *
  * @kind geometry
  * @param corner - vertex `V` with its previous and next vertices
+ * @param angle - its turning angle `τ`, from `turningAngles`
  * @param radius - effective radius `r`, >= 0
  * @returns the arc from the incoming to the outgoing tangent point
  * @see DERIV-fillet-arc
  */
-export function filletArc(corner: CornerPoints, radius: number): Arc {
+export function filletArc(corner: CornerPoints, angle: number, radius: number): Arc {
   const { next, previous, vertex } = corner;
   const incoming = unit(subtract(vertex, previous));
   const normal = quarterTurn(incoming);
-  const angle = turningAngle(previous, vertex, next);
   const setback = filletSetback(radius, angle);
   const outgoing = unit(subtract(next, vertex));
   const start = add(vertex, scale(incoming, -setback));

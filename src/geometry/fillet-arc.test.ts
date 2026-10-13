@@ -4,8 +4,22 @@ import { describe, expect, it } from "vitest";
 import { integerPoint } from "../../tests";
 
 import { filletArc } from "./fillet-arc";
+import { turningAngle } from "./turning-angle";
 
+import type { Arc } from "./arc";
+import type { CornerPoints } from "./corner-points";
 import type { Point } from "../math";
+
+/**
+ * Fillet of a corner, its turning angle computed from its three points.
+ *
+ * @param corner - vertex with its neighbours
+ * @param radius - effective radius
+ * @returns the fillet arc
+ */
+function arcOf(corner: CornerPoints, radius: number): Arc {
+  return filletArc(corner, turningAngle(corner.previous, corner.vertex, corner.next), radius);
+}
 
 /** Integer point. */
 const POINT = integerPoint(500);
@@ -54,7 +68,7 @@ describe("filletArc (DERIV-fillet-arc)", () => {
   ])(
     "rounds the rectangle corner at $corner.vertex.x, $corner.vertex.y in the positive direction",
     (row) => {
-      const arc = filletArc(row.corner, 10);
+      const arc = arcOf(row.corner, 10);
 
       expectPoint(arc.start, row.start);
       expectPoint(arc.end, row.end);
@@ -66,7 +80,7 @@ describe("filletArc (DERIV-fillet-arc)", () => {
 
   it("rounds a concave corner in the negative direction, center on the other side", () => {
     // u_in = (1, 0), u_out = (0, −1): τ = −π/2, s = 5, C = (5, 0) − 5 · (0, 1) = (5, −5).
-    const arc = filletArc(
+    const arc = arcOf(
       { next: { x: 10, y: -10 }, previous: { x: 0, y: 0 }, vertex: { x: 10, y: 0 } },
       5,
     );
@@ -79,7 +93,7 @@ describe("filletArc (DERIV-fillet-arc)", () => {
 
   it("degenerates to the vertex at an aligned vertex: no arc", () => {
     // τ = 0 → s = 0: T_in = T_out = V.
-    const arc = filletArc(
+    const arc = arcOf(
       { next: { x: 100, y: 0 }, previous: { x: 0, y: 0 }, vertex: { x: 50, y: 0 } },
       30,
     );
@@ -92,7 +106,7 @@ describe("filletArc (DERIV-fillet-arc)", () => {
 
   it("degenerates to the vertex on a zero-length edge, without NaN (Q15)", () => {
     // Rectangle 0 × 50: the outgoing edge has no direction, τ = 0, s = 0.
-    const arc = filletArc(
+    const arc = arcOf(
       { next: { x: 0, y: 0 }, previous: { x: 0, y: 50 }, vertex: { x: 0, y: 0 } },
       10,
     );
@@ -104,7 +118,7 @@ describe("filletArc (DERIV-fillet-arc)", () => {
 
   it("keeps every center at the radius from both tangent points", () => {
     // Turn of π/3: s = 10 · tan(π/6) = 10 / √3; both distances to the center equal 10.
-    const arc = filletArc(
+    const arc = arcOf(
       {
         next: { x: 150, y: 50 * Math.sqrt(3) },
         previous: { x: 0, y: 0 },
@@ -146,7 +160,7 @@ describe("filletArc (properties)", () => {
       // Corners with a real turn, away from the spike of Q16.
       fc.pre(Math.abs(turn) > 0.01 && Math.abs(turn) < Math.PI - 0.1);
 
-      const arc = filletArc({ next, previous, vertex }, radius);
+      const arc = arcOf({ next, previous, vertex }, radius);
 
       expect(Math.hypot(arc.center.x - arc.start.x, arc.center.y - arc.start.y)).toBeCloseTo(
         radius,
