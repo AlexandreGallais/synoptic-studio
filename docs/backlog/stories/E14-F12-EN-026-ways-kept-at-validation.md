@@ -3,7 +3,7 @@ id: EN-026
 epic: E14
 feature: F12
 title: Keep only the ways and modes chosen at the validation
-status: in-progress
+status: done
 points: 2
 ---
 
@@ -24,3 +24,7 @@ One task = one commit, referenced as `EN-026.Tn`.
 
 - [x] T1 — Remove the methods and the mode from the library and the playground, with their tests (1 h)
 - [x] T2 — Remove their derivations and rules; Q32 settled; a pass over the code for anything left only for them (1 h)
+
+## Review
+
+Auditor, asked for a full pass over the code after the removal (2026-10-13). Fixed: the angle derivation and `angledHandle` framed the x axis as a method; a reference still named dx, dy; the −0 fix written three ways now goes through `withoutNegativeZero`; a test that the lists offer exactly the methods and modes kept; a kept-angle test that typed no angle. Kept: the kept angle's owner names the way, so that an x typed on the page is never read back as an angle.
