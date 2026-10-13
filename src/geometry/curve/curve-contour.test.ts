@@ -6,9 +6,8 @@ import { roundedContour } from "../corner-radius";
 
 import { curveContour } from "./curve-contour";
 
-import type { CurveCorner } from "./curve-corner";
-import type { Handles } from "./handles";
 import type { Corner } from "../contour";
+import type { CurveCorner, Handles } from "../handles";
 
 /** Handles off: the drawing of E01. */
 const OFF: Handles = {

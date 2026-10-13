@@ -1,10 +1,8 @@
+import { ZERO_VECTOR } from "../../math";
 import { turnAbout } from "../placement";
 
 import type { Handles } from "./handles";
 import type { Vector } from "../../math";
-
-/** Origin of the vectors: a handle is turned about its own point. */
-const ORIGIN = { x: 0, y: 0 };
 
 /**
  * Handles of a point once its shape is turned: each vector turned by the angle, clockwise on
@@ -21,7 +19,7 @@ const ORIGIN = { x: 0, y: 0 };
 export function turnedHandles(handles: Handles, direction: Vector): Handles {
   return {
     ...handles,
-    after: turnAbout(handles.after, ORIGIN, direction),
-    before: turnAbout(handles.before, ORIGIN, direction),
+    after: turnAbout(handles.after, ZERO_VECTOR, direction),
+    before: turnAbout(handles.before, ZERO_VECTOR, direction),
   };
 }

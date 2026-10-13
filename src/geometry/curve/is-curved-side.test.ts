@@ -5,8 +5,8 @@ import { integerPoint } from "../../../tests";
 
 import { isCurvedSide } from "./is-curved-side";
 
-import type { CurveCorner } from "./curve-corner";
 import type { Vector } from "../../math";
+import type { CurveCorner } from "../handles";
 
 /**
  * A corner with given handles.

@@ -31,7 +31,7 @@ function innerExtremes(piece: ContourPiece): readonly Point[] {
  * (`DERIV-arc-bounding-box` step 4).
  *
  * @kind geometry
- * @param pieces - segments and arcs of a contour (`roundedContour`)
+ * @param pieces - segments, arcs and cubics of a contour (`curveContour`)
  * @returns its extreme coordinates
  * @see DERIV-arc-bounding-box
  */

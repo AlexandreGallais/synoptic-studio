@@ -1,10 +1,7 @@
-import { add } from "../../math";
+import { ZERO_VECTOR, add } from "../../math";
 
-import type { CurveCorner } from "./curve-corner";
 import type { Cubic } from "../contour";
-
-/** The zero vector: the handle of a point that is off. */
-const ORIGIN = { x: 0, y: 0 };
+import type { CurveCorner } from "../handles";
 
 /**
  * The cubic between two corners: from the start, through the start plus its handle after and the
@@ -22,9 +19,9 @@ const ORIGIN = { x: 0, y: 0 };
 export function cubicSide(start: CurveCorner, end: CurveCorner): Cubic {
   return {
     end: end.point,
-    first: add(start.point, start.handles.isOn ? start.handles.after : ORIGIN),
+    first: add(start.point, start.handles.isOn ? start.handles.after : ZERO_VECTOR),
     kind: "cubic",
-    second: add(end.point, end.handles.isOn ? end.handles.before : ORIGIN),
+    second: add(end.point, end.handles.isOn ? end.handles.before : ZERO_VECTOR),
     start: start.point,
   };
 }

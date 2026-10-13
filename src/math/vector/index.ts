@@ -9,3 +9,5 @@ export * from "./scale";
 export * from "./subtract";
 export * from "./unit";
 export type * from "./vector";
+export * from "./without-negative-zero";
+export * from "./zero-vector";

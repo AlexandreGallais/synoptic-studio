@@ -5,7 +5,7 @@ import { integerPoint, rectangleCorners } from "../../../tests";
 
 import { curveBoundingBox } from "./curve-bounding-box";
 
-import type { CurveCorner } from "./curve-corner";
+import type { CurveCorner } from "../handles";
 
 /**
  * The square 100 × 100, its top side an arch: points 1 and 2 with vertical handles of 40.

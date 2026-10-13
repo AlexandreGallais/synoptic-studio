@@ -1,5 +1,5 @@
-import type { CurveCorner } from "./curve-corner";
 import type { Vector } from "../../math";
+import type { CurveCorner } from "../handles";
 
 /**
  * Whether one handle bends its side: its point in handles mode, the vector of some length.
