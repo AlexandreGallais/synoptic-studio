@@ -29,7 +29,7 @@ describe("regularPolygonAsFreeShape", () => {
     // 100 wide, 50√3 = 86.60254 high: fractional, as left by the conversion (Q27).
     expect(shape.width).toBeCloseTo(100, 9);
     expect(shape.height).toBeCloseTo(50 * Math.sqrt(3), 9);
-    expect(shape.corners).toEqual(regularPolygonCorners(hexagon));
+    expect(shape.corners).toMatchObject(regularPolygonCorners(hexagon));
     expect(isValidFreeShape(shape)).toBe(true);
   });
 
@@ -52,7 +52,7 @@ describe("regularPolygonAsFreeShape", () => {
       );
 
       // At its own size a free shape is drawn as stored: the same corners, bit for bit.
-      expect(after).toEqual(before);
+      expect(after).toMatchObject(before);
     },
   );
 

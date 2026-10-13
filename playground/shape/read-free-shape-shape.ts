@@ -1,4 +1,5 @@
 import {
+  NO_HANDLES,
   cornersWithRadii,
   formatSvgNumber,
   freeShapeCorners,
@@ -72,7 +73,10 @@ export function readFreeShapeShape(document: Document, kept: FreeShape): ShapeRe
   const points = kept.corners.map((corner) => corner.point);
   const model = {
     angle: readAngle(document),
-    corners: cornersWithRadii(points, radii),
+    corners: cornersWithRadii(points, radii).map((corner, index) => ({
+      ...corner,
+      handles: kept.corners[index]?.handles ?? NO_HANDLES,
+    })),
     height: height.size,
     width: width.size,
     x: kept.x,

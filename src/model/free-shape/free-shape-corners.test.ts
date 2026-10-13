@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { freeShapeOf } from "../../../tests";
+import { NO_HANDLES } from "../handles";
 import { rectangleAsFreeShape } from "../rectangle";
 
 import { freeShapeCorners } from "./free-shape-corners";
@@ -18,7 +19,7 @@ describe("freeShapeCorners", () => {
           width: 100,
         }),
       ),
-    ).toEqual([
+    ).toMatchObject([
       { point: { x: 0, y: 0 }, radius: 10 },
       { point: { x: 100, y: 0 }, radius: 0 },
       { point: { x: 100, y: 50 }, radius: 5 },
@@ -84,7 +85,7 @@ describe("freeShapeCorners", () => {
     expect(
       rectangleAsFreeShape({ angle: 0, x: 0, y: 0, height: 50, radii: [10, 0, 5, 0], width: 100 })
         .corners,
-    ).toEqual([
+    ).toMatchObject([
       { point: { x: 0, y: 0 }, radius: 10 },
       { point: { x: 1, y: 0 }, radius: 0 },
       { point: { x: 1, y: 1 }, radius: 5 },
@@ -111,5 +112,37 @@ describe("freeShapeCorners (at a position, F04)", () => {
       { x: 110, y: 70 },
       { x: 10, y: 70 },
     ]);
+  });
+
+  it("[F12.AC1] gives the rectangle tool's corners their handles off, and stretches handles with the points", () => {
+    // The unit square drawn 200 × 100: a handle (0.1, −0.2) of point 1 is drawn (20, −20).
+    const rectangle = rectangleAsFreeShape({
+      angle: 0,
+      height: 100,
+      radii: [30, 0, 0, 0],
+      width: 200,
+      x: 0,
+      y: 0,
+    });
+    const handles = { ...NO_HANDLES, after: { x: 0.1, y: -0.2 }, isOn: true };
+    const curved = {
+      ...rectangle,
+      corners: rectangle.corners.map((corner, index) =>
+        index === 0 ? { ...corner, handles } : corner,
+      ),
+    };
+
+    expect(rectangle.corners.map((corner) => corner.handles)).toEqual([
+      NO_HANDLES,
+      NO_HANDLES,
+      NO_HANDLES,
+      NO_HANDLES,
+    ]);
+
+    expect(freeShapeCorners(curved)[0]).toEqual({
+      handles: { ...handles, after: { x: 20, y: -20 } },
+      point: { x: 0, y: 0 },
+      radius: 30,
+    });
   });
 });

@@ -8,7 +8,7 @@ describe("rectangleCorners", () => {
   it("[F03.AC1] gives the four vertices of the contour the same radius when the radii are equal", () => {
     expect(
       rectangleCorners({ angle: 0, x: 0, y: 0, height: 50, radii: [10, 10, 10, 10], width: 100 }),
-    ).toEqual([
+    ).toMatchObject([
       { point: { x: 0, y: 0 }, radius: 10 },
       { point: { x: 100, y: 0 }, radius: 10 },
       { point: { x: 100, y: 50 }, radius: 10 },
