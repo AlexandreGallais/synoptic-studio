@@ -3,7 +3,7 @@ id: CHK-011
 epic: E14
 feature: F12
 title: Checkpoint in the middle of F12
-status: draft
+status: ready
 points: 1
 ---
 

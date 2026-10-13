@@ -6,7 +6,7 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 
 | ADR                                                        | Title                                                                                                        | Status                                             |
 | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------- |
-| [0001](./0001-geometric-scope.md)                          | Geometric scope: segments and circular arcs                                                                  | Accepted                                           |
+| [0001](./0001-geometric-scope.md)                          | Geometric scope: segments and circular arcs                                                                  | Partly superseded by ADR-0046                      |
 | [0002](./0002-everything-is-a-path.md)                     | Everything is a path, except text                                                                            | Accepted                                           |
 | [0003](./0003-integer-model.md)                            | Integer model, derived geometry                                                                              | Accepted, partly superseded by 0031, 0034 and 0035 |
 | [0004](./0004-orthogonal-pipes.md)                         | Orthogonal pipes only                                                                                        | Accepted                                           |
@@ -50,3 +50,4 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0043](./0043-folders-by-domain.md)                        | Folders by business domain, files and folders never side by side                                             | Accepted                                           |
 | [0044](./0044-records-inside-the-project.md)               | The private records inside the project folder, ignored by Git                                                | Accepted                                           |
 | [0045](./0045-run-is-the-go-ahead.md)                      | `/run` is the go-ahead; validated features merge by themselves; releases when the Product Owner asks         | Accepted                                           |
+| [0046](./0046-cubic-sides-in-symbols.md)                   | Cubic Bézier sides in symbols, from points with handles                                                      | Accepted                                           |
