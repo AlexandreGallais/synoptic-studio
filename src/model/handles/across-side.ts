@@ -1,4 +1,4 @@
-import { add, quarterTurn, scale } from "../../math";
+import { quarterTurn, scale, withoutNegativeZero } from "../../math";
 
 import type { HandleFrame } from "./handle-frame";
 import type { Vector } from "../../math";
@@ -18,6 +18,5 @@ import type { Vector } from "../../math";
 export function acrossSide(frame: HandleFrame): Vector {
   const turned = quarterTurn(frame.side);
 
-  // Adding zero turns −0 into 0.
-  return add(frame.isBefore ? turned : scale(turned, -1), { x: 0, y: 0 });
+  return withoutNegativeZero(frame.isBefore ? turned : scale(turned, -1));
 }

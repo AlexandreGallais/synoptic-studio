@@ -1,5 +1,5 @@
 import { angledHandle } from "../../geometry";
-import { degreesInTurn, norm, unit } from "../../math";
+import { degreesInTurn, norm, unit, withoutNegativeZero } from "../../math";
 
 import { acrossSide } from "./across-side";
 
@@ -70,13 +70,12 @@ function shareTypedHandle(
   const [along, across] = values;
   const normal = acrossSide(frame);
 
-  // Adding zero turns −0 into 0.
   return norm(frame.side) === 0
     ? undefined
-    : {
-        x: (along * frame.side.x + across * normal.x) / PERCENT + 0,
-        y: (along * frame.side.y + across * normal.y) / PERCENT + 0,
-      };
+    : withoutNegativeZero({
+        x: (along * frame.side.x + across * normal.x) / PERCENT,
+        y: (along * frame.side.y + across * normal.y) / PERCENT,
+      });
 }
 
 /**
@@ -84,7 +83,7 @@ function shareTypedHandle(
  *
  * @kind domain
  * @param way - the way chosen
- * @param values - x, y; dx, dy; or angle, length
+ * @param values - x, y; dx, dy; angle, length; or shares along and across
  * @param frame - the handle's point, its side and which end it is
  * @returns the handle, a vector from its point as drawn, or `undefined` when refused
  * @see DERIV-handle-angle

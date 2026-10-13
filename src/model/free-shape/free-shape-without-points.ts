@@ -8,7 +8,8 @@ import type { FreeShape } from "./free-shape";
 
 /**
  * Free shape without some of its points: each goes with its radius, and its two neighbours become
- * consecutive, joined by a straight edge, the contour staying closed; the others keep their place —
+ * consecutive, joined by one side, curved by their outer handles if they have some, the contour
+ * staying closed; the others keep their place —
  * on a turned shape too (ADR-0035) — and their order, numbered from the first one left (F08.AC4, note 0007). Fewer than
  * 3 points left give a free shape that is not valid (see `deletionOutcome`).
  *
