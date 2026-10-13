@@ -1,5 +1,4 @@
-import { test } from "@fast-check/vitest";
-import fc from "fast-check";
+import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { withoutNegativeZero } from "./without-negative-zero";
