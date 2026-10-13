@@ -1,4 +1,5 @@
 import { cornersWithRadii } from "../corner-radius";
+import { curveCornerOf } from "../handles";
 
 import type { FreeShape } from "../free-shape";
 import type { Rectangle } from "./rectangle";
@@ -23,7 +24,7 @@ const UNIT_SQUARE = [
 export function rectangleAsFreeShape(rectangle: Rectangle): FreeShape {
   return {
     angle: rectangle.angle,
-    corners: cornersWithRadii(UNIT_SQUARE, rectangle.radii),
+    corners: cornersWithRadii(UNIT_SQUARE, rectangle.radii).map((corner) => curveCornerOf(corner)),
     height: rectangle.height,
     width: rectangle.width,
     x: rectangle.x,

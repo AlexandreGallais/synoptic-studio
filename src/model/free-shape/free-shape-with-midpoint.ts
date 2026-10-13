@@ -1,5 +1,6 @@
 import { cyclicItem } from "../../geometry";
 import { midpoint } from "../../math";
+import { NO_HANDLES } from "../handles";
 import { turnedCorners } from "../placement";
 
 import { freeShapeAroundCorners } from "./free-shape-around-corners";
@@ -31,6 +32,7 @@ export function freeShapeWithMidpoint(shape: FreeShape, edge: number): FreeShape
             {
               point: midpoint(corner.point, cyclicItem(corners, index + 1, corner).point),
               radius: 0,
+              handles: NO_HANDLES,
             },
           ]
         : [corner],

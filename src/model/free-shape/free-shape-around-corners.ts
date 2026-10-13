@@ -1,7 +1,7 @@
 import { boundingBox } from "../../geometry";
 
 import type { FreeShape } from "./free-shape";
-import type { Corner } from "../../geometry";
+import type { CurveCorner } from "../../geometry";
 
 /**
  * Free shape fitted around straight corners, placed in the SVG but not turned: those corners, and
@@ -10,12 +10,12 @@ import type { Corner } from "../../geometry";
  * then place it so that the shape does not move (`freeShapeKeptInPlace`).
  *
  * @kind domain
- * @param corners - straight points, placed in the SVG, and their radii, in contour order
+ * @param corners - straight points, placed in the SVG, their radii and handles as drawn, in contour order
  * @param angle - angle kept, from 0 to 359 (ADR-0035)
  * @returns the free shape of those corners, at scale 1
  * @see DERIV-free-shape-stretch
  */
-export function freeShapeAroundCorners(corners: readonly Corner[], angle: number): FreeShape {
+export function freeShapeAroundCorners(corners: readonly CurveCorner[], angle: number): FreeShape {
   const box = boundingBox(corners.map((corner) => corner.point));
 
   return {

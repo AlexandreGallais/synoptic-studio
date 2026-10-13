@@ -2,9 +2,13 @@ import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { freeShapeOf } from "../../../tests";
+import { NO_HANDLES } from "../handles";
 import { isValidRectangle, rectangleAsFreeShape } from "../rectangle";
 
 import { isValidFreeShape } from "./is-valid-free-shape";
+
+import type { FreeShape } from "./free-shape";
+import type { Handles } from "../../geometry";
 
 /** A triangle stored in a 2 × 2 box, drawn 10 × 4. */
 const TRIANGLE = {
@@ -17,6 +21,21 @@ const TRIANGLE = {
   radii: [0, 0, 0],
   width: 10,
 };
+
+/**
+ * The triangle with the handles of its first point replaced.
+ *
+ * @param handles - handles of point 1
+ * @returns the triangle as a free shape
+ */
+function shapeWithHandles(handles: Handles): FreeShape {
+  const shape = freeShapeOf(TRIANGLE);
+
+  return {
+    ...shape,
+    corners: shape.corners.map((corner, index) => (index === 0 ? { ...corner, handles } : corner)),
+  };
+}
 
 describe("isValidFreeShape", () => {
   it("[F09.AC1] accepts the free shape of the rectangle tool, size 0 included (Q15)", () => {
@@ -122,5 +141,12 @@ describe("isValidFreeShape", () => {
     { angle: 45, isValid: true, x: 0.5, y: -3.25 },
   ])("[F04.AC3] checks the angle $angle and the position ($x, $y)", ({ isValid, ...placement }) => {
     expect(isValidFreeShape({ ...freeShapeOf(TRIANGLE), ...placement })).toBe(isValid);
+  });
+
+  it("[F12.AC1] refuses a corner whose handles are not valid, and keeps the radius under handles on", () => {
+    const on = { ...NO_HANDLES, after: { x: 1, y: -1 }, isOn: true };
+
+    expect(isValidFreeShape(shapeWithHandles(on))).toBe(true);
+    expect(isValidFreeShape(shapeWithHandles({ ...on, after: { x: NaN, y: 0 } }))).toBe(false);
   });
 });
