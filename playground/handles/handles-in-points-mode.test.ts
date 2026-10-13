@@ -196,17 +196,17 @@ describe("handles in Points mode (US-022)", () => {
     expect(document.querySelectorAll("#canvas path.curve-handle")).toHaveLength(0);
   });
 
-  it("hides the switch for two points selected, and for a polygon's point", () => {
+  it("[F12.AC8] hides the switch for two points selected, and shows it for a polygon's point", () => {
     clickPoint(2, true);
 
     expect(isHidden("handles-switch")).toBe(true);
 
-    // Step 10: a hexagon.
+    // Step 10: a hexagon; its point's switch converts it first (US-028).
     openOnStep(10);
     clickElement("mode-points");
     clickPoint(1, false);
 
-    expect(isHidden("handles-switch")).toBe(true);
+    expect(isHidden("handles-switch")).toBe(false);
   });
 
   it("keeps the text of a value that is not an integer in its field", () => {

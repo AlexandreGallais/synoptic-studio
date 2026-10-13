@@ -7,7 +7,12 @@ import {
   typedHandle,
 } from "../../src";
 import { readNumber, selectElement } from "../page";
-import { readEditedFreeShape, readShape, writeStoredFreeShape } from "../shape";
+import {
+  readEditedFreeShape,
+  readShape,
+  writeConvertedPolygon,
+  writeStoredFreeShape,
+} from "../shape";
 
 import { readHandleFrames } from "./read-handle-frames";
 import { readKeptAngle } from "./read-kept-angle";
@@ -268,6 +273,8 @@ export function listenToHandleFields(document: Document, update: () => void): vo
   );
 
   selectElement(document, "handles-switch").addEventListener("click", () => {
+    // A regular polygon's point gets handles once the polygon is a free shape (US-028).
+    writeConvertedPolygon(document);
     writeChangedHandles(document, (handles) => ({ ...handles, isOn: !handles.isOn }), update);
   });
 
