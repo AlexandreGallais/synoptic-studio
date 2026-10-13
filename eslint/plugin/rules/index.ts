@@ -1,6 +1,7 @@
 export * from "./barrel-exports";
 export * from "./canonical-import-path";
 export * from "./folder-has-index";
+export * from "./folder-layout";
 export * from "./kind-in-layer";
 export * from "./kind-limits";
 export * from "./kind-naming";

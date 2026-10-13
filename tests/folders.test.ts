@@ -1,40 +1,21 @@
 import { readFileSync, readdirSync } from "node:fs";
-import { join, relative } from "node:path";
+import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
+
+import { FOLDERS_PAST_SIGNAL, FOLDER_SIGNAL } from "../eslint";
 
 /** Repository root. */
 const ROOT = join(import.meta.dirname, "..");
 
-/** Most modules a folder holds before it asks for a theme to split it (ADR-0042). */
-const SIGNAL = 15;
-
-/** Folders of code the layout rule covers. */
-const CODE_FOLDERS = ["src", "playground"];
-
-/**
- * Every folder below a root, the root included.
- *
- * @param folder - absolute path
- * @returns absolute paths of the folder and of each folder below it
- */
-function foldersBelow(folder: string): readonly string[] {
-  return [
-    folder,
-    ...readdirSync(folder, { recursive: true, withFileTypes: true })
-      .filter((entry) => entry.isDirectory())
-      .map((entry) => join(entry.parentPath, entry.name)),
-  ];
-}
-
 /**
  * Number of modules of a folder: its TypeScript files, tests and barrel left out.
  *
- * @param folder - absolute path
+ * @param folder - path from the repository root
  * @returns how many modules sit directly in it
  */
 function moduleCount(folder: string): number {
-  return readdirSync(folder).filter(
+  return readdirSync(join(ROOT, folder)).filter(
     (name) => name.endsWith(".ts") && !name.endsWith(".test.ts") && name !== "index.ts",
   ).length;
 }
@@ -42,7 +23,7 @@ function moduleCount(folder: string): number {
 /** Folders listed in `docs/conventions/files.md` as staying whole past the signal, with their count. */
 const LISTED = new Map(
   readFileSync(join(ROOT, "docs", "conventions", "files.md"), "utf8")
-    .split("### Folders past 15 modules", 2)[1]
+    .split(`### Folders past ${String(FOLDER_SIGNAL)} modules`, 2)[1]
     ?.matchAll(/^\| `(?<folder>[^`]+)` +\| (?<count>\d+)/gmu)
     .map((match): [string, number] => [
       match.groups?.["folder"] ?? "",
@@ -51,35 +32,18 @@ const LISTED = new Map(
     .toArray(),
 );
 
-describe("folders (ADR-0042)", () => {
-  const counts = CODE_FOLDERS.flatMap((root) => foldersBelow(join(ROOT, root))).map((folder) => ({
-    count: moduleCount(folder),
-    folder: relative(ROOT, folder),
-  }));
-
-  it("reads the code folders and the list of exceptions", () => {
-    expect(counts.length).toBeGreaterThanOrEqual(26);
-
-    expect(counts.map(({ folder }) => folder)).toEqual(
-      expect.arrayContaining(["src/geometry/corner-radius", "src/math/vector"]),
-    );
-
-    expect(LISTED.size).toBeGreaterThan(0);
+// `local/folder-layout` checks each folder (ADR-0043); this test keeps its list and the page as one.
+describe("folders past the signal (ADR-0043)", () => {
+  it("lists in docs/conventions/files.md the folders the lint lets past the signal", () => {
+    expect(FOLDERS_PAST_SIGNAL.length).toBeGreaterThan(0);
+    expect(new Set(LISTED.keys())).toEqual(new Set(FOLDERS_PAST_SIGNAL));
   });
 
-  it("splits a folder past 15 modules along a theme, or lists it with its reason", () => {
+  it("lists only folders still past the signal, each with its true count", () => {
     expect(
-      counts
-        .filter(({ count, folder }) => count > SIGNAL && !LISTED.has(folder))
-        .map(({ count, folder }) => `${folder} (${String(count)})`),
+      [...LISTED].filter(
+        ([folder, count]) => count <= FOLDER_SIGNAL || moduleCount(folder) !== count,
+      ),
     ).toEqual([]);
-  });
-
-  it("lists only folders still past 15 modules, each with its true count", () => {
-    const past = new Map(
-      counts.filter(({ count }) => count > SIGNAL).map(({ count, folder }) => [folder, count]),
-    );
-
-    expect([...LISTED].filter(([folder, count]) => past.get(folder) !== count)).toEqual([]);
   });
 });

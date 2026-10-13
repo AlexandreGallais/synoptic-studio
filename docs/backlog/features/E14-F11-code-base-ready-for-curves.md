@@ -27,7 +27,7 @@ Decided with the Product Owner on 2026-10-13:
 1. The test helpers repeated across files (typing in a field, reading a text, mounting the playground, building a rectangle, the shoelace area) live once, in shared test modules.
 2. The library has one writer of path data, `contourPiecesToPathData`; `contourToPathData` is removed from the public API (a breaking change: the next version is 0.2.0), and `SEPARATOR` and `CLOSE_PATH` are declared once.
 3. A rounded contour computes each corner's triple and turning angle once.
-4. The folders of `src/` and `playground/` follow the layout of ADR-0042, written in `docs/conventions/files.md`: folders by business theme, a shape's type in its folder; a folder past 15 modules (tests not counted) is listed there with its reason, checked by a test.
+4. The folders of `src/` and `playground/` follow the layout of ADR-0043 (which superseded ADR-0042 during F11), written in `docs/conventions/files.md`: folders by business domain, modules and folders never side by side, a shape's type in its folder; a folder past 15 modules (tests not counted) is listed there with its reason, checked by the lint.
 5. Every function of `src/math/` and `src/geometry/` has a property test: `tests/fitness.test.ts` holds no list of exceptions.
 6. Behavior is unchanged: every existing test passes, with the same values.
 
@@ -35,23 +35,24 @@ Decided with the Product Owner on 2026-10-13:
 
 In delivery order.
 
-| ID                                                         | Type       | Title                                                     | Status |
-| ---------------------------------------------------------- | ---------- | --------------------------------------------------------- | ------ |
-| [SP-010](../stories/E14-F11-SP-010-research-f11.md)        | Spike      | Research for F11: folder layouts and test placement       | done   |
-| [EN-020](../stories/E14-F11-EN-020-property-tests.md)      | Enabler    | Property tests for the nine functions without one         | done   |
-| [EN-021](../stories/E14-F11-EN-021-shared-test-helpers.md) | Enabler    | Shared test helpers, one path writer, one pass per corner | done   |
-| [CHK-010](../stories/E14-F11-CHK-010-checkpoint-f11.md)    | Checkpoint | Checkpoint in the middle of F11                           | done   |
-| [EN-022](../stories/E14-F11-EN-022-folder-layout.md)       | Enabler    | Folders of the library and the playground                 | done   |
-| [AUD-010](../stories/E14-F11-AUD-010-audit-f11.md)         | Audit      | Audit F11                                                 | done   |
-| [VAL-010](../stories/E14-F11-VAL-010-validate-f11.md)      | Validation | Validate F11                                              | draft  |
+| ID                                                         | Type       | Title                                                            | Status      |
+| ---------------------------------------------------------- | ---------- | ---------------------------------------------------------------- | ----------- |
+| [SP-010](../stories/E14-F11-SP-010-research-f11.md)        | Spike      | Research for F11: folder layouts and test placement              | done        |
+| [EN-020](../stories/E14-F11-EN-020-property-tests.md)      | Enabler    | Property tests for the nine functions without one                | done        |
+| [EN-021](../stories/E14-F11-EN-021-shared-test-helpers.md) | Enabler    | Shared test helpers, one path writer, one pass per corner        | done        |
+| [CHK-010](../stories/E14-F11-CHK-010-checkpoint-f11.md)    | Checkpoint | Checkpoint in the middle of F11                                  | done        |
+| [EN-022](../stories/E14-F11-EN-022-folder-layout.md)       | Enabler    | Folders of the library and the playground                        | done        |
+| [AUD-010](../stories/E14-F11-AUD-010-audit-f11.md)         | Audit      | Audit F11                                                        | done        |
+| [EN-023](../stories/E14-F11-EN-023-folders-by-domain.md)   | Enabler    | Folders by business domain, files and folders never side by side | in-progress |
+| [VAL-010](../stories/E14-F11-VAL-010-validate-f11.md)      | Validation | Validate F11                                                     | draft       |
 
 ## Feature plan
 
-| Acceptance criterion | Realized by    | Verified by             |
-| -------------------- | -------------- | ----------------------- |
-| F11.AC1              | EN-021         | AUD-010                 |
-| F11.AC2              | EN-021         | AUD-010                 |
-| F11.AC3              | EN-021         | AUD-010                 |
-| F11.AC4              | SP-010, EN-022 | AUD-010                 |
-| F11.AC5              | EN-020         | `tests/fitness.test.ts` |
-| F11.AC6              | every story    | `npm run check:all`     |
+| Acceptance criterion | Realized by            | Verified by                    |
+| -------------------- | ---------------------- | ------------------------------ |
+| F11.AC1              | EN-021                 | AUD-010                        |
+| F11.AC2              | EN-021                 | AUD-010                        |
+| F11.AC3              | EN-021                 | AUD-010                        |
+| F11.AC4              | SP-010, EN-022, EN-023 | AUD-010, `local/folder-layout` |
+| F11.AC5              | EN-020                 | `tests/fitness.test.ts`        |
+| F11.AC6              | every story            | `npm run check:all`            |

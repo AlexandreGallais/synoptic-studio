@@ -13,14 +13,14 @@
 
 Import **the child of the common ancestor** that contains the target:
 
-| From (in `src/`)                       | Target (in `src/`)                       | Written                         | Fixed to                              |
-| -------------------------------------- | ---------------------------------------- | ------------------------------- | ------------------------------------- |
-| `model/free-shape/free-shape-radii.ts` | `model/free-shape/free-shape.ts`         | `./free-shape.ts`               | `./free-shape`                        |
-| `model/free-shape/free-shape-radii.ts` | `model/placement/turned-corners.ts`      | `../placement/turned-corners`   | `../placement`                        |
-| `model/rectangle/rectangle-contour.ts` | `geometry/index.ts`                      | `../../geometry/index`          | `../../geometry`                      |
-| `geometry/box/contour-bounding-box.ts` | `geometry/rounded-corners/has-length.ts` | `../rounded-corners/has-length` | `../rounded-corners`                  |
-| `geometry/box/fit-in-box.ts`           | `geometry/size.ts`                       | `../size`                       | _(already canonical)_                 |
-| `geometry/box/fit-in-box.ts`           | `geometry/index.ts`                      | `..`                            | **error**: own layer's barrel = cycle |
+| From (in `src/`)                             | Target (in `src/`)                     | Written                       | Fixed to                              |
+| -------------------------------------------- | -------------------------------------- | ----------------------------- | ------------------------------------- |
+| `model/free-shape/free-shape-radii.ts`       | `model/free-shape/free-shape.ts`       | `./free-shape.ts`             | `./free-shape`                        |
+| `model/free-shape/free-shape-radii.ts`       | `model/placement/turned-corners.ts`    | `../placement/turned-corners` | `../placement`                        |
+| `model/rectangle/rectangle-contour.ts`       | `geometry/index.ts`                    | `../../geometry/index`        | `../../geometry`                      |
+| `geometry/placement/contour-bounding-box.ts` | `geometry/corner-radius/has-length.ts` | `../corner-radius/has-length` | `../corner-radius`                    |
+| `geometry/layout-box/fit-in-box.ts`          | `geometry/layout-box/size.ts`          | `./size`                      | _(already canonical)_                 |
+| `geometry/layout-box/fit-in-box.ts`          | `geometry/index.ts`                    | `..`                          | **error**: own layer's barrel = cycle |
 
 Never a `.ts` extension, never `/index`.
 

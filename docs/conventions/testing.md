@@ -17,7 +17,7 @@ it("returns the height of an equilateral triangle", () => {
 ```
 
 - When the expected value cannot be computed by hand: **stop** (research request or derivation to validate).
-- Float comparisons: `toBeCloseTo` with a justified number of decimals, or the project's `EPSILON = 1e-9` (Q10, `src/math/epsilon.ts`).
+- Float comparisons: `toBeCloseTo` with a justified number of decimals, or the project's `EPSILON = 1e-9` (Q10, `src/math/precision/epsilon.ts`).
 - Shared test data of `src/` lives in `tests/geometry-fixtures.ts`, imported from `tests` (EN-021): the rectangle of US-001 as points or corners, a free shape from points and radii side by side, the shoelace area, `expectPoints` with its number of decimals, integer points and triangles for properties. A test needing one of these never writes its own copy; test data never enters `src/`, whose barrels are the public API.
 - DOM tests (`src/render/`, `src/interaction/` when it exists, `playground/`): start the file with `// @vitest-environment happy-dom`; the shell stays thin, the logic lives in the core.
 - Playground tests (`playground/*.test.ts`, happy-dom, one file per area such as `points-list`, `radius-field`):

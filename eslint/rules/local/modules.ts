@@ -13,6 +13,8 @@ export const LOCAL_MODULES: TSESLint.FlatConfig.Config = {
       "error",
       { exemptDirectories: [".", "docs/.vitepress", "tests"], root: PROJECT_ROOT },
     ],
+    // Enabled on library and playground files only (scopes/modules.ts).
+    "local/folder-layout": "off",
     // Enabled on library and playground modules only (scopes/modules.ts).
     "local/one-export-per-file": "off",
   },

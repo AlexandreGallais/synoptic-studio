@@ -1,4 +1,5 @@
 export * from "./files";
+export * from "./folders";
 export * from "./formatting";
 export * from "./identifiers";
 export * from "./kinds";
