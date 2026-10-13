@@ -14,8 +14,10 @@ As a symbol designer, I type a side's two handles as whole percentages of the si
 ## Acceptance criteria
 
 - Given the side from (100, 0) to (200, 0), when the user types 25 % along and 30 % across for the first handle, then its end is at (125, −30) (a derivation).
-- Given the text `cubic-bezier(0.42, 0, 0.58, 1)` pasted on a side, then its two handles are set as those shares of the side.
-- Given the text `C 130 -15 170 -15 200 0` pasted for the side from (100, 0), then its handles are set to those points; any other text is refused with a line saying why.
+- Given the text `cubic-bezier(0.42, 0, 0.58, 1)` pasted on the side from (100, 0) to (200, 0), then CSS's diagonal from (0, 0) to (1, 1) is laid on the side: the handles end at (121, 21) and (179, −21), the S shape of the easing (a derivation); x values outside 0 to 1 are refused, as CSS does.
+- Given shares typed for the second handle, then they are measured from B along the side's reverse direction, so that equal shares at both ends give a symmetric arch.
+- Given the text `C 130 -15 170 -15 200 0` pasted for the side from (100, 0), then its handles are set to those points; a `C` whose end is not B, or any other text, is refused with a line saying why; decimals pasted are kept, as stored handles are exact (ADR-0046).
+- Given a point in a mirrored mode, when a pasted curve sets its handle, then the other handle of that point follows its mode, bending the neighbouring side too.
 
 ## Tasks
 

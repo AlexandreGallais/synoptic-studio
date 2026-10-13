@@ -61,7 +61,10 @@ Reference behavior: Figma.
 - A point keeps its corner radius when it gets handles: removing the handles brings the radius back as it was (30 stays 30, 0 stays 0); no value is lost when switching.
 - A point is edited in one of two modes, **corner radius** or **handles**, switched in one step, the mode always visible; the final layout of this switch is part of the UX pass at the end of E14.
 - A new point on the curve starts in Figma's **mirrored angle and length** mode: moving one handle to (130, 0) around a point at (100, 0) puts the other at (70, 0). The two other modes, **mirrored angle** and **no mirroring**, are chosen per point.
-- How a handle is typed is open (Q32).
+- A side is a **curve** when a handle is on at either of its ends (ADR-0046); a corner in radius mode next to a curved side is drawn sharp until a rule is chosen.
+- Handles stretch with the shape, like its points. The shape's **box is the box of its curve**: a square 100 × 100 whose top bulges by 20 shows about 100 × 115, as Figma (Product Owner, 2026-10-13).
+- A point added in the middle of a curved side keeps the outline; deleting a point joins its two sides, keeping the outer handles.
+- How a handle is typed: seven methods, each built and tried at the end of F12 (Q32, research note 0013). With the same values at both ends of a side, the methods measured from the side give a symmetric arch towards the outside.
 
 ### Radius clamping (ADR-0007)
 
@@ -160,7 +163,7 @@ Settled with the Product Owner (2026-10-10, refining F07): a box that places the
 ### Out of scope (symbols)
 
 - **Pen** and **freeform drawing** in the Symbol Editor: contrary to the "logical" principle.
-- **Bézier curves**, Figma's **Bend** tool, handle **mirroring** in symbols (ADR-0001) — until E14 decides otherwise (Q4).
+- Bézier curves other than the cubic sides from handles (ADR-0046); Figma's **Bend** tool dragged on the drawing (E02).
 - **Corner smoothing** (Figma squircle smoothing): produces Béziers.
 
 Static drawings of the View Editor follow other rules (§8).
@@ -220,4 +223,4 @@ See `interaction.md` §6.
 - Made by business users in the View Editor, with **more freedom** than symbols but few options.
 - A drawing has no parameter and no animation. Selecting a group and saving it creates a drawing.
 - Drawings go into a **drawing library shared between projects**, so that the same drawings are reused from one synoptic view to another.
-- Curves are allowed **only** in drawings (Q12, ADR-0018): a Figma-like pen places points, and dragging a point pulls Bézier handles. Symbols keep ADR-0001 (segments and arcs only).
+- Curves drawn freely with a pen are allowed in drawings only (Q12, ADR-0018): a Figma-like pen places points, and dragging a point pulls Bézier handles. Symbols have cubic sides from typed handles only (ADR-0046).

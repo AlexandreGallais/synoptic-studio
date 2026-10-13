@@ -28,7 +28,7 @@ Started with the Product Owner on 2026-10-13:
 
 | ID                                                                 | Type       | Title                                                               | Status |
 | ------------------------------------------------------------------ | ---------- | ------------------------------------------------------------------- | ------ |
-| [SP-011](../stories/E14-F12-SP-011-research-f12.md)                | Spike      | Research for F12: curves in symbols, ways to type a handle, strokes | ready  |
+| [SP-011](../stories/E14-F12-SP-011-research-f12.md)                | Spike      | Research for F12: curves in symbols, ways to type a handle, strokes | done   |
 | [EN-024](../stories/E14-F12-EN-024-handles-model.md)               | Enabler    | A point's handles in the free shape model                           | ready  |
 | [EN-025](../stories/E14-F12-EN-025-cubic-sides.md)                 | Enabler    | Cubic sides in contours, path data and the straight box             | ready  |
 | [US-022](../stories/E14-F12-US-022-handles-in-points-mode.md)      | User story | Switch a point to handles and type them as x and y                  | ready  |
@@ -36,6 +36,7 @@ Started with the Product Owner on 2026-10-13:
 | [CHK-011](../stories/E14-F12-CHK-011-checkpoint-f12.md)            | Checkpoint | Checkpoint in the middle of F12                                     | ready  |
 | [US-024](../stories/E14-F12-US-024-handles-as-angle-and-length.md) | User story | Type a handle as an angle and a length                              | ready  |
 | [US-025](../stories/E14-F12-US-025-handles-as-share-or-data.md)    | User story | Type a side's handles as shares of the side, or paste curve data    | ready  |
+| [US-026](../stories/E14-F12-US-026-handles-from-a-tension.md)      | User story | Smooth a point by a tension, its handles computed                   | ready  |
 | [AUD-011](../stories/E14-F12-AUD-011-audit-f12.md)                 | Audit      | Audit F12                                                           | ready  |
 | [VAL-011](../stories/E14-F12-VAL-011-validate-f12.md)              | Validation | Validate F12                                                        | ready  |
 
@@ -46,8 +47,9 @@ Written by SP-011 from [research note 0013](../../research/notes/0013-f12-curves
 1. A point of a free shape switches between its corner radius and its handles; the radius comes back as it was.
 2. Handles follow Figma's three modes, angle and length by default.
 3. A side with a handle at either end is drawn as a cubic Bézier, its straight box exact (ADR-0046).
-4. A handle can be typed in each of the six methods of research note 0013: x and y; dx and dy; angle and length from the x axis or from the side; shares of the side; pasted `C` or `cubic-bezier()` data.
+4. A handle can be typed in each of the seven methods of research note 0013: x and y; dx and dy; angle and length from the x axis or from the side; shares of the side; pasted `C` or `cubic-bezier()` data; a tension.
 5. Every shape of E01 draws as before.
+6. A shape's box is the box of its curve (Product Owner, 2026-10-13).
 
 ## Feature plan
 
@@ -56,5 +58,6 @@ Written by SP-011 from [research note 0013](../../research/notes/0013-f12-curves
 | F12.AC1              | EN-024, US-022   | AUD-011             |
 | F12.AC2              | EN-024, US-022   | AUD-011             |
 | F12.AC3              | EN-025           | AUD-011             |
-| F12.AC4              | US-022 to US-025 | AUD-011             |
+| F12.AC4              | US-022 to US-026 | AUD-011             |
 | F12.AC5              | every story      | `npm run check:all` |
+| F12.AC6              | EN-025           | AUD-011             |
