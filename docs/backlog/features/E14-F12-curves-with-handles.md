@@ -37,7 +37,7 @@ Started with the Product Owner on 2026-10-13:
 | [US-024](../stories/E14-F12-US-024-handles-as-angle-and-length.md) | User story | Type a handle as an angle and a length                              | done   |
 | [US-025](../stories/E14-F12-US-025-handles-as-share-or-data.md)    | User story | Type a side's handles as shares of the side, or paste curve data    | done   |
 | [US-026](../stories/E14-F12-US-026-handles-from-a-tension.md)      | User story | Smooth a point by a tension, its handles computed                   | done   |
-| [AUD-011](../stories/E14-F12-AUD-011-audit-f12.md)                 | Audit      | Audit F12                                                           | ready  |
+| [AUD-011](../stories/E14-F12-AUD-011-audit-f12.md)                 | Audit      | Audit F12                                                           | done   |
 | [VAL-011](../stories/E14-F12-VAL-011-validate-f12.md)              | Validation | Validate F12                                                        | ready  |
 
 Written by SP-011 from [research note 0013](../../research/notes/0013-f12-curves-with-handles.md); set ready by the run (ADR-0045).
