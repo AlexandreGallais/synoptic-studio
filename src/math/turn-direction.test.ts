@@ -1,9 +1,8 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
-import { norm } from "./norm";
-import { quarterTurn } from "./quarter-turn";
 import { turnDirection } from "./turn-direction";
+import { norm, quarterTurn } from "./vector";
 
 describe("turnDirection (DERIV-turned-shape step 3)", () => {
   it.each([
