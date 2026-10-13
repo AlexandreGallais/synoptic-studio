@@ -1,5 +1,6 @@
 import type { CornerPoints } from "../contour";
-import type { CornerFillet, CornerSide } from "../curve-fillet";
+import type { CornerFillet } from "../curve-fillet";
+import type { CornerSide } from "../fillet-side";
 
 /** What a corner asks before ADR-0007 shares its straight sides. */
 export type CornerAsk = {

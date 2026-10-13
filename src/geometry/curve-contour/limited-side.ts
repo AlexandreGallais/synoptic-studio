@@ -1,4 +1,4 @@
-import type { CornerSide } from "../curve-fillet";
+import type { CornerSide } from "../fillet-side";
 
 /**
  * A side with the reach ADR-0007 leaves a fillet on it: on a straight side shared with a reduced

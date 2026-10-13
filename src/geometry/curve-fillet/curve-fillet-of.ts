@@ -1,14 +1,14 @@
 import { perpDot, scale } from "../../math";
 import { cubicStartDirection } from "../curve";
+import { orientedSides } from "../fillet-side";
 import { cubicPoint } from "../placement";
 
 import { filletTangency } from "./fillet-tangency";
 import { fittedFilletRadius } from "./fitted-fillet-radius";
-import { orientedSides } from "./oriented-sides";
 
 import type { CornerFillet } from "./corner-fillet";
 import type { Arc } from "../contour";
-import type { CornerSide } from "./corner-side";
+import type { CornerSide } from "../fillet-side";
 
 /**
  * Whether a corner turns positively, as `turningAngle`: from the direction coming into it to the
@@ -42,14 +42,14 @@ export function curveFilletOf(
 ): CornerFillet {
   const oriented = orientedSides(sides[0], sides[1]);
   const drawn = fittedFilletRadius(oriented, radius);
-  const none = { after: 0, before: 0, centre: sides[0].cubic.start };
-  const { after, before, centre } = drawn === 0 ? none : (filletTangency(oriented, drawn) ?? none);
+  const found = drawn === 0 ? undefined : filletTangency(oriented, drawn);
+  const { after, before, centre } = found ?? { after: 0, before: 0, centre: sides[0].cubic.start };
   const arc: Arc = {
     center: centre,
     end: cubicPoint(sides[1].cubic, after),
     kind: "arc",
     positive: isTurningPositively(sides),
-    radius: drawn,
+    radius: found === undefined ? 0 : drawn,
     start: cubicPoint(sides[0].cubic, before),
   };
 

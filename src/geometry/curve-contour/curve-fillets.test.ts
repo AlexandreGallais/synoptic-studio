@@ -6,6 +6,30 @@ import { filletArcs } from "../corner-radius";
 
 import { curveFillets } from "./curve-fillets";
 
+import type { Arc } from "../contour";
+import type { CurveCorner } from "../handles";
+
+/** An arc without length at the origin, read when a corner is missing. */
+const NO_ARC: Arc = {
+  center: { x: 0, y: 0 },
+  end: { x: 0, y: 0 },
+  kind: "arc",
+  positive: false,
+  radius: 0,
+  start: { x: 0, y: 0 },
+};
+
+/**
+ * The arc drawn at one corner.
+ *
+ * @param corners - corners of the shape
+ * @param index - the corner's number, from 0
+ * @returns its fillet's arc
+ */
+function arcAt(corners: readonly CurveCorner[], index: number): Arc {
+  return curveFillets(corners)[index]?.arc ?? NO_ARC;
+}
+
 describe("curveFillets (ADR-0047, DERIV-fillet-beside-curve)", () => {
   it("[F12.AC7] keeps points 2 and 4 rounded by 20 when point 3 gets handles", () => {
     // The checks table: corner 2's centre (100.15277, 20), touching the curve at (120.15232,
@@ -63,6 +87,33 @@ describe("curveFillets (ADR-0047, DERIV-fillet-beside-curve)", () => {
       }));
 
       expect(curveFillets(handled).map((fillet) => fillet.arc)).toEqual(filletArcs(corners));
+    },
+  );
+
+  it("[F12.AC7] shares a straight side between a corner beside a curve and its neighbour (ADR-0007)", () => {
+    // The top side, 120: radius 100 at point 1 and 60 at point 2 ask more than it holds; both are
+    // reduced, their arcs meeting at most on it.
+    const corners = bentRectangle(40, [100, 60, 20, 20]);
+    const [first, second] = [arcAt(corners, 0), arcAt(corners, 1)];
+
+    expect(first.end.x).toBeLessThanOrEqual(second.start.x + 1e-9);
+    expect([first.radius, second.radius].every((radius) => radius > 0 && radius < 100)).toBe(true);
+  });
+
+  test.prop(
+    { asked: fc.integer({ max: 80, min: 1 }), handle: fc.integer({ max: 90, min: 1 }) },
+    { numRuns: 15 },
+  )(
+    "[F12.AC7] draws a radius that never falls as the radius asked grows, with an arc of some length",
+    ({ asked, handle }) => {
+      const smaller = arcAt(bentRectangle(handle, [20, asked, 20, 20]), 1);
+      const larger = arcAt(bentRectangle(handle, [20, asked + 5, 20, 20]), 1);
+
+      expect(larger.radius + 1e-6).toBeGreaterThanOrEqual(smaller.radius);
+
+      expect(
+        Math.hypot(larger.end.x - larger.start.x, larger.end.y - larger.start.y),
+      ).toBeGreaterThan(0);
     },
   );
 });

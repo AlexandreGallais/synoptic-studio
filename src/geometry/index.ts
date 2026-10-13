@@ -3,6 +3,7 @@ export * from "./corner-radius";
 export * from "./curve";
 export * from "./curve-contour";
 export * from "./curve-fillet";
+export * from "./fillet-side";
 export * from "./handles";
 export * from "./layout-box";
 export * from "./placement";

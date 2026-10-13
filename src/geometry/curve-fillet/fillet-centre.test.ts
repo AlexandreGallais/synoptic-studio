@@ -3,10 +3,10 @@ import { describe, expect, it } from "vitest";
 
 import { LINE_AND_THIRDS } from "../../../tests";
 import { norm, subtract } from "../../math";
+import { orientedSides } from "../fillet-side";
 import { cubicPoint } from "../placement";
 
 import { filletCentre } from "./fillet-centre";
-import { orientedSides } from "./oriented-sides";
 
 describe("filletCentre (DERIV-fillet-beside-curve step 3)", () => {
   it("stands the radius away from the curve, towards the corner's inside", () => {
