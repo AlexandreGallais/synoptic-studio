@@ -31,7 +31,7 @@ Started with the Product Owner on 2026-10-13:
 | [SP-011](../stories/E14-F12-SP-011-research-f12.md)                | Spike      | Research for F12: curves in symbols, ways to type a handle, strokes | done   |
 | [EN-024](../stories/E14-F12-EN-024-handles-model.md)               | Enabler    | A point's handles in the free shape model                           | done   |
 | [EN-025](../stories/E14-F12-EN-025-cubic-sides.md)                 | Enabler    | Cubic sides in contours, path data and the straight box             | done   |
-| [US-022](../stories/E14-F12-US-022-handles-in-points-mode.md)      | User story | Switch a point to handles and type them as x and y                  | ready  |
+| [US-022](../stories/E14-F12-US-022-handles-in-points-mode.md)      | User story | Switch a point to handles and type them as x and y                  | done   |
 | [US-023](../stories/E14-F12-US-023-handles-relative-to-point.md)   | User story | Type a handle as dx and dy from its point                           | ready  |
 | [CHK-011](../stories/E14-F12-CHK-011-checkpoint-f12.md)            | Checkpoint | Checkpoint in the middle of F12                                     | ready  |
 | [US-024](../stories/E14-F12-US-024-handles-as-angle-and-length.md) | User story | Type a handle as an angle and a length                              | ready  |

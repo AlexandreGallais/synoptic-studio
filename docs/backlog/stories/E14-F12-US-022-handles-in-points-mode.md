@@ -3,7 +3,7 @@ id: US-022
 epic: E14
 feature: F12
 title: "Switch a point to handles and type them as x and y"
-status: ready
+status: done
 points: 5
 ---
 
@@ -22,9 +22,9 @@ As a symbol designer, I switch a selected point from its corner radius to its ha
 
 One task = one commit, referenced as `US-022.Tn`.
 
-- [x] T1 — The switch and the mode in Points mode (with `freeShapeWithHandles`)
-- [x] T2 — Handle fields as x and y, written into the model
-- [x] T3 — Handles drawn on the drawing; tests end to end (with T2: one commit)
+- [x] T1 — `freeShapeWithHandles`, the model side of the switch and the fields
+- [x] T2 — The switch, the mode and the handle fields as x and y in Points mode
+- [x] T3 — Handles drawn on the drawing (with T2); the test card and the review
 
 ## Decisions during the story
 
@@ -37,12 +37,16 @@ One task = one commit, referenced as `US-022.Tn`.
 
 ## Product Owner test
 
-Run `npm run dev`, open `http://localhost:5173/?step=1`: the rectangle 120 × 80, radius 10.
+Run `npm run dev` and open the page (`http://localhost:5173`): the rectangle 120 × 80, radius 10, point 1 at the top left (0, 0).
 
-1. Click **Points** in the toolbar, then point 1 (the red one, top left). Look at the panel: a **Handles** button above the radius.
-2. Click **Handles**. The radius field disappears, replaced by **Mode** (Mirror angle and length) and four fields: the ends of the two handles, both at the point (0, 0).
-3. Type **After x** = 30, Enter, then **After y** = −15, Enter. The top side bends upwards from point 1; the other handle moves to (−30, 15), its mirror; two violet marks show the handles.
-4. Choose **Mode** = No mirroring, then type **After x** = 60: only that handle moves.
-5. Click **Handles** again: the corner is round again, radius 10, as before.
+1. Click **Points** in the toolbar, then point 1 (the red one). In the panel, a **Handles** button sits above the radius.
+2. Click **Handles**: the button looks pressed, the radius field gives way to **Mode** (Mirror angle and length) and four fields, the ends of the two handles, both at the point (0, 0). Point 1 is now sharp: in handles mode a point has no rounding.
+3. Type **After x** = 30, Enter, then **After y** = −15, Enter. The top side bends upwards from point 1, and the left side bulges to the left: the other handle is the mirror, at (−30, 15). Points 2 and 4, next to a curved side, lose their rounding. Two violet marks show the handles; Width and Height read 133.33333 × 86.66667, the box of the curve.
+4. Choose **Mode** = No mirroring, then type **After x** = 60: only that handle moves, the left side stays as it is.
+5. Click **Handles** again: point 1 is round again, radius 10, and the shape is the rectangle 120 × 80 once more.
 
-What to look at: the shape's points never move; only the side next to point 1 bends.
+What to look at: the points never move, only the sides next to point 1 bend; the radius comes back as it was.
+
+## Review
+
+Auditor and verifier, before the last commit. Fixed: one coordinate of a handle typed alone was refused on a turned shape (the other read as a decimal); tests on a point away from the origin (absolute x and y told from a vector), the marks' place, the handle before, mode angle, the mode shown when the selection changes, no mark for zero or off handles, no switch for two points or a polygon; the other points' handles untouched; the test card now says what the page shows (the mirrored handle bends the previous side, the neighbours lose their rounding, the box grows); the pressed switch styled; the tags. Kept: `readOnlySelected` is written in `points/` and in `handles/`, a three-line twin.
