@@ -1,15 +1,12 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
+import { rectanglePoints } from "../../tests";
+
 import { cyclicItem } from "./cyclic-item";
 
 /** Rectangle 100 × 50 of US-001, clockwise from the top-left vertex. */
-const RECTANGLE = [
-  { x: 0, y: 0 },
-  { x: 100, y: 0 },
-  { x: 100, y: 50 },
-  { x: 0, y: 50 },
-];
+const RECTANGLE = rectanglePoints(100, 50);
 
 /** Fallback returned for an empty contour. */
 const FALLBACK = { x: -1, y: -1 };

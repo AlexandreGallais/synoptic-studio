@@ -56,6 +56,24 @@ describe("contourPiecesToPathData (REF-SVG2-PATHS §9.3.3–9.3.8)", () => {
     expect(contourPiecesToPathData(pieces)).toBe("M50 0 L100 86.60254 L0 86.60254 Z");
   });
 
+  it("writes a concave fillet with sweep flag 0: the inner corner of an L shape", () => {
+    // V = (50, 50) turns counterclockwise on screen (τ = −π/2): the arc runs from (60, 50) to (50, 60).
+    const pieces = roundedContour(
+      [
+        { x: 0, y: 0 },
+        { x: 100, y: 0 },
+        { x: 100, y: 50 },
+        { x: 50, y: 50 },
+        { x: 50, y: 100 },
+        { x: 0, y: 100 },
+      ].map((point) => ({ point, radius: point.x === 50 && point.y === 50 ? 10 : 0 })),
+    );
+
+    expect(contourPiecesToPathData(pieces)).toBe(
+      "M0 0 L100 0 L100 50 L60 50 A10 10 0 0 0 50 60 L50 100 L0 100 Z",
+    );
+  });
+
   it("gives an empty d for no piece", () => {
     expect(contourPiecesToPathData([])).toBe("");
   });

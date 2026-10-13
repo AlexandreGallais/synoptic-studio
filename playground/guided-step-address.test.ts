@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
 
-import { openPage, readText } from "./user-actions";
+import { clickElement, openPage, readText } from "./user-actions";
 
 describe("guided test address", () => {
   it("opens on the step the address asks, and writes the step shown into the address", () => {
@@ -10,7 +10,7 @@ describe("guided test address", () => {
     expect(readText("#guide-number")).toBe("20");
     expect(readText("#guide-title")).toBe("F07 · A triangle and its box");
 
-    document.querySelector<HTMLButtonElement>("#guide-next")?.click();
+    clickElement("guide-next");
 
     expect(globalThis.location.search).toBe("?step=21");
   });
