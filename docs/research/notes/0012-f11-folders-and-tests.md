@@ -42,9 +42,9 @@ Counts are modules, tests not counted (each test follows its module).
 
 The exact lists are fixed in EN-022, checked by `import-x/no-cycle`; a folder over the chosen limit is split again by theme.
 
-## Questions for the Product Owner
+## Decision of the Product Owner
 
-- The most modules per folder (tests not counted), and whether the playground is split by panel (as above) or kept flat until E02 rewrites it.
+On 2026-10-13 (ADR-0042): folders by business theme first; 15 modules as a signal, a folder past it split only along a theme that makes sense, else listed with its reason; the playground split by panel now; the limit reviewed with every rule, every four to five epics.
 
 ## Open
 
