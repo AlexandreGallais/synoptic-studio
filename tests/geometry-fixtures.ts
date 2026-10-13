@@ -6,7 +6,7 @@
 import { fc } from "@fast-check/vitest";
 import { expect } from "vitest";
 
-import { cornersWithRadii } from "../src";
+import { cornersWithRadii, curveCornerOf } from "../src";
 
 import type { Corner, FreeShape, Point } from "../src";
 
@@ -130,7 +130,7 @@ export type SideBySide = {
 export function freeShapeOf(shape: SideBySide): FreeShape {
   return {
     angle: 0,
-    corners: cornersWithRadii(shape.points, shape.radii),
+    corners: cornersWithRadii(shape.points, shape.radii).map((corner) => curveCornerOf(corner)),
     height: shape.height,
     width: shape.width,
     x: Math.min(...shape.points.map((point) => point.x)),

@@ -13,12 +13,16 @@ export type TurnedBox = Pick<FreeShape, "angle" | "height" | "width" | "x" | "y"
  * number; at 0° the corners are returned as they are, bit for bit.
  *
  * @kind domain
+ * @template C - a corner, with its handles for a free shape (kept as they are until EN-025 turns them)
  * @param corners - straight corners, placed in the SVG (`freeShapeCorners`, `regularPolygonCorners`)
  * @param box - the shape's angle, position, width and height
  * @returns the corners as drawn, in the same order
  * @see DERIV-turned-shape
  */
-export function turnedCorners(corners: readonly Corner[], box: TurnedBox): readonly Corner[] {
+export function turnedCorners<C extends Corner>(
+  corners: readonly C[],
+  box: TurnedBox,
+): readonly C[] {
   if (box.angle === 0) {
     return corners;
   }

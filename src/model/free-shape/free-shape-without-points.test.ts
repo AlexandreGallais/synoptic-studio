@@ -20,7 +20,7 @@ describe("freeShapeWithoutPoints", () => {
     });
     const shape = freeShapeWithoutPoints(square, [1]);
 
-    expect(freeShapeCorners(shape)).toEqual([
+    expect(freeShapeCorners(shape)).toMatchObject([
       { point: { x: 0, y: 0 }, radius: 10 },
       { point: { x: 100, y: 100 }, radius: 30 },
       { point: { x: 0, y: 100 }, radius: 40 },
