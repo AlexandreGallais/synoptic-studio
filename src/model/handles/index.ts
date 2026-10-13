@@ -1,4 +1,10 @@
 export * from "./are-valid-handles";
 export * from "./curve-corner-of";
+export * from "./field-values-of-handle";
+export type * from "./handle-frame";
+export type * from "./handle-way";
+export * from "./handle-ways";
 export * from "./handles-after-typing";
+export * from "./is-angle-unknown";
 export * from "./no-handles";
+export * from "./typed-handle";
