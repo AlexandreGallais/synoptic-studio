@@ -1,5 +1,7 @@
 import { boundingBox } from "../placement";
 
+import { stretchedInBox } from "./stretched-in-box";
+
 import type { Size } from "./size";
 import type { Point } from "../../math";
 
@@ -19,16 +21,5 @@ import type { Point } from "../../math";
  * @see DERIV-free-shape-stretch
  */
 export function stretchToSize(points: readonly Point[], size: Size): readonly Point[] {
-  const box = boundingBox(points);
-  const spanX = box.maxX - box.minX;
-  const spanY = box.maxY - box.minY;
-
-  // At its own size a shape is drawn as stored, bit for bit (fractional points, ADR-0033).
-  const scaleX = size.width === spanX ? undefined : size.width;
-  const scaleY = size.height === spanY ? undefined : size.height;
-
-  return points.map((point) => ({
-    x: scaleX === undefined ? point.x : box.minX + (scaleX * (point.x - box.minX)) / spanX,
-    y: scaleY === undefined ? point.y : box.minY + (scaleY * (point.y - box.minY)) / spanY,
-  }));
+  return stretchedInBox(points, boundingBox(points), size);
 }
