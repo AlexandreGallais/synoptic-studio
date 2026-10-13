@@ -1,3 +1,4 @@
+import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { isSoundStretch } from "./is-sound-stretch";
@@ -27,5 +28,25 @@ describe("isSoundStretch (DERIV-stretched-polygon step 3)", () => {
     const open = unitStretchedPolygon(5, Math.exp(-3));
 
     expect(isSoundStretch(open)).toBe(false);
+  });
+});
+
+/** Number of corners of a polygon of the editor. */
+const CORNERS = fc.integer({ max: 12, min: 3 });
+
+describe("isSoundStretch (properties)", () => {
+  test.prop({
+    corners: CORNERS,
+    size: fc.integer({ max: 5000, min: 1 }),
+    x: fc.integer({ max: 5000, min: -5000 }),
+    y: fc.integer({ max: 5000, min: -5000 }),
+  })("accepts every regular polygon, whatever its size and place", ({ corners, size, x, y }) => {
+    // A regular polygon turns 2π/n at each corner, twice the guard π/n. Clockwise on screen (y down).
+    const polygon = Array.from({ length: corners }, (empty, index) => ({
+      x: x + size * Math.cos((2 * Math.PI * index) / corners),
+      y: y + size * Math.sin((2 * Math.PI * index) / corners),
+    }));
+
+    expect(isSoundStretch(polygon)).toBe(true);
   });
 });

@@ -1,3 +1,4 @@
+import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { boxAspect } from "./box-aspect";
@@ -79,4 +80,22 @@ describe("stretchScale (DERIV-stretched-polygon step 5)", () => {
       expect(changeCount(above)).toBeLessThanOrEqual(1);
     }
   });
+});
+
+describe("stretchScale (properties)", () => {
+  test.prop({
+    corners: fc.integer({ max: 12, min: 5 }),
+    first: fc.integer({ max: 1000, min: 1 }),
+    second: fc.integer({ max: 1000, min: 1 }),
+  })(
+    "gives a taller box a scale at least as large, always positive",
+    ({ corners, first, second }) => {
+      // Ratios h / w from 0.01 to 10: λ grows with the ratio, then stops at the corner guard.
+      const low = stretchScale(corners, Math.min(first, second) / 100);
+      const high = stretchScale(corners, Math.max(first, second) / 100);
+
+      expect(low).toBeGreaterThan(0);
+      expect(high).toBeGreaterThanOrEqual(low);
+    },
+  );
 });
