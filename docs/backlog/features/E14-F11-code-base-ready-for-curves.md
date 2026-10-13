@@ -39,7 +39,7 @@ In delivery order.
 | ---------------------------------------------------------- | ---------- | --------------------------------------------------------- | ------ |
 | [SP-010](../stories/E14-F11-SP-010-research-f11.md)        | Spike      | Research for F11: folder layouts and test placement       | done   |
 | [EN-020](../stories/E14-F11-EN-020-property-tests.md)      | Enabler    | Property tests for the nine functions without one         | done   |
-| [EN-021](../stories/E14-F11-EN-021-shared-test-helpers.md) | Enabler    | Shared test helpers, one path writer, one pass per corner | ready  |
+| [EN-021](../stories/E14-F11-EN-021-shared-test-helpers.md) | Enabler    | Shared test helpers, one path writer, one pass per corner | done   |
 | [CHK-010](../stories/E14-F11-CHK-010-checkpoint-f11.md)    | Checkpoint | Checkpoint in the middle of F11                           | ready  |
 | [EN-022](../stories/E14-F11-EN-022-folder-layout.md)       | Enabler    | Folders of the library and the playground                 | ready  |
 | [AUD-010](../stories/E14-F11-AUD-010-audit-f11.md)         | Audit      | Audit F11                                                 | ready  |
