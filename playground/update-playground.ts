@@ -1,10 +1,7 @@
-import { readShape } from "./read-shape";
-import { selectElement } from "./select-element";
-import { showRefusedShape } from "./show-refused-shape";
-import { showShape } from "./show-shape";
-import { writeCappedSizes } from "./write-capped-sizes";
-import { writeShapeKind } from "./write-shape-kind";
-import { writeValidity } from "./write-validity";
+import { showRefusedShape, showShape } from "./drawing";
+import { selectElement, writeValidity } from "./page";
+import { readShape, writeCappedSizes } from "./shape";
+import { writeShapeKind } from "./toolbar";
 
 /**
  * Updates the page from the inputs: the selected shape is drawn when valid, refused otherwise;

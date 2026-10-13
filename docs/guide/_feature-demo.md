@@ -13,7 +13,7 @@ One short paragraph per idea, each technical word explained; a picture per geome
 
 ## Try it
 
-Run `npm run dev`: the playground opens on the guided test of this feature, a few short steps (`playground/current-guided-steps.ts`).
+Run `npm run dev`: the playground opens on the guided test of this feature, a few short steps (`playground/guided-steps/current-guided-steps.ts`).
 
 | Step | Do  | You should see |
 | ---- | --- | -------------- |

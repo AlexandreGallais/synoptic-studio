@@ -1,6 +1,6 @@
+import { readGuidedTestSteps } from "../guided-test";
 import page from "../index.html?raw";
 import { mountPlayground } from "../mount-playground";
-import { readGuidedTestSteps } from "../read-guided-test-steps";
 
 /**
  * Opens the playground at an address exactly as `playground/index.ts` mounts it: the steps of the

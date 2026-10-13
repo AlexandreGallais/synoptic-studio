@@ -1,8 +1,7 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { CURRENT_GUIDED_STEPS } from "./current-guided-steps";
-import { GUIDED_STEPS } from "./guided-steps";
+import { CURRENT_GUIDED_STEPS, GUIDED_STEPS } from "./guided-steps";
 import {
   clickElement,
   clickWithKeys,
