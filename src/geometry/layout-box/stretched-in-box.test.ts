@@ -34,4 +34,18 @@ describe("stretchedInBox (DERIV-free-shape-stretch)", () => {
       );
     },
   );
+
+  it("stretches x about the box's left side, not the points'", () => {
+    // Box x from −20 to 100 (120), made 60 wide: x = −20 + 60 (x + 20) / 120: 0 → −10, 100 → 40.
+    const stretched = stretchedInBox(
+      [
+        { x: 0, y: 0 },
+        { x: 100, y: 100 },
+      ],
+      { maxX: 100, maxY: 100, minX: -20, minY: 0 },
+      { height: 100, width: 60 },
+    );
+
+    expect(stretched.map((point) => point.x)).toEqual([-10, 40]);
+  });
 });

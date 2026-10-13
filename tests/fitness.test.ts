@@ -163,8 +163,8 @@ describe("a code base ready for curves (F11)", () => {
     expect(modules.filter((text) => text.includes("const CLOSE_PATH ="))).toHaveLength(1);
   });
 
-  it("[F11.AC3] computes each corner's triple and turning angle once for a rounded contour", () => {
-    const text = readFileSync(join(ROOT, "src/geometry/corner-radius/rounded-contour.ts"), "utf8");
+  it("[F11.AC3] computes each corner's triple and turning angle once for the fillets of a contour", () => {
+    const text = readFileSync(join(ROOT, "src/geometry/corner-radius/fillet-arcs.ts"), "utf8");
 
     expect(occurrences(text, "cornerTriples(")).toBe(1);
     expect(occurrences(text, "turningAngles(")).toBe(1);

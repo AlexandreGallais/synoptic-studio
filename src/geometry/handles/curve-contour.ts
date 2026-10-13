@@ -1,11 +1,18 @@
 import { cyclicItem } from "../contour";
-import { roundedContour } from "../corner-radius";
+import { filletArcs, hasLength } from "../corner-radius";
 
 import { cubicSide } from "./cubic-side";
 import { isCurvedSide } from "./is-curved-side";
 
 import type { CurveCorner } from "./curve-corner";
-import type { ContourPiece, Cubic } from "../contour";
+import type { ContourPiece } from "../contour";
+
+/** Corner read when there is none: a contour has 3 corners or more. */
+const NO_CORNER: CurveCorner = {
+  handles: { after: { x: 0, y: 0 }, before: { x: 0, y: 0 }, isOn: false, mode: "angle-and-length" },
+  point: { x: 0, y: 0 },
+  radius: 0,
+};
 
 /**
  * Corners as filleted next to curves: a corner in handles mode, or next to a curved side, keeps
@@ -29,26 +36,10 @@ function filletableCorners(corners: readonly CurveCorner[]): readonly CurveCorne
 }
 
 /**
- * Whether a cubic and a straight piece join the same two points, in the same order.
- *
- * @kind geometry
- * @param cubic - a curved side
- * @param piece - a straight side of the rounded contour
- * @returns `true` when the cubic replaces that straight side
- * @see ADR-0046
- */
-function isSameSide(cubic: Cubic, piece: ContourPiece): boolean {
-  const ends = [cubic.start.x, cubic.start.y, cubic.end.x, cubic.end.y];
-  const sides = [piece.start.x, piece.start.y, piece.end.x, piece.end.y];
-
-  return ends.every((value, index) => value === sides[index]);
-}
-
-/**
- * Contour of a free shape with handles: the rounded contour of its corners (`roundedContour`),
- * each curved side then drawn as a cubic. A curved side's corners keep no fillet, so its segment
- * runs from its start point to its end point, and the cubic takes its place. With every handle
- * off it is the rounded contour, piece for piece.
+ * Contour of a free shape with handles: as `roundedContour`, each corner's fillet arc and a piece
+ * per side between them, built side by side — a cubic for a curved side (its corners kept sharp,
+ * so it runs from point to point), a segment otherwise; pieces without length dropped. With every
+ * handle off it is the rounded contour, piece for piece.
  *
  * @kind geometry
  * @param corners - points, radii and handles in contour order (Q11), clockwise
@@ -57,14 +48,18 @@ function isSameSide(cubic: Cubic, piece: ContourPiece): boolean {
  */
 export function curveContour(corners: readonly CurveCorner[]): readonly ContourPiece[] {
   const kept = filletableCorners(corners);
-  const curved = kept.flatMap((corner, index) => {
-    const next = cyclicItem(kept, index + 1, corner);
+  const arcs = filletArcs(kept);
 
-    return isCurvedSide(corner, next) ? [cubicSide(corner, next)] : [];
-  });
+  return arcs
+    .flatMap((arc, index): ContourPiece[] => {
+      const next = cyclicItem(arcs, index + 1, arc);
+      const start = cyclicItem(kept, index, NO_CORNER);
+      const end = cyclicItem(kept, index + 1, start);
+      const side: ContourPiece = isCurvedSide(start, end)
+        ? cubicSide(start, end)
+        : { end: next.start, kind: "segment", start: arc.end };
 
-  return roundedContour(kept).map(
-    (piece) =>
-      curved.find((cubic) => piece.kind === "segment" && isSameSide(cubic, piece)) ?? piece,
-  );
+      return [side, next];
+    })
+    .filter((piece) => hasLength(piece));
 }
