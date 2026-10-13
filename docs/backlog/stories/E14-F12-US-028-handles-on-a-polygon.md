@@ -22,4 +22,16 @@ A regular polygon's points are computed from its corner count and its box: a poi
 
 One task = one commit, referenced as `US-028.Tn`.
 
-- [ ] T1 — The switch converts a polygon first; playground test and test card (1 h)
+- [x] T1 — The switch converts a polygon first; playground test and test card (1 h)
+
+## Decisions during the story
+
+| Decision                                                                      | Reason                                                                                                                                                                   |
+| ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| the switch is shown for a polygon's point, its fields only once it is pressed | the fields act on a free shape: the polygon is converted at the press, by the same step as **Convert to free shape** (`writeConvertedPolygon`, moved to the shape panel) |
+
+## Product Owner test
+
+1. Choose **Polygon**, 6 corners, **Radius** 10. Click **Points**, then point 1: the **Handles** switch shows.
+2. Press **Handles**: the shape selector reads **Free shape**, nothing moves but point 1, now sharp; the list reads its radius 10 (effective 0).
+3. Type **After x** = 90: the side after point 1 bends.

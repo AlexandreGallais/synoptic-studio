@@ -26,7 +26,8 @@ function readOnlySelected(document: Document): number | undefined {
 }
 
 /**
- * The corner of a point of a free shape, with its number; none for a polygon.
+ * The corner of a point, with its number: a polygon's point too, its handles switch converting
+ * it first (US-028).
  *
  * @kind procedure
  * @param reading - the shape read from the inputs
@@ -37,12 +38,11 @@ function readOnlySelected(document: Document): number | undefined {
 function readFreeCorner(reading: ShapeReading, index: number): SelectedCorner | undefined {
   const corner = reading.corners[index];
 
-  return corner === undefined || "anchor" in reading.model ? undefined : { corner, index };
+  return corner === undefined ? undefined : { corner, index };
 }
 
 /**
- * The corner of the one point selected in a free shape, as drawn; none when the shape is a
- * polygon (its points are not typed, F08), or when no point or several are selected.
+ * The corner of the one point selected, as drawn; none when no point or several are selected.
  *
  * @kind procedure
  * @param document - page document
