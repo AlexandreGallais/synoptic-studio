@@ -409,6 +409,13 @@
         <fieldset id="handle-fields" hidden>
           <legend>Handles</legend>
           <label
+            >Typed as
+            <select id="handle-method">
+              <option value="page">x, y on the page</option>
+              <option value="point">dx, dy from the point</option>
+            </select></label
+          >
+          <label
             >Mode
             <select id="handle-mode">
               <option value="angle-and-length">Mirror angle and length</option>
@@ -417,12 +424,24 @@
             </select></label
           >
           <div class="pair">
-            <label>Before x <input id="handle-before-x" type="number" step="1" /></label>
-            <label>Before y <input id="handle-before-y" type="number" step="1" /></label>
+            <label
+              >Before <span class="handle-axis">x</span>
+              <input id="handle-before-x" type="number" step="1"
+            /></label>
+            <label
+              >Before <span class="handle-axis">y</span>
+              <input id="handle-before-y" type="number" step="1"
+            /></label>
           </div>
           <div class="pair">
-            <label>After x <input id="handle-after-x" type="number" step="1" /></label>
-            <label>After y <input id="handle-after-y" type="number" step="1" /></label>
+            <label
+              >After <span class="handle-axis">x</span>
+              <input id="handle-after-x" type="number" step="1"
+            /></label>
+            <label
+              >After <span class="handle-axis">y</span>
+              <input id="handle-after-y" type="number" step="1"
+            /></label>
           </div>
         </fieldset>
         <div class="pair">
