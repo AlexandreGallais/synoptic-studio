@@ -10,9 +10,9 @@ import type { Vector } from "../../math";
  * @kind domain
  * @param way - the way the handle is typed
  * @param handle - the handle, a vector from its point
- * @returns `true` for an angle way and a handle of length 0
+ * @returns `true` for the way `side` and a handle of length 0
  * @see DERIV-handle-angle
  */
 export function isAngleUnknown(way: HandleWay, handle: Vector): boolean {
-  return (way === "axis" || way === "side") && norm(handle) === 0;
+  return way === "side" && norm(handle) === 0;
 }

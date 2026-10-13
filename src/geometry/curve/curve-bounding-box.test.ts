@@ -21,7 +21,6 @@ function archedSquare(isOn: boolean): CurveCorner[] {
       before: { x: 0, y: index === 1 ? -40 : 0 },
       isOn,
       mode: "none",
-      tension: 0,
     },
   }));
 }
@@ -56,7 +55,6 @@ describe("curveBoundingBox (ADR-0046)", () => {
             before: { x: -3, y: 4 },
             isOn: true,
             mode: "none",
-            tension: 0,
           },
           point,
           radius: 0,

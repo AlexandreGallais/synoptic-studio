@@ -18,7 +18,7 @@ import type { CurveCorner } from "../handles";
  */
 function corner(isOn: boolean, before: Vector, after: Vector): CurveCorner {
   return {
-    handles: { after, before, isOn, mode: "none", tension: 0 },
+    handles: { after, before, isOn, mode: "none" },
     point: { x: 0, y: 0 },
     radius: 10,
   };

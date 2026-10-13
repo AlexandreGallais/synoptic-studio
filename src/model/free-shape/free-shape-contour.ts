@@ -1,5 +1,4 @@
 import { curveBoundingBox, stretchedInBox } from "../../geometry";
-import { smoothedCorners } from "../handles";
 
 import type { FreeShape } from "./free-shape";
 import type { Point } from "../../math";
@@ -18,7 +17,7 @@ import type { Point } from "../../math";
  */
 export function freeShapeContour(shape: FreeShape): readonly Point[] {
   const points = shape.corners.map((corner) => corner.point);
-  const box = curveBoundingBox(smoothedCorners(shape.corners));
+  const box = curveBoundingBox(shape.corners);
   const dx = shape.x - box.minX;
   const dy = shape.y - box.minY;
 

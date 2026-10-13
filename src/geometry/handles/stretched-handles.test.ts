@@ -11,7 +11,6 @@ const HANDLES = {
   before: { x: -10, y: 4 },
   isOn: true,
   mode: "none",
-  tension: 0,
 } as const;
 
 /** Vector with integer components. */

@@ -1,5 +1,5 @@
 import { selectionAfterHandleClick, selectionAfterRowClick } from "../../src";
-import { listenToHandleFields, listenToPaste } from "../handles";
+import { listenToHandleFields } from "../handles";
 import { readSelection, selectElement, writeSelection } from "../page";
 
 import { listenToPointFields } from "./listen-to-point-fields";
@@ -89,5 +89,4 @@ export function listenToPoints(document: Document, update: () => void): void {
 
   listenToPointFields(document, update);
   listenToHandleFields(document, update);
-  listenToPaste(document, update);
 }

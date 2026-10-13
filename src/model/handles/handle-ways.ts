@@ -1,6 +1,6 @@
 /**
- * The ways to type a handle, research note 0013: its end on the page (`page`), its vector from the
- * point (`point`), an angle and a length from the x axis (`axis`) or from its side (`side`), whole
- * percentages of its side along and across it (`share`).
+ * The ways to type a handle (Q32, decided at VAL-011): its end on the page (`page`), as in Figma,
+ * or an angle and a length from its side (`side`), so that the same values give the same bend at
+ * every point.
  */
-export const HANDLE_WAYS = ["page", "point", "axis", "side", "share"] as const;
+export const HANDLE_WAYS = ["page", "side"] as const;
