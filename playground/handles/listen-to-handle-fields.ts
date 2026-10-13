@@ -2,6 +2,7 @@ import { HANDLE_MODES, add, freeShapeWithHandles, handlesAfterTyping, subtract }
 import { readNumber, selectElement } from "../page";
 import { readEditedFreeShape, readShape, writeStoredFreeShape } from "../shape";
 
+import { readFieldOrigin } from "./read-field-origin";
 import { readSelectedCorner } from "./read-selected-corner";
 
 import type { SelectedCorner } from "./read-selected-corner";
@@ -135,7 +136,7 @@ function readTypedHandles(
 
   return selected === undefined || !Number.isSafeInteger(typed)
     ? undefined
-    : readMovedEnd(handles, selected.corner.point, { ...field, typed });
+    : readMovedEnd(handles, readFieldOrigin(document, selected.corner.point), { ...field, typed });
 }
 
 /**
@@ -143,19 +144,19 @@ function readTypedHandles(
  *
  * @kind procedure
  * @param handles - handles as drawn
- * @param point - the point of the handles, as drawn
+ * @param origin - what the fields are counted from (`readFieldOrigin`)
  * @param move - the handle, the coordinate and its new value
  * @returns the handles after the move
  * @see docs/backlog/stories/E14-F12-US-022-handles-in-points-mode.md
  */
 function readMovedEnd(
   handles: Handles,
-  point: Point,
+  origin: Point,
   move: TypedField & { readonly typed: number },
 ): Handles {
-  const end = { ...add(point, handles[move.end]), [move.axis]: move.typed };
+  const end = { ...add(origin, handles[move.end]), [move.axis]: move.typed };
 
-  return handlesAfterTyping(handles, move.end, subtract(end, point));
+  return handlesAfterTyping(handles, move.end, subtract(end, origin));
 }
 
 /**
@@ -197,6 +198,9 @@ export function listenToHandleFields(document: Document, update: () => void): vo
   selectElement(document, "handle-mode").addEventListener("change", () => {
     writeChangedHandles(document, readChosenMode, update);
   });
+
+  // The way to type the handles is the page's, not the model's: only the fields change.
+  selectElement(document, "handle-method").addEventListener("change", update);
 
   for (const field of fields) {
     selectElement(document, `handle-${field.end}-${field.axis}`).addEventListener("change", () => {
