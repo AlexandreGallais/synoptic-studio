@@ -1,6 +1,6 @@
 # ADR-0018 — Bézier curves allowed in static drawings only
 
-**Status**: Accepted
+**Status**: Accepted — "only" superseded by ADR-0046: symbols have cubic sides from typed handles
 
 ## Context
 
