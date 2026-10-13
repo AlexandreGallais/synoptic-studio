@@ -1,3 +1,4 @@
+import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { stretchedSideDirections } from "./stretched-side-directions";
@@ -36,4 +37,26 @@ describe("stretchedSideDirections (DERIV-stretched-polygon steps 1–2)", () => 
     // φ₁ = atan2(e⁻³ sin 72°, cos 72°) ≈ 8.7°: −1/2 − cos φ₁ ≈ −1.49, outside [−1, 1].
     expect(stretchedSideDirections(5, Math.exp(-3))[1]).toBeNaN();
   });
+});
+
+/** Vertical scale `λ = e^t`, `t` from −3 to 3 in steps of 1/100. */
+const SCALE = fc.integer({ max: 300, min: -300 }).map((step) => Math.exp(step / 100));
+
+describe("stretchedSideDirections (properties)", () => {
+  test.prop({ half: fc.integer({ max: 6, min: 2 }), scale: SCALE })(
+    "gives an even polygon rising directions in (0, π), symmetric about the vertical",
+    ({ half, scale }) => {
+      // n = 2m: θⱼ and θₘ₋ⱼ are symmetric about π/2, and so are their scaled directions: φⱼ + φₘ₋ⱼ = π.
+      const directions = stretchedSideDirections(2 * half, scale);
+
+      expect(directions).toHaveLength(half - 1);
+
+      for (const [index, direction] of directions.entries()) {
+        expect(direction).toBeGreaterThan(0);
+        expect(direction).toBeLessThan(Math.PI);
+        expect(direction).toBeGreaterThan(directions[index - 1] ?? 0);
+        expect(direction + (directions[half - 2 - index] ?? 0)).toBeCloseTo(Math.PI, DECIMALS);
+      }
+    },
+  );
 });
