@@ -1,11 +1,17 @@
 import { cyclicItem } from "../../geometry";
-import { add, norm, quarterTurn, scale, subtract } from "../../math";
+import { add, norm, scale, subtract } from "../../math";
+
+import { acrossSide } from "./across-side";
 
 import type { PastedCurve } from "./pasted-curve";
 import type { Point } from "../../math";
 
-/** A number as SVG path data and CSS write it: a sign, digits, a point, an exponent. */
-const NUMBER = String.raw`[-+]?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?`;
+/**
+ * A number as SVG path data writes it (`REF-SVG2-PATHS` §9.3.9): a sign, digits with an optional
+ * fraction, an exponent; never followed by a digit or a point, so that one run of digits is never
+ * read as two numbers (the grammar consumes as much as it can).
+ */
+const NUMBER = String.raw`[-+]?(?:\d*\.\d+|\d+)(?:[eE][-+]?\d+)?(?![\d.])`;
 
 /** A separator between numbers: spaces, or a comma with spaces around it. */
 const NUMBER_GAP = String.raw`\s*,?\s*`;
@@ -67,7 +73,7 @@ function isInUnitWidth(point: Point): boolean {
  * @see DERIV-handle-share
  */
 function pointOnSide(start: Point, side: Point, square: Point): Point {
-  const across = scale(quarterTurn(side), -1);
+  const across = acrossSide({ isBefore: false, point: start, side });
 
   return add(
     add(start, scale(side, (square.x + square.y) / 2)),
@@ -116,6 +122,50 @@ function pathCurve(numbers: readonly number[], end: Point): PastedCurve {
     : { first: cyclicItem(points, 0, ORIGIN), second: cyclicItem(points, 1, ORIGIN) };
 }
 
+/** Why a number pasted was refused: too large to be a number (`1e400`). */
+const TOO_LARGE = { refusal: "A number pasted is too large." };
+
+/**
+ * The curve of one SVG `C` command, if the text is one.
+ *
+ * @kind domain
+ * @param text - what was pasted
+ * @param end - the side's end
+ * @returns the curve or why it was refused; `undefined` when the text is no `C` command
+ * @see REF-SVG2-PATHS
+ */
+function commandCurve(text: string, end: Point): PastedCurve | undefined {
+  const numbers = CUBIC_COMMAND.exec(text)?.slice(1).map(Number);
+
+  if (numbers === undefined) {
+    return undefined;
+  }
+
+  return numbers.every((value) => Number.isFinite(value)) ? pathCurve(numbers, end) : TOO_LARGE;
+}
+
+/**
+ * The curve of a CSS `cubic-bezier()` value laid on the side, if the text is one.
+ *
+ * @kind domain
+ * @param text - what was pasted
+ * @param start - the side's start
+ * @param end - the side's end
+ * @returns the curve or why it was refused; `undefined` when the text is no `cubic-bezier()`
+ * @see REF-CSS-EASING
+ */
+function easingCurve(text: string, start: Point, end: Point): PastedCurve | undefined {
+  const numbers = CSS_CUBIC.exec(text)?.slice(1).map(Number);
+
+  if (numbers === undefined) {
+    return undefined;
+  }
+
+  return numbers.every((value) => Number.isFinite(value))
+    ? cssCurve(numbers, start, end)
+    : TOO_LARGE;
+}
+
 /**
  * The two control points of a curve pasted on a side, from one SVG `C` command (its end on the
  * side's end) or a CSS `cubic-bezier()` value laid on the side (research note 0013, method 6);
@@ -130,15 +180,10 @@ function pathCurve(numbers: readonly number[], end: Point): PastedCurve {
  * @see DERIV-handle-share
  */
 export function pastedControlPoints(text: string, start: Point, end: Point): PastedCurve {
-  const command = CUBIC_COMMAND.exec(text)?.slice(1).map(Number);
-
-  if (command !== undefined) {
-    return pathCurve(command, end);
-  }
-
-  const css = CSS_CUBIC.exec(text)?.slice(1).map(Number);
-
-  return css === undefined
-    ? { refusal: "Paste one C command (C x1 y1 x2 y2 x y) or a cubic-bezier() value." }
-    : cssCurve(css, start, end);
+  return (
+    commandCurve(text, end) ??
+    easingCurve(text, start, end) ?? {
+      refusal: "Paste one C command (C x1 y1 x2 y2 x y) or a cubic-bezier() value.",
+    }
+  );
 }
