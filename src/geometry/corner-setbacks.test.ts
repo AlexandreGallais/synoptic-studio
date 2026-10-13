@@ -1,3 +1,4 @@
+import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { cornerSetbacks } from "./corner-setbacks";
@@ -59,4 +60,35 @@ describe("cornerSetbacks (DERIV-local-radius-clamp step 1)", () => {
 
     expect(cornerSetbacks(corners)).toEqual([0, 0, 0, 0]);
   });
+});
+
+/** Arbitrary requested radius. */
+const RADIUS = fc.integer({ max: 5000, min: 0 });
+
+describe("cornerSetbacks (properties)", () => {
+  test.prop({
+    height: fc.integer({ max: 5000, min: 1 }),
+    radii: fc.tuple(RADIUS, RADIUS, RADIUS, RADIUS),
+    width: fc.integer({ max: 5000, min: 1 }),
+    x: fc.integer({ max: 5000, min: -5000 }),
+    y: fc.integer({ max: 5000, min: -5000 }),
+  })(
+    "equals the radius at every right corner of any rectangle, wherever it is",
+    ({ height, radii, width, x, y }) => {
+      // Every corner of a rectangle turns π/2: s = r · tan(π/4) = r.
+      const points = [
+        { x, y },
+        { x: x + width, y },
+        { x: x + width, y: y + height },
+        { x, y: y + height },
+      ];
+      const setbacks = cornerSetbacks(
+        points.map((point, index) => ({ point, radius: radii[index] ?? 0 })),
+      );
+
+      for (const [index, setback] of setbacks.entries()) {
+        expect(setback).toBeCloseTo(radii[index] ?? 0, 9);
+      }
+    },
+  );
 });
