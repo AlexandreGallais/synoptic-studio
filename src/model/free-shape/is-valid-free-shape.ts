@@ -1,5 +1,5 @@
+import { areValidRadii } from "../corner-radius";
 import { isShapePlacement } from "../placement";
-import { areValidRadii } from "../radii";
 
 import { areFreeShapePoints } from "./are-free-shape-points";
 import { freeShapeRadii } from "./free-shape-radii";

@@ -1,7 +1,7 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
-import { roundedContour } from "../rounded-corners";
+import { roundedContour } from "../corner-radius";
 
 import { boundingBox } from "./bounding-box";
 import { contourBoundingBox } from "./contour-bounding-box";

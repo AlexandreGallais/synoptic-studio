@@ -1,4 +1,4 @@
-import { hasLength } from "../rounded-corners";
+import { hasLength } from "../corner-radius";
 
 import { arcAxisPoints } from "./arc-axis-points";
 import { boundingBox } from "./bounding-box";

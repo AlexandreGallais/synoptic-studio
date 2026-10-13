@@ -1,4 +1,4 @@
-import { cornersWithRadii } from "../radii";
+import { cornersWithRadii } from "../corner-radius";
 
 import { freeShapeContour } from "./free-shape-contour";
 import { freeShapeRadii } from "./free-shape-radii";

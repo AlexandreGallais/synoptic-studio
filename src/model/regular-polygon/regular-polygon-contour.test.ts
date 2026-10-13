@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { expectPoints } from "../../../tests";
 import { ALIGNMENTS, boundingBox, stretchedPolygon } from "../../geometry";
 import { EPSILON } from "../../math";
-import { resizeRadii } from "../radii";
+import { resizeRadii } from "../corner-radius";
 
 import { regularPolygonContour } from "./regular-polygon-contour";
 import { regularPolygonCorners } from "./regular-polygon-corners";

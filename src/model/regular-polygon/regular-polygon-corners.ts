@@ -1,4 +1,4 @@
-import { cornersWithRadii } from "../radii";
+import { cornersWithRadii } from "../corner-radius";
 
 import { regularPolygonContour } from "./regular-polygon-contour";
 

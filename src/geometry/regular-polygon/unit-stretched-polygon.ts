@@ -1,4 +1,4 @@
-import { boundingBox } from "../box";
+import { boundingBox } from "../placement";
 
 import { mirrorAcrossAxis } from "./mirror-across-axis";
 import { stretchedRightHalf } from "./stretched-right-half";

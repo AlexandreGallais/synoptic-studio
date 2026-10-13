@@ -1,4 +1,4 @@
-import { cornerTriples, turningAngles } from "../rounded-corners";
+import { cornerTriples, turningAngles } from "../corner-radius";
 
 import type { Point } from "../../math";
 
