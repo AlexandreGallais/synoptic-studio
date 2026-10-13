@@ -66,12 +66,12 @@ function filesBesideFolders(): readonly string[] {
 
 // `local/folder-layout` checks each folder (ADR-0043); this test keeps its list and the page as one.
 describe("folders past the signal (ADR-0043)", () => {
-  it("lists in docs/conventions/files.md the folders the lint lets past the signal", () => {
+  it("[F11.AC4] lists in docs/conventions/files.md the folders the lint lets past the signal", () => {
     expect(FOLDERS_PAST_SIGNAL.length).toBeGreaterThan(0);
     expect(new Set(LISTED.keys())).toEqual(new Set(FOLDERS_PAST_SIGNAL));
   });
 
-  it("keeps every file of src and playground out of folders that hold folders", () => {
+  it("[F11.AC4] keeps every file of src and playground out of folders that hold folders", () => {
     expect(filesBesideFolders()).toEqual([]);
   });
 
