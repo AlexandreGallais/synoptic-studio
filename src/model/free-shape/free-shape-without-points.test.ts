@@ -1,9 +1,11 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
+import { rectangleCorners } from "../../../tests";
 import { NO_HANDLES, curveCornerOf } from "../handles";
 import { rectangleAsFreeShape } from "../rectangle";
 
+import { freeShapeAroundCorners } from "./free-shape-around-corners";
 import { freeShapeCorners } from "./free-shape-corners";
 import { freeShapeWithMidpoint } from "./free-shape-with-midpoint";
 import { freeShapeWithoutPoints } from "./free-shape-without-points";
@@ -11,7 +13,7 @@ import { freeShapeWithoutPoints } from "./free-shape-without-points";
 import type { FreeShape } from "./free-shape";
 
 /**
- * The rectangle 200 × 100, its point 1's handle after (0.1, −0.2) in the unit square, on: (20, −20) as drawn.
+ * The rectangle 200 × 100, its point 1's handle after (0.1, 0.2) in the unit square, on: (20, 20) as drawn.
  *
  * @param angle - 0 or 90 degrees, clockwise
  * @returns the free shape
@@ -30,7 +32,7 @@ function curvedRectangle(angle: number): FreeShape {
     ...rectangle,
     corners: rectangle.corners.map((corner, index) =>
       index === 0
-        ? { ...corner, handles: { ...corner.handles, after: { x: 0.1, y: -0.2 }, isOn: true } }
+        ? { ...corner, handles: { ...corner.handles, after: { x: 0.1, y: 0.2 }, isOn: true } }
         : corner,
     ),
   };
@@ -105,15 +107,34 @@ describe("freeShapeWithoutPoints", () => {
   );
 
   it.each([0, 90])("keeps the handles on, as drawn, after deleting a point (angle %i)", (angle) => {
-    // Stored at scale 1 after the edit: the handle is stored and drawn (20, −20).
+    // Stored at scale 1 after the edit: the handle is stored and drawn (20, 20).
     const edited = freeShapeWithoutPoints(curvedRectangle(angle), [1]);
 
     expect(edited.corners[0]?.handles).toEqual({
       ...NO_HANDLES,
-      after: { x: 20, y: -20 },
+      after: { x: 20, y: 20 },
       isOn: true,
     });
 
-    expect(freeShapeCorners(edited)[0]?.handles.after).toEqual({ x: 20, y: -20 });
+    expect(freeShapeCorners(edited)[0]?.handles.after).toEqual({ x: 20, y: 20 });
+  });
+
+  it("[F12.AC3] keeps the outer handles when a point between curved sides is deleted", () => {
+    // Deleting point 2 of the arched square: point 1 keeps its handle after (0, −40).
+    const shape = freeShapeAroundCorners(
+      rectangleCorners(100, 100, [0, 0, 0, 0]).map((corner, index) => ({
+        ...corner,
+        handles: {
+          ...NO_HANDLES,
+          after: { x: 0, y: index === 0 ? -40 : 0 },
+          before: { x: 0, y: index === 1 ? -40 : 0 },
+          isOn: index < 2,
+          mode: "none" as const,
+        },
+      })),
+      0,
+    );
+
+    expect(freeShapeWithoutPoints(shape, [1]).corners[0]?.handles.after).toEqual({ x: 0, y: -40 });
   });
 });

@@ -12,7 +12,7 @@ import { freeShapeWithMidpoint } from "./free-shape-with-midpoint";
 import type { FreeShape } from "./free-shape";
 
 /**
- * The rectangle 200 × 100, its point 1's handle after (0.1, −0.2) in the unit square, on: (20, −20) as drawn.
+ * The rectangle 200 × 100, its point 1's handle after (0.1, 0.2) in the unit square, on: (20, 20) as drawn.
  *
  * @param angle - 0 or 90 degrees, clockwise
  * @returns the free shape
@@ -31,7 +31,7 @@ function curvedRectangle(angle: number): FreeShape {
     ...rectangle,
     corners: rectangle.corners.map((corner, index) =>
       index === 0
-        ? { ...corner, handles: { ...corner.handles, after: { x: 0.1, y: -0.2 }, isOn: true } }
+        ? { ...corner, handles: { ...corner.handles, after: { x: 0.1, y: 0.2 }, isOn: true } }
         : corner,
     ),
   };
@@ -138,15 +138,15 @@ describe("freeShapeWithMidpoint", () => {
   );
 
   it.each([0, 90])("keeps the handles on, as drawn, after adding a point (angle %i)", (angle) => {
-    // Stored at scale 1 after the edit: the handle is stored and drawn (20, −20).
+    // Stored at scale 1 after the edit: the handle is stored and drawn (20, 20).
     const edited = freeShapeWithMidpoint(curvedRectangle(angle), 1);
 
     expect(edited.corners[0]?.handles).toEqual({
       ...NO_HANDLES,
-      after: { x: 20, y: -20 },
+      after: { x: 20, y: 20 },
       isOn: true,
     });
 
-    expect(freeShapeCorners(edited)[0]?.handles.after).toEqual({ x: 20, y: -20 });
+    expect(freeShapeCorners(edited)[0]?.handles.after).toEqual({ x: 20, y: 20 });
   });
 });
