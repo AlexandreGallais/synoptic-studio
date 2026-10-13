@@ -201,4 +201,21 @@ describe("handles in Points mode (US-022)", () => {
 
     expect(selectInput("handle-after-x").value).toBe("1.5");
   });
+
+  it("changes nothing when the switch is pressed with no point selected, or the mode list holds no mode", () => {
+    const shown = readText("#path-data");
+
+    clickPoint(1, true);
+    clickElement("handles-switch");
+
+    expect(readText("#path-data")).toBe(shown);
+
+    clickPoint(1, false);
+    clickElement("handles-switch");
+    selectChoice("handle-mode").value = "smooth";
+    selectChoice("handle-mode").dispatchEvent(new Event("change", { bubbles: true }));
+
+    expect(readPressedState("handles-switch")).toBe("true");
+    expect(readText("#model")).toContain('"mode": "angle-and-length"');
+  });
 });
