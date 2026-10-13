@@ -80,15 +80,15 @@ It gives one row: the duration (wall and active), the tokens, the part the model
 A command expected to last more than a minute runs in the background (`run_in_background`), never behind a waiting loop; the agent watches it with Claude Code's Monitor and `scripts/watch-task.ts`, which prints a line only when the task needs a look:
 
 ```sh
-node --harmony-temporal scripts/watch-task.ts <output file> --stall 120 --until "^done" --max 1800
+node --harmony-temporal scripts/watch-task.ts <output file> --stall 120 --until "done" --max 1800
 ```
 
-| Line printed                                  | When                                                                                                    |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `stalled: no output for 125 s — last line: …` | the output has not changed for `--stall` seconds                                                        |
-| `resumed: …`                                  | it changes again after a stall                                                                          |
-| `done: …`                                     | a new line matches `--until`, or the task exited (`[exited with code N]`, the line Claude Code appends) |
-| `watch over: …`                               | `--max` seconds passed (Monitor's longest watch is 30 minutes: start another)                           |
+| Line printed                                  | When                                                                                                                     |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `stalled: no output for 125 s — last line: …` | the output has not changed for `--stall` seconds                                                                         |
+| `resumed: …`                                  | it changes again after a stall                                                                                           |
+| `done: …`                                     | a new line starts with `--until` (plain text), or the task exited (`[exited with code N]`, the line Claude Code appends) |
+| `watch over: …`                               | `--max` seconds passed (Monitor's longest watch is 30 minutes: start another)                                            |
 
 The status line shows a tool call running for more than 5 minutes in red. A long task writes one progress line per step, and stops itself when a step changes nothing ([tooling pitfalls](https://github.com/AlexandreGallais/synoptic-studio/blob/main/.claude/rules/tooling.md)).
 

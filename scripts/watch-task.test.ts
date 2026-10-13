@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { lastLine, watchStep } from "./watch-task";
 
 /** Stall after 120 s; the watch ends on a line starting with "deployments: none". */
-const RULES = { stallMs: 120_000, until: /^deployments: none/u };
+const RULES = { stallMs: 120_000, until: "deployments: none" };
 
 /** State after a first look at 0 s, 10 bytes read. */
 const FRESH = { changedAt: 0, isStalled: false, size: 10 };

@@ -91,13 +91,27 @@ export function decodeEntities(text: string): string {
 }
 
 /**
+ * A removal repeated until it removes nothing more: removing `<!--` once can join two halves
+ * into a new one (`<!<!---->--`).
+ *
+ * @param text - text to clean
+ * @param remove - one pass of the removal
+ * @returns the text once a pass changes nothing
+ */
+function untilStable(text: string, remove: (part: string) => string): string {
+  const next = remove(text);
+
+  return next === text ? text : untilStable(next, remove);
+}
+
+/**
  * Text of an HTML fragment, its tags removed.
  *
  * @param html - fragment
  * @returns its text
  */
 function withoutTags(html: string): string {
-  return html.replaceAll(/<[^>]+>/gu, "");
+  return untilStable(html, (part) => part.replaceAll(/<[^>]+>/gu, ""));
 }
 
 /**
@@ -160,7 +174,7 @@ function headingsAndLinks(html: string): string {
 export function htmlToMarkdown(html: string): string {
   const kept = DROPPED.reduce(
     (part, tag) => part.replaceAll(new RegExp(String.raw`<${tag}\b[\s\S]*?</${tag}>`, "giu"), ""),
-    mainPart(html).replaceAll(/<!--[\s\S]*?-->/gu, ""),
+    untilStable(mainPart(html), (part) => part.replaceAll(/<!--[\s\S]*?-->/gu, "")),
   );
   const marked = MARKS.reduce(
     (part, [pattern, mark]) => part.replaceAll(pattern, () => mark),

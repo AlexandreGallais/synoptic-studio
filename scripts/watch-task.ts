@@ -2,9 +2,9 @@
 // follows the task's output file and prints a line only when the agent must look — the output
 // stalled, came back, matched the end pattern, or the watch ran out of time — so that a stuck task
 // is seen within minutes instead of waited on.
-//   node --harmony-temporal scripts/watch-task.ts <output file> [--stall 120] [--until <regex>] [--max 1800]
+//   node --harmony-temporal scripts/watch-task.ts <output file> [--stall 120] [--until <start of a line>] [--max 1800]
 
-import { existsSync, readFileSync, statSync } from "node:fs";
+import { readFileSync } from "node:fs";
 
 /** What the watchdog knows of the output file. */
 export type Watch = {
@@ -20,8 +20,8 @@ export type Watch = {
 export type WatchRules = {
   /** Output silent this long, milliseconds: a stall. */
   readonly stallMs: number;
-  /** A line matching it ends the watch. */
-  readonly until: RegExp | undefined;
+  /** A line starting with it ends the watch; plain text, not a pattern (CodeQL: no pattern from the command line). */
+  readonly until: string;
 };
 
 /** A step of the watch: the new state, and the line to print, possibly empty. */
@@ -75,16 +75,17 @@ export type Look = {
  *
  * @param watch - state after the previous look
  * @param look - the output now
- * @param until - end pattern, if any
+ * @param until - start of the line that ends the watch, empty for none
  * @returns the new state and the line to print
  */
-function changedStep(watch: Watch, look: Look, until: RegExp | undefined): WatchStep {
+function changedStep(watch: Watch, look: Look, until: string): WatchStep {
   const last = lastLine(look.text);
   const added = Buffer.from(look.text)
     .subarray(Math.max(watch.size, 0))
     .toString("utf8")
     .split("\n");
-  const end = added.find((line) => until?.test(line) === true || EXITED.test(line)) ?? "";
+  const end =
+    added.find((line) => (until !== "" && line.startsWith(until)) || EXITED.test(line)) ?? "";
   const isDone = end !== "";
   const messages = [isDone ? `done: ${end}` : "", watch.isStalled ? `resumed: ${last}` : ""];
 
@@ -128,7 +129,11 @@ export function watchStep(watch: Watch, look: Look, rules: WatchRules): WatchSte
  * @returns its content
  */
 function readText(file: string): string {
-  return existsSync(file) && statSync(file).isFile() ? readFileSync(file, "utf8") : "";
+  try {
+    return readFileSync(file, "utf8");
+  } catch {
+    return "";
+  }
 }
 
 /**
@@ -148,10 +153,9 @@ function option(options: readonly string[], name: string, fallback: string): str
 if (import.meta.main) {
   const options = process.argv.slice(2);
   const file = options[0] ?? "";
-  const until = option(options, "--until", "");
   const rules = {
     stallMs: Number(option(options, "--stall", String(STALL_S))) * SECOND_MS,
-    until: until === "" ? undefined : new RegExp(until, "u"),
+    until: option(options, "--until", ""),
   };
   const start = Temporal.Now.instant().epochMilliseconds;
   const endAt = start + Number(option(options, "--max", String(MAX_S))) * SECOND_MS;
