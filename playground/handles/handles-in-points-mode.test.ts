@@ -6,6 +6,7 @@ import {
   clickElement,
   clickPoint,
   openOnStep,
+  readPointRows,
   readPressedState,
   readText,
   selectChoice,
@@ -217,5 +218,18 @@ describe("handles in Points mode (US-022)", () => {
 
     expect(readPressedState("handles-switch")).toBe("true");
     expect(readText("#model")).toContain('"mode": "angle-and-length"');
+  });
+
+  it("[F12.AC1] shows the radii as drawn: a point in handles mode sharp, its neighbours clamped without it", () => {
+    // Radius 50 on the 120 × 80 rectangle; point 1 in handles mode: drawn 0, 40, 40, 50.
+    typeAndEnter("radius", "50");
+    clickPoint(1, false);
+    clickElement("handles-switch");
+
+    expect(
+      readPointRows().map(
+        (row) => /effective (?<radius>[\d.]+)/u.exec(row)?.groups?.["radius"] ?? "50",
+      ),
+    ).toEqual(["0", "40", "40", "50"]);
   });
 });

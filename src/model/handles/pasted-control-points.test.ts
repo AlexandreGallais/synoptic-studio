@@ -130,4 +130,14 @@ describe("pastedControlPoints (DERIV-handle-share step 4)", () => {
       refusal: "Paste one C command (C x1 y1 x2 y2 x y) or a cubic-bezier() value.",
     });
   });
+
+  it("refuses a cubic-bezier() on a side of length 0, as a share typed", () => {
+    expect(pastedControlPoints("cubic-bezier(0.42, 0, 0.58, 1)", START, START)).toEqual({
+      refusal: "A cubic-bezier() needs a side of some length.",
+    });
+  });
+
+  it("reads a number followed by a point as no number, stricter than SVG's grammar", () => {
+    expect(pastedControlPoints("C 130.5.5 170 -15 200 0", START, END)).toHaveProperty("refusal");
+  });
 });

@@ -1,5 +1,5 @@
 import { cyclicItem } from "../../geometry";
-import { add, norm, scale, subtract } from "../../math";
+import { ZERO_VECTOR, add, norm, scale, subtract } from "../../math";
 
 import { acrossSide } from "./across-side";
 
@@ -8,8 +8,9 @@ import type { Point } from "../../math";
 
 /**
  * A number as SVG path data writes it (`REF-SVG2-PATHS` §9.3.9): a sign, digits with an optional
- * fraction, an exponent; never followed by a digit or a point, so that one run of digits is never
- * read as two numbers (the grammar consumes as much as it can).
+ * fraction, an exponent. Never followed by a digit or a point: stricter than the grammar, which
+ * reads `0.6.5` as 0.6 and .5 — the project's choice, so that a pasted run of digits is read as one
+ * number or refused, never split.
  */
 const NUMBER = String.raw`[-+]?(?:\d*\.\d+|\d+)(?:[eE][-+]?\d+)?(?![\d.])`;
 
@@ -30,9 +31,6 @@ const CSS_CUBIC = new RegExp(
 
 /** How far a pasted `C`'s end may be from the side's end: the precision of SVG numbers (ADR-0003). */
 const END_TOLERANCE = 1e-5;
-
-/** The origin: a point missing from what was pasted. */
-const ORIGIN = { x: 0, y: 0 };
 
 /**
  * Numbers read two by two as points, x then y.
@@ -83,7 +81,8 @@ function pointOnSide(start: Point, side: Point, square: Point): Point {
 
 /**
  * The control points of a CSS `cubic-bezier()` laid on a side; x values outside 0 to 1 refused,
- * as CSS refuses them (`REF-CSS-EASING`).
+ * as CSS refuses them (`REF-CSS-EASING`), and a side of length 0, as a share typed is
+ * (`DERIV-handle-share`).
  *
  * @kind domain
  * @param numbers - x1, y1, x2, y2
@@ -96,10 +95,14 @@ function cssCurve(numbers: readonly number[], start: Point, end: Point): PastedC
   const square = pairsOf(numbers);
   const side = subtract(end, start);
 
+  if (norm(side) === 0) {
+    return { refusal: "A cubic-bezier() needs a side of some length." };
+  }
+
   return square.every((point) => isInUnitWidth(point))
     ? {
-        first: pointOnSide(start, side, cyclicItem(square, 0, ORIGIN)),
-        second: pointOnSide(start, side, cyclicItem(square, 1, ORIGIN)),
+        first: pointOnSide(start, side, cyclicItem(square, 0, ZERO_VECTOR)),
+        second: pointOnSide(start, side, cyclicItem(square, 1, ZERO_VECTOR)),
       }
     : { refusal: "A cubic-bezier() takes x values from 0 to 1." };
 }
@@ -115,11 +118,11 @@ function cssCurve(numbers: readonly number[], start: Point, end: Point): PastedC
  */
 function pathCurve(numbers: readonly number[], end: Point): PastedCurve {
   const points = pairsOf(numbers);
-  const last = cyclicItem(points, 2, ORIGIN);
+  const last = cyclicItem(points, 2, ZERO_VECTOR);
 
   return norm(subtract(last, end)) > END_TOLERANCE
     ? { refusal: "The C must end on the side's last point." }
-    : { first: cyclicItem(points, 0, ORIGIN), second: cyclicItem(points, 1, ORIGIN) };
+    : { first: cyclicItem(points, 0, ZERO_VECTOR), second: cyclicItem(points, 1, ZERO_VECTOR) };
 }
 
 /** Why a number pasted was refused: too large to be a number (`1e400`). */

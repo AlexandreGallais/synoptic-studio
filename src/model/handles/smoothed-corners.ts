@@ -1,4 +1,5 @@
 import { cyclicItem, tensionHandle } from "../../geometry";
+import { scale, withoutNegativeZero } from "../../math";
 
 import type { CurveCorner } from "../../geometry";
 
@@ -26,10 +27,9 @@ export function smoothedCorners(corners: readonly CurveCorner[]): readonly Curve
       corner.handles.tension,
     );
 
-    // Adding zero turns −0 into 0.
     return {
       ...corner,
-      handles: { ...corner.handles, after, before: { x: -after.x + 0, y: -after.y + 0 } },
+      handles: { ...corner.handles, after, before: withoutNegativeZero(scale(after, -1)) },
     };
   });
 }

@@ -35,7 +35,7 @@ function formatPieceCommand(piece: ContourPiece): string {
  * path data does. No piece gives an empty `d`.
  *
  * @kind format
- * @param pieces - segments and arcs in drawing order, each starting where the previous one ends
+ * @param pieces - segments, arcs and cubics in drawing order, each starting where the previous one ends
  * @returns the `d` attribute of the `<path>`
  * @see REF-SVG2-PATHS
  */
