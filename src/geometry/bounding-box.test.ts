@@ -1,8 +1,6 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
-import { integerPoint } from "../../tests";
-
 import { boundingBox } from "./bounding-box";
 
 describe("boundingBox", () => {
@@ -32,7 +30,7 @@ describe("boundingBox", () => {
 });
 
 /** Arbitrary point with integer coordinates. */
-const POINT = integerPoint(2_147_483_647);
+const POINT = fc.record({ x: fc.integer(), y: fc.integer() });
 
 describe("boundingBox (properties)", () => {
   test.prop({ points: fc.array(POINT, { minLength: 1 }) })(

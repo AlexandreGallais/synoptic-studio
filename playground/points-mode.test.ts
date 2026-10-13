@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { chooseOption, clickElement, openPage, typeValue } from "./user-actions";
+import { chooseOption, clickElement, openPage, readPressedState, typeValue } from "./user-actions";
 
 /**
  * Handles drawn on the canvas, in drawing order (the last one on top).
@@ -12,16 +12,6 @@ function handles(): readonly SVGPathElement[] {
   return [...document.querySelectorAll<SVGPathElement>("#canvas path.handle")];
 }
 
-/**
- * Whether a mode button is pressed.
- *
- * @param id - `mode-shape` or `mode-points`
- * @returns its `aria-pressed` value
- */
-function pressed(id: string): string {
-  return document.querySelector(`#${id}`)?.getAttribute("aria-pressed") ?? "";
-}
-
 describe("points mode", () => {
   beforeEach(() => {
     // Step 10 of the guided test: a hexagon in 100 × 100 (F02).
@@ -29,16 +19,16 @@ describe("points mode", () => {
   });
 
   it("[F03.AC4] opens on Shape mode, without handles", () => {
-    expect(pressed("mode-shape")).toBe("true");
-    expect(pressed("mode-points")).toBe("false");
+    expect(readPressedState("mode-shape")).toBe("true");
+    expect(readPressedState("mode-points")).toBe("false");
     expect(handles()).toHaveLength(0);
   });
 
   it("[F03.AC4] shows one handle per vertex in Points mode, vertex 1 red on top, vertex 2 green", () => {
     clickElement("mode-points");
 
-    expect(pressed("mode-points")).toBe("true");
-    expect(pressed("mode-shape")).toBe("false");
+    expect(readPressedState("mode-points")).toBe("true");
+    expect(readPressedState("mode-shape")).toBe("false");
 
     expect(handles().map((handle) => handle.dataset["vertex"])).toEqual([
       "6",

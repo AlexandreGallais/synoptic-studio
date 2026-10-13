@@ -1,8 +1,15 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it } from "vitest";
 
-import page from "./index.html?raw";
-import { chooseOption, clickWithKeys, openPage, readText, typeValue } from "./user-actions";
+import {
+  chooseOption,
+  clickElement,
+  clickWithKeys,
+  openPage,
+  readText,
+  selectInput,
+  typeValue,
+} from "./user-actions";
 
 /**
  * Numbers of the rows pressed in the list of points, from 1.
@@ -13,17 +20,6 @@ function pressedRows(): readonly string[] {
   return [
     ...document.querySelectorAll<HTMLButtonElement>('#points button[aria-pressed="true"]'),
   ].map((button) => button.dataset["vertex"] ?? "");
-}
-
-/**
- * The radius input of the points, in Points mode.
- *
- * @returns the input, or a detached one when the page has none
- */
-function radiusField(): HTMLInputElement {
-  return (
-    document.querySelector<HTMLInputElement>("#point-radius") ?? document.createElement("input")
-  );
 }
 
 /**
@@ -53,15 +49,15 @@ describe("list of points and selection", () => {
   });
 
   it("[F03.AC5] disables the radius field until a point is selected", () => {
-    expect(radiusField().disabled).toBe(true);
-    expect(radiusField().placeholder).toBe("Select points");
+    expect(selectInput("point-radius").disabled).toBe(true);
+    expect(selectInput("point-radius").placeholder).toBe("Select points");
 
     clickWithKeys('#canvas path.handle[data-vertex="3"]', {});
 
     expect(pressedRows()).toEqual(["3"]);
     expect(document.querySelectorAll("#canvas path.halo")).toHaveLength(1);
-    expect(radiusField().disabled).toBe(false);
-    expect(radiusField().value).toBe("0");
+    expect(selectInput("point-radius").disabled).toBe(false);
+    expect(selectInput("point-radius").value).toBe("0");
   });
 
   it("[F03.AC5] adds with Ctrl or, on the drawing, Shift; selects a range with Shift in the list", () => {
@@ -98,8 +94,8 @@ describe("list of points and selection", () => {
     // Vertices 1 and 2 differ (10 and 3): Mixed.
     clickWithKeys('#points [data-vertex="2"]', { ctrlKey: true });
 
-    expect(radiusField().value).toBe("");
-    expect(radiusField().placeholder).toBe("Mixed");
+    expect(selectInput("point-radius").value).toBe("");
+    expect(selectInput("point-radius").placeholder).toBe("Mixed");
   });
 
   it("[F03.AC4] shows the effective radius of a point when it was reduced (Q8)", () => {
@@ -141,7 +137,7 @@ describe("list of points and selection", () => {
 
   it("[F03.AC5] clears the selection at each step of the guided test and when the shape changes", () => {
     clickWithKeys('#points [data-vertex="2"]', {});
-    document.querySelector<HTMLButtonElement>("#guide-next")?.click();
+    clickElement("guide-next");
 
     expect(pressedRows()).toEqual([]);
 
@@ -156,7 +152,7 @@ describe("list of points and selection", () => {
     clickWithKeys('#points [data-vertex="1"]', {});
     typeValue("point-radius", "200000");
 
-    expect(radiusField().value).toBe("100000");
+    expect(selectInput("point-radius").value).toBe("100000");
     expect(keptRadii()).toBe("100000 0 0 0 0 0");
   });
 

@@ -1,26 +1,17 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
 
-import page from "./index.html?raw";
 import {
   chooseOption,
   clickElement,
   clickPoint,
+  commitField,
   openOnStep,
   readPointRows,
   readText,
+  selectInput,
   typeAndEnter,
 } from "./user-actions";
-
-/**
- * An input of the page.
- *
- * @param id - input id
- * @returns the input, or a detached one when the page has none
- */
-function field(id: string): HTMLInputElement {
-  return document.querySelector<HTMLInputElement>(`#${id}`) ?? document.createElement("input");
-}
 
 /**
  * A number of the model shown in the pipeline panel, written in full by `JSON.stringify`.
@@ -33,17 +24,6 @@ function modelNumber(key: string): number {
   const match = pattern.exec(readText("#model"));
 
   return Number(match?.[1]);
-}
-
-/**
- * Adds a point of the list to the selection, as Ctrl + click does.
- *
- * @param vertex - number of the point, from 1
- */
-function addPoint(vertex: number): void {
-  document
-    .querySelector(`#points [data-vertex="${CSS.escape(String(vertex))}"]`)
-    ?.dispatchEvent(new MouseEvent("click", { bubbles: true, ctrlKey: true }));
 }
 
 /**
@@ -71,9 +51,9 @@ describe("editing the points of a free shape", () => {
     clickElement("mode-points");
     clickPoint(1, false);
 
-    expect(field("point-x").value).toBe("75");
-    expect(field("point-y").value).toBe("93.30127");
-    expect(field("point-x").disabled).toBe(true);
+    expect(selectInput("point-x").value).toBe("75");
+    expect(selectInput("point-y").value).toBe("93.30127");
+    expect(selectInput("point-x").disabled).toBe(true);
     expect(document.querySelector<HTMLButtonElement>("#convert")?.hidden).toBe(false);
   });
 
@@ -83,12 +63,12 @@ describe("editing the points of a free shape", () => {
 
     const before = readText("#path-data");
 
-    document.querySelector<HTMLButtonElement>("#convert")?.click();
+    clickElement("convert");
 
     expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("free");
     expect(readText("#path-data")).toBe(before);
-    expect(field("width").value).toBe("100");
-    expect(field("height").value).toBe("86.60254");
+    expect(selectInput("width").value).toBe("100");
+    expect(selectInput("height").value).toBe("86.60254");
 
     // The model keeps the exact height, 50√3, not the 5 decimals shown in the input (Q27).
     expect(modelNumber("height")).toBeCloseTo(50 * Math.sqrt(3), 12);
@@ -97,7 +77,7 @@ describe("editing the points of a free shape", () => {
   it("[F08.AC1] hides the anchor, the corners and the conversion of a free shape", () => {
     openOnStep(10);
     clickElement("mode-points");
-    document.querySelector<HTMLButtonElement>("#convert")?.click();
+    clickElement("convert");
 
     const hidden = ["#anchor-field", "#corners-field", "#convert"].map(
       (selector) => document.querySelector<HTMLElement>(selector)?.hidden,
@@ -109,7 +89,7 @@ describe("editing the points of a free shape", () => {
   it("[F08.AC2] moves a point of the converted polygon to the x typed, its y kept", () => {
     openOnStep(10);
     clickElement("mode-points");
-    document.querySelector<HTMLButtonElement>("#convert")?.click();
+    clickElement("convert");
     clickPoint(1, false);
     typeAndEnter("point-x", "80");
 
@@ -127,7 +107,7 @@ describe("editing the points of a free shape", () => {
     expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("free");
     expect(readText('#points [data-vertex="3"]')).toBe("3 · x 150 · y 80 · radius 10");
     // The box around the points: 150 wide now.
-    expect(field("width").value).toBe("150");
+    expect(selectInput("width").value).toBe("150");
   });
 
   it("[F08.AC2] ignores a coordinate that is not an integer", () => {
@@ -143,7 +123,7 @@ describe("editing the points of a free shape", () => {
   it("[F08.AC1] stretches the converted polygon by an integer width, and refuses a fractional one", () => {
     openOnStep(10);
     clickElement("mode-points");
-    document.querySelector<HTMLButtonElement>("#convert")?.click();
+    clickElement("convert");
     typeAndEnter("width", "50");
 
     expect(readText('#points [data-vertex="1"]')).toBe("1 · x 37.5 · y 93.30127 · radius 0");
@@ -185,7 +165,7 @@ describe("editing the points of a free shape", () => {
     openOnStep(10);
     clickElement("mode-points");
     typeAndEnter("corners", "2");
-    document.querySelector<HTMLButtonElement>("#convert")?.click();
+    clickElement("convert");
 
     expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("polygon");
   });
@@ -194,7 +174,7 @@ describe("editing the points of a free shape", () => {
     openOnStep(1);
     clickElement("mode-points");
     clickPoint(3, false);
-    document.querySelector<HTMLSelectElement>("#shape")?.dispatchEvent(new Event("change"));
+    commitField("shape");
     typeAndEnter("point-x", "5");
 
     expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("rectangle");
@@ -205,7 +185,7 @@ describe("editing the points of a free shape", () => {
     clickElement("mode-points");
     clickPoint(3, false);
     typeAndEnter("point-x", "150");
-    document.querySelector<HTMLButtonElement>("#guide-next")?.click();
+    clickElement("guide-next");
 
     // A step draws its own shape: the free shape goes, and so does its option.
     expect(
@@ -222,8 +202,8 @@ describe("editing the points of a free shape", () => {
     openOnStep(1);
     clickElement("mode-points");
     clickPoint(1, false);
-    addPoint(2);
-    document.querySelector<HTMLButtonElement>("#add-midpoint")?.click();
+    clickPoint(2, true);
+    clickElement("add-midpoint");
 
     expect(readPointRows()).toEqual([
       "1 · x 0 · y 0 · radius 10",
@@ -234,7 +214,7 @@ describe("editing the points of a free shape", () => {
     ]);
 
     expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("free");
-    expect(field("point-x").value).toBe("60");
+    expect(selectInput("point-x").value).toBe("60");
   });
 
   it("[F08.AC3] adds the point of the closing edge, between the last point and the first, at the end", () => {
@@ -242,8 +222,8 @@ describe("editing the points of a free shape", () => {
     openOnStep(1);
     clickElement("mode-points");
     clickPoint(4, false);
-    addPoint(1);
-    document.querySelector<HTMLButtonElement>("#add-midpoint")?.click();
+    clickPoint(1, true);
+    clickElement("add-midpoint");
 
     expect(readPointRows().at(-1)).toBe("5 · x 0 · y 40 · radius 0");
     expect(readPointRows()).toHaveLength(5);
@@ -256,10 +236,10 @@ describe("editing the points of a free shape", () => {
     typeAndEnter("width", "100");
     typeAndEnter("height", "100");
     clickPoint(1, false);
-    addPoint(2);
+    clickPoint(2, true);
     // Points 1 and 2 selected: the radius goes to both.
     typeAndEnter("radius", "1000");
-    document.querySelector<HTMLButtonElement>("#add-midpoint")?.click();
+    clickElement("add-midpoint");
 
     expect(readPointRows()[0]).toBe("1 · x 0 · y 0 · radius 1000 (effective 50)");
   });
@@ -271,7 +251,7 @@ describe("editing the points of a free shape", () => {
 
     const isOneGreyed = isAddGreyed();
 
-    addPoint(3);
+    clickPoint(3, true);
 
     expect([isOneGreyed, isAddGreyed()]).toEqual([true, true]);
   });
@@ -280,7 +260,7 @@ describe("editing the points of a free shape", () => {
     openOnStep(10);
     clickElement("mode-points");
     clickPoint(1, false);
-    addPoint(2);
+    clickPoint(2, true);
 
     expect(isAddGreyed()).toBe(true);
     expect(document.querySelector<HTMLElement>("#convert-hint")?.hidden).toBe(false);
@@ -290,9 +270,9 @@ describe("editing the points of a free shape", () => {
     openOnStep(1);
     clickElement("mode-points");
     clickPoint(1, false);
-    addPoint(2);
+    clickPoint(2, true);
     typeAndEnter("width", "");
-    document.querySelector<HTMLButtonElement>("#add-midpoint")?.click();
+    clickElement("add-midpoint");
     typeAndEnter("width", "120");
 
     expect(readPointRows()).toHaveLength(4);
@@ -304,7 +284,7 @@ describe("editing the points of a free shape", () => {
     openOnStep(1);
     clickElement("mode-points");
     clickPoint(2, false);
-    document.querySelector<HTMLButtonElement>("#delete-points")?.click();
+    clickElement("delete-points");
     clickPoint(2, false);
     typeAndEnter("point-x", "0");
 
@@ -322,13 +302,13 @@ describe("editing the points of a free shape", () => {
     clickElement("mode-points");
     typeAndEnter("width", "0");
     clickPoint(1, false);
-    addPoint(2);
-    document.querySelector<HTMLButtonElement>("#add-midpoint")?.click();
+    clickPoint(2, true);
+    clickElement("add-midpoint");
 
     expect(isAddGreyed()).toBe(true);
     expect(readPointRows()[1]).toBe("2 · x 0 · y 0 · radius 10");
     // Points 1 and 2 still selected: no single point to show.
-    expect(field("point-x").value).toBe("");
+    expect(selectInput("point-x").value).toBe("");
   });
 
   it("[F08.AC5] shows the shape's radius in both modes, and a radius of the points in Points mode", () => {
@@ -338,7 +318,7 @@ describe("editing the points of a free shape", () => {
     typeAndEnter("point-radius", "30");
 
     // The shape's field still speaks for every corner: 30 and 10, Mixed.
-    expect([place(), field("radius").placeholder]).toEqual([undefined, "Mixed"]);
+    expect([place(), selectInput("radius").placeholder]).toEqual([undefined, "Mixed"]);
 
     typeAndEnter("radius", "5");
 
@@ -356,11 +336,11 @@ describe("editing the points of a free shape", () => {
     clickPoint(1, false);
 
     for (const id of ["point-radius", "radius"]) {
-      field(id).focus();
+      selectInput(id).focus();
       typeAndEnter(id, "1");
       typeAndEnter(id, "12");
 
-      expect(document.activeElement === field(id)).toBe(true);
+      expect(document.activeElement === selectInput(id)).toBe(true);
     }
   });
 
@@ -375,10 +355,10 @@ describe("editing the points of a free shape", () => {
       chooseOption("shape", value);
 
       // The polygon gets a width of its own, which the free shape must not take.
-      typeAndEnter("width", value === "polygon" ? "100" : field("width").value);
+      typeAndEnter("width", value === "polygon" ? "100" : selectInput("width").value);
     }
 
-    expect(field("width").value).toBe("150");
+    expect(selectInput("width").value).toBe("150");
     expect(readPointRows()[2]).toBe("3 · x 150 · y 80 · radius 10");
   });
 });

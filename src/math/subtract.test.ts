@@ -1,5 +1,7 @@
-import { fc, test } from "@fast-check/vitest";
+import { test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
+
+import { integerPoint } from "../../tests";
 
 import { subtract } from "./subtract";
 
@@ -12,14 +14,8 @@ describe("subtract", () => {
 
 describe("subtract (properties)", () => {
   test.prop({
-    a: fc.record({
-      x: fc.integer({ max: 1e4, min: -1e4 }),
-      y: fc.integer({ max: 1e4, min: -1e4 }),
-    }),
-    b: fc.record({
-      x: fc.integer({ max: 1e4, min: -1e4 }),
-      y: fc.integer({ max: 1e4, min: -1e4 }),
-    }),
+    a: integerPoint(1e4),
+    b: integerPoint(1e4),
   })("is antisymmetric: a − b = −(b − a)", ({ a, b }) => {
     const forward = subtract(a, b);
     const backward = subtract(b, a);
