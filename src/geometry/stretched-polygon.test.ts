@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { expectPoints } from "../../tests";
 
 import { boundingBox } from "./bounding-box";
+import { cornerTriples } from "./corner-triples";
 import { edgeLengths } from "./edge-lengths";
 import { stretchScale } from "./stretch-scale";
 import { stretchedPolygon } from "./stretched-polygon";
@@ -221,7 +222,8 @@ describe("stretchedPolygon (DERIV-stretched-polygon, checks)", () => {
       const lengths = edgeLengths(stretchedPolygon(corners, { height, width }));
       const unit = unitStretchedPolygon(corners, stretchScale(corners, height / width));
       const isEven = Math.max(...lengths) - Math.min(...lengths) < 1e-9 * Math.max(...lengths);
-      const isGuarded = Math.abs(Math.min(...turningAngles(unit)) - Math.PI / corners) < 1e-9;
+      const turns = turningAngles(cornerTriples(unit));
+      const isGuarded = Math.abs(Math.min(...turns) - Math.PI / corners) < 1e-9;
 
       expect(isEven || isGuarded).toBe(true);
     },
