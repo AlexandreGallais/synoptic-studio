@@ -77,7 +77,7 @@ A point of a free shape can bend its two sides with two handles, as in Figma, wi
 
 **Sides and box:**
 
-- A side is a cubic curve when a handle is on at either of its ends and not of length 0 (ADR-0046); a point with its handles on but of length 0 leaves its sides straight. A point in handles mode, or for now a corner in radius mode next to a curved side, is drawn sharp, its radius kept; the radius shown as effective is then 0, and its neighbours' clamp is computed without it. The Product Owner wants a corner beside a curved side to keep its rounding (VAL-011, 2026-10-13): SP-012, then US-027.
+- A side is a cubic curve when a handle is on at either of its ends and not of length 0 (ADR-0046); a point with its handles on but of length 0 leaves its sides straight. A point in handles mode is drawn sharp, its radius kept; the radius shown as effective is then 0. A corner in radius mode beside a curved side keeps its rounding: an arc tangent to the side and to the curve, the curve cut there (ADR-0047, `DERIV-fillet-beside-curve`; Product Owner, VAL-011, 2026-10-13). A radius too large is reduced, never drawn sharp: it may use the whole curve, whose other end is sharp; where the curve bends more tightly than the radius, it becomes the largest circle still tangent (handle of 80 at point 3 of a rectangle 120 × 80: a radius 60 at point 2 becomes 36.3).
 - Handles stretch with the shape, like its points.
 - The shape's box is the box of its curve, as in Figma: a square 100 × 100 whose top bulges by 20 shows about 100 × 115.
 
