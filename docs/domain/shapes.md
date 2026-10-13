@@ -60,7 +60,7 @@ Reference behavior: Figma.
 
 A point of a free shape can bend its two sides with two handles, as in Figma, without losing its corner radius (Product Owner decision, 2026-10-13). Drawing rules: ADR-0046; formulas: the derivations named in the tables.
 
-**Radius or handles.** Each point has a switch with two states, always visible; its final layout is part of the UX pass at the end of E14.
+**Radius or handles.** Each point has a switch with two states, always visible; its final layout is part of the UX pass at the end of E14. On a regular polygon, the switch first converts it to a free shape, unmoved, as deleting a point does (Product Owner, VAL-011, 2026-10-13).
 
 | State         | The point is drawn                | Its corner radius                                                          |
 | ------------- | --------------------------------- | -------------------------------------------------------------------------- |

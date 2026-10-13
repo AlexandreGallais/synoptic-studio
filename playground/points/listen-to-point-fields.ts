@@ -1,17 +1,12 @@
-import {
-  freeShapeCorners,
-  freeShapeWithPoint,
-  regularPolygonAsFreeShape,
-  turnedCorners,
-} from "../../src";
+import { freeShapeCorners, freeShapeWithPoint, turnedCorners } from "../../src";
 import { readNumber, readSelection, selectElement } from "../page";
-import { readEditedFreeShape, readShape, writeStoredFreeShape } from "../shape";
+import { readEditedFreeShape, writeConvertedPolygon, writeStoredFreeShape } from "../shape";
 
 import { listenToDeleteKey } from "./listen-to-delete-key";
 import { writeAddedMidpoint } from "./write-added-midpoint";
 import { writeDeletedPoints } from "./write-deleted-points";
 
-import type { FreeShape, Point, RegularPolygon } from "../../src";
+import type { FreeShape, Point } from "../../src";
 
 /** Which point moves, and along which axis. */
 type Target = {
@@ -96,36 +91,6 @@ function movePointTyped(document: Document, axis: "x" | "y"): void {
   }
 
   writeMovedPoint(document, shape, { axis, index });
-}
-
-/**
- * Reads the regular polygon shown, when it is valid.
- *
- * @kind procedure
- * @param document - page document
- * @returns the polygon, `undefined` for another shape or a refused one
- * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
- */
-function readValidPolygon(document: Document): RegularPolygon | undefined {
-  const { isValid, model } = readShape(document);
-
-  return isValid && "anchor" in model ? model : undefined;
-}
-
-/**
- * Converts the valid regular polygon shown into a free shape, unmoved, and keeps it on the page;
- * a polygon of width or height 0 has no box to stretch and is not converted (F08.AC1, ADR-0033).
- *
- * @kind procedure
- * @param document - page document
- * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
- */
-function writeConvertedPolygon(document: Document): void {
-  const polygon = readValidPolygon(document);
-
-  if (polygon !== undefined && polygon.width * polygon.height > 0) {
-    writeStoredFreeShape(document, regularPolygonAsFreeShape(polygon));
-  }
 }
 
 /**
