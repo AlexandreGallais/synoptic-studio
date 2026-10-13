@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { clockDuration, shortDuration, statusText } from "./status-line";
+import { clockDuration, isTurnDone, shortDuration, statusText } from "./status-line";
 import { EMPTY_TALLY, addTokens, cachedTally } from "./status-tokens";
 
 // Transcript lines are external JSON (snake_case keys), written here as the transcript holds them.
@@ -25,6 +25,19 @@ function line(id: string, output: number): string {
 function prompt(time: string): string {
   return `{"type": "user", "timestamp": "${time}", "message": {"content": "go on"}}`;
 }
+
+/** What the status line shows, before a test changes some of it. */
+const STATUS = {
+  contextPercent: 10,
+  durationMs: 60_000,
+  isRunningLong: false,
+  model: "Opus 5.5",
+  place: "E14 › F12",
+  running: "",
+  silentMs: 1000,
+  step: "",
+  tally: EMPTY_TALLY,
+};
 
 /** Transcript line of the agent ending its turn. */
 const END = '{"message": {"id": "z", "stop_reason": "end_turn"}}';
@@ -108,17 +121,57 @@ describe("status line", () => {
     });
   });
 
+  it("waits for background tasks after the end of the turn, the person's turn coming once they end", () => {
+    const launch =
+      '{"type": "assistant", "timestamp": "2026-10-13T08:01:00Z", "message": {"id": "a", "content": [{"type": "tool_use", "id": "toolu_A", "name": "Agent", "input": {}}, {"type": "tool_use", "id": "toolu_B", "name": "Bash", "input": {"run_in_background": true}}, {"type": "tool_use", "id": "toolu_C", "name": "Bash", "input": {}}]}}';
+    const results =
+      '{"type": "user", "message": {"content": [{"type": "tool_result", "tool_use_id": "toolu_A"}, {"type": "tool_result", "tool_use_id": "toolu_C"}]}}';
+    const ended = addTokens(
+      EMPTY_TALLY,
+      `${prompt("2026-10-13T08:00:00Z")}\n${launch}\n${results}\n{"timestamp": "2026-10-13T08:02:00Z", "message": {"id": "z", "stop_reason": "end_turn"}}\n`,
+    );
+
+    // A subagent and a command in the background run on; their immediate results end nothing.
+    expect(ended.pending.map((task) => task.id)).toEqual(["toolu_A", "toolu_B"]);
+    expect(ended.finished).toEqual(["toolu_A", "toolu_C"]);
+    expect(isTurnDone(ended)).toBe(false);
+    expect(statusText({ ...STATUS, tally: ended })).toContain("waiting for 2 background tasks");
+
+    const notified = addTokens(
+      ended,
+      '{"type": "queue-operation", "timestamp": "2026-10-13T08:30:00Z", "content": "<task-notification>\\n<tool-use-id>toolu_A</tool-use-id>\\n<tool-use-id>toolu_B</tool-use-id>"}\n',
+    );
+
+    expect(notified.pending).toEqual([]);
+    expect(isTurnDone(notified)).toBe(true);
+  });
+
+  it("drops a background task whose end never came after three hours", () => {
+    const launch =
+      '{"type": "assistant", "timestamp": "2026-10-13T08:00:00Z", "message": {"id": "a", "content": [{"type": "tool_use", "id": "toolu_A", "name": "Agent", "input": {}}]}}';
+
+    expect(
+      addTokens(EMPTY_TALLY, `${launch}\n${prompt("2026-10-13T11:00:01Z")}\n`).pending,
+    ).toEqual([]);
+
+    expect(
+      addTokens(EMPTY_TALLY, `${launch}\n${prompt("2026-10-13T10:59:59Z")}\n`).pending,
+    ).toHaveLength(1);
+  });
+
   it("keeps a cached tally only for the same transcript", () => {
     const cache: unknown = JSON.parse(
-      '{"transcript": "t.jsonl", "tally": {"end": 7, "isWaiting": false, "lastId": "a", "offset": 9, "output": 2, "start": 5, "total": 3}}',
+      '{"transcript": "t.jsonl", "tally": {"end": 7, "isWaiting": false, "lastId": "a", "offset": 9, "output": 2, "pending": [{"id": "toolu_A", "start": 4}], "start": 5, "total": 3}}',
     );
 
     expect(cachedTally(cache, "t.jsonl")).toEqual({
       end: 7,
+      finished: [],
       isWaiting: false,
       lastId: "a",
       offset: 9,
       output: 2,
+      pending: [{ id: "toolu_A", start: 4 }],
       start: 5,
       total: 3,
     });

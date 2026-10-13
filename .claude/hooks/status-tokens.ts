@@ -4,15 +4,27 @@
 
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 
+/** A background task the agent started (a subagent, a command in the background), still running. */
+type BackgroundTask = {
+  /** The id of the tool call that started it. */
+  readonly id: string;
+  /** When it started, epoch milliseconds. */
+  readonly start: number;
+};
+
 /** Tokens of the current turn, and where the reading of the transcript stopped. */
 export type TokenTally = {
   /** When the agent ended its turn, epoch milliseconds; 0 while it works. */
   readonly end: number;
+  /** Ids of the tool calls whose result or end arrived in the lines just read. */
+  readonly finished: readonly string[];
   /** Whether the agent ended its turn: the next prompt starts a new one. */
   readonly isWaiting: boolean;
   readonly lastId: string;
   readonly offset: number;
   readonly output: number;
+  /** Background tasks still running: the agent waits for them even after its turn ended. */
+  readonly pending: readonly BackgroundTask[];
   /** When the turn started, epoch milliseconds; 0 before the first prompt. */
   readonly start: number;
   readonly total: number;
@@ -21,10 +33,12 @@ export type TokenTally = {
 /** A tally before any line. */
 export const EMPTY_TALLY: TokenTally = {
   end: 0,
+  finished: [],
   isWaiting: true,
   lastId: "",
   offset: 0,
   output: 0,
+  pending: [],
   start: 0,
   total: 0,
 };
@@ -155,6 +169,81 @@ function resumed(tally: TokenTally, line: unknown): TokenTally {
   return text(line, "type") === "assistant" ? { ...tally, end: 0, isWaiting: false } : tally;
 }
 
+/** Three hours: a background task older than this is taken as lost, its end never arrived (the session was stopped). */
+const LOST_TASK_MS = 10_800_000;
+
+/**
+ * Blocks of a message's content.
+ *
+ * @param message - message of a transcript line
+ * @returns its blocks, none for a text content
+ */
+function blocksOf(message: unknown): readonly unknown[] {
+  const content = field(message, "content");
+
+  return Array.isArray(content) ? content : [];
+}
+
+/**
+ * Background tasks a transcript line starts: every subagent (they always run in the background),
+ * and any tool call asked to run in the background.
+ *
+ * @param line - parsed transcript line
+ * @returns each subagent or background call it launches, with its start
+ */
+function startedTasks(line: unknown): readonly BackgroundTask[] {
+  return blocksOf(field(line, "message"))
+    .filter(
+      (block) =>
+        text(block, "type") === "tool_use" &&
+        (text(block, "name") === "Agent" ||
+          field(field(block, "input"), "run_in_background") === true),
+    )
+    .map((block) => ({ id: text(block, "id"), start: startOf(line) }));
+}
+
+/**
+ * Ids of the tool calls a transcript line ends: a tool result, or a background task's notification
+ * (`<task-notification>`, naming the call that started it).
+ *
+ * @param line - parsed transcript line
+ * @param raw - the same line, as written
+ * @returns the ids of the calls whose result or end it brings
+ */
+function endedIds(line: unknown, raw: string): readonly string[] {
+  const results = blocksOf(field(line, "message"))
+    .filter((block) => text(block, "type") === "tool_result")
+    .map((block) => text(block, "tool_use_id"));
+  const notified = raw.includes("<task-notification>")
+    ? raw
+        .matchAll(/<tool-use-id>(?<id>[\w-]+)<\/tool-use-id>/gu)
+        .map((match) => match.groups?.["id"] ?? "")
+        .toArray()
+    : [];
+
+  return [...results, ...notified];
+}
+
+/**
+ * Background tasks after one transcript line: those it starts added, those notified as ended
+ * removed, those older than `LOST_TASK_MS` dropped.
+ *
+ * @param tally - tally before the line
+ * @param line - parsed transcript line
+ * @param raw - the same line, as written
+ * @returns the tally with its tasks and the calls ended
+ */
+function withTasks(tally: TokenTally, line: unknown, raw: string): TokenTally {
+  const ended = endedIds(line, raw);
+  const notified = raw.includes("<task-notification>") ? ended : [];
+  const time = startOf(line);
+  const pending = [...tally.pending, ...startedTasks(line)].filter(
+    (task) => !notified.includes(task.id) && (time === 0 || time - task.start < LOST_TASK_MS),
+  );
+
+  return { ...tally, finished: [...tally.finished, ...ended], pending };
+}
+
 /**
  * Tally after one transcript line: a prompt after the agent ended its turn starts a new turn;
  * messages sent while the agent works stay inside the turn; an answer after the end of the turn
@@ -162,12 +251,13 @@ function resumed(tally: TokenTally, line: unknown): TokenTally {
  *
  * @param tally - tokens of the turn so far
  * @param line - parsed transcript line
+ * @param raw - the same line, as written
  * @returns the new tally
  */
-function withLine(tally: TokenTally, line: unknown): TokenTally {
+function withLine(tally: TokenTally, line: unknown, raw: string): TokenTally {
   const message = field(line, "message");
   const started = tally.isWaiting ? resumed(tally, line) : tally;
-  const counted = withUsage(started, message);
+  const counted = withUsage(withTasks(started, line, raw), message);
 
   return text(message, "stop_reason") === "end_turn"
     ? { ...counted, end: startOf(line), isWaiting: true }
@@ -185,11 +275,18 @@ export function addTokens(tally: TokenTally, lines: string): TokenTally {
   return lines
     .split("\n")
     .filter((line) => line.startsWith("{"))
-    .map((line): unknown => JSON.parse(line))
-    .reduce<TokenTally>((sum, line) => withLine(sum, line), {
-      ...tally,
-      offset: tally.offset + Buffer.byteLength(lines),
-    });
+    .reduce<TokenTally>(
+      (sum, raw) => {
+        const line: unknown = JSON.parse(raw);
+
+        return withLine(sum, line, raw);
+      },
+      {
+        ...tally,
+        finished: [],
+        offset: tally.offset + Buffer.byteLength(lines),
+      },
+    );
 }
 
 /**
@@ -202,13 +299,20 @@ export function addTokens(tally: TokenTally, lines: string): TokenTally {
 export function cachedTally(cached: unknown, transcript: string): TokenTally {
   const tally = field(cached, "tally");
 
+  const pending = field(tally, "pending");
+
   return field(cached, "transcript") === transcript
     ? {
         end: count(tally, "end"),
+        finished: [],
         isWaiting: field(tally, "isWaiting") !== false,
         lastId: text(tally, "lastId"),
         offset: count(tally, "offset"),
         output: count(tally, "output"),
+        pending: (Array.isArray(pending) ? pending : []).map((task) => ({
+          id: text(task, "id"),
+          start: count(task, "start"),
+        })),
         start: count(tally, "start"),
         total: count(tally, "total"),
       }

@@ -6,7 +6,7 @@
 // Temporal runs behind `--harmony-temporal` in Node.js 24: the status line command passes it.
 
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 import { placeOf, readRunningCall, runningLine } from "./status-place.ts";
@@ -102,12 +102,28 @@ export function clockDuration(milliseconds: number): string {
 }
 
 /**
- * Activity of a working agent: active, or silent for a while (waiting, or stalled).
+ * Whether the person's turn has come: the agent ended its turn and waits for no background task.
+ *
+ * @param tally - tokens, times and background tasks of the turn
+ * @returns true when the agent waits for the person
+ */
+export function isTurnDone(tally: TokenTally): boolean {
+  return tally.isWaiting && tally.start !== 0 && tally.pending.length === 0;
+}
+
+/**
+ * Activity of a working agent: waiting for its background tasks once its answer is written,
+ * active, or silent for a while (waiting, or stalled).
  *
  * @param silentMs - time since the transcript last changed
+ * @param tally - the turn's tally
  * @returns the colored activity
  */
-function activityOf(silentMs: number): string {
+function activityOf(silentMs: number, tally: TokenTally): string {
+  if (tally.isWaiting && tally.pending.length > 0) {
+    return `${COLOR.cyan}◌ waiting for ${String(tally.pending.length)} background task${tally.pending.length === 1 ? "" : "s"}${COLOR.reset}`;
+  }
+
   return silentMs < IDLE_MS
     ? `${COLOR.green}● active${COLOR.reset}`
     : `${COLOR.yellow}◌ silent for ${shortDuration(silentMs)}${COLOR.reset}`;
@@ -121,10 +137,10 @@ function activityOf(silentMs: number): string {
  */
 function sessionLine(status: Status): string {
   const { contextPercent, durationMs, model, silentMs, tally } = status;
-  const isDone = tally.isWaiting && tally.start !== 0;
+  const isDone = isTurnDone(tally);
 
   return [
-    isDone ? `${COLOR.dim}◌ your turn${COLOR.reset}` : activityOf(silentMs),
+    isDone ? `${COLOR.dim}◌ your turn${COLOR.reset}` : activityOf(silentMs, tally),
     `⏱ ${isDone ? "last turn" : "turn"} ${clockDuration(durationMs)}`,
     `${tally.total.toLocaleString("en-US")} tokens this turn (${tally.output.toLocaleString("en-US")} written)`,
     `conversation memory ${String(Math.round(contextPercent))} % full`,
@@ -161,14 +177,17 @@ function textOf(path: string): string {
  * Calls running, as the `track-tool-call` hook wrote them.
  *
  * @param folder - `metrics/running` of the Git directory
- * @returns each call still running
+ * @returns each call still running, with the name of its file
  */
-function runningCalls(folder: string): readonly RunningCall[] {
+function runningCalls(folder: string): readonly (readonly [string, RunningCall])[] {
   return existsSync(folder)
     ? readdirSync(folder)
         .filter((name) => name.endsWith(".json"))
-        .map((name) => readFileSync(join(folder, name), "utf8"))
-        .map((json) => readRunningCall(JSON.parse(json)))
+        .map((name) => {
+          const json: unknown = JSON.parse(readFileSync(join(folder, name), "utf8"));
+
+          return [name, readRunningCall(json)] as const;
+        })
     : [];
 }
 
@@ -197,13 +216,32 @@ if (import.meta.main) {
   mkdirSync(folder, { recursive: true });
 
   const tally = turnTokens(transcript, join(folder, "status-line-turn.json"));
-  // A call started before the turn was interrupted and never finished: not shown.
-  const calls = runningCalls(join(folder, "running")).filter((call) => call.start >= tally.start);
+  const running = join(folder, "running");
+
+  // A call whose result arrived is over, even if its end was never recorded (a scheduled wake-up).
+  for (const id of tally.finished) {
+    rmSync(join(running, `${id}.json`), { force: true });
+  }
+
+  // A call started before the turn never finished (an interrupted turn): its file is removed.
+  const stale = runningCalls(running).filter(([, call]) => call.start < tally.start);
+
+  for (const [name] of stale) {
+    rmSync(join(running, name), { force: true });
+  }
+
+  const calls = isTurnDone(tally)
+    ? []
+    : runningCalls(running)
+        .map(([, call]) => call)
+        .filter((call) => call.start >= tally.start);
   const status: Status = {
     contextPercent: count(field(input, "context_window"), "used_percentage"),
     // Once the agent ended its turn, the clock stops at its last answer.
     durationMs:
-      tally.start === 0 ? 0 : (tally.isWaiting && tally.end !== 0 ? tally.end : now) - tally.start,
+      tally.start === 0
+        ? 0
+        : (isTurnDone(tally) && tally.end !== 0 ? tally.end : now) - tally.start,
     model: typeof model === "string" ? model : "",
     place: placeOf(git(["branch", "--show-current"]), backlog),
     isRunningLong: calls.some((call) => now - call.start > LONG_CALL_MS),
