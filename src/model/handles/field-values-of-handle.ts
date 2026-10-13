@@ -44,7 +44,7 @@ function shareValues(handle: Vector, frame: HandleFrame): readonly [number, numb
  * @param way - the way chosen
  * @param handle - the handle, a vector from its point, as drawn
  * @param frame - its point, its side and which end it is
- * @returns the first and second values: x, y; dx, dy; or angle, length
+ * @returns the first and second values: x, y; dx, dy; angle, length; or shares along and across
  * @see DERIV-handle-angle
  */
 export function fieldValuesOfHandle(

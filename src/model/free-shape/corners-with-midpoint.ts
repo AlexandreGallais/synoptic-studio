@@ -1,12 +1,9 @@
 import { cubicSide, cyclicItem, halvedCubic, isCurvedSide } from "../../geometry";
-import { add, midpoint, scale, subtract } from "../../math";
+import { midpoint, scale, subtract, withoutNegativeZero } from "../../math";
 import { NO_HANDLES } from "../handles";
 
 import type { Cubic, CurveCorner } from "../../geometry";
 import type { Point } from "../../math";
-
-/** The zero vector. */
-const ORIGIN = { x: 0, y: 0 };
 
 /** Corner read when the side asked for does not exist: none is, the shape has 3 points or more. */
 const NO_CORNER: CurveCorner = { handles: NO_HANDLES, point: { x: 0, y: 0 }, radius: 0 };
@@ -49,9 +46,8 @@ function withHandleTo(corner: CurveCorner, end: "after" | "before", control: Poi
 function splitPoint(first: Cubic): CurveCorner {
   const before = subtract(first.second, first.end);
 
-  // Adding zero turns −0 into 0.
   return {
-    handles: { ...NO_HANDLES, after: add(scale(before, -1), ORIGIN), before, isOn: true },
+    handles: { ...NO_HANDLES, after: withoutNegativeZero(scale(before, -1)), before, isOn: true },
     point: first.end,
     radius: 0,
   };
