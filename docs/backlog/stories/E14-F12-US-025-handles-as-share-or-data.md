@@ -3,7 +3,7 @@ id: US-025
 epic: E14
 feature: F12
 title: "Type a side's handles as shares of the side, or paste curve data"
-status: ready
+status: done
 points: 3
 ---
 
@@ -40,6 +40,10 @@ Open the page, type **Width** = 100: points 1 (0, 0), 2 (100, 0).
 
 1. Click **Points**, point 1, **Handles**, then **Typed as** = **share of the side (%)**. The fields read along % and across %.
 2. Type **After along** = 25, **After across** = 30: the top side bends upwards, the handle's end at (25, −30) — a quarter along the side, 30 % of its length above it.
-3. In **Paste a curve on the side after**, type `C 30 -15 70 -15 100 0` and click **Apply**: the top side is that curve; point 1's other handle mirrors it, so the left side bends too.
+3. In **Paste a curve on the side after**, type `C 30 -15 70 -15 100 0` and click **Apply**: the top side is that curve; points 1 and 2 mirror their handles (mode angle and length), so the left and right sides bend too.
 4. Paste `cubic-bezier(0.42, 0, 0.58, 1)` and click **Apply**: the top side takes the S of CSS's ease-in-out.
 5. Paste `C 30 -15 70 -15 90 0`: a line says the C must end on the side's last point; nothing changes.
+
+## Review
+
+Auditor, also in the verifier's role, before the last commit. Fixed: one run of digits was read as two numbers (`2000` as `200 0`), so malformed text was applied — numbers now end where SVG's grammar ends them; numbers too large are refused with a line; the "across" vector built once (`acrossSide`); tests of the refusal line shown then hidden, a paste on a turned shape, on the last side, next to a point in mode none, and of signs, exponents, a leading point, the end's tolerance, text around a command; the test card's step 3.

@@ -85,7 +85,7 @@
 | [US-022](./E14-F12-US-022-handles-in-points-mode.md)            | F12     | Switch a point to handles and type them as x and y                  | done   |
 | [US-023](./E14-F12-US-023-handles-relative-to-point.md)         | F12     | Type a handle as dx and dy from its point                           | done   |
 | [US-024](./E14-F12-US-024-handles-as-angle-and-length.md)       | F12     | Type a handle as an angle and a length                              | done   |
-| [US-025](./E14-F12-US-025-handles-as-share-or-data.md)          | F12     | Type a side's handles as shares of the side, or paste curve data    | ready  |
+| [US-025](./E14-F12-US-025-handles-as-share-or-data.md)          | F12     | Type a side's handles as shares of the side, or paste curve data    | done   |
 | [US-026](./E14-F12-US-026-handles-from-a-tension.md)            | F12     | Smooth a point by a tension, its handles computed                   | ready  |
 | [CHK-011](./E14-F12-CHK-011-checkpoint-f12.md)                  | F12     | Checkpoint in the middle of F12                                     | done   |
 | [AUD-011](./E14-F12-AUD-011-audit-f12.md)                       | F12     | Audit F12                                                           | ready  |
