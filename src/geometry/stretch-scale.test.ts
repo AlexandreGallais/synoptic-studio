@@ -82,7 +82,34 @@ describe("stretchScale (DERIV-stretched-polygon step 5)", () => {
   });
 });
 
+/**
+ * Aspect of the polygon drawn for a box ratio.
+ *
+ * @param corners - number of corners
+ * @param ratio - height of the box over its width
+ * @returns the aspect of the unit polygon at the scale chosen for the ratio
+ */
+function scaledAspect(corners: number, ratio: number): number {
+  return boxAspect(unitStretchedPolygon(corners, stretchScale(corners, ratio)));
+}
+
 describe("stretchScale (properties)", () => {
+  // From 5 corners on: the triangle's and the square's shapes do not depend on λ (examples above).
+  test.prop({
+    corners: fc.integer({ max: 12, min: 5 }),
+    share: fc.integer({ max: 100, min: 0 }),
+  })(
+    "gives back a ratio between the guard aspects as the aspect of its polygon",
+    ({ corners, share }) => {
+      // Round trip inside the clamp: aspect(λ(r)) = r for r between the aspects at the two guards.
+      const lowest = scaledAspect(corners, 0);
+      const highest = scaledAspect(corners, Infinity);
+      const ratio = lowest + ((highest - lowest) * share) / 100;
+
+      expect(scaledAspect(corners, ratio)).toBeCloseTo(ratio, 6);
+    },
+  );
+
   test.prop({
     corners: fc.integer({ max: 12, min: 5 }),
     first: fc.integer({ max: 1000, min: 1 }),

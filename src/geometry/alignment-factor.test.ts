@@ -22,6 +22,10 @@ describe("alignmentFactor (properties)", () => {
     ({ alignment }) => {
       // Reading the axis backwards puts after the shape what was before it: f(a) + f(ā) = 1.
       expect(alignmentFactor(alignment) + alignmentFactor(MIRRORED[alignment])).toBe(1);
+      expect(alignmentFactor(alignment)).toBeGreaterThanOrEqual(0);
+      expect(alignmentFactor(alignment)).toBeLessThanOrEqual(1);
+      expect(alignmentFactor("min")).toBeLessThan(alignmentFactor("mid"));
+      expect(alignmentFactor("mid")).toBeLessThan(alignmentFactor("max"));
     },
   );
 });
