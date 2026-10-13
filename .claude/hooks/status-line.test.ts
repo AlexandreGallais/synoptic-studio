@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { shortDuration, statusText } from "./status-line";
+import { clockDuration, shortDuration, statusText } from "./status-line";
 import { EMPTY_TALLY, addTokens, cachedTally } from "./status-tokens";
 
 // Transcript lines are external JSON (snake_case keys), written here as the transcript holds them.
@@ -97,6 +97,12 @@ describe("status line", () => {
     expect(shortDuration(125 * 60_000)).toBe("2 h 05");
   });
 
+  it("writes the turn's clock to the second", () => {
+    expect(clockDuration(45_900)).toBe("45 s");
+    expect(clockDuration(12 * 60_000 + 5000)).toBe("12 min 05 s");
+    expect(clockDuration(125 * 60_000 + 9000)).toBe("2 h 05 min 09 s");
+  });
+
   it("shows the place and step, the turn, and the call running", () => {
     const base = {
       contextPercent: 34.4,
@@ -119,7 +125,7 @@ describe("status line", () => {
     expect(active).toContain("E01 › RET-001 retrospective e01");
     expect(active).toContain("RET-001 · metrics");
     expect(active).toContain("● active");
-    expect(active).toContain("⏱ turn 1 min");
+    expect(active).toContain("⏱ turn 1 min 00 s");
     expect(active).toContain("5,678,901 tokens this turn (1,234 written)");
     expect(active).toContain("conversation memory 34 % full");
     expect(active.split("\n")).toHaveLength(2);

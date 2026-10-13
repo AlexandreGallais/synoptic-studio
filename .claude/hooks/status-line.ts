@@ -82,6 +82,26 @@ export function shortDuration(milliseconds: number): string {
 }
 
 /**
+ * Duration to the second, so that the turn's clock moves at each refresh.
+ *
+ * @param milliseconds - length of time to write
+ * @returns `45 s`, `12 min 05 s` or `2 h 05 min 09 s`
+ */
+export function clockDuration(milliseconds: number): string {
+  const seconds = Math.floor(milliseconds / SECOND);
+  const minutes = Math.floor(seconds / SIXTY);
+  const secondsText = `${String(seconds % SIXTY).padStart(2, "0")} s`;
+
+  if (minutes < 1) {
+    return `${String(seconds)} s`;
+  }
+
+  return minutes < SIXTY
+    ? `${String(minutes)} min ${secondsText}`
+    : `${String(Math.floor(minutes / SIXTY))} h ${String(minutes % SIXTY).padStart(2, "0")} min ${secondsText}`;
+}
+
+/**
  * The turn's line: activity, time, tokens, how full the conversation memory is, model.
  *
  * @param status - what the status line shows
@@ -96,7 +116,7 @@ function sessionLine(status: Status): string {
 
   return [
     activity,
-    `⏱ turn ${shortDuration(durationMs)}`,
+    `⏱ turn ${clockDuration(durationMs)}`,
     `${tally.total.toLocaleString("en-US")} tokens this turn (${tally.output.toLocaleString("en-US")} written)`,
     `conversation memory ${String(Math.round(contextPercent))} % full`,
     `${COLOR.dim}${model}${COLOR.reset}`,
