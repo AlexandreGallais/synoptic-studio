@@ -71,7 +71,7 @@ Agents to add when their epic comes, with their trigger:
 
 The Product Owner may talk to a second session while a run works in the background. Both share the same folder, and the run owns it (its branch, its uncommitted files). The second session:
 
-1. **Never touches the run's folder**: no `git switch`, `stash` nor commit there. It works in its own worktree from `develop`, in its scratchpad: `git worktree add -b <type>/<topic> <scratchpad>/<topic> origin/develop`, then `npm ci` in it (hooks and `check:all` need `node_modules`).
+1. **Never touches the run's folder**: no `git switch`, `stash` nor commit there. It works in its own worktree from `develop`, in its scratchpad: `git worktree add -b <type>/<topic> <scratchpad>/<topic> origin/develop`, then `npm ci` in it (hooks and `check:all` need `node_modules`). Never a symbolic link to the main folder's `node_modules`: `npm ci` runs `prepare`, which installs the Git hooks; without it no hook runs, not even `pre-push` (F11 run, EN-020: a push went out unchecked, `check:all` was run by hand after).
 2. **Puts each decision in the repository**, the only state both sessions read: domain, ADR, backlog, `AGENTS.md`, skills. One branch, one pull request into `develop` (or straight to `develop` when the Product Owner allows it for tooling and backlog). Durable facts also go to the agent's memory, read by every new session.
 3. **Tells the run at once**: `ListAgents`, then `SendMessage` to the busy session with what changed, where it is written and what it changes for the run. A run never acts on a message alone: it waits for the change to reach `develop`, as with any decision.
 4. **Removes its worktree** once the pull request is merged (`git worktree remove <path>`, then delete the branch).
