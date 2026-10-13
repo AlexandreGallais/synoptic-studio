@@ -2,51 +2,14 @@
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { GUIDED_STEPS } from "./guided-steps";
-import page from "./index.html?raw";
-import { mountPlayground } from "./mount-playground";
-
-/**
- * Text shown in an element of the page.
- *
- * @param id - element id, without `#`
- * @returns its text content, empty when absent
- */
-function text(id: string): string {
-  return document.querySelector(`#${id}`)?.textContent ?? "";
-}
-
-/**
- * Types a value into an input and fires its `input` event, as a user would.
- *
- * @param id - input id
- * @param value - typed text
- */
-function type(id: string, value: string): void {
-  const input = document.querySelector<HTMLInputElement>(`#${id}`);
-
-  if (input === null) {
-    return;
-  }
-
-  input.value = value;
-  input.dispatchEvent(new Event("input"));
-}
-
-/**
- * Chooses a shape in the selector and fires its `change` event, as a user would.
- *
- * @param value - `rectangle` or `polygon`
- */
-function chooseShape(value: string): void {
-  const select = document.querySelector<HTMLSelectElement>("#shape");
-
-  if (select === null) {
-    return;
-  }
-
-  select.value = value;
-  select.dispatchEvent(new Event("change"));
-}
+import {
+  chooseOption,
+  clickElement,
+  openPage,
+  readText,
+  readValue,
+  typeValue,
+} from "./user-actions";
 
 /**
  * Whether the field of the number of corners is out of sight: its computed display, so that a
@@ -61,25 +24,6 @@ function isCornersFieldHidden(): boolean {
 }
 
 /**
- * Value shown in an input.
- *
- * @param id - input id
- * @returns its value, empty when absent
- */
-function valueOf(id: string): string {
-  return document.querySelector<HTMLInputElement>(`#${id}`)?.value ?? "";
-}
-
-/**
- * Clicks a button of the page.
- *
- * @param id - button id
- */
-function click(id: string): void {
-  document.querySelector<HTMLButtonElement>(`#${id}`)?.click();
-}
-
-/**
  * Clicks a button of the page several times.
  *
  * @param id - button id
@@ -90,7 +34,7 @@ function clickTimes(id: string, count: number): void {
     return;
   }
 
-  click(id);
+  clickElement(id);
   clickTimes(id, count - 1);
 }
 
@@ -137,14 +81,7 @@ function isAnchorFieldHidden(): boolean {
 describe("playground", () => {
   beforeAll(() => {
     // The page as served, without its script tag: the test mounts the playground itself.
-    const parser = new DOMParser();
-    const parsed = parser.parseFromString(page, "text/html");
-
-    parsed.querySelector("script")?.remove();
-    // The head carries the page's style: visibility is checked as the browser computes it.
-    document.head.replaceChildren(...parsed.head.childNodes);
-    document.body.replaceChildren(...parsed.body.childNodes);
-    mountPlayground(document, GUIDED_STEPS);
+    openPage("");
   });
 
   it("[F02.AC4] opens on the rectangle, the selector on Rectangle, without the number of corners", () => {
@@ -153,42 +90,42 @@ describe("playground", () => {
   });
 
   it("[F01.AC1] renders the rectangle as one <path>", () => {
-    type("width", "100");
-    type("height", "50");
-    type("radius", "0");
+    typeValue("width", "100");
+    typeValue("height", "50");
+    typeValue("radius", "0");
 
     expect(document.querySelectorAll("#canvas svg path")).toHaveLength(1);
-    expect(text("path-data")).toBe("M0 0 L100 0 L100 50 L0 50 Z");
+    expect(readText("#path-data")).toBe("M0 0 L100 0 L100 50 L0 50 Z");
   });
 
   it("[F01.AC2] shows the effective radius next to the requested one when it was reduced", () => {
-    type("height", "25");
-    type("radius", "100");
+    typeValue("height", "25");
+    typeValue("radius", "100");
 
-    expect(text("effective")).toBe("Effective radius: 12.5 (requested 100, reduced to fit)");
+    expect(readText("#effective")).toBe("Effective radius: 12.5 (requested 100, reduced to fit)");
   });
 
   it("[F01.AC2] says the radius is as requested when it fits", () => {
-    type("height", "50");
-    type("radius", "10");
+    typeValue("height", "50");
+    typeValue("radius", "10");
 
-    expect(text("effective")).toBe("Effective radius: 10 (as requested)");
-    expect(text("path-data")).toContain("A10 10 0 0 1 100 10");
+    expect(readText("#effective")).toBe("Effective radius: 10 (as requested)");
+    expect(readText("#path-data")).toContain("A10 10 0 0 1 100 10");
   });
 
   it("refuses a negative radius and clears the effective radius", () => {
-    type("radius", "-3");
+    typeValue("radius", "-3");
 
-    expect(text("status")).toBe(
+    expect(readText("#status")).toBe(
       "Width, height and radius must be integers ≥ 0, and the angle an integer.",
     );
 
-    expect(text("effective")).toBe("");
+    expect(readText("#effective")).toBe("");
   });
 
   it("[F02.AC1] walks the steps of the guided test (F01, F02, F07, F03, F09, F08, F04, F06, then E01), each showing what it tells to look at", () => {
     // "Previous" on the first step stays there and types its values again.
-    click("guide-previous");
+    clickElement("guide-previous");
 
     // Effective radius text expected at each step, as announced by the step (US-003 card).
     const expected = [
@@ -263,15 +200,15 @@ describe("playground", () => {
     ];
 
     for (const [index, effective] of expected.entries()) {
-      expect(text("guide-number")).toBe(String(index + 1));
-      expect(text("effective")).toBe(effective);
-      click("guide-next");
+      expect(readText("#guide-number")).toBe(String(index + 1));
+      expect(readText("#effective")).toBe(effective);
+      clickElement("guide-next");
     }
 
     // Past the last step, the guide stays on it: the stretched hexagon of E01, rounded, straight.
-    expect(text("guide-number")).toBe("72");
+    expect(readText("#guide-number")).toBe("72");
 
-    expect(text("path-data")).toBe(
+    expect(readText("#path-data")).toBe(
       "M92.04396 100 L67.95604 100 A50 50 0 0 1 31.16755 83.86159 A50 50 0 0 1 31.16755 16.13841 A50 50 0 0 1 67.95604 0 L92.04396 0 A50 50 0 0 1 128.83245 16.13841 A50 50 0 0 1 128.83245 83.86159 A50 50 0 0 1 92.04396 100 Z",
     );
 
@@ -280,33 +217,33 @@ describe("playground", () => {
     // The last step of F06: the stretched hexagon, straight.
     clickTimes("guide-previous", 6);
 
-    expect(text("guide-number")).toBe("66");
+    expect(readText("#guide-number")).toBe("66");
 
-    expect(text("path-data")).toBe(
+    expect(readText("#path-data")).toBe(
       "M77.42919 100 L22.57081 100 L0 50 L22.57081 0 L77.42919 0 L100 50 Z",
     );
 
     // The last step of F09: the 120 × 80 rectangle, a free shape.
     clickTimes("guide-previous", 28);
 
-    expect(text("guide-number")).toBe("38");
+    expect(readText("#guide-number")).toBe("38");
 
-    expect(text("path-data")).toBe(
+    expect(readText("#path-data")).toBe(
       "M10 0 L110 0 A10 10 0 0 1 120 10 L120 70 A10 10 0 0 1 110 80 L10 80 A10 10 0 0 1 0 70 L0 10 A10 10 0 0 1 10 0 Z",
     );
 
     // The last step of F03: a rectangle 0 wide, not drawn.
     clickTimes("guide-previous", 5);
 
-    expect(text("guide-number")).toBe("33");
-    expect(text("path-data")).toBe("M0 0 L0 50 Z");
+    expect(readText("#guide-number")).toBe("33");
+    expect(readText("#path-data")).toBe("M0 0 L0 50 Z");
 
     // The last step of F07: back to the rectangle, the anchor grid hidden.
     clickTimes("guide-previous", 5);
 
-    expect(text("guide-number")).toBe("28");
+    expect(readText("#guide-number")).toBe("28");
 
-    expect(text("path-data")).toBe(
+    expect(readText("#path-data")).toBe(
       "M10 0 L90 0 A10 10 0 0 1 100 10 L100 40 A10 10 0 0 1 90 50 L10 50 A10 10 0 0 1 0 40 L0 10 A10 10 0 0 1 10 0 Z",
     );
 
@@ -315,86 +252,93 @@ describe("playground", () => {
     // The next tests start from the last step of F02: a rectangle, the anchor on the center.
     clickTimes("guide-previous", 9);
 
-    expect(text("guide-number")).toBe("19");
+    expect(readText("#guide-number")).toBe("19");
     expect(checkedAnchor()).toBe("mid mid");
   });
 
   it("[F02.AC4] stays on the rectangle after the steps of the F01 guided test", () => {
-    click("guide-previous");
+    clickElement("guide-previous");
 
     expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("rectangle");
     expect(isCornersFieldHidden()).toBe(true);
   });
 
   it("[F02.AC4] draws a polygon in the same box, keeping width, height and radius", () => {
-    type("width", "100");
-    type("height", "100");
-    type("radius", "0");
-    type("corners", "6");
-    chooseShape("polygon");
+    typeValue("width", "100");
+    typeValue("height", "100");
+    typeValue("radius", "0");
+    typeValue("corners", "6");
+    chooseOption("shape", "polygon");
 
     // Hexagon (6 corners by default) in 100 × 100: flat top and bottom at (100 − 50√3)/2.
     expect(isCornersFieldHidden()).toBe(false);
-    expect([valueOf("width"), valueOf("height"), valueOf("radius")]).toEqual(["100", "100", "0"]);
 
-    expect(text("path-data")).toBe(
+    expect([readValue("width"), readValue("height"), readValue("radius")]).toEqual([
+      "100",
+      "100",
+      "0",
+    ]);
+
+    expect(readText("#path-data")).toBe(
       "M75 93.30127 L25 93.30127 L0 50 L25 6.69873 L75 6.69873 L100 50 Z",
     );
   });
 
   it("[F02.AC3] writes the polygon with at most 5 decimals, clockwise from the right end of its base", () => {
     // Hexagon of the previous step: 6.69873 is (100 − 50√3)/2 = 6.698729… rounded to 5 decimals.
-    const numbers = text("path-data").match(/-?\d+(?:\.\d+)?/gu) ?? [];
+    const numbers = readText("#path-data").match(/-?\d+(?:\.\d+)?/gu) ?? [];
 
     expect(numbers.every((number) => (number.split(".", 2)[1] ?? "").length <= 5)).toBe(true);
-    expect(text("path-data").startsWith("M75 93.30127 L25 93.30127")).toBe(true);
+    expect(readText("#path-data").startsWith("M75 93.30127 L25 93.30127")).toBe(true);
   });
 
   it("[F02.AC4] follows the number of corners: a triangle pointing up", () => {
-    type("corners", "3");
+    typeValue("corners", "3");
 
-    expect(text("path-data")).toBe("M100 93.30127 L0 93.30127 L50 6.69873 Z");
+    expect(readText("#path-data")).toBe("M100 93.30127 L0 93.30127 L50 6.69873 Z");
   });
 
   it("[F02.AC2] shows the incircle radius when the radius is too big", () => {
-    type("corners", "6");
-    type("radius", "1000");
+    typeValue("corners", "6");
+    typeValue("radius", "1000");
 
     // Inradius of the hexagon: 50 cos(π/6) = 43.30127.
-    expect(text("effective")).toBe("Effective radius: 43.30127 (requested 1000, reduced to fit)");
+    expect(readText("#effective")).toBe(
+      "Effective radius: 43.30127 (requested 1000, reduced to fit)",
+    );
 
     // The circle of the hexagon: six arcs of radius 43.30127 and no line, from the middle of the
     // base, where the first fillet ends.
-    expect(text("path-data")).toMatch(
+    expect(readText("#path-data")).toMatch(
       /^M50 93\.30127 (?:A43\.30127 43\.30127 0 0 1 [\d. ]+){6}Z$/u,
     );
   });
 
   it("[F02.AC1] refuses 13, 2, 2.5 and no corners", () => {
-    type("corners", "13");
+    typeValue("corners", "13");
 
-    expect(text("status")).toBe(
+    expect(readText("#status")).toBe(
       "Width, height and radius must be integers ≥ 0, corners an integer from 3 to 12, and the angle an integer.",
     );
 
     expect(document.querySelector("#corners")?.getAttribute("aria-invalid")).toBe("true");
-    expect(text("effective")).toBe("");
+    expect(readText("#effective")).toBe("");
 
     for (const corners of ["2", "2.5", ""]) {
-      type("corners", corners);
+      typeValue("corners", corners);
 
-      expect(text("status")).toContain("corners an integer from 3 to 12");
+      expect(readText("#status")).toContain("corners an integer from 3 to 12");
       expect(document.querySelector("#corners")?.getAttribute("aria-invalid")).toBe("true");
     }
   });
 
   it("[F02.AC4] goes back to the rectangle, the number of corners hidden and ignored", () => {
-    type("radius", "0");
-    chooseShape("rectangle");
+    typeValue("radius", "0");
+    chooseOption("shape", "rectangle");
 
     expect(isCornersFieldHidden()).toBe(true);
-    expect(text("status")).toBe("");
-    expect(text("path-data")).toBe("M0 0 L100 0 L100 100 L0 100 Z");
+    expect(readText("#status")).toBe("");
+    expect(readText("#path-data")).toBe("M0 0 L100 0 L100 100 L0 100 Z");
   });
 
   it("[F02.AC4] sets the shape and the corners of each step of the guided test", () => {
@@ -406,53 +350,53 @@ describe("playground", () => {
 
     clickTimes("guide-next", 9);
 
-    expect(text("guide-number")).toBe("10");
+    expect(readText("#guide-number")).toBe("10");
     expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("polygon");
     expect(isCornersFieldHidden()).toBe(false);
-    expect(valueOf("corners")).toBe("6");
+    expect(readValue("corners")).toBe("6");
   });
 
   it("[F02.AC5] caps a width or a radius above 100 000 at 100 000, in the input too (Q20)", () => {
-    chooseShape("rectangle");
-    type("width", "250000");
+    chooseOption("shape", "rectangle");
+    typeValue("width", "250000");
 
-    expect(valueOf("width")).toBe("100000");
-    expect(text("model")).toContain('"width": 100000');
+    expect(readValue("width")).toBe("100000");
+    expect(readText("#model")).toContain('"width": 100000');
 
-    type("height", "250000");
+    typeValue("height", "250000");
 
-    expect(valueOf("height")).toBe("100000");
-    expect(text("model")).toContain('"height": 100000');
+    expect(readValue("height")).toBe("100000");
+    expect(readText("#model")).toContain('"height": 100000');
 
-    type("radius", "500000");
+    typeValue("radius", "500000");
 
-    expect(valueOf("radius")).toBe("100000");
-    expect(text("model")).toContain('"radius": 100000');
+    expect(readValue("radius")).toBe("100000");
+    expect(readText("#model")).toContain('"radius": 100000');
   });
 
   it("[F02.AC5] keeps 100 000 and smaller values exactly", () => {
-    type("height", "100000");
-    type("width", "99999");
+    typeValue("height", "100000");
+    typeValue("width", "99999");
 
-    expect([valueOf("height"), valueOf("width")]).toEqual(["100000", "99999"]);
-    expect(text("model")).toContain('"width": 99999');
+    expect([readValue("height"), readValue("width")]).toEqual(["100000", "99999"]);
+    expect(readText("#model")).toContain('"width": 99999');
   });
 
   it("[F07.AC5] hides the anchor grid for the rectangle, shows it for the polygon on the center", () => {
-    chooseShape("rectangle");
+    chooseOption("shape", "rectangle");
 
     expect(isAnchorFieldHidden()).toBe(true);
     expect(document.querySelectorAll("#canvas path")).toHaveLength(1);
 
-    type("width", "100");
-    type("height", "100");
-    type("radius", "0");
-    type("corners", "3");
-    chooseShape("polygon");
+    typeValue("width", "100");
+    typeValue("height", "100");
+    typeValue("radius", "0");
+    typeValue("corners", "3");
+    chooseOption("shape", "polygon");
 
     expect(isAnchorFieldHidden()).toBe(false);
     expect(checkedAnchor()).toBe("mid mid");
-    expect(text("path-data")).toBe("M100 93.30127 L0 93.30127 L50 6.69873 Z");
+    expect(readText("#path-data")).toBe("M100 93.30127 L0 93.30127 L50 6.69873 Z");
   });
 
   it("[F07.AC5] offers nine cells in one radio group, for the arrow keys", () => {
@@ -492,30 +436,30 @@ describe("playground", () => {
 
     // Room 100 − 86.60254 = 13.39746, all of it above the triangle.
     expect(checkedAnchor()).toBe("mid max");
-    expect(text("path-data")).toBe("M100 100 L0 100 L50 13.39746 Z");
-    expect(text("model")).toContain('"vertical": "max"');
+    expect(readText("#path-data")).toBe("M100 100 L0 100 L50 13.39746 Z");
+    expect(readText("#model")).toContain('"vertical": "max"');
   });
 
   it("[F07.AC3] keeps the triangle in place from left to right, the anchor still shown", () => {
     chooseAnchor("min max");
 
-    expect(text("path-data")).toBe("M100 100 L0 100 L50 13.39746 Z");
-    expect(text("model")).toContain('"horizontal": "min"');
+    expect(readText("#path-data")).toBe("M100 100 L0 100 L50 13.39746 Z");
+    expect(readText("#model")).toContain('"horizontal": "min"');
 
     chooseAnchor("max max");
 
-    expect(text("path-data")).toBe("M100 100 L0 100 L50 13.39746 Z");
-    expect(text("model")).toContain('"horizontal": "max"');
+    expect(readText("#path-data")).toBe("M100 100 L0 100 L50 13.39746 Z");
+    expect(readText("#model")).toContain('"horizontal": "max"');
   });
 
   it("[F07.AC4] lets the radius round the triangle without moving its base", () => {
-    type("radius", "10");
+    typeValue("radius", "10");
 
     // The base stays on y = 100 between its fillets' tangent points, r / tan(30°) = 17.32051
     // from each base vertex (it would rise if the rounded shape were anchored instead).
-    expect(text("path-data")).toContain("L17.32051 100 ");
-    expect(text("path-data")).toContain("82.67949 100");
-    expect(text("path-data")).not.toBe("M100 100 L0 100 L50 13.39746 Z");
+    expect(readText("#path-data")).toContain("L17.32051 100 ");
+    expect(readText("#path-data")).toContain("82.67949 100");
+    expect(readText("#path-data")).not.toBe("M100 100 L0 100 L50 13.39746 Z");
   });
 
   it("[F07.AC1] puts the anchor back on the center at each step of the guided test", () => {
@@ -524,7 +468,7 @@ describe("playground", () => {
 
     expect(checkedAnchor()).toBe("mid mid");
 
-    expect(text("path-data")).toBe(
+    expect(readText("#path-data")).toBe(
       "M75 93.30127 L25 93.30127 L0 50 L25 6.69873 L75 6.69873 L100 50 Z",
     );
   });
@@ -534,22 +478,22 @@ describe("playground", () => {
     clickTimes("guide-previous", GUIDED_STEPS.length);
     clickTimes("guide-next", 20);
 
-    expect(text("path-data")).toBe("M100 100 L0 100 L50 13.39746 Z");
+    expect(readText("#path-data")).toBe("M100 100 L0 100 L50 13.39746 Z");
 
     clickTimes("guide-next", 2);
 
-    expect(text("path-data")).toBe("M100 86.60254 L0 86.60254 L50 0 Z");
+    expect(readText("#path-data")).toBe("M100 86.60254 L0 86.60254 L50 0 Z");
 
     // The square of 50 in a 100 × 50 box: right (50 to 100), then left (0 to 50) by a corner button;
     // its path starts where the fillet of point 1, the right end of the base, ends on the base.
     clickTimes("guide-next", 2);
 
     expect(checkedAnchor()).toBe("max mid");
-    expect(text("path-data")).toContain("M90 50 L60 50 ");
+    expect(readText("#path-data")).toContain("M90 50 L60 50 ");
 
-    click("guide-next");
+    clickElement("guide-next");
 
     expect(checkedAnchor()).toBe("min max");
-    expect(text("path-data")).toContain("M40 50 L10 50 ");
+    expect(readText("#path-data")).toContain("M40 50 L10 50 ");
   });
 });

@@ -4,7 +4,7 @@
 
 - Every code folder holds an `index.ts` (`local/folder-has-index`).
 - An `index.ts` contains **only** `export * from "./module";`, one line per module and sub-folder, sorted (`local/barrel-exports`). **Autofixed**: create a file, then run `npm run fix`.
-- Exceptions: tests (`*.test.ts`) are never exported; `playground/index.ts` is an entry point, not a barrel.
+- Exceptions: tests (`*.test.ts`) are never exported; `playground/index.ts` is an entry point, not a barrel; a subfolder of the playground has a barrel (`playground/user-actions/index.ts`).
 
 ## Canonical path (`local/canonical-import-path`, autofixed)
 
