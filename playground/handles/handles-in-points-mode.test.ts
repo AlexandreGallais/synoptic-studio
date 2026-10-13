@@ -72,13 +72,14 @@ describe("handles in Points mode (US-022)", () => {
   });
 
   it("[F12.AC2] [F12.AC4] bends the side when the handle after is typed, the handle before mirrored", () => {
-    // After at (30, −15): the vector (30, −15); before mirrored at (−30, 15); the top side a cubic.
+    // After at (30, −15): the vector (30, −15); before mirrored at (−30, 15); the top side a cubic
+    // from point 1, cut where point 2's fillet of radius 10 touches it (ADR-0047).
     clickElement("handles-switch");
     typeAndEnter("handle-after-x", "30");
     typeAndEnter("handle-after-y", "-15");
 
     expect(readHandleFields()).toEqual(["-30", "15", "30", "-15"]);
-    expect(readText("#path-data")).toMatch(/^M.* C30 -15 /u);
+    expect(readText("#path-data")).toMatch(/^M0 0 C/u);
   });
 
   it("[F12.AC2] leaves the handle before in mode none", () => {

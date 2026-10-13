@@ -35,32 +35,28 @@ function curved(
   });
 }
 
-describe("curveContour (ADR-0046)", () => {
+describe("curveContour (ADR-0046, ADR-0047)", () => {
   it("[F12.AC5] is the rounded contour, piece for piece, when every handle is off", () => {
     const corners = rectangleCorners(100, 50, [10, 0, 25, 5]);
 
     expect(curveContour(curved(corners, {}))).toEqual(roundedContour(corners));
   });
 
-  it("[F12.AC3] draws the top side of a square as a cubic, its corners sharp, the others rounded", () => {
-    // Point 1 (0, 0) after (30, −15): the side to (100, 0) is a cubic; point 2 keeps radius 10 but
-    // is next to a curved side, so it is sharp; points 3 and 4 keep their fillets.
+  it("[F12.AC3] [F12.AC7] draws the top side of a square as a cubic, its point in handles mode sharp, the others rounded", () => {
+    // Point 1 (0, 0) after (30, −15): the side to (100, 0) is a cubic from (0, 0); point 2 keeps its
+    // radius 10 beside it, the cubic cut where the arc touches it (ADR-0047).
     const pieces = curveContour(
       curved(rectangleCorners(100, 100, [0, 10, 10, 10]), { 0: { after: { x: 30, y: -15 } } }),
     );
+    const [cubic, arc] = pieces;
 
-    expect(pieces.filter((piece) => piece.kind === "cubic")).toEqual([
-      {
-        end: { x: 100, y: 0 },
-        first: { x: 30, y: -15 },
-        kind: "cubic",
-        second: { x: 100, y: 0 },
-        start: { x: 0, y: 0 },
-      },
-    ]);
+    expect(cubic).toMatchObject({ kind: "cubic", start: { x: 0, y: 0 } });
+    // The cut keeps the cubic's direction at its start: its first control point on the handle.
+    expect(cubic?.kind === "cubic" && cubic.first.y / cubic.first.x).toBeCloseTo(-0.5, 12);
+    expect(arc?.start).toEqual(cubic?.end);
 
     expect(pieces.filter((piece) => piece.kind === "arc").map((piece) => piece.radius)).toEqual([
-      10, 10,
+      10, 10, 10,
     ]);
   });
 
@@ -90,7 +86,7 @@ describe("curveContour (ADR-0046)", () => {
           (first.x !== second.x || first.y !== second.y),
       );
 
-      const corners = points.map((point) => ({ point, radius: 5 }));
+      const corners = points.map((point) => ({ point, radius: 0 }));
       const cubics = curveContour(curved(corners, { 0: { after: { x: 5, y: 5 } } })).filter(
         (piece) => piece.kind === "cubic",
       );
@@ -105,23 +101,19 @@ describe("curveContour (ADR-0046)", () => {
     expect(pieces).toEqual(roundedContour(rectangleCorners(100, 100, [0, 0, 0, 0])));
   });
 
-  it("sharpens a corner whose next side is curved by the next point's handle before", () => {
-    // Point 1 off with radius 10; point 2 on with before (0, −40): the side 1 → 2 is a cubic from (0, 0).
+  it("[F12.AC7] rounds a corner whose next side is curved by the next point's handle before", () => {
+    // Point 1 off with radius 10; point 2 on with before (0, −40): the side 1 → 2 is a cubic, cut
+    // where point 1's arc of radius 10 touches it.
     const pieces = curveContour(
       curved(rectangleCorners(100, 100, [10, 0, 0, 0]), { 1: { before: { x: 0, y: -40 } } }),
     );
+    const cubic = pieces.find((piece) => piece.kind === "cubic");
+    const arc = pieces.find((piece) => piece.kind === "arc");
 
-    expect(pieces.filter((piece) => piece.kind === "cubic")).toEqual([
-      {
-        end: { x: 100, y: 0 },
-        first: { x: 0, y: 0 },
-        kind: "cubic",
-        second: { x: 100, y: -40 },
-        start: { x: 0, y: 0 },
-      },
-    ]);
-
-    expect(pieces.some((piece) => piece.kind === "arc")).toBe(false);
+    expect(arc?.radius).toBe(10);
+    expect(cubic?.start).toEqual(arc?.end);
+    // The cut keeps the cubic's end and its direction there: its second control point above (100, 0).
+    expect(cubic).toMatchObject({ end: { x: 100, y: 0 }, second: { x: 100 } });
   });
 
   it("does not draw the vector kept by a point that is off", () => {
