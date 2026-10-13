@@ -56,18 +56,52 @@ Reference behavior: Figma.
 - No "independent corners" switch: the radius of one corner is set in node editing only.
 - Geometry: arc tangent to both edges; setback `d = r / tan(θ/2)` (`DERIV-fillet-setback`).
 
-### Radius and handles on one point (F12, Product Owner, 2026-10-13)
+### Points with handles (F12)
 
-- A point keeps its corner radius when it gets handles: removing the handles brings the radius back as it was (30 stays 30, 0 stays 0); no value is lost when switching.
-- A point is edited in one of two modes, **corner radius** or **handles**, switched in one step, the mode always visible; the final layout of this switch is part of the UX pass at the end of E14.
-- A new point on the curve starts in Figma's **mirrored angle and length** mode: moving one handle to (130, 0) around a point at (100, 0) puts the other at (70, 0). The two other modes, **mirrored angle** and **no mirroring**, are chosen per point.
-- A side is a **curve** when a handle is on at either of its ends (ADR-0046); a corner in radius mode next to a curved side is drawn sharp until a rule is chosen.
-- Handles stretch with the shape, like its points. The shape's **box is the box of its curve**: a square 100 × 100 whose top bulges by 20 shows about 100 × 115, as Figma (Product Owner, 2026-10-13).
-- A point added in the middle of a curved side keeps the outline; deleting a point joins its two sides, keeping the outer handles.
-- How a handle is typed: seven methods, each built and tried at the end of F12 (Q32, research note 0013). With the same values at both ends of a side, the methods measured from the side give a symmetric arch, outwards for angles from 180° to 359° on a clockwise contour (330° bends a side out by 30°), inwards for the others.
-- A handle typed as an angle and a length (US-024): angles clockwise on screen, from the x axis or from the handle's side, brought into 0 to 359 as a shape's (370 becomes 10, −90 becomes 270); a negative length is refused, and so is an angle from a side of length 0; an angle typed while the handle has no length is kept until its length is typed.
-- A handle typed as shares of its side (US-025): whole percentages along it and across it, across counted outwards for the handle after and mirrored for the handle before, so that equal shares make a symmetric arch; refused on a side of length 0. A curve can be pasted on the side after a point: one SVG `C` command ending on the next point, or a CSS `cubic-bezier()` laid on the side by its diagonal (x values from 0 to 1); any other text is refused with a line saying why; each point's other handle follows its mode.
-- A point can be smoothed by a tension (US-026): its mode `auto` computes its handles from its neighbours as a cardinal spline, `±(1 − c)(next − previous) / 6`, a whole percentage from 0 (Catmull–Rom) to 100 (straight sides); they follow the neighbours as they move, and are smoothed again from new neighbours when a point next to them is deleted (the side beyond then moves, unlike other points); typing one of its handles leaves the tension for mode angle.
+A point of a free shape can bend its two sides with two handles, as in Figma, without losing its corner radius (Product Owner decision, 2026-10-13). Drawing rules: ADR-0046; formulas: the derivations named in the tables.
+
+**Radius or handles.** Each point has a switch with two states, always visible; its final layout is part of the UX pass at the end of E14.
+
+| State         | The point is drawn                | Its corner radius                                                          |
+| ------------- | --------------------------------- | -------------------------------------------------------------------------- |
+| Corner radius | filleted (ADR-0007)               | drawn                                                                      |
+| Handles       | its two sides bent by its handles | kept, not drawn; back as it was when switched off (30 stays 30, 0 stays 0) |
+
+**Handle modes.** Typing one handle sets the other by the point's mode, chosen per point:
+
+| Mode (playground)                 | Stored             | The other handle                                                                                                                                                                                                                                              |
+| --------------------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Mirror angle and length (default) | `angle-and-length` | opposite, same length: one handle at (130, 0) around a point at (100, 0) puts the other at (70, 0) (Figma)                                                                                                                                                    |
+| Mirror angle                      | `angle`            | opposite direction, its own length kept; unchanged when the typed handle has length 0 (Figma)                                                                                                                                                                 |
+| No mirroring                      | `none`             | unchanged (Figma)                                                                                                                                                                                                                                             |
+| Smooth by a tension               | `auto`             | both computed from the neighbours, `±(1 − c)(next − previous) / 6`, `c` a whole percentage from 0 (Catmull–Rom) to 100 (straight sides); they follow the neighbours as they move; typing a handle switches the point to Mirror angle (`DERIV-handle-tension`) |
+
+**Sides and box:**
+
+- A side is a cubic curve when a handle is on at either of its ends and not of length 0 (ADR-0046); a point with its handles on but of length 0 leaves its sides straight. A point in handles mode, or a corner in radius mode next to a curved side, is drawn sharp, its radius kept, until a rule is chosen; the radius shown as effective is then 0, and its neighbours' clamp is computed without it.
+- Handles stretch with the shape, like its points.
+- The shape's box is the box of its curve, as in Figma: a square 100 × 100 whose top bulges by 20 shows about 100 × 115.
+
+**Points added or deleted on a curve:**
+
+| Edit                                         | Effect                                                                                                                                                                                                                                     |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| A point added in the middle of a curved side | the curve is split at its middle and the drawing does not move; the new point is in handles mode, Mirror angle and length; a neighbour in Mirror angle and length or Smooth by a tension goes to Mirror angle (`DERIV-cubic-sides` step 4) |
+| A point deleted                              | its two sides become one, keeping the outer handles; a neighbour in Smooth by a tension is smoothed again from its new neighbours, so the side beyond it moves, unlike other points                                                        |
+
+**Typing a handle.** Seven methods, each built and tried at the end of F12 (Q32, research note 0013). The method changes only how the stored vector is shown and typed.
+
+| Method                        | Typed                                                                                                                    | Rules                                                                                                                                                                              | Derivation             |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- |
+| x, y on the page              | the handle's end                                                                                                         | —                                                                                                                                                                                  | —                      |
+| dx, dy from the point         | the vector from the point                                                                                                | moves with its point                                                                                                                                                               | —                      |
+| angle, length from the x axis | degrees clockwise on screen, and a length                                                                                | angle brought into 0 to 359 as a shape's (370 becomes 10, −90 becomes 270); a negative length refused; an angle typed while the length is 0 kept until a length is typed           | `DERIV-handle-angle`   |
+| angle, length from the side   | the same, from the side the handle leaves along                                                                          | as above; refused on a side of length 0                                                                                                                                            | `DERIV-handle-angle`   |
+| share of the side (%)         | whole percentages along and across the side                                                                              | across counted outwards for the handle after, mirrored for the handle before; refused on a side of length 0                                                                        | `DERIV-handle-share`   |
+| paste a curve                 | one SVG `C` command ending on the next point, or a CSS `cubic-bezier()` laid on the side by its diagonal (x from 0 to 1) | applies to the side after the point; refused on a side of length 0 for `cubic-bezier()`; any other text refused with a line saying why; each point's other handle follows its mode | `DERIV-handle-share`   |
+| tension                       | a whole percentage, mode Smooth by a tension                                                                             | see the modes above                                                                                                                                                                | `DERIV-handle-tension` |
+
+With the same values at both ends of a side, the methods measured from the side give a symmetric arch: outwards for angles from 180° to 359° on a clockwise contour (330° bends a side out by 30°), inwards for the others (Product Owner decision, 2026-10-13).
 
 ### Radius clamping (ADR-0007)
 
@@ -101,7 +135,8 @@ Storing the value (Q8, settled):
 - The rectangle is a **free shape** of 4 points made by the rectangle tool (Product Owner, 2026-10-11, F09): underneath, a rectangle is always a free shape. Width and height of any free shape stretch its points, the top-left of its box fixed; a rectangle stays a rectangle; stretching is without loss (0 then back gives the same shape). The eight handles of the box, the opposite side fixed as in Inkscape, come with E02.
 
 - Model (ADR-0032, ADR-0033) — a **free shape** stores:
-  - its **corners**, each a point in the shape's own box, its radius (integer ≥ 0) and its **handles** (F12, ADR-0046): a switch, a mode and two vectors from the point, stored in the same frame as the points and stretched with them; off, in mode angle and length, (0, 0) for a new point or a converted shape; at least 3 corners, spanning a box of positive width and height (contour order Q11);
+  - its **corners**, each a point in the shape's own box, its radius (integer ≥ 0) and its **handles** (F12, ADR-0046, "Points with handles" above); at least 3 corners, spanning a box of positive width and height (contour order Q11);
+    - handles: the switch `isOn`, the `mode`, the vectors `before` and `after` from the point (in the frame of the stored points, stretched with them; exact, fractional when pasted or computed) and the `tension` of mode `auto`; a new point or a converted shape has them off, in `angle-and-length`, (0, 0), tension 0;
   - its `width`, `height`, `angle` and position `x`, `y` (ADR-0035).
 - Numbers: finite; integers when typed; fractional after a conversion (Q27) or an edit (ADR-0034); on a turned shape, integers in the drawing only, the point being stored un-turned (ADR-0035).
 - Drawing: the stored points stretched from the top-left of their curve's box (`DERIV-free-shape-stretch`, ADR-0046), moved to the position, then turned by the angle (`DERIV-turned-shape`). The rectangle tool stores the unit square.

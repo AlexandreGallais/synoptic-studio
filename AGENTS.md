@@ -47,7 +47,7 @@ A library of small named functions, each backed by a verified source, composed s
 
 ## Key decisions (the ADR is the source)
 
-- **Numbers** (ADR-0003, ADR-0031, ADR-0034, ADR-0035): every input is an integer; derived geometry is float and never stored, except a free shape's exact points and size, and a turned shape's position; `EPSILON = 1e-9`, `SVG_DECIMALS = 5`.
+- **Numbers** (ADR-0003, ADR-0031, ADR-0034, ADR-0035): every input is an integer; derived geometry is float and never stored, except a free shape's exact points, handles and size, and a turned shape's position; `EPSILON = 1e-9`, `SVG_DECIMALS = 5`.
 - **Geometry** (ADR-0001, ADR-0002, ADR-0046): segments, circular arcs only as fillets, and cubic sides from typed handles in symbols; everything is a `<path>` except text; strokes computed by offset.
 - **Portable core** (ADR-0025): ECMAScript only, plain data.
 - Contours clockwise from the top-left vertex, a regular polygon from the right end of its base (Q11, Q18); corner radius reduced locally, requested value stored (ADR-0007).
