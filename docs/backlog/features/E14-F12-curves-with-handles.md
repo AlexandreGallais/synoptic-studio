@@ -69,3 +69,4 @@ Written by SP-011 from [research note 0013](../../research/notes/0013-f12-curves
 | F12.AC5              | every story            | `npm run check:all` |
 | F12.AC6              | EN-025                 | AUD-011             |
 | F12.AC7              | SP-012, US-027         | AUD-012             |
+| F12.AC8              | US-028                 | AUD-012             |
