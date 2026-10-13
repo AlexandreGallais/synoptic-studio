@@ -38,4 +38,18 @@ describe("handlesAfterTyping", () => {
 
     expect([typed.isOn, typed.mode]).toEqual([true, "angle"]);
   });
+
+  it("mirrors from the handle before too, in modes angle and length and none", () => {
+    // Before (30, −15) typed: after becomes (−30, 15) in angle and length, stays (−5, 7) in none.
+    const kept = { ...NO_HANDLES, after: { x: -5, y: 7 } };
+
+    expect(handlesAfterTyping(kept, "before", { x: 30, y: -15 }).after).toEqual({ x: -30, y: 15 });
+
+    expect(
+      handlesAfterTyping({ ...kept, mode: "none" }, "before", { x: 30, y: -15 }).after,
+    ).toEqual({
+      x: -5,
+      y: 7,
+    });
+  });
 });
