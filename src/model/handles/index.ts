@@ -10,4 +10,5 @@ export * from "./is-angle-unknown";
 export * from "./no-handles";
 export * from "./pasted-control-points";
 export type * from "./pasted-curve";
+export * from "./smoothed-corners";
 export * from "./typed-handle";

@@ -56,6 +56,7 @@ describe("cornersWithMidpoint (DERIV-cubic-sides step 4)", () => {
       before: { x: -25, y: 0 },
       isOn: true,
       mode: "angle-and-length",
+      tension: 0,
     });
 
     expect([corners[0]?.handles.after, corners[2]?.handles.before]).toEqual([

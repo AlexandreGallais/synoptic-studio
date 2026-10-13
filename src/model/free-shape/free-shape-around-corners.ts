@@ -1,4 +1,5 @@
 import { curveBoundingBox } from "../../geometry";
+import { smoothedCorners } from "../handles";
 
 import type { FreeShape } from "./free-shape";
 import type { CurveCorner } from "../../geometry";
@@ -16,7 +17,7 @@ import type { CurveCorner } from "../../geometry";
  * @see DERIV-free-shape-stretch
  */
 export function freeShapeAroundCorners(corners: readonly CurveCorner[], angle: number): FreeShape {
-  const box = curveBoundingBox(corners);
+  const box = curveBoundingBox(smoothedCorners(corners));
 
   return {
     angle,

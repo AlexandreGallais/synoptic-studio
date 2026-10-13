@@ -9,7 +9,13 @@ import type { ContourPiece } from "../contour";
 
 /** Corner read when there is none: a contour has 3 corners or more. */
 const NO_CORNER: CurveCorner = {
-  handles: { after: { x: 0, y: 0 }, before: { x: 0, y: 0 }, isOn: false, mode: "angle-and-length" },
+  handles: {
+    after: { x: 0, y: 0 },
+    before: { x: 0, y: 0 },
+    isOn: false,
+    mode: "angle-and-length",
+    tension: 0,
+  },
   point: { x: 0, y: 0 },
   radius: 0,
 };
