@@ -80,7 +80,7 @@ The run picks up `develop` before every story (run skill, step 1): when `develop
 
 ## Searching past conversations
 
-Claude Code keeps each conversation as a JSONL file in `~/.claude/projects/<project-path>/` (local, never committed). The session journal ([journal](../process/journal.md), ADR-0024) is read first; the transcripts are the full archive:
+Claude Code keeps each conversation as a JSONL file in `~/.claude/projects/<project-path>/` (local, never committed here; saved in the private records, ADR-0041). The session journal ([journal](../process/journal.md), ADR-0024) is read first; the transcripts are the full archive:
 
 ```sh
 cd ~/.claude/projects/<project-path>
