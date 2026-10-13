@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { edgeLengths, effectiveRadii, roundedContour } from "../../geometry";
 import { EPSILON } from "../../math";
-import { effectiveCornerRadius } from "../radii";
+import { effectiveCornerRadius } from "../corner-radius";
 
 import { regularPolygonContour } from "./regular-polygon-contour";
 import { regularPolygonCorners } from "./regular-polygon-corners";

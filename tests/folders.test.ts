@@ -61,7 +61,7 @@ describe("folders (ADR-0042)", () => {
     expect(counts.length).toBeGreaterThanOrEqual(26);
 
     expect(counts.map(({ folder }) => folder)).toEqual(
-      expect.arrayContaining(["src/geometry/rounded-corners", "src/math/vector"]),
+      expect.arrayContaining(["src/geometry/corner-radius", "src/math/vector"]),
     );
 
     expect(LISTED.size).toBeGreaterThan(0);

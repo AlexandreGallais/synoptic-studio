@@ -1,4 +1,4 @@
-import { boundingBox } from "./bounding-box";
+import { boundingBox } from "../placement";
 
 import type { Point } from "../../math";
 

@@ -2,7 +2,7 @@ import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { expectPoints } from "../../../tests";
-import { edgeLengths } from "../rounded-corners";
+import { edgeLengths } from "../corner-radius";
 
 import { unitStretchedPolygon } from "./unit-stretched-polygon";
 

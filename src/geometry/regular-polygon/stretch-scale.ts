@@ -1,5 +1,5 @@
 import { bisection } from "../../math";
-import { boxAspect } from "../box";
+import { boxAspect } from "../layout-box";
 
 import { isSoundStretch } from "./is-sound-stretch";
 import { STRETCH_LOG_BOUND } from "./stretch-log-bound";
