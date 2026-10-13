@@ -14,7 +14,7 @@ TypeScript library `editor` to create **SVG symbols** for **synoptic views**, an
 
 A library of small named functions, each backed by a verified source, composed so that they read like formulas; the playground (`playground/`) shows each stage. Principles: schematic, orthogonal, integer, documented, dependency-free.
 
-**State**: E01 (shapes from numbers) is delivered and its retrospective (RET-001) done — rectangle, regular polygon, anchor, radius per corner, free shape, node editing, rotation, stretched polygon. Next: E14 (curves), starting with F11 (a code base ready for curves), then E15 (text), E02. **Scope** (ADR-0030): a finished free V1, then new features only in a paid pro edition; a request that looks pro → say so and ask; pro ideas go to `docs/domain/editions.md`. Implement only stories the Product Owner has set to `ready`.
+**State**: E01 (shapes from numbers) is delivered and its retrospective (RET-001) done — rectangle, regular polygon, anchor, radius per corner, free shape, node editing, rotation, stretched polygon. E14 (curves) is in progress: F11 delivered a code base ready for curves (folders by business domain, ADR-0043; one path writer; a property test per function); next F10 (round shape), then E15 (text), E02. **Scope** (ADR-0030): a finished free V1, then new features only in a paid pro edition; a request that looks pro → say so and ask; pro ideas go to `docs/domain/editions.md`. Implement only stories the Product Owner has set to `ready`.
 
 ## Where to read — before any task
 

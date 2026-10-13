@@ -15,7 +15,7 @@ Nothing you can see in the playground: every drawing is the same, to the last de
 | Small helpers written again in the playground's tests      | 72                                           | 12, each used by one file only; the rest shared once    |
 | Writers of SVG path data in the library                    | 2                                            | 1 (`contourPiecesToPathData`)                           |
 | Passes over each corner to round a contour                 | several (angles computed again by each step) | one: each corner and its angle computed once            |
-| Tests                                                      | 793                                          | 859, every old value unchanged                          |
+| Tests                                                      | 793                                          | 860, every old value unchanged                          |
 
 A **property test** checks a rule on hundreds of random inputs (for instance, "a mirrored point mirrored again is the point itself"), where an ordinary test checks one hand-computed example.
 
@@ -54,7 +54,10 @@ F11 changes no drawing. Curves themselves come in the next features of E14, afte
 
 ## Validation
 
-Not yet validated (`VAL-010`).
+Validated by the Product Owner on 2026-10-13 (`VAL-010`): the folders by domain read well in the editor, the lint underlined a file put beside the folders, and the playground draws as before. The code itself was not reviewed by the Product Owner, who relies on the audits.
 
-| Remark | What was done or where it went |
-| ------ | ------------------------------ |
+| Remark                                                                                                                                                             | What was done or where it went                                                                                 |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| A demo page in Markdown adds little for a feature that changes no drawing                                                                                          | improvement log: such a feature is shown where it is checked (the editor, the playground), its page kept short |
+| When the playground is used for a check, a short text in it should say what to look at, during the validation only (the playground at `main` stays as it is)       | the run skill: every validation gets its short guided steps in the playground, even when no drawing changes    |
+| The handles of curves (Figma's three modes, the corner radius beside them, points on the curve after converting a round shape) are not visible as a feature of E14 | a draft feature F12 in E14, its order for the Product Owner to set                                             |

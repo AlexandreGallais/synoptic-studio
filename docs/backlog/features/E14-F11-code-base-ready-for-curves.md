@@ -2,7 +2,7 @@
 id: F11
 epic: E14
 title: A code base ready for curves
-status: in-progress
+status: done
 ---
 
 # E14 · F11 — A code base ready for curves
@@ -35,16 +35,16 @@ Decided with the Product Owner on 2026-10-13:
 
 In delivery order.
 
-| ID                                                         | Type       | Title                                                            | Status      |
-| ---------------------------------------------------------- | ---------- | ---------------------------------------------------------------- | ----------- |
-| [SP-010](../stories/E14-F11-SP-010-research-f11.md)        | Spike      | Research for F11: folder layouts and test placement              | done        |
-| [EN-020](../stories/E14-F11-EN-020-property-tests.md)      | Enabler    | Property tests for the nine functions without one                | done        |
-| [EN-021](../stories/E14-F11-EN-021-shared-test-helpers.md) | Enabler    | Shared test helpers, one path writer, one pass per corner        | done        |
-| [CHK-010](../stories/E14-F11-CHK-010-checkpoint-f11.md)    | Checkpoint | Checkpoint in the middle of F11                                  | done        |
-| [EN-022](../stories/E14-F11-EN-022-folder-layout.md)       | Enabler    | Folders of the library and the playground                        | done        |
-| [AUD-010](../stories/E14-F11-AUD-010-audit-f11.md)         | Audit      | Audit F11                                                        | done        |
-| [EN-023](../stories/E14-F11-EN-023-folders-by-domain.md)   | Enabler    | Folders by business domain, files and folders never side by side | done        |
-| [VAL-010](../stories/E14-F11-VAL-010-validate-f11.md)      | Validation | Validate F11                                                     | in-progress |
+| ID                                                         | Type       | Title                                                            | Status |
+| ---------------------------------------------------------- | ---------- | ---------------------------------------------------------------- | ------ |
+| [SP-010](../stories/E14-F11-SP-010-research-f11.md)        | Spike      | Research for F11: folder layouts and test placement              | done   |
+| [EN-020](../stories/E14-F11-EN-020-property-tests.md)      | Enabler    | Property tests for the nine functions without one                | done   |
+| [EN-021](../stories/E14-F11-EN-021-shared-test-helpers.md) | Enabler    | Shared test helpers, one path writer, one pass per corner        | done   |
+| [CHK-010](../stories/E14-F11-CHK-010-checkpoint-f11.md)    | Checkpoint | Checkpoint in the middle of F11                                  | done   |
+| [EN-022](../stories/E14-F11-EN-022-folder-layout.md)       | Enabler    | Folders of the library and the playground                        | done   |
+| [AUD-010](../stories/E14-F11-AUD-010-audit-f11.md)         | Audit      | Audit F11                                                        | done   |
+| [EN-023](../stories/E14-F11-EN-023-folders-by-domain.md)   | Enabler    | Folders by business domain, files and folders never side by side | done   |
+| [VAL-010](../stories/E14-F11-VAL-010-validate-f11.md)      | Validation | Validate F11                                                     | done   |
 
 ## Feature plan
 
@@ -55,4 +55,4 @@ In delivery order.
 | F11.AC3              | EN-021                 | AUD-010, `[F11.AC3]`                  |
 | F11.AC4              | SP-010, EN-022, EN-023 | AUD-010, EN-023's review, `[F11.AC4]` |
 | F11.AC5              | EN-020                 | `[F11.AC5]`                           |
-| F11.AC6              | every story            | `npm run check:all`                   |
+| F11.AC6              | every story            | `npm run check:all`, `[F11.AC6]`      |

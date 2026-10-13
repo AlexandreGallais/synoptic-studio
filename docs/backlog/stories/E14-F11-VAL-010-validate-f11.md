@@ -3,7 +3,7 @@ id: VAL-010
 epic: E14
 feature: F11
 title: Validate F11
-status: in-progress
+status: done
 points: 1
 ---
 
@@ -22,7 +22,7 @@ One task = one commit, referenced as `VAL-010.Tn`. This story is not merged auto
 
 - [x] T1 — One test per criterion `[F11.AC1]`…`[F11.AC5]`; AC6 is `npm run check:all` (1 h)
 - [x] T2 — Demo page of the figures, the layout page linked (1 h)
-- [ ] T3 — The Product Owner reads the page and checks the editor; the result recorded
+- [x] T3 — The Product Owner reads the page and checks the editor; the result recorded
 
 ## Product Owner test
 
@@ -31,3 +31,7 @@ No guided test: no drawing changes. Read the demo page (`npm run docs:dev`, then
 1. Open `src/`: each layer holds only folders named after a domain (`math/` holds `vector/`, `angle/`, `bisection/`, `precision/`).
 2. Create an empty file `src/math/test.ts`: the editor underlines it, the folder holds domain folders. Delete it.
 3. Optional: `npm run dev`, a few steps of `http://localhost:5173/?guide=epic`: the shapes are drawn as before.
+
+## Validation
+
+Validated by the Product Owner on 2026-10-13: steps 1 to 3 done, the lint message seen on `src/math/test.ts`; the code trusted to the audits. Remarks and where they went: [demo page](../../guide/f11-code-base-ready-for-curves.md#validation).
