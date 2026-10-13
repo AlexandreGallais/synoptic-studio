@@ -25,6 +25,8 @@ export type Status = {
   readonly model: string;
   /** Epic, feature and story of the branch checked out. */
   readonly place: string;
+  /** Whether that call has run for more than 5 minutes: shown in red, to be checked. */
+  readonly isRunningLong: boolean;
   /** Line of the tool call running, possibly empty. */
   readonly running: string;
   /** Time since the transcript last changed. */
@@ -50,9 +52,13 @@ const COLOR = {
   cyan: "\u{1B}[36m",
   dim: "\u{1B}[2m",
   green: "\u{1B}[32m",
+  red: "\u{1B}[31m",
   reset: "\u{1B}[0m",
   yellow: "\u{1B}[33m",
 };
+
+/** A call running longer than this, milliseconds, is shown in red: look at what it does. */
+const LONG_CALL_MS = 300_000;
 
 /** Separator between the parts of a line. */
 const SEPARATOR = `${COLOR.dim} · ${COLOR.reset}`;
@@ -106,7 +112,8 @@ function sessionLine(status: Status): string {
 export function statusText(status: Status): string {
   const place = `${COLOR.bold}${status.place}${COLOR.reset}`;
   const step = status.step === "" ? "waiting" : status.step;
-  const running = status.running === "" ? [] : [`${COLOR.cyan}${status.running}${COLOR.reset}`];
+  const color = status.isRunningLong ? COLOR.red : COLOR.cyan;
+  const running = status.running === "" ? [] : [`${color}${status.running}${COLOR.reset}`];
 
   return [[place, step].join(SEPARATOR), sessionLine(status), ...running].join("\n");
 }
@@ -161,17 +168,15 @@ if (import.meta.main) {
   mkdirSync(folder, { recursive: true });
 
   const tally = turnTokens(transcript, join(folder, "status-line-turn.json"));
+  // A call started before the turn was interrupted and never finished: not shown.
+  const calls = runningCalls(join(folder, "running")).filter((call) => call.start >= tally.start);
   const status: Status = {
     contextPercent: count(field(input, "context_window"), "used_percentage"),
     durationMs: tally.start === 0 ? 0 : now - tally.start,
     model: typeof model === "string" ? model : "",
     place: placeOf(git(["branch", "--show-current"]), backlog),
-    // A call started before the turn was interrupted and never finished: not shown.
-    running: runningLine(
-      runningCalls(join(folder, "running")).filter((call) => call.start >= tally.start),
-      now,
-      shortDuration,
-    ),
+    isRunningLong: calls.some((call) => now - call.start > LONG_CALL_MS),
+    running: runningLine(calls, now, shortDuration),
     silentMs: existsSync(transcript) ? now - statSync(transcript).mtimeMs : 0,
     step: textOf(join(folder, "step")),
     tally,

@@ -90,5 +90,6 @@
     "command": "node --harmony-temporal \"$(git rev-parse --show-toplevel)/.claude/hooks/status-line.ts\"",
     "refreshInterval": 1
   },
-  "enabledMcpjsonServers": ["library"]
+  "enabledMcpjsonServers": ["library"],
+  "cleanupPeriodDays": 3650
 }

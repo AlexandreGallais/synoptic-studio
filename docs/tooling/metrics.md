@@ -2,12 +2,14 @@
 
 Measure first, then make each epic faster than the last (Product Owner, RET-001): which commands the agent runs most, which take longest, how long each task, story, feature and session takes, and how many tokens they use.
 
-## Two sources
+## Where the data lives
 
-| Source                                  | Written by                                                                                                               | Holds                                                                                                                                                                    |
-| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `.git/metrics/tool-calls.jsonl`         | the hook `.claude/hooks/log-tool-call.ts`, after each tool call (`PostToolUse`, `PostToolUseFailure`, in the background) | one line per call: time, session, branch, subagent, tool, what it ran (command, file, pattern; 300 characters at most), exact duration, failure and its first error line |
-| `~/.claude/projects/<repository path>/` | Claude Code: one JSON Lines transcript per session, subagents included                                                   | every request with its tokens, every tool call and its result, each line with its time, session and branch                                                               |
+| Source                                        | Written by                                                                                                               | Holds                                                                                                                                                                    |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `.git/metrics/tool-calls.jsonl`               | the hook `.claude/hooks/log-tool-call.ts`, after each tool call (`PostToolUse`, `PostToolUseFailure`, in the background) | one line per call: time, session, branch, subagent, tool, what it ran (command, file, pattern; 300 characters at most), exact duration, failure and its first error line |
+| `~/.claude/projects/<repository path>/`       | Claude Code: one JSON Lines transcript per session, subagents included                                                   | every request with its tokens, every tool call and its result, each line with its time, session and branch                                                               |
+| `.git/metrics/turns.jsonl`                    | `npm run metrics:session`, at the end of each turn                                                                       | one line per turn: start, session, duration, active time, tokens, tokens written, calls, failures, commits                                                               |
+| `~/.local/share/agent-library/library.sqlite` | the library server and `npm run library` ([sources](./sources.md))                                                       | the pages read, their sections indexed, and every search and read (`uses` table)                                                                                         |
 
 The hook's log sits inside the Git directory: never committed, shared by every worktree, kept when transcripts are cleaned up. Its durations are exact: Claude Code measures the tool's execution and leaves out permission prompts (`duration_ms`, `REF-CC-HOOKS`). For calls made before the hook existed, the report estimates the duration from the transcript, from the request to the result; this also counts the time spent writing the command, so a long heredoc looks slow.
 
@@ -73,8 +75,27 @@ It gives one row: the duration (wall and active), the tokens, the part the model
 - how many tool calls failed, and of which kind: a repeated failure gets a check or a rule;
 - how tokens grew per story compared with the last epic: what made the agent search or read more.
 
+## Watching a long task
+
+A command expected to last more than a minute runs in the background (`run_in_background`), never behind a waiting loop; the agent watches it with Claude Code's Monitor and `scripts/watch-task.ts`, which prints a line only when the task needs a look:
+
+```sh
+node --harmony-temporal scripts/watch-task.ts <output file> --stall 120 --until "^done" --max 1800
+```
+
+| Line printed                                  | When                                                                          |
+| --------------------------------------------- | ----------------------------------------------------------------------------- |
+| `stalled: no output for 125 s — last line: …` | the output has not changed for `--stall` seconds                              |
+| `resumed: …`                                  | it changes again after a stall                                                |
+| `done: …`                                     | its last line matches `--until`                                               |
+| `watch over: …`                               | `--max` seconds passed (Monitor's longest watch is 30 minutes: start another) |
+
+The status line shows a tool call running for more than 5 minutes in red. A long task writes one progress line per step, and stops itself when a step changes nothing ([tooling pitfalls](https://github.com/AlexandreGallais/synoptic-studio/blob/main/.claude/rules/tooling.md)).
+
 ## Limits
 
 - Sessions run from another folder (a worktree in the scratchpad) have their transcripts under another project folder: they are not read yet.
-- Claude Code may delete old transcripts; the hook's log keeps the calls, not the tokens.
+- Claude Code deletes transcripts older than `cleanupPeriodDays` (30 by default): `.claude/settings.json` sets it to 3650, so that every retrospective still reads the tokens of its epic.
+- `.git/metrics/` lives in this clone only: a fresh clone starts empty.
+- Tokens are counted per model request, not per command: a command's cost shows as the request that wrote it and the one that read its result.
 - Temporal is behind `--harmony-temporal` in Node.js 24: the hook command, `npm run metrics` and Vitest pass it.

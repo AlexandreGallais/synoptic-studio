@@ -99,6 +99,7 @@ describe("status line", () => {
     const base = {
       contextPercent: 34.4,
       durationMs: 60_000,
+      isRunningLong: false,
       model: "Opus 5.5",
       place: "E01 › RET-001 retrospective e01",
       running: "",
@@ -107,6 +108,7 @@ describe("status line", () => {
     const active = statusText({ ...base, silentMs: 1000, step: "RET-001 · metrics" });
     const silent = statusText({
       ...base,
+      isRunningLong: true,
       running: "▶ Bash · Run the checks — 12 s",
       silentMs: 180_000,
       step: "",
@@ -121,6 +123,6 @@ describe("status line", () => {
     expect(active.split("\n")).toHaveLength(2);
     expect(silent).toContain("waiting");
     expect(silent).toContain("◌ silent for 3 min");
-    expect(silent.split("\n", 3)[2]).toContain("▶ Bash · Run the checks — 12 s");
+    expect(silent.split("\n", 3)[2]).toBe("\u{1B}[31m▶ Bash · Run the checks — 12 s\u{1B}[0m");
   });
 });
