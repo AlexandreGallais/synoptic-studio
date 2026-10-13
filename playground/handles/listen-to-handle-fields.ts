@@ -1,5 +1,6 @@
 import {
   HANDLE_MODES,
+  areValidHandles,
   fieldValuesOfHandle,
   freeShapeWithHandles,
   handlesAfterTyping,
@@ -212,6 +213,23 @@ function readMovedHandle(
 }
 
 /**
+ * Handles with the tension typed, a whole percentage from 0 to 100 (`DERIV-handle-tension`); any
+ * other value changes nothing.
+ *
+ * @kind procedure
+ * @param handles - handles as drawn
+ * @param document - page document
+ * @returns the handles with that tension, or `undefined`
+ * @see docs/backlog/stories/E14-F12-US-026-handles-from-a-tension.md
+ */
+function readTypedTension(handles: Handles, document: Document): Handles | undefined {
+  const tension = readNumber(document, "handle-tension");
+  const changed = { ...handles, tension };
+
+  return areValidHandles(changed) ? changed : undefined;
+}
+
+/**
  * Handles with the mode chosen in the list; none for a value the list does not hold.
  *
  * @kind procedure
@@ -271,6 +289,10 @@ export function listenToHandleFields(document: Document, update: () => void): vo
 
   selectElement(document, "handle-mode").addEventListener("change", () => {
     writeChangedHandles(document, readChosenMode, update);
+  });
+
+  selectElement(document, "handle-tension").addEventListener("change", () => {
+    writeChangedHandles(document, readTypedTension, update);
   });
 
   // The way to type the handles is the page's, not the model's: only the fields change.

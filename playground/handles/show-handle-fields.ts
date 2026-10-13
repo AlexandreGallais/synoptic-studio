@@ -89,6 +89,9 @@ function writeHandleValues(
     mode.value = handles.mode;
   }
 
+  selectElement(document, "handle-tension-field").hidden = handles.mode !== "auto";
+  writeInputValue(document, "handle-tension", handles.tension);
+
   writeAxisLabels(document, way);
 
   for (const end of ["before", "after"] as const) {
