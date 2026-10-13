@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
-import { join } from "node:path";
+import { basename, join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
@@ -28,7 +28,7 @@ function exportedFunctions(folder: string): readonly CheckedFunction[] {
   return readdirSync(join(ROOT, folder), { recursive: true })
     .map(String)
     .filter(
-      (file) => file.endsWith(".ts") && !file.endsWith("index.ts") && !file.endsWith(".test.ts"),
+      (file) => file.endsWith(".ts") && basename(file) !== "index.ts" && !file.endsWith(".test.ts"),
     )
     .flatMap((file) =>
       readFileSync(join(ROOT, folder, file), "utf8")

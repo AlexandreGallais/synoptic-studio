@@ -7,6 +7,7 @@ import {
   openOnStep,
   pressKey,
   readPointRows,
+  readValue,
   typeValue,
 } from "./user-actions";
 
@@ -37,8 +38,8 @@ describe("deleting points", () => {
       "3 · x 0 · y 80 · radius 10",
     ]);
 
-    expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("free");
-    expect(document.querySelector<HTMLInputElement>("#point-x")?.value).toBe("");
+    expect(readValue("shape")).toBe("free");
+    expect(readValue("point-x")).toBe("");
   });
 
   it("[F08.AC4] deletes with the Delete key, but not while a field is typed in", () => {
@@ -136,7 +137,7 @@ describe("deleting points", () => {
     clickElement("mode-points");
     pressKey("body", "Delete");
 
-    expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("rectangle");
+    expect(readValue("shape")).toBe("rectangle");
   });
 
   it("[F08.AC4] deletes with Backspace too, the delete key of a Mac", () => {

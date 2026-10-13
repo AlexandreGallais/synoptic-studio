@@ -58,7 +58,12 @@ describe("folders (ADR-0042)", () => {
   }));
 
   it("reads the code folders and the list of exceptions", () => {
-    expect(counts.length).toBeGreaterThan(10);
+    expect(counts.length).toBeGreaterThanOrEqual(26);
+
+    expect(counts.map(({ folder }) => folder)).toEqual(
+      expect.arrayContaining(["src/geometry/rounded-corners", "src/math/vector"]),
+    );
+
     expect(LISTED.size).toBeGreaterThan(0);
   });
 

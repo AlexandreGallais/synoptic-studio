@@ -4,7 +4,10 @@ import { dirname, join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 /** Library root: every `index.ts` below it is a barrel. */
-const SOURCE = join(import.meta.dirname, "..", "src");
+const ROOTS = ["src", "playground"].map((folder) => join(import.meta.dirname, "..", folder));
+
+/** The playground's entry, which mounts the page: not a barrel. */
+const PLAYGROUND_ENTRY = join(import.meta.dirname, "..", "playground", "index.ts");
 
 /**
  * Every barrel file of the library.
@@ -12,9 +15,11 @@ const SOURCE = join(import.meta.dirname, "..", "src");
  * @returns absolute paths of the `index.ts` files under `src/`
  */
 function barrels(): string[] {
-  return readdirSync(SOURCE, { recursive: true, withFileTypes: true })
-    .filter((entry) => entry.isFile() && entry.name === "index.ts")
-    .map((entry) => join(entry.parentPath, entry.name));
+  return ROOTS.flatMap((root) =>
+    readdirSync(root, { recursive: true, withFileTypes: true })
+      .filter((entry) => entry.isFile() && entry.name === "index.ts")
+      .map((entry) => join(entry.parentPath, entry.name)),
+  ).filter((barrel) => barrel !== PLAYGROUND_ENTRY);
 }
 
 /**
@@ -46,6 +51,17 @@ async function runtimeExports(target: string): Promise<string[]> {
 describe("barrels", () => {
   it("re-export as types only the modules that export no runtime value", async () => {
     const targets = barrels().flatMap((barrel) => typeOnlyTargets(barrel));
+
+    // Not vacuous: nested barrels of the library and of the playground are read.
+    expect(targets.length).toBeGreaterThanOrEqual(19);
+
+    expect(targets).toEqual(
+      expect.arrayContaining([
+        join(import.meta.dirname, "..", "src", "math", "vector", "vector"),
+        join(import.meta.dirname, "..", "playground", "user-actions", "keys"),
+      ]),
+    );
+
     const modules = await Promise.all(
       targets.map(async (target) => ({ exported: await runtimeExports(target), target })),
     );

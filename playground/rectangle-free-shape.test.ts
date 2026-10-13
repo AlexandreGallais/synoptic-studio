@@ -73,13 +73,9 @@ describe("rectangle as a free shape", () => {
   it("[F09.AC4] lists the drawn points of the rectangle, not the stored ones", () => {
     clickElement("mode-points");
 
-    expect(document.querySelector('#points [data-vertex="1"]')?.textContent).toBe(
-      "1 · x 0 · y 0 · radius 10",
-    );
+    expect(readText('#points [data-vertex="1"]')).toBe("1 · x 0 · y 0 · radius 10");
 
-    expect(document.querySelector('#points [data-vertex="3"]')?.textContent).toBe(
-      "3 · x 120 · y 80 · radius 10",
-    );
+    expect(readText('#points [data-vertex="3"]')).toBe("3 · x 120 · y 80 · radius 10");
   });
 
   it("[F09.AC4] still refuses a fractional width typed for the rectangle (Q15)", () => {

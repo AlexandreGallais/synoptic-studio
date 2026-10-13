@@ -4,6 +4,8 @@ import { describe, expect, it } from "vitest";
 import {
   doubleSignedArea,
   expectPoints,
+  freeShapeOf,
+  integerPoint,
   integerTriangle,
   rectanglePoints,
 } from "./geometry-fixtures";
@@ -34,5 +36,48 @@ describe("geometry fixtures", () => {
     expect(
       aligned.every(([a, b, c]) => (b.x - a.x) * (c.y - a.y) !== (b.y - a.y) * (c.x - a.x)),
     ).toBe(true);
+  });
+
+  it("compares to the number of decimals asked: 1e-6 off fails at 9 decimals, passes at 5", () => {
+    expect(() => {
+      expectPoints([{ x: 0, y: 1e-6 }], [{ x: 0, y: 0 }], 9);
+    }).toThrow();
+
+    expect(() => {
+      expectPoints([{ x: 0, y: 1e-6 }], [{ x: 0, y: 0 }], 5);
+    }).not.toThrow();
+  });
+
+  it("draws integer points on both sides of each axis, within the bound", () => {
+    const points = fc.sample(integerPoint(5), 1000);
+
+    expect(points.every((point) => Math.abs(point.x) <= 5 && Math.abs(point.y) <= 5)).toBe(true);
+    expect(points.some((point) => point.x < 0) && points.some((point) => point.y < 0)).toBe(true);
+  });
+
+  it("draws triangles anywhere within the bound, not around one fixed vertex", () => {
+    const triangles = fc.sample(integerTriangle(5), 1000);
+    const firsts = new Set(triangles.map(([first]) => `${String(first.x)} ${String(first.y)}`));
+
+    expect(firsts.size).toBeGreaterThan(1);
+
+    expect(
+      triangles.flat().every((point) => Math.abs(point.x) <= 5 && Math.abs(point.y) <= 5),
+    ).toBe(true);
+  });
+
+  it("puts a free shape's box at the top-left of its points, not turned", () => {
+    const shape = freeShapeOf({
+      height: 20,
+      points: [
+        { x: 10, y: 20 },
+        { x: 30, y: 20 },
+        { x: 30, y: 40 },
+      ],
+      radii: [0, 0, 0],
+      width: 20,
+    });
+
+    expect([shape.x, shape.y, shape.angle]).toEqual([10, 20, 0]);
   });
 });
