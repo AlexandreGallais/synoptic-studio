@@ -35,7 +35,7 @@ Decided by the Product Owner on 2026-10-12, at the validation of F10. The round 
 ## For the UX pass at the end of E14
 
 - The layout of a point's switch between its corner radius and its handles (F12).
-- Copying one group of a point's settings — its corner radius, or its handles — and pasting it on another point, so that two neighbouring corners bend the same way without typing the values again (Product Owner, VAL-011, 2026-10-13).
+- Not in E14, for when the editors' interface is built: copying one group of a point's settings — its corner radius, or its handles — and pasting it on another point; it needs the business objects sorted first, what can be pasted onto what (Product Owner, VAL-011, 2026-10-13).
 
 ## Features
 

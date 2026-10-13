@@ -90,8 +90,9 @@
 | [CHK-011](./E14-F12-CHK-011-checkpoint-f12.md)                  | F12     | Checkpoint in the middle of F12                                     | done        |
 | [AUD-011](./E14-F12-AUD-011-audit-f12.md)                       | F12     | Audit F12                                                           | done        |
 | [EN-026](./E14-F12-EN-026-ways-kept-at-validation.md)           | F12     | Keep only the ways and modes chosen at the validation               | done        |
-| [SP-012](./E14-F12-SP-012-research-fillet-beside-curve.md)      | F12     | Research: a corner radius beside a curved side                      | ready       |
-| [US-027](./E14-F12-US-027-radius-beside-curve.md)               | F12     | A corner beside a curved side keeps its radius                      | draft       |
+| [SP-012](./E14-F12-SP-012-research-fillet-beside-curve.md)      | F12     | Research: a corner radius beside a curved side                      | done        |
+| [US-027](./E14-F12-US-027-radius-beside-curve.md)               | F12     | A corner beside a curved side keeps its radius                      | ready       |
+| [US-028](./E14-F12-US-028-handles-on-a-polygon.md)              | F12     | Give handles to a point of a regular polygon                        | ready       |
 | [AUD-012](./E14-F12-AUD-012-audit-after-validation.md)          | F12     | Audit the changes asked at the validation                           | draft       |
 | [VAL-011](./E14-F12-VAL-011-validate-f12.md)                    | F12     | Validate F12                                                        | in-progress |
 | [VAL-010](./E14-F11-VAL-010-validate-f11.md)                    | F11     | Validate F11                                                        | done        |
