@@ -9,6 +9,7 @@ import {
   openOnStep,
   readPointRows,
   readText,
+  readValue,
   selectInput,
   typeAndEnter,
 } from "./user-actions";
@@ -65,7 +66,7 @@ describe("editing the points of a free shape", () => {
 
     clickElement("convert");
 
-    expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("free");
+    expect(readValue("shape")).toBe("free");
     expect(readText("#path-data")).toBe(before);
     expect(selectInput("width").value).toBe("100");
     expect(selectInput("height").value).toBe("86.60254");
@@ -104,7 +105,7 @@ describe("editing the points of a free shape", () => {
     clickPoint(3, false);
     typeAndEnter("point-x", "150");
 
-    expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("free");
+    expect(readValue("shape")).toBe("free");
     expect(readText('#points [data-vertex="3"]')).toBe("3 · x 150 · y 80 · radius 10");
     // The box around the points: 150 wide now.
     expect(selectInput("width").value).toBe("150");
@@ -116,7 +117,7 @@ describe("editing the points of a free shape", () => {
     clickPoint(3, false);
     typeAndEnter("point-x", "150.5");
 
-    expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("rectangle");
+    expect(readValue("shape")).toBe("rectangle");
     expect(readText('#points [data-vertex="3"]')).toBe("3 · x 120 · y 80 · radius 10");
   });
 
@@ -167,7 +168,7 @@ describe("editing the points of a free shape", () => {
     typeAndEnter("corners", "2");
     clickElement("convert");
 
-    expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("polygon");
+    expect(readValue("shape")).toBe("polygon");
   });
 
   it("[F08.AC2] moves nothing when no point is selected", () => {
@@ -177,7 +178,7 @@ describe("editing the points of a free shape", () => {
     commitField("shape");
     typeAndEnter("point-x", "5");
 
-    expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("rectangle");
+    expect(readValue("shape")).toBe("rectangle");
   });
 
   it("[F08.AC2] drops the free shape kept when a guided step draws its own", () => {
@@ -213,7 +214,7 @@ describe("editing the points of a free shape", () => {
       "5 · x 0 · y 80 · radius 10",
     ]);
 
-    expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("free");
+    expect(readValue("shape")).toBe("free");
     expect(selectInput("point-x").value).toBe("60");
   });
 
@@ -294,7 +295,7 @@ describe("editing the points of a free shape", () => {
       "3 · x 0 · y 80 · radius 10",
     ]);
 
-    expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("free");
+    expect(readValue("shape")).toBe("free");
   });
 
   it("[F08.AC3] greys adding a point on a shape of width 0, its radii kept", () => {

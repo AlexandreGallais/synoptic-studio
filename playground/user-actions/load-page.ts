@@ -1,0 +1,20 @@
+import page from "../index.html?raw";
+
+/**
+ * Loads the playground page at an address, as the browser serves it, without mounting it: its
+ * script tag removed, its head and body put in the document.
+ *
+ * @kind procedure
+ * @param search - query of the address, `?step=10`, or empty
+ * @see docs/backlog/stories/E14-F11-EN-021-shared-test-helpers.md
+ */
+export function loadPage(search: string): void {
+  const parser = new DOMParser();
+  const parsed = parser.parseFromString(page, "text/html");
+
+  globalThis.history.replaceState(undefined, "", `/${search}`);
+  parsed.querySelector("script")?.remove();
+  // The head carries the page's style: visibility is checked as the browser computes it.
+  document.head.replaceChildren(...parsed.head.childNodes);
+  document.body.replaceChildren(...parsed.body.childNodes);
+}
