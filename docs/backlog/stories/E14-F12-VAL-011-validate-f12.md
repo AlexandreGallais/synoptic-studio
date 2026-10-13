@@ -13,8 +13,9 @@ The Product Owner tries each way of typing a handle in the playground, guided by
 
 ## Acceptance criteria
 
-- Given the playground, when the Product Owner follows one guided step per method of typing a handle (seven), then each method is tried and their choice for Q32 is recorded.
-- Given the radius/handles switch and the four modes, when tried, then each behaves as `docs/domain/shapes.md` "Points with handles" states.
+- Given the playground, when the Product Owner follows one guided step per method of typing a handle (seven, at the first session), then each method is tried and their choice for Q32 is recorded.
+- Given the changes asked at the first session (EN-026, US-027, US-028), when the Product Owner tries the nine options of the second session, then each behaves as the domain states.
+- Given the radius/handles switch and the modes kept, when tried, then each behaves as `docs/domain/shapes.md` "Points with handles" states.
 
 ## Validation, first session (2026-10-13)
 
@@ -30,3 +31,9 @@ The Product Owner ran the guided steps and decided:
 | the status line showed the person's turn while subagents still ran                                                                                                                      | fixed on `develop` (feedback log)      |
 
 The validation resumes once EN-026, SP-012, US-027 and AUD-012 are done; the guided steps are cut to the methods kept.
+
+## Tasks
+
+- [x] T1 — The guided test, cut to the options kept: nine steps, one per option, tested end to end (`f12-steps.test.ts`) (1 h)
+- [x] T2 — The demo page as a list of the options (30 min)
+- [ ] T3 — The Product Owner's validation, Q33, Q34 and the reduced radius answered (1 h)
