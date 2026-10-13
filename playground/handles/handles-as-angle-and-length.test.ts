@@ -22,14 +22,10 @@ function readHandleFields(): readonly number[] {
   );
 }
 
-/**
- * Switches the point selected to handles, typed as an angle and a length.
- *
- * @param way - from the x axis or from the side
- */
-function openAngleFields(way: "axis" | "side"): void {
+/** Switches the point selected to handles, typed as an angle and a length from the side. */
+function openAngleFields(): void {
   clickElement("handles-switch");
-  chooseOption("handle-method", way);
+  chooseOption("handle-method", "side");
 }
 
 describe("handles typed as an angle and a length (US-024)", () => {
@@ -41,9 +37,9 @@ describe("handles typed as an angle and a length (US-024)", () => {
     clickPoint(1, false);
   });
 
-  it("[F12.AC4] counts the angle from the x axis, clockwise on screen", () => {
-    // 330°, 30 from (0, 0): the end at (25.98076, −15).
-    openAngleFields("axis");
+  it("[F12.AC4] counts the angle from the side, clockwise on screen", () => {
+    // Point 1's side goes right: 330°, 30 from (0, 0) ends at (25.98076, −15).
+    openAngleFields();
     typeAndEnter("handle-after-x", "330");
     typeAndEnter("handle-after-y", "30");
 
@@ -54,7 +50,7 @@ describe("handles typed as an angle and a length (US-024)", () => {
   it("[F12.AC4] counts it from the side, so that a side going down bends the same way", () => {
     // Point 2 (100, 0), its side going down to (100, 80): 330°, 30 from the side ends at (115, 25.98076).
     clickPoint(2, false);
-    openAngleFields("side");
+    openAngleFields();
     typeAndEnter("handle-after-x", "330");
     typeAndEnter("handle-after-y", "30");
 
@@ -63,12 +59,12 @@ describe("handles typed as an angle and a length (US-024)", () => {
 
   it("[F12.AC4] makes a symmetric arch with the same values at both ends of a side", () => {
     // Point 1 after and point 2 before, 330°, 30 from the side: both handles above the top side.
-    openAngleFields("side");
+    openAngleFields();
     chooseOption("handle-mode", "none");
     typeAndEnter("handle-after-x", "330");
     typeAndEnter("handle-after-y", "30");
     clickPoint(2, false);
-    openAngleFields("side");
+    openAngleFields();
     chooseOption("handle-mode", "none");
     typeAndEnter("handle-before-x", "330");
     typeAndEnter("handle-before-y", "30");
@@ -78,7 +74,7 @@ describe("handles typed as an angle and a length (US-024)", () => {
   });
 
   it("[F12.AC4] brings 370° back to 10°, and refuses a negative length", () => {
-    openAngleFields("axis");
+    openAngleFields();
     typeAndEnter("handle-after-y", "30");
     typeAndEnter("handle-after-x", "370");
 
@@ -91,7 +87,7 @@ describe("handles typed as an angle and a length (US-024)", () => {
   });
 
   it("labels the fields angle and length", () => {
-    openAngleFields("axis");
+    openAngleFields();
 
     expect(
       [...document.querySelectorAll("#handle-fields .handle-axis")].map(
@@ -102,7 +98,7 @@ describe("handles typed as an angle and a length (US-024)", () => {
 
   it("[F12.AC4] reads point 1's handle before against the side back to the last point", () => {
     // Point 1's side before goes down to (0, 80): mirrored, 330°, 30 gives (−15, 25.98076).
-    openAngleFields("side");
+    openAngleFields();
     chooseOption("handle-mode", "none");
     typeAndEnter("handle-before-x", "330");
     typeAndEnter("handle-before-y", "30");
@@ -111,13 +107,14 @@ describe("handles typed as an angle and a length (US-024)", () => {
   });
 
   it("never takes a number left by another way as an angle", () => {
-    // Point 2, x and y first (its x reads 100), then the x axis: the length typed alone gives 0°.
+    // Point 2, x and y first (its x reads 100), then the side going down: the length typed alone
+    // gives 0° from the side, the handle (0, 30).
     clickPoint(2, false);
     clickElement("handles-switch");
-    chooseOption("handle-method", "axis");
+    chooseOption("handle-method", "side");
     chooseOption("handle-mode", "none");
     typeAndEnter("handle-after-y", "30");
 
-    expect(readText("#path-data")).toContain("C130 0 ");
+    expect(readText("#path-data")).toContain("C100 30 ");
   });
 });

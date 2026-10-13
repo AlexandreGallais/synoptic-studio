@@ -1,6 +1,6 @@
 import { curveBoundingBox, cyclicItem, stretchFactors, stretchedHandles } from "../../geometry";
 import { cornersWithRadii } from "../corner-radius";
-import { NO_HANDLES, smoothedCorners } from "../handles";
+import { NO_HANDLES } from "../handles";
 
 import { freeShapeContour } from "./free-shape-contour";
 import { freeShapeRadii } from "./free-shape-radii";
@@ -19,13 +19,11 @@ import type { CurveCorner } from "../../geometry";
  * @see docs/domain/shapes.md#_2-corner-radius
  */
 export function freeShapeCorners(shape: FreeShape): readonly CurveCorner[] {
-  const factors = stretchFactors(curveBoundingBox(smoothedCorners(shape.corners)), shape);
+  const factors = stretchFactors(curveBoundingBox(shape.corners), shape);
   const handles = shape.corners.map((corner) => corner.handles);
 
-  return smoothedCorners(
-    cornersWithRadii(freeShapeContour(shape), freeShapeRadii(shape)).map((corner, index) => ({
-      ...corner,
-      handles: stretchedHandles(cyclicItem(handles, index, NO_HANDLES), factors),
-    })),
-  );
+  return cornersWithRadii(freeShapeContour(shape), freeShapeRadii(shape)).map((corner, index) => ({
+    ...corner,
+    handles: stretchedHandles(cyclicItem(handles, index, NO_HANDLES), factors),
+  }));
 }

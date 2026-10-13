@@ -58,9 +58,4 @@ describe("mirroredHandle (REF-FIGMA-HANDLE-MIRRORING)", () => {
       expect(dot(mirrored, typed)).toBeLessThanOrEqual(0);
     },
   );
-
-  it("[F12.AC4] mirrors as mode angle in mode auto, keeping the other handle when the typed one has no length", () => {
-    expect(mirroredHandle("auto", { x: 30, y: -40 }, { x: -10, y: 0 })).toEqual({ x: -6, y: 8 });
-    expect(mirroredHandle("auto", { x: 0, y: 0 }, { x: -5, y: 7 })).toEqual({ x: -5, y: 7 });
-  });
 });

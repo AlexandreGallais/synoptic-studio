@@ -13,7 +13,6 @@ const OFF: Handles = {
   before: { x: 0, y: 0 },
   isOn: false,
   mode: "angle-and-length",
-  tension: 0,
 };
 
 /**

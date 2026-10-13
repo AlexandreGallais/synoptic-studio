@@ -24,18 +24,4 @@ describe("areValidHandles (ADR-0046)", () => {
     expect(areValidHandles({ ...NO_HANDLES, after: { x: 0, y: Infinity } })).toBe(false);
     expect(areValidHandles({ ...NO_HANDLES, isOn: notBoolean.isOn })).toBe(false);
   });
-
-  it("[F12.AC4] takes a tension from 0 to 100, whole", () => {
-    expect([0, 50, 100].map((tension) => areValidHandles({ ...NO_HANDLES, tension }))).toEqual([
-      true,
-      true,
-      true,
-    ]);
-
-    expect([-1, 101, 1.5].map((tension) => areValidHandles({ ...NO_HANDLES, tension }))).toEqual([
-      false,
-      false,
-      false,
-    ]);
-  });
 });

@@ -1,4 +1,3 @@
-export * from "./across-side";
 export * from "./are-valid-handles";
 export * from "./curve-corner-of";
 export * from "./field-values-of-handle";
@@ -8,7 +7,4 @@ export * from "./handle-ways";
 export * from "./handles-after-typing";
 export * from "./is-angle-unknown";
 export * from "./no-handles";
-export * from "./pasted-control-points";
-export type * from "./pasted-curve";
-export * from "./smoothed-corners";
 export * from "./typed-handle";

@@ -182,12 +182,12 @@ describe("freeShapeCorners (at a position, F04)", () => {
     expect(radiiSwitched(rectangle, false)).toEqual([30, 0, 0, 0]);
   });
 
-  it("[F12.AC6] stretches other handles by the box of the curve, an automatic bulge included", () => {
-    // Point 1 in mode auto bulges the top side up; point 3 has an angle handle (10, 0). At the
+  it("[F12.AC6] stretches other handles by the box of the curve, another point's bulge included", () => {
+    // Point 1's handles (20, −20) and (−20, 20) bulge the top and left sides; point 3 has an angle handle (10, 0). At the
     // size of its own box, nothing is stretched: point 3's handle stays (10, 0).
     const square = rectangleCorners(100, 100, [0, 0, 0, 0]).map((corner, index) => {
       const handles = [
-        { ...NO_HANDLES, isOn: true, mode: "auto" as const },
+        { ...NO_HANDLES, after: { x: 20, y: -20 }, before: { x: -20, y: 20 }, isOn: true },
         NO_HANDLES,
         { ...NO_HANDLES, after: { x: 10, y: 0 }, before: { x: -10, y: 0 }, isOn: true },
         NO_HANDLES,

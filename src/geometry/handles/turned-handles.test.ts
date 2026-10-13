@@ -12,7 +12,6 @@ const HANDLES = {
   before: { x: -30, y: 15 },
   isOn: true,
   mode: "angle-and-length",
-  tension: 0,
 } as const;
 
 describe("turnedHandles (DERIV-cubic-sides step 5)", () => {
