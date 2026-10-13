@@ -1,5 +1,6 @@
 export * from "./contour";
 export * from "./corner-radius";
+export * from "./curve";
 export * from "./handles";
 export * from "./layout-box";
 export * from "./placement";

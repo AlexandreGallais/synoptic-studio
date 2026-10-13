@@ -1,14 +1,9 @@
 export * from "./angle-from-direction";
 export * from "./angled-handle";
-export * from "./cubic-side";
-export * from "./curve-bounding-box";
-export * from "./curve-contour";
 export type * from "./curve-corner";
-export * from "./halved-cubic";
 export type * from "./handle-mode";
 export * from "./handle-modes";
 export type * from "./handles";
-export * from "./is-curved-side";
 export * from "./mirrored-handle";
 export * from "./stretched-handles";
 export * from "./tension-handle";

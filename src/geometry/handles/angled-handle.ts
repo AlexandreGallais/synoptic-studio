@@ -1,10 +1,7 @@
-import { add, scale, turnDirection } from "../../math";
+import { ZERO_VECTOR, add, scale, turnDirection } from "../../math";
 import { turnAbout } from "../placement";
 
 import type { Vector } from "../../math";
-
-/** Origin of the vectors: a direction is turned about its own start. */
-const ORIGIN = { x: 0, y: 0 };
 
 /**
  * A handle from an angle and a length counted from a direction: the direction turned by the angle,
@@ -20,8 +17,8 @@ const ORIGIN = { x: 0, y: 0 };
  * @see DERIV-handle-angle
  */
 export function angledHandle(direction: Vector, angle: number, length: number): Vector {
-  const turned = turnAbout(direction, ORIGIN, turnDirection(angle));
+  const turned = turnAbout(direction, ZERO_VECTOR, turnDirection(angle));
 
   // Adding zero turns −0 into 0: a handle of length 0 is (0, 0), as a new one.
-  return add(scale(turned, length), ORIGIN);
+  return add(scale(turned, length), ZERO_VECTOR);
 }

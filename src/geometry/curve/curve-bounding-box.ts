@@ -4,7 +4,7 @@ import { boundingBox, cubicExtremes } from "../placement";
 import { cubicSide } from "./cubic-side";
 import { isCurvedSide } from "./is-curved-side";
 
-import type { CurveCorner } from "./curve-corner";
+import type { CurveCorner } from "../handles";
 import type { BoundingBox } from "../placement";
 
 /**
