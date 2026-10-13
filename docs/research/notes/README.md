@@ -17,3 +17,5 @@ Content: summary in our own words (no copy of source text), formulas, references
 | [0010](./0010-f10-round-shape.md)                  | Sources of F10: the capsule (stadium), its conversion, the model of the round shape; F10 as built in E01, cancelled and kept for E14                        |
 | [0011](./0011-f06-stretched-polygon.md)            | Sources of F06: a polygon stretched to its box, sides as even as possible, corners kept; rules A, B, C                                                      |
 | [0012](./0012-f11-folders-and-tests.md)            | Sources of F11: tests beside their module, folders by theme, a limit of files per folder, a shape's type in its folder, shared types at the root of a layer |
+| [0013](./0013-f12-curves-with-handles.md)          | Sources of F12: ways to type a handle, a point with a radius and handles, cubic sides                                                                       |
+| [0014](./0014-f12-fillet-beside-curve.md)          | Sources of F12: a corner fillet beside a curved side, a radius too large                                                                                    |
