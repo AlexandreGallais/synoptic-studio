@@ -1,0 +1,20 @@
+import { selectElement } from "../page";
+
+/**
+ * Keeps an angle typed for a handle of length 0, which has no angle of its own, in its field's
+ * data, with its owner — the point's number and the way chosen — so that another point or way
+ * never reads it (`readKeptAngle`).
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param end - which handle
+ * @param keptAngle - the owner, then "|", then the angle typed, as `2 axis|330`
+ * @see docs/backlog/stories/E14-F12-US-024-handles-as-angle-and-length.md
+ */
+export function writeKeptAngle(
+  document: Document,
+  end: "after" | "before",
+  keptAngle: string,
+): void {
+  selectElement(document, `handle-${end}-x`).dataset["keptAngle"] = keptAngle;
+}

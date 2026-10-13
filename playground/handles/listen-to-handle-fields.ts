@@ -10,8 +10,10 @@ import { readNumber, selectElement } from "../page";
 import { readEditedFreeShape, readShape, writeStoredFreeShape } from "../shape";
 
 import { readHandleFrames } from "./read-handle-frames";
+import { readKeptAngle } from "./read-kept-angle";
 import { readSelectedCorner } from "./read-selected-corner";
 import { readTypingWay } from "./read-typing-way";
+import { writeKeptAngle } from "./write-kept-angle";
 
 import type { SelectedCorner } from "./read-selected-corner";
 import type { FreeShape, HandleFrame, HandleWay, Handles, Vector } from "../../src";
@@ -114,13 +116,10 @@ function writeChangedHandles(document: Document, change: HandlesChange, update: 
   update();
 }
 
-/** The other value of a handle's two fields. */
-const OTHER_AXIS = { x: "y", y: "x" } as const;
-
 /** A value typed in a handle field, with what the move needs. */
 type HandleMove = TypedField & {
-  /** The other value of that handle, as its field shows it. */
-  readonly shown: number;
+  /** The angle kept for a handle of length 0 (`readKeptAngle`). */
+  readonly kept: number;
   /** The value typed. */
   readonly typed: number;
   /** The way the handles are typed. */
@@ -160,7 +159,11 @@ function readTypedHandles(
     ? undefined
     : readMovedHandle(handles, readHandleFrames(reading, selected)[field.end], {
         ...field,
-        shown: readNumber(document, `handle-${field.end}-${OTHER_AXIS[field.axis]}`),
+        kept: readKeptAngle(
+          document,
+          field.end,
+          `${String(selected.index)} ${readTypingWay(document)}`,
+        ),
         typed,
         way: readTypingWay(document),
       });
@@ -168,12 +171,12 @@ function readTypedHandles(
 
 /**
  * The two values of a handle once one is typed: the other as it is shown — computed from the
- * handle, or, for a handle of length 0 typed as an angle, the angle in its field (`isAngleUnknown`).
+ * handle, or, for a handle of length 0 typed as an angle, the angle kept (`isAngleUnknown`).
  *
  * @kind procedure
  * @param handle - the handle typed, as drawn
  * @param frame - what it is read against
- * @param move - which value, its new value, the other value as shown, the way chosen
+ * @param move - which value, its new value, the angle kept, the way chosen
  * @returns the two values to type
  * @see docs/backlog/stories/E14-F12-US-024-handles-as-angle-and-length.md
  */
@@ -183,7 +186,7 @@ function readTypedValues(
   move: HandleMove,
 ): readonly [number, number] {
   const [computed, second] = fieldValuesOfHandle(move.way, handle, frame);
-  const first = isAngleUnknown(move.way, handle) ? move.shown : computed;
+  const first = isAngleUnknown(move.way, handle) ? move.kept : computed;
 
   return move.axis === "x" ? [move.typed, second] : [first, move.typed];
 }
@@ -194,7 +197,7 @@ function readTypedValues(
  * @kind procedure
  * @param handles - handles as drawn
  * @param frame - what that handle is read against
- * @param move - the handle, which value, its new value, the other value as shown, the way chosen
+ * @param move - the handle, which value, its new value, the angle kept, the way chosen
  * @returns the handles after the move, or `undefined` when the values are refused
  * @see docs/backlog/stories/E14-F12-US-024-handles-as-angle-and-length.md
  */
@@ -227,8 +230,30 @@ function readChosenMode(handles: Handles, document: Document): Handles | undefin
 }
 
 /**
+ * Keeps the first value typed for a handle — an angle, in the angle ways — for the point selected
+ * and the way chosen, so that a handle of length 0 keeps it until its length is typed.
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param field - which handle and which of its two values were typed
+ * @see docs/backlog/stories/E14-F12-US-024-handles-as-angle-and-length.md
+ */
+function writeTypedAngle(document: Document, field: TypedField): void {
+  const selected = readSelectedCorner(document, readShape(document));
+
+  if (selected === undefined || field.axis === "y") {
+    return;
+  }
+
+  const owner = `${String(selected.index)} ${readTypingWay(document)}`;
+  const typed = readNumber(document, `handle-${field.end}-x`);
+
+  writeKeptAngle(document, field.end, `${owner}|${String(typed)}`);
+}
+
+/**
  * Listens to the handles of the point selected: the switch between radius and handles, the mode,
- * the way to type them, and each handle typed as x and y on the page or dx and dy from the point, on "change" as the point's fields (US-022).
+ * the way to type them, and each handle's two values typed in that way (US-022 to US-024), on "change" as the point's fields (US-022).
  *
  * @kind procedure
  * @param document - page document
@@ -253,6 +278,8 @@ export function listenToHandleFields(document: Document, update: () => void): vo
 
   for (const field of fields) {
     selectElement(document, `handle-${field.end}-${field.axis}`).addEventListener("change", () => {
+      writeTypedAngle(document, field);
+
       writeChangedHandles(
         document,
         (handles, page) => readTypedHandles(handles, page, field),

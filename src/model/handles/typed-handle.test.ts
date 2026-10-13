@@ -74,4 +74,61 @@ describe("typedHandle and fieldValuesOfHandle (DERIV-handle-angle)", () => {
     expect(back?.x).toBeCloseTo(handle.x, 6);
     expect(back?.y).toBeCloseTo(handle.y, 6);
   });
+
+  it("[F12.AC4] counts the axis way from the x axis whatever the side, and never mirrors it", () => {
+    const down = { isBefore: false, point: { x: 100, y: 0 }, side: { x: 0, y: 100 } };
+    const handle = { x: 25.980762113533157, y: -15 };
+
+    expectPoints(
+      [typedHandle("axis", [330, 30], down) ?? { x: NaN, y: NaN }],
+      [{ x: 25.98076, y: -15 }],
+      5,
+    );
+
+    expectPoints(
+      [typedHandle("axis", [330, 30], BEFORE) ?? { x: NaN, y: NaN }],
+      [{ x: 25.98076, y: -15 }],
+      5,
+    );
+
+    expectPoints(
+      [typedHandle("axis", [330, 30], { ...AFTER, side: { x: 0, y: 0 } }) ?? { x: NaN, y: NaN }],
+      [{ x: 25.98076, y: -15 }],
+      5,
+    );
+
+    expect(fieldValuesOfHandle("axis", handle, down)[0]).toBeCloseTo(330, 9);
+    expect(fieldValuesOfHandle("axis", handle, BEFORE)[0]).toBeCloseTo(330, 9);
+  });
+
+  it("[F12.AC4] accepts a length of 0, and reads −90° as 270° and 370° as 10°", () => {
+    expect(typedHandle("axis", [0, 0], AFTER)).toEqual({ x: 0, y: 0 });
+    expect(typedHandle("side", [330, 0], AFTER)).toEqual({ x: 0, y: 0 });
+
+    expect(
+      fieldValuesOfHandle(
+        "axis",
+        typedHandle("axis", [-90, 30], AFTER) ?? { x: 0, y: 0 },
+        AFTER,
+      )[0],
+    ).toBeCloseTo(270, 9);
+
+    expect(
+      fieldValuesOfHandle(
+        "axis",
+        typedHandle("axis", [370, 30], AFTER) ?? { x: 0, y: 0 },
+        AFTER,
+      )[0],
+    ).toBeCloseTo(10, 9);
+
+    expect(typedHandle("axis", [370, 30], AFTER)?.x).toBeCloseTo(29.54423, 5);
+  });
+
+  it("counts the page way from the point on both axes, and reads a handle before along its side as 0", () => {
+    const raised = { isBefore: false, point: { x: 100, y: 20 }, side: { x: 100, y: 0 } };
+
+    expect(typedHandle("page", [130, -15], raised)).toEqual({ x: 30, y: -35 });
+    expect(fieldValuesOfHandle("page", { x: 30, y: -15 }, raised)).toEqual([130, 5]);
+    expect(fieldValuesOfHandle("side", { x: -10, y: 0 }, BEFORE)).toEqual([0, 10]);
+  });
 });
