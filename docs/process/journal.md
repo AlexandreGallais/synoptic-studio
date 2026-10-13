@@ -2,6 +2,15 @@
 
 What each working session dealt with, in the agent's words: the Product Owner's requests in neutral words, decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`).
 
+## 2026-10-13 — Run F11: stopped before VAL-010
+
+- `#run` Merged into `feature/f11-code-base-ready-for-curves`: SP-010 (#155), EN-020 (#156), EN-021 (#157), CHK-010 (#158), EN-022 (#159), AUD-010 (#160). Stopped before VAL-010, the Product Owner's validation.
+- `#adr` ADR-0042: folders by business theme, 15 modules a signal with listed exceptions, a shape's type in its folder; the review of SP-010 found a name clash and a false premise, and the Product Owner chose the type in its folder before the merge.
+- `#tests` A property for every math and geometry function in its own test file; shared playground actions and geometry fixtures; one path writer (`contourToPathData` removed, next version 0.2.0); one pass per corner; a folder test. 816 → 838 tests, no value changed (audit's scripted comparison).
+- `#review` Each story reviewed by the auditor and the verifier (and the doc-editor at the audit): mutations that survived the suite were killed with new cases (concave fillet, 3-4-5 triangle, unequal edge factors, non-vacuous checks).
+- `#tooling` A worktree linked to the main `node_modules` ran no Git hook: EN-020's push went out unchecked, `check:all` was run by hand (green); `docs/tooling/agent.md` now requires `npm ci`.
+- `#questions` For the Product Owner: ADR-0042 rule 5 assumed math under 15 modules (it had 17, split by rule 3); is `playground/page/` a theme; the unused-imports rule reads JSDoc words as uses (improvement log).
+
 ## 2026-10-13 — Run F11 authorized
 
 - `#run` The Product Owner started an autonomous run on F11 (`/run F11`), after agreeing to its plan: SP-010, EN-020, EN-021, CHK-010, EN-022 and AUD-010 set `ready`, F11 and E14 `in-progress`; a stop at the end of SP-010 for the folder layout choice; a stop before VAL-010.
