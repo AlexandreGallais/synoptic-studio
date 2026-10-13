@@ -38,14 +38,22 @@ Counts are modules, tests not counted (each test follows its module).
 | `src/model`                        | 49       | `rectangle/` 6, `regular-polygon/` 7, `free-shape/` 13 (each with its type), `radii/` 5, `placement/` 8, `selection/` 10; the root keeps its barrel only                                                               |
 | `src/geometry`                     | 40       | root: the types (`arc`, `segment`, `contour-piece`, `corner`, `corner-points`, `size`, `bounding-box`, `alignment`, `alignments`, `anchor`) and `cyclic-item`; `rounded-corners/` 11, `box/` 9, `stretched-polygon/` 9 |
 | `playground`                       | 77       | root: entry, mount, update; `guided-test/` 17, `shape/` (kind, sizes, validity, drawing) about 20, `points/` (list, fields, selection, delete) about 20, `position/` (position, anchor, angle, boxes) about 17         |
-| `src/math`, `src/io`, `src/render` | 17, 6, 4 | unchanged                                                                                                                                                                                                              |
+| `src/math`, `src/io`, `src/render` | 17, 6, 4 | math split in EN-022 (`vector/`), see [EN-022](../../backlog/stories/E14-F11-EN-022-folder-layout.md); io and render unchanged                                                                                         |
 
 The exact lists are fixed in EN-022; `import-x/no-cycle` checks that value imports between folders go one way. A folder over the limit is split again by theme, or listed with its reason.
 
 ## Decision of the Product Owner
 
-On 2026-10-13 (ADR-0042); the type of a shape in its own folder decided after the review of SP-010, which found the name clash and the false premise about type cycles: folders by business theme first; 15 modules as a signal, a folder past it split only along a theme that makes sense, else listed with its reason; the playground split by panel now; the limit reviewed with every rule, every four to five epics.
+On 2026-10-13 (ADR-0042):
+
+| Topic      | Retained                                                               | Source                             |
+| ---------- | ---------------------------------------------------------------------- | ---------------------------------- |
+| Folders    | named by business theme, never by kind of code                         | `REF-ANGULAR-STYLE`, Product Owner |
+| Limit      | 15 modules a signal; past it, split by theme or listed with its reason | Product Owner                      |
+| Shape type | in its folder, after the review of SP-010 found the name clash         | review of SP-010                   |
+| Playground | split by panel now                                                     | Product Owner                      |
+| Review     | the limit and the themes with every rule, every four to five epics     | `docs/process/agile.md`            |
 
 ## Open
 
-- None for EN-020 and EN-021: they need no new source (property tests follow ADR-0022 and `REF-FASTCHECK-PBT`; the shared helpers and the single path writer change no formula).
+Nothing open: EN-020 and EN-021 need no new source (property tests follow ADR-0022 and `REF-FASTCHECK-PBT`; the shared helpers and the single path writer change no formula).
