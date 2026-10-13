@@ -1,19 +1,14 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
+import { rectanglePoints } from "../../tests";
+
 import { edgeLengths } from "./edge-lengths";
 
 describe("edgeLengths", () => {
   it("gives the length of each edge, the last one closing the contour (Q11)", () => {
     // Rectangle 100 × 50 clockwise from the top-left vertex: top, right, bottom, left.
-    const rectangle = [
-      { x: 0, y: 0 },
-      { x: 100, y: 0 },
-      { x: 100, y: 50 },
-      { x: 0, y: 50 },
-    ];
-
-    expect(edgeLengths(rectangle)).toEqual([100, 50, 100, 50]);
+    expect(edgeLengths(rectanglePoints(100, 50))).toEqual([100, 50, 100, 50]);
   });
 
   it("gives 0 for the edges of a size of 0 (Q15)", () => {
@@ -38,12 +33,7 @@ describe("edgeLengths (properties)", () => {
     height: fc.integer({ max: 1000, min: 0 }),
     width: fc.integer({ max: 1000, min: 0 }),
   })("sums to the perimeter 2 · (width + height) of a rectangle", ({ height, width }) => {
-    const lengths = edgeLengths([
-      { x: 0, y: 0 },
-      { x: width, y: 0 },
-      { x: width, y: height },
-      { x: 0, y: height },
-    ]);
+    const lengths = edgeLengths(rectanglePoints(width, height));
 
     expect(lengths.reduce((sum, length) => sum + length, 0)).toBe(2 * (width + height));
   });

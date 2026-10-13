@@ -1,18 +1,14 @@
 // @vitest-environment happy-dom
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { chooseOption, clickElement, openPage, readText, typeValue } from "./user-actions";
-
-/**
- * Whether the « Stretched » check box is out of sight, as the browser computes it.
- *
- * @returns `true` when it is not displayed
- */
-function isStretchedFieldHidden(): boolean {
-  const element = document.querySelector("#stretched-field");
-
-  return element !== null && getComputedStyle(element).display === "none";
-}
+import {
+  chooseOption,
+  clickElement,
+  openPage,
+  readDisplay,
+  readText,
+  typeValue,
+} from "./user-actions";
 
 /**
  * Whether the « Stretched » check box is ticked.
@@ -33,7 +29,7 @@ describe("playground: stretched polygon (US-021)", () => {
   });
 
   it("[F06.AC5] shows the « Stretched » check box for the polygon only, unticked", () => {
-    expect(isStretchedFieldHidden()).toBe(true);
+    expect(readDisplay("stretched-field") === "none").toBe(true);
 
     typeValue("width", "100");
     typeValue("height", "100");
@@ -41,7 +37,7 @@ describe("playground: stretched polygon (US-021)", () => {
     typeValue("corners", "6");
     chooseOption("shape", "polygon");
 
-    expect(isStretchedFieldHidden()).toBe(false);
+    expect(readDisplay("stretched-field") === "none").toBe(false);
     expect(isStretched()).toBe(false);
 
     // The regular hexagon of F02, centered: flat top and bottom at (100 − 50√3)/2.

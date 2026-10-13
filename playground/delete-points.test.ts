@@ -1,7 +1,14 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
 
-import { clickElement, clickPoint, openOnStep, readPointRows } from "./user-actions";
+import {
+  clickElement,
+  clickPoint,
+  openOnStep,
+  pressKey,
+  readPointRows,
+  typeValue,
+} from "./user-actions";
 
 /**
  * What the Delete button shows: whether it is greyed, and the line under it.
@@ -14,15 +21,6 @@ function deleteState(): { readonly isGreyed: boolean; readonly line: string } {
   const isShown = message?.hidden === false;
 
   return { isGreyed: button?.disabled === true, line: isShown ? message.textContent : "" };
-}
-
-/**
- * Presses the Delete key on an element of the page.
- *
- * @param target - element that has the focus
- */
-function pressDelete(target: Element | null): void {
-  target?.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: "Delete" }));
 }
 
 describe("deleting points", () => {
@@ -47,11 +45,11 @@ describe("deleting points", () => {
     openOnStep(1);
     clickElement("mode-points");
     clickPoint(2, false);
-    pressDelete(document.querySelector("#point-x"));
+    pressKey("#point-x", "Delete");
 
     expect(readPointRows()).toHaveLength(4);
 
-    pressDelete(document.body);
+    pressKey("body", "Delete");
 
     expect(readPointRows()).toHaveLength(3);
   });
@@ -114,7 +112,7 @@ describe("deleting points", () => {
     openOnStep(10);
     clickElement("mode-points");
     clickPoint(1, false);
-    pressDelete(document.body);
+    pressKey("body", "Delete");
 
     expect(readPointRows()).toHaveLength(6);
     expect(deleteState().isGreyed).toBe(true);
@@ -126,15 +124,9 @@ describe("deleting points", () => {
     clickElement("mode-points");
     clickPoint(2, false);
 
-    const width = document.querySelector<HTMLInputElement>("#width");
-
-    if (width !== null) {
-      width.value = "";
-      width.dispatchEvent(new Event("input"));
-      pressDelete(document.body);
-      width.value = "120";
-      width.dispatchEvent(new Event("input"));
-    }
+    typeValue("width", "");
+    pressKey("body", "Delete");
+    typeValue("width", "120");
 
     expect(readPointRows()).toHaveLength(4);
   });
@@ -142,7 +134,7 @@ describe("deleting points", () => {
   it("[F08.AC4] leaves the rectangle as it is when Delete is pressed with no point selected", () => {
     openOnStep(1);
     clickElement("mode-points");
-    pressDelete(document.body);
+    pressKey("body", "Delete");
 
     expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("rectangle");
   });
@@ -151,7 +143,7 @@ describe("deleting points", () => {
     openOnStep(1);
     clickElement("mode-points");
     clickPoint(2, false);
-    document.body.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key: "Backspace" }));
+    pressKey("body", "Backspace");
 
     expect(readPointRows()).toHaveLength(3);
   });

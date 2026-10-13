@@ -22,7 +22,7 @@ src/geometry/
 ## Names
 
 - Every file and folder: `kebab-case` (`unicorn/filename-case`); a module file is the kebab-case of its export.
-- Tests: `<module>.test.ts`, next to the module; repository-wide tests (backlog, bibliography, barrels, diagrams, dependencies, fitness) in `tests/`.
+- Tests: `<module>.test.ts`, next to the module; repository-wide tests (backlog, bibliography, barrels, diagrams, dependencies, fitness) in `tests/`, with the fixtures shared by the tests of `src/` (`tests/geometry-fixtures.ts`, imported from `tests`); the actions shared by the playground's tests in `playground/user-actions/`.
 
 ## Folders
 

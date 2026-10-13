@@ -1,7 +1,7 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
-import { integerTriangle } from "../../tests";
+import { integerTriangle, rectanglePoints } from "../../tests";
 
 import { cornerTriples } from "./corner-triples";
 import { turningAngles } from "./turning-angles";
@@ -12,14 +12,7 @@ const DECIMALS = 12;
 describe("turningAngles", () => {
   it("gives a clockwise quarter turn at every corner of the rectangle of US-001", () => {
     // The first vertex sees the last edge (0, 50) → (0, 0): cyclic contour (Q11).
-    const angles = turningAngles(
-      cornerTriples([
-        { x: 0, y: 0 },
-        { x: 100, y: 0 },
-        { x: 100, y: 50 },
-        { x: 0, y: 50 },
-      ]),
-    );
+    const angles = turningAngles(cornerTriples(rectanglePoints(100, 50)));
 
     expect(angles).toHaveLength(4);
 
