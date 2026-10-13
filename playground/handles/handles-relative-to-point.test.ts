@@ -45,6 +45,8 @@ describe("handles typed as dx and dy from their point (US-023)", () => {
   });
 
   it("[F12.AC4] puts the handle's end at the point plus dx and dy", () => {
+    expect(readHandleFields()).toEqual(["0", "0", "0", "0"]);
+
     // dx = 30, dy = −15 from (100, 0): the end at (130, −15); the mirror (−30, 15).
     typeAndEnter("handle-after-x", "30");
     typeAndEnter("handle-after-y", "-15");
@@ -63,6 +65,7 @@ describe("handles typed as dx and dy from their point (US-023)", () => {
     typeAndEnter("point-x", "110");
 
     expect(readHandleFields().slice(2)).toEqual(["30", "-15"]);
+    expect(readText("#path-data")).toContain("C140 -15 ");
   });
 
   it("labels the fields dx and dy, back to x and y on the page", () => {
@@ -71,5 +74,11 @@ describe("handles typed as dx and dy from their point (US-023)", () => {
     chooseOption("handle-method", "page");
 
     expect(readAxisLabels()).toEqual(["x", "y", "x", "y"]);
+  });
+
+  it("[F12.AC4] types the handle before as dx and dy too", () => {
+    typeAndEnter("handle-before-x", "-20");
+
+    expect(readHandleFields()).toEqual(["-20", "0", "20", "0"]);
   });
 });

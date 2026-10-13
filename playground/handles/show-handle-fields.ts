@@ -1,8 +1,9 @@
 import { add } from "../../src";
 import { readMode, selectElement, writeInputValue } from "../page";
 
-import { readFieldOrigin } from "./read-field-origin";
+import { readFieldShift } from "./read-field-shift";
 import { readSelectedCorner } from "./read-selected-corner";
+import { readTypingWay } from "./read-typing-way";
 
 import type { CurveCorner } from "../../src";
 import type { ShapeReading } from "../shape";
@@ -32,7 +33,7 @@ function writeAxisLabels(document: Document, prefix: "" | "d"): void {
  */
 function writeHandleValues(document: Document, corner: CurveCorner): void {
   const mode = selectElement(document, "handle-mode");
-  const origin = readFieldOrigin(document, corner.point);
+  const origin = readFieldShift(document, corner.point);
   const before = add(origin, corner.handles.before);
   const after = add(origin, corner.handles.after);
 
@@ -40,7 +41,7 @@ function writeHandleValues(document: Document, corner: CurveCorner): void {
     mode.value = corner.handles.mode;
   }
 
-  writeAxisLabels(document, origin === corner.point ? "" : "d");
+  writeAxisLabels(document, readTypingWay(document) === "point" ? "d" : "");
   writeInputValue(document, "handle-before-x", before.x);
   writeInputValue(document, "handle-before-y", before.y);
   writeInputValue(document, "handle-after-x", after.x);
@@ -68,8 +69,8 @@ function showHandleSwitch(document: Document, corner: CurveCorner | undefined): 
 
 /**
  * Shows the handles of the one point selected in Points mode: the switch between radius and
- * handles, then the mode and the end of each handle as x and y on the page (F12, domain: radius
- * and handles on one point).
+ * handles, then the mode and each handle, as x and y on the page or dx and dy from the point
+ * (`readFieldShift`; F12, domain: radius and handles on one point).
  *
  * @kind procedure
  * @param document - page document
