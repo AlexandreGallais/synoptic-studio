@@ -1,4 +1,4 @@
-import { contourBoundingBox, roundedContour } from "../../src";
+import { contourBoundingBox, curveContour } from "../../src";
 import { readNumber, selectElement } from "../page";
 import { readShape } from "../shape";
 
@@ -19,7 +19,7 @@ type Axis = "x" | "y";
  */
 function readStraightStart(document: Document, axis: Axis): number | undefined {
   const reading = readShape(document);
-  const box = contourBoundingBox(roundedContour(reading.corners));
+  const box = contourBoundingBox(curveContour(reading.corners));
 
   if (!reading.isValid) {
     return undefined;

@@ -1,5 +1,6 @@
 import {
   RECTANGLE_CORNER_COUNT,
+  curveCornerOf,
   freeShapeCorners,
   freeShapeRadii,
   isRegularPolygonCornerCount,
@@ -115,7 +116,12 @@ function readPolygonShape(document: Document): ShapeReading {
   const isValid = isValidRegularPolygon(model);
 
   return {
-    corners: isValid ? turnedCorners(regularPolygonCorners(model), model) : [],
+    corners: isValid
+      ? turnedCorners(
+          regularPolygonCorners(model).map((corner) => curveCornerOf(corner)),
+          model,
+        )
+      : [],
     isValid,
     message: INVALID_POLYGON,
     model,

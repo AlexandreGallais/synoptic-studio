@@ -1,9 +1,9 @@
-import type { Corner, FreeShape, RegularPolygon } from "../../src";
+import type { CurveCorner, FreeShape, RegularPolygon } from "../../src";
 
 /** A shape read from the inputs, with what the page shows of it. */
 export type ShapeReading = {
   /** Corners to draw, empty when the shape is invalid. */
-  readonly corners: readonly Corner[];
+  readonly corners: readonly CurveCorner[];
   /** Whether the shape can enter the model. */
   readonly isValid: boolean;
   /** Message shown when it cannot. */

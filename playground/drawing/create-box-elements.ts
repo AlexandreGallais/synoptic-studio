@@ -1,6 +1,7 @@
 import {
   contourPiecesToPathData,
   createPathElement,
+  curveCornerOf,
   rectangleCorners,
   roundedContour,
   turnedCorners,
@@ -32,7 +33,10 @@ function readBoxCorners(model: FreeShape | RegularPolygon, inset: number): reado
     y: model.y + inset,
   });
 
-  return turnedCorners(box, model);
+  return turnedCorners(
+    box.map((corner) => curveCornerOf(corner)),
+    model,
+  );
 }
 
 /**

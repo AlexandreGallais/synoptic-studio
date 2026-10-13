@@ -96,10 +96,10 @@ describe("regularPolygonAsFreeShape", () => {
       corner.point.x,
       corner.point.y,
     ]);
-    const expected = turnedCorners(regularPolygonCorners(triangle), triangle).flatMap((corner) => [
-      corner.point.x,
-      corner.point.y,
-    ]);
+    const expected = turnedCorners(
+      regularPolygonCorners(triangle).map((corner) => curveCornerOf(corner)),
+      triangle,
+    ).flatMap((corner) => [corner.point.x, corner.point.y]);
 
     expect(shape.angle).toBe(90);
 
@@ -127,10 +127,10 @@ describe("regularPolygonAsFreeShape", () => {
         corner.point.x,
         corner.point.y,
       ]);
-      const expected = turnedCorners(regularPolygonCorners(polygon), polygon).flatMap((corner) => [
-        corner.point.x,
-        corner.point.y,
-      ]);
+      const expected = turnedCorners(
+        regularPolygonCorners(polygon).map((corner) => curveCornerOf(corner)),
+        polygon,
+      ).flatMap((corner) => [corner.point.x, corner.point.y]);
 
       for (const [index, value] of drawn.entries()) {
         expect(value).toBeCloseTo(expected[index] ?? NaN, 9);
