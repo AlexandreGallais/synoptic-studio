@@ -1,6 +1,6 @@
 # ADR-0042 — Folders by theme, 15 modules as a signal, a shape's type in its folder
 
-**Status**: Accepted (Product Owner, SP-010, 2026-10-13).
+**Status**: Superseded by ADR-0043 (2026-10-13). Accepted at SP-010 (Product Owner, 2026-10-13).
 
 ## Context
 

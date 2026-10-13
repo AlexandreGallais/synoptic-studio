@@ -1,6 +1,6 @@
 import { AGGREGATORS, BARRELS } from "./barrels";
 import { DOM_LAYERS } from "./dom-layers";
-import { LIBRARY_SIGNATURES, SINGLE_EXPORT_MODULES } from "./modules";
+import { FOLDER_LAYOUT, LIBRARY_SIGNATURES, SINGLE_EXPORT_MODULES } from "./modules";
 import { PLAYGROUND_ENTRY } from "./playground";
 import { PURE_LAYERS } from "./pure-layers";
 import { TESTS } from "./tests";
@@ -13,6 +13,7 @@ export const SCOPES: readonly TSESLint.FlatConfig.Config[] = [
   PURE_LAYERS,
   LIBRARY_SIGNATURES,
   SINGLE_EXPORT_MODULES,
+  FOLDER_LAYOUT,
   DOM_LAYERS,
   PLAYGROUND_ENTRY,
   BARRELS,
