@@ -8,9 +8,9 @@ The structure is **checked by a test** (`backlog.test.ts`): unique IDs, valid st
 
 ## Where we are
 
-| Done                                  | Now                               | Next                                                                   | Then                 |
-| ------------------------------------- | --------------------------------- | ---------------------------------------------------------------------- | -------------------- |
-| E01 — draw symbol shapes from numbers | RET-001, the retrospective of E01 | E14 — curves: F11, a code base ready for curves, then F10, round shape | E15 — text, then E02 |
+| Done                                                      | Now | Next                                                                   | Then                 |
+| --------------------------------------------------------- | --- | ---------------------------------------------------------------------- | -------------------- |
+| E01 — draw symbol shapes from numbers, retrospective done | —   | E14 — curves: F11, a code base ready for curves, then F10, round shape | E15 — text, then E02 |
 
 The full order of the epics is the Product Owner's, in [epics](./epics/); each epic orders its features, each feature its stories.
 

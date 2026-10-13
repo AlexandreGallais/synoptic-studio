@@ -2,7 +2,7 @@
 id: RET-001
 epic: E01
 title: Retrospective of E01
-status: ready
+status: done
 points: 2
 ---
 
@@ -21,5 +21,5 @@ Look back at how E01 was built, decide what changes, review what the growing pro
 One task = one commit, referenced as `RET-001.Tn`.
 
 - [x] T1 — Gather facts and the improvement log (1 h)
-- [ ] T2 — Retrospective with the Product Owner; evolvability review; decisions (2 h) — every logged item decided; what helped and hurt the Product Owner still to record
+- [x] T2 — Retrospective with the Product Owner; evolvability review; decisions (2 h)
 - [x] T3 — Record, update the playbook and the agent configuration (1 h)

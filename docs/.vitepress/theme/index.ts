@@ -17,9 +17,16 @@ const THEME: Theme = {
       return;
     }
 
+    // Drawings run one after the other: Mermaid measures text in the page, and two drawings at
+    // once disturb each other. The observer cannot wait, so each change queues the next one.
+    const queue = { drawing: Promise.resolve() };
     const observer = new MutationObserver(() => {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises -- a DOM observer cannot wait; drawDiagrams catches every error itself
-      drawDiagrams();
+      const previous = queue.drawing;
+
+      queue.drawing = (async (): Promise<void> => {
+        await previous;
+        await drawDiagrams();
+      })();
     });
 
     observer.observe(document.body, { childList: true, subtree: true });
