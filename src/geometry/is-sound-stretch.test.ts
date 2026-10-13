@@ -48,5 +48,7 @@ describe("isSoundStretch (properties)", () => {
     }));
 
     expect(isSoundStretch(polygon)).toBe(true);
+    // Drawn the other way (counterclockwise on screen), every corner turns −2π/n, below the guard.
+    expect(isSoundStretch(polygon.toReversed())).toBe(false);
   });
 });

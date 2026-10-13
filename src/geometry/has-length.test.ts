@@ -35,12 +35,20 @@ describe("hasLength (EPSILON, Q10)", () => {
 });
 
 /** Arbitrary point with integer coordinates. */
-const POINT = fc.record({ x: fc.integer(), y: fc.integer() });
+const POINT = fc.record({
+  x: fc.integer({ max: 1e6, min: -1e6 }),
+  y: fc.integer({ max: 1e6, min: -1e6 }),
+});
+
+/** A step of −1, 0 or 1 along an axis. */
+const STEP = fc.integer({ max: 1, min: -1 });
 
 describe("hasLength (properties)", () => {
-  test.prop({ end: POINT, start: POINT })(
+  test.prop({ dx: STEP, dy: STEP, start: POINT })(
     "keeps a segment between integer points exactly when they differ, whichever way it runs",
-    ({ end, start }) => {
+    ({ dx, dy, start }) => {
+      // Steps of −1, 0 or 1 make the two ends equal about one time in nine.
+      const end = { x: start.x + dx, y: start.y + dy };
       // Two integer points that differ are at least 1 apart, far above EPSILON.
       const isDrawn = start.x !== end.x || start.y !== end.y;
 

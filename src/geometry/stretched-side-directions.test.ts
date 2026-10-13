@@ -43,6 +43,42 @@ describe("stretchedSideDirections (DERIV-stretched-polygon steps 1–2)", () => 
 const SCALE = fc.integer({ max: 300, min: -300 }).map((step) => Math.exp(step / 100));
 
 describe("stretchedSideDirections (properties)", () => {
+  test.prop({ corners: fc.integer({ max: 12, min: 3 }) })(
+    "gives the regular directions 2πj/n at λ = 1",
+    ({ corners }) => {
+      for (const [index, direction] of stretchedSideDirections(corners, 1).entries()) {
+        expect(direction).toBeCloseTo((2 * Math.PI * (index + 1)) / corners, DECIMALS);
+      }
+    },
+  );
+
+  test.prop({ half: fc.integer({ max: 5, min: 1 }), scale: SCALE })(
+    "closes an odd polygon on the axis whenever a side can reach it",
+    ({ half, scale }) => {
+      // n = 2m + 1: from x = 1/2, the sides' horizontal steps cos φⱼ end at x = 0 (step 2).
+      const directions = stretchedSideDirections(2 * half + 1, scale);
+      const reach = directions.reduce((sum, direction) => sum + Math.cos(direction), 0.5);
+
+      expect(Number.isNaN(reach) || Math.abs(reach) < 1e-9).toBe(true);
+    },
+  );
+
+  test.prop({ corners: fc.integer({ max: 12, min: 3 }), first: SCALE, second: SCALE })(
+    "turns a side below the horizontal middle more upright as λ grows",
+    ({ corners, first, second }) => {
+      // For θⱼ < π/2, atan2(λ sin θ, cos θ) = atan(λ tan θ) grows with λ; the odd closure is left out.
+      const low = stretchedSideDirections(corners, Math.min(first, second));
+      const high = stretchedSideDirections(corners, Math.max(first, second));
+      const scaled = corners % 2 === 0 ? low : low.slice(0, -1);
+
+      for (const [index, direction] of scaled.entries()) {
+        if ((2 * Math.PI * (index + 1)) / corners < Math.PI / 2) {
+          expect(high[index]).toBeGreaterThanOrEqual(direction);
+        }
+      }
+    },
+  );
+
   test.prop({ half: fc.integer({ max: 6, min: 2 }), scale: SCALE })(
     "gives an even polygon rising directions in (0, π), symmetric about the vertical",
     ({ half, scale }) => {

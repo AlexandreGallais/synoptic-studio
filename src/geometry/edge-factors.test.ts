@@ -23,6 +23,23 @@ describe("edgeFactors (DERIV-local-radius-clamp step 2)", () => {
 /** Arbitrary length or setback. */
 const SIZE = fc.integer({ max: 5000, min: 0 });
 
+/**
+ * Checks that a factor reduces a demand as little as fits in its edge: none when the demand fits,
+ * else the reduced demand fills the edge.
+ *
+ * @param length - length of the edge
+ * @param demand - sum of the two setbacks it carries
+ * @param factor - factor computed for the edge
+ */
+function expectFittingFactor(length: number, demand: number, factor: number): void {
+  const isFitting = demand <= length;
+
+  expect(factor).toBeGreaterThanOrEqual(0);
+  expect(factor).toBeLessThanOrEqual(1);
+  expect(factor * demand).toBeLessThanOrEqual(length * (1 + 1e-12));
+  expect(isFitting ? factor : factor * demand).toBeCloseTo(isFitting ? 1 : length, 9);
+}
+
 describe("edgeFactors (properties)", () => {
   test.prop({ pairs: fc.array(fc.tuple(SIZE, SIZE), { minLength: 1 }) })(
     "gives each edge a factor in [0, 1] that fits its two reduced setbacks in it",
@@ -33,13 +50,13 @@ describe("edgeFactors (properties)", () => {
 
       expect(factors).toHaveLength(lengths.length);
 
-      for (const [index, factor] of factors.entries()) {
-        // Edge i carries the setbacks of corners i and i + 1, the last edge those of the last and the first.
-        const demand = (setbacks[index] ?? 0) + (setbacks[(index + 1) % setbacks.length] ?? 0);
+      // Edge i carries the setbacks of corners i and i + 1, the last edge those of the last and the first.
+      const demands = pairs.map(
+        ([, setback], index) => setback + (pairs[(index + 1) % pairs.length]?.[1] ?? 0),
+      );
 
-        expect(factor).toBeGreaterThanOrEqual(0);
-        expect(factor).toBeLessThanOrEqual(1);
-        expect(factor * demand).toBeLessThanOrEqual((lengths[index] ?? 0) * (1 + 1e-12));
+      for (const [index, [length]] of pairs.entries()) {
+        expectFittingFactor(length, demands[index] ?? NaN, factors[index] ?? NaN);
       }
     },
   );

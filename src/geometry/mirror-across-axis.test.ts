@@ -20,6 +20,7 @@ describe("mirrorAcrossAxis (properties)", () => {
     ({ x, y }) => {
       expect(mirrorAcrossAxis(mirrorAcrossAxis({ x, y }))).toEqual({ x, y });
       expect(mirrorAcrossAxis({ x, y }).y).toBe(y);
+      expect(x + mirrorAcrossAxis({ x, y }).x).toBe(0);
     },
   );
 });
