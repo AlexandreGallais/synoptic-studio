@@ -80,6 +80,23 @@ describe("status line", () => {
     });
   });
 
+  it("resumes the turn, its clock and tokens running, when the agent answers a notification after its end", () => {
+    const ended = addTokens(
+      EMPTY_TALLY,
+      `${prompt("2026-10-13T08:00:00Z")}\n${line("a", 5)}\n{"timestamp": "2026-10-13T08:03:00Z", "message": {"id": "z", "stop_reason": "end_turn"}}\n`,
+    );
+    const notification =
+      '{"type": "user", "promptSource": "system", "message": {"content": "done"}}';
+    const answer = `{"type": "assistant", "message": {"id": "b", "usage": {"input_tokens": 1, "output_tokens": 7}}}`;
+
+    expect(addTokens(ended, `${notification}\n${answer}\n`)).toMatchObject({
+      end: 0,
+      isWaiting: false,
+      output: 12,
+      start: Temporal.Instant.from("2026-10-13T08:00:00Z").epochMilliseconds,
+    });
+  });
+
   it("does not start a turn at a compaction summary nor at a task notification", () => {
     const summary = '{"type": "user", "isCompactSummary": true, "message": {"content": "summary"}}';
     const notification =

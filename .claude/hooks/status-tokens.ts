@@ -140,8 +140,25 @@ function startOf(line: unknown): number {
 }
 
 /**
+ * Tally once the agent works again after the end of its turn: a new turn at a prompt, the same
+ * turn resumed at an answer that no prompt asked (a background task's notification woke it).
+ *
+ * @param tally - tally of a turn that ended
+ * @param line - parsed transcript line
+ * @returns the tally of the turn at work, or unchanged for any other line
+ */
+function resumed(tally: TokenTally, line: unknown): TokenTally {
+  if (isPrompt(line)) {
+    return { ...tally, end: 0, isWaiting: false, output: 0, start: startOf(line), total: 0 };
+  }
+
+  return text(line, "type") === "assistant" ? { ...tally, end: 0, isWaiting: false } : tally;
+}
+
+/**
  * Tally after one transcript line: a prompt after the agent ended its turn starts a new turn;
- * messages sent while the agent works stay inside the turn.
+ * messages sent while the agent works stay inside the turn; an answer after the end of the turn
+ * without a prompt (the agent woken by a background task's notification) resumes that turn.
  *
  * @param tally - tokens of the turn so far
  * @param line - parsed transcript line
@@ -149,10 +166,7 @@ function startOf(line: unknown): number {
  */
 function withLine(tally: TokenTally, line: unknown): TokenTally {
   const message = field(line, "message");
-  const started =
-    tally.isWaiting && isPrompt(line)
-      ? { ...tally, end: 0, isWaiting: false, output: 0, start: startOf(line), total: 0 }
-      : tally;
+  const started = tally.isWaiting ? resumed(tally, line) : tally;
   const counted = withUsage(started, message);
 
   return text(message, "stop_reason") === "end_turn"
