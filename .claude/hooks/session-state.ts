@@ -121,7 +121,7 @@ if (import.meta.main) {
       "Project state (SessionStart hook, ADR-0021):",
       `- branch ${git(["branch", "--show-current"])}, ${String(changed)} uncommitted file(s), last commit: ${git(["log", "-1", "--format=%h %s"])}`,
       ...(features.length === 0 ? ["- no feature started"] : features.map((line) => `- ${line}`)),
-      "- a story is implemented only once the Product Owner has set it ready.",
+      "- a story is implemented only when ready; the Product Owner's /run sets its scope ready (ADR-0045).",
       "",
     ].join("\n"),
   );

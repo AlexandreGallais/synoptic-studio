@@ -22,7 +22,7 @@ The full order of the epics is the Product Owner's, in [epics](./epics/); each e
 | Scrum Master  | Claude Code                          | keeps the backlog and its links, prepares refinement, checks the method                           |
 | Developers    | Claude Code (with the Product Owner) | split features into stories and stories into tasks, implement, test, demonstrate                  |
 
-The Product Owner is one person (`REF-SCRUM-GUIDE`). Claude Code never sets an epic or a feature to `ready` without the Product Owner's explicit agreement. A story is set to `done` in the **last commit of its pull request**, merged into its feature branch (by the Product Owner, or by GitHub in an authorized run once the local checks passed at the push). The Product Owner's acceptance is given on the test cards and at the feature's validation, by merging the feature pull request: `develop` and `main` only ever hold a story as `done` once its feature is accepted (ADR-0028, ADR-0038).
+The Product Owner is one person (`REF-SCRUM-GUIDE`). Claude Code never sets an epic or a feature to `ready` without the Product Owner's explicit agreement; a `/run` is that agreement for its feature and stories (ADR-0045). A story is set to `done` in the **last commit of its pull request**, merged into its feature branch (by the Product Owner, or by GitHub in an authorized run once the local checks passed at the push). The Product Owner's acceptance is given on the test cards and at the feature's validation, by merging the feature pull request: `develop` and `main` only ever hold a story as `done` once its feature is accepted (ADR-0028, ADR-0038).
 
 ## The four levels
 
