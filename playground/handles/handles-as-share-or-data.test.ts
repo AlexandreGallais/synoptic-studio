@@ -21,6 +21,15 @@ function pasteCurve(text: string): void {
   clickElement("paste-curve");
 }
 
+/**
+ * Whether the line saying why a paste was refused is hidden.
+ *
+ * @returns its `hidden` state
+ */
+function isMessageHidden(): boolean {
+  return document.querySelector<HTMLElement>("#paste-message")?.hidden !== false;
+}
+
 describe("handles typed as shares of the side, or pasted (US-025)", () => {
   beforeEach(() => {
     // The rectangle 100 × 80: points 1 (0, 0), 2 (100, 0); Points mode, point 1, handles on.
@@ -46,6 +55,8 @@ describe("handles typed as shares of the side, or pasted (US-025)", () => {
     expect(readText("#path-data")).toContain("C30 -15 70 -15 100 0");
     // Point 1 mirrors its handle (mode angle and length): the left side bends too.
     expect(readText("#path-data")).toContain("C0 80 -30 15 0 0");
+    // Point 2 mirrors its handle too: (30, 15) after, the right side bends.
+    expect(readText("#path-data")).toContain("C130 15 100 80 100 80");
   });
 
   it("[F12.AC4] lays a cubic-bezier() on the side", () => {
@@ -61,6 +72,38 @@ describe("handles typed as shares of the side, or pasted (US-025)", () => {
     pasteCurve("C 30 -15 70 -15 90 0");
 
     expect(readText("#paste-message")).toBe("The C must end on the side's last point.");
+    expect(isMessageHidden()).toBe(false);
     expect(readText("#path-data")).toBe(before);
+
+    pasteCurve("C 30 -15 70 -15 100 0");
+
+    expect(isMessageHidden()).toBe(true);
+  });
+
+  it("[F12.AC4] leaves the next point's handles alone in mode none", () => {
+    clickPoint(2, false);
+    clickElement("handles-switch");
+    chooseOption("handle-mode", "none");
+    clickPoint(1, false);
+    pasteCurve("C 30 -15 70 -15 100 0");
+
+    expect(readText("#path-data")).toContain("C30 -15 70 -15 100 0");
+    expect(readText("#path-data")).not.toContain("C130 15");
+  });
+
+  it("[F12.AC4] pastes on the side after the last point, back to point 1", () => {
+    clickPoint(4, false);
+    clickElement("handles-switch");
+    pasteCurve("C -15 50 -15 30 0 0");
+
+    expect(readText("#path-data")).toContain("C-15 50 -15 30 0 0");
+  });
+
+  it("[F12.AC4] pastes control points as drawn on a turned shape", () => {
+    // Turned 90° about (50, 40): point 1 at (90, −10), point 2 at (90, 90).
+    typeAndEnter("angle", "90");
+    pasteCurve("C 105 15 105 65 90 90");
+
+    expect(readText("#path-data")).toContain("C105 15 105 65 90 90");
   });
 });
