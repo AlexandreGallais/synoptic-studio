@@ -1,3 +1,4 @@
+import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { EPSILON } from "../math";
@@ -31,4 +32,20 @@ describe("hasLength (EPSILON, Q10)", () => {
       }),
     ).toBe(false);
   });
+});
+
+/** Arbitrary point with integer coordinates. */
+const POINT = fc.record({ x: fc.integer(), y: fc.integer() });
+
+describe("hasLength (properties)", () => {
+  test.prop({ end: POINT, start: POINT })(
+    "keeps a segment between integer points exactly when they differ, whichever way it runs",
+    ({ end, start }) => {
+      // Two integer points that differ are at least 1 apart, far above EPSILON.
+      const isDrawn = start.x !== end.x || start.y !== end.y;
+
+      expect(hasLength({ end, kind: "segment", start })).toBe(isDrawn);
+      expect(hasLength({ end: start, kind: "segment", start: end })).toBe(isDrawn);
+    },
+  );
 });
