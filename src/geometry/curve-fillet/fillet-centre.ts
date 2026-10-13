@@ -1,10 +1,9 @@
 import { add, scale } from "../../math";
+import { sideNormal } from "../fillet-side";
 import { cubicPoint } from "../placement";
 
-import { sideNormal } from "./side-normal";
-
-import type { FilletSide } from "./fillet-side";
 import type { Point } from "../../math";
+import type { FilletSide } from "../fillet-side";
 
 /**
  * The centre of a fillet touching a side at a parameter: on the side's parallel curve

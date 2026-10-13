@@ -1,8 +1,8 @@
 import { norm, subtract } from "../../math";
 import { cubicPoint } from "../placement";
 
-import type { FilletSide } from "./fillet-side";
 import type { Point } from "../../math";
+import type { FilletSide } from "../fillet-side";
 
 /** Samples of a side checked against a fillet's circle. */
 const SAMPLES = 64;

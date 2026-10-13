@@ -2,7 +2,7 @@ import { norm, subtract } from "../../math";
 import { cyclicItem } from "../contour";
 import { cubicSide, isCurvedSide, reversedCubic, straightCubic } from "../curve";
 
-import type { CornerSide } from "../curve-fillet";
+import type { CornerSide } from "../fillet-side";
 import type { CurveCorner } from "../handles";
 
 /**

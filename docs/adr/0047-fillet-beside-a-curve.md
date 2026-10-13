@@ -22,5 +22,5 @@ Chosen by the Product Owner from the agent's two recommendations, for a behaviou
 ## Consequences
 
 - A straight side written as a cubic draws the same fillet as today's segment.
-- The point is found numerically (bisection, 60 halvings) where a straight side needs a formula; a corner between two cubics costs a nested bisection.
+- The point is found numerically, where a straight side needs a formula: coarse tables of 32 samples, then bisections of 40 halvings; the centre runs along the curve and is measured from the straight side, so that only a corner between two cubics nests a search of the foot. A corner beside a curve costs about 10 ms, one between two cubics with a radius to reduce up to about 200 ms (US-027, measured).
 - A spike where the curve leaves back along the straight side gets no arc.

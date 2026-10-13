@@ -3,9 +3,9 @@ import { describe, expect, it } from "vitest";
 
 import { LINE_AND_THIRDS, sideOf } from "../../../tests";
 import { straightCubic } from "../curve";
+import { orientedSides } from "../fillet-side";
 
 import { fittedFilletRadius } from "./fitted-fillet-radius";
-import { orientedSides } from "./oriented-sides";
 
 describe("fittedFilletRadius (ADR-0047)", () => {
   it("[F12.AC7] keeps a radius that fits, and reduces one too large to the curve's whole length", () => {

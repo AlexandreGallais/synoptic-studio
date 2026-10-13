@@ -72,14 +72,16 @@ describe("handles in Points mode (US-022)", () => {
   });
 
   it("[F12.AC2] [F12.AC4] bends the side when the handle after is typed, the handle before mirrored", () => {
-    // After at (30, −15): the vector (30, −15); before mirrored at (−30, 15); the top side a cubic
-    // from point 1, cut where point 2's fillet of radius 10 touches it (ADR-0047).
+    // After at (30, −15): the vector (30, −15); before mirrored at (−30, 15); the top side a cubic.
+    // Radius 0: no fillet cuts it, its control point drawn as typed.
+    typeAndEnter("radius", "0");
+    clickPoint(1, false);
     clickElement("handles-switch");
     typeAndEnter("handle-after-x", "30");
     typeAndEnter("handle-after-y", "-15");
 
     expect(readHandleFields()).toEqual(["-30", "15", "30", "-15"]);
-    expect(readText("#path-data")).toMatch(/^M0 0 C/u);
+    expect(readText("#path-data")).toMatch(/^M0 0 C30 -15 /u);
   });
 
   it("[F12.AC2] leaves the handle before in mode none", () => {
@@ -117,6 +119,8 @@ describe("handles in Points mode (US-022)", () => {
 
   it("[F12.AC4] types the ends as x and y on the page, for a point away from the origin", () => {
     // Point 2 at (120, 0): after at (150, −15) is the vector (30, −15); before, its mirror, at (90, 15).
+    // Radius 0: no fillet cuts the curves, the control points typed are drawn as they are.
+    typeAndEnter("radius", "0");
     clickPoint(2, false);
     clickElement("handles-switch");
     typeAndEnter("handle-after-x", "150");

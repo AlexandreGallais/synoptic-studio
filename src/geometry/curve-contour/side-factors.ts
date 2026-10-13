@@ -1,7 +1,7 @@
 import { cyclicItem } from "../contour";
 import { edgeFactor } from "../corner-radius";
 
-import type { CornerSide } from "../curve-fillet";
+import type { CornerSide } from "../fillet-side";
 
 /**
  * The factor of each side after a corner: on a straight side, the share of its length both
