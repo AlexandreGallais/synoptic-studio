@@ -3,7 +3,7 @@ id: EN-025
 epic: E14
 feature: F12
 title: "Cubic sides in contours, path data and the straight box"
-status: ready
+status: done
 points: 5
 ---
 
@@ -40,3 +40,10 @@ One task = one commit, referenced as `EN-025.Tn`.
 | `stretchToSize` now calls `stretchedInBox` with the points' box; a free shape passes the box of its curve                                                  | one formula for both; the polygons keep theirs                                                                                |
 | `turnedCorners` takes `CurveCorner`s; a polygon's corners get their handles off first                                                                      | turning must turn the handles, and only free shapes have them                                                                 |
 | the derivative's roots without an EPSILON                                                                                                                  | the stable form drops degenerate roots by itself (`REF-WIKI-QUADRATIC`, math expert's review of SP-011)                       |
+| a handle whose point is off counts as (0, 0) in a cubic, and a split leaves it as stored                                                                   | an off point keeps its vectors but draws none (domain: no value lost when switching)                                          |
+| a split shortens the neighbours' handles; one in mode angle and length goes to mode angle                                                                  | the outline is kept and the handles stay on one line, of different lengths (audit and math expert)                            |
+| a lens — points on one line, sides bulging — stays refused                                                                                                 | a business question for the Product Owner (Q33)                                                                               |
+
+## Review
+
+Auditor, verifier and math expert, before the last commit. Fixed: an off handle bent its side; two sides with the same ends, and a curved loop, were drawn wrongly by matching sides by their ends; the closing side split; the mirrored mode after a split; the new point's handles exactly opposite; tests for each surviving mutation (a sharp point in handles mode, a side curved by the next point's handle, the handles stretched by the curve's box, a cubic's length, the Bernstein weights at t = ¼, a stretch about a box wider than the points, a turn by 180°, a deletion between two curved sides); `DERIV-free-shape-stretch` now stretches from the curve's box, with the step that keeps that box at the size asked; the Pomax entry lists the derivative's weights and the split. Open: Q33.

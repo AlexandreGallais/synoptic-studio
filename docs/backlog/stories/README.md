@@ -81,7 +81,7 @@
 | [EN-023](./E14-F11-EN-023-folders-by-domain.md)                 | F11     | Folders by business domain, files and folders never side by side    | done   |
 | [SP-011](./E14-F12-SP-011-research-f12.md)                      | F12     | Research for F12: curves in symbols, ways to type a handle, strokes | done   |
 | [EN-024](./E14-F12-EN-024-handles-model.md)                     | F12     | A point's handles in the free shape model                           | done   |
-| [EN-025](./E14-F12-EN-025-cubic-sides.md)                       | F12     | Cubic sides in contours, path data and the straight box             | ready  |
+| [EN-025](./E14-F12-EN-025-cubic-sides.md)                       | F12     | Cubic sides in contours, path data and the straight box             | done   |
 | [US-022](./E14-F12-US-022-handles-in-points-mode.md)            | F12     | Switch a point to handles and type them as x and y                  | ready  |
 | [US-023](./E14-F12-US-023-handles-relative-to-point.md)         | F12     | Type a handle as dx and dy from its point                           | ready  |
 | [US-024](./E14-F12-US-024-handles-as-angle-and-length.md)       | F12     | Type a handle as an angle and a length                              | ready  |
