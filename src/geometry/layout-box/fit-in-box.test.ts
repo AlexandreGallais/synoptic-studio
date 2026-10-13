@@ -3,9 +3,9 @@ import { describe, expect, it } from "vitest";
 
 import { expectPoints } from "../../../tests";
 import { EPSILON } from "../../math";
-import { unitRegularPolygon } from "../polygon";
+import { boundingBox } from "../placement";
+import { unitRegularPolygon } from "../regular-polygon";
 
-import { boundingBox } from "./bounding-box";
 import { fitInBox } from "./fit-in-box";
 
 import type { Alignment } from "./alignment";

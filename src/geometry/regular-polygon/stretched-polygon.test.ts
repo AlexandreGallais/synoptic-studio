@@ -2,8 +2,8 @@ import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { expectPoints } from "../../../tests";
-import { boundingBox } from "../box";
-import { cornerTriples, edgeLengths, turningAngles } from "../rounded-corners";
+import { cornerTriples, edgeLengths, turningAngles } from "../corner-radius";
+import { boundingBox } from "../placement";
 
 import { stretchScale } from "./stretch-scale";
 import { stretchedPolygon } from "./stretched-polygon";

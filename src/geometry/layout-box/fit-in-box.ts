@@ -1,5 +1,6 @@
+import { boundingBox } from "../placement";
+
 import { alignmentFactor } from "./alignment-factor";
-import { boundingBox } from "./bounding-box";
 
 import type { Anchor } from "./anchor";
 import type { Size } from "./size";

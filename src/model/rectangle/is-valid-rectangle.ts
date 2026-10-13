@@ -1,5 +1,5 @@
+import { areValidRadii } from "../corner-radius";
 import { isModelSize, isShapeAngle } from "../placement";
-import { areValidRadii } from "../radii";
 
 import { RECTANGLE_CORNER_COUNT } from "./rectangle-corner-count";
 

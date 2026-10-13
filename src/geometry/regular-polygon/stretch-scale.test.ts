@@ -1,7 +1,7 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
-import { boxAspect } from "../box";
+import { boxAspect } from "../layout-box";
 
 import { isSoundStretch } from "./is-sound-stretch";
 import { stretchScale } from "./stretch-scale";

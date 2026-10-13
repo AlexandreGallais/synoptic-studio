@@ -1,4 +1,4 @@
-import { cornersWithRadii } from "../radii";
+import { cornersWithRadii } from "../corner-radius";
 
 import type { FreeShape } from "../free-shape";
 import type { Rectangle } from "./rectangle";
