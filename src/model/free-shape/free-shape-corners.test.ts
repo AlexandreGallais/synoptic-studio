@@ -135,7 +135,7 @@ describe("freeShapeCorners (at a position, F04)", () => {
   });
 
   it("[F12.AC2] gives the rectangle tool's corners their handles off, and stretches handles with the points", () => {
-    // The unit square drawn 200 × 100: a handle (0.1, −0.2) of point 1 is drawn (20, −20).
+    // The unit square drawn 200 × 100: a handle (0.1, 0.2) of point 1 is drawn (20, 20).
     const rectangle = rectangleAsFreeShape({
       angle: 0,
       height: 100,
@@ -144,7 +144,7 @@ describe("freeShapeCorners (at a position, F04)", () => {
       x: 0,
       y: 0,
     });
-    const handles = { ...NO_HANDLES, after: { x: 0.1, y: -0.2 }, isOn: true };
+    const handles = { ...NO_HANDLES, after: { x: 0.1, y: 0.2 }, isOn: true };
     const curved = {
       ...rectangle,
       corners: rectangle.corners.map((corner, index) =>
@@ -160,7 +160,7 @@ describe("freeShapeCorners (at a position, F04)", () => {
     ]);
 
     expect(freeShapeCorners(curved)[0]).toEqual({
-      handles: { ...handles, after: { x: 20, y: -20 } },
+      handles: { ...handles, after: { x: 20, y: 20 } },
       point: { x: 0, y: 0 },
       radius: 30,
     });

@@ -2,6 +2,7 @@ import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { integerPoint } from "../../../tests";
+import { boundingBox } from "../placement";
 
 import { stretchFactors } from "./stretch-factors";
 import { stretchToSize } from "./stretch-to-size";
@@ -17,7 +18,10 @@ const UNIT_SQUARE = [
 describe("stretchFactors (DERIV-free-shape-stretch)", () => {
   it("divides the size asked by the span of the points", () => {
     // The unit square drawn 120 × 80: factors 120 and 80.
-    expect(stretchFactors(UNIT_SQUARE, { height: 80, width: 120 })).toEqual({ x: 120, y: 80 });
+    expect(stretchFactors(boundingBox(UNIT_SQUARE), { height: 80, width: 120 })).toEqual({
+      x: 120,
+      y: 80,
+    });
   });
 
   it("takes each axis's own span", () => {
@@ -28,7 +32,7 @@ describe("stretchFactors (DERIV-free-shape-stretch)", () => {
       { x: 2, y: 5 },
     ];
 
-    expect(stretchFactors(points, { height: 10, width: 10 })).toEqual({ x: 5, y: 2 });
+    expect(stretchFactors(boundingBox(points), { height: 10, width: 10 })).toEqual({ x: 5, y: 2 });
   });
 
   it("gives 1 on an axis already at its size, even of span 0", () => {
@@ -38,7 +42,7 @@ describe("stretchFactors (DERIV-free-shape-stretch)", () => {
       { x: 5, y: 50 },
     ];
 
-    expect(stretchFactors(flat, { height: 100, width: 0 })).toEqual({ x: 1, y: 2 });
+    expect(stretchFactors(boundingBox(flat), { height: 100, width: 0 })).toEqual({ x: 1, y: 2 });
   });
 
   test.prop({ points: fc.array(integerPoint(1e3), { minLength: 2 }), size: integerPoint(1e3) })(
@@ -51,7 +55,7 @@ describe("stretchFactors (DERIV-free-shape-stretch)", () => {
 
       fc.pre(Math.max(...xs) > Math.min(...xs) && Math.max(...ys) > Math.min(...ys));
 
-      const factors = stretchFactors(points, { height, width });
+      const factors = stretchFactors(boundingBox(points), { height, width });
       const stretched = stretchToSize(points, { height, width });
 
       for (const [index, point] of stretched.entries()) {
