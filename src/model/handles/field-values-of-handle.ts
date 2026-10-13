@@ -22,9 +22,11 @@ export function fieldValuesOfHandle(
   handle: Vector,
   frame: HandleFrame,
 ): readonly [number, number] {
+  if (way === "page") {
+    return [frame.point.x + handle.x, frame.point.y + handle.y];
+  }
+
   const sideAngle = angleFromDirection(unit(frame.side), handle);
 
-  return way === "page"
-    ? [frame.point.x + handle.x, frame.point.y + handle.y]
-    : [frame.isBefore ? degreesInTurn(-sideAngle) : sideAngle, norm(handle)];
+  return [frame.isBefore ? degreesInTurn(-sideAngle) : sideAngle, norm(handle)];
 }
