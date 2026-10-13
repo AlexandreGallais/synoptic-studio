@@ -11,9 +11,9 @@ import {
   turnedCorners,
 } from "../../src";
 import { readNumber, readShapeKind } from "../page";
+import { readAngle } from "../position";
 
 import { readAnchor } from "./read-anchor";
-import { readAngle } from "./read-angle";
 import { readFreeShapeShape } from "./read-free-shape-shape";
 import { readPosition } from "./read-position";
 import { readStoredFreeShape } from "./read-stored-free-shape";

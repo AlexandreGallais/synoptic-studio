@@ -1,6 +1,6 @@
 import { bisection } from "../../math";
-import { boxAspect } from "../layout-box";
 
+import { boxAspect } from "./box-aspect";
 import { isSoundStretch } from "./is-sound-stretch";
 import { STRETCH_LOG_BOUND } from "./stretch-log-bound";
 import { unitStretchedPolygon } from "./unit-stretched-polygon";

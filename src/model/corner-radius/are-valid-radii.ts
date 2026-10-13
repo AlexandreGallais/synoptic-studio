@@ -1,4 +1,4 @@
-import { isModelSize } from "../placement";
+import { isModelSize } from "../layout-box";
 
 /**
  * Whether the requested corner radii of a shape can enter the model: one per vertex, each an

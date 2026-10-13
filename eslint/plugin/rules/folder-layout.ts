@@ -7,8 +7,11 @@ import type { Dirent } from "node:fs";
 
 /** Options of `local/folder-layout`. */
 type Options = [
-  { readonly listed: readonly string[]; readonly root?: string; readonly signal: number },
+  { readonly listed: readonly string[]; readonly root: string; readonly signal: number },
 ];
+
+/** Folder names that are no domain: hidden (`.cache`) or a tool's (`__snapshots__`). */
+const TOOL_FOLDER = /^(?:\.|__)/u;
 
 /** Extension of test files, which a module count leaves out. */
 const TEST_EXTENSION = ".test.ts";
@@ -24,14 +27,18 @@ function isModule(name: string): boolean {
 }
 
 /**
- * Whether a file sits beside domain folders: any file but the barrel, in a folder of folders.
+ * Whether a file sits beside domain folders: any file but the barrel, in a folder of folders;
+ * a hidden or tool folder (`.cache/`, `__snapshots__/`) is no domain.
  *
  * @param name - file name
  * @param entries - entries of its folder
  * @returns `true` when the file should move into one of the folders
  */
 function isMixed(name: string, entries: readonly Dirent[]): boolean {
-  return name !== INDEX_FILE && entries.some((entry) => entry.isDirectory());
+  return (
+    name !== INDEX_FILE &&
+    entries.some((entry) => entry.isDirectory() && !TOOL_FOLDER.test(entry.name))
+  );
 }
 
 /**
@@ -41,7 +48,7 @@ function isMixed(name: string, entries: readonly Dirent[]): boolean {
  * @see ADR-0043
  */
 export const FOLDER_LAYOUT_RULE = createRule<Options, "mixed" | "past">({
-  create: (context, [{ listed, root = context.cwd, signal }]) => ({
+  create: (context, [{ listed, root, signal }]) => ({
     Program: (node): void => {
       const directory = dirname(context.filename);
       const name = basename(context.filename);
@@ -60,7 +67,7 @@ export const FOLDER_LAYOUT_RULE = createRule<Options, "mixed" | "past">({
       }
     },
   }),
-  defaultOptions: [{ listed: [], signal: 15 }],
+  defaultOptions: [{ listed: [], root: ".", signal: 15 }],
   meta: {
     docs: { description: "Keep files and domain folders apart, and folders under the signal." },
     messages: {
@@ -75,7 +82,7 @@ export const FOLDER_LAYOUT_RULE = createRule<Options, "mixed" | "past">({
           root: { type: "string" },
           signal: { type: "number" },
         },
-        required: ["listed", "signal"],
+        required: ["listed", "root", "signal"],
         type: "object",
       },
     ],

@@ -1,3 +1,4 @@
+export * from "./box-aspect";
 export * from "./half-side";
 export * from "./is-sound-stretch";
 export * from "./mirror-across-axis";
