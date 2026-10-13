@@ -13,7 +13,7 @@ Independent audit of F12 before its validation: formulas re-derived, expected va
 
 ## Acceptance criteria
 
-- Given each derivation of F12 (`DERIV-cubic-sides`, `DERIV-handle-angle`, `DERIV-handle-share`, `DERIV-handle-tension`, `DERIV-free-shape-stretch` step 5), when re-derived, then every check value holds.
+- Given each derivation of F12 (`DERIV-cubic-sides`, `DERIV-handle-angle`, the derivations of shares and of the tension (removed by EN-026), `DERIV-free-shape-stretch` step 5), when re-derived, then every check value holds.
 - Given F12.AC1 to AC6, when audited, then each is proven by a tagged test.
 - Given the decisions taken during the stories, when audited, then each is in the domain or an open question, and the domain agrees with the code.
 
