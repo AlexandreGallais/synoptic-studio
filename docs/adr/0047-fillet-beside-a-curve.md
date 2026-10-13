@@ -22,5 +22,5 @@ Chosen by the Product Owner from the agent's two recommendations, for a behaviou
 ## Consequences
 
 - A straight side written as a cubic draws the same fillet as today's segment.
-- The point is found numerically, where a straight side needs a formula: coarse tables of 32 samples, then bisections of 40 halvings; the centre runs along the curve and is measured from the straight side, so that only a corner between two cubics nests a search of the foot. A corner beside a curve costs about 10 ms, one between two cubics with a radius to reduce up to about 200 ms (US-027, measured).
+- The point is found numerically, where a straight side needs a formula: tables of 32 samples along a side, 16 radii and 64 samples to check a circle clear, then bisections of 40 halvings; the centre runs along the curve and is measured from the straight side, so that only a corner between two cubics nests a search of the foot. Measured (US-027): a shape with corners beside curves 10 to 30 ms; a square with two corners between two cubics and a radius to reduce about 300 ms; the playground computes the fillets three times per change (improvement log).
 - A spike where the curve leaves back along the straight side gets no arc.

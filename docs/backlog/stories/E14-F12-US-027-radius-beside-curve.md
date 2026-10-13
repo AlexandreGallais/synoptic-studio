@@ -3,7 +3,7 @@ id: US-027
 epic: E14
 feature: F12
 title: A corner beside a curved side keeps its radius
-status: in-progress
+status: done
 points: 3
 ---
 
@@ -47,3 +47,7 @@ Open the page: the rectangle 120 × 80. Type **Radius** = 20.
 1. Click **Points**, point 3 (bottom right), **Handles**, then type **After x** = 90 and **After y** = 110: the bottom-right corner bends, and the corners at points 2 and 4 stay rounded by 20; the list of points shows radius 20 for them, with no "effective".
 2. Click point 2 and type its **Radius** = 60: it is drawn smaller, the list shows its effective radius, never 0.
 3. Click point 3 and **Handles** again: every corner is rounded by 20 again.
+
+## Review
+
+Two auditor passes, also as verifier and math-expert. Fixed: a radius shown while the corner was drawn sharp; the radius drawn falling and rising as the one asked grew; the foot on a curve whose handle is off at the corner (small radii between two curves drawn sharp); the cost beside a straight side (130 ms to about 10 ms a corner); tests pinning a later crossing, the cut at a curve's far end, corners between two curves. Open: Q34 (a point added on a curve beside a large fillet); the numbers of ADR-0047 differ from those the Product Owner chose from (47.7 and 46.9, not 48.6 and 36.3), shown at VAL-011; computing the fillets once per render (improvement log). F12.AC5 checked bit for bit on 20 000 random shapes.

@@ -40,7 +40,7 @@ Started with the Product Owner on 2026-10-13:
 | [AUD-011](../stories/E14-F12-AUD-011-audit-f12.md)                  | Audit      | Audit F12                                                           | done        |
 | [EN-026](../stories/E14-F12-EN-026-ways-kept-at-validation.md)      | Enabler    | Keep only the ways and modes chosen at the validation               | done        |
 | [SP-012](../stories/E14-F12-SP-012-research-fillet-beside-curve.md) | Spike      | Research: a corner radius beside a curved side                      | done        |
-| [US-027](../stories/E14-F12-US-027-radius-beside-curve.md)          | User story | A corner beside a curved side keeps its radius                      | in-progress |
+| [US-027](../stories/E14-F12-US-027-radius-beside-curve.md)          | User story | A corner beside a curved side keeps its radius                      | done        |
 | [US-028](../stories/E14-F12-US-028-handles-on-a-polygon.md)         | User story | Give handles to a point of a regular polygon                        | done        |
 | [AUD-012](../stories/E14-F12-AUD-012-audit-after-validation.md)     | Audit      | Audit the changes asked at the validation                           | draft       |
 | [VAL-011](../stories/E14-F12-VAL-011-validate-f12.md)               | Validation | Validate F12                                                        | in-progress |
