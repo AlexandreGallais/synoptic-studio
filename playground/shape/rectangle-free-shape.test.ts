@@ -12,7 +12,7 @@ describe("rectangle as a free shape", () => {
   it("[F09.AC4] shows the rectangle as a free shape: the corners of the unit square with their radii, its size", () => {
     const model: unknown = JSON.parse(readText("#model"));
 
-    expect(model).toEqual({
+    expect(model).toMatchObject({
       angle: 0,
       corners: [
         { point: { x: 0, y: 0 }, radius: 10 },

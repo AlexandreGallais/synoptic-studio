@@ -1,4 +1,5 @@
 import { freeShapeAroundCorners, freeShapeKeptInPlace } from "../free-shape";
+import { curveCornerOf } from "../handles";
 import { turnedCorners } from "../placement";
 
 import { regularPolygonCorners } from "./regular-polygon-corners";
@@ -22,7 +23,10 @@ export function regularPolygonAsFreeShape(polygon: RegularPolygon): FreeShape {
   const corners = regularPolygonCorners(polygon);
 
   return freeShapeKeptInPlace(
-    freeShapeAroundCorners(corners, polygon.angle),
+    freeShapeAroundCorners(
+      corners.map((corner) => curveCornerOf(corner)),
+      polygon.angle,
+    ),
     turnedCorners(corners, polygon),
     { after: 0, before: 0 },
   );

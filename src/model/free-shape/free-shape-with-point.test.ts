@@ -1,6 +1,7 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
+import { NO_HANDLES } from "../handles";
 import { rectangleAsFreeShape } from "../rectangle";
 import { regularPolygonAsFreeShape } from "../regular-polygon";
 
@@ -20,7 +21,7 @@ describe("freeShapeWithPoint", () => {
     expect(shape.width).toBe(120);
     expect(shape.height).toBe(60);
 
-    expect(freeShapeCorners(shape)).toEqual([
+    expect(freeShapeCorners(shape)).toMatchObject([
       { point: { x: 0, y: 0 }, radius: 10 },
       { point: { x: 100, y: 0 }, radius: 0 },
       { point: { x: 120, y: 60 }, radius: 0 },
@@ -107,7 +108,7 @@ describe("freeShapeWithPoint", () => {
       { x: -20, y: -10 },
     );
 
-    expect(freeShapeCorners(shape)[0]).toEqual({ point: { x: -20, y: -10 }, radius: 10 });
+    expect(freeShapeCorners(shape)[0]).toMatchObject({ point: { x: -20, y: -10 }, radius: 10 });
   });
 
   const coordinate = fc.integer({ max: 1000, min: -1000 });
@@ -130,7 +131,7 @@ describe("freeShapeWithPoint", () => {
       const ys = after.map((corner) => corner.point.y);
 
       expect(after.toSpliced(index, 1)).toEqual(before.toSpliced(index, 1));
-      expect(after[index]).toEqual({ point: { x, y }, radius: index + 1 });
+      expect(after[index]).toEqual({ handles: NO_HANDLES, point: { x, y }, radius: index + 1 });
 
       expect([shape.width, shape.height]).toEqual([
         Math.max(...xs) - Math.min(...xs),

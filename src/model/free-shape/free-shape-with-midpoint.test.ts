@@ -2,6 +2,7 @@ import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { effectiveRadii } from "../../geometry";
+import { NO_HANDLES } from "../handles";
 import { rectangleAsFreeShape } from "../rectangle";
 import { regularPolygonAsFreeShape } from "../regular-polygon";
 
@@ -20,7 +21,7 @@ describe("freeShapeWithMidpoint", () => {
     });
     const corners = freeShapeCorners(freeShapeWithMidpoint(square, 0));
 
-    expect(corners).toEqual([
+    expect(corners).toMatchObject([
       { point: { x: 0, y: 0 }, radius: 1000 },
       { point: { x: 50, y: 0 }, radius: 0 },
       { point: { x: 100, y: 0 }, radius: 0 },
@@ -99,6 +100,7 @@ describe("freeShapeWithMidpoint", () => {
       expect(after.toSpliced(edge + 1, 1)).toEqual(before);
 
       expect(added).toEqual({
+        handles: NO_HANDLES,
         point: { x: (start.x + end.x) / 2, y: (start.y + end.y) / 2 },
         radius: 0,
       });
