@@ -114,4 +114,20 @@ describe("contourBoundingBox (DERIV-arc-bounding-box)", () => {
       ]),
     ).toEqual({ maxX: 5, maxY: 5, minX: 5, minY: 5 });
   });
+
+  it("[F12.AC6] holds the top of a cubic side, past its ends", () => {
+    // The arch (0, 0), (0, −40), (100, −40), (100, 0) tops at y = −30.
+    expect(
+      contourBoundingBox([
+        {
+          end: { x: 100, y: 0 },
+          first: { x: 0, y: -40 },
+          kind: "cubic",
+          second: { x: 100, y: -40 },
+          start: { x: 0, y: 0 },
+        },
+        { end: { x: 0, y: 0 }, kind: "segment", start: { x: 100, y: 0 } },
+      ]),
+    ).toEqual({ maxX: 100, maxY: 0, minX: 0, minY: -30 });
+  });
 });
