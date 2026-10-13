@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it } from "vitest";
 
+import { HANDLE_MODES, HANDLE_WAYS } from "../../src";
 import {
   chooseOption,
   clickElement,
@@ -33,6 +34,18 @@ function readHandleFields(): readonly string[] {
  */
 function isHidden(id: string): boolean {
   return document.querySelector<HTMLElement>(`#${id}`)?.hidden !== false;
+}
+
+/**
+ * The values of a list's options, in order.
+ *
+ * @param id - the list's id
+ * @returns each option's value
+ */
+function options(id: string): readonly string[] {
+  return [...document.querySelectorAll<HTMLOptionElement>(`#${id} option`)].map(
+    (option) => option.value,
+  );
 }
 
 describe("handles in Points mode (US-022)", () => {
@@ -231,5 +244,13 @@ describe("handles in Points mode (US-022)", () => {
         (row) => /effective (?<radius>[\d.]+)/u.exec(row)?.groups?.["radius"] ?? "50",
       ),
     ).toEqual(["0", "40", "40", "50"]);
+  });
+
+  it("[F12.AC2] [F12.AC4] offers the two methods and the three modes kept (Q32), nothing else", () => {
+    expect(options("handle-method")).toEqual([...HANDLE_WAYS]);
+
+    expect(options("handle-mode").toSorted((left, right) => left.localeCompare(right))).toEqual(
+      HANDLE_MODES.toSorted((left, right) => left.localeCompare(right)),
+    );
   });
 });
