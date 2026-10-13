@@ -88,7 +88,7 @@
 | [US-025](./E14-F12-US-025-handles-as-share-or-data.md)          | F12     | Type a side's handles as shares of the side, or paste curve data    | done   |
 | [US-026](./E14-F12-US-026-handles-from-a-tension.md)            | F12     | Smooth a point by a tension, its handles computed                   | done   |
 | [CHK-011](./E14-F12-CHK-011-checkpoint-f12.md)                  | F12     | Checkpoint in the middle of F12                                     | done   |
-| [AUD-011](./E14-F12-AUD-011-audit-f12.md)                       | F12     | Audit F12                                                           | ready  |
+| [AUD-011](./E14-F12-AUD-011-audit-f12.md)                       | F12     | Audit F12                                                           | done   |
 | [VAL-011](./E14-F12-VAL-011-validate-f12.md)                    | F12     | Validate F12                                                        | ready  |
 | [VAL-010](./E14-F11-VAL-010-validate-f11.md)                    | F11     | Validate F11                                                        | done   |
 | [REV-002](./E14-REV-002-review-e14.md)                          | E14     | Review E14 with the Product Owner                                   | draft  |
