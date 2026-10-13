@@ -52,4 +52,23 @@ describe("handlesAfterTyping", () => {
       y: 7,
     });
   });
+
+  it("[F12.AC4] leaves the tension for mode angle when a handle is typed, before or after", () => {
+    const auto = {
+      ...NO_HANDLES,
+      after: { x: 10, y: 0 },
+      before: { x: -10, y: 0 },
+      isOn: true,
+      mode: "auto",
+    } as const;
+
+    expect(handlesAfterTyping(auto, "before", { x: -30, y: 40 })).toEqual({
+      ...auto,
+      after: { x: 6, y: -8 },
+      before: { x: -30, y: 40 },
+      mode: "angle",
+    });
+
+    expect(handlesAfterTyping(auto, "after", { x: 30, y: -40 }).mode).toBe("angle");
+  });
 });
