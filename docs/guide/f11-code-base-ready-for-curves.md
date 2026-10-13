@@ -15,7 +15,7 @@ Nothing you can see in the playground: every drawing is the same, to the last de
 | Small helpers written again in the playground's tests      | 72                                           | 12, each used by one file only; the rest shared once    |
 | Writers of SVG path data in the library                    | 2                                            | 1 (`contourPiecesToPathData`)                           |
 | Passes over each corner to round a contour                 | several (angles computed again by each step) | one: each corner and its angle computed once            |
-| Tests                                                      | 793                                          | 857, every old value unchanged                          |
+| Tests                                                      | 793                                          | 859, every old value unchanged                          |
 
 A **property test** checks a rule on hundreds of random inputs (for instance, "a mirrored point mirrored again is the point itself"), where an ordinary test checks one hand-computed example.
 
