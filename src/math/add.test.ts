@@ -1,14 +1,13 @@
-import { fc, test } from "@fast-check/vitest";
+import { test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
+
+import { integerPoint } from "../../tests";
 
 import { add } from "./add";
 import { subtract } from "./subtract";
 
 /** Point with integer coordinates. */
-const POINT = fc.record({
-  x: fc.integer({ max: 1e6, min: -1e6 }),
-  y: fc.integer({ max: 1e6, min: -1e6 }),
-});
+const POINT = integerPoint(1e6);
 
 describe("add (REF-MATHWORLD-VECTOR-ADDITION)", () => {
   it("adds component-wise", () => {

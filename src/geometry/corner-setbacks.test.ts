@@ -1,6 +1,8 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
+import { integerTriangle } from "../../tests";
+
 import { cornerSetbacks } from "./corner-setbacks";
 
 import type { Corner } from "./corner";
@@ -65,21 +67,12 @@ describe("cornerSetbacks (DERIV-local-radius-clamp step 1)", () => {
 /** Arbitrary requested radius. */
 const RADIUS = fc.integer({ max: 5000, min: 0 });
 
-/** Arbitrary point with integer coordinates. */
-const POINT = fc.record({
-  x: fc.integer({ max: 1000, min: -1000 }),
-  y: fc.integer({ max: 1000, min: -1000 }),
-});
-
 /** Triangles of positive area, a radius at each corner. */
-const TRIANGLE = fc
-  .tuple(POINT, POINT, POINT)
-  .filter(([a, b, c]) => (b.x - a.x) * (c.y - a.y) !== (b.y - a.y) * (c.x - a.x))
-  .chain((points) =>
-    fc
-      .tuple(RADIUS, RADIUS, RADIUS)
-      .map((radii) => points.map((point, index) => ({ point, radius: radii[index] ?? 0 }))),
-  );
+const TRIANGLE = integerTriangle(1000).chain((points) =>
+  fc
+    .tuple(RADIUS, RADIUS, RADIUS)
+    .map((radii) => points.map((point, index) => ({ point, radius: radii[index] ?? 0 }))),
+);
 
 describe("cornerSetbacks (properties)", () => {
   test.prop({ corners: TRIANGLE })(

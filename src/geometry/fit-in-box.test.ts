@@ -1,6 +1,7 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
+import { expectPoints } from "../../tests";
 import { EPSILON } from "../math";
 
 import { boundingBox } from "./bounding-box";
@@ -27,21 +28,6 @@ const ALIGNMENT = fc.constantFrom<Alignment>("min", "mid", "max");
 
 /** √3 / 2 · 100 = 86.60254…: height of the triangle fitted in 100 × 100. */
 const HEIGHT_3 = 50 * Math.sqrt(3);
-
-/**
- * Checks two lists of points coordinate by coordinate, to 9 decimals (more than the 5 written).
- *
- * @param actual - computed points
- * @param expected - hand-computed points
- */
-function expectPoints(actual: readonly Point[], expected: readonly Point[]): void {
-  expect(actual).toHaveLength(expected.length);
-
-  for (const [index, point] of expected.entries()) {
-    expect(actual[index]?.x).toBeCloseTo(point.x, 9);
-    expect(actual[index]?.y).toBeCloseTo(point.y, 9);
-  }
-}
 
 /**
  * Largest distance, on either axis, between the points of two lists of the same length.
@@ -128,6 +114,7 @@ describe("fitInBox (DERIV-regular-polygon-fit steps 3–5)", () => {
         { x: 0, y: 100 },
         { x: 50, y: room },
       ],
+      9,
     );
 
     expectPoints(
@@ -137,6 +124,7 @@ describe("fitInBox (DERIV-regular-polygon-fit steps 3–5)", () => {
         { x: 0, y: HEIGHT_3 },
         { x: 50, y: 0 },
       ],
+      9,
     );
   });
 
@@ -146,8 +134,8 @@ describe("fitInBox (DERIV-regular-polygon-fit steps 3–5)", () => {
     const size = { height: 100, width: 100 };
     const centered = fitInBox(triangle, size, { horizontal: "mid", vertical: "max" });
 
-    expectPoints(fitInBox(triangle, size, { horizontal: "min", vertical: "max" }), centered);
-    expectPoints(fitInBox(triangle, size, { horizontal: "max", vertical: "max" }), centered);
+    expectPoints(fitInBox(triangle, size, { horizontal: "min", vertical: "max" }), centered, 9);
+    expectPoints(fitInBox(triangle, size, { horizontal: "max", vertical: "max" }), centered, 9);
   });
 });
 

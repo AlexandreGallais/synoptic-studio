@@ -1,6 +1,7 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
+import { expectPoints } from "../../tests";
 import { ALIGNMENTS, boundingBox, stretchedPolygon } from "../geometry";
 import { EPSILON } from "../math";
 
@@ -9,28 +10,12 @@ import { regularPolygonCorners } from "./regular-polygon-corners";
 import { resizeRadii } from "./resize-radii";
 
 import type { Anchor } from "../geometry";
-import type { Point } from "../math";
 
 /** F02's placement: centered on both axes (F07.AC1). */
 const CENTER: Anchor = { horizontal: "mid", vertical: "mid" };
 
 /** Decimals compared: the 5 of the SVG output (Q10), and more. */
 const DECIMALS = 9;
-
-/**
- * Checks two lists of points coordinate by coordinate.
- *
- * @param actual - computed points
- * @param expected - hand-computed points (DERIV-regular-polygon-fit, checks)
- */
-function expectPoints(actual: readonly Point[], expected: readonly Point[]): void {
-  expect(actual).toHaveLength(expected.length);
-
-  for (const [index, point] of expected.entries()) {
-    expect(actual[index]?.x).toBeCloseTo(point.x, DECIMALS);
-    expect(actual[index]?.y).toBeCloseTo(point.y, DECIMALS);
-  }
-}
 
 /** √3 / 2 · 100 = 86.60254…: height of the triangle and the hexagon fitted in 100 × 100. */
 const HEIGHT_3 = 50 * Math.sqrt(3);
@@ -57,6 +42,7 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
         { x: 0, y: 100 - margin },
         { x: 50, y: margin },
       ],
+      DECIMALS,
     );
   });
 
@@ -80,6 +66,7 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
         { x: 25, y: 0 },
         { x: 75, y: 0 },
       ],
+      DECIMALS,
     );
   });
 
@@ -107,6 +94,7 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
         { x: 75, y: margin },
         { x: 100, y: 50 },
       ],
+      DECIMALS,
     );
   });
 
@@ -134,6 +122,7 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
         { x: 50, y: top },
         { x: 100, y: top + s * (1 - Math.sin(Math.PI / 10)) },
       ],
+      DECIMALS,
     );
   });
 
@@ -262,6 +251,7 @@ describe("regularPolygonContour (anchored, F07)", () => {
         { x: 0, y: 100 - margin },
         { x: 50, y: margin },
       ],
+      DECIMALS,
     );
   });
 
@@ -286,6 +276,7 @@ describe("regularPolygonContour (anchored, F07)", () => {
         { x: 0, y: 100 },
         { x: 50, y: 100 - HEIGHT_3 },
       ],
+      DECIMALS,
     );
   });
 
@@ -314,6 +305,7 @@ describe("regularPolygonContour (anchored, F07)", () => {
         { x: 75, y: top },
         { x: 100, y: top + HEIGHT_3 / 2 },
       ],
+      DECIMALS,
     );
   });
 
@@ -339,6 +331,7 @@ describe("regularPolygonContour (anchored, F07)", () => {
         { x: 50, y: 0 },
         { x: 100, y: 0 },
       ],
+      DECIMALS,
     );
   });
 
@@ -357,7 +350,7 @@ describe("regularPolygonContour (anchored, F07)", () => {
     } as const;
     const right = { ...left, anchor: { horizontal: "max", vertical: "max" } } as const;
 
-    expectPoints(regularPolygonContour(left), regularPolygonContour(right));
+    expectPoints(regularPolygonContour(left), regularPolygonContour(right), DECIMALS);
   });
 });
 
@@ -540,6 +533,7 @@ describe("regularPolygonContour (stretched, F06)", () => {
       expectPoints(
         contour,
         expected.map((point) => ({ x: point.x + 10, y: point.y + 20 })),
+        DECIMALS,
       );
     }
   });
