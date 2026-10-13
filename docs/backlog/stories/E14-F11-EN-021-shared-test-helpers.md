@@ -3,7 +3,7 @@ id: EN-021
 epic: E14
 feature: F11
 title: Shared test helpers, one path writer, one pass per corner
-status: ready
+status: done
 points: 3
 ---
 
@@ -22,6 +22,6 @@ Pay the debt found by the audits of E01 (AUD-001 D1, D2; AUD-004 D3; CHK-002), w
 
 One task = one commit, referenced as `EN-021.Tn`.
 
-- [ ] T1 — Shared playground test helpers (2 h)
-- [ ] T2 — Shared geometry fixtures (1 h)
-- [ ] T3 — One path writer; one pass per corner (2 h)
+- [x] T1 — Shared playground test helpers (2 h)
+- [x] T2 — Shared geometry fixtures (1 h)
+- [x] T3 — One path writer; one pass per corner (2 h)
