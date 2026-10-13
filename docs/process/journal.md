@@ -2,6 +2,13 @@
 
 What each working session dealt with, in the agent's words: the Product Owner's requests in neutral words, decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`).
 
+## 2026-10-13 — Run F12: stopped before VAL-011
+
+- `#run` Merged into `feature/f12-curves-with-handles`: SP-011 (#164), EN-024 (#165), EN-025 (#166), US-022 (#167), US-023 (#168), CHK-011 (#169), US-024 (#170), US-025 (#171), US-026 (#172), AUD-011 (#173); each story reviewed by the auditor (and the verifier or math-expert where it added math) before its last commit.
+- `#audit` AUD-011: the criteria F12.AC1–AC6 traced; the radii shown in the playground now match the drawing next to curves; `interaction.md` and Q28 follow the F12 rules; the handles section of the domain rewritten as tables; curve modules in `geometry/curve`.
+- `#val` VAL-011 prepared on `feat/val-011-validate-f12`: 13 guided steps (`npm run dev`), tested end to end, and the demo page `docs/guide/f12-curves-with-handles.md`.
+- `#questions` For the Product Owner at the validation: Q32 (which methods of typing a handle to keep), Q33 (a lens of points on one line), ADR-0046 "typed as integers" against the decimals of pasted and computed handles.
+
 ## 2026-10-13 — Run F12 authorized
 
 - `#run` The Product Owner started a run without scope after F11: F12 (points on a curve with handles), first in E14's order, from its spike SP-011. `/run` is now the go-ahead (ADR-0045): the agent set F12 in progress and SP-011 ready. The release pull request of F11 was closed by the Product Owner: releases are opened when they ask.
