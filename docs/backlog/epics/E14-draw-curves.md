@@ -1,7 +1,7 @@
 ---
 id: E14
 title: Draw curves with handles, ellipses and round shapes
-status: draft
+status: in-progress
 ---
 
 # E14 — Draw curves with handles, ellipses and round shapes
@@ -34,10 +34,10 @@ Decided by the Product Owner on 2026-10-12, at the validation of F10. The round 
 
 ## Features
 
-| Feature                                                                                 | Status |
-| --------------------------------------------------------------------------------------- | ------ |
-| [F11](../features/E14-F11-code-base-ready-for-curves.md) — A code base ready for curves | draft  |
-| [F10](../features/E14-F10-round-shape.md) — Round shape                                 | draft  |
+| Feature                                                                                 | Status      |
+| --------------------------------------------------------------------------------------- | ----------- |
+| [F11](../features/E14-F11-code-base-ready-for-curves.md) — A code base ready for curves | in-progress |
+| [F10](../features/E14-F10-round-shape.md) — Round shape                                 | draft       |
 
 ## Closing
 

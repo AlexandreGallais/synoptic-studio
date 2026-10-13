@@ -3,7 +3,7 @@ id: EN-020
 epic: E14
 feature: F11
 title: Property tests for the nine functions without one
-status: draft
+status: ready
 points: 3
 ---
 

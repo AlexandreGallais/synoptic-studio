@@ -3,7 +3,7 @@ id: SP-010
 epic: E14
 feature: F11
 title: "Research for F11: folder layouts and test placement"
-status: draft
+status: ready
 points: 2
 ---
 

@@ -2,6 +2,10 @@
 
 What each working session dealt with, in the agent's words: the Product Owner's requests in neutral words, decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`).
 
+## 2026-10-13 — Run F11 authorized
+
+- `#run` The Product Owner started an autonomous run on F11 (`/run F11`), after agreeing to its plan: SP-010, EN-020, EN-021, CHK-010, EN-022 and AUD-010 set `ready`, F11 and E14 `in-progress`; a stop at the end of SP-010 for the folder layout choice; a stop before VAL-010.
+
 ## 2026-10-13 — Private records, a pass over the tooling, F11 refined
 
 - `#tooling` ADR-0041: the metrics, transcripts and source library hold raw messages and local paths; they are saved by `npm run records:save` into a private repository beside this one, with a private GitHub remote. A submodule would have put its URL and a moving commit in the public tree; an ignored folder inside would have to be skipped by every tool.

@@ -3,7 +3,7 @@ id: EN-021
 epic: E14
 feature: F11
 title: Shared test helpers, one path writer, one pass per corner
-status: draft
+status: ready
 points: 3
 ---
 

@@ -3,7 +3,7 @@ id: EN-022
 epic: E14
 feature: F11
 title: Folders of the library and the playground
-status: draft
+status: ready
 points: 3
 ---
 
