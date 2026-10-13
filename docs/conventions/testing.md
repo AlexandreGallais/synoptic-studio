@@ -64,7 +64,7 @@ it("[F01.AC3] clamps a 100 × 25 rectangle with radius 100 to an effective radiu
 
 `npm run test` measures the coverage of `src/` and `playground/` (`@vitest/coverage-v8`). It fails below **100 %** of lines, branches, functions and statements in `src/`, and below the playground's floor (lines 98, statements 98, functions 100, branches 89 on 2026-10-13). Barrels, tests and the playground's entry are excluded. An uncovered branch is either a missing test or dead code.
 
-**Fitness functions** (`tests/fitness.test.ts`, `REF-FITNESS-FUNCTIONS`): every function exported by `src/math/` and `src/geometry/` is named in a test file holding a property (`test.prop`); the functions written before this check are listed there until EN-020 gives them one, and the list may only shrink. Repository-wide tests live in `tests/`: backlog, bibliography, barrels, dependencies, fitness.
+**Fitness functions** (`tests/fitness.test.ts`, `REF-FITNESS-FUNCTIONS`): every function exported by `src/math/` and `src/geometry/` has a property (`test.prop`) in its own test file, the one beside it; a property written for another function, even one calling it, does not count (EN-020). Repository-wide tests live in `tests/`: backlog, bibliography, barrels, dependencies, fitness.
 
 ## Checking the tests themselves
 
