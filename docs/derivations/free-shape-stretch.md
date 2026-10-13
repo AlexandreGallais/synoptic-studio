@@ -36,7 +36,7 @@ The rectangle tool stores the unit square `(0, 0), (1, 0), (1, 1), (0, 1)`, top-
 
 ## Step 5 — Handles (F12, ADR-0046)
 
-A handle is a vector from its point, `h = c − p` with `c` its control point (`REF-FIGMA-VECTOR-NETWORK`). An affine map acts on a Bézier curve through its control points (`REF-WIKI-BEZIER`), so the control point is drawn `c' = o + S(c − o)` with `S = diag(sx, sy)` (step 1). Then `c' − p' = S(c − o) − S(p − o) = S(c − p)`: the handle drawn is `h' = (sx · hₓ, sy · h_y)` — the factors of step 2, no translation. On an axis where `w = nₓ` the points are drawn as stored (step 3), so the factor taken is 1 (`stretchFactors`, `stretchedHandles`).
+A handle is a vector from its point, `v = c − p` with `c` its control point (`REF-FIGMA-VECTOR-NETWORK`). An affine map acts on a Bézier curve through its control points (`REF-WIKI-BEZIER`), so the control point is drawn `c' = o + S(c − o)` with `S = diag(sx, sy)` (step 1). Then `c' − p' = S(c − o) − S(p − o) = S(c − p)`: the handle drawn is `v' = (sx · vₓ, sy · v_y)` — the factors of step 2, no translation. On an axis where `w = nₓ` the points are drawn as stored (step 3), so the factor taken is 1 (`stretchFactors`, `stretchedHandles`).
 
 The box of the curve maps onto `w × h` exactly: the points move by `p ↦ o + S(p − o)` and the handles by `S`, so every control point moves by that one affine map, and the curve with them (`REF-WIKI-BEZIER`); each axis is scaled by a factor ≥ 0 about `o`, so its smallest and largest values stay its smallest and largest, now `o` and `o + w` (or `+ h`).
 
