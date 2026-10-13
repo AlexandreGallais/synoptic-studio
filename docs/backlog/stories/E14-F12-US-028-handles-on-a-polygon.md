@@ -28,10 +28,11 @@ One task = one commit, referenced as `US-028.Tn`.
 
 | Decision                                                                      | Reason                                                                                                                                                                   |
 | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| a polygon of width or height 0, which cannot be converted, shows no switch    | as its **Convert** button is greyed (F08)                                                                                                                                |
 | the switch is shown for a polygon's point, its fields only once it is pressed | the fields act on a free shape: the polygon is converted at the press, by the same step as **Convert to free shape** (`writeConvertedPolygon`, moved to the shape panel) |
 
 ## Product Owner test
 
 1. Choose **Polygon**, 6 corners, **Radius** 10. Click **Points**, then point 1: the **Handles** switch shows.
 2. Press **Handles**: the shape selector reads **Free shape**, nothing moves but point 1, now sharp; the list reads its radius 10 (effective 0).
-3. Type **After x** = 90: the side after point 1 bends.
+3. Type **After y** = 80: the side after point 1 bends, the side before too by the mirror. Its neighbours stay rounded once US-027 is in (a corner beside a curve keeps its radius).

@@ -27,7 +27,7 @@ function readOnlySelected(document: Document): number | undefined {
 
 /**
  * The corner of a point, with its number: a polygon's point too, its handles switch converting
- * it first (US-028).
+ * it first (US-028), unless the polygon has no width or height and cannot be converted.
  *
  * @kind procedure
  * @param reading - the shape read from the inputs
@@ -37,8 +37,10 @@ function readOnlySelected(document: Document): number | undefined {
  */
 function readFreeCorner(reading: ShapeReading, index: number): SelectedCorner | undefined {
   const corner = reading.corners[index];
+  // A shape without width or height, a polygon that cannot be converted, gets no switch.
+  const hasArea = reading.model.width * reading.model.height > 0;
 
-  return corner === undefined ? undefined : { corner, index };
+  return corner === undefined || !hasArea ? undefined : { corner, index };
 }
 
 /**
