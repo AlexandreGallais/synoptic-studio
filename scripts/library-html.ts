@@ -91,17 +91,26 @@ export function decodeEntities(text: string): string {
 }
 
 /**
- * A removal repeated until it removes nothing more: removing `<!--` once can join two halves
- * into a new one (`<!<!---->--`).
+ * Text with every span from an opening to a closing mark removed, by splitting rather than by a
+ * pattern, which CodeQL reads as an incomplete sanitization. An opening mark never closed stays,
+ * with what follows it: `1 < 2` in code is text.
  *
  * @param text - text to clean
- * @param remove - one pass of the removal
- * @returns the text once a pass changes nothing
+ * @param open - opening mark, such as `<!--`
+ * @param close - closing mark, such as `-->`
+ * @returns the text outside the spans
  */
-function untilStable(text: string, remove: (part: string) => string): string {
-  const next = remove(text);
+function withoutSpans(text: string, open: string, close: string): string {
+  const [head = "", ...rest] = text.split(open);
 
-  return next === text ? text : untilStable(next, remove);
+  return [
+    head,
+    ...rest.map((part) => {
+      const end = part.indexOf(close);
+
+      return end === -1 ? `${open}${part}` : part.slice(end + close.length);
+    }),
+  ].join("");
 }
 
 /**
@@ -111,7 +120,7 @@ function untilStable(text: string, remove: (part: string) => string): string {
  * @returns its text
  */
 function withoutTags(html: string): string {
-  return untilStable(html, (part) => part.replaceAll(/<[^>]+>/gu, ""));
+  return withoutSpans(html, "<", ">");
 }
 
 /**
@@ -174,7 +183,7 @@ function headingsAndLinks(html: string): string {
 export function htmlToMarkdown(html: string): string {
   const kept = DROPPED.reduce(
     (part, tag) => part.replaceAll(new RegExp(String.raw`<${tag}\b[\s\S]*?</${tag}>`, "giu"), ""),
-    untilStable(mainPart(html), (part) => part.replaceAll(/<!--[\s\S]*?-->/gu, "")),
+    withoutSpans(mainPart(html), "<!--", "-->"),
   );
   const marked = MARKS.reduce(
     (part, [pattern, mark]) => part.replaceAll(pattern, () => mark),

@@ -11,7 +11,7 @@ describe("decodeEntities", () => {
 });
 
 describe("htmlToMarkdown", () => {
-  it("removes tags and comments until none is left, even when a removal joins two halves", () => {
+  it("removes nested tags and comments, keeping a < that opens no tag", () => {
     expect(htmlToMarkdown("<body><p><<b>i>x<!<!-- a -->-- b --></p></body>")).toBe("x");
   });
 
