@@ -39,12 +39,15 @@ function moduleCount(folder: string): number {
   ).length;
 }
 
-/** Folders listed in `docs/conventions/files.md` as staying whole past the signal. */
-const LISTED = new Set(
+/** Folders listed in `docs/conventions/files.md` as staying whole past the signal, with their count. */
+const LISTED = new Map(
   readFileSync(join(ROOT, "docs", "conventions", "files.md"), "utf8")
     .split("### Folders past 15 modules", 2)[1]
-    ?.matchAll(/^\| `(?<folder>[^`]+)` +\| \d+/gmu)
-    .map((match) => match.groups?.["folder"] ?? "")
+    ?.matchAll(/^\| `(?<folder>[^`]+)` +\| (?<count>\d+)/gmu)
+    .map((match): [string, number] => [
+      match.groups?.["folder"] ?? "",
+      Number(match.groups?.["count"]),
+    ])
     .toArray(),
 );
 
@@ -67,9 +70,11 @@ describe("folders (ADR-0042)", () => {
     ).toEqual([]);
   });
 
-  it("lists only folders still past 15 modules", () => {
-    const past = new Set(counts.filter(({ count }) => count > SIGNAL).map(({ folder }) => folder));
+  it("lists only folders still past 15 modules, each with its true count", () => {
+    const past = new Map(
+      counts.filter(({ count }) => count > SIGNAL).map(({ count, folder }) => [folder, count]),
+    );
 
-    expect([...LISTED].filter((folder) => !past.has(folder))).toEqual([]);
+    expect([...LISTED].filter(([folder, count]) => past.get(folder) !== count)).toEqual([]);
   });
 });

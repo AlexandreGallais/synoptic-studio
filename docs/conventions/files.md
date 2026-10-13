@@ -12,10 +12,11 @@ In `src/` and `playground/` (barrels, entry points and tests excepted):
 - non-exported helpers may stay in the file only if they serve its single export; a helper shared by two modules becomes its own module.
 
 ```text
-src/geometry/
+src/geometry/rounded-corners/
   index.ts              export * from "./fillet-setback"; …
-  fillet-setback.ts     export function filletSetback(…): Setback   (+ export type Setback)
+  fillet-setback.ts     export function filletSetback(…): number
   fillet-setback.test.ts
+src/math/
   point.ts              export type Point = …
 ```
 
@@ -30,12 +31,12 @@ Every code folder has an `index.ts` barrel (see [imports.md](./imports.md)). A s
 
 Layout of ADR-0042: folders named by business theme, never by kind of code.
 
-| Folder          | Themes                                                                                                                                                                                                                                                                                  |
-| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/math/`     | `vector/` (the `Vector` type and its arithmetic); at the root the point, the angle in turns, the bisection, `EPSILON`                                                                                                                                                                   |
-| `src/geometry/` | `rounded-corners/` (fillets, clamp, turning angles), `box/` (bounding boxes, fit, stretch, turn), `polygon/` (regular and stretched polygons); at the root the types every folder needs (`Arc`, `Segment`, `ContourPiece`, `Corner`, `Size`…) and `cyclicItem`                          |
-| `src/model/`    | one folder per shape, its type inside (`rectangle/`, `regular-polygon/`, `free-shape/`), and per concern of the editor (`radii/`, `placement/`, `selection/`)                                                                                                                           |
-| `playground/`   | one folder per panel (`toolbar/`, `shape/`, `points/`, `position/`, `drawing/`, `guided-test/`), the steps of the guided test (`guided-steps/`), the page's own reading and writing (`page/`), the tests' actions (`user-actions/`); at the root the entry, the mounting and the update |
+| Folder          | Themes                                                                                                                                                                                                                                                                                                                                  |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/math/`     | `vector/` (the `Vector` type and its arithmetic); at the root the point, the angle in turns, the bisection, `EPSILON`                                                                                                                                                                                                                   |
+| `src/geometry/` | `rounded-corners/` (fillets, clamp, turning angles), `box/` (bounding boxes, fit, stretch, turn), `polygon/` (regular and stretched polygons); at the root what every folder needs: the types (`Arc`, `Segment`, `ContourPiece`, `Corner`, `Size`…), `cyclicItem`, `boundingBox` and `ALIGNMENTS`                                       |
+| `src/model/`    | one folder per shape, its type inside (`rectangle/`, `regular-polygon/`, `free-shape/`), and per concern of the editor (`radii/`, `placement/`, `selection/`)                                                                                                                                                                           |
+| `playground/`   | one folder per panel (`toolbar/`, `shape/`, `points/`, `position/`, `drawing/`, `guided-test/`), the steps of the guided test (`guided-steps/`), the page's own reading and writing (`page/`), the tests' actions (`user-actions/`); at the root the entry, the mounting, the wiring of the listeners (`listenToInputs`) and the update |
 
 A shape's type lives in its folder (`free-shape/free-shape.ts`): a file and a folder of the same name cannot sit side by side, an import of `./free-shape` reaching the file first. Folders may use each other's types; their value imports go one way (`import-x/no-cycle`).
 
