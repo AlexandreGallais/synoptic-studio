@@ -44,17 +44,17 @@ New step (algebra). For unit vectors `1 − u · v = ‖u − v‖² / 2` (`REF-
 
 If `B(t) − V = λb`, then `(λb) · nL = λ sin θ` and `n · nL = −cos θ`, so `r = λ sin θ / (1 + cos θ) = λ tan(θ/2)` (`REF-WIKI-TAN-HALF-ANGLE`, with η = 0): `λ = r / tan(θ/2)`, the setback of `DERIV-fillet-setback`.
 
-## Step 6 — While `r(t)` grows
+## Step 6 — Where the radius stops growing
 
 With the signed curvature `k = det(B′, B″) / ‖B′‖³` and the normal `N` turning by `N′ = −k B′` (`REF-WIKI-CURVATURE`, signed curvature and Frenet–Serret in the plane), let `κ = −σk` be the curvature towards the fillet. The quotient rule gives
 
 `r′(t) = ‖B′‖ (T · nL) (1 − r(t) κ(t)) / (1 − n · nL)`.
 
-So `r(t)` grows while (i) the curve moves away from the straight side, `T · nL > 0`, and (ii) its radius of curvature on the fillet's side is larger than `r`, `r κ < 1` — an offset has a cusp where the distance equals the radius of curvature (`REF-WIKI-PARALLEL-CURVE`). New step; checked numerically on the cases below.
+So `r(t)` grows while (i) the curve moves away from the straight side, `T · nL > 0`, and (ii) its radius of curvature on the fillet's side is larger than the radius reached, `r(t) κ < 1` — an offset has a cusp where the distance equals the radius of curvature (`REF-WIKI-PARALLEL-CURVE`). Near a corner whose handle is off the curvature is unbounded (step 1: `B′` vanishes faster than `det(B′, B″)`), while `r(t)` tends to 0: (ii) holds there. New step. The code does not evaluate the curvature: steps 7 and 11 test the circle itself.
 
 ## Step 7 — Solving for `t`
 
-`r(0⁺) = 0` (the numerator tends to 0, the denominator to `1 + cos θ > 0`). On `[0, tMax]`, where `tMax` is the first `t` at which step 6 fails (or 1), `r` is continuous and increasing, so a single `t*` with `r(t*) = r` exists for `r ≤ r(tMax)` (`REF-WIKI-IVT`, version I). The library's `bisection` on the predicate `r(t) < r` finds it (`REF-MATHWORLD-BISECTION`, `REF-WIKI-BISECTION`). `tMax` is found from a coarse table of 64 samples, then a bisection inside the first bracket: Pomax's coarse lookup table followed by a binary search ("Projecting a point onto a Bézier curve"); Inkscape's fillet spec selects the solution "closest … to the cusp along the length of bezier" (`REF-INKSCAPE-FILLET-SPEC`).
+`r(0⁺) = 0`: the centre starts inside the straight side's distance, `distance − r = r(cos τ − 1) < 0` (the numerator tends to 0, the denominator to `1 + cos θ > 0`). The tangent point closest to the corner is the first `t` where the centre on the curve's parallel reaches the distance `r` from the other side (`REF-WIKI-IVT`, version I): a coarse table of 64 samples finds the first bracket, a bisection inside it the point (`REF-MATHWORLD-BISECTION`, `REF-WIKI-BISECTION`) — Pomax's coarse lookup table followed by a binary search ("Projecting a point onto a Bézier curve"); Inkscape's fillet spec selects the solution "closest … to the cusp along the length of bezier" (`REF-INKSCAPE-FILLET-SPEC`).
 
 ## Step 8 — Tangent points and arc
 
@@ -62,7 +62,7 @@ So `r(t)` grows while (i) the curve moves away from the straight side, `T · nL 
 
 ## Step 9 — The curve cut at the tangent point
 
-De Casteljau's recurrence `βᵢ⁽ʲ⁾ = βᵢ⁽ʲ⁻¹⁾(1 − t₀) + βᵢ₊₁⁽ʲ⁻¹⁾ t₀` splits a curve at `t₀` into two with control points `β₀⁽⁰⁾ … β₀⁽ⁿ⁾` and `β₀⁽ⁿ⁾, β₁⁽ⁿ⁻¹⁾, …, βₙ⁽⁰⁾` (`REF-WIKI-DE-CASTELJAU`), which "can be overlaid exactly on the original curve" (`REF-POMAX-BEZIER`, "Splitting curves"). The piece kept is the second one from `Tc`; for a curve coming into `V`, the original is split at `1 − t*` and the first piece kept. `halvedCubic` is the case `t₀ = ½`.
+De Casteljau's recurrence `βᵢ⁽ʲ⁾ = βᵢ⁽ʲ⁻¹⁾(1 − t₀) + βᵢ₊₁⁽ʲ⁻¹⁾ t₀` splits a curve at `t₀` into two with control points `β₀⁽⁰⁾ … β₀⁽ⁿ⁾` and `β₀⁽ⁿ⁾, β₁⁽ⁿ⁻¹⁾, …, βₙ⁽⁰⁾` (`REF-WIKI-DE-CASTELJAU`), which "can be overlaid exactly on the original curve" (`REF-POMAX-BEZIER`, "Splitting curves"). The piece kept is the second one from `Tc`; for a curve coming into `V`, the original is split at `1 − t*` and the first piece kept. `splitCubic` at `t₀ = ½` halves the curve (`DERIV-cubic-sides` step 4).
 
 ## Step 10 — Between two cubic sides
 
@@ -70,7 +70,9 @@ Both sides written from `V` as `A` and `B`; `σ = sign(T_A(0)⊥ · T_B(0))`, `n
 
 ## Step 11 — A radius too large (ADR-0047)
 
-A cubic has at most one filleted end: the point at its other end has handles on, and is drawn sharp. So a fillet may use the whole curve, as a single rounded corner may use a whole straight side (ADR-0007). The radius drawn is `min(r, r(tLimit))`, `tLimit = min(1, tMax)`: the largest circle still tangent to the curve without crossing it (`REF-ASTUTE-CORNERS`: "its radius will be made as large as possible. Corners cannot extend past the next anchor point"). On the straight side the setback keeps ADR-0007's share of the side; the corner keeps the smaller of its two limits (ADR-0007 step 3).
+A cubic has at most one filleted end: the point at its other end has handles on, and is drawn sharp. So a fillet may use the whole curve, as a single rounded corner may use a whole straight side (ADR-0007). A radius fits when its tangent points lie within both sides' limits and its circle stays clear of both sides — no sample of either side inside it, before or after the tangent point — so that the arc never crosses the curve. A radius that does not fit is reduced, by bisection, to the largest that does (`REF-ASTUTE-CORNERS`: "its radius will be made as large as possible. Corners cannot extend past the next anchor point"). On a straight side shared with a reduced factor, the fillet may reach that share of its setback (ADR-0007); otherwise the whole side.
+
+On the rectangle 120 × 80 with point 3's handles along the diagonal, a radius 60 at point 2 becomes 47.74907 with handles of 40, and 46.86292 with handles of 80, where its circle touches the curve at point 3 itself.
 
 ## Checks (test cases)
 

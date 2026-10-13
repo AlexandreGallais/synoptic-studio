@@ -1,4 +1,4 @@
-import { cubicSide, cyclicItem, halvedCubic, isCurvedSide } from "../../geometry";
+import { cubicSide, cyclicItem, isCurvedSide, splitCubic } from "../../geometry";
 import { midpoint, scale, subtract, withoutNegativeZero } from "../../math";
 import { NO_HANDLES } from "../handles";
 
@@ -69,7 +69,7 @@ function cornersWithCurveSplit(
   edge: number,
 ): readonly CurveCorner[] {
   const start = cyclicItem(corners, edge, NO_CORNER);
-  const [first, second] = halvedCubic(cubicSide(start, cyclicItem(corners, edge + 1, start)));
+  const [first, second] = splitCubic(cubicSide(start, cyclicItem(corners, edge + 1, start)), 1 / 2);
   const middle = splitPoint(first);
 
   return corners.flatMap((corner, index) => {

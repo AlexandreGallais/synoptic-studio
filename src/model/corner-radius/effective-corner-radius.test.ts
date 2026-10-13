@@ -1,19 +1,32 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
+import { effectiveRadii } from "../../geometry";
 import { rectangleCorners } from "../rectangle";
 import { regularPolygonCorners } from "../regular-polygon";
 
 import { effectiveCornerRadius } from "./effective-corner-radius";
 
+import type { Corner } from "../../geometry";
+
 /** Decimals compared, from `EPSILON = 1e-9` (Q10). */
 const DECIMALS = 9;
+
+/**
+ * The one radius drawn on corners asking the same radius, through the clamp of F01.
+ *
+ * @param corners - points and radii of a shape
+ * @returns the radius drawn, or `undefined` when they differ
+ */
+function radiusOf(corners: readonly Corner[]): number | undefined {
+  return effectiveCornerRadius(effectiveRadii(corners));
+}
 
 describe("effectiveCornerRadius (Q8, ADR-0007)", () => {
   it("[F01.AC2] keeps radius 10 on a 100 × 50 rectangle", () => {
     // S = 20 ≤ 50 and ≤ 100: no reduction.
     expect(
-      effectiveCornerRadius(
+      radiusOf(
         rectangleCorners({ angle: 0, x: 0, y: 0, height: 50, radii: [10, 10, 10, 10], width: 100 }),
       ),
     ).toBeCloseTo(10, DECIMALS);
@@ -22,7 +35,7 @@ describe("effectiveCornerRadius (Q8, ADR-0007)", () => {
   it("[F01.AC2] gives 12.5 for radius 100 on a 100 × 25 rectangle, the requested 100 being kept", () => {
     // Short edges: f = 25 / 200 = 0.125 → 12.5.
     expect(
-      effectiveCornerRadius(
+      radiusOf(
         rectangleCorners({
           angle: 0,
           x: 0,
@@ -38,7 +51,7 @@ describe("effectiveCornerRadius (Q8, ADR-0007)", () => {
   it("[F01.AC2] follows the size up to the requested value (Q8)", () => {
     // Radius 100: 100 × 300 → the 100 edges carry 200, f = 0.5 → 50; 300 × 300 → S = 200 ≤ 300 → 100.
     expect(
-      effectiveCornerRadius(
+      radiusOf(
         rectangleCorners({
           angle: 0,
           x: 0,
@@ -51,7 +64,7 @@ describe("effectiveCornerRadius (Q8, ADR-0007)", () => {
     ).toBeCloseTo(50, DECIMALS);
 
     expect(
-      effectiveCornerRadius(
+      radiusOf(
         rectangleCorners({
           angle: 0,
           x: 0,
@@ -71,7 +84,7 @@ describe("effectiveCornerRadius (Q8, ADR-0007)", () => {
   })(
     "never exceeds the requested radius and never shrinks when the rectangle widens",
     ({ height, radius, width }) => {
-      const narrow = effectiveCornerRadius(
+      const narrow = radiusOf(
         rectangleCorners({
           angle: 0,
           x: 0,
@@ -81,7 +94,7 @@ describe("effectiveCornerRadius (Q8, ADR-0007)", () => {
           width,
         }),
       );
-      const wide = effectiveCornerRadius(
+      const wide = radiusOf(
         rectangleCorners({
           angle: 0,
           x: 0,
@@ -114,7 +127,7 @@ describe("effectiveCornerRadius (stretched polygon, F06)", () => {
       y: 0,
     });
 
-    expect(effectiveCornerRadius(corners)).toBeUndefined();
+    expect(radiusOf(corners)).toBeUndefined();
   });
 
   it("[F06.AC5] gives the one radius when it fits every corner of a stretched hexagon", () => {
@@ -130,6 +143,6 @@ describe("effectiveCornerRadius (stretched polygon, F06)", () => {
       y: 0,
     });
 
-    expect(effectiveCornerRadius(corners)).toBeCloseTo(5, DECIMALS);
+    expect(radiusOf(corners)).toBeCloseTo(5, DECIMALS);
   });
 });

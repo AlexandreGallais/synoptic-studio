@@ -39,6 +39,16 @@ function circumradius(corners: readonly Corner[]): number {
   return edge / (2 * Math.sin(Math.PI / corners.length));
 }
 
+/**
+ * The one radius drawn on corners asking the same radius, through the clamp of F01.
+ *
+ * @param corners - points and radii of a shape
+ * @returns the radius drawn, or `undefined` when they differ
+ */
+function radiusOf(corners: readonly Corner[]): number | undefined {
+  return effectiveCornerRadius(effectiveRadii(corners));
+}
+
 describe("regularPolygonCorners (DERIV-regular-polygon-fit step 6)", () => {
   it("[F02.AC2] turns a hexagon in 100 × 100 with radius 1000 into its incircle: diameter 86.60254", () => {
     // s = 50, inradius 50 cos(π/6) = 43.30127; every arc centered at the center of the box.
@@ -55,7 +65,7 @@ describe("regularPolygonCorners (DERIV-regular-polygon-fit step 6)", () => {
     });
     const pieces = roundedContour(corners);
 
-    expect(effectiveCornerRadius(corners)).toBeCloseTo(25 * Math.sqrt(3), DECIMALS);
+    expect(radiusOf(corners)).toBeCloseTo(25 * Math.sqrt(3), DECIMALS);
     expect(arcsOf(pieces)).toHaveLength(6);
     expect(pieces.every((piece) => piece.kind === "arc")).toBe(true);
 
@@ -83,7 +93,7 @@ describe("regularPolygonCorners (DERIV-regular-polygon-fit step 6)", () => {
     const inradius = 50 / Math.sqrt(3);
     const base = 50 + 25 * Math.sqrt(3);
 
-    expect(effectiveCornerRadius(corners)).toBeCloseTo(inradius, DECIMALS);
+    expect(radiusOf(corners)).toBeCloseTo(inradius, DECIMALS);
 
     const pieces = roundedContour(corners);
     const arcs = arcsOf(pieces);
@@ -111,7 +121,7 @@ describe("regularPolygonCorners (DERIV-regular-polygon-fit step 6)", () => {
       width: 100,
     });
 
-    expect(effectiveCornerRadius(corners)).toBeCloseTo(10, DECIMALS);
+    expect(radiusOf(corners)).toBeCloseTo(10, DECIMALS);
   });
 
   it("keeps the requested radius on a polygon of size 0, which draws nothing (Q17)", () => {
@@ -127,7 +137,7 @@ describe("regularPolygonCorners (DERIV-regular-polygon-fit step 6)", () => {
       width: 0,
     });
 
-    expect(effectiveCornerRadius(corners)).toBe(10);
+    expect(radiusOf(corners)).toBe(10);
     expect(roundedContour(corners)).toEqual([]);
   });
 
@@ -238,7 +248,7 @@ describe("regularPolygonCorners (properties)", () => {
         Math.hypot(arc.center.x - (first?.center.x ?? 0), arc.center.y - (first?.center.y ?? 0)),
       );
 
-      expect(effectiveCornerRadius(polygon)).toBeCloseTo(
+      expect(radiusOf(polygon)).toBeCloseTo(
         circumradius(polygon) * Math.cos(Math.PI / corners),
         DECIMALS,
       );
@@ -265,7 +275,7 @@ describe("regularPolygonCorners (properties)", () => {
       width: size,
     });
 
-    expect(effectiveCornerRadius(polygon)).toBeLessThanOrEqual(radius * (1 + 1e-9));
+    expect(radiusOf(polygon)).toBeLessThanOrEqual(radius * (1 + 1e-9));
   });
 
   test.prop({
