@@ -1,4 +1,4 @@
-import type { Point } from "../math";
+import type { Point } from "../../math";
 
 /** Straight piece of an evaluated contour (ADR-0005, stage 3). */
 export type Segment = {

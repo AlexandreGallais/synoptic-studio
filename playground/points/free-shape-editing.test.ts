@@ -12,7 +12,7 @@ import {
   readValue,
   selectInput,
   typeAndEnter,
-} from "./user-actions";
+} from "../user-actions";
 
 /**
  * A number of the model shown in the pipeline panel, written in full by `JSON.stringify`.

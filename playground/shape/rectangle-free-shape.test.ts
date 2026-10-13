@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { clickElement, clickPoint, openPage, readText, typeValue } from "./user-actions";
+import { clickElement, clickPoint, openPage, readText, typeValue } from "../user-actions";
 
 describe("rectangle as a free shape", () => {
   beforeEach(() => {

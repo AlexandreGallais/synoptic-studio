@@ -1,4 +1,4 @@
-import type { Point } from "../math";
+import type { Point } from "../../math";
 
 /** Smallest axis-aligned rectangle containing a set of points (glossary: bounding box). */
 export type BoundingBox = {

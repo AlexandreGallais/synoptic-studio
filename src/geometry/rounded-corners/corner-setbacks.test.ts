@@ -7,7 +7,7 @@ import { cornerSetbacks } from "./corner-setbacks";
 import { cornerTriples } from "./corner-triples";
 import { turningAngles } from "./turning-angles";
 
-import type { Corner } from "../corner";
+import type { Corner } from "../contour";
 
 /**
  * Setbacks of the corners of a contour, their turning angles computed from their points.

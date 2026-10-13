@@ -1,8 +1,7 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
-import { boundingBox } from "../bounding-box";
-
+import { boundingBox } from "./bounding-box";
 import { stretchToSize } from "./stretch-to-size";
 
 /** Integer coordinates around the origin. */

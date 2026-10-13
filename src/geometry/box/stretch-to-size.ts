@@ -1,7 +1,7 @@
-import { boundingBox } from "../bounding-box";
+import { boundingBox } from "./bounding-box";
 
+import type { Size } from "./size";
 import type { Point } from "../../math";
-import type { Size } from "../size";
 
 /**
  * Stretches a set of points to a width and a height, each axis by its own factor, the top-left

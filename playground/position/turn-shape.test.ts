@@ -10,7 +10,7 @@ import {
   readText,
   readValue,
   typeValue,
-} from "./user-actions";
+} from "../user-actions";
 
 /**
  * Number of paths of a class drawn on the canvas.

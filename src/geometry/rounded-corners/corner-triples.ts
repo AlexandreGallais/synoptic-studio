@@ -1,7 +1,7 @@
-import { cyclicItem } from "../cyclic-item";
+import { cyclicItem } from "../contour";
 
 import type { Point } from "../../math";
-import type { CornerPoints } from "../corner-points";
+import type { CornerPoints } from "../contour";
 
 /**
  * Every corner of a cyclic contour with its two neighbours: the vertex before the first is the

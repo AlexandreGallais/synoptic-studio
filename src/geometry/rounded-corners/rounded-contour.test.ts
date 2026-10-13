@@ -8,7 +8,7 @@ import { effectiveRadii } from "./effective-radii";
 import { roundedContour } from "./rounded-contour";
 
 import type { Point } from "../../math";
-import type { Corner } from "../corner";
+import type { Corner } from "../contour";
 
 /** Decimals compared, from `EPSILON = 1e-9` (Q10). */
 const DECIMALS = 9;

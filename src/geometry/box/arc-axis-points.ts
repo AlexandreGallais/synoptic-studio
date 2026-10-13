@@ -1,7 +1,7 @@
 import { perpDot } from "../../math";
 
 import type { Point, Vector } from "../../math";
-import type { Arc } from "../arc";
+import type { Arc } from "../contour";
 
 /** The four axis directions: right, down, left, up (y down). */
 const AXES: readonly Vector[] = [

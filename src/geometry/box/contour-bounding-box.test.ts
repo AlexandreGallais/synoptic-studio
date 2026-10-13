@@ -1,12 +1,12 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
-import { boundingBox } from "../bounding-box";
 import { roundedContour } from "../rounded-corners";
 
+import { boundingBox } from "./bounding-box";
 import { contourBoundingBox } from "./contour-bounding-box";
 
-import type { Corner } from "../corner";
+import type { Corner } from "../contour";
 
 /**
  * Corners of a 100 × 100 square turned about (50, 50), all with one radius.

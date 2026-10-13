@@ -1,5 +1,5 @@
 import { GUIDED_STEPS } from "../guided-steps";
-import { mountPlayground } from "../mount-playground";
+import { mountPlayground } from "../mount";
 
 import { loadPage } from "./load-page";
 

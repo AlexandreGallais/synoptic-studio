@@ -1,18 +1,18 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
-import { expectPoints } from "../../tests";
-
+import { expectPoints } from "../../../tests";
 import {
   freeShapeCorners,
   freeShapeWithMidpoint,
   freeShapeWithPoint,
   freeShapeWithoutPoints,
-} from "./free-shape";
-import { turnedCorners } from "./placement";
-import { rectangleAsFreeShape } from "./rectangle";
+} from "../free-shape";
+import { rectangleAsFreeShape } from "../rectangle";
 
-import type { FreeShape } from "./free-shape";
+import { turnedCorners } from "./turned-corners";
+
+import type { FreeShape } from "../free-shape";
 
 /**
  * Points of a free shape as drawn, turned.

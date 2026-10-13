@@ -2,7 +2,7 @@ import { clampedRadii } from "./clamped-radii";
 import { cornerTriples } from "./corner-triples";
 import { turningAngles } from "./turning-angles";
 
-import type { Corner } from "../corner";
+import type { Corner } from "../contour";
 
 /**
  * Effective radius of every corner: requested radii reduced locally and proportionally so that

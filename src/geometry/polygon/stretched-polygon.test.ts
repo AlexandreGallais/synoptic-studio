@@ -2,7 +2,7 @@ import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { expectPoints } from "../../../tests";
-import { boundingBox } from "../bounding-box";
+import { boundingBox } from "../box";
 import { cornerTriples, edgeLengths, turningAngles } from "../rounded-corners";
 
 import { stretchScale } from "./stretch-scale";
