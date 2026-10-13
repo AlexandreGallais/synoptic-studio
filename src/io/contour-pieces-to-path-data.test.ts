@@ -1,29 +1,13 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
+import { rectanglePoints } from "../../tests";
 import { roundedContour } from "../geometry";
 
 import { contourPiecesToPathData } from "./contour-pieces-to-path-data";
 import { contourToPathData } from "./contour-to-path-data";
 
 import type { Corner } from "../geometry";
-import type { Point } from "../math";
-
-/**
- * Rectangle clockwise from the top-left vertex (Q11).
- *
- * @param width - width, >= 0
- * @param height - height, >= 0
- * @returns its four vertices
- */
-function rectangle(width: number, height: number): Point[] {
-  return [
-    { x: 0, y: 0 },
-    { x: width, y: 0 },
-    { x: width, y: height },
-    { x: 0, y: height },
-  ];
-}
 
 /**
  * Corners of a rectangle with one radius everywhere.
@@ -34,7 +18,7 @@ function rectangle(width: number, height: number): Point[] {
  * @returns its four corners
  */
 function corners(width: number, height: number, radius: number): Corner[] {
-  return rectangle(width, height).map((point) => ({ point, radius }));
+  return rectanglePoints(width, height).map((point) => ({ point, radius }));
 }
 
 describe("contourPiecesToPathData (REF-SVG2-PATHS §9.3.3–9.3.8)", () => {
@@ -85,6 +69,6 @@ describe("contourPiecesToPathData (REF-SVG2-PATHS §9.3.3–9.3.8)", () => {
   })("writes exactly the sharp path data of EN-002 when every radius is 0", ({ height, width }) => {
     const pieces = roundedContour(corners(width, height, 0));
 
-    expect(contourPiecesToPathData(pieces)).toBe(contourToPathData(rectangle(width, height)));
+    expect(contourPiecesToPathData(pieces)).toBe(contourToPathData(rectanglePoints(width, height)));
   });
 });

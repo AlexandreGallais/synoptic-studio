@@ -1,41 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { cornersWithRadii } from "./corners-with-radii";
+import { freeShapeOf } from "../../tests";
+
 import { freeShapeCorners } from "./free-shape-corners";
 import { rectangleAsFreeShape } from "./rectangle-as-free-shape";
-
-import type { FreeShape } from "./free-shape";
-import type { Point } from "../math";
-
-/** Points and radii side by side, as F09 stored them. */
-type SideBySide = {
-  /** Height drawn. */
-  readonly height: number;
-  /** Points as stored. */
-  readonly points: readonly Point[];
-  /** Radius of each point. */
-  readonly radii: readonly number[];
-  /** Width drawn. */
-  readonly width: number;
-};
-
-/**
- * Free shape from its points and radii side by side, as the tests write them (ADR-0033 keeps
- * each radius with its point).
- *
- * @param shape - points, radii, width and height
- * @returns the free shape of corners
- */
-function shapeOf(shape: SideBySide): FreeShape {
-  return {
-    angle: 0,
-    corners: cornersWithRadii(shape.points, shape.radii),
-    height: shape.height,
-    width: shape.width,
-    x: Math.min(...shape.points.map((point) => point.x)),
-    y: Math.min(...shape.points.map((point) => point.y)),
-  };
-}
 
 describe("freeShapeCorners", () => {
   it("[F09.AC1] draws the rectangle tool's free shape as the rectangle of F01, with its radii", () => {
@@ -70,7 +38,7 @@ describe("freeShapeCorners", () => {
       width: 10,
     };
 
-    expect(freeShapeCorners(shapeOf(triangle)).map((corner) => corner.point)).toEqual([
+    expect(freeShapeCorners(freeShapeOf(triangle)).map((corner) => corner.point)).toEqual([
       { x: 5, y: 0 },
       { x: 10, y: 4 },
       { x: 0, y: 4 },
@@ -89,7 +57,7 @@ describe("freeShapeCorners", () => {
       width: 100,
     };
 
-    expect(freeShapeCorners(shapeOf(stored)).map((corner) => corner.point)).toEqual([
+    expect(freeShapeCorners(freeShapeOf(stored)).map((corner) => corner.point)).toEqual([
       { x: 0, y: 0 },
       { x: 100, y: 0 },
       { x: 100, y: 50 },

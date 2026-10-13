@@ -1,6 +1,8 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
+import { doubleSignedArea } from "../../tests";
+
 import { rectangleContour } from "./rectangle-contour";
 
 describe("rectangleContour", () => {
@@ -59,14 +61,9 @@ describe("rectangleContour (properties)", () => {
         radii: [0, 0, 0, 0],
         width,
       });
+
       // Shoelace sum Σ (xᵢ yᵢ₊₁ − xᵢ₊₁ yᵢ) = 2 · width · height > 0 for a clockwise turn on screen.
-      const doubleArea = contour.reduce((sum, vertex, index) => {
-        const next = contour[(index + 1) % contour.length] ?? vertex;
-
-        return sum + vertex.x * next.y - next.x * vertex.y;
-      }, 0);
-
-      expect(doubleArea).toBe(2 * width * height);
+      expect(doubleSignedArea(contour)).toBe(2 * width * height);
     },
   );
 });

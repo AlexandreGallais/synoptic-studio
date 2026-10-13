@@ -1,6 +1,8 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
+import { integerTriangle } from "../../tests";
+
 import { turningAngles } from "./turning-angles";
 
 /** Decimals compared: atan2 of exact integers is correct to the last bits of a double. */
@@ -41,16 +43,8 @@ describe("turningAngles", () => {
   });
 });
 
-/** Arbitrary point with integer coordinates. */
-const POINT = fc.record({
-  x: fc.integer({ max: 1000, min: -1000 }),
-  y: fc.integer({ max: 1000, min: -1000 }),
-});
-
 /** Triangles of positive area: their three vertices are not aligned. */
-const TRIANGLE = fc
-  .tuple(POINT, POINT, POINT)
-  .filter(([a, b, c]) => (b.x - a.x) * (c.y - a.y) !== (b.y - a.y) * (c.x - a.x));
+const TRIANGLE = integerTriangle(1000);
 
 describe("turningAngles (properties)", () => {
   test.prop({
