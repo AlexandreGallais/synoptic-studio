@@ -73,7 +73,7 @@
 | [REV-001](./E01-REV-001-review-e01.md)                          | E01     | Review E01 with the Product Owner                         | done   |
 | [RET-001](./E01-RET-001-retrospective-e01.md)                   | E01     | Retrospective of E01                                      | done   |
 | [SP-010](./E14-F11-SP-010-research-f11.md)                      | F11     | Research for F11: folder layouts and test placement       | done   |
-| [EN-020](./E14-F11-EN-020-property-tests.md)                    | F11     | Property tests for the nine functions without one         | ready  |
+| [EN-020](./E14-F11-EN-020-property-tests.md)                    | F11     | Property tests for the nine functions without one         | done   |
 | [EN-021](./E14-F11-EN-021-shared-test-helpers.md)               | F11     | Shared test helpers, one path writer, one pass per corner | ready  |
 | [CHK-010](./E14-F11-CHK-010-checkpoint-f11.md)                  | F11     | Checkpoint in the middle of F11                           | ready  |
 | [EN-022](./E14-F11-EN-022-folder-layout.md)                     | F11     | Folders of the library and the playground                 | ready  |
