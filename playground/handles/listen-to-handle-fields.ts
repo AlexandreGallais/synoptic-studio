@@ -2,7 +2,7 @@ import { HANDLE_MODES, add, freeShapeWithHandles, handlesAfterTyping, subtract }
 import { readNumber, selectElement } from "../page";
 import { readEditedFreeShape, readShape, writeStoredFreeShape } from "../shape";
 
-import { readFieldOrigin } from "./read-field-origin";
+import { readFieldShift } from "./read-field-shift";
 import { readSelectedCorner } from "./read-selected-corner";
 
 import type { SelectedCorner } from "./read-selected-corner";
@@ -116,7 +116,7 @@ type TypedField = {
 
 /**
  * Handles once one coordinate of a handle's end is typed: the other coordinate kept where it is
- * drawn, as the point's x and y (F08); the vector from the point to that end, the other handle
+ * drawn, as the point's x and y (F08); the handle's vector from the values (`readFieldShift`), the other handle
  * following the mode (`handlesAfterTyping`); a value that is not an integer changes nothing.
  *
  * @kind procedure
@@ -136,7 +136,7 @@ function readTypedHandles(
 
   return selected === undefined || !Number.isSafeInteger(typed)
     ? undefined
-    : readMovedEnd(handles, readFieldOrigin(document, selected.corner.point), { ...field, typed });
+    : readMovedEnd(handles, readFieldShift(document, selected.corner.point), { ...field, typed });
 }
 
 /**
@@ -144,7 +144,7 @@ function readTypedHandles(
  *
  * @kind procedure
  * @param handles - handles as drawn
- * @param origin - what the fields are counted from (`readFieldOrigin`)
+ * @param origin - what the fields are counted from (`readFieldShift`)
  * @param move - the handle, the coordinate and its new value
  * @returns the handles after the move
  * @see docs/backlog/stories/E14-F12-US-022-handles-in-points-mode.md
@@ -179,7 +179,7 @@ function readChosenMode(handles: Handles, document: Document): Handles | undefin
 
 /**
  * Listens to the handles of the point selected: the switch between radius and handles, the mode,
- * and the end of each handle typed as x and y on the page, on "change" as the point's fields (US-022).
+ * the way to type them, and each handle typed as x and y on the page or dx and dy from the point, on "change" as the point's fields (US-022).
  *
  * @kind procedure
  * @param document - page document
