@@ -1,0 +1,24 @@
+import { scale, turnDirection } from "../../math";
+import { turnAbout } from "../placement";
+
+import type { Vector } from "../../math";
+
+/** Origin of the vectors: a direction is turned about its own start. */
+const ORIGIN = { x: 0, y: 0 };
+
+/**
+ * A handle from an angle and a length counted from a direction: the direction turned by the angle,
+ * clockwise on screen, scaled to the length (`DERIV-handle-angle` steps 1 and 2).
+ *
+ * Formula: h = L · R(θ) u; with u = (1, 0), h = L · (cos θ, sin θ).
+ *
+ * @kind geometry
+ * @param direction - unit vector the angle is counted from: the x axis, or the handle's side
+ * @param angle - degrees, clockwise on screen
+ * @param length - the handle's length, ≥ 0
+ * @returns the handle, a vector from its point
+ * @see DERIV-handle-angle
+ */
+export function angledHandle(direction: Vector, angle: number, length: number): Vector {
+  return scale(turnAbout(direction, ORIGIN, turnDirection(angle)), length);
+}
