@@ -18,3 +18,4 @@ Each file: statement and domain, steps each citing a read source, cross-check, c
 | [`DERIV-cubic-sides`](./cubic-sides.md)                 | A cubic side: its extremes on each axis, its split in half, its handles turned (F12)                                          |
 | [`DERIV-handle-angle`](./handle-angle.md)               | A handle from an angle and a length, from the x axis or from its side, the handle before mirrored (F12)                       |
 | [`DERIV-handle-share`](./handle-share.md)               | A handle as shares of its side, the handle before mirrored; CSS's cubic-bezier() laid on a side (F12)                         |
+| [`DERIV-handle-tension`](./handle-tension.md)           | A point's handles from a tension, as a cardinal spline: `±(1 − c)(next − previous) / 6` (F12)                                 |

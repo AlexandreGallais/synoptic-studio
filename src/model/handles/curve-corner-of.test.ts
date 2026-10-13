@@ -11,6 +11,7 @@ describe("curveCornerOf", () => {
         before: { x: 0, y: 0 },
         isOn: false,
         mode: "angle-and-length",
+        tension: 0,
       },
       point: { x: 100, y: 0 },
       radius: 30,

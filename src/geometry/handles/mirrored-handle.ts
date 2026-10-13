@@ -20,10 +20,13 @@ import type { Vector } from "../../math";
 export function mirroredHandle(mode: HandleMode, typed: Vector, other: Vector): Vector {
   const length = norm(typed);
 
-  if (mode === "none" || (mode === "angle" && length === 0)) {
+  if (mode === "none" || (mode !== "angle-and-length" && length === 0)) {
     return other;
   }
 
   // Adding zero turns −0 into 0, so that a path never writes "-0".
-  return add(scale(typed, mode === "angle" ? -norm(other) / length : -1), { x: 0, y: 0 });
+  return add(scale(typed, mode === "angle-and-length" ? -1 : -norm(other) / length), {
+    x: 0,
+    y: 0,
+  });
 }
