@@ -29,3 +29,4 @@ One task = one commit, referenced as `SP-010.Tn`.
 
 - [ ] T1 — Read the sources (library first), record them (2 h)
 - [ ] T2 — Layout proposal with a table of moves, research note, questions for the Product Owner (2 h)
+- [ ] T3 — The Product Owner's choice as ADR-0042; F11 and EN-022 updated (1 h)
