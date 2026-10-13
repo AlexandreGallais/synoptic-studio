@@ -131,4 +131,16 @@ describe("typedHandle and fieldValuesOfHandle (DERIV-handle-angle)", () => {
     expect(fieldValuesOfHandle("page", { x: 30, y: -15 }, raised)).toEqual([130, 5]);
     expect(fieldValuesOfHandle("side", { x: -10, y: 0 }, BEFORE)).toEqual([0, 10]);
   });
+
+  it("[F12.AC4] takes shares of the side, the handle before mirrored, and refuses a side of length 0", () => {
+    // 25 % along, 30 % across: after A (25, −30), end (125, −30); before B (−25, −30), end (175, −30).
+    expect(typedHandle("share", [25, 30], AFTER)).toEqual({ x: 25, y: -30 });
+    expect(typedHandle("share", [25, 30], BEFORE)).toEqual({ x: -25, y: -30 });
+    expect(fieldValuesOfHandle("share", { x: 25, y: -30 }, AFTER)).toEqual([25, 30]);
+    expect(typedHandle("share", [25, 30], { ...AFTER, side: { x: 0, y: 0 } })).toBeUndefined();
+
+    expect(
+      fieldValuesOfHandle("share", { x: 3, y: 4 }, { ...AFTER, side: { x: 0, y: 0 } }),
+    ).toEqual([0, 0]);
+  });
 });
