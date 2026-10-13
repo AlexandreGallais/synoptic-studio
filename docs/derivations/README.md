@@ -16,4 +16,4 @@ Each file: statement and domain, steps each citing a read source, cross-check, c
 | [`DERIV-round-shape`](./round-shape.md)                 | A circle or a capsule as a rectangle rounded by half its smaller side; its conversion (F10, moved to E14, research note 0010) |
 | [`DERIV-stretched-polygon`](./stretched-polygon.md)     | A polygon stretched to its box, sides equal while its corners keep half their regular turn, then a plain stretch (F06)        |
 | [`DERIV-cubic-sides`](./cubic-sides.md)                 | A cubic side: its extremes on each axis, its split in half, its handles turned (F12)                                          |
-| [`DERIV-handle-angle`](./handle-angle.md)               | A handle from an angle and a length, from the x axis or from its side, the handle before mirrored (F12)                       |
+| [`DERIV-handle-angle`](./handle-angle.md)               | A handle from an angle and a length, from its side, the handle before mirrored, the handle before mirrored (F12)              |
