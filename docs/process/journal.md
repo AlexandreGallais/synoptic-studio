@@ -2,6 +2,10 @@
 
 What each working session dealt with, in the agent's words: the Product Owner's requests in neutral words, decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`).
 
+## 2026-10-13 — Run F12 authorized
+
+- `#run` The Product Owner started a run without scope after F11: F12 (points on a curve with handles), first in E14's order, from its spike SP-011. `/run` is now the go-ahead (ADR-0045): the agent set F12 in progress and SP-011 ready. The release pull request of F11 was closed by the Product Owner: releases are opened when they ask.
+
 ## 2026-10-13 — F11 resumed: folders by domain, VAL-010 prepared
 
 - `#adr` ADR-0043 supersedes ADR-0042: folders named after the business domains of `docs/domain/`, the same name in each layer, modules and folders never side by side; 15 modules stay a signal. The Product Owner refused the layout of EN-022 (math held a folder beside loose modules; folders cut to meet a count) and the agent's question on `playground/page/`, a choice of code to decide alone (feedback log).

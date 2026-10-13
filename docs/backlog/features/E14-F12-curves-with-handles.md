@@ -2,7 +2,7 @@
 id: F12
 epic: E14
 title: Points on a curve with handles
-status: draft
+status: in-progress
 ---
 
 # E14 · F12 — Points on a curve with handles
@@ -26,9 +26,9 @@ Started with the Product Owner on 2026-10-13:
 
 ## Stories
 
-| ID     | Type  | Title                                                               | Status |
-| ------ | ----- | ------------------------------------------------------------------- | ------ |
-| SP-011 | Spike | Research for F12: curves in symbols, ways to type a handle, strokes | draft  |
+| ID                                                  | Type  | Title                                                               | Status |
+| --------------------------------------------------- | ----- | ------------------------------------------------------------------- | ------ |
+| [SP-011](../stories/E14-F12-SP-011-research-f12.md) | Spike | Research for F12: curves in symbols, ways to type a handle, strokes | ready  |
 
 The other stories are written after SP-011, then set ready by the Product Owner.
 
