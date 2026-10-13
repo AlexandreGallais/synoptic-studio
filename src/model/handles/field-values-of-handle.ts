@@ -30,7 +30,7 @@ export function fieldValuesOfHandle(
     axis: [angleFromDirection(X_AXIS, handle), norm(handle)],
     page: [frame.point.x + handle.x, frame.point.y + handle.y],
     point: [handle.x, handle.y],
-    side: [frame.isBefore ? degreesInTurn(-sideAngle) + 0 : sideAngle, norm(handle)],
+    side: [frame.isBefore ? degreesInTurn(-sideAngle) : sideAngle, norm(handle)],
   } as const;
 
   return values[way];

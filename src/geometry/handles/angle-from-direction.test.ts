@@ -16,7 +16,7 @@ describe("angleFromDirection (REF-MDN-ATAN2)", () => {
       9,
     );
 
-    expect(Object.is(angleFromDirection({ x: 1, y: 0 }, { x: 0, y: 0 }), 0)).toBe(true);
+    expect(angleFromDirection({ x: 1, y: 0 }, { x: 0, y: 0 })).toBe(0);
   });
 
   test.prop({ angle: fc.integer({ max: 359, min: 0 }), length: fc.integer({ max: 1000, min: 1 }) })(
