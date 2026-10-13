@@ -70,4 +70,64 @@ describe("pastedControlPoints (DERIV-handle-share step 4)", () => {
       refusal: "Paste one C command (C x1 y1 x2 y2 x y) or a cubic-bezier() value.",
     });
   });
+
+  it("never reads one run of digits as two numbers, as SVG reads numbers", () => {
+    expect(pastedControlPoints("C 130 -15 170 -15 2000", START, END)).toEqual({
+      refusal: "Paste one C command (C x1 y1 x2 y2 x y) or a cubic-bezier() value.",
+    });
+
+    expect(pastedControlPoints("C 130 -15 170 -15 200", START, END)).toEqual({
+      refusal: "Paste one C command (C x1 y1 x2 y2 x y) or a cubic-bezier() value.",
+    });
+  });
+
+  it("refuses numbers too large to be numbers", () => {
+    expect(pastedControlPoints("C 1e400 0 170 -15 200 0", START, END)).toEqual({
+      refusal: "A number pasted is too large.",
+    });
+
+    expect(pastedControlPoints("cubic-bezier(0.42, 1e400, 0.58, 1)", START, END)).toEqual({
+      refusal: "A number pasted is too large.",
+    });
+  });
+
+  it("reads the numbers SVG and CSS write: signs, exponents, a leading point, spaces around commas", () => {
+    expect(pastedControlPoints("C +1.3e2 -15 170 -15 2e2 +0", START, END)).toEqual({
+      first: { x: 130, y: -15 },
+      second: { x: 170, y: -15 },
+    });
+
+    expectPoints(
+      controlsOf(pastedControlPoints("cubic-bezier(.42 , 0 , .58 , 1)", START, END)),
+      [
+        { x: 121, y: 21 },
+        { x: 179, y: -21 },
+      ],
+      9,
+    );
+  });
+
+  it("takes x values of 0 and 1, and an end within the precision of SVG numbers", () => {
+    expectPoints(
+      controlsOf(pastedControlPoints("cubic-bezier(0, 0, 1, 1)", START, END)),
+      [START, END],
+      9,
+    );
+
+    expect("first" in pastedControlPoints("C 130 -15 170 -15 200.000004 0", START, END)).toBe(true);
+
+    expect(pastedControlPoints("C 130 -15 170 -15 200.0001 0", START, END)).toHaveProperty(
+      "refusal",
+    );
+  });
+
+  it("refuses text before or after the command", () => {
+    expect(pastedControlPoints("M 0 0 C 130 -15 170 -15 200 0", START, END)).toEqual({
+      refusal: "Paste one C command (C x1 y1 x2 y2 x y) or a cubic-bezier() value.",
+    });
+
+    expect(pastedControlPoints("C 130 -15 170 -15 200 0 extra", START, END)).toEqual({
+      refusal: "Paste one C command (C x1 y1 x2 y2 x y) or a cubic-bezier() value.",
+    });
+  });
 });
