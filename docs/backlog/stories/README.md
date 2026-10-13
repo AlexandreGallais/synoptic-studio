@@ -80,9 +80,15 @@
 | [AUD-010](./E14-F11-AUD-010-audit-f11.md)                       | F11     | Audit F11                                                           | done   |
 | [EN-023](./E14-F11-EN-023-folders-by-domain.md)                 | F11     | Folders by business domain, files and folders never side by side    | done   |
 | [SP-011](./E14-F12-SP-011-research-f12.md)                      | F12     | Research for F12: curves in symbols, ways to type a handle, strokes | ready  |
-| [CHK-011](./E14-F12-CHK-011-checkpoint-f12.md)                  | F12     | Checkpoint in the middle of F12                                     | draft  |
-| [AUD-011](./E14-F12-AUD-011-audit-f12.md)                       | F12     | Audit F12                                                           | draft  |
-| [VAL-011](./E14-F12-VAL-011-validate-f12.md)                    | F12     | Validate F12                                                        | draft  |
+| [EN-024](./E14-F12-EN-024-handles-model.md)                     | F12     | A point's handles in the free shape model                           | ready  |
+| [EN-025](./E14-F12-EN-025-cubic-sides.md)                       | F12     | Cubic sides in contours, path data and the straight box             | ready  |
+| [US-022](./E14-F12-US-022-handles-in-points-mode.md)            | F12     | Switch a point to handles and type them as x and y                  | ready  |
+| [US-023](./E14-F12-US-023-handles-relative-to-point.md)         | F12     | Type a handle as dx and dy from its point                           | ready  |
+| [US-024](./E14-F12-US-024-handles-as-angle-and-length.md)       | F12     | Type a handle as an angle and a length                              | ready  |
+| [US-025](./E14-F12-US-025-handles-as-share-or-data.md)          | F12     | Type a side's handles as shares of the side, or paste curve data    | ready  |
+| [CHK-011](./E14-F12-CHK-011-checkpoint-f12.md)                  | F12     | Checkpoint in the middle of F12                                     | ready  |
+| [AUD-011](./E14-F12-AUD-011-audit-f12.md)                       | F12     | Audit F12                                                           | ready  |
+| [VAL-011](./E14-F12-VAL-011-validate-f12.md)                    | F12     | Validate F12                                                        | ready  |
 | [VAL-010](./E14-F11-VAL-010-validate-f11.md)                    | F11     | Validate F11                                                        | done   |
 | [REV-002](./E14-REV-002-review-e14.md)                          | E14     | Review E14 with the Product Owner                                   | draft  |
 | [RET-002](./E14-RET-002-retrospective-e14.md)                   | E14     | Retrospective of E14                                                | draft  |

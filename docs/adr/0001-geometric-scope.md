@@ -1,6 +1,6 @@
 # ADR-0001 — Geometric scope: segments and circular arcs
 
-**Status**: Accepted — scope narrowed to symbols by ADR-0018
+**Status**: Accepted — scope narrowed to symbols by ADR-0018; its "No Bézier curve" superseded for symbols by ADR-0046
 
 ## Context
 

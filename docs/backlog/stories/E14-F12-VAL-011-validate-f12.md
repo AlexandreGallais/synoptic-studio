@@ -3,7 +3,7 @@ id: VAL-011
 epic: E14
 feature: F12
 title: Validate F12
-status: draft
+status: ready
 points: 1
 ---
 
