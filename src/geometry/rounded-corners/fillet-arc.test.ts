@@ -6,8 +6,7 @@ import { expectPoints, integerPoint } from "../../../tests";
 import { filletArc } from "./fillet-arc";
 import { turningAngle } from "./turning-angle";
 
-import type { Arc } from "../arc";
-import type { CornerPoints } from "../corner-points";
+import type { Arc, CornerPoints } from "../contour";
 
 /**
  * Fillet of a corner, its turning angle computed from its three points.

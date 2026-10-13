@@ -1,4 +1,4 @@
-import type { Alignment } from "../alignment";
+import type { Alignment } from "./alignment";
 
 /** Share of the room placed before the shape, per alignment (`REF-SVG2-COORDS` §8.2). */
 const FACTORS: Readonly<Record<Alignment, number>> = { max: 1, mid: 0.5, min: 0 };

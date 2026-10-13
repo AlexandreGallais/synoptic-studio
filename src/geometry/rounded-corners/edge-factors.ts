@@ -1,4 +1,4 @@
-import { cyclicItem } from "../cyclic-item";
+import { cyclicItem } from "../contour";
 
 import { edgeFactor } from "./edge-factor";
 

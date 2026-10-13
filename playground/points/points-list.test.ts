@@ -9,7 +9,7 @@ import {
   readText,
   selectInput,
   typeValue,
-} from "./user-actions";
+} from "../user-actions";
 
 /**
  * Numbers of the rows pressed in the list of points, from 1.

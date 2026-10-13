@@ -2,7 +2,7 @@ import { test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { integerPoint } from "../../../tests";
-import { EPSILON } from "../epsilon";
+import { EPSILON } from "../precision";
 
 import { norm } from "./norm";
 import { subtract } from "./subtract";

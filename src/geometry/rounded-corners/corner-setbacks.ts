@@ -1,8 +1,8 @@
-import { cyclicItem } from "../cyclic-item";
+import { cyclicItem } from "../contour";
 
 import { filletSetback } from "./fillet-setback";
 
-import type { Corner } from "../corner";
+import type { Corner } from "../contour";
 
 /**
  * Setback requested at every corner of a cyclic contour, before any reduction.

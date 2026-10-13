@@ -9,7 +9,7 @@ import {
   readPointRows,
   readValue,
   typeValue,
-} from "./user-actions";
+} from "../user-actions";
 
 /**
  * What the Delete button shows: whether it is greyed, and the line under it.

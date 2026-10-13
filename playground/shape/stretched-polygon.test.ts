@@ -8,7 +8,7 @@ import {
   readDisplay,
   readText,
   typeValue,
-} from "./user-actions";
+} from "../user-actions";
 
 /**
  * Whether the « Stretched » check box is ticked.

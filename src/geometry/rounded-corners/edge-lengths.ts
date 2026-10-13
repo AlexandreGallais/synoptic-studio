@@ -1,5 +1,5 @@
 import { norm, subtract } from "../../math";
-import { cyclicItem } from "../cyclic-item";
+import { cyclicItem } from "../contour";
 
 import type { Point } from "../../math";
 

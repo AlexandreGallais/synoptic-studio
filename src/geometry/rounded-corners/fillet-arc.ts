@@ -2,8 +2,7 @@ import { add, quarterTurn, scale, subtract, unit } from "../../math";
 
 import { filletSetback } from "./fillet-setback";
 
-import type { Arc } from "../arc";
-import type { CornerPoints } from "../corner-points";
+import type { Arc, CornerPoints } from "../contour";
 
 /**
  * Fillet arc of a corner: tangent points, center and direction.

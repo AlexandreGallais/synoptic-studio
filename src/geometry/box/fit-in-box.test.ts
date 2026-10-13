@@ -3,14 +3,14 @@ import { describe, expect, it } from "vitest";
 
 import { expectPoints } from "../../../tests";
 import { EPSILON } from "../../math";
-import { boundingBox } from "../bounding-box";
 import { unitRegularPolygon } from "../polygon";
 
+import { boundingBox } from "./bounding-box";
 import { fitInBox } from "./fit-in-box";
 
+import type { Alignment } from "./alignment";
+import type { Anchor } from "./anchor";
 import type { Point } from "../../math";
-import type { Alignment } from "../alignment";
-import type { Anchor } from "../anchor";
 
 /** Unit square from (−1, −1) to (1, 1), clockwise on screen from its top-left vertex. */
 const SQUARE = [

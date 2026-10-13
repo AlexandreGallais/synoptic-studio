@@ -3,6 +3,7 @@ export * from "./dot";
 export * from "./midpoint";
 export * from "./norm";
 export * from "./perp-dot";
+export type * from "./point";
 export * from "./quarter-turn";
 export * from "./scale";
 export * from "./subtract";

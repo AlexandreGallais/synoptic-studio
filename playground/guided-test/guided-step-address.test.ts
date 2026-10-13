@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
 
-import { clickElement, openPage, readText } from "./user-actions";
+import { clickElement, openPage, readText } from "../user-actions";
 
 describe("guided test address", () => {
   it("opens on the step the address asks, and writes the step shown into the address", () => {

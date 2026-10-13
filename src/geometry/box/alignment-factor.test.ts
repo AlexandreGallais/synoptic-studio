@@ -1,9 +1,8 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
-import { ALIGNMENTS } from "../alignments";
-
 import { alignmentFactor } from "./alignment-factor";
+import { ALIGNMENTS } from "./alignments";
 
 describe("alignmentFactor (DERIV-regular-polygon-fit step 5)", () => {
   it("puts no room before the shape at min, half at mid, all at max", () => {

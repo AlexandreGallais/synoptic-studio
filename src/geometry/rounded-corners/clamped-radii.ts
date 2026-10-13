@@ -1,11 +1,11 @@
-import { cyclicItem } from "../cyclic-item";
+import { cyclicItem } from "../contour";
 
 import { cornerSetbacks } from "./corner-setbacks";
 import { edgeFactors } from "./edge-factors";
 import { edgeLengths } from "./edge-lengths";
 import { vertexFactors } from "./vertex-factors";
 
-import type { Corner } from "../corner";
+import type { Corner } from "../contour";
 
 /**
  * Effective radius of every corner from its turning angle, already computed: requested radii
