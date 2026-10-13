@@ -15,5 +15,9 @@ import type { Corner } from "../../geometry";
  * @see docs/domain/shapes.md#_2-corner-radius
  */
 export function rectangleCorners(rectangle: Rectangle): readonly Corner[] {
-  return freeShapeCorners(rectangleAsFreeShape(rectangle));
+  // A rectangle has no handles (EN-024): its corners are plain.
+  return freeShapeCorners(rectangleAsFreeShape(rectangle)).map(({ point, radius }) => ({
+    point,
+    radius,
+  }));
 }

@@ -8,9 +8,9 @@ import type { Vector } from "../../math";
  * (`mirroredHandle`); the switch and the mode unchanged.
  *
  * @kind domain
- * @param handles - handles before the change
+ * @param handles - handles before the change, as drawn: the shape at scale 1 (`freeShapeAroundCorners`), so that mode angle keeps the length seen
  * @param end - the handle typed: towards the previous point (`before`) or the next (`after`)
- * @param typed - its new vector from the point
+ * @param typed - its new vector from the point, as drawn
  * @returns the handles after the change
  * @see docs/domain/shapes.md
  */

@@ -98,7 +98,7 @@ Storing the value (Q8, settled):
 - The rectangle is a **free shape** of 4 points made by the rectangle tool (Product Owner, 2026-10-11, F09): underneath, a rectangle is always a free shape. Width and height of any free shape stretch its points, the top-left of its box fixed; a rectangle stays a rectangle; stretching is without loss (0 then back gives the same shape). The eight handles of the box, the opposite side fixed as in Inkscape, come with E02.
 
 - Model (ADR-0032, ADR-0033) — a **free shape** stores:
-  - its **corners**, each a point in the shape's own box and its radius (integer ≥ 0); at least 3, spanning a box of positive width and height (contour order Q11);
+  - its **corners**, each a point in the shape's own box, its radius (integer ≥ 0) and its **handles** (F12, ADR-0046): a switch, a mode and two vectors from the point, stored in the same frame as the points and stretched with them; off, in mode angle and length, (0, 0) for a new point or a converted shape; at least 3 corners, spanning a box of positive width and height (contour order Q11);
   - its `width`, `height`, `angle` and position `x`, `y` (ADR-0035).
 - Numbers: finite; integers when typed; fractional after a conversion (Q27) or an edit (ADR-0034); on a turned shape, integers in the drawing only, the point being stored un-turned (ADR-0035).
 - Drawing: the stored points stretched from the top-left of their box (`DERIV-free-shape-stretch`), moved to the position, then turned by the angle (`DERIV-turned-shape`). The rectangle tool stores the unit square.

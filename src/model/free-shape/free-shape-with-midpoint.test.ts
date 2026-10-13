@@ -2,12 +2,40 @@ import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { effectiveRadii } from "../../geometry";
-import { NO_HANDLES } from "../handles";
+import { NO_HANDLES, curveCornerOf } from "../handles";
 import { rectangleAsFreeShape } from "../rectangle";
 import { regularPolygonAsFreeShape } from "../regular-polygon";
 
 import { freeShapeCorners } from "./free-shape-corners";
 import { freeShapeWithMidpoint } from "./free-shape-with-midpoint";
+
+import type { FreeShape } from "./free-shape";
+
+/**
+ * The rectangle 200 × 100, its point 1's handle after (0.1, −0.2) in the unit square, on: (20, −20) as drawn.
+ *
+ * @param angle - 0 or 90 degrees, clockwise
+ * @returns the free shape
+ */
+function curvedRectangle(angle: number): FreeShape {
+  const rectangle = rectangleAsFreeShape({
+    angle,
+    height: 100,
+    radii: [0, 0, 0, 0],
+    width: 200,
+    x: 0,
+    y: 0,
+  });
+
+  return {
+    ...rectangle,
+    corners: rectangle.corners.map((corner, index) =>
+      index === 0
+        ? { ...corner, handles: { ...corner.handles, after: { x: 0.1, y: -0.2 }, isOn: true } }
+        : corner,
+    ),
+  };
+}
 
 describe("freeShapeWithMidpoint", () => {
   it("[F08.AC3] adds a sharp point in the middle of the top edge of a square, after point 1", () => {
@@ -21,13 +49,15 @@ describe("freeShapeWithMidpoint", () => {
     });
     const corners = freeShapeCorners(freeShapeWithMidpoint(square, 0));
 
-    expect(corners).toMatchObject([
-      { point: { x: 0, y: 0 }, radius: 1000 },
-      { point: { x: 50, y: 0 }, radius: 0 },
-      { point: { x: 100, y: 0 }, radius: 0 },
-      { point: { x: 100, y: 100 }, radius: 0 },
-      { point: { x: 0, y: 100 }, radius: 0 },
-    ]);
+    expect(corners).toEqual(
+      [
+        { point: { x: 0, y: 0 }, radius: 1000 },
+        { point: { x: 50, y: 0 }, radius: 0 },
+        { point: { x: 100, y: 0 }, radius: 0 },
+        { point: { x: 100, y: 100 }, radius: 0 },
+        { point: { x: 0, y: 100 }, radius: 0 },
+      ].map((corner) => curveCornerOf(corner)),
+    );
 
     // Radius 1000 drawn 100 before (edges of 100), 50 after: the top edge from point 1 is now 50
     // long, its whole length for the one fillet at a right angle (DERIV-local-radius-clamp).
@@ -106,4 +136,17 @@ describe("freeShapeWithMidpoint", () => {
       });
     },
   );
+
+  it.each([0, 90])("keeps the handles on, as drawn, after adding a point (angle %i)", (angle) => {
+    // Stored at scale 1 after the edit: the handle is stored and drawn (20, −20).
+    const edited = freeShapeWithMidpoint(curvedRectangle(angle), 1);
+
+    expect(edited.corners[0]?.handles).toEqual({
+      ...NO_HANDLES,
+      after: { x: 20, y: -20 },
+      isOn: true,
+    });
+
+    expect(freeShapeCorners(edited)[0]?.handles.after).toEqual({ x: 20, y: -20 });
+  });
 });

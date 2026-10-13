@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it } from "vitest";
 
+import { curveCornerOf } from "../../src";
 import { clickElement, clickPoint, openPage, readText, typeValue } from "../user-actions";
 
 describe("rectangle as a free shape", () => {
@@ -12,14 +13,14 @@ describe("rectangle as a free shape", () => {
   it("[F09.AC4] shows the rectangle as a free shape: the corners of the unit square with their radii, its size", () => {
     const model: unknown = JSON.parse(readText("#model"));
 
-    expect(model).toMatchObject({
+    expect(model).toEqual({
       angle: 0,
       corners: [
         { point: { x: 0, y: 0 }, radius: 10 },
         { point: { x: 1, y: 0 }, radius: 10 },
         { point: { x: 1, y: 1 }, radius: 10 },
         { point: { x: 0, y: 1 }, radius: 10 },
-      ],
+      ].map((corner) => curveCornerOf(corner)),
       height: 80,
       width: 120,
       x: 0,
