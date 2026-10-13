@@ -80,7 +80,8 @@ function hasText(line: unknown): boolean {
 
 /**
  * Whether a transcript line is a prompt typed by the person, not a tool result, a reminder, nor
- * the summary written after the conversation memory is compacted (it continues the turn).
+ * the summary written after the conversation memory is compacted, nor a background task's
+ * notification: they continue the turn.
  *
  * @param line - parsed transcript line
  * @returns true for a `user` line holding text
@@ -90,6 +91,7 @@ function isPrompt(line: unknown): boolean {
     text(line, "type") === "user" &&
     field(line, "isMeta") !== true &&
     field(line, "isCompactSummary") !== true &&
+    text(line, "promptSource") !== "system" &&
     hasText(line)
   );
 }

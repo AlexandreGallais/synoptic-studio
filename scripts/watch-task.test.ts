@@ -35,8 +35,27 @@ describe("watchdog of a background task", () => {
     expect(back.message).toBe("resumed: batch 2");
   });
 
+  it("ends on any new line matching, or when the task exited", () => {
+    const text = "0123456789\ndeployments: none left\n\n[exited with code 0]\n";
+    const exited = watchStep(
+      FRESH,
+      { now: 5000, text: "0123456789\n[exited with code 1]\n" },
+      RULES,
+    );
+
+    expect(watchStep(FRESH, { now: 5000, text }, RULES).message).toBe(
+      "done: deployments: none left",
+    );
+
+    expect(exited.message).toBe("done: [exited with code 1]");
+  });
+
   it("ends on the end pattern", () => {
-    const step = watchStep(FRESH, { now: 5000, text: "deployments: none left\n" }, RULES);
+    const step = watchStep(
+      FRESH,
+      { now: 5000, text: "0123456789\ndeployments: none left\n" },
+      RULES,
+    );
 
     expect(step).toMatchObject({ isDone: true, message: "done: deployments: none left" });
   });

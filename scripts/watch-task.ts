@@ -31,6 +31,9 @@ export type WatchStep = {
   readonly watch: Watch;
 };
 
+/** Line Claude Code appends to a background task's output when the task ends. */
+const EXITED = /^\[exited with code \d+\]$/u;
+
 /** Seconds between two looks at the file. */
 const PERIOD_S = 5;
 
@@ -67,7 +70,8 @@ export type Look = {
 };
 
 /**
- * Step after the output changed: done when its last line matches the end pattern, back after a stall.
+ * Step after the output changed: done when a new line matches the end pattern or says the task
+ * exited, back after a stall.
  *
  * @param watch - state after the previous look
  * @param look - the output now
@@ -76,8 +80,13 @@ export type Look = {
  */
 function changedStep(watch: Watch, look: Look, until: RegExp | undefined): WatchStep {
   const last = lastLine(look.text);
-  const isDone = until?.test(last) === true;
-  const messages = [isDone ? `done: ${last}` : "", watch.isStalled ? `resumed: ${last}` : ""];
+  const added = Buffer.from(look.text)
+    .subarray(Math.max(watch.size, 0))
+    .toString("utf8")
+    .split("\n");
+  const end = added.find((line) => until?.test(line) === true || EXITED.test(line)) ?? "";
+  const isDone = end !== "";
+  const messages = [isDone ? `done: ${end}` : "", watch.isStalled ? `resumed: ${last}` : ""];
 
   return {
     isDone,

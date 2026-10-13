@@ -63,10 +63,12 @@ describe("status line", () => {
     });
   });
 
-  it("does not start a turn at the summary written when the memory is compacted", () => {
+  it("does not start a turn at a compaction summary nor at a task notification", () => {
     const summary = '{"type": "user", "isCompactSummary": true, "message": {"content": "summary"}}';
+    const notification =
+      '{"type": "user", "promptSource": "system", "message": {"content": "done"}}';
 
-    expect(addTokens(EMPTY_TALLY, `${END}\n${summary}\n`)).toMatchObject({
+    expect(addTokens(EMPTY_TALLY, `${END}\n${summary}\n${notification}\n`)).toMatchObject({
       isWaiting: true,
       start: 0,
     });
