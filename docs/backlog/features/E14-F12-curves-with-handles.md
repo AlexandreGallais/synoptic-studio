@@ -38,7 +38,7 @@ Started with the Product Owner on 2026-10-13:
 | [US-025](../stories/E14-F12-US-025-handles-as-share-or-data.md)     | User story | Type a side's handles as shares of the side, or paste curve data    | done        |
 | [US-026](../stories/E14-F12-US-026-handles-from-a-tension.md)       | User story | Smooth a point by a tension, its handles computed                   | done        |
 | [AUD-011](../stories/E14-F12-AUD-011-audit-f12.md)                  | Audit      | Audit F12                                                           | done        |
-| [EN-026](../stories/E14-F12-EN-026-ways-kept-at-validation.md)      | Enabler    | Keep only the ways and modes chosen at the validation               | in-progress |
+| [EN-026](../stories/E14-F12-EN-026-ways-kept-at-validation.md)      | Enabler    | Keep only the ways and modes chosen at the validation               | done        |
 | [SP-012](../stories/E14-F12-SP-012-research-fillet-beside-curve.md) | Spike      | Research: a corner radius beside a curved side                      | ready       |
 | [US-027](../stories/E14-F12-US-027-radius-beside-curve.md)          | User story | A corner beside a curved side keeps its radius                      | draft       |
 | [AUD-012](../stories/E14-F12-AUD-012-audit-after-validation.md)     | Audit      | Audit the changes asked at the validation                           | draft       |
