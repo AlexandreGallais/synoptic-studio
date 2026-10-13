@@ -1,10 +1,26 @@
 import { describe, expect, it } from "vitest";
 
 import { freeShapeOf } from "../../../tests";
-import { NO_HANDLES } from "../handles";
+import { NO_HANDLES, curveCornerOf } from "../handles";
 import { rectangleAsFreeShape } from "../rectangle";
 
 import { freeShapeCorners } from "./free-shape-corners";
+
+import type { FreeShape } from "./free-shape";
+
+/**
+ * Radii drawn once every handle of a shape is switched on or off.
+ *
+ * @param shape - free shape
+ * @param isOn - the switch given to every point
+ * @returns the radius of each corner drawn
+ */
+function radiiSwitched(shape: FreeShape, isOn: boolean): readonly number[] {
+  return freeShapeCorners({
+    ...shape,
+    corners: shape.corners.map((corner) => ({ ...corner, handles: { ...corner.handles, isOn } })),
+  }).map((corner) => corner.radius);
+}
 
 describe("freeShapeCorners", () => {
   it("[F09.AC1] draws the rectangle tool's free shape as the rectangle of F01, with its radii", () => {
@@ -19,12 +35,14 @@ describe("freeShapeCorners", () => {
           width: 100,
         }),
       ),
-    ).toMatchObject([
-      { point: { x: 0, y: 0 }, radius: 10 },
-      { point: { x: 100, y: 0 }, radius: 0 },
-      { point: { x: 100, y: 50 }, radius: 5 },
-      { point: { x: 0, y: 50 }, radius: 0 },
-    ]);
+    ).toEqual(
+      [
+        { point: { x: 0, y: 0 }, radius: 10 },
+        { point: { x: 100, y: 0 }, radius: 0 },
+        { point: { x: 100, y: 50 }, radius: 5 },
+        { point: { x: 0, y: 50 }, radius: 0 },
+      ].map((corner) => curveCornerOf(corner)),
+    );
   });
 
   it("[F09.AC2] stretches any free shape, a rectangle staying a rectangle", () => {
@@ -85,12 +103,14 @@ describe("freeShapeCorners", () => {
     expect(
       rectangleAsFreeShape({ angle: 0, x: 0, y: 0, height: 50, radii: [10, 0, 5, 0], width: 100 })
         .corners,
-    ).toMatchObject([
-      { point: { x: 0, y: 0 }, radius: 10 },
-      { point: { x: 1, y: 0 }, radius: 0 },
-      { point: { x: 1, y: 1 }, radius: 5 },
-      { point: { x: 0, y: 1 }, radius: 0 },
-    ]);
+    ).toEqual(
+      [
+        { point: { x: 0, y: 0 }, radius: 10 },
+        { point: { x: 1, y: 0 }, radius: 0 },
+        { point: { x: 1, y: 1 }, radius: 5 },
+        { point: { x: 0, y: 1 }, radius: 0 },
+      ].map((corner) => curveCornerOf(corner)),
+    );
   });
 });
 
@@ -114,7 +134,7 @@ describe("freeShapeCorners (at a position, F04)", () => {
     ]);
   });
 
-  it("[F12.AC1] gives the rectangle tool's corners their handles off, and stretches handles with the points", () => {
+  it("[F12.AC2] gives the rectangle tool's corners their handles off, and stretches handles with the points", () => {
     // The unit square drawn 200 × 100: a handle (0.1, −0.2) of point 1 is drawn (20, −20).
     const rectangle = rectangleAsFreeShape({
       angle: 0,
@@ -144,5 +164,20 @@ describe("freeShapeCorners (at a position, F04)", () => {
       point: { x: 0, y: 0 },
       radius: 30,
     });
+  });
+
+  it("[F12.AC1] keeps each radius when the point's handles are switched on, then off", () => {
+    // Radius 30 at point 1 and 0 at point 2: on, then off, they stay 30 and 0.
+    const rectangle = rectangleAsFreeShape({
+      angle: 0,
+      height: 100,
+      radii: [30, 0, 0, 0],
+      width: 200,
+      x: 0,
+      y: 0,
+    });
+
+    expect(radiiSwitched(rectangle, true)).toEqual([30, 0, 0, 0]);
+    expect(radiiSwitched(rectangle, false)).toEqual([30, 0, 0, 0]);
   });
 });

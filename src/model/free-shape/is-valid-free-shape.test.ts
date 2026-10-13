@@ -143,10 +143,22 @@ describe("isValidFreeShape", () => {
     expect(isValidFreeShape({ ...freeShapeOf(TRIANGLE), ...placement })).toBe(isValid);
   });
 
-  it("[F12.AC1] refuses a corner whose handles are not valid, and keeps the radius under handles on", () => {
+  it("refuses a corner whose handles are not valid, the last one too", () => {
     const on = { ...NO_HANDLES, after: { x: 1, y: -1 }, isOn: true };
 
     expect(isValidFreeShape(shapeWithHandles(on))).toBe(true);
     expect(isValidFreeShape(shapeWithHandles({ ...on, after: { x: NaN, y: 0 } }))).toBe(false);
+
+    const shape = freeShapeOf(TRIANGLE);
+    const lastBroken = {
+      ...shape,
+      corners: shape.corners.map((corner, index, all) =>
+        index === all.length - 1
+          ? { ...corner, handles: { ...on, before: { x: 0, y: Infinity } } }
+          : corner,
+      ),
+    };
+
+    expect(isValidFreeShape(lastBroken)).toBe(false);
   });
 });
