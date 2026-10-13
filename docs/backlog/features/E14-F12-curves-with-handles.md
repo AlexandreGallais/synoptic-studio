@@ -13,6 +13,25 @@ status: draft
 
 Already in the scope of E14 (handle modes, Bézier curves in symbols); this feature makes it a deliverable of its own. Refined with the Product Owner before any story: how handles are typed, the modes, how a corner radius and handles live on one point, and the ADR that supersedes ADR-0001 (segments and circular arcs only).
 
+## Refinement
+
+Started with the Product Owner on 2026-10-13:
+
+| Question                                 | Decision                                                                                                                                                                                                                                                                                                            |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Order in E14                             | F12 before F10: the round shape converted to a free shape needs points with handles                                                                                                                                                                                                                                 |
+| How a handle is typed                    | researched in the spike: x and y of its end (the Product Owner's choice, the simplest), an angle and a length relative to its point (the same values give the same curve anywhere), pasted Bézier data, other ways used by tools; every method found is built, each tried in the playground at the end of F12 (Q32) |
+| A corner radius and handles on one point | the radius is kept when handles are added and comes back when they are removed; a clear switch between a radius mode and a handles mode; its final layout at E14's UX pass                                                                                                                                          |
+| Default handle mode                      | mirrored angle and length, as Figma's smooth point; mirrored angle and no mirroring chosen per point                                                                                                                                                                                                                |
+
+## Stories
+
+| ID     | Type  | Title                                                               | Status |
+| ------ | ----- | ------------------------------------------------------------------- | ------ |
+| SP-011 | Spike | Research for F12: curves in symbols, ways to type a handle, strokes | draft  |
+
+The other stories are written after SP-011, then set ready by the Product Owner.
+
 ## Acceptance criteria
 
-To write at the refinement.
+To write after SP-011.

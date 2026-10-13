@@ -37,8 +37,8 @@ Decided by the Product Owner on 2026-10-12, at the validation of F10. The round 
 | Feature                                                                                 | Status |
 | --------------------------------------------------------------------------------------- | ------ |
 | [F11](../features/E14-F11-code-base-ready-for-curves.md) — A code base ready for curves | done   |
-| [F10](../features/E14-F10-round-shape.md) — Round shape                                 | draft  |
 | [F12](../features/E14-F12-curves-with-handles.md) — Points on a curve with handles      | draft  |
+| [F10](../features/E14-F10-round-shape.md) — Round shape                                 | draft  |
 
 ## Closing
 

@@ -56,6 +56,13 @@ Reference behavior: Figma.
 - No "independent corners" switch: the radius of one corner is set in node editing only.
 - Geometry: arc tangent to both edges; setback `d = r / tan(θ/2)` (`DERIV-fillet-setback`).
 
+### Radius and handles on one point (F12, Product Owner, 2026-10-13)
+
+- A point keeps its corner radius when it gets handles: removing the handles brings the radius back as it was (30 stays 30, 0 stays 0); no value is lost when switching.
+- A point is edited in one of two modes, **corner radius** or **handles**, switched in one step, the mode always visible; the final layout of this switch is part of the UX pass at the end of E14.
+- A new point on the curve starts in Figma's **mirrored angle and length** mode: moving one handle to (130, 0) around a point at (100, 0) puts the other at (70, 0). The two other modes, **mirrored angle** and **no mirroring**, are chosen per point.
+- How a handle is typed is open (Q32).
+
 ### Radius clamping (ADR-0007)
 
 Rule: **local proportional reduction per edge** (`DERIV-local-radius-clamp`).
