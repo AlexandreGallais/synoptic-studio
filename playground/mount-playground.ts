@@ -1,11 +1,9 @@
+import { readGuidedStep, readStepFromAddress, showGuidedStep } from "./guided-test";
 import { listenToInputs } from "./listen-to-inputs";
-import { readGuidedStep } from "./read-guided-step";
-import { readStepFromAddress } from "./read-step-from-address";
-import { selectElement } from "./select-element";
-import { showGuidedStep } from "./show-guided-step";
+import { selectElement } from "./page";
 import { updatePlayground } from "./update-playground";
 
-import type { GuidedStep } from "./guided-step";
+import type { GuidedStep } from "./guided-steps";
 
 /**
  * Wires the Previous and Next buttons of the guided test.

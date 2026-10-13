@@ -1,0 +1,121 @@
+import {
+  EPSILON,
+  commonRadius,
+  contourBoundingBox,
+  contourPiecesToPathData,
+  createPathElement,
+  createSvgElement,
+  effectiveCornerRadius,
+  formatSvgNumber,
+  roundedContour,
+} from "../../src";
+import { selectElement, writeText } from "../page";
+import { showPoints } from "../points";
+
+import { createBoxElements } from "./create-box-elements";
+import { writeShapeBoxes } from "./write-shape-boxes";
+
+import type { ShapeReading } from "../shape";
+
+/**
+ * Distance from the canvas top-left corner to the origin of the SVG, in user units (= CSS pixels):
+ * room for a point or a box a little left of or above 0, such as a stretched polygon rounded past its
+ * box (REV-001, step 72).
+ */
+const MARGIN = 40;
+
+/** Indentation of the JSON shown in the pipeline panel. */
+const JSON_INDENT = 2;
+
+/** Text shown instead of one effective radius when the vertices have different radii. */
+const MIXED_EFFECTIVE = "Effective radius: mixed, shown for each point in Points mode.";
+
+/**
+ * Reads the size of the drawing area in CSS pixels.
+ *
+ * @kind procedure
+ * @param document - page document
+ * @returns width and height of the `#canvas` element
+ * @see docs/backlog/stories/E01-F01-US-004-fixed-scale-playground.md
+ */
+function readCanvasSize(document: Document): { readonly height: number; readonly width: number } {
+  const { height, width } = selectElement(document, "canvas").getBoundingClientRect();
+
+  return { height, width };
+}
+
+/**
+ * Shows the one effective radius of a shape, saying whether it was reduced to fit (Q8).
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param radius - requested radius of every corner
+ * @param effective - radius drawn at every corner
+ * @see docs/backlog/stories/E01-F01-US-003-round-rectangle-corners.md
+ */
+function writeOneEffectiveRadius(document: Document, radius: number, effective: number): void {
+  const text =
+    radius - effective >= EPSILON
+      ? `Effective radius: ${formatSvgNumber(effective)} (requested ${String(radius)}, reduced to fit)`
+      : `Effective radius: ${formatSvgNumber(effective)} (as requested)`;
+
+  writeText(document, "effective", text);
+}
+
+/**
+ * Shows the effective corner radius next to the requested one, and says when it was reduced to
+ * fit the shape (Q8: the requested value is kept, the effective one is derived); when the
+ * vertices request or draw different radii, says where each one is shown (F03.AC2, F06.AC5).
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param reading - valid shape
+ * @see docs/backlog/stories/E01-F06-US-021-stretched-option.md
+ */
+function writeEffectiveRadius(document: Document, reading: ShapeReading): void {
+  const radius = commonRadius(reading.radii);
+  const effective = effectiveCornerRadius(reading.corners);
+
+  if (radius === undefined || effective === undefined) {
+    writeText(document, "effective", MIXED_EFFECTIVE);
+
+    return;
+  }
+
+  writeOneEffectiveRadius(document, radius, effective);
+}
+
+/**
+ * Draws a shape with its rounded corners at a fixed scale (1 user unit = 1 CSS pixel, US-004)
+ * and shows each pipeline stage: model, contour, evaluated contour, path data.
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param reading - valid shape to draw
+ * @see docs/backlog/stories/E01-F01-US-003-round-rectangle-corners.md
+ */
+export function showShape(document: Document, reading: ShapeReading): void {
+  const contour = reading.corners.map((corner) => corner.point);
+  const pieces = roundedContour(reading.corners);
+  const pathData = contourPiecesToPathData(pieces);
+  const box = contourBoundingBox(pieces);
+  // The view stays put, the origin a margin from the top-left: a turned shape turns about its
+  // center on screen, and may leave the canvas (Product Owner, VAL-007).
+  const viewBox = { ...readCanvasSize(document), x: -MARGIN, y: -MARGIN };
+  const svg = createSvgElement(document, viewBox);
+  const handles = showPoints(document, reading);
+
+  svg.append(
+    ...createBoxElements(document, reading.model, box),
+    createPathElement(document, pathData),
+    ...handles,
+  );
+
+  selectElement(document, "canvas").replaceChildren(svg);
+  writeText(document, "model", JSON.stringify(reading.model, undefined, JSON_INDENT));
+  writeText(document, "contour", JSON.stringify(contour, undefined, JSON_INDENT));
+  writeText(document, "pieces", JSON.stringify(pieces, undefined, JSON_INDENT));
+  writeEffectiveRadius(document, reading);
+  writeText(document, "path-data", pathData);
+  writeShapeBoxes(document, box, reading.model);
+}
