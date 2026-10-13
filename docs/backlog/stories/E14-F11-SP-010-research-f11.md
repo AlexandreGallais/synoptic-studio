@@ -3,7 +3,7 @@ id: SP-010
 epic: E14
 feature: F11
 title: "Research for F11: folder layouts and test placement"
-status: ready
+status: done
 points: 2
 ---
 
@@ -27,6 +27,6 @@ Find, read and record what is common practice for laying out a TypeScript librar
 
 One task = one commit, referenced as `SP-010.Tn`.
 
-- [ ] T1 — Read the sources (library first), record them (2 h)
-- [ ] T2 — Layout proposal with a table of moves, research note, questions for the Product Owner (2 h)
-- [ ] T3 — The Product Owner's choice as ADR-0042; F11 and EN-022 updated (1 h)
+- [x] T1 — Read the sources (library first), record them (2 h)
+- [x] T2 — Layout proposal with a table of moves, research note, questions for the Product Owner (2 h)
+- [x] T3 — The Product Owner's choice as ADR-0042; F11 and EN-022 updated (1 h)
