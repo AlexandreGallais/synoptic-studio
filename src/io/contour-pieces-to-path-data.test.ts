@@ -89,4 +89,27 @@ describe("contourPiecesToPathData (REF-SVG2-PATHS §9.3.3–9.3.8)", () => {
       `M0 0 L${String(width)} 0 L${String(width)} ${String(height)} L0 ${String(height)} Z`,
     );
   });
+
+  it("[F12.AC3] writes a cubic side as C, and a curved closing side before Z", () => {
+    // Triangle (0, 0) → (100, 0) curved through (30, −15) → (100, 100) → back to (0, 0) curved.
+    expect(
+      contourPiecesToPathData([
+        {
+          end: { x: 100, y: 0 },
+          first: { x: 30, y: -15 },
+          kind: "cubic",
+          second: { x: 100, y: 0 },
+          start: { x: 0, y: 0 },
+        },
+        { end: { x: 100, y: 100 }, kind: "segment", start: { x: 100, y: 0 } },
+        {
+          end: { x: 0, y: 0 },
+          first: { x: 80, y: 120 },
+          kind: "cubic",
+          second: { x: -20, y: 30 },
+          start: { x: 100, y: 100 },
+        },
+      ]),
+    ).toBe("M0 0 C30 -15 100 0 100 0 L100 100 C80 120 -20 30 0 0 Z");
+  });
 });
