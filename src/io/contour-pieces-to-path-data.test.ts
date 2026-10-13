@@ -7,7 +7,7 @@ import { roundedContour } from "../geometry";
 import { contourPiecesToPathData } from "./contour-pieces-to-path-data";
 
 describe("contourPiecesToPathData (REF-SVG2-PATHS §9.3.3–9.3.8)", () => {
-  it("[F01.AC2] writes the 100 × 50 rectangle with radius 10 (EN-007 criterion)", () => {
+  it("[F01.AC2] [F11.AC6] writes the 100 × 50 rectangle with radius 10, as before F11 (EN-007 criterion)", () => {
     const pieces = roundedContour(rectangleCorners(100, 50, [10, 10, 10, 10]));
 
     expect(contourPiecesToPathData(pieces)).toBe(

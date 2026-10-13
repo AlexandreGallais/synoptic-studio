@@ -238,8 +238,8 @@ function hasKinds(
   return prefixes.every((prefix) => ids.some((id) => id.startsWith(prefix)));
 }
 
-/** Folders whose tests may verify acceptance criteria (ADR-0027). */
-const TEST_ROOTS = ["src", "playground"];
+/** Folders whose tests may verify acceptance criteria (ADR-0027); `tests` for the criteria on the code base itself (F11). */
+const TEST_ROOTS = ["src", "playground", "tests"];
 
 /**
  * Concatenated content of every test file, where `[F01.AC3]` tags are looked for.
@@ -250,7 +250,8 @@ function testSources(): string {
   return TEST_ROOTS.flatMap((root) =>
     readdirSync(join(import.meta.dirname, "..", root), { recursive: true })
       .map(String)
-      .filter((file) => file.endsWith(".test.ts"))
+      // This file names tags in its own text: it proves no criterion.
+      .filter((file) => file.endsWith(".test.ts") && file !== "backlog.test.ts")
       .map((file) => readFileSync(join(import.meta.dirname, "..", root, file), "utf8")),
   ).join("\n");
 }
