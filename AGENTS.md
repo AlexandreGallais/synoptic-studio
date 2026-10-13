@@ -48,14 +48,14 @@ A library of small named functions, each backed by a verified source, composed s
 ## Key decisions (the ADR is the source)
 
 - **Numbers** (ADR-0003, ADR-0031, ADR-0034, ADR-0035): every input is an integer; derived geometry is float and never stored, except a free shape's exact points and size, and a turned shape's position; `EPSILON = 1e-9`, `SVG_DECIMALS = 5`.
-- **Geometry** (ADR-0001, ADR-0002): segments and circular arcs only in symbols, an arc only as a fillet; everything is a `<path>` except text; strokes computed by offset.
+- **Geometry** (ADR-0001, ADR-0002, ADR-0046): segments, circular arcs only as fillets, and cubic sides from typed handles in symbols; everything is a `<path>` except text; strokes computed by offset.
 - **Portable core** (ADR-0025): ECMAScript only, plain data.
 - Contours clockwise from the top-left vertex, a regular polygon from the right end of its base (Q11, Q18); corner radius reduced locally, requested value stored (ADR-0007).
 
 ## Never
 
 - A runtime dependency (`dependencies` stays empty); a dev package without its row in `docs/tooling/dependencies.md`, its release notes read, a version at least 7 days old.
-- Bézier curves or freehand in symbols; SVG primitives other than `svg`, `g`, `path`, `text`, `defs`; native `stroke`.
+- Freehand in symbols, or Bézier curves other than cubic sides from typed handles (ADR-0046); SVG primitives other than `svg`, `g`, `path`, `text`, `defs`; native `stroke`.
 - `any`, `!`, `as` without `eslint-disable-next-line … -- justification`; classes; `enum`; a rule disabled to make code pass (fix the code, or tell the Product Owner the rule is wrong).
 - An epic or feature set `ready` by the agent outside a `/run`, or a pull request merged by the agent; a push to `main`; `--no-verify`; a force push without lease.
 

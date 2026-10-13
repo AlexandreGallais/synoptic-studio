@@ -15,7 +15,8 @@ As a symbol designer, I type a handle as an angle and a length, measured from th
 
 - Given a point at (100, 0) and its next point at (200, 0), when the user types angle 330° and length 30 from the x axis, then the handle's end is at about (125.98, −15).
 - Given the side from (100, 0) to (100, 100), when the user types angle 330° and length 30 from the side, then the handle leaves the side at the same 30° as on a horizontal side (a derivation).
-- Given an angle not between 0 and 359 or a negative length, when typed, then it is refused.
+- Given an angle outside 0 to 359, when typed, then it is brought back into that range as a shape's angle is (370 becomes 10, −90 becomes 270); a negative length or a side of length 0 is refused.
+- Given the same angle and length typed at both ends of a side, then the two handles leave towards the outside, a symmetric arch (Product Owner, 2026-10-13).
 
 ## Tasks
 
