@@ -23,13 +23,13 @@ src/math/
 ## Names
 
 - Every file and folder: `kebab-case` (`unicorn/filename-case`); a module file is the kebab-case of its export.
-- Tests: `<module>.test.ts`, next to the module; repository-wide tests (backlog, bibliography, barrels, diagrams, dependencies, fitness) in `tests/`, with the fixtures shared by the tests of `src/` (`tests/geometry-fixtures.ts`, imported from `tests`); the actions shared by the playground's tests in `playground/user-actions/`.
+- Tests: `<module>.test.ts`, next to the module.
+- Repository-wide tests in `tests/`: `backlog`, `references`, `barrels`, `diagrams`, `package`, `fitness`, `folders`, and the fixtures shared by the tests of `src/` (`geometry-fixtures`, imported from `tests`).
+- The actions shared by the playground's tests: `playground/user-actions/`.
 
 ## Folders
 
-Every code folder has an `index.ts` barrel (see [imports.md](./imports.md)). A sub-folder groups modules of one sub-concept (`geometry/intersections/`), never "utils" or "helpers" (`id-denylist`).
-
-Layout of ADR-0042: folders named by business theme, never by kind of code.
+Every code folder has an `index.ts` barrel (see [imports.md](./imports.md)). A subfolder groups the modules of one business theme (`geometry/rounded-corners/`), never a kind of code, "utils" or "helpers" (ADR-0042, `id-denylist`).
 
 | Folder          | Themes                                                                                                                                                                                                                                                                                                                                  |
 | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -38,7 +38,7 @@ Layout of ADR-0042: folders named by business theme, never by kind of code.
 | `src/model/`    | one folder per shape, its type inside (`rectangle/`, `regular-polygon/`, `free-shape/`), and per concern of the editor (`radii/`, `placement/`, `selection/`)                                                                                                                                                                           |
 | `playground/`   | one folder per panel (`toolbar/`, `shape/`, `points/`, `position/`, `drawing/`, `guided-test/`), the steps of the guided test (`guided-steps/`), the page's own reading and writing (`page/`), the tests' actions (`user-actions/`); at the root the entry, the mounting, the wiring of the listeners (`listenToInputs`) and the update |
 
-A shape's type lives in its folder (`free-shape/free-shape.ts`): a file and a folder of the same name cannot sit side by side, an import of `./free-shape` reaching the file first. Folders may use each other's types; their value imports go one way (`import-x/no-cycle`).
+A shape's type lives in its folder (`free-shape/free-shape.ts`); folders may use each other's types, their value imports go one way (`import-x/no-cycle`). Why: [ADR-0042](../adr/0042-folders-by-theme.md).
 
 ### Folders past 15 modules
 
@@ -46,4 +46,4 @@ A shape's type lives in its folder (`free-shape/free-shape.ts`): a file and a fo
 
 | Folder                    | Modules | Why it stays whole                                                                                                                          |
 | ------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `playground/user-actions` | 20      | one theme, what a user does to the page; splitting it into reading, typing and clicking would split by kind of code, which ADR-0042 refuses |
+| `playground/user-actions` | 23      | one theme, what a user does to the page; splitting it into reading, typing and clicking would split by kind of code, which ADR-0042 refuses |

@@ -7,9 +7,9 @@ status: in-progress
 
 # E14 · F11 — A code base ready for curves
 
-**Benefit hypothesis**: the debt E01 left — repeated test helpers, two path writers, a folder of 50 model files, functions without a property test — is paid before curves add a second kind of point, so that E14 builds on one structure instead of two.
+**Benefit hypothesis**: the debt E01 left — repeated test helpers, two path writers, a folder of 49 model modules, functions without a property test — is paid before curves add a second kind of point, so that E14 builds on one structure instead of two.
 
-Written at RET-001 (2026-10-13), at the Product Owner's request: plan the clean-up and the folder structure before the next epic. Its stories are drafts; the Product Owner sets them `ready`.
+Written at RET-001 (2026-10-13), at the Product Owner's request: plan the clean-up and the folder structure before the next epic.
 
 ## Refinement
 
@@ -18,7 +18,7 @@ Decided with the Product Owner on 2026-10-13:
 | Question                                        | Decision                                                                                                                                              |
 | ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | The older path writer, `contourToPathData`      | removed from the public API: one writer in the library; its tests compare with written-out path data, e.g. `M0 0 L100 0 L100 50 L0 50 Z`              |
-| Most files per folder                           | at the end of SP-010: folders by business theme, 15 modules as a signal rather than a rule to split blindly, the playground split by panel (ADR-0042) |
+| Folder layout and size limit                    | at the end of SP-010: folders by business theme, 15 modules as a signal rather than a rule to split blindly, the playground split by panel (ADR-0042) |
 | Validation of a feature that changes no drawing | a demo page of figures before and after (largest folder, functions without a property test, repeated helpers, `check:all` green), no guided test      |
 | A place for curves in the contour pieces        | out of scope: it comes after the ADR that supersedes ADR-0001, in the next feature of E14                                                             |
 
@@ -28,7 +28,7 @@ Decided with the Product Owner on 2026-10-13:
 2. The library has one writer of path data, `contourPiecesToPathData`; `contourToPathData` is removed from the public API (a breaking change: the next version is 0.2.0), and `SEPARATOR` and `CLOSE_PATH` are declared once.
 3. A rounded contour computes each corner's triple and turning angle once.
 4. The folders of `src/` and `playground/` follow the layout of ADR-0042, written in `docs/conventions/files.md`: folders by business theme, a shape's type in its folder; a folder past 15 modules (tests not counted) is listed there with its reason, checked by a test.
-5. Every function of `src/math/` and `src/geometry/` has a property test: the list of `tests/fitness.test.ts` is empty.
+5. Every function of `src/math/` and `src/geometry/` has a property test: `tests/fitness.test.ts` holds no list of exceptions.
 6. Behavior is unchanged: every existing test passes, with the same values.
 
 ## Stories
@@ -42,7 +42,7 @@ In delivery order.
 | [EN-021](../stories/E14-F11-EN-021-shared-test-helpers.md) | Enabler    | Shared test helpers, one path writer, one pass per corner | done   |
 | [CHK-010](../stories/E14-F11-CHK-010-checkpoint-f11.md)    | Checkpoint | Checkpoint in the middle of F11                           | done   |
 | [EN-022](../stories/E14-F11-EN-022-folder-layout.md)       | Enabler    | Folders of the library and the playground                 | done   |
-| [AUD-010](../stories/E14-F11-AUD-010-audit-f11.md)         | Audit      | Audit F11                                                 | ready  |
+| [AUD-010](../stories/E14-F11-AUD-010-audit-f11.md)         | Audit      | Audit F11                                                 | done   |
 | [VAL-010](../stories/E14-F11-VAL-010-validate-f11.md)      | Validation | Validate F11                                              | draft  |
 
 ## Feature plan
