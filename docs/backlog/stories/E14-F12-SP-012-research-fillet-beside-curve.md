@@ -3,7 +3,7 @@ id: SP-012
 epic: E14
 feature: F12
 title: "Research: a corner radius beside a curved side"
-status: ready
+status: done
 points: 2
 ---
 
@@ -21,5 +21,9 @@ Today a corner in radius mode next to a curved side is drawn sharp, its radius k
 
 One task = one commit, referenced as `SP-012.Tn`.
 
-- [ ] T1 — Read the sources (tangent circle to a curve, offset curves, how tools fillet a curved corner) (2 h)
-- [ ] T2 — Research note and derivation; the story written (2 h)
+- [x] T1 — Read the sources (tangent circle to a curve, offset curves, how tools fillet a curved corner) (2 h)
+- [x] T2 — Research note and derivation; the story written (2 h)
+
+## Result
+
+[Research note 0014](../../research/notes/0014-f12-fillet-beside-curve.md), `DERIV-fillet-beside-curve`, ADR-0047. The math-expert agent read the sources and computed the checks, among them an independent brute-force check of the Product Owner's rectangle. The Product Owner chose, from the agent's two recommendations, that a radius too large may use the whole curve and is reduced to the largest circle still tangent, never drawn sharp. US-027 written; US-028 added for the remark on polygons.
