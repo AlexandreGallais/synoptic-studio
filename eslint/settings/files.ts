@@ -18,6 +18,8 @@ export const IGNORED_FILES = [
   "docs/.vitepress/cache/**",
   "docs/.vitepress/dist/**",
   "CHANGELOG.md",
+  // Private records, their own Git repository, ignored by this one (ADR-0044).
+  "records/**",
   // Only TypeScript is authored; the rare JavaScript file is a tool's required format (.ncurc.cjs).
   "**/*.{js,cjs,mjs}",
 ];

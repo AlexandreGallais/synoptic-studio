@@ -3,9 +3,9 @@ import { describe, expect, it } from "vitest";
 import { recordCopies, recordsFolder } from "./records-save";
 
 describe("records-save", () => {
-  it("puts the records beside the repository unless RECORDS_PATH is set", () => {
-    expect(recordsFolder(undefined, "/work/SVG editor")).toBe("/work/synoptic-studio-records");
-    expect(recordsFolder("", "/work/SVG editor")).toBe("/work/synoptic-studio-records");
+  it("puts the records in the repository's ignored records folder unless RECORDS_PATH is set", () => {
+    expect(recordsFolder(undefined, "/work/SVG editor")).toBe("/work/SVG editor/records");
+    expect(recordsFolder("", "/work/SVG editor")).toBe("/work/SVG editor/records");
     expect(recordsFolder("/backup/records", "/work/SVG editor")).toBe("/backup/records");
   });
 

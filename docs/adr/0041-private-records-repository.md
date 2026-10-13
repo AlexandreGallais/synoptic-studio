@@ -1,6 +1,6 @@
 # ADR-0041 — Private records in a sibling repository, saved by `npm run records:save`
 
-**Status**: Accepted (Product Owner, 2026-10-13).
+**Status**: Accepted (Product Owner, 2026-10-13). Decision 1, the place beside the project, superseded by ADR-0044.
 
 ## Context
 

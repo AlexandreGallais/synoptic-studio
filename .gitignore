@@ -10,3 +10,6 @@ docs/api
 docs/.vitepress/cache
 docs/.vitepress/dist
 test-report.xml
+
+# Private records, their own Git repository (ADR-0044)
+/records/

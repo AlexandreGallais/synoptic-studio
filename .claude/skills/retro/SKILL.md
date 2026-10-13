@@ -20,4 +20,4 @@ Retrospective: $ARGUMENTS. Decision: ADR-0023. Questions: `docs/process/README.m
 9. **Starter kit**: keep `docs/playbook/setup.md` copy-ready — files to copy, rhythm (cadences), references worth reading first, use cases met.
 10. **Agent configuration**: prune `AGENTS.md`, `CLAUDE.md`, rules, skills and agents; a repeated mistake gets a check, not a sentence. Every four to five epics, and at the end of the project, question **every** rule against how the project went: harden by default, relax only with a reason (`docs/process/agile.md`).
 11. Branch, commits per task and pull request as for a story (`/story` steps 3–10).
-12. `npm run records:save`: the epic's transcripts and metrics in the private records (ADR-0041).
+12. `npm run records:save`: the epic's transcripts and metrics in the private records, `records/` (ADR-0041, ADR-0044).

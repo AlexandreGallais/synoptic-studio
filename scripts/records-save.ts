@@ -1,7 +1,7 @@
 // Save of the private records (ADR-0041): the agent's traces, which hold the Product Owner's raw
 // messages and local paths, copied into a private Git repository next to this one and committed,
 // then pushed when it has a remote. Run by `npm run records:save` at the end of every session and
-// at every retrospective. The folder is `RECORDS_PATH`, else `../synoptic-studio-records`.
+// at every retrospective. The folder is `RECORDS_PATH`, else `records/` inside the project, ignored by Git (ADR-0044).
 
 import { execFileSync } from "node:child_process";
 import { cpSync, existsSync, mkdirSync, rmSync } from "node:fs";
@@ -23,12 +23,10 @@ export type RecordCopy = {
  *
  * @param variable - value of `RECORDS_PATH`, or `undefined`
  * @param main - root of the main working tree of this repository
- * @returns `RECORDS_PATH` when set, else `synoptic-studio-records` beside the repository
+ * @returns `RECORDS_PATH` when set, else `records` inside the repository (ADR-0044)
  */
 export function recordsFolder(variable: string | undefined, main: string): string {
-  return variable === undefined || variable === ""
-    ? join(dirname(main), "synoptic-studio-records")
-    : variable;
+  return variable === undefined || variable === "" ? join(main, "records") : variable;
 }
 
 /**
