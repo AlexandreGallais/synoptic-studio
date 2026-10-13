@@ -3,7 +3,7 @@ id: EN-024
 epic: E14
 feature: F12
 title: "A point's handles in the free shape model"
-status: ready
+status: done
 points: 3
 ---
 
@@ -35,3 +35,7 @@ One task = one commit, referenced as `EN-024.Tn`.
 | a free shape's corners are `CurveCorner`s; rectangles and polygons keep plain `Corner`s                                    | only a free shape has handles; a conversion gives them off (`curveCornerOf`)                                                                      |
 | `turnedCorners` keeps the handles as they are                                                                              | turning them is part of the cubic sides (EN-025)                                                                                                  |
 | the page's model text shows the handles                                                                                    | it shows the model as stored                                                                                                                      |
+
+## Review
+
+Auditor and verifier, before the last commit. Fixed: a test that the radius stays when the handles are switched on and off; the handles carried, as drawn, through moving, adding and deleting a point, at 0° and 90°; the polygon converted with its handles off; exact assertions again where they had become partial (`toEqual` with the handles); a rectangle's corners plain again; the criteria tags; handles invalid on the last corner; the step of the stretch derivation for handles (`DERIV-free-shape-stretch` step 5); the domain and the type's TSDoc. Not fixed: handles missing from data read by the page make the check throw instead of refusing, as a missing point already does (`areFreeShapePoints`) — only the page writes that data; typing handles through the page is tested with US-022.
