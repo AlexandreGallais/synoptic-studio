@@ -1,8 +1,6 @@
-import { cyclicItem } from "../../geometry";
-import { midpoint } from "../../math";
-import { NO_HANDLES } from "../handles";
 import { turnedCorners } from "../placement";
 
+import { cornersWithMidpoint } from "./corners-with-midpoint";
 import { freeShapeAroundCorners } from "./free-shape-around-corners";
 import { freeShapeCorners } from "./free-shape-corners";
 import { freeShapeKeptInPlace } from "./free-shape-kept-in-place";
@@ -24,21 +22,7 @@ import type { FreeShape } from "./free-shape";
 export function freeShapeWithMidpoint(shape: FreeShape, edge: number): FreeShape {
   const corners = freeShapeCorners(shape);
 
-  const edited = freeShapeAroundCorners(
-    corners.flatMap((corner, index) =>
-      index === edge
-        ? [
-            corner,
-            {
-              point: midpoint(corner.point, cyclicItem(corners, index + 1, corner).point),
-              radius: 0,
-              handles: NO_HANDLES,
-            },
-          ]
-        : [corner],
-    ),
-    shape.angle,
-  );
+  const edited = freeShapeAroundCorners(cornersWithMidpoint(corners, edge), shape.angle);
 
   // Point 1 keeps its number: the new point comes after the edge's first point.
   return freeShapeKeptInPlace(edited, turnedCorners(corners, shape), { after: 0, before: 0 });
