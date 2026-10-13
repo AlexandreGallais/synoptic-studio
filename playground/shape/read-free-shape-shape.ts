@@ -7,8 +7,8 @@ import {
   turnedCorners,
 } from "../../src";
 import { readNumber, selectElement } from "../page";
+import { readAngle } from "../position";
 
-import { readAngle } from "./read-angle";
 import { updateKeptRadii } from "./update-kept-radii";
 
 import type { ShapeReading } from "./shape-reading";

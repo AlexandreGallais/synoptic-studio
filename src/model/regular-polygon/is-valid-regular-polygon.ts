@@ -1,5 +1,6 @@
 import { areValidRadii } from "../corner-radius";
-import { isAnchor, isModelSize, isShapePlacement } from "../placement";
+import { isAnchor, isModelSize } from "../layout-box";
+import { isShapePlacement } from "../placement";
 
 import { isRegularPolygonCornerCount } from "./is-regular-polygon-corner-count";
 
