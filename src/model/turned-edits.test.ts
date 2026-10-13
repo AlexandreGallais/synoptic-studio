@@ -3,12 +3,14 @@ import { describe, expect, it } from "vitest";
 
 import { expectPoints } from "../../tests";
 
-import { freeShapeCorners } from "./free-shape-corners";
-import { freeShapeWithMidpoint } from "./free-shape-with-midpoint";
-import { freeShapeWithPoint } from "./free-shape-with-point";
-import { freeShapeWithoutPoints } from "./free-shape-without-points";
-import { rectangleAsFreeShape } from "./rectangle-as-free-shape";
-import { turnedCorners } from "./turned-corners";
+import {
+  freeShapeCorners,
+  freeShapeWithMidpoint,
+  freeShapeWithPoint,
+  freeShapeWithoutPoints,
+} from "./free-shape";
+import { turnedCorners } from "./placement";
+import { rectangleAsFreeShape } from "./rectangle";
 
 import type { FreeShape } from "./free-shape";
 
