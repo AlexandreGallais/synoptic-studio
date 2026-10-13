@@ -156,7 +156,12 @@ describe("playground", () => {
       clickElement("guide-next");
     }
 
-    // Past the last step, the guide stays on it: the stretched hexagon of E01, rounded, straight.
+    // Past the last step of E01, F12's first step (E14); back one, the stretched hexagon of E01,
+    // rounded, straight.
+    expect(readText("#guide-number")).toBe("73");
+
+    clickElement("guide-previous");
+
     expect(readText("#guide-number")).toBe("72");
 
     expect(readText("#path-data")).toBe(
