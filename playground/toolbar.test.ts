@@ -6,6 +6,7 @@ import { GUIDED_STEPS } from "./guided-steps";
 import page from "./index.html?raw";
 import { mountPlayground } from "./mount-playground";
 import { readGuidedTestSteps } from "./read-guided-test-steps";
+import { clickWithKeys, readValue } from "./user-actions";
 
 /**
  * Opens the playground at an address, as a link would: the page as served, its head included so
@@ -72,30 +73,11 @@ describe("toolbar", () => {
   });
 });
 
-/**
- * Clicks an element of the page, as a mouse would.
- *
- * @param selector - CSS selector of the element
- */
-function clickOn(selector: string): void {
-  document.querySelector(selector)?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
-}
-
-/**
- * Value of an input of the page.
- *
- * @param id - input id
- * @returns its value, empty when absent
- */
-function valueOf(id: string): string {
-  return document.querySelector<HTMLInputElement>(`#${id}`)?.value ?? "";
-}
-
 describe("toolbar after a free shape", () => {
   beforeEach(() => {
     open("");
     // A pentagon 120 × 80 converted to a free shape: its width becomes 84.11698.
-    clickOn("#tool-polygon");
+    clickWithKeys("#tool-polygon", {});
 
     const corners = document.querySelector<HTMLInputElement>("#corners");
 
@@ -104,9 +86,9 @@ describe("toolbar after a free shape", () => {
       corners.dispatchEvent(new Event("input"));
     }
 
-    clickOn("#mode-points");
-    clickOn("#convert");
-    clickOn('#points [data-vertex="1"]');
+    clickWithKeys("#mode-points", {});
+    clickWithKeys("#convert", {});
+    clickWithKeys('#points [data-vertex="1"]', {});
 
     const pointX = document.querySelector<HTMLInputElement>("#point-x");
 
@@ -119,20 +101,25 @@ describe("toolbar after a free shape", () => {
   });
 
   it("draws a valid rectangle, its width rounded and one radius for every corner", () => {
-    expect(valueOf("width")).toBe("84.11698");
+    expect(readValue("width")).toBe("84.11698");
 
-    clickOn("#tool-rectangle");
+    clickWithKeys("#tool-rectangle", {});
 
-    expect(valueOf("width")).toBe("84");
+    expect(readValue("width")).toBe("84");
     // The radius field was empty (Mixed): the first radius kept, 10, goes to every corner.
-    expect(valueOf("radius")).toBe("10");
+    expect(readValue("radius")).toBe("10");
     expect(document.querySelectorAll('[aria-invalid="true"]')).toHaveLength(0);
   });
 
   it("goes back to the shape the page opens with on Reset, in Shape mode", () => {
-    clickOn("#tool-reset");
+    clickWithKeys("#tool-reset", {});
 
-    expect([valueOf("width"), valueOf("height"), valueOf("radius")]).toEqual(["120", "80", "10"]);
+    expect([readValue("width"), readValue("height"), readValue("radius")]).toEqual([
+      "120",
+      "80",
+      "10",
+    ]);
+
     expect(isPressed("tool-rectangle")).toBe(true);
     expect(isPressed("mode-shape")).toBe(true);
     expect(document.querySelectorAll('[aria-invalid="true"]')).toHaveLength(0);
@@ -145,11 +132,11 @@ describe("pipeline column", () => {
 
     expect(isHidden("output")).toBe(false);
 
-    clickOn("#tool-output");
+    clickWithKeys("#tool-output", {});
 
     expect([isHidden("output"), isPressed("tool-output")]).toEqual([true, false]);
 
-    clickOn("#tool-output");
+    clickWithKeys("#tool-output", {});
 
     expect([isHidden("output"), isPressed("tool-output")]).toEqual([false, true]);
   });

@@ -69,8 +69,8 @@ export const ROOT_CONFIG_FILES = [
 /** Entry module of the playground app (top-level side effects allowed). */
 export const PLAYGROUND_ENTRY_FILES = ["playground/index.ts"];
 
-/** Folders whose `index.ts` files are barrels (re-exports only). */
-export const BARREL_FILES = ["src/**/index.ts", "eslint/**/index.ts"];
+/** Folders whose `index.ts` files are barrels (re-exports only); `playground/index.ts` is the entry. */
+export const BARREL_FILES = ["src/**/index.ts", "eslint/**/index.ts", "playground/*/**/index.ts"];
 
 /** Lists of rule themes, one import per theme file. */
 export const AGGREGATOR_FILES = ["eslint/rules/*/all.ts"];
