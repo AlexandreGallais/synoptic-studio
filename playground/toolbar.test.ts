@@ -9,6 +9,7 @@ import {
   openServedPage,
   readDisplay,
   readPressedState,
+  readText,
   readValue,
   selectInput,
   typeValue,
@@ -22,7 +23,7 @@ describe("toolbar", () => {
   it("starts on the rectangle, its button pressed and the polygon's options hidden", () => {
     expect(readPressedState("tool-rectangle") === "true").toBe(true);
     expect(readPressedState("tool-polygon") === "true").toBe(false);
-    expect(document.querySelector("#shape-title")?.textContent).toBe("Rectangle");
+    expect(readText("#shape-title")).toBe("Rectangle");
     expect(readDisplay("polygon-options") === "none").toBe(true);
   });
 
@@ -31,10 +32,10 @@ describe("toolbar", () => {
 
     expect(readPressedState("tool-polygon") === "true").toBe(true);
     expect(readPressedState("tool-rectangle") === "true").toBe(false);
-    expect(document.querySelector("#shape-title")?.textContent).toBe("Polygon");
+    expect(readText("#shape-title")).toBe("Polygon");
     expect(readDisplay("polygon-options") === "none").toBe(false);
     // A hexagon, the default number of corners, has six vertices in its contour.
-    expect(document.querySelector("#contour")?.textContent.match(/"x"/gu)).toHaveLength(6);
+    expect(readText("#contour").match(/"x"/gu)).toHaveLength(6);
   });
 });
 
@@ -115,6 +116,6 @@ describe("guided test of the page", () => {
     openServedPage("?guide=epic");
 
     expect(readDisplay("guide") === "none").toBe(false);
-    expect(document.querySelector("#guide-count")?.textContent).toBe(String(GUIDED_STEPS.length));
+    expect(readText("#guide-count")).toBe(String(GUIDED_STEPS.length));
   });
 });

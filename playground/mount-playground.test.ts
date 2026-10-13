@@ -4,8 +4,10 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { GUIDED_STEPS } from "./guided-steps";
 import {
   chooseOption,
+  chooseRadio,
   clickElement,
   openPage,
+  readCheckedRadio,
   readDisplay,
   readText,
   readValue,
@@ -27,35 +29,6 @@ function clickTimes(id: string, count: number): void {
   clickTimes(id, count - 1);
 }
 
-/**
- * Clicks a cell of the anchor grid, as a user would: it is checked and fires `change`.
- *
- * @param value - value of the cell, horizontal then vertical alignment (`mid max`)
- * @throws {Error} when the page has no cell of this value
- */
-function chooseAnchor(value: string): void {
-  const buttons = document.querySelectorAll<HTMLInputElement>('input[name="anchor"]');
-  const button = [...buttons].find((cell) => cell.value === value);
-
-  if (button === undefined) {
-    throw new Error(`No anchor cell ${value}`);
-  }
-
-  button.click();
-}
-
-/**
- * Value of the checked cell of the anchor grid.
- *
- * @returns its value, empty when none is checked
- */
-function checkedAnchor(): string {
-  const buttons = document.querySelectorAll<HTMLInputElement>('input[name="anchor"]');
-
-  // By property: happy-dom's `:checked` follows the `checked` attribute, not the state.
-  return [...buttons].find((button) => button.checked)?.value ?? "";
-}
-
 describe("playground", () => {
   beforeAll(() => {
     // The page as served, without its script tag: the test mounts the playground itself.
@@ -63,7 +36,7 @@ describe("playground", () => {
   });
 
   it("[F02.AC4] opens on the rectangle, the selector on Rectangle, without the number of corners", () => {
-    expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("rectangle");
+    expect(readValue("shape")).toBe("rectangle");
     expect(readDisplay("corners-field") === "none").toBe(true);
   });
 
@@ -190,7 +163,7 @@ describe("playground", () => {
       "M92.04396 100 L67.95604 100 A50 50 0 0 1 31.16755 83.86159 A50 50 0 0 1 31.16755 16.13841 A50 50 0 0 1 67.95604 0 L92.04396 0 A50 50 0 0 1 128.83245 16.13841 A50 50 0 0 1 128.83245 83.86159 A50 50 0 0 1 92.04396 100 Z",
     );
 
-    expect(document.querySelector<HTMLInputElement>("#angle")?.value).toBe("0");
+    expect(readValue("angle")).toBe("0");
 
     // The last step of F06: the stretched hexagon, straight.
     clickTimes("guide-previous", 6);
@@ -231,13 +204,13 @@ describe("playground", () => {
     clickTimes("guide-previous", 9);
 
     expect(readText("#guide-number")).toBe("19");
-    expect(checkedAnchor()).toBe("mid mid");
+    expect(readCheckedRadio("anchor")).toBe("mid mid");
   });
 
   it("[F02.AC4] stays on the rectangle after the steps of the F01 guided test", () => {
     clickElement("guide-previous");
 
-    expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("rectangle");
+    expect(readValue("shape")).toBe("rectangle");
     expect(readDisplay("corners-field") === "none").toBe(true);
   });
 
@@ -323,13 +296,13 @@ describe("playground", () => {
     // Back to step 1 (Previous stays on the first step), then on to step 10, the first of F02.
     clickTimes("guide-previous", GUIDED_STEPS.length);
 
-    expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("rectangle");
+    expect(readValue("shape")).toBe("rectangle");
     expect(readDisplay("corners-field") === "none").toBe(true);
 
     clickTimes("guide-next", 9);
 
     expect(readText("#guide-number")).toBe("10");
-    expect(document.querySelector<HTMLSelectElement>("#shape")?.value).toBe("polygon");
+    expect(readValue("shape")).toBe("polygon");
     expect(readDisplay("corners-field") === "none").toBe(false);
     expect(readValue("corners")).toBe("6");
   });
@@ -373,7 +346,7 @@ describe("playground", () => {
     chooseOption("shape", "polygon");
 
     expect(readDisplay("anchor-field") === "none").toBe(false);
-    expect(checkedAnchor()).toBe("mid mid");
+    expect(readCheckedRadio("anchor")).toBe("mid mid");
     expect(readText("#path-data")).toBe("M100 93.30127 L0 93.30127 L50 6.69873 Z");
   });
 
@@ -410,21 +383,21 @@ describe("playground", () => {
   });
 
   it("[F07.AC2] puts the triangle's base on the bottom of its box", () => {
-    chooseAnchor("mid max");
+    chooseRadio("anchor", "mid max");
 
     // Room 100 − 86.60254 = 13.39746, all of it above the triangle.
-    expect(checkedAnchor()).toBe("mid max");
+    expect(readCheckedRadio("anchor")).toBe("mid max");
     expect(readText("#path-data")).toBe("M100 100 L0 100 L50 13.39746 Z");
     expect(readText("#model")).toContain('"vertical": "max"');
   });
 
   it("[F07.AC3] keeps the triangle in place from left to right, the anchor still shown", () => {
-    chooseAnchor("min max");
+    chooseRadio("anchor", "min max");
 
     expect(readText("#path-data")).toBe("M100 100 L0 100 L50 13.39746 Z");
     expect(readText("#model")).toContain('"horizontal": "min"');
 
-    chooseAnchor("max max");
+    chooseRadio("anchor", "max max");
 
     expect(readText("#path-data")).toBe("M100 100 L0 100 L50 13.39746 Z");
     expect(readText("#model")).toContain('"horizontal": "max"');
@@ -444,7 +417,7 @@ describe("playground", () => {
     clickTimes("guide-previous", GUIDED_STEPS.length);
     clickTimes("guide-next", 9);
 
-    expect(checkedAnchor()).toBe("mid mid");
+    expect(readCheckedRadio("anchor")).toBe("mid mid");
 
     expect(readText("#path-data")).toBe(
       "M75 93.30127 L25 93.30127 L0 50 L25 6.69873 L75 6.69873 L100 50 Z",
@@ -466,12 +439,12 @@ describe("playground", () => {
     // its path starts where the fillet of point 1, the right end of the base, ends on the base.
     clickTimes("guide-next", 2);
 
-    expect(checkedAnchor()).toBe("max mid");
+    expect(readCheckedRadio("anchor")).toBe("max mid");
     expect(readText("#path-data")).toContain("M90 50 L60 50 ");
 
     clickElement("guide-next");
 
-    expect(checkedAnchor()).toBe("min max");
+    expect(readCheckedRadio("anchor")).toBe("min max");
     expect(readText("#path-data")).toContain("M40 50 L10 50 ");
   });
 });
