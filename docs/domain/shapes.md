@@ -66,6 +66,7 @@ Reference behavior: Figma.
 - A point added in the middle of a curved side keeps the outline; deleting a point joins its two sides, keeping the outer handles.
 - How a handle is typed: seven methods, each built and tried at the end of F12 (Q32, research note 0013). With the same values at both ends of a side, the methods measured from the side give a symmetric arch, outwards for angles from 180° to 359° on a clockwise contour (330° bends a side out by 30°), inwards for the others.
 - A handle typed as an angle and a length (US-024): angles clockwise on screen, from the x axis or from the handle's side, brought into 0 to 359 as a shape's (370 becomes 10, −90 becomes 270); a negative length is refused, and so is an angle from a side of length 0; an angle typed while the handle has no length is kept until its length is typed.
+- A handle typed as shares of its side (US-025): whole percentages along it and across it, across counted outwards for the handle after and mirrored for the handle before, so that equal shares make a symmetric arch; refused on a side of length 0. A curve can be pasted on the side after a point: one SVG `C` command ending on the next point, or a CSS `cubic-bezier()` laid on the side by its diagonal (x values from 0 to 1); any other text is refused with a line saying why; each point's other handle follows its mode.
 
 ### Radius clamping (ADR-0007)
 
