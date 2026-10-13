@@ -1,5 +1,5 @@
 // Save of the private records (ADR-0041): the agent's traces, which hold the Product Owner's raw
-// messages and local paths, copied into a private Git repository next to this one and committed,
+// messages and local paths, copied into a private Git repository inside this one (ignored) and committed,
 // then pushed when it has a remote. Run by `npm run records:save` at the end of every session and
 // at every retrospective. The folder is `RECORDS_PATH`, else `records/` inside the project, ignored by Git (ADR-0044).
 

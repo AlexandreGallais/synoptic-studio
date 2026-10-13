@@ -53,6 +53,7 @@
     "metrics:session": "node --harmony-temporal scripts/session-report.ts",
     "library": "node --harmony-temporal --no-warnings=ExperimentalWarning scripts/library-cli.ts",
     "prepare": "husky",
+    "branches:clean": "node --harmony-temporal --no-warnings=ExperimentalWarning scripts/branches-clean.ts",
     "records:save": "node --harmony-temporal --no-warnings=ExperimentalWarning scripts/records-save.ts"
   },
   "devDependencies": {
