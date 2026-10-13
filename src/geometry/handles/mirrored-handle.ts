@@ -8,7 +8,7 @@ import type { Vector } from "../../math";
  * keeps it; `angle-and-length` is the typed handle reversed; `angle` reverses the typed handle's
  * direction, keeping the other's length — kept as it was when the typed handle has no direction.
  *
- * Formula: none → o; angle and length → −t; angle → −t · |o| / |t|, or o when |t| = 0.
+ * Formula: none → o; angle and length → −t; angle and auto → −t · |o| / |t|, or o when |t| = 0.
  *
  * @kind geometry
  * @param mode - how the two handles follow each other

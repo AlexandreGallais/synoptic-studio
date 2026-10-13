@@ -38,7 +38,11 @@ describe("handles from a tension (US-026)", () => {
   });
 
   it("[F12.AC4] straightens the sides at tension 100", () => {
+    expect(document.querySelector<HTMLInputElement>("#handle-tension")?.value).toBe("0");
+
     typeAndEnter("handle-tension", "100");
+
+    expect(document.querySelector<HTMLInputElement>("#handle-tension")?.value).toBe("100");
 
     expect(readText("#path-data")).not.toContain("C");
   });

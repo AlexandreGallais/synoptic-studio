@@ -5,7 +5,8 @@ import type { CurveCorner } from "../../geometry";
 /**
  * Corners with the handles of each point in mode `auto` computed from its neighbours by its
  * tension, the handle before opposite the handle after (`DERIV-handle-tension`); the other
- * corners as they are. Computed, never stored: they follow the neighbours as they move.
+ * corners as they are. Computed whenever the shape is drawn or stored, so that they follow the
+ * neighbours as they move.
  *
  * @kind domain
  * @param corners - corners of a free shape, in contour order

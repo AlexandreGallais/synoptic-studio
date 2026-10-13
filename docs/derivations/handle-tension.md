@@ -20,7 +20,7 @@ A Hermite segment from `p₀` to `p₁` with tangents `m₀`, `m₁` is the cubi
 
 ## Step 3 — Following the neighbours
 
-The handles are a function of the neighbours only: moving a neighbour moves them, as an auto-smooth node's handles adapt (`REF-INKSCAPE-NODE-TYPES`). They are computed from the points drawn, never stored. They commute with a stretch of the shape: both are linear in the points (`DERIV-free-shape-stretch` step 5).
+The handles are a function of the two neighbours only (`REF-WIKI-HERMITE`: the tangent at `p_k` depends on `p_{k−1}` and `p_{k+1}`): moving a neighbour moves them. Inkscape's auto-smooth nodes also adapt their handles by themselves (`REF-INKSCAPE-NODE-TYPES`), though by a rule it does not state. They are computed from the points drawn; the values stored are those last computed. They commute with a stretch of the shape: both are linear in the points (`DERIV-free-shape-stretch` step 5).
 
 ## Checks (test cases)
 
