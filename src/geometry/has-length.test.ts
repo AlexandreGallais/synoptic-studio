@@ -1,6 +1,7 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
+import { integerPoint } from "../../tests";
 import { EPSILON } from "../math";
 
 import { hasLength } from "./has-length";
@@ -35,10 +36,7 @@ describe("hasLength (EPSILON, Q10)", () => {
 });
 
 /** Arbitrary point with integer coordinates. */
-const POINT = fc.record({
-  x: fc.integer({ max: 1e6, min: -1e6 }),
-  y: fc.integer({ max: 1e6, min: -1e6 }),
-});
+const POINT = integerPoint(1e6);
 
 /** A step of −1, 0 or 1 along an axis. */
 const STEP = fc.integer({ max: 1, min: -1 });

@@ -1,6 +1,8 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
+import { integerPoint } from "../../tests";
+
 import { boxAspect } from "./box-aspect";
 
 describe("boxAspect (DERIV-stretched-polygon step 4)", () => {
@@ -16,10 +18,7 @@ describe("boxAspect (DERIV-stretched-polygon step 4)", () => {
 });
 
 /** Arbitrary point with integer coordinates. */
-const POINT = fc.record({
-  x: fc.integer({ max: 1000, min: -1000 }),
-  y: fc.integer({ max: 1000, min: -1000 }),
-});
+const POINT = integerPoint(1000);
 
 /** Points spanning the x axis: two of them differ in x. */
 const SPANNING = fc

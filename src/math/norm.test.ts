@@ -1,15 +1,14 @@
-import { fc, test } from "@fast-check/vitest";
+import { test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
+
+import { integerPoint } from "../../tests";
 
 import { EPSILON } from "./epsilon";
 import { norm } from "./norm";
 import { subtract } from "./subtract";
 
 /** Vector with integer components, as produced by integer vertices. */
-const VECTOR = fc.record({
-  x: fc.integer({ max: 1e6, min: -1e6 }),
-  y: fc.integer({ max: 1e6, min: -1e6 }),
-});
+const VECTOR = integerPoint(1e6);
 
 describe("norm (REF-MATHWORLD-VECTOR-NORM)", () => {
   it("is 5 for (3, 4)", () => {

@@ -1,15 +1,14 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
+import { integerPoint } from "../../tests";
+
 import { filletArc } from "./fillet-arc";
 
 import type { Point } from "../math";
 
 /** Integer point. */
-const POINT = fc.record({
-  x: fc.integer({ max: 500, min: -500 }),
-  y: fc.integer({ max: 500, min: -500 }),
-});
+const POINT = integerPoint(500);
 
 /** Decimals compared: tangents and square roots of doubles. */
 const DECIMALS = 9;

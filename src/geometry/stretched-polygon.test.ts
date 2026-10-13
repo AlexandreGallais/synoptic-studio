@@ -1,6 +1,8 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
+import { expectPoints } from "../../tests";
+
 import { boundingBox } from "./bounding-box";
 import { edgeLengths } from "./edge-lengths";
 import { stretchScale } from "./stretch-scale";
@@ -8,55 +10,47 @@ import { stretchedPolygon } from "./stretched-polygon";
 import { turningAngles } from "./turning-angles";
 import { unitStretchedPolygon } from "./unit-stretched-polygon";
 
-import type { Point } from "../math";
-
 /** Decimals compared: the 5 of the SVG output (Q10), as the values of note 0011. */
 const DECIMALS = 5;
 
-/**
- * Checks two lists of points coordinate by coordinate, to 5 decimals.
- *
- * @param actual - computed points
- * @param expected - values of `DERIV-stretched-polygon`, checks
- */
-function expectPoints(
-  actual: readonly Point[],
-  expected: readonly (readonly [number, number])[],
-): void {
-  expect(actual).toHaveLength(expected.length);
-
-  for (const [index, [x, y]] of expected.entries()) {
-    expect(actual[index]?.x).toBeCloseTo(x, DECIMALS);
-    expect(actual[index]?.y).toBeCloseTo(y, DECIMALS);
-  }
-}
-
 describe("stretchedPolygon (DERIV-stretched-polygon, checks)", () => {
   it("[F06.AC2] stretches the triangle to an isosceles one and the square to the rectangle of the box", () => {
-    expectPoints(stretchedPolygon(3, { height: 100, width: 100 }), [
-      [100, 100],
-      [0, 100],
-      [50, 0],
-    ]);
+    expectPoints(
+      stretchedPolygon(3, { height: 100, width: 100 }),
+      [
+        { x: 100, y: 100 },
+        { x: 0, y: 100 },
+        { x: 50, y: 0 },
+      ],
+      DECIMALS,
+    );
 
-    expectPoints(stretchedPolygon(4, { height: 50, width: 300 }), [
-      [300, 50],
-      [0, 50],
-      [0, 0],
-      [300, 0],
-    ]);
+    expectPoints(
+      stretchedPolygon(4, { height: 50, width: 300 }),
+      [
+        { x: 300, y: 50 },
+        { x: 0, y: 50 },
+        { x: 0, y: 0 },
+        { x: 300, y: 0 },
+      ],
+      DECIMALS,
+    );
   });
 
   it("[F06.AC2] gives the pentagon in 100 × 100 five equal sides of 63.51246", () => {
     const pentagon = stretchedPolygon(5, { height: 100, width: 100 });
 
-    expectPoints(pentagon, [
-      [81.75623, 100],
-      [18.24377, 100],
-      [0, 39.16418],
-      [50, 0],
-      [100, 39.16418],
-    ]);
+    expectPoints(
+      pentagon,
+      [
+        { x: 81.75623, y: 100 },
+        { x: 18.24377, y: 100 },
+        { x: 0, y: 39.16418 },
+        { x: 50, y: 0 },
+        { x: 100, y: 39.16418 },
+      ],
+      DECIMALS,
+    );
 
     for (const length of edgeLengths(pentagon)) {
       expect(length).toBeCloseTo(63.51246, DECIMALS);
@@ -64,26 +58,34 @@ describe("stretchedPolygon (DERIV-stretched-polygon, checks)", () => {
   });
 
   it("[F06.AC2] stops equalizing the pentagon in 300 × 50 when its apex turns 36°", () => {
-    expectPoints(stretchedPolygon(5, { height: 50, width: 300 }), [
-      [228.85967, 50],
-      [71.14033, 50],
-      [0, 12.8595],
-      [150, 0],
-      [300, 12.8595],
-    ]);
+    expectPoints(
+      stretchedPolygon(5, { height: 50, width: 300 }),
+      [
+        { x: 228.85967, y: 50 },
+        { x: 71.14033, y: 50 },
+        { x: 0, y: 12.8595 },
+        { x: 150, y: 0 },
+        { x: 300, y: 12.8595 },
+      ],
+      DECIMALS,
+    );
   });
 
   it("[F06.AC2] gives the hexagon in 100 × 100 six equal sides of 54.85838", () => {
     const hexagon = stretchedPolygon(6, { height: 100, width: 100 });
 
-    expectPoints(hexagon, [
-      [77.42919, 100],
-      [22.57081, 100],
-      [0, 50],
-      [22.57081, 0],
-      [77.42919, 0],
-      [100, 50],
-    ]);
+    expectPoints(
+      hexagon,
+      [
+        { x: 77.42919, y: 100 },
+        { x: 22.57081, y: 100 },
+        { x: 0, y: 50 },
+        { x: 22.57081, y: 0 },
+        { x: 77.42919, y: 0 },
+        { x: 100, y: 50 },
+      ],
+      DECIMALS,
+    );
 
     for (const length of edgeLengths(hexagon)) {
       expect(length).toBeCloseTo(54.85838, DECIMALS);
@@ -92,57 +94,77 @@ describe("stretchedPolygon (DERIV-stretched-polygon, checks)", () => {
 
   it("[F06.AC2] stretches the hexagon's limit polygon past its corner guard, in 300 × 50 and 50 × 300", () => {
     // 300 × 50: base corners at 30°, x scale 300 / (1 + √3), base end 75 + 75√3 (DERIV checks).
-    expectPoints(stretchedPolygon(6, { height: 50, width: 300 }), [
-      [75 + 75 * Math.sqrt(3), 50],
-      [225 - 75 * Math.sqrt(3), 50],
-      [0, 25],
-      [225 - 75 * Math.sqrt(3), 0],
-      [75 + 75 * Math.sqrt(3), 0],
-      [300, 25],
-    ]);
+    expectPoints(
+      stretchedPolygon(6, { height: 50, width: 300 }),
+      [
+        { x: 75 + 75 * Math.sqrt(3), y: 50 },
+        { x: 225 - 75 * Math.sqrt(3), y: 50 },
+        { x: 0, y: 25 },
+        { x: 225 - 75 * Math.sqrt(3), y: 0 },
+        { x: 75 + 75 * Math.sqrt(3), y: 0 },
+        { x: 300, y: 25 },
+      ],
+      DECIMALS,
+    );
 
-    expectPoints(stretchedPolygon(6, { height: 300, width: 50 }), [
-      [41.47297, 300],
-      [8.52703, 300],
-      [0, 150],
-      [8.52703, 0],
-      [41.47297, 0],
-      [50, 150],
-    ]);
+    expectPoints(
+      stretchedPolygon(6, { height: 300, width: 50 }),
+      [
+        { x: 41.47297, y: 300 },
+        { x: 8.52703, y: 300 },
+        { x: 0, y: 150 },
+        { x: 8.52703, y: 0 },
+        { x: 41.47297, y: 0 },
+        { x: 50, y: 150 },
+      ],
+      DECIMALS,
+    );
   });
 
   it("[F06.AC2] stops equalizing the pentagon in 100 × 300 when its side corners turn 36°", () => {
     // λ_hi = 6.74030, beyond ln λ = 1.9: the bracket [−3, 3] must hold it (review of EN-017).
-    expectPoints(stretchedPolygon(5, { height: 300, width: 100 }), [
-      [95.60798, 300],
-      [4.39202, 300],
-      [0, 136.7215],
-      [50, 0],
-      [100, 136.7215],
-    ]);
+    expectPoints(
+      stretchedPolygon(5, { height: 300, width: 100 }),
+      [
+        { x: 95.60798, y: 300 },
+        { x: 4.39202, y: 300 },
+        { x: 0, y: 136.7215 },
+        { x: 50, y: 0 },
+        { x: 100, y: 136.7215 },
+      ],
+      DECIMALS,
+    );
   });
 
   it("[F06.AC2] gives the octagon in 100 × 50 and the heptagon in 100 × 100 the values of note 0011", () => {
-    expectPoints(stretchedPolygon(8, { height: 50, width: 100 }), [
-      [67.55767, 50],
-      [32.44233, 50],
-      [0, 39.16136],
-      [0, 10.83864],
-      [32.44233, 0],
-      [67.55767, 0],
-      [100, 10.83864],
-      [100, 39.16136],
-    ]);
+    expectPoints(
+      stretchedPolygon(8, { height: 50, width: 100 }),
+      [
+        { x: 67.55767, y: 50 },
+        { x: 32.44233, y: 50 },
+        { x: 0, y: 39.16136 },
+        { x: 0, y: 10.83864 },
+        { x: 32.44233, y: 0 },
+        { x: 67.55767, y: 0 },
+        { x: 100, y: 10.83864 },
+        { x: 100, y: 39.16136 },
+      ],
+      DECIMALS,
+    );
 
-    expectPoints(stretchedPolygon(7, { height: 100, width: 100 }), [
-      [72.54712, 100],
-      [27.45288, 100],
-      [0, 64.22529],
-      [9.67353, 20.18085],
-      [50, 0],
-      [90.32647, 20.18085],
-      [100, 64.22529],
-    ]);
+    expectPoints(
+      stretchedPolygon(7, { height: 100, width: 100 }),
+      [
+        { x: 72.54712, y: 100 },
+        { x: 27.45288, y: 100 },
+        { x: 0, y: 64.22529 },
+        { x: 9.67353, y: 20.18085 },
+        { x: 50, y: 0 },
+        { x: 90.32647, y: 20.18085 },
+        { x: 100, y: 64.22529 },
+      ],
+      DECIMALS,
+    );
   });
 
   it("[F06.AC2] gives the regular octagon in a square box: side 100 (√2 − 1)", () => {

@@ -1,15 +1,13 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
+import { integerPoint } from "../../tests";
 import { turnDirection } from "../math";
 
 import { turnAbout } from "./turn-about";
 
 /** Point with integer coordinates. */
-const POINT = fc.record({
-  x: fc.integer({ max: 1e4, min: -1e4 }),
-  y: fc.integer({ max: 1e4, min: -1e4 }),
-});
+const POINT = integerPoint(1e4);
 
 describe("turnAbout (DERIV-turned-shape steps 2 and 4, REF-SVG11-TRANSFORM)", () => {
   it.each([
