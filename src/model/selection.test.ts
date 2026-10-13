@@ -1,12 +1,14 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
-import { NO_VERTEX_SELECTION } from "./no-vertex-selection";
-import { selectionAfterClick } from "./selection-after-click";
-import { selectionAfterHandleClick } from "./selection-after-handle-click";
-import { selectionAfterRange } from "./selection-after-range";
-import { selectionAfterRowClick } from "./selection-after-row-click";
-import { selectionAfterToggle } from "./selection-after-toggle";
+import {
+  NO_VERTEX_SELECTION,
+  selectionAfterClick,
+  selectionAfterHandleClick,
+  selectionAfterRange,
+  selectionAfterRowClick,
+  selectionAfterToggle,
+} from "./selection";
 
 describe("vertex selection", () => {
   it("[F03.AC5] selects the vertex clicked alone, the start of the next range", () => {

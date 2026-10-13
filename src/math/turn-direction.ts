@@ -1,5 +1,5 @@
 import { degreesInTurn } from "./degrees-in-turn";
-import { quarterTurn } from "./quarter-turn";
+import { quarterTurn } from "./vector";
 
 import type { Vector } from "./vector";
 
