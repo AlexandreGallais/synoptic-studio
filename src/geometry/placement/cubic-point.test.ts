@@ -42,4 +42,9 @@ describe("cubicPoint (REF-WIKI-BEZIER)", () => {
       expect(point.y).toBeLessThanOrEqual(Math.max(...ys) + 1e-9);
     },
   );
+
+  it("weighs each control point by its own Bernstein weight", () => {
+    // t = ¼: weights 27/64, 27/64, 9/64, 1/64; x = (9 + 1) / 64 · 100 = 15.625, y = (27 + 9) / 64 · (−40) = −22.5.
+    expect(cubicPoint(ARCH, 0.25)).toEqual({ x: 15.625, y: -22.5 });
+  });
 });

@@ -1,15 +1,20 @@
 import { cubicSide, cyclicItem, halvedCubic, isCurvedSide } from "../../geometry";
-import { midpoint, subtract } from "../../math";
+import { add, midpoint, scale, subtract } from "../../math";
 import { NO_HANDLES } from "../handles";
 
-import type { CurveCorner } from "../../geometry";
+import type { Cubic, CurveCorner } from "../../geometry";
 import type { Point } from "../../math";
+
+/** The zero vector. */
+const ORIGIN = { x: 0, y: 0 };
 
 /** Corner read when the side asked for does not exist: none is, the shape has 3 points or more. */
 const NO_CORNER: CurveCorner = { handles: NO_HANDLES, point: { x: 0, y: 0 }, radius: 0 };
 
 /**
- * A corner whose handle after or before now reaches a given control point.
+ * A corner whose handle after or before now reaches a given control point, when its point is in
+ * handles mode (an off point draws no handle and keeps its stored one). Shortened by the split, its
+ * handles leave mode angle and length for mode angle: still on one line, of their own lengths.
  *
  * @kind domain
  * @param corner - corner to change
@@ -19,7 +24,37 @@ const NO_CORNER: CurveCorner = { handles: NO_HANDLES, point: { x: 0, y: 0 }, rad
  * @see DERIV-cubic-sides
  */
 function withHandleTo(corner: CurveCorner, end: "after" | "before", control: Point): CurveCorner {
-  return { ...corner, handles: { ...corner.handles, [end]: subtract(control, corner.point) } };
+  if (!corner.handles.isOn) {
+    return corner;
+  }
+
+  const mode = corner.handles.mode === "angle-and-length" ? "angle" : corner.handles.mode;
+
+  return {
+    ...corner,
+    handles: { ...corner.handles, mode, [end]: subtract(control, corner.point) },
+  };
+}
+
+/**
+ * The point added at the middle of a curved side: in handles mode, angle and length, its handle
+ * before towards the first half's second control point, its handle after the opposite — opposite
+ * in exact arithmetic (M halves P₀₁₂ P₁₂₃), written so in floats too (`DERIV-cubic-sides` step 4).
+ *
+ * @kind domain
+ * @param first - the first half of the split curve, ending at the new point
+ * @returns the new corner, radius 0
+ * @see DERIV-cubic-sides
+ */
+function splitPoint(first: Cubic): CurveCorner {
+  const before = subtract(first.second, first.end);
+
+  // Adding zero turns −0 into 0.
+  return {
+    handles: { ...NO_HANDLES, after: add(scale(before, -1), ORIGIN), before, isOn: true },
+    point: first.end,
+    radius: 0,
+  };
 }
 
 /**
@@ -39,8 +74,7 @@ function cornersWithCurveSplit(
 ): readonly CurveCorner[] {
   const start = cyclicItem(corners, edge, NO_CORNER);
   const [first, second] = halvedCubic(cubicSide(start, cyclicItem(corners, edge + 1, start)));
-  const opened = { handles: { ...NO_HANDLES, isOn: true }, point: first.end, radius: 0 };
-  const middle = withHandleTo(withHandleTo(opened, "before", first.second), "after", second.first);
+  const middle = splitPoint(first);
 
   return corners.flatMap((corner, index) => {
     if (index === edge) {

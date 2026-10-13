@@ -99,4 +99,75 @@ describe("curveContour (ADR-0046)", () => {
       expect(cubics.map((cubic) => [cubic.start, cubic.end])).toEqual([[first, second]]);
     },
   );
+
+  it("draws a point in handles mode with zero handles sharp, its radius kept in the model", () => {
+    const pieces = curveContour(curved(rectangleCorners(100, 100, [0, 10, 0, 0]), { 1: {} }));
+
+    expect(pieces).toEqual(roundedContour(rectangleCorners(100, 100, [0, 0, 0, 0])));
+  });
+
+  it("sharpens a corner whose next side is curved by the next point's handle before", () => {
+    // Point 1 off with radius 10; point 2 on with before (0, −40): the side 1 → 2 is a cubic from (0, 0).
+    const pieces = curveContour(
+      curved(rectangleCorners(100, 100, [10, 0, 0, 0]), { 1: { before: { x: 0, y: -40 } } }),
+    );
+
+    expect(pieces.filter((piece) => piece.kind === "cubic")).toEqual([
+      {
+        end: { x: 100, y: 0 },
+        first: { x: 0, y: 0 },
+        kind: "cubic",
+        second: { x: 100, y: -40 },
+        start: { x: 0, y: 0 },
+      },
+    ]);
+
+    expect(pieces.some((piece) => piece.kind === "arc")).toBe(false);
+  });
+
+  it("does not draw the vector kept by a point that is off", () => {
+    // Point 1 off, its stored after (30, −30); point 2 on, before (−20, −20): the cubic leaves (0, 0) itself.
+    const corners = curved(rectangleCorners(100, 100, [0, 0, 0, 0]), {
+      1: { before: { x: -20, y: -20 } },
+    }).map((corner, index) =>
+      index === 0
+        ? { ...corner, handles: { ...corner.handles, after: { x: 30, y: -30 } } }
+        : corner,
+    );
+
+    expect(curveContour(corners)[0]).toMatchObject({ first: { x: 0, y: 0 }, kind: "cubic" });
+  });
+
+  it("draws each side by its own number, two sides with the same ends told apart", () => {
+    // Points A B C A B: only side 1 (A → B) is curved; side 4 (A → B again) stays straight.
+    const points = [
+      { x: 0, y: 0 },
+      { x: 100, y: 0 },
+      { x: 100, y: 100 },
+      { x: 0, y: 0 },
+      { x: 100, y: 0 },
+    ].map((point) => ({ point, radius: 0 }));
+    const pieces = curveContour(curved(points, { 0: { after: { x: 30, y: -30 } } }));
+
+    expect(pieces.map((piece) => piece.kind)).toEqual([
+      "cubic",
+      "segment",
+      "segment",
+      "segment",
+      "segment",
+    ]);
+  });
+
+  it("draws a curved loop between two points at the same place", () => {
+    // B = C, B's handle after (50, −50): the loop from B back to B is kept.
+    const points = [
+      { x: 0, y: 0 },
+      { x: 100, y: 0 },
+      { x: 100, y: 0 },
+      { x: 100, y: 100 },
+    ].map((point) => ({ point, radius: 0 }));
+    const pieces = curveContour(curved(points, { 1: { after: { x: 50, y: -50 } } }));
+
+    expect(pieces.filter((piece) => piece.kind === "cubic")).toHaveLength(1);
+  });
 });

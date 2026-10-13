@@ -4,13 +4,13 @@ Used by: ADR-0032, F09; ADR-0033, F08 (fractional points and size); ADR-0046, F1
 
 ## Notation
 
-| Symbol          | Definition                                                                   |
-| --------------- | ---------------------------------------------------------------------------- |
-| `p₀ … pₙ₋₁`     | the points of the free shape, as stored, in contour order (Q11)              |
-| `o = (oₓ, o_y)` | top-left of their bounding box: the smallest x and the smallest y            |
-| `nₓ, n_y`       | width and height of that box: largest minus smallest coordinate on each axis |
-| `w, h`          | width and height asked for the shape, integers ≥ 0                           |
-| `p'ᵢ`           | the point drawn                                                              |
+| Symbol          | Definition                                                                                                                                       |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `p₀ … pₙ₋₁`     | the points of the free shape, as stored, in contour order (Q11)                                                                                  |
+| `o = (oₓ, o_y)` | top-left of the box of their curve (`DERIV-cubic-sides` step 3; the box of the points when no side is curved): the smallest x and the smallest y |
+| `nₓ, n_y`       | width and height of that box: largest minus smallest coordinate on each axis                                                                     |
+| `w, h`          | width and height asked for the shape, integers ≥ 0                                                                                               |
+| `p'ᵢ`           | the point drawn                                                                                                                                  |
 
 ## Step 1 — A scale about a fixed point
 
@@ -38,7 +38,9 @@ The rectangle tool stores the unit square `(0, 0), (1, 0), (1, 1), (0, 1)`, top-
 
 A handle is a vector from its point, `h = c − p` with `c` its control point (`REF-FIGMA-VECTOR-NETWORK`). An affine map acts on a Bézier curve through its control points (`REF-WIKI-BEZIER`), so the control point is drawn `c' = o + S(c − o)` with `S = diag(sx, sy)` (step 1). Then `c' − p' = S(c − o) − S(p − o) = S(c − p)`: the handle drawn is `h' = (sx · hₓ, sy · h_y)` — the factors of step 2, no translation. On an axis where `w = nₓ` the points are drawn as stored (step 3), so the factor taken is 1 (`stretchFactors`, `stretchedHandles`).
 
-Check: the unit square drawn 200 × 100, a handle (0.1, −0.2) at (0, 0): drawn (20, −20).
+The box of the curve maps onto `w × h` exactly: the points move by `p ↦ o + S(p − o)` and the handles by `S`, so every control point moves by that one affine map, and the curve with them (`REF-WIKI-BEZIER`); each axis is scaled by a factor ≥ 0 about `o`, so its smallest and largest values stay its smallest and largest, now `o` and `o + w` (or `+ h`).
+
+Check: the unit square drawn 200 × 100, a handle (0.1, 0.2) at (0, 0) pointing inside, so that the box of the curve is the unit square: drawn (20, 20).
 
 ## Checks (test cases)
 

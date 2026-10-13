@@ -32,4 +32,11 @@ describe("turnedHandles (DERIV-cubic-sides step 5)", () => {
       expect(norm(turned.after)).toBeCloseTo(norm(after), 6);
     },
   );
+
+  it("turns a handle by half a turn", () => {
+    const turned = turnedHandles(HANDLES, turnDirection(180));
+
+    expect(turned.after.x).toBeCloseTo(-30, 12);
+    expect(turned.after.y).toBeCloseTo(15, 12);
+  });
 });
