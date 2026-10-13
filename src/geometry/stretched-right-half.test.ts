@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 
 import { stretchedRightHalf } from "./stretched-right-half";
 
+import type { Point } from "../math";
+
 /** Decimals compared: sums of cosines and sines, correct to their last bits. */
 const DECIMALS = 12;
 
@@ -31,6 +33,24 @@ describe("stretchedRightHalf (DERIV-stretched-polygon step 1)", () => {
 /** Vertical scale `λ = e^t`, `t` from −1 to 1 in steps of 1/100. */
 const SCALE = fc.integer({ max: 100, min: -100 }).map((step) => Math.exp(step / 100));
 
+/**
+ * Right half without its closing vertex when that one cannot exist: only the closing vertex of an
+ * odd polygon may be NaN, when no side reaches the axis.
+ *
+ * @param corners - number of corners
+ * @param scale - vertical scale
+ * @returns the vertices, every one finite
+ */
+function closedHalf(corners: number, scale: number): readonly Point[] {
+  const half = stretchedRightHalf(corners, scale);
+  const isOpen = corners % 2 === 1 && Number.isNaN(half.at(-1)?.x);
+  const closed = isOpen ? half.slice(0, -1) : half;
+
+  return closed.every((vertex) => Number.isFinite(vertex.x) && Number.isFinite(vertex.y))
+    ? closed
+    : [];
+}
+
 describe("stretchedRightHalf (properties)", () => {
   test.prop({ corners: fc.integer({ max: 12, min: 3 }), scale: SCALE })(
     "starts at (1/2, 0) and joins its vertices by sides of length 1",
@@ -40,13 +60,25 @@ describe("stretchedRightHalf (properties)", () => {
       expect(half).toHaveLength(Math.ceil(corners / 2));
       expect(half[0]).toEqual({ x: 0.5, y: 0 });
 
-      for (const [index, vertex] of half.slice(1).entries()) {
+      for (const [index, vertex] of closedHalf(corners, scale).slice(1).entries()) {
         const previous = half[index] ?? vertex;
-        const side = Math.hypot(vertex.x - previous.x, vertex.y - previous.y);
 
-        // A polygon that cannot close gives NaN coordinates: no side to measure.
-        expect(Number.isNaN(side) || Math.abs(side - 1) < 1e-12).toBe(true);
+        expect(Math.hypot(vertex.x - previous.x, vertex.y - previous.y)).toBeCloseTo(1, 12);
+        // Every side rises: its direction is in (0, π).
+        expect(vertex.y).toBeGreaterThan(previous.y);
       }
+    },
+  );
+
+  test.prop({ corners: fc.integer({ max: 12, min: 3 }), scale: SCALE })(
+    "ends on the axis (odd n) or above the base's right end (even n)",
+    ({ corners, scale }) => {
+      const end = stretchedRightHalf(corners, scale).at(-1)?.x ?? NaN;
+
+      // An odd polygon whose last side cannot reach the axis has no end to check.
+      fc.pre(!Number.isNaN(end));
+      // The apex of an odd polygon is at x = 0; the top side of an even one mirrors the base, x = 1/2.
+      expect(end).toBeCloseTo(corners % 2 === 1 ? 0 : 0.5, 9);
     },
   );
 });

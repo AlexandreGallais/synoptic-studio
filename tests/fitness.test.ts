@@ -49,15 +49,31 @@ function exportedFunctions(folder: string): readonly CheckedFunction[] {
  * @returns true when the test file exists and holds `test.prop` or `it.prop`
  */
 function hasOwnProperty(checked: CheckedFunction): boolean {
-  return existsSync(checked.test) && PROPERTY.test(readFileSync(checked.test, "utf8"));
+  // A property commented out does not count.
+  return (
+    existsSync(checked.test) &&
+    PROPERTY.test(readFileSync(checked.test, "utf8").replaceAll(/\/\/.*$/gmu, ""))
+  );
 }
 
+/** Functions checked: every exported function of the layers. */
+const CHECKED = PROPERTY_LAYERS.flatMap((layer) => exportedFunctions(layer));
+
+/** Functions of the two layers at EN-020: the check may never read fewer (an empty list passes). */
+const FUNCTIONS_AT_EN_020 = 41;
+
 describe("fitness functions", () => {
+  it("reads every function of the layers, not an empty list", () => {
+    expect(CHECKED.length).toBeGreaterThanOrEqual(FUNCTIONS_AT_EN_020);
+
+    expect(CHECKED.map((checked) => checked.name)).toEqual(
+      expect.arrayContaining(["add", "mirrorAcrossAxis", "turningAngles"]),
+    );
+  });
+
   it("gives every math and geometry function a property test in its own test file", () => {
     expect(
-      PROPERTY_LAYERS.flatMap((layer) => exportedFunctions(layer))
-        .filter((checked) => !hasOwnProperty(checked))
-        .map((checked) => checked.name),
+      CHECKED.filter((checked) => !hasOwnProperty(checked)).map((checked) => checked.name),
     ).toEqual([]);
   });
 });

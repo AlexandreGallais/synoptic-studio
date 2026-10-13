@@ -65,7 +65,35 @@ describe("cornerSetbacks (DERIV-local-radius-clamp step 1)", () => {
 /** Arbitrary requested radius. */
 const RADIUS = fc.integer({ max: 5000, min: 0 });
 
+/** Arbitrary point with integer coordinates. */
+const POINT = fc.record({
+  x: fc.integer({ max: 1000, min: -1000 }),
+  y: fc.integer({ max: 1000, min: -1000 }),
+});
+
+/** Triangles of positive area, a radius at each corner. */
+const TRIANGLE = fc
+  .tuple(POINT, POINT, POINT)
+  .filter(([a, b, c]) => (b.x - a.x) * (c.y - a.y) !== (b.y - a.y) * (c.x - a.x))
+  .chain((points) =>
+    fc
+      .tuple(RADIUS, RADIUS, RADIUS)
+      .map((radii) => points.map((point, index) => ({ point, radius: radii[index] ?? 0 }))),
+  );
+
 describe("cornerSetbacks (properties)", () => {
+  test.prop({ corners: TRIANGLE })(
+    "gives the same setback at each corner when the contour is drawn the other way",
+    ({ corners }) => {
+      // Reversing the order flips the sign of each turn, not its size: s = r · tan(|τ| / 2).
+      const reversed = cornerSetbacks(corners.toReversed());
+
+      for (const [index, setback] of cornerSetbacks(corners).toReversed().entries()) {
+        expect(reversed[index]).toBeCloseTo(setback, 6);
+      }
+    },
+  );
+
   test.prop({
     height: fc.integer({ max: 5000, min: 1 }),
     radii: fc.tuple(RADIUS, RADIUS, RADIUS, RADIUS),
