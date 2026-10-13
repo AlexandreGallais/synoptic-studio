@@ -2,6 +2,14 @@
 
 What each working session dealt with, in the agent's words: the Product Owner's requests in neutral words, decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`).
 
+## 2026-10-13 — F11 resumed: folders by domain, VAL-010 prepared
+
+- `#adr` ADR-0043 supersedes ADR-0042: folders named after the business domains of `docs/domain/`, the same name in each layer, modules and folders never side by side; 15 modules stay a signal. The Product Owner refused the layout of EN-022 (math held a folder beside loose modules; folders cut to meet a count) and the agent's question on `playground/page/`, a choice of code to decide alone (feedback log).
+- `#run` EN-023 (#161): `math/` and `geometry/` hold domain folders only, `rounded-corners/` and `radii/` became `corner-radius/`, `box/` split into `layout-box/` and `placement/`, the playground's wiring in `mount/`; rule `local/folder-layout` in the editor. Reviewed by the auditor and the verifier, their findings fixed.
+- `#tooling` On `develop`: the private records moved into the project as `records/`, ignored by Git (ADR-0044); the status line's turn clock moves every second (the tokens still arrive when each answer ends).
+- `#val` VAL-010 prepared on `feat/val-010-validate-f11`: one test per criterion, the demo page of figures, the closing commit ready; waiting for the Product Owner's reading.
+- `#questions` `unicorn/prefer-iterator-concat` writes code Node.js 24 cannot run: turn it off? (improvement log).
+
 ## 2026-10-13 — Run F11: stopped before VAL-010
 
 - `#run` Merged into `feature/f11-code-base-ready-for-curves`: SP-010 (#155), EN-020 (#156), EN-021 (#157), CHK-010 (#158), EN-022 (#159), AUD-010 (#160). Stopped before VAL-010, the Product Owner's validation.
