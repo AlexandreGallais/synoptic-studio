@@ -64,7 +64,8 @@ Reference behavior: Figma.
 - A side is a **curve** when a handle is on at either of its ends (ADR-0046); a corner in radius mode next to a curved side is drawn sharp until a rule is chosen.
 - Handles stretch with the shape, like its points. The shape's **box is the box of its curve**: a square 100 × 100 whose top bulges by 20 shows about 100 × 115, as Figma (Product Owner, 2026-10-13).
 - A point added in the middle of a curved side keeps the outline; deleting a point joins its two sides, keeping the outer handles.
-- How a handle is typed: seven methods, each built and tried at the end of F12 (Q32, research note 0013). With the same values at both ends of a side, the methods measured from the side give a symmetric arch towards the outside.
+- How a handle is typed: seven methods, each built and tried at the end of F12 (Q32, research note 0013). With the same values at both ends of a side, the methods measured from the side give a symmetric arch, outwards for angles from 180° to 359° on a clockwise contour (330° bends a side out by 30°), inwards for the others.
+- A handle typed as an angle and a length (US-024): angles clockwise on screen, from the x axis or from the handle's side, brought into 0 to 359 as a shape's (370 becomes 10, −90 becomes 270); a negative length is refused, and so is an angle from a side of length 0; an angle typed while the handle has no length is kept until its length is typed.
 
 ### Radius clamping (ADR-0007)
 

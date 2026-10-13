@@ -2,20 +2,13 @@ import { fieldValuesOfHandle, isAngleUnknown } from "../../src";
 import { readMode, selectElement, writeInputValue } from "../page";
 
 import { readHandleFrames } from "./read-handle-frames";
+import { readKeptAngle } from "./read-kept-angle";
 import { readSelectedCorner } from "./read-selected-corner";
 import { readTypingWay } from "./read-typing-way";
 
-import type { CurveCorner, HandleWay } from "../../src";
+import type { CurveCorner, HandleFrame, HandleWay } from "../../src";
 import type { ShapeReading } from "../shape";
 import type { SelectedCorner } from "./read-selected-corner";
-
-/** The two values of a handle to show, and whether its first field keeps what it shows. */
-type ShownValues = {
-  /** Whether the first field keeps its text: an angle typed before a length. */
-  readonly isKept: boolean;
-  /** The two values in the way chosen. */
-  readonly values: readonly [number, number];
-};
 
 /** Names of the two values of a handle, by the way it is typed. */
 const VALUE_NAMES: Readonly<Record<HandleWay, readonly [string, string]>> = {
@@ -39,22 +32,37 @@ function writeAxisLabels(document: Document, way: HandleWay): void {
   }
 }
 
+/** What one handle's values are shown against. */
+type ShownHandle = {
+  /** What the handle is read against. */
+  readonly frame: HandleFrame;
+  /** The point selected. */
+  readonly selected: SelectedCorner;
+  /** The way chosen to type the handles. */
+  readonly way: HandleWay;
+};
+
 /**
- * Writes the two values of one handle; a handle of length 0 typed as an angle keeps the angle
- * typed before its length in its field (`isAngleUnknown`).
+ * The two values one handle shows: computed in the way chosen (`fieldValuesOfHandle`), or, for a
+ * handle of length 0 typed as an angle, the angle kept for this point and way (`readKeptAngle`).
  *
  * @kind procedure
  * @param document - page document
  * @param end - which handle
- * @param shown - its two values in the way chosen, and whether the first field keeps what it shows
+ * @param shown - its frame, the point selected and the way chosen
+ * @returns the two values to write
  * @see docs/backlog/stories/E14-F12-US-024-handles-as-angle-and-length.md
  */
-function writeEndValues(document: Document, end: "after" | "before", shown: ShownValues): void {
-  if (!shown.isKept) {
-    writeInputValue(document, `handle-${end}-x`, shown.values[0]);
-  }
+function readShownValues(
+  document: Document,
+  end: "after" | "before",
+  shown: ShownHandle,
+): readonly [number, number] {
+  const handle = shown.selected.corner.handles[end];
+  const [first, second] = fieldValuesOfHandle(shown.way, handle, shown.frame);
+  const owner = `${String(shown.selected.index)} ${shown.way}`;
 
-  writeInputValue(document, `handle-${end}-y`, shown.values[1]);
+  return [isAngleUnknown(shown.way, handle) ? readKeptAngle(document, end, owner) : first, second];
 }
 
 /**
@@ -83,10 +91,10 @@ function writeHandleValues(
   writeAxisLabels(document, way);
 
   for (const end of ["before", "after"] as const) {
-    writeEndValues(document, end, {
-      isKept: isAngleUnknown(way, handles[end]),
-      values: fieldValuesOfHandle(way, handles[end], frames[end]),
-    });
+    const [first, second] = readShownValues(document, end, { frame: frames[end], selected, way });
+
+    writeInputValue(document, `handle-${end}-x`, first);
+    writeInputValue(document, `handle-${end}-y`, second);
   }
 }
 

@@ -20,6 +20,5 @@ const HALF_TURN = DEGREES_PER_TURN / 2;
 export function angleFromDirection(direction: Vector, handle: Vector): number {
   const radians = Math.atan2(perpDot(direction, handle), dot(direction, handle));
 
-  // Adding zero turns −0 into 0.
-  return degreesInTurn((radians * HALF_TURN) / Math.PI) + 0;
+  return degreesInTurn((radians * HALF_TURN) / Math.PI);
 }

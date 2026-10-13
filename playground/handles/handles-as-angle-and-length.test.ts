@@ -74,6 +74,7 @@ describe("handles typed as an angle and a length (US-024)", () => {
     typeAndEnter("handle-before-y", "30");
 
     expect(readText("#path-data")).toContain("C25.98076 -15 74.01924 -15 100 0");
+    expect(readHandleFields().slice(0, 2)).toEqual([330, 30]);
   });
 
   it("[F12.AC4] brings 370° back to 10°, and refuses a negative length", () => {
@@ -97,5 +98,26 @@ describe("handles typed as an angle and a length (US-024)", () => {
         (label) => label.textContent,
       ),
     ).toEqual(["angle", "length", "angle", "length"]);
+  });
+
+  it("[F12.AC4] reads point 1's handle before against the side back to the last point", () => {
+    // Point 1's side before goes down to (0, 80): mirrored, 330°, 30 gives (−15, 25.98076).
+    openAngleFields("side");
+    chooseOption("handle-mode", "none");
+    typeAndEnter("handle-before-x", "330");
+    typeAndEnter("handle-before-y", "30");
+
+    expect(readText("#path-data")).toContain("-15 25.98076 0 0");
+  });
+
+  it("never takes a number left by another way as an angle", () => {
+    // Point 2, x and y first (its x reads 100), then the x axis: the length typed alone gives 0°.
+    clickPoint(2, false);
+    clickElement("handles-switch");
+    chooseOption("handle-method", "axis");
+    chooseOption("handle-mode", "none");
+    typeAndEnter("handle-after-y", "30");
+
+    expect(readText("#path-data")).toContain("C130 0 ");
   });
 });

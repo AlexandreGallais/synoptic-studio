@@ -27,7 +27,7 @@ The handle before a point leaves along the side towards the previous point, `u =
 
 ## Step 4 — Reading a handle back
 
-The angle of a vector from the x axis is `atan2(h_y, hₓ)` (`REF-MDN-ATAN2`), counterclockwise with y up, so clockwise on screen; converted to degrees and brought into 0 to 359. From the side: the angle between `u` and `h` is `atan2(u × h, u · h)` (perp dot and dot), negated for the handle before (step 3). The length is `|h|`. A handle of length 0 has no angle: it reads 0.
+The angle of a vector from the x axis is `atan2(h_y, hₓ)` (`REF-MDN-ATAN2`), counterclockwise with y up, so clockwise on screen; converted to degrees and brought into 0 to 359. From the side: `u × h = |u| |h| sin θ` (`REF-MATHWORLD-PERP-DOT`) and `u · h = |u| |h| cos θ` (`REF-MATHWORLD-DOT`), so the angle between `u` and `h` is `atan2(u × h, u · h)`, negated for the handle before (step 3). The length is `|h|`. A handle of length 0 has no angle: it reads 0.
 
 ## Checks (test cases)
 
