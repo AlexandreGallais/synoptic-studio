@@ -83,10 +83,10 @@ A point of a free shape can bend its two sides with two handles, as in Figma, wi
 
 **Points added or deleted on a curve:**
 
-| Edit                                         | Effect                                                                                                                                                                                                              |
-| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| A point added in the middle of a curved side | the curve is split at its middle and the drawing does not move; the new point is in handles mode, Mirror angle and length; a neighbour in Mirror angle and length goes to Mirror angle (`DERIV-cubic-sides` step 4) |
-| A point deleted                              | its two sides become one, keeping the outer handles                                                                                                                                                                 |
+| Edit                                         | Effect                                                                                                                                                                                                                                                                                                                              |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A point added in the middle of a curved side | the curve is split at its middle and the drawing does not move — unless a neighbour's fillet reached past the middle: it is then rebuilt on the half left and may shrink (Q34); the new point is in handles mode, Mirror angle and length; a neighbour in Mirror angle and length goes to Mirror angle (`DERIV-cubic-sides` step 4) |
+| A point deleted                              | its two sides become one, keeping the outer handles                                                                                                                                                                                                                                                                                 |
 
 **Typing a handle.** Two methods, kept by the Product Owner at VAL-011 out of the seven tried (Q32, research note 0013, 2026-10-13). The method changes only how the stored vector is shown and typed.
 

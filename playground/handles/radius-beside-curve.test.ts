@@ -44,5 +44,11 @@ describe("a corner beside a curved side keeps its radius (US-027)", () => {
     typeAndEnter("point-radius", "60");
 
     expect(readPointRows()[1]).toMatch(/^2 · x 120 · y 0 · radius 60 \(effective [1-5]\d\.\d+\)$/u);
+
+    // Drawn: an arc at point 2, whose radius is the effective one shown.
+    const effective =
+      /effective (?<radius>[\d.]+)/u.exec(readPointRows()[1] ?? "")?.groups?.["radius"] ?? "";
+
+    expect(readText("#path-data")).toContain(`A${effective} ${effective} `);
   });
 });

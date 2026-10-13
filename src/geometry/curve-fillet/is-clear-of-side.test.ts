@@ -2,9 +2,9 @@ import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { LINE_AND_THIRDS } from "../../../tests";
+import { orientedSides } from "../fillet-side";
 
 import { isClearOfSide } from "./is-clear-of-side";
-import { orientedSides } from "./oriented-sides";
 
 describe("isClearOfSide (ADR-0047)", () => {
   it("keeps the fillet's circle outside the side, and refuses one the side runs through", () => {

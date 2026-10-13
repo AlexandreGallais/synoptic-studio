@@ -32,5 +32,5 @@ As built (US-027), the circle is kept clear of the whole curve, not only up to w
 
 ## Impact
 
-- Geometry: a general `splitCubic`, the tangent at a corner whose handle is off, `r(t)`, the fillet between a segment and a cubic, then between two cubics; `filletableCorners` keeps the radius of a corner beside a curve.
+- Geometry: a general `splitCubic`, the tangent at a corner whose handle is off, the fillet between a side and a cubic found along the cubic's parallel curve (folders `fillet-side`, `curve-fillet`, `curve-contour`).
 - Domain: `shapes.md` "Points with handles"; ADR-0047 replaces ADR-0046's sharp corner.

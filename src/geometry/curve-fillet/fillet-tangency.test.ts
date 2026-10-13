@@ -3,10 +3,10 @@ import { describe, expect, it } from "vitest";
 
 import { LINE_AND_HANDLE_OFF, LINE_AND_THIRDS, TWO_CURVES } from "../../../tests";
 import { norm, subtract } from "../../math";
+import { orientedSides } from "../fillet-side";
 import { cubicPoint } from "../placement";
 
 import { filletTangency } from "./fillet-tangency";
-import { orientedSides } from "./oriented-sides";
 
 describe("filletTangency (DERIV-fillet-beside-curve, checks 1a, 1b and 3)", () => {
   it("[F12.AC7] touches a straight cubic as the fillet of a segment: centre (90, 10)", () => {
