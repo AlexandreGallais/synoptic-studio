@@ -26,15 +26,35 @@ Started with the Product Owner on 2026-10-13:
 
 ## Stories
 
-| ID                                                      | Type       | Title                                                               | Status |
-| ------------------------------------------------------- | ---------- | ------------------------------------------------------------------- | ------ |
-| [SP-011](../stories/E14-F12-SP-011-research-f12.md)     | Spike      | Research for F12: curves in symbols, ways to type a handle, strokes | ready  |
-| [CHK-011](../stories/E14-F12-CHK-011-checkpoint-f12.md) | Checkpoint | Checkpoint in the middle of F12                                     | draft  |
-| [AUD-011](../stories/E14-F12-AUD-011-audit-f12.md)      | Audit      | Audit F12                                                           | draft  |
-| [VAL-011](../stories/E14-F12-VAL-011-validate-f12.md)   | Validation | Validate F12                                                        | draft  |
+| ID                                                                 | Type       | Title                                                               | Status |
+| ------------------------------------------------------------------ | ---------- | ------------------------------------------------------------------- | ------ |
+| [SP-011](../stories/E14-F12-SP-011-research-f12.md)                | Spike      | Research for F12: curves in symbols, ways to type a handle, strokes | ready  |
+| [EN-024](../stories/E14-F12-EN-024-handles-model.md)               | Enabler    | A point's handles in the free shape model                           | ready  |
+| [EN-025](../stories/E14-F12-EN-025-cubic-sides.md)                 | Enabler    | Cubic sides in contours, path data and the straight box             | ready  |
+| [US-022](../stories/E14-F12-US-022-handles-in-points-mode.md)      | User story | Switch a point to handles and type them as x and y                  | ready  |
+| [US-023](../stories/E14-F12-US-023-handles-relative-to-point.md)   | User story | Type a handle as dx and dy from its point                           | ready  |
+| [CHK-011](../stories/E14-F12-CHK-011-checkpoint-f12.md)            | Checkpoint | Checkpoint in the middle of F12                                     | ready  |
+| [US-024](../stories/E14-F12-US-024-handles-as-angle-and-length.md) | User story | Type a handle as an angle and a length                              | ready  |
+| [US-025](../stories/E14-F12-US-025-handles-as-share-or-data.md)    | User story | Type a side's handles as shares of the side, or paste curve data    | ready  |
+| [AUD-011](../stories/E14-F12-AUD-011-audit-f12.md)                 | Audit      | Audit F12                                                           | ready  |
+| [VAL-011](../stories/E14-F12-VAL-011-validate-f12.md)              | Validation | Validate F12                                                        | ready  |
 
-The stories between SP-011 and the checkpoint, and after it, are written by SP-011; the run sets them ready (ADR-0045).
+Written by SP-011 from [research note 0013](../../research/notes/0013-f12-curves-with-handles.md); set ready by the run (ADR-0045).
 
 ## Acceptance criteria
 
-To write after SP-011.
+1. A point of a free shape switches between its corner radius and its handles; the radius comes back as it was.
+2. Handles follow Figma's three modes, angle and length by default.
+3. A side with a handle at either end is drawn as a cubic Bézier, its straight box exact (ADR-0046).
+4. A handle can be typed in each of the six methods of research note 0013: x and y; dx and dy; angle and length from the x axis or from the side; shares of the side; pasted `C` or `cubic-bezier()` data.
+5. Every shape of E01 draws as before.
+
+## Feature plan
+
+| Acceptance criterion | Realized by      | Verified by         |
+| -------------------- | ---------------- | ------------------- |
+| F12.AC1              | EN-024, US-022   | AUD-011             |
+| F12.AC2              | EN-024, US-022   | AUD-011             |
+| F12.AC3              | EN-025           | AUD-011             |
+| F12.AC4              | US-022 to US-025 | AUD-011             |
+| F12.AC5              | every story      | `npm run check:all` |
