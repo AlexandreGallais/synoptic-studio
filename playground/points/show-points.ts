@@ -1,3 +1,4 @@
+import { createCurveHandleElements, showHandleFields } from "../handles";
 import { readMode, readSelection } from "../page";
 
 import { createHandleElements } from "./create-handle-elements";
@@ -31,6 +32,12 @@ export function showPoints(document: Document, reading: ShapeReading): readonly 
   writeRadiusField(document, "point-radius", { all: reading.radii, shown: selection.selected });
   showPointsList(document, reading, selection);
   showPointFields(document, reading, selection);
+  showHandleFields(document, reading);
 
-  return isPoints ? createHandleElements(document, contour, selection.selected) : [];
+  return isPoints
+    ? [
+        ...createCurveHandleElements(document, reading.corners),
+        ...createHandleElements(document, contour, selection.selected),
+      ]
+    : [];
 }
