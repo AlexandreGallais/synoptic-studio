@@ -1,4 +1,5 @@
 export * from "./are-free-shape-points";
+export * from "./corners-with-midpoint";
 export * from "./deletion-outcome";
 export type * from "./free-shape";
 export * from "./free-shape-around-corners";
