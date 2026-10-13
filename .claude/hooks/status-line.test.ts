@@ -63,6 +63,23 @@ describe("status line", () => {
     });
   });
 
+  it("stops the turn's clock at the agent's last answer, and restarts it at the next prompt", () => {
+    const ended = addTokens(
+      EMPTY_TALLY,
+      `${prompt("2026-10-13T08:00:00Z")}\n${line("a", 5)}\n{"timestamp": "2026-10-13T08:03:00Z", "message": {"id": "z", "stop_reason": "end_turn"}}\n`,
+    );
+
+    expect(ended).toMatchObject({
+      end: Temporal.Instant.from("2026-10-13T08:03:00Z").epochMilliseconds,
+      isWaiting: true,
+    });
+
+    expect(addTokens(ended, `${prompt("2026-10-13T09:00:00Z")}\n`)).toMatchObject({
+      end: 0,
+      isWaiting: false,
+    });
+  });
+
   it("does not start a turn at a compaction summary nor at a task notification", () => {
     const summary = '{"type": "user", "isCompactSummary": true, "message": {"content": "summary"}}';
     const notification =
@@ -76,10 +93,11 @@ describe("status line", () => {
 
   it("keeps a cached tally only for the same transcript", () => {
     const cache: unknown = JSON.parse(
-      '{"transcript": "t.jsonl", "tally": {"isWaiting": false, "lastId": "a", "offset": 9, "output": 2, "start": 5, "total": 3}}',
+      '{"transcript": "t.jsonl", "tally": {"end": 7, "isWaiting": false, "lastId": "a", "offset": 9, "output": 2, "start": 5, "total": 3}}',
     );
 
     expect(cachedTally(cache, "t.jsonl")).toEqual({
+      end: 7,
       isWaiting: false,
       lastId: "a",
       offset: 9,
@@ -131,6 +149,25 @@ describe("status line", () => {
     expect(active.split("\n")).toHaveLength(2);
     expect(silent).toContain("waiting");
     expect(silent).toContain("◌ silent for 3 min");
+
+    expect(
+      statusText({
+        ...base,
+        silentMs: 1000,
+        step: "",
+        tally: { ...base.tally, isWaiting: true, start: 1 },
+      }),
+    ).toContain("◌ your turn");
+
+    expect(
+      statusText({
+        ...base,
+        silentMs: 1000,
+        step: "",
+        tally: { ...base.tally, isWaiting: true, start: 1 },
+      }),
+    ).toContain("⏱ last turn 1 min 00 s");
+
     expect(silent.split("\n", 3)[2]).toBe("\u{1B}[31m▶ Bash · Run the checks — 12 s\u{1B}[0m");
   });
 });

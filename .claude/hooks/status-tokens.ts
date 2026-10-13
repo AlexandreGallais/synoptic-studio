@@ -6,6 +6,8 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 
 /** Tokens of the current turn, and where the reading of the transcript stopped. */
 export type TokenTally = {
+  /** When the agent ended its turn, epoch milliseconds; 0 while it works. */
+  readonly end: number;
   /** Whether the agent ended its turn: the next prompt starts a new one. */
   readonly isWaiting: boolean;
   readonly lastId: string;
@@ -18,6 +20,7 @@ export type TokenTally = {
 
 /** A tally before any line. */
 export const EMPTY_TALLY: TokenTally = {
+  end: 0,
   isWaiting: true,
   lastId: "",
   offset: 0,
@@ -125,9 +128,9 @@ function withUsage(tally: TokenTally, message: unknown): TokenTally {
 }
 
 /**
- * When a prompt was sent.
+ * When a transcript line was written: a prompt sent, or the agent's last answer.
  *
- * @param line - parsed transcript line of a prompt
+ * @param line - parsed transcript line
  * @returns its timestamp, epoch milliseconds, or 0 when it has none
  */
 function startOf(line: unknown): number {
@@ -148,11 +151,13 @@ function withLine(tally: TokenTally, line: unknown): TokenTally {
   const message = field(line, "message");
   const started =
     tally.isWaiting && isPrompt(line)
-      ? { ...tally, isWaiting: false, output: 0, start: startOf(line), total: 0 }
+      ? { ...tally, end: 0, isWaiting: false, output: 0, start: startOf(line), total: 0 }
       : tally;
   const counted = withUsage(started, message);
 
-  return text(message, "stop_reason") === "end_turn" ? { ...counted, isWaiting: true } : counted;
+  return text(message, "stop_reason") === "end_turn"
+    ? { ...counted, end: startOf(line), isWaiting: true }
+    : counted;
 }
 
 /**
@@ -185,6 +190,7 @@ export function cachedTally(cached: unknown, transcript: string): TokenTally {
 
   return field(cached, "transcript") === transcript
     ? {
+        end: count(tally, "end"),
         isWaiting: field(tally, "isWaiting") !== false,
         lastId: text(tally, "lastId"),
         offset: count(tally, "offset"),

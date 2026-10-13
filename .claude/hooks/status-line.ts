@@ -102,6 +102,18 @@ export function clockDuration(milliseconds: number): string {
 }
 
 /**
+ * Activity of a working agent: active, or silent for a while (waiting, or stalled).
+ *
+ * @param silentMs - time since the transcript last changed
+ * @returns the colored activity
+ */
+function activityOf(silentMs: number): string {
+  return silentMs < IDLE_MS
+    ? `${COLOR.green}● active${COLOR.reset}`
+    : `${COLOR.yellow}◌ silent for ${shortDuration(silentMs)}${COLOR.reset}`;
+}
+
+/**
  * The turn's line: activity, time, tokens, how full the conversation memory is, model.
  *
  * @param status - what the status line shows
@@ -109,14 +121,11 @@ export function clockDuration(milliseconds: number): string {
  */
 function sessionLine(status: Status): string {
   const { contextPercent, durationMs, model, silentMs, tally } = status;
-  const activity =
-    silentMs < IDLE_MS
-      ? `${COLOR.green}● active${COLOR.reset}`
-      : `${COLOR.yellow}◌ silent for ${shortDuration(silentMs)}${COLOR.reset}`;
+  const isDone = tally.isWaiting && tally.start !== 0;
 
   return [
-    activity,
-    `⏱ turn ${clockDuration(durationMs)}`,
+    isDone ? `${COLOR.dim}◌ your turn${COLOR.reset}` : activityOf(silentMs),
+    `⏱ ${isDone ? "last turn" : "turn"} ${clockDuration(durationMs)}`,
     `${tally.total.toLocaleString("en-US")} tokens this turn (${tally.output.toLocaleString("en-US")} written)`,
     `conversation memory ${String(Math.round(contextPercent))} % full`,
     `${COLOR.dim}${model}${COLOR.reset}`,
@@ -192,7 +201,9 @@ if (import.meta.main) {
   const calls = runningCalls(join(folder, "running")).filter((call) => call.start >= tally.start);
   const status: Status = {
     contextPercent: count(field(input, "context_window"), "used_percentage"),
-    durationMs: tally.start === 0 ? 0 : now - tally.start,
+    // Once the agent ended its turn, the clock stops at its last answer.
+    durationMs:
+      tally.start === 0 ? 0 : (tally.isWaiting && tally.end !== 0 ? tally.end : now) - tally.start,
     model: typeof model === "string" ? model : "",
     place: placeOf(git(["branch", "--show-current"]), backlog),
     isRunningLong: calls.some((call) => now - call.start > LONG_CALL_MS),
