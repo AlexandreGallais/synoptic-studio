@@ -34,7 +34,7 @@ Started with the Product Owner on 2026-10-13:
 | [US-022](../stories/E14-F12-US-022-handles-in-points-mode.md)      | User story | Switch a point to handles and type them as x and y                  | done   |
 | [US-023](../stories/E14-F12-US-023-handles-relative-to-point.md)   | User story | Type a handle as dx and dy from its point                           | done   |
 | [CHK-011](../stories/E14-F12-CHK-011-checkpoint-f12.md)            | Checkpoint | Checkpoint in the middle of F12                                     | done   |
-| [US-024](../stories/E14-F12-US-024-handles-as-angle-and-length.md) | User story | Type a handle as an angle and a length                              | ready  |
+| [US-024](../stories/E14-F12-US-024-handles-as-angle-and-length.md) | User story | Type a handle as an angle and a length                              | done   |
 | [US-025](../stories/E14-F12-US-025-handles-as-share-or-data.md)    | User story | Type a side's handles as shares of the side, or paste curve data    | ready  |
 | [US-026](../stories/E14-F12-US-026-handles-from-a-tension.md)      | User story | Smooth a point by a tension, its handles computed                   | ready  |
 | [AUD-011](../stories/E14-F12-AUD-011-audit-f12.md)                 | Audit      | Audit F12                                                           | ready  |
