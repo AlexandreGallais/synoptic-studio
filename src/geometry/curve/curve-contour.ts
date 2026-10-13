@@ -15,7 +15,6 @@ const NO_CORNER: CurveCorner = {
     before: { x: 0, y: 0 },
     isOn: false,
     mode: "angle-and-length",
-    tension: 0,
   },
   point: { x: 0, y: 0 },
   radius: 0,

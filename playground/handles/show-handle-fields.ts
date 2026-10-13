@@ -12,15 +12,12 @@ import type { SelectedCorner } from "./read-selected-corner";
 
 /** Names of the two values of a handle, by the way it is typed. */
 const VALUE_NAMES: Readonly<Record<HandleWay, readonly [string, string]>> = {
-  axis: ["angle", "length"],
   page: ["x", "y"],
-  point: ["dx", "dy"],
-  share: ["along %", "across %"],
   side: ["angle", "length"],
 };
 
 /**
- * Writes the name of each handle field's value: x and y, dx and dy, or angle and length.
+ * Writes the name of each handle field's value: x and y, or angle and length.
  *
  * @kind procedure
  * @param document - page document
@@ -88,9 +85,6 @@ function writeHandleValues(
   if (mode instanceof HTMLSelectElement) {
     mode.value = handles.mode;
   }
-
-  selectElement(document, "handle-tension-field").hidden = handles.mode !== "auto";
-  writeInputValue(document, "handle-tension", handles.tension);
 
   writeAxisLabels(document, way);
 

@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { rectangleCorners } from "../../../tests";
 import { cubicPoint, curveContour } from "../../geometry";
-import { NO_HANDLES, curveCornerOf, smoothedCorners } from "../handles";
+import { NO_HANDLES, curveCornerOf } from "../handles";
 
 import { cornersWithMidpoint } from "./corners-with-midpoint";
 
@@ -26,15 +26,6 @@ function archedSquare(): CurveCorner[] {
     },
   }));
 }
-
-/** A cubic of no length, read when a contour has none. */
-const ORIGIN_CUBIC = {
-  end: { x: 0, y: 0 },
-  first: { x: 0, y: 0 },
-  kind: "cubic",
-  second: { x: 0, y: 0 },
-  start: { x: 0, y: 0 },
-} as const;
 
 describe("cornersWithMidpoint (DERIV-cubic-sides step 4)", () => {
   it("[F08.AC3] adds a sharp point in the middle of a straight side", () => {
@@ -65,7 +56,6 @@ describe("cornersWithMidpoint (DERIV-cubic-sides step 4)", () => {
       before: { x: -25, y: 0 },
       isOn: true,
       mode: "angle-and-length",
-      tension: 0,
     });
 
     expect([corners[0]?.handles.after, corners[2]?.handles.before]).toEqual([
@@ -132,25 +122,5 @@ describe("cornersWithMidpoint (DERIV-cubic-sides step 4)", () => {
     );
 
     expect(cornersWithMidpoint(arched, 0)[2]?.handles).toEqual(arched[1]?.handles);
-  });
-
-  it("[F12.AC4] keeps the outline when the side split starts at a point in mode auto, that point set to angle", () => {
-    // Point 1 (0, 0) in mode auto, tension 0: after = ((100, 0) − (0, 100)) / 6, the top side bulges.
-    const square = rectangleCorners(100, 100, [0, 0, 0, 0]).map((corner, index) => ({
-      ...corner,
-      handles: index === 0 ? { ...NO_HANDLES, isOn: true, mode: "auto" as const } : NO_HANDLES,
-    }));
-    const before = smoothedCorners(square);
-    const whole = curveContour(before).find((piece) => piece.kind === "cubic");
-    const split = smoothedCorners(cornersWithMidpoint(before, 0));
-    const half = curveContour(split).find((piece) => piece.kind === "cubic");
-
-    expect(split[0]?.handles.mode).toBe("angle");
-    expect(half === undefined || whole === undefined).toBe(false);
-
-    expect(cubicPoint(half ?? ORIGIN_CUBIC, 0.5).y).toBeCloseTo(
-      cubicPoint(whole ?? ORIGIN_CUBIC, 0.25).y,
-      9,
-    );
   });
 });

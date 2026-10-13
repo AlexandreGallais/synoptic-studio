@@ -11,7 +11,7 @@ const NO_CORNER: CurveCorner = { handles: NO_HANDLES, point: { x: 0, y: 0 }, rad
 /**
  * A corner whose handle after or before now reaches a given control point, when its point is in
  * handles mode (an off point draws no handle and keeps its stored one). Shortened by the split, its
- * handles leave mode angle and length, or their tension, for mode angle: still on one line, of their own lengths.
+ * handles leave mode angle and length for mode angle: still on one line, of their own lengths.
  *
  * @kind domain
  * @param corner - corner to change

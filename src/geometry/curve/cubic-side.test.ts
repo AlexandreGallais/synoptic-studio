@@ -17,7 +17,7 @@ import type { CurveCorner } from "../handles";
  * @returns the corner, radius 0
  */
 function corner(point: Point, before: Vector, after: Vector): CurveCorner {
-  return { handles: { after, before, isOn: true, mode: "none", tension: 0 }, point, radius: 0 };
+  return { handles: { after, before, isOn: true, mode: "none" }, point, radius: 0 };
 }
 
 describe("cubicSide (REF-SVG2-PATHS)", () => {
