@@ -77,7 +77,7 @@
 | [EN-021](./E14-F11-EN-021-shared-test-helpers.md)               | F11     | Shared test helpers, one path writer, one pass per corner | done   |
 | [CHK-010](./E14-F11-CHK-010-checkpoint-f11.md)                  | F11     | Checkpoint in the middle of F11                           | done   |
 | [EN-022](./E14-F11-EN-022-folder-layout.md)                     | F11     | Folders of the library and the playground                 | done   |
-| [AUD-010](./E14-F11-AUD-010-audit-f11.md)                       | F11     | Audit F11                                                 | ready  |
+| [AUD-010](./E14-F11-AUD-010-audit-f11.md)                       | F11     | Audit F11                                                 | done   |
 | [VAL-010](./E14-F11-VAL-010-validate-f11.md)                    | F11     | Validate F11                                              | draft  |
 | [REV-002](./E14-REV-002-review-e14.md)                          | E14     | Review E14 with the Product Owner                         | draft  |
 | [RET-002](./E14-RET-002-retrospective-e14.md)                   | E14     | Retrospective of E14                                      | draft  |
