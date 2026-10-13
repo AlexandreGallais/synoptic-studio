@@ -93,7 +93,7 @@
 | [SP-012](./E14-F12-SP-012-research-fillet-beside-curve.md)      | F12     | Research: a corner radius beside a curved side                      | done        |
 | [US-027](./E14-F12-US-027-radius-beside-curve.md)               | F12     | A corner beside a curved side keeps its radius                      | done        |
 | [US-028](./E14-F12-US-028-handles-on-a-polygon.md)              | F12     | Give handles to a point of a regular polygon                        | done        |
-| [AUD-012](./E14-F12-AUD-012-audit-after-validation.md)          | F12     | Audit the changes asked at the validation                           | draft       |
+| [AUD-012](./E14-F12-AUD-012-audit-after-validation.md)          | F12     | Audit the changes asked at the validation                           | done        |
 | [VAL-011](./E14-F12-VAL-011-validate-f12.md)                    | F12     | Validate F12                                                        | in-progress |
 | [VAL-010](./E14-F11-VAL-010-validate-f11.md)                    | F11     | Validate F11                                                        | done        |
 | [REV-002](./E14-REV-002-review-e14.md)                          | E14     | Review E14 with the Product Owner                                   | draft       |
