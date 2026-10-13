@@ -3,7 +3,7 @@ id: US-028
 epic: E14
 feature: F12
 title: Give handles to a point of a regular polygon
-status: ready
+status: done
 points: 1
 ---
 
@@ -36,3 +36,7 @@ One task = one commit, referenced as `US-028.Tn`.
 1. Choose **Polygon**, 6 corners, **Radius** 10. Click **Points**, then point 1: the **Handles** switch shows.
 2. Press **Handles**: the shape selector reads **Free shape**, nothing moves but point 1, now sharp; the list reads its radius 10 (effective 0).
 3. Type **After y** = 80: the side after point 1 bends, the side before too by the mirror. Its neighbours stay rounded once US-027 is in (a corner beside a curve keeps its radius).
+
+## Review
+
+Verifier, before the last commit: the conversion now checked exactly (path, mode, handles), a polygon of width 0 shows no switch, the test card corrected. Left: a turned polygon is covered by the conversion's own tests (F08, F04).
