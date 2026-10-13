@@ -1,16 +1,21 @@
+import { HANDLE_WAYS } from "../../src";
 import { selectElement } from "../page";
 
+import type { HandleWay } from "../../src";
+
 /**
- * How the handle fields are typed, read from the list: as x and y on the page (`page`), or as dx
- * and dy from the point (`point`).
+ * How the handle fields are typed, read from the list (research note 0013): x and y on the page,
+ * dx and dy from the point, an angle and a length from the x axis or from the side.
  *
  * @kind procedure
  * @param document - page document
- * @returns `point` when dx and dy are chosen, `page` otherwise
- * @see docs/backlog/stories/E14-F12-US-023-handles-relative-to-point.md
+ * @returns the way chosen, `page` for a value the list does not hold
+ * @see docs/backlog/stories/E14-F12-US-024-handles-as-angle-and-length.md
  */
-export function readTypingWay(document: Document): "page" | "point" {
+export function readTypingWay(document: Document): HandleWay {
   const list = selectElement(document, "handle-method");
 
-  return list instanceof HTMLSelectElement && list.value === "point" ? "point" : "page";
+  return (
+    HANDLE_WAYS.find((way) => list instanceof HTMLSelectElement && way === list.value) ?? "page"
+  );
 }

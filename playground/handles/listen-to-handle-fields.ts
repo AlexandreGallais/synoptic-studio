@@ -1,12 +1,20 @@
-import { HANDLE_MODES, add, freeShapeWithHandles, handlesAfterTyping, subtract } from "../../src";
+import {
+  HANDLE_MODES,
+  fieldValuesOfHandle,
+  freeShapeWithHandles,
+  handlesAfterTyping,
+  isAngleUnknown,
+  typedHandle,
+} from "../../src";
 import { readNumber, selectElement } from "../page";
 import { readEditedFreeShape, readShape, writeStoredFreeShape } from "../shape";
 
-import { readFieldShift } from "./read-field-shift";
+import { readHandleFrames } from "./read-handle-frames";
 import { readSelectedCorner } from "./read-selected-corner";
+import { readTypingWay } from "./read-typing-way";
 
 import type { SelectedCorner } from "./read-selected-corner";
-import type { FreeShape, Handles, Point } from "../../src";
+import type { FreeShape, HandleFrame, HandleWay, Handles, Vector } from "../../src";
 
 /** A change to the handles of the point selected, from its handles as drawn. */
 type HandlesChange = (handles: Handles, document: Document) => Handles | undefined;
@@ -106,6 +114,19 @@ function writeChangedHandles(document: Document, change: HandlesChange, update: 
   update();
 }
 
+/** The other value of a handle's two fields. */
+const OTHER_AXIS = { x: "y", y: "x" } as const;
+
+/** A value typed in a handle field, with what the move needs. */
+type HandleMove = TypedField & {
+  /** The other value of that handle, as its field shows it. */
+  readonly shown: number;
+  /** The value typed. */
+  readonly typed: number;
+  /** The way the handles are typed. */
+  readonly way: HandleWay;
+};
+
 /** The field typed: which handle, and which coordinate of its end. */
 type TypedField = {
   /** The coordinate typed. */
@@ -115,16 +136,16 @@ type TypedField = {
 };
 
 /**
- * Handles once one coordinate of a handle's end is typed: the other coordinate kept where it is
- * drawn, as the point's x and y (F08); the handle's vector from the values (`readFieldShift`), the other handle
- * following the mode (`handlesAfterTyping`); a value that is not an integer changes nothing.
+ * Handles once one value of a handle is typed, in the way chosen (`typedHandle`): the other value
+ * kept as it is shown, as the point's x and y (F08); the other handle following the mode
+ * (`handlesAfterTyping`); a value that is not an integer, or refused, changes nothing.
  *
  * @kind procedure
  * @param handles - handles as drawn
  * @param document - page document
- * @param field - which handle and which coordinate were typed
+ * @param field - which handle and which of its two values were typed
  * @returns the handles after the typing, or `undefined`
- * @see docs/backlog/stories/E14-F12-US-022-handles-in-points-mode.md
+ * @see docs/backlog/stories/E14-F12-US-024-handles-as-angle-and-length.md
  */
 function readTypedHandles(
   handles: Handles,
@@ -132,31 +153,59 @@ function readTypedHandles(
   field: TypedField,
 ): Handles | undefined {
   const typed = readNumber(document, `handle-${field.end}-${field.axis}`);
-  const selected = readSelectedCorner(document, readShape(document));
+  const reading = readShape(document);
+  const selected = readSelectedCorner(document, reading);
 
   return selected === undefined || !Number.isSafeInteger(typed)
     ? undefined
-    : readMovedEnd(handles, readFieldShift(document, selected.corner.point), { ...field, typed });
+    : readMovedHandle(handles, readHandleFrames(reading, selected)[field.end], {
+        ...field,
+        shown: readNumber(document, `handle-${field.end}-${OTHER_AXIS[field.axis]}`),
+        typed,
+        way: readTypingWay(document),
+      });
 }
 
 /**
- * Handles with one coordinate of a handle's end moved to the value typed.
+ * The two values of a handle once one is typed: the other as it is shown — computed from the
+ * handle, or, for a handle of length 0 typed as an angle, the angle in its field (`isAngleUnknown`).
+ *
+ * @kind procedure
+ * @param handle - the handle typed, as drawn
+ * @param frame - what it is read against
+ * @param move - which value, its new value, the other value as shown, the way chosen
+ * @returns the two values to type
+ * @see docs/backlog/stories/E14-F12-US-024-handles-as-angle-and-length.md
+ */
+function readTypedValues(
+  handle: Vector,
+  frame: HandleFrame,
+  move: HandleMove,
+): readonly [number, number] {
+  const [computed, second] = fieldValuesOfHandle(move.way, handle, frame);
+  const first = isAngleUnknown(move.way, handle) ? move.shown : computed;
+
+  return move.axis === "x" ? [move.typed, second] : [first, move.typed];
+}
+
+/**
+ * Handles with one value of a handle replaced by the value typed.
  *
  * @kind procedure
  * @param handles - handles as drawn
- * @param origin - what the fields are counted from (`readFieldShift`)
- * @param move - the handle, the coordinate and its new value
- * @returns the handles after the move
- * @see docs/backlog/stories/E14-F12-US-022-handles-in-points-mode.md
+ * @param frame - what that handle is read against
+ * @param move - the handle, which value, its new value, the other value as shown, the way chosen
+ * @returns the handles after the move, or `undefined` when the values are refused
+ * @see docs/backlog/stories/E14-F12-US-024-handles-as-angle-and-length.md
  */
-function readMovedEnd(
+function readMovedHandle(
   handles: Handles,
-  origin: Point,
-  move: TypedField & { readonly typed: number },
-): Handles {
-  const end = { ...add(origin, handles[move.end]), [move.axis]: move.typed };
+  frame: HandleFrame,
+  move: HandleMove,
+): Handles | undefined {
+  const handle = typedHandle(move.way, readTypedValues(handles[move.end], frame, move), frame);
 
-  return handlesAfterTyping(handles, move.end, subtract(end, origin));
+  return handle === undefined ? undefined : handlesAfterTyping(handles, move.end, handle);
 }
 
 /**
