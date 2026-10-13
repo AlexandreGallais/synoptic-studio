@@ -36,4 +36,15 @@ describe("orientedSides (DERIV-fillet-beside-curve step 2)", () => {
       expect(before.sign + after.sign).toBe(0);
     },
   );
+
+  it("has no inside when a side has length 0, its direction only rounding noise", () => {
+    // pointBetween((120, 0), (120, 0), 1/3) is 120.00000000000001: a direction from nothing.
+    const corner = { x: 120, y: 0 };
+    const [before] = orientedSides(
+      sideOf(straightCubic(corner, corner), true),
+      sideOf(straightCubic(corner, { x: 120, y: 80 }), false),
+    );
+
+    expect(before.sign).toBe(0);
+  });
 });
