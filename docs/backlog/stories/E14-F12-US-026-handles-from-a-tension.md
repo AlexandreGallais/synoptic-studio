@@ -3,7 +3,7 @@ id: US-026
 epic: E14
 feature: F12
 title: "Smooth a point by a tension, its handles computed"
-status: ready
+status: done
 points: 3
 ---
 
@@ -27,11 +27,12 @@ One task = one commit, referenced as `US-026.Tn`.
 
 ## Decisions during the story
 
-| Decision                                                                                                                                  | Reason                                                                                              |
-| ----------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| a fourth handle mode, `auto`, with a `tension` stored in the handles                                                                      | the handles are computed, so the point must say it is smoothed; the tension is the only value typed |
-| the automatic handles are computed from the points as drawn, never stored (`smoothedCorners`), in the drawing and in the box of the curve | they follow the neighbours, as an auto-smooth node; a stretch commutes with them (both linear)      |
-| a handle typed in mode `auto` turns the point to mode angle                                                                               | as Inkscape's auto-smooth node dragged becomes smooth (`REF-INKSCAPE-NODE-TYPES`)                   |
+| Decision                                                                                                                                  | Reason                                                                                                                       |
+| ----------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| a fourth handle mode, `auto`, with a `tension` stored in the handles                                                                      | the handles are computed, so the point must say it is smoothed; the tension is the only value typed                          |
+| the automatic handles are computed from the points as drawn, never stored (`smoothedCorners`), in the drawing and in the box of the curve | they follow the neighbours, as an auto-smooth node; a stretch commutes with them (both linear)                               |
+| a handle typed in mode `auto` turns the point to mode angle                                                                               | the agent's choice: the handles stay on one line, the tension no longer applies; no source read states what a tool does here |
+| a point in mode `auto` next to a point deleted is smoothed again from its new neighbours                                                  | that is what mode `auto` means: its handles follow its neighbours; the outer side moves (domain)                             |
 
 ## Product Owner test
 
@@ -41,3 +42,7 @@ Open the page, type **Width** = 100: points 1 (0, 0), 2 (100, 0), 3 (100, 80).
 2. Type **Tension** = 50: the curve tightens; 100: the sides are straight again.
 3. Type **Tension** = 0, click point 3 and type its **X** = 150: point 2's curve follows, its handles turning towards the new place of point 3.
 4. Click point 2 and type a handle's **After x**: the mode becomes Mirror angle; the tension is left.
+
+## Review
+
+Auditor, also in the verifier's role, before the last commit. Fixed: Inkscape's page was cited for what it does not say (a dragged auto-smooth handle, who moves) — the derivation cites the Hermite page, the switch to mode angle is the agent's choice; the automatic handles are now stored as computed; a point in mode auto next to a deleted point is smoothed again (domain); tests of mode auto when typing (before and after, a zero handle), a split next to an auto point, a tension out of range, the factors with an automatic bulge, the tension field's value.
