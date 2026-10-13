@@ -1,3 +1,5 @@
+export * from "./angle-from-direction";
+export * from "./angled-handle";
 export * from "./cubic-side";
 export * from "./curve-bounding-box";
 export * from "./curve-contour";
