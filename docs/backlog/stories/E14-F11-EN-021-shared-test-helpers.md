@@ -15,7 +15,7 @@ Pay the debt found by the audits of E01 (AUD-001 D1, D2; AUD-004 D3; CHK-002), w
 
 - Given the playground tests, when they type, click or read the page, then they use one shared helper module, and seed their state through the page, not its attributes.
 - Given the geometry tests, when they need a rectangle, an expected list of points or a signed area, then they use shared fixtures.
-- Given the library, when a contour becomes path data, then one writer does it; `SEPARATOR` and `CLOSE_PATH` are declared once.
+- Given the library, when a contour becomes path data, then `contourPiecesToPathData` alone does it: `contourToPathData` is removed from `src/` and the public API (commit marked as a breaking change, next version 0.2.0); the test that compared both writers compares with written-out path data; `SEPARATOR` and `CLOSE_PATH` are declared once.
 - Given a rounded contour, when it is computed, then each corner's triple and turning angle are computed once.
 
 ## Tasks

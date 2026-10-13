@@ -11,10 +11,21 @@ status: draft
 
 Written at RET-001 (2026-10-13), at the Product Owner's request: plan the clean-up and the folder structure before the next epic. Its stories are drafts; the Product Owner sets them `ready`.
 
+## Refinement
+
+Decided with the Product Owner on 2026-10-13:
+
+| Question                                        | Decision                                                                                                                                         |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| The older path writer, `contourToPathData`      | removed from the public API: one writer in the library; its tests compare with written-out path data, e.g. `M0 0 L100 0 L100 50 L0 50 Z`         |
+| Most files per folder                           | proposed by SP-010 with figures from its sources, chosen by the Product Owner at the end of the spike, then an ADR                               |
+| Validation of a feature that changes no drawing | a demo page of figures before and after (largest folder, functions without a property test, repeated helpers, `check:all` green), no guided test |
+| A place for curves in the contour pieces        | out of scope: it comes after the ADR that supersedes ADR-0001, in the next feature of E14                                                        |
+
 ## Acceptance criteria
 
 1. The test helpers repeated across files (typing in a field, reading a text, mounting the playground, building a rectangle, the shoelace area) live once, in shared test modules.
-2. The library has one writer of path data; `contourToPathData` and its separators are gone or are the writer's oracle only, declared once.
+2. The library has one writer of path data, `contourPiecesToPathData`; `contourToPathData` is removed from the public API (a breaking change: the next version is 0.2.0), and `SEPARATOR` and `CLOSE_PATH` are declared once.
 3. A rounded contour computes each corner's triple and turning angle once.
 4. The folders of `src/` and `playground/` follow the layout chosen by SP-010, written in `docs/conventions/files.md`; no folder holds more than the limit it sets.
 5. Every function of `src/math/` and `src/geometry/` has a property test: the list of `tests/fitness.test.ts` is empty.
