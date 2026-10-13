@@ -28,7 +28,7 @@ A cubic's other end always has its handles on, so it is sharp: only one fillet e
 | how far along the curve                      | the whole curve (rectangle above with a handle of 40, radius 60 at point 2 → 48.6); half of it (→ 37.2, and a straight cubic would reduce a radius 20 that fits to 18.75) | the whole curve, as a single rounded corner may use a whole straight side (ADR-0007) |
 | a curve bending more tightly than the radius | the largest circle still tangent (handle 80, radius 60 → 36.3); a sharp corner                                                                                            | the largest circle, as Astute Graphics                                               |
 
-As built (US-027), the circle is kept clear of the whole curve, not only up to where it touches: the examples asked become 47.7 instead of 48.6 (the larger circle crossed the curve further on) and 46.9 instead of 36.3 (a larger circle touches the curve at point 3 without crossing it). The decision stands: the whole curve, the largest circle, never sharp.
+As built (US-027), the circle is kept clear of the whole curve, not only up to where it touches: the examples asked become 47.7 instead of 48.6 (the larger circle crossed the curve further on) and 46.9 instead of 36.3 (a larger circle touches the curve at point 3 without crossing it). The rule chosen is unchanged — the whole curve, the largest circle, never sharp — but the numbers differ from those the Product Owner chose from: shown at VAL-011.
 
 ## Impact
 
