@@ -1,6 +1,6 @@
 # ADR-0046 — Cubic Bézier sides in symbols, from points with handles
 
-**Status**: Accepted (Product Owner, 2026-10-12, Q4: curves with handles are needed in symbols; F12 refinement and SP-011, 2026-10-13). Supersedes ADR-0001's "No Bézier curve" for symbols; its other points stand.
+**Status**: Accepted (Product Owner, 2026-10-12, Q4: curves with handles are needed in symbols; F12 refinement and SP-011, 2026-10-13). Supersedes ADR-0001's "No Bézier curve" for symbols; its other points stand. Its sharp corner beside a curved side is replaced by ADR-0047.
 
 ## Context
 
