@@ -26,11 +26,14 @@ Started with the Product Owner on 2026-10-13:
 
 ## Stories
 
-| ID                                                  | Type  | Title                                                               | Status |
-| --------------------------------------------------- | ----- | ------------------------------------------------------------------- | ------ |
-| [SP-011](../stories/E14-F12-SP-011-research-f12.md) | Spike | Research for F12: curves in symbols, ways to type a handle, strokes | ready  |
+| ID                                                      | Type       | Title                                                               | Status |
+| ------------------------------------------------------- | ---------- | ------------------------------------------------------------------- | ------ |
+| [SP-011](../stories/E14-F12-SP-011-research-f12.md)     | Spike      | Research for F12: curves in symbols, ways to type a handle, strokes | ready  |
+| [CHK-011](../stories/E14-F12-CHK-011-checkpoint-f12.md) | Checkpoint | Checkpoint in the middle of F12                                     | draft  |
+| [AUD-011](../stories/E14-F12-AUD-011-audit-f12.md)      | Audit      | Audit F12                                                           | draft  |
+| [VAL-011](../stories/E14-F12-VAL-011-validate-f12.md)   | Validation | Validate F12                                                        | draft  |
 
-The other stories are written after SP-011, then set ready by the Product Owner.
+The stories between SP-011 and the checkpoint, and after it, are written by SP-011; the run sets them ready (ADR-0045).
 
 ## Acceptance criteria
 

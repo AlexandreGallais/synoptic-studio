@@ -80,6 +80,9 @@
 | [AUD-010](./E14-F11-AUD-010-audit-f11.md)                       | F11     | Audit F11                                                           | done   |
 | [EN-023](./E14-F11-EN-023-folders-by-domain.md)                 | F11     | Folders by business domain, files and folders never side by side    | done   |
 | [SP-011](./E14-F12-SP-011-research-f12.md)                      | F12     | Research for F12: curves in symbols, ways to type a handle, strokes | ready  |
+| [CHK-011](./E14-F12-CHK-011-checkpoint-f12.md)                  | F12     | Checkpoint in the middle of F12                                     | draft  |
+| [AUD-011](./E14-F12-AUD-011-audit-f12.md)                       | F12     | Audit F12                                                           | draft  |
+| [VAL-011](./E14-F12-VAL-011-validate-f12.md)                    | F12     | Validate F12                                                        | draft  |
 | [VAL-010](./E14-F11-VAL-010-validate-f11.md)                    | F11     | Validate F11                                                        | done   |
 | [REV-002](./E14-REV-002-review-e14.md)                          | E14     | Review E14 with the Product Owner                                   | draft  |
 | [RET-002](./E14-RET-002-retrospective-e14.md)                   | E14     | Retrospective of E14                                                | draft  |
