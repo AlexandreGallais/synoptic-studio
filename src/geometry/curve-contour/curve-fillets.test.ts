@@ -116,4 +116,31 @@ describe("curveFillets (ADR-0047, DERIV-fillet-beside-curve)", () => {
       ).toBeGreaterThan(0);
     },
   );
+
+  it("[F12.AC7] keeps the radius 40 where only a later crossing along the curve is clear", () => {
+    // Handles of 95 at point 3: the first circle found along the curve crosses it further on; a
+    // later one is clear, and draws the 40 asked (32.93 with the first one only, review).
+    expect(arcAt(bentRectangle(95, [20, 40, 20, 40]), 1).radius).toBe(40);
+  });
+
+  it("[F12.AC7] rounds a corner between two curves even with a small radius, its handle off", () => {
+    // Points 1 and 3 with handles (60, −60): points 2 and 4 lie between two curves.
+    const off = {
+      after: { x: 0, y: 0 },
+      before: { x: 0, y: 0 },
+      isOn: false,
+      mode: "angle-and-length",
+    } as const;
+    const on = { ...off, after: { x: 60, y: -60 }, before: { x: -60, y: 60 }, isOn: true };
+    const radii = [1, 2, 40].map((radius) => {
+      const corners = bentRectangle(0, [radius, radius, radius, radius]).map((corner, index) => ({
+        ...corner,
+        handles: index % 2 === 0 ? on : off,
+      }));
+
+      return arcAt(corners, 1).radius;
+    });
+
+    expect(radii).toEqual([1, 2, 40]);
+  });
 });

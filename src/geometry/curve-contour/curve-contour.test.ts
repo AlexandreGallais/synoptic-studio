@@ -1,7 +1,7 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
-import { integerPoint, rectangleCorners } from "../../../tests";
+import { bentRectangle, integerPoint, rectangleCorners } from "../../../tests";
 import { roundedContour } from "../corner-radius";
 
 import { curveContour } from "./curve-contour";
@@ -160,5 +160,24 @@ describe("curveContour (ADR-0046, ADR-0047)", () => {
     const pieces = curveContour(curved(points, { 1: { after: { x: 50, y: -50 } } }));
 
     expect(pieces.filter((piece) => piece.kind === "cubic")).toHaveLength(1);
+  });
+
+  it("[F12.AC7] cuts a curve at its far end where the next corner's arc touches it", () => {
+    // Side 3 → 4 of the rectangle bent by handles of 40 at point 3: cut at corner 4's tangent point,
+    // its control points those of the piece kept (de Casteljau, DERIV-fillet-beside-curve step 9).
+    const [, cut] = curveContour(bentRectangle(40, [20, 20, 20, 20])).flatMap((piece) =>
+      piece.kind === "cubic" ? [[piece.start, piece.first, piece.second, piece.end]] : [],
+    );
+
+    expect(cut?.flatMap((point) => [point.x, point.y])).toEqual([
+      120,
+      80,
+      expect.closeTo(98.91795, 5),
+      expect.closeTo(101.08205, 5),
+      expect.closeTo(42.59553, 5),
+      expect.closeTo(90.73654, 5),
+      expect.closeTo(15.27896, 5),
+      expect.closeTo(84.10088, 5),
+    ]);
   });
 });
