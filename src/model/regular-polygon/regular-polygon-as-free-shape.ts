@@ -20,13 +20,10 @@ import type { RegularPolygon } from "./regular-polygon";
  * @see docs/domain/interaction.md#_3-node-editing
  */
 export function regularPolygonAsFreeShape(polygon: RegularPolygon): FreeShape {
-  const corners = regularPolygonCorners(polygon);
+  const corners = regularPolygonCorners(polygon).map((corner) => curveCornerOf(corner));
 
   return freeShapeKeptInPlace(
-    freeShapeAroundCorners(
-      corners.map((corner) => curveCornerOf(corner)),
-      polygon.angle,
-    ),
+    freeShapeAroundCorners(corners, polygon.angle),
     turnedCorners(corners, polygon),
     { after: 0, before: 0 },
   );
