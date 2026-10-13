@@ -1,6 +1,8 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
+import { expectPoints } from "../../tests";
+
 import { freeShapeCorners } from "./free-shape-corners";
 import { freeShapeWithMidpoint } from "./free-shape-with-midpoint";
 import { freeShapeWithPoint } from "./free-shape-with-point";
@@ -9,7 +11,6 @@ import { rectangleAsFreeShape } from "./rectangle-as-free-shape";
 import { turnedCorners } from "./turned-corners";
 
 import type { FreeShape } from "./free-shape";
-import type { Point } from "../math";
 
 /**
  * Points of a free shape as drawn, turned.
@@ -17,25 +18,8 @@ import type { Point } from "../math";
  * @param shape - free shape
  * @returns its drawn points, in contour order
  */
-function drawnPoints(shape: FreeShape): readonly Point[] {
+function drawnPoints(shape: FreeShape): readonly FreeShape["corners"][number]["point"][] {
   return turnedCorners(freeShapeCorners(shape), shape).map((corner) => corner.point);
-}
-
-/**
- * Checks that two lists of points are the same within rounding.
- *
- * @param actual - the points the edit gives
- * @param expected - the points computed by hand
- */
-function expectPoints(actual: readonly Point[], expected: readonly Point[]): void {
-  const wanted = expected.flatMap((point) => [point.x, point.y]);
-  const values = actual.flatMap((point) => [point.x, point.y]);
-
-  expect(actual).toHaveLength(expected.length);
-
-  for (const [index, value] of values.entries()) {
-    expect(value).toBeCloseTo(wanted[index] ?? NaN, 9);
-  }
 }
 
 /** The rectangle tool's 100 × 50 shape turned by 90°: drawn (75, −25), (75, 75), (25, 75), (25, −25). */
@@ -52,12 +36,16 @@ describe("edits of a turned free shape (ADR-0035, DERIV-turned-shape step 5)", (
   it("[F04.AC4] moves only the point typed: x 80 for point 1, the others drawn where they were", () => {
     const edited = freeShapeWithPoint(TURNED, 0, { x: 80, y: -25 });
 
-    expectPoints(drawnPoints(edited), [
-      { x: 80, y: -25 },
-      { x: 75, y: 75 },
-      { x: 25, y: 75 },
-      { x: 25, y: -25 },
-    ]);
+    expectPoints(
+      drawnPoints(edited),
+      [
+        { x: 80, y: -25 },
+        { x: 75, y: 75 },
+        { x: 25, y: 75 },
+        { x: 25, y: -25 },
+      ],
+      9,
+    );
 
     expect(edited.angle).toBe(90);
   });
@@ -75,27 +63,35 @@ describe("edits of a turned free shape (ADR-0035, DERIV-turned-shape step 5)", (
       index === typed.index ? { x: typed.x, y: typed.y } : point,
     );
 
-    expectPoints(drawnPoints(edited), expected);
+    expectPoints(drawnPoints(edited), expected, 9);
   });
 
   it("[F04.AC4] adds a point in the middle of an edge without moving the others", () => {
     // Between (75, −25) and (75, 75): (75, 25).
-    expectPoints(drawnPoints(freeShapeWithMidpoint(TURNED, 0)), [
-      { x: 75, y: -25 },
-      { x: 75, y: 25 },
-      { x: 75, y: 75 },
-      { x: 25, y: 75 },
-      { x: 25, y: -25 },
-    ]);
+    expectPoints(
+      drawnPoints(freeShapeWithMidpoint(TURNED, 0)),
+      [
+        { x: 75, y: -25 },
+        { x: 75, y: 25 },
+        { x: 75, y: 75 },
+        { x: 25, y: 75 },
+        { x: 25, y: -25 },
+      ],
+      9,
+    );
   });
 
   it("[F04.AC4] deletes a point without moving the others", () => {
     // Point 1 removed: the triangle of the three others, drawn where they were.
-    expectPoints(drawnPoints(freeShapeWithoutPoints(TURNED, [0])), [
-      { x: 75, y: 75 },
-      { x: 25, y: 75 },
-      { x: 25, y: -25 },
-    ]);
+    expectPoints(
+      drawnPoints(freeShapeWithoutPoints(TURNED, [0])),
+      [
+        { x: 75, y: 75 },
+        { x: 25, y: 75 },
+        { x: 25, y: -25 },
+      ],
+      9,
+    );
   });
 
   test.prop({ angle: fc.integer({ max: 359, min: 1 }), edge: fc.integer({ max: 3, min: 0 }) })(
@@ -108,6 +104,7 @@ describe("edits of a turned free shape (ADR-0035, DERIV-turned-shape step 5)", (
       expectPoints(
         after.filter((point, index) => index !== edge + 1),
         before,
+        9,
       );
     },
   );
@@ -118,7 +115,7 @@ describe("edits of a turned free shape (ADR-0035, DERIV-turned-shape step 5)", (
       const shape = { ...TURNED, angle };
       const before = drawnPoints(shape).filter((point, index) => index !== removed);
 
-      expectPoints(drawnPoints(freeShapeWithoutPoints(shape, [removed])), before);
+      expectPoints(drawnPoints(freeShapeWithoutPoints(shape, [removed])), before, 9);
     },
   );
 });

@@ -1,9 +1,9 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
-import { unitRegularPolygon } from "./unit-regular-polygon";
+import { doubleSignedArea, expectPoints } from "../../tests";
 
-import type { Point } from "../math";
+import { unitRegularPolygon } from "./unit-regular-polygon";
 
 /** Decimals compared: cosine and sine of the angles are correct to the last bits of a double. */
 const DECIMALS = 12;
@@ -14,66 +14,48 @@ const HALF_SQRT_2 = Math.SQRT2 / 2;
 /** Half of √3: cos(π/6), a coordinate of the triangle and the hexagon. */
 const HALF_SQRT_3 = Math.sqrt(3) / 2;
 
-/**
- * Checks two lists of points coordinate by coordinate.
- *
- * @param actual - computed points
- * @param expected - hand-computed points
- */
-function expectPoints(actual: readonly Point[], expected: readonly Point[]): void {
-  expect(actual).toHaveLength(expected.length);
-
-  for (const [index, point] of expected.entries()) {
-    expect(actual[index]?.x).toBeCloseTo(point.x, DECIMALS);
-    expect(actual[index]?.y).toBeCloseTo(point.y, DECIMALS);
-  }
-}
-
-/**
- * Twice the signed area of a closed contour (shoelace formula), positive when clockwise on
- * screen (y down), like the rectangle of US-001.
- *
- * @param points - vertices in drawing order
- * @returns twice the signed area
- */
-function doubleSignedArea(points: readonly Point[]): number {
-  return points.reduce((sum, point, index) => {
-    const next = points[(index + 1) % points.length] ?? point;
-
-    return sum + point.x * next.y - next.x * point.y;
-  }, 0);
-}
-
 describe("unitRegularPolygon (DERIV-regular-polygon-fit steps 1–2)", () => {
   it("[F08.AC5] gives a triangle pointing up, from the right end of its base, clockwise on screen", () => {
     // n = 3, βⱼ = −π/2 + (1 − 2j) π/3: −π/6, −5π/6, −3π/2; SVG point (cos β, −sin β).
-    expectPoints(unitRegularPolygon(3), [
-      { x: HALF_SQRT_3, y: 0.5 },
-      { x: -HALF_SQRT_3, y: 0.5 },
-      { x: 0, y: -1 },
-    ]);
+    expectPoints(
+      unitRegularPolygon(3),
+      [
+        { x: HALF_SQRT_3, y: 0.5 },
+        { x: -HALF_SQRT_3, y: 0.5 },
+        { x: 0, y: -1 },
+      ],
+      DECIMALS,
+    );
   });
 
   it("[F08.AC5] gives a square with horizontal edges, not a diamond, from its bottom-right vertex", () => {
     // n = 4: β = −π/4, −3π/4, −5π/4, −7π/4.
-    expectPoints(unitRegularPolygon(4), [
-      { x: HALF_SQRT_2, y: HALF_SQRT_2 },
-      { x: -HALF_SQRT_2, y: HALF_SQRT_2 },
-      { x: -HALF_SQRT_2, y: -HALF_SQRT_2 },
-      { x: HALF_SQRT_2, y: -HALF_SQRT_2 },
-    ]);
+    expectPoints(
+      unitRegularPolygon(4),
+      [
+        { x: HALF_SQRT_2, y: HALF_SQRT_2 },
+        { x: -HALF_SQRT_2, y: HALF_SQRT_2 },
+        { x: -HALF_SQRT_2, y: -HALF_SQRT_2 },
+        { x: HALF_SQRT_2, y: -HALF_SQRT_2 },
+      ],
+      DECIMALS,
+    );
   });
 
   it("[F08.AC5] gives a hexagon with flat top and bottom, from the right end of its base", () => {
     // n = 6: β = −π/3, −2π/3, −π, −4π/3, −5π/3, −2π.
-    expectPoints(unitRegularPolygon(6), [
-      { x: 0.5, y: HALF_SQRT_3 },
-      { x: -0.5, y: HALF_SQRT_3 },
-      { x: -1, y: 0 },
-      { x: -0.5, y: -HALF_SQRT_3 },
-      { x: 0.5, y: -HALF_SQRT_3 },
-      { x: 1, y: 0 },
-    ]);
+    expectPoints(
+      unitRegularPolygon(6),
+      [
+        { x: 0.5, y: HALF_SQRT_3 },
+        { x: -0.5, y: HALF_SQRT_3 },
+        { x: -1, y: 0 },
+        { x: -0.5, y: -HALF_SQRT_3 },
+        { x: 0.5, y: -HALF_SQRT_3 },
+        { x: 1, y: 0 },
+      ],
+      DECIMALS,
+    );
   });
 
   it("never writes a coordinate as −0 (ADR-0025)", () => {

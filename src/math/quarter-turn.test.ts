@@ -1,5 +1,7 @@
-import { fc, test } from "@fast-check/vitest";
+import { test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
+
+import { integerPoint } from "../../tests";
 
 import { dot } from "./dot";
 import { norm } from "./norm";
@@ -7,10 +9,7 @@ import { perpDot } from "./perp-dot";
 import { quarterTurn } from "./quarter-turn";
 
 /** Vector with integer components. */
-const VECTOR = fc.record({
-  x: fc.integer({ max: 1e4, min: -1e4 }),
-  y: fc.integer({ max: 1e4, min: -1e4 }),
-});
+const VECTOR = integerPoint(1e4);
 
 describe("quarterTurn (REF-MATHWORLD-ROTATION-MATRIX, θ = π/2)", () => {
   it("maps (x, y) to (−y, x)", () => {
