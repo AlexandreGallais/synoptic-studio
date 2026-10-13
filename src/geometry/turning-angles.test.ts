@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { integerTriangle } from "../../tests";
 
+import { cornerTriples } from "./corner-triples";
 import { turningAngles } from "./turning-angles";
 
 /** Decimals compared: atan2 of exact integers is correct to the last bits of a double. */
@@ -11,12 +12,14 @@ const DECIMALS = 12;
 describe("turningAngles", () => {
   it("gives a clockwise quarter turn at every corner of the rectangle of US-001", () => {
     // The first vertex sees the last edge (0, 50) → (0, 0): cyclic contour (Q11).
-    const angles = turningAngles([
-      { x: 0, y: 0 },
-      { x: 100, y: 0 },
-      { x: 100, y: 50 },
-      { x: 0, y: 50 },
-    ]);
+    const angles = turningAngles(
+      cornerTriples([
+        { x: 0, y: 0 },
+        { x: 100, y: 0 },
+        { x: 100, y: 50 },
+        { x: 0, y: 50 },
+      ]),
+    );
 
     expect(angles).toHaveLength(4);
 
@@ -27,11 +30,13 @@ describe("turningAngles", () => {
 
   it("gives each corner of a 3-4-5 triangle its own turn", () => {
     // (0, 0), (4, 0), (0, 3), clockwise on screen: π − the inner angles π/2, atan(3/4), atan(4/3).
-    const [first, second, third] = turningAngles([
-      { x: 0, y: 0 },
-      { x: 4, y: 0 },
-      { x: 0, y: 3 },
-    ]);
+    const [first, second, third] = turningAngles(
+      cornerTriples([
+        { x: 0, y: 0 },
+        { x: 4, y: 0 },
+        { x: 0, y: 3 },
+      ]),
+    );
 
     expect(first).toBeCloseTo(Math.PI / 2, DECIMALS);
     expect(second).toBeCloseTo(Math.PI - Math.atan(3 / 4), DECIMALS);
@@ -39,7 +44,7 @@ describe("turningAngles", () => {
   });
 
   it("gives no angle for an empty contour", () => {
-    expect(turningAngles([])).toEqual([]);
+    expect(turningAngles(cornerTriples([]))).toEqual([]);
   });
 });
 
@@ -53,8 +58,10 @@ describe("turningAngles (properties)", () => {
     triangle: TRIANGLE,
   })("turns a triangle by one full turn, the same wherever it is", ({ dx, dy, triangle }) => {
     // A simple closed polygon turns by ±2π in all (turning number 1).
-    const angles = turningAngles(triangle);
-    const moved = turningAngles(triangle.map((point) => ({ x: point.x + dx, y: point.y + dy })));
+    const angles = turningAngles(cornerTriples(triangle));
+    const moved = turningAngles(
+      cornerTriples(triangle.map((point) => ({ x: point.x + dx, y: point.y + dy }))),
+    );
 
     expect(Math.abs(angles.reduce((sum, angle) => sum + angle, 0))).toBeCloseTo(2 * Math.PI, 9);
 
@@ -67,7 +74,7 @@ describe("turningAngles (properties)", () => {
     "turns at each vertex by π minus the inner angle there",
     ({ triangle }) => {
       // |τᵢ| = π − acos(u · v / (|u| |v|)), u and v from vertex i to its neighbours.
-      const angles = turningAngles(triangle);
+      const angles = turningAngles(cornerTriples(triangle));
 
       for (const [index, vertex] of triangle.entries()) {
         const previous = triangle[(index + 2) % 3] ?? vertex;

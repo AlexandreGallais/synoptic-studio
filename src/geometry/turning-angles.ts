@@ -1,24 +1,16 @@
-import { cyclicItem } from "./cyclic-item";
 import { turningAngle } from "./turning-angle";
 
-import type { Point } from "../math";
+import type { CornerPoints } from "./corner-points";
 
 /**
- * Turning angle at every vertex of a cyclic contour (`τᵢ` of `DERIV-local-radius-clamp`).
- *
- * The first vertex turns from the last edge, the last vertex towards the first edge (Q11).
+ * Turning angle at every corner of a cyclic contour (`τᵢ` of `DERIV-local-radius-clamp`), each
+ * from its triple of `cornerTriples`.
  *
  * @kind geometry
- * @param contour - vertices in drawing order
- * @returns one signed angle per vertex, in radians
+ * @param corners - every vertex with its neighbours, in drawing order
+ * @returns one signed angle per corner, in radians
  * @see DERIV-turning-angle
  */
-export function turningAngles(contour: readonly Point[]): readonly number[] {
-  return contour.map((vertex, index) =>
-    turningAngle(
-      cyclicItem(contour, index - 1, vertex),
-      vertex,
-      cyclicItem(contour, index + 1, vertex),
-    ),
-  );
+export function turningAngles(corners: readonly CornerPoints[]): readonly number[] {
+  return corners.map((corner) => turningAngle(corner.previous, corner.vertex, corner.next));
 }

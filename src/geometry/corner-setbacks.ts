@@ -1,6 +1,5 @@
 import { cyclicItem } from "./cyclic-item";
 import { filletSetback } from "./fillet-setback";
-import { turningAngles } from "./turning-angles";
 
 import type { Corner } from "./corner";
 
@@ -11,11 +10,13 @@ import type { Corner } from "./corner";
  *
  * @kind geometry
  * @param corners - vertices with their requested radii, in drawing order
+ * @param angles - turning angle `τᵢ` of each corner, in drawing order
  * @returns one setback per corner, 0 at aligned vertices
  * @see DERIV-local-radius-clamp
  */
-export function cornerSetbacks(corners: readonly Corner[]): readonly number[] {
-  const angles = turningAngles(corners.map((corner) => corner.point));
-
+export function cornerSetbacks(
+  corners: readonly Corner[],
+  angles: readonly number[],
+): readonly number[] {
   return corners.map((corner, index) => filletSetback(corner.radius, cyclicItem(angles, index, 0)));
 }
