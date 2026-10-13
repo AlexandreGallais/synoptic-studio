@@ -230,8 +230,8 @@ function readChosenMode(handles: Handles, document: Document): Handles | undefin
 }
 
 /**
- * Keeps the first value typed for a handle — an angle, in the angle ways — for the point selected
- * and the way chosen, so that a handle of length 0 keeps it until its length is typed.
+ * Keeps the first value typed for a handle, for the point selected and the way chosen, so that a
+ * handle of length 0 typed from its side keeps its angle until its length is typed.
  *
  * @kind procedure
  * @param document - page document
@@ -245,15 +245,17 @@ function writeTypedAngle(document: Document, field: TypedField): void {
     return;
   }
 
-  const owner = `${String(selected.index)} ${readTypingWay(document)}`;
   const typed = readNumber(document, `handle-${field.end}-x`);
+
+  // Its owner names the way too: an x typed on the page is never read back as an angle.
+  const owner = `${String(selected.index)} ${readTypingWay(document)}`;
 
   writeKeptAngle(document, field.end, `${owner}|${String(typed)}`);
 }
 
 /**
  * Listens to the handles of the point selected: the switch between radius and handles, the mode,
- * the way to type them, and each handle's two values typed in that way (US-022 to US-024), on "change" as the point's fields (US-022).
+ * the way to type them, and each handle's two values typed in that way (US-022, US-024), on "change" as the point's fields (US-022).
  *
  * @kind procedure
  * @param document - page document

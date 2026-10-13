@@ -7,7 +7,7 @@ import { norm } from "../../math";
 import { angledHandle } from "./angled-handle";
 
 describe("angledHandle (DERIV-handle-angle)", () => {
-  it("[F12.AC4] counts the angle clockwise on screen from the x axis", () => {
+  it("[F12.AC4] counts the angle clockwise on screen, from a side going right", () => {
     // 330°, 30: (30 cos 330°, 30 sin 330°) = (25.98076, −15); 90°, 10: (0, 10).
     expectPoints(
       [angledHandle({ x: 1, y: 0 }, 330, 30), angledHandle({ x: 1, y: 0 }, 90, 10)],

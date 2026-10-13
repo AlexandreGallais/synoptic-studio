@@ -106,12 +106,13 @@ describe("handles typed as an angle and a length (US-024)", () => {
     expect(readText("#path-data")).toContain("-15 25.98076 0 0");
   });
 
-  it("never takes a number left by another way as an angle", () => {
-    // Point 2, x and y first (its x reads 100), then the side going down: the length typed alone
-    // gives 0° from the side, the handle (0, 30).
+  it("never takes an angle kept for another point", () => {
+    // Point 1 keeps 90° for its handle of length 0; point 2's length typed alone gives 0° from its
+    // side going down, the handle (0, 30).
+    openAngleFields();
+    typeAndEnter("handle-after-x", "90");
     clickPoint(2, false);
-    clickElement("handles-switch");
-    chooseOption("handle-method", "side");
+    openAngleFields();
     chooseOption("handle-mode", "none");
     typeAndEnter("handle-after-y", "30");
 

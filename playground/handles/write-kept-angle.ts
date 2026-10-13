@@ -8,7 +8,7 @@ import { selectElement } from "../page";
  * @kind procedure
  * @param document - page document
  * @param end - which handle
- * @param keptAngle - the owner, then "|", then the angle typed, as `2 axis|330`
+ * @param keptAngle - the point's number, then "|", then the angle typed, as `2 side|330`
  * @see docs/backlog/stories/E14-F12-US-024-handles-as-angle-and-length.md
  */
 export function writeKeptAngle(
