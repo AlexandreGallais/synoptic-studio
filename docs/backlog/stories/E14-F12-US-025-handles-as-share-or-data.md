@@ -23,5 +23,23 @@ As a symbol designer, I type a side's two handles as whole percentages of the si
 
 One task = one commit, referenced as `US-025.Tn`.
 
-- [ ] T1 — Derivation of a handle from shares of its side
-- [ ] T2 — The share fields; the parser of `C` and `cubic-bezier()`; tests
+- [x] T1 — Derivation of a handle from shares of its side
+- [x] T2 — The share fields; the parser of `C` and `cubic-bezier()`; tests
+
+## Decisions during the story
+
+| Decision                                                                                          | Reason                                                                                                                               |
+| ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| shares are a fifth way of `HANDLE_WAYS`, typed in the same four fields                            | one set of fields for every way                                                                                                      |
+| a paste applies to the side after the point selected                                              | the side has a start and an end: the `C`'s end must be the next point, the `cubic-bezier()` diagonal runs from the point to the next |
+| a pasted curve switches both points to handles mode, each point's other handle following its mode | as typing a handle; the criterion asks it                                                                                            |
+
+## Product Owner test
+
+Open the page, type **Width** = 100: points 1 (0, 0), 2 (100, 0).
+
+1. Click **Points**, point 1, **Handles**, then **Typed as** = **share of the side (%)**. The fields read along % and across %.
+2. Type **After along** = 25, **After across** = 30: the top side bends upwards, the handle's end at (25, −30) — a quarter along the side, 30 % of its length above it.
+3. In **Paste a curve on the side after**, type `C 30 -15 70 -15 100 0` and click **Apply**: the top side is that curve; point 1's other handle mirrors it, so the left side bends too.
+4. Paste `cubic-bezier(0.42, 0, 0.58, 1)` and click **Apply**: the top side takes the S of CSS's ease-in-out.
+5. Paste `C 30 -15 70 -15 90 0`: a line says the C must end on the side's last point; nothing changes.
