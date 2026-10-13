@@ -14,7 +14,7 @@ Find, read and record what is common practice for laying out a TypeScript librar
 ## Acceptance criteria
 
 - Given the question of test placement, when the spike ends, then the practices found (tests next to their module, or in a separate tree) are compared with their sources, against this project's rules: one export per file (ADR-0019), barrels (ADR-0012), the 100 % coverage of `src/`.
-- Given `src/model/` (50 modules) and `playground/` (80 modules), when the spike ends, then a layout by subfolder is proposed, with the limit of files per folder and the ESLint rules it touches (layers, barrels, canonical paths).
+- Given `src/model/` (49 modules) and `playground/` (77 modules), when the spike ends, then a layout by subfolder is proposed, with the limit of files per folder and the ESLint rules it touches (layers, barrels, canonical paths).
 - Given the proposal, when the spike ends, then the Product Owner chooses, and the choice is an ADR.
 
 ## Questions

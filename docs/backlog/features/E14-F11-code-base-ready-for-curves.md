@@ -27,7 +27,7 @@ Decided with the Product Owner on 2026-10-13:
 1. The test helpers repeated across files (typing in a field, reading a text, mounting the playground, building a rectangle, the shoelace area) live once, in shared test modules.
 2. The library has one writer of path data, `contourPiecesToPathData`; `contourToPathData` is removed from the public API (a breaking change: the next version is 0.2.0), and `SEPARATOR` and `CLOSE_PATH` are declared once.
 3. A rounded contour computes each corner's triple and turning angle once.
-4. The folders of `src/` and `playground/` follow the layout of ADR-0042, written in `docs/conventions/files.md`: folders by business theme, shape types at the root of their layer; a folder past 15 modules (tests not counted) is listed there with its reason, checked by a test.
+4. The folders of `src/` and `playground/` follow the layout of ADR-0042, written in `docs/conventions/files.md`: folders by business theme, a shape's type in its folder; a folder past 15 modules (tests not counted) is listed there with its reason, checked by a test.
 5. Every function of `src/math/` and `src/geometry/` has a property test: the list of `tests/fitness.test.ts` is empty.
 6. Behavior is unchanged: every existing test passes, with the same values.
 
