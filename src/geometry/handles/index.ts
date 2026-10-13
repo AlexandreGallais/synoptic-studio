@@ -11,4 +11,5 @@ export type * from "./handles";
 export * from "./is-curved-side";
 export * from "./mirrored-handle";
 export * from "./stretched-handles";
+export * from "./tension-handle";
 export * from "./turned-handles";

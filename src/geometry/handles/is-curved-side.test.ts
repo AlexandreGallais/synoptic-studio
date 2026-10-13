@@ -17,7 +17,11 @@ import type { Vector } from "../../math";
  * @returns the corner at (0, 0), radius 10
  */
 function corner(isOn: boolean, before: Vector, after: Vector): CurveCorner {
-  return { handles: { after, before, isOn, mode: "none" }, point: { x: 0, y: 0 }, radius: 10 };
+  return {
+    handles: { after, before, isOn, mode: "none", tension: 0 },
+    point: { x: 0, y: 0 },
+    radius: 10,
+  };
 }
 
 /** A zero handle. */
