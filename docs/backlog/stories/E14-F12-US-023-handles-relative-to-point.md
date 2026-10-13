@@ -3,7 +3,7 @@ id: US-023
 epic: E14
 feature: F12
 title: "Type a handle as dx and dy from its point"
-status: ready
+status: done
 points: 2
 ---
 
@@ -38,3 +38,7 @@ Open the page (`npm run dev`, `http://localhost:5173`), type **Width** = 100: po
 3. Type **After dx** = 30, then **After dy** = −15: the handle's end is at (130, −15), its mirror at (−30, 15) from the point.
 4. Choose **x, y on the page** again: the same handle reads 130, −15 and 70, 15.
 5. Choose **dx, dy** again, then type the point's **X** = 110: the handle still reads 30, −15; it moved with its point.
+
+## Review
+
+Auditor, before the last commit: both criteria hold and every mutation listed is killed. Fixed: `readFieldShift` (was `readFieldOrigin`, whose summary said the opposite of what it returned) and `readTypingWay`; stale TSDoc; tests of the handle before as dx, dy, of the curve after the point moves, and of step 2.
