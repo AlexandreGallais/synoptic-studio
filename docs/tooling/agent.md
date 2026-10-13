@@ -39,7 +39,7 @@ flowchart LR
 
 ## Expert agents
 
-Read-only reviewers in a fresh context, each with the documents it reads first (`REF-CC-SUBAGENTS`). The skills start them in the background and in parallel; they report, they never edit.
+Read-only reviewers in a fresh context, each with the documents it reads first (`REF-CC-SUBAGENTS`). The skills start them in the background and in parallel; they report, they never edit. The agents that read sources (`auditor`, `math-expert`, `functional-analyst`) have the library's tools (`library_search`, `library_get`, `library_read`) and follow the same protocol as the main agent (`docs/tooling/sources.md`): library first, the web only for a page it cannot read. Until 2026-10-13 they had only `WebFetch` and `WebSearch`, so their pages never reached the library unless their prompt asked for it.
 
 | Agent                | Expert in                                             | Started by                                               |
 | -------------------- | ----------------------------------------------------- | -------------------------------------------------------- |
