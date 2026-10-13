@@ -1,4 +1,4 @@
-import { EPSILON, cyclicItem, effectiveRadii, filletableCorners, formatSvgNumber } from "../../src";
+import { EPSILON, cyclicItem, drawnRadii, formatSvgNumber } from "../../src";
 import { readMode, selectElement } from "../page";
 
 import type { Corner, VertexSelection } from "../../src";
@@ -39,8 +39,8 @@ export function showPointsList(
   selection: VertexSelection,
 ): void {
   const list = selectElement(document, "points");
-  // The radii drawn: a point in handles mode, or next to a curved side, keeps no fillet (ADR-0046).
-  const effective = effectiveRadii(filletableCorners(reading.corners));
+  // The radii drawn: a point in handles mode keeps no fillet; beside a curve, ADR-0047.
+  const effective = drawnRadii(reading.corners);
   const rows = reading.corners.map((corner, vertex) => {
     const row = document.createElement("li");
     const button = document.createElement("button");

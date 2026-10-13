@@ -6,8 +6,8 @@ import {
   createPathElement,
   createSvgElement,
   curveContour,
+  drawnRadii,
   effectiveCornerRadius,
-  filletableCorners,
   formatSvgNumber,
 } from "../../src";
 import { selectElement, writeText } from "../page";
@@ -75,7 +75,7 @@ function writeOneEffectiveRadius(document: Document, radius: number, effective: 
  */
 function writeEffectiveRadius(document: Document, reading: ShapeReading): void {
   const radius = commonRadius(reading.radii);
-  const effective = effectiveCornerRadius(filletableCorners(reading.corners));
+  const effective = effectiveCornerRadius(drawnRadii(reading.corners));
 
   if (radius === undefined || effective === undefined) {
     writeText(document, "effective", MIXED_EFFECTIVE);

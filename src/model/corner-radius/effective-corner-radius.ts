@@ -1,7 +1,4 @@
-import { effectiveRadii } from "../../geometry";
 import { EPSILON } from "../../math";
-
-import type { Corner } from "../../geometry";
 
 /**
  * Corner radius actually drawn on a shape whose corners all request the same radius: the
@@ -15,13 +12,13 @@ import type { Corner } from "../../geometry";
  * (review of US-021), ten times below. No corner gives `+∞`.
  *
  * @kind domain
- * @param corners - corners of the shape, the same requested radius on each
+ * @param radii - the radii each corner is drawn with (`effectiveRadii`, or `drawnRadii` with
+ * handles), the same radius requested on each
  * @returns the effective radius, <= the requested one; `undefined` when the corners draw
  * different radii (an absent value, an option type in other languages, ADR-0025)
  * @see docs/domain/shapes.md#radius-clamping-adr-0007
  */
-export function effectiveCornerRadius(corners: readonly Corner[]): number | undefined {
-  const radii = effectiveRadii(corners);
+export function effectiveCornerRadius(radii: readonly number[]): number | undefined {
   const smallest = Math.min(...radii);
 
   return radii.every((radius) => radius - smallest < EPSILON) ? smallest : undefined;
