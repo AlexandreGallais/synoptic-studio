@@ -15,6 +15,7 @@ const VALUE_NAMES: Readonly<Record<HandleWay, readonly [string, string]>> = {
   axis: ["angle", "length"],
   page: ["x", "y"],
   point: ["dx", "dy"],
+  share: ["along %", "across %"],
   side: ["angle", "length"],
 };
 

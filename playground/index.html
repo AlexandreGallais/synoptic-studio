@@ -415,6 +415,7 @@
               <option value="point">dx, dy from the point</option>
               <option value="axis">angle, length from the x axis</option>
               <option value="side">angle, length from the side</option>
+              <option value="share">share of the side (%)</option>
             </select></label
           >
           <label
@@ -445,6 +446,15 @@
               <input id="handle-after-y" type="number" step="1"
             /></label>
           </div>
+          <label
+            >Paste a curve on the side after
+            <input
+              id="handle-paste"
+              type="text"
+              placeholder="C x1 y1 x2 y2 x y, or cubic-bezier(…)"
+          /></label>
+          <button id="paste-curve" type="button">Apply</button>
+          <p id="paste-message" hidden></p>
         </fieldset>
         <div class="pair">
           <label>X <input id="point-x" type="number" step="1" /></label>

@@ -1,5 +1,6 @@
 export * from "./create-curve-handle-elements";
 export * from "./listen-to-handle-fields";
+export * from "./listen-to-paste";
 export * from "./read-handle-frames";
 export * from "./read-kept-angle";
 export * from "./read-selected-corner";
