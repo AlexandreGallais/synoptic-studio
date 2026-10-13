@@ -1,9 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { freeShapeOf } from "../../../tests";
+import { freeShapeOf, rectangleCorners } from "../../../tests";
 import { NO_HANDLES, curveCornerOf } from "../handles";
 import { rectangleAsFreeShape } from "../rectangle";
 
+import { freeShapeAroundCorners } from "./free-shape-around-corners";
 import { freeShapeCorners } from "./free-shape-corners";
 
 import type { FreeShape } from "./free-shape";
@@ -179,5 +180,23 @@ describe("freeShapeCorners (at a position, F04)", () => {
 
     expect(radiiSwitched(rectangle, true)).toEqual([30, 0, 0, 0]);
     expect(radiiSwitched(rectangle, false)).toEqual([30, 0, 0, 0]);
+  });
+
+  it("[F12.AC6] stretches other handles by the box of the curve, an automatic bulge included", () => {
+    // Point 1 in mode auto bulges the top side up; point 3 has an angle handle (10, 0). At the
+    // size of its own box, nothing is stretched: point 3's handle stays (10, 0).
+    const square = rectangleCorners(100, 100, [0, 0, 0, 0]).map((corner, index) => {
+      const handles = [
+        { ...NO_HANDLES, isOn: true, mode: "auto" as const },
+        NO_HANDLES,
+        { ...NO_HANDLES, after: { x: 10, y: 0 }, before: { x: -10, y: 0 }, isOn: true },
+        NO_HANDLES,
+      ];
+
+      return { ...corner, handles: handles[index] ?? NO_HANDLES };
+    });
+    const shape = freeShapeAroundCorners(square, 0);
+
+    expect(freeShapeCorners(shape)[2]?.handles.after).toEqual({ x: 10, y: 0 });
   });
 });

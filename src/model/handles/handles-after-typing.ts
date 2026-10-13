@@ -6,7 +6,7 @@ import type { Vector } from "../../math";
 /**
  * A point's handles once one of them is typed: that handle set, the other following the mode
  * (`mirroredHandle`); the switch unchanged, the mode too but `auto`, which becomes `angle`: a handle
- * typed leaves the tension, as an auto-smooth node dragged becomes smooth (`REF-INKSCAPE-NODE-TYPES`).
+ * typed leaves the tension, its handles kept on one line (the agent's choice, US-026).
  *
  * @kind domain
  * @param handles - handles before the change, as drawn: the shape at scale 1 (`freeShapeAroundCorners`), so that mode angle keeps the length seen
