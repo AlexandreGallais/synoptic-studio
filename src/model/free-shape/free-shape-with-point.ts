@@ -11,8 +11,8 @@ import type { Point } from "../../math";
 
 /**
  * Free shape after one of its points is typed in the coordinates of the SVG (ADR-0033): its
- * corners are kept as drawn, that point replaced, and its width and height become the box around
- * the points, so that stretching it later stays without loss. On a turned shape the point typed
+ * corners are kept as drawn, that point replaced, and its width and height become the box of its
+ * curve (`curveBoundingBox`), so that stretching it later stays without loss. On a turned shape the point typed
  * is turned back into the straight shape, and the new box placed so that the other points stay
  * where they are drawn (ADR-0035, `DERIV-turned-shape` step 5); the integer typed then holds in
  * the drawing, within a rounding error.

@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it } from "vitest";
 
+import { curveCornerOf } from "../../src";
 import { clickElement, clickPoint, openPage, readText, typeValue } from "../user-actions";
 
 describe("rectangle as a free shape", () => {
@@ -19,7 +20,7 @@ describe("rectangle as a free shape", () => {
         { point: { x: 1, y: 0 }, radius: 10 },
         { point: { x: 1, y: 1 }, radius: 10 },
         { point: { x: 0, y: 1 }, radius: 10 },
-      ],
+      ].map((corner) => curveCornerOf(corner)),
       height: 80,
       width: 120,
       x: 0,

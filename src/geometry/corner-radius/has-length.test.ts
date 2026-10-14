@@ -6,6 +6,26 @@ import { EPSILON } from "../../math";
 
 import { hasLength } from "./has-length";
 
+import type { Cubic } from "../contour";
+
+/**
+ * A cubic from (0, 0), its control points on the y axis, its end on the x axis.
+ *
+ * @param first - y of the first control point
+ * @param second - y of the second
+ * @param end - x of the end
+ * @returns the cubic piece
+ */
+function cubic(first: number, second: number, end: number): Cubic {
+  return {
+    end: { x: end, y: 0 },
+    first: { x: 0, y: first },
+    kind: "cubic",
+    second: { x: 0, y: second },
+    start: { x: 0, y: 0 },
+  };
+}
+
 describe("hasLength (EPSILON, Q10)", () => {
   it("keeps a piece whose ends are exactly EPSILON apart", () => {
     expect(hasLength({ end: { x: EPSILON, y: 0 }, kind: "segment", start: { x: 0, y: 0 } })).toBe(
@@ -54,4 +74,10 @@ describe("hasLength (properties)", () => {
       expect(hasLength({ end: start, kind: "segment", start: end })).toBe(isDrawn);
     },
   );
+
+  it("[F12.AC3] gives a cubic length when a control point leaves its start, a loop too", () => {
+    expect(hasLength(cubic(-40, -40, 0))).toBe(true);
+    expect(hasLength(cubic(0, 0, 100))).toBe(true);
+    expect(hasLength(cubic(0, 0, 0))).toBe(false);
+  });
 });

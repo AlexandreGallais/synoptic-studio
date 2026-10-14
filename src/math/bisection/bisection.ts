@@ -1,3 +1,4 @@
+import { bisectionBracket } from "./bisection-bracket";
 import { BISECTION_STEPS } from "./bisection-steps";
 
 /**
@@ -15,10 +16,7 @@ import { BISECTION_STEPS } from "./bisection-steps";
  * @see REF-MATHWORLD-BISECTION
  */
 export function bisection(isBelow: (value: number) => boolean, low: number, high: number): number {
-  const [start, end] = Array.from({ length: BISECTION_STEPS }).reduce<readonly [number, number]>(
-    ([from, to]) => (isBelow((from + to) / 2) ? [(from + to) / 2, to] : [from, (from + to) / 2]),
-    [low, high],
-  );
+  const [start, end] = bisectionBracket(isBelow, [low, high], BISECTION_STEPS);
 
   return (start + end) / 2;
 }

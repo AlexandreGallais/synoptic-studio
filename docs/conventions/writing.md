@@ -80,18 +80,21 @@ No tutorial, no history, no design discussion, no restating of the name (`jsdoc/
 
 The [glossary](../domain/) defines the domain terms; this list fixes the words used to write about them.
 
-| Use              | Not                                         | Note                                                                |
-| ---------------- | ------------------------------------------- | ------------------------------------------------------------------- |
-| corner radius    | border radius, rounding                     | the requested value; "effective radius" for the reduced one         |
-| fillet           | round, curve                                | the arc replacing a corner                                          |
-| setback          | offset, inset                               | distance from a corner to a tangent point                           |
-| contour          | outline, polygon (for the list of vertices) | closed list of vertices, clockwise                                  |
-| vertex, vertices | point, node (in geometry)                   | "point" in the playground and the guide, where the user sees points |
-| path data        | `d` string, path string                     | the `d` attribute of `<path>`                                       |
-| Product Owner    | PO, client, user (for the Product Owner)    | "user" means the end user of the tools                              |
-| story, task      | ticket, issue (for backlog items)           | "issue" only for GitHub issues                                      |
-| pull request     | PR, merge request                           |                                                                     |
-| playground       | demo app, sandbox                           |                                                                     |
+| Use                                                 | Not                                         | Note                                                                                      |
+| --------------------------------------------------- | ------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| corner radius                                       | border radius, rounding                     | the requested value; "effective radius" for the reduced one                               |
+| fillet                                              | round, curve                                | the arc replacing a corner                                                                |
+| setback                                             | offset, inset                               | distance from a corner to a tangent point                                                 |
+| contour                                             | outline, polygon (for the list of vertices) | closed list of vertices, clockwise                                                        |
+| vertex, vertices                                    | point, node (in geometry)                   | "point" in the playground and the guide, where the user sees points                       |
+| path data                                           | `d` string, path string                     | the `d` attribute of `<path>`                                                             |
+| side                                                | edge (for a free shape with handles)        | the part of the contour between two points; "curved side" when cubic                      |
+| Mirror angle and length, Mirror angle, No mirroring | mirrored angle and length, mode angle       | the handle modes as the playground names them; stored `angle-and-length`, `angle`, `none` |
+| method (of typing a handle)                         | way                                         | `HANDLE_WAYS` in the code                                                                 |
+| Product Owner                                       | PO, client, user (for the Product Owner)    | "user" means the end user of the tools                                                    |
+| story, task                                         | ticket, issue (for backlog items)           | "issue" only for GitHub issues                                                            |
+| pull request                                        | PR, merge request                           |                                                                                           |
+| playground                                          | demo app, sandbox                           |                                                                                           |
 
 ## Page skeletons
 

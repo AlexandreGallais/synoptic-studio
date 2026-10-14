@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { ALIGNMENTS } from "../../geometry";
 import { freeShapeCorners, isValidFreeShape } from "../free-shape";
+import { curveCornerOf } from "../handles";
 import { turnedCorners } from "../placement";
 
 import { regularPolygonAsFreeShape } from "./regular-polygon-as-free-shape";
@@ -29,7 +30,11 @@ describe("regularPolygonAsFreeShape", () => {
     // 100 wide, 50√3 = 86.60254 high: fractional, as left by the conversion (Q27).
     expect(shape.width).toBeCloseTo(100, 9);
     expect(shape.height).toBeCloseTo(50 * Math.sqrt(3), 9);
-    expect(shape.corners).toEqual(regularPolygonCorners(hexagon));
+
+    expect(shape.corners).toEqual(
+      regularPolygonCorners(hexagon).map((corner) => curveCornerOf(corner)),
+    );
+
     expect(isValidFreeShape(shape)).toBe(true);
   });
 
@@ -52,7 +57,7 @@ describe("regularPolygonAsFreeShape", () => {
       );
 
       // At its own size a free shape is drawn as stored: the same corners, bit for bit.
-      expect(after).toEqual(before);
+      expect(after).toEqual(before.map((corner) => curveCornerOf(corner)));
     },
   );
 
@@ -91,10 +96,10 @@ describe("regularPolygonAsFreeShape", () => {
       corner.point.x,
       corner.point.y,
     ]);
-    const expected = turnedCorners(regularPolygonCorners(triangle), triangle).flatMap((corner) => [
-      corner.point.x,
-      corner.point.y,
-    ]);
+    const expected = turnedCorners(
+      regularPolygonCorners(triangle).map((corner) => curveCornerOf(corner)),
+      triangle,
+    ).flatMap((corner) => [corner.point.x, corner.point.y]);
 
     expect(shape.angle).toBe(90);
 
@@ -122,10 +127,10 @@ describe("regularPolygonAsFreeShape", () => {
         corner.point.x,
         corner.point.y,
       ]);
-      const expected = turnedCorners(regularPolygonCorners(polygon), polygon).flatMap((corner) => [
-        corner.point.x,
-        corner.point.y,
-      ]);
+      const expected = turnedCorners(
+        regularPolygonCorners(polygon).map((corner) => curveCornerOf(corner)),
+        polygon,
+      ).flatMap((corner) => [corner.point.x, corner.point.y]);
 
       for (const [index, value] of drawn.entries()) {
         expect(value).toBeCloseTo(expected[index] ?? NaN, 9);

@@ -5,9 +5,10 @@ import {
   contourPiecesToPathData,
   createPathElement,
   createSvgElement,
+  curveContour,
+  drawnRadii,
   effectiveCornerRadius,
   formatSvgNumber,
-  roundedContour,
 } from "../../src";
 import { selectElement, writeText } from "../page";
 import { showPoints } from "../points";
@@ -74,7 +75,7 @@ function writeOneEffectiveRadius(document: Document, radius: number, effective: 
  */
 function writeEffectiveRadius(document: Document, reading: ShapeReading): void {
   const radius = commonRadius(reading.radii);
-  const effective = effectiveCornerRadius(reading.corners);
+  const effective = effectiveCornerRadius(drawnRadii(reading.corners));
 
   if (radius === undefined || effective === undefined) {
     writeText(document, "effective", MIXED_EFFECTIVE);
@@ -96,7 +97,7 @@ function writeEffectiveRadius(document: Document, reading: ShapeReading): void {
  */
 export function showShape(document: Document, reading: ShapeReading): void {
   const contour = reading.corners.map((corner) => corner.point);
-  const pieces = roundedContour(reading.corners);
+  const pieces = curveContour(reading.corners);
   const pathData = contourPiecesToPathData(pieces);
   const box = contourBoundingBox(pieces);
   // The view stays put, the origin a margin from the top-left: a turned shape turns about its

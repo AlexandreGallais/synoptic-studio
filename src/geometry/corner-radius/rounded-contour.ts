@@ -1,10 +1,7 @@
 import { cyclicItem } from "../contour";
 
-import { clampedRadii } from "./clamped-radii";
-import { cornerTriples } from "./corner-triples";
-import { filletArc } from "./fillet-arc";
+import { filletArcs } from "./fillet-arcs";
 import { hasLength } from "./has-length";
-import { turningAngles } from "./turning-angles";
 
 import type { Arc, ContourPiece, Corner } from "../contour";
 
@@ -24,13 +21,7 @@ import type { Arc, ContourPiece, Corner } from "../contour";
  * @see DERIV-fillet-arc
  */
 export function roundedContour(corners: readonly Corner[]): readonly ContourPiece[] {
-  // Each corner's triple and turning angle, computed once and shared by the clamp and the fillets.
-  const triples = cornerTriples(corners.map((corner) => corner.point));
-  const angles = turningAngles(triples);
-  const radii = clampedRadii(corners, angles);
-  const arcs = triples.map((triple, index) =>
-    filletArc(triple, cyclicItem(angles, index, 0), cyclicItem(radii, index, 0)),
-  );
+  const arcs = filletArcs(corners);
 
   return arcs
     .flatMap((arc, index): ContourPiece[] => {

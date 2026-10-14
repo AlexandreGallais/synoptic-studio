@@ -2,10 +2,12 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { CURRENT_GUIDED_STEPS, GUIDED_STEPS } from "../guided-steps";
+import { mountPlayground } from "../mount";
 import {
   clickElement,
   clickWithKeys,
   commitField,
+  loadPage,
   openServedPage,
   readDisplay,
   readPressedState,
@@ -41,7 +43,8 @@ describe("toolbar", () => {
 
 describe("toolbar after a free shape", () => {
   beforeEach(() => {
-    openServedPage("");
+    // The epic's step 1, radius 10, whatever feature is being validated.
+    openServedPage("?guide=epic");
     // A pentagon 120 × 80 converted to a free shape: its width becomes 84.11698.
     clickWithKeys("#tool-polygon", {});
 
@@ -105,10 +108,16 @@ describe("pipeline column", () => {
 });
 
 describe("guided test of the page", () => {
-  it("is hidden when the feature being validated has no steps", () => {
+  it("shows the steps of the feature being validated", () => {
     openServedPage("");
 
-    expect(CURRENT_GUIDED_STEPS).toHaveLength(0);
+    expect(readDisplay("guide") === "none").toBe(CURRENT_GUIDED_STEPS.length === 0);
+  });
+
+  it("is hidden without steps, as between features", () => {
+    loadPage("");
+    mountPlayground(document, []);
+
     expect(readDisplay("guide") === "none").toBe(true);
   });
 

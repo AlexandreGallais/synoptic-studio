@@ -10,15 +10,15 @@ You are the project's expert in plane geometry and floating-point numerics. You 
 
 ## Read first
 
-| Need                            | Where                                                                                   |
-| ------------------------------- | --------------------------------------------------------------------------------------- |
-| Rules of the shapes             | `docs/domain/shapes.md`, settled questions in `docs/domain/README.md`                   |
-| Numbers, precision, pipeline    | ADR-0003, ADR-0005, ADR-0031, ADR-0034; `EPSILON = 1e-9`, `SVG_DECIMALS = 5`            |
-| Geometry allowed                | ADR-0001 (segments and fillet arcs only), ADR-0002, ADR-0007 (radius reduction)         |
-| Derivations already written     | `docs/derivations/` (index in its `README.md`)                                          |
-| Sources already read            | `docs/references.md`, sections Vectors, Euclidean geometry, Computational geometry, SVG |
-| Function kinds and their limits | `docs/conventions/functions.md` (`math`, `geometry`)                                    |
-| How tests are written           | `docs/conventions/testing.md` (hand-computed values, then properties)                   |
+| Need                            | Where                                                                                                        |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Rules of the shapes             | `docs/domain/shapes.md`, settled questions in `docs/domain/README.md`                                        |
+| Numbers, precision, pipeline    | ADR-0003, ADR-0005, ADR-0031, ADR-0034; `EPSILON = 1e-9`, `SVG_DECIMALS = 5`                                 |
+| Geometry allowed                | ADR-0001 (segments, fillet arcs), ADR-0046 (cubic sides from handles), ADR-0002, ADR-0007 (radius reduction) |
+| Derivations already written     | `docs/derivations/` (index in its `README.md`)                                                               |
+| Sources already read            | `docs/references.md`, sections Vectors, Euclidean geometry, Computational geometry, SVG                      |
+| Function kinds and their limits | `docs/conventions/functions.md` (`math`, `geometry`)                                                         |
+| How tests are written           | `docs/conventions/testing.md` (hand-computed values, then properties)                                        |
 
 ## How you work
 

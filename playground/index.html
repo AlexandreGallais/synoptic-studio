@@ -73,6 +73,10 @@
       #canvas path.handle.first {
         fill: #d04a4a;
       }
+      /* Handles of a curve (F12): a thin bar from the point to a small square, both filled. */
+      #canvas path.curve-handle {
+        fill: #7c3aed;
+      }
       /* Floating toolbar, as in design tools: shapes on the left, modes on the right. */
       #toolbar {
         position: absolute;
@@ -243,6 +247,7 @@
         min-height: 2.25rem;
         text-align: left;
       }
+      #handles-switch[aria-pressed="true"],
       #points button[aria-pressed="true"] {
         background: #f5b700;
       }
@@ -397,9 +402,48 @@
       <ol id="points" aria-label="Points" hidden></ol>
       <fieldset id="point-fields" hidden>
         <legend>Points</legend>
-        <label
+        <button id="handles-switch" type="button" aria-pressed="false" hidden>Handles</button>
+        <label id="point-radius-field"
           >Radius <input id="point-radius" type="number" min="0" max="100000" step="1"
         /></label>
+        <fieldset id="handle-fields" hidden>
+          <legend>Handles</legend>
+          <label
+            >Typed as
+            <select id="handle-method">
+              <option value="page">x, y on the page</option>
+              <option value="side">angle, length from the side</option>
+            </select></label
+          >
+          <label
+            >Mode
+            <select id="handle-mode">
+              <option value="angle-and-length">Mirror angle and length</option>
+              <option value="angle">Mirror angle</option>
+              <option value="none">No mirroring</option>
+            </select></label
+          >
+          <div class="pair">
+            <label
+              >Before <span class="handle-axis">x</span>
+              <input id="handle-before-x" type="number" step="1"
+            /></label>
+            <label
+              >Before <span class="handle-axis">y</span>
+              <input id="handle-before-y" type="number" step="1"
+            /></label>
+          </div>
+          <div class="pair">
+            <label
+              >After <span class="handle-axis">x</span>
+              <input id="handle-after-x" type="number" step="1"
+            /></label>
+            <label
+              >After <span class="handle-axis">y</span>
+              <input id="handle-after-y" type="number" step="1"
+            /></label>
+          </div>
+        </fieldset>
         <div class="pair">
           <label>X <input id="point-x" type="number" step="1" /></label>
           <label>Y <input id="point-y" type="number" step="1" /></label>
