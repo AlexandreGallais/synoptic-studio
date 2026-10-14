@@ -183,10 +183,27 @@ Functional reference: Inkscape's Star/Polygon tool.
 
 ### Text
 
-- Exception to "everything is a path": native `<text>` (ADR-0002).
-- Parameters: content, font, integer size, text anchor (start / middle / end, SVG's `text-anchor`; not the anchor of a shape in its box), color.
-- Reason: converting text to paths requires reading font files, hence a library or a heavy home-made parser.
-- Text has its own epic, E15 (Product Owner, 2026-10-12): native text or a `foreignObject`, fonts and measured size are studied first (Q31).
+Decided by the Product Owner at F05's refinement, rounds 1 and 2 (2026-10-14); drawn and measured as ADR-0052 says.
+
+- **Drawing**: a native `<text>`, the exception to "everything is a path" (ADR-0002), with one positioned `<tspan>` per line, so that every SVG reader shows the same lines. The library measures the text and breaks its lines itself. Text converted to paths is not wanted. An HTML layer for browsers comes on top later (F15).
+- **Measuring**: from the font's metrics, read once from the font file and kept; measuring a text is then a sum of stored numbers (`DERIV-text-width`). In a running view a text may change a hundred times a second on a thousand texts: moving, turning, showing, hiding and recoloring stay cheap transforms.
+- **Characters**: a text holds:
+  - its content, with the line breaks the designer typed;
+  - a font named with a fallback (`Inter`, else `sans-serif`), any font allowed; the default font is Inter, whose metrics ship with the library;
+  - a size, an integer from 1 to 100 000, in the one unit used everywhere (no millimetres, no points);
+  - a weight from 100 (thin) to 900 (black), with a quick bold button (700) and an italic button;
+  - a color in hexadecimal with an opacity from 0 to 100 % (F16 brings the picker);
+  - letter spacing and word spacing, to fit text in small frames;
+  - underline and strike-through;
+  - a case transform: upper, lower, the first word or every word capitalized, and the programmers' cases camel, Pascal, kebab, snake and constant, so that a value typed once comes out formatted; the library writes the transformed string (rules: Q36);
+  - a direction, left to right or right to left;
+  - an alignment of its lines (left, center, right), a position and an angle.
+- **Scripts**: the library measures Latin, Greek and Cyrillic, and Hebrew written right to left. Arabic and Indian scripts need shaping: they are left to the browser's HTML layer (F15).
+- **Turning**: like a shape, by an integer angle kept from 0 to 359, clockwise, about the middle of its block: of the measured text when it fits its content, of its box otherwise (F14). When shapes get rotation anchors, text gets them too.
+- **Empty text**: the library draws an empty text as nothing; a text created by a click and left empty disappears when the designer changes tool or clicks elsewhere (an editor behavior, E02).
+- **Later in E15**: a box of text of given width and height, its lines wrapped, a word too long broken at a character or moved whole to the next line, no hyphenation, an ellipsis and a maximum number of lines, a vertical alignment, a line height, a wrap style (balance, pretty), a background color drawn as a path, a vertical trim from the cap height to the baseline (F14); fonts read from files or from the computer, fonts embedded once per view, the HTML layer (F15); colors and their pickers (F16).
+- **Not wanted**: lists (a dash typed by hand is enough), highlight shapes beyond a background color, CSS color names, RGB fields.
+- **Text styles**: named styles ("title", "body", "description") that predefine a text's options; in the free edition, templates kept locally that forbid nothing (`editions.md` for the pro edition); with the libraries' epic.
 
 ### Layout box (Q21)
 

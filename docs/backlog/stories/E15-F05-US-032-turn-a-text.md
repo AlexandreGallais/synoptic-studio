@@ -13,8 +13,8 @@ As a designer, I want to turn a text about the middle of its block and see that 
 
 ## Acceptance criteria
 
-- Given a text turned by 90, when drawn, then it turns about the middle of its measured block, and its angle is kept from 0 to 359.
-- Given a selected text, when shown, then its measured block is drawn as a dashed frame, as a shape's box.
+- Given a text turned by 90, when drawn, then it turns clockwise about the middle of its measured block by a `transform` on its `<text>`, and its angle is kept from 0 to 359 (ADR-0052, `REF-SVG11-TRANSFORM`, `DERIV-turned-shape`).
+- Given a selected text, when shown, then its measured block (`DERIV-text-width`, step 4) is drawn as a dashed frame, as a shape's box.
 
 ## Tasks
 
