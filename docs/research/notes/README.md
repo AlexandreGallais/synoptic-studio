@@ -21,3 +21,4 @@ Content: summary in our own words (no copy of source text), formulas, references
 | [0014](./0014-f12-fillet-beside-curve.md)          | Sources of F12: a corner fillet beside a curved side, a radius too large                                                                                    |
 | [0015](./0015-f10-ellipse-from-cubics.md)          | Sources of F10 in E14: an ellipse from four cubic sides, not elliptical arcs                                                                                |
 | [0016](./0016-f13-named-calculations.md)           | Sources of F13: the calculations of the code that mathematics names, and those left inline                                                                  |
+| [0017](./0017-e15-text.md)                         | Sources of E15: text in SVG readers, font files and their metrics, measuring, scripts and wrapping, embedding, the default font                             |
