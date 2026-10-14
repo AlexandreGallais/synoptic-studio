@@ -55,7 +55,9 @@
     "prepare": "husky",
     "branches:clean": "node --harmony-temporal --no-warnings=ExperimentalWarning scripts/branches-clean.ts",
     "records:save": "node --harmony-temporal --no-warnings=ExperimentalWarning scripts/records-save.ts",
-    "replace": "node scripts/replace-text.ts"
+    "replace": "node scripts/replace-text.ts",
+    "golden:write": "vitest run tests/golden-results.test.ts --mode golden-write",
+    "golden:check": "vitest run tests/golden-results.test.ts --mode golden-check"
   },
   "devDependencies": {
     "@commitlint/cli": "21.2.3",
