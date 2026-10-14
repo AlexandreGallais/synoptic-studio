@@ -119,6 +119,17 @@ export function viewOf(bytes: readonly number[]): DataView {
 }
 
 /**
+ * A view of the first bytes of a table, as a table cut short.
+ *
+ * @param bytes - the table's bytes
+ * @param size - how many bytes are kept; a negative size cuts that many from the end
+ * @returns a view of the bytes kept
+ */
+export function viewOfFirst(bytes: readonly number[], size: number): DataView {
+  return viewOf(bytes.slice(0, size));
+}
+
+/**
  * A font file: the table directory, then each table at a 4-byte boundary, in the order given.
  *
  * @param sfntVersion - `TRUE_TYPE_VERSION` or `OPEN_TYPE_VERSION`
