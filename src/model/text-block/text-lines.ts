@@ -1,12 +1,16 @@
+/** A hard line break: a carriage return followed by a line feed, a carriage return alone, or a line feed. */
+const LINE_BREAK = /\r\n|\r|\n/u;
+
 /**
- * The lines of a text's content, cut at each line feed: none for an empty content, which draws
- * nothing; a content ending with a line feed ends with an empty line.
+ * The lines of a text's content, cut at each hard line break: CR LF, CR or LF, as UAX #14 (LB5)
+ * treats them; none for an empty content, which draws nothing; a content ending with a line
+ * break ends with an empty line.
  *
  * @kind domain
- * @param content - the content, a line feed (U+000A) between two lines
+ * @param content - the content, a line break between two lines
  * @returns its lines, in order
- * @see docs/domain/shapes.md#text
+ * @see REF-UAX14
  */
 export function textLines(content: string): readonly string[] {
-  return content === "" ? [] : content.split("\n");
+  return content === "" ? [] : content.split(LINE_BREAK);
 }

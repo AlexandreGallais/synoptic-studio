@@ -12,7 +12,7 @@ export type Text = {
   readonly textCase: TextCase;
   /** Color, `#` and six hexadecimal digits: red, green, blue (F16 brings the picker). */
   readonly color: string;
-  /** What the designer typed, a line feed (U+000A) between two lines; empty, it draws nothing. */
+  /** What the designer typed, a line break (CR LF, CR or LF) between two lines; empty, it draws nothing. */
   readonly content: string;
   /** Left to right or right to left. */
   readonly direction: TextDirection;
