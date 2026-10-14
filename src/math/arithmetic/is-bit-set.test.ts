@@ -3,7 +3,17 @@ import { describe, expect, it } from "vitest";
 
 import { isBitSet } from "./is-bit-set";
 
-describe("isBitSet (REF-WIKI-BIT-NUMBERING)", () => {
+describe("isBitSet (DERIV-bit-of-integer)", () => {
+  it.each([
+    // ⌊65 535 / 2¹⁵⌋ = 1; ⌊65 535 / 2¹⁶⌋ = 0; ⌊32 768 / 2¹⁵⌋ = 1; ⌊32 768 / 2¹⁴⌋ = 2, even.
+    { bit: 15, isSet: true, value: 0xff_ff },
+    { bit: 16, isSet: false, value: 0xff_ff },
+    { bit: 15, isSet: true, value: 0x80_00 },
+    { bit: 14, isSet: false, value: 0x80_00 },
+  ])("reads bit $bit of $value as $isSet", ({ bit, isSet, value }) => {
+    expect(isBitSet(value, bit)).toBe(isSet);
+  });
+
   it.each([
     // 149 = 1001 0101: bits 0, 2, 4 and 7 are 1 (the source's example).
     { bit: 0, isSet: true },
