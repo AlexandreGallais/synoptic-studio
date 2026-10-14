@@ -3,7 +3,7 @@ id: EN-031
 epic: E15
 feature: F05
 title: Font metrics read from a TrueType or OpenType file
-status: ready
+status: done
 points: 3
 ---
 

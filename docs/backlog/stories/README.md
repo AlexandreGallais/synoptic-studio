@@ -113,7 +113,7 @@
 | [REV-002](./E14-REV-002-review-e14.md)                          | E14     | Review E14 with the Product Owner                                               | done   |
 | [RET-002](./E14-RET-002-retrospective-e14.md)                   | E14     | Retrospective of E14                                                            | done   |
 | [SP-015](./E15-F05-SP-015-research-e15-text.md)                 | F05     | Research for E15: text measured from font metrics and drawn as positioned lines | done   |
-| [EN-031](./E15-F05-EN-031-font-metrics-from-a-font-file.md)     | F05     | Font metrics read from a TrueType or OpenType file                              | ready  |
+| [EN-031](./E15-F05-EN-031-font-metrics-from-a-font-file.md)     | F05     | Font metrics read from a TrueType or OpenType file                              | done   |
 | [EN-032](./E15-F05-EN-032-text-in-the-model.md)                 | F05     | A text in the model: its characters, its lines and its measured block           | ready  |
 | [US-031](./E15-F05-US-031-place-a-text.md)                      | F05     | Place a text with the Text tool                                                 | ready  |
 | [CHK-014](./E15-F05-CHK-014-checkpoint-f05.md)                  | F05     | Checkpoint in the middle of F05                                                 | ready  |
