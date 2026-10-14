@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { cmapFormat12 } from "../../../tests";
+import { cmapFormat12, uint32, viewOf, viewOfFirst } from "../../../tests";
 
 import { parseSegmentedCoverageGlyphs } from "./parse-segmented-coverage-glyphs";
 
@@ -29,5 +29,21 @@ describe("parseSegmentedCoverageGlyphs (REF-OT-CMAP)", () => {
       [64, 0],
       [68, 0],
     ]);
+  });
+
+  it("gives undefined when the header or the groups pass the table's end", () => {
+    // 15 bytes cut the 16-byte header; 30 bytes hold the header and one group of the two.
+    expect(parseSegmentedCoverageGlyphs(viewOfFirst([...SUBTABLE], 15), 0, [65])).toBe(undefined);
+
+    expect(parseSegmentedCoverageGlyphs(viewOfFirst([...SUBTABLE], 30), 0, [65])).toBe(undefined);
+  });
+
+  it("refuses a group count that would pass the table, without reading 2³² groups", () => {
+    // numGroups, at 12, set to 0xFFFFFFFF.
+    const table = [...SUBTABLE];
+
+    table.splice(12, 4, ...uint32(0xff_ff_ff_ff));
+
+    expect(parseSegmentedCoverageGlyphs(viewOf(table), 0, [65])).toBeUndefined();
   });
 });

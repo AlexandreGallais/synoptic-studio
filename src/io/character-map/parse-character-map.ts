@@ -2,7 +2,6 @@ import { parseSegmentMappingGlyphs } from "./parse-segment-mapping-glyphs";
 import { parseSegmentedCoverageGlyphs } from "./parse-segmented-coverage-glyphs";
 import { parseUnicodeSubtables } from "./parse-unicode-subtables";
 
-import type { FontTableRecord } from "./font-table-record";
 import type { CharacterGlyph } from "../../model";
 
 /** `cmap` subtable format 4, segment mapping to delta values: the Basic Multilingual Plane. */
@@ -17,26 +16,25 @@ const SEGMENTED_COVERAGE = 12;
  * glyph 0.
  *
  * @kind format
- * @param view - the font file
- * @param cmap - where its `cmap` table sits
+ * @param cmap - the font's `cmap` table, at least its 4-byte header
  * @param characters - the code points to map
- * @returns each character and its glyph, 0 for a character the font does not map
+ * @returns each character and its glyph, 0 for a character the font does not map; undefined when
+ * the subtable read passes the table's end
  * @see REF-OT-CMAP
  */
 export function parseCharacterMap(
-  view: DataView,
-  cmap: FontTableRecord,
+  cmap: DataView,
   characters: readonly number[],
-): readonly CharacterGlyph[] {
-  const subtables = parseUnicodeSubtables(view, cmap);
-  const coverage = subtables.find((subtable) => view.getUint16(subtable) === SEGMENTED_COVERAGE);
-  const segments = subtables.find((subtable) => view.getUint16(subtable) === SEGMENT_MAPPING);
+): readonly CharacterGlyph[] | undefined {
+  const subtables = parseUnicodeSubtables(cmap);
+  const coverage = subtables.find((subtable) => cmap.getUint16(subtable) === SEGMENTED_COVERAGE);
+  const segments = subtables.find((subtable) => cmap.getUint16(subtable) === SEGMENT_MAPPING);
 
   if (coverage !== undefined) {
-    return parseSegmentedCoverageGlyphs(view, coverage, characters);
+    return parseSegmentedCoverageGlyphs(cmap, coverage, characters);
   }
 
   return segments === undefined
     ? characters.map((codePoint): CharacterGlyph => [codePoint, 0])
-    : parseSegmentMappingGlyphs(view, segments, characters);
+    : parseSegmentMappingGlyphs(cmap, segments, characters);
 }

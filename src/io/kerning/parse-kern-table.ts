@@ -1,7 +1,12 @@
+import { isSpanWithin } from "../../math";
+
 import type { KerningLookup } from "../../model";
 
 /** Size of the `kern` header: version and `nTables`. */
 const HEADER_SIZE = 4;
+
+/** Size of a subtable's header: version, length and coverage. */
+const SUBTABLE_HEADER_SIZE = 6;
 
 /** Offset of a subtable's length field. */
 const LENGTH_FIELD = 2;
@@ -44,7 +49,7 @@ const HORIZONTAL_KERNING_COVERAGES: ReadonlySet<number> = new Set([
 type SubtableWalk = {
   /** Where the next subtable starts. */
   readonly next: number;
-  /** Where each subtable met starts. */
+  /** Where each subtable met starts; −1 for one whose header passes the table's end. */
   readonly starts: readonly number[];
 };
 
@@ -53,20 +58,23 @@ type SubtableWalk = {
  * previous one's length.
  *
  * @kind format
- * @param view - the font file
- * @param kern - where the `kern` table starts in the file
- * @returns the offset of each subtable in the file; none for a version other than 0
+ * @param kern - the `kern` table, at least its 4-byte header
+ * @returns the offset of each subtable in the table, −1 for one whose header passes its end; none
+ * for a version other than 0
  * @see REF-OT-KERN
  */
-function parseSubtableStarts(view: DataView, kern: number): readonly number[] {
-  const count = view.getUint16(kern) === 0 ? view.getUint16(kern + 2) : 0;
+function parseSubtableStarts(kern: DataView): readonly number[] {
+  const count = kern.getUint16(0) === 0 ? kern.getUint16(2) : 0;
 
   return Array.from({ length: count }).reduce<SubtableWalk>(
-    (walk) => ({
-      next: walk.next + view.getUint16(walk.next + LENGTH_FIELD),
-      starts: [...walk.starts, walk.next],
-    }),
-    { next: kern + HEADER_SIZE, starts: [] },
+    (walk) =>
+      isSpanWithin(walk.next, SUBTABLE_HEADER_SIZE, kern.byteLength)
+        ? {
+            next: walk.next + kern.getUint16(walk.next + LENGTH_FIELD),
+            starts: [...walk.starts, walk.next],
+          }
+        : { next: walk.next, starts: [...walk.starts, -1] },
+    { next: HEADER_SIZE, starts: [] },
   ).starts;
 }
 
@@ -74,64 +82,117 @@ function parseSubtableStarts(view: DataView, kern: number): readonly number[] {
  * Reads the right glyph and the value of each kerning pair, by right glyph.
  *
  * @kind format
- * @param view - the font file
- * @param records - where the KernPair records sit in the file
+ * @param kern - the `kern` table
+ * @param records - where the KernPair records sit in it
  * @returns the kerning by right glyph
  * @see REF-OT-KERN
  */
 function parseRightGlyphs(
-  view: DataView,
+  kern: DataView,
   records: readonly number[],
 ): Readonly<Record<number, number>> {
   return Object.fromEntries(
     records.map((record) => [
-      view.getUint16(record + RIGHT_FIELD),
-      view.getInt16(record + VALUE_FIELD),
+      kern.getUint16(record + RIGHT_FIELD),
+      kern.getInt16(record + VALUE_FIELD),
     ]),
   );
 }
 
 /**
- * Reads the kerning pairs of a format 0 subtable: each its left glyph, its right glyph, then its
- * value.
+ * Reads the kerning pairs of a format 0 subtable whose two glyphs were asked: each its left glyph,
+ * its right glyph, then its value.
  *
  * @kind format
- * @param view - the font file
- * @param subtable - where the subtable starts in the file
- * @returns the kerning by left glyph, then right glyph
+ * @param kern - the `kern` table
+ * @param subtable - where the subtable starts in it, its header within the table
+ * @param glyphs - the glyphs asked, left and right
+ * @returns the kerning by left glyph, then right glyph; undefined when the pairs pass the table's
+ * end
  * @see REF-OT-KERN
  */
 function parsePairs(
-  view: DataView,
+  kern: DataView,
   subtable: number,
+  glyphs: ReadonlySet<number>,
+): Readonly<Record<number, Readonly<Record<number, number>>>> | undefined {
+  const records = parsePairRecords(kern, subtable);
+
+  return records === undefined ? undefined : recordsToPairs(kern, records, glyphs);
+}
+
+/**
+ * Reads where the KernPair records of a format 0 subtable sit.
+ *
+ * @kind format
+ * @param kern - the `kern` table
+ * @param subtable - where the subtable starts in it, its header within the table
+ * @returns the offset of each record in the table; undefined when they pass its end
+ * @see REF-OT-KERN
+ */
+function parsePairRecords(kern: DataView, subtable: number): readonly number[] | undefined {
+  const count = isSpanWithin(subtable, PAIRS_OFFSET, kern.byteLength)
+    ? kern.getUint16(subtable + PAIR_COUNT_FIELD)
+    : Infinity;
+
+  return isSpanWithin(subtable + PAIRS_OFFSET, PAIR_SIZE * count, kern.byteLength)
+    ? Array.from({ length: count }, (unused, index) => subtable + PAIRS_OFFSET + PAIR_SIZE * index)
+    : undefined;
+}
+
+/**
+ * The kerning of the pairs whose two glyphs were asked, by left glyph then right glyph.
+ *
+ * @kind format
+ * @param kern - the `kern` table
+ * @param records - where the KernPair records sit in it
+ * @param glyphs - the glyphs asked, left and right
+ * @returns the kerning by left glyph, then right glyph
+ * @see REF-OT-KERN
+ */
+function recordsToPairs(
+  kern: DataView,
+  records: readonly number[],
+  glyphs: ReadonlySet<number>,
 ): Readonly<Record<number, Readonly<Record<number, number>>>> {
-  const records = Array.from(
-    { length: view.getUint16(subtable + PAIR_COUNT_FIELD) },
-    (unused, index) => subtable + PAIRS_OFFSET + PAIR_SIZE * index,
+  const asked = records.filter(
+    (record) =>
+      glyphs.has(kern.getUint16(record)) && glyphs.has(kern.getUint16(record + RIGHT_FIELD)),
   );
 
   return Object.fromEntries(
-    [...Map.groupBy(records, (record) => view.getUint16(record))].map(([left, group]) => [
+    [...Map.groupBy(asked, (record) => kern.getUint16(record))].map(([left, group]) => [
       left,
-      parseRightGlyphs(view, group),
+      parseRightGlyphs(kern, group),
     ]),
   );
 }
 
 /**
- * Reads the kerning of a `kern` table of version 0: each subtable of horizontal kerning values,
- * format 0, as a lookup of its own, since the subtables' values add up.
+ * Reads the kerning of a `kern` table of version 0 for some glyphs: each subtable of horizontal
+ * kerning values, format 0, as a lookup of its own, since the subtables' values add up.
  *
  * @kind format
- * @param view - the font file
- * @param kern - where the `kern` table starts in the file
- * @returns its kerning lookups; none for another version
+ * @param kern - the `kern` table, at least its 4-byte header
+ * @param glyphs - the glyphs asked, left and right
+ * @returns its kerning lookups, none for another version; undefined when a subtable passes the
+ * table's end
  * @see REF-OT-KERN
  */
-export function parseKernTable(view: DataView, kern: number): readonly KerningLookup[] {
-  return parseSubtableStarts(view, kern)
-    .filter((subtable) =>
-      HORIZONTAL_KERNING_COVERAGES.has(view.getUint16(subtable + COVERAGE_FIELD)),
+export function parseKernTable(
+  kern: DataView,
+  glyphs: ReadonlySet<number>,
+): readonly KerningLookup[] | undefined {
+  const starts = parseSubtableStarts(kern);
+  const pairs = starts
+    .filter(
+      (subtable) =>
+        subtable < 0 || HORIZONTAL_KERNING_COVERAGES.has(kern.getUint16(subtable + COVERAGE_FIELD)),
     )
-    .map((subtable): KerningLookup => [{ kind: "pairs", pairs: parsePairs(view, subtable) }]);
+    .map((subtable) => (subtable < 0 ? undefined : parsePairs(kern, subtable, glyphs)));
+  const found = pairs.filter((subtable) => subtable !== undefined);
+
+  return found.length < pairs.length
+    ? undefined
+    : found.map((subtable): KerningLookup => [{ kind: "pairs", pairs: subtable }]);
 }
