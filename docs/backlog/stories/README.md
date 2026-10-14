@@ -94,6 +94,13 @@
 | [US-027](./E14-F12-US-027-radius-beside-curve.md)               | F12     | A corner beside a curved side keeps its radius                      | done   |
 | [US-028](./E14-F12-US-028-handles-on-a-polygon.md)              | F12     | Give handles to a point of a regular polygon                        | done   |
 | [AUD-012](./E14-F12-AUD-012-audit-after-validation.md)          | F12     | Audit the changes asked at the validation                           | done   |
+| [SP-013](./E14-F10-SP-013-research-f10.md)                      | F10     | Research for F10: an ellipse from four cubic sides                  | ready  |
+| [EN-027](./E14-F10-EN-027-round-shape-model.md)                 | F10     | The round shape in the model, its curve and conversions             | ready  |
+| [US-029](./E14-F10-US-029-round-tool.md)                        | F10     | Draw a circle or an ellipse with the Round tool                     | ready  |
+| [CHK-012](./E14-F10-CHK-012-checkpoint-f10.md)                  | F10     | Checkpoint in the middle of F10                                     | ready  |
+| [US-030](./E14-F10-US-030-convert-round-shape.md)               | F10     | Convert a round shape to a free shape, two ways                     | ready  |
+| [AUD-013](./E14-F10-AUD-013-audit-f10.md)                       | F10     | Audit F10                                                           | ready  |
+| [VAL-012](./E14-F10-VAL-012-validate-f10.md)                    | F10     | Validate F10                                                        | ready  |
 | [VAL-011](./E14-F12-VAL-011-validate-f12.md)                    | F12     | Validate F12                                                        | done   |
 | [VAL-010](./E14-F11-VAL-010-validate-f11.md)                    | F11     | Validate F11                                                        | done   |
 | [REV-002](./E14-REV-002-review-e14.md)                          | E14     | Review E14 with the Product Owner                                   | draft  |
