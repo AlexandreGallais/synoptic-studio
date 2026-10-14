@@ -50,6 +50,21 @@ describe("textInCase (Q36)", () => {
     expect(textInCase("valve__ON - off", "kebab")).toBe("valve-on-off");
   });
 
+  it("capitalizes the first letter of a line in sentence case, past what is not a letter", () => {
+    expect(textInCase(" pump", "sentence")).toBe(" Pump");
+    expect(textInCase("(pump) on", "sentence")).toBe("(Pump) on");
+  });
+
+  it("capitalizes the first letter after any white space in title case, the spaces kept", () => {
+    expect(textInCase("pump  on", "title")).toBe("Pump  On");
+    // A tab and a no-break space are white space too; "(on)" capitalizes past the parenthesis.
+    expect(textInCase("pump\ton\u{A0}(off)", "title")).toBe("Pump\tOn\u{A0}(Off)");
+  });
+
+  it("writes Pascal case from words of any case", () => {
+    expect(textInCase("valve__ON - off", "pascal")).toBe("ValveOnOff");
+  });
+
   it("writes each line in the case, its line breaks kept", () => {
     expect(textInCase("pump on\nvalve off", "kebab")).toBe("pump-on\nvalve-off");
     expect(textInCase("pump on\nvalve off", "sentence")).toBe("Pump on\nValve off");
