@@ -6,6 +6,9 @@ import type { TextCase } from "../text";
 /** A word of the title case: a run of characters other than white space. */
 const WORD = /\S+/gu;
 
+/** A line: a run of characters other than a carriage return or a line feed. */
+const LINE = /[^\n\r]+/gu;
+
 /** How each case writes one line (Q36). */
 const LINE_IN_CASE: Readonly<Record<TextCase, (line: string) => string>> = {
   camel: (line) =>
@@ -33,14 +36,11 @@ const LINE_IN_CASE: Readonly<Record<TextCase, (line: string) => string>> = {
  * underscores, joined in camel, Pascal, kebab, snake or constant case.
  *
  * @kind domain
- * @param content - what the designer typed, a line feed between two lines
+ * @param content - what the designer typed, a line break (CR LF, CR or LF) between two lines
  * @param textCase - the case to write it in
  * @returns the content in that case
  * @see docs/domain/shapes.md#text
  */
 export function textInCase(content: string, textCase: TextCase): string {
-  return content
-    .split("\n")
-    .map((line) => LINE_IN_CASE[textCase](line))
-    .join("\n");
+  return content.replaceAll(LINE, (line) => LINE_IN_CASE[textCase](line));
 }
