@@ -8,7 +8,7 @@ import { parseKernTable } from "./parse-kern-table";
 const GLYPHS = new Set([1, 2, 3, 4]);
 
 describe("parseKernTable (REF-OT-KERN)", () => {
-  it("reads each subtable of horizontal kerning values as a lookup of its own", () => {
+  it("adds up the subtables of horizontal kerning values into one lookup", () => {
     const table = kernTable([
       {
         coverage: 1,
@@ -22,11 +22,36 @@ describe("parseKernTable (REF-OT-KERN)", () => {
       { coverage: 1, pairs: [{ left: 1, right: 2, value: -5 }] },
     ]);
 
-    // 4 9 is left out: glyph 9 was not asked.
+    // 1 2: −50 + −5 = −55; 4 9 is left out: glyph 9 was not asked.
     expect(parseKernTable(viewOf(table), GLYPHS)).toEqual([
-      [{ kind: "pairs", pairs: { 1: { 2: -50, 3: -20 }, 4: { 1: 15 } } }],
-      [{ kind: "pairs", pairs: { 1: { 2: -5 } } }],
+      [{ kind: "pairs", pairs: { 1: { 2: -55, 3: -20 }, 4: { 1: 15 } } }],
     ]);
+  });
+
+  it("replaces the value accumulated with that of a subtable whose override bit is set", () => {
+    // 1 2: −50, then an override subtable (coverage bit 3) gives −20: −20, not −70; 1 3 keeps −20.
+    // A plain subtable after it adds again: −20 + −5 = −25.
+    const table = kernTable([
+      {
+        coverage: 1,
+        pairs: [
+          { left: 1, right: 2, value: -50 },
+          { left: 1, right: 3, value: -20 },
+        ],
+      },
+      { coverage: 0b1001, pairs: [{ left: 1, right: 2, value: -20 }] },
+      { coverage: 1, pairs: [{ left: 1, right: 2, value: -5 }] },
+    ]);
+
+    expect(parseKernTable(viewOf(table), GLYPHS)).toEqual([
+      [{ kind: "pairs", pairs: { 1: { 2: -25, 3: -20 } } }],
+    ]);
+  });
+
+  it("gives no lookup when no subtable holds horizontal kerning values", () => {
+    const table = kernTable([{ coverage: 0, pairs: [{ left: 1, right: 2, value: -50 }] }]);
+
+    expect(parseKernTable(viewOf(table), GLYPHS)).toEqual([]);
   });
 
   it.each([
