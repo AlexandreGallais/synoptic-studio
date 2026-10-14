@@ -92,6 +92,6 @@ In delivery order. Set ready by the run (ADR-0045).
 | F05.AC1              | SP-015, EN-031 | AUD-015             |
 | F05.AC2              | EN-032, US-031 | AUD-015             |
 | F05.AC3              | SP-015, EN-032 | AUD-015             |
-| F05.AC4              | US-031         | AUD-015             |
+| F05.AC4              | EN-032, US-031 | AUD-015             |
 | F05.AC5              | US-032         | AUD-015             |
 | F05.AC6              | every story    | `npm run check:all` |
