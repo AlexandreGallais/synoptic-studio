@@ -24,7 +24,7 @@ The Product Owner asked for no further questions: F13 is done after F10, and bot
 ## Acceptance criteria
 
 1. Every calculation in `src/` that mathematics names is a call to a function of that name, with its `@see` source; a list of those left inline, each with its reason, is kept in the feature's audit.
-2. The duplicates found by the audits are merged into one function each.
+2. The duplicates found by the audits are merged into one function each, unless merging would change a floating-point result (then both are kept and say why).
 3. Every drawing is identical bit for bit: the tests' exact values unchanged, no expected value edited.
 4. No new feature, no business rule changed, the approximations kept.
 
@@ -37,7 +37,7 @@ The Product Owner asked for no further questions: F13 is done after F10, and bot
 | [EN-029](../stories/E14-F13-EN-029-name-model-and-playground.md) | Enabler    | Pass 1: name the calculations of the model, io, render and playground | done   |
 | [CHK-013](../stories/E14-F13-CHK-013-checkpoint-f13.md)          | Checkpoint | Checkpoint between the two passes                                     | done   |
 | [EN-030](../stories/E14-F13-EN-030-second-pass.md)               | Enabler    | Pass 2: what pass 1 missed, and the duplicates                        | done   |
-| [AUD-014](../stories/E14-F13-AUD-014-audit-f13.md)               | Audit      | Audit F13                                                             | ready  |
+| [AUD-014](../stories/E14-F13-AUD-014-audit-f13.md)               | Audit      | Audit F13                                                             | done   |
 | [VAL-013](../stories/E14-F13-VAL-013-validate-f13.md)            | Validation | Validate F13                                                          | ready  |
 
 Set ready by the run (ADR-0045).
