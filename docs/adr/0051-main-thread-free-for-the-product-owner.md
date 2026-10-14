@@ -20,6 +20,15 @@ During a run the main agent works on the main thread. A message from the Product
 - **Reviews.** Subagents cannot start subagents, so the reviews stay with the main agent.
 - **Conflicts.** One worker per feature branch and one worktree each leave none on the code. The backlog files a story changes stay its own.
 
+## Amendment (2026-10-14)
+
+Added by the Product Owner during E15's run, so that the chat is always free:
+
+1. **The main thread only dispatches.** Every piece of work goes to a subagent: research, stories, tool or rule changes.
+2. **Each comment is acknowledged at once.** The main agent says it is taken into account and when: now, or once a named running agent has finished, if the comment concerns that agent's work. Comments may come one after another without waiting; each is acknowledged.
+3. **Tool and rule comments run in parallel.** A comment about tools, rules, skills or configuration, unrelated to the running story, goes at once to another agent, on `develop`, in its own worktree.
+4. **No two agents on the same files.** The main agent knows each running agent's topic and files.
+
 ## References
 
 ADR-0028, ADR-0045, ADR-0050, `docs/tooling/agent.md` (parallel sessions)

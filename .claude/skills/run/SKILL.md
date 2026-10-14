@@ -36,6 +36,11 @@ The main agent dispatches and stays free for the Product Owner, who may write at
 - **The main agent's part.** It answers the Product Owner while the worker works, with `npm run activity` and the status line to say where the work is. When the worker reports, it runs the reviews of step 6 in the background, sends the correctness findings back to a worker, then finishes the story (`npm run story:finish`).
 - **Business questions** come back from the worker. Only the main agent asks them, in the questionnaire, with room for remarks.
 - **Measured.** At the end of each run, the turn's tokens and the time the chat was free go into the journal, for E15's retrospective.
+- **Only dispatch.** Every piece of work goes to a subagent: research, stories, tool or rule changes. The main thread does none itself, so the chat is always free.
+- **Each comment acknowledged at once.** The main agent says the comment is taken into account and when: now, or once a named running agent has finished, if the comment concerns that agent's work.
+- **Comments one after another.** The Product Owner may send several without waiting; each gets its own acknowledgement.
+- **Tool and rule comments in parallel.** A comment about tools, rules, skills or configuration, unrelated to the running story, goes at once to another agent, on `develop`, in its own worktree.
+- **No shared files.** The main agent knows each running agent's topic and files, so that two agents never edit the same files.
 
 ## For each story
 
