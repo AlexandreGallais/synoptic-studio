@@ -19,3 +19,4 @@ Content: summary in our own words (no copy of source text), formulas, references
 | [0012](./0012-f11-folders-and-tests.md)            | Sources of F11: tests beside their module, folders by theme, a limit of files per folder, a shape's type in its folder, shared types at the root of a layer |
 | [0013](./0013-f12-curves-with-handles.md)          | Sources of F12: ways to type a handle, a point with a radius and handles, cubic sides                                                                       |
 | [0014](./0014-f12-fillet-beside-curve.md)          | Sources of F12: a corner fillet beside a curved side, a radius too large                                                                                    |
+| [0015](./0015-f10-ellipse-from-cubics.md)          | Sources of F10 in E14: an ellipse from four cubic sides, not elliptical arcs                                                                                |
