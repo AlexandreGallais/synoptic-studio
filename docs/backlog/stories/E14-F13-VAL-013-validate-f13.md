@@ -3,7 +3,7 @@ id: VAL-013
 epic: E14
 feature: F13
 title: "Validate F13"
-status: in-progress
+status: done
 points: 1
 ---
 
@@ -20,4 +20,8 @@ F13 changes no drawing: the Product Owner reads a short demo page — a few func
 One task = one commit, referenced as `VAL-013.Tn`.
 
 - [x] T1 — The demo page (30 min)
-- [ ] T2 — The Product Owner's reading (15 min)
+- [x] T2 — The Product Owner's reading (15 min)
+
+## Result (2026-10-14)
+
+Accepted with F10, without remark. The Product Owner asked that the work become a standing rule of the project: ADR-0049 (every calculation named; a `NAM` naming pass in two passes at the end of each epic).

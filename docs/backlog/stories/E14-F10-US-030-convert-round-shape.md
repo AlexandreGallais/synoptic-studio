@@ -14,7 +14,7 @@ As a designer, I want to convert a round shape either to its 4 points on the cur
 ## Acceptance criteria
 
 - Given a round shape 120 × 80 in Points mode, when **Convert to free shape** is pressed, then the shape is a free shape of 4 points in handles mode and the drawing does not move.
-- Given the same, when **Convert to rounded rectangle** is pressed, then the shape is a free shape of 4 corners of radius 40: a capsule.
+- Given the same, when **Convert to rounded rectangle** is pressed, then the shape is a free shape of 4 corners of radius 40: a capsule. _Removed at VAL-012 (2026-10-14): destructive for an ellipse; F10.AC5 now proves the button is absent._
 - Given a round shape of width 0, then both buttons are greyed.
 
 ## Product Owner test

@@ -1,6 +1,6 @@
 # DERIV-round-shape — A circle or a capsule as a rectangle rounded by half its smaller side
 
-Used by: F10 as built in E01, then moved to E14 (research note 0010); the capsule stays a rectangle rounded by half its smaller side. Sources: `DERIV-local-radius-clamp` (setback and factor per edge), `DERIV-fillet-setback` (`s = r · tan(|τ|/2)`), `REF-MATHWORLD-STADIUM` (a rectangle capped by two half circles), `REF-SVG2-SHAPES` §10.2 (as a contrast: SVG caps a `rect`'s `rx` at half its width and `ry` at half its height separately, which gives elliptical corners, not a capsule).
+Used by: F10 as built in E01, then moved to E14 (research note 0010); no longer by the code since VAL-012 removed the conversion to a rounded rectangle (2026-10-14), kept for the rectangle's own capsule; the capsule stays a rectangle rounded by half its smaller side. Sources: `DERIV-local-radius-clamp` (setback and factor per edge), `DERIV-fillet-setback` (`s = r · tan(|τ|/2)`), `REF-MATHWORLD-STADIUM` (a rectangle capped by two half circles), `REF-SVG2-SHAPES` §10.2 (as a contrast: SVG caps a `rect`'s `rx` at half its width and `ry` at half its height separately, which gives elliptical corners, not a capsule).
 
 ## Notation
 

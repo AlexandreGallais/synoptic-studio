@@ -2,7 +2,7 @@
 id: F13
 epic: E14
 title: Every calculation named
-status: in-progress
+status: done
 ---
 
 # E14 · F13 — Every calculation named
@@ -30,15 +30,15 @@ The Product Owner asked for no further questions: F13 is done after F10, and bot
 
 ## Stories
 
-| ID                                                               | Type       | Title                                                                 | Status      |
-| ---------------------------------------------------------------- | ---------- | --------------------------------------------------------------------- | ----------- |
-| [SP-014](../stories/E14-F13-SP-014-research-f13.md)              | Spike      | Research for F13: the named calculations and their sources            | done        |
-| [EN-028](../stories/E14-F13-EN-028-name-math-and-geometry.md)    | Enabler    | Pass 1: name the calculations of `math` and `geometry`                | done        |
-| [EN-029](../stories/E14-F13-EN-029-name-model-and-playground.md) | Enabler    | Pass 1: name the calculations of the model, io, render and playground | done        |
-| [CHK-013](../stories/E14-F13-CHK-013-checkpoint-f13.md)          | Checkpoint | Checkpoint between the two passes                                     | done        |
-| [EN-030](../stories/E14-F13-EN-030-second-pass.md)               | Enabler    | Pass 2: what pass 1 missed, and the duplicates                        | done        |
-| [AUD-014](../stories/E14-F13-AUD-014-audit-f13.md)               | Audit      | Audit F13                                                             | done        |
-| [VAL-013](../stories/E14-F13-VAL-013-validate-f13.md)            | Validation | Validate F13                                                          | in-progress |
+| ID                                                               | Type       | Title                                                                 | Status |
+| ---------------------------------------------------------------- | ---------- | --------------------------------------------------------------------- | ------ |
+| [SP-014](../stories/E14-F13-SP-014-research-f13.md)              | Spike      | Research for F13: the named calculations and their sources            | done   |
+| [EN-028](../stories/E14-F13-EN-028-name-math-and-geometry.md)    | Enabler    | Pass 1: name the calculations of `math` and `geometry`                | done   |
+| [EN-029](../stories/E14-F13-EN-029-name-model-and-playground.md) | Enabler    | Pass 1: name the calculations of the model, io, render and playground | done   |
+| [CHK-013](../stories/E14-F13-CHK-013-checkpoint-f13.md)          | Checkpoint | Checkpoint between the two passes                                     | done   |
+| [EN-030](../stories/E14-F13-EN-030-second-pass.md)               | Enabler    | Pass 2: what pass 1 missed, and the duplicates                        | done   |
+| [AUD-014](../stories/E14-F13-AUD-014-audit-f13.md)               | Audit      | Audit F13                                                             | done   |
+| [VAL-013](../stories/E14-F13-VAL-013-validate-f13.md)            | Validation | Validate F13                                                          | done   |
 
 Set ready by the run (ADR-0045).
 

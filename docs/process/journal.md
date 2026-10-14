@@ -2,6 +2,11 @@
 
 What each working session dealt with, in the agent's words: the Product Owner's requests in neutral words, decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`).
 
+## 2026-10-14 — F10 and F13 validated
+
+- `#val` VAL-012 and VAL-013: the Product Owner tried the round shape, its points and handles, and the shapes made from it, and accepted F10 and F13. One change: **Convert to rounded rectangle** removed (an ellipse becomes a capsule, so it keeps the drawing only for a circle); F10.AC5 reworded, the function and its helper removed, the guided test down to six steps. The agent's other F10 decisions accepted as built.
+- `#merge` One feature pull request from `feat/val-013-validate-f13`, which holds F10 and F13; `feat/val-012-validate-f10` deleted, its content inside.
+
 ## 2026-10-14 — F10 and F13 built, ready for one validation
 
 - `#run` F10 (round shape) into `feature/f10-round-shape`: SP-013 (#180, ADR-0048: four cubic sides, not elliptical arcs), EN-027 (#181), US-029 (#182), CHK-012 (#183), US-030 (#184), AUD-013 (#185); each reviewed (math expert, auditor or verifier), two playground bugs found by the verifier and fixed. VAL-012 prepared on `feat/val-012-validate-f10`: seven guided steps, the demo page.

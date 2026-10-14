@@ -25,3 +25,7 @@ Sources and the full lists: [research note 0016](../research/notes/0016-f13-name
 ## How to check it
 
 Nothing to try in the playground: every drawing is the one of F10's validation. The demo page of F10 holds the guided test of both.
+
+## Validation (2026-10-14)
+
+Accepted by the Product Owner with F10, without remark. They asked that its work become a standing rule: every calculation named while writing, and a naming pass over the whole code at the end of each epic ([ADR-0049](../adr/0049-every-calculation-named.md)).
