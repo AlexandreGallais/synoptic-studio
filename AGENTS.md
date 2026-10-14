@@ -99,14 +99,15 @@ Stop format: what blocks, what was consulted, the precise question, the options 
 
 ## Commands
 
-| Command                | Role                                                                       |
-| ---------------------- | -------------------------------------------------------------------------- |
-| `npm run dev`          | playground on `http://localhost:5173` (`?guide=epic` for the epic's steps) |
-| `npm run docs:dev`     | documentation site                                                         |
-| `npm run fix`          | Prettier + ESLint `--fix`                                                  |
-| `npm run check:all`    | every check (what `pre-push` and the CI run)                               |
-| `npm run library -- …` | local library of sources: `search`, `get`, `read`, `list`                  |
-| `npm run metrics`      | report of the agent's commands, time and tokens                            |
+| Command                | Role                                                                                                              |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `npm run dev`          | playground on `http://localhost:5173` (`?guide=epic` for the epic's steps)                                        |
+| `npm run docs:dev`     | documentation site                                                                                                |
+| `npm run fix`          | Prettier + ESLint `--fix`                                                                                         |
+| `npm run check:all`    | every check (what `pre-push` and the CI run)                                                                      |
+| `npm run library -- …` | local library of sources: `search`, `get`, `read`, `list`                                                         |
+| `npm run metrics`      | report of the agent's commands, time and tokens                                                                   |
+| agent tools            | `replace`, `backlog:status`, `story:finish`, `golden:*`, `activity`, `epic:check` (`docs/tooling/agent-tools.md`) |
 
 ## Pitfalls
 
