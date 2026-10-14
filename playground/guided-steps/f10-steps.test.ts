@@ -5,6 +5,7 @@ import {
   clickElement,
   clickPoint,
   openOnStep,
+  readDisabledState,
   readPointRows,
   readPressedState,
   readText,
@@ -22,16 +23,6 @@ import { GUIDED_STEPS_OF_EPIC_1 } from "./guided-steps-of-epic-1";
  */
 function openStep(step: number): void {
   openOnStep(GUIDED_STEPS_OF_EPIC_1.length + GUIDED_STEPS_F12.length + step);
-}
-
-/**
- * Whether a button of the page is greyed.
- *
- * @param id - its id
- * @returns whether it has the `disabled` attribute
- */
-function isDisabled(id: string): boolean {
-  return document.querySelector(`#${id}`)?.hasAttribute("disabled") === true;
 }
 
 describe("the guided test of F10 (VAL-012)", () => {
@@ -88,6 +79,9 @@ describe("the guided test of F10 (VAL-012)", () => {
     typeAndEnter("width", "0");
     clickElement("mode-points");
 
-    expect([isDisabled("convert"), isDisabled("convert-rounded")]).toEqual([true, true]);
+    expect([
+      readDisabledState("convert") === "true",
+      readDisabledState("convert-rounded") === "true",
+    ]).toEqual([true, true]);
   });
 });

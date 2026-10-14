@@ -1,5 +1,5 @@
+import { withoutNegativeZero } from "../precision";
 import { quarterTurns } from "../rotation";
-import { withoutNegativeZero } from "../vector";
 
 import { degreesInTurn } from "./degrees-in-turn";
 import { DEGREES_PER_QUARTER_TURN } from "./degrees-per-quarter-turn";

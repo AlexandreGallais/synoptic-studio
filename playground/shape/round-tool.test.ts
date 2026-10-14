@@ -6,6 +6,7 @@ import {
   clickPoint,
   openOnStep,
   pressKey,
+  readDisabledState,
   readPointRows,
   readPressedState,
   readText,
@@ -23,16 +24,6 @@ import {
  */
 function isHidden(id: string): boolean {
   return document.querySelector<HTMLElement>(`#${id}`)?.hidden === true;
-}
-
-/**
- * Whether a button of the page is greyed.
- *
- * @param id - its id
- * @returns whether it has the `disabled` attribute
- */
-function isDisabled(id: string): boolean {
-  return document.querySelector(`#${id}`)?.hasAttribute("disabled") === true;
 }
 
 describe("the Round tool (US-029)", () => {
@@ -103,11 +94,11 @@ describe("the Round tool (US-029)", () => {
 
     const drawn = readText("#path-data");
 
-    expect([isDisabled("add-midpoint"), isDisabled("delete-points"), isHidden("convert")]).toEqual([
-      true,
-      true,
-      false,
-    ]);
+    expect([
+      readDisabledState("add-midpoint") === "true",
+      readDisabledState("delete-points") === "true",
+      isHidden("convert"),
+    ]).toEqual([true, true, false]);
 
     clickElement("add-midpoint");
     clickElement("delete-points");

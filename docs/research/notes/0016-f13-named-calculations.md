@@ -27,7 +27,7 @@ Existing names used where the code wrote them out: `subtract`, `add`, `scale`, `
 
 ## Pass 1, model, io, render and playground (EN-029)
 
-`hasArea(size)` (`REF-WIKI-RECTANGLE`, `width · height > 0`), `halfSize(size)` (`DERIV-turned-shape`), `explement(angle)` (`REF-WIKI-ANGLE`), `clamp` (`REF-WIKI-CLAMP`), `turnAboutBy(point, center, angle)`; and calls to `boxCenter`, `add`, `subtract`, `boxSize`, `modulo` and `mirroredHandle` where the code wrote them out.
+`hasArea(size)` (`REF-WIKI-RECTANGLE`, `width · height > 0`), `halfSize(size)` (`DERIV-turned-shape`), `explement(angle)` (`REF-WIKI-ANGLE`), `clamp` (`REF-WIKI-CLAMP`); and calls to `boxCenter`, `add`, `subtract`, `boxSize`, `modulo` and `mirroredHandle` where the code wrote them out.
 
 ## Left inline, with the reason
 
@@ -41,7 +41,7 @@ Existing names used where the code wrote them out: `subtract`, `add`, `scale`, `
 | `midpoint` beside `pointBetween(…, 1/2)`                               | `(a + b)/2` and `a/2 + b/2` differ on overflow and subnormals: both kept                         |
 | the playground's handle bar and inset box                              | drawings of the playground only; a band and an inset need a derivation of their own              |
 | `turnAbout(p, c, turnDirection(α))` in the model                       | already two named steps: turning by the direction of an angle; a third name would only wrap them |
-| `width === 0 \|\| height === 0` in the playground's conversion buttons | `!hasArea` differs when a fractional product underflows                                          |
+| `width === 0 \|\| height === 0` in the playground's conversion buttons | `!hasArea` differs when a fractional product underflows, and for negative or NaN sizes           |
 | one-sided tolerance tests (`radius − effective ≥ EPSILON`)             | no standard name                                                                                 |
 | evenly spaced samples `(k · T) / n`                                    | no source read for the name; pass 2                                                              |
 

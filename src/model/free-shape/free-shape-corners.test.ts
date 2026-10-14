@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import { freeShapeOf, rectangleCorners } from "../../../tests";
-import { NO_HANDLES, curveCornerOf } from "../handles";
+import { NO_HANDLES } from "../../geometry";
+import { curveCornerOf } from "../handles";
 import { rectangleAsFreeShape } from "../rectangle";
 
 import { freeShapeAroundCorners } from "./free-shape-around-corners";

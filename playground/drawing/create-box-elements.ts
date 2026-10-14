@@ -2,6 +2,7 @@ import {
   contourPiecesToPathData,
   createPathElement,
   curveCornerOf,
+  isRegularPolygon,
   rectangleCorners,
   roundedContour,
   turnedCorners,
@@ -104,7 +105,7 @@ export function createBoxElements(
 
   box.classList.add("box");
 
-  const boxes = "anchor" in model ? [box] : [];
+  const boxes = isRegularPolygon(model) ? [box] : [];
 
   return model.angle === 0
     ? boxes

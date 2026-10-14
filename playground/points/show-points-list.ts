@@ -1,4 +1,4 @@
-import { EPSILON, cyclicItem, drawnRadii, formatSvgNumber } from "../../src";
+import { cyclicItem, drawnRadii, formatSvgNumber, isReducedRadius } from "../../src";
 import { readMode, selectElement } from "../page";
 
 import type { Corner, VertexSelection } from "../../src";
@@ -17,7 +17,9 @@ import type { ShapeReading } from "../shape";
  */
 function createRowText(corner: Corner, vertex: number, effective: number): string {
   const { point, radius } = corner;
-  const reduced = radius - effective >= EPSILON ? ` (effective ${formatSvgNumber(effective)})` : "";
+  const reduced = isReducedRadius(radius, effective)
+    ? ` (effective ${formatSvgNumber(effective)})`
+    : "";
   const place = `x ${formatSvgNumber(point.x)} · y ${formatSvgNumber(point.y)}`;
 
   return `${String(vertex + 1)} · ${place} · radius ${String(radius)}${reduced}`;

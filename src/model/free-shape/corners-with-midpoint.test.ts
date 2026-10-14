@@ -2,8 +2,8 @@ import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { rectangleCorners } from "../../../tests";
-import { cubicPoint, curveContour } from "../../geometry";
-import { NO_HANDLES, curveCornerOf } from "../handles";
+import { NO_HANDLES, cubicPoint, curveContour } from "../../geometry";
+import { curveCornerOf } from "../handles";
 
 import { cornersWithMidpoint } from "./corners-with-midpoint";
 

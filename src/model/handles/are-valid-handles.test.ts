@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 
+import { NO_HANDLES } from "../../geometry";
+
 import { areValidHandles } from "./are-valid-handles";
-import { NO_HANDLES } from "./no-handles";
 
 import type { Handles } from "../../geometry";
 

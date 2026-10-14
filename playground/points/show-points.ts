@@ -1,3 +1,4 @@
+import { isRoundShape } from "../../src";
 import { createCurveHandleElements, showHandleFields } from "../handles";
 import { readMode, readSelection, selectElement } from "../page";
 
@@ -25,7 +26,7 @@ function writeRadiusFields(
   reading: ShapeReading,
   selection: VertexSelection,
 ): void {
-  if ("kind" in reading.model) {
+  if (isRoundShape(reading.model)) {
     selectElement(document, "point-radius-field").hidden = true;
 
     return;

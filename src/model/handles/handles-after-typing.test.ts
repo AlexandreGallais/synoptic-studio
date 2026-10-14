@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 
+import { NO_HANDLES } from "../../geometry";
+
 import { handlesAfterTyping } from "./handles-after-typing";
-import { NO_HANDLES } from "./no-handles";
 
 describe("handlesAfterTyping", () => {
   it("[F12.AC2] sets the handle typed and mirrors the other in mode angle and length", () => {

@@ -1,4 +1,4 @@
-import { EPSILON, distance } from "../../math";
+import { EPSILON, distance, regularPartition } from "../../math";
 import { cubicPoint } from "../placement";
 
 import type { Point } from "../../math";
@@ -20,9 +20,8 @@ const SAMPLES = 64;
  * @see ADR-0047
  */
 export function isClearOfSide(side: FilletSide, centre: Point, radius: number): boolean {
-  return Array.from(
-    { length: SAMPLES + 1 },
-    (unused, index) => (index * side.limit) / SAMPLES,
-    // A share EPSILON of the radius forgives rounding errors only.
-  ).every((t) => distance(centre, cubicPoint(side.cubic, t)) >= radius * (1 - EPSILON));
+  // A share EPSILON of the radius forgives rounding errors only.
+  return regularPartition(side.limit, SAMPLES).every(
+    (t) => distance(centre, cubicPoint(side.cubic, t)) >= radius * (1 - EPSILON),
+  );
 }

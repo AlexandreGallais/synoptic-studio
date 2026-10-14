@@ -10,10 +10,10 @@ import type { Point } from "../../math";
  *
  * @kind geometry
  * @param start - where the chain starts
- * @param directions - each side's angle in radians, in order
+ * @param angles - each side's angle in radians, in order
  * @returns where the chain ends
  * @see REF-CRANE-DISCRETE-CURVES
  */
-export function chainEnd(start: Point, directions: readonly number[]): Point {
-  return directions.reduce((point, direction) => add(point, directionAt(direction)), start);
+export function chainEnd(start: Point, angles: readonly number[]): Point {
+  return angles.reduce((point, angle) => add(point, directionAt(angle)), start);
 }

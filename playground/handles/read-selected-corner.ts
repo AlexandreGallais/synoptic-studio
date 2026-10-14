@@ -1,4 +1,4 @@
-import { hasArea } from "../../src";
+import { hasArea, isRoundShape } from "../../src";
 import { readSelection } from "../page";
 
 import type { CurveCorner } from "../../src";
@@ -59,7 +59,7 @@ export function readSelectedCorner(
   const index = readOnlySelected(document);
 
   // A round shape's points already have their handles: it is converted first (US-030).
-  return index === undefined || "kind" in reading.model
+  return index === undefined || isRoundShape(reading.model)
     ? undefined
     : readFreeCorner(reading, index);
 }

@@ -1,4 +1,4 @@
-import { hasArea, roundShapeAsRoundedRectangle } from "../../src";
+import { hasArea, isRoundShape, roundShapeAsRoundedRectangle } from "../../src";
 
 import { readShape } from "./read-shape";
 import { writeStoredFreeShape } from "./write-stored-free-shape";
@@ -16,7 +16,7 @@ import type { RoundShape } from "../../src";
 function readValidRoundShape(document: Document): RoundShape | undefined {
   const { isValid, model } = readShape(document);
 
-  return isValid && "kind" in model ? model : undefined;
+  return isValid && isRoundShape(model) ? model : undefined;
 }
 
 /**
