@@ -1,6 +1,6 @@
 import { formatSvgNumber } from "./format-svg-number";
 
-import type { Point } from "../math";
+import type { Point } from "../../math";
 
 /**
  * Coordinate pair of a path-data command, numbers at fixed precision: `x y`.

@@ -1,7 +1,7 @@
 import { formatCoordinatePair } from "./format-coordinate-pair";
 import { formatSvgNumber } from "./format-svg-number";
 
-import type { Arc } from "../geometry";
+import type { Arc } from "../../geometry";
 
 /**
  * Elliptical arc command of a fillet: `A r r 0 0 sweep x y`.

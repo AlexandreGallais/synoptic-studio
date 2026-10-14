@@ -2,7 +2,7 @@ import { formatArcCommand } from "./format-arc-command";
 import { formatCoordinatePair } from "./format-coordinate-pair";
 import { formatCubicCommand } from "./format-cubic-command";
 
-import type { ContourPiece } from "../geometry";
+import type { ContourPiece } from "../../geometry";
 
 /** Separator between path-data commands (SVG 2 §9.3.9, `wsp`). */
 const SEPARATOR = " ";

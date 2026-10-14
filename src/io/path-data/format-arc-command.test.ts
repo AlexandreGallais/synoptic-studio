@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { formatArcCommand } from "./format-arc-command";
 
-import type { Arc } from "../geometry";
+import type { Arc } from "../../geometry";
 
 /**
  * Fillet arc reduced to what the command writes: radius, end point and direction.
