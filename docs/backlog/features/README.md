@@ -12,6 +12,6 @@
 | [F08](./E01-F08-node-editing.md)                       | E01  | Node editing                       | done        |
 | [F09](./E01-F09-stretchable-free-shape.md)             | E01  | Stretchable free shape             | done        |
 | [F10](./E14-F10-round-shape.md)                        | E14  | Round shape                        | in-progress |
-| [F13](./E14-F13-every-calculation-named.md)            | E14  | Every calculation named            | draft       |
+| [F13](./E14-F13-every-calculation-named.md)            | E14  | Every calculation named            | in-progress |
 | [F12](./E14-F12-curves-with-handles.md)                | E14  | Points on a curve with handles     | done        |
 | [F11](./E14-F11-code-base-ready-for-curves.md)         | E14  | A code base ready for curves       | done        |
