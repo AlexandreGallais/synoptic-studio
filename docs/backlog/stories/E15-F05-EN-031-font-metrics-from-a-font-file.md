@@ -25,4 +25,4 @@ One task = one commit, referenced as `EN-031.Tn`.
 
 - [x] T1 — The font file reader: directory, head, hhea, maxp, hmtx, cmap; tests first with hand-computed values (3 h)
 - [x] T2 — Kerning pairs from `kern` and `GPOS`; underline and strike-out from `post` and `OS/2`, and `fsType` (2 h)
-- [ ] T3 — The default font's metrics as a data file, and the script that writes it (1 h)
+- [x] T3 — The default font's metrics as a data file, and the script that writes it (1 h)

@@ -61,7 +61,8 @@
     "backlog:status": "node scripts/backlog-status.ts",
     "story:finish": "node scripts/story-finish.ts",
     "activity": "node --harmony-temporal scripts/activity.ts",
-    "epic:check": "node --harmony-temporal scripts/epic-check.ts"
+    "epic:check": "node --harmony-temporal scripts/epic-check.ts",
+    "font:metrics": "node scripts/default-font-metrics.ts"
   },
   "devDependencies": {
     "@commitlint/cli": "21.2.3",

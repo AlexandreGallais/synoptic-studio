@@ -100,7 +100,7 @@ describe("parseFontMetrics (REF-OT-OTFF)", () => {
     });
   });
 
-  it("[F05.AC3] reads an OpenType file's kerning from the lookups of its GPOS kern feature", () => {
+  it("[F05.AC1] reads an OpenType file's kerning from the lookups of its GPOS kern feature", () => {
     const file = fontFile(OPEN_TYPE_VERSION, { ...testFontTables(), GPOS, kern: KERN });
     const kerning = parseFontMetrics(file, CHARACTERS)?.kerning ?? NO_KERNING;
 
@@ -113,7 +113,7 @@ describe("parseFontMetrics (REF-OT-OTFF)", () => {
     expect(pairKerning(kerning, 67, 65)).toBe(0);
   });
 
-  it("[F05.AC3] reads a TrueType file's kerning from its kern table when it has no GPOS", () => {
+  it("[F05.AC1] reads a TrueType file's kerning from its kern table when it has no GPOS", () => {
     const file = fontFile(TRUE_TYPE_VERSION, { ...testFontTables(), kern: KERN });
     const kerning = parseFontMetrics(file, CHARACTERS)?.kerning ?? NO_KERNING;
 
@@ -122,7 +122,7 @@ describe("parseFontMetrics (REF-OT-OTFF)", () => {
   });
 
   it.skipIf(ARIAL === undefined)(
-    "[F05.AC2] reads Arial's advances and kerning pairs as the derivation's cross-check",
+    "[F05.AC1] reads Arial's advances and kerning pairs as the derivation's cross-check",
     () => {
       const metrics = parseFontMetrics(ARIAL ?? new Uint8Array(), ARIAL_CHARACTERS);
       const kerning = metrics?.kerning ?? NO_KERNING;
