@@ -14,7 +14,7 @@ status: draft
 ## Plan, to refine at its start
 
 - Pass 1: list, folder by folder (`math`, `geometry`, `model`, `io`, `render`, `playground`), each inline formula and each sequence of steps with a mathematical name; turn them into named functions with a `REF-*` or a `DERIV-*` step; the math-expert agent checks each name against its source.
-- Pass 2: the same, on the result, and the duplicates the audits left: `NO_HANDLES` and `NO_CORNER` in model and geometry, `midpoint` beside `pointBetween`, `cubicVelocity` beside `derivativeCoefficients`.
+- Pass 2: the same, on the result, and the duplicates the audits left: `NO_HANDLES` and `NO_CORNER` in model and geometry, `midpoint` beside `pointBetween`, `cubicVelocity` beside `derivativeCoefficients`; the shape kinds told apart three ways (`isFreeShape`, `"anchor" in model`, `"kind" in model`, AUD-013); the per-axis product written in `stretchedToEllipse` and `stretchedHandles`; the test helper `isDisabled` in two playground tests.
 - Every drawing unchanged, bit for bit (the property tests of F11 and F12).
 
 ## Stories

@@ -19,7 +19,7 @@ The round shape draws a circle in a square box and an ellipse otherwise (F10). A
 | Four cubic sides (chosen) | one curve kind; the conversion moves nothing; stretching a converted shape stays an ellipse (affine, `REF-WIKI-BEZIER`) | a gap of 0.00027 of the half axis: 0.014 on a circle of diameter 100, under a hundredth of a unit up to a diameter of about 70                                                                                    |
 | Elliptical arcs (`A`)     | exact                                                                                                                   | a second curve kind in contours, boxes, turns and strokes; the conversion to points with handles would move the curve by the same gap; a stretch must recompute the arc's radii and rotation, not only map points |
 
-The handle `4(√2 − 1)/3` is kept rather than 0.551785, whose largest error is about a quarter smaller (`REF-POMAX-BEZIER`): with it the middle of each side lies exactly on the curve, the error is only outwards, and it is the value of `REF-WIKI-BEZIER` and of common tools. `REF-POMAX-BEZIER` advises circular arcs for circular arcs: the round shape is chosen to be the curve its points with handles draw, so that what is shown and what is converted are one curve.
+The handle `4(√2 − 1)/3` is kept rather than 0.551785, whose largest error is about a quarter smaller (`REF-POMAX-BEZIER`): with it the middle of each side lies exactly on the curve, the error is only outwards, and it is the value of `REF-WIKI-BEZIER`. `REF-POMAX-BEZIER` advises circular arcs for circular arcs: the round shape is chosen to be the curve its points with handles draw, so that what is shown and what is converted are one curve.
 
 ## Consequences
 

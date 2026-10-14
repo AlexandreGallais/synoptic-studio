@@ -264,4 +264,4 @@ See `interaction.md` §6.
 - Made by business users in the View Editor, with **more freedom** than symbols but few options.
 - A drawing has no parameter and no animation. Selecting a group and saving it creates a drawing.
 - Drawings go into a **drawing library shared between projects**, so that the same drawings are reused from one synoptic view to another.
-- Curves drawn freely with a pen are allowed in drawings only (Q12, ADR-0018): a Figma-like pen places points, and dragging a point pulls Bézier handles. Symbols have cubic sides from typed handles only (ADR-0046).
+- Curves drawn freely with a pen are allowed in drawings only (Q12, ADR-0018): a Figma-like pen places points, and dragging a point pulls Bézier handles. Symbols have cubic sides from typed handles only, or the round shape's derived ones (ADR-0046, ADR-0048).

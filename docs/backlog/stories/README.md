@@ -99,7 +99,7 @@
 | [US-029](./E14-F10-US-029-round-tool.md)                        | F10     | Draw a circle or an ellipse with the Round tool                     | done   |
 | [CHK-012](./E14-F10-CHK-012-checkpoint-f10.md)                  | F10     | Checkpoint in the middle of F10                                     | done   |
 | [US-030](./E14-F10-US-030-convert-round-shape.md)               | F10     | Convert a round shape to a free shape, two ways                     | done   |
-| [AUD-013](./E14-F10-AUD-013-audit-f10.md)                       | F10     | Audit F10                                                           | ready  |
+| [AUD-013](./E14-F10-AUD-013-audit-f10.md)                       | F10     | Audit F10                                                           | done   |
 | [VAL-012](./E14-F10-VAL-012-validate-f10.md)                    | F10     | Validate F10                                                        | ready  |
 | [VAL-011](./E14-F12-VAL-011-validate-f12.md)                    | F12     | Validate F12                                                        | done   |
 | [VAL-010](./E14-F11-VAL-010-validate-f11.md)                    | F11     | Validate F11                                                        | done   |
