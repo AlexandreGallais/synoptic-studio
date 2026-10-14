@@ -1,8 +1,8 @@
-// The full check of what an epic produced, a fixed step of every retrospective (RET-002, the
+// The full check of what an epic produced, at the start and at the end of every epic (RET-002, the
 // agent's tools in docs/tooling/agent-tools.md): every check of the code and the site, the
-// branches and pull requests left, the calls that failed during the epic and why, calls left
-// running, the backlog of the epic, the private records saved. Prints a Markdown table to copy
-// into the retrospective's record. Run by `npm run epic:check -- <epic> <first day>`.
+// branches and pull requests left, the code scanning alerts on GitHub, the calls that failed
+// during the epic and why, calls left running, the backlog of the epic, the private records
+// saved. Prints a Markdown table to copy into the retrospective's record. Run by `npm run epic:check -- <epic> <first day>`.
 
 // Temporal runs behind `--harmony-temporal` in Node.js 24: the npm script passes it.
 
@@ -196,6 +196,12 @@ if (import.meta.main) {
     String.raw`.[] | "#\(.number) \(.title)"`,
   ]);
   const issues = run("gh", ["issue", "list", "--json", "number", "-q", "length"]);
+  const alerts = run("gh", [
+    "api",
+    "repos/{owner}/{repo}/code-scanning/alerts?state=open&per_page=100",
+    "-q",
+    String.raw`.[] | "\(.rule.id) \(.most_recent_instance.location.path) on \(.most_recent_instance.ref)"`,
+  ]);
   const records = run("git", ["-C", join(ROOT, "records"), "status", "--short"]);
   const recordsLog = run("git", ["-C", join(ROOT, "records"), "log", "-1", "--format=%cs %s"]);
   const findings: readonly Finding[] = [
@@ -214,6 +220,11 @@ if (import.meta.main) {
       what: "pull requests open",
     },
     { detail: issues.out, isOk: issues.out === "0", what: "issues open" },
+    {
+      detail: alerts.out === "" ? "none" : alerts.out.replaceAll("\n", "; "),
+      isOk: alerts.isOk && alerts.out === "",
+      what: "code scanning alerts open (GitHub, Security)",
+    },
     failedCalls(metricsLog(metrics), since),
     {
       detail: stale.length === 0 ? "none" : stale.join(", "),

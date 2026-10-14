@@ -12,7 +12,14 @@ Scope: $ARGUMENTS. Never without the Product Owner's explicit start in this conv
 
 **Order guard** (Product Owner, 2026-10-10): a run only takes the **next feature in the Product Owner's order**, never another one. The next feature is the one `in-progress`, else the first feature not `done` in the **Features** table of the first epic not `done` in `docs/backlog/epics/README.md` (table order, not file order). A scope naming another feature, or a story of another feature, is refused before anything else: stop, say which feature is next and why, and do nothing. To work on another feature, the Product Owner first changes the order in the tables (a backlog commit on `develop`), then starts the run again.
 
+## Refinement of a new feature: two rounds (Product Owner, 2026-10-14)
+
+1. **First round**: the first questions (research done before, `functional-analyst` agent), each with options and numeric examples, then one open question asking for every remark, idea and constraint at length.
+2. **Second round**: from all they said, **every** remaining question at once, again ending with room for remarks. After it the Product Owner may leave: the run goes on without asking again, except for a business rule nobody could foresee.
+
 ## Before the first story
+
+- **First feature of an epic**: `npm run epic:check -- <epic> <first day>` before anything else, the code scanning alerts included; what it finds is fixed or listed for the Product Owner.
 
 0. **`/run` is the go-ahead** (ADR-0045): set the feature `in-progress` and its stories `ready` yourself (a `docs(backlog)` commit on `develop`); never ask the Product Owner to do it. Ask only business questions.
 1. Record the authorization in `docs/process/journal.md` (scope, date, the Product Owner's request in neutral words) — on `develop`.

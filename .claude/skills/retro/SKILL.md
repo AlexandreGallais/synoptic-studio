@@ -20,5 +20,7 @@ Retrospective: $ARGUMENTS. Decision: ADR-0023. Questions: `docs/process/README.m
 9. **Playbook**: update `docs/playbook/` — new lessons (with the check that prevents them), principles or setup steps changed; keep each rule linked to its source.
 10. **Starter kit**: keep `docs/playbook/setup.md` copy-ready — files to copy, rhythm (cadences), references worth reading first, use cases met.
 11. **Agent configuration**: prune `AGENTS.md`, `CLAUDE.md`, rules, skills and agents; a repeated mistake gets a check, not a sentence. Every four to five epics, and at the end of the project, question **every** rule against how the project went: harden by default, relax only with a reason (`docs/process/agile.md`).
-12. Branch, commits per task and pull request as for a story (`/story` steps 3–10).
-13. `npm run records:save`: the epic's transcripts and metrics in the private records, `records/` (ADR-0041, ADR-0044).
+12. **Tools**: list in `docs/tooling/agent-tools.md` every tool that would have spared the agent's writing during the epic, with its signal and whether Rust is worth it; read the **agent's tools** table of `npm run metrics` (runs, time, failures) for the tools already written (Product Owner, 2026-10-14).
+13. Branch, commits per task and pull request as for a story (`/story` steps 3–10).
+14. `npm run records:save`: the epic's transcripts and metrics in the private records, `records/` (ADR-0041, ADR-0044).
+15. **Release** (Product Owner, 2026-10-14): once the retrospective is merged, open the pull request `develop` → `main` (title `chore(release): E<nn> — <epic>`, body: the epic's features and changes). Its CI and CodeQL run on it; read them, fix a failure on `develop`. The Product Owner validates and merges it with a merge commit; release-please then publishes the release. Afterwards bring `develop` up to `main`.

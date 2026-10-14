@@ -10,6 +10,7 @@ import { join } from "node:path";
 import { count, field, text } from "../.claude/hooks/status-json.ts";
 
 import { formatDuration, markdownTable } from "./metrics-tables.ts";
+import { toolsTable } from "./metrics-tools.ts";
 import { savedTurns, turnsTable } from "./turns.ts";
 
 /** A main-agent call with its start, as the metrics log holds it. */
@@ -157,5 +158,8 @@ export function turnSections(): readonly string[] {
     "## Where the time of the latest turns went",
     "Main agent only, calls timed by the hooks since RET-002: the tools running, and the model between two calls (reading, thinking, writing the next one; gaps over 5 minutes left out).",
     timeTable(loggedCalls(), TURNS_SHOWN),
+    "## The agent's tools",
+    "Each tool of `docs/tooling/agent-tools.md` run through npm: how often, how long, how often it failed.",
+    toolsTable(loggedCalls()),
   ];
 }
