@@ -8,7 +8,7 @@ import type { CharacterGlyph } from "../font";
  * @param glyphs - the characters, in the order of the classes
  * @param classes - the class of each character
  * @returns the classes other than 0, by code point
- * @see REF-OT-GPOS
+ * @see DERIV-kerning-classes
  */
 export function classesByCharacter(
   glyphs: readonly CharacterGlyph[],

@@ -7,7 +7,7 @@ import type { KerningRow } from "./kerning-row";
  * @kind domain
  * @param rows - the kerning of each character with every other one, font units
  * @returns the class of each row, in order
- * @see REF-OT-GPOS
+ * @see DERIV-kerning-classes
  */
 export function kerningClasses(rows: readonly KerningRow[]): readonly number[] {
   const keys = rows.map((row) => (row.every((value) => value === 0) ? "" : row.join(",")));
