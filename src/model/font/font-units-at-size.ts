@@ -9,7 +9,7 @@
  * @param size - the text's size, the em in user units
  * @param unitsPerEm - the font's units per em, from 16 to 16 384
  * @returns the length in user units
- * @see REF-OT-HEAD
+ * @see DERIV-text-width
  */
 export function fontUnitsAtSize(units: number, size: number, unitsPerEm: number): number {
   return (units * size) / unitsPerEm;
