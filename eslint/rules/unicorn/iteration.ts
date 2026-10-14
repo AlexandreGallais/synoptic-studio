@@ -21,11 +21,14 @@ export const UNICORN_ITERATION: TSESLint.FlatConfig.Config = {
     "unicorn/prefer-continue": "off",
     "unicorn/prefer-direct-iteration": "error",
     "unicorn/prefer-iterable-in-constructor": "error",
-    "unicorn/prefer-iterator-concat": "error",
+    // Its autofix writes Iterator.concat, which Node.js 24 lacks: code passing tsc crashes at run
+    // time (VAL-010, RET-002). Back on once the Node.js LTS ships it.
+    "unicorn/prefer-iterator-concat": "off",
     "unicorn/prefer-iterator-helpers": "error",
     "unicorn/prefer-iterator-to-array": "error",
     "unicorn/prefer-iterator-to-array-at-end": "error",
-    "unicorn/prefer-iterator-zip": "error",
+    // Same reason: Iterator.zip is missing from Node.js 24.
+    "unicorn/prefer-iterator-zip": "off",
     "unicorn/prefer-object-iterable-methods": "error",
     "unicorn/prefer-while-loop-condition": "error",
   },

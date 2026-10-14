@@ -2,10 +2,14 @@
 // story of the branch checked out, read from the backlog's file names, and the tool call running.
 
 import { toolSummary } from "./log-tool-call.ts";
-import { count, field, text } from "./status-tokens.ts";
+import { count, field, text, textOr } from "./status-json.ts";
+
+import type { BackgroundTask } from "./status-tasks.ts";
 
 /** A tool call started and not finished yet, as the `track-tool-call` hook writes it. */
 export type RunningCall = {
+  /** Who runs it: `main`, or the type of the subagent. */
+  readonly agent: string;
   readonly description: string;
   readonly start: number;
   readonly summary: string;
@@ -77,6 +81,7 @@ export function runningCall(input: unknown, start: number): RunningCall {
   const toolInput = field(input, "tool_input");
 
   return {
+    agent: textOr(input, "agent_type", "main"),
     description: text(toolInput, "description"),
     start,
     summary: toolSummary(tool, toolInput, text(input, "cwd")),
@@ -92,6 +97,7 @@ export function runningCall(input: unknown, start: number): RunningCall {
  */
 export function readRunningCall(record: unknown): RunningCall {
   return {
+    agent: textOr(record, "agent", "main"),
     description: text(record, "description"),
     start: count(record, "start"),
     summary: text(record, "summary"),
@@ -114,12 +120,44 @@ export function runningLine(
 ): string {
   const oldest = calls.toSorted((left, right) => left.start - right.start)[0];
 
-  if (oldest === undefined) {
-    return "";
-  }
+  return oldest === undefined ? "" : `▶ ${callText(oldest)} — ${duration(now - oldest.start)}`;
+}
 
-  const what =
-    oldest.description === "" ? oldest.summary.slice(0, COMMAND_SHOWN) : oldest.description;
+/**
+ * A call in a few words: its tool, and its description or the start of its command.
+ *
+ * @param call - a call running
+ * @returns `Bash · Run the checks`
+ */
+function callText(call: RunningCall): string {
+  const what = call.description === "" ? call.summary.slice(0, COMMAND_SHOWN) : call.description;
 
-  return `▶ ${oldest.tool} · ${what} — ${duration(now - oldest.start)}`;
+  return `${call.tool} · ${what}`;
+}
+
+/**
+ * One line per background task: what it is, for how long it has run, and, for a subagent, the
+ * call it is making now (the latest one started by a subagent of its type).
+ *
+ * @param tasks - background tasks still running
+ * @param calls - calls running, of the main agent and of the subagents
+ * @param context - time now and the duration format
+ * @param context.duration - formats the time since a task started
+ * @param context.now - time now, epoch milliseconds
+ * @returns `↳ agent auditor: Review EN-030 — 4 min · now Bash · List the files`, one per task
+ */
+export function backgroundLines(
+  tasks: readonly BackgroundTask[],
+  calls: readonly RunningCall[],
+  context: { readonly duration: (milliseconds: number) => string; readonly now: number },
+): readonly string[] {
+  return tasks.map((task) => {
+    const type = task.label.split(":", 1)[0] ?? "";
+    const current = calls
+      .filter((call) => task.kind === "agent" && call.agent === type)
+      .toSorted((left, right) => right.start - left.start)[0];
+    const now = current === undefined ? "" : ` · now ${callText(current)}`;
+
+    return `↳ ${task.kind} ${task.label} — ${context.duration(context.now - task.start)}${now}`;
+  });
 }

@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 
-import { clockDuration, isTurnDone, shortDuration, statusText } from "./status-line";
+import {
+  backgroundText,
+  clockDuration,
+  isTurnDone,
+  shortDuration,
+  statusText,
+} from "./status-line";
+import { backgroundLines } from "./status-place";
 import { EMPTY_TALLY, addTokens, cachedTally } from "./status-tokens";
 
 // Transcript lines are external JSON (snake_case keys), written here as the transcript holds them.
@@ -28,6 +35,7 @@ function prompt(time: string): string {
 
 /** What the status line shows, before a test changes some of it. */
 const STATUS = {
+  background: [],
   contextPercent: 10,
   durationMs: 60_000,
   isRunningLong: false,
@@ -135,7 +143,10 @@ describe("status line", () => {
     expect(ended.pending.map((task) => task.id)).toEqual(["toolu_A", "toolu_B"]);
     expect(ended.finished).toEqual(["toolu_A", "toolu_C"]);
     expect(isTurnDone(ended)).toBe(false);
-    expect(statusText({ ...STATUS, tally: ended })).toContain("waiting for 2 background tasks");
+
+    expect(statusText({ ...STATUS, tally: ended })).toContain(
+      "◌ chat free · waiting for 1 agent, 1 command",
+    );
 
     const notified = addTokens(
       ended,
@@ -144,6 +155,55 @@ describe("status line", () => {
 
     expect(notified.pending).toEqual([]);
     expect(isTurnDone(notified)).toBe(true);
+  });
+
+  it("ends a background call answered with an error: refused before it started, it never notifies", () => {
+    // The line that kept the status line waiting for three hours (2026-10-14): a push in the
+    // background refused because the safety check gave no verdict.
+    const launch =
+      '{"type": "assistant", "timestamp": "2026-10-14T16:33:05Z", "message": {"id": "a", "content": [{"type": "tool_use", "id": "toolu_P", "name": "Bash", "input": {"command": "git push", "description": "Push", "run_in_background": true}}]}}';
+    const refused =
+      '{"type": "user", "message": {"content": [{"type": "tool_result", "is_error": true, "tool_use_id": "toolu_P", "content": "The server-side auto mode classifier gave no verdict"}]}}';
+    const started = addTokens(EMPTY_TALLY, `${prompt("2026-10-14T16:33:00Z")}\n${launch}\n`);
+
+    expect(started.pending).toEqual([
+      { id: "toolu_P", kind: "command", label: "Push", start: 1_791_995_585_000 },
+    ]);
+
+    expect(addTokens(started, `${refused}\n${END}\n`).pending).toEqual([]);
+  });
+
+  it("counts a monitor and a subagent as background tasks, with what they do", () => {
+    const launch =
+      '{"type": "assistant", "timestamp": "2026-10-14T16:00:00Z", "message": {"id": "a", "content": [{"type": "tool_use", "id": "toolu_M", "name": "Monitor", "input": {"description": "push F10", "command": "until …"}}, {"type": "tool_use", "id": "toolu_A", "name": "Agent", "input": {"subagent_type": "auditor", "description": "Review EN-030"}}, {"type": "tool_use", "id": "toolu_B", "name": "Bash", "input": {"command": "npm run check:all", "run_in_background": true}}]}}';
+    const tally = addTokens(EMPTY_TALLY, `${launch}\n`);
+
+    expect(tally.pending.map((task) => [task.kind, task.label])).toEqual([
+      ["command", "push F10"],
+      ["agent", "auditor: Review EN-030"],
+      ["command", "npm run check:all"],
+    ]);
+
+    expect(backgroundText(tally)).toBe("1 agent, 2 commands");
+    expect(backgroundText(EMPTY_TALLY)).toBe("");
+  });
+
+  it("shows each background task, a subagent with the call it makes now", () => {
+    const tasks = [
+      { id: "a", kind: "agent", label: "auditor: Review EN-030", start: 0 },
+      { id: "b", kind: "command", label: "Push", start: 60_000 },
+    ] as const;
+    const call = { description: "", start: 0, summary: "", tool: "Read" };
+    const calls = [
+      { ...call, agent: "auditor", start: 100, summary: "src/a.ts" },
+      { ...call, agent: "auditor", description: "List the files", start: 200, tool: "Bash" },
+      { ...call, agent: "main", start: 300, tool: "Edit" },
+    ];
+
+    expect(backgroundLines(tasks, calls, { duration: shortDuration, now: 240_000 })).toEqual([
+      "↳ agent auditor: Review EN-030 — 4 min · now Bash · List the files",
+      "↳ command Push — 3 min",
+    ]);
   });
 
   it("drops a background task whose end never came after three hours", () => {
@@ -171,7 +231,7 @@ describe("status line", () => {
       lastId: "a",
       offset: 9,
       output: 2,
-      pending: [{ id: "toolu_A", start: 4 }],
+      pending: [{ id: "toolu_A", kind: "command", label: "", start: 4 }],
       start: 5,
       total: 3,
     });
@@ -193,6 +253,7 @@ describe("status line", () => {
 
   it("shows the place and step, the turn, and the call running", () => {
     const base = {
+      background: [],
       contextPercent: 34.4,
       durationMs: 60_000,
       isRunningLong: false,
@@ -212,7 +273,7 @@ describe("status line", () => {
 
     expect(active).toContain("E01 › RET-001 retrospective e01");
     expect(active).toContain("RET-001 · metrics");
-    expect(active).toContain("● active");
+    expect(active).toContain("● working");
     expect(active).toContain("⏱ turn 1 min 00 s");
     expect(active).toContain("5,678,901 tokens this turn (1,234 written)");
     expect(active).toContain("conversation memory 34 % full");
@@ -237,6 +298,24 @@ describe("status line", () => {
         tally: { ...base.tally, isWaiting: true, start: 1 },
       }),
     ).toContain("⏱ last turn 1 min 00 s");
+
+    expect(
+      statusText({
+        ...base,
+        background: ["↳ command Push — 3 min"],
+        silentMs: 1000,
+        step: "",
+        tally: {
+          ...base.tally,
+          isWaiting: false,
+          pending: [{ id: "b", kind: "command", label: "Push", start: 0 }],
+        },
+      }).split("\n"),
+    ).toEqual([
+      expect.stringContaining("E01"),
+      expect.stringContaining("● working · 1 command in the background"),
+      "\u{1B}[2m↳ command Push — 3 min\u{1B}[0m",
+    ]);
 
     expect(silent.split("\n", 3)[2]).toBe("\u{1B}[31m▶ Bash · Run the checks — 12 s\u{1B}[0m");
   });

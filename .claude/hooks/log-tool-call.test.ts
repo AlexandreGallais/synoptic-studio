@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { toolCallRecord, toolSummary } from "./log-tool-call";
+import { sessionMoment, toolCallRecord, toolSummary } from "./log-tool-call";
 
 // Hook inputs are external JSON (snake_case keys): parsed as the hook parses them.
 
@@ -8,6 +8,15 @@ import { toolCallRecord, toolSummary } from "./log-tool-call";
 const BASH = `"cwd": "/repo", "duration_ms": 4187, "session_id": "abc123", "tool_name": "Bash",
   "tool_input": {"command": "npm run check", "description": "Run the checks"},
   "tool_use_id": "toolu_01"`;
+
+/** Where and when the call ends: the hook ran at 2026-10-12T21:00:00Z, no snapshot. */
+const CONTEXT = {
+  branch: "develop",
+  snapshot: undefined,
+  startedAt: 0,
+  step: "",
+  time: 1_791_838_800_000,
+};
 
 /**
  * Parsed hook input.
@@ -23,18 +32,71 @@ describe("log-tool-call hook", () => {
   it("records a successful command with its duration", () => {
     const input = hookInput(`${BASH}, "hook_event_name": "PostToolUse"`);
 
-    expect(toolCallRecord(input, "2026-10-12T21:00:00Z", "develop")).toEqual({
+    expect(toolCallRecord(input, CONTEXT)).toEqual({
+      ...sessionMoment(undefined, 0),
       agent: "main",
+      agentId: "",
       branch: "develop",
       description: "Run the checks",
       durationMs: 4187,
       error: "",
+      // {"command":"npm run check","description":"Run the checks"}: 58 characters.
+      inputChars: 58,
+      isBackground: false,
       isOk: true,
+      outputChars: 0,
+      permissionMode: "",
       session: "abc123",
+      startedAt: 0,
+      step: "",
       summary: "npm run check",
       time: "2026-10-12T21:00:00Z",
       tool: "Bash",
       toolUseId: "toolu_01",
+    });
+  });
+
+  it("copies the session's state from the status line's snapshot, its age and the turn's time", () => {
+    const snapshot = {
+      contextPercent: 42,
+      model: "Opus 5.5",
+      pendingAgents: 1,
+      pendingCommands: 2,
+      time: 9000,
+      turnOutputTokens: 300,
+      turnStart: 4000,
+      turnTokens: 5000,
+    };
+
+    expect(sessionMoment(snapshot, 10_000)).toEqual({
+      contextPercent: 42,
+      model: "Opus 5.5",
+      pendingAgents: 1,
+      pendingCommands: 2,
+      snapshotAgeMs: 1000,
+      turnElapsedMs: 6000,
+      turnOutputTokens: 300,
+      turnStart: 4000,
+      turnTokens: 5000,
+    });
+
+    expect(sessionMoment(undefined, 10_000)).toMatchObject({ snapshotAgeMs: 0, turnElapsedMs: 0 });
+  });
+
+  it("records a call in the background, its start, step, result size and subagent id", () => {
+    const input = hookInput(
+      `"tool_name": "Agent", "agent_id": "ag1", "permission_mode": "auto",
+      "tool_input": {"subagent_type": "auditor"}, "tool_response": "ok"`,
+    );
+
+    expect(toolCallRecord(input, { ...CONTEXT, startedAt: 7, step: "RET-002" })).toMatchObject({
+      agentId: "ag1",
+      isBackground: true,
+      // "ok" written as JSON: 4 characters.
+      outputChars: 4,
+      permissionMode: "auto",
+      startedAt: 7,
+      step: "RET-002",
     });
   });
 
@@ -44,7 +106,7 @@ describe("log-tool-call hook", () => {
       "error": "Exit code 1\nError: Cannot find module"`,
     );
 
-    expect(toolCallRecord(input, "t", "b")).toMatchObject({
+    expect(toolCallRecord(input, CONTEXT)).toMatchObject({
       agent: "auditor",
       error: "Exit code 1",
       isOk: false,
@@ -54,7 +116,7 @@ describe("log-tool-call hook", () => {
   it("leaves out a missing duration", () => {
     const input = hookInput('"tool_name": "Bash", "tool_input": {"command": "ls"}');
 
-    expect(toolCallRecord(input, "t", "b").durationMs).toBeUndefined();
+    expect(toolCallRecord(input, CONTEXT).durationMs).toBeUndefined();
   });
 
   it("summarizes each kind of tool by what it acted on", () => {
