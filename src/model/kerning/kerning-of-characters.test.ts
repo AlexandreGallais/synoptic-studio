@@ -68,6 +68,14 @@ describe("kerningOfCharacters (REF-OT-GPOS)", () => {
     });
   });
 
+  it("gives one class 0 and its one value for no character at all", () => {
+    expect(kerningOfCharacters([], [])).toEqual({
+      leftClasses: {},
+      rightClasses: {},
+      values: [[0]],
+    });
+  });
+
   test.prop({ pairs: fc.array(PAIR, { maxLength: 20 }) })(
     "gives every pair of characters the kerning of their glyphs",
     ({ pairs }) => {

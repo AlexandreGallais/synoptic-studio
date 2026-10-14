@@ -7,7 +7,9 @@ import {
   X_ADVANCE_ONLY,
   fontFile,
   gposTable,
+  hheaTable,
   kernTable,
+  os2Table,
   pairPosFormat1,
   pairPosFormat2,
   systemFont,
@@ -183,6 +185,16 @@ describe("parseFontMetrics (REF-OT-OTFF)", () => {
         expect(() => parseFontMetrics(damaged, CHARACTERS)).not.toThrow();
       }
     }
+  });
+
+  it("reads the signed fields as signed: a line gap of −1, a strike-out at −20", () => {
+    const file = fontFile(TRUE_TYPE_VERSION, {
+      ...testFontTables(),
+      hhea: hheaTable({ ascender: 800, descender: -200, lineGap: -1, numberOfHMetrics: 3 }),
+      "OS/2": os2Table({ fsType: 0, strikeoutPosition: -20, strikeoutSize: 50 }),
+    });
+
+    expect(parseFontMetrics(file, [65])).toMatchObject({ lineGap: -1, strikeoutPosition: -20 });
   });
 
   it("reads a file lying inside a larger buffer", () => {
