@@ -3,7 +3,7 @@ id: US-030
 epic: E14
 feature: F10
 title: Convert a round shape to a free shape, two ways
-status: ready
+status: done
 points: 1
 ---
 
@@ -30,4 +30,15 @@ As a designer, I want to convert a round shape either to its 4 points on the cur
 
 One task = one commit, referenced as `US-030.Tn`.
 
-- [ ] T1 — The two conversion buttons; playground tests and test card (1 h)
+- [x] T1 — The two conversion buttons; playground tests and test card (1 h)
+
+## Decisions during the story
+
+| Decision                                                                                               | Reason                                                                       |
+| ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
+| the converted shape writes its own radii in the Radius field: 0 for its points, 40 for the rounded box | as a converted polygon (F08): the free shape's radii are what is edited next |
+| **Convert to free shape** converts a polygon or a round shape; the hint line says "This shape"         | one button, one rule for both shapes that keep their points                  |
+
+## Review
+
+Verifier, before the last commit, with probe tests: no bug. Tests added: a turned round shape converted both ways, a box of height 0, the guard behind the greyed buttons, the hint line, the radii after converting, the handles switch hidden on every point.
