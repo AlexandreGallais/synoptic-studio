@@ -3,7 +3,7 @@ id: US-029
 epic: E14
 feature: F10
 title: Draw a circle or an ellipse with the Round tool
-status: ready
+status: done
 points: 2
 ---
 
@@ -33,4 +33,8 @@ Look closely: the curve is four Bézier sides, not a true ellipse; the gap is un
 
 One task = one commit, referenced as `US-029.Tn`.
 
-- [ ] T1 — The Round tool and the round shape's panel in the playground; playground tests and test card (2 h)
+- [x] T1 — The Round tool and the round shape's panel in the playground; playground tests and test card (2 h)
+
+## Review
+
+Verifier, before the last commit, with probe tests: fixed — choosing Round erased the rectangle's and the polygon's radius (the round shape no longer writes the radius fields); the point's Radius field showed on a round shape. Tests added: point fields greyed, Add and Delete greyed and harmless, the radius back after Round, a refused round shape recovering; a property for `isFreeShape`.

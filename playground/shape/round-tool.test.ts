@@ -5,9 +5,12 @@ import {
   clickElement,
   clickPoint,
   openOnStep,
+  pressKey,
   readPointRows,
   readPressedState,
   readText,
+  readValue,
+  selectInput,
   typeAndEnter,
   typeValue,
 } from "../user-actions";
@@ -20,6 +23,16 @@ import {
  */
 function isHidden(id: string): boolean {
   return document.querySelector<HTMLElement>(`#${id}`)?.hidden === true;
+}
+
+/**
+ * Whether a button of the page is greyed.
+ *
+ * @param id - its id
+ * @returns whether it has the `disabled` attribute
+ */
+function isDisabled(id: string): boolean {
+  return document.querySelector(`#${id}`)?.hasAttribute("disabled") === true;
 }
 
 describe("the Round tool (US-029)", () => {
@@ -73,6 +86,56 @@ describe("the Round tool (US-029)", () => {
     ]);
 
     expect(isHidden("handles-switch")).toBe(true);
+    expect(isHidden("point-radius-field")).toBe(true);
+
+    expect([selectInput("point-x").disabled, selectInput("point-y").disabled]).toEqual([
+      true,
+      true,
+    ]);
+  });
+
+  it("[F10.AC2] greys adding and deleting points, and keeps the curve", () => {
+    openOnStep(1);
+    clickElement("tool-round");
+    clickElement("mode-points");
+    clickPoint(1, false);
+    clickPoint(2, true);
+
+    const drawn = readText("#path-data");
+
+    expect([isDisabled("add-midpoint"), isDisabled("delete-points"), isHidden("convert")]).toEqual([
+      true,
+      true,
+      true,
+    ]);
+
+    clickElement("add-midpoint");
+    clickElement("delete-points");
+    pressKey("body", "Delete");
+
+    expect(readText("#path-data")).toBe(drawn);
+  });
+
+  it("gives the rectangle back its radius after Round, and the polygon its own", () => {
+    // Step 1 is the rectangle 120 × 80, radius 10.
+    openOnStep(1);
+
+    const rectangle = readText("#path-data");
+
+    clickElement("tool-round");
+    clickElement("tool-rectangle");
+
+    expect(readText("#path-data")).toBe(rectangle);
+    expect([readValue("radius"), isHidden("corners-section")]).toEqual(["10", false]);
+
+    clickElement("tool-polygon");
+
+    const polygon = readText("#path-data");
+
+    clickElement("tool-round");
+    clickElement("tool-polygon");
+
+    expect(readText("#path-data")).toBe(polygon);
   });
 
   it("turns about the centre of its box: at 30°, its top point at (80, 5.35898)", () => {

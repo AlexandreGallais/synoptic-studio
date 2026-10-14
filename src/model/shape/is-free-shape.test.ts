@@ -1,5 +1,7 @@
+import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
+import { rectangleAsFreeShape } from "../rectangle";
 import { regularPolygonAsFreeShape } from "../regular-polygon";
 
 import { isFreeShape } from "./is-free-shape";
@@ -30,4 +32,17 @@ describe("isFreeShape (F08, F10)", () => {
 
     expect(shapes.map((shape) => isFreeShape(shape))).toEqual([true, false, false]);
   });
+
+  test.prop({ height: fc.nat(1000), width: fc.nat(1000) })(
+    "holds for every rectangle the tool makes, never for a round shape",
+    ({ height, width }) => {
+      const box = { angle: 0, height, width, x: 0, y: 0 };
+      const shapes: readonly Shape[] = [
+        rectangleAsFreeShape({ ...box, radii: [0, 0, 0, 0] }),
+        { ...box, kind: "round" },
+      ];
+
+      expect(shapes.map((shape) => isFreeShape(shape))).toEqual([true, false]);
+    },
+  );
 });
