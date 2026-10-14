@@ -39,10 +39,18 @@ describe("ruleKerning (REF-OT-GPOS)", () => {
     expect(ruleKerning(CLASSES, 2, 7)).toBe(0);
   });
 
-  it("gives 0 to a first class past the rule's values", () => {
+  it("matches nothing whose first class is past the rule's values", () => {
+    // Class 4 has no Class1 record among the 2: the pair does not match, the next subtable is read.
     const rule: ClassKerningRule = { ...CLASSES, firstClasses: { 9: 4 } };
 
-    expect(ruleKerning(rule, 9, 3)).toBe(0);
+    expect(ruleKerning(rule, 9, 3)).toBeUndefined();
+  });
+
+  it("gives 0 to a second class past the first class's values", () => {
+    // Glyph 6 in second class 5, past the 2 values of class 1's row.
+    const rule: ClassKerningRule = { ...CLASSES, secondClasses: { 6: 5 } };
+
+    expect(ruleKerning(rule, 1, 6)).toBe(0);
   });
 
   it("matches nothing whose first glyph is not covered", () => {
