@@ -1,6 +1,6 @@
 import { modulo } from "../../math";
 
-import type { CharacterGlyph } from "./character-glyph";
+import type { CharacterGlyph } from "../../model";
 
 /** Offset of `segCountX2`, twice the number of segments, in a format 4 subtable. */
 const SEG_COUNT_X2_OFFSET = 6;

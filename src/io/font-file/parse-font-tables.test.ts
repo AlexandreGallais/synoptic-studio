@@ -18,18 +18,32 @@ function tablesWithout(missing: readonly string[]): ReturnType<typeof parseFontT
 }
 
 describe("parseFontTables (REF-OT-OTFF)", () => {
-  it("finds cmap, head, hhea and hmtx, ignoring the other tables", () => {
+  it("finds the tables measuring needs, the kerning ones absent, ignoring maxp", () => {
     const tables = tablesWithout([]);
 
-    // Five tables in tag order (cmap, head, hhea, hmtx, maxp): the directory takes 12 + 5 × 16 =
-    // 92 bytes, so cmap starts at 92.
-    expect(tables?.cmap.offset).toBe(92);
-    expect(Object.keys(tables ?? {})).toEqual(["cmap", "head", "hhea", "hmtx"]);
+    // Seven tables, cmap first: the directory takes 12 + 7 × 16 = 124 bytes, so cmap starts there.
+    expect(tables?.cmap.offset).toBe(124);
+    expect(tables?.gpos).toBeUndefined();
+    expect(tables?.kern).toBeUndefined();
+
+    expect(Object.keys(tables ?? {})).toEqual([
+      "cmap",
+      "head",
+      "hhea",
+      "hmtx",
+      "gpos",
+      "kern",
+      "os2",
+      "post",
+    ]);
   });
 
-  it.each(["cmap", "head", "hhea", "hmtx"])("gives undefined when %s is missing", (tag) => {
-    expect(tablesWithout([tag])).toBeUndefined();
-  });
+  it.each(["cmap", "head", "hhea", "hmtx", "OS/2", "post"])(
+    "gives undefined when %s is missing",
+    (tag) => {
+      expect(tablesWithout([tag])).toBeUndefined();
+    },
+  );
 
   it("gives undefined for a file shorter than its directory's header", () => {
     const view = new DataView(new ArrayBuffer(11));

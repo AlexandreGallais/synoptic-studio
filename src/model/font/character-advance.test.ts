@@ -9,8 +9,14 @@ const METRICS: FontMetrics = {
   advances: { 65: 600, 66: 700 },
   ascender: 800,
   descender: -200,
+  embeddingPermissions: 0,
+  kerning: { leftClasses: {}, rightClasses: {}, values: [[0]] },
   lineGap: 90,
   missingAdvance: 500,
+  strikeoutPosition: 300,
+  strikeoutSize: 50,
+  underlinePosition: -100,
+  underlineThickness: 50,
   unitsPerEm: 1000,
 };
 

@@ -1,4 +1,4 @@
-import type { CharacterGlyph } from "./character-glyph";
+import type { CharacterGlyph } from "../../model";
 
 /** Offset of `numGroups` in a format 12 subtable. */
 const NUM_GROUPS_OFFSET = 12;
