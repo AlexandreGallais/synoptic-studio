@@ -1,5 +1,5 @@
 import { angleFromDirection } from "../../geometry";
-import { degreesInTurn, norm, unit } from "../../math";
+import { add, explement, norm, unit } from "../../math";
 
 import type { HandleFrame } from "./handle-frame";
 import type { HandleWay } from "./handle-way";
@@ -23,10 +23,12 @@ export function fieldValuesOfHandle(
   frame: HandleFrame,
 ): readonly [number, number] {
   if (way === "page") {
-    return [frame.point.x + handle.x, frame.point.y + handle.y];
+    const end = add(frame.point, handle);
+
+    return [end.x, end.y];
   }
 
   const sideAngle = angleFromDirection(unit(frame.side), handle);
 
-  return [frame.isBefore ? degreesInTurn(-sideAngle) : sideAngle, norm(handle)];
+  return [frame.isBefore ? explement(sideAngle) : sideAngle, norm(handle)];
 }

@@ -1,4 +1,5 @@
 import { curveBoundingBox, stretchedInBox } from "../../geometry";
+import { subtract } from "../../math";
 
 import type { FreeShape } from "./free-shape";
 import type { Point } from "../../math";
@@ -18,8 +19,7 @@ import type { Point } from "../../math";
 export function freeShapeContour(shape: FreeShape): readonly Point[] {
   const points = shape.corners.map((corner) => corner.point);
   const box = curveBoundingBox(shape.corners);
-  const dx = shape.x - box.minX;
-  const dy = shape.y - box.minY;
+  const { x: dx, y: dy } = subtract({ x: shape.x, y: shape.y }, { x: box.minX, y: box.minY });
 
   // A move of zero is skipped, so that the stored point is drawn bit for bit (−0 + 0 is +0).
   return stretchedInBox(points, box, shape).map((point) => ({

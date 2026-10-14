@@ -1,3 +1,4 @@
+import { hasArea } from "../../src";
 import { readSelection } from "../page";
 
 import type { CurveCorner } from "../../src";
@@ -37,10 +38,9 @@ function readOnlySelected(document: Document): number | undefined {
  */
 function readFreeCorner(reading: ShapeReading, index: number): SelectedCorner | undefined {
   const corner = reading.corners[index];
-  // A shape without width or height, a polygon that cannot be converted, gets no switch.
-  const hasArea = reading.model.width * reading.model.height > 0;
 
-  return corner === undefined || !hasArea ? undefined : { corner, index };
+  // A shape without width or height, a polygon that cannot be converted, gets no switch.
+  return corner === undefined || !hasArea(reading.model) ? undefined : { corner, index };
 }
 
 /**

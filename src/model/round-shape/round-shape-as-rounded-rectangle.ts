@@ -1,3 +1,4 @@
+import { halfSmallerSide } from "../../geometry";
 import { rectangleAsFreeShape } from "../rectangle";
 
 import type { RoundShape } from "./round-shape";
@@ -15,7 +16,8 @@ import type { FreeShape } from "../free-shape";
  * @see DERIV-round-shape
  */
 export function roundShapeAsRoundedRectangle(shape: RoundShape): FreeShape {
-  const radius = Math.ceil(Math.min(shape.width, shape.height) / 2);
+  // An integer radius (ADR-0029): half the smaller side rounded up (DERIV-round-shape step 2).
+  const radius = Math.ceil(halfSmallerSide(shape));
 
   return rectangleAsFreeShape({
     angle: shape.angle,

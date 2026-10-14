@@ -1,4 +1,4 @@
-import { curveBoundingBox } from "../../geometry";
+import { boxSize, curveBoundingBox } from "../../geometry";
 
 import type { FreeShape } from "./free-shape";
 import type { CurveCorner } from "../../geometry";
@@ -21,8 +21,7 @@ export function freeShapeAroundCorners(corners: readonly CurveCorner[], angle: n
   return {
     angle,
     corners,
-    height: box.maxY - box.minY,
-    width: box.maxX - box.minX,
+    ...boxSize(box),
     x: box.minX,
     y: box.minY,
   };

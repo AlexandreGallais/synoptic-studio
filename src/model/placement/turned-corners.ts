@@ -1,6 +1,8 @@
 import { turnAbout, turnedHandles } from "../../geometry";
 import { turnDirection } from "../../math";
 
+import { boxCenter } from "./box-center";
+
 import type { CurveCorner } from "../../geometry";
 import type { FreeShape } from "../free-shape";
 
@@ -27,7 +29,7 @@ export function turnedCorners(
     return corners;
   }
 
-  const center = { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+  const center = boxCenter(box);
   const direction = turnDirection(box.angle);
 
   return corners.map((corner) => ({

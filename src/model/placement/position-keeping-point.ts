@@ -1,5 +1,5 @@
-import { turnAbout } from "../../geometry";
-import { turnDirection } from "../../math";
+import { halfSize, turnAbout } from "../../geometry";
+import { subtract, turnDirection } from "../../math";
 
 import type { Size } from "../../geometry";
 import type { Point } from "../../math";
@@ -24,11 +24,7 @@ export type TurnedSize = Size & {
  * @see DERIV-turned-shape
  */
 export function positionKeepingPoint(box: TurnedSize, local: Point, drawn: Point): Point {
-  const turned = turnAbout(
-    local,
-    { x: box.width / 2, y: box.height / 2 },
-    turnDirection(box.angle),
-  );
+  const turned = turnAbout(local, halfSize(box), turnDirection(box.angle));
 
-  return { x: drawn.x - turned.x, y: drawn.y - turned.y };
+  return subtract(drawn, turned);
 }

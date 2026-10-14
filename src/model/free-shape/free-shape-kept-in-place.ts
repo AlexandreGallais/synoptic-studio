@@ -1,4 +1,5 @@
 import { cyclicItem } from "../../geometry";
+import { subtract } from "../../math";
 import { positionKeepingPoint } from "../placement";
 
 import { freeShapeCorners } from "./free-shape-corners";
@@ -42,6 +43,6 @@ export function freeShapeKeptInPlace(
 
   return {
     ...shape,
-    ...positionKeepingPoint(shape, { x: point.x - shape.x, y: point.y - shape.y }, target),
+    ...positionKeepingPoint(shape, subtract(point, { x: shape.x, y: shape.y }), target),
   };
 }

@@ -1,3 +1,4 @@
+import { clamp } from "../../src";
 import { selectElement, writeText } from "../page";
 
 import { writeStepToAddress } from "./write-step-to-address";
@@ -21,7 +22,7 @@ export function showGuidedStep(
   steps: readonly GuidedStep[],
   index: number,
 ): void {
-  const position = Math.min(Math.max(index, 0), steps.length - 1);
+  const position = clamp(index, 0, steps.length - 1);
   const step = steps.at(position) ?? steps[0];
 
   selectElement(document, "guide").hidden = step === undefined;

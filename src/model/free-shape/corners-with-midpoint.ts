@@ -1,5 +1,5 @@
 import { cubicSide, cyclicItem, isCurvedSide, splitCubic } from "../../geometry";
-import { midpoint, scale, subtract, withoutNegativeZero } from "../../math";
+import { midpoint, modulo, opposite, subtract, withoutNegativeZero } from "../../math";
 import { NO_HANDLES } from "../handles";
 
 import type { Cubic, CurveCorner } from "../../geometry";
@@ -47,7 +47,7 @@ function splitPoint(first: Cubic): CurveCorner {
   const before = subtract(first.second, first.end);
 
   return {
-    handles: { ...NO_HANDLES, after: withoutNegativeZero(scale(before, -1)), before, isOn: true },
+    handles: { ...NO_HANDLES, after: withoutNegativeZero(opposite(before)), before, isOn: true },
     point: first.end,
     radius: 0,
   };
@@ -78,7 +78,7 @@ function cornersWithCurveSplit(
     }
 
     return [
-      index === (edge + 1) % corners.length
+      index === modulo(edge + 1, corners.length)
         ? withHandleTo(corner, "before", second.second)
         : corner,
     ];
