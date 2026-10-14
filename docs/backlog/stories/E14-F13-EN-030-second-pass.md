@@ -20,5 +20,5 @@ A second reading of the whole code base, on the result of pass 1, by a fresh age
 
 One task = one commit, referenced as `EN-030.Tn`.
 
-- [ ] T1 — The findings of the second reading (2 h)
-- [ ] T2 — The duplicates merged (2 h)
+- [x] T1 — The findings of the second reading (2 h)
+- [x] T2 — The duplicates merged (2 h)
