@@ -1,3 +1,5 @@
+import { glyphPairKey } from "./glyph-pair-key";
+
 import type { ClassKerningRule } from "./class-kerning-rule";
 import type { KerningRule } from "./kerning-rule";
 
@@ -37,6 +39,6 @@ function groupRuleKerning(
  */
 export function ruleKerning(rule: KerningRule, first: number, second: number): number | undefined {
   return rule.kind === "pairs"
-    ? rule.pairs[first]?.[second]
+    ? rule.pairs[glyphPairKey(first, second)]
     : groupRuleKerning(rule, first, second);
 }

@@ -1,4 +1,5 @@
 import { isSpanWithin } from "../../math";
+import { glyphPairKey } from "../../model";
 
 import { parseCoverage } from "./parse-coverage";
 import { parseXAdvance } from "./parse-x-advance";
@@ -21,8 +22,8 @@ const PAIR_SET_OFFSETS = 10;
 /** Size of a pair's second glyph, of a PairSet's count and of a PairSet's offset. */
 const FIELD_SIZE = 2;
 
-/** The kerning of each pair starting with one glyph, by second glyph. */
-type PairSet = Readonly<Record<number, number>>;
+/** The kerning of each pair starting with one glyph: its second glyph, then its kerning. */
+type PairSet = readonly (readonly [second: number, kerning: number])[];
 
 /** What the PairSets are read with: where they sit, the subtable's ValueFormats, the glyphs asked. */
 type PairSetReading = {
@@ -45,7 +46,8 @@ type PairSetReading = {
  * @param gpos - the `GPOS` table
  * @param pairSet - where the PairSet table starts in it
  * @param reading - the ValueFormats and the glyphs asked
- * @returns the kerning by second glyph; undefined when the PairSet passes the table's end
+ * @returns each second glyph asked and its kerning; undefined when the PairSet passes the table's
+ * end
  * @see REF-OT-GPOS
  */
 function parsePairSet(
@@ -59,14 +61,12 @@ function parsePairSet(
     : Infinity;
 
   return isSpanWithin(pairSet, FIELD_SIZE + size * count, gpos.byteLength)
-    ? Object.fromEntries(
-        Array.from({ length: count }, (unused, index) => pairSet + FIELD_SIZE + size * index)
-          .filter((record) => reading.glyphs.has(gpos.getUint16(record)))
-          .map((record) => [
-            gpos.getUint16(record),
-            parseXAdvance(gpos, record + FIELD_SIZE, reading.first),
-          ]),
-      )
+    ? Array.from({ length: count }, (unused, index) => pairSet + FIELD_SIZE + size * index)
+        .filter((record) => reading.glyphs.has(gpos.getUint16(record)))
+        .map((record): readonly [number, number] => [
+          gpos.getUint16(record),
+          parseXAdvance(gpos, record + FIELD_SIZE, reading.first),
+        ])
     : undefined;
 }
 
@@ -115,9 +115,26 @@ function pairSetsToRule(
   );
   const found = sets.filter((set): set is readonly [string, PairSet] => set[1] !== undefined);
 
-  return found.length < sets.length
-    ? undefined
-    : { kind: "pairs", pairs: Object.fromEntries(found) };
+  return found.length < sets.length ? undefined : setsToRule(found);
+}
+
+/**
+ * The rule by pairs of the PairSets read, each pair keyed by its first and second glyphs.
+ *
+ * @kind format
+ * @param sets - each first glyph and its PairSet
+ * @returns the rule by pairs
+ * @see REF-OT-KERN
+ */
+function setsToRule(sets: readonly (readonly [string, PairSet])[]): PairKerningRule {
+  return {
+    kind: "pairs",
+    pairs: Object.fromEntries(
+      sets.flatMap(([first, set]) =>
+        set.map(([second, kerning]) => [glyphPairKey(Number(first), second), kerning]),
+      ),
+    ),
+  };
 }
 
 /**

@@ -1,17 +1,18 @@
 import { describe, expect, it } from "vitest";
 
 import { glyphPairKerning } from "./glyph-pair-kerning";
+import { glyphPairKey } from "./glyph-pair-key";
 
 import type { KerningLookup } from "./kerning-lookup";
 
 /** A lookup of two subtables: glyph pairs 1 2 −50, then classes covering glyph 1, −20 for all. */
 const FIRST: KerningLookup = [
-  { kind: "pairs", pairs: { 1: { 2: -50 } } },
+  { kind: "pairs", pairs: { [glyphPairKey(1, 2)]: -50 } },
   { firstClasses: { 1: 0 }, kind: "classes", secondClasses: {}, values: [[-20]] },
 ];
 
 /** A second lookup: glyph pair 1 2, −5. */
-const SECOND: KerningLookup = [{ kind: "pairs", pairs: { 1: { 2: -5 } } }];
+const SECOND: KerningLookup = [{ kind: "pairs", pairs: { [glyphPairKey(1, 2)]: -5 } }];
 
 describe("glyphPairKerning (REF-OT-LAYOUT-COMMON)", () => {
   it("takes the first subtable of a lookup that matches the pair", () => {

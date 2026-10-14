@@ -2,6 +2,7 @@ import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { glyphPairKerning } from "./glyph-pair-kerning";
+import { glyphPairKey } from "./glyph-pair-key";
 import { kerningOfCharacters } from "./kerning-of-characters";
 import { pairKerning } from "./pair-kerning";
 
@@ -18,7 +19,18 @@ const GLYPHS: readonly CharacterGlyph[] = [
 
 /** A V −80, V A −80, A T −40, T A −40, T o −60. */
 const LOOKUPS: readonly KerningLookup[] = [
-  [{ kind: "pairs", pairs: { 1: { 2: -80, 3: -40 }, 2: { 1: -80 }, 3: { 1: -40, 4: -60 } } }],
+  [
+    {
+      kind: "pairs",
+      pairs: {
+        [glyphPairKey(1, 2)]: -80,
+        [glyphPairKey(1, 3)]: -40,
+        [glyphPairKey(2, 1)]: -80,
+        [glyphPairKey(3, 1)]: -40,
+        [glyphPairKey(3, 4)]: -60,
+      },
+    },
+  ],
 ];
 
 /** A glyph from 1 to 6. */
@@ -64,7 +76,7 @@ describe("kerningOfCharacters (REF-OT-GPOS)", () => {
         index + 1,
       ]);
       const lookups: readonly KerningLookup[] = pairs.map((pair) => [
-        { kind: "pairs", pairs: { [pair.first]: { [pair.second]: pair.value } } },
+        { kind: "pairs", pairs: { [glyphPairKey(pair.first, pair.second)]: pair.value } },
       ]);
       const kerning = kerningOfCharacters(lookups, glyphs);
 

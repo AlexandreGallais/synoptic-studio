@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { kernTable, uint16, viewOf, viewOfFirst } from "../../../tests";
+import { glyphPairKey } from "../../model";
 
 import { parseKernTable } from "./parse-kern-table";
 
@@ -24,7 +25,12 @@ describe("parseKernTable (REF-OT-KERN)", () => {
 
     // 1 2: −50 + −5 = −55; 4 9 is left out: glyph 9 was not asked.
     expect(parseKernTable(viewOf(table), GLYPHS)).toEqual([
-      [{ kind: "pairs", pairs: { 1: { 2: -55, 3: -20 }, 4: { 1: 15 } } }],
+      [
+        {
+          kind: "pairs",
+          pairs: { [glyphPairKey(1, 2)]: -55, [glyphPairKey(1, 3)]: -20, [glyphPairKey(4, 1)]: 15 },
+        },
+      ],
     ]);
   });
 
@@ -44,7 +50,7 @@ describe("parseKernTable (REF-OT-KERN)", () => {
     ]);
 
     expect(parseKernTable(viewOf(table), GLYPHS)).toEqual([
-      [{ kind: "pairs", pairs: { 1: { 2: -25, 3: -20 } } }],
+      [{ kind: "pairs", pairs: { [glyphPairKey(1, 2)]: -25, [glyphPairKey(1, 3)]: -20 } }],
     ]);
   });
 
@@ -66,7 +72,7 @@ describe("parseKernTable (REF-OT-KERN)", () => {
     ]);
 
     expect(parseKernTable(viewOf(table), GLYPHS)).toEqual([
-      [{ kind: "pairs", pairs: { 1: { 3: -20 } } }],
+      [{ kind: "pairs", pairs: { [glyphPairKey(1, 3)]: -20 } }],
     ]);
   });
 

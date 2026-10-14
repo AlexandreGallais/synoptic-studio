@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { X_ADVANCE_ONLY, pairPosFormat1, viewOf, viewOfFirst } from "../../../tests";
+import { glyphPairKey } from "../../model";
 
 import { parsePairGlyphsRule } from "./parse-pair-glyphs-rule";
 
@@ -27,14 +28,14 @@ describe("parsePairGlyphsRule (REF-OT-GPOS)", () => {
   it("reads each pair of glyphs asked, its kerning the first glyph's xAdvance", () => {
     expect(parsePairGlyphsRule(viewOf(SUBTABLE), 0, GLYPHS)).toEqual({
       kind: "pairs",
-      pairs: { 1: { 2: -50, 3: -20 }, 4: { 1: 15 } },
+      pairs: { [glyphPairKey(1, 2)]: -50, [glyphPairKey(1, 3)]: -20, [glyphPairKey(4, 1)]: 15 },
     });
   });
 
   it("reads no PairSet of a first glyph not asked", () => {
     expect(parsePairGlyphsRule(viewOf(SUBTABLE), 0, new Set([4, 1]))).toEqual({
       kind: "pairs",
-      pairs: { 1: {}, 4: { 1: 15 } },
+      pairs: { [glyphPairKey(4, 1)]: 15 },
     });
   });
 
@@ -55,7 +56,8 @@ describe("parsePairGlyphsRule (REF-OT-GPOS)", () => {
     );
 
     expect(parsePairGlyphsRule(viewOf(subtable), 0, GLYPHS)?.pairs).toEqual({
-      1: { 2: -40, 3: -10 },
+      [glyphPairKey(1, 2)]: -40,
+      [glyphPairKey(1, 3)]: -10,
     });
   });
 
