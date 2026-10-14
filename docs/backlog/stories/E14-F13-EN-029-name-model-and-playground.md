@@ -3,7 +3,7 @@ id: EN-029
 epic: E14
 feature: F13
 title: "Pass 1: name the calculations of the model, io, render and playground"
-status: ready
+status: done
 points: 2
 ---
 
@@ -21,3 +21,7 @@ The same pass on `src/model`, `src/io`, `src/render` and the playground: an inli
 One task = one commit, referenced as `EN-029.Tn`.
 
 - [x] T1 — The calls in the model, io, render and playground (2 h)
+
+## Review
+
+Auditor, before the last commit: every replacement re-derived; fixed — the conversion buttons' test of a flat shape kept as it was (`!hasArea` differs when a fractional product underflows), the TSDoc of `hasArea` and `clamp`, the split point's mirrored handle written as `mirroredHandle`, the folders table. Left inline with its reason: turning by an angle, already two named steps.

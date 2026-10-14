@@ -31,17 +31,19 @@ Existing names used where the code wrote them out: `subtract`, `add`, `scale`, `
 
 ## Left inline, with the reason
 
-| Calculation                                                | Reason                                                                                |
-| ---------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| `d − floor(d/90)·90` in `turnDirection`                    | `modulo(d, 90)` differs when `d/90` rounds up                                         |
-| `t − end / SAMPLES` in `crossings`                         | not always equal to the previous grid point                                           |
-| the translation of `freeShapeContour`, `dx === 0 ? …`      | `add` turns −0 into +0                                                                |
-| `(b < 0 ? −1 : 1)` in `quadraticRoots`                     | a sign with sign(0) = +1, not `Math.sign`; no standard name                           |
-| `cubicVelocity` beside `derivativeCoefficients`            | Bernstein and power forms of one derivative round differently: documented, not merged |
-| `midpoint` beside `pointBetween(…, 1/2)`                   | `(a + b)/2` and `a/2 + b/2` differ on overflow and subnormals: both kept              |
-| the playground's handle bar and inset box                  | drawings of the playground only; a band and an inset need a derivation of their own   |
-| one-sided tolerance tests (`radius − effective ≥ EPSILON`) | no standard name                                                                      |
-| evenly spaced samples `(k · T) / n`                        | no source read for the name; pass 2                                                   |
+| Calculation                                                            | Reason                                                                                           |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `d − floor(d/90)·90` in `turnDirection`                                | `modulo(d, 90)` differs when `d/90` rounds up                                                    |
+| `t − end / SAMPLES` in `crossings`                                     | not always equal to the previous grid point                                                      |
+| the translation of `freeShapeContour`, `dx === 0 ? …`                  | `add` turns −0 into +0                                                                           |
+| `(b < 0 ? −1 : 1)` in `quadraticRoots`                                 | a sign with sign(0) = +1, not `Math.sign`; no standard name                                      |
+| `cubicVelocity` beside `derivativeCoefficients`                        | Bernstein and power forms of one derivative round differently: documented, not merged            |
+| `midpoint` beside `pointBetween(…, 1/2)`                               | `(a + b)/2` and `a/2 + b/2` differ on overflow and subnormals: both kept                         |
+| the playground's handle bar and inset box                              | drawings of the playground only; a band and an inset need a derivation of their own              |
+| `turnAbout(p, c, turnDirection(α))` in the model                       | already two named steps: turning by the direction of an angle; a third name would only wrap them |
+| `width === 0 \|\| height === 0` in the playground's conversion buttons | `!hasArea` differs when a fractional product underflows                                          |
+| one-sided tolerance tests (`radius − effective ≥ EPSILON`)             | no standard name                                                                                 |
+| evenly spaced samples `(k · T) / n`                                    | no source read for the name; pass 2                                                              |
 
 ## Open
 

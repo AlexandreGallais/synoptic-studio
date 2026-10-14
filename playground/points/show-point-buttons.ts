@@ -1,4 +1,4 @@
-import { edgeOfSelection, hasArea, isFreeShape } from "../../src";
+import { edgeOfSelection, isFreeShape } from "../../src";
 import { selectElement } from "../page";
 
 import { showDeleteButton } from "./show-delete-button";
@@ -26,7 +26,7 @@ export function showPointButtons(
   const { model } = reading;
   const isConverted = !isFreeShape(model);
   // A shape without width or height cannot be converted (F08).
-  const isFlat = !hasArea(model);
+  const isFlat = model.width === 0 || model.height === 0;
   const edge = edgeOfSelection(selection.selected, reading.corners.length * Number(!isFlat));
   const convert = selectElement(document, "convert");
   const rounded = selectElement(document, "convert-rounded");
