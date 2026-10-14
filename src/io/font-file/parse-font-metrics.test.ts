@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 
 import {
   ARIAL_PATH,
+  HELLO_TEXT,
+  NO_KERNING,
   OPEN_TYPE_VERSION,
   TRUE_TYPE_VERSION,
   X_ADVANCE_ONLY,
@@ -15,7 +17,7 @@ import {
   systemFont,
   testFontTables,
 } from "../../../tests";
-import { pairKerning } from "../../model";
+import { pairKerning, textBlock } from "../../model";
 
 import { parseFontMetrics } from "./parse-font-metrics";
 
@@ -24,9 +26,6 @@ const ARIAL = systemFont(ARIAL_PATH);
 
 /** The characters of "Hello World" and "AVATAR": H e l o space W r d, A V T R. */
 const ARIAL_CHARACTERS = [72, 101, 108, 111, 32, 87, 114, 100, 65, 86, 84, 82];
-
-/** No kerning, for a font that could not be read. */
-const NO_KERNING = { leftClasses: {}, rightClasses: {}, values: [] };
 
 /** A, B, C, a, and Z, which the test font does not map. */
 const CHARACTERS = [65, 66, 67, 97, 90];
@@ -153,6 +152,23 @@ describe("parseFontMetrics (REF-OT-OTFF)", () => {
         pairKerning(kerning, 65, 84),
         pairKerning(kerning, 84, 65),
       ]).toEqual([-152, -152, -152, -152]);
+    },
+  );
+
+  it.skipIf(ARIAL === undefined)(
+    "[F05.AC3] measures 'Hello World' and 'Hello' / 'World' in Arial 16 read from its file",
+    () => {
+      const metrics = parseFontMetrics(ARIAL ?? new Uint8Array(), ARIAL_CHARACTERS);
+      const blocks = ["Hello World", "Hello\nWorld"].map((content) =>
+        metrics === undefined ? undefined : textBlock(metrics, { ...HELLO_TEXT, content }),
+      );
+
+      // DERIV-text-width, checks: (10 584 − 37) × 16 / 2048 = 82.3984375, one line of 18.3984375;
+      // kerned "World", W o −37: 5311 × 16 / 2048 = 41.4921875, two lines.
+      expect(blocks).toEqual([
+        { height: 18.3984375, width: 82.3984375 },
+        { height: 36.796875, width: 41.4921875 },
+      ]);
     },
   );
 
