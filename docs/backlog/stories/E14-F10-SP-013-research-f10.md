@@ -3,7 +3,7 @@ id: SP-013
 epic: E14
 feature: F10
 title: "Research for F10: an ellipse from four cubic sides"
-status: ready
+status: done
 points: 1
 ---
 
@@ -27,4 +27,8 @@ Find, read and record the sources of F10's stories before their implementation (
 
 One task = one commit, referenced as `SP-013.Tn`.
 
-- [ ] T1 — Read the sources; research note, derivation `DERIV-round-shape-curve` and ADR-0048 (2 h)
+- [x] T1 — Read the sources; research note, derivation `DERIV-round-shape-curve` and ADR-0048 (2 h)
+
+## Result
+
+[Research note 0015](../../research/notes/0015-f10-ellipse-from-cubics.md), `DERIV-round-shape-curve`, ADR-0048. The math-expert agent recomputed every check (the largest gap 1.00027253 at t = 0.211325) and re-read the sources; fixed from its review: the half-angle form cited, step 4 for half axes > 0, the larger half axis in the domain, the arc option's drawback in the ADR, why 4(√2 − 1)/3 and not 0.551785.

@@ -13,7 +13,7 @@ Used by: F10 in E14 (EN-027, ADR-0048). Sources: `REF-POMAX-BEZIER` (a circular 
 
 ## Step 1 — A quarter circle as a cubic
 
-A circular arc of angle θ and radius `r` is approximated by the cubic whose handles leave its ends along the tangents, each of length `r · 4/3 · tan(θ/4)` (`REF-POMAX-BEZIER`). For a quarter, `θ = π/2`: `tan(π/8) = (1 − cos(π/4)) / sin(π/4) = √2 − 1` (`REF-WIKI-TAN-HALF-ANGLE`, with `η = 0`), so `κ = 4(√2 − 1)/3 ≈ 0.5522847498`, the value of `REF-WIKI-BEZIER`. The cubic from (1, 0) to (0, 1) with controls (1, κ) and (κ, 1) passes at `t = 1/2` through `((4 + 3κ)/8, (4 + 3κ)/8) = (√2/2, √2/2)`, on the circle; its largest distance from the centre is about 1.00027, near `t = 0.21` and `t = 0.79` (`REF-POMAX-BEZIER`: an error of about 0.00027 of the radius).
+A circular arc of angle θ and radius `r` is approximated by the cubic whose handles leave its ends along the tangents, each of length `r · 4/3 · tan(θ/4)` (`REF-POMAX-BEZIER`). For a quarter, `θ = π/2`: `tan(π/8) = sin(π/4) / (1 + cos(π/4)) = (√2/2) / (1 + √2/2) = √2 − 1` (`REF-WIKI-TAN-HALF-ANGLE`, with `η = 0`), so `κ = 4(√2 − 1)/3 ≈ 0.5522847498`, the value of `REF-WIKI-BEZIER`. The cubic from (1, 0) to (0, 1) with controls (1, κ) and (κ, 1) passes at `t = 1/2` through `((4 + 3κ)/8, (4 + 3κ)/8) = (√2/2, √2/2)`, on the circle; its largest distance from the centre is about 1.00027, near `t = 0.21` and `t = 0.79` (`REF-POMAX-BEZIER`: an error of about 0.00027 of the radius).
 
 ## Step 2 — The ellipse as the circle stretched
 
@@ -34,7 +34,7 @@ At each point the two handles are opposite and of the same length: Mirror angle 
 
 ## Step 4 — The box
 
-Each side's four control points move the same way along x and along y (from P1 to P2: x `a, a + κa, w, w`, y `0, 0, b − κb, b`), so the differences of its control points never change sign along an axis; the derivative is a Bernstein sum of those differences (`REF-WIKI-BEZIER`) and does not vanish inside the side. Its extremes are its ends, and the shape's straight box is exactly `0 ≤ x ≤ w`, `0 ≤ y ≤ h`: the ellipse touches the four sides of its box at its four points.
+Each side's four control points move the same way along x and along y (from P1 to P2: x `a, a + κa, w, w`, y `0, 0, b − κb, b`), so the differences of its control points never change sign along an axis; the derivative is a Bernstein sum of those differences (`REF-WIKI-BEZIER`) and, for `a, b > 0`, does not vanish inside the side (step 5 for 0). Its extremes are its ends, and the shape's straight box is exactly `0 ≤ x ≤ w`, `0 ≤ y ≤ h`: the ellipse touches the four sides of its box at its four points.
 
 ## Step 5 — Degenerate boxes
 
