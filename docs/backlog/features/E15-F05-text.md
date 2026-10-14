@@ -77,7 +77,7 @@ In delivery order. Set ready by the run (ADR-0045).
 | ID                                                                   | Type       | Title                                                                           | Status |
 | -------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------- | ------ |
 | [SP-015](../stories/E15-F05-SP-015-research-e15-text.md)             | Spike      | Research for E15: text measured from font metrics and drawn as positioned lines | done   |
-| [EN-031](../stories/E15-F05-EN-031-font-metrics-from-a-font-file.md) | Enabler    | Font metrics read from a TrueType or OpenType file                              | ready  |
+| [EN-031](../stories/E15-F05-EN-031-font-metrics-from-a-font-file.md) | Enabler    | Font metrics read from a TrueType or OpenType file                              | done   |
 | [EN-032](../stories/E15-F05-EN-032-text-in-the-model.md)             | Enabler    | A text in the model: its characters, its lines and its measured block           | ready  |
 | [US-031](../stories/E15-F05-US-031-place-a-text.md)                  | User story | Place a text with the Text tool                                                 | ready  |
 | [CHK-014](../stories/E15-F05-CHK-014-checkpoint-f05.md)              | Checkpoint | Checkpoint in the middle of F05                                                 | ready  |
