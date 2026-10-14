@@ -78,6 +78,16 @@
 | `npm-check-updates` | `npm run deps:outdated`: fails when a dependency is not on its latest version                                     | `npm outdated`: no per-package target (TypeScript limited to patches)          |
 | `knip`              | `npm run deps:unused`: unused files, exports and dependencies (`knip.json`), which lint cannot see across modules | `ts-prune`: unused exports only; ESLint `no-unused-vars`: one module at a time |
 
+## Assets
+
+Data the library ships that is not an npm package. Same rules: a row here, its licence and its release read, a release at least 7 days old.
+
+| Asset                                                     | Why                                                                                                                                                                                      | Alternatives rejected                                                                                                                       |
+| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Inter 4.1, metrics only (`REF-INTER-RELEASE`, 2024-11-16) | the default font: its advances, kerning pairs and vertical metrics ship as data, so that a text is measured with no font file (ADR-0052, EN-031); weights 100 to 900, upright and italic | Arial: `fsType` 8, editable embedding only (`REF-OT-OS2`), and no open licence read; the fonts of the reader's system: not known in advance |
+
+Licence: SIL Open Font License 1.1 (`REF-INTER-LICENSE`). The fonts may be "bundled, embedded, redistributed and/or sold with any software"; each copy carries the copyright notice and the licence. The metrics file is a format change of the font, a Modified Version under the licence: it is distributed under the OFL with Inter's copyright notice and the licence text beside it, and keeps no reserved font name (Inter's notice names none). The licence does not reach the library's own code nor the documents made with the font.
+
 ## Overrides
 
 Checked at each retrospective: an override goes once the package that pulls the vulnerable version asks for a fixed one. Still needed on 2026-10-13: `eslint-plugin-functional` 10.0.1 asks for `deepmerge-ts` `^7.1.5`, and `micromark-extension-math` 3.1.0 (through `@eslint/markdown`) for `katex` `^0.16.0`.

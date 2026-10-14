@@ -13,9 +13,10 @@ As a designer, I want a Text tool with its fields so that a symbol shows a label
 
 ## Acceptance criteria
 
-- Given the Text tool, when content, font, size, weight, italic, color, opacity, spacing, underline, strike-through, case and direction are typed, then the drawing shows them, and the SVG holds one `<text>` with one positioned `<tspan>` per line.
-- Given a text aligned left, center or right, when it has two lines of different widths, then each line is placed in the block as the alignment says.
-- Given the bold and italic buttons, when they are pressed, then the weight becomes 700 and the style italic; the weight list offers 100 to 900.
+- Given the Text tool, when content, font, size, weight, italic, color, opacity, spacing, underline, strike-through, case and direction are typed, then the drawing shows them, and the SVG holds one `<text>` with one `<tspan>` per line, each with its `x` and `y`, without `text-anchor` nor `dominant-baseline` (ADR-0052, `REF-SVG2-TEXT`, `REF-RESVG-SUPPORT-TABLE`).
+- Given a text aligned left, center or right, when it has two lines of different widths, then each line's `x` places it in the block as the alignment says, and each `y` is the line's top plus the ascender times the size over the units per em (`DERIV-text-width`, step 4).
+- Given underline or strike-through, when drawn, then each is a `<path>` rectangle from the font's `post` underline or `OS/2` strike-out position and thickness, not `text-decoration` (ADR-0052, `REF-OT-POST`, `REF-OT-OS2`).
+- Given the bold and italic buttons, when they are pressed, then the weight becomes 700 and the style italic; the weight list offers 100 to 900 (`REF-CSS-FONTS-4`, §2.2).
 
 ## Tasks
 
