@@ -1,7 +1,7 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
-import { freeShapeCorners } from "../free-shape";
+import { freeShapeCorners, isValidFreeShape } from "../free-shape";
 import { turnedCorners } from "../placement";
 
 import { roundShapeAsFreeShape } from "./round-shape-as-free-shape";
@@ -47,4 +47,12 @@ describe("roundShapeAsFreeShape (F10.AC4, ADR-0048)", () => {
       expect(free.angle).toBe(angle);
     },
   );
+
+  it("gives no valid free shape for a box of width 0: it is not converted (F08)", () => {
+    expect(
+      isValidFreeShape(
+        roundShapeAsFreeShape({ angle: 0, height: 50, kind: "round", width: 0, x: 0, y: 0 }),
+      ),
+    ).toBe(false);
+  });
 });
