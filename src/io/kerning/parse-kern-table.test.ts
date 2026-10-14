@@ -54,6 +54,21 @@ describe("parseKernTable (REF-OT-KERN)", () => {
     ]);
   });
 
+  it.each([
+    // A B −50, then an override A B −20: −20; then an override −5: −5.
+    { expected: -20, override: -20 },
+    { expected: -5, override: -5 },
+  ])("gives $expected to a pair of −50 overridden by $override", ({ expected, override }) => {
+    const table = kernTable([
+      { coverage: 1, pairs: [{ left: 1, right: 2, value: -50 }] },
+      { coverage: 0b1001, pairs: [{ left: 1, right: 2, value: override }] },
+    ]);
+
+    expect(parseKernTable(viewOf(table), GLYPHS)).toEqual([
+      [{ kind: "pairs", pairs: { [glyphPairKey(1, 2)]: expected } }],
+    ]);
+  });
+
   it("gives no lookup when no subtable holds horizontal kerning values", () => {
     const table = kernTable([{ coverage: 0, pairs: [{ left: 1, right: 2, value: -50 }] }]);
 
