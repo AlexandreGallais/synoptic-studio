@@ -52,7 +52,7 @@ At REV-002 (2026-10-14) the Product Owner found the interface simple enough and 
 
 After its last feature is validated (ADR-0023). Its naming pass is F13, which went over the whole code twice; later epics have a `NAM` story (ADR-0049).
 
-| Story                                                                               | Status |
-| ----------------------------------------------------------------------------------- | ------ |
-| [REV-002](../stories/E14-REV-002-review-e14.md) — Review E14 with the Product Owner | done   |
-| [RET-002](../stories/E14-RET-002-retrospective-e14.md) — Retrospective of E14       | draft  |
+| Story                                                                               | Status      |
+| ----------------------------------------------------------------------------------- | ----------- |
+| [REV-002](../stories/E14-REV-002-review-e14.md) — Review E14 with the Product Owner | done        |
+| [RET-002](../stories/E14-RET-002-retrospective-e14.md) — Retrospective of E14       | in-progress |

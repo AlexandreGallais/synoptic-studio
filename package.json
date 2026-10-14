@@ -57,7 +57,10 @@
     "records:save": "node --harmony-temporal --no-warnings=ExperimentalWarning scripts/records-save.ts",
     "replace": "node scripts/replace-text.ts",
     "golden:write": "vitest run tests/golden-results.test.ts --mode golden-write",
-    "golden:check": "vitest run tests/golden-results.test.ts --mode golden-check"
+    "golden:check": "vitest run tests/golden-results.test.ts --mode golden-check",
+    "backlog:status": "node scripts/backlog-status.ts",
+    "story:finish": "node scripts/story-finish.ts",
+    "activity": "node --harmony-temporal scripts/activity.ts"
   },
   "devDependencies": {
     "@commitlint/cli": "21.2.3",
