@@ -83,10 +83,10 @@ Held with the Product Owner on 2026-10-14 (`REV-002`), right after the validatio
 
 **Remarks.**
 
-| Remark                                                                                                                                                                                               | Where it went                                                    |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| The angle measured from the side towards the neighbouring point is unusual, but coherent: the same values on two right-angled corners give the same curve.                                           | kept as built                                                    |
-| The interface stays simple: few options, many shapes possible.                                                                                                                                       | kept as built                                                    |
-| Every shape's point 1 could be its lowest right point, as a polygon's is, so that all shapes start alike. A round shape would start at its bottom or its right point. Not urgent, for the end of V1. | note in [E12](../backlog/epics/E12-release-a-trusted-product.md) |
+| Remark                                                                                                                                                                                               | Where it went                                                                                 |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| The angle measured from the side towards the neighbouring point is unusual, but coherent: the same values on two right-angled corners give the same curve.                                           | kept as built                                                                                 |
+| The interface stays simple: few options, many shapes possible.                                                                                                                                       | kept as built                                                                                 |
+| Every shape's point 1 could be its lowest right point, as a polygon's is, so that all shapes start alike. A round shape would start at its bottom or its right point. Not urgent, for the end of V1. | note in [E10](../backlog/epics/E10-draw-static-drawings.md), before E11 fixes the file format |
 
 **Closure criteria.** A round shape and an ellipse render as specified. A propeller blade is a free shape with curved sides, which F12 draws; the propeller symbol itself is assembled once symbols exist (E05).
