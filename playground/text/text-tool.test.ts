@@ -1,0 +1,202 @@
+// @vitest-environment happy-dom
+
+import { beforeEach, describe, expect, it } from "vitest";
+
+import {
+  chooseOption,
+  clickElement,
+  openServedPage,
+  readDisplay,
+  readPressedState,
+  readText,
+  readValue,
+  selectPageElement,
+  typeValue,
+} from "../user-actions";
+
+/** Namespace of the `xml:` attributes. */
+const XML_NAMESPACE = "http://www.w3.org/XML/1998/namespace";
+
+/**
+ * Types a content in the Text tool's text area, as the designer would.
+ *
+ * @param content - the lines, a line feed between two
+ */
+function typeContent(content: string): void {
+  const area = selectPageElement("#text-content");
+
+  if (area instanceof HTMLTextAreaElement) {
+    area.value = content;
+  }
+
+  area.dispatchEvent(new Event("input", { bubbles: true }));
+}
+
+/**
+ * Reads the text drawn on the canvas.
+ *
+ * @returns its `<text>` element
+ */
+function readTextElement(): Element {
+  return selectPageElement("#canvas text");
+}
+
+/**
+ * Reads each line drawn: its characters, `x` and `y`.
+ *
+ * @returns one row per `<tspan>`
+ */
+function readLines(): readonly (readonly (string | null)[])[] {
+  return [...document.querySelectorAll("#canvas tspan")].map((span) => [
+    span.textContent,
+    span.getAttribute("x"),
+    span.getAttribute("y"),
+  ]);
+}
+
+describe("Text tool", () => {
+  beforeEach(() => {
+    openServedPage("");
+    clickElement("tool-text");
+    // "H" over "HH" in Inter Regular 16: H advances 1522 of 2048 units, 11.890625; HH 23.78125.
+    typeValue("text-size", "16");
+    // happy-dom does not select the option marked `selected` once the page is moved into its
+    // document: the weight the page opens with, 400, is chosen again.
+    chooseOption("text-weight", "400");
+    typeContent("H\nHH");
+  });
+
+  it("[F05.AC2] opens its fields, the shapes' size and corners hidden", () => {
+    expect(readPressedState("tool-text")).toBe("true");
+    expect(readPressedState("tool-rectangle")).toBe("false");
+    expect(readText("#shape-title")).toBe("Text");
+    expect(readDisplay("text-options") === "none").toBe(false);
+    expect(readDisplay("size-section") === "none").toBe(true);
+    expect(readDisplay("corners-section") === "none").toBe(true);
+  });
+
+  it("[F05.AC4] draws one <text> with one positioned <tspan> per line, no anchor nor baseline", () => {
+    // Baselines: ascender 1984 × 16 / 2048 = 15.5, then 15.5 + 2478 × 16 / 2048 = 34.859375.
+    expect(readLines()).toEqual([
+      ["H", "0", "15.5"],
+      ["HH", "0", "34.85938"],
+    ]);
+
+    expect(document.querySelectorAll("#canvas text")).toHaveLength(1);
+    expect(document.querySelector("#canvas [text-anchor], #canvas [dominant-baseline]")).toBeNull();
+    expect(readTextElement().getAttributeNS(XML_NAMESPACE, "space")).toBe("preserve");
+    expect(readTextElement().getAttribute("font-family")).toBe('"Inter", sans-serif');
+  });
+
+  it("[F05.AC4] aligns each line in the block: right, then center", () => {
+    chooseOption("text-alignment", "right");
+    // Room 23.78125 − 11.890625 = 11.890625 before "H".
+    expect(readLines().map(([, x]) => x)).toEqual(["11.89063", "0"]);
+    chooseOption("text-alignment", "center");
+    expect(readLines().map(([, x]) => x)).toEqual(["5.94531", "0"]);
+  });
+
+  it("[F05.AC4] writes a right-to-left line at its right edge", () => {
+    chooseOption("text-direction", "rtl");
+    expect(readTextElement().getAttribute("direction")).toBe("rtl");
+    expect(readLines().map(([, x]) => x)).toEqual(["11.89063", "23.78125"]);
+  });
+
+  it("[F05.AC2] frames the measured block, 23.78125 × 38.71875, with a fill", () => {
+    // Two lines of 2478 × 16 / 2048 = 19.359375.
+    expect(selectPageElement("#canvas path.text-block").getAttribute("d")).toBe(
+      "M0 0 L23.78125 0 L23.78125 38.71875 L0 38.71875 Z M1 1 L22.78125 1 L22.78125 37.71875 L1 37.71875 Z",
+    );
+
+    expect(readText("#contour")).toContain('"width": 23.78125');
+  });
+
+  it("[F05.AC2] offers the weights 100 to 900; bold sets 700 and back to 400", () => {
+    const weights = [...document.querySelectorAll<HTMLOptionElement>("#text-weight option")];
+
+    expect(weights.map((option) => option.value)).toEqual(
+      ["100", "200", "300", "400", "500", "600", "700", "800", "900"].map(String),
+    );
+
+    clickElement("text-bold");
+    expect([readValue("text-weight"), readPressedState("text-bold")]).toEqual(["700", "true"]);
+    expect(readTextElement().getAttribute("font-weight")).toBe("700");
+    clickElement("text-bold");
+    expect([readValue("text-weight"), readPressedState("text-bold")]).toEqual(["400", "false"]);
+    chooseOption("text-weight", "900");
+    expect(readTextElement().getAttribute("font-weight")).toBe("900");
+  });
+
+  it("[F05.AC2] turns italic on and off", () => {
+    clickElement("text-italic");
+    expect(readTextElement().getAttribute("font-style")).toBe("italic");
+    clickElement("text-italic");
+    expect(readTextElement().getAttribute("font-style")).toBe("normal");
+  });
+
+  it("[F05.AC2] writes the color, the opacity and the spacing typed", () => {
+    typeValue("text-color", "#FF0000");
+    typeValue("text-opacity", "40");
+    typeValue("text-letter-spacing", "2");
+    typeValue("text-word-spacing", "-4");
+
+    expect(
+      ["fill", "fill-opacity", "letter-spacing", "word-spacing"].map((name) =>
+        readTextElement().getAttribute(name),
+      ),
+    ).toEqual(["#FF0000", "0.4", "2", "-4"]);
+  });
+
+  it("[F05.AC4] underlines and strikes each line through with paths in the text's color", () => {
+    clickElement("text-underline");
+    clickElement("text-strike");
+
+    const paths = document.querySelectorAll("#canvas g path");
+
+    // Two lines, each underlined and struck through; Inter Regular's underline top −348 units:
+    // 15.5 + 348 × 16 / 2048 = 18.21875, 140 × 16 / 2048 = 1.09375 thick.
+    expect(paths).toHaveLength(4);
+
+    expect(paths[0]?.getAttribute("d")).toBe(
+      "M0 18.21875 L11.89063 18.21875 L11.89063 19.3125 L0 19.3125 Z",
+    );
+
+    expect(paths[0]?.getAttribute("fill")).toBe("#1e293b");
+    expect(document.querySelector("#canvas [text-decoration]")).toBeNull();
+  });
+
+  it("[F05.AC4] writes the lines in the case chosen", () => {
+    typeContent("pump p-101 is running");
+    chooseOption("text-case", "constant");
+    expect(readLines().map(([content]) => content)).toEqual(["PUMP_P_101_IS_RUNNING"]);
+  });
+
+  it("moves the text with X and Y", () => {
+    typeValue("shape-x", "10");
+    typeValue("shape-y", "20");
+    // 20 + 15.5.
+    expect(readLines()[0]).toEqual(["H", "10", "35.5"]);
+  });
+
+  it("refuses a size of 0 and draws nothing, saying why", () => {
+    typeValue("text-size", "0");
+    expect(readText("#status")).toContain("Size must be an integer from 1 to 100 000");
+    expect(document.querySelectorAll("#canvas text")).toHaveLength(0);
+    expect(selectPageElement("#text-size").getAttribute("aria-invalid")).toBe("true");
+  });
+
+  it("draws an empty content as an empty text, without a frame", () => {
+    typeContent("");
+    expect(readLines()).toEqual([]);
+    expect(document.querySelectorAll("#canvas path")).toHaveLength(0);
+  });
+
+  it("goes back to the shapes, the text's fields hidden", () => {
+    clickElement("tool-rectangle");
+    expect(readDisplay("text-options") === "none").toBe(true);
+    expect(readDisplay("size-section") === "none").toBe(false);
+    expect(readPressedState("tool-rectangle")).toBe("true");
+    expect(document.querySelectorAll("#canvas text")).toHaveLength(0);
+    expect(readText("#path-data")).toMatch(/^M0 0 L/u);
+  });
+});
