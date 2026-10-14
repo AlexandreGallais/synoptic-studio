@@ -21,3 +21,4 @@ Each file: statement and domain, steps each citing a read source, cross-check, c
 | [`DERIV-round-shape-curve`](./round-shape-curve.md)     | A circle or an ellipse as four cubic sides through its top, right, bottom and left points (F10 in E14)                        |
 | [`DERIV-text-width`](./text-width.md)                   | The width of a line of text from its font's advances, kerning and spacing; the line height (F05, ADR-0052)                    |
 | [`DERIV-bit-of-integer`](./bit-of-integer.md)           | A bit of a non-negative integer, `⌊n / 2ⁱ⌋ mod 2`, past the 32 bits of the bitwise operators (EN-031)                         |
+| [`DERIV-kerning-classes`](./kerning-classes.md)         | The kerning of characters kept by classes of characters that kern alike, every pair's kerning unchanged (EN-031)              |
