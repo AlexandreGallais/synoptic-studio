@@ -1,10 +1,12 @@
 import { fontUnitsAtSize } from "../font";
 
+import { characterUnitCount } from "./character-unit-count";
 import { isWordSeparator } from "./is-word-separator";
 import { letterSpacingCount } from "./letter-spacing-count";
 import { lineAdvance } from "./line-advance";
 import { lineCodePoints } from "./line-code-points";
 import { lineKerning } from "./line-kerning";
+import { measuredCharacters } from "./measured-characters";
 
 import type { FontMetrics } from "../font";
 import type { Text } from "../text";
@@ -13,11 +15,13 @@ import type { Text } from "../text";
 export type LineSpacing = Pick<Text, "letterSpacing" | "size" | "wordSpacing">;
 
 /**
- * The width of one line of a text: its advances and kerning summed in font units, then brought
- * to the text's size once, plus the letter spacing between adjacent characters and the word
- * spacing at each space and no-break space (`DERIV-text-width`, steps 1 to 3).
+ * The width of one line of a text: its characters composed and its formatting characters left
+ * out (`measuredCharacters`), their advances and kerning summed in font units, then brought to the
+ * text's size once, plus the letter spacing between adjacent typographic character units
+ * (`characterUnitCount`) and the word spacing at each space and no-break space
+ * (`DERIV-text-width`, steps 1 to 3).
  *
- * Formula: (Σ adv + Σ kern) × s / U + max(n − 1, 0) × L + m × W.
+ * Formula: (Σ adv + Σ kern) × s / U + max(u − 1, 0) × L + m × W, for u units.
  *
  * @kind domain
  * @param metrics - the font face's metrics
@@ -27,13 +31,14 @@ export type LineSpacing = Pick<Text, "letterSpacing" | "size" | "wordSpacing">;
  * @see DERIV-text-width
  */
 export function lineWidth(metrics: FontMetrics, line: string, spacing: LineSpacing): number {
-  const codePoints = lineCodePoints(line);
+  const characters = measuredCharacters(line);
+  const codePoints = lineCodePoints(characters);
   const units = lineAdvance(metrics, codePoints) + lineKerning(metrics.kerning, codePoints);
   const separators = codePoints.filter((codePoint) => isWordSeparator(codePoint)).length;
 
   return (
     fontUnitsAtSize(units, spacing.size, metrics.unitsPerEm) +
-    letterSpacingCount(codePoints.length) * spacing.letterSpacing +
+    letterSpacingCount(characterUnitCount(characters)) * spacing.letterSpacing +
     separators * spacing.wordSpacing
   );
 }

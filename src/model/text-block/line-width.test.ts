@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { ARIAL_METRICS, ARIAL_UNKERNED } from "../../../tests";
 import { DEFAULT_FONT } from "../font";
 
+import { lineCodePoints } from "./line-code-points";
 import { lineWidth } from "./line-width";
 
 /** Size 16, no spacing. */
@@ -55,6 +56,38 @@ describe("lineWidth (DERIV-text-width, steps 1 to 3)", () => {
     expect(lineWidth(metrics, "Hello World", PLAIN)).toBe(87.5546875);
   });
 
+  it("[F05.AC3] adds letter spacing between typographic character units only", () => {
+    const metrics = INTER_REGULAR?.metrics ?? ARIAL_METRICS;
+    const spaced = { ...PLAIN, letterSpacing: 2 };
+
+    // A zero-width space (Cf) is measured and spaced as if absent: "AB", A 1413 + B 1340 = 2753
+    // units, 2753 × 16 / 2048 = 21.5078125, plus one letter spacing: 23.5078125.
+    expect(lineWidth(metrics, "A\u{200B}B", spaced)).toBe(23.5078125);
+    expect(lineWidth(metrics, "AB", spaced)).toBe(23.5078125);
+    // e and a combining acute compose into é, 1194 units: 9.328125, one unit, no spacing.
+    expect(lineWidth(metrics, "e\u{301}", spaced)).toBe(9.328125);
+    // q and a combining acute (0 units) stay two characters but one unit: q q 2508 units,
+    // 19.59375, plus one letter spacing between the two units: 21.59375.
+    expect(lineWidth(metrics, "q\u{301}q", spaced)).toBe(21.59375);
+  });
+
+  it("counts a character beyond the basic plane as one character", () => {
+    // a and 😀 take glyph 0, 1536 each: 3072 × 16 / 2048 = 24, plus one letter spacing.
+    expect(lineWidth(ARIAL_METRICS, "a\u{1F600}", { ...PLAIN, letterSpacing: 2 })).toBe(26);
+  });
+
+  it("adds a negative word spacing at the space", () => {
+    // 82.6875 − 4 = 78.6875.
+    expect(lineWidth(ARIAL_UNKERNED, "Hello World", { ...PLAIN, wordSpacing: -4 })).toBe(78.6875);
+  });
+
+  it("measures a single space as its advance and one word spacing", () => {
+    const metrics = INTER_REGULAR?.metrics ?? ARIAL_METRICS;
+
+    // Inter's space, 576 units: 4.5, plus 3.
+    expect(lineWidth(metrics, " ", { ...PLAIN, wordSpacing: 3 })).toBe(7.5);
+  });
+
   it("measures an empty line as 0, whatever the spacing", () => {
     expect(lineWidth(ARIAL_METRICS, "", { letterSpacing: 5, size: 16, wordSpacing: 5 })).toBe(0);
   });
@@ -68,7 +101,7 @@ describe("lineWidth (DERIV-text-width, steps 1 to 3)", () => {
     const unspaced = lineWidth(ARIAL_UNKERNED, line, { ...spacing, letterSpacing: 0 });
 
     expect(lineWidth(ARIAL_UNKERNED, line, spacing)).toBeCloseTo(
-      unspaced + (line.length - 1) * letterSpacing,
+      unspaced + (lineCodePoints(line).length - 1) * letterSpacing,
       6,
     );
   });
