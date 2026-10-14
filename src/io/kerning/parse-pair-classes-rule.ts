@@ -3,10 +3,7 @@ import { parseCoverage } from "./parse-coverage";
 import { parseXAdvance } from "./parse-x-advance";
 import { valueFormatToSize } from "./value-format-to-size";
 
-import type { ClassKerningRule } from "../../model";
-
-/** The kerning of one class with every class, font units. */
-type Row = readonly number[];
+import type { ClassKerningRule, KerningRow } from "../../model";
 
 /** Offsets of the fields of a PairPos format 2 subtable. */
 const FIELDS = {
@@ -31,7 +28,7 @@ const FIELDS = {
  * @returns the kerning by first class, then second class
  * @see REF-OT-GPOS
  */
-function parseClassValues(view: DataView, subtable: number): readonly Row[] {
+function parseClassValues(view: DataView, subtable: number): readonly KerningRow[] {
   const firstFormat = view.getUint16(subtable + FIELDS.valueFormat1);
   const recordSize =
     valueFormatToSize(firstFormat) +

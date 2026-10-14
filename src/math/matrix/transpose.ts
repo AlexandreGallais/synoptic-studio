@@ -1,5 +1,4 @@
-/** One row of a matrix. */
-type Row = readonly number[];
+import type { MatrixRow } from "./matrix-row";
 
 /**
  * The transpose of a matrix: its rows and columns exchanged, the element of row i and column j
@@ -11,6 +10,6 @@ type Row = readonly number[];
  * @returns its columns, as rows
  * @see REF-MATHWORLD-TRANSPOSE
  */
-export function transpose(matrix: readonly Row[]): readonly Row[] {
+export function transpose(matrix: readonly MatrixRow[]): readonly MatrixRow[] {
   return (matrix[0] ?? []).map((unused, column) => matrix.map((row) => row[column] ?? 0));
 }
