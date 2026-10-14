@@ -68,6 +68,7 @@ describe("textInCase (Q36)", () => {
   it("writes each line in the case, its line breaks kept", () => {
     expect(textInCase("pump on\nvalve off", "kebab")).toBe("pump-on\nvalve-off");
     expect(textInCase("pump on\nvalve off", "sentence")).toBe("Pump on\nValve off");
+    expect(textInCase("pump on\r\nvalve off\rtank", "kebab")).toBe("pump-on\r\nvalve-off\rtank");
   });
 
   it("capitalizes a whole code point, beyond the basic plane", () => {

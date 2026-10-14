@@ -2,6 +2,7 @@ import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { ARIAL_METRICS, ARIAL_UNKERNED, HELLO_TEXT } from "../../../tests";
+import { DEFAULT_FONT } from "../font";
 
 import { lineHeight } from "./line-height";
 import { lineWidth } from "./line-width";
@@ -29,6 +30,18 @@ describe("textBlock (DERIV-text-width step 4)", () => {
     expect(textBlock(ARIAL_METRICS, { ...HELLO_TEXT, content: "" })).toEqual({
       height: 0,
       width: 0,
+    });
+  });
+
+  it("cuts lines at CR LF too: 'Hello' and 'World' in Inter Regular 16", () => {
+    const regular = DEFAULT_FONT.faces.find((face) => face.weight === 400 && !face.isItalic);
+    const metrics = regular?.metrics ?? ARIAL_METRICS;
+
+    // "World": W 2018 + o 1228 + r 771 + l 496 + d 1254 = 5767, W o −104, r l +32: 5695 units,
+    // 5695 × 16 / 2048 = 44.4921875 ("Hello" 4936 units, 38.5625); two lines of 19.359375.
+    expect(textBlock(metrics, { ...HELLO_TEXT, content: "Hello\r\nWorld" })).toEqual({
+      height: 38.71875,
+      width: 44.4921875,
     });
   });
 
