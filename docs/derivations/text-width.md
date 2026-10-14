@@ -22,7 +22,7 @@ A character is drawn by its glyph `g(c)`, glyph 0 when the font has no glyph for
 
 ## Step 2 — The line without spacing
 
-Glyphs follow each other, each starting where the previous advance ends, so the line's width is the sum of the advances, plus the kerning of each adjacent pair, which adjusts "the advances of two glyphs in relation to one another" (`REF-OT-GPOS`; for a font whose `GPOS` table has no `kern` feature, the pairs of its `kern` table, whose subtables add up, `REF-OT-KERN`, as browsers do, `REF-CSS-FONTS-4`):
+Glyphs follow each other, each starting where the previous advance ends, so the line's width is the sum of the advances, plus the kerning of each adjacent pair, which adjusts "the advances of two glyphs in relation to one another" (`REF-OT-GPOS`; for a font whose `GPOS` table has no `kern` feature, the pairs of its `kern` table, whose subtables add up unless one overrides the value accumulated, `REF-OT-KERN`, as browsers do, `REF-CSS-FONTS-4`):
 
 ```text
 w₀ = (s / U) × ( Σᵢ₌₁ⁿ adv(g(cᵢ)) + Σᵢ₌₁ⁿ⁻¹ kern(g(cᵢ), g(cᵢ₊₁)) )
