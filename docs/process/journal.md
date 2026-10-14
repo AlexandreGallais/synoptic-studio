@@ -2,6 +2,13 @@
 
 What each working session dealt with, in the agent's words: the Product Owner's requests in neutral words, decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`).
 
+## 2026-10-14 — RET-002, the retrospective of E14
+
+- `#ret` The Product Owner decided every logged item and asked for the work without further questions; their remaining questions wait in the record (`docs/process/retrospectives/E14-retrospective.md`).
+- `#tooling` Status line: the cause of the stuck background task found in the transcript (a call refused before it started answers with an error, never a notification); four states, a line per background task. Each call's record holds the session's state; the report splits turns between tools and model. `check:all` in parallel lanes (90 s to 54 s), ESLint's cache for fixes (28 s to 8 s).
+- `#tools` `npm run replace`, `backlog:status`, `story:finish`, `golden:write` and `golden:check`, `activity`, `epic:check`; specifications of the next ones and the reason Rust waits (`docs/tooling/agent-tools.md`).
+- `#decisions` ADR-0050 (tools, parallel checks, validated epic stories merging by themselves, GitHub deleting merged branches); ADR-0051 proposed (the main thread kept free, stories worked by subagents) for a trial at the next run; source tiers in the research protocol; a JSDoc word no longer counts as a use; point 1 alike in every shape noted in E10 with SVG 2's convention.
+
 ## 2026-10-14 — REV-002, the review of E14
 
 - `#rev` A free walk-through of the playground: round shape, conversion, handles in every mode, a loop, deleting a point, turning; everything as intended. Report `docs/guide/e14-draw-curves.md`. One idea for the end of V1: every shape's point 1 at its lowest right point (note in E10, before E11 fixes the file format).
