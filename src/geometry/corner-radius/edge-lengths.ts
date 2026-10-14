@@ -1,4 +1,4 @@
-import { norm, subtract } from "../../math";
+import { distance } from "../../math";
 import { cyclicItem } from "../contour";
 
 import type { Point } from "../../math";
@@ -12,7 +12,5 @@ import type { Point } from "../../math";
  * @see DERIV-local-radius-clamp
  */
 export function edgeLengths(contour: readonly Point[]): readonly number[] {
-  return contour.map((vertex, index) =>
-    norm(subtract(cyclicItem(contour, index + 1, vertex), vertex)),
-  );
+  return contour.map((vertex, index) => distance(vertex, cyclicItem(contour, index + 1, vertex)));
 }

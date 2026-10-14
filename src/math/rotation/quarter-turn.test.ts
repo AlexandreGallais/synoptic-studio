@@ -2,10 +2,8 @@ import { test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { integerPoint } from "../../../tests";
+import { dot, norm, perpDot } from "../vector";
 
-import { dot } from "./dot";
-import { norm } from "./norm";
-import { perpDot } from "./perp-dot";
 import { quarterTurn } from "./quarter-turn";
 
 /** Vector with integer components. */

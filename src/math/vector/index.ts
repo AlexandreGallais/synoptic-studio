@@ -1,11 +1,12 @@
 export * from "./add";
+export * from "./distance";
 export * from "./dot";
-export * from "./midpoint";
+export * from "./hadamard-product";
 export * from "./norm";
+export * from "./opposite";
 export * from "./perp-dot";
 export type * from "./point";
-export * from "./point-between";
-export * from "./quarter-turn";
+export * from "./scalar-projection";
 export * from "./scale";
 export * from "./subtract";
 export * from "./unit";

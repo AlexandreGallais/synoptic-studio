@@ -20,4 +20,4 @@ The math-expert agent lists, file by file, each inline calculation of `src/math`
 
 One task = one commit, referenced as `EN-028.Tn`.
 
-- [ ] T1 — The named functions of `math` and `geometry`, each with its property test (3 h)
+- [x] T1 — The named functions of `math` and `geometry`, each with its property test (3 h)

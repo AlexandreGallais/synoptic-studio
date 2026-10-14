@@ -1,3 +1,5 @@
+import { directionAt } from "../../math";
+
 import type { Point } from "../../math";
 
 /**
@@ -20,6 +22,9 @@ export function unitRegularPolygon(corners: number): readonly Point[] {
   return Array.from({ length: corners }, (empty, index) => {
     const angle = -Math.PI / 2 + ((1 - 2 * index) * Math.PI) / corners;
 
-    return { x: Math.cos(angle), y: 0 - Math.sin(angle) };
+    const direction = directionAt(angle);
+
+    // y down: the reflection keeps +0 where −sin gives −0.
+    return { x: direction.x, y: 0 - direction.y };
   });
 }

@@ -1,3 +1,5 @@
+import { average } from "../arithmetic";
+
 import { bisectionBracket } from "./bisection-bracket";
 import { BISECTION_STEPS } from "./bisection-steps";
 
@@ -18,5 +20,5 @@ import { BISECTION_STEPS } from "./bisection-steps";
 export function bisection(isBelow: (value: number) => boolean, low: number, high: number): number {
   const [start, end] = bisectionBracket(isBelow, [low, high], BISECTION_STEPS);
 
-  return (start + end) / 2;
+  return average(start, end);
 }

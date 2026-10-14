@@ -1,5 +1,4 @@
-import { ZERO_VECTOR, scale, turnDirection, withoutNegativeZero } from "../../math";
-import { turnAbout } from "../placement";
+import { rotate, scale, turnDirection, withoutNegativeZero } from "../../math";
 
 import type { Vector } from "../../math";
 
@@ -17,7 +16,7 @@ import type { Vector } from "../../math";
  * @see DERIV-handle-angle
  */
 export function angledHandle(direction: Vector, angle: number, length: number): Vector {
-  const turned = turnAbout(direction, ZERO_VECTOR, turnDirection(angle));
+  const turned = withoutNegativeZero(rotate(direction, turnDirection(angle)));
 
   // A handle of length 0 is (0, 0), as a new one, never −0.
   return withoutNegativeZero(scale(turned, length));

@@ -1,4 +1,4 @@
-import { dot, subtract } from "../../math";
+import { scalarProjection } from "../../math";
 import { cubicPoint } from "../placement";
 
 import { footOnSide } from "./foot-on-side";
@@ -25,5 +25,5 @@ export function distanceFromSide(side: FilletSide, point: Point, end: number): n
   // A straight side's normal is the same everywhere: no foot to look for.
   const foot = side.isStraight ? 0 : footOnSide(side, point, end);
 
-  return dot(subtract(point, cubicPoint(side.cubic, foot)), sideNormal(side, foot));
+  return scalarProjection(point, cubicPoint(side.cubic, foot), sideNormal(side, foot));
 }

@@ -1,7 +1,8 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
-import { norm, quarterTurn } from "../vector";
+import { quarterTurn } from "../rotation";
+import { norm } from "../vector";
 
 import { turnDirection } from "./turn-direction";
 

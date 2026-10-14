@@ -1,4 +1,4 @@
-import { CUBIC_DEGREE } from "./cubic-degree";
+import { cubicBernstein } from "./cubic-bernstein";
 
 import type { Point } from "../../math";
 import type { Cubic } from "../contour";
@@ -15,13 +15,7 @@ import type { Cubic } from "../contour";
  * @see REF-WIKI-BEZIER
  */
 export function cubicPoint(cubic: Cubic, t: number): Point {
-  const u = 1 - t;
-  const [w0, w1, w2, w3] = [
-    u * u * u,
-    CUBIC_DEGREE * u * u * t,
-    CUBIC_DEGREE * u * t * t,
-    t * t * t,
-  ];
+  const [w0, w1, w2, w3] = cubicBernstein(t);
   const { end, first, second, start } = cubic;
 
   return {

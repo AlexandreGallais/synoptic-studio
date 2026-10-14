@@ -1,4 +1,4 @@
-import { norm, subtract } from "../../math";
+import { distance } from "../../math";
 import { cyclicItem } from "../contour";
 import { cubicSide, isCurvedSide, reversedCubic, straightCubic } from "../curve";
 
@@ -24,7 +24,7 @@ function sideFrom(corner: CurveCorner, other: CurveCorner, isAfter: boolean): Co
   return {
     cubic: isStraight ? straightCubic(corner.point, other.point) : curved,
     isStraight,
-    length: norm(subtract(other.point, corner.point)),
+    length: distance(corner.point, other.point),
     limit: 1,
   };
 }

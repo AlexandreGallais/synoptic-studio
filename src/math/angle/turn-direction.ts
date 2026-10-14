@@ -1,14 +1,14 @@
-import { quarterTurn } from "../vector";
+import { quarterTurns } from "../rotation";
+import { withoutNegativeZero } from "../vector";
 
 import { degreesInTurn } from "./degrees-in-turn";
+import { degreesToRadians } from "./degrees-to-radians";
+import { directionAt } from "./direction-at";
 
 import type { Vector } from "../vector";
 
 /** Degrees in a quarter turn. */
 const QUARTER = 90;
-
-/** Degrees in a half turn, π radians. */
-const HALF_TURN = 180;
 
 /**
  * Direction `(cos α, sin α)` of an angle in degrees, exact at every quarter turn.
@@ -25,12 +25,7 @@ const HALF_TURN = 180;
  */
 export function turnDirection(angle: number): Vector {
   const quarters = Math.floor(degreesInTurn(angle) / QUARTER);
-  const rest = ((degreesInTurn(angle) - quarters * QUARTER) * Math.PI) / HALF_TURN;
-  const turned = Array.from({ length: quarters }).reduce<Vector>((vector) => quarterTurn(vector), {
-    x: Math.cos(rest),
-    y: Math.sin(rest),
-  });
+  const rest = degreesToRadians(degreesInTurn(angle) - quarters * QUARTER);
 
-  // −0 + 0 is +0.
-  return { x: turned.x + 0, y: turned.y + 0 };
+  return withoutNegativeZero(quarterTurns(directionAt(rest), quarters));
 }

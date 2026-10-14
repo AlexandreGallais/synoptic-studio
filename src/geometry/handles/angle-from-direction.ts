@@ -1,9 +1,6 @@
-import { DEGREES_PER_TURN, degreesInTurn, dot, perpDot } from "../../math";
+import { degreesInTurn, radiansToDegrees, signedAngle } from "../../math";
 
 import type { Vector } from "../../math";
-
-/** Half a turn, in degrees: π radians. */
-const HALF_TURN = DEGREES_PER_TURN / 2;
 
 /**
  * Angle of a handle counted from a direction, clockwise on screen, from 0 to 359.99…: the signed
@@ -18,7 +15,5 @@ const HALF_TURN = DEGREES_PER_TURN / 2;
  * @see REF-MDN-ATAN2
  */
 export function angleFromDirection(direction: Vector, handle: Vector): number {
-  const radians = Math.atan2(perpDot(direction, handle), dot(direction, handle));
-
-  return degreesInTurn((radians * HALF_TURN) / Math.PI);
+  return degreesInTurn(radiansToDegrees(signedAngle(direction, handle)));
 }

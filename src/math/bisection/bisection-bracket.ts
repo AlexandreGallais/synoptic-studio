@@ -1,3 +1,5 @@
+import { average } from "../arithmetic";
+
 /**
  * The last bracket of a bisection: a bracket halved a number of times, always keeping the half
  * where the predicate turns from true to false; its width shrinks by 2 at each halving
@@ -16,8 +18,9 @@ export function bisectionBracket(
   bracket: readonly [number, number],
   steps: number,
 ): readonly [number, number] {
-  return Array.from({ length: steps }).reduce<readonly [number, number]>(
-    ([from, to]) => (isBelow((from + to) / 2) ? [(from + to) / 2, to] : [from, (from + to) / 2]),
-    bracket,
-  );
+  return Array.from({ length: steps }).reduce<readonly [number, number]>(([from, to]) => {
+    const middle = average(from, to);
+
+    return isBelow(middle) ? [middle, to] : [from, middle];
+  }, bracket);
 }
