@@ -1,3 +1,4 @@
+export * from "./character-unit-count";
 export * from "./is-word-separator";
 export * from "./letter-spacing-count";
 export * from "./line-advance";
@@ -5,6 +6,7 @@ export * from "./line-code-points";
 export * from "./line-height";
 export * from "./line-kerning";
 export * from "./line-width";
+export * from "./measured-characters";
 export * from "./text-block";
 export * from "./text-font-metrics";
 export * from "./text-lines";
