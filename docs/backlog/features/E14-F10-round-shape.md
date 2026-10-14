@@ -22,21 +22,21 @@ To refine again in E14:
 
 ## Decided with the Product Owner in E01 (2026-10-12)
 
-- **Circle and capsule**: in a square box the round shape is a circle; in a wider or taller box, a capsule (two half circles joined by straight sides). Only circular arcs (ADR-0001); the ellipse stays out of scope (Q4 open).
-- **Edited as the polygon**: the round shape has its width, height, angle and position, but no radius field and no points. **No anchor**: it always fills its box, touching its four sides. The **Convert to free shape** button gives a free shape of 4 points whose radii are half the smaller side, rounded up to an integer (120 × 80 gives 40; 81 × 81 gives 41, clamped to 40.5 when drawn, ADR-0007): it stays round until stretched, and its points and radii can then be edited (F08). Its points are numbered as the rectangle's, point 1 at the top left, clockwise: the order of the path's `d`, never changed afterwards (Product Owner, 2026-10-12).
+- **Circle and capsule** (superseded in E14: an ellipse in a long box, "Moved to E14" above): in a square box the round shape is a circle; in a wider or taller box, a capsule (two half circles joined by straight sides). Only circular arcs (ADR-0001); the ellipse stays out of scope (Q4 open).
+- **Edited as the polygon** (its conversion superseded in E14: two buttons, AC4 and AC5): the round shape has its width, height, angle and position, but no radius field and no points. **No anchor**: it always fills its box, touching its four sides. The **Convert to free shape** button gives a free shape of 4 points whose radii are half the smaller side, rounded up to an integer (120 × 80 gives 40; 81 × 81 gives 41, clamped to 40.5 when drawn, ADR-0007): it stays round until stretched, and its points and radii can then be edited (F08). Its points are numbered as the rectangle's, point 1 at the top left, clockwise: the order of the path's `d`, never changed afterwards (Product Owner, 2026-10-12).
 - **Order** (superseded): in E01 right after F04; in E14, after F11 (a code base ready for curves).
 
 ## Refinement in E14 (2026-10-14)
 
 The Product Owner's decisions above stand; they asked for no further questions (2026-10-14). What they leave open is decided by the agent from them, and shown at VAL-012:
 
-| Question                   | Decision                                                                                                                                                                                                                 |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| How the ellipse is drawn   | four cubic sides through its top, right, bottom and left points, handles 4(√2 − 1)/3 of the half axis: the curve a conversion gives, as Figma's ellipse converted to a vector; researched in SP-013 (ADR-0048)           |
-| Its fields                 | width, height, angle and position, as E01 decided; no radius, no anchor, no point to edit                                                                                                                                |
-| Point 1                    | the top point, then clockwise: right, bottom, left — the curve has no top-left corner (Q11)                                                                                                                              |
-| The two conversions        | **Convert to free shape**: its 4 points on the curve with their handles, unmoved; **Convert to rounded rectangle**: the 4 corners of its box, as E01 built it (the same circle in a square box, a capsule in a long one) |
-| A box of width or height 0 | drawn as the line it is, as a rectangle; not converted, as a polygon (F08)                                                                                                                                               |
+| Question                   | Decision                                                                                                                                                                                                                                          |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| How the ellipse is drawn   | four cubic sides through its top, right, bottom and left points, handles 4(√2 − 1)/3 of the half axis: the curve its conversion to points with handles gives (the Product Owner wants those points, as in Figma); researched in SP-013 (ADR-0048) |
+| Its fields                 | width, height, angle and position, as E01 decided; no radius, no anchor, no point to edit                                                                                                                                                         |
+| Point 1                    | the top point, then clockwise: right, bottom, left — the curve has no top-left corner (Q11)                                                                                                                                                       |
+| The two conversions        | **Convert to free shape**: its 4 points on the curve with their handles, unmoved; **Convert to rounded rectangle**: the 4 corners of its box, as E01 built it (the same circle in a square box, a capsule in a long one)                          |
+| A box of width or height 0 | drawn as the line it is, as a rectangle; not converted, as a polygon (F08)                                                                                                                                                                        |
 
 ## Acceptance criteria
 
@@ -56,7 +56,7 @@ The Product Owner's decisions above stand; they asked for no further questions (
 | [US-029](../stories/E14-F10-US-029-round-tool.md)          | User story | Draw a circle or an ellipse with the Round tool         | done   |
 | [CHK-012](../stories/E14-F10-CHK-012-checkpoint-f10.md)    | Checkpoint | Checkpoint in the middle of F10                         | done   |
 | [US-030](../stories/E14-F10-US-030-convert-round-shape.md) | User story | Convert a round shape to a free shape, two ways         | done   |
-| [AUD-013](../stories/E14-F10-AUD-013-audit-f10.md)         | Audit      | Audit F10                                               | ready  |
+| [AUD-013](../stories/E14-F10-AUD-013-audit-f10.md)         | Audit      | Audit F10                                               | done   |
 | [VAL-012](../stories/E14-F10-VAL-012-validate-f10.md)      | Validation | Validate F10                                            | ready  |
 
 Set ready by the run (ADR-0045).
