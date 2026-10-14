@@ -3,7 +3,7 @@ id: EN-032
 epic: E15
 feature: F05
 title: "A text in the model: its characters, its lines and its measured block"
-status: ready
+status: done
 points: 3
 ---
 
