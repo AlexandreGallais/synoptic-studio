@@ -1,3 +1,5 @@
+import { integerRange } from "../../math";
+
 import type { UnicodeBlock } from "./unicode-block";
 
 /**
@@ -10,7 +12,5 @@ import type { UnicodeBlock } from "./unicode-block";
  * @see REF-UNICODE-BLOCKS
  */
 export function blockCharacters(blocks: readonly UnicodeBlock[]): readonly number[] {
-  return blocks.flatMap((block) =>
-    Array.from({ length: block.last - block.first + 1 }, (unused, index) => block.first + index),
-  );
+  return blocks.flatMap((block) => integerRange(block.first, block.last));
 }

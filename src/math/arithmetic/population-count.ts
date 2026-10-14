@@ -1,3 +1,4 @@
+import { integerRange } from "./integer-range";
 import { isBitSet } from "./is-bit-set";
 
 /** The base of the binary representation. */
@@ -14,7 +15,6 @@ const BINARY = 2;
  * @see REF-WIKI-HAMMING-WEIGHT
  */
 export function populationCount(value: number): number {
-  return Array.from({ length: value.toString(BINARY).length }, (unused, bit) => bit).filter((bit) =>
-    isBitSet(value, bit),
-  ).length;
+  return integerRange(0, value.toString(BINARY).length - 1).filter((bit) => isBitSet(value, bit))
+    .length;
 }
