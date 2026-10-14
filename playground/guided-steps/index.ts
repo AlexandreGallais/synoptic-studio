@@ -10,5 +10,6 @@ export * from "./guided-steps-f06";
 export * from "./guided-steps-f07";
 export * from "./guided-steps-f08";
 export * from "./guided-steps-f09";
+export * from "./guided-steps-f10";
 export * from "./guided-steps-f12";
 export * from "./guided-steps-of-epic-1";

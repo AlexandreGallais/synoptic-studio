@@ -19,7 +19,8 @@ import {
 
 describe("toolbar", () => {
   beforeEach(() => {
-    openServedPage("");
+    // The epic's step 1, a rectangle, whatever feature is being validated.
+    openServedPage("?guide=epic");
   });
 
   it("starts on the rectangle, its button pressed and the polygon's options hidden", () => {

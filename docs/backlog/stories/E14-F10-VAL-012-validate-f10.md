@@ -3,7 +3,7 @@ id: VAL-012
 epic: E14
 feature: F10
 title: Validate F10
-status: ready
+status: in-progress
 points: 1
 ---
 
@@ -19,6 +19,6 @@ The Product Owner tries the round shape in the playground, guided by short steps
 
 One task = one commit, referenced as `VAL-012.Tn`.
 
-- [ ] T1 — The guided test, one step per option, tested end to end (1 h)
-- [ ] T2 — The demo page as a list of the options (30 min)
+- [x] T1 — The guided test, one step per option, tested end to end (1 h)
+- [x] T2 — The demo page as a list of the options (30 min)
 - [ ] T3 — The Product Owner's validation (1 h)

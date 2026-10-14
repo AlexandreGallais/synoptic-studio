@@ -49,15 +49,15 @@ The Product Owner's decisions above stand; they asked for no further questions (
 
 ## Stories
 
-| ID                                                         | Type       | Title                                                   | Status |
-| ---------------------------------------------------------- | ---------- | ------------------------------------------------------- | ------ |
-| [SP-013](../stories/E14-F10-SP-013-research-f10.md)        | Spike      | Research for F10: an ellipse from four cubic sides      | done   |
-| [EN-027](../stories/E14-F10-EN-027-round-shape-model.md)   | Enabler    | The round shape in the model, its curve and conversions | done   |
-| [US-029](../stories/E14-F10-US-029-round-tool.md)          | User story | Draw a circle or an ellipse with the Round tool         | done   |
-| [CHK-012](../stories/E14-F10-CHK-012-checkpoint-f10.md)    | Checkpoint | Checkpoint in the middle of F10                         | done   |
-| [US-030](../stories/E14-F10-US-030-convert-round-shape.md) | User story | Convert a round shape to a free shape, two ways         | done   |
-| [AUD-013](../stories/E14-F10-AUD-013-audit-f10.md)         | Audit      | Audit F10                                               | done   |
-| [VAL-012](../stories/E14-F10-VAL-012-validate-f10.md)      | Validation | Validate F10                                            | ready  |
+| ID                                                         | Type       | Title                                                   | Status      |
+| ---------------------------------------------------------- | ---------- | ------------------------------------------------------- | ----------- |
+| [SP-013](../stories/E14-F10-SP-013-research-f10.md)        | Spike      | Research for F10: an ellipse from four cubic sides      | done        |
+| [EN-027](../stories/E14-F10-EN-027-round-shape-model.md)   | Enabler    | The round shape in the model, its curve and conversions | done        |
+| [US-029](../stories/E14-F10-US-029-round-tool.md)          | User story | Draw a circle or an ellipse with the Round tool         | done        |
+| [CHK-012](../stories/E14-F10-CHK-012-checkpoint-f10.md)    | Checkpoint | Checkpoint in the middle of F10                         | done        |
+| [US-030](../stories/E14-F10-US-030-convert-round-shape.md) | User story | Convert a round shape to a free shape, two ways         | done        |
+| [AUD-013](../stories/E14-F10-AUD-013-audit-f10.md)         | Audit      | Audit F10                                               | done        |
+| [VAL-012](../stories/E14-F10-VAL-012-validate-f10.md)      | Validation | Validate F10                                            | in-progress |
 
 Set ready by the run (ADR-0045).
 
