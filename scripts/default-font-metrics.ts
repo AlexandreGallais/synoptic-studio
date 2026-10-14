@@ -14,13 +14,13 @@ import { join } from "node:path";
 
 import { runnerImport } from "vite";
 
-import { blockCharacters } from "../src/model/font/block-characters.ts";
 import { MEASURED_BLOCKS } from "../src/model/font/measured-blocks.ts";
 
-import type { FontFace, FontFamily, parseFontMetrics } from "../src/index.ts";
+import type { FontFace, FontFamily, blockCharacters, parseFontMetrics } from "../src/index.ts";
 
-/** What the script uses of the library's reader, loaded through Vite. */
-type Reader = {
+/** What the script uses of the library, loaded through Vite. */
+type Library = {
+  readonly blockCharacters: typeof blockCharacters;
   readonly parseFontMetrics: typeof parseFontMetrics;
 };
 
@@ -98,13 +98,13 @@ export function familyJson(family: FontFamily): string {
 
 if (import.meta.main) {
   const [folder = "."] = process.argv.slice(2);
-  const { module: reader } = await runnerImport<Reader>(
-    join(import.meta.dirname, "..", "src", "io", "index.ts"),
+  const { module: library } = await runnerImport<Library>(
+    join(import.meta.dirname, "..", "src", "index.ts"),
     { configFile: false, logLevel: "error" },
   );
-  const characters = blockCharacters(MEASURED_BLOCKS);
+  const characters = library.blockCharacters(MEASURED_BLOCKS);
   const faces = interFaces().map((face): FontFace => {
-    const metrics = reader.parseFontMetrics(readFileSync(join(folder, face.file)), characters);
+    const metrics = library.parseFontMetrics(readFileSync(join(folder, face.file)), characters);
 
     if (metrics === undefined) {
       throw new Error(`${face.file} is not a TrueType or OpenType font`);
