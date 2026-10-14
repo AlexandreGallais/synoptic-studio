@@ -23,5 +23,6 @@ export function isClearOfSide(side: FilletSide, centre: Point, radius: number): 
   return Array.from(
     { length: SAMPLES + 1 },
     (unused, index) => (index * side.limit) / SAMPLES,
+    // A share EPSILON of the radius forgives rounding errors only.
   ).every((t) => distance(centre, cubicPoint(side.cubic, t)) >= radius * (1 - EPSILON));
 }

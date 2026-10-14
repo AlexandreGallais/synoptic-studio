@@ -11,6 +11,11 @@ describe("chainEnd (REF-CRANE-DISCRETE-CURVES)", () => {
     expect(end.y).toBeCloseTo(1, 15);
   });
 
+  it("tells cosines from sines, from (5, 0): two units right, one down", () => {
+    // x = 5 + 1 + 1 + cos(π/2) rounds to 7; y = 0 + 0 + 0 + 1. Swapped, it would be (6, 2).
+    expect(chainEnd({ x: 5, y: 0 }, [0, 0, Math.PI / 2])).toEqual({ x: 7, y: 1 });
+  });
+
   test.prop({ count: fc.integer({ max: 12, min: 3 }) })(
     "closes the sides of a regular polygon",
     ({ count }) => {

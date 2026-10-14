@@ -1,6 +1,6 @@
 /**
- * Arithmetic mean of two numbers: the middle of the interval between them, as a bisection halves
- * it. Halving is exact in binary floating point: the only rounding is the sum's.
+ * Midpoint of an interval, the mean of its two ends, as a bisection halves it. Halving is exact in
+ * binary floating point unless the sum is subnormal: the only rounding is the sum's.
  *
  * Formula: (a + b) / 2.
  *
