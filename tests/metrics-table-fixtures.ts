@@ -59,7 +59,7 @@ export function os2Table(fields: Os2Fields): number[] {
 }
 
 /** One kerning pair of a `kern` format 0 subtable. */
-export type KernPair = {
+type KernPair = {
   /** Left glyph. */
   readonly left: number;
   /** Right glyph. */

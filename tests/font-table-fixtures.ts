@@ -23,7 +23,7 @@ const SEGMENTED_COVERAGE = 12;
  * @param unitsPerEm - from 16 to 16 384
  * @returns its bytes
  */
-export function headTable(unitsPerEm: number): number[] {
+function headTable(unitsPerEm: number): number[] {
   return tableOf({
     fields: [
       { at: 0, bytes: uint32(TRUE_TYPE_VERSION) },
@@ -34,7 +34,7 @@ export function headTable(unitsPerEm: number): number[] {
 }
 
 /** The `hhea` fields written by `hheaTable`. */
-export type HheaFields = {
+type HheaFields = {
   /** Typographic ascent, font units. */
   readonly ascender: number;
   /** Typographic descent, font units, negative below the baseline. */
@@ -52,7 +52,7 @@ export type HheaFields = {
  * @param fields - the values to write
  * @returns its bytes
  */
-export function hheaTable(fields: HheaFields): number[] {
+function hheaTable(fields: HheaFields): number[] {
   return tableOf({
     fields: [
       { at: 0, bytes: uint32(TRUE_TYPE_VERSION) },
@@ -71,7 +71,7 @@ export function hheaTable(fields: HheaFields): number[] {
  * @param glyphCount - number of glyphs of the font
  * @returns its bytes
  */
-export function maxpTable(glyphCount: number): number[] {
+function maxpTable(glyphCount: number): number[] {
   return tableOf({
     fields: [
       { at: 0, bytes: uint32(MAXP_VERSION) },
@@ -89,7 +89,7 @@ export function maxpTable(glyphCount: number): number[] {
  * @param remaining - number of glyphs past the records
  * @returns its bytes
  */
-export function hmtxTable(advances: readonly number[], remaining: number): number[] {
+function hmtxTable(advances: readonly number[], remaining: number): number[] {
   return tableOf({
     fields: advances.map((advance, glyph) => ({
       at: HMTX_RECORD_SIZE * glyph,
@@ -226,7 +226,7 @@ export function cmapTable(encodings: readonly CmapEncoding[]): number[] {
 }
 
 /** The values of the test font of `[F05.AC1]`: glyph 0 is 500 units wide, glyph 1 600, glyph 2 700. */
-export const TEST_FONT = {
+const TEST_FONT = {
   ascender: 800,
   descender: -200,
   firstAdvance: 600,
