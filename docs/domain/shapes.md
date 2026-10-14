@@ -198,16 +198,33 @@ Decided by the Product Owner at F05's refinement, rounds 1 and 2 (2026-10-14); d
   - the characters kept are those of the scripts measured (ADR-0052): the Unicode blocks Basic Latin, Latin-1 Supplement, Latin Extended-A and B, Latin Extended Additional, Greek and Coptic, Cyrillic, Hebrew, General Punctuation, and the symbols industrial labels use: Currency Symbols, Letterlike Symbols, Arrows and Mathematical Operators (€ − → ≤ ™, and ș ț of Romanian), 1968 code points (`REF-UNICODE-BLOCKS`). "Latin" is read as the Latin script and the symbols labels use (agent, 2026-10-14, EN-031 review), to be confirmed by the Product Owner at VAL-014;
   - the default font's metrics ship with the library for Inter 4.1's nine weights, upright and italic; Inter has no Hebrew glyph, so a Hebrew character is measured with Inter's `.notdef` advance until a font with Hebrew is read.
 - **Characters**: a text holds:
-  - its content, with the line breaks the designer typed;
+  - its content, with the line breaks the designer typed, a line feed (U+000A) between two lines; any content is allowed, the empty one included, which draws nothing;
   - a font named with a fallback (`Inter`, else `sans-serif`), any font allowed; the default font is Inter, whose metrics ship with the library;
-  - a size, an integer from 1 to 100 000, in the one unit used everywhere (no millimetres, no points);
-  - a weight from 100 (thin) to 900 (black), with a quick bold button (700) and an italic button;
-  - a color in hexadecimal with an opacity from 0 to 100 % (F16 brings the picker);
-  - letter spacing and word spacing, to fit text in small frames;
+  - a size, an integer from 1 to 100 000, in the one unit used everywhere (no millimetres, no points); a size outside that range or not an integer is refused;
+  - a weight, an integer from 100 (thin) to 900 (black), with a quick bold button (700) and an italic button;
+  - a color in hexadecimal, `#` and six digits (upper or lower case), with an opacity, an integer from 0 to 100 % (F16 brings the picker);
+  - letter spacing and word spacing, integers in user units, negative to tighten, to fit text in small frames;
   - underline and strike-through;
-  - a case transform: upper, lower, the first word or every word capitalized, and the programmers' cases camel, Pascal, kebab, snake and constant, so that a value typed once comes out formatted; the library writes the transformed string (rules: Q36);
+  - a case transform, written by the library (Q36, below);
   - a direction, left to right or right to left;
-  - an alignment of its lines (left, center, right), a position and an angle.
+  - an alignment of its lines (left, center, right), a position (integers, the top-left of its block before it turns) and an angle.
+- **Case transforms** (Q36, a provisional decision of 2026-10-15, to be confirmed at VAL-014): each line is written in the case on its own, its line breaks kept. For "pump P-101 is running":
+
+  | Case     | Rule                                                                                                     | Gives                   |
+  | -------- | -------------------------------------------------------------------------------------------------------- | ----------------------- |
+  | none     | as typed                                                                                                 | `pump P-101 is running` |
+  | upper    | every letter in upper case                                                                               | `PUMP P-101 IS RUNNING` |
+  | lower    | every letter in lower case                                                                               | `pump p-101 is running` |
+  | sentence | the line's first character in upper case, the rest kept                                                  | `Pump P-101 is running` |
+  | title    | the first character after each space in upper case, the rest kept                                        | `Pump P-101 Is Running` |
+  | camel    | the words, cut at spaces, hyphens and underscores, in lower case, each but the first capitalized, joined | `pumpP101IsRunning`     |
+  | Pascal   | the same words, each capitalized, joined                                                                 | `PumpP101IsRunning`     |
+  | kebab    | the same words in lower case, joined by hyphens                                                          | `pump-p-101-is-running` |
+  | snake    | the same words in lower case, joined by underscores                                                      | `pump_p_101_is_running` |
+  | constant | the same words in upper case, joined by underscores                                                      | `PUMP_P_101_IS_RUNNING` |
+
+  A run of separators cuts once, so a line of separators only gives an empty line in the programmers' cases.
+
 - **Scripts**: the library measures Latin, Greek and Cyrillic, and Hebrew written right to left. Arabic and Indian scripts need shaping: they are left to the browser's HTML layer (F15).
 - **Turning**: like a shape, by an integer angle kept from 0 to 359, clockwise, about the middle of its block: of the measured text when it fits its content, of its box otherwise (F14). When shapes get rotation anchors, text gets them too.
 - **Empty text**: the library draws an empty text as nothing; a text created by a click and left empty disappears when the designer changes tool or clicks elsewhere (an editor behavior, E02).
