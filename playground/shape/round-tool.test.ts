@@ -94,7 +94,7 @@ describe("the Round tool (US-029)", () => {
     ]);
   });
 
-  it("[F10.AC2] greys adding and deleting points, and keeps the curve", () => {
+  it("[F10.AC2] greys adding and deleting points, and keeps the curve; offers converting", () => {
     openOnStep(1);
     clickElement("tool-round");
     clickElement("mode-points");
@@ -106,7 +106,7 @@ describe("the Round tool (US-029)", () => {
     expect([isDisabled("add-midpoint"), isDisabled("delete-points"), isHidden("convert")]).toEqual([
       true,
       true,
-      true,
+      false,
     ]);
 
     clickElement("add-midpoint");
