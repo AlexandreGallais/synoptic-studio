@@ -26,6 +26,14 @@ describe("transpose (REF-MATHWORLD-TRANSPOSE)", () => {
     ]);
   });
 
+  it("takes as many columns as the longest row, whichever row it is", () => {
+    // The second row is the longest: two columns, the first row lacking its second element.
+    expect(transpose([[1], [2, 3]])).toEqual([
+      [1, 2],
+      [0, 3],
+    ]);
+  });
+
   it("gives an empty matrix for an empty one", () => {
     expect(transpose([])).toEqual([]);
   });
