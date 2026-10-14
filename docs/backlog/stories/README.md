@@ -94,7 +94,7 @@
 | [US-027](./E14-F12-US-027-radius-beside-curve.md)               | F12     | A corner beside a curved side keeps its radius                        | done        |
 | [US-028](./E14-F12-US-028-handles-on-a-polygon.md)              | F12     | Give handles to a point of a regular polygon                          | done        |
 | [AUD-012](./E14-F12-AUD-012-audit-after-validation.md)          | F12     | Audit the changes asked at the validation                             | done        |
-| [SP-014](./E14-F13-SP-014-research-f13.md)                      | F13     | Research for F13: the named calculations and their sources            | ready       |
+| [SP-014](./E14-F13-SP-014-research-f13.md)                      | F13     | Research for F13: the named calculations and their sources            | done        |
 | [EN-028](./E14-F13-EN-028-name-math-and-geometry.md)            | F13     | Pass 1: name the calculations of math and geometry                    | ready       |
 | [EN-029](./E14-F13-EN-029-name-model-and-playground.md)         | F13     | Pass 1: name the calculations of the model, io, render and playground | ready       |
 | [CHK-013](./E14-F13-CHK-013-checkpoint-f13.md)                  | F13     | Checkpoint between the two passes                                     | ready       |
