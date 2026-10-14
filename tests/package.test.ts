@@ -7,6 +7,7 @@ import { describe, expect, it } from "vitest";
 type PackageManifest = {
   readonly dependencies?: Readonly<Record<string, string>>;
   readonly devDependencies?: Readonly<Record<string, string>>;
+  readonly files?: readonly string[];
   readonly overrides?: Readonly<Record<string, string>>;
 };
 
@@ -41,7 +42,17 @@ function documentedPackages(): string[] {
     .toArray();
 }
 
+/** Inter's copyright notice and the SIL Open Font License, beside the default font's metrics. */
+const INTER_LICENSE = "src/model/font/inter-license.txt";
+
 describe("package.json", () => {
+  it("ships the licence of the default font's metrics, which NOTICE names", () => {
+    const notice = readFileSync(join(import.meta.dirname, "..", "NOTICE"), "utf8");
+
+    expect(manifest().files).toContain(INTER_LICENSE);
+    expect(notice).toContain(INTER_LICENSE);
+  });
+
   it("has no runtime dependency", () => {
     expect(Object.keys(manifest().dependencies ?? {})).toEqual([]);
   });

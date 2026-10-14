@@ -20,7 +20,8 @@
   "files": [
     "dist",
     "LICENSE",
-    "NOTICE"
+    "NOTICE",
+    "src/model/font/inter-license.txt"
   ],
   "engines": {
     "node": ">=24"
