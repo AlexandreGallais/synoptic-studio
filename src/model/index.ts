@@ -10,3 +10,5 @@ export * from "./regular-polygon";
 export * from "./round-shape";
 export * from "./selection";
 export * from "./shape";
+export * from "./text";
+export * from "./text-case";
