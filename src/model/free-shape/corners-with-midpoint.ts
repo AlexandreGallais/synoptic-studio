@@ -1,5 +1,5 @@
-import { cubicSide, cyclicItem, isCurvedSide, splitCubic } from "../../geometry";
-import { midpoint, modulo, opposite, subtract, withoutNegativeZero } from "../../math";
+import { cubicSide, cyclicItem, isCurvedSide, mirroredHandle, splitCubic } from "../../geometry";
+import { midpoint, modulo, subtract } from "../../math";
 import { NO_HANDLES } from "../handles";
 
 import type { Cubic, CurveCorner } from "../../geometry";
@@ -47,7 +47,13 @@ function splitPoint(first: Cubic): CurveCorner {
   const before = subtract(first.second, first.end);
 
   return {
-    handles: { ...NO_HANDLES, after: withoutNegativeZero(opposite(before)), before, isOn: true },
+    handles: {
+      ...NO_HANDLES,
+      // A symmetric node, as the curve split there.
+      after: mirroredHandle("angle-and-length", before, before),
+      before,
+      isOn: true,
+    },
     point: first.end,
     radius: 0,
   };
