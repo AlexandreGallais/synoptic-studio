@@ -37,7 +37,7 @@ const TABLE_ALIGNMENT = 4;
 const DIRECTORY = { headerSize: 12, recordSize: 16 };
 
 /** One field of a table: its bytes, at an offset. */
-export type TableField = {
+type TableField = {
   /** Offset of the field from the start of the table. */
   readonly at: number;
   /** The field's bytes. */

@@ -1,4 +1,10 @@
+export * from "./block-characters";
 export * from "./character-advance";
 export type * from "./character-glyph";
+export * from "./default-font";
+export type * from "./font-face";
+export type * from "./font-family";
 export type * from "./font-metrics";
 export * from "./glyph-advance";
+export * from "./measured-blocks";
+export type * from "./unicode-block";
