@@ -23,5 +23,5 @@ A text holds its content and the options of its characters; the library transfor
 
 One task = one commit, referenced as `EN-032.Tn`.
 
-- [ ] T1 — The text type, its validity and its case transforms; tests first (2 h)
+- [x] T1 — The text type, its validity and its case transforms; tests first (2 h)
 - [ ] T2 — Measuring a line with kerning and spacing, and the block of its lines (2 h)
