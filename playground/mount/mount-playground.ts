@@ -1,5 +1,7 @@
 import { readGuidedStep, readStepFromAddress, showGuidedStep } from "../guided-test";
-import { selectElement } from "../page";
+import { readShapeKind, selectElement } from "../page";
+import { listenToTextFields, updateTextTool, writeTextSections } from "../text";
+import { writeShapeKind } from "../toolbar";
 
 import { listenToInputs } from "./listen-to-inputs";
 import { updatePlayground } from "./update-playground";
@@ -39,10 +41,22 @@ function listenToGuide(document: Document, steps: readonly GuidedStep[], update:
 export function mountPlayground(document: Document, steps: readonly GuidedStep[]): void {
   /** Redraws the page from the inputs. */
   function update(): void {
+    const isText = readShapeKind(document) === "text";
+
+    writeTextSections(document, isText);
+
+    if (isText) {
+      writeShapeKind(document);
+      updateTextTool(document);
+
+      return;
+    }
+
     updatePlayground(document);
   }
 
   listenToInputs(document, update);
+  listenToTextFields(document, update);
 
   listenToGuide(document, steps, update);
 

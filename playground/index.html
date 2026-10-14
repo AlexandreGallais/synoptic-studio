@@ -43,8 +43,14 @@
         width: 100%;
         height: 100%;
       }
-      #canvas path {
+      /* A path without its own fill; a text's decorations carry the text's color (US-031). */
+      #canvas path:not([fill]) {
         fill: var(--accent);
+      }
+      /* The measured block of a text (US-031): a thin frame, a fill between two rectangles. */
+      #canvas path.text-block {
+        fill: #2563eb;
+        fill-rule: evenodd;
       }
       /* The box the shape is placed in, behind it (F07): a fill only, never a native stroke. */
       #canvas path.box {
@@ -203,6 +209,22 @@
         display: block;
         margin-block: 0.35rem;
       }
+      #text-options input[type="text"],
+      #text-options textarea,
+      #text-options select {
+        box-sizing: border-box;
+        display: block;
+        width: 100%;
+        margin-top: 0.2rem;
+        padding: 0.3rem 0.4rem;
+        font: inherit;
+        border: 1px solid var(--line);
+        border-radius: 0.35rem;
+      }
+      #text-style button[aria-pressed="true"] {
+        color: #fff;
+        background: var(--accent);
+      }
       input[type="number"] {
         box-sizing: border-box;
         display: block;
@@ -312,6 +334,12 @@
             </svg>
             Round
           </button>
+          <button id="tool-text" type="button" aria-pressed="false" title="Text">
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M2.5 2.5h11v3H12V4H9v8.5h1.5V14h-5v-1.5H7V4H4v1.5H2.5z" />
+            </svg>
+            Text
+          </button>
         </p>
         <p id="tools" role="group" aria-label="Mode">
           <button id="mode-shape" type="button" aria-pressed="true" title="Edit the shape">
@@ -353,6 +381,7 @@
         <option value="rectangle" selected>Rectangle</option>
         <option value="polygon">Polygon</option>
         <option value="round">Round shape</option>
+        <option value="text">Text</option>
         <option value="free" hidden>Free shape</option>
       </select>
       <section id="polygon-options" aria-labelledby="polygon-heading">
@@ -378,7 +407,89 @@
           </div>
         </fieldset>
       </section>
-      <section aria-labelledby="size-heading">
+      <section id="text-options" aria-labelledby="text-heading" hidden>
+        <h2 id="text-heading">Text</h2>
+        <label
+          >Content
+          <textarea id="text-content" rows="3">
+Pump P-101
+Running</textarea>
+        </label>
+        <label>Font <input id="text-font" type="text" value="Inter" /></label>
+        <div class="pair">
+          <label
+            >Size <input id="text-size" type="number" min="1" max="100000" step="1" value="32"
+          /></label>
+          <label
+            >Weight
+            <select id="text-weight">
+              <option value="100">100 Thin</option>
+              <option value="200">200 Extra light</option>
+              <option value="300">300 Light</option>
+              <option value="400" selected>400 Regular</option>
+              <option value="500">500 Medium</option>
+              <option value="600">600 Semi-bold</option>
+              <option value="700">700 Bold</option>
+              <option value="800">800 Extra bold</option>
+              <option value="900">900 Black</option>
+            </select></label
+          >
+        </div>
+        <p id="text-style">
+          <button id="text-bold" type="button" aria-pressed="false"><b>B</b> Bold</button>
+          <button id="text-italic" type="button" aria-pressed="false"><i>I</i> Italic</button>
+        </p>
+        <div class="pair">
+          <label>Color <input id="text-color" type="text" value="#1e293b" /></label>
+          <label
+            >Opacity (%)
+            <input id="text-opacity" type="number" min="0" max="100" step="1" value="100"
+          /></label>
+        </div>
+        <div class="pair">
+          <label
+            >Letter spacing <input id="text-letter-spacing" type="number" step="1" value="0"
+          /></label>
+          <label
+            >Word spacing <input id="text-word-spacing" type="number" step="1" value="0"
+          /></label>
+        </div>
+        <label><input id="text-underline" type="checkbox" /> Underline</label>
+        <label><input id="text-strike" type="checkbox" /> Strike-through</label>
+        <label
+          >Case
+          <select id="text-case">
+            <option value="none" selected>As typed</option>
+            <option value="upper">UPPER CASE</option>
+            <option value="lower">lower case</option>
+            <option value="sentence">Sentence case</option>
+            <option value="title">Title Case</option>
+            <option value="camel">camelCase</option>
+            <option value="pascal">PascalCase</option>
+            <option value="kebab">kebab-case</option>
+            <option value="snake">snake_case</option>
+            <option value="constant">CONSTANT_CASE</option>
+          </select></label
+        >
+        <div class="pair">
+          <label
+            >Direction
+            <select id="text-direction">
+              <option value="ltr" selected>Left to right</option>
+              <option value="rtl">Right to left</option>
+            </select></label
+          >
+          <label
+            >Alignment
+            <select id="text-alignment">
+              <option value="left" selected>Left</option>
+              <option value="center">Center</option>
+              <option value="right">Right</option>
+            </select></label
+          >
+        </div>
+      </section>
+      <section id="size-section" aria-labelledby="size-heading">
         <h2 id="size-heading">Size</h2>
         <div class="pair">
           <label
