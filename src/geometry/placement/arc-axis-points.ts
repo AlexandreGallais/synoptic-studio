@@ -1,4 +1,4 @@
-import { perpDot } from "../../math";
+import { add, perpDot, scale, subtract } from "../../math";
 
 import type { Point, Vector } from "../../math";
 import type { Arc } from "../contour";
@@ -26,13 +26,10 @@ const AXES: readonly Vector[] = [
  */
 export function arcAxisPoints(arc: Arc): readonly Point[] {
   const sign = arc.positive ? 1 : -1;
-  const start = { x: arc.start.x - arc.center.x, y: arc.start.y - arc.center.y };
-  const end = { x: arc.end.x - arc.center.x, y: arc.end.y - arc.center.y };
+  const start = subtract(arc.start, arc.center);
+  const end = subtract(arc.end, arc.center);
 
   return AXES.filter(
     (axis) => sign * perpDot(start, axis) >= 0 && sign * perpDot(axis, end) >= 0,
-  ).map((axis) => ({
-    x: arc.center.x + arc.radius * axis.x,
-    y: arc.center.y + arc.radius * axis.y,
-  }));
+  ).map((axis) => add(arc.center, scale(axis, arc.radius)));
 }

@@ -1,3 +1,5 @@
+import { hadamardProduct } from "../../math";
+
 import type { Handles } from "./handles";
 import type { Vector } from "../../math";
 
@@ -17,7 +19,7 @@ import type { Vector } from "../../math";
 export function stretchedHandles(handles: Handles, factors: Vector): Handles {
   return {
     ...handles,
-    after: { x: factors.x * handles.after.x, y: factors.y * handles.after.y },
-    before: { x: factors.x * handles.before.x, y: factors.y * handles.before.y },
+    after: hadamardProduct(handles.after, factors),
+    before: hadamardProduct(handles.before, factors),
   };
 }

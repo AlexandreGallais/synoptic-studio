@@ -1,3 +1,5 @@
+import { boxSize } from "./box-size";
+
 import type { Size } from "./size";
 import type { Point } from "../../math";
 import type { BoundingBox } from "../placement";
@@ -22,8 +24,7 @@ export function stretchedInBox(
   box: BoundingBox,
   size: Size,
 ): readonly Point[] {
-  const spanX = box.maxX - box.minX;
-  const spanY = box.maxY - box.minY;
+  const { height: spanY, width: spanX } = boxSize(box);
   const scaleX = size.width === spanX ? undefined : size.width;
   const scaleY = size.height === spanY ? undefined : size.height;
 

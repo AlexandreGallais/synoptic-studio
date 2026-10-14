@@ -1,3 +1,4 @@
+import { ZERO_VECTOR } from "../../math";
 import { cyclicItem } from "../contour";
 import { cornerTriples, turningAngles } from "../corner-radius";
 import { straightCubic } from "../curve";
@@ -12,9 +13,9 @@ import type { CurveCorner } from "../handles";
 
 /** Points read when there are none: a contour has 3 corners or more. */
 const NO_TRIPLE: CornerPoints = {
-  next: { x: 0, y: 0 },
-  previous: { x: 0, y: 0 },
-  vertex: { x: 0, y: 0 },
+  next: ZERO_VECTOR,
+  previous: ZERO_VECTOR,
+  vertex: ZERO_VECTOR,
 };
 
 /** Sides read when there are none: a contour has 3 corners or more. */

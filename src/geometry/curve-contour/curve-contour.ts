@@ -1,3 +1,4 @@
+import { ZERO_VECTOR } from "../../math";
 import { cyclicItem } from "../contour";
 import { hasLength } from "../corner-radius";
 import { cubicSide, isCurvedSide } from "../curve";
@@ -11,12 +12,12 @@ import type { CurveCorner } from "../handles";
 /** Corner read when there is none: a contour has 3 corners or more. */
 const NO_CORNER: CurveCorner = {
   handles: {
-    after: { x: 0, y: 0 },
-    before: { x: 0, y: 0 },
+    after: ZERO_VECTOR,
+    before: ZERO_VECTOR,
     isOn: false,
     mode: "angle-and-length",
   },
-  point: { x: 0, y: 0 },
+  point: ZERO_VECTOR,
   radius: 0,
 };
 

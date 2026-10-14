@@ -1,4 +1,4 @@
-import { dot, perpDot, subtract } from "../../math";
+import { dot, perpDot, signedAngle, subtract } from "../../math";
 
 import type { Point } from "../../math";
 
@@ -24,5 +24,5 @@ export function turningAngle(previous: Point, vertex: Point, next: Point): numbe
   const sine = perpDot(incoming, outgoing);
   const cosine = dot(incoming, outgoing);
 
-  return sine === 0 && cosine === 0 ? 0 : Math.atan2(sine, cosine);
+  return sine === 0 && cosine === 0 ? 0 : signedAngle(incoming, outgoing);
 }

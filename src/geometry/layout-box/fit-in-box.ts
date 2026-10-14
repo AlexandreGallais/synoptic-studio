@@ -1,6 +1,8 @@
+import { add, scale as scaleVector, subtract } from "../../math";
 import { boundingBox } from "../placement";
 
 import { alignmentFactor } from "./alignment-factor";
+import { boxSize } from "./box-size";
 
 import type { Anchor } from "./anchor";
 import type { Size } from "./size";
@@ -27,14 +29,13 @@ import type { Point } from "../../math";
  */
 export function fitInBox(points: readonly Point[], size: Size, anchor: Anchor): readonly Point[] {
   const box = boundingBox(points);
-  const spanX = box.maxX - box.minX;
-  const spanY = box.maxY - box.minY;
+  const { height: spanY, width: spanX } = boxSize(box);
   const scale = Math.min(size.width / spanX, size.height / spanY);
   const left = alignmentFactor(anchor.horizontal) * (size.width - scale * spanX);
   const top = alignmentFactor(anchor.vertical) * (size.height - scale * spanY);
 
-  return points.map((point) => ({
-    x: left + scale * (point.x - box.minX),
-    y: top + scale * (point.y - box.minY),
-  }));
+  // Scaled from the box's corner, then moved to its place: s(P − m) + (left, top).
+  return points.map((point) =>
+    add({ x: left, y: top }, scaleVector(subtract(point, { x: box.minX, y: box.minY }), scale)),
+  );
 }

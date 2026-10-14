@@ -1,4 +1,4 @@
-import { bisectionBracket } from "../../math";
+import { average, bisectionBracket } from "../../math";
 
 import { FILLET_STEPS } from "./fillet-steps";
 
@@ -25,6 +25,6 @@ export function crossings(isBelow: (t: number) => boolean, end: number): readonl
     .map((t) => {
       const [low, high] = bisectionBracket(isBelow, [t - end / SAMPLES, t], FILLET_STEPS);
 
-      return (low + high) / 2;
+      return average(low, high);
     });
 }

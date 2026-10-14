@@ -1,4 +1,4 @@
-import { dot, subtract } from "../../math";
+import { scalarProjection } from "../../math";
 import { cubicPoint } from "../placement";
 
 import { crossings } from "./crossings";
@@ -20,7 +20,7 @@ import type { Point } from "../../math";
  * @see DERIV-fillet-beside-curve
  */
 function isAheadAt(side: FilletSide, point: Point, t: number): boolean {
-  return dot(subtract(point, cubicPoint(side.cubic, t)), sideTangent(side.cubic, t)) > 0;
+  return scalarProjection(point, cubicPoint(side.cubic, t), sideTangent(side.cubic, t)) > 0;
 }
 
 /**

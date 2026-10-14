@@ -1,4 +1,4 @@
-import type { Vector } from "./vector";
+import type { Vector } from "../vector";
 
 /**
  * Vector turned by a quarter turn in the positive direction of angles.

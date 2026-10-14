@@ -1,4 +1,4 @@
-import type { Point } from "./point";
+import type { Point } from "../vector";
 
 /**
  * The point at a fraction of a segment, from its start: de Casteljau's step (`REF-WIKI-DE-CASTELJAU`).

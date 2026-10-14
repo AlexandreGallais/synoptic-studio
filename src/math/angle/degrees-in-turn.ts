@@ -1,3 +1,5 @@
+import { modulo } from "../arithmetic";
+
 import { DEGREES_PER_TURN } from "./degrees-per-turn";
 
 /**
@@ -14,5 +16,5 @@ import { DEGREES_PER_TURN } from "./degrees-per-turn";
  * @see DERIV-turned-shape
  */
 export function degreesInTurn(angle: number): number {
-  return ((angle % DEGREES_PER_TURN) + DEGREES_PER_TURN) % DEGREES_PER_TURN;
+  return modulo(angle, DEGREES_PER_TURN);
 }
