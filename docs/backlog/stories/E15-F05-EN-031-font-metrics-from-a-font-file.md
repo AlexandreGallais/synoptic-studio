@@ -23,6 +23,6 @@ The library reads a font file once into its metrics: the advance of each charact
 
 One task = one commit, referenced as `EN-031.Tn`.
 
-- [ ] T1 — The font file reader: directory, head, hhea, maxp, hmtx, cmap; tests first with hand-computed values (3 h)
+- [x] T1 — The font file reader: directory, head, hhea, maxp, hmtx, cmap; tests first with hand-computed values (3 h)
 - [ ] T2 — Kerning pairs from `kern` and `GPOS`; underline and strike-out from `post` and `OS/2`, and `fsType` (2 h)
 - [ ] T3 — The default font's metrics as a data file, and the script that writes it (1 h)

@@ -1,8 +1,8 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
-import { rectangleCorners } from "../../tests";
-import { roundedContour } from "../geometry";
+import { rectangleCorners } from "../../../tests";
+import { roundedContour } from "../../geometry";
 
 import { contourPiecesToPathData } from "./contour-pieces-to-path-data";
 
