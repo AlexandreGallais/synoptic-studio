@@ -19,7 +19,12 @@ As a designer, I want to convert a round shape either to its 4 points on the cur
 
 ## Product Owner test
 
-Written with the story.
+| Step | Do                                                                     | You should see                                                               |
+| ---- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| 1    | **Round** 120 × 80, **Points**, **Convert to free shape**              | nothing moves; the shape reads **Free shape**, 4 points                      |
+| 2    | Click point 1                                                          | **Handles** pressed, Mirror angle and length: its handles can be typed (F12) |
+| 3    | **Round** 120 × 80 again, **Points**, **Convert to rounded rectangle** | a capsule: the 4 corners of the box, radius 40                               |
+| 4    | **Round**, width 0, **Points**                                         | a vertical line; both conversion buttons greyed                              |
 
 ## Tasks
 
