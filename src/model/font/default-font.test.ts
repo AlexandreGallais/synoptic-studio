@@ -78,9 +78,11 @@ describe("DEFAULT_FONT (ADR-0052, REF-INTER-RELEASE)", () => {
     ]);
 
     // W o, A V, T o: the pair adjustments of the GPOS kern feature.
-    expect([pairKerning(regular.kerning, 87, 111), pairKerning(regular.kerning, 65, 86)]).toEqual([
-      -104, -140,
-    ]);
+    expect([
+      pairKerning(regular.kerning, 87, 111),
+      pairKerning(regular.kerning, 65, 86),
+      pairKerning(regular.kerning, 84, 111),
+    ]).toEqual([-104, -140, -160]);
   });
 
   it("holds Inter Bold Italic's own advances and kerning", () => {
