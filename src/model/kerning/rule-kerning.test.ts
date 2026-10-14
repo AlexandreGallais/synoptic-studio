@@ -1,12 +1,13 @@
 import { describe, expect, it } from "vitest";
 
+import { glyphPairKey } from "./glyph-pair-key";
 import { ruleKerning } from "./rule-kerning";
 
 import type { ClassKerningRule } from "./class-kerning-rule";
 import type { PairKerningRule } from "./pair-kerning-rule";
 
 /** Glyph 1 then glyph 2: −50. */
-const PAIRS: PairKerningRule = { kind: "pairs", pairs: { 1: { 2: -50 } } };
+const PAIRS: PairKerningRule = { kind: "pairs", pairs: { [glyphPairKey(1, 2)]: -50 } };
 
 /** Glyphs 1 and 2 covered, 1 in first class 1, 2 in class 0; glyph 3 in second class 1. */
 const CLASSES: ClassKerningRule = {

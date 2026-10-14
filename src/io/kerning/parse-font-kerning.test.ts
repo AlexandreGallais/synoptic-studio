@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { X_ADVANCE_ONLY, gposTable, kernTable, pairPosFormat1, viewOf } from "../../../tests";
+import { glyphPairKey } from "../../model";
 
 import { parseFontKerning } from "./parse-font-kerning";
 
@@ -27,12 +28,12 @@ const MARK_GPOS = viewOf(gposTable([], []));
 const KERN = viewOf(kernTable([{ coverage: 1, pairs: [{ left: 1, right: 2, value: -999 }] }]));
 
 /** The lookups of `KERN`. */
-const FROM_KERN = [[{ kind: "pairs", pairs: { 1: { 2: -999 } } }]];
+const FROM_KERN = [[{ kind: "pairs", pairs: { [glyphPairKey(1, 2)]: -999 } }]];
 
 describe("parseFontKerning (REF-CSS-FONTS-4)", () => {
   it("reads the GPOS kern feature, and then not the kern table", () => {
     expect(parseFontKerning(KERNING_GPOS, KERN, GLYPHS)).toEqual([
-      [{ kind: "pairs", pairs: { 1: { 2: -50 } } }],
+      [{ kind: "pairs", pairs: { [glyphPairKey(1, 2)]: -50 } }],
     ]);
   });
 
