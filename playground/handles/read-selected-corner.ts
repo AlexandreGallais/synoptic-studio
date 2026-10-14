@@ -58,5 +58,8 @@ export function readSelectedCorner(
 ): SelectedCorner | undefined {
   const index = readOnlySelected(document);
 
-  return index === undefined ? undefined : readFreeCorner(reading, index);
+  // A round shape's points already have their handles: it is converted first (US-030).
+  return index === undefined || "kind" in reading.model
+    ? undefined
+    : readFreeCorner(reading, index);
 }

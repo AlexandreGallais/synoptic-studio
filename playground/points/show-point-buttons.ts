@@ -1,4 +1,4 @@
-import { edgeOfSelection } from "../../src";
+import { edgeOfSelection, isFreeShape } from "../../src";
 import { selectElement } from "../page";
 
 import { showDeleteButton } from "./show-delete-button";
@@ -39,6 +39,6 @@ export function showPointButtons(
 
   selectElement(document, "add-midpoint").toggleAttribute(
     "disabled",
-    isPolygon || edge === undefined,
+    !isFreeShape(model) || edge === undefined,
   );
 }

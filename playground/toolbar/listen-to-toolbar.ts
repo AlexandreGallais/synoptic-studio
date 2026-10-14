@@ -7,6 +7,7 @@ import { writeWholeShapeFields } from "./write-whole-shape-fields";
 const TOOLS = [
   ["tool-rectangle", "rectangle"],
   ["tool-polygon", "polygon"],
+  ["tool-round", "round"],
 ] as const;
 
 /**
@@ -15,7 +16,7 @@ const TOOLS = [
  *
  * @kind procedure
  * @param document - page document
- * @param kind - `rectangle` or `polygon`
+ * @param kind - `rectangle`, `polygon` or `round`
  * @see docs/backlog/stories/E01-RET-001-retrospective-e01.md
  */
 function writeShapeChoice(document: Document, kind: string): void {
