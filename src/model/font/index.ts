@@ -5,6 +5,8 @@ export * from "./default-font";
 export type * from "./font-face";
 export type * from "./font-family";
 export type * from "./font-metrics";
+export * from "./font-units-at-size";
 export * from "./glyph-advance";
+export * from "./matching-face";
 export * from "./measured-blocks";
 export type * from "./unicode-block";
