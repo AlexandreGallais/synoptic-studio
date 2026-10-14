@@ -1,5 +1,3 @@
-import type { FontTableRecord } from "./font-table-record";
-
 /** Offset of `ascender` in the `hhea` table. */
 const ASCENDER_OFFSET = 4;
 
@@ -29,16 +27,15 @@ export type HorizontalHeader = {
  * number of advance records.
  *
  * @kind format
- * @param view - the font file
- * @param hhea - where its `hhea` table sits
+ * @param hhea - the font's `hhea` table, at least 36 bytes long
  * @returns the header's fields
  * @see REF-OT-HHEA
  */
-export function parseHorizontalHeader(view: DataView, hhea: FontTableRecord): HorizontalHeader {
+export function parseHorizontalHeader(hhea: DataView): HorizontalHeader {
   return {
-    ascender: view.getInt16(hhea.offset + ASCENDER_OFFSET),
-    descender: view.getInt16(hhea.offset + DESCENDER_OFFSET),
-    lineGap: view.getInt16(hhea.offset + LINE_GAP_OFFSET),
-    numberOfHMetrics: view.getUint16(hhea.offset + NUMBER_OF_H_METRICS_OFFSET),
+    ascender: hhea.getInt16(ASCENDER_OFFSET),
+    descender: hhea.getInt16(DESCENDER_OFFSET),
+    lineGap: hhea.getInt16(LINE_GAP_OFFSET),
+    numberOfHMetrics: hhea.getUint16(NUMBER_OF_H_METRICS_OFFSET),
   };
 }

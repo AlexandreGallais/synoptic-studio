@@ -154,6 +154,37 @@ describe("parseFontMetrics (REF-OT-OTFF)", () => {
     },
   );
 
+  it("gives undefined, never an error, when a kerning table passes its end", () => {
+    // A GPOS of one kern lookup, cut by one byte: its subtable's coverage passes the table's end.
+    const gpos = gposTable(
+      [{ lookups: [0], tag: "kern" }],
+      [
+        {
+          subtables: [pairPosFormat1([X_ADVANCE_ONLY, 0], [{ first: 1, pairs: [[2, -50]] }])],
+          type: 2,
+        },
+      ],
+    );
+    const file = fontFile(OPEN_TYPE_VERSION, { ...testFontTables(), GPOS: gpos.slice(0, -1) });
+
+    expect(parseFontMetrics(file, CHARACTERS)).toBeUndefined();
+  });
+
+  it("reads a damaged file without an error, whatever byte is changed", () => {
+    const file = fontFile(OPEN_TYPE_VERSION, { ...testFontTables(), GPOS, kern: KERN });
+
+    // Each byte set in turn to 0x00, 0x80 and 0xFF: the reader gives metrics or undefined.
+    for (const [index] of file.entries()) {
+      for (const value of [0x00, 0x80, 0xff]) {
+        const damaged = Uint8Array.from(file);
+
+        damaged[index] = value;
+
+        expect(() => parseFontMetrics(damaged, CHARACTERS)).not.toThrow();
+      }
+    }
+  });
+
   it("reads a file lying inside a larger buffer", () => {
     const file = fontFile(TRUE_TYPE_VERSION, testFontTables());
     const buffer = new Uint8Array(file.length + 8);

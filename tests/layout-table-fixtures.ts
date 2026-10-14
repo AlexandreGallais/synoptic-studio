@@ -134,30 +134,35 @@ export type ClassPairFields = {
   readonly secondClasses: readonly GlyphRange[];
   /** Kerning by first class, then second class, class 0 included. */
   readonly values: readonly (readonly number[])[];
+  /** The second glyph's `xAdvance` in every record, written with `valueFormat2` X_ADVANCE; none when absent. */
+  readonly secondAdvance?: number;
 };
 
 /**
- * A PairPos subtable of format 2, `valueFormat1` X_ADVANCE and `valueFormat2` 0: its header, the
- * Class1 records, then the Coverage list and the two ClassDef tables (`REF-OT-GPOS`).
+ * A PairPos subtable of format 2, `valueFormat1` X_ADVANCE and `valueFormat2` X_ADVANCE when a
+ * second advance is given, else 0: its header, the Class1 records, then the Coverage list and the
+ * two ClassDef tables (`REF-OT-GPOS`).
  *
  * @param fields - its coverage, classes and values
  * @returns its bytes
  */
 export function pairPosFormat2(fields: ClassPairFields): number[] {
-  const records = fields.values.flatMap((row) => row.flatMap((value) => int16(value)));
+  const second = fields.secondAdvance === undefined ? [] : int16(fields.secondAdvance);
+  const records = fields.values.flatMap((row) =>
+    row.flatMap((value) => [...int16(value), ...second]),
+  );
   const covered = coverageList(fields.covered);
   const firstClasses = rangeTable(fields.firstClasses);
   const coverage = LAYOUT.pairPos2HeaderSize + records.length;
   const first = coverage + covered.length;
-  const second = first + firstClasses.length;
 
   return [
     ...uint16(PAIR_ADJUSTMENT),
     ...uint16(coverage),
     ...uint16(X_ADVANCE_ONLY),
-    ...uint16(0),
+    ...uint16(fields.secondAdvance === undefined ? 0 : X_ADVANCE_ONLY),
     ...uint16(first),
-    ...uint16(second),
+    ...uint16(first + firstClasses.length),
     ...uint16(fields.values.length),
     ...uint16(fields.values[0]?.length ?? 0),
     ...records,
@@ -173,11 +178,15 @@ export type GposLookup = {
   readonly type: number;
   /** The bytes of its subtables, of type 2 even in an extension lookup. */
   readonly subtables: readonly (readonly number[])[];
+  /** In an extension lookup, the type its extensions name; 2 when absent. */
+  readonly extensionType?: number;
+  /** In an extension lookup, the bytes between each extension and its subtable; none when absent. */
+  readonly extensionPadding?: number;
 };
 
 /**
  * A Lookup table; in an extension lookup each subtable is wrapped in an extension subtable of 8
- * bytes pointing right after itself (`REF-OT-LAYOUT-COMMON`, `REF-OT-GPOS`).
+ * bytes, then the padding, then the subtable it points to (`REF-OT-LAYOUT-COMMON`, `REF-OT-GPOS`).
  *
  * @param lookup - its type and subtables
  * @returns its bytes
@@ -185,7 +194,13 @@ export type GposLookup = {
 function lookupTable(lookup: GposLookup): number[] {
   const subtables = lookup.subtables.map((subtable) =>
     lookup.type === EXTENSION
-      ? [...uint16(1), ...uint16(PAIR_ADJUSTMENT), ...uint32(LAYOUT.extensionSize), ...subtable]
+      ? [
+          ...uint16(1),
+          ...uint16(lookup.extensionType ?? PAIR_ADJUSTMENT),
+          ...uint32(LAYOUT.extensionSize + (lookup.extensionPadding ?? 0)),
+          ...Array.from({ length: lookup.extensionPadding ?? 0 }, () => 0),
+          ...subtable,
+        ]
       : [...subtable],
   );
   const headerSize = LAYOUT.lookupHeaderSize + 2 * subtables.length;

@@ -1,3 +1,5 @@
+import { isSpanWithin } from "../../math";
+
 import { parseClassDefinition } from "./parse-class-definition";
 import { parseCoverage } from "./parse-coverage";
 import { parseXAdvance } from "./parse-x-advance";
@@ -23,50 +25,109 @@ const FIELDS = {
  * `xAdvance` is the kerning.
  *
  * @kind format
- * @param view - the font file
- * @param subtable - where the subtable starts in the file
- * @returns the kerning by first class, then second class
+ * @param gpos - the `GPOS` table
+ * @param subtable - where the subtable starts in it, its header within the table
+ * @returns the kerning by first class, then second class; undefined when the records pass the
+ * table's end
  * @see REF-OT-GPOS
  */
-function parseClassValues(view: DataView, subtable: number): readonly KerningRow[] {
-  const firstFormat = view.getUint16(subtable + FIELDS.valueFormat1);
+function parseClassValues(gpos: DataView, subtable: number): readonly KerningRow[] | undefined {
+  const firstFormat = gpos.getUint16(subtable + FIELDS.valueFormat1);
   const recordSize =
     valueFormatToSize(firstFormat) +
-    valueFormatToSize(view.getUint16(subtable + FIELDS.valueFormat2));
-  const secondCount = view.getUint16(subtable + FIELDS.class2Count);
+    valueFormatToSize(gpos.getUint16(subtable + FIELDS.valueFormat2));
+  const firstCount = gpos.getUint16(subtable + FIELDS.class1Count);
+  const secondCount = gpos.getUint16(subtable + FIELDS.class2Count);
   const records = subtable + FIELDS.class1Records;
 
-  return Array.from({ length: view.getUint16(subtable + FIELDS.class1Count) }, (unused, first) =>
-    Array.from({ length: secondCount }, (unusedRecord, second) =>
-      parseXAdvance(view, records + recordSize * (secondCount * first + second), firstFormat),
-    ),
-  );
+  return isSpanWithin(records, recordSize * firstCount * secondCount, gpos.byteLength)
+    ? Array.from({ length: firstCount }, (unused, first) =>
+        Array.from({ length: secondCount }, (unusedRecord, second) =>
+          parseXAdvance(gpos, records + recordSize * (secondCount * first + second), firstFormat),
+        ),
+      )
+    : undefined;
 }
 
 /**
- * Reads a pair adjustment subtable of format 2: the classes of the first glyphs it covers, those
- * of the second glyphs, and the kerning of each pair of classes.
+ * Reads the class of each first glyph asked that the subtable covers, class 0 when the first
+ * class definition leaves it out.
  *
  * @kind format
- * @param view - the font file
- * @param subtable - where the subtable starts in the file
- * @returns the rule by classes
+ * @param gpos - the `GPOS` table
+ * @param subtable - where the subtable starts in it, its header within the table
+ * @param glyphs - the glyphs asked
+ * @returns the class of each covered first glyph, by glyph; undefined when the coverage or the
+ * class definition passes the table's end
  * @see REF-OT-GPOS
  */
-export function parsePairClassesRule(view: DataView, subtable: number): ClassKerningRule {
-  const firstClasses = parseClassDefinition(
-    view,
-    subtable + view.getUint16(subtable + FIELDS.classDef1),
+function parseFirstClasses(
+  gpos: DataView,
+  subtable: number,
+  glyphs: ReadonlySet<number>,
+): Readonly<Record<number, number>> | undefined {
+  const covered = parseCoverage(
+    gpos,
+    subtable + gpos.getUint16(subtable + FIELDS.coverage),
+    glyphs,
   );
-  const covered = parseCoverage(view, subtable + view.getUint16(subtable + FIELDS.coverage));
+  const classes = parseClassDefinition(
+    gpos,
+    subtable + gpos.getUint16(subtable + FIELDS.classDef1),
+    glyphs,
+  );
 
-  return {
-    firstClasses: Object.fromEntries(covered.map((glyph) => [glyph, firstClasses[glyph] ?? 0])),
-    kind: "classes",
-    secondClasses: parseClassDefinition(
-      view,
-      subtable + view.getUint16(subtable + FIELDS.classDef2),
-    ),
-    values: parseClassValues(view, subtable),
-  };
+  return covered === undefined || classes === undefined
+    ? undefined
+    : Object.fromEntries(Object.keys(covered).map((glyph) => [glyph, classes[Number(glyph)] ?? 0]));
+}
+
+/**
+ * Reads the parts of a PairPos format 2 subtable for some glyphs: the classes of the first glyphs
+ * it covers, those of the second glyphs, and the values.
+ *
+ * @kind format
+ * @param gpos - the `GPOS` table
+ * @param subtable - where the subtable starts in it, its header within the table
+ * @param glyphs - the glyphs asked, first and second
+ * @returns the rule by classes; undefined when a part passes the table's end
+ * @see REF-OT-GPOS
+ */
+function parseClassParts(
+  gpos: DataView,
+  subtable: number,
+  glyphs: ReadonlySet<number>,
+): ClassKerningRule | undefined {
+  const firstClasses = parseFirstClasses(gpos, subtable, glyphs);
+  const secondClasses = parseClassDefinition(
+    gpos,
+    subtable + gpos.getUint16(subtable + FIELDS.classDef2),
+    glyphs,
+  );
+  const values = parseClassValues(gpos, subtable);
+
+  return firstClasses === undefined || secondClasses === undefined || values === undefined
+    ? undefined
+    : { firstClasses, kind: "classes", secondClasses, values };
+}
+
+/**
+ * Reads a pair adjustment subtable of format 2 for some glyphs: the classes of the first glyphs it
+ * covers, those of the second glyphs, and the kerning of each pair of classes.
+ *
+ * @kind format
+ * @param gpos - the `GPOS` table
+ * @param subtable - where the subtable starts in it
+ * @param glyphs - the glyphs asked, first and second
+ * @returns the rule by classes; undefined when a part of it passes the table's end
+ * @see REF-OT-GPOS
+ */
+export function parsePairClassesRule(
+  gpos: DataView,
+  subtable: number,
+  glyphs: ReadonlySet<number>,
+): ClassKerningRule | undefined {
+  return isSpanWithin(subtable, FIELDS.class1Records, gpos.byteLength)
+    ? parseClassParts(gpos, subtable, glyphs)
+    : undefined;
 }

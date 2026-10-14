@@ -1,4 +1,3 @@
-import type { FontTables } from "./font-tables";
 import type { FontMetrics } from "../../model";
 
 /** Offset of `underlinePosition` in the `post` table. */
@@ -24,19 +23,16 @@ export type TextDecorations = Pick<
  * the top of each stroke from the baseline, and its thickness.
  *
  * @kind format
- * @param view - the font file
- * @param tables - where its tables sit
+ * @param post - the font's `post` table, at least 12 bytes long
+ * @param os2 - the font's `OS/2` table, at least 30 bytes long
  * @returns the underline's and the strike-out's position and thickness, font units
  * @see REF-OT-POST
  */
-export function parseTextDecorations(
-  view: DataView,
-  tables: Pick<FontTables, "os2" | "post">,
-): TextDecorations {
+export function parseTextDecorations(post: DataView, os2: DataView): TextDecorations {
   return {
-    strikeoutPosition: view.getInt16(tables.os2.offset + STRIKEOUT_POSITION_OFFSET),
-    strikeoutSize: view.getInt16(tables.os2.offset + STRIKEOUT_SIZE_OFFSET),
-    underlinePosition: view.getInt16(tables.post.offset + UNDERLINE_POSITION_OFFSET),
-    underlineThickness: view.getInt16(tables.post.offset + UNDERLINE_THICKNESS_OFFSET),
+    strikeoutPosition: os2.getInt16(STRIKEOUT_POSITION_OFFSET),
+    strikeoutSize: os2.getInt16(STRIKEOUT_SIZE_OFFSET),
+    underlinePosition: post.getInt16(UNDERLINE_POSITION_OFFSET),
+    underlineThickness: post.getInt16(UNDERLINE_THICKNESS_OFFSET),
   };
 }

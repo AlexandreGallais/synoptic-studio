@@ -45,6 +45,38 @@ describe("parseFontTables (REF-OT-OTFF)", () => {
     },
   );
 
+  it.each([
+    { size: 19, tag: "head" },
+    { size: 4, tag: "hhea" },
+    { size: 35, tag: "hhea" },
+    { size: 11, tag: "post" },
+    { size: 29, tag: "OS/2" },
+    { size: 3, tag: "cmap" },
+  ])(
+    "gives undefined when $tag is $size bytes long, too short for what is read",
+    ({ size, tag }) => {
+      const tables = { ...testFontTables() };
+      const cut = { ...tables, [tag]: (tables[tag] ?? []).slice(0, size) };
+
+      const file = fontFile(TRUE_TYPE_VERSION, cut);
+
+      expect(parseFontTables(new DataView(file.buffer))).toBeUndefined();
+    },
+  );
+
+  it("leaves out a kerning table too short for its header", () => {
+    // GPOS needs its 10-byte header, kern its 4-byte one.
+    const file = fontFile(TRUE_TYPE_VERSION, {
+      ...testFontTables(),
+      GPOS: [0, 1, 0, 0, 0, 0, 0, 0, 0],
+      kern: [0, 0, 0],
+    });
+    const tables = parseFontTables(new DataView(file.buffer));
+
+    expect(tables?.gpos).toBeUndefined();
+    expect(tables?.kern).toBeUndefined();
+  });
+
   it("gives undefined for a file shorter than its directory's header", () => {
     const view = new DataView(new ArrayBuffer(11));
 

@@ -1,5 +1,3 @@
-import type { FontTableRecord } from "./font-table-record";
-
 /** Offset of `fsType` in the `OS/2` table. */
 const FS_TYPE_OFFSET = 8;
 
@@ -8,11 +6,10 @@ const FS_TYPE_OFFSET = 8;
  * licence, 4 preview and print, 8 editable.
  *
  * @kind format
- * @param view - the font file
- * @param os2 - where its `OS/2` table sits
+ * @param os2 - the font's `OS/2` table, at least 30 bytes long
  * @returns the `fsType` flags
  * @see REF-OT-OS2
  */
-export function parseEmbeddingPermissions(view: DataView, os2: FontTableRecord): number {
-  return view.getUint16(os2.offset + FS_TYPE_OFFSET);
+export function parseEmbeddingPermissions(os2: DataView): number {
+  return os2.getUint16(FS_TYPE_OFFSET);
 }

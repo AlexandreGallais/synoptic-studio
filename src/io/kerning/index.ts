@@ -1,6 +1,7 @@
 export * from "./parse-class-definition";
 export * from "./parse-coverage";
 export * from "./parse-font-kerning";
+export * from "./parse-glyph-range";
 export * from "./parse-gpos-kerning";
 export * from "./parse-kern-feature-lookups";
 export * from "./parse-kern-table";

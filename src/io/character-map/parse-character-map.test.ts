@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { cmapFormat12, cmapFormat4, cmapTable } from "../../../tests";
+import { cmapFormat12, cmapFormat4, cmapTable, viewOf } from "../../../tests";
 
 import { parseCharacterMap } from "./parse-character-map";
 
@@ -19,16 +19,10 @@ const FORMAT_12 = cmapFormat12([{ end: 65, glyph: 7, start: 65 }]);
  * The glyph of A in a `cmap` table.
  *
  * @param encodings - the table's encodings
- * @returns its glyph index
+ * @returns its glyph index; undefined when the table could not be read
  */
 function glyphOfA(encodings: readonly CmapEncoding[]): number | undefined {
-  const table = Uint8Array.from(cmapTable(encodings));
-
-  return parseCharacterMap(
-    new DataView(table.buffer),
-    { length: table.length, offset: 0 },
-    [65],
-  )[0]?.[1];
+  return parseCharacterMap(viewOf(cmapTable(encodings)), [65])?.[0]?.[1];
 }
 
 describe("parseCharacterMap (REF-OT-CMAP)", () => {
@@ -51,5 +45,12 @@ describe("parseCharacterMap (REF-OT-CMAP)", () => {
     expect(glyphOfA([{ encoding: 1, platform: 3, subtable: [0, 6, 0, 0] }])).toBe(0);
     expect(glyphOfA([{ encoding: 0, platform: 1, subtable: FORMAT_4 }])).toBe(0);
     expect(glyphOfA([{ encoding: 0, platform: 3, subtable: FORMAT_4 }])).toBe(0);
+  });
+
+  it("gives undefined when the subtable read passes the table's end", () => {
+    // Format 12 cut after its header: its one group is missing.
+    expect(glyphOfA([{ encoding: 10, platform: 3, subtable: FORMAT_12.slice(0, 16) }])).toBe(
+      undefined,
+    );
   });
 });
