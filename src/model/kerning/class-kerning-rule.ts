@@ -1,5 +1,4 @@
-/** The kerning of one class with every class, font units. */
-type Row = readonly number[];
+import type { KerningRow } from "./kerning-row";
 
 /** Kerning by classes of glyphs: `GPOS` pair adjustment format 2. */
 export type ClassKerningRule = {
@@ -10,5 +9,5 @@ export type ClassKerningRule = {
   /** Class of each second glyph, by glyph; a glyph left out is in class 0. */
   readonly secondClasses: Readonly<Record<number, number>>;
   /** Kerning of each pair of classes, font units, by first class then second class. */
-  readonly values: readonly Row[];
+  readonly values: readonly KerningRow[];
 };

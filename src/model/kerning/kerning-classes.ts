@@ -1,5 +1,4 @@
-/** The kerning of one character with every other one, font units. */
-type Row = readonly number[];
+import type { KerningRow } from "./kerning-row";
 
 /**
  * Groups the rows of a kerning table into classes: equal rows share a class, numbered from 1 in
@@ -10,7 +9,7 @@ type Row = readonly number[];
  * @returns the class of each row, in order
  * @see REF-OT-GPOS
  */
-export function kerningClasses(rows: readonly Row[]): readonly number[] {
+export function kerningClasses(rows: readonly KerningRow[]): readonly number[] {
   const keys = rows.map((row) => (row.every((value) => value === 0) ? "" : row.join(",")));
   const classes = new Map(
     [...new Set(keys.filter((key) => key !== ""))].map((key, index) => [key, index + 1]),

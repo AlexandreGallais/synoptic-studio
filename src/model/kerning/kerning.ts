@@ -1,5 +1,4 @@
-/** The kerning of one class with every class, font units. */
-type Row = readonly number[];
+import type { KerningRow } from "./kerning-row";
 
 /**
  * The kerning of a font between characters, by classes (ADR-0052): characters that kern alike
@@ -11,5 +10,5 @@ export type Kerning = {
   /** Class of each character as the second of a pair, by code point; a character left out is in class 0. */
   readonly rightClasses: Readonly<Record<number, number>>;
   /** Kerning of each pair of classes, font units, by left class then right class; negative tightens. */
-  readonly values: readonly Row[];
+  readonly values: readonly KerningRow[];
 };

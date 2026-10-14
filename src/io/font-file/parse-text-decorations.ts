@@ -14,7 +14,7 @@ const STRIKEOUT_SIZE_OFFSET = 26;
 const STRIKEOUT_POSITION_OFFSET = 28;
 
 /** What a font says of its underline and strike-out strokes. */
-type TextDecorations = Pick<
+export type TextDecorations = Pick<
   FontMetrics,
   "strikeoutPosition" | "strikeoutSize" | "underlinePosition" | "underlineThickness"
 >;
