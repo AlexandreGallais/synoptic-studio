@@ -4,17 +4,17 @@ Used by: F05 (EN-031, EN-032, ADR-0052), then F14 for wrapping. Sources: `REF-OT
 
 ## Notation
 
-| Symbol       | Definition                                                                                           |
-| ------------ | ---------------------------------------------------------------------------------------------------- |
-| `c₁ … cₙ`    | the characters of one line, after the case transform, `n ≥ 0`                                        |
-| `g(c)`       | the glyph of character `c` in the font's `cmap`; 0 (`.notdef`) when the font has none                |
-| `adv(g)`     | the advance of glyph `g` in `hmtx`, in font units                                                    |
-| `kern(a, b)` | the kerning of the glyph pair `(a, b)`, in font units, 0 when the font lists none; negative tightens |
-| `U`          | `unitsPerEm` of the font, an integer from 16 to 16 384                                               |
-| `s`          | the text's size, an integer from 1 to 100 000, in user units                                         |
-| `L`, `W`     | the letter spacing and the word spacing, in user units                                               |
-| `m`          | the number of word separators in the line: spaces U+0020 and no-break spaces U+00A0                  |
-| `A, D, G`    | the `hhea` ascender, descender (negative below the baseline) and line gap, in font units             |
+| Symbol       | Definition                                                                                                        |
+| ------------ | ----------------------------------------------------------------------------------------------------------------- |
+| `c₁ … cₙ`    | the characters of one line, after the case transform, composed (NFC), without formatting characters (Cf), `n ≥ 0` |
+| `g(c)`       | the glyph of character `c` in the font's `cmap`; 0 (`.notdef`) when the font has none                             |
+| `adv(g)`     | the advance of glyph `g` in `hmtx`, in font units                                                                 |
+| `kern(a, b)` | the kerning of the glyph pair `(a, b)`, in font units, 0 when the font lists none; negative tightens              |
+| `U`          | `unitsPerEm` of the font, an integer from 16 to 16 384                                                            |
+| `s`          | the text's size, an integer from 1 to 100 000, in user units                                                      |
+| `L`, `W`     | the letter spacing and the word spacing, in user units                                                            |
+| `m`          | the number of word separators in the line: spaces U+0020 and no-break spaces U+00A0                               |
+| `A, D, G`    | the `hhea` ascender, descender (negative below the baseline) and line gap, in font units                          |
 
 ## Step 1 — One glyph's advance in user units
 
@@ -32,13 +32,13 @@ Kerning is read only between characters of one line: the line's last character h
 
 ## Step 3 — Letter spacing and word spacing
 
-Letter spacing is "additional spacing between adjacent typographic character units", "in addition to kerning and word-spacing", and "not applied at the beginning or end of a line" (`REF-CSS-TEXT-3`): it is added once between each pair of adjacent characters, `n − 1` times. Word spacing is "applied to each word separator", the space and the no-break space among them (`REF-CSS-TEXT-3`): it is added `m` times.
+Letter spacing is "additional spacing between adjacent typographic character units", "in addition to kerning and word-spacing", and "not applied at the beginning or end of a line" (`REF-CSS-TEXT-3`). A typographic character unit is approximated by the extended grapheme cluster, so that "combining marks are kept with the preceding grapheme cluster" (`REF-CSS-TEXT-3`, §1.4); for the scripts measured (ADR-0052), a character with the nonspacing marks (category Mn) after it. Letter spacing "ignores invisible zero-width formatting characters (such as those from the Unicode Cf category)", added "as if those characters did not exist" (`REF-CSS-TEXT-3`); the library also leaves them out of the sums of step 2. The line is first composed into Normalization Form C (`REF-ECMA-262-NORMALIZE`), so that a letter and its mark typed apart are measured as the font's composed letter. For `u` units, letter spacing is added `u − 1` times. Word spacing is "applied to each word separator", the space and the no-break space among them (`REF-CSS-TEXT-3`): it is added `m` times.
 
 ```text
-w = w₀ + max(n − 1, 0) × L + m × W
+w = w₀ + max(u − 1, 0) × L + m × W
 ```
 
-An empty line (`n = 0`) has width 0. The order of the sums does not change the value beyond rounding: the library sums integers of font units first, then multiplies once by `s / U`.
+An empty line (`n = 0`) has width 0. A change of the letter-spacing model has landed in the CSS editors' draft: spacing "applied to each typographic character unit except those with zero advance", divided equally between its two sides, browsers yet to check its compatibility (`REF-CSSWG-10193`, 2026-08-12); this step keeps `u − 1` spacings until browsers are measured (US-031). The order of the sums does not change the value beyond rounding: the library sums integers of font units first, then multiplies once by `s / U`.
 
 ## Step 4 — The line height and the block
 

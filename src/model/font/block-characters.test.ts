@@ -13,11 +13,12 @@ describe("blockCharacters (REF-UNICODE-BLOCKS)", () => {
     ).toEqual([0x41, 0x42, 0x43, 0x61]);
   });
 
-  it("lists 1968 code points for the measured blocks", () => {
-    // Latin 128 + 128 + 128 + 208 (Extended-B) + 256 (Extended Additional), Greek 144, Cyrillic
-    // 256, Hebrew 112, punctuation 112, currency 48, letterlike 80, arrows 112, mathematical
-    // operators 256 = 1968, each block's size last − first + 1 read from Blocks.txt.
-    expect(blockCharacters(MEASURED_BLOCKS)).toHaveLength(1968);
+  it("lists 2080 code points for the measured blocks", () => {
+    // Latin 128 + 128 + 128 + 208 (Extended-B) + 256 (Extended Additional), combining diacritical
+    // marks 112, Greek 144, Cyrillic 256, Hebrew 112, punctuation 112, currency 48, letterlike 80,
+    // arrows 112, mathematical operators 256 = 2080, each block's size last − first + 1 read from
+    // Blocks.txt.
+    expect(blockCharacters(MEASURED_BLOCKS)).toHaveLength(2080);
   });
 
   it("holds the symbols industrial labels use: € − → ≤ ™ ș ț", () => {
