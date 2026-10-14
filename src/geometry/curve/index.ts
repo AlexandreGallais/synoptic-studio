@@ -1,3 +1,4 @@
+export * from "./arc-handle-length";
 export * from "./cubic-side";
 export * from "./cubic-start-direction";
 export * from "./cubic-velocity";

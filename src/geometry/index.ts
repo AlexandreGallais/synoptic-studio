@@ -8,3 +8,4 @@ export * from "./handles";
 export * from "./layout-box";
 export * from "./placement";
 export * from "./regular-polygon";
+export * from "./round-shape";
