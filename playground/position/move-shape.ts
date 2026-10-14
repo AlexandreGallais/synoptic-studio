@@ -1,3 +1,5 @@
+import { add } from "../../src";
+
 import { readShapePosition } from "./read-shape-position";
 import { writeShapePosition } from "./write-shape-position";
 
@@ -15,5 +17,5 @@ import type { Vector } from "../../src";
 export function moveShape(document: Document, delta: Vector): void {
   const position = readShapePosition(document);
 
-  writeShapePosition(document, { x: position.x + delta.x, y: position.y + delta.y });
+  writeShapePosition(document, add(position, delta));
 }

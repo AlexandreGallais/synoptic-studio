@@ -1,4 +1,4 @@
-import { roundShapeAsRoundedRectangle } from "../../src";
+import { hasArea, roundShapeAsRoundedRectangle } from "../../src";
 
 import { readShape } from "./read-shape";
 import { writeStoredFreeShape } from "./write-stored-free-shape";
@@ -31,7 +31,7 @@ function readValidRoundShape(document: Document): RoundShape | undefined {
 export function writeRoundedRectangle(document: Document): void {
   const shape = readValidRoundShape(document);
 
-  if (shape !== undefined && shape.width * shape.height > 0) {
+  if (shape !== undefined && hasArea(shape)) {
     writeStoredFreeShape(document, roundShapeAsRoundedRectangle(shape));
   }
 }

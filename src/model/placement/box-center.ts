@@ -1,3 +1,6 @@
+import { halfSize } from "../../geometry";
+import { add } from "../../math";
+
 import type { TurnedBox } from "./turned-corners";
 import type { Point } from "../../math";
 
@@ -10,5 +13,5 @@ import type { Point } from "../../math";
  * @see DERIV-turned-shape
  */
 export function boxCenter(box: Omit<TurnedBox, "angle">): Point {
-  return { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+  return add({ x: box.x, y: box.y }, halfSize(box));
 }

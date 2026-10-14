@@ -20,4 +20,4 @@ The same pass on `src/model`, `src/io`, `src/render` and the playground: an inli
 
 One task = one commit, referenced as `EN-029.Tn`.
 
-- [ ] T1 — The calls in the model, io, render and playground (2 h)
+- [x] T1 — The calls in the model, io, render and playground (2 h)

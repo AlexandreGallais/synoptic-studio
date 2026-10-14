@@ -1,4 +1,4 @@
-import { isFreeShape, regularPolygonAsFreeShape, roundShapeAsFreeShape } from "../../src";
+import { hasArea, isFreeShape, regularPolygonAsFreeShape, roundShapeAsFreeShape } from "../../src";
 
 import { readShape } from "./read-shape";
 import { writeStoredFreeShape } from "./write-stored-free-shape";
@@ -44,7 +44,7 @@ function readFreeShapeOf(shape: RegularPolygon | RoundShape): FreeShape {
 export function writeConvertedShape(document: Document): void {
   const shape = readConvertibleShape(document);
 
-  if (shape !== undefined && shape.width * shape.height > 0) {
+  if (shape !== undefined && hasArea(shape)) {
     writeStoredFreeShape(document, readFreeShapeOf(shape));
   }
 }

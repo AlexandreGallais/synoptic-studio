@@ -1,4 +1,5 @@
 import { fitInBox, stretchedPolygon, unitRegularPolygon } from "../../geometry";
+import { add } from "../../math";
 
 import type { RegularPolygon } from "./regular-polygon";
 import type { Point } from "../../math";
@@ -21,8 +22,5 @@ export function regularPolygonContour(polygon: RegularPolygon): readonly Point[]
     : fitInBox(unitRegularPolygon(polygon.corners), polygon, polygon.anchor);
 
   // Adding a position of 0 is exact: the drawing of F02 and F07 is unchanged.
-  return placed.map((point) => ({
-    x: point.x + polygon.x,
-    y: point.y + polygon.y,
-  }));
+  return placed.map((point) => add(point, { x: polygon.x, y: polygon.y }));
 }

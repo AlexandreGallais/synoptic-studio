@@ -1,4 +1,5 @@
 import { add, hadamardProduct, opposite, scale, withoutNegativeZero } from "../../math";
+import { halfSize } from "../layout-box";
 
 import { ELLIPSE_QUARTERS } from "./ellipse-quarters";
 import { QUARTER_CIRCLE_HANDLE } from "./quarter-circle-handle";
@@ -17,7 +18,7 @@ import type { Size } from "../layout-box";
  * @see DERIV-round-shape-curve
  */
 export function ellipseCorners(size: Size): readonly CurveCorner[] {
-  const half = { x: size.width / 2, y: size.height / 2 };
+  const half = halfSize(size);
 
   return ELLIPSE_QUARTERS.map(({ point, tangent }) => {
     const after = scale(hadamardProduct(tangent, half), QUARTER_CIRCLE_HANDLE);
