@@ -48,7 +48,7 @@ Existing names used where the code wrote them out: `subtract`, `add`, `scale`, `
 
 A second math-expert read the whole code after pass 1. Named: `regularPartition` (`REF-OPENSTAX-REGULAR-PARTITION`, the evenly spaced samples of the fillets), `isZeroVector` (`REF-OPENSTAX-CALC3-VECTORS`), `isReducedRadius` (ADR-0007, written twice in the playground), `midpoint` written with `average`; the fillet's start point as a difference; a local `hasArea` renamed where it meant something else. Duplicates merged: `NO_HANDLES` and one `NO_CURVE_CORNER` in `geometry/handles` for the three empty corners; `isRegularPolygon` and `isRoundShape` beside `isFreeShape`, instead of `in` tests; the playground's `isDisabled` as the shared action `readDisabledState`. `withoutNegativeZero` moved to `math/precision`.
 
-Left inline, with the reason: `stretchedInBox` beside `stretchFactors` (they round differently); a fold for `cubicPoint` (a sum from 0 turns −0 into +0); the angle of `unitRegularPolygon` (reordering it changes the result); one-step parameter changes in `curveContour` and `cubicBetween`; `add(P, scale(u, d))`, already two named steps; the playground's handle squares and 1-based numbers.
+Left inline, with the reason: `stretchedInBox` beside `stretchFactors` (they round differently); a fold for `cubicPoint` (a sum from 0 turns −0 into +0); the angle of `unitRegularPolygon` (reordering it changes the result); one-step parameter changes in `curveContour` and `cubicBetween`; `add(P, scale(u, d))`, already two named steps; and the table of radii of `fittedFilletRadius` differs only for an infinite radius, which an integer radius never is; the playground's handle squares and 1-based numbers.
 
 ## Open
 

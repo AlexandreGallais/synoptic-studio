@@ -12,8 +12,13 @@ import { freeShapeWithoutPoints } from "./free-shape-without-points";
 
 import type { FreeShape } from "./free-shape";
 
-/** Handles off, as a new corner's (`NO_HANDLES`). */
-const OFF = curveCornerOf({ point: { x: 0, y: 0 }, radius: 0 }).handles;
+/** Handles off, as a new corner's (`NO_HANDLES`), written out. */
+const OFF = {
+  after: { x: 0, y: 0 },
+  before: { x: 0, y: 0 },
+  isOn: false,
+  mode: "angle-and-length",
+} as const;
 
 /**
  * The rectangle 200 × 100, its point 1's handle after (0.1, 0.2) in the unit square, on: (20, 20) as drawn.

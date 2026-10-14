@@ -10,6 +10,7 @@ describe("isZeroVector (REF-OPENSTAX-CALC3-VECTORS)", () => {
   it.each([
     { isZero: true, v: { x: 0, y: -0 } },
     { isZero: false, v: { x: 5e-324, y: 0 } },
+    { isZero: false, v: { x: 0, y: 5e-324 } },
     { isZero: false, v: { x: NaN, y: 0 } },
   ])("is $isZero for ($v.x, $v.y)", ({ isZero, v }) => {
     expect(isZeroVector(v)).toBe(isZero);
