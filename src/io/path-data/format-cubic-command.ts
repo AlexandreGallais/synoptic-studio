@@ -1,6 +1,6 @@
 import { formatCoordinatePair } from "./format-coordinate-pair";
 
-import type { Cubic } from "../geometry";
+import type { Cubic } from "../../geometry";
 
 /**
  * Path command of a cubic side: `C`, its two control points and its end, each pair at fixed

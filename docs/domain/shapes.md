@@ -187,6 +187,11 @@ Decided by the Product Owner at F05's refinement, rounds 1 and 2 (2026-10-14); d
 
 - **Drawing**: a native `<text>`, the exception to "everything is a path" (ADR-0002), with one positioned `<tspan>` per line, so that every SVG reader shows the same lines. The library measures the text and breaks its lines itself. Text converted to paths is not wanted. An HTML layer for browsers comes on top later (F15).
 - **Measuring**: from the font's metrics, read once from the font file and kept; measuring a text is then a sum of stored numbers (`DERIV-text-width`). In a running view a text may change a hundred times a second on a thousand texts: moving, turning, showing, hiding and recoloring stay cheap transforms.
+- **Font metrics** (EN-031): the library reads a TrueType or OpenType file (`REF-OT-OTFF`) into plain numbers, in font units:
+  - the units per em (`head`), and the ascender, descender and line gap of `hhea`;
+  - the advance of each character asked that the font maps to a glyph, read from its Unicode `cmap` subtable of format 12, else 4 (`REF-OT-CMAP`), and from `hmtx`, where a glyph past the last record takes the last record's advance (`REF-OT-HMTX`);
+  - the advance of glyph 0, `.notdef`, which a character the font does not map takes;
+  - a file that is not a TrueType or OpenType font (a collection `.ttc` among them), or lacks `cmap`, `head`, `hhea` or `hmtx`, gives no metrics.
 - **Characters**: a text holds:
   - its content, with the line breaks the designer typed;
   - a font named with a fallback (`Inter`, else `sans-serif`), any font allowed; the default font is Inter, whose metrics ship with the library;

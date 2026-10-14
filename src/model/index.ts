@@ -1,4 +1,5 @@
 export * from "./corner-radius";
+export * from "./font";
 export * from "./free-shape";
 export * from "./handles";
 export * from "./layout-box";
