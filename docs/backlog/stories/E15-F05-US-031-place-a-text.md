@@ -25,3 +25,8 @@ One task = one commit, referenced as `US-031.Tn`.
 - [ ] T1 — The Text tool and its fields in the playground (3 h)
 - [ ] T2 — The drawing of the text: positioned lines and their attributes (2 h)
 - [ ] T3 — The Product Owner test card (30 min)
+
+## Notes from EN-032's review (2026-10-15)
+
+- **Spaces kept.** The library measures every space of a line, runs of spaces and spaces at its ends included; the SVG writer must keep them all, with `xml:space="preserve"` or a `white-space` that preserves them, or a reader collapses them and draws a narrower line than the measured block.
+- **Letter spacing after the last character.** `DERIV-text-width` adds letter spacing between units only, `u − 1` times, as CSS Text 3 says; the CSS editors' draft now spreads it on both sides of each unit (`REF-CSSWG-10193`) and browsers differ. Measure in Chrome, Firefox and Safari whether a line with letter spacing ends with a trailing space, and record the result before the text's block is trusted for alignment.
