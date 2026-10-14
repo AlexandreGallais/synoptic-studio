@@ -60,7 +60,8 @@
     "golden:check": "vitest run tests/golden-results.test.ts --mode golden-check",
     "backlog:status": "node scripts/backlog-status.ts",
     "story:finish": "node scripts/story-finish.ts",
-    "activity": "node --harmony-temporal scripts/activity.ts"
+    "activity": "node --harmony-temporal scripts/activity.ts",
+    "epic:check": "node --harmony-temporal scripts/epic-check.ts"
   },
   "devDependencies": {
     "@commitlint/cli": "21.2.3",
