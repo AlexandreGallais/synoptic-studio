@@ -2,7 +2,7 @@
 id: REV-002
 epic: E14
 title: Review E14 with the Product Owner
-status: draft
+status: done
 points: 3
 ---
 
@@ -20,6 +20,10 @@ Show everything E14 delivered, in plain language, and test it together (ADR-0023
 
 One task = one commit, referenced as `REV-002.Tn`.
 
-- [ ] T1 — Re-run the guided tests of every feature of E14 on `develop` (1 h)
-- [ ] T2 — Write the epic report and its user test (3 h)
-- [ ] T3 — Session with the Product Owner; record feedback and backlog changes (1 h)
+- [x] T1 — Re-run the guided tests of every feature of E14 on `develop` (1 h)
+- [x] T2 — Write the epic report and its user test (3 h)
+- [x] T3 — Session with the Product Owner; record feedback and backlog changes (1 h)
+
+## Result (2026-10-14)
+
+Held right after the validation of F10 and F13, as a free walk-through of the playground on `develop` rather than a list of guided steps: every step worked as intended. Report, remarks and closure: [E14 report](../../guide/e14-draw-curves.md). The guided tests of E01, F12 and F10 pass on `develop` (`check:all`).

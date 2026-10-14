@@ -31,5 +31,6 @@ Written at the end of each feature (`VAL`, demo page) and of each epic (`REV`, e
 | [F10 — Round shape](./f10-round-shape.md)                                            | the Round tool, its two conversions, the guided test, what the agent decided           |
 | [F13 — Every calculation named](./f13-every-calculation-named.md)                    | the calculations of the code named after their mathematics, every drawing unchanged    |
 | [E01 — Drawing symbol shapes from numbers](./e01-draw-shapes.md)                     | the eight features of E01, the words, a user test crossing them, the decisions         |
+| [E14 — Drawing curves with handles, ellipses and round shapes](./e14-draw-curves.md) | the four features of E14, the words, the walk-through of the review, the decisions     |
 
 Templates: `_feature-demo.md`, `_epic-report.md` (not published).

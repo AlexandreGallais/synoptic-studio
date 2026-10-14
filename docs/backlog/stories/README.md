@@ -110,5 +110,5 @@
 | [VAL-012](./E14-F10-VAL-012-validate-f10.md)                    | F10     | Validate F10                                                          | done   |
 | [VAL-011](./E14-F12-VAL-011-validate-f12.md)                    | F12     | Validate F12                                                          | done   |
 | [VAL-010](./E14-F11-VAL-010-validate-f11.md)                    | F11     | Validate F11                                                          | done   |
-| [REV-002](./E14-REV-002-review-e14.md)                          | E14     | Review E14 with the Product Owner                                     | draft  |
+| [REV-002](./E14-REV-002-review-e14.md)                          | E14     | Review E14 with the Product Owner                                     | done   |
 | [RET-002](./E14-RET-002-retrospective-e14.md)                   | E14     | Retrospective of E14                                                  | draft  |

@@ -2,6 +2,11 @@
 
 What each working session dealt with, in the agent's words: the Product Owner's requests in neutral words, decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`).
 
+## 2026-10-14 — REV-002, the review of E14
+
+- `#rev` A free walk-through of the playground: round shape, conversion, handles in every mode, a loop, deleting a point, turning; everything as intended. Report `docs/guide/e14-draw-curves.md`. One idea for the end of V1: every shape's point 1 at its lowest right point (note in E12).
+- `#ret` For RET-002, the Product Owner raised: the status line still shows a background task after the end of the turn; it should say whether the agent works, waits only for agents (the chat is free), or both; richer data per command for the analysis; what agents do is hard to follow; a full check of what the epic produced, at each retrospective.
+
 ## 2026-10-14 — F10 and F13 validated
 
 - `#val` VAL-012 and VAL-013: the Product Owner tried the round shape, its points and handles, and the shapes made from it, and accepted F10 and F13. One change: **Convert to rounded rectangle** removed (an ellipse becomes a capsule, so it keeps the drawing only for a circle); F10.AC5 reworded, the function and its helper removed, the guided test down to six steps. The agent's other F10 decisions accepted as built.

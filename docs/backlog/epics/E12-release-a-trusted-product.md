@@ -22,6 +22,10 @@ status: draft
 | Out of scope                | hosting a service; features not specified in the other epics                                                                                                  |
 | Closure criteria            | the Product Owner and one person new to the project understand and use the release from the summary documents                                                 |
 
+## Notes for later
+
+- **Point 1 alike in every shape** (Product Owner, 2026-10-14, at REV-002): a regular polygon's point 1 is the right end of its base (Q18); the rectangle's is its top-left corner (Q11), the round shape's its top point. Starting every shape at its lowest right point would make them alike; for the round shape, its bottom or its right point, left to the agent. Not urgent, near the end of V1. Cheaper before E11 fixes the file format: afterwards, stored shapes need their points renumbered.
+
 ## Features
 
 To be refined with the Product Owner (draft proposed by Claude Code on 2026-10-08).
