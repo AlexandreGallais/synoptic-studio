@@ -1,7 +1,7 @@
 ---
 id: E15
 title: Place text in symbols
-status: draft
+status: in-progress
 ---
 
 # E15 — Place text in symbols
@@ -32,6 +32,6 @@ Decided by the Product Owner on 2026-10-12: text is too large a subject for one 
 
 ## Features
 
-| Feature                                   | Status |
-| ----------------------------------------- | ------ |
-| [F05](../features/E15-F05-text.md) — Text | draft  |
+| Feature                                   | Status      |
+| ----------------------------------------- | ----------- |
+| [F05](../features/E15-F05-text.md) — Text | in-progress |

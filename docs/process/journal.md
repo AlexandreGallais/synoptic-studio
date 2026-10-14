@@ -2,6 +2,12 @@
 
 What each working session dealt with, in the agent's words: the Product Owner's requests in neutral words, decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`).
 
+## 2026-10-14 — Run of F05 started; E14 released
+
+- `#run` The Product Owner started a run: the next feature in order is F05 (text, E15), so the run begins with its refinement, in two rounds (first questions with a long free comment, then every remaining question at once). Its runs keep the main thread free (ADR-0051, trial).
+- `#process` New routine: `npm run epic:check` at the start and at the end of each epic, GitHub's code scanning alerts included; at each retrospective, the list of tools worth writing and the metrics of those written; at each epic's end, a pull request `develop` → `main` the Product Owner validates.
+- `#security` The two open CodeQL alerts (incomplete sanitization in `scripts/library-html.ts`) concern the code on `main`, already rewritten on `develop`: the release of E14 closes them.
+
 ## 2026-10-14 — E14 closed
 
 - `#ret` The Product Owner answered the retrospective's questions. The main thread stays free during E15's runs: each story goes to a worker subagent, as a measured trial (ADR-0051). Point 1 alike in every shape is decided as recommended and built in E10: the rectangle starts at its bottom-right corner, the round shape at its right point. Every questionnaire now ends with room for remarks.
