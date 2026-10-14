@@ -5,3 +5,4 @@ One record per epic retrospective (`RET` story, ADR-0023), named `E01-retrospect
 | Epic | Record                                         |
 | ---- | ---------------------------------------------- |
 | E01  | [E01-retrospective.md](./E01-retrospective.md) |
+| E14  | [E14-retrospective.md](./E14-retrospective.md) |
