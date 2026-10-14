@@ -85,6 +85,32 @@ describe("isValidText (F05)", () => {
     expect(isValidText({ ...HELLO, ...text })).toBe(false);
   });
 
+  it.each([-100_000, 100_000])(
+    "[F05.AC2] accepts a letter and word spacing of %d, an end of −100 000 .. 100 000",
+    (spacing) => {
+      expect(isValidText({ ...HELLO, letterSpacing: spacing, wordSpacing: spacing })).toBe(true);
+    },
+  );
+
+  it.each([
+    { name: "a letter spacing under −100 000", text: { letterSpacing: -100_001 } },
+    { name: "a word spacing over 100 000", text: { wordSpacing: 100_001 } },
+    { name: "an empty font name", text: { font: "" } },
+    { name: "a font name of spaces only", text: { font: "  " } },
+  ])("[F05.AC2] refuses $name", ({ text }) => {
+    expect(isValidText({ ...HELLO, ...text })).toBe(false);
+  });
+
+  it.each([
+    { field: "textCase", value: "shout" },
+    { field: "alignment", value: "justify" },
+    { field: "direction", value: "ttb" },
+  ])("[F05.AC2] refuses a $field of '$value', read from outside", ({ field, value }) => {
+    const text = { ...HELLO, [field]: value };
+
+    expect(isValidText(text)).toBe(false);
+  });
+
   test.prop({
     opacity: fc.integer({ max: 100, min: 0 }),
     size: fc.integer({ max: 100_000, min: 1 }),

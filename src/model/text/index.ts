@@ -4,4 +4,5 @@ export type * from "./text";
 export type * from "./text-alignment";
 export type * from "./text-case";
 export type * from "./text-direction";
+export * from "./text-options";
 export * from "./text-ranges";

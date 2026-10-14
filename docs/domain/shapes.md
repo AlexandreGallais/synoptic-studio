@@ -199,14 +199,14 @@ Decided by the Product Owner at F05's refinement, rounds 1 and 2 (2026-10-14); d
   - the default font's metrics ship with the library for Inter 4.1's nine weights, upright and italic; Inter has no Hebrew glyph, so a Hebrew character is measured with Inter's `.notdef` advance until a font with Hebrew is read.
 - **Characters**: a text holds:
   - its content, with the line breaks the designer typed, a line feed (U+000A) between two lines; any content is allowed, the empty one included, which draws nothing;
-  - a font named with a fallback (`Inter`, else `sans-serif`), any font allowed; the default font is Inter, whose metrics ship with the library;
+  - a font named with a fallback (`Inter`, else `sans-serif`), any font allowed, its name holding at least one character other than white space (2026-10-15, provisional, to confirm at VAL-014); the default font is Inter, whose metrics ship with the library;
   - a size, an integer from 1 to 100 000, in the one unit used everywhere (no millimetres, no points); a size outside that range or not an integer is refused;
   - a weight, an integer from 100 (thin) to 900 (black), with a quick bold button (700) and an italic button;
   - a color in hexadecimal, `#` and six digits (upper or lower case), with an opacity, an integer from 0 to 100 % (F16 brings the picker);
-  - letter spacing and word spacing, integers in user units, negative to tighten, to fit text in small frames;
+  - letter spacing and word spacing, integers from −100 000 to 100 000 user units, the size's bound, negative to tighten, to fit text in small frames (bounds of 2026-10-15, provisional, to confirm at VAL-014);
   - underline and strike-through;
   - a case transform, written by the library (Q36, below);
-  - a direction, left to right or right to left;
+  - a direction, left to right or right to left; a case, an alignment or a direction outside its values, read from a file, is refused;
   - an alignment of its lines (left, center, right), a position (integers, the top-left of its block before it turns) and an angle.
 - **Case transforms** (Q36, a provisional decision of 2026-10-15, to be confirmed at VAL-014): each line is written in the case on its own, its line breaks kept. For "pump P-101 is running":
 
