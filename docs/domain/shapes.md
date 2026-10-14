@@ -186,6 +186,13 @@ Functional reference: Inkscape's Star/Polygon tool.
 Decided by the Product Owner at F05's refinement, rounds 1 and 2 (2026-10-14); drawn and measured as ADR-0052 says.
 
 - **Drawing**: a native `<text>`, the exception to "everything is a path" (ADR-0002), with one positioned `<tspan>` per line, so that every SVG reader shows the same lines. The library measures the text and breaks its lines itself. Text converted to paths is not wanted. An HTML layer for browsers comes on top later (F15).
+- **Lines drawn** (US-031, `DERIV-text-width` steps 5 and 6):
+  - each line's `x` places it in the block as its alignment says: aligned left, at the block's left edge; centered, half of the room it leaves before it; aligned right, all of it. "Hello" over "World" in Arial 16, centered: "Hello" starts 2.66016 right of the block's edge, "World" at it;
+  - left, center and right are read as the physical sides for both directions, as CSS's `left` and `right` are: a right-to-left text aligned left starts each line on the block's left edge (agent, 2026-10-15, from the words of the refinement; to be confirmed by the Product Owner at VAL-014). A right-to-left line is written at its right edge, where SVG draws its start, with `direction="rtl"`;
+  - each line's `y` is its baseline; every space typed is drawn (`xml:space="preserve"`), as it is measured;
+  - the font is written as itself, then its fallback, then `sans-serif`, each name once: `"Inter", sans-serif`;
+  - the opacity is written as a number from 0 to 1 (`fill-opacity`, 40 % gives 0.4);
+  - an underline or a strike-through is a rectangle as long as the line, placed and as thick as the font says, in the text's color; an empty line has none.
 - **Measuring**: from the font's metrics, read once from the font file and kept; measuring a text is then a sum of stored numbers (`DERIV-text-width`). In a running view a text may change a hundred times a second on a thousand texts: moving, turning, showing, hiding and recoloring stay cheap transforms.
 - **Font metrics** (EN-031): the library reads a TrueType or OpenType file (`REF-OT-OTFF`) into plain numbers, in font units:
   - the units per em (`head`), and the ascender, descender and line gap of `hhea`;
