@@ -12,18 +12,42 @@ In `src/` and `playground/` (barrels, entry points and tests excepted):
 - non-exported helpers may stay in the file only if they serve its single export; a helper shared by two modules becomes its own module.
 
 ```text
-src/geometry/
+src/geometry/corner-radius/
   index.ts              export * from "./fillet-setback"; …
-  fillet-setback.ts     export function filletSetback(…): Setback   (+ export type Setback)
+  fillet-setback.ts     export function filletSetback(…): number
   fillet-setback.test.ts
+src/math/vector/
   point.ts              export type Point = …
 ```
 
 ## Names
 
 - Every file and folder: `kebab-case` (`unicorn/filename-case`); a module file is the kebab-case of its export.
-- Tests: `<module>.test.ts`, next to the module; repository-wide tests (backlog, bibliography, barrels, diagrams, dependencies, fitness) in `tests/`.
+- Tests: `<module>.test.ts`, next to the module.
+- Repository-wide tests in `tests/`: `backlog`, `references`, `barrels`, `diagrams`, `package`, `fitness`, `folders`, and the fixtures shared by the tests of `src/` (`geometry-fixtures`, imported from `tests`).
+- The actions shared by the playground's tests: `playground/user-actions/`.
 
 ## Folders
 
-Every code folder has an `index.ts` barrel (see [imports.md](./imports.md)). A sub-folder groups modules of one sub-concept (`geometry/intersections/`), never "utils" or "helpers" (`id-denylist`).
+Every code folder has an `index.ts` barrel (see [imports.md](./imports.md)). Folders are named after the **business domains** of `docs/domain/`, the same name in every layer where the domain has code — never a kind of code, "utils" or "helpers" (ADR-0043, `id-denylist`).
+
+A code folder holds **modules or domain folders, never both**: beside folders sits only the barrel (and the playground's entry). `local/folder-layout` reports a TypeScript file beside folders at once, in the editor; `tests/folders.test.ts` checks every other file.
+
+| Folder          | Domains                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/math/`     | `vector/` (the point, the vector, its products and distance), `angle/` (degrees and radians, quarter and half turns, explement, directions, signed and central angles), `rotation/` (rotate, quarter turns), `interpolation/` (midpoint, point between, regular partition), `arithmetic/` (average, clamp, modulo), `polynomial/` (the quadratic, its discriminant and roots), `bisection/`, `precision/` (`EPSILON`, without negative zero)                                                                                                                                                                               |
+| `src/geometry/` | `contour/` (arcs, segments, cubics, corners, `cyclicItem`), `corner-radius/` (fillets, clamp, turning angles), `handles/` (a point's handles, the empty handles and corner, their turn and stretch, F12), `regular-polygon/` (regular and stretched), `layout-box/` (alignment, anchor, fit, stretch, size, box size, half size, half the smaller side, area — Q21), `placement/` (straight box, turn — `shapes.md` §1), `curve/` (cubic sides, their box and split, F12), `fillet-side/`, `curve-fillet/` and `curve-contour/` (a fillet beside a curve, ADR-0047), `round-shape/` (the ellipse as four cubics, ADR-0048) |
+| `src/model/`    | one folder per shape, its type inside (`rectangle/`, `regular-polygon/`, `free-shape/`, `round-shape/`), `shape/` (the three kinds of shape told apart: `isFreeShape`, `isRegularPolygon`, `isRoundShape`), then `corner-radius/` (`shapes.md` §2), `handles/` (handles' validity and typing), `layout-box/` (anchor and size checks), `placement/` (position, angle, turned corners), `selection/` (`interaction.md`)                                                                                                                                                                                                     |
+| `src/io/`       | modules only: the writing of path data, one domain                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `src/render/`   | modules only: the SVG elements, one domain                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `playground/`   | one folder per panel (`toolbar/`, `shape/`, `points/`, `handles/`, `position/`, `drawing/`, `guided-test/`), the steps of the guided tests (`guided-steps/`), the fields every panel reads and writes (`page/`), the wiring of the panels (`mount/`), the tests' actions (`user-actions/`)                                                                                                                                                                                                                                                                                                                                 |
+
+A shape's type lives in its folder (`free-shape/free-shape.ts`); folders may use each other's types, their value imports go one way (`import-x/no-cycle`). A test of the whole page sits in the folder of the panel it exercises. Why: [ADR-0043](../adr/0043-folders-by-domain.md).
+
+### Folders past 15 modules
+
+15 modules per folder, tests and barrel not counted, is a signal (ADR-0043): a folder past it asks whether a domain is missing; it is split along that domain, or listed here with the reason none is. `local/folder-layout` fails on a folder past 15 not listed in `eslint/settings/folders.ts`; `tests/folders.test.ts` keeps that list and this table equal.
+
+| Folder                    | Modules | Why it stays whole                                                                                                                          |
+| ------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `playground/user-actions` | 24      | one theme, what a user does to the page; splitting it into reading, typing and clicking would split by kind of code, which ADR-0043 refuses |

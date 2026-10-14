@@ -1,4 +1,4 @@
-import { mountPlayground } from "./mount-playground";
-import { readGuidedTestSteps } from "./read-guided-test-steps";
+import { readGuidedTestSteps } from "./guided-test";
+import { mountPlayground } from "./mount";
 
 mountPlayground(document, readGuidedTestSteps(document));

@@ -91,13 +91,36 @@ export function decodeEntities(text: string): string {
 }
 
 /**
+ * Text with every span from an opening to a closing mark removed, by splitting rather than by a
+ * pattern, which CodeQL reads as an incomplete sanitization. An opening mark never closed stays,
+ * with what follows it: `1 < 2` in code is text.
+ *
+ * @param text - text to clean
+ * @param open - opening mark, such as `<!--`
+ * @param close - closing mark, such as `-->`
+ * @returns the text outside the spans
+ */
+function withoutSpans(text: string, open: string, close: string): string {
+  const [head = "", ...rest] = text.split(open);
+
+  return [
+    head,
+    ...rest.map((part) => {
+      const end = part.indexOf(close);
+
+      return end === -1 ? `${open}${part}` : part.slice(end + close.length);
+    }),
+  ].join("");
+}
+
+/**
  * Text of an HTML fragment, its tags removed.
  *
  * @param html - fragment
  * @returns its text
  */
 function withoutTags(html: string): string {
-  return html.replaceAll(/<[^>]+>/gu, "");
+  return withoutSpans(html, "<", ">");
 }
 
 /**
@@ -160,7 +183,7 @@ function headingsAndLinks(html: string): string {
 export function htmlToMarkdown(html: string): string {
   const kept = DROPPED.reduce(
     (part, tag) => part.replaceAll(new RegExp(String.raw`<${tag}\b[\s\S]*?</${tag}>`, "giu"), ""),
-    mainPart(html).replaceAll(/<!--[\s\S]*?-->/gu, ""),
+    withoutSpans(mainPart(html), "<!--", "-->"),
   );
   const marked = MARKS.reduce(
     (part, [pattern, mark]) => part.replaceAll(pattern, () => mark),

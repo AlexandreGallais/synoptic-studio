@@ -18,6 +18,8 @@ export const IGNORED_FILES = [
   "docs/.vitepress/cache/**",
   "docs/.vitepress/dist/**",
   "CHANGELOG.md",
+  // Private records, their own Git repository, ignored by this one (ADR-0044).
+  "records/**",
   // Only TypeScript is authored; the rare JavaScript file is a tool's required format (.ncurc.cjs).
   "**/*.{js,cjs,mjs}",
 ];
@@ -69,8 +71,8 @@ export const ROOT_CONFIG_FILES = [
 /** Entry module of the playground app (top-level side effects allowed). */
 export const PLAYGROUND_ENTRY_FILES = ["playground/index.ts"];
 
-/** Folders whose `index.ts` files are barrels (re-exports only). */
-export const BARREL_FILES = ["src/**/index.ts", "eslint/**/index.ts"];
+/** Folders whose `index.ts` files are barrels (re-exports only); `playground/index.ts` is the entry. */
+export const BARREL_FILES = ["src/**/index.ts", "eslint/**/index.ts", "playground/*/**/index.ts"];
 
 /** Lists of rule themes, one import per theme file. */
 export const AGGREGATOR_FILES = ["eslint/rules/*/all.ts"];

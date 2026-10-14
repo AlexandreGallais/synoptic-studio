@@ -3,21 +3,24 @@
 ## `index.ts` in every folder (ADR-0012)
 
 - Every code folder holds an `index.ts` (`local/folder-has-index`).
-- An `index.ts` contains **only** `export * from "./module";`, one line per module and sub-folder, sorted (`local/barrel-exports`). **Autofixed**: create a file, then run `npm run fix`.
-- Exceptions: tests (`*.test.ts`) are never exported; `playground/index.ts` is an entry point, not a barrel.
+- An `index.ts` contains **only** `export * from "./module";`, one line per module and subfolder, sorted (`local/barrel-exports`). **Autofixed**: create a file, then run `npm run fix`.
+- Exceptions:
+  - tests (`*.test.ts`) are never exported;
+  - `playground/index.ts` is the entry point, not a barrel; every subfolder of the playground has one;
+  - `tests/index.ts` gathers the shared test fixtures, not a barrel of the library.
 
 ## Canonical path (`local/canonical-import-path`, autofixed)
 
 Import **the child of the common ancestor** that contains the target:
 
-| From                         | Target                       | Written                  | Fixed to                               |
-| ---------------------------- | ---------------------------- | ------------------------ | -------------------------------------- |
-| `src/model/shape.ts`         | `src/model/port.ts`          | `./port.ts`              | `./port`                               |
-| `src/model/shape.ts`         | `src/geometry/index.ts`      | `../geometry/index`      | `../geometry`                          |
-| `src/model/shape.ts`         | `src/geometry/arc/fillet.ts` | `../geometry/arc/fillet` | `../geometry`                          |
-| `src/geometry/vector.ts`     | `src/geometry/arc/fillet.ts` | `./arc/fillet`           | `./arc`                                |
-| `src/geometry/arc/fillet.ts` | `src/geometry/vector.ts`     | `../vector`              | _(already canonical)_                  |
-| `src/geometry/vector.ts`     | `src/geometry/index.ts`      | `.`                      | **error**: own folder's barrel = cycle |
+| From (in `src/`)                             | Target (in `src/`)                     | Written                       | Fixed to                              |
+| -------------------------------------------- | -------------------------------------- | ----------------------------- | ------------------------------------- |
+| `model/free-shape/free-shape-radii.ts`       | `model/free-shape/free-shape.ts`       | `./free-shape.ts`             | `./free-shape`                        |
+| `model/free-shape/free-shape-radii.ts`       | `model/placement/turned-corners.ts`    | `../placement/turned-corners` | `../placement`                        |
+| `model/rectangle/rectangle-contour.ts`       | `geometry/index.ts`                    | `../../geometry/index`        | `../../geometry`                      |
+| `geometry/placement/contour-bounding-box.ts` | `geometry/corner-radius/has-length.ts` | `../corner-radius/has-length` | `../corner-radius`                    |
+| `geometry/layout-box/fit-in-box.ts`          | `geometry/layout-box/size.ts`          | `./size`                      | _(already canonical)_                 |
+| `geometry/layout-box/fit-in-box.ts`          | `geometry/index.ts`                    | `..`                          | **error**: own layer's barrel = cycle |
 
 Never a `.ts` extension, never `/index`.
 

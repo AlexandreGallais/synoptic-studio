@@ -18,6 +18,7 @@ import {
   markdownTable,
   statsTable,
 } from "./metrics-tables.ts";
+import { loggedCalls, turnSections } from "./metrics-time.ts";
 import { taskCommits, taskOf, unitOf, workStats } from "./metrics-work.ts";
 
 import type { ModelRequest, ToolCall } from "./metrics-events.ts";
@@ -43,19 +44,6 @@ const DAY_LENGTH = 10;
 const SESSION_SHOWN = 8;
 
 /**
- * Lines of a text file that hold JSON objects.
- *
- * @param path - JSON Lines file
- * @returns each object line parsed
- */
-function jsonLines(path: string): readonly unknown[] {
-  return readFileSync(path, "utf8")
-    .split("\n")
-    .filter((line) => line.startsWith("{"))
-    .map((line): unknown => JSON.parse(line));
-}
-
-/**
  * Claude Code transcripts of this repository: the sessions and their subagents.
  *
  * @returns paths of the JSON Lines files
@@ -76,13 +64,8 @@ function transcriptFiles(): readonly string[] {
  * @returns milliseconds by tool use id
  */
 function hookDurations(): ReadonlyMap<string, number> {
-  const common = execFileSync("git", ["rev-parse", "--path-format=absolute", "--git-common-dir"], {
-    encoding: "utf8",
-  }).trim();
-  const log = join(common, "metrics", "tool-calls.jsonl");
-
   return new Map(
-    (existsSync(log) ? jsonLines(log) : [])
+    loggedCalls()
       .filter((record) => typeof field(record, "durationMs") === "number")
       .map((record) => [text(record, "toolUseId"), Number(field(record, "durationMs"))]),
   );
@@ -282,6 +265,7 @@ if (import.meta.main) {
     summary,
     ...commandSections(calls),
     ...workSections(moments),
+    ...turnSections(),
     "## Sources",
     usageReport(library, 0),
   ];

@@ -2,7 +2,7 @@
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "entry": [
     ".claude/hooks/{guard-bash,session-state,log-tool-call,track-tool-call,status-line}.ts",
-    "scripts/{tool-versions,metrics-report,session-report,library-cli,library-mcp}.ts",
+    "scripts/{branches-clean,tool-versions,metrics-report,session-report,library-cli,library-mcp,records-save,watch-task}.ts",
     "docs/.vitepress/config.ts",
     "docs/.vitepress/theme/index.ts",
     ".ncurc.cjs"

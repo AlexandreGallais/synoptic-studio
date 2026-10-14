@@ -90,7 +90,7 @@ export function callSummary(input: unknown): string {
  * @param key - property name
  * @returns the property when it is a number, else 0
  */
-function count(value: unknown, key: string): number {
+export function count(value: unknown, key: string): number {
   const property = field(value, key);
 
   return typeof property === "number" ? property : 0;
@@ -214,17 +214,32 @@ export function transcriptEvents(transcript: string): TranscriptEvents {
 }
 
 /**
+ * Whether a `user` line comes from the person: not a reminder, nor the summary written after the
+ * conversation memory is compacted, nor a background task's notification.
+ *
+ * @param line - parsed transcript line
+ * @returns true for a line the person sent
+ */
+function isFromPerson(line: unknown): boolean {
+  return (
+    text(line, "type") === "user" &&
+    field(line, "isMeta") !== true &&
+    field(line, "isCompactSummary") !== true &&
+    text(line, "promptSource") !== "system"
+  );
+}
+
+/**
  * Whether a transcript line is a prompt typed by the person, not a tool result nor a reminder.
  *
  * @param line - parsed transcript line
- * @returns true for a `user` line holding text
+ * @returns true for a line from the person holding text
  */
 function isPrompt(line: unknown): boolean {
   const content = field(field(line, "message"), "content");
 
   return (
-    text(line, "type") === "user" &&
-    field(line, "isMeta") !== true &&
+    isFromPerson(line) &&
     (typeof content === "string" || blocks(line).some((block) => text(block, "type") === "text"))
   );
 }

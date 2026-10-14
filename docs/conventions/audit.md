@@ -29,6 +29,7 @@ Procedure: the `/audit` skill. Sections A to E are first reviewed by the indepen
 1. Exported API (`npm run docs:api`, or `src/**`): no two functions for one concept, no near-identical helpers.
 2. Derivations and references: no two documents for the same result; no URL under two IDs (`tests/references.test.ts`).
 3. Tests: no copy-pasted test hiding a missing case.
+4. Named calculations (ADR-0049): no operation or run of steps that a field names left as bare arithmetic; each one left inline is listed with its reason.
 
 ## E. Consistency
 

@@ -26,6 +26,19 @@ Every level-4 or level-5 finding is recorded in `research/notes/` and in `docs/r
 
 Two concurring sources of level ≥ 4 are required for an interface behavior rule.
 
+### How many sources (RET-002)
+
+No field of research sets one number: triangulation asks for sources that do not depend on each other, and quality counts more than count. Wikipedia's policy asks for "multiple high-quality sources" for an exceptional claim, without a number (`REF-WIKI-VERIFIABILITY`). The project sets its own rule, in tiers, and stops looking once the tier is met:
+
+| What is claimed, from which level                                      | Sources needed                                                                       |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| a definition or a formula, from a level 1 to 3 source, read and quoted | one, its use checked by hand-computed tests or a derivation                          |
+| a behavior or a convention, from levels 4 and 5                        | two independent sources that agree                                                   |
+| anything from level 6                                                  | never alone: it only points to a source of a higher level                            |
+| a surprising claim, or sources that disagree                           | three independent sources, or one of level 1 or 2; otherwise a research request (§5) |
+
+Two sources are **independent** when neither cites nor copies the other and they do not come from the same origin (a vendor's page and a blog that repeats it are one source). An expert agent that finds the tier already met in the library still looks for one more independent site when the claim is new to the project; it stops there.
+
 ## 3. Topic map
 
 | Topic                            | Internal first                                               | External next                                                                           |

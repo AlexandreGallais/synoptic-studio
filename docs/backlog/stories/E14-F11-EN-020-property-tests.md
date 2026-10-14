@@ -3,7 +3,7 @@ id: EN-020
 epic: E14
 feature: F11
 title: Property tests for the nine functions without one
-status: draft
+status: done
 points: 3
 ---
 
@@ -14,11 +14,11 @@ Give a property test (ADR-0022) to each function listed in `tests/fitness.test.t
 ## Acceptance criteria
 
 - Given each listed function, when its test file runs, then at least one `test.prop` states an invariant that holds for every valid input (a bound, a symmetry, a round trip), checked by the `verifier` agent.
-- Given the fitness test, when the story ends, then its list is empty and the check holds for every function of `src/math/` and `src/geometry/`.
+- Given the fitness test, when the story ends, then its list is gone and it checks each function of `src/math/` and `src/geometry/` in its **own** test file: `stretchScale` and `turningAngles`, which passed only because another file's property named them, get one too (found at the start of the story).
 
 ## Tasks
 
 One task = one commit, referenced as `EN-020.Tn`.
 
-- [ ] T1 — Properties of the five box and alignment functions (2 h)
-- [ ] T2 — Properties of the four stretched-polygon functions; the list emptied (3 h)
+- [x] T1 — Properties of the five box, alignment and corner functions (2 h)
+- [x] T2 — Properties of the stretched-polygon functions, `stretchScale` and `turningAngles`; the fitness test checks each function's own test file (3 h)

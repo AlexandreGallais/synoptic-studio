@@ -39,7 +39,7 @@ flowchart LR
 
 ## Expert agents
 
-Read-only reviewers in a fresh context, each with the documents it reads first (`REF-CC-SUBAGENTS`). The skills start them in the background and in parallel; they report, they never edit.
+Read-only reviewers in a fresh context, each with the documents it reads first (`REF-CC-SUBAGENTS`). The skills start them in the background and in parallel; they report, they never edit. The agents that read sources (`auditor`, `math-expert`, `functional-analyst`) have the library's tools (`library_search`, `library_get`, `library_read`) and follow the same protocol as the main agent (`docs/tooling/sources.md`): library first, the web only for a page it cannot read. Until 2026-10-13 they had only `WebFetch` and `WebSearch`, so their pages never reached the library unless their prompt asked for it.
 
 | Agent                | Expert in                                             | Started by                                               |
 | -------------------- | ----------------------------------------------------- | -------------------------------------------------------- |
@@ -59,19 +59,19 @@ Agents to add when their epic comes, with their trigger:
 
 ## Hooks
 
-| Hook                 | Event                                                  | Does                                                                                        |
-| -------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------- |
-| `guard-bash.ts`      | `PreToolUse` (shell)                                   | denies `gh pr merge`, `--no-verify`, a force push without lease; skips here-document bodies |
-| `session-state.ts`   | `SessionStart`                                         | prints the branch, uncommitted files, progress of started features                          |
-| `track-tool-call.ts` | `PreToolUse` (every tool), in the background           | writes the call starting, for the status line ([metrics](./metrics.md))                     |
-| `log-tool-call.ts`   | `PostToolUse`, `PostToolUseFailure`, in the background | logs each call and its duration; removes it from the running calls                          |
-| `status-line.ts`     | status line, every second                              | place in the backlog, step, session, call running ([metrics](./metrics.md))                 |
+| Hook                 | Event                                                  | Does                                                                                                                                                                                           |
+| -------------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `guard-bash.ts`      | `PreToolUse` (shell)                                   | denies `gh pr merge`, `--no-verify` (`commit -n`), hooks switched off (`HUSKY=0`, `core.hooksPath`), a force push without lease (`+branch` too), `git -C` included; skips here-document bodies |
+| `session-state.ts`   | `SessionStart`                                         | prints the branch, uncommitted files, progress of started features; removes the files of calls left running for a day                                                                          |
+| `track-tool-call.ts` | `PreToolUse` (every tool), in the background           | writes the call starting, for the status line ([metrics](./metrics.md))                                                                                                                        |
+| `log-tool-call.ts`   | `PostToolUse`, `PostToolUseFailure`, in the background | logs each call and its duration; removes it from the running calls                                                                                                                             |
+| `status-line.ts`     | status line, every second                              | place in the backlog, step, session, call running ([metrics](./metrics.md))                                                                                                                    |
 
 ## Parallel sessions
 
 The Product Owner may talk to a second session while a run works in the background. Both share the same folder, and the run owns it (its branch, its uncommitted files). The second session:
 
-1. **Never touches the run's folder**: no `git switch`, `stash` nor commit there. It works in its own worktree from `develop`, in its scratchpad: `git worktree add -b <type>/<topic> <scratchpad>/<topic> origin/develop`, then `npm ci` in it (hooks and `check:all` need `node_modules`).
+1. **Never touches the run's folder**: no `git switch`, `stash` nor commit there. It works in its own worktree from `develop`, in its scratchpad: `git worktree add -b <type>/<topic> <scratchpad>/<topic> origin/develop`, then `npm ci` in it (hooks and `check:all` need `node_modules`). Never link `node_modules` to the main folder: `npm ci` runs `prepare`, which installs the Git hooks; without it no hook runs, not even `pre-push`.
 2. **Puts each decision in the repository**, the only state both sessions read: domain, ADR, backlog, `AGENTS.md`, skills. One branch, one pull request into `develop` (or straight to `develop` when the Product Owner allows it for tooling and backlog). Durable facts also go to the agent's memory, read by every new session.
 3. **Tells the run at once**: `ListAgents`, then `SendMessage` to the busy session with what changed, where it is written and what it changes for the run. A run never acts on a message alone: it waits for the change to reach `develop`, as with any decision.
 4. **Removes its worktree** once the pull request is merged (`git worktree remove <path>`, then delete the branch).
@@ -80,7 +80,7 @@ The run picks up `develop` before every story (run skill, step 1): when `develop
 
 ## Searching past conversations
 
-Claude Code keeps each conversation as a JSONL file in `~/.claude/projects/<project-path>/` (local, never committed). The session journal ([journal](../process/journal.md), ADR-0024) is read first; the transcripts are the full archive:
+Claude Code keeps each conversation as a JSONL file in `~/.claude/projects/<project-path>/` (local, never committed here; saved in the private records, `records/`, ADR-0041 and ADR-0044). The session journal ([journal](../process/journal.md), ADR-0024) is read first; the transcripts are the full archive:
 
 ```sh
 cd ~/.claude/projects/<project-path>

@@ -56,6 +56,48 @@ Reference behavior: Figma.
 - No "independent corners" switch: the radius of one corner is set in node editing only.
 - Geometry: arc tangent to both edges; setback `d = r / tan(θ/2)` (`DERIV-fillet-setback`).
 
+### Points with handles (F12)
+
+A point of a free shape can bend its two sides with two handles, as in Figma, without losing its corner radius (Product Owner decision, 2026-10-13). Drawing rules: ADR-0046; formulas: the derivations named in the tables.
+
+**Radius or handles.** Each point has a switch with two states, always visible; its final layout is part of the UX pass at the end of E14. On a regular polygon, the switch first converts it to a free shape, unmoved, as deleting a point does (Product Owner, VAL-011, 2026-10-13).
+
+| State         | The point is drawn                | Its corner radius                                                          |
+| ------------- | --------------------------------- | -------------------------------------------------------------------------- |
+| Corner radius | filleted (ADR-0007)               | drawn                                                                      |
+| Handles       | its two sides bent by its handles | kept, not drawn; back as it was when switched off (30 stays 30, 0 stays 0) |
+
+**Handle modes.** Typing one handle sets the other by the point's mode, chosen per point:
+
+| Mode (playground)                 | Stored             | The other handle                                                                                           |
+| --------------------------------- | ------------------ | ---------------------------------------------------------------------------------------------------------- |
+| Mirror angle and length (default) | `angle-and-length` | opposite, same length: one handle at (130, 0) around a point at (100, 0) puts the other at (70, 0) (Figma) |
+| Mirror angle                      | `angle`            | opposite direction, its own length kept; unchanged when the typed handle has length 0 (Figma)              |
+| No mirroring                      | `none`             | unchanged (Figma)                                                                                          |
+
+**Sides and box:**
+
+- A side is a cubic curve when a handle is on at either of its ends and not of length 0 (ADR-0046); a point with its handles on but of length 0 leaves its sides straight. A point in handles mode is drawn sharp, its radius kept; the radius shown as effective is then 0. A corner in radius mode beside a curved side keeps its rounding: an arc tangent to the side and to the curve, the curve cut there (ADR-0047, `DERIV-fillet-beside-curve`; Product Owner, VAL-011, 2026-10-13). A radius too large is reduced, never drawn sharp: it may use the whole curve, whose other end is sharp; it becomes the largest circle tangent to both sides that crosses neither (a rectangle 120 × 80 with handles of 40 at point 3: a radius 60 at point 2 becomes 47.7).
+- Handles stretch with the shape, like its points.
+- A free shape whose points lie on one line is refused even when its sides bulge (a lens): its points span no area (Q33, Product Owner, VAL-011, 2026-10-14).
+- The shape's box is the box of its curve, as in Figma: a square 100 × 100 whose top bulges by 20 shows about 100 × 115.
+
+**Points added or deleted on a curve:**
+
+| Edit                                         | Effect                                                                                                                                                                                                                                                                                                                                                  |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A point added in the middle of a curved side | the curve is split at its middle and the drawing does not move — unless a neighbour's fillet reached past the middle: it is then rebuilt on the half left and may shrink (Q34, settled at VAL-011); the new point is in handles mode, Mirror angle and length; a neighbour in Mirror angle and length goes to Mirror angle (`DERIV-cubic-sides` step 4) |
+| A point deleted                              | its two sides become one, keeping the outer handles                                                                                                                                                                                                                                                                                                     |
+
+**Typing a handle.** Two methods, kept by the Product Owner at VAL-011 out of the seven tried (Q32, research note 0013, 2026-10-13). The method changes only how the stored vector is shown and typed.
+
+| Method                      | Typed                                                                           | Rules                                                                                                                                                                                            | Derivation           |
+| --------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------- |
+| x, y on the page            | the handle's end, as in Figma                                                   | —                                                                                                                                                                                                | —                    |
+| angle, length from the side | degrees clockwise on screen from the side the handle leaves along, and a length | angle brought into 0 to 359 as a shape's (370 becomes 10, −90 becomes 270); a negative length refused, and a side of length 0; an angle typed while the length is 0 kept until a length is typed | `DERIV-handle-angle` |
+
+With the same values at both ends of a side, the angle from the side gives a symmetric arch, the same at the four corners of a rectangle: outwards for angles from 180° to 359° on a clockwise contour (330° bends a side out by 30°), inwards for the others (Product Owner decision, 2026-10-13).
+
 ### Radius clamping (ADR-0007)
 
 Rule: **local proportional reduction per edge** (`DERIV-local-radius-clamp`).
@@ -78,7 +120,7 @@ Storing the value (Q8, settled):
 
 ### Useful special case
 
-- Square of side `c` + radius `c/2` on all 4 corners = **circle**. The circle is therefore not a primitive: it is a rounded square. A round-shape tool will draw it without a radius field: a circle in a square box, an ellipse otherwise, which needs curves outside ADR-0001 (F10, moved to E14 by the Product Owner on 2026-10-12, Q4). A capsule is a rectangle whose radius is half its smaller side.
+- Square of side `c` + radius `c/2` on all 4 corners = **circle**. The circle is therefore not a primitive: it is a rounded square. The round shape (F10) draws it without a radius field: a circle in a square box, an ellipse otherwise ("Round shape" below). A capsule is a rectangle whose radius is half its smaller side.
 - Same for a regular polygon with maximal radius: every fillet stops at the middle of its edges, so the polygon becomes exactly its inscribed circle.
 
 ## 3. Creation tools
@@ -88,10 +130,11 @@ Storing the value (Q8, settled):
 - The rectangle is a **free shape** of 4 points made by the rectangle tool (Product Owner, 2026-10-11, F09): underneath, a rectangle is always a free shape. Width and height of any free shape stretch its points, the top-left of its box fixed; a rectangle stays a rectangle; stretching is without loss (0 then back gives the same shape). The eight handles of the box, the opposite side fixed as in Inkscape, come with E02.
 
 - Model (ADR-0032, ADR-0033) — a **free shape** stores:
-  - its **corners**, each a point in the shape's own box and its radius (integer ≥ 0); at least 3, spanning a box of positive width and height (contour order Q11);
+  - its **corners**, each a point in the shape's own box, its radius (integer ≥ 0) and its **handles** (F12, ADR-0046, "Points with handles" above); at least 3 corners, spanning a box of positive width and height (contour order Q11);
+    - handles: the switch `isOn`, the `mode`, the vectors `before` and `after` from the point (in the frame of the stored points, stretched with them; exact, fractional after an angle or a stretch); a new point or a converted shape has them off, in `angle-and-length`, (0, 0);
   - its `width`, `height`, `angle` and position `x`, `y` (ADR-0035).
 - Numbers: finite; integers when typed; fractional after a conversion (Q27) or an edit (ADR-0034); on a turned shape, integers in the drawing only, the point being stored un-turned (ADR-0035).
-- Drawing: the stored points stretched from the top-left of their box (`DERIV-free-shape-stretch`), moved to the position, then turned by the angle (`DERIV-turned-shape`). The rectangle tool stores the unit square.
+- Drawing: the stored points stretched from the top-left of their curve's box (`DERIV-free-shape-stretch`, ADR-0046), moved to the position, then turned by the angle (`DERIV-turned-shape`). The rectangle tool stores the unit square.
 - A point typed in the SVG's coordinates: the corners are kept as drawn, that point replaced, the box fitted around them; on a turned shape the box is placed so that the other points stay where they are drawn (`DERIV-turned-shape` step 5).
 - Rectangle tool parameters: `width`, `height` (integers ≥ 0; negative forbidden, 0 allowed — Q15), `angle` (0 to 359), `x`, `y` (integers, ADR-0003), and `radii`, the requested corner radius of each of its 4 vertices in contour order (integers ≥ 0; 0 = sharp corner; ADR-0029). They are creation values: the free shape the tool makes is what is edited afterwards, and its position may become fractional (ADR-0035). A radius larger than the rectangle is clamped, not refused (ADR-0007); the requested value is kept (Q8).
 - Result: contour of 4 vertices.
@@ -130,6 +173,14 @@ Functional reference: Inkscape's Star/Polygon tool.
 - The grid keeps its **nine places** (Product Owner, 2026-10-11, left to the agent at `VAL-003`). In a given box only one axis has room, so only three places give different drawings. A corner place is not a duplicate: it holds both alignments, and the one that counts follows the proportions of the box. A triangle anchored bottom left sits at the bottom of a 100 × 100 box; a square anchored bottom left sits on the left of a 100 × 50 box. The layout box (Q21) uses the same grid for elements with room on both axes.
 - Rotation (F04) comes after: the box turns with its content.
 
+### Round shape (F10)
+
+- A **round shape** fills its box: a circle in a square box, an ellipse otherwise, touching its four sides (Product Owner, 2026-10-12). A capsule stays a rectangle rounded by half its smaller side.
+- Model (`RoundShape`, ADR-0048): `width`, `height` (integers ≥ 0, Q15), `angle` (0 to 359), position `x`, `y` (ADR-0035), and `kind: "round"`, which tells it from the shapes that have corners. No radius, no anchor, no point to edit.
+- Drawn as four cubic sides through its top, right, bottom and left points, point 1 at the top then clockwise; each handle `4(√2 − 1)/3` of the half axis, in Mirror angle and length (`DERIV-round-shape-curve`). The curve is within about 0.00027 of the larger half axis of the true ellipse: 0.014 on a circle of diameter 100. A box of width or height 0 draws the line it is.
+- One conversion to a free shape: **Convert to free shape** gives its 4 points with their handles, the drawing unchanged (Product Owner, 2026-10-12). A box of width or height 0 is not converted, as a polygon (F08). No conversion to a rounded rectangle: rounding its box turns an ellipse into a capsule, which loses the drawing (Product Owner, 2026-10-14, at VAL-012).
+- Refined by the agent from the Product Owner's decisions and accepted at VAL-012 (2026-10-14): the cubic sides, point 1 at the top, the name of the conversion.
+
 ### Text
 
 - Exception to "everything is a path": native `<text>` (ADR-0002).
@@ -153,7 +204,7 @@ Settled with the Product Owner (2026-10-10, refining F07): a box that places the
 ### Out of scope (symbols)
 
 - **Pen** and **freeform drawing** in the Symbol Editor: contrary to the "logical" principle.
-- **Bézier curves**, Figma's **Bend** tool, handle **mirroring** in symbols (ADR-0001) — until E14 decides otherwise (Q4).
+- Bézier curves other than the cubic sides from handles (ADR-0046); Figma's **Bend** tool dragged on the drawing (E02).
 - **Corner smoothing** (Figma squircle smoothing): produces Béziers.
 
 Static drawings of the View Editor follow other rules (§8).
@@ -213,4 +264,4 @@ See `interaction.md` §6.
 - Made by business users in the View Editor, with **more freedom** than symbols but few options.
 - A drawing has no parameter and no animation. Selecting a group and saving it creates a drawing.
 - Drawings go into a **drawing library shared between projects**, so that the same drawings are reused from one synoptic view to another.
-- Curves are allowed **only** in drawings (Q12, ADR-0018): a Figma-like pen places points, and dragging a point pulls Bézier handles. Symbols keep ADR-0001 (segments and arcs only).
+- Curves drawn freely with a pen are allowed in drawings only (Q12, ADR-0018): a Figma-like pen places points, and dragging a point pulls Bézier handles. Symbols have cubic sides from typed handles only, or the round shape's derived ones (ADR-0046, ADR-0048).

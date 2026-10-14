@@ -20,7 +20,8 @@ export const IMPORTS_STYLE: TSESLint.FlatConfig.Config = {
     "import-x/no-empty-named-blocks": "error",
     "import-x/no-mutable-exports": "error",
     "import-x/no-namespace": "error",
-    "import-x/no-unassigned-import": ["error", { allow: ["**/*.css"] }],
+    // The second glob names `.vitepress`: `**` skips folders starting with a dot (minimatch).
+    "import-x/no-unassigned-import": ["error", { allow: ["**/*.css", "**/.vitepress/**/*.css"] }],
     "import-x/order": ["error", IMPORT_ORDER],
     // Namespace imports are banned (import-x/no-namespace).
     "import-x/prefer-namespace-import": "off",

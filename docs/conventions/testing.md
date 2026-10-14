@@ -17,9 +17,15 @@ it("returns the height of an equilateral triangle", () => {
 ```
 
 - When the expected value cannot be computed by hand: **stop** (research request or derivation to validate).
-- Float comparisons: `toBeCloseTo` with a justified number of decimals, or the project's `EPSILON = 1e-9` (Q10, `src/math/epsilon.ts`).
+- Float comparisons: `toBeCloseTo` with a justified number of decimals, or the project's `EPSILON = 1e-9` (Q10, `src/math/precision/epsilon.ts`).
+- Shared test data of `src/` lives in `tests/geometry-fixtures.ts`, imported from `tests` (EN-021): the rectangle of US-001 as points or corners, a free shape from points and radii side by side, the shoelace area, `expectPoints` with its number of decimals, integer points and triangles for properties. A test needing one of these never writes its own copy; test data never enters `src/`, whose barrels are the public API.
 - DOM tests (`src/render/`, `src/interaction/` when it exists, `playground/`): start the file with `// @vitest-environment happy-dom`; the shell stays thin, the logic lives in the core.
-- The playground has its own tests (`playground/*.test.ts`, happy-dom: `mount-playground`, then one file per area such as `points-list`, `radius-field`): it loads the page as served (`index.html?raw`), mounts it, types values and reads what the page shows. It carries the criteria that only the playground can show (`[F01.AC1]`, the display part of `[F01.AC2]`, `[F02.AC4]`, and the playground side of `[F02.AC1]`–`[F02.AC3]`). The playground has a coverage floor of its own, below 100 %: `PLAYGROUND_COVERAGE` in `vite.config.ts`, which only rises.
+- Playground tests (`playground/<panel>/*.test.ts`, happy-dom, in the folder of the panel they exercise, such as `points/points-list`, `shape/radius-field`):
+  - they load the page as served (`index.html?raw`), mount it, act on it and read what it shows, through the actions of `playground/user-actions/` only; an element the test names and the page lacks fails it at once;
+  - the actions select elements on their own (`selectPageElement`), never through the playground's `selectElement`: a test does not lean on the code it checks;
+  - they set state through the page as a user does (a radius per point typed in Points mode), never in the page's attributes;
+  - they carry the criteria only the playground can show (`[F01.AC1]`, the display part of `[F01.AC2]`, `[F02.AC4]`, the playground side of `[F02.AC1]`–`[F02.AC3]`);
+  - the playground has a coverage floor of its own ([Coverage](#coverage)).
 
 ## Properties (ADR-0022)
 
@@ -62,9 +68,9 @@ it("[F01.AC3] clamps a 100 × 25 rectangle with radius 100 to an effective radiu
 
 ## Coverage
 
-`npm run test` measures the coverage of `src/` and `playground/` (`@vitest/coverage-v8`). It fails below **100 %** of lines, branches, functions and statements in `src/`, and below the playground's floor (lines 98, statements 98, functions 100, branches 89 on 2026-10-13). Barrels, tests and the playground's entry are excluded. An uncovered branch is either a missing test or dead code.
+`npm run test` measures the coverage of `src/` and `playground/` (`@vitest/coverage-v8`). It fails below **100 %** of lines, branches, functions and statements in `src/`, and below the playground's floor (lines 98, statements 98, functions 100, branches 89 on 2026-10-13). Barrels, tests, the playground's entry and its test actions (`playground/user-actions/`) are excluded. An uncovered branch is either a missing test or dead code.
 
-**Fitness functions** (`tests/fitness.test.ts`, `REF-FITNESS-FUNCTIONS`): every function exported by `src/math/` and `src/geometry/` is named in a test file holding a property (`test.prop`); the functions written before this check are listed there until EN-020 gives them one, and the list may only shrink. Repository-wide tests live in `tests/`: backlog, bibliography, barrels, dependencies, fitness.
+**Fitness functions** (`tests/fitness.test.ts`, `REF-FITNESS-FUNCTIONS`): every function exported by `src/math/` and `src/geometry/` has a property (`test.prop`) in its own test file, the one beside it; a property written for another function, even one calling it, does not count (EN-020). Repository-wide tests: [files.md](./files.md#names).
 
 ## Checking the tests themselves
 

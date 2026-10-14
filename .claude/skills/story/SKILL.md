@@ -8,7 +8,7 @@ argument-hint: "[story id, e.g. EN-005]"
 
 Story: $ARGUMENTS (default: the next unfinished story of the started feature, printed by the session-start hook).
 
-1. **Check it may start**: status `ready`, or the Product Owner's explicit go-ahead in this conversation. Otherwise stop and ask. Run `/triage` if issues are open (`gh issue list`).
+1. **Check it may start**: status `ready`, or the Product Owner's explicit go-ahead in this conversation (a `/run` is one: ADR-0045). Otherwise stop and ask. Run `/triage` if issues are open (`gh issue list`).
 2. **Read**: the story, its feature (acceptance criteria, plan), the domain file, linked ADRs, derivations and `REF-*` it cites, the research note of the feature's spike; a source to read again → `library_search` / `library_read` first. Missing business rule or source → the stop table of `AGENTS.md`.
 3. **Branch** from the up-to-date feature branch `feature/f<nn>-<topic>` (ADR-0028; created from `develop` when the feature starts, ADR-0038), never from another story branch:
    `git switch feature/f<nn>-<topic> && git pull --prune && git switch -c <type>/<id-lowercase>-<topic>`

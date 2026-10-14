@@ -9,6 +9,9 @@ type Guard = {
   readonly reason: string;
 };
 
+/** `git` and its global options (`-C <path>`, `-c <name>=<value>`, `--no-pager`…), before a subcommand. */
+const GIT = String.raw`^git(?:\s+(?:-[Cc]\s+(?:"[^"]*"|'[^']*'|\S+)|--[a-z-]+(?:=\S+)?))*\s+`;
+
 /** Commands denied in this repository, matched against each segment of a shell command. */
 const GUARDS: readonly Guard[] = [
   {
@@ -17,12 +20,24 @@ const GUARDS: readonly Guard[] = [
       "Story pull requests are merged by the Product Owner, never by the agent (AGENTS.md, Never).",
   },
   {
-    pattern: /^git\s+(?:commit|push)\b.*\s--no-verify\b/u,
+    // `-n` is `git commit`'s short form of `--no-verify`, alone or among other short options.
+    pattern: new RegExp(
+      String.raw`${GIT}(?:commit\b.*\s(?:--no-verify\b|-[A-Za-z]*n[A-Za-z]*(?:\s|$))|push\b.*\s--no-verify\b)`,
+      "u",
+    ),
     reason:
       "The Git hooks (lint-staged, commitlint, check:all) are never bypassed: fix the cause instead.",
   },
   {
-    pattern: /^git\s+push\b(?=.*\s(?:--force|-f)(?:\s|$))/u,
+    // As a command's own setting, not as a word inside a quoted text or a file edit.
+    pattern:
+      /^(?:export\s+|env\s+)?(?:\w+=\S*\s+)*HUSKY=0\b|^git\s.*(?:-c\s+|config\b.*\s)core\.hooksPath\b/u,
+    reason:
+      "The Git hooks (lint-staged, commitlint, check:all) are never switched off: fix the cause instead.",
+  },
+  {
+    // `+branch` in a refspec forces that one update.
+    pattern: new RegExp(String.raw`${GIT}push\b(?=.*\s(?:--force|-f|\+\S+)(?:\s|$))`, "u"),
     reason: "Force pushes use --force-with-lease, and only on the agent's own story branch.",
   },
 ];

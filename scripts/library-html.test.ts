@@ -11,6 +11,10 @@ describe("decodeEntities", () => {
 });
 
 describe("htmlToMarkdown", () => {
+  it("removes nested tags and comments, keeping a < that opens no tag", () => {
+    expect(htmlToMarkdown("<body><p><<b>i>x<!<!-- a -->-- b --></p></body>")).toBe("x");
+  });
+
   it("keeps the main part as Markdown and drops the page chrome", () => {
     const html = [
       "<html><head><title>T</title><script>x()</script></head><body>",

@@ -6,7 +6,9 @@ export const JSDOC_TYPES: TSESLint.FlatConfig.Config = {
   rules: {
     "jsdoc/check-types": "error",
     "jsdoc/no-types": "error",
-    "jsdoc/no-undefined-types": "error",
+    // A word of a JSDoc comment is not a use: an import only the comments name is reported by
+    // unused-imports (three playground tests kept an unused page import, EN-021; RET-002).
+    "jsdoc/no-undefined-types": ["error", { markVariablesAsUsed: false }],
     "jsdoc/no-unnecessary-type-assertion": "error",
     "jsdoc/prefer-import-tag": "error",
     "jsdoc/reject-any-type": "error",

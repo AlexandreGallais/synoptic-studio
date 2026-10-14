@@ -8,7 +8,7 @@ flowchart LR
   S --> A[Analysis<br/>start-of-project interview]
   A --> W[Process<br/>epics, features, stories]
   W --> G[Agent<br/>configuration and habits]
-  G --> L[Lessons<br/>what went wrong, what prevents it]
+  G --> L[Lessons<br/>what went wrong,<br/>what prevents it]
   L -.->|each retrospective| P
 ```
 

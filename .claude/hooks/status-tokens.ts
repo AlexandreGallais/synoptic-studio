@@ -1,58 +1,169 @@
-// Exact tokens of a session for the status line (docs/tooling/metrics.md): summed from its
-// transcript incrementally, a small cache in the Git directory keeping the byte offset already read.
+// Exact tokens of the current turn for the status line (docs/tooling/metrics.md): from the person's
+// prompt to the agent's last answer, like the session report. Summed from the transcript
+// incrementally, a small cache in the Git directory keeping the byte offset already read.
 
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 
-/** Tokens summed so far over a transcript, and where the reading stopped. */
+import { count, field, startOf, text } from "./status-json.ts";
+import { LOST_TASK_MS, endedIds, failedIds, startedTasks } from "./status-tasks.ts";
+
+import type { BackgroundTask } from "./status-tasks.ts";
+
+/** Tokens of the current turn, and where the reading of the transcript stopped. */
 export type TokenTally = {
+  /** When the agent ended its turn, epoch milliseconds; 0 while it works. */
+  readonly end: number;
+  /** Ids of the tool calls whose result or end arrived in the lines just read. */
+  readonly finished: readonly string[];
+  /** Whether the agent ended its turn: the next prompt starts a new one. */
+  readonly isWaiting: boolean;
   readonly lastId: string;
   readonly offset: number;
   readonly output: number;
+  /** Background tasks still running: the agent waits for them even after its turn ended. */
+  readonly pending: readonly BackgroundTask[];
+  /** When the turn started, epoch milliseconds; 0 before the first prompt. */
+  readonly start: number;
   readonly total: number;
 };
 
+/** A tally before any line. */
+export const EMPTY_TALLY: TokenTally = {
+  end: 0,
+  finished: [],
+  isWaiting: true,
+  lastId: "",
+  offset: 0,
+  output: 0,
+  pending: [],
+  start: 0,
+  total: 0,
+};
+
 /**
- * Property of a parsed JSON value.
+ * Whether a transcript line holds text, not only tool results.
  *
- * @param value - parsed JSON
- * @param key - property name
- * @returns the property, or `undefined` when `value` is not an object
+ * @param line - parsed transcript line
+ * @returns true for a string content or a text block
  */
-export function field(value: unknown, key: string): unknown {
-  return typeof value === "object" && value !== null ? Reflect.get(value, key) : undefined;
+function hasText(line: unknown): boolean {
+  const content = field(field(line, "message"), "content");
+
+  return (
+    typeof content === "string" ||
+    (Array.isArray(content) && content.some((block) => text(block, "type") === "text"))
+  );
 }
 
 /**
- * String property of a parsed JSON value.
+ * Whether a transcript line is a prompt typed by the person, not a tool result, a reminder, nor
+ * the summary written after the conversation memory is compacted, nor a background task's
+ * notification: they continue the turn.
  *
- * @param value - parsed JSON
- * @param key - property name
- * @returns the property when it is a string, else an empty string
+ * @param line - parsed transcript line
+ * @returns true for a `user` line holding text
  */
-export function text(value: unknown, key: string): string {
-  const property = field(value, key);
-
-  return typeof property === "string" ? property : "";
+function isPrompt(line: unknown): boolean {
+  return (
+    text(line, "type") === "user" &&
+    field(line, "isMeta") !== true &&
+    field(line, "isCompactSummary") !== true &&
+    text(line, "promptSource") !== "system" &&
+    hasText(line)
+  );
 }
 
 /**
- * Number property of a parsed JSON value.
+ * Tally after a request's usage; a request written over several consecutive lines is counted
+ * once, by its message id.
  *
- * @param value - parsed JSON
- * @param key - property name
- * @returns the property when it is a number, else 0
+ * @param tally - tokens of the turn so far
+ * @param message - message of a transcript line
+ * @returns the tally with the request added
  */
-export function count(value: unknown, key: string): number {
-  const property = field(value, key);
+function withUsage(tally: TokenTally, message: unknown): TokenTally {
+  const usage = field(message, "usage");
+  const id = String(field(message, "id"));
 
-  return typeof property === "number" ? property : 0;
+  if (usage === undefined || id === tally.lastId) {
+    return tally;
+  }
+
+  const all = ["input_tokens", "cache_creation_input_tokens", "cache_read_input_tokens"]
+    .map((key) => count(usage, key))
+    .reduce((left, right) => left + right, count(usage, "output_tokens"));
+
+  return {
+    ...tally,
+    lastId: id,
+    output: tally.output + count(usage, "output_tokens"),
+    total: tally.total + all,
+  };
 }
 
 /**
- * Tally updated with new transcript lines; a request written over several consecutive lines is
- * counted once, by its message id.
+ * Tally once the agent works again after the end of its turn: a new turn at a prompt, the same
+ * turn resumed at an answer that no prompt asked (a background task's notification woke it).
  *
- * @param tally - tokens summed so far
+ * @param tally - tally of a turn that ended
+ * @param line - parsed transcript line
+ * @returns the tally of the turn at work, or unchanged for any other line
+ */
+function resumed(tally: TokenTally, line: unknown): TokenTally {
+  if (isPrompt(line)) {
+    return { ...tally, end: 0, isWaiting: false, output: 0, start: startOf(line), total: 0 };
+  }
+
+  return text(line, "type") === "assistant" ? { ...tally, end: 0, isWaiting: false } : tally;
+}
+
+/**
+ * Background tasks after one transcript line: those it starts added, those notified as ended or
+ * answered with an error removed, those older than `LOST_TASK_MS` dropped.
+ *
+ * @param tally - tally before the line
+ * @param line - parsed transcript line
+ * @param raw - the same line, as written
+ * @returns the tally with its tasks and the calls ended
+ */
+function withTasks(tally: TokenTally, line: unknown, raw: string): TokenTally {
+  const ended = endedIds(line, raw);
+  const notified = new Set([
+    ...(raw.includes("<task-notification>") ? ended : []),
+    ...failedIds(line),
+  ]);
+  const time = startOf(line);
+  const pending = [...tally.pending, ...startedTasks(line)].filter(
+    (task) => !notified.has(task.id) && (time === 0 || time - task.start < LOST_TASK_MS),
+  );
+
+  return { ...tally, finished: [...tally.finished, ...ended], pending };
+}
+
+/**
+ * Tally after one transcript line: a prompt after the agent ended its turn starts a new turn;
+ * messages sent while the agent works stay inside the turn; an answer after the end of the turn
+ * without a prompt (the agent woken by a background task's notification) resumes that turn.
+ *
+ * @param tally - tokens of the turn so far
+ * @param line - parsed transcript line
+ * @param raw - the same line, as written
+ * @returns the new tally
+ */
+function withLine(tally: TokenTally, line: unknown, raw: string): TokenTally {
+  const message = field(line, "message");
+  const started = tally.isWaiting ? resumed(tally, line) : tally;
+  const counted = withUsage(withTasks(started, line, raw), message);
+
+  return text(message, "stop_reason") === "end_turn"
+    ? { ...counted, end: startOf(line), isWaiting: true }
+    : counted;
+}
+
+/**
+ * Tally updated with new transcript lines.
+ *
+ * @param tally - tokens of the turn so far
  * @param lines - complete lines appended to the transcript since `tally.offset`
  * @returns the new tally, its offset moved past `lines`
  */
@@ -60,25 +171,17 @@ export function addTokens(tally: TokenTally, lines: string): TokenTally {
   return lines
     .split("\n")
     .filter((line) => line.startsWith("{"))
-    .map((line): unknown => field(JSON.parse(line), "message"))
-    .filter((message) => field(message, "usage") !== undefined)
     .reduce<TokenTally>(
-      (sum, message) => {
-        const id = String(field(message, "id"));
-        const usage = field(message, "usage");
-        const isNew = id !== sum.lastId;
-        const all = ["input_tokens", "cache_creation_input_tokens", "cache_read_input_tokens"]
-          .map((key) => count(usage, key))
-          .reduce((left, right) => left + right, count(usage, "output_tokens"));
+      (sum, raw) => {
+        const line: unknown = JSON.parse(raw);
 
-        return {
-          lastId: id,
-          offset: sum.offset,
-          output: sum.output + (isNew ? count(usage, "output_tokens") : 0),
-          total: sum.total + (isNew ? all : 0),
-        };
+        return withLine(sum, line, raw);
       },
-      { ...tally, offset: tally.offset + Buffer.byteLength(lines) },
+      {
+        ...tally,
+        finished: [],
+        offset: tally.offset + Buffer.byteLength(lines),
+      },
     );
 }
 
@@ -91,16 +194,27 @@ export function addTokens(tally: TokenTally, lines: string): TokenTally {
  */
 export function cachedTally(cached: unknown, transcript: string): TokenTally {
   const tally = field(cached, "tally");
-  const lastId = field(tally, "lastId");
+
+  const pending = field(tally, "pending");
 
   return field(cached, "transcript") === transcript
     ? {
-        lastId: typeof lastId === "string" ? lastId : "",
+        end: count(tally, "end"),
+        finished: [],
+        isWaiting: field(tally, "isWaiting") !== false,
+        lastId: text(tally, "lastId"),
         offset: count(tally, "offset"),
         output: count(tally, "output"),
+        pending: (Array.isArray(pending) ? pending : []).map((task): BackgroundTask => ({
+          id: text(task, "id"),
+          kind: text(task, "kind") === "agent" ? "agent" : "command",
+          label: text(task, "label"),
+          start: count(task, "start"),
+        })),
+        start: count(tally, "start"),
         total: count(tally, "total"),
       }
-    : { lastId: "", offset: 0, output: 0, total: 0 };
+    : EMPTY_TALLY;
 }
 
 /**
@@ -110,7 +224,7 @@ export function cachedTally(cached: unknown, transcript: string): TokenTally {
  * @param cacheFile - JSON file holding the tally of the previous call
  * @returns the updated tally, also written to the cache
  */
-export function sessionTokens(transcript: string, cacheFile: string): TokenTally {
+export function turnTokens(transcript: string, cacheFile: string): TokenTally {
   const cached: unknown = existsSync(cacheFile) ? JSON.parse(readFileSync(cacheFile, "utf8")) : {};
   const start = cachedTally(cached, transcript);
   const content = existsSync(transcript)

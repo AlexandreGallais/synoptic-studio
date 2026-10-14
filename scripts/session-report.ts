@@ -5,13 +5,21 @@
 // current turn: from the prompt that started it.
 
 import { execFileSync } from "node:child_process";
-import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
+import {
+  appendFileSync,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  statSync,
+} from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 
 import { transcriptEvents, turnStartTime } from "./metrics-events.ts";
 import { formatDuration } from "./metrics-tables.ts";
 import { activeMs } from "./metrics-work.ts";
+import { turnRecord } from "./turns.ts";
 
 import type { TranscriptEvents } from "./metrics-events.ts";
 
@@ -99,11 +107,14 @@ export function sessionFigures(
   };
 }
 
+/** Commits listed by name in a report; beyond, only their count. */
+const COMMITS_LISTED = 8;
+
 /**
- * Rows of the report: label and value.
+ * Rows of the report: label and value, the essentials only.
  *
  * @param figures - figures of the session
- * @returns the rows, in reading order
+ * @returns duration, tokens, tokens written, tool calls, commits
  */
 export function reportRows(figures: SessionFigures): readonly (readonly [string, string])[] {
   const total =
@@ -111,28 +122,39 @@ export function reportRows(figures: SessionFigures): readonly (readonly [string,
 
   return [
     ["Duration", `${formatDuration(figures.wallMs)} (active ${formatDuration(figures.activeMs)})`],
-    ["Tokens, total", formatCount(total)],
-    ["  written by the model", formatCount(figures.outputTokens)],
-    ["  read from the cache", formatCount(figures.cacheReadTokens)],
-    ["  written to the cache", formatCount(figures.cacheWriteTokens)],
-    ["  new input", formatCount(figures.inputTokens)],
-    ["Model requests", formatCount(figures.requests)],
+    ["Tokens", formatCount(total)],
+    ["Written", formatCount(figures.outputTokens)],
     ["Tool calls", `${formatCount(figures.calls)} (${formatCount(figures.failures)} failed)`],
     ["Commits", formatCount(figures.commits.length)],
   ];
 }
 
 /**
- * The report as a Markdown table, for a chat message.
+ * Commits of a report: each one when few, else none (the count is in the table).
+ *
+ * @param commits - commits made during the session
+ * @returns the commits to list
+ */
+function listedCommits(commits: readonly string[]): readonly string[] {
+  return commits.length <= COMMITS_LISTED ? commits : [];
+}
+
+/**
+ * The report as a one-row Markdown table, for a chat message.
  *
  * @param figures - figures of the session
- * @returns a table, then the commits
+ * @returns the table, then the commits when they are few
  */
 export function markdownReport(figures: SessionFigures): string {
-  const rows = reportRows(figures).map(([label, value]) => `| ${label.trim()} | ${value} |`);
-  const commits = figures.commits.map((commit) => `- \`${commit}\``);
+  const rows = reportRows(figures);
+  const commits = listedCommits(figures.commits).map((commit) => `- \`${commit}\``);
 
-  return ["| Session | |", "| --- | --- |", ...rows, "", ...commits].join("\n");
+  return [
+    `| ${rows.map(([label]) => label).join(" | ")} |`,
+    `| ${rows.map(() => "---").join(" | ")} |`,
+    `| ${rows.map(([, value]) => value).join(" | ")} |`,
+    ...(commits.length === 0 ? [] : ["", ...commits]),
+  ].join("\n");
 }
 
 /**
@@ -145,12 +167,13 @@ export function terminalReport(figures: SessionFigures): string {
   const rows = reportRows(figures);
   const width = Math.max(...rows.map(([label, value]) => label.length + value.length)) + GAP;
   const rule = `${COLOR.dim}${"─".repeat(width)}${COLOR.reset}`;
-  const lines = rows.map(([label, value]) => {
-    const color = label.startsWith(" ") ? COLOR.dim : COLOR.cyan;
-
-    return `${color}${label}${COLOR.reset}${" ".repeat(width - label.length - value.length)}${COLOR.bold}${value}${COLOR.reset}`;
-  });
-  const commits = figures.commits.map((commit) => `${COLOR.green}●${COLOR.reset} ${commit}`);
+  const lines = rows.map(
+    ([label, value]) =>
+      `${COLOR.cyan}${label}${COLOR.reset}${" ".repeat(width - label.length - value.length)}${COLOR.bold}${value}${COLOR.reset}`,
+  );
+  const commits = listedCommits(figures.commits).map(
+    (commit) => `${COLOR.green}●${COLOR.reset} ${commit}`,
+  );
 
   return [
     `${COLOR.magenta}${COLOR.bold}Session report${COLOR.reset}`,
@@ -232,6 +255,22 @@ if (import.meta.main) {
     events,
     log.split("\n").filter((line) => line !== ""),
   );
+
+  // Saved for the retrospective's comparison of turns (npm run metrics), unless --all.
+  if (!options.includes("--all") && Number.isFinite(start)) {
+    const common = execFileSync(
+      "git",
+      ["rev-parse", "--path-format=absolute", "--git-common-dir"],
+      {
+        cwd: ROOT,
+        encoding: "utf8",
+      },
+    ).trim();
+    const record = turnRecord(figures, start, events.requests[0]?.session ?? "");
+
+    mkdirSync(join(common, "metrics"), { recursive: true });
+    appendFileSync(join(common, "metrics", "turns.jsonl"), `${JSON.stringify(record)}\n`);
+  }
 
   process.stdout.write(
     `${options.includes("--markdown") ? markdownReport(figures) : terminalReport(figures)}\n`,

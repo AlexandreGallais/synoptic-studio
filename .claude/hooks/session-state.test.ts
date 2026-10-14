@@ -26,6 +26,15 @@ describe("session-state hook", () => {
     );
   });
 
+  it("sees a feature started by its first story in progress", () => {
+    expect(
+      featureLine("E14-F11-x.md", [
+        { id: "SP-010", status: "in-progress", title: "Research" },
+        { id: "VAL-010", status: "draft", title: "Validate" },
+      ]),
+    ).toBe("E14-F11-x: 0/2 stories finished; next SP-010 (in-progress) — Research");
+  });
+
   it("is silent for a feature not started or finished", () => {
     expect(featureLine("f.md", [{ id: "US-001", status: "draft", title: "t" }])).toBeUndefined();
     expect(featureLine("f.md", [{ id: "US-001", status: "done", title: "t" }])).toBeUndefined();

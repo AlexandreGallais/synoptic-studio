@@ -24,7 +24,7 @@ const STATUSES: Readonly<Record<string, readonly string[]>> = {
 const ID_PATTERNS: Readonly<Record<string, RegExp>> = {
   epics: /^E\d{2}$/u,
   features: /^F\d{2}$/u,
-  stories: /^(?:US|EN|SP|CHK|AUD|VAL|REV|RET)-\d{3}$/u,
+  stories: /^(?:US|EN|SP|CHK|AUD|VAL|NAM|REV|RET)-\d{3}$/u,
 };
 
 /**
@@ -119,14 +119,14 @@ function hasValidStatus(item: Item): boolean {
 /** Parent field of each child folder. */
 const PARENT_FIELDS: Readonly<Record<string, string>> = { features: "epic", stories: "feature" };
 
-/** Story kinds attached to an epic rather than a feature: review and retrospective (ADR-0023). */
-const EPIC_STORY = /^(?:REV|RET)-/u;
+/** Story kinds attached to an epic rather than a feature: naming pass, review and retrospective (ADR-0023, ADR-0049). */
+const EPIC_STORY = /^(?:NAM|REV|RET)-/u;
 
 /**
  * Whether a story belongs directly to its epic (review, retrospective).
  *
  * @param item - backlog item
- * @returns `true` for a `REV` or `RET` story
+ * @returns `true` for a `NAM`, `REV` or `RET` story
  */
 function isEpicStory(item: Item): boolean {
   return item.folder === "stories" && EPIC_STORY.test(item.fields["id"] ?? "");
@@ -217,6 +217,12 @@ const FRAME_PREFIXES = ["SP-", "CHK-", "AUD-", "VAL-"];
 /** Story kinds every started epic needs: review, retrospective (ADR-0023). */
 const CLOSING_PREFIXES = ["REV-", "RET-"];
 
+/** Story kind every started epic needs before its review: the naming pass (ADR-0049). */
+const NAMING_PREFIXES = ["NAM-"];
+
+/** Epics without a naming pass: E01 closed before ADR-0049, F13 is E14's (ADR-0049 §4). */
+const BEFORE_NAMING_PASS = new Set(["E01", "E14"]);
+
 /**
  * Whether the stories of one parent include every required kind.
  *
@@ -238,8 +244,8 @@ function hasKinds(
   return prefixes.every((prefix) => ids.some((id) => id.startsWith(prefix)));
 }
 
-/** Folders whose tests may verify acceptance criteria (ADR-0027). */
-const TEST_ROOTS = ["src", "playground"];
+/** Folders whose tests may verify acceptance criteria (ADR-0027); `tests` for the criteria on the code base itself (F11). */
+const TEST_ROOTS = ["src", "playground", "tests"];
 
 /**
  * Concatenated content of every test file, where `[F01.AC3]` tags are looked for.
@@ -250,7 +256,8 @@ function testSources(): string {
   return TEST_ROOTS.flatMap((root) =>
     readdirSync(join(import.meta.dirname, "..", root), { recursive: true })
       .map(String)
-      .filter((file) => file.endsWith(".test.ts"))
+      // This file names tags in its own text: it proves no criterion.
+      .filter((file) => file.endsWith(".test.ts") && file !== "backlog.test.ts")
       .map((file) => readFileSync(join(import.meta.dirname, "..", root, file), "utf8")),
   ).join("\n");
 }
@@ -352,6 +359,17 @@ describe("backlog", () => {
     const unclosed = epics.filter((epic) => !hasKinds(stories, ["epic", epic], CLOSING_PREFIXES));
 
     expect(unclosed).toEqual([]);
+  });
+
+  it("closes every started epic since ADR-0049 with a naming pass", () => {
+    const stories = items().filter((item) => item.folder === "stories");
+    const epics = [...new Set(stories.map((story) => story.fields["epic"] ?? ""))];
+    const unnamed = epics.filter(
+      (epic) =>
+        !BEFORE_NAMING_PASS.has(epic) && !hasKinds(stories, ["epic", epic], NAMING_PREFIXES),
+    );
+
+    expect(unnamed).toEqual([]);
   });
 
   it("traces every criterion of a done feature to a test tagged with its id (ADR-0027)", () => {

@@ -1,0 +1,17 @@
+/* Mermaid diagrams drawn by the theme (draw-diagrams.ts): centered, scrollable when wide. */
+.diagram {
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  text-align: center;
+}
+
+.diagram svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Labels keep their line height inside the boxes Mermaid measured. */
+.diagram .nodeLabel,
+.diagram .edgeLabel {
+  line-height: 1.35;
+}

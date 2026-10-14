@@ -48,7 +48,7 @@ export const IDLE_MS = 300_000;
  * @returns `US-018`, `F04`, or the branch name (`main`, `develop`…)
  */
 export function unitOf(branch: string): string {
-  const found = /\b(?:us|en|sp|chk|aud|val|rev|ret)-\d{3}\b|(?<=^feature\/)f\d{2}(?=-)/u.exec(
+  const found = /\b(?:us|en|sp|chk|aud|val|nam|rev|ret)-\d{3}\b|(?<=^feature\/)f\d{2}(?=-)/u.exec(
     branch,
   );
 

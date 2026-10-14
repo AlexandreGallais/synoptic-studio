@@ -8,9 +8,9 @@ The structure is **checked by a test** (`backlog.test.ts`): unique IDs, valid st
 
 ## Where we are
 
-| Done                                  | Now                               | Next                                                                   | Then                 |
-| ------------------------------------- | --------------------------------- | ---------------------------------------------------------------------- | -------------------- |
-| E01 — draw symbol shapes from numbers | RET-001, the retrospective of E01 | E14 — curves: F11, a code base ready for curves, then F10, round shape | E15 — text, then E02 |
+| Done                                                      | Now | Next                                                                   | Then                 |
+| --------------------------------------------------------- | --- | ---------------------------------------------------------------------- | -------------------- |
+| E01 — draw symbol shapes from numbers, retrospective done | —   | E14 — curves: F11, a code base ready for curves, then F10, round shape | E15 — text, then E02 |
 
 The full order of the epics is the Product Owner's, in [epics](./epics/); each epic orders its features, each feature its stories.
 
@@ -22,7 +22,7 @@ The full order of the epics is the Product Owner's, in [epics](./epics/); each e
 | Scrum Master  | Claude Code                          | keeps the backlog and its links, prepares refinement, checks the method                           |
 | Developers    | Claude Code (with the Product Owner) | split features into stories and stories into tasks, implement, test, demonstrate                  |
 
-The Product Owner is one person (`REF-SCRUM-GUIDE`). Claude Code never sets an epic or a feature to `ready` without the Product Owner's explicit agreement. A story is set to `done` in the **last commit of its pull request**, merged into its feature branch (by the Product Owner, or by GitHub in an authorized run once the local checks passed at the push). The Product Owner's acceptance is given on the test cards and at the feature's validation, by merging the feature pull request: `develop` and `main` only ever hold a story as `done` once its feature is accepted (ADR-0028, ADR-0038).
+The Product Owner is one person (`REF-SCRUM-GUIDE`). Claude Code never sets an epic or a feature to `ready` without the Product Owner's explicit agreement; a `/run` is that agreement for its feature and stories (ADR-0045). A story is set to `done` in the **last commit of its pull request**, merged into its feature branch (by the Product Owner, or by GitHub in an authorized run once the local checks passed at the push). The Product Owner's acceptance is given on the test cards and at the feature's validation, by merging the feature pull request: `develop` and `main` only ever hold a story as `done` once its feature is accepted (ADR-0028, ADR-0038).
 
 ## The four levels
 
@@ -45,7 +45,7 @@ EPIC          complete business need
 1. **Every item has a parent**: story → feature → epic.
 2. **Vertical slice**: a feature or a user story describes an observable behavior, never an isolated layer ("the geometry", "the tests").
 3. **A story is small**: finished, tested and accepted on its own, in a few working sessions at most. Without sprints, this replaces Scrum's "done within one sprint" (`REF-SCRUM-GUIDE`). It meets INVEST (`REF-HUMANIZING-SPLITTING`). Too big → split by behavior (simple case first, then variants), never "part 1 / part 2".
-4. **Story types** (`REF-SAFE-STORY`): `US` user story (user-visible behavior), `EN` enabler (exploration, architecture, infrastructure — e.g. a geometric function and its derivation), `SP` spike (time-boxed study, its acceptance criteria are the questions), `AUD` audit (compliance enabler: full check of a feature, [audit.md](../conventions/audit.md)), `VAL` feature validation (demo page in the [guide](../guide/), the Product Owner runs its guided test and checks the feature's criteria), `CHK` checkpoint in the middle of a feature (docs and methods brought up to date, light evolvability check, ADR-0028), `REV` epic review and `RET` epic retrospective (attached to the epic, no feature; [process](../process/)). Each user story carries a **Product Owner test card** (section `## Product Owner test`): what to try in the playground and what to expect.
+4. **Story types** (`REF-SAFE-STORY`): `US` user story (user-visible behavior), `EN` enabler (exploration, architecture, infrastructure — e.g. a geometric function and its derivation), `SP` spike (time-boxed study, its acceptance criteria are the questions), `AUD` audit (compliance enabler: full check of a feature, [audit.md](../conventions/audit.md)), `VAL` feature validation (demo page in the [guide](../guide/), the Product Owner runs its guided test and checks the feature's criteria), `CHK` checkpoint in the middle of a feature (docs and methods brought up to date, light evolvability check, ADR-0028), `NAM` naming pass (the whole code gone over twice so that every calculation a field names is a named function, ADR-0049), `REV` epic review and `RET` epic retrospective (attached to the epic, no feature; [process](../process/)). Each user story carries a **Product Owner test card** (section `## Product Owner test`): what to try in the playground and what to expect.
 5. **Acceptance criteria**: Given / When / Then, one block per case, each observable. A **feature's** numbered criteria are its requirements (`F01.AC3`, ADR-0027): each one appropriate, complete, correct, feasible, necessary, singular, unambiguous and verifiable; once the feature is `done`, a criterion is changed only by a new story citing it.
 6. **Feature plan**: once a feature is refined, a table maps each acceptance criterion to the stories that realize it and to the story that verifies it, in delivery order.
 7. **A task is ≤ 1 day**, one verifiable result, estimated in hours (`REF-SCRUM-GUIDE`: work items of one day or less); stories are estimated in points. Tasks are numbered `T1`, `T2`… inside their story; **one task = one commit**, referenced as `US-004.T2`.
@@ -66,7 +66,7 @@ Every feature is delivered in the same order, checked by `backlog.test.ts` (a fe
 | 3    | `AUD` audit                                      | the feature in depth, the project in breadth ([audit.md](../conventions/audit.md))                                                                                                                                                         |
 | 4    | `VAL` validation                                 | plain-language demo page and guided test; the Product Owner checks the feature's acceptance criteria                                                                                                                                       |
 
-Every started epic closes with `REV` (epic report and user test) then `RET` (retrospective, evolvability review, playbook) — ADR-0023, checked by the same test. Their files are `E01-REV-001-slug.md`, listed in the epic's **Closing** table.
+Every started epic closes with `NAM` (naming pass over the whole code, ADR-0049), `REV` (epic report and user test) then `RET` (retrospective, evolvability review, playbook) — ADR-0023, checked by the same test; E01 has no `NAM` (closed before it), nor E14 (F13 is its naming pass). Their files are `E01-REV-001-slug.md`, listed in the epic's **Closing** table.
 
 ## Statuses
 
