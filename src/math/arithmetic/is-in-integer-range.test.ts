@@ -15,6 +15,8 @@ describe("isInIntegerRange (REF-WIKI-INTERVAL)", () => {
     { isIn: false, first: 1, last: 5, value: 2.5 },
     { isIn: false, first: 1, last: 5, value: NaN },
     { isIn: false, first: -10, last: 10, value: Infinity },
+    // 2⁵³ is past the safe integers: refused even in an unbounded interval.
+    { isIn: false, first: 0, last: Infinity, value: 2 ** 53 },
     // An interval of one integer holds it; the last before the first holds none.
     { isIn: true, first: 7, last: 7, value: 7 },
     { isIn: false, first: 5, last: 4, value: 5 },
