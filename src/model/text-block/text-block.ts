@@ -1,3 +1,4 @@
+import { maximum } from "../../math";
 import { textInCase } from "../text-case";
 
 import { lineHeight } from "./line-height";
@@ -11,9 +12,10 @@ import type { Text } from "../text";
 /**
  * The block of a text, measured from its font face's metrics: its content written in its case
  * and cut into lines, as wide as its widest line and as tall as its lines' heights together
- * (`DERIV-text-width`, step 4). An empty content has no line: a block 0 wide and 0 tall.
+ * (`DERIV-text-width`, step 4). An empty content has no line: a block 0 wide and 0 tall; lines
+ * narrower than nothing, tightened by a negative spacing, give a block 0 wide.
  *
- * Formula: width = max over the lines of their width; height = k × lineHeight for k lines.
+ * Formula: width = max(0, widths of the lines); height = k × lineHeight for k lines.
  *
  * @kind domain
  * @param metrics - the metrics of the face the text is drawn with
@@ -26,6 +28,9 @@ export function textBlock(metrics: FontMetrics, text: Text): Size {
 
   return {
     height: lines.length * lineHeight(metrics, text.size),
-    width: Math.max(0, ...lines.map((line) => lineWidth(metrics, line, text))),
+    width: maximum(
+      lines.map((line) => lineWidth(metrics, line, text)),
+      0,
+    ),
   };
 }
