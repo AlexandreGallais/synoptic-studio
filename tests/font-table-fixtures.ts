@@ -34,7 +34,7 @@ function headTable(unitsPerEm: number): number[] {
 }
 
 /** The `hhea` fields written by `hheaTable`. */
-type HheaFields = {
+export type HheaFields = {
   /** Typographic ascent, font units. */
   readonly ascender: number;
   /** Typographic descent, font units, negative below the baseline. */
@@ -52,7 +52,7 @@ type HheaFields = {
  * @param fields - the values to write
  * @returns its bytes
  */
-function hheaTable(fields: HheaFields): number[] {
+export function hheaTable(fields: HheaFields): number[] {
   return tableOf({
     fields: [
       { at: 0, bytes: uint32(TRUE_TYPE_VERSION) },
