@@ -9,7 +9,8 @@ import type { FreeShape } from "../free-shape";
  * (ADR-0029) — a circle in a square box, a capsule in a long one (`DERIV-round-shape` step 2).
  *
  * @kind domain
- * @param shape - valid round shape of width and height > 0
+ * @param shape - valid round shape of width and height > 0: one of size 0 is not converted (F08),
+ * the caller greys its button, as for a polygon
  * @returns the free shape of its box, rounded
  * @see DERIV-round-shape
  */

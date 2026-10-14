@@ -176,8 +176,8 @@ Functional reference: Inkscape's Star/Polygon tool.
 ### Round shape (F10)
 
 - A **round shape** fills its box: a circle in a square box, an ellipse otherwise, touching its four sides (Product Owner, 2026-10-12). A capsule stays a rectangle rounded by half its smaller side.
-- Model (`RoundShape`, ADR-0048): `width`, `height` (integers ≥ 0, Q15), `angle` (0 to 359) and position `x`, `y` (ADR-0035). No radius, no anchor, no point to edit.
-- Drawn as four cubic sides through its top, right, bottom and left points, point 1 at the top then clockwise; each handle `4(√2 − 1)/3` of the half axis, in Mirror angle and length (`DERIV-round-shape-curve`). The curve is within 0.00027 of the larger half axis of the true ellipse: 0.014 on a circle of diameter 100. A box of width or height 0 draws the line it is.
+- Model (`RoundShape`, ADR-0048): `width`, `height` (integers ≥ 0, Q15), `angle` (0 to 359), position `x`, `y` (ADR-0035), and `kind: "round"`, which tells it from the shapes that have corners. No radius, no anchor, no point to edit.
+- Drawn as four cubic sides through its top, right, bottom and left points, point 1 at the top then clockwise; each handle `4(√2 − 1)/3` of the half axis, in Mirror angle and length (`DERIV-round-shape-curve`). The curve is within about 0.00027 of the larger half axis of the true ellipse: 0.014 on a circle of diameter 100. A box of width or height 0 draws the line it is.
 - Two conversions to a free shape (Product Owner, 2026-10-12): **Convert to free shape** gives its 4 points with their handles, the drawing unchanged; **Convert to rounded rectangle** gives the 4 corners of its box, each with half the smaller side rounded up as radius — the same circle in a square box (within the gap above), a capsule in a long one (`DERIV-round-shape` step 2). A box of width or height 0 is not converted, as a polygon (F08).
 - Refined by the agent from the Product Owner's decisions, to confirm at VAL-012: the cubic sides, point 1 at the top, the names of the two conversions.
 

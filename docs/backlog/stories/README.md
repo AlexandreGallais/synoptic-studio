@@ -95,7 +95,7 @@
 | [US-028](./E14-F12-US-028-handles-on-a-polygon.md)              | F12     | Give handles to a point of a regular polygon                        | done   |
 | [AUD-012](./E14-F12-AUD-012-audit-after-validation.md)          | F12     | Audit the changes asked at the validation                           | done   |
 | [SP-013](./E14-F10-SP-013-research-f10.md)                      | F10     | Research for F10: an ellipse from four cubic sides                  | done   |
-| [EN-027](./E14-F10-EN-027-round-shape-model.md)                 | F10     | The round shape in the model, its curve and conversions             | ready  |
+| [EN-027](./E14-F10-EN-027-round-shape-model.md)                 | F10     | The round shape in the model, its curve and conversions             | done   |
 | [US-029](./E14-F10-US-029-round-tool.md)                        | F10     | Draw a circle or an ellipse with the Round tool                     | ready  |
 | [CHK-012](./E14-F10-CHK-012-checkpoint-f10.md)                  | F10     | Checkpoint in the middle of F10                                     | ready  |
 | [US-030](./E14-F10-US-030-convert-round-shape.md)               | F10     | Convert a round shape to a free shape, two ways                     | ready  |

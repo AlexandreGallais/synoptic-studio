@@ -21,16 +21,16 @@ No radius is reduced: the drawing is exactly the rectangle capped by two half ci
 
 ## Step 2 — Converted to a free shape
 
-A free shape stores integer radii (ADR-0029, ADR-0033). The conversion is the rectangle tool's free shape for the box (the unit square stretched to `w × h`, ADR-0032, valid at a size of 0), each of its 4 corners getting `⌈m/2⌉`. For an even `m` it is `m/2`, step 1. For an odd `m` it is `(m + 1)/2`: on a side of length `m` the setbacks add up to `m + 1 > m`, the factor is `m/(m + 1)`, and the effective radius is `(m + 1)/2 · m/(m + 1) = m/2` (`DERIV-local-radius-clamp` step 3): the same drawing. On the longer side, `m + 1 ≤ M` unless `w = h`, where both sides give the same factor.
+A free shape stores integer radii (ADR-0029, ADR-0033). The conversion is the rectangle tool's free shape for the box (the unit square stretched to `w × h`, ADR-0032; in E14 a box of width or height 0 is not converted, as a polygon, F08), each of its 4 corners getting `⌈m/2⌉`. For an even `m` it is `m/2`, step 1. For an odd `m` it is `(m + 1)/2`: on a side of length `m` the setbacks add up to `m + 1 > m`, the factor is `m/(m + 1)`, and the effective radius is `(m + 1)/2 · m/(m + 1) = m/2` (`DERIV-local-radius-clamp` step 3): the same drawing. On the longer side, `m + 1 ≤ M` unless `w = h`, where both sides give the same factor.
 
 ## Checks (test cases)
 
-| Case               | Computation                                  | Expected                                                             |
-| ------------------ | -------------------------------------------- | -------------------------------------------------------------------- |
-| 100 × 100          | `r = 50`                                     | the circle of diameter 100: four quarter arcs of radius 50           |
-| 120 × 80           | `r = 40`; top side 120: straight part 40     | a capsule: half circles of radius 40, straight sides from x 40 to 80 |
-| 80 × 120           | `r = 40`; left side 120: straight part 40    | a standing capsule                                                   |
-| 81 × 81 converted  | radii 41; factor 81/82                       | effective radius 40.5: the same circle                               |
-| 120 × 80 converted | radii 40                                     | the same capsule                                                     |
-| 0 × 50             | `r = 0`                                      | a vertical line, as a rectangle of width 0 (Q15)                     |
-| 0 × 50 converted   | the unit square stretched to 0 × 50, radii 0 | a valid free shape, the same line                                    |
+| Case               | Computation                               | Expected                                                             |
+| ------------------ | ----------------------------------------- | -------------------------------------------------------------------- |
+| 100 × 100          | `r = 50`                                  | the circle of diameter 100: four quarter arcs of radius 50           |
+| 120 × 80           | `r = 40`; top side 120: straight part 40  | a capsule: half circles of radius 40, straight sides from x 40 to 80 |
+| 80 × 120           | `r = 40`; left side 120: straight part 40 | a standing capsule                                                   |
+| 81 × 81 converted  | radii 41; factor 81/82                    | effective radius 40.5: the same circle                               |
+| 120 × 80 converted | radii 40                                  | the same capsule                                                     |
+| 0 × 50             | `r = 0`                                   | a vertical line, as a rectangle of width 0 (Q15)                     |
+| 0 × 50 converted   | not converted (F08, E14)                  | the buttons greyed                                                   |
