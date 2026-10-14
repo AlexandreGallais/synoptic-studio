@@ -1,9 +1,12 @@
-import { test } from "@fast-check/vitest";
+import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { integerPoint } from "../../../tests";
+import { quarterTurn } from "../rotation";
 
+import { add } from "./add";
 import { scalarProjection } from "./scalar-projection";
+import { scale } from "./scale";
 
 describe("scalarProjection (REF-MATHWORLD-SCALAR-PROJECTION)", () => {
   it("measures (3, 4) from the origin along the x axis: 3", () => {
@@ -14,11 +17,19 @@ describe("scalarProjection (REF-MATHWORLD-SCALAR-PROJECTION)", () => {
     expect(scalarProjection({ x: -2, y: 7 }, { x: 1, y: 0 }, { x: 1, y: 0 })).toBe(-3);
   });
 
-  test.prop({ origin: integerPoint(1e3), point: integerPoint(1e3) })(
-    "is 0 across a line's direction turned a quarter",
-    ({ origin, point }) => {
-      // Along (0, 1), the x offset does not count.
-      expect(scalarProjection(point, origin, { x: 0, y: 1 })).toBe(point.y - origin.y);
+  test.prop({
+    across: fc.integer({ max: 100, min: -100 }),
+    along: fc.integer({ max: 100, min: -100 }),
+    angle: fc.double({ max: 7, min: -7, noNaN: true }),
+    origin: integerPoint(1e3),
+  })(
+    "measures the part along the direction, not the part across",
+    ({ across, along, angle, origin }) => {
+      const u = { x: Math.cos(angle), y: Math.sin(angle) };
+      const offset = add(scale(u, along), scale(quarterTurn(u), across));
+      const point = add(origin, offset);
+
+      expect(scalarProjection(point, origin, u)).toBeCloseTo(along, 9);
     },
   );
 });

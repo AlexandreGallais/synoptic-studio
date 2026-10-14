@@ -8,7 +8,7 @@ import type { BoundingBox } from "../placement";
  *
  * @kind geometry
  * @param box - the box, its bounds on each axis
- * @returns its width and height, ≥ 0
+ * @returns its width and height, ≥ 0 for a box of at least one point
  * @see REF-WIKI-BOUNDING-BOX
  */
 export function boxSize(box: BoundingBox): Size {

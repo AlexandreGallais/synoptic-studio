@@ -1,5 +1,6 @@
 export * from "./central-angle";
 export * from "./degrees-in-turn";
+export * from "./degrees-per-half-turn";
 export * from "./degrees-per-turn";
 export * from "./degrees-to-radians";
 export * from "./direction-at";

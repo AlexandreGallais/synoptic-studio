@@ -11,8 +11,7 @@ describe("rotate (REF-MATHWORLD-ROTATION-MATRIX)", () => {
     // (cos 60°, sin 60°) = (0.5, √3/2): (1 · 0.5 − 0, 1 · √3/2 + 0).
     const turned = rotate({ x: 1, y: 0 }, { x: 0.5, y: Math.sqrt(3) / 2 });
 
-    expect(turned.x).toBeCloseTo(0.5, 15);
-    expect(turned.y).toBeCloseTo(0.8660254037844386, 15);
+    expect(turned).toEqual({ x: 0.5, y: 0.8660254037844386 });
   });
 
   it("leaves a vector as it is for the direction (1, 0)", () => {

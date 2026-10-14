@@ -12,7 +12,7 @@ describe("average (REF-MATHWORLD-MIDPOINT)", () => {
   test.prop({
     first: fc.double({ noNaN: true, noDefaultInfinity: true, max: 1e300, min: -1e300 }),
     second: fc.double({ noNaN: true, noDefaultInfinity: true, max: 1e300, min: -1e300 }),
-  })("lies between the two numbers, at the same distance from both", ({ first, second }) => {
+  })("lies between the two numbers, whatever their order", ({ first, second }) => {
     const mean = average(first, second);
 
     expect(mean >= Math.min(first, second) && mean <= Math.max(first, second)).toBe(true);

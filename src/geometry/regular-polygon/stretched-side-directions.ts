@@ -29,6 +29,7 @@ export function stretchedSideDirections(corners: number, scale: number): readonl
   }
 
   const before = directions.slice(0, -1);
+  // The x of the chain from the origin is the sum of the sides' cosines.
   const cosines = chainEnd(ZERO_VECTOR, before).x;
 
   return [...before, Math.acos(-HALF_SIDE - cosines)];

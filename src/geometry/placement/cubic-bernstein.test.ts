@@ -7,6 +7,8 @@ describe("cubicBernstein (REF-WIKI-BEZIER)", () => {
   it("is (1/8, 3/8, 3/8, 1/8) at ½, and the ends at 0 and 1", () => {
     expect(cubicBernstein(1 / 2)).toEqual([0.125, 0.375, 0.375, 0.125]);
     expect(cubicBernstein(0)).toEqual([1, 0, 0, 0]);
+    // At ¼: (27, 27, 9, 1)/64, exact; the two middle weights told apart.
+    expect(cubicBernstein(1 / 4)).toEqual([0.421875, 0.421875, 0.140625, 0.015625]);
     expect(cubicBernstein(1)).toEqual([0, 0, 0, 1]);
   });
 

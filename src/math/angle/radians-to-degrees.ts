@@ -1,7 +1,4 @@
-import { DEGREES_PER_TURN } from "./degrees-per-turn";
-
-/** Degrees in half a turn, π radians. */
-const HALF_TURN = DEGREES_PER_TURN / 2;
+import { DEGREES_PER_HALF_TURN } from "./degrees-per-half-turn";
 
 /**
  * An angle in radians, in degrees: π radians are 180 degrees.
@@ -14,5 +11,5 @@ const HALF_TURN = DEGREES_PER_TURN / 2;
  * @see REF-OPENSTAX-ANGLES
  */
 export function radiansToDegrees(radians: number): number {
-  return (radians * HALF_TURN) / Math.PI;
+  return (radians * DEGREES_PER_HALF_TURN) / Math.PI;
 }
