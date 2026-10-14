@@ -5,7 +5,6 @@ export type * from "./anchor";
 export * from "./box-size";
 export * from "./fit-in-box";
 export * from "./half-size";
-export * from "./half-smaller-side";
 export * from "./has-area";
 export type * from "./size";
 export * from "./stretch-factors";

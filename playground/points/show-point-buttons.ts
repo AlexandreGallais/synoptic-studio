@@ -1,4 +1,4 @@
-import { edgeOfSelection, hasArea, isFreeShape, isRoundShape } from "../../src";
+import { edgeOfSelection, hasArea, isFreeShape } from "../../src";
 import { selectElement } from "../page";
 
 import { showDeleteButton } from "./show-delete-button";
@@ -29,13 +29,9 @@ export function showPointButtons(
   const isFlat = model.width === 0 || model.height === 0;
   const edge = edgeOfSelection(selection.selected, reading.corners.length * Number(hasArea(model)));
   const convert = selectElement(document, "convert");
-  const rounded = selectElement(document, "convert-rounded");
 
   convert.hidden = !isConverted;
   convert.toggleAttribute("disabled", isFlat);
-  // A round shape also converts to the rounded rectangle of its box (F10.AC5).
-  rounded.hidden = !isRoundShape(model);
-  rounded.toggleAttribute("disabled", isFlat);
   selectElement(document, "convert-hint").hidden = !isConverted;
 
   showDeleteButton(document, reading, selection);

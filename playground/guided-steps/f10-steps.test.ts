@@ -66,22 +66,11 @@ describe("the guided test of F10 (VAL-012)", () => {
     expect(readPressedState("handles-switch")).toBe("true");
   });
 
-  it("step 6 converts it to a capsule of radius 40", () => {
+  it("step 6 greys the conversion at width 0", () => {
     openStep(6);
-    clickElement("mode-points");
-    clickElement("convert-rounded");
-
-    expect(readPointRows()[0]).toBe("1 · x 0 · y 0 · radius 40");
-  });
-
-  it("step 7 greys both conversions at width 0", () => {
-    openStep(7);
     typeAndEnter("width", "0");
     clickElement("mode-points");
 
-    expect([
-      readDisabledState("convert") === "true",
-      readDisabledState("convert-rounded") === "true",
-    ]).toEqual([true, true]);
+    expect(readDisabledState("convert")).toBe("true");
   });
 });

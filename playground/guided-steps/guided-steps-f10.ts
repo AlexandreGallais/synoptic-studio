@@ -43,14 +43,8 @@ export const GUIDED_STEPS_F10: readonly GuidedStep[] = [
     values: ELLIPSE,
   },
   {
-    explanation: "Points, Convert to rounded rectangle.",
-    look: "A capsule: the 4 corners of the box, radius 40 each.",
-    title: "F10 · Convert to rounded rectangle",
-    values: ELLIPSE,
-  },
-  {
     explanation: "Width 0, then Points.",
-    look: "A vertical line; both conversions greyed.",
+    look: "A vertical line; Convert to free shape greyed.",
     title: "F10 · A box of width 0",
     values: ELLIPSE,
   },

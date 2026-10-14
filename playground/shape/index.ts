@@ -11,5 +11,4 @@ export * from "./update-kept-radii";
 export * from "./write-capped-sizes";
 export * from "./write-chosen-free-shape";
 export * from "./write-converted-shape";
-export * from "./write-rounded-rectangle";
 export * from "./write-stored-free-shape";

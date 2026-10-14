@@ -1,11 +1,6 @@
 import { freeShapeCorners, freeShapeWithPoint, turnedCorners } from "../../src";
 import { readNumber, readSelection, selectElement } from "../page";
-import {
-  readEditedFreeShape,
-  writeConvertedShape,
-  writeRoundedRectangle,
-  writeStoredFreeShape,
-} from "../shape";
+import { readEditedFreeShape, writeConvertedShape, writeStoredFreeShape } from "../shape";
 
 import { listenToDeleteKey } from "./listen-to-delete-key";
 import { writeAddedMidpoint } from "./write-added-midpoint";
@@ -100,7 +95,7 @@ function movePointTyped(document: Document, axis: "x" | "y"): void {
 
 /**
  * Listens to the buttons converting a regular polygon or a round shape to a free shape, then
- * calls back (F08.AC1, F10.AC4, F10.AC5).
+ * calls back (F08.AC1, F10.AC4).
  *
  * @kind procedure
  * @param document - page document
@@ -110,11 +105,6 @@ function movePointTyped(document: Document, axis: "x" | "y"): void {
 function listenToConvertButtons(document: Document, update: () => void): void {
   selectElement(document, "convert").addEventListener("click", () => {
     writeConvertedShape(document);
-    update();
-  });
-
-  selectElement(document, "convert-rounded").addEventListener("click", () => {
-    writeRoundedRectangle(document);
     update();
   });
 }

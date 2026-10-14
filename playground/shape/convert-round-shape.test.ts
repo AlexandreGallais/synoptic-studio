@@ -14,7 +14,6 @@ import {
 } from "../user-actions";
 
 import { writeConvertedShape } from "./write-converted-shape";
-import { writeRoundedRectangle } from "./write-rounded-rectangle";
 
 /**
  * Opens the page on a round shape 120 × 80, in Points mode.
@@ -47,42 +46,29 @@ describe("converting a round shape (US-030)", () => {
     expect(readValue("handle-mode")).toBe("angle-and-length");
   });
 
-  it("[F10.AC5] gives the 4 corners of its box rounded by 40: a capsule", () => {
-    // Half the smaller side, 80 / 2 = 40 (DERIV-round-shape step 2).
+  it("[F10.AC5] offers no conversion to a rounded rectangle", () => {
+    // Removed at VAL-012: an ellipse rounded as its box would change shape.
     openRoundShape("120");
-    clickElement("convert-rounded");
 
-    expect(readValue("shape")).toBe("free");
+    const buttons = [...document.querySelectorAll("button")].map((button) => button.textContent);
 
-    expect(readPointRows()).toEqual([
-      "1 · x 0 · y 0 · radius 40",
-      "2 · x 120 · y 0 · radius 40",
-      "3 · x 120 · y 80 · radius 40",
-      "4 · x 0 · y 80 · radius 40",
-    ]);
-
-    expect(readText("#path-data")).toBe(
-      "M40 0 L80 0 A40 40 0 0 1 120 40 A40 40 0 0 1 80 80 L40 80 A40 40 0 0 1 0 40 A40 40 0 0 1 40 0 Z",
-    );
+    expect(buttons).not.toContain("Convert to rounded rectangle");
+    expect(document.querySelector("#convert-rounded")).toBeNull();
   });
 
   it.each([
     { height: "80", width: "0" },
     { height: "0", width: "120" },
-  ])("greys both buttons on a box $width × $height", ({ height, width }) => {
+  ])("greys the conversion on a box $width × $height", ({ height, width }) => {
     openRoundShape(width);
     typeAndEnter("height", height);
 
-    expect([
-      readDisabledState("convert") === "true",
-      readDisabledState("convert-rounded") === "true",
-    ]).toEqual([true, true]);
+    expect(readDisabledState("convert")).toBe("true");
   });
 
-  it("converts nothing of width 0 even when asked directly (the buttons' guard)", () => {
+  it("converts nothing of width 0 even when asked directly (the button's guard)", () => {
     openRoundShape("0");
     writeConvertedShape(document);
-    writeRoundedRectangle(document);
 
     expect(readValue("shape")).toBe("round");
   });
@@ -98,20 +84,6 @@ describe("converting a round shape (US-030)", () => {
     expect([readText("#path-data"), readValue("angle")]).toEqual([drawn, "30"]);
   });
 
-  it("[F10.AC5] rounds the box of a turned round shape about its centre", () => {
-    // The box's corners turned by 30° about (60, 40), each √(60² + 40²) ≈ 72.111 from it.
-    openRoundShape("120");
-    typeAndEnter("angle", "30");
-    clickElement("convert-rounded");
-
-    expect(readPointRows()).toEqual([
-      "1 · x 28.03848 · y -24.64102 · radius 40",
-      "2 · x 131.96152 · y 35.35898 · radius 40",
-      "3 · x 91.96152 · y 104.64102 · radius 40",
-      "4 · x -11.96152 · y 44.64102 · radius 40",
-    ]);
-  });
-
   it("shows the conversion line on a round shape", () => {
     openRoundShape("120");
 
@@ -122,17 +94,12 @@ describe("converting a round shape (US-030)", () => {
     );
   });
 
-  it("gives the converted shape its own radii: 0 for its points, 40 for the rounded box", () => {
+  it("gives the converted shape its own radii: 0 for its points", () => {
     // As a converted polygon (F08): the free shape's radii are written in the Radius field.
     openRoundShape("120");
     clickElement("convert");
 
     expect(readValue("radius")).toBe("0");
-
-    openRoundShape("120");
-    clickElement("convert-rounded");
-
-    expect(readValue("radius")).toBe("40");
   });
 
   it("hides the handles switch on every point of a round shape", () => {
@@ -148,12 +115,11 @@ describe("converting a round shape (US-030)", () => {
     expect(hidden).toEqual([true, true, true, true]);
   });
 
-  it("shows the rounded conversion for a round shape only", () => {
+  it("shows the conversion for a polygon too", () => {
     openOnStep(1);
     clickElement("tool-polygon");
     clickElement("mode-points");
 
-    expect(document.querySelector<HTMLElement>("#convert-rounded")?.hidden).toBe(true);
     expect(document.querySelector<HTMLElement>("#convert")?.hidden).toBe(false);
   });
 });
