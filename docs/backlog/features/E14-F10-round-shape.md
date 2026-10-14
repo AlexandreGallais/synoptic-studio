@@ -51,7 +51,7 @@ The Product Owner's decisions above stand; they asked for no further questions (
 
 | ID                                                         | Type       | Title                                                   | Status |
 | ---------------------------------------------------------- | ---------- | ------------------------------------------------------- | ------ |
-| [SP-013](../stories/E14-F10-SP-013-research-f10.md)        | Spike      | Research for F10: an ellipse from four cubic sides      | ready  |
+| [SP-013](../stories/E14-F10-SP-013-research-f10.md)        | Spike      | Research for F10: an ellipse from four cubic sides      | done   |
 | [EN-027](../stories/E14-F10-EN-027-round-shape-model.md)   | Enabler    | The round shape in the model, its curve and conversions | ready  |
 | [US-029](../stories/E14-F10-US-029-round-tool.md)          | User story | Draw a circle or an ellipse with the Round tool         | ready  |
 | [CHK-012](../stories/E14-F10-CHK-012-checkpoint-f10.md)    | Checkpoint | Checkpoint in the middle of F10                         | ready  |
