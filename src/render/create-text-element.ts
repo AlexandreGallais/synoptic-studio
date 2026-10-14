@@ -1,4 +1,10 @@
-import { formatSvgNumber, percentToOpacity, rectangleToPathData, textToAttributes } from "../io";
+import { rectangleSides } from "../geometry";
+import {
+  contourPiecesToPathData,
+  formatSvgNumber,
+  percentToOpacity,
+  textToAttributes,
+} from "../io";
 
 import { createPathElement } from "./create-path-element";
 import { SVG_NAMESPACE } from "./svg-namespace";
@@ -42,7 +48,10 @@ function createDecorationElement(
   decoration: LineDecoration,
   text: Text,
 ): SVGPathElement {
-  const path = createPathElement(document, rectangleToPathData(decoration));
+  const path = createPathElement(
+    document,
+    contourPiecesToPathData(rectangleSides(decoration, decoration)),
+  );
 
   path.setAttribute("fill", text.color);
   path.setAttribute("fill-opacity", formatSvgNumber(percentToOpacity(text.opacity)));

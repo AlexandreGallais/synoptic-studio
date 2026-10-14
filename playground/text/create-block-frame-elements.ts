@@ -1,4 +1,4 @@
-import { createPathElement, rectangleToPathData } from "../../src";
+import { contourPiecesToPathData, createPathElement, rectangleSides } from "../../src";
 
 import type { Size, Text } from "../../src";
 
@@ -26,13 +26,13 @@ export function createBlockFrameElements(
     return [];
   }
 
-  const outer = rectangleToPathData({ ...block, x: text.x, y: text.y });
-  const inner = rectangleToPathData({
-    height: block.height - 2 * LINE,
-    width: block.width - 2 * LINE,
-    x: text.x + LINE,
-    y: text.y + LINE,
-  });
+  const outer = contourPiecesToPathData(rectangleSides(text, block));
+  const inner = contourPiecesToPathData(
+    rectangleSides(
+      { x: text.x + LINE, y: text.y + LINE },
+      { height: block.height - 2 * LINE, width: block.width - 2 * LINE },
+    ),
+  );
   const frame = createPathElement(document, `${outer} ${inner}`);
 
   frame.classList.add("text-block");
