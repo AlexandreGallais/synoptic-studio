@@ -32,7 +32,7 @@ The Product Owner asked for no further questions: F13 is done after F10, and bot
 
 | ID                                                               | Type       | Title                                                                 | Status |
 | ---------------------------------------------------------------- | ---------- | --------------------------------------------------------------------- | ------ |
-| [SP-014](../stories/E14-F13-SP-014-research-f13.md)              | Spike      | Research for F13: the named calculations and their sources            | ready  |
+| [SP-014](../stories/E14-F13-SP-014-research-f13.md)              | Spike      | Research for F13: the named calculations and their sources            | done   |
 | [EN-028](../stories/E14-F13-EN-028-name-math-and-geometry.md)    | Enabler    | Pass 1: name the calculations of `math` and `geometry`                | ready  |
 | [EN-029](../stories/E14-F13-EN-029-name-model-and-playground.md) | Enabler    | Pass 1: name the calculations of the model, io, render and playground | ready  |
 | [CHK-013](../stories/E14-F13-CHK-013-checkpoint-f13.md)          | Checkpoint | Checkpoint between the two passes                                     | ready  |

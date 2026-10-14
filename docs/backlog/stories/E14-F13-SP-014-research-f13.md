@@ -3,7 +3,7 @@ id: SP-014
 epic: E14
 feature: F13
 title: "Research for F13: the named calculations and their sources"
-status: ready
+status: done
 points: 1
 ---
 
@@ -19,4 +19,8 @@ Find, before any change, each inline calculation that mathematics names, its nam
 
 One task = one commit, referenced as `SP-014.Tn`.
 
-- [ ] T1 — The math-expert's inventory, checked, as a research note (1 h)
+- [x] T1 — The math-expert's inventory, checked, as a research note (1 h)
+
+## Result
+
+[Research note 0016](../../research/notes/0016-f13-named-calculations.md): the calculations to name in each pass, their sources, those left inline with the reason; eight sources added to the references. Q35 asked.
