@@ -30,6 +30,14 @@ Decided by the Product Owner on 2026-10-12: text is too large a subject for one 
 - Fonts: which fonts are allowed, how they are named and found, what happens when one is missing.
 - Size: how the size of a text is measured without the DOM in the portable core (ADR-0025), for the layout box (E13) and alignment.
 
+## Before E15's release
+
+- **A release without an extra commit on `main`** (Product Owner, 2026-10-14, after the 0.2.0 release). Today release-please runs on `main`: once the release pull request from `develop` is merged, it opens a second pull request that bumps the version and the changelog. That makes one more commit on `main`, which `develop` then has to merge back. The plan, to check against release-please's documentation:
+  - run its `release-pr` step on `develop` (target branch `develop`), so that the version and the changelog are bumped there;
+  - run only its `github-release` step on `main`, which tags and publishes the release from the merged commit.
+
+  `main` then never holds a commit that `develop` lacks, and `develop` follows `main` by a fast-forward. `develop` stays: it is the integration branch.
+
 ## Features
 
 | Feature                                   | Status      |
