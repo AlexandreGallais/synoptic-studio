@@ -2,7 +2,7 @@ import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { rectangleCorners } from "../../../tests";
-import { NO_HANDLES, curveCornerOf } from "../handles";
+import { curveCornerOf } from "../handles";
 import { rectangleAsFreeShape } from "../rectangle";
 
 import { freeShapeAroundCorners } from "./free-shape-around-corners";
@@ -11,6 +11,9 @@ import { freeShapeWithMidpoint } from "./free-shape-with-midpoint";
 import { freeShapeWithoutPoints } from "./free-shape-without-points";
 
 import type { FreeShape } from "./free-shape";
+
+/** Handles off, as a new corner's (`NO_HANDLES`). */
+const OFF = curveCornerOf({ point: { x: 0, y: 0 }, radius: 0 }).handles;
 
 /**
  * The rectangle 200 × 100, its point 1's handle after (0.1, 0.2) in the unit square, on: (20, 20) as drawn.
@@ -111,7 +114,7 @@ describe("freeShapeWithoutPoints", () => {
     const edited = freeShapeWithoutPoints(curvedRectangle(angle), [1]);
 
     expect(edited.corners[0]?.handles).toEqual({
-      ...NO_HANDLES,
+      ...OFF,
       after: { x: 20, y: 20 },
       isOn: true,
     });
@@ -131,7 +134,7 @@ describe("freeShapeWithoutPoints", () => {
     const shape = freeShapeAroundCorners(
       rectangleCorners(100, 100, [0, 0, 0, 0]).map((stored, index) => ({
         ...stored,
-        handles: { ...NO_HANDLES, ...handles[index], isOn: index < 3, mode: "none" as const },
+        handles: { ...OFF, ...handles[index], isOn: index < 3, mode: "none" as const },
       })),
       0,
     );

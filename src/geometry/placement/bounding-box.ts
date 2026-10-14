@@ -21,7 +21,7 @@ export type BoundingBox = {
  * @kind geometry
  * @param points - points, in any order
  * @returns the extreme coordinates
- * @see DERIV-regular-polygon-fit
+ * @see REF-WIKI-BOUNDING-BOX
  */
 export function boundingBox(points: readonly Point[]): BoundingBox {
   // A fold rather than Math.max(...xs): engines cap the number of arguments of a call.

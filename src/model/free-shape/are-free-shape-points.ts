@@ -17,11 +17,11 @@ import type { Point } from "../../math";
 export function areFreeShapePoints(points: readonly Point[]): boolean {
   const box = boundingBox(points);
   const coordinates = points.flatMap((point) => [point.x, point.y]);
-  const hasArea = box.maxX > box.minX && box.maxY > box.minY;
+  const hasExtent = box.maxX > box.minX && box.maxY > box.minY;
 
   return (
     points.length >= MIN_FREE_SHAPE_POINTS &&
     coordinates.every((value) => Number.isFinite(value)) &&
-    hasArea
+    hasExtent
   );
 }

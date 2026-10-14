@@ -1,4 +1,4 @@
-import { NO_HANDLES } from "./no-handles";
+import { NO_HANDLES } from "../../geometry";
 
 import type { Corner, CurveCorner } from "../../geometry";
 

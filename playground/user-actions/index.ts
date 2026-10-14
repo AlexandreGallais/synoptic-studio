@@ -1,4 +1,3 @@
-// The playground page driven as a user drives it, for the playground's tests (EN-021).
 export * from "./choose-option";
 export * from "./choose-radio";
 export * from "./click-element";
@@ -12,6 +11,7 @@ export * from "./open-page";
 export * from "./open-served-page";
 export * from "./press-key";
 export * from "./read-checked-radio";
+export * from "./read-disabled-state";
 export * from "./read-display";
 export * from "./read-point-rows";
 export * from "./read-pressed-state";

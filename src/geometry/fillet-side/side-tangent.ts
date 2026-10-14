@@ -1,4 +1,4 @@
-import { norm, unit } from "../../math";
+import { isZeroVector, unit } from "../../math";
 import { cubicStartDirection, cubicVelocity } from "../curve";
 
 import type { Vector } from "../../math";
@@ -17,5 +17,5 @@ import type { Cubic } from "../contour";
 export function sideTangent(cubic: Cubic, t: number): Vector {
   const velocity = cubicVelocity(cubic, t);
 
-  return norm(velocity) === 0 ? cubicStartDirection(cubic) : unit(velocity);
+  return isZeroVector(velocity) ? cubicStartDirection(cubic) : unit(velocity);
 }

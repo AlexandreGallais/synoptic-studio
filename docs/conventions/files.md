@@ -50,4 +50,4 @@ A shape's type lives in its folder (`free-shape/free-shape.ts`); folders may use
 
 | Folder                    | Modules | Why it stays whole                                                                                                                          |
 | ------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `playground/user-actions` | 23      | one theme, what a user does to the page; splitting it into reading, typing and clicking would split by kind of code, which ADR-0043 refuses |
+| `playground/user-actions` | 24      | one theme, what a user does to the page; splitting it into reading, typing and clicking would split by kind of code, which ADR-0043 refuses |

@@ -2,7 +2,7 @@ import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { freeShapeOf } from "../../../tests";
-import { NO_HANDLES } from "../handles";
+import { NO_HANDLES } from "../../geometry";
 import { isValidRectangle, rectangleAsFreeShape } from "../rectangle";
 
 import { isValidFreeShape } from "./is-valid-free-shape";

@@ -6,5 +6,4 @@ export type * from "./handle-way";
 export * from "./handle-ways";
 export * from "./handles-after-typing";
 export * from "./is-angle-unknown";
-export * from "./no-handles";
 export * from "./typed-handle";

@@ -1,5 +1,5 @@
 import { angledHandle } from "../../geometry";
-import { degreesInTurn, explement, norm, subtract, unit } from "../../math";
+import { degreesInTurn, explement, isZeroVector, subtract, unit } from "../../math";
 
 import type { HandleFrame } from "./handle-frame";
 import type { HandleWay } from "./handle-way";
@@ -22,7 +22,7 @@ function sideTypedHandle(
 ): Vector | undefined {
   const [angle, length] = values;
 
-  return length < 0 || norm(frame.side) === 0
+  return length < 0 || isZeroVector(frame.side)
     ? undefined
     : angledHandle(
         unit(frame.side),

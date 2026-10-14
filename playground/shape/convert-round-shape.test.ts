@@ -5,6 +5,7 @@ import {
   clickElement,
   clickPoint,
   openOnStep,
+  readDisabledState,
   readPointRows,
   readPressedState,
   readText,
@@ -26,16 +27,6 @@ function openRoundShape(width: string): void {
   typeAndEnter("width", width);
   typeAndEnter("height", "80");
   clickElement("mode-points");
-}
-
-/**
- * Whether a button of the page is greyed.
- *
- * @param id - its id
- * @returns whether it has the `disabled` attribute
- */
-function isDisabled(id: string): boolean {
-  return document.querySelector(`#${id}`)?.hasAttribute("disabled") === true;
 }
 
 describe("converting a round shape (US-030)", () => {
@@ -82,7 +73,10 @@ describe("converting a round shape (US-030)", () => {
     openRoundShape(width);
     typeAndEnter("height", height);
 
-    expect([isDisabled("convert"), isDisabled("convert-rounded")]).toEqual([true, true]);
+    expect([
+      readDisabledState("convert") === "true",
+      readDisabledState("convert-rounded") === "true",
+    ]).toEqual([true, true]);
   });
 
   it("converts nothing of width 0 even when asked directly (the buttons' guard)", () => {

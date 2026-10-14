@@ -1,4 +1,4 @@
-import { ZERO_VECTOR, subtract, unit } from "../../math";
+import { ZERO_VECTOR, isZeroVector, subtract, unit } from "../../math";
 
 import type { Vector } from "../../math";
 import type { Cubic } from "../contour";
@@ -16,7 +16,7 @@ import type { Cubic } from "../contour";
 export function cubicStartDirection(cubic: Cubic): Vector {
   const leaving = [cubic.first, cubic.second, cubic.end]
     .map((point) => subtract(point, cubic.start))
-    .find((vector) => vector.x !== 0 || vector.y !== 0);
+    .find((vector) => !isZeroVector(vector));
 
   return unit(leaving ?? ZERO_VECTOR);
 }

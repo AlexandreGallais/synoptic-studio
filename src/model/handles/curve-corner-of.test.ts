@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 
+import { NO_HANDLES } from "../../geometry";
+
 import { curveCornerOf } from "./curve-corner-of";
-import { NO_HANDLES } from "./no-handles";
 
 describe("curveCornerOf", () => {
   it("[F12.AC2] gives a corner its handles off, in mode angle and length, both (0, 0)", () => {

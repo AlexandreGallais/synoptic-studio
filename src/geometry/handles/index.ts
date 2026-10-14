@@ -5,5 +5,7 @@ export type * from "./handle-mode";
 export * from "./handle-modes";
 export type * from "./handles";
 export * from "./mirrored-handle";
+export * from "./no-curve-corner";
+export * from "./no-handles";
 export * from "./stretched-handles";
 export * from "./turned-handles";

@@ -1,4 +1,10 @@
-import { hasArea, isFreeShape, regularPolygonAsFreeShape, roundShapeAsFreeShape } from "../../src";
+import {
+  hasArea,
+  isFreeShape,
+  isRoundShape,
+  regularPolygonAsFreeShape,
+  roundShapeAsFreeShape,
+} from "../../src";
 
 import { readShape } from "./read-shape";
 import { writeStoredFreeShape } from "./write-stored-free-shape";
@@ -29,7 +35,7 @@ function readConvertibleShape(document: Document): RegularPolygon | RoundShape |
  * @see docs/backlog/stories/E14-F10-US-030-convert-round-shape.md
  */
 function readFreeShapeOf(shape: RegularPolygon | RoundShape): FreeShape {
-  return "kind" in shape ? roundShapeAsFreeShape(shape) : regularPolygonAsFreeShape(shape);
+  return isRoundShape(shape) ? roundShapeAsFreeShape(shape) : regularPolygonAsFreeShape(shape);
 }
 
 /**

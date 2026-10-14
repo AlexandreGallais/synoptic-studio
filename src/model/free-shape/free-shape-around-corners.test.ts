@@ -2,7 +2,8 @@ import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { rectangleCorners } from "../../../tests";
-import { NO_HANDLES, curveCornerOf } from "../handles";
+import { NO_HANDLES } from "../../geometry";
+import { curveCornerOf } from "../handles";
 
 import { freeShapeAroundCorners } from "./free-shape-around-corners";
 import { freeShapeCorners } from "./free-shape-corners";

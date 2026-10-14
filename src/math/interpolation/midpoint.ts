@@ -1,3 +1,5 @@
+import { average } from "../arithmetic";
+
 import type { Point } from "../vector";
 
 /**
@@ -13,5 +15,5 @@ import type { Point } from "../vector";
  * @see REF-MATHWORLD-MIDPOINT
  */
 export function midpoint(start: Point, end: Point): Point {
-  return { x: (start.x + end.x) / 2, y: (start.y + end.y) / 2 };
+  return { x: average(start.x, end.x), y: average(start.y, end.y) };
 }

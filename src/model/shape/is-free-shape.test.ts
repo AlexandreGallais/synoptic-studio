@@ -5,6 +5,8 @@ import { rectangleAsFreeShape } from "../rectangle";
 import { regularPolygonAsFreeShape } from "../regular-polygon";
 
 import { isFreeShape } from "./is-free-shape";
+import { isRegularPolygon } from "./is-regular-polygon";
+import { isRoundShape } from "./is-round-shape";
 
 import type { Shape } from "./shape";
 import type { RegularPolygon } from "../regular-polygon";
@@ -22,7 +24,7 @@ const HEXAGON: RegularPolygon = {
   y: 0,
 };
 
-describe("isFreeShape (F08, F10)", () => {
+describe("isFreeShape, isRegularPolygon, isRoundShape (F08, F10)", () => {
   it("tells a free shape from a regular polygon and a round shape", () => {
     const shapes: readonly Shape[] = [
       regularPolygonAsFreeShape(HEXAGON),
@@ -31,6 +33,8 @@ describe("isFreeShape (F08, F10)", () => {
     ];
 
     expect(shapes.map((shape) => isFreeShape(shape))).toEqual([true, false, false]);
+    expect(shapes.map((shape) => isRegularPolygon(shape))).toEqual([false, true, false]);
+    expect(shapes.map((shape) => isRoundShape(shape))).toEqual([false, false, true]);
   });
 
   test.prop({ height: fc.nat(1000), width: fc.nat(1000) })(

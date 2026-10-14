@@ -1,12 +1,16 @@
-import { cubicSide, cyclicItem, isCurvedSide, mirroredHandle, splitCubic } from "../../geometry";
+import {
+  NO_CURVE_CORNER,
+  NO_HANDLES,
+  cubicSide,
+  cyclicItem,
+  isCurvedSide,
+  mirroredHandle,
+  splitCubic,
+} from "../../geometry";
 import { midpoint, modulo, subtract } from "../../math";
-import { NO_HANDLES } from "../handles";
 
 import type { Cubic, CurveCorner } from "../../geometry";
 import type { Point } from "../../math";
-
-/** Corner read when the side asked for does not exist: none is, the shape has 3 points or more. */
-const NO_CORNER: CurveCorner = { handles: NO_HANDLES, point: { x: 0, y: 0 }, radius: 0 };
 
 /**
  * A corner whose handle after or before now reaches a given control point, when its point is in
@@ -74,7 +78,7 @@ function cornersWithCurveSplit(
   corners: readonly CurveCorner[],
   edge: number,
 ): readonly CurveCorner[] {
-  const start = cyclicItem(corners, edge, NO_CORNER);
+  const start = cyclicItem(corners, edge, NO_CURVE_CORNER);
   const [first, second] = splitCubic(cubicSide(start, cyclicItem(corners, edge + 1, start)), 1 / 2);
   const middle = splitPoint(first);
 
@@ -105,7 +109,7 @@ export function cornersWithMidpoint(
   corners: readonly CurveCorner[],
   edge: number,
 ): readonly CurveCorner[] {
-  const start = cyclicItem(corners, edge, NO_CORNER);
+  const start = cyclicItem(corners, edge, NO_CURVE_CORNER);
   const end = cyclicItem(corners, edge + 1, start);
 
   if (isCurvedSide(start, end)) {

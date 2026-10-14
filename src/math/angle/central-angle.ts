@@ -1,6 +1,7 @@
 /**
  * Angle at the centre of a regular polygon from its first vertex to another: n equal turns make
- * a whole turn, 2π, so each is 2π/n (`DERIV-stretched-polygon`).
+ * a whole turn, 2π, so each is 2π/n (`DERIV-stretched-polygon`); k of them are also the direction
+ * of the k-th side, the sum of the turns before it.
  *
  * Formula: 2π · k / n, the product first.
  *
