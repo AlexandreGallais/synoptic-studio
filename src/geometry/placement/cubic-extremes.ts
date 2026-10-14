@@ -1,6 +1,7 @@
+import { quadraticRoots } from "../../math";
+
 import { cubicPoint } from "./cubic-point";
 import { derivativeCoefficients } from "./derivative-coefficients";
-import { quadraticRoots } from "./quadratic-roots";
 
 import type { Point } from "../../math";
 import type { Cubic } from "../contour";

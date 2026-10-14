@@ -14,7 +14,7 @@ TypeScript library `editor` to create **SVG symbols** for **synoptic views**, an
 
 A library of small named functions, each backed by a verified source, composed so that they read like formulas; the playground (`playground/`) shows each stage. Principles: schematic, orthogonal, integer, documented, dependency-free.
 
-**State**: E01 (shapes from numbers) is delivered and its retrospective (RET-001) done — rectangle, regular polygon, anchor, radius per corner, free shape, node editing, rotation, stretched polygon. E14 (curves) is in progress: F11 delivered a code base ready for curves (folders by business domain, ADR-0043; one path writer; a property test per function); F12 delivered points on a curve with handles (cubic sides from typed handles, ADR-0046; a corner beside a curve keeps its rounding, ADR-0047); next F10 (round shape: an ellipse), then F13 (every calculation named), then E15 (text), E02. **Scope** (ADR-0030): a finished free V1, then new features only in a paid pro edition; a request that looks pro → say so and ask; pro ideas go to `docs/domain/editions.md`. Implement only `ready` stories: the Product Owner's `/run` is the go-ahead, the agent then sets its scope `ready` (ADR-0045).
+**State**: E01 (shapes from numbers) is delivered and its retrospective (RET-001) done — rectangle, regular polygon, anchor, radius per corner, free shape, node editing, rotation, stretched polygon. E14 (curves) is in progress: F11 delivered a code base ready for curves (folders by business domain, ADR-0043; one path writer; a property test per function); F12 delivered points on a curve with handles (cubic sides from typed handles, ADR-0046; a corner beside a curve keeps its rounding, ADR-0047); F10 delivered the round shape (an ellipse as four cubic sides, ADR-0048; converted to a free shape only); F13 named every calculation, now a standing rule with a naming pass closing each epic (ADR-0049); next REV-002 and RET-002, then E15 (text), E02. **Scope** (ADR-0030): a finished free V1, then new features only in a paid pro edition; a request that looks pro → say so and ask; pro ideas go to `docs/domain/editions.md`. Implement only `ready` stories: the Product Owner's `/run` is the go-ahead, the agent then sets its scope `ready` (ADR-0045).
 
 ## Where to read — before any task
 
@@ -40,6 +40,7 @@ A library of small named functions, each backed by a verified source, composed s
 - Pipeline (ADR-0005): typed integers → model → evaluated geometry (floats, segments and arcs) → SVG; never read the DOM back.
 - **Functional core, imperative shell** (ADR-0014): `math` → `io` are pure; `render`, `interaction`, `playground` carry the effects. A function never modifies its arguments.
 - **One export per file**, named in kebab-case after it (ADR-0019); no default nor optional parameter in `src/` (ADR-0016).
+- **Every calculation named** (ADR-0049): an operation or a run of steps that a field names — mathematics, geometry, physics, drafting, industry, the laboratory — is a call to a function of that name with its source, never bare arithmetic; a process is named the same way.
 - **Every function**: one `@kind` (`math`, `geometry`, `domain`, `format`, `procedure`), one `@see` to a **verified** source, austere TSDoc; size limits per kind (ADR-0011).
 - **Never invent a reference**: cite only what was read; otherwise a derivation (each step citing a read source) or a research request.
 - **No personal information** about the Product Owner in this public repository.
@@ -48,14 +49,14 @@ A library of small named functions, each backed by a verified source, composed s
 ## Key decisions (the ADR is the source)
 
 - **Numbers** (ADR-0003, ADR-0031, ADR-0034, ADR-0035): every input is an integer; derived geometry is float and never stored, except a free shape's exact points, handles and size, and a turned shape's position; `EPSILON = 1e-9`, `SVG_DECIMALS = 5`.
-- **Geometry** (ADR-0001, ADR-0002, ADR-0046): segments, circular arcs only as fillets, and cubic sides from typed handles in symbols; everything is a `<path>` except text; strokes computed by offset.
+- **Geometry** (ADR-0001, ADR-0002, ADR-0046, ADR-0048): segments, circular arcs only as fillets, and cubic sides from typed handles in symbols, or the round shape's derived ones; everything is a `<path>` except text; strokes computed by offset.
 - **Portable core** (ADR-0025): ECMAScript only, plain data.
 - Contours clockwise from the top-left vertex, a regular polygon from the right end of its base (Q11, Q18); corner radius reduced locally, requested value stored (ADR-0007).
 
 ## Never
 
 - A runtime dependency (`dependencies` stays empty); a dev package without its row in `docs/tooling/dependencies.md`, its release notes read, a version at least 7 days old.
-- Freehand in symbols, or Bézier curves other than cubic sides from typed handles (ADR-0046); SVG primitives other than `svg`, `g`, `path`, `text`, `defs`; native `stroke`.
+- Freehand in symbols, or Bézier curves other than cubic sides from typed handles or the round shape's (ADR-0046, ADR-0048); SVG primitives other than `svg`, `g`, `path`, `text`, `defs`; native `stroke`.
 - `any`, `!`, `as` without `eslint-disable-next-line … -- justification`; classes; `enum`; a rule disabled to make code pass (fix the code, or tell the Product Owner the rule is wrong).
 - An epic or feature set `ready` by the agent outside a `/run`, or a pull request merged by the agent; a push to `main`; `--no-verify`; a force push without lease.
 
@@ -64,7 +65,7 @@ A library of small named functions, each backed by a verified source, composed s
 | Level   | Flow                                                                                                                                                                                                                |
 | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Feature | refinement → `SP` spike → `US` / `EN` stories, `CHK` midway → `AUD` audit → `VAL` guided test and demo page (ADR-0020)                                                                                              |
-| Epic    | its features → `REV` review → `RET` retrospective with metrics (ADR-0023)                                                                                                                                           |
+| Epic    | its features → `NAM` naming pass over the whole code → `REV` review → `RET` retrospective with metrics (ADR-0023, ADR-0049)                                                                                         |
 | Branch  | `main` releases only; `develop` integration; `feature/f<nn>-<topic>` from `develop`; `<type>/<id>-<topic>` per story from its feature (ADR-0038)                                                                    |
 | Merge   | story → feature: rebase, by the Product Owner or, in an authorized run, by GitHub; feature → `develop`: merge commit, by GitHub once validated; `develop` → `main`: when the Product Owner asks, by them (ADR-0045) |
 | Checks  | local only on work branches (`pre-push` runs `check:all`); one CI, on the pull request into `main`; never wait for a CI elsewhere                                                                                   |

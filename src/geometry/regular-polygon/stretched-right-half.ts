@@ -1,3 +1,4 @@
+import { chainEnd } from "./chain-end";
 import { HALF_SIDE } from "./half-side";
 import { stretchedSideDirections } from "./stretched-side-directions";
 
@@ -19,12 +20,7 @@ import type { Point } from "../../math";
 export function stretchedRightHalf(corners: number, scale: number): readonly Point[] {
   const directions = stretchedSideDirections(corners, scale);
 
-  return Array.from({ length: directions.length + 1 }, (empty, count) => {
-    const sides = directions.slice(0, count);
-
-    return {
-      x: sides.reduce((sum, direction) => sum + Math.cos(direction), HALF_SIDE),
-      y: sides.reduce((sum, direction) => sum + Math.sin(direction), 0),
-    };
-  });
+  return Array.from({ length: directions.length + 1 }, (empty, count) =>
+    chainEnd({ x: HALF_SIDE, y: 0 }, directions.slice(0, count)),
+  );
 }

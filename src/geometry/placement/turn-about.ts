@@ -1,3 +1,5 @@
+import { add, rotate, subtract } from "../../math";
+
 import type { Point, Vector } from "../../math";
 
 /**
@@ -15,11 +17,5 @@ import type { Point, Vector } from "../../math";
  * @see REF-SVG11-TRANSFORM
  */
 export function turnAbout(point: Point, center: Point, direction: Vector): Point {
-  const dx = point.x - center.x;
-  const dy = point.y - center.y;
-
-  return {
-    x: center.x + (dx * direction.x - dy * direction.y),
-    y: center.y + (dx * direction.y + dy * direction.x),
-  };
+  return add(center, rotate(subtract(point, center), direction));
 }

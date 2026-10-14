@@ -1,5 +1,5 @@
 import { angledHandle } from "../../geometry";
-import { degreesInTurn, norm, unit } from "../../math";
+import { degreesInTurn, explement, isZeroVector, subtract, unit } from "../../math";
 
 import type { HandleFrame } from "./handle-frame";
 import type { HandleWay } from "./handle-way";
@@ -22,9 +22,13 @@ function sideTypedHandle(
 ): Vector | undefined {
   const [angle, length] = values;
 
-  return length < 0 || norm(frame.side) === 0
+  return length < 0 || isZeroVector(frame.side)
     ? undefined
-    : angledHandle(unit(frame.side), degreesInTurn(frame.isBefore ? -angle : angle), length);
+    : angledHandle(
+        unit(frame.side),
+        frame.isBefore ? explement(angle) : degreesInTurn(angle),
+        length,
+      );
 }
 
 /**
@@ -45,6 +49,6 @@ export function typedHandle(
   const [first, second] = values;
 
   return way === "page"
-    ? { x: first - frame.point.x, y: second - frame.point.y }
+    ? subtract({ x: first, y: second }, frame.point)
     : sideTypedHandle(values, frame);
 }

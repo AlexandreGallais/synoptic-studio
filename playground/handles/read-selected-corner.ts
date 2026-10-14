@@ -1,3 +1,4 @@
+import { hasArea, isRoundShape } from "../../src";
 import { readSelection } from "../page";
 
 import type { CurveCorner } from "../../src";
@@ -37,10 +38,9 @@ function readOnlySelected(document: Document): number | undefined {
  */
 function readFreeCorner(reading: ShapeReading, index: number): SelectedCorner | undefined {
   const corner = reading.corners[index];
-  // A shape without width or height, a polygon that cannot be converted, gets no switch.
-  const hasArea = reading.model.width * reading.model.height > 0;
 
-  return corner === undefined || !hasArea ? undefined : { corner, index };
+  // A shape without width or height, a polygon that cannot be converted, gets no switch.
+  return corner === undefined || !hasArea(reading.model) ? undefined : { corner, index };
 }
 
 /**
@@ -58,5 +58,8 @@ export function readSelectedCorner(
 ): SelectedCorner | undefined {
   const index = readOnlySelected(document);
 
-  return index === undefined ? undefined : readFreeCorner(reading, index);
+  // A round shape's points already have their handles: it is converted first (US-030).
+  return index === undefined || isRoundShape(reading.model)
+    ? undefined
+    : readFreeCorner(reading, index);
 }

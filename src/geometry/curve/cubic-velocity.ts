@@ -1,11 +1,13 @@
-import { CUBIC_DEGREE } from "../placement";
+import { subtract } from "../../math";
+import { cubicDerivativeWeights } from "../placement";
 
 import type { Vector } from "../../math";
 import type { Cubic } from "../contour";
 
 /**
  * The derivative of a cubic at a parameter, its velocity: the tangent's direction
- * (`REF-WIKI-BEZIER`; `REF-POMAX-BEZIER`, "Tangents and normals").
+ * (`REF-WIKI-BEZIER`; `REF-POMAX-BEZIER`, "Tangents and normals"). `derivativeCoefficients` gives the same
+ * derivative in power form for the box; both are kept, as they round differently (F13).
  *
  * Formula: B′(t) = 3(1−t)²(P₁−P₀) + 6(1−t)t(P₂−P₁) + 3t²(P₃−P₂).
  *
@@ -16,12 +18,12 @@ import type { Cubic } from "../contour";
  * @see REF-WIKI-BEZIER
  */
 export function cubicVelocity(cubic: Cubic, t: number): Vector {
-  const u = 1 - t;
-  const [w0, w1, w2] = [CUBIC_DEGREE * u * u, 2 * CUBIC_DEGREE * u * t, CUBIC_DEGREE * t * t];
+  const [w0, w1, w2] = cubicDerivativeWeights(t);
   const { end, first, second, start } = cubic;
+  const [d0, d1, d2] = [subtract(first, start), subtract(second, first), subtract(end, second)];
 
   return {
-    x: w0 * (first.x - start.x) + w1 * (second.x - first.x) + w2 * (end.x - second.x),
-    y: w0 * (first.y - start.y) + w1 * (second.y - first.y) + w2 * (end.y - second.y),
+    x: w0 * d0.x + w1 * d1.x + w2 * d2.x,
+    y: w0 * d0.y + w1 * d1.y + w2 * d2.y,
   };
 }

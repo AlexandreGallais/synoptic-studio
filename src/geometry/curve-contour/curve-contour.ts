@@ -1,24 +1,13 @@
 import { cyclicItem } from "../contour";
 import { hasLength } from "../corner-radius";
 import { cubicSide, isCurvedSide } from "../curve";
+import { NO_CURVE_CORNER } from "../handles";
 
 import { cubicBetween } from "./cubic-between";
 import { curveFillets } from "./curve-fillets";
 
 import type { ContourPiece } from "../contour";
 import type { CurveCorner } from "../handles";
-
-/** Corner read when there is none: a contour has 3 corners or more. */
-const NO_CORNER: CurveCorner = {
-  handles: {
-    after: { x: 0, y: 0 },
-    before: { x: 0, y: 0 },
-    isOn: false,
-    mode: "angle-and-length",
-  },
-  point: { x: 0, y: 0 },
-  radius: 0,
-};
 
 /**
  * Contour of a free shape with handles: as `roundedContour`, each corner's fillet arc and a piece
@@ -38,7 +27,7 @@ export function curveContour(corners: readonly CurveCorner[]): readonly ContourP
   return fillets
     .flatMap((fillet, index): ContourPiece[] => {
       const next = cyclicItem(fillets, index + 1, fillet);
-      const start = cyclicItem(corners, index, NO_CORNER);
+      const start = cyclicItem(corners, index, NO_CURVE_CORNER);
       const end = cyclicItem(corners, index + 1, start);
       const side: ContourPiece = isCurvedSide(start, end)
         ? {

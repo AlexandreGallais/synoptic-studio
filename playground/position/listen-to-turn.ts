@@ -1,10 +1,7 @@
-import { degreesInTurn } from "../../src";
+import { DEGREES_PER_QUARTER_TURN, degreesInTurn } from "../../src";
 import { readNumber, selectElement, writeInputValue } from "../page";
 
 import { readAngle } from "./read-angle";
-
-/** Degrees turned by each of the −90° and +90° buttons. */
-const QUARTER_TURN = 90;
 
 /** A button turning the shape. */
 type TurnButton = {
@@ -63,6 +60,6 @@ export function listenToTurn(document: Document, update: () => void): void {
     }
   });
 
-  listenToTurnButton(document, { id: "turn-left", turn: -QUARTER_TURN }, update);
-  listenToTurnButton(document, { id: "turn-right", turn: QUARTER_TURN }, update);
+  listenToTurnButton(document, { id: "turn-left", turn: -DEGREES_PER_QUARTER_TURN }, update);
+  listenToTurnButton(document, { id: "turn-right", turn: DEGREES_PER_QUARTER_TURN }, update);
 }

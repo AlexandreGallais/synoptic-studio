@@ -1,6 +1,6 @@
 import { freeShapeCorners, freeShapeWithPoint, turnedCorners } from "../../src";
 import { readNumber, readSelection, selectElement } from "../page";
-import { readEditedFreeShape, writeConvertedPolygon, writeStoredFreeShape } from "../shape";
+import { readEditedFreeShape, writeConvertedShape, writeStoredFreeShape } from "../shape";
 
 import { listenToDeleteKey } from "./listen-to-delete-key";
 import { writeAddedMidpoint } from "./write-added-midpoint";
@@ -94,8 +94,25 @@ function movePointTyped(document: Document, axis: "x" | "y"): void {
 }
 
 /**
- * Listens to the x and y fields of the point selected and to the buttons converting a polygon
- * adding and deleting points, and to the Delete key, then calls back (F08.AC1 to F08.AC4).
+ * Listens to the buttons converting a regular polygon or a round shape to a free shape, then
+ * calls back (F08.AC1, F10.AC4).
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param update - redraws the playground
+ * @see docs/backlog/stories/E14-F10-US-030-convert-round-shape.md
+ */
+function listenToConvertButtons(document: Document, update: () => void): void {
+  selectElement(document, "convert").addEventListener("click", () => {
+    writeConvertedShape(document);
+    update();
+  });
+}
+
+/**
+ * Listens to the x and y fields of the point selected, to the buttons converting a polygon or a
+ * round shape, adding and deleting points, and to the Delete key, then calls back (F08.AC1 to
+ * F08.AC4, F10.AC4, F10.AC5).
  *
  * @kind procedure
  * @param document - page document
@@ -111,10 +128,7 @@ export function listenToPointFields(document: Document, update: () => void): voi
     });
   }
 
-  selectElement(document, "convert").addEventListener("click", () => {
-    writeConvertedPolygon(document);
-    update();
-  });
+  listenToConvertButtons(document, update);
 
   selectElement(document, "add-midpoint").addEventListener("click", () => {
     writeAddedMidpoint(document);

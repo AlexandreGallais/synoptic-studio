@@ -2,6 +2,18 @@
 
 What each working session dealt with, in the agent's words: the Product Owner's requests in neutral words, decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`).
 
+## 2026-10-14 — F10 and F13 validated
+
+- `#val` VAL-012 and VAL-013: the Product Owner tried the round shape, its points and handles, and the shapes made from it, and accepted F10 and F13. One change: **Convert to rounded rectangle** removed (an ellipse becomes a capsule, so it keeps the drawing only for a circle); F10.AC5 reworded, the function and its helper removed, the guided test down to six steps. The agent's other F10 decisions accepted as built.
+- `#merge` One feature pull request from `feat/val-013-validate-f13`, which holds F10 and F13; `feat/val-012-validate-f10` deleted, its content inside.
+
+## 2026-10-14 — F10 and F13 built, ready for one validation
+
+- `#run` F10 (round shape) into `feature/f10-round-shape`: SP-013 (#180, ADR-0048: four cubic sides, not elliptical arcs), EN-027 (#181), US-029 (#182), CHK-012 (#183), US-030 (#184), AUD-013 (#185); each reviewed (math expert, auditor or verifier), two playground bugs found by the verifier and fixed. VAL-012 prepared on `feat/val-012-validate-f10`: seven guided steps, the demo page.
+- `#run` F13 (every calculation named), from F10's validation branch: SP-014 (#186, research note 0016), EN-028 (#187), EN-029 (#188), CHK-013 (#189), EN-030 (#190), AUD-014 (#191). 33 new named modules, the duplicates merged; a golden file of 400 results and the auditor's comparison of 70 970 results found no difference. VAL-013 prepared on `feat/val-013-validate-f13`, which holds both features.
+- `#rule` The Product Owner asked that F13's work become a standing rule: every calculation or process that a field names (mathematics, geometry, physics, industry, the laboratory) is a named function with its source, checked at each story's review and by a naming pass over the whole code, in two passes, at the end of each epic. Recorded as ADR-0049, a `NAM` story type before `REV`, checked by `backlog.test.ts` (E01 and E14 exempt: F13 is E14's pass).
+- `#questions` For the Product Owner: the decisions the agent took for F10 (cubic sides, point 1 at the top, the two conversion buttons' names); Q35 settled by the agent (nothing visible).
+
 ## 2026-10-14 — F12 validated; F10, then F13
 
 - `#val` Second session of VAL-011: the Product Owner accepted every option as built — the reduced radius beside a curve (47.7 and 46.9), Q34 (the whole curve split at its middle), Q33 (a lens stays refused). F12 done; its pull request into `develop` merges by itself (ADR-0045).

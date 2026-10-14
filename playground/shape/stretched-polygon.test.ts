@@ -5,6 +5,7 @@ import {
   chooseOption,
   clickElement,
   openPage,
+  readDisabledState,
   readDisplay,
   readText,
   typeValue,
@@ -51,7 +52,7 @@ describe("playground: stretched polygon (US-021)", () => {
 
     expect(isStretched()).toBe(true);
     expect(readText("#path-data")).toBe(STRETCHED_HEXAGON);
-    expect(document.querySelector("#anchor-field")?.hasAttribute("disabled")).toBe(true);
+    expect(readDisabledState("anchor-field") === "true").toBe(true);
   });
 
   it("[F06.AC3] stays stretched when the number of corners and the size change", () => {
@@ -81,7 +82,7 @@ describe("playground: stretched polygon (US-021)", () => {
     clickElement("stretched");
 
     expect(isStretched()).toBe(false);
-    expect(document.querySelector("#anchor-field")?.hasAttribute("disabled")).toBe(false);
+    expect(readDisabledState("anchor-field") === "true").toBe(false);
 
     expect(readText("#path-data")).toBe(
       "M75 93.30127 L25 93.30127 L0 50 L25 6.69873 L75 6.69873 L100 50 Z",

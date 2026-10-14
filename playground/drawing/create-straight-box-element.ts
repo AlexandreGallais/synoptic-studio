@@ -1,4 +1,4 @@
-import { createPathElement, formatSvgNumber } from "../../src";
+import { boxSize, createPathElement, formatSvgNumber, halfSize } from "../../src";
 
 import type { BoundingBox } from "../../src";
 
@@ -73,8 +73,9 @@ function readSideDashes(side: Side): string {
  */
 export function createStraightBoxElement(document: Document, box: BoundingBox): SVGPathElement {
   // In a box thinner than two lines, the far dashes stay inside it.
-  const across = Math.min(LINE, (box.maxY - box.minY) / 2);
-  const along = Math.min(LINE, (box.maxX - box.minX) / 2);
+  const half = halfSize(boxSize(box));
+  const across = Math.min(LINE, half.y);
+  const along = Math.min(LINE, half.x);
   const sides: readonly Side[] = [
     { at: box.minY, end: box.maxX, isHorizontal: true, start: box.minX },
     { at: box.maxY - across, end: box.maxX, isHorizontal: true, start: box.minX },

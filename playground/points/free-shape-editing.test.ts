@@ -7,6 +7,7 @@ import {
   clickPoint,
   commitField,
   openOnStep,
+  readDisabledState,
   readPointRows,
   readText,
   readValue,
@@ -25,15 +26,6 @@ function modelNumber(key: string): number {
   const match = pattern.exec(readText("#model"));
 
   return Number(match?.[1]);
-}
-
-/**
- * Whether the button adding a point is greyed.
- *
- * @returns `true` when it cannot be clicked
- */
-function isAddGreyed(): boolean {
-  return document.querySelector<HTMLButtonElement>("#add-midpoint")?.disabled ?? false;
 }
 
 /**
@@ -250,11 +242,11 @@ describe("editing the points of a free shape", () => {
     clickElement("mode-points");
     clickPoint(1, false);
 
-    const isOneGreyed = isAddGreyed();
+    const isOneGreyed = readDisabledState("add-midpoint") === "true";
 
     clickPoint(3, true);
 
-    expect([isOneGreyed, isAddGreyed()]).toEqual([true, true]);
+    expect([isOneGreyed, readDisabledState("add-midpoint") === "true"]).toEqual([true, true]);
   });
 
   it("[F08.AC3] greys the button on a polygon and says to convert it first", () => {
@@ -263,7 +255,7 @@ describe("editing the points of a free shape", () => {
     clickPoint(1, false);
     clickPoint(2, true);
 
-    expect(isAddGreyed()).toBe(true);
+    expect(readDisabledState("add-midpoint") === "true").toBe(true);
     expect(document.querySelector<HTMLElement>("#convert-hint")?.hidden).toBe(false);
   });
 
@@ -306,7 +298,7 @@ describe("editing the points of a free shape", () => {
     clickPoint(2, true);
     clickElement("add-midpoint");
 
-    expect(isAddGreyed()).toBe(true);
+    expect(readDisabledState("add-midpoint") === "true").toBe(true);
     expect(readPointRows()[1]).toBe("2 · x 0 · y 0 · radius 10");
     // Points 1 and 2 still selected: no single point to show.
     expect(selectInput("point-x").value).toBe("");

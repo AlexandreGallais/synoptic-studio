@@ -1,5 +1,4 @@
 import {
-  EPSILON,
   commonRadius,
   contourBoundingBox,
   contourPiecesToPathData,
@@ -9,6 +8,7 @@ import {
   drawnRadii,
   effectiveCornerRadius,
   formatSvgNumber,
+  isReducedRadius,
 } from "../../src";
 import { selectElement, writeText } from "../page";
 import { showPoints } from "../points";
@@ -55,10 +55,9 @@ function readCanvasSize(document: Document): { readonly height: number; readonly
  * @see docs/backlog/stories/E01-F01-US-003-round-rectangle-corners.md
  */
 function writeOneEffectiveRadius(document: Document, radius: number, effective: number): void {
-  const text =
-    radius - effective >= EPSILON
-      ? `Effective radius: ${formatSvgNumber(effective)} (requested ${String(radius)}, reduced to fit)`
-      : `Effective radius: ${formatSvgNumber(effective)} (as requested)`;
+  const text = isReducedRadius(radius, effective)
+    ? `Effective radius: ${formatSvgNumber(effective)} (requested ${String(radius)}, reduced to fit)`
+    : `Effective radius: ${formatSvgNumber(effective)} (as requested)`;
 
   writeText(document, "effective", text);
 }

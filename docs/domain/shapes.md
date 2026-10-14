@@ -120,7 +120,7 @@ Storing the value (Q8, settled):
 
 ### Useful special case
 
-- Square of side `c` + radius `c/2` on all 4 corners = **circle**. The circle is therefore not a primitive: it is a rounded square. A round-shape tool will draw it without a radius field: a circle in a square box, an ellipse otherwise, which needs curves outside ADR-0001 (F10, moved to E14 by the Product Owner on 2026-10-12, Q4). A capsule is a rectangle whose radius is half its smaller side.
+- Square of side `c` + radius `c/2` on all 4 corners = **circle**. The circle is therefore not a primitive: it is a rounded square. The round shape (F10) draws it without a radius field: a circle in a square box, an ellipse otherwise ("Round shape" below). A capsule is a rectangle whose radius is half its smaller side.
 - Same for a regular polygon with maximal radius: every fillet stops at the middle of its edges, so the polygon becomes exactly its inscribed circle.
 
 ## 3. Creation tools
@@ -172,6 +172,14 @@ Functional reference: Inkscape's Star/Polygon tool.
 - The anchor places the **sharp-cornered** polygon; the corner radius then rounds inwards without moving it: a flat face on the anchored side keeps touching it, a rounded vertex leaves it (a triangle anchored at the top with radius 10 has its top at y = 10). No "always touch" option, which would push a rounded polygon until it touches its box (Product Owner, 2026-10-11, confirmed at `VAL-003`): a polygon is used to attach things to the face that touches its box, and a rounded polygon pushed off its sharp place would put that face, and the measures taken from it, at meaningless positions.
 - The grid keeps its **nine places** (Product Owner, 2026-10-11, left to the agent at `VAL-003`). In a given box only one axis has room, so only three places give different drawings. A corner place is not a duplicate: it holds both alignments, and the one that counts follows the proportions of the box. A triangle anchored bottom left sits at the bottom of a 100 × 100 box; a square anchored bottom left sits on the left of a 100 × 50 box. The layout box (Q21) uses the same grid for elements with room on both axes.
 - Rotation (F04) comes after: the box turns with its content.
+
+### Round shape (F10)
+
+- A **round shape** fills its box: a circle in a square box, an ellipse otherwise, touching its four sides (Product Owner, 2026-10-12). A capsule stays a rectangle rounded by half its smaller side.
+- Model (`RoundShape`, ADR-0048): `width`, `height` (integers ≥ 0, Q15), `angle` (0 to 359), position `x`, `y` (ADR-0035), and `kind: "round"`, which tells it from the shapes that have corners. No radius, no anchor, no point to edit.
+- Drawn as four cubic sides through its top, right, bottom and left points, point 1 at the top then clockwise; each handle `4(√2 − 1)/3` of the half axis, in Mirror angle and length (`DERIV-round-shape-curve`). The curve is within about 0.00027 of the larger half axis of the true ellipse: 0.014 on a circle of diameter 100. A box of width or height 0 draws the line it is.
+- One conversion to a free shape: **Convert to free shape** gives its 4 points with their handles, the drawing unchanged (Product Owner, 2026-10-12). A box of width or height 0 is not converted, as a polygon (F08). No conversion to a rounded rectangle: rounding its box turns an ellipse into a capsule, which loses the drawing (Product Owner, 2026-10-14, at VAL-012).
+- Refined by the agent from the Product Owner's decisions and accepted at VAL-012 (2026-10-14): the cubic sides, point 1 at the top, the name of the conversion.
 
 ### Text
 
@@ -256,4 +264,4 @@ See `interaction.md` §6.
 - Made by business users in the View Editor, with **more freedom** than symbols but few options.
 - A drawing has no parameter and no animation. Selecting a group and saving it creates a drawing.
 - Drawings go into a **drawing library shared between projects**, so that the same drawings are reused from one synoptic view to another.
-- Curves drawn freely with a pen are allowed in drawings only (Q12, ADR-0018): a Figma-like pen places points, and dragging a point pulls Bézier handles. Symbols have cubic sides from typed handles only (ADR-0046).
+- Curves drawn freely with a pen are allowed in drawings only (Q12, ADR-0018): a Figma-like pen places points, and dragging a point pulls Bézier handles. Symbols have cubic sides from typed handles only, or the round shape's derived ones (ADR-0046, ADR-0048).

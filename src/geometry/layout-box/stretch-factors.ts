@@ -1,3 +1,5 @@
+import { boxSize } from "./box-size";
+
 import type { Size } from "./size";
 import type { Vector } from "../../math";
 import type { BoundingBox } from "../placement";
@@ -15,8 +17,7 @@ import type { BoundingBox } from "../placement";
  * @see DERIV-free-shape-stretch
  */
 export function stretchFactors(box: BoundingBox, size: Size): Vector {
-  const spanX = box.maxX - box.minX;
-  const spanY = box.maxY - box.minY;
+  const { height: spanY, width: spanX } = boxSize(box);
 
   return {
     x: size.width === spanX ? 1 : size.width / spanX,

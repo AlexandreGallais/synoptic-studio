@@ -1,3 +1,5 @@
+import { modulo } from "../../math";
+
 /**
  * Item of a cyclic list at any integer index: indices are taken modulo the list length (Q11).
  *
@@ -13,5 +15,5 @@
  * @see DERIV-turning-angle
  */
 export function cyclicItem<T>(items: readonly T[], index: number, fallback: T): T {
-  return items.at(((index % items.length) + items.length) % items.length) ?? fallback;
+  return items.at(modulo(index, items.length)) ?? fallback;
 }

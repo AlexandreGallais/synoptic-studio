@@ -1,4 +1,5 @@
 import { norm } from "./norm";
+import { ZERO_VECTOR } from "./zero-vector";
 
 import type { Vector } from "./vector";
 
@@ -17,5 +18,5 @@ import type { Vector } from "./vector";
 export function unit(vector: Vector): Vector {
   const length = norm(vector);
 
-  return length === 0 ? { x: 0, y: 0 } : { x: vector.x / length, y: vector.y / length };
+  return length === 0 ? ZERO_VECTOR : { x: vector.x / length, y: vector.y / length };
 }

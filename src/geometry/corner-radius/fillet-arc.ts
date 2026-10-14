@@ -25,7 +25,7 @@ export function filletArc(corner: CornerPoints, angle: number, radius: number): 
   const normal = quarterTurn(incoming);
   const setback = filletSetback(radius, angle);
   const outgoing = unit(subtract(next, vertex));
-  const start = add(vertex, scale(incoming, -setback));
+  const start = subtract(vertex, scale(incoming, setback));
 
   return {
     center: add(start, scale(normal, Math.sign(angle) * radius)),

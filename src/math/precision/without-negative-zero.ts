@@ -1,4 +1,4 @@
-import type { Vector } from "./vector";
+import type { Vector } from "../vector";
 
 /**
  * A vector whose components −0 become 0: equal under IEEE 754, they differ for `Object.is` and in

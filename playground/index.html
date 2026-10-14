@@ -303,6 +303,15 @@
             </svg>
             Polygon
           </button>
+          <button id="tool-round" type="button" aria-pressed="false" title="Round shape">
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path
+                d="M8 2.5a6 5.5 0 1 1 0 11 6 5.5 0 0 1 0-11zm0 1.5a4.5 4 0 1 0 0 8 4.5 4 0 0 0 0-8z"
+                fill-rule="evenodd"
+              />
+            </svg>
+            Round
+          </button>
         </p>
         <p id="tools" role="group" aria-label="Mode">
           <button id="mode-shape" type="button" aria-pressed="true" title="Edit the shape">
@@ -343,6 +352,7 @@
       <select id="shape" aria-label="Shape kind" hidden>
         <option value="rectangle" selected>Rectangle</option>
         <option value="polygon">Polygon</option>
+        <option value="round">Round shape</option>
         <option value="free" hidden>Free shape</option>
       </select>
       <section id="polygon-options" aria-labelledby="polygon-heading">
@@ -392,7 +402,7 @@
         </div>
         <p id="straight-box"></p>
       </fieldset>
-      <section aria-labelledby="corners-heading">
+      <section id="corners-section" aria-labelledby="corners-heading">
         <h2 id="corners-heading">Corners</h2>
         <label id="radius-field"
           >Radius <input id="radius" type="number" min="0" max="100000" step="1" value="10"
@@ -452,7 +462,7 @@
         <button id="delete-points" type="button">Delete points</button>
         <p id="delete-message" hidden></p>
         <p id="convert-hint" hidden>
-          A polygon keeps its points: convert it to a free shape to move, add or delete them.
+          This shape keeps its points: convert it to a free shape to move, add or delete them.
         </p>
         <button id="convert" type="button">Convert to free shape</button>
       </fieldset>

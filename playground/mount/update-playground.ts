@@ -1,3 +1,4 @@
+import { isRegularPolygon, isRoundShape } from "../../src";
 import { showRefusedShape, showShape } from "../drawing";
 import { selectElement, writeValidity } from "../page";
 import { readShape, writeCappedSizes } from "../shape";
@@ -16,13 +17,15 @@ export function updatePlayground(document: Document): void {
   writeCappedSizes(document);
 
   const reading = readShape(document);
-  const isPolygon = "anchor" in reading.model;
-  const isStretched = "stretched" in reading.model && reading.model.stretched;
+  const isPolygon = isRegularPolygon(reading.model);
+  const isStretched = isRegularPolygon(reading.model) && reading.model.stretched;
 
   writeShapeKind(document);
   selectElement(document, "corners-field").hidden = !isPolygon;
   selectElement(document, "stretched-field").hidden = !isPolygon;
   selectElement(document, "anchor-field").hidden = !isPolygon;
+  // A round shape has no radius (F10).
+  selectElement(document, "corners-section").hidden = isRoundShape(reading.model);
   // A stretched polygon fills its box: the anchor has no effect (ADR-0037).
   selectElement(document, "anchor-field").toggleAttribute("disabled", isStretched);
   writeValidity(document, reading);

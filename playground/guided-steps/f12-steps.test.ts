@@ -85,7 +85,7 @@ describe("playground: the guided test of F12 (VAL-011)", () => {
     expect(readHandleFields().slice(2)).toEqual(["90", "110"]);
   });
 
-  it("step 5: the same angle and length at both ends of a side make a symmetric arch", () => {
+  it("[F10.AC6] [F13.AC3] step 5: the same angle and length at both ends of a side make a symmetric arch", () => {
     openStep(5);
     clickPoint(1, false);
     clickElement("handles-switch");
@@ -103,7 +103,7 @@ describe("playground: the guided test of F12 (VAL-011)", () => {
     expect(readValue("height")).toBe("95");
   });
 
-  it("step 6: a radius too large beside a curve is drawn smaller, never sharp", () => {
+  it("[F13.AC4] step 6: a radius too large beside a curve is drawn smaller, never sharp", () => {
     openStep(6);
     bendPointThree("angle-and-length");
     clickPoint(2, false);

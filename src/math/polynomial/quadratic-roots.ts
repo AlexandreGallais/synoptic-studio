@@ -1,7 +1,6 @@
-import type { Quadratic } from "./derivative-coefficients";
+import { discriminant } from "./discriminant";
 
-/** The 4 of the discriminant b² − 4ac. */
-const DISCRIMINANT_FACTOR = 4;
+import type { Quadratic } from "./quadratic";
 
 /**
  * Roots of `a t² + b t + c`, taken without cancellation; a degenerate case (a = 0, D < 0) gives
@@ -16,7 +15,7 @@ const DISCRIMINANT_FACTOR = 4;
  */
 export function quadraticRoots(quadratic: Quadratic): readonly [number, number] {
   const { a, b, c } = quadratic;
-  const q = -(b + (b < 0 ? -1 : 1) * Math.sqrt(b * b - DISCRIMINANT_FACTOR * a * c)) / 2;
+  const q = -(b + (b < 0 ? -1 : 1) * Math.sqrt(discriminant(quadratic))) / 2;
 
   return [q / a, c / q];
 }

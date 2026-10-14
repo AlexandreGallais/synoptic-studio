@@ -1,3 +1,4 @@
+import { centralAngle } from "../../math";
 import { cornerTriples, turningAngles } from "../corner-radius";
 
 import type { Point } from "../../math";
@@ -13,7 +14,8 @@ import type { Point } from "../../math";
  * @see DERIV-stretched-polygon
  */
 export function isSoundStretch(polygon: readonly Point[]): boolean {
-  const guard = Math.PI / polygon.length;
+  // Half a regular polygon's turn, π/n.
+  const guard = centralAngle(1, polygon.length) / 2;
 
   return turningAngles(cornerTriples(polygon)).every((turn) => turn >= guard);
 }

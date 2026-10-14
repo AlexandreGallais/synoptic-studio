@@ -1,3 +1,4 @@
+import { boxSize } from "../layout-box";
 import { boundingBox } from "../placement";
 
 import type { Point } from "../../math";
@@ -12,7 +13,7 @@ import type { Point } from "../../math";
  * @see DERIV-stretched-polygon
  */
 export function boxAspect(points: readonly Point[]): number {
-  const box = boundingBox(points);
+  const { height, width } = boxSize(boundingBox(points));
 
-  return (box.maxY - box.minY) / (box.maxX - box.minX);
+  return height / width;
 }

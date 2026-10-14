@@ -1,4 +1,4 @@
-import { formatSvgNumber } from "../../src";
+import { boxSize, formatSvgNumber } from "../../src";
 import { writeInputValue, writeText } from "../page";
 
 import type { BoundingBox } from "../../src";
@@ -33,8 +33,9 @@ export function writeStraightBox(document: Document, box: BoundingBox): void {
 
   const x = formatSvgNumber(box.minX);
   const y = formatSvgNumber(box.minY);
-  const width = formatSvgNumber(box.maxX - box.minX);
-  const height = formatSvgNumber(box.maxY - box.minY);
+  const size = boxSize(box);
+  const width = formatSvgNumber(size.width);
+  const height = formatSvgNumber(size.height);
 
   writeText(
     document,

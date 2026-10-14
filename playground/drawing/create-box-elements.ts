@@ -2,6 +2,7 @@ import {
   contourPiecesToPathData,
   createPathElement,
   curveCornerOf,
+  isRegularPolygon,
   rectangleCorners,
   roundedContour,
   turnedCorners,
@@ -9,7 +10,7 @@ import {
 
 import { createStraightBoxElement } from "./create-straight-box-element";
 
-import type { BoundingBox, Corner, FreeShape, RegularPolygon } from "../../src";
+import type { BoundingBox, Corner, Shape } from "../../src";
 
 /** Width of the line drawing the turned box, in user units. */
 const LINE = 1;
@@ -23,7 +24,7 @@ const LINE = 1;
  * @returns the four corners, turned
  * @see docs/backlog/stories/E01-F04-US-018-turn-a-shape.md
  */
-function readBoxCorners(model: FreeShape | RegularPolygon, inset: number): readonly Corner[] {
+function readBoxCorners(model: Shape, inset: number): readonly Corner[] {
   const box = rectangleCorners({
     angle: 0,
     height: Math.max(model.height - 2 * inset, 0),
@@ -65,7 +66,7 @@ function readPathData(corners: readonly Corner[]): string {
  */
 function createFrameElements(
   document: Document,
-  model: FreeShape | RegularPolygon,
+  model: Shape,
   outer: string,
 ): readonly SVGPathElement[] {
   if (model.width <= 2 * LINE || model.height <= 2 * LINE) {
@@ -96,7 +97,7 @@ function createFrameElements(
  */
 export function createBoxElements(
   document: Document,
-  model: FreeShape | RegularPolygon,
+  model: Shape,
   straight: BoundingBox,
 ): readonly SVGPathElement[] {
   const outer = readPathData(readBoxCorners(model, 0));
@@ -104,7 +105,7 @@ export function createBoxElements(
 
   box.classList.add("box");
 
-  const boxes = "anchor" in model ? [box] : [];
+  const boxes = isRegularPolygon(model) ? [box] : [];
 
   return model.angle === 0
     ? boxes

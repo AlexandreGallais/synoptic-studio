@@ -36,6 +36,7 @@ Scope: $ARGUMENTS. Never without the Product Owner's explicit start in this conv
 ## Stop when
 
 - the next story is `VAL`, `REV` or `RET`;
+- the feature's `VAL` is done and it was the epic's last feature: the next run's scope is the epic's `NAM` naming pass (ADR-0049), a story run like the others, with its own branch from `develop`;
 - a business question, a research request, a stop of `AGENTS.md`, or an auditor finding that changes a requirement;
 - a check still red after three attempts;
 - the scope is finished.

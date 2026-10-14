@@ -1,4 +1,4 @@
-import { norm, subtract } from "../../math";
+import { EPSILON, distance, regularPartition } from "../../math";
 import { cubicPoint } from "../placement";
 
 import type { Point } from "../../math";
@@ -6,9 +6,6 @@ import type { FilletSide } from "../fillet-side";
 
 /** Samples of a side checked against a fillet's circle. */
 const SAMPLES = 64;
-
-/** Share of the radius a sample may come inside the circle by: rounding errors only. */
-const TOLERANCE = 1e-9;
 
 /**
  * Whether a fillet's circle stays clear of a side up to its limit: no sample inside the circle,
@@ -23,8 +20,8 @@ const TOLERANCE = 1e-9;
  * @see ADR-0047
  */
 export function isClearOfSide(side: FilletSide, centre: Point, radius: number): boolean {
-  return Array.from(
-    { length: SAMPLES + 1 },
-    (unused, index) => (index * side.limit) / SAMPLES,
-  ).every((t) => norm(subtract(cubicPoint(side.cubic, t), centre)) >= radius * (1 - TOLERANCE));
+  // A share EPSILON of the radius forgives rounding errors only.
+  return regularPartition(side.limit, SAMPLES).every(
+    (t) => distance(centre, cubicPoint(side.cubic, t)) >= radius * (1 - EPSILON),
+  );
 }

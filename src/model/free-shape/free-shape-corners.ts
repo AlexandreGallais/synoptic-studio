@@ -1,6 +1,11 @@
-import { curveBoundingBox, cyclicItem, stretchFactors, stretchedHandles } from "../../geometry";
+import {
+  NO_HANDLES,
+  curveBoundingBox,
+  cyclicItem,
+  stretchFactors,
+  stretchedHandles,
+} from "../../geometry";
 import { cornersWithRadii } from "../corner-radius";
-import { NO_HANDLES } from "../handles";
 
 import { freeShapeContour } from "./free-shape-contour";
 import { freeShapeRadii } from "./free-shape-radii";

@@ -1,5 +1,4 @@
-import { ZERO_VECTOR } from "../../math";
-import { turnAbout } from "../placement";
+import { rotate, withoutNegativeZero } from "../../math";
 
 import type { Handles } from "./handles";
 import type { Vector } from "../../math";
@@ -19,7 +18,7 @@ import type { Vector } from "../../math";
 export function turnedHandles(handles: Handles, direction: Vector): Handles {
   return {
     ...handles,
-    after: turnAbout(handles.after, ZERO_VECTOR, direction),
-    before: turnAbout(handles.before, ZERO_VECTOR, direction),
+    after: withoutNegativeZero(rotate(handles.after, direction)),
+    before: withoutNegativeZero(rotate(handles.before, direction)),
   };
 }

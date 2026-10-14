@@ -1,4 +1,4 @@
-import { perpDot, scale } from "../../math";
+import { opposite, perpDot } from "../../math";
 import { cubicStartDirection } from "../curve";
 import { orientedSides } from "../fillet-side";
 import { cubicPoint } from "../placement";
@@ -20,7 +20,7 @@ import type { CornerSide } from "../fillet-side";
  * @see DERIV-fillet-arc
  */
 function isTurningPositively(sides: readonly [CornerSide, CornerSide]): boolean {
-  const coming = scale(cubicStartDirection(sides[0].cubic), -1);
+  const coming = opposite(cubicStartDirection(sides[0].cubic));
 
   return perpDot(coming, cubicStartDirection(sides[1].cubic)) > 0;
 }

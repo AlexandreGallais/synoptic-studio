@@ -1,4 +1,4 @@
-import { edgeOfSelection, freeShapeWithMidpoint } from "../../src";
+import { edgeOfSelection, freeShapeWithMidpoint, hasArea } from "../../src";
 import { readSelection, writeSelection } from "../page";
 import { readEditedFreeShape, readShape, writeStoredFreeShape } from "../shape";
 
@@ -17,7 +17,7 @@ export function writeAddedMidpoint(document: Document): void {
   // No point is added to a shape of width or height 0: it would lie on its one line (AUD-005).
   const edge = edgeOfSelection(
     readSelection(document).selected,
-    corners.length * Math.sign(model.width * model.height),
+    corners.length * Number(hasArea(model)),
   );
 
   if (shape === undefined || edge === undefined) {

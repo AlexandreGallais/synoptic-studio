@@ -5,4 +5,6 @@ export * from "./layout-box";
 export * from "./placement";
 export * from "./rectangle";
 export * from "./regular-polygon";
+export * from "./round-shape";
 export * from "./selection";
+export * from "./shape";

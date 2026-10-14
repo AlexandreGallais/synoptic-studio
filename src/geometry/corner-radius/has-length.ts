@@ -1,4 +1,4 @@
-import { EPSILON, norm, subtract } from "../../math";
+import { EPSILON, distance } from "../../math";
 
 import type { ContourPiece } from "../contour";
 
@@ -17,5 +17,5 @@ import type { ContourPiece } from "../contour";
 export function hasLength(piece: ContourPiece): boolean {
   const points = piece.kind === "cubic" ? [piece.first, piece.second, piece.end] : [piece.end];
 
-  return points.some((point) => norm(subtract(point, piece.start)) >= EPSILON);
+  return points.some((point) => distance(piece.start, point) >= EPSILON);
 }

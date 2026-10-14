@@ -1,3 +1,6 @@
+import { ZERO_VECTOR, centralAngle, directionAt, hadamardProduct, polarAngle } from "../../math";
+
+import { chainEnd } from "./chain-end";
 import { HALF_SIDE } from "./half-side";
 
 /**
@@ -15,9 +18,10 @@ import { HALF_SIDE } from "./half-side";
  */
 export function stretchedSideDirections(corners: number, scale: number): readonly number[] {
   const directions = Array.from({ length: Math.ceil(corners / 2) - 1 }, (empty, index) => {
-    const regular = (2 * Math.PI * (index + 1)) / corners;
+    const regular = directionAt(centralAngle(index + 1, corners));
 
-    return Math.atan2(scale * Math.sin(regular), Math.cos(regular));
+    // The regular side's direction stretched vertically by the scale.
+    return polarAngle(hadamardProduct(regular, { x: 1, y: scale }));
   });
 
   if (corners % 2 === 0) {
@@ -25,7 +29,8 @@ export function stretchedSideDirections(corners: number, scale: number): readonl
   }
 
   const before = directions.slice(0, -1);
-  const cosines = before.reduce((sum, direction) => sum + Math.cos(direction), 0);
+  // The x of the chain from the origin is the sum of the sides' cosines.
+  const cosines = chainEnd(ZERO_VECTOR, before).x;
 
   return [...before, Math.acos(-HALF_SIDE - cosines)];
 }

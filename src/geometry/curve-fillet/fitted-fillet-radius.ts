@@ -1,4 +1,5 @@
-import { bisectionBracket } from "../../math";
+import { bisectionBracket, regularPartition } from "../../math";
+import { cyclicItem } from "../contour";
 import { FILLET_STEPS } from "../fillet-side";
 
 import { filletTangency } from "./fillet-tangency";
@@ -34,15 +35,13 @@ function isFitting(sides: readonly [FilletSide, FilletSide], radius: number): bo
  * @see DERIV-fillet-beside-curve
  */
 function largestFitting(sides: readonly [FilletSide, FilletSide], radius: number): number {
-  const table = Array.from(
-    { length: STEPS + 1 },
-    (unused, index) => (radius * (STEPS - index)) / STEPS,
-  );
+  // The radii tried, from the radius asked down to 0.
+  const table = regularPartition(radius, STEPS).toReversed();
   const first = table.findIndex((tried) => isFitting(sides, tried));
 
   return bisectionBracket(
     (tried) => isFitting(sides, tried),
-    [(radius * (STEPS - first)) / STEPS, (radius * (STEPS - first + 1)) / STEPS],
+    [cyclicItem(table, first, 0), cyclicItem(table, first - 1, radius)],
     FILLET_STEPS,
   )[0];
 }

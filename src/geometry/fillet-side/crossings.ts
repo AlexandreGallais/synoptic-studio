@@ -1,4 +1,5 @@
-import { bisectionBracket } from "../../math";
+import { average, bisectionBracket, regularPartition } from "../../math";
+import { cyclicItem } from "../contour";
 
 import { FILLET_STEPS } from "./fillet-steps";
 
@@ -17,14 +18,14 @@ const SAMPLES = 32;
  * @see DERIV-fillet-beside-curve
  */
 export function crossings(isBelow: (t: number) => boolean, end: number): readonly number[] {
-  const steps = Array.from({ length: SAMPLES + 1 }, (unused, index) => (index * end) / SAMPLES);
+  const steps = regularPartition(end, SAMPLES);
 
   return steps
     .slice(1)
-    .filter((t, index) => isBelow((index * end) / SAMPLES) && !isBelow(t))
+    .filter((t, index) => isBelow(cyclicItem(steps, index, t)) && !isBelow(t))
     .map((t) => {
       const [low, high] = bisectionBracket(isBelow, [t - end / SAMPLES, t], FILLET_STEPS);
 
-      return (low + high) / 2;
+      return average(low, high);
     });
 }

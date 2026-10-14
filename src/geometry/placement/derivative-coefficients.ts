@@ -1,14 +1,6 @@
 import { CUBIC_DEGREE } from "./cubic-degree";
 
-/** Coefficients of a quadratic `a t² + b t + c`. */
-export type Quadratic = {
-  /** Coefficient of t². */
-  readonly a: number;
-  /** Coefficient of t. */
-  readonly b: number;
-  /** Constant term. */
-  readonly c: number;
-};
+import type { Quadratic } from "../../math";
 
 /**
  * Derivative of one axis of a cubic as a quadratic in t (`DERIV-cubic-sides` step 2).

@@ -1,4 +1,4 @@
-import { norm } from "../../math";
+import { isZeroVector } from "../../math";
 
 import type { HandleWay } from "./handle-way";
 import type { Vector } from "../../math";
@@ -14,5 +14,5 @@ import type { Vector } from "../../math";
  * @see DERIV-handle-angle
  */
 export function isAngleUnknown(way: HandleWay, handle: Vector): boolean {
-  return way === "side" && norm(handle) === 0;
+  return way === "side" && isZeroVector(handle);
 }

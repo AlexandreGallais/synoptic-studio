@@ -1,4 +1,4 @@
-import type { CurveCorner, FreeShape, RegularPolygon } from "../../src";
+import type { CurveCorner, Shape } from "../../src";
 
 /** A shape read from the inputs, with what the page shows of it. */
 export type ShapeReading = {
@@ -11,5 +11,5 @@ export type ShapeReading = {
   /** Requested radius of each corner, in contour order. */
   readonly radii: readonly number[];
   /** Model of the shape. */
-  readonly model: FreeShape | RegularPolygon;
+  readonly model: Shape;
 };

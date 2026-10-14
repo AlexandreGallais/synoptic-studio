@@ -10,7 +10,7 @@ import { readNumber, selectElement } from "../page";
 import {
   readEditedFreeShape,
   readShape,
-  writeConvertedPolygon,
+  writeConvertedShape,
   writeStoredFreeShape,
 } from "../shape";
 
@@ -274,7 +274,7 @@ export function listenToHandleFields(document: Document, update: () => void): vo
 
   selectElement(document, "handles-switch").addEventListener("click", () => {
     // A regular polygon's point gets handles once the polygon is a free shape (US-028).
-    writeConvertedPolygon(document);
+    writeConvertedShape(document);
     writeChangedHandles(document, (handles) => ({ ...handles, isOn: !handles.isOn }), update);
   });
 

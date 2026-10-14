@@ -1,4 +1,4 @@
-import { deletionOutcome } from "../../src";
+import { deletionOutcome, isFreeShape } from "../../src";
 import { selectElement } from "../page";
 
 import type { DeletionOutcome, VertexSelection } from "../../src";
@@ -13,8 +13,8 @@ const DELETION_MESSAGES: Readonly<Record<DeletionOutcome | "none", string>> = {
 };
 
 /**
- * Reads what deleting the points selected would give: `none` on a regular polygon (converted
- * first) or with no point selected.
+ * Reads what deleting the points selected would give: `none` on a regular polygon or a round
+ * shape (converted first) or with no point selected.
  *
  * @kind procedure
  * @param reading - valid shape
@@ -28,9 +28,9 @@ function readDeletionOutcome(
 ): DeletionOutcome | "none" {
   const { model } = reading;
 
-  return "anchor" in model || selection.selected.length === 0
-    ? "none"
-    : deletionOutcome(model, selection.selected);
+  return isFreeShape(model) && selection.selected.length > 0
+    ? deletionOutcome(model, selection.selected)
+    : "none";
 }
 
 /**

@@ -1,12 +1,44 @@
+import { isRoundShape } from "../../src";
 import { createCurveHandleElements, showHandleFields } from "../handles";
-import { readMode, readSelection } from "../page";
+import { readMode, readSelection, selectElement } from "../page";
 
 import { createHandleElements } from "./create-handle-elements";
 import { showPointFields } from "./show-point-fields";
 import { showPointsList } from "./show-points-list";
 import { writeRadiusField } from "./write-radius-field";
 
+import type { VertexSelection } from "../../src";
 import type { ShapeReading } from "../shape";
+
+/**
+ * Shows the radius fields: the shape's for every vertex, the point's for the selected ones. A
+ * round shape has no radius (F10): its fields are left as they are, the radii kept for the next
+ * shape, and the point's field hidden.
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param reading - valid shape
+ * @param selection - vertices selected
+ * @see docs/backlog/stories/E14-F10-US-029-round-tool.md
+ */
+function writeRadiusFields(
+  document: Document,
+  reading: ShapeReading,
+  selection: VertexSelection,
+): void {
+  if (isRoundShape(reading.model)) {
+    selectElement(document, "point-radius-field").hidden = true;
+
+    return;
+  }
+
+  writeRadiusField(document, "radius", {
+    all: reading.radii,
+    shown: Object.keys(reading.corners).map(Number),
+  });
+
+  writeRadiusField(document, "point-radius", { all: reading.radii, shown: selection.selected });
+}
 
 /**
  * Shows what the mode says about the vertices: in Points mode their handles, the selected ones
@@ -24,15 +56,10 @@ export function showPoints(document: Document, reading: ShapeReading): readonly 
   const isPoints = readMode(document) === "points";
   const selection = readSelection(document);
 
-  writeRadiusField(document, "radius", {
-    all: reading.radii,
-    shown: Object.keys(contour).map(Number),
-  });
-
-  writeRadiusField(document, "point-radius", { all: reading.radii, shown: selection.selected });
   showPointsList(document, reading, selection);
   showPointFields(document, reading, selection);
   showHandleFields(document, reading);
+  writeRadiusFields(document, reading, selection);
 
   return isPoints
     ? [

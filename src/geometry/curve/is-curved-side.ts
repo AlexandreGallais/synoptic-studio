@@ -1,3 +1,5 @@
+import { isZeroVector } from "../../math";
+
 import type { Vector } from "../../math";
 import type { CurveCorner } from "../handles";
 
@@ -11,7 +13,7 @@ import type { CurveCorner } from "../handles";
  * @see REF-FIGMA-VECTOR-NETWORK
  */
 function isPulling(isOn: boolean, handle: Vector): boolean {
-  return isOn && (handle.x !== 0 || handle.y !== 0);
+  return isOn && !isZeroVector(handle);
 }
 
 /**

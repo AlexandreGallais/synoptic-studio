@@ -1,3 +1,5 @@
+import { modulo } from "../../math";
+
 /**
  * Whether a number is the one of a point of the shape: a whole number from 0 to `count − 1`.
  *
@@ -29,5 +31,5 @@ export function edgeOfSelection(selected: readonly number[], count: number): num
     selected.every((point) => isPointOf(point, count));
 
   // The edge starts at the point whose next one, in contour order, is the other point selected.
-  return isPair ? selected.find((point) => selected.includes((point + 1) % count)) : undefined;
+  return isPair ? selected.find((point) => selected.includes(modulo(point + 1, count))) : undefined;
 }
