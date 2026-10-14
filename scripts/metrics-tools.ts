@@ -9,7 +9,7 @@ import { callStats, statsTable } from "./metrics-tables.ts";
 import type { TimedCall } from "./metrics-tables.ts";
 
 /** The npm scripts that are the agent's tools. */
-export const AGENT_TOOLS = [
+const AGENT_TOOLS = new Set([
   "activity",
   "backlog:status",
   "check:all",
@@ -23,7 +23,7 @@ export const AGENT_TOOLS = [
   "story:finish",
   "branches:clean",
   "library",
-];
+]);
 
 /**
  * The agent's tool a shell command runs, if any.
@@ -35,7 +35,7 @@ export function agentTool(command: string): string {
   const match = /\bnpm run (?:-s |--silent )?(?<name>[\w:]+)/u.exec(command);
   const name = match?.groups?.["name"] ?? "";
 
-  return AGENT_TOOLS.includes(name) ? name : "";
+  return AGENT_TOOLS.has(name) ? name : "";
 }
 
 /**
