@@ -2,6 +2,12 @@
 
 What each working session dealt with, in the agent's words: the Product Owner's requests in neutral words, decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`).
 
+## 2026-10-14 — E14 closed
+
+- `#ret` The Product Owner answered the retrospective's questions. The main thread stays free during E15's runs: each story goes to a worker subagent, as a measured trial (ADR-0051). Point 1 alike in every shape is decided as recommended and built in E10: the rectangle starts at its bottom-right corner, the round shape at its right point. Every questionnaire now ends with room for remarks.
+- `#tools` Every tool worth writing is listed, with the ones worth Rust: the hooks and the status line, measured at 65 ms and 149 ms per run, and the large readers (`docs/tooling/agent-tools.md`). A lighter context at session start is planned during E02, the epic after E15.
+- `#merge` RET-002 and E14 done. The retrospective's pull request (#194) holds the review's (#193) and merges by itself once labeled (ADR-0050).
+
 ## 2026-10-14 — RET-002, the retrospective of E14
 
 - `#ret` The Product Owner decided every logged item and asked for the work without further questions; their remaining questions wait in the record (`docs/process/retrospectives/E14-retrospective.md`).

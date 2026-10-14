@@ -20,6 +20,16 @@ Scope: $ARGUMENTS. Never without the Product Owner's explicit start in this conv
 3. `/triage` if issues are open: present them at the next stop, do not act on them.
 4. List the scope's stories in delivery order (feature plan); stop now if the next one is `VAL`, `REV` or `RET`, or if a business question of `docs/domain/README.md` blocks it.
 
+## Main thread kept free (ADR-0051, trial during E15)
+
+The main agent dispatches and stays free for the Product Owner, who may write at any time:
+
+- **One worker per story.** It is an `Agent` call (`general-purpose`, `isolation: "worktree"`), in the background, from the up-to-date feature branch. Its prompt holds the story id, this skill's steps 2 to 4 below, `AGENTS.md`'s rules, and two limits: stop before the pull request, and stop with the question when a business rule is missing.
+- **One worker at a time per feature branch.** A feature's stories build on each other. Work on other files may run beside it: the research of the next feature, documentation, reviews.
+- **The main agent's part.** It answers the Product Owner while the worker works, with `npm run activity` and the status line to say where the work is. When the worker reports, it runs the reviews of step 6 in the background, sends the correctness findings back to a worker, then finishes the story (`npm run story:finish`).
+- **Business questions** come back from the worker. Only the main agent asks them, in the questionnaire, with room for remarks.
+- **Measured.** At the end of each run, the turn's tokens and the time the chat was free go into the journal, for E15's retrospective.
+
 ## For each story
 
 1. **Pick up `develop`** (parallel sessions, `docs/tooling/agent.md`): `git fetch origin` and `git log --oneline feature/f<nn>-<topic>..origin/develop -- AGENTS.md CLAUDE.md .claude docs/domain docs/adr docs/backlog docs/conventions`. If it lists commits, the Product Owner decided something in another session: rebase the feature branch on `origin/develop` (`git switch feature/f<nn>-<topic> && git pull && git rebase origin/develop && git push --force-with-lease`), read those commits' diffs, and apply them from this story on — a changed skill or rule replaces what was loaded at the start of the run; a change that touches the run's stories or scope is a stop.
