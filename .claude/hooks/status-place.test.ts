@@ -48,6 +48,7 @@ describe("running calls", () => {
     const call = runningCall(input, 1000);
 
     expect(call).toEqual({
+      agent: "main",
       description: "Run the checks",
       start: 1000,
       summary: "npm run check",
@@ -61,8 +62,14 @@ describe("running calls", () => {
 
   it("shows the oldest call, its description or else its command, and how long it runs", () => {
     const calls = [
-      { description: "", start: 5000, summary: "ls", tool: "Bash" },
-      { description: "Run the checks", start: 1000, summary: "npm run check", tool: "Bash" },
+      { agent: "main", description: "", start: 5000, summary: "ls", tool: "Bash" },
+      {
+        agent: "main",
+        description: "Run the checks",
+        start: 1000,
+        summary: "npm run check",
+        tool: "Bash",
+      },
     ];
 
     expect(runningLine(calls, 13_000, seconds)).toBe("▶ Bash · Run the checks — 12 s");

@@ -14,3 +14,4 @@ How the project is built, checked, documented, versioned and released.
 | [agent.md](./agent.md)                                 | agent configuration: `AGENTS.md`, `CLAUDE.md`, skills, expert agents, hooks, parallel sessions |
 | [metrics.md](./metrics.md)                             | how long the agent's commands, tasks and stories take, tokens                                  |
 | [sources.md](./sources.md)                             | the local source library: search, fetch, freshness (ADR-0039)                                  |
+| [agent-tools.md](./agent-tools.md)                     | the agent's own scripts: edits, statuses, end of a story, golden file, activity, epic check    |

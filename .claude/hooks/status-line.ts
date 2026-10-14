@@ -6,17 +6,28 @@
 // Temporal runs behind `--harmony-temporal` in Node.js 24: the status line command passes it.
 
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from "node:fs";
 import { join } from "node:path";
 
-import { placeOf, readRunningCall, runningLine } from "./status-place.ts";
-import { count, field, turnTokens } from "./status-tokens.ts";
+import { count, field } from "./status-json.ts";
+import { backgroundLines, placeOf, readRunningCall, runningLine } from "./status-place.ts";
+import { turnTokens } from "./status-tokens.ts";
 
 import type { RunningCall } from "./status-place.ts";
 import type { TokenTally } from "./status-tokens.ts";
 
 /** What the status line shows. */
 export type Status = {
+  /** One line per background task: subagent or command, what it does now. */
+  readonly background: readonly string[];
   /** Share of the context window used, in percent. */
   readonly contextPercent: number;
   /** Time since the current turn started. */
@@ -112,21 +123,55 @@ export function isTurnDone(tally: TokenTally): boolean {
 }
 
 /**
- * Activity of a working agent: waiting for its background tasks once its answer is written,
- * active, or silent for a while (waiting, or stalled).
+ * A number of things, the noun in the plural when needed.
+ *
+ * @param amount - how many
+ * @param noun - the noun in the singular
+ * @returns `1 agent`, `2 agents`
+ */
+function counted(amount: number, noun: string): string {
+  return `${String(amount)} ${noun}${amount === 1 ? "" : "s"}`;
+}
+
+/**
+ * The background tasks in a few words.
+ *
+ * @param tally - the turn's tally
+ * @returns `2 agents, 1 command`, empty when nothing runs in the background
+ */
+export function backgroundText(tally: TokenTally): string {
+  const agents = tally.pending.filter((task) => task.kind === "agent").length;
+  const commands = tally.pending.length - agents;
+
+  return [
+    agents === 0 ? "" : counted(agents, "agent"),
+    commands === 0 ? "" : counted(commands, "command"),
+  ]
+    .filter((part) => part !== "")
+    .join(", ");
+}
+
+/**
+ * Activity, in four states: the agent works on the main thread (with or without tasks in the
+ * background), or its turn is over and only background tasks run (the chat is free for the
+ * person's messages); a working agent silent for a while is shown as such.
  *
  * @param silentMs - time since the transcript last changed
  * @param tally - the turn's tally
  * @returns the colored activity
  */
 function activityOf(silentMs: number, tally: TokenTally): string {
-  if (tally.isWaiting && tally.pending.length > 0) {
-    return `${COLOR.cyan}◌ waiting for ${String(tally.pending.length)} background task${tally.pending.length === 1 ? "" : "s"}${COLOR.reset}`;
+  const background = backgroundText(tally);
+
+  if (background !== "" && tally.isWaiting) {
+    return `${COLOR.cyan}◌ chat free · waiting for ${background}${COLOR.reset}`;
   }
 
+  const also = background === "" ? "" : ` · ${background} in the background`;
+
   return silentMs < IDLE_MS
-    ? `${COLOR.green}● active${COLOR.reset}`
-    : `${COLOR.yellow}◌ silent for ${shortDuration(silentMs)}${COLOR.reset}`;
+    ? `${COLOR.green}● working${also}${COLOR.reset}`
+    : `${COLOR.yellow}◌ silent for ${shortDuration(silentMs)}${also}${COLOR.reset}`;
 }
 
 /**
@@ -152,15 +197,41 @@ function sessionLine(status: Status): string {
  * The status line's text.
  *
  * @param status - what the line shows
- * @returns two or three lines with ANSI colors: place and step, session, running call
+ * @returns two lines or more with ANSI colors: place and step, session, the main thread's running
+ * call, then one line per background task
  */
 export function statusText(status: Status): string {
   const place = `${COLOR.bold}${status.place}${COLOR.reset}`;
   const step = status.step === "" ? "waiting" : status.step;
   const color = status.isRunningLong ? COLOR.red : COLOR.cyan;
   const running = status.running === "" ? [] : [`${color}${status.running}${COLOR.reset}`];
+  const background = status.background.map((line) => `${COLOR.dim}${line}${COLOR.reset}`);
 
-  return [[place, step].join(SEPARATOR), sessionLine(status), ...running].join("\n");
+  return [[place, step].join(SEPARATOR), sessionLine(status), ...running, ...background].join("\n");
+}
+
+/**
+ * The session's state that each tool call's record copies (`now.json`, read by the
+ * `log-tool-call` hook): written at each refresh, so that reading it costs the hook nothing.
+ *
+ * @param status - what the status line shows
+ * @param now - time now, epoch milliseconds
+ * @returns the snapshot to write
+ */
+export function sessionSnapshot(status: Status, now: number): Readonly<Record<string, unknown>> {
+  const agents = status.tally.pending.filter((task) => task.kind === "agent").length;
+
+  return {
+    contextPercent: status.contextPercent,
+    isWaiting: status.tally.isWaiting,
+    model: status.model,
+    pendingAgents: agents,
+    pendingCommands: status.tally.pending.length - agents,
+    time: now,
+    turnOutputTokens: status.tally.output,
+    turnStart: status.tally.start,
+    turnTokens: status.tally.total,
+  };
 }
 
 /**
@@ -223,19 +294,22 @@ if (import.meta.main) {
     rmSync(join(running, `${id}.json`), { force: true });
   }
 
-  // A call started before the turn never finished (an interrupted turn): its file is removed.
-  const stale = runningCalls(running).filter(([, call]) => call.start < tally.start);
+  // A main call started before the turn never finished (an interrupted turn): its file is removed;
+  // a subagent's call may outlive the turn that launched the subagent.
+  const stale = runningCalls(running).filter(
+    ([, call]) => call.agent === "main" && call.start < tally.start,
+  );
 
   for (const [name] of stale) {
     rmSync(join(running, name), { force: true });
   }
 
-  const calls = isTurnDone(tally)
+  const all = runningCalls(running).map(([, call]) => call);
+  const calls = tally.isWaiting
     ? []
-    : runningCalls(running)
-        .map(([, call]) => call)
-        .filter((call) => call.start >= tally.start);
+    : all.filter((call) => call.agent === "main" && call.start >= tally.start);
   const status: Status = {
+    background: backgroundLines(tally.pending, all, { duration: shortDuration, now }),
     contextPercent: count(field(input, "context_window"), "used_percentage"),
     // Once the agent ended its turn, the clock stops at its last answer.
     durationMs:
@@ -251,5 +325,6 @@ if (import.meta.main) {
     tally,
   };
 
+  writeFileSync(join(folder, "now.json"), JSON.stringify(sessionSnapshot(status, now)));
   process.stdout.write(statusText(status));
 }

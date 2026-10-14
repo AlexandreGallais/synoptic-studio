@@ -34,7 +34,7 @@ The agent designs, implements, tests and documents. The Product Owner sets prior
 
 ## Lessons from the Product Owner
 
-The Product Owner's critiques of E01, written as habits: what the agent does in each situation.
+The Product Owner's critiques of E01 and E14, written as habits: what the agent does in each situation.
 
 | When the agent is about to…         | Instead                                                                                                       |
 | ----------------------------------- | ------------------------------------------------------------------------------------------------------------- |
@@ -52,3 +52,9 @@ The Product Owner's critiques of E01, written as habits: what the agent does in 
 | wait for something                  | read the statuses; stop at the first failure; never wait for a CI on a work branch                            |
 | record what the Product Owner said  | write the decision and its reason in neutral English, never quote                                             |
 | add code                            | only for stories the Product Owner set `ready`                                                                |
+| organize code                       | split by business domain, never by a count of files; never leave files beside folders (E14)                   |
+| stop a run                          | say the next step instead of asking when; write in plain words, never in the words of the code (E14)          |
+| leave a session                     | stop every background task; delete every merged branch at once, not after the release (E14)                   |
+| fix a tool that misbehaves          | find the cause in the data first (the transcript line, the log); write a test from that line (E14)            |
+| propose an improvement              | say what would change for the Product Owner, with an example they can picture (E14)                           |
+| write the same script again         | make it a tool of the repository, tested, with its line in `docs/tooling/agent-tools.md` (E14)                |

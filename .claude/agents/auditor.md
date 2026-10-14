@@ -22,4 +22,4 @@ Report **only** gaps that affect correctness, the sources' validity or the state
 
 ## Sources
 
-The same tools and protocol as the main agent (`docs/tooling/sources.md`, `docs/research/README.md`): `library_search` first, then `library_get` and `library_read`; `WebFetch` and `WebSearch` only for a page the library cannot read, which `library_get` then keeps. Never cite a page you have not read.
+The same tools and protocol as the main agent (`docs/tooling/sources.md`, `docs/research/README.md`): `library_search` first, then `library_get` and `library_read`; `WebFetch` and `WebSearch` only for a page the library cannot read, which `library_get` then keeps. Never cite a page you have not read. How many sources a claim needs, and when to stop looking: the tiers of `docs/research/README.md` §2.

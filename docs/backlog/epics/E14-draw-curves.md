@@ -1,7 +1,7 @@
 ---
 id: E14
 title: Draw curves with handles, ellipses and round shapes
-status: in-progress
+status: done
 ---
 
 # E14 — Draw curves with handles, ellipses and round shapes
@@ -34,6 +34,8 @@ Decided by the Product Owner on 2026-10-12, at the validation of F10. The round 
 
 ## For the UX pass at the end of E14
 
+At REV-002 (2026-10-14) the Product Owner found the interface simple enough and asked for no change; the copy and paste of a point's settings waits for the editors' interface.
+
 - The layout of a point's switch between its corner radius and its handles (F12).
 - Not in E14, for when the editors' interface is built: copying one group of a point's settings — its corner radius, or its handles — and pasting it on another point; it needs the business objects sorted first, what can be pasted onto what (Product Owner, VAL-011, 2026-10-13).
 
@@ -52,5 +54,5 @@ After its last feature is validated (ADR-0023). Its naming pass is F13, which we
 
 | Story                                                                               | Status |
 | ----------------------------------------------------------------------------------- | ------ |
-| [REV-002](../stories/E14-REV-002-review-e14.md) — Review E14 with the Product Owner | draft  |
-| [RET-002](../stories/E14-RET-002-retrospective-e14.md) — Retrospective of E14       | draft  |
+| [REV-002](../stories/E14-REV-002-review-e14.md) — Review E14 with the Product Owner | done   |
+| [RET-002](../stories/E14-RET-002-retrospective-e14.md) — Retrospective of E14       | done   |

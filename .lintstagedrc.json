@@ -1,5 +1,8 @@
 {
-  "*.{ts,md}": ["prettier --write", "eslint --fix --max-warnings=0 --no-warn-ignored"],
+  "*.{ts,md}": [
+    "prettier --write",
+    "eslint --cache --cache-location node_modules/.cache/eslint/ --fix --max-warnings=0 --no-warn-ignored"
+  ],
   "*.{json,html,css,scss,yml,yaml}": ["prettier --write"],
   "*": ["secretlint"]
 }

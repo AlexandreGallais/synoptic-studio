@@ -20,6 +20,16 @@ Scope: $ARGUMENTS. Never without the Product Owner's explicit start in this conv
 3. `/triage` if issues are open: present them at the next stop, do not act on them.
 4. List the scope's stories in delivery order (feature plan); stop now if the next one is `VAL`, `REV` or `RET`, or if a business question of `docs/domain/README.md` blocks it.
 
+## Main thread kept free (ADR-0051, trial during E15)
+
+The main agent dispatches and stays free for the Product Owner, who may write at any time:
+
+- **One worker per story.** It is an `Agent` call (`general-purpose`, `isolation: "worktree"`), in the background, from the up-to-date feature branch. Its prompt holds the story id, this skill's steps 2 to 4 below, `AGENTS.md`'s rules, and two limits: stop before the pull request, and stop with the question when a business rule is missing.
+- **One worker at a time per feature branch.** A feature's stories build on each other. Work on other files may run beside it: the research of the next feature, documentation, reviews.
+- **The main agent's part.** It answers the Product Owner while the worker works, with `npm run activity` and the status line to say where the work is. When the worker reports, it runs the reviews of step 6 in the background, sends the correctness findings back to a worker, then finishes the story (`npm run story:finish`).
+- **Business questions** come back from the worker. Only the main agent asks them, in the questionnaire, with room for remarks.
+- **Measured.** At the end of each run, the turn's tokens and the time the chat was free go into the journal, for E15's retrospective.
+
 ## For each story
 
 1. **Pick up `develop`** (parallel sessions, `docs/tooling/agent.md`): `git fetch origin` and `git log --oneline feature/f<nn>-<topic>..origin/develop -- AGENTS.md CLAUDE.md .claude docs/domain docs/adr docs/backlog docs/conventions`. If it lists commits, the Product Owner decided something in another session: rebase the feature branch on `origin/develop` (`git switch feature/f<nn>-<topic> && git pull && git rebase origin/develop && git push --force-with-lease`), read those commits' diffs, and apply them from this story on — a changed skill or rule replaces what was loaded at the start of the run; a change that touches the run's stories or scope is a stop.
@@ -28,10 +38,10 @@ Scope: $ARGUMENTS. Never without the Product Owner's explicit start in this conv
 4. **User story** (`US`): write its **Product Owner test card** in the story file, section `## Product Owner test`: steps in the playground, expected result of each, terms explained in plain words, what to look at closely.
 5. **Checkpoint** (`CHK`): update docs and methods as the project grows; check consistency of code, docs, `AGENTS.md`, `CLAUDE.md` and rules; run the light evolvability check (`docs/process/README.md`); list the test cards written so far; log what deserves the retrospective.
 6. **Independent review**, before the `done` commit (so that it stays last), in the background and in parallel: the `auditor` on the story's diff (`git diff feature/f<nn>-<topic>...HEAD`), its criteria, derivations and sources; the `verifier` on its tests; the `math-expert` when it adds a `math` or `geometry` function. Fix correctness findings; record the rest in the pull request body.
-7. `gh pr create --base feature/f<nn>-<topic> --label autonomous …` (never the label for `VAL`, `REV`, `RET`).
-8. No CI runs on the pull request (ADR-0038): the push already passed `check:all` in the pre-push hook. GitHub merges it within a minute of the label (`story-automerge.yml`); read `gh pr view <n> --json state` once or twice, never in a long loop. Branch behind its base: `gh pr update-branch <n> --rebase`. Not merged after two minutes: read the workflow's log (`gh run list --workflow story-automerge.yml --limit 1`, then `gh run view <run> --log-failed`).
+7. `npm run story:finish -- feature/f<nn>-<topic> "<title>" <body file>` (ADR-0050): it opens the pull request with the `autonomous` label (never for `VAL`, `REV`, `RET` before the Product Owner validated them), waits at most three minutes for GitHub's merge (`story-automerge.yml`; no CI, ADR-0038), brings the feature branch up to date and deletes the story's branch here and on GitHub. Not merged: it says so; read `gh run list --workflow story-automerge.yml --limit 1`, then `gh run view <run> --log-failed`; a branch behind its base: `gh pr update-branch <n> --rebase`.
    - "Dependencies not up-to-date" at the push: a version passed its 7-day cooldown meanwhile — read its release notes (`docs/tooling/versions-and-security.md`), update it on the story branch (`build(deps)` commit) and on `develop` too.
-9. `git switch feature/f<nn>-<topic> && git pull --prune && git branch -D <branch>`; delete the merged story branch on GitHub too (auto-merges do not delete it): `gh api -X DELETE repos/<owner>/<repo>/git/refs/heads/<branch>` — not `git push --delete`, which runs the pre-push hook (`check:all`) for nothing; next story.
+8. Statuses: `npm run backlog:status -- <ID> <status>` changes the story's file, index and feature table at once; edits across files: `npm run replace` (`docs/tooling/agent-tools.md`).
+9. Next story.
 
 ## Stop when
 

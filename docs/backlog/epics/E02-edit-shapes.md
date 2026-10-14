@@ -22,6 +22,10 @@ status: draft
 | Out of scope                | —                                                                                                                  |
 | Closure criteria            | the scenarios of `interaction.md` are demonstrated                                                                 |
 
+## For the agent's work during E02
+
+- **Lighter context** (Product Owner, 2026-10-14, at RET-002): measure what a session loads before its first word — `AGENTS.md`, `CLAUDE.md`, the rules, the memory index, the skills' descriptions — and make it smaller, so that each session starts with fewer tokens and the conversation memory fills up more slowly. A tool `context:size` gives the figures (`docs/tooling/agent-tools.md`); the retrospective of E02 compares them with E15's. Today: about 29 000 characters for those files, 27 000 more for the skills.
+
 ## Candidate features
 
 | Feature                    | Status    |

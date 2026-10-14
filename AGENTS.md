@@ -14,7 +14,7 @@ TypeScript library `editor` to create **SVG symbols** for **synoptic views**, an
 
 A library of small named functions, each backed by a verified source, composed so that they read like formulas; the playground (`playground/`) shows each stage. Principles: schematic, orthogonal, integer, documented, dependency-free.
 
-**State**: E01 (shapes from numbers) is delivered and its retrospective (RET-001) done — rectangle, regular polygon, anchor, radius per corner, free shape, node editing, rotation, stretched polygon. E14 (curves) is in progress: F11 delivered a code base ready for curves (folders by business domain, ADR-0043; one path writer; a property test per function); F12 delivered points on a curve with handles (cubic sides from typed handles, ADR-0046; a corner beside a curve keeps its rounding, ADR-0047); F10 delivered the round shape (an ellipse as four cubic sides, ADR-0048; converted to a free shape only); F13 named every calculation, now a standing rule with a naming pass closing each epic (ADR-0049); next REV-002 and RET-002, then E15 (text), E02. **Scope** (ADR-0030): a finished free V1, then new features only in a paid pro edition; a request that looks pro → say so and ask; pro ideas go to `docs/domain/editions.md`. Implement only `ready` stories: the Product Owner's `/run` is the go-ahead, the agent then sets its scope `ready` (ADR-0045).
+**State**: E01 (shapes from numbers) is delivered and its retrospective (RET-001) done — rectangle, regular polygon, anchor, radius per corner, free shape, node editing, rotation, stretched polygon. E14 (curves) is delivered and its retrospective (RET-002) done — points on a curve with handles (ADR-0046, ADR-0047), the round shape as four cubic sides (ADR-0048), every calculation named with a naming pass closing each epic (ADR-0049), the agent's tools and parallel checks (ADR-0050). Next E15 (text), its runs keeping the main thread free (ADR-0051, a trial), then E02. **Scope** (ADR-0030): a finished free V1, then new features only in a paid pro edition; a request that looks pro → say so and ask; pro ideas go to `docs/domain/editions.md`. Implement only `ready` stories: the Product Owner's `/run` is the go-ahead, the agent then sets its scope `ready` (ADR-0045).
 
 ## Where to read — before any task
 
@@ -99,14 +99,15 @@ Stop format: what blocks, what was consulted, the precise question, the options 
 
 ## Commands
 
-| Command                | Role                                                                       |
-| ---------------------- | -------------------------------------------------------------------------- |
-| `npm run dev`          | playground on `http://localhost:5173` (`?guide=epic` for the epic's steps) |
-| `npm run docs:dev`     | documentation site                                                         |
-| `npm run fix`          | Prettier + ESLint `--fix`                                                  |
-| `npm run check:all`    | every check (what `pre-push` and the CI run)                               |
-| `npm run library -- …` | local library of sources: `search`, `get`, `read`, `list`                  |
-| `npm run metrics`      | report of the agent's commands, time and tokens                            |
+| Command                | Role                                                                                                              |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `npm run dev`          | playground on `http://localhost:5173` (`?guide=epic` for the epic's steps)                                        |
+| `npm run docs:dev`     | documentation site                                                                                                |
+| `npm run fix`          | Prettier + ESLint `--fix`                                                                                         |
+| `npm run check:all`    | every check (what `pre-push` and the CI run)                                                                      |
+| `npm run library -- …` | local library of sources: `search`, `get`, `read`, `list`                                                         |
+| `npm run metrics`      | report of the agent's commands, time and tokens                                                                   |
+| agent tools            | `replace`, `backlog:status`, `story:finish`, `golden:*`, `activity`, `epic:check` (`docs/tooling/agent-tools.md`) |
 
 ## Pitfalls
 

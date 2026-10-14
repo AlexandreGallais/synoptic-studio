@@ -2,6 +2,24 @@
 
 What each working session dealt with, in the agent's words: the Product Owner's requests in neutral words, decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`).
 
+## 2026-10-14 — E14 closed
+
+- `#ret` The Product Owner answered the retrospective's questions. The main thread stays free during E15's runs: each story goes to a worker subagent, as a measured trial (ADR-0051). Point 1 alike in every shape is decided as recommended and built in E10: the rectangle starts at its bottom-right corner, the round shape at its right point. Every questionnaire now ends with room for remarks.
+- `#tools` Every tool worth writing is listed, with the ones worth Rust: the hooks and the status line, measured at 65 ms and 149 ms per run, and the large readers (`docs/tooling/agent-tools.md`). A lighter context at session start is planned during E02, the epic after E15.
+- `#merge` RET-002 and E14 done. The retrospective's pull request (#194) holds the review's (#193) and merges by itself once labeled (ADR-0050).
+
+## 2026-10-14 — RET-002, the retrospective of E14
+
+- `#ret` The Product Owner decided every logged item and asked for the work without further questions; their remaining questions wait in the record (`docs/process/retrospectives/E14-retrospective.md`).
+- `#tooling` Status line: the cause of the stuck background task found in the transcript (a call refused before it started answers with an error, never a notification); four states, a line per background task. Each call's record holds the session's state; the report splits turns between tools and model. `check:all` in parallel lanes (90 s to 54 s), ESLint's cache for fixes (28 s to 8 s).
+- `#tools` `npm run replace`, `backlog:status`, `story:finish`, `golden:write` and `golden:check`, `activity`, `epic:check`; specifications of the next ones and the reason Rust waits (`docs/tooling/agent-tools.md`).
+- `#decisions` ADR-0050 (tools, parallel checks, validated epic stories merging by themselves, GitHub deleting merged branches); ADR-0051 proposed (the main thread kept free, stories worked by subagents) for a trial at the next run; source tiers in the research protocol; a JSDoc word no longer counts as a use; point 1 alike in every shape noted in E10 with SVG 2's convention.
+
+## 2026-10-14 — REV-002, the review of E14
+
+- `#rev` A free walk-through of the playground: round shape, conversion, handles in every mode, a loop, deleting a point, turning; everything as intended. Report `docs/guide/e14-draw-curves.md`. One idea for the end of V1: every shape's point 1 at its lowest right point (note in E10, before E11 fixes the file format).
+- `#ret` For RET-002, the Product Owner raised: the status line still shows a background task after the end of the turn; it should say whether the agent works, waits only for agents (the chat is free), or both; richer data per command for the analysis; what agents do is hard to follow; a full check of what the epic produced, at each retrospective.
+
 ## 2026-10-14 — F10 and F13 validated
 
 - `#val` VAL-012 and VAL-013: the Product Owner tried the round shape, its points and handles, and the shapes made from it, and accepted F10 and F13. One change: **Convert to rounded rectangle** removed (an ellipse becomes a capsule, so it keeps the drawing only for a circle); F10.AC5 reworded, the function and its helper removed, the guided test down to six steps. The agent's other F10 decisions accepted as built.
