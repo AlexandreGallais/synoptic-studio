@@ -18,8 +18,8 @@ import {
  * @param id - its id
  * @returns its `hidden` property
  */
-function isHidden(id: string): boolean | undefined {
-  return document.querySelector<HTMLElement>(`#${id}`)?.hidden;
+function isHidden(id: string): boolean {
+  return document.querySelector<HTMLElement>(`#${id}`)?.hidden === true;
 }
 
 describe("the Round tool (US-029)", () => {
