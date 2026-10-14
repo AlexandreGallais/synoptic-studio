@@ -8,6 +8,7 @@ import {
   viewOf,
   viewOfFirst,
 } from "../../../tests";
+import { glyphPairKey } from "../../model";
 
 import { parseGposKerning } from "./parse-gpos-kerning";
 
@@ -21,10 +22,10 @@ const PAIR = pairPosFormat1([X_ADVANCE_ONLY, 0], [{ first: 1, pairs: [[2, -50]] 
 const OTHER_PAIR = pairPosFormat1([X_ADVANCE_ONLY, 0], [{ first: 1, pairs: [[3, -20]] }]);
 
 /** The rule of `PAIR`. */
-const PAIR_RULE = { kind: "pairs", pairs: { 1: { 2: -50 } } };
+const PAIR_RULE = { kind: "pairs", pairs: { [glyphPairKey(1, 2)]: -50 } };
 
 /** The rule of `OTHER_PAIR`. */
-const OTHER_RULE = { kind: "pairs", pairs: { 1: { 3: -20 } } };
+const OTHER_RULE = { kind: "pairs", pairs: { [glyphPairKey(1, 3)]: -20 } };
 
 describe("parseGposKerning (REF-OT-GPOS)", () => {
   it("reads the kern feature's lookups once each, in lookup list order", () => {

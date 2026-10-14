@@ -1,4 +1,5 @@
 import { isSpanWithin } from "../../math";
+import { glyphPairKey } from "../../model";
 
 import type { KerningLookup, PairKerningRule } from "../../model";
 
@@ -161,22 +162,16 @@ function stepsToKerning(steps: readonly KernStep[]): number {
  *
  * @kind format
  * @param steps - every pair of every subtable, in subtable order
- * @returns the rule, by left glyph then right glyph
+ * @returns the rule, by pair key
  * @see REF-OT-KERN
  */
 function stepsToRule(steps: readonly KernStep[]): PairKerningRule {
   return {
     kind: "pairs",
     pairs: Object.fromEntries(
-      [...Map.groupBy(steps, (step) => step.left)].map(([left, row]) => [
-        left,
-        Object.fromEntries(
-          [...Map.groupBy(row, (step) => step.right)].map(([right, values]) => [
-            right,
-            stepsToKerning(values),
-          ]),
-        ),
-      ]),
+      [...Map.groupBy(steps, (step) => glyphPairKey(step.left, step.right))].map(
+        ([key, values]) => [key, stepsToKerning(values)],
+      ),
     ),
   };
 }
