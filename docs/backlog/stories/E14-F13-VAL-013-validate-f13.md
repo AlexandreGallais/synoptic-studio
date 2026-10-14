@@ -3,7 +3,7 @@ id: VAL-013
 epic: E14
 feature: F13
 title: "Validate F13"
-status: ready
+status: in-progress
 points: 1
 ---
 
@@ -19,5 +19,5 @@ F13 changes no drawing: the Product Owner reads a short demo page — a few func
 
 One task = one commit, referenced as `VAL-013.Tn`.
 
-- [ ] T1 — The demo page (30 min)
+- [x] T1 — The demo page (30 min)
 - [ ] T2 — The Product Owner's reading (15 min)

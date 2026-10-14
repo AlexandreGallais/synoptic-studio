@@ -100,7 +100,7 @@
 | [CHK-013](./E14-F13-CHK-013-checkpoint-f13.md)                  | F13     | Checkpoint between the two passes                                     | done        |
 | [EN-030](./E14-F13-EN-030-second-pass.md)                       | F13     | Pass 2: what pass 1 missed, and the duplicates                        | done        |
 | [AUD-014](./E14-F13-AUD-014-audit-f13.md)                       | F13     | Audit F13                                                             | done        |
-| [VAL-013](./E14-F13-VAL-013-validate-f13.md)                    | F13     | Validate F13                                                          | ready       |
+| [VAL-013](./E14-F13-VAL-013-validate-f13.md)                    | F13     | Validate F13                                                          | in-progress |
 | [SP-013](./E14-F10-SP-013-research-f10.md)                      | F10     | Research for F10: an ellipse from four cubic sides                    | done        |
 | [EN-027](./E14-F10-EN-027-round-shape-model.md)                 | F10     | The round shape in the model, its curve and conversions               | done        |
 | [US-029](./E14-F10-US-029-round-tool.md)                        | F10     | Draw a circle or an ellipse with the Round tool                       | done        |
