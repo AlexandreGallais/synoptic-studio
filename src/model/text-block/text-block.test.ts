@@ -45,6 +45,28 @@ describe("textBlock (DERIV-text-width step 4)", () => {
     });
   });
 
+  it("measures a line of spaces with its spacing", () => {
+    // Three spaces, 3 × 569 = 1707 units: 13.3359375, plus 2 letter spacings of 2 and 3 word
+    // spacings of 4: 13.3359375 + 4 + 12 = 29.3359375.
+    const text = { ...HELLO_TEXT, content: " ".repeat(3), letterSpacing: 2, wordSpacing: 4 };
+
+    expect(textBlock(ARIAL_METRICS, text).width).toBe(29.3359375);
+  });
+
+  it("floors the width at 0 when a negative spacing makes every line narrower than nothing", () => {
+    // "HH": 2958 units, 23.109375, then one letter spacing of −100: −76.890625, floored.
+    const text = { ...HELLO_TEXT, content: "HH\nHH", letterSpacing: -100 };
+
+    expect(textBlock(ARIAL_METRICS, text)).toEqual({ height: 36.796875, width: 0 });
+  });
+
+  it("measures 200 000 lines, past what a call's arguments may hold", () => {
+    const text = { ...HELLO_TEXT, content: Array.from({ length: 200_000 }, () => "H").join("\n") };
+
+    // 1479 × 16 / 2048 = 11.5546875 wide, 200 000 lines of 18.3984375.
+    expect(textBlock(ARIAL_METRICS, text)).toEqual({ height: 3_679_687.5, width: 11.5546875 });
+  });
+
   it("counts an empty last line in the height", () => {
     // "Hello" then an empty line: 36.4609375 wide, two lines tall.
     expect(textBlock(ARIAL_METRICS, { ...HELLO_TEXT, content: "Hello\n" })).toEqual({
