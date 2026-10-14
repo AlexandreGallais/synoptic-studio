@@ -3,7 +3,7 @@ id: SP-015
 epic: E15
 feature: F05
 title: "Research for E15: text measured from font metrics and drawn as positioned lines"
-status: ready
+status: done
 points: 2
 ---
 
@@ -22,6 +22,6 @@ Read and record the sources of every story of F05, and of what F14, F15 and F16 
 
 One task = one commit, referenced as `SP-015.Tn`.
 
-- [ ] T1 — Research note 0017 and the references read (1 h)
-- [ ] T2 — ADR-0052 and `DERIV-text-width` with hand-computed cases (2 h)
-- [ ] T3 — The default font chosen, its licence recorded; F05's stories updated (1 h)
+- [x] T1 — Research note 0017 and the references read (1 h)
+- [x] T2 — ADR-0052 and `DERIV-text-width` with hand-computed cases (2 h)
+- [x] T3 — The default font chosen, its licence recorded; F05's stories updated (1 h)

@@ -13,10 +13,10 @@ A text holds its content and the options of its characters; the library transfor
 
 ## Acceptance criteria
 
-- Given "Hello World" in Arial at size 16 without kerning, when it is measured, then its width is 82.6875 (10 584 × 16 / 2048).
-- Given a letter spacing of 2 and a word spacing of 4, when "Hello World" is measured, then 2 is added after each character but the last and 4 after each space.
-- Given a content with two lines, when it is measured, then its block is as wide as its longest line and as tall as two line heights, the line height being the font's ascender minus descender plus line gap, times the size over the units per em.
-- Given each case transform (upper, lower, sentence, title, camel, Pascal, kebab, snake, constant), when "pump P-101 is running" is transformed, then it gives the expected string.
+- Given "Hello World" in Arial at size 16, when it is measured, then its width is 82.6875 without kerning (10 584 × 16 / 2048) and 82.39844 with it (`DERIV-text-width`, steps 1 and 2).
+- Given a letter spacing of 2 and a word spacing of 4, when "Hello World" is measured, then 2 is added between adjacent characters and 4 for each space: 106.6875; a single character gets no letter spacing (`DERIV-text-width`, step 3; `REF-CSS-TEXT-3`).
+- Given the content "Hello" and "World" on two lines, when it is measured, then its block is 41.78125 wide, its longest line, and 36.79688 tall, two line heights of `(A − D + G) × s / U` (`DERIV-text-width`, step 4).
+- Given each case transform (upper, lower, sentence, title, camel, Pascal, kebab, snake, constant), when "pump P-101 is running" is transformed, then it gives the string of `docs/domain/shapes.md` (Text), once Q36 is answered.
 - Given an empty content, when it is measured, then its block is 0 wide; given a size outside 1 to 100 000 or not an integer, then the text is refused.
 
 ## Tasks
