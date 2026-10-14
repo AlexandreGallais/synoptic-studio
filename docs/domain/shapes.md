@@ -210,18 +210,18 @@ Decided by the Product Owner at F05's refinement, rounds 1 and 2 (2026-10-14); d
   - an alignment of its lines (left, center, right), a position (integers, the top-left of its block before it turns) and an angle.
 - **Case transforms** (Q36, a provisional decision of 2026-10-15, to be confirmed at VAL-014): each line is written in the case on its own, its line breaks kept. For "pump P-101 is running":
 
-  | Case     | Rule                                                                                                     | Gives                   |
-  | -------- | -------------------------------------------------------------------------------------------------------- | ----------------------- |
-  | none     | as typed                                                                                                 | `pump P-101 is running` |
-  | upper    | every letter in upper case                                                                               | `PUMP P-101 IS RUNNING` |
-  | lower    | every letter in lower case                                                                               | `pump p-101 is running` |
-  | sentence | the line's first character in upper case, the rest kept                                                  | `Pump P-101 is running` |
-  | title    | the first character after each space in upper case, the rest kept                                        | `Pump P-101 Is Running` |
-  | camel    | the words, cut at spaces, hyphens and underscores, in lower case, each but the first capitalized, joined | `pumpP101IsRunning`     |
-  | Pascal   | the same words, each capitalized, joined                                                                 | `PumpP101IsRunning`     |
-  | kebab    | the same words in lower case, joined by hyphens                                                          | `pump-p-101-is-running` |
-  | snake    | the same words in lower case, joined by underscores                                                      | `pump_p_101_is_running` |
-  | constant | the same words in upper case, joined by underscores                                                      | `PUMP_P_101_IS_RUNNING` |
+  | Case     | Rule                                                                                                                                                                  | Gives                   |
+  | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
+  | none     | as typed                                                                                                                                                              | `pump P-101 is running` |
+  | upper    | every letter in upper case                                                                                                                                            | `PUMP P-101 IS RUNNING` |
+  | lower    | every letter in lower case                                                                                                                                            | `pump p-101 is running` |
+  | sentence | the line's first letter in upper case, past what is not a letter ("␣pump" gives "␣Pump", "(pump) on" gives "(Pump) on"), the rest kept                                | `Pump P-101 is running` |
+  | title    | the first letter of each run of characters between white space (space, no-break space, tab) in upper case, the spaces and the rest kept (`pump  on` gives `Pump  On`) | `Pump P-101 Is Running` |
+  | camel    | the words, cut at spaces, hyphens and underscores, in lower case, each but the first capitalized, joined                                                              | `pumpP101IsRunning`     |
+  | Pascal   | the same words, each capitalized, joined                                                                                                                              | `PumpP101IsRunning`     |
+  | kebab    | the same words in lower case, joined by hyphens                                                                                                                       | `pump-p-101-is-running` |
+  | snake    | the same words in lower case, joined by underscores                                                                                                                   | `pump_p_101_is_running` |
+  | constant | the same words in upper case, joined by underscores                                                                                                                   | `PUMP_P_101_IS_RUNNING` |
 
   A run of separators cuts once, so a line of separators only gives an empty line in the programmers' cases.
 

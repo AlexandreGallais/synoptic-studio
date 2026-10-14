@@ -3,6 +3,9 @@ import { caseWords } from "./case-words";
 
 import type { TextCase } from "../text";
 
+/** A word of the title case: a run of characters other than white space. */
+const WORD = /\S+/gu;
+
 /** How each case writes one line (Q36). */
 const LINE_IN_CASE: Readonly<Record<TextCase, (line: string) => string>> = {
   camel: (line) =>
@@ -19,19 +22,15 @@ const LINE_IN_CASE: Readonly<Record<TextCase, (line: string) => string>> = {
       .join(""),
   sentence: (line) => capitalized(line),
   snake: (line) => caseWords(line.toLowerCase()).join("_"),
-  title: (line) =>
-    line
-      .split(" ")
-      .map((word) => capitalized(word))
-      .join(" "),
+  title: (line) => line.replaceAll(WORD, (word) => capitalized(word)),
   upper: (line) => line.toUpperCase(),
 };
 
 /**
  * The content of a text written in a case, line by line, its line breaks kept (Q36): upper,
- * lower, its first character capitalized (sentence), the first character after each space
- * capitalized (title), or its words, cut at spaces, hyphens and underscores, joined in camel,
- * Pascal, kebab, snake or constant case.
+ * lower, the first letter of each line capitalized (sentence), the first letter of each run of
+ * characters between white space capitalized (title), or its words, cut at spaces, hyphens and
+ * underscores, joined in camel, Pascal, kebab, snake or constant case.
  *
  * @kind domain
  * @param content - what the designer typed, a line feed between two lines
