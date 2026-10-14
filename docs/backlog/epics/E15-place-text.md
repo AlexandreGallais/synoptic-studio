@@ -8,21 +8,21 @@ status: in-progress
 
 Decided by the Product Owner on 2026-10-12: text is too large a subject for one feature of E01, so F05 left E01 for this epic, after E14.
 
-| Field                       | Content                                                                                    |
-| --------------------------- | ------------------------------------------------------------------------------------------ |
-| For                         | symbol designers                                                                           |
-| who                         | need labels and values in their symbols                                                    |
-| the solution                | a text tool                                                                                |
-| is a                        | text with content, font, integer size, anchor and color, measured so that it can be placed |
-| that                        | text that stays where it is meant to be whatever the font                                  |
-| unlike                      | a text box whose real size is only known once drawn                                        |
-| our solution                | the way text is drawn and measured is chosen from sources, before any code                 |
-| Business outcomes           | a symbol shows a text with the font, size and anchor chosen, at the place expected         |
-| Leading indicators          | the text approach decided (Q31); reference cases of text accepted                          |
-| Non-functional requirements | no runtime dependency; integer inputs (ADR-0003)                                           |
-| In scope                    | text content, font, size, anchor, color; measuring the size of a text                      |
-| Out of scope                | text converted to paths                                                                    |
-| Closure criteria            | the text cases of `shapes.md` render as specified in the playground                        |
+| Field                       | Content                                                                                                                                                          |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| For                         | symbol designers                                                                                                                                                 |
+| who                         | need labels and values in their symbols                                                                                                                          |
+| the solution                | a text tool                                                                                                                                                      |
+| is a                        | text with content, font, integer size, anchor and color, measured so that it can be placed                                                                       |
+| that                        | text that stays where it is meant to be whatever the font                                                                                                        |
+| unlike                      | a text box whose real size is only known once drawn                                                                                                              |
+| our solution                | the way text is drawn and measured is chosen from sources, before any code                                                                                       |
+| Business outcomes           | a symbol shows a text with the font, size and anchor chosen, at the place expected                                                                               |
+| Leading indicators          | the text approach decided (Q31); reference cases of text accepted                                                                                                |
+| Non-functional requirements | no runtime dependency; integer inputs (ADR-0003)                                                                                                                 |
+| In scope                    | text and its characters, a box of text, colors and their pickers, fonts from files, embedded fonts, an HTML layer for browsers; measuring text from font metrics |
+| Out of scope                | text converted to paths                                                                                                                                          |
+| Closure criteria            | the text cases of `shapes.md` render as specified in the playground                                                                                              |
 
 ## To study in the first spike
 
@@ -40,6 +40,21 @@ Decided by the Product Owner on 2026-10-12: text is too large a subject for one 
 
 ## Features
 
-| Feature                                   | Status      |
-| ----------------------------------------- | ----------- |
-| [F05](../features/E15-F05-text.md) — Text | in-progress |
+| Feature                                                                                                  | Status      |
+| -------------------------------------------------------------------------------------------------------- | ----------- |
+| [F05](../features/E15-F05-text.md) — Text and its characters                                             | in-progress |
+| [F14](../features/E15-F14-a-box-of-text.md) — A box of text                                              | draft       |
+| [F16](../features/E15-F16-colors.md) — Colors and their pickers                                          | draft       |
+| [F15](../features/E15-F15-fonts-and-html-layer.md) — Fonts from files, embedded fonts and the HTML layer | draft       |
+
+Split by the agent on 2026-10-14, as the Product Owner asked: the characters first, then the box, the colors, and the fonts with the HTML layer, which needs a new ADR.
+
+## Closing
+
+After its last feature is validated (ADR-0023, ADR-0049).
+
+| Story                                                                                   | Status |
+| --------------------------------------------------------------------------------------- | ------ |
+| [NAM-001](../stories/E15-NAM-001-naming-pass-e15.md) — Naming pass over the code of E15 | draft  |
+| [REV-003](../stories/E15-REV-003-review-e15.md) — Review E15 with the Product Owner     | draft  |
+| [RET-003](../stories/E15-RET-003-retrospective-e15.md) — Retrospective of E15           | draft  |
