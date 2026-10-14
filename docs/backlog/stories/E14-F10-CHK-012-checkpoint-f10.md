@@ -26,7 +26,7 @@ One task = one commit, referenced as `CHK-012.Tn`.
 
 | Question            | Answer                                                                                                                                                                       |
 | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Size                | 197 modules in `src/` (geometry 98, model 68, math 21, io 6, render 4), 111 in the playground; 1 120 tests; every folder at 15 modules or fewer (`model/free-shape` at 15)   |
+| Size                | 197 modules in `src/` (geometry 98, model 68, math 21, io 6, render 4), 111 in the playground; 1 115 tests; every folder at 15 modules or fewer (`model/free-shape` at 15)   |
 | Tools               | StrykerJS still waits; the verifier's probe tests found two bugs in US-029 that the story's own tests missed                                                                 |
 | Fitness functions   | a property per math and geometry function holds for the new `arcHandleLength` and `ellipseCorners`; the box of the ellipse is its own box, a property                        |
 | Patterns            | `"kind" in model` tells the round shape apart in the playground, `isFreeShape` the free shape; `stretchedToEllipse` repeats the per-axis product of `stretchedHandles` (F13) |
