@@ -45,14 +45,14 @@ describe("matchingFace (REF-CSS-FONTS-4, §5.2)", () => {
     { expected: "500", isItalic: false, weight: 450 },
     // 350, under 400: the lighter ones first, 300.
     { expected: "300", isItalic: false, weight: 350 },
+    // 399, under 400: the lighter ones first, 300; 501, over 500: the heavier ones first, 600.
+    { expected: "300", isItalic: false, weight: 399 },
+    { expected: "600", isItalic: false, weight: 501 },
     // 550, over 500: the heavier ones first, 600.
     { expected: "600i", isItalic: true, weight: 550 },
-  ])(
-    "[F05.AC2] measures Inter $weight with its face $expected",
-    ({ expected, isItalic, weight }) => {
-      expect(chosen(DEFAULT_FONT.faces, weight, isItalic)).toBe(expected);
-    },
-  );
+  ])("measures Inter $weight with its face $expected", ({ expected, isItalic, weight }) => {
+    expect(chosen(DEFAULT_FONT.faces, weight, isItalic)).toBe(expected);
+  });
 
   it.each([
     // 400: nothing from 400 to 500, then the lighter ones in descending order: 300.
@@ -78,6 +78,31 @@ describe("matchingFace (REF-CSS-FONTS-4, §5.2)", () => {
     expect(chosen([face(600, false)], 450, false)).toBe("600");
   });
 
+  it.each([
+    // 400 among 300 and 450: from 400 up to 500 first, 450.
+    { expected: "450", weight: 400, weights: [300, 450] },
+    // 400 among 300 and 500: 500 is checked before the lighter ones.
+    { expected: "500", weight: 400, weights: [300, 500] },
+    // 450 among 700 and 600: past 500 only, in ascending order, 600.
+    { expected: "600", weight: 450, weights: [700, 600] },
+    // 300 among 200 and 300: the weight asked.
+    { expected: "300", weight: 300, weights: [200, 300] },
+  ])("chooses $expected for $weight among $weights", ({ expected, weight, weights }) => {
+    expect(
+      chosen(
+        weights.map((each) => face(each, false)),
+        weight,
+        false,
+      ),
+    ).toBe(expected);
+  });
+
+  it("chooses the first of two faces of the same weight and style", () => {
+    const first = face(400, false);
+
+    expect(matchingFace([first, face(400, false)], { isItalic: false, weight: 400 })).toBe(first);
+  });
+
   it("chooses the other style when the family has none of the style asked", () => {
     expect(chosen(LIGHT_AND_BOLD, 700, true)).toBe("700");
     expect(chosen([face(400, true), face(700, false)], 400, false)).toBe("700");
@@ -93,12 +118,14 @@ describe("matchingFace (REF-CSS-FONTS-4, §5.2)", () => {
   });
 
   test.prop({
+    asked: fc.nat(17),
     isItalic: fc.boolean(),
-    weight: fc.integer({ max: 900, min: 100 }),
     weights: fc.uniqueArray(fc.integer({ max: 9, min: 1 }), { maxLength: 9, minLength: 1 }),
   })(
     "chooses the weight asked when the family has it, else a face of the family",
-    ({ isItalic, weight, weights }) => {
+    ({ asked, isItalic, weights }) => {
+      // About half the time a weight of the family, else any hundred from 100 to 900.
+      const weight = 100 * (asked < 9 ? (weights[asked % weights.length] ?? 1) : asked - 8);
       const faces = weights.map((hundreds) => face(100 * hundreds, isItalic));
       const found = matchingFace(faces, { isItalic, weight });
 

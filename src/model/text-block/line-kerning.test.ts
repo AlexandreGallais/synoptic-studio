@@ -2,6 +2,7 @@ import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { ARIAL_KERNING, NO_KERNING } from "../../../tests";
+import { DEFAULT_FONT } from "../font";
 
 import { lineCodePoints } from "./line-code-points";
 import { lineKerning } from "./line-kerning";
@@ -19,6 +20,13 @@ describe("lineKerning (DERIV-text-width step 2)", () => {
     { expected: 0, line: "" },
   ])("sums the kerning of '$line' in Arial: $expected", ({ expected, line }) => {
     expect(lineKerning(ARIAL_KERNING, lineCodePoints(line))).toBe(expected);
+  });
+
+  it.each(["T", "W", "A"])("gives one character of Inter no kerning: '%s'", (line) => {
+    // The character before the first is no character, in class 0, whose row kerns 0.
+    const regular = DEFAULT_FONT.faces.find((face) => face.weight === 400 && !face.isItalic);
+
+    expect(lineKerning(regular?.metrics.kerning ?? ARIAL_KERNING, lineCodePoints(line))).toBe(0);
   });
 
   test.prop({ line: fc.string({ maxLength: 20 }) })("is 0 without kerning", ({ line }) => {
