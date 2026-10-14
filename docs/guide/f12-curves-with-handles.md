@@ -24,10 +24,12 @@ Rules: [domain, "Points with handles"](../domain/shapes.md#points-with-handles-f
 
 Example values for the angle from the side: point 1 **After** 330 and 40, point 2 **Before** 330 and 40 — a symmetric arch over the top side.
 
-## What to decide
+## Validated
 
-| Question                                             | Options                                                                                                                                               |
-| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Q33 — points on one line whose sides bulge (a lens)  | allowed, or refused as today                                                                                                                          |
-| Q34 — a point added on a curve beside a large fillet | split where the curve is drawn (nothing moves), or at the middle of the whole curve (the fillet shrinks)                                              |
-| The reduced radius beside a curve                    | as built: 47.7 for a radius 60 beside handles of 40 (48.6 was shown), 46.9 beside handles of 80 (36.3 was shown), the circle never crossing the curve |
+Validated by the Product Owner on 2026-10-14, every option as built:
+
+| Question                                             | Decision                                                                       |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Q33 — points on one line whose sides bulge (a lens)  | refused, as today                                                              |
+| Q34 — a point added on a curve beside a large fillet | split at the middle of the whole curve; the fillet shrinks                     |
+| The reduced radius beside a curve                    | as built: 47.7 for a radius 60 beside handles of 40, 46.9 beside handles of 80 |

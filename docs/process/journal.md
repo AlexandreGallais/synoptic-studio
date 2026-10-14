@@ -2,6 +2,11 @@
 
 What each working session dealt with, in the agent's words: the Product Owner's requests in neutral words, decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`).
 
+## 2026-10-14 — F12 validated; F10, then F13
+
+- `#val` Second session of VAL-011: the Product Owner accepted every option as built — the reduced radius beside a curve (47.7 and 46.9), Q34 (the whole curve split at its middle), Q33 (a lens stays refused). F12 done; its pull request into `develop` merges by itself (ADR-0045).
+- `#run` The Product Owner asked for F10 (round shape) next, then F13 (every calculation named), without further questions: F10's refinement was done in E01 and at the start of E14 (an ellipse in a long box; both kinds of points after conversion). Both are presented to the Product Owner together at their end; the order of E14's features changed accordingly.
+
 ## 2026-10-14 — F12 after its first validation, VAL-011 ready again
 
 - `#val` First session of VAL-011: the Product Owner kept x, y on the page and the angle from the side, the three mirror modes (Q32), and asked that a corner beside a curve keep its rounding and that a polygon's point take handles. Routed to EN-026 (#174), SP-012 (#175, ADR-0047), US-028 (#176), US-027 (#177), AUD-012 (#178); each reviewed, US-027 twice.
