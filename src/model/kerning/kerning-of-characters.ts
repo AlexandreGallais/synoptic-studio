@@ -18,7 +18,7 @@ import type { KerningRow } from "./kerning-row";
  * @param leftClasses - the class of each row
  * @param rightClasses - the class of each column
  * @returns the kerning by left class, then right class
- * @see REF-OT-GPOS
+ * @see DERIV-kerning-classes
  */
 function valuesByClasses(
   rows: readonly KerningRow[],
@@ -45,7 +45,7 @@ function valuesByClasses(
  * @param lookups - the font's kerning lookups, in lookup list order
  * @param glyphs - each character and its glyph
  * @returns the kerning between those characters
- * @see REF-OT-GPOS
+ * @see DERIV-kerning-classes
  */
 export function kerningOfCharacters(
   lookups: readonly KerningLookup[],
