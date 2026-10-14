@@ -28,6 +28,7 @@ describe("unitOf", () => {
   it("reads the story, else the feature, else keeps the branch", () => {
     expect(unitOf("feat/us-018-turn-a-shape")).toBe("US-018");
     expect(unitOf("docs/ret-001-retrospective-e01")).toBe("RET-001");
+    expect(unitOf("refactor/nam-001-naming-pass-e15")).toBe("NAM-001");
     expect(unitOf("feature/f04-free-rotation")).toBe("F04");
     expect(unitOf("main")).toBe("main");
     expect(unitOf("")).toBe("(no branch)");

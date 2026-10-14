@@ -30,6 +30,20 @@ Boolean prefixes: `is`, `has`, `can`, `should`, `are`, `was`, `will`, `did`, `do
 
 To add a procedure verb: insert it (sorted) in `eslint/settings/verbs.ts` rather than bending a name.
 
+## Every calculation named (ADR-0049)
+
+The names above say how a function is written; this rule says **what** gets a function. An operation, or a run of steps, that a field names — mathematics, geometry, physics, technical drafting, industrial practice, the laboratory — is a call to a function of that name, with its source; a process is a `procedure` named after what it does.
+
+| Written inline                                   | Named (F13)         | Field      |
+| ------------------------------------------------ | ------------------- | ---------- |
+| `x·cos θ − y·sin θ`, `x·sin θ + y·cos θ`         | `rotate`            | geometry   |
+| `atan2(cross, dot)`                              | `signedAngle`       | geometry   |
+| `((a % n) + n) % n`                              | `modulo`            | arithmetic |
+| `(i · b) / n` for `i = 0 … n`                    | `regularPartition`  | analysis   |
+| reading which buttons are greyed, field by field | `readDisabledState` | the page   |
+
+Bare arithmetic stays only where no field names it, or where naming it would change a floating-point result: then a comment says why. Each story's review looks for unnamed calculations; a `NAM` story at the end of each epic goes over the whole code twice ([agile process](../process/agile.md)).
+
 ## Files
 
 The file is named like its export (see [files.md](./files.md)).

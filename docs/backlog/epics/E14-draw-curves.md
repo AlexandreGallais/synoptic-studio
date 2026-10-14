@@ -48,7 +48,7 @@ Decided by the Product Owner on 2026-10-12, at the validation of F10. The round 
 
 ## Closing
 
-After its last feature is validated (ADR-0023).
+After its last feature is validated (ADR-0023). Its naming pass is F13, which went over the whole code twice; later epics have a `NAM` story (ADR-0049).
 
 | Story                                                                               | Status |
 | ----------------------------------------------------------------------------------- | ------ |

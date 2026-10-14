@@ -15,6 +15,7 @@ Rules:
 - Re-open every cited URL; check it still says what the bibliography claims. A source you cannot read is a finding.
 - Provenance: look for structure, comments or names typical of a known library; search distinctive lines when in doubt.
 - Duplicates: two functions, derivations or references for one concept.
+- Unnamed calculations (ADR-0049): an operation or a run of steps that a field names, left as bare arithmetic in the diff; give the name and its source.
 - Consistency: code, TSDoc, derivation, `docs/domain/`, ADRs and backlog say the same thing.
 
 Report **only** gaps that affect correctness, the sources' validity or the stated requirements. Style preferences are not findings. For each finding: check id of `docs/conventions/audit.md`, file and line, evidence (command and output, or quote), and why it matters. If a section has no finding, say what you checked.

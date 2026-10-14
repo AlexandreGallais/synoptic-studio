@@ -40,6 +40,7 @@ A library of small named functions, each backed by a verified source, composed s
 - Pipeline (ADR-0005): typed integers → model → evaluated geometry (floats, segments and arcs) → SVG; never read the DOM back.
 - **Functional core, imperative shell** (ADR-0014): `math` → `io` are pure; `render`, `interaction`, `playground` carry the effects. A function never modifies its arguments.
 - **One export per file**, named in kebab-case after it (ADR-0019); no default nor optional parameter in `src/` (ADR-0016).
+- **Every calculation named** (ADR-0049): an operation or a run of steps that a field names — mathematics, geometry, physics, drafting, industry, the laboratory — is a call to a function of that name with its source, never bare arithmetic; a process is named the same way.
 - **Every function**: one `@kind` (`math`, `geometry`, `domain`, `format`, `procedure`), one `@see` to a **verified** source, austere TSDoc; size limits per kind (ADR-0011).
 - **Never invent a reference**: cite only what was read; otherwise a derivation (each step citing a read source) or a research request.
 - **No personal information** about the Product Owner in this public repository.
@@ -64,7 +65,7 @@ A library of small named functions, each backed by a verified source, composed s
 | Level   | Flow                                                                                                                                                                                                                |
 | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Feature | refinement → `SP` spike → `US` / `EN` stories, `CHK` midway → `AUD` audit → `VAL` guided test and demo page (ADR-0020)                                                                                              |
-| Epic    | its features → `REV` review → `RET` retrospective with metrics (ADR-0023)                                                                                                                                           |
+| Epic    | its features → `NAM` naming pass over the whole code → `REV` review → `RET` retrospective with metrics (ADR-0023, ADR-0049)                                                                                         |
 | Branch  | `main` releases only; `develop` integration; `feature/f<nn>-<topic>` from `develop`; `<type>/<id>-<topic>` per story from its feature (ADR-0038)                                                                    |
 | Merge   | story → feature: rebase, by the Product Owner or, in an authorized run, by GitHub; feature → `develop`: merge commit, by GitHub once validated; `develop` → `main`: when the Product Owner asks, by them (ADR-0045) |
 | Checks  | local only on work branches (`pre-push` runs `check:all`); one CI, on the pull request into `main`; never wait for a CI elsewhere                                                                                   |

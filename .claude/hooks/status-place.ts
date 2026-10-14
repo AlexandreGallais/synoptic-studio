@@ -13,7 +13,7 @@ export type RunningCall = {
 };
 
 /** Story ids as they appear in branch names. */
-const STORY = /\b(?<id>(?:us|en|sp|chk|aud|val|rev|ret)-\d{3})\b/u;
+const STORY = /\b(?<id>(?:us|en|sp|chk|aud|val|nam|rev|ret)-\d{3})\b/u;
 
 /** Feature branches, `feature/f14-curves`. */
 const FEATURE = /^feature\/(?<id>f\d{2})-/u;
