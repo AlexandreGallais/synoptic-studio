@@ -1,13 +1,14 @@
-import { isBitSet } from "../../math";
+import { modulo, populationCount } from "../../math";
 
-/** Number of defined flags of a ValueFormat, bits 0 to 7, one field of the ValueRecord each. */
-const VALUE_FORMAT_FLAGS = 8;
+/** The defined flags of a ValueFormat sit in bits 0 to 7: the remainder by 2⁸ keeps them alone. */
+const DEFINED_FLAGS = 0x1_00;
 
 /** Size of each field of a ValueRecord, in bytes. */
 const FIELD_SIZE = 2;
 
 /**
- * The size of the ValueRecords a ValueFormat describes: each flag set adds a field of two bytes.
+ * The size of the ValueRecords a ValueFormat describes: each of its eight defined flags that is set
+ * adds a field of two bytes; the reserved bits 8 to 15 add none.
  *
  * @kind format
  * @param valueFormat - the ValueFormat flags
@@ -15,10 +16,5 @@ const FIELD_SIZE = 2;
  * @see REF-OT-GPOS
  */
 export function valueFormatToSize(valueFormat: number): number {
-  return (
-    FIELD_SIZE *
-    Array.from({ length: VALUE_FORMAT_FLAGS }, (unused, bit) => bit).filter((bit) =>
-      isBitSet(valueFormat, bit),
-    ).length
-  );
+  return FIELD_SIZE * populationCount(modulo(valueFormat, DEFINED_FLAGS));
 }

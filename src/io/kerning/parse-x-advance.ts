@@ -1,7 +1,10 @@
-import { isBitSet } from "../../math";
+import { isBitSet, modulo, populationCount } from "../../math";
 
-/** Flags of the fields before `xAdvance`: X_PLACEMENT (bit 0), Y_PLACEMENT (bit 1). */
-const FIELDS_BEFORE_X_ADVANCE = [0, 1];
+/**
+ * The flags of the fields before `xAdvance`, X_PLACEMENT (bit 0) and Y_PLACEMENT (bit 1): the
+ * remainder by 2² keeps them alone.
+ */
+const FIELDS_BEFORE_X_ADVANCE = 0b100;
 
 /** Flag X_ADVANCE, bit 2. */
 const X_ADVANCE_BIT = 2;
@@ -21,7 +24,7 @@ const FIELD_SIZE = 2;
  * @see REF-OT-GPOS
  */
 export function parseXAdvance(view: DataView, record: number, valueFormat: number): number {
-  const before = FIELDS_BEFORE_X_ADVANCE.filter((bit) => isBitSet(valueFormat, bit)).length;
+  const before = populationCount(modulo(valueFormat, FIELDS_BEFORE_X_ADVANCE));
 
   return isBitSet(valueFormat, X_ADVANCE_BIT) ? view.getInt16(record + FIELD_SIZE * before) : 0;
 }
