@@ -8,6 +8,7 @@ const TOOLS = [
   ["tool-rectangle", "rectangle"],
   ["tool-polygon", "polygon"],
   ["tool-round", "round"],
+  ["tool-text", "text"],
 ] as const;
 
 /**
@@ -16,7 +17,7 @@ const TOOLS = [
  *
  * @kind procedure
  * @param document - page document
- * @param kind - `rectangle`, `polygon` or `round`
+ * @param kind - `rectangle`, `polygon`, `round` or `text`
  * @see docs/backlog/stories/E01-RET-001-retrospective-e01.md
  */
 function writeShapeChoice(document: Document, kind: string): void {
