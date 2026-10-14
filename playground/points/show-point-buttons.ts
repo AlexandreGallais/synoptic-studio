@@ -7,9 +7,9 @@ import type { VertexSelection } from "../../src";
 import type { ShapeReading } from "../shape";
 
 /**
- * Shows the buttons acting on the points: for a regular polygon or a round shape, the
- * conversion — two for a round shape — (greyed when it has no width or height) and a line saying it is converted first; for a free shape (the
- * rectangle included), adding a point, greyed unless two neighbouring points are selected
+ * Shows the buttons acting on the points: for a regular polygon or a round shape, the conversion
+ * — two for a round shape — greyed when it has no width or height, and a line saying it is
+ * converted first; for a free shape (the rectangle included), adding a point, greyed unless two neighbouring points are selected
  * and deleting points (F08.AC1, F08.AC3, F08.AC4).
  *
  * @kind procedure
