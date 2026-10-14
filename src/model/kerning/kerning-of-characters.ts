@@ -7,9 +7,7 @@ import { kerningClasses } from "./kerning-classes";
 import type { CharacterGlyph } from "../font";
 import type { Kerning } from "./kerning";
 import type { KerningLookup } from "./kerning-lookup";
-
-/** The kerning of one character with every other one, font units. */
-type Row = readonly number[];
+import type { KerningRow } from "./kerning-row";
 
 /**
  * The kerning of each pair of classes, read on a pair of characters of those classes; class 0
@@ -23,10 +21,10 @@ type Row = readonly number[];
  * @see REF-OT-GPOS
  */
 function valuesByClasses(
-  rows: readonly Row[],
+  rows: readonly KerningRow[],
   leftClasses: readonly number[],
   rightClasses: readonly number[],
-): readonly Row[] {
+): readonly KerningRow[] {
   const columns = Array.from({ length: Math.max(0, ...rightClasses) + 1 }, (unused, group) =>
     rightClasses.indexOf(group),
   );
