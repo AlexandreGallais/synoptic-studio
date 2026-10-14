@@ -7,6 +7,7 @@ export type * from "./font-family";
 export type * from "./font-metrics";
 export * from "./font-units-at-size";
 export * from "./glyph-advance";
+export * from "./is-same-family-name";
 export * from "./matching-face";
 export * from "./measured-blocks";
 export type * from "./unicode-block";
