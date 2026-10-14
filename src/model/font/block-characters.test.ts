@@ -13,10 +13,22 @@ describe("blockCharacters (REF-UNICODE-BLOCKS)", () => {
     ).toEqual([0x41, 0x42, 0x43, 0x61]);
   });
 
-  it("lists 1008 code points for the measured blocks", () => {
-    // 128 + 128 + 128 (Latin) + 144 (Greek) + 256 (Cyrillic) + 112 (Hebrew) + 112 (punctuation),
-    // = 1008, each block's size last − first + 1 read from Blocks.txt.
-    expect(blockCharacters(MEASURED_BLOCKS)).toHaveLength(1008);
+  it("lists 1968 code points for the measured blocks", () => {
+    // Latin 128 + 128 + 128 + 208 (Extended-B) + 256 (Extended Additional), Greek 144, Cyrillic
+    // 256, Hebrew 112, punctuation 112, currency 48, letterlike 80, arrows 112, mathematical
+    // operators 256 = 1968, each block's size last − first + 1 read from Blocks.txt.
+    expect(blockCharacters(MEASURED_BLOCKS)).toHaveLength(1968);
+  });
+
+  it("holds the symbols industrial labels use: € − → ≤ ™ ș ț", () => {
+    const characters = new Set(blockCharacters(MEASURED_BLOCKS));
+
+    // € U+20AC, − U+2212, → U+2192, ≤ U+2264, ™ U+2122, ș U+0219, ț U+021B.
+    expect(
+      [0x20_ac, 0x22_12, 0x21_92, 0x22_64, 0x21_22, 0x02_19, 0x02_1b].every((codePoint) =>
+        characters.has(codePoint),
+      ),
+    ).toBe(true);
   });
 
   it("lists nothing for no block", () => {
