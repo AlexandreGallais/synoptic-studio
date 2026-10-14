@@ -3,6 +3,21 @@
 // at its offset so that every value read back is known by hand. Tests only: never part of the
 // library.
 
+import { existsSync, readFileSync } from "node:fs";
+
+/** Arial 5.01 of macOS, the font of the cross-check of `DERIV-text-width`. */
+export const ARIAL_PATH = "/System/Library/Fonts/Supplemental/Arial.ttf";
+
+/**
+ * A font file of the machine, if it has it: tests that need one skip without it.
+ *
+ * @param path - where the file sits
+ * @returns its bytes; undefined when the machine has no such file
+ */
+export function systemFont(path: string): Uint8Array | undefined {
+  return existsSync(path) ? readFileSync(path) : undefined;
+}
+
 /** `sfntVersion` of a font with TrueType outlines (`REF-OT-OTFF`). */
 export const TRUE_TYPE_VERSION = 0x00_01_00_00;
 
@@ -91,6 +106,16 @@ export function tableOf(layout: TableLayout): number[] {
   }
 
   return bytes;
+}
+
+/**
+ * A view of bytes, as the readers of `src/io/` take a font file.
+ *
+ * @param bytes - the file's bytes, each from 0 to 255
+ * @returns a view of a copy of them
+ */
+export function viewOf(bytes: readonly number[]): DataView {
+  return new DataView(Uint8Array.from(bytes).buffer);
 }
 
 /**

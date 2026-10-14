@@ -1,11 +1,81 @@
 import { describe, expect, it } from "vitest";
 
-import { OPEN_TYPE_VERSION, TRUE_TYPE_VERSION, fontFile, testFontTables } from "../../../tests";
+import {
+  ARIAL_PATH,
+  OPEN_TYPE_VERSION,
+  TRUE_TYPE_VERSION,
+  X_ADVANCE_ONLY,
+  fontFile,
+  gposTable,
+  kernTable,
+  pairPosFormat1,
+  pairPosFormat2,
+  systemFont,
+  testFontTables,
+} from "../../../tests";
+import { pairKerning } from "../../model";
 
 import { parseFontMetrics } from "./parse-font-metrics";
 
+/** Arial 5.01 of macOS, read where the machine has it (`DERIV-text-width`, cross-check). */
+const ARIAL = systemFont(ARIAL_PATH);
+
+/** The characters of "Hello World" and "AVATAR": H e l o space W r d, A V T R. */
+const ARIAL_CHARACTERS = [72, 101, 108, 111, 32, 87, 114, 100, 65, 86, 84, 82];
+
+/** No kerning, for a font that could not be read. */
+const NO_KERNING = { leftClasses: {}, rightClasses: {}, values: [] };
+
 /** A, B, C, a, and Z, which the test font does not map. */
 const CHARACTERS = [65, 66, 67, 97, 90];
+
+/**
+ * A `GPOS` table: a `kern` feature of lookups 1 and 0, listed in that order, and a `cpsp` feature
+ * of lookup 2. Lookup 0, pair adjustment: A B (glyphs 1, 2) −50. Lookup 1, an extension of a
+ * pair adjustment by classes: A and B in first class 1, C (glyph 3) in second class 1, −30.
+ * Lookup 2: A B +200, which is not kerning.
+ */
+const GPOS = gposTable(
+  [
+    { lookups: [2], tag: "cpsp" },
+    { lookups: [1, 0], tag: "kern" },
+  ],
+  [
+    {
+      subtables: [pairPosFormat1([X_ADVANCE_ONLY, 0], [{ first: 1, pairs: [[2, -50]] }])],
+      type: 2,
+    },
+    {
+      subtables: [
+        pairPosFormat2({
+          covered: [1, 2],
+          firstClasses: [{ end: 2, start: 1, value: 1 }],
+          secondClasses: [{ end: 3, start: 3, value: 1 }],
+          values: [
+            [0, 0],
+            [0, -30],
+          ],
+        }),
+      ],
+      type: 9,
+    },
+    {
+      subtables: [pairPosFormat1([X_ADVANCE_ONLY, 0], [{ first: 1, pairs: [[2, 200]] }])],
+      type: 2,
+    },
+  ],
+);
+
+/** A `kern` table: A B −999, A C −20. */
+const KERN = kernTable([
+  {
+    coverage: 1,
+    pairs: [
+      { left: 1, right: 2, value: -999 },
+      { left: 1, right: 3, value: -20 },
+    ],
+  },
+]);
 
 describe("parseFontMetrics (REF-OT-OTFF)", () => {
   it("[F05.AC1] reads the units per em, the vertical metrics and the advances as written", () => {
@@ -17,17 +87,72 @@ describe("parseFontMetrics (REF-OT-OTFF)", () => {
       advances: { 65: 600, 66: 700, 67: 700, 97: 700 },
       ascender: 800,
       descender: -200,
+      embeddingPermissions: 4,
+      // No kerning table: every character in class 0.
+      kerning: { leftClasses: {}, rightClasses: {}, values: [[0]] },
       lineGap: 90,
       missingAdvance: 500,
+      strikeoutPosition: 300,
+      strikeoutSize: 50,
+      underlinePosition: -100,
+      underlineThickness: 40,
       unitsPerEm: 1000,
     });
   });
 
-  it("reads an OpenType file with CFF outlines the same way", () => {
-    const metrics = parseFontMetrics(fontFile(OPEN_TYPE_VERSION, testFontTables()), [65]);
+  it("[F05.AC3] reads an OpenType file's kerning from the lookups of its GPOS kern feature", () => {
+    const file = fontFile(OPEN_TYPE_VERSION, { ...testFontTables(), GPOS, kern: KERN });
+    const kerning = parseFontMetrics(file, CHARACTERS)?.kerning ?? NO_KERNING;
 
-    expect(metrics?.advances).toEqual({ 65: 600 });
+    // A B: −50 in lookup 0, and 0 in lookup 1 (B in second class 0); the kern table and the
+    // cpsp feature are not read.
+    expect(pairKerning(kerning, 65, 66)).toBe(-50);
+    // A C and B C: −30 in lookup 1, by classes; C A: nothing.
+    expect(pairKerning(kerning, 65, 67)).toBe(-30);
+    expect(pairKerning(kerning, 66, 67)).toBe(-30);
+    expect(pairKerning(kerning, 67, 65)).toBe(0);
   });
+
+  it("[F05.AC3] reads a TrueType file's kerning from its kern table when it has no GPOS", () => {
+    const file = fontFile(TRUE_TYPE_VERSION, { ...testFontTables(), kern: KERN });
+    const kerning = parseFontMetrics(file, CHARACTERS)?.kerning ?? NO_KERNING;
+
+    expect(pairKerning(kerning, 65, 66)).toBe(-999);
+    expect(pairKerning(kerning, 65, 67)).toBe(-20);
+  });
+
+  it.skipIf(ARIAL === undefined)(
+    "[F05.AC2] reads Arial's advances and kerning pairs as the derivation's cross-check",
+    () => {
+      const metrics = parseFontMetrics(ARIAL ?? new Uint8Array(), ARIAL_CHARACTERS);
+      const kerning = metrics?.kerning ?? NO_KERNING;
+
+      // DERIV-text-width, cross-check: read from the file's tables by the spike's script.
+      expect(metrics).toMatchObject({
+        advances: {
+          32: 569,
+          72: 1479,
+          87: 1933,
+          100: 1139,
+          101: 1139,
+          108: 455,
+          111: 1139,
+          114: 682,
+        },
+        unitsPerEm: 2048,
+      });
+
+      expect(pairKerning(kerning, 87, 111)).toBe(-37);
+
+      // A V, V A, A T, T A: −152 each.
+      expect([
+        pairKerning(kerning, 65, 86),
+        pairKerning(kerning, 86, 65),
+        pairKerning(kerning, 65, 84),
+        pairKerning(kerning, 84, 65),
+      ]).toEqual([-152, -152, -152, -152]);
+    },
+  );
 
   it("reads a file lying inside a larger buffer", () => {
     const file = fontFile(TRUE_TYPE_VERSION, testFontTables());
