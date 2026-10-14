@@ -3,3 +3,5 @@ export * from "./geometry-fixtures";
 export * from "./fillet-fixtures";
 export * from "./font-fixtures";
 export * from "./font-table-fixtures";
+export * from "./layout-table-fixtures";
+export * from "./metrics-table-fixtures";

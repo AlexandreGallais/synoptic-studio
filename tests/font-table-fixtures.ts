@@ -3,6 +3,7 @@
 // specification, and the test font of `[F05.AC1]`. Tests only: never part of the library.
 
 import { TRUE_TYPE_VERSION, int16, tableOf, uint16, uint32 } from "./font-fixtures";
+import { os2Table, postTable } from "./metrics-table-fixtures";
 
 /** Version 0.5 of `maxp`, a font with CFF outlines or this test's. */
 const MAXP_VERSION = 0x00_00_50_00;
@@ -229,17 +230,23 @@ export const TEST_FONT = {
   ascender: 800,
   descender: -200,
   firstAdvance: 600,
+  fsType: 4,
   glyphCount: 5,
   lastAdvance: 700,
   lineGap: 90,
   notdefAdvance: 500,
+  strikeoutPosition: 300,
+  strikeoutSize: 50,
+  underlinePosition: -100,
+  underlineThickness: 40,
   unitsPerEm: 1000,
 };
 
 /**
  * The tables of the test font of `[F05.AC1]`: 1000 units per em, ascender 800, descender −200,
  * line gap 90, three `hmtx` records (500, 600, 700) for five glyphs; A, B, C map to glyphs 1 to 3
- * by a delta of −64, `a` to glyph 4 through the glyph array.
+ * by a delta of −64, `a` to glyph 4 through the glyph array; an underline at −100, 40 thick, a
+ * strike-out at 300, 50 thick, `fsType` 4 (preview and print); no kerning.
  *
  * @returns the tables by tag
  */
@@ -262,5 +269,7 @@ export function testFontTables(): Record<string, readonly number[]> {
     hhea: hheaTable({ ...TEST_FONT, numberOfHMetrics: advances.length }),
     hmtx: hmtxTable(advances, TEST_FONT.glyphCount - advances.length),
     maxp: maxpTable(TEST_FONT.glyphCount),
+    "OS/2": os2Table(TEST_FONT),
+    post: postTable(TEST_FONT.underlinePosition, TEST_FONT.underlineThickness),
   };
 }

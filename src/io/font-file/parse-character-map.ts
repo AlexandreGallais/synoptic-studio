@@ -2,8 +2,8 @@ import { parseSegmentMappingGlyphs } from "./parse-segment-mapping-glyphs";
 import { parseSegmentedCoverageGlyphs } from "./parse-segmented-coverage-glyphs";
 import { parseUnicodeSubtables } from "./parse-unicode-subtables";
 
-import type { CharacterGlyph } from "./character-glyph";
 import type { FontTableRecord } from "./font-table-record";
+import type { CharacterGlyph } from "../../model";
 
 /** `cmap` subtable format 4, segment mapping to delta values: the Basic Multilingual Plane. */
 const SEGMENT_MAPPING = 4;

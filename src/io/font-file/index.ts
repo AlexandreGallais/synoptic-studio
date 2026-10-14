@@ -1,8 +1,8 @@
-export type * from "./character-glyph";
 export type * from "./font-table-record";
 export type * from "./font-tables";
 export * from "./parse-advance-widths";
 export * from "./parse-character-map";
+export * from "./parse-embedding-permissions";
 export * from "./parse-font-metrics";
 export * from "./parse-font-tables";
 export * from "./parse-horizontal-header";
@@ -10,5 +10,6 @@ export * from "./parse-segment-mapping-glyphs";
 export * from "./parse-segmented-coverage-glyphs";
 export * from "./parse-table-directory";
 export * from "./parse-tag";
+export * from "./parse-text-decorations";
 export * from "./parse-unicode-subtables";
 export * from "./parse-units-per-em";

@@ -191,7 +191,9 @@ Decided by the Product Owner at F05's refinement, rounds 1 and 2 (2026-10-14); d
   - the units per em (`head`), and the ascender, descender and line gap of `hhea`;
   - the advance of each character asked that the font maps to a glyph, read from its Unicode `cmap` subtable of format 12, else 4 (`REF-OT-CMAP`), and from `hmtx`, where a glyph past the last record takes the last record's advance (`REF-OT-HMTX`);
   - the advance of glyph 0, `.notdef`, which a character the font does not map takes;
-  - a file that is not a TrueType or OpenType font (a collection `.ttc` among them), or lacks `cmap`, `head`, `hhea` or `hmtx`, gives no metrics.
+  - the kerning between those characters: the lookups of the `GPOS` table's `kern` feature, whatever its script, in lookup list order, the first subtable of a lookup that matches a pair giving its value and the lookups adding up (`REF-OT-LAYOUT-COMMON`, `REF-OT-GPOS`); when `GPOS` has no `kern` feature, the horizontal format 0 subtables of the `kern` table, added up (`REF-OT-KERN`, as browsers do, `REF-CSS-FONTS-4`). Only the first glyph's `xAdvance` is read, and every pair is adjacent: the lookup flags that skip marks are not applied. The kerning is kept by classes of characters that kern alike, so that a pair's kerning is one look-up;
+  - the underline's position and thickness (`post`), the strike-out's (`OS/2`), and the embedding permissions `fsType` (`OS/2`, `REF-OT-OS2`);
+  - a file that is not a TrueType or OpenType font (a collection `.ttc` among them), or lacks `cmap`, `head`, `hhea`, `hmtx`, `post` or `OS/2`, gives no metrics.
 - **Characters**: a text holds:
   - its content, with the line breaks the designer typed;
   - a font named with a fallback (`Inter`, else `sans-serif`), any font allowed; the default font is Inter, whose metrics ship with the library;
