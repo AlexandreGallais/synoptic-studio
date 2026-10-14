@@ -18,3 +18,4 @@ Each file: statement and domain, steps each citing a read source, cross-check, c
 | [`DERIV-cubic-sides`](./cubic-sides.md)                 | A cubic side: its extremes on each axis, its split in half, its handles turned (F12)                                          |
 | [`DERIV-handle-angle`](./handle-angle.md)               | A handle from an angle and a length, from its side, the handle before mirrored (F12)                                          |
 | [`DERIV-fillet-beside-curve`](./fillet-beside-curve.md) | A corner fillet beside a cubic side: the centre where the offsets meet, the radius reached at `t`, the curve cut there (F12)  |
+| [`DERIV-round-shape-curve`](./round-shape-curve.md)     | A circle or an ellipse as four cubic sides through its top, right, bottom and left points (F10 in E14)                        |
