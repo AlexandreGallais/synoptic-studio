@@ -1,4 +1,6 @@
+export * from "./generic-font-families";
 export * from "./is-font-name";
+export * from "./is-generic-family-name";
 export * from "./is-valid-text";
 export * from "./is-valid-text-box";
 export type * from "./text";
