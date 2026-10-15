@@ -230,4 +230,41 @@ describe("Text tool: a text in a box (US-033)", () => {
     expect(readLines()).toEqual([[PUMP, "0", "15.5"]]);
     expect(readFrame()).toContain("M165.80469 0H166.80469V4H165.80469Z");
   });
+
+  it("follows the Product Owner test card from step 2 to step 12, one step after the other", () => {
+    typeValue("text-maximum-lines", "1");
+    expect(readContents()).toEqual(["Hell…"]);
+    typeValue("text-maximum-lines", "0");
+    typeContent(PUMP);
+    expect(readContents()).toEqual(["Pump", "P-101", "is", "runnin", "g"]);
+    chooseOption("text-long-word", "move");
+    clickElement("text-ellipsis");
+    expect(readContents()).toEqual(["Pump", "P-101", "is", "running"]);
+    clickElement("text-ellipsis");
+    chooseOption("text-vertical-alignment", "bottom");
+    expect(readBaselines()[0]).toBe("38.0625");
+    chooseOption("text-vertical-alignment", "top");
+    typeValue("text-line-height", "24");
+    typeValue("text-line-height", "0");
+    clickElement("text-trim");
+    expect(readBaselines()[0]).toBe("11.64063");
+    typeValue("text-box-width", "110");
+    chooseOption("text-wrap", "balance");
+    expect(readContents()).toEqual(["Pump P-101", "is running"]);
+    typeValue("angle", "90");
+
+    expect(selectPageElement("#canvas g.text-frame").getAttribute("transform")).toBe(
+      "rotate(90 55 50)",
+    );
+
+    typeValue("angle", "0");
+    clickElement("text-trim");
+    chooseOption("text-fit", "content");
+    expect(readLines()).toEqual([[PUMP, "0", "15.5"]]);
+    chooseOption("text-fit", "box");
+    typeValue("text-box-width", "");
+    expect(document.querySelectorAll("#canvas text")).toHaveLength(0);
+    typeValue("text-box-width", "110");
+    expect(readContents()).toEqual(["Pump P-101", "is running"]);
+  });
 });
