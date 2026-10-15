@@ -138,6 +138,13 @@
 | [AUD-017](./E15-F16-AUD-017-audit-f16.md)                       | F16     | Audit F16                                                                       | done        |
 | [VAL-016](./E15-F16-VAL-016-validate-f16.md)                    | F16     | Validate F16                                                                    | ready       |
 | [SP-018](./E15-F15-SP-018-research-f15-fonts-and-html-layer.md) | F15     | Research for F15: fonts from files, embedded fonts and the HTML layer           | in-progress |
+| [EN-039](./E15-F15-EN-039-a-font-file-read-and-kept.md)         | F15     | A font file read, named and kept, and whether it may be embedded                | ready       |
+| [EN-040](./E15-F15-EN-040-fonts-embedded-once-per-document.md)  | F15     | Fonts embedded once per document as @font-face rules                            | ready       |
+| [CHK-017](./E15-F15-CHK-017-checkpoint-f15.md)                  | F15     | Checkpoint in the middle of F15                                                 | ready       |
+| [EN-041](./E15-F15-EN-041-the-html-layer-of-a-text.md)          | F15     | The HTML layer of a text in a switch, over its positioned lines                 | ready       |
+| [US-036](./E15-F15-US-036-fonts-embedding-and-html-layer.md)    | F15     | Import or choose a font, embed it, and turn the HTML layer on                   | ready       |
+| [AUD-018](./E15-F15-AUD-018-audit-f15.md)                       | F15     | Audit F15                                                                       | ready       |
+| [VAL-017](./E15-F15-VAL-017-validate-f15.md)                    | F15     | Validate F15                                                                    | ready       |
 | [NAM-001](./E15-NAM-001-naming-pass-e15.md)                     | E15     | Naming pass over the code of E15                                                | draft       |
 | [REV-003](./E15-REV-003-review-e15.md)                          | E15     | Review E15 with the Product Owner                                               | draft       |
 | [RET-003](./E15-RET-003-retrospective-e15.md)                   | E15     | Retrospective of E15                                                            | draft       |
