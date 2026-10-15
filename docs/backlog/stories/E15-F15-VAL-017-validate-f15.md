@@ -34,6 +34,7 @@ Steps for the guided test, from the EN-041 audit (checked in Chromium and Firefo
 4. A word moved whole, wider than its box, the ellipsis off and a maximum of 1 line: the word overflows sideways, the lines below cut.
 5. The same with the ellipsis on: the word ends with "…".
 6. A text whose lines pass its block or its box: nothing clipped by the `foreignObject`.
+7. A word cut with the ellipsis on, underlined and struck through (US-041): in the text's color, the "…" underlined and struck as in the SVG; the underline `#ff0000`, the strike-through in the text's color: the "…" struck, not underlined, the provisional reading of `shapes.md` (HTML layer).
 
 ## Decisions to confirm
 

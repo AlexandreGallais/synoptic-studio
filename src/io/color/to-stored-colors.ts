@@ -1,14 +1,6 @@
 import { parseHexColor } from "./parse-hex-color";
 
-import type { Text } from "../../model";
-
-/** A color and its opacity, as a text keeps them. */
-type ColorWithOpacity = {
-  /** The color. */
-  readonly color: string;
-  /** Its opacity, an integer percent. */
-  readonly opacity: number;
-};
+import type { ColorFill, Text } from "../../model";
 
 /**
  * Reads one color and its opacity into their stored form: a color `parseHexColor` reads becomes
@@ -21,7 +13,7 @@ type ColorWithOpacity = {
  * @returns the color and the opacity to keep
  * @see REF-CSS-COLOR-4
  */
-function parseStoredColor(color: string, opacity: number): ColorWithOpacity {
+function parseStoredColor(color: string, opacity: number): ColorFill {
   const parsed = parseHexColor(color);
 
   return parsed === undefined

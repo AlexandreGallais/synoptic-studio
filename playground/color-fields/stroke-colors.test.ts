@@ -23,9 +23,13 @@ import {
  * @param value - what is typed or pasted
  */
 function typeAndLeave(id: string, value: string): void {
-  selectPageElement(`#${id}`).dispatchEvent(new FocusEvent("focus"));
+  const field = selectPageElement(`#${id}`);
+
+  field.focus();
+  field.dispatchEvent(new FocusEvent("focus"));
   typeValue(id, value);
   commitField(id);
+  field.blur();
 }
 
 /**
@@ -105,7 +109,7 @@ describe("The underline's and the strike-through's colors (US-041)", () => {
   });
 
   it("[F16.AC4] draws the underline at 50 % once its opacity is typed, chosen from then on", () => {
-    typeValue("text-underline-opacity", "50");
+    typeAndLeave("text-underline-opacity", "50");
 
     expect(isFollowing("text-underline-follows")).toBe(false);
     expect(readStrokeFills()).toEqual(["#1e293b 0.5", "#1e293b 1"]);
@@ -159,12 +163,43 @@ describe("The underline's and the strike-through's colors (US-041)", () => {
   it.each([
     { id: "text-underline-opacity", value: "101" },
     { id: "text-strike-opacity", value: "" },
-  ])("[F16.AC1] refuses $id = '$value' and draws nothing", ({ id, value }) => {
-    typeValue(id, value);
+  ])(
+    "[F16.AC1] refuses $id = '$value' and draws nothing, the stroke still following",
+    ({ id, value }) => {
+      selectPageElement(`#${id}`).focus();
+      typeValue(id, value);
+      commitField(id);
 
-    expect(readText("#status")).toContain("strike-through opacity");
-    expect(document.querySelectorAll("#canvas text")).toHaveLength(0);
-    expect(selectPageElement(`#${id}`).getAttribute("aria-invalid")).toBe("true");
+      expect(isFollowing(id.replace("opacity", "follows"))).toBe(true);
+      expect(readText("#status")).toContain("strike-through opacity");
+      expect(document.querySelectorAll("#canvas text")).toHaveLength(0);
+      expect(selectPageElement(`#${id}`).getAttribute("aria-invalid")).toBe("true");
+    },
+  );
+
+  it("[F16.AC1] leaves the box ticked for red refused, the underline following the text's #22c55e", () => {
+    typeAndLeave("text-underline-color", "red");
+    typeAndLeave("text-color", "#22c55e");
+
+    expect([isFollowing("text-underline-follows"), ...readStrokeFills()]).toEqual([
+      true,
+      "#22c55e 1",
+      "#22c55e 1",
+    ]);
+  });
+
+  it("[F16.AC1] leaves the box ticked while a color is typed, until it is committed", () => {
+    selectPageElement("#text-underline-color").focus();
+    typeValue("text-underline-color", "#0000f");
+
+    expect([isFollowing("text-underline-follows"), readValue("text-underline-color")]).toEqual([
+      true,
+      "#0000f",
+    ]);
+
+    selectPageElement("#text-strike-opacity").focus();
+    typeValue("text-strike-opacity", "50");
+    expect(isFollowing("text-strike-follows")).toBe(true);
   });
 
   it("[F16.AC2] opens the same picker from the underline's swatch, under its fields", () => {
