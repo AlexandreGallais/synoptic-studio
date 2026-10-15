@@ -1,8 +1,8 @@
 import { roundedContour } from "../geometry";
 import {
   contourPiecesToPathData,
+  formatPathData,
   formatRotation,
-  formatSubPaths,
   formatSvgNumber,
   percentToOpacity,
   textToAttributes,
@@ -93,7 +93,7 @@ function createBackgroundElements(
   backgrounds: readonly LineDecoration[],
   text: Text,
 ): readonly SVGPathElement[] {
-  const pathData = formatSubPaths(
+  const pathData = formatPathData(
     backgrounds.map((background) => decorationToPathData(background)),
   );
   const fill = { color: text.backgroundColor, opacity: text.backgroundOpacity };
