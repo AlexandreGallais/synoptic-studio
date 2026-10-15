@@ -3,6 +3,7 @@ import { isShapeAngle } from "../placement";
 
 import { isFontName } from "./is-font-name";
 import { isTextColor } from "./is-text-color";
+import { isValidTextBox } from "./is-valid-text-box";
 import { TEXT_OPTIONS } from "./text-options";
 import { TEXT_RANGES } from "./text-ranges";
 
@@ -13,8 +14,9 @@ import type { Text } from "./text";
  * opacity from 0 to 100, a letter and a word spacing from −100 000 to 100 000, all integers; a
  * color of six hexadecimal digits; an integer position (ADR-0003); an angle from 0 to 359
  * (ADR-0035); a case, an alignment and a direction among their values; a font name and a
- * fallback name that are not empty, trimmed and free of control characters (`isFontName`). Any
- * content is allowed, the empty one included, which draws nothing.
+ * fallback name that are not empty, trimmed and free of control characters (`isFontName`); the
+ * options of its box (`isValidTextBox`). Any content is allowed, the empty one included, which
+ * draws nothing.
  *
  * @kind domain
  * @param text - the text to check
@@ -38,7 +40,7 @@ export function isValidText(text: Text): boolean {
     cases.includes(text.textCase),
     alignments.includes(text.alignment),
     directions.includes(text.direction),
-    isFontName(text.font),
-    isFontName(text.fallback),
+    ...[text.font, text.fallback].map((name) => isFontName(name)),
+    isValidTextBox(text),
   ].every(Boolean);
 }
