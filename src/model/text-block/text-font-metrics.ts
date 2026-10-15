@@ -20,7 +20,7 @@ function familyFaces(fonts: readonly FontFamily[], name: string): readonly FontF
 /**
  * The metrics a text is measured with: those of the face that matches its weight and style
  * (`matchingFace`) in its font; when its font has no metrics, in its fallback family; then in the
- * default font (ADR-0052).
+ * default font (ADR-0055, decision 1).
  *
  * @kind domain
  * @param text - its font, fallback, weight and style

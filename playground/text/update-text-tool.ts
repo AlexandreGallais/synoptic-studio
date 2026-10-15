@@ -27,7 +27,8 @@ function writeTextValidity(document: Document, isValid: boolean): void {
 
 /**
  * Updates the page for the Text tool: the bold button pressed at weight 700 or heavier; the text drawn with
- * its block, measured with the default font's metrics (Inter) when its font has none (ADR-0052);
+ * its block, measured with its fallback's metrics, else the default font's (Inter), when its font
+ * has none (ADR-0055, decision 1), Inter's being the only metrics read here;
  * a refused text clears the drawing and says why, its fields outlined.
  *
  * @kind procedure
