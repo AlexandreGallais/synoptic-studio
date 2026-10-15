@@ -3,7 +3,7 @@ id: US-033
 epic: E15
 feature: F14
 title: Put a text in a box with the Text tool
-status: ready
+status: done
 points: 3
 ---
 
@@ -43,6 +43,6 @@ Inter 4 installed, as for VAL-014; otherwise the frame does not hug the letters.
 
 One task = one commit, referenced as `US-033.Tn`.
 
-- [ ] T1 — The box's fields in the Text tool: Fit content or Box, width, height, long words, max lines, ellipsis, line height, vertical alignment, wrap, trim (3 h)
-- [ ] T2 — The drawing of the lines shown in the box, the frame and the turn about the box's middle (2 h)
-- [ ] T3 — The Product Owner test card checked end to end (30 min)
+- [x] T1 — The box's fields in the Text tool: Fit content or Box, width, height, long words, max lines, ellipsis, line height, vertical alignment, wrap, trim (3 h)
+- [x] T2 — The drawing of the lines shown in the box, the frame and the turn about the box's middle (2 h)
+- [x] T3 — The Product Owner test card checked end to end (30 min)
