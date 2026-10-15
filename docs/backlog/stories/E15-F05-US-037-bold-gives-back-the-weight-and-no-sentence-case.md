@@ -3,7 +3,7 @@ id: US-037
 epic: E15
 feature: F05
 title: The bold button gives back the weight before, and sentence case removed
-status: ready
+status: done
 points: 2
 ---
 
