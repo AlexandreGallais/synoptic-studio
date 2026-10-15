@@ -6,6 +6,7 @@ export * from "./read-color-model";
 export * from "./read-open-swatch";
 export * from "./read-picked-color";
 export * from "./show-color-picker";
+export * from "./show-model-chosen";
 export * from "./toggle-color-picker";
 export * from "./update-color-picker";
 export * from "./write-color-plane";
