@@ -1,6 +1,7 @@
+import { test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
-import { rgbOfBytes } from "../../../tests";
+import { ANY_RGB, rgbOfBytes } from "../../../tests";
 
 import { brightness } from "./brightness";
 
@@ -15,5 +16,12 @@ describe("brightness (REF-WIKI-HSL-HSV, DERIV-color-spaces step 5)", () => {
     { expected: 0, rgb: rgbOfBytes(0, 0, 0) },
   ])("[F16.AC3] is $expected", ({ expected, rgb }) => {
     expect(brightness(rgb)).toBeCloseTo(expected, 12);
+  });
+
+  test.prop({ rgb: ANY_RGB })("is one of the components, none above it", ({ rgb }) => {
+    const components = [rgb.red, rgb.green, rgb.blue];
+
+    expect(components).toContain(brightness(rgb));
+    expect(components.every((component) => component <= brightness(rgb))).toBe(true);
   });
 });

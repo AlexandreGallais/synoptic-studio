@@ -1,6 +1,8 @@
+import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { fractionFromPercent } from "./fraction-from-percent";
+import { percentFromFraction } from "./percent-from-fraction";
 
 describe("fractionFromPercent (REF-CSS-COLOR-4 §7.1)", () => {
   it.each([
@@ -12,4 +14,11 @@ describe("fractionFromPercent (REF-CSS-COLOR-4 §7.1)", () => {
   ])("gives $expected for $percent %", ({ expected, percent }) => {
     expect(fractionFromPercent(percent)).toBeCloseTo(expected, 12);
   });
+
+  test.prop({ percent: fc.double({ max: 100, min: 0, noNaN: true }) })(
+    "is undone by percentFromFraction",
+    ({ percent }) => {
+      expect(percentFromFraction(fractionFromPercent(percent))).toBeCloseTo(percent, 12);
+    },
+  );
 });
