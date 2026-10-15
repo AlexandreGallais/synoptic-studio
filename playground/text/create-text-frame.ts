@@ -7,25 +7,26 @@ import {
   textFrame,
   textStraightBox,
 } from "../../src";
-import { createStraightBoxElement } from "../drawing";
+import { createFrameElements, createStraightBoxElement } from "../drawing";
 
 import type { DrawnText, Text } from "../../src";
 
 /**
- * Draws the frame of the selected text as a shape's box is drawn, dashed by thin filled
- * rectangles (`createStraightBoxElement`), in a `<g>` turned as the text is, about its middle:
- * its measured block when it fits its content, its box when it sits in one (`textFrame`, US-033).
- * A turned text also gets its straight box, upright and dashed the same way, behind its frame, as
- * a turned shape does (`textStraightBox`, US-039). A frame without area, an empty block or a box
- * 0 wide or 0 tall, is not drawn, nor its straight box.
+ * Draws the frame of the selected text, its measured block when it fits its content, its box
+ * when it sits in one (`textFrame`, US-033), in a `<g>` of class `text-frame` turned as the text
+ * is, about its middle, and as a shape's boxes are drawn: upright, dashed by thin filled
+ * rectangles (`createStraightBoxElement`); turned, as a turned shape's (US-050), a thin blue frame
+ * (`createFrameElements`, `turned-box`), with its straight box behind it, upright and dashed
+ * (`textStraightBox`, US-039). A frame without area, an empty block or a box 0 wide or 0 tall, is
+ * not drawn, nor its straight box.
  *
  * @kind procedure
  * @param document - page document
  * @param text - its position, its box and its angle
  * @param drawn - its block and its middle, from `textDrawing`
- * @returns the straight box of a turned text, then the turned group holding the frame's dashes;
- * nothing for a frame without area
- * @see docs/backlog/stories/E15-F14-US-039-straight-box-of-a-turned-text.md
+ * @returns the dashed frame of an upright text; the straight box and the turned frame of a turned
+ * one; nothing for a frame without area
+ * @see docs/backlog/stories/E15-F17-US-050-turned-text-frames-as-shapes.md
  */
 export function createTextFrame(
   document: Document,
@@ -44,9 +45,14 @@ export function createTextFrame(
 
   group.classList.add("text-frame");
   group.setAttribute("transform", formatRotation(text.angle, drawn.center));
-  group.append(createStraightBoxElement(document, boundingBox([position, corner])));
 
-  return text.angle === 0
-    ? [group]
-    : [createStraightBoxElement(document, textStraightBox(text, drawn.block)), group];
+  if (text.angle === 0) {
+    group.append(createStraightBoxElement(document, boundingBox([position, corner])));
+
+    return [group];
+  }
+
+  group.append(...createFrameElements(document, { ...frame, angle: 0 }, "turned-box"));
+
+  return [createStraightBoxElement(document, textStraightBox(text, drawn.block)), group];
 }
