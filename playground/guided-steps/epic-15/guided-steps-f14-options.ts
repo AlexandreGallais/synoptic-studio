@@ -79,6 +79,13 @@ export const GUIDED_STEPS_F14_OPTIONS: readonly GuidedStep[] = [
   },
   {
     explanation:
+      "Nothing to type: a box 60 × 40 turned by 30; then the Rectangle tool, Width 60, Height 40, Angle 30.",
+    look: "The text's frame thin and blue, turned with it, an upright dashed box around it: the same two frames as the rectangle's (US-050).",
+    title: "F14 · A turned text's frames (US-050)",
+    values: createTextBoxStepValues({ angle: 30, boxHeight: 40, boxWidth: 60, isInBox: true }),
+  },
+  {
+    explanation:
       "Import a font: Arial.ttf; then Alignment right, and type a space at the end: “Hello World ”.",
     look: "Two bands, each as long as its word, 36.46 and 41.78; “World” and its band ending at the box's right edge (x 8.22), never past it.",
     title: "F14 · A band ends with its line (US-049)",
