@@ -3,6 +3,8 @@ export type * from "./html-layer";
 export * from "./html-layer-frame";
 export * from "./html-layer-line-limit";
 export * from "./html-layer-paragraphs";
+export type * from "./html-layer-strokes";
 export * from "./is-html-layer-drawn";
 export * from "./text-html-layer";
+export * from "./text-html-layer-strokes";
 export type * from "./text-with-html-layer";

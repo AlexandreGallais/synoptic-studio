@@ -5,28 +5,41 @@ import { formatCssColor } from "./format-css-color";
 import type { CssDeclaration } from "./css-declaration";
 import type { Text, TextStrokeKind } from "../../model";
 
+/** The CSS decoration line of each stroke. */
+const CSS_LINES: Readonly<Record<TextStrokeKind, string>> = {
+  strikeThrough: "line-through",
+  underline: "underline",
+};
+
 /**
- * A text's underline or strike-through as a CSS decoration line, `underline` or `line-through`,
- * as thick as the font says (`from-font`, its "preferred thickness", `REF-MDN-TEXT-DECORATION-THICKNESS`), in the color and the
- * opacity the stroke is drawn in (`textStrokeFill`, `formatCssColor`, US-041); none when the text
- * has no such stroke. A decoration's color applies to every line its element draws, so that each
- * stroke sits on an element of its own (`REF-CSS-TEXT-DECOR-3`, §2.3).
+ * Strokes of one element of a text's HTML layer as CSS decoration lines, `underline` and
+ * `line-through`, as thick as the font says (`from-font`, its "preferred thickness",
+ * `REF-MDN-TEXT-DECORATION-THICKNESS`), in the color and the opacity they are drawn in
+ * (`textStrokeFill`, `formatCssColor`, US-041), one for every line of the element
+ * (`REF-CSS-TEXT-DECOR-3`, §2.3): the strokes given share it (`textHtmlLayerStrokes`). None for no
+ * stroke.
  *
  * @kind format
- * @param text - whether it has the stroke, and its colors
- * @param kind - the underline or the strike-through
+ * @param text - its strokes' colors
+ * @param kinds - the strokes the element draws, one color between them
  * @returns the declarations, none or three
  * @see REF-CSS-TEXT-DECOR-3
  */
-export function textStrokeToCss(text: Text, kind: TextStrokeKind): readonly CssDeclaration[] {
-  const isDrawn = kind === "underline" ? text.isUnderlined : text.isStruckThrough;
-  const fill = textStrokeFill(text, kind);
+export function textStrokeToCss(
+  text: Text,
+  kinds: readonly TextStrokeKind[],
+): readonly CssDeclaration[] {
+  const [first] = kinds;
 
-  return isDrawn
-    ? [
-        ["text-decoration-line", kind === "underline" ? "underline" : "line-through"],
-        ["text-decoration-thickness", "from-font"],
-        ["text-decoration-color", formatCssColor(fill.color, fill.opacity)],
-      ]
-    : [];
+  if (first === undefined) {
+    return [];
+  }
+
+  const fill = textStrokeFill(text, first);
+
+  return [
+    ["text-decoration-line", kinds.map((kind) => CSS_LINES[kind]).join(" ")],
+    ["text-decoration-thickness", "from-font"],
+    ["text-decoration-color", formatCssColor(fill.color, fill.opacity)],
+  ];
 }

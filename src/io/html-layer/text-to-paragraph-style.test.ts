@@ -21,36 +21,30 @@ describe("textToParagraphStyle (ADR-0053, EN-041)", () => {
     expect(textToParagraphStyle({ ...HELLO_TEXT, backgroundColor: "#22c55e" })).toEqual([]);
   });
 
-  it("[F16.AC4] strikes each paragraph through in the text's color when none was chosen", () => {
-    const text = { ...HELLO_TEXT, color: "#0000ff", isStruckThrough: true, opacity: 40 };
+  it("[F16.AC4] writes no stroke on the spans while both share the text's color", () => {
+    const text = { ...HELLO_TEXT, isStruckThrough: true, isUnderlined: true };
 
-    // 40 %: 255 · 40 / 100 = 102, written 66.
-    expect(textToParagraphStyle(text)).toEqual([
-      ["text-decoration-line", "line-through"],
-      ["text-decoration-thickness", "from-font"],
-      ["text-decoration-color", "#0000ff66"],
-    ]);
+    expect(textToParagraphStyle(text)).toEqual([]);
   });
 
-  it("[F16.AC4] strikes it through in its own color, #ff0000, after the background", () => {
+  it("[F16.AC4] underlines each span in #ff0000 at 50 %, after the background, the strokes of two colors", () => {
     const text = {
       ...HELLO_TEXT,
       backgroundColor: "#22c55e",
       hasBackground: true,
-      hasStrikeThroughColor: true,
+      hasUnderlineColor: true,
       isStruckThrough: true,
-      strikeThroughColor: "#ff0000",
+      isUnderlined: true,
+      underlineColor: "#ff0000",
+      underlineOpacity: 50,
     };
 
+    // 50 %: 255 · 50 / 100 = 127.5, rounded 128, written 80.
     expect(textToParagraphStyle(text)).toEqual([
       ["background-color", "#22c55eff"],
-      ["text-decoration-line", "line-through"],
+      ["text-decoration-line", "underline"],
       ["text-decoration-thickness", "from-font"],
-      ["text-decoration-color", "#ff0000ff"],
+      ["text-decoration-color", "#ff000080"],
     ]);
-  });
-
-  it("[F16.AC4] writes no strike-through on the spans for a text only underlined", () => {
-    expect(textToParagraphStyle({ ...HELLO_TEXT, isUnderlined: true })).toEqual([]);
   });
 });
