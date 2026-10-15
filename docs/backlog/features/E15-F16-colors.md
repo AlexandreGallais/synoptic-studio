@@ -22,15 +22,15 @@ Refined with F05 on 2026-10-14 (its rounds 1 and 2); its stories were written by
 
 In delivery order.
 
-| ID                                                                  | Type       | Title                                                                  | Status      |
-| ------------------------------------------------------------------- | ---------- | ---------------------------------------------------------------------- | ----------- |
-| [SP-017](../stories/E15-F16-SP-017-research-f16-colors.md)          | Spike      | Research for F16: colors in hexadecimal, HSL and HSB, and their picker | in-progress |
-| [EN-037](../stories/E15-F16-EN-037-a-color-typed-in-hexadecimal.md) | Enabler    | A color typed in hexadecimal, kept as six digits and an opacity        | ready       |
-| [EN-038](../stories/E15-F16-EN-038-hsl-and-hsb-from-a-color.md)     | Enabler    | HSL and HSB from a hexadecimal color, and back                         | ready       |
-| [CHK-016](../stories/E15-F16-CHK-016-checkpoint-f16.md)             | Checkpoint | Checkpoint in the middle of F16                                        | ready       |
-| [US-035](../stories/E15-F16-US-035-pick-a-color.md)                 | User story | Type or pick a color and its opacity                                   | ready       |
-| [AUD-017](../stories/E15-F16-AUD-017-audit-f16.md)                  | Audit      | Audit F16                                                              | ready       |
-| [VAL-016](../stories/E15-F16-VAL-016-validate-f16.md)               | Validation | Validate F16                                                           | ready       |
+| ID                                                                  | Type       | Title                                                                  | Status |
+| ------------------------------------------------------------------- | ---------- | ---------------------------------------------------------------------- | ------ |
+| [SP-017](../stories/E15-F16-SP-017-research-f16-colors.md)          | Spike      | Research for F16: colors in hexadecimal, HSL and HSB, and their picker | done   |
+| [EN-037](../stories/E15-F16-EN-037-a-color-typed-in-hexadecimal.md) | Enabler    | A color typed in hexadecimal, kept as six digits and an opacity        | ready  |
+| [EN-038](../stories/E15-F16-EN-038-hsl-and-hsb-from-a-color.md)     | Enabler    | HSL and HSB from a hexadecimal color, and back                         | ready  |
+| [CHK-016](../stories/E15-F16-CHK-016-checkpoint-f16.md)             | Checkpoint | Checkpoint in the middle of F16                                        | ready  |
+| [US-035](../stories/E15-F16-US-035-pick-a-color.md)                 | User story | Type or pick a color and its opacity                                   | ready  |
+| [AUD-017](../stories/E15-F16-AUD-017-audit-f16.md)                  | Audit      | Audit F16                                                              | ready  |
+| [VAL-016](../stories/E15-F16-VAL-016-validate-f16.md)               | Validation | Validate F16                                                           | ready  |
 
 ## Feature plan
 

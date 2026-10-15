@@ -3,7 +3,7 @@ id: SP-017
 epic: E15
 feature: F16
 title: "Research for F16: colors in hexadecimal, HSL and HSB, and their picker"
-status: in-progress
+status: done
 points: 2
 ---
 
