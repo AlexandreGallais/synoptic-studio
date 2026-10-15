@@ -27,7 +27,7 @@ In delivery order. Written by its research spike (SP-016, research note 0018).
 | ID                                                                  | Type       | Title                                                                     | Status |
 | ------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------- | ------ |
 | [SP-016](../stories/E15-F14-SP-016-research-f14-text-box.md)        | Spike      | Research for F14: a box of text wrapped, cut with an ellipsis and aligned | done   |
-| [EN-033](../stories/E15-F14-EN-033-lines-wrapped-in-a-box.md)       | Enabler    | A text in a box: its options and its lines wrapped at spaces              | ready  |
+| [EN-033](../stories/E15-F14-EN-033-lines-wrapped-in-a-box.md)       | Enabler    | A text in a box: its options and its lines wrapped at spaces              | done   |
 | [EN-034](../stories/E15-F14-EN-034-lines-shown-and-the-ellipsis.md) | Enabler    | The lines a box shows, and the ellipsis                                   | ready  |
 | [EN-035](../stories/E15-F14-EN-035-lines-placed-in-the-box.md)      | Enabler    | Lines placed in the box: line height, cap-height trim, vertical alignment | ready  |
 | [EN-036](../stories/E15-F14-EN-036-balanced-wrap.md)                | Enabler    | A balanced wrap that evens the lines' lengths                             | ready  |
