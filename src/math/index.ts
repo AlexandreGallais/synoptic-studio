@@ -6,4 +6,5 @@ export * from "./matrix";
 export * from "./polynomial";
 export * from "./precision";
 export * from "./rotation";
+export * from "./sequence";
 export * from "./vector";

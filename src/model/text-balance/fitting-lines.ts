@@ -1,6 +1,8 @@
+import { scan } from "../../math";
 import { joinedLineMeasure, lineMeasureWidth } from "../text-block";
 import { isMeasureFitting } from "../text-wrap";
 
+import type { FittingLine } from "./fitting-line";
 import type { LinesEnding } from "./lines-ending";
 import type { FontMetrics } from "../font";
 import type { Text } from "../text";
@@ -23,12 +25,18 @@ type ExtendedLine = {
   readonly visible: LineMeasure;
 };
 
-/** The paragraph read so far: the lines still open, and the lines ending before each token read. */
+/** The paragraph read to a token: the lines still open, and the lines that end after the token. */
 type LineScan = {
   /** The lines that fit with every token read, by their first token in order. */
   readonly open: readonly OpenLine[];
-  /** For each token index read, and the end, the lines that fit and end right before it. */
-  readonly ending: readonly LinesEnding[];
+  /** The lines that fit and end right after the token, by their first token in order. */
+  readonly lines: readonly FittingLine[];
+};
+
+/** A token measured, with its index in the paragraph. */
+type IndexedToken = TokenMeasure & {
+  /** Its index. */
+  readonly index: number;
 };
 
 /**
@@ -36,24 +44,21 @@ type LineScan = {
  * would end with after the token (`joinedLineMeasure`, the token measured once).
  *
  * @kind domain
- * @param scan - the paragraph read so far
- * @param token - the next token's measures
+ * @param state - the paragraph read so far
+ * @param token - the next token's measures and index
  * @param metrics - the metrics of the face the text is drawn with
  * @returns the lines, by their first token in order
  * @see DERIV-text-box
  */
 function extendedLines(
-  scan: LineScan,
-  token: TokenMeasure,
+  state: LineScan,
+  token: IndexedToken,
   metrics: FontMetrics,
 ): readonly ExtendedLine[] {
-  const opening = {
-    line: { start: scan.ending.length - 1, whole: token.whole },
-    visible: token.visible,
-  };
+  const opening = { line: { start: token.index, whole: token.whole }, visible: token.visible };
 
   return [
-    ...scan.open.map((line) => ({
+    ...state.open.map((line) => ({
       line,
       visible: joinedLineMeasure(metrics, line.whole, token.visible),
     })),
@@ -85,15 +90,15 @@ function lineRoom(metrics: FontMetrics, visible: LineMeasure, text: Text): numbe
  * steps 3 and 9).
  *
  * @kind domain
- * @param scan - the paragraph read so far
- * @param token - the next token's measures
+ * @param state - the paragraph read so far
+ * @param token - the next token's measures and index
  * @param context - the text and its face's metrics
  * @returns the paragraph read with the token
  * @see DERIV-text-box
  */
-function scanWithToken(scan: LineScan, token: TokenMeasure, context: TextInBox): LineScan {
+function scanWithToken(state: LineScan, token: IndexedToken, context: TextInBox): LineScan {
   const { metrics, text } = context;
-  const fitting = extendedLines(scan, token, metrics).filter((extended) =>
+  const fitting = extendedLines(state, token, metrics).filter((extended) =>
     isMeasureFitting(metrics, extended.visible, text),
   );
   const lines = fitting.map(({ line, visible }) => ({
@@ -101,12 +106,12 @@ function scanWithToken(scan: LineScan, token: TokenMeasure, context: TextInBox):
     start: line.start,
   }));
   const open = fitting.map(({ line }) =>
-    line.start === scan.ending.length - 1
+    line.start === token.index
       ? line
       : { start: line.start, whole: joinedLineMeasure(metrics, line.whole, token.whole) },
   );
 
-  return { ending: [...scan.ending, { lines }], open };
+  return { lines, open };
 }
 
 /**
@@ -114,8 +119,8 @@ function scanWithToken(scan: LineScan, token: TokenMeasure, context: TextInBox):
  * end, the lines of whole tokens that end there and fit, every shorter line from the same start
  * fitting too, so that the greedy wrap's lines are among them; each line leaves its room, the box's
  * width less its own, trailing spaces left out (`DERIV-text-box`, steps 2, 3 and 9). The lines are
- * measured by joining the tokens' measures (`joinedLineMeasure`), each token measured once, at a
- * cost of the number of tokens times the most tokens a line holds.
+ * measured by joining the tokens' measures (`joinedLineMeasure`), each token measured once, the
+ * tokens read by a scan (`scan`), at a cost of the number of tokens times the most a line holds.
  *
  * @kind domain
  * @param metrics - the metrics of the face the text is drawn with
@@ -131,8 +136,11 @@ export function fittingLines(
 ): readonly LinesEnding[] {
   const context = { metrics, text };
 
-  return tokens.reduce<LineScan>((scan, token) => scanWithToken(scan, token, context), {
-    ending: [{ lines: [] }],
-    open: [],
-  }).ending;
+  const steps = scan<LineScan, IndexedToken>(
+    tokens.map((token, index) => ({ ...token, index })),
+    (state, token) => scanWithToken(state, token, context),
+    { lines: [], open: [] },
+  );
+
+  return [{ lines: [] }, ...steps.map(({ lines }) => ({ lines }))];
 }

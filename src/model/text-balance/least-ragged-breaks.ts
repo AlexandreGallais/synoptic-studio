@@ -1,6 +1,7 @@
-import { minimum } from "../../math";
+import { integerRange, minimum, scan } from "../../math";
 
 import { fewestLinesFrom } from "./fewest-lines-from";
+import { longestLineSpan } from "./longest-line-span";
 
 import type { LinesEnding } from "./lines-ending";
 import type { LinesEndingAhead } from "./lines-ending-ahead";
@@ -21,23 +22,44 @@ type BreakColumn = {
   readonly cells: readonly BreakCell[];
 };
 
-/** Where a column stands: its end, and the numbers of lines and tokens of the paragraph. */
+/** Where a column stands: its end, the columns just before it, and the paragraph's counts. */
 type BreakPlace = {
   /** The number of tokens before it. */
   readonly end: number;
+  /** The columns of the ends just before it, nearest first, as many as a line holds tokens. */
+  readonly window: readonly BreakColumn[];
   /** The number of lines of the paragraph. */
   readonly lineCount: number;
   /** The number of tokens of the paragraph. */
   readonly tokenCount: number;
 };
 
-/** The fewest and the most lines a whole cut may give a paragraph's first tokens. */
-type LineCountRange = {
-  /** The fewest. */
-  readonly least: number;
-  /** The most. */
-  readonly most: number;
+/** The paragraph's counts that every column reads. */
+type BreakCounts = {
+  /** The number of lines of the paragraph. */
+  readonly lineCount: number;
+  /** The number of tokens of the paragraph. */
+  readonly tokenCount: number;
+  /** The most tokens a line holds. */
+  readonly span: number;
 };
+
+/** An end read: its lines with the fewest lines after it, and the end itself. */
+type IndexedAhead = LinesEndingAhead & {
+  /** The number of tokens before it. */
+  readonly end: number;
+};
+
+/** The paragraph read to an end: its column, and the columns just before, nearest first. */
+type BreakScan = {
+  /** The end's column. */
+  readonly column: BreakColumn;
+  /** The columns of this end and the ends just before, nearest first, as many as a line holds tokens. */
+  readonly window: readonly BreakColumn[];
+};
+
+/** A column that no cut reaches. */
+const NO_COLUMN: BreakColumn = { cells: [], least: Infinity };
 
 /** No token on no line: nothing left, at no cost. */
 const NOTHING: BreakColumn = { cells: [{ cost: 0, start: -1 }], least: 0 };
@@ -65,13 +87,27 @@ function lineRaggedness(room: number): number {
  * tokens that no whole cut gives that number of lines are unreached.
  *
  * @kind domain
- * @param column - the least costs of the first tokens, or none past the paragraph
+ * @param column - the least costs of the first tokens, or none past the window
  * @param count - the number of lines
  * @returns the cell, or `UNREACHED`
- * @see REF-WIKI-KNUTH-PLASS
+ * @see DERIV-text-box
  */
 function cellAt(column: BreakColumn | undefined, count: number): BreakCell {
   return column?.cells[count - column.least] ?? UNREACHED;
+}
+
+/**
+ * The column of a line's start, read from the window of a column's place: none for a line that
+ * does not end after its start.
+ *
+ * @kind domain
+ * @param place - the end and the columns just before it
+ * @param start - the line's first token
+ * @returns the column, or none
+ * @see DERIV-text-box
+ */
+function columnAt(place: BreakPlace, start: number): BreakColumn | undefined {
+  return place.window[place.end - start - 1];
 }
 
 /**
@@ -80,19 +116,15 @@ function cellAt(column: BreakColumn | undefined, count: number): BreakCell {
  * raggedness; on equal cost the later start, tried last, is kept (`DERIV-text-box`, step 9).
  *
  * @kind domain
- * @param columns - the columns of the ends before
- * @param ending - the lines that fit and end there, by their start in order
+ * @param place - the end and the columns just before it
+ * @param ahead - the lines that fit and end there, by their start in order
  * @param count - the number of lines
  * @returns the least cost and the start of the last line
- * @see REF-WIKI-KNUTH-PLASS
+ * @see DERIV-text-box
  */
-function leastCell(
-  columns: readonly BreakColumn[],
-  ending: LinesEnding | LinesEndingAhead,
-  count: number,
-): BreakCell {
-  return ending.lines.reduce<BreakCell>((best, line) => {
-    const cost = cellAt(columns[line.start], count - 1).cost + lineRaggedness(line.room);
+function leastCell(place: BreakPlace, ahead: LinesEndingAhead, count: number): BreakCell {
+  return ahead.lines.reduce<BreakCell>((best, line) => {
+    const cost = cellAt(columnAt(place, line.start), count - 1).cost + lineRaggedness(line.room);
 
     return cost <= best.cost && Number.isFinite(cost) ? { cost, start: line.start } : best;
   }, UNREACHED);
@@ -104,64 +136,53 @@ function leastCell(
  * @kind domain
  * @param column - the column of an end, or none
  * @returns its fewest lines
- * @see REF-WIKI-KNUTH-PLASS
+ * @see DERIV-text-box
  */
 function columnLeast(column: BreakColumn | undefined): number {
   return column?.least ?? Infinity;
 }
 
 /**
- * The numbers of lines a whole cut may give the tokens before an end: at least one more than the
- * fewest of the columns its lines start at, and the lines the rest of the tokens leave, one each;
- * at most one a token, and the lines left once the rest has its fewest (`fewestLinesFrom`).
+ * The column of an end: its least cost on each number of lines a whole cut may give the tokens
+ * before it — at least one more than the fewest of the columns its lines start at, and the lines
+ * the rest of the tokens leave, one each; at most one a token, and the lines left once the rest
+ * has its fewest (`fewestLinesFrom`).
  *
  * @kind domain
- * @param columns - the columns of the ends before
- * @param ahead - the lines ending there, with the fewest lines after it
- * @param place - the end, the number of lines and of tokens
- * @returns the fewest and the most lines
- * @see REF-WIKI-KNUTH-PLASS
+ * @param place - the end, the columns just before it and the paragraph's counts
+ * @param ahead - the lines that fit and end there, with the fewest lines after it
+ * @returns its fewest lines and its cells
+ * @see DERIV-text-box
  */
-function lineCountRange(
-  columns: readonly BreakColumn[],
-  ahead: LinesEndingAhead,
-  place: BreakPlace,
-): LineCountRange {
+function breakColumn(place: BreakPlace, ahead: LinesEndingAhead): BreakColumn {
   const before = minimum(
-    ahead.lines.map(({ start }) => columnLeast(columns[start])),
+    ahead.lines.map(({ start }) => columnLeast(columnAt(place, start))),
     Infinity,
   );
+  const least = Math.max(1 + before, place.lineCount - place.tokenCount + place.end);
+  const most = Math.min(place.end, place.lineCount - ahead.fewestAfter);
 
-  return {
-    least: Math.max(1 + before, place.lineCount - place.tokenCount + place.end),
-    most: Math.min(place.end, place.lineCount - ahead.fewestAfter),
-  };
+  return { cells: integerRange(least, most).map((count) => leastCell(place, ahead, count)), least };
 }
 
 /**
- * The column of an end: its least cost on each number of lines a whole cut may give the tokens
- * before it (`lineCountRange`).
+ * The paragraph read to one more end: its column, and the window of columns moved by one; the
+ * first end, before any token, holds nothing at no cost.
  *
  * @kind domain
- * @param columns - the columns of the ends before
- * @param ahead - the lines that fit and end there, with the fewest lines after it
- * @param place - the end, the number of lines and of tokens
- * @returns its fewest lines and its cells
- * @see REF-WIKI-KNUTH-PLASS
+ * @param state - the paragraph read to the end before
+ * @param ahead - the end, its lines and the fewest lines after it
+ * @param counts - the paragraph's numbers of lines and tokens, and the most tokens a line holds
+ * @returns the paragraph read to the end
+ * @see DERIV-text-box
  */
-function breakColumn(
-  columns: readonly BreakColumn[],
-  ahead: LinesEndingAhead,
-  place: BreakPlace,
-): BreakColumn {
-  const range = lineCountRange(columns, ahead, place);
+function breakScanWith(state: BreakScan, ahead: IndexedAhead, counts: BreakCounts): BreakScan {
+  const column =
+    ahead.end === 0
+      ? NOTHING
+      : breakColumn({ ...counts, end: ahead.end, window: state.window }, ahead);
 
-  return {
-    cells: Array.from({ length: Math.max(range.most - range.least + 1, 0) }, (unused, offset) =>
-      leastCell(columns, ahead, range.least + offset),
-    ),
-    least: range.least,
-  };
+  return { column, window: [column, ...state.window.slice(0, counts.span - 1)] };
 }
 
 /**
@@ -170,9 +191,9 @@ function breakColumn(
  * on `k` lines is the least, over the lines from `i` to `j` that fit, of that of the first `i`
  * tokens on `k − 1` lines plus the square of the line's room; on equal cost the later break is
  * kept (`DERIV-text-box`, step 9; `REF-WIKI-KNUTH-PLASS`). Each end keeps only the numbers of
- * lines a whole cut may give the tokens before it (`lineCountRange`), so that the work follows
- * the number of lines that fit, not that times the number of lines; a line that does not end
- * after its start is never taken.
+ * lines a whole cut may give the tokens before it, and reads only the columns of the `m` ends
+ * before it, `m` the most tokens a line holds; the ends are read by a scan (`scan`), and so are the
+ * breaks, back from the last; a line that does not end after its start is never taken.
  *
  * @kind domain
  * @param ending - for each index from 0 to the number of tokens, the lines that fit and end there
@@ -184,20 +205,16 @@ export function leastRaggedBreaks(
   ending: readonly LinesEnding[],
   lineCount: number,
 ): readonly number[] {
-  const tokenCount = ending.length - 1;
-  const columns = fewestLinesFrom(ending).reduce<readonly BreakColumn[]>(
-    (done, ahead, end) => [
-      ...done,
-      end === 0 ? NOTHING : breakColumn(done, ahead, { end, lineCount, tokenCount }),
-    ],
-    [],
-  );
+  const counts = { lineCount, span: longestLineSpan(ending), tokenCount: ending.length - 1 };
+  const columns = scan<BreakScan, IndexedAhead>(
+    fewestLinesFrom(ending).map((ahead, end) => ({ ...ahead, end })),
+    (state, ahead) => breakScanWith(state, ahead, counts),
+    { column: NO_COLUMN, window: [] },
+  ).map(({ column }) => column);
 
-  return Array.from({ length: lineCount - 1 }).reduce<readonly number[]>(
-    (starts, unused, index) => [
-      cellAt(columns[starts.at(0) ?? tokenCount], lineCount - index).start,
-      ...starts,
-    ],
-    [],
-  );
+  return scan<number, number>(
+    integerRange(2, lineCount).toReversed(),
+    (end, count) => cellAt(columns[end], count).start,
+    counts.tokenCount,
+  ).toReversed();
 }
