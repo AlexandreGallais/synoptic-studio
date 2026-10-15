@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
 
+import { writeTextStepValues } from "../../guided-test";
 import {
   chooseOption,
   clickElement,
@@ -17,6 +18,8 @@ import {
 } from "../../user-actions";
 import { GUIDED_STEPS } from "../lists";
 
+import type { GuidedText } from "../guided-step";
+
 /**
  * Opens the playground's epic list on a step of F05, found by its title.
  *
@@ -27,6 +30,23 @@ function openStep(title: string): void {
 
   expect(index).toBeGreaterThanOrEqual(0);
   openOnStep(index + 1);
+}
+
+/**
+ * Reads the text a step of F05 types, found by its title.
+ *
+ * @param title - the step's title, without "F05 · "
+ * @returns its text
+ * @throws {Error} when the step types no text
+ */
+function readStepText(title: string): GuidedText {
+  const text = GUIDED_STEPS.find((step) => step.title === `F05 · ${title}`)?.values.text;
+
+  if (text === undefined) {
+    throw new Error(`No text in the step ${title}`);
+  }
+
+  return text;
 }
 
 /**
@@ -466,6 +486,14 @@ describe("the guided test of F05 (VAL-014): the browser checks and the end", () 
     // "Pump P-101" in Inter 16, 87.953125 wide, at (47, 61) turned by 23, its corner
     // (54.27808, 44.58648); 177.953125 wide: (54.27808 − 88.97656 + 78.12120, 44.58648 − 9.67969 + 43.67611).
     expect([readValue("shape-x"), readValue("shape-y")]).toEqual(["43.42272", "78.5829"]);
+  });
+
+  it("[F05.AC5] a step forgets the text last drawn, so that it is never placed from it", () => {
+    openStep("A turned text grows in place (US-038)");
+    typeValue("text-letter-spacing", "10");
+
+    writeTextStepValues(document, readStepText("A turned text grows in place (US-038)"));
+    expect(selectPageElement("#text-options").dataset["drawnText"]).toBeUndefined();
   });
 
   it("[F05.AC5] a step comes back at its own position, not placed from the text last drawn", () => {

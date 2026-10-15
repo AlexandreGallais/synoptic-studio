@@ -1,14 +1,13 @@
-import { readNumber } from "../page";
-
 import { readDrawnText } from "./read-drawn-text";
 import { readPositionFields } from "./read-position-fields";
+import { readTypedCoordinate } from "./read-typed-coordinate";
 
 import type { Point } from "../../src";
 
 /**
  * Reads the text's position from the X and Y fields (US-038): while they still show the position
- * of the text last drawn, at 5 decimals, its exact position; otherwise the numbers typed, a
- * fraction accepted.
+ * of the text last drawn, at 5 decimals, its exact position, a fraction once a turned text has
+ * grown; otherwise the integers typed (`readTypedCoordinate`), a fraction typed refused.
  *
  * @kind procedure
  * @param document - page document
@@ -22,5 +21,5 @@ export function readTextPosition(document: Document): Point {
 
   return drawn !== undefined && isShown
     ? { x: drawn.text.x, y: drawn.text.y }
-    : { x: readNumber(document, "shape-x"), y: readNumber(document, "shape-y") };
+    : { x: readTypedCoordinate(document, "shape-x"), y: readTypedCoordinate(document, "shape-y") };
 }

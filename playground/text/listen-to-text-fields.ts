@@ -10,7 +10,7 @@ import { pressBold } from "./press-bold";
  * (`listenToExport`, US-036); a value typed or chosen, the drawing's options among them, redraws
  * the text; the bold button gives 700 and gives back the weight before (`pressBold`, US-037), a
  * weight chosen in the list forgetting the weight held; the italic button turns italic on or off;
- * a number typed in X or Y, a fraction too, redraws the text (`listenToTextPosition`, US-038).
+ * a value typed in X or Y redraws the text (`listenToTextPosition`, US-038).
  *
  * @kind procedure
  * @param document - page document
