@@ -1,8 +1,11 @@
 export * from "./is-line-fitting";
 export * from "./is-measure-fitting";
 export type * from "./line-wrap";
+export * from "./measured-token";
 export * from "./paragraph-tokens";
+export type * from "./paragraph-wrap";
 export type * from "./text-in-box";
+export type * from "./token-measure";
 export * from "./without-trailing-spaces";
 export * from "./word-broken-at-characters";
 export * from "./wrapped-lines";

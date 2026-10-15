@@ -12,6 +12,7 @@ export * from "./round-shape";
 export * from "./selection";
 export * from "./shape";
 export * from "./text";
+export * from "./text-balance";
 export * from "./text-block";
 export * from "./text-box";
 export * from "./text-case";
