@@ -19,8 +19,8 @@ const JSON_INDENT = 2;
  * turned text also with its straight box, upright, and its x, y, width and height (US-039) — and
  * shows each stage in the pipeline column: the model, the block, the positioned lines and the SVG
  * written. The drawing is written with its options (`createTextDocument`, US-036): its embedded
- * fonts in `<defs>` before the text, the text with its HTML layer, and the faces left out listed;
- * both options off, exactly as before.
+ * fonts in `<defs>` before the text, then the text, and the faces left out listed; the option off,
+ * exactly as before.
  *
  * @kind procedure
  * @param document - page document
@@ -32,7 +32,7 @@ export function showText(document: Document, text: Text, metrics: FontMetrics): 
   const { height, width } = selectElement(document, "canvas").getBoundingClientRect();
   const svg = createSvgElement(document, { height, width, x: -MARGIN, y: -MARGIN });
   const drawn = textDrawing(metrics, text);
-  const written = createTextDocument(document, { drawn, metrics, text });
+  const written = createTextDocument(document, { drawn, text });
   const serializer = new XMLSerializer();
 
   svg.append(...written.defs, ...createTextFrame(document, text, drawn), written.element);

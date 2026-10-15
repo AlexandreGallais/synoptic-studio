@@ -5,7 +5,6 @@ export * from "./hex-pair-to-byte";
 export * from "./hex-to-bytes";
 export * from "./hex-to-rgb";
 export * from "./parse-hex-color";
-export * from "./percent-to-alpha";
 export * from "./rgb-to-hex";
 export * from "./to-shown-hue";
 export * from "./to-stored-colors";
