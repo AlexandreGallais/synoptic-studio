@@ -58,7 +58,7 @@ describe("every calculation named (F13, ADR-0049)", () => {
       pattern: /Math\.atan2\(/u,
     },
     { files: ["norm.ts"], name: "a length from hypot", pattern: /Math\.hypot\(/u },
-    { files: ["modulo.ts"], name: "the modulo idiom", pattern: /\+ \(\w+ < 0 \? \w+ : 0\)/u },
+    { files: ["modulo.ts"], name: "the modulo idiom", pattern: /\(\w+ % \w+\) \+ \w+\) %/u },
   ])("[F13.AC1] writes $name only in its named function", ({ files, pattern }) => {
     expect(filesWith(pattern)).toEqual(files);
   });
