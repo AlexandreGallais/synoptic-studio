@@ -8,8 +8,7 @@ import { showColorPicker } from "./show-color-picker";
 import { writePickedColor } from "./write-picked-color";
 
 /**
- * Reads the open picker's values again from its color, after a hexadecimal typed or another
- * model chosen: to one decimal in the model chosen, a grey keeping the hue the picker holds
+ * Reads the open picker's values again from its color, after a hexadecimal typed: to one decimal in the model chosen, a grey keeping the hue the picker holds
  * (`hexToPickedColor`); nothing while it is closed.
  *
  * @kind procedure
