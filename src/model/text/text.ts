@@ -65,8 +65,8 @@ export type Text = {
   readonly wordSpacing: number;
   /** How its lines are wrapped in its box: as many words a line as fit, or balanced. */
   readonly wrapStyle: TextWrapStyle;
-  /** Abscissa of the top-left of its block before it turns, in the SVG, an integer. */
+  /** Abscissa of the top-left of its block, or its box, before it turns, in the SVG: an integer when typed, finite and possibly fractional once a turned text has grown (ADR-0057). */
   readonly x: number;
-  /** Ordinate of the top-left of its block before it turns, in the SVG, an integer. */
+  /** Ordinate of the top-left of its block, or its box, before it turns, in the SVG: an integer when typed, finite and possibly fractional once a turned text has grown (ADR-0057). */
   readonly y: number;
 };

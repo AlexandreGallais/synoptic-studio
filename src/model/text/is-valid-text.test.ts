@@ -93,10 +93,29 @@ describe("isValidText (F05)", () => {
     { name: "a fractional letter spacing", text: { letterSpacing: 0.5 } },
     { name: "a fractional word spacing", text: { wordSpacing: 1.5 } },
     { name: "an angle of 360", text: { angle: 360 } },
-    { name: "a fractional position", text: { x: 0.5 } },
-    { name: "a position not a number", text: { y: NaN } },
   ])("[F05.AC2] refuses $name", ({ text }) => {
     expect(isValidText({ ...HELLO, ...text })).toBe(false);
+  });
+
+  it("[F05.AC5] accepts a fractional, finite position, as a turned text that grew has", () => {
+    // ADR-0057: a block 100 × 20 at (47, 61) turned by 23, grown 120 wide.
+    expect(isValidText({ ...HELLO, angle: 23, x: 46.20505, y: 64.90731 })).toBe(true);
+  });
+
+  it.each([
+    { name: "an abscissa not a number", text: { x: NaN } },
+    { name: "an ordinate not a number", text: { y: NaN } },
+    { name: "an infinite abscissa", text: { x: Infinity } },
+    { name: "an ordinate of −∞", text: { y: -Infinity } },
+  ])("[F05.AC5] refuses a position that is not finite: $name", ({ text }) => {
+    expect(isValidText({ ...HELLO, ...text })).toBe(false);
+  });
+
+  test.prop({
+    x: fc.double({ noDefaultInfinity: true, noNaN: true }),
+    y: fc.double({ noDefaultInfinity: true, noNaN: true }),
+  })("[F05.AC5] accepts every finite position", (position) => {
+    expect(isValidText({ ...HELLO, ...position })).toBe(true);
   });
 
   it.each([-100_000, 100_000])(
