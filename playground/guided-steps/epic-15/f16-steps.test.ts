@@ -252,8 +252,8 @@ describe("the guided test of F16 (VAL-016): the ways to type and pick a color", 
     // 192 (c0); blue 0.5, 127.5 → 128 (80).
     typeAndLeave("color-saturation-value", "50");
     expect(readValue("text-color")).toBe("#ffc080");
-    // B 50 with the exact S 127 / 255 and hue 60 · 64 / 127: red 127.5 → 80; green 96.0 → 60;
-    // blue 64.0 → 40.
+    // B 50 against #ff8000 read: S 50 held as typed, the exact hue 60 · 128 / 255: red 0.5,
+    // 127.5 → 128 (80); green 0.5 · (1 − 0.5 · 127 / 255), 95.75 → 96 (60); blue 0.25, 63.75 → 64 (40).
     typeAndLeave("color-level-value", "50");
     expect([readValue("text-color"), ...readPickerValues()]).toEqual(["#806040", "30", "50", "50"]);
   });

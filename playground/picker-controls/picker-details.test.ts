@@ -162,9 +162,28 @@ describe("Color picker: focus, keys, rounding and what it writes (US-035, audit,
     expect(readValue("text-color")).toBe("#123456");
   });
 
+  it("[F16.AC2] gives #336699 back when S goes to 50 then to 67, the value read (ADR-0059)", () => {
+    typeAndLeave("text-color", "#336699");
+
+    expect(
+      ["color-hue-value", "color-saturation-value", "color-level-value"].map((id) => readValue(id)),
+    ).toEqual(["210", "67", "60"]);
+
+    // S 50 with the exact 210° and 153 / 255: red 0.6 · 0.5 · 255 = 76.5 → 77 (4d); green
+    // 0.6 · (1 − 0.5 · 0.5) · 255 = 114.75 → 115 (73); blue 153 (99).
+    typeAndLeave("color-saturation-value", "50");
+    expect(readValue("text-color")).toBe("#4d7399");
+
+    // 67 is the value read from #336699: its exact 102 / 153 again. Rebuilt from #4d7399's exact
+    // values (ADR-0058's wording), 0.6 · 0.33 · 255 = 50.49 would give #326699.
+    typeAndLeave("color-saturation-value", "67");
+    expect(readValue("text-color")).toBe("#336699");
+  });
+
   it("holds the values typed, then shows the color's own hue in the other model: #7e7f80 at 210°", () => {
-    // 200° then 1 % give #fcfeff; 50 % with the exact 200° and 3 / 255: red 0.5 · 252 = 126 (7e),
-    // green 127 (7f), blue 127.5 → 128 (80). The picker holds the values typed, 200 among them.
+    // Against #ff8000 read: 200 then 1 typed give #fcfeff; 50 typed, the three values held as
+    // typed, HSB 200°, 1 %, 50 %: red 0.5 · 0.99, 126.2 → 126 (7e); green 0.5 · (1 − 0.01 / 3),
+    // 127.1 → 127 (7f); blue 127.5 → 128 (80). The picker holds the values typed, 200 among them.
     typeAndLeave("color-hue-value", "200");
     typeAndLeave("color-saturation-value", "1");
     typeAndLeave("color-level-value", "50");
