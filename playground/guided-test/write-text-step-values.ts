@@ -61,6 +61,25 @@ function writeTextBoxValues(document: Document, text: GuidedText): void {
 }
 
 /**
+ * Types a step's underline and strike-through colors into the Text tool's fields, without firing
+ * any event: each box "follows the text's color" ticked unless its color was chosen, then the
+ * color and the opacity it keeps (US-041).
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param text - the fields typed
+ * @see docs/backlog/stories/E15-F16-US-041-underline-and-strike-through-colors.md
+ */
+function writeTextStrokeColorValues(document: Document, text: GuidedText): void {
+  writeCheckedValue(document, "text-underline-follows", !text.hasUnderlineColor);
+  writeCheckedValue(document, "text-strike-follows", !text.hasStrikeThroughColor);
+  writeFieldValue(document, "text-underline-color", text.underlineColor);
+  writeFieldValue(document, "text-strike-color", text.strikeThroughColor);
+  writeInputValue(document, "text-underline-opacity", text.underlineOpacity);
+  writeInputValue(document, "text-strike-opacity", text.strikeThroughOpacity);
+}
+
+/**
  * Types a step's style into the Text tool's fields, without firing any event: underline,
  * strike-through and italic, then the font chosen in its list and the weight among the family's
  * faces (US-036), the bold button holding no weight before (US-037); the drawing's options off, as the page opens, so that the step draws as before
@@ -84,7 +103,7 @@ function writeTextStyleValues(document: Document, text: GuidedText): void {
 
 /**
  * Types a step's text into the Text tool's fields, its font and weight chosen in their lists
- * (US-036), its box's and its background's among them (VAL-015), the drawing's options off (US-036), and its X, Y and angle into the placement fields, without firing any event; the
+ * (US-036), its box's and its background's among them (VAL-015), its strokes' colors (US-041), the drawing's options off (US-036), and its X, Y and angle into the placement fields, without firing any event; the
  * placements each tool kept go, and the text last drawn (US-038), so that the step starts from
  * its own values (VAL-014).
  *
@@ -124,6 +143,7 @@ export function writeTextStepValues(document: Document, text: GuidedText): void 
   }
 
   writeTextBoxValues(document, text);
+  writeTextStrokeColorValues(document, text);
 
   // The keys of `TOOL_PLACEMENT`, the placements each tool kept.
   delete selectElement(document, "placement").dataset["textPlacement"];

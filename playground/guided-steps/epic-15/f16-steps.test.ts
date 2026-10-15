@@ -102,6 +102,32 @@ function readTextColor(): readonly string[] {
   return [readValue("text-color"), readValue("text-opacity")];
 }
 
+/**
+ * Reads the fill and the fill opacity of the text's strokes, its underline then its
+ * strike-through, on a text of one line.
+ *
+ * @returns each stroke's fill and fill opacity, joined by a space
+ */
+function readStrokeFills(): readonly string[] {
+  const group = selectPageElement("#canvas text").parentElement;
+
+  return [...(group?.querySelectorAll("path") ?? [])].map(
+    (path) => `${path.getAttribute("fill") ?? ""} ${path.getAttribute("fill-opacity") ?? ""}`,
+  );
+}
+
+/**
+ * Reads whether a check box is ticked.
+ *
+ * @param id - the box
+ * @returns whether it is ticked
+ */
+function isChecked(id: string): boolean {
+  const box = selectPageElement(`#${id}`);
+
+  return box instanceof HTMLInputElement && box.checked;
+}
+
 describe("the guided test of F16 (VAL-016): the ways to type and pick a color", () => {
   it("is the current guided test, and Next from F14's last step types F16's first", () => {
     openServedPage("");
@@ -557,6 +583,45 @@ describe("the guided test of F16 (VAL-016): its decisions, each with its example
 
     pressKey("#color-plane", "End");
     expect(readPickerValues()).toEqual(["210", "100", "60"]);
+  });
+
+  it("[F16.AC2] the underline's swatch opens the same picker; blue at 50 %, the strike-through the text's", () => {
+    openStep("The underline's and the strike-through's colors");
+    expect(readStrokeFills()).toEqual(["#1e293b 1", "#1e293b 1"]);
+    clickElement("text-underline-color-swatch");
+    chooseOption("color-model", "hsb");
+
+    expect(selectPageElement("#text-underline-color-message").nextElementSibling?.id).toBe(
+      "color-picker",
+    );
+
+    for (const [id, value] of [
+      ["color-hue-value", "240"],
+      ["color-saturation-value", "100"],
+      ["color-level-value", "100"],
+    ] as const) {
+      typeAndLeave(id, value);
+    }
+
+    // 100 · 100 / 200 = 50 %.
+    pressPointer("#color-opacity", "pointerdown", { buttons: 1, clientX: 100, clientY: 5 });
+    expect(readStrokeFills()).toEqual(["#0000ff 0.5", "#1e293b 1"]);
+    expect(isChecked("text-underline-follows")).toBe(false);
+  });
+
+  it("decision 21: the strokes follow the text until chosen; a chosen one kept when it turns green", () => {
+    openStep("The strokes follow the text until chosen (decision 21)");
+    expect(readStrokeFills()).toEqual(["#1e293b 1", "#1e293b 1"]);
+    typeAndLeave("text-strike-color", "#ff0000");
+
+    expect([isChecked("text-strike-follows"), ...readStrokeFills()]).toEqual([
+      false,
+      "#1e293b 1",
+      "#ff0000 1",
+    ]);
+
+    typeAndLeave("text-color", "#22c55e");
+    expect(readStrokeFills()).toEqual(["#22c55e 1", "#ff0000 1"]);
   });
 
   it("[F16.AC4] back to F14: the box, the yellow band, the letters #1e293b", () => {

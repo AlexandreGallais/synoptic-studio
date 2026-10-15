@@ -43,7 +43,7 @@
         width: 100%;
         height: 100%;
       }
-      /* A path without its own fill; a text's decorations carry the text's color (US-031). */
+      /* A path without its own fill; a text's strokes carry their own color (US-031, US-041). */
       #canvas path:not([fill]) {
         fill: var(--accent);
       }
@@ -599,7 +599,59 @@ Running</textarea>
           /></label>
         </div>
         <label><input id="text-underline" type="checkbox" /> Underline</label>
+        <div id="text-underline-color-fields" class="pair color-pair">
+          <button
+            id="text-underline-color-swatch"
+            class="swatch"
+            type="button"
+            aria-label="Pick the underline's color"
+            aria-expanded="false"
+            aria-controls="color-picker"
+            data-color="text-underline-color"
+            data-opacity="text-underline-opacity"
+            data-message="text-underline-color-message"
+            data-follows="text-underline-follows"
+          ></button>
+          <label
+            >Underline color <input id="text-underline-color" type="text" value="#1e293b"
+          /></label>
+          <label
+            >Underline opacity (%)
+            <input id="text-underline-opacity" type="number" min="0" max="100" step="1" value="100"
+          /></label>
+        </div>
+        <p id="text-underline-color-message" class="color-message" role="status"></p>
+        <label
+          ><input id="text-underline-follows" type="checkbox" checked /> Underline follows the
+          text's color</label
+        >
         <label><input id="text-strike" type="checkbox" /> Strike-through</label>
+        <div id="text-strike-color-fields" class="pair color-pair">
+          <button
+            id="text-strike-color-swatch"
+            class="swatch"
+            type="button"
+            aria-label="Pick the strike-through's color"
+            aria-expanded="false"
+            aria-controls="color-picker"
+            data-color="text-strike-color"
+            data-opacity="text-strike-opacity"
+            data-message="text-strike-color-message"
+            data-follows="text-strike-follows"
+          ></button>
+          <label
+            >Strike-through color <input id="text-strike-color" type="text" value="#1e293b"
+          /></label>
+          <label
+            >Strike-through opacity (%)
+            <input id="text-strike-opacity" type="number" min="0" max="100" step="1" value="100"
+          /></label>
+        </div>
+        <p id="text-strike-color-message" class="color-message" role="status"></p>
+        <label
+          ><input id="text-strike-follows" type="checkbox" checked /> Strike-through follows the
+          text's color</label
+        >
         <label
           >Case
           <select id="text-case">

@@ -124,4 +124,11 @@ export const GUIDED_STEPS_F16_OPTIONS: readonly GuidedStep[] = [
     title: "F16 · The background's color",
     values: createColorStepValues({ hasBackground: true }),
   },
+  {
+    explanation:
+      "Click the Underline color's swatch, Model HSB; H 240, S 100, B 100, each then Tab; click the opacity bar's middle.",
+    look: "The same picker under the underline's fields; the underline see-through blue, its box unticked, the strike-through still the text's.",
+    title: "F16 · The underline's and the strike-through's colors",
+    values: createColorStepValues({ isStruckThrough: true, isUnderlined: true }),
+  },
 ];
