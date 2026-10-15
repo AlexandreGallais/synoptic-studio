@@ -6,5 +6,8 @@ export type * from "./drawn-text";
 export * from "./is-line-with-length";
 export type * from "./line-decoration";
 export * from "./line-decorations";
+export type * from "./measured-text";
+export * from "./measured-text-drawing";
 export * from "./text-backgrounds";
 export * from "./text-drawing";
+export * from "./text-measure";

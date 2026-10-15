@@ -1,11 +1,19 @@
-import { createSvgElement, textDrawing } from "../../src";
+import { createSvgElement, measuredTextDrawing } from "../../src";
 import { createTextDocument, writeLeftOutFaces } from "../document";
 import { selectElement, writeText } from "../page";
 
 import { createTextFrame } from "./create-text-frame";
 import { writeTextStraightBox } from "./write-text-straight-box";
 
-import type { FontMetrics, Text } from "../../src";
+import type { FontMetrics, MeasuredText, Text } from "../../src";
+
+/** What a text is drawn from: the metrics of its face and what it measures. */
+type TextMeasures = {
+  /** The metrics of the face it is measured with. */
+  readonly metrics: FontMetrics;
+  /** Its lines shown and its block (`textMeasure`). */
+  readonly measured: MeasuredText;
+};
 
 /** Distance from the canvas top-left corner to the origin of the SVG, as for the shapes. */
 const MARGIN = 40;
@@ -25,13 +33,14 @@ const JSON_INDENT = 2;
  * @kind procedure
  * @param document - page document
  * @param text - a valid text
- * @param metrics - the metrics of the face it is measured with
+ * @param measures - the metrics of its face and its lines and block, drawn from once
+ * (`measuredTextDrawing`, US-048)
  * @see docs/backlog/stories/E15-F05-US-032-turn-a-text.md
  */
-export function showText(document: Document, text: Text, metrics: FontMetrics): void {
+export function showText(document: Document, text: Text, measures: TextMeasures): void {
   const { height, width } = selectElement(document, "canvas").getBoundingClientRect();
   const svg = createSvgElement(document, { height, width, x: -MARGIN, y: -MARGIN });
-  const drawn = textDrawing(metrics, text);
+  const drawn = measuredTextDrawing(measures.metrics, text, measures.measured);
   const written = createTextDocument(document, { drawn, text });
   const serializer = new XMLSerializer();
 
