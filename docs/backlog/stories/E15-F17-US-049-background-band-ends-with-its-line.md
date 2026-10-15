@@ -15,6 +15,8 @@ From the Product Owner's validation of E15 (2026-10-15): the band behind a wrapp
 
 Open for the Product Owner at the start of this story (`DERIV-text-box`, step 2): whether the last line's trailing spaces still place a right-aligned or centred line. Hanging, as CSS `white-space: normal`: "World " right-aligned in the box 50 sits at 8.219. Kept for placement: it sits at 3.773, a space's width from the edge. The band ends with "World" either way.
 
+Decided on 2026-10-16, provisional until VAL-018: the trailing spaces of a paragraph's last line are ignored for placing the line and for its band, as every other line's — "World " right-aligned in the box 50 sits at 8.219, its band ending with "World" (`DERIV-text-box`, step 2).
+
 ## Acceptance criteria
 
 - Given "Hello World " (a space at the end) in Arial 16 in a box 50 wide with a background, when drawn, then the band of "World" is 41.781 wide, not 46.227; with two spaces, never past the box; each band runs from the line's start to its last character other than a space, its ellipsis included.
@@ -32,5 +34,5 @@ Open for the Product Owner at the start of this story (`DERIV-text-box`, step 2)
 
 One task = one commit, referenced as `US-049.Tn`.
 
-- [ ] T1 — The band of a last line without its trailing spaces, the Product Owner's answer on placement written in `DERIV-text-box` step 2, with a test of the reproduced case (2 h)
+- [x] T1 — The band of a last line without its trailing spaces, the Product Owner's answer on placement written in `DERIV-text-box` step 2, with a test of the reproduced case (2 h)
 - [ ] T2 — Test card and guided step (1 h)

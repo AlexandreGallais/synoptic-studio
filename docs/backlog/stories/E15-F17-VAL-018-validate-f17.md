@@ -22,6 +22,7 @@ The agent's readings, written in `docs/domain/shapes.md` as provisional, for the
 | Story  | Reading                                                                                                                                                                                                                                                                      |
 | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | US-046 | an installed face the browser cannot give is said in the family's line as `<full name>: <Chrome's message> Import its file with Import a font`; a whole collection given for a face keeps the face of its PostScript name; an imported collection says its faces in one line |
+| US-049 | the trailing spaces of a paragraph's last line in a box are ignored for its placement and its background band, as every line's: "World " right-aligned in a box 50 (Arial 16) ends at the box's edge, x 8.219, its band ending with "World"                                  |
 | US-047 | a face the browser cannot load is said in one line, `<face> could not be loaded by the browser (<reason>): measured with it, drawn with another face.`                                                                                                                       |
 
 ## Tasks

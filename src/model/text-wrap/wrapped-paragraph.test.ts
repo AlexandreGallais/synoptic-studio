@@ -84,19 +84,24 @@ describe("wrappedParagraph (DERIV-text-box steps 1 to 4)", () => {
     ).toEqual(["Hello World", "Hello"]);
   });
 
-  it("keeps the spaces that open the paragraph and those that end it", () => {
-    // "  Hello" 2 × 569 + 4667 = 5805 units, 45.35156 ≤ 50; the last line keeps its spaces.
+  it("[F17.AC6] keeps the spaces that open the paragraph, and drops those that end it", () => {
+    // "  Hello" 2 × 569 + 4667 = 5805 units, 45.35156 ≤ 50; the last line loses its trailing
+    // spaces as every other line does (US-049).
     expect(wrappedParagraph(ARIAL_BOX_METRICS, "  Hello World  ", BOXED)).toEqual([
       "  Hello",
-      "World  ",
+      "World",
     ]);
   });
 
-  it("gives one empty line for an empty paragraph, and keeps a line of spaces", () => {
+  it("[F17.AC6] drops the space typed at the end of 'Hello World '", () => {
+    expect(wrappedParagraph(ARIAL_BOX_METRICS, "Hello World ", BOXED)).toEqual(["Hello", "World"]);
+  });
+
+  it("gives one empty line for an empty paragraph, and for a paragraph of spaces", () => {
     expect(wrappedParagraph(ARIAL_BOX_METRICS, "", BOXED)).toEqual([""]);
 
     expect(wrappedParagraph(ARIAL_BOX_METRICS, " ".repeat(4), { ...BOXED, boxWidth: 0 })).toEqual([
-      " ".repeat(4),
+      "",
     ]);
   });
 
@@ -143,14 +148,14 @@ describe("wrappedParagraph (DERIV-text-box steps 1 to 4)", () => {
   });
 
   test.prop(PARAGRAPH_IN_BOX)(
-    "[F14.AC1] gives back the paragraph joined, but for the spaces dropped at each wrap",
+    "[F14.AC1] gives back the paragraph joined, but for the spaces dropped at each wrap and at its end",
     (values) => {
       const lines = wrappedParagraph(ARIAL_BOX_METRICS, values.paragraph, boxedText(values));
       // Characters of the alphabet need no escape: the lines joined by any run of spaces.
-      const joined = new RegExp(`^${lines.join(" *")}$`, "u");
+      const joined = new RegExp(`^${lines.join(" *")} *$`, "u");
 
       expect(joined.test(values.paragraph)).toBe(true);
-      expect(lines.slice(0, -1).every((line) => !line.endsWith(" "))).toBe(true);
+      expect(lines.every((line) => !line.endsWith(" "))).toBe(true);
       expect(lines.slice(0, -1).every((line) => line !== "")).toBe(true);
     },
   );
