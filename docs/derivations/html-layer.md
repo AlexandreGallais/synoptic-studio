@@ -44,6 +44,14 @@ The `foreignObject` is therefore placed `k · G / 2` above the top of the librar
 
 **Its rectangle.** A text that fits its content: as wide as its block, as tall as its lines untrimmed, `n · L`. A text in a box: the box's rectangle, width and height unchanged, the whole rectangle raised by the shift, so that its bottom is `k · G / 2` above the box's: the browser's vertical alignment inside it then puts the lines where the library's are (bottom-aligned, the last baseline at the box's bottom less `k · (D + G)` in both).
 
+**In general** (EN-041). Both first baselines are written from where each block sits: the library's block of `n` lines, `h(n)` tall, lies `(H − h(n)) · v` down its frame (`DERIV-text-box`, step 8, `v` = 0, ½ or 1 for top, middle, bottom) and its first baseline `b` below its top (step 1, or `k · C` trimmed); the browser's block, untrimmed, `n · L` tall, lies `(H_l − n · L) · v` down the layer, `H_l` the layer's height, and its first baseline `b_css` (step 2) below its top. The layer's top is therefore
+
+```text
+y_l = y + (H − h(n)) · v + b − (H_l − n · L) · v − b_css
+```
+
+A text that fits its content has `H = h(n)` and `H_l = n · L`: both offsets vanish, and `y_l = y + b − b_css`, step 4's shift. In a box, `H = H_l`; untrimmed, `h(n) = n · L` and the offsets cancel, giving step 4's box raised by the shift; trimmed, `n · L − h(n) = L − k · C`, so `y_l = y + (L − k · C) · v + k · C − b_css`, which no longer depends on `n`: at the top, the trimmed shift of step 4; at the bottom, the layer is lowered by `L − b_css`, the room the browser leaves below its last baseline, so that both last baselines sit on the box's bottom.
+
 ## Cross-check
 
 Arial 16 (`u` = 2048, `A` = 1854, `D` = 434, `G` = 67, `k` = 0.0078125), automatic: `L = 0.0078125 · 2355 = 18.3984375` (as `DERIV-text-width`); the library's baseline at `0.0078125 · 1854 = 14.484375`; a browser's at `14.484375 + (18.3984375 − 17.875) / 2 = 14.484375 + 0.26171875 = 14.74609375`, `k · G / 2 = 0.0078125 · 33.5 = 0.26171875` lower, as step 4 says.
@@ -59,3 +67,4 @@ Arial 16 (`u` = 2048, `A` = 1854, `D` = 434, `G` = 67, `k` = 0.0078125), automat
 | "Hello" over "World", Arial 16, automatic, trimmed (`C` = 1467) | untrimmed baseline 14.484375, trimmed `0.0078125 · 1467 = 11.4609375`: 3.0234375, plus 0.26171875 | top 3.28515625 above the block's, height `2 · 18.3984375` = 36.796875                                                      |
 | the same, fitting its content, not trimmed                      | top `−0.26171875`, height `n · L`                                                                 | 41.78125 × 36.796875, bottom at 36.53515625                                                                                |
 | a box 50 × 40 at (0, 0), Arial 16, automatic                    | the box raised by 0.26171875                                                                      | `y` −0.26171875, 50 × 40, bottom 39.73828125; bottom-aligned, last baseline at `40 − 0.0078125 · 501` = 36.0859375 in both |
+| the same box, trimmed, bottom-aligned                           | `(18.3984375 − 11.4609375) · 1 + 11.4609375 − 14.74609375`                                        | `y` 3.65234375; both last baselines at 40 (the library's trimmed block, 29.859375 tall, from 10.140625)                    |
