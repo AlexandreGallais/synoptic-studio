@@ -4,5 +4,6 @@ Every critique the Product Owner makes of how the agent worked, written as soon 
 
 At each retrospective, the rows are grouped into the habits sheet of [Working with the agent](../playbook/agent.md#lessons-from-the-product-owner), then the log is emptied. E01's rows: [E01 retrospective](./retrospectives/E01-retrospective.md); E14's: [E14 retrospective](./retrospectives/E14-retrospective.md).
 
-| Date | What happened | What the agent should have done | Now prevented by |
-| ---- | ------------- | ------------------------------- | ---------------- |
+| Date       | What happened                                                                                            | What the agent should have done                                                                    | Now prevented by                                                                                                                            |
+| ---------- | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-10-15 | The session report restarted from zero at each Product Owner message, so 10 h 40 of work showed as 2.8 s | Report the whole session's duration, tokens, tool calls and commits, whoever sent the last message | Logged in the [improvement log](./improvements.md) for RET-003: cause to find in the scripts and the transcript, fix at E15's retrospective |
