@@ -8,7 +8,7 @@
 | [F04](./E01-F04-free-rotation-of-shapes.md)            | E01  | Free rotation of shapes                             | done        |
 | [F05](./E15-F05-text.md)                               | E15  | Text and its characters                             | in-progress |
 | [F14](./E15-F14-a-box-of-text.md)                      | E15  | A box of text                                       | in-progress |
-| [F16](./E15-F16-colors.md)                             | E15  | Colors and their pickers                            | draft       |
+| [F16](./E15-F16-colors.md)                             | E15  | Colors and their pickers                            | in-progress |
 | [F15](./E15-F15-fonts-and-html-layer.md)               | E15  | Fonts from files, embedded fonts and the HTML layer | draft       |
 | [F06](./E01-F06-polygon-stretched-to-its-box.md)       | E01  | Polygon stretched to fill its box                   | done        |
 | [F07](./E01-F07-polygon-aligned-in-its-box.md)         | E01  | Polygon aligned in its box                          | done        |
