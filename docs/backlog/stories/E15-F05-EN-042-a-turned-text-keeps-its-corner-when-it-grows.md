@@ -3,7 +3,7 @@ id: EN-042
 epic: E15
 feature: F05
 title: A turned text keeps its turned top-left corner when its block changes size
-status: ready
+status: done
 points: 2
 ---
 
@@ -25,5 +25,5 @@ Product Owner decision of 2026-10-15, from a try of the playground before VAL-01
 
 One task = one commit, referenced as `EN-042.Tn`.
 
-- [ ] T1 — The position of a turned text after its block or its box changes size, from the corner kept (`positionAfterResize`, or its shared core, `@see DERIV-turned-shape` step 5, ADR-0057); tests first, the hand-computed cases above, a property test: the corner does not move (2 h)
-- [ ] T2 — `isValidText` accepts a finite fractional position; the domain and F05's fifth criterion brought up to date; tests first (1 h)
+- [x] T1 — The position of a turned text after its block or its box changes size, from the corner kept (`positionAfterResize`, or its shared core, `@see DERIV-turned-shape` step 5, ADR-0057); tests first, the hand-computed cases above, a property test: the corner does not move (2 h)
+- [x] T2 — `isValidText` accepts a finite fractional position; the domain and F05's fifth criterion brought up to date; tests first (1 h)

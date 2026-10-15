@@ -120,7 +120,7 @@
 | [US-032](./E15-F05-US-032-turn-a-text.md)                                     | F05     | Turn a text and see its measured block                                          | done   |
 | [AUD-015](./E15-F05-AUD-015-audit-f05.md)                                     | F05     | Audit F05                                                                       | done   |
 | [US-037](./E15-F05-US-037-bold-gives-back-the-weight-and-no-sentence-case.md) | F05     | The bold button gives back the weight before, and sentence case removed         | done   |
-| [EN-042](./E15-F05-EN-042-a-turned-text-keeps-its-corner-when-it-grows.md)    | F05     | A turned text keeps its turned top-left corner when its block changes size      | ready  |
+| [EN-042](./E15-F05-EN-042-a-turned-text-keeps-its-corner-when-it-grows.md)    | F05     | A turned text keeps its turned top-left corner when its block changes size      | done   |
 | [US-038](./E15-F05-US-038-a-turned-text-grows-in-place.md)                    | F05     | A turned text grows along its direction and stays in place                      | ready  |
 | [VAL-014](./E15-F05-VAL-014-validate-f05.md)                                  | F05     | Validate F05                                                                    | ready  |
 | [SP-016](./E15-F14-SP-016-research-f14-text-box.md)                           | F14     | Research for F14: a box of text wrapped, cut with an ellipsis and aligned       | done   |
