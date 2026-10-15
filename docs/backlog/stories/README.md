@@ -149,7 +149,7 @@
 | [EN-040](./E15-F15-EN-040-fonts-embedded-once-per-document.md)                | F15     | Fonts embedded once per document as @font-face rules                            | done   |
 | [CHK-017](./E15-F15-CHK-017-checkpoint-f15.md)                                | F15     | Checkpoint in the middle of F15                                                 | done   |
 | [EN-041](./E15-F15-EN-041-the-html-layer-of-a-text.md)                        | F15     | The HTML layer of a text in a switch, over its positioned lines                 | done   |
-| [US-036](./E15-F15-US-036-fonts-embedding-and-html-layer.md)                  | F15     | Import or choose a font, embed it, and turn the HTML layer on                   | ready  |
+| [US-036](./E15-F15-US-036-fonts-embedding-and-html-layer.md)                  | F15     | Import or choose a font, embed it, and turn the HTML layer on                   | done   |
 | [AUD-018](./E15-F15-AUD-018-audit-f15.md)                                     | F15     | Audit F15                                                                       | ready  |
 | [VAL-017](./E15-F15-VAL-017-validate-f15.md)                                  | F15     | Validate F15                                                                    | ready  |
 | [NAM-001](./E15-NAM-001-naming-pass-e15.md)                                   | E15     | Naming pass over the code of E15                                                | draft  |
