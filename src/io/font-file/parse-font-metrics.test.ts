@@ -9,6 +9,7 @@ import {
   X_ADVANCE_ONLY,
   fontFile,
   gposTable,
+  headTable,
   hheaTable,
   kernTable,
   os2Table,
@@ -211,6 +212,34 @@ describe("parseFontMetrics (REF-OT-OTFF)", () => {
     });
 
     expect(parseFontMetrics(file, [65])).toMatchObject({ lineGap: -1, strikeoutPosition: -20 });
+  });
+
+  it("gives undefined for units per em outside 16 to 16 384 (REF-OT-HEAD)", () => {
+    // 0 would measure every text as Infinity, or NaN for an empty line: 10 584 × 16 / 0.
+    const metrics = [0, 15, 16, 16_384, 16_385].map((unitsPerEm) =>
+      parseFontMetrics(
+        fontFile(TRUE_TYPE_VERSION, { ...testFontTables(), head: headTable(unitsPerEm) }),
+        [65],
+      ),
+    );
+
+    expect(metrics.map((each) => each?.unitsPerEm)).toEqual([
+      undefined,
+      undefined,
+      16,
+      16_384,
+      undefined,
+    ]);
+  });
+
+  it("gives undefined for a font without any advance record (REF-OT-HMTX)", () => {
+    // numberOfHMetrics 0: no record whose advance the remaining glyphs take, every text 0 wide.
+    const file = fontFile(TRUE_TYPE_VERSION, {
+      ...testFontTables(),
+      hhea: hheaTable({ ascender: 800, descender: -200, lineGap: 90, numberOfHMetrics: 0 }),
+    });
+
+    expect(parseFontMetrics(file, [65])).toBeUndefined();
   });
 
   it("reads a file lying inside a larger buffer", () => {

@@ -1,4 +1,4 @@
-import { transpose } from "../../math";
+import { maximum, transpose } from "../../math";
 
 import { classesByCharacter } from "./classes-by-character";
 import { glyphPairKerning } from "./glyph-pair-kerning";
@@ -25,11 +25,11 @@ function valuesByClasses(
   leftClasses: readonly number[],
   rightClasses: readonly number[],
 ): readonly KerningRow[] {
-  const columns = Array.from({ length: Math.max(0, ...rightClasses) + 1 }, (unused, group) =>
+  const columns = Array.from({ length: maximum(rightClasses, 0) + 1 }, (unused, group) =>
     rightClasses.indexOf(group),
   );
 
-  return Array.from({ length: Math.max(0, ...leftClasses) + 1 }, (unused, group) => {
+  return Array.from({ length: maximum(leftClasses, 0) + 1 }, (unused, group) => {
     const row = rows[leftClasses.indexOf(group)];
 
     return columns.map((column) => row?.[column] ?? 0);

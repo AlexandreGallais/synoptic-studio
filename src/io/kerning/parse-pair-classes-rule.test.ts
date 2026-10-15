@@ -75,4 +75,19 @@ describe("parsePairClassesRule (REF-OT-GPOS)", () => {
 
     expect(parsePairClassesRule(viewOf(subtable), 0, GLYPHS)).toBeUndefined();
   });
+
+  it("reads records of no bytes as no kerning, without building a row per pair of classes", () => {
+    // valueFormat1, at 4, set to 0, valueFormat2 already 0: every Class2 record is 0 bytes, so
+    // any class counts fit; with 0xFFFF × 0xFFFF counts, at 12 and 14, a value per pair would be
+    // 4.3 × 10⁹ values. A covered first glyph still matches, with 0 (REF-OT-GPOS).
+    const subtable = pairPosFormat2(FIELDS);
+
+    subtable.splice(4, 2, 0, 0);
+    subtable.splice(12, 4, 0xff, 0xff, 0xff, 0xff);
+
+    const values = parsePairClassesRule(viewOf(subtable), 0, GLYPHS)?.values;
+
+    expect(values).toHaveLength(0xff_ff);
+    expect(values?.every((row) => row.length === 0)).toBe(true);
+  });
 });

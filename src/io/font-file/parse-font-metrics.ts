@@ -66,7 +66,8 @@ function parseKerningLookups(
  * @param view - the font file
  * @param tables - where its tables sit
  * @param glyphs - each character the font maps among those asked, and its glyph
- * @returns its metrics; undefined when a kerning table read passes its end
+ * @returns its metrics; undefined when a kerning table read passes its end, or when the font cannot
+ * measure a text (`parseFixedMetrics`)
  * @see REF-OT-OTFF
  */
 function glyphsToMetrics(
@@ -75,12 +76,13 @@ function glyphsToMetrics(
   glyphs: readonly CharacterGlyph[],
 ): FontMetrics | undefined {
   const lookups = parseKerningLookups(view, tables, glyphs);
+  const fixed = parseFixedMetrics(view, tables);
 
-  return lookups === undefined
+  return lookups === undefined || fixed === undefined
     ? undefined
     : {
         ...parseCharacterAdvances(view, tables, glyphs),
-        ...parseFixedMetrics(view, tables),
+        ...fixed,
         kerning: kerningOfCharacters(lookups, glyphs),
       };
 }
@@ -122,7 +124,8 @@ function tablesToMetrics(
  * @param file - the bytes of the font file
  * @param characters - the code points whose advances and kerning are kept
  * @returns its metrics; undefined for a file that is not a font, lacks a table measuring needs,
- * or holds a table too short for what it points to
+ * holds a table too short for what it points to, has units per em outside 16 to 16 384 or no
+ * advance record
  * @see REF-OT-OTFF
  */
 export function parseFontMetrics(

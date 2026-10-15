@@ -22,7 +22,8 @@ const FIELDS = {
 /**
  * Reads the kerning of each pair of classes of a PairPos format 2 subtable: Class1 records by
  * first class, each holding a Class2 record per second class, class 0 included; the first glyph's
- * `xAdvance` is the kerning.
+ * `xAdvance` is the kerning. Records of no bytes, both value formats 0, hold no kerning: each first
+ * class gets an empty row, read as 0, never a value per pair of classes, whatever the counts.
  *
  * @kind format
  * @param gpos - the `GPOS` table
@@ -37,7 +38,7 @@ function parseClassValues(gpos: DataView, subtable: number): readonly KerningRow
     valueFormatToSize(firstFormat) +
     valueFormatToSize(gpos.getUint16(subtable + FIELDS.valueFormat2));
   const firstCount = gpos.getUint16(subtable + FIELDS.class1Count);
-  const secondCount = gpos.getUint16(subtable + FIELDS.class2Count);
+  const secondCount = recordSize === 0 ? 0 : gpos.getUint16(subtable + FIELDS.class2Count);
   const records = subtable + FIELDS.class1Records;
 
   return isSpanWithin(records, recordSize * firstCount * secondCount, gpos.byteLength)

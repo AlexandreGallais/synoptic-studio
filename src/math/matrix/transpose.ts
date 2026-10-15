@@ -1,3 +1,5 @@
+import { maximum } from "../arithmetic";
+
 import type { MatrixRow } from "./matrix-row";
 
 /**
@@ -11,7 +13,12 @@ import type { MatrixRow } from "./matrix-row";
  * @see REF-MATHWORLD-TRANSPOSE
  */
 export function transpose(matrix: readonly MatrixRow[]): readonly MatrixRow[] {
-  return Array.from({ length: Math.max(0, ...matrix.map((row) => row.length)) }, (unused, column) =>
+  const columnCount = maximum(
+    matrix.map((row) => row.length),
+    0,
+  );
+
+  return Array.from({ length: columnCount }, (unused, column) =>
     matrix.map((row) => row[column] ?? 0),
   );
 }

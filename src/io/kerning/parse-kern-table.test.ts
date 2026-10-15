@@ -112,4 +112,26 @@ describe("parseKernTable (REF-OT-KERN)", () => {
 
     expect(parseKernTable(viewOf(twoAnnounced), GLYPHS)).toBeUndefined();
   });
+
+  it("gives undefined for a subtable shorter than its own header, never reading it twice", () => {
+    // Two subtables of A B −50; the first's length (at 4 + 2) set to 0, below its 6-byte header
+    // (the length includes the header, REF-OT-KERN): the walk would start the second subtable at
+    // the first's place again and count −50 twice, −100.
+    const pair = { coverage: 1, pairs: [{ left: 1, right: 2, value: -50 }] };
+    const table = kernTable([pair, pair]);
+    const shortened = [...table.slice(0, 6), ...uint16(5), ...table.slice(8)];
+    const empty = [...table.slice(0, 6), ...uint16(0), ...table.slice(8)];
+
+    expect(parseKernTable(viewOf(shortened), GLYPHS)).toBeUndefined();
+    expect(parseKernTable(viewOf(empty), GLYPHS)).toBeUndefined();
+  });
+
+  it("gives undefined at once when the table cannot hold the subtables announced", () => {
+    // 0xFFFF subtables announced in a table of 4 + 20 bytes: their 6-byte headers alone need
+    // 393 210 bytes; walking them one by one took seconds.
+    const table = kernTable([{ coverage: 1, pairs: [{ left: 1, right: 2, value: -50 }] }]);
+    const many = [...uint16(0), ...uint16(0xff_ff), ...table.slice(4)];
+
+    expect(parseKernTable(viewOf(many), GLYPHS)).toBeUndefined();
+  });
 });

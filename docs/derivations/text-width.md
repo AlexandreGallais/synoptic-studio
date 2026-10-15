@@ -18,11 +18,11 @@ Used by: F05 (EN-031, EN-032, US-031, ADR-0052), then F14 for wrapping. Sources:
 
 ## Step 1 — One glyph's advance in user units
 
-A character is drawn by its glyph `g(c)`, glyph 0 when the font has no glyph for it (`REF-OT-CMAP`). Its advance is read from `hmtx`, from the last record when the glyph's index is past `numberOfHMetrics` (`REF-OT-HMTX`). Font units are fractions of the em, `U` of them per em (`REF-OT-HEAD`), and the em is the text's size, so one font unit is `s / U` user units: the glyph advances `adv(g(c)) × s / U`.
+A character is drawn by its glyph `g(c)` (`REF-OT-CMAP`). A character the font has no glyph for is measured, by convention, with glyph 0 (`.notdef`): a CSS reader would draw it with the next family of the font list that has it (`REF-CSS-FONTS-4`, §2.1), so such a character's measure is a convention, not what a reader draws. Its advance is read from `hmtx`, from the last record when the glyph's index is past `numberOfHMetrics` (`REF-OT-HMTX`). Font units are fractions of the em, `U` of them per em (`REF-OT-HEAD`), and the em is the text's size, so one font unit is `s / U` user units: the glyph advances `adv(g(c)) × s / U`.
 
 ## Step 2 — The line without spacing
 
-Glyphs follow each other, each starting where the previous advance ends, so the line's width is the sum of the advances, plus the kerning of each adjacent pair, which adjusts "the advances of two glyphs in relation to one another" (`REF-OT-GPOS`; for a font whose `GPOS` table has no `kern` feature, the pairs of its `kern` table, whose subtables add up unless one overrides the value accumulated, `REF-OT-KERN`, as browsers do, `REF-CSS-FONTS-4`):
+Glyphs follow each other, each starting where the previous advance ends, so the line's width is the sum of the advances, plus the kerning of each adjacent pair, which adjusts "the advances of two glyphs in relation to one another" (`REF-OT-GPOS`; for a font whose `GPOS` table has no `kern` feature, the pairs of its `kern` table, whose subtables add up unless one overrides the value accumulated, `REF-OT-KERN`, as `REF-CSS-FONTS-4` allows a reader to do):
 
 ```text
 w₀ = (s / U) × ( Σᵢ₌₁ⁿ adv(g(cᵢ)) + Σᵢ₌₁ⁿ⁻¹ kern(g(cᵢ), g(cᵢ₊₁)) )
