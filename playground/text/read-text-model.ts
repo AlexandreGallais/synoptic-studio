@@ -2,6 +2,7 @@ import { TEXT_BOX_DEFAULTS } from "../../src";
 import { readNumber, selectElement } from "../page";
 import { readAngle } from "../position";
 
+import { readColorField } from "./read-color-field";
 import { readFieldValue } from "./read-field-value";
 import { readTextBoxOptions } from "./read-text-box-options";
 
@@ -52,7 +53,7 @@ export function readTextModel(document: Document): Text {
     ...readTextBoxOptions(document),
     alignment,
     angle: readAngle(document),
-    color: readFieldValue(document, "text-color"),
+    color: readColorField(document, "text-color"),
     content: readFieldValue(document, "text-content"),
     direction,
     fallback: FALLBACK,

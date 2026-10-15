@@ -181,7 +181,15 @@ describe("Text tool", () => {
       ["fill", "fill-opacity", "letter-spacing", "word-spacing"].map((name) =>
         readTextElement().getAttribute(name),
       ),
-    ).toEqual(["#FF0000", "0.4", "2", "-4"]);
+    ).toEqual(["#ff0000", "0.4", "2", "-4"]);
+  });
+
+  it("[F16.AC1] reads a color typed in upper case in lower case, as the model keeps it", () => {
+    typeValue("text-color", "#FF8000");
+
+    expect(readTextElement().getAttribute("fill")).toBe("#ff8000");
+    expect(readText("#model")).toContain('"color": "#ff8000"');
+    expect(selectPageElement("#text-color").getAttribute("aria-invalid")).not.toBe("true");
   });
 
   it("[F05.AC4] underlines and strikes each line through with paths in the text's color", () => {
