@@ -111,7 +111,7 @@ export const GUIDED_STEPS_F05_OPTIONS: readonly GuidedStep[] = [
   },
   {
     explanation: "Nothing to type: the text turned by 30.",
-    look: "The frame is dashed like a shape's straight box and turns with the letters. Reads well?",
+    look: "The frame turns with the letters, thin and blue as a turned shape's box, an upright dashed box around it (US-050).",
     title: "F05 · The dashed frame",
     values: createTextStepValues({ angle: 30 }),
   },
