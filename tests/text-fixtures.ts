@@ -66,6 +66,31 @@ export const ARIAL_METRICS: FontMetrics = {
 /** The same metrics without kerning: the derivation's widths "without kerning". */
 export const ARIAL_UNKERNED: FontMetrics = { ...ARIAL_METRICS, kerning: NO_KERNING };
 
+/**
+ * Arial's measured part without kerning, with the advances `DERIV-text-box` adds for its boxes:
+ * `-` 682, `.` 569, `0` and `1` 1139, `P` 1366, `g` 1139, `i` 455, `m` 1706, `n` 1139, `p` 1139,
+ * `s` 1024, `u` 1139, and the ellipsis `…` 2048, read from the same file.
+ */
+export const ARIAL_BOX_METRICS: FontMetrics = {
+  ...ARIAL_UNKERNED,
+  advances: {
+    ...ARIAL_METRICS.advances,
+    45: 682,
+    46: 569,
+    48: 1139,
+    49: 1139,
+    80: 1366,
+    103: 1139,
+    105: 455,
+    109: 1706,
+    110: 1139,
+    112: 1139,
+    115: 1024,
+    117: 1139,
+    8230: 2048,
+  },
+};
+
 /** "Hello World" in Inter 16, regular, black, without spacing, at the origin. */
 export const HELLO_TEXT: Text = {
   alignment: "left",
