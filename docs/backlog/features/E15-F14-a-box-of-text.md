@@ -2,7 +2,7 @@
 id: F14
 epic: E15
 title: A box of text
-status: draft
+status: in-progress
 ---
 
 # E15 · F14 — A box of text

@@ -43,7 +43,7 @@ Decided by the Product Owner on 2026-10-12: text is too large a subject for one 
 | Feature                                                                                                  | Status      |
 | -------------------------------------------------------------------------------------------------------- | ----------- |
 | [F05](../features/E15-F05-text.md) — Text and its characters                                             | in-progress |
-| [F14](../features/E15-F14-a-box-of-text.md) — A box of text                                              | draft       |
+| [F14](../features/E15-F14-a-box-of-text.md) — A box of text                                              | in-progress |
 | [F16](../features/E15-F16-colors.md) — Colors and their pickers                                          | draft       |
 | [F15](../features/E15-F15-fonts-and-html-layer.md) — Fonts from files, embedded fonts and the HTML layer | draft       |
 
