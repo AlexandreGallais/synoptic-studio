@@ -13,6 +13,8 @@ describe("roundedQuotient (DERIV-color-spaces, step 2)", () => {
     { dividend: 20_400, divisor: 255, expected: 80 },
     // 7 / 2 = 3.5, a tie rounded up.
     { dividend: 7, divisor: 2, expected: 4 },
+    // −7 / 2 = −3.5, a tie rounded up, toward +∞: ⌊(−14 + 2) / 4⌋ = −3.
+    { dividend: -7, divisor: 2, expected: -3 },
     // −5 / 2 = −2.5, a tie rounded up, toward +∞.
     { dividend: -5, divisor: 2, expected: -2 },
     // 1 / 3 = 0.33…, 2 / 3 = 0.66….
