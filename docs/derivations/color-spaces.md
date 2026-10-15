@@ -135,6 +135,14 @@ S = 100 · x / w,   L or V = 100 · (1 − y / h)
 
 CSS's tables list the saturation from 100 % down to 0 % across; the plane takes the increasing order for both models, one convention (provisional, VAL-016).
 
+The same convention reads a slider `w` long holding values from 0 to `M`, its left end at 0: the point at `x` stands for `M · x / w`, the hue slider's `M` being 360° (a hue of 360 is shown 0.0, step 9) and the opacity's 100 %. The plane is two such sliders: `S` across, and `L` or `V` from the bottom edge, at the height `h − y`, so `100 · (h − y) / h`, the line above. Solving each line for its position gives where a value sits, for the marks the picker draws:
+
+```text
+x = w · v / M,   x = w · S / 100,   y = h − h · (L or V) / 100
+```
+
+The multiplication comes first, as for the stretched shapes (`DERIV-free-shape-stretch`). A point beyond an edge, during a drag, counts at that edge, and a slider not laid out yet (`w = 0`) holds 0 (US-035, provisional, VAL-016). The middle of the right edge of a plane 200 × 100 is `S = 100 · 200 / 200 = 100 %`, `V = 100 · 50 / 100 = 50 %`; at the hue 210° in HSB it is `#004080` (step 6: red 0, green `0.5 − 0.5 · 0.5 = 0.25`, 63.75 gives 64, blue 127.5 gives 128).
+
 ## Cross-check
 
 A script written at SP-017 (Node.js, binary64) converted each of the 16 777 216 colors: the hue, HSL and HSL back by the sample code of `REF-CSS-COLOR-4` §7.2 and §7.1 (without its `1e−5` threshold, a grey's hue 0), HSB and HSB back by the formulas of `REF-WIKI-HSL-HSV`, the values rounded by `Math.round(x · 10ᵈ) / 10ᵈ` and a hue of 360 written 0, each byte by `Math.round`; unrounded and rounded to 0, 1 and 2 decimals, and gave the counts of step 9 and the bounds of step 8; it also checked the 101 percents of step 2. At EN-038 the library's own functions (`rgbToHsl`, `rgbToHsb`, `hslToRgb`, `hsbToRgb`, `toShownHsl`, `toShownHsb`, `fractionToByte`) ran over every color once, unrounded and to one decimal, in HSL and in HSB: 0 colors changed in each of the four runs, about 13 to 17 s each. That is too slow for every test run, so the tests run a sample with the same functions: one color in 31 (31 is prime to 256, so every byte of every component is drawn) and every color with two equal components, where the hue changes sector, about 735 000 colors, each round trip a test of its own taking about 1.3 to 1.8 s, about 3 s for each model under coverage; a property test draws any color besides.
@@ -159,3 +167,5 @@ A script written at SP-017 (Node.js, binary64) converted each of the 16 777 216 
 | byte 236 to a percent          | `⌊(47 200 + 255) / 510⌋ = ⌊93.05⌋`                                                      | 93 %                            |
 | every percent 0 to 100         | percent → byte → percent                                                                | the same percent                |
 | every color, one decimal shown | step 9                                                                                  | the same hexadecimal            |
+| plane 200 × 100 at (200, 50)   | step 10: `S = 100 · 200 / 200`, `V = 100 · (100 − 50) / 100`; HSB at 210°               | 100 %, 50 %, `#004080`          |
+| hue slider 200 long at 100     | step 10: `360 · 100 / 200`                                                              | 180°                            |
