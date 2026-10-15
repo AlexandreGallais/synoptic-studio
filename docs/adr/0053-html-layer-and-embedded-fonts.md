@@ -1,6 +1,6 @@
 # ADR-0053 — The HTML layer of a text and its embedded fonts (`switch`, `foreignObject`, `style`)
 
-**Status**: Accepted (agent, SP-018, 2026-10-15, from the Product Owner's decisions of F05's refinement, round 2: an HTML layer for browsers on top of the positioned lines, an option that embeds a font in a symbol or once in a synoptic view, no text converted to paths; provisional, to confirm by the Product Owner at VAL-017). Number reserved by ADR-0052, decision 8. Adds `switch`, `foreignObject` and `style` to the SVG elements allowed (ADR-0002, ADR-0052, decision 7), each in one place only.
+**Status**: Accepted (agent, SP-018, 2026-10-15, from the Product Owner's decisions of F05's refinement, round 2: an HTML layer for browsers on top of the positioned lines, an option that embeds a font in a symbol, and once in a synoptic view — the views come with E08 —, no text converted to paths; provisional, to confirm by the Product Owner at VAL-017). Number reserved by ADR-0052, decision 8. Adds `switch`, `foreignObject` and `style` to the SVG elements allowed (ADR-0002, ADR-0052, decision 7), each in one place only.
 
 ## Context
 
@@ -10,11 +10,11 @@
 
 ## Decision
 
-1. **The HTML layer**, an option of a document (a symbol or a view), off unless turned on: each text is written as one `switch` holding, in this order,
+1. **The HTML layer**, an option of a document (a symbol; a synoptic view with E08), off unless turned on: each text is written as one `switch` holding, in this order,
    - a `foreignObject` with `requiredExtensions="http://www.w3.org/1999/xhtml"`, at the text's block (or box), holding one XHTML `div` with the text's content and the CSS of its options (EN-041);
-   - the text's group as ADR-0052, ADR-0054 and ADR-0055 write it, unchanged: its background, `<text>`, lines and decorations.
-     A browser draws the first, every other reader the second. The `switch` sits inside the group that turns the text, so that both turn alike.
-2. **Embedded fonts**, an option of a document, off unless turned on: one `<style>` inside the document's `<defs>`, holding one `@font-face` per face used — family name, weight, style, `src: url(data:font/ttf;base64,…) format("truetype")` (`font/otf` and `"opentype"` for a CFF file), no `local()` — each face once, whatever the number of its texts (`DERIV-font-embedding`, step 7). A face whose `fsType` does not permit embedding is not written, and the editor says so (`DERIV-font-embedding`, step 3). A face whose file the editor does not hold is not written either: the library ships Inter's metrics, not its files, so Inter, whose licence allows embedding (`REF-INTER-LICENSE`), is embedded once its file is imported.
+   - the text's group as ADR-0052, ADR-0054 and ADR-0055 write it — its background, `<text>`, lines and decorations — without its `transform`.
+     A browser draws the first, every other reader the second. With the layer on, an outer `g` carries the text's turn (`rotate(α cx cy)`, ADR-0055) and holds the `switch`; the `switch`'s second child is the text's group with the same content and no `transform`, so that both children turn alike. With the layer off, the text is written exactly as before.
+2. **Embedded fonts**, an option of a document, off unless turned on: one `<style>` inside the document's `<defs>`, holding one `@font-face` per face used — family name, weight, style, `src: url(data:font/ttf;base64,…) format("truetype")` (for a file with CFF outlines, `font/otf` and `"opentype"`, the agent's choice among the synonyms of `REF-CSS-FONTS-4`, §11.2, where `font/otf` and `font/ttf` both name OpenType), no `local()` — each face once, whatever the number of its texts (`DERIV-font-embedding`, step 7). A face whose `fsType` does not permit embedding is not written, and the editor says so (`DERIV-font-embedding`, step 3). A face whose file the editor does not hold is not written either: the library ships Inter's metrics, not its files, so Inter, whose licence allows embedding (`REF-INTER-LICENSE`), is embedded once its file is imported.
 3. **Allowed SVG elements**: `svg`, `g`, `path`, `text`, `tspan`, `defs`, and
    - `style`, only inside `defs`, holding only `@font-face` rules;
    - `switch`, only around one text, its first child the HTML layer and its second the text's group;
