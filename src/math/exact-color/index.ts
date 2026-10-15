@@ -1,10 +1,9 @@
 export type * from "./byte-rgb";
 export type * from "./exact-color";
 export * from "./exact-hsb";
+export * from "./exact-hsb-component";
 export * from "./exact-hsl";
+export * from "./exact-hsl-component";
 export * from "./exact-hue";
-export * from "./hsb-component-in-tenths";
-export * from "./hsl-component-in-tenths";
 export type * from "./integer-ratio";
 export * from "./saturation-ratio";
-export type * from "./tenths-color";
