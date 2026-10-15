@@ -2,7 +2,7 @@
 id: F15
 epic: E15
 title: Fonts from files, embedded fonts and the HTML layer
-status: draft
+status: in-progress
 ---
 
 # E15 · F15 — Fonts from files, embedded fonts and the HTML layer
