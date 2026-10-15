@@ -20,7 +20,11 @@ Refined with F05 on 2026-10-14 (its rounds 1 and 2); its stories are written by 
 
 ## Stories
 
-Written by its research spike.
+In delivery order.
+
+| ID                                                         | Type  | Title                                                                  | Status      |
+| ---------------------------------------------------------- | ----- | ---------------------------------------------------------------------- | ----------- |
+| [SP-017](../stories/E15-F16-SP-017-research-f16-colors.md) | Spike | Research for F16: colors in hexadecimal, HSL and HSB, and their picker | in-progress |
 
 ## Left for later
 
