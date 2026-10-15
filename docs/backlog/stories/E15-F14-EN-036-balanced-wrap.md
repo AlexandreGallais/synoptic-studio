@@ -3,7 +3,7 @@ id: EN-036
 epic: E15
 feature: F14
 title: A balanced wrap that evens the lines' lengths
-status: ready
+status: done
 points: 2
 ---
 
