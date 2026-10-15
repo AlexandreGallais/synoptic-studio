@@ -12,5 +12,6 @@ export * from "./selection";
 export * from "./shape";
 export * from "./text";
 export * from "./text-block";
+export * from "./text-box";
 export * from "./text-case";
 export * from "./text-drawing";
