@@ -3,7 +3,7 @@ import {
   applyPickedColor,
   readPickedColor,
   showColorPicker,
-  updateColorPicker,
+  showModelChosen,
 } from "../color-picker";
 import { readNumber, selectElement } from "../page";
 
@@ -67,7 +67,7 @@ function applyTypedValue(document: Document, field: ValueField, update: () => vo
  * Listens to the picker's values: a number typed in the hue, the saturation or the lightness or
  * brightness sets it, the color following (`applyPickedColor`), and a field left empty shows its
  * value again; another model chosen shows the color's values in it, the hue kept
- * (`updateColorPicker`).
+ * (`showModelChosen`).
  *
  * @kind procedure
  * @param document - page document
@@ -82,6 +82,6 @@ export function listenToPickerValues(document: Document, update: () => void): vo
   }
 
   selectElement(document, "color-model").addEventListener("change", () => {
-    updateColorPicker(document);
+    showModelChosen(document);
   });
 }

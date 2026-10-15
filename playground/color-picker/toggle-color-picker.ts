@@ -3,8 +3,9 @@ import { openColorPicker } from "./open-color-picker";
 import { readOpenSwatch } from "./read-open-swatch";
 
 /**
- * Opens a swatch's picker on a click, or closes it on a second click (`REF-FIGMA-COLOR-PICKER`;
- * `docs/domain/interaction.md` §5).
+ * Opens a swatch's picker on a click, as Figma's opens on a click on the fill swatch
+ * (`REF-FIGMA-COLOR-PICKER`), or closes it on a second click (`docs/domain/interaction.md` §5,
+ * provisional).
  *
  * @kind procedure
  * @param document - page document
