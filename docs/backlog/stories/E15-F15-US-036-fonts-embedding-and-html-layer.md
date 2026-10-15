@@ -3,7 +3,7 @@ id: US-036
 epic: E15
 feature: F15
 title: Import or choose a font, embed it, and turn the HTML layer on
-status: ready
+status: done
 points: 5
 ---
 
