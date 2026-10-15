@@ -100,7 +100,7 @@ A block taller than the box (one line in a box shorter than it) has negative roo
 ## Step 9 — The balanced wrap
 
 > [!NOTE]
-> The balanced wrap was removed by the Product Owner at VAL-015 (2026-10-15): lines always wrap automatically; US-043 removes it, this step kept as a record.
+> The balanced wrap was removed by the Product Owner at VAL-015 (2026-10-15): lines always wrap automatically. US-043 removed it from the library; this step is kept as a record, with the balanced examples below.
 
 With `balance`, "line breaks are chosen to balance the remaining (empty) space in each line box", without changing the number of lines (for 5 or fewer, "must not"); balance is measured by "the standard deviation from the average inline-size of the remaining space in each line box … (including lines that end in a forced line break)", each paragraph "processed separately", and "the exact algorithm is UA-defined" (`REF-CSS-TEXT-4`, §5.4).
 

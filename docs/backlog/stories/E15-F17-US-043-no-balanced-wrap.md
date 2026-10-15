@@ -3,7 +3,7 @@ id: US-043
 epic: E15
 feature: F17
 title: The balanced wrap removed, lines always wrapped automatically
-status: ready
+status: done
 points: 2
 ---
 
@@ -30,5 +30,5 @@ From the Product Owner's validation of E15 (2026-10-15): the balanced wrap is re
 
 One task = one commit, referenced as `US-043.Tn`.
 
-- [ ] T1 — The balanced wrap removed from the library (EN-036's code) with its tests (2 h)
-- [ ] T2 — The playground's option and guided steps removed; `shapes.md`, `DERIV-text-box` and F14's criterion 3 updated (2 h)
+- [x] T1 — The balanced wrap removed from the library (EN-036's code) with its tests (2 h)
+- [x] T2 — The playground's option and guided steps removed; `shapes.md`, `DERIV-text-box` and F14's criterion 3 updated (2 h)
