@@ -4,14 +4,14 @@
 
 A text can now use any font of the computer: a `.ttf` or `.otf` file imported, or, in Chrome and Edge, a font installed, read once its family is chosen. The text is measured with that font's own numbers, as with Inter. An option of the drawing goes further: **Embed fonts** writes each face used into the SVG, so that it carries its fonts. **Export SVG** saves the drawing as `drawing.svg`. The **HTML layer**, a second copy of each text for browsers, was removed at the validation (ADR-0060, US-044): it brought no speed, and served only scripts that industrial views do not use; every reader now draws the same positioned lines.
 
-| Part                | What it does                                                                                                          |
-| ------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| **Font** list       | the families the editor measures: Inter first, then those imported, then the installed ones; no name typed            |
-| **Import a font**   | reads `.ttf` and `.otf` files, chooses the family at once and says it: “Arial 400 imported.”; a file refused says why |
-| **Installed fonts** | in Chrome and Edge, after a permission, lists the computer's families; a family's files are read when it is chosen    |
-| **Weight** list     | only the weights the family has: Arial gives 400 Regular and 700 Bold                                                 |
-| **Embed fonts**     | each face used written once, the whole file, in the SVG's `<defs>`; the faces left out listed with their reason       |
-| **Export SVG**      | saves `drawing.svg`, without the dashed selection frame                                                               |
+| Part                | What it does                                                                                                                                                         |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Font** list       | the families the editor measures: Inter first, then those imported, then the installed ones; no name typed                                                           |
+| **Import a font**   | reads `.ttf` and `.otf` files, chooses the family at once and says it: “Arial 400 imported.”; a file refused says why                                                |
+| **Installed fonts** | in Chrome and Edge, after a permission, lists the computer's families; a family's files are read when it is chosen                                                   |
+| **Weight** list     | only the weights the family has: Arial gives 400 Regular and 700 Bold                                                                                                |
+| **Embed fonts**     | each face used written once, the whole file, in the `<defs>` of the file exported, never the drawing on screen (US-045); the faces left out listed with their reason |
+| **Export SVG**      | saves `drawing.svg`, without the dashed selection frame                                                                                                              |
 
 Rules: [domain, "Text"](../domain/shapes.md#text) (Fonts from files, Embedded fonts); formulas: [`DERIV-font-embedding`](../derivations/font-embedding.md), [`DERIV-html-layer`](../derivations/html-layer.md), kept as a record; decisions: [ADR-0053](../adr/0053-html-layer-and-embedded-fonts.md), [ADR-0060](../adr/0060-no-html-layer-and-fonts-embedded-at-export.md); research: [note 0020](../research/notes/0020-f15-fonts-and-html-layer.md).
 
