@@ -38,6 +38,18 @@ describe("htmlLayerFrame (DERIV-html-layer, step 4 and checks)", () => {
     });
   });
 
+  it("[F15.AC3] places the layer at the text's x, its y raised", () => {
+    // At (47, 61): y 61 − 0.26171875 = 60.73828125.
+    expect(frameOf({ ...HELLO_WORLD, x: 47, y: 61 })).toEqual({
+      height: 36.796875,
+      width: 41.78125,
+      x: 47,
+      y: 60.73828125,
+    });
+
+    expect(frameOf({ ...BOXED, x: -12, y: 5 }).x).toBe(-12);
+  });
+
   it("[F15.AC3] raises Arial 160 by 2.6171875", () => {
     // 0.078125 · 33.5 = 2.6171875.
     expect(frameOf({ ...HELLO_WORLD, size: 160 }).y).toBeCloseTo(-2.6171875, 12);

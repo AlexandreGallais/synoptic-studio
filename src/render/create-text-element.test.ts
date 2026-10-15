@@ -182,6 +182,13 @@ describe("createTextElement (ADR-0052)", () => {
       expect(drawn.querySelector("path")?.getAttribute("transform")).toBeNull();
     });
 
+    it("[F14.AC4] draws one <path> for a single line", () => {
+      const one = { ...highlighted, content: "Hello" };
+      const oneGroup = createTextElement(document, one, textDrawing(DECORATED_METRICS, one));
+
+      expect(oneGroup.querySelectorAll("path")).toHaveLength(1);
+    });
+
     it("[F14.AC4] draws no <path> when no line has a length", () => {
       const blank = { ...highlighted, content: "\n" };
       const blankGroup = createTextElement(document, blank, textDrawing(DECORATED_METRICS, blank));

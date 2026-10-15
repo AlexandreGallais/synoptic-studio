@@ -74,8 +74,11 @@ describe("isValidTextDecorations (US-041)", () => {
     (key) => {
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- a value read from outside the type
       const text = { ...CHOSEN, [key]: "yes" as unknown as boolean };
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- a value read from outside the type
+      const missing = { ...CHOSEN, [key]: undefined as unknown as boolean };
 
       expect(isValidTextDecorations(text)).toBe(false);
+      expect(isValidTextDecorations(missing)).toBe(false);
     },
   );
 

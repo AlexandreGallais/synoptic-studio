@@ -25,7 +25,7 @@ One task = one commit, referenced as `VAL-015.Tn`.
 
 ## Guided test (T1)
 
-41 steps at `http://localhost:5173`, also after F05's at `?guide=epic` (steps 124 to 164): one line to do, one to look at, Next typing the values. `playground/guided-steps/epic-15/f14-steps.test.ts` checks each step end to end. The playground measures Inter only, so the steps give each example in Inter 16; the table below keeps Arial 16, as the derivation and the tests do.
+41 steps at `http://localhost:5173`, also after F05's at `?guide=epic` (steps 124 to 164): one line to do, one to look at, Next typing the values. `playground/guided-steps/epic-15/f14-steps.test.ts` checks each step end to end. The steps give each example in Inter 16, whose metrics ship with the library; the table below keeps Arial 16, as the derivation and the tests do.
 
 | Steps | What                                                                                                                                                                                                     |
 | ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

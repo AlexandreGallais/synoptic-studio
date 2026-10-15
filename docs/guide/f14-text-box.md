@@ -56,7 +56,7 @@ Rules: [domain, "Text"](../domain/shapes.md#text); formulas: [`DERIV-text-box`](
 
 ## How to try it
 
-Install Inter 4.1 first, as for F05. Then `npm run dev` and `http://localhost:5173`: 39 steps, each one line to do and one to look at; **Next** types the text and its box. At the epic review they come back as steps 123 to 161 of `?guide=epic`. The playground measures Inter only, so the examples are in Inter 16.
+Install Inter 4.1 first, as for F05. Then `npm run dev` and `http://localhost:5173`: 41 steps, each one line to do and one to look at; **Next** types the text and its box. At the epic review they come back as steps 124 to 164 of `?guide=epic`. The steps give each example in Inter 16, whose metrics ship with the library.
 
 | Steps | What                                                                                                                                                                      |
 | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -65,36 +65,38 @@ Install Inter 4.1 first, as for F05. Then `npm run dev` and `http://localhost:51
 | 14–15 | turned about the box's middle, values refused                                                                                                                             |
 | 16    | back to Fit content: the text draws as in F05                                                                                                                             |
 | 17–38 | the 22 decisions below, one step each with its example                                                                                                                    |
-| 39    | back to the rectangle, drawn as before                                                                                                                                    |
+| 39    | a turned box resized in place, its turned top-left corner kept (ADR-0057, US-038)                                                                                         |
+| 40    | a turned box's straight box, upright, with its x, y, width and height (US-039)                                                                                            |
+| 41    | back to the rectangle, drawn as before                                                                                                                                    |
 
 ## Decided by the agent, to confirm
 
 Each is built as written and shown by its step; the full list, with its examples in Arial 16, is in [VAL-015](../backlog/stories/E15-F14-VAL-015-validate-f14.md#decisions-to-confirm).
 
-| #   | Question                            | As built                                                                             | Step |
-| --- | ----------------------------------- | ------------------------------------------------------------------------------------ | ---- |
-| 1   | Box size                            | integers from 0 to 100 000                                                           | 17   |
-| 2   | Spaces opening a paragraph          | kept with its first word: " Hello" over "World"                                      | 18   |
-| 3   | A word too long, broken             | on its own line, broken without a hyphen; the next word may join its last part       | 19   |
-| 4   | A word too long, moved whole        | on its own line, cut with "…", or whole and overflowing without the ellipsis         | 20   |
-| 5   | No-break space                      | no line ends after it                                                                | 21   |
-| 6   | A box shorter than a line           | one line shown at least; max lines from 0 (none) to 100 000                          | 22   |
-| 7   | The ellipsis                        | an option, on by default                                                             | 23   |
-| 8   | What the ellipsis removes           | characters, not whole words: "Hell…" in a box 50                                     | 24   |
-| 9   | One character wider than the box    | no ellipsis                                                                          | 25   |
-| 10  | Empty lines left out                | no ellipsis                                                                          | 26   |
-| 11  | Even "H…" too wide                  | drawn past the box's edge; or draw only what fits, or nothing                        | 27   |
-| 12  | Line height                         | 0 automatic, or 1 to 100 000, the room spread half above, half below                 | 28   |
-| 13  | Balanced wrap                       | the most even lines, the later break on a tie                                        | 29   |
-| 14  | Balance and a cut                   | a text cut keeps its automatic lines                                                 | 30   |
-| 15  | The "pretty" wrap style             | not built: keep it for later, or drop it                                             | 31   |
-| 16  | Options of every text               | line height, trim and background for every text; the others in a box only            | 32   |
-| 17  | Defaults                            | fit content, automatic line height, no trim, no background, ellipsis on; a box 0 × 0 | 33   |
-| 18  | The background's height             | the content area, from the ascender to the descender                                 | 34   |
-| 19  | Bands under a line height or a trim | still from the ascender to the descender, so a band may rise above the box           | 35   |
-| 20  | Overlapping bands                   | one path, the overlap filled once                                                    | 36   |
-| 21  | The turn of a text in a box         | about the box's middle (ADR-0055, decision 3, to amend)                              | 37   |
-| 22  | Other no-break characters           | only U+00A0 holds a line; U+202F, U+2007 and U+2060 may end one                      | 38   |
+| #   | Question                            | As built                                                                                                    | Step |
+| --- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------- | ---- |
+| 1   | Box size                            | integers from 0 to 100 000                                                                                  | 17   |
+| 2   | Spaces opening a paragraph          | kept with its first word: " Hello" over "World"                                                             | 18   |
+| 3   | A word too long, broken             | on its own line, broken without a hyphen; the next word may join its last part                              | 19   |
+| 4   | A word too long, moved whole        | on its own line, cut with "…", or whole and overflowing without the ellipsis                                | 20   |
+| 5   | No-break space                      | no line ends after it                                                                                       | 21   |
+| 6   | A box shorter than a line           | one line shown at least; max lines from 0 (none) to 100 000                                                 | 22   |
+| 7   | The ellipsis                        | an option, on by default                                                                                    | 23   |
+| 8   | What the ellipsis removes           | characters, not whole words: "Hell…" in a box 50                                                            | 24   |
+| 9   | One character wider than the box    | no ellipsis                                                                                                 | 25   |
+| 10  | Empty lines left out                | no ellipsis                                                                                                 | 26   |
+| 11  | Even "H…" too wide                  | drawn past the box's edge; or draw only what fits, or nothing                                               | 27   |
+| 12  | Line height                         | 0 automatic, or 1 to 100 000, the room spread half above, half below                                        | 28   |
+| 13  | Balanced wrap                       | the most even lines, the later break on a tie                                                               | 29   |
+| 14  | Balance and a cut                   | a text cut keeps its automatic lines                                                                        | 30   |
+| 15  | The "pretty" wrap style             | not built: keep it for later, or drop it                                                                    | 31   |
+| 16  | Options of every text               | line height, trim and background for every text; the others in a box only                                   | 32   |
+| 17  | Defaults                            | fit content, automatic line height, no trim, no background, ellipsis on; a box 0 × 0                        | 33   |
+| 18  | The background's height             | the content area, from the ascender to the descender                                                        | 34   |
+| 19  | Bands under a line height or a trim | still from the ascender to the descender, so a band may rise above the box                                  | 35   |
+| 20  | Overlapping bands                   | one path, the overlap filled once                                                                           | 36   |
+| 21  | The turn of a text in a box         | about the box's middle (ADR-0055, decision 3); grown or resized, its turned top-left corner kept (ADR-0057) | 37   |
+| 22  | Other no-break characters           | only U+00A0 holds a line; U+202F, U+2007 and U+2060 may end one                                             | 38   |
 
 ## Limits
 

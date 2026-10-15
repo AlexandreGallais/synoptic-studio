@@ -15,6 +15,13 @@ describe("parseTableDirectory (REF-OT-OTFF)", () => {
     });
   });
 
+  it("keeps a table that ends at the file's last byte", () => {
+    // One record: 12 + 16 = 28 bytes; abcd from 28 to 32, the file's length.
+    const file = fontFile(TRUE_TYPE_VERSION, { abcd: [1, 2, 3, 4] });
+
+    expect(parseTableDirectory(viewOf([...file]))).toEqual({ abcd: { length: 4, offset: 28 } });
+  });
+
   it("leaves out a table that ends past the file", () => {
     const file = [...fontFile(TRUE_TYPE_VERSION, { abcd: [1, 2, 3, 4] })];
 
