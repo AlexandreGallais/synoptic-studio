@@ -25,8 +25,22 @@ const SHORT_FORM_LENGTH = 4;
 const RGB_LENGTH = 6;
 
 /**
- * Reads the digits of a hex color in their full form, 6 or 8 lower-case digits, each digit of a
- * 3- or 4-digit form doubled (REF-CSS-COLOR-4, §5.2: `#123` is `#112233`).
+ * The full form of a hex color's digits: 6 or 8 digits as they are, each digit of a 3- or 4-digit
+ * short form written twice (REF-CSS-COLOR-4, §5.2: "#123 specifies the same color as the notation
+ * #112233").
+ *
+ * @kind format
+ * @param digits - 3, 4, 6 or 8 hexadecimal digits, already checked
+ * @returns 6 or 8 digits
+ * @see REF-CSS-COLOR-4
+ */
+function toFullHexDigits(digits: string): string {
+  return digits.length > SHORT_FORM_LENGTH ? digits : digits.replaceAll(EACH_DIGIT, "$&$&");
+}
+
+/**
+ * Reads the digits of a hex color in their full form, 6 or 8 lower-case digits
+ * (`toFullHexDigits`).
  *
  * @kind format
  * @param typed - the text typed or pasted
@@ -36,11 +50,7 @@ const RGB_LENGTH = 6;
 function parseHexDigits(typed: string): string {
   const digits = typed.trim().toLowerCase().replace(LEADING_HASH, "");
 
-  if (!HEX_DIGITS.test(digits)) {
-    return "";
-  }
-
-  return digits.length > SHORT_FORM_LENGTH ? digits : digits.replaceAll(EACH_DIGIT, "$&$&");
+  return HEX_DIGITS.test(digits) ? toFullHexDigits(digits) : "";
 }
 
 /**
