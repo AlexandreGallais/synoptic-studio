@@ -42,7 +42,7 @@ Taken from the closest reading of the refinement and the sources, written in `do
 | Decision                                                                                         | Reading                                                                                    |
 | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
 | The hexadecimal and the opacity are stored; HSL and HSB are views                                | integers in the model (ADR-0003); Figma; Inkscape's OKLch mode                             |
-| 3, 4, 6 and 8 digits, `#` optional, any case, white space ignored; kept as six lower-case digits | CSS's forms; "a quick copy and paste"; CSS's serialization                                 |
+| 3, 4, 6 and 8 digits, `#` optional, any case, white space ignored; kept as six lower-case digits | CSS's forms; the refinement's aim of a quick copy and paste; CSS's serialization           |
 | An alpha typed sets the opacity to the nearest percent                                           | Figma's 8-digit input; the opacity is an integer percent                                   |
 | Values shown to one decimal                                                                      | the exhaustive count: integers lose nearly 9 colors in 10                                  |
 | The plane in HSB first, the saturation across from 0 at the left, the other value up             | HSB first: the agent's own choice, no source read; CSS's tables, the order made increasing |

@@ -56,7 +56,7 @@ function colorIndex(red: number, green: number, blue: number): number {
 
 /**
  * The colors of the round trip's sample, by their index: one color in 31, and every color with
- * two equal components, where the hue changes sector (greys among them), about 735 000 of the
+ * two equal components, where the hue changes sector (greys among them), about 731 000 of the
  * 16 777 216.
  *
  * @returns the indices, each once

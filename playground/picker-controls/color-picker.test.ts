@@ -135,6 +135,44 @@ describe("Color picker: opening, sliders and values (US-035)", () => {
     expect(readValue("text-opacity")).toBe("34");
   });
 
+  it.each([
+    { key: "ArrowLeft", opacity: "99" },
+    // 99 + 10 = 109, held at 100.
+    { key: "PageUp", opacity: "100" },
+    { key: "Home", opacity: "0" },
+    { key: "ArrowRight", opacity: "1" },
+    { key: "End", opacity: "100" },
+  ])(
+    "[F16.AC2] takes the opacity to $opacity % on $key, as the plane's keys",
+    ({ key, opacity }) => {
+      const order = ["ArrowLeft", "PageUp", "Home", "ArrowRight", "End"];
+
+      const pressed = order.slice(0, order.indexOf(key) + 1);
+
+      for (const each of pressed) {
+        pressKey("#color-opacity", each);
+      }
+
+      expect([readAttribute("#color-opacity", "aria-valuenow"), readValue("text-opacity")]).toEqual(
+        [opacity, opacity],
+      );
+    },
+  );
+
+  it("[F16.AC2] draws the opacity's thumb at its percent: 40 % at 40 % of the track", () => {
+    typeValue("text-opacity", "40");
+
+    // 100 · 40 / 100 = 40.
+    expect(selectPageElement("#color-opacity-thumb").style.left).toBe("40%");
+  });
+
+  it("[F16.AC2] shows the hue of a color typed while it is open, not the hue it held", () => {
+    typeAndLeave("text-color", "#ff0000");
+
+    // C = 1: the color's own hue, 0°, not 30.1°.
+    expect(readPickerValues()).toEqual(["0", "100", "100"]);
+  });
+
   it("follows the opacity and the hexadecimal typed while it is open", () => {
     typeValue("text-opacity", "40");
     expect(readAttribute("#color-opacity", "aria-valuenow")).toBe("40");
@@ -149,6 +187,13 @@ describe("Color picker: opening, sliders and values (US-035)", () => {
 
     typeAndLeave("color-saturation-value", "");
     expect(readValue("color-saturation-value")).toBe("100");
+  });
+
+  it("[F16.AC2] counts a negative value typed at the lower end, 0", () => {
+    typeAndLeave("color-hue-value", "-10");
+    typeAndLeave("color-saturation-value", "-5");
+
+    expect(readPickerValues()).toEqual(["0", "0", "100"]);
   });
 
   it("does not answer a key no slider answers", () => {
@@ -183,6 +228,18 @@ describe("Color picker: opening, sliders and values (US-035)", () => {
     expect(readDisplay("color-picker")).toBe("none");
     expect(readAttribute("#text-color-swatch", "aria-expanded")).toBe("false");
     expect(readValue("text-color")).toBe("#ff8000");
+  });
+
+  it("does nothing on Escape once closed, the focus kept where it is", () => {
+    pressKey("body", "Escape");
+    selectPageElement("#text-color").focus();
+
+    expect(() => {
+      pressKey("body", "Escape");
+    }).not.toThrow();
+
+    expect(readDisplay("color-picker")).toBe("none");
+    expect(selectPageElement("#text-color").ownerDocument.activeElement?.id).toBe("text-color");
   });
 
   it("stays open on a click in it or on its color's fields; moves under the background's", () => {

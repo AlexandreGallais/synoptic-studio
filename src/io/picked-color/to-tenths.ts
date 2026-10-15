@@ -5,7 +5,8 @@ const TENTHS = 10;
 
 /**
  * A value given to one decimal, as the picker holds it, counted in tenths: 30.1 is 301. The
- * rounding takes away the error of `10 · 30.1` in binary64 (`DERIV-color-spaces`, step 11).
+ * rounding takes away the error of a value computed near a tenth, `0.7 + 0.1` being
+ * 0.7999999999999999 in binary64 (`DERIV-color-spaces`, step 11).
  *
  * Formula: round(10 · x).
  *

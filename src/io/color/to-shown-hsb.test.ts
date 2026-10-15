@@ -29,6 +29,17 @@ describe("toShownHsb (DERIV-color-spaces step 9, ADR-0056)", () => {
     expect(rgbToHex(hsbToRgb(shown))).toBe("#336699");
   });
 
+  it("[F16.AC3] shows #000080 as HSB 240°, 100 %, 50.2 %, its brightness to one decimal", () => {
+    // V = 128 / 255 = 0.50196, 50.196 % shown 50.2; S_V = C / V = 1; hue 60 · (4 + 0) = 240.
+    const hsb = rgbToHsb(hexToRgb("#000080"));
+
+    expect(toShownHsb(hsb)).toEqual({
+      brightness: 50.2,
+      hue: 240,
+      saturation: 100,
+    });
+  });
+
   it("[F16.AC3] shows a hue that rounds to 360.0 as 0.0", () => {
     expect(toShownHsb({ brightness: 50, hue: 359.96, saturation: 100 })).toHaveProperty("hue", 0);
   });
