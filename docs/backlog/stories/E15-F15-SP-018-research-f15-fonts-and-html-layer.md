@@ -3,7 +3,7 @@ id: SP-018
 epic: E15
 feature: F15
 title: "Research for F15: fonts from files, embedded fonts and the HTML layer"
-status: in-progress
+status: done
 points: 3
 ---
 
