@@ -1,3 +1,4 @@
+import { listenToColorFields } from "../color";
 import { readGuidedStep, readStepFromAddress, showGuidedStep } from "../guided-test";
 import { readShapeKind, selectElement } from "../page";
 import { hidePointPanels, listenToTextFields, updateTextTool, writeTextSections } from "../text";
@@ -58,6 +59,7 @@ export function mountPlayground(document: Document, steps: readonly GuidedStep[]
 
   listenToInputs(document, update);
   listenToTextFields(document, update);
+  listenToColorFields(document, update);
 
   listenToGuide(document, steps, update);
 
