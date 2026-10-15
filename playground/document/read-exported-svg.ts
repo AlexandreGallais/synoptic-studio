@@ -1,3 +1,10 @@
+import { createEmbeddedFontsElements, documentFontEmbedding } from "../../src";
+import { readFontSession } from "../fonts";
+
+import { readDocumentOptions } from "./read-document-options";
+
+import type { Text } from "../../src";
+
 /**
  * Reads a copy of the drawing as a file's text, the dashed frames of the selection removed.
  *
@@ -17,16 +24,29 @@ function readDrawingText(copy: Element): string {
 }
 
 /**
- * Reads the drawing as it is exported: the canvas's `<svg>`, its embedded fonts and its text,
- * without the dashed frame of the selection, which is the editor's and not the drawing's.
+ * Reads the drawing as it is exported: the canvas's `<svg>` and its text, without the dashed frame
+ * of the selection, which is the editor's and not the drawing's; with Embed fonts on, the faces
+ * its texts are measured with embedded first, in a `<defs>` (`documentFontEmbedding`,
+ * `createEmbeddedFontsElements`), which only a file written holds, never the drawing on screen
+ * (ADR-0060, US-045).
  *
  * @kind procedure
  * @param document - page document
+ * @param texts - the texts of the drawing
  * @returns the SVG file's text; empty when nothing is drawn
- * @see docs/backlog/stories/E15-F15-US-036-fonts-embedding-and-html-layer.md
+ * @see docs/backlog/stories/E15-F17-US-045-fonts-embedded-at-export.md
  */
-export function readExportedSvg(document: Document): string {
+export function readExportedSvg(document: Document, texts: readonly Text[]): string {
   const copy = document.querySelector("#canvas svg")?.cloneNode(true);
 
-  return copy instanceof Element ? readDrawingText(copy) : "";
+  if (!(copy instanceof Element)) {
+    return "";
+  }
+
+  const options = readDocumentOptions(document);
+  const { embedded } = documentFontEmbedding(texts, readFontSession(document).kept, options);
+
+  copy.prepend(...createEmbeddedFontsElements(document, embedded));
+
+  return readDrawingText(copy);
 }

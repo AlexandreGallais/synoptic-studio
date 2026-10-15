@@ -4,6 +4,7 @@ import { selectElement } from "../page";
 import { listenToTextPosition } from "../text-placement";
 
 import { pressBold } from "./press-bold";
+import { readTextModel } from "./read-text-model";
 
 /**
  * Listens to the Text tool's fields: its font controls (`listenToFonts`) and **Export SVG**
@@ -22,7 +23,7 @@ export function listenToTextFields(document: Document, update: () => void): void
   const italic = selectElement(document, "text-italic");
 
   listenToFonts(document, update);
-  listenToExport(document);
+  listenToExport(document, () => [readTextModel(document)]);
   options.addEventListener("input", update);
   options.addEventListener("change", update);
 
