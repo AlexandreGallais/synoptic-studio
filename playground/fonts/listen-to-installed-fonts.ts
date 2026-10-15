@@ -1,5 +1,5 @@
 import { isSameFamilyName } from "../../src";
-import { selectElement, startTask, writeText } from "../page";
+import { runTask, selectElement, writeText } from "../page";
 
 import { readFontSession } from "./read-font-session";
 import { readInstalledFamily } from "./read-installed-family";
@@ -82,7 +82,9 @@ function readListError(error: unknown): string {
 
 /**
  * Reads the files of an installed family chosen in the font list (`readInstalledFamily`), says
- * what was read, then redraws; a family already kept is not read again.
+ * what was read, then redraws; meanwhile the list shows it chosen, "Reading …" is said, and the
+ * text keeps the family chosen before it (`FontSession.measured`), never Inter by default. A
+ * family already kept is not read again.
  *
  * @kind procedure
  * @param document - page document
@@ -102,14 +104,13 @@ function listenToInstalledChoice(document: Document, update: () => void): void {
 
     writeText(document, "font-message", `Reading ${family}…`);
 
-    startTask(
+    runTask(
+      document,
       async () => {
         writeText(document, "font-message", await readInstalledFamily(document, family, update));
         update();
       },
-      (error) => {
-        writeText(document, "font-message", `${family} could not be read: ${String(error)}`);
-      },
+      update,
     );
   });
 }
@@ -135,7 +136,8 @@ export function listenToInstalledFonts(document: Document, update: () => void): 
       return;
     }
 
-    startTask(
+    runTask(
+      document,
       async () => {
         await showInstalledFonts(document, access, update);
       },
