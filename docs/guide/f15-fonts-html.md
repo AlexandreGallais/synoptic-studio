@@ -92,7 +92,7 @@ Each is built as written and shown by its step; the full list, with its examples
 - Arabic and Indic scripts are not supported: the library's lines would need a shaping engine (ADR-0060).
 - A font is embedded once per symbol; once per synoptic view for all its symbols comes with the views (E08).
 - Fonts are forgotten at a reload: kept across sessions with the editor's files (E02).
-- No WOFF, WOFF2 or font collection (`.ttc`); a family's localized names are not aliases of it.
+- No WOFF nor WOFF2; a collection (`.ttc`) is read face by face (US-046); a family's localized names are not aliases of it.
 - Installed fonts are listed only in Chrome and Edge; elsewhere, import the font's file.
 - A right-to-left line in resvg and Batik is drawn one width too far right until decision 10 is made.
 

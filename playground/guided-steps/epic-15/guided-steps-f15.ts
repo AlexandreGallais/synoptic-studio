@@ -47,6 +47,13 @@ export const GUIDED_STEPS_F15: readonly GuidedStep[] = [
     values: ARIAL_PUMP,
   },
   {
+    explanation:
+      "In Chrome: Installed fonts; Font Helvetica (a .ttc collection on macOS); then Import a font: Helvetica.ttc (/System/Library/Fonts).",
+    look: "“Helvetica: 6 faces read.”, none refused; the import says its 6 faces imported. A face the browser cannot give is said in one line naming it, “could not be accessed. Import its file with Import a font”.",
+    title: "F15 · Installed fonts from a collection (US-046)",
+    values: ARIAL_PUMP,
+  },
+  {
     explanation: "In Firefox or Safari: Installed fonts.",
     look: "“This browser cannot list the installed fonts (Chrome and Edge can): use Import a font with the font's file.”",
     title: "F15 · Installed fonts elsewhere",
