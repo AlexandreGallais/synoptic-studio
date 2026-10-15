@@ -1,4 +1,5 @@
 import { parseTag } from "./parse-tag";
+import { SFNT_VERSION } from "./sfnt-version";
 
 import type { FontTableRecord } from "./font-table-record";
 
@@ -17,14 +18,8 @@ const RECORD_OFFSET_FIELD = 8;
 /** Offset of a table's length in its record. */
 const RECORD_LENGTH_FIELD = 12;
 
-/** `sfntVersion` of a font with TrueType outlines. */
-const TRUE_TYPE_OUTLINES = 0x00_01_00_00;
-
-/** `sfntVersion` of a font with CFF outlines: the tag `OTTO`. */
-const CFF_OUTLINES = 0x4f_54_54_4f;
-
 /** The `sfntVersion` values of a TrueType or OpenType font file. */
-const SFNT_VERSIONS: ReadonlySet<number> = new Set([TRUE_TYPE_OUTLINES, CFF_OUTLINES]);
+const SFNT_VERSIONS: ReadonlySet<number> = new Set([SFNT_VERSION.trueType, SFNT_VERSION.cff]);
 
 /**
  * Where the table records of a font file sit: none for a file that is not a TrueType or OpenType
