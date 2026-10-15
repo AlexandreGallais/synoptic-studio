@@ -20,6 +20,8 @@ import {
   MEASURED_BLOCKS,
   blockCharacters,
   fontsWithFace,
+  shownLines,
+  textBlock,
   textFontMetrics,
 } from "../../model";
 import { parseFontMetrics } from "../font-file";
@@ -183,6 +185,36 @@ describe("parseFontFace (REF-OT-NAME, REF-OT-OS2)", () => {
       });
 
       expect(named?.face.metrics.unitsPerEm).toBe(2048);
+    },
+  );
+});
+
+describe("parseFontFace, measuring with its face (F15.AC4)", () => {
+  /** The face read from the file, once, before the measure is timed. */
+  const metrics = parseFontFace(ARIAL_FILE)?.face.metrics;
+
+  /** A thousand texts of two lines, each its own content. */
+  const texts = Array.from({ length: 1000 }, (unused, index) => ({
+    ...HELLO_TEXT,
+    content: `ABC ${String(index)}\naBC`,
+  }));
+
+  // About 12 ms alone for Inter's data (SP-018); the loaded pre-push run was seen 2.5 times
+  // slower: 100 ms, Vitest's timeout, leaves room for both. No clock is read in the test.
+  it(
+    "[F15.AC4] measures the blocks of 1 000 texts of two lines within 100 ms",
+    { timeout: 100 },
+    () => {
+      const blocks = texts.map((text) =>
+        metrics === undefined ? undefined : textBlock(metrics, text, shownLines(metrics, text)),
+      );
+
+      // Two lines of the automatic line height: (800 + 200 + 90) / 1000 × 16 = 17.44 each, 34.88.
+      expect(blocks).toHaveLength(1000);
+
+      expect(
+        blocks.every((block) => block !== undefined && Math.abs(block.height - 34.88) < 1e-9),
+      ).toBe(true);
     },
   );
 });
