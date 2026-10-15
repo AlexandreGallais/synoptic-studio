@@ -3,7 +3,7 @@ id: SP-019
 epic: E15
 feature: F17
 title: "Research for F17: the Latin script in industrial HMIs, and the causes of the defects"
-status: ready
+status: done
 points: 3
 ---
 

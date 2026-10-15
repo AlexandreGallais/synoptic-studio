@@ -29,7 +29,7 @@ In delivery order.
 
 | ID                                                                           | Type       | Title                                                                                | Status |
 | ---------------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------ | ------ |
-| [SP-019](../stories/E15-F17-SP-019-research-f17-latin-script-and-defects.md) | Spike      | Research for F17: the Latin script in industrial HMIs, and the causes of the defects | ready  |
+| [SP-019](../stories/E15-F17-SP-019-research-f17-latin-script-and-defects.md) | Spike      | Research for F17: the Latin script in industrial HMIs, and the causes of the defects | done   |
 | [US-042](../stories/E15-F17-US-042-a-long-word-always-whole.md)              | User story | A word too long always stays whole                                                   | ready  |
 | [US-043](../stories/E15-F17-US-043-no-balanced-wrap.md)                      | User story | The balanced wrap removed, lines always wrapped automatically                        | ready  |
 | [US-044](../stories/E15-F17-US-044-no-html-layer.md)                         | User story | The HTML layer removed                                                               | ready  |

@@ -152,7 +152,7 @@
 | [US-036](./E15-F15-US-036-fonts-embedding-and-html-layer.md)                  | F15     | Import or choose a font, embed it, and turn the HTML layer on                        | done   |
 | [AUD-018](./E15-F15-AUD-018-audit-f15.md)                                     | F15     | Audit F15                                                                            | done   |
 | [VAL-017](./E15-F15-VAL-017-validate-f15.md)                                  | F15     | Validate F15                                                                         | done   |
-| [SP-019](./E15-F17-SP-019-research-f17-latin-script-and-defects.md)           | F17     | Research for F17: the Latin script in industrial HMIs, and the causes of the defects | ready  |
+| [SP-019](./E15-F17-SP-019-research-f17-latin-script-and-defects.md)           | F17     | Research for F17: the Latin script in industrial HMIs, and the causes of the defects | done   |
 | [US-042](./E15-F17-US-042-a-long-word-always-whole.md)                        | F17     | A word too long always stays whole                                                   | ready  |
 | [US-043](./E15-F17-US-043-no-balanced-wrap.md)                                | F17     | The balanced wrap removed, lines always wrapped automatically                        | ready  |
 | [US-044](./E15-F17-US-044-no-html-layer.md)                                   | F17     | The HTML layer removed                                                               | ready  |
