@@ -1,5 +1,6 @@
 import { isValidText, isValidTextBox, textFontMetrics } from "../../src";
 import { writeColorSwatches } from "../color-fields";
+import { writeLeftOutFaces } from "../document";
 import { readFontSession, writeFontFields } from "../fonts";
 import { selectElement, writeText } from "../page";
 
@@ -76,4 +77,5 @@ export function updateTextTool(document: Document): void {
 
   writeText(document, "status", REFUSED);
   selectElement(document, "canvas").replaceChildren();
+  writeLeftOutFaces(document, []);
 }
