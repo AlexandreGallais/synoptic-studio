@@ -55,26 +55,46 @@ type SubtableWalk = {
 };
 
 /**
+ * Reads the length of a subtable of a `kern` table, its header included.
+ *
+ * @kind format
+ * @param kern - the `kern` table
+ * @param subtable - where the subtable starts in it
+ * @returns its length in bytes; 0 when its header passes the table's end
+ * @see REF-OT-KERN
+ */
+function parseSubtableLength(kern: DataView, subtable: number): number {
+  return isSpanWithin(subtable, SUBTABLE_HEADER_SIZE, kern.byteLength)
+    ? kern.getUint16(subtable + LENGTH_FIELD)
+    : 0;
+}
+
+/**
  * Reads where each subtable of a `kern` table starts: right after the header, then each after the
  * previous one's length.
  *
  * @kind format
  * @param kern - the `kern` table, at least its 4-byte header
- * @returns the offset of each subtable in the table, −1 for one whose header passes its end; none
- * for a version other than 0
+ * @returns the offset of each subtable in the table, −1 for one whose header passes its end or
+ * whose length is shorter than its header, or alone when the table cannot hold the headers of the
+ * subtables announced; none for a version other than 0
  * @see REF-OT-KERN
  */
 function parseSubtableStarts(kern: DataView): readonly number[] {
   const count = kern.getUint16(0) === 0 ? kern.getUint16(2) : 0;
 
+  if (!isSpanWithin(HEADER_SIZE, SUBTABLE_HEADER_SIZE * count, kern.byteLength)) {
+    return [-1];
+  }
+
   return Array.from({ length: count }).reduce<SubtableWalk>(
-    (walk) =>
-      isSpanWithin(walk.next, SUBTABLE_HEADER_SIZE, kern.byteLength)
-        ? {
-            next: walk.next + kern.getUint16(walk.next + LENGTH_FIELD),
-            starts: [...walk.starts, walk.next],
-          }
-        : { next: walk.next, starts: [...walk.starts, -1] },
+    (walk) => {
+      const length = parseSubtableLength(kern, walk.next);
+
+      return length >= SUBTABLE_HEADER_SIZE
+        ? { next: walk.next + length, starts: [...walk.starts, walk.next] }
+        : { next: walk.next, starts: [...walk.starts, -1] };
+    },
     { next: HEADER_SIZE, starts: [] },
   ).starts;
 }
@@ -185,7 +205,7 @@ function stepsToRule(steps: readonly KernStep[]): PairKerningRule {
  * @param kern - the `kern` table, at least its 4-byte header
  * @param glyphs - the glyphs asked, left and right
  * @returns its kerning lookup, none for another version or without such subtables; undefined when
- * a subtable passes the table's end
+ * a subtable passes the table's end or is shorter than its header
  * @see REF-OT-KERN
  */
 export function parseKernTable(
