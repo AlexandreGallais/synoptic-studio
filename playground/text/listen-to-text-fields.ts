@@ -1,3 +1,4 @@
+import { listenToExport } from "../document";
 import { listenToFonts, writeWeightChoice } from "../fonts";
 import { selectElement } from "../page";
 
@@ -7,8 +8,9 @@ import { readFieldValue } from "./read-field-value";
 const WEIGHTS = { bold: 700, normal: 400 };
 
 /**
- * Listens to the Text tool's fields: its font controls (`listenToFonts`, US-036); a value typed or
- * chosen redraws the text; the bold button asks for 700, or back to 400 when the weight is 700 or
+ * Listens to the Text tool's fields: its font controls (`listenToFonts`) and **Export SVG**
+ * (`listenToExport`, US-036); a value typed or chosen, the drawing's options among them, redraws
+ * the text; the bold button asks for 700, or back to 400 when the weight is 700 or
  * heavier (pressed), among the faces of the family chosen: the nearest face is chosen when the
  * family lacks that weight (`writeWeightChoice`, US-036); the italic button turns italic on or off.
  *
@@ -22,6 +24,7 @@ export function listenToTextFields(document: Document, update: () => void): void
   const italic = selectElement(document, "text-italic");
 
   listenToFonts(document, update);
+  listenToExport(document);
   options.addEventListener("input", update);
   options.addEventListener("change", update);
 

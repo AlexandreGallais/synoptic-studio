@@ -2,7 +2,7 @@
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { testFaceFile } from "../../tests";
+import { ARIAL_PATH, systemFont, testFaceFile } from "../../tests";
 import {
   chooseFiles,
   chooseOption,
@@ -16,6 +16,9 @@ import {
 } from "../user-actions";
 
 import type { TestFace } from "../../tests";
+
+/** Arial 5.01 of macOS, read where the machine has it. */
+const ARIAL = systemFont(ARIAL_PATH);
 
 /** The test font named Test Sans, regular, installable. */
 const TEST_SANS: TestFace = { family: "Test Sans", fsType: 0, isItalic: false, weightClass: 400 };
@@ -147,4 +150,25 @@ describe("Import a font (US-036)", () => {
     expect(readFontList()).toEqual(["Inter", "Test Sans"]);
     expect(readValue("text-font")).toBe("Test Sans");
   });
+
+  it.skipIf(ARIAL === undefined)(
+    "[F15.AC1] measures Hello World in Arial 16 with Arial's metrics, its kerning included",
+    async () => {
+      await importFiles(
+        [new File([new Uint8Array(ARIAL ?? [])], "Arial.ttf")],
+        "Arial 400 imported.",
+      );
+
+      typeValue("text-size", "16");
+      typeContent("Hello World");
+
+      // 82.6875 without kerning (US-036); Arial's kerning narrows it to 82.3984375. Inter would
+      // give 87.5546875 × 19.359375.
+      expect(readBlock()).toEqual({ height: 18.3984375, width: 82.3984375 });
+
+      expect([...selectChoice("text-weight").options].map((option) => option.value)).toEqual([
+        "400",
+      ]);
+    },
+  );
 });
