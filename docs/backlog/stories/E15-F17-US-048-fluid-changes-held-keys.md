@@ -3,7 +3,7 @@ id: US-048
 epic: E15
 feature: F17
 title: Values changed fast redrawn without lag
-status: ready
+status: done
 points: 3
 ---
 
@@ -22,6 +22,22 @@ From the Product Owner's validation of E15 (2026-10-15): holding an arrow key on
 - Given a change of the size, when the drawing is redrawn, then the metrics are kept and the lines and block computed again.
 - Given SP-019's measure of a redraw before the story, when it ends, then the same measure after it is recorded in the story.
 
+## Measures before and after
+
+Measured on 2026-10-16 in Chromium's headless shell (HeadlessChrome 153), on the playground built before the story (`feature/f17-text-corrections` after US-047) and after it: the Text tool, 590 installed faces of 186 families listed (a fake `queryLocalFonts`, as CoreText's count in SP-019), the size focused at 16, then the Up arrow held — 30 key repeats sent 33 ms apart through the DevTools protocol (`Input.dispatchKeyEvent`, `autoRepeat`) — the size ending at 46. Three runs each; the work is the time spent in the `input` listeners and in the animation frames.
+
+| Measure, three runs                       | Before              | After               |
+| ----------------------------------------- | ------------------- | ------------------- |
+| redraws for 30 repeats                    | 30, one per `input` | 30, one a frame     |
+| work in the `input` listeners, total      | 146.5, 141.8, 142.3 | 0.3, 0.4, 0.6 ms    |
+| work in the animation frames, total       | 0                   | 25.9, 23.0, 23.7 ms |
+| one redraw, mean                          | 4.7 to 4.9 ms       | 0.8 ms              |
+| one redraw, longest                       | 9.3 to 10.2 ms      | 1.5 to 1.8 ms       |
+| a key's wait before its listener, longest | 0.5 ms              | 0.4 to 0.8 ms       |
+| size drawn at the key's release           | 46                  | 46                  |
+
+On this machine a redraw already fitted in the 33 ms between two repeats before the story, so no repeat waited behind another in the headless browser; the Product Owner's lag of 2026-10-15 came with Embed fonts on, each face written in base 64 at every redraw (21 ms a face, SP-019), which US-045 moved to the export. After the story a redraw costs a sixth of what it did, and repeats faster than the display's frames are drawn once a frame. The repeats were 33 ms apart, longer than a frame: each gave its own frame; the gathering itself is shown by the tests (30 sizes typed before one frame, one redraw).
+
 ## Product Owner test
 
 | Step | Do                                                | You should see                                             |
@@ -33,6 +49,6 @@ From the Product Owner's validation of E15 (2026-10-15): holding an arrow key on
 
 One task = one commit, referenced as `US-048.Tn`.
 
-- [ ] T1 — Redraws gathered into one per animation frame in the playground; the font list written only when the session changes, in one pass (2 h)
-- [ ] T2 — Metrics, wrapped lines and block kept by their inputs, with tests counting the computations (3 h)
-- [ ] T3 — Measures before and after recorded; test card (1 h)
+- [x] T1 — Redraws gathered into one per animation frame in the playground; the font list written only when the session changes, in one pass (2 h)
+- [x] T2 — Metrics, wrapped lines and block kept by their inputs, with tests counting the computations (3 h)
+- [x] T3 — Measures before and after recorded; test card (1 h)
