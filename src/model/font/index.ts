@@ -1,4 +1,5 @@
 export * from "./block-characters";
+export * from "./case-folded-family-name";
 export * from "./character-advance";
 export type * from "./character-glyph";
 export * from "./default-font";

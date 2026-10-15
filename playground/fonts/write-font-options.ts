@@ -1,7 +1,8 @@
-import { isSameFamilyName } from "../../src";
+import { distinctFamilyNames, isSameFamilyName } from "../../src";
 import { selectElement, writeSelectOptions } from "../page";
 
 import { readFontSession } from "./read-font-session";
+import { WRITTEN_FONT_LISTS } from "./written-font-lists";
 
 import type { FontSession } from "./font-session";
 
@@ -15,14 +16,10 @@ import type { FontSession } from "./font-session";
  * @see docs/backlog/stories/E15-F15-US-036-fonts-embedding-and-html-layer.md
  */
 function readFontListNames(session: FontSession): readonly string[] {
-  const names = [
+  return distinctFamilyNames([
     ...session.kept.map((family) => family.name),
     ...session.installed.map((font) => font.family),
-  ];
-
-  return names.filter(
-    (name, index) => names.findIndex((other) => isSameFamilyName(name, other)) === index,
-  );
+  ]);
 }
 
 /**
@@ -51,7 +48,8 @@ function readFontChoice(names: readonly string[], family: string): string {
  * @see docs/backlog/stories/E15-F15-US-036-fonts-embedding-and-html-layer.md
  */
 export function writeFontOptions(document: Document, family: string): void {
-  const names = readFontListNames(readFontSession(document));
+  const session = readFontSession(document);
+  const names = readFontListNames(session);
   const font = selectElement(document, "text-font");
   const chosen = font instanceof HTMLSelectElement ? font.value : "";
 
@@ -60,4 +58,6 @@ export function writeFontOptions(document: Document, family: string): void {
     options: names.map((name) => ({ label: name, value: name })),
     value: readFontChoice(names, family === "" ? chosen : family),
   });
+
+  WRITTEN_FONT_LISTS.set(font, session);
 }
