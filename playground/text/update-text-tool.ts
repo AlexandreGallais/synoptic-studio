@@ -15,7 +15,7 @@ const BOLD = 700;
 
 /** Message shown when a text cannot enter the model. */
 const REFUSED =
-  "Size must be an integer from 1 to 100 000, opacity and background opacity from 0 to 100, spacing from −100 000 to 100 000, X and Y numbers, the angle an integer, the color and background color # and six hexadecimal digits, the font named, and the box's width and height, its maximum lines and the line height integers from 0 to 100 000.";
+  "Size must be an integer from 1 to 100 000, opacity and background opacity from 0 to 100, spacing from −100 000 to 100 000, X, Y and the angle integers, the color and background color # and six hexadecimal digits, the font named, and the box's width and height, its maximum lines and the line height integers from 0 to 100 000.";
 
 /**
  * Outlines the Text tool's fields and the position fields when the text is refused.

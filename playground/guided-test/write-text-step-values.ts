@@ -85,7 +85,8 @@ function writeTextStyleValues(document: Document, text: GuidedText): void {
 /**
  * Types a step's text into the Text tool's fields, its font and weight chosen in their lists
  * (US-036), its box's and its background's among them (VAL-015), the drawing's options off (US-036), and its X, Y and angle into the placement fields, without firing any event; the
- * placements each tool kept go, so that the step starts from its own values (VAL-014).
+ * placements each tool kept go, and the text last drawn (US-038), so that the step starts from
+ * its own values (VAL-014).
  *
  * @kind procedure
  * @param document - page document
@@ -127,4 +128,6 @@ export function writeTextStepValues(document: Document, text: GuidedText): void 
   // The keys of `TOOL_PLACEMENT`, the placements each tool kept.
   delete selectElement(document, "placement").dataset["textPlacement"];
   delete selectElement(document, "placement").dataset["shapePlacement"];
+  // The text last drawn (US-038): a step is never placed from the step before.
+  delete selectElement(document, "text-options").dataset["drawnText"];
 }

@@ -1,9 +1,11 @@
 // @vitest-environment happy-dom
 
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { add, halfSize, turnAbout, turnDirection } from "../../src";
+import { testFaceFile } from "../../tests";
 import {
+  chooseFiles,
   chooseOption,
   clickElement,
   commitField,
@@ -15,6 +17,10 @@ import {
 } from "../user-actions";
 
 import type { Point, Size } from "../../src";
+import type { TestFace } from "../../tests";
+
+/** The test font named Test Sans, regular, installable. */
+const TEST_SANS: TestFace = { family: "Test Sans", fsType: 0, isItalic: false, weightClass: 400 };
 
 // Inter 4.1 Regular 16, kerning included: "Pump P-101" 87.953125 wide, a line 19.359375 tall; a
 // letter spacing of 10 adds 10 between each two of its 10 characters, 90: 177.953125.
@@ -234,15 +240,36 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
     expectCorner(corner);
   });
 
-  it("[F05.AC5] accepts a fractional position typed, and grows from it", () => {
+  it("[F05.AC5] refuses a fraction typed in X: a position typed is an integer (ADR-0057)", () => {
     typeValue("shape-x", "47.5");
 
-    expect(readText("#status")).toBe("");
-    expect(readDrawn().x).toBe(47.5);
+    expect(readText("#status")).toContain("X, Y and the angle integers");
+    expect(document.querySelectorAll("#canvas text")).toHaveLength(0);
+    expect(selectPageElement("#shape-x").getAttribute("aria-invalid")).toBe("true");
+  });
 
+  it("[F05.AC5] accepts the 5 decimals shown typed back, the exact position behind them", () => {
+    typeValue("text-letter-spacing", "10");
+    typeValue("shape-x", "43.42272");
+
+    expect(readText("#status")).toBe("");
+    expect(readDrawn().x).toBe(43.4227184053598);
+  });
+
+  it("[F05.AC5] keeps the corner when the font changes: Test Sans 400 imported", async () => {
     const corner = readCorner();
 
-    typeValue("text-letter-spacing", "10");
+    const bytes = new Uint8Array(testFaceFile(TEST_SANS));
+
+    chooseFiles("font-file", [new File([bytes], "400.ttf")]);
+
+    await vi.waitFor(() => {
+      expect(readText("#font-message")).toBe("Test Sans 400 imported.");
+    });
+
+    // "Pump P-101" in Test Sans 16: 80 wide; P = (54.27808, 44.58648) kept.
+    expect(readDrawn().width).toBe(80);
+    expect(readFields()).toEqual(["47.6911", "59.52252"]);
     expectCorner(corner);
   });
 

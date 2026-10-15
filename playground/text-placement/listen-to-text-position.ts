@@ -1,9 +1,8 @@
 import { readShapeKind, selectElement } from "../page";
 
 /**
- * Makes X and Y redraw a text whatever number is typed, a fraction too (US-038): a turned text
- * that grew has a fractional position, which the designer may type back. The shapes' own moves
- * take only integers (`listenToPosition`).
+ * Makes X and Y redraw a text whatever is typed (US-038), so that a fraction typed is refused
+ * at once, outlined; the shapes' own moves act on integers only (`listenToPosition`).
  *
  * @kind procedure
  * @param document - page document
