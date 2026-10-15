@@ -2,6 +2,7 @@ export * from "./alpha-to-percent";
 export * from "./bytes-to-hex";
 export * from "./fraction-to-byte";
 export * from "./hex-pair-to-byte";
+export * from "./hex-to-bytes";
 export * from "./hex-to-rgb";
 export * from "./parse-hex-color";
 export * from "./percent-to-alpha";

@@ -25,10 +25,11 @@ export function rgbOfBytes(red: number, green: number, blue: number): Rgb {
 /** Any byte, from 0 to 255. */
 const ANY_BYTE = fc.integer({ max: BYTE_MAX, min: 0 });
 
+/** Any of the 16 777 216 colors, as its bytes. */
+export const ANY_BYTE_RGB = fc.record({ blue: ANY_BYTE, green: ANY_BYTE, red: ANY_BYTE });
+
 /** Any of the 16 777 216 colors, as its components. */
-export const ANY_RGB = fc
-  .tuple(ANY_BYTE, ANY_BYTE, ANY_BYTE)
-  .map(([red, green, blue]) => rgbOfBytes(red, green, blue));
+export const ANY_RGB = ANY_BYTE_RGB.map(({ blue, green, red }) => rgbOfBytes(red, green, blue));
 
 /** The values of a byte: 256. */
 const BYTE_COUNT = 256;
