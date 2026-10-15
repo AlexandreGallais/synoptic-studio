@@ -228,6 +228,7 @@ export function cmapTable(encodings: readonly CmapEncoding[]): number[] {
 /** The values of the test font of `[F05.AC1]`: glyph 0 is 500 units wide, glyph 1 600, glyph 2 700. */
 const TEST_FONT = {
   ascender: 800,
+  capHeight: 700,
   descender: -200,
   firstAdvance: 600,
   fsType: 4,
@@ -240,13 +241,15 @@ const TEST_FONT = {
   underlinePosition: -100,
   underlineThickness: 40,
   unitsPerEm: 1000,
+  version: 4,
 };
 
 /**
  * The tables of the test font of `[F05.AC1]`: 1000 units per em, ascender 800, descender −200,
  * line gap 90, three `hmtx` records (500, 600, 700) for five glyphs; A, B, C map to glyphs 1 to 3
  * by a delta of −64, `a` to glyph 4 through the glyph array; an underline at −100, 40 thick, a
- * strike-out at 300, 50 thick, `fsType` 4 (preview and print); no kerning.
+ * strike-out at 300, 50 thick, `fsType` 4 (preview and print), an `OS/2` table of version 4 whose
+ * cap height is 700; no kerning.
  *
  * @returns the tables by tag
  */

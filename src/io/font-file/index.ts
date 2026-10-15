@@ -1,6 +1,7 @@
 export type * from "./font-table-record";
 export type * from "./font-tables";
 export * from "./parse-advance-widths";
+export * from "./parse-cap-height";
 export * from "./parse-embedding-permissions";
 export * from "./parse-fixed-metrics";
 export * from "./parse-font-metrics";
