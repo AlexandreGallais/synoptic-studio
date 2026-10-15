@@ -92,6 +92,19 @@ describe("Color picker: the plane (US-035)", () => {
     expect(readPicked()).toEqual(["210", "66.7", "60", "#336699"]);
   });
 
+  it("[F16.AC2] puts the mark at the top left on Home: 0 %, 100 % up", () => {
+    pressKey("#color-plane", "Home");
+
+    // HSB 30.1°, 0 %, 100 %: x = 100 · 0 / 100 = 0; y = 100 − 100 · 100 / 100 = 0.
+    const mark = selectPageElement("#color-plane-mark");
+
+    expect([mark.style.left, mark.style.top]).toEqual(["0%", "0%"]);
+
+    pressKey("#color-plane", "ArrowDown");
+    // Brightness 99: y = 100 − 99 = 1.
+    expect(mark.style.top).toBe("1%");
+  });
+
   it("[F16.AC2] follows a drag beyond the plane's edges, the button held", () => {
     pressPlane("pointerdown", 110, 70);
     // (−90 − 10, 170 − 20): beyond the left and bottom edges, 0 % and 0 %.

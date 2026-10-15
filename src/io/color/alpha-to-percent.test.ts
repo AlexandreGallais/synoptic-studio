@@ -10,7 +10,7 @@ describe("alphaToPercent (DERIV-color-spaces, step 2)", () => {
     { alpha: 204, expected: 80 },
     // ⌊(200 · 236 + 255) / 510⌋ = ⌊93.05⌋ = 93: `ec`, 92.549… % rounded.
     { alpha: 236, expected: 93 },
-    // ⌊(200 · 128 + 255) / 510⌋ = ⌊50.69⌋ = 50: `80`.
+    // ⌊(200 · 128 + 255) / 510⌋ = ⌊50.696⌋ = 50: `80`.
     { alpha: 128, expected: 50 },
     // ⌊(200 · 1 + 255) / 510⌋ = 0: 0.39 % rounded down.
     { alpha: 1, expected: 0 },

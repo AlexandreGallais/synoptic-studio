@@ -70,6 +70,26 @@ describe("Color fields (US-035)", () => {
     expect(readFills().slice(2)).toEqual(["#0000ff", "0.8"]);
   });
 
+  it("[F16.AC4] draws the text and its background with the colors of their fields", () => {
+    clickElement("text-background");
+    typeAndLeave("text-color", "#ff8000");
+    typeAndLeave("text-background-color", "#0000ffcc");
+
+    // cc = 204, 100 · 204 / 255 = 80: fill-opacity 0.8.
+    expect(readFills()).toEqual(["#ff8000", "1", "#0000ff", "0.8"]);
+  });
+
+  it("[F16.AC1] keeps the opacity typed when a color without alpha is typed after it", () => {
+    typeAndLeave("text-opacity", "40");
+    typeAndLeave("text-color", "#ff0000");
+
+    expect([readValue("text-opacity"), ...readFills().slice(0, 2)]).toEqual([
+      "40",
+      "#ff0000",
+      "0.4",
+    ]);
+  });
+
   it.each(["red", "#ff800", "rgb(255, 0, 0)"])(
     "[F16.AC1] refuses %s when the field is left: the previous color back, the page says why",
     (typed) => {
