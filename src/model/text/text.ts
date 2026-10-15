@@ -41,6 +41,10 @@ export type Text = {
   readonly isItalic: boolean;
   /** Whether a line is drawn through it. */
   readonly isStruckThrough: boolean;
+  /** Whether its strike-through has a color of its own, `strikeThroughColor`; otherwise it follows the text's color (US-041). */
+  readonly hasStrikeThroughColor: boolean;
+  /** Whether its underline has a color of its own, `underlineColor`; otherwise it follows the text's color (US-041). */
+  readonly hasUnderlineColor: boolean;
   /** Whether its block runs from the cap height of its first line to the baseline of its last. */
   readonly isTrimmed: boolean;
   /** Whether it is underlined. */
@@ -57,6 +61,14 @@ export type Text = {
   readonly opacity: number;
   /** Size, the em: an integer from 1 to 100 000 user units. */
   readonly size: number;
+  /** Color of its strike-through, `#` and six hexadecimal digits, drawn when `hasStrikeThroughColor` is on. */
+  readonly strikeThroughColor: string;
+  /** Opacity of its strike-through, an integer from 0 (invisible) to 100 %, drawn when `hasStrikeThroughColor` is on. */
+  readonly strikeThroughOpacity: number;
+  /** Color of its underline, `#` and six hexadecimal digits, drawn when `hasUnderlineColor` is on. */
+  readonly underlineColor: string;
+  /** Opacity of its underline, an integer from 0 (invisible) to 100 %, drawn when `hasUnderlineColor` is on. */
+  readonly underlineOpacity: number;
   /** Where its block of lines sits down its box. */
   readonly verticalAlignment: TextVerticalAlignment;
   /** Weight, an integer from 100 (thin) to 900 (black); 400 regular, 700 bold (`REF-CSS-FONTS-4`). */

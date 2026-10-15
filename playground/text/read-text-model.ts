@@ -1,4 +1,4 @@
-import { TEXT_BOX_DEFAULTS, toStoredColors } from "../../src";
+import { TEXT_BOX_DEFAULTS, TEXT_DECORATION_DEFAULTS, toStoredColors } from "../../src";
 import { readFontSession } from "../fonts";
 import { readNumber, selectElement } from "../page";
 import { readAngle } from "../position";
@@ -51,6 +51,7 @@ export function readTextModel(document: Document): Text {
 
   return toStoredColors({
     ...TEXT_BOX_DEFAULTS,
+    ...TEXT_DECORATION_DEFAULTS,
     ...readTextBoxOptions(document),
     alignment,
     angle: readAngle(document),

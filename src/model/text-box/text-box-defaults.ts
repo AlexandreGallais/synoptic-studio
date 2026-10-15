@@ -1,4 +1,4 @@
-import type { Text } from "./text";
+import type { Text } from "../text";
 
 /**
  * The options of a text's box (F14) that a text gets until the designer changes them, so that a
