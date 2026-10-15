@@ -29,27 +29,21 @@ export const GUIDED_STEPS_F14_DECISIONS: readonly GuidedStep[] = [
     values: createTextBoxStepValues({ boxWidth: 60, content: " Hello World", isInBox: true }),
   },
   {
-    explanation: "Nothing to type; then Content “running”, Width 50.",
-    look: "Hell, o is, Wo, rld: “is” joins the broken word, no hyphen; then “runnin” over “g”.",
-    title: "F14 · Long word broken (decision 3)",
-    values: createTextBoxStepValues({ boxWidth: 30, content: "Hello is World", isInBox: true }),
-  },
-  {
     explanation: "Untick Ellipsis.",
     look: "“runn…” (48.2) on its own line; then “running” whole (57.5), past the box's edge.",
-    title: "F14 · Long word moved whole (decision 4)",
-    values: createTextBoxStepValues({
-      boxWidth: 50,
-      content: "running",
-      isInBox: true,
-      longWord: "move",
-    }),
+    title: "F14 · Long word kept whole (decisions 3 and 4)",
+    values: createTextBoxStepValues({ boxWidth: 50, content: "running", isInBox: true }),
   },
   {
-    explanation: "Nothing to type: “Hello”, a no-break space, “World”.",
-    look: "Hello, then the no-break space with “Worl”, then d: no line ends after it.",
+    explanation: "Nothing to type: “Hello”, a no-break space, “World”, the ellipsis off.",
+    look: "One line “Hello World” (82.7), past the box 45 wide: no break at a no-break space.",
     title: "F14 · No-break space (decision 5)",
-    values: createTextBoxStepValues({ boxWidth: 45, content: "Hello\u{A0}World", isInBox: true }),
+    values: createTextBoxStepValues({
+      boxWidth: 45,
+      content: "Hello\u{A0}World",
+      hasEllipsis: false,
+      isInBox: true,
+    }),
   },
   {
     explanation: "Nothing to type: a box 50 × 5. Then Max lines 100001.",
@@ -70,10 +64,10 @@ export const GUIDED_STEPS_F14_DECISIONS: readonly GuidedStep[] = [
     values: createTextBoxStepValues(ONE_LINE),
   },
   {
-    explanation: "Nothing to type: “Hello” in a box 5 wide.",
-    look: "H, e, l, l, o on five lines, each wider than 5, none with an ellipsis.",
+    explanation: "Nothing to type: “W a” in a box 5 wide.",
+    look: "W over a, each wider than 5, neither with an ellipsis.",
     title: "F14 · One character too wide (decision 9)",
-    values: createTextBoxStepValues({ boxWidth: 5, content: "Hello", isInBox: true }),
+    values: createTextBoxStepValues({ boxWidth: 5, content: "W a", isInBox: true }),
   },
   {
     explanation: "Nothing to type: “Hello” and a line break, at most 1 line.",
@@ -119,7 +113,7 @@ export const GUIDED_STEPS_F14_DECISIONS: readonly GuidedStep[] = [
   },
   {
     explanation: "Tick Background; then Fit: Box.",
-    look: "Yellow, opaque; Break, Max 0, Ellipsis on, Top, Automatic (model box 0 × 0, page 200 × 100).",
+    look: "Yellow, opaque; Max 0, Ellipsis on, Top, Automatic (model box 0 × 0, page 200 × 100).",
     title: "F14 · Defaults (decision 17)",
     values: createTextBoxStepValues({}),
   },
@@ -154,10 +148,10 @@ export const GUIDED_STEPS_F14_DECISIONS: readonly GuidedStep[] = [
   },
   {
     explanation: "Nothing to type: “100”, U+202F, “%”; under it “100”, U+00A0, “%”.",
-    look: "“100” and U+202F over “%”; then “100” over U+00A0 and “%”.",
+    look: "“100”, U+202F and “…”; under it “100…”: the cut never comes right after U+00A0.",
     title: "F14 · Other no-break characters (decision 22)",
     values: createTextBoxStepValues({
-      boxWidth: 30,
+      boxWidth: 44,
       content: "100\u{202F}%\n100\u{A0}%",
       isInBox: true,
     }),

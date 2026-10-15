@@ -8,7 +8,6 @@ export type * from "./text";
 export type * from "./text-alignment";
 export type * from "./text-case";
 export type * from "./text-direction";
-export type * from "./text-long-word";
 export * from "./text-options";
 export * from "./text-ranges";
 export type * from "./text-vertical-alignment";

@@ -5,6 +5,6 @@ import type { Text } from "../text";
 export type TextInBox = {
   /** The metrics of the face the text is drawn with. */
   readonly metrics: FontMetrics;
-  /** Its size, spacing, box and long-word option. */
+  /** Its size, spacing and box. */
   readonly text: Text;
 };

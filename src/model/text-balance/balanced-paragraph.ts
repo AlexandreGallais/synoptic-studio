@@ -71,7 +71,7 @@ function isWithinBalanceBounds(lineCount: number, tokenCount: number): boolean {
  * @kind domain
  * @param metrics - the metrics of the face the text is drawn with
  * @param paragraph - a paragraph of the text, in its case
- * @param text - its size, spacing, box and long-word option
+ * @param text - its size, spacing and box
  * @returns its lines, in order; one empty line for an empty paragraph
  * @see DERIV-text-box
  */

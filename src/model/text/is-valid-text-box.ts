@@ -9,7 +9,7 @@ import type { Text } from "./text";
 /**
  * Whether the options of a text's box (F14) can enter the model: its width and height, its
  * maximum number of lines and its line height, integers from 0 to 100 000; its background's color
- * of `#` and six lower-case hexadecimal digits and its opacity, an integer from 0 to 100; its long-word option,
+ * of `#` and six lower-case hexadecimal digits and its opacity, an integer from 0 to 100; its
  * vertical alignment and wrap style among their values; its box, ellipsis, trim and background
  * switches true or false, as read from outside. They are checked whether the text sits in
  * a box or fits its content, so that a text keeps valid options when it changes kind.
@@ -21,7 +21,7 @@ import type { Text } from "./text";
  */
 export function isValidTextBox(text: Text): boolean {
   const { boxSide, lineHeight, maximumLines, opacity } = TEXT_RANGES;
-  const { longWords, verticalAlignments, wrapStyles } = TEXT_OPTIONS;
+  const { verticalAlignments, wrapStyles } = TEXT_OPTIONS;
 
   return [
     ...[text.boxWidth, text.boxHeight].map((side) =>
@@ -31,7 +31,6 @@ export function isValidTextBox(text: Text): boolean {
     isInIntegerRange(text.lineHeight, lineHeight.first, lineHeight.last),
     isInIntegerRange(text.backgroundOpacity, opacity.first, opacity.last),
     isColor(text.backgroundColor),
-    longWords.includes(text.longWord),
     verticalAlignments.includes(text.verticalAlignment),
     wrapStyles.includes(text.wrapStyle),
     [text.isInBox, text.hasEllipsis, text.isTrimmed, text.hasBackground].every(

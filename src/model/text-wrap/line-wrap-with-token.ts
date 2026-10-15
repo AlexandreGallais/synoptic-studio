@@ -1,9 +1,8 @@
-import { joinedLineMeasure, measuredLine } from "../text-block";
+import { joinedLineMeasure } from "../text-block";
 
 import { isMeasureFitting } from "./is-measure-fitting";
 import { measuredToken } from "./measured-token";
 import { withoutTrailingSpaces } from "./without-trailing-spaces";
-import { wordBrokenAtCharacters } from "./word-broken-at-characters";
 
 import type { LineWrap } from "./line-wrap";
 import type { TextInBox } from "./text-in-box";
@@ -25,10 +24,9 @@ function endedLine(wrap: LineWrap): readonly string[] {
 
 /**
  * A paragraph wrapped with one more token: the token joins the line being filled when the line
- * with it, its trailing spaces left out, fits; otherwise it starts the next line, and a word too
- * long for a line of its own is broken at a character when the text says so, or stays whole
- * (`DERIV-text-box`, steps 2 to 4). The line's measure grows by the token's, measured once
- * (`joinedLineMeasure`).
+ * with it, its trailing spaces left out, fits; otherwise it starts the next line, where a word too
+ * long for a line of its own stays whole, overflowing (`DERIV-text-box`, steps 2 to 4). The
+ * line's measure grows by the token's, measured once (`joinedLineMeasure`).
  *
  * @kind domain
  * @param wrap - the step before, its line being filled
@@ -41,17 +39,8 @@ export function lineWrapWithToken(wrap: LineWrap, token: string, context: TextIn
   const { metrics, text } = context;
   const { visible, whole } = measuredToken(metrics, token);
 
-  if (
-    wrap.line.text !== "" &&
+  return wrap.line.text !== "" &&
     isMeasureFitting(metrics, joinedLineMeasure(metrics, wrap.line, visible), text)
-  ) {
-    return { ended: [], line: joinedLineMeasure(metrics, wrap.line, whole) };
-  }
-
-  const broken =
-    text.longWord === "break" && !isMeasureFitting(metrics, visible, text)
-      ? wordBrokenAtCharacters(measuredLine(metrics, ""), token, context)
-      : { ended: [], line: whole };
-
-  return { ended: [...endedLine(wrap), ...broken.ended], line: broken.line };
+    ? { ended: [], line: joinedLineMeasure(metrics, wrap.line, whole) }
+    : { ended: endedLine(wrap), line: whole };
 }

@@ -1,7 +1,6 @@
 import type { TextAlignment } from "./text-alignment";
 import type { TextCase } from "./text-case";
 import type { TextDirection } from "./text-direction";
-import type { TextLongWord } from "./text-long-word";
 import type { TextVerticalAlignment } from "./text-vertical-alignment";
 import type { TextWrapStyle } from "./text-wrap-style";
 
@@ -53,8 +52,6 @@ export type Text = {
   readonly letterSpacing: number;
   /** Distance between two baselines, an integer from 1 to 100 000 user units; 0 for the font's own (automatic). */
   readonly lineHeight: number;
-  /** What becomes of a word too long for its box: broken at a character or moved whole. */
-  readonly longWord: TextLongWord;
   /** Most lines shown in its box, an integer from 1 to 100 000; 0 for no maximum. */
   readonly maximumLines: number;
   /** Opacity, an integer from 0 (invisible) to 100 %. */

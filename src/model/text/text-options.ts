@@ -1,7 +1,6 @@
 import type { TextAlignment } from "./text-alignment";
 import type { TextCase } from "./text-case";
 import type { TextDirection } from "./text-direction";
-import type { TextLongWord } from "./text-long-word";
 import type { TextVerticalAlignment } from "./text-vertical-alignment";
 import type { TextWrapStyle } from "./text-wrap-style";
 
@@ -13,8 +12,6 @@ export const TEXT_OPTIONS: {
   readonly cases: readonly TextCase[];
   /** Writing directions. */
   readonly directions: readonly TextDirection[];
-  /** What becomes of a word too long for its box. */
-  readonly longWords: readonly TextLongWord[];
   /** Places of its block down its box. */
   readonly verticalAlignments: readonly TextVerticalAlignment[];
   /** Ways its lines are wrapped in its box. */
@@ -23,7 +20,6 @@ export const TEXT_OPTIONS: {
   alignments: ["left", "center", "right"],
   cases: ["none", "upper", "lower", "title", "camel", "pascal", "kebab", "snake", "constant"],
   directions: ["ltr", "rtl"],
-  longWords: ["break", "move"],
   verticalAlignments: ["top", "middle", "bottom"],
   wrapStyles: ["auto", "balance"],
 };

@@ -15,7 +15,6 @@ const BOXED: Text = {
   boxHeight: 1000,
   boxWidth: 110,
   isInBox: true,
-  longWord: "move",
 };
 
 /**

@@ -27,7 +27,6 @@ const ONE_WORD = {
   content: "Overflowing words",
   hasEllipsis: false,
   isInBox: true,
-  longWord: "move",
   maximumLines: 1,
 } as const;
 
