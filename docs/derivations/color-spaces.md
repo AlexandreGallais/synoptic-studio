@@ -1,6 +1,6 @@
 # DERIV-color-spaces — A color in hexadecimal, its opacity, and its HSL and HSB views
 
-Used by: EN-037 (the hexadecimal forms and the opacity), EN-038 (HSL and HSB from the hexadecimal and back), US-035 (the picker's plane and the values it shows, the exact bytes of its values), EN-043 (the values shown as integers, read from exact fractions). Sources: `REF-CSS-COLOR-4` (§5.1, §5.2, §7, §7.1, §7.2, §16.1.1, §16.2.1), `REF-WIKI-HSL-HSV` (From RGB, HSV to RGB alternative). The stored color is six hexadecimal digits and an integer opacity (F16.AC1); HSL and HSB are computed from it and never stored (ADR-0056). This page shows that the round trip from the hexadecimal is exact, and which precision of the shown HSL and HSB values keeps it exact when they are typed back.
+Used by: EN-037 (the hexadecimal forms and the opacity), EN-038 (HSL and HSB from the hexadecimal and back), US-035 (the picker's plane and the values it shows, the exact bytes of its values), EN-043 (the values shown as integers, read from exact fractions, and one value edited with the exact others). Sources: `REF-CSS-COLOR-4` (§5.1, §5.2, §7, §7.1, §7.2, §16.1.1, §16.2.1), `REF-WIKI-HSL-HSV` (From RGB, HSV to RGB alternative). The stored color is six hexadecimal digits and an integer opacity (F16.AC1); HSL and HSB are computed from it and never stored (ADR-0056). This page shows that the round trip from the hexadecimal is exact, and which precision of the shown HSL and HSB values keeps it exact when they are typed back.
 
 ## Notation
 
@@ -187,7 +187,20 @@ S_L = C / min(M + m, 510 − (M + m)) (0 / 1 if that is 0),   L = (M + m) / 510
 
 A value is shown as the nearest integer, a tie up, `round(k · N / D)` with `k` 1 for the hue and 100 for a percent, and a hue rounding to 360 shown 0 as in step 9 (ADR-0058). `k · N` is an integer below `100 · 510`, so step 11's argument holds: the quotient is correctly rounded, a value lying on a half is seen as a half, and any other lies at least `1 / (2D) ≥ 1 / 1020` from one. `#ff8000` shows HSB 30, 100, 100 and HSL 30, 100, 50; `#336699` shows HSB 210, 67, 60; `#ff0001`, at `91 740 / 255 = 359.76471°`, shows 0; `#080100`, at `60 · 1 / 8 = 7.5°`, shows 8; `#c8c7c7`, its HSB saturation `1 / 200 = 0.5 %`, shows 1.
 
+**One value edited, the others exact** (ADR-0058, decisions 2 and 3). The color is rebuilt from the integer typed and the exact values of the two others; a value given equal to the one shown stands for its exact value, so a field left as it is changes nothing. Step 11's integer form holds for any fractions `H = h / d`, `S = s / e` and `V` or `L = v / w` (or `l / w`), with `t = 60 d` for HSB and `t = 30 d` for HSL in place of 600 and 300:
+
+```text
+HSB:  K = (t n + h) mod 6t,   p = clamp(min(K, 4t − K), 0, t),            f(n) = v · (e t − s p) / (w e t)
+HSL:  K = (t n + h) mod 12t,  q = clamp(min(K − 3t, 9t − K), −t, t),      f(n) = (l e t − s · min(l, w − l) · q) / (w e t)
+```
+
+Tenths are `d = 10`, `e = w = 1000`, step 11's lines; an integer typed is `d = 1` or `e = w = 100`; an exact value has a denominator up to 255 (`d = C`, `e = M` or `min(M + m, 510 − (M + m))`) or 510 (`w` for `L`). The denominator `w e t` is at most `255 · 255 · 60 · 255` or `510 · 255 · 30 · 255`, about `9.95 · 10⁸`, and `|N| ≤ w e t`, so `255 · N < 2.6 · 10¹¹ < 2⁵³` and a value off a half lies at least `1 / (2 w e t) ≥ 5 · 10⁻¹⁰` from it: step 11's three reasons hold. With the three values exact, `f(n)` is `R / 255` exactly (step 7), so the color comes back.
+
+`#336699`, its brightness typed 61: HSB `21 420 / 102`, `102 / 153`, `61 / 100`. Red: `t = 6120`, `K = (30 600 + 21 420) mod 36 720 = 15 300`, `p = 6120`, `f = 61 · 51 / (100 · 153) = 0.20333`, 51.85 gives 52; green: `K = 3060`, `p = 3060`, `f = 0.40667`, 103.7 gives 104; blue `0.61`, 155.55 gives 156: `#34689c`. The three integers shown, 210, 67, 61, would give `#33679c`. Black (HSL 0, 0, 0 shown) given 30, 100, 50 gives `#ff8000`, the green 127.5 rounded up.
+
 ## Cross-check
+
+At EN-043 the tests run the sample described below through the integers shown (`toWholeColor`) given back unchanged (`wholeValuesToHex`), in HSL and in HSB: 0 colors changed; a property test moves one value of any color by 1 and checks each byte within ½ of `255 · f(n)` computed in binary64 by `hsbToRgb` or `hslToRgb` from that integer and the exact others.
 
 At AUD-017 two reviewers ran every color through the picker's own path, its values shown to one decimal (`hexToPickedColor`) then turned back in exact integers (`pickedColorToHex`, step 11), in HSL and in HSB: 0 colors changed in each.
 
@@ -213,5 +226,7 @@ A script written at SP-017 (Node.js, binary64) converted each of the 16 777 216 
 | byte 236 to a percent          | `round(100 · 236 / 255) = round(92.549)`                                                | 93 %                            |
 | every percent 0 to 100         | percent → byte → percent                                                                | the same percent                |
 | every color, one decimal shown | step 9                                                                                  | the same hexadecimal            |
+| `#336699`, brightness typed 61 | step 12: `210°`, `102 / 153` exact, `61 / 100`                                          | `#34689c`, not `#33679c`        |
+| `#336699`, saturation typed 67 | step 12: 67 is the value shown, so `102 / 153`                                          | `#336699`                       |
 | plane 200 × 100 at (200, 50)   | step 10: `S = 100 · 200 / 200`, `V = 100 · (100 − 50) / 100`; HSB at 210°               | 100 %, 50 %, `#004080`          |
 | hue slider 200 long at 100     | step 10: `360 · 100 / 200`                                                              | 180°                            |

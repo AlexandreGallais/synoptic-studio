@@ -3,9 +3,9 @@
 
 import { fc } from "@fast-check/vitest";
 
-import { fractionToByte, integerRange } from "../src";
+import { DEGREES_PER_TURN, fractionToByte, integerRange } from "../src";
 
-import type { Rgb } from "../src";
+import type { IntegerRatio, Rgb } from "../src";
 
 /** The largest byte, `ff`. */
 const BYTE_MAX = 255;
@@ -30,6 +30,34 @@ export const ANY_BYTE_RGB = fc.record({ blue: ANY_BYTE, green: ANY_BYTE, red: AN
 
 /** Any of the 16 777 216 colors, as its components. */
 export const ANY_RGB = ANY_BYTE_RGB.map(({ blue, green, red }) => rgbOfBytes(red, green, blue));
+
+/**
+ * Any fraction of integers from 0 to a whole, its denominator up to a bound.
+ *
+ * @param whole - the largest value, 1 for a fraction, 360 for a hue in degrees
+ * @param largestDenominator - the bound of the denominator
+ * @returns fractions `n / d`, `d` from 1 to the bound, `n` from 0 to `whole · d`
+ */
+function anyRatio(whole: number, largestDenominator: number): fc.Arbitrary<IntegerRatio> {
+  return fc
+    .integer({ max: largestDenominator, min: 1 })
+    .chain((denominator) =>
+      fc
+        .integer({ max: whole * denominator, min: 0 })
+        .map((numerator) => ({ denominator, numerator })),
+    );
+}
+
+/**
+ * Any exact color whose denominators are those a color read from its bytes, or a value typed, may
+ * have: the hue over the chroma (up to 255), the saturation over up to 255, the level over up to
+ * 510 (`DERIV-color-spaces`, step 12).
+ */
+export const ANY_EXACT_COLOR = fc.record({
+  hue: anyRatio(DEGREES_PER_TURN, BYTE_MAX),
+  level: anyRatio(1, 2 * BYTE_MAX),
+  saturation: anyRatio(1, BYTE_MAX),
+});
 
 /** The values of a byte: 256. */
 const BYTE_COUNT = 256;
