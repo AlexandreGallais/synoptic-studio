@@ -3,7 +3,7 @@ id: AUD-016
 epic: E15
 feature: F14
 title: Audit F14
-status: ready
+status: done
 points: 2
 ---
 
@@ -21,7 +21,7 @@ The feature in depth, the project in breadth, following [audit.md](../../convent
 
 One task = one commit, referenced as `AUD-016.Tn`.
 
-- [ ] T1 — The audit by independent reviewers and its findings (2 h)
+- [x] T1 — The audit by independent reviewers and its findings (2 h)
 
 ## Findings
 
