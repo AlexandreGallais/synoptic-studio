@@ -110,6 +110,8 @@ The five other sectors permute the components and shift `k` by the same offsets;
 
 Each byte is `round(255 · f(n))` (`REF-CSS-COLOR-4`, §16.1.1: "rounded to the closest integer (rounding up if two values are equally close)"). Over the 16 777 216 colors, computed in binary64 from the unrounded HSL or HSB values, `|255 · f(n) − byte|` is at most `3.7 × 10⁻¹³` for HSL and `3.8 × 10⁻¹³` for HSB, far below the 0.5 rounding forgives: **the round trip from the hexadecimal is exact** for every color.
 
+The library rounds with `Math.round` (`nearestInteger`, `REF-MDN-MATH-ROUND`), as the cross-check did: it is CSS's rule, while `⌊x + 0.5⌋` in binary64 rounds 0.49999999999999994 up, and `roundedQuotient`, exact for integers, is not for a fraction: by 1, it gives `5.6 × 10⁻¹⁷` for `−10⁻¹³`, not an integer, and 1 for 0.49999999999999994, `2n + 1` rounding to 2 (EN-038).
+
 ## Step 9 — The precision of the values shown
 
 A designer reads the HSL or HSB values and may type them back. Integers cannot keep every color: there are `360 × 101 × 101 = 3 672 360` integer triples for `16 777 216` colors. One decimal can. Every color was converted, its values rounded, and converted back:
