@@ -1,5 +1,11 @@
 import { hexToExactColor, wholeValuesToHex } from "../../src";
-import { readColorField, readColorInput, readShownColor, writeKeptColor } from "../color-fields";
+import {
+  readColorField,
+  readColorInput,
+  readShownColor,
+  writeColorChosen,
+  writeKeptColor,
+} from "../color-fields";
 import { selectElement, writeText } from "../page";
 
 import { readColorModel } from "./read-color-model";
@@ -15,7 +21,8 @@ import type { PickedColor } from "../../src";
  * in the model chosen against the color its values were read from (`writePickedColor`), each value
  * equal to the one read standing for its exact value, each other kept as given
  * (`hexToExactColor`, `wholeValuesToHex`; ADR-0058, decisions 2 and 3), so that a value edited
- * never moves the others; the color written in the hexadecimal field, the page redrawn.
+ * never moves the others; the color written in the hexadecimal field, marked chosen when it
+ * followed the text's (`writeColorChosen`, US-041), the page redrawn.
  *
  * @kind procedure
  * @param document - page document
@@ -47,6 +54,7 @@ export function applyPickedColor(
   readColorInput(document, ids.color).value = color;
   writeKeptColor(document, ids.color);
   writeText(document, ids.message, "");
+  writeColorChosen(document, ids);
   update();
   showColorPicker(document);
 }

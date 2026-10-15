@@ -1,4 +1,4 @@
-import { readColorField } from "../color-fields";
+import { readColorField, writeColorChosen } from "../color-fields";
 import { writeInputValue } from "../page";
 
 import { readOpenSwatch } from "./read-open-swatch";
@@ -6,7 +6,8 @@ import { showColorPicker } from "./show-color-picker";
 
 /**
  * Applies an opacity picked on the open picker's slider: written in its color's opacity field,
- * the page redrawn, the picker shown again.
+ * the color marked chosen when it followed the text's (`writeColorChosen`, US-041), the page
+ * redrawn, the picker shown again.
  *
  * @kind procedure
  * @param document - page document
@@ -21,7 +22,10 @@ export function applyPickedOpacity(document: Document, opacity: number, update: 
     return;
   }
 
-  writeInputValue(document, readColorField(swatch).opacity, opacity);
+  const ids = readColorField(swatch);
+
+  writeInputValue(document, ids.opacity, opacity);
+  writeColorChosen(document, ids);
   update();
   showColorPicker(document);
 }

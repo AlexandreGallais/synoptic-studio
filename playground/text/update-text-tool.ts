@@ -1,5 +1,5 @@
 import { isValidText, isValidTextBox, textDrawing, textFontMetrics } from "../../src";
-import { writeColorSwatches } from "../color-fields";
+import { writeColorSwatches, writeFollowedColors } from "../color-fields";
 import { writeLeftOutFaces } from "../document";
 import { readFontSession, writeFontFields } from "../fonts";
 import { selectElement, writeText } from "../page";
@@ -15,7 +15,7 @@ const BOLD = 700;
 
 /** Message shown when a text cannot enter the model. */
 const REFUSED =
-  "Size must be an integer from 1 to 100 000, opacity and background opacity from 0 to 100, spacing from −100 000 to 100 000, X, Y and the angle integers, the color and background color # and six hexadecimal digits, the font named, and the box's width and height, its maximum lines and the line height integers from 0 to 100 000.";
+  "Size must be an integer from 1 to 100 000, opacity, underline opacity, strike-through opacity and background opacity from 0 to 100, spacing from −100 000 to 100 000, X, Y and the angle integers, the color, underline, strike-through and background colors # and six hexadecimal digits, the font named, and the box's width and height, its maximum lines and the line height integers from 0 to 100 000.";
 
 /**
  * Outlines the Text tool's fields and the position fields when the text is refused.
@@ -73,7 +73,8 @@ function clearTextDrawing(document: Document): void {
 }
 
 /**
- * Updates the page for the Text tool: the bold button pressed at weight 700 or while it holds the
+ * Updates the page for the Text tool: the underline's and the strike-through's fields showing the
+ * text's color while they follow it (`writeFollowedColors`, US-041); the bold button pressed at weight 700 or while it holds the
  * weight before (US-037); the fields
  * read only in a box shown when Box is chosen, and while one of them is refused, so that the
  * value outlined stays in sight (US-033); the font and weight lists brought up to date with the
@@ -90,6 +91,7 @@ function clearTextDrawing(document: Document): void {
  */
 export function updateTextTool(document: Document): void {
   writeFontFields(document);
+  writeFollowedColors(document);
 
   const text = readTextModel(document);
   const metrics = textFontMetrics(text, readFontSession(document).kept);
