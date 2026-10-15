@@ -1,11 +1,10 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
-import { ARIAL_METRICS, ARIAL_UNKERNED, HELLO_TEXT } from "../../../tests";
+import { ARIAL_BOX_METRICS, ARIAL_METRICS, ARIAL_UNKERNED, HELLO_TEXT } from "../../../tests";
 import { DEFAULT_FONT } from "../font";
+import { lineHeight, lineWidth } from "../text-block";
 
-import { lineHeight } from "./line-height";
-import { lineWidth } from "./line-width";
 import { textBlock } from "./text-block";
 
 describe("textBlock (DERIV-text-width step 4)", () => {
@@ -82,6 +81,35 @@ describe("textBlock (DERIV-text-width step 4)", () => {
 
     expect(textBlock(ARIAL_METRICS, { ...text, textCase: "sentence" }).width).toBe(36.4609375);
     expect(textBlock(ARIAL_METRICS, text).width).toBe(36.90625);
+  });
+
+  it("[F14.AC2] measures the lines a box shows, with their ellipsis", () => {
+    // "Hello World Hello World" in a box 60 wide, at most 2 lines: "Hello" over "World…",
+    // (5348 + 2048) / 128 = 57.78125 wide, two lines of 18.3984375.
+    const text = {
+      ...HELLO_TEXT,
+      boxHeight: 1000,
+      boxWidth: 60,
+      content: "Hello World Hello World",
+      isInBox: true,
+      maximumLines: 2,
+    };
+
+    expect(textBlock(ARIAL_BOX_METRICS, text)).toEqual({ height: 36.796875, width: 57.78125 });
+  });
+
+  it("[F14.AC6] measures a text that fits its content with the lines of F05", () => {
+    // "Hello World" in a box 50 wide would wrap; fitting its content it stays one line, 82.6875
+    // wide, over "Hello": two lines of 18.3984375.
+    const text = {
+      ...HELLO_TEXT,
+      boxHeight: 1000,
+      boxWidth: 50,
+      content: "Hello World\nHello",
+      maximumLines: 1,
+    };
+
+    expect(textBlock(ARIAL_BOX_METRICS, text)).toEqual({ height: 36.796875, width: 82.6875 });
   });
 
   test.prop({

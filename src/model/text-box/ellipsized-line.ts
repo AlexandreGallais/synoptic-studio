@@ -1,0 +1,73 @@
+import { characterUnits } from "../line-characters";
+import { joinedLineMeasure, measuredLine } from "../text-block";
+
+import { isMeasureFitting } from "./is-measure-fitting";
+import { textEllipsis } from "./text-ellipsis";
+import { withoutTrailingSpaces } from "./without-trailing-spaces";
+
+import type { TextInBox } from "./text-in-box";
+import type { LineMeasure } from "../text-block";
+
+/** The space U+0020, which never ends what is kept before the ellipsis. */
+const SPACE = " ";
+
+/** A line being read for its cut: the measure of its start read so far, and the longest start kept. */
+type EllipsisCut = {
+  /** The measure of the line's start read so far. */
+  readonly start: LineMeasure;
+  /** The longest start that fits with the ellipsis, or the first one ending with a character other than a space; undefined before it. */
+  readonly kept: string | undefined;
+};
+
+/** What a cut is read with: the text, its face's metrics, and the measure of its ellipsis. */
+type CutContext = TextInBox & {
+  /** The measure of the ellipsis. */
+  readonly ellipsis: LineMeasure;
+};
+
+/**
+ * A line's cut read one unit further: its start grows by the unit, measured once
+ * (`joinedLineMeasure`); a start ending with a character other than a space is kept when it is
+ * the first such, which always stays, or when it fits with the ellipsis after it.
+ *
+ * @kind domain
+ * @param cut - the cut read so far
+ * @param unit - the line's next unit
+ * @param context - the text, its face's metrics and its ellipsis's measure
+ * @returns the cut read with the unit
+ * @see DERIV-text-box
+ */
+function cutWithUnit(cut: EllipsisCut, unit: string, context: CutContext): EllipsisCut {
+  const { metrics, text } = context;
+  const start = joinedLineMeasure(metrics, cut.start, measuredLine(metrics, unit));
+  const isKept =
+    unit !== SPACE &&
+    (cut.kept === undefined ||
+      isMeasureFitting(metrics, joinedLineMeasure(metrics, start, context.ellipsis), text));
+
+  return { kept: isKept ? start.text : cut.kept, start };
+}
+
+/**
+ * A line ended with an ellipsis: without its trailing spaces, then without its last units, with
+ * the spaces before them, until the line and its ellipsis fit the box; the first unit other than
+ * a space always stays, so that a box narrower than it and the ellipsis shows both, overflowing
+ * (`DERIV-text-box`, step 6, provisional). The line's start is measured once, unit by unit, and
+ * the longest start that fits is kept, which is where removing units from the end first fits.
+ *
+ * @kind domain
+ * @param context - the text and the metrics of its face
+ * @param line - a line shown, in the text's case
+ * @returns the line cut, its ellipsis after it; the ellipsis alone for a line of spaces
+ * @see REF-CSS-OVERFLOW-3
+ */
+export function ellipsizedLine(context: TextInBox, line: string): string {
+  const ellipsis = textEllipsis(context.metrics);
+  const cutContext = { ...context, ellipsis: measuredLine(context.metrics, ellipsis) };
+  const cut = characterUnits(withoutTrailingSpaces(line)).reduce<EllipsisCut>(
+    (state, unit) => cutWithUnit(state, unit, cutContext),
+    { kept: undefined, start: measuredLine(context.metrics, "") },
+  );
+
+  return (cut.kept ?? "") + ellipsis;
+}

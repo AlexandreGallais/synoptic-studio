@@ -1,8 +1,8 @@
 import { boxCenter } from "../placement";
-import { textBlock } from "../text-block";
 
 import { lineDecorations } from "./line-decorations";
 import { positionedLines } from "./positioned-lines";
+import { textBlock } from "./text-block";
 
 import type { FontMetrics } from "../font";
 import type { Text } from "../text";

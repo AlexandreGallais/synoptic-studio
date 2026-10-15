@@ -31,8 +31,8 @@ Arial 5.01 at size 16, kerning left out; automatic line height 18.39844; "…" 2
 
 One task = one commit, referenced as `EN-034.Tn`.
 
-- [ ] T1 — The number of lines shown from the box's height, the line height, the trim, the maximum and the number of lines wrapped, at least one unless the text is empty; tests first, a property: the lines shown never exceed the maximum (2 h)
-- [ ] T2 — The ellipsis, on or off: characters removed from the end until the line fits, the first other than a space kept, three full stops when the face lacks U+2026; `@see DERIV-text-box`, `REF-CSS-OVERFLOW-3`; tests first, a property: a cut line is no wider than the box unless one character is left (2 h)
+- [x] T1 — The number of lines shown from the box's height, the line height, the trim, the maximum and the number of lines wrapped, at least one unless the text is empty; tests first, a property: the lines shown never exceed the maximum (2 h)
+- [x] T2 — The ellipsis, on or off: characters removed from the end until the line fits, the first other than a space kept, three full stops when the face lacks U+2026; `@see DERIV-text-box`, `REF-CSS-OVERFLOW-3`; tests first, a property: a cut line is no wider than the box unless one character is left (2 h)
 
 ## Notes
 

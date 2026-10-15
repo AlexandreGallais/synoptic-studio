@@ -1,12 +1,12 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
-import { ARIAL_UNKERNED, HELLO_TEXT } from "../../../tests";
+import { ARIAL_BOX_METRICS, ARIAL_UNKERNED, HELLO_TEXT } from "../../../tests";
 import { EPSILON } from "../../math";
 import { TEXT_OPTIONS } from "../text";
-import { textBlock } from "../text-block";
 
 import { positionedLines } from "./positioned-lines";
+import { textBlock } from "./text-block";
 
 import type { Text } from "../text";
 import type { PositionedLine } from "./positioned-line";
@@ -87,6 +87,25 @@ describe("positionedLines (DERIV-text-width steps 4 and 5)", () => {
     const [line] = placed({ ...HELLO_TEXT, alignment: "right", content: "HH", letterSpacing: -30 });
 
     expect([line?.width, line?.left]).toEqual([-6.890625, 6.890625]);
+  });
+
+  it("[F14.AC2] places the lines a box shows, with their ellipsis", () => {
+    // "Hello World Hello World" in a box 60 wide, at most 2 lines: "Hello" over "World…",
+    // (5348 + 2048) / 128 = 57.78125 wide, the block as wide.
+    const text: Text = {
+      ...HELLO_TEXT,
+      boxHeight: 1000,
+      boxWidth: 60,
+      content: "Hello World Hello World",
+      isInBox: true,
+      maximumLines: 2,
+    };
+    const lines = positionedLines(ARIAL_BOX_METRICS, text, 57.78125);
+
+    expect(lines.map((line) => [line.content, line.width])).toEqual([
+      ["Hello", 36.4609375],
+      ["World…", 57.78125],
+    ]);
   });
 
   it("gives an empty text no line", () => {

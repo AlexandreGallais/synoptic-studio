@@ -1,5 +1,5 @@
-import { lineWidth, textLines } from "../text-block";
-import { textInCase } from "../text-case";
+import { lineWidth } from "../text-block";
+import { shownLines } from "../text-box";
 
 import { initialTextPosition } from "./initial-text-position";
 import { lineBaseline } from "./line-baseline";
@@ -10,7 +10,7 @@ import type { Text } from "../text";
 import type { PositionedLine } from "./positioned-line";
 
 /**
- * The lines of a text, placed: its content written in its case and cut into lines, each measured,
+ * The lines of a text, placed: its lines shown (`shownLines`), each measured,
  * moved in the block as its alignment says, its `x` its initial text position and its `y` its
  * baseline (`DERIV-text-width`, steps 4 and 5). An empty content has no line. A line tightened
  * past nothing keeps its negative width and may fall outside the block, which is at least 0 wide
@@ -28,7 +28,7 @@ export function positionedLines(
   text: Text,
   blockWidth: number,
 ): readonly PositionedLine[] {
-  const lines = textLines(textInCase(text.content, text.textCase)).map((content) => ({
+  const lines = shownLines(metrics, text).map((content) => ({
     content,
     width: lineWidth(metrics, content, text),
   }));
