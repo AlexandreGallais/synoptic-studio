@@ -1,6 +1,6 @@
 # DERIV-text-width — The width of a line of text, the line height and the lines placed, from a font's metrics
 
-Used by: F05 (EN-031, EN-032, US-031, ADR-0052), then F14 for wrapping. Sources: `REF-OT-HEAD` (`unitsPerEm`), `REF-OT-CMAP` (character to glyph, glyph 0 when missing), `REF-OT-HMTX` (the advance of a glyph, the last record for the remaining glyphs), `REF-OT-KERN` and `REF-OT-GPOS` (kerning of a pair of glyphs), `REF-OT-HHEA` (ascender, descender, line gap), `REF-CSS-TEXT-3` (letter spacing between adjacent characters, not at the start or end of a line, in addition to kerning; word spacing on each word separator; `text-align`), `REF-SVG2-TEXT` (`text-anchor`, `xml:space`), `REF-OT-POST` and `REF-OT-OS2` (underline and strike-out).
+Used by: F05 (EN-031, EN-032, US-031, ADR-0052), then F14 for wrapping. Sources: `REF-OT-HEAD` (`unitsPerEm`), `REF-OT-CMAP` (character to glyph, glyph 0 when missing), `REF-OT-HMTX` (the advance of a glyph, the last record for the remaining glyphs), `REF-OT-KERN` and `REF-OT-GPOS` (kerning of a pair of glyphs), `REF-OT-HHEA` (ascender, descender, line gap), `REF-CSS-TEXT-3` (letter spacing between adjacent characters, not at the start or end of a line, in addition to kerning; word spacing on each word separator; `text-align`), `REF-SVG2-TEXT` (`text-anchor`, `white-space`, `xml:space`), `REF-CSS-WRITING-MODES-4` (line-left and line-right), `REF-OT-POST` and `REF-OT-OS2` (underline and strike-out).
 
 ## Notation
 
@@ -53,7 +53,7 @@ A text of `k ≥ 1` lines has a block as wide as its widest line and `k × lineH
 
 ## Step 5 — A line placed in its block
 
-`text-align` aligns a line's content "to the line-left edge of the line box" for `left`, "to the line-right edge" for `right`, and centers it for `center` (`REF-CSS-TEXT-3`, §6.1); in horizontal writing the line-left edge is the left one, whatever the direction. The block, of width `B`, is the line box of every line, its left edge at the text's `X`; a line of width `w` leaves `B − w` of room: none of it goes before the line aligned left, half before the line centered, all of it before the line aligned right.
+`text-align` aligns a line's content "to the line-left edge of the line box" for `left`, "to the line-right edge" for `right`, and centers it for `center` (`REF-CSS-TEXT-3`, §6.1); line-left is "the side from which LTR text would start" (`REF-CSS-WRITING-MODES-4`, §6.3), and in horizontal writing it is the left side for both directions (§6.4). The block, of width `B`, is the line box of every line, its left edge at the text's `X`; a line of width `w` leaves `B − w` of room: none of it goes before the line aligned left, half before the line centered, all of it before the line aligned right.
 
 ```text
 left of line = X + (B − w) × a,   a = 0 (left), ½ (center), 1 (right)
@@ -67,7 +67,7 @@ x of line = left of line + w        (right to left)
 y of line k = baseline of line k    (step 4)
 ```
 
-The spaces measured at step 3 are drawn only if the reader keeps them: with `xml:space="preserve"` it "will draw all space characters, including leading, trailing and multiple contiguous space characters" (`REF-SVG2-TEXT`, §11.10.3.2).
+The spaces measured at step 3 are drawn only if the reader keeps them: `white-space="pre"` "prevents user agents from collapsing sequences of white space" (`REF-CSS-TEXT-3`, §3) for SVG 2 readers, and with `xml:space="preserve"` an SVG 1.1 reader "will draw all space characters, including leading, trailing and multiple contiguous space characters" (`REF-SVG2-TEXT`, §11.10.3.2); ADR-0054 writes both.
 
 ## Step 6 — Underline and strike-through
 

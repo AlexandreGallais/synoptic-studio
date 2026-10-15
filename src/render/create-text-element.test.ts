@@ -48,6 +48,8 @@ describe("createTextElement (ADR-0052)", () => {
   });
 
   it("[F05.AC4] keeps every space, without text-anchor nor dominant-baseline", () => {
+    // white-space for SVG 2 readers, XML:space for SVG 1.1 ones (ADR-0054).
+    expect(text?.getAttribute("white-space")).toBe("pre");
     expect(text?.getAttributeNS("http://www.w3.org/XML/1998/namespace", "space")).toBe("preserve");
     expect(text?.getAttribute("font-family")).toBe('"Inter", sans-serif');
     expect(group.querySelector("[text-anchor], [dominant-baseline], [text-decoration]")).toBeNull();
