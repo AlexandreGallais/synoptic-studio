@@ -3,7 +3,7 @@ id: US-034
 epic: E15
 feature: F14
 title: A background color behind a text, as a highlighter
-status: ready
+status: done
 points: 2
 ---
 
