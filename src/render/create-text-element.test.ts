@@ -95,6 +95,38 @@ describe("createTextElement (ADR-0052)", () => {
     },
   );
 
+  it("[F16.AC4] draws an underline chosen #ff0000 at 50 % in it, the strike-through in the text's #000000 at 1", () => {
+    const chosen = {
+      ...TEXT,
+      hasUnderlineColor: true,
+      underlineColor: "#ff0000",
+      underlineOpacity: 50,
+    };
+    const drawn = createTextElement(document, chosen, textDrawing(DECORATED_METRICS, chosen));
+
+    // Per line, its underline then its strike-through: 'Hello' then 'World'.
+    expect(
+      [...drawn.querySelectorAll("path")].map((path) => [
+        path.getAttribute("fill"),
+        path.getAttribute("fill-opacity"),
+      ]),
+    ).toEqual([
+      ["#ff0000", "0.5"],
+      ["#000000", "1"],
+      ["#ff0000", "0.5"],
+      ["#000000", "1"],
+    ]);
+  });
+
+  it("[F16.AC4] draws both strokes in the text's #0000ff when neither color was chosen", () => {
+    const blue = { ...TEXT, color: "#0000ff", strikeThroughColor: "#ff0000" };
+    const drawn = createTextElement(document, blue, textDrawing(DECORATED_METRICS, blue));
+
+    expect([...drawn.querySelectorAll("path")].map((path) => path.getAttribute("fill"))).toEqual(
+      Array.from({ length: 4 }, () => "#0000ff"),
+    );
+  });
+
   it("[F05.AC5] turns the group by 90 about the middle of the measured block", () => {
     const turned = { ...TEXT, angle: 90, x: 10, y: 20 };
     const drawn = createTextElement(document, turned, textDrawing(DECORATED_METRICS, turned));

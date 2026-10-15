@@ -93,6 +93,32 @@ describe("createHtmlLayerElement (ADR-0053, EN-041)", () => {
     ]);
   });
 
+  it("[F16.AC4] underlines the content's div and strikes each span through, each in its color", () => {
+    const decorated = {
+      ...HELLO_WORLD,
+      hasUnderlineColor: true,
+      isStruckThrough: true,
+      isUnderlined: true,
+      underlineColor: "#ff0000",
+      underlineOpacity: 50,
+    };
+    const layer = createHtmlLayerElement(document, decorated, ARIAL_HTML_LAYER);
+    const style = layer.firstElementChild?.firstElementChild?.getAttribute("style") ?? "";
+
+    // 50 %: alpha 128, written 80; the strike-through follows the text's #000000 at 100 %.
+    expect(style).toContain(
+      "text-decoration-line: underline; text-decoration-thickness: from-font; text-decoration-color: #ff000080",
+    );
+
+    expect([...layer.querySelectorAll("span")].map((span) => span.getAttribute("style"))).toEqual(
+      Array.from(
+        { length: 2 },
+        () =>
+          "text-decoration-line: line-through; text-decoration-thickness: from-font; text-decoration-color: #000000ff",
+      ),
+    );
+  });
+
   it("writes no span for an empty text", () => {
     const empty = createHtmlLayerElement(document, HELLO_WORLD, {
       ...ARIAL_HTML_LAYER,

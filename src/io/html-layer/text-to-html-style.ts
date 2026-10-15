@@ -3,6 +3,7 @@ import { formatFontFamily } from "../text-style";
 
 import { formatCssColor } from "./format-css-color";
 import { formatCssPixels } from "./format-css-pixels";
+import { textStrokeToCss } from "./text-stroke-to-css";
 
 import type { CssDeclaration } from "./css-declaration";
 import type { HtmlLayer, Text } from "../../model";
@@ -53,29 +54,6 @@ function spacingToCss(text: Text): readonly CssDeclaration[] {
     ...direction,
     ["text-align", text.alignment],
   ];
-}
-
-/**
- * The underline and strike-through of a text as CSS decoration lines, as thick as the font says
- * (`from-font`, its "preferred thickness"); none when it has neither.
- *
- * @kind format
- * @param text - whether it is underlined and struck through
- * @returns the declarations, none or two
- * @see REF-MDN-TEXT-DECORATION-THICKNESS
- */
-function decorationsToCss(text: Text): readonly CssDeclaration[] {
-  const lines = [
-    ...(text.isUnderlined ? ["underline"] : []),
-    ...(text.isStruckThrough ? ["line-through"] : []),
-  ];
-
-  return lines.length > 0
-    ? [
-        ["text-decoration-line", lines.join(" ")],
-        ["text-decoration-thickness", "from-font"],
-      ]
-    : [];
 }
 
 /**
@@ -173,7 +151,8 @@ function boxToFlexItemCss(text: Text): readonly CssDeclaration[] {
 /**
  * The style of the `div` holding a text's content in its HTML layer (ADR-0053, decision 1), as
  * plain declarations: its font and color with the library's line height, its spacing, direction
- * and alignment, its decorations, how its lines break, how a text cut by its box ends, and, in a
+ * and alignment, its underline in its color (`textStrokeToCss`; the strike-through sits on each
+ * paragraph's `span`, `textToParagraphStyle`, US-041), how its lines break, how a text cut by its box ends, and, in a
  * box, an item of its flex column that never shrinks.
  * Lengths are written as the SVG writes its numbers (`formatCssPixels`); the font's names are
  * escaped by `formatFontFamily`.
@@ -188,7 +167,7 @@ export function textToHtmlStyle(text: Text, layer: HtmlLayer): readonly CssDecla
   return [
     ...fontToCss(text, layer),
     ...spacingToCss(text),
-    ...decorationsToCss(text),
+    ...textStrokeToCss(text, "underline"),
     ...wrapStyleToCss(text),
     ...boxCutToCss(text, layer),
     ...boxToFlexItemCss(text),

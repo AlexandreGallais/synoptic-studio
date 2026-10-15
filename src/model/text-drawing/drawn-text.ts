@@ -1,3 +1,4 @@
+import type { DrawnStroke } from "./drawn-stroke";
 import type { LineDecoration } from "./line-decoration";
 import type { Size } from "../../geometry";
 import type { Point } from "../../math";
@@ -13,6 +14,6 @@ export type DrawnText = {
   readonly center: Point;
   /** Its lines, in order, one `<tspan>` each. */
   readonly lines: readonly PositionedLine[];
-  /** Its underlines and strike-throughs, line by line, one `<path>` each. */
-  readonly decorations: readonly LineDecoration[];
+  /** Its underlines and strike-throughs, line by line, one `<path>` each in its color (US-041). */
+  readonly decorations: readonly DrawnStroke[];
 };
