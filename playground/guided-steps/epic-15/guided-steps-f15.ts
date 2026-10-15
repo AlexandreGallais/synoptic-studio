@@ -54,6 +54,13 @@ export const GUIDED_STEPS_F15: readonly GuidedStep[] = [
     values: ARIAL_PUMP,
   },
   {
+    explanation:
+      "In Chrome: Installed fonts; Font IBM Plex Sans (or import its Regular, Text and Medium); Weight 400, 450, then 500.",
+    look: "Three different weights, 450 a little heavier than 400; the dashed frame hugging the letters at each; Contour width 90.688, 91.264, then 91.92.",
+    title: "F15 · Weight 450 drawn as measured (US-047)",
+    values: createTextStepValues({ content: "Pump P-101", font: "IBM Plex Sans", size: 16 }),
+  },
+  {
     explanation: "In Firefox or Safari: Installed fonts.",
     look: "“This browser cannot list the installed fonts (Chrome and Edge can): use Import a font with the font's file.”",
     title: "F15 · Installed fonts elsewhere",
