@@ -129,4 +129,44 @@ describe("US-035 Product Owner test card", () => {
     expect(readDisplay("color-picker")).toBe("none");
     expect(readValue("text-color")).toBe("#9c3436");
   });
+
+  it("[F16.AC2] follows US-040's card: whole numbers, one value edited, the hexadecimal kept", () => {
+    openServedPage("");
+    clickElement("tool-text");
+    chooseOption("text-weight", "400");
+    chooseOption("text-fit", "content");
+    chooseOption("color-model", "hsb");
+
+    // 1. #ff8000: HSB 30, 100, 100, no decimal anywhere.
+    typeAndLeave("text-color", "#ff8000");
+    clickElement("text-color-swatch");
+    expect(readPickerValues()).toEqual(["30", "100", "100"]);
+    expect(readValue("text-color")).toBe("#ff8000");
+
+    // 2. #336699, then 61 in B: #34689c, S still 67.
+    typeAndLeave("text-color", "#336699");
+    typeAndLeave("color-level-value", "61");
+
+    expect([readValue("text-color"), ...readPickerValues()]).toEqual([
+      "#34689c",
+      "210",
+      "67",
+      "61",
+    ]);
+
+    // 3. #336699, Enter in S at 67: unchanged.
+    typeAndLeave("text-color", "#336699");
+    typeAndLeave("color-saturation-value", "67");
+    expect(readValue("text-color")).toBe("#336699");
+
+    // 4. End on the hue: 359.
+    pressKey("#color-hue", "End");
+    expect(readValue("color-hue-value")).toBe("359");
+
+    // 5. A click on the plane, 200 × 300 at (61, 100): S 100 · 61 / 200 = 30.5 → 31,
+    // B 100 · 200 / 300 = 66.67 → 67.
+    setElementBox("#color-plane", { height: 300, left: 0, top: 0, width: 200 });
+    pressPointer("#color-plane", "pointerdown", { buttons: 1, clientX: 61, clientY: 100 });
+    expect(readPickerValues().slice(1)).toEqual(["31", "67"]);
+  });
 });
