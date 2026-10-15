@@ -1,14 +1,14 @@
 import { isInIntegerRange } from "../../math";
+import { tableToView } from "../font-tables";
 
 import { parseCapHeight } from "./parse-cap-height";
 import { parseEmbeddingPermissions } from "./parse-embedding-permissions";
 import { parseHorizontalHeader } from "./parse-horizontal-header";
 import { parseTextDecorations } from "./parse-text-decorations";
 import { parseUnitsPerEm } from "./parse-units-per-em";
-import { tableToView } from "./table-to-view";
 
-import type { FontTables } from "./font-tables";
 import type { FontMetrics } from "../../model";
+import type { FontTables } from "../font-tables";
 
 /** The metrics a font gives once for all its characters. */
 export type FixedMetrics = Omit<FontMetrics, "advances" | "kerning" | "missingAdvance">;

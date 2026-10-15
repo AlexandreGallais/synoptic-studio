@@ -4,6 +4,8 @@ import { TRUE_TYPE_VERSION, fontFile, testFontTables } from "../../../tests";
 
 import { parseFontTables } from "./parse-font-tables";
 
+import type { FontTables } from "./font-tables";
+
 /**
  * The tables found in the test font, some left out.
  *
@@ -17,25 +19,19 @@ function tablesWithout(missing: readonly string[]): ReturnType<typeof parseFontT
   return parseFontTables(new DataView(file.buffer));
 }
 
+/** No table found, for a test whose file gives none. */
+const EMPTY_TABLES: Partial<FontTables> = {};
+
 describe("parseFontTables (REF-OT-OTFF)", () => {
-  it("finds the tables measuring needs, the kerning ones absent, ignoring maxp", () => {
-    const tables = tablesWithout([]);
+  it("finds the tables measuring needs, the kerning and naming ones absent, ignoring maxp", () => {
+    const { cmap, gpos, kern, name, ...others } = tablesWithout([]) ?? EMPTY_TABLES;
 
     // Seven tables, cmap first: the directory takes 12 + 7 × 16 = 124 bytes, so cmap starts there.
-    expect(tables?.cmap.offset).toBe(124);
-    expect(tables?.gpos).toBeUndefined();
-    expect(tables?.kern).toBeUndefined();
+    expect(cmap?.offset).toBe(124);
+    expect([gpos, kern, name]).toEqual([undefined, undefined, undefined]);
 
-    expect(Object.keys(tables ?? {})).toEqual([
-      "cmap",
-      "head",
-      "hhea",
-      "hmtx",
-      "gpos",
-      "kern",
-      "os2",
-      "post",
-    ]);
+    // Besides them: the other required tables, maxp left out.
+    expect(Object.keys(others)).toEqual(["head", "hhea", "hmtx", "os2", "post"]);
   });
 
   it.each(["cmap", "head", "hhea", "hmtx", "OS/2", "post"])(

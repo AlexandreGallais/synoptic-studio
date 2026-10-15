@@ -63,7 +63,8 @@ describe("parseFontFace (REF-OT-NAME, REF-OT-OS2)", () => {
   it("[F15.AC1] reads a face named Arial, 400, upright, with its metrics and its file", () => {
     expect(parseFontFace(ARIAL_FILE)).toEqual({
       face: {
-        file: { bytes: ARIAL_FILE, isEmbeddable: true },
+        // The test font has no name ID 5: no version.
+        file: { bytes: ARIAL_FILE, isEmbeddable: true, version: "" },
         isItalic: false,
         // The metrics F05 reads, for the characters of the measured blocks.
         metrics: parseFontMetrics(ARIAL_FILE, blockCharacters(MEASURED_BLOCKS)),
@@ -94,6 +95,21 @@ describe("parseFontFace (REF-OT-NAME, REF-OT-OS2)", () => {
       face: { file: { isEmbeddable: true }, isItalic: true, weight: 300 },
       family: "Inter",
     });
+  });
+
+  it("[F15.AC1] keeps the version its file names, name ID 5, read once with the family", () => {
+    const name = nameTable([
+      { encoding: 1, language: ENGLISH_US, nameId: 1, platform: WINDOWS_PLATFORM, text: "Arial" },
+      {
+        encoding: 1,
+        language: ENGLISH_US,
+        nameId: 5,
+        platform: WINDOWS_PLATFORM,
+        text: "Version 5.01x",
+      },
+    ]);
+
+    expect(parseFontFace(namedFont(name, ARIAL_OS2))?.face.file?.version).toBe("Version 5.01x");
   });
 
   it.each([
