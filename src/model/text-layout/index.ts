@@ -2,6 +2,7 @@ export * from "./block-offset-in-box";
 export * from "./first-baseline-offset";
 export * from "./initial-text-position";
 export * from "./line-baseline";
+export type * from "./line-in-block";
 export * from "./line-offset-in-block";
 export type * from "./positioned-line";
 export * from "./positioned-lines";
