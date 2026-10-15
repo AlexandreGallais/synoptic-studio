@@ -29,7 +29,7 @@ In delivery order.
 | [EN-038](../stories/E15-F16-EN-038-hsl-and-hsb-from-a-color.md)     | Enabler    | HSL and HSB from a hexadecimal color, and back                         | done   |
 | [CHK-016](../stories/E15-F16-CHK-016-checkpoint-f16.md)             | Checkpoint | Checkpoint in the middle of F16                                        | done   |
 | [US-035](../stories/E15-F16-US-035-pick-a-color.md)                 | User story | Type or pick a color and its opacity                                   | done   |
-| [AUD-017](../stories/E15-F16-AUD-017-audit-f16.md)                  | Audit      | Audit F16                                                              | ready  |
+| [AUD-017](../stories/E15-F16-AUD-017-audit-f16.md)                  | Audit      | Audit F16                                                              | done   |
 | [VAL-016](../stories/E15-F16-VAL-016-validate-f16.md)               | Validation | Validate F16                                                           | ready  |
 
 ## Feature plan
