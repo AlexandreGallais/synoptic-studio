@@ -64,7 +64,7 @@ function createDecorationElement(
  * positioned `<tspan>` per line, every space kept so that a reader draws the spaces the library
  * measured (`white-space="pre"` for SVG 2 readers, `xml:space="preserve"` for SVG 1.1 ones,
  * ADR-0054), then one `<path>` rectangle per underline or strike-through. A turned text's `<g>`
- * carries a `transform` turning it about the middle of its block (ADR-0052, decision 4), so that
+ * carries a `transform` turning it about the middle of its block (ADR-0055, decision 3), so that
  * its underlines and strike-throughs turn with its letters; a text at 0° carries none.
  *
  * @kind procedure
