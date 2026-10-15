@@ -23,6 +23,7 @@ One task = one commit, referenced as `US-032.Tn`.
 - [x] T1 — The turn about the block's middle and the block's frame (2 h)
 - [x] T2 — The Product Owner test card (30 min)
 - [x] T3 — CHK-014's two points: a font without metrics, the fallback's name checked (1 h)
+- [x] T4 — The review's findings: each tool keeps its own placement, citations (1 h)
 
 ## Decisions taken (2026-10-15)
 
@@ -31,6 +32,7 @@ One task = one commit, referenced as `US-032.Tn`.
 - **The frame.** A selected text's block is drawn by the route of a shape's straight box (`createStraightBoxElement`: dashes as thin filled rectangles), in a `<g>` carrying the text's rotation, so that it turns with the text; an empty block draws none.
 - **CHK-014's two points** (ADR-0055): a font without metrics is measured with its fallback family's face, when read, else with the default font's, as the code did since EN-032; ADR-0052's decision 1 is amended. The fallback's name is checked as the font's (`isFontName` in `isValidText`).
 - **The playground.** In Text mode the angle row (field, −90° and +90°) is shown; the shapes' modes and straight box stay hidden.
+- **Each tool keeps its own placement** (audit finding, a playground behaviour): the Text tool and the shapes each keep their X, Y and angle, and the shapes their position; going from one to the other shows the other's values, a text not yet placed starting at X 0, Y 0, straight. A text's angle never turns the shape, nor the other way round (`saveToolPlacement`, `writeToolPlacement`).
 
 ## Product Owner test
 
@@ -47,6 +49,6 @@ Open `http://localhost:5173/`, click **Text** in the toolbar, and type in **Cont
 7. Type **Size** = 48 and **Angle** = 90: the block grows to 133.47656 × 116.15625 and the text turns about its new middle, `rotate(90 166.73828 108.07813)` at X 100, Y 50.
 8. Type **Angle** = 1.5: the drawing goes, the message under the fields says the angle must be an integer, the fields are outlined in red. Type 0: the text comes back.
 9. Empty **Content**: nothing is drawn, no frame.
-10. Click **Rectangle**: its angle row works as before, and its turned box and dashed straight box look as they did.
+10. Type **Content** "Hello", a line break, "World" again, **Size** = 32, **Angle** = 90 and **X** = 0, **Y** = 0. Click **Rectangle**: the fields show the rectangle's own X, Y and angle, and the rectangle is not turned by the text's 90. Type **Angle** = 30 for it. Click **Text**: the fields show 0, 0 and 90 again and the text turns as before, `rotate(90 44.49219 38.71875)`; the rectangle's 30 did not turn it. Click **Rectangle**: 30 again, its turned box and dashed straight box as before.
 
 What to look at closely: the frame turning with the letters without drifting from them (step 1), the underline turning with its line (step 2), and whether the dashed frame reads well as the selection of a text (the look of a turned shape's straight box). The library turns "Hello" over "World" in Arial 16 without kerning about (20.89063, 18.39844), which the tests check; the playground measures every font with Inter until fonts are read from files (F15).

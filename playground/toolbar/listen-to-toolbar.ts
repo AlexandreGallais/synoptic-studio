@@ -1,4 +1,5 @@
 import { selectElement } from "../page";
+import { saveToolPlacement, writeToolPlacement } from "../text";
 
 import { writeDefaultShape } from "./write-default-shape";
 import { writeWholeShapeFields } from "./write-whole-shape-fields";
@@ -12,7 +13,9 @@ const TOOLS = [
 ] as const;
 
 /**
- * Chooses a shape kind in the selector, its fields made whole first, and fires the selector's
+ * Chooses a shape kind in the selector, its fields made whole first and the X, Y and angle of
+ * the text or of the shapes shown, each tool keeping its own (`saveToolPlacement`,
+ * `writeToolPlacement`), and fires the selector's
  * `change` event, as a choice in the selector would.
  *
  * @kind procedure
@@ -27,7 +30,9 @@ function writeShapeChoice(document: Document, kind: string): void {
     return;
   }
 
+  saveToolPlacement(document, kind);
   writeWholeShapeFields(document);
+  writeToolPlacement(document, kind);
   select.value = kind;
   select.dispatchEvent(new Event("change"));
 }
