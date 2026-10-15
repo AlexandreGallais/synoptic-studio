@@ -1,4 +1,4 @@
-export * from "./create-text-block-frame";
+export * from "./create-text-frame";
 export * from "./hide-point-panels";
 export * from "./listen-to-text-fields";
 export * from "./read-field-value";

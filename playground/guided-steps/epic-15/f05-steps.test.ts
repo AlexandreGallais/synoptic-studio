@@ -84,7 +84,7 @@ function readTextAttribute(name: string): string | null | undefined {
 function readTransforms(): readonly (string | null | undefined)[] {
   return [
     document.querySelector("#canvas g:has(> text)")?.getAttribute("transform"),
-    document.querySelector("#canvas g.text-block")?.getAttribute("transform"),
+    document.querySelector("#canvas g.text-frame")?.getAttribute("transform"),
   ];
 }
 
@@ -105,7 +105,7 @@ function readStrokes(): readonly (string | null)[] {
  * @returns true when it is
  */
 function hasFrame(): boolean {
-  return document.querySelector("#canvas g.text-block") !== null;
+  return document.querySelector("#canvas g.text-frame") !== null;
 }
 
 describe("the guided test of F05 (VAL-014): the Text tool's options", () => {
@@ -293,7 +293,7 @@ describe("the guided test of F05 (VAL-014): placing and turning", () => {
   it("[F05.AC5] the dashed frame turns with the letters", () => {
     openStep("The dashed frame");
     expect(readTransforms()[1]).toBe("rotate(30 87.95313 38.71875)");
-    expect(document.querySelectorAll("#canvas g.text-block path.straight-box")).toHaveLength(1);
+    expect(document.querySelectorAll("#canvas g.text-frame path.straight-box")).toHaveLength(1);
   });
 
   it("the turn on the group holding the text and its four strokes", () => {

@@ -37,7 +37,7 @@ function typeContent(content: string): void {
 function readTransforms(): readonly (string | null | undefined)[] {
   return [
     document.querySelector("#canvas g:has(> text)")?.getAttribute("transform"),
-    document.querySelector("#canvas g.text-block")?.getAttribute("transform"),
+    document.querySelector("#canvas g.text-frame")?.getAttribute("transform"),
   ];
 }
 
