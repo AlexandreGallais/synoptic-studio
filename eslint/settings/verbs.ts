@@ -41,6 +41,7 @@ export const PROCEDURE_VERBS = [
   "reset",
   "run",
   "save",
+  "schedule",
   "select",
   "set",
   "show",

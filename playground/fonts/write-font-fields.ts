@@ -5,6 +5,7 @@ import { readFontSession } from "./read-font-session";
 import { writeFontOptions } from "./write-font-options";
 import { writeFontSession } from "./write-font-session";
 import { writeWeightChoice } from "./write-weight-choice";
+import { WRITTEN_FONT_LISTS } from "./written-font-lists";
 
 /** The weight the page opens with, read when the list holds none chosen (`REF-CSS-FONTS-4`, §2.2). */
 const REGULAR = 400;
@@ -43,6 +44,24 @@ function readChosenWeight(document: Document): string {
 }
 
 /**
+ * Writes the font list again only when the families it shows changed since it was written: the
+ * families kept or the installed fonts of the session, each list replaced whole when it changes;
+ * a value of the text changed alone, its size or opacity, leaves it as it is (US-048).
+ *
+ * @kind procedure
+ * @param document - page document
+ * @see docs/backlog/stories/E15-F17-US-048-fluid-changes-held-keys.md
+ */
+function writeChangedFontOptions(document: Document): void {
+  const session = readFontSession(document);
+  const written = WRITTEN_FONT_LISTS.get(selectElement(document, "text-font"));
+
+  if (written?.kept !== session.kept || written.installed !== session.installed) {
+    writeFontOptions(document, "");
+  }
+}
+
+/**
  * Brings the font and weight lists up to date with the session's fonts before the text is read:
  * the families the editor can measure, the one chosen kept and measured with once its metrics are
  * read (`writeMeasuredFamily`); the weights of its faces, the weight chosen kept when the family
@@ -56,7 +75,7 @@ function readChosenWeight(document: Document): string {
 export function writeFontFields(document: Document): void {
   const chosen = readChosenWeight(document);
 
-  writeFontOptions(document, "");
+  writeChangedFontOptions(document);
   writeMeasuredFamily(document);
   writeWeightChoice(document, chosen === "" ? REGULAR : Number(chosen));
 
