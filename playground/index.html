@@ -47,11 +47,6 @@
       #canvas path:not([fill]) {
         fill: var(--accent);
       }
-      /* The measured block of a text (US-031): a thin frame, a fill between two rectangles. */
-      #canvas path.text-block {
-        fill: #2563eb;
-        fill-rule: evenodd;
-      }
       /* The box the shape is placed in, behind it (F07): a fill only, never a native stroke. */
       #canvas path.box {
         fill: #8883;
@@ -61,7 +56,7 @@
         fill: #2563eb;
         fill-rule: evenodd;
       }
-      /* Its straight box, dashed: thin filled rectangles. */
+      /* Its straight box, and a selected text's measured block (US-032), dashed: thin filled rectangles. */
       #canvas path.straight-box {
         fill: #555;
       }

@@ -1,6 +1,6 @@
 # DERIV-turned-shape — A shape turned about the center of its box, and kept in place when edited
 
-Used by: ADR-0035, F04. Sources: `REF-SVG11-TRANSFORM` §7.4 (the rotation matrix) and §7.6 (a rotation about a point is translate, rotate, translate back), `REF-CSS-TRANSFORMS` §9.1 (a positive angle appears clockwise), `REF-SVG2-COORDS` §8.4 (y pointing down), `REF-MDN-REMAINDER` (sign of `%`), `REF-MATHWORLD-ROTATION-MATRIX` (the quarter turn).
+Used by: ADR-0035, F04, and F05 for a text turned about the middle of its block (US-032). Sources: `REF-SVG11-TRANSFORM` §7.4 (the rotation matrix) and §7.6 (a rotation about a point is translate, rotate, translate back), `REF-CSS-TRANSFORMS` §9.1 (a positive angle appears clockwise), `REF-SVG2-COORDS` §8.4 (y pointing down), `REF-MDN-REMAINDER` (sign of `%`), `REF-MATHWORLD-ROTATION-MATRIX` (the quarter turn).
 
 ## Notation
 

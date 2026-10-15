@@ -1,4 +1,5 @@
 import { readNumber, selectElement } from "../page";
+import { readAngle } from "../position";
 
 import { readFieldValue } from "./read-field-value";
 
@@ -27,8 +28,8 @@ function readTextSwitches(
 }
 
 /**
- * Reads the text typed in the Text tool's fields; its position is the shape's X and Y, its angle
- * 0 (a text turns with US-032). The choices are read as the page offers them, so they hold one
+ * Reads the text typed in the Text tool's fields; its position and its angle are the shape's X, Y
+ * and angle, the angle kept from 0 to 359 (`readAngle`). The choices are read as the page offers them, so they hold one
  * of their values.
  *
  * @kind procedure
@@ -46,7 +47,7 @@ export function readTextModel(document: Document): Text {
 
   return {
     alignment,
-    angle: 0,
+    angle: readAngle(document),
     color: readFieldValue(document, "text-color"),
     content: readFieldValue(document, "text-content"),
     direction,

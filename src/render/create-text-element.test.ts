@@ -95,6 +95,20 @@ describe("createTextElement (ADR-0052)", () => {
     },
   );
 
+  it("[F05.AC5] turns the group by 90 about the middle of the measured block", () => {
+    const turned = { ...TEXT, angle: 90, x: 10, y: 20 };
+    const drawn = createTextElement(document, turned, textDrawing(DECORATED_METRICS, turned));
+
+    // Block 41.78125 × 36.796875 at (10, 20): middle (30.890625, 38.3984375), at 5 decimals. The
+    // group turns, so the underline and the strike-through turn with the letters.
+    expect(drawn.getAttribute("transform")).toBe("rotate(90 30.89063 38.39844)");
+    expect(drawn.querySelector("[transform]")).toBeNull();
+  });
+
+  it("[F05.AC5] writes no transform for a text that does not turn", () => {
+    expect(group.getAttribute("transform")).toBeNull();
+  });
+
   it("draws an empty text as an empty <text>", () => {
     const empty = { ...HELLO_TEXT, content: "" };
     const drawn = createTextElement(document, empty, textDrawing(DECORATED_METRICS, empty));
