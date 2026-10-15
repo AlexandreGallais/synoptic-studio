@@ -1,3 +1,4 @@
+export * from "./create-embedded-fonts-elements";
 export * from "./create-path-element";
 export * from "./create-svg-element";
 export * from "./create-text-element";
