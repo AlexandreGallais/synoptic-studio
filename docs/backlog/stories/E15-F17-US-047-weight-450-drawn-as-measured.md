@@ -11,12 +11,13 @@ points: 2
 
 As a symbol designer, I want a text drawn with the face it is measured with so that its frame hugs its letters at every weight.
 
-From the Product Owner's validation of E15 (2026-10-15): weight 450 of a family such as IBM Plex was measured but not visibly drawn, the browser seeming to draw another face. Cause from SP-019.
+From the Product Owner's validation of E15 (2026-10-15): weight 450 of a family such as IBM Plex was measured but not visibly drawn, the browser seeming to draw another face. SP-019 ([research note 0021](../../research/notes/0021-f17-latin-script-and-defects.md)) found the code path right once the 450 `FontFace` has loaded, and two causes that only a browser tells apart: the 450 face's load failed unseen (`registerFontFace` gives `update` as the error handler, and CSS then matches 500, `REF-CSS-FONTS-4` §5.2), or the drawing came before the load. The library measures "Pump P-101" at 16 as 90.688 at 400, 91.264 at 450 and 91.92 at 500 (IBM Plex Sans Regular, Text, Medium): a drawn width tells the face within 0.5.
 
 ## Acceptance criteria
 
-- Given a family holding a 450 face (IBM Plex Sans Text, named by SP-019), when a text is set to 450, then the browser draws that face: the drawn line's width, read in a test page, equals the measured width within 0.5 of a unit.
-- Given the same family at 400 and 500, when drawn, then each is drawn with its own face, as measured.
+- Given IBM Plex Sans read from the installed fonts (its 450 face, IBM Plex Sans Text, listed in the family on macOS), when "Pump P-101" at 16 is set to 450, then the browser draws that face: the drawn width (`getComputedTextLength()`), read in a test page, is 91.264 within 0.5.
+- Given the same text at 400 and 500, when drawn, then the drawn widths are 90.688 and 91.92 within 0.5.
+- Given a face whose `FontFace` load fails, when it fails, then one line names the face and the browser's reason, and no error is left unseen.
 - Given a family without a 450 face, when 450 is asked, then the face the Font face rule matches is measured and drawn (`shapes.md`, Font face).
 
 ## Product Owner test
@@ -30,5 +31,5 @@ From the Product Owner's validation of E15 (2026-10-15): weight 450 of a family 
 
 One task = one commit, referenced as `US-047.Tn`.
 
-- [ ] T1 — The fix from SP-019's cause, with a test (2 h)
+- [ ] T1 — A failed face load said in one line; the test page comparing drawn and measured widths at 400, 450 and 500, the cause seen there written here, and its fix (2 h)
 - [ ] T2 — Test card, guided step and `shapes.md` when a rule changes (1 h)
