@@ -3,7 +3,7 @@ id: US-045
 epic: E15
 feature: F17
 title: Fonts embedded only when a file is exported or saved
-status: ready
+status: done
 points: 2
 ---
 
@@ -30,5 +30,5 @@ From the Product Owner's validation of E15 (2026-10-15): embedded fonts are appl
 
 One task = one commit, referenced as `US-045.Tn`.
 
-- [ ] T1 — The drawing written without fonts, the export with them, in the library and the playground (2 h)
-- [ ] T2 — Tests of both, guided step and `shapes.md` (1 h)
+- [x] T1 — The drawing written without fonts, the export with them, in the library and the playground (2 h)
+- [x] T2 — Tests of both, guided step and `shapes.md` (1 h)
