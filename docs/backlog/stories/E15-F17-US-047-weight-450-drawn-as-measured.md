@@ -3,7 +3,7 @@ id: US-047
 epic: E15
 feature: F17
 title: A weight such as 450 drawn with the face it is measured with
-status: ready
+status: done
 points: 2
 ---
 
@@ -44,4 +44,4 @@ Chrome keeps `FontFace`'s `family` argument as it is, never parsed as CSS: the q
 One task = one commit, referenced as `US-047.Tn`.
 
 - [x] T1 — A failed face load said in one line; the test page comparing drawn and measured widths at 400, 450 and 500, the cause seen there written here, and its fix (2 h)
-- [ ] T2 — Test card, guided step and `shapes.md` when a rule changes (1 h)
+- [x] T2 — Test card, guided step and `shapes.md` when a rule changes (1 h)
