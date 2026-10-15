@@ -39,7 +39,7 @@ describe("textToHtmlStyle (ADR-0053, EN-041)", () => {
     ]);
   });
 
-  it("[F15.AC3] adds the spacing, direction, alignment and decorations typed", () => {
+  it("[F15.AC3] adds the spacing, direction, alignment and the underline typed", () => {
     const text = {
       ...ARIAL_TEXT,
       alignment: "center",
@@ -66,20 +66,39 @@ describe("textToHtmlStyle (ADR-0053, EN-041)", () => {
       ["word-spacing", "-4px"],
       ["direction", "rtl"],
       ["text-align", "center"],
-      ["text-decoration-line", "underline line-through"],
+      ["text-decoration-line", "underline"],
       ["text-decoration-thickness", "from-font"],
+      ["text-decoration-color", "#1a2b3c66"],
       ["white-space", "pre"],
     ]);
   });
 
-  it.each([
-    { isStruckThrough: false, isUnderlined: true, lines: "underline" },
-    { isStruckThrough: true, isUnderlined: false, lines: "line-through" },
-  ])("[F15.AC3] writes the decoration line $lines alone", ({ lines, ...decorations }) => {
-    expect(textToHtmlStyle({ ...ARIAL_TEXT, ...decorations }, ARIAL_HTML_LAYER)).toContainEqual([
-      "text-decoration-line",
-      lines,
+  it("[F16.AC4] writes the underline in its own color, #ff0000 at 50 %, the strike-through left to the spans", () => {
+    const text = {
+      ...ARIAL_TEXT,
+      hasUnderlineColor: true,
+      isStruckThrough: true,
+      isUnderlined: true,
+      underlineColor: "#ff0000",
+      underlineOpacity: 50,
+    };
+
+    // 50 %: 255 · 50 / 100 = 127.5, rounded 128, written 80.
+    expect(
+      textToHtmlStyle(text, ARIAL_HTML_LAYER).filter(([property]) =>
+        property.startsWith("text-decoration"),
+      ),
+    ).toEqual([
+      ["text-decoration-line", "underline"],
+      ["text-decoration-thickness", "from-font"],
+      ["text-decoration-color", "#ff000080"],
     ]);
+  });
+
+  it("[F16.AC4] writes no decoration on the content's div for a text only struck through", () => {
+    const style = textToHtmlStyle({ ...ARIAL_TEXT, isStruckThrough: true }, ARIAL_HTML_LAYER);
+
+    expect(style.filter(([property]) => property.startsWith("text-decoration"))).toEqual([]);
   });
 
   it("[F15.AC3] escapes the font's name as the <text> does", () => {

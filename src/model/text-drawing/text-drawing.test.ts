@@ -19,8 +19,8 @@ describe("textDrawing (ADR-0052, DERIV-text-width steps 4 to 6)", () => {
     expect(drawn.lines).toHaveLength(3);
 
     expect(drawn.decorations).toEqual([
-      { height: 1, width: 36.4609375, x: 0, y: 16.484375 },
-      { height: 1, width: 41.78125, x: 0, y: 53.28125 },
+      { color: "#000000", height: 1, opacity: 100, width: 36.4609375, x: 0, y: 16.484375 },
+      { color: "#000000", height: 1, opacity: 100, width: 41.78125, x: 0, y: 53.28125 },
     ]);
   });
 
