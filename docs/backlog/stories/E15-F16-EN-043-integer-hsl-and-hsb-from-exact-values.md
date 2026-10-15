@@ -3,7 +3,7 @@ id: EN-043
 epic: E15
 feature: F16
 title: HSL and HSB as integers, one value edited with the exact others
-status: ready
+status: done
 points: 2
 ---
 
@@ -25,5 +25,5 @@ Product Owner decision of 2026-10-15, from a try of the playground before VAL-01
 
 One task = one commit, referenced as `EN-043.Tn`.
 
-- [ ] T1 — The values shown as integers, a hue of 360 shown 0, `@see ADR-0058`, `DERIV-color-spaces` step 9; tests first (1 h)
-- [ ] T2 — A color rebuilt from one value set as an integer and the exact values of the two others, a value equal to the one shown keeping the color; tests first, the cases above, property tests (2 h)
+- [x] T1 — The values shown as integers, a hue of 360 shown 0, `@see ADR-0058`, `DERIV-color-spaces` step 9; tests first (1 h)
+- [x] T2 — A color rebuilt from one value set as an integer and the exact values of the two others, a value equal to the one shown keeping the color; tests first, the cases above, property tests (2 h)
