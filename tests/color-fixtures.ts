@@ -3,6 +3,8 @@
 
 import { fc } from "@fast-check/vitest";
 
+import { fractionToByte, integerRange } from "../src";
+
 import type { Rgb } from "../src";
 
 /** The largest byte, `ff`. */
@@ -27,3 +29,77 @@ const ANY_BYTE = fc.integer({ max: BYTE_MAX, min: 0 });
 export const ANY_RGB = fc
   .tuple(ANY_BYTE, ANY_BYTE, ANY_BYTE)
   .map(([red, green, blue]) => rgbOfBytes(red, green, blue));
+
+/** The values of a byte: 256. */
+const BYTE_COUNT = 256;
+
+/** The colors there are: 256³ = 16 777 216. */
+const COLOR_COUNT = 16_777_216;
+
+/**
+ * One color in this many is drawn into the sample, 31 being prime to 256 so that every byte of
+ * every component is drawn.
+ */
+const SAMPLE_STRIDE = 31;
+
+/**
+ * A color's index, `65 536 · R + 256 · G + B`.
+ *
+ * @param red - its red byte
+ * @param green - its green byte
+ * @param blue - its blue byte
+ * @returns the index, from 0 to 16 777 215
+ */
+function colorIndex(red: number, green: number, blue: number): number {
+  return (red * BYTE_COUNT + green) * BYTE_COUNT + blue;
+}
+
+/**
+ * The colors of the round trip's sample, by their index: one color in 31, and every color with
+ * two equal components, where the hue changes sector (greys among them), about 735 000 of the
+ * 16 777 216.
+ *
+ * @returns the indices, each once
+ */
+function sampledColorIndices(): readonly number[] {
+  const strided = integerRange(0, Math.ceil(COLOR_COUNT / SAMPLE_STRIDE) - 1).map(
+    (k) => SAMPLE_STRIDE * k,
+  );
+  const bytes = integerRange(0, BYTE_COUNT - 1);
+  const edges = bytes.flatMap((a) =>
+    bytes.flatMap((b) => [colorIndex(a, a, b), colorIndex(b, a, a), colorIndex(a, b, a)]),
+  );
+
+  return [...new Set([...strided, ...edges])];
+}
+
+/**
+ * Whether a round trip gives a color's bytes back: its components converted and back, each
+ * brought to its byte (`fractionToByte`).
+ *
+ * @param roundTrip - the components of a color to the components it comes back as
+ * @param index - the color's index
+ * @returns `true` when every byte comes back
+ */
+function isKept(roundTrip: (rgb: Rgb) => Rgb, index: number): boolean {
+  const blue = index % BYTE_COUNT;
+  const green = Math.floor(index / BYTE_COUNT) % BYTE_COUNT;
+  const red = Math.floor(index / BYTE_COUNT / BYTE_COUNT);
+  const back = roundTrip(rgbOfBytes(red, green, blue));
+
+  return (
+    [back.red, back.green, back.blue].map((component) => fractionToByte(component)).join(",") ===
+    [red, green, blue].join(",")
+  );
+}
+
+/**
+ * How many of the sampled colors (`sampledColorIndices`) a round trip changes. Every color was run
+ * once, at EN-038, about 13 s a round trip: too slow for each run (`DERIV-color-spaces`, step 9).
+ *
+ * @param roundTrip - the components of a color to the components it comes back as
+ * @returns the number of sampled colors whose bytes changed
+ */
+export function changedColorCount(roundTrip: (rgb: Rgb) => Rgb): number {
+  return sampledColorIndices().filter((index) => !isKept(roundTrip, index)).length;
+}

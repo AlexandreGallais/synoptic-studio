@@ -1,5 +1,7 @@
+import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
+import { fractionFromPercent } from "./fraction-from-percent";
 import { percentFromFraction } from "./percent-from-fraction";
 
 describe("percentFromFraction (REF-CSS-COLOR-4 §7.2)", () => {
@@ -13,4 +15,11 @@ describe("percentFromFraction (REF-CSS-COLOR-4 §7.2)", () => {
   ])("gives $expected % for $fraction", ({ expected, fraction }) => {
     expect(percentFromFraction(fraction)).toBeCloseTo(expected, 12);
   });
+
+  test.prop({ fraction: fc.double({ max: 1, min: 0, noNaN: true }) })(
+    "is undone by fractionFromPercent",
+    ({ fraction }) => {
+      expect(fractionFromPercent(percentFromFraction(fraction))).toBeCloseTo(fraction, 14);
+    },
+  );
 });

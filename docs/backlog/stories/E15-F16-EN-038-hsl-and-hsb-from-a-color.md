@@ -19,6 +19,11 @@ The library computes a color's hue, saturation and lightness (HSL) or brightness
 - Given `#ff8000`, when its values are rounded to one decimal, then HSL is 30.1°, 100 %, 50 % and HSB 30.1°, 100 %, 100 %; given a hue that rounds to 360.0, then it is 0.0.
 - Given every one of the 16 777 216 colors, when converted to HSL and to HSB and back, unrounded and with the values rounded to one decimal by the library's own rounding, then each gives its hexadecimal again (F16.AC3; one test over every color, within Vitest's timeout; otherwise a property test and the derivation's count, said in the story).
 
+## Notes
+
+- **Every color, once.** The round trip over the 16 777 216 colors, with the library's functions, unrounded and to one decimal, in HSL and in HSB, ran once at EN-038 and changed no color; at about 13 to 17 s a run, it is too slow for each test run (Vitest's timeout is 5 s, and the loaded pre-push run is about 2.5 times slower). The test runs a sample instead, one color in 31 and every color with two equal components (about 735 000 colors, about 1.7 s), and a property test draws any color (`DERIV-color-spaces`, cross-check).
+- **The rounding.** A byte and a value shown are rounded by `nearestInteger` (`Math.round`, `REF-MDN-MATH-ROUND`), not by `roundedQuotient`, which is exact for integers only (`DERIV-color-spaces`, step 8).
+
 ## Tasks
 
 One task = one commit, referenced as `EN-038.Tn`.

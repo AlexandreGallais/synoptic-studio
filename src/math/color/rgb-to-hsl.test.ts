@@ -1,6 +1,7 @@
+import { test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
-import { rgbOfBytes } from "../../../tests";
+import { ANY_RGB, rgbOfBytes } from "../../../tests";
 
 import { rgbToHsl } from "./rgb-to-hsl";
 
@@ -25,4 +26,13 @@ describe("rgbToHsl (REF-CSS-COLOR-4 §7.2, DERIV-color-spaces steps 3 and 4)", (
       expect(hsl.lightness).toBeCloseTo(expected.lightness, 5);
     },
   );
+
+  test.prop({ rgb: ANY_RGB })("gives a hue below 360° and percents from 0 to 100", ({ rgb }) => {
+    const { hue, lightness, saturation } = rgbToHsl(rgb);
+
+    expect(hue).toBeGreaterThanOrEqual(0);
+    expect(hue).toBeLessThan(360);
+    expect(Math.min(lightness, saturation)).toBeGreaterThanOrEqual(0);
+    expect(Math.max(lightness, saturation)).toBeLessThanOrEqual(100 + 1e-12);
+  });
 });

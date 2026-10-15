@@ -1,5 +1,3 @@
-import { maximum } from "../arithmetic";
-
 import type { Rgb } from "./rgb";
 
 /**
@@ -15,5 +13,5 @@ import type { Rgb } from "./rgb";
  * @see REF-WIKI-HSL-HSV
  */
 export function brightness(rgb: Rgb): number {
-  return maximum(Object.values(rgb), 0);
+  return Math.max(rgb.red, rgb.green, rgb.blue);
 }

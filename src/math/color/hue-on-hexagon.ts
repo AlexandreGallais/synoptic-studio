@@ -1,4 +1,6 @@
-import { maximum, modulo } from "../arithmetic";
+import { modulo } from "../arithmetic";
+
+import { brightness } from "./brightness";
 
 import type { Rgb } from "./rgb";
 
@@ -25,7 +27,7 @@ const BLUE_CORNER = 4;
  * @see REF-WIKI-HSL-HSV
  */
 export function hueOnHexagon(rgb: Rgb, chromaOfColor: number): number {
-  const largest = maximum(Object.values(rgb), 0);
+  const largest = brightness(rgb);
 
   if (largest === rgb.red) {
     return modulo((rgb.green - rgb.blue) / chromaOfColor, HEXAGON_SIDES);
