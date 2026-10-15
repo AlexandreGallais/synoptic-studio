@@ -67,31 +67,34 @@ The research is summarized in research note 0017 (written by SP-015). The Produc
 2. A text holds its content (lines broken by the designer), font and fallback, an integer size from 1 to 100 000, a weight from 100 to 900 and italic, a color in hexadecimal with an opacity from 0 to 100 %, letter and word spacing, underline and strike-through, a case transform, a direction (left to right or right to left), an alignment of its lines, a position and an angle.
 3. The library measures each line as `size × Σ advance / unitsPerEm` plus kerning and spacing, and the text's block from its lines; "Hello World" in Arial 16 measures 82.6875 without kerning.
 4. The text is drawn as one `<text>` with one positioned `<tspan>` per line, readable by any SVG reader (ADR-0052); its case is applied to the string by the library.
-5. A text turns about the middle of its block, by an integer angle kept from 0 to 359; its block is shown when it is selected.
+5. A text turns about the middle of its block, by an integer angle kept from 0 to 359; its block is shown when it is selected; turned, a change of its block's size keeps its turned top-left corner in place (added 2026-10-15, ADR-0057, EN-042).
 6. Every shape of E01 and E14 draws as before.
 
 ## Stories
 
 In delivery order. Set ready by the run (ADR-0045).
 
-| ID                                                                   | Type       | Title                                                                           | Status |
-| -------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------- | ------ |
-| [SP-015](../stories/E15-F05-SP-015-research-e15-text.md)             | Spike      | Research for E15: text measured from font metrics and drawn as positioned lines | done   |
-| [EN-031](../stories/E15-F05-EN-031-font-metrics-from-a-font-file.md) | Enabler    | Font metrics read from a TrueType or OpenType file                              | done   |
-| [EN-032](../stories/E15-F05-EN-032-text-in-the-model.md)             | Enabler    | A text in the model: its characters, its lines and its measured block           | done   |
-| [US-031](../stories/E15-F05-US-031-place-a-text.md)                  | User story | Place a text with the Text tool                                                 | done   |
-| [CHK-014](../stories/E15-F05-CHK-014-checkpoint-f05.md)              | Checkpoint | Checkpoint in the middle of F05                                                 | done   |
-| [US-032](../stories/E15-F05-US-032-turn-a-text.md)                   | User story | Turn a text and see its measured block                                          | done   |
-| [AUD-015](../stories/E15-F05-AUD-015-audit-f05.md)                   | Audit      | Audit F05                                                                       | done   |
-| [VAL-014](../stories/E15-F05-VAL-014-validate-f05.md)                | Validation | Validate F05                                                                    | ready  |
+| ID                                                                                     | Type       | Title                                                                           | Status |
+| -------------------------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------- | ------ |
+| [SP-015](../stories/E15-F05-SP-015-research-e15-text.md)                               | Spike      | Research for E15: text measured from font metrics and drawn as positioned lines | done   |
+| [EN-031](../stories/E15-F05-EN-031-font-metrics-from-a-font-file.md)                   | Enabler    | Font metrics read from a TrueType or OpenType file                              | done   |
+| [EN-032](../stories/E15-F05-EN-032-text-in-the-model.md)                               | Enabler    | A text in the model: its characters, its lines and its measured block           | done   |
+| [US-031](../stories/E15-F05-US-031-place-a-text.md)                                    | User story | Place a text with the Text tool                                                 | done   |
+| [CHK-014](../stories/E15-F05-CHK-014-checkpoint-f05.md)                                | Checkpoint | Checkpoint in the middle of F05                                                 | done   |
+| [US-032](../stories/E15-F05-US-032-turn-a-text.md)                                     | User story | Turn a text and see its measured block                                          | done   |
+| [AUD-015](../stories/E15-F05-AUD-015-audit-f05.md)                                     | Audit      | Audit F05                                                                       | done   |
+| [US-037](../stories/E15-F05-US-037-bold-gives-back-the-weight-and-no-sentence-case.md) | User story | The bold button gives back the weight before, and sentence case removed         | ready  |
+| [EN-042](../stories/E15-F05-EN-042-a-turned-text-keeps-its-corner-when-it-grows.md)    | Enabler    | A turned text keeps its turned top-left corner when its block changes size      | ready  |
+| [US-038](../stories/E15-F05-US-038-a-turned-text-grows-in-place.md)                    | User story | A turned text grows along its direction and stays in place                      | ready  |
+| [VAL-014](../stories/E15-F05-VAL-014-validate-f05.md)                                  | Validation | Validate F05                                                                    | ready  |
 
 ## Feature plan
 
-| Acceptance criterion | Realized by    | Verified by         |
-| -------------------- | -------------- | ------------------- |
-| F05.AC1              | SP-015, EN-031 | AUD-015             |
-| F05.AC2              | EN-032, US-031 | AUD-015             |
-| F05.AC3              | SP-015, EN-032 | AUD-015             |
-| F05.AC4              | EN-032, US-031 | AUD-015             |
-| F05.AC5              | US-032         | AUD-015             |
-| F05.AC6              | every story    | `npm run check:all` |
+| Acceptance criterion | Realized by            | Verified by         |
+| -------------------- | ---------------------- | ------------------- |
+| F05.AC1              | SP-015, EN-031         | AUD-015             |
+| F05.AC2              | EN-032, US-031, US-037 | AUD-015             |
+| F05.AC3              | SP-015, EN-032         | AUD-015             |
+| F05.AC4              | EN-032, US-031         | AUD-015             |
+| F05.AC5              | US-032, EN-042, US-038 | AUD-015, VAL-014    |
+| F05.AC6              | every story            | `npm run check:all` |
