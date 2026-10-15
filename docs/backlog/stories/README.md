@@ -133,7 +133,7 @@
 | [SP-017](./E15-F16-SP-017-research-f16-colors.md)               | F16     | Research for F16: colors in hexadecimal, HSL and HSB, and their picker          | done   |
 | [EN-037](./E15-F16-EN-037-a-color-typed-in-hexadecimal.md)      | F16     | A color typed in hexadecimal, kept as six digits and an opacity                 | done   |
 | [EN-038](./E15-F16-EN-038-hsl-and-hsb-from-a-color.md)          | F16     | HSL and HSB from a hexadecimal color, and back                                  | done   |
-| [CHK-016](./E15-F16-CHK-016-checkpoint-f16.md)                  | F16     | Checkpoint in the middle of F16                                                 | ready  |
+| [CHK-016](./E15-F16-CHK-016-checkpoint-f16.md)                  | F16     | Checkpoint in the middle of F16                                                 | done   |
 | [US-035](./E15-F16-US-035-pick-a-color.md)                      | F16     | Type or pick a color and its opacity                                            | ready  |
 | [AUD-017](./E15-F16-AUD-017-audit-f16.md)                       | F16     | Audit F16                                                                       | ready  |
 | [VAL-016](./E15-F16-VAL-016-validate-f16.md)                    | F16     | Validate F16                                                                    | ready  |
