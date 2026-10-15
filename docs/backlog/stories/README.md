@@ -118,7 +118,7 @@
 | [US-031](./E15-F05-US-031-place-a-text.md)                      | F05     | Place a text with the Text tool                                                 | done   |
 | [CHK-014](./E15-F05-CHK-014-checkpoint-f05.md)                  | F05     | Checkpoint in the middle of F05                                                 | done   |
 | [US-032](./E15-F05-US-032-turn-a-text.md)                       | F05     | Turn a text and see its measured block                                          | done   |
-| [AUD-015](./E15-F05-AUD-015-audit-f05.md)                       | F05     | Audit F05                                                                       | ready  |
+| [AUD-015](./E15-F05-AUD-015-audit-f05.md)                       | F05     | Audit F05                                                                       | done   |
 | [VAL-014](./E15-F05-VAL-014-validate-f05.md)                    | F05     | Validate F05                                                                    | ready  |
 | [NAM-001](./E15-NAM-001-naming-pass-e15.md)                     | E15     | Naming pass over the code of E15                                                | draft  |
 | [REV-003](./E15-REV-003-review-e15.md)                          | E15     | Review E15 with the Product Owner                                               | draft  |
