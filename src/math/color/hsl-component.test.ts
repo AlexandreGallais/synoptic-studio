@@ -1,6 +1,14 @@
+import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { hslComponent } from "./hsl-component";
+
+/** Any HSL a picker may give: a hue from 0 to 360, a saturation and lightness from 0 to 100. */
+const ANY_HSL = fc.record({
+  hue: fc.double({ max: 360, min: 0, noNaN: true }),
+  lightness: fc.double({ max: 100, min: 0, noNaN: true }),
+  saturation: fc.double({ max: 100, min: 0, noNaN: true }),
+});
 
 describe("hslComponent (REF-CSS-COLOR-4 §7.1, DERIV-color-spaces step 6)", () => {
   /** HSL(30°, 100 %, 50 %): a = 1 · min(0.5, 0.5) = 0.5. */
@@ -32,4 +40,12 @@ describe("hslComponent (REF-CSS-COLOR-4 §7.1, DERIV-color-spaces step 6)", () =
     expect(hslComponent({ ...orange, hue: 360 }, 0)).toBeCloseTo(1, 12);
     expect(hslComponent({ ...orange, hue: 360 }, 8)).toBeCloseTo(0, 12);
   });
+
+  test.prop({ hsl: ANY_HSL, n: fc.constantFrom(0, 8, 4) })(
+    "is a component from 0 to 1",
+    ({ hsl, n }) => {
+      expect(hslComponent(hsl, n)).toBeGreaterThanOrEqual(-1e-15);
+      expect(hslComponent(hsl, n)).toBeLessThanOrEqual(1 + 1e-15);
+    },
+  );
 });

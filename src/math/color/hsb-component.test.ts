@@ -1,6 +1,14 @@
+import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { hsbComponent } from "./hsb-component";
+
+/** Any HSB a picker may give: a hue from 0 to 360, a saturation and brightness from 0 to 100. */
+const ANY_HSB = fc.record({
+  hue: fc.double({ max: 360, min: 0, noNaN: true }),
+  brightness: fc.double({ max: 100, min: 0, noNaN: true }),
+  saturation: fc.double({ max: 100, min: 0, noNaN: true }),
+});
 
 describe("hsbComponent (REF-WIKI-HSL-HSV, DERIV-color-spaces step 6)", () => {
   /** HSB(210°, 67 %, 60 %): H / 60° = 3.5, V · S = 0.402. */
@@ -25,4 +33,12 @@ describe("hsbComponent (REF-WIKI-HSL-HSV, DERIV-color-spaces step 6)", () => {
   it("[F16.AC3] gives 0 for a brightness of 0, black", () => {
     expect(hsbComponent({ brightness: 0, hue: 90, saturation: 100 }, 3)).toBe(0);
   });
+
+  test.prop({ hsb: ANY_HSB, n: fc.constantFrom(5, 3, 1) })(
+    "is a component from 0 to 1",
+    ({ hsb, n }) => {
+      expect(hsbComponent(hsb, n)).toBeGreaterThanOrEqual(-1e-15);
+      expect(hsbComponent(hsb, n)).toBeLessThanOrEqual(1 + 1e-15);
+    },
+  );
 });
