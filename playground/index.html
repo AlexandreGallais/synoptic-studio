@@ -483,6 +483,63 @@ Running</textarea>
             </select></label
           >
         </div>
+        <label
+          >Fit
+          <select id="text-fit">
+            <option value="content" selected>Fit content</option>
+            <option value="box">Box</option>
+          </select></label
+        >
+        <div id="text-box-fields" hidden>
+          <div class="pair">
+            <label
+              >Width
+              <input id="text-box-width" type="number" min="0" max="100000" step="1" value="200"
+            /></label>
+            <label
+              >Height
+              <input id="text-box-height" type="number" min="0" max="100000" step="1" value="100"
+            /></label>
+          </div>
+          <div class="pair">
+            <label
+              >Long words
+              <select id="text-long-word">
+                <option value="break" selected>Break</option>
+                <option value="move">Move whole</option>
+              </select></label
+            >
+            <label
+              >Max lines (0 none)
+              <input id="text-maximum-lines" type="number" min="0" max="100000" step="1" value="0"
+            /></label>
+          </div>
+          <label><input id="text-ellipsis" type="checkbox" checked /> Ellipsis</label>
+          <div class="pair">
+            <label
+              >Vertical alignment
+              <select id="text-vertical-alignment">
+                <option value="top" selected>Top</option>
+                <option value="middle">Middle</option>
+                <option value="bottom">Bottom</option>
+              </select></label
+            >
+            <label
+              >Wrap
+              <select id="text-wrap">
+                <option value="auto" selected>Automatic</option>
+                <option value="balance">Balance</option>
+              </select></label
+            >
+          </div>
+        </div>
+        <div class="pair">
+          <label
+            >Line height (0 auto)
+            <input id="text-line-height" type="number" min="0" max="100000" step="1" value="0"
+          /></label>
+          <label><input id="text-trim" type="checkbox" /> Trim</label>
+        </div>
       </section>
       <section id="size-section" aria-labelledby="size-heading">
         <h2 id="size-heading">Size</h2>
