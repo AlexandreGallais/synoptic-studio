@@ -22,6 +22,7 @@ The agent's readings, written in `docs/domain/shapes.md` as provisional, for the
 | Story  | Reading                                                                                                                                                                                                                                                                      |
 | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | US-046 | an installed face the browser cannot give is said in the family's line as `<full name>: <Chrome's message> Import its file with Import a font`; a whole collection given for a face keeps the face of its PostScript name; an imported collection says its faces in one line |
+| US-047 | a face the browser cannot load is said in one line, `<face> could not be loaded by the browser (<reason>): measured with it, drawn with another face.`                                                                                                                       |
 
 ## Tasks
 
