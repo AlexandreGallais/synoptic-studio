@@ -50,9 +50,10 @@ describe("lineBaseline (DERIV-text-box step 7)", () => {
   })("[F14.AC3] puts consecutive baselines one line height apart", ({ index, top, ...options }) => {
     const text = { ...HELLO_TEXT, ...options };
 
+    // Baselines up to about 1e8, where a double is good to 1.5e-8: their difference to 6 decimals.
     expect(
       lineBaseline(ARIAL_METRICS, text, { index: index + 1, top }) -
         lineBaseline(ARIAL_METRICS, text, { index, top }),
-    ).toBeCloseTo(textLineHeight(ARIAL_METRICS, text), 3);
+    ).toBeCloseTo(textLineHeight(ARIAL_METRICS, text), 6);
   });
 });

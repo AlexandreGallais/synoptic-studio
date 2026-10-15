@@ -1,5 +1,4 @@
-import { fontUnitsAtSize } from "../font";
-import { textLineHeight } from "../text-block";
+import { capHeightAtSize, textLineHeight } from "../text-block";
 
 import type { BlockLineHeights } from "./block-line-heights";
 import type { FontMetrics } from "../font";
@@ -22,9 +21,7 @@ export function textBlockLineHeights(metrics: FontMetrics, text: Text): BlockLin
   const line = textLineHeight(metrics, text);
 
   return {
-    firstLine: text.isTrimmed
-      ? fontUnitsAtSize(metrics.capHeight, text.size, metrics.unitsPerEm)
-      : line,
+    firstLine: text.isTrimmed ? capHeightAtSize(metrics, text.size) : line,
     line,
   };
 }
