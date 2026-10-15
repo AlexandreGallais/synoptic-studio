@@ -1,6 +1,6 @@
-import { listenToColorFields } from "../color";
 import { readGuidedStep, readStepFromAddress, showGuidedStep } from "../guided-test";
 import { readShapeKind, selectElement } from "../page";
+import { listenToColorPicker } from "../picker-controls";
 import { hidePointPanels, listenToTextFields, updateTextTool, writeTextSections } from "../text";
 import { writeShapeKind } from "../toolbar";
 
@@ -59,7 +59,7 @@ export function mountPlayground(document: Document, steps: readonly GuidedStep[]
 
   listenToInputs(document, update);
   listenToTextFields(document, update);
-  listenToColorFields(document, update);
+  listenToColorPicker(document, update);
 
   listenToGuide(document, steps, update);
 

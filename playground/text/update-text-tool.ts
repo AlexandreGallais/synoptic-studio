@@ -1,5 +1,5 @@
 import { DEFAULT_FONT, isValidText, isValidTextBox, textFontMetrics } from "../../src";
-import { writeColorSwatches } from "../color";
+import { writeColorSwatches } from "../color-fields";
 import { selectElement, writeText } from "../page";
 
 import { readTextModel } from "./read-text-model";
