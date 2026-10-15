@@ -1,6 +1,7 @@
 export * from "./is-line-fitting";
 export * from "./is-measure-fitting";
 export type * from "./line-wrap";
+export * from "./line-wrap-with-token";
 export * from "./measured-token";
 export * from "./paragraph-tokens";
 export type * from "./paragraph-wrap";

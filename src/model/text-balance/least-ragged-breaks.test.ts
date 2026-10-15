@@ -123,6 +123,17 @@ describe("leastRaggedBreaks (DERIV-text-box step 9, REF-WIKI-KNUTH-PLASS)", () =
     expect(leastRaggedBreaks(ending, 2)).toEqual([1]);
   });
 
+  it("cuts 6000 tokens into a line each within a second", { timeout: 1000 }, () => {
+    // Only the line of each token fits: the breaks are 1 to 5999, read back one by one.
+    const ending = Array.from({ length: 6001 }, (unused, end) => ({
+      lines: end === 0 ? [] : [{ room: 0, start: end - 1 }],
+    }));
+    const breaks = leastRaggedBreaks(ending, 6000);
+
+    expect(breaks).toHaveLength(5999);
+    expect([breaks.at(0), breaks.at(-1)]).toEqual([1, 5999]);
+  });
+
   it("gives no break for one line", () => {
     expect(leastRaggedBreaks(endingOf({ box: 9, widths: [3, 2] }), 1)).toEqual([]);
   });

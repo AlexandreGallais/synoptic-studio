@@ -5,8 +5,6 @@ import { measuredLine } from "../text-block";
 
 import { wordBrokenAtCharacters } from "./word-broken-at-characters";
 
-import type { LineWrap } from "./line-wrap";
-
 /**
  * A word broken in a box of Arial 16 without kerning, from an empty line, as lines.
  *
@@ -16,11 +14,11 @@ import type { LineWrap } from "./line-wrap";
  * @returns the lines ended, then the line being filled
  */
 function brokenLines(word: string, boxWidth: number, lines: readonly string[]): readonly string[] {
-  const empty: LineWrap = { line: measuredLine(ARIAL_BOX_METRICS, ""), lines };
   const text = { ...HELLO_TEXT, boxWidth, isInBox: true };
+  const empty = measuredLine(ARIAL_BOX_METRICS, "");
   const wrap = wordBrokenAtCharacters(empty, word, { metrics: ARIAL_BOX_METRICS, text });
 
-  return [...wrap.lines, wrap.line.text];
+  return [...lines, ...wrap.ended, wrap.line.text];
 }
 
 describe("wordBrokenAtCharacters (DERIV-text-box step 4)", () => {
@@ -34,6 +32,10 @@ describe("wordBrokenAtCharacters (DERIV-text-box step 4)", () => {
     // "e" go alone; "ll" 910 / 128 = 7.10938 fits; "llo" 2049 / 128 = 16.00781 does not; "o"
     // keeps the spaces after the word.
     expect(brokenLines("Hello  ", 12, [])).toEqual(["H", "e", "ll", "o  "]);
+  });
+
+  it("leaves the line as it is for an empty word", () => {
+    expect(brokenLines("", 50, ["is"])).toEqual(["is", ""]);
   });
 
   it("keeps at least one character on a line, even wider than the box", () => {

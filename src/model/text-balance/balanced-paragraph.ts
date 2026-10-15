@@ -32,12 +32,41 @@ function linesFromStarts(tokens: readonly string[], starts: readonly number[]): 
 }
 
 /**
+ * The most lines a paragraph's greedy wrap may give for it to be balanced: CSS lets a user agent
+ * "treat this value as auto if there are more than ten lines to balance" (`REF-CSS-TEXT-4`, §5.4).
+ */
+const MAXIMUM_BALANCED_LINES = 10;
+
+/**
+ * The most tokens a paragraph may hold for it to be balanced, so that the candidate lines stay
+ * few; CSS leaves the algorithm to the user agent (`REF-CSS-TEXT-4`, §5.4; provisional, VAL-015).
+ */
+const MAXIMUM_BALANCED_TOKENS = 500;
+
+/**
+ * Whether a paragraph is small enough to be balanced: its greedy wrap gives from 2 to 10 lines,
+ * and it holds at most 500 tokens (`DERIV-text-box`, step 9).
+ *
+ * @kind domain
+ * @param lineCount - the number of lines of its greedy wrap
+ * @param tokenCount - the number of its tokens
+ * @returns `true` when it may be balanced
+ * @see DERIV-text-box
+ */
+function isWithinBalanceBounds(lineCount: number, tokenCount: number): boolean {
+  return (
+    lineCount >= 2 && lineCount <= MAXIMUM_BALANCED_LINES && tokenCount <= MAXIMUM_BALANCED_TOKENS
+  );
+}
+
+/**
  * The lines of a paragraph wrapped in a balanced way: as many as the greedy wrap gives, cut where
  * the sum of the squares of the room each line leaves is the least (`leastRaggedBreaks`), on
- * equal cost at the later break; the greedy cut is among the candidates, so the balanced one is
- * never more ragged. A paragraph of one line, or holding a word too long for a line of its own,
- * keeps its greedy lines (`DERIV-text-box`, step 9; `REF-CSS-TEXT-4`, §5.4, each paragraph
- * processed separately).
+ * equal cost at the later break, among the cuts whose lines grow while they fit
+ * (`fittingLines`); the greedy cut is among them, so the balanced one is never more ragged. A
+ * paragraph of one line or of more than 10, of more than 500 tokens (`isWithinBalanceBounds`), or
+ * holding a word too long for a line of its own, keeps its greedy lines (`DERIV-text-box`,
+ * step 9; `REF-CSS-TEXT-4`, §5.4, each paragraph processed separately).
  *
  * @kind domain
  * @param metrics - the metrics of the face the text is drawn with
@@ -53,10 +82,13 @@ export function balancedParagraph(
 ): readonly string[] {
   const greedy = wrappedParagraph(metrics, paragraph, text);
   const tokens = paragraphTokens(paragraph);
-  const measures = tokens.map((token) => measuredToken(metrics, token));
+
+  const measures = isWithinBalanceBounds(greedy.length, tokens.length)
+    ? tokens.map((token) => measuredToken(metrics, token))
+    : [];
 
   if (
-    greedy.length < 2 ||
+    measures.length === 0 ||
     measures.some(({ visible }) => !isMeasureFitting(metrics, visible, text))
   ) {
     return greedy;
