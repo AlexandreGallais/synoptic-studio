@@ -100,12 +100,22 @@ describe("isValidText (F05)", () => {
     { name: "a font name with a space at an end", text: { font: " Inter" } },
     { name: "a font name with a line break", text: { font: "Inter\nBold" } },
     { name: "a font name with a tab", text: { font: "Inter\tBold" } },
+    { name: "an empty fallback", text: { fallback: "" } },
+    { name: "a fallback of spaces only", text: { fallback: "  " } },
+    { name: "a fallback with a space at an end", text: { fallback: "sans-serif " } },
+    { name: "a fallback with a line break", text: { fallback: "Arial\nBold" } },
+    { name: "a fallback with a tab", text: { fallback: "Arial\tBold" } },
   ])("[F05.AC2] refuses $name", ({ text }) => {
     expect(isValidText({ ...HELLO, ...text })).toBe(false);
   });
 
   it("[F05.AC2] accepts a font name with inner spaces, digits and punctuation", () => {
     expect(isValidText({ ...HELLO, font: 'Hawaii 5-0 "Pro"' })).toBe(true);
+  });
+
+  it("[F05.AC2] accepts a fallback named as a font is: a family or a generic one", () => {
+    expect(isValidText({ ...HELLO, fallback: "Arial Narrow" })).toBe(true);
+    expect(isValidText({ ...HELLO, fallback: "serif" })).toBe(true);
   });
 
   it.each([

@@ -22,11 +22,12 @@ One task = one commit, referenced as `US-032.Tn`.
 
 - [x] T1 — The turn about the block's middle and the block's frame (2 h)
 - [ ] T2 — The Product Owner test card (30 min)
-- [ ] T3 — CHK-014's two points: a font without metrics, the fallback's name checked (1 h)
+- [x] T3 — CHK-014's two points: a font without metrics, the fallback's name checked (1 h)
 
 ## Decisions taken (2026-10-15)
 
 - **The turn on the group.** The `transform="rotate(α cx cy)"` is written on the `<g>` that holds the `<text>` and its underline and strike-through paths, so that the strokes turn with the letters; the first criterion's "a `transform` on its `<text>`" is met through that group (provisional, to confirm at VAL-014). A text at 0° carries no `transform`.
 - **The middle** is `boxCenter` of the measured block at the text's position (`DERIV-turned-shape` step 4), kept in `DrawnText.center`; the transform is written by `formatRotation` (`REF-SVG11-TRANSFORM`, §7.6). The angle is checked by `isShapeAngle`, as a shape's.
 - **The frame.** A selected text's block is drawn by the route of a shape's straight box (`createStraightBoxElement`: dashes as thin filled rectangles), in a `<g>` carrying the text's rotation, so that it turns with the text; an empty block draws none.
+- **CHK-014's two points** (ADR-0055): a font without metrics is measured with its fallback family's face, when read, else with the default font's, as the code did since EN-032; ADR-0052's decision 1 is amended. The fallback's name is checked as the font's (`isFontName` in `isValidText`).
 - **The playground.** In Text mode the angle row (field, −90° and +90°) is shown; the shapes' modes and straight box stay hidden.
