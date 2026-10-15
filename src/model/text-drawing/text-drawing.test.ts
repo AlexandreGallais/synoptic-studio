@@ -143,6 +143,31 @@ describe("textDrawing (ADR-0052, DERIV-text-width steps 4 to 6)", () => {
     ]);
   });
 
+  it.each([
+    // Line height 24: half the leading (24 − 17.875) / 2 = 3.0625, so the first baseline
+    // 3.0625 + 14.484375 = 17.546875 and the band's top 3.0625; the second 24 lower, 27.0625.
+    { isTrimmed: false, lineHeight: 24, tops: [3.0625, 27.0625] },
+    // Trimmed: the first baseline at the cap height 1467 × 16 / 2048 = 11.4609375, the band's
+    // top 11.4609375 − 14.484375 = −3.0234375, above the block; the second 18.3984375 lower.
+    { isTrimmed: true, lineHeight: 0, tops: [-3.0234375, 15.375] },
+  ])(
+    "[F14.AC4] keeps each band from ascender to descender, line height $lineHeight, trimmed: $isTrimmed",
+    ({ isTrimmed, lineHeight, tops }) => {
+      const text = {
+        ...HELLO_TEXT,
+        content: "Hello\nWorld",
+        hasBackground: true,
+        isTrimmed,
+        lineHeight,
+      };
+
+      expect(textDrawing(ARIAL_BOX_METRICS, text).backgrounds).toEqual([
+        { height: 17.875, width: 36.4609375, x: 0, y: tops[0] },
+        { height: 17.875, width: 41.78125, x: 0, y: tops[1] },
+      ]);
+    },
+  );
+
   it("[F14.AC4] runs a cut line's background to the end of its ellipsis", () => {
     // "Hello World" in a box 60 wide, 1 line: "Hello…", (4667 + 2048) / 128 = 52.4609375 wide.
     const text = { ...IN_BOX, hasBackground: true, maximumLines: 1 };

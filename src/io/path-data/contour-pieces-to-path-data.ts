@@ -1,7 +1,7 @@
 import { formatArcCommand } from "./format-arc-command";
 import { formatCoordinatePair } from "./format-coordinate-pair";
 import { formatCubicCommand } from "./format-cubic-command";
-import { SEPARATOR } from "./separator";
+import { formatPathData } from "./format-path-data";
 
 import type { ContourPiece } from "../../geometry";
 
@@ -44,5 +44,5 @@ export function contourPiecesToPathData(pieces: readonly ContourPiece[]): string
 
   return first === undefined
     ? ""
-    : [`M${formatCoordinatePair(first.start)}`, ...commands, CLOSE_PATH].join(SEPARATOR);
+    : formatPathData([`M${formatCoordinatePair(first.start)}`, ...commands, CLOSE_PATH]);
 }
