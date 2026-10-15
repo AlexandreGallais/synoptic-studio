@@ -94,6 +94,19 @@ describe("Text tool: the straight box of a turned text (US-039)", () => {
     );
   });
 
+  it("[F14.AC7] draws the straight box first, behind the turned frame and the text", () => {
+    typeBox("60", "40");
+    typeValue("angle", "90");
+
+    // Painted in document order (SVG 1.1 §3.3): the first child is the furthest behind.
+    const children = [...document.querySelectorAll("#canvas > svg > *")];
+    const straight = children.findIndex((child) => child.matches("path.straight-box"));
+    const frame = children.findIndex((child) => child.matches("g.text-frame"));
+
+    expect(straight).toBeGreaterThanOrEqual(0);
+    expect(frame).toBe(straight + 1);
+  });
+
   it("[F14.AC7] boxes the block fitting its content turned by 90, as tall as the text is long", () => {
     // Half sizes swapped about (11.890625, 19.359375): x 11.890625 − 19.359375 = −7.46875,
     // y 19.359375 − 11.890625 = 7.46875.

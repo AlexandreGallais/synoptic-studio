@@ -1,6 +1,6 @@
 # DERIV-turned-shape — A shape turned about the center of its box, and kept in place when edited
 
-Used by: ADR-0035, F04, and F05 for a text turned about the middle of its block (US-032), kept in place when its block or its box changes size by step 5 (ADR-0057, EN-042). Sources: `REF-SVG11-TRANSFORM` §7.4 (the rotation matrix) and §7.6 (a rotation about a point is translate, rotate, translate back), `REF-CSS-TRANSFORMS` §9.1 (a positive angle appears clockwise), `REF-SVG2-COORDS` §8.4 (y pointing down), `REF-MDN-REMAINDER` (sign of `%`), `REF-MATHWORLD-ROTATION-MATRIX` (the quarter turn).
+Used by: ADR-0035, F04, and F05 for a text turned about the middle of its block (US-032), kept in place when its block or its box changes size by step 5 (ADR-0057, EN-042), and F14 for the straight box of a turned text, the bounding box of its frame's corners by step 4 (US-039). Sources: `REF-SVG11-TRANSFORM` §7.4 (the rotation matrix) and §7.6 (a rotation about a point is translate, rotate, translate back), `REF-CSS-TRANSFORMS` §9.1 (a positive angle appears clockwise), `REF-SVG2-COORDS` §8.4 (y pointing down), `REF-MDN-REMAINDER` (sign of `%`), `REF-MATHWORLD-ROTATION-MATRIX` (the quarter turn).
 
 ## Notation
 
@@ -49,14 +49,15 @@ The shape is rigid under `R` (a rotation keeps distances): once one point is in 
 
 ## Checks (test cases)
 
-| Case                                                 | Computation                                                | Expected                                               |
-| ---------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------ |
-| Angles typed 370, −90, 360, −360, 45                 | `((a % 360) + 360) % 360`                                  | 10, 270, 0, 0, 45                                      |
-| Rectangle 100 × 50 at `b = (0, 0)`, 90°              | `c = (50, 25)`; `(−50, −25) ↦ (25, −50)`                   | points (75, −25), (75, 75), (25, 75), (25, −25)        |
-| Same, straight box                                   | x from 25 to 75, y from −25 to 75                          | x 25, y −25, 50 × 100                                  |
-| Square 100 × 100 at `(0, 0)`, 45°                    | `(−50, −50) ↦ (0, −70.71068)`                              | point 1 at (50, −20.71068); straight box 141.42136     |
-| Rectangle 100 × 50, 90°, width typed 200             | `P = (75, −25)`, `k' = (100, 25)`, `R(k') = (−25, 100)`    | `b' = (−50, 50)`; point 1 still at (75, −25)           |
-| Text block 100 × 20 at (47, 61), 23°, grown 120 wide | `P = (54.88207, 42.25840)`, `R(k') = (51.32298, 32.64892)` | `b' = (46.20505, 64.90731)`; the corner stays at `P`   |
-| Any shape, 0°                                        | not computed                                               | the straight drawing, bit for bit                      |
-| Rectangle 100 × 50 at 90°, 180°, 270°                | quarter turns exact                                        | every coordinate exact, no rounding dust (`Object.is`) |
-| The 90° drawing map applied four times to the points | four exact quarter turns about `c`                         | the straight points exactly                            |
+| Case                                                 | Computation                                                   | Expected                                                                                                                                      |
+| ---------------------------------------------------- | ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Angles typed 370, −90, 360, −360, 45                 | `((a % 360) + 360) % 360`                                     | 10, 270, 0, 0, 45                                                                                                                             |
+| Rectangle 100 × 50 at `b = (0, 0)`, 90°              | `c = (50, 25)`; `(−50, −25) ↦ (25, −50)`                      | points (75, −25), (75, 75), (25, 75), (25, −25)                                                                                               |
+| Same, straight box                                   | x from 25 to 75, y from −25 to 75                             | x 25, y −25, 50 × 100                                                                                                                         |
+| Square 100 × 100 at `(0, 0)`, 45°                    | `(−50, −50) ↦ (0, −70.71068)`                                 | point 1 at (50, −20.71068); straight box 141.42136                                                                                            |
+| Rectangle 100 × 50, 90°, width typed 200             | `P = (75, −25)`, `k' = (100, 25)`, `R(k') = (−25, 100)`       | `b' = (−50, 50)`; point 1 still at (75, −25)                                                                                                  |
+| Text block 100 × 20 at (47, 61), 23°, grown 120 wide | `P = (54.88207, 42.25840)`, `R(k') = (51.32298, 32.64892)`    | `b' = (46.20505, 64.90731)`; the corner stays at `P`                                                                                          |
+| Text block 40 × 20 at (0, 0), 45°, straight box      | `c = (20, 10)`; half sizes `20c + 10s = 20s + 10c = 21.21320` | corners (12.92893, −11.21320), (41.21320, 17.07107), (27.07107, 31.21320), (−1.21320, 2.92893); box at (−1.21320, −11.21320), 42.42641 square |
+| Any shape, 0°                                        | not computed                                                  | the straight drawing, bit for bit                                                                                                             |
+| Rectangle 100 × 50 at 90°, 180°, 270°                | quarter turns exact                                           | every coordinate exact, no rounding dust (`Object.is`)                                                                                        |
+| The 90° drawing map applied four times to the points | four exact quarter turns about `c`                            | the straight points exactly                                                                                                                   |
