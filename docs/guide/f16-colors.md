@@ -12,9 +12,9 @@ A color is now typed or pasted in any common hexadecimal form, or picked with a 
 | **Opacity** field                       | an integer from 0 to 100 %; 4 or 8 digits typed set it from their alpha                                             |
 | **Swatch**                              | the square left of the field, in the color; a click opens the picker under the color's fields, another click closes |
 | **Plane**                               | the saturation across, 0 at the left; the brightness (HSB) or the lightness (HSL) up, 100 at the top                |
-| **Hue bar**                             | the hue from 0 to 359.9°, to one decimal                                                                            |
+| **Hue bar**                             | the hue from 0 to 359°, whole degrees                                                                               |
 | **Opacity bar**                         | the opacity from 0 to 100 %, a whole percent                                                                        |
-| **Model**, **H**, **S**, **B** or **L** | HSB or HSL, and their three values to one decimal, typed or shown                                                   |
+| **Model**, **H**, **S**, **B** or **L** | HSB or HSL, and their three values as whole numbers, typed or shown                                                 |
 
 Rules: [domain, "Colors"](../domain/interaction.md#_5-colors-align-and-distribute) and Q38; formulas: [`DERIV-color-spaces`](../derivations/color-spaces.md); decision: [ADR-0056](../adr/0056-color-stored-as-hexadecimal-hsl-and-hsb-as-views.md).
 
@@ -32,7 +32,7 @@ Rules: [domain, "Colors"](../domain/interaction.md#_5-colors-align-and-distribut
 
 **Short forms.** `f80` doubles each digit: `#ff8800`. `#0000ffcc` keeps `#0000ff` and sets the opacity to 80 %. Anything else, `red` or `#ff800`, is refused: the field shows its previous color again, a line under it says why.
 
-**HSB and HSL are views.** They are computed from the hexadecimal each time the picker opens, never stored. `#ff8000` is HSB 30.1°, 100 %, 100 % and HSL 30.1°, 100 %, 50 %. Values are shown to one decimal because whole numbers would change nearly 9 colors in 10 when typed back: `#336699` is HSB 210°, 66.7 %, 60 %, but 67 % gives `#326699`.
+**HSB and HSL are views.** They are computed from the hexadecimal each time the picker opens, never stored. `#ff8000` is HSB 30°, 100 %, 100 % and HSL 30°, 100 %, 50 %, whole numbers, the decimals kept inside (ADR-0058). Editing one value keeps the exact others: `#336699` is HSB 210°, 67 %, 60 %; its brightness set to 61 gives `#34689c`, where the three whole numbers would give `#33679c`, and 67 left as shown keeps `#336699` (ADR-0059).
 
 **The plane**, described rather than drawn: in HSB, white at the top left, the pure hue at the top right, black along the bottom; in HSL, white along the top, black along the bottom, grey at the left and the pure hue in the middle of the right edge. At the hue 210°, the middle of the right edge in HSB is `#004080`.
 

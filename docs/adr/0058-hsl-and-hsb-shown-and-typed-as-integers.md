@@ -1,6 +1,6 @@
 # ADR-0058 — HSL and HSB shown and typed as integers
 
-**Status**: Accepted (Product Owner, 2026-10-15, from a try of the playground before VAL-016). Supersedes ADR-0056, decision 4 (values shown to one decimal); its decisions 1 to 3 stand: the hexadecimal and the opacity are the stored truth, HSL and HSB are views.
+**Status**: Accepted (Product Owner, 2026-10-15, from a try of the playground before VAL-016); decision 2 amended by ADR-0059. Supersedes ADR-0056, decision 4 (values shown to one decimal); its decisions 1 to 3 stand: the hexadecimal and the opacity are the stored truth, HSL and HSB are views.
 
 ## Context
 
