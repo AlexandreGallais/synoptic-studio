@@ -85,7 +85,7 @@ In delivery order. Set ready by the run (ADR-0045).
 | [AUD-015](../stories/E15-F05-AUD-015-audit-f05.md)                                     | Audit      | Audit F05                                                                       | done   |
 | [US-037](../stories/E15-F05-US-037-bold-gives-back-the-weight-and-no-sentence-case.md) | User story | The bold button gives back the weight before, and sentence case removed         | done   |
 | [EN-042](../stories/E15-F05-EN-042-a-turned-text-keeps-its-corner-when-it-grows.md)    | Enabler    | A turned text keeps its turned top-left corner when its block changes size      | done   |
-| [US-038](../stories/E15-F05-US-038-a-turned-text-grows-in-place.md)                    | User story | A turned text grows along its direction and stays in place                      | ready  |
+| [US-038](../stories/E15-F05-US-038-a-turned-text-grows-in-place.md)                    | User story | A turned text grows along its direction and stays in place                      | done   |
 | [VAL-014](../stories/E15-F05-VAL-014-validate-f05.md)                                  | Validation | Validate F05                                                                    | ready  |
 
 ## Feature plan
