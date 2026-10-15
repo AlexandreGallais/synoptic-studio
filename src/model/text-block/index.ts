@@ -1,3 +1,4 @@
+export * from "./ascent-at-size";
 export * from "./cap-height-at-size";
 export * from "./content-area-height";
 export * from "./half-leading";

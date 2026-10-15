@@ -1,6 +1,7 @@
 import { fontUnitsAtSize } from "../font";
 
 import { decorationStroke } from "./decoration-stroke";
+import { isLineWithLength } from "./is-line-with-length";
 
 import type { FontMetrics } from "../font";
 import type { Text } from "../text";
@@ -50,7 +51,7 @@ export function lineDecorations(
     ...(text.isStruckThrough ? [strikeout] : []),
   ].filter((stroke) => stroke.thickness > 0);
 
-  return line.width > 0
+  return isLineWithLength(line)
     ? strokes.map((stroke) => decorationStroke(line, strokeAtSize(metrics, text.size, stroke)))
     : [];
 }
