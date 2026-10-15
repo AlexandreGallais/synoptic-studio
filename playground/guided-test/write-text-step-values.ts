@@ -1,3 +1,4 @@
+import { writeFontOptions, writeWeightChoice } from "../fonts";
 import { selectElement, writeInputValue } from "../page";
 
 import type { GuidedText } from "../guided-steps";
@@ -60,8 +61,8 @@ function writeTextBoxValues(document: Document, text: GuidedText): void {
 }
 
 /**
- * Types a step's text into the Text tool's fields, its box's and its background's among them
- * (VAL-015), and its X, Y and angle into the placement fields, without firing any event; the
+ * Types a step's text into the Text tool's fields, its font and weight chosen in their lists
+ * (US-036), its box's and its background's among them (VAL-015), and its X, Y and angle into the placement fields, without firing any event; the
  * placements each tool kept go, so that the step starts from its own values (VAL-014).
  *
  * @kind procedure
@@ -72,8 +73,6 @@ function writeTextBoxValues(document: Document, text: GuidedText): void {
 export function writeTextStepValues(document: Document, text: GuidedText): void {
   for (const [id, value] of [
     ["text-content", text.content],
-    ["text-font", text.font],
-    ["text-weight", String(text.weight)],
     ["text-color", text.color],
     ["text-case", text.textCase],
     ["text-direction", text.direction],
@@ -85,6 +84,9 @@ export function writeTextStepValues(document: Document, text: GuidedText): void 
   writeCheckedValue(document, "text-underline", text.isUnderlined);
   writeCheckedValue(document, "text-strike", text.isStruckThrough);
   selectElement(document, "text-italic").setAttribute("aria-pressed", String(text.isItalic));
+  // The font chosen in the list, then its weight among the family's faces (US-036).
+  writeFontOptions(document, text.font);
+  writeWeightChoice(document, text.weight);
 
   for (const [id, value] of [
     ["text-size", text.size],
