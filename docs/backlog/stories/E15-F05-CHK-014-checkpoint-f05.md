@@ -3,7 +3,7 @@ id: CHK-014
 epic: E15
 feature: F05
 title: Checkpoint in the middle of F05
-status: ready
+status: done
 points: 1
 ---
 
@@ -19,7 +19,7 @@ Docs and methods brought up to date, consistency checked (ADR-0028).
 
 One task = one commit, referenced as `CHK-014.Tn`.
 
-- [ ] T1 — Consistency and evolvability check (1 h)
+- [x] T1 — Consistency and evolvability check (1 h)
 
 ## Light evolvability check (2026-10-15)
 
@@ -32,6 +32,6 @@ One task = one commit, referenced as `CHK-014.Tn`.
 | Agent configuration | AGENTS.md and CLAUDE.md 147 lines together; three pitfalls added to `.claude/rules/library.md` (lint of nested readonly types alone, happy-dom `<select>`, `[hidden]` against rules by id)  |
 | Process             | workers in worktrees with three parallel reviews per story (ADR-0051): every story had findings fixed before its merge; incidents logged in the improvement log                             |
 
-Consistency: AGENTS.md's state line now says E15 is in progress; `shapes.md` says a line 0 wide or less has no underline nor strike-through, as `lineDecorations` does. Left for a decision: ADR-0052 (decision 1) and Q31 measure a font without metrics with the default font, while the code and `shapes.md` try the fallback family first; the fallback family is not checked as the font is.
+Consistency — AGENTS.md's state line now says E15 is in progress; `shapes.md` says a line 0 wide or less has no underline nor strike-through, as `lineDecorations` does. Left for a decision: ADR-0052 (decision 1) and Q31 measure a font without metrics with the default font, while the code and `shapes.md` try the fallback family first; the fallback family is not checked as the font is.
 
 Product Owner test cards written so far in F05: US-031's ("Product Owner test" in its story file).
