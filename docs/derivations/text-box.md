@@ -1,0 +1,158 @@
+# DERIV-text-box — Lines wrapped in a box, cut with an ellipsis, placed by a line height, a trim and a vertical alignment
+
+Used by: F14 (EN-033 to EN-036, US-033, US-034). Builds on `DERIV-text-width`, which measures a line and places it across its block. Sources: `REF-UAX14` (break opportunities after spaces, spaces not measured for fit), `REF-CSS-TEXT-3` (soft wrap opportunities, hanging spaces, `overflow-wrap`), `REF-WIKI-LINE-WRAP` (the greedy wrap), `REF-WIKI-KNUTH-PLASS` (minimum raggedness by dynamic programming), `REF-CSS-TEXT-4` (`text-wrap-style: balance`), `REF-CSS-OVERFLOW-3` (`text-overflow: ellipsis`), `REF-CSS-OVERFLOW-4` (`line-clamp`, `max-lines`, `block-ellipsis`), `REF-CSS-INLINE-3` (`line-height`, half-leading, cap height, `text-box-trim`, content area), `REF-OT-OS2` (`sCapHeight`), `REF-OT-HHEA` (ascender, descender, line gap).
+
+## Notation
+
+| Symbol    | Definition                                                                                                                 |
+| --------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `W`, `H`  | the box's width and height, integers in user units                                                                         |
+| `w(t)`    | the width of the string `t` measured as one line (`DERIV-text-width`, steps 1 to 3)                                        |
+| `trim(t)` | `t` without the spaces U+0020 at its end                                                                                   |
+| `s`, `U`  | the text's size and its font's units per em                                                                                |
+| `A, D, G` | the `hhea` ascender, descender (negative) and line gap, in font units                                                      |
+| `C`       | the cap height `sCapHeight` of `OS/2`, in font units; `0.66 × U` when the table is older than version 2 or gives 0 or less |
+| `λ`       | the line height in user units: the font's `(A − D + G) × s / U` when automatic, otherwise the integer chosen               |
+| `N`       | the maximum number of lines, 0 for none                                                                                    |
+| `v`       | the vertical alignment: 0 top, ½ middle, 1 bottom                                                                          |
+| `…`       | the ellipsis, U+2026                                                                                                       |
+
+## Step 1 — Paragraphs and where a line may wrap
+
+The content is cut into paragraphs at each line break typed (`DERIV-text-width`; `REF-UAX14`, LB5); each paragraph is wrapped on its own. Inside a paragraph, only spaces open a break (the scope of F14): a break is allowed after the last space of each run of spaces U+0020, "the locally most optimal one" (`REF-UAX14`, SP and LB18), and never after a no-break space U+00A0 (`REF-UAX14`, LB12, class GL). The paragraph is therefore a list of **tokens**, each a run of characters other than U+0020 followed by the spaces after it. Spaces at the start of a paragraph join its first token, so that no line is made of them alone.
+
+## Step 2 — A line's width for fit, and its spaces at a wrap
+
+"Spaces at the end of a line are ordinarily not measured for fit" and are "kept together invisibly on the previous line" (`REF-UAX14`, SP); CSS makes them hang, "not considered when placing the rest of the line during text alignment" (`REF-CSS-TEXT-3`, §4.1.2). So a candidate line `t` fits when:
+
+```text
+w(trim(t)) ≤ W
+```
+
+and a line ended by a wrap is drawn and measured as `trim(t)`. The last line of a paragraph keeps the spaces typed, measured as in F05.
+
+## Step 3 — The greedy wrap
+
+"A greedy algorithm that puts as many words on a line as possible" uses "the minimum possible number of lines" (`REF-WIKI-LINE-WRAP`), and the user agent "must minimize the amount of content overflowing a line by wrapping the line at a soft wrap opportunity" (`REF-CSS-TEXT-3`, §5). For each token in order: on an empty line it is placed; otherwise it joins the line when the line with it fits (step 2), and starts a new line when it does not.
+
+## Step 4 — A word too long for the box
+
+A token that does not fit on a line of its own is a long word. The designer chooses (F05 refinement, round 2):
+
+- **break at a character**, as `overflow-wrap: anywhere`: the word "may be broken at an arbitrary point if there are no otherwise-acceptable break points in the line", grapheme clusters kept together, "No hyphenation character is inserted" (`REF-CSS-TEXT-3`, §5.4). So the word first starts a new line, as every token that does not fit; then it is cut after its longest run of units (a character and the nonspacing marks after it, `DERIV-text-width` step 3) that fits, at least one unit, and the rest is a new token on the next line, again;
+- **move whole**, as `overflow-wrap: normal`: "Lines may break only at allowed break points" (`REF-CSS-TEXT-3`, §5.4), so the word stays whole on its own line and overflows the box; "a single word is too long to fit" is a case of text overflowing a line (`REF-CSS-OVERFLOW-3`, §5.1), so that line is cut with an ellipsis (step 6).
+
+## Step 5 — The number of lines shown
+
+A block of `n` lines is `n × λ` tall, or `(n − 1) × λ + C × s / U` when trimmed (step 7). The lines shown are the most whose block fits in the box, at least one, and at most `N` when a maximum is set:
+
+```text
+n = min( max{ n ≥ 1 : h(n) ≤ H } , N )        (N = 0: no maximum)
+```
+
+`line-clamp` limits a block "to the specified number of lines; remaining content is fragmented away and neither rendered nor measured", and `max-lines` takes only positive integers (`REF-CSS-OVERFLOW-4`, §5.1, §5.2). At least one line is shown even when the box is shorter than one line, so that a text never vanishes (provisional rule, VAL-015).
+
+## Step 6 — The ellipsis
+
+The last line shown ends with an ellipsis when lines were left out (`block-ellipsis: auto` renders U+2026 "at the end of the affected line box", `REF-CSS-OVERFLOW-4`, §4.2), and so does a line wider than the box (`text-overflow: ellipsis`, `REF-CSS-OVERFLOW-3`, §5.1). In both cases the ellipsis is measured with the rest of the line, and "implementations must hide characters … at the end edge of the line as necessary to fit the ellipsis" (`REF-CSS-OVERFLOW-3`):
+
+```text
+t ← trim(line)
+while t has more than one unit and w(t + "…") > W:  t ← trim(t without its last unit)
+line ← t + "…"
+```
+
+"The first character … on a line must be clipped rather than ellipsed" (`REF-CSS-OVERFLOW-3`): the first unit always stays, so a box narrower than one character and the ellipsis shows that character and the ellipsis, overflowing. A face without a glyph for U+2026 writes three full stops, "three dots \"...\" if the ellipsis character is unavailable" (`REF-CSS-OVERFLOW-3`). CSS Overflow 4 would place the block ellipsis "after the last soft wrap opportunity" that lets it fit, a whole word removed (`REF-CSS-OVERFLOW-4`, §4.2); a cut at a unit keeps more of the text in a narrow box, and is the rule for both cases here (provisional, VAL-015).
+
+## Step 7 — Line height, baselines and the trim
+
+When the line height is automatic, the lines follow `DERIV-text-width` step 4: `λ = (A − D + G) × s / U`, and the first baseline lies `A × s / U` below the block's top, as in F05.
+
+When a line height `λ` is chosen, CSS computes "the leading L as L = line-height − (A + D)", with `A` and `D` the ascent and the depth below the baseline, and adds "half the leading … above A … and the other half below D", `L` possibly negative (`REF-CSS-INLINE-3`, §5.3). With the descender `D` negative:
+
+```text
+first baseline below the block's top = (λ − (A − D) × s / U) / 2 + A × s / U
+```
+
+When the text is trimmed, its first line's top is the cap height and its last line's bottom the baseline (`text-box-trim` with the edges cap height and alphabetic; the cap height is "Calculated using `sCapHeight` in OpenType", `REF-CSS-INLINE-3`, §3.2, §6, §6.2). The first baseline then lies `C × s / U` below the block's top, whatever `λ`, and the block of `n` lines is `(n − 1) × λ + C × s / U` tall. `sCapHeight` exists from version 2 of `OS/2` and is set to 0 when the font has no `H` (`REF-OT-OS2`); then the cap height is `0.66 em`, the fallback `REF-CSS-INLINE-3` suggests (Appendix A.2). In every case:
+
+```text
+baseline of line k (from 0) = top of the block + first baseline + k × λ
+```
+
+## Step 8 — The block placed in the box
+
+A text that fits its content has its block's top at its `y` and is as wide as its widest line (`DERIV-text-width`). In a box, the lines are placed across the box's width `W` by their alignment (`DERIV-text-width`, step 5, with `B = W`), and the block of `n` lines is placed down the box by the room it leaves, as a line is placed across:
+
+```text
+top of the block = y + (H − h(n)) × v,   v = 0 (top), ½ (middle), 1 (bottom)
+```
+
+A block taller than the box (one line in a box shorter than it) has negative room: centered, it overflows both edges equally. A text in a box turns about the middle of its box (`DERIV-turned-shape`, step 4; F05 refinement, round 2): `(x + W / 2, y + H / 2)`.
+
+## Step 9 — The balanced wrap
+
+With `balance`, "line breaks are chosen to balance the remaining (empty) space in each line box", without changing the number of lines (for 5 or fewer, "must not"); balance is measured by "the standard deviation from the average inline-size of the remaining space in each line box … (including lines that end in a forced line break)", each paragraph "processed separately", and "the exact algorithm is UA-defined" (`REF-CSS-TEXT-4`, §5.4).
+
+For a paragraph of `n` greedy lines, the `n` lines are chosen to minimize the sum of the squares of the space each leaves, every line fitting:
+
+```text
+minimize  Σᵢ₌₁ⁿ (W − wᵢ)²    over the ways to cut the tokens into n lines with wᵢ ≤ W
+```
+
+the minimum raggedness of TeX, which "minimizes the sum of the squares of the lengths of the spaces at the end of lines" (`REF-WIKI-LINE-WRAP`), computed by dynamic programming over the break points (`REF-WIKI-KNUTH-PLASS`): the least cost of the first `j` tokens on `k` lines is the least, over `i < j`, of the cost of the first `i` tokens on `k − 1` lines plus the square of the space left by tokens `i` to `j − 1` on one line. Since `Σ (W − wᵢ)` changes only by the spaces dropped at the breaks, minimizing the squares with `n` fixed lowers their spread, which CSS's standard deviation measures. The greedy cut is one of the candidates, so the balanced cut leaves no more raggedness than it, and has the same `n` lines. On equal cost, the later break is kept, as the greedy wrap would choose. A paragraph holding a long word, and a text cut by the ellipsis, keep their greedy lines (provisional, VAL-015): CSS balances after clamping (`REF-CSS-TEXT-4`), which would move the text that the ellipsis hides.
+
+## Step 10 — The background behind each line
+
+A highlighter covers each line's content area, "sized and positioned to fit … text from its first available font", for example from "the maximum ascender and descender of the font" (`REF-CSS-INLINE-3`, §6.4): from the ascender to the descender, as long as the line drawn (with its ellipsis). For a line of width `w > 0`:
+
+```text
+x = left of line,  y = baseline − A × s / U,  width = w,  height = (A − D) × s / U
+```
+
+A line `w ≤ 0` wide gets none. The rectangles are one `<path>`, one closed sub-path per line, clockwise from its top-left corner (Q11), drawn before the `<text>` in the text's group so that the letters stay on top.
+
+## Cross-check
+
+Arial 5.01 at size 16, kerning left out: `U = 2048`, `A = 1854`, `D = −434`, `G = 67` (`DERIV-text-width`); `OS/2` version 3, `sCapHeight = 1467`; advances read from the file by a script: `…` 2048, `.` 569, `P` 1366, `u` 1139, `m` 1706, `p` 1139, `-` 682, `1` 1139, `0` 1139, `i` 455, `s` 1024, `n` 1139, `g` 1139, and those of `DERIV-text-width`. One font unit is `16 / 2048 = 1 / 128` user unit.
+
+| Word or string | Units | Width    |
+| -------------- | ----- | -------- |
+| `Hello`        | 4 667 | 36.46094 |
+| `World`        | 5 348 | 41.78125 |
+| `Pump`         | 5 350 | 41.79688 |
+| `P-101`        | 5 465 | 42.69531 |
+| `is`           | 1 479 | 11.55469 |
+| `running`      | 6 832 | 53.375   |
+| space          | 569   | 4.44531  |
+| `…`            | 2 048 | 16       |
+| `...`          | 1 707 | 13.33594 |
+
+## Checks (test cases)
+
+| Case                                                       | Computation                                                                                            | Expected                                                                          |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------- |
+| "Hello World", box 50 wide                                 | `4667 + 569 + 5348 = 10 584` units, 82.6875 > 50: wrap after the space                                 | "Hello" (36.46094) / "World" (41.78125)                                           |
+| "Hello World", box 60 wide, at most 1 line                 | "Hello" + "…" = `(4667 + 2048) / 128` = 52.46094 ≤ 60                                                  | "Hello…", 52.46094 wide                                                           |
+| "Hello World", box 50 wide, at most 1 line                 | 52.46094 > 50; without `o`: `(4667 − 1139 + 2048) / 128` = 43.5625 ≤ 50                                | "Hell…", 43.5625 wide                                                             |
+| "Hello World Hello World", box 60 wide, at most 2 lines    | four lines of one word; the second with "…": `(5348 + 2048) / 128` = 57.78125 ≤ 60                     | "Hello" / "World…", 57.78125 wide                                                 |
+| the same, box 60 × 40, no maximum                          | `h(2) = 36.79688 ≤ 40 < h(3) = 55.19531`                                                               | 2 lines: "Hello" / "World…"                                                       |
+| a box 10 tall                                              | no `n ≥ 1` fits; at least one line                                                                     | 1 line                                                                            |
+| "Pump P-101 is running", box 50, break at a character      | "running" 53.375 > 50 starts its line; "runnin" `5693 / 128` = 44.47656 ≤ 50, with `g` 53.375          | "Pump" / "P-101" / "is" / "runnin" / "g"                                          |
+| the same, move whole                                       | "running" overflows: `(6832 − 1139 − 1139 − 455 + 2048) / 128` = 48.02344 ≤ 50, one unit more 51.57813 | "Pump" / "P-101" / "is" / "runn…"                                                 |
+| the same, move whole, at most 2 lines                      | "P-101…" `7513 / 128` = 58.69531 > 50; "P-10…" `6374 / 128` = 49.79688                                 | "Pump" / "P-10…"                                                                  |
+| "Hello", box 10 wide, at most 1 line, forced cut           | the first unit stays: `(1479 + 2048) / 128`                                                            | "H…", 27.55469 wide, overflowing                                                  |
+| ellipsis missing from the face                             | three full stops: `3 × 569 / 128`                                                                      | "...", 13.33594 wide                                                              |
+| baselines, automatic line height                           | `λ = 2355 / 128` = 18.39844; first `1854 / 128`                                                        | 14.48438, 32.88281                                                                |
+| baselines, line height 24                                  | `(24 − 2288 / 128) / 2 + 14.48438` = `3.0625 + 14.48438`                                               | 17.54688, 41.54688; block 48 tall                                                 |
+| baselines, trimmed, automatic line height                  | first `1467 / 128`; block of 2 lines `18.39844 + 11.46094`                                             | 11.46094, 29.85938; block 29.85938 tall                                           |
+| trimmed at size 32                                         | `1467 × 32 / 2048`                                                                                     | first baseline 22.92188 below the top                                             |
+| "Hello" / "World" in a box 60 tall, middle                 | room `60 − 36.79688` = 23.20313, half before; baseline `11.60156 + 14.48438`                           | top 11.60156, first baseline 26.08594                                             |
+| the same, bottom                                           | all the room before: `23.20313 + 14.48438`                                                             | first baseline 37.6875                                                            |
+| the same, trimmed, middle                                  | `(60 − 29.85938) / 2 + 11.46094`                                                                       | first baseline 26.53125                                                           |
+| "Pump P-101 is running", box 110 wide, balanced            | greedy "Pump P-101 is" (104.9375) / "running" (53.375): `5.0625² + 56.625²` = 3232.01953               | "Pump P-101" (88.9375) / "is running" (69.375): `21.0625² + 40.625²` = 2094.01953 |
+| "AAA BB CC DDDDD", every character 1 wide, box 6, balanced | greedy "AAA BB" / "CC" / "DDDDD": `0² + 4² + 1²` = 17 (`REF-WIKI-KNUTH-PLASS`)                         | "AAA" / "BB CC" / "DDDDD": `3² + 1² + 1²` = 11                                    |
+| "Hello World Hello", box 90 wide, balanced                 | "Hello World" / "Hello" and "Hello" / "World Hello" both cost `7.3125² + 53.53906²`                    | the later break: "Hello World" / "Hello"                                          |
+| background of "Hello" at (0, 0), automatic line height     | `y = 14.48438 − 14.48438`, height `(1854 + 434) / 128`                                                 | x 0, y 0, 36.46094 × 17.875                                                       |
+| background of its second line "World"                      | `y = 32.88281 − 14.48438`                                                                              | y 18.39844, 41.78125 × 17.875                                                     |
+| a box 60 × 40 at (0, 0), turned                            | the middle of the box                                                                                  | about (30, 20)                                                                    |
