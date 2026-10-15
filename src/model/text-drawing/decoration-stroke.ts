@@ -1,5 +1,5 @@
 import type { LineDecoration } from "./line-decoration";
-import type { PositionedLine } from "./positioned-line";
+import type { PositionedLine } from "../text-layout";
 
 /** Where a decoration's stroke sits, in user units at the text's size. */
 export type StrokeMetrics = {

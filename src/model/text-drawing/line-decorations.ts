@@ -6,7 +6,7 @@ import type { FontMetrics } from "../font";
 import type { Text } from "../text";
 import type { StrokeMetrics } from "./decoration-stroke";
 import type { LineDecoration } from "./line-decoration";
-import type { PositionedLine } from "./positioned-line";
+import type { PositionedLine } from "../text-layout";
 
 /**
  * A decoration's position and thickness, from font units to the text's size.
