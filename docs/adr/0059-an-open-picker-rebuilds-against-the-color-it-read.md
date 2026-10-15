@@ -1,6 +1,6 @@
 # ADR-0059 — An open picker rebuilds each edit against the color it read
 
-**Status**: Accepted by the agent (2026-10-15, US-040), provisional, to confirm at VAL-016. Amends ADR-0058, decision 2 (the exact values "computed from the hexadecimal"); its decisions 1, 3 and 4 stand.
+**Status**: Accepted by the agent (2026-10-15, US-040); confirmed by the Product Owner at VAL-016, 2026-10-15. Amends ADR-0058, decision 2 (the exact values "computed from the hexadecimal"); its decisions 1, 3 and 4 stand.
 
 ## Context
 

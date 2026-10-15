@@ -1,6 +1,6 @@
 # ADR-0055 — A text measured with its fallback's metrics, and turned by its group
 
-**Status**: Accepted (agent, US-032, 2026-10-15, settling two points of CHK-014 and the place of the turn; provisional, to confirm by the Product Owner at VAL-014). Decision 3 completed by ADR-0057 (2026-10-15): a turned text that grows keeps its turned top-left corner in place. Amends ADR-0052, decisions 1 and 4; the rest of ADR-0052 and ADR-0054 stand. Number 0053 stays reserved for F15's HTML layer.
+**Status**: Accepted (agent, US-032, 2026-10-15, settling two points of CHK-014 and the place of the turn; confirmed by the Product Owner at VAL-014, 2026-10-15). Decision 3 completed by ADR-0057 (2026-10-15): a turned text that grows keeps its turned top-left corner in place. Amends ADR-0052, decisions 1 and 4; the rest of ADR-0052 and ADR-0054 stand. Number 0053 stays reserved for F15's HTML layer.
 
 ## Context
 
@@ -27,7 +27,7 @@
 ## Consequences
 
 - ADR-0052's status names this amendment; its text is unchanged. Q31 (`docs/domain/README.md`) names this ADR.
-- `shapes.md` (Text) states the three rules; US-032's first criterion is met through the group (provisional, VAL-014).
+- `shapes.md` (Text) states the three rules; US-032's first criterion is met through the group (confirmed at VAL-014, 2026-10-15).
 
 ## References
 
