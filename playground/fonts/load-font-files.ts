@@ -1,6 +1,10 @@
+import { parseCollectionFaces } from "../../src";
+
 import { addFontFile } from "./add-font-file";
 import { readFaceName } from "./read-face-name";
 import { writeFontOptions } from "./write-font-options";
+
+import type { NamedFontFace } from "../../src";
 
 /** What the page says of one file chosen, and the family it added. */
 type LoadedFile = {
@@ -11,13 +15,38 @@ type LoadedFile = {
 };
 
 /**
- * Reads one file chosen and keeps its face, saying what was read or why it was refused.
+ * Adds the faces of a font file to the session's families (`addFontFile`): its face, or each face
+ * of a collection (`parseCollectionFaces`), each given to the page alone.
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param bytes - the bytes of a font file or of a collection
+ * @param update - redraws the playground
+ * @returns the faces added, in the file's order; none for a file that is not a font
+ * @see REF-OT-OTFF
+ */
+function addFontFaces(
+  document: Document,
+  bytes: Uint8Array,
+  update: () => void,
+): readonly NamedFontFace[] {
+  return parseCollectionFaces(bytes).flatMap((face) => {
+    const named = addFontFile(document, face, update);
+
+    return named === undefined ? [] : [named];
+  });
+}
+
+/**
+ * Reads one file chosen and keeps its faces, saying what was read or why it was refused: a font
+ * file gives its face, a collection (`.ttc`) each of its faces (`parseCollectionFaces`), each
+ * given to the page alone.
  *
  * @kind procedure
  * @param document - page document
  * @param file - a file the designer chose
  * @param update - redraws the playground
- * @returns the line said, and the family kept, empty for a file refused
+ * @returns the line said, and the family of the last face kept, empty for a file refused
  * @throws {DOMException} when the browser cannot read the file's bytes
  * @see REF-W3C-FILE-API
  */
@@ -26,14 +55,16 @@ async function loadFontFile(
   file: File,
   update: () => void,
 ): Promise<LoadedFile> {
-  const named = addFontFile(document, new Uint8Array(await file.arrayBuffer()), update);
+  const faces = addFontFaces(document, new Uint8Array(await file.arrayBuffer()), update);
+  const names = faces.map((named) => readFaceName(named.family, named.face));
 
-  return named === undefined
-    ? {
-        family: "",
-        line: `${file.name} is not a TrueType or OpenType font file (.ttf, .otf): refused.`,
-      }
-    : { family: named.family, line: `${readFaceName(named.family, named.face)} imported.` };
+  return {
+    family: faces.at(-1)?.family ?? "",
+    line:
+      names.length === 0
+        ? `${file.name} is not a TrueType or OpenType font file (.ttf, .otf, .ttc): refused.`
+        : `${names.join(", ")} imported.`,
+  };
 }
 
 /**

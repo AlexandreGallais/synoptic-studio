@@ -22,7 +22,7 @@ async function showFontFiles(
 }
 
 /**
- * Listens to the font file picker (`accept=".ttf,.otf"`, `REF-MDN-INPUT-FILE`): the files chosen
+ * Listens to the font file picker (`accept=".ttf,.otf,.ttc"`, `REF-MDN-INPUT-FILE`): the files chosen
  * are imported, each file read or refused on its own, the page says which and why, then redraws
  * (`showFontFiles`); the picker is emptied, so that the same file can be chosen
  * again.

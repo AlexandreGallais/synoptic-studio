@@ -30,7 +30,7 @@ export const GUIDED_STEPS_F15: readonly GuidedStep[] = [
   },
   {
     explanation: "Import a font: any other file renamed with .ttf (a .txt, a .png).",
-    look: "“<its name> is not a TrueType or OpenType font file (.ttf, .otf): refused.”; Font unchanged.",
+    look: "“<its name> is not a TrueType or OpenType font file (.ttf, .otf, .ttc): refused.”; Font unchanged.",
     title: "F15 · A file refused",
     values: ARIAL_PUMP,
   },

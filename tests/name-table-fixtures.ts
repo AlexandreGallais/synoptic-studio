@@ -167,14 +167,13 @@ export type TestFace = {
 };
 
 /**
- * The test font of `[F05.AC1]` as a whole file (1000 units per em, ascender 800, descender −200,
- * line gap 90; A 600 units wide, B, C and a 700, any other character 500; no kerning), named,
- * weighted and styled by a `name` and an `OS/2` table, for the playground's tests (US-036).
+ * The test font of `[F05.AC1]` as a whole file, named by the `name` table given.
  *
- * @param face - its family, weight, style and permissions
+ * @param face - its weight, style and permissions
+ * @param name - the bytes of its `name` table
  * @returns the file's bytes
  */
-export function testFaceFile(face: TestFace): Uint8Array {
+function testFaceNamed(face: TestFace, name: readonly number[]): Uint8Array {
   const os2 = os2FaceTable({
     capHeight: 700,
     fsSelection: face.isItalic ? ITALIC_SELECTION : REGULAR_SELECTION,
@@ -185,9 +184,47 @@ export function testFaceFile(face: TestFace): Uint8Array {
     weightClass: face.weightClass,
   });
 
-  return fontFile(TRUE_TYPE_VERSION, {
-    ...testFontTables(),
-    name: familyNameTable(face.family),
-    "OS/2": os2,
-  });
+  return fontFile(TRUE_TYPE_VERSION, { ...testFontTables(), name, "OS/2": os2 });
+}
+
+/**
+ * The test font of `[F05.AC1]` as a whole file (1000 units per em, ascender 800, descender −200,
+ * line gap 90; A 600 units wide, B, C and a 700, any other character 500; no kerning), named,
+ * weighted and styled by a `name` and an `OS/2` table, for the playground's tests (US-036).
+ *
+ * @param face - its family, weight, style and permissions
+ * @returns the file's bytes
+ */
+export function testFaceFile(face: TestFace): Uint8Array {
+  return testFaceNamed(face, familyNameTable(face.family));
+}
+
+/**
+ * The test font of `testFaceFile` with a PostScript name too (name ID 6), as an installed face is
+ * found in its collection (US-046).
+ *
+ * @param face - its family, weight, style and permissions
+ * @param postScriptName - its name ID 6, such as `TestSans-Bold`
+ * @returns the file's bytes
+ */
+export function postScriptFaceFile(face: TestFace, postScriptName: string): Uint8Array {
+  return testFaceNamed(
+    face,
+    nameTable([
+      {
+        encoding: 1,
+        language: ENGLISH_US,
+        nameId: 1,
+        platform: WINDOWS_PLATFORM,
+        text: face.family,
+      },
+      {
+        encoding: 1,
+        language: ENGLISH_US,
+        nameId: 6,
+        platform: WINDOWS_PLATFORM,
+        text: postScriptName,
+      },
+    ]),
+  );
 }

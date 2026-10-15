@@ -2,7 +2,13 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { testFaceFile } from "../../tests";
+import {
+  APPLE_TRUE_TYPE_VERSION,
+  fontCollection,
+  postScriptFaceFile,
+  testFaceFile,
+  uint32,
+} from "../../tests";
 import {
   chooseFiles,
   chooseOption,
@@ -16,8 +22,8 @@ import {
   waitForPageTasks,
 } from "../user-actions";
 
-import type { InstalledFont } from "./installed-font";
 import type { TestFace } from "../../tests";
+import type { InstalledFont } from "../fonts";
 
 /** The test font named Test Sans, regular, installable. */
 const TEST_SANS: TestFace = { family: "Test Sans", fsType: 0, isItalic: false, weightClass: 400 };
@@ -38,6 +44,40 @@ function installedFont(family: string, bytes: Uint8Array): InstalledFont {
     blob: vi.fn<() => Promise<Blob>>().mockResolvedValue(new Blob([new Uint8Array(bytes)])),
     family,
     fullName: family,
+    postscriptName: family,
+  };
+}
+
+/**
+ * An installed face whose file the browser gives as its whole collection, as on Windows and
+ * Linux (`REF-CHROMIUM-FONT-BLOB-CODE`).
+ *
+ * @param family - its family, as the browser names it
+ * @param postscriptName - its PostScript name, which finds it in the collection
+ * @param collection - the bytes of the whole collection
+ * @returns a `FontData` holding them
+ */
+function collectionFont(
+  family: string,
+  postscriptName: string,
+  collection: Uint8Array,
+): InstalledFont {
+  return { ...installedFont(family, collection), fullName: postscriptName, postscriptName };
+}
+
+/**
+ * An installed face whose file the browser cannot give: Chrome's `TypeError`.
+ *
+ * @param fullName - its full name
+ * @param message - Chrome's message
+ * @returns a `FontData` whose `blob()` rejects
+ */
+function inaccessibleFont(fullName: string, message: string): InstalledFont {
+  return {
+    blob: vi.fn<() => Promise<Blob>>().mockRejectedValue(new TypeError(message)),
+    family: "Test Sans",
+    fullName,
+    postscriptName: fullName.replaceAll(" ", "-"),
   };
 }
 
@@ -144,7 +184,12 @@ describe("Installed fonts (US-036)", () => {
 
     fakeLocalFonts([
       installedFont("Test Sans", testFaceFile(TEST_SANS)),
-      { blob: bold, family: "Test Sans", fullName: "Test Sans Bold" },
+      {
+        blob: bold,
+        family: "Test Sans",
+        fullName: "Test Sans Bold",
+        postscriptName: "TestSans-Bold",
+      },
       installedFont("Test Serif", testFaceFile({ ...TEST_SANS, family: "Test Serif" })),
     ]);
 
@@ -192,14 +237,20 @@ describe("Installed fonts (US-036)", () => {
   it("[F15.AC1] keeps the family chosen before when the browser cannot give a family's file", async () => {
     const broken = vi.fn<() => Promise<Blob>>().mockRejectedValue(new Error("No file."));
 
-    fakeLocalFonts([{ blob: broken, family: "Test Serif", fullName: "Test Serif" }]);
+    fakeLocalFonts([
+      { blob: broken, family: "Test Serif", fullName: "Test Serif", postscriptName: "TestSerif" },
+    ]);
+
     await importFace();
     clickElement("installed-fonts");
     await waitForPageTasks();
     chooseOption("text-font", "Test Serif");
     await waitForPageTasks();
 
-    expect(readText("#font-message")).toBe("Test Serif could not be read (Error: No file.).");
+    expect(readText("#font-message")).toBe(
+      "Test Serif could not be read (Test Serif: Error: No file.).",
+    );
+
     expect(readOptions("text-font")).toEqual(["Inter", "Test Sans"]);
     expect(readValue("text-font")).toBe("Test Sans");
     expect(readFontFamily()).toBe('"Test Sans", sans-serif');
@@ -210,7 +261,12 @@ describe("Installed fonts (US-036)", () => {
 
     fakeLocalFonts([
       installedFont("Test Sans", testFaceFile(TEST_SANS)),
-      { blob: broken, family: "Test Sans", fullName: "Test Sans Bold" },
+      {
+        blob: broken,
+        family: "Test Sans",
+        fullName: "Test Sans Bold",
+        postscriptName: "TestSans-Bold",
+      },
       installedFont("Test Sans", Uint8Array.from([0x74, 0x74, 0x63, 0x66])),
     ]);
 
@@ -220,14 +276,14 @@ describe("Installed fonts (US-036)", () => {
     await waitForPageTasks();
 
     expect(readText("#font-message")).toBe(
-      "Test Sans: 1 faces read, 2 refused (Error: No file.; not a TrueType or OpenType font, a collection among them).",
+      "Test Sans: 1 faces read, 2 refused (Test Sans Bold: Error: No file.; not a TrueType or OpenType font).",
     );
 
     expect(readValue("text-font")).toBe("Test Sans");
     expect(readOptions("text-weight")).toEqual(["400"]);
   });
 
-  it("[F15.AC1] gives the list back to Inter for a file it cannot read, a collection among them", async () => {
+  it("[F15.AC1] gives the list back to Inter for a file it cannot read, a collection's tag alone", async () => {
     fakeLocalFonts([installedFont("Test Bad", Uint8Array.from([0x74, 0x74, 0x63, 0x66]))]);
     clickElement("installed-fonts");
     await waitForPageTasks();
@@ -235,7 +291,7 @@ describe("Installed fonts (US-036)", () => {
     await waitForPageTasks();
 
     expect(readText("#font-message")).toBe(
-      "Test Bad could not be read (not a TrueType or OpenType font, a collection among them).",
+      "Test Bad could not be read (not a TrueType or OpenType font).",
     );
 
     expect(readOptions("text-font")).toEqual(["Inter"]);
@@ -300,5 +356,83 @@ describe("Installed fonts (US-036)", () => {
     Object.defineProperty(globalThis, "queryLocalFonts", { configurable: true, value: 42 });
     clickElement("installed-fonts");
     expect(readText("#font-message")).toBe(UNSUPPORTED);
+  });
+
+  it("[F17.AC4] reads a face tagged true, as Chrome gives one on macOS (Helvetica's faces)", async () => {
+    const bytes = [...testFaceFile(TEST_SANS)];
+
+    bytes.splice(0, 4, ...uint32(APPLE_TRUE_TYPE_VERSION));
+    fakeLocalFonts([installedFont("Test Sans", Uint8Array.from(bytes))]);
+    clickElement("installed-fonts");
+    await waitForPageTasks();
+    chooseOption("text-font", "Test Sans");
+    await waitForPageTasks();
+
+    expect(readText("#font-message")).toBe("Test Sans: 1 faces read.");
+  });
+
+  it("[F17.AC4] keeps from a whole collection the faces of the family chosen, by PostScript name", async () => {
+    const collection = fontCollection([
+      postScriptFaceFile(TEST_SANS, "TestSans-Regular"),
+      postScriptFaceFile({ ...TEST_SANS, family: "Other Serif" }, "OtherSerif-Regular"),
+      postScriptFaceFile({ ...TEST_SANS, weightClass: 700 }, "TestSans-Bold"),
+    ]);
+
+    fakeLocalFonts([
+      collectionFont("Test Sans", "TestSans-Regular", collection),
+      collectionFont("Test Sans", "TestSans-Bold", collection),
+      collectionFont("Other Serif", "OtherSerif-Regular", collection),
+    ]);
+
+    clickElement("installed-fonts");
+    await waitForPageTasks();
+    chooseOption("text-font", "Test Sans");
+    await waitForPageTasks();
+
+    expect(readText("#font-message")).toBe("Test Sans: 2 faces read.");
+    expect(readValue("text-font")).toBe("Test Sans");
+    expect(readOptions("text-weight")).toEqual(["400", "700"]);
+    // Other Serif stays listed as installed, its file unread.
+    expect(readOptions("text-font")).toEqual(["Inter", "Test Sans", "Other Serif"]);
+  });
+
+  it("[F17.AC4] refuses a face missing from the collection the browser gives", async () => {
+    // Two faces, neither named TestSans-Bold.
+    const collection = fontCollection([
+      postScriptFaceFile(TEST_SANS, "TestSans-Regular"),
+      postScriptFaceFile({ ...TEST_SANS, isItalic: true }, "TestSans-Italic"),
+    ]);
+
+    fakeLocalFonts([
+      installedFont("Test Sans", testFaceFile(TEST_SANS)),
+      collectionFont("Test Sans", "TestSans-Bold", collection),
+    ]);
+
+    clickElement("installed-fonts");
+    await waitForPageTasks();
+    chooseOption("text-font", "Test Sans");
+    await waitForPageTasks();
+
+    expect(readText("#font-message")).toBe(
+      "Test Sans: 1 faces read, 1 refused (no face named TestSans-Bold in its collection).",
+    );
+  });
+
+  it("[F17.AC4] refuses a face Chrome cannot give (TypeError) in one line, naming it, the others kept", async () => {
+    fakeLocalFonts([
+      installedFont("Test Sans", testFaceFile(TEST_SANS)),
+      inaccessibleFont("Test Sans Light", "The font Test-Sans-Light could not be accessed."),
+    ]);
+
+    clickElement("installed-fonts");
+    await waitForPageTasks();
+    chooseOption("text-font", "Test Sans");
+    await waitForPageTasks();
+
+    expect(readText("#font-message")).toBe(
+      "Test Sans: 1 faces read, 1 refused (Test Sans Light: The font Test-Sans-Light could not be accessed. Import its file with Import a font).",
+    );
+
+    expect(readValue("text-font")).toBe("Test Sans");
   });
 });
