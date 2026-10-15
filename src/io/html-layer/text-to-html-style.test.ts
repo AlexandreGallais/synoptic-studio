@@ -118,7 +118,7 @@ describe("textToHtmlStyle (ADR-0053, EN-041)", () => {
   it("[F15.AC3] wraps a text in a box, a word too long broken at a character", () => {
     expect(wrapping(BOXED, 0)).toEqual([
       "white-space: pre-wrap",
-      "overflow-wrap: anywhere",
+      "overflow-wrap: normal",
       "overflow: hidden",
       "text-overflow: ellipsis",
       "flex-shrink: 0",
@@ -126,7 +126,7 @@ describe("textToHtmlStyle (ADR-0053, EN-041)", () => {
   });
 
   it("[F15.AC3] moves a word too long whole, and balances the lines when asked", () => {
-    expect(wrapping({ ...BOXED, longWord: "move", wrapStyle: "balance" }, 0)).toEqual([
+    expect(wrapping({ ...BOXED, wrapStyle: "balance" }, 0)).toEqual([
       "white-space: pre-wrap",
       "overflow-wrap: normal",
       "text-wrap: balance",
@@ -139,7 +139,7 @@ describe("textToHtmlStyle (ADR-0053, EN-041)", () => {
   it("[F15.AC3] clamps a box showing at most 2 lines, the ellipsis on", () => {
     expect(wrapping(BOXED, 2)).toEqual([
       "white-space: pre-wrap",
-      "overflow-wrap: anywhere",
+      "overflow-wrap: normal",
       "overflow: hidden",
       "text-overflow: ellipsis",
       "display: -webkit-box",
@@ -152,7 +152,7 @@ describe("textToHtmlStyle (ADR-0053, EN-041)", () => {
   it("[F15.AC3] cuts a box showing at most 2 lines at 2 line heights, down only, the ellipsis off", () => {
     // 2 · 18.3984375 = 36.796875, at 5 decimals 36.79688; clipped down, visible across, so that a
     // word moved whole overflows sideways.
-    expect(wrapping({ ...BOXED, hasEllipsis: false, longWord: "move" }, 2)).toEqual([
+    expect(wrapping({ ...BOXED, hasEllipsis: false }, 2)).toEqual([
       "white-space: pre-wrap",
       "overflow-wrap: normal",
       "overflow-x: visible",
@@ -165,7 +165,7 @@ describe("textToHtmlStyle (ADR-0053, EN-041)", () => {
   it("[F15.AC3] neither cuts nor ends with an ellipsis a box without limit, the ellipsis off", () => {
     expect(wrapping({ ...BOXED, hasEllipsis: false }, 0)).toEqual([
       "white-space: pre-wrap",
-      "overflow-wrap: anywhere",
+      "overflow-wrap: normal",
       "flex-shrink: 0",
     ]);
   });

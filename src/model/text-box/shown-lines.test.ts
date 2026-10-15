@@ -9,7 +9,7 @@ import { wrappedLines, wrappedParagraph } from "../text-wrap";
 import { shownLines } from "./shown-lines";
 
 import type { FontMetrics } from "../font";
-import type { Text, TextLongWord } from "../text";
+import type { Text } from "../text";
 
 /** Arial 16 without kerning in a box 60 wide and 1000 tall, its ellipsis on. */
 const BOXED: Text = { ...HELLO_TEXT, boxHeight: 1000, boxWidth: 60, isInBox: true };
@@ -26,12 +26,6 @@ type ShownText = {
   readonly lines: readonly string[];
   /** Their widths in user units. */
   readonly widths: readonly number[];
-};
-
-/** A word too long for the box: broken at a character or moved whole. */
-type LongWordCase = {
-  /** The option chosen. */
-  readonly longWord: TextLongWord;
 };
 
 /**
@@ -110,9 +104,15 @@ describe("shownLines (DERIV-text-box steps 5 and 6)", () => {
     expect(shownLines(ARIAL_BOX_METRICS, { ...text, content: "" })).toEqual([]);
   });
 
-  it("[F14.AC2] cuts a word moved whole that overflows with an ellipsis", () => {
-    // "runn…" 6147 / 128 = 48.02344 ≤ 50; "runni…" 51.57813 > 50.
-    const text: Text = { ...BOXED, boxWidth: 50, content: PUMP, longWord: "move" };
+  it("[F17.AC1] cuts a word too long, kept whole, with an ellipsis", () => {
+    // "running" 6832 / 128 = 53.375 > 50 stays whole; "runn…" (6832 − 1139 − 1139 − 455 + 2048)
+    // / 128 = 6147 / 128 = 48.02344 ≤ 50; "runni…" 51.57813 > 50.
+    expect(shown({ ...BOXED, boxWidth: 50, content: "running" })).toEqual({
+      lines: ["runn…"],
+      widths: [48.0234375],
+    });
+
+    const text: Text = { ...BOXED, boxWidth: 50, content: PUMP };
 
     expect(shown(text)).toEqual({
       lines: ["Pump", "P-101", "is", "runn…"],
@@ -126,23 +126,19 @@ describe("shownLines (DERIV-text-box steps 5 and 6)", () => {
     });
   });
 
-  it.each<LongWordCase>([{ longWord: "break" }, { longWord: "move" }])(
-    "[F14.AC2] keeps the first character and its ellipsis in a box too narrow, words $longWord",
-    ({ longWord }) => {
-      // (1479 + 2048) / 128 = 27.55469 > 10: both drawn, past the box's edge (provisional).
-      expect(shown({ ...BOXED, boxWidth: 10, longWord, maximumLines: 1 })).toEqual({
-        lines: ["H…"],
-        widths: [27.5546875],
-      });
-    },
-  );
+  it("[F14.AC2] keeps the first character and its ellipsis in a box too narrow", () => {
+    // (1479 + 2048) / 128 = 27.55469 > 10: both drawn, past the box's edge (provisional).
+    expect(shown({ ...BOXED, boxWidth: 10, maximumLines: 1 })).toEqual({
+      lines: ["H…"],
+      widths: [27.5546875],
+    });
+  });
 
   it("[F14.AC2] never counts the spaces opening a line as the character kept", () => {
     const text: Text = {
       ...BOXED,
       boxWidth: 10,
       content: "  Hello World",
-      longWord: "move",
       maximumLines: 1,
     };
 
@@ -158,26 +154,32 @@ describe("shownLines (DERIV-text-box steps 5 and 6)", () => {
       "Hello",
       "World",
     ]);
+  });
 
-    // A word moved whole is drawn whole, 6832 / 128 = 53.375 wide, past the box (provisional).
-    expect(shown({ ...off, boxWidth: 50, content: PUMP, longWord: "move" })).toEqual({
+  it("[F17.AC1] draws a word too long whole, past the box, when the ellipsis is off", () => {
+    // "running" 6832 / 128 = 53.375, 3.375 past the box 50 wide.
+    const off: Text = { ...BOXED, boxWidth: 50, hasEllipsis: false };
+
+    expect(shown({ ...off, content: "running" })).toEqual({ lines: ["running"], widths: [53.375] });
+
+    expect(shown({ ...off, content: PUMP })).toEqual({
       lines: ["Pump", "P-101", "is", "running"],
       widths: [41.796875, 42.6953125, 11.5546875, 53.375],
+    });
+
+    // "Hello World" 82.6875 > 50 wraps as before: "Hello" 36.46094 over "World" 41.78125.
+    expect(shown({ ...off, content: "Hello World" })).toEqual({
+      lines: ["Hello", "World"],
+      widths: [36.4609375, 41.78125],
     });
   });
 
   it("[F14.AC2] leaves a line of one character wider than the box without an ellipsis", () => {
-    // Broken at a character in a box 5: every letter alone, "H", "e" and "o" wider than 5, "ll" 7.11 > 5; nothing to remove,
-    // the first character is clipped rather than ellipsed (provisional, VAL-015).
-    const text: Text = { ...BOXED, boxWidth: 5, content: "Hello" };
+    // In a box 5: "W" 15.10 and "a" (glyph 0) 12 are each wider than 5; nothing to remove, the
+    // first character is clipped rather than ellipsed (provisional, VAL-015).
+    const text: Text = { ...BOXED, boxWidth: 5, content: "W a" };
 
-    expect(shownLines(ARIAL_BOX_METRICS, text)).toEqual(["H", "e", "l", "l", "o"]);
-
-    // Moved whole: "W" 15.10 and "a" (glyph 0) 12 are each wider than 5.
-    expect(shownLines(ARIAL_BOX_METRICS, { ...text, content: "W a", longWord: "move" })).toEqual([
-      "W",
-      "a",
-    ]);
+    expect(shownLines(ARIAL_BOX_METRICS, text)).toEqual(["W", "a"]);
   });
 
   it("[F14.AC2] adds no ellipsis when the lines left out are empty", () => {
@@ -237,7 +239,6 @@ describe("shownLines (DERIV-text-box steps 5 and 6)", () => {
     boxWidth: fc.integer({ max: 80, min: 0 }),
     content: fc.stringMatching(/^[ \nHWdelor]{0,40}$/u),
     hasEllipsis: fc.boolean(),
-    longWord: fc.constantFrom<TextLongWord>("break", "move"),
     maximumLines: fc.integer({ max: 5, min: 0 }),
   })(
     "[F14.AC2] shows at most the maximum, each line fitting with the ellipsis on unless one character is left",

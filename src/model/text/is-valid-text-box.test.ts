@@ -19,7 +19,6 @@ const BOXED = {
   isInBox: true,
   isTrimmed: true,
   lineHeight: 24,
-  longWord: "move",
   maximumLines: 2,
   verticalAlignment: "middle",
   wrapStyle: "balance",
@@ -43,7 +42,6 @@ describe("isValidTextBox (F14)", () => {
       isInBox: false,
       isTrimmed: false,
       lineHeight: 0,
-      longWord: "break",
       maximumLines: 0,
       verticalAlignment: "top",
       wrapStyle: "auto",
@@ -89,7 +87,6 @@ describe("isValidTextBox (F14)", () => {
   });
 
   it.each([
-    { field: "longWord", value: "hyphenate" },
     { field: "verticalAlignment", value: "baseline" },
     { field: "wrapStyle", value: "pretty" },
     { field: "isInBox", value: "true" },
@@ -110,7 +107,6 @@ describe("isValidTextBox (F14)", () => {
     isInBox: fc.boolean(),
     isTrimmed: fc.boolean(),
     lineHeight: fc.integer({ max: 100_000, min: 0 }),
-    longWord: fc.constantFrom("break", "move"),
     maximumLines: fc.integer({ max: 100_000, min: 0 }),
     verticalAlignment: fc.constantFrom("top", "middle", "bottom"),
     wrapStyle: fc.constantFrom("auto", "balance"),

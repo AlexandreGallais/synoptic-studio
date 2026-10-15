@@ -13,15 +13,14 @@ import {
 import { balancedParagraph } from "./balanced-paragraph";
 
 import type { FontMetrics } from "../font";
-import type { Text, TextLongWord } from "../text";
+import type { Text } from "../text";
 
-/** Arial 16 without kerning in a box 110 wide, balanced, a word too long moved whole. */
+/** Arial 16 without kerning in a box 110 wide, balanced. */
 const BOXED: Text = {
   ...HELLO_TEXT,
   boxHeight: 1000,
   boxWidth: 110,
   isInBox: true,
-  longWord: "move",
   wrapStyle: "balance",
 };
 
@@ -30,12 +29,6 @@ const UNIT_METRICS: FontMetrics = {
   ...ARIAL_BOX_METRICS,
   advances: { 32: 1, 65: 1, 66: 1, 67: 1, 68: 1 },
   unitsPerEm: 16,
-};
-
-/** A word too long for the box: broken at a character or moved whole. */
-type LongWordCase = {
-  /** The option chosen. */
-  readonly longWord: TextLongWord;
 };
 
 /**
@@ -134,18 +127,15 @@ describe("balancedParagraph (DERIV-text-box step 9)", () => {
     ]);
   });
 
-  it.each<LongWordCase>([{ longWord: "move" }, { longWord: "break" }])(
-    "[F14.AC3] keeps the greedy lines of a paragraph holding a word too long ($longWord)",
-    ({ longWord }) => {
-      // Every character 1 wide, a box 6: "DDDDDDD" 7 > 6 is a word too long; greedy "AAA BB" /
-      // "CC" / "DDDDDDD" (or "DDDDDD" / "D" broken) stays, though "AAA" / "BB CC" is less ragged.
-      const text = { ...BOXED, boxWidth: 6, longWord };
-      const lines = balancedParagraph(UNIT_METRICS, "AAA BB CC DDDDDDD", text);
+  it("[F14.AC3] keeps the greedy lines of a paragraph holding a word too long", () => {
+    // Every character 1 wide, a box 6: "DDDDDDD" 7 > 6 is a word too long; greedy "AAA BB" /
+    // "CC" / "DDDDDDD" stays, though "AAA" / "BB CC" is less ragged.
+    const text = { ...BOXED, boxWidth: 6 };
+    const lines = balancedParagraph(UNIT_METRICS, "AAA BB CC DDDDDDD", text);
 
-      expect(lines.slice(0, 2)).toEqual(["AAA BB", "CC"]);
-      expect(lines).toEqual(wrappedParagraph(UNIT_METRICS, "AAA BB CC DDDDDDD", text));
-    },
-  );
+    expect(lines).toEqual(["AAA BB", "CC", "DDDDDDD"]);
+    expect(lines).toEqual(wrappedParagraph(UNIT_METRICS, "AAA BB CC DDDDDDD", text));
+  });
 
   it("keeps one line, and gives one empty line for an empty paragraph", () => {
     expect(balancedParagraph(ARIAL_BOX_METRICS, "Pump", BOXED)).toEqual(["Pump"]);
@@ -251,7 +241,6 @@ describe("balancedParagraph (DERIV-text-box step 9)", () => {
   test.prop({
     boxWidth: fc.integer({ max: 120, min: 0 }),
     letterSpacing: fc.integer({ max: 5, min: -15 }),
-    longWord: fc.constantFrom<TextLongWord>("break", "move"),
     paragraph: fc.stringMatching(/^(?:[ HWdelor\u{A0}]|\u{301}){0,40}$/u),
     wordSpacing: fc.integer({ max: 5, min: -15 }),
   })(

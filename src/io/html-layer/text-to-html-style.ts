@@ -59,11 +59,10 @@ function spacingToCss(text: Text): readonly CssDeclaration[] {
 /**
  * How a text's lines break: a text that fits its content keeps every space and breaks only at its
  * line breaks (`pre`); in a box, its lines also wrap to fill it (`pre-wrap`), a word too long
- * broken at any character (`overflow-wrap: anywhere`) or moved whole (`normal`,
- * `REF-MDN-OVERFLOW-WRAP`), balanced when asked (`text-wrap: balance`, `REF-MDN-TEXT-WRAP`).
+ * kept whole (`overflow-wrap: normal`, `REF-MDN-OVERFLOW-WRAP`), balanced when asked (`text-wrap: balance`, `REF-MDN-TEXT-WRAP`).
  *
  * @kind format
- * @param text - whether it sits in a box, its long words and its wrap style
+ * @param text - whether it sits in a box and its wrap style
  * @returns the declarations: one for a text that fits its content, two or three in a box
  * @see REF-MDN-WHITE-SPACE
  */
@@ -75,11 +74,7 @@ function wrapStyleToCss(text: Text): readonly CssDeclaration[] {
   const balance: readonly CssDeclaration[] =
     text.wrapStyle === "balance" ? [["text-wrap", "balance"]] : [];
 
-  return [
-    ["white-space", "pre-wrap"],
-    ["overflow-wrap", text.longWord === "break" ? "anywhere" : "normal"],
-    ...balance,
-  ];
+  return [["white-space", "pre-wrap"], ["overflow-wrap", "normal"], ...balance];
 }
 
 /**

@@ -16,7 +16,6 @@ import {
 const BOX_ONLY = [
   "text-box-width",
   "text-box-height",
-  "text-long-word",
   "text-maximum-lines",
   "text-ellipsis",
   "text-vertical-alignment",
@@ -42,7 +41,6 @@ describe("Text tool: the box's fields (US-033)", () => {
     // choices the page opens with are chosen again.
     chooseOption("text-weight", "400");
     chooseOption("text-fit", "content");
-    chooseOption("text-long-word", "break");
     chooseOption("text-vertical-alignment", "top");
     chooseOption("text-wrap", "auto");
   });
@@ -78,7 +76,6 @@ describe("Text tool: the box's fields (US-033)", () => {
     chooseOption("text-fit", "box");
     typeValue("text-box-width", "50");
     typeValue("text-box-height", "60");
-    chooseOption("text-long-word", "move");
     typeValue("text-maximum-lines", "2");
     clickElement("text-ellipsis");
     chooseOption("text-vertical-alignment", "bottom");
@@ -93,7 +90,6 @@ describe("Text tool: the box's fields (US-033)", () => {
       isInBox: true,
       isTrimmed: true,
       lineHeight: 24,
-      longWord: "move",
       maximumLines: 2,
       verticalAlignment: "bottom",
       wrapStyle: "balance",

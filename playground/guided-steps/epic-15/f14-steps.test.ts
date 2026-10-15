@@ -153,15 +153,14 @@ describe("the guided test of F14 (VAL-015): the box's options", () => {
     expect([readContents(), readBaselines()]).toEqual([["Hello World"], ["15.5"]]);
   });
 
-  it("[F14.AC1] a long word broken at a character, five lines 5 × 19.359375 tall", () => {
-    openStep("Long word broken");
-    expect(readContents()).toEqual(["Pump", "P-101", "is", "runnin", "g"]);
-    expect(readBlock().height).toBe(96.796875);
-  });
+  it("[F17.AC1] a long word kept whole, cut with an ellipsis; no option for it", () => {
+    openStep("Long word kept whole");
 
-  it("[F14.AC1] a long word moved whole, cut with an ellipsis", () => {
-    openStep("Long word moved whole");
-    chooseOption("text-long-word", "move");
+    // No field and no label for a word too long: the option is removed (US-042).
+    expect([
+      document.querySelector("#text-long-word") === null,
+      document.body.textContent.includes("Long words"),
+    ]).toEqual([true, false]);
 
     expect([readContents(), readBlock().width]).toEqual([
       ["Pump", "P-101", "is", "runn…"],
@@ -285,24 +284,16 @@ describe("the guided test of F14 (VAL-015): the decisions to confirm", () => {
     expect(readContents()).toEqual([" Hello", "World"]);
   });
 
-  it("decision 3: a word broken at a character, the next word joining its last part", () => {
-    openStep("Long word broken (decision 3)");
-    expect(readContents()).toEqual(["Hell", "o is", "Wo", "rld"]);
-    typeContent("running");
-    typeValue("text-box-width", "50");
-    expect(readContents()).toEqual(["runnin", "g"]);
-  });
-
-  it("decision 4: a word moved whole, “runn…”, then whole without the ellipsis", () => {
-    openStep("Long word moved whole (decision 4)");
+  it("[F17.AC1] decisions 3 and 4: a word kept whole, “runn…”, then whole without the ellipsis", () => {
+    openStep("Long word kept whole (decisions 3 and 4)");
     expect(readContents()).toEqual(["runn…"]);
     clickElement("text-ellipsis");
     expect(readContents()).toEqual(["running"]);
   });
 
-  it("decision 5: no line ends after a no-break space", () => {
+  it("decision 5: no break at a no-break space, the line whole past the box", () => {
     openStep("No-break space (decision 5)");
-    expect(readContents()).toEqual(["Hello", "\u{A0}Worl", "d"]);
+    expect(readContents()).toEqual(["Hello\u{A0}World"]);
   });
 
   it("decision 6: one line at least in a box 5 tall; max lines 100 001 refused", () => {
@@ -328,7 +319,7 @@ describe("the guided test of F14 (VAL-015): the decisions to confirm", () => {
 
   it("decision 9: one character a line, none with an ellipsis", () => {
     openStep("One character too wide (decision 9)");
-    expect(readContents()).toEqual(["H", "e", "l", "l", "o"]);
+    expect(readContents()).toEqual(["W", "a"]);
   });
 
   it("decision 10: an empty line left out adds no ellipsis", () => {
@@ -388,10 +379,8 @@ describe("the guided test of F14 (VAL-015): the decisions to confirm", () => {
     chooseOption("text-fit", "box");
 
     expect(
-      ["text-long-word", "text-maximum-lines", "text-vertical-alignment", "text-wrap"].map((id) =>
-        readValue(id),
-      ),
-    ).toEqual(["break", "0", "top", "auto"]);
+      ["text-maximum-lines", "text-vertical-alignment", "text-wrap"].map((id) => readValue(id)),
+    ).toEqual(["0", "top", "auto"]);
 
     expect(selectPageElement("#text-ellipsis")).toHaveProperty("checked", true);
   });
@@ -427,9 +416,9 @@ describe("the guided test of F14 (VAL-015): the decisions to confirm", () => {
     expect(readTransforms()).toEqual(["rotate(90 30 20)", "rotate(90 30 20)"]);
   });
 
-  it("decision 22: U+202F may end a line, U+00A0 may not", () => {
+  it("decision 22: an ellipsis may come after U+202F, never right after U+00A0", () => {
     openStep("Other no-break characters (decision 22)");
-    expect(readContents()).toEqual(["100\u{202F}", "%", "100", "\u{A0}%"]);
+    expect(readContents()).toEqual(["100\u{202F}…", "100…"]);
   });
 
   it("[F05.AC5] a turned box: a spacing moves nothing, 160 wide keeps its corner", () => {
