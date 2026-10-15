@@ -1,14 +1,15 @@
-import { isValidText, isValidTextBox, textDrawing, textFontMetrics } from "../../src";
+import { isValidText, isValidTextBox } from "../../src";
 import { writeColorSwatches, writeFollowedColors } from "../color-fields";
 import { writeLeftOutFaces } from "../document";
-import { readFontSession, writeFontFields } from "../fonts";
+import { writeFontFields } from "../fonts";
 import { selectElement, writeText } from "../page";
+import { readTextMeasure, readTextMetrics } from "../text-measure";
 import { writeTextPosition } from "../text-placement";
 
 import { readTextModel } from "./read-text-model";
 import { showText } from "./show-text";
 
-import type { Text } from "../../src";
+import type { FontMetrics, Text } from "../../src";
 
 /** Weight of the bold button (`REF-CSS-FONTS-4`, §2.2). */
 const BOLD = 700;
@@ -73,13 +74,34 @@ function clearTextDrawing(document: Document): void {
 }
 
 /**
+ * Draws a valid text from what it measures, its lines and block kept while their inputs stay the
+ * same (`readTextMeasure`, US-048), placed so that a turned text keeps its corner
+ * (`writeTextPosition`, US-038), then drawn once (`showText`).
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param text - a valid text
+ * @param metrics - the metrics of its face
+ * @see docs/backlog/stories/E15-F17-US-048-fluid-changes-held-keys.md
+ */
+function showMeasuredText(document: Document, text: Text, metrics: FontMetrics): void {
+  const measured = readTextMeasure(metrics, text);
+
+  showText(document, writeTextPosition(document, { block: measured.block, text }), {
+    measured,
+    metrics,
+  });
+}
+
+/**
  * Updates the page for the Text tool: the underline's and the strike-through's fields showing the
  * text's color while they follow it (`writeFollowedColors`, US-041); the bold button pressed at weight 700 or while it holds the
  * weight before (US-037); the fields
  * read only in a box shown when Box is chosen, and while one of them is refused, so that the
  * value outlined stays in sight (US-033); the font and weight lists brought up to date with the
  * session's fonts (`writeFontFields`, US-036); the text drawn with its block, measured with the
- * metrics of the family chosen, Inter or a font imported or installed and read (US-036), a
+ * metrics of the family chosen — the metrics, lines and block kept while their inputs stay the
+ * same (`readTextMetrics`, `readTextMeasure`, US-048) — Inter or a font imported or installed and read (US-036), a
  * turned text whose block or box changed size placed so that its turned top-left corner stays
  * (`writeTextPosition`, US-038);
  * each color's swatch painted with it (US-035);
@@ -94,7 +116,7 @@ export function updateTextTool(document: Document): void {
   writeFollowedColors(document);
 
   const text = readTextModel(document);
-  const metrics = textFontMetrics(text, readFontSession(document).kept);
+  const metrics = readTextMetrics(document, text);
   const isValid = metrics !== undefined && isValidText(text);
 
   writeBoldState(document, text.weight);
@@ -105,11 +127,7 @@ export function updateTextTool(document: Document): void {
   if (isValid) {
     writeText(document, "status", "");
 
-    showText(
-      document,
-      writeTextPosition(document, { block: textDrawing(metrics, text).block, text }),
-      metrics,
-    );
+    showMeasuredText(document, text, metrics);
 
     return;
   }
