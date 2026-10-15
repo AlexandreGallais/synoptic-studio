@@ -34,9 +34,35 @@ function writeCheckedValue(document: Document, id: string, isChecked: boolean): 
 }
 
 /**
- * Types a step's text into the Text tool's fields and its X, Y and angle into the placement
- * fields, without firing any event; the placements each tool kept go, so that the step starts
- * from its own values (VAL-014).
+ * Types a step's box and background choices into the Text tool's fields, without firing any
+ * event: Fit content or Box, long words, the ellipsis, the vertical alignment, the wrap, the trim
+ * and the background with its color (VAL-015).
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param text - the fields typed
+ * @see docs/backlog/stories/E15-F14-VAL-015-validate-f14.md
+ */
+function writeTextBoxValues(document: Document, text: GuidedText): void {
+  for (const [id, value] of [
+    ["text-fit", text.isInBox ? "box" : "content"],
+    ["text-long-word", text.longWord],
+    ["text-vertical-alignment", text.verticalAlignment],
+    ["text-wrap", text.wrapStyle],
+    ["text-background-color", text.backgroundColor],
+  ] as const) {
+    writeFieldValue(document, id, value);
+  }
+
+  writeCheckedValue(document, "text-ellipsis", text.hasEllipsis);
+  writeCheckedValue(document, "text-trim", text.isTrimmed);
+  writeCheckedValue(document, "text-background", text.hasBackground);
+}
+
+/**
+ * Types a step's text into the Text tool's fields, its box's and its background's among them
+ * (VAL-015), and its X, Y and angle into the placement fields, without firing any event; the
+ * placements each tool kept go, so that the step starts from its own values (VAL-014).
  *
  * @kind procedure
  * @param document - page document
@@ -65,12 +91,19 @@ export function writeTextStepValues(document: Document, text: GuidedText): void 
     ["text-opacity", text.opacity],
     ["text-letter-spacing", text.letterSpacing],
     ["text-word-spacing", text.wordSpacing],
+    ["text-box-width", text.boxWidth],
+    ["text-box-height", text.boxHeight],
+    ["text-maximum-lines", text.maximumLines],
+    ["text-line-height", text.lineHeight],
+    ["text-background-opacity", text.backgroundOpacity],
     ["shape-x", text.x],
     ["shape-y", text.y],
     ["angle", text.angle],
   ] as const) {
     writeInputValue(document, id, value);
   }
+
+  writeTextBoxValues(document, text);
 
   // The keys of `TOOL_PLACEMENT`, the placements each tool kept.
   delete selectElement(document, "placement").dataset["textPlacement"];

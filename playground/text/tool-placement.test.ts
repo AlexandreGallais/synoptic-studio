@@ -57,6 +57,8 @@ describe("Each tool keeps its own X, Y and angle (US-032)", () => {
     clickElement("tool-text");
     // happy-dom does not select the option marked `selected`: the page's weight, 400, chosen again.
     chooseOption("text-weight", "400");
+    // The size the page opens with, typed again: the current guided test's first step may change it.
+    typeValue("text-size", "32");
     // "Pump P-101" over "Running" in Inter Regular 32: 2 × 2478 × 32 / 2048 = 77.4375 tall;
     // "Pump P-101" the widest, 11 351 units of advances and −93 of kerning,
     // (11351 − 93) × 32 / 2048 = 175.90625 wide; its middle (87.953125, 38.71875) at X 0, Y 0.

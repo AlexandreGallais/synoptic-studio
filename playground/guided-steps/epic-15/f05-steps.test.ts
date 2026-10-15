@@ -5,7 +5,6 @@ import {
   chooseOption,
   clickElement,
   openOnStep,
-  openServedPage,
   readDisplay,
   readPressedState,
   readText,
@@ -109,10 +108,7 @@ function hasFrame(): boolean {
 }
 
 describe("the guided test of F05 (VAL-014): the Text tool's options", () => {
-  it("is the current guided test, and Next from F10's last step types F05's first", () => {
-    openServedPage("");
-    expect(readText("#guide-title")).toBe("F05 · Inter installed");
-
+  it("is in the epic's list, and Next from F10's last step types F05's first", () => {
     openStep("Inter installed");
     clickElement("guide-previous");
     clickElement("guide-next");
