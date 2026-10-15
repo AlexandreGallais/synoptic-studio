@@ -128,7 +128,7 @@
 | [CHK-015](./E15-F14-CHK-015-checkpoint-f14.md)                  | F14     | Checkpoint in the middle of F14                                                 | done   |
 | [US-033](./E15-F14-US-033-put-a-text-in-a-box.md)               | F14     | Put a text in a box with the Text tool                                          | done   |
 | [US-034](./E15-F14-US-034-background-behind-a-text.md)          | F14     | A background color behind a text, as a highlighter                              | done   |
-| [AUD-016](./E15-F14-AUD-016-audit-f14.md)                       | F14     | Audit F14                                                                       | ready  |
+| [AUD-016](./E15-F14-AUD-016-audit-f14.md)                       | F14     | Audit F14                                                                       | done   |
 | [VAL-015](./E15-F14-VAL-015-validate-f14.md)                    | F14     | Validate F14                                                                    | ready  |
 | [NAM-001](./E15-NAM-001-naming-pass-e15.md)                     | E15     | Naming pass over the code of E15                                                | draft  |
 | [REV-003](./E15-REV-003-review-e15.md)                          | E15     | Review E15 with the Product Owner                                               | draft  |
