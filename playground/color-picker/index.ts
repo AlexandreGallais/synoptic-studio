@@ -8,6 +8,7 @@ export * from "./read-picked-color";
 export * from "./show-color-picker";
 export * from "./toggle-color-picker";
 export * from "./update-color-picker";
+export * from "./write-color-plane";
 export * from "./write-picked-color";
 export * from "./write-picker-values";
 export * from "./write-slider-thumb";

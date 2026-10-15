@@ -1,12 +1,13 @@
 import { listenToColorFields } from "./listen-to-color-fields";
+import { listenToColorPlane } from "./listen-to-color-plane";
 import { listenToHueSlider } from "./listen-to-hue-slider";
 import { listenToOpacitySlider } from "./listen-to-opacity-slider";
 import { listenToPickerClosing } from "./listen-to-picker-closing";
 import { listenToPickerValues } from "./listen-to-picker-values";
 
 /**
- * Listens to each color's fields and to the color picker: its opening and closing, its hue and
- * opacity sliders and its values (`docs/domain/interaction.md` §5).
+ * Listens to each color's fields and to the color picker: its opening and closing, its hue and opacity sliders, its plane
+ * and its values (`docs/domain/interaction.md` §5).
  *
  * @kind procedure
  * @param document - page document
@@ -18,5 +19,6 @@ export function listenToColorPicker(document: Document, update: () => void): voi
   listenToPickerClosing(document);
   listenToHueSlider(document, update);
   listenToOpacitySlider(document, update);
+  listenToColorPlane(document, update);
   listenToPickerValues(document, update);
 }
