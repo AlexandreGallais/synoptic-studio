@@ -2,7 +2,7 @@
 id: F14
 epic: E15
 title: A box of text
-status: in-progress
+status: done
 ---
 
 # E15 · F14 — A box of text
@@ -37,7 +37,7 @@ In delivery order.
 | [US-034](../stories/E15-F14-US-034-background-behind-a-text.md)      | User story | A background color behind a text, as a highlighter                        | done   |
 | [AUD-016](../stories/E15-F14-AUD-016-audit-f14.md)                   | Audit      | Audit F14                                                                 | done   |
 | [US-039](../stories/E15-F14-US-039-straight-box-of-a-turned-text.md) | User story | See the straight box of a turned text                                     | done   |
-| [VAL-015](../stories/E15-F14-VAL-015-validate-f14.md)                | Validation | Validate F14                                                              | ready  |
+| [VAL-015](../stories/E15-F14-VAL-015-validate-f14.md)                | Validation | Validate F14                                                              | done   |
 
 ## Feature plan
 
@@ -53,4 +53,5 @@ In delivery order.
 
 ## Left for later
 
-- Scrolling a long text in its box on a touch screen: with the synoptic views (E08), through the HTML layer (F15).
+- Scrolling a long text in its box on a touch screen: with the synoptic views (E08).
+- The choice for a word too long and the balanced wrap: removed at the validation (Product Owner, 2026-10-15); F17 rewords criteria 1 and 3 (US-042, US-043).

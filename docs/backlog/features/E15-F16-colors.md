@@ -2,7 +2,7 @@
 id: F16
 epic: E15
 title: Colors and their pickers
-status: in-progress
+status: done
 ---
 
 # E15 · F16 — Colors and their pickers
@@ -16,7 +16,7 @@ Refined with F05 on 2026-10-14 (its rounds 1 and 2); its stories were written by
 1. A color is stored as six hexadecimal digits and an opacity from 0 to 100 %, both always shown, for a quick copy and paste.
 2. A picker opens on a click: a hue slider, an opacity slider, and a plane in HSL or in HSB, as chosen, its hexadecimal translation always shown.
 3. Conversions between hexadecimal, HSL and HSB are exact on the round trip from hexadecimal (`DERIV-color-spaces`).
-4. The text's color uses it, and its background's color (the agent's reading, to confirm at VAL-016); the shapes' fills and strokes will (E04).
+4. The text's color uses it, and its background's color (the agent's reading, confirmed at VAL-016, 2026-10-15); the shapes' fills and strokes will (E04).
 
 ## Stories
 
@@ -33,7 +33,7 @@ In delivery order.
 | [EN-043](../stories/E15-F16-EN-043-integer-hsl-and-hsb-from-exact-values.md) | Enabler    | HSL and HSB as integers, one value edited with the exact others        | done   |
 | [US-040](../stories/E15-F16-US-040-whole-numbers-in-the-picker.md)           | User story | Whole numbers in the color picker                                      | done   |
 | [US-041](../stories/E15-F16-US-041-underline-and-strike-through-colors.md)   | User story | Choose the underline's and the strike-through's colors                 | done   |
-| [VAL-016](../stories/E15-F16-VAL-016-validate-f16.md)                        | Validation | Validate F16                                                           | ready  |
+| [VAL-016](../stories/E15-F16-VAL-016-validate-f16.md)                        | Validation | Validate F16                                                           | done   |
 
 ## Feature plan
 

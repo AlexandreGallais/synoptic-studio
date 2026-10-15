@@ -3,7 +3,7 @@ id: VAL-016
 epic: E15
 feature: F16
 title: Validate F16
-status: ready
+status: done
 points: 1
 ---
 
@@ -21,7 +21,7 @@ One task = one commit, referenced as `VAL-016.Tn`.
 
 - [x] T1 — The guided test, tested end to end (1 h)
 - [x] T2 — The demo page (30 min)
-- [ ] T3 — The Product Owner's validation (1 h)
+- [x] T3 — The Product Owner's validation, 2026-10-15 (1 h)
 
 ## Guided test (T1)
 
@@ -75,3 +75,14 @@ The Product Owner tried the colors in the playground before the formal validatio
 | 1   | The picker is much liked                                                          | kept; its look is polished later                                                                                                                                                                                                                                                                                                                       | none           |
 | 2   | The values shown and typed in the picker have decimals                            | the picker's inputs show and accept integers only; a hexadecimal typed or pasted is kept exactly as typed, never altered afterwards; decimals may exist inside, never shown; one value edited is rebuilt with the exact values of the others; the picker reaching fewer colors than the hexadecimal is accepted (ADR-0058, decisions 8, 12, 17 and 19) | EN-043, US-040 |
 | 3   | The underline's and the strike-through's colors cannot be chosen (F05's remark 6) | each gets its own color and opacity, through the same color field and picker                                                                                                                                                                                                                                                                           | US-041         |
+
+## Validation (2026-10-15)
+
+The Product Owner walked every feature of E15 in the playground, in a Chromium-based browser, and validated the whole epic. Every rule above is confirmed as built, ADR-0056, ADR-0058 and ADR-0059 among them, with these remarks:
+
+| #   | Remark                                                                                                   | Decision                                                                                                                                                                                    | Work                 |
+| --- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- |
+| 1   | The underline's and the strike-through's own colors (decision 21)                                        | kept for now; a later epic on the editor's ease of use may remove them                                                                                                                      | E02 (ideas)          |
+| 2   | The box "follows the text's color" of each stroke color                                                  | for a later epic on ease of use: a reset button on the stroke colors instead of the box, and fewer options                                                                                  | E02 (ideas)          |
+| 3   | A value changed fast, an arrow key held on the size, the opacity or the height, lags; typing feels fluid | the drawing is redrawn at most once per animation frame, and only what a change touches is computed again: metrics, wrapped lines and block kept by their inputs                            | US-048 (F17)         |
+| 4   | The long step-by-step guided test is slow to walk                                                        | a validation is one checklist page listing every feature delivered, with check boxes and no Previous nor Next, so that the Product Owner tests freely; the `run` and `review` skills say so | US-051, EN-044 (F17) |

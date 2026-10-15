@@ -3,7 +3,7 @@ id: VAL-015
 epic: E15
 feature: F14
 title: Validate F14
-status: ready
+status: done
 points: 1
 ---
 
@@ -21,7 +21,7 @@ One task = one commit, referenced as `VAL-015.Tn`.
 
 - [x] T1 — The guided test, tested end to end (1 h)
 - [x] T2 — The demo page (30 min)
-- [ ] T3 — The Product Owner's validation (1 h)
+- [x] T3 — The Product Owner's validation, 2026-10-15 (1 h)
 
 ## Guided test (T1)
 
@@ -79,3 +79,16 @@ The Product Owner tried the box of text in the playground before the formal vali
 | 2   | A turned text shows only its turned frame, while a turned shape also shows its straight box, as SVG's `getBBox` gives                                   | a turned text shows its straight box too, with its x, y, width and height                                        | US-039         |
 | 3   | Long words broken or moved whole, line height, trim and background work; a background will serve, for instance, to make a text's background blink later | kept (decisions 3, 4, 12 and 18); their measuring errors came from the font measured with Inter, fixed by US-036 | US-036         |
 | 4   | A text in a box turns about the middle of its box                                                                                                       | kept, and a turned text keeps its turned top-left corner in place when it grows (decision 21, ADR-0057)          | EN-042, US-038 |
+
+## Validation (2026-10-15)
+
+The Product Owner walked every feature of E15 in the playground, in a Chromium-based browser, and validated the whole epic. Every rule above is confirmed as built, except decisions 3, 4, 13, 14 and 15, changed by the Product Owner (2026-10-15), with these remarks:
+
+| #   | Remark                                                                                                   | Decision                                                                                                                                                                                    | Work                 |
+| --- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- |
+| 1   | A word too long: the choice between breaking it at a character and moving it whole (decisions 3 and 4)   | the option is removed: a word too long always stays whole, overflowing the box, or cut with "…" when the ellipsis is on; never broken at a character. Fewer options make a clearer product  | US-042 (F17)         |
+| 2   | The balanced wrap (decisions 13, 14 and 15)                                                              | removed: lines always wrap automatically; "pretty" is not built. Fewer options make a clearer product                                                                                       | US-043 (F17)         |
+| 3   | The background band of a wrapped text may run past a line's end, to the right, on a new line             | a defect: reproduced and fixed                                                                                                                                                              | SP-019, US-049 (F17) |
+| 4   | A turned text in a box shows its frames unlike a turned shape                                            | the turned box in blue, in the style of a shape's turned box, and the straight box dashed                                                                                                   | US-050 (F17)         |
+| 5   | A value changed fast, an arrow key held on the size, the opacity or the height, lags; typing feels fluid | the drawing is redrawn at most once per animation frame, and only what a change touches is computed again: metrics, wrapped lines and block kept by their inputs                            | US-048 (F17)         |
+| 6   | The long step-by-step guided test is slow to walk                                                        | a validation is one checklist page listing every feature delivered, with check boxes and no Previous nor Next, so that the Product Owner tests freely; the `run` and `review` skills say so | US-051, EN-044 (F17) |
