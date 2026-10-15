@@ -1,19 +1,17 @@
-import { DEGREES_PER_TURN, nonNegativeRemainder } from "../../math";
-
-import { toOneDecimal } from "./to-one-decimal";
+import { DEGREES_PER_TURN, nearestInteger, nonNegativeRemainder } from "../../math";
 
 /**
- * A hue as shown, to one decimal, from 0.0 to 359.9: a hue that rounds to 360.0 is shown 0.0, the
- * same direction (`DERIV-color-spaces`, step 9). No color read from a hexadecimal has such a hue,
- * the largest being 359.76471° (`#ff0001`); a hue typed or picked may.
+ * A hue as shown, a whole number of degrees from 0 to 359, a tie up: a hue that rounds to 360 is
+ * shown 0, the same direction (ADR-0058, decision 1; `DERIV-color-spaces`, steps 9 and 12).
+ * `#ff0001`, at 359.76471°, shows 0; a hue dragged to the slider's right end, 360, shows 0.
  *
- * Formula: round(10 · H) / 10 mod 360.
+ * Formula: round(H) mod 360.
  *
  * @kind format
  * @param hue - the hue, in degrees, from 0 to 360
- * @returns the hue to one decimal, from 0 to 359.9
+ * @returns the hue shown, an integer from 0 to 359
  * @see DERIV-color-spaces
  */
 export function toShownHue(hue: number): number {
-  return nonNegativeRemainder(toOneDecimal(hue), DEGREES_PER_TURN);
+  return nonNegativeRemainder(nearestInteger(hue), DEGREES_PER_TURN);
 }

@@ -7,8 +7,5 @@ export * from "./hex-to-rgb";
 export * from "./parse-hex-color";
 export * from "./percent-to-alpha";
 export * from "./rgb-to-hex";
-export * from "./to-one-decimal";
-export * from "./to-shown-hsb";
-export * from "./to-shown-hsl";
 export * from "./to-shown-hue";
 export * from "./to-stored-colors";
