@@ -3,7 +3,7 @@ id: US-042
 epic: E15
 feature: F17
 title: A word too long always stays whole
-status: ready
+status: done
 points: 2
 ---
 
@@ -32,5 +32,5 @@ From the Product Owner's validation of E15 (2026-10-15): the choice between brea
 
 One task = one commit, referenced as `US-042.Tn`.
 
-- [ ] T1 — The library keeps every word whole, the option and the break at a character removed, tests updated (3 h)
-- [ ] T2 — The playground's option and its guided steps removed; `shapes.md` and F14's criterion 1 updated (2 h)
+- [x] T1 — The library keeps every word whole, the option and the break at a character removed, tests updated (3 h)
+- [x] T2 — The playground's option and its guided steps removed; `shapes.md` and F14's criterion 1 updated (2 h)

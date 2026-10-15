@@ -39,7 +39,7 @@ and a line ended by a wrap is drawn and measured as `trim(t)`. The last line of 
 ## Step 4 — A word too long for the box
 
 > [!NOTE]
-> The choice below was removed by the Product Owner at VAL-015 (2026-10-15): a long word always moves whole; US-042 removes the break at a character, kept here as a record.
+> The choice below was removed by the Product Owner at VAL-015 (2026-10-15): a long word always moves whole. US-042 removed the break at a character from the library; it is kept here as a record, with the examples below that break at a character.
 
 A token that does not fit on a line of its own is a long word. The designer chooses (F05 refinement, round 2):
 
