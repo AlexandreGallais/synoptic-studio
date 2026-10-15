@@ -110,7 +110,8 @@ Each is built as written and shown by its step; the full list, with its examples
 
 ## Validation
 
-To be run by the Product Owner (`VAL-017`, T3).
+Run by the Product Owner on 2026-10-15 (`VAL-017`, T3), with the whole of E15, in a Chromium-based browser; the details are in `VAL-017`.
 
-| Remark | What was done or where it went |
-| ------ | ------------------------------ |
+| Remark                                                                                                                                                                                                                                                                             | What was done or where it went                |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| every rule confirmed as built, except the HTML layer, removed (ADR-0060), and the embedding, applied only at export or save; installed collections and faces failing with a `TypeError` to read; weight 450 drawn with another face; a search field over installed fonts for later | ADR-0060; US-044 to US-047 (F17); E02 (ideas) |

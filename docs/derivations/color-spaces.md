@@ -125,7 +125,7 @@ A designer reads the HSL or HSB values and may type them back. Integers cannot k
 
 The integer counts are those of the SP-017 script; another binary64 implementation of the same formulas gave counts up to 45 apart (AUD-017), since values lying exactly on a half are computed a last bit above or below it. The zeros do not depend on it.
 
-A value shown is the nearest tenth of the value computed in binary64. When the exact value lies on a half-tenth, the computed one may lie a last bit below it and is shown rounded down: `#002330` has the hue 196.25° exactly, computed 196.24999999999997 and shown 196.2; `#030330` has the HSB saturation 93.75 %, shown 93.7. Either neighbour gives the hexadecimal back, as the one-decimal row shows (AUD-017, provisional, VAL-016).
+A value shown is the nearest tenth of the value computed in binary64. When the exact value lies on a half-tenth, the computed one may lie a last bit below it and is shown rounded down: `#002330` has the hue 196.25° exactly, computed 196.24999999999997 and shown 196.2; `#030330` has the HSB saturation 93.75 %, shown 93.7. Either neighbour gives the hexadecimal back, as the one-decimal row shows (AUD-017, confirmed at VAL-016, 2026-10-15).
 
 Since ADR-0058 the values are shown as integers, and the integer row's changes are avoided another way: the color is never rebuilt from the three values shown, only from one value typed and the exact values of the two others (step 12).
 
@@ -139,7 +139,7 @@ A picker shows a slice of the model at one hue, with a slider choosing the hue (
 S = 100 · x / w,   L or V = 100 · (1 − y / h)
 ```
 
-CSS's tables list the saturation from 100 % down to 0 % across; the plane takes the increasing order for both models, one convention (provisional, VAL-016).
+CSS's tables list the saturation from 100 % down to 0 % across; the plane takes the increasing order for both models, one convention (confirmed at VAL-016, 2026-10-15).
 
 The same convention reads a slider `w` long holding values from 0 to `M`, its left end at 0: the point at `x` stands for `M · x / w`, the hue slider's `M` being 360° (a hue of 360 is shown 0.0, step 9) and the opacity's 100 %. The plane is two such sliders: `S` across, and `L` or `V` from the bottom edge, at the height `h − y`, so `100 · (h − y) / h`, the line above. Solving each line for its position gives where a value sits, for the marks the picker draws:
 
@@ -147,7 +147,7 @@ The same convention reads a slider `w` long holding values from 0 to `M`, its le
 x = w · v / M,   x = w · S / 100,   y = h − h · (L or V) / 100
 ```
 
-The multiplication comes first, as for the stretched shapes (`DERIV-free-shape-stretch`). A point beyond an edge, during a drag, counts at that edge, and a slider not laid out yet (`w = 0`) holds 0 (US-035, provisional, VAL-016). The middle of the right edge of a plane 200 × 100 is `S = 100 · 200 / 200 = 100 %`, `V = 100 · 50 / 100 = 50 %`; at the hue 210° in HSB it is `#004080` (step 6: red 0, green `0.5 − 0.5 · 0.5 = 0.25`, 63.75 gives 64, blue 127.5 gives 128).
+The multiplication comes first, as for the stretched shapes (`DERIV-free-shape-stretch`). A point beyond an edge, during a drag, counts at that edge, and a slider not laid out yet (`w = 0`) holds 0 (US-035, confirmed at VAL-016, 2026-10-15). The middle of the right edge of a plane 200 × 100 is `S = 100 · 200 / 200 = 100 %`, `V = 100 · 50 / 100 = 50 %`; at the hue 210° in HSB it is `#004080` (step 6: red 0, green `0.5 − 0.5 · 0.5 = 0.25`, 63.75 gives 64, blue 127.5 gives 128).
 
 ## Step 11 — Exact bytes for values given to one decimal
 

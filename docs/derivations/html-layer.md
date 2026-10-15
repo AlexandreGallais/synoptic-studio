@@ -1,5 +1,8 @@
 # DERIV-html-layer — Where a browser puts the HTML layer's first baseline, and how the layer is placed to meet the library's
 
+> [!NOTE]
+> The HTML layer was removed by the Product Owner at VAL-017 (2026-10-15, ADR-0060); US-044 removes its code. This derivation is kept as a record.
+
 Used by: EN-041 (the HTML layer's `foreignObject` placed over the text's lines). Sources: `REF-CSS-INLINE-3` (§5.3, the leading of a line box), `REF-GLYPHS-VERTICAL-METRICS` and `REF-GF-VERTICAL-METRICS` (which vertical metrics browsers use), `DERIV-text-width` (the library's line height and baseline), `DERIV-text-box` (a chosen line height, half-leading). No source states the shift of step 4; each step cites what it rests on.
 
 ## Notation

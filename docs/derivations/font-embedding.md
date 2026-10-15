@@ -44,7 +44,7 @@ restricted  = bit(1) and not permits
 embeddable  = not bitmapOnly and not restricted
 ```
 
-`REF-OT-OS2`: "For Restricted License embedding to take effect, the Embedding permissions sub-field must have the value 2 (that is, only bit 1 is set)"; with bit 2 or 3 also set, the permission is no longer restricted, as `permits` reads it. Bits 1, 2 and 3 all clear is installable (value 0), embeddable; bit 0 is not read, being reserved. Bit 8 does not forbid it: the whole file is not a subset. Taking the least restrictive permission for a table of version 3 or later that sets several bits follows the specification's note on what "some applications could assume" (provisional, VAL-017).
+`REF-OT-OS2`: "For Restricted License embedding to take effect, the Embedding permissions sub-field must have the value 2 (that is, only bit 1 is set)"; with bit 2 or 3 also set, the permission is no longer restricted, as `permits` reads it. Bits 1, 2 and 3 all clear is installable (value 0), embeddable; bit 0 is not read, being reserved. Bit 8 does not forbid it: the whole file is not a subset. Taking the least restrictive permission for a table of version 3 or later that sets several bits follows the specification's note on what "some applications could assume" (confirmed at VAL-017, 2026-10-15).
 
 ## Step 4 — Three bytes, four characters
 

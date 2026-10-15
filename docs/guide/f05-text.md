@@ -100,7 +100,8 @@ Each was built as the first option and is shown by its step; the full list, with
 
 ## Validation
 
-To be run by the Product Owner (`VAL-014`, T3).
+Run by the Product Owner on 2026-10-15 (`VAL-014`, T3), with the whole of E15, in a Chromium-based browser; the details are in `VAL-014`.
 
-| Remark | What was done or where it went |
-| ------ | ------------------------------ |
+| Remark                                                                                                                                                                                 | What was done or where it went       |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| every decision confirmed as built; the editor targets the Latin script (ADR-0060); a turned text's frames drawn as a shape's; weight 450 drawn with another face; a lag with keys held | SP-019, US-047, US-048, US-050 (F17) |
