@@ -75,7 +75,7 @@ function readLeftOut(): readonly (string | null)[] {
   return [...document.querySelectorAll("#font-left-out li")].map((item) => item.textContent);
 }
 
-describe("The drawing's options: Embed fonts and HTML layer (US-036)", () => {
+describe("The drawing's options: Embed fonts (US-036), no HTML layer (US-044)", () => {
   beforeEach(() => {
     openServedPage("");
     clickElement("tool-text");
@@ -87,11 +87,11 @@ describe("The drawing's options: Embed fonts and HTML layer (US-036)", () => {
     vi.restoreAllMocks();
   });
 
-  it("[F15.AC2] starts with both options off: no <defs>, no switch, no face listed", () => {
-    expect([selectInput("embed-fonts").checked, selectInput("html-layer").checked]).toEqual([
-      false,
-      false,
-    ]);
+  it("[F17.AC2] starts with Embed fonts off, no HTML layer option: no <defs>, no switch", () => {
+    expect([
+      selectInput("embed-fonts").checked,
+      document.querySelector("#html-layer") === null,
+    ]).toEqual([false, true]);
 
     expect(document.querySelector("#canvas defs, #canvas switch")).toBeNull();
     expect(readDisplay("font-left-out")).toBe("none");
@@ -143,35 +143,25 @@ describe("The drawing's options: Embed fonts and HTML layer (US-036)", () => {
     expect(readDisplay("font-left-out")).toBe("none");
   });
 
-  it("[F15.AC3] writes the text as a switch of its HTML layer and its positioned lines", () => {
-    tick("html-layer", true);
-
-    const foreign = selectPageElement("#canvas switch > foreignObject");
-
-    expect(foreign.getAttribute("requiredExtensions")).toBe("http://www.w3.org/1999/xhtml");
-    expect(document.querySelector("#canvas switch > g > text")).not.toBeNull();
-    expect(readText("#path-data")).toContain("<switch>");
-    tick("html-layer", false);
-    expect(document.querySelector("#canvas switch")).toBeNull();
-  });
-
-  it("[F15.AC3] gives an Arabic text to the browser in its HTML layer, which joins its letters", () => {
-    tick("html-layer", true);
-    typeContent("مضخة");
-
-    expect(selectPageElement("#canvas foreignObject span").textContent).toBe("مضخة");
-  });
-
-  it("[F15.AC2] exports the drawing with its <style> and its switch, without the frame", async () => {
+  it("[F17.AC1] exports a text with every option on: its <style>, no switch, no XHTML", async () => {
     await importFace(TEST_SANS);
     tick("embed-fonts", true);
-    tick("html-layer", true);
+    typeContent("Pump P-101 is running");
+    chooseOption("text-fit", "box");
+    typeValue("text-box-width", "50");
+    typeValue("text-box-height", "100");
+    typeValue("text-maximum-lines", "2");
+    tick("text-underline", true);
+    tick("text-strike", true);
+    tick("text-background", true);
 
     const exported = readExportedSvg(document);
 
     expect(exported).toMatch(/^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg"/u);
     expect(exported).toContain("<style>@font-face");
-    expect(exported).toContain("<switch>");
+    // Cut to two lines, the last ending with an ellipsis: three full stops in a face without "…".
+    expect(exported).toMatch(/(?:…|\.\.\.)<\/tspan>/u);
+    expect(exported).not.toMatch(/<switch|<foreignObject|xhtml|<div|<span/u);
     expect(exported).not.toContain("text-frame");
     expect(document.querySelector("#canvas .text-frame")).not.toBeNull();
   });

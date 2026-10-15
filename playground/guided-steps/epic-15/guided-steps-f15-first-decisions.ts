@@ -13,19 +13,13 @@ const TESTED = "Nothing to try: no file at hand shows it; the tests prove it.";
 
 /**
  * The F15 decisions to confirm (VAL-017), rows 1 to 18 of the story's table, the rules of SP-018,
- * EN-039 and EN-040, one step each with its example.
+ * EN-039 and EN-040, one step each with its example; those of the HTML layer removed (US-044).
  */
 export const GUIDED_STEPS_F15_FIRST_DECISIONS: readonly GuidedStep[] = [
   {
-    explanation: "Tick HTML layer; Export SVG; open drawing.svg in Chrome, then in Inkscape.",
-    look: "<switch>, a <foreignObject> for browsers then the lines: Chrome lays the text out, Inkscape draws the lines.",
-    title: "F15 · The layer is a switch (decision 1)",
-    values: ARIAL_16,
-  },
-  {
     explanation: "Nothing to type: read the Drawing options and the SVG output.",
-    look: "Embed fonts and HTML layer unticked; the output starts with <g>: the drawing as before F15.",
-    title: "F15 · Both options off (decision 2)",
+    look: "Embed fonts unticked, the only option; the output starts with <g>: the drawing as before F15.",
+    title: "F15 · Embed fonts off (decision 2)",
     values: ARIAL_16,
   },
   {
@@ -62,12 +56,6 @@ export const GUIDED_STEPS_F15_FIRST_DECISIONS: readonly GuidedStep[] = [
     explanation: "Tick Embed fonts; Bold; Bold again.",
     look: "One @font-face each time, the face drawn: 700, then 400; the whole file in base64, no local().",
     title: "F15 · Each face once, whole (decision 8)",
-    values: ARIAL_16,
-  },
-  {
-    explanation: "Tick HTML layer; then Trim.",
-    look: "<foreignObject> at y −0.26172, half Arial's line gap higher; trimmed, at y −3.28516.",
-    title: "F15 · The layer's line height (decision 9)",
     values: ARIAL_16,
   },
   {

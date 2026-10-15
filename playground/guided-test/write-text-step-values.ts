@@ -96,7 +96,6 @@ function writeTextStyleValues(document: Document, text: GuidedText): void {
   writeWeightChoice(document, text.weight);
   delete selectElement(document, "text-bold").dataset["heldWeight"];
   writeCheckedValue(document, "embed-fonts", false);
-  writeCheckedValue(document, "html-layer", false);
 }
 
 /**
