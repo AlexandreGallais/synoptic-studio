@@ -10,7 +10,7 @@ import { TEXT_BOX_DEFAULTS } from "./text-box-defaults";
 /** "Hello World" in a box 60 × 40, every option of its box set away from its default. */
 const BOXED = {
   ...HELLO_TEXT,
-  backgroundColor: "#1A2b3C",
+  backgroundColor: "#1a2b3c",
   backgroundOpacity: 40,
   boxHeight: 40,
   boxWidth: 60,
@@ -82,6 +82,7 @@ describe("isValidTextBox (F14)", () => {
     { name: "a negative background opacity", text: { backgroundOpacity: -1 } },
     { name: "a background color of three digits", text: { backgroundColor: "#ff0" } },
     { name: "a background color without #", text: { backgroundColor: "ffff00" } },
+    { name: "a background color in upper case", text: { backgroundColor: "#FF8000" } },
   ])("[F14.AC1] refuses $name", ({ text }) => {
     expect(isValidTextBox({ ...BOXED, ...text })).toBe(false);
     expect(isValidText({ ...BOXED, ...text })).toBe(false);

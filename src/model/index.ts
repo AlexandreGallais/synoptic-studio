@@ -1,3 +1,4 @@
+export * from "./color";
 export * from "./corner-radius";
 export * from "./font";
 export * from "./free-shape";
