@@ -3,7 +3,7 @@ id: US-041
 epic: E15
 feature: F16
 title: Choose the underline's and the strike-through's colors
-status: ready
+status: done
 points: 3
 ---
 

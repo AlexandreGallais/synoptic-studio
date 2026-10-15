@@ -142,7 +142,7 @@
 | [AUD-017](./E15-F16-AUD-017-audit-f16.md)                                     | F16     | Audit F16                                                                       | done   |
 | [EN-043](./E15-F16-EN-043-integer-hsl-and-hsb-from-exact-values.md)           | F16     | HSL and HSB as integers, one value edited with the exact others                 | done   |
 | [US-040](./E15-F16-US-040-whole-numbers-in-the-picker.md)                     | F16     | Whole numbers in the color picker                                               | done   |
-| [US-041](./E15-F16-US-041-underline-and-strike-through-colors.md)             | F16     | Choose the underline's and the strike-through's colors                          | ready  |
+| [US-041](./E15-F16-US-041-underline-and-strike-through-colors.md)             | F16     | Choose the underline's and the strike-through's colors                          | done   |
 | [VAL-016](./E15-F16-VAL-016-validate-f16.md)                                  | F16     | Validate F16                                                                    | ready  |
 | [SP-018](./E15-F15-SP-018-research-f15-fonts-and-html-layer.md)               | F15     | Research for F15: fonts from files, embedded fonts and the HTML layer           | done   |
 | [EN-039](./E15-F15-EN-039-a-font-file-read-and-kept.md)                       | F15     | A font file read, named and kept, and whether it may be embedded                | done   |
