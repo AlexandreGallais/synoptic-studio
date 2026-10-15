@@ -3,7 +3,7 @@ id: CHK-016
 epic: E15
 feature: F16
 title: Checkpoint in the middle of F16
-status: ready
+status: done
 points: 1
 ---
 
