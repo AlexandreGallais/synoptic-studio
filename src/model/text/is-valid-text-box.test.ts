@@ -2,10 +2,10 @@ import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { HELLO_TEXT } from "../../../tests";
+import { TEXT_BOX_DEFAULTS } from "../text-box";
 
 import { isValidText } from "./is-valid-text";
 import { isValidTextBox } from "./is-valid-text-box";
-import { TEXT_BOX_DEFAULTS } from "./text-box-defaults";
 
 /** "Hello World" in a box 60 × 40, every option of its box set away from its default. */
 const BOXED = {

@@ -30,8 +30,8 @@ function parseStoredColor(color: string, opacity: number): ColorWithOpacity {
 }
 
 /**
- * A text with its color and its background color in their stored form, `#` and six lower-case
- * digits, as every reader of a color does before the model's check (ADR-0056): a color of F05 or
+ * A text with its color, its background color and its underline's and strike-through's colors
+ * (US-041) in their stored form, `#` and six lower-case digits, as every reader of a color does before the model's check (ADR-0056): a color of F05 or
  * F14 typed or loaded in upper case, or in another hexadecimal form, is turned to it, its alpha,
  * if any, setting its opacity; a color that is no hexadecimal is left as it is, so that
  * `isValidText` still refuses it.
@@ -44,6 +44,8 @@ function parseStoredColor(color: string, opacity: number): ColorWithOpacity {
 export function toStoredColors(text: Text): Text {
   const color = parseStoredColor(text.color, text.opacity);
   const background = parseStoredColor(text.backgroundColor, text.backgroundOpacity);
+  const underline = parseStoredColor(text.underlineColor, text.underlineOpacity);
+  const strikeThrough = parseStoredColor(text.strikeThroughColor, text.strikeThroughOpacity);
 
   return {
     ...text,
@@ -51,5 +53,9 @@ export function toStoredColors(text: Text): Text {
     backgroundOpacity: background.opacity,
     color: color.color,
     opacity: color.opacity,
+    strikeThroughColor: strikeThrough.color,
+    strikeThroughOpacity: strikeThrough.opacity,
+    underlineColor: underline.color,
+    underlineOpacity: underline.opacity,
   };
 }

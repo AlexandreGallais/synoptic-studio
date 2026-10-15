@@ -25,4 +25,5 @@ export * from "./text-case";
 export * from "./text-drawing";
 export * from "./text-font";
 export * from "./text-layout";
+export * from "./text-stroke";
 export * from "./text-wrap";

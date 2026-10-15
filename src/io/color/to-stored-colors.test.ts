@@ -43,4 +43,26 @@ describe("toStoredColors (ADR-0056)", () => {
     expect(toStoredColors(text)).toEqual(text);
     expect(isValidText(toStoredColors(text))).toBe(false);
   });
+
+  it("[F16.AC1] keeps an underline typed F00 as #ff0000, a strike-through's alpha 80 as its opacity", () => {
+    const text = { ...HELLO_TEXT, strikeThroughColor: "#00FF00CC", underlineColor: "F00" };
+
+    // cc = 204, 100 · 204 / 255 = 80; the underline's opacity, without alpha, is kept.
+    expect(toStoredColors(text)).toEqual({
+      ...text,
+      strikeThroughColor: "#00ff00",
+      strikeThroughOpacity: 80,
+      underlineColor: "#ff0000",
+    });
+  });
+
+  it.each(["red", "#ff000"])(
+    "[F16.AC1] leaves the underline's and the strike-through's '%s' as it is, still refused",
+    (color) => {
+      const text = { ...HELLO_TEXT, strikeThroughColor: color, underlineColor: color };
+
+      expect(toStoredColors(text)).toEqual(text);
+      expect(isValidText(toStoredColors(text))).toBe(false);
+    },
+  );
 });

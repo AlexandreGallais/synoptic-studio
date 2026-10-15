@@ -4,6 +4,7 @@ import { isShapePlacement } from "../placement";
 
 import { isFontName } from "./is-font-name";
 import { isValidTextBox } from "./is-valid-text-box";
+import { isValidTextDecorations } from "./is-valid-text-decorations";
 import { TEXT_OPTIONS } from "./text-options";
 import { TEXT_RANGES } from "./text-ranges";
 
@@ -16,7 +17,8 @@ import type { Text } from "./text";
  * finite position, fractional once a turned text has grown (`isShapePlacement`, ADR-0035,
  * ADR-0057); a case, an alignment and a direction among their values; a font name and a
  * fallback name that are not empty, trimmed and free of control characters (`isFontName`); the
- * options of its box (`isValidTextBox`). Any content is allowed, the empty one included, which
+ * options of its box (`isValidTextBox`); the colors of its underline and strike-through
+ * (`isValidTextDecorations`). Any content is allowed, the empty one included, which
  * draws nothing.
  *
  * @kind domain
@@ -42,5 +44,6 @@ export function isValidText(text: Text): boolean {
     directions.includes(text.direction),
     ...[text.font, text.fallback].map((name) => isFontName(name)),
     isValidTextBox(text),
+    isValidTextDecorations(text),
   ].every(Boolean);
 }
