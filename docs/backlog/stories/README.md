@@ -135,7 +135,7 @@
 | [EN-038](./E15-F16-EN-038-hsl-and-hsb-from-a-color.md)          | F16     | HSL and HSB from a hexadecimal color, and back                                  | done   |
 | [CHK-016](./E15-F16-CHK-016-checkpoint-f16.md)                  | F16     | Checkpoint in the middle of F16                                                 | done   |
 | [US-035](./E15-F16-US-035-pick-a-color.md)                      | F16     | Type or pick a color and its opacity                                            | done   |
-| [AUD-017](./E15-F16-AUD-017-audit-f16.md)                       | F16     | Audit F16                                                                       | ready  |
+| [AUD-017](./E15-F16-AUD-017-audit-f16.md)                       | F16     | Audit F16                                                                       | done   |
 | [VAL-016](./E15-F16-VAL-016-validate-f16.md)                    | F16     | Validate F16                                                                    | ready  |
 | [NAM-001](./E15-NAM-001-naming-pass-e15.md)                     | E15     | Naming pass over the code of E15                                                | draft  |
 | [REV-003](./E15-REV-003-review-e15.md)                          | E15     | Review E15 with the Product Owner                                               | draft  |
