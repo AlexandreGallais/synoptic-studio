@@ -3,7 +3,7 @@ id: US-038
 epic: E15
 feature: F05
 title: A turned text grows along its direction and stays in place
-status: ready
+status: done
 points: 2
 ---
 
@@ -44,5 +44,5 @@ In the guided test (`?guide=epic`), the steps **F05 · A turned text grows in pl
 
 One task = one commit, referenced as `US-038.Tn`.
 
-- [ ] T1 — The playground computes the new position through EN-042 whenever a turned text's block or box changes size (content, spacing, size, font, line height, box), and shows it in x and y; the playground's tests first (2 h)
-- [ ] T2 — The guided steps of F05 and F14 (turned text, the dashed frame) and VAL-014's examples brought up to date; the test card (1 h)
+- [x] T1 — The playground computes the new position through EN-042 whenever a turned text's block or box changes size (content, spacing, size, font, line height, box), and shows it in x and y; the playground's tests first (2 h)
+- [x] T2 — The guided steps of F05 and F14 (turned text, the dashed frame) and VAL-014's examples brought up to date; the test card (1 h)
