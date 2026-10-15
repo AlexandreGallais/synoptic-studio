@@ -109,7 +109,7 @@ describe("Text tool: turning (US-032)", () => {
   it("refuses a fractional angle and draws nothing, saying why", () => {
     typeValue("angle", "1.5");
 
-    expect(readText("#status")).toContain("the angle integers");
+    expect(readText("#status")).toContain("the angle an integer");
     expect(document.querySelectorAll("#canvas text")).toHaveLength(0);
     expect(selectPageElement("#angle").getAttribute("aria-invalid")).toBe("true");
   });

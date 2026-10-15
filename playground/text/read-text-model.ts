@@ -2,6 +2,7 @@ import { TEXT_BOX_DEFAULTS, toStoredColors } from "../../src";
 import { readFontSession } from "../fonts";
 import { readNumber, selectElement } from "../page";
 import { readAngle } from "../position";
+import { readTextPosition } from "../text-placement";
 
 import { readFieldValue } from "./read-field-value";
 import { readTextBoxOptions } from "./read-text-box-options";
@@ -32,7 +33,7 @@ function readTextSwitches(
 
 /**
  * Reads the text typed in the Text tool's fields, its font the family measured with (US-036), its box's among them (`readTextBoxOptions`), its colors in their stored form (`toStoredColors`); its position and its angle are the shape's X, Y
- * and angle, the angle kept from 0 to 359 (`readAngle`). The choices are read as the page offers them, so they hold one
+ * and angle, its exact position while X and Y show the one last drawn (`readTextPosition`, US-038), the angle kept from 0 to 359 (`readAngle`). The choices are read as the page offers them, so they hold one
  * of their values.
  *
  * @kind procedure
@@ -65,7 +66,6 @@ export function readTextModel(document: Document): Text {
     textCase,
     weight: Number(readFieldValue(document, "text-weight")),
     wordSpacing: readNumber(document, "text-word-spacing"),
-    x: readNumber(document, "shape-x"),
-    y: readNumber(document, "shape-y"),
+    ...readTextPosition(document),
   });
 }

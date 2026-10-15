@@ -1,8 +1,9 @@
-import { isValidText, isValidTextBox, textFontMetrics } from "../../src";
+import { isValidText, isValidTextBox, textDrawing, textFontMetrics } from "../../src";
 import { writeColorSwatches } from "../color-fields";
 import { writeLeftOutFaces } from "../document";
 import { readFontSession, writeFontFields } from "../fonts";
 import { selectElement, writeText } from "../page";
+import { writeTextPosition } from "../text-placement";
 
 import { readTextModel } from "./read-text-model";
 import { showText } from "./show-text";
@@ -14,7 +15,7 @@ const BOLD = 700;
 
 /** Message shown when a text cannot enter the model. */
 const REFUSED =
-  "Size must be an integer from 1 to 100 000, opacity and background opacity from 0 to 100, spacing from −100 000 to 100 000, X, Y and the angle integers, the color and background color # and six hexadecimal digits, the font named, and the box's width and height, its maximum lines and the line height integers from 0 to 100 000.";
+  "Size must be an integer from 1 to 100 000, opacity and background opacity from 0 to 100, spacing from −100 000 to 100 000, X and Y numbers, the angle an integer, the color and background color # and six hexadecimal digits, the font named, and the box's width and height, its maximum lines and the line height integers from 0 to 100 000.";
 
 /**
  * Outlines the Text tool's fields and the position fields when the text is refused.
@@ -63,7 +64,9 @@ function writeBoldState(document: Document, weight: number): void {
  * read only in a box shown when Box is chosen, and while one of them is refused, so that the
  * value outlined stays in sight (US-033); the font and weight lists brought up to date with the
  * session's fonts (`writeFontFields`, US-036); the text drawn with its block, measured with the
- * metrics of the family chosen, Inter or a font imported or installed and read (US-036);
+ * metrics of the family chosen, Inter or a font imported or installed and read (US-036), a
+ * turned text whose block or box changed size placed so that its turned top-left corner stays
+ * (`writeTextPosition`, US-038);
  * each color's swatch painted with it (US-035);
  * a refused text clears the drawing and says why, its fields outlined.
  *
@@ -85,7 +88,12 @@ export function updateTextTool(document: Document): void {
 
   if (isValid) {
     writeText(document, "status", "");
-    showText(document, text, metrics);
+
+    showText(
+      document,
+      writeTextPosition(document, { block: textDrawing(metrics, text).block, text }),
+      metrics,
+    );
 
     return;
   }
