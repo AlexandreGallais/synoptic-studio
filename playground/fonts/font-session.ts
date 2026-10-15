@@ -7,4 +7,6 @@ export type FontSession = {
   readonly kept: readonly FontFamily[];
   /** The installed fonts the browser listed, their files not read yet, in its order. */
   readonly installed: readonly InstalledFont[];
+  /** The kept family the text is measured with: the one chosen in the font list, or, while an installed family chosen is read, the one chosen before it. */
+  readonly measured: string;
 };

@@ -6,8 +6,9 @@ import { FONT_SESSIONS } from "./font-sessions";
 import type { FontSession } from "./font-session";
 
 /**
- * Reads the page's fonts: the families kept with their metrics and the installed fonts listed;
- * Inter alone, the default font, before any is imported or listed.
+ * Reads the page's fonts: the families kept with their metrics, the installed fonts listed and
+ * the family the text is measured with; Inter alone, the default font, before any is imported or
+ * listed.
  *
  * @kind procedure
  * @param document - page document
@@ -19,6 +20,7 @@ export function readFontSession(document: Document): FontSession {
     FONT_SESSIONS.get(selectElement(document, "text-font")) ?? {
       installed: [],
       kept: [DEFAULT_FONT],
+      measured: DEFAULT_FONT.name,
     }
   );
 }

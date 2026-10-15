@@ -1,4 +1,4 @@
-import { selectElement, startTask, writeText } from "../page";
+import { runTask, selectElement, writeText } from "../page";
 
 import { loadFontFiles } from "./load-font-files";
 
@@ -23,8 +23,8 @@ async function showFontFiles(
 
 /**
  * Listens to the font file picker (`accept=".ttf,.otf"`, `REF-MDN-INPUT-FILE`): the files chosen
- * are imported, the page says what was read or refused, then redraws (`showFontFiles`), or says
- * why the files could not be read; the picker is emptied, so that the same file can be chosen
+ * are imported, each file read or refused on its own, the page says which and why, then redraws
+ * (`showFontFiles`); the picker is emptied, so that the same file can be chosen
  * again.
  *
  * @kind procedure
@@ -44,13 +44,12 @@ export function listenToFontImport(document: Document, update: () => void): void
 
     picker.value = "";
 
-    startTask(
+    runTask(
+      document,
       async () => {
         await showFontFiles(document, files, update);
       },
-      (error) => {
-        writeText(document, "font-message", `The files could not be read: ${String(error)}`);
-      },
+      update,
     );
   });
 }
