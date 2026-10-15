@@ -30,7 +30,7 @@ In delivery order.
 | [CHK-017](../stories/E15-F15-CHK-017-checkpoint-f15.md)                  | Checkpoint | Checkpoint in the middle of F15                                       | done   |
 | [EN-041](../stories/E15-F15-EN-041-the-html-layer-of-a-text.md)          | Enabler    | The HTML layer of a text in a switch, over its positioned lines       | done   |
 | [US-036](../stories/E15-F15-US-036-fonts-embedding-and-html-layer.md)    | User story | Import or choose a font, embed it, and turn the HTML layer on         | done   |
-| [AUD-018](../stories/E15-F15-AUD-018-audit-f15.md)                       | Audit      | Audit F15                                                             | ready  |
+| [AUD-018](../stories/E15-F15-AUD-018-audit-f15.md)                       | Audit      | Audit F15                                                             | done   |
 | [VAL-017](../stories/E15-F15-VAL-017-validate-f15.md)                    | Validation | Validate F15                                                          | ready  |
 
 ## Feature plan
