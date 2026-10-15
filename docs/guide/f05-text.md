@@ -6,19 +6,19 @@ A **Text** tool writes a label in a symbol: "Pump P-101" over "Running", in the 
 
 ![“Pump P-101” over “Running” in Inter 32, its measured block dashed around it](./images/f05-label.svg)
 
-| Option                               | What it does                                                                             |
-| ------------------------------------ | ---------------------------------------------------------------------------------------- |
-| **Content**                          | the lines, broken where the designer pressed Enter; empty, nothing is drawn              |
-| **Font**                             | any font name, written with `sans-serif` after it for a reader that lacks it             |
-| **Size**                             | an integer from 1 to 100 000, in the one unit used everywhere                            |
-| **Weight**, **Bold**, **Italic**     | 100 (thin) to 900 (black); Bold sets 700, Italic slants                                  |
-| **Color**, **Opacity**               | `#` and six hexadecimal digits; 0 to 100 %                                               |
-| **Letter spacing**, **Word spacing** | added between the letters, or at each space; negative to tighten                         |
-| **Underline**, **Strike-through**    | a thin rectangle under or through each line, where the font says                         |
-| **Case**                             | the text written in upper, lower or title case, or as `camelCase`, `kebab-case` and more |
-| **Direction**                        | left to right, or right to left (Hebrew)                                                 |
-| **Alignment**                        | each line on the left, the center or the right of the block                              |
-| **X**, **Y**, **Angle**              | the block's top-left corner, and a turn about its middle; each tool keeps its own        |
+| Option                               | What it does                                                                                             |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| **Content**                          | the lines, broken where the designer pressed Enter; empty, nothing is drawn                              |
+| **Font**                             | any font name, written with `sans-serif` after it for a reader that lacks it                             |
+| **Size**                             | an integer from 1 to 100 000, in the one unit used everywhere                                            |
+| **Weight**, **Bold**, **Italic**     | 100 (thin) to 900 (black); Bold sets 700 and, pressed again, gives back the weight before; Italic slants |
+| **Color**, **Opacity**               | `#` and six hexadecimal digits; 0 to 100 %                                                               |
+| **Letter spacing**, **Word spacing** | added between the letters, or at each space; negative to tighten                                         |
+| **Underline**, **Strike-through**    | a thin rectangle under or through each line, where the font says                                         |
+| **Case**                             | the text written in upper, lower or title case, or as `camelCase`, `kebab-case` and more                 |
+| **Direction**                        | left to right, or right to left (Hebrew)                                                                 |
+| **Alignment**                        | each line on the left, the center or the right of the block                                              |
+| **X**, **Y**, **Angle**              | the block's top-left corner, and a turn about its middle; each tool keeps its own                        |
 
 Rules: [domain, "Text"](../domain/shapes.md#text); decisions: [ADR-0052](../adr/0052-text-measured-and-drawn-as-positioned-lines.md), [ADR-0054](../adr/0054-text-font-list-and-spaces-kept.md), [ADR-0055](../adr/0055-text-fallback-metrics-and-turn-on-its-group.md); formula: [`DERIV-text-width`](../derivations/text-width.md).
 
@@ -63,6 +63,13 @@ Install Inter 4.1 first (Font Book on macOS shows it). Then `npm run dev` and `h
 
 The two browser checks: "HH" in Inter 16 with letter spacing 10 measures 33.78125 when the spacing goes between the letters only, as the library measures, and 43.78125 when the browser adds it after the last letter too; a native underline drawn over ours shows whether the browser reads the font's underline position as the top of the stroke, as the library does, or as its middle, 6.84 lower at size 200.
 
+## Decided by the Product Owner
+
+| Question        | Decided                                                                                                                                                   | Step |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| The bold button | gives back the weight before: 100, Bold 700, Bold again 100; 800, 700, 800; a weight chosen in the list, or a family that changes it, forgets it (US-037) | 24   |
+| Cases (Q36)     | sentence case removed as of no use; the other cases kept, nine in the list with none (US-037)                                                             | 11   |
+
 ## Decided by the agent, to confirm
 
 Each was built as the first option and is shown by its step; the full list, with every option, is in [VAL-014](../backlog/stories/E15-F05-VAL-014-validate-f05.md#decisions-to-confirm).
@@ -74,7 +81,6 @@ Each was built as the first option and is shown by its step; the full list, with
 | The turn                                | one `rotate` on the group of the text and its strokes                                    | 19   |
 | A font without metrics                  | measured with its fallback's, else Inter's: Arial measures 175.91 like Inter             | 22   |
 | A font's name                           | stored trimmed; a line break or a tab refused                                            | 23   |
-| The bold button                         | pressed from 700; from 800 a click gives 400, from 600 it gives 700                      | 24   |
 | Spacing bounds                          | −100 000 to 100 000                                                                      | 25   |
 | A line tightened past nothing           | kept negative: at letter spacing −20, "Pump P-101" is −4.09 wide and may leave its block | 26   |
 | Strokes under such a line               | none                                                                                     | 27   |

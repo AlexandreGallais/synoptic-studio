@@ -142,6 +142,15 @@ describe("The weight list of the family chosen (US-036)", () => {
     expect([readValue("text-weight"), readPressedState("text-bold")]).toEqual(["300", "false"]);
   });
 
+  it("[F05.AC2] forgets the weight held when a family chosen rewrites the weight", async () => {
+    chooseOption("text-weight", "100");
+    clickElement("text-bold");
+    expect([readValue("text-weight"), readPressedState("text-bold")]).toEqual(["700", "true"]);
+    await importFaces([TEST_SANS], "Test Sans 400 imported.");
+    expect([readValue("text-weight"), readPressedState("text-bold")]).toEqual(["400", "false"]);
+    expect(Object.hasOwn(selectPageElement("#text-bold").dataset, "heldWeight")).toBe(false);
+  });
+
   it("[F15.AC1] keeps 400 when Bold is pressed on a family of 400 alone, its nearest face", async () => {
     await importFaces([TEST_SANS], "Test Sans 400 imported.");
     clickElement("text-bold");
