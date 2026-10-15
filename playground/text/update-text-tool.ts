@@ -59,6 +59,20 @@ function writeBoldState(document: Document, weight: number): void {
 }
 
 /**
+ * Clears what a refused text drew: the drawing, its straight box's line (US-039) and the faces
+ * left out of its document.
+ *
+ * @kind procedure
+ * @param document - page document
+ * @see docs/backlog/stories/E15-F14-US-039-straight-box-of-a-turned-text.md
+ */
+function clearTextDrawing(document: Document): void {
+  selectElement(document, "canvas").replaceChildren();
+  selectElement(document, "straight-box").hidden = true;
+  writeLeftOutFaces(document, []);
+}
+
+/**
  * Updates the page for the Text tool: the bold button pressed at weight 700 or while it holds the
  * weight before (US-037); the fields
  * read only in a box shown when Box is chosen, and while one of them is refused, so that the
@@ -68,7 +82,7 @@ function writeBoldState(document: Document, weight: number): void {
  * turned text whose block or box changed size placed so that its turned top-left corner stays
  * (`writeTextPosition`, US-038);
  * each color's swatch painted with it (US-035);
- * a refused text clears the drawing and says why, its fields outlined.
+ * a refused text clears the drawing and its straight box's line and says why, its fields outlined.
  *
  * @kind procedure
  * @param document - page document
@@ -99,6 +113,5 @@ export function updateTextTool(document: Document): void {
   }
 
   writeText(document, "status", REFUSED);
-  selectElement(document, "canvas").replaceChildren();
-  writeLeftOutFaces(document, []);
+  clearTextDrawing(document);
 }

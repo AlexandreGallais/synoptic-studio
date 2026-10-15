@@ -443,6 +443,15 @@ describe("the guided test of F14 (VAL-015): the decisions to confirm", () => {
     expect([readValue("shape-x"), readValue("shape-y")]).toEqual(["45.4101", "68.81462"]);
   });
 
+  it("[F14.AC7] a box 60 × 40 turned by 90: its straight box at (10, −10), 40 × 60", () => {
+    openStep("The straight box of a turned text (US-039)");
+    typeValue("angle", "90");
+
+    // R(90°) about (30, 20): (0, 0) ↦ (50, −10), (60, 40) ↦ (10, 50).
+    expect(readText("#straight-box")).toBe("Straight box: x 10, y -10, width 40, height 60");
+    expect(readDisplay("straight-box") === "none").toBe(false);
+  });
+
   it("[F14.AC6] back to the rectangle, drawn as before", () => {
     openStep("Back to the rectangle");
     clickElement("tool-rectangle");

@@ -177,6 +177,17 @@ export const GUIDED_STEPS_F14_DECISIONS: readonly GuidedStep[] = [
     }),
   },
   {
+    explanation: "Angle 90.",
+    look: "Around the turned frame, an upright dashed box: Straight box x 10, y -10, width 40, height 60 (US-039).",
+    title: "F14 · The straight box of a turned text (US-039)",
+    values: createTextBoxStepValues({
+      boxHeight: 40,
+      boxWidth: 60,
+      content: "Pump P-101",
+      isInBox: true,
+    }),
+  },
+  {
     explanation: "Rectangle.",
     look: "The sharp rectangle 120 × 80, as before; the text's fields go (F14.AC6).",
     title: "F14 · Back to the rectangle",
