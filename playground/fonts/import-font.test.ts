@@ -11,6 +11,7 @@ import {
   readText,
   readValue,
   selectChoice,
+  selectInput,
   selectPageElement,
   typeValue,
 } from "../user-actions";
@@ -172,11 +173,26 @@ describe("Import a font (US-036)", () => {
     },
   );
 
-  it("[F15.AC1] says the files could not be read when the browser fails to give their bytes", async () => {
+  it("[F15.AC1] keeps the files read and says which the browser could not give, one good and one bad", async () => {
     const unreadable = new File([], "Arial.ttf");
 
     vi.spyOn(unreadable, "arrayBuffer").mockRejectedValue(new Error("Read failed."));
-    await importFiles([unreadable], "The files could not be read: Error: Read failed.");
-    expect(readFontList()).toEqual(["Inter"]);
+
+    await importFiles(
+      [fontFileOf(TEST_SANS, "TestSans.ttf"), unreadable],
+      "Test Sans 400 imported. Arial.ttf could not be read (Error: Read failed.).",
+    );
+
+    expect(readFontList()).toEqual(["Inter", "Test Sans"]);
+    expect(readValue("text-font")).toBe("Test Sans");
+  });
+
+  it("[F15.AC1] names an italic face as italic, and empties the picker for the same file again", async () => {
+    await importFiles(
+      [fontFileOf({ ...TEST_SANS, isItalic: true }, "TestSansItalic.ttf")],
+      "Test Sans 400 italic imported.",
+    );
+
+    expect(selectInput("font-file").value).toBe("");
   });
 });

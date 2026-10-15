@@ -131,4 +131,13 @@ describe("The weight list of the family chosen (US-036)", () => {
     expect([readValue("text-weight"), readPressedState("text-bold")]).toEqual(["400", "false"]);
     expect(readText("#status")).toBe("");
   });
+
+  it("[F15.AC1] keeps the lists' options when their values do not change", () => {
+    const [font] = selectChoice("text-font").options;
+    const [weight] = selectChoice("text-weight").options;
+
+    chooseOption("text-weight", "500");
+    expect(selectChoice("text-font").options[0]).toBe(font);
+    expect(selectChoice("text-weight").options[0]).toBe(weight);
+  });
 });

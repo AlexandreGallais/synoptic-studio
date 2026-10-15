@@ -179,9 +179,11 @@ describe("The drawing's options: Embed fonts and HTML layer (US-036)", () => {
   it("[F15.AC2] saves the export as drawing.svg when Export SVG is clicked", async () => {
     const saved = vi.fn<(file: Blob) => string>().mockReturnValue("blob:drawing");
 
+    const revoked = vi.fn<(url: string) => void>();
+
     Object.defineProperties(URL, {
       createObjectURL: { configurable: true, value: saved },
-      revokeObjectURL: { configurable: true, value: vi.fn() },
+      revokeObjectURL: { configurable: true, value: revoked },
     });
 
     const click = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {
@@ -194,6 +196,7 @@ describe("The drawing's options: Embed fonts and HTML layer (US-036)", () => {
     const [link] = click.mock.contexts;
 
     expect(click).toHaveBeenCalledOnce();
+    expect(revoked).toHaveBeenCalledExactlyOnceWith("blob:drawing");
     expect(link instanceof HTMLAnchorElement && link.download).toBe("drawing.svg");
     expect(exported?.type).toBe("image/svg+xml");
     expect(await exported?.text()).toBe(readExportedSvg(document));
@@ -202,5 +205,13 @@ describe("The drawing's options: Embed fonts and HTML layer (US-036)", () => {
   it("[F15.AC2] exports nothing when nothing is drawn", () => {
     selectPageElement("#canvas").replaceChildren();
     expect(readExportedSvg(document)).toBe("");
+  });
+
+  it("[F15.AC2] hides the faces left out while the text is refused", () => {
+    tick("embed-fonts", true);
+    expect(readLeftOut()).toHaveLength(1);
+    typeValue("text-size", "0");
+    expect(readLeftOut()).toEqual([]);
+    expect(readDisplay("font-left-out")).toBe("none");
   });
 });
