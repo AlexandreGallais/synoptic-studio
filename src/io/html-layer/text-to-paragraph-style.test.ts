@@ -44,6 +44,7 @@ describe("textToParagraphStyle (ADR-0053, EN-041)", () => {
       ["background-color", "#22c55eff"],
       ["text-decoration-line", "underline"],
       ["text-decoration-thickness", "from-font"],
+      ["text-decoration-skip-ink", "none"],
       ["text-decoration-color", "#ff000080"],
     ]);
   });

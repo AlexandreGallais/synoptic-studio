@@ -34,10 +34,15 @@ describe("parseNameString (REF-OT-NAME)", () => {
   it("reads a Macintosh Roman string in ASCII, nothing past it", () => {
     const ascii = viewOf([0x41, 0x62]);
     const roman = viewOf([0x41, 0x8a]);
+    // 0x7f, the last ASCII byte, is read; 0x80, Macintosh Roman "Ä", is not.
+    const lastAscii = viewOf([0x41, 0x7f]);
+    const firstRoman = viewOf([0x41, 0x80]);
     const mac = { ...RECORD, encoding: 0, language: 0, length: 2, platform: 1 };
 
     expect(parseNameString(ascii, mac)).toBe("Ab");
     expect(parseNameString(roman, mac)).toBeUndefined();
+    expect(parseNameString(lastAscii, mac)).toBe("A\u{7F}");
+    expect(parseNameString(firstRoman, mac)).toBeUndefined();
   });
 
   it("reads no Windows code page (encodings 0, 3, 4, 5) and no other Macintosh script", () => {

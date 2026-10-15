@@ -107,14 +107,14 @@ describe("createHtmlLayerElement (ADR-0053, EN-041)", () => {
 
     // 50 %: alpha 128, written 80; the strike-through follows the text's #000000 at 100 %.
     expect(style).toContain(
-      "text-decoration-line: line-through; text-decoration-thickness: from-font; text-decoration-color: #000000ff",
+      "text-decoration-line: line-through; text-decoration-thickness: from-font; text-decoration-skip-ink: none; text-decoration-color: #000000ff",
     );
 
     expect([...layer.querySelectorAll("span")].map((span) => span.getAttribute("style"))).toEqual(
       Array.from(
         { length: 2 },
         () =>
-          "text-decoration-line: underline; text-decoration-thickness: from-font; text-decoration-color: #ff000080",
+          "text-decoration-line: underline; text-decoration-thickness: from-font; text-decoration-skip-ink: none; text-decoration-color: #ff000080",
       ),
     );
   });
@@ -124,7 +124,7 @@ describe("createHtmlLayerElement (ADR-0053, EN-041)", () => {
     const layer = createHtmlLayerElement(document, decorated, ARIAL_HTML_LAYER);
 
     expect(layer.firstElementChild?.firstElementChild?.getAttribute("style")).toContain(
-      "text-decoration-line: underline line-through; text-decoration-thickness: from-font; text-decoration-color: #000000ff",
+      "text-decoration-line: underline line-through; text-decoration-thickness: from-font; text-decoration-skip-ink: none; text-decoration-color: #000000ff",
     );
 
     expect([...layer.querySelectorAll("span")].map((span) => span.hasAttribute("style"))).toEqual([
