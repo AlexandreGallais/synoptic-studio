@@ -2,6 +2,7 @@ export * from "./angle";
 export * from "./arithmetic";
 export * from "./bisection";
 export * from "./color";
+export * from "./exact-color";
 export * from "./interpolation";
 export * from "./matrix";
 export * from "./polynomial";
