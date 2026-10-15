@@ -2,6 +2,7 @@ export * from "./color";
 export * from "./color-picker";
 export * from "./corner-radius";
 export * from "./font";
+export type * from "./font-embedding";
 export * from "./font-import";
 export * from "./free-shape";
 export * from "./handles";
