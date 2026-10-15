@@ -2,7 +2,7 @@
 export type PositionedLine = {
   /** The line's characters, in the text's case, written as they are measured. */
   readonly content: string;
-  /** Abscissa of the line's left edge as drawn. */
+  /** Abscissa of the start of the line as drawn: its left edge when its width is not negative. */
   readonly left: number;
   /** Its measured width; 0 for an empty line, negative when a spacing tightens it past nothing. */
   readonly width: number;

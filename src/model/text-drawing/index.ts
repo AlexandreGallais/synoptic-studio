@@ -1,3 +1,4 @@
+export * from "./decoration-corners";
 export * from "./decoration-stroke";
 export type * from "./drawn-text";
 export * from "./initial-text-position";

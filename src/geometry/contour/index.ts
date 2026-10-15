@@ -4,5 +4,4 @@ export type * from "./corner";
 export type * from "./corner-points";
 export type * from "./cubic";
 export * from "./cyclic-item";
-export * from "./rectangle-sides";
 export type * from "./segment";

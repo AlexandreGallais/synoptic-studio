@@ -77,7 +77,9 @@ The spaces measured at step 3 are drawn only if the reader keeps them: with `xml
 x = left of line,  y = baseline − P × s / U,  width = w,  height = T × s / U
 ```
 
-A line of width `w ≤ 0`, empty or tightened past nothing by a negative spacing, gets no stroke.
+A line of width `w ≤ 0`, empty or tightened past nothing by a negative spacing, gets no stroke, and neither does a stroke of thickness `T ≤ 0`, which has no area to fill. The rectangle is drawn with the rectangle tool's corners, sharp (`decorationCorners`).
+
+The block is at least 0 wide (step 4). A line of negative width keeps it, and step 5 places it all the same: aligned right, a line `−6.89063` wide in a block 0 wide starts at `X + 6.89063`; lines 10 and −8 wide, centered, start `X + 0` and `X + 9`.
 
 ## Cross-check
 
@@ -113,4 +115,4 @@ Kerning pairs used: `W o` −37; `A V`, `V A`, `A T`, `T A` −152 each.
 | the same, right to left, aligned left | `x = left + w`                                                                                                           | x 36.46094 and 41.78125                      |
 | baselines of the two lines, 16        | `14.48438`, then `14.48438 + 18.39844`                                                                                   | 14.48438 and 32.88281                        |
 | underline, `P = −256`, `T = 128`, 16  | `y = 14.48438 + 256 × 16 / 2048`, height `128 × 16 / 2048`                                                               | y 16.48438, 1 thick                          |
-| strike-out, `P = 512`, `T = 128`, 16  | `y = 14.48438 − 512 × 16 / 2048`                                                                                         | y 10.48438, 1 thick                          |
+| strike-out, `P = 512`, `T = 64`, 16   | `y = 14.48438 − 512 × 16 / 2048`, height `64 × 16 / 2048`                                                                | y 10.48438, 0.5 thick                        |
