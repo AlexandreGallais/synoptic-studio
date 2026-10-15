@@ -1,18 +1,14 @@
 import { listenToExport } from "../document";
-import { listenToFonts, writeWeightChoice } from "../fonts";
+import { listenToFonts } from "../fonts";
 import { selectElement } from "../page";
 
-import { readFieldValue } from "./read-field-value";
-
-/** Weights of the bold button, pressed and released (`REF-CSS-FONTS-4`, §2.2: bold 700, normal 400). */
-const WEIGHTS = { bold: 700, normal: 400 };
+import { pressBold } from "./press-bold";
 
 /**
  * Listens to the Text tool's fields: its font controls (`listenToFonts`) and **Export SVG**
  * (`listenToExport`, US-036); a value typed or chosen, the drawing's options among them, redraws
- * the text; the bold button asks for 700, or back to 400 when the weight is 700 or
- * heavier (pressed), among the faces of the family chosen: the nearest face is chosen when the
- * family lacks that weight (`writeWeightChoice`, US-036); the italic button turns italic on or off.
+ * the text; the bold button gives 700 and gives back the weight before (`pressBold`, US-037), a
+ * weight chosen in the list forgetting the weight held; the italic button turns italic on or off.
  *
  * @kind procedure
  * @param document - page document
@@ -29,10 +25,12 @@ export function listenToTextFields(document: Document, update: () => void): void
   options.addEventListener("change", update);
 
   selectElement(document, "text-bold").addEventListener("click", () => {
-    const isBold = Number(readFieldValue(document, "text-weight")) >= WEIGHTS.bold;
-
-    writeWeightChoice(document, isBold ? WEIGHTS.normal : WEIGHTS.bold);
+    pressBold(document);
     update();
+  });
+
+  selectElement(document, "text-weight").addEventListener("change", () => {
+    delete selectElement(document, "text-bold").dataset["heldWeight"];
   });
 
   italic.addEventListener("click", () => {

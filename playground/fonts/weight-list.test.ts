@@ -125,6 +125,23 @@ describe("The weight list of the family chosen (US-036)", () => {
     expect([readValue("text-weight"), readPressedState("text-bold")]).toEqual(["400", "false"]);
   });
 
+  it("[F15.AC1] presses Bold on a family of 300 and 600: its nearest face, 600, then 300 given back", async () => {
+    await importFaces(
+      [
+        { ...TEST_SANS, weightClass: 300 },
+        { ...TEST_SANS, weightClass: 600 },
+      ],
+      "Test Sans 300 imported. Test Sans 600 imported.",
+    );
+
+    // Inter's 400 matches 300 (the lighter faces under 500 first), 700 matches 600.
+    expect(readValue("text-weight")).toBe("300");
+    clickElement("text-bold");
+    expect([readValue("text-weight"), readPressedState("text-bold")]).toEqual(["600", "true"]);
+    clickElement("text-bold");
+    expect([readValue("text-weight"), readPressedState("text-bold")]).toEqual(["300", "false"]);
+  });
+
   it("[F15.AC1] keeps 400 when Bold is pressed on a family of 400 alone, its nearest face", async () => {
     await importFaces([TEST_SANS], "Test Sans 400 imported.");
     clickElement("text-bold");

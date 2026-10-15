@@ -134,7 +134,7 @@ describe("Text tool", () => {
     }
   });
 
-  it("[F05.AC2] offers the weights 100 to 900; bold sets 700 and back to 400", () => {
+  it("[F05.AC2] offers the weights 100 to 900; bold sets 700 and gives back 400", () => {
     const weights = [...document.querySelectorAll<HTMLOptionElement>("#text-weight option")];
 
     expect(weights.map((option) => option.value)).toEqual(
@@ -150,19 +150,41 @@ describe("Text tool", () => {
     expect(readTextElement().getAttribute("font-weight")).toBe("900");
   });
 
-  it.each([
-    { after: "400", pressed: "true", weight: "800" },
-    { after: "400", pressed: "true", weight: "900" },
-    { after: "700", pressed: "false", weight: "600" },
-  ])(
-    "[F05.AC2] presses Bold at weight $weight: $pressed, and a click sets $after",
-    ({ after, pressed, weight }) => {
+  it.each(["100", "600", "800", "900"])(
+    "[F05.AC2] gives back %s when Bold, 700, is pressed twice",
+    (weight) => {
       chooseOption("text-weight", weight);
-      expect(readPressedState("text-bold")).toBe(pressed);
+      expect(readPressedState("text-bold")).toBe("false");
       clickElement("text-bold");
-      expect(readValue("text-weight")).toBe(after);
+      expect([readValue("text-weight"), readPressedState("text-bold")]).toEqual(["700", "true"]);
+      expect(readTextElement().getAttribute("font-weight")).toBe("700");
+      clickElement("text-bold");
+      expect([readValue("text-weight"), readPressedState("text-bold")]).toEqual([weight, "false"]);
+      expect(readTextElement().getAttribute("font-weight")).toBe(weight);
     },
   );
+
+  it("[F05.AC2] forgets the weight held when a weight is chosen in the list", () => {
+    chooseOption("text-weight", "100");
+    clickElement("text-bold");
+    chooseOption("text-weight", "500");
+    expect(readPressedState("text-bold")).toBe("false");
+    clickElement("text-bold");
+    expect([readValue("text-weight"), readPressedState("text-bold")]).toEqual(["700", "true"]);
+    clickElement("text-bold");
+    expect([readValue("text-weight"), readPressedState("text-bold")]).toEqual(["500", "false"]);
+  });
+
+  it("[F05.AC2] gives 400 when Bold is pressed at 700 with no weight held", () => {
+    chooseOption("text-weight", "700");
+    expect(readPressedState("text-bold")).toBe("true");
+    clickElement("text-bold");
+    expect([readValue("text-weight"), readPressedState("text-bold")]).toEqual(["400", "false"]);
+    clickElement("text-bold");
+    expect([readValue("text-weight"), readPressedState("text-bold")]).toEqual(["700", "true"]);
+    clickElement("text-bold");
+    expect(readValue("text-weight")).toBe("400");
+  });
 
   it("[F05.AC2] turns italic on and off", () => {
     clickElement("text-italic");

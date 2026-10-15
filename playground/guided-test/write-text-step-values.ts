@@ -63,7 +63,7 @@ function writeTextBoxValues(document: Document, text: GuidedText): void {
 /**
  * Types a step's style into the Text tool's fields, without firing any event: underline,
  * strike-through and italic, then the font chosen in its list and the weight among the family's
- * faces (US-036); the drawing's options off, as the page opens, so that the step draws as before
+ * faces (US-036), the bold button holding no weight before (US-037); the drawing's options off, as the page opens, so that the step draws as before
  * (US-036).
  *
  * @kind procedure
@@ -77,6 +77,7 @@ function writeTextStyleValues(document: Document, text: GuidedText): void {
   selectElement(document, "text-italic").setAttribute("aria-pressed", String(text.isItalic));
   writeFontOptions(document, text.font);
   writeWeightChoice(document, text.weight);
+  delete selectElement(document, "text-bold").dataset["heldWeight"];
   writeCheckedValue(document, "embed-fonts", false);
   writeCheckedValue(document, "html-layer", false);
 }
