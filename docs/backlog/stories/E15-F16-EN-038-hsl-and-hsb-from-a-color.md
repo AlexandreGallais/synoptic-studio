@@ -3,7 +3,7 @@ id: EN-038
 epic: E15
 feature: F16
 title: HSL and HSB from a hexadecimal color, and back
-status: ready
+status: done
 points: 2
 ---
 
@@ -28,6 +28,6 @@ The library computes a color's hue, saturation and lightness (HSL) or brightness
 
 One task = one commit, referenced as `EN-038.Tn`.
 
-- [ ] T1 — The hue and chroma of three bytes, a grey's hue 0, and HSL from the bytes, `@see REF-CSS-COLOR-4`, `REF-WIKI-HSL-HSV`, `DERIV-color-spaces` steps 3 and 4; tests first, the checks of the derivation (2 h)
-- [ ] T2 — HSB from the bytes; HSL and HSB back to the bytes, each rounded to the nearest, a tie up, and to the stored hexadecimal, `@see DERIV-color-spaces` steps 5 to 8; tests first (2 h)
-- [ ] T3 — The values rounded to one decimal, the hue 360.0 written 0.0, `@see DERIV-color-spaces` step 9; the round trip over every color, unrounded and to one decimal; property tests (2 h)
+- [x] T1 — The hue and chroma of three bytes, a grey's hue 0, and HSL from the bytes, `@see REF-CSS-COLOR-4`, `REF-WIKI-HSL-HSV`, `DERIV-color-spaces` steps 3 and 4; tests first, the checks of the derivation (2 h)
+- [x] T2 — HSB from the bytes; HSL and HSB back to the bytes, each rounded to the nearest, a tie up, and to the stored hexadecimal, `@see DERIV-color-spaces` steps 5 to 8; tests first (2 h)
+- [x] T3 — The values rounded to one decimal, the hue 360.0 written 0.0, `@see DERIV-color-spaces` step 9; the round trip over every color, unrounded and to one decimal; property tests (2 h)
