@@ -2,6 +2,7 @@ export * from "./block-characters";
 export * from "./character-advance";
 export type * from "./character-glyph";
 export * from "./default-font";
+export * from "./face-weight";
 export type * from "./font-face";
 export type * from "./font-family";
 export type * from "./font-metrics";
