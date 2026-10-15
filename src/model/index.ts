@@ -1,8 +1,9 @@
 export * from "./color";
 export * from "./color-picker";
 export * from "./corner-radius";
+export * from "./document";
 export * from "./font";
-export type * from "./font-embedding";
+export * from "./font-embedding";
 export * from "./font-import";
 export * from "./free-shape";
 export * from "./handles";
@@ -21,5 +22,6 @@ export * from "./text-block";
 export * from "./text-box";
 export * from "./text-case";
 export * from "./text-drawing";
+export * from "./text-font";
 export * from "./text-layout";
 export * from "./text-wrap";
