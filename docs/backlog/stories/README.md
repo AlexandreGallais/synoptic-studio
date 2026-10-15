@@ -155,7 +155,7 @@
 | [SP-019](./E15-F17-SP-019-research-f17-latin-script-and-defects.md)           | F17     | Research for F17: the Latin script in industrial HMIs, and the causes of the defects | done   |
 | [US-042](./E15-F17-US-042-a-long-word-always-whole.md)                        | F17     | A word too long always stays whole                                                   | done   |
 | [US-043](./E15-F17-US-043-no-balanced-wrap.md)                                | F17     | The balanced wrap removed, lines always wrapped automatically                        | done   |
-| [US-044](./E15-F17-US-044-no-html-layer.md)                                   | F17     | The HTML layer removed                                                               | ready  |
+| [US-044](./E15-F17-US-044-no-html-layer.md)                                   | F17     | The HTML layer removed                                                               | done   |
 | [US-045](./E15-F17-US-045-fonts-embedded-at-export.md)                        | F17     | Fonts embedded only when a file is exported or saved                                 | ready  |
 | [US-046](./E15-F17-US-046-installed-fonts-from-collections.md)                | F17     | Installed fonts read from collections, and faces that failed                         | ready  |
 | [CHK-018](./E15-F17-CHK-018-checkpoint-f17.md)                                | F17     | Checkpoint in the middle of F17                                                      | ready  |
