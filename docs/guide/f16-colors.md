@@ -90,7 +90,8 @@ Each is built as written and shown by its step; the full list, with its examples
 
 ## Validation
 
-To be run by the Product Owner (`VAL-016`, T3).
+Run by the Product Owner on 2026-10-15 (`VAL-016`, T3), with the whole of E15, in a Chromium-based browser; the details are in `VAL-016`.
 
-| Remark | What was done or where it went |
-| ------ | ------------------------------ |
+| Remark                                                                                                                          | What was done or where it went |
+| ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| every rule confirmed as built; the stroke colors kept for now, a reset button and fewer options for a later epic on ease of use | E02 (ideas)                    |

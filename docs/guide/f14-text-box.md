@@ -107,7 +107,8 @@ Each is built as written and shown by its step; the full list, with its examples
 
 ## Validation
 
-To be run by the Product Owner (`VAL-015`, T3).
+Run by the Product Owner on 2026-10-15 (`VAL-015`, T3), with the whole of E15, in a Chromium-based browser; the details are in `VAL-015`.
 
-| Remark | What was done or where it went |
-| ------ | ------------------------------ |
+| Remark                                                                                                                                                                                                      | What was done or where it went       |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| every rule confirmed as built, except the choice for a word too long, removed (always whole), and the balanced wrap, removed; a background band past a line's end; a turned box's frames drawn as a shape's | US-042, US-043, US-049, US-050 (F17) |
