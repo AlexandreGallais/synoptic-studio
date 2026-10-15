@@ -1,7 +1,8 @@
 import type { Text } from "../../../src";
 
 /**
- * The Text tool's fields a step of F05 types (VAL-014): every field of a text but its fallback,
- * which the playground keeps at `sans-serif`; X, Y and the angle go into the placement fields.
+ * The Text tool's fields a step of F05 or F14 types (VAL-014, VAL-015): every field of a text but
+ * its fallback, which the playground keeps at `sans-serif`; X, Y and the angle go into the
+ * placement fields.
  */
 export type GuidedText = Omit<Text, "fallback">;
