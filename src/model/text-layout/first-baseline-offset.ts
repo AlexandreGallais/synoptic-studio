@@ -1,5 +1,5 @@
 import { fontUnitsAtSize } from "../font";
-import { halfLeading, isAutomaticLineHeight } from "../text-block";
+import { capHeightAtSize, halfLeading, isAutomaticLineHeight } from "../text-block";
 
 import type { FontMetrics } from "../font";
 import type { Text } from "../text";
@@ -21,7 +21,7 @@ import type { Text } from "../text";
  */
 export function firstBaselineOffset(metrics: FontMetrics, text: Text): number {
   if (text.isTrimmed) {
-    return fontUnitsAtSize(metrics.capHeight, text.size, metrics.unitsPerEm);
+    return capHeightAtSize(metrics, text.size);
   }
 
   const ascent = fontUnitsAtSize(metrics.ascender, text.size, metrics.unitsPerEm);
