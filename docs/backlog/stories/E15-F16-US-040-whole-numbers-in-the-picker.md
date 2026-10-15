@@ -3,7 +3,7 @@ id: US-040
 epic: E15
 feature: F16
 title: Whole numbers in the color picker
-status: ready
+status: done
 points: 2
 ---
 
@@ -37,5 +37,5 @@ Open `http://localhost:5173/`, click **Text**, click on the drawing, then the co
 
 One task = one commit, referenced as `US-040.Tn`.
 
-- [ ] T1 — The picker's fields and sliders show and take integers, rebuilt through EN-043; the hue slider from 0 to 359; the playground's tests first (2 h)
-- [ ] T2 — F16's guided steps and VAL-016's decisions 8, 12, 17 and 19 brought up to date; the test card (1 h)
+- [x] T1 — The picker's fields and sliders show and take integers, rebuilt through EN-043; the hue slider from 0 to 359; the playground's tests first (2 h)
+- [x] T2 — F16's guided steps and VAL-016's decisions 8, 12, 17 and 19 brought up to date; the test card (1 h)
