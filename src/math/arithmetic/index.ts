@@ -8,3 +8,4 @@ export * from "./maximum";
 export * from "./minimum";
 export * from "./modulo";
 export * from "./population-count";
+export * from "./rounded-quotient";
