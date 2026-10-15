@@ -3,6 +3,7 @@ import { readNumber, selectElement } from "../page";
 import { readAngle } from "../position";
 
 import { readFieldValue } from "./read-field-value";
+import { readTextBoxOptions } from "./read-text-box-options";
 
 import type { Text, TextAlignment, TextCase, TextDirection } from "../../src";
 
@@ -29,7 +30,7 @@ function readTextSwitches(
 }
 
 /**
- * Reads the text typed in the Text tool's fields; its position and its angle are the shape's X, Y
+ * Reads the text typed in the Text tool's fields, its box's among them (`readTextBoxOptions`); its position and its angle are the shape's X, Y
  * and angle, the angle kept from 0 to 359 (`readAngle`). The choices are read as the page offers them, so they hold one
  * of their values.
  *
@@ -48,6 +49,7 @@ export function readTextModel(document: Document): Text {
 
   return {
     ...TEXT_BOX_DEFAULTS,
+    ...readTextBoxOptions(document),
     alignment,
     angle: readAngle(document),
     color: readFieldValue(document, "text-color"),
