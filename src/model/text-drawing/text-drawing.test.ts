@@ -132,16 +132,51 @@ describe("textDrawing (ADR-0052, DERIV-text-width steps 4 to 6)", () => {
     expect(center.y).toBeCloseTo(box.y + box.boxHeight / 2, 9);
   });
 
+  it("[F14.AC4] puts a background behind 'Hello' over 'World', ascender to descender", () => {
+    const text = { ...HELLO_TEXT, content: "Hello\nWorld", hasBackground: true };
+
+    // Baselines 14.484375 and 32.8828125, ascent 1854 × 16 / 2048 = 14.484375, height
+    // (1854 + 434) / 128 = 17.875 (DERIV-text-box, checks).
+    expect(textDrawing(ARIAL_BOX_METRICS, text).backgrounds).toEqual([
+      { height: 17.875, width: 36.4609375, x: 0, y: 0 },
+      { height: 17.875, width: 41.78125, x: 0, y: 18.3984375 },
+    ]);
+  });
+
+  it("[F14.AC4] runs a cut line's background to the end of its ellipsis", () => {
+    // "Hello World" in a box 60 wide, 1 line: "Hello…", (4667 + 2048) / 128 = 52.4609375 wide.
+    const text = { ...IN_BOX, hasBackground: true, maximumLines: 1 };
+    const drawn = textDrawing(ARIAL_BOX_METRICS, text);
+
+    expect(drawn.lines.map((line) => line.content)).toEqual(["Hello…"]);
+    expect(drawn.backgrounds).toEqual([{ height: 17.875, width: 52.4609375, x: 0, y: 0 }]);
+  });
+
+  it("[F14.AC4] gives an empty line no background", () => {
+    const text = { ...HELLO_TEXT, content: "Hello\n\nWorld", hasBackground: true };
+
+    // The third line's baseline 14.484375 + 2 × 18.3984375 = 51.28125, its top 36.796875.
+    expect(
+      textDrawing(ARIAL_BOX_METRICS, text).backgrounds.map((rectangle) => rectangle.y),
+    ).toEqual([0, 36.796875]);
+  });
+
+  it("[F14.AC6] draws no background for a text without one", () => {
+    expect(textDrawing(ARIAL_BOX_METRICS, IN_BOX).backgrounds).toEqual([]);
+  });
+
   it("draws an empty text as nothing, its middle at its position", () => {
     expect(
       textDrawing(DECORATED_METRICS, {
         ...HELLO_TEXT,
         content: "",
+        hasBackground: true,
         isUnderlined: true,
         x: 3,
         y: 4,
       }),
     ).toEqual({
+      backgrounds: [],
       block: { height: 0, width: 0 },
       center: { x: 3, y: 4 },
       decorations: [],

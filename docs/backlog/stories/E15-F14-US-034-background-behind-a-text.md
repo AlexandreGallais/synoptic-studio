@@ -34,5 +34,5 @@ Open `http://localhost:5173/` and click **Text**.
 
 One task = one commit, referenced as `US-034.Tn`.
 
-- [ ] T1 — The background's rectangles per line in the text's drawing, one `<path>` under the `<text>`, `@see DERIV-text-box`; tests first (2 h)
+- [x] T1 — The background's rectangles per line in the text's drawing, one `<path>` under the `<text>`, `@see DERIV-text-box`; tests first (2 h)
 - [ ] T2 — The Background, Background color and Background opacity fields in the playground; the test card checked (1 h)
