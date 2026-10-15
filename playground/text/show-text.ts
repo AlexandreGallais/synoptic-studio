@@ -1,6 +1,7 @@
 import { createSvgElement, createTextElement, textDrawing } from "../../src";
-import { createFrameElements } from "../drawing";
 import { selectElement, writeText } from "../page";
+
+import { createTextBlockFrame } from "./create-text-block-frame";
 
 import type { FontMetrics, Text } from "../../src";
 
@@ -11,15 +12,15 @@ const MARGIN = 40;
 const JSON_INDENT = 2;
 
 /**
- * Draws a text at a fixed scale (1 user unit = 1 CSS pixel) with its measured block as a frame
- * behind it, and shows each stage in the pipeline column: the model, the block, the positioned
- * lines and the SVG written.
+ * Draws a text at a fixed scale (1 user unit = 1 CSS pixel), turned by its angle, with its
+ * measured block behind it as a dashed frame turned with it, and shows each stage in the pipeline
+ * column: the model, the block, the positioned lines and the SVG written.
  *
  * @kind procedure
  * @param document - page document
  * @param text - a valid text
  * @param metrics - the metrics of the face it is measured with
- * @see docs/backlog/stories/E15-F05-US-031-place-a-text.md
+ * @see docs/backlog/stories/E15-F05-US-032-turn-a-text.md
  */
 export function showText(document: Document, text: Text, metrics: FontMetrics): void {
   const { height, width } = selectElement(document, "canvas").getBoundingClientRect();
@@ -28,13 +29,8 @@ export function showText(document: Document, text: Text, metrics: FontMetrics): 
   const group = createTextElement(document, text, drawn);
 
   const { block } = drawn;
-  const frame = createFrameElements(
-    document,
-    { ...block, angle: 0, x: text.x, y: text.y },
-    "text-block",
-  );
 
-  svg.append(...frame, group);
+  svg.append(...createTextBlockFrame(document, text, drawn), group);
   selectElement(document, "canvas").replaceChildren(svg);
   writeText(document, "model", JSON.stringify(text, undefined, JSON_INDENT));
   writeText(document, "contour", JSON.stringify(block, undefined, JSON_INDENT));

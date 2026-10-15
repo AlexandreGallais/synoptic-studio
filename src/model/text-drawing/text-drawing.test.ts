@@ -1,3 +1,4 @@
+import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { DECORATED_METRICS, HELLO_TEXT } from "../../../tests";
@@ -45,9 +46,44 @@ describe("textDrawing (ADR-0052, DERIV-text-width steps 4 to 6)", () => {
     expect(drawn.decorations.map((stroke) => stroke.x)).toEqual([5.3203125, 0]);
   });
 
-  it("draws an empty text as nothing", () => {
+  it("[F05.AC5] turns about the middle of the measured block, its position added", () => {
+    const drawn = textDrawing(DECORATED_METRICS, {
+      ...HELLO_TEXT,
+      angle: 90,
+      content: "Hello\nWorld",
+      x: 10,
+      y: 20,
+    });
+
+    // Block 41.78125 × 2 × 18.3984375 = 36.796875: middle (10 + 20.890625, 20 + 18.3984375).
+    expect(drawn.center).toEqual({ x: 30.890625, y: 38.3984375 });
+  });
+
+  test.prop({
+    content: fc.string({ maxLength: 12 }),
+    x: fc.integer({ max: 100_000, min: -100_000 }),
+    y: fc.integer({ max: 100_000, min: -100_000 }),
+  })("[F05.AC5] keeps the middle half a block from the position", ({ content, x, y }) => {
+    const { block, center } = textDrawing(DECORATED_METRICS, { ...HELLO_TEXT, content, x, y });
+
+    expect(center.x - x).toBeCloseTo(block.width / 2, 9);
+    expect(center.y - y).toBeCloseTo(block.height / 2, 9);
+  });
+
+  it("draws an empty text as nothing, its middle at its position", () => {
     expect(
-      textDrawing(DECORATED_METRICS, { ...HELLO_TEXT, content: "", isUnderlined: true }),
-    ).toEqual({ block: { height: 0, width: 0 }, decorations: [], lines: [] });
+      textDrawing(DECORATED_METRICS, {
+        ...HELLO_TEXT,
+        content: "",
+        isUnderlined: true,
+        x: 3,
+        y: 4,
+      }),
+    ).toEqual({
+      block: { height: 0, width: 0 },
+      center: { x: 3, y: 4 },
+      decorations: [],
+      lines: [],
+    });
   });
 });

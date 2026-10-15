@@ -2,7 +2,6 @@
 
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { createFrameElements } from "../drawing";
 import {
   chooseOption,
   clickElement,
@@ -104,17 +103,18 @@ describe("Text tool", () => {
     expect(readLines().map(([, x]) => x)).toEqual(["11.89063", "23.78125"]);
   });
 
-  it("[F05.AC2] frames the measured block, 23.78125 × 38.71875, with a fill", () => {
-    // Two lines of 2478 × 16 / 2048 = 19.359375.
-    expect(selectPageElement("#canvas path.text-block").getAttribute("d")).toBe(
-      "M0 0 L23.78125 0 L23.78125 38.71875 L0 38.71875 Z M1 1 L22.78125 1 L22.78125 37.71875 L1 37.71875 Z",
-    );
+  it("[F05.AC5] frames the measured block, 23.78125 × 38.71875, dashed as a shape's box", () => {
+    // Two lines of 2478 × 16 / 2048 = 19.359375. Dashes 4 long every 7, 1 thick: the top side
+    // from x 0 to 23.78125 holds ceil(23.78125 / 7) = 4, the last one cut at 23.78125.
+    const dashes = selectPageElement("#canvas g.text-block path.straight-box").getAttribute("d");
 
+    expect(dashes).toMatch(/^M0 0H4V1H0Z M7 0H11V1H7Z M14 0H18V1H14Z M21 0H23\.78125V1H21Z /u);
+    expect(dashes).toContain("M22.78125 35H23.78125V38.71875H22.78125Z");
     expect(readText("#contour")).toContain('"width": 23.78125');
   });
 
   it("[F05.AC2] hides every control of the shapes, its points and handles too, and shows them back", () => {
-    for (const id of ["size-section", "corners-section", "turn", "straight-box", "tools"]) {
+    for (const id of ["size-section", "corners-section", "straight-box", "tools"]) {
       expect([id, readDisplay(id)]).toEqual([id, "none"]);
     }
 
@@ -188,7 +188,7 @@ describe("Text tool", () => {
     clickElement("text-underline");
     clickElement("text-strike");
 
-    const paths = document.querySelectorAll("#canvas g path");
+    const paths = document.querySelectorAll("#canvas g:has(> text) path");
 
     // Two lines, each underlined and struck through; Inter Regular's underline top −348 units:
     // 15.5 + 348 × 16 / 2048 = 18.21875, 140 × 16 / 2048 = 1.09375 thick.
@@ -216,7 +216,7 @@ describe("Text tool", () => {
   ])("[F05.AC4] draws $id alone along each line", ({ d, id }) => {
     clickElement(id);
 
-    const paths = document.querySelectorAll("#canvas g path");
+    const paths = document.querySelectorAll("#canvas g:has(> text) path");
 
     expect(paths).toHaveLength(2);
     expect(paths[0]?.getAttribute("d")).toBe(d);
@@ -260,12 +260,6 @@ describe("Text tool", () => {
     expect(readText("#status")).toBe("");
     expect(selectPageElement("#text-size").getAttribute("aria-invalid")).toBe("false");
     expect(readLines()).toHaveLength(2);
-  });
-
-  it("frames no block too small to hold a frame: 2 wide", () => {
-    expect(
-      createFrameElements(document, { angle: 0, height: 10, width: 2, x: 0, y: 0 }, "text-block"),
-    ).toEqual([]);
   });
 
   it("draws an empty content as an empty text, without a frame", () => {

@@ -1,6 +1,7 @@
 import { roundedContour } from "../geometry";
 import {
   contourPiecesToPathData,
+  formatRotation,
   formatSvgNumber,
   percentToOpacity,
   textToAttributes,
@@ -62,12 +63,14 @@ function createDecorationElement(
  * Creates the SVG of a text (ADR-0052): a `<g>` holding one `<text>` with its attributes and one
  * positioned `<tspan>` per line, every space kept so that a reader draws the spaces the library
  * measured (`white-space="pre"` for SVG 2 readers, `xml:space="preserve"` for SVG 1.1 ones,
- * ADR-0054), then one `<path>` rectangle per underline or strike-through.
+ * ADR-0054), then one `<path>` rectangle per underline or strike-through. A turned text's `<g>`
+ * carries a `transform` turning it about the middle of its block (ADR-0052, decision 4), so that
+ * its underlines and strike-throughs turn with its letters; a text at 0° carries none.
  *
  * @kind procedure
  * @param document - document owning the elements
- * @param text - the text, for its attributes
- * @param drawn - its lines and decorations, from `textDrawing`
+ * @param text - the text, for its attributes and its angle
+ * @param drawn - its middle, lines and decorations, from `textDrawing`
  * @returns the detached `<g>`
  * @see REF-SVG2-TEXT
  */
@@ -82,6 +85,10 @@ export function createTextElement(document: Document, text: Text, drawn: DrawnTe
   element.setAttribute("white-space", "pre");
   element.setAttributeNS(XML_NAMESPACE, "xml:space", "preserve");
   element.append(...drawn.lines.map((line) => createLineElement(document, line)));
+
+  if (text.angle !== 0) {
+    group.setAttribute("transform", formatRotation(text.angle, drawn.center));
+  }
 
   group.append(
     element,
