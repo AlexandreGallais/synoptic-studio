@@ -4,7 +4,8 @@
 
 import { lineCodePoints } from "../src";
 
-import { tableOf, uint16 } from "./font-fixtures";
+import { TRUE_TYPE_VERSION, fontFile, tableOf, uint16 } from "./font-fixtures";
+import { testFontTables } from "./font-table-fixtures";
 import { os2Table } from "./metrics-table-fixtures";
 
 import type { Os2Fields } from "./metrics-table-fixtures";
@@ -144,5 +145,49 @@ export function os2FaceTable(fields: Os2FaceFields): number[] {
       { at: 62, bytes: uint16(fields.fsSelection) },
     ],
     size: 96,
+  });
+}
+
+/** `fsSelection` with bit 0 set, italic. */
+const ITALIC_SELECTION = 0x00_01;
+
+/** `fsSelection` with bit 6 set, regular. */
+const REGULAR_SELECTION = 0x00_40;
+
+/** A face of the test font, as a playground test imports it (US-036). */
+export type TestFace = {
+  /** How its `name` table names its family. */
+  readonly family: string;
+  /** Its `usWeightClass`. */
+  readonly weightClass: number;
+  /** Whether `fsSelection` bit 0, italic, is set. */
+  readonly isItalic: boolean;
+  /** Its embedding permissions: 0 installable, 2 restricted. */
+  readonly fsType: number;
+};
+
+/**
+ * The test font of `[F05.AC1]` as a whole file (1000 units per em, ascender 800, descender −200,
+ * line gap 90; A 600 units wide, B, C and a 700, any other character 500; no kerning), named,
+ * weighted and styled by a `name` and an `OS/2` table, for the playground's tests (US-036).
+ *
+ * @param face - its family, weight, style and permissions
+ * @returns the file's bytes
+ */
+export function testFaceFile(face: TestFace): Uint8Array {
+  const os2 = os2FaceTable({
+    capHeight: 700,
+    fsSelection: face.isItalic ? ITALIC_SELECTION : REGULAR_SELECTION,
+    fsType: face.fsType,
+    strikeoutPosition: 300,
+    strikeoutSize: 50,
+    version: 4,
+    weightClass: face.weightClass,
+  });
+
+  return fontFile(TRUE_TYPE_VERSION, {
+    ...testFontTables(),
+    name: familyNameTable(face.family),
+    "OS/2": os2,
   });
 }

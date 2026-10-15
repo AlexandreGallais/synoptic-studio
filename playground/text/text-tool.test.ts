@@ -230,9 +230,12 @@ describe("Text tool", () => {
     expect(paths[0]?.getAttribute("d")).toBe(d);
   });
 
-  it("[F05.AC2] names a font without metrics first, measured with Inter", () => {
-    typeValue("text-font", "Arial");
-    expect(readTextElement().getAttribute("font-family")).toBe('"Arial", sans-serif');
+  it("[F05.AC2] offers no font without metrics: Arial is not in the list until read (US-036)", () => {
+    expect(() => {
+      chooseOption("text-font", "Arial");
+    }).toThrow("#text-font has no option Arial.");
+
+    expect(readTextElement().getAttribute("font-family")).toBe('"Inter", sans-serif');
 
     expect(readLines()).toEqual([
       ["H", "0", "15.5"],

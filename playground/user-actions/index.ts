@@ -1,3 +1,4 @@
+export * from "./choose-files";
 export * from "./choose-option";
 export * from "./choose-radio";
 export * from "./click-element";

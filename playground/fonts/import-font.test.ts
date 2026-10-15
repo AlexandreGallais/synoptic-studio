@@ -1,0 +1,150 @@
+// @vitest-environment happy-dom
+
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import { testFaceFile } from "../../tests";
+import {
+  chooseFiles,
+  chooseOption,
+  clickElement,
+  openServedPage,
+  readText,
+  readValue,
+  selectChoice,
+  selectPageElement,
+  typeValue,
+} from "../user-actions";
+
+import type { TestFace } from "../../tests";
+
+/** The test font named Test Sans, regular, installable. */
+const TEST_SANS: TestFace = { family: "Test Sans", fsType: 0, isItalic: false, weightClass: 400 };
+
+/**
+ * A font file as the designer chooses it.
+ *
+ * @param face - its family, weight, style and permissions
+ * @param name - its file's name
+ * @returns a `File` holding its bytes
+ */
+function fontFileOf(face: TestFace, name: string): File {
+  return new File([new Uint8Array(testFaceFile(face))], name);
+}
+
+/**
+ * Chooses files in the font picker and waits for the page to say what it read.
+ *
+ * @param files - the files chosen
+ * @param message - the line the page says once they are read
+ * @returns once the page says it
+ */
+async function importFiles(files: readonly File[], message: string): Promise<void> {
+  chooseFiles("font-file", files);
+
+  await vi.waitFor(() => {
+    expect(readText("#font-message")).toBe(message);
+  });
+}
+
+/**
+ * Reads the families the font list offers.
+ *
+ * @returns their names, in order
+ */
+function readFontList(): readonly string[] {
+  return [...selectChoice("text-font").options].map((option) => option.value);
+}
+
+/**
+ * Reads the measured block shown in the pipeline column.
+ *
+ * @returns its width and height
+ */
+function readBlock(): { readonly height: number; readonly width: number } {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- written by showText from a TextBlock
+  return JSON.parse(readText("#contour")) as { readonly height: number; readonly width: number };
+}
+
+/**
+ * Types a content in the Text tool's text area, as the designer would.
+ *
+ * @param content - the lines
+ */
+function typeContent(content: string): void {
+  const area = selectPageElement("#text-content");
+
+  if (area instanceof HTMLTextAreaElement) {
+    area.value = content;
+  }
+
+  area.dispatchEvent(new Event("input", { bubbles: true }));
+}
+
+describe("Import a font (US-036)", () => {
+  beforeEach(() => {
+    openServedPage("");
+    clickElement("tool-text");
+    chooseOption("text-weight", "400");
+    typeValue("text-size", "100");
+    typeContent("AB");
+  });
+
+  it("[F15.AC1] offers a list of the families it measures, Inter alone as the page opens", () => {
+    expect(selectPageElement("#text-font").tagName).toBe("SELECT");
+    expect(readFontList()).toEqual(["Inter"]);
+    expect(readValue("text-font")).toBe("Inter");
+    expect(selectPageElement("#font-file").getAttribute("accept")).toBe(".ttf,.otf");
+  });
+
+  it("[F15.AC1] adds the family of a file imported, chooses it, and measures the text with it", async () => {
+    await importFiles([fontFileOf(TEST_SANS, "TestSans.ttf")], "Test Sans 400 imported.");
+
+    expect(readFontList()).toEqual(["Inter", "Test Sans"]);
+    expect(readValue("text-font")).toBe("Test Sans");
+
+    expect(selectPageElement("#canvas text").getAttribute("font-family")).toBe(
+      '"Test Sans", sans-serif',
+    );
+
+    // At 100, A is 600 × 100 / 1000 = 60 wide and B 70: 130; one line of
+    // (800 + 200 + 90) × 100 / 1000 = 109; the baseline at the ascender, 80.
+    expect(readBlock()).toEqual({ height: 109, width: 130 });
+    expect(selectPageElement("#canvas tspan").getAttribute("y")).toBe("80");
+  });
+
+  it("[F15.AC1] measures with Inter again when Inter is chosen back", async () => {
+    await importFiles([fontFileOf(TEST_SANS, "TestSans.ttf")], "Test Sans 400 imported.");
+    chooseOption("text-font", "Inter");
+
+    expect(readBlock().width).not.toBe(130);
+
+    expect(selectPageElement("#canvas text").getAttribute("font-family")).toBe(
+      '"Inter", sans-serif',
+    );
+  });
+
+  it("[F15.AC1] refuses a file that is not a font, said why, the list unchanged", async () => {
+    const notes = new File(["Pump P-101"], "notes.ttf");
+
+    await importFiles(
+      [notes],
+      "notes.ttf is not a TrueType or OpenType font file (.ttf, .otf): refused.",
+    );
+
+    expect(readFontList()).toEqual(["Inter"]);
+    expect(readValue("text-font")).toBe("Inter");
+  });
+
+  it("[F15.AC1] keeps one family for two files of it, its name matched without regard to case", async () => {
+    await importFiles(
+      [
+        fontFileOf(TEST_SANS, "TestSans.ttf"),
+        fontFileOf({ ...TEST_SANS, family: "TEST SANS", weightClass: 700 }, "TestSansBold.ttf"),
+      ],
+      "Test Sans 400 imported. TEST SANS 700 imported.",
+    );
+
+    expect(readFontList()).toEqual(["Inter", "Test Sans"]);
+    expect(readValue("text-font")).toBe("Test Sans");
+  });
+});

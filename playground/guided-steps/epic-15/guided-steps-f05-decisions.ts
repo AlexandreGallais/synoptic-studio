@@ -11,15 +11,15 @@ const HH = { content: "HH", size: 16 } as const;
  */
 export const GUIDED_STEPS_F05_DECISIONS: readonly GuidedStep[] = [
   {
-    explanation: "Font Arial; Pipeline.",
-    look: "Arial drawn, the frame keeps Inter's measure (Arial unread: fallback, else Inter).",
-    title: "F05 · A font without metrics (decision)",
+    explanation: "Open the Font list.",
+    look: "Inter, then the fonts imported or installed only: a font without metrics cannot be chosen (US-036).",
+    title: "F05 · A font without metrics (decided, US-036)",
     values: createTextStepValues({}),
   },
   {
-    explanation: "Font “  Inter  ”, spaces before and after.",
-    look: "Drawn in Inter; SVG output font-family &quot;Inter&quot;, sans-serif: spaces trimmed.",
-    title: "F05 · Font name trimmed (decision)",
+    explanation: "Font Inter, chosen in the list: no name is typed (US-036).",
+    look: "SVG output font-family &quot;Inter&quot;, sans-serif: the name as the list holds it.",
+    title: "F05 · Font name as listed (decided, US-036)",
     values: createTextStepValues({}),
   },
   {

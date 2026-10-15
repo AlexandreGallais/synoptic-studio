@@ -9,6 +9,7 @@ import {
   readPressedState,
   readText,
   readValue,
+  selectChoice,
   selectPageElement,
   typeAndEnter,
   typeValue,
@@ -328,19 +329,15 @@ describe("the guided test of F05 (VAL-014): placing and turning", () => {
 });
 
 describe("the guided test of F05 (VAL-014): the decisions to confirm", () => {
-  it("a font without metrics is measured with Inter", () => {
-    openStep("A font without metrics (decision)");
-    typeValue("text-font", "Arial");
-
-    expect([readTextAttribute("font-family"), readBlock().width]).toEqual([
-      '"Arial", sans-serif',
-      175.90625,
-    ]);
+  it("a font without metrics cannot be chosen: the list holds Inter alone", () => {
+    openStep("A font without metrics (decided, US-036)");
+    expect([...selectChoice("text-font").options].map((option) => option.value)).toEqual(["Inter"]);
+    expect(readTextAttribute("font-family")).toBe('"Inter", sans-serif');
   });
 
-  it("a font name typed with spaces is trimmed", () => {
-    openStep("Font name trimmed (decision)");
-    typeValue("text-font", "  Inter  ");
+  it("a font chosen in the list is written as the list holds it", () => {
+    openStep("Font name as listed (decided, US-036)");
+    chooseOption("text-font", "Inter");
     expect(readTextAttribute("font-family")).toBe('"Inter", sans-serif');
   });
 
