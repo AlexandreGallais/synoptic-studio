@@ -1,8 +1,5 @@
 import { chroma, rgbToHsb, rgbToHsl } from "../../math";
-
-import { hexToRgb } from "./hex-to-rgb";
-import { toShownHsb } from "./to-shown-hsb";
-import { toShownHsl } from "./to-shown-hsl";
+import { hexToRgb, toShownHsb, toShownHsl } from "../color";
 
 import type { Rgb } from "../../math";
 import type { ColorModel, PickedColor } from "../../model";

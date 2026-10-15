@@ -3,5 +3,6 @@ export * from "./color";
 export * from "./font-file";
 export * from "./kerning";
 export * from "./path-data";
+export * from "./picked-color";
 export * from "./text-style";
 export * from "./transform";

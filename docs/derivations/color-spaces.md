@@ -1,6 +1,6 @@
 # DERIV-color-spaces — A color in hexadecimal, its opacity, and its HSL and HSB views
 
-Used by: EN-037 (the hexadecimal forms and the opacity), EN-038 (HSL and HSB from the hexadecimal and back), US-035 (the picker's plane and the values it shows). Sources: `REF-CSS-COLOR-4` (§5.1, §5.2, §7, §7.1, §7.2, §16.1.1, §16.2.1), `REF-WIKI-HSL-HSV` (From RGB, HSV to RGB alternative). The stored color is six hexadecimal digits and an integer opacity (F16.AC1); HSL and HSB are computed from it and never stored (ADR-0056). This page shows that the round trip from the hexadecimal is exact, and which precision of the shown HSL and HSB values keeps it exact when they are typed back.
+Used by: EN-037 (the hexadecimal forms and the opacity), EN-038 (HSL and HSB from the hexadecimal and back), US-035 (the picker's plane and the values it shows, the exact bytes of its values). Sources: `REF-CSS-COLOR-4` (§5.1, §5.2, §7, §7.1, §7.2, §16.1.1, §16.2.1), `REF-WIKI-HSL-HSV` (From RGB, HSV to RGB alternative). The stored color is six hexadecimal digits and an integer opacity (F16.AC1); HSL and HSB are computed from it and never stored (ADR-0056). This page shows that the round trip from the hexadecimal is exact, and which precision of the shown HSL and HSB values keeps it exact when they are typed back.
 
 ## Notation
 
@@ -142,6 +142,30 @@ x = w · v / M,   x = w · S / 100,   y = h − h · (L or V) / 100
 ```
 
 The multiplication comes first, as for the stretched shapes (`DERIV-free-shape-stretch`). A point beyond an edge, during a drag, counts at that edge, and a slider not laid out yet (`w = 0`) holds 0 (US-035, provisional, VAL-016). The middle of the right edge of a plane 200 × 100 is `S = 100 · 200 / 200 = 100 %`, `V = 100 · 50 / 100 = 50 %`; at the hue 210° in HSB it is `#004080` (step 6: red 0, green `0.5 − 0.5 · 0.5 = 0.25`, 63.75 gives 64, blue 127.5 gives 128).
+
+## Step 11 — Exact bytes for values given to one decimal
+
+Step 8 rounds `255 · f(n)` with `f(n)` computed in binary64. For a color read from its hexadecimal that is safe: step 9's check found no byte changed. A value picked or typed in the picker is any number to one decimal, and some land a byte exactly on a half, where binary64 may fall below it: HSB 30.1°, 90 %, 100 % has the blue `1 − 0.9 = 0.1`, `255 · 0.1 = 25.5`, which the domain rounds up to 26, but `1 − 0.9` is `0.09999999999999998` in binary64 and gives 25. So the picker's values take a second form of step 6, in integers.
+
+Each value is counted in tenths, `h = 10 · H`, `s = 10 · S`, `v` or `l = 10 · (V or L)`, integers (`h` from 0 to 3599, `s`, `v`, `l` from 0 to 1000). Multiplying step 6's `k` by 600 for HSB and by 300 for HSL, and writing each fraction over one common denominator:
+
+```text
+HSB:  K = (600 n + h) mod 3600,  p = clamp(min(K, 2400 − K), 0, 600),
+      f(n) = N / D,  N = v · (600 000 − s · p),  D = 6 · 10⁸
+HSL:  K = (300 n + h) mod 3600,  q = clamp(min(K − 900, 2700 − K), −300, 300),
+      f(n) = N / D,  N = 300 000 · l − s · min(l, 1000 − l) · q,  D = 3 · 10⁸
+byte = round(255 · N / D)
+```
+
+Each line is step 6 with `k = K / 600` (or `K / 300`), `V = v / 1000`, `S = s / 1000`, `min(k, 4 − k) = p / 600`, `min(k − 3, 9 − k) = q / 300` and `a = S · min(L, 1 − L) = s · min(l, 1000 − l) / 10⁶`; the clamps are step 6's.
+
+Why it is exact:
+
+1. Every quantity is an integer: `|N| ≤ D` and `255 · N ≤ 255 · 6 · 10⁸ < 1.6 · 10¹¹`, far below 2⁵³, so `K`, `p`, `q`, `N` and `255 · N` are exact in binary64.
+2. The quotient `255 · N / D` is one correctly rounded division (IEEE 754). If the byte lies on a half, `255 · N / D = m + ½` with `m` an integer below 256, which binary64 represents exactly; the division returns it exactly and `round` takes it up.
+3. Otherwise `|255 · N / D − (m + ½)| = |510 · N − (2m + 1) · D| / (2D) ≥ 1 / (2D) ≥ 8.3 · 10⁻¹⁰`, the numerator being a non-zero integer, while the division's error is below 256 · 2⁻⁵³ ≈ 2.8 · 10⁻¹⁴: the rounding cannot cross the half.
+
+The binary64 form of step 6 stays for colors read from their hexadecimal (step 9's round trip); the integer form serves the values a picker holds, given to one decimal (US-035). HSB 30.1°, 90 %, 100 % gives `#ff8d1a`, HSB 200°, 50 %, 100 % `#80d5ff` (green 5/6, 212.5 up to 213), HSB 0°, 75 %, 40 % `#661a1a`, HSL 0°, 75 %, 40 % `#b31a1a`, HSL 0°, 75 %, 60 % `#e64d4d`; the tests check every byte against the same arithmetic in exact integers (BigInt).
 
 ## Cross-check
 
