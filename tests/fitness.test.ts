@@ -1,7 +1,21 @@
+// @vitest-environment happy-dom
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { basename, join } from "node:path";
 
 import { describe, expect, it } from "vitest";
+
+import {
+  SVG_NAMESPACE,
+  createEmbeddedFontsElements,
+  createPathElement,
+  createSvgElement,
+  createTextElement,
+  textDrawing,
+} from "../src";
+
+import { DECORATED_METRICS, HELLO_TEXT } from "./text-fixtures";
+
+import type { EmbeddedFace, Text } from "../src";
 
 /** Folders whose functions need a property test (ADR-0022). */
 const PROPERTY_LAYERS = ["src/math", "src/geometry"];
@@ -169,5 +183,154 @@ describe("a code base ready for curves (F11)", () => {
     expect(occurrences(text, "cornerTriples(")).toBe(1);
     expect(occurrences(text, "turningAngles(")).toBe(1);
     expect(occurrences(text, "turningAngle(")).toBe(0);
+  });
+});
+
+/** Namespace of the HTML layer's elements, and the extension its `foreignObject` requires (ADR-0053). */
+const XHTML_NAMESPACE = "http://www.w3.org/1999/xhtml";
+
+/** The SVG elements the library may write (ADR-0002, ADR-0052, ADR-0053, decision 3). */
+const SVG_ELEMENTS = new Set([
+  "defs",
+  "foreignObject",
+  "g",
+  "path",
+  "style",
+  "svg",
+  "switch",
+  "text",
+  "tspan",
+]);
+
+/** The XHTML elements an HTML layer may hold (ADR-0053, decision 3). */
+const XHTML_ELEMENTS = new Set(["div", "span"]);
+
+/** An element created in `src/` or `playground/`: `createElementNS(<namespace>, "<name>")`. */
+const CREATED = /createElementNS\(\s*(?<namespace>[\w.]+),\s*"(?<name>[^"]+)"/gu;
+
+/**
+ * Whether an element created with a namespace written as in the code is one ADR-0053 allows.
+ *
+ * @param namespace - the namespace's expression, `SVG_NAMESPACE` or `XHTML_NAMESPACE`
+ * @param name - the element's name
+ * @returns true when that namespace allows it
+ */
+function isAllowedCreation(namespace: string, name: string): boolean {
+  return namespace === "SVG_NAMESPACE"
+    ? SVG_ELEMENTS.has(name)
+    : namespace === "XHTML_NAMESPACE" && XHTML_ELEMENTS.has(name);
+}
+
+/** Where each element ADR-0053 restricts may stand (decision 3); any other element stands anywhere. */
+const PLACES: Readonly<Record<string, (element: Element) => boolean>> = {
+  div: (element) => element.closest("foreignObject") !== null,
+  foreignObject: (element) =>
+    element.parentElement?.tagName === "switch" &&
+    element.parentElement.firstElementChild === element &&
+    element.getAttribute("requiredExtensions") === XHTML_NAMESPACE,
+  span: (element) => element.closest("foreignObject") !== null,
+  style: (element) => element.parentElement?.tagName === "defs",
+  switch: (element) =>
+    element.querySelectorAll(":scope > g > text").length === 1 &&
+    [...element.children].map((child) => child.tagName).join(" ") === "foreignObject g",
+};
+
+/**
+ * Whether an element is in its namespace: `div` and `span` in XHTML's, any other in SVG's.
+ *
+ * @param element - an element of the SVG written
+ * @returns true when it is
+ */
+function isInItsNamespace(element: Element): boolean {
+  const namespace = XHTML_ELEMENTS.has(element.tagName) ? XHTML_NAMESPACE : SVG_NAMESPACE;
+
+  return element.namespaceURI === namespace;
+}
+
+/**
+ * Where an element of a written SVG breaks its place (ADR-0053, decision 3): `style` only inside
+ * `defs`; `switch` only around one text, its children a `foreignObject` then the text's group;
+ * `foreignObject` only as that first child, with the XHTML extension; `div` and `span` only in the
+ * XHTML namespace, inside a `foreignObject`; any other element only in the SVG namespace.
+ *
+ * @param element - an element of the SVG written
+ * @returns its name and its parent's when misplaced, or nothing
+ */
+function misplacement(element: Element): string | undefined {
+  const isPlaced = PLACES[element.tagName] ?? ((): boolean => true);
+
+  return isInItsNamespace(element) && isPlaced(element)
+    ? undefined
+    : `${element.tagName} in ${String(element.parentElement?.tagName)}`;
+}
+
+/** A face embedded, for the document written. */
+const EMBEDDED: EmbeddedFace = {
+  family: "Arial",
+  file: { bytes: Uint8Array.from([0, 1, 0, 0]), isEmbeddable: true, version: "" },
+  isItalic: false,
+  weight: 400,
+};
+
+/** Texts of every kind the library writes: plain, turned, decorated, with a background, in a box. */
+const TEXTS: readonly Text[] = [
+  HELLO_TEXT,
+  { ...HELLO_TEXT, angle: 30, content: "Hello\nWorld", isStruckThrough: true, isUnderlined: true },
+  { ...HELLO_TEXT, hasBackground: true, isInBox: true, boxHeight: 40, boxWidth: 50 },
+];
+
+/**
+ * A document as the library writes it: its canvas, its embedded fonts, a shape and its texts.
+ *
+ * @returns the `<svg>`
+ */
+function writtenDocument(): SVGSVGElement {
+  const svg = createSvgElement(document, { height: 100, width: 100, x: 0, y: 0 });
+
+  svg.append(
+    ...createEmbeddedFontsElements(document, [EMBEDDED]),
+    createPathElement(document, "M0 0 L10 0 L10 10 Z"),
+    ...TEXTS.map((text) => createTextElement(document, text, textDrawing(DECORATED_METRICS, text))),
+  );
+
+  return svg;
+}
+
+describe("the SVG elements the library writes (ADR-0053)", () => {
+  const created = sourcesEndingWith(".ts")
+    .filter(({ path }) => !path.endsWith(".test.ts"))
+    .flatMap(({ path, text }) =>
+      text
+        .matchAll(CREATED)
+        .map((match) => ({
+          name: match.groups?.["name"] ?? "",
+          namespace: match.groups?.["namespace"] ?? "",
+          path,
+        }))
+        .toArray(),
+    );
+
+  it("reads every element created, not an empty list", () => {
+    expect(created.map(({ name }) => name)).toEqual(
+      expect.arrayContaining(["defs", "g", "path", "style", "svg", "text", "tspan"]),
+    );
+  });
+
+  it("[F15.AC3] creates only the elements ADR-0053 allows, each in its namespace", () => {
+    expect(
+      created
+        .filter(({ name, namespace }) => !isAllowedCreation(namespace, name))
+        .map(({ name, path }) => `${path}: ${name}`),
+    ).toEqual([]);
+  });
+
+  it("[F15.AC3] writes each element in its place: style in defs, switch around a text", () => {
+    const elements = [...writtenDocument().querySelectorAll("*")];
+
+    expect(elements.map((element) => element.tagName)).toEqual(
+      expect.arrayContaining(["defs", "style", "path", "g", "text", "tspan"]),
+    );
+
+    expect(elements.map((element) => misplacement(element)).filter(Boolean)).toEqual([]);
   });
 });
