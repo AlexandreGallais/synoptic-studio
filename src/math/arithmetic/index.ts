@@ -9,5 +9,6 @@ export * from "./maximum";
 export * from "./minimum";
 export * from "./modulo";
 export * from "./nearest-integer";
+export * from "./non-negative-remainder";
 export * from "./percent-from-fraction";
 export * from "./population-count";

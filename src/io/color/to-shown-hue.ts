@@ -1,4 +1,4 @@
-import { DEGREES_PER_TURN, modulo } from "../../math";
+import { DEGREES_PER_TURN, nonNegativeRemainder } from "../../math";
 
 import { toOneDecimal } from "./to-one-decimal";
 
@@ -15,5 +15,5 @@ import { toOneDecimal } from "./to-one-decimal";
  * @see DERIV-color-spaces
  */
 export function toShownHue(hue: number): number {
-  return modulo(toOneDecimal(hue), DEGREES_PER_TURN);
+  return nonNegativeRemainder(toOneDecimal(hue), DEGREES_PER_TURN);
 }
