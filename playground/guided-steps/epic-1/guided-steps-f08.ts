@@ -1,4 +1,4 @@
-import type { GuidedStep } from "./guided-step";
+import type { GuidedStep } from "../guided-step";
 
 /** The hexagon of the F08 steps: 100 × 100, sharp. */
 const HEXAGON = {

@@ -1,4 +1,4 @@
-import type { GuidedStep } from "./guided-step";
+import type { GuidedStep } from "../guided-step";
 
 /** The rectangle of the F12 steps: 120 × 80, radius 20; point 1 top left, then clockwise. */
 const RECTANGLE = {

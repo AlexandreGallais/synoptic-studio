@@ -1,4 +1,4 @@
-import type { GuidedStep } from "./guided-step";
+import type { GuidedStep } from "../guided-step";
 
 /** The body of a symbol in the E01 steps: a 160 × 100 rectangle rounded by 12. */
 const BODY = {

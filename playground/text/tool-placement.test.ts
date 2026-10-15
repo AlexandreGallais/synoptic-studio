@@ -8,8 +8,24 @@ import {
   openServedPage,
   readText,
   readValue,
+  selectPageElement,
   typeValue,
 } from "../user-actions";
+
+/**
+ * Types a content in the Text tool's text area, as the designer would.
+ *
+ * @param content - the lines, a line feed between two
+ */
+function typeContent(content: string): void {
+  const area = selectPageElement("#text-content");
+
+  if (area instanceof HTMLTextAreaElement) {
+    area.value = content;
+  }
+
+  area.dispatchEvent(new Event("input", { bubbles: true }));
+}
 
 /**
  * Reads the `transform` of the text's group.
@@ -41,12 +57,12 @@ describe("Each tool keeps its own X, Y and angle (US-032)", () => {
     clickElement("tool-text");
     // happy-dom does not select the option marked `selected`: the page's weight, 400, chosen again.
     chooseOption("text-weight", "400");
-    // The page's content in Inter Regular 32: happy-dom keeps the line break after <textarea>, so
-    // an empty line, "Pump P-101", "Running": 3 × 2478 × 32 / 2048 = 116.15625 tall; "Pump P-101"
-    // the widest, 11 351 units of advances and −93 of kerning, (11351 − 93) × 32 / 2048 = 175.90625
-    // wide; its middle (87.953125, 58.078125) at X 0, Y 0.
+    // "Pump P-101" over "Running" in Inter Regular 32: 2 × 2478 × 32 / 2048 = 77.4375 tall;
+    // "Pump P-101" the widest, 11 351 units of advances and −93 of kerning,
+    // (11351 − 93) × 32 / 2048 = 175.90625 wide; its middle (87.953125, 38.71875) at X 0, Y 0.
+    typeContent("Pump P-101\nRunning");
     typeValue("angle", "90");
-    expect(readTextTransform()).toBe("rotate(90 87.95313 58.07813)");
+    expect(readTextTransform()).toBe("rotate(90 87.95313 38.71875)");
 
     clickElement("tool-rectangle");
     // The rectangle straight, at its own place.
@@ -55,7 +71,7 @@ describe("Each tool keeps its own X, Y and angle (US-032)", () => {
 
     clickElement("tool-text");
     expect(readPlacement()).toEqual(["0", "0", "90"]);
-    expect(readTextTransform()).toBe("rotate(90 87.95313 58.07813)");
+    expect(readTextTransform()).toBe("rotate(90 87.95313 38.71875)");
   });
 
   it("[F05.AC5] starts a new text straight, whatever the rectangle's angle, and gives it back", () => {

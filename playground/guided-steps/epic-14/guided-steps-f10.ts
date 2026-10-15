@@ -1,4 +1,4 @@
-import type { GuidedStep } from "./guided-step";
+import type { GuidedStep } from "../guided-step";
 
 /** The round shape of the F10 steps: an ellipse 120 × 80. */
 const ELLIPSE = {
