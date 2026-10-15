@@ -166,4 +166,14 @@ describe("Installed fonts (US-036)", () => {
 
     expect(readOptions("text-font")).toEqual(["Inter"]);
   });
+
+  it("[F15.AC1] says a family whose file the browser could not give was not read", async () => {
+    const broken = vi.fn<() => Promise<Blob>>().mockRejectedValue(new Error("No file."));
+
+    fakeLocalFonts([{ blob: broken, family: "Test Sans", fullName: "Test Sans" }]);
+    clickElement("installed-fonts");
+    await waitForMessage("Installed families listed: 1. Choose one in the font list.");
+    chooseOption("text-font", "Test Sans");
+    await waitForMessage("Test Sans could not be read: Error: No file.");
+  });
 });
