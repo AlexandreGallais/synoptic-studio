@@ -1,3 +1,4 @@
+export * from "./cap-height-at-size";
 export * from "./content-area-height";
 export * from "./half-leading";
 export * from "./is-automatic-line-height";
