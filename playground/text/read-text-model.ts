@@ -51,7 +51,7 @@ export function readTextModel(document: Document): Text {
     content: readFieldValue(document, "text-content"),
     direction,
     fallback: FALLBACK,
-    font: readFieldValue(document, "text-font"),
+    font: readFieldValue(document, "text-font").trim(),
     ...readTextSwitches(document),
     letterSpacing: readNumber(document, "text-letter-spacing"),
     opacity: readNumber(document, "text-opacity"),

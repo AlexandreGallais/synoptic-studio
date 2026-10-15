@@ -97,8 +97,15 @@ describe("isValidText (F05)", () => {
     { name: "a word spacing over 100 000", text: { wordSpacing: 100_001 } },
     { name: "an empty font name", text: { font: "" } },
     { name: "a font name of spaces only", text: { font: "  " } },
+    { name: "a font name with a space at an end", text: { font: " Inter" } },
+    { name: "a font name with a line break", text: { font: "Inter\nBold" } },
+    { name: "a font name with a tab", text: { font: "Inter\tBold" } },
   ])("[F05.AC2] refuses $name", ({ text }) => {
     expect(isValidText({ ...HELLO, ...text })).toBe(false);
+  });
+
+  it("[F05.AC2] accepts a font name with inner spaces, digits and punctuation", () => {
+    expect(isValidText({ ...HELLO, font: 'Hawaii 5-0 "Pro"' })).toBe(true);
   });
 
   it.each([

@@ -1,3 +1,4 @@
+export * from "./is-font-name";
 export * from "./is-text-color";
 export * from "./is-valid-text";
 export type * from "./text";

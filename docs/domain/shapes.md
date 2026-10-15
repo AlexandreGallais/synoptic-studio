@@ -207,7 +207,7 @@ Decided by the Product Owner at F05's refinement, rounds 1 and 2 (2026-10-14); d
   - the default font's metrics ship with the library for Inter 4.1's nine weights, upright and italic; Inter has no Hebrew glyph, so a Hebrew character is measured with Inter's `.notdef` advance until a font with Hebrew is read.
 - **Characters**: a text holds:
   - its content, with the line breaks the designer typed, a line break between two lines: a line feed (LF), a carriage return (CR) or both (CR LF), as Unicode's hard line breaks (`REF-UAX14`, LB5; 2026-10-15, provisional, to confirm at VAL-014); any content is allowed, the empty one included, which draws nothing;
-  - a font named with a fallback (`Inter`, else `sans-serif`), any font allowed, its name holding at least one character other than white space (2026-10-15, provisional, to confirm at VAL-014); the default font is Inter, whose metrics ship with the library;
+  - a font named with a fallback (`Inter`, else `sans-serif`), any font allowed; its name is stored trimmed, with no white space at either end, holds at least one character, and no control character such as a line break or a tab (2026-10-15, provisional, to confirm at VAL-014: `" Inter"` and `"Inter⏎Bold"` are refused, the playground trims what is typed); the default font is Inter, whose metrics ship with the library;
   - a size, an integer from 1 to 100 000, in the one unit used everywhere (no millimetres, no points); a size outside that range or not an integer is refused;
   - a weight, an integer from 100 (thin) to 900 (black), with a quick bold button (700) and an italic button;
   - a color in hexadecimal, `#` and six digits (upper or lower case), with an opacity, an integer from 0 to 100 % (F16 brings the picker);
