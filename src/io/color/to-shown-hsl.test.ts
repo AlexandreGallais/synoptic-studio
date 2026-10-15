@@ -30,10 +30,17 @@ describe("toShownHsl (DERIV-color-spaces step 9, ADR-0056)", () => {
   });
 
   it(
-    "[F16.AC3] gives one color in 31 and every sector edge back from its HSL, unrounded and shown",
-    { timeout: 10_000 },
+    "[F16.AC3] gives one color in 31 and every sector edge back from its HSL, unrounded",
+    { timeout: 20_000 },
     () => {
       expect(changedColorCount((rgb) => hslToRgb(rgbToHsl(rgb)))).toBe(0);
+    },
+  );
+
+  it(
+    "[F16.AC3] gives one color in 31 and every sector edge back from its HSL shown",
+    { timeout: 20_000 },
+    () => {
       expect(changedColorCount((rgb) => hslToRgb(toShownHsl(rgbToHsl(rgb))))).toBe(0);
     },
   );

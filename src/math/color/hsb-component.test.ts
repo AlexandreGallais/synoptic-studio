@@ -30,6 +30,14 @@ describe("hsbComponent (REF-WIKI-HSL-HSV, DERIV-color-spaces step 6)", () => {
     expect(hsbComponent({ brightness: 25, hue: 90, saturation: 0 }, 5)).toBeCloseTo(0.25, 12);
   });
 
+  it("[F16.AC3] takes a hue of −240° as 120°, green: its red is 0", () => {
+    // k = (5 − 240 / 60) mod 6 = 1, min(1, 3, 1) = 1: 1 − 1 · 1 · 1 = 0, as at 120°.
+    const green = { brightness: 100, hue: -240, saturation: 100 };
+
+    expect(hsbComponent(green, 5)).toBe(0);
+    expect(hsbComponent(green, 3)).toBe(hsbComponent({ ...green, hue: 120 }, 3));
+  });
+
   it("[F16.AC3] gives 0 for a brightness of 0, black", () => {
     expect(hsbComponent({ brightness: 0, hue: 90, saturation: 100 }, 3)).toBe(0);
   });

@@ -73,6 +73,9 @@ function sampledColorIndices(): readonly number[] {
   return [...new Set([...strided, ...edges])];
 }
 
+/** The sampled colors' indices, computed once for every round trip. */
+const SAMPLED_COLOR_INDICES = sampledColorIndices();
+
 /**
  * Whether a round trip gives a color's bytes back: its components converted and back, each
  * brought to its byte (`fractionToByte`).
@@ -95,11 +98,12 @@ function isKept(roundTrip: (rgb: Rgb) => Rgb, index: number): boolean {
 
 /**
  * How many of the sampled colors (`sampledColorIndices`) a round trip changes. Every color was run
- * once, at EN-038, about 13 s a round trip: too slow for each run (`DERIV-color-spaces`, step 9).
+ * once, at EN-038, 13 to 17 s a round trip: too slow for each run (`DERIV-color-spaces`,
+ * cross-check).
  *
  * @param roundTrip - the components of a color to the components it comes back as
  * @returns the number of sampled colors whose bytes changed
  */
 export function changedColorCount(roundTrip: (rgb: Rgb) => Rgb): number {
-  return sampledColorIndices().filter((index) => !isKept(roundTrip, index)).length;
+  return SAMPLED_COLOR_INDICES.filter((index) => !isKept(roundTrip, index)).length;
 }

@@ -1,4 +1,4 @@
-import { roundedQuotient } from "../../math";
+import { nearestInteger } from "../../math";
 
 /** The alpha byte of a fully opaque color, `ff`. */
 const OPAQUE_ALPHA = 255;
@@ -11,7 +11,7 @@ const OPAQUE_PERCENT = 100;
  * nearest percent, a tie rounded up: `cc` (204) is 80 %, `ec` (236) 93 %. The 256 bytes give the
  * 101 percents, so a byte that no percent gives is rounded (`DERIV-color-spaces`, step 2).
  *
- * Formula: p = round(100 · A / 255) = ⌊(200 · A + 255) / 510⌋.
+ * Formula: p = round(100 · A / 255), a quotient of integers, whose tie binary64 keeps exact.
  *
  * @kind format
  * @param alpha - the alpha byte, an integer from 0 to 255
@@ -19,5 +19,5 @@ const OPAQUE_PERCENT = 100;
  * @see DERIV-color-spaces
  */
 export function alphaToPercent(alpha: number): number {
-  return roundedQuotient(OPAQUE_PERCENT * alpha, OPAQUE_ALPHA);
+  return nearestInteger((OPAQUE_PERCENT * alpha) / OPAQUE_ALPHA);
 }

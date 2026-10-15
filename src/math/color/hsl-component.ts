@@ -1,5 +1,7 @@
 import { clamp, fractionFromPercent, modulo } from "../arithmetic";
 
+import { largestHalfChroma } from "./largest-half-chroma";
+
 import type { Hsl } from "./rgb-to-hsl";
 
 /** The degrees of one of the twelve steps `k` counts around the hue: 30°. */
@@ -31,7 +33,7 @@ const FALL_START = 9;
 export function hslComponent(hsl: Hsl, n: number): number {
   const k = modulo(n + hsl.hue / DEGREES_PER_STEP, STEPS_PER_TURN);
   const light = fractionFromPercent(hsl.lightness);
-  const a = fractionFromPercent(hsl.saturation) * Math.min(light, 1 - light);
+  const a = fractionFromPercent(hsl.saturation) * largestHalfChroma(light);
 
   return light - a * clamp(Math.min(k - RISE_END, FALL_START - k), -1, 1);
 }
