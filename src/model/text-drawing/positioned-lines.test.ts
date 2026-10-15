@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { ARIAL_BOX_METRICS, ARIAL_UNKERNED, HELLO_TEXT } from "../../../tests";
 import { EPSILON } from "../../math";
 import { TEXT_OPTIONS } from "../text";
+import { shownLines } from "../text-box";
 
 import { positionedLines } from "./positioned-lines";
 import { textBlock } from "./text-block";
@@ -18,7 +19,12 @@ import type { PositionedLine } from "./positioned-line";
  * @returns its lines
  */
 function placed(text: Text): readonly PositionedLine[] {
-  return positionedLines(ARIAL_UNKERNED, text, textBlock(ARIAL_UNKERNED, text).width);
+  const lines = shownLines(ARIAL_UNKERNED, text);
+
+  return positionedLines(ARIAL_UNKERNED, text, {
+    lines,
+    width: textBlock(ARIAL_UNKERNED, text, lines).width,
+  });
 }
 
 /** "Hello" over "World" in Arial 16, without kerning. */
@@ -100,7 +106,10 @@ describe("positionedLines (DERIV-text-width steps 4 and 5)", () => {
       isInBox: true,
       maximumLines: 2,
     };
-    const lines = positionedLines(ARIAL_BOX_METRICS, text, 57.78125);
+    const lines = positionedLines(ARIAL_BOX_METRICS, text, {
+      lines: shownLines(ARIAL_BOX_METRICS, text),
+      width: 57.78125,
+    });
 
     expect(lines.map((line) => [line.content, line.width])).toEqual([
       ["Hello", 36.4609375],
@@ -120,7 +129,7 @@ describe("positionedLines (DERIV-text-width steps 4 and 5)", () => {
     x: fc.integer({ max: 1000, min: -1000 }),
   })("keeps every line inside the measured block", ({ alignment, content, x }) => {
     const text = { ...HELLO_TEXT, alignment, content, x };
-    const { width } = textBlock(ARIAL_UNKERNED, text);
+    const { width } = textBlock(ARIAL_UNKERNED, text, shownLines(ARIAL_UNKERNED, text));
 
     for (const line of placed(text)) {
       expect(line.left).toBeGreaterThanOrEqual(x - EPSILON);

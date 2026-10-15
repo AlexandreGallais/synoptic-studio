@@ -18,7 +18,7 @@ import {
   systemFont,
   testFontTables,
 } from "../../../tests";
-import { pairKerning, textBlock } from "../../model";
+import { pairKerning, shownLines, textBlock } from "../../model";
 
 import { parseFontMetrics } from "./parse-font-metrics";
 
@@ -161,7 +161,13 @@ describe("parseFontMetrics (REF-OT-OTFF)", () => {
     () => {
       const metrics = parseFontMetrics(ARIAL ?? new Uint8Array(), ARIAL_CHARACTERS);
       const blocks = ["Hello World", "Hello\nWorld"].map((content) =>
-        metrics === undefined ? undefined : textBlock(metrics, { ...HELLO_TEXT, content }),
+        metrics === undefined
+          ? undefined
+          : textBlock(
+              metrics,
+              { ...HELLO_TEXT, content },
+              shownLines(metrics, { ...HELLO_TEXT, content }),
+            ),
       );
 
       // DERIV-text-width, checks: (10 584 − 37) × 16 / 2048 = 82.3984375, one line of 18.3984375;

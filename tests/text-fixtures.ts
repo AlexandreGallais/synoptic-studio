@@ -69,7 +69,7 @@ export const ARIAL_UNKERNED: FontMetrics = { ...ARIAL_METRICS, kerning: NO_KERNI
 /**
  * Arial's measured part without kerning, with the advances `DERIV-text-box` adds for its boxes:
  * `-` 682, `.` 569, `0` and `1` 1139, `P` 1366, `g` 1139, `i` 455, `m` 1706, `n` 1139, `p` 1139,
- * `s` 1024, `u` 1139, and the ellipsis `…` 2048, read from the same file.
+ * `s` 1024, `u` 1139, the no-break space 569 and the ellipsis `…` 2048, read from the same file.
  */
 export const ARIAL_BOX_METRICS: FontMetrics = {
   ...ARIAL_UNKERNED,
@@ -87,6 +87,7 @@ export const ARIAL_BOX_METRICS: FontMetrics = {
     112: 1139,
     115: 1024,
     117: 1139,
+    160: 569,
     8230: 2048,
   },
 };

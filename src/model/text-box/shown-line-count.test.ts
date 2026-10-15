@@ -78,6 +78,11 @@ describe("shownLineCount (DERIV-text-box step 5)", () => {
     expect(shownLineCount(boxed(30, 0), AUTOMATIC, 4)).toBe(1);
   });
 
+  it("[F14.AC2] counts a block that fits within a rounding error", () => {
+    // λ = 9.4: (94 − 9.4) / 9.4 = 9 exactly, 8.999999999999998 in doubles; 10 lines fit 94.
+    expect(shownLineCount(boxed(94, 0), { firstLine: 9.4, line: 9.4 }, 20)).toBe(10);
+  });
+
   it("counts a chosen line height", () => {
     // A line height of 24: h(2) = 48 ≤ 50 < h(3) = 72.
     expect(shownLineCount(boxed(50, 0), { firstLine: 24, line: 24 }, 10)).toBe(2);
@@ -103,6 +108,23 @@ describe("shownLineCount (DERIV-text-box step 5)", () => {
       expect(shownLineCount(boxed(boxHeight, maximumLines), heights, wrapped)).toBe(
         fitting.at(-1) ?? 0,
       );
+    },
+  );
+
+  test.prop({
+    boxHeight: fc.integer({ max: 1000, min: 0 }),
+    firstTenths: fc.integer({ max: 2000, min: 1 }),
+    lineTenths: fc.integer({ max: 2000, min: 1 }),
+  })(
+    "[F14.AC2] counts heights in tenths as exact integers would",
+    ({ boxHeight, firstTenths, lineTenths }) => {
+      const heights = { firstLine: firstTenths / 10, line: lineTenths / 10 };
+      // In tenths, h(n) ≤ H reads f + (n − 1) × λ ≤ 10 H, in integers.
+      const fitting = integerRange(1, 100).filter(
+        (count) => count === 1 || firstTenths + (count - 1) * lineTenths <= 10 * boxHeight,
+      );
+
+      expect(shownLineCount(boxed(boxHeight, 0), heights, 100)).toBe(fitting.at(-1) ?? 0);
     },
   );
 });

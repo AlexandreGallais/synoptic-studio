@@ -1,7 +1,9 @@
-import { ellipsizedLine } from "./ellipsized-line";
+import { ellipsisCut } from "./ellipsis-cut";
 import { isLineFitting } from "./is-line-fitting";
 import { shownLineCount } from "./shown-line-count";
 import { textBlockLineHeights } from "./text-block-line-heights";
+import { textEllipsis } from "./text-ellipsis";
+import { withoutTrailingSpaces } from "./without-trailing-spaces";
 import { wrappedLines } from "./wrapped-lines";
 
 import type { TextInBox } from "./text-in-box";
@@ -9,37 +11,37 @@ import type { FontMetrics } from "../font";
 import type { Text } from "../text";
 
 /**
- * The lines shown, each ended with an ellipsis when it is the last of a text cut or wider than the
- * box, its trailing spaces left out (`DERIV-text-box`, step 6).
+ * A line shown, ended with an ellipsis when it is the last of a text cut, or when it is wider than
+ * the box and its cut removes at least one unit: the first character of a line is "clipped rather
+ * than ellipsed", so a line of one character wider than the box stays as it is
+ * (`DERIV-text-box`, step 6).
  *
  * @kind domain
  * @param context - the text and the metrics of its face
- * @param shown - the lines shown, in order
- * @param isCut - whether lines were left out after them
- * @returns the lines with their ellipses
- * @see DERIV-text-box
+ * @param line - a line shown, in the text's case
+ * @param isLastOfCut - whether it is the last line shown of a text that lines were left out of
+ * @returns the line, with its ellipsis when it gets one
+ * @see REF-CSS-OVERFLOW-3
  */
-function withEllipses(
-  context: TextInBox,
-  shown: readonly string[],
-  isCut: boolean,
-): readonly string[] {
-  const { metrics, text } = context;
+function shownLine(context: TextInBox, line: string, isLastOfCut: boolean): string {
+  if (!isLastOfCut && isLineFitting(context.metrics, line, context.text)) {
+    return line;
+  }
 
-  return shown.map((line, index) =>
-    (isCut && index === shown.length - 1) || !isLineFitting(metrics, line, text)
-      ? ellipsizedLine(context, line)
-      : line,
-  );
+  const kept = ellipsisCut(context, line);
+
+  return !isLastOfCut && kept === withoutTrailingSpaces(line)
+    ? line
+    : kept + textEllipsis(context.metrics);
 }
 
 /**
  * The lines a text shows: a text that fits its content shows all its lines (F05); in a box, the
  * lines it wraps into (`wrappedLines`), as many as its box and its maximum show
  * (`shownLineCount`), and, with the ellipsis on, the last line shown ends with an ellipsis when
- * lines were left out, as does every line wider than the box (`ellipsizedLine`); with it off, a
- * text cut stops at its last line shown and a word moved whole is drawn whole
- * (`DERIV-text-box`, steps 5 and 6).
+ * lines other than empty ones were left out, as does a line wider than the box when its cut
+ * removes a unit (`ellipsisCut`); with it off, a text cut stops at its last line shown and a word
+ * moved whole is drawn whole (`DERIV-text-box`, steps 5 and 6).
  *
  * @kind domain
  * @param metrics - the metrics of the face the text is drawn with
@@ -56,6 +58,9 @@ export function shownLines(metrics: FontMetrics, text: Text): readonly string[] 
 
   const count = shownLineCount(text, textBlockLineHeights(metrics, text), wrapped.length);
   const shown = wrapped.slice(0, count);
+  const isCut = wrapped.slice(count).some((line) => line !== "");
 
-  return text.hasEllipsis ? withEllipses({ metrics, text }, shown, count < wrapped.length) : shown;
+  return text.hasEllipsis
+    ? shown.map((line, index) => shownLine({ metrics, text }, line, isCut && index === count - 1))
+    : shown;
 }
