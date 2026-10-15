@@ -24,7 +24,9 @@ type TextBoxOptions = Pick<
  * of a long word, the maximum number of lines, the ellipsis, the vertical alignment, the wrap
  * style, the line height and the trim. They are read whichever kind is chosen, so that the text
  * keeps them when it changes kind (`docs/domain/shapes.md`, "Box"); a number left empty is
- * `NaN`, which the model refuses (`isValidText`).
+ * `NaN`, which the model refuses (`isValidText`). The page opens the box at 200 × 100, a playground
+ * starting value that shows a few lines at once; the model's default stays 0 × 0
+ * (`TEXT_BOX_DEFAULTS`).
  *
  * @kind procedure
  * @param document - page document

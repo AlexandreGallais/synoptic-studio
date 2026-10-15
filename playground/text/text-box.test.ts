@@ -160,6 +160,21 @@ describe("Text tool: a text in a box (US-033)", () => {
     expect(readBaselines()).toEqual(["38.0625", "57.42188", "76.78125", "96.14063"]);
   });
 
+  it("[F14.AC1] frames the box at its position and turns both about the box's middle", () => {
+    typeValue("shape-x", "10");
+    typeValue("shape-y", "20");
+    // The box 50 × 100 at (10, 20): its first dash from (10, 20), its middle (35, 70).
+    expect(readFrame()).toMatch(/^M10 20H14V21H10Z /u);
+
+    typeValue("angle", "90");
+
+    expect(
+      ["#canvas g:has(> text)", "#canvas g.text-frame"].map((selector) =>
+        selectPageElement(selector).getAttribute("transform"),
+      ),
+    ).toEqual(["rotate(90 35 70)", "rotate(90 35 70)"]);
+  });
+
   it("[F14.AC3] aligns the lines across the box's width", () => {
     chooseOption("text-alignment", "center");
 
@@ -194,7 +209,7 @@ describe("Text tool: a text in a box (US-033)", () => {
     expect(readContents()).toEqual(["Pump P-101 is", "running"]);
 
     chooseOption("text-wrap", "balance");
-    // Room left 22.05² + 35.65² = 1757.3 against 5.23² + 52.47² = 2780.4: the even pair.
+    // Room left 22.05² + 35.65² = 1756.88 against 5.23² + 52.47² = 2780.29: the even pair.
     expect(readContents()).toEqual(["Pump P-101", "is running"]);
   });
 
