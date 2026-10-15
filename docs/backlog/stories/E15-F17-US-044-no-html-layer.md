@@ -3,7 +3,7 @@ id: US-044
 epic: E15
 feature: F17
 title: The HTML layer removed
-status: ready
+status: done
 points: 3
 ---
 
@@ -30,6 +30,6 @@ From the Product Owner's validation of E15 (2026-10-15): the HTML layer brings n
 
 One task = one commit, referenced as `US-044.Tn`.
 
-- [ ] T1 — The layer's code removed from the library (EN-041) with its tests; a test refusing `switch` and `foreignObject` (3 h)
-- [ ] T2 — The playground's option, its guided steps and the demo page updated (2 h)
-- [ ] T3 — References no longer cited, `DERIV-html-layer` marked as a record, F15's criterion 3 withdrawn (1 h)
+- [x] T1 — The layer's code removed from the library (EN-041) with its tests; a test refusing `switch` and `foreignObject` (3 h)
+- [x] T2 — The playground's option, its guided steps and the demo page updated (2 h)
+- [x] T3 — References no longer cited, `DERIV-html-layer` marked as a record, F15's criterion 3 withdrawn (1 h)
