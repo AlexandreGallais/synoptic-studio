@@ -26,7 +26,7 @@ Open `http://localhost:5173/` and click **Text**.
 | ---- | --------------------------------------------------------------------------- | -------------------------------------------------------------- |
 | 1    | Type **Content** "Pump P-101", a line break, "Running"; tick **Background** | a colored band behind each line, as long as the line           |
 | 2    | Type **Background color** `#22c55e`, **Background opacity** 40              | the bands turn light green, the letters stay on top            |
-| 3    | Choose **Box**, **Width** 50, **Max lines** 2                               | the bands follow the wrapped lines, the last one up to its "…" |
+| 3    | Choose **Box**, **Width** 50, **Height** 100, **Max lines** 2               | the bands follow the wrapped lines, the last one up to its "…" |
 | 4    | Type **Angle** 30                                                           | the bands turn with the text                                   |
 | 5    | Untick **Background**                                                       | the bands go; the text is as before                            |
 
