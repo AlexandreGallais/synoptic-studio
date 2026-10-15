@@ -91,6 +91,14 @@ describe("Text tool: a background behind the text (US-034)", () => {
     expect(readText("#model")).toContain('"backgroundOpacity": 40');
   });
 
+  it("[F16.AC1] reads a background color typed in upper case in lower case", () => {
+    clickElement("text-background");
+    typeValue("text-background-color", "#FF8000");
+
+    expect(readBackground()[1]).toBe("#ff8000");
+    expect(readText("#model")).toContain('"backgroundColor": "#ff8000"');
+  });
+
   it("[F14.AC4] follows the wrapped lines in a box, the last one up to its ellipsis", () => {
     clickElement("text-background");
     chooseOption("text-fit", "box");
