@@ -19,3 +19,11 @@ Ordered by the Product Owner (2026-10-08; E13 added before E03, confirmed 2026-1
 | 13    | [E10](./E10-draw-static-drawings.md)       | Draw and reuse static drawings                      | draft       |
 | 14    | [E11](./E11-store-and-share.md)            | Store and share as files in a working folder        | draft       |
 | 15    | [E12](./E12-release-a-trusted-product.md)  | Release a product people can trust                  | draft       |
+
+## Ideas for later
+
+Draft epics recorded from the Product Owner's ideas, outside the run order until the Product Owner places them; their edition, free V1 or pro, is decided then (ADR-0030).
+
+| ID                                  | Epic                                            | Given      | Status |
+| ----------------------------------- | ----------------------------------------------- | ---------- | ------ |
+| [E16](./E16-check-text-contrast.md) | Check the contrast of texts on their background | 2026-10-15 | draft  |
