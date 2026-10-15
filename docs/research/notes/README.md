@@ -23,3 +23,4 @@ Content: summary in our own words (no copy of source text), formulas, references
 | [0016](./0016-f13-named-calculations.md)           | Sources of F13: the calculations of the code that mathematics names, and those left inline                                                                    |
 | [0017](./0017-e15-text.md)                         | Sources of E15: text in SVG readers, font files and their metrics, measuring, scripts and wrapping, embedding, the default font                               |
 | [0018](./0018-f14-text-box.md)                     | Sources of F14: wrapping at spaces, long words, the lines shown and the ellipsis, line height, cap-height trim, vertical alignment, balanced wrap, background |
+| [0019](./0019-f16-colors.md)                       | Sources of F16: hexadecimal forms and the alpha byte, HSL and HSB and their exact round trip, the picker's plane, sliders and keyboard                        |
