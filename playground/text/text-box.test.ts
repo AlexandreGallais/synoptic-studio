@@ -84,7 +84,6 @@ describe("Text tool: a text in a box (US-033)", () => {
     // choices the page opens with are chosen again.
     chooseOption("text-weight", "400");
     chooseOption("text-vertical-alignment", "top");
-    chooseOption("text-wrap", "auto");
     typeContent("Hello World");
     chooseOption("text-fit", "box");
     typeValue("text-box-width", "50");
@@ -185,15 +184,11 @@ describe("Text tool: a text in a box (US-033)", () => {
     expect(readBaselines()).toEqual(["11.64063", "31", "50.35938", "69.71875"]);
   });
 
-  it("[F14.AC3] balances 'Pump P-101 is running' in a box 110 wide", () => {
+  it("[F17.AC1] wraps 'Pump P-101 is running' automatically in a box 110 wide", () => {
     typeContent(PUMP);
     typeValue("text-box-width", "110");
-    // Greedy: "Pump P-101 is" (104.77) over "running" (57.53).
+    // Inter 16: "Pump P-101 is" (104.77) fits; with " running" (57.53) it would not.
     expect(readContents()).toEqual(["Pump P-101 is", "running"]);
-
-    chooseOption("text-wrap", "balance");
-    // Room left 22.05² + 35.65² = 1756.88 against 5.23² + 52.47² = 2780.29: the even pair.
-    expect(readContents()).toEqual(["Pump P-101", "is running"]);
   });
 
   it("turns the text and its box by 90 about the box's middle", () => {
@@ -245,8 +240,7 @@ describe("Text tool: a text in a box (US-033)", () => {
     clickElement("text-trim");
     expect(readBaselines()[0]).toBe("11.64063");
     typeValue("text-box-width", "110");
-    chooseOption("text-wrap", "balance");
-    expect(readContents()).toEqual(["Pump P-101", "is running"]);
+    expect(readContents()).toEqual(["Pump P-101 is", "running"]);
     typeValue("angle", "90");
 
     expect(selectPageElement("#canvas g.text-frame").getAttribute("transform")).toBe(
@@ -261,6 +255,6 @@ describe("Text tool: a text in a box (US-033)", () => {
     typeValue("text-box-width", "");
     expect(document.querySelectorAll("#canvas text")).toHaveLength(0);
     typeValue("text-box-width", "110");
-    expect(readContents()).toEqual(["Pump P-101", "is running"]);
+    expect(readContents()).toEqual(["Pump P-101 is", "running"]);
   });
 });

@@ -13,8 +13,8 @@ const TWO_LINES = { content: "Pump P-101\nRunning" } as const;
 
 /**
  * The F14 options to try (VAL-015), one per step: Fit content or Box, the box's size, a long word
- * kept whole, the maximum number of lines, the ellipsis, the vertical alignment, the line height, the trim,
- * the balance, the background, the turn about the box, values refused and back to F05.
+ * kept whole, the maximum number of lines, the ellipsis, the vertical alignment, the line height,
+ * the trim, the background, the turn about the box, values refused and back to F05.
  */
 export const GUIDED_STEPS_F14_OPTIONS: readonly GuidedStep[] = [
   {
@@ -70,12 +70,6 @@ export const GUIDED_STEPS_F14_OPTIONS: readonly GuidedStep[] = [
     look: "The lines move up: the first capitals touch the box's top, its baseline 11.64 below it.",
     title: "F14 · Trim",
     values: createTextBoxStepValues(PUMP_50),
-  },
-  {
-    explanation: "Wrap: Balance.",
-    look: "“Pump P-101 is” over “running” becomes “Pump P-101” over “is running”.",
-    title: "F14 · Balance",
-    values: createTextBoxStepValues(PUMP_110),
   },
   {
     explanation: "Tick Background.",

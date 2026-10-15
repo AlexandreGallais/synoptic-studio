@@ -4,7 +4,6 @@ export type * from "./line-wrap";
 export * from "./line-wrap-with-token";
 export * from "./measured-token";
 export * from "./paragraph-tokens";
-export type * from "./paragraph-wrap";
 export type * from "./text-in-box";
 export type * from "./token-measure";
 export * from "./without-trailing-spaces";

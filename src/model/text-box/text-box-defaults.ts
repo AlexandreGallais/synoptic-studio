@@ -21,7 +21,6 @@ export const TEXT_BOX_DEFAULTS: Pick<
   | "lineHeight"
   | "maximumLines"
   | "verticalAlignment"
-  | "wrapStyle"
 > = {
   backgroundColor: "#ffff00",
   backgroundOpacity: 100,
@@ -34,5 +33,4 @@ export const TEXT_BOX_DEFAULTS: Pick<
   lineHeight: 0,
   maximumLines: 0,
   verticalAlignment: "top",
-  wrapStyle: "auto",
 };
