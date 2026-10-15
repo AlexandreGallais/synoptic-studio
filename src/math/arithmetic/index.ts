@@ -1,5 +1,6 @@
 export * from "./average";
 export * from "./clamp";
+export * from "./fraction-from-percent";
 export * from "./integer-range";
 export * from "./is-bit-set";
 export * from "./is-in-integer-range";
@@ -7,6 +8,7 @@ export * from "./is-span-within";
 export * from "./maximum";
 export * from "./minimum";
 export * from "./modulo";
+export * from "./nearest-integer";
 export * from "./percent-from-fraction";
 export * from "./population-count";
 export * from "./rounded-quotient";
