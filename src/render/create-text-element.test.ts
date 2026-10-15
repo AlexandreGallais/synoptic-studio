@@ -109,6 +109,55 @@ describe("createTextElement (ADR-0052)", () => {
     expect(group.getAttribute("transform")).toBeNull();
   });
 
+  describe("[F14.AC4] with a background", () => {
+    const highlighted = {
+      ...HELLO_TEXT,
+      angle: 30,
+      backgroundColor: "#22c55e",
+      backgroundOpacity: 40,
+      content: "Hello\nWorld",
+      hasBackground: true,
+    };
+    const drawn = createTextElement(
+      document,
+      highlighted,
+      textDrawing(DECORATED_METRICS, highlighted),
+    );
+
+    it("[F14.AC4] draws one <path> before the <text>, so that the letters stay on top", () => {
+      expect([...drawn.children].map((child) => child.tagName)).toEqual(["path", "text"]);
+    });
+
+    it("[F14.AC4] holds one rectangle per line, clockwise from its top-left (Q11)", () => {
+      // (0, 0) 36.4609375 × 17.875 and (0, 18.3984375) 41.78125 × 17.875: bottom
+      // 18.3984375 + 17.875 = 36.2734375, at 5 decimals.
+      expect(drawn.querySelector("path")?.getAttribute("d")).toBe(
+        "M0 0 L36.46094 0 L36.46094 17.875 L0 17.875 Z M0 18.39844 L41.78125 18.39844 L41.78125 36.27344 L0 36.27344 Z",
+      );
+    });
+
+    it("[F14.AC4] fills it with the background's color, its opacity 40 % written 0.4", () => {
+      const path = drawn.querySelector("path");
+
+      expect([path?.getAttribute("fill"), path?.getAttribute("fill-opacity")]).toEqual([
+        "#22c55e",
+        "0.4",
+      ]);
+    });
+
+    it("[F14.AC4] turns it with the group, carrying no transform of its own", () => {
+      expect(drawn.getAttribute("transform")).not.toBeNull();
+      expect(drawn.querySelector("path")?.getAttribute("transform")).toBeNull();
+    });
+
+    it("[F14.AC4] draws no <path> when no line has a length", () => {
+      const blank = { ...highlighted, content: "\n" };
+      const blankGroup = createTextElement(document, blank, textDrawing(DECORATED_METRICS, blank));
+
+      expect(blankGroup.querySelectorAll("path")).toHaveLength(0);
+    });
+  });
+
   it("draws an empty text as an empty <text>", () => {
     const empty = { ...HELLO_TEXT, content: "" };
     const drawn = createTextElement(document, empty, textDrawing(DECORATED_METRICS, empty));

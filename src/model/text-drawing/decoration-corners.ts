@@ -7,12 +7,12 @@ import type { Corner } from "../../geometry";
 const SHARP = [0, 0, 0, 0];
 
 /**
- * The corners of an underline's or a strike-through's rectangle, sharp, clockwise from its
- * top-left (Q11): the rectangle tool's corners (`rectangleCorners`), so that every rectangle of
+ * The corners of an underline's, a strike-through's or a background's rectangle, sharp, clockwise
+ * from its top-left (Q11): the rectangle tool's corners (`rectangleCorners`), so that every rectangle of
  * the library is drawn by one route.
  *
  * @kind domain
- * @param decoration - the stroke's rectangle, its width and height positive
+ * @param decoration - the rectangle, its width and height positive
  * @returns its four corners
  * @see docs/domain/shapes.md#text
  */
