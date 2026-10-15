@@ -115,15 +115,35 @@ describe("Text tool: the box's fields (US-033)", () => {
     { id: "text-box-height", value: "-1" },
     { id: "text-maximum-lines", value: "1.5" },
     { id: "text-line-height", value: "100001" },
+    { id: "text-line-height", value: "" },
+    { id: "text-line-height", value: "-1" },
   ])("refuses $id = '$value', draws nothing and keeps the last valid text", ({ id, value }) => {
     chooseOption("text-fit", "box");
+
+    const shown = readText("#model");
+
     typeValue(id, value);
 
-    expect(readText("#status")).toContain("integers from 0 to 100 000");
+    expect(readText("#status")).toContain(
+      "the box's width and height, its maximum lines and the line height integers from 0 to 100 000",
+    );
+
     expect(document.querySelectorAll("#canvas text")).toHaveLength(0);
     expect(selectPageElement(`#${id}`).getAttribute("aria-invalid")).toBe("true");
     // No NaN nor refused value reaches the model shown: JSON writes NaN as null.
     expect(readText("#model")).not.toContain("null");
-    expect(readModel()).toMatchObject({ isInBox: true, maximumLines: 0 });
+    expect(readText("#model")).toBe(shown);
+  });
+
+  it("keeps the box's fields shown while one of them is refused, Fit content chosen", () => {
+    chooseOption("text-fit", "box");
+    typeValue("text-box-width", "");
+    chooseOption("text-fit", "content");
+
+    expect(readDisplay("text-box-fields") === "none").toBe(false);
+    expect(selectPageElement("#text-box-width").getAttribute("aria-invalid")).toBe("true");
+
+    typeValue("text-box-width", "50");
+    expect(readDisplay("text-box-fields")).toBe("none");
   });
 });

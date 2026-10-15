@@ -1,8 +1,10 @@
-import { DEFAULT_FONT, isValidText, textFontMetrics } from "../../src";
+import { DEFAULT_FONT, isValidText, isValidTextBox, textFontMetrics } from "../../src";
 import { selectElement, writeText } from "../page";
 
 import { readTextModel } from "./read-text-model";
 import { showText } from "./show-text";
+
+import type { Text } from "../../src";
 
 /** Weight of the bold button (`REF-CSS-FONTS-4`, §2.2). */
 const BOLD = 700;
@@ -26,8 +28,22 @@ function writeTextValidity(document: Document, isValid: boolean): void {
 }
 
 /**
+ * Shows the fields read only in a box when Box is chosen, and while one of them is refused, so
+ * that the value outlined stays in sight after Fit content is chosen (US-033).
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param text - the text read from the fields, valid or not
+ * @see docs/backlog/stories/E15-F14-US-033-put-a-text-in-a-box.md
+ */
+function writeTextBoxFields(document: Document, text: Text): void {
+  selectElement(document, "text-box-fields").hidden = !text.isInBox && isValidTextBox(text);
+}
+
+/**
  * Updates the page for the Text tool: the bold button pressed at weight 700 or heavier; the fields
- * read only in a box shown when Box is chosen (US-033); the text drawn with
+ * read only in a box shown when Box is chosen, and while one of them is refused, so that the
+ * value outlined stays in sight (US-033); the text drawn with
  * its block, measured with its fallback's metrics, else the default font's (Inter), when its font
  * has none (ADR-0055, decision 1), Inter's being the only metrics read here;
  * a refused text clears the drawing and says why, its fields outlined.
@@ -42,7 +58,7 @@ export function updateTextTool(document: Document): void {
   const isValid = metrics !== undefined && isValidText(text);
 
   selectElement(document, "text-bold").setAttribute("aria-pressed", String(text.weight >= BOLD));
-  selectElement(document, "text-box-fields").hidden = !text.isInBox;
+  writeTextBoxFields(document, text);
   writeTextValidity(document, isValid);
 
   if (isValid) {
