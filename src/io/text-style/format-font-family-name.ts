@@ -1,5 +1,6 @@
+import { isGenericFamilyName } from "../../model";
+
 import { formatCssEscape } from "./format-css-escape";
-import { GENERIC_FONT_FAMILIES } from "./generic-font-families";
 
 /** A backslash or a double quote, escaped by a backslash inside a CSS string. */
 const STRING_ESCAPED = /["\\]/gu;
@@ -21,10 +22,9 @@ const CONTROL_CHARACTER = /\p{Cc}/gu;
  * @see REF-CSS-FONTS-4
  */
 export function formatFontFamilyName(name: string): string {
-  const keyword = name.trim().toLowerCase();
   const escaped = name
     .replaceAll(STRING_ESCAPED, (character) => `\\${character}`)
     .replaceAll(CONTROL_CHARACTER, (character) => formatCssEscape(character));
 
-  return GENERIC_FONT_FAMILIES.includes(keyword) ? keyword : `"${escaped}"`;
+  return isGenericFamilyName(name) ? name.trim().toLowerCase() : `"${escaped}"`;
 }
