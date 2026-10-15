@@ -1,6 +1,6 @@
 # DERIV-text-box — Lines wrapped in a box, cut with an ellipsis, placed by a line height, a trim and a vertical alignment
 
-Used by: F14 (EN-033 to EN-036, US-033, US-034). Builds on `DERIV-text-width`, which measures a line and places it across its block. Sources: `REF-UAX14` (break opportunities after spaces, spaces not measured for fit), `REF-CSS-TEXT-3` (soft wrap opportunities, hanging spaces, `overflow-wrap`), `REF-WIKI-LINE-WRAP` (the greedy wrap), `REF-WIKI-KNUTH-PLASS` (minimum raggedness by dynamic programming), `REF-WIKI-PREFIX-SUM` (the scan of the wrap's steps), `REF-CSS-TEXT-4` (`text-wrap-style: balance`), `REF-CSS-OVERFLOW-3` (`text-overflow: ellipsis`), `REF-CSS-OVERFLOW-4` (`line-clamp`, `max-lines`, `block-ellipsis`), `REF-CSS-INLINE-3` (`line-height`, half-leading, cap height, `text-box-trim`, content area), `REF-OT-OS2` (`sCapHeight`), `REF-OT-HHEA` (ascender, descender, line gap).
+Used by: F14 (EN-033 to EN-036, US-033, US-034). Builds on `DERIV-text-width`, which measures a line and places it across its block. Sources: `REF-UAX14` (break opportunities after spaces, spaces not measured for fit), `REF-CSS-TEXT-3` (soft wrap opportunities, hanging spaces, `overflow-wrap`), `REF-WIKI-LINE-WRAP` (the greedy wrap), `REF-WIKI-KNUTH-PLASS` (minimum raggedness by dynamic programming), `REF-WIKI-PREFIX-SUM` (the scan of the wrap's steps), `REF-CSS-TEXT-4` (`text-wrap-style: balance`), `REF-CSS-OVERFLOW-3` (`text-overflow: ellipsis`), `REF-CSS-OVERFLOW-4` (`line-clamp`, `max-lines`, `block-ellipsis`), `REF-CSS-INLINE-3` (`line-height`, half-leading, cap height, `text-box-trim`, content area), `REF-OT-OS2` (`sCapHeight`), `REF-OT-HHEA` (ascender, descender, line gap), `REF-SVG2-PATHS` (sub-paths of one `<path>`), `REF-SVG2-FILL-RULE` (overlaps filled once).
 
 ## Notation
 
@@ -122,6 +122,8 @@ x = left of line,  y = baseline − A × s / U,  width = w,  height = (A − D) 
 ```
 
 A line `w ≤ 0` wide gets none (`textBackgrounds`). The rectangles are one `<path>`, one closed sub-path per line, each drawn with the rectangle tool's corners, sharp (`decorationCorners`), clockwise from its top-left corner (Q11), each starting with its own `moveto` (`REF-SVG2-PATHS`, §9.3.3; `formatPathData`), drawn before the `<text>` in the text's group so that the letters stay on top and turn with it.
+
+The band ignores the line height and the trim: a line height chosen spreads its leading around the content area (step 7), so the bands of two lines leave `λ − (A − D) × s / U` between them, or overlap by that much when it is negative; a trimmed block starts at the cap height, so the first band rises `(A − C) × s / U` above the block's top, and above the box's top in a box placed at the top. Overlapping bands are filled once, the rectangles being sub-paths of one `<path>` turning the same way, filled by the nonzero rule (`REF-SVG2-FILL-RULE`); CSS paints each line's background on its own, so a see-through overlap would look darker there: a departure kept for one `<path>` (provisional, VAL-015). With Arial 16, "Hello" over "World" at a line height of 24 gives bands from `3.0625` and `27.0625`, 6.125 apart; trimmed, from `11.4609375 − 14.484375 = −3.0234375` and `15.375`.
 
 ## Cross-check
 
