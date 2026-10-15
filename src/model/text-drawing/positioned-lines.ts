@@ -41,7 +41,7 @@ export function positionedLines(
       left,
       width,
       x: initialTextPosition(left, width, text.direction),
-      y: lineBaseline(metrics, text, index),
+      y: lineBaseline(metrics, text, { index, top: text.y }),
     };
   });
 }

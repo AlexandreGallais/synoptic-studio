@@ -19,4 +19,12 @@ describe("textBlockLineHeights (DERIV-text-box steps 5 and 7)", () => {
       line: 24,
     });
   });
+
+  it("[F14.AC5] starts a trimmed block's first line at the cap height", () => {
+    // 1467 × 16 / 2048 = 11.4609375, the lines after it 18.3984375 apart.
+    expect(textBlockLineHeights(ARIAL_BOX_METRICS, { ...HELLO_TEXT, isTrimmed: true })).toEqual({
+      firstLine: 11.4609375,
+      line: 18.3984375,
+    });
+  });
 });

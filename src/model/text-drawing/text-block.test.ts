@@ -127,6 +127,19 @@ describe("textBlock (DERIV-text-width step 4)", () => {
     expect(measured(ARIAL_BOX_METRICS, text)).toEqual({ height: 36.796875, width: 82.6875 });
   });
 
+  it("[F14.AC3] measures 'Hello' over 'World' with a line height of 24 as 48 tall", () => {
+    const text = { ...HELLO_TEXT, content: "Hello\nWorld", lineHeight: 24 };
+
+    expect(measured(ARIAL_UNKERNED, text).height).toBe(48);
+  });
+
+  it("[F14.AC5] measures 'Hello' over 'World' trimmed from the cap height to the baseline", () => {
+    // 18.3984375 + 1467 / 128 = 18.3984375 + 11.4609375 = 29.859375.
+    const text = { ...HELLO_TEXT, content: "Hello\nWorld", isTrimmed: true };
+
+    expect(measured(ARIAL_UNKERNED, text).height).toBe(29.859375);
+  });
+
   test.prop({
     lines: fc.array(fc.stringMatching(/^[HeloWrdAVTR ]{1,12}$/u), { maxLength: 5, minLength: 1 }),
     size: fc.integer({ max: 1000, min: 1 }),

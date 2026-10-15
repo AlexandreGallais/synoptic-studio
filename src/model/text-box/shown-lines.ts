@@ -1,14 +1,13 @@
+import { isLineFitting, withoutTrailingSpaces, wrappedLines } from "../text-wrap";
+
 import { ellipsisCut } from "./ellipsis-cut";
-import { isLineFitting } from "./is-line-fitting";
 import { shownLineCount } from "./shown-line-count";
 import { textBlockLineHeights } from "./text-block-line-heights";
 import { textEllipsis } from "./text-ellipsis";
-import { withoutTrailingSpaces } from "./without-trailing-spaces";
-import { wrappedLines } from "./wrapped-lines";
 
-import type { TextInBox } from "./text-in-box";
 import type { FontMetrics } from "../font";
 import type { Text } from "../text";
+import type { TextInBox } from "../text-wrap";
 
 /**
  * A line shown, ended with an ellipsis when it is the last of a text cut, or when it is wider than
