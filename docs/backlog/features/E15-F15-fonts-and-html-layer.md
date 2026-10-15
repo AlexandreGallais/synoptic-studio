@@ -15,7 +15,7 @@ Refined with F05 on 2026-10-14 (its rounds 1 and 2); its stories were written by
 
 1. A TrueType or OpenType font file imported, or a font installed on the computer (read by the browser with permission), is read into its metrics once and kept.
 2. An option embeds a font in a symbol, each face once (`@font-face` in `<defs>`), its licence permitting it (OS/2 `fsType`).
-3. An HTML layer in a `<foreignObject>` inside a `<switch>` lets a browser lay the text out live with its own fonts; other readers show the positioned lines (ADR-0053).
+3. ~~An HTML layer in a `<foreignObject>` inside a `<switch>` lets a browser lay the text out live with its own fonts; other readers show the positioned lines (ADR-0053).~~ Withdrawn on 2026-10-15 at the validation of E15: the HTML layer brought no speed and served only scripts that industrial views do not use (ADR-0060); US-044 removed it.
 4. Measuring stays a sum of stored numbers: a thousand texts measured in a few milliseconds.
 
 ## Stories
@@ -35,12 +35,12 @@ In delivery order.
 
 ## Feature plan
 
-| Acceptance criterion | Realized by            | Verified by      |
-| -------------------- | ---------------------- | ---------------- |
-| F15.AC1              | SP-018, EN-039, US-036 | AUD-018, VAL-017 |
-| F15.AC2              | EN-039, EN-040, US-036 | AUD-018, VAL-017 |
-| F15.AC3              | SP-018, EN-041, US-036 | AUD-018, VAL-017 |
-| F15.AC4              | EN-039                 | AUD-018          |
+| Acceptance criterion | Realized by            | Verified by       |
+| -------------------- | ---------------------- | ----------------- |
+| F15.AC1              | SP-018, EN-039, US-036 | AUD-018, VAL-017  |
+| F15.AC2              | EN-039, EN-040, US-036 | AUD-018, VAL-017  |
+| F15.AC3 (withdrawn)  | SP-018, EN-041, US-036 | removed by US-044 |
+| F15.AC4              | EN-039                 | AUD-018           |
 
 ## Left for later
 
