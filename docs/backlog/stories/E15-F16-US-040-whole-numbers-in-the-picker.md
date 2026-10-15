@@ -31,6 +31,7 @@ Open `http://localhost:5173/`, click **Text**, click on the drawing, then the co
 | 2    | Type `#336699`, then 61 in the brightness   | `#34689c`; the saturation still 67    |
 | 3    | Type `#336699`, Enter in the saturation, 67 | `#336699` unchanged                   |
 | 4    | Press End on the hue slider                 | 359                                   |
+| 5    | Click anywhere on the plane                 | S and B whole numbers                 |
 
 ## Tasks
 
