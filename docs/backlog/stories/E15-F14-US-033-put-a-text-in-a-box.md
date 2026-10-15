@@ -22,21 +22,22 @@ As a designer, I want to put a long text in a box of given width and height, wra
 
 ## Product Owner test
 
-Inter 4 installed, as for VAL-014; otherwise the frame does not hug the letters. Open `http://localhost:5173/` and click **Text**. The widths below are Inter 4.1's at size 16, regular, kerning left out (line height 19.35938, "…" 13.82813): kerning may move them by a fraction, not the lines.
+Inter 4 installed, as for VAL-014; otherwise the frame does not hug the letters. Open `http://localhost:5173/` and click **Text**. The widths below are Inter 4.1's at size 16, regular, kerning included, as the library measures them (line height 19.35938, cap height 11.64063); a browser may draw them a fraction apart, never on other lines.
 
-| Step | Do                                                                                    | You should see                                                                                        |
-| ---- | ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| 1    | Type **Content** "Hello World", choose **Box**, **Width** 50, **Height** 100          | "Hello" (38.6 wide) over "World" (45.1); the frame is the box, 50 × 100                               |
-| 2    | Type **Max lines** 1                                                                  | one line, "Hell…" (42.8): "Hello…" (52.4) is wider than the box                                       |
-| 3    | Type **Max lines** 0, **Content** "Pump P-101 is running", **Long words** = **Break** | five lines: "Pump", "P-101", "is", "runnin", "g"; no hyphen; the box, 100 tall, holds all five (96.8) |
-| 4    | Choose **Long words** = **Move whole**                                                | four lines: "Pump", "P-101", "is", "runn…" (48.2)                                                     |
-| 5    | Untick **Ellipsis**                                                                   | the last line is "running" whole (57.5), past the box's right edge; tick **Ellipsis** again           |
-| 6    | Choose **Vertical alignment** = **Middle**, then **Bottom**                           | the four lines (77.4 tall) move down by 11.3, then by 22.6, to the box's bottom                       |
-| 7    | Choose **Vertical alignment** = **Top**; type **Line height** 24, then 0              | the lines spread apart, 24 from baseline to baseline, then come back to 19.4                          |
-| 8    | Tick **Trim**                                                                         | the first line's capitals touch the box's top                                                         |
-| 9    | Type **Width** 110, choose **Wrap** = **Balance**                                     | "Pump P-101" (88.7) over "is running" (74.4) instead of "Pump P-101 is" (105.5) over "running"        |
-| 10   | Type **Angle** 90                                                                     | the text and its box turn about the box's middle                                                      |
-| 11   | Choose **Fit content**                                                                | the text is on one line again, as in F05                                                              |
+| Step | Do                                                                                                       | You should see                                                                                          |
+| ---- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| 1    | Type **Size** 16, **Content** "Hello World", choose **Fit** = **Box**, then **Width** 50, **Height** 100 | the box's fields appear; "Hello" (38.6 wide) over "World" (44.5); the dashed frame is the box, 50 × 100 |
+| 2    | Type **Max lines (0 none)** 1                                                                            | one line, "Hell…" (42.8): "Hello…" (52.4) is wider than the box                                         |
+| 3    | Type **Max lines** 0, **Content** "Pump P-101 is running"; **Long words** stays **Break**                | five lines: "Pump", "P-101", "is", "runnin", "g"; no hyphen; the box, 100 tall, holds all five (96.8)   |
+| 4    | Choose **Long words** = **Move whole**                                                                   | four lines: "Pump", "P-101", "is", "runn…" (48.2)                                                       |
+| 5    | Untick **Ellipsis**                                                                                      | the last line is "running" whole (57.5), past the box's right edge; tick **Ellipsis** again             |
+| 6    | Choose **Vertical alignment** = **Middle**, then **Bottom**                                              | the four lines (77.4 tall) move down by 11.3, then by 22.6, the last one's descent on the box's bottom  |
+| 7    | Choose **Vertical alignment** = **Top**; type **Line height (0 auto)** 24, then 0                        | the lines spread apart, 24 from baseline to baseline, then come back to 19.4                            |
+| 8    | Tick **Trim**                                                                                            | the lines move up: the first line's capitals touch the box's top, its baseline 11.6 below it            |
+| 9    | Type **Width** 110, then choose **Wrap** = **Balance**                                                   | "Pump P-101 is" (104.8) over "running", then "Pump P-101" (88.0) over "is running" (74.4)               |
+| 10   | Type **Angle** 90                                                                                        | the text and its box turn together about the box's middle, (55, 50)                                     |
+| 11   | Type **Angle** 0, untick **Trim**, choose **Fit** = **Fit content**                                      | the box's fields disappear; the text is on one line again (166.8 wide), its frame hugging it, as in F05 |
+| 12   | Choose **Fit** = **Box** and empty **Width**                                                             | nothing is drawn, the message says why, the fields are outlined; type 110 and the text comes back       |
 
 ## Tasks
 
