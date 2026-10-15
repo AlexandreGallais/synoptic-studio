@@ -29,20 +29,38 @@ function writeMeasuredFamily(document: Document): void {
 }
 
 /**
+ * Reads the weight chosen in the weight list.
+ *
+ * @kind procedure
+ * @param document - page document
+ * @returns its value; empty when the list holds none chosen
+ * @see docs/backlog/stories/E15-F05-US-037-bold-gives-back-the-weight-and-no-sentence-case.md
+ */
+function readChosenWeight(document: Document): string {
+  const weight = selectElement(document, "text-weight");
+
+  return weight instanceof HTMLSelectElement ? weight.value : "";
+}
+
+/**
  * Brings the font and weight lists up to date with the session's fonts before the text is read:
  * the families the editor can measure, the one chosen kept and measured with once its metrics are
  * read (`writeMeasuredFamily`); the weights of its faces, the weight chosen kept when the family
- * has it, else the nearest face's (`writeWeightChoice`).
+ * has it, else the nearest face's (`writeWeightChoice`); a weight so rewritten forgets the weight
+ * the bold button held, so that Bold never shows pressed over a weight it did not give (US-037).
  *
  * @kind procedure
  * @param document - page document
  * @see docs/backlog/stories/E15-F15-US-036-fonts-embedding-and-html-layer.md
  */
 export function writeFontFields(document: Document): void {
-  const weight = selectElement(document, "text-weight");
-  const chosen = weight instanceof HTMLSelectElement ? weight.value : "";
+  const chosen = readChosenWeight(document);
 
   writeFontOptions(document, "");
   writeMeasuredFamily(document);
   writeWeightChoice(document, chosen === "" ? REGULAR : Number(chosen));
+
+  if (readChosenWeight(document) !== chosen) {
+    delete selectElement(document, "text-bold").dataset["heldWeight"];
+  }
 }
