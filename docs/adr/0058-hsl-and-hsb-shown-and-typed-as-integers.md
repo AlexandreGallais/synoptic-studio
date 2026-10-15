@@ -12,7 +12,7 @@
 
 1. **HSL and HSB are shown as integers**, each value rounded to the nearest, a tie up (`nearestInteger`): `#ff8000` shows HSL 30°, 100 %, 50 % and HSB 30°, 100 %, 100 %; a hue rounding to 360 shows 0.
 2. **A value typed, keyed or dragged is an integer.** The color is rebuilt from that integer and the exact, unrounded values of the two others, computed from the hexadecimal (or the hue the open picker holds, ADR-0056, decision 3), then rounded to bytes as ADR-0056 says. `#336699`, its HSB brightness typed 61: HSB 210°, 66.66667 %, 61 % gives `#34689c`.
-3. **A value typed equal to the one shown changes nothing**: `#336699`, its saturation shown 67 and typed 67 again, stays `#336699` (agent's reading, so that a field left as it is never changes the color; to confirm at VAL-016).
+3. **A value typed equal to the one shown changes nothing**: `#336699`, its saturation shown 67 and typed 67 again, stays `#336699` (agent's reading, so that a field left as it is never changes the color; confirmed at VAL-016, 2026-10-15).
 4. **The hue slider** holds integers from 0 to 359: End gives 359, an arrow adds 1 to the hue shown (`#ff8000`, shown 30: Right gives 31).
 
 ## Reasons

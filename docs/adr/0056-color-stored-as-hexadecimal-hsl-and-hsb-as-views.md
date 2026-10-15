@@ -1,6 +1,6 @@
 # ADR-0056 — A color stored as hexadecimal and an opacity; HSL and HSB as views
 
-**Status**: Accepted (agent, SP-017, 2026-10-15; provisional, to confirm by the Product Owner at VAL-016). Decision 4 superseded by ADR-0058 (2026-10-15): HSL and HSB shown and typed as integers. Number 0053 stays reserved for F15's HTML layer.
+**Status**: Accepted (agent, SP-017, 2026-10-15; confirmed by the Product Owner at VAL-016, 2026-10-15). Decision 4 superseded by ADR-0058 (2026-10-15): HSL and HSB shown and typed as integers. Number 0053 stays reserved for F15's HTML layer.
 
 ## Context
 

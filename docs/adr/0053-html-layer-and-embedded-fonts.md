@@ -1,6 +1,6 @@
 # ADR-0053 — The HTML layer of a text and its embedded fonts (`switch`, `foreignObject`, `style`)
 
-**Status**: Accepted (agent, SP-018, 2026-10-15, from the Product Owner's decisions of F05's refinement, round 2: an HTML layer for browsers on top of the positioned lines, an option that embeds a font in a symbol, and once in a synoptic view — the views come with E08 —, no text converted to paths; provisional, to confirm by the Product Owner at VAL-017). Number reserved by ADR-0052, decision 8. Adds `switch`, `foreignObject` and `style` to the SVG elements allowed (ADR-0002, ADR-0052, decision 7), each in one place only.
+**Status**: Accepted (agent, SP-018, 2026-10-15, from the Product Owner's decisions of F05's refinement, round 2: an HTML layer for browsers on top of the positioned lines, an option that embeds a font in a symbol, and once in a synoptic view — the views come with E08 —, no text converted to paths; confirmed by the Product Owner at VAL-017, 2026-10-15). Decisions 1 and 3 superseded for `switch` and `foreignObject`, and decision 2 amended, by ADR-0060 (2026-10-15): no HTML layer, fonts embedded only when a file is exported or saved. Number reserved by ADR-0052, decision 8. Adds `switch`, `foreignObject` and `style` to the SVG elements allowed (ADR-0002, ADR-0052, decision 7), each in one place only.
 
 ## Context
 
