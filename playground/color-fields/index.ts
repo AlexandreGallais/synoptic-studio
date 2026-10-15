@@ -1,5 +1,6 @@
 export type * from "./color-field";
 export * from "./commit-color-field";
+export * from "./commit-opacity-field";
 export * from "./read-color-field";
 export * from "./read-color-input";
 export * from "./read-kept-color";

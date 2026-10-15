@@ -93,7 +93,7 @@ describe("createHtmlLayerElement (ADR-0053, EN-041)", () => {
     ]);
   });
 
-  it("[F16.AC4] underlines the content's div and strikes each span through, each in its color", () => {
+  it("[F16.AC4] strikes the content's div and underlines each span when their colors differ", () => {
     const decorated = {
       ...HELLO_WORLD,
       hasUnderlineColor: true,
@@ -107,16 +107,30 @@ describe("createHtmlLayerElement (ADR-0053, EN-041)", () => {
 
     // 50 %: alpha 128, written 80; the strike-through follows the text's #000000 at 100 %.
     expect(style).toContain(
-      "text-decoration-line: underline; text-decoration-thickness: from-font; text-decoration-color: #ff000080",
+      "text-decoration-line: line-through; text-decoration-thickness: from-font; text-decoration-color: #000000ff",
     );
 
     expect([...layer.querySelectorAll("span")].map((span) => span.getAttribute("style"))).toEqual(
       Array.from(
         { length: 2 },
         () =>
-          "text-decoration-line: line-through; text-decoration-thickness: from-font; text-decoration-color: #000000ff",
+          "text-decoration-line: underline; text-decoration-thickness: from-font; text-decoration-color: #ff000080",
       ),
     );
+  });
+
+  it("[F16.AC4] puts both strokes on the content's div while they follow the text, so that \u{2026} carries both", () => {
+    const decorated = { ...HELLO_WORLD, isStruckThrough: true, isUnderlined: true };
+    const layer = createHtmlLayerElement(document, decorated, ARIAL_HTML_LAYER);
+
+    expect(layer.firstElementChild?.firstElementChild?.getAttribute("style")).toContain(
+      "text-decoration-line: underline line-through; text-decoration-thickness: from-font; text-decoration-color: #000000ff",
+    );
+
+    expect([...layer.querySelectorAll("span")].map((span) => span.hasAttribute("style"))).toEqual([
+      false,
+      false,
+    ]);
   });
 
   it("writes no span for an empty text", () => {

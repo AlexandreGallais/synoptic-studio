@@ -41,9 +41,13 @@ function openStep(title: string): void {
  * @param value - what is typed or pasted
  */
 function typeAndLeave(id: string, value: string): void {
-  selectPageElement(`#${id}`).dispatchEvent(new FocusEvent("focus"));
+  const field = selectPageElement(`#${id}`);
+
+  field.focus();
+  field.dispatchEvent(new FocusEvent("focus"));
   typeValue(id, value);
   commitField(id);
+  field.blur();
 }
 
 /**

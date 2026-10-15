@@ -1,4 +1,4 @@
-import { blockHeight } from "../../model";
+import { blockHeight, textHtmlLayerStrokes } from "../../model";
 import { formatFontFamily } from "../text-style";
 
 import { formatCssColor } from "./format-css-color";
@@ -151,8 +151,8 @@ function boxToFlexItemCss(text: Text): readonly CssDeclaration[] {
 /**
  * The style of the `div` holding a text's content in its HTML layer (ADR-0053, decision 1), as
  * plain declarations: its font and color with the library's line height, its spacing, direction
- * and alignment, its underline in its color (`textStrokeToCss`; the strike-through sits on each
- * paragraph's `span`, `textToParagraphStyle`, US-041), how its lines break, how a text cut by its box ends, and, in a
+ * and alignment, its strokes of the content's `div` in their color (`textHtmlLayerStrokes`,
+ * `textStrokeToCss`, US-041), how its lines break, how a text cut by its box ends, and, in a
  * box, an item of its flex column that never shrinks.
  * Lengths are written as the SVG writes its numbers (`formatCssPixels`); the font's names are
  * escaped by `formatFontFamily`.
@@ -167,7 +167,7 @@ export function textToHtmlStyle(text: Text, layer: HtmlLayer): readonly CssDecla
   return [
     ...fontToCss(text, layer),
     ...spacingToCss(text),
-    ...textStrokeToCss(text, "underline"),
+    ...textStrokeToCss(text, textHtmlLayerStrokes(text).content),
     ...wrapStyleToCss(text),
     ...boxCutToCss(text, layer),
     ...boxToFlexItemCss(text),
