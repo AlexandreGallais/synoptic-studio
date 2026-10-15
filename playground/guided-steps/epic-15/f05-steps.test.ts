@@ -459,6 +459,26 @@ describe("the guided test of F05 (VAL-014): the browser checks and the end", () 
     ]);
   });
 
+  it("[F05.AC5] a turned text grows in place: X 43.42272, Y 78.5829 at a letter spacing of 10", () => {
+    openStep("A turned text grows in place (US-038)");
+    typeValue("text-letter-spacing", "10");
+
+    // "Pump P-101" in Inter 16, 87.953125 wide, at (47, 61) turned by 23, its corner
+    // (54.27808, 44.58648); 177.953125 wide: (54.27808 − 88.97656 + 78.12120, 44.58648 − 9.67969 + 43.67611).
+    expect([readValue("shape-x"), readValue("shape-y")]).toEqual(["43.42272", "78.5829"]);
+  });
+
+  it("[F05.AC5] a step comes back at its own position, not placed from the text last drawn", () => {
+    openStep("A turned text grows in place (US-038)");
+    typeValue("text-letter-spacing", "10");
+    typeValue("shape-x", "47");
+    typeValue("shape-y", "61");
+    clickElement("guide-next");
+    clickElement("guide-previous");
+
+    expect([readValue("shape-x"), readValue("shape-y")]).toEqual(["47", "61"]);
+  });
+
   it("[F05.AC6] back to the rectangle, drawn as before", () => {
     openStep("Back to the rectangle");
     clickElement("tool-rectangle");

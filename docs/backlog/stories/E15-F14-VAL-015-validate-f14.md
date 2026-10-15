@@ -25,7 +25,7 @@ One task = one commit, referenced as `VAL-015.Tn`.
 
 ## Guided test (T1)
 
-39 steps at `http://localhost:5173`, also after F05's at `?guide=epic` (steps 123 to 161): one line to do, one to look at, Next typing the values. `playground/guided-steps/epic-15/f14-steps.test.ts` checks each step end to end. The playground measures Inter only, so the steps give each example in Inter 16; the table below keeps Arial 16, as the derivation and the tests do.
+40 steps at `http://localhost:5173`, also after F05's at `?guide=epic` (steps 124 to 163): one line to do, one to look at, Next typing the values. `playground/guided-steps/epic-15/f14-steps.test.ts` checks each step end to end. The playground measures Inter only, so the steps give each example in Inter 16; the table below keeps Arial 16, as the derivation and the tests do.
 
 | Steps | What                                                                                                                                                                                                     |
 | ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -34,7 +34,8 @@ One task = one commit, referenced as `VAL-015.Tn`.
 | 14–15 | turned about the box's middle, values refused                                                                                                                                                            |
 | 16    | back to Fit content: the text draws as in F05 (F14.AC6)                                                                                                                                                  |
 | 17–38 | the 22 decisions below, one step each with its example                                                                                                                                                   |
-| 39    | back to the rectangle, drawn as before (F14.AC6)                                                                                                                                                         |
+| 39    | a turned box resized in place, its turned top-left corner kept (ADR-0057, US-038)                                                                                                                        |
+| 40    | back to the rectangle, drawn as before (F14.AC6)                                                                                                                                                         |
 
 A step of a text now types the box's and the background's fields too.
 

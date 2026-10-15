@@ -163,6 +163,20 @@ export const GUIDED_STEPS_F14_DECISIONS: readonly GuidedStep[] = [
     }),
   },
   {
+    explanation: "Letter spacing 10; then Width 160.",
+    look: "The spacing moves nothing; at 160 the box's turned corner stays put: X 45.4101, Y 68.81462.",
+    title: "F14 · A turned box resized in place (US-038)",
+    values: createTextBoxStepValues({
+      angle: 23,
+      boxHeight: 40,
+      boxWidth: 120,
+      content: "Pump P-101",
+      isInBox: true,
+      x: 47,
+      y: 61,
+    }),
+  },
+  {
     explanation: "Rectangle.",
     look: "The sharp rectangle 120 × 80, as before; the text's fields go (F14.AC6).",
     title: "F14 · Back to the rectangle",

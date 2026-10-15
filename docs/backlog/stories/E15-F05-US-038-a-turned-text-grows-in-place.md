@@ -24,14 +24,21 @@ Product Owner decision of 2026-10-15 (ADR-0057), built on EN-042. The text still
 
 ## Product Owner test
 
-Open `http://localhost:5173/`, click **Text**, click on the drawing, type `Pump P-101`, set x 47, y 61 and the angle 23.
+Open `http://localhost:5173/`, click **Text**, click on the drawing, type `Pump P-101`, choose the size 16 and the weight Regular, set X 47, Y 61 and the angle 23.
 
-| Step | Do                                                  | You should see                                                     |
-| ---- | --------------------------------------------------- | ------------------------------------------------------------------ |
-| 1    | Raise the letter spacing from 0 to 10, step by step | the first letter's corner stays put; the text grows along its line |
-| 2    | Add a second line                                   | the corner stays; the text grows on the side of its lines          |
-| 3    | Set the size to 32                                  | the corner stays                                                   |
-| 4    | Choose **Box**, 120 × 40, then a width of 160       | the corner stays                                                   |
+| Step | Do                                                    | You should see                                                                                        |
+| ---- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| 1    | Raise the letter spacing from 0 to 10, step by step   | the P's turned top-left corner stays put, the text grows along its line; at 10, X 43.42272, Y 78.5829 |
+| 2    | Add a second line                                     | the corner stays; the text grows on the side of its lines; X 39.64056, Y 77.81341                     |
+| 3    | Set the size to 32, then the weight Bold              | the corner stays                                                                                      |
+| 4    | Set the angle to 40                                   | the text turns about its middle; X and Y do not change                                                |
+| 5    | Set the box 120 × 40, choose **Box**, then X 47, Y 61 | choosing Box keeps the corner; the text in its box at (47, 61)                                        |
+| 6    | Set the angle to 23, raise the letter spacing         | nothing moves: the box keeps its size                                                                 |
+| 7    | Set the box's width to 160                            | the corner stays; X 45.4101, Y 68.81462                                                               |
+| 8    | Click **Rectangle**, then **Text**                    | X and Y as they were; a spacing changed then keeps the corner                                         |
+| 9    | Set the angle to 0, raise the letter spacing          | X and Y do not change: the text grows to the right and down                                           |
+
+In the guided test (`?guide=epic`), the steps **F05 · A turned text grows in place (US-038)** and **F14 · A turned box resized in place (US-038)** walk through steps 1 and 6 to 7.
 
 ## Tasks
 

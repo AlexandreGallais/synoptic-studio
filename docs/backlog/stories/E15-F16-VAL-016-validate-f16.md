@@ -25,7 +25,7 @@ One task = one commit, referenced as `VAL-016.Tn`.
 
 ## Guided test (T1)
 
-40 steps at `http://localhost:5173`, also after F14's at `?guide=epic` (steps 162 to 201): one line to do, one to look at, Next typing the text and its colors. `playground/guided-steps/epic-15/f16-steps.test.ts` checks each step end to end, each decision's example among them. The picker's model is not typed by Next: a step that needs one names it.
+40 steps at `http://localhost:5173`, also after F14's at `?guide=epic` (steps 164 to 203): one line to do, one to look at, Next typing the text and its colors. `playground/guided-steps/epic-15/f16-steps.test.ts` checks each step end to end, each decision's example among them. The picker's model is not typed by Next: a step that needs one names it.
 
 | Steps | What                                                                                                              |
 | ----- | ----------------------------------------------------------------------------------------------------------------- |
