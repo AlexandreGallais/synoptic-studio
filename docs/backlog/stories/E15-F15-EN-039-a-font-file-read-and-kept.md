@@ -3,7 +3,7 @@ id: EN-039
 epic: E15
 feature: F15
 title: A font file read, named and kept, and whether it may be embedded
-status: ready
+status: done
 points: 3
 ---
 
@@ -25,7 +25,7 @@ The library reads a TrueType or OpenType file's bytes — chosen by the designer
 
 One task = one commit, referenced as `EN-039.Tn`.
 
-- [ ] T1 — A face's names from the `name` table (name ID 16, else 1; platform 3 strings in UTF-16BE, English US first), its weight from `usWeightClass` brought into 100 to 900 and its style from `fsSelection` bit 0 (`isBitSet`), `@see REF-OT-NAME`, `REF-OT-OS2`; fixtures built in the tests; tests first (2 h)
-- [ ] T2 — Whether a file may be embedded, from `fsType` and the `OS/2` version, `@see DERIV-font-embedding` step 3; tests first, the checks of the derivation, then a property test: bit 9 set from version 2 always refuses (1 h)
-- [ ] T4 — 1 000 texts measured with a face read from a file, bounded by the test's timeout, no clock read in the test (`.claude/rules/tooling.md`); tests first (1 h)
-- [ ] T3 — A face read from a file's bytes, with its metrics, its file and its permission; a kept collection of families adding a face, a face of the same family, weight and style replacing the one kept; `shapes.md` (Fonts from files) updated; tests first (2 h)
+- [x] T1 — A face's names from the `name` table (name ID 16, else 1; platform 3 strings in UTF-16BE, English US first), its weight from `usWeightClass` brought into 100 to 900 and its style from `fsSelection` bit 0 (`isBitSet`), `@see REF-OT-NAME`, `REF-OT-OS2`; fixtures built in the tests; tests first (2 h)
+- [x] T2 — Whether a file may be embedded, from `fsType` and the `OS/2` version, `@see DERIV-font-embedding` step 3; tests first, the checks of the derivation, then a property test: bit 9 set from version 2 always refuses (1 h)
+- [x] T4 — 1 000 texts measured with a face read from a file, bounded by the test's timeout, no clock read in the test (`.claude/rules/tooling.md`); tests first (1 h)
+- [x] T3 — A face read from a file's bytes, with its metrics, its file and its permission; a kept collection of families adding a face, a face of the same family, weight and style replacing the one kept; `shapes.md` (Fonts from files) updated; tests first (2 h)
