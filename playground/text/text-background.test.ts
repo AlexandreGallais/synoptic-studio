@@ -58,7 +58,6 @@ describe("Text tool: a background behind the text (US-034)", () => {
     chooseOption("text-weight", "400");
     chooseOption("text-fit", "content");
     chooseOption("text-vertical-alignment", "top");
-    chooseOption("text-wrap", "auto");
     typeContent("Pump P-101\nRunning");
   });
 

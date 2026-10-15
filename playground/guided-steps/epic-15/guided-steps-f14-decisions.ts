@@ -88,22 +88,10 @@ export const GUIDED_STEPS_F14_DECISIONS: readonly GuidedStep[] = [
     values: createTextBoxStepValues({ content: "Hello" }),
   },
   {
-    explanation: "Content “Hello World Hello”, Width 90.",
-    look: "“Pump P-101” over “is running”; then “Hello World” over “Hello”: the later break.",
-    title: "F14 · Balanced wrap (decision 13)",
-    values: createTextBoxStepValues({ ...PUMP, boxWidth: 110, wrapStyle: "balance" }),
-  },
-  {
-    explanation: "Nothing to type: balanced, at most 1 line, a box 120.",
-    look: "“Pump P-101 is…”: the automatic line cut, not the balanced “Pump P-101…”.",
-    title: "F14 · Balance after a cut (decision 14)",
-    values: createTextBoxStepValues({ ...PUMP, ...ONE_LINE, boxWidth: 120, wrapStyle: "balance" }),
-  },
-  {
-    explanation: "Open Wrap.",
-    look: "Automatic and Balance only: “pretty” is not built. Keep it for later, or drop it?",
-    title: "F14 · The pretty wrap (decision 15)",
-    values: createTextBoxStepValues({ ...PUMP, boxWidth: 110, isInBox: true }),
+    explanation: "Nothing to type: a box 110 wide; look for a Wrap field.",
+    look: "“Pump P-101 is” over “running”, the automatic wrap; no Wrap field.",
+    title: "F14 · Automatic wrap only (decisions 13 to 15)",
+    values: createTextBoxStepValues({ ...PUMP, boxWidth: 110 }),
   },
   {
     explanation: "Line height 30.",
@@ -113,7 +101,7 @@ export const GUIDED_STEPS_F14_DECISIONS: readonly GuidedStep[] = [
   },
   {
     explanation: "Tick Background; then Fit: Box.",
-    look: "Yellow, opaque; Max 0, Ellipsis on, Top, Automatic (model box 0 × 0, page 200 × 100).",
+    look: "Yellow, opaque; Max 0, Ellipsis on, Top (model box 0 × 0, page 200 × 100).",
     title: "F14 · Defaults (decision 17)",
     values: createTextBoxStepValues({}),
   },

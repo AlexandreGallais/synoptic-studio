@@ -19,7 +19,6 @@ const BOX_ONLY = [
   "text-maximum-lines",
   "text-ellipsis",
   "text-vertical-alignment",
-  "text-wrap",
 ];
 
 /**
@@ -42,7 +41,6 @@ describe("Text tool: the box's fields (US-033)", () => {
     chooseOption("text-weight", "400");
     chooseOption("text-fit", "content");
     chooseOption("text-vertical-alignment", "top");
-    chooseOption("text-wrap", "auto");
   });
 
   it("[F14.AC1] hides the fields read only in a box while the text fits its content", () => {
@@ -79,7 +77,6 @@ describe("Text tool: the box's fields (US-033)", () => {
     typeValue("text-maximum-lines", "2");
     clickElement("text-ellipsis");
     chooseOption("text-vertical-alignment", "bottom");
-    chooseOption("text-wrap", "balance");
     typeValue("text-line-height", "24");
     clickElement("text-trim");
 
@@ -92,7 +89,6 @@ describe("Text tool: the box's fields (US-033)", () => {
       lineHeight: 24,
       maximumLines: 2,
       verticalAlignment: "bottom",
-      wrapStyle: "balance",
     });
   });
 

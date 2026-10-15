@@ -61,7 +61,6 @@ describe("Text tool: the straight box of a turned text (US-039)", () => {
     // happy-dom loses the option marked `selected` once the page is moved into its document.
     chooseOption("text-weight", "400");
     chooseOption("text-vertical-alignment", "top");
-    chooseOption("text-wrap", "auto");
     typeContent("H\nHH");
   });
 

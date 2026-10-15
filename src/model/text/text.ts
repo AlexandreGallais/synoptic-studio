@@ -2,7 +2,6 @@ import type { TextAlignment } from "./text-alignment";
 import type { TextCase } from "./text-case";
 import type { TextDirection } from "./text-direction";
 import type { TextVerticalAlignment } from "./text-vertical-alignment";
-import type { TextWrapStyle } from "./text-wrap-style";
 
 /** A text of the model (F05, ADR-0052): its content, the options of its characters and those of its box (F14), every number an integer (ADR-0003); its lines and its block are measured from its font's metrics (`DERIV-text-width`, `DERIV-text-box`). */
 export type Text = {
@@ -72,8 +71,6 @@ export type Text = {
   readonly weight: number;
   /** Spacing added at each word separator (space, no-break space), an integer in user units (`REF-CSS-TEXT-3`). */
   readonly wordSpacing: number;
-  /** How its lines are wrapped in its box: as many words a line as fit, or balanced. */
-  readonly wrapStyle: TextWrapStyle;
   /** Abscissa of the top-left of its block, or its box, before it turns, in the SVG: an integer when typed, finite and possibly fractional once a turned text has grown (ADR-0057). */
   readonly x: number;
   /** Ordinate of the top-left of its block, or its box, before it turns, in the SVG: an integer when typed, finite and possibly fractional once a turned text has grown (ADR-0057). */

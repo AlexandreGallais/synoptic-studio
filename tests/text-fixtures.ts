@@ -129,7 +129,6 @@ export const HELLO_TEXT: Text = {
   verticalAlignment: "top",
   weight: 400,
   wordSpacing: 0,
-  wrapStyle: "auto",
   x: 0,
   y: 0,
 };

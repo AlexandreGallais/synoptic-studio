@@ -48,7 +48,6 @@ function writeTextBoxValues(document: Document, text: GuidedText): void {
   for (const [id, value] of [
     ["text-fit", text.isInBox ? "box" : "content"],
     ["text-vertical-alignment", text.verticalAlignment],
-    ["text-wrap", text.wrapStyle],
     ["text-background-color", text.backgroundColor],
   ] as const) {
     writeFieldValue(document, id, value);

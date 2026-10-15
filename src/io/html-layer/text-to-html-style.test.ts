@@ -125,17 +125,6 @@ describe("textToHtmlStyle (ADR-0053, EN-041)", () => {
     ]);
   });
 
-  it("[F15.AC3] moves a word too long whole, and balances the lines when asked", () => {
-    expect(wrapping({ ...BOXED, wrapStyle: "balance" }, 0)).toEqual([
-      "white-space: pre-wrap",
-      "overflow-wrap: normal",
-      "text-wrap: balance",
-      "overflow: hidden",
-      "text-overflow: ellipsis",
-      "flex-shrink: 0",
-    ]);
-  });
-
   it("[F15.AC3] clamps a box showing at most 2 lines, the ellipsis on", () => {
     expect(wrapping(BOXED, 2)).toEqual([
       "white-space: pre-wrap",
@@ -179,11 +168,8 @@ describe("textToHtmlStyle (ADR-0053, EN-041)", () => {
   });
 
   it("[F15.AC3] keeps a text that fits its content whole, whatever its box options", () => {
-    expect(
-      wrapping(
-        { ...ARIAL_TEXT, maximumLines: 1, wrapStyle: "balance" },
-        ARIAL_HTML_LAYER.lineLimit,
-      ),
-    ).toEqual(["white-space: pre"]);
+    expect(wrapping({ ...ARIAL_TEXT, maximumLines: 1 }, ARIAL_HTML_LAYER.lineLimit)).toEqual([
+      "white-space: pre",
+    ]);
   });
 });
