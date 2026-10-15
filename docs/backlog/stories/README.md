@@ -122,7 +122,7 @@
 | [VAL-014](./E15-F05-VAL-014-validate-f05.md)                    | F05     | Validate F05                                                                    | ready  |
 | [SP-016](./E15-F14-SP-016-research-f14-text-box.md)             | F14     | Research for F14: a box of text wrapped, cut with an ellipsis and aligned       | done   |
 | [EN-033](./E15-F14-EN-033-lines-wrapped-in-a-box.md)            | F14     | A text in a box: its options and its lines wrapped at spaces                    | done   |
-| [EN-034](./E15-F14-EN-034-lines-shown-and-the-ellipsis.md)      | F14     | The lines a box shows, and the ellipsis                                         | ready  |
+| [EN-034](./E15-F14-EN-034-lines-shown-and-the-ellipsis.md)      | F14     | The lines a box shows, and the ellipsis                                         | done   |
 | [EN-035](./E15-F14-EN-035-lines-placed-in-the-box.md)           | F14     | Lines placed in the box: line height, cap-height trim, vertical alignment       | ready  |
 | [EN-036](./E15-F14-EN-036-balanced-wrap.md)                     | F14     | A balanced wrap that evens the lines' lengths                                   | ready  |
 | [CHK-015](./E15-F14-CHK-015-checkpoint-f14.md)                  | F14     | Checkpoint in the middle of F14                                                 | ready  |
