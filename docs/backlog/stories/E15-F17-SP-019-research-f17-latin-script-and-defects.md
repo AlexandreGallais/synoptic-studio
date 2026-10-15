@@ -30,6 +30,6 @@ Find, read and record the sources of F17's stories before their implementation (
 
 One task = one commit, referenced as `SP-019.Tn`.
 
-- [ ] T1 — Research note on the scripts of industrial HMIs, sources read and recorded (2 h)
-- [ ] T2 — Causes of the font defects: collections, `TypeError`, weight 450, each reproduced (3 h)
-- [ ] T3 — Causes of the lag and of the background band, measured; note finished and stories updated (2 h)
+- [x] T1 — Research note on the scripts of industrial HMIs, sources read and recorded (2 h)
+- [x] T2 — Causes of the font defects: collections, `TypeError`, weight 450, each reproduced (3 h)
+- [x] T3 — Causes of the lag and of the background band, measured; note finished and stories updated (2 h)
