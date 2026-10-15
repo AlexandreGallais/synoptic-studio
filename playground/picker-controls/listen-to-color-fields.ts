@@ -1,12 +1,10 @@
-import { commitColorField } from "./commit-color-field";
-import { readColorField } from "./read-color-field";
-import { readColorInput } from "./read-color-input";
-import { writeKeptColor } from "./write-kept-color";
+import { commitColorField, readColorField, readColorInput, writeKeptColor } from "../color-fields";
+import { showColorPicker, updateColorPicker } from "../color-picker";
 
 /**
  * Listens to each color's fields: the hexadecimal field keeps its color when it gets the focus,
  * and commits what it holds when it is left or Enter pressed (`commitColorField`), the page
- * redrawn after.
+ * redrawn after, and an open picker following the color and its opacity.
  *
  * @kind procedure
  * @param document - page document
@@ -25,6 +23,11 @@ export function listenToColorFields(document: Document, update: () => void): voi
     field.addEventListener("change", () => {
       commitColorField(document, ids);
       update();
+      updateColorPicker(document);
+    });
+
+    readColorInput(document, ids.opacity).addEventListener("input", () => {
+      showColorPicker(document);
     });
   }
 }
