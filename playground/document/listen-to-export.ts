@@ -7,8 +7,8 @@ const FILE_NAME = "drawing.svg";
 
 /**
  * Listens to **Export SVG**: the drawing as it is exported (`readExportedSvg`) is saved as a file,
- * which a browser, resvg or Inkscape can open, so that its embedded fonts and its HTML layer can
- * be seen outside the editor.
+ * which a browser, resvg or Inkscape can open, so that its embedded fonts can be seen outside the
+ * editor.
  *
  * @kind procedure
  * @param document - page document

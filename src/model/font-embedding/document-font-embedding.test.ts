@@ -48,7 +48,7 @@ const RESTRICTED: FontFamily = { faces: [RESTRICTED_FACE], name: "Restricted", v
 const FONTS = [ARIAL, RESTRICTED, DEFAULT_FONT];
 
 /** The embedding on. */
-const ON = { hasEmbeddedFonts: true, hasHtmlLayer: false };
+const ON = { hasEmbeddedFonts: true };
 
 describe("documentFontEmbedding (ADR-0053, DERIV-font-embedding step 7)", () => {
   it("[F15.AC2] embeds 10 texts in Arial 400 and 700 as 2 faces, in the order of first use", () => {
