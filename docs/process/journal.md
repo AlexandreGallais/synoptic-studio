@@ -2,6 +2,17 @@
 
 What each working session dealt with, in the agent's words: the Product Owner's requests in neutral words, decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`).
 
+## 2026-10-15 — Run of E15 up to the validations of F05, F14 and F16
+
+- `#run` Started on 2026-10-14 in the evening; the main thread only dispatched, each story going to a worker subagent (ADR-0051, trial).
+- `#run` F05 (text) into `feature/f05-text`: SP-015, EN-031, EN-032, US-031, CHK-014, US-032, AUD-015 (#198–#204). VAL-014 prepared on `feat/val-014-text`: 35 guided steps, 17 decisions to confirm.
+- `#run` F14 (box of text): SP-016, EN-033–EN-036, CHK-015, US-033, US-034, AUD-016 (#205–#213). VAL-015 prepared on `feat/val-015-text-box`: 39 steps, 22 decisions.
+- `#run` F16 (colors): SP-017, EN-037, EN-038, CHK-016, US-035, AUD-017 (#214–#219). VAL-016 prepared on `feat/val-016-colors`: 40 steps, 20 decisions.
+- `#run` F15 (fonts, HTML layer): SP-018 merged (#220, ADR-0053); EN-039 in progress.
+- `#process` One worker per story in its own worktree; an independent audit of every story before its merge, with mutations, often by brute force, its findings sent back to the worker. Every story had real findings, all fixed. The decisions the agent took alone are written as provisional and listed in each VAL story.
+- `#stop` The Product Owner validates F05, F14 and F16 from 14:00; F15 continues meanwhile.
+- `#metrics` The session report's counter resets each time the Product Owner writes (logged for RET-003). About 10 h 40 of work reported overnight, then about 9 h from 2026-10-15 01:00 to 13:30. The main thread stayed free throughout: the Product Owner wrote twice and was answered at once.
+
 ## 2026-10-14 — Run of F05 started; E14 released
 
 - `#run` The Product Owner started a run: the next feature in order is F05 (text, E15), so the run begins with its refinement, in two rounds (first questions with a long free comment, then every remaining question at once). Its runs keep the main thread free (ADR-0051, trial).
