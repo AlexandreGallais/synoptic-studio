@@ -11,7 +11,7 @@
 
 ## Decision
 
-1. **The stored truth** of a color is `#` and six lower-case hexadecimal digits, the only form the model's check accepts, the only form the model's check accepts, with an opacity, an integer percent from 0 to 100, in separate fields. The SVG writes them as `fill` and `fill-opacity`, as F05 does.
+1. **The stored truth** of a color is `#` and six lower-case hexadecimal digits, the only form the model's check accepts, with an opacity, an integer percent from 0 to 100, in separate fields. The SVG writes them as `fill` and `fill-opacity`, as F05 does.
 2. **HSL and HSB are views**, computed from the hexadecimal by the formulas of `REF-CSS-COLOR-4` and `REF-WIKI-HSL-HSV`, never stored in the model or in a file. A grey's hue is 0.
 3. **A value typed or picked** in HSL or HSB becomes the hexadecimal by rounding each byte, a tie rounded up. The picker keeps its own hue, saturation and lightness or brightness while it is open, so that a grey keeps the hue its slider shows; closing it keeps only the hexadecimal and the opacity.
 4. **The values shown** in HSL and HSB have one decimal: typed back, every color gives its hexadecimal again.

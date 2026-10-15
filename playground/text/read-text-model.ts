@@ -1,8 +1,7 @@
-import { TEXT_BOX_DEFAULTS } from "../../src";
+import { TEXT_BOX_DEFAULTS, toStoredColors } from "../../src";
 import { readNumber, selectElement } from "../page";
 import { readAngle } from "../position";
 
-import { readColorField } from "./read-color-field";
 import { readFieldValue } from "./read-field-value";
 import { readTextBoxOptions } from "./read-text-box-options";
 
@@ -31,7 +30,7 @@ function readTextSwitches(
 }
 
 /**
- * Reads the text typed in the Text tool's fields, its box's among them (`readTextBoxOptions`); its position and its angle are the shape's X, Y
+ * Reads the text typed in the Text tool's fields, its box's among them (`readTextBoxOptions`), its colors in their stored form (`toStoredColors`); its position and its angle are the shape's X, Y
  * and angle, the angle kept from 0 to 359 (`readAngle`). The choices are read as the page offers them, so they hold one
  * of their values.
  *
@@ -48,12 +47,12 @@ export function readTextModel(document: Document): Text {
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- the page offers only the values of this type
   const direction = readFieldValue(document, "text-direction") as TextDirection;
 
-  return {
+  return toStoredColors({
     ...TEXT_BOX_DEFAULTS,
     ...readTextBoxOptions(document),
     alignment,
     angle: readAngle(document),
-    color: readColorField(document, "text-color"),
+    color: readFieldValue(document, "text-color"),
     content: readFieldValue(document, "text-content"),
     direction,
     fallback: FALLBACK,
@@ -67,5 +66,5 @@ export function readTextModel(document: Document): Text {
     wordSpacing: readNumber(document, "text-word-spacing"),
     x: readNumber(document, "shape-x"),
     y: readNumber(document, "shape-y"),
-  };
+  });
 }
