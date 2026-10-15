@@ -1,5 +1,4 @@
-/** Separator between sub-paths (SVG 2 §9.3.9, `wsp`). */
-const SEPARATOR = " ";
+import { SEPARATOR } from "./separator";
 
 /**
  * Path data of several closed sub-paths drawn as one `<path>`: each starts with its own
@@ -11,6 +10,6 @@ const SEPARATOR = " ";
  * @returns the `d` attribute of the `<path>`
  * @see REF-SVG2-PATHS
  */
-export function subPathsToPathData(subPaths: readonly string[]): string {
+export function formatSubPaths(subPaths: readonly string[]): string {
   return subPaths.join(SEPARATOR);
 }
