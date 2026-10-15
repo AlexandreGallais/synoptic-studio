@@ -432,6 +432,17 @@ describe("the guided test of F14 (VAL-015): the decisions to confirm", () => {
     expect(readContents()).toEqual(["100\u{202F}", "%", "100", "\u{A0}%"]);
   });
 
+  it("[F05.AC5] a turned box: a spacing moves nothing, 160 wide keeps its corner", () => {
+    openStep("A turned box resized in place (US-038)");
+    typeValue("text-letter-spacing", "10");
+    expect([readValue("shape-x"), readValue("shape-y")]).toEqual(["47", "61"]);
+
+    // Corner (107, 81) − R(60, 20) = (59.58433, 39.14604); then
+    // (59.58433 − 80 + 65.82577, 39.14604 − 20 + 49.66859).
+    typeValue("text-box-width", "160");
+    expect([readValue("shape-x"), readValue("shape-y")]).toEqual(["45.4101", "68.81462"]);
+  });
+
   it("[F14.AC6] back to the rectangle, drawn as before", () => {
     openStep("Back to the rectangle");
     clickElement("tool-rectangle");

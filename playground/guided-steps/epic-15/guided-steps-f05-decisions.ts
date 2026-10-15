@@ -91,6 +91,12 @@ export const GUIDED_STEPS_F05_DECISIONS: readonly GuidedStep[] = [
     values: createTextStepValues({ ...HH, isUnderlined: true, opacity: 50, size: 200 }),
   },
   {
+    explanation: "Letter spacing 1, 2, … up to 10; then a second line; then Size 32.",
+    look: "The P's turned corner stays put, the text grows along its line; at 10, X 43.42272, Y 78.5829.",
+    title: "F05 · A turned text grows in place (US-038)",
+    values: createTextStepValues({ angle: 23, content: "Pump P-101", size: 16, x: 47, y: 61 }),
+  },
+  {
     explanation: "Rectangle.",
     look: "The sharp rectangle 120 × 80, as before; the text's fields go, the shape's come back.",
     title: "F05 · Back to the rectangle",
