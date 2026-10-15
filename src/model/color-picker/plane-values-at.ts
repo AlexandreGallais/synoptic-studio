@@ -1,3 +1,4 @@
+import { heightFromBottom } from "./height-from-bottom";
 import { PERCENT_SLIDER_RANGE } from "./percent-slider-range";
 import { sliderValueAt } from "./slider-value-at";
 
@@ -27,8 +28,7 @@ export function planeValuesAt(point: Point, size: Size): PlaneValues {
   const { maximum } = PERCENT_SLIDER_RANGE;
 
   return {
-    // The distance up from the bottom edge: 100 · (1 − y / h) = 100 · (h − y) / h.
-    level: sliderValueAt(size.height - point.y, size.height, maximum),
+    level: sliderValueAt(heightFromBottom(point.y, size.height), size.height, maximum),
     saturation: sliderValueAt(point.x, size.width, maximum),
   };
 }
