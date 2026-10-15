@@ -11,4 +11,3 @@ export type * from "./text-direction";
 export * from "./text-options";
 export * from "./text-ranges";
 export type * from "./text-vertical-alignment";
-export type * from "./text-wrap-style";

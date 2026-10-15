@@ -32,21 +32,6 @@ function openStep(title: string): void {
 }
 
 /**
- * Types a content in the Text tool's text area, as the designer would.
- *
- * @param content - the lines, a line feed between two
- */
-function typeContent(content: string): void {
-  const area = selectPageElement("#text-content");
-
-  if (area instanceof HTMLTextAreaElement) {
-    area.value = content;
-  }
-
-  area.dispatchEvent(new Event("input", { bubbles: true }));
-}
-
-/**
  * Reads the characters of each line drawn.
  *
  * @returns one string per `<tspan>`
@@ -214,13 +199,6 @@ describe("the guided test of F14 (VAL-015): the box's options", () => {
     expect(readBaselines()[0]).toBe("11.64063");
   });
 
-  it("[F14.AC3] balance: “Pump P-101” over “is running”", () => {
-    openStep("Balance");
-    expect(readContents()).toEqual(["Pump P-101 is", "running"]);
-    chooseOption("text-wrap", "balance");
-    expect(readContents()).toEqual(["Pump P-101", "is running"]);
-  });
-
   it("[F14.AC4] a yellow band behind each line, 19.359375 tall, the two touching", () => {
     openStep("Background");
     clickElement("text-background");
@@ -341,25 +319,15 @@ describe("the guided test of F14 (VAL-015): the decisions to confirm", () => {
     expect(readBaselines()).toEqual(["15.5"]);
   });
 
-  it("decision 13: the balanced wrap, the later break on equal evenness", () => {
-    openStep("Balanced wrap (decision 13)");
-    expect(readContents()).toEqual(["Pump P-101", "is running"]);
-    typeContent("Hello World Hello");
-    typeValue("text-box-width", "90");
-    expect(readContents()).toEqual(["Hello World", "Hello"]);
-  });
+  it("[F17.AC1] decisions 13 to 15: the automatic wrap only, no Wrap field", () => {
+    openStep("Automatic wrap only (decisions 13 to 15)");
+    expect(readContents()).toEqual(["Pump P-101 is", "running"]);
 
-  it("decision 14: a text cut by its maximum keeps its automatic line", () => {
-    openStep("Balance after a cut (decision 14)");
-    expect(readContents()).toEqual(["Pump P-101 is…"]);
-  });
-
-  it("decision 15: the wrap offers Automatic and Balance only", () => {
-    openStep("The pretty wrap (decision 15)");
-
-    expect(
-      [...selectPageElement("#text-wrap").querySelectorAll("option")].map((option) => option.value),
-    ).toEqual(["auto", "balance"]);
+    // No field and no label for a wrap style: the balanced wrap is removed (US-043).
+    expect([
+      document.querySelector("#text-wrap") === null,
+      document.body.textContent.includes("Balance"),
+    ]).toEqual([true, false]);
   });
 
   it("decision 16: a line height without a box, the box's fields hidden", () => {
@@ -378,9 +346,10 @@ describe("the guided test of F14 (VAL-015): the decisions to confirm", () => {
     expect(readBackground().slice(1)).toEqual(["#ffff00", "1"]);
     chooseOption("text-fit", "box");
 
-    expect(
-      ["text-maximum-lines", "text-vertical-alignment", "text-wrap"].map((id) => readValue(id)),
-    ).toEqual(["0", "top", "auto"]);
+    expect(["text-maximum-lines", "text-vertical-alignment"].map((id) => readValue(id))).toEqual([
+      "0",
+      "top",
+    ]);
 
     expect(selectPageElement("#text-ellipsis")).toHaveProperty("checked", true);
   });

@@ -21,7 +21,7 @@ import type { Text } from "./text";
  */
 export function isValidTextBox(text: Text): boolean {
   const { boxSide, lineHeight, maximumLines, opacity } = TEXT_RANGES;
-  const { verticalAlignments, wrapStyles } = TEXT_OPTIONS;
+  const { verticalAlignments } = TEXT_OPTIONS;
 
   return [
     ...[text.boxWidth, text.boxHeight].map((side) =>
@@ -32,7 +32,6 @@ export function isValidTextBox(text: Text): boolean {
     isInIntegerRange(text.backgroundOpacity, opacity.first, opacity.last),
     isColor(text.backgroundColor),
     verticalAlignments.includes(text.verticalAlignment),
-    wrapStyles.includes(text.wrapStyle),
     [text.isInBox, text.hasEllipsis, text.isTrimmed, text.hasBackground].every(
       (isOn) => typeof isOn === "boolean",
     ),

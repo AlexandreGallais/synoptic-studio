@@ -59,22 +59,22 @@ function spacingToCss(text: Text): readonly CssDeclaration[] {
 /**
  * How a text's lines break: a text that fits its content keeps every space and breaks only at its
  * line breaks (`pre`); in a box, its lines also wrap to fill it (`pre-wrap`), a word too long
- * kept whole (`overflow-wrap: normal`, `REF-MDN-OVERFLOW-WRAP`), balanced when asked (`text-wrap: balance`, `REF-MDN-TEXT-WRAP`).
+ * kept whole (`overflow-wrap: normal`, `REF-MDN-OVERFLOW-WRAP`).
  *
  * @kind format
- * @param text - whether it sits in a box and its wrap style
- * @returns the declarations: one for a text that fits its content, two or three in a box
+ * @param text - whether it sits in a box
+ * @returns the declarations: one for a text that fits its content, two in a box
  * @see REF-MDN-WHITE-SPACE
  */
-function wrapStyleToCss(text: Text): readonly CssDeclaration[] {
+function wrappingToCss(text: Text): readonly CssDeclaration[] {
   if (!text.isInBox) {
     return [["white-space", "pre"]];
   }
 
-  const balance: readonly CssDeclaration[] =
-    text.wrapStyle === "balance" ? [["text-wrap", "balance"]] : [];
-
-  return [["white-space", "pre-wrap"], ["overflow-wrap", "normal"], ...balance];
+  return [
+    ["white-space", "pre-wrap"],
+    ["overflow-wrap", "normal"],
+  ];
 }
 
 /**
@@ -163,7 +163,7 @@ export function textToHtmlStyle(text: Text, layer: HtmlLayer): readonly CssDecla
     ...fontToCss(text, layer),
     ...spacingToCss(text),
     ...textStrokeToCss(text, textHtmlLayerStrokes(text).content),
-    ...wrapStyleToCss(text),
+    ...wrappingToCss(text),
     ...boxCutToCss(text, layer),
     ...boxToFlexItemCss(text),
   ];

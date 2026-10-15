@@ -2,7 +2,7 @@ import { readNumber } from "../page";
 
 import { readFieldValue } from "./read-field-value";
 
-import type { Text, TextVerticalAlignment, TextWrapStyle } from "../../src";
+import type { Text, TextVerticalAlignment } from "../../src";
 
 /** The options of a text's box the Text tool reads (US-033), its background among them (US-034). */
 type TextBoxOptions = Pick<
@@ -18,7 +18,6 @@ type TextBoxOptions = Pick<
   | "lineHeight"
   | "maximumLines"
   | "verticalAlignment"
-  | "wrapStyle"
 >;
 
 /**
@@ -42,8 +41,6 @@ export function readTextBoxOptions(document: Document): TextBoxOptions {
     document,
     "text-vertical-alignment",
   ) as TextVerticalAlignment;
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- the page offers only the values of this type
-  const wrapStyle = readFieldValue(document, "text-wrap") as TextWrapStyle;
 
   return {
     backgroundColor: readFieldValue(document, "text-background-color"),
@@ -57,6 +54,5 @@ export function readTextBoxOptions(document: Document): TextBoxOptions {
     lineHeight: readNumber(document, "text-line-height"),
     maximumLines: readNumber(document, "text-maximum-lines"),
     verticalAlignment,
-    wrapStyle,
   };
 }

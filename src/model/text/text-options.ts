@@ -2,7 +2,6 @@ import type { TextAlignment } from "./text-alignment";
 import type { TextCase } from "./text-case";
 import type { TextDirection } from "./text-direction";
 import type { TextVerticalAlignment } from "./text-vertical-alignment";
-import type { TextWrapStyle } from "./text-wrap-style";
 
 /** The values a text's choices may take, so that a text read from outside is checked against them (F05, Q36, F14). */
 export const TEXT_OPTIONS: {
@@ -14,12 +13,9 @@ export const TEXT_OPTIONS: {
   readonly directions: readonly TextDirection[];
   /** Places of its block down its box. */
   readonly verticalAlignments: readonly TextVerticalAlignment[];
-  /** Ways its lines are wrapped in its box. */
-  readonly wrapStyles: readonly TextWrapStyle[];
 } = {
   alignments: ["left", "center", "right"],
   cases: ["none", "upper", "lower", "title", "camel", "pascal", "kebab", "snake", "constant"],
   directions: ["ltr", "rtl"],
   verticalAlignments: ["top", "middle", "bottom"],
-  wrapStyles: ["auto", "balance"],
 };

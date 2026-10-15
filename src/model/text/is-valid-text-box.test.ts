@@ -21,7 +21,6 @@ const BOXED = {
   lineHeight: 24,
   maximumLines: 2,
   verticalAlignment: "middle",
-  wrapStyle: "balance",
 } as const;
 
 describe("isValidTextBox (F14)", () => {
@@ -44,7 +43,6 @@ describe("isValidTextBox (F14)", () => {
       lineHeight: 0,
       maximumLines: 0,
       verticalAlignment: "top",
-      wrapStyle: "auto",
     });
 
     expect(isValidText({ ...HELLO_TEXT, ...TEXT_BOX_DEFAULTS })).toBe(true);
@@ -88,7 +86,6 @@ describe("isValidTextBox (F14)", () => {
 
   it.each([
     { field: "verticalAlignment", value: "baseline" },
-    { field: "wrapStyle", value: "pretty" },
     { field: "isInBox", value: "true" },
     { field: "hasEllipsis", value: 1 },
     { field: "isTrimmed", value: undefined },
@@ -109,7 +106,6 @@ describe("isValidTextBox (F14)", () => {
     lineHeight: fc.integer({ max: 100_000, min: 0 }),
     maximumLines: fc.integer({ max: 100_000, min: 0 }),
     verticalAlignment: fc.constantFrom("top", "middle", "bottom"),
-    wrapStyle: fc.constantFrom("auto", "balance"),
   })("accepts every option of a box within its range or among its values", (options) => {
     expect(isValidTextBox({ ...BOXED, ...options })).toBe(true);
   });
