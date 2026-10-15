@@ -36,7 +36,7 @@ In delivery order.
 | [US-033](../stories/E15-F14-US-033-put-a-text-in-a-box.md)           | User story | Put a text in a box with the Text tool                                    | done   |
 | [US-034](../stories/E15-F14-US-034-background-behind-a-text.md)      | User story | A background color behind a text, as a highlighter                        | done   |
 | [AUD-016](../stories/E15-F14-AUD-016-audit-f14.md)                   | Audit      | Audit F14                                                                 | done   |
-| [US-039](../stories/E15-F14-US-039-straight-box-of-a-turned-text.md) | User story | See the straight box of a turned text                                     | ready  |
+| [US-039](../stories/E15-F14-US-039-straight-box-of-a-turned-text.md) | User story | See the straight box of a turned text                                     | done   |
 | [VAL-015](../stories/E15-F14-VAL-015-validate-f14.md)                | Validation | Validate F14                                                              | ready  |
 
 ## Feature plan
