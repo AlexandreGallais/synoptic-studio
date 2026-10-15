@@ -9,7 +9,7 @@ import type { FontFamily } from "../font";
 
 /** Arial with one face, regular upright. */
 const ARIAL: FontFamily = {
-  faces: [{ isItalic: false, metrics: ARIAL_METRICS, weight: 400 }],
+  faces: [{ file: undefined, isItalic: false, metrics: ARIAL_METRICS, weight: 400 }],
   name: "Arial",
   version: "5.01",
 };
@@ -38,7 +38,10 @@ describe("textFontMetrics (ADR-0052)", () => {
   it("chooses the italic face for an italic text", () => {
     const family: FontFamily = {
       ...ARIAL,
-      faces: [...ARIAL.faces, { isItalic: true, metrics: ARIAL_UNKERNED, weight: 400 }],
+      faces: [
+        ...ARIAL.faces,
+        { file: undefined, isItalic: true, metrics: ARIAL_UNKERNED, weight: 400 },
+      ],
     };
     const italic = { ...HELLO_TEXT, isItalic: true };
 
