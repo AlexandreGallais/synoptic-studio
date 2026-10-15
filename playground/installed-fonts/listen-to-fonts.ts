@@ -1,4 +1,5 @@
-import { listenToFontImport } from "./listen-to-font-import";
+import { listenToFontImport } from "../fonts";
+
 import { listenToInstalledFonts } from "./listen-to-installed-fonts";
 
 /**

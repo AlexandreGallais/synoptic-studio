@@ -2,8 +2,8 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { testFaceFile } from "../../tests";
-import { clickElement, openServedPage, waitForPageTasks } from "../user-actions";
+import { fontCollection, testFaceFile } from "../../tests";
+import { chooseFiles, clickElement, openServedPage, waitForPageTasks } from "../user-actions";
 
 import { addFontFile } from "./add-font-file";
 
@@ -86,5 +86,39 @@ describe("A font imported drawn by the page, CSS Font Loading's FontFace (US-036
     expect(addFontFile(document, bytes, update)?.family).toBe("Broken");
     await waitForPageTasks();
     expect(addFace).toHaveBeenCalledOnce();
+  });
+
+  it("[F17.AC4] gives the page each face of a collection alone, as its own font file", async () => {
+    const regular = testFaceFile({
+      family: "Test Sans",
+      fsType: 0,
+      isItalic: false,
+      weightClass: 400,
+    });
+    const bold = testFaceFile({
+      family: "Test Sans",
+      fsType: 0,
+      isItalic: false,
+      weightClass: 700,
+    });
+
+    const collection = new Uint8Array(fontCollection([regular, bold]));
+
+    chooseFiles("font-file", [new File([collection], "TestSans.ttc")]);
+
+    await waitForPageTasks();
+
+    // Each face written alone gives back the face's own file, byte for byte, not the collection.
+    expect(createdFaces).toHaveBeenCalledTimes(2);
+
+    expect(createdFaces).toHaveBeenNthCalledWith(1, '"Test Sans"', regular, {
+      style: "normal",
+      weight: "400",
+    });
+
+    expect(createdFaces).toHaveBeenNthCalledWith(2, '"Test Sans"', bold, {
+      style: "normal",
+      weight: "700",
+    });
   });
 });

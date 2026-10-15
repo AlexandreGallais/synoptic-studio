@@ -239,7 +239,7 @@ describe("the guided test of F15 (VAL-017): fonts, embedding, the export", () =>
 
     await importFiles(
       [{ bytes: encoder.encode("not a font"), name: "notes.ttf" }],
-      "notes.ttf is not a TrueType or OpenType font file (.ttf, .otf): refused.",
+      "notes.ttf is not a TrueType or OpenType font file (.ttf, .otf, .ttc): refused.",
     );
 
     expect(readOptions("text-font")).toEqual(["Inter"]);

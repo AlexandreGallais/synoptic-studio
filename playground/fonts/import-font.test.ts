@@ -2,7 +2,7 @@
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { ARIAL_PATH, systemFont, testFaceFile } from "../../tests";
+import { ARIAL_PATH, fontCollection, systemFont, testFaceFile } from "../../tests";
 import {
   chooseFiles,
   chooseOption,
@@ -97,7 +97,7 @@ describe("Import a font (US-036)", () => {
     expect(selectPageElement("#text-font").tagName).toBe("SELECT");
     expect(readFontList()).toEqual(["Inter"]);
     expect(readValue("text-font")).toBe("Inter");
-    expect(selectPageElement("#font-file").getAttribute("accept")).toBe(".ttf,.otf");
+    expect(selectPageElement("#font-file").getAttribute("accept")).toBe(".ttf,.otf,.ttc");
   });
 
   it("[F15.AC1] adds the family of a file imported, chooses it, and measures the text with it", async () => {
@@ -127,12 +127,28 @@ describe("Import a font (US-036)", () => {
     );
   });
 
+  it("[F17.AC4] imports each face of a collection (.ttc), the last one's family chosen", async () => {
+    const collection = fontCollection([
+      testFaceFile(TEST_SANS),
+      testFaceFile({ ...TEST_SANS, isItalic: true, weightClass: 700 }),
+      testFaceFile({ ...TEST_SANS, family: "Other Serif" }),
+    ]);
+
+    await importFiles(
+      [new File([new Uint8Array(collection)], "Test.ttc")],
+      "Test Sans 400, Test Sans 700 italic, Other Serif 400 imported.",
+    );
+
+    expect(readFontList()).toEqual(["Inter", "Test Sans", "Other Serif"]);
+    expect(readValue("text-font")).toBe("Other Serif");
+  });
+
   it("[F15.AC1] refuses a file that is not a font, said why, the list unchanged", async () => {
     const notes = new File(["Pump P-101"], "notes.ttf");
 
     await importFiles(
       [notes],
-      "notes.ttf is not a TrueType or OpenType font file (.ttf, .otf): refused.",
+      "notes.ttf is not a TrueType or OpenType font file (.ttf, .otf, .ttc): refused.",
     );
 
     expect(readFontList()).toEqual(["Inter"]);

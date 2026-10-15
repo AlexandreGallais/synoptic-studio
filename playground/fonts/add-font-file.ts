@@ -111,7 +111,7 @@ function registerFontFace(document: Document, named: NamedFontFace, update: () =
  */
 export function addFontFile(
   document: Document,
-  bytes: Uint8Array,
+  bytes: Readonly<Uint8Array>,
   update: () => void,
 ): NamedFontFace | undefined {
   const named = parseFontFace(bytes);

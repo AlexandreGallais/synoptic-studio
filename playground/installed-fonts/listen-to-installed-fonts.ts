@@ -1,12 +1,10 @@
 import { isSameFamilyName } from "../../src";
+import { readFontSession, writeFontOptions, writeFontSession } from "../fonts";
 import { runTask, selectElement, writeText } from "../page";
 
-import { readFontSession } from "./read-font-session";
 import { readInstalledFamily } from "./read-installed-family";
-import { writeFontOptions } from "./write-font-options";
-import { writeFontSession } from "./write-font-session";
 
-import type { InstalledFont } from "./installed-font";
+import type { InstalledFont } from "../fonts";
 
 /** A window that lists the installed fonts: Chrome and Edge from version 103 (`REF-CHROME-LOCAL-FONTS`). */
 type LocalFontAccess = {
