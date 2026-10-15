@@ -1,3 +1,4 @@
+export * from "./create-color-step-values";
 export * from "./create-text-box-step-values";
 export * from "./create-text-step-values";
 export * from "./guided-steps-f05";
@@ -6,3 +7,6 @@ export * from "./guided-steps-f05-options";
 export * from "./guided-steps-f14";
 export * from "./guided-steps-f14-decisions";
 export * from "./guided-steps-f14-options";
+export * from "./guided-steps-f16";
+export * from "./guided-steps-f16-decisions";
+export * from "./guided-steps-f16-options";

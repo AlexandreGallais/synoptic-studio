@@ -19,13 +19,27 @@ The Product Owner types, pastes and picks colors in the playground, guided by sh
 
 One task = one commit, referenced as `VAL-016.Tn`.
 
-- [ ] T1 — The guided test, tested end to end (1 h)
+- [x] T1 — The guided test, tested end to end (1 h)
 - [ ] T2 — The demo page (30 min)
 - [ ] T3 — The Product Owner's validation (1 h)
 
+## Guided test (T1)
+
+40 steps at `http://localhost:5173`, also after F14's at `?guide=epic` (steps 162 to 201): one line to do, one to look at, Next typing the text and its colors. `playground/guided-steps/epic-15/f16-steps.test.ts` checks each step end to end, each decision's example among them. The picker's model is not typed by Next: a step that needs one names it.
+
+| Steps | What                                                                                                              |
+| ----- | ----------------------------------------------------------------------------------------------------------------- |
+| 1–7   | six digits, with `#` and spaces, three, four and eight digits, a color pasted, a value refused and the color back |
+| 8–10  | the opacity, the swatch opening the picker, the picker closed by the swatch, Escape and a click outside           |
+| 11–13 | the hue bar by mouse and by keys, the opacity bar                                                                 |
+| 14–17 | the plane in HSB and in HSL, values typed, a grey keeping its hue                                                 |
+| 18    | the background's color and its picker                                                                             |
+| 19–38 | the 20 decisions below, one step each with its example                                                            |
+| 39–40 | back to F14 and F05, the colors drawn as before, then back to the rectangle (F16.AC4)                             |
+
 ## Decisions to confirm
 
-The rules of colors marked provisional in `docs/domain/interaction.md` (Colors), Q38 and ADR-0056, read by the agent from F05's refinement at SP-017, then while building US-035 and at AUD-017 (2026-10-15).
+The rules of colors marked provisional in `docs/domain/interaction.md` (Colors), Q38 and ADR-0056, read by the agent from F05's refinement at SP-017, then while building US-035 and at AUD-017 (2026-10-15). Each example was checked against the playground at VAL-016.T1: rows 12 and 15 show the hue 0 as the field does, `0` rather than `0.0`; the others held.
 
 | #   | Rule                                                                                                                                                                                                                                | Example                                                                                          |
 | --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
@@ -40,10 +54,10 @@ The rules of colors marked provisional in `docs/domain/interaction.md` (Colors),
 | 9   | A value typed or picked becomes the hexadecimal by rounding each of red, green and blue to the nearest, a tie up                                                                                                                    | HSL 30°, 100 %, 50 %: the green 127.5 gives 128, `#ff8000`                                       |
 | 10  | A grey shows the hue 0°; an open picker keeps the hue its slider shows                                                                                                                                                              | `#808080` with the slider at 200°, dragged to more saturation, keeps 200°                        |
 | 11  | Keys: arrows 1, Page Up and Page Down 10, Home and End to the ends, on each slider; on the plane, Left and Right the saturation, Up and Down the other value; each slider and the plane give a screen reader their name and value   | hue 210°: Right 211°, Page Up 221°                                                               |
-| 12  | The hue slider holds the hue to one decimal, arrows add 1 to it, End gives 359.9°, a hue of 360 is shown 0.0                                                                                                                        | `#ff8000`: 30.1°, Right 31.1°                                                                    |
+| 12  | The hue slider holds the hue to one decimal, arrows add 1 to it, End gives 359.9°, a hue of 360 is shown 0                                                                                                                          | `#ff8000`: 30.1°, Right 31.1°                                                                    |
 | 13  | F16's fourth criterion names the text's color; the agent reads it as the background's color too                                                                                                                                     | the background's color field has the same swatch and picker                                      |
 | 14  | A color refused brings back the color the field had when it got the focus, a line under it saying why; while it is typed, the text follows the field                                                                                | `red` then Tab: `#ff8800` again, a line under it                                                 |
-| 15  | A number typed or dragged beyond an end counts at that end; a value left empty shows its value again; a click on the opacity slider gives the nearest percent; a slider not laid out yet holds 0                                    | hue 400 gives 0.0, hue −10 gives 0; 33.5 % clicked gives 34 %                                    |
+| 15  | A number typed or dragged beyond an end counts at that end; a value left empty shows its value again; a click on the opacity slider gives the nearest percent; a slider not laid out yet holds 0                                    | hue 400 gives 0, hue −10 gives 0; 33.5 % clicked gives 34 %                                      |
 | 16  | The picker opens under its color's fields, which stay usable; Escape gives the focus back to the swatch                                                                                                                             | —                                                                                                |
 | 17  | Another model chosen keeps the hue the picker holds while the three values still give the color back, a grey always; else it shows the color's own hue                                                                              | `#523a39` picked at HSB 0.7°, 30 %, 32.2 %: HSL 2.4°, 18 %, 27.3 %, as 0.7° would give `#523939` |
 | 18  | Each slider's role, name and value sit on its track, which takes the focus; the thumb is only drawn (the WAI-ARIA pattern puts them on the thumb)                                                                                   | a screen reader reads Hue, 30.1                                                                  |
