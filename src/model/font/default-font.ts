@@ -6,6 +6,9 @@ import type { FontFamily } from "./font-family";
  * The default font, Inter 4.1: the metrics of its nine weights, upright and italic, read from its
  * files by `scripts/default-font-metrics.ts`; a text whose font has no metrics is measured with
  * them (ADR-0052). Inter's copyright notice and the SIL Open Font License sit beside the data, in
- * `inter-license.txt` (`REF-INTER-LICENSE`).
+ * `inter-license.txt` (`REF-INTER-LICENSE`). Its files are not shipped: no face holds a file.
  */
-export const DEFAULT_FONT: FontFamily = INTER;
+export const DEFAULT_FONT: FontFamily = {
+  ...INTER,
+  faces: INTER.faces.map((face) => ({ ...face, file: undefined })),
+};

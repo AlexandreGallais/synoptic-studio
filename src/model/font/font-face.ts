@@ -1,3 +1,4 @@
+import type { FontFile } from "./font-file";
 import type { FontMetrics } from "./font-metrics";
 
 /** One face of a font family: a weight, upright or italic, and its metrics (ADR-0052). */
@@ -8,4 +9,6 @@ export type FontFace = {
   readonly isItalic: boolean;
   /** Its metrics, read from its font file. */
   readonly metrics: FontMetrics;
+  /** The file its metrics were read from, when the editor holds it; undefined for a face whose metrics ship without their file, as Inter's (ADR-0053). */
+  readonly file: FontFile | undefined;
 };
