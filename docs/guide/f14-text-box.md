@@ -13,7 +13,6 @@ A text can now sit in a **box** of a given width and height instead of fitting i
 | **Max lines (0 none)**                  | the most lines shown; the last one shown ends with "…"                                                  |
 | **Ellipsis**                            | on by default; off, a cut text simply stops                                                             |
 | **Vertical alignment**                  | the block of lines at the top, the middle or the bottom of the box                                      |
-| **Wrap**                                | **Automatic**, as many words a line as fit, or **Balance**, lines of even length                        |
 | **Line height (0 auto)**                | the distance between two baselines; 0 keeps the font's own                                              |
 | **Trim**                                | the block starts at the capitals' top, not at the font's ascender                                       |
 | **Background**, its color and opacity   | a band behind each line, as a highlighter, yellow and opaque when ticked                                |
@@ -25,21 +24,16 @@ Rules: [domain, "Text"](../domain/shapes.md#text); formulas: [`DERIV-text-box`](
 
 | Term               | In plain words                                                                                                               |
 | ------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
-| **Wrap**           | starting a new line when the next word does not fit; the lines break only at spaces, or inside a word too long               |
+| **Wrap**           | starting a new line when the next word does not fit; the lines break only at spaces, never inside a word                     |
 | **Ellipsis**       | the "…" that ends a text cut short; characters are removed until the line and its "…" fit                                    |
 | **Line height**    | the distance from one baseline to the next; the room it adds is spread half above and half below the letters                 |
 | **Content area**   | the height from the font's ascender (the top of tall letters) to its descender (the bottom of "g" or "p"): 19.36 at Inter 16 |
 | **Cap height**     | the height of a capital letter, 11.64 at Inter 16; trimming starts the block there                                           |
-| **Balanced wrap**  | the same number of lines, the words moved so that the room each line leaves is as even as possible                           |
 | **No-break space** | a space that keeps the two words around it on one line                                                                       |
 
 **Wrapping and cutting.** "Pump P-101 is running" in a box 110 wide: "Pump P-101 is" (104.77) fits, "running" goes to the next line. At most one line, "Pump P-101 is…" would be 118.6 wide: characters go until it fits, "Pump P-101…" (101.78).
 
 ![At most one line: “Pump P-101…”](./images/f14-ellipsis.svg)
-
-**Balance.** The automatic wrap fills each line in turn and leaves a short last line; the balanced wrap keeps two lines and evens them: "Pump P-101" over "is running". On equal evenness the later break wins. A paragraph with a word too long, more than 10 lines or 500 words, or cut by its box, keeps the automatic lines.
-
-![Automatic on the left, balanced on the right](./images/f14-balance.svg)
 
 **Placing the lines.** Across the box, each line follows the text's alignment; down the box, the block of lines sits at the top, the middle or the bottom. Below, "Pump P-101" over "Running", centered and in the middle of a box 120 × 80.
 
@@ -55,7 +49,7 @@ Rules: [domain, "Text"](../domain/shapes.md#text); formulas: [`DERIV-text-box`](
 
 ## How to try it
 
-Install Inter 4.1 first, as for F05. Then `npm run dev` and `http://localhost:5173`: 41 steps, each one line to do and one to look at; **Next** types the text and its box. E15 is validated at once (VAL-017): they are steps 37 to 77 of its 176, numbered so below; at the epic review, steps 124 to 164 of `?guide=epic`. These are the numbers of the run on 2026-10-15: F17 removed steps 39 and 55, the break at a character, a word too long now always kept whole (US-042). The steps give each example in Inter 16, whose metrics ship with the library.
+Install Inter 4.1 first, as for F05. Then `npm run dev` and `http://localhost:5173`: 41 steps, each one line to do and one to look at; **Next** types the text and its box. E15 is validated at once (VAL-017): they are steps 37 to 77 of its 176, numbered so below; at the epic review, steps 124 to 164 of `?guide=epic`. These are the numbers of the run on 2026-10-15: F17 removed steps 39 and 55, the break at a character, a word too long now always kept whole (US-042), then steps 47, 65 and 66, the balanced wrap, lines now always wrapped automatically (US-043). The steps give each example in Inter 16, whose metrics ship with the library.
 
 | Steps | What                                                                                                                                                                      |
 | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -86,9 +80,9 @@ Each is built as written and shown by its step; the full list, with its examples
 | 10  | Empty lines left out                | no ellipsis                                                                                                 | 62   |
 | 11  | Even "H…" too wide                  | drawn past the box's edge; or draw only what fits, or nothing                                               | 63   |
 | 12  | Line height                         | 0 automatic, or 1 to 100 000, the room spread half above, half below                                        | 64   |
-| 13  | Balanced wrap                       | the most even lines, the later break on a tie                                                               | 65   |
-| 14  | Balance and a cut                   | a text cut keeps its automatic lines                                                                        | 66   |
-| 15  | The "pretty" wrap style             | not built: keep it for later, or drop it                                                                    | 67   |
+| 13  | Balanced wrap                       | removed at the validation: lines always wrap automatically (US-043)                                         | 65   |
+| 14  | Balance and a cut                   | removed with the balanced wrap (US-043)                                                                     | 66   |
+| 15  | The "pretty" wrap style             | dropped: not built (US-043)                                                                                 | 67   |
 | 16  | Options of every text               | line height, trim and background for every text; the others in a box only                                   | 68   |
 | 17  | Defaults                            | fit content, automatic line height, no trim, no background, ellipsis on; a box 0 × 0                        | 69   |
 | 18  | The background's height             | the content area, from the ascender to the descender                                                        | 70   |
@@ -101,7 +95,7 @@ Each is built as written and shown by its step; the full list, with its examples
 
 - Fonts other than Inter are still measured with Inter until fonts are read from files (F15).
 - No hyphenation: a word too long stays whole, overflowing its box or cut with "…" (US-042).
-- No "pretty" wrap style (decision 15).
+- One wrap only, automatic: no balanced nor "pretty" wrap (US-043).
 - A line's characters are never clipped at the box's edge: what overflows is drawn.
 
 ## Validation

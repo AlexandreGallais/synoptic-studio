@@ -15,7 +15,7 @@ Refined with F05 on 2026-10-14 (its rounds 1 and 2); its stories were written by
 
 1. A text either fits its content or sits in a box of a given width and height; in a box, its lines wrap at spaces, and a word too long for the box stays whole on its own line, overflowing it or cut with "…" (reworded 2026-10-15 at the validation of E15: the break at a character removed, US-042).
 2. A text too long for its box, or for a maximum number of lines, ends with an ellipsis: "Hello World" in Arial 16, in a box 60 wide with at most 1 line, shows "Hello…", 52.46094 wide ("Hell…" in a box 50 wide); "Hello World Hello World" in a box 60 wide with at most 2 lines shows "Hello" over "World…", 57.78125 wide (`DERIV-text-box`).
-3. The lines are aligned horizontally and vertically in the box (top, middle, bottom), with a line height chosen; a balanced wrap style evens the lines' lengths.
+3. The lines are aligned horizontally and vertically in the box (top, middle, bottom), with a line height chosen; they always wrap automatically, as many words a line as fit (reworded 2026-10-15 at the validation of E15: the balanced wrap removed, US-043).
 4. A background color is drawn behind the text, as a highlighter, as a `<path>`.
 5. A vertical trim from the cap height to the baseline lines up texts of different sizes on where their letters start.
 6. Every shape and text of E01, E14 and F05 draws as before.
