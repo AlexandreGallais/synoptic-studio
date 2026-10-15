@@ -134,7 +134,7 @@ describe("Text tool: a background behind the text (US-034)", () => {
   });
 
   it.each([
-    { id: "text-background-color", value: "#ff0" },
+    { id: "text-background-color", value: "#ff800" },
     { id: "text-background-opacity", value: "101" },
     { id: "text-background-opacity", value: "" },
   ])("refuses $id = '$value' and draws nothing", ({ id, value }) => {

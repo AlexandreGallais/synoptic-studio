@@ -1,6 +1,5 @@
 import { readNumber } from "../page";
 
-import { readColorField } from "./read-color-field";
 import { readFieldValue } from "./read-field-value";
 
 import type { Text, TextLongWord, TextVerticalAlignment, TextWrapStyle } from "../../src";
@@ -50,7 +49,7 @@ export function readTextBoxOptions(document: Document): TextBoxOptions {
   const wrapStyle = readFieldValue(document, "text-wrap") as TextWrapStyle;
 
   return {
-    backgroundColor: readColorField(document, "text-background-color"),
+    backgroundColor: readFieldValue(document, "text-background-color"),
     backgroundOpacity: readNumber(document, "text-background-opacity"),
     boxHeight: readNumber(document, "text-box-height"),
     boxWidth: readNumber(document, "text-box-width"),
