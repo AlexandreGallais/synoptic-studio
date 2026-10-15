@@ -1,7 +1,9 @@
 import { listenToFontImport } from "./listen-to-font-import";
+import { listenToInstalledFonts } from "./listen-to-installed-fonts";
 
 /**
- * Listens to the font controls of the Text tool: **Import a font** (`listenToFontImport`).
+ * Listens to the font controls of the Text tool: **Import a font** (`listenToFontImport`), and
+ * **Installed fonts** with the font list (`listenToInstalledFonts`).
  *
  * @kind procedure
  * @param document - page document
@@ -10,4 +12,5 @@ import { listenToFontImport } from "./listen-to-font-import";
  */
 export function listenToFonts(document: Document, update: () => void): void {
   listenToFontImport(document, update);
+  listenToInstalledFonts(document, update);
 }
