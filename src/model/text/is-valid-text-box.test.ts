@@ -32,12 +32,21 @@ describe("isValidTextBox (F14)", () => {
   });
 
   it("[F14.AC6] gives a text of F05 the defaults: fits its content, automatic line height, no trim, no background, ellipsis on", () => {
-    expect(TEXT_BOX_DEFAULTS).toMatchObject({
+    // The others, read only in a box (provisional, VAL-015): docs/domain/shapes.md, Box.
+    expect(TEXT_BOX_DEFAULTS).toEqual({
+      backgroundColor: "#ffff00",
+      backgroundOpacity: 100,
+      boxHeight: 0,
+      boxWidth: 0,
       hasBackground: false,
       hasEllipsis: true,
       isInBox: false,
       isTrimmed: false,
       lineHeight: 0,
+      longWord: "break",
+      maximumLines: 0,
+      verticalAlignment: "top",
+      wrapStyle: "auto",
     });
 
     expect(isValidText({ ...HELLO_TEXT, ...TEXT_BOX_DEFAULTS })).toBe(true);
@@ -82,6 +91,10 @@ describe("isValidTextBox (F14)", () => {
     { field: "longWord", value: "hyphenate" },
     { field: "verticalAlignment", value: "baseline" },
     { field: "wrapStyle", value: "pretty" },
+    { field: "isInBox", value: "true" },
+    { field: "hasEllipsis", value: 1 },
+    { field: "isTrimmed", value: undefined },
+    { field: "hasBackground", value: "false" },
   ])("[F14.AC1] refuses a $field of '$value', read from outside", ({ field, value }) => {
     const text = { ...BOXED, [field]: value };
 

@@ -10,7 +10,8 @@ import type { Text } from "./text";
  * Whether the options of a text's box (F14) can enter the model: its width and height, its
  * maximum number of lines and its line height, integers from 0 to 100 000; its background's color
  * of six hexadecimal digits and its opacity, an integer from 0 to 100; its long-word option,
- * vertical alignment and wrap style among their values. They are checked whether the text sits in
+ * vertical alignment and wrap style among their values; its box, ellipsis, trim and background
+ * switches true or false, as read from outside. They are checked whether the text sits in
  * a box or fits its content, so that a text keeps valid options when it changes kind.
  *
  * @kind domain
@@ -33,5 +34,8 @@ export function isValidTextBox(text: Text): boolean {
     longWords.includes(text.longWord),
     verticalAlignments.includes(text.verticalAlignment),
     wrapStyles.includes(text.wrapStyle),
+    [text.isInBox, text.hasEllipsis, text.isTrimmed, text.hasBackground].every(
+      (isOn) => typeof isOn === "boolean",
+    ),
   ].every(Boolean);
 }
