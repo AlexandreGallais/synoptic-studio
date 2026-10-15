@@ -3,7 +3,7 @@ id: EN-033
 epic: E15
 feature: F14
 title: "A text in a box: its options and its lines wrapped at spaces"
-status: ready
+status: done
 points: 3
 ---
 
