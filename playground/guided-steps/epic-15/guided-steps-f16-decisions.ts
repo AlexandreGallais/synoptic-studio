@@ -141,6 +141,12 @@ export const GUIDED_STEPS_F16_DECISIONS: readonly GuidedStep[] = [
     values: STEEL_BLUE,
   },
   {
+    explanation: "Strike-through color #ff0000, Tab; then Color #22c55e, Tab.",
+    look: "Both strokes #1e293b at first; the strike-through red, its box unticked; then the letters and the underline green, the strike-through still red.",
+    title: "F16 · The strokes follow the text until chosen (decision 21)",
+    values: createColorStepValues({ isStruckThrough: true, isUnderlined: true }),
+  },
+  {
     explanation: "Nothing to type.",
     look: "As in F14: “Hello World” in its box, the yellow band, the letters #1e293b (F16.AC4).",
     title: "F16 · Back to F14 and F05",
