@@ -1,5 +1,6 @@
 export * from "./character-map";
 export * from "./color";
+export * from "./font-embedding";
 export * from "./font-face";
 export * from "./font-file";
 export * from "./font-name";
