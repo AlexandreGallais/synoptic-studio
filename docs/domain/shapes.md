@@ -192,7 +192,8 @@ Decided by the Product Owner at F05's refinement, rounds 1 and 2 (2026-10-14); d
   - each line's `y` is its baseline; every space typed is drawn (`xml:space="preserve"`), as it is measured;
   - the font is written as itself, then its fallback, then `sans-serif`, each name once: `"Inter", sans-serif`;
   - the opacity is written as a number from 0 to 1 (`fill-opacity`, 40 % gives 0.4);
-  - an underline or a strike-through is a rectangle as long as the line, placed and as thick as the font says, in the text's color; an empty line has none.
+  - an underline or a strike-through is a rectangle as long as the line, placed and as thick as the font says, in the text's color; an empty line has none, and neither has a stroke the font gives no thickness (0 or negative) (2026-10-15, provisional, to confirm at VAL-014);
+  - a line tightened past nothing by a negative spacing keeps its negative width and is placed by the same rule, so it may fall outside the block, which stays at least 0 wide: lines 10 and −8 wide, centered, start 0 and 9 from the block's left edge; a single line −6.89 wide, aligned right, starts 6.89 right of it (2026-10-15, provisional, to confirm at VAL-014);
 - **Measuring**: from the font's metrics, read once from the font file and kept; measuring a text is then a sum of stored numbers (`DERIV-text-width`). In a running view a text may change a hundred times a second on a thousand texts: moving, turning, showing, hiding and recoloring stay cheap transforms.
 - **Font metrics** (EN-031): the library reads a TrueType or OpenType file (`REF-OT-OTFF`) into plain numbers, in font units:
   - the units per em (`head`), and the ascender, descender and line gap of `hhea`;

@@ -17,6 +17,12 @@ describe("lineOffsetInBlock (REF-CSS-TEXT-3 §6.1, DERIV-text-width step 5)", ()
     }
   });
 
+  it("centers a line narrower than nothing in a block of its widest line, 10", () => {
+    // Lines 10 and −8: block 10; room 18 and 0, half of each before the line.
+    expect(lineOffsetInBlock(10, -8, "center")).toBe(9);
+    expect(lineOffsetInBlock(10, 10, "center")).toBe(0);
+  });
+
   it("moves a line narrower than nothing past the right edge when aligned right", () => {
     // Block 0 (every line negative), line −8: room 8.
     expect(lineOffsetInBlock(0, -8, "right")).toBe(8);

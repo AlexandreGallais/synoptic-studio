@@ -1,3 +1,5 @@
+import { textBlock } from "../text-block";
+
 import { lineDecorations } from "./line-decorations";
 import { positionedLines } from "./positioned-lines";
 
@@ -13,13 +15,15 @@ import type { DrawnText } from "./drawn-text";
  * @kind domain
  * @param metrics - the metrics of the face the text is drawn with
  * @param text - its content, font, color, spacing and options
- * @returns its positioned lines and their decorations
+ * @returns its block, its positioned lines and their decorations
  * @see DERIV-text-width
  */
 export function textDrawing(metrics: FontMetrics, text: Text): DrawnText {
-  const lines = positionedLines(metrics, text);
+  const block = textBlock(metrics, text);
+  const lines = positionedLines(metrics, text, block.width);
 
   return {
+    block,
     decorations: lines.flatMap((line) => lineDecorations(metrics, text, line)),
     lines,
   };

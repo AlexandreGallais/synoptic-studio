@@ -1,7 +1,6 @@
-import { createSvgElement, createTextElement, textBlock, textDrawing } from "../../src";
+import { createSvgElement, createTextElement, textDrawing } from "../../src";
+import { createFrameElements } from "../drawing";
 import { selectElement, writeText } from "../page";
-
-import { createBlockFrameElements } from "./create-block-frame-elements";
 
 import type { FontMetrics, Text } from "../../src";
 
@@ -25,11 +24,17 @@ const JSON_INDENT = 2;
 export function showText(document: Document, text: Text, metrics: FontMetrics): void {
   const { height, width } = selectElement(document, "canvas").getBoundingClientRect();
   const svg = createSvgElement(document, { height, width, x: -MARGIN, y: -MARGIN });
-  const block = textBlock(metrics, text);
   const drawn = textDrawing(metrics, text);
   const group = createTextElement(document, text, drawn);
 
-  svg.append(...createBlockFrameElements(document, text, block), group);
+  const { block } = drawn;
+  const frame = createFrameElements(
+    document,
+    { ...block, angle: 0, x: text.x, y: text.y },
+    "text-block",
+  );
+
+  svg.append(...frame, group);
   selectElement(document, "canvas").replaceChildren(svg);
   writeText(document, "model", JSON.stringify(text, undefined, JSON_INDENT));
   writeText(document, "contour", JSON.stringify(block, undefined, JSON_INDENT));

@@ -67,6 +67,32 @@ describe("createTextElement (ADR-0052)", () => {
     ]);
   });
 
+  it("[F05.AC4] draws the strike-through 0.5 thick, 4 above the baseline", () => {
+    const strike = group.querySelectorAll("path")[1];
+
+    // Hello strike-out: top 14.484375 − 4 = 10.484375, 64 × 16 / 2048 = 0.5 thick.
+    expect(strike?.getAttribute("d")).toBe(
+      "M2.66016 10.48438 L39.12109 10.48438 L39.12109 10.98438 L2.66016 10.98438 Z",
+    );
+  });
+
+  it.each([
+    { opacity: 0, written: "0" },
+    { opacity: 40, written: "0.4" },
+  ])(
+    "[F05.AC4] writes an opacity of $opacity % as $written on the text and its paths",
+    ({ opacity, written }) => {
+      const faded = { ...TEXT, opacity };
+      const drawn = createTextElement(document, faded, textDrawing(DECORATED_METRICS, faded));
+
+      expect(
+        [...drawn.querySelectorAll("text, path")].map((element) =>
+          element.getAttribute("fill-opacity"),
+        ),
+      ).toEqual(Array.from({ length: 5 }, () => written));
+    },
+  );
+
   it("draws an empty text as an empty <text>", () => {
     const empty = { ...HELLO_TEXT, content: "" };
     const drawn = createTextElement(document, empty, textDrawing(DECORATED_METRICS, empty));

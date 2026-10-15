@@ -1,10 +1,11 @@
-import { rectangleSides } from "../geometry";
+import { roundedContour } from "../geometry";
 import {
   contourPiecesToPathData,
   formatSvgNumber,
   percentToOpacity,
   textToAttributes,
 } from "../io";
+import { decorationCorners } from "../model";
 
 import { createPathElement } from "./create-path-element";
 import { SVG_NAMESPACE } from "./svg-namespace";
@@ -48,10 +49,8 @@ function createDecorationElement(
   decoration: LineDecoration,
   text: Text,
 ): SVGPathElement {
-  const path = createPathElement(
-    document,
-    contourPiecesToPathData(rectangleSides(decoration, decoration)),
-  );
+  const contour = roundedContour(decorationCorners(decoration));
+  const path = createPathElement(document, contourPiecesToPathData(contour));
 
   path.setAttribute("fill", text.color);
   path.setAttribute("fill-opacity", formatSvgNumber(percentToOpacity(text.opacity)));
