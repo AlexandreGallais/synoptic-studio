@@ -29,7 +29,7 @@ function strokeAtSize(metrics: FontMetrics, size: number, units: StrokeMetrics):
  * The strokes along one line of a text: its underline from the font's `post` table when it is
  * underlined, its strike-through from `OS/2` when it is struck through, drawn as rectangles
  * rather than `text-decoration` (ADR-0052). A line with no length, empty or tightened past
- * nothing, has none.
+ * nothing, has none, and a stroke the font gives no thickness, 0 or negative, is not drawn.
  *
  * @kind domain
  * @param metrics - the font face's metrics
@@ -48,7 +48,7 @@ export function lineDecorations(
   const strokes = [
     ...(text.isUnderlined ? [underline] : []),
     ...(text.isStruckThrough ? [strikeout] : []),
-  ];
+  ].filter((stroke) => stroke.thickness > 0);
 
   return line.width > 0
     ? strokes.map((stroke) => decorationStroke(line, strokeAtSize(metrics, text.size, stroke)))

@@ -90,13 +90,13 @@ export const HELLO_TEXT: Text = {
 
 /**
  * Arial's measured part without kerning, with round decorations for hand computation, not
- * Arial's: the underline's top 256 units below the baseline, the strike-out's 512 above it, both
- * 128 thick; at size 16, 2, 4 and 1 user units.
+ * Arial's: the underline's top 256 units below the baseline, 128 thick, the strike-out's 512 above
+ * it, 64 thick; at size 16, 2, 1, 4 and 0.5 user units.
  */
 export const DECORATED_METRICS: FontMetrics = {
   ...ARIAL_UNKERNED,
   strikeoutPosition: 512,
-  strikeoutSize: 128,
+  strikeoutSize: 64,
   underlinePosition: -256,
   underlineThickness: 128,
 };
