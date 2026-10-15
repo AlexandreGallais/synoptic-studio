@@ -23,14 +23,14 @@ function facesWithFace(faces: readonly FontFace[], face: FontFace): readonly Fon
 /**
  * The font families kept with one face more, read from a file: added to the family of its name,
  * matched without regard to case (`isSameFamilyName`), replacing a face of the same weight and
- * style; a family not kept yet is listed last with that face, and an empty version since its
- * files may differ. The families given are never changed: a new list is returned.
+ * style, as CSS matches names (`REF-CSS-FONTS-4`, §5.1); a family not kept yet is listed last
+ * with that face, and an empty version, each face's file giving its own. The families given are never changed: a new list is returned.
  *
  * @kind domain
  * @param fonts - the font families kept
  * @param named - the face read and its family's name
  * @returns the families, that of the face holding it
- * @see REF-CSS-FONTS-4
+ * @see docs/domain/shapes.md#text
  */
 export function fontsWithFace(
   fonts: readonly FontFamily[],

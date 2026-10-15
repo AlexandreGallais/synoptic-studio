@@ -4,7 +4,7 @@ import type { FontFace } from "./font-face";
 export type FontFamily = {
   /** The family's name, as the SVG's `font-family` names it. */
   readonly name: string;
-  /** The version of its files the metrics were read from; empty for a family kept from the files the editor read (`fontsWithFace`). */
+  /** The version of the shipped data's files, Inter's `4.1`; empty for a family kept from the files the editor read (`fontsWithFace`), each face's file giving its own (`FontFile.version`). */
   readonly version: string;
   /** Its faces. */
   readonly faces: readonly FontFace[];

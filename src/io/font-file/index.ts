@@ -1,14 +1,10 @@
-export type * from "./font-table-record";
-export type * from "./font-tables";
+export * from "./font-tables-to-metrics";
 export * from "./parse-advance-widths";
 export * from "./parse-cap-height";
 export * from "./parse-embedding-permissions";
 export * from "./parse-fixed-metrics";
 export * from "./parse-font-metrics";
-export * from "./parse-font-tables";
 export * from "./parse-horizontal-header";
-export * from "./parse-table-directory";
-export * from "./parse-tag";
+export * from "./parse-os2-version";
 export * from "./parse-text-decorations";
 export * from "./parse-units-per-em";
-export * from "./table-to-view";

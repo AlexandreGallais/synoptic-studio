@@ -69,8 +69,8 @@ function directoryToHorizontalTables(
 }
 
 /**
- * Finds the tables of the decorations and permissions: `post` and `OS/2`, and the kerning tables
- * `GPOS` and `kern` if the font has them.
+ * Finds the tables of the decorations, permissions and names: `post` and `OS/2`, and the kerning
+ * tables `GPOS` and `kern` and the naming table `name` if the font has them.
  *
  * @kind format
  * @param directory - the font's table directory
@@ -79,16 +79,16 @@ function directoryToHorizontalTables(
  */
 function directoryToLayoutTables(
   directory: Directory,
-): Pick<FontTables, "gpos" | "kern" | "os2" | "post"> | undefined {
-  const { GPOS: gpos, kern, "OS/2": os2, post } = directory;
+): Pick<FontTables, "gpos" | "kern" | "name" | "os2" | "post"> | undefined {
+  const { GPOS: gpos, kern, name, "OS/2": os2, post } = directory;
 
-  return os2 === undefined || post === undefined ? undefined : { gpos, kern, os2, post };
+  return os2 === undefined || post === undefined ? undefined : { gpos, kern, name, os2, post };
 }
 
 /**
  * Finds the tables a font file needs to be measured: a TrueType or OpenType file whose directory
  * lists `cmap`, `head`, `hhea`, `hmtx`, `post` and `OS/2` within the file, each long enough for
- * the fields read in it, and `GPOS` and `kern` when it has them.
+ * the fields read in it, and `GPOS`, `kern` and `name` when it has them.
  *
  * @kind format
  * @param view - the font file

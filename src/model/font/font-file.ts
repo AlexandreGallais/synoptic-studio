@@ -4,4 +4,6 @@ export type FontFile = {
   readonly bytes: Readonly<Uint8Array>;
   /** Whether its `fsType` permits embedding the whole file (`isEmbeddable`, `DERIV-font-embedding`). */
   readonly isEmbeddable: boolean;
+  /** Its version string, name ID 5 of its `name` table, such as `Version 5.01x`; empty when it names none (`REF-OT-NAME`). */
+  readonly version: string;
 };

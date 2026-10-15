@@ -26,6 +26,6 @@ export type FontMetrics = {
   readonly strikeoutPosition: number;
   /** Thickness of the strike-out stroke (`REF-OT-OS2`). */
   readonly strikeoutSize: number;
-  /** `fsType`, the embedding permissions: 0 installable, 2 restricted, 4 preview and print, 8 editable (`REF-OT-OS2`). */
+  /** `fsType` as the file holds it: 0 installable, 2 restricted, 4 preview and print, 8 editable (`REF-OT-OS2`). The raw field only: whether the file may be embedded is decided by `isEmbeddable`, with the `OS/2` version, and kept in `FontFile.isEmbeddable`. */
   readonly embeddingPermissions: number;
 };
