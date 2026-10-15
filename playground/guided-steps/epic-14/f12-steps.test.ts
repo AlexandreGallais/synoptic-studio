@@ -10,9 +10,8 @@ import {
   readText,
   readValue,
   typeAndEnter,
-} from "../user-actions";
-
-import { GUIDED_STEPS_OF_EPIC_1 } from "./guided-steps-of-epic-1";
+} from "../../user-actions";
+import { GUIDED_STEPS_OF_EPIC_1 } from "../epic-1";
 
 /**
  * Opens the playground on a step of F12, in Points mode.

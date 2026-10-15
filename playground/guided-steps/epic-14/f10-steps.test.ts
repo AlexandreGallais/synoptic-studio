@@ -11,10 +11,10 @@ import {
   readText,
   readValue,
   typeAndEnter,
-} from "../user-actions";
+} from "../../user-actions";
+import { GUIDED_STEPS_OF_EPIC_1 } from "../epic-1";
 
 import { GUIDED_STEPS_F12 } from "./guided-steps-f12";
-import { GUIDED_STEPS_OF_EPIC_1 } from "./guided-steps-of-epic-1";
 
 /**
  * Opens the playground on a step of F10.

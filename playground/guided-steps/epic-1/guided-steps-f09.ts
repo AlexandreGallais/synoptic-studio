@@ -1,4 +1,4 @@
-import type { GuidedStep } from "./guided-step";
+import type { GuidedStep } from "../guided-step";
 
 /** The steps of the US-017 card (F09, VAL-006), one at a time. */
 export const GUIDED_STEPS_F09: readonly GuidedStep[] = [

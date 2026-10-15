@@ -1,4 +1,4 @@
-import type { GuidedStep } from "./guided-step";
+import type { GuidedStep } from "../guided-step";
 
 /** The rectangle of the F04 steps: 120 × 80, sharp, so that the numbers are round. */
 const RECTANGLE = {

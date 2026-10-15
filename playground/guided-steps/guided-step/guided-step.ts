@@ -1,3 +1,5 @@
+import type { GuidedText } from "./guided-text";
+
 /** One step of the guided test of the playground (VAL-001 to VAL-006): what to try and what to look at. */
 export type GuidedStep = {
   /** Short name of the step. */
@@ -16,6 +18,8 @@ export type GuidedStep = {
     readonly shape: string;
     /** Whether the polygon is stretched to its box (F06); unticked when absent. */
     readonly stretched?: boolean;
+    /** The Text tool's fields, when the step chooses the Text tool (F05); absent for a shape. */
+    readonly text?: GuidedText;
     /** Width typed. */
     readonly width: number;
   };

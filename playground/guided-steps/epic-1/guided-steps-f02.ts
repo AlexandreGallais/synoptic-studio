@@ -1,4 +1,4 @@
-import type { GuidedStep } from "./guided-step";
+import type { GuidedStep } from "../guided-step";
 
 /** The ten steps of US-007's test card and the one of US-008 (F02, VAL-002), one at a time. */
 export const GUIDED_STEPS_F02: readonly GuidedStep[] = [
