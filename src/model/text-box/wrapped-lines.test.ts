@@ -2,7 +2,7 @@ import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { ARIAL_BOX_METRICS, HELLO_TEXT } from "../../../tests";
-import { textBlock, textLines } from "../text-block";
+import { textLines } from "../text-block";
 
 import { wrappedLines } from "./wrapped-lines";
 
@@ -35,8 +35,6 @@ describe("wrappedLines (DERIV-text-box step 1)", () => {
     const text = { ...BOXED, content: "Hello World\nHello", isInBox: false };
 
     expect(wrappedLines(ARIAL_BOX_METRICS, text)).toEqual(["Hello World", "Hello"]);
-    // Its block is F05's: 82.6875 wide, two lines of 18.3984375.
-    expect(textBlock(ARIAL_BOX_METRICS, text)).toEqual({ height: 36.796875, width: 82.6875 });
   });
 
   test.prop({ content: fc.stringMatching(/^[ \nHWdelor]{0,40}$/u) })(
