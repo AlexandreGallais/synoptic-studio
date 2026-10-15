@@ -78,6 +78,20 @@ export const GUIDED_STEPS_F14_OPTIONS: readonly GuidedStep[] = [
     values: createTextBoxStepValues(TWO_LINES),
   },
   {
+    explanation:
+      "Import a font: Arial.ttf; then Alignment right, and type a space at the end: “Hello World ”.",
+    look: "Two bands, each as long as its word, 36.46 and 41.78; “World” and its band ending at the box's right edge (x 8.22), never past it.",
+    title: "F14 · A band ends with its line (US-049)",
+    values: createTextBoxStepValues({
+      boxHeight: 40,
+      boxWidth: 50,
+      content: "Hello World",
+      font: "Arial",
+      hasBackground: true,
+      isInBox: true,
+    }),
+  },
+  {
     explanation: "Background color #22c55e; Background opacity 40.",
     look: "Light green bands under the letters; SVG output: one path, fill-opacity 0.4.",
     title: "F14 · Background color and opacity",
