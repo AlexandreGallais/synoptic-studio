@@ -20,11 +20,17 @@ The library writes a text, when the document's HTML layer is on, as a `switch`: 
 - Given a background, when written, then each paragraph is a `span` whose `background-color` is the background's color with its opacity, so that each line is highlighted as the library's bands are (`REF-CSS-INLINE-3`, §5.3).
 - Given the HTML layer off, when written, then no `switch` nor `foreignObject` is written and every shape and text of E01, E14, F05, F14 and F16 is written as before.
 
+## Notes
+
+- The property test of the layer's frame (`htmlLayerFrame`) checks the browser's first baseline against the library's with the same model of a browser — `cssFirstBaselineOffset` and `blockOffsetInBox` — that the code uses: it guards the arithmetic, not what a browser does. What a browser does was checked by the audit in Chromium and Firefox, and becomes steps of VAL-017 ("Browser checks of the HTML layer").
+- The audit's fixes (T5): the content's `div` never shrunk in its box and aligned `unsafe`; no layer for a box 0 wide or 0 tall; a last empty paragraph held open by a zero-width space; the `foreignObject` not clipping, the cut with the ellipsis off clipping down only; the fitness test reading every spelling of `createElementNS` and every element's namespace list.
+
 ## Tasks
 
 One task = one commit, referenced as `EN-041.Tn`.
 
-- [ ] T1 — A fitness test: every element `src/` and `playground/` create is one ADR-0053 allows, in its namespace, and a document written puts each in its place (`style` only in `defs`, `foreignObject` only as the first child of a `switch`, `switch` only around a text's group); mutation-checked (CHK-017's evolvability check) (1 h)
-- [ ] T2 — The CSS of a text's options for its HTML layer, as plain data (property and value), `@see REF-MDN-WHITE-SPACE`, `REF-MDN-OVERFLOW-WRAP`, `REF-MDN-LINE-CLAMP`, `REF-MDN-TEXT-WRAP`, `REF-MDN-TEXT-DECORATION-THICKNESS`; tests first (3 h)
-- [ ] T3 — Where the layer is placed: the block's or box's rectangle, raised by half the line gap for an automatic line height, from the first line's top before a trim, `@see DERIV-html-layer`; its condition (`USE_TYPO_METRICS` unset with `win` equal to `hhea`, or set with the typographic values equal to `hhea`; Arial and Inter 4.1 meet it) written in the TSDoc; tests first, the derivation's checks (2 h)
-- [ ] T4 — The `switch` in the render: the `foreignObject` in the SVG namespace, its `div` and `span` in the XHTML namespace, the text's group second without its `transform`, an outer group carrying the turn; the option off by default, the output then exactly as before; `shapes.md` (HTML layer) updated; tests first (2 h)
+- [x] T1 — A fitness test: every element `src/` and `playground/` create is one ADR-0053 allows, in its namespace, and a document written puts each in its place (`style` only in `defs`, `foreignObject` only as the first child of a `switch`, `switch` only around a text's group); mutation-checked (CHK-017's evolvability check) (1 h)
+- [x] T2 — The CSS of a text's options for its HTML layer, as plain data (property and value), `@see REF-MDN-WHITE-SPACE`, `REF-MDN-OVERFLOW-WRAP`, `REF-MDN-LINE-CLAMP`, `REF-MDN-TEXT-WRAP`, `REF-MDN-TEXT-DECORATION-THICKNESS`; tests first (3 h)
+- [x] T3 — Where the layer is placed: the block's or box's rectangle, raised by half the line gap for an automatic line height, from the first line's top before a trim, `@see DERIV-html-layer`; its condition (`USE_TYPO_METRICS` unset with `win` equal to `hhea`, or set with the typographic values equal to `hhea`; Arial and Inter 4.1 meet it) written in the TSDoc; tests first, the derivation's checks (2 h)
+- [x] T4 — The `switch` in the render: the `foreignObject` in the SVG namespace, its `div` and `span` in the XHTML namespace, the text's group second without its `transform`, an outer group carrying the turn; the option off by default, the output then exactly as before; `shapes.md` (HTML layer) updated; tests first (2 h)
+- [x] T5 — The audit's fixes, read in CSS Flexbox 1, CSS Box Alignment 3, CSS Inline 3, CSS Overflow 3 and SVG 2 (§12.2); VAL-017's browser steps (1 h)

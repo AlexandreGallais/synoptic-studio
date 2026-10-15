@@ -8,6 +8,6 @@ export type HtmlLayer = {
   readonly lineHeight: number;
   /** The most lines its box shows, which the browser shows at most; 0 for no limit, a text that fits its content among them. */
   readonly lineLimit: number;
-  /** Its content written in its case, cut at each line break typed, one `span` each. */
+  /** Its content written in its case, cut at each line break typed, one `span` each; a last one left empty holds a zero-width space (`htmlLayerParagraphs`). */
   readonly paragraphs: readonly string[];
 };
