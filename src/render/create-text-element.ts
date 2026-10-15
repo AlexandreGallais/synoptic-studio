@@ -107,8 +107,8 @@ function createBackgroundElements(
  * measured (`white-space="pre"` for SVG 2 readers, `xml:space="preserve"` for SVG 1.1 ones,
  * ADR-0054), then one `<path>` rectangle per underline or strike-through; a text with a
  * background draws it first, one `<path>` under its letters (`DERIV-text-box`, step 10). A turned
- * text's `<g>` carries a `transform` turning it about the middle of its block (ADR-0055,
- * decision 3), so that its background, underlines and strike-throughs turn with its letters; a
+ * text's `<g>` carries a `transform` turning it about the middle of its block, or of its box for a text in a box (ADR-0055,
+ * decision 3; `DERIV-text-box`, step 8), so that its background, underlines and strike-throughs turn with its letters; a
  * text at 0° carries none.
  *
  * @kind procedure

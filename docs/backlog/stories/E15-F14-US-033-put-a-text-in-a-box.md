@@ -16,7 +16,7 @@ As a designer, I want to put a long text in a box of given width and height, wra
 - Given the Text tool, when **Box** is chosen with a width and a height, then the text wraps in the box, the frame shows the box, and the SVG still holds one `<text>` with one positioned `<tspan>` per line shown, without `text-anchor` nor `dominant-baseline` (ADR-0052, `DERIV-text-box`).
 - Given "Hello World" in Inter at size 16 in a box whose width leaves room for "Hello" only, when drawn, then "World" is on a second line; given **Max lines** = 1, then one line ending with "…" is drawn (F14.AC1, F14.AC2).
 - Given **Long words** = **Break** or **Move whole**, when a word wider than the box is typed, then it breaks at a character, or stays whole on its line, ending with "…" when **Ellipsis** is ticked and drawn whole when it is not (F14.AC1).
-- Given **Vertical alignment** top, middle or bottom, **Line height** automatic or a number, **Wrap** automatic or balanced, and **Trim**, when chosen, then the lines move as `DERIV-text-box` steps 7 to 9 say (F14.AC3, F14.AC5).
+- Given **Vertical alignment** top, middle or bottom, **Line height** automatic or a number, **Wrap** **Automatic** or **Balance**, and **Trim**, when chosen, then the lines move as `DERIV-text-box` steps 7 to 9 say (F14.AC3, F14.AC5).
 - Given **Fit content**, when chosen again, then the text draws exactly as in F05, and every shape of E01 and E14 draws as before (F14.AC6).
 - Given a text in a box turned by 90°, when selected, then its box is shown, turned about its middle.
 

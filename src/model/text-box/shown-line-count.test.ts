@@ -83,6 +83,14 @@ describe("shownLineCount (DERIV-text-box step 5)", () => {
     expect(shownLineCount(boxed(94, 0), { firstLine: 9.4, line: 9.4 }, 20)).toBe(10);
   });
 
+  it("shows every line wrapped when a line takes no height", () => {
+    // A font whose ascender, descender and line gap add up to 0 gives an automatic line height
+    // of 0: in a box 0 tall, f = 0 ≤ 0 and each further line adds 0, so all 3 lines fit
+    // (AUD-016); (0 − 0) / 0 would be NaN and show none.
+    expect(shownLineCount(boxed(0, 0), { firstLine: 0, line: 0 }, 3)).toBe(3);
+    expect(shownLineCount(boxed(0, 2), { firstLine: 0, line: 0 }, 3)).toBe(2);
+  });
+
   it("counts a chosen line height", () => {
     // A line height of 24: h(2) = 48 ≤ 50 < h(3) = 72.
     expect(shownLineCount(boxed(50, 0), { firstLine: 24, line: 24 }, 10)).toBe(2);

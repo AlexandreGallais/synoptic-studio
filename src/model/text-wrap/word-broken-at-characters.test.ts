@@ -1,3 +1,4 @@
+import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { ARIAL_BOX_METRICS, HELLO_TEXT } from "../../../tests";
@@ -54,6 +55,13 @@ describe("wordBrokenAtCharacters (DERIV-text-box step 4)", () => {
     expect(brokenLines("He\u{301}", 12, [])).toEqual(["H", "e\u{301}"]);
   });
 
+  it("never measures a space after a no-break space for the fit", () => {
+    // In a box 12: "H" 11.55, "e" alone ("el" 12.45 > 12), "ll" 910 / 128 = 7.10938. "ll" + the
+    // no-break space (569) = 1479 / 128 = 11.55469 ≤ 12 fits; the space after it (569 more,
+    // 16.00781) is not measured (step 2), so it stays on the line (AUD-016).
+    expect(brokenLines("Hell\u{A0} ", 12, [])).toEqual(["H", "e", "ll\u{A0} "]);
+  });
+
   it("never ends a line with a no-break space: it moves with the unit after it", () => {
     // In a box 45: "Hello" 36.46 ≤ 45; "Hello" + no-break space (569) = 5236 / 128 = 40.91 would
     // fit, but the no-break space goes with "W": 7169 / 128 = 56.01 > 45, so the cut comes before
@@ -73,5 +81,15 @@ describe("wordBrokenAtCharacters (DERIV-text-box step 4)", () => {
     // A box 0 wide: no unit follows the no-break space, which goes alone, the cut before it.
     expect(brokenLines("H\u{A0}", 0, [])).toEqual(["H", "\u{A0}"]);
     expect(brokenLines("H\u{A0} ", 0, [])).toEqual(["H", "\u{A0} "]);
+  });
+
+  test.prop({
+    boxWidth: fc.integer({ max: 60, min: 0 }),
+    word: fc.stringMatching(/^[HWdelor\u{A0}]{0,20} *$/u),
+  })("gives back the word whole, no line ending with a no-break space", ({ boxWidth, word }) => {
+    const lines = brokenLines(word, boxWidth, []);
+
+    expect(lines.join("")).toBe(word);
+    expect(lines.slice(0, -1).some((line) => line.endsWith("\u{A0}"))).toBe(false);
   });
 });

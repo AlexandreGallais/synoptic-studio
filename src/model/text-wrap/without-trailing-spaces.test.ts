@@ -1,3 +1,4 @@
+import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { withoutTrailingSpaces } from "./without-trailing-spaces";
@@ -23,4 +24,16 @@ describe("withoutTrailingSpaces (REF-UAX14, SP)", () => {
 
     expect(withoutTrailingSpaces(line)).toBe(`${" ".repeat(40_000)}x`);
   });
+
+  test.prop({ line: fc.stringMatching(/^[ Ha\u{A0}]{0,12}$/u) })(
+    "keeps a prefix of the line, ending with no space, the rest spaces only, the same once more",
+    ({ line }) => {
+      const kept = withoutTrailingSpaces(line);
+
+      expect(line.startsWith(kept)).toBe(true);
+      expect(kept.endsWith(" ")).toBe(false);
+      expect(line.slice(kept.length).replaceAll(" ", "")).toBe("");
+      expect(withoutTrailingSpaces(kept)).toBe(kept);
+    },
+  );
 });

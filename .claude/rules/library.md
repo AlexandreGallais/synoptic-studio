@@ -36,6 +36,3 @@ paths:
 - A clamp before a bisection on a monotone predicate is unobservable (false everywhere ends at the low end, true everywhere at the high end): a mutation survives it; drop it or say so (EN-017).
 - `functional/prefer-immutable-types` reports nested readonly arrays or records in parameters as shallow when a file is linted alone (lint-staged) though the full run passes: use named row types or flat keyed records (EN-031).
 - happy-dom: a `<select>` moved from a `DOMParser` document loses its `selected` option: choose the value again in the test (US-031).
-- A commit-body line that starts with a word and a colon (`word: …`) is read by commitlint as a footer, the lines after it as its value: reword it, or put the colon later in the line (F14).
-- Timing tests: the lint forbids `performance.now()` and `Date.now()` (non-deterministic); bound the time with Vitest's per-test `timeout` (`it("…", { timeout: 1000 }, …)`), with a margin for the loaded pre-push run, seen 2.5 times slower than a test run alone (EN-036).
-- The pre-push hook refuses a branch named outside `<type>/<id>-<topic>`, `feature/f<nn>-<topic>`, `main` and `develop` (`.validate-branch-namerc.json`): a worktree's own branch cannot be pushed; work on a story branch (F14).

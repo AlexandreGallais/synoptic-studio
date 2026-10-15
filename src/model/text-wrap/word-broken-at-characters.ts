@@ -60,9 +60,17 @@ function wrapWithUnit(line: LineMeasure, unit: string, context: TextInBox): Line
  * @see DERIV-text-box
  */
 function wordWrapWithUnit(state: WordWrap, unit: string, context: TextInBox): WordWrap {
-  return isNoBreakAfter(unit)
-    ? { ended: [], line: state.line, pending: state.pending + unit }
-    : { ...wrapWithUnit(state.line, state.pending + unit, context), pending: "" };
+  if (isNoBreakAfter(unit)) {
+    return { ended: [], line: state.line, pending: state.pending + unit };
+  }
+
+  if (unit === SPACE && state.pending !== "") {
+    const pending = wrapWithUnit(state.line, state.pending, context);
+
+    return { ...pending, line: wrapWithUnit(pending.line, unit, context).line, pending: "" };
+  }
+
+  return { ...wrapWithUnit(state.line, state.pending + unit, context), pending: "" };
 }
 
 /**
