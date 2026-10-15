@@ -1,7 +1,14 @@
+export * from "./brightness";
 export * from "./chroma";
+export * from "./hsb-component";
+export * from "./hsb-saturation";
+export * from "./hsb-to-rgb";
+export * from "./hsl-component";
 export * from "./hsl-saturation";
+export * from "./hsl-to-rgb";
 export * from "./hue";
 export * from "./hue-on-hexagon";
 export * from "./lightness";
 export type * from "./rgb";
+export * from "./rgb-to-hsb";
 export * from "./rgb-to-hsl";
