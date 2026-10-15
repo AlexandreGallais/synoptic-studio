@@ -217,7 +217,6 @@ describe("the guided test of F05 (VAL-014): the Text tool's options", () => {
   it.each([
     ["upper", "PUMP P-101 IS RUNNING"],
     ["lower", "pump p-101 is running"],
-    ["sentence", "Pump P-101 is running"],
     ["title", "Pump P-101 Is Running"],
     ["camel", "pumpP101IsRunning"],
     ["pascal", "PumpP101IsRunning"],

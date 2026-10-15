@@ -220,18 +220,17 @@ Decided by the Product Owner at F05's refinement, rounds 1 and 2 (2026-10-14); d
   - an alignment of its lines (left, center, right), a position (the top-left of its block before it turns: integers when typed, finite and possibly fractional once a turned text has grown, ADR-0057) and an angle.
 - **Case transforms** (Q36, the agent's proposal of 2026-10-15; kept by the Product Owner on 2026-10-15, sentence case removed as of no use, US-037): each line is written in the case on its own, its line breaks kept; a text whose case is not one of these, `sentence` among them, is refused. For "pump P-101 is running":
 
-  | Case  | Rule                       | Gives                   |
-  | ----- | -------------------------- | ----------------------- |
-  | none  | as typed                   | `pump P-101 is running` |
-  | upper | every letter in upper case | `PUMP P-101 IS RUNNING` |
-  | lower | every letter in lower case | `pump p-101 is running` |
-
-  | title | the first letter of each run of characters between white space (space, no-break space, tab) in upper case, the spaces and the rest kept (`pump  on` gives `Pump  On`) | `Pump P-101 Is Running` |
-  | camel | the words, cut at spaces, hyphens and underscores, in lower case, each but the first capitalized, joined | `pumpP101IsRunning` |
-  | Pascal | the same words, each capitalized, joined | `PumpP101IsRunning` |
-  | kebab | the same words in lower case, joined by hyphens | `pump-p-101-is-running` |
-  | snake | the same words in lower case, joined by underscores | `pump_p_101_is_running` |
-  | constant | the same words in upper case, joined by underscores | `PUMP_P_101_IS_RUNNING` |
+  | Case     | Rule                                                                                                                                                                  | Gives                   |
+  | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
+  | none     | as typed                                                                                                                                                              | `pump P-101 is running` |
+  | upper    | every letter in upper case                                                                                                                                            | `PUMP P-101 IS RUNNING` |
+  | lower    | every letter in lower case                                                                                                                                            | `pump p-101 is running` |
+  | title    | the first letter of each run of characters between white space (space, no-break space, tab) in upper case, the spaces and the rest kept (`pump  on` gives `Pump  On`) | `Pump P-101 Is Running` |
+  | camel    | the words, cut at spaces, hyphens and underscores, in lower case, each but the first capitalized, joined                                                              | `pumpP101IsRunning`     |
+  | Pascal   | the same words, each capitalized, joined                                                                                                                              | `PumpP101IsRunning`     |
+  | kebab    | the same words in lower case, joined by hyphens                                                                                                                       | `pump-p-101-is-running` |
+  | snake    | the same words in lower case, joined by underscores                                                                                                                   | `pump_p_101_is_running` |
+  | constant | the same words in upper case, joined by underscores                                                                                                                   | `PUMP_P_101_IS_RUNNING` |
 
   A run of separators cuts once, so a line of separators only gives an empty line in the programmers' cases.
 

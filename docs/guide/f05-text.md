@@ -6,19 +6,19 @@ A **Text** tool writes a label in a symbol: "Pump P-101" over "Running", in the 
 
 ![“Pump P-101” over “Running” in Inter 32, its measured block dashed around it](./images/f05-label.svg)
 
-| Option                               | What it does                                                                                       |
-| ------------------------------------ | -------------------------------------------------------------------------------------------------- |
-| **Content**                          | the lines, broken where the designer pressed Enter; empty, nothing is drawn                        |
-| **Font**                             | any font name, written with `sans-serif` after it for a reader that lacks it                       |
-| **Size**                             | an integer from 1 to 100 000, in the one unit used everywhere                                      |
-| **Weight**, **Bold**, **Italic**     | 100 (thin) to 900 (black); Bold sets 700, Italic slants                                            |
-| **Color**, **Opacity**               | `#` and six hexadecimal digits; 0 to 100 %                                                         |
-| **Letter spacing**, **Word spacing** | added between the letters, or at each space; negative to tighten                                   |
-| **Underline**, **Strike-through**    | a thin rectangle under or through each line, where the font says                                   |
-| **Case**                             | the text written in upper, lower, sentence or title case, or as `camelCase`, `kebab-case` and more |
-| **Direction**                        | left to right, or right to left (Hebrew)                                                           |
-| **Alignment**                        | each line on the left, the center or the right of the block                                        |
-| **X**, **Y**, **Angle**              | the block's top-left corner, and a turn about its middle; each tool keeps its own                  |
+| Option                               | What it does                                                                             |
+| ------------------------------------ | ---------------------------------------------------------------------------------------- |
+| **Content**                          | the lines, broken where the designer pressed Enter; empty, nothing is drawn              |
+| **Font**                             | any font name, written with `sans-serif` after it for a reader that lacks it             |
+| **Size**                             | an integer from 1 to 100 000, in the one unit used everywhere                            |
+| **Weight**, **Bold**, **Italic**     | 100 (thin) to 900 (black); Bold sets 700, Italic slants                                  |
+| **Color**, **Opacity**               | `#` and six hexadecimal digits; 0 to 100 %                                               |
+| **Letter spacing**, **Word spacing** | added between the letters, or at each space; negative to tighten                         |
+| **Underline**, **Strike-through**    | a thin rectangle under or through each line, where the font says                         |
+| **Case**                             | the text written in upper, lower or title case, or as `camelCase`, `kebab-case` and more |
+| **Direction**                        | left to right, or right to left (Hebrew)                                                 |
+| **Alignment**                        | each line on the left, the center or the right of the block                              |
+| **X**, **Y**, **Angle**              | the block's top-left corner, and a turn about its middle; each tool keeps its own        |
 
 Rules: [domain, "Text"](../domain/shapes.md#text); decisions: [ADR-0052](../adr/0052-text-measured-and-drawn-as-positioned-lines.md), [ADR-0054](../adr/0054-text-font-list-and-spaces-kept.md), [ADR-0055](../adr/0055-text-fallback-metrics-and-turn-on-its-group.md); formula: [`DERIV-text-width`](../derivations/text-width.md).
 

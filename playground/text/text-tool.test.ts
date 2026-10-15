@@ -2,6 +2,7 @@
 
 import { beforeEach, describe, expect, it } from "vitest";
 
+import { TEXT_OPTIONS } from "../../src";
 import {
   chooseOption,
   clickElement,
@@ -263,6 +264,27 @@ describe("Text tool", () => {
       ["H", "0", "15.5"],
       ["HH", "0", "34.85938"],
     ]);
+  });
+
+  it("[F05.AC4] offers nine cases, no sentence case, and writes title case word by word", () => {
+    const cases = [...document.querySelectorAll<HTMLOptionElement>("#text-case option")];
+
+    expect(cases.map((option) => option.value)).toEqual([
+      "none",
+      "upper",
+      "lower",
+      "title",
+      "camel",
+      "pascal",
+      "kebab",
+      "snake",
+      "constant",
+    ]);
+
+    expect(cases.map((option) => option.value)).toEqual(TEXT_OPTIONS.cases);
+    typeContent("pump P-101 is running");
+    chooseOption("text-case", "title");
+    expect(readLines().map(([content]) => content)).toEqual(["Pump P-101 Is Running"]);
   });
 
   it("[F05.AC4] writes the lines in the case chosen", () => {

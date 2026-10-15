@@ -49,11 +49,11 @@ describe("wrappedLines (DERIV-text-box step 1)", () => {
   });
 
   it("wraps the content in its case, and gives no line for an empty content", () => {
-    // In sentence case "Hello world": 4667 + 569 + w 1536 (glyph 0) + 1139 + 682 + 455 + 1139
-    // = 10 187 units, 79.58594 > 50, so it wraps after the space.
-    const text = { ...BOXED, content: "hello world", textCase: "sentence" } as const;
+    // In title case "Hello World": 4667 + 569 + 1933 + 1139 + 682 + 455 + 1139 = 10 584 units,
+    // 82.6875 > 50, so it wraps after the space; as typed it would give "hello", "world".
+    const text = { ...BOXED, content: "hello world", textCase: "title" } as const;
 
-    expect(wrappedLines(ARIAL_BOX_METRICS, text, wrappedParagraph)).toEqual(["Hello", "world"]);
+    expect(wrappedLines(ARIAL_BOX_METRICS, text, wrappedParagraph)).toEqual(["Hello", "World"]);
 
     expect(wrappedLines(ARIAL_BOX_METRICS, { ...BOXED, content: "" }, wrappedParagraph)).toEqual(
       [],

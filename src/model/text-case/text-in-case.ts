@@ -23,7 +23,6 @@ const LINE_IN_CASE: Readonly<Record<TextCase, (line: string) => string>> = {
     caseWords(line.toLowerCase())
       .map((word) => capitalized(word))
       .join(""),
-  sentence: (line) => capitalized(line),
   snake: (line) => caseWords(line.toLowerCase()).join("_"),
   title: (line) => line.replaceAll(WORD, (word) => capitalized(word)),
   upper: (line) => line.toUpperCase(),
@@ -31,9 +30,9 @@ const LINE_IN_CASE: Readonly<Record<TextCase, (line: string) => string>> = {
 
 /**
  * The content of a text written in a case, line by line, its line breaks kept (Q36): upper,
- * lower, the first letter of each line capitalized (sentence), the first letter of each run of
- * characters between white space capitalized (title), or its words, cut at spaces, hyphens and
- * underscores, joined in camel, Pascal, kebab, snake or constant case.
+ * lower, the first letter of each run of characters between white space capitalized (title), or
+ * its words, cut at spaces, hyphens and underscores, joined in camel, Pascal, kebab, snake or
+ * constant case.
  *
  * @kind domain
  * @param content - what the designer typed, a line break (CR LF, CR or LF) between two lines
