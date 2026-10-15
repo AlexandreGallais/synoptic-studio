@@ -1,3 +1,4 @@
+import { TEXT_BOX_DEFAULTS } from "../../src";
 import { readNumber, selectElement } from "../page";
 import { readAngle } from "../position";
 
@@ -46,6 +47,7 @@ export function readTextModel(document: Document): Text {
   const direction = readFieldValue(document, "text-direction") as TextDirection;
 
   return {
+    ...TEXT_BOX_DEFAULTS,
     alignment,
     angle: readAngle(document),
     color: readFieldValue(document, "text-color"),

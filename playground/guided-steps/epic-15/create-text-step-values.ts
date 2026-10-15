@@ -1,7 +1,10 @@
+import { TEXT_BOX_DEFAULTS } from "../../../src";
+
 import type { GuidedStep, GuidedText } from "../guided-step";
 
 /** The text the page opens with: "Pump P-101" over "Running", Inter 32, regular, at (0, 0). */
 const TEXT: GuidedText = {
+  ...TEXT_BOX_DEFAULTS,
   alignment: "left",
   angle: 0,
   color: "#1e293b",

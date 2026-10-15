@@ -28,6 +28,6 @@ Arial 5.01 at size 16, kerning left out, as in `DERIV-text-width` (one font unit
 
 One task = one commit, referenced as `EN-033.Tn`.
 
-- [ ] T1 — The options of the box in the text type, their validity and their bounds; F05's texts given the defaults (fit content, line height automatic, no trim, no background, ellipsis on); tests first (2 h)
+- [x] T1 — The options of the box in the text type, their validity and their bounds; F05's texts given the defaults (fit content, line height automatic, no trim, no background, ellipsis on); tests first (2 h)
 - [ ] T2 — The paragraphs cut into tokens at spaces and wrapped greedily, the spaces at a wrap dropped, `@see DERIV-text-box`; tests first, a property: no line but a long word's is wider than the box (3 h)
 - [ ] T3 — A long word broken at a character or moved whole; tests first, a property: the lines joined give back the paragraph without its dropped spaces (2 h)
