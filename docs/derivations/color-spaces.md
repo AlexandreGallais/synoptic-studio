@@ -4,17 +4,17 @@ Used by: EN-037 (the hexadecimal forms and the opacity), EN-038 (HSL and HSB fro
 
 ## Notation
 
-| Symbol        | Definition                                                                        |
-| ------------- | --------------------------------------------------------------------------------- |
-| `R`, `G`, `B` | the red, green and blue bytes, integers from 0 to 255                             |
-| `r`, `g`, `b` | the same as fractions: `r = R / 255`, from 0 to 1                                 |
-| `M`, `m`      | `max(r, g, b)` and `min(r, g, b)`                                                 |
-| `C`           | the chroma, `M − m`                                                               |
-| `H`           | the hue, in degrees, from 0 included to 360 excluded                              |
-| `S_L`, `L`    | HSL's saturation and lightness, as fractions from 0 to 1 (shown in percent)       |
-| `S_V`, `V`    | HSB's saturation and brightness (HSV's value), as fractions (shown in percent)    |
-| `p`, `A`      | the opacity in percent, an integer from 0 to 100, and an alpha byte from 0 to 255 |
-| `round(x)`    | the nearest integer, a tie rounded up: `⌊x + 0.5⌋` (`REF-CSS-COLOR-4` §16.1.1)    |
+| Symbol        | Definition                                                                                                        |
+| ------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `R`, `G`, `B` | the red, green and blue bytes, integers from 0 to 255                                                             |
+| `r`, `g`, `b` | the same as fractions: `r = R / 255`, from 0 to 1                                                                 |
+| `M`, `m`      | `max(r, g, b)` and `min(r, g, b)`                                                                                 |
+| `C`           | the chroma, `M − m`                                                                                               |
+| `H`           | the hue, in degrees, from 0 included to 360 excluded                                                              |
+| `S_L`, `L`    | HSL's saturation and lightness, as fractions from 0 to 1 (shown in percent)                                       |
+| `S_V`, `V`    | HSB's saturation and brightness (HSV's value), as fractions (shown in percent)                                    |
+| `p`, `A`      | the opacity in percent, an integer from 0 to 100, and an alpha byte from 0 to 255                                 |
+| `round(x)`    | the nearest integer, a tie rounded up: `⌊x + 0.5⌋` (`REF-CSS-COLOR-4` §16.1.1), computed by `Math.round` (step 8) |
 
 ## Step 1 — The hexadecimal forms
 
@@ -123,7 +123,7 @@ A designer reads the HSL or HSB values and may type them back. Integers cannot k
 | one decimal  | 0                         | 0                         |
 | two decimals | 0                         | 0                         |
 
-A hue rounded to 360.0 is shown 0.0. No bound proves the one-decimal case by itself: rounding the lightness to a tenth of a percent moves a byte by up to 0.26, rounding the hue to a tenth of a degree by up to 0.21, together more than 0.5. The exhaustive count is the proof.
+A hue rounded to 360.0 is shown 0.0, by the remainder `n − 360 · ⌊n / 360⌋` of the rounded hue, which is never negative; the library takes it with `%` (`nonNegativeRemainder`, `REF-ECMA-262-NUMBER-REMAINDER`), exact in binary64, where `modulo`'s added divisor turns 30.1 into 30.100000000000023 (EN-038). No bound proves the one-decimal case by itself: rounding the lightness to a tenth of a percent moves a byte by up to 0.26, rounding the hue to a tenth of a degree by up to 0.21, together more than 0.5. The exhaustive count is the proof.
 
 ## Step 10 — The plane of the picker
 
