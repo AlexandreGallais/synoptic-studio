@@ -12,15 +12,7 @@ import { decorationCorners } from "../model";
 import { createPathElement } from "./create-path-element";
 import { SVG_NAMESPACE } from "./svg-namespace";
 
-import type { DrawnText, LineDecoration, PositionedLine, Text } from "../model";
-
-/** The fill of a `<path>`: a color and an opacity. */
-type PathFill = {
-  /** Its color, `#` and six hexadecimal digits. */
-  readonly color: string;
-  /** Its opacity, an integer from 0 (invisible) to 100 %. */
-  readonly opacity: number;
-};
+import type { ColorFill, DrawnText, LineDecoration, PositionedLine, Text } from "../model";
 
 /** Namespace of the `xml:` attributes (`REF-SVG2-TEXT`, §11.10.3.2). */
 const XML_NAMESPACE = "http://www.w3.org/XML/1998/namespace";
@@ -68,7 +60,7 @@ function decorationToPathData(decoration: LineDecoration): string {
  * @returns the detached `<path>`
  * @see REF-SVG2-PATHS
  */
-function createFilledPath(document: Document, pathData: string, fill: PathFill): SVGPathElement {
+function createFilledPath(document: Document, pathData: string, fill: ColorFill): SVGPathElement {
   const path = createPathElement(document, pathData);
 
   path.setAttribute("fill", fill.color);
@@ -105,7 +97,8 @@ function createBackgroundElements(
  * Creates the SVG of a text (ADR-0052): a `<g>` holding one `<text>` with its attributes and one
  * positioned `<tspan>` per line, every space kept so that a reader draws the spaces the library
  * measured (`white-space="pre"` for SVG 2 readers, `xml:space="preserve"` for SVG 1.1 ones,
- * ADR-0054), then one `<path>` rectangle per underline or strike-through; a text with a
+ * ADR-0054), then one `<path>` rectangle per underline or strike-through, each in its own color
+ * and opacity (`textStrokeFill`, US-041); a text with a
  * background draws it first, one `<path>` under its letters (`DERIV-text-box`, step 10). A turned
  * text's `<g>` carries a `transform` turning it about the middle of its block, or of its box for a text in a box (ADR-0055,
  * decision 3; `DERIV-text-box`, step 8), so that its background, underlines and strike-throughs turn with its letters; a
@@ -134,13 +127,11 @@ export function createTextElement(document: Document, text: Text, drawn: DrawnTe
     group.setAttribute("transform", formatRotation(text.angle, drawn.center));
   }
 
-  const decorationFill = { color: text.color, opacity: text.opacity };
-
   group.append(
     ...createBackgroundElements(document, drawn.backgrounds, text),
     element,
     ...drawn.decorations.map((decoration) =>
-      createFilledPath(document, decorationToPathData(decoration), decorationFill),
+      createFilledPath(document, decorationToPathData(decoration), decoration),
     ),
   );
 
