@@ -1,3 +1,4 @@
+import { heightFromBottom } from "./height-from-bottom";
 import { PERCENT_SLIDER_RANGE } from "./percent-slider-range";
 import { sliderPositionOf } from "./slider-position-of";
 
@@ -23,7 +24,6 @@ export function planePointOf(values: PlaneValues, size: Size): Point {
 
   return {
     x: sliderPositionOf(values.saturation, size.width, maximum),
-    // The distance up from the bottom edge, taken from the height.
-    y: size.height - sliderPositionOf(values.level, size.height, maximum),
+    y: heightFromBottom(sliderPositionOf(values.level, size.height, maximum), size.height),
   };
 }

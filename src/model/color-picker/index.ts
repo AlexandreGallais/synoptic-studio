@@ -1,4 +1,5 @@
 export type * from "./color-model";
+export * from "./height-from-bottom";
 export * from "./hue-slider-range";
 export * from "./percent-slider-range";
 export type * from "./picked-color";
