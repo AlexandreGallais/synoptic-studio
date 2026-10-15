@@ -2,9 +2,9 @@ import { roundedContour } from "../geometry";
 import {
   contourPiecesToPathData,
   formatRotation,
+  formatSubPaths,
   formatSvgNumber,
   percentToOpacity,
-  subPathsToPathData,
   textToAttributes,
 } from "../io";
 import { decorationCorners } from "../model";
@@ -93,7 +93,7 @@ function createBackgroundElements(
   backgrounds: readonly LineDecoration[],
   text: Text,
 ): readonly SVGPathElement[] {
-  const pathData = subPathsToPathData(
+  const pathData = formatSubPaths(
     backgrounds.map((background) => decorationToPathData(background)),
   );
   const fill = { color: text.backgroundColor, opacity: text.backgroundOpacity };

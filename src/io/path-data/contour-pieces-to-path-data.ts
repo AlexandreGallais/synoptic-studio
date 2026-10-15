@@ -1,11 +1,9 @@
 import { formatArcCommand } from "./format-arc-command";
 import { formatCoordinatePair } from "./format-coordinate-pair";
 import { formatCubicCommand } from "./format-cubic-command";
+import { SEPARATOR } from "./separator";
 
 import type { ContourPiece } from "../../geometry";
-
-/** Separator between path-data commands (SVG 2 §9.3.9, `wsp`). */
-const SEPARATOR = " ";
 
 /** `closepath` command: closes the path back to its initial point (SVG 2 §9.3.4). */
 const CLOSE_PATH = "Z";
