@@ -1,5 +1,6 @@
-import { DEFAULT_FONT, isValidText, isValidTextBox, textFontMetrics } from "../../src";
+import { isValidText, isValidTextBox, textFontMetrics } from "../../src";
 import { writeColorSwatches } from "../color-fields";
+import { readFontSession, writeFontFields } from "../fonts";
 import { selectElement, writeText } from "../page";
 
 import { readTextModel } from "./read-text-model";
@@ -44,9 +45,9 @@ function writeTextBoxFields(document: Document, text: Text): void {
 /**
  * Updates the page for the Text tool: the bold button pressed at weight 700 or heavier; the fields
  * read only in a box shown when Box is chosen, and while one of them is refused, so that the
- * value outlined stays in sight (US-033); the text drawn with
- * its block, measured with its fallback's metrics, else the default font's (Inter), when its font
- * has none (ADR-0055, decision 1), Inter's being the only metrics read here;
+ * value outlined stays in sight (US-033); the font and weight lists brought up to date with the
+ * session's fonts (`writeFontFields`, US-036); the text drawn with its block, measured with the
+ * metrics of the family chosen, Inter or a font imported or installed and read (US-036);
  * each color's swatch painted with it (US-035);
  * a refused text clears the drawing and says why, its fields outlined.
  *
@@ -55,8 +56,10 @@ function writeTextBoxFields(document: Document, text: Text): void {
  * @see docs/backlog/stories/E15-F05-US-031-place-a-text.md
  */
 export function updateTextTool(document: Document): void {
+  writeFontFields(document);
+
   const text = readTextModel(document);
-  const metrics = textFontMetrics(text, [DEFAULT_FONT]);
+  const metrics = textFontMetrics(text, readFontSession(document).kept);
   const isValid = metrics !== undefined && isValidText(text);
 
   selectElement(document, "text-bold").setAttribute("aria-pressed", String(text.weight >= BOLD));
