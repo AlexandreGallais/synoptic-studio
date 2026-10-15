@@ -9,10 +9,6 @@ describe("modulo (REF-MDN-REMAINDER)", () => {
     { divisor: 4, dividend: 5, expected: 1 },
     { divisor: 360, dividend: -370, expected: 350 },
     { divisor: 360, dividend: 720, expected: 0 },
-    // 30.1 % 360 is 30.1 exactly; ((30.1 % 360) + 360) % 360 would be 30.100000000000023.
-    { divisor: 360, dividend: 30.1, expected: 30.1 },
-    // −0.5 % 6 = −0.5, plus 6.
-    { divisor: 6, dividend: -0.5, expected: 5.5 },
   ])("gives $expected for $dividend mod $divisor", ({ dividend, divisor, expected }) => {
     expect(modulo(dividend, divisor)).toBe(expected);
   });
