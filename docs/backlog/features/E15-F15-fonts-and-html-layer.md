@@ -27,7 +27,7 @@ In delivery order.
 | [SP-018](../stories/E15-F15-SP-018-research-f15-fonts-and-html-layer.md) | Spike      | Research for F15: fonts from files, embedded fonts and the HTML layer | done   |
 | [EN-039](../stories/E15-F15-EN-039-a-font-file-read-and-kept.md)         | Enabler    | A font file read, named and kept, and whether it may be embedded      | done   |
 | [EN-040](../stories/E15-F15-EN-040-fonts-embedded-once-per-document.md)  | Enabler    | Fonts embedded once per document as @font-face rules                  | done   |
-| [CHK-017](../stories/E15-F15-CHK-017-checkpoint-f15.md)                  | Checkpoint | Checkpoint in the middle of F15                                       | ready  |
+| [CHK-017](../stories/E15-F15-CHK-017-checkpoint-f15.md)                  | Checkpoint | Checkpoint in the middle of F15                                       | done   |
 | [EN-041](../stories/E15-F15-EN-041-the-html-layer-of-a-text.md)          | Enabler    | The HTML layer of a text in a switch, over its positioned lines       | ready  |
 | [US-036](../stories/E15-F15-US-036-fonts-embedding-and-html-layer.md)    | User story | Import or choose a font, embed it, and turn the HTML layer on         | ready  |
 | [AUD-018](../stories/E15-F15-AUD-018-audit-f15.md)                       | Audit      | Audit F15                                                             | ready  |

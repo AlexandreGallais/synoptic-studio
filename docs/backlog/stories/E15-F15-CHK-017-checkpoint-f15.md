@@ -3,7 +3,7 @@ id: CHK-017
 epic: E15
 feature: F15
 title: Checkpoint in the middle of F15
-status: ready
+status: done
 points: 1
 ---
 
