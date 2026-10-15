@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { nearestInteger } from "./nearest-integer";
 
-describe("nearestInteger (REF-MDN-MATH-ROUND, REF-CSS-COLOR-4 §16.1.1)", () => {
+describe("nearestInteger (REF-MDN-MATH-ROUND, REF-CSS-VALUES-4 §5.2)", () => {
   it.each([
     // 255 · 0.5 = 127.5, a tie rounded up.
     { expected: 128, value: 127.5 },
@@ -16,6 +16,13 @@ describe("nearestInteger (REF-MDN-MATH-ROUND, REF-CSS-COLOR-4 §16.1.1)", () => 
     // Just below 0.5: 0, where ⌊0.49999999999999994 + 0.5⌋ is 1 in binary64.
     { expected: 0, value: 0.49999999999999994 },
     { expected: 7, value: 7 },
+    // Quotients of integers (DERIV-color-spaces, step 2): 255 · 50 / 100 = 127.5, computed exactly,
+    // a tie rounded up; 100 · 236 / 255 = 92.549…; 100 · 204 / 255 = 80; 1 / 3 and 2 / 3.
+    { expected: 128, value: 12_750 / 100 },
+    { expected: 93, value: 23_600 / 255 },
+    { expected: 80, value: 20_400 / 255 },
+    { expected: 0, value: 1 / 3 },
+    { expected: 1, value: 2 / 3 },
   ])("gives $expected for $value", ({ expected, value }) => {
     expect(nearestInteger(value)).toBe(expected);
   });

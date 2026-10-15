@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { fractionToByte } from "./fraction-to-byte";
 
-describe("fractionToByte (REF-CSS-COLOR-4 §16.1.1, DERIV-color-spaces step 8)", () => {
+describe("fractionToByte (REF-CSS-COLOR-4 §16.2.2, REF-CSS-VALUES-4 §5.2, DERIV-color-spaces step 8)", () => {
   it.each([
     // 255 · 0.5 = 127.5, a tie rounded up.
     { expected: 128, fraction: 0.5 },

@@ -1,4 +1,5 @@
 import { brightness } from "./brightness";
+import { largestHalfChroma } from "./largest-half-chroma";
 import { lightness } from "./lightness";
 
 import type { Rgb } from "./rgb";
@@ -19,7 +20,7 @@ import type { Rgb } from "./rgb";
  */
 export function hslSaturation(rgb: Rgb): number {
   const lightnessOfColor = lightness(rgb);
-  const mostAboveLightness = Math.min(lightnessOfColor, 1 - lightnessOfColor);
+  const mostAboveLightness = largestHalfChroma(lightnessOfColor);
 
   return mostAboveLightness === 0 ? 0 : (brightness(rgb) - lightnessOfColor) / mostAboveLightness;
 }

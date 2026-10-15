@@ -1,4 +1,5 @@
 import { brightness } from "./brightness";
+import { smallestComponent } from "./smallest-component";
 
 import type { Rgb } from "./rgb";
 
@@ -16,5 +17,5 @@ import type { Rgb } from "./rgb";
  * @see REF-WIKI-HSL-HSV
  */
 export function chroma(rgb: Rgb): number {
-  return brightness(rgb) - Math.min(rgb.red, rgb.green, rgb.blue);
+  return brightness(rgb) - smallestComponent(rgb);
 }

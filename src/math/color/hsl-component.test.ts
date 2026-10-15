@@ -35,6 +35,14 @@ describe("hslComponent (REF-CSS-COLOR-4 §7.1, DERIV-color-spaces step 6)", () =
     expect(hslComponent({ hue: 200, lightness: 40, saturation: 0 }, 8)).toBeCloseTo(0.4, 12);
   });
 
+  it("[F16.AC3] takes a hue of −240° as 120°, green: its red is 0", () => {
+    // k = (0 − 240 / 30) mod 12 = 4, min(1, 5, 1) = 1: 0.5 − 0.5 · 1 = 0, as at 120°.
+    const green = { ...orange, hue: -240 };
+
+    expect(hslComponent(green, 0)).toBe(0);
+    expect(hslComponent(green, 8)).toBe(hslComponent({ ...orange, hue: 120 }, 8));
+  });
+
   it("[F16.AC3] takes a hue of 360° as 0°", () => {
     // k = (0 + 12) mod 12 = 0: the same as hue 0, red 1 for HSL(360°, 100 %, 50 %).
     expect(hslComponent({ ...orange, hue: 360 }, 0)).toBeCloseTo(1, 12);

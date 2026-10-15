@@ -1,6 +1,7 @@
 import { average } from "../arithmetic";
 
 import { brightness } from "./brightness";
+import { smallestComponent } from "./smallest-component";
 
 import type { Rgb } from "./rgb";
 
@@ -17,5 +18,5 @@ import type { Rgb } from "./rgb";
  * @see REF-CSS-COLOR-4
  */
 export function lightness(rgb: Rgb): number {
-  return average(brightness(rgb), Math.min(rgb.red, rgb.green, rgb.blue));
+  return average(brightness(rgb), smallestComponent(rgb));
 }

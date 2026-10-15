@@ -31,16 +31,16 @@ The stored form is `#` and six lower-case digits, the HTML-compatible serializat
 
 ## Step 2 — The opacity and the alpha byte
 
-CSS maps an alpha percentage `p` to the byte `p × 2.55` rounded to the closest integer, rounding up on a tie (`REF-CSS-COLOR-4`, §16.1.1). Computed with integers, so that no binary fraction enters:
+CSS maps an alpha percentage `p` to the byte `p × 2.55` rounded to the closest integer, rounding up on a tie (`REF-CSS-COLOR-4`, §16.1.1). Computed as one quotient of integers, so that no inexact factor enters:
 
 ```text
-A = round(255 · p / 100) = ⌊(255 · p + 50) / 100⌋
-p = round(100 · A / 255) = ⌊(200 · A + 255) / 510⌋
+A = round(255 · p / 100)
+p = round(100 · A / 255)
 ```
 
-Both are one rounded quotient of integers (`roundedQuotient`): for `d > 0`, `round(n / d) = ⌊n / d + ½⌋ = ⌊(2n + d) / 2d⌋`, with the first line `n = 255 · p`, `d = 100` and the second `n = 100 · A`, `d = 255`. The floor of `t / u` is taken as `(t − t mod u) / u`, `t mod u` from 0 included to `u` excluded, so that the division is exact; for a negative `n` a tie still rounds toward +∞ (`−7 / 2 = −3.5` gives −3).
+Each is `round(n / d)` (`nearestInteger`, `Math.round`) of a quotient of integers, `n = 255 · p`, `d = 100` and `n = 100 · A`, `d = 255`. The quotient computed in binary64 is exact enough: a quotient that is a half-integer, `k + ½` with `|k|` small, is a binary fraction and is computed exactly, so the tie is seen and rounded up; any other quotient lies at least `1 / (2d)` from every half-integer (`2n / d` differs from an odd integer by a nonzero integer over `d`), far more than the division's error, at most half a unit in the last place, about `10⁻¹⁴` here, so rounding it gives the same integer.
 
-`2.55` is not exact in binary64: `50 × 2.55` gives `127.49999999999999`, which rounds to 127, while `255 · 50 / 100 = 127.5` rounds up to 128 (`#80`); `90 × 2.55` gives `229.49999999999997`, which rounds to 229, while `229.5` rounds up to 230 (`#e6`). The integer forms give 128 and 230.
+`2.55` is not exact in binary64: `50 × 2.55` gives `127.49999999999999`, which rounds to 127, while `255 · 50 / 100 = 127.5` rounds up to 128 (`#80`); `90 × 2.55` gives `229.49999999999997`, which rounds to 229, while `229.5` rounds up to 230 (`#e6`). The quotients of integers give 128 and 230.
 
 **Every percent comes back.** `|A − 2.55 p| ≤ 0.5`, so `|100 A / 255 − p| ≤ 0.5 / 2.55 < 0.2 < 0.5`: rounding gives `p` again. The byte from a percent never ties back: `100 A / 255 = k + ½` would need `200 A = 255 (2k + 1)`, an even number equal to an odd one.
 
@@ -108,9 +108,9 @@ The five other sectors permute the components and shift `k` by the same offsets;
 
 ## Step 8 — Back to the bytes
 
-Each byte is `round(255 · f(n))` (`REF-CSS-COLOR-4`, §16.1.1: "rounded to the closest integer (rounding up if two values are equally close)"). Over the 16 777 216 colors, computed in binary64 from the unrounded HSL or HSB values, `|255 · f(n) − byte|` is at most `3.7 × 10⁻¹³` for HSL and `3.8 × 10⁻¹³` for HSB, far below the 0.5 rounding forgives: **the round trip from the hexadecimal is exact** for every color.
+Each byte is `round(255 · f(n))`: an sRGB component "must be rounded towards +∞, not truncated" (`REF-CSS-COLOR-4`, §16.2.2), and CSS rounds to the nearest integer "in the direction of +∞ when the fractional portion is exactly 0.5" (`REF-CSS-VALUES-4`, §5.2). Over the 16 777 216 colors, computed in binary64 from the unrounded HSL or HSB values, `|255 · f(n) − byte|` is at most `3.7 × 10⁻¹³` for HSL and `3.8 × 10⁻¹³` for HSB, far below the 0.5 rounding forgives: **the round trip from the hexadecimal is exact** for every color.
 
-The library rounds with `Math.round` (`nearestInteger`, `REF-MDN-MATH-ROUND`), as the cross-check did: it is CSS's rule, while `⌊x + 0.5⌋` in binary64 rounds 0.49999999999999994 up, and `roundedQuotient`, exact for integers, is not for a fraction: by 1, it gives `5.6 × 10⁻¹⁷` for `−10⁻¹³`, not an integer, and 1 for 0.49999999999999994, `2n + 1` rounding to 2 (EN-038).
+The library rounds with `Math.round` (`nearestInteger`, `REF-MDN-MATH-ROUND`), as the cross-check did: it is CSS's rule, while `⌊x + 0.5⌋` in binary64 rounds 0.49999999999999994 up, and the floor `⌊(2n + d) / 2d⌋` taken with a modulo, exact for integers, is not for a fraction: by 1, it gave `−5.6 × 10⁻¹⁷` for `−10⁻¹³`, not an integer, and 1 for 0.49999999999999994, `2n + 1` rounding to 2 (EN-038).
 
 ## Step 9 — The precision of the values shown
 
@@ -137,7 +137,7 @@ CSS's tables list the saturation from 100 % down to 0 % across; the plane takes 
 
 ## Cross-check
 
-A script written at SP-017 (Node.js, binary64) converted each of the 16 777 216 colors: the hue, HSL and HSL back by the sample code of `REF-CSS-COLOR-4` §7.2 and §7.1 (without its `1e−5` threshold, a grey's hue 0), HSB and HSB back by the formulas of `REF-WIKI-HSL-HSV`, the values rounded by `Math.round(x · 10ᵈ) / 10ᵈ` and a hue of 360 written 0, each byte by `Math.round`; unrounded and rounded to 0, 1 and 2 decimals, and gave the counts of step 9 and the bounds of step 8; it also checked the 101 percents of step 2. At EN-038 the library's own functions (`rgbToHsl`, `rgbToHsb`, `hslToRgb`, `hsbToRgb`, `toShownHsl`, `toShownHsb`, `fractionToByte`) ran over every color once, unrounded and to one decimal, in HSL and in HSB: 0 colors changed in each of the four runs, about 13 to 17 s each. That is too slow for every test run, so the tests run a sample with the same functions: one color in 31 (31 is prime to 256, so every byte of every component is drawn) and every color with two equal components, where the hue changes sector, about 735 000 colors, in about 1.7 s; a property test draws any color besides.
+A script written at SP-017 (Node.js, binary64) converted each of the 16 777 216 colors: the hue, HSL and HSL back by the sample code of `REF-CSS-COLOR-4` §7.2 and §7.1 (without its `1e−5` threshold, a grey's hue 0), HSB and HSB back by the formulas of `REF-WIKI-HSL-HSV`, the values rounded by `Math.round(x · 10ᵈ) / 10ᵈ` and a hue of 360 written 0, each byte by `Math.round`; unrounded and rounded to 0, 1 and 2 decimals, and gave the counts of step 9 and the bounds of step 8; it also checked the 101 percents of step 2. At EN-038 the library's own functions (`rgbToHsl`, `rgbToHsb`, `hslToRgb`, `hsbToRgb`, `toShownHsl`, `toShownHsb`, `fractionToByte`) ran over every color once, unrounded and to one decimal, in HSL and in HSB: 0 colors changed in each of the four runs, about 13 to 17 s each. That is too slow for every test run, so the tests run a sample with the same functions: one color in 31 (31 is prime to 256, so every byte of every component is drawn) and every color with two equal components, where the hue changes sector, about 735 000 colors, each round trip a test of its own taking about 1.3 to 1.8 s, about 3 s for each model under coverage; a property test draws any color besides.
 
 ## Checks (test cases)
 
