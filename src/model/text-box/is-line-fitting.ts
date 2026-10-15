@@ -1,5 +1,6 @@
-import { lineWidth } from "../text-block";
+import { measuredLine } from "../text-block";
 
+import { isMeasureFitting } from "./is-measure-fitting";
 import { withoutTrailingSpaces } from "./without-trailing-spaces";
 
 import type { FontMetrics } from "../font";
@@ -19,5 +20,5 @@ import type { Text } from "../text";
  * @see DERIV-text-box
  */
 export function isLineFitting(metrics: FontMetrics, line: string, text: Text): boolean {
-  return lineWidth(metrics, withoutTrailingSpaces(line), text) <= text.boxWidth;
+  return isMeasureFitting(metrics, measuredLine(metrics, withoutTrailingSpaces(line)), text);
 }
