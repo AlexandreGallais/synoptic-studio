@@ -272,4 +272,33 @@ describe("Installed fonts (US-036)", () => {
       /^The installed fonts could not be listed: .*No user activation\./u,
     );
   });
+
+  it("[F15.AC1] reads nothing when a kept family is chosen after the list (M7)", async () => {
+    fakeLocalFonts([installedFont("Test Sans", testFaceFile(TEST_SANS))]);
+    clickElement("installed-fonts");
+    await waitForPageTasks();
+    chooseOption("text-font", "Inter");
+    await waitForPageTasks();
+
+    expect(readText("#font-message")).toBe(
+      "Installed families listed: 1. Choose one in the font list.",
+    );
+  });
+
+  it("[F15.AC1] chooses the family its files name once read, not the browser's name (M12)", async () => {
+    fakeLocalFonts([installedFont("Test Sans Bold", testFaceFile(TEST_SANS))]);
+    clickElement("installed-fonts");
+    await waitForPageTasks();
+    chooseOption("text-font", "Test Sans Bold");
+    await waitForPageTasks();
+
+    expect(readValue("text-font")).toBe("Test Sans");
+    expect(readOptions("text-font")).toEqual(["Inter", "Test Sans"]);
+  });
+
+  it("[F15.AC1] says the browser cannot list them when queryLocalFonts is not a function (M6)", () => {
+    Object.defineProperty(globalThis, "queryLocalFonts", { configurable: true, value: 42 });
+    clickElement("installed-fonts");
+    expect(readText("#font-message")).toBe(UNSUPPORTED);
+  });
 });
