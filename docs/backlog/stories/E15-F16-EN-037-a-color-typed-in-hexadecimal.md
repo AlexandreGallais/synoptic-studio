@@ -3,7 +3,7 @@ id: EN-037
 epic: E15
 feature: F16
 title: A color typed in hexadecimal, kept as six digits and an opacity
-status: ready
+status: done
 points: 2
 ---
 
@@ -24,6 +24,6 @@ The library reads a color typed or pasted in any hexadecimal form CSS knows and 
 
 One task = one commit, referenced as `EN-037.Tn`.
 
-- [ ] T1 — A color folder in the model (ADR-0043): the check of a stored color, shared by the text's color and background (`isTextColor` becomes the color's check, lower case only, its test updated: `#FF8000` refused; its callers updated, every reader of a color, the playground's fields among them, turning it to lower case first), the byte of a pair of hexadecimal digits, `@see REF-CSS-COLOR-4`; tests first (2 h)
-- [ ] T2 — A typed color read into its stored form and an opacity or none: `#` optional, any case, white space around ignored, 3, 4, 6 or 8 digits, refused otherwise, `@see REF-CSS-COLOR-4`, `DERIV-color-spaces` step 1; tests first, then a property test: a stored color read again is itself (2 h)
-- [ ] T3 — The opacity from an alpha byte and the byte from an opacity, in integers, `@see DERIV-color-spaces` step 2; tests first, the 101 percents (1 h)
+- [x] T1 — A color folder in the model (ADR-0043): the check of a stored color, shared by the text's color and background (`isTextColor` becomes the color's check, lower case only, its test updated: `#FF8000` refused; its callers updated, every reader of a color, the playground's fields among them, turning it to lower case first), the byte of a pair of hexadecimal digits, `@see REF-CSS-COLOR-4`; tests first (2 h)
+- [x] T2 — A typed color read into its stored form and an opacity or none: `#` optional, any case, white space around ignored, 3, 4, 6 or 8 digits, refused otherwise, `@see REF-CSS-COLOR-4`, `DERIV-color-spaces` step 1; tests first, then a property test: a stored color read again is itself (2 h)
+- [x] T3 — The opacity from an alpha byte and the byte from an opacity, in integers, `@see DERIV-color-spaces` step 2; tests first, the 101 percents (1 h)
