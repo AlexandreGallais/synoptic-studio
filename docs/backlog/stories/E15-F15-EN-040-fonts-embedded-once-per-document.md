@@ -3,7 +3,7 @@ id: EN-040
 epic: E15
 feature: F15
 title: Fonts embedded once per document as @font-face rules
-status: ready
+status: done
 points: 3
 ---
 
@@ -24,6 +24,6 @@ The library writes the faces a document's texts are measured with, each once, as
 
 One task = one commit, referenced as `EN-040.Tn`.
 
-- [ ] T1 — Base 64 of a file's bytes, by groups of three bytes into four characters, padded with `=`, `@see REF-RFC-4648`, `DERIV-font-embedding` steps 4 to 6; tests first: the vectors of RFC 4648 §10, then the property test (2 h)
-- [ ] T2 — The `@font-face` rule of a face: family, style, weight, `src` as a `data:` URL with its media type and format hint, `@see REF-CSS-FONTS-4`, `REF-RFC-2397`; tests first (2 h)
-- [ ] T3 — The faces a document embeds: the face each text is measured with, each once, permitted and held, the others listed with their reason; the `<style>` in `<defs>` of the render (`style` allowed there by ADR-0053), the option off by default; `shapes.md` (Embedded fonts) updated; tests first (2 h)
+- [x] T1 — Base 64 of a file's bytes, by groups of three bytes into four characters, padded with `=`, `@see REF-RFC-4648`, `DERIV-font-embedding` steps 4 to 6; tests first: the vectors of RFC 4648 §10, then the property test (2 h)
+- [x] T2 — The `@font-face` rule of a face: family, style, weight, `src` as a `data:` URL with its media type and format hint, `@see REF-CSS-FONTS-4`, `REF-RFC-2397`; tests first (2 h)
+- [x] T3 — The faces a document embeds: the face each text is measured with, each once, permitted and held, the others listed with their reason; the `<style>` in `<defs>` of the render (`style` allowed there by ADR-0053), the option off by default; `shapes.md` (Embedded fonts) updated; tests first (2 h)
