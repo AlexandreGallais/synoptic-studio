@@ -17,8 +17,8 @@ const FIELD_SIZE = 2;
  * fields its ValueFormat holds; 0 when it holds none.
  *
  * @kind format
- * @param view - the font file
- * @param record - where the ValueRecord starts in the file
+ * @param view - the `GPOS` table
+ * @param record - where the ValueRecord starts in the table
  * @param valueFormat - its ValueFormat flags
  * @returns the adjustment, font units
  * @see REF-OT-GPOS

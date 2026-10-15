@@ -20,10 +20,10 @@ const SEGMENTED_COVERAGE = 12;
 /**
  * A `head` table: 54 bytes, `unitsPerEm` at offset 18 (`REF-OT-HEAD`).
  *
- * @param unitsPerEm - from 16 to 16 384
+ * @param unitsPerEm - from 16 to 16 384 in a valid font
  * @returns its bytes
  */
-function headTable(unitsPerEm: number): number[] {
+export function headTable(unitsPerEm: number): number[] {
   return tableOf({
     fields: [
       { at: 0, bytes: uint32(TRUE_TYPE_VERSION) },

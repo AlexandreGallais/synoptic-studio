@@ -34,7 +34,7 @@ bᵢ = ⌊n / 2ⁱ⌋ mod 2
 
 ## Cross-check
 
-149 is `1001 0101` (`REF-WIKI-BIT-NUMBERING`'s example): `⌊149 / 1⌋ mod 2 = 1`, `⌊149 / 2⌋ = 74`, `74 mod 2 = 0`, `⌊149 / 4⌋ = 37`, `37 mod 2 = 1`, `⌊149 / 128⌋ = 1`, `1 mod 2 = 1`: bits 0, 2 and 7 are 1, bit 1 is 0.
+149 is `1001 0101` (`REF-WIKI-BIT-NUMBERING`'s example): `⌊149 / 1⌋ mod 2 = 1`, `⌊149 / 2⌋ = 74`, `74 mod 2 = 0`, `⌊149 / 4⌋ = 37`, `37 mod 2 = 1`, `⌊149 / 128⌋ = 1`, `1 mod 2 = 1`: bits 0, 2 and 7 are 1 (and bit 4: `⌊149 / 16⌋ = 9`, `9 mod 2 = 1`), bit 1 is 0.
 
 ## Checks (test cases)
 

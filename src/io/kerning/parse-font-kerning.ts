@@ -5,8 +5,8 @@ import type { KerningLookup } from "../../model";
 
 /**
  * Reads the kerning of a font for some glyphs: the lookups of the `kern` feature of its `GPOS`
- * table, or, when it has none, the subtables of its `kern` table, as a browser does for a font
- * whose `GPOS` table lacks the feature.
+ * table, or, when it has none, the subtables of its `kern` table, as CSS Fonts 4 allows a reader to
+ * do for a font whose `GPOS` table lacks the feature.
  *
  * @kind format
  * @param gpos - its `GPOS` table, at least its 10-byte header, if it has one
