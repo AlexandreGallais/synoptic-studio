@@ -10,4 +10,5 @@ export * from "./show-text";
 export * from "./tool-placement";
 export * from "./update-text-tool";
 export * from "./write-text-sections";
+export * from "./write-text-straight-box";
 export * from "./write-tool-placement";

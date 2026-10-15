@@ -8,3 +8,4 @@ export * from "./show-shape";
 export * from "./write-drawn-box";
 export * from "./write-shape-boxes";
 export * from "./write-straight-box";
+export * from "./write-straight-box-line";
