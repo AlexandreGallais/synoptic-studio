@@ -19,7 +19,7 @@ describe("textToAttributes (ADR-0052, decision 4)", () => {
   it("[F05.AC4] adds the spacing, italic, opacity and direction typed", () => {
     const text = {
       ...HELLO_TEXT,
-      color: "#1a2B3c",
+      color: "#1a2b3c",
       direction: "rtl",
       isItalic: true,
       letterSpacing: 2,
@@ -33,7 +33,7 @@ describe("textToAttributes (ADR-0052, decision 4)", () => {
       ["font-size", "16"],
       ["font-weight", "700"],
       ["font-style", "italic"],
-      ["fill", "#1a2B3c"],
+      ["fill", "#1a2b3c"],
       ["fill-opacity", "0.4"],
       ["letter-spacing", "2"],
       ["word-spacing", "-4"],
