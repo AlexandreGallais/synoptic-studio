@@ -42,7 +42,7 @@ function pressCancellableKey(selector: string, key: string): boolean {
   return event.defaultPrevented;
 }
 
-describe("Color picker: focus, keys, rounding and what it writes (US-035, audit)", () => {
+describe("Color picker: focus, keys, rounding and what it writes (US-035, audit, US-040)", () => {
   beforeEach(() => {
     openServedPage("");
     clickElement("tool-text");
@@ -78,28 +78,33 @@ describe("Color picker: focus, keys, rounding and what it writes (US-035, audit)
     },
   );
 
-  it("brings a value typed beyond 100 to 100, and rounds 66.75 to 66.8", () => {
+  it("brings a value typed beyond 100 to 100, and rounds 66.75 to 67", () => {
     typeAndLeave("color-saturation-value", "150");
     expect(readValue("color-saturation-value")).toBe("100");
 
+    // 67 % with the exact hue and brightness: #ffaa54, its saturation 171 / 255 = 67.06 → 67.
     typeAndLeave("color-saturation-value", "66.75");
-    expect(readValue("color-saturation-value")).toBe("66.8");
+    expect(readValue("color-saturation-value")).toBe("67");
   });
 
-  it("rounds the plane's level to one decimal: 200 of 300 high is 66.7", () => {
+  it("rounds the plane's level to a whole number: 200 of 300 high is 67", () => {
     setElementBox("#color-plane", { height: 300, left: 0, top: 0, width: 300 });
-    // 100 · (300 − 100) / 300 = 66.667, shown 66.7; x 300 of 300 is 100 %.
+    // 100 · (300 − 100) / 300 = 66.667, 67; x 300 of 300 is 100 %, the value shown, so exact.
     pressPointer("#color-plane", "pointerdown", { buttons: 1, clientX: 300, clientY: 100 });
 
-    expect(readValue("color-level-value")).toBe("66.7");
+    expect(readValue("color-level-value")).toBe("67");
+    // Red 0.67 · 255 = 170.85 → ab; green 0.67 · (1 − 0.49804) = 0.33631, 85.76 → 56.
+    expect(readValue("text-color")).toBe("#ab5600");
     expect(selectPageElement("#color-plane").getAttribute("aria-valuenow")).toBe("100");
   });
 
-  it("takes a hue of 1.1 to 0.1 on Left, the binary64 error rounded away", () => {
-    typeAndLeave("color-hue-value", "1.1");
-    pressKey("#color-hue", "ArrowLeft");
+  it("rounds a typed hue of 1.4 to 1, then takes it to 0 on Left", () => {
+    // HSB 1°, 1, 1: green 1 − 59 / 60 = 0.01667, 4.25 → 04; #ff0400 shows 60 · 4 / 255 = 0.94 → 1.
+    typeAndLeave("color-hue-value", "1.4");
+    expect([readValue("color-hue-value"), readValue("text-color")]).toEqual(["1", "#ff0400"]);
 
-    expect(readValue("color-hue-value")).toBe("0.1");
+    pressKey("#color-hue", "ArrowLeft");
+    expect([readValue("color-hue-value"), readValue("text-color")]).toEqual(["0", "#ff0000"]);
   });
 
   it("paints the plane with the pure hue, and the opacity slider with the color", () => {
@@ -113,8 +118,8 @@ describe("Color picker: focus, keys, rounding and what it writes (US-035, audit)
     );
   });
 
-  it("places the hue's thumb at 100 · 30.1 / 360 = 8.36111 %", () => {
-    expect(selectPageElement("#color-hue-thumb").style.left).toMatch(/^8\.36111/u);
+  it("places the hue's thumb at 100 · 30 / 360 = 8.33333 %", () => {
+    expect(selectPageElement("#color-hue-thumb").style.left).toMatch(/^8\.33333/u);
   });
 
   it("keeps the color a plane click wrote, as the one a refused hexadecimal brings back", () => {
@@ -157,34 +162,17 @@ describe("Color picker: focus, keys, rounding and what it writes (US-035, audit)
     expect(readValue("text-color")).toBe("#123456");
   });
 
-  it("keeps its hue when another model is chosen and it gives the color back: #7e7f80 at 200°", () => {
+  it("holds the values typed, then shows the color's own hue in the other model: #7e7f80 at 210°", () => {
+    // 200° then 1 % give #fcfeff; 50 % with the exact 200° and 3 / 255: red 0.5 · 252 = 126 (7e),
+    // green 127 (7f), blue 127.5 → 128 (80). The picker holds the values typed, 200 among them.
     typeAndLeave("color-hue-value", "200");
     typeAndLeave("color-saturation-value", "1");
     typeAndLeave("color-level-value", "50");
-    chooseOption("color-model", "hsl");
-
-    // #7e7f80 alone reads as hue 210°; HSL 200°, 0.8 %, 49.8 % gives #7e7f80 back: 200° kept.
     expect([readValue("color-hue-value"), readValue("text-color")]).toEqual(["200", "#7e7f80"]);
-  });
 
-  it("[F16.AC3] shows the color's own hue when the one held would not give it back: #523a39", () => {
-    typeAndLeave("color-hue-value", "0.7");
-    typeAndLeave("color-saturation-value", "30");
-    typeAndLeave("color-level-value", "32.2");
-    expect(readValue("text-color")).toBe("#523a39");
-
+    // Another model reads the color again: its own hue 60 · ((126 − 127) / 2 + 4) = 210°, the
+    // color kept (ADR-0058).
     chooseOption("color-model", "hsl");
-
-    // Own hue 60 · (0x3a − 0x39) / (0x52 − 0x39) = 60 / 25 = 2.4°; HSL 0.7°, 18 %, 27.3 % would
-    // give #523939, so the hue shown is 2.4°, which gives #523a39 back.
-    expect([
-      readValue("color-hue-value"),
-      readValue("color-saturation-value"),
-      readValue("color-level-value"),
-      readValue("text-color"),
-    ]).toEqual(["2.4", "18", "27.3", "#523a39"]);
-
-    typeAndLeave("color-level-value", "27.3");
-    expect(readValue("text-color")).toBe("#523a39");
+    expect([readValue("color-hue-value"), readValue("text-color")]).toEqual(["210", "#7e7f80"]);
   });
 });

@@ -60,32 +60,33 @@ describe("Color picker: opening, sliders and values (US-035)", () => {
     clickElement("text-color-swatch");
   });
 
-  it("[F16.AC2] opens on the swatch: hue 30.1°, HSB first, 30.1°, 100 %, 100 %", () => {
+  it("[F16.AC2] opens on the swatch: hue 30°, HSB first, 30°, 100 %, 100 %, no decimal", () => {
     expect(readDisplay("color-picker") === "none").toBe(false);
     expect(readAttribute("#text-color-swatch", "aria-expanded")).toBe("true");
-    expect(readAttribute("#color-hue", "aria-valuenow")).toBe("30.1");
-    expect(readAttribute("#color-hue", "aria-valuetext")).toBe("30.1°");
-    expect(readPickerValues()).toEqual(["30.1", "100", "100"]);
+    expect(readAttribute("#color-hue", "aria-valuenow")).toBe("30");
+    expect(readAttribute("#color-hue", "aria-valuetext")).toBe("30°");
+    // 60 · 128 / 255 = 30.11765, shown 30 (ADR-0058).
+    expect(readPickerValues()).toEqual(["30", "100", "100"]);
     expect(selectPageElement("#color-level-name").textContent).toBe("B");
     expect([readValue("text-color"), readValue("text-opacity")]).toEqual(["#ff8000", "100"]);
   });
 
-  it("[F16.AC2] shows HSL when chosen: 30.1°, 100 %, 50 %, the color kept", () => {
+  it("[F16.AC2] shows HSL when chosen: 30°, 100 %, 50 %, the color kept", () => {
     chooseOption("color-model", "hsl");
 
-    expect(readPickerValues()).toEqual(["30.1", "100", "50"]);
+    expect(readPickerValues()).toEqual(["30", "100", "50"]);
     expect(selectPageElement("#color-level-name").textContent).toBe("L");
     expect(readValue("text-color")).toBe("#ff8000");
   });
 
   it.each([
-    // HSB(31.1°, 100 %, 100 %): green 1 − (1 − 31.1 / 60) = 0.51833, 132.2 → 84.
-    { color: "#ff8400", hue: "31.1", key: "ArrowRight" },
-    // 41.1°: green 0.685, 174.7 → af.
-    { color: "#ffaf00", hue: "41.1", key: "PageUp" },
+    // 30 + 1: HSB(31°, 1, 1): green 31 / 60 = 0.51667, 131.75 → 84; shown 60 · 132 / 255 → 31.
+    { color: "#ff8400", hue: "31", key: "ArrowRight" },
+    // 31 + 10 = 41°: green 41 / 60 = 0.68333, 174.25 → ae; shown 60 · 174 / 255 = 40.9 → 41.
+    { color: "#ffae00", hue: "41", key: "PageUp" },
     { color: "#ff0000", hue: "0", key: "Home" },
-    // 359.9°: blue 1 − 5.99833 mod 6 = 0.00167, 0.4 → 00.
-    { color: "#ff0000", hue: "359.9", key: "End" },
+    // 359°: blue 1 − 59 / 60 = 0.01667, 4.25 → 04; shown 359.06 → 359.
+    { color: "#ff0004", hue: "359", key: "End" },
   ])("[F16.AC2] takes the hue to $hue° on $key, the color following", ({ color, hue, key }) => {
     const order = ["ArrowRight", "PageUp", "Home", "End"];
 
@@ -104,6 +105,13 @@ describe("Color picker: opening, sliders and values (US-035)", () => {
       readValue("text-color"),
       selectPageElement("#canvas text").getAttribute("fill"),
     ]).toEqual([color, color]);
+  });
+
+  it("[F16.AC2] takes the hue from 30 to 40 on Page Up, a whole number", () => {
+    // 30 + 10 = 40: green 40 / 60 = 0.66667, 170 → aa; #ffaa00 shows 60 · 170 / 255 = 40.
+    pressKey("#color-hue", "PageUp");
+
+    expect([readValue("color-hue-value"), readValue("text-color")]).toEqual(["40", "#ffaa00"]);
   });
 
   it("[F16.AC2] sets the hue where the slider is clicked, 360° at the right end shown 0", () => {
@@ -169,7 +177,7 @@ describe("Color picker: opening, sliders and values (US-035)", () => {
   it("[F16.AC2] shows the hue of a color typed while it is open, not the hue it held", () => {
     typeAndLeave("text-color", "#ff0000");
 
-    // C = 1: the color's own hue, 0°, not 30.1°.
+    // C = 1: the color's own hue, 0°, not 30°.
     expect(readPickerValues()).toEqual(["0", "100", "100"]);
   });
 
@@ -178,7 +186,9 @@ describe("Color picker: opening, sliders and values (US-035)", () => {
     expect(readAttribute("#color-opacity", "aria-valuenow")).toBe("40");
 
     typeAndLeave("text-color", "#336699");
-    expect(readPickerValues()).toEqual(["210", "66.7", "60"]);
+    // The hexadecimal kept as typed; 102 / 153 = 66.7 %, shown 67.
+    expect(readPickerValues()).toEqual(["210", "67", "60"]);
+    expect(readValue("text-color")).toBe("#336699");
   });
 
   it("[F16.AC2] sets a value typed, refused when left empty", () => {
@@ -200,7 +210,7 @@ describe("Color picker: opening, sliders and values (US-035)", () => {
     pressKey("#color-hue", "a");
     pressKey("#color-opacity", "a");
 
-    expect([readValue("color-hue-value"), readValue("text-opacity")]).toEqual(["30.1", "100"]);
+    expect([readValue("color-hue-value"), readValue("text-opacity")]).toEqual(["30", "100"]);
   });
 
   it.each([

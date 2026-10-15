@@ -1,4 +1,4 @@
-import { planeValuesAfterKey, planeValuesAt, toOneDecimal } from "../../src";
+import { nearestInteger, planeValuesAfterKey, planeValuesAt } from "../../src";
 import { applyPickedColor, readPickedColor } from "../color-picker";
 import { selectElement } from "../page";
 
@@ -7,8 +7,8 @@ import { listenToDrag } from "./listen-to-drag";
 import type { PlaneValues } from "../../src";
 
 /**
- * Applies a place picked on the plane: its saturation and lightness or brightness, each to one
- * decimal as the picker shows them (`toOneDecimal`), the hue the picker holds kept, even for a
+ * Applies a place picked on the plane: its saturation and lightness or brightness, each a whole
+ * number as the picker shows them (`nearestInteger`; ADR-0058), the hue the picker holds kept, even for a
  * grey (ADR-0056, decision 3).
  *
  * @kind procedure
@@ -22,8 +22,8 @@ function applyPlaneValues(document: Document, values: PlaneValues, update: () =>
     document,
     {
       ...readPickedColor(document),
-      level: toOneDecimal(values.level),
-      saturation: toOneDecimal(values.saturation),
+      level: nearestInteger(values.level),
+      saturation: nearestInteger(values.saturation),
     },
     update,
   );

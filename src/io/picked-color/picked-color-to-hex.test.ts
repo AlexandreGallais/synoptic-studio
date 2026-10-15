@@ -1,9 +1,6 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
-import { rgbToHex } from "../color";
-
-import { hexToPickedColor } from "./hex-to-picked-color";
 import { pickedColorToHex } from "./picked-color-to-hex";
 
 /**
@@ -78,16 +75,15 @@ describe("pickedColorToHex (DERIV-color-spaces steps 6, 8 and 11)", () => {
   it.each([
     // HSB 210°, 100 %, 50 %: red 0; green 0.25, 63.75 gives 64 (40); blue 0.5, 127.5 gives 128.
     { expected: "#004080", model: "hsb", picked: { hue: 210, level: 50, saturation: 100 } },
-    // HSB 210°, 66.7 %, 60 %: red 0.6 − 0.6 · 0.667 = 0.1998, 50.949 gives 51 (33).
-    { expected: "#336699", model: "hsb", picked: { hue: 210, level: 60, saturation: 66.7 } },
-    // HSL 30.1°, 100 %, 50 %: green 0.50167, 127.925 gives 128 (80).
-    { expected: "#ff8000", model: "hsl", picked: { hue: 30.1, level: 50, saturation: 100 } },
-    { expected: "#ff8000", model: "hsb", picked: { hue: 30.1, level: 100, saturation: 100 } },
-    // A grey: HSB 200°, 0 %, 50.2 %, 0.502 · 255 = 128.01.
-    { expected: "#808080", model: "hsb", picked: { hue: 200, level: 50.2, saturation: 0 } },
-    // Ties, each byte on a half rounded up: HSB 30.1°, 90 %, 100 % has blue 0.1, 25.5 gives 26
-    // (1a), green 0.5515, 140.6 gives 141 (8d).
-    { expected: "#ff8d1a", model: "hsb", picked: { hue: 30.1, level: 100, saturation: 90 } },
+    // HSB 210°, 67 %, 60 %: red 0.6 − 0.6 · 0.67 = 0.198, 50.49 gives 50 (32): not #336699.
+    { expected: "#326699", model: "hsb", picked: { hue: 210, level: 60, saturation: 67 } },
+    // HSB 210°, 67 %, 61 %: red 0.2013, 51.33 → 51 (33); green 0.40565, 103.44 → 103 (67).
+    { expected: "#33679c", model: "hsb", picked: { hue: 210, level: 61, saturation: 67 } },
+    // HSL 30°, 100 %, 50 %: green 0.5, 127.5 gives 128 (80).
+    { expected: "#ff8000", model: "hsl", picked: { hue: 30, level: 50, saturation: 100 } },
+    { expected: "#ff8000", model: "hsb", picked: { hue: 30, level: 100, saturation: 100 } },
+    // A grey: HSB 200°, 0 %, 50 %, 127.5 gives 128 (80).
+    { expected: "#808080", model: "hsb", picked: { hue: 200, level: 50, saturation: 0 } },
     // HSB 200°, 50 %, 100 %: red 0.5, 127.5 gives 128 (80); green 5/6, 212.5 gives 213 (d5).
     { expected: "#80d5ff", model: "hsb", picked: { hue: 200, level: 100, saturation: 50 } },
     // HSB 0°, 75 %, 40 %: red 0.4, 102 (66); green and blue 0.1, 25.5 gives 26 (1a).
@@ -101,39 +97,25 @@ describe("pickedColorToHex (DERIV-color-spaces steps 6, 8 and 11)", () => {
   });
 
   test.prop({
-    h: fc.integer({ max: 3599, min: 0 }),
-    s: fc.integer({ max: 1000, min: 0 }),
-    v: fc.integer({ max: 1000, min: 0 }),
+    h: fc.integer({ max: 359, min: 0 }),
+    s: fc.integer({ max: 100, min: 0 }),
+    v: fc.integer({ max: 100, min: 0 }),
   })("gives the bytes of the exact rational arithmetic in HSB", ({ h, s, v }) => {
-    const tenths = [BigInt(h), BigInt(s), BigInt(v)] as const;
+    // An integer is ten tenths.
+    const tenths = [10n * BigInt(h), 10n * BigInt(s), 10n * BigInt(v)] as const;
     const bytes = [5, 3, 1].map((n) => exactHsbByte(tenths, n).toString(16).padStart(2, "0"));
 
-    expect(pickedColorToHex({ hue: h / 10, level: v / 10, saturation: s / 10 }, "hsb")).toBe(
-      `#${bytes.join("")}`,
-    );
+    expect(pickedColorToHex({ hue: h, level: v, saturation: s }, "hsb")).toBe(`#${bytes.join("")}`);
   });
 
   test.prop({
-    h: fc.integer({ max: 3599, min: 0 }),
-    l: fc.integer({ max: 1000, min: 0 }),
-    s: fc.integer({ max: 1000, min: 0 }),
+    h: fc.integer({ max: 359, min: 0 }),
+    l: fc.integer({ max: 100, min: 0 }),
+    s: fc.integer({ max: 100, min: 0 }),
   })("gives the bytes of the exact rational arithmetic in HSL", ({ h, l, s }) => {
-    const tenths = [BigInt(h), BigInt(s), BigInt(l)] as const;
+    const tenths = [10n * BigInt(h), 10n * BigInt(s), 10n * BigInt(l)] as const;
     const bytes = [0, 8, 4].map((n) => exactHslByte(tenths, n).toString(16).padStart(2, "0"));
 
-    expect(pickedColorToHex({ hue: h / 10, level: l / 10, saturation: s / 10 }, "hsl")).toBe(
-      `#${bytes.join("")}`,
-    );
-  });
-
-  test.prop({
-    blue: fc.integer({ max: 255, min: 0 }),
-    green: fc.integer({ max: 255, min: 0 }),
-    model: fc.constantFrom("hsb" as const, "hsl" as const),
-    red: fc.integer({ max: 255, min: 0 }),
-  })("gives back every color shown to one decimal", ({ blue, green, model, red }) => {
-    const color = rgbToHex({ blue: blue / 255, green: green / 255, red: red / 255 });
-
-    expect(pickedColorToHex(hexToPickedColor(color, model, 0), model)).toBe(color);
+    expect(pickedColorToHex({ hue: h, level: l, saturation: s }, "hsl")).toBe(`#${bytes.join("")}`);
   });
 });

@@ -1,7 +1,7 @@
 import { test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
-import { ANY_RGB } from "../../../tests";
+import { ANY_RGB, changedColorCount } from "../../../tests";
 
 import { hsbToRgb } from "./hsb-to-rgb";
 import { rgbToHsb } from "./rgb-to-hsb";
@@ -24,6 +24,14 @@ describe("hsbToRgb (REF-WIKI-HSL-HSV, DERIV-color-spaces steps 6 and 7)", () => 
       expect(back.red).toBeCloseTo(rgb.red, 12);
       expect(back.green).toBeCloseTo(rgb.green, 12);
       expect(back.blue).toBeCloseTo(rgb.blue, 12);
+    },
+  );
+
+  it(
+    "[F16.AC3] gives one color in 31 and every sector edge back from its HSB, unrounded",
+    { timeout: 20_000 },
+    () => {
+      expect(changedColorCount((rgb) => hsbToRgb(rgbToHsb(rgb)))).toBe(0);
     },
   );
 });

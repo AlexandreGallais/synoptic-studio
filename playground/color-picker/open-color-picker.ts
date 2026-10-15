@@ -12,7 +12,7 @@ const GREY_HUE = 0;
 
 /**
  * Opens the picker under a swatch's fields, closing it first where it was: its values read from
- * the color in the model chosen, to one decimal, a grey at the hue 0 (`hexToPickedColor`).
+ * the color in the model chosen, whole numbers, a grey at the hue 0 (`hexToPickedColor`), the color kept as the one read.
  *
  * @kind procedure
  * @param document - page document
@@ -25,7 +25,7 @@ export function openColorPicker(document: Document, swatch: HTMLElement): void {
   const color = readShownColor(document, ids.color);
 
   closeColorPicker(document);
-  writePickedColor(document, hexToPickedColor(color, readColorModel(document), GREY_HUE));
+  writePickedColor(document, hexToPickedColor(color, readColorModel(document), GREY_HUE), color);
   selectElement(document, ids.message).after(picker);
   picker.hidden = false;
   swatch.setAttribute("aria-expanded", "true");

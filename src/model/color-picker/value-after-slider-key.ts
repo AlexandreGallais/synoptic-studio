@@ -21,8 +21,8 @@ const KEY_STEPS = new Map([
 /**
  * A slider's value after a key, as the WAI-ARIA slider answers it: Right and Up add one step, Left
  * and Down take one away, Page Up and Page Down ten, kept within the range; Home and End go to its
- * first and last values (`REF-WAI-APG-SLIDER`, Keyboard Interaction). A hue of 30.1° is 31.1°
- * after Right, 0° after Home, 359.9° after End.
+ * first and last values (`REF-WAI-APG-SLIDER`, Keyboard Interaction). A hue of 30° is 31° after
+ * Right, 40° after Page Up, 0° after Home, 359° after End.
  *
  * @kind domain
  * @param key - the key pressed, as `KeyboardEvent.key` names it

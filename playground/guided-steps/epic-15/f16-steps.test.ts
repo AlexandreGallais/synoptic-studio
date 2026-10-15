@@ -149,18 +149,13 @@ describe("the guided test of F16 (VAL-016): the ways to type and pick a color", 
     expect(readText("#model")).toContain('"opacity": 40');
   });
 
-  it("[F16.AC2] the swatch opens the picker under the color's fields: HSB 30.1, 100, 100", () => {
+  it("[F16.AC2] the swatch opens the picker under the color's fields: HSB 30, 100, 100", () => {
     openStep("The swatch opens the picker");
     clickElement("text-color-swatch");
     expect(isPickerOpen()).toBe(true);
     expect(selectPageElement("#text-color-message").nextElementSibling?.id).toBe("color-picker");
 
-    expect([readValue("color-model"), ...readPickerValues()]).toEqual([
-      "hsb",
-      "30.1",
-      "100",
-      "100",
-    ]);
+    expect([readValue("color-model"), ...readPickerValues()]).toEqual(["hsb", "30", "100", "100"]);
   });
 
   it("[F16.AC2] closed by the swatch, by Escape, the focus back on the swatch, by a click outside", () => {
@@ -189,7 +184,7 @@ describe("the guided test of F16 (VAL-016): the ways to type and pick a color", 
     expect([readValue("color-hue-value"), readValue("text-color")]).toEqual(["0", "#ff0000"]);
   });
 
-  it("[F16.AC2] the hue bar's keys: 210, then 211, 221, 0, 359.9", () => {
+  it("[F16.AC2] the hue bar's keys: 210, then 211, 221, 0, 359", () => {
     openStep("Hue bar by keys");
     clickElement("text-color-swatch");
     expect(readValue("color-hue-value")).toBe("210");
@@ -200,7 +195,7 @@ describe("the guided test of F16 (VAL-016): the ways to type and pick a color", 
       return readValue("color-hue-value");
     });
 
-    expect(hues).toEqual(["211", "221", "0", "359.9"]);
+    expect(hues).toEqual(["211", "221", "0", "359"]);
   });
 
   it("[F16.AC2] the opacity bar: 50 at its middle, then 49, 39, 100", () => {
@@ -223,7 +218,8 @@ describe("the guided test of F16 (VAL-016): the ways to type and pick a color", 
     chooseOption("color-model", "hsb");
     clickElement("text-color-swatch");
 
-    // HSB(30.1°, 100 %, 50 %): red 127.5, 128 (80); green 0.5 · 30.1 / 60 = 0.25083, 63.96 (40).
+    // From black, a grey, the hue held 30: HSB(30°, 100 %, 50 %): red 127.5, 128 (80); green
+    // 0.5 · 30 / 60 = 0.25, 63.75, 64 (40).
     const colors = [
       [0, 0],
       [100, 100],
@@ -248,14 +244,18 @@ describe("the guided test of F16 (VAL-016): the ways to type and pick a color", 
     expect(readValue("text-color")).toBe("#ff8000");
   });
 
-  it("[F16.AC2] H 210, S 66.7, B 60 typed: #336699", () => {
+  it("[F16.AC2] S 50 then B 50 typed on #ff8000: #ffc080, then #806040, H still 30", () => {
     openStep("Values typed");
     chooseOption("color-model", "hsb");
     clickElement("text-color-swatch");
-    typeAndLeave("color-hue-value", "210");
-    typeAndLeave("color-saturation-value", "66.7");
-    typeAndLeave("color-level-value", "60");
-    expect(readValue("text-color")).toBe("#336699");
+    // S 50 with the exact hue and V 1: green 1 − 0.5 · 127 / 255 = 383 / 510, 191.5, a tie up to
+    // 192 (c0); blue 0.5, 127.5 → 128 (80).
+    typeAndLeave("color-saturation-value", "50");
+    expect(readValue("text-color")).toBe("#ffc080");
+    // B 50 with the exact S 127 / 255 and hue 60 · 64 / 127: red 127.5 → 80; green 96.0 → 60;
+    // blue 64.0 → 40.
+    typeAndLeave("color-level-value", "50");
+    expect([readValue("text-color"), ...readPickerValues()]).toEqual(["#806040", "30", "50", "50"]);
   });
 
   it("[F16.AC2] a grey opens at 0°; 200° kept, the top right #00aaff", () => {
@@ -288,10 +288,10 @@ describe("the guided test of F16 (VAL-016): its decisions, each with its example
     openStep("Hexadecimal stored (decision 1)");
     clickElement("text-color-swatch");
     chooseOption("color-model", "hsl");
-    expect(readPickerValues()).toEqual(["30.1", "100", "50"]);
+    expect(readPickerValues()).toEqual(["30", "100", "50"]);
     expect(readText("#model")).toContain('"color": "#ff8000"');
     expect(readText("#model")).toContain('"opacity": 100');
-    expect(readText("#model")).not.toContain("30.1");
+    expect(readText("#model")).not.toContain("saturation");
   });
 
   it("decision 2: #FF8000 read in lower case; spaces around ignored", () => {
@@ -372,14 +372,24 @@ describe("the guided test of F16 (VAL-016): its decisions, each with its example
     expect(readValue("text-color")).toBe("#004080");
   });
 
-  it("decision 8: #336699 is 210, 66.7, 60; S 67 gives #326699", () => {
-    openStep("One decimal (decision 8)");
+  it("decision 8: #336699 is 210, 67, 60; S 67 keeps it; B 61 gives #34689c, S still 67", () => {
+    openStep("Whole numbers, the others exact (decision 8)");
     chooseOption("color-model", "hsb");
     clickElement("text-color-swatch");
-    expect(readPickerValues()).toEqual(["210", "66.7", "60"]);
+    expect(readPickerValues()).toEqual(["210", "67", "60"]);
+    // 67 is the value shown: the exact 102 / 153 kept, every value exact.
     typeAndLeave("color-saturation-value", "67");
-    // Red 0.6 · (1 − 0.67) = 0.198, 50.49, 50 (32).
-    expect(readValue("text-color")).toBe("#326699");
+    expect(readValue("text-color")).toBe("#336699");
+    // 210°, 102 / 153, 61 %: 51.85 → 52, 103.7 → 104, 155.55 → 156; the shown 67 would give
+    // #33679c.
+    typeAndLeave("color-level-value", "61");
+
+    expect([readValue("text-color"), ...readPickerValues()]).toEqual([
+      "#34689c",
+      "210",
+      "67",
+      "61",
+    ]);
   });
 
   it("decision 9: HSL 30°, 100 %, 50 %: the green 127.5 rounded up, #ff8000", () => {
@@ -398,12 +408,19 @@ describe("the guided test of F16 (VAL-016): its decisions, each with its example
     clickElement("text-color-swatch");
     expect(readValue("color-hue-value")).toBe("0");
     typeAndLeave("color-hue-value", "200");
-    // (100, 50) of 200 × 100: S 50 %, B 50 %.
+    // (100, 50) of 200 × 100: S 50 %, B 50 %, the 50 shown so the exact 128 / 255, at 200°: red
+    // 64, green 128 · (1 − 0.5 / 3) = 106.67 → 107 (6b), blue 128: #406b80; the values held.
     pressPointer("#color-plane", "pointerdown", { buttons: 1, clientX: 100, clientY: 50 });
-    expect(readPickerValues()).toEqual(["200", "50", "50"]);
+
+    expect([readValue("text-color"), ...readPickerValues()]).toEqual([
+      "#406b80",
+      "200",
+      "50",
+      "50",
+    ]);
   });
 
-  it("decision 11: hue 211, 221; on the plane S 67.7, then B 61", () => {
+  it("decision 11: hue 211, 221; on the plane S 68, then B 61", () => {
     openStep("Keys (decision 11)");
     chooseOption("color-model", "hsb");
     clickElement("text-color-swatch");
@@ -412,7 +429,15 @@ describe("the guided test of F16 (VAL-016): its decisions, each with its example
     pressKey("#color-hue", "PageUp");
     pressKey("#color-plane", "ArrowRight");
     pressKey("#color-plane", "ArrowUp");
-    expect(readPickerValues()).toEqual(["221", "67.7", "61"]);
+
+    // The hue typed, S and B the exact ones of #336699: #336499, #335399; then S 68 and B 61
+    // typed with the hue 221 held: #315299, #32539c.
+    expect([readValue("text-color"), ...readPickerValues()]).toEqual([
+      "#32539c",
+      "221",
+      "68",
+      "61",
+    ]);
 
     const hue = selectPageElement("#color-hue");
 
@@ -422,8 +447,8 @@ describe("the guided test of F16 (VAL-016): its decisions, each with its example
     ]);
   });
 
-  it("decision 12: 30.1°, Right 31.1°, End 359.9°, 360 shown 0", () => {
-    openStep("Hue to one decimal (decision 12)");
+  it("decision 12: 30°, Right 31°, End 359°, 360 shown 0", () => {
+    openStep("Whole degrees of hue (decision 12)");
     chooseOption("color-model", "hsb");
     clickElement("text-color-swatch");
 
@@ -434,7 +459,7 @@ describe("the guided test of F16 (VAL-016): its decisions, each with its example
     });
 
     typeAndLeave("color-hue-value", "360");
-    expect([...hues, readValue("color-hue-value")]).toEqual(["31.1", "359.9", "0"]);
+    expect([...hues, readValue("color-hue-value")]).toEqual(["31", "359", "0"]);
   });
 
   it("decision 13: the background's color has its swatch and picker", () => {
@@ -465,7 +490,7 @@ describe("the guided test of F16 (VAL-016): its decisions, each with its example
 
     // 100 · 67 / 200 = 33.5, to the nearest percent: 34.
     pressPointer("#color-opacity", "pointerdown", { buttons: 1, clientX: 67, clientY: 5 });
-    expect([...hues, readValue("text-opacity")]).toEqual(["30.1", "0", "0", "34"]);
+    expect([...hues, readValue("text-opacity")]).toEqual(["30", "0", "0", "34"]);
   });
 
   it("decision 16: the opacity typed while open moves the bar; Escape gives the swatch the focus", () => {
@@ -479,19 +504,18 @@ describe("the guided test of F16 (VAL-016): its decisions, each with its example
     expect(document.activeElement).toBe(selectPageElement("#text-color-swatch"));
   });
 
-  it("decision 17: #523a39 picked at HSB 0.7°, 30 %, 32.2 %, shown HSL 2.4°, 18 %, 27.3 %", () => {
+  it("decision 17: #7e7f80 at its own hue 210° in HSB 210, 2, 50 and HSL 210, 1, 50", () => {
     openStep("Another model, its own hue (decision 17)");
     chooseOption("color-model", "hsb");
     clickElement("text-color-swatch");
-    typeAndLeave("color-hue-value", "0.7");
-    typeAndLeave("color-saturation-value", "30");
-    typeAndLeave("color-level-value", "32.2");
-    expect(readValue("text-color")).toBe("#523a39");
+    // Hue 60 · ((126 − 127) / 2 + 4) = 210; S_V 2 / 128 = 1.6 → 2; V 128 / 255 = 50.2 → 50.
+    expect(readPickerValues()).toEqual(["210", "2", "50"]);
     chooseOption("color-model", "hsl");
-    expect(readPickerValues()).toEqual(["2.4", "18", "27.3"]);
+    // S_L 2 / min(254, 256) = 0.79 → 1; L 254 / 510 = 49.8 → 50; the color kept.
+    expect([readValue("text-color"), ...readPickerValues()]).toEqual(["#7e7f80", "210", "1", "50"]);
   });
 
-  it("decision 18: the track is the slider, named Hue at 30.1; the thumb only drawn", () => {
+  it("decision 18: the track is the slider, named Hue at 30; the thumb only drawn", () => {
     openStep("Read by a screen reader (decision 18)");
     clickElement("text-color-swatch");
 
@@ -499,25 +523,38 @@ describe("the guided test of F16 (VAL-016): its decisions, each with its example
     const thumb = selectPageElement("#color-hue-thumb");
 
     expect([hue.getAttribute("role"), hue.getAttribute("aria-label")]).toEqual(["slider", "Hue"]);
-    expect([hue.getAttribute("aria-valuenow"), hue.tabIndex]).toEqual(["30.1", 0]);
+    expect([hue.getAttribute("aria-valuenow"), hue.tabIndex]).toEqual(["30", 0]);
     expect([thumb.hasAttribute("role"), thumb.hasAttribute("tabindex")]).toEqual([false, false]);
   });
 
-  it("decision 19: #002330's hue 196.25 shown 196.2; #030330's saturation 93.75 shown 93.7", () => {
-    openStep("A half-tenth (decision 19)");
+  it("decision 19: no tenth shown, #002330's hue 196.25 is 196; #030330's saturation 93.75 is 94", () => {
+    openStep("No tenth shown (decision 19)");
     chooseOption("color-model", "hsb");
     clickElement("text-color-swatch");
-    expect(readValue("color-hue-value")).toBe("196.2");
+    // 60 · ((0 − 35) / 48 + 4) = 196.25 → 196; 45 / 48 = 93.75 % → 94, the hexadecimal kept.
+    expect(readValue("color-hue-value")).toBe("196");
     typeAndLeave("text-color", "#030330");
-    expect(readValue("color-saturation-value")).toBe("93.7");
+
+    expect([readValue("color-saturation-value"), readValue("text-color")]).toEqual([
+      "94",
+      "#030330",
+    ]);
   });
 
-  it("decision 20: on the plane, Page Up 76.7 %, End 100 %, B kept at 60", () => {
+  it("decision 20: on the plane, Page Up 77 %, End 100 %, B kept at 60", () => {
     openStep("Page keys on the plane (decision 20)");
     chooseOption("color-model", "hsb");
     clickElement("text-color-swatch");
     pressKey("#color-plane", "PageUp");
-    expect(readPickerValues()).toEqual(["210", "76.7", "60"]);
+
+    // 67 + 10 with the exact hue and V: #235e99.
+    expect([readValue("text-color"), ...readPickerValues()]).toEqual([
+      "#235e99",
+      "210",
+      "77",
+      "60",
+    ]);
+
     pressKey("#color-plane", "End");
     expect(readPickerValues()).toEqual(["210", "100", "60"]);
   });

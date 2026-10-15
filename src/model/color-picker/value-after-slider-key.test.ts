@@ -7,20 +7,20 @@ import { valueAfterSliderKey } from "./value-after-slider-key";
 
 describe("valueAfterSliderKey (REF-WAI-APG-SLIDER)", () => {
   it.each([
-    // 30.1 + 1 = 31.1; 31.1 + 10 = 41.1; the ends, 0 and 359.9.
-    { expected: 31.1, key: "ArrowRight", value: 30.1 },
-    { expected: 31.1, key: "ArrowUp", value: 30.1 },
-    { expected: 29.1, key: "ArrowLeft", value: 30.1 },
-    { expected: 29.1, key: "ArrowDown", value: 30.1 },
-    { expected: 41.1, key: "PageUp", value: 31.1 },
-    { expected: 21.1, key: "PageDown", value: 31.1 },
-    { expected: 0, key: "Home", value: 41.1 },
-    { expected: 359.9, key: "End", value: 0 },
-    // Kept within the range: 359.9 + 1 stays 359.9, 5 − 10 stays 0.
-    { expected: 359.9, key: "ArrowRight", value: 359.9 },
+    // 30 + 1 = 31; 31 + 10 = 41; the ends, 0 and 359 (ADR-0058, decision 4).
+    { expected: 31, key: "ArrowRight", value: 30 },
+    { expected: 31, key: "ArrowUp", value: 30 },
+    { expected: 29, key: "ArrowLeft", value: 30 },
+    { expected: 29, key: "ArrowDown", value: 30 },
+    { expected: 40, key: "PageUp", value: 30 },
+    { expected: 21, key: "PageDown", value: 31 },
+    { expected: 0, key: "Home", value: 41 },
+    { expected: 359, key: "End", value: 0 },
+    // Kept within the range: 359 + 1 stays 359, 5 − 10 stays 0.
+    { expected: 359, key: "ArrowRight", value: 359 },
     { expected: 0, key: "PageDown", value: 5 },
   ])("[F16.AC2] takes the hue $value° to $expected° on $key", ({ expected, key, value }) => {
-    expect(valueAfterSliderKey(key, value, HUE_SLIDER_RANGE)).toBeCloseTo(expected, 12);
+    expect(valueAfterSliderKey(key, value, HUE_SLIDER_RANGE)).toBe(expected);
   });
 
   it("[F16.AC2] takes an opacity from 0 to 100 %, End at 100", () => {

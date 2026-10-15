@@ -48,7 +48,7 @@ function pressPlane(type: string, clientX: number, clientY: number): void {
   pressPointer("#color-plane", type, { buttons: 1, clientX, clientY });
 }
 
-describe("Color picker: the plane (US-035)", () => {
+describe("Color picker: the plane (US-035, US-040)", () => {
   beforeEach(() => {
     openServedPage("");
     clickElement("tool-text");
@@ -66,14 +66,14 @@ describe("Color picker: the plane (US-035)", () => {
 
     expect(plane.dataset["model"]).toBe("hsb");
     expect(plane.getAttribute("aria-label")).toBe("Saturation and brightness");
-    // The hue at its purest, HSB(30.1°, 100 %, 100 %).
+    // The hue at its purest, HSB(30°, 100 %, 100 %).
     expect(plane.style.getPropertyValue("--hue-color")).toBe("#ff8000");
 
     chooseOption("color-model", "hsl");
 
     expect(plane.dataset["model"]).toBe("hsl");
     expect(plane.getAttribute("aria-label")).toBe("Saturation and lightness");
-    // HSL 30.1°, 100 %, 50 %: the mark at the right end, halfway up.
+    // HSL 30°, 100 %, 50 %: the mark at the right end, halfway up.
     expect([mark.style.left, mark.style.top]).toEqual(["100%", "50%"]);
   });
 
@@ -87,15 +87,21 @@ describe("Color picker: the plane (US-035)", () => {
     expect(selectPageElement("#color-plane-mark").style.left).toBe("100%");
     expect(selectPageElement("#color-plane-mark").style.top).toBe("50%");
 
-    typeAndLeave("color-saturation-value", "66.7");
-    typeAndLeave("color-level-value", "60");
-    expect(readPicked()).toEqual(["210", "66.7", "60", "#336699"]);
+    // #336699 shows 210, 67, 60; 67 typed again is the value shown, so the exact 102 / 153 stays.
+    typeAndLeave("text-color", "#336699");
+    typeAndLeave("color-saturation-value", "67");
+    expect(readPicked()).toEqual(["210", "67", "60", "#336699"]);
+
+    // 61 typed: 210°, 102 / 153, 61 %: red 51.85 → 52, green 103.7 → 104, blue 155.55 → 156;
+    // S still 67 (ADR-0058).
+    typeAndLeave("color-level-value", "61");
+    expect(readPicked()).toEqual(["210", "67", "61", "#34689c"]);
   });
 
   it("[F16.AC2] puts the mark at the top left on Home: 0 %, 100 % up", () => {
     pressKey("#color-plane", "Home");
 
-    // HSB 30.1°, 0 %, 100 %: x = 100 · 0 / 100 = 0; y = 100 − 100 · 100 / 100 = 0.
+    // HSB 30°, 0 %, 100 %: x = 100 · 0 / 100 = 0; y = 100 − 100 · 100 / 100 = 0.
     const mark = selectPageElement("#color-plane-mark");
 
     expect([mark.style.left, mark.style.top]).toEqual(["0%", "0%"]);
@@ -109,20 +115,23 @@ describe("Color picker: the plane (US-035)", () => {
     pressPlane("pointerdown", 110, 70);
     // (−90 − 10, 170 − 20): beyond the left and bottom edges, 0 % and 0 %.
     pressPlane("pointermove", -90, 170);
-    expect(readPicked()).toEqual(["30.1", "0", "0", "#000000"]);
+    expect(readPicked()).toEqual(["30", "0", "0", "#000000"]);
 
     pressPointer("#color-plane", "pointermove", { buttons: 0, clientX: 210, clientY: 20 });
-    expect(readPicked()).toEqual(["30.1", "0", "0", "#000000"]);
+    expect(readPicked()).toEqual(["30", "0", "0", "#000000"]);
   });
 
   it.each([
-    // HSB(30.1°, 99 %, 100 %): green 1 − 0.99 · 0.49833 = 0.50665, 129.2 → 81; blue 0.01, 2.55 → 03.
-    { expected: ["30.1", "99", "100", "#ff8103"], key: "ArrowLeft" },
-    // HSB(30.1°, 100 %, 99 %): red 252.45 → fc; green 0.99 · 0.50167 = 0.49665, 126.6 → 7f.
-    { expected: ["30.1", "100", "99", "#fc7f00"], key: "ArrowDown" },
-    // PageDown twice, 100 − 20 = 80 %: green 1 − 0.8 · 0.49833 = 0.60133, 153.3 → 99; blue 0.2, 51 → 33.
-    { expected: ["30.1", "80", "100", "#ff9933"], key: "PageDown" },
-    { expected: ["30.1", "0", "100", "#ffffff"], key: "Home" },
+    // 99 % with the exact hue 30.11765° and brightness 1: green 1 − 0.99 · 0.49804 = 0.50694,
+    // 129.27 → 81; blue 0.01, 2.55 → 03; shown hue 60 · 126 / 252 = 30, S 252 / 255 → 99.
+    { expected: ["30", "99", "100", "#ff8103"], key: "ArrowLeft" },
+    // 99 % brightness, S 1 exact: red 252.45 → fc; green 0.99 · 0.50196 = 0.49694, 126.7 → 7f.
+    { expected: ["30", "100", "99", "#fc7f00"], key: "ArrowDown" },
+    // PageDown: 90 % gives #ff8d1a (hue 60 · 115 / 229 = 30.131°); again 80 %: green
+    // 1 − 0.8 · 0.49782 = 0.60175, 153.4 → 99; blue 0.2, 51 → 33.
+    { expected: ["30", "80", "100", "#ff9933"], key: "PageDown" },
+    // White, a grey: the hue held, 30.
+    { expected: ["30", "0", "100", "#ffffff"], key: "Home" },
   ])("[F16.AC2] answers $key on the plane", ({ expected, key }) => {
     pressKey("#color-plane", key);
 
@@ -140,18 +149,19 @@ describe("Color picker: the plane (US-035)", () => {
   it("does not answer a key the plane does not answer", () => {
     pressKey("#color-plane", "Enter");
 
-    expect(readPicked()).toEqual(["30.1", "100", "100", "#ff8000"]);
+    expect(readPicked()).toEqual(["30", "100", "100", "#ff8000"]);
   });
 
   it("[F16.AC2] keeps the slider's hue for a grey while the picker is open", () => {
     typeAndLeave("text-color", "#808080");
-    expect(readPicked()).toEqual(["30.1", "0", "50.2", "#808080"]);
+    // V = 128 / 255 = 50.2 %, shown 50.
+    expect(readPicked()).toEqual(["30", "0", "50", "#808080"]);
 
     typeAndLeave("color-hue-value", "200");
-    expect(readPicked()).toEqual(["200", "0", "50.2", "#808080"]);
+    expect(readPicked()).toEqual(["200", "0", "50", "#808080"]);
 
     // (60 − 10, 20 − 20) = (50, 0): S 25 %, B 100 %. HSB(200°, 25 %, 100 %): red 0.75, 191.25 → bf;
-    // green 1 − 0.25 · 0.33333 = 0.91667, 233.75 → ea; blue ff.
+    // green 1 − 0.25 · 0.33333 = 0.91667, 233.75 → ea; blue ff; shown hue 199.7 → 200, S 25.1 → 25.
     pressPlane("pointerdown", 60, 20);
     expect(readPicked()).toEqual(["200", "25", "100", "#bfeaff"]);
   });
@@ -160,10 +170,10 @@ describe("Color picker: the plane (US-035)", () => {
     typeAndLeave("text-color", "#808080");
     clickElement("text-color-swatch");
     clickElement("text-color-swatch");
-    expect(readPicked()).toEqual(["0", "0", "50.2", "#808080"]);
+    expect(readPicked()).toEqual(["0", "0", "50", "#808080"]);
 
     typeAndLeave("color-hue-value", "120");
     chooseOption("color-model", "hsl");
-    expect(readPicked()).toEqual(["120", "0", "50.2", "#808080"]);
+    expect(readPicked()).toEqual(["120", "0", "50", "#808080"]);
   });
 });

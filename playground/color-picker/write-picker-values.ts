@@ -3,7 +3,7 @@ import { writeInputValue, writeText } from "../page";
 import type { ColorModel, PickedColor } from "../../src";
 
 /**
- * Shows the picker's three values, to one decimal as it holds them: the hue, the saturation and
+ * Shows the picker's three values, whole numbers as it holds them: the hue, the saturation and
  * the lightness (L) or brightness (B) of the model chosen.
  *
  * @kind procedure

@@ -1,23 +1,19 @@
 import { exactColorToHex } from "./exact-color-to-hex";
-import { toTenths } from "./to-tenths";
 
 import type { ColorModel, PickedColor } from "../../model";
 
-/** Tenths in a unit: a hue in degrees, given to one decimal, is its tenths over 10. */
-const TENTHS = 10;
-
-/** Tenths of a percent in a whole: a percent to one decimal is its tenths over 1000. */
-const TENTHS_OF_PERCENT = 1000;
+/** A whole saturation, lightness or brightness, in percent: an integer `x` is `x / 100`. */
+const PERCENT = 100;
 
 /**
- * The stored color of the values an open picker holds, read in its model: each value, given to
- * one decimal, counted in tenths (`toTenths`) as an exact fraction, then turned into bytes
- * exactly (`exactColorToHex`), so that a byte lying on a half rounds up as the domain says
- * (ADR-0056, decision 3; `DERIV-color-spaces`, step 11). HSB 210°, 100 %, 50 % is `#004080`;
- * HSB 30.1°, 90 %, 100 % is `#ff8d1a`.
+ * The color of three whole values read in a model, each an exact fraction (a hue `h / 1`, a
+ * percent `x / 100`), turned into bytes exactly (`exactColorToHex`), so that a byte lying on a
+ * half rounds up as the domain says (ADR-0056; ADR-0058; `DERIV-color-spaces`, steps 11 and 12).
+ * HSB 210°, 100 %, 50 % is `#004080`; HSB 210°, 67 %, 61 % is `#33679c`. A picker editing one
+ * value of a color rebuilds it with `wholeValuesToHex` instead, the others exact.
  *
  * @kind format
- * @param picked - the hue, the saturation and the lightness or brightness, to one decimal
+ * @param picked - the hue, the saturation and the lightness or brightness, integers
  * @param model - the model the values are read in
  * @returns the color, `#` and six lower-case digits
  * @see DERIV-color-spaces
@@ -25,9 +21,9 @@ const TENTHS_OF_PERCENT = 1000;
 export function pickedColorToHex(picked: PickedColor, model: ColorModel): string {
   return exactColorToHex(
     {
-      hue: { denominator: TENTHS, numerator: toTenths(picked.hue) },
-      level: { denominator: TENTHS_OF_PERCENT, numerator: toTenths(picked.level) },
-      saturation: { denominator: TENTHS_OF_PERCENT, numerator: toTenths(picked.saturation) },
+      hue: { denominator: 1, numerator: picked.hue },
+      level: { denominator: PERCENT, numerator: picked.level },
+      saturation: { denominator: PERCENT, numerator: picked.saturation },
     },
     model,
   );
