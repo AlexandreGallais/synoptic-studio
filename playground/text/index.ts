@@ -2,6 +2,7 @@ export * from "./create-text-block-frame";
 export * from "./hide-point-panels";
 export * from "./listen-to-text-fields";
 export * from "./read-field-value";
+export * from "./read-text-box-options";
 export * from "./read-text-model";
 export * from "./save-tool-placement";
 export * from "./show-text";
