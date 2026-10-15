@@ -30,7 +30,7 @@ The content is cut into paragraphs at each line break typed (`DERIV-text-width`;
 w(trim(t)) ≤ W
 ```
 
-and a line ended by a wrap is drawn and measured as `trim(t)`. The last line of a paragraph keeps the spaces typed, drawn and measured as in F05 for its placement, but they are not measured for fit either: CSS hangs them too when they would overflow (`REF-CSS-TEXT-3`, §4.1.2, `pre-wrap` before a forced break), so every line the greedy wrap makes fits (step 9 relies on it).
+and a line ended by a wrap is drawn and measured as `trim(t)`. The last line of a paragraph in a box is drawn and measured as `trim(t)` too: its trailing spaces hang as every line's, "not considered when placing the rest of the line during text alignment" (`REF-CSS-TEXT-3`, §4.1.2), so they neither place the line nor lengthen its background (step 10), and every line the greedy wrap makes fits (step 9 relies on it). In Arial 16 in a box 50 wide, "Hello World " gives "World", 41.78125 wide; right-aligned it sits at 50 − 41.78125 = 8.21875, not at 3.7734375, a space's width (4.4453125) from the edge. Decided on 2026-10-16 for US-049, provisional until VAL-018; before it, the last line kept the spaces typed for its placement, as CSS `pre-wrap` does before a forced break, and its band ran past its last word. A text that fits its content is not wrapped and keeps its lines as typed (F05).
 
 ## Step 3 — The greedy wrap
 

@@ -11,6 +11,38 @@ import type { Text } from "../text";
 const IN_BOX: Text = { ...HELLO_TEXT, boxHeight: 60, boxWidth: 60, isInBox: true };
 
 describe("textDrawing (ADR-0052, DERIV-text-width steps 4 to 6)", () => {
+  it.each([
+    { content: "Hello World", name: "no space" },
+    { content: "Hello World ", name: "a space" },
+    { content: "Hello World  ", name: "two spaces" },
+  ])(
+    "[F17.AC6] ends each band of 'Hello World' with $name at the end with its word, in a box 50",
+    ({ content }) => {
+      const text = { ...IN_BOX, boxWidth: 50, content, hasBackground: true };
+
+      // "Hello" 36.4609375 and "World" 41.78125 wide, never 46.2265625 with a space (569 × 16 /
+      // 2048 = 4.4453125), nor 50.671875 with two, past the box.
+      expect(textDrawing(ARIAL_BOX_METRICS, text).backgrounds.map((band) => band.width)).toEqual([
+        36.4609375, 41.78125,
+      ]);
+    },
+  );
+
+  it("[F17.AC6] places 'World ' right-aligned at the box's edge, its space ignored", () => {
+    const text = {
+      ...IN_BOX,
+      alignment: "right" as const,
+      boxWidth: 50,
+      content: "Hello World ",
+      hasBackground: true,
+    };
+    const drawn = textDrawing(ARIAL_BOX_METRICS, text);
+
+    // 50 − 41.78125 = 8.21875, not 50 − 46.2265625 = 3.7734375.
+    expect(drawn.lines[1]?.x).toBe(8.21875);
+    expect(drawn.backgrounds[1]).toMatchObject({ width: 41.78125, x: 8.21875 });
+  });
+
   it("[F05.AC4] underlines each line that has a length, an empty line in between", () => {
     const text = { ...HELLO_TEXT, content: "Hello\n\nWorld", isUnderlined: true };
     const drawn = textDrawing(DECORATED_METRICS, text);
