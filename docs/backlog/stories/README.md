@@ -131,6 +131,12 @@
 | [AUD-016](./E15-F14-AUD-016-audit-f14.md)                       | F14     | Audit F14                                                                       | done        |
 | [VAL-015](./E15-F14-VAL-015-validate-f14.md)                    | F14     | Validate F14                                                                    | ready       |
 | [SP-017](./E15-F16-SP-017-research-f16-colors.md)               | F16     | Research for F16: colors in hexadecimal, HSL and HSB, and their picker          | in-progress |
+| [EN-037](./E15-F16-EN-037-a-color-typed-in-hexadecimal.md)      | F16     | A color typed in hexadecimal, kept as six digits and an opacity                 | ready       |
+| [EN-038](./E15-F16-EN-038-hsl-and-hsb-from-a-color.md)          | F16     | HSL and HSB from a hexadecimal color, and back                                  | ready       |
+| [CHK-016](./E15-F16-CHK-016-checkpoint-f16.md)                  | F16     | Checkpoint in the middle of F16                                                 | ready       |
+| [US-035](./E15-F16-US-035-pick-a-color.md)                      | F16     | Type or pick a color and its opacity                                            | ready       |
+| [AUD-017](./E15-F16-AUD-017-audit-f16.md)                       | F16     | Audit F16                                                                       | ready       |
+| [VAL-016](./E15-F16-VAL-016-validate-f16.md)                    | F16     | Validate F16                                                                    | ready       |
 | [NAM-001](./E15-NAM-001-naming-pass-e15.md)                     | E15     | Naming pass over the code of E15                                                | draft       |
 | [REV-003](./E15-REV-003-review-e15.md)                          | E15     | Review E15 with the Product Owner                                               | draft       |
 | [RET-003](./E15-RET-003-retrospective-e15.md)                   | E15     | Retrospective of E15                                                            | draft       |
