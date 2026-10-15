@@ -21,7 +21,7 @@ The Product Owner imports and chooses fonts, embeds them and turns the HTML laye
 One task = one commit, referenced as `VAL-017.Tn`.
 
 - [x] T1 — The guided test, tested end to end (1 h)
-- [ ] T2 — The demo page (30 min)
+- [x] T2 — The demo page (30 min)
 - [ ] T3 — The Product Owner's validation (1 h)
 
 ## Browser checks of the HTML layer

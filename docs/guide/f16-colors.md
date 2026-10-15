@@ -40,18 +40,18 @@ Rules: [domain, "Colors"](../domain/interaction.md#_5-colors-align-and-distribut
 
 ## How to try it
 
-`npm run dev` and `http://localhost:5173`: 42 steps, each one line to do and one to look at; **Next** types the text and its colors. At the epic review they come back as steps 165 to 206 of `?guide=epic`. Next does not choose the picker's model: a step that needs one names it.
+`npm run dev` and `http://localhost:5173`: 42 steps, each one line to do and one to look at; **Next** types the text and its colors. E15 is validated at once (VAL-017): they are steps 78 to 119 of its 176, numbered so below; at the epic review, steps 165 to 206 of `?guide=epic`. Next does not choose the picker's model: a step that needs one names it.
 
-| Steps | What                                                                                                    |
-| ----- | ------------------------------------------------------------------------------------------------------- |
-| 1–7   | six digits, with `#` and spaces, three, four and eight digits, a color pasted, a value refused          |
-| 8–10  | the opacity, the swatch opening the picker, the picker closed by the swatch, Escape and a click outside |
-| 11–13 | the hue bar by mouse and by keys, the opacity bar                                                       |
-| 14–17 | the plane in HSB and in HSL, values typed, a grey keeping its hue                                       |
-| 18    | the background's color and its picker                                                                   |
-| 19    | the underline's and the strike-through's colors, the underline's picker (US-041)                        |
-| 20–40 | the 21 decisions below, one step each with its example                                                  |
-| 41–42 | back to F14 and F05, then to the rectangle, drawn as before                                             |
+| Steps   | What                                                                                                    |
+| ------- | ------------------------------------------------------------------------------------------------------- |
+| 78–84   | six digits, with `#` and spaces, three, four and eight digits, a color pasted, a value refused          |
+| 85–87   | the opacity, the swatch opening the picker, the picker closed by the swatch, Escape and a click outside |
+| 88–90   | the hue bar by mouse and by keys, the opacity bar                                                       |
+| 91–94   | the plane in HSB and in HSL, values typed, a grey keeping its hue                                       |
+| 95      | the background's color and its picker                                                                   |
+| 96      | the underline's and the strike-through's colors, the underline's picker (US-041)                        |
+| 97–117  | the 21 decisions below, one step each with its example                                                  |
+| 118–119 | back to F14 and F05, then to the rectangle, drawn as before                                             |
 
 ## Decided by the agent, to confirm
 
@@ -59,27 +59,27 @@ Each is built as written and shown by its step; the full list, with its examples
 
 | #   | Question                            | As built                                                                                                        | Step |
 | --- | ----------------------------------- | --------------------------------------------------------------------------------------------------------------- | ---- |
-| 1   | What is stored                      | the hexadecimal and the opacity; HSL and HSB computed, never stored                                             | 20   |
-| 2   | Forms typed                         | with or without `#`, any case, spaces around ignored; kept as six lower-case digits                             | 21   |
-| 3   | Short forms and alpha               | 3 digits doubled; 4 and 8 digits set the opacity to the nearest percent (`ec` gives 93 %)                       | 22   |
-| 4   | Anything else; a copy               | refused, the previous color back; a copy is six digits, the opacity apart                                       | 23   |
-| 5   | Opening and closing                 | the swatch opens; the swatch, Escape or a click outside closes                                                  | 24   |
-| 6   | First model                         | HSB, the agent's own choice; HSL one choice away                                                                | 25   |
-| 7   | The plane's axes                    | saturation across, 0 at the left; brightness or lightness up, 100 at the top                                    | 26   |
-| 8   | Values shown                        | whole numbers; one value edited rebuilt with the exact others, against the color last read (ADR-0058, ADR-0059) | 27   |
-| 9   | Rounding to the hexadecimal         | each of red, green and blue to the nearest, a tie up                                                            | 28   |
-| 10  | A grey's hue                        | 0° shown; an open picker keeps its bar's hue                                                                    | 29   |
-| 11  | Keys                                | arrows 1, Page Up and Down 10, Home and End; on the plane Left and Right the saturation                         | 30   |
-| 12  | The hue bar                         | whole degrees from 0 to 359: arrows add 1, End 359°, a hue rounding to 360 shown 0                              | 31   |
-| 13  | The background's color              | read into F16's fourth criterion: the same swatch and picker                                                    | 32   |
-| 14  | A color refused                     | the color the field had when it got the focus, a line under it                                                  | 33   |
-| 15  | Beyond the ends; empty              | held at the end; an empty value shown again; a click on the opacity bar a whole percent                         | 34   |
-| 16  | Where the picker opens; Escape      | under its color's fields, which stay usable; Escape gives the focus back to the swatch                          | 35   |
-| 17  | Another model chosen                | reads the color's values again, its own hue; a grey keeps the hue the picker holds                              | 36   |
-| 18  | What a screen reader reads          | each bar's track is the slider, with its name and value; the thumb only drawn                                   | 37   |
-| 19  | A value on a half-tenth             | dropped (ADR-0058): no tenth is shown                                                                           | 38   |
-| 20  | Page keys on the plane              | Page Up, Page Down, Home and End act on the saturation                                                          | 39   |
-| 21  | Underline and strike-through colors | follow the text's color until one is chosen, its box then unticked; ticked again, it follows (US-041)           | 40   |
+| 1   | What is stored                      | the hexadecimal and the opacity; HSL and HSB computed, never stored                                             | 97   |
+| 2   | Forms typed                         | with or without `#`, any case, spaces around ignored; kept as six lower-case digits                             | 98   |
+| 3   | Short forms and alpha               | 3 digits doubled; 4 and 8 digits set the opacity to the nearest percent (`ec` gives 93 %)                       | 99   |
+| 4   | Anything else; a copy               | refused, the previous color back; a copy is six digits, the opacity apart                                       | 100  |
+| 5   | Opening and closing                 | the swatch opens; the swatch, Escape or a click outside closes                                                  | 101  |
+| 6   | First model                         | HSB, the agent's own choice; HSL one choice away                                                                | 102  |
+| 7   | The plane's axes                    | saturation across, 0 at the left; brightness or lightness up, 100 at the top                                    | 103  |
+| 8   | Values shown                        | whole numbers; one value edited rebuilt with the exact others, against the color last read (ADR-0058, ADR-0059) | 104  |
+| 9   | Rounding to the hexadecimal         | each of red, green and blue to the nearest, a tie up                                                            | 105  |
+| 10  | A grey's hue                        | 0° shown; an open picker keeps its bar's hue                                                                    | 106  |
+| 11  | Keys                                | arrows 1, Page Up and Down 10, Home and End; on the plane Left and Right the saturation                         | 107  |
+| 12  | The hue bar                         | whole degrees from 0 to 359: arrows add 1, End 359°, a hue rounding to 360 shown 0                              | 108  |
+| 13  | The background's color              | read into F16's fourth criterion: the same swatch and picker                                                    | 109  |
+| 14  | A color refused                     | the color the field had when it got the focus, a line under it                                                  | 110  |
+| 15  | Beyond the ends; empty              | held at the end; an empty value shown again; a click on the opacity bar a whole percent                         | 111  |
+| 16  | Where the picker opens; Escape      | under its color's fields, which stay usable; Escape gives the focus back to the swatch                          | 112  |
+| 17  | Another model chosen                | reads the color's values again, its own hue; a grey keeps the hue the picker holds                              | 113  |
+| 18  | What a screen reader reads          | each bar's track is the slider, with its name and value; the thumb only drawn                                   | 114  |
+| 19  | A value on a half-tenth             | dropped (ADR-0058): no tenth is shown                                                                           | 115  |
+| 20  | Page keys on the plane              | Page Up, Page Down, Home and End act on the saturation                                                          | 116  |
+| 21  | Underline and strike-through colors | follow the text's color until one is chosen, its box then unticked; ticked again, it follows (US-041)           | 117  |
 
 ## Limits
 
