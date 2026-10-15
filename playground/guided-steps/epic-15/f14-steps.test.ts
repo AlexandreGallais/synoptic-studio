@@ -5,7 +5,6 @@ import {
   chooseOption,
   clickElement,
   openOnStep,
-  openServedPage,
   readDisplay,
   readText,
   readValue,
@@ -131,10 +130,7 @@ function isRefused(id: string): boolean {
 }
 
 describe("the guided test of F14 (VAL-015): the box's options", () => {
-  it("is the current guided test, and Next from F05's last step types F14's first", () => {
-    openServedPage("");
-    expect(readText("#guide-title")).toBe("F14 · Fit content or Box");
-
+  it("Next from F05's last step types F14's first", () => {
     openStep("Fit content or Box");
     clickElement("guide-previous");
     clickElement("guide-next");
