@@ -3,7 +3,7 @@ id: EN-041
 epic: E15
 feature: F15
 title: The HTML layer of a text in a switch, over its positioned lines
-status: ready
+status: done
 points: 5
 ---
 
