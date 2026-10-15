@@ -31,7 +31,7 @@ In delivery order. Written by its research spike (SP-016, research note 0018).
 | [EN-034](../stories/E15-F14-EN-034-lines-shown-and-the-ellipsis.md) | Enabler    | The lines a box shows, and the ellipsis                                   | done   |
 | [EN-035](../stories/E15-F14-EN-035-lines-placed-in-the-box.md)      | Enabler    | Lines placed in the box: line height, cap-height trim, vertical alignment | done   |
 | [EN-036](../stories/E15-F14-EN-036-balanced-wrap.md)                | Enabler    | A balanced wrap that evens the lines' lengths                             | done   |
-| [CHK-015](../stories/E15-F14-CHK-015-checkpoint-f14.md)             | Checkpoint | Checkpoint in the middle of F14                                           | ready  |
+| [CHK-015](../stories/E15-F14-CHK-015-checkpoint-f14.md)             | Checkpoint | Checkpoint in the middle of F14                                           | done   |
 | [US-033](../stories/E15-F14-US-033-put-a-text-in-a-box.md)          | User story | Put a text in a box with the Text tool                                    | ready  |
 | [US-034](../stories/E15-F14-US-034-background-behind-a-text.md)     | User story | A background color behind a text, as a highlighter                        | ready  |
 | [AUD-016](../stories/E15-F14-AUD-016-audit-f14.md)                  | Audit      | Audit F14                                                                 | ready  |

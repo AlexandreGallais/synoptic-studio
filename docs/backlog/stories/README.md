@@ -125,7 +125,7 @@
 | [EN-034](./E15-F14-EN-034-lines-shown-and-the-ellipsis.md)      | F14     | The lines a box shows, and the ellipsis                                         | done   |
 | [EN-035](./E15-F14-EN-035-lines-placed-in-the-box.md)           | F14     | Lines placed in the box: line height, cap-height trim, vertical alignment       | done   |
 | [EN-036](./E15-F14-EN-036-balanced-wrap.md)                     | F14     | A balanced wrap that evens the lines' lengths                                   | done   |
-| [CHK-015](./E15-F14-CHK-015-checkpoint-f14.md)                  | F14     | Checkpoint in the middle of F14                                                 | ready  |
+| [CHK-015](./E15-F14-CHK-015-checkpoint-f14.md)                  | F14     | Checkpoint in the middle of F14                                                 | done   |
 | [US-033](./E15-F14-US-033-put-a-text-in-a-box.md)               | F14     | Put a text in a box with the Text tool                                          | ready  |
 | [US-034](./E15-F14-US-034-background-behind-a-text.md)          | F14     | A background color behind a text, as a highlighter                              | ready  |
 | [AUD-016](./E15-F14-AUD-016-audit-f14.md)                       | F14     | Audit F14                                                                       | ready  |
