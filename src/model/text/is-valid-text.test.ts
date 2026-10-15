@@ -134,6 +134,8 @@ describe("isValidText (F05)", () => {
 
   it.each([
     { field: "textCase", value: "shout" },
+    // Sentence case, removed on 2026-10-15 (US-037), is refused as any other unknown case.
+    { field: "textCase", value: "sentence" },
     { field: "alignment", value: "justify" },
     { field: "direction", value: "ttb" },
   ])("[F05.AC2] refuses a $field of '$value', read from outside", ({ field, value }) => {

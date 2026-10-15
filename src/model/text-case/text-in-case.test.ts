@@ -10,7 +10,6 @@ const CASES: readonly TextCase[] = [
   "none",
   "upper",
   "lower",
-  "sentence",
   "title",
   "camel",
   "pascal",
@@ -27,8 +26,6 @@ describe("textInCase (Q36)", () => {
     { expected: "pump P-101 is running", textCase: "none" },
     { expected: "PUMP P-101 IS RUNNING", textCase: "upper" },
     { expected: "pump p-101 is running", textCase: "lower" },
-    // The first character capitalized, the rest kept: P-101 stays in upper case.
-    { expected: "Pump P-101 is running", textCase: "sentence" },
     // The first character after each space capitalized: "P-101" is one word, already upper.
     { expected: "Pump P-101 Is Running", textCase: "title" },
     // Words cut at spaces and hyphens: pump, p, 101, is, running.
@@ -50,11 +47,6 @@ describe("textInCase (Q36)", () => {
     expect(textInCase("valve__ON - off", "kebab")).toBe("valve-on-off");
   });
 
-  it("capitalizes the first letter of a line in sentence case, past what is not a letter", () => {
-    expect(textInCase(" pump", "sentence")).toBe(" Pump");
-    expect(textInCase("(pump) on", "sentence")).toBe("(Pump) on");
-  });
-
   it("capitalizes the first letter after any white space in title case, the spaces kept", () => {
     expect(textInCase("pump  on", "title")).toBe("Pump  On");
     // A tab and a no-break space are white space too; "(on)" capitalizes past the parenthesis.
@@ -67,13 +59,13 @@ describe("textInCase (Q36)", () => {
 
   it("writes each line in the case, its line breaks kept", () => {
     expect(textInCase("pump on\nvalve off", "kebab")).toBe("pump-on\nvalve-off");
-    expect(textInCase("pump on\nvalve off", "sentence")).toBe("Pump on\nValve off");
+    expect(textInCase("pump on\nvalve off", "title")).toBe("Pump On\nValve Off");
     expect(textInCase("pump on\r\nvalve off\rtank", "kebab")).toBe("pump-on\r\nvalve-off\rtank");
   });
 
   it("capitalizes a whole code point, beyond the basic plane", () => {
     // Deseret small long i (U+10428) has the capital U+10400.
-    expect(textInCase("\u{10428}x", "sentence")).toBe("\u{10400}x");
+    expect(textInCase("\u{10428}x", "title")).toBe("\u{10400}x");
     expect(textInCase("éclair", "title")).toBe("Éclair");
   });
 

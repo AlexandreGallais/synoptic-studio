@@ -90,11 +90,11 @@ describe("textBlock (DERIV-text-width step 4)", () => {
   });
 
   it("[F05.AC4] measures the content in its case", () => {
-    // "hello" in sentence case is "Hello", 36.4609375; as typed, h takes glyph 0:
+    // "hello" in title case is "Hello", 36.4609375; as typed, h takes glyph 0:
     // (1536 + 1139 + 910 + 1139) × 16 / 2048 = 36.90625.
     const text = { ...HELLO_TEXT, content: "hello" };
 
-    expect(measured(ARIAL_METRICS, { ...text, textCase: "sentence" }).width).toBe(36.4609375);
+    expect(measured(ARIAL_METRICS, { ...text, textCase: "title" }).width).toBe(36.4609375);
     expect(measured(ARIAL_METRICS, text).width).toBe(36.90625);
   });
 
