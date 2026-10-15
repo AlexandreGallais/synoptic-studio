@@ -23,6 +23,7 @@ function placed(text: Text): readonly PositionedLine[] {
 
   return positionedLines(ARIAL_UNKERNED, text, {
     lines,
+    top: text.y,
     width: textBlock(ARIAL_UNKERNED, text, lines).width,
   });
 }
@@ -108,6 +109,7 @@ describe("positionedLines (DERIV-text-width steps 4 and 5)", () => {
     };
     const lines = positionedLines(ARIAL_BOX_METRICS, text, {
       lines: shownLines(ARIAL_BOX_METRICS, text),
+      top: 0,
       width: 57.78125,
     });
 
