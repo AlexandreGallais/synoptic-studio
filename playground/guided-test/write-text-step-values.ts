@@ -47,7 +47,6 @@ function writeCheckedValue(document: Document, id: string, isChecked: boolean): 
 function writeTextBoxValues(document: Document, text: GuidedText): void {
   for (const [id, value] of [
     ["text-fit", text.isInBox ? "box" : "content"],
-    ["text-long-word", text.longWord],
     ["text-vertical-alignment", text.verticalAlignment],
     ["text-wrap", text.wrapStyle],
     ["text-background-color", text.backgroundColor],

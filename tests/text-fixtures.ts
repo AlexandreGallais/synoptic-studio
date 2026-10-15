@@ -118,7 +118,6 @@ export const HELLO_TEXT: Text = {
   isUnderlined: false,
   letterSpacing: 0,
   lineHeight: 0,
-  longWord: "break",
   maximumLines: 0,
   opacity: 100,
   size: 16,

@@ -5,9 +5,6 @@ import type { GuidedStep } from "../guided-step";
 /** "Pump P-101 is running" in a box 50 wide: a word too long, "running", 57.53 wide. */
 const PUMP_50 = { boxWidth: 50, content: "Pump P-101 is running", isInBox: true } as const;
 
-/** The same with "running" moved whole. */
-const MOVED = { ...PUMP_50, longWord: "move" } as const;
-
 /** "Pump P-101 is running" in a box 110 wide: "Pump P-101 is" over "running". */
 const PUMP_110 = { ...PUMP_50, boxWidth: 110 } as const;
 
@@ -15,8 +12,8 @@ const PUMP_110 = { ...PUMP_50, boxWidth: 110 } as const;
 const TWO_LINES = { content: "Pump P-101\nRunning" } as const;
 
 /**
- * The F14 options to try (VAL-015), one per step: Fit content or Box, the box's size, long words,
- * the maximum number of lines, the ellipsis, the vertical alignment, the line height, the trim,
+ * The F14 options to try (VAL-015), one per step: Fit content or Box, the box's size, a long word
+ * kept whole, the maximum number of lines, the ellipsis, the vertical alignment, the line height, the trim,
  * the balance, the background, the turn about the box, values refused and back to F05.
  */
 export const GUIDED_STEPS_F14_OPTIONS: readonly GuidedStep[] = [
@@ -33,22 +30,16 @@ export const GUIDED_STEPS_F14_OPTIONS: readonly GuidedStep[] = [
     values: createTextBoxStepValues({ boxWidth: 50, isInBox: true }),
   },
   {
-    explanation: "Nothing to type: Long words Break.",
-    look: "Five lines: Pump, P-101, is, runnin, g; no hyphen; the box, 100 tall, holds them (96.8).",
-    title: "F14 · Long word broken",
-    values: createTextBoxStepValues(PUMP_50),
-  },
-  {
-    explanation: "Long words: Move whole.",
-    look: "Four lines: Pump, P-101, is, “runn…” (48.2 wide).",
-    title: "F14 · Long word moved whole",
+    explanation: "Nothing to type.",
+    look: "Four lines: Pump, P-101, is, “runn…” (48.2 wide): “running” stays whole, never broken.",
+    title: "F14 · Long word kept whole",
     values: createTextBoxStepValues(PUMP_50),
   },
   {
     explanation: "Untick Ellipsis; tick it again.",
     look: "“running” whole (57.5), past the box's right edge at 50; then “runn…” again.",
     title: "F14 · Ellipsis",
-    values: createTextBoxStepValues(MOVED),
+    values: createTextBoxStepValues(PUMP_50),
   },
   {
     explanation: "Max lines 1; then 0.",
@@ -60,7 +51,7 @@ export const GUIDED_STEPS_F14_OPTIONS: readonly GuidedStep[] = [
     explanation: "Vertical alignment Middle, then Bottom.",
     look: "The four lines (77.4 tall) move down 11.3, then 22.6: the last one's bottom on the box's.",
     title: "F14 · Vertical alignment",
-    values: createTextBoxStepValues(MOVED),
+    values: createTextBoxStepValues(PUMP_50),
   },
   {
     explanation: "Alignment Center, then Right.",
@@ -72,13 +63,13 @@ export const GUIDED_STEPS_F14_OPTIONS: readonly GuidedStep[] = [
     explanation: "Line height 24; then 0.",
     look: "Baselines 24 apart, the first at 17.82; then 19.36 apart again, the first at 15.5.",
     title: "F14 · Line height",
-    values: createTextBoxStepValues(MOVED),
+    values: createTextBoxStepValues(PUMP_50),
   },
   {
     explanation: "Tick Trim.",
     look: "The lines move up: the first capitals touch the box's top, its baseline 11.64 below it.",
     title: "F14 · Trim",
-    values: createTextBoxStepValues(MOVED),
+    values: createTextBoxStepValues(PUMP_50),
   },
   {
     explanation: "Wrap: Balance.",

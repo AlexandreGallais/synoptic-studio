@@ -83,7 +83,6 @@ describe("Text tool: a text in a box (US-033)", () => {
     // happy-dom loses the option marked `selected` once the page is moved into its document: the
     // choices the page opens with are chosen again.
     chooseOption("text-weight", "400");
-    chooseOption("text-long-word", "break");
     chooseOption("text-vertical-alignment", "top");
     chooseOption("text-wrap", "auto");
     typeContent("Hello World");
@@ -126,22 +125,9 @@ describe("Text tool: a text in a box (US-033)", () => {
     expect(readText("#path-data")).toContain(">Hell…</tspan>");
   });
 
-  it("[F14.AC1] breaks a word too long at a character, five lines in the box 100 tall", () => {
+  it("[F17.AC1] keeps a word too long whole, cut with an ellipsis, or drawn whole without it", () => {
+    // Inter 16: "running" (57.53) is wider than 50, never broken into "runnin" (47.72) over "g".
     typeContent(PUMP);
-
-    // "running" (57.53) is wider than 50: "runnin" (47.72) over "g"; 5 × 19.359375 = 96.8 ≤ 100.
-    expect(readLines()).toEqual([
-      ["Pump", "0", "15.5"],
-      ["P-101", "0", "34.85938"],
-      ["is", "0", "54.21875"],
-      ["runnin", "0", "73.57813"],
-      ["g", "0", "92.9375"],
-    ]);
-  });
-
-  it("[F14.AC1] moves a word too long whole, cut with an ellipsis, or drawn whole without it", () => {
-    typeContent(PUMP);
-    chooseOption("text-long-word", "move");
     expect(readContents()).toEqual(["Pump", "P-101", "is", "runn…"]);
 
     clickElement("text-ellipsis");
@@ -150,7 +136,6 @@ describe("Text tool: a text in a box (US-033)", () => {
 
   it("[F14.AC3] places the block of four lines (77.4375 tall) at the top, middle and bottom", () => {
     typeContent(PUMP);
-    chooseOption("text-long-word", "move");
     chooseOption("text-vertical-alignment", "middle");
     // Room (100 − 4 × 19.359375) / 2 = 11.28125 above: 15.5 + 11.28125 = 26.78125.
     expect(readBaselines()).toEqual(["26.78125", "46.14063", "65.5", "84.85938"]);
@@ -184,7 +169,6 @@ describe("Text tool: a text in a box (US-033)", () => {
 
   it("[F14.AC3] spreads the lines 24 apart, then back to the font's line height", () => {
     typeContent(PUMP);
-    chooseOption("text-long-word", "move");
     typeValue("text-line-height", "24");
     // Half-leading (24 − 19.359375) / 2 = 2.3203125: the first baseline at 17.8203125.
     expect(readBaselines()).toEqual(["17.82031", "41.82031", "65.82031", "89.82031"]);
@@ -195,7 +179,6 @@ describe("Text tool: a text in a box (US-033)", () => {
 
   it("[F14.AC5] trims the block to the first line's cap height", () => {
     typeContent(PUMP);
-    chooseOption("text-long-word", "move");
     clickElement("text-trim");
 
     // The first baseline one cap height, 11.640625, below the box's top.
@@ -230,14 +213,13 @@ describe("Text tool: a text in a box (US-033)", () => {
     typeValue("text-box-width", "0");
 
     expect(document.querySelector("#canvas g.text-frame")).toBeNull();
-    // Each character on its own line, five in the box 100 tall; the text is cut, so the last
-    // line ends with the ellipsis, drawn past the box's edge.
-    expect(readContents()).toEqual(["H", "e", "l", "l", "o…"]);
+    // Each word on its own line, kept whole and cut to its first character and the ellipsis,
+    // drawn past the box's edge.
+    expect(readContents()).toEqual(["H…", "W…"]);
   });
 
   it("[F14.AC6] draws the text as in F05 once Fit content is chosen again", () => {
     typeContent(PUMP);
-    chooseOption("text-long-word", "move");
     typeValue("text-maximum-lines", "1");
     chooseOption("text-fit", "content");
 
@@ -251,8 +233,7 @@ describe("Text tool: a text in a box (US-033)", () => {
     expect(readContents()).toEqual(["Hell…"]);
     typeValue("text-maximum-lines", "0");
     typeContent(PUMP);
-    expect(readContents()).toEqual(["Pump", "P-101", "is", "runnin", "g"]);
-    chooseOption("text-long-word", "move");
+    expect(readContents()).toEqual(["Pump", "P-101", "is", "runn…"]);
     clickElement("text-ellipsis");
     expect(readContents()).toEqual(["Pump", "P-101", "is", "running"]);
     clickElement("text-ellipsis");
