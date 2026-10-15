@@ -43,7 +43,7 @@ The vertical alignment places the block of lines in the box as F05 places a line
 | Knuth–Plass computes it by dynamic programming in O(n²); worked example "AAA BB CC DDDDD": greedy 17, optimum 11                                                                      | `REF-WIKI-KNUTH-PLASS`      |
 | Figma's Balance "distributes text as evenly as possible across every line"                                                                                                            | `REF-FIGMA-TEXT-PROPERTIES` |
 
-Chosen: the minimum raggedness with the greedy wrap's number of lines. With that number fixed, the sum of the squares falls with their spread, which is what CSS measures; it is exact, small (a box holds few words a line) and testable by hand. `pretty` is left out: CSS leaves its improvements to each user agent, and F14's criterion names only the balanced style.
+Chosen: the minimum raggedness with the greedy wrap's number of lines. With that number fixed, a smaller sum of squares tends to a smaller spread, which CSS measures: a heuristic, not a proof (`DERIV-text-box`, step 9); it is small (a box holds few words a line) and testable by hand. `pretty` is left out: CSS leaves its improvements to each user agent, and F14's criterion names only the balanced style.
 
 ## The background (US-034)
 
@@ -63,7 +63,7 @@ Taken from the closest reading of the refinement and the sources, written in `do
 | "pretty" is not built in F14, balance only                                                                                                        | CSS leaves it to each user agent; keep it for later, or drop it                                                          |
 | Wrapping, maximum lines, ellipsis, vertical alignment and balance apply in a box only; line height, trim and background in both modes             | Figma truncates only fixed-size text; a text fitting its content does not wrap                                           |
 | An automatic line height keeps F05's placement (gap below the line); a chosen one spreads its leading half above, half below                      | F14.AC6 (draw as before); CSS half-leading                                                                               |
-| A paragraph with a long word, and a text cut by the ellipsis, keep their greedy lines under balance                                               | a simpler rule than CSS's balance after clamping                                                                         |
+| A paragraph with a long word, and a text cut by its box or its maximum of lines, keep their greedy lines under balance                            | a simpler rule than CSS's balance after clamping                                                                         |
 | The background covers each line from the ascender to the descender                                                                                | CSS's content area                                                                                                       |
 | A box's width and height are integers from 0 to 100 000, a maximum of lines from 0 (none) to 100 000, a line height from 0 (automatic) to 100 000 | the bounds of a size, and Q15 (0 allowed)                                                                                |
 

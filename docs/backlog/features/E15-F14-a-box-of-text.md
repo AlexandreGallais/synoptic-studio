@@ -9,7 +9,7 @@ status: in-progress
 
 **Benefit hypothesis**: the designer puts a long text in a box of given width and height, wrapped, cut with an ellipsis, aligned in both directions, as in Figma and a word processor.
 
-Refined with F05 on 2026-10-14 (its rounds 1 and 2); its stories are written by its spike, once F05 is built.
+Refined with F05 on 2026-10-14 (its rounds 1 and 2); its stories were written by SP-016 (research note 0018).
 
 ## Acceptance criteria
 
@@ -22,7 +22,7 @@ Refined with F05 on 2026-10-14 (its rounds 1 and 2); its stories are written by 
 
 ## Stories
 
-In delivery order. Written by its research spike (SP-016, research note 0018).
+In delivery order.
 
 | ID                                                                  | Type       | Title                                                                     | Status |
 | ------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------- | ------ |

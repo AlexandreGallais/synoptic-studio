@@ -1,3 +1,4 @@
+import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { ARIAL_BOX_METRICS, HELLO_TEXT } from "../../../tests";
@@ -31,5 +32,20 @@ describe("isMeasureFitting (DERIV-text-box step 2)", () => {
 
     expect(isMeasureFitting(metrics, measure, text)).toBe(true);
     expect(isMeasureFitting(metrics, measure, { ...text, letterSpacing: 0.21 })).toBe(false);
+  });
+
+  test.prop({
+    content: fc.stringMatching(/^[ HWdelor]{0,12}$/u),
+    narrow: fc.integer({ max: 200, min: 0 }),
+    wider: fc.integer({ max: 200, min: 0 }),
+  })("fits a line that fits a box in every wider box", ({ content, narrow, wider }) => {
+    const line = measuredLine(ARIAL_BOX_METRICS, content);
+    const text = { ...HELLO_TEXT, isInBox: true };
+    const isFitting = isMeasureFitting(ARIAL_BOX_METRICS, line, { ...text, boxWidth: narrow });
+
+    expect(
+      !isFitting ||
+        isMeasureFitting(ARIAL_BOX_METRICS, line, { ...text, boxWidth: narrow + wider }),
+    ).toBe(true);
   });
 });

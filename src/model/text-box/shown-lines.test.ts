@@ -167,7 +167,7 @@ describe("shownLines (DERIV-text-box steps 5 and 6)", () => {
   });
 
   it("[F14.AC2] leaves a line of one character wider than the box without an ellipsis", () => {
-    // Broken at a character in a box 5: every letter alone, each wider than 5; nothing to remove,
+    // Broken at a character in a box 5: every letter alone, "H", "e" and "o" wider than 5, "ll" 7.11 > 5; nothing to remove,
     // the first character is clipped rather than ellipsed (provisional, VAL-015).
     const text: Text = { ...BOXED, boxWidth: 5, content: "Hello" };
 
