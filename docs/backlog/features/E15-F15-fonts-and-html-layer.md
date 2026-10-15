@@ -2,7 +2,7 @@
 id: F15
 epic: E15
 title: Fonts from files, embedded fonts and the HTML layer
-status: in-progress
+status: done
 ---
 
 # E15 · F15 — Fonts from files, embedded fonts and the HTML layer
@@ -31,7 +31,7 @@ In delivery order.
 | [EN-041](../stories/E15-F15-EN-041-the-html-layer-of-a-text.md)          | Enabler    | The HTML layer of a text in a switch, over its positioned lines       | done   |
 | [US-036](../stories/E15-F15-US-036-fonts-embedding-and-html-layer.md)    | User story | Import or choose a font, embed it, and turn the HTML layer on         | done   |
 | [AUD-018](../stories/E15-F15-AUD-018-audit-f15.md)                       | Audit      | Audit F15                                                             | done   |
-| [VAL-017](../stories/E15-F15-VAL-017-validate-f15.md)                    | Validation | Validate F15                                                          | ready  |
+| [VAL-017](../stories/E15-F15-VAL-017-validate-f15.md)                    | Validation | Validate F15                                                          | done   |
 
 ## Feature plan
 
@@ -44,9 +44,9 @@ In delivery order.
 
 ## Left for later
 
-- Arabic and Indian scripts measured by the library: they need a shaping engine; until then they are laid out by the browser's HTML layer.
+- Arabic and Indian scripts: not supported; the HTML layer that laid them out was removed at the validation, the editor targeting the Latin script (Product Owner, 2026-10-15, ADR-0060, F17).
 - A font embedded once in a synoptic view for all its symbols: with the views (E08); F15 embeds each face once per document, a symbol.
 - Fonts kept across sessions: with the editor's files (E02).
-- WOFF and WOFF2 files, and font collections: not asked.
+- WOFF and WOFF2 files: not asked. Installed faces held in a collection: read by F17 (US-046).
 - A font's localized family names (a Windows name in another language) as aliases of its family: only the English name, else the first, names it for now (EN-039 audit, 2026-10-15).
-- A right-to-left line in resvg and Batik, which ignore `direction`: a choice at VAL-017 (research note 0020).
+- A right-to-left line in resvg and Batik, which ignore `direction`: kept as written (VAL-017, 2026-10-15).

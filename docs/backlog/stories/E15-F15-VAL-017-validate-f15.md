@@ -3,7 +3,7 @@ id: VAL-017
 epic: E15
 feature: F15
 title: Validate F15
-status: ready
+status: done
 points: 1
 ---
 
@@ -22,7 +22,7 @@ One task = one commit, referenced as `VAL-017.Tn`.
 
 - [x] T1 — The guided test, tested end to end (1 h)
 - [x] T2 — The demo page (30 min)
-- [ ] T3 — The Product Owner's validation (1 h)
+- [x] T3 — The Product Owner's validation, 2026-10-15 (1 h)
 
 ## Browser checks of the HTML layer
 
@@ -78,3 +78,17 @@ The rules marked provisional by SP-018 (2026-10-15), then by EN-039 and EN-040 (
 | 34  | With a line limit or the ellipsis, the layer's content clips the ink outside its lines; the lines never clip a letter (AUD-018). The alternative: no clipping, the lines past the limit hidden otherwise                     | Arial 16 at line height 10 with the ellipsis on: 3.9375 of the first line's capitals cut at the top in a browser, whole in the lines |
 | 35  | The ellipsis of the layer gets no background band, being the block's and not the paragraph's; the lines' band runs under it (AUD-018)                                                                                        | "Pump P-101" cut to "Pump…", background on: the band stops before "…" in a browser                                                   |
 | 36  | The layer is two nested `div` (row 19), its frame shifted to meet the first baseline, while ADR-0053 decision 1 names one `div` at the block: a new ADR amends it once confirmed (AUD-018)                                   | the `foreignObject` at y −0.26171875 for Arial 16, not 0                                                                             |
+
+## Validation (2026-10-15)
+
+The Product Owner walked every feature of E15 in the playground, in a Chromium-based browser, and validated the whole epic. Every rule above is confirmed as built, except those of the HTML layer (rows 1, 9, 10, 19 to 23, 32 to 36 and the browser checks), dropped with it, and the embedding's moment (row 2), changed, by the Product Owner (2026-10-15). The second criterion, an export opened in three browsers and Inkscape, has no object left without the layer: the positioned lines are the only drawing.
+
+| #   | Remark                                                                                                                                                  | Decision                                                                                                                                                                                                                                                                                                             | Work                                            |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| 1   | The HTML layer (`switch`, `foreignObject`, the XHTML layer)                                                                                             | removed: it brings no speed, the library computing the lines in about 3 µs per text, and served only Arabic and Indic scripts, which industrial synoptic views do not need; the editor targets the Latin script, Greek, Cyrillic, Hebrew and right to left kept as built; `style` in `defs` for embedded fonts stays | ADR-0060; US-044, research note in SP-019 (F17) |
+| 2   | Embedded fonts (row 2)                                                                                                                                  | applied only when a file is exported or saved, never during editing: Export SVG writes them, the drawing never does                                                                                                                                                                                                  | ADR-0060; US-045 (F17)                          |
+| 3   | Installed fonts that cannot be read: a collection (`.ttc`), said not to be a TrueType or OpenType font, and faces whose access fails with a `TypeError` | the face read from the collection; the `TypeError`'s cause found and handled                                                                                                                                                                                                                                         | SP-019, US-046 (F17)                            |
+| 4   | Weight 450 of a family such as IBM Plex measured but not visibly drawn: the browser seems to draw another face                                          | a defect: its cause found and fixed                                                                                                                                                                                                                                                                                  | SP-019, US-047 (F17)                            |
+| 5   | A search field over the installed fonts, the list filtered as one types                                                                                 | for a later epic on ease of use                                                                                                                                                                                                                                                                                      | E02 (ideas)                                     |
+| 6   | A value changed fast, an arrow key held on the size, the opacity or the height, lags; typing feels fluid                                                | the drawing is redrawn at most once per animation frame, and only what a change touches is computed again: metrics, wrapped lines and block kept by their inputs                                                                                                                                                     | US-048 (F17)                                    |
+| 7   | The long step-by-step guided test is slow to walk                                                                                                       | a validation is one checklist page listing every feature delivered, with check boxes and no Previous nor Next, so that the Product Owner tests freely; the `run` and `review` skills say so                                                                                                                          | US-051, EN-044 (F17)                            |

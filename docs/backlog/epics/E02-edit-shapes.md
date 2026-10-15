@@ -42,6 +42,14 @@ status: draft
 - Stretching a shape by its width and height from a fixed point chosen in the 3 × 3 grid, as Inkscape; strokes keep their width in pixels.
 - When a polygon is converted to a free shape, a message saying what happens, with a **do not show again** box.
 
+## Ideas from the Product Owner (2026-10-15, validation of E15)
+
+For a later pass on the editor's ease of use; none is planned yet:
+
+- **A search field over the installed fonts**: typing filters the font list.
+- **A reset button on the stroke colors**: the underline's and the strike-through's colors get a button that makes them follow the text's color again, instead of the box "follows the text's color".
+- **Fewer options**: simplify the Text tool's options, the stroke colors perhaps removed (kept for now, VAL-016).
+
 ## Ideas from the Product Owner (2026-10-11, refinement of F04)
 
 - **A rotation mode**, entered by a button, showing the center of rotation (by default the center of the shape's box). The center is either **free**, fixed at an x and y; or one of the **nine anchors** of the shape's box, or a **point of the shape**, both following the shape when it moves or grows; or a **point or the center of another shape**, which only places it, at that x and y, without following that shape.

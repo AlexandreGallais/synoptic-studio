@@ -3,7 +3,7 @@ id: VAL-014
 epic: E15
 feature: F05
 title: Validate F05
-status: ready
+status: done
 points: 1
 ---
 
@@ -21,7 +21,7 @@ One task = one commit, referenced as `VAL-014.Tn`.
 
 - [x] T1 — The guided test, tested end to end (1 h)
 - [x] T2 — The demo page (30 min)
-- [ ] T3 — The Product Owner's validation (1 h)
+- [x] T3 — The Product Owner's validation, 2026-10-15 (1 h)
 
 ## Guided test (T1)
 
@@ -77,3 +77,15 @@ The Product Owner tried the text in the playground before the formal validation,
 | 4   | Sentence case is of no use; title, camel, Pascal, kebab, snake, constant, upper and lower work and are kept, title case capitalizing each word as typed                                         | sentence case removed (decision 1)                                                                                                                                                                                                 | US-037         |
 | 5   | The underline works and sits lower than expected, at the font's standard position                                                                                                               | kept as built (decision 17); an underline that skips descenders is not wanted                                                                                                                                                      | none           |
 | 6   | The underline's and the strike-through's colors cannot be chosen                                                                                                                                | each gets its own color and opacity, through the same color field and picker                                                                                                                                                       | US-041 (F16)   |
+
+## Validation (2026-10-15)
+
+The Product Owner walked every feature of E15 in the playground, in a Chromium-based browser, and validated the whole epic. Every decision above is confirmed as built (option 1 where options were given; rows 1, 3, 10 and 17 as settled before), with these decisions and remarks:
+
+| #   | Remark                                                                                                   | Decision                                                                                                                                                                                    | Work                                    |
+| --- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| 1   | Characters measured (decision 9): Latin, Greek, Cyrillic, Hebrew and the symbols labels use              | confirmed; the editor targets the Latin script, industrial synoptic views being written in it; Greek, Cyrillic, Hebrew and right to left stay as built, with no new work on scripts         | ADR-0060; research note in SP-019 (F17) |
+| 2   | A turned text's frames differ from a turned shape's                                                      | a turned text shows its turned block or box in blue, in the style of a shape's turned box, and its straight box dashed                                                                      | US-050 (F17)                            |
+| 3   | Weight 450 of a family such as IBM Plex is measured but the browser draws another face                   | a defect: its cause found and fixed                                                                                                                                                         | SP-019, US-047 (F17)                    |
+| 4   | A value changed fast, an arrow key held on the size, the opacity or the height, lags; typing feels fluid | the drawing is redrawn at most once per animation frame, and only what a change touches is computed again: metrics, wrapped lines and block kept by their inputs                            | US-048 (F17)                            |
+| 5   | The long step-by-step guided test is slow to walk                                                        | a validation is one checklist page listing every feature delivered, with check boxes and no Previous nor Next, so that the Product Owner tests freely; the `run` and `review` skills say so | US-051, EN-044 (F17)                    |

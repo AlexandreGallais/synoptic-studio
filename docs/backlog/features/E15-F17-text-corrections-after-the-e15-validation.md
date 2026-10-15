@@ -1,0 +1,64 @@
+---
+id: F17
+epic: E15
+title: Text corrections after the E15 validation
+status: ready
+---
+
+# E15 · F17 — Text corrections after the E15 validation
+
+**Benefit hypothesis**: fewer options make the text clearer to use, and the defects found at the validation of E15 are gone, so that a designer can place text in a symbol without surprise.
+
+Written on 2026-10-15 from the Product Owner's validation of E15 (VAL-014 to VAL-017): three options removed, embedded fonts moved to export, five defects to fix, and a new validation format.
+
+## Acceptance criteria
+
+1. A word too long for its box always stays whole, overflowing it or cut with "…"; the lines of a box always wrap automatically, the balanced wrap removed (F14's criteria 1 and 3 reworded).
+2. No text is written with an HTML layer: no `switch` nor `foreignObject` (ADR-0060); F15's criterion 3 withdrawn.
+3. Embedded fonts are written only when a file is exported or saved, never in the drawing on screen.
+4. An installed font held in a collection, or whose access failed with a `TypeError`, is read, or refused with its reason said; a weight such as 450 is drawn with the face it is measured with.
+5. A value changed fast, an arrow key held, is redrawn at most once per animation frame, only what the change touches computed again.
+6. A wrapped text's background bands end with their lines.
+7. A turned text shows its turned frame in blue and its straight box dashed, as a turned shape does.
+8. A feature is validated on one checklist page with check boxes; the `run` and `review` skills prepare it.
+9. Every shape and text draws as before, apart from the options removed.
+
+## Stories
+
+In delivery order.
+
+| ID                                                                           | Type       | Title                                                                                | Status |
+| ---------------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------ | ------ |
+| [SP-019](../stories/E15-F17-SP-019-research-f17-latin-script-and-defects.md) | Spike      | Research for F17: the Latin script in industrial HMIs, and the causes of the defects | ready  |
+| [US-042](../stories/E15-F17-US-042-a-long-word-always-whole.md)              | User story | A word too long always stays whole                                                   | ready  |
+| [US-043](../stories/E15-F17-US-043-no-balanced-wrap.md)                      | User story | The balanced wrap removed, lines always wrapped automatically                        | ready  |
+| [US-044](../stories/E15-F17-US-044-no-html-layer.md)                         | User story | The HTML layer removed                                                               | ready  |
+| [US-045](../stories/E15-F17-US-045-fonts-embedded-at-export.md)              | User story | Fonts embedded only when a file is exported or saved                                 | ready  |
+| [US-046](../stories/E15-F17-US-046-installed-fonts-from-collections.md)      | User story | Installed fonts read from collections, and faces that failed                         | ready  |
+| [CHK-018](../stories/E15-F17-CHK-018-checkpoint-f17.md)                      | Checkpoint | Checkpoint in the middle of F17                                                      | ready  |
+| [US-047](../stories/E15-F17-US-047-weight-450-drawn-as-measured.md)          | User story | A weight such as 450 drawn with the face it is measured with                         | ready  |
+| [US-048](../stories/E15-F17-US-048-fluid-changes-held-keys.md)               | User story | Values changed fast redrawn without lag                                              | ready  |
+| [US-049](../stories/E15-F17-US-049-background-band-ends-with-its-line.md)    | User story | A wrapped text's background band ends with its line                                  | ready  |
+| [US-050](../stories/E15-F17-US-050-turned-text-frames-as-shapes.md)          | User story | A turned text's frames drawn as a turned shape's                                     | ready  |
+| [US-051](../stories/E15-F17-US-051-validation-checklist-page.md)             | User story | Validation on one checklist page                                                     | ready  |
+| [EN-044](../stories/E15-F17-EN-044-val-steps-as-a-checklist.md)              | Enabler    | The run and review skills validate with a checklist page                             | ready  |
+| [AUD-019](../stories/E15-F17-AUD-019-audit-f17.md)                           | Audit      | Audit F17                                                                            | ready  |
+| [VAL-018](../stories/E15-F17-VAL-018-validate-f17.md)                        | Validation | Validate F17                                                                         | ready  |
+
+## Feature plan
+
+| Acceptance criterion | Realized by            | Verified by         |
+| -------------------- | ---------------------- | ------------------- |
+| F17.AC1              | US-042, US-043         | AUD-019, VAL-018    |
+| F17.AC2              | US-044                 | AUD-019, VAL-018    |
+| F17.AC3              | US-045                 | AUD-019, VAL-018    |
+| F17.AC4              | SP-019, US-046, US-047 | AUD-019, VAL-018    |
+| F17.AC5              | SP-019, US-048         | AUD-019, VAL-018    |
+| F17.AC6              | SP-019, US-049         | AUD-019, VAL-018    |
+| F17.AC7              | US-050                 | AUD-019, VAL-018    |
+| F17.AC8              | US-051, EN-044         | VAL-018             |
+| F17.AC9              | every story            | `npm run check:all` |
+
+## Left for later
+
+- A search field over the installed fonts, a reset button on the stroke colors instead of the box "follows the text's color", and fewer options, the stroke colors perhaps among them: a later epic on the editor's ease of use (E02, ideas).
