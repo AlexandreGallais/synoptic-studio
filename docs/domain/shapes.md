@@ -212,7 +212,7 @@ Decided by the Product Owner at F05's refinement, rounds 1 and 2 (2026-10-14); d
   - a font named with a fallback (`Inter`, else `sans-serif`), any font allowed; its name is stored trimmed, with no white space at either end, holds at least one character, and no control character such as a line break or a tab (2026-10-15, provisional, to confirm at VAL-014: `" Inter"` and `"Inter⏎Bold"` are refused, the playground trims what is typed); the fallback's name follows the same rule (US-032, from CHK-014); the default font is Inter, whose metrics ship with the library;
   - a size, an integer from 1 to 100 000, in the one unit used everywhere (no millimetres, no points); a size outside that range or not an integer is refused;
   - a weight, an integer from 100 (thin) to 900 (black), with a quick bold button and an italic button; the bold button is pressed at a weight of 700 or heavier, and a click sets 400 when it is pressed, 700 otherwise: from 800 it gives 400, from 600 it gives 700 (2026-10-15, provisional, to confirm at VAL-014);
-  - a color in hexadecimal, `#` and six digits (upper or lower case), with an opacity, an integer from 0 to 100 % (F16 brings the picker);
+  - a color in hexadecimal, `#` and six digits (upper or lower case; typed in another form, it is kept in lower case, `interaction.md` §5), with an opacity, an integer from 0 to 100 %, picked or typed as `interaction.md` §5 says (F16, ADR-0056);
   - letter spacing and word spacing, integers from −100 000 to 100 000 user units, the size's bound, negative to tighten, to fit text in small frames (bounds of 2026-10-15, provisional, to confirm at VAL-014);
   - underline and strike-through;
   - a case transform, written by the library (Q36, below);
@@ -258,7 +258,7 @@ Decided by the Product Owner at F05's refinement, rounds 1 and 2 (2026-10-14); d
   - The turn is written as `transform="rotate(α cx cy)"` (`REF-SVG11-TRANSFORM`, §7.6) on the `<g>` that holds the text's `<text>` and its underline and strike-through paths, so that the strokes turn with the letters; the criterion's "a `transform` on its `<text>`" is met through that group (agent, 2026-10-15, provisional, to confirm at VAL-014). A text at 0° carries no `transform`.
   - A selected text shows its measured block, or its box when it sits in one (US-033), as a shape's straight box is shown: dashed by thin filled rectangles, turned with the text about the same middle (US-032); an empty text, whose block has no area, and a box 0 wide or 0 tall show none.
 - **Empty text**: the library draws an empty text as nothing; a text created by a click and left empty disappears when the designer changes tool or clicks elsewhere (an editor behavior, E02).
-- **Later in E15**: fonts read from files or from the computer, fonts embedded once per view, the HTML layer (F15); colors and their pickers (F16).
+- **Later in E15**: fonts read from files or from the computer, fonts embedded once per view, the HTML layer (F15).
 - **Not wanted**: lists (a dash typed by hand is enough), highlight shapes beyond a background color, CSS color names, RGB fields.
 - **Text styles**: named styles ("title", "body", "description") that predefine a text's options; in the free edition, templates kept locally that forbid nothing (`editions.md` for the pro edition); with the libraries' epic.
 
