@@ -1,5 +1,6 @@
 export * from "./listen-to-color-fields";
 export * from "./listen-to-color-picker";
+export * from "./listen-to-color-plane";
 export * from "./listen-to-drag";
 export * from "./listen-to-hue-slider";
 export * from "./listen-to-opacity-slider";

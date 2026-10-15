@@ -5,12 +5,14 @@ import { readNumber, selectElement } from "../page";
 import { readColorModel } from "./read-color-model";
 import { readOpenSwatch } from "./read-open-swatch";
 import { readPickedColor } from "./read-picked-color";
+import { writeColorPlane } from "./write-color-plane";
 import { writePickerValues } from "./write-picker-values";
 import { writeSliderThumb } from "./write-slider-thumb";
 
 /**
  * Shows the open picker from the values it holds and its color's fields: the hue slider, the
- * opacity slider painted with the color and the three values; nothing while it is closed.
+ * opacity slider painted with the color, the plane and the three values; nothing while it is
+ * closed.
  *
  * @kind procedure
  * @param document - page document
@@ -48,5 +50,6 @@ export function showColorPicker(document: Document): void {
     readShownColor(document, ids.color),
   );
 
+  writeColorPlane(document, picked, model);
   writePickerValues(document, picked, model);
 }
