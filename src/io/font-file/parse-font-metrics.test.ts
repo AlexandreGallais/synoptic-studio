@@ -88,6 +88,7 @@ describe("parseFontMetrics (REF-OT-OTFF)", () => {
       // hmtx records: the last record, 700. Z is not mapped: left out, drawn by glyph 0 (500).
       advances: { 65: 600, 66: 700, 67: 700, 97: 700 },
       ascender: 800,
+      capHeight: 700,
       descender: -200,
       embeddingPermissions: 4,
       // No kerning table: every character in class 0.
@@ -157,6 +158,14 @@ describe("parseFontMetrics (REF-OT-OTFF)", () => {
   );
 
   it.skipIf(ARIAL === undefined)(
+    "[F14.AC5] reads Arial's cap height from its OS/2 table of version 3",
+    () => {
+      // DERIV-text-box, cross-check: sCapHeight 1467.
+      expect(parseFontMetrics(ARIAL ?? new Uint8Array(), [72])?.capHeight).toBe(1467);
+    },
+  );
+
+  it.skipIf(ARIAL === undefined)(
     "[F05.AC3] measures 'Hello World' and 'Hello' / 'World' in Arial 16 read from its file",
     () => {
       const metrics = parseFontMetrics(ARIAL ?? new Uint8Array(), ARIAL_CHARACTERS);
@@ -214,7 +223,13 @@ describe("parseFontMetrics (REF-OT-OTFF)", () => {
     const file = fontFile(TRUE_TYPE_VERSION, {
       ...testFontTables(),
       hhea: hheaTable({ ascender: 800, descender: -200, lineGap: -1, numberOfHMetrics: 3 }),
-      "OS/2": os2Table({ fsType: 0, strikeoutPosition: -20, strikeoutSize: 50 }),
+      "OS/2": os2Table({
+        capHeight: 700,
+        fsType: 0,
+        strikeoutPosition: -20,
+        strikeoutSize: 50,
+        version: 4,
+      }),
     });
 
     expect(parseFontMetrics(file, [65])).toMatchObject({ lineGap: -1, strikeoutPosition: -20 });

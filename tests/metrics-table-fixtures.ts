@@ -7,7 +7,6 @@ import { int16, tableOf, uint16, uint32 } from "./font-fixtures";
 /** Sizes and versions of the tables, in bytes. */
 const LAYOUT = {
   kernPairSize: 6,
-  os2Version: 4,
   postVersion: 0x00_03_00_00,
 };
 
@@ -31,6 +30,10 @@ export function postTable(position: number, thickness: number): number[] {
 
 /** The `OS/2` fields written by `os2Table`. */
 export type Os2Fields = {
+  /** Version of the table: `sCapHeight` is read from version 2. */
+  readonly version: number;
+  /** Height of the capitals, `sCapHeight`. */
+  readonly capHeight: number;
   /** Embedding permissions. */
   readonly fsType: number;
   /** Thickness of the strike-out stroke. */
@@ -40,8 +43,8 @@ export type Os2Fields = {
 };
 
 /**
- * An `OS/2` table, version 4: `fsType` at 8, `yStrikeoutSize` at 26, `yStrikeoutPosition` at 28
- * (`REF-OT-OS2`).
+ * An `OS/2` table 96 bytes long, as from version 2: its version at 0, `fsType` at 8,
+ * `yStrikeoutSize` at 26, `yStrikeoutPosition` at 28, `sCapHeight` at 88 (`REF-OT-OS2`).
  *
  * @param fields - the values to write
  * @returns its bytes
@@ -49,10 +52,11 @@ export type Os2Fields = {
 export function os2Table(fields: Os2Fields): number[] {
   return tableOf({
     fields: [
-      { at: 0, bytes: uint16(LAYOUT.os2Version) },
+      { at: 0, bytes: uint16(fields.version) },
       { at: 8, bytes: uint16(fields.fsType) },
       { at: 26, bytes: int16(fields.strikeoutSize) },
       { at: 28, bytes: int16(fields.strikeoutPosition) },
+      { at: 88, bytes: int16(fields.capHeight) },
     ],
     size: 96,
   });
