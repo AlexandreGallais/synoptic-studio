@@ -4,6 +4,8 @@ type InstalledFontNames = {
   readonly family: string;
   /** Its full name, such as `Arial Bold`. */
   readonly fullName: string;
+  /** Its PostScript name, unique to the face, such as `Arial-BoldMT`: its name ID 6. */
+  readonly postscriptName: string;
 };
 
 /** The file of an installed face, which the browser reads on demand. */

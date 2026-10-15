@@ -1,5 +1,5 @@
 import { listenToExport } from "../document";
-import { listenToFonts } from "../fonts";
+import { listenToFonts } from "../installed-fonts";
 import { selectElement } from "../page";
 import { listenToTextPosition } from "../text-placement";
 

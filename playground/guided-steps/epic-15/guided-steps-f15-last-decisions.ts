@@ -54,8 +54,8 @@ export const GUIDED_STEPS_F15_LAST_DECISIONS: readonly GuidedStep[] = [
     values: ARIAL_16,
   },
   {
-    explanation: "In Chrome: Installed fonts; Font Georgia; then Font Helvetica.",
-    look: "Arial kept until Georgia is read; Helvetica (a .ttc collection) gives the list back, said why.",
+    explanation: "In Chrome: Installed fonts; Font Georgia.",
+    look: "Arial kept until Georgia is read, then Georgia chosen; a family none of whose faces is read gives the list back to Arial, said why.",
     title: "F15 · While a family is read (decision 31)",
     values: ARIAL_16,
   },
