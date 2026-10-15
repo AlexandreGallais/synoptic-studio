@@ -3,7 +3,7 @@ id: US-046
 epic: E15
 feature: F17
 title: Installed fonts read from collections, and faces that failed
-status: ready
+status: done
 points: 3
 ---
 
@@ -35,6 +35,6 @@ From the Product Owner's validation of E15 (2026-10-15): installed faces held in
 
 One task = one commit, referenced as `US-046.Tn`.
 
-- [ ] T1 — The `true` tag read as TrueType, and a face read from a collection in the library (`ttcf` header, its offsets, a face written as a standalone SFNT), with tests on Helvetica.ttc's numbers (3 h)
-- [ ] T2 — The playground reads installed faces from collections by PostScript name, gives `FontFace` one face, and says the `TypeError` in one line (2 h)
-- [ ] T3 — `shapes.md`, the test card and the guided step (1 h)
+- [x] T1 — The `true` tag read as TrueType, and a face read from a collection in the library (`ttcf` header, its offsets, a face written as a standalone SFNT), with tests on Helvetica.ttc's numbers (3 h)
+- [x] T2 — The playground reads installed faces from collections by PostScript name, gives `FontFace` one face, and says the `TypeError` in one line (2 h)
+- [x] T3 — `shapes.md`, the test card and the guided step (1 h)
