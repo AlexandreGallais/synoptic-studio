@@ -37,9 +37,10 @@ function shownLine(context: TextInBox, line: string, isLastOfCut: boolean): stri
 
 /**
  * The lines a text in a box wraps into, before they are cut: balanced when asked, unless lines are
- * left out — the balanced wrap keeps the greedy number of lines, and CSS balances after clamping,
- * which would move the text the cut hides — otherwise those of the greedy wrap (`DERIV-text-box`,
- * step 9; `REF-CSS-TEXT-4`, §5.4).
+ * left out, otherwise those of the greedy wrap. A text cut keeps its greedy lines, so that it shows
+ * what it would show without balance: a departure from CSS, which applies "the clamping effect
+ * first, then the remaining lines are balanced" (`DERIV-text-box`, step 9; `REF-CSS-TEXT-4`, §5.4;
+ * provisional, VAL-015).
  *
  * @kind domain
  * @param context - the text and the metrics of its face
