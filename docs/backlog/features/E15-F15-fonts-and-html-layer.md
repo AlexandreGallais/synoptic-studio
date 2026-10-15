@@ -20,7 +20,11 @@ Refined with F05 on 2026-10-14 (its rounds 1 and 2); its stories are written by 
 
 ## Stories
 
-Written by its research spike.
+In delivery order.
+
+| ID                                                                       | Type  | Title                                                                 | Status      |
+| ------------------------------------------------------------------------ | ----- | --------------------------------------------------------------------- | ----------- |
+| [SP-018](../stories/E15-F15-SP-018-research-f15-fonts-and-html-layer.md) | Spike | Research for F15: fonts from files, embedded fonts and the HTML layer | in-progress |
 
 ## Left for later
 
