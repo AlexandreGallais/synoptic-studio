@@ -4,19 +4,19 @@ Used by: F14 (EN-033 to EN-036, US-033, US-034). Builds on `DERIV-text-width`, w
 
 ## Notation
 
-| Symbol    | Definition                                                                                                                 |
-| --------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `W`, `H`  | the box's width and height, integers in user units                                                                         |
-| `w(t)`    | the width of the string `t` measured as one line (`DERIV-text-width`, steps 1 to 3)                                        |
-| `trim(t)` | `t` without the spaces U+0020 at its end                                                                                   |
-| `s`, `U`  | the text's size and its font's units per em                                                                                |
-| `A, D, G` | the `hhea` ascender, descender (negative) and line gap, in font units                                                      |
-| `C`       | the cap height `sCapHeight` of `OS/2`, in font units; `0.66 × U` when the table is older than version 2 or gives 0 or less |
-| `λ`       | the line height in user units: the font's `(A − D + G) × s / U` when automatic, otherwise the integer chosen               |
-| `N`       | the maximum number of lines, 0 for none                                                                                    |
-| `L`       | the number of lines the wrap gives (steps 3 and 4), 0 for an empty text                                                    |
-| `v`       | the vertical alignment: 0 top, ½ middle, 1 bottom                                                                          |
-| `…`       | the ellipsis, U+2026                                                                                                       |
+| Symbol    | Definition                                                                                                                                               |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `W`, `H`  | the box's width and height, integers in user units                                                                                                       |
+| `w(t)`    | the width of the string `t` measured as one line (`DERIV-text-width`, steps 1 to 3)                                                                      |
+| `trim(t)` | `t` without the spaces U+0020 at its end                                                                                                                 |
+| `s`, `U`  | the text's size and its font's units per em                                                                                                              |
+| `A, D, G` | the `hhea` ascender, descender (negative) and line gap, in font units                                                                                    |
+| `C`       | the cap height `sCapHeight` of `OS/2`, in font units; `0.66 × U` when the table is older than version 2, too short to hold the field, or gives 0 or less |
+| `λ`       | the line height in user units: the font's `(A − D + G) × s / U` when automatic, otherwise the integer chosen                                             |
+| `N`       | the maximum number of lines, 0 for none                                                                                                                  |
+| `L`       | the number of lines the wrap gives (steps 3 and 4), 0 for an empty text                                                                                  |
+| `v`       | the vertical alignment: 0 top, ½ middle, 1 bottom                                                                                                        |
+| `…`       | the ellipsis, U+2026                                                                                                                                     |
 
 ## Step 1 — Paragraphs and where a line may wrap
 
