@@ -189,8 +189,8 @@ Decided by the Product Owner at F05's refinement, rounds 1 and 2 (2026-10-14); d
 - **Lines drawn** (US-031, `DERIV-text-width` steps 5 and 6):
   - each line's `x` places it in the block as its alignment says: aligned left, at the block's left edge; centered, half of the room it leaves before it; aligned right, all of it. "Hello" over "World" in Arial 16, centered: "Hello" starts 2.66016 right of the block's edge, "World" at it;
   - left, center and right are read as the physical sides for both directions, as CSS's `left` and `right` are: a right-to-left text aligned left starts each line on the block's left edge (agent, 2026-10-15, from the words of the refinement; to be confirmed by the Product Owner at VAL-014). A right-to-left line is written at its right edge, where SVG draws its start, with `direction="rtl"`;
-  - each line's `y` is its baseline; every space typed is drawn (`xml:space="preserve"`), as it is measured;
-  - the font is written as itself, then its fallback, then `sans-serif`, each name once: `"Inter", sans-serif`;
+  - each line's `y` is its baseline; every space typed is drawn, as it is measured (`white-space="pre"` and `xml:space="preserve"`, ADR-0054);
+  - the font is written as itself, then its fallback, then `sans-serif`, each name once: `"Inter", sans-serif` (ADR-0054);
   - the opacity is written as a number from 0 to 1 (`fill-opacity`, 40 % gives 0.4);
   - an underline or a strike-through is a rectangle as long as the line, placed and as thick as the font says, in the text's color; an empty line has none, and neither has a stroke the font gives no thickness (0 or negative) (2026-10-15, provisional, to confirm at VAL-014);
   - a line tightened past nothing by a negative spacing keeps its negative width and is placed by the same rule, so it may fall outside the block, which stays at least 0 wide: lines 10 and −8 wide, centered, start 0 and 9 from the block's left edge; a single line −6.89 wide, aligned right, starts 6.89 right of it (2026-10-15, provisional, to confirm at VAL-014);

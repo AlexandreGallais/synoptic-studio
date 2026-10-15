@@ -2,7 +2,7 @@
 
 Format: Status, Context, Decision, Consequences, References.
 An accepted ADR is never rewritten: it is superseded by a new ADR (`Superseded by ADR-XXXX`).
-All ADRs were translated from French to English on 2026-10-08 (project rule: English everywhere); on 2026-10-13 their Context sections were reworded so that they state the Product Owner's decisions without quoting them. The decisions are unchanged. Number 0036 is not used: it was taken on the F10 feature branch and never accepted (ADR-0037).
+All ADRs were translated from French to English on 2026-10-08 (project rule: English everywhere); on 2026-10-13 their Context sections were reworded so that they state the Product Owner's decisions without quoting them. The decisions are unchanged. Number 0036 is not used: it was taken on the F10 feature branch and never accepted (ADR-0037). Number 0053 is reserved for F15's HTML layer (ADR-0052).
 
 | ADR                                                           | Title                                                                                                        | Status                                             |
 | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------- |
@@ -56,4 +56,5 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0049](./0049-every-calculation-named.md)                     | Every calculation named, and a naming pass closes each epic                                                  | Accepted                                           |
 | [0050](./0050-retrospective-e14-tools-and-merges.md)          | The agent's tools, parallel checks, and validated epic stories that merge by themselves                      | Accepted                                           |
 | [0051](./0051-main-thread-free-for-the-product-owner.md)      | The main thread kept free: stories worked by subagents                                                       | Accepted for a trial during E15                    |
-| [0052](./0052-text-measured-and-drawn-as-positioned-lines.md) | Text measured from font metrics and drawn as positioned lines (`text`, `tspan`)                              | Accepted                                           |
+| [0052](./0052-text-measured-and-drawn-as-positioned-lines.md) | Text measured from font metrics and drawn as positioned lines (`text`, `tspan`)                              | Accepted, decision 4 amended by ADR-0054           |
+| [0054](./0054-text-font-list-and-spaces-kept.md)              | A text's font list and its spaces kept (`white-space`, `xml:space`)                                          | Accepted                                           |

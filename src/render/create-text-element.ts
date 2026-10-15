@@ -60,8 +60,9 @@ function createDecorationElement(
 
 /**
  * Creates the SVG of a text (ADR-0052): a `<g>` holding one `<text>` with its attributes and one
- * positioned `<tspan>` per line, every space kept (`xml:space="preserve"`, so that a reader draws
- * the spaces the library measured), then one `<path>` rectangle per underline or strike-through.
+ * positioned `<tspan>` per line, every space kept so that a reader draws the spaces the library
+ * measured (`white-space="pre"` for SVG 2 readers, `xml:space="preserve"` for SVG 1.1 ones,
+ * ADR-0054), then one `<path>` rectangle per underline or strike-through.
  *
  * @kind procedure
  * @param document - document owning the elements
@@ -78,6 +79,7 @@ export function createTextElement(document: Document, text: Text, drawn: DrawnTe
     element.setAttribute(name, value);
   }
 
+  element.setAttribute("white-space", "pre");
   element.setAttributeNS(XML_NAMESPACE, "xml:space", "preserve");
   element.append(...drawn.lines.map((line) => createLineElement(document, line)));
 
