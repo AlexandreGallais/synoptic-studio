@@ -22,7 +22,14 @@ Refined with F05 on 2026-10-14 (its rounds 1 and 2); its stories are written by 
 
 ## Stories
 
-Written by its research spike.
+In delivery order. Written by its research spike.
+
+| ID                                                           | Type       | Title                                                                     | Status      |
+| ------------------------------------------------------------ | ---------- | ------------------------------------------------------------------------- | ----------- |
+| [SP-016](../stories/E15-F14-SP-016-research-f14-text-box.md) | Spike      | Research for F14: a box of text wrapped, cut with an ellipsis and aligned | in-progress |
+| [CHK-015](../stories/E15-F14-CHK-015-checkpoint-f14.md)      | Checkpoint | Checkpoint in the middle of F14                                           | draft       |
+| [AUD-016](../stories/E15-F14-AUD-016-audit-f14.md)           | Audit      | Audit F14                                                                 | draft       |
+| [VAL-015](../stories/E15-F14-VAL-015-validate-f14.md)        | Validation | Validate F14                                                              | draft       |
 
 ## Left for later
 
