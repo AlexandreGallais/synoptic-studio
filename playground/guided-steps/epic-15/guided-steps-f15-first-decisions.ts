@@ -41,8 +41,8 @@ export const GUIDED_STEPS_F15_FIRST_DECISIONS: readonly GuidedStep[] = [
     values: ARIAL_16,
   },
   {
-    explanation: "Tick Embed fonts.",
-    look: "Arial (fsType 8) embedded: its @font-face in the output, no line under the options.",
+    explanation: "Tick Embed fonts; Export SVG.",
+    look: "Arial (fsType 8) embedded: its @font-face in drawing.svg, no line under the options.",
     title: "F15 · Which faces may be embedded (decision 6)",
     values: ARIAL_16,
   },
@@ -53,8 +53,8 @@ export const GUIDED_STEPS_F15_FIRST_DECISIONS: readonly GuidedStep[] = [
     values: PUMP,
   },
   {
-    explanation: "Tick Embed fonts; Bold; Bold again.",
-    look: "One @font-face each time, the face drawn: 700, then 400; the whole file in base64, no local().",
+    explanation: "Tick Embed fonts; Bold, Export SVG; Bold again, Export SVG.",
+    look: "One @font-face in each drawing.svg, the face drawn: 700, then 400; the whole file in base64, no local().",
     title: "F15 · Each face once, whole (decision 8)",
     values: ARIAL_16,
   },

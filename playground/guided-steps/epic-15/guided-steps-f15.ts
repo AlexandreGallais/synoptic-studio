@@ -59,8 +59,8 @@ export const GUIDED_STEPS_F15: readonly GuidedStep[] = [
     values: createTextStepValues({ content: "Hello World", font: "Arial", size: 16 }),
   },
   {
-    explanation: "Tick Embed fonts; then Font Inter.",
-    look: "Arial: the SVG output opens with <defs><style>@font-face; Inter: “Inter 400: not embedded, its file not held.”",
+    explanation: "Tick Embed fonts; Export SVG; then Font Inter.",
+    look: "SVG output unchanged, no <style>; drawing.svg opens with <defs><style>@font-face for Arial; Inter: “Inter 400: not embedded, its file not held.”",
     title: "F15 · Embed fonts",
     values: ARIAL_PUMP,
   },
