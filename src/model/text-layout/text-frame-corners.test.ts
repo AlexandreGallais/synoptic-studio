@@ -1,7 +1,7 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
-import { HELLO_TEXT } from "../../../tests";
+import { HELLO_TEXT, expectPoints } from "../../../tests";
 
 import { textFrameCorners } from "./text-frame-corners";
 
@@ -11,18 +11,17 @@ import type { Point } from "../../math";
 type Expected = readonly [number, number];
 
 /**
- * Asserts each point to 5 decimals, the precision the SVG is written with (Q10).
+ * Asserts each corner to 5 decimals, the precision the SVG is written with (Q10).
  *
- * @param actual - points computed
- * @param expected - points computed by hand
+ * @param actual - corners computed
+ * @param expected - corners computed by hand, each its x then its y
  */
-function expectPoints(actual: readonly Point[], expected: readonly Expected[]): void {
-  expect(actual).toHaveLength(expected.length);
-
-  for (const [index, [x, y]] of expected.entries()) {
-    expect(actual[index]?.x).toBeCloseTo(x, 5);
-    expect(actual[index]?.y).toBeCloseTo(y, 5);
-  }
+function expectCorners(actual: readonly Point[], expected: readonly Expected[]): void {
+  expectPoints(
+    actual,
+    expected.map(([x, y]) => ({ x, y })),
+    5,
+  );
 }
 
 describe("textFrameCorners (DERIV-turned-shape step 4)", () => {
@@ -32,7 +31,7 @@ describe("textFrameCorners (DERIV-turned-shape step 4)", () => {
     // (20, 10) ↦ (7.07107, 21.21320); (−20, 10) ↦ (−21.21320, −7.07107); plus (20, 10).
     const text = { ...HELLO_TEXT, angle: 45, x: 0, y: 0 };
 
-    expectPoints(textFrameCorners(text, { height: 20, width: 40 }), [
+    expectCorners(textFrameCorners(text, { height: 20, width: 40 }), [
       [12.92893, -11.2132],
       [41.2132, 17.07107],
       [27.07107, 31.2132],
@@ -48,7 +47,7 @@ describe("textFrameCorners (DERIV-turned-shape step 4)", () => {
     // (−50, 10) ↦ (−50c − 10s, −50s + 10c) = (−49.93255, −10.33151); plus (97, 71).
     const text = { ...HELLO_TEXT, angle: 23, x: 47, y: 61 };
 
-    expectPoints(textFrameCorners(text, { height: 20, width: 100 }), [
+    expectCorners(textFrameCorners(text, { height: 20, width: 100 }), [
       [54.88207, 42.2584],
       [146.93255, 81.33151],
       [139.11793, 99.7416],
@@ -90,7 +89,7 @@ describe("textFrameCorners (DERIV-turned-shape step 4)", () => {
   it("gives four corners on one point for an empty block", () => {
     const text = { ...HELLO_TEXT, angle: 30, x: 5, y: 7 };
 
-    expectPoints(textFrameCorners(text, { height: 0, width: 0 }), [
+    expectCorners(textFrameCorners(text, { height: 0, width: 0 }), [
       [5, 7],
       [5, 7],
       [5, 7],
