@@ -82,7 +82,7 @@ In delivery order. Set ready by the run (ADR-0045).
 | [US-031](../stories/E15-F05-US-031-place-a-text.md)                  | User story | Place a text with the Text tool                                                 | done   |
 | [CHK-014](../stories/E15-F05-CHK-014-checkpoint-f05.md)              | Checkpoint | Checkpoint in the middle of F05                                                 | done   |
 | [US-032](../stories/E15-F05-US-032-turn-a-text.md)                   | User story | Turn a text and see its measured block                                          | done   |
-| [AUD-015](../stories/E15-F05-AUD-015-audit-f05.md)                   | Audit      | Audit F05                                                                       | ready  |
+| [AUD-015](../stories/E15-F05-AUD-015-audit-f05.md)                   | Audit      | Audit F05                                                                       | done   |
 | [VAL-014](../stories/E15-F05-VAL-014-validate-f05.md)                | Validation | Validate F05                                                                    | ready  |
 
 ## Feature plan
