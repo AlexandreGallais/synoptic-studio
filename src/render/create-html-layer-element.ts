@@ -61,7 +61,8 @@ function createParagraphNodes(
 
 /**
  * Creates the HTML layer of a text (ADR-0053, decision 1): a `foreignObject` at its frame, with
- * `requiredExtensions` set to the XHTML namespace so that only a browser draws it, holding a `div`
+ * `requiredExtensions` set to the XHTML namespace so that only a browser draws it, and
+ * `overflow="visible"`, so that lines past its frame are drawn as the library draws them, holding a `div`
  * as large, which places the block down a box (`htmlLayerToFrameStyle`), holding the `div` of the
  * text's content with the CSS of its options (`textToHtmlStyle`), one `span` per paragraph.
  *
@@ -92,6 +93,7 @@ export function createHtmlLayerElement(
   }
 
   foreign.setAttribute("requiredExtensions", XHTML_NAMESPACE);
+  foreign.setAttribute("overflow", "visible");
 
   const outer = writeStyle(
     document.createElementNS(XHTML_NAMESPACE, "div"),

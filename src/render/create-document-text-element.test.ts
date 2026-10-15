@@ -39,4 +39,24 @@ describe("createDocumentTextElement (ADR-0053)", () => {
 
     expect(written.querySelectorAll(":scope > switch > foreignObject")).toHaveLength(1);
   });
+
+  it.each([
+    { boxHeight: 0, boxWidth: 80 },
+    { boxHeight: 40, boxWidth: 0 },
+  ])(
+    "[F15.AC3] writes no layer for a box $boxWidth × $boxHeight, which SVG would not render",
+    (box) => {
+      const flat = { ...TEXT, ...box };
+      const flatDrawn = textDrawing(DECORATED_METRICS, flat);
+      const layer = textHtmlLayer(DECORATED_METRICS, flat, flatDrawn);
+      const options = { ...DEFAULT_DOCUMENT_OPTIONS, hasHtmlLayer: true };
+      const written = createDocumentTextElement(document, options, {
+        drawn: flatDrawn,
+        layer,
+        text: flat,
+      });
+
+      expect(written.outerHTML).toBe(createTextElement(document, flat, flatDrawn).outerHTML);
+    },
+  );
 });
