@@ -110,7 +110,8 @@ if (import.meta.main) {
       throw new Error(`${face.file} is not a TrueType or OpenType font`);
     }
 
-    return { isItalic: face.isItalic, metrics, weight: face.weight };
+    // The files are not shipped: no face holds one, and JSON leaves the undefined field out.
+    return { file: undefined, isItalic: face.isItalic, metrics, weight: face.weight };
   });
   const text = familyJson({ ...INTER, faces });
 

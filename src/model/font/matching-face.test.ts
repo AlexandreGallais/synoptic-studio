@@ -16,7 +16,7 @@ import type { FontFace } from "./font-face";
  * @returns the face, with Arial's metrics
  */
 function face(weight: number, isItalic: boolean): FontFace {
-  return { isItalic, metrics: ARIAL_METRICS, weight };
+  return { file: undefined, isItalic, metrics: ARIAL_METRICS, weight };
 }
 
 /** A family of two upright faces only, 300 and 700. */

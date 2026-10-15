@@ -1,0 +1,188 @@
+import { describe, expect, it } from "vitest";
+
+import {
+  ARIAL_PATH,
+  ENGLISH_US,
+  HELLO_TEXT,
+  OPEN_TYPE_VERSION,
+  TRUE_TYPE_VERSION,
+  WINDOWS_PLATFORM,
+  familyNameTable,
+  fontFile,
+  headTable,
+  nameTable,
+  os2FaceTable,
+  systemFont,
+  testFontTables,
+} from "../../../tests";
+import {
+  DEFAULT_FONT,
+  MEASURED_BLOCKS,
+  blockCharacters,
+  fontsWithFace,
+  textFontMetrics,
+} from "../../model";
+import { parseFontMetrics } from "../font-file";
+
+import { parseFontFace } from "./parse-font-face";
+
+import type { Os2FaceFields } from "../../../tests";
+import type { FontFamily } from "../../model";
+
+/** Arial 5.01 of macOS, read where the machine has it. */
+const ARIAL = systemFont(ARIAL_PATH);
+
+/** The `OS/2` table of the test font as Arial's: version 3, `fsType` 8, 400, upright. */
+const ARIAL_OS2: Os2FaceFields = {
+  capHeight: 700,
+  fsSelection: 0x00_40,
+  fsType: 8,
+  strikeoutPosition: 300,
+  strikeoutSize: 50,
+  version: 3,
+  weightClass: 400,
+};
+
+/**
+ * The test font of `[F05.AC1]` named and styled by a `name` and an `OS/2` table.
+ *
+ * @param name - the bytes of its `name` table
+ * @param os2 - its `OS/2` fields
+ * @returns the file's bytes
+ */
+function namedFont(name: readonly number[], os2: Os2FaceFields): Uint8Array {
+  return fontFile(TRUE_TYPE_VERSION, { ...testFontTables(), name, "OS/2": os2FaceTable(os2) });
+}
+
+/** The test font named Arial, 400 upright, `fsType` 8. */
+const ARIAL_FILE = namedFont(familyNameTable("Arial"), ARIAL_OS2);
+
+describe("parseFontFace (REF-OT-NAME, REF-OT-OS2)", () => {
+  it("[F15.AC1] reads a face named Arial, 400, upright, with its metrics and its file", () => {
+    expect(parseFontFace(ARIAL_FILE)).toEqual({
+      face: {
+        file: { bytes: ARIAL_FILE, isEmbeddable: true },
+        isItalic: false,
+        // The metrics F05 reads, for the characters of the measured blocks.
+        metrics: parseFontMetrics(ARIAL_FILE, blockCharacters(MEASURED_BLOCKS)),
+        weight: 400,
+      },
+      family: "Arial",
+    });
+  });
+
+  it("[F15.AC1] keeps the very bytes it read as the face's file", () => {
+    expect(parseFontFace(ARIAL_FILE)?.face.file?.bytes).toBe(ARIAL_FILE);
+  });
+
+  it("[F15.AC1] names Inter by its name ID 16, its weight 300, italic from fsSelection 1", () => {
+    const name = nameTable([
+      { language: ENGLISH_US, nameId: 1, platform: WINDOWS_PLATFORM, text: "Inter Light" },
+      { language: ENGLISH_US, nameId: 16, platform: WINDOWS_PLATFORM, text: "Inter" },
+    ]);
+    const file = namedFont(name, { ...ARIAL_OS2, fsSelection: 1, fsType: 0, weightClass: 300 });
+
+    expect(parseFontFace(file)).toMatchObject({
+      face: { file: { isEmbeddable: true }, isItalic: true, weight: 300 },
+      family: "Inter",
+    });
+  });
+
+  it.each([
+    { case: "2", fsType: 2, isEmbeddable: false, version: 3 },
+    { case: "0x0208, version 4", fsType: 0x02_08, isEmbeddable: false, version: 4 },
+    { case: "0x0208, version 1", fsType: 0x02_08, isEmbeddable: true, version: 1 },
+  ])("[F15.AC2] reads fsType $case: embeddable $isEmbeddable", (row) => {
+    const file = namedFont(familyNameTable("Arial"), { ...ARIAL_OS2, ...row });
+
+    expect(parseFontFace(file)?.face.file?.isEmbeddable).toBe(row.isEmbeddable);
+  });
+
+  it.each([
+    // The tags of a TrueType collection, a WOFF and a WOFF2 file.
+    {
+      case: "ttcf",
+      file: fontFile(0x74_74_63_66, { ...testFontTables(), name: familyNameTable("A") }),
+    },
+    {
+      case: "wOFF",
+      file: fontFile(0x77_4f_46_46, { ...testFontTables(), name: familyNameTable("A") }),
+    },
+    {
+      case: "wOF2",
+      file: fontFile(0x77_4f_46_32, { ...testFontTables(), name: familyNameTable("A") }),
+    },
+    { case: "an empty file", file: new Uint8Array() },
+  ])("[F15.AC1] gives no face, never an error, for $case", ({ file }) => {
+    expect(parseFontFace(file)).toBeUndefined();
+  });
+
+  it("gives no face for a font that F05 cannot measure: units per em 0", () => {
+    const file = fontFile(TRUE_TYPE_VERSION, {
+      ...testFontTables(),
+      head: headTable(0),
+      name: familyNameTable("Arial"),
+      "OS/2": os2FaceTable(ARIAL_OS2),
+    });
+
+    expect(parseFontFace(file)).toBeUndefined();
+  });
+
+  it("gives no face for a font without a name table, or naming no family", () => {
+    const unnamed = fontFile(TRUE_TYPE_VERSION, {
+      ...testFontTables(),
+      "OS/2": os2FaceTable(ARIAL_OS2),
+    });
+    const subfamilyOnly = nameTable([
+      { language: ENGLISH_US, nameId: 2, platform: WINDOWS_PLATFORM, text: "Regular" },
+    ]);
+
+    expect(parseFontFace(unnamed)).toBeUndefined();
+    expect(parseFontFace(namedFont(subfamilyOnly, ARIAL_OS2))).toBeUndefined();
+  });
+
+  it("gives no face for an OS/2 table too short to hold fsSelection", () => {
+    // 40 bytes: enough for F05's fields (30), not for fsSelection at 62.
+    const file = fontFile(OPEN_TYPE_VERSION, {
+      ...testFontTables(),
+      name: familyNameTable("Arial"),
+      "OS/2": os2FaceTable(ARIAL_OS2).slice(0, 40),
+    });
+
+    expect(parseFontFace(file)).toBeUndefined();
+  });
+
+  it("[F15.AC1] measures a text in arial 700 with the face of Arial 700 read from its file", () => {
+    // Arial 400 and Arial 700, told apart by their units per em, 1000 and 2000.
+    const bold = fontFile(TRUE_TYPE_VERSION, {
+      ...testFontTables(),
+      head: headTable(2000),
+      name: familyNameTable("Arial"),
+      "OS/2": os2FaceTable({ ...ARIAL_OS2, weightClass: 700 }),
+    });
+    const faces = [parseFontFace(ARIAL_FILE), parseFontFace(bold)];
+    const fonts = faces.reduce<readonly FontFamily[]>(
+      (kept, named) => (named === undefined ? kept : fontsWithFace(kept, named)),
+      [DEFAULT_FONT],
+    );
+    const metrics = textFontMetrics({ ...HELLO_TEXT, font: "arial", weight: 700 }, fonts);
+
+    expect(metrics).toBe(faces[1]?.face.metrics);
+    expect(metrics?.unitsPerEm).toBe(2000);
+  });
+
+  it.skipIf(ARIAL === undefined)(
+    "[F15.AC1] reads Arial 5.01 of macOS: Arial, 400, upright, embeddable",
+    () => {
+      // REF-OT-NAME: no name ID 16, name ID 1 Arial; REF-OT-OS2: 400, fsSelection 0x0040, fsType 8.
+      const named = parseFontFace(ARIAL ?? new Uint8Array());
+
+      expect(named).toMatchObject({
+        face: { file: { isEmbeddable: true }, isItalic: false, weight: 400 },
+        family: "Arial",
+      });
+
+      expect(named?.face.metrics.unitsPerEm).toBe(2048);
+    },
+  );
+});
