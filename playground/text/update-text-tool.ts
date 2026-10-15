@@ -1,4 +1,5 @@
 import { DEFAULT_FONT, isValidText, isValidTextBox, textFontMetrics } from "../../src";
+import { writeColorSwatches } from "../color";
 import { selectElement, writeText } from "../page";
 
 import { readTextModel } from "./read-text-model";
@@ -46,6 +47,7 @@ function writeTextBoxFields(document: Document, text: Text): void {
  * value outlined stays in sight (US-033); the text drawn with
  * its block, measured with its fallback's metrics, else the default font's (Inter), when its font
  * has none (ADR-0055, decision 1), Inter's being the only metrics read here;
+ * each color's swatch painted with it (US-035);
  * a refused text clears the drawing and says why, its fields outlined.
  *
  * @kind procedure
@@ -59,6 +61,7 @@ export function updateTextTool(document: Document): void {
 
   selectElement(document, "text-bold").setAttribute("aria-pressed", String(text.weight >= BOLD));
   writeTextBoxFields(document, text);
+  writeColorSwatches(document);
   writeTextValidity(document, isValid);
 
   if (isValid) {
