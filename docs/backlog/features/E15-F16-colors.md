@@ -2,7 +2,7 @@
 id: F16
 epic: E15
 title: Colors and their pickers
-status: draft
+status: in-progress
 ---
 
 # E15 · F16 — Colors and their pickers
