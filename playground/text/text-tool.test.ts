@@ -106,7 +106,7 @@ describe("Text tool", () => {
   it("[F05.AC5] frames the measured block, 23.78125 × 38.71875, dashed as a shape's box", () => {
     // Two lines of 2478 × 16 / 2048 = 19.359375. Dashes 4 long every 7, 1 thick: the top side
     // from x 0 to 23.78125 holds ceil(23.78125 / 7) = 4, the last one cut at 23.78125.
-    const dashes = selectPageElement("#canvas g.text-block path.straight-box").getAttribute("d");
+    const dashes = selectPageElement("#canvas g.text-frame path.straight-box").getAttribute("d");
 
     expect(dashes).toMatch(/^M0 0H4V1H0Z M7 0H11V1H7Z M14 0H18V1H14Z M21 0H23\.78125V1H21Z /u);
     expect(dashes).toContain("M22.78125 35H23.78125V38.71875H22.78125Z");
