@@ -3,8 +3,8 @@ import { describe, expect, it } from "vitest";
 
 import { ARIAL_METRICS, ARIAL_UNKERNED } from "../../../tests";
 import { DEFAULT_FONT } from "../font";
+import { lineCodePoints } from "../line-characters";
 
-import { lineCodePoints } from "./line-code-points";
 import { lineWidth } from "./line-width";
 
 /** Size 16, no spacing. */

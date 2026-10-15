@@ -30,3 +30,7 @@ One task = one commit, referenced as `EN-035.Tn`.
 - [ ] T1 — The cap height read from `OS/2` with its fallback, kept in the font metrics; Inter's data written again; tests first (2 h)
 - [ ] T2 — The first baseline and the line height: automatic, chosen with half-leading, trimmed; `@see DERIV-text-box`; tests first, a property: consecutive baselines are one line height apart (2 h)
 - [ ] T3 — The block placed in the box by its vertical alignment, the lines across the box's width, the turn about the box's middle; tests first (2 h)
+
+## Notes
+
+- From the EN-033 audit: `textBlock` and `positionedLines` must take their lines from `wrappedLines` (`src/model/text-box/`) instead of their own `textLines(textInCase(…))`, so that a text in a box is measured and drawn with its wrapped lines; a text that fits its content keeps the lines of F05.

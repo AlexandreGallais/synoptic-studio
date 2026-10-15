@@ -33,3 +33,7 @@ One task = one commit, referenced as `EN-034.Tn`.
 
 - [ ] T1 — The number of lines shown from the box's height, the line height, the trim, the maximum and the number of lines wrapped, at least one unless the text is empty; tests first, a property: the lines shown never exceed the maximum (2 h)
 - [ ] T2 — The ellipsis, on or off: characters removed from the end until the line fits, the first other than a space kept, three full stops when the face lacks U+2026; `@see DERIV-text-box`, `REF-CSS-OVERFLOW-3`; tests first, a property: a cut line is no wider than the box unless one character is left (2 h)
+
+## Notes
+
+- From the EN-033 audit: `textBlock` and `positionedLines` must take their lines from `wrappedLines` (`src/model/text-box/`) instead of their own `textLines(textInCase(…))`, so that a text in a box is measured and drawn with its wrapped lines; a text that fits its content keeps the lines of F05. The measure of a line (`measuredLine`, `joinedLineMeasure`) lets a line cut by the ellipsis be measured without measuring it again.

@@ -2,13 +2,14 @@ import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { ARIAL_BOX_METRICS, HELLO_TEXT } from "../../../tests";
+import { characterUnits } from "../line-characters";
 import { lineWidth } from "../text-block";
 
 import { isLineFitting } from "./is-line-fitting";
 import { paragraphTokens } from "./paragraph-tokens";
 import { wrappedParagraph } from "./wrapped-paragraph";
 
-import type { Text } from "../text";
+import type { Text, TextLongWord } from "../text";
 
 /** Arial 16 without kerning in a box 50 wide, a word too long moved whole. */
 const BOXED: Text = {
@@ -19,10 +20,33 @@ const BOXED: Text = {
   longWord: "move",
 };
 
-/** A paragraph of words written with the characters of the fixture's Arial, and spaces. */
-const PARAGRAPH = fc.stringMatching(/^[ HWdelor]{0,40}$/u);
+/**
+ * A paragraph of the fixture's Arial characters, spaces, no-break spaces and combining acutes, in
+ * a box 0 to 60 wide, either long-word option, letter and word spacing from −15 to 5.
+ */
+const PARAGRAPH_IN_BOX = {
+  boxWidth: fc.integer({ max: 60, min: 0 }),
+  letterSpacing: fc.integer({ max: 5, min: -15 }),
+  longWord: fc.constantFrom<TextLongWord>("break", "move"),
+  paragraph: fc.stringMatching(/^(?:[ HWdelor\u{A0}]|\u{301}){0,40}$/u),
+  wordSpacing: fc.integer({ max: 5, min: -15 }),
+};
 
-describe("wrappedParagraph (DERIV-text-box steps 1 to 3)", () => {
+/**
+ * The text a drawn paragraph sits in.
+ *
+ * @param values - its box width, spacing and long-word option
+ * @returns the text in a box 50 wide with them
+ */
+function boxedText(
+  values: Pick<Text, "boxWidth" | "letterSpacing" | "longWord" | "wordSpacing">,
+): Text {
+  const { boxWidth, letterSpacing, longWord, wordSpacing } = values;
+
+  return { ...BOXED, boxWidth, letterSpacing, longWord, wordSpacing };
+}
+
+describe("wrappedParagraph (DERIV-text-box steps 1 to 4)", () => {
   it("[F14.AC1] wraps 'Hello World' in a box 50 wide after the space", () => {
     // 4667 + 569 + 5348 = 10 584 units, 82.6875 > 50: "Hello" 36.46094 over "World" 41.78125.
     const lines = wrappedParagraph(ARIAL_BOX_METRICS, "Hello World", BOXED);
@@ -113,46 +137,73 @@ describe("wrappedParagraph (DERIV-text-box steps 1 to 3)", () => {
     expect(wrappedParagraph(ARIAL_BOX_METRICS, "  Hello", text)).toEqual(["  H", "ell", "o"]);
   });
 
-  test.prop({
-    boxWidth: fc.integer({ max: 150, min: 0 }),
-    longWord: fc.constantFrom("break", "move"),
-    paragraph: PARAGRAPH,
-  })(
+  it("breaks words separated by a space into a line each in a box 0 wide", () => {
+    // "H " cannot share a line with "l": "H l" 2503 / 128 = 19.55 > 0; each alone overflows.
+    const text = { ...BOXED, boxWidth: 0, longWord: "break" } as const;
+
+    expect(wrappedParagraph(ARIAL_BOX_METRICS, "H l", text)).toEqual(["H", "l"]);
+  });
+
+  it("places whole a word that a negative letter spacing makes fit", () => {
+    // "Hel" (1479 + 1139 + 455) / 128 = 24.00781, two letter spacings of −10: 4.00781 ≤ 5, so it
+    // is no word too long, though "He" is wider: 2618 / 128 − 10 = 10.45313 > 5.
+    const text = { ...BOXED, boxWidth: 5, letterSpacing: -10, longWord: "break" } as const;
+
+    expect(wrappedParagraph(ARIAL_BOX_METRICS, "Hel", text)).toEqual(["Hel"]);
+  });
+
+  it("[F14.AC1] never cuts a word after a no-break space, breaking at a character", () => {
+    // "Hello" + no-break space (glyph 0, 1536) + "W" = 8136 / 128 = 63.56 > 50: the cut comes
+    // before the no-break space, which stays with "W"; then "\u{A0}Worl" 5745 / 128 = 44.88 ≤ 50,
+    // "\u{A0}World" 6884 / 128 = 53.78 > 50. No line ends with the no-break space.
+    const text = { ...BOXED, longWord: "break" } as const;
+    const lines = wrappedParagraph(ARIAL_BOX_METRICS, "Hello\u{A0}World", text);
+
+    expect(lines).toEqual(["Hello", "\u{A0}Worl", "d"]);
+    expect(lines.some((line) => line.endsWith("\u{A0}"))).toBe(false);
+
+    expect(wrappedParagraph(ARIAL_BOX_METRICS, "\u{A0}r", { ...text, boxWidth: 0 })).toEqual([
+      "\u{A0}r",
+    ]);
+  });
+
+  it("wraps 16 000 words in well under a second, each measured once", { timeout: 1000 }, () => {
+    // 8000 times "Hello World ": in a box 100 wide, 8000 lines "Hello World". In a box 100 000
+    // wide, 12 800 000 units: "Hello World " is 11 153 units, so about 2295 words a line, 7 lines
+    // for 16 000; measuring each line again at each word would read some 4 × 10⁷ characters.
+    const paragraph = "Hello World ".repeat(8000);
+    const lines = wrappedParagraph(ARIAL_BOX_METRICS, paragraph, { ...BOXED, boxWidth: 100 });
+    const wide = wrappedParagraph(ARIAL_BOX_METRICS, paragraph, { ...BOXED, boxWidth: 100_000 });
+
+    expect(lines).toHaveLength(8000);
+    expect(wide).toHaveLength(7);
+  });
+
+  test.prop(PARAGRAPH_IN_BOX)(
     "[F14.AC1] gives back the paragraph joined, but for the spaces dropped at each wrap",
-    ({ boxWidth, longWord, paragraph }) => {
-      const lines = wrappedParagraph(ARIAL_BOX_METRICS, paragraph, {
-        ...BOXED,
-        boxWidth,
-        longWord,
-      });
+    (values) => {
+      const lines = wrappedParagraph(ARIAL_BOX_METRICS, values.paragraph, boxedText(values));
       // Characters of the alphabet need no escape: the lines joined by any run of spaces.
       const joined = new RegExp(`^${lines.join(" *")}$`, "u");
 
-      expect(joined.test(paragraph)).toBe(true);
+      expect(joined.test(values.paragraph)).toBe(true);
       expect(lines.slice(0, -1).every((line) => !line.endsWith(" "))).toBe(true);
+      expect(lines.slice(0, -1).every((line) => line !== "")).toBe(true);
     },
   );
 
-  test.prop({ boxWidth: fc.integer({ max: 150, min: 0 }), paragraph: PARAGRAPH })(
-    "[F14.AC1] breaking at a character, makes no line wider than the box but one of one character",
-    ({ boxWidth, paragraph }) => {
-      const text = { ...BOXED, boxWidth, longWord: "break" } as const;
+  test.prop(PARAGRAPH_IN_BOX)(
+    "[F14.AC1] makes no line wider than the box but one of a long word, or of one character",
+    (values) => {
+      const text = boxedText(values);
 
-      for (const line of wrappedParagraph(ARIAL_BOX_METRICS, paragraph, text)) {
-        expect(isLineFitting(ARIAL_BOX_METRICS, line, text) || line.trim().length === 1).toBe(true);
-      }
-    },
-  );
+      for (const line of wrappedParagraph(ARIAL_BOX_METRICS, values.paragraph, text)) {
+        const isKeptWhole =
+          text.longWord === "break"
+            ? characterUnits(line.replaceAll(/[ \u{A0}]/gu, "")).length <= 1
+            : paragraphTokens(line).length === 1;
 
-  test.prop({ boxWidth: fc.integer({ max: 150, min: 0 }), paragraph: PARAGRAPH })(
-    "[F14.AC1] makes no line wider than the box but a long word's",
-    ({ boxWidth, paragraph }) => {
-      const text = { ...BOXED, boxWidth };
-
-      for (const line of wrappedParagraph(ARIAL_BOX_METRICS, paragraph, text)) {
-        expect(
-          isLineFitting(ARIAL_BOX_METRICS, line, text) || paragraphTokens(line).length === 1,
-        ).toBe(true);
+        expect(isLineFitting(ARIAL_BOX_METRICS, line, text) || isKeptWhole).toBe(true);
       }
     },
   );

@@ -4,6 +4,7 @@ export * from "./free-shape";
 export * from "./handles";
 export * from "./kerning";
 export * from "./layout-box";
+export * from "./line-characters";
 export * from "./placement";
 export * from "./rectangle";
 export * from "./regular-polygon";
