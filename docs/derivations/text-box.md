@@ -121,7 +121,7 @@ A highlighter covers each line's content area, "sized and positioned to fit … 
 x = left of line,  y = baseline − A × s / U,  width = w,  height = (A − D) × s / U
 ```
 
-A line `w ≤ 0` wide gets none (`textBackgrounds`). The rectangles are one `<path>`, one closed sub-path per line, each drawn with the rectangle tool's corners, sharp (`decorationCorners`), clockwise from its top-left corner (Q11), each starting with its own `moveto` (`REF-SVG2-PATHS`, §9.3.3; `subPathsToPathData`), drawn before the `<text>` in the text's group so that the letters stay on top and turn with it.
+A line `w ≤ 0` wide gets none (`textBackgrounds`). The rectangles are one `<path>`, one closed sub-path per line, each drawn with the rectangle tool's corners, sharp (`decorationCorners`), clockwise from its top-left corner (Q11), each starting with its own `moveto` (`REF-SVG2-PATHS`, §9.3.3; `formatSubPaths`), drawn before the `<text>` in the text's group so that the letters stay on top and turn with it.
 
 ## Cross-check
 
