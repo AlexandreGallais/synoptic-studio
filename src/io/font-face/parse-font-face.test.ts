@@ -79,8 +79,14 @@ describe("parseFontFace (REF-OT-NAME, REF-OT-OS2)", () => {
 
   it("[F15.AC1] names Inter by its name ID 16, its weight 300, italic from fsSelection 1", () => {
     const name = nameTable([
-      { language: ENGLISH_US, nameId: 1, platform: WINDOWS_PLATFORM, text: "Inter Light" },
-      { language: ENGLISH_US, nameId: 16, platform: WINDOWS_PLATFORM, text: "Inter" },
+      {
+        encoding: 1,
+        language: ENGLISH_US,
+        nameId: 1,
+        platform: WINDOWS_PLATFORM,
+        text: "Inter Light",
+      },
+      { encoding: 1, language: ENGLISH_US, nameId: 16, platform: WINDOWS_PLATFORM, text: "Inter" },
     ]);
     const file = namedFont(name, { ...ARIAL_OS2, fsSelection: 1, fsType: 0, weightClass: 300 });
 
@@ -136,7 +142,7 @@ describe("parseFontFace (REF-OT-NAME, REF-OT-OS2)", () => {
       "OS/2": os2FaceTable(ARIAL_OS2),
     });
     const subfamilyOnly = nameTable([
-      { language: ENGLISH_US, nameId: 2, platform: WINDOWS_PLATFORM, text: "Regular" },
+      { encoding: 1, language: ENGLISH_US, nameId: 2, platform: WINDOWS_PLATFORM, text: "Regular" },
     ]);
 
     expect(parseFontFace(unnamed)).toBeUndefined();

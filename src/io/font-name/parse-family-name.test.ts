@@ -5,7 +5,7 @@ import { ENGLISH_US, WINDOWS_PLATFORM, familyNameTable, nameTable, viewOf } from
 import { parseFamilyName } from "./parse-family-name";
 
 /** A Windows name in English (United States). */
-const ENGLISH_NAME = { language: ENGLISH_US, platform: WINDOWS_PLATFORM };
+const ENGLISH_NAME = { encoding: 1, language: ENGLISH_US, platform: WINDOWS_PLATFORM };
 
 describe("parseFamilyName (REF-OT-NAME)", () => {
   it("[F15.AC1] names Arial by its name ID 1 when it has no name ID 16", () => {

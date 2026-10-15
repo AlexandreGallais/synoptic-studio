@@ -15,18 +15,23 @@ const NAME_LAYOUT = { headerSize: 6, recordSize: 12 };
 /** Platform 3, Windows, whose strings are UTF-16BE (`REF-OT-NAME`). */
 export const WINDOWS_PLATFORM = 3;
 
+/** Platform 1, Macintosh. */
+export const MACINTOSH_PLATFORM = 1;
+
 /** Language 0x0409 of platform 3, English (United States) (`REF-OT-NAME`). */
 export const ENGLISH_US = 0x04_09;
 
 /** One name record of a `name` table and its string. */
 export type NameEntry = {
-  /** Platform: 1 Macintosh, 3 Windows. */
+  /** Platform: 0 Unicode, 1 Macintosh, 3 Windows. */
   readonly platform: number;
+  /** Encoding of the platform: 1 Unicode BMP for Windows, 0 Roman for Macintosh. */
+  readonly encoding: number;
   /** Language of the platform: 0x0409 English (United States) for Windows. */
   readonly language: number;
   /** Name ID: 1 family, 2 subfamily, 16 typographic family. */
   readonly nameId: number;
-  /** The string: in UTF-16BE for Windows, one byte per character otherwise. */
+  /** The string: one byte per character for Macintosh, UTF-16BE otherwise. */
   readonly text: string;
 };
 
@@ -61,8 +66,8 @@ function utf16Units(codePoint: number): number[] {
 }
 
 /**
- * The bytes of a name's string: two per UTF-16 code unit, big-endian, for Windows; one per
- * character for another platform.
+ * The bytes of a name's string: one per character for Macintosh; two per UTF-16 code unit,
+ * big-endian, for another platform.
  *
  * @param entry - the name record and its string
  * @returns its bytes
@@ -70,12 +75,12 @@ function utf16Units(codePoint: number): number[] {
 function nameBytes(entry: NameEntry): number[] {
   const units = lineCodePoints(entry.text).flatMap((codePoint) => utf16Units(codePoint));
 
-  return entry.platform === WINDOWS_PLATFORM ? units.flatMap((unit) => uint16(unit)) : units;
+  return entry.platform === MACINTOSH_PLATFORM ? units : units.flatMap((unit) => uint16(unit));
 }
 
 /**
  * A `name` table of version 0: its header (`version`, `count`, `storageOffset`), its name records
- * (`platformID`, `encodingID` 1, `languageID`, `nameID`, `length`, `stringOffset`), then its
+ * (`platformID`, `encodingID`, `languageID`, `nameID`, `length`, `stringOffset`), then its
  * strings in the same order (`REF-OT-NAME`).
  *
  * @param entries - the names
@@ -94,7 +99,7 @@ export function nameTable(entries: readonly NameEntry[]): number[] {
     ...uint16(storage),
     ...entries.flatMap((entry, index) => [
       ...uint16(entry.platform),
-      ...uint16(1),
+      ...uint16(entry.encoding),
       ...uint16(entry.language),
       ...uint16(entry.nameId),
       ...uint16(strings[index]?.length ?? 0),
@@ -111,7 +116,9 @@ export function nameTable(entries: readonly NameEntry[]): number[] {
  * @returns its bytes
  */
 export function familyNameTable(family: string): number[] {
-  return nameTable([{ language: ENGLISH_US, nameId: 1, platform: WINDOWS_PLATFORM, text: family }]);
+  return nameTable([
+    { encoding: 1, language: ENGLISH_US, nameId: 1, platform: WINDOWS_PLATFORM, text: family },
+  ]);
 }
 
 /** The `OS/2` fields written by `os2FaceTable`. */
