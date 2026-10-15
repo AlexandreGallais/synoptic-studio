@@ -12,9 +12,10 @@ describe("formatFontFamily (REF-CSS-FONTS-4 §2.1)", () => {
     expect(formatFontFamily("Arial", "Helvetica")).toBe('"Arial", "Helvetica", sans-serif');
   });
 
-  it("names a family once, without regard to case", () => {
+  it("names a family once, without regard to case nor to white space at its ends", () => {
     expect(formatFontFamily("Arial", "arial")).toBe('"Arial", sans-serif');
     expect(formatFontFamily("Sans-Serif", "sans-serif")).toBe("sans-serif");
+    expect(formatFontFamily(" sans-serif", "sans-serif")).toBe("sans-serif");
   });
 
   test.prop({ fallback: fc.string(), font: fc.string() })(
