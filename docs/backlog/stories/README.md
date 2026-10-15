@@ -115,7 +115,7 @@
 | [SP-015](./E15-F05-SP-015-research-e15-text.md)                 | F05     | Research for E15: text measured from font metrics and drawn as positioned lines | done   |
 | [EN-031](./E15-F05-EN-031-font-metrics-from-a-font-file.md)     | F05     | Font metrics read from a TrueType or OpenType file                              | done   |
 | [EN-032](./E15-F05-EN-032-text-in-the-model.md)                 | F05     | A text in the model: its characters, its lines and its measured block           | done   |
-| [US-031](./E15-F05-US-031-place-a-text.md)                      | F05     | Place a text with the Text tool                                                 | ready  |
+| [US-031](./E15-F05-US-031-place-a-text.md)                      | F05     | Place a text with the Text tool                                                 | done   |
 | [CHK-014](./E15-F05-CHK-014-checkpoint-f05.md)                  | F05     | Checkpoint in the middle of F05                                                 | ready  |
 | [US-032](./E15-F05-US-032-turn-a-text.md)                       | F05     | Turn a text and see its measured block                                          | ready  |
 | [AUD-015](./E15-F05-AUD-015-audit-f05.md)                       | F05     | Audit F05                                                                       | ready  |
