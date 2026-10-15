@@ -49,16 +49,11 @@ function openStep(title: string): void {
   openOnStep(index + 1);
 }
 
-/**
- * Ticks or unticks a check box, as the designer would: its `change` event.
- *
- * @param id - the box's id
- * @param isChecked - whether it ends ticked
- */
-function tick(id: string, isChecked: boolean): void {
-  const box = selectInput(id);
+/** Ticks Embed fonts, as the designer would: its `change` event. */
+function tickEmbedFonts(): void {
+  const box = selectInput("embed-fonts");
 
-  box.checked = isChecked;
+  box.checked = true;
   box.dispatchEvent(new Event("change", { bubbles: true }));
 }
 
@@ -141,22 +136,12 @@ function readLines(): readonly (string | null)[] {
 }
 
 /**
- * Reads an attribute of the HTML layer's `foreignObject`.
+ * Reads the path data of the text's underline, the path drawn after its `<text>`.
  *
- * @param name - the attribute
- * @returns its value
+ * @returns its `d` attribute
  */
-function readLayer(name: string): string | null {
-  return selectPageElement("#canvas foreignObject").getAttribute(name);
-}
-
-/**
- * Reads the style of the HTML layer's content `div`.
- *
- * @returns its `style` attribute
- */
-function readContentStyle(): string {
-  return selectPageElement("#canvas foreignObject > div > div").getAttribute("style") ?? "";
+function readUnderline(): string {
+  return selectPageElement("#canvas g:has(> text) > text ~ path").getAttribute("d") ?? "";
 }
 
 /**
@@ -209,7 +194,7 @@ describe("the guided test of E15 (VAL-017): F05, F14, F16 and F15 in a row", () 
       ...Array.from({ length: 36 }, () => "F05"),
       ...Array.from({ length: 36 }, () => "F14"),
       ...Array.from({ length: 42 }, () => "F16"),
-      ...Array.from({ length: 57 }, () => "F15"),
+      ...Array.from({ length: 37 }, () => "F15"),
     ]);
   });
 
@@ -220,7 +205,7 @@ describe("the guided test of E15 (VAL-017): F05, F14, F16 and F15 in a row", () 
   });
 });
 
-describe("the guided test of F15 (VAL-017): fonts, embedding, the HTML layer, the export", () => {
+describe("the guided test of F15 (VAL-017): fonts, embedding, the export", () => {
   it("[F15.AC1] the font list: Inter alone, a list where no name is typed", () => {
     openStep("The font list");
 
@@ -293,7 +278,7 @@ describe("the guided test of F15 (VAL-017): fonts, embedding, the HTML layer, th
   it("[F15.AC2] Embed fonts: the face imported embedded, Inter listed as not embedded", async () => {
     openStep("Embed fonts");
     await importTestFace(TEST_SANS);
-    tick("embed-fonts", true);
+    tickEmbedFonts();
 
     expect(readOutput()).toMatch(/^<defs[^>]*><style>@font-face \{ font-family: "Test Sans"/u);
 
@@ -301,23 +286,7 @@ describe("the guided test of F15 (VAL-017): fonts, embedding, the HTML layer, th
     expect(readLeftOut()).toEqual(["Inter 400: not embedded, its file not held."]);
   });
 
-  it("[F15.AC3] HTML layer: a switch of a foreignObject and the lines, gone when unticked", () => {
-    openStep("HTML layer");
-    tick("html-layer", true);
-
-    expect(readOutput()).toMatch(/^<g[^>]*><switch><foreignObject /u);
-    expect(readLayer("requiredExtensions")).toBe("http://www.w3.org/1999/xhtml");
-    tick("html-layer", false);
-    expect(readOutput()).not.toContain("<switch>");
-  });
-
-  it("[F15.AC3] Arabic given to the browser in its HTML layer", () => {
-    openStep("Arabic in the HTML layer");
-    tick("html-layer", true);
-    expect(selectPageElement("#canvas foreignObject span").textContent).toBe("مضخة");
-  });
-
-  it("[F15.AC2] Export SVG saves drawing.svg with its style and switch, without the frame", async () => {
+  it("[F15.AC2] Export SVG saves drawing.svg with its style, no switch, without the frame", async () => {
     const saved = vi.fn<(file: Blob) => string>().mockReturnValue("blob:drawing");
 
     Object.defineProperties(URL, {
@@ -331,8 +300,7 @@ describe("the guided test of F15 (VAL-017): fonts, embedding, the HTML layer, th
 
     openStep("Export SVG");
     await importTestFace(TEST_SANS);
-    tick("embed-fonts", true);
-    tick("html-layer", true);
+    tickEmbedFonts();
     clickElement("export-svg");
 
     const [[savedFile] = []] = saved.mock.calls;
@@ -341,7 +309,7 @@ describe("the guided test of F15 (VAL-017): fonts, embedding, the HTML layer, th
 
     expect(link instanceof HTMLAnchorElement && link.download).toBe("drawing.svg");
     expect(exported).toContain("<style>@font-face");
-    expect(exported).toContain("<switch>");
+    expect(exported).not.toMatch(/<switch|<foreignObject/u);
     expect(exported).not.toContain("text-frame");
   });
 
@@ -354,111 +322,14 @@ describe("the guided test of F15 (VAL-017): fonts, embedding, the HTML layer, th
   );
 });
 
-describe("the guided test of F15 (VAL-017): the browser checks of the HTML layer", () => {
-  it("check 1: a line taller than its box, centered then at the bottom, `unsafe`", () => {
-    openStep("Browser check 1, a line past the box");
-    tick("html-layer", true);
-
-    // Inter 32: a line 38.71875 tall in a box 20 tall; centered, it starts (20 − 38.71875) / 2
-    // = −9.359375 above, its baseline 31 lower: 21.640625.
-    expect(selectPageElement("#canvas foreignObject > div").getAttribute("style")).toContain(
-      "justify-content: unsafe center",
-    );
-
-    expect(selectPageElement("#canvas tspan").getAttribute("y")).toBe("21.64063");
-    chooseOption("text-vertical-alignment", "bottom");
-
-    expect(selectPageElement("#canvas foreignObject > div").getAttribute("style")).toContain(
-      "justify-content: unsafe flex-end",
-    );
-  });
-
-  it.each([
-    { height: "0", width: "80" },
-    { height: "40", width: "0" },
-  ])("check 2: a box $width × $height writes no layer", ({ height, width }) => {
-    openStep("Browser check 2, an empty box");
-    tick("html-layer", true);
-    selectInput("text-box-width").value = width;
-    selectInput("text-box-width").dispatchEvent(new Event("input", { bubbles: true }));
-    selectInput("text-box-height").value = height;
-    selectInput("text-box-height").dispatchEvent(new Event("input", { bubbles: true }));
-
-    expect(document.querySelector("#canvas foreignObject")).toBeNull();
-    expect(readLines().length).toBeGreaterThan(0);
-  });
-
-  it("check 3: Hello and a line break at the bottom, two lines in both", () => {
-    openStep("Browser check 3, a line break at the bottom");
-    tick("html-layer", true);
-
-    expect(
-      [...document.querySelectorAll("#canvas foreignObject span")].map((span) => span.textContent),
-    ).toEqual(["Hello", "\u{200B}"]);
-
-    // Two lines of 19.359375 at the bottom of 100: the first baseline at 100 − 2 · 19.359375
-    // + 15.5 = 76.78125.
-    expect(selectPageElement("#canvas tspan").getAttribute("y")).toBe("76.78125");
-  });
-
-  it("check 4: a word moved whole overflows, the lines below cut at one line height", () => {
-    openStep("Browser check 4, a word moved whole");
-    tick("html-layer", true);
-
-    expect(readLines()).toEqual(["Overflowing"]);
-
-    expect(readContentStyle()).toContain(
-      "overflow-x: visible; overflow-y: clip; max-height: 19.35938px",
-    );
-  });
-
-  it("check 5: with the ellipsis, the word ends with …", () => {
-    openStep("Browser check 5, the same with the ellipsis");
-    tick("html-layer", true);
-
-    expect(readLines()).toEqual(["Over…"]);
-    expect(readContentStyle()).toContain("text-overflow: ellipsis");
-  });
-
-  it("check 6: the layer clips nothing, overflow visible and no overflow rule in it", () => {
-    openStep("Browser check 6, nothing clipped");
-    tick("html-layer", true);
-
-    expect(readLayer("overflow")).toBe("visible");
-    expect(readContentStyle()).not.toContain("overflow");
-  });
-
-  it("check 7: the ellipsis underlined and struck in the text's color, then the underline red", () => {
-    openStep("Browser check 7, the ellipsis's strokes");
-    tick("html-layer", true);
-
-    expect(readContentStyle()).toContain(
-      "text-decoration-line: underline line-through; text-decoration-thickness: from-font; text-decoration-skip-ink: none; text-decoration-color: #1e293bff",
-    );
-
-    selectInput("text-underline-color").value = "#ff0000";
-    selectInput("text-underline-color").dispatchEvent(new Event("change", { bubbles: true }));
-    expect(readOutput()).toContain('fill="#ff0000"');
-  });
-});
-
 describe("the guided test of F15 (VAL-017): its decisions, each with its example", () => {
-  it("decision 1: the layer is a switch, the XHTML extension first, then the lines", () => {
-    openStep("The layer is a switch (decision 1)");
-    tick("html-layer", true);
+  it("[F17.AC2] decision 2: Embed fonts off, the only option, the output a group as before F15", () => {
+    openStep("Embed fonts off (decision 2)");
 
-    expect(readOutput()).toMatch(
-      /<switch><foreignObject [^>]*requiredExtensions="http:\/\/www\.w3\.org\/1999\/xhtml"[^>]*>.*<\/foreignObject><g><text /su,
-    );
-  });
-
-  it("decision 2: both options off, the output a group as before F15", () => {
-    openStep("Both options off (decision 2)");
-
-    expect([selectInput("embed-fonts").checked, selectInput("html-layer").checked]).toEqual([
-      false,
-      false,
-    ]);
+    expect([
+      selectInput("embed-fonts").checked,
+      document.querySelector("#html-layer") === null,
+    ]).toEqual([false, true]);
 
     expect(readOutput()).toMatch(/^<g /u);
   });
@@ -502,13 +373,13 @@ describe("the guided test of F15 (VAL-017): its decisions, each with its example
   ])("decision 6: fsType $fsType embedded unless restricted", async ({ fsType, leftOut }) => {
     openStep("Which faces may be embedded (decision 6)");
     await importTestFace({ ...TEST_SANS, fsType });
-    tick("embed-fonts", true);
+    tickEmbedFonts();
     expect(readLeftOut()).toEqual(leftOut);
   });
 
   it("decision 7: Inter, its file not held, listed as not embedded", () => {
     openStep("A face without its file (decision 7)");
-    tick("embed-fonts", true);
+    tickEmbedFonts();
     expect(readLeftOut()).toEqual(["Inter 400: not embedded, its file not held."]);
   });
 
@@ -516,7 +387,7 @@ describe("the guided test of F15 (VAL-017): its decisions, each with its example
     openStep("Each face once, whole (decision 8)");
     await importTestFace(TEST_SANS);
     await importTestFace({ ...TEST_SANS, weightClass: 700 });
-    tick("embed-fonts", true);
+    tickEmbedFonts();
     clickElement("text-bold");
     expect(readOutput().match(/@font-face/gu)).toHaveLength(1);
     expect(readOutput()).toContain("font-weight: 700");
@@ -524,20 +395,6 @@ describe("the guided test of F15 (VAL-017): its decisions, each with its example
     expect(readOutput()).toContain("font-weight: 400");
     expect(readOutput()).not.toContain("local(");
   });
-
-  it.skipIf(ARIAL === undefined)(
-    "decision 9: Arial 16's layer raised by 0.26171875; trimmed, by 3.28515625",
-    async () => {
-      openStep("The layer's line height (decision 9)");
-      await importArial();
-      tick("html-layer", true);
-      expect(readLayer("y")).toBe("-0.26172");
-      tick("text-trim", true);
-      // The trim takes off (1854 − 1467) × 16 / 2048 = 3.0234375 above the cap height, plus the
-      // half line gap 0.26171875: 3.28515625.
-      expect(readLayer("y")).toBe("-3.28516");
-    },
-  );
 
   it("decision 10: a Hebrew line right to left", () => {
     openStep("Right to left in resvg and Batik (decision 10)");
@@ -577,54 +434,9 @@ describe("the guided test of F15 (VAL-017): its decisions, each with its example
         "Noto Sans Javanese 400 imported.",
       );
 
-      tick("embed-fonts", true);
+      tickEmbedFonts();
       expect(readOutput()).toContain("src: url(data:font/otf;base64,T1RUTw");
       expect(readOutput()).toContain('format("opentype")');
-    },
-  );
-
-  it("decision 19: a frame div holding the content's div, one span per paragraph", () => {
-    openStep("The layer's elements (decision 19)");
-    tick("html-layer", true);
-    expect(document.querySelectorAll("#canvas foreignObject > div > div > span")).toHaveLength(1);
-  });
-
-  it.skipIf(ARIAL === undefined)("decision 20: Arial 16's line height at 5 decimals", async () => {
-    openStep("Numbers at 5 decimals (decision 20)");
-    await importArial();
-    tick("html-layer", true);
-    expect(readContentStyle()).toContain("line-height: 18.39844px");
-  });
-
-  it("decision 21: black at 40 % is #00000066", () => {
-    openStep("Opacity in the layer's color (decision 21)");
-    tick("html-layer", true);
-    expect(readContentStyle()).toContain("color: #00000066");
-  });
-
-  it.skipIf(ARIAL === undefined)(
-    "decision 22: two lines at most in a box 50 × 40, clamped with …, cut without",
-    async () => {
-      openStep("At most the library's lines (decision 22)");
-      await importArial();
-      tick("html-layer", true);
-      expect(readLines()).toEqual(["Pump", "P-10…"]);
-      expect(readContentStyle()).toContain("-webkit-line-clamp: 2");
-      tick("text-ellipsis", false);
-      expect(readLines()).toEqual(["Pump", "P-101"]);
-      // 2 × 18.3984375 = 36.796875.
-      expect(readContentStyle()).toContain("max-height: 36.79688px");
-    },
-  );
-
-  it.skipIf(ARIAL === undefined)(
-    "decision 23: a trimmed text at the bottom, its layer lowered by 3.65234375",
-    async () => {
-      openStep("A trimmed text's first baseline (decision 23)");
-      await importArial();
-      tick("html-layer", true);
-      expect(readLayer("y")).toBe("3.65234");
-      expect(selectPageElement("#canvas tspan").getAttribute("y")).toBe("40");
     },
   );
 
@@ -663,7 +475,7 @@ describe("the guided test of F15 (VAL-017): its decisions, each with its example
 
   it("decision 28: one line per face left out, the italic one named", () => {
     openStep("The faces left out, one line each (decision 28)");
-    tick("embed-fonts", true);
+    tickEmbedFonts();
     clickElement("text-italic");
     expect(readLeftOut()).toEqual(["Inter 400 italic: not embedded, its file not held."]);
   });
@@ -698,47 +510,9 @@ describe("the guided test of F15 (VAL-017): its decisions, each with its example
 
   it("decision 32: the underline drawn across descenders", () => {
     openStep("The underline across descenders (decision 32)");
-    tick("html-layer", true);
-    expect(readContentStyle()).toContain("text-decoration-skip-ink: none");
+    // One rectangle as long as the line, never broken where the p descends.
+    expect(readUnderline()).toMatch(/^M[^M]*Z$/u);
   });
-
-  it("decision 33: the layer's underline from the font", () => {
-    openStep("The underline from the font (decision 33)");
-    tick("html-layer", true);
-    expect(readContentStyle()).toContain("text-decoration-thickness: from-font");
-  });
-
-  it("decision 34: with the ellipsis, the layer's content clips its overflow", () => {
-    openStep("The layer clips its lines' ink (decision 34)");
-    tick("html-layer", true);
-    expect(readContentStyle()).toContain("line-height: 10px");
-    expect(readContentStyle()).toContain("overflow: hidden");
-  });
-
-  it.skipIf(ARIAL === undefined)(
-    "decision 35: Pump P-101 cut to Pump…, the band on the paragraph's span only",
-    async () => {
-      openStep("No band under the layer's ellipsis (decision 35)");
-      await importArial();
-      tick("html-layer", true);
-      expect(readLines()).toEqual(["Pump…"]);
-
-      expect(selectPageElement("#canvas foreignObject span").getAttribute("style")).toBe(
-        "background-color: #ffff00ff",
-      );
-    },
-  );
-
-  it.skipIf(ARIAL === undefined)(
-    "decision 36: two nested div, the frame at y −0.26172",
-    async () => {
-      openStep("Two div, the frame shifted (decision 36)");
-      await importArial();
-      tick("html-layer", true);
-      expect(document.querySelectorAll("#canvas foreignObject > div > div")).toHaveLength(1);
-      expect(readLayer("y")).toBe("-0.26172");
-    },
-  );
 
   it("back to the rectangle, drawn as before", () => {
     openStep("Back to the rectangle");

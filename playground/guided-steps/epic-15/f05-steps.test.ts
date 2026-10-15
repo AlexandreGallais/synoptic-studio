@@ -368,22 +368,12 @@ describe("the guided test of F05 (VAL-014): the decisions to confirm", () => {
   it("starts the next step with the drawing's options off, as the page opens (US-036)", () => {
     openStep("Font name as listed (decided, US-036)");
 
-    for (const id of ["embed-fonts", "html-layer"]) {
-      const box = selectInput(id);
+    const box = selectInput("embed-fonts");
 
-      box.checked = true;
-      box.dispatchEvent(new Event("change", { bubbles: true }));
-    }
-
-    expect(document.querySelector("#canvas switch")).not.toBeNull();
+    box.checked = true;
+    box.dispatchEvent(new Event("change", { bubbles: true }));
     clickElement("guide-next");
-
-    expect([selectInput("embed-fonts").checked, selectInput("html-layer").checked]).toEqual([
-      false,
-      false,
-    ]);
-
-    expect(document.querySelector("#canvas switch")).toBeNull();
+    expect(selectInput("embed-fonts").checked).toBe(false);
   });
 
   it("[F05.AC2] bold from 100 gives 700, then 100; from 800, 700 then 800", () => {
