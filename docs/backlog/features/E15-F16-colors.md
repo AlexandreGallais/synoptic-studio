@@ -32,7 +32,7 @@ In delivery order.
 | [AUD-017](../stories/E15-F16-AUD-017-audit-f16.md)                           | Audit      | Audit F16                                                              | done   |
 | [EN-043](../stories/E15-F16-EN-043-integer-hsl-and-hsb-from-exact-values.md) | Enabler    | HSL and HSB as integers, one value edited with the exact others        | done   |
 | [US-040](../stories/E15-F16-US-040-whole-numbers-in-the-picker.md)           | User story | Whole numbers in the color picker                                      | done   |
-| [US-041](../stories/E15-F16-US-041-underline-and-strike-through-colors.md)   | User story | Choose the underline's and the strike-through's colors                 | ready  |
+| [US-041](../stories/E15-F16-US-041-underline-and-strike-through-colors.md)   | User story | Choose the underline's and the strike-through's colors                 | done   |
 | [VAL-016](../stories/E15-F16-VAL-016-validate-f16.md)                        | Validation | Validate F16                                                           | ready  |
 
 ## Feature plan
