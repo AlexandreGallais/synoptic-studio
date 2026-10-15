@@ -1,3 +1,4 @@
+import { listenToFonts } from "../fonts";
 import { selectElement } from "../page";
 
 import { readFieldValue } from "./read-field-value";
@@ -6,7 +7,8 @@ import { readFieldValue } from "./read-field-value";
 const WEIGHTS = { bold: "700", normal: "400" };
 
 /**
- * Listens to the Text tool's fields: a value typed or chosen redraws the text; the bold button
+ * Listens to the Text tool's fields: its font controls (`listenToFonts`, US-036); a value typed or
+ * chosen redraws the text; the bold button
  * sets the weight to 700, or back to 400 when the weight is 700 or heavier (pressed); the italic
  * button turns italic on or off.
  *
@@ -20,6 +22,7 @@ export function listenToTextFields(document: Document, update: () => void): void
   const weight = selectElement(document, "text-weight");
   const italic = selectElement(document, "text-italic");
 
+  listenToFonts(document, update);
   options.addEventListener("input", update);
   options.addEventListener("change", update);
 

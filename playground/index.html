@@ -217,6 +217,37 @@
         padding: 0;
         cursor: pointer;
       }
+      /* A font imported or installed (US-036): the file picker drawn as a button. */
+      #font-sources {
+        display: flex;
+        gap: 0.5rem;
+        margin: 0.35rem 0;
+      }
+      #font-file-button {
+        box-sizing: border-box;
+        display: inline-flex;
+        align-items: center;
+        min-height: 2.1rem;
+        margin: 0;
+        padding: 0 0.7rem;
+        cursor: pointer;
+        border: 1px solid var(--line);
+        border-radius: 0.35rem;
+      }
+      #font-file-button:focus-within {
+        outline: 2px solid var(--accent);
+      }
+      #font-file {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+      }
+      .font-message {
+        margin: 0;
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
       .color-message {
         margin: 0;
         font-size: 0.85rem;
@@ -499,7 +530,19 @@
 Pump P-101
 Running</textarea>
         </label>
-        <label>Font <input id="text-font" type="text" value="Inter" /></label>
+        <label
+          >Font
+          <select id="text-font">
+            <option value="Inter" selected>Inter</option>
+          </select></label
+        >
+        <p id="font-sources">
+          <label id="font-file-button"
+            >Import a font <input id="font-file" type="file" accept=".ttf,.otf"
+          /></label>
+          <button id="installed-fonts" type="button">Installed fonts</button>
+        </p>
+        <p id="font-message" class="font-message" role="status"></p>
         <div class="pair">
           <label
             >Size <input id="text-size" type="number" min="1" max="100000" step="1" value="32"
