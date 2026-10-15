@@ -56,7 +56,7 @@ A library of small named functions, each backed by a verified source, composed s
 ## Never
 
 - A runtime dependency (`dependencies` stays empty); a dev package without its row in `docs/tooling/dependencies.md`, its release notes read, a version at least 7 days old.
-- Freehand in symbols, or Bézier curves other than cubic sides from typed handles or the round shape's (ADR-0046, ADR-0048); SVG primitives other than `svg`, `g`, `path`, `text`, `tspan`, `defs` (ADR-0052); native `stroke`.
+- Freehand in symbols, or Bézier curves other than cubic sides from typed handles or the round shape's (ADR-0046, ADR-0048); SVG primitives other than `svg`, `g`, `path`, `text`, `tspan`, `defs`, and `style` in `defs` for `@font-face`, `switch` around a text's HTML layer, `foreignObject` as its first child (ADR-0052, ADR-0053); native `stroke`.
 - `any`, `!`, `as` without `eslint-disable-next-line … -- justification`; classes; `enum`; a rule disabled to make code pass (fix the code, or tell the Product Owner the rule is wrong).
 - An epic or feature set `ready` by the agent outside a `/run`, or a pull request merged by the agent; a push to `main`; `--no-verify`; a force push without lease.
 
