@@ -44,7 +44,7 @@ restricted  = bit(1) and not permits
 embeddable  = not bitmapOnly and not restricted
 ```
 
-Bits 1, 2 and 3 all clear is installable (value 0), embeddable; bit 0 is not read, being reserved. Bit 8 does not forbid it: the whole file is not a subset. Taking the least restrictive permission for a table of version 3 or later that sets several bits follows the specification's note on what "some applications could assume" (provisional, VAL-017).
+`REF-OT-OS2`: "For Restricted License embedding to take effect, the Embedding permissions sub-field must have the value 2 (that is, only bit 1 is set)"; with bit 2 or 3 also set, the permission is no longer restricted, as `permits` reads it. Bits 1, 2 and 3 all clear is installable (value 0), embeddable; bit 0 is not read, being reserved. Bit 8 does not forbid it: the whole file is not a subset. Taking the least restrictive permission for a table of version 3 or later that sets several bits follows the specification's note on what "some applications could assume" (provisional, VAL-017).
 
 ## Step 4 — Three bytes, four characters
 
@@ -71,7 +71,7 @@ Each full group of 3 bytes gives 4 characters (step 4), and a last group of 1 or
 base64Length(n) = 4 · ⌈n / 3⌉
 ```
 
-characters. The `data:` URL is `data:` and the media type, `;base64,` and those characters (`REF-RFC-2397`, §3). With the media types of `REF-CSS-FONTS-4`, §11.2 — `font/ttf` for a TrueType file, `font/otf` for an OpenType file with CFF outlines — the prefix `data:font/ttf;base64,` or `data:font/otf;base64,` is 21 characters:
+characters. The `data:` URL is `data:` and the media type, `;base64,` and those characters (`REF-RFC-2397`, §3). With the media types of `REF-CSS-FONTS-4`, §11.2 — `font/ttf` for a TrueType file and, the agent's choice among the media types §11.2 gives OpenType, `font/otf` for a file with CFF outlines — the prefix `data:font/ttf;base64,` or `data:font/otf;base64,` is 21 characters:
 
 ```text
 dataUrlLength(n) = 21 + 4 · ⌈n / 3⌉
@@ -79,9 +79,9 @@ dataUrlLength(n) = 21 + 4 · ⌈n / 3⌉
 
 A file grows by a third: 4 characters for 3 bytes.
 
-## Step 7 — Once per view
+## Step 7 — Once per document
 
-A face is one family name, one weight, one style and one file (`REF-CSS-FONTS-4`, §4.1: several `@font-face` rules build a family). A view that holds `k` texts in `m` distinct faces writes `m` rules, not `k`: its length is the sum of `dataUrlLength` over its distinct faces, whatever `k`.
+A face is one family name, one weight, one style and one file (`REF-CSS-FONTS-4`, §4.1: several `@font-face` rules build a family). A document (a symbol; a synoptic view with E08) that holds `k` texts in `m` distinct faces writes `m` rules, not `k`: its length is the sum of `dataUrlLength` over its distinct faces, whatever `k`.
 
 ## Cross-check
 
@@ -89,18 +89,18 @@ A face is one family name, one weight, one style and one file (`REF-CSS-FONTS-4`
 
 ## Checks (test cases)
 
-| Case                                               | Computation                              | Expected                                 |
-| -------------------------------------------------- | ---------------------------------------- | ---------------------------------------- |
-| Arial 5.01 (`fsType` 8, `OS/2` version 3)          | `bit(3)`: permits                        | embeddable                               |
-| Inter 4.1 (`fsType` 0)                             | no bit set                               | embeddable                               |
-| `fsType` 2                                         | `bit(1)`, no `bit(2)` nor `bit(3)`       | not embeddable                           |
-| `fsType` 4                                         | `bit(2)`                                 | embeddable                               |
-| `fsType` 10 (2 and 8), version 2                   | `bit(3)` wins                            | embeddable                               |
-| `fsType` 0x0100 (no subsetting)                    | bit 8 does not forbid the whole file     | embeddable                               |
-| `fsType` 0x0208 (bitmap only, editable), version 4 | `v ≥ 2` and `bit(9)`                     | not embeddable                           |
-| `fsType` 0x0208, version 1                         | bit 9 ignored, `bit(3)`                  | embeddable                               |
-| `fsType` 1 (reserved bit 0)                        | bits 1 to 3 clear: installable           | embeddable                               |
-| `""`, `"f"`, `"fo"`, `"foo"`, `"foobar"`           | `REF-RFC-4648` §10                       | `""`, `Zg==`, `Zm8=`, `Zm9v`, `Zm9vYmFy` |
-| `n` = 0, 1, 2, 3, 4                                | `4 · ⌈n / 3⌉`                            | 0, 4, 4, 4, 8                            |
-| Arial 5.01, 773 236 bytes                          | `⌈773 236 / 3⌉ = 257 746`, `× 4`, `+ 21` | 1 030 984 characters, URL 1 031 005      |
-| a view of 10 texts, all in Arial regular and bold  | 2 distinct faces                         | 2 rules                                  |
+| Case                                                  | Computation                              | Expected                                 |
+| ----------------------------------------------------- | ---------------------------------------- | ---------------------------------------- |
+| Arial 5.01 (`fsType` 8, `OS/2` version 3)             | `bit(3)`: permits                        | embeddable                               |
+| Inter 4.1 (`fsType` 0)                                | no bit set                               | embeddable                               |
+| `fsType` 2                                            | `bit(1)`, no `bit(2)` nor `bit(3)`       | not embeddable                           |
+| `fsType` 4                                            | `bit(2)`                                 | embeddable                               |
+| `fsType` 10 (2 and 8), version 2                      | `bit(3)` wins                            | embeddable                               |
+| `fsType` 0x0100 (no subsetting)                       | bit 8 does not forbid the whole file     | embeddable                               |
+| `fsType` 0x0208 (bitmap only, editable), version 4    | `v ≥ 2` and `bit(9)`                     | not embeddable                           |
+| `fsType` 0x0208, version 1                            | bit 9 ignored, `bit(3)`                  | embeddable                               |
+| `fsType` 1 (reserved bit 0)                           | bits 1 to 3 clear: installable           | embeddable                               |
+| `""`, `"f"`, `"fo"`, `"foo"`, `"foobar"`              | `REF-RFC-4648` §10                       | `""`, `Zg==`, `Zm8=`, `Zm9v`, `Zm9vYmFy` |
+| `n` = 0, 1, 2, 3, 4                                   | `4 · ⌈n / 3⌉`                            | 0, 4, 4, 4, 8                            |
+| Arial 5.01, 773 236 bytes                             | `⌈773 236 / 3⌉ = 257 746`, `× 4`, `+ 21` | 1 030 984 characters, URL 1 031 005      |
+| a document of 10 texts, all in Arial regular and bold | 2 distinct faces                         | 2 rules                                  |

@@ -31,7 +31,7 @@ An installed font goes through the same reader as a file: its `blob()` holds the
 | resvg does not read `@font-face` (issue open; its CSS parser learnt the rule in 2025)                                                                                                       | `REF-RESVG-541`, `REF-RESVG-UNSUPPORTED`     |
 | Inkscape's import of embedded `@font-face` fonts was "incomplete" in 2026; a merge request was open                                                                                         | `REF-INKSCAPE-MR-7806`                       |
 
-A file grows by a third in base 64: Arial's 773 236 bytes become a URL of 1 031 005 characters (`DERIV-font-embedding`, step 6). A view writes each face once (step 7).
+A file grows by a third in base 64: Arial's 773 236 bytes become a URL of 1 031 005 characters (`DERIV-font-embedding`, step 6). A document writes each face once (step 7); once in a synoptic view for all its symbols comes with the views (E08).
 
 ## The HTML layer (EN-041)
 
@@ -56,14 +56,14 @@ The layer is the browser's own layout: where its font or its wrapping differs, i
 
 ## Vertical metrics of some fonts (read from their files)
 
-| Font                          | `hhea` ascender, descender, gap | `OS/2` typographic | `win` ascent, descent | `USE_TYPO_METRICS` |
-| ----------------------------- | ------------------------------- | ------------------ | --------------------- | ------------------ |
-| Arial 5.01 (2048 units)       | 1854, −434, 67                  | 1491, −431, 307    | 1854, 434             | no                 |
-| Times New Roman 5.01 (2048)   | 1825, −443, 87                  | 1420, −442, 307    | 1825, 443             | no                 |
-| Verdana 5.01 (2048)           | 2059, −430, 0                   | 1566, −423, 202    | 2059, 430             | no                 |
-| Inter 4.1 (2048), `hhea` only | 1984, −494, 0                   | not read           | not read              | not read           |
+| Font                        | `hhea` ascender, descender, gap | `OS/2` typographic | `win` ascent, descent | `USE_TYPO_METRICS` |
+| --------------------------- | ------------------------------- | ------------------ | --------------------- | ------------------ |
+| Arial 5.01 (2048 units)     | 1854, −434, 67                  | 1491, −431, 307    | 1854, 434             | no                 |
+| Times New Roman 5.01 (2048) | 1825, −443, 87                  | 1420, −442, 307    | 1825, 443             | no                 |
+| Verdana 5.01 (2048)         | 2059, −430, 0                   | 1566, −423, 202    | 2059, 430             | no                 |
+| Inter 4.1 (2048)            | 1984, −494, 0                   | 1984, −494, 0      | 1984, 494             | yes                |
 
-For these three system fonts, `hhea` and `win` agree on ascent and descent, so a browser places their lines alike on macOS and Windows; their typographic values, which would give other line heights, are unused since the flag is unset. Inter 4.1's `OS/2` values were not read (its files are not in the repository); an older Inter, 3.019, sets the flag and gives equal `hhea` and typographic values.
+For these three system fonts, `hhea` and `win` agree on ascent and descent, so a browser places their lines alike on macOS and Windows; their typographic values, which would give other line heights, are unused since the flag is unset. Inter 4.1, read from `Inter-4.1.zip` (`extras/ttf/`, Regular, Bold, Italic, Thin and Black alike), sets the flag and gives equal `hhea` and typographic values: browsers place its lines alike everywhere.
 
 ## Decisions of the spike (provisional, to confirm at VAL-017)
 
