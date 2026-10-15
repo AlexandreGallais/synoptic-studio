@@ -149,7 +149,7 @@ describe("the guided test of F05 (VAL-014): the Text tool's options", () => {
     expect(readBlock()).toEqual({ height: 116.15625, width: 263.859375 });
   });
 
-  it("weight 100, then 900 with Bold pressed", () => {
+  it("weight 100, then 900, Bold released at both", () => {
     openStep("Weight");
     chooseOption("text-weight", "100");
 
@@ -159,7 +159,11 @@ describe("the guided test of F05 (VAL-014): the Text tool's options", () => {
     ]);
 
     chooseOption("text-weight", "900");
-    expect(readPressedState("text-bold")).toBe("true");
+
+    expect([readTextAttribute("font-weight"), readPressedState("text-bold")]).toEqual([
+      "900",
+      "false",
+    ]);
   });
 
   it("italic, then upright", () => {
@@ -363,14 +367,27 @@ describe("the guided test of F05 (VAL-014): the decisions to confirm", () => {
     expect(document.querySelector("#canvas switch")).toBeNull();
   });
 
-  it("bold from 800 gives 400, from 600 gives 700", () => {
-    openStep("Bold button (decision)");
-    chooseOption("text-weight", "800");
+  it("[F05.AC2] bold from 100 gives 700, then 100; from 800, 700 then 800", () => {
+    openStep("Bold button (decided, US-037)");
+
+    for (const weight of ["100", "800"]) {
+      chooseOption("text-weight", weight);
+      clickElement("text-bold");
+      expect([readValue("text-weight"), readPressedState("text-bold")]).toEqual(["700", "true"]);
+      clickElement("text-bold");
+      expect([readValue("text-weight"), readPressedState("text-bold")]).toEqual([weight, "false"]);
+    }
+  });
+
+  it("forgets the weight held when another step is opened", () => {
+    openStep("Bold button (decided, US-037)");
+    chooseOption("text-weight", "100");
     clickElement("text-bold");
+    clickElement("guide-next");
+    clickElement("guide-previous");
     expect([readValue("text-weight"), readPressedState("text-bold")]).toEqual(["400", "false"]);
-    chooseOption("text-weight", "600");
     clickElement("text-bold");
-    expect([readValue("text-weight"), readPressedState("text-bold")]).toEqual(["700", "true"]);
+    expect(readValue("text-weight")).toBe("700");
   });
 
   it("letter spacing 100 001 refused, −100 000 accepted without a frame", () => {
