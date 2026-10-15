@@ -40,5 +40,5 @@ One task = one commit, referenced as `SP-018.Tn`.
 
 - [x] T1 — Inventory the behaviors, formats and calculations of the stories (1 h)
 - [x] T2 — Find, read and record the sources; write `DERIV-font-embedding` (3 h)
-- [ ] T3 — ADR-0053: the HTML layer and the embedded fonts as SVG elements; `AGENTS.md` (1 h)
+- [x] T3 — ADR-0053: the HTML layer and the embedded fonts as SVG elements; `AGENTS.md` (1 h)
 - [ ] T4 — Research note 0020, the domain's provisional rules and F15's stories (2 h)
