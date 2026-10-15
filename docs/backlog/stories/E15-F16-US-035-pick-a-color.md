@@ -39,6 +39,11 @@ Open `http://localhost:5173/`, click **Text** and click on the drawing (Inter 16
 | 8    | Focus the hue slider, press Right, then Page Up, Home, End                    | 211°, 221°, 0°, 359.9°                                                     |
 | 9    | Press Escape                                                                  | the picker closed, the color kept (`#993333` after End)                    |
 
+## Notes
+
+- Each slider's role `slider`, its name and its values sit on its track, the element that takes the focus and the keys, and the thumb is only drawn; the WAI-ARIA slider pattern puts them on the thumb (`REF-WAI-APG-SLIDER`). The plane does the same. A provisional choice, to confirm at VAL-016.
+- The bytes of values picked or typed to one decimal are computed in exact integers, so that a byte lying on a half rounds up (`DERIV-color-spaces`, step 11; US-035 audit).
+
 ## Tasks
 
 One task = one commit, referenced as `US-035.Tn`.
