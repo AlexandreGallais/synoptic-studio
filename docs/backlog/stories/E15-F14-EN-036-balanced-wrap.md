@@ -23,4 +23,4 @@ With the balanced wrap style, the library keeps the number of lines of the greed
 
 One task = one commit, referenced as `EN-036.Tn`.
 
-- [ ] T1 — The least raggedness with the greedy number of lines, by dynamic programming over the breaks, `@see DERIV-text-box`, `REF-WIKI-KNUTH-PLASS`; tests first, the two properties above (3 h)
+- [x] T1 — The least raggedness with the greedy number of lines, by dynamic programming over the breaks, `@see DERIV-text-box`, `REF-WIKI-KNUTH-PLASS`; tests first, the two properties above (3 h)

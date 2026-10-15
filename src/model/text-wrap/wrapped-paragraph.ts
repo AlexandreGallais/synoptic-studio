@@ -1,6 +1,7 @@
 import { joinedLineMeasure, measuredLine } from "../text-block";
 
 import { isMeasureFitting } from "./is-measure-fitting";
+import { measuredToken } from "./measured-token";
 import { paragraphTokens } from "./paragraph-tokens";
 import { withoutTrailingSpaces } from "./without-trailing-spaces";
 import { wordBrokenAtCharacters } from "./word-broken-at-characters";
@@ -41,8 +42,7 @@ function linesBeforeWrap(wrap: LineWrap): readonly string[] {
  */
 function wrapWithToken(wrap: LineWrap, token: string, context: TextInBox): LineWrap {
   const { metrics, text } = context;
-  const whole = measuredLine(metrics, token);
-  const visible = measuredLine(metrics, withoutTrailingSpaces(token));
+  const { visible, whole } = measuredToken(metrics, token);
 
   if (
     wrap.line.text !== "" &&
