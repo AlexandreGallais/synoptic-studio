@@ -171,4 +171,12 @@ describe("Import a font (US-036)", () => {
       ]);
     },
   );
+
+  it("[F15.AC1] says the files could not be read when the browser fails to give their bytes", async () => {
+    const unreadable = new File([], "Arial.ttf");
+
+    vi.spyOn(unreadable, "arrayBuffer").mockRejectedValue(new Error("Read failed."));
+    await importFiles([unreadable], "The files could not be read: Error: Read failed.");
+    expect(readFontList()).toEqual(["Inter"]);
+  });
 });
