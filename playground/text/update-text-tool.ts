@@ -44,7 +44,22 @@ function writeTextBoxFields(document: Document, text: Text): void {
 }
 
 /**
- * Updates the page for the Text tool: the bold button pressed at weight 700 or heavier; the fields
+ * Shows the bold button pressed at weight 700, or while it holds the weight before (US-037).
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param weight - the text's weight
+ * @see docs/backlog/stories/E15-F05-US-037-bold-gives-back-the-weight-and-no-sentence-case.md
+ */
+function writeBoldState(document: Document, weight: number): void {
+  const bold = selectElement(document, "text-bold");
+
+  bold.setAttribute("aria-pressed", String(weight === BOLD || "heldWeight" in bold.dataset));
+}
+
+/**
+ * Updates the page for the Text tool: the bold button pressed at weight 700 or while it holds the
+ * weight before (US-037); the fields
  * read only in a box shown when Box is chosen, and while one of them is refused, so that the
  * value outlined stays in sight (US-033); the font and weight lists brought up to date with the
  * session's fonts (`writeFontFields`, US-036); the text drawn with its block, measured with the
@@ -63,7 +78,7 @@ export function updateTextTool(document: Document): void {
   const metrics = textFontMetrics(text, readFontSession(document).kept);
   const isValid = metrics !== undefined && isValidText(text);
 
-  selectElement(document, "text-bold").setAttribute("aria-pressed", String(text.weight >= BOLD));
+  writeBoldState(document, text.weight);
   writeTextBoxFields(document, text);
   writeColorSwatches(document);
   writeTextValidity(document, isValid);

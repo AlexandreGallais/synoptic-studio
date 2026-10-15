@@ -23,9 +23,9 @@ export const GUIDED_STEPS_F05_DECISIONS: readonly GuidedStep[] = [
     values: createTextStepValues({}),
   },
   {
-    explanation: "Weight 800, Bold; then Weight 600, Bold.",
-    look: "800 pressed, gives 400 released; 600 released, gives 700 pressed.",
-    title: "F05 · Bold button (decision)",
+    explanation: "Weight 100, Bold, Bold; then Weight 800, Bold, Bold.",
+    look: "100 gives 700 pressed, then 100 back; 800 gives 700, then 800 back: the weight before.",
+    title: "F05 · Bold button (decided, US-037)",
     values: createTextStepValues({}),
   },
   {

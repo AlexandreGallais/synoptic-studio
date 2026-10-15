@@ -33,7 +33,7 @@ export const GUIDED_STEPS_F05_OPTIONS: readonly GuidedStep[] = [
   },
   {
     explanation: "Weight 100, then 900.",
-    look: "Thin, then black; Bold pressed at 900.",
+    look: "Thin, then black; Bold released at both, pressed at 700 only.",
     title: "F05 · Weight",
     values: createTextStepValues({}),
   },
