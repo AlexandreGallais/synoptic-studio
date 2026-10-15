@@ -140,4 +140,25 @@ describe("The weight list of the family chosen (US-036)", () => {
     expect(selectChoice("text-font").options[0]).toBe(font);
     expect(selectChoice("text-weight").options[0]).toBe(weight);
   });
+
+  it("[F15.AC1] lists the weights from the lightest, whatever the order of import (M19)", async () => {
+    await importFaces(
+      [{ ...TEST_SANS, weightClass: 700 }, TEST_SANS],
+      "Test Sans 700 imported. Test Sans 400 imported.",
+    );
+
+    expect(readWeights()).toEqual(["400", "700"]);
+  });
+
+  it("[F15.AC1] matches the italic faces first: 700 asked in italic gives 400 italic (M21)", async () => {
+    await importFaces(
+      [TEST_SANS, { ...TEST_SANS, weightClass: 700 }, { ...TEST_SANS, isItalic: true }],
+      "Test Sans 400 imported. Test Sans 700 imported. Test Sans 400 italic imported.",
+    );
+
+    clickElement("text-italic");
+    chooseOption("text-weight", "700");
+
+    expect(readValue("text-weight")).toBe("400");
+  });
 });

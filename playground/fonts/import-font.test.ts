@@ -195,4 +195,17 @@ describe("Import a font (US-036)", () => {
 
     expect(selectInput("font-file").value).toBe("");
   });
+
+  it("[F15.AC1] chooses the last family of files of two families picked together (M14)", async () => {
+    await importFiles(
+      [
+        fontFileOf(TEST_SANS, "TestSans.ttf"),
+        fontFileOf({ ...TEST_SANS, family: "Test Serif" }, "TestSerif.ttf"),
+      ],
+      "Test Sans 400 imported. Test Serif 400 imported.",
+    );
+
+    expect(readFontList()).toEqual(["Inter", "Test Sans", "Test Serif"]);
+    expect(readValue("text-font")).toBe("Test Serif");
+  });
 });
