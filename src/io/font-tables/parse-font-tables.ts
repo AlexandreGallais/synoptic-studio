@@ -96,7 +96,7 @@ function directoryToLayoutTables(
  * @see REF-OT-OTFF
  */
 export function parseFontTables(view: DataView): FontTables | undefined {
-  const directory = directoryToReadableTables(parseTableDirectory(view));
+  const directory = directoryToReadableTables(parseTableDirectory(view, 0));
   const characters = directoryToCharacterTables(directory);
   const horizontal = directoryToHorizontalTables(directory);
   const layout = directoryToLayoutTables(directory);

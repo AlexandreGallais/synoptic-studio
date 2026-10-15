@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  APPLE_TRUE_TYPE_VERSION,
   ARIAL_PATH,
   ENGLISH_US,
   HELLO_TEXT,
+  HELVETICA_COLLECTION_PATH,
   OPEN_TYPE_VERSION,
   TRUE_TYPE_VERSION,
   WINDOWS_PLATFORM,
@@ -14,6 +16,7 @@ import {
   os2FaceTable,
   systemFont,
   testFontTables,
+  uint32,
 } from "../../../tests";
 import {
   DEFAULT_FONT,
@@ -25,6 +28,7 @@ import {
   textFontMetrics,
 } from "../../model";
 import { parseFontMetrics } from "../font-file";
+import { parseCollectionFaces } from "../font-tables";
 
 import { parseFontFace } from "./parse-font-face";
 
@@ -33,6 +37,20 @@ import type { FontFamily } from "../../model";
 
 /** Arial 5.01 of macOS, read where the machine has it. */
 const ARIAL = systemFont(ARIAL_PATH);
+
+/** Helvetica of macOS, a collection of 6 faces, read where the machine has it. */
+const HELVETICA = systemFont(HELVETICA_COLLECTION_PATH);
+
+/**
+ * A font file tagged `true`, as Chrome gives on macOS a face whose CoreText format is TrueType
+ * (`REF-SKIA-MAC-STREAM-CODE`).
+ *
+ * @param file - the bytes of a font file
+ * @returns a copy whose first four bytes are `true`
+ */
+function appleTagged(file: Readonly<Uint8Array>): Uint8Array {
+  return Uint8Array.from([...uint32(APPLE_TRUE_TYPE_VERSION), ...file.subarray(4)]);
+}
 
 /** The `OS/2` table of the test font as Arial's: version 3, `fsType` 8, 400, upright. */
 const ARIAL_OS2: Os2FaceFields = {
@@ -123,7 +141,8 @@ describe("parseFontFace (REF-OT-NAME, REF-OT-OS2)", () => {
   });
 
   it.each([
-    // The tags of a TrueType collection, a WOFF and a WOFF2 file.
+    // The tags of a TrueType collection, read whole (its faces are read with
+    // parseCollectionFaces), a WOFF and a WOFF2 file.
     {
       case: "ttcf",
       file: fontFile(0x74_74_63_66, { ...testFontTables(), name: familyNameTable("A") }),
@@ -207,6 +226,53 @@ describe("parseFontFace (REF-OT-NAME, REF-OT-OS2)", () => {
       });
 
       expect(named?.face.metrics.unitsPerEm).toBe(2048);
+    },
+  );
+});
+
+describe("parseFontFace, faces of macOS and of collections (F17.AC4)", () => {
+  it("[F17.AC4] reads a face whose sfntVersion is true as TrueType (REF-APPLE-TT-SCALER)", () => {
+    const tagged = appleTagged(ARIAL_FILE);
+
+    expect(parseFontFace(tagged)).toEqual({
+      face: {
+        file: { bytes: tagged, isEmbeddable: true, version: "" },
+        isItalic: false,
+        metrics: parseFontMetrics(ARIAL_FILE, blockCharacters(MEASURED_BLOCKS)),
+        weight: 400,
+      },
+      family: "Arial",
+    });
+  });
+
+  it.skipIf(HELVETICA === undefined)(
+    "[F17.AC4] reads the 6 faces of Helvetica.ttc: 400, 700, 400 italic, 700 italic, 300, 300 italic",
+    () => {
+      const faces = parseCollectionFaces(HELVETICA ?? new Uint8Array()).map((file) =>
+        parseFontFace(file),
+      );
+
+      expect(
+        faces.map((named) => [named?.family, named?.face.weight, named?.face.isItalic]),
+      ).toEqual([
+        ["Helvetica", 400, false],
+        ["Helvetica", 700, false],
+        ["Helvetica", 400, true],
+        ["Helvetica", 700, true],
+        ["Helvetica", 300, false],
+        ["Helvetica", 300, true],
+      ]);
+    },
+  );
+
+  it.skipIf(HELVETICA === undefined)(
+    "[F17.AC4] reads each Helvetica face tagged true, as Chrome gives it on macOS",
+    () => {
+      const faces = parseCollectionFaces(HELVETICA ?? new Uint8Array()).map((file) =>
+        parseFontFace(appleTagged(file)),
+      );
+
+      expect(faces.filter((named) => named?.family === "Helvetica")).toHaveLength(6);
     },
   );
 });

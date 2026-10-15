@@ -173,3 +173,52 @@ export function fontFile(
     ...padded.flat(),
   ]);
 }
+
+/** Helvetica of macOS, a collection (`.ttc`) of 6 faces, the font of US-046's examples. */
+export const HELVETICA_COLLECTION_PATH = "/System/Library/Fonts/Helvetica.ttc";
+
+/** `sfntVersion` of a TrueType font as Apple's systems tag it, `true` (`REF-APPLE-TT-SCALER`). */
+export const APPLE_TRUE_TYPE_VERSION = 0x74_72_75_65;
+
+/**
+ * A font collection (`.ttc`, version 1.0): its header — the tag `ttcf`, the versions, `numFonts`
+ * and one offset per face — then each face's file whole, its table offsets moved to count from
+ * the collection's start, as `REF-OT-OTFF` asks. Each face starts on a four-byte boundary, the
+ * faces of `fontFile` being padded.
+ *
+ * @param faces - the file of each face, as `fontFile` writes it
+ * @returns the collection's bytes
+ */
+export function fontCollection(faces: readonly Uint8Array[]): Uint8Array {
+  const layout = { numTables: 4, offsetField: 8, offsetSize: 4 };
+  const headerSize = DIRECTORY.headerSize + layout.offsetSize * faces.length;
+  const bases = faces.map(
+    (unused, index) =>
+      headerSize + faces.slice(0, index).reduce((sum, face) => sum + face.length, 0),
+  );
+  const moved = faces.map((face, index) => {
+    const view = new DataView(face.buffer, face.byteOffset, face.byteLength);
+    const fields = Array.from(
+      { length: view.getUint16(layout.numTables) },
+      (unused, record) => DIRECTORY.headerSize + DIRECTORY.recordSize * record + layout.offsetField,
+    );
+
+    return fields.reduce<number[]>(
+      (bytes, field) => [
+        ...bytes.slice(0, field),
+        ...uint32(view.getUint32(field) + (bases[index] ?? 0)),
+        ...bytes.slice(field + layout.offsetSize),
+      ],
+      [...face],
+    );
+  });
+
+  return Uint8Array.from([
+    ...tagBytes("ttcf"),
+    ...uint16(1),
+    ...uint16(0),
+    ...uint32(faces.length),
+    ...bases.flatMap((base) => uint32(base)),
+    ...moved.flat(),
+  ]);
+}

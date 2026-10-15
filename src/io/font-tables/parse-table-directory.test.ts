@@ -9,7 +9,7 @@ describe("parseTableDirectory (REF-OT-OTFF)", () => {
     const file = fontFile(TRUE_TYPE_VERSION, { abcd: [1, 2, 3], wxyz: [4, 5, 6, 7, 8] });
 
     // Two records: 12 + 2 × 16 = 44 bytes; abcd (3 bytes) is padded to 4, so wxyz starts at 48.
-    expect(parseTableDirectory(viewOf([...file]))).toEqual({
+    expect(parseTableDirectory(viewOf([...file]), 0)).toEqual({
       abcd: { length: 3, offset: 44 },
       wxyz: { length: 5, offset: 48 },
     });
@@ -19,7 +19,7 @@ describe("parseTableDirectory (REF-OT-OTFF)", () => {
     // One record: 12 + 16 = 28 bytes; abcd from 28 to 32, the file's length.
     const file = fontFile(TRUE_TYPE_VERSION, { abcd: [1, 2, 3, 4] });
 
-    expect(parseTableDirectory(viewOf([...file]))).toEqual({ abcd: { length: 4, offset: 28 } });
+    expect(parseTableDirectory(viewOf([...file]), 0)).toEqual({ abcd: { length: 4, offset: 28 } });
   });
 
   it("leaves out a table that ends past the file", () => {
@@ -28,7 +28,7 @@ describe("parseTableDirectory (REF-OT-OTFF)", () => {
     // The record's length, at 12 + 12 = 24, is set to 5: the table would end at 33 > 32.
     file.splice(24, 4, ...uint32(5));
 
-    expect(parseTableDirectory(viewOf(file))).toEqual({});
+    expect(parseTableDirectory(viewOf(file), 0)).toEqual({});
   });
 
   it("reads nothing when the directory does not fit in the file", () => {
@@ -41,6 +41,6 @@ describe("parseTableDirectory (REF-OT-OTFF)", () => {
       ...uint16(0),
     ];
 
-    expect(parseTableDirectory(viewOf(file))).toEqual({});
+    expect(parseTableDirectory(viewOf(file), 0)).toEqual({});
   });
 });
