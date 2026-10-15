@@ -3,7 +3,7 @@ id: US-050
 epic: E15
 feature: F17
 title: A turned text's frames drawn as a turned shape's
-status: ready
+status: done
 points: 2
 ---
 
@@ -31,4 +31,4 @@ From the Product Owner's validation of E15 (2026-10-15): a turned text's turned 
 One task = one commit, referenced as `US-050.Tn`.
 
 - [x] T1 — The turned text's frames drawn with the shapes' styles, with tests (2 h)
-- [ ] T2 — Test card and guided step (1 h)
+- [x] T2 — Test card and guided step (1 h)

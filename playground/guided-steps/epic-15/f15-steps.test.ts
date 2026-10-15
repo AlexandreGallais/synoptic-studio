@@ -203,7 +203,7 @@ describe("the guided test of E15 (VAL-017): F05, F14, F16 and F15 in a row", () 
 
     expect(CURRENT_GUIDED_STEPS.map((step) => step.title.slice(0, 3))).toEqual([
       ...Array.from({ length: 36 }, () => "F05"),
-      ...Array.from({ length: 37 }, () => "F14"),
+      ...Array.from({ length: 38 }, () => "F14"),
       ...Array.from({ length: 42 }, () => "F16"),
       ...Array.from({ length: 39 }, () => "F15"),
     ]);
