@@ -21,18 +21,7 @@ export const TEXT_OPTIONS: {
   readonly wrapStyles: readonly TextWrapStyle[];
 } = {
   alignments: ["left", "center", "right"],
-  cases: [
-    "none",
-    "upper",
-    "lower",
-    "sentence",
-    "title",
-    "camel",
-    "pascal",
-    "kebab",
-    "snake",
-    "constant",
-  ],
+  cases: ["none", "upper", "lower", "title", "camel", "pascal", "kebab", "snake", "constant"],
   directions: ["ltr", "rtl"],
   longWords: ["break", "move"],
   verticalAlignments: ["top", "middle", "bottom"],

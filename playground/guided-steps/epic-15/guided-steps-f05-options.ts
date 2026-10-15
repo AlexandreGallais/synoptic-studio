@@ -68,7 +68,7 @@ export const GUIDED_STEPS_F05_OPTIONS: readonly GuidedStep[] = [
     values: createTextStepValues({}),
   },
   {
-    explanation: "Case: each of the ten, one after the other.",
+    explanation: "Case: each of the nine, one after the other.",
     look: "As domain Q36 says: camel pumpP101IsRunning, kebab pump-p-101-is-running, and so on.",
     title: "F05 · Case (decision Q36)",
     values: createTextStepValues({ content: "pump P-101 is running" }),
