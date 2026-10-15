@@ -2,16 +2,9 @@ import { textLineHeight } from "../text-block";
 
 import { firstBaselineOffset } from "./first-baseline-offset";
 
+import type { LineInBlock } from "./line-in-block";
 import type { FontMetrics } from "../font";
 import type { Text } from "../text";
-
-/** A line's place in its block: its index from 0, and the ordinate of the block's top. */
-type LineInBlock = {
-  /** The line's place, from 0. */
-  readonly index: number;
-  /** The ordinate of its block's top, in the SVG. */
-  readonly top: number;
-};
 
 /**
  * The baseline of a text's line: the top of its block, a line height for each line above, then
