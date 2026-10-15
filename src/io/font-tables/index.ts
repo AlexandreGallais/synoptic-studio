@@ -1,7 +1,14 @@
+export * from "./collection-face-to-file";
 export type * from "./font-table-record";
 export type * from "./font-tables";
+export * from "./length-to-four-byte-boundary";
+export * from "./parse-collection-faces";
+export * from "./parse-collection-offsets";
 export * from "./parse-font-tables";
+export * from "./parse-record-places";
 export * from "./parse-table-directory";
 export * from "./parse-tag";
 export * from "./sfnt-version";
+export * from "./table-directory-layout";
 export * from "./table-to-view";
+export * from "./unsigned-to-big-endian";
