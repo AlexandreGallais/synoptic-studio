@@ -16,7 +16,7 @@ Refined with F05 on 2026-10-14 (its rounds 1 and 2); its stories were written by
 1. A color is stored as six hexadecimal digits and an opacity from 0 to 100 %, both always shown, for a quick copy and paste.
 2. A picker opens on a click: a hue slider, an opacity slider, and a plane in HSL or in HSB, as chosen, its hexadecimal translation always shown.
 3. Conversions between hexadecimal, HSL and HSB are exact on the round trip from hexadecimal (`DERIV-color-spaces`).
-4. The text's color and its background use it; the shapes' fills and strokes will (E04).
+4. The text's color uses it, and its background's color (the agent's reading, to confirm at VAL-016); the shapes' fills and strokes will (E04).
 
 ## Stories
 

@@ -4,17 +4,17 @@ Used by: EN-037 (the hexadecimal forms and the opacity), EN-038 (HSL and HSB fro
 
 ## Notation
 
-| Symbol        | Definition                                                                          |
-| ------------- | ----------------------------------------------------------------------------------- |
-| `R`, `G`, `B` | the red, green and blue bytes, integers from 0 to 255                               |
-| `r`, `g`, `b` | the same as fractions: `r = R / 255`, from 0 to 1                                   |
-| `M`, `m`      | `max(r, g, b)` and `min(r, g, b)`                                                   |
-| `C`           | the chroma, `M − m`                                                                 |
-| `H`           | the hue, in degrees, from 0 included to 360 excluded                                |
-| `S_L`, `L`    | HSL's saturation and lightness, as fractions from 0 to 1 (shown in percent)         |
-| `S_V`, `V`    | HSB's saturation and brightness (HSV's value), as fractions (shown in percent)      |
-| `p`, `A`      | the opacity in percent, an integer from 0 to 100, and an alpha byte from 0 to 255   |
-| `round(x)`    | the nearest integer, a tie rounded towards +∞: `⌊x + 0.5⌋` (`REF-CSS-COLOR-4` §5.1) |
+| Symbol        | Definition                                                                        |
+| ------------- | --------------------------------------------------------------------------------- |
+| `R`, `G`, `B` | the red, green and blue bytes, integers from 0 to 255                             |
+| `r`, `g`, `b` | the same as fractions: `r = R / 255`, from 0 to 1                                 |
+| `M`, `m`      | `max(r, g, b)` and `min(r, g, b)`                                                 |
+| `C`           | the chroma, `M − m`                                                               |
+| `H`           | the hue, in degrees, from 0 included to 360 excluded                              |
+| `S_L`, `L`    | HSL's saturation and lightness, as fractions from 0 to 1 (shown in percent)       |
+| `S_V`, `V`    | HSB's saturation and brightness (HSV's value), as fractions (shown in percent)    |
+| `p`, `A`      | the opacity in percent, an integer from 0 to 100, and an alpha byte from 0 to 255 |
+| `round(x)`    | the nearest integer, a tie rounded up: `⌊x + 0.5⌋` (`REF-CSS-COLOR-4` §16.1.1)    |
 
 ## Step 1 — The hexadecimal forms
 
@@ -27,7 +27,7 @@ A hex color is `#` and 3, 4, 6 or 8 hexadecimal digits, the case of the letters 
 | 3      | `RGB`, each digit doubled                                               | `#f80` is `#ff8800`             |
 | 4      | `RGBA`, each digit doubled                                              | `#f80c` is `#ff8800`, alpha 204 |
 
-The stored form is `#` and six lower-case digits, the form CSS serializes an 8-bit sRGB color in (`REF-CSS-COLOR-4`, §16.2.1: `#ff00ff`, "not `#FF00FF`").
+The stored form is `#` and six lower-case digits, the HTML-compatible serialization of an 8-bit sRGB color (`REF-CSS-COLOR-4`, §16.2.1: `#ff00ff`, "not `#FF00FF`").
 
 ## Step 2 — The opacity and the alpha byte
 
@@ -84,40 +84,40 @@ f(n) = V − V · S_V · max(0, min(k_n, 4 − k_n, 1))
 
 ## Step 7 — Steps 6 undo steps 3 to 5
 
-Take the sector where `r ≥ g ≥ b` and `C > 0`, and `h = (g − b) / C`, from 0 to 1 excluded (`h = 1` would need `g = r`, read by the next sector), so `H = 60° · h`.
+Take the sector where `r ≥ g ≥ b` and `C > 0`, and `h = (g − b) / C`, from 0 to 1 included (`h = 1` when `g = r`, still read by the first line of step 3, as CSS's `switch` tests red first), so `H = 60° · h`. At `h = 1`, `k_5 = 6` wraps to 0, which gives 0 as well, and the rows below hold with `g = r`.
 
 HSB: `V = r`, `V · S_V = C`, `V − C = b`.
 
-| n   | `k_n`        | `max(0, min(k, 4 − k, 1))` | `f(n)`                                    |
-| --- | ------------ | -------------------------- | ----------------------------------------- |
-| 5   | `5 + h`, ≥ 5 | 0 (`4 − k < 0`)            | `V = r`                                   |
-| 3   | `3 + h`      | `4 − k = 1 − h`            | `V − C (1 − h) = b + C h = b + g − b = g` |
-| 1   | `1 + h`      | 1                          | `V − C = b`                               |
+| n   | `k_n`             | `max(0, min(k, 4 − k, 1))` | `f(n)`                                    |
+| --- | ----------------- | -------------------------- | ----------------------------------------- |
+| 5   | `5 + h`, ≥ 5 or 0 | 0 (`4 − k < 0`)            | `V = r`                                   |
+| 3   | `3 + h`           | `4 − k = 1 − h`            | `V − C (1 − h) = b + C h = b + g − b = g` |
+| 1   | `1 + h`           | 1                          | `V − C = b`                               |
 
 HSL: `L = (r + b) / 2`, `a = S_L · min(L, 1 − L) = M − L = C / 2`, `L − C/2 = b`, `L + C/2 = r`.
 
-| n   | `k_n`         | `max(−1, min(k − 3, 9 − k, 1))` | `f(n)`                            |
-| --- | ------------- | ------------------------------- | --------------------------------- |
-| 0   | `2h`, below 2 | −1 (`k − 3 < −1`)               | `L + C/2 = r`                     |
-| 8   | `8 + 2h`      | `9 − k = 1 − 2h`                | `L − (C/2)(1 − 2h) = b + C h = g` |
-| 4   | `4 + 2h`      | 1 (`k − 3 ≥ 1`, `9 − k > 3`)    | `L − C/2 = b`                     |
+| n   | `k_n`           | `max(−1, min(k − 3, 9 − k, 1))` | `f(n)`                            |
+| --- | --------------- | ------------------------------- | --------------------------------- |
+| 0   | `2h`, at most 2 | −1 (`k − 3 ≤ −1`)               | `L + C/2 = r`                     |
+| 8   | `8 + 2h`        | `9 − k = 1 − 2h`                | `L − (C/2)(1 − 2h) = b + C h = g` |
+| 4   | `4 + 2h`        | 1 (`k − 3 ≥ 1`, `9 − k > 3`)    | `L − C/2 = b`                     |
 
 The five other sectors permute the components and shift `k` by the same offsets; a grey (`C = 0`) gives `a = 0` and `V · S_V = 0`, so every component is `L` or `V`, the grey itself. The script of the cross-check runs every sector.
 
 ## Step 8 — Back to the bytes
 
-Each byte is `round(255 · f(n))` (`REF-CSS-COLOR-4`, §5.1). Over the 16 777 216 colors, computed in binary64 from the unrounded HSL or HSB values, `|255 · f(n) − byte|` is at most `3.7 × 10⁻¹³` for HSL and `3.8 × 10⁻¹³` for HSB, far below the 0.5 rounding forgives: **the round trip from the hexadecimal is exact** for every color.
+Each byte is `round(255 · f(n))` (`REF-CSS-COLOR-4`, §16.1.1: "rounded to the closest integer (rounding up if two values are equally close)"). Over the 16 777 216 colors, computed in binary64 from the unrounded HSL or HSB values, `|255 · f(n) − byte|` is at most `3.7 × 10⁻¹³` for HSL and `3.8 × 10⁻¹³` for HSB, far below the 0.5 rounding forgives: **the round trip from the hexadecimal is exact** for every color.
 
 ## Step 9 — The precision of the values shown
 
 A designer reads the HSL or HSB values and may type them back. Integers cannot keep every color: there are `360 × 101 × 101 = 3 672 360` integer triples for `16 777 216` colors. One decimal can. Every color was converted, its values rounded, and converted back:
 
-| Values shown | HSL: colors changed | HSB: colors changed |
-| ------------ | ------------------- | ------------------- |
-| unrounded    | 0                   | 0                   |
-| integers     | 15 001 662 (89.4 %) | 14 732 448 (87.8 %) |
-| one decimal  | 0                   | 0                   |
-| two decimals | 0                   | 0                   |
+| Values shown | HSL: colors changed       | HSB: colors changed       |
+| ------------ | ------------------------- | ------------------------- |
+| unrounded    | 0                         | 0                         |
+| integers     | 15 001 662 (about 89.4 %) | 14 732 448 (about 87.8 %) |
+| one decimal  | 0                         | 0                         |
+| two decimals | 0                         | 0                         |
 
 A hue rounded to 360.0 is shown 0.0. No bound proves the one-decimal case by itself: rounding the lightness to a tenth of a percent moves a byte by up to 0.26, rounding the hue to a tenth of a degree by up to 0.21, together more than 0.5. The exhaustive count is the proof.
 
@@ -133,7 +133,7 @@ CSS's tables list the saturation from 100 % down to 0 % across; the plane takes 
 
 ## Cross-check
 
-A script written at SP-017 (Node.js, binary64) converted each of the 16 777 216 colors with the sample code of `REF-CSS-COLOR-4` §7.1 and §7.2 and the formulas of `REF-WIKI-HSL-HSV`, unrounded and rounded to 0, 1 and 2 decimals, and gave the counts of step 9 and the bounds of step 8; it also checked the 101 percents of step 2. EN-038 turns the one-decimal count and the unrounded one into a test over every color, with the library's functions, so that the proof lives with the code.
+A script written at SP-017 (Node.js, binary64) converted each of the 16 777 216 colors: the hue, HSL and HSL back by the sample code of `REF-CSS-COLOR-4` §7.2 and §7.1 (without its `1e−5` threshold, a grey's hue 0), HSB and HSB back by the formulas of `REF-WIKI-HSL-HSV`, the values rounded by `Math.round(x · 10ᵈ) / 10ᵈ` and a hue of 360 written 0, each byte by `Math.round`; unrounded and rounded to 0, 1 and 2 decimals, and gave the counts of step 9 and the bounds of step 8; it also checked the 101 percents of step 2. EN-038 turns the one-decimal count and the unrounded one into a test over every color, with the library's functions, so that the proof lives with the code.
 
 ## Checks (test cases)
 
