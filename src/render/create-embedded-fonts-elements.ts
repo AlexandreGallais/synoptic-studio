@@ -8,6 +8,7 @@ import type { EmbeddedFace } from "../model";
  * Creates the `<defs>` of a document's embedded fonts (ADR-0053): one `<style>` holding one
  * `@font-face` rule per face (`formatFontFaceRule`), one rule a line, in the order given; none
  * when no face is embedded, so that a document without embedded fonts is written as before.
+ * Only a file written, exported or saved, holds them, never the drawing on screen (ADR-0060).
  *
  * @kind procedure
  * @param document - document owning the elements

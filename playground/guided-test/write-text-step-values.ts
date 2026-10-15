@@ -1,3 +1,4 @@
+import { DEFAULT_DOCUMENT_OPTIONS } from "../../src";
 import { writeFontOptions, writeWeightChoice } from "../fonts";
 import { selectElement, writeInputValue } from "../page";
 
@@ -80,8 +81,8 @@ function writeTextStrokeColorValues(document: Document, text: GuidedText): void 
 /**
  * Types a step's style into the Text tool's fields, without firing any event: underline,
  * strike-through and italic, then the font chosen in its list and the weight among the family's
- * faces (US-036), the bold button holding no weight before (US-037); the drawing's options off, as the page opens, so that the step draws as before
- * (US-036).
+ * faces (US-036), the bold button holding no weight before (US-037); the drawing's options those
+ * of a new document (`DEFAULT_DOCUMENT_OPTIONS`), Embed fonts off, as the page opens (US-036).
  *
  * @kind procedure
  * @param document - page document
@@ -95,7 +96,7 @@ function writeTextStyleValues(document: Document, text: GuidedText): void {
   writeFontOptions(document, text.font);
   writeWeightChoice(document, text.weight);
   delete selectElement(document, "text-bold").dataset["heldWeight"];
-  writeCheckedValue(document, "embed-fonts", false);
+  writeCheckedValue(document, "embed-fonts", DEFAULT_DOCUMENT_OPTIONS.hasEmbeddedFonts);
 }
 
 /**
