@@ -26,7 +26,7 @@ function writeTextValidity(document: Document, isValid: boolean): void {
 }
 
 /**
- * Updates the page for the Text tool: the bold button pressed at weight 700; the text drawn with
+ * Updates the page for the Text tool: the bold button pressed at weight 700 or heavier; the text drawn with
  * its block, measured with the default font's metrics (Inter) when its font has none (ADR-0052);
  * a refused text clears the drawing and says why, its fields outlined.
  *
@@ -39,7 +39,7 @@ export function updateTextTool(document: Document): void {
   const metrics = textFontMetrics(text, [DEFAULT_FONT]);
   const isValid = metrics !== undefined && isValidText(text);
 
-  selectElement(document, "text-bold").setAttribute("aria-pressed", String(text.weight === BOLD));
+  selectElement(document, "text-bold").setAttribute("aria-pressed", String(text.weight >= BOLD));
   writeTextValidity(document, isValid);
 
   if (isValid) {

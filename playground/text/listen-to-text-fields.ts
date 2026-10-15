@@ -7,8 +7,8 @@ const WEIGHTS = { bold: "700", normal: "400" };
 
 /**
  * Listens to the Text tool's fields: a value typed or chosen redraws the text; the bold button
- * sets the weight to 700, or back to 400 when it already is 700; the italic button turns italic
- * on or off.
+ * sets the weight to 700, or back to 400 when the weight is 700 or heavier (pressed); the italic
+ * button turns italic on or off.
  *
  * @kind procedure
  * @param document - page document
@@ -24,7 +24,7 @@ export function listenToTextFields(document: Document, update: () => void): void
   options.addEventListener("change", update);
 
   selectElement(document, "text-bold").addEventListener("click", () => {
-    const isBold = readFieldValue(document, "text-weight") === WEIGHTS.bold;
+    const isBold = Number(readFieldValue(document, "text-weight")) >= Number(WEIGHTS.bold);
 
     if (weight instanceof HTMLSelectElement) {
       weight.value = isBold ? WEIGHTS.normal : WEIGHTS.bold;

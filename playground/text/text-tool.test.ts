@@ -2,9 +2,11 @@
 
 import { beforeEach, describe, expect, it } from "vitest";
 
+import { createFrameElements } from "../drawing";
 import {
   chooseOption,
   clickElement,
+  clickWithKeys,
   openServedPage,
   readDisplay,
   readPressedState,
@@ -111,6 +113,27 @@ describe("Text tool", () => {
     expect(readText("#contour")).toContain('"width": 23.78125');
   });
 
+  it("[F05.AC2] hides every control of the shapes, its points and handles too, and shows them back", () => {
+    for (const id of ["size-section", "corners-section", "turn", "straight-box", "tools"]) {
+      expect([id, readDisplay(id)]).toEqual([id, "none"]);
+    }
+
+    clickElement("tool-rectangle");
+
+    for (const id of ["size-section", "corners-section", "turn", "tools"]) {
+      expect(readDisplay(id) === "none").toBe(false);
+    }
+
+    // A vertex picked in Points mode: its panels go with the Text tool.
+    clickWithKeys("#mode-points", {});
+    clickWithKeys('#points [data-vertex="1"]', {});
+    clickElement("tool-text");
+
+    for (const id of ["points", "point-fields", "handle-fields"]) {
+      expect([id, readDisplay(id)]).toEqual([id, "none"]);
+    }
+  });
+
   it("[F05.AC2] offers the weights 100 to 900; bold sets 700 and back to 400", () => {
     const weights = [...document.querySelectorAll<HTMLOptionElement>("#text-weight option")];
 
@@ -126,6 +149,20 @@ describe("Text tool", () => {
     chooseOption("text-weight", "900");
     expect(readTextElement().getAttribute("font-weight")).toBe("900");
   });
+
+  it.each([
+    { after: "400", pressed: "true", weight: "800" },
+    { after: "400", pressed: "true", weight: "900" },
+    { after: "700", pressed: "false", weight: "600" },
+  ])(
+    "[F05.AC2] presses Bold at weight $weight: $pressed, and a click sets $after",
+    ({ after, pressed, weight }) => {
+      chooseOption("text-weight", weight);
+      expect(readPressedState("text-bold")).toBe(pressed);
+      clickElement("text-bold");
+      expect(readValue("text-weight")).toBe(after);
+    },
+  );
 
   it("[F05.AC2] turns italic on and off", () => {
     clickElement("text-italic");
@@ -165,6 +202,36 @@ describe("Text tool", () => {
     expect(document.querySelector("#canvas [text-decoration]")).toBeNull();
   });
 
+  it.each([
+    {
+      // 15.5 + 348 × 16 / 2048 = 18.21875, 140 × 16 / 2048 = 1.09375 thick.
+      d: "M0 18.21875 L11.89063 18.21875 L11.89063 19.3125 L0 19.3125 Z",
+      id: "text-underline",
+    },
+    {
+      // 15.5 − 671 × 16 / 2048 = 10.2578125, 1.09375 thick.
+      d: "M0 10.25781 L11.89063 10.25781 L11.89063 11.35156 L0 11.35156 Z",
+      id: "text-strike",
+    },
+  ])("[F05.AC4] draws $id alone along each line", ({ d, id }) => {
+    clickElement(id);
+
+    const paths = document.querySelectorAll("#canvas g path");
+
+    expect(paths).toHaveLength(2);
+    expect(paths[0]?.getAttribute("d")).toBe(d);
+  });
+
+  it("[F05.AC2] names a font without metrics first, measured with Inter", () => {
+    typeValue("text-font", "Arial");
+    expect(readTextElement().getAttribute("font-family")).toBe('"Arial", sans-serif');
+
+    expect(readLines()).toEqual([
+      ["H", "0", "15.5"],
+      ["HH", "0", "34.85938"],
+    ]);
+  });
+
   it("[F05.AC4] writes the lines in the case chosen", () => {
     typeContent("pump p-101 is running");
     chooseOption("text-case", "constant");
@@ -178,11 +245,27 @@ describe("Text tool", () => {
     expect(readLines()[0]).toEqual(["H", "10", "35.5"]);
   });
 
-  it("refuses a size of 0 and draws nothing, saying why", () => {
+  it("refuses a size of 0 and draws nothing, saying why, the last valid text kept", () => {
     typeValue("text-size", "0");
     expect(readText("#status")).toContain("Size must be an integer from 1 to 100 000");
     expect(document.querySelectorAll("#canvas text")).toHaveLength(0);
     expect(selectPageElement("#text-size").getAttribute("aria-invalid")).toBe("true");
+    expect(selectPageElement("#shape-x").getAttribute("aria-invalid")).toBe("true");
+    expect(readText("#model")).toContain('"size": 16');
+  });
+
+  it("draws the text again once the size is valid, its fields no longer outlined", () => {
+    typeValue("text-size", "0");
+    typeValue("text-size", "16");
+    expect(readText("#status")).toBe("");
+    expect(selectPageElement("#text-size").getAttribute("aria-invalid")).toBe("false");
+    expect(readLines()).toHaveLength(2);
+  });
+
+  it("frames no block too small to hold a frame: 2 wide", () => {
+    expect(
+      createFrameElements(document, { angle: 0, height: 10, width: 2, x: 0, y: 0 }, "text-block"),
+    ).toEqual([]);
   });
 
   it("draws an empty content as an empty text, without a frame", () => {
@@ -191,7 +274,7 @@ describe("Text tool", () => {
     expect(document.querySelectorAll("#canvas path")).toHaveLength(0);
   });
 
-  it("goes back to the shapes, the text's fields hidden", () => {
+  it("[F05.AC6] goes back to the shapes, the text's fields hidden", () => {
     clickElement("tool-rectangle");
     expect(readDisplay("text-options") === "none").toBe(true);
     expect(readDisplay("size-section") === "none").toBe(false);

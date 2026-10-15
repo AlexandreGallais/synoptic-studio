@@ -1,6 +1,6 @@
 import { readGuidedStep, readStepFromAddress, showGuidedStep } from "../guided-test";
 import { readShapeKind, selectElement } from "../page";
-import { listenToTextFields, updateTextTool, writeTextSections } from "../text";
+import { hidePointPanels, listenToTextFields, updateTextTool, writeTextSections } from "../text";
 import { writeShapeKind } from "../toolbar";
 
 import { listenToInputs } from "./listen-to-inputs";
@@ -47,6 +47,7 @@ export function mountPlayground(document: Document, steps: readonly GuidedStep[]
 
     if (isText) {
       writeShapeKind(document);
+      hidePointPanels(document);
       updateTextTool(document);
 
       return;
