@@ -10,6 +10,8 @@ export type FontMetrics = {
   readonly descender: number;
   /** Typographic line gap of `hhea` (`REF-OT-HHEA`). */
   readonly lineGap: number;
+  /** Height of the capitals above the baseline: `sCapHeight` of `OS/2`, or 0.66 em when the font gives none (`REF-OT-OS2`, `REF-CSS-INLINE-3`). */
+  readonly capHeight: number;
   /** Advance of each character the font maps to a glyph other than 0, by code point (`REF-OT-CMAP`, `REF-OT-HMTX`). */
   readonly advances: Readonly<Record<number, number>>;
   /** Advance of glyph 0, `.notdef`, which draws every character the font does not map (`REF-OT-CMAP`). */

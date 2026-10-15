@@ -59,9 +59,11 @@ describe("DEFAULT_FONT (ADR-0052, REF-INTER-RELEASE)", () => {
   it("[F05.AC1] holds Inter Regular's metrics as its file gives them", () => {
     const regular = faceMetrics(400, false);
 
-    // Read from Inter-Regular.ttf by the spike's prototype parser, apart from the library.
+    // Read from Inter-Regular.ttf by the spike's prototype parser, apart from the library; its
+    // cap height, sCapHeight of its OS/2 table of version 4, read by a script at EN-035.
     expect(regular).toMatchObject({
       ascender: 1984,
+      capHeight: 1490,
       descender: -494,
       embeddingPermissions: 0,
       lineGap: 0,

@@ -1,5 +1,6 @@
 import { isInIntegerRange } from "../../math";
 
+import { parseCapHeight } from "./parse-cap-height";
 import { parseEmbeddingPermissions } from "./parse-embedding-permissions";
 import { parseHorizontalHeader } from "./parse-horizontal-header";
 import { parseTextDecorations } from "./parse-text-decorations";
@@ -19,11 +20,31 @@ const MIN_UNITS_PER_EM = 16;
 const MAX_UNITS_PER_EM = 16_384;
 
 /**
+ * Reads what a font gives in its `OS/2` table for all its characters, apart from its strike-out:
+ * its cap height and its embedding permissions.
+ *
+ * @kind format
+ * @param os2 - the font's `OS/2` table, at least 30 bytes long
+ * @param unitsPerEm - the font's units per em
+ * @returns its cap height, font units, and its `fsType` flags
+ * @see REF-OT-OS2
+ */
+function parseOs2Metrics(
+  os2: DataView,
+  unitsPerEm: number,
+): Pick<FixedMetrics, "capHeight" | "embeddingPermissions"> {
+  return {
+    capHeight: parseCapHeight(os2, unitsPerEm),
+    embeddingPermissions: parseEmbeddingPermissions(os2),
+  };
+}
+
+/**
  * Reads the metrics a font gives once for all its characters: its units per em, its `hhea`
- * ascender, descender and line gap, its underline, its strike-out and its embedding permissions,
- * each table long enough for what is read in it. A font cannot measure a text when its units per
- * em lie outside 16 to 16 384 (`REF-OT-HEAD`), or when `hhea` announces no `hmtx` record, whose
- * advance the glyphs past the records take (`REF-OT-HMTX`).
+ * ascender, descender and line gap, its cap height, its underline, its strike-out and its
+ * embedding permissions, each table long enough for what is read in it. A font cannot measure a
+ * text when its units per em lie outside 16 to 16 384 (`REF-OT-HEAD`), or when `hhea` announces
+ * no `hmtx` record, whose advance the glyphs past the records take (`REF-OT-HMTX`).
  *
  * @kind format
  * @param view - the font file
@@ -48,9 +69,9 @@ export function parseFixedMetrics(view: DataView, tables: FontTables): FixedMetr
 
   return {
     ...parseTextDecorations(tableToView(view, tables.post), os2),
+    ...parseOs2Metrics(os2, unitsPerEm),
     ascender,
     descender,
-    embeddingPermissions: parseEmbeddingPermissions(os2),
     lineGap,
     unitsPerEm,
   };

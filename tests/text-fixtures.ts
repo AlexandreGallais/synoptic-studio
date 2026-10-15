@@ -32,7 +32,8 @@ export const NO_KERNING: Kerning = { leftClasses: {}, rightClasses: {}, values: 
 /**
  * The part of Arial 5.01's metrics (macOS `Arial.ttf`) that measuring reads, as
  * `DERIV-text-width` lists it: `unitsPerEm` 2048, `hhea` 1854, −434, 67, the advances of
- * H e l o space W r d A V T R and its kerning pairs. The advance of glyph 0 is 1536, its first
+ * H e l o space W r d A V T R and its kerning pairs; its cap height, `sCapHeight` 1467 of its
+ * `OS/2` table of version 3 (`DERIV-text-box`). The advance of glyph 0 is 1536, its first
  * `hmtx` record, read from the same file. The decorations, which measuring does not read, are 0.
  */
 export const ARIAL_METRICS: FontMetrics = {
@@ -51,6 +52,7 @@ export const ARIAL_METRICS: FontMetrics = {
     114: 682,
   },
   ascender: 1854,
+  capHeight: 1467,
   descender: -434,
   embeddingPermissions: 0,
   kerning: ARIAL_KERNING,

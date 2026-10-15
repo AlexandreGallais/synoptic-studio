@@ -8,6 +8,7 @@ import type { FontMetrics } from "./font-metrics";
 const METRICS: FontMetrics = {
   advances: { 65: 600, 66: 700 },
   ascender: 800,
+  capHeight: 700,
   descender: -200,
   embeddingPermissions: 0,
   kerning: { leftClasses: {}, rightClasses: {}, values: [[0]] },
