@@ -5,7 +5,7 @@ import type { GuidedStep } from "../guided-step";
 /** "Pump P-101" in the text's opening color, #1e293b. */
 const OPENING = createColorStepValues({});
 
-/** "Pump P-101" in orange, HSB 30.1°, 100 %, 100 %. */
+/** "Pump P-101" in orange, HSB 30°, 100 %, 100 %. */
 const ORANGE = createColorStepValues({ color: "#ff8000" });
 
 /**
@@ -64,7 +64,7 @@ export const GUIDED_STEPS_F16_OPTIONS: readonly GuidedStep[] = [
   },
   {
     explanation: "Click the swatch left of Color.",
-    look: "The picker opens under the color's fields: plane, hue bar, opacity bar, HSB 30.1, 100, 100.",
+    look: "The picker opens under the color's fields: plane, hue bar, opacity bar, HSB 30, 100, 100.",
     title: "F16 · The swatch opens the picker",
     values: ORANGE,
   },
@@ -82,7 +82,7 @@ export const GUIDED_STEPS_F16_OPTIONS: readonly GuidedStep[] = [
   },
   {
     explanation: "Open the picker; Tab four times to the hue bar; Right, Page Up, Home, End.",
-    look: "H 210, then 211, 221, 0, 359.9; the text follows.",
+    look: "H 210, then 211, 221, 0, 359; the text follows.",
     title: "F16 · Hue bar by keys",
     values: createColorStepValues({ color: "#336699" }),
   },
@@ -107,10 +107,10 @@ export const GUIDED_STEPS_F16_OPTIONS: readonly GuidedStep[] = [
     values: ORANGE,
   },
   {
-    explanation: "Open the picker, Model HSB; H 210, S 66.7, B 60, each then Tab.",
-    look: "#336699 in Color; the mark and the thumb move to the values.",
+    explanation: "Open the picker, Model HSB; S 50, Tab; B 50, Tab.",
+    look: "#ffc080, then #806040, H still 30; the mark and the thumbs move to the values.",
     title: "F16 · Values typed",
-    values: OPENING,
+    values: ORANGE,
   },
   {
     explanation: "Open the picker; H 200, Tab; then click the plane's top right.",

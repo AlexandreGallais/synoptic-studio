@@ -6,10 +6,10 @@ import type { GuidedStep } from "../guided-step";
 /** "Pump P-101" in the text's opening color, #1e293b. */
 const OPENING = createColorStepValues({});
 
-/** "Pump P-101" in orange, HSB 30.1°, 100 %, 100 %. */
+/** "Pump P-101" in orange, HSB 30°, 100 %, 100 %. */
 const ORANGE = createColorStepValues({ color: "#ff8000" });
 
-/** "Pump P-101" in a steel blue, HSB 210°, 66.7 %, 60 %. */
+/** "Pump P-101" in a steel blue, HSB 210°, 67 %, 60 %. */
 const STEEL_BLUE = createColorStepValues({ color: "#336699" });
 
 /**
@@ -19,7 +19,7 @@ const STEEL_BLUE = createColorStepValues({ color: "#336699" });
 export const GUIDED_STEPS_F16_DECISIONS: readonly GuidedStep[] = [
   {
     explanation: "Open the picker, Model HSL.",
-    look: "HSL 30.1, 100, 50; the Model column holds “color”: “#ff8000”, “opacity”: 100, no 30.1.",
+    look: "HSL 30, 100, 50; the Model column holds “color”: “#ff8000”, “opacity”: 100, no HSL.",
     title: "F16 · Hexadecimal stored (decision 1)",
     values: ORANGE,
   },
@@ -61,9 +61,9 @@ export const GUIDED_STEPS_F16_DECISIONS: readonly GuidedStep[] = [
     values: ORANGE,
   },
   {
-    explanation: "Open the picker, Model HSB; then S 67, Tab.",
-    look: "210, 66.7, 60 to one decimal; S 67 gives #326699, no longer #336699.",
-    title: "F16 · One decimal (decision 8)",
+    explanation: "Open the picker, Model HSB; S 67 as shown, Tab; then B 61, Tab.",
+    look: "210, 67, 60, no decimal; S 67 leaves #336699; B 61 gives #34689c, not #33679c; S still 67.",
+    title: "F16 · Whole numbers, the others exact (decision 8)",
     values: STEEL_BLUE,
   },
   {
@@ -74,21 +74,21 @@ export const GUIDED_STEPS_F16_DECISIONS: readonly GuidedStep[] = [
   },
   {
     explanation: "Open the picker, Model HSB; H 200, Tab; drag the plane's mark to the right.",
-    look: "The grey opens at H 0; H 200 kept as the saturation grows: a blue, not a red.",
+    look: "The grey opens at H 0; H 200 kept as the saturation grows: a blue, #406b80, not a red.",
     title: "F16 · A grey's hue (decision 10)",
     values: createColorStepValues({ color: "#808080" }),
   },
   {
     explanation:
       "Open the picker, Model HSB; Tab 4 times to the hue bar; Right, Page Up; Shift+Tab, Right, Up.",
-    look: "H 211, 221; on the plane S 67.7, then B 61.",
+    look: "H 211, 221; on the plane S 68, then B 61.",
     title: "F16 · Keys (decision 11)",
     values: STEEL_BLUE,
   },
   {
     explanation: "Open the picker; Tab 4 times to the hue bar; Right; End. Then H 360, Tab.",
-    look: "H 30.1, then 31.1, 359.9; H 360 shown 0.",
-    title: "F16 · Hue to one decimal (decision 12)",
+    look: "H 30, then 31, 359; H 360 shown 0.",
+    title: "F16 · Whole degrees of hue (decision 12)",
     values: ORANGE,
   },
   {
@@ -105,7 +105,7 @@ export const GUIDED_STEPS_F16_DECISIONS: readonly GuidedStep[] = [
   },
   {
     explanation: "Open the picker; H empty, Tab; H 400, Tab; H −10, Tab; click the opacity bar.",
-    look: "Empty: 30.1 shown again; H 400 gives 0, −10 gives 0; the opacity a whole percent.",
+    look: "Empty: 30 shown again; H 400 gives 0, −10 gives 0; the opacity a whole percent.",
     title: "F16 · Beyond the ends (decision 15)",
     values: ORANGE,
   },
@@ -116,27 +116,27 @@ export const GUIDED_STEPS_F16_DECISIONS: readonly GuidedStep[] = [
     values: ORANGE,
   },
   {
-    explanation: "Open the picker, Model HSB; H 0.7, S 30, B 32.2, each then Tab; then Model HSL.",
-    look: "#523a39; HSL 2.4, 18, 27.3: H 0.7 would give #523939.",
+    explanation: "Open the picker, Model HSB; then Model HSL.",
+    look: "HSB 210, 2, 50; HSL 210, 1, 50: the color's own hue in both, #7e7f80 kept.",
     title: "F16 · Another model, its own hue (decision 17)",
-    values: OPENING,
+    values: createColorStepValues({ color: "#7e7f80" }),
   },
   {
     explanation:
       "Open the picker; a screen reader on (VoiceOver: Cmd+F5); Tab 4 times to the hue bar.",
-    look: "“Hue, 30.1, slider”; the focus ring around the bar, the thumb only drawn.",
+    look: "“Hue, 30, slider”; the focus ring around the bar, the thumb only drawn.",
     title: "F16 · Read by a screen reader (decision 18)",
     values: ORANGE,
   },
   {
     explanation: "Open the picker, Model HSB; then Color #030330, Tab.",
-    look: "H 196.2 (196.25 exactly); then S 93.7 (93.75 exactly).",
-    title: "F16 · A half-tenth (decision 19)",
+    look: "H 196 (196.25 exactly); then S 94 (93.75 exactly): no tenth shown.",
+    title: "F16 · No tenth shown (decision 19)",
     values: createColorStepValues({ color: "#002330" }),
   },
   {
     explanation: "Open the picker, Model HSB; Tab 3 times to the plane; Page Up; End.",
-    look: "S 76.7, then 100; B stays 60.",
+    look: "S 77, then 100; B stays 60.",
     title: "F16 · Page keys on the plane (decision 20)",
     values: STEEL_BLUE,
   },

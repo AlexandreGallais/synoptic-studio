@@ -8,8 +8,8 @@ import { showColorPicker } from "./show-color-picker";
 import { writePickedColor } from "./write-picked-color";
 
 /**
- * Reads the open picker's values again from its color, after a hexadecimal typed: to one decimal in the model chosen, a grey keeping the hue the picker holds
- * (`hexToPickedColor`); nothing while it is closed.
+ * Reads the open picker's values again from its color, after a hexadecimal typed, kept exactly as typed: whole numbers in the model chosen, a grey keeping the hue the picker holds
+ * (`hexToPickedColor`), the color kept as the one read; nothing while it is closed.
  *
  * @kind procedure
  * @param document - page document
@@ -25,6 +25,6 @@ export function updateColorPicker(document: Document): void {
   const color = readShownColor(document, readColorField(swatch).color);
   const { hue } = readPickedColor(document);
 
-  writePickedColor(document, hexToPickedColor(color, readColorModel(document), hue));
+  writePickedColor(document, hexToPickedColor(color, readColorModel(document), hue), color);
   showColorPicker(document);
 }

@@ -12,7 +12,7 @@ import { listenToDrag } from "./listen-to-drag";
 
 /**
  * Listens to the hue slider: a click or a drag sets the hue where it is, 360° at the right end
- * shown 0.0 (`sliderValueAt`, `toShownHue`); the keys of a WAI-ARIA slider change it
+ * shown 0, a whole number (`sliderValueAt`, `toShownHue`); the keys of a WAI-ARIA slider change it
  * (`valueAfterSliderKey`); the saturation and lightness or brightness stay.
  *
  * @kind procedure
