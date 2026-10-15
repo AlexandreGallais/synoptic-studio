@@ -38,7 +38,7 @@ In delivery order.
 | [CHK-018](../stories/E15-F17-CHK-018-checkpoint-f17.md)                      | Checkpoint | Checkpoint in the middle of F17                                                      | ready  |
 | [US-047](../stories/E15-F17-US-047-weight-450-drawn-as-measured.md)          | User story | A weight such as 450 drawn with the face it is measured with                         | done   |
 | [US-048](../stories/E15-F17-US-048-fluid-changes-held-keys.md)               | User story | Values changed fast redrawn without lag                                              | done   |
-| [US-049](../stories/E15-F17-US-049-background-band-ends-with-its-line.md)    | User story | A wrapped text's background band ends with its line                                  | ready  |
+| [US-049](../stories/E15-F17-US-049-background-band-ends-with-its-line.md)    | User story | A wrapped text's background band ends with its line                                  | done   |
 | [US-050](../stories/E15-F17-US-050-turned-text-frames-as-shapes.md)          | User story | A turned text's frames drawn as a turned shape's                                     | ready  |
 | [US-051](../stories/E15-F17-US-051-validation-checklist-page.md)             | User story | Validation on one checklist page                                                     | ready  |
 | [EN-044](../stories/E15-F17-EN-044-val-steps-as-a-checklist.md)              | Enabler    | The run and review skills validate with a checklist page                             | ready  |

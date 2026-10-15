@@ -3,7 +3,7 @@ id: US-049
 epic: E15
 feature: F17
 title: A wrapped text's background band ends with its line
-status: ready
+status: done
 points: 2
 ---
 
@@ -35,4 +35,4 @@ Decided on 2026-10-16, provisional until VAL-018: the trailing spaces of a parag
 One task = one commit, referenced as `US-049.Tn`.
 
 - [x] T1 — The band of a last line without its trailing spaces, the Product Owner's answer on placement written in `DERIV-text-box` step 2, with a test of the reproduced case (2 h)
-- [ ] T2 — Test card and guided step (1 h)
+- [x] T2 — Test card and guided step (1 h)
