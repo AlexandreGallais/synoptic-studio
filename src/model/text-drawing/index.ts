@@ -8,5 +8,6 @@ export * from "./line-decorations";
 export * from "./line-offset-in-block";
 export type * from "./positioned-line";
 export * from "./positioned-lines";
+export type * from "./shown-block";
 export * from "./text-block";
 export * from "./text-drawing";

@@ -1,5 +1,5 @@
 export type * from "./block-line-heights";
-export * from "./ellipsized-line";
+export * from "./ellipsis-cut";
 export * from "./is-line-fitting";
 export * from "./is-measure-fitting";
 export type * from "./line-wrap";

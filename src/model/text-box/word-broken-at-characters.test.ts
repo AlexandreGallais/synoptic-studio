@@ -53,10 +53,10 @@ describe("wordBrokenAtCharacters (DERIV-text-box step 4)", () => {
   });
 
   it("never ends a line with a no-break space: it moves with the unit after it", () => {
-    // "Hello" 36.46 ≤ 50; "Hello" + no-break space (glyph 0, 1536) = 6203 / 128 = 48.46 would fit,
-    // but the no-break space goes with "W": 8136 / 128 = 63.56 > 50, so the cut comes before it.
-    // Then "\u{A0}Worl" (1536 + 1933 + 1139 + 682 + 455) / 128 = 44.88 ≤ 50, with d 53.78 > 50.
-    const lines = brokenLines("Hello\u{A0}World", 50, []);
+    // In a box 45: "Hello" 36.46 ≤ 45; "Hello" + no-break space (569) = 5236 / 128 = 40.91 would
+    // fit, but the no-break space goes with "W": 7169 / 128 = 56.01 > 45, so the cut comes before
+    // it. Then "\u{A0}Worl" (569 + 1933 + 1139 + 682 + 455) / 128 = 37.33 ≤ 45, with d 46.23 > 45.
+    const lines = brokenLines("Hello\u{A0}World", 45, []);
 
     expect(lines).toEqual(["Hello", "\u{A0}Worl", "d"]);
     expect(lines.some((line) => line.endsWith("\u{A0}"))).toBe(false);

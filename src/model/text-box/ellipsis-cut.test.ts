@@ -5,7 +5,8 @@ import { ARIAL_BOX_METRICS, HELLO_TEXT } from "../../../tests";
 import { characterUnits } from "../line-characters";
 import { lineWidth } from "../text-block";
 
-import { ellipsizedLine } from "./ellipsized-line";
+import { ellipsisCut } from "./ellipsis-cut";
+import { textEllipsis } from "./text-ellipsis";
 import { withoutTrailingSpaces } from "./without-trailing-spaces";
 
 import type { FontMetrics } from "../font";
@@ -43,12 +44,12 @@ const ELLIPSIS = "\u{2026}";
  */
 function cut(line: string, boxWidth: number, metrics: FontMetrics): MeasuredCut {
   const text = { ...BOXED, boxWidth };
-  const ellipsized = ellipsizedLine({ metrics, text }, line);
+  const ellipsized = ellipsisCut({ metrics, text }, line) + textEllipsis(metrics);
 
   return { line: ellipsized, width: lineWidth(metrics, ellipsized, text) };
 }
 
-describe("ellipsizedLine (DERIV-text-box step 6)", () => {
+describe("ellipsisCut (DERIV-text-box step 6)", () => {
   it("[F14.AC2] ends a line that fits with its ellipsis", () => {
     // "Hello" + "…" = (4667 + 2048) / 128 = 52.46094 ≤ 60; "World…" (5348 + 2048) / 128 = 57.78125.
     expect(cut("Hello", 60, ARIAL_BOX_METRICS)).toEqual({ line: "Hello…", width: 52.4609375 });
@@ -80,6 +81,20 @@ describe("ellipsizedLine (DERIV-text-box step 6)", () => {
     expect(cut("  Hello", 10, ARIAL_BOX_METRICS).line).toBe("  H…");
   });
 
+  it("[F14.AC2] never keeps a start ending with a no-break space", () => {
+    // In a box 70: "Hello\u{A0}W…" (4667 + 569 + 1933 + 2048) / 128 = 72.00781 > 70;
+    // "Hello\u{A0}…" 56.91 would fit, but the no-break space stays with "W": "Hello…", 52.46094.
+    expect(cut("Hello\u{A0}World", 70, ARIAL_BOX_METRICS)).toEqual({
+      line: "Hello…",
+      width: 52.4609375,
+    });
+
+    // In a box 75 "Hello\u{A0}W…" fits.
+    expect(cut("Hello\u{A0}World", 75, ARIAL_BOX_METRICS).line).toBe("Hello\u{A0}W…");
+    // The first unit kept takes the no-break spaces before it.
+    expect(cut("\u{A0}\u{A0}Hello", 10, ARIAL_BOX_METRICS).line).toBe("\u{A0}\u{A0}H…");
+  });
+
   it("[F14.AC2] gives a line of spaces, or an empty one, its ellipsis alone", () => {
     expect(cut("", 60, ARIAL_BOX_METRICS).line).toBe(ELLIPSIS);
     expect(cut(" ".repeat(3), 60, ARIAL_BOX_METRICS).line).toBe(ELLIPSIS);
@@ -98,14 +113,14 @@ describe("ellipsizedLine (DERIV-text-box step 6)", () => {
     letterSpacing: fc.integer({ max: 5, min: -5 }),
     line: fc.stringMatching(/^(?:[ HWdelor\u{A0}]|\u{301}){0,30}$/u),
   })(
-    "[F14.AC2] cuts a line no wider than the box, unless one character is left",
+    "[F14.AC2] cuts a line no wider than the box unless one character is left, never after a no-break space",
     ({ boxWidth, letterSpacing, line }) => {
       const text = { ...BOXED, boxWidth, letterSpacing };
-      const ellipsized = ellipsizedLine({ metrics: ARIAL_BOX_METRICS, text }, line);
-      const kept = ellipsized.slice(0, -ELLIPSIS.length);
-      const units = characterUnits(kept).filter((unit) => unit !== " ");
+      const kept = ellipsisCut({ metrics: ARIAL_BOX_METRICS, text }, line);
+      const ellipsized = kept + ELLIPSIS;
+      const units = characterUnits(kept).filter((unit) => unit !== " " && unit !== "\u{A0}");
 
-      expect(ellipsized.endsWith(ELLIPSIS)).toBe(true);
+      expect(kept.endsWith("\u{A0}")).toBe(false);
       // What is kept opens the line, without trailing spaces.
       expect(withoutTrailingSpaces(line).startsWith(kept)).toBe(true);
       expect(withoutTrailingSpaces(kept)).toBe(kept);

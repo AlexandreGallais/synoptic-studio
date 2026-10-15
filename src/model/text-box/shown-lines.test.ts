@@ -152,6 +152,31 @@ describe("shownLines (DERIV-text-box steps 5 and 6)", () => {
     });
   });
 
+  it("[F14.AC2] leaves a line of one character wider than the box without an ellipsis", () => {
+    // Broken at a character in a box 5: every letter alone, each wider than 5; nothing to remove,
+    // the first character is clipped rather than ellipsed (provisional, VAL-015).
+    const text: Text = { ...BOXED, boxWidth: 5, content: "Hello" };
+
+    expect(shownLines(ARIAL_BOX_METRICS, text)).toEqual(["H", "e", "l", "l", "o"]);
+
+    // Moved whole: "W" 15.10 and "a" (glyph 0) 12 are each wider than 5.
+    expect(shownLines(ARIAL_BOX_METRICS, { ...text, content: "W a", longWord: "move" })).toEqual([
+      "W",
+      "a",
+    ]);
+  });
+
+  it("[F14.AC2] adds no ellipsis when the lines left out are empty", () => {
+    // "Hello" then an empty line, at most 1 line: nothing hidden but the empty line (provisional).
+    const text: Text = { ...BOXED, content: "Hello\n", maximumLines: 1 };
+
+    expect(shownLines(ARIAL_BOX_METRICS, text)).toEqual(["Hello"]);
+
+    expect(shownLines(ARIAL_BOX_METRICS, { ...text, content: "Hello\n\nWorld" })).toEqual([
+      "Hello…",
+    ]);
+  });
+
   it("[F14.AC6] keeps every line of a text that fits its content", () => {
     // Not in a box: no maximum, no ellipsis, the lines of F05.
     const text = { ...BOXED, content: "Hello World\nHello", isInBox: false, maximumLines: 1 };

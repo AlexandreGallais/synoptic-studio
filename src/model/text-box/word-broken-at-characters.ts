@@ -1,4 +1,4 @@
-import { characterUnits } from "../line-characters";
+import { characterUnits, isNoBreakAfter } from "../line-characters";
 import { joinedLineMeasure, measuredLine } from "../text-block";
 
 import { isMeasureFitting } from "./is-measure-fitting";
@@ -8,9 +8,6 @@ import type { TextInBox } from "./text-in-box";
 
 /** The space U+0020, which never opens a line: the spaces after a word stay with it. */
 const SPACE = " ";
-
-/** The no-break space U+00A0, which never ends a line: it stays with the unit after it. */
-const NO_BREAK_SPACE = "\u{A0}";
 
 /** A word being broken: the paragraph wrapped so far, and the no-break spaces waiting for the unit after them. */
 type WordWrap = {
@@ -67,7 +64,7 @@ function wrapWithUnit(wrap: LineWrap, unit: string, context: TextInBox): LineWra
 export function wordBrokenAtCharacters(wrap: LineWrap, word: string, context: TextInBox): LineWrap {
   const end = characterUnits(word).reduce<WordWrap>(
     (state, unit) =>
-      unit === NO_BREAK_SPACE
+      isNoBreakAfter(unit)
         ? { pending: state.pending + unit, wrap: state.wrap }
         : { pending: "", wrap: wrapWithUnit(state.wrap, state.pending + unit, context) },
     { pending: "", wrap },
