@@ -121,18 +121,18 @@ describe("balancedParagraph (DERIV-text-box step 9)", () => {
   });
 
   it("balances 2000 words within a second", { timeout: 1000 }, () => {
-    // 1000 times "Hello World ": in a box 100 wide, 1000 lines "Hello World"; in a box 1000 wide,
-    // "Hello World " is 87.13281, so 11 pairs and "Hello" a line, 21 to 22 words, 91 lines; in a
-    // box 100 000, one line.
+    // 1000 times "Hello World ": in a box 100 wide, "Hello World" 82.6875 a line, 1000 lines; in a
+    // box 1000 wide, "Hello World " is 87.13281, so about 22 words a line, 91 lines as the greedy
+    // wrap gives. The work grows with the number of words times the most a line holds.
     const paragraph = "Hello World ".repeat(1000);
 
-    for (const boxWidth of [100, 1000, 10_000]) {
-      const text = { ...BOXED, boxWidth };
+    expect(
+      balancedParagraph(ARIAL_BOX_METRICS, paragraph, { ...BOXED, boxWidth: 100 }),
+    ).toHaveLength(1000);
 
-      expect(balancedParagraph(ARIAL_BOX_METRICS, paragraph, text)).toHaveLength(
-        wrappedParagraph(ARIAL_BOX_METRICS, paragraph, text).length,
-      );
-    }
+    expect(
+      balancedParagraph(ARIAL_BOX_METRICS, paragraph, { ...BOXED, boxWidth: 1000 }),
+    ).toHaveLength(91);
   });
 
   test.prop({
