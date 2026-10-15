@@ -18,8 +18,8 @@ describe("htmlLayerToFrameStyle (ADR-0053, EN-041)", () => {
 
   it.each([
     { packing: "flex-start", verticalAlignment: "top" },
-    { packing: "center", verticalAlignment: "middle" },
-    { packing: "flex-end", verticalAlignment: "bottom" },
+    { packing: "unsafe center", verticalAlignment: "middle" },
+    { packing: "unsafe flex-end", verticalAlignment: "bottom" },
   ] as const)(
     "[F15.AC3] places the block down a box $verticalAlignment as a flex column packed $packing",
     ({ packing, verticalAlignment }) => {

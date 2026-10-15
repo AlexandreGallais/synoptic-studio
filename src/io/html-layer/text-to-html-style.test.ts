@@ -95,6 +95,7 @@ describe("textToHtmlStyle (ADR-0053, EN-041)", () => {
       "overflow-wrap: anywhere",
       "overflow: hidden",
       "text-overflow: ellipsis",
+      "flex-shrink: 0",
     ]);
   });
 
@@ -105,6 +106,7 @@ describe("textToHtmlStyle (ADR-0053, EN-041)", () => {
       "text-wrap: balance",
       "overflow: hidden",
       "text-overflow: ellipsis",
+      "flex-shrink: 0",
     ]);
   });
 
@@ -117,16 +119,20 @@ describe("textToHtmlStyle (ADR-0053, EN-041)", () => {
       "display: -webkit-box",
       "-webkit-box-orient: vertical",
       "-webkit-line-clamp: 2",
+      "flex-shrink: 0",
     ]);
   });
 
-  it("[F15.AC3] cuts a box showing at most 2 lines at 2 line heights, the ellipsis off", () => {
-    // 2 · 18.3984375 = 36.796875, at 5 decimals 36.79688.
-    expect(wrapping({ ...BOXED, hasEllipsis: false }, 2)).toEqual([
+  it("[F15.AC3] cuts a box showing at most 2 lines at 2 line heights, down only, the ellipsis off", () => {
+    // 2 · 18.3984375 = 36.796875, at 5 decimals 36.79688; clipped down, visible across, so that a
+    // word moved whole overflows sideways.
+    expect(wrapping({ ...BOXED, hasEllipsis: false, longWord: "move" }, 2)).toEqual([
       "white-space: pre-wrap",
-      "overflow-wrap: anywhere",
-      "overflow: hidden",
+      "overflow-wrap: normal",
+      "overflow-x: visible",
+      "overflow-y: clip",
       "max-height: 36.79688px",
+      "flex-shrink: 0",
     ]);
   });
 
@@ -134,6 +140,15 @@ describe("textToHtmlStyle (ADR-0053, EN-041)", () => {
     expect(wrapping({ ...BOXED, hasEllipsis: false }, 0)).toEqual([
       "white-space: pre-wrap",
       "overflow-wrap: anywhere",
+      "flex-shrink: 0",
+    ]);
+  });
+
+  it("[F15.AC3] never shrinks the content of a box, a block taller than its box keeping its place", () => {
+    // A box 50 × 10 holding 2 lines 36.796875 tall: without flex-shrink 0, the item would shrink.
+    expect(textToHtmlStyle({ ...BOXED, boxHeight: 10 }, ARIAL_HTML_LAYER).at(-1)).toEqual([
+      "flex-shrink",
+      "0",
     ]);
   });
 

@@ -1,3 +1,4 @@
+import { blockHeight } from "../../model";
 import { formatFontFamily } from "../text-style";
 
 import { formatCssColor } from "./format-css-color";
@@ -126,33 +127,54 @@ function lineLimitToEllipsisCss(lineLimit: number): readonly CssDeclaration[] {
 
 /**
  * How a text cut by its box ends: with the ellipsis on, as `lineLimitToEllipsisCss` says; with it
- * off, its block is cut at as many line heights as its box shows lines (`max-height` with
- * `overflow: hidden`, the lines spaced by the line height, `REF-CSS-INLINE-3`, §5.1). A text that
- * fits its content, or one in a box without limit and the ellipsis off, has none.
+ * off, its block is cut, down only, at the height of as many lines as its box shows (`max-height`
+ * of `blockHeight`, the lines untrimmed), clipped vertically and left visible across
+ * (`overflow-x: visible`, `overflow-y: clip`), so that a word moved whole overflows sideways as
+ * the library draws it (`REF-CSS-OVERFLOW-3`). A text that fits its content, or one in a box
+ * without limit and the ellipsis off, has none.
  *
  * @kind format
  * @param text - whether it sits in a box and its ellipsis
  * @param layer - its line height and the most lines its box shows
- * @returns none, the ellipsis's, or `overflow` and `max-height`
- * @see REF-CSS-INLINE-3
+ * @returns none, the ellipsis's, or the overflow and `max-height`
+ * @see REF-CSS-OVERFLOW-3
  */
 function boxCutToCss(text: Text, layer: HtmlLayer): readonly CssDeclaration[] {
   if (text.isInBox && text.hasEllipsis) {
     return lineLimitToEllipsisCss(layer.lineLimit);
   }
 
+  const line = layer.lineHeight;
+
   return layer.lineLimit > 0
     ? [
-        ["overflow", "hidden"],
-        ["max-height", formatCssPixels(layer.lineLimit * layer.lineHeight)],
+        ["overflow-x", "visible"],
+        ["overflow-y", "clip"],
+        ["max-height", formatCssPixels(blockHeight({ firstLine: line, line }, layer.lineLimit))],
       ]
     : [];
 }
 
 /**
+ * The content's `div` as an item of its box's flex column: it never shrinks (`flex-shrink: 0`,
+ * §7.2.2), since an item that clips its overflow may shrink to nothing (§4.5, its automatic
+ * minimum size zero), which would move a block taller than its box and its lines with it; a text
+ * that fits its content is not in a flex column.
+ *
+ * @kind format
+ * @param text - whether it sits in a box
+ * @returns the declaration, or none
+ * @see REF-CSS-FLEXBOX-1
+ */
+function boxToFlexItemCss(text: Text): readonly CssDeclaration[] {
+  return text.isInBox ? [["flex-shrink", "0"]] : [];
+}
+
+/**
  * The style of the `div` holding a text's content in its HTML layer (ADR-0053, decision 1), as
  * plain declarations: its font and color with the library's line height, its spacing, direction
- * and alignment, its decorations, how its lines break, and how a text cut by its box ends.
+ * and alignment, its decorations, how its lines break, how a text cut by its box ends, and, in a
+ * box, an item of its flex column that never shrinks.
  * Lengths are written as the SVG writes its numbers (`formatCssPixels`); the font's names are
  * escaped by `formatFontFamily`.
  *
@@ -169,5 +191,6 @@ export function textToHtmlStyle(text: Text, layer: HtmlLayer): readonly CssDecla
     ...decorationsToCss(text),
     ...wrapStyleToCss(text),
     ...boxCutToCss(text, layer),
+    ...boxToFlexItemCss(text),
   ];
 }

@@ -22,6 +22,10 @@ describe("createHtmlLayerElement (ADR-0053, EN-041)", () => {
     expect(foreign.getAttribute("requiredExtensions")).toBe("http://www.w3.org/1999/xhtml");
   });
 
+  it("[F15.AC3] lets lines past its frame show, as the library draws them", () => {
+    expect(foreign.getAttribute("overflow")).toBe("visible");
+  });
+
   it("[F15.AC3] places it at the layer's frame, numbers at 5 decimals", () => {
     // −0.26171875 → −0.26172; 36.796875 → 36.79688 (Q10).
     expect(["x", "y", "width", "height"].map((name) => foreign.getAttribute(name))).toEqual([
@@ -60,6 +64,16 @@ describe("createHtmlLayerElement (ADR-0053, EN-041)", () => {
     );
 
     expect(written).toContain("a &lt; b &amp; c");
+  });
+
+  it("[F15.AC3] writes markup typed in the content as text, one text node, escaped", () => {
+    const layer = { ...ARIAL_HTML_LAYER, paragraphs: ["<b>x</b>&"] };
+    const span = createHtmlLayerElement(document, HELLO_WORLD, layer).querySelector("span");
+    const serializer = new XMLSerializer();
+
+    expect([...(span?.childNodes ?? [])].map((node) => node.nodeType)).toEqual([Node.TEXT_NODE]);
+    expect(span?.querySelector("b")).toBeNull();
+    expect(serializer.serializeToString(span ?? document)).toContain("&lt;b&gt;x&lt;/b&gt;&amp;");
   });
 
   it("[F15.AC3] paints each paragraph's background on its span", () => {

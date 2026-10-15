@@ -209,6 +209,9 @@ const XHTML_ELEMENTS = new Set(["div", "span"]);
 /** An element created in `src/` or `playground/`: `createElementNS(<namespace>, <name>)`. */
 const CREATED = /createElementNS\(\s*(?<namespace>[\w.]+),\s*(?<name>[^)]+)\)/gu;
 
+/** A comment: a block comment, or a line comment not part of a URL's `://`. */
+const COMMENT = /\/\*[\s\S]*?\*\/|(?<!:)\/\/.*$/gmu;
+
 /** A name written as a string literal, which alone can be checked: `"<name>"`. */
 const LITERAL = /^"(?<name>[^"]+)"$/u;
 
@@ -267,16 +270,21 @@ const PLACES: Readonly<Record<string, (element: Element) => boolean>> = {
     [...element.children].map((child) => child.localName).join(" ") === "foreignObject g",
 };
 
+/** The elements allowed in each namespace (ADR-0053, decision 3). */
+const ALLOWED: Readonly<Record<string, ReadonlySet<string>>> = {
+  [SVG_NAMESPACE]: SVG_ELEMENTS,
+  [XHTML_NAMESPACE]: XHTML_ELEMENTS,
+};
+
 /**
- * Whether an element is in its namespace: `div` and `span` in XHTML's, any other in SVG's.
+ * Whether an element is one its namespace allows: an SVG element of the SVG list, an XHTML one of
+ * the XHTML list, and none of another namespace.
  *
  * @param element - an element of the SVG written
  * @returns true when it is
  */
 function isInItsNamespace(element: Element): boolean {
-  const namespace = XHTML_ELEMENTS.has(element.localName) ? XHTML_NAMESPACE : SVG_NAMESPACE;
-
-  return element.namespaceURI === namespace;
+  return ALLOWED[String(element.namespaceURI)]?.has(element.localName) ?? false;
 }
 
 /**
@@ -341,14 +349,23 @@ function writtenDocument(): SVGSVGElement {
 }
 
 describe("the SVG elements the library writes (ADR-0053)", () => {
-  const created = sourcesEndingWith(".ts")
+  // The code without its comments, where a mention of the function is no call.
+  const sources = sourcesEndingWith(".ts")
     .filter(({ path }) => !path.endsWith(".test.ts"))
-    .flatMap(({ path, text }) =>
-      text
-        .matchAll(CREATED)
-        .map((match) => creation(match, path))
-        .toArray(),
-    );
+    .map(({ path, text }) => ({ path, text: text.replaceAll(COMMENT, "") }));
+  const created = sources.flatMap(({ path, text }) =>
+    text
+      .matchAll(CREATED)
+      .map((match) => creation(match, path))
+      .toArray(),
+  );
+
+  it("[F15.AC3] reads every call creating an element, whatever its spelling", () => {
+    // `document["createElementNS"](…)` escapes the pattern: each mention must be a call it reads.
+    expect(
+      sources.reduce((count, { text }) => count + occurrences(text, "createElementNS"), 0),
+    ).toBe(created.length);
+  });
 
   it("reads every element created, not an empty list", () => {
     expect(created.map(({ name }) => name)).toEqual(
