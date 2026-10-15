@@ -3,7 +3,7 @@ id: US-031
 epic: E15
 feature: F05
 title: Place a text with the Text tool
-status: ready
+status: done
 points: 3
 ---
 
@@ -22,9 +22,9 @@ As a designer, I want a Text tool with its fields so that a symbol shows a label
 
 One task = one commit, referenced as `US-031.Tn`.
 
-- [ ] T1 — The Text tool and its fields in the playground (3 h)
-- [ ] T2 — The drawing of the text: positioned lines and their attributes (2 h)
-- [ ] T3 — The Product Owner test card (30 min)
+- [x] T1 — The Text tool and its fields in the playground (3 h)
+- [x] T2 — The drawing of the text: positioned lines and their attributes (2 h)
+- [x] T3 — The Product Owner test card (30 min)
 
 ## Notes from EN-032's review (2026-10-15)
 
