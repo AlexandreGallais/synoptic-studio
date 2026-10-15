@@ -2,7 +2,7 @@
 // metrics that `DERIV-text-width` lists, and a text of every default option. Tests only: never
 // part of the library.
 
-import type { FontMetrics, Kerning, Text } from "../src";
+import type { FontMetrics, HtmlLayer, Kerning, Text } from "../src";
 
 /** Arial's kerning of W o. */
 const W_O = -37;
@@ -140,4 +140,16 @@ export const DECORATED_METRICS: FontMetrics = {
   strikeoutSize: 64,
   underlinePosition: -256,
   underlineThickness: 128,
+};
+
+/**
+ * The HTML layer of "Hello" over "World" in Arial 16, automatic line height, at (0, 0)
+ * (`DERIV-html-layer`, checks): its block 41.78125 × 36.796875 raised by 0.0078125 · 67 / 2 =
+ * 0.26171875, its line height 0.0078125 · 2355 = 18.3984375, no limit.
+ */
+export const ARIAL_HTML_LAYER: HtmlLayer = {
+  frame: { height: 36.796875, width: 41.78125, x: 0, y: -0.26171875 },
+  lineHeight: 18.3984375,
+  lineLimit: 0,
+  paragraphs: ["Hello", "World"],
 };
