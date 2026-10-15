@@ -3,7 +3,7 @@ id: EN-035
 epic: E15
 feature: F14
 title: "Lines placed in the box: line height, cap-height trim, vertical alignment"
-status: ready
+status: done
 points: 3
 ---
 
