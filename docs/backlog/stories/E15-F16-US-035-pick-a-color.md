@@ -27,23 +27,23 @@ The text's color and its background color use it in the playground; the shapes' 
 
 Open `http://localhost:5173/`, click **Text** and click on the drawing (Inter 16, as the page opens).
 
-| Step | Do                                                                             | You should see                                                             |
-| ---- | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
-| 1    | Type `F80` in **Color**, press Tab                                             | `#ff8800` in the field, the text orange                                    |
-| 2    | Turn **Background** on, paste `#0000ffcc` in its color                         | `#0000ff`, its opacity 80, a blue band a little transparent                |
-| 3    | Type `red` in **Color**, press Tab                                             | the field back to `#ff8800`, a message                                     |
-| 4    | Type `#ff8000` in **Color**, click its swatch                                  | the picker: hue at 30.1°, values 30.1°, 100 %, 100 %, plane in HSB         |
-| 5    | Choose **HSL**                                                                 | values 30.1°, 100 %, 50 %; the plane white at the top, black at the bottom |
-| 6    | Choose **HSB**, set the hue to 210, click the middle of the plane's right edge | `#004080`                                                                  |
-| 7    | Type 66.7 in **S** and 60 in **B**                                             | `#336699`                                                                  |
-| 8    | Focus the hue slider, press Right, then Page Up, Home, End                     | 211°, 221°, 0°, 359.9°                                                     |
-| 9    | Press Escape                                                                   | the picker closed, the color kept                                          |
+| Step | Do                                                                            | You should see                                                             |
+| ---- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| 1    | Type `F80` in **Color**, press Tab                                            | `#ff8800` in the field, the text orange                                    |
+| 2    | Turn **Background** on, paste `#0000ffcc` in its color, press Tab             | `#0000ff`, its opacity 80, a blue band a little transparent                |
+| 3    | Type `red` in **Color**, press Tab                                            | the field back to `#ff8800`, a red line under it saying why                |
+| 4    | Type `#ff8000` in **Color**, click its swatch                                 | the picker: hue at 30.1°, values 30.1°, 100 %, 100 %, plane in HSB         |
+| 5    | Choose **HSL**                                                                | values 30.1°, 100 %, 50 %; the plane white at the top, black at the bottom |
+| 6    | Choose **HSB**, type 210 in **H**, click the middle of the plane's right edge | `#004080`                                                                  |
+| 7    | Type 66.7 in **S** and 60 in **B**, Tab after each                            | `#336699`                                                                  |
+| 8    | Focus the hue slider, press Right, then Page Up, Home, End                    | 211°, 221°, 0°, 359.9°                                                     |
+| 9    | Press Escape                                                                  | the picker closed, the color kept (`#993333` after End)                    |
 
 ## Tasks
 
 One task = one commit, referenced as `US-035.Tn`.
 
-- [ ] T1 — The color fields: a swatch beside the hexadecimal and opacity fields, a typed or pasted form read by the library, refused with a message, for the text's color and its background (2 h)
-- [ ] T2 — The picker: opening and closing, the hue and opacity sliders with their keys, the choice of HSL or HSB, the three values to one decimal, typed back through the library (3 h)
-- [ ] T3 — The plane drawn for the hue chosen from the library's conversion, picked by a click, a drag or the keyboard; a grey keeps the slider's hue while the picker is open (3 h)
-- [ ] T4 — Playground tests end to end of the steps above; the test card checked (2 h)
+- [x] T1 — The color fields: a swatch beside the hexadecimal and opacity fields, a typed or pasted form read by the library, refused with a message, for the text's color and its background (2 h)
+- [x] T2 — The picker: opening and closing, the hue and opacity sliders with their keys, the choice of HSL or HSB, the three values to one decimal, typed back through the library (3 h)
+- [x] T3 — The plane drawn for the hue chosen from the library's conversion, picked by a click, a drag or the keyboard; a grey keeps the slider's hue while the picker is open (3 h)
+- [x] T4 — Playground tests end to end of the steps above; the test card checked (2 h)
