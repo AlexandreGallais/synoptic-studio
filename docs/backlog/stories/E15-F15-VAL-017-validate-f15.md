@@ -38,5 +38,5 @@ The rules marked provisional by SP-018 (2026-10-15); the stories add theirs.
 | 6   | Embeddable: not bitmap only, not restricted without the preview-and-print or editable bit; preview-and-print fonts embedded              | Arial (8) and Inter (0) yes, `fsType` 2 no           |
 | 7   | A face whose file is not held is not embedded, Inter's among them until its file is imported                                             | Inter listed as not embedded                         |
 | 8   | Each face once per document, the whole file, no `local()`                                                                                | 10 texts in Arial regular and bold: 2 rules          |
-| 9   | The layer's line height is the library's, the layer raised by half the line gap for an automatic line height                             | Arial 16: 0.26171875 higher                          |
+| 9   | The layer's line height is the library's, the layer raised by half the line gap for an automatic line height                             | Arial 16: 0.26171875 higher; trimmed, 3.28515625     |
 | 10  | Right to left in resvg and Batik, which ignore `direction`: keep the line as written, or write it from its left edge without `direction` | a Hebrew line drawn one width too far right in resvg |
