@@ -48,4 +48,5 @@ In delivery order.
 - A font embedded once in a synoptic view for all its symbols: with the views (E08); F15 embeds each face once per document, a symbol.
 - Fonts kept across sessions: with the editor's files (E02).
 - WOFF and WOFF2 files, and font collections: not asked.
+- A font's localized family names (a Windows name in another language) as aliases of its family: only the English name, else the first, names it for now (EN-039 audit, 2026-10-15).
 - A right-to-left line in resvg and Batik, which ignore `direction`: a choice at VAL-017 (research note 0020).
