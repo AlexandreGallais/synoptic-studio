@@ -4,10 +4,11 @@ import { describe, expect, it } from "vitest";
 import { ARIAL_BOX_METRICS, HELLO_TEXT } from "../../../tests";
 import { characterUnits } from "../line-characters";
 import { lineWidth } from "../text-block";
-import { wrappedLines } from "../text-wrap";
+import { wrappedLines, wrappedParagraph } from "../text-wrap";
 
 import { shownLines } from "./shown-lines";
 
+import type { FontMetrics } from "../font";
 import type { Text, TextLongWord } from "../text";
 
 /** Arial 16 without kerning in a box 60 wide and 1000 tall, its ellipsis on. */
@@ -190,6 +191,40 @@ describe("shownLines (DERIV-text-box steps 5 and 6)", () => {
     ]);
   });
 
+  it("[F14.AC3] shows the balanced lines of a text that is not cut", () => {
+    // "Pump P-101" 88.9375 / "is running" 69.375 rather than the greedy "Pump P-101 is" / "running".
+    expect(shown({ ...BOXED, boxWidth: 110, content: PUMP, wrapStyle: "balance" })).toEqual({
+      lines: ["Pump P-101", "is running"],
+      widths: [88.9375, 69.375],
+    });
+  });
+
+  it.each([{ hasEllipsis: true }, { hasEllipsis: false }])(
+    "[F14.AC3] keeps the greedy lines of a text cut, the ellipsis on: $hasEllipsis",
+    ({ hasEllipsis }) => {
+      // Every character 1 wide, a box 6, lines 1 apart, at most 2 lines: greedy "AAA BB" / "CC" / "DDDDD" is cut
+      // after "CC"; balanced "AAA" / "BB CC" would move what the cut hides. With the ellipsis on,
+      // "CC..." is 5 ≤ 6, the face having no "…".
+      const metrics: FontMetrics = {
+        ...ARIAL_BOX_METRICS,
+        advances: { 32: 1, 46: 1, 65: 1, 66: 1, 67: 1, 68: 1 },
+        unitsPerEm: 16,
+      };
+      const text: Text = {
+        ...BOXED,
+        boxWidth: 6,
+        content: "AAA BB CC DDDDD",
+        hasEllipsis,
+        lineHeight: 1,
+        maximumLines: 2,
+        wrapStyle: "balance",
+      };
+
+      expect(shownLines(metrics, text)).toEqual(["AAA BB", hasEllipsis ? "CC..." : "CC"]);
+      expect(shownLines(metrics, { ...text, maximumLines: 0 })).toEqual(["AAA", "BB CC", "DDDDD"]);
+    },
+  );
+
   it("[F14.AC6] keeps every line of a text that fits its content", () => {
     // Not in a box: no maximum, no ellipsis, the lines of F05.
     const text = { ...BOXED, content: "Hello World\nHello", isInBox: false, maximumLines: 1 };
@@ -209,7 +244,7 @@ describe("shownLines (DERIV-text-box steps 5 and 6)", () => {
     (values) => {
       const text = { ...BOXED, ...values };
       const lines = shownLines(ARIAL_BOX_METRICS, text);
-      const wrapped = wrappedLines(ARIAL_BOX_METRICS, text);
+      const wrapped = wrappedLines(ARIAL_BOX_METRICS, text, wrappedParagraph);
 
       const maximum = values.maximumLines === 0 ? wrapped.length : values.maximumLines;
 
