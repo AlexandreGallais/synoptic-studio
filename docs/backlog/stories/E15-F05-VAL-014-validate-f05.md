@@ -20,7 +20,7 @@ The Product Owner tries the text in the playground, guided by short steps, and s
 One task = one commit, referenced as `VAL-014.Tn`.
 
 - [x] T1 — The guided test, tested end to end (1 h)
-- [ ] T2 — The demo page (30 min)
+- [x] T2 — The demo page (30 min)
 - [ ] T3 — The Product Owner's validation (1 h)
 
 ## Guided test (T1)
