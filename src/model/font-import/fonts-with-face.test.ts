@@ -19,7 +19,12 @@ const BYTES = Uint8Array.from([0, 1]);
  * @returns the face, upright, with an embeddable file
  */
 function arialFace(weight: number, metrics: FontMetrics): FontFace {
-  return { file: { bytes: BYTES, isEmbeddable: true }, isItalic: false, metrics, weight };
+  return {
+    file: { bytes: BYTES, isEmbeddable: true, version: "" },
+    isItalic: false,
+    metrics,
+    weight,
+  };
 }
 
 /**
@@ -32,7 +37,7 @@ function arialFace(weight: number, metrics: FontMetrics): FontFace {
 function fileFace(byte: number, weight: number): FontFace {
   return {
     ...arialFace(weight, ARIAL_METRICS),
-    file: { bytes: Uint8Array.from([byte]), isEmbeddable: true },
+    file: { bytes: Uint8Array.from([byte]), isEmbeddable: true, version: "" },
   };
 }
 

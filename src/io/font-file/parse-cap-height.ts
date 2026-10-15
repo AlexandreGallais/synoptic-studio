@@ -1,5 +1,4 @@
-/** Offset of the table's version in the `OS/2` table. */
-const VERSION_OFFSET = 0;
+import { parseOs2Version } from "./parse-os2-version";
 
 /** Offset of `sCapHeight` in the `OS/2` table, from version 2. */
 const CAP_HEIGHT_OFFSET = 88;
@@ -41,7 +40,7 @@ function emToFontUnits(em: number, unitsPerEm: number): number {
 export function parseCapHeight(os2: DataView, unitsPerEm: number): number {
   const capHeight =
     os2.byteLength >= CAP_HEIGHT_OFFSET + Int16Array.BYTES_PER_ELEMENT &&
-    os2.getUint16(VERSION_OFFSET) >= CAP_HEIGHT_VERSION
+    parseOs2Version(os2) >= CAP_HEIGHT_VERSION
       ? os2.getInt16(CAP_HEIGHT_OFFSET)
       : 0;
 

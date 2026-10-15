@@ -3,6 +3,7 @@ export * from "./color";
 export * from "./font-face";
 export * from "./font-file";
 export * from "./font-name";
+export * from "./font-tables";
 export * from "./kerning";
 export * from "./path-data";
 export * from "./picked-color";

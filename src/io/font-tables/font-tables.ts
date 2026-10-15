@@ -16,6 +16,8 @@ export type FontTables = {
   readonly os2: FontTableRecord;
   /** Glyph positioning: kerning by pairs and classes, if the font has it (`REF-OT-GPOS`). */
   readonly gpos: FontTableRecord | undefined;
+  /** Naming table: the family and version names, if the font has it (`REF-OT-NAME`). */
+  readonly name: FontTableRecord | undefined;
   /** Kerning pairs of TrueType fonts, if the font has them (`REF-OT-KERN`). */
   readonly kern: FontTableRecord | undefined;
 };
