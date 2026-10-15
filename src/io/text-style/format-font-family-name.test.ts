@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 
+import { GENERIC_FONT_FAMILIES } from "../../model";
+
 import { formatFontFamilyName } from "./format-font-family-name";
-import { GENERIC_FONT_FAMILIES } from "./generic-font-families";
 
 describe("formatFontFamilyName (REF-CSS-FONTS-4 §2.1.1, §2.1.2)", () => {
   it("quotes a family name, spaces and digits included", () => {
