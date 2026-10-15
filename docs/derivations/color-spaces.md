@@ -1,6 +1,6 @@
 # DERIV-color-spaces — A color in hexadecimal, its opacity, and its HSL and HSB views
 
-Used by: EN-037 (the hexadecimal forms and the opacity), EN-038 (HSL and HSB from the hexadecimal and back), US-035 (the picker's plane and the values it shows, the exact bytes of its values). Sources: `REF-CSS-COLOR-4` (§5.1, §5.2, §7, §7.1, §7.2, §16.1.1, §16.2.1), `REF-WIKI-HSL-HSV` (From RGB, HSV to RGB alternative). The stored color is six hexadecimal digits and an integer opacity (F16.AC1); HSL and HSB are computed from it and never stored (ADR-0056). This page shows that the round trip from the hexadecimal is exact, and which precision of the shown HSL and HSB values keeps it exact when they are typed back.
+Used by: EN-037 (the hexadecimal forms and the opacity), EN-038 (HSL and HSB from the hexadecimal and back), US-035 (the picker's plane and the values it shows, the exact bytes of its values), EN-043 (the values shown as integers, read from exact fractions). Sources: `REF-CSS-COLOR-4` (§5.1, §5.2, §7, §7.1, §7.2, §16.1.1, §16.2.1), `REF-WIKI-HSL-HSV` (From RGB, HSV to RGB alternative). The stored color is six hexadecimal digits and an integer opacity (F16.AC1); HSL and HSB are computed from it and never stored (ADR-0056). This page shows that the round trip from the hexadecimal is exact, and which precision of the shown HSL and HSB values keeps it exact when they are typed back.
 
 ## Notation
 
@@ -127,6 +127,8 @@ The integer counts are those of the SP-017 script; another binary64 implementati
 
 A value shown is the nearest tenth of the value computed in binary64. When the exact value lies on a half-tenth, the computed one may lie a last bit below it and is shown rounded down: `#002330` has the hue 196.25° exactly, computed 196.24999999999997 and shown 196.2; `#030330` has the HSB saturation 93.75 %, shown 93.7. Either neighbour gives the hexadecimal back, as the one-decimal row shows (AUD-017, provisional, VAL-016).
 
+Since ADR-0058 the values are shown as integers, and the integer row's changes are avoided another way: the color is never rebuilt from the three values shown, only from one value typed and the exact values of the two others (step 12).
+
 A hue rounded to 360.0 is shown 0.0, by the remainder `n − 360 · ⌊n / 360⌋` of the rounded hue, which is never negative; the library takes it with `%` (`nonNegativeRemainder`, `REF-ECMA-262-NUMBER-REMAINDER`), exact in binary64, where `modulo`'s added divisor turns 30.1 into 30.100000000000023 (EN-038). No bound proves the one-decimal case by itself: rounding the lightness to a tenth of a percent moves a byte by up to 0.26, rounding the hue to a tenth of a degree by up to 0.21, together more than 0.5. The exhaustive count is the proof.
 
 ## Step 10 — The plane of the picker
@@ -170,6 +172,20 @@ Why it is exact:
 3. Otherwise `|255 · N / D − (m + ½)| = |510 · N − (2m + 1) · D| / (2D) ≥ 1 / (2D) ≥ 8.3 · 10⁻¹⁰`, the numerator being a non-zero integer, while the division's error is below 256 · 2⁻⁵³ ≈ 2.8 · 10⁻¹⁴: the rounding cannot cross the half.
 
 The binary64 form of step 6 stays for colors read from their hexadecimal (step 9's round trip); the integer form serves the values a picker holds, given to one decimal (US-035). HSB 30.1°, 90 %, 100 % gives `#ff8d1a`, HSB 200°, 50 %, 100 % `#80d5ff` (green 5/6, 212.5 up to 213), HSB 0°, 75 %, 40 % `#661a1a`, HSL 0°, 75 %, 40 % `#b31a1a`, HSL 0°, 75 %, 60 % `#e64d4d`; the tests check every byte against the same arithmetic in exact integers (BigInt).
+
+## Step 12 — Exact values from the bytes, shown as integers
+
+Steps 3 to 5 written over the bytes keep every value an exact fraction of integers, with `M`, `m` and `C` taken in bytes (`brightness`, `smallestComponent` and `chroma` read bytes as they read fractions, `max`, `min` and a difference keeping the scale):
+
+```text
+H   = 60 · H″ / C,   H″ = (G − B) mod 6C if M = R, (B − R) + 2C if M = G, (R − G) + 4C;  0 / 1 if C = 0
+S_V = C / M (0 / 1 if M = 0),   V = M / 255
+S_L = C / min(M + m, 510 − (M + m)) (0 / 1 if that is 0),   L = (M + m) / 510
+```
+
+`H″` is step 3's `H′ · C`, an integer from 0 to `6C`. `S_L` is step 4's `(M − L) / min(L, 1 − L)` with both terms multiplied by 510: `M − L` is `C / 2` in fractions, `C / 510` over 255, and `min(L, 1 − L)` is `min(M + m, 510 − (M + m)) / 510`. `#336699` (51, 102, 153) is HSB `21 420 / 102 = 210°`, `102 / 153`, `153 / 255` and HSL 210°, `102 / 204`, `204 / 510`. Every denominator is at most 510.
+
+A value is shown as the nearest integer, a tie up, `round(k · N / D)` with `k` 1 for the hue and 100 for a percent, and a hue rounding to 360 shown 0 as in step 9 (ADR-0058). `k · N` is an integer below `100 · 510`, so step 11's argument holds: the quotient is correctly rounded, a value lying on a half is seen as a half, and any other lies at least `1 / (2D) ≥ 1 / 1020` from one. `#ff8000` shows HSB 30, 100, 100 and HSL 30, 100, 50; `#336699` shows HSB 210, 67, 60; `#ff0001`, at `91 740 / 255 = 359.76471°`, shows 0; `#080100`, at `60 · 1 / 8 = 7.5°`, shows 8; `#c8c7c7`, its HSB saturation `1 / 200 = 0.5 %`, shows 1.
 
 ## Cross-check
 
