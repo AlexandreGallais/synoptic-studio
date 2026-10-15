@@ -1,6 +1,7 @@
 import { listenToExport } from "../document";
 import { listenToFonts } from "../fonts";
 import { selectElement } from "../page";
+import { listenToTextPosition } from "../text-placement";
 
 import { pressBold } from "./press-bold";
 
@@ -8,7 +9,8 @@ import { pressBold } from "./press-bold";
  * Listens to the Text tool's fields: its font controls (`listenToFonts`) and **Export SVG**
  * (`listenToExport`, US-036); a value typed or chosen, the drawing's options among them, redraws
  * the text; the bold button gives 700 and gives back the weight before (`pressBold`, US-037), a
- * weight chosen in the list forgetting the weight held; the italic button turns italic on or off.
+ * weight chosen in the list forgetting the weight held; the italic button turns italic on or off;
+ * a number typed in X or Y, a fraction too, redraws the text (`listenToTextPosition`, US-038).
  *
  * @kind procedure
  * @param document - page document
@@ -32,6 +34,8 @@ export function listenToTextFields(document: Document, update: () => void): void
   selectElement(document, "text-weight").addEventListener("change", () => {
     delete selectElement(document, "text-bold").dataset["heldWeight"];
   });
+
+  listenToTextPosition(document, update);
 
   italic.addEventListener("click", () => {
     italic.setAttribute("aria-pressed", String(italic.getAttribute("aria-pressed") !== "true"));
