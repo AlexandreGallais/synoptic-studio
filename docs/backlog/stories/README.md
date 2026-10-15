@@ -132,7 +132,7 @@
 | [US-033](./E15-F14-US-033-put-a-text-in-a-box.md)                             | F14     | Put a text in a box with the Text tool                                          | done   |
 | [US-034](./E15-F14-US-034-background-behind-a-text.md)                        | F14     | A background color behind a text, as a highlighter                              | done   |
 | [AUD-016](./E15-F14-AUD-016-audit-f14.md)                                     | F14     | Audit F14                                                                       | done   |
-| [US-039](./E15-F14-US-039-straight-box-of-a-turned-text.md)                   | F14     | See the straight box of a turned text                                           | ready  |
+| [US-039](./E15-F14-US-039-straight-box-of-a-turned-text.md)                   | F14     | See the straight box of a turned text                                           | done   |
 | [VAL-015](./E15-F14-VAL-015-validate-f14.md)                                  | F14     | Validate F14                                                                    | ready  |
 | [SP-017](./E15-F16-SP-017-research-f16-colors.md)                             | F16     | Research for F16: colors in hexadecimal, HSL and HSB, and their picker          | done   |
 | [EN-037](./E15-F16-EN-037-a-color-typed-in-hexadecimal.md)                    | F16     | A color typed in hexadecimal, kept as six digits and an opacity                 | done   |

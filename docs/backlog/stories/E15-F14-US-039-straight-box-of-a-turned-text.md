@@ -3,7 +3,7 @@ id: US-039
 epic: E15
 feature: F14
 title: See the straight box of a turned text
-status: ready
+status: done
 points: 2
 ---
 
