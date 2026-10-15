@@ -25,7 +25,7 @@ One task = one commit, referenced as `VAL-014.Tn`.
 
 ## Guided test (T1)
 
-35 steps at `http://localhost:5173`, also after E14's at `?guide=epic`: one line to do, one to look at, Next typing the values. `playground/guided-steps/epic-15/f05-steps.test.ts` checks each step end to end.
+36 steps at `http://localhost:5173`, also after E14's at `?guide=epic`: one line to do, one to look at, Next typing the values. `playground/guided-steps/epic-15/f05-steps.test.ts` checks each step end to end.
 
 | Steps | What                                                                                                                                                                                                                                          |
 | ----- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -35,7 +35,8 @@ One task = one commit, referenced as `VAL-014.Tn`.
 | 21    | each tool keeps its placement                                                                                                                                                                                                                 |
 | 22–32 | the decisions and questions below, one step each with its example                                                                                                                                                                             |
 | 33–34 | in Chrome, Firefox and Safari: letter spacing after the last letter, our underline against the native one                                                                                                                                     |
-| 35    | back to the rectangle, drawn as before (F05.AC6)                                                                                                                                                                                              |
+| 35    | a turned text grows in place, its turned top-left corner kept (ADR-0057, US-038)                                                                                                                                                              |
+| 36    | back to the rectangle, drawn as before (F05.AC6)                                                                                                                                                                                              |
 
 A step of a text carries the Text tool's fields (`GuidedText`), which Next types. The guided steps are now one folder per epic (`epic-1/`, `epic-14/`, `epic-15/`), their type in `guided-step/` and the two lists in `lists/`, so that no folder passes 15 modules (ADR-0043).
 
