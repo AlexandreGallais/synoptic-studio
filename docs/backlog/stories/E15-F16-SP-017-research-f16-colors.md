@@ -36,5 +36,5 @@ Find, read and record the sources of every story of F16 before its implementatio
 One task = one commit, referenced as `SP-017.Tn`.
 
 - [x] T1 — Inventory the formulas and behaviors of the stories (1 h)
-- [ ] T2 — Find, read and record the sources; write `DERIV-color-spaces` (3 h)
+- [x] T2 — Find, read and record the sources; write `DERIV-color-spaces` (3 h)
 - [ ] T3 — Write research note 0019, the domain's provisional rules and F16's stories (2 h)
