@@ -3,7 +3,7 @@ id: US-032
 epic: E15
 feature: F05
 title: Turn a text and see its measured block
-status: ready
+status: done
 points: 2
 ---
 
