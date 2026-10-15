@@ -16,3 +16,4 @@ export * from "./text-block";
 export * from "./text-box";
 export * from "./text-case";
 export * from "./text-drawing";
+export * from "./text-wrap";

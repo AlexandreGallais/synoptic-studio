@@ -4,9 +4,9 @@ import { describe, expect, it } from "vitest";
 import { ARIAL_BOX_METRICS, HELLO_TEXT } from "../../../tests";
 import { characterUnits } from "../line-characters";
 import { lineWidth } from "../text-block";
+import { wrappedLines } from "../text-wrap";
 
 import { shownLines } from "./shown-lines";
-import { wrappedLines } from "./wrapped-lines";
 
 import type { Text, TextLongWord } from "../text";
 
@@ -86,6 +86,19 @@ describe("shownLines (DERIV-text-box steps 5 and 6)", () => {
     const text = { ...BOXED, boxHeight: 50, content: TWICE, lineHeight: 24 };
 
     expect(shownLines(ARIAL_BOX_METRICS, text)).toEqual(["Hello", "World…"]);
+  });
+
+  it("[F14.AC5] counts a trimmed first line at the cap height", () => {
+    // Trimmed, h(2) = 11.46094 + 18.39844 = 29.85938 ≤ 30 < h(3) = 48.25781: 2 lines;
+    // untrimmed, h(2) = 36.79688 > 30: 1 line.
+    const text = { ...BOXED, boxHeight: 30, content: TWICE };
+
+    expect(shownLines(ARIAL_BOX_METRICS, { ...text, isTrimmed: true })).toEqual([
+      "Hello",
+      "World…",
+    ]);
+
+    expect(shownLines(ARIAL_BOX_METRICS, text)).toEqual(["Hello…"]);
   });
 
   it("[F14.AC2] shows no more lines than the text wraps into, and no ellipsis when all fit", () => {

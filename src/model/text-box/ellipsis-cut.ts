@@ -1,12 +1,11 @@
 import { characterUnits, isNoBreakAfter } from "../line-characters";
 import { joinedLineMeasure, measuredLine } from "../text-block";
+import { isMeasureFitting, withoutTrailingSpaces } from "../text-wrap";
 
-import { isMeasureFitting } from "./is-measure-fitting";
 import { textEllipsis } from "./text-ellipsis";
-import { withoutTrailingSpaces } from "./without-trailing-spaces";
 
-import type { TextInBox } from "./text-in-box";
 import type { LineMeasure } from "../text-block";
+import type { TextInBox } from "../text-wrap";
 
 /** The space U+0020, which never ends what is kept before the ellipsis. */
 const SPACE = " ";
