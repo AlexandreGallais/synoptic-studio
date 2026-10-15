@@ -3,7 +3,7 @@ id: SP-016
 epic: E15
 feature: F14
 title: "Research for F14: a box of text wrapped, cut with an ellipsis and aligned"
-status: in-progress
+status: done
 points: 2
 ---
 
@@ -37,5 +37,5 @@ Find, read and record the sources of every story of F14 before its implementatio
 One task = one commit, referenced as `SP-016.Tn`.
 
 - [x] T1 — Inventory the formulas and behaviors of the stories (1 h)
-- [ ] T2 — Find, read and record the sources; write `DERIV-text-box` (3 h)
-- [ ] T3 — Write research note 0018, the domain's provisional rules and F14's stories (2 h)
+- [x] T2 — Find, read and record the sources; write `DERIV-text-box` (3 h)
+- [x] T3 — Write research note 0018, the domain's provisional rules and F14's stories (2 h)
