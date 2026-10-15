@@ -12,9 +12,9 @@ import type { Text } from "./text";
  * Whether a text can enter the model: a size from 1 to 100 000, a weight from 100 to 900, an
  * opacity from 0 to 100, a letter and a word spacing from −100 000 to 100 000, all integers; a
  * color of six hexadecimal digits; an integer position (ADR-0003); an angle from 0 to 359
- * (ADR-0035); a case, an alignment and a direction among their values; a font name that is not
- * empty, trimmed and free of control characters (`isFontName`). Any content is allowed, the empty one included, which
- * draws nothing.
+ * (ADR-0035); a case, an alignment and a direction among their values; a font name and a
+ * fallback name that are not empty, trimmed and free of control characters (`isFontName`). Any
+ * content is allowed, the empty one included, which draws nothing.
  *
  * @kind domain
  * @param text - the text to check
@@ -39,5 +39,6 @@ export function isValidText(text: Text): boolean {
     alignments.includes(text.alignment),
     directions.includes(text.direction),
     isFontName(text.font),
+    isFontName(text.fallback),
   ].every(Boolean);
 }
