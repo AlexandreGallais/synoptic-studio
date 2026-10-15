@@ -6,19 +6,18 @@ A text can now sit in a **box** of a given width and height instead of fitting i
 
 ![“Pump P-101 is running” in Inter 16, wrapped in a box 110 × 60, the box dashed](./images/f14-box.svg)
 
-| Option                                  | What it does                                                                                             |
-| --------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| **Fit**                                 | **Fit content**, as in F05, or **Box**; the box's own fields show only for a box                         |
-| **Width**, **Height**                   | the box, integers from 0 to 100 000; the dashed frame is the box, not the lines                          |
-| **Long words**                          | a word wider than the box: **Break** at a character, without a hyphen, or **Move whole** to its own line |
-| **Max lines (0 none)**                  | the most lines shown; the last one shown ends with "…"                                                   |
-| **Ellipsis**                            | on by default; off, a cut text simply stops                                                              |
-| **Vertical alignment**                  | the block of lines at the top, the middle or the bottom of the box                                       |
-| **Wrap**                                | **Automatic**, as many words a line as fit, or **Balance**, lines of even length                         |
-| **Line height (0 auto)**                | the distance between two baselines; 0 keeps the font's own                                               |
-| **Trim**                                | the block starts at the capitals' top, not at the font's ascender                                        |
-| **Background**, its color and opacity   | a band behind each line, as a highlighter, yellow and opaque when ticked                                 |
-| **Alignment**, **Angle** (F05's fields) | each line on the left, the center or the right of the box; a text in a box turns about the box's middle  |
+| Option                                  | What it does                                                                                            |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| **Fit**                                 | **Fit content**, as in F05, or **Box**; the box's own fields show only for a box                        |
+| **Width**, **Height**                   | the box, integers from 0 to 100 000; the dashed frame is the box, not the lines                         |
+| **Max lines (0 none)**                  | the most lines shown; the last one shown ends with "…"                                                  |
+| **Ellipsis**                            | on by default; off, a cut text simply stops                                                             |
+| **Vertical alignment**                  | the block of lines at the top, the middle or the bottom of the box                                      |
+| **Wrap**                                | **Automatic**, as many words a line as fit, or **Balance**, lines of even length                        |
+| **Line height (0 auto)**                | the distance between two baselines; 0 keeps the font's own                                              |
+| **Trim**                                | the block starts at the capitals' top, not at the font's ascender                                       |
+| **Background**, its color and opacity   | a band behind each line, as a highlighter, yellow and opaque when ticked                                |
+| **Alignment**, **Angle** (F05's fields) | each line on the left, the center or the right of the box; a text in a box turns about the box's middle |
 
 Rules: [domain, "Text"](../domain/shapes.md#text); formulas: [`DERIV-text-box`](../derivations/text-box.md); decisions: [ADR-0052](../adr/0052-text-measured-and-drawn-as-positioned-lines.md), [ADR-0055](../adr/0055-text-fallback-metrics-and-turn-on-its-group.md).
 
@@ -56,7 +55,7 @@ Rules: [domain, "Text"](../domain/shapes.md#text); formulas: [`DERIV-text-box`](
 
 ## How to try it
 
-Install Inter 4.1 first, as for F05. Then `npm run dev` and `http://localhost:5173`: 41 steps, each one line to do and one to look at; **Next** types the text and its box. E15 is validated at once (VAL-017): they are steps 37 to 77 of its 176, numbered so below; at the epic review, steps 124 to 164 of `?guide=epic`. The steps give each example in Inter 16, whose metrics ship with the library.
+Install Inter 4.1 first, as for F05. Then `npm run dev` and `http://localhost:5173`: 41 steps, each one line to do and one to look at; **Next** types the text and its box. E15 is validated at once (VAL-017): they are steps 37 to 77 of its 176, numbered so below; at the epic review, steps 124 to 164 of `?guide=epic`. These are the numbers of the run on 2026-10-15: F17 removed steps 39 and 55, the break at a character, a word too long now always kept whole (US-042). The steps give each example in Inter 16, whose metrics ship with the library.
 
 | Steps | What                                                                                                                                                                      |
 | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -77,7 +76,7 @@ Each is built as written and shown by its step; the full list, with its examples
 | --- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------- | ---- |
 | 1   | Box size                            | integers from 0 to 100 000                                                                                  | 53   |
 | 2   | Spaces opening a paragraph          | kept with its first word: " Hello" over "World"                                                             | 54   |
-| 3   | A word too long, broken             | on its own line, broken without a hyphen; the next word may join its last part                              | 55   |
+| 3   | A word too long, broken             | removed at the validation: a word too long always stays whole (US-042)                                      | 55   |
 | 4   | A word too long, moved whole        | on its own line, cut with "…", or whole and overflowing without the ellipsis                                | 56   |
 | 5   | No-break space                      | no line ends after it                                                                                       | 57   |
 | 6   | A box shorter than a line           | one line shown at least; max lines from 0 (none) to 100 000                                                 | 58   |
@@ -101,7 +100,7 @@ Each is built as written and shown by its step; the full list, with its examples
 ## Limits
 
 - Fonts other than Inter are still measured with Inter until fonts are read from files (F15).
-- No hyphenation: a long word breaks at a character, without a hyphen.
+- No hyphenation: a word too long stays whole, overflowing its box or cut with "…" (US-042).
 - No "pretty" wrap style (decision 15).
 - A line's characters are never clipped at the box's edge: what overflows is drawn.
 
