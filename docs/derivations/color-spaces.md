@@ -38,7 +38,9 @@ A = round(255 · p / 100) = ⌊(255 · p + 50) / 100⌋
 p = round(100 · A / 255) = ⌊(200 · A + 255) / 510⌋
 ```
 
-`2.55` is not exact in binary64: `50 × 2.55` gives `127.49999999999999`, which rounds to 127, while `255 · 50 / 100 = 127.5` rounds up to 128 (`#80`). The integer forms give 128.
+Both are one rounded quotient of integers (`roundedQuotient`): for `d > 0`, `round(n / d) = ⌊n / d + ½⌋ = ⌊(2n + d) / 2d⌋`, with the first line `n = 255 · p`, `d = 100` and the second `n = 100 · A`, `d = 255`. The floor of `t / u` is taken as `(t − t mod u) / u`, `t mod u` from 0 included to `u` excluded, so that the division is exact; for a negative `n` a tie still rounds toward +∞ (`−7 / 2 = −3.5` gives −3).
+
+`2.55` is not exact in binary64: `50 × 2.55` gives `127.49999999999999`, which rounds to 127, while `255 · 50 / 100 = 127.5` rounds up to 128 (`#80`); `90 × 2.55` gives `229.49999999999997`, which rounds to 229, while `229.5` rounds up to 230 (`#e6`). The integer forms give 128 and 230.
 
 **Every percent comes back.** `|A − 2.55 p| ≤ 0.5`, so `|100 A / 255 − p| ≤ 0.5 / 2.55 < 0.2 < 0.5`: rounding gives `p` again. The byte from a percent never ties back: `100 A / 255 = k + ½` would need `200 A = 255 (2k + 1)`, an even number equal to an odd one.
 
