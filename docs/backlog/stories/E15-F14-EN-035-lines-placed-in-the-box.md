@@ -28,7 +28,7 @@ Arial 5.01 at size 16, kerning left out: ascender 1854, descender −434, line g
 One task = one commit, referenced as `EN-035.Tn`.
 
 - [x] T1 — The cap height read from `OS/2` with its fallback, kept in the font metrics; Inter's data written again; tests first (2 h)
-- [ ] T2 — The first baseline and the line height: automatic, chosen with half-leading, trimmed; `@see DERIV-text-box`; tests first, a property: consecutive baselines are one line height apart (2 h)
+- [x] T2 — The first baseline and the line height: automatic, chosen with half-leading, trimmed; `@see DERIV-text-box`; tests first, a property: consecutive baselines are one line height apart (2 h)
 - [ ] T3 — The block placed in the box by its vertical alignment, the lines across the box's width, the turn about the box's middle; tests first (2 h)
 
 ## Notes

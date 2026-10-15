@@ -1,28 +1,30 @@
-import { lineHeight } from "../text-block";
+import { fontUnitsAtSize } from "../font";
+import { textLineHeight } from "../text-block";
 
 import type { BlockLineHeights } from "./block-line-heights";
 import type { FontMetrics } from "../font";
 import type { Text } from "../text";
 
-/** A line height of 0 asks for the font's own. */
-const AUTOMATIC = 0;
-
 /**
- * The heights a text's block of lines is counted with: its line height, the font's when automatic
- * (`lineHeight`) or the integer chosen, for every line, its first one included
- * (`DERIV-text-box`, steps 5 and 7). The trim, which starts the first line at the cap height,
- * needs the font's cap height, read with EN-035.
+ * The heights a text's block of lines is measured with: its line height (`textLineHeight`), and
+ * its first line's height, the line height, or the cap height when the block is trimmed, its
+ * first line's top then at the cap height (`DERIV-text-box`, steps 5 and 7).
  *
- * Formula: λ = (A − D + G) × s / U when automatic, the integer chosen otherwise.
+ * Formula: f = C × s / U trimmed, λ otherwise.
  *
  * @kind domain
  * @param metrics - the metrics of the face the text is drawn with
- * @param text - its size and line height
+ * @param text - its size, line height and trim
  * @returns the first line's height and the line height, in user units
  * @see DERIV-text-box
  */
 export function textBlockLineHeights(metrics: FontMetrics, text: Text): BlockLineHeights {
-  const line = text.lineHeight === AUTOMATIC ? lineHeight(metrics, text.size) : text.lineHeight;
+  const line = textLineHeight(metrics, text);
 
-  return { firstLine: line, line };
+  return {
+    firstLine: text.isTrimmed
+      ? fontUnitsAtSize(metrics.capHeight, text.size, metrics.unitsPerEm)
+      : line,
+    line,
+  };
 }

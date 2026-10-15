@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 import { ARIAL_BOX_METRICS, HELLO_TEXT } from "../../../tests";
 import { characterUnits } from "../line-characters";
 import { lineWidth } from "../text-block";
+import { withoutTrailingSpaces } from "../text-wrap";
 
 import { ellipsisCut } from "./ellipsis-cut";
 import { textEllipsis } from "./text-ellipsis";
-import { withoutTrailingSpaces } from "./without-trailing-spaces";
 
 import type { FontMetrics } from "../font";
 import type { Text } from "../text";
