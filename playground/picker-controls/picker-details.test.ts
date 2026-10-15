@@ -157,13 +157,34 @@ describe("Color picker: focus, keys, rounding and what it writes (US-035, audit)
     expect(readValue("text-color")).toBe("#123456");
   });
 
-  it("keeps the hue of any color when another model is chosen: HSB 200°, 1 %, 50 % in HSL", () => {
+  it("keeps its hue when another model is chosen and it gives the color back: #7e7f80 at 200°", () => {
     typeAndLeave("color-hue-value", "200");
     typeAndLeave("color-saturation-value", "1");
     typeAndLeave("color-level-value", "50");
     chooseOption("color-model", "hsl");
 
-    // #7e7f80 alone reads as hue 210°: the picker keeps its 200°.
-    expect(readValue("color-hue-value")).toBe("200");
+    // #7e7f80 alone reads as hue 210°; HSL 200°, 0.8 %, 49.8 % gives #7e7f80 back: 200° kept.
+    expect([readValue("color-hue-value"), readValue("text-color")]).toEqual(["200", "#7e7f80"]);
+  });
+
+  it("[F16.AC3] shows the color's own hue when the one held would not give it back: #523a39", () => {
+    typeAndLeave("color-hue-value", "0.7");
+    typeAndLeave("color-saturation-value", "30");
+    typeAndLeave("color-level-value", "32.2");
+    expect(readValue("text-color")).toBe("#523a39");
+
+    chooseOption("color-model", "hsl");
+
+    // Own hue 60 · (0x3a − 0x39) / (0x52 − 0x39) = 60 / 25 = 2.4°; HSL 0.7°, 18 %, 27.3 % would
+    // give #523939, so the hue shown is 2.4°, which gives #523a39 back.
+    expect([
+      readValue("color-hue-value"),
+      readValue("color-saturation-value"),
+      readValue("color-level-value"),
+      readValue("text-color"),
+    ]).toEqual(["2.4", "18", "27.3", "#523a39"]);
+
+    typeAndLeave("color-level-value", "27.3");
+    expect(readValue("text-color")).toBe("#523a39");
   });
 });

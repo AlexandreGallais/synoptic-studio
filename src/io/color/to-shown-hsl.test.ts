@@ -20,6 +20,17 @@ describe("toShownHsl (DERIV-color-spaces step 9, ADR-0056)", () => {
     });
   });
 
+  it("[F16.AC3] shows #808080 as HSL 0°, 0 %, 50.2 %, its lightness to one decimal", () => {
+    // C = 0: hue 0, S_L = 0; L = (128 + 128) / 2 / 255 = 0.50196, 50.196 % shown 50.2.
+    const hsl = rgbToHsl(hexToRgb("#808080"));
+
+    expect(toShownHsl(hsl)).toEqual({
+      hue: 0,
+      lightness: 50.2,
+      saturation: 0,
+    });
+  });
+
   it("[F16.AC3] shows a hue that rounds to 360.0 as 0.0", () => {
     expect(toShownHsl({ hue: 359.96, lightness: 50, saturation: 100 })).toHaveProperty("hue", 0);
   });

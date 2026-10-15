@@ -102,13 +102,13 @@ HSL: `L = (r + b) / 2`, `a = S_L · min(L, 1 − L) = M − L = C / 2`, `L − C
 | --- | --------------- | ------------------------------- | --------------------------------- |
 | 0   | `2h`, at most 2 | −1 (`k − 3 ≤ −1`)               | `L + C/2 = r`                     |
 | 8   | `8 + 2h`        | `9 − k = 1 − 2h`                | `L − (C/2)(1 − 2h) = b + C h = g` |
-| 4   | `4 + 2h`        | 1 (`k − 3 ≥ 1`, `9 − k > 3`)    | `L − C/2 = b`                     |
+| 4   | `4 + 2h`        | 1 (`k − 3 ≥ 1`, `9 − k ≥ 3`)    | `L − C/2 = b`                     |
 
 The five other sectors permute the components and shift `k` by the same offsets; a grey (`C = 0`) gives `a = 0` and `V · S_V = 0`, so every component is `L` or `V`, the grey itself. The script of the cross-check runs every sector.
 
 ## Step 8 — Back to the bytes
 
-Each byte is `round(255 · f(n))`: an sRGB component "must be rounded towards +∞, not truncated" (`REF-CSS-COLOR-4`, §16.2.2), and CSS rounds to the nearest integer "in the direction of +∞ when the fractional portion is exactly 0.5" (`REF-CSS-VALUES-4`, §5.2). Over the 16 777 216 colors, computed in binary64 from the unrounded HSL or HSB values, `|255 · f(n) − byte|` is at most `3.7 × 10⁻¹³` for HSL and `3.8 × 10⁻¹³` for HSB, far below the 0.5 rounding forgives: **the round trip from the hexadecimal is exact** for every color.
+Each byte is `round(255 · f(n))`: a component whose precision cannot be kept "should be rounded towards +∞" (`REF-CSS-COLOR-4`, §5.1; the rounding to a byte is the project's choice, ADR-0056), and CSS rounds to the nearest integer "in the direction of +∞ when the fractional portion is exactly 0.5" (`REF-CSS-VALUES-4`, §5.2). Over the 16 777 216 colors, computed in binary64 from the unrounded HSL or HSB values, `|255 · f(n) − byte|` is at most `3.7 × 10⁻¹³` for HSL and `3.8 × 10⁻¹³` for HSB, far below the 0.5 rounding forgives: **the round trip from the hexadecimal is exact** for every color.
 
 The library rounds with `Math.round` (`nearestInteger`, `REF-MDN-MATH-ROUND`), as the cross-check did: it is CSS's rule, while `⌊x + 0.5⌋` in binary64 rounds 0.49999999999999994 up, and the floor `⌊(2n + d) / 2d⌋` taken with a modulo, exact for integers, is not for a fraction: by 1, it gave `−5.6 × 10⁻¹⁷` for `−10⁻¹³`, not an integer, and 1 for 0.49999999999999994, `2n + 1` rounding to 2 (EN-038).
 
@@ -122,6 +122,10 @@ A designer reads the HSL or HSB values and may type them back. Integers cannot k
 | integers     | 15 001 662 (about 89.4 %) | 14 732 448 (about 87.8 %) |
 | one decimal  | 0                         | 0                         |
 | two decimals | 0                         | 0                         |
+
+The integer counts are those of the SP-017 script; another binary64 implementation of the same formulas gave counts up to 45 apart (AUD-017), since values lying exactly on a half are computed a last bit above or below it. The zeros do not depend on it.
+
+A value shown is the nearest tenth of the value computed in binary64. When the exact value lies on a half-tenth, the computed one may lie a last bit below it and is shown rounded down: `#002330` has the hue 196.25° exactly, computed 196.24999999999997 and shown 196.2; `#030330` has the HSB saturation 93.75 %, shown 93.7. Either neighbour gives the hexadecimal back, as the one-decimal row shows (AUD-017, provisional, VAL-016).
 
 A hue rounded to 360.0 is shown 0.0, by the remainder `n − 360 · ⌊n / 360⌋` of the rounded hue, which is never negative; the library takes it with `%` (`nonNegativeRemainder`, `REF-ECMA-262-NUMBER-REMAINDER`), exact in binary64, where `modulo`'s added divisor turns 30.1 into 30.100000000000023 (EN-038). No bound proves the one-decimal case by itself: rounding the lightness to a tenth of a percent moves a byte by up to 0.26, rounding the hue to a tenth of a degree by up to 0.21, together more than 0.5. The exhaustive count is the proof.
 
@@ -169,7 +173,9 @@ The binary64 form of step 6 stays for colors read from their hexadecimal (step 9
 
 ## Cross-check
 
-A script written at SP-017 (Node.js, binary64) converted each of the 16 777 216 colors: the hue, HSL and HSL back by the sample code of `REF-CSS-COLOR-4` §7.2 and §7.1 (without its `1e−5` threshold, a grey's hue 0), HSB and HSB back by the formulas of `REF-WIKI-HSL-HSV`, the values rounded by `Math.round(x · 10ᵈ) / 10ᵈ` and a hue of 360 written 0, each byte by `Math.round`; unrounded and rounded to 0, 1 and 2 decimals, and gave the counts of step 9 and the bounds of step 8; it also checked the 101 percents of step 2. At EN-038 the library's own functions (`rgbToHsl`, `rgbToHsb`, `hslToRgb`, `hsbToRgb`, `toShownHsl`, `toShownHsb`, `fractionToByte`) ran over every color once, unrounded and to one decimal, in HSL and in HSB: 0 colors changed in each of the four runs, about 13 to 17 s each. That is too slow for every test run, so the tests run a sample with the same functions: one color in 31 (31 is prime to 256, so every byte of every component is drawn) and every color with two equal components, where the hue changes sector, about 735 000 colors, each round trip a test of its own taking about 1.3 to 1.8 s, about 3 s for each model under coverage; a property test draws any color besides.
+At AUD-017 two reviewers ran every color through the picker's own path, its values shown to one decimal (`hexToPickedColor`) then turned back in exact integers (`pickedColorToHex`, step 11), in HSL and in HSB: 0 colors changed in each.
+
+A script written at SP-017 (Node.js, binary64) converted each of the 16 777 216 colors: the hue, HSL and HSL back by the sample code of `REF-CSS-COLOR-4` §7.2 and §7.1 (without its `1e−5` threshold, a grey's hue 0), HSB and HSB back by the formulas of `REF-WIKI-HSL-HSV`, the values rounded by `Math.round(x · 10ᵈ) / 10ᵈ` and a hue of 360 written 0, each byte by `Math.round`; unrounded and rounded to 0, 1 and 2 decimals, and gave the counts of step 9 and the bounds of step 8; it also checked the 101 percents of step 2. At EN-038 the library's own functions (`rgbToHsl`, `rgbToHsb`, `hslToRgb`, `hsbToRgb`, `toShownHsl`, `toShownHsb`, `fractionToByte`) ran over every color once, unrounded and to one decimal, in HSL and in HSB: 0 colors changed in each of the four runs, about 13 to 17 s each. That is too slow for every test run, so the tests run a sample with the same functions: one color in 31 (31 is prime to 256, so every byte of every component is drawn) and every color with two equal components, where the hue changes sector, about 731 000 colors, each round trip a test of its own taking about 1.3 to 1.8 s, about 3 s for each model under coverage; a property test draws any color besides.
 
 ## Checks (test cases)
 
@@ -187,8 +193,8 @@ A script written at SP-017 (Node.js, binary64) converted each of the 16 777 216 
 | `#000001` at integer HSL       | HSL(240°, 100 %, 0.19608 %) shown 0 % lightness                                         | `#000000`; at 0.2 %: `#000001`  |
 | `#000000`, `#ffffff`           | `C = 0`; `L` is 0 or 1                                                                  | saturation 0, hue 0             |
 | `#f80`, `#F80C`                | each digit doubled; `cc` = 204                                                          | `#ff8800`; with alpha, 80 %     |
-| 50 % to a byte                 | `⌊(12 750 + 50) / 100⌋`                                                                 | 128 (`80`), not 127             |
-| byte 236 to a percent          | `⌊(47 200 + 255) / 510⌋ = ⌊93.05⌋`                                                      | 93 %                            |
+| 50 % to a byte                 | `round(255 · 50 / 100) = round(127.5)`                                                  | 128 (`80`), not 127             |
+| byte 236 to a percent          | `round(100 · 236 / 255) = round(92.549)`                                                | 93 %                            |
 | every percent 0 to 100         | percent → byte → percent                                                                | the same percent                |
 | every color, one decimal shown | step 9                                                                                  | the same hexadecimal            |
 | plane 200 × 100 at (200, 50)   | step 10: `S = 100 · 200 / 200`, `V = 100 · (100 − 50) / 100`; HSB at 210°               | 100 %, 50 %, `#004080`          |

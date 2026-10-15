@@ -35,6 +35,19 @@ describe("hexToPickedColor (DERIV-color-spaces steps 3 and 9)", () => {
       saturation: 0,
     });
 
-    expect(hexToPickedColor("#808080", "hsl", 0)).toEqual({ hue: 0, level: 50.2, saturation: 0 });
+    expect(hexToPickedColor("#808080", "hsl", 200)).toEqual({
+      hue: 200,
+      level: 50.2,
+      saturation: 0,
+    });
+  });
+
+  it("[F16.AC2] shows #ff0000 at 0°, its own hue, not the hue held", () => {
+    // C = 1, so the hue is the color's own: 60 · ((0 − 0) / 1 mod 6) = 0; V = 1, S_V = 1.
+    expect(hexToPickedColor("#ff0000", "hsb", 200)).toEqual({
+      hue: 0,
+      level: 100,
+      saturation: 100,
+    });
   });
 });

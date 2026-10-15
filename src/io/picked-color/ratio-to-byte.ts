@@ -7,7 +7,7 @@ const BYTE_MAX = 255;
 
 /**
  * The byte of a component given as an exact fraction of integers, `255 · N / D` rounded to the
- * closest, a tie up (REF-CSS-COLOR-4, §16.2.2): `255 · N` stays an integer below 2⁵³ and the
+ * closest, a tie up (REF-CSS-COLOR-4, §5.1): `255 · N` stays an integer below 2⁵³ and the
  * quotient is correctly rounded, so a half is seen as a half and any other value lies at least
  * `1 / (2D)` from one (`DERIV-color-spaces`, step 11). 0.1 is 25.5, which gives 26.
  *
