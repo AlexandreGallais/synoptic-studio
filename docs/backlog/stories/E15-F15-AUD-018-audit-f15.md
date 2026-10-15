@@ -3,7 +3,7 @@ id: AUD-018
 epic: E15
 feature: F15
 title: Audit F15
-status: ready
+status: done
 points: 2
 ---
 
