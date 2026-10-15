@@ -311,10 +311,11 @@ describe("the guided test of F05 (VAL-014): placing and turning", () => {
     expect(turned).toEqual(["90", "0", "270"]);
   });
 
-  it("[F05.AC5] the dashed frame turns with the letters", () => {
+  it("[F05.AC5] the frame turns with the letters, blue as a turned shape's box", () => {
     openStep("The dashed frame");
     expect(readTransforms()[1]).toBe("rotate(30 87.95313 38.71875)");
-    expect(document.querySelectorAll("#canvas g.text-frame path.straight-box")).toHaveLength(1);
+    // Turned, the frame is drawn as a turned shape's box, thin and blue (US-050).
+    expect(document.querySelectorAll("#canvas g.text-frame path.turned-box")).toHaveLength(1);
   });
 
   it("the turn on the group holding the text and its four strokes", () => {
