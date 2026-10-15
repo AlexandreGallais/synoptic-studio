@@ -4,11 +4,14 @@ import { readFieldValue } from "./read-field-value";
 
 import type { Text, TextLongWord, TextVerticalAlignment, TextWrapStyle } from "../../src";
 
-/** The options of a text's box the Text tool reads (US-033); the background comes with US-034. */
+/** The options of a text's box the Text tool reads (US-033), its background among them (US-034). */
 type TextBoxOptions = Pick<
   Text,
+  | "backgroundColor"
+  | "backgroundOpacity"
   | "boxHeight"
   | "boxWidth"
+  | "hasBackground"
   | "hasEllipsis"
   | "isInBox"
   | "isTrimmed"
@@ -22,7 +25,8 @@ type TextBoxOptions = Pick<
 /**
  * Reads the box's fields of the Text tool: Fit content or Box, its width and height, what becomes
  * of a long word, the maximum number of lines, the ellipsis, the vertical alignment, the wrap
- * style, the line height and the trim. They are read whichever kind is chosen, so that the text
+ * style, the line height, the trim and the background, on or off, with its color and opacity
+ * (US-034). They are read whichever kind is chosen, so that the text
  * keeps them when it changes kind (`docs/domain/shapes.md`, "Box"); a number left empty is
  * `NaN`, which the model refuses (`isValidText`). The page opens the box at 200 × 100, a playground
  * starting value that shows a few lines at once; the model's default stays 0 × 0
@@ -45,8 +49,11 @@ export function readTextBoxOptions(document: Document): TextBoxOptions {
   const wrapStyle = readFieldValue(document, "text-wrap") as TextWrapStyle;
 
   return {
+    backgroundColor: readFieldValue(document, "text-background-color"),
+    backgroundOpacity: readNumber(document, "text-background-opacity"),
     boxHeight: readNumber(document, "text-box-height"),
     boxWidth: readNumber(document, "text-box-width"),
+    hasBackground: document.querySelector<HTMLInputElement>("#text-background")?.checked === true,
     hasEllipsis: document.querySelector<HTMLInputElement>("#text-ellipsis")?.checked === true,
     isInBox: readFieldValue(document, "text-fit") === "box",
     isTrimmed: document.querySelector<HTMLInputElement>("#text-trim")?.checked === true,
