@@ -219,6 +219,25 @@ describe("parseFontMetrics (REF-OT-OTFF)", () => {
     }
   });
 
+  it.each([
+    { capHeight: 700, case: "an OS/2 table of version 1", version: 1 },
+    { capHeight: 0, case: "a cap height of 0", version: 4 },
+  ])("[F14.AC5] gives the test font 0.66 em of its own for $case", ({ capHeight, version }) => {
+    const file = fontFile(TRUE_TYPE_VERSION, {
+      ...testFontTables(),
+      "OS/2": os2Table({
+        capHeight,
+        fsType: 4,
+        strikeoutPosition: 300,
+        strikeoutSize: 50,
+        version,
+      }),
+    });
+
+    // 0.66 × 1000 units per em = 660, not 0.66 × another em.
+    expect(parseFontMetrics(file, [65])?.capHeight).toBeCloseTo(660, 9);
+  });
+
   it("reads the signed fields as signed: a line gap of −1, a strike-out at −20", () => {
     const file = fontFile(TRUE_TYPE_VERSION, {
       ...testFontTables(),

@@ -50,6 +50,12 @@ describe("parseCapHeight (REF-OT-OS2)", () => {
     expect(capHeightOf(fields, ARIAL_UNITS_PER_EM)).toBeCloseTo(FALLBACK, 9);
   });
 
+  it("[F14.AC5] reads sCapHeight from a table of exactly 90 bytes, just long enough", () => {
+    const os2 = viewOfFirst(os2Table(ARIAL_OS2), 90);
+
+    expect(parseCapHeight(os2, ARIAL_UNITS_PER_EM)).toBe(1467);
+  });
+
   it("falls back to 0.66 em, never an error, for a table too short to hold sCapHeight", () => {
     // Version 3 announced, but 89 bytes: sCapHeight, at 88 and 89, is cut; 0.66 × 1000 = 660.
     const os2 = viewOfFirst(os2Table(ARIAL_OS2), 89);
