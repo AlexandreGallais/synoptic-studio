@@ -11,4 +11,3 @@ export * from "./modulo";
 export * from "./nearest-integer";
 export * from "./percent-from-fraction";
 export * from "./population-count";
-export * from "./rounded-quotient";

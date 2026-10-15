@@ -10,7 +10,7 @@ describe("percentFromFraction (REF-CSS-COLOR-4 §7.2)", () => {
     { expected: 50, fraction: 0.5 },
     { expected: 100, fraction: 1 },
     { expected: 0, fraction: 0 },
-    // 100 · 0.4 = 40.00000000000001 in binary64: close to 40.
+    // 100 · 0.4 = 40, exactly in binary64 too.
     { expected: 40, fraction: 0.4 },
   ])("gives $expected % for $fraction", ({ expected, fraction }) => {
     expect(percentFromFraction(fraction)).toBeCloseTo(expected, 12);

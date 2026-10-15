@@ -21,8 +21,8 @@ The library computes a color's hue, saturation and lightness (HSL) or brightness
 
 ## Notes
 
-- **Every color, once.** The round trip over the 16 777 216 colors, with the library's functions, unrounded and to one decimal, in HSL and in HSB, ran once at EN-038 and changed no color; at about 13 to 17 s a run, it is too slow for each test run (Vitest's timeout is 5 s, and the loaded pre-push run is about 2.5 times slower). The test runs a sample instead, one color in 31 and every color with two equal components (about 735 000 colors, about 1.7 s), and a property test draws any color (`DERIV-color-spaces`, cross-check).
-- **The rounding.** A byte and a value shown are rounded by `nearestInteger` (`Math.round`, `REF-MDN-MATH-ROUND`), not by `roundedQuotient`, which is exact for integers only (`DERIV-color-spaces`, step 8).
+- **Every color, once.** The round trip over the 16 777 216 colors, with the library's functions, unrounded and to one decimal, in HSL and in HSB, ran once at EN-038 and changed no color; at about 13 to 17 s a run, it is too slow for each test run (Vitest's timeout is 5 s, and the loaded pre-push run is about 2.5 times slower). The tests run a sample instead, one color in 31 and every color with two equal components (about 735 000 colors), each round trip, unrounded or shown, a test of its own of about 1.3 to 1.8 s, about 3 s for each model under coverage, with a timeout of 20 s; a property test draws any color (`DERIV-color-spaces`, cross-check).
+- **The rounding.** A byte, a value shown and the alpha's percent and byte are rounded by one function, `nearestInteger` (`Math.round`, `REF-MDN-MATH-ROUND`, CSS's tie toward +∞, `REF-CSS-VALUES-4` §5.2); the rounded quotient of EN-037, exact for integers only, is folded into it as `nearestInteger(n / d)` (`DERIV-color-spaces`, steps 2 and 8).
 
 ## Tasks
 
