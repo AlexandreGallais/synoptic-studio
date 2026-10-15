@@ -6,11 +6,12 @@ import { describe, expect, it } from "vitest";
 
 import {
   SVG_NAMESPACE,
+  createDocumentTextElement,
   createEmbeddedFontsElements,
   createPathElement,
   createSvgElement,
-  createTextElement,
   textDrawing,
+  textHtmlLayer,
 } from "../src";
 
 import { DECORATED_METRICS, HELLO_TEXT } from "./text-fixtures";
@@ -205,8 +206,39 @@ const SVG_ELEMENTS = new Set([
 /** The XHTML elements an HTML layer may hold (ADR-0053, decision 3). */
 const XHTML_ELEMENTS = new Set(["div", "span"]);
 
-/** An element created in `src/` or `playground/`: `createElementNS(<namespace>, "<name>")`. */
-const CREATED = /createElementNS\(\s*(?<namespace>[\w.]+),\s*"(?<name>[^"]+)"/gu;
+/** An element created in `src/` or `playground/`: `createElementNS(<namespace>, <name>)`. */
+const CREATED = /createElementNS\(\s*(?<namespace>[\w.]+),\s*(?<name>[^)]+)\)/gu;
+
+/** A name written as a string literal, which alone can be checked: `"<name>"`. */
+const LITERAL = /^"(?<name>[^"]+)"$/u;
+
+/**
+ * The name an element is created with, when written as a string literal.
+ *
+ * @param written - the argument as written
+ * @param call - the whole call
+ * @returns the literal's characters, or the whole call
+ */
+function literalName(written: string, call: string): string {
+  return LITERAL.exec(written)?.groups?.["name"] ?? call;
+}
+
+/** An element created in the code: its name, its namespace's expression and its file. */
+type Creation = { readonly name: string; readonly namespace: string; readonly path: string };
+
+/**
+ * An element created, read from its call: a name that is not a string literal stays the whole
+ * call, which no list holds.
+ *
+ * @param match - the call matched by `CREATED`
+ * @param path - its file
+ * @returns its name, namespace and file
+ */
+function creation(match: RegExpMatchArray, path: string): Creation {
+  const { name = "", namespace = "" } = match.groups ?? {};
+
+  return { name: literalName(name, match[0]), namespace, path };
+}
 
 /**
  * Whether an element created with a namespace written as in the code is one ADR-0053 allows.
@@ -225,14 +257,14 @@ function isAllowedCreation(namespace: string, name: string): boolean {
 const PLACES: Readonly<Record<string, (element: Element) => boolean>> = {
   div: (element) => element.closest("foreignObject") !== null,
   foreignObject: (element) =>
-    element.parentElement?.tagName === "switch" &&
+    element.parentElement?.localName === "switch" &&
     element.parentElement.firstElementChild === element &&
     element.getAttribute("requiredExtensions") === XHTML_NAMESPACE,
   span: (element) => element.closest("foreignObject") !== null,
-  style: (element) => element.parentElement?.tagName === "defs",
+  style: (element) => element.parentElement?.localName === "defs",
   switch: (element) =>
     element.querySelectorAll(":scope > g > text").length === 1 &&
-    [...element.children].map((child) => child.tagName).join(" ") === "foreignObject g",
+    [...element.children].map((child) => child.localName).join(" ") === "foreignObject g",
 };
 
 /**
@@ -242,7 +274,7 @@ const PLACES: Readonly<Record<string, (element: Element) => boolean>> = {
  * @returns true when it is
  */
 function isInItsNamespace(element: Element): boolean {
-  const namespace = XHTML_ELEMENTS.has(element.tagName) ? XHTML_NAMESPACE : SVG_NAMESPACE;
+  const namespace = XHTML_ELEMENTS.has(element.localName) ? XHTML_NAMESPACE : SVG_NAMESPACE;
 
   return element.namespaceURI === namespace;
 }
@@ -257,11 +289,11 @@ function isInItsNamespace(element: Element): boolean {
  * @returns its name and its parent's when misplaced, or nothing
  */
 function misplacement(element: Element): string | undefined {
-  const isPlaced = PLACES[element.tagName] ?? ((): boolean => true);
+  const isPlaced = PLACES[element.localName] ?? ((): boolean => true);
 
   return isInItsNamespace(element) && isPlaced(element)
     ? undefined
-    : `${element.tagName} in ${String(element.parentElement?.tagName)}`;
+    : `${element.localName} in ${String(element.parentElement?.localName)}`;
 }
 
 /** A face embedded, for the document written. */
@@ -280,7 +312,8 @@ const TEXTS: readonly Text[] = [
 ];
 
 /**
- * A document as the library writes it: its canvas, its embedded fonts, a shape and its texts.
+ * A document as the library writes it: its canvas, its embedded fonts, a shape and its texts,
+ * each without and with its HTML layer.
  *
  * @returns the `<svg>`
  */
@@ -290,7 +323,18 @@ function writtenDocument(): SVGSVGElement {
   svg.append(
     ...createEmbeddedFontsElements(document, [EMBEDDED]),
     createPathElement(document, "M0 0 L10 0 L10 10 Z"),
-    ...TEXTS.map((text) => createTextElement(document, text, textDrawing(DECORATED_METRICS, text))),
+    ...[false, true].flatMap((hasHtmlLayer) =>
+      TEXTS.map((text) => {
+        const drawn = textDrawing(DECORATED_METRICS, text);
+        const layer = textHtmlLayer(DECORATED_METRICS, text, drawn);
+
+        return createDocumentTextElement(
+          document,
+          { hasEmbeddedFonts: true, hasHtmlLayer },
+          { drawn, layer, text },
+        );
+      }),
+    ),
   );
 
   return svg;
@@ -302,17 +346,25 @@ describe("the SVG elements the library writes (ADR-0053)", () => {
     .flatMap(({ path, text }) =>
       text
         .matchAll(CREATED)
-        .map((match) => ({
-          name: match.groups?.["name"] ?? "",
-          namespace: match.groups?.["namespace"] ?? "",
-          path,
-        }))
+        .map((match) => creation(match, path))
         .toArray(),
     );
 
   it("reads every element created, not an empty list", () => {
     expect(created.map(({ name }) => name)).toEqual(
-      expect.arrayContaining(["defs", "g", "path", "style", "svg", "text", "tspan"]),
+      expect.arrayContaining([
+        "defs",
+        "div",
+        "foreignObject",
+        "g",
+        "path",
+        "span",
+        "style",
+        "svg",
+        "switch",
+        "text",
+        "tspan",
+      ]),
     );
   });
 
@@ -327,8 +379,19 @@ describe("the SVG elements the library writes (ADR-0053)", () => {
   it("[F15.AC3] writes each element in its place: style in defs, switch around a text", () => {
     const elements = [...writtenDocument().querySelectorAll("*")];
 
-    expect(elements.map((element) => element.tagName)).toEqual(
-      expect.arrayContaining(["defs", "style", "path", "g", "text", "tspan"]),
+    expect(elements.map((element) => element.localName)).toEqual(
+      expect.arrayContaining([
+        "defs",
+        "style",
+        "path",
+        "g",
+        "text",
+        "tspan",
+        "switch",
+        "foreignObject",
+        "div",
+        "span",
+      ]),
     );
 
     expect(elements.map((element) => misplacement(element)).filter(Boolean)).toEqual([]);
