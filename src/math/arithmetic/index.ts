@@ -7,5 +7,6 @@ export * from "./is-span-within";
 export * from "./maximum";
 export * from "./minimum";
 export * from "./modulo";
+export * from "./percent-from-fraction";
 export * from "./population-count";
 export * from "./rounded-quotient";
