@@ -55,6 +55,22 @@ describe("textFontMetrics (ADR-0052)", () => {
     expect(textFontMetrics({ ...HELLO_TEXT, weight: 450 }, FONTS)?.advances[72]).toBe(1525);
   });
 
+  it("[F17.AC4] measures 450 of a family of 400 and 700 with its 400 face, as CSS draws it", () => {
+    // REF-CSS-FONTS-4, §5.2: for 450, the weights up to 500 ascending (none), then the lighter
+    // ones descending: 400, the face the browser draws too once the family's faces are loaded.
+    const family: FontFamily = {
+      ...ARIAL,
+      faces: [
+        ...ARIAL.faces,
+        { file: undefined, isItalic: false, metrics: ARIAL_UNKERNED, weight: 700 },
+      ],
+    };
+
+    expect(textFontMetrics({ ...HELLO_TEXT, font: "Arial", weight: 450 }, [family])).toBe(
+      ARIAL_METRICS,
+    );
+  });
+
   it("measures a font without metrics with its fallback family's face first", () => {
     expect(textFontMetrics({ ...HELLO_TEXT, fallback: "arial", font: "Helvetica" }, FONTS)).toBe(
       ARIAL_METRICS,

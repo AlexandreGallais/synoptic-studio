@@ -3,7 +3,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { fontCollection, testFaceFile } from "../../tests";
-import { chooseFiles, clickElement, openServedPage, waitForPageTasks } from "../user-actions";
+import {
+  chooseFiles,
+  clickElement,
+  openServedPage,
+  readText,
+  waitForPageTasks,
+} from "../user-actions";
 
 import { addFontFile } from "./add-font-file";
 
@@ -57,7 +63,7 @@ describe("A font imported drawn by the page, CSS Font Loading's FontFace (US-036
     vi.clearAllMocks();
   });
 
-  it("[F15.AC1] gives the page the face, its family a CSS string, its weight and style, then redraws once loaded", async () => {
+  it("[F15.AC1] gives the page the face, its family's name as it is, its weight and style, then redraws once loaded", async () => {
     const update = vi.fn<() => void>();
     const bytes = testFaceFile({
       family: "Test Sans",
@@ -70,7 +76,7 @@ describe("A font imported drawn by the page, CSS Font Loading's FontFace (US-036
     expect(update).not.toHaveBeenCalled();
     await waitForPageTasks();
 
-    expect(createdFaces).toHaveBeenCalledExactlyOnceWith('"Test Sans"', bytes, {
+    expect(createdFaces).toHaveBeenCalledExactlyOnceWith("Test Sans", bytes, {
       style: "italic",
       weight: "700",
     });
@@ -86,6 +92,37 @@ describe("A font imported drawn by the page, CSS Font Loading's FontFace (US-036
     expect(addFontFile(document, bytes, update)?.family).toBe("Broken");
     await waitForPageTasks();
     expect(addFace).toHaveBeenCalledOnce();
+  });
+
+  it("[F17.AC4] names the family as it is, quotes and all, never as a CSS string (Chrome takes it literally)", async () => {
+    const bytes = testFaceFile({
+      family: 'My "Font"',
+      fsType: 0,
+      isItalic: false,
+      weightClass: 450,
+    });
+
+    addFontFile(document, bytes, vi.fn<() => void>());
+    await waitForPageTasks();
+
+    expect(createdFaces).toHaveBeenCalledExactlyOnceWith('My "Font"', bytes, {
+      style: "normal",
+      weight: "450",
+    });
+  });
+
+  it("[F17.AC4] says in one line a face the browser cannot load, its name and the browser's reason", async () => {
+    const update = vi.fn<() => void>();
+    const bytes = testFaceFile({ family: "Broken", fsType: 0, isItalic: true, weightClass: 450 });
+
+    addFontFile(document, bytes, update);
+    await waitForPageTasks();
+
+    expect(readText("#font-message")).toBe(
+      "Broken 450 italic could not be loaded by the browser (SyntaxError: The font could not be parsed.): measured with it, drawn with another face.",
+    );
+
+    expect(update).toHaveBeenCalledOnce();
   });
 
   it("[F17.AC4] gives the page each face of a collection alone, as its own font file", async () => {
@@ -111,12 +148,12 @@ describe("A font imported drawn by the page, CSS Font Loading's FontFace (US-036
     // Each face written alone gives back the face's own file, byte for byte, not the collection.
     expect(createdFaces).toHaveBeenCalledTimes(2);
 
-    expect(createdFaces).toHaveBeenNthCalledWith(1, '"Test Sans"', regular, {
+    expect(createdFaces).toHaveBeenNthCalledWith(1, "Test Sans", regular, {
       style: "normal",
       weight: "400",
     });
 
-    expect(createdFaces).toHaveBeenNthCalledWith(2, '"Test Sans"', bold, {
+    expect(createdFaces).toHaveBeenNthCalledWith(2, "Test Sans", bold, {
       style: "normal",
       weight: "700",
     });
