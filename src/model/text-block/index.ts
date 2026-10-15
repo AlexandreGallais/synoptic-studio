@@ -5,6 +5,5 @@ export * from "./line-measure-width";
 export type * from "./line-spacing";
 export * from "./line-width";
 export * from "./measured-line";
-export * from "./text-block";
 export * from "./text-font-metrics";
 export * from "./text-lines";

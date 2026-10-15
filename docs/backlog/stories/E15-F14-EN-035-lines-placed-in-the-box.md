@@ -33,4 +33,4 @@ One task = one commit, referenced as `EN-035.Tn`.
 
 ## Notes
 
-- From the EN-033 audit: `textBlock` and `positionedLines` must take their lines from `wrappedLines` (`src/model/text-box/`) instead of their own `textLines(textInCase(…))`, so that a text in a box is measured and drawn with its wrapped lines; a text that fits its content keeps the lines of F05.
+- From the EN-033 audit, done in EN-034: `textBlock` (moved to `src/model/text-drawing/`) and `positionedLines` take their lines from `shownLines` (`src/model/text-box/`), the lines wrapped, counted and ended with their ellipsis; a text that fits its content keeps the lines of F05. The lines shown are counted with `textBlockLineHeights`, which takes the chosen line height but not yet the trim: with the cap height read, its first line's height becomes the cap height when the text is trimmed (`DERIV-text-box`, step 5). The folder `src/model/text-box/` holds 15 modules, its limit.
