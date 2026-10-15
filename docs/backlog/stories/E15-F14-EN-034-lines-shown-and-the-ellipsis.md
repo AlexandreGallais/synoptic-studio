@@ -3,7 +3,7 @@ id: EN-034
 epic: E15
 feature: F14
 title: The lines a box shows, and the ellipsis
-status: ready
+status: done
 points: 2
 ---
 
