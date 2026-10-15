@@ -1,5 +1,6 @@
 export * from "./character-unit-count";
 export * from "./character-units";
+export * from "./is-no-break-after";
 export * from "./is-word-separator";
 export * from "./letter-spacing-count";
 export * from "./line-advance";

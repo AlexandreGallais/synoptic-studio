@@ -153,10 +153,11 @@ describe("wrappedParagraph (DERIV-text-box steps 1 to 4)", () => {
   });
 
   it("[F14.AC1] never cuts a word after a no-break space, breaking at a character", () => {
-    // "Hello" + no-break space (glyph 0, 1536) + "W" = 8136 / 128 = 63.56 > 50: the cut comes
-    // before the no-break space, which stays with "W"; then "\u{A0}Worl" 5745 / 128 = 44.88 ≤ 50,
-    // "\u{A0}World" 6884 / 128 = 53.78 > 50. No line ends with the no-break space.
-    const text = { ...BOXED, longWord: "break" } as const;
+    // In a box 45: "Hello" + no-break space (569) = 40.91 would fit, but with "W" 7169 / 128 =
+    // 56.01 > 45: the cut comes before the no-break space, which stays with "W"; then
+    // "\u{A0}Worl" 4778 / 128 = 37.33 ≤ 45, "\u{A0}World" 5917 / 128 = 46.23 > 45. No line ends
+    // with the no-break space.
+    const text = { ...BOXED, boxWidth: 45, longWord: "break" } as const;
     const lines = wrappedParagraph(ARIAL_BOX_METRICS, "Hello\u{A0}World", text);
 
     expect(lines).toEqual(["Hello", "\u{A0}Worl", "d"]);
