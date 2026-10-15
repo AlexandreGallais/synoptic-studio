@@ -68,6 +68,7 @@ describe("textToHtmlStyle (ADR-0053, EN-041)", () => {
       ["text-align", "center"],
       ["text-decoration-line", "underline line-through"],
       ["text-decoration-thickness", "from-font"],
+      ["text-decoration-skip-ink", "none"],
       ["text-decoration-color", "#1a2b3c66"],
       ["white-space", "pre"],
     ]);
@@ -92,6 +93,7 @@ describe("textToHtmlStyle (ADR-0053, EN-041)", () => {
     ).toEqual([
       ["text-decoration-line", "line-through"],
       ["text-decoration-thickness", "from-font"],
+      ["text-decoration-skip-ink", "none"],
       ["text-decoration-color", "#000000ff"],
     ]);
   });

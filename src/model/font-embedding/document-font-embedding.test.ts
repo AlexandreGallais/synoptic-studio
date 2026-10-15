@@ -182,6 +182,16 @@ describe("documentFontEmbedding (ADR-0053, DERIV-font-embedding step 7)", () => 
     });
   });
 
+  it("[F15.AC2] embeds a face its text names only as its fallback", () => {
+    // "Missing" is not held: the text is measured with its fallback, Arial 400, which it names.
+    const fallback = { ...HELLO_TEXT, fallback: "Arial", font: "Missing" };
+
+    expect(documentFontEmbedding([fallback], FONTS, ON)).toEqual({
+      embedded: [{ family: "Arial", file: REGULAR_FILE, isItalic: false, weight: 400 }],
+      leftOut: [],
+    });
+  });
+
   it("[F15.AC2] embeds nothing for no text, or texts measured with no face", () => {
     expect(documentFontEmbedding([], FONTS, ON)).toEqual({ embedded: [], leftOut: [] });
     expect(documentFontEmbedding([HELLO_TEXT], [], ON)).toEqual({ embedded: [], leftOut: [] });

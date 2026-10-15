@@ -7,7 +7,8 @@ import type { Text } from "../text";
 
 /**
  * The straight box of a text: the smallest upright rectangle around its frame as drawn, its block
- * or its box turned by its angle (`textFrameCorners`), as SVG's `getBBox` gives for its group
+ * or its box turned by its angle (`textFrameCorners`), in the drawing's space, as a turned shape's
+ * straight box (`getBBox` on the group would give the frame before the group's own turn)
  * (`docs/domain/shapes.md`, Text, Turning; `DERIV-turned-shape` step 4). It is taken around the
  * frame, not the letters' outlines. At 0° it is the frame itself; a frame without area gives a box
  * without area.
