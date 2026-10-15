@@ -10,6 +10,7 @@ import {
   readText,
   readValue,
   selectChoice,
+  selectInput,
   selectPageElement,
   typeAndEnter,
   typeValue,
@@ -339,6 +340,27 @@ describe("the guided test of F05 (VAL-014): the decisions to confirm", () => {
     openStep("Font name as listed (decided, US-036)");
     chooseOption("text-font", "Inter");
     expect(readTextAttribute("font-family")).toBe('"Inter", sans-serif');
+  });
+
+  it("starts the next step with the drawing's options off, as the page opens (US-036)", () => {
+    openStep("Font name as listed (decided, US-036)");
+
+    for (const id of ["embed-fonts", "html-layer"]) {
+      const box = selectInput(id);
+
+      box.checked = true;
+      box.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+
+    expect(document.querySelector("#canvas switch")).not.toBeNull();
+    clickElement("guide-next");
+
+    expect([selectInput("embed-fonts").checked, selectInput("html-layer").checked]).toEqual([
+      false,
+      false,
+    ]);
+
+    expect(document.querySelector("#canvas switch")).toBeNull();
   });
 
   it("bold from 800 gives 400, from 600 gives 700", () => {

@@ -248,6 +248,11 @@
         font-size: 0.85rem;
         color: var(--muted);
       }
+      /* The faces a drawing does not embed (US-036), one per line. */
+      #font-left-out {
+        margin: 0.35rem 0;
+        padding-left: 1.1rem;
+      }
       .color-message {
         margin: 0;
         font-size: 0.85rem;
@@ -769,6 +774,13 @@ Running</textarea>
             /></label>
           </div>
         </div>
+        <fieldset id="document-options">
+          <legend>Drawing</legend>
+          <label><input id="embed-fonts" type="checkbox" /> Embed fonts</label>
+          <label><input id="html-layer" type="checkbox" /> HTML layer</label>
+          <ul id="font-left-out" class="font-message" aria-label="Faces not embedded" hidden></ul>
+          <button id="export-svg" type="button">Export SVG</button>
+        </fieldset>
       </section>
       <section id="size-section" aria-labelledby="size-heading">
         <h2 id="size-heading">Size</h2>

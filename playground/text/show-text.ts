@@ -1,4 +1,5 @@
-import { createSvgElement, createTextElement, textDrawing } from "../../src";
+import { createSvgElement, textDrawing } from "../../src";
+import { createTextDocument, writeLeftOutFaces } from "../document";
 import { selectElement, writeText } from "../page";
 
 import { createTextFrame } from "./create-text-frame";
@@ -15,7 +16,9 @@ const JSON_INDENT = 2;
  * Draws a text at a fixed scale (1 user unit = 1 CSS pixel), turned by its angle, with its
  * measured block, or its box when it sits in one, behind it as a dashed frame turned with it, and
  * shows each stage in the pipeline column: the model, the block, the positioned lines and the SVG
- * written.
+ * written. The drawing is written with its options (`createTextDocument`, US-036): its embedded
+ * fonts in `<defs>` before the text, the text with its HTML layer, and the faces left out listed;
+ * both options off, exactly as before.
  *
  * @kind procedure
  * @param document - page document
@@ -27,17 +30,19 @@ export function showText(document: Document, text: Text, metrics: FontMetrics): 
   const { height, width } = selectElement(document, "canvas").getBoundingClientRect();
   const svg = createSvgElement(document, { height, width, x: -MARGIN, y: -MARGIN });
   const drawn = textDrawing(metrics, text);
-  const group = createTextElement(document, text, drawn);
-
-  const { block } = drawn;
-
-  svg.append(...createTextFrame(document, text, drawn), group);
-  selectElement(document, "canvas").replaceChildren(svg);
-  writeText(document, "model", JSON.stringify(text, undefined, JSON_INDENT));
-  writeText(document, "contour", JSON.stringify(block, undefined, JSON_INDENT));
-  writeText(document, "pieces", JSON.stringify(drawn, undefined, JSON_INDENT));
-
+  const written = createTextDocument(document, { drawn, metrics, text });
   const serializer = new XMLSerializer();
 
-  writeText(document, "path-data", serializer.serializeToString(group));
+  svg.append(...written.defs, ...createTextFrame(document, text, drawn), written.element);
+  selectElement(document, "canvas").replaceChildren(svg);
+  writeLeftOutFaces(document, written.leftOut);
+  writeText(document, "model", JSON.stringify(text, undefined, JSON_INDENT));
+  writeText(document, "contour", JSON.stringify(drawn.block, undefined, JSON_INDENT));
+  writeText(document, "pieces", JSON.stringify(drawn, undefined, JSON_INDENT));
+
+  writeText(
+    document,
+    "path-data",
+    [...written.defs, written.element].map((node) => serializer.serializeToString(node)).join("\n"),
+  );
 }
