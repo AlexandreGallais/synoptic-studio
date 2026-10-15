@@ -18,9 +18,9 @@ const JSON_INDENT = 2;
  * measured block, or its box when it sits in one, behind it as a dashed frame turned with it — a
  * turned text also with its straight box, upright, and its x, y, width and height (US-039) — and
  * shows each stage in the pipeline column: the model, the block, the positioned lines and the SVG
- * written. The drawing is written with its options (`createTextDocument`, US-036): its embedded
- * fonts in `<defs>` before the text, then the text, and the faces left out listed; the option off,
- * exactly as before.
+ * written. The drawing is written without its embedded fonts, which only Export SVG writes
+ * (`createTextDocument`, ADR-0060, US-045), the faces a file would leave out listed when Embed
+ * fonts is on.
  *
  * @kind procedure
  * @param document - page document
@@ -35,7 +35,7 @@ export function showText(document: Document, text: Text, metrics: FontMetrics): 
   const written = createTextDocument(document, { drawn, text });
   const serializer = new XMLSerializer();
 
-  svg.append(...written.defs, ...createTextFrame(document, text, drawn), written.element);
+  svg.append(...createTextFrame(document, text, drawn), written.element);
   selectElement(document, "canvas").replaceChildren(svg);
   writeLeftOutFaces(document, written.leftOut);
   writeTextStraightBox(document, text, drawn.block);
@@ -43,9 +43,5 @@ export function showText(document: Document, text: Text, metrics: FontMetrics): 
   writeText(document, "contour", JSON.stringify(drawn.block, undefined, JSON_INDENT));
   writeText(document, "pieces", JSON.stringify(drawn, undefined, JSON_INDENT));
 
-  writeText(
-    document,
-    "path-data",
-    [...written.defs, written.element].map((node) => serializer.serializeToString(node)).join("\n"),
-  );
+  writeText(document, "path-data", serializer.serializeToString(written.element));
 }

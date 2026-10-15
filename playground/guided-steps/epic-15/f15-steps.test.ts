@@ -2,6 +2,8 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { ARIAL_PATH, systemFont, testFaceFile } from "../../../tests";
+import { readExportedSvg } from "../../document";
+import { readTextModel } from "../../text";
 import {
   chooseFiles,
   chooseOption,
@@ -112,6 +114,15 @@ async function importTestFace(face: TestFace): Promise<void> {
  */
 function readOutput(): string {
   return readText("#path-data");
+}
+
+/**
+ * Reads the drawing as Export SVG writes it, with the text the page holds.
+ *
+ * @returns the file's text
+ */
+function readExport(): string {
+  return readExportedSvg(document, [readTextModel(document)]);
 }
 
 /**
@@ -280,7 +291,12 @@ describe("the guided test of F15 (VAL-017): fonts, embedding, the export", () =>
     await importTestFace(TEST_SANS);
     tickEmbedFonts();
 
-    expect(readOutput()).toMatch(/^<defs[^>]*><style>@font-face \{ font-family: "Test Sans"/u);
+    // The drawing without its fonts (US-045); the file exported with them.
+    expect(readOutput()).toMatch(/^<g /u);
+
+    expect(readExport()).toMatch(
+      /^<svg [^>]*><defs><style>@font-face \{ font-family: "Test Sans"/u,
+    );
 
     chooseOption("text-font", "Inter");
     expect(readLeftOut()).toEqual(["Inter 400: not embedded, its file not held."]);
@@ -389,11 +405,11 @@ describe("the guided test of F15 (VAL-017): its decisions, each with its example
     await importTestFace({ ...TEST_SANS, weightClass: 700 });
     tickEmbedFonts();
     clickElement("text-bold");
-    expect(readOutput().match(/@font-face/gu)).toHaveLength(1);
-    expect(readOutput()).toContain("font-weight: 700");
+    expect(readExport().match(/@font-face/gu)).toHaveLength(1);
+    expect(readExport()).toContain("font-weight: 700");
     clickElement("text-bold");
-    expect(readOutput()).toContain("font-weight: 400");
-    expect(readOutput()).not.toContain("local(");
+    expect(readExport()).toContain("font-weight: 400");
+    expect(readExport()).not.toContain("local(");
   });
 
   it("decision 10: a Hebrew line right to left", () => {
@@ -435,8 +451,8 @@ describe("the guided test of F15 (VAL-017): its decisions, each with its example
       );
 
       tickEmbedFonts();
-      expect(readOutput()).toContain("src: url(data:font/otf;base64,T1RUTw");
-      expect(readOutput()).toContain('format("opentype")');
+      expect(readExport()).toContain("src: url(data:font/otf;base64,T1RUTw");
+      expect(readExport()).toContain('format("opentype")');
     },
   );
 
