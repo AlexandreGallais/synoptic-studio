@@ -2,7 +2,7 @@
 
 Checks run in two places (ADR-0038):
 
-- **Locally, on every work branch** (stories, features, `develop`): the Git hooks — `pre-commit` (lint-staged), `commit-msg` (commitlint), `pre-push` (no shared file on a worker's story branch, branch name, `npm run check:all`). A push that fails them does not leave the machine. No workflow runs on these branches and the agent never waits for one.
+- **Locally, on every work branch** (stories, features, `develop`): the Git hooks — `pre-commit` (lint-staged), `commit-msg` (commitlint), `pre-push` (no shared file on a worker's story branch, branch name, `npm run check:all`, then `golden:check` when a golden file is written). A push that fails them does not leave the machine. No workflow runs on these branches and the agent never waits for one.
 - **On GitHub, once per release**: the pull request from `develop` into `main` runs the CI below; it can be merged only when every check is green (ruleset of `main`). Nothing is re-checked after the merge.
 
 | Workflow              | Job            | When                                             | Does                                                                                                                                                                                                                                                                                            |
