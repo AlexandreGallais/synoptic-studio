@@ -31,6 +31,7 @@ Go faster and lose less time on the agent's checks and tools, not on the library
 - **Oxc instead of ESLint and Prettier.** VoidZero's toolchain: Vite and Vitest (already used), Rolldown, and Oxc — oxlint (a linter compatible with ESLint), oxfmt (a formatter compatible with Prettier), the transformer, the resolver (Node.js module resolution) and the minifier. The aim is to drop ESLint and its plugins entirely, not to keep a mixed setup.
 - **Rules in Rust when needed.** A lint rule or setting oxlint and oxfmt cannot carry as it is is rewritten by hand in Rust, on Oxc, in this repository: the plugins are open source, so each rule is read, then reimplemented. Rust's own tools (rustfmt, clippy), strict by default, are enough for the Rust code's own style.
 - **Agent tools in Rust** for what Oxc cannot replace, living in this repository: for example a tool that gives a new agent its context in fewer tokens and faster.
+- **Every new script in Rust** (decided 2026-10-16): from now on a new script, hook or agent tool is written in Rust, not TypeScript, so that no new TypeScript tool has to be rewritten later; the existing TypeScript tools may still be edited until F19 rewrites them.
 - **`check:all` optimised hard**, and the pre-push wait with it.
 - **More agents without lag**: with the heavy-command lock in the tools (EN-047), ADR-0063's trial of three subagents stands, Vitest limited to half the machine's cores.
 
