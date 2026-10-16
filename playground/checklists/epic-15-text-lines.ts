@@ -92,13 +92,8 @@ export const EPIC_15_TEXT_LINES: readonly ChecklistLine[] = [
   },
   {
     feature: "F14",
-    todo: "Max lines 1, then 0",
-    see: "one line ending with “…”; then every line back",
-  },
-  {
-    feature: "F14",
-    todo: "The content “A”, “B”, an empty line, “C”, Max lines 3, then 0",
-    see: "“A” over “B…”, no “…” alone on the empty line, which takes no height (US-058); then the four lines",
+    todo: "Max lines 1, then 0; then the content “A”, “B”, an empty line, “C”, Max lines 3, then 0",
+    see: "one line ending with “…”, then every line back; then “A” over “B…”, no “…” alone on the empty line, which takes no height (US-058), then the four lines",
   },
   {
     feature: "F14",

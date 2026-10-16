@@ -3,7 +3,7 @@ id: US-058
 epic: E15
 feature: F17
 title: The ellipsis on the last line shown holding text
-status: in-progress
+status: done
 points: 1
 ---
 
