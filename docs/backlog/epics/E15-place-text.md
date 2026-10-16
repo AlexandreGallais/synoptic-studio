@@ -1,7 +1,7 @@
 ---
 id: E15
 title: Place text in symbols
-status: in-progress
+status: done
 ---
 
 # E15 — Place text in symbols
@@ -56,8 +56,8 @@ Split by the agent on 2026-10-14, as the Product Owner asked: the characters fir
 
 After its last feature is validated (ADR-0023, ADR-0049).
 
-| Story                                                                                   | Status      |
-| --------------------------------------------------------------------------------------- | ----------- |
-| [NAM-001](../stories/E15-NAM-001-naming-pass-e15.md) — Naming pass over the code of E15 | done        |
-| [REV-003](../stories/E15-REV-003-review-e15.md) — Review E15 with the Product Owner     | done        |
-| [RET-003](../stories/E15-RET-003-retrospective-e15.md) — Retrospective of E15           | in-progress |
+| Story                                                                                   | Status |
+| --------------------------------------------------------------------------------------- | ------ |
+| [NAM-001](../stories/E15-NAM-001-naming-pass-e15.md) — Naming pass over the code of E15 | done   |
+| [REV-003](../stories/E15-REV-003-review-e15.md) — Review E15 with the Product Owner     | done   |
+| [RET-003](../stories/E15-RET-003-retrospective-e15.md) — Retrospective of E15           | done   |
