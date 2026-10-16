@@ -12,6 +12,7 @@ What each working session dealt with, in the agent's words: the Product Owner's 
 - EN-056: the checklist became a column beside the drawing, a test caps each feature at 12 lines (E15's F05 cut from 14 to 12), and `val:prepare` (Rust) drafts a feature's lines from its criteria; the guided steps of E15 stay for `?guide=epic`.
 - EN-058: `npm run mutate` (`tools/mutate/`, Rust, std only) tries textual mutations — comparison, operator, constant, condition, return — in a temporary worktree outside the repository, under the heavy lock, and reports caught and surviving ones; the audit skill's A4 step points to it.
 - EN-059: a story's `done` commit that changes a rule in `docs/domain/` is refused by the `commit-msg` hook (`tools/rule-docs`, Rust) until its change holds the Q row, the feature's VAL decisions to confirm and the guide page, or the footer `Rule-docs: none affected, <why>`.
+- 2026-10-17, US-061: the font list held while the default font is read again (I77), a face refused at that reading dropped (I78); second criterion read as dropping, from the settled rule that every font offered can be exported.
 
 ## 2026-10-16 — F17 validated, E15 reviewed
 
