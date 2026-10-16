@@ -170,3 +170,61 @@ fn reads_the_tasks_of_the_status_line_cache_for_its_transcript_only() {
     );
     assert_eq!(cached_tasks(&cache, "/other.jsonl"), (Vec::new(), 0));
 }
+
+#[test]
+fn f18_ac9_counts_a_subagent_resumed_by_a_message_until_its_notification() {
+    // The lines that showed "your turn" for 15 minutes while a worker ran (2026-10-15, 12:07 to
+    // 12:22 UTC): a message resumed the stopped EN-039 worker, its end notified under the
+    // message's call id.
+    let send = |id: &str| {
+        uses(
+            "2026-10-15T12:07:38Z",
+            &format!(
+                r#"{{"type":"tool_use","id":"{id}","name":"SendMessage","input":{{"to":"a93498ccc604c403b","summary":"EN-039 audit findings to fix","message":"fix"}}}}"#
+            ),
+        )
+    };
+    let result = |id: &str, text: &str| {
+        format!(
+            r#"{{"type":"user","message":{{"content":[{{"tool_use_id":"{id}","type":"tool_result","content":[{{"type":"text","text":"{text}"}}]}}]}}}}"#
+        )
+    };
+    let resumed = result(
+        "toolu_013f",
+        r#"{\"success\":true,\"message\":\"Resuming agent a93498c\",\"resumedAgentId\":\"a93498ccc604c403b\"}"#,
+    );
+    let running = pending_after(Vec::new(), &[send("toolu_013f"), resumed].join("\n"));
+
+    assert_eq!(
+        running,
+        vec![Task {
+            id: "toolu_013f".into(),
+            kind: Kind::Agent,
+            label: "resumed: EN-039 audit findings to fix".into(),
+            start: 1_792_066_058_000,
+        }]
+    );
+    assert_eq!(after_line(running, &notification("toolu_013f")), Vec::new());
+
+    // A message to a subagent still running is only queued: it resumes nothing.
+    let asked = after_line(Vec::new(), &send("toolu_01Wc"));
+
+    assert_eq!(asked[0].kind, Kind::Message);
+    assert_eq!(
+        after_line(
+            asked,
+            &result(
+                "toolu_01Wc",
+                r#"{\"success\":true,\"message\":\"Message queued for delivery to a6ab5a436c6a3dc67 at its next tool round.\"}"#
+            )
+        ),
+        Vec::new()
+    );
+    let (tasks, _) = cached_tasks(
+        &parse(r#"{"transcript":"/t","tally":{"pending":[{"id":"m","kind":"message"}]}}"#)
+            .expect("JSON"),
+        "/t",
+    );
+
+    assert_eq!(tasks[0].kind, Kind::Message);
+}

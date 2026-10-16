@@ -173,6 +173,48 @@ describe("status line", () => {
     expect(addTokens(started, `${refused}\n${END}\n`).pending).toEqual([]);
   });
 
+  it("[F18.AC9] counts a subagent resumed by a message until its notification, a queued message as nothing", () => {
+    // The lines that showed "your turn" for 15 minutes while a worker ran (2026-10-15, 12:07 to
+    // 12:22 UTC): a message resumed the stopped EN-039 worker, whose end was notified under the
+    // message's call id; no Agent call started it, so the status line saw nothing running.
+    const send =
+      '{"type": "assistant", "timestamp": "2026-10-15T12:07:38Z", "message": {"id": "m", "content": [{"type": "tool_use", "id": "toolu_013f", "name": "SendMessage", "input": {"to": "a93498ccc604c403b", "summary": "EN-039 audit findings to fix", "message": "EN-039 audit findings: fix …"}}]}}';
+    const resumed = String.raw`{"type": "user", "timestamp": "2026-10-15T12:07:40Z", "message": {"content": [{"tool_use_id": "toolu_013f", "type": "tool_result", "content": [{"type": "text", "text": "{\"success\":true,\"message\":\"Resuming agent a93498c\",\"resumedAgentId\":\"a93498ccc604c403b\"}"}]}]}}`;
+    const end =
+      '{"timestamp": "2026-10-15T12:07:46Z", "message": {"id": "z", "stop_reason": "end_turn"}}';
+    const running = addTokens(
+      EMPTY_TALLY,
+      `${prompt("2026-10-15T12:07:30Z")}\n${send}\n${resumed}\n${end}\n`,
+    );
+
+    expect(running.pending).toEqual([
+      {
+        id: "toolu_013f",
+        kind: "agent",
+        label: "resumed: EN-039 audit findings to fix",
+        start: 1_792_066_058_000,
+      },
+    ]);
+
+    expect(isTurnDone(running)).toBe(false);
+
+    const notified = addTokens(
+      running,
+      '{"type": "queue-operation", "timestamp": "2026-10-15T12:22:26Z", "content": "<task-notification>\\n<task-id>a93498ccc604c403b</task-id>\\n<tool-use-id>toolu_013f</tool-use-id>\\n<status>completed</status>"}\n',
+    );
+
+    expect(notified.pending).toEqual([]);
+    expect(isTurnDone(notified)).toBe(true);
+
+    // 13:54:35 UTC the same day: a message to a subagent still running is only queued.
+    const queued = send.replaceAll("toolu_013f", "toolu_01Wc");
+    const queuedResult = String.raw`{"type": "user", "message": {"content": [{"tool_use_id": "toolu_01Wc", "type": "tool_result", "content": [{"type": "text", "text": "{\"success\":true,\"message\":\"Message queued for delivery to a6ab5a436c6a3dc67 at its next tool round.\"}"}]}]}}`;
+    const asked = addTokens(EMPTY_TALLY, `${queued}\n`);
+
+    expect(asked.pending.map((task) => task.kind)).toEqual(["message"]);
+    expect(addTokens(asked, `${queuedResult}\n`).pending).toEqual([]);
+  });
+
   it("counts a monitor and a subagent as background tasks, with what they do", () => {
     const launch =
       '{"type": "assistant", "timestamp": "2026-10-14T16:00:00Z", "message": {"id": "a", "content": [{"type": "tool_use", "id": "toolu_M", "name": "Monitor", "input": {"description": "push F10", "command": "until …"}}, {"type": "tool_use", "id": "toolu_A", "name": "Agent", "input": {"subagent_type": "auditor", "description": "Review EN-030"}}, {"type": "tool_use", "id": "toolu_B", "name": "Bash", "input": {"command": "npm run check:all", "run_in_background": true}}]}}';

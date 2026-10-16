@@ -1,6 +1,7 @@
 // Background tasks of a session, for the status line (docs/tooling/metrics.md): which tool calls
-// start one — a subagent, a monitor, a call run in the background — and which transcript lines end
-// one: its notification, or an error result when it was refused before it started.
+// start one — a subagent, a monitor, a call run in the background, a message that resumes a
+// subagent — and which transcript lines end one: its notification, or an error result when it was
+// refused before it started.
 
 import { blocksOf, field, startOf, text, textOr } from "./status-json.ts";
 
@@ -8,9 +9,13 @@ import { blocksOf, field, startOf, text, textOr } from "./status-json.ts";
 export type BackgroundTask = {
   /** The id of the tool call that started it. */
   readonly id: string;
-  /** A subagent, or a command (a shell command in the background, a monitor). */
-  readonly kind: "agent" | "command";
-  /** What it does: a subagent's type and task, a command's description. */
+
+  /**
+   * A subagent, a command (a shell command in the background, a monitor), or a message to a
+   * subagent whose result is still to come: it becomes a subagent if that result resumes one.
+   */
+  readonly kind: "agent" | "command" | "message";
+  /** What it does: a subagent's type and task, a command's description, a message's summary. */
   readonly label: string;
   /** When it started, epoch milliseconds. */
   readonly start: number;
@@ -20,11 +25,12 @@ export type BackgroundTask = {
 export const LOST_TASK_MS = 10_800_000;
 
 /**
- * Whether a tool call runs in the background: every subagent, every monitor (both end with a
- * notification), and any call asked to run in the background.
+ * Whether a tool call may run in the background: every subagent, every monitor (both end with a
+ * notification), any call asked to run in the background, and a message to a subagent, which
+ * resumes it in the background when it had stopped.
  *
  * @param block - a `tool_use` block
- * @returns true when its end comes later, as a notification
+ * @returns true when its end may come later, as a notification
  */
 function isBackground(block: unknown): boolean {
   const name = text(block, "name");
@@ -32,12 +38,30 @@ function isBackground(block: unknown): boolean {
   return (
     name === "Agent" ||
     name === "Monitor" ||
+    name === "SendMessage" ||
     field(field(block, "input"), "run_in_background") === true
   );
 }
 
 /** Characters of a command kept as its label when it has no description. */
 const LABEL_LENGTH = 60;
+
+/**
+ * What a background task does.
+ *
+ * @param name - the tool's name
+ * @param input - the tool call's input
+ * @returns a subagent's type and task, a message's summary, a command's description
+ */
+function labelOf(name: string, input: unknown): string {
+  if (name === "Agent") {
+    return `${textOr(input, "subagent_type", "agent")}: ${text(input, "description")}`;
+  }
+
+  return name === "SendMessage"
+    ? `resumed: ${textOr(input, "summary", text(input, "to"))}`
+    : textOr(input, "description", text(input, "command").slice(0, LABEL_LENGTH));
+}
 
 /**
  * The background task a tool call starts.
@@ -47,25 +71,49 @@ const LABEL_LENGTH = 60;
  * @returns its id, kind, label and start
  */
 function taskOf(block: unknown, start: number): BackgroundTask {
-  const input = field(block, "input");
-  const isAgent = text(block, "name") === "Agent";
-  const label = isAgent
-    ? `${textOr(input, "subagent_type", "agent")}: ${text(input, "description")}`
-    : textOr(input, "description", text(input, "command").slice(0, LABEL_LENGTH));
+  const name = text(block, "name");
+  const kinds: Readonly<Record<string, BackgroundTask["kind"]>> = {
+    Agent: "agent",
+    SendMessage: "message",
+  };
 
-  return { id: text(block, "id"), kind: isAgent ? "agent" : "command", label, start };
+  return {
+    id: text(block, "id"),
+    kind: kinds[name] ?? "command",
+    label: labelOf(name, field(block, "input")),
+    start,
+  };
 }
 
 /**
  * Background tasks a transcript line starts.
  *
  * @param line - parsed transcript line
- * @returns each subagent, monitor or background call it launches, with its start
+ * @returns each subagent, monitor, background call or message it launches, with its start
  */
 export function startedTasks(line: unknown): readonly BackgroundTask[] {
   return blocksOf(field(line, "message"))
     .filter((block) => text(block, "type") === "tool_use" && isBackground(block))
     .map((block) => taskOf(block, startOf(line)));
+}
+
+/**
+ * Ids of the messages a transcript line answers by resuming a subagent: a subagent that had
+ * stopped runs again in the background, and its end is notified under the message's call id
+ * (seen 2026-10-15: "Resuming agent …", then the notification 15 minutes later). A message to a
+ * subagent still running is only queued: its result resumes nothing.
+ *
+ * @param line - parsed transcript line
+ * @returns the ids of the calls whose result names a resumed subagent
+ */
+export function resumedIds(line: unknown): readonly string[] {
+  return blocksOf(field(line, "message"))
+    .filter(
+      (block) =>
+        text(block, "type") === "tool_result" &&
+        JSON.stringify(field(block, "content") ?? "").includes("resumedAgentId"),
+    )
+    .map((block) => text(block, "tool_use_id"));
 }
 
 /**
