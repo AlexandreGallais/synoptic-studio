@@ -179,7 +179,7 @@
 | [NAM-001](./E15-NAM-001-naming-pass-e15.md)                                       | E15     | Naming pass over the code of E15                                                     | done   |
 | [REV-003](./E15-REV-003-review-e15.md)                                            | E15     | Review E15 with the Product Owner                                                    | done   |
 | [RET-003](./E15-RET-003-retrospective-e15.md)                                     | E15     | Retrospective of E15                                                                 | done   |
-| [SP-020](./E17-F18-SP-020-research-f18.md)                                        | F18     | Research for F18, the sources of RET-003 recorded                                    | ready  |
+| [SP-020](./E17-F18-SP-020-research-f18.md)                                        | F18     | Research for F18, the sources of RET-003 recorded                                    | done   |
 | [EN-045](./E17-F18-EN-045-explicit-tool-scopes.md)                                | F18     | Every check tool given explicit targets                                              | done   |
 | [EN-047](./E17-F18-EN-047-heavy-lock-and-agent-limit.md)                          | F18     | A lock for heavy commands and a limit on subagents                                   | ready  |
 | [EN-063](./E17-F18-EN-063-subagent-limit-in-settings.md)                          | F18     | The subagent limit set in Claude Code's settings                                     | ready  |

@@ -40,7 +40,7 @@ In delivery order.
 
 | ID                                                                                   | Type       | Title                                                              | Status |
 | ------------------------------------------------------------------------------------ | ---------- | ------------------------------------------------------------------ | ------ |
-| [SP-020](../stories/E17-F18-SP-020-research-f18.md)                                  | Spike      | Research for F18, the sources of RET-003 recorded                  | ready  |
+| [SP-020](../stories/E17-F18-SP-020-research-f18.md)                                  | Spike      | Research for F18, the sources of RET-003 recorded                  | done   |
 | [EN-045](../stories/E17-F18-EN-045-explicit-tool-scopes.md)                          | Enabler    | Every check tool given explicit targets                            | done   |
 | [EN-047](../stories/E17-F18-EN-047-heavy-lock-and-agent-limit.md)                    | Enabler    | A lock for heavy commands and a limit on subagents                 | ready  |
 | [EN-063](../stories/E17-F18-EN-063-subagent-limit-in-settings.md)                    | Enabler    | The subagent limit set in Claude Code's settings                   | ready  |
