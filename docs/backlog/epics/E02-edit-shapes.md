@@ -24,7 +24,10 @@ status: draft
 
 ## For the agent's work during E02
 
-- **Lighter context** (Product Owner, 2026-10-14, at RET-002): measure what a session loads before its first word — `AGENTS.md`, `CLAUDE.md`, the rules, the memory index, the skills' descriptions — and make it smaller, so that each session starts with fewer tokens and the conversation memory fills up more slowly. A tool `context:size` gives the figures (`docs/tooling/agent-tools.md`); the retrospective of E02 compares them with E15's. Today: about 29 000 characters for those files, 27 000 more for the skills.
+- **Lighter context** (Product Owner, 2026-10-14, at RET-002): moved to E17, before E02, as its feature F20, a context diet (RET-003).
+- **The model chosen per task** (Product Owner, 2026-10-16, at RET-003): a lighter model for logs, backlog edits, merges and step texts; the strongest for mathematics, audits and research. Measured during E02: tokens per story against E15's 24 M.
+- **Checks by level** (ADR-0064): no independent review per story, a thorough audit per feature, a full audit beside the naming pass.
+- **A trial of sessions** (Product Owner, 2026-10-16, at RET-003): the playground's specification written during the session from the requests, its code updated once before the validation; the heavy checks at the end of a session. Which checks move, and how a session stops in the middle, are specified before the trial starts.
 
 ## Candidate features
 

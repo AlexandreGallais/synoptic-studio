@@ -1,7 +1,7 @@
 ---
 id: E15
 title: Place text in symbols
-status: in-progress
+status: done
 ---
 
 # E15 — Place text in symbols
@@ -38,6 +38,8 @@ Decided by the Product Owner on 2026-10-12: text is too large a subject for one 
 
   `main` then never holds a commit that `develop` lacks, and `develop` follows `main` by a fast-forward. `develop` stays: it is the integration branch.
 
+  Moved at RET-003 to EN-046, in E17: the release of E15 (#259) waits until the end of E17 (Product Owner, 2026-10-16).
+
 ## Features
 
 | Feature                                                                                                             | Status |
@@ -58,4 +60,4 @@ After its last feature is validated (ADR-0023, ADR-0049).
 | --------------------------------------------------------------------------------------- | ------ |
 | [NAM-001](../stories/E15-NAM-001-naming-pass-e15.md) — Naming pass over the code of E15 | done   |
 | [REV-003](../stories/E15-REV-003-review-e15.md) — Review E15 with the Product Owner     | done   |
-| [RET-003](../stories/E15-RET-003-retrospective-e15.md) — Retrospective of E15           | draft  |
+| [RET-003](../stories/E15-RET-003-retrospective-e15.md) — Retrospective of E15           | done   |

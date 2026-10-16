@@ -83,10 +83,35 @@ These run at every tool call or every second, each one starting Node.js. Measure
 
 ### Context
 
-| Tool           | Does                                                                                                                                                       | Signal                                                                        | Rust |
-| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ---- |
-| `context:size` | what a session loads before its first word — `AGENTS.md`, `CLAUDE.md`, rules, memory index, skills' descriptions — in characters and an estimate of tokens | the conversation memory filling up fast (planned for E02, the epic after E15) |      |
+| Tool           | Does                                                                                                                                                       | Signal                                                              | Rust |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- | ---- |
+| `context:size` | what a session loads before its first word — `AGENTS.md`, `CLAUDE.md`, rules, memory index, skills' descriptions — in characters and an estimate of tokens | the conversation memory filling up fast (E17, F20 the context diet) | yes  |
+
+### Asked by E15 (RET-003)
+
+Each is a story of F18 (E17), with the signal measured in E15.
+
+| Tool                                | Does                                                                             | Signal                                                               | Rust                |
+| ----------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------- | ------------------- |
+| heavy lock, `Agent` hook            | one heavy command at a time across worktrees; a fourth subagent refused (EN-047) | four subagents ran checks at once and froze the computer             | yes, with the hooks |
+| `worktree:new <ID>`                 | a worktree named after its story, on its branch (EN-052)                         | worktrees named `agent-a13cbef…`; 549 commands refused in worktrees  |                     |
+| `story:finish` from a worktree      | one merge at a time, clean-up only once merged (EN-051)                          | 4 clean-ups by hand, 2 branches deleted with their pull request open |                     |
+| stories index generated             | the index written from each story's front matter (EN-049)                        | 18 commits rewrote more than 100 of its 181 lines                    | yes                 |
+| `epic:check` failures               | the failing tests, worktree refusals apart, calls lost at a force-quit (EN-055)  | "failed: test" with no name; 549 refusals counted as failures        |                     |
+| `mutate <files>`                    | mutations in a copy of the repository, caught and surviving (EN-058)             | the runner written again at each audit (F05 to F17)                  |                     |
+| `val:prepare`                       | the feature's checklist lines, not guided steps (EN-056)                         | guided-steps files written and unused since US-051                   |                     |
+| a summary of OpenType and CSS Fonts | the fields the project uses, read once                                           | OS/2 read 38 times, CSS Fonts 4 27 times                             |                     |
 
 ## Rust
 
-Rust is installed on the machine. The tools above that run once in a while stay in TypeScript: the time goes to writing commands and to the checks, not to the tools. The tools marked **Rust** are the ones that run thousands of times or read large files. They will be written as one separate Rust project of agent tools, with an ADR, once their measured cost justifies a second language: the hooks and the status line first.
+Rust is installed on the machine. Decided at RET-003 (Product Owner, 2026-10-16): the agent's tooling moves to Oxc and Rust now, in E17, before E02 — not once each tool's cost justifies it, as RET-002 had planned. The measures of E15 say where Rust pays:
+
+| Where                             | E15's measure                                                      | Rust worth it                                              |
+| --------------------------------- | ------------------------------------------------------------------ | ---------------------------------------------------------- |
+| lint (ESLint and its plugins)     | 170 s in a loaded `check:all`, about 25 s alone at E14             | yes: oxlint, and the rules it lacks rewritten on Oxc (F19) |
+| format (Prettier)                 | 33 s in `check:all`; `npm run fix` 195 × 25 s                      | yes if oxfmt formats as Prettier does (F19's spike)        |
+| hooks and status line             | 65 ms per shell command, 149 ms per refresh; 13 127 calls ≈ 14 min | yes                                                        |
+| a context tool for each new agent | 24 M tokens per story; inputs read whole                           | yes, measured first (F20)                                  |
+| tools run once in a while         | seconds, against minutes of the model writing commands             | no: the model is 93–100 % of each turn                     |
+
+The Rust tools live in this repository, beside the TypeScript, with their own checks (rustfmt, clippy); the library stays dependency-free.

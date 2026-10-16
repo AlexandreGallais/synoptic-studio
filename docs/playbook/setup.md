@@ -40,6 +40,19 @@ Setting up a new project the way this one ended E01. In order; each step names t
 | `REF-SAFE-STORY`, `REF-KANBAN-GUIDE` | story types; flow without sprints                          |
 | `REF-GITFLOW`                        | `main` for releases, `develop` for integration             |
 
+## Starting parallel agents (E15)
+
+Copy before the first run with parallel workers:
+
+| Setting                                                                                                    | Why                                                                           |
+| ---------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `.claude/worktrees/` in `.gitignore`, and out of the IDE's indexing with `coverage/`, `dist/`, `docs/api/` | the IDE indexed each worktree as a new project (256 % of the CPU)             |
+| a lock for heavy commands in `.git/`, holding its owner's process id                                       | one `check:all` saturates a laptop; a lock left by a force-quit is taken over |
+| a `PreToolUse` hook on `Agent` limiting subagents                                                          | a sentence was bent once, with a freeze                                       |
+| Prettier's `proseWrap: "never"`; generated indexes; `merge=union` on append-only logs                      | padded tables rewrite whole and conflict on every parallel merge              |
+| the worker brief versioned in the run skill, naming the commands that fit a worktree                       | 549 compound commands refused in worktrees                                    |
+| a register of exceptions to the rules, checked                                                             | each exception visible and justified                                          |
+
 ## Cases met in E01
 
 | Case                                                    | What the kit does                                                   |
@@ -50,3 +63,6 @@ Setting up a new project the way this one ended E01. In order; each step names t
 | no idea how long the work took                          | metrics, session reports                                            |
 | the Product Owner's words kept in a public repository   | writing rules; decisions in neutral words                           |
 | a long guided test accumulating every feature's steps   | one checklist page per epic, a line per option; rerun at the review |
+| a computer frozen by parallel agents (E15)              | the agent limit and the heavy lock in the tools                     |
+| merge conflicts on indexes and logs (E15)               | shared files written at merge; generated indexes; unpadded tables   |
+| a checklist of 50 lines (E15)                           | at most 12 lines per feature, each tried before the validation      |

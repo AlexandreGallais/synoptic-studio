@@ -19,3 +19,6 @@
 | [F13](./E14-F13-every-calculation-named.md)                   | E14  | Every calculation named                             | done   |
 | [F12](./E14-F12-curves-with-handles.md)                       | E14  | Points on a curve with handles                      | done   |
 | [F11](./E14-F11-code-base-ready-for-curves.md)                | E14  | A code base ready for curves                        | done   |
+| [F18](./E17-F18-a-safe-and-cheap-parallel-run.md)             | E17  | A safe and cheap parallel run, and E15's leftovers  | draft  |
+| [F19](./E17-F19-oxc-and-rust-tools.md)                        | E17  | Checks and agent tools on Oxc and Rust              | draft  |
+| [F20](./E17-F20-a-context-diet.md)                            | E17  | A context diet for every agent                      | draft  |
