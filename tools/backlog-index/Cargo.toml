@@ -1,0 +1,8 @@
+[package]
+name = "backlog-index"
+version = "0.1.0"
+edition = "2024"
+publish = false
+description = "Writes the stories index of the backlog from each story's front matter (EN-049, ADR-0065)."
+
+[dependencies]

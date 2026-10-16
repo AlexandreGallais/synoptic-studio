@@ -16,3 +16,6 @@ test-report.xml
 
 # Private records, their own Git repository (ADR-0044)
 /records/
+
+# Build output of the Rust tools (EN-049)
+/tools/*/target/
