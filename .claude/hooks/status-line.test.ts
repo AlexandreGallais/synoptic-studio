@@ -4,6 +4,7 @@ import {
   backgroundText,
   clockDuration,
   isTurnDone,
+  sessionSnapshot,
   shortDuration,
   statusText,
 } from "./status-line";
@@ -145,7 +146,7 @@ describe("status line", () => {
     expect(isTurnDone(ended)).toBe(false);
 
     expect(statusText({ ...STATUS, tally: ended })).toContain(
-      "◌ chat free · waiting for 1 agent, 1 command",
+      "◌ chat free · 1 agent, 1 command in the background",
     );
 
     const notified = addTokens(
@@ -228,6 +229,42 @@ describe("status line", () => {
 
     expect(backgroundText(tally)).toBe("1 agent, 2 commands");
     expect(backgroundText(EMPTY_TALLY)).toBe("");
+  });
+
+  it("[F18.AC9] shows a worker in the background and its duration, never waiting nor your turn", () => {
+    const worker = {
+      id: "w",
+      kind: "agent",
+      label: "resumed: EN-039 audit findings to fix",
+    } as const;
+    const tally = {
+      ...EMPTY_TALLY,
+      pending: [
+        { ...worker, start: 0 },
+        { id: "m", kind: "message", label: "resumed: other", start: 0 },
+      ],
+      start: 1,
+    } as const;
+    const background = backgroundLines(tally.pending, [], {
+      duration: shortDuration,
+      now: 900_000,
+    });
+    const text = statusText({ ...STATUS, background, tally });
+
+    // 900 000 ms = 15 min, the time the resumed EN-039 worker ran; a message still unanswered
+    // is neither a line nor counted.
+    expect(text.split("\n")).toEqual([
+      "\u{1B}[1mE14 › F12\u{1B}[0m",
+      expect.stringContaining("◌ chat free · 1 agent in the background"),
+      "\u{1B}[2m↳ agent resumed: EN-039 audit findings to fix — 15 min\u{1B}[0m",
+    ]);
+
+    expect(text).not.toMatch(/waiting|your turn/u);
+
+    expect(sessionSnapshot({ ...STATUS, background, tally }, 0)).toMatchObject({
+      pendingAgents: 1,
+      pendingCommands: 0,
+    });
   });
 
   it("shows each background task, a subagent with the call it makes now", () => {
@@ -320,7 +357,7 @@ describe("status line", () => {
     expect(active).toContain("5,678,901 tokens this turn (1,234 written)");
     expect(active).toContain("conversation memory 34 % full");
     expect(active.split("\n")).toHaveLength(2);
-    expect(silent).toContain("waiting");
+    expect(silent.split("\n", 1)[0]).toBe("\u{1B}[1mE01 › RET-001 retrospective e01\u{1B}[0m");
     expect(silent).toContain("◌ silent for 3 min");
 
     expect(

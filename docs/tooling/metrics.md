@@ -8,7 +8,7 @@ Measure first, then make each epic faster than the last (Product Owner, RET-001)
 | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
 | `.git/metrics/tool-calls.jsonl`               | the hook `.claude/hooks/log-tool-call.ts`, after each tool call (`PostToolUse`, `PostToolUseFailure`, in the background) | one line per call: see [each call's record](#the-record-of-each-call)                                      |
 | `~/.claude/projects/<repository path>/`       | Claude Code: one JSON Lines transcript per session, subagents included                                                   | every request with its tokens, every tool call and its result, each line with its time, session and branch |
-| `.git/metrics/turns.jsonl`                    | `npm run metrics:session`, at the end of each turn                                                                       | one line per turn: start, session, duration, active time, tokens, tokens written, calls, failures, commits |
+| `.git/metrics/turns.jsonl`                    | `npm run metrics:session` without `--all`                                                                                | one line per turn: start, session, duration, active time, tokens, tokens written, calls, failures, commits |
 | `~/.local/share/agent-library/library.sqlite` | the library server and `npm run library` ([sources](./sources.md))                                                       | the pages read, their sections indexed, and every search and read (`uses` table)                           |
 
 The hook's log sits inside the Git directory: never committed, shared by every worktree, kept when transcripts are cleaned up. Its durations are exact: Claude Code measures the tool's execution and leaves out permission prompts (`duration_ms`, `REF-CC-HOOKS`). For calls made before the hook existed, the report estimates the duration from the transcript, from the request to the result; this also counts the time spent writing the command, so a long heredoc looks slow.
@@ -63,12 +63,12 @@ E14 › RET-002 retrospective e14 · status line, documentation
 
 Its four states tell the Product Owner when the chat is free (RET-002):
 
-| State                                          | Means                                                                              |
-| ---------------------------------------------- | ---------------------------------------------------------------------------------- |
-| `● working`                                    | the agent works on the main thread: a message waits until its turn ends            |
-| `● working · 2 agents in the background`       | the same, with subagents or background commands running                            |
-| `◌ chat free · waiting for 1 agent, 1 command` | the agent's turn is over; only background tasks run: a message is answered at once |
-| `◌ your turn`                                  | nothing runs                                                                       |
+| State                                                | Means                                                                              |
+| ---------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `● working`                                          | the agent works on the main thread: a message waits until its turn ends            |
+| `● working · 2 agents in the background`             | the same, with subagents or background commands running                            |
+| `◌ chat free · 1 agent, 1 command in the background` | the agent's turn is over; only background tasks run: a message is answered at once |
+| `◌ your turn`                                        | nothing runs                                                                       |
 
 A working agent silent for more than 2 minutes shows `◌ silent for 3 min`: waiting, or stalled. A background task is a subagent, a monitor, a call run in the background, or a subagent resumed by a message; it ends with its notification, or with an error result when it was refused before it started (a denied permission, the safety check unavailable): such a call sends no notification and once stayed counted for three hours (2026-10-14).
 
@@ -77,7 +77,7 @@ A message to a subagent that had stopped (`SendMessage`, its result `Resuming ag
 | Part                   | Source                                                                                                                                                                                                                                                                                                                          |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | epic › feature › story | the branch checked out, matched with the backlog's file names (`status-place.ts`); the branch itself outside a story                                                                                                                                                                                                            |
-| the step               | `.git/metrics/step`, one line the agent writes at each step; `waiting` when empty                                                                                                                                                                                                                                               |
+| the step               | `.git/metrics/step`, one line the agent writes at each step; when empty, the place alone (it once read `waiting`, taken for a state: RET-003)                                                                                                                                                                                   |
 | the state              | see the table above; read from the transcript and its background tasks (`status-tasks.ts`)                                                                                                                                                                                                                                      |
 | `⏱ turn`               | time since the current turn started, to the second so that it moves at each refresh; once the agent ends its turn, `last turn` and the clock stopped at its last answer: the Product Owner's prompt after the agent last ended its turn; a message sent while the agent works, or a compaction, stays in the turn               |
 | tokens this turn       | exact sum of the turn's requests, read from the transcript, the same figures as the session report; the part the model wrote in brackets. They grow by steps: Claude Code writes a request's tokens into the transcript only once its answer is complete, so a long answer (a large file written) shows its tokens when it ends |
@@ -89,15 +89,15 @@ The tokens are summed incrementally: `.git/metrics/status-line-turn.json` keeps 
 
 ## Session report
 
-Every message that ends a piece of work closes with a session report (`CLAUDE.md`; [writing](../conventions/writing.md#messages-to-the-product-owner)):
+The session report closes the last message of a session, once, with `--all` (`CLAUDE.md`; [writing](../conventions/writing.md#messages-to-the-product-owner)): without it, the report counts the current turn only, from the last prompt, and 10 h 40 of work once showed as 2.8 s (2026-10-15, RET-003).
 
 ```sh
-npm run metrics:session              # the current turn, framed and colored for the terminal
-npm run metrics:session -- --markdown # the same as a Markdown table, for the chat
-npm run metrics:session -- --all      # the whole conversation
+npm run metrics:session -- --all --markdown # the whole session, as a Markdown table, for the chat
+npm run metrics:session -- --all            # the same, framed and colored for the terminal
+npm run metrics:session                     # the current turn only, saved for the comparison of turns
 ```
 
-It gives one row: the duration (wall and active), the tokens, the part the model wrote, the tool calls and failures, the commits (listed when there are eight or fewer). Each report is also saved as one line in `.git/metrics/turns.jsonl`; the **Turns** section of `npm run metrics` lists every turn, so that a retrospective compares them. A turn starts at the first prompt after the agent last ended its turn; messages sent while it works stay in the turn.
+It gives one row: the duration (wall and active), the tokens, the part the model wrote, the tool calls and failures, the commits (listed when there are eight or fewer); the subagents' transcripts count with the session's. A report of the current turn (without `--all`) is also saved as one line in `.git/metrics/turns.jsonl`; the **Turns** section of `npm run metrics` lists every turn, so that a retrospective compares them. A turn starts at the first prompt after the agent last ended its turn; messages sent while it works stay in the turn.
 
 ## At each retrospective
 

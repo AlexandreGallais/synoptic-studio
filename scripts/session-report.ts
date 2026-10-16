@@ -1,6 +1,6 @@
 // Report of one working session (docs/tooling/metrics.md): how long it took, how many tokens it
 // used, how many tool calls and failures, which commits it made. The agent ends each session with
-// it (CLAUDE.md, definition of done). Run by `npm run metrics:session [session id] [--all]
+// it (CLAUDE.md, with `--all`). Run by `npm run metrics:session [session id] [--all]
 // [--markdown]`: without an id, the session whose transcript changed last; without `--all`, the
 // current turn: from the prompt that started it.
 
@@ -214,14 +214,17 @@ function sessionFiles(folder: string, session: string): readonly string[] {
 }
 
 /**
- * Events of a session, from a given time on.
+ * Events a report counts: every turn of the session with `--all`, else the current turn only,
+ * from the prompt that started it (the main transcript's last turn).
  *
- * @param files - transcripts of the session and its subagents
- * @param from - epoch milliseconds
- * @returns requests and calls at or after `from`
+ * @param transcripts - text of the session's transcript, then those of its subagents
+ * @param isAll - whether `--all` was given
+ * @returns requests and calls of the turns counted
  */
-function eventsFrom(files: readonly string[], from: number): TranscriptEvents {
-  const parsed = files.map((file) => transcriptEvents(readFileSync(file, "utf8")));
+export function reportedEvents(transcripts: readonly string[], isAll: boolean): TranscriptEvents {
+  const [main] = transcripts;
+  const from = isAll || main === undefined ? 0 : turnStartTime(main);
+  const parsed = transcripts.map((transcript) => transcriptEvents(transcript));
 
   return {
     calls: parsed.flatMap((entry) => entry.calls).filter((call) => call.start >= from),
@@ -234,11 +237,10 @@ if (import.meta.main) {
   const session = options.find((option) => !option.startsWith("--")) ?? "";
   const folder = join(homedir(), ".claude", "projects", ROOT.replaceAll(/[^\dA-Za-z]/gu, "-"));
   const files = sessionFiles(folder, session);
-  const from =
-    options.includes("--all") || files[0] === undefined
-      ? 0
-      : turnStartTime(readFileSync(files[0], "utf8"));
-  const events = eventsFrom(files, from);
+  const events = reportedEvents(
+    files.map((file) => readFileSync(file, "utf8")),
+    options.includes("--all"),
+  );
   const start = Math.min(...events.requests.map((request) => request.time));
   const since = Temporal.Instant.fromEpochMilliseconds(
     Number.isFinite(start) ? start : 0,

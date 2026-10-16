@@ -116,7 +116,7 @@ In French, the same shape every time:
 3. **Evidence**: checks run and their result, links to the pull request or commits.
 4. **Decisions needed**: numbered questions, each answerable by yes / no or a choice, with a recommendation.
 5. **Next step**, and what waits for the Product Owner.
-6. **Session report**: `npm run metrics:session -- --markdown` (time and tokens of the turn).
+6. **Session report**, at a session's end only: `npm run metrics:session -- --all --markdown` (time and tokens of every turn of the session).
 
 No raw logs: quote the one line that matters. Questions come last, so they are not lost.
 
