@@ -3,7 +3,7 @@ id: US-060
 epic: E15
 feature: F17
 title: The font chosen automatically holds its files
-status: ready
+status: done
 points: 1
 ---
 
