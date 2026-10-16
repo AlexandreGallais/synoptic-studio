@@ -79,6 +79,14 @@ First tried on 2026-10-16; the validation is not finished.
 
 Each point is investigated for its cause first, then becomes a story.
 
+## Second validation pass
+
+Tried again on 2026-10-16; the validation is still not finished.
+
+- **Works**: installed fonts read ahead, Apple Color Emoji no longer crashing the tab, a turned text's X and Y following its top-left corner, fit content then box keeping its size, letter spacing with right alignment, and the rest of the checklist.
+- **To correct**: a font that is not available (Inter included) is no longer listed, and "Installed fonts" comes first (F1); a font that forbids embedding or lacks the basic Latin letters is not listed (F2); the box size typed is kept when coming back to Box (F3); an ellipsis lands on the last shown line that holds text (F4).
+- **Later**: handling text like other shapes when turned, a single-line option, and a curated set of fonts with an Install button.
+
 ## Validation
 
 Not yet validated (`VAL-018`).
