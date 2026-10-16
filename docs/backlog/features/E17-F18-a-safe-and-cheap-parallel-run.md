@@ -54,7 +54,7 @@ In delivery order.
 | [EN-054](../stories/E17-F18-EN-054-timing-tests-that-hold-under-load.md)             | Enabler    | Timing tests that hold under load                                  | done   |
 | [EN-055](../stories/E17-F18-EN-055-epic-check-says-what-failed.md)                   | Enabler    | `epic:check` says what failed; the golden check at push            | ready  |
 | [EN-056](../stories/E17-F18-EN-056-a-short-checklist.md)                             | Enabler    | A short checklist, prepared by `val:prepare`                       | ready  |
-| [EN-057](../stories/E17-F18-EN-057-register-of-exceptions-and-a-byte-buffer.md)      | Enabler    | The register of exceptions, and a byte buffer for font collections | ready  |
+| [EN-057](../stories/E17-F18-EN-057-register-of-exceptions-and-a-byte-buffer.md)      | Enabler    | The register of exceptions, and a byte buffer for font collections | done   |
 | [US-061](../stories/E17-F18-US-061-font-list-held-while-the-default-font-is-read.md) | User story | Font list held while the default font is read again                | ready  |
 | [EN-058](../stories/E17-F18-EN-058-a-mutation-runner.md)                             | Enabler    | A mutation runner as a tool                                        | ready  |
 | [EN-059](../stories/E17-F18-EN-059-done-commit-checks-the-docs.md)                   | Enabler    | The done commit checks the docs a rule touches                     | ready  |
