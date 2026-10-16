@@ -75,6 +75,12 @@ Not scheduled; for the later UI/UX epic (US-059):
 - **A font list that says more**: which fonts are usable, and which can be exported.
 - **Fonts installed automatically**.
 
+## Ideas from the Product Owner (2026-10-16, review of E15)
+
+To do at the later UI/UX epic (REV-003):
+
+- **Remove the text direction**: right to left is of no use, the Latin script being the strict target, as for fonts. It stays until then; that epic drops the options that make no sense, the aim being the fewest options doing the most.
+
 ## Ideas from the Product Owner (2026-10-11, refinement of F04)
 
 - **A rotation mode**, entered by a button, showing the center of rotation (by default the center of the shape's box). The center is either **free**, fixed at an x and y; or one of the **nine anchors** of the shape's box, or a **point of the shape**, both following the shape when it moves or grows; or a **point or the center of another shape**, which only places it, at that x and y, without following that shape.
