@@ -56,6 +56,6 @@ After its last feature is validated (ADR-0023, ADR-0049).
 
 | Story                                                                                   | Status |
 | --------------------------------------------------------------------------------------- | ------ |
-| [NAM-001](../stories/E15-NAM-001-naming-pass-e15.md) — Naming pass over the code of E15 | draft  |
+| [NAM-001](../stories/E15-NAM-001-naming-pass-e15.md) — Naming pass over the code of E15 | ready  |
 | [REV-003](../stories/E15-REV-003-review-e15.md) — Review E15 with the Product Owner     | draft  |
 | [RET-003](../stories/E15-RET-003-retrospective-e15.md) — Retrospective of E15           | draft  |
