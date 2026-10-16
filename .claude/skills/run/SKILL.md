@@ -1,12 +1,12 @@
 ---
 name: run
-description: Autonomous run — chain the stories of an authorized scope on its feature branch, each with every check and an independent review, merged into the feature branch once checked locally, until a point that needs the Product Owner. Use only when the Product Owner explicitly starts a run, naming a feature or a scope to chain (in French they say to launch or chain it).
+description: Autonomous run — chain the stories of an authorized scope on its feature branch, each with every check, merged into the feature branch once checked locally, until a point that needs the Product Owner. Use only when the Product Owner explicitly starts a run, naming a feature or a scope to chain (in French they say to launch or chain it).
 argument-hint: "[scope, e.g. F01 or EN-005..US-003]"
 ---
 
 # Autonomous run (ADR-0028)
 
-**Terminal** (Product Owner, 2026-10-12): say nothing between tool calls. The commits and the status line (`.git/metrics/step`, updated at each step) show the progress; reviews run as background agents; one summary at the stop, or a question when one blocks. Never write "waiting for an agent" or "message from the auditor".
+**Terminal** (Product Owner, 2026-10-12): say nothing between tool calls. The commits and the status line (`.git/metrics/step`, updated at each step) show the progress; workers run as background agents; one summary at the stop, or a question when one blocks. Never write "waiting for an agent" or "message from the auditor".
 
 Scope: $ARGUMENTS. Never without the Product Owner's explicit start in this conversation. Without argument, the scope is the feature `in-progress` (from its next unfinished story up to its `VAL`); if none is in progress, propose the next feature in order — a new feature starts with its refinement interview, never directly with code.
 
@@ -27,29 +27,26 @@ Scope: $ARGUMENTS. Never without the Product Owner's explicit start in this conv
 3. `/triage` if issues are open: present them at the next stop, do not act on them.
 4. List the scope's stories in delivery order (feature plan); stop now if the next one is `VAL`, `REV` or `RET`, or if a business question of `docs/domain/README.md` blocks it.
 
-## Main thread kept free (ADR-0051, trial during E15)
+## Main thread kept free (ADR-0063)
 
 The main agent dispatches and stays free for the Product Owner, who may write at any time:
 
-- **One worker per story.** It is an `Agent` call (`general-purpose`, `isolation: "worktree"`), in the background, from the up-to-date feature branch. Its prompt holds the story id, this skill's steps 2 to 4 below, `AGENTS.md`'s rules, and two limits: stop before the pull request, and stop with the question when a business rule is missing.
-- **One worker at a time per feature branch.** A feature's stories build on each other. Work on other files may run beside it: the research of the next feature, documentation, reviews.
-- **The main agent's part.** It answers the Product Owner while the worker works, with `npm run activity` and the status line to say where the work is. When the worker reports, it runs the reviews of step 6 in the background, sends the correctness findings back to a worker, then finishes the story (`npm run story:finish`).
+- **One worker per story**, an `Agent` call (`general-purpose`) in the background, in a worktree named after its story. Its prompt is short: the story id, the feature branch, the worktree, and the path of [worker-brief.md](./worker-brief.md), the versioned brief every worker follows.
+- **At most three subagents at once** (a trial; two heavy and one light if the computer lags), **one heavy command at a time** through the lock: the hook of EN-047 refuses a fourth subagent; until it is merged, count them before each `Agent` call.
+- **Separate files.** Parallel workers only on stories that touch separate files; the shared files (indexes, logs, feature file, checklist) are written by the main thread at merge, one merge at a time (ADR-0065).
+- **Heartbeat.** One chat line when a worker starts and when it ends, with an estimate of its duration.
+- **The main agent's part.** It answers the Product Owner, says where the work is (`npm run activity`, the status line), finishes each story (`npm run story:finish`) and writes the shared files.
 - **Business questions** come back from the worker. Only the main agent asks them, in the questionnaire, with room for remarks.
-- **Measured.** At the end of each run, the turn's tokens and the time the chat was free go into the journal, for E15's retrospective.
-- **Only dispatch.** Every piece of work goes to a subagent: research, stories, tool or rule changes. The main thread does none itself, so the chat is always free.
-- **Each comment acknowledged at once.** The main agent says the comment is taken into account and when: now, or once a named running agent has finished, if the comment concerns that agent's work.
-- **Comments one after another.** The Product Owner may send several without waiting; each gets its own acknowledgement.
-- **Tool and rule comments in parallel.** A comment about tools, rules, skills or configuration, unrelated to the running story, goes at once to another agent, on `develop`, in its own worktree.
-- **No shared files.** The main agent knows each running agent's topic and files, so that two agents never edit the same files.
+- **Only dispatch**, and **each comment acknowledged at once**: now, or once a named running agent has finished. A comment about tools, rules or configuration goes to another agent, on `develop`, in its own worktree, within the limit.
 
 ## For each story
 
-1. **Pick up `develop`** (parallel sessions, `docs/tooling/agent.md`): `git fetch origin` and `git log --oneline feature/f<nn>-<topic>..origin/develop -- AGENTS.md CLAUDE.md .claude docs/domain docs/adr docs/backlog docs/conventions`. If it lists commits, the Product Owner decided something in another session: rebase the feature branch on `origin/develop` (`git switch feature/f<nn>-<topic> && git pull && git rebase origin/develop && git push --force-with-lease`), read those commits' diffs, and apply them from this story on — a changed skill or rule replaces what was loaded at the start of the run; a change that touches the run's stories or scope is a stop.
+1. **Pick up `develop`** (parallel sessions, `docs/tooling/agent.md`): `git fetch origin` and `git log --oneline feature/f<nn>-<topic>..origin/develop -- AGENTS.md CLAUDE.md .claude docs/domain docs/adr docs/backlog docs/conventions`. If it lists commits, the Product Owner decided something in another session: merge `origin/develop` into the feature branch (no force push on a feature branch, even with lease, RET-003), read those commits' diffs, and apply them from this story on — a changed skill or rule replaces what was loaded at the start of the run; a change that touches the run's stories or scope is a stop.
 2. Branch from the up-to-date feature branch: `git switch feature/f<nn>-<topic> && git pull && git switch -c <type>/<id>-<topic>`.
-3. Follow `/story` steps 2 and 4–6 (read, `ready`, tests first, one commit per task, docs), then the review of step 6 below, then `/story` steps 7–8 (`done` in the last commit, push through the pre-push hook).
+3. Follow `/story` steps 2 and 4–6 (read, `ready`, tests first, one commit per task, docs), then step 6 below, then `/story` steps 7–8 (`done` in the last commit, push through the pre-push hook).
 4. **User story** (`US`): write its **Product Owner test card** in the story file, section `## Product Owner test`: steps in the playground, expected result of each, terms explained in plain words, what to look at closely.
 5. **Checkpoint** (`CHK`): update docs and methods as the project grows; check consistency of code, docs, `AGENTS.md`, `CLAUDE.md` and rules; run the light evolvability check (`docs/process/README.md`); list the test cards written so far; log what deserves the retrospective.
-6. **Independent review**, before the `done` commit (so that it stays last), in the background and in parallel: the `auditor` on the story's diff (`git diff feature/f<nn>-<topic>...HEAD`), its criteria, derivations and sources; the `verifier` on its tests; the `math-expert` when it adds a `math` or `geometry` function. Fix correctness findings; record the rest in the pull request body.
+6. **Checks by level** (ADR-0064, from E02): no independent review per story; the worker has written the edge cases and mutation-checked each new test. The feature's `AUD` audits in depth; the epic's full audit sits beside its `NAM`.
 7. `npm run story:finish -- feature/f<nn>-<topic> "<title>" <body file>` (ADR-0050): it opens the pull request with the `autonomous` label (never for `VAL`, `REV`, `RET` before the Product Owner validated them), waits at most three minutes for GitHub's merge (`story-automerge.yml`; no CI, ADR-0038), brings the feature branch up to date and deletes the story's branch here and on GitHub. Not merged: it says so; read `gh run list --workflow story-automerge.yml --limit 1`, then `gh run view <run> --log-failed`; a branch behind its base: `gh pr update-branch <n> --rebase`.
    - "Dependencies not up-to-date" at the push: a version passed its 7-day cooldown meanwhile — read its release notes (`docs/tooling/versions-and-security.md`), update it on the story branch (`build(deps)` commit) and on `develop` too.
 8. Statuses: `npm run backlog:status -- <ID> <status>` changes the story's file, index and feature table at once; edits across files: `npm run replace` (`docs/tooling/agent-tools.md`).
@@ -66,14 +63,14 @@ The main agent dispatches and stays free for the Product Owner, who may write at
 ## At the stop
 
 1. Journal entry (on `develop`): stories merged with their pull requests, findings, stop reason.
-2. Message to the Product Owner in French (`docs/conventions/writing.md`): what was built in plain words, the **test cards to run**, findings, questions, what the next step needs from them, and the session report (`npm run metrics:session -- --markdown`).
+2. Message to the Product Owner in French (`docs/conventions/writing.md`): what was built in plain words, the **test cards to run**, findings, questions, what the next step needs from them, and, at a session's end, the session report (`npm run metrics:session -- --all --markdown`).
 
 ## Validation (`VAL`, with the Product Owner)
 
 The Product Owner may test over several sessions: never wait in a loop for them, and start nothing else until they have finished every step.
 
-1. Rebase the feature branch on `develop` (`git rebase origin/develop`, `git push --force-with-lease`), `check:all` green; branch `feat/val-<nnn>-<topic>` from it.
-2. Prepare, as `VAL` tasks: one test per feature criterion `[F01.ACn]`; the feature's lines in its epic's **checklist** (`playground/checklists/`, `?checklist=E15`, US-051) — one line per option kept and one per decision to confirm, each what to try and what to see, a check box before it, no Previous nor Next; even when no drawing changes, one line saying what to check — tested in happy-dom (every option named, none removed); the demo page in `docs/guide/` (`/review`), whose **How to try it** names the checklist's address. No new guided steps: the steps written up to E15 stay in `?guide=epic` only (Product Owner, 2026-10-15).
+1. Merge `origin/develop` into the feature branch (no force push), `check:all` green; branch `feat/val-<nnn>-<topic>` from it.
+2. Prepare, as `VAL` tasks: one test per feature criterion `[F01.ACn]`; the feature's lines in its epic's **checklist** (`playground/checklists/`, `?checklist=E15`, US-051) — at most 12 per feature (counted by EN-056's test), one line per thing to see, each tried in a browser before the validation, the panel beside the drawing; one line per option kept and one per decision to confirm, each what to try and what to see, a check box before it, no Previous nor Next; even when no drawing changes, one line saying what to check — tested in happy-dom (every option named, none removed); the demo page in `docs/guide/` (`/review`), whose **How to try it** names the checklist's address. No new guided steps: the steps written up to E15 stay in `?guide=epic` only (Product Owner, 2026-10-15).
 3. Tell the Product Owner how to launch it themselves — `npm run dev` then `http://localhost:5173/?checklist=<epic>`, and `npm run docs:dev` for the demo page — rather than starting servers for them.
 4. They try the checklist's lines in any order, tick each one seen (the ticks stay in their browser), and say what they see, often spoken; compare it with what each line meant to show (`/review`); record the result and each remark in neutral words in the `VAL` story and the demo page (`docs/conventions/writing.md`); route remarks (stories, improvement log, memory).
 5. Last commit: `VAL` and the feature `done` (feature file, epic table, features index); `Closes:` both. Rebase on `develop`, push (the hook runs `check:all`).

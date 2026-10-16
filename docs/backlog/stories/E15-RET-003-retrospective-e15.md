@@ -24,6 +24,6 @@ One task = one commit, referenced as `RET-003.Tn`.
 - [x] T2 — The record, the logs' treated rows moved, the habits sheet (2 h)
 - [x] T3 — ADRs: the amended run, checks by level, merges of parallel branches, the register of exceptions (1 h)
 - [x] T4 — Backlog: the stories that apply the decisions, the Oxc and Rust epic (1 h)
-- [ ] T5 — Agent configuration: rules, skills, the run's worker brief (1 h)
+- [x] T5 — Agent configuration: rules, skills, the run's worker brief (1 h)
 - [ ] T6 — Playbook, starter kit and the agent's tools page (30 min)
 - [ ] T7 — RET-003 and E15 done, the state of `AGENTS.md` (15 min)

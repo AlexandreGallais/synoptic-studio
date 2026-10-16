@@ -14,7 +14,7 @@ Story: $ARGUMENTS (default: the next unfinished story of the started feature, pr
    `git switch feature/f<nn>-<topic> && git pull --prune && git switch -c <type>/<id-lowercase>-<topic>`
 4. **T0 commit** if needed: status `ready` in the story file, `docs/backlog/stories/README.md` and the feature's table — `docs(backlog): set <ID> ready`, footer `Refs: <ID>`.
 5. **Per task** (`T1`, `T2`…), one commit each, footer `Refs: <ID>.Tn`; the step written to `.git/metrics/step`:
-   - `math` / `geometry`: write the tests first — examples with hand-computed values justified in a comment, degenerate cases, then properties (`test.prop`); have the `verifier` agent check the test plan; run them and see them fail;
+   - `math` / `geometry`: write the tests first — examples with hand-computed values justified in a comment, degenerate cases, the story's edge cases, then properties (`test.prop`); break each new test once on purpose (no per-story review, ADR-0064); run them and see them fail;
    - implement: one function per file, kebab-case name, `@kind`, `@see` to a verified source, austere TSDoc;
    - `npm run fix`, then `npm run check`; commit tests with their implementation (the pre-commit hook needs a compiling tree).
 6. **Docs** in the same task as the code they describe: `docs/domain/`, derivations, references, playground. A user story (`US`) also gets its **Product Owner test card** (section `## Product Owner test`).
@@ -22,6 +22,6 @@ Story: $ARGUMENTS (default: the next unfinished story of the started feature, pr
 8. `git push -u origin <branch>` — the pre-push hook runs `check:all`, the story's only check (ADR-0038; a failure blocks the push: fix and push again) — then
    `gh pr create --base feature/f<nn>-<topic> --title "<type>(<scope>): <summary>" --body-file <filled .github/pull_request_template.md>` (not a draft; in an autonomous run, `/run` adds `--label autonomous` after the auditor's review).
 9. No CI runs on a story pull request: do not wait for one.
-10. **Stop**: summarize to the Product Owner in French — functions with `@kind` and `@see`, sources, what was checked and how, link to the pull request, session report. Never merge it.
+10. **Stop**: summarize to the Product Owner in French — functions with `@kind` and `@see`, sources, what was checked and how, link to the pull request; the session report only at a session's end (`--all`). Never merge it.
 
 After the merge: `git switch feature/f<nn>-<topic> && git pull --prune && git branch -d <branch>`. The feature reaches `develop` through its feature pull request at `VAL`, then `main` with the next release (`/run`, Validation).
