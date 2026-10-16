@@ -181,7 +181,7 @@
 | [RET-003](./E15-RET-003-retrospective-e15.md)                                     | E15     | Retrospective of E15                                                                 | done   |
 | [SP-020](./E17-F18-SP-020-research-f18.md)                                        | F18     | Research for F18, the sources of RET-003 recorded                                    | done   |
 | [EN-045](./E17-F18-EN-045-explicit-tool-scopes.md)                                | F18     | Every check tool given explicit targets                                              | done   |
-| [EN-047](./E17-F18-EN-047-heavy-lock-and-agent-limit.md)                          | F18     | A lock for heavy commands and a limit on subagents                                   | ready  |
+| [EN-047](./E17-F18-EN-047-heavy-lock-and-agent-limit.md)                          | F18     | A lock for heavy commands and a limit on subagents                                   | done   |
 | [EN-063](./E17-F18-EN-063-subagent-limit-in-settings.md)                          | F18     | The subagent limit set in Claude Code's settings                                     | ready  |
 | [EN-048](./E17-F18-EN-048-tables-without-padding-and-union-logs.md)               | F18     | Tables without padding, append-only logs merged by union                             | ready  |
 | [EN-049](./E17-F18-EN-049-stories-index-generated.md)                             | F18     | The stories index generated from the story files                                     | done   |
