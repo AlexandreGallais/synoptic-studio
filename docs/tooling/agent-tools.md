@@ -96,7 +96,7 @@ Each is a story of F18 (E17), with the signal measured in E15.
 | Tool                                | Does                                                                            | Signal                                                               | Rust |
 | ----------------------------------- | ------------------------------------------------------------------------------- | -------------------------------------------------------------------- | ---- |
 | `worktree:new <ID>`                 | a worktree named after its story, on its branch (EN-052)                        | worktrees named `agent-a13cbef…`; 549 commands refused in worktrees  |      |
-| `story:finish` from a worktree      | one merge at a time, clean-up only once merged (EN-051)                         | 4 clean-ups by hand, 2 branches deleted with their pull request open |      |
+| `story:finish` from a worktree      | one merge at a time, clean-up only once merged (EN-051)                         | 4 clean-ups by hand, 2 branches deleted with their pull request open | done |
 | stories index generated             | the index written from each story's front matter (EN-049)                       | 18 commits rewrote more than 100 of its 181 lines                    | yes  |
 | `epic:check` failures               | the failing tests, worktree refusals apart, calls lost at a force-quit (EN-055) | "failed: test" with no name; 549 refusals counted as failures        |      |
 | `mutate <files>`                    | mutations in a copy of the repository, caught and surviving (EN-058)            | the runner written again at each audit (F05 to F17)                  |      |
