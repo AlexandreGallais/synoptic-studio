@@ -6,6 +6,7 @@ import { DEFAULT_FONT, lineWidth } from "../../src";
 import { testFaceFile } from "../../tests";
 import {
   chooseFiles,
+  chooseOption,
   clickElement,
   openServedPage,
   readText,
@@ -110,21 +111,42 @@ function testFaceBlob(family: string): Blob {
 }
 
 /**
- * Makes the browser list installed families, as Chrome does once the permission is granted, each
- * one face of the test font, regular, embeddable, every Latin letter mapped.
+ * An installed family as the browser lists it, one face of the test font, regular, embeddable,
+ * every Latin letter mapped.
+ *
+ * @param family - its name
+ * @param file - its file, once the browser gives it
+ * @returns its face
+ */
+function installedFamily(family: string, file: Promise<Blob>): InstalledFont {
+  return {
+    blob: vi.fn<() => Promise<Blob>>(async () => await file),
+    family,
+    fullName: family,
+    postscriptName: family,
+  };
+}
+
+/**
+ * Makes the browser list installed faces, as Chrome does once the permission is granted.
+ *
+ * @param fonts - the faces, in the browser's order
+ */
+function fakeInstalledFonts(fonts: readonly InstalledFont[]): void {
+  const query = vi.fn<() => Promise<readonly InstalledFont[]>>().mockResolvedValue(fonts);
+
+  Object.defineProperty(globalThis, "queryLocalFonts", { configurable: true, value: query });
+}
+
+/**
+ * Makes the browser list installed families, each one face of the test font (`installedFamily`).
  *
  * @param families - their names, in the browser's order
  */
 function fakeLocalFonts(families: readonly string[]): void {
-  const fonts: readonly InstalledFont[] = families.map((family) => ({
-    blob: vi.fn<() => Promise<Blob>>().mockResolvedValue(testFaceBlob(family)),
-    family,
-    fullName: family,
-    postscriptName: family,
-  }));
-  const query = vi.fn<() => Promise<readonly InstalledFont[]>>().mockResolvedValue(fonts);
-
-  Object.defineProperty(globalThis, "queryLocalFonts", { configurable: true, value: query });
+  fakeInstalledFonts(
+    families.map((family) => installedFamily(family, Promise.resolve(testFaceBlob(family)))),
+  );
 }
 
 /**
@@ -214,6 +236,41 @@ describe("Inter's faces kept only when the browser draws them (US-053)", () => {
     expect(document.querySelector("#canvas text")?.getAttribute("font-family")).toBe(
       '"Test Sans", sans-serif',
     );
+  });
+
+  it("[F17.AC14] leaves a family the designer chose while the others are read as it is, its message kept", async () => {
+    const { promise, resolve } = Promise.withResolvers<Blob>();
+
+    fakeCanvas({});
+
+    const sans = installedFamily("Test Sans", Promise.resolve(testFaceBlob("Test Sans")));
+    const serif = installedFamily("Test Serif", Promise.resolve(testFaceBlob("Test Serif")));
+
+    fakeInstalledFonts([sans, serif, installedFamily("Test Mono", promise)]);
+
+    openTextTool();
+
+    clickElement("installed-fonts");
+
+    await vi.waitFor(() => {
+      expect(readText("#installed-fonts-progress")).toBe(
+        "Reading the installed fonts: 2 of 3 families…",
+      );
+    });
+
+    expect(readValue("text-font")).toBe("Test Sans");
+    chooseOption("text-font", "Test Serif");
+
+    await vi.waitFor(() => {
+      expect(readText("#font-message")).toBe("Test Serif: 1 faces read.");
+    });
+
+    resolve(testFaceBlob("Test Mono"));
+    await waitForPageTasks();
+
+    expect(readText("#installed-fonts-progress")).toBe("Installed fonts read: 3 families.");
+    expect(readValue("text-font")).toBe("Test Serif");
+    expect(readText("#font-message")).toBe("Test Serif: 1 faces read.");
   });
 
   it("[F17.AC14] leaves a family chosen before the installed fonts are read as it is", async () => {
