@@ -192,7 +192,7 @@
 | [EN-053](./E17-F18-EN-053-session-figures-and-background-subagents.md)            | F18     | The session's figures at its end, background subagents seen                          | done   |
 | [EN-054](./E17-F18-EN-054-timing-tests-that-hold-under-load.md)                   | F18     | Timing tests that hold under load                                                    | done   |
 | [EN-055](./E17-F18-EN-055-epic-check-says-what-failed.md)                         | F18     | `epic:check` says what failed; the golden check at push                              | done   |
-| [EN-056](./E17-F18-EN-056-a-short-checklist.md)                                   | F18     | A short checklist, prepared by `val:prepare`                                         | ready  |
+| [EN-056](./E17-F18-EN-056-a-short-checklist.md)                                   | F18     | A short checklist, prepared by `val:prepare`                                         | done   |
 | [EN-057](./E17-F18-EN-057-register-of-exceptions-and-a-byte-buffer.md)            | F18     | The register of exceptions, and a byte buffer for font collections                   | done   |
 | [US-061](./E17-F18-US-061-font-list-held-while-the-default-font-is-read.md)       | F18     | Font list held while the default font is read again                                  | ready  |
 | [EN-058](./E17-F18-EN-058-a-mutation-runner.md)                                   | F18     | A mutation runner as a tool                                                          | ready  |
