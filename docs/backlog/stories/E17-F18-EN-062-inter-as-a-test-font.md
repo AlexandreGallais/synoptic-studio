@@ -3,7 +3,7 @@ id: EN-062
 epic: E17
 feature: F18
 title: Inter Regular as a test font file
-status: ready
+status: done
 points: 1
 ---
 
