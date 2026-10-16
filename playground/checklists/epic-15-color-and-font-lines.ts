@@ -142,18 +142,13 @@ export const EPIC_15_COLOR_AND_FONT_LINES: readonly ChecklistLine[] = [
   },
   {
     feature: "F17",
-    todo: "Reading to confirm (US-053): Installed fonts, allow, wait; then choose Helvetica",
-    see: "a line counting the families read, then those left out (ABC Oracle Book gone from the list); Helvetica 300, 400 and 700 only, “Helvetica: 6 faces read.”",
+    todo: "Reading to confirm (US-053, US-056): Installed fonts, allow, wait; open the font list, then choose Helvetica",
+    see: "a line counting the families read, then those left out (ABC Oracle Book gone from the list); no Apple Color Emoji, Al Nile nor Apple Braille: the line counts them under “no Latin letters”, and a font whose licence forbids embedding under “not embeddable”; Helvetica 300, 400 and 700 only, “Helvetica: 6 faces read.”",
   },
   {
     feature: "F17",
     todo: "Reading to confirm (US-056): Inter not installed, open the page, Text tool; Installed fonts, allow; then import Inter's Regular and Bold files",
     see: "Installed fonts first and in blue, an empty font list, no text; the first family read chosen and the text drawn in it; once imported, Inter listed with 400 and 700 only",
-  },
-  {
-    feature: "F17",
-    todo: "Reading to confirm (US-056): Installed fonts, allow, wait; open the font list",
-    see: "no Apple Color Emoji, Al Nile nor Apple Braille: the line counts them under “no Latin letters”, and a font whose licence forbids embedding under “not embeddable”",
   },
   {
     feature: "F17",
