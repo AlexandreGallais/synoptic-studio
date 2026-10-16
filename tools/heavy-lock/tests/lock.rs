@@ -224,7 +224,7 @@ fn f18_ac3_names_the_process_holding_the_lock() {
         "heavy lock /repo/.git/heavy.lock held without a process id (taken by hand): waiting; remove it with rmdir once its command ended\n"
     );
     assert_eq!(
-        take_over_line(&owner()),
+        take_over_line(&owner(), Path::new("/repo/.git/heavy.lock")),
         "heavy lock of process 4242 (npm run test) taken over: that process no longer exists\n"
     );
 }
@@ -320,7 +320,10 @@ fn looks_again_at_once_when_another_command_takes_the_free_lock_first() {
 
     assert_eq!(action, Action::Take);
     assert_eq!(reads, 2);
-    assert_eq!(String::from_utf8_lossy(&said), take_over_line(&first));
+    assert_eq!(
+        String::from_utf8_lossy(&said),
+        take_over_line(&first, &lock.path)
+    );
 }
 
 #[test]
@@ -379,7 +382,7 @@ fn f18_ac3_takes_over_at_once_the_lock_of_a_process_that_no_longer_exists() {
 
     assert_eq!(
         run(&lock.path, None, &exit_with(0)),
-        (0, take_over_line(&dead))
+        (0, take_over_line(&dead, &lock.path))
     );
     assert_eq!(read_lock(&lock.path), Held::Free);
 }

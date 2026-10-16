@@ -1,5 +1,6 @@
-//! `heavy-lock <command> [arguments…]`: runs a heavy command under the lock of the Git common
-//! directory (ADR-0063, EN-047, `docs/tooling/commands.md`).
+//! `heavy-lock [--lock <name>] <command> [arguments…]`: runs a command under a lock of the Git
+//! common directory, the heavy one by default (ADR-0063, EN-047), `merge` for `story:finish`
+//! (ADR-0065, EN-051; `docs/tooling/commands.md`).
 
 use std::env;
 use std::io;
@@ -7,7 +8,9 @@ use std::path::PathBuf;
 use std::process::{Command, ExitCode};
 use std::time::Duration;
 
-use heavy_lock::{LOCK_NAME, LockOwner, OWNER_VARIABLE, Request, command_name, now, run_locked};
+use heavy_lock::{
+    LockOwner, Request, command_name, lock_and_command, lock_file, now, owner_variable, run_locked,
+};
 
 /// Time between two looks at a lock held by another command.
 const POLL: Duration = Duration::from_secs(5);
@@ -29,26 +32,25 @@ fn git_common_dir() -> io::Result<PathBuf> {
 
 fn main() -> ExitCode {
     let argv: Vec<String> = env::args().skip(1).collect();
-
-    if argv.is_empty() {
-        eprintln!("usage: heavy-lock <command> [arguments…]");
+    let Some((name, command)) = lock_and_command(&argv) else {
+        eprintln!("usage: heavy-lock [--lock <name>] <command> [arguments…]");
         return ExitCode::from(2);
-    }
+    };
 
     let result = git_common_dir().and_then(|common| {
         let request = Request {
-            path: &common.join(LOCK_NAME),
+            path: &common.join(lock_file(name)),
             owner: LockOwner {
-                command: command_name(&argv, env::var("npm_lifecycle_event").ok().as_deref()),
+                command: command_name(command, env::var("npm_lifecycle_event").ok().as_deref()),
                 cwd: env::current_dir()?.display().to_string(),
                 pid: std::process::id(),
                 start: now(),
             },
-            owner_variable: env::var(OWNER_VARIABLE).ok(),
+            owner_variable: env::var(owner_variable(name)).ok(),
             poll: POLL,
         };
 
-        run_locked(&request, &argv, &mut io::stderr())
+        run_locked(&request, command, &mut io::stderr())
     });
 
     match result {

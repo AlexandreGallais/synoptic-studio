@@ -46,6 +46,8 @@ Every check tool is given the folders and files it checks, by name (EN-045): the
 
 A push inherits the lock through its pre-push hook (`check:all`). Single test files (`npx vitest run <paths>`) take no lock.
 
+`story:finish` takes a second lock the same way, `.git/merge.lock` (`heavy-lock --lock merge`, ADR-0065 decision 5, EN-051): two stories finishing at once merge one after the other, the second rebasing on the base the first updated. The two locks are apart: each names its owner to its commands in its own variable (`HEAVY_LOCK_PID`, `MERGE_LOCK_PID`), so the push under the merge lock still waits for the heavy one.
+
 ## Playground
 
 `playground/index.html` loads `playground/index.ts`, which may only import the public API (`../src`). It is published with the docs site on each release: <https://alexandregallais.github.io/synoptic-studio/playground/> (menu _Playground_). It will show each pipeline stage (integer model → `d` → `<path>`) as features arrive.

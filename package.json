@@ -62,7 +62,7 @@
     "golden:check": "cargo run --release -q --manifest-path tools/heavy-lock/Cargo.toml -- vitest run tests/golden-results.test.ts --mode golden-check",
     "backlog:status": "node scripts/backlog-status.ts",
     "backlog:index": "cargo run --quiet --manifest-path tools/backlog-index/Cargo.toml -- docs/backlog && prettier --write docs/backlog/stories/README.md",
-    "story:finish": "node scripts/story-finish.ts",
+    "story:finish": "cargo run --release -q --manifest-path tools/heavy-lock/Cargo.toml -- --lock merge node scripts/story-finish.ts",
     "activity": "node --harmony-temporal scripts/activity.ts",
     "epic:check": "node --harmony-temporal scripts/epic-check.ts",
     "font:metrics": "node scripts/default-font-metrics.ts"
