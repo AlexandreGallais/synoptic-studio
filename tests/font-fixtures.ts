@@ -238,8 +238,8 @@ export function fontCollection(faces: readonly Uint8Array[]): Uint8Array {
 export const APPLE_COLOR_EMOJI_PATH = "/System/Library/Fonts/Apple Color Emoji.ttc";
 
 /**
- * The parts of a face joined in their order into its file, as the playground joins them with a
- * `Blob`: small files only, its bytes spread.
+ * The parts of a face joined in their order into its file, as `facePartsToFile` joins them but
+ * written apart from it, to check it: small files only, its bytes spread.
  *
  * @param parts - the face's parts
  * @returns its file

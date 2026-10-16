@@ -6,7 +6,6 @@ export * from "./listen-to-font-import";
 export * from "./load-font-files";
 export * from "./read-face-name";
 export * from "./read-font-session";
-export * from "./read-joined-file";
 export * from "./unlisted-face-reasons";
 export * from "./write-font-fields";
 export * from "./write-font-options";

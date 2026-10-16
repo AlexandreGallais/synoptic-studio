@@ -2,6 +2,7 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { facePartsToFile } from "../../src";
 import {
   APPLE_TRUE_TYPE_VERSION,
   fontCollection,
@@ -199,25 +200,34 @@ function readOptions(id: string): readonly string[] {
 /** What a browser says when it cannot allocate a buffer, a file too large to hold. */
 const ALLOCATION_FAILED = "RangeError: Array buffer allocation failed";
 
+/** The library, its join of a face's parts typed: the other functions are spread as they are. */
+type JoiningLibrary = Readonly<Record<string, unknown>> & {
+  /** Joins a face's parts into its file. */
+  readonly facePartsToFile: typeof facePartsToFile;
+};
+
+// The library's join of a face's parts, wrapped in a spy that a test can make refuse.
+vi.mock("../../src", async (importOriginal) => {
+  const library = await importOriginal<JoiningLibrary>();
+
+  return { ...library, facePartsToFile: vi.fn(library.facePartsToFile) };
+});
+
 /**
- * Makes the browser refuse to join a face of several parts — a face of a collection — as when
+ * Makes the editor refuse to join a face of several parts — a face of a collection — as when
  * its file is too large to hold, a face of one part joined as before.
  */
 function refuseCollectionJoins(): void {
-  vi.stubGlobal(
-    "Blob",
-    new Proxy(Blob, {
-      construct(page, [parts]: readonly (readonly BlobPart[])[]): object {
-        if (parts !== undefined && parts.length > 1) {
-          throw new RangeError("Array buffer allocation failed");
-        }
+  const join = vi.mocked(facePartsToFile);
+  const joined = join.getMockImplementation() ?? facePartsToFile;
 
-        const blob: unknown = Reflect.construct(page, [parts]);
+  join.mockImplementation((parts) => {
+    if (parts.length > 1) {
+      throw new RangeError("Array buffer allocation failed");
+    }
 
-        return blob instanceof page ? blob : {};
-      },
-    }),
-  );
+    return joined(parts);
+  });
 }
 
 describe("Installed fonts (US-036)", () => {
@@ -231,6 +241,7 @@ describe("Installed fonts (US-036)", () => {
   afterEach(() => {
     Reflect.deleteProperty(globalThis, "queryLocalFonts");
     vi.unstubAllGlobals();
+    vi.mocked(facePartsToFile).mockReset();
   });
 
   it("[F15.AC1] says where the browser cannot list them, Firefox and Safari, and points to Import a font", () => {

@@ -1,9 +1,6 @@
-export * from "./collection-face-to-parts";
 export type * from "./font-table-record";
 export type * from "./font-tables";
 export * from "./length-to-four-byte-boundary";
-export * from "./parse-collection-faces";
-export * from "./parse-collection-offsets";
 export * from "./parse-font-tables";
 export * from "./parse-record-places";
 export * from "./parse-table-directory";

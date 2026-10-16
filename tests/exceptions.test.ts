@@ -169,8 +169,8 @@ ${COMMENT.block} eslint-disable c-rule -- why */`,
   });
 
   it("[F18.AC13] lists every eslint-disable directive of the code", () => {
-    // Not vacuous: the 29 directives of the code and the register are read.
-    expect(CODE.length).toBeGreaterThanOrEqual(29);
+    // Not vacuous: the 30 directives of the code and the register are read.
+    expect(CODE.length).toBeGreaterThanOrEqual(30);
     expect(unmatched(CODE, ROWS)).toEqual([]);
   });
 

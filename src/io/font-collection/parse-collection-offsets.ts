@@ -1,6 +1,5 @@
 import { elementAddress } from "../../math";
-
-import { parseTag } from "./parse-tag";
+import { parseTag } from "../font-tables";
 
 /** The tag of a font collection's header, its first four bytes. */
 const COLLECTION_TAG = "ttcf";

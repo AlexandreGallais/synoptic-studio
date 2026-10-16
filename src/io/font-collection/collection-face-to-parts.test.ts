@@ -11,10 +11,10 @@ import {
   uint16,
   uint32,
 } from "../../../tests";
+import { parseTableDirectory } from "../font-tables";
 
 import { collectionFaceToParts } from "./collection-face-to-parts";
 import { parseCollectionOffsets } from "./parse-collection-offsets";
-import { parseTableDirectory } from "./parse-table-directory";
 
 /** A face of one table of 3 bytes: 28 + 4 = 32 bytes. */
 const FIRST = fontFile(TRUE_TYPE_VERSION, { abcd: [1, 2, 3] });
