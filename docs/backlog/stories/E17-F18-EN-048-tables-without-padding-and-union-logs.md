@@ -11,6 +11,8 @@ points: 2
 
 Stop Markdown tables from being rewritten whole when one cell grows, and let parallel branches add log rows without conflict (ADR-0065, decisions 1 and 2; F18.AC4).
 
+SP-020 ([research note 0022](../../research/notes/0022-f18-parallel-run.md)): Prettier prints a table without padding only with `proseWrap: "never"` **and** when its padded form is wider than `printWidth` (`REF-PRETTIER-TABLE-CODE`); tried on the repository, about 61 of 607 tables stay padded and every paragraph written on several lines is joined. ADR-0065 decision 1 and its source disagree: the Product Owner chooses before T1 (options in the note). Whether GitHub's merge applies `merge=union` is not documented: tried once before relying on it (`REF-GIT-UNION`).
+
 ## Acceptance criteria
 
 - Given Prettier's `proseWrap: "never"`, when a cell wider than the others is added to a table, then only that row changes.
