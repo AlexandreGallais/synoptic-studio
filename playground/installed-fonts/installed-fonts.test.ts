@@ -327,6 +327,30 @@ describe("Installed fonts (US-036)", () => {
     expect(readFontFamily()).toBe('"Test Sans", sans-serif');
   });
 
+  it("[F15.AC1] stays on a family read ahead when none of its files can be read again, said why", async () => {
+    const file = new Blob([new Uint8Array(testFaceFile(TEST_SANS))]);
+    const blob = vi
+      .fn<() => Promise<Blob>>()
+      .mockResolvedValueOnce(file)
+      .mockRejectedValue(new Error("No file."));
+
+    fakeLocalFonts([
+      { blob, family: "Test Sans", fullName: "Test Sans", postscriptName: "TestSans" },
+    ]);
+
+    clickElement("installed-fonts");
+    await waitForPageTasks();
+    chooseOption("text-font", "Test Sans");
+    await waitForPageTasks();
+
+    expect(readText("#font-message")).toBe(
+      "Test Sans could not be read (Test Sans: Error: No file.).",
+    );
+
+    expect(readValue("text-font")).toBe("Test Sans");
+    expect(readFontFamily()).toBe('"Test Sans", sans-serif');
+  });
+
   it("[F15.AC1] keeps the faces read and counts those refused, one good and two bad", async () => {
     const broken = vi.fn<() => Promise<Blob>>().mockRejectedValue(new Error("No file."));
 
