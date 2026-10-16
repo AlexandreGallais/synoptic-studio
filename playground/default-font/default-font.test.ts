@@ -9,11 +9,14 @@ import {
   clickElement,
   openServedPage,
   readText,
+  readValue,
   selectChoice,
   waitForPageTasks,
 } from "../user-actions";
 
 import { DEFAULT_FONT_MISSING } from "./default-font-missing";
+
+import type { InstalledFont } from "../fonts";
 
 /** The probe line the page measures in each of Inter's faces. */
 const PROBE = "Pump P-101 Running";
@@ -86,6 +89,45 @@ function readWeights(): readonly string[] {
 }
 
 /**
+ * Reads the families the font list offers.
+ *
+ * @returns their values, in order
+ */
+function readFamilies(): readonly string[] {
+  return [...selectChoice("text-font").options].map((option) => option.value);
+}
+
+/**
+ * The file of a regular face of the test font, as the browser gives it.
+ *
+ * @param family - the family its `name` table gives
+ * @returns a `Blob` of its bytes
+ */
+function testFaceBlob(family: string): Blob {
+  const bytes = testFaceFile({ family, fsType: 0, isItalic: false, weightClass: 400 });
+
+  return new Blob([new Uint8Array(bytes)]);
+}
+
+/**
+ * Makes the browser list installed families, as Chrome does once the permission is granted, each
+ * one face of the test font, regular, embeddable, every Latin letter mapped.
+ *
+ * @param families - their names, in the browser's order
+ */
+function fakeLocalFonts(families: readonly string[]): void {
+  const fonts: readonly InstalledFont[] = families.map((family) => ({
+    blob: vi.fn<() => Promise<Blob>>().mockResolvedValue(testFaceBlob(family)),
+    family,
+    fullName: family,
+    postscriptName: family,
+  }));
+  const query = vi.fn<() => Promise<readonly InstalledFont[]>>().mockResolvedValue(fonts);
+
+  Object.defineProperty(globalThis, "queryLocalFonts", { configurable: true, value: query });
+}
+
+/**
  * Opens the page on the Text tool.
  */
 function openTextTool(): void {
@@ -95,6 +137,7 @@ function openTextTool(): void {
 
 describe("Inter's faces kept only when the browser draws them (US-053)", () => {
   afterEach(() => {
+    Reflect.deleteProperty(globalThis, "queryLocalFonts");
     vi.restoreAllMocks();
   });
 
@@ -137,6 +180,52 @@ describe("Inter's faces kept only when the browser draws them (US-053)", () => {
     expect(readText("#status")).toBe(DEFAULT_FONT_MISSING);
     expect(document.querySelector("#canvas text")).toBeNull();
     expect(document.querySelector("#text-size")?.getAttribute("aria-invalid")).toBe("false");
+  });
+
+  it("[F17.AC14] lists no font while Inter is not drawn and no installed font is read", () => {
+    fakeCanvas({});
+    openTextTool();
+
+    expect(readFamilies()).toEqual([]);
+  });
+
+  it("[F17.AC14] keeps Inter first in the list when the browser draws it", () => {
+    fakeCanvas({ 400: 0 });
+    openTextTool();
+
+    expect(readFamilies()).toEqual(["Inter"]);
+  });
+
+  it("[F17.AC14] chooses the first family read when Inter is not drawn, and draws the text in it", async () => {
+    fakeCanvas({});
+    fakeLocalFonts(["Test Sans", "Test Serif"]);
+    openTextTool();
+
+    clickElement("installed-fonts");
+    await waitForPageTasks();
+
+    expect(readFamilies()).toEqual(["Test Sans", "Test Serif"]);
+    expect(readValue("text-font")).toBe("Test Sans");
+
+    expect(readText("#font-message")).toBe(
+      "Test Sans is chosen, the first font read: Inter is not installed on this computer.",
+    );
+
+    expect(document.querySelector("#canvas text")?.getAttribute("font-family")).toBe(
+      '"Test Sans", sans-serif',
+    );
+  });
+
+  it("[F17.AC14] leaves a family chosen before the installed fonts are read as it is", async () => {
+    fakeCanvas({ 400: 0 });
+    fakeLocalFonts(["Test Sans"]);
+    openTextTool();
+
+    clickElement("installed-fonts");
+    await waitForPageTasks();
+
+    expect(readFamilies()).toEqual(["Inter", "Test Sans"]);
+    expect(readValue("text-font")).toBe("Inter");
   });
 
   it("[F17.AC11] offers Inter's faces read from its files once imported, Inter missing before", async () => {

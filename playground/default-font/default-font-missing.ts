@@ -1,3 +1,3 @@
-/** Said when the browser draws no face of Inter as its shipped metrics measure it (US-053): Inter neither installed nor imported. */
+/** Said while no font is available (US-056): the browser draws no face of Inter as its shipped metrics measure it, and no font is read yet. */
 export const DEFAULT_FONT_MISSING =
-  "Inter is not installed on this computer: a text in Inter would be drawn in another font, its frame not matching its letters. Install Inter, import its files with Import a font, or choose another font.";
+  "No font is available yet: Inter is not installed on this computer. Click Installed fonts first, a font is chosen as soon as one is read; or import a font file with Import a font.";

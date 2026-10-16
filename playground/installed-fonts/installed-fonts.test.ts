@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   APPLE_TRUE_TYPE_VERSION,
   fontCollection,
+  lettersMissingFaceFile,
   postScriptFaceFile,
   testFaceFile,
   uint32,
@@ -363,7 +364,7 @@ describe("Installed fonts (US-036)", () => {
     expect(readValue("text-font")).toBe("Inter");
 
     expect(readProgress()).toBe(
-      "Installed fonts read: 1 families; 2 left out, their files could not be read (Test Bad, Test Gone).",
+      "Installed fonts read: 1 families; 2 left out: 2 unreadable (Test Bad, Test Gone).",
     );
   });
 
@@ -609,5 +610,70 @@ describe("Installed fonts (US-036)", () => {
     expect(readValue("text-font")).toBe("Test Sans");
     // 700's metrics, read ahead before the joins were refused, stay kept (US-053).
     expect(readOptions("text-weight")).toEqual(["400", "700"]);
+  });
+
+  it("[F17.AC14] leaves out the families that cannot be embedded or lack the Latin letters, counted by reason", async () => {
+    fakeLocalFonts([
+      installedFont("Test Emoji", lettersMissingFaceFile({ ...TEST_SANS, family: "Test Emoji" })),
+      installedFont(
+        "Test Locked",
+        testFaceFile({ ...TEST_SANS, family: "Test Locked", fsType: 2 }),
+      ),
+      installedFont("Test Sans", testFaceFile(TEST_SANS)),
+      installedFont("Test Bad", Uint8Array.from([0x74, 0x74, 0x63, 0x66])),
+    ]);
+
+    clickElement("installed-fonts");
+    await waitForPageTasks();
+
+    expect(readOptions("text-font")).toEqual(["Inter", "Test Sans"]);
+
+    expect(readProgress()).toBe(
+      "Installed fonts read: 1 families; 3 left out: 1 not embeddable (Test Locked); 1 no Latin letters (Test Emoji); 1 unreadable (Test Bad).",
+    );
+  });
+
+  it("[F17.AC14] keeps a family's faces that can be listed, and says those left out when it is chosen", async () => {
+    fakeLocalFonts([
+      installedFont("Test Sans", testFaceFile(TEST_SANS)),
+      {
+        ...installedFont("Test Sans", testFaceFile({ ...TEST_SANS, fsType: 2, weightClass: 700 })),
+        fullName: "Test Sans Bold",
+      },
+    ]);
+
+    clickElement("installed-fonts");
+    await waitForPageTasks();
+
+    expect(readProgress()).toBe("Installed fonts read: 1 families.");
+    chooseOption("text-font", "Test Sans");
+    await waitForPageTasks();
+
+    expect(readText("#font-message")).toBe(
+      "Test Sans: 1 faces read, 1 refused (Test Sans Bold: its fsType forbids embedding it).",
+    );
+
+    expect(readOptions("text-weight")).toEqual(["400"]);
+  });
+
+  it("[F17.AC14] says a family chosen before it is read that lacks the Latin letters", async () => {
+    const [emoji, release] = heldFont(
+      "Test Emoji",
+      lettersMissingFaceFile({ ...TEST_SANS, family: "Test Emoji" }),
+    );
+
+    fakeLocalFonts([emoji]);
+
+    clickElement("installed-fonts");
+    await waitForMessage("Installed families listed: 1. Choose one in the font list.");
+    chooseOption("text-font", "Test Emoji");
+    release();
+    await waitForPageTasks();
+
+    expect(readText("#font-message")).toBe(
+      "Test Emoji could not be read (Test Emoji: it lacks letters of the basic Latin alphabet (A to Z, a to z)).",
+    );
+
+    expect(readOptions("text-font")).toEqual(["Inter"]);
   });
 });

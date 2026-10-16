@@ -6,6 +6,7 @@ import { lineCodePoints } from "../src";
 
 import { TRUE_TYPE_VERSION, fontFile, tableOf, uint16 } from "./font-fixtures";
 import { testFontTables } from "./font-table-fixtures";
+import { latinTestFontTables } from "./latin-font-table-fixtures";
 import { os2Table } from "./metrics-table-fixtures";
 
 import type { Os2Fields } from "./metrics-table-fixtures";
@@ -167,14 +168,13 @@ export type TestFace = {
 };
 
 /**
- * The test font of `[F05.AC1]` as a whole file, named by the `name` table given.
+ * The `OS/2` table of a face of the test font.
  *
  * @param face - its weight, style and permissions
- * @param name - the bytes of its `name` table
- * @returns the file's bytes
+ * @returns its bytes
  */
-function testFaceNamed(face: TestFace, name: readonly number[]): Uint8Array {
-  const os2 = os2FaceTable({
+function testFaceOs2(face: TestFace): number[] {
+  return os2FaceTable({
     capHeight: 700,
     fsSelection: face.isItalic ? ITALIC_SELECTION : REGULAR_SELECTION,
     fsType: face.fsType,
@@ -183,13 +183,43 @@ function testFaceNamed(face: TestFace, name: readonly number[]): Uint8Array {
     version: 4,
     weightClass: face.weightClass,
   });
+}
 
-  return fontFile(TRUE_TYPE_VERSION, { ...testFontTables(), name, "OS/2": os2 });
+/**
+ * The test font of `[F05.AC1]` as a whole file, every letter of the ISO basic Latin alphabet
+ * mapped (`latinTestFontTables`), named by the `name` table given.
+ *
+ * @param face - its weight, style and permissions
+ * @param name - the bytes of its `name` table
+ * @returns the file's bytes
+ */
+function testFaceNamed(face: TestFace, name: readonly number[]): Uint8Array {
+  return fontFile(TRUE_TYPE_VERSION, {
+    ...latinTestFontTables(),
+    name,
+    "OS/2": testFaceOs2(face),
+  });
+}
+
+/**
+ * The test font of `testFaceFile` mapping A, B, C and `a` alone (`testFontTables`), as a font
+ * lacking the Latin letters is, such as Apple Color Emoji (US-056).
+ *
+ * @param face - its family, weight, style and permissions
+ * @returns the file's bytes
+ */
+export function lettersMissingFaceFile(face: TestFace): Uint8Array {
+  return fontFile(TRUE_TYPE_VERSION, {
+    ...testFontTables(),
+    name: familyNameTable(face.family),
+    "OS/2": testFaceOs2(face),
+  });
 }
 
 /**
  * The test font of `[F05.AC1]` as a whole file (1000 units per em, ascender 800, descender −200,
- * line gap 90; A 600 units wide, B, C and a 700, any other character 500; no kerning), named,
+ * line gap 90; A 600 units wide, B, C and a 700, any other character 500, every Latin letter
+ * mapped; no kerning), named,
  * weighted and styled by a `name` and an `OS/2` table, for the playground's tests (US-036).
  *
  * @param face - its family, weight, style and permissions

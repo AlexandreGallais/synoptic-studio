@@ -283,6 +283,13 @@
         border: 1px solid var(--line);
         border-radius: 0.35rem;
       }
+      /* The first thing to do in the Text tool (US-056): read the installed fonts. */
+      #installed-fonts {
+        font-weight: 600;
+        color: #fff;
+        background: var(--accent);
+        border-color: var(--accent);
+      }
       #font-file-button:focus-within {
         outline: 2px solid var(--accent);
       }
@@ -588,20 +595,23 @@
 Pump P-101
 Running</textarea>
         </label>
+        <p id="font-first" class="font-message">
+          Start with Installed fonts: the font list offers only the fonts read.
+        </p>
+        <p id="font-sources">
+          <button id="installed-fonts" type="button">Installed fonts</button>
+          <label id="font-file-button"
+            >Import a font <input id="font-file" type="file" accept=".ttf,.otf,.ttc"
+          /></label>
+        </p>
+        <p id="font-message" class="font-message" role="status"></p>
+        <p id="installed-fonts-progress" class="font-message" role="status"></p>
         <label
           >Font
           <select id="text-font">
             <option value="Inter" selected>Inter</option>
           </select></label
         >
-        <p id="font-sources">
-          <label id="font-file-button"
-            >Import a font <input id="font-file" type="file" accept=".ttf,.otf,.ttc"
-          /></label>
-          <button id="installed-fonts" type="button">Installed fonts</button>
-        </p>
-        <p id="font-message" class="font-message" role="status"></p>
-        <p id="installed-fonts-progress" class="font-message" role="status"></p>
         <div class="pair">
           <label
             >Size <input id="text-size" type="number" min="1" max="100000" step="1" value="32"

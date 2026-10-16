@@ -147,8 +147,13 @@ export const EPIC_15_COLOR_AND_FONT_LINES: readonly ChecklistLine[] = [
   },
   {
     feature: "F17",
-    todo: "Reading to confirm (US-053): Inter not installed, open the page, Text tool; then import Inter's Regular and Bold files",
-    see: "Inter without weights, no text, a line saying Inter is not installed and how to get it; once imported, 400 and 700 only, the frame fitting the letters",
+    todo: "Reading to confirm (US-056): Inter not installed, open the page, Text tool; Installed fonts, allow; then import Inter's Regular and Bold files",
+    see: "Installed fonts first and in blue, an empty font list, no text; the first family read chosen and the text drawn in it; once imported, Inter listed with 400 and 700 only",
+  },
+  {
+    feature: "F17",
+    todo: "Reading to confirm (US-056): Installed fonts, allow, wait; open the font list",
+    see: "no Apple Color Emoji, Al Nile nor Apple Braille: the line counts them under “no Latin letters”, and a font whose licence forbids embedding under “not embeddable”",
   },
   {
     feature: "F17",
