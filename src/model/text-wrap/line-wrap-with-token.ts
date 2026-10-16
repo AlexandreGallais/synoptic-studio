@@ -26,7 +26,9 @@ function endedLine(wrap: LineWrap): readonly string[] {
  * A paragraph wrapped with one more token: the token joins the line being filled when the line
  * with it, its trailing spaces left out, fits; otherwise it starts the next line, where a word too
  * long for a line of its own stays whole, overflowing (`DERIV-text-box`, steps 2 to 4). The
- * line's measure grows by the token's, measured once (`joinedLineMeasure`).
+ * line's measure grows by the token's, measured once (`joinedLineMeasure`). A line still empty
+ * takes the token without measuring the join, which would give the same line whether it fits or
+ * not (AUD-016).
  *
  * @kind domain
  * @param wrap - the step before, its line being filled

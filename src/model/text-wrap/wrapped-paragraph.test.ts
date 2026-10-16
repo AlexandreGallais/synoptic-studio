@@ -180,4 +180,21 @@ describe("wrappedParagraph (DERIV-text-box steps 1 to 4)", () => {
       }
     },
   );
+
+  test.prop({
+    boxWidth: fc.integer({ max: 60, min: 0 }),
+    words: fc.array(fc.stringMatching(/^[HWdelor]{1,6}$/u), { maxLength: 12, minLength: 1 }),
+  })("[F14.AC1] ends a line only where its next word would not fit after it, greedy", (values) => {
+    const text = boxedText({ boxWidth: values.boxWidth, letterSpacing: 0, wordSpacing: 0 });
+    const lines = wrappedParagraph(ARIAL_BOX_METRICS, values.words.join(" "), text);
+
+    // Words one space apart: the next line's first word, after the line and its space, overflows.
+    const ended = lines.slice(0, -1);
+
+    for (const [index, line] of ended.entries()) {
+      const [next = ""] = paragraphTokens(lines[index + 1] ?? "");
+
+      expect(isLineFitting(ARIAL_BOX_METRICS, `${line} ${next}`, text)).toBe(false);
+    }
+  });
 });

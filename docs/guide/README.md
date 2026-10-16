@@ -33,7 +33,7 @@ Written at the end of each feature (`VAL`, demo page) and of each epic (`REV`, e
 | [F05 — Text and its characters](./f05-text.md)                                       | the Text tool and its fields, the measured block, turning, the guided test, what to confirm                             |
 | [F14 — A box of text](./f14-text-box.md)                                             | wrapping in a box, the ellipsis, both alignments, line height, trim, the background, the guided test, what to confirm   |
 | [F16 — Colors and their picker](./f16-colors.md)                                     | the hexadecimal forms, the swatch and picker, HSB and HSL, the guided test, what to confirm                             |
-| [F15 — Fonts from files and embedded fonts](./f15-fonts-html.md)                     | fonts imported or installed, embedding and its reasons, the export, the guided test, what to confirm                    |
+| [F15 — Fonts from files and embedded fonts](./f15-fonts.md)                          | fonts imported or installed, embedding and its reasons, the export, the guided test, what to confirm                    |
 | [F17 — Text corrections after the E15 validation](./f17-text-corrections.md)         | the options removed, the defects fixed and why, the checklist, the readings and questions to confirm, Apple Color Emoji |
 | [E01 — Drawing symbol shapes from numbers](./e01-draw-shapes.md)                     | the eight features of E01, the words, a user test crossing them, the decisions                                          |
 | [E14 — Drawing curves with handles, ellipses and round shapes](./e14-draw-curves.md) | the four features of E14, the words, the walk-through of the review, the decisions                                      |

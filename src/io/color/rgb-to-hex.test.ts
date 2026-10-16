@@ -1,8 +1,11 @@
+import { test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
-import { rgbOfBytes } from "../../../tests";
+import { ANY_BYTE_RGB, rgbOfBytes } from "../../../tests";
 import { hsbToRgb, hslToRgb } from "../../math";
 
+import { bytesToHex } from "./bytes-to-hex";
+import { hexToRgb } from "./hex-to-rgb";
 import { rgbToHex } from "./rgb-to-hex";
 
 describe("rgbToHex (REF-CSS-COLOR-4 §16.2.1, DERIV-color-spaces step 8)", () => {
@@ -27,4 +30,13 @@ describe("rgbToHex (REF-CSS-COLOR-4 §16.2.1, DERIV-color-spaces step 8)", () =>
   it("[F16.AC3] gives HSL(30°, 100 %, 50 %) back as #ff8000, the green 127.5 rounded up", () => {
     expect(rgbToHex(hslToRgb({ hue: 30, lightness: 50, saturation: 100 }))).toBe("#ff8000");
   });
+
+  test.prop({ bytes: ANY_BYTE_RGB })(
+    "gives every color back from its components, byte for byte",
+    ({ bytes }) => {
+      const hex = bytesToHex([bytes.red, bytes.green, bytes.blue]);
+
+      expect(rgbToHex(hexToRgb(hex))).toBe(hex);
+    },
+  );
 });

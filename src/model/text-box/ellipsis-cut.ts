@@ -1,6 +1,6 @@
 import { characterUnits, isNoBreakAfter } from "../line-characters";
 import { joinedLineMeasure, measuredLine } from "../text-block";
-import { isMeasureFitting, withoutTrailingSpaces } from "../text-wrap";
+import { isMeasureFitting } from "../text-wrap";
 
 import { textEllipsis } from "./text-ellipsis";
 
@@ -56,7 +56,8 @@ function cutWithUnit(cut: EllipsisCut, unit: string, context: CutContext): Ellip
  * other than a space always stays, so that a box narrower than it and the ellipsis shows both,
  * overflowing (`DERIV-text-box`, step 6, provisional). The line's start is measured once, unit by
  * unit, and the longest start that fits is kept, which is where removing units from the end first
- * fits.
+ * fits. No start ends with a space, so the trailing spaces are cut with no step of their own: a
+ * trim before the units changed no result (AUD-016).
  *
  * @kind domain
  * @param context - the text and the metrics of its face
@@ -69,7 +70,7 @@ export function ellipsisCut(context: TextInBox, line: string): string {
     ...context,
     ellipsis: measuredLine(context.metrics, textEllipsis(context.metrics)),
   };
-  const cut = characterUnits(withoutTrailingSpaces(line)).reduce<EllipsisCut>(
+  const cut = characterUnits(line).reduce<EllipsisCut>(
     (state, unit) => cutWithUnit(state, unit, cutContext),
     { kept: undefined, start: measuredLine(context.metrics, "") },
   );

@@ -3,12 +3,15 @@
 
 import { fc } from "@fast-check/vitest";
 
-import { DEGREES_PER_TURN, fractionToByte, integerRange } from "../src";
+import {
+  BYTE_MAXIMUM,
+  DEGREES_PER_TURN,
+  byteToFraction,
+  fractionToByte,
+  integerRange,
+} from "../src";
 
 import type { IntegerRatio, Rgb } from "../src";
-
-/** The largest byte, `ff`. */
-const BYTE_MAX = 255;
 
 /**
  * A color's components from its bytes, each divided by 255 (`DERIV-color-spaces`, notation).
@@ -19,11 +22,11 @@ const BYTE_MAX = 255;
  * @returns the components, from 0 to 1
  */
 export function rgbOfBytes(red: number, green: number, blue: number): Rgb {
-  return { blue: blue / BYTE_MAX, green: green / BYTE_MAX, red: red / BYTE_MAX };
+  return { blue: byteToFraction(blue), green: byteToFraction(green), red: byteToFraction(red) };
 }
 
 /** Any byte, from 0 to 255. */
-const ANY_BYTE = fc.integer({ max: BYTE_MAX, min: 0 });
+const ANY_BYTE = fc.integer({ max: BYTE_MAXIMUM, min: 0 });
 
 /** Any of the 16 777 216 colors, as its bytes. */
 export const ANY_BYTE_RGB = fc.record({ blue: ANY_BYTE, green: ANY_BYTE, red: ANY_BYTE });
@@ -54,9 +57,9 @@ function anyRatio(whole: number, largestDenominator: number): fc.Arbitrary<Integ
  * 510 (`DERIV-color-spaces`, step 12).
  */
 export const ANY_EXACT_COLOR = fc.record({
-  hue: anyRatio(DEGREES_PER_TURN, BYTE_MAX),
-  level: anyRatio(1, 2 * BYTE_MAX),
-  saturation: anyRatio(1, BYTE_MAX),
+  hue: anyRatio(DEGREES_PER_TURN, BYTE_MAXIMUM),
+  level: anyRatio(1, 2 * BYTE_MAXIMUM),
+  saturation: anyRatio(1, BYTE_MAXIMUM),
 });
 
 /** The values of a byte: 256. */

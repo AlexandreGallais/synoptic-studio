@@ -1,4 +1,11 @@
-import { boxSize, createPathElement, formatSvgNumber, halfSize } from "../../src";
+import {
+  boxSize,
+  ceiling,
+  createPathElement,
+  elementAddress,
+  formatSvgNumber,
+  halfSize,
+} from "../../src";
 
 import type { BoundingBox } from "../../src";
 
@@ -51,11 +58,11 @@ function readDash(side: Side, from: number, to: number): string {
  * @see docs/backlog/stories/E01-F04-US-018-turn-a-shape.md
  */
 function readSideDashes(side: Side): string {
-  const count = Math.max(Math.ceil((side.end - side.start) / PERIOD), 0);
+  const count = Math.max(ceiling((side.end - side.start) / PERIOD), 0);
 
   return Array.from({ length: count })
     .keys()
-    .map((index) => side.start + index * PERIOD)
+    .map((index) => elementAddress(side.start, PERIOD, index))
     .map((from) => readDash(side, from, Math.min(from + DASH, side.end)))
     .toArray()
     .join(" ");

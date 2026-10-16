@@ -24,7 +24,7 @@ const WEIGHT_NAMES: Readonly<Record<number, string>> = {
  * @kind procedure
  * @param document - page document
  * @returns the family; undefined for an installed family whose files are not read yet
- * @see docs/backlog/stories/E15-F15-US-036-fonts-embedding-and-html-layer.md
+ * @see docs/backlog/stories/E15-F15-US-036-import-choose-and-embed-a-font.md
  */
 function readChosenFamily(document: Document): FontFamily | undefined {
   const font = selectElement(document, "text-font");
@@ -39,7 +39,7 @@ function readChosenFamily(document: Document): FontFamily | undefined {
  * @kind procedure
  * @param weight - a face's weight
  * @returns such as `700 Bold`
- * @see docs/backlog/stories/E15-F15-US-036-fonts-embedding-and-html-layer.md
+ * @see docs/backlog/stories/E15-F15-US-036-import-choose-and-embed-a-font.md
  */
 function readWeightLabel(weight: number): string {
   const name = WEIGHT_NAMES[weight];
@@ -74,7 +74,7 @@ function readMatchingWeight(document: Document, family: FontFamily, weight: numb
  * @kind procedure
  * @param document - page document
  * @param weight - the weight asked, from 100 to 900
- * @see docs/backlog/stories/E15-F15-US-036-fonts-embedding-and-html-layer.md
+ * @see docs/backlog/stories/E15-F15-US-036-import-choose-and-embed-a-font.md
  */
 export function writeWeightChoice(document: Document, weight: number): void {
   const family = readChosenFamily(document);

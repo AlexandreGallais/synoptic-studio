@@ -45,7 +45,7 @@ Decided by the Product Owner on 2026-10-12: text is too large a subject for one 
 | [F05](../features/E15-F05-text.md) — Text and its characters                                                        | done   |
 | [F14](../features/E15-F14-a-box-of-text.md) — A box of text                                                         | done   |
 | [F16](../features/E15-F16-colors.md) — Colors and their pickers                                                     | done   |
-| [F15](../features/E15-F15-fonts-and-html-layer.md) — Fonts from files, embedded fonts and the HTML layer            | done   |
+| [F15](../features/E15-F15-fonts-from-files-and-embedded.md) — Fonts from files, embedded fonts and the HTML layer   | done   |
 | [F17](../features/E15-F17-text-corrections-after-the-e15-validation.md) — Text corrections after the E15 validation | ready  |
 
 Split by the agent on 2026-10-14, as the Product Owner asked: the characters first, then the box, the colors, and the fonts with the HTML layer, which needs a new ADR. The Product Owner validated the four on 2026-10-15; F17 holds the corrections of that validation: two options and the HTML layer removed (ADR-0060), fonts embedded at export, five defects fixed, and a validation on one checklist page.

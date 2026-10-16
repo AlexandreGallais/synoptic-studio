@@ -1,4 +1,4 @@
-import { sliderPositionOf } from "../../src";
+import { PERCENT, sliderPositionOf } from "../../src";
 import { selectElement } from "../page";
 
 /** A slider of the picker as shown: its value, its largest value and the value as read aloud. */
@@ -14,7 +14,7 @@ export type ShownSlider = {
 };
 
 /** A slider's length in percent of itself, for the thumb's place in CSS. */
-const SLIDER_LENGTH_PERCENT = 100;
+const SLIDER_LENGTH_PERCENT = PERCENT;
 
 /**
  * Shows a slider's value: its thumb where the value sits (`sliderPositionOf`), and the value and

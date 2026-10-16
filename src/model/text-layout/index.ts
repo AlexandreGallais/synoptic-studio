@@ -11,5 +11,4 @@ export type * from "./sized-text";
 export * from "./text-block";
 export * from "./text-frame";
 export * from "./text-frame-corners";
-export * from "./text-position-after-resize";
 export * from "./text-straight-box";

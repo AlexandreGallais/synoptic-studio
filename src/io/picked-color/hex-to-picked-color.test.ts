@@ -1,4 +1,8 @@
+import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
+
+import { ANY_BYTE_RGB } from "../../../tests";
+import { bytesToHex } from "../color";
 
 import { hexToPickedColor } from "./hex-to-picked-color";
 
@@ -41,4 +45,30 @@ describe("hexToPickedColor (DERIV-color-spaces steps 3 and 12, ADR-0058)", () =>
       saturation: 0,
     });
   });
+
+  test.prop({
+    bytes: ANY_BYTE_RGB,
+    keptHue: fc.integer({ max: 359, min: 0 }),
+    model: fc.constantFrom("hsb" as const, "hsl" as const),
+  })(
+    "shows whole values, the hue from 0 to 359, the others from 0 to 100, a grey's hue kept",
+    ({ bytes, keptHue, model }) => {
+      const picked = hexToPickedColor(
+        bytesToHex([bytes.red, bytes.green, bytes.blue]),
+        model,
+        keptHue,
+      );
+      const isGrey = bytes.red === bytes.green && bytes.green === bytes.blue;
+
+      expect(
+        [picked.hue, picked.saturation, picked.level].every((value) => Number.isSafeInteger(value)),
+      ).toBe(true);
+
+      expect(picked.hue).toBeGreaterThanOrEqual(0);
+      expect(picked.hue).toBeLessThanOrEqual(359);
+      expect(Math.min(picked.saturation, picked.level)).toBeGreaterThanOrEqual(0);
+      expect(Math.max(picked.saturation, picked.level)).toBeLessThanOrEqual(100);
+      expect(isGrey ? picked.hue : keptHue).toBe(keptHue);
+    },
+  );
 });

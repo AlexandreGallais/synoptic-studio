@@ -50,9 +50,10 @@ function parseSegments(cmap: DataView, subtable: number): readonly Segment[] | u
     ? cmap.getUint16(subtable + SEG_COUNT_X2_OFFSET)
     : Infinity;
   const ends = subtable + END_CODES_OFFSET;
-  const rangeOffsets = ends + PAD_SIZE + (SEGMENT_ARRAYS - 1) * arraySize;
+  // The four arrays of arraySize bytes, the pad after the first: the last starts past three.
+  const rangeOffsets = elementAddress(ends + PAD_SIZE, arraySize, SEGMENT_ARRAYS - 1);
 
-  return isSpanWithin(ends, PAD_SIZE + SEGMENT_ARRAYS * arraySize, cmap.byteLength)
+  return isSpanWithin(ends, elementAddress(PAD_SIZE, arraySize, SEGMENT_ARRAYS), cmap.byteLength)
     ? Array.from({ length: arraySize / 2 }, (unused, index) => ({
         delta: cmap.getInt16(elementAddress(rangeOffsets - arraySize, 2, index)),
         end: cmap.getUint16(elementAddress(ends, 2, index)),

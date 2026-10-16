@@ -1,13 +1,13 @@
-import { pickedColorToHex, planePointOf } from "../../src";
+import { PERCENT, pickedColorToHex, planePointOf } from "../../src";
 import { selectElement } from "../page";
 
 import type { ColorModel, PickedColor } from "../../src";
 
 /** The plane's size in percent of itself, for its mark's place in CSS. */
-const PLANE_PERCENT = { height: 100, width: 100 };
+const PLANE_PERCENT = { height: PERCENT, width: PERCENT };
 
 /** The saturation and brightness of a hue at its purest, the right end of HSB's top row. */
-const PUREST = { level: 100, saturation: 100 };
+const PUREST = { level: PERCENT, saturation: PERCENT };
 
 /**
  * Shows the picker's plane for the hue it holds: its model, which paints it (HSB: white to the

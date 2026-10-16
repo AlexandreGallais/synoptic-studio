@@ -1,3 +1,4 @@
+import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -18,6 +19,15 @@ const FIRST = fontFile(TRUE_TYPE_VERSION, { abcd: [1, 2, 3] });
 
 /** A face of two tables: 56 bytes. */
 const SECOND = fontFile(OPEN_TYPE_VERSION, { cdef: [9, 8, 7, 6, 5], wxyz: [4, 3, 2, 1] });
+
+/** Any table body of up to 12 bytes. */
+const TABLE_BODY = fc.array(fc.integer({ max: 255, min: 0 }), { maxLength: 12 });
+
+/** Any face of one to four tables of up to 12 bytes, its sfntVersion TrueType or OpenType. */
+const FACE = fc.record({
+  tables: fc.dictionary(fc.stringMatching(/^[a-z]{4}$/u), TABLE_BODY, { maxKeys: 4, minKeys: 1 }),
+  version: fc.constantFrom(TRUE_TYPE_VERSION, OPEN_TYPE_VERSION),
+});
 
 /** Helvetica of macOS, a collection of 6 faces, read where the machine has it. */
 const HELVETICA = systemFont(HELVETICA_COLLECTION_PATH);
@@ -69,6 +79,17 @@ describe("parseCollectionFaces (REF-OT-OTFF)", () => {
         [319_036, "b6d030e869c822f8df4083d4c32082349465bdd095f79956a696874477557f59"],
         [325_764, "6e443176752ddf7760cf94daea14cd35f5433d948db8c7078fff497f128354f7"],
       ]);
+    },
+  );
+
+  test.prop({ faces: fc.array(FACE, { maxLength: 3, minLength: 1 }) })(
+    "[F17.AC4] gives back the very faces a collection is made of",
+    ({ faces }) => {
+      const files = faces.map((face) => fontFile(face.version, face.tables));
+
+      expect(
+        parseCollectionFaces(fontCollection(files)).map((parts) => joinedParts(parts)),
+      ).toEqual(files);
     },
   );
 });

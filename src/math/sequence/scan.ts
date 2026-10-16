@@ -1,3 +1,5 @@
+import { integerQuotient } from "../arithmetic";
+
 import type { ScanStep } from "./scan-step";
 
 /**
@@ -52,7 +54,7 @@ function shortScanned<S, T>(items: readonly T[], step: ScanStep<S, T>, initial: 
  * @see REF-WIKI-PREFIX-SUM
  */
 function scanned<S, T>(items: readonly T[], step: ScanStep<S, T>, initial: S): Scanned<S> {
-  const middle = Math.floor(items.length / 2);
+  const middle = integerQuotient(items.length, 2);
   const first =
     items.length <= SHORT_RUN ? undefined : scanned(items.slice(0, middle), step, initial);
 

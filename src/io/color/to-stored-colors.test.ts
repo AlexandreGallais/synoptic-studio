@@ -1,3 +1,4 @@
+import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { HELLO_TEXT } from "../../../tests";
@@ -65,4 +66,13 @@ describe("toStoredColors (ADR-0056)", () => {
       expect(isValidText(toStoredColors(text))).toBe(false);
     },
   );
+
+  test.prop({
+    background: fc.stringMatching(/^#?[\dA-Fa-f]{3,8}$/u),
+    color: fc.stringMatching(/^#?[\dA-Fa-f]{3,8}$/u),
+  })("stores each color once: storing it again changes nothing", ({ background, color }) => {
+    const stored = toStoredColors({ ...HELLO_TEXT, backgroundColor: background, color });
+
+    expect(toStoredColors(stored)).toEqual(stored);
+  });
 });

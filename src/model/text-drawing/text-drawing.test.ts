@@ -2,6 +2,7 @@ import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { ARIAL_BOX_METRICS, DECORATED_METRICS, HELLO_TEXT } from "../../../tests";
+import { capHeightAtSize } from "../text-block";
 
 import { textDrawing } from "./text-drawing";
 
@@ -240,4 +241,26 @@ describe("textDrawing (ADR-0052, DERIV-text-width steps 4 to 6)", () => {
       lines: [],
     });
   });
+
+  test.prop({
+    size: fc.integer({ max: 1000, min: 1 }),
+    y: fc.integer({ max: 1000, min: -1000 }),
+  })(
+    "[F14.AC5] puts a trimmed text's first capital on its box's top, at any size",
+    ({ size, y }) => {
+      const text = {
+        ...HELLO_TEXT,
+        boxHeight: 5000,
+        boxWidth: 5000,
+        isInBox: true,
+        isTrimmed: true,
+        size,
+        y,
+      };
+      const [first] = textDrawing(ARIAL_BOX_METRICS, text).lines;
+
+      // The first baseline lies a cap height below the box's top.
+      expect((first?.y ?? NaN) - capHeightAtSize(ARIAL_BOX_METRICS, size)).toBeCloseTo(y, 9);
+    },
+  );
 });
