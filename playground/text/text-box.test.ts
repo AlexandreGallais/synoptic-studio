@@ -254,12 +254,11 @@ describe("Text tool: a text in a box (US-033)", () => {
     expect(readLines()).toEqual([[PUMP, "0", "15.5"]]);
     chooseOption("text-fit", "box");
 
-    // The box takes the block rounded up (US-055): the block shown, 166.8046875 × 19.359375
-    // (104.77344 + 4.5 for the space + 57.53125), gives 167 × 20, one line, unmoved.
-    expect([readValue("text-box-width"), readValue("text-box-height"), readLines()]).toEqual([
-      "167",
-      "20",
-      [[PUMP, "0", "15.5"]],
+    // The box typed comes back (US-057), 110 × 100, not the block rounded up, 167 × 20 (US-055).
+    expect([readValue("text-box-width"), readValue("text-box-height"), readContents()]).toEqual([
+      "110",
+      "100",
+      ["Pump P-101 is", "running"],
     ]);
 
     typeValue("text-box-width", "");

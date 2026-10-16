@@ -122,6 +122,17 @@ describe("the guided test of F14 (VAL-015): the box's options", () => {
     expect([readValue("text-fit"), readContents()]).toEqual(["content", ["Hello World"]]);
   });
 
+  it("[F17.AC15] a step is a new text: Box measures it again, the box typed before forgotten", () => {
+    openStep("Fit content or Box");
+    chooseOption("text-fit", "box");
+    typeValue("text-box-width", "50");
+    clickElement("guide-previous");
+    clickElement("guide-next");
+    chooseOption("text-fit", "box");
+
+    expect([readValue("text-box-width"), readValue("text-box-height")]).toEqual(["88", "20"]);
+  });
+
   it("[F14.AC1] Box: “Hello” over “World”, the frame the box 50 × 100", () => {
     openStep("Fit content or Box");
     chooseOption("text-fit", "box");

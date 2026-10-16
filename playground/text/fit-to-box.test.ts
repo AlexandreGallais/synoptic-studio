@@ -132,9 +132,8 @@ describe("Text tool: a text put in a box keeps its fitted size (US-055)", () => 
     expect(readLines().map(([content]) => content)).toEqual(["Pump", "P-101"]);
   });
 
-  it("[F17.AC13] measures again at each switch: 88 × 39 once a second line is typed", () => {
+  it("[F17.AC13] measures again at each switch while the box is not typed: 88 × 39 with a second line", () => {
     chooseOption("text-fit", "box");
-    typeValue("text-box-width", "50");
     chooseOption("text-fit", "content");
     typeContent("Pump P-101\nTank");
     chooseOption("text-fit", "box");
@@ -172,5 +171,46 @@ describe("Text tool: a text put in a box keeps its fitted size (US-055)", () => 
     chooseOption("text-fit", "box");
 
     expect(readBoxFields()).toEqual(["0", "0"]);
+  });
+});
+
+describe("Text tool: the box typed is kept when the text comes back to Box (US-057)", () => {
+  beforeEach(() => {
+    openServedPage("");
+    clickElement("tool-text");
+    typeValue("text-size", "16");
+    chooseOption("text-weight", "400");
+    chooseOption("text-fit", "content");
+    chooseOption("text-vertical-alignment", "top");
+    typeContent("Pump P-101");
+    chooseOption("text-fit", "box");
+  });
+
+  it("[F17.AC15] keeps a height typed 15 through Fit content and back: 88 × 15", () => {
+    typeValue("text-box-height", "15");
+    chooseOption("text-fit", "content");
+    chooseOption("text-fit", "box");
+
+    expect(readBoxFields()).toEqual(["88", "15"]);
+    expect(readModel()).toMatchObject({ boxHeight: 15, boxWidth: 88, isInBox: true });
+  });
+
+  it("[F17.AC15] keeps a width typed 50 though a second line was typed meanwhile: 50 × 20", () => {
+    typeValue("text-box-width", "50");
+    chooseOption("text-fit", "content");
+    typeContent("Pump P-101\nTank");
+    chooseOption("text-fit", "box");
+
+    // Not 88 × 39, the new block rounded up (US-055): the box typed comes back.
+    expect(readBoxFields()).toEqual(["50", "20"]);
+  });
+
+  it("[F17.AC15] keeps the maximum number of lines with the box typed", () => {
+    typeValue("text-box-height", "40");
+    typeValue("text-maximum-lines", "1");
+    chooseOption("text-fit", "content");
+    chooseOption("text-fit", "box");
+
+    expect([...readBoxFields(), readValue("text-maximum-lines")]).toEqual(["88", "40", "1"]);
   });
 });
