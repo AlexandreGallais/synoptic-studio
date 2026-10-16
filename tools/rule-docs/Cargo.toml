@@ -1,0 +1,12 @@
+[package]
+name = "rule-docs"
+version = "0.1.0"
+edition = "2024"
+description = "A story's done commit brings the docs a rule it changes touches (EN-059)"
+license = "Apache-2.0"
+publish = false
+
+[dependencies]
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
