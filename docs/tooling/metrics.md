@@ -31,7 +31,7 @@ Each line of `tool-calls.jsonl` holds what the hook knows when the call ends, an
 
 ## The report
 
-`npm run metrics` prints a Markdown report (`npm run metrics > report.md` to keep it):
+`npm run metrics` prints a Markdown report (`npm run metrics > report.md` to keep it); `npm run metrics -- --since 2026-10-16` covers only the calls, requests and turns from that day on, 00:00 UTC (EN-055). The transcripts are read from the main checkout's folder, also when the report runs in a worktree:
 
 | Section                                 | What it shows                                                                                                                                      |
 | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |

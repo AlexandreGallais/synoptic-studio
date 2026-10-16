@@ -90,10 +90,10 @@ Refs: EN-001.T2, DERIV-local-radius-clamp
 
 ## Hooks (`.husky/`)
 
-| Hook         | Runs                                                                                                                                                                                                      |
-| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pre-commit` | `lint-staged` (`.lintstagedrc.json`): Prettier + ESLint `--fix` on staged TypeScript and Markdown, Prettier on JSON, HTML, CSS and YAML, secretlint on every staged file                                  |
-| `commit-msg` | commitlint                                                                                                                                                                                                |
-| `pre-push`   | no shared file edited on a worker's story branch (`tools/shared-files`, ADR-0065), branch name (`.validate-branch-namerc.json`), `npm run check:all` (check, latest versions, docs and playground builds) |
+| Hook         | Runs                                                                                                                                                                                                                                                                          |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pre-commit` | `lint-staged` (`.lintstagedrc.json`): Prettier + ESLint `--fix` on staged TypeScript and Markdown, Prettier on JSON, HTML, CSS and YAML, secretlint on every staged file                                                                                                      |
+| `commit-msg` | commitlint                                                                                                                                                                                                                                                                    |
+| `pre-push`   | no shared file edited on a worker's story branch (`tools/shared-files`, ADR-0065), branch name (`.validate-branch-namerc.json`), `npm run check:all` (check, latest versions, docs and playground builds), then `npm run golden:check` when a golden file is written (EN-055) |
 
 Hooks are installed by `npm install` (`prepare` script). Bypassing them (`--no-verify`) is not allowed.
