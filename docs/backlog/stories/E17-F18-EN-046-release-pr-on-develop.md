@@ -11,6 +11,8 @@ points: 2
 
 Run release-please's release pull request on `develop` and only its GitHub release on `main`, so that a release adds no commit to `main` that `develop` lacks (F18.AC1; asked by the Product Owner on 2026-10-14). Done before the release that closes E17: the release pull request 0.3 (#259) waits until the end of E17 and is merged by the Product Owner then (2026-10-16), with this flow in place.
 
+SP-020 ([research note 0022](../../research/notes/0022-f18-parallel-run.md)): the action's `target-branch`, `skip-github-release` and `skip-github-pull-request` split the release pull request from the release (`REF-RELEASE-PLEASE-ACTION`); a release tags the merge commit of the release pull request found by its label (`REF-RELEASE-PLEASE-DESIGN`), so the step on `main` looks for pull requests merged into `develop`, checked on the next release.
+
 ## Acceptance criteria
 
 - Given release-please's documentation read (its `release-pr` and `github-release` steps, the target branch option), when the workflow is changed, then `release.yml` runs the release pull request on `develop` and only the tag and the GitHub release on `main`.

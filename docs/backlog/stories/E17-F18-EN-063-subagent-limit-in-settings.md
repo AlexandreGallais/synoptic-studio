@@ -11,6 +11,8 @@ points: 1
 
 Set the limit of simultaneous subagents in Claude Code's settings, beside the hook of EN-047 (ADR-0063). Recommended by the research of 2026-10-16; the change is shown to the Product Owner before it is applied.
 
+SP-020 ([research note 0022](../../research/notes/0022-f18-parallel-run.md)): `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` under `env` in `.claude/settings.json`, a positive whole number that lowers the cap of 20; its refusal names no subagent and a resume escapes it, so it backs the hook of EN-047 up rather than replacing it (`REF-CC-ENV-VARS`, `REF-CC-SUBAGENTS`).
+
 ## Acceptance criteria
 
 - Given the recommended setting shown to the Product Owner and accepted, when it is applied, then the settings file holds the limit and `docs/tooling/agent.md` names it beside the hook of EN-047.

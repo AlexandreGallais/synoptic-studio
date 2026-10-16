@@ -11,6 +11,8 @@ points: 1
 
 Turn ADR-0043's signal and the spread found in F14 into checks (row 32 of RET-003; I26, I27; F18.AC18).
 
+SP-020 ([research note 0022](../../research/notes/0022-f18-parallel-run.md)): a spread on a fold's accumulator costs `O(n^2)` (`REF-OXLINT-ACCUMULATING-SPREAD`), reported with ESLint's `no-restricted-syntax` and a selector (`REF-ESLINT-RESTRICTED-SYNTAX`); the fix Oxlint shows mutates the accumulator, which ADR-0014 forbids: `map`, `flatMap` or a loop over a local array instead.
+
 ## Acceptance criteria
 
 - Given a folder of `src/` or `playground/` past 15 modules, when the tests run, then a test fails unless the folder is listed in `docs/conventions/files.md` with its reason.
