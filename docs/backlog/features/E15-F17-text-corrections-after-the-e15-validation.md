@@ -35,7 +35,7 @@ In delivery order.
 | [US-044](../stories/E15-F17-US-044-no-html-layer.md)                         | User story | The HTML layer removed                                                               | done   |
 | [US-045](../stories/E15-F17-US-045-fonts-embedded-at-export.md)              | User story | Fonts embedded only when a file is exported or saved                                 | done   |
 | [US-046](../stories/E15-F17-US-046-installed-fonts-from-collections.md)      | User story | Installed fonts read from collections, and faces that failed                         | done   |
-| [CHK-018](../stories/E15-F17-CHK-018-checkpoint-f17.md)                      | Checkpoint | Checkpoint in the middle of F17                                                      | ready  |
+| [CHK-018](../stories/E15-F17-CHK-018-checkpoint-f17.md)                      | Checkpoint | Checkpoint in the middle of F17                                                      | done   |
 | [US-047](../stories/E15-F17-US-047-weight-450-drawn-as-measured.md)          | User story | A weight such as 450 drawn with the face it is measured with                         | done   |
 | [US-048](../stories/E15-F17-US-048-fluid-changes-held-keys.md)               | User story | Values changed fast redrawn without lag                                              | done   |
 | [US-049](../stories/E15-F17-US-049-background-band-ends-with-its-line.md)    | User story | A wrapped text's background band ends with its line                                  | done   |
