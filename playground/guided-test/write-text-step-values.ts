@@ -148,4 +148,6 @@ export function writeTextStepValues(document: Document, text: GuidedText): void 
   delete selectElement(document, "placement").dataset["shapePlacement"];
   // The text last drawn (US-038): a step is never placed from the step before.
   delete selectElement(document, "text-options").dataset["drawnText"];
+  // The box typed (US-057): a step is a new text, its box measured again when Box is chosen.
+  delete selectElement(document, "text-options").dataset["boxTyped"];
 }

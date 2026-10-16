@@ -10,11 +10,12 @@ import { writeFittedBox } from "./write-fitted-box";
 /**
  * Listens to the choice of Fit content or Box on the choice itself, so that the box's fields take
  * the text's block rounded up before the options redraw the text (`writeFittedBox`, US-055): a
- * browser sends `input`, then `change`, each reaching the choice before its group.
+ * browser sends `input`, then `change`, each reaching the choice before its group. A width or
+ * height typed marks the box as the designer's (`data-box-typed`), kept from then on (US-057).
  *
  * @kind procedure
  * @param document - page document
- * @see docs/backlog/stories/E15-F17-US-055-fit-to-box-keeps-the-size.md
+ * @see docs/backlog/stories/E15-F17-US-057-box-size-kept.md
  */
 function listenToBoxChoice(document: Document): void {
   const fit = selectElement(document, "text-fit");
@@ -22,6 +23,12 @@ function listenToBoxChoice(document: Document): void {
   for (const type of ["input", "change"]) {
     fit.addEventListener(type, () => {
       writeFittedBox(document);
+    });
+  }
+
+  for (const id of ["text-box-width", "text-box-height"]) {
+    selectElement(document, id).addEventListener("input", () => {
+      selectElement(document, "text-options").dataset["boxTyped"] = "true";
     });
   }
 }
@@ -52,7 +59,8 @@ function listenToBold(document: Document, update: () => void): void {
  * the text; the bold button gives 700 and gives back the weight before (`pressBold`, US-037), a
  * weight chosen in the list forgetting the weight held; the italic button turns italic on or off;
  * a value typed in X or Y redraws the text (`listenToTextPosition`, US-038); Box chosen after Fit
- * content first writes the block rounded up in the box's fields (`writeFittedBox`, US-055).
+ * content first writes the block rounded up in the box's fields (`writeFittedBox`, US-055), unless
+ * the designer typed the box, which then comes back (US-057).
  *
  * @kind procedure
  * @param document - page document
