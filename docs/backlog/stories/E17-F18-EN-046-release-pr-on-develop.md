@@ -56,13 +56,3 @@ The release itself cannot run before the merge of `develop` into `main`: the cri
 5. `git merge --ff-only origin/main` on `develop` succeeds.
 
 **Rollback** if step 1 or 4 fails: in `release.yml`, remove the `release-pr` job and `develop` from the push branches, remove `target-branch` and `skip-github-pull-request` from the `release-please` job and give back its `gh pr merge --auto --merge` step (the file before EN-046); close the release pull request left on `develop`. If the tag is missing after step 4 with the release pull request merged, run the workflow by hand from `main` (_Actions → Release → Run workflow_): its release step looks again for the merged pull request.
-
-## For the main thread
-
-### Journal
-
-- `#run` EN-046: the release pull request now lives on `develop` and `main` only tags it (ADR-0067); the Product Owner merges the release pull request into `develop` before #259, checked at the release of 0.3.
-
-### Improvements
-
-| 2026-10-17 | agent | EN-046: release-please's commit scope follows its branch, so the release commit `chore(develop): release x.y.z` would have failed the commit-message check of the pull request into `main`; found by reading `ci.yml` before the release (commitlint now lets it through) | tooling |
