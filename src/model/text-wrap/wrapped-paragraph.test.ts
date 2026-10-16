@@ -84,6 +84,14 @@ describe("wrappedParagraph (DERIV-text-box steps 1 to 4)", () => {
     ).toEqual(["Hello World", "Hello"]);
   });
 
+  it("[F17.AC6] fits a line by its letters, its trailing space left out", () => {
+    // Box 85: "Hello World" 82.6875 fits; with its trailing space, 82.6875 + 569 / 128 = 87.13281
+    // would not, and "World Hello" (82.6875) would take the second line instead.
+    expect(
+      wrappedParagraph(ARIAL_BOX_METRICS, "Hello World Hello", { ...BOXED, boxWidth: 85 }),
+    ).toEqual(["Hello World", "Hello"]);
+  });
+
   it("[F17.AC6] keeps the spaces that open the paragraph, and drops those that end it", () => {
     // "  Hello" 2 × 569 + 4667 = 5805 units, 45.35156 ≤ 50; the last line loses its trailing
     // spaces as every other line does (US-049).

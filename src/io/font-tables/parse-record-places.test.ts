@@ -46,6 +46,13 @@ describe("parseRecordPlaces (REF-OT-OTFF, REF-APPLE-TT-SCALER)", () => {
     expect(parseRecordPlaces(viewOf([...collection]), 52)).toEqual([64]);
   });
 
+  it("reads the records of a directory that ends with the file", () => {
+    // Header 12 + 1 record × 16 = 28 bytes: the file cut at 28 still holds the directory.
+    const file = [...fontFile(TRUE_TYPE_VERSION, { abcd: [1, 2, 3] })].slice(0, 28);
+
+    expect(parseRecordPlaces(viewOf(file), 0)).toEqual([12]);
+  });
+
   it("reads nothing at a directory whose header ends past the file", () => {
     // 32 bytes: a directory at 24 would end its header at 36.
     const file = [...fontFile(TRUE_TYPE_VERSION, { abcd: [1, 2, 3] })];

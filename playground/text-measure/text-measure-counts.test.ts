@@ -102,4 +102,11 @@ describe("What a redraw computes again (US-048)", () => {
 
     expect(readCounts()).toEqual({ drawing: 1, measure: 1, metrics: 1, wholeDrawing: 0 });
   });
+
+  it("[F17.AC5] italic turned on: the metrics read again, then the lines and block", () => {
+    clickElement("text-italic");
+    runFrames();
+
+    expect(readCounts()).toEqual({ drawing: 1, measure: 1, metrics: 1, wholeDrawing: 0 });
+  });
 });

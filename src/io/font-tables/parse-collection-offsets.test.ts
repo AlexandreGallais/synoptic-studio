@@ -46,6 +46,13 @@ describe("parseCollectionOffsets (REF-OT-OTFF)", () => {
     expect(parseCollectionOffsets(viewOf(file))).toEqual([]);
   });
 
+  it("reads the offsets that end with the file", () => {
+    // numFonts 1 asks for 12 + 1 × 4 = 16 bytes; the file has 16.
+    const file = [...tagBytes("ttcf"), ...uint16(1), ...uint16(0), ...uint32(1), ...uint32(16)];
+
+    expect(parseCollectionOffsets(viewOf(file))).toEqual([16]);
+  });
+
   it("reads no face when the offsets do not fit in the file", () => {
     // numFonts 2 asks for 12 + 2 × 4 = 20 bytes; the file has 16.
     const file = [...tagBytes("ttcf"), ...uint16(1), ...uint16(0), ...uint32(2), ...uint32(20)];

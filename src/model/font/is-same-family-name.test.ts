@@ -9,6 +9,8 @@ describe("isSameFamilyName (REF-CSS-FONTS-4, §5.1)", () => {
     { isSame: true, name: "ARIAL", other: "Arial" },
     // Case folding maps ß to ss.
     { isSame: true, name: "Straße", other: "STRASSE" },
+    // The Kelvin sign U+212A folds to k: upper case keeps it apart from K, lower case gives k.
+    { isSame: true, name: "\u{212A}elvin Sans", other: "kelvin sans" },
     { isSame: false, name: "Arial", other: "Arial Black" },
     // Without normalization: a + combining ring is not å.
     { isSame: false, name: "å", other: "å" },
