@@ -29,6 +29,10 @@ One task = one commit, referenced as `EN-047.Tn`.
 - [ ] T2 — The `PreToolUse` hook on `Agent`, counting running subagents from `.git/metrics/`; tests (2 h)
 - [ ] T3 — Vitest's workers capped at half the cores; docs and the rule pointing to the check (1 h)
 
+## Follow-up
+
+A waiter read the lock twice per look: a lock released between the two readings was named "taken by hand", a false line seen once under load (2026-10-16). Each look now reads the lock once and a lock gone since is taken at the next look; the lock is written to a draft then linked, so it is never read half written; its age is left out when its start is missing, in the future or over a day ago, and written in hours past an hour (`fix/en-047-lock-released-while-read`, `Refs: EN-047`).
+
 ## For the main thread
 
 ### The hook's line in `.claude/settings.json`, to show the Product Owner

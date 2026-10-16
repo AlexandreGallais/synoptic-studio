@@ -23,6 +23,12 @@ const NO_SUCH_PROCESS: i32 = 3;
 /// Seconds in a minute.
 const MINUTE: u64 = 60;
 
+/// Seconds in an hour.
+const HOUR: u64 = 60 * MINUTE;
+
+/// Seconds in a day: longer than any heavy command.
+const DAY: u64 = 24 * HOUR;
+
 /// Who holds the lock, as written in it.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct LockOwner {
@@ -130,14 +136,26 @@ pub fn is_running(pid: u32) -> bool {
     io::Error::last_os_error().raw_os_error() != Some(NO_SUCH_PROCESS)
 }
 
-/// A duration in seconds, written short: `45 s`, `2 min 05 s`.
+/// A duration in seconds, written short: `45 s`, `2 min 05 s`, `1 h 02 min`.
 #[must_use]
 pub fn short_duration(seconds: u64) -> String {
     if seconds < MINUTE {
         format!("{seconds} s")
-    } else {
+    } else if seconds < HOUR {
         format!("{} min {:02} s", seconds / MINUTE, seconds % MINUTE)
+    } else {
+        format!("{} h {:02} min", seconds / HOUR, seconds % HOUR / MINUTE)
     }
+}
+
+/// How long a lock taken at `start` has been held at `now`, written short; `None` when the start is
+/// missing, later than now, or over a day ago, which no heavy command lasts: a clock or a lock gone
+/// wrong.
+#[must_use]
+pub fn held_for(start: u64, now: u64) -> Option<String> {
+    now.checked_sub(start)
+        .filter(|age| start > 0 && *age <= DAY)
+        .map(short_duration)
 }
 
 /// The command as the person typed it: `npm run check:all` from its npm script, else the command.
@@ -158,13 +176,13 @@ pub fn waiting_line(owner: Option<&LockOwner>, path: &Path, now: u64) -> String 
             path.display()
         ),
         Some(owner) => format!(
-            "heavy lock held by process {} ({} in {}, for {}): waiting\n",
+            "heavy lock held by process {} ({} in {}{}): waiting\n",
             owner.pid,
             owner.command,
             Path::new(&owner.cwd)
                 .file_name()
                 .map_or_else(String::new, |name| name.to_string_lossy().into_owned()),
-            short_duration(now.saturating_sub(owner.start))
+            held_for(owner.start, now).map_or_else(String::new, |age| format!(", for {age}"))
         ),
     }
 }
@@ -190,15 +208,29 @@ pub fn read_lock(path: &Path) -> Held {
 
 /// Creates the lock, only if none exists: an exclusive creation, which one command only wins.
 ///
+/// The owner is written to a file of its own first, then linked as the lock: a waiter never reads a
+/// lock still empty or half written.
+///
 /// # Errors
 ///
 /// When the lock cannot be written for another reason than an existing one.
 pub fn create_lock(path: &Path, owner: &LockOwner) -> io::Result<bool> {
-    match OpenOptions::new().write(true).create_new(true).open(path) {
-        Ok(mut file) => {
-            file.write_all(owner.to_text().as_bytes())?;
-            Ok(true)
-        }
+    let draft = path.with_extension(format!("lock.{}", owner.pid));
+
+    OpenOptions::new()
+        .write(true)
+        .create(true)
+        .truncate(true)
+        .open(&draft)?
+        .write_all(owner.to_text().as_bytes())?;
+
+    let linked = fs::hard_link(&draft, path);
+
+    // Gone already is as good as removed.
+    let _ = fs::remove_file(&draft);
+
+    match linked {
+        Ok(()) => Ok(true),
         Err(error) if error.kind() == io::ErrorKind::AlreadyExists => Ok(false),
         Err(error) => Err(error),
     }
@@ -233,25 +265,68 @@ pub struct Request<'a> {
     pub poll: Duration,
 }
 
-/// One look at the lock: `Some` once the command may run, `None` while it must wait.
-fn try_take(request: &Request, say: &mut impl Write) -> io::Result<Option<Action>> {
-    let held = read_lock(request.path);
-    let action = lock_action(&held, request.owner_variable.as_deref(), is_running);
+/// What one look at the lock leads to.
+enum Look {
+    /// The command may run.
+    Run(Action),
+    /// The lock is held by this owner, `None` for a lock taken by hand: wait.
+    Wait(Option<LockOwner>),
+    /// Another command took the lock first: look again at once.
+    Again,
+}
 
-    if action == Action::Inside {
-        return Ok(Some(action));
+/// One look at the lock, from one reading of it: a lock gone since that reading is seen at the next.
+fn look(request: &Request, held: Held, say: &mut impl Write) -> io::Result<Look> {
+    match lock_action(&held, request.owner_variable.as_deref(), is_running) {
+        Action::Inside => Ok(Look::Run(Action::Inside)),
+        Action::Wait => Ok(Look::Wait(match held {
+            Held::By(owner) => owner,
+            Held::Free => None,
+        })),
+        action => {
+            if let (Action::TakeOver, Held::By(Some(dead))) = (action, &held) {
+                say.write_all(take_over_line(dead).as_bytes())?;
+                // Removed only if still the dead owner's: another waiter may have taken it over already.
+                remove_lock(request.path, dead.pid);
+            }
+
+            Ok(if create_lock(request.path, &request.owner)? {
+                Look::Run(Action::Take)
+            } else {
+                Look::Again
+            })
+        }
     }
+}
 
-    if let (Action::TakeOver, Held::By(Some(dead))) = (action, &held) {
-        say.write_all(take_over_line(dead).as_bytes())?;
-        // Removed only if still the dead owner's: another waiter may have taken it over already.
-        remove_lock(request.path, dead.pid);
+/// Waits until the command may run, reading the lock with `read`, saying who holds it each time the
+/// holder changes.
+///
+/// # Errors
+///
+/// When the lock cannot be read or written.
+pub fn acquire_reading(
+    request: &Request,
+    say: &mut impl Write,
+    mut read: impl FnMut(&Path) -> Held,
+) -> io::Result<Action> {
+    let mut said = None;
+
+    loop {
+        let owner = match look(request, read(request.path), say)? {
+            Look::Run(action) => return Ok(action),
+            Look::Again => continue,
+            Look::Wait(owner) => owner,
+        };
+
+        // One line per holder, not per look.
+        if said.as_ref() != Some(&owner) {
+            say.write_all(waiting_line(owner.as_ref(), request.path, now()).as_bytes())?;
+            said = Some(owner);
+        }
+
+        thread::sleep(request.poll);
     }
-
-    Ok(
-        (action != Action::Wait && create_lock(request.path, &request.owner)?)
-            .then_some(Action::Take),
-    )
 }
 
 /// Waits until the command may run, saying who holds the lock each time the holder changes.
@@ -260,28 +335,7 @@ fn try_take(request: &Request, say: &mut impl Write) -> io::Result<Option<Action
 ///
 /// When the lock cannot be read or written.
 pub fn acquire(request: &Request, say: &mut impl Write) -> io::Result<Action> {
-    let mut said = String::new();
-
-    loop {
-        if let Some(action) = try_take(request, say)? {
-            return Ok(action);
-        }
-
-        let owner = match read_lock(request.path) {
-            Held::By(owner) => owner,
-            Held::Free => None,
-        };
-        let line = waiting_line(owner.as_ref(), request.path, now());
-        // The holder, not its duration: one line per holder.
-        let holder = line.split(", for").next().unwrap_or_default().to_owned();
-
-        if holder != said {
-            say.write_all(line.as_bytes())?;
-            said = holder;
-        }
-
-        thread::sleep(request.poll);
-    }
+    acquire_reading(request, say, read_lock)
 }
 
 /// Runs a heavy command under the lock: waits for it, runs the command, then frees it.
