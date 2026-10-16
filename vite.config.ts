@@ -67,6 +67,8 @@ export default defineConfig(({ mode }) => ({
       ".claude/hooks/*.test.ts",
       "scripts/*.test.ts",
     ],
+    // Half the machine's cores: the other checks of `check:all` run beside the tests (EN-045).
+    maxWorkers: "50%",
     ...(JUNIT_FILE !== undefined && {
       outputFile: { junit: JUNIT_FILE },
       reporters: ["default", "junit"],

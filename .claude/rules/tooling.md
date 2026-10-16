@@ -15,6 +15,7 @@ paths:
 - A plugin upgrade makes `eslint/config.test.ts` fail until its new rules are decided in `eslint/rules/`: intended.
 - `unicorn/prefer-import-meta-properties` turns `new URL(".", import.meta.url)` into `import.meta.dirname` (no trailing slash): build paths with `join()`.
 - A test that reads files is mutation-checked once: break its input on purpose and see it fail.
+- A check tool is always given explicit targets (folders and files by name, never `.` nor `**/*`); a new tracked folder joins the targets in `package.json`, or `tests/check-targets.test.ts` fails (EN-045).
 - A tooling change that makes existing files invalid is committed together with their fix.
 - Hooks in `.claude/hooks/` and `scripts/` run with `node` (type stripping): relative imports name the `.ts` file (lint scope `node-run`), exported pure functions tested, side effects under `if (import.meta.main)`. Temporal needs `node --harmony-temporal` on Node.js 24.
 - Stylelint is planned for SCSS but not installed (`braces` advisory GHSA-vfj7-8cjw-p6xm): see `docs/tooling/versions-and-security.md`.

@@ -32,6 +32,7 @@ Written at RET-003 (2026-10-16) from the Product Owner's decisions (ADR-0063, AD
 17. E15's long pages shortened.
 18. Modules per folder counted; no spread in a fold.
 19. The CI reads a real font file.
+20. Every check tool given explicit targets, no tracked file left out; Vitest on half the cores.
 
 ## Stories
 
@@ -40,6 +41,7 @@ In delivery order.
 | ID                                                                                   | Type       | Title                                                              | Status |
 | ------------------------------------------------------------------------------------ | ---------- | ------------------------------------------------------------------ | ------ |
 | [SP-020](../stories/E17-F18-SP-020-research-f18.md)                                  | Spike      | Research for F18, the sources of RET-003 recorded                  | draft  |
+| [EN-045](../stories/E17-F18-EN-045-explicit-tool-scopes.md)                          | Enabler    | Every check tool given explicit targets                            | done   |
 | [EN-047](../stories/E17-F18-EN-047-heavy-lock-and-agent-limit.md)                    | Enabler    | A lock for heavy commands and a limit on subagents                 | draft  |
 | [EN-048](../stories/E17-F18-EN-048-tables-without-padding-and-union-logs.md)         | Enabler    | Tables without padding, append-only logs merged by union           | draft  |
 | [EN-049](../stories/E17-F18-EN-049-stories-index-generated.md)                       | Enabler    | The stories index generated from the story files                   | draft  |
@@ -85,3 +87,4 @@ In delivery order.
 | F18.AC17             | EN-060      | AUD-020, `[F18.AC17]` |
 | F18.AC18             | EN-061      | AUD-020, `[F18.AC18]` |
 | F18.AC19             | EN-062      | AUD-020, `[F18.AC19]` |
+| F18.AC20             | EN-045      | AUD-020, `[F18.AC20]` |
