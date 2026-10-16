@@ -104,12 +104,85 @@ fn leaves_alone_a_story_without_rows() {
 
 #[test]
 fn stops_a_log_heading_at_the_next_heading() {
-    let story = "## For the main thread\n\n### Feedback\n\n| row |\n\n### Decisions\n\n- kept\n\n## Next\n\n| not a row |\n";
+    let story = "## For the main thread\n\n### Feedback\n\n| 2026-10-17 | row |\n\n### Decisions\n\n- kept\n\n## Next\n\n| not a row |\n";
     let taken = take_rows(story);
 
-    assert_eq!(taken.rows[0].1, ["| row |"]);
+    assert_eq!(taken.rows[0].1, ["| 2026-10-17 | row |"]);
+    assert_eq!(taken.left, Vec::new());
     assert!(taken.story.contains("### Decisions\n\n- kept\n"));
     assert!(taken.story.contains("## Next\n\n| not a row |\n"));
+}
+
+#[test]
+fn moves_only_dated_table_rows_into_a_table_log() {
+    // EN-058 wrote a header and its separator, EN-055 and EN-061 bullets, US-061 `- None.`.
+    let story = "# S\n\n## For the main thread\n\n### Improvements\n\n| Date | From | Item | Kind |\n| ---------- | :--: | --- | --- |\n| 2026-10-17 | EN-058 | An idea | tool |\n- A bullet note.\n| soon | EN-058 | Undated | tool |\n- None.\n\n### Feedback\n\n- None new.\n";
+    let taken = take_rows(story);
+
+    assert_eq!(
+        taken.rows,
+        [(
+            LOGS[1],
+            vec!["| 2026-10-17 | EN-058 | An idea | tool |".to_owned()]
+        )]
+    );
+    assert_eq!(
+        taken.left,
+        [(
+            LOGS[1],
+            vec![
+                "- A bullet note.".to_owned(),
+                "| soon | EN-058 | Undated | tool |".to_owned()
+            ]
+        )]
+    );
+    // The lines left stay under their heading; the header, the placeholders and the empty
+    // `### Feedback` go.
+    assert_eq!(
+        taken.story,
+        "# S\n\n## For the main thread\n\n### Improvements\n\n- A bullet note.\n| soon | EN-058 | Undated | tool |\n"
+    );
+}
+
+#[test]
+fn moves_only_bullets_into_the_journal() {
+    let story = "# S\n\n## For the main thread\n\n### Journal\n\n- `#run` A finding.\n| 2026-10-17 | a row |\nA paragraph.\n- None.\n- Nothing new\n\n## Next\n";
+    let taken = take_rows(story);
+
+    assert_eq!(
+        taken.rows,
+        [(LOGS[0], vec!["- `#run` A finding.".to_owned()])]
+    );
+    assert_eq!(
+        taken.left,
+        [(
+            LOGS[0],
+            vec![
+                "| 2026-10-17 | a row |".to_owned(),
+                "A paragraph.".to_owned()
+            ]
+        )]
+    );
+    assert_eq!(
+        taken.story,
+        "# S\n\n## For the main thread\n\n### Journal\n\n| 2026-10-17 | a row |\nA paragraph.\n\n## Next\n"
+    );
+}
+
+#[test]
+fn drops_a_subsection_holding_only_placeholders() {
+    for placeholder in ["- None.", "- none new", "- Nothing.", "- N/A", "| None |"] {
+        let story = format!("# S\n\n## For the main thread\n\n### Feedback\n\n{placeholder}\n");
+        let taken = take_rows(&story);
+
+        assert!(taken.rows.is_empty(), "{placeholder}");
+        assert!(taken.left.is_empty(), "{placeholder}");
+        assert_eq!(taken.story, "# S\n", "{placeholder}");
+    }
+    // A bullet that only starts like a placeholder is a journal row.
+    let taken = take_rows("## For the main thread\n\n### Journal\n\n- None of the tests failed.\n");
+
+    assert_eq!(taken.rows[0].1, ["- None of the tests failed."]);
 }
 
 #[test]
@@ -197,6 +270,72 @@ fn moves_the_rows_of_a_merged_story_into_the_logs() {
     );
     assert_eq!(String::from_utf8_lossy(&run("develop").stdout), "");
     assert_eq!(String::from_utf8_lossy(&run("feat/us-1-none").stdout), "");
+
+    let _ = fs::remove_dir_all(&root);
+}
+
+#[test]
+fn leaves_a_line_of_another_shape_in_the_story_and_names_it() {
+    let root: PathBuf = std::env::temp_dir().join(format!("move-rows-left-{}", std::process::id()));
+    let _ = fs::remove_dir_all(&root);
+    fs::create_dir_all(root.join("docs/backlog/stories")).unwrap();
+    fs::create_dir_all(root.join("docs/process")).unwrap();
+
+    let story = "docs/backlog/stories/E17-F18-US-998-a-story.md";
+    let feedback = "# Feedback\n\n| Date | What |\n| --- | --- |\n| 2026-10-16 | Old |\n";
+    let read = |path: &str| fs::read_to_string(root.join(path)).unwrap();
+
+    fs::write(
+        root.join(story),
+        "# US-998\n\n## For the main thread\n\n### Feedback\n\n| Date | What |\n| --- | --- |\n| 2026-10-17 | New |\n- A note.\n\n### Journal\n\n- None.\n",
+    )
+    .unwrap();
+    fs::write(root.join("docs/process/feedback.md"), feedback).unwrap();
+
+    let output = Command::new(env!("CARGO_BIN_EXE_move-rows"))
+        .arg("feat/us-998-a-story")
+        .current_dir(&root)
+        .output()
+        .unwrap();
+
+    assert!(output.status.success(), "{output:?}");
+    assert_eq!(
+        String::from_utf8_lossy(&output.stdout),
+        format!("docs/process/feedback.md\n{story}\n")
+    );
+    assert_eq!(
+        String::from_utf8_lossy(&output.stderr),
+        format!(
+            "move-rows: left in {story} under ### Feedback, not a row of docs/process/feedback.md: - A note.\n"
+        )
+    );
+    // Only the dated row reached the log; the note stays in the story, the placeholder goes.
+    assert_eq!(
+        read("docs/process/feedback.md"),
+        format!("{feedback}| 2026-10-17 | New |\n")
+    );
+    assert_eq!(
+        read(story),
+        "# US-998\n\n## For the main thread\n\n### Feedback\n\n- A note.\n"
+    );
+
+    // A story holding only a placeholder: no log written, the story file cleaned all the same.
+    let only = "docs/backlog/stories/E17-F18-US-997-another.md";
+
+    fs::write(
+        root.join(only),
+        "# US-997\n\n## For the main thread\n\n### Improvements\n\n- None.\n",
+    )
+    .unwrap();
+
+    let output = Command::new(env!("CARGO_BIN_EXE_move-rows"))
+        .arg("feat/us-997-another")
+        .current_dir(&root)
+        .output()
+        .unwrap();
+
+    assert_eq!(String::from_utf8_lossy(&output.stdout), format!("{only}\n"));
+    assert_eq!(read(only), "# US-997\n");
 
     let _ = fs::remove_dir_all(&root);
 }
