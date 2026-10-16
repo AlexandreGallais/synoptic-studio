@@ -3,7 +3,7 @@ id: US-061
 epic: E17
 feature: F18
 title: Font list held while the default font is read again
-status: ready
+status: done
 points: 2
 ---
 
