@@ -67,8 +67,6 @@ The Product Owner walked E15's checklist page on branch `feat/val-018-text-corre
 | D4  | After turning a text by 90, the X and Y fields keep their old values while the box moves; the readout shows the new ones; one crash seen, which recovered                                                                                  | X and Y (the top-left corner) should follow the turn                                         |
 | D5  | An installed font that cannot be read ("ABC Oracle Book could not be accessed") is still listed                                                                                                                                            | read every installed font ahead; list only the fonts and weights really available, Inter too |
 
-For D1, the Product Owner notes that Figma offers every Inter weight (Thin to Black) and shows them all working; the fault is therefore in how the editor reads or measures Inter, not in the font.
-
 **Change C1**: switching from fit content to a box keeps the fit-content size as the box's size, then editable (to investigate; story to come).
 
 **Points not answered**: Helvetica Neue 700, an unquoted family name with a digit in Safari, and Apple Color Emoji.ttc. The Product Owner left the choice to the agent: Apple Color Emoji is handled by the recommended option (b) unless a business choice remains.
