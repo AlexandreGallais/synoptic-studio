@@ -1,6 +1,6 @@
 # ADR-0038 — A `develop` branch, checks run locally, one CI on the pull request into `main`
 
-**Status**: Accepted (Product Owner, RET-001, 2026-10-13). Supersedes, in ADR-0028: the feature branch created from `main` and merged into `main` (points 1 and 7), the required checks on feature branches (point 1) and the auto-merge waiting for them (point 3); and the rule "no `develop` branch" of `CLAUDE.md` and `docs/tooling/git-workflow.md`.
+**Status**: Accepted (Product Owner, RET-001, 2026-10-13). Supersedes, in ADR-0028: the feature branch created from `main` and merged into `main` (points 1 and 7), the required checks on feature branches (point 1) and the auto-merge waiting for them (point 3); and the rule "no `develop` branch" of `CLAUDE.md` and `docs/tooling/git-workflow.md`. Points 1, 5 and 7, on the release pull request into `main`, superseded by ADR-0067 (2026-10-17): the release pull request is on `develop`.
 
 ## Context
 
