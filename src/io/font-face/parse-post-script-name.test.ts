@@ -11,7 +11,7 @@ import {
   systemFont,
   testFontTables,
 } from "../../../tests";
-import { parseCollectionOffsets } from "../font-tables";
+import { parseCollectionOffsets } from "../font-collection";
 
 import { parsePostScriptName } from "./parse-post-script-name";
 

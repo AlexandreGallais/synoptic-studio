@@ -1,11 +1,12 @@
 import { elementAddress, scan } from "../../math";
+import {
+  TABLE_DIRECTORY_LAYOUT,
+  lengthToFourByteBoundary,
+  parseTableRecords,
+  unsignedToBigEndian,
+} from "../font-tables";
 
-import { lengthToFourByteBoundary } from "./length-to-four-byte-boundary";
-import { parseTableRecords } from "./parse-table-records";
-import { TABLE_DIRECTORY_LAYOUT } from "./table-directory-layout";
-import { unsignedToBigEndian } from "./unsigned-to-big-endian";
-
-import type { FontTableRecord } from "./font-table-record";
+import type { FontTableRecord } from "../font-tables";
 
 /** One table of the face: where its record sits, and where the table sits, in the collection. */
 type FaceTable = FontTableRecord & {

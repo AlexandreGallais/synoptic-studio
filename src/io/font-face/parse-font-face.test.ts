@@ -28,8 +28,8 @@ import {
   textBlock,
   textFontMetrics,
 } from "../../model";
+import { parseCollectionFaces } from "../font-collection";
 import { parseFontMetrics } from "../font-file";
-import { parseCollectionFaces } from "../font-tables";
 
 import { parseFontFace } from "./parse-font-face";
 
