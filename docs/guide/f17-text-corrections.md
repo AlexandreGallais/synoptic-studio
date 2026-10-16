@@ -87,9 +87,16 @@ Tried again on 2026-10-16; the validation is still not finished.
 - **To correct**: a font that is not available (Inter included) is no longer listed, and "Installed fonts" comes first (F1); a font that forbids embedding or lacks the basic Latin letters is not listed (F2); the box size typed is kept when coming back to Box (F3); an ellipsis lands on the last shown line that holds text (F4).
 - **Later**: handling text like other shapes when turned, a single-line option, and a curated set of fonts with an Install button.
 
+## Third validation pass
+
+Tried on 2026-10-16, after US-059 and US-060: the font chosen automatically is embedded with **Embed fonts**. Everything validated at the earlier passes stays validated.
+
 ## Validation
 
-Not yet validated (`VAL-018`).
+Validated by the Product Owner on 2026-10-16 (`VAL-018`), at the third pass.
 
-| Remark | What was done or where it went |
-| ------ | ------------------------------ |
+| Remark                                                             | What was done or where it went                             |
+| ------------------------------------------------------------------ | ---------------------------------------------------------- |
+| The font list showed fonts not read yet, then fonts not exportable | US-056, US-059: only fonts read and approved listed        |
+| The font chosen automatically was not embedded                     | US-060: its files read again, as a font chosen by hand     |
+| The right-to-left direction is of no use for the Latin target      | kept for now; removed at the later UI/UX epic (E02, ideas) |

@@ -175,7 +175,7 @@
 | [US-059](./E15-F17-US-059-approved-fonts-only.md)                                 | F17     | Only fonts read and approved, imported ones too                                      | done   |
 | [US-060](./E15-F17-US-060-chosen-font-file-held.md)                               | F17     | The font chosen automatically holds its files                                        | done   |
 | [AUD-019](./E15-F17-AUD-019-audit-f17.md)                                         | F17     | Audit F17                                                                            | done   |
-| [VAL-018](./E15-F17-VAL-018-validate-f17.md)                                      | F17     | Validate F17                                                                         | ready  |
+| [VAL-018](./E15-F17-VAL-018-validate-f17.md)                                      | F17     | Validate F17                                                                         | done   |
 | [NAM-001](./E15-NAM-001-naming-pass-e15.md)                                       | E15     | Naming pass over the code of E15                                                     | done   |
 | [REV-003](./E15-REV-003-review-e15.md)                                            | E15     | Review E15 with the Product Owner                                                    | draft  |
 | [RET-003](./E15-RET-003-retrospective-e15.md)                                     | E15     | Retrospective of E15                                                                 | draft  |

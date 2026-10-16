@@ -3,7 +3,7 @@ id: VAL-018
 epic: E15
 feature: F17
 title: Validate F17
-status: ready
+status: done
 points: 1
 ---
 
@@ -41,7 +41,7 @@ One task = one commit, referenced as `VAL-018.Tn`.
 
 - [x] T1 — The checklist's lines of F17, tested (1 h)
 - [x] T2 — The demo page (30 min)
-- [ ] T3 — The Product Owner's validation (1 h)
+- [x] T3 — The Product Owner's validation (1 h)
 
 ## Result (first pass, 2026-10-16)
 
@@ -94,3 +94,14 @@ The Product Owner walked E15's checklist page again on branch `feature/f17-text-
 | F4  | Ellipsis on an empty line: 4 lines, the third empty, a maximum of 3 lines: the ellipsis lands on the empty third line. The rule asked for is the most logical one; the agent's proposal: the ellipsis goes on the last shown line that holds text, and the empty shown lines after it are dropped                                                                                                                                                                                                                 | US-058 |
 
 **Not now**: the single-line option (I3) and the curated set of fonts with an Install button (I4) are logged as ideas in E02.
+
+## Result (third pass, 2026-10-16)
+
+The Product Owner tried F17 again after US-059 and US-060, in Chrome. **F17 is validated.**
+
+- **US-059 accepted**: the font list holds only the fonts read and approved, imported ones too.
+- **US-060 accepted**: the font chosen automatically is embedded with **Embed fonts**, as a font chosen by hand.
+- Everything accepted at the first and second passes stays accepted.
+- A tour of the whole Text tool followed, taken as E15's review (REV-003): every option works.
+
+**Open points left by US-060**, logged in the [improvement log](../../process/improvements.md) for RET-003: the font list enabled for a moment while the default font's files are read again; faces refused at the second read keeping the metrics read ahead; the 2026-10-16 rows of the feedback log reported as duplicated, of which none is byte-identical, so none was removed.
