@@ -1,4 +1,3 @@
-import { isSameFamilyName } from "../../src";
 import { addFontFace, readFontSession, writeFontOptions, writeFontSession } from "../fonts";
 
 import { readFamilyFonts } from "./read-family-fonts";
@@ -51,24 +50,6 @@ function readFamilyMessage(
 }
 
 /**
- * Reads the family the font list goes back to when none of a family's faces is read: the family
- * itself when its metrics are kept, read ahead; else the family the text is measured with.
- *
- * @kind procedure
- * @param document - page document
- * @param family - the installed family chosen
- * @returns the family to choose
- * @see REF-WICG-LOCAL-FONT-ACCESS
- */
-function readFallbackChoice(document: Document, family: string): string {
-  const session = readFontSession(document);
-
-  return session.kept.some((kept) => isSameFamilyName(kept.name, family))
-    ? family
-    : session.measured;
-}
-
-/**
  * Reads the files of an installed family chosen in the font list, each face on its own: a file
  * read as an imported one is (EN-039), the family then kept with its metrics and files, so that
  * the page draws it with its own outlines and can embed it, no longer listed as installed, and
@@ -77,8 +58,8 @@ function readFallbackChoice(document: Document, family: string): string {
  * collection is read from it (`readInstalledFace`), one face per entry of the browser's list, so
  * that a collection holding faces of several families gives the family chosen only. A family read
  * ahead, its metrics kept without its files, has its files read again (US-053). When no face is
- * read, the list goes back to the family the text is measured with, or stays on a family read
- * ahead, whose metrics are kept.
+ * read again, the list stays on the family, whose metrics read ahead are kept: a family is offered
+ * only once read ahead (US-059).
  *
  * @kind procedure
  * @param document - page document
@@ -104,11 +85,10 @@ export async function readInstalledFamily(
 
   writeFontSession(document, {
     ...session,
-    installed: session.installed.filter((font) => !fonts.includes(font)),
     readAhead: session.readAhead.filter((read) => !fonts.includes(read.font)),
   });
 
-  writeFontOptions(document, faces[0]?.family ?? readFallbackChoice(document, family));
+  writeFontOptions(document, faces[0]?.family ?? family);
 
   return readFamilyMessage(family, faces, reads);
 }
