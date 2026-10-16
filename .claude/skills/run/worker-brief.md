@@ -21,7 +21,7 @@ The main thread gives this file's path to each worker, with the story id, its fe
 - One commit per task, footer `Refs: <ID>.Tn`, scope from `commitlint.config.ts`, the attribution line; a refused commit leaves its files staged.
 - Before each commit: `npm run fix`, `npx tsc --noEmit`, the touched tests (`npx vitest run <paths>`). Edits across files: `npm run replace` or the Edit tool, never a Python script.
 - Docs in the same task as the code: domain, derivations, references, playground.
-- **Shared files** (ADR-0065): never edit the stories index, the logs (`journal.md`, `improvements.md`, `feedback.md`), the feature file nor the checklist; write the rows meant for them under `## For the main thread` in the story file.
+- **Shared files** (ADR-0065): never edit the indexes of `docs/backlog/`, the logs (`journal.md`, `improvements.md`, `feedback.md`), the feature file nor the checklists (`playground/checklists/epic-*`): the pre-push hook refuses the branch and names the file (`tools/shared-files`, EN-050). Write the rows meant for a log in the story file, under `## For the main thread`, beneath `### Journal`, `### Improvements` or `### Feedback`, each row as the log writes it (a bullet for the journal, a table row for the other two): `story:finish` moves them into the log at merge. Anything else for the main thread goes in that section, outside those headings.
 - Never `npm run golden:write` in a worktree: the golden file is shared by every worktree.
 
 ## Heavy commands (ADR-0063)

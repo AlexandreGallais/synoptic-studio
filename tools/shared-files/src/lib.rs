@@ -3,4 +3,5 @@
 //! that edits one is refused at push (`shared`); the rows a worker writes for a log in its story
 //! file are moved into that log when the story is merged (`rows`).
 
+pub mod rows;
 pub mod shared;
