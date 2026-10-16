@@ -26,7 +26,3 @@ One task = one commit, referenced as `EN-059.Tn`.
 - Technical choices made by the worker: the check is the Rust crate `tools/rule-docs/` (binary `check-rule-docs`, in `check:rust`), run by the `commit-msg` hook only when the message has a `Closes:` footer. At commit rather than at push: the `done` commit is refused before it exists and made again, never amended after a push; the hook sees the staged files and the message together.
 - A story's change is the files of its commits — those whose `Refs:` or `Closes:` footer names the story or one of its tasks — plus the files staged; a rule is changed when one of them is under `docs/domain/`. Each doc is asked for when a file is changed (the README, the feature's VAL file, the guide page `f<nn>-*.md`, `e<nn>-*.md` for an epic's story), not the rows inside it.
 - The line saying none is affected is a footer of the `done` commit, exactly `Rule-docs: none affected, <why>`, its reason after the comma; it covers every doc the check would ask for. Written in the story skill's step 7 and the worker brief.
-
-### Journal
-
-- EN-059: a story's `done` commit that changes a rule in `docs/domain/` is refused by the `commit-msg` hook (`tools/rule-docs`, Rust) until its change holds the Q row, the feature's VAL decisions to confirm and the guide page, or the footer `Rule-docs: none affected, <why>`.
