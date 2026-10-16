@@ -34,5 +34,6 @@ Between heavy commands, run single test files only (`npx vitest run <paths>`); a
 
 - Push with `git push -u origin HEAD` once the tasks are done; never `--no-verify`, never a force push.
 - Stop before the pull request and before the `done` commit.
+- A story that changes a rule in `docs/domain/` brings in its tasks the Q row of `docs/domain/README.md`, the decisions to confirm of its feature's VAL and its guide page; the `done` commit's `commit-msg` hook refuses the story otherwise (`tools/rule-docs`, EN-059). One the change does not affect: say so in the final report, with its reason, for the footer line `Rule-docs: none affected, <why>` of the `done` commit.
 - A business rule missing, or code, domain and ADRs that contradict each other: stop and report the question.
 - Final report, brief: branch, commits, files, decisions taken, evidence, open points.
