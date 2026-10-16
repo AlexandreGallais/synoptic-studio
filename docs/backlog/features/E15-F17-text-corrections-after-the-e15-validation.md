@@ -24,6 +24,7 @@ Written on 2026-10-15 from the Product Owner's validation of E15 (VAL-014 to VAL
 9. Every shape and text draws as before, apart from the options removed.
 10. A large font collection is read without running out of memory: a face of a collection is given as views of its tables, only the face kept is assembled, and every error of a read is said in one line (VAL-018, 2026-10-16: Apple Color Emoji, 192 MB, crashed the page).
 11. The font and weight lists offer only what the browser can draw: the installed fonts are read in the background, a family that cannot be read left out, and Inter's shipped metrics used only for the faces the browser draws with them, Inter missing said (VAL-018, 2026-10-16: Inter measured, Helvetica drawn).
+12. X and Y of a turned text show its turned top-left corner, updated when it turns; a corner typed moves the text there, its angle and size kept (VAL-018, 2026-10-16: turning a text left X and Y unchanged; provisional).
 
 ## Stories
 
@@ -46,6 +47,7 @@ In delivery order.
 | [EN-044](../stories/E15-F17-EN-044-val-steps-as-a-checklist.md)                            | Enabler    | The run and review skills validate with a checklist page                             | done   |
 | [US-052](../stories/E15-F17-US-052-large-collection-read-without-running-out-of-memory.md) | User story | Read a large font collection without running out of memory                           | done   |
 | [US-053](../stories/E15-F17-US-053-installed-fonts-read-ahead-and-real-weights.md)         | User story | Installed fonts read ahead, and only the weights the browser draws                   | done   |
+| [US-054](../stories/E15-F17-US-054-turned-text-position-shows-its-corner.md)               | User story | X and Y of a turned text show its turned top-left corner                             | ready  |
 | [AUD-019](../stories/E15-F17-AUD-019-audit-f17.md)                                         | Audit      | Audit F17                                                                            | done   |
 | [VAL-018](../stories/E15-F17-VAL-018-validate-f17.md)                                      | Validation | Validate F17                                                                         | ready  |
 
@@ -64,6 +66,7 @@ In delivery order.
 | F17.AC9              | every story            | `npm run check:all` |
 | F17.AC10             | US-052                 | VAL-018             |
 | F17.AC11             | US-053                 | VAL-018             |
+| F17.AC12             | US-054                 | VAL-018             |
 
 ## Left for later
 
