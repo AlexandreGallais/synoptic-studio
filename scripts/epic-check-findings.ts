@@ -4,6 +4,8 @@
 
 // Temporal runs behind `--harmony-temporal` in Node.js 24: the npm script passes it.
 
+import { stripVTControlCharacters } from "node:util";
+
 import { text } from "../.claude/hooks/status-json.ts";
 import { readRunningCall } from "../.claude/hooks/status-place.ts";
 
@@ -56,10 +58,6 @@ const MINUTE_TEXT = 16;
  */
 const ISOLATION_REFUSAL = "This agent is isolated in the worktree";
 
-/** Colors and styles of a terminal (`ESC [ … m`), which Vitest may print. */
-// eslint-disable-next-line no-control-regex -- the escape character is what is matched
-const TERMINAL_STYLE = /\u{1B}\[[\d;]*m/gu;
-
 /** A failing test as Vitest (`FAIL  file > suite > test`) or `cargo test` (`test x ... FAILED`) names it. */
 const FAILING_TEST = /^\s*(?:FAIL\s+(?<vitest>.+?)|test (?<cargo>\S+) \.\.\. FAILED)\s*$/u;
 
@@ -111,7 +109,8 @@ function failingTests(lines: readonly string[]): readonly string[] {
  * @returns lines such as `test (lane test): a.test.ts > adds`, empty when none failed
  */
 export function failingChecks(output: string): readonly string[] {
-  return checkBlocks(output.replaceAll(TERMINAL_STYLE, "").split("\n"))
+  // Vitest may print a terminal's colors and styles: removed before reading the lines.
+  return checkBlocks(stripVTControlCharacters(output).split("\n"))
     .filter((block) => block.isFailed)
     .map((block) => {
       const lane = LANES.find((checks) => checks.includes(block.name)) ?? [block.name];
