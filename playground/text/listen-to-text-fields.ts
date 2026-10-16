@@ -1,11 +1,11 @@
 import { listenToExport } from "../document";
 import { listenToFonts } from "../installed-fonts";
 import { selectElement } from "../page";
+import { resetFittedBox, writeFittedBox } from "../text-box";
 import { listenToTextPosition } from "../text-placement";
 
 import { pressBold } from "./press-bold";
 import { readTextModel } from "./read-text-model";
-import { writeFittedBox } from "./write-fitted-box";
 
 /**
  * Listens to the choice of Fit content or Box on the choice itself, so that the box's fields take
@@ -22,7 +22,7 @@ function listenToBoxChoice(document: Document): void {
 
   for (const type of ["input", "change"]) {
     fit.addEventListener(type, () => {
-      writeFittedBox(document);
+      writeFittedBox(document, readTextModel(document));
     });
   }
 
@@ -60,7 +60,8 @@ function listenToBold(document: Document, update: () => void): void {
  * weight chosen in the list forgetting the weight held; the italic button turns italic on or off;
  * a value typed in X or Y redraws the text (`listenToTextPosition`, US-038); Box chosen after Fit
  * content first writes the block rounded up in the box's fields (`writeFittedBox`, US-055), unless
- * the designer typed the box, which then comes back (US-057).
+ * the designer typed the box, which then comes back (US-057); **Reset** puts the box back to that
+ * size and forgets the box typed (`resetFittedBox`, US-057).
  *
  * @kind procedure
  * @param document - page document
@@ -79,6 +80,11 @@ export function listenToTextFields(document: Document, update: () => void): void
 
   listenToBold(document, update);
   listenToTextPosition(document, update);
+
+  selectElement(document, "text-box-reset").addEventListener("click", () => {
+    resetFittedBox(document, readTextModel(document));
+    update();
+  });
 
   italic.addEventListener("click", () => {
     italic.setAttribute("aria-pressed", String(italic.getAttribute("aria-pressed") !== "true"));
