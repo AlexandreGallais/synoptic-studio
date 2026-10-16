@@ -3,7 +3,7 @@ id: US-056
 epic: E15
 feature: F17
 title: Only the fonts the editor can use are listed
-status: in-progress
+status: done
 points: 2
 ---
 
