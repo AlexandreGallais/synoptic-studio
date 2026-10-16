@@ -158,7 +158,7 @@
 | [US-044](./E15-F17-US-044-no-html-layer.md)                                   | F17     | The HTML layer removed                                                               | done   |
 | [US-045](./E15-F17-US-045-fonts-embedded-at-export.md)                        | F17     | Fonts embedded only when a file is exported or saved                                 | done   |
 | [US-046](./E15-F17-US-046-installed-fonts-from-collections.md)                | F17     | Installed fonts read from collections, and faces that failed                         | done   |
-| [CHK-018](./E15-F17-CHK-018-checkpoint-f17.md)                                | F17     | Checkpoint in the middle of F17                                                      | ready  |
+| [CHK-018](./E15-F17-CHK-018-checkpoint-f17.md)                                | F17     | Checkpoint in the middle of F17                                                      | done   |
 | [US-047](./E15-F17-US-047-weight-450-drawn-as-measured.md)                    | F17     | A weight such as 450 drawn with the face it is measured with                         | done   |
 | [US-048](./E15-F17-US-048-fluid-changes-held-keys.md)                         | F17     | Values changed fast redrawn without lag                                              | done   |
 | [US-049](./E15-F17-US-049-background-band-ends-with-its-line.md)              | F17     | A wrapped text's background band ends with its line                                  | done   |
