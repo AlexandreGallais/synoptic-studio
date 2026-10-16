@@ -1,4 +1,4 @@
-export * from "./collection-face-to-file";
+export * from "./collection-face-to-parts";
 export type * from "./font-table-record";
 export type * from "./font-tables";
 export * from "./length-to-four-byte-boundary";

@@ -2,6 +2,7 @@ import { parseCollectionFaces } from "../../src";
 
 import { addFontFile } from "./add-font-file";
 import { readFaceName } from "./read-face-name";
+import { readJoinedFile } from "./read-joined-file";
 import { writeFontOptions } from "./write-font-options";
 
 import type { NamedFontFace } from "../../src";
@@ -16,21 +17,27 @@ type LoadedFile = {
 
 /**
  * Adds the faces of a font file to the session's families (`addFontFile`): its face, or each face
- * of a collection (`parseCollectionFaces`), each given to the page alone.
+ * of a collection (`parseCollectionFaces`), each joined from its parts (`readJoinedFile`) and
+ * given to the page alone.
  *
  * @kind procedure
  * @param document - page document
  * @param bytes - the bytes of a font file or of a collection
  * @param update - redraws the playground
  * @returns the faces added, in the file's order; none for a file that is not a font
+ * @throws {DOMException} when the browser cannot hold a face's joined file
  * @see REF-OT-OTFF
  */
-function addFontFaces(
+async function addFontFaces(
   document: Document,
-  bytes: Uint8Array,
+  bytes: Uint8Array<ArrayBuffer>,
   update: () => void,
-): readonly NamedFontFace[] {
-  return parseCollectionFaces(bytes).flatMap((face) => {
+): Promise<readonly NamedFontFace[]> {
+  const files = await Promise.all(
+    parseCollectionFaces(bytes).map(async (parts) => await readJoinedFile(parts)),
+  );
+
+  return files.flatMap((face) => {
     const named = addFontFile(document, face, update);
 
     return named === undefined ? [] : [named];
@@ -47,7 +54,7 @@ function addFontFaces(
  * @param file - a file the designer chose
  * @param update - redraws the playground
  * @returns the line said, and the family of the last face kept, empty for a file refused
- * @throws {DOMException} when the browser cannot read the file's bytes
+ * @throws {DOMException} when the browser cannot read the file's bytes, or hold a face's file
  * @see REF-W3C-FILE-API
  */
 async function loadFontFile(
@@ -55,7 +62,7 @@ async function loadFontFile(
   file: File,
   update: () => void,
 ): Promise<LoadedFile> {
-  const faces = addFontFaces(document, new Uint8Array(await file.arrayBuffer()), update);
+  const faces = await addFontFaces(document, new Uint8Array(await file.arrayBuffer()), update);
   const names = faces.map((named) => readFaceName(named.family, named.face));
 
   return {

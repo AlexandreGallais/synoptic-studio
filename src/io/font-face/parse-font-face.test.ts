@@ -12,6 +12,7 @@ import {
   familyNameTable,
   fontFile,
   headTable,
+  joinedParts,
   nameTable,
   os2FaceTable,
   systemFont,
@@ -248,8 +249,8 @@ describe("parseFontFace, faces of macOS and of collections (F17.AC4)", () => {
   it.skipIf(HELVETICA === undefined)(
     "[F17.AC4] reads the 6 faces of Helvetica.ttc: 400, 700, 400 italic, 700 italic, 300, 300 italic",
     () => {
-      const faces = parseCollectionFaces(HELVETICA ?? new Uint8Array()).map((file) =>
-        parseFontFace(file),
+      const faces = parseCollectionFaces(HELVETICA ?? new Uint8Array()).map((parts) =>
+        parseFontFace(joinedParts(parts)),
       );
 
       expect(
@@ -268,8 +269,8 @@ describe("parseFontFace, faces of macOS and of collections (F17.AC4)", () => {
   it.skipIf(HELVETICA === undefined)(
     "[F17.AC4] reads each Helvetica face tagged true, as Chrome gives it on macOS",
     () => {
-      const faces = parseCollectionFaces(HELVETICA ?? new Uint8Array()).map((file) =>
-        parseFontFace(appleTagged(file)),
+      const faces = parseCollectionFaces(HELVETICA ?? new Uint8Array()).map((parts) =>
+        parseFontFace(appleTagged(joinedParts(parts))),
       );
 
       expect(faces.filter((named) => named?.family === "Helvetica")).toHaveLength(6);

@@ -98,48 +98,60 @@ function placedTableToRecord(file: Readonly<Uint8Array>, placed: PlacedTable): r
 }
 
 /**
- * Writes a table placed in the face's file: its bytes copied, then zeros up to the next table.
+ * Gives a table placed in the face's file as its parts: a view of its bytes in the collection,
+ * never copied, then the zeros up to the next table, when it needs any.
  *
  * @kind format
+ * @template Buffer - the buffer the bytes sit in, kept by every view of them
  * @param file - the collection's bytes
  * @param placed - the table and where it starts and ends in the face's file
- * @returns its bytes, padded
+ * @returns the table's view, then its padding
  * @see REF-OT-OTFF
  */
-function placedTableToBytes(file: Readonly<Uint8Array>, placed: PlacedTable): readonly number[] {
+function placedTableToParts<Buffer extends ArrayBufferLike>(
+  file: Readonly<Uint8Array<Buffer>>,
+  placed: PlacedTable,
+): readonly Readonly<Uint8Array<ArrayBuffer | Buffer>>[] {
   const { length, offset } = placed.table;
+  const padding = placed.end - placed.start - length;
+  const table = file.subarray(offset, offset + length);
 
-  return [
-    ...file.subarray(offset, offset + length),
-    ...new Uint8Array(placed.end - placed.start - length),
-  ];
+  return padding === 0 ? [table] : [table, new Uint8Array(padding)];
 }
 
 /**
- * Writes a face of a collection as a font file of its own, as Skia assembles one on macOS
- * (`REF-SKIA-MAC-STREAM-CODE`): its directory's header copied with `numTables` set to the tables
- * kept, its records copied with each offset rewritten from the new file's start, then its tables
- * copied in the order of its records, each padded to a four-byte boundary. The search fields are
- * copied, which a parser derives from `numTables` (`REF-OT-OTFF`); a table that does not fit in
- * the collection is left out.
+ * Gives a face of a collection as the parts of a font file of its own, as Skia assembles one on
+ * macOS (`REF-SKIA-MAC-STREAM-CODE`): first its table directory, written anew — its header copied
+ * with `numTables` set to the tables kept, its records copied with each offset rewritten from the
+ * new file's start —, then each of its tables in the order of its records, a view of the
+ * collection's bytes, never copied, followed by the zeros that pad it to a four-byte boundary.
+ * Joined in that order, the parts are the face's file; a table of 191 MB stays a view, where an
+ * array of its numbers would pass the longest array an engine allows (US-052). The search fields
+ * are copied, which a parser derives from `numTables` (`REF-OT-OTFF`); a table that does not fit
+ * in the collection is left out.
  *
  * @kind format
+ * @template Buffer - the buffer the bytes sit in, kept by every view of them
  * @param file - the collection's bytes
  * @param directory - where the face's table directory starts, `tableDirectoryOffsets[i]`
- * @returns the face's file; a directory's header alone for a directory that is not a font's
+ * @returns the face's parts, its directory first; a directory's header alone for a directory
+ * that is not a font's
  * @see REF-OT-OTFF
  */
-export function collectionFaceToFile(file: Readonly<Uint8Array>, directory: number): Uint8Array {
+export function collectionFaceToParts<Buffer extends ArrayBufferLike>(
+  file: Readonly<Uint8Array<Buffer>>,
+  directory: number,
+): readonly Readonly<Uint8Array<ArrayBuffer | Buffer>>[] {
   const view = new DataView(file.buffer, file.byteOffset, file.byteLength);
   const { headerSize, numTablesOffset } = TABLE_DIRECTORY_LAYOUT;
   const places = tablesToPlaces(parseFaceTables(view, directory));
   const numberTables = directory + numTablesOffset;
-
-  return Uint8Array.from([
+  const header = Uint8Array.from([
     ...file.subarray(directory, numberTables),
     ...unsignedToBigEndian(places.length, UINT16_SIZE),
     ...file.subarray(numberTables + UINT16_SIZE, directory + headerSize),
     ...places.flatMap((placed) => placedTableToRecord(file, placed)),
-    ...places.flatMap((placed) => placedTableToBytes(file, placed)),
   ]);
+
+  return [header, ...places.flatMap((placed) => placedTableToParts(file, placed))];
 }

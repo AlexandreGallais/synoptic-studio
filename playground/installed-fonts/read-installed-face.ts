@@ -1,5 +1,5 @@
-import { parseCollectionFaces, parsePostScriptName } from "../../src";
-import { addFontFile } from "../fonts";
+import { parseNamedFaceParts } from "../../src";
+import { addFontFile, readJoinedFile } from "../fonts";
 
 import type { InstalledFaceRead } from "./installed-face-read";
 import type { InstalledFont } from "../fonts";
@@ -12,7 +12,7 @@ type GivenFace = {
   /** The face, as the browser lists it. */
   readonly font: InstalledFont;
   /** The bytes of its file, or of its whole collection. */
-  readonly bytes: Uint8Array;
+  readonly bytes: Uint8Array<ArrayBuffer>;
 };
 
 /**
@@ -27,7 +27,7 @@ type GivenFace = {
  * @returns its bytes; the refusal, in one line, when the browser cannot give them
  * @see REF-CHROMIUM-FONT-BLOB-CODE
  */
-async function readFaceBytes(font: InstalledFont): Promise<Uint8Array | string> {
+async function readFaceBytes(font: InstalledFont): Promise<Uint8Array<ArrayBuffer> | string> {
   try {
     const blob = await font.blob();
 
@@ -40,23 +40,26 @@ async function readFaceBytes(font: InstalledFont): Promise<Uint8Array | string> 
 }
 
 /**
- * Finds the file of an installed face among those its bytes hold (`parseCollectionFaces`): a face
- * alone is its own file; a whole collection, as a browser may give it, is searched for the face of
- * its PostScript name (name ID 6, as `FontData.postscriptName`), the other faces left out.
+ * Reads the file of an installed face from the bytes the browser gave for it
+ * (`parseNamedFaceParts`): a face alone is its own file; in a whole collection, as a browser may
+ * give it, the face of its PostScript name (name ID 6, as `FontData.postscriptName`) is found by
+ * reading each face's name in the collection, and only that face is joined from its parts
+ * (`readJoinedFile`), the other faces never written (US-052).
  *
  * @kind procedure
  * @param font - a face the browser lists
  * @param bytes - the bytes the browser gave for it
  * @returns its file; undefined when a collection holds no face of that name
+ * @throws {DOMException} when the browser cannot hold the joined file
  * @see REF-OT-OTFF
  */
-function readFaceFile(font: InstalledFont, bytes: Uint8Array): Readonly<Uint8Array> | undefined {
-  const files = parseCollectionFaces(bytes);
-  const [only] = files;
+async function readFaceFile(
+  font: InstalledFont,
+  bytes: Uint8Array<ArrayBuffer>,
+): Promise<Uint8Array<ArrayBuffer> | undefined> {
+  const parts = parseNamedFaceParts(bytes, font.postscriptName);
 
-  return files.length === 1
-    ? only
-    : files.find((file) => parsePostScriptName(file) === font.postscriptName);
+  return parts === undefined ? undefined : await readJoinedFile(parts);
 }
 
 /**
@@ -89,14 +92,15 @@ function readFaceFromFile(
  * @param given - the face and the bytes the browser gave for it
  * @param update - redraws the playground
  * @returns the face read; or why it was refused
+ * @throws {DOMException} when the browser cannot hold the joined file
  * @see REF-WICG-LOCAL-FONT-ACCESS
  */
-function readFaceFromBytes(
+async function readFaceFromBytes(
   document: Document,
   given: GivenFace,
   update: () => void,
-): InstalledFaceRead {
-  const file = readFaceFile(given.font, given.bytes);
+): Promise<InstalledFaceRead> {
+  const file = await readFaceFile(given.font, given.bytes);
 
   return file === undefined
     ? { face: undefined, refusal: `no face named ${given.font.postscriptName} in its collection` }
@@ -125,5 +129,5 @@ export async function readInstalledFace(
 
   return typeof bytes === "string"
     ? { face: undefined, refusal: bytes }
-    : readFaceFromBytes(document, { bytes, font }, update);
+    : await readFaceFromBytes(document, { bytes, font }, update);
 }

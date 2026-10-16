@@ -16,7 +16,7 @@ function tablesWithout(missing: readonly string[]): ReturnType<typeof parseFontT
   const tables = Object.entries(testFontTables()).filter(([tag]) => !missing.includes(tag));
   const file = fontFile(TRUE_TYPE_VERSION, Object.fromEntries(tables));
 
-  return parseFontTables(new DataView(file.buffer));
+  return parseFontTables(new DataView(file.buffer), 0);
 }
 
 /** No table found, for a test whose file gives none. */
@@ -56,7 +56,7 @@ describe("parseFontTables (REF-OT-OTFF)", () => {
 
       const file = fontFile(TRUE_TYPE_VERSION, cut);
 
-      expect(parseFontTables(new DataView(file.buffer))).toBeUndefined();
+      expect(parseFontTables(new DataView(file.buffer), 0)).toBeUndefined();
     },
   );
 
@@ -67,7 +67,7 @@ describe("parseFontTables (REF-OT-OTFF)", () => {
       GPOS: [0, 1, 0, 0, 0, 0, 0, 0, 0],
       kern: [0, 0, 0],
     });
-    const tables = parseFontTables(new DataView(file.buffer));
+    const tables = parseFontTables(new DataView(file.buffer), 0);
 
     expect(tables?.gpos).toBeUndefined();
     expect(tables?.kern).toBeUndefined();
@@ -76,6 +76,6 @@ describe("parseFontTables (REF-OT-OTFF)", () => {
   it("gives undefined for a file shorter than its directory's header", () => {
     const view = new DataView(new ArrayBuffer(11));
 
-    expect(parseFontTables(view)).toBeUndefined();
+    expect(parseFontTables(view, 0)).toBeUndefined();
   });
 });

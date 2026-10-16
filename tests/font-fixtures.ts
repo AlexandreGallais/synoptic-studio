@@ -3,6 +3,7 @@
 // at its offset so that every value read back is known by hand. Tests only: never part of the
 // library.
 
+import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 
 /** Arial 5.01 of macOS, the font of the cross-check of `DERIV-text-width`. */
@@ -221,4 +222,28 @@ export function fontCollection(faces: readonly Uint8Array[]): Uint8Array {
     ...bases.flatMap((base) => uint32(base)),
     ...moved.flat(),
   ]);
+}
+
+/** Apple Color Emoji of macOS, a collection of 2 faces whose `sbix` table is 191 MB (US-052). */
+export const APPLE_COLOR_EMOJI_PATH = "/System/Library/Fonts/Apple Color Emoji.ttc";
+
+/**
+ * The parts of a face joined in their order into its file, as the playground joins them with a
+ * `Blob`: small files only, its bytes spread.
+ *
+ * @param parts - the face's parts
+ * @returns its file
+ */
+export function joinedParts(parts: readonly Readonly<Uint8Array>[]): Uint8Array {
+  return Uint8Array.from(parts.flatMap((part) => [...part]));
+}
+
+/**
+ * The SHA-256 of a face's parts joined in their order, read part after part, never joined.
+ *
+ * @param parts - the face's parts
+ * @returns the digest, in lower-case hexadecimal
+ */
+export function partsDigest(parts: readonly Readonly<Uint8Array>[]): string {
+  return parts.reduce((hash, part) => hash.update(part), createHash("sha256")).digest("hex");
 }

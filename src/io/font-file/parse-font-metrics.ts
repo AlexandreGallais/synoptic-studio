@@ -24,7 +24,7 @@ export function parseFontMetrics(
   characters: readonly number[],
 ): FontMetrics | undefined {
   const view = new DataView(file.buffer, file.byteOffset, file.byteLength);
-  const tables = parseFontTables(view);
+  const tables = parseFontTables(view, 0);
 
   return tables === undefined ? undefined : fontTablesToMetrics(view, tables, characters);
 }

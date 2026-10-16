@@ -11,7 +11,7 @@ import {
   systemFont,
   testFontTables,
 } from "../../../tests";
-import { parseCollectionFaces } from "../font-tables";
+import { parseCollectionOffsets } from "../font-tables";
 
 import { parsePostScriptName } from "./parse-post-script-name";
 
@@ -33,21 +33,31 @@ describe("parsePostScriptName (REF-OT-NAME)", () => {
 
     const file = fontFile(TRUE_TYPE_VERSION, { ...testFontTables(), name });
 
-    expect(parsePostScriptName(file)).toBe("Arial-BoldMT");
+    expect(parsePostScriptName(file, 0)).toBe("Arial-BoldMT");
   });
 
-  it.skipIf(HELVETICA === undefined)("[F17.AC4] names each face of Helvetica.ttc", () => {
-    expect(
-      parseCollectionFaces(HELVETICA ?? new Uint8Array()).map((face) => parsePostScriptName(face)),
-    ).toEqual([
-      "Helvetica",
-      "Helvetica-Bold",
-      "Helvetica-Oblique",
-      "Helvetica-BoldOblique",
-      "Helvetica-Light",
-      "Helvetica-LightOblique",
-    ]);
-  });
+  it.skipIf(HELVETICA === undefined)(
+    "[F17.AC10] names each face of Helvetica.ttc, read in the collection",
+    () => {
+      // Each face read at its directory, 48, 380, 696, 1028, 1344 and 1644 (US-046), no face's
+      // file written (US-052).
+      const file = HELVETICA ?? new Uint8Array();
+      const offsets = parseCollectionOffsets(
+        new DataView(file.buffer, file.byteOffset, file.byteLength),
+      );
+
+      expect(offsets).toEqual([48, 380, 696, 1028, 1344, 1644]);
+
+      expect(offsets.map((offset) => parsePostScriptName(file, offset))).toEqual([
+        "Helvetica",
+        "Helvetica-Bold",
+        "Helvetica-Oblique",
+        "Helvetica-BoldOblique",
+        "Helvetica-Light",
+        "Helvetica-LightOblique",
+      ]);
+    },
+  );
 
   it.each([
     {
@@ -57,6 +67,6 @@ describe("parsePostScriptName (REF-OT-NAME)", () => {
     { case: "no name table", file: fontFile(TRUE_TYPE_VERSION, testFontTables()) },
     { case: "a file that is not a font", file: Uint8Array.from([1, 2, 3]) },
   ])("reads no name for $case", ({ file }) => {
-    expect(parsePostScriptName(file)).toBeUndefined();
+    expect(parsePostScriptName(file, 0)).toBeUndefined();
   });
 });

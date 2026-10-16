@@ -101,7 +101,7 @@ function fontTablesToFace(font: ReadFont): NamedFontFace | undefined {
  */
 export function parseFontFace(file: Readonly<Uint8Array>): NamedFontFace | undefined {
   const view = new DataView(file.buffer, file.byteOffset, file.byteLength);
-  const tables = parseFontTables(view);
+  const tables = parseFontTables(view, 0);
 
   return tables === undefined ? undefined : fontTablesToFace({ file, tables, view });
 }
