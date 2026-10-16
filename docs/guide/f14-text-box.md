@@ -49,6 +49,8 @@ Rules: [domain, "Text"](../domain/shapes.md#text); formulas: [`DERIV-text-box`](
 
 ## How to try it
 
+**Validation**: `npm run dev`, then `http://localhost:5173/?checklist=E15`: one page listing E15's options, one line each, what to try and what to see, a check box before it, the boxes ticked kept in this browser (US-051). Since then the plain address opens no guided test: the steps below come back only in `?guide=epic`, at the numbers given for the epic review.
+
 Install Inter 4.1 first, as for F05. Then `npm run dev` and `http://localhost:5173`: 41 steps, each one line to do and one to look at; **Next** types the text and its box. E15 is validated at once (VAL-017): they are steps 37 to 77 of its 176, numbered so below; at the epic review, steps 124 to 164 of `?guide=epic`. These are the numbers of the run on 2026-10-15: F17 removed steps 39 and 55, the break at a character, a word too long now always kept whole (US-042), then steps 47, 65 and 66, the balanced wrap, lines now always wrapped automatically (US-043). The steps give each example in Inter 16, whose metrics ship with the library.
 
 | Steps | What                                                                                                                                                                      |

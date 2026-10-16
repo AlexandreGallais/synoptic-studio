@@ -33,6 +33,8 @@ Rules: [domain, "Text"](../domain/shapes.md#text) (Fonts from files, Embedded fo
 
 ## How to try it
 
+**Validation**: `npm run dev`, then `http://localhost:5173/?checklist=E15`: one page listing E15's options, one line each, what to try and what to see, a check box before it, the boxes ticked kept in this browser (US-051). Since then the plain address opens no guided test: the steps below come back only in `?guide=epic`, at the numbers given for the epic review.
+
 `npm run dev` and `http://localhost:5173`: E15 is validated at once (VAL-017), 176 steps, F05's, F14's and F16's first; F15's are steps 120 to 176. At the epic review they come back as steps 207 to 263 of `?guide=epic`. **Next** types the text; Embed fonts starts unticked at each step, and a font imported stays for the session, so import Arial at step 121 and keep it. Arial is in `/System/Library/Fonts/Supplemental` on macOS. These are the numbers of the run on 2026-10-15: F17 removed the HTML layer's 20 steps (US-044), among them steps 128 and 129, the seven browser checks 133 to 139, and decisions 1, 9, 19 to 23 and 33 to 36.
 
 | Steps   | What                                                                                                                                                |
