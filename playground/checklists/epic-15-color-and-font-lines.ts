@@ -72,6 +72,11 @@ export const EPIC_15_COLOR_AND_FONT_LINES: readonly ChecklistLine[] = [
   },
   {
     feature: "F15",
+    todo: "Import a font: Helvetica.ttc (/System/Library/Fonts on macOS)",
+    see: "“Helvetica 400, Helvetica 700, … imported.”, its faces in the Weight list (US-046)",
+  },
+  {
+    feature: "F15",
     todo: "IBM Plex Sans installed, weight 400, then 450, then 500",
     see: "three different weights, 450 a little heavier than 400, the frame hugging the letters at each (US-047)",
   },

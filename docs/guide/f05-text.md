@@ -96,9 +96,8 @@ Each was built as the first option and is shown by its step; the full list, with
 ## Limits
 
 - No box of text yet: lines are broken only where the designer pressed Enter. Wrapping in a box, an ellipsis, a maximum number of lines, a line height and a background come with F14.
-- The HTML layer for browsers comes with F15.
 - No color picker yet (F16).
-- Arabic and Indic scripts need shaping: they are left to the browser's HTML layer (F15).
+- Arabic and Indic scripts need shaping: they are not supported (ADR-0060).
 
 ## Validation
 

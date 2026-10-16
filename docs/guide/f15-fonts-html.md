@@ -1,4 +1,4 @@
-# F15 — Fonts from files, embedded fonts and the HTML layer
+# F15 — Fonts from files and embedded fonts
 
 ## What is new
 
@@ -7,7 +7,7 @@ A text can now use any font of the computer: a `.ttf` or `.otf` file imported, o
 | Part                | What it does                                                                                                                                                         |
 | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Font** list       | the families the editor measures: Inter first, then those imported, then the installed ones; no name typed                                                           |
-| **Import a font**   | reads `.ttf` and `.otf` files, chooses the family at once and says it: “Arial 400 imported.”; a file refused says why                                                |
+| **Import a font**   | reads `.ttf`, `.otf` and `.ttc` files (a collection gives each of its faces), chooses the family at once and says it: “Arial 400 imported.”; a file refused says why |
 | **Installed fonts** | in Chrome and Edge, after a permission, lists the computer's families; a family's files are read when it is chosen                                                   |
 | **Weight** list     | only the weights the family has: Arial gives 400 Regular and 700 Bold                                                                                                |
 | **Embed fonts**     | each face used written once, the whole file, in the `<defs>` of the file exported, never the drawing on screen (US-045); the faces left out listed with their reason |
@@ -40,9 +40,9 @@ Rules: [domain, "Text"](../domain/shapes.md#text) (Fonts from files, Embedded fo
 | Steps   | What                                                                                                                                                |
 | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 120–126 | the font list, a font imported, a file refused, a family's weights, installed fonts in Chrome and elsewhere, the text measured with the font chosen |
-| 127–130 | Embed fonts, the HTML layer, Arabic in the layer, Export SVG                                                                                        |
+| 127–130 | Embed fonts, Export SVG (the HTML layer and Arabic in it removed by F17)                                                                            |
 | 131–132 | the exported file in Chrome, Firefox and Safari, then in Inkscape                                                                                   |
-| 133–139 | the seven browser checks of the layer, each against the positioned lines                                                                            |
+| 133–139 | removed with the HTML layer (US-044)                                                                                                                |
 | 140–175 | the 36 decisions below, one step each with its example                                                                                              |
 | 176     | back to the rectangle, drawn as before                                                                                                              |
 
@@ -50,44 +50,44 @@ Rules: [domain, "Text"](../domain/shapes.md#text) (Fonts from files, Embedded fo
 
 Each is built as written and shown by its step; the full list, with its examples, is in [VAL-017](../backlog/stories/E15-F15-VAL-017-validate-f15.md#decisions-to-confirm). Steps saying “Nothing to try” need a font file not at hand: the tests prove them, the step asks to confirm the rule.
 
-| #   | Question                             | As built                                                                                                 | Step |
-| --- | ------------------------------------ | -------------------------------------------------------------------------------------------------------- | ---- |
-| 1   | The HTML layer's form                | removed with the HTML layer (ADR-0060, US-044)                                                           | 140  |
-| 2   | Both options                         | one option of the document, Embed fonts, off by default; the HTML layer removed (US-044)                 | 141  |
-| 3   | A face's name                        | family from name ID 16, else 1; weight brought into 100 to 900; italic from `fsSelection`                | 142  |
-| 4   | A face read again                    | replaces the one kept                                                                                    | 143  |
-| 5   | How long fonts are kept              | for the session; across sessions with the editor's files (E02)                                           | 144  |
-| 6   | Which faces may be embedded          | not bitmap only, not restricted without the preview-and-print or editable bit                            | 145  |
-| 7   | A face whose file is not held        | not embedded, Inter's among them                                                                         | 146  |
-| 8   | How a face is embedded               | once per document, the whole file, no `local()`                                                          | 147  |
-| 9   | The layer's line height              | removed with the HTML layer (ADR-0060, US-044)                                                           | 148  |
-| 10  | Right to left in resvg and Batik     | to choose: keep the line as written, or write it from its left edge without `direction`                  | 149  |
-| 11  | The family name's encoding           | read from the Unicode strings, English first; Windows code pages not read                                | 150  |
-| 12  | A file without a family              | refused as not a font, as one whose `OS/2` table is too short                                            | 151  |
-| 13  | A family imported again              | keeps its first name; a new family listed after those kept                                               | 152  |
-| 14  | Several permission bits              | the least restrictive wins                                                                               | 153  |
-| 15  | CFF outlines (`OTTO`)                | embedded as `font/otf`, `format("opentype")`                                                             | 154  |
-| 16  | A family partly embeddable           | embedded whole or not at all                                                                             | 155  |
-| 17  | A family named like a generic one    | never embedded                                                                                           | 156  |
-| 18  | The default font reached alone       | left out: only a family a text names is embedded                                                         | 157  |
-| 19  | The layer's elements                 | removed with the HTML layer (ADR-0060, US-044)                                                           | 158  |
-| 20  | The layer's numbers                  | removed with the HTML layer (ADR-0060, US-044)                                                           | 159  |
-| 21  | The layer's opacity                  | removed with the HTML layer (ADR-0060, US-044)                                                           | 160  |
-| 22  | The browser's lines in a box         | removed with the HTML layer (ADR-0060, US-044)                                                           | 161  |
-| 23  | A trimmed text in a box              | removed with the HTML layer (ADR-0060, US-044)                                                           | 162  |
-| 24  | The font field                       | a list of the families measured; no name typed (US-036)                                                  | 163  |
-| 25  | A font imported                      | chosen at once, its face said; a file refused said why (US-036)                                          | 164  |
-| 26  | Installed families                   | listed without reading their files; read when chosen (US-036)                                            | 165  |
-| 27  | The weight held                      | kept when the family has it, else the nearest face; Bold within the family's faces (US-036, US-037)      | 166  |
-| 28  | Faces left out                       | listed with their reason, one line each (US-036)                                                         | 167  |
-| 29  | Export SVG                           | `drawing.svg`, without the selection's frame (US-036)                                                    | 168  |
-| 30  | A font not installed                 | also given to the page, so that it is drawn with its own outlines (US-036)                               | 169  |
-| 31  | While a family is read               | the text keeps the family before; one none of whose faces is read gives the list back, said why (US-036) | 170  |
-| 32  | The layer's underline and descenders | the lines' underline drawn across them (AUD-018)                                                         | 171  |
-| 33  | The layer's underline position       | removed with the HTML layer (ADR-0060, US-044)                                                           | 172  |
-| 34  | Clipping with a line limit           | removed with the HTML layer (ADR-0060, US-044)                                                           | 173  |
-| 35  | The background under the “…”         | removed with the HTML layer (ADR-0060, US-044)                                                           | 174  |
-| 36  | ADR-0053's one `div`                 | removed with the HTML layer (ADR-0060, US-044)                                                           | 175  |
+| #   | Question                          | As built                                                                                                 | Step |
+| --- | --------------------------------- | -------------------------------------------------------------------------------------------------------- | ---- |
+| 1   | The HTML layer's form             | removed with the HTML layer (ADR-0060, US-044)                                                           | 140  |
+| 2   | Both options                      | one option of the document, Embed fonts, off by default; the HTML layer removed (US-044)                 | 141  |
+| 3   | A face's name                     | family from name ID 16, else 1; weight brought into 100 to 900; italic from `fsSelection`                | 142  |
+| 4   | A face read again                 | replaces the one kept                                                                                    | 143  |
+| 5   | How long fonts are kept           | for the session; across sessions with the editor's files (E02)                                           | 144  |
+| 6   | Which faces may be embedded       | not bitmap only, not restricted without the preview-and-print or editable bit                            | 145  |
+| 7   | A face whose file is not held     | not embedded, Inter's among them                                                                         | 146  |
+| 8   | How a face is embedded            | once per document, the whole file, no `local()`                                                          | 147  |
+| 9   | The layer's line height           | removed with the HTML layer (ADR-0060, US-044)                                                           | 148  |
+| 10  | Right to left in resvg and Batik  | to choose: keep the line as written, or write it from its left edge without `direction`                  | 149  |
+| 11  | The family name's encoding        | read from the Unicode strings, English first; Windows code pages not read                                | 150  |
+| 12  | A file without a family           | refused as not a font, as one whose `OS/2` table is too short                                            | 151  |
+| 13  | A family imported again           | keeps its first name; a new family listed after those kept                                               | 152  |
+| 14  | Several permission bits           | the least restrictive wins                                                                               | 153  |
+| 15  | CFF outlines (`OTTO`)             | embedded as `font/otf`, `format("opentype")`                                                             | 154  |
+| 16  | A family partly embeddable        | embedded whole or not at all                                                                             | 155  |
+| 17  | A family named like a generic one | never embedded                                                                                           | 156  |
+| 18  | The default font reached alone    | left out: only a family a text names is embedded                                                         | 157  |
+| 19  | The layer's elements              | removed with the HTML layer (ADR-0060, US-044)                                                           | 158  |
+| 20  | The layer's numbers               | removed with the HTML layer (ADR-0060, US-044)                                                           | 159  |
+| 21  | The layer's opacity               | removed with the HTML layer (ADR-0060, US-044)                                                           | 160  |
+| 22  | The browser's lines in a box      | removed with the HTML layer (ADR-0060, US-044)                                                           | 161  |
+| 23  | A trimmed text in a box           | removed with the HTML layer (ADR-0060, US-044)                                                           | 162  |
+| 24  | The font field                    | a list of the families measured; no name typed (US-036)                                                  | 163  |
+| 25  | A font imported                   | chosen at once, its face said; a file refused said why (US-036)                                          | 164  |
+| 26  | Installed families                | listed without reading their files; read when chosen (US-036)                                            | 165  |
+| 27  | The weight held                   | kept when the family has it, else the nearest face; Bold within the family's faces (US-036, US-037)      | 166  |
+| 28  | Faces left out                    | listed with their reason, one line each (US-036)                                                         | 167  |
+| 29  | Export SVG                        | `drawing.svg`, without the selection's frame (US-036)                                                    | 168  |
+| 30  | A font not installed              | also given to the page, so that it is drawn with its own outlines (US-036)                               | 169  |
+| 31  | While a family is read            | the text keeps the family before; one none of whose faces is read gives the list back, said why (US-036) | 170  |
+| 32  | The underline and descenders      | the lines' underline drawn across them (AUD-018)                                                         | 171  |
+| 33  | The layer's underline position    | removed with the HTML layer (ADR-0060, US-044)                                                           | 172  |
+| 34  | Clipping with a line limit        | removed with the HTML layer (ADR-0060, US-044)                                                           | 173  |
+| 35  | The background under the “…”      | removed with the HTML layer (ADR-0060, US-044)                                                           | 174  |
+| 36  | ADR-0053's one `div`              | removed with the HTML layer (ADR-0060, US-044)                                                           | 175  |
 
 ## Limits
 
