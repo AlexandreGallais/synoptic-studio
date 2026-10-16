@@ -56,7 +56,8 @@ describe("The font list written only when the session's fonts change (US-048)", 
     clickElement("tool-text");
     clickElement("installed-fonts");
     await waitForPageTasks();
-  });
+    // 590 faces read ahead take about 3 s alone, 10 s in a loaded pre-push run: a margin, not a bound on time.
+  }, 30_000);
 
   afterEach(() => {
     Reflect.deleteProperty(globalThis, "queryLocalFonts");
