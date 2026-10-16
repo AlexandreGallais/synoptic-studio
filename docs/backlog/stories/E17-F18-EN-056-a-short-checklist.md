@@ -42,7 +42,3 @@ One task = one commit, referenced as `EN-056.Tn`.
 - `val:prepare` writes the checklist files (`epic-*`, `checklists.ts`, `index.ts`): it is meant for the main thread at a `VAL`, the shared-file rule refusing it on a worker's branch.
 - F18's own `VAL`: its 20 criteria give 20 draft lines; they must be merged to 12 at most, which the tool says and the test enforces.
 - Technical choices made by the worker: the page is now a row of flex columns (drawing, checklist, options, pipeline) instead of a grid; a hidden column gives its room to the drawing, which replaces the `body:has(#output[hidden])` rule. The checklist column is 24rem wide.
-
-### Journal
-
-- EN-056: the checklist became a column beside the drawing, a test caps each feature at 12 lines (E15's F05 cut from 14 to 12), and `val:prepare` (Rust) drafts a feature's lines from its criteria; the guided steps of E15 stay for `?guide=epic`.
