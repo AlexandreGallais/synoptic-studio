@@ -1,11 +1,18 @@
 import { execFileSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { nextStep, rebaseOnBase, rowsMessage } from "./story-finish";
+import {
+  cleanUp,
+  cleanUpPlan,
+  nextStep,
+  rebaseOnBase,
+  rowsMessage,
+  worktrees,
+} from "./story-finish";
 
 /** The feature branch the stories of a test merge into. */
 const BASE = "feature/f99-topic";
@@ -69,6 +76,31 @@ function repositories(name: string): { alpha: string; beta: string } {
   git(folder, "clone", "--quiet", "--branch", BASE, origin, beta);
 
   return { alpha, beta };
+}
+
+/**
+ * A remote and its main checkout on the base, the story in a linked worktree, as in a run.
+ *
+ * @param name - the folder of this test's repositories
+ * @returns the paths of the main checkout and of the story's worktree
+ */
+function runCheckouts(name: string): { main: string; worktree: string } {
+  const folder = join(SCRATCH, name);
+  const origin = join(folder, "origin.git");
+  const main = join(folder, "main");
+  const worktree = join(folder, "en-999");
+
+  mkdirSync(folder);
+  git(folder, "init", "--quiet", "--bare", origin);
+  git(folder, "clone", "--quiet", origin, main);
+  commit(main, "readme", "start\n");
+  git(main, "switch", "--quiet", "-c", BASE);
+  git(main, "push", "--quiet", "-u", "origin", BASE);
+  git(main, "worktree", "add", "--quiet", "-b", STORY, worktree, BASE);
+  commit(worktree, "story", "story\n");
+  git(worktree, "push", "--quiet", "-u", "origin", STORY);
+
+  return { main, worktree };
 }
 
 beforeAll(() => {
@@ -144,5 +176,121 @@ describe("story-finish", () => {
     expect(git(alpha, "rev-parse", "HEAD")).toBe(head);
     expect(git(alpha, "status", "--porcelain")).toBe("");
     expect(git(alpha, "branch", "--show-current")).toBe(STORY);
+  });
+
+  it("reads each checkout's folder and branch, the main one first", () => {
+    const porcelain = [
+      "worktree /repo\nHEAD 1111\nbranch refs/heads/feature/f18-topic\n",
+      "worktree /repo/.claude/worktrees/en-051\nHEAD 2222\nbranch refs/heads/chore/en-051-topic\n",
+      "worktree /repo/.claude/worktrees/spare\nHEAD 3333\ndetached\n",
+    ].join("\n");
+
+    expect(worktrees(porcelain)).toStrictEqual([
+      { branch: "feature/f18-topic", path: "/repo" },
+      { branch: "chore/en-051-topic", path: "/repo/.claude/worktrees/en-051" },
+      { branch: "", path: "/repo/.claude/worktrees/spare" },
+    ]);
+
+    expect(worktrees("")).toStrictEqual([]);
+  });
+
+  it("from a worktree, updates the base where it is checked out, then removes the worktree", () => {
+    const here = "/repo/.claude/worktrees/en-999";
+
+    expect(
+      cleanUpPlan({ base: BASE, branch: STORY }, here, [
+        { branch: BASE, path: "/repo" },
+        { branch: STORY, path: here },
+      ]),
+    ).toStrictEqual({
+      place: "/repo",
+      remove: [
+        { cwd: "/repo", options: ["worktree", "remove", here] },
+        { cwd: "/repo", options: ["branch", "-D", STORY] },
+      ],
+      update: [
+        { cwd: here, options: ["fetch", "--quiet", "--prune", "origin"] },
+        { cwd: "/repo", options: ["merge", "--ff-only", "--quiet", `origin/${BASE}`] },
+      ],
+    });
+  });
+
+  it("from a worktree whose base no checkout holds, switches the worktree to the base first", () => {
+    const here = "/repo/.claude/worktrees/en-999";
+    const plan = cleanUpPlan({ base: BASE, branch: STORY }, here, [
+      { branch: "develop", path: "/repo" },
+      { branch: STORY, path: here },
+    ]);
+
+    expect(plan.place).toBe(here);
+
+    expect(plan.update.map((step) => [step.cwd, step.options[0]])).toStrictEqual([
+      [here, "fetch"],
+      [here, "switch"],
+      [here, "merge"],
+    ]);
+
+    expect(plan.remove.map((step) => step.options[0])).toStrictEqual(["worktree", "branch"]);
+  });
+
+  it("from the main checkout, switches to the base and removes no worktree", () => {
+    const plan = cleanUpPlan({ base: BASE, branch: STORY }, "/repo", [
+      { branch: STORY, path: "/repo" },
+      { branch: BASE, path: "/repo/.claude/worktrees/other" },
+    ]);
+
+    expect(plan.place).toBe("/repo");
+    expect(plan.update.map((step) => step.options[0])).toStrictEqual(["fetch", "switch", "merge"]);
+    expect(plan.remove).toStrictEqual([{ cwd: "/repo", options: ["branch", "-D", STORY] }]);
+  });
+
+  it("[F18.AC7] cleans up a merged story from its worktree without switching the main checkout", () => {
+    const { main, worktree } = runCheckouts("merged");
+    const places: string[] = [];
+
+    // GitHub's merge of the pull request, as seen from the remote.
+    git(worktree, "push", "--quiet", "origin", `${STORY}:${BASE}`);
+
+    const plan = cleanUpPlan(
+      { base: BASE, branch: STORY },
+      worktree,
+      worktrees(git(worktree, "worktree", "list", "--porcelain")),
+    );
+
+    expect(
+      cleanUp("MERGED", plan, (cwd) => {
+        places.push(cwd);
+      }),
+    ).toBe(true);
+
+    expect(places).toStrictEqual([main]);
+    expect(existsSync(worktree)).toBe(false);
+    expect(git(main, "branch", "--list", STORY)).toBe("");
+    expect(git(main, "branch", "--show-current")).toBe(BASE);
+    expect(git(main, "rev-parse", "HEAD")).toBe(git(main, "rev-parse", `origin/${BASE}`));
+    expect(git(main, "log", "--format=%s", "-1")).toBe("write story");
+  });
+
+  it("[F18.AC7] keeps the worktree and the branch of a pull request not merged", () => {
+    const { main, worktree } = runCheckouts("open");
+    const places: string[] = [];
+    const plan = cleanUpPlan(
+      { base: BASE, branch: STORY },
+      worktree,
+      worktrees(git(worktree, "worktree", "list", "--porcelain")),
+    );
+
+    for (const state of ["OPEN", "CLOSED"]) {
+      expect(
+        cleanUp(state, plan, (cwd) => {
+          places.push(cwd);
+        }),
+      ).toBe(false);
+    }
+
+    expect(places).toStrictEqual([]);
+    expect(existsSync(worktree)).toBe(true);
+    expect(git(main, "branch", "--list", STORY)).toBe(`+ ${STORY}`);
+    expect(git(worktree, "branch", "--show-current")).toBe(STORY);
   });
 });
