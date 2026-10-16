@@ -24,23 +24,6 @@ describe("joinedLineMeasure (DERIV-text-width step 2)", () => {
     expect(lineMeasureWidth(ARIAL_METRICS, joined, SPACING)).toBe(23.7109375);
   });
 
-  it("counts once the kerning a line's first character has with nothing", () => {
-    // A kerning giving every "o" +5 after any character, nothing before included: "o" alone is
-    // 1139 + 5 units; "Wo" is 1933 + 1139 + 5, not + 10.
-    const metrics = {
-      ...ARIAL_UNKERNED,
-      kerning: { leftClasses: {}, rightClasses: { 111: 1 }, values: [[0, 5]] },
-    };
-    const joined = joinedLineMeasure(
-      metrics,
-      measuredLine(metrics, "W"),
-      measuredLine(metrics, "o"),
-    );
-
-    expect(joined.advance).toBe(3077);
-    expect(joined).toEqual(measuredLine(metrics, "Wo"));
-  });
-
   it("adds the letter spacing at the junction and the word spacing of both lines", () => {
     // "Hello " and "World": 11 units, 10 letter spacings of 2, one space with a word spacing
     // of 3: 82.6875 + 20 + 3 = 105.6875.

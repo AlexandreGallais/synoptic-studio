@@ -5,8 +5,8 @@ import { rowMajorOffset } from "./row-major-offset";
 
 describe("rowMajorOffset (REF-WIKI-ROW-MAJOR)", () => {
   it.each([
-    // The source's 3 × 3 matrix 1 … 9 in row-major order: 1 2 3 4 5 6 7 8 9; the element 6, row
-    // 1 column 2, is at 3 · 1 + 2 = 5; the element 7, row 2 column 0, at 6.
+    // The source's 2 × 3 array a₁₁ … a₂₃, stored a₁₁ a₁₂ a₁₃ a₂₁ a₂₂ a₂₃: a₂₃, row 1 column 2 from
+    // 0, is at 3 · 1 + 2 = 5; a row 2 column 0 would follow at 6.
     { column: 2, columnCount: 3, expected: 5, row: 1 },
     { column: 0, columnCount: 3, expected: 6, row: 2 },
     { column: 0, columnCount: 3, expected: 0, row: 0 },

@@ -2,7 +2,8 @@ import type { KerningRow } from "./kerning-row";
 
 /**
  * The kerning of a font between characters, by classes (ADR-0052): characters that kern alike
- * share a class, so that a pair's kerning is read from a small table. Class 0 kerns with nothing.
+ * share a class, so that a pair's kerning is read from a small table. Class 0 kerns with nothing:
+ * its row and its column of values are zeros (`DERIV-kerning-classes`).
  */
 export type Kerning = {
   /** Class of each character as the first of a pair, by code point; a character left out is in class 0. */

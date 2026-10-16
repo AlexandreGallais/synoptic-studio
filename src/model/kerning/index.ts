@@ -1,5 +1,6 @@
 export type * from "./class-kerning-rule";
 export * from "./classes-by-character";
+export * from "./glyph-index-count";
 export * from "./glyph-pair-kerning";
 export * from "./glyph-pair-key";
 export type * from "./kerning";

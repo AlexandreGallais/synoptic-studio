@@ -1,4 +1,5 @@
 import { elementAddress, indexInRange, isSpanWithin, modulo } from "../../math";
+import { GLYPH_INDEX_COUNT } from "../../model";
 
 import type { CharacterGlyph } from "../../model";
 
@@ -16,9 +17,6 @@ const SEGMENT_ARRAYS = 4;
 
 /** Size of a glyph index in the glyph array. */
 const GLYPH_SIZE = 2;
-
-/** Glyph indices are reckoned modulo 65 536 once the delta is added. */
-const GLYPH_INDEX_MODULUS = 65_536;
 
 /** One segment of a format 4 subtable: a range of character codes and how they map to glyphs. */
 type Segment = {
@@ -92,7 +90,7 @@ function glyphArrayToGlyph(
     return undefined;
   }
 
-  return glyph === 0 ? 0 : modulo(glyph + segment.delta, GLYPH_INDEX_MODULUS);
+  return glyph === 0 ? 0 : modulo(glyph + segment.delta, GLYPH_INDEX_COUNT);
 }
 
 /**
@@ -116,7 +114,7 @@ function segmentToGlyph(
   }
 
   return segment.rangeOffset === 0
-    ? modulo(codePoint + segment.delta, GLYPH_INDEX_MODULUS)
+    ? modulo(codePoint + segment.delta, GLYPH_INDEX_COUNT)
     : glyphArrayToGlyph(cmap, segment, codePoint);
 }
 

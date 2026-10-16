@@ -3,13 +3,7 @@
 
 import { fc } from "@fast-check/vitest";
 
-import {
-  BYTE_MAXIMUM,
-  DEGREES_PER_TURN,
-  byteToFraction,
-  fractionToByte,
-  integerRange,
-} from "../src";
+import { BYTE_MAXIMUM, DEGREES_PER_TURN, fractionToByte, integerRange } from "../src";
 
 import type { IntegerRatio, Rgb } from "../src";
 
@@ -22,7 +16,7 @@ import type { IntegerRatio, Rgb } from "../src";
  * @returns the components, from 0 to 1
  */
 export function rgbOfBytes(red: number, green: number, blue: number): Rgb {
-  return { blue: byteToFraction(blue), green: byteToFraction(green), red: byteToFraction(red) };
+  return { blue: blue / BYTE_MAXIMUM, green: green / BYTE_MAXIMUM, red: red / BYTE_MAXIMUM };
 }
 
 /** Any byte, from 0 to 255. */

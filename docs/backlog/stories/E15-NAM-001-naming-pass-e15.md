@@ -2,7 +2,7 @@
 id: NAM-001
 epic: E15
 title: Naming pass over the code of E15
-status: ready
+status: done
 points: 3
 ---
 
@@ -23,7 +23,7 @@ One task = one commit, referenced as `NAM-001.Tn`.
 - [x] T1 — Golden file; list the unnamed calculations and their sources (1 h)
 - [x] T2 — First pass (3 h)
 - [x] T3 — Second pass and duplicates (2 h)
-- [ ] T4 — Audit of both passes (1 h)
+- [x] T4 — Audit of both passes (1 h)
 
 ## Golden files
 
@@ -86,3 +86,19 @@ New folders, each a domain of its own (ADR-0043): `math/addressing` (`elementAdd
 | `measuredTextDrawing`, `positionedLines`                       | `frame.y + offset`, `text.x + offset`                       | a coordinate moved by an offset, named by its variable (`top`, `left`)                    |
 | `sliderValueAt`, `sliderPositionOf`                            | `(max · p) / L`, `(L · v) / max`                            | each function is named after its concept; the order keeps the values shown (AUD-017)      |
 | `hsbComponent`, `hslComponent`, `exactHsbRamp`, `exactHslRamp` | the ramp `k`                                                | each line is a step of the cited formula (`REF-CSS-COLOR-4` §7.1, `REF-WIKI-HSL-HSV`)     |
+
+## Review
+
+The `auditor` re-derived each replacement: every one gives the same results, signed zeros, NaN and Infinity included, or works on integers too small for the order to matter. The kerning sentinel pair is gone safely: every `Kerning` the library builds has a row 0 of zeros (`DERIV-kerning-classes`), and so do Inter's 18 shipped faces. Both golden files, the shapes' (`npm run golden:check`) and E15's (150 texts, 1 500 colors, 48 system font files), are unchanged bit for bit after each pass; no expected test value was edited.
+
+| Finding                                                                                                          | Done                                                                                                          |
+| ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| a test of `joinedLineMeasure` built a class 0 that kerns, which no `Kerning` holds, to test the sentinel removed | dropped; `Kerning`'s TSDoc says class 0's row and column are zeros                                            |
+| `REF-WIKI-ROW-MAJOR` quoted a sentence of the Array page; a test cited its example                               | the row page's own sentence quoted; the test cites its 2 × 3 example                                          |
+| `rgbOfBytes` in the fixtures called `byteToFraction`, the function under test                                    | the fixture divides by `BYTE_MAXIMUM` on its own again                                                        |
+| 65 536 declared twice, 100 left in `PERCENT_SLIDER_RANGE`                                                        | `GLYPH_INDEX_COUNT` declared once in `model/kerning`; `PERCENT`                                               |
+| `DERIV-regular-polygon-fit` named only `alignmentFactor`; a negative room had no source                          | the derivation names `alignedOffset`; its TSDoc cites `DERIV-text-box` step 8 for a block taller than its box |
+
+`check:all` failed once on `deps:outdated`: knip 6.41.0 had passed its seven-day cooldown; it was raised to 6.41.0 in a commit of its own, its release notes read.
+
+Left for REV-003: US-047's tolerance "within 0.5" (0.1 would tell faces 0.576 apart, AUD-019); writing a large collection's face as one byte buffer, which the functional lint forbids (AUD-019, improvement log); the titles of F15, SP-018 and US-036 still name the HTML layer they built, kept as records while their file names lost it.

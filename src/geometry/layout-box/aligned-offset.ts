@@ -6,7 +6,8 @@ import type { Alignment } from "./alignment";
  * How far a span starts from the start of the room it is aligned in: the share of the room it
  * leaves that goes before it (`alignmentFactor`), none at `min`, half at `mid`, all at `max`, as
  * SVG's `preserveAspectRatio` places a viewport's content (`DERIV-regular-polygon-fit`, step 5).
- * A span longer than its room leaves a negative room: at `mid`, it overflows both ends equally.
+ * A span longer than its room leaves a negative room: at `mid`, it overflows both ends equally, as
+ * a text's block in a box too short for it (`DERIV-text-box`, step 8).
  * A room of 40 at `mid` gives 20.
  *
  * Formula: a × r, a = 0, ½ or 1 for `min`, `mid` or `max`.
