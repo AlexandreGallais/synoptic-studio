@@ -90,11 +90,15 @@ async function runCheck(name: string): Promise<CheckResult> {
  * @returns their results
  */
 async function runLane(lane: readonly string[]): Promise<readonly CheckResult[]> {
-  // Each check starts once the previous one has ended.
-  return await lane.reduce<Promise<readonly CheckResult[]>>(
-    async (previous, name) => [...(await previous), await runCheck(name)],
-    Promise.resolve([]),
-  );
+  const results: CheckResult[] = [];
+
+  // Each check starts once the previous one has ended; its result joins a local list.
+  await lane.reduce(async (previous, name) => {
+    await previous;
+    results.push(await runCheck(name));
+  }, Promise.resolve());
+
+  return results;
 }
 
 if (import.meta.main) {
