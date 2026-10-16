@@ -93,16 +93,15 @@ These run at every tool call or every second, each one starting Node.js. Measure
 
 Each is a story of F18 (E17), with the signal measured in E15.
 
-| Tool                                | Does                                                                            | Signal                                                               | Rust                |
-| ----------------------------------- | ------------------------------------------------------------------------------- | -------------------------------------------------------------------- | ------------------- |
-| `Agent` hook                        | a fourth subagent refused (EN-047)                                              | four subagents ran checks at once and froze the computer             | yes, with the hooks |
-| `worktree:new <ID>`                 | a worktree named after its story, on its branch (EN-052)                        | worktrees named `agent-a13cbef…`; 549 commands refused in worktrees  |                     |
-| `story:finish` from a worktree      | one merge at a time, clean-up only once merged (EN-051)                         | 4 clean-ups by hand, 2 branches deleted with their pull request open |                     |
-| stories index generated             | the index written from each story's front matter (EN-049)                       | 18 commits rewrote more than 100 of its 181 lines                    | yes                 |
-| `epic:check` failures               | the failing tests, worktree refusals apart, calls lost at a force-quit (EN-055) | "failed: test" with no name; 549 refusals counted as failures        |                     |
-| `mutate <files>`                    | mutations in a copy of the repository, caught and surviving (EN-058)            | the runner written again at each audit (F05 to F17)                  |                     |
-| `val:prepare`                       | the feature's checklist lines, not guided steps (EN-056)                        | guided-steps files written and unused since US-051                   |                     |
-| a summary of OpenType and CSS Fonts | the fields the project uses, read once                                          | OS/2 read 38 times, CSS Fonts 4 27 times                             |                     |
+| Tool                                | Does                                                                            | Signal                                                               | Rust |
+| ----------------------------------- | ------------------------------------------------------------------------------- | -------------------------------------------------------------------- | ---- |
+| `worktree:new <ID>`                 | a worktree named after its story, on its branch (EN-052)                        | worktrees named `agent-a13cbef…`; 549 commands refused in worktrees  |      |
+| `story:finish` from a worktree      | one merge at a time, clean-up only once merged (EN-051)                         | 4 clean-ups by hand, 2 branches deleted with their pull request open |      |
+| stories index generated             | the index written from each story's front matter (EN-049)                       | 18 commits rewrote more than 100 of its 181 lines                    | yes  |
+| `epic:check` failures               | the failing tests, worktree refusals apart, calls lost at a force-quit (EN-055) | "failed: test" with no name; 549 refusals counted as failures        |      |
+| `mutate <files>`                    | mutations in a copy of the repository, caught and surviving (EN-058)            | the runner written again at each audit (F05 to F17)                  |      |
+| `val:prepare`                       | the feature's checklist lines, not guided steps (EN-056)                        | guided-steps files written and unused since US-051                   |      |
+| a summary of OpenType and CSS Fonts | the fields the project uses, read once                                          | OS/2 read 38 times, CSS Fonts 4 27 times                             |      |
 
 ## Rust
 
@@ -121,3 +120,5 @@ The Rust tools live in this repository, beside the TypeScript, with their own ch
 The first is `tools/backlog-index/` (EN-049): a Cargo crate without a crates.io dependency, its tests beside its code, checked by `npm run check:rust` (`cargo fmt --check`, `cargo clippy -- -D warnings`, `cargo test`), part of `check` and `check:all`; its build output `target/` is ignored by Git and by every check tool. SP-021 proposes the lasting layout of the crates.
 
 The second is `tools/heavy-lock/` (EN-047), the heavy lock, run by `check:all`, `test`, `golden:check` and `docs:build` (`cargo run --release`) and checked by `check:rust` too.
+
+The third is `tools/hooks/` (EN-047): the Claude Code hooks written in Rust and what they share — a small JSON reader, the transcript's times, the background tasks of a session, a temporary twin of `status-tasks.ts` until F19 ports the status line onto it. Its binary `limit-agents` refuses a fourth subagent ([agent](./agent.md#hooks)).

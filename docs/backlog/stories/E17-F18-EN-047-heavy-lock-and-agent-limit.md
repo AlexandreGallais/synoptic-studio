@@ -28,3 +28,36 @@ One task = one commit, referenced as `EN-047.Tn`.
 - [ ] T1 — The lock in the heavy scripts, with its owner's process id and its take-over; tests (2 h)
 - [ ] T2 — The `PreToolUse` hook on `Agent`, counting running subagents from `.git/metrics/`; tests (2 h)
 - [ ] T3 — Vitest's workers capped at half the cores; docs and the rule pointing to the check (1 h)
+
+## For the main thread
+
+### The hook's line in `.claude/settings.json`, to show the Product Owner
+
+Not committed: Claude Code reads the hook only once the Product Owner accepts this entry, added to `hooks.PreToolUse` after the `Bash` entry. The first call builds the tool (about 10 s); a failure of the hook lets the call through.
+
+```json
+{
+  "matcher": "Agent",
+  "hooks": [
+    {
+      "type": "command",
+      "command": "cargo",
+      "args": [
+        "run",
+        "--release",
+        "-q",
+        "--manifest-path",
+        "${CLAUDE_PROJECT_DIR}/tools/hooks/Cargo.toml",
+        "--bin",
+        "limit-agents"
+      ]
+    }
+  ]
+}
+```
+
+### Rows for the logs
+
+- Improvement log: the Rust hook `tools/hooks` reads the transcript's background tasks with its own code, a temporary twin of `.claude/hooks/status-tasks.ts` and of `withTasks` in `status-tokens.ts`; F19 ports the status line onto `tools/hooks` and removes the TypeScript copy (decided 2026-10-16, Rust-only new tools, no crates.io dependency before SP-021).
+- Improvement log: once EN-047 is merged, workers no longer take the heavy lock by hand with `mkdir`: a heavy command waiting for a hand-taken folder lock cannot see its owner, and a worker holding one while running `npm run check:all` waits for itself.
+- Improvement log: the CI needs `cargo` for `check:all` (the `tools:check` lane and the heavy lock); GitHub's Ubuntu runners have it, to be confirmed at the first pull request into `main`.
