@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   HELLO_TEXT,
-  INTER_REGULAR,
+  INTER_REGULAR_FILE,
   NO_KERNING,
   OPEN_TYPE_VERSION,
   TRUE_TYPE_VERSION,
@@ -131,13 +131,13 @@ describe("parseFontMetrics (REF-OT-OTFF)", () => {
     const regular = DEFAULT_FONT.faces.find((face) => face.weight === 400 && !face.isItalic);
 
     // The same file, read for the same characters, gives the shipped metrics field for field.
-    expect(parseFontMetrics(INTER_REGULAR, blockCharacters(MEASURED_BLOCKS))).toEqual(
+    expect(parseFontMetrics(INTER_REGULAR_FILE, blockCharacters(MEASURED_BLOCKS))).toEqual(
       regular?.metrics,
     );
   });
 
   it("[F05.AC1] reads Inter Regular's advances and kerning pairs from its file", () => {
-    const metrics = parseFontMetrics(INTER_REGULAR, HELLO_CHARACTERS);
+    const metrics = parseFontMetrics(INTER_REGULAR_FILE, HELLO_CHARACTERS);
     const kerning = metrics?.kerning ?? NO_KERNING;
 
     // Read again from the file's hmtx and GPOS tables with fontTools 4.60.2
@@ -170,11 +170,11 @@ describe("parseFontMetrics (REF-OT-OTFF)", () => {
 
   it("[F14.AC5] reads Inter Regular's cap height from its OS/2 table of version 4", () => {
     // sCapHeight 1490, read again with fontTools 4.60.2 (`REF-INTER-REGULAR-FILE`).
-    expect(parseFontMetrics(INTER_REGULAR, [72])?.capHeight).toBe(1490);
+    expect(parseFontMetrics(INTER_REGULAR_FILE, [72])?.capHeight).toBe(1490);
   });
 
   it("[F05.AC3] measures 'Hello World' and 'Hello' / 'World' in Inter Regular 16 read from its file", () => {
-    const metrics = parseFontMetrics(INTER_REGULAR, HELLO_CHARACTERS);
+    const metrics = parseFontMetrics(INTER_REGULAR_FILE, HELLO_CHARACTERS);
     const blocks = ["Hello World", "Hello\nWorld"].map((content) =>
       metrics === undefined
         ? undefined
