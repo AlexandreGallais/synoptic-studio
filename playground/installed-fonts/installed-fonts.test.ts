@@ -633,6 +633,26 @@ describe("Installed fonts (US-036)", () => {
     );
   });
 
+  it("[F17.AC14] leaves out a family whose faces have different reasons under the first, not embeddable before no Latin letters", async () => {
+    fakeLocalFonts([
+      installedFont(
+        "Test Mixed",
+        lettersMissingFaceFile({ ...TEST_SANS, family: "Test Mixed", weightClass: 700 }),
+      ),
+      installedFont("Test Mixed", testFaceFile({ ...TEST_SANS, family: "Test Mixed", fsType: 2 })),
+      installedFont("Test Mixed", Uint8Array.from([1, 2, 3])),
+    ]);
+
+    clickElement("installed-fonts");
+    await waitForPageTasks();
+
+    expect(readOptions("text-font")).toEqual(["Inter"]);
+
+    expect(readProgress()).toBe(
+      "Installed fonts read: 0 families; 1 left out: 1 not embeddable (Test Mixed).",
+    );
+  });
+
   it("[F17.AC14] keeps a family's faces that can be listed, and says those left out when it is chosen", async () => {
     fakeLocalFonts([
       installedFont("Test Sans", testFaceFile(TEST_SANS)),

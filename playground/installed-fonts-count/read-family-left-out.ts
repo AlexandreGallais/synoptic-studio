@@ -1,16 +1,12 @@
+import { LEFT_OUT_REASONS } from "./left-out-reasons";
+
 import type { InstalledFaceLeftOut } from "./installed-face-left-out";
 import type { InstalledFaceRead } from "../installed-fonts";
 
-/** The reasons a family is left out, in the order one of its faces' reasons is taken for the family (US-056). */
-const LEFT_OUT_ORDER: readonly InstalledFaceLeftOut[] = [
-  "no-latin-letters",
-  "not-embeddable",
-  "unreadable",
-];
-
 /**
- * Reads why a family none of whose faces is listed is left out (US-056): a face read that lacks
- * the Latin letters, else one whose `fsType` forbids embedding it, else its files unreadable.
+ * Reads why a family none of whose faces is listed is left out (US-056): the first reason one of
+ * its faces has, in the one order of `LEFT_OUT_REASONS` — not embeddable, no Latin letters,
+ * unreadable.
  *
  * @kind procedure
  * @param reads - the reads of its faces, none kept
@@ -19,6 +15,7 @@ const LEFT_OUT_ORDER: readonly InstalledFaceLeftOut[] = [
  */
 export function readFamilyLeftOut(reads: readonly InstalledFaceRead[]): InstalledFaceLeftOut {
   const reasons = new Set(reads.map((read) => read.leftOut));
+  const [reason] = LEFT_OUT_REASONS.find(([key]) => reasons.has(key)) ?? ["unreadable"];
 
-  return LEFT_OUT_ORDER.find((reason) => reasons.has(reason)) ?? "unreadable";
+  return reason;
 }

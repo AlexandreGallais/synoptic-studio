@@ -1,13 +1,8 @@
+import { LEFT_OUT_REASONS } from "./left-out-reasons";
+
 import type { InstalledFaceLeftOut } from "./installed-face-left-out";
 import type { LeftOutFamily } from "./left-out-family";
 import type { ReadAheadCount } from "./read-ahead-count";
-
-/** How the reading line names each reason a family is left out, in the order it says them (US-056). */
-const REASONS: readonly (readonly [InstalledFaceLeftOut, string])[] = [
-  ["not-embeddable", "not embeddable"],
-  ["no-latin-letters", "no Latin letters"],
-  ["unreadable", "unreadable"],
-];
 
 /**
  * Reads the part of the reading line that says the families left out for one reason, such as
@@ -48,7 +43,7 @@ export function readProgressLine(count: ReadAheadCount, isDone: boolean): string
   }
 
   const read = `Installed fonts read: ${String(count.read)} families`;
-  const parts = REASONS.flatMap((reason) => readReasonPart(count.leftOut, reason));
+  const parts = LEFT_OUT_REASONS.flatMap((reason) => readReasonPart(count.leftOut, reason));
 
   return count.leftOut.length === 0
     ? `${read}.`
