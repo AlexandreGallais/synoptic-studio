@@ -42,7 +42,7 @@ In delivery order.
 | [US-050](../stories/E15-F17-US-050-turned-text-frames-as-shapes.md)          | User story | A turned text's frames drawn as a turned shape's                                     | done   |
 | [US-051](../stories/E15-F17-US-051-validation-checklist-page.md)             | User story | Validation on one checklist page                                                     | done   |
 | [EN-044](../stories/E15-F17-EN-044-val-steps-as-a-checklist.md)              | Enabler    | The run and review skills validate with a checklist page                             | done   |
-| [AUD-019](../stories/E15-F17-AUD-019-audit-f17.md)                           | Audit      | Audit F17                                                                            | ready  |
+| [AUD-019](../stories/E15-F17-AUD-019-audit-f17.md)                           | Audit      | Audit F17                                                                            | done   |
 | [VAL-018](../stories/E15-F17-VAL-018-validate-f17.md)                        | Validation | Validate F17                                                                         | ready  |
 
 ## Feature plan
