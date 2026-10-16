@@ -110,6 +110,23 @@ export const RESTRICTED_TYPES = {
   Set: { fixWith: "ReadonlySet", message: "Data is immutable: use ReadonlySet." },
 };
 
+/** The callback of a fold: the first argument of `reduce` or `reduceRight`. */
+const FOLD_CALLBACK =
+  "CallExpression[callee.property.name=/^reduce(?:Right)?$/] > :function:first-child";
+
+/** A spread into the array or object a callback returns, as its arrow body or from a `return`. */
+const RETURNED_SPREAD = ":matches(ArrayExpression, ObjectExpression) > SpreadElement";
+
+/**
+ * A spread of the accumulator at each step of a fold (`[...acc, x]`, `{ ...acc, k: v }`); a
+ * selector cannot tell the accumulator from another name, so any spread into the returned
+ * literal is reported (REF-OXLINT-ACCUMULATING-SPREAD, REF-ESLINT-RESTRICTED-SYNTAX).
+ */
+const FOLD_SPREAD = [
+  `${FOLD_CALLBACK} > ${RETURNED_SPREAD}`,
+  `${FOLD_CALLBACK} ReturnStatement > ${RETURNED_SPREAD}`,
+].join(", ");
+
 /** Syntax outside the project's style. */
 export const RESTRICTED_SYNTAX = [
   { message: "Use a union of string literals instead of an enum.", selector: "TSEnumDeclaration" },
@@ -125,6 +142,11 @@ export const RESTRICTED_SYNTAX = [
   {
     message: "The dependency graph stays static: no dynamic import.",
     selector: "ImportExpression",
+  },
+  {
+    message:
+      "A fold that spreads its accumulator copies it at every step, in quadratic time: build the result with `map` or `flatMap`; never mutate the accumulator (ADR-0014).",
+    selector: FOLD_SPREAD,
   },
 ];
 

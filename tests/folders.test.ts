@@ -23,17 +23,35 @@ function moduleCount(folder: string): number {
   ).length;
 }
 
-/** Folders listed in `docs/conventions/files.md` as staying whole past the signal, with their count. */
-const LISTED = new Map(
+/** Rows of the table of folders past the signal in `docs/conventions/files.md`. */
+const ROWS = (
   readFileSync(join(ROOT, "docs", "conventions", "files.md"), "utf8")
     .split(`### Folders past ${String(FOLDER_SIGNAL)} modules`, 2)[1]
-    ?.matchAll(/^\| `(?<folder>[^`]+)` +\| (?<count>\d+)/gmu)
-    .map((match): [string, number] => [
-      match.groups?.["folder"] ?? "",
-      Number(match.groups?.["count"]),
-    ])
-    .toArray(),
+    ?.matchAll(/^\| `(?<folder>[^`]+)` +\| (?<count>\d+) +\|(?<reason>[^|]*)\|/gmu)
+    .toArray() ?? []
+).map((match) => match.groups ?? {});
+
+/** Folders listed in `docs/conventions/files.md` as staying whole past the signal, with their count. */
+const LISTED = new Map(
+  ROWS.map((row): [string, number] => [row["folder"] ?? "", Number(row["count"])]),
 );
+
+/**
+ * Folders of `src/` and `playground/` holding more modules than the signal, counted by walking
+ * the disk rather than by the lint.
+ *
+ * @returns paths from the repository root
+ */
+function foldersPastSignal(): readonly string[] {
+  return ["src", "playground"]
+    .flatMap((root) => [
+      root,
+      ...readdirSync(join(ROOT, root), { recursive: true, withFileTypes: true })
+        .filter((entry) => entry.isDirectory())
+        .map((entry) => relative(ROOT, join(entry.parentPath, entry.name))),
+    ])
+    .filter((folder) => moduleCount(folder) > FOLDER_SIGNAL);
+}
 
 /** Files allowed beside domain folders: the barrel, and the playground's page; hidden files (`.DS_Store`) are skipped. */
 const BESIDE_FOLDERS = new Set(["index.ts", "index.html"]);
@@ -73,6 +91,11 @@ describe("folders past the signal (ADR-0043)", () => {
 
   it("[F11.AC4] keeps every file of src and playground out of folders that hold folders", () => {
     expect(filesBesideFolders()).toEqual([]);
+  });
+
+  it("[F18.AC18] lists every folder of src and playground past the signal, each with its reason", () => {
+    expect(foldersPastSignal().filter((folder) => !LISTED.has(folder))).toEqual([]);
+    expect(ROWS.filter((row) => (row["reason"] ?? "").trim() === "")).toEqual([]);
   });
 
   it("lists only folders still past the signal, each with its true count", () => {

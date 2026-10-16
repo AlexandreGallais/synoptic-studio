@@ -214,14 +214,15 @@ export function fontCollection(faces: readonly Uint8Array[]): Uint8Array {
       (unused, record) => DIRECTORY.headerSize + DIRECTORY.recordSize * record + layout.offsetField,
     );
 
-    return fields.reduce<number[]>(
-      (bytes, field) => [
-        ...bytes.slice(0, field),
-        ...uint32(view.getUint32(field) + (bases[index] ?? 0)),
-        ...bytes.slice(field + layout.offsetSize),
-      ],
-      [...face],
-    );
+    // A local copy shifted in place: a fold spreading the bytes copied them at every field.
+    const copy = Uint8Array.from(face);
+    const shifted = new DataView(copy.buffer);
+
+    for (const field of fields) {
+      shifted.setUint32(field, view.getUint32(field) + (bases[index] ?? 0));
+    }
+
+    return [...copy];
   });
 
   return Uint8Array.from([
