@@ -42,3 +42,33 @@ One task = one commit, referenced as `VAL-018.Tn`.
 - [x] T1 — The checklist's lines of F17, tested (1 h)
 - [x] T2 — The demo page (30 min)
 - [ ] T3 — The Product Owner's validation (1 h)
+
+## Result (first pass, 2026-10-16)
+
+The Product Owner walked E15's checklist page on branch `feat/val-018-text-corrections`. The validation is not finished: VAL-018 stays open until the defects below are corrected and tried again.
+
+**What works**
+
+- Empty lines show their frames and draw nothing; sizes 48, 16, 48, 16 no longer lag.
+- IBM Plex Sans: every weight, 450 drawn as measured; italic on and off; color, opacity, both pickers, HSL and HSB, letter and word spacing, the underline's and strike-through's colors, and every letter case.
+- Right-to-left text with right alignment; fit content, trim, line height, background, ellipsis with every vertical alignment, and a maximum of 0 lines.
+- A turned text has a blue box and a dashed bounding box, as a shape; typing in fit content while turned works.
+- The Export SVG button serves as a test tool (the real export comes later); the file opens correctly in Inkscape.
+
+**Decision**: trailing spaces (answers question 1 of AUD-019) are accepted as built: the background does not grow with spaces typed at a line's end.
+
+**Defects, to investigate cause first; stories to come**
+
+| Id  | Seen                                                                                                                                                                                                                                       | To check                                                                                     |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
+| D1  | Inter without an imported file: 800 looks like 900, 700 like 600, 500 like 400; the weight list offers every weight anyway; the box padding varies with the weight (Thin overflows by the "1", Medium too wide, ExtraBold and Black wrong) | whether the installed Inter is read at all or default metrics stand in for missing faces     |
+| D2  | Italic on: the box does not change                                                                                                                                                                                                         | whether the text is measured upright                                                         |
+| D3  | Left-to-right text with right alignment: the second line does not end exactly at x 100, the "g" looks off                                                                                                                                  | advance against ink at a line's end                                                          |
+| D4  | After turning a text by 90, the X and Y fields keep their old values while the box moves; the readout shows the new ones; one crash seen, which recovered                                                                                  | X and Y (the top-left corner) should follow the turn                                         |
+| D5  | An installed font that cannot be read ("ABC Oracle Book could not be accessed") is still listed                                                                                                                                            | read every installed font ahead; list only the fonts and weights really available, Inter too |
+
+For D1, the Product Owner notes that Figma offers every Inter weight (Thin to Black) and shows them all working; the fault is therefore in how the editor reads or measures Inter, not in the font.
+
+**Change C1**: switching from fit content to a box keeps the fit-content size as the box's size, then editable (to investigate; story to come).
+
+**Points not answered**: Helvetica Neue 700, an unquoted family name with a digit in Safari, and Apple Color Emoji.ttc. The Product Owner left the choice to the agent: Apple Color Emoji is handled by the recommended option (b) unless a business choice remains.

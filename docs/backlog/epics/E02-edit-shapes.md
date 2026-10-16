@@ -50,6 +50,13 @@ For a later pass on the editor's ease of use; none is planned yet:
 - **A reset button on the stroke colors**: the underline's and the strike-through's colors get a button that makes them follow the text's color again, instead of the box "follows the text's color".
 - **Fewer options**: simplify the Text tool's options, the stroke colors perhaps removed (kept for now, VAL-016).
 
+## Ideas from the Product Owner (2026-10-16, first pass of VAL-018)
+
+Not scheduled; for a later pass on text:
+
+- **Trim trailing empty lines at run time**: line breaks with nothing after them take no space.
+- **One line in a box**: in box mode, an option to show everything on one line, ignoring line breaks, when the box is wide enough.
+
 ## Ideas from the Product Owner (2026-10-11, refinement of F04)
 
 - **A rotation mode**, entered by a button, showing the center of rotation (by default the center of the shape's box). The center is either **free**, fixed at an x and y; or one of the **nine anchors** of the shape's box, or a **point of the shape**, both following the shape when it moves or grows; or a **point or the center of another shape**, which only places it, at that x and y, without following that shape.

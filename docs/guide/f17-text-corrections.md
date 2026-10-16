@@ -68,6 +68,17 @@ Found by [AUD-019](../backlog/stories/E15-F17-AUD-019-audit-f17.md); nothing is 
 - **Apple Color Emoji must not be chosen yet**, installed or imported: its collection of 192 MB exhausts the page's memory while its faces are copied out. The fix writes bytes in place, which the functional lint forbids; it waits for a decision (AUD-019, improvement log). Every other system collection is read, 127 files and 543 faces, Songti.ttc in 8.5 s.
 - No search field over the installed fonts, no reset button on the stroke colors: a later epic on the editor's ease of use (E02).
 
+## First validation pass
+
+First tried on 2026-10-16; the validation is not finished.
+
+- **Works**: empty lines, every weight of IBM Plex Sans, italic, colors, spacing, letter cases, right-to-left text, fit content, trim, background, ellipsis, a turned text's frames, and the SVG export (opened in Inkscape).
+- **Accepted as built**: spaces typed at a line's end do not widen the background.
+- **To correct**: Inter's weights and box padding (D1), the box not following italic (D2), a right-aligned line not ending exactly at the edge (D3), X and Y not following a turn (D4), and unreadable installed fonts still listed (D5).
+- **Change asked**: switching from fit content to a box keeps the size it had (C1).
+
+Each point is investigated for its cause first, then becomes a story.
+
 ## Validation
 
 Not yet validated (`VAL-018`).
