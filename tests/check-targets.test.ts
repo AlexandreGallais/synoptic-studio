@@ -12,8 +12,8 @@ const ROOT = join(import.meta.dirname, "..");
 /** The project's ESLint, read from its configuration. */
 const LINT = new ESLint({ cwd: ROOT });
 
-/** Time limit of a test asking a tool about every tracked file: four times its 3 s alone, and a margin. */
-const WALK_TIMEOUT = 20_000;
+/** Time limit of a test asking a tool about every tracked file: about 4.3 s alone (EN-054), seven times. */
+const WALK_TIMEOUT = 30_000;
 
 /** Prettier's ignore files, as its command line reads them. */
 const PRETTIER_IGNORE = [join(ROOT, ".gitignore"), join(ROOT, ".prettierignore")];
