@@ -18,6 +18,7 @@ Almost everything here is **checked by ESLint** (`eslint/`). When a rule is auto
 | [testing.md](./testing.md)             | Vitest, hand-computed expected values                                                     |
 | [writing.md](./writing.md)             | how documentation is written: page types, austere API reference, style                    |
 | [audit.md](./audit.md)                 | checklist of the feature audit: mathematics, sources, provenance, duplicates, consistency |
+| [exceptions.md](./exceptions.md)       | register of the places where the code turns a lint rule off, with their reasons           |
 
 ## Language
 
