@@ -387,6 +387,22 @@ describe("Installed fonts (US-036)", () => {
     expect(readProgress()).toBe("Installed fonts read: 2 families.");
   });
 
+  it("[F17.AC11] says an error of the reading ahead, never left uncaught", async () => {
+    const [sans, release] = heldFont("Test Sans", testFaceFile(TEST_SANS));
+
+    fakeLocalFonts([sans]);
+    clickElement("installed-fonts");
+    await waitForMessage("Installed families listed: 1. Choose one in the font list.");
+    // The progress line gone while Test Sans is read: its next write throws.
+    selectPageElement("#installed-fonts-progress").remove();
+    release();
+    await waitForPageTasks();
+
+    expect(readText("#font-message")).toMatch(
+      /^The installed fonts could not be read: Error: Playground page without #installed-fonts-progress/u,
+    );
+  });
+
   it("[F17.AC11] keeps the file of a face imported when its installed family is read ahead", async () => {
     fakeLocalFonts([installedFont("Test Sans", testFaceFile(TEST_SANS))]);
     await importFace();

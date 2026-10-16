@@ -69,7 +69,11 @@ async function showInstalledFonts(
       await readInstalledFontsAhead(document, update);
     },
     (error) => {
-      writeText(document, "installed-fonts-progress", String(error));
+      writeText(
+        document,
+        "font-message",
+        `The installed fonts could not be read: ${String(error)}`,
+      );
     },
   );
 }
