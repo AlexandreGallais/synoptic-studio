@@ -11,5 +11,8 @@ docs/.vitepress/cache
 docs/.vitepress/dist
 test-report.xml
 
+# Worktrees of agents and parallel sessions (RET-003)
+/.claude/worktrees/
+
 # Private records, their own Git repository (ADR-0044)
 /records/
