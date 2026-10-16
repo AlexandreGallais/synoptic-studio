@@ -3,7 +3,7 @@ id: EN-053
 epic: E17
 feature: F18
 title: The session's figures at its end, background subagents seen
-status: ready
+status: done
 points: 2
 ---
 
