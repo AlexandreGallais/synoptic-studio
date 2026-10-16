@@ -187,7 +187,7 @@
 | [EN-049](./E17-F18-EN-049-stories-index-generated.md)                             | F18     | The stories index generated from the story files                                     | done   |
 | [EN-050](./E17-F18-EN-050-shared-files-written-at-merge.md)                       | F18     | Shared files written only at merge                                                   | done   |
 | [EN-051](./E17-F18-EN-051-story-finish-one-merge-at-a-time.md)                    | F18     | `story:finish` one merge at a time, from a worktree too                              | done   |
-| [CHK-019](./E17-F18-CHK-019-checkpoint-f18.md)                                    | F18     | Checkpoint in the middle of F18                                                      | ready  |
+| [CHK-019](./E17-F18-CHK-019-checkpoint-f18.md)                                    | F18     | Checkpoint in the middle of F18                                                      | done   |
 | [EN-052](./E17-F18-EN-052-worktrees-named-after-their-story.md)                   | F18     | Worktrees named after their story, commands that fit them                            | done   |
 | [EN-053](./E17-F18-EN-053-session-figures-and-background-subagents.md)            | F18     | The session's figures at its end, background subagents seen                          | done   |
 | [EN-054](./E17-F18-EN-054-timing-tests-that-hold-under-load.md)                   | F18     | Timing tests that hold under load                                                    | done   |
