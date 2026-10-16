@@ -58,7 +58,7 @@ After a plugin upgrade, `npm run test` lists the new rules to decide: add them t
 
 ## One-off exceptions
 
-`// eslint-disable-next-line rule -- justification` — the justification is mandatory (`unicorn/no-abusive-eslint-disable`), an unused directive is an error.
+`// eslint-disable-next-line rule -- justification` — the justification is mandatory (`unicorn/no-abusive-eslint-disable`), an unused directive is an error. Each directive has its row in the [register of exceptions](./exceptions.md), in the same change (ADR-0066).
 
 ## Known autofix pitfall
 
