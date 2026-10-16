@@ -39,4 +39,4 @@ From the Product Owner's test of 2026-10-16, after US-059: after **Installed fon
 One task = one commit, referenced as `US-060.Tn`.
 
 - [x] T1 — The default font chosen once the reading ends, as a font chosen by hand: its files read again, a family refused then left out and the next tried; no family read ahead measured with while the fonts are read; `shapes.md`, the checklist line, the story registered (1 h)
-- [ ] T2 — The process log: the font chosen automatically not tried with Embed fonts (0.25 h)
+- [x] T2 — The process log: the font chosen automatically not tried with Embed fonts (0.25 h)
