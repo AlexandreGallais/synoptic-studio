@@ -65,6 +65,16 @@ Not scheduled; for the later UI/UX epic:
 - **A curated set of fonts**: the software ships fonts suited to synoptic views; installing a local font is a choice, through an "Install" button listing the local fonts to pick from, beside importing a font file. Not every font is accepted (Comic Sans, Braille and emoji fonts are of no use in a synoptic view).
 - **Turned text**: handle a turned text like rectangles, polygons and round shapes.
 
+## Ideas from the Product Owner (2026-10-16, decisions after US-056)
+
+Not scheduled; for the later UI/UX epic (US-059):
+
+- **Fonts shipped**: free fonts that can be exported, installed with the software.
+- **A font chosen from the computer**: the designer selects an installed font to import, and the software says whether it can be exported.
+- **A font that cannot be embedded**: exported once the designer forces it after a confirmation, or refused outright — to decide then (ADR-0062 refuses it for now).
+- **A font list that says more**: which fonts are usable, and which can be exported.
+- **Fonts installed automatically**.
+
 ## Ideas from the Product Owner (2026-10-11, refinement of F04)
 
 - **A rotation mode**, entered by a button, showing the center of rotation (by default the center of the shape's box). The center is either **free**, fixed at an x and y; or one of the **nine anchors** of the shape's box, or a **point of the shape**, both following the shape when it moves or grows; or a **point or the center of another shape**, which only places it, at that x and y, without following that shape.

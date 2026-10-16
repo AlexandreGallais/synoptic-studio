@@ -43,5 +43,5 @@ One task = one commit, referenced as `US-059.Tn`.
 
 - [x] T1 — The font list holds only families read and approved, disabled with Installed fonts while they are read; the Content field disabled while no font is available; the first approved family chosen at the end of the reading; the guard for a family chosen meanwhile removed; `shapes.md`, the checklist lines, the story registered (1.5 h)
 - [x] T2 — A face imported by hand without the basic Latin letters, or whose `fsType` forbids embedding it, refused and said why; ADR-0062; `shapes.md` (1 h)
-- [ ] T3 — The ideas for the later epic on ease of use in E02 (0.25 h)
+- [x] T3 — The ideas for the later epic on ease of use in E02 (0.25 h)
 - [ ] T4 — The process logs: the explanation of US-056 given without an example, and `story:finish` from a worktree (0.25 h)
