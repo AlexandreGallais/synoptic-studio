@@ -24,6 +24,10 @@ describe("guard-bash hook", () => {
     "git -c core.hooksPath=/dev/null commit -m x",
     "CI=1 HUSKY=0 git push",
     "cat > a.txt <<'EOF'\ntext\nEOF\ngh pr merge 21",
+    "npx vitest run",
+    "npx vitest run --coverage",
+    "cd repo && npx vitest run --reporter=dot",
+    "npx vitest",
   ])("denies %s", (command) => {
     expect(deniedReason(command)).toBeDefined();
   });
@@ -39,6 +43,9 @@ describe("guard-bash hook", () => {
     "sed -i '' 's/a/denies HUSKY=0 and core.hooksPath/' docs/tooling/agent.md",
     'git commit -m "docs: explain why gh pr merge is denied"',
     "npm run check:all",
+    "npx vitest run scripts/check-all.test.ts",
+    "npx vitest run src/geometry --coverage",
+    "npm run test",
     "cat > note.md <<'EOF'\nThe agent never runs gh pr merge.\nEOF",
     'git commit -F - <<"MSG"\ndocs: x\n\ngit push --force is denied\nMSG\ngit log -1',
   ])("allows %s", (command) => {

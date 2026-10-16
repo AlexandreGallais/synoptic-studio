@@ -1,0 +1,12 @@
+[package]
+name = "heavy-lock"
+version = "0.1.0"
+edition = "2024"
+description = "One heavy command at a time across every worktree (ADR-0063, EN-047)"
+license = "Apache-2.0"
+publish = false
+
+[dependencies]
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }

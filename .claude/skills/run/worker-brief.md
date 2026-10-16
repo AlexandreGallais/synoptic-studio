@@ -26,13 +26,9 @@ The main thread gives this file's path to each worker, with the story id, its fe
 
 ## Heavy commands (ADR-0063)
 
-One heavy command at a time across every worktree: `check:all`, a full Vitest run, `golden:check`, the docs build, and `git push` (its pre-push runs `check:all`). Until EN-047 puts the lock in the tools, take it by hand, in a single call, in the background if it may last over 2 minutes:
+One heavy command at a time across every worktree: `check:all`, `npm run test`, `golden:check`, `docs:build`, and `git push` (its pre-push runs `check:all`). They take the lock `.git/heavy.lock` themselves (EN-047, `docs/tooling/commands.md`): run them as they are, in the background if they may last over 2 minutes; one waiting prints which process holds the lock. Never take the lock by hand with `mkdir`: the command would wait for a lock it cannot see the owner of.
 
-```sh
-L="$(git rev-parse --git-common-dir)/heavy.lock"; until mkdir "$L" 2>/dev/null; do sleep 10; done; <heavy command>; rc=$?; rmdir "$L"; exit $rc
-```
-
-Between heavy commands, run single test files only.
+Between heavy commands, run single test files only (`npx vitest run <paths>`); a full run is `npm run test`, never `npx vitest run` without a path.
 
 ## Limits
 
