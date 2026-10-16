@@ -3,7 +3,7 @@ id: US-059
 epic: E15
 feature: F17
 title: Only fonts read and approved, imported ones too
-status: ready
+status: done
 points: 2
 ---
 
