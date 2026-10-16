@@ -7,6 +7,7 @@ import { lineWidth } from "../text-block";
 import { wrappedLines } from "../text-wrap";
 
 import { shownLines } from "./shown-lines";
+import { textEllipsis } from "./text-ellipsis";
 
 import type { Text } from "../text";
 
@@ -18,6 +19,15 @@ const TWICE = "Hello World Hello World";
 
 /** A word too long for a box 50 wide, "running" being 53.375 wide. */
 const PUMP = "Pump P-101 is running";
+
+/** A box's values drawn at random: its size, its maximum, its ellipsis, and a content of few letters. */
+const BOX_VALUES = {
+  boxHeight: fc.integer({ max: 120, min: 0 }),
+  boxWidth: fc.integer({ max: 80, min: 0 }),
+  content: fc.stringMatching(/^[ \nHWdelor]{0,40}$/u),
+  hasEllipsis: fc.boolean(),
+  maximumLines: fc.integer({ max: 5, min: 0 }),
+};
 
 /** The lines a text shows, and their widths. */
 type ShownText = {
@@ -267,13 +277,7 @@ describe("shownLines (DERIV-text-box steps 5 and 6)", () => {
     expect(shownLines(ARIAL_BOX_METRICS, text)).toEqual(["Hello World", "Hello"]);
   });
 
-  test.prop({
-    boxHeight: fc.integer({ max: 120, min: 0 }),
-    boxWidth: fc.integer({ max: 80, min: 0 }),
-    content: fc.stringMatching(/^[ \nHWdelor]{0,40}$/u),
-    hasEllipsis: fc.boolean(),
-    maximumLines: fc.integer({ max: 5, min: 0 }),
-  })(
+  test.prop(BOX_VALUES)(
     "[F14.AC2] shows at most the maximum, each line fitting with the ellipsis on unless one character is left",
     (values) => {
       const text = { ...BOXED, ...values };
@@ -298,6 +302,29 @@ describe("shownLines (DERIV-text-box steps 5 and 6)", () => {
             !values.hasEllipsis ||
             characterUnits(line.trim()).length <= 2 ||
             lineWidth(ARIAL_BOX_METRICS, line.trimEnd(), text) <= values.boxWidth,
+        ),
+      ).toBe(true);
+    },
+  );
+
+  test.prop(BOX_VALUES)(
+    "[F17.AC16] drops only empty lines from those the box shows, each line kept its wrapped line or a start of it with the ellipsis",
+    (values) => {
+      const text = { ...BOXED, ...values };
+      const lines = shownLines(ARIAL_BOX_METRICS, text);
+      const wrapped = wrappedLines(ARIAL_BOX_METRICS, text);
+      // With the ellipsis off, a box shows its first lines as they wrap, as many as fit.
+      const count = shownLines(ARIAL_BOX_METRICS, { ...text, hasEllipsis: false }).length;
+      const ellipsis = textEllipsis(ARIAL_BOX_METRICS);
+
+      expect(wrapped.slice(lines.length, count).every((line) => line === "")).toBe(true);
+
+      expect(
+        lines.every(
+          (line, index) =>
+            line === wrapped[index] ||
+            (line.endsWith(ellipsis) &&
+              wrapped[index]?.startsWith(line.slice(0, -ellipsis.length)) === true),
         ),
       ).toBe(true);
     },
