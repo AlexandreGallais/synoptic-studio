@@ -2,6 +2,12 @@
 
 What each working session dealt with, in the agent's words: the Product Owner's requests in neutral words, decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`).
 
+## 2026-10-16 — F17 validated, E15 reviewed
+
+- `#decision` VAL-018's third pass: US-059 and US-060 accepted, F17 done. Three points left by US-060 went to the improvement log for RET-003.
+- `#rev` A tour of the whole Text tool, taken as REV-003: every option works; italic leaving the box unchanged kept. The text direction is kept for now and goes at the later UI/UX epic (E02, ideas). Report: `docs/guide/e15-place-text.md`.
+- `#stop` E15 stays `in-progress` until RET-003, run with the Product Owner (ADR-0023); then the `develop` → `main` release.
+
 ## 2026-10-16 — Run of E15 through F17, up to the validation
 
 - `#run` 2026-10-15 afternoon: the Product Owner's remarks before validation led to US-037 to US-041, EN-042, EN-043 and ADR-0057, ADR-0058, ADR-0059. F15 finished (EN-041, US-036, AUD-018). Pull requests #224–#235.
