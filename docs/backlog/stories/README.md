@@ -190,7 +190,7 @@
 | [CHK-019](./E17-F18-CHK-019-checkpoint-f18.md)                                    | F18     | Checkpoint in the middle of F18                                                      | ready  |
 | [EN-052](./E17-F18-EN-052-worktrees-named-after-their-story.md)                   | F18     | Worktrees named after their story, commands that fit them                            | ready  |
 | [EN-053](./E17-F18-EN-053-session-figures-and-background-subagents.md)            | F18     | The session's figures at its end, background subagents seen                          | ready  |
-| [EN-054](./E17-F18-EN-054-timing-tests-that-hold-under-load.md)                   | F18     | Timing tests that hold under load                                                    | ready  |
+| [EN-054](./E17-F18-EN-054-timing-tests-that-hold-under-load.md)                   | F18     | Timing tests that hold under load                                                    | done   |
 | [EN-055](./E17-F18-EN-055-epic-check-says-what-failed.md)                         | F18     | `epic:check` says what failed; the golden check at push                              | ready  |
 | [EN-056](./E17-F18-EN-056-a-short-checklist.md)                                   | F18     | A short checklist, prepared by `val:prepare`                                         | ready  |
 | [EN-057](./E17-F18-EN-057-register-of-exceptions-and-a-byte-buffer.md)            | F18     | The register of exceptions, and a byte buffer for font collections                   | ready  |
