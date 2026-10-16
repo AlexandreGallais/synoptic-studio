@@ -37,3 +37,32 @@ One task = one commit, referenced as `EN-046.Tn`.
 | The previous release is found among the last releases, then in the history of `target-branch` (500 commits at most by default)                     | `REF-RELEASE-PLEASE-DESIGN`, `REF-RELEASE-PLEASE-SOURCE` |
 
 So the step on `main` runs with `target-branch: develop` and `skip-github-pull-request: true`: it finds the release pull request merged into `develop`, and tags its merge commit, which `main` holds once the Product Owner has merged `develop`. Checked on the repository on 2026-10-17: `v0.2.0`'s commit is an ancestor of `develop`, 354 commits behind it.
+
+## The change (T2)
+
+- `.github/workflows/release.yml`: a `release-pr` job on pushes to `develop` (`target-branch: develop`, `skip-github-release: true`); the `release-please` job on pushes to `main` (`target-branch: develop`, `skip-github-pull-request: true`); the automatic merge of the release pull request removed ([ADR-0067](../../adr/0067-release-pull-request-on-develop.md), decision 2: the Product Owner merges it into `develop` when they ask for a release).
+- `commitlint.config.ts`: the release commit `chore(develop): release x.y.z` is let through, since the CI of the pull request into `main` checks every commit it brings.
+- `tests/release-flow.test.ts`: each job's branch, `target-branch` and `skip-` input, no `gh pr merge`, the release commit of either branch; broken once on purpose (`skip-github-pull-request: false`, then the `develop` scope removed), each run failed.
+- Docs: [releases](../../tooling/releases.md), [Git workflow](../../tooling/git-workflow.md) (`develop` follows `main` by a fast-forward), [CI](../../tooling/ci.md), ADR-0038's status.
+
+The release itself cannot run before the merge of `develop` into `main`: the criteria are proven by the sources read (T1) and the test, then checked at the release of 0.3.
+
+## To check at the next release (0.3, #259)
+
+1. Once F18 is merged into `develop`, the Release workflow runs on `develop` and opens `chore(develop): release 0.3.0` against `develop`, from the `release-please--branches--develop` branch; its changelog starts after `v0.2.0`.
+2. The Product Owner merges it into `develop`; the next run on `develop` logs "There are untagged, merged release PRs outstanding - aborting" and opens nothing.
+3. The pull request #259 gains the release commit; its CI, commit messages included, is green.
+4. After the merge of #259, the run on `main` logs no pull request opened, creates the tag `v0.3.0` on the release pull request's merge commit (`git merge-base --is-ancestor v0.3.0 origin/main`), the GitHub release with `test-report.xml`, and the site; the release pull request carries `autorelease: tagged`.
+5. `git merge --ff-only origin/main` on `develop` succeeds.
+
+**Rollback** if step 1 or 4 fails: in `release.yml`, remove the `release-pr` job and `develop` from the push branches, remove `target-branch` and `skip-github-pull-request` from the `release-please` job and give back its `gh pr merge --auto --merge` step (the file before EN-046); close the release pull request left on `develop`. If the tag is missing after step 4 with the release pull request merged, run the workflow by hand from `main` (_Actions → Release → Run workflow_): its release step looks again for the merged pull request.
+
+## For the main thread
+
+### Journal
+
+- `#run` EN-046: the release pull request now lives on `develop` and `main` only tags it (ADR-0067); the Product Owner merges the release pull request into `develop` before #259, checked at the release of 0.3.
+
+### Improvements
+
+| 2026-10-17 | agent | EN-046: release-please's commit scope follows its branch, so the release commit `chore(develop): release x.y.z` would have failed the commit-message check of the pull request into `main`; found by reading `ci.yml` before the release (commitlint now lets it through) | tooling |

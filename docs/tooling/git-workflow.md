@@ -4,24 +4,24 @@
 
 Git-flow without release branches (ADR-0038, `REF-GITFLOW`):
 
-| Branch                      | Holds                                                     | Receives                                                                                   | Checked by                            |
-| --------------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------- |
-| `main`                      | released versions only                                    | pull requests from `develop` (merged by the Product Owner) and release-please's; no push   | the CI of the pull request (`ci.yml`) |
-| `develop`                   | the integration branch: validated features, tooling, docs | direct pushes of the agent (tooling, docs, backlog), feature pull requests (Product Owner) | local Git hooks                       |
-| `feature/f<nn>-<topic>`     | one feature while it is built (ADR-0028)                  | story pull requests (Product Owner, or GitHub in an autonomous run)                        | local Git hooks                       |
-| `<type>/<story-id>-<topic>` | one story, one commit per task                            | the agent's commits                                                                        | local Git hooks                       |
+| Branch                      | Holds                                                     | Receives                                                                                 | Checked by                            |
+| --------------------------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------- |
+| `main`                      | released versions only                                    | pull requests from `develop` (merged by the Product Owner); no push                      | the CI of the pull request (`ci.yml`) |
+| `develop`                   | the integration branch: validated features, tooling, docs | agent pushes (tooling, docs, backlog); feature and release pull requests (Product Owner) | local Git hooks                       |
+| `feature/f<nn>-<topic>`     | one feature while it is built (ADR-0028)                  | story pull requests (Product Owner, or GitHub in an autonomous run)                      | local Git hooks                       |
+| `<type>/<story-id>-<topic>` | one story, one commit per task                            | the agent's commits                                                                      | local Git hooks                       |
 
 - **One branch = one feature**: `feature/f<nn>-<topic>`, created from the up-to-date `develop` when the feature starts, merged into `develop` by the Product Owner at the feature's validation, then deleted.
 - **One branch = one story**: `<type>/<story-id>-<topic>`, e.g. `feat/us-004-rectangle-contour`, created from the up-to-date feature branch. The type is the Conventional Commits type of the story's main change.
 - **One commit = one task** of the story, with the task ID in a footer (`Refs: US-004.T2`).
 - When the story's Definition of Done is met, Claude Code pushes the branch (the pre-push hook runs `check:all`) and opens a pull request **into the feature branch** (template `.github/pull_request_template.md`). No CI runs on it and nobody waits for one. Merge: **rebase merge** — by the Product Owner, or, in an authorized autonomous run, by GitHub as soon as the pull request is labeled `autonomous` (`story-automerge.yml`, ADR-0028).
 - At the feature's validation (`VAL`), Claude Code does the validation work on a `VAL` branch made from the feature branch, and opens **one feature pull request** from that branch into `develop`; the Product Owner merges it with a **merge commit** (git-flow's `--no-ff`: the feature stays visible as one bridge in the history, `REF-GITFLOW`).
-- **A release**: Claude Code opens a pull request from `develop` into `main`, usually right after a feature pull request is merged. The CI runs on it (about 2 minutes); the Product Owner merges it with a **merge commit**, the only method `main` allows: a rebase would copy the commits under new SHAs and `develop` would no longer be an ancestor of `main` (`REF-GH-MERGE-METHODS`). release-please then opens its release pull request, which merges itself.
-- **After a release**, Claude Code brings `develop` up to `main`: `git switch develop && git pull && git merge --ff-only origin/main && git push` (a plain `git merge origin/main` if `develop` moved meanwhile).
+- **A release**: Claude Code opens a pull request from `develop` into `main`, usually right after a feature pull request is merged. The CI runs on it (about 2 minutes); the Product Owner merges it with a **merge commit**, the only method `main` allows: a rebase would copy the commits under new SHAs and `develop` would no longer be an ancestor of `main` (`REF-GH-MERGE-METHODS`). Before it, the Product Owner merges release-please's release pull request into `develop`; on `main`, release-please only tags that commit and publishes the release ([releases](./releases.md), ADR-0067).
+- **After a release**, Claude Code brings `develop` up to `main` by a fast-forward: `git switch develop && git pull && git merge --ff-only origin/main && git push` (a plain `git merge origin/main` if `develop` moved meanwhile).
 - No long-lived branch other than `main`, `develop` and the current feature's.
 - Branch names are checked by `validate-branch-name` (pattern in `.validate-branch-namerc.json`): `main`, `develop`, `feature/f<nn>-<kebab-case>`, `<type>/<kebab-case>`, plus the bots' `dependabot/…` and `release-please--…`.
 
-How the history reads (ADR-0038): stories line up on their feature, each feature joins `develop` by a merge commit, each release joins `main` by another, and `develop` catches up with the release commit.
+How the history reads (ADR-0038, ADR-0067): stories line up on their feature, each feature joins `develop` by a merge commit, the release pull request too, tagged once `main` holds it; each release joins `main` by a merge commit, and `develop` fast-forwards to it.
 
 ```mermaid
 gitGraph
@@ -36,10 +36,13 @@ gitGraph
   commit id: "EN-019.T1"
   checkout develop
   merge feature/f14-curves id: "F14 merged"
-  checkout main
-  merge develop id: "release" tag: "v0.2.0"
+  branch release-pr
+  checkout release-pr
+  commit id: "release 0.2.0"
   checkout develop
-  merge main id: "catch up"
+  merge release-pr id: "release merged" tag: "v0.2.0"
+  checkout main
+  merge develop id: "release"
 ```
 
 ## After a merge
