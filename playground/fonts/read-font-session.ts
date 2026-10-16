@@ -19,6 +19,7 @@ export function readFontSession(document: Document): FontSession {
   return (
     FONT_SESSIONS.get(selectElement(document, "text-font")) ?? {
       installed: [],
+      isReading: false,
       kept: [DEFAULT_FONT],
       measured: DEFAULT_FONT.name,
       readAhead: [],

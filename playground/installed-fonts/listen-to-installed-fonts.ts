@@ -36,8 +36,8 @@ function readLocalFontAccess(view: object): LocalFontAccess | undefined {
 /**
  * Lists the installed fonts, after the browser's permission, then reads their files in the
  * background (`readInstalledFontsAhead`, US-053), the font list offering each family only once it
- * is read and approved and disabled until they all are (US-059); a reading that fails gives the
- * list back.
+ * is read and approved and disabled until they all are and the default font's files are read
+ * again (US-059, US-061); a reading that fails gives the list back.
  *
  * @kind procedure
  * @param document - page document
@@ -54,7 +54,7 @@ async function showInstalledFonts(
   const installed = await access.queryLocalFonts();
   const families = new Set(installed.map((font) => font.family));
 
-  writeFontSession(document, { ...readFontSession(document), installed });
+  writeFontSession(document, { ...readFontSession(document), installed, isReading: true });
   writeFontOptions(document, "");
 
   writeText(
@@ -69,9 +69,15 @@ async function showInstalledFonts(
     document,
     async () => {
       await readInstalledFontsAhead(document, update);
+      writeFontSession(document, { ...readFontSession(document), isReading: false });
+      update();
     },
     (error) => {
-      writeFontSession(document, { ...readFontSession(document), installed: [] });
+      writeFontSession(document, {
+        ...readFontSession(document),
+        installed: [],
+        isReading: false,
+      });
 
       writeText(
         document,
