@@ -98,3 +98,63 @@ A hook or tool in Rust saves 30 to 130 ms per call, mostly Node.js's start: `gua
 ### A rule in Rust on Oxc
 
 A proof of concept on the `oxc` crate 0.153.0 parsed every TypeScript file of the repository (1,533), built each semantic model and counted each module's exports, the core of `local/one-export-per-file`: 0.06 s for all, on one thread. First build 25 s with the crate's dependencies, then 2 s; `target/` 274 MB. Clippy found nothing in it. Its 19 findings on `src/` are a type and a value sharing a name, which the real rule allows: a rewrite must carry each rule's exceptions, test by test.
+
+## Answers to the spike's questions
+
+| Question                                                       | Answer                                                                                                                                                                                                                                                                                                                                                                | Sources                                                            |
+| -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| Which ESLint rules does oxlint carry, which must be rewritten? | 432 natively, 8 once stable, 246 as JS plugins of the current packages, the 10 project rules and 19 plugin rules as JS plugins; to rewrite: `no-restricted-syntax` and 2 core rules, the 21 Markdown rules, `functional/no-return-void`; 8 rules need types that Oxc has not (5 functional, 3 typescript-eslint): rewritten without types, or dropped (Product Owner) | `REF-OXLINT-MIGRATE`, `REF-OXLINT-JS-PLUGINS`, measures            |
+| Can the configurations be kept?                                | translated, not kept: `@oxlint/migrate` writes `.oxlintrc.json` from `eslint/` (one option dropped, 110 findings to decide, scopes by hand), `oxfmt --migrate` writes `.oxfmtrc.json` (`printWidth` by hand); the ESLint configuration's tests (`eslint/config.test.ts`) move to the new files                                                                        | `REF-OXLINT-MIGRATE`, `REF-OXFMT-MIGRATE`                          |
+| Does oxfmt format as Prettier does here?                       | yes on Markdown, tables and front matter included, with `proseWrap` `preserve` or `never`; 3 TypeScript files differ (a long union type)                                                                                                                                                                                                                              | `REF-OXFMT`, `REF-OXFMT-MD-DIVERGENCES`, measures                  |
+| Which agent tools first in Rust, and what each saves?          | the hooks first: `guard-bash` is waited for on every Bash call (60 ms to 3 ms), the status line runs every second (136 ms), `track-tool-call` and `log-tool-call` on every call (94 ms); then the 26 scripts, 5,855 lines with the hooks; each saves tens of milliseconds per call and no token by itself                                                             | measures                                                           |
+| How fast can `check:all` get?                                  | bound by the test lane, about 113 s; F19 removes lint, format and type check from the critical path and frees about 93 s of work beside the tests; going further is in the test lane (64 % setup and import) and in running the docs build only when the docs changed                                                                                                 | measures, `REF-VITEST-RELATED`                                     |
+| How is Rust built, tested and checked here?                    | one Cargo workspace, below                                                                                                                                                                                                                                                                                                                                            | `REF-CARGO-WORKSPACES`, `REF-CLIPPY-USAGE`, `REF-RUSTUP-TOOLCHAIN` |
+
+## The Rust layout
+
+Since 2026-10-16 every new script or tool is written in Rust, and the existing TypeScript tools are rewritten in F19; EN-047 builds the first crate, `tools/heavy-lock` (standard library only, its own `Cargo.lock`, `clippy::pedantic` at `warn`). The lasting layout proposed:
+
+- **One virtual workspace at the root**: a `Cargo.toml` with `[workspace]`, `members = ["tools/*"]`, `resolver = "3"`, and no package; each tool a crate under `tools/` (`tools/heavy-lock`, `tools/guard-bash`…). One `Cargo.lock` at the root, tracked; one `target/` at the root, ignored by Git and by every check tool. `tools/heavy-lock/Cargo.lock` goes, its crate joins the workspace with `[lints] workspace = true`.
+- **Shared settings**: `[workspace.package]` (edition 2024, licence Apache-2.0, `publish = false`), `[workspace.lints]` (`clippy::pedantic` as now, `unsafe_code = "forbid"`), `[workspace.dependencies]` with exact versions (`oxc = "=0.153.0"`) so that a crate added is reviewed as a dev package is: its row in `docs/tooling/dependencies.md`, its release notes read, at least 7 days old.
+- **Toolchain pinned**: `rust-toolchain.toml` with `channel = "1.99.1"` and `components = ["rustfmt", "clippy"]`; `wasm32` is not needed by any tool found.
+- **Warnings are errors** through `.cargo/config.toml` (`[build] warnings = "deny"`), which Clippy recommends over `-D warnings` because it keeps the build cache.
+- **A `rust` lane in `check:all`**: `cargo fmt --all --check`, `cargo clippy --workspace --all-targets --locked`, `cargo test --workspace --locked`, with explicit targets as every check tool (EN-045). The pre-push and the CI on the pull request into `main` run it with the rest.
+- **The binaries** are built by `cargo build --release` from `prepare` (after `npm install`) and from the lane; hooks and scripts call `target/release/<tool>`. A tool missing its binary fails with a message naming the build command.
+- **The library stays dependency-free** (ADR-0025): crates are tools of the repository, never in `dependencies` nor in `dist`; `package.json`'s `files` is unchanged.
+- **Not available yet**: no `cargo audit` nor `cargo deny` (a crate's advisories) and no coverage tool (`cargo-llvm-cov`) are installed; the 100 % coverage rule applies to `src/` only, so Rust tools are tested like today's scripts, without a coverage floor, unless the Product Owner wants one.
+
+## The target of `check:all` (to set by the Product Owner)
+
+| Option                                                                        | `check:all` on this machine                                                        | What it takes                                                                                                                |
+| ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| A — F19 only                                                                  | about 115 to 125 s: the test lane                                                  | oxlint, oxfmt, the type check in oxlint                                                                                      |
+| B — A, and the docs build only when `docs/`, `src/` or the playground changed | the same on a code story, shorter on a tooling story                               | a path filter in `check-all.ts`                                                                                              |
+| C — B, and the test lane's setup cut                                          | estimated 50 to 70 s, from the 64 % of setup and import (no source gives a figure) | a story on Vitest's environments, imports and coverage: outside F19's open questions, inside E17's scope (the checks' speed) |
+
+## F19's acceptance criteria and stories (draft)
+
+Criteria, to confirm at the refinement:
+
+- Given `npm run lint`, when it runs on the whole repository, then oxlint reports what ESLint reported on 2026-10-16 (no finding on the same tree), every rule of `eslint/` carried, rewritten or dropped by a decision written in an ADR.
+- Given `npm run format:check`, when it runs, then oxfmt checks the same targets as Prettier, Markdown included.
+- Given `check:all`, when it runs, then it ends under the target set by the Product Owner, lane times printed as now.
+- Given a hook or an agent tool, when it is called, then it is a Rust binary of the workspace, its output unchanged.
+- Given `package.json`, when F19 ends, then no ESLint, Prettier or plugin package is left, and `dependencies` is still empty.
+
+Stories, in order:
+
+| Story         | Type    | Title                                                                                                                                                                       |
+| ------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| EN            | Enabler | The Cargo workspace, its toolchain file and the `rust` lane in `check:all`, `heavy-lock` moved in                                                                           |
+| EN            | Enabler | oxfmt instead of Prettier: configuration, scripts, lint-staged, the 3 union types                                                                                           |
+| EN            | Enabler | oxlint with its native and type-aware rules, the type check in it, the scopes as `overrides`, the 110 findings decided                                                      |
+| EN            | Enabler | The project rules and the plugins oxlint lacks as JS plugins, their tests on oxlint's `RuleTester`                                                                          |
+| EN            | Enabler | `no-restricted-syntax`, `require-atomic-updates`, `consistent-this` and `functional/no-return-void` rewritten (JS plugin or Rust: Product Owner)                            |
+| EN            | Enabler | The 21 Markdown rules in a Rust tool                                                                                                                                        |
+| EN            | Enabler | The 8 rules that need types: rewritten without types, or dropped (Product Owner)                                                                                            |
+| EN            | Enabler | The hooks in Rust: `guard-bash`, `track-tool-call` and `log-tool-call`, the status line                                                                                     |
+| EN            | Enabler | The scripts in Rust, by group: metrics, library, backlog and story tools, `check:all`                                                                                       |
+| EN            | Enabler | ESLint, Prettier and their plugins removed; ADR on the Oxc toolchain, superseding ADR-0009 (toolchain) and ADR-0013 (Prettier next to ESLint), ADR-0010 (lint first) reread |
+| CHK, AUD, VAL | —       | as for every feature                                                                                                                                                        |
+
+TypeScript stays at 6.0: TypeDoc 0.28.20, the latest, asks for `typescript` up to 6.0 (`npm view typedoc peerDependencies`), even once typescript-eslint has left; `tsgolint` brings its own typescript-go and read this `tsconfig.json` without an error.
