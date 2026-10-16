@@ -1,6 +1,6 @@
 # ADR-0061 — An installed font without the basic Latin letters is not listed
 
-**Status**: Accepted (Product Owner, 2026-10-16, at VAL-018's second pass, asked by questionnaire; US-056). Refines ADR-0060, decision 4 (scripts): its other decisions stand.
+**Status**: Accepted (Product Owner, 2026-10-16, at VAL-018's second pass, asked by questionnaire; US-056). Refines ADR-0060, decision 4 (scripts): its other decisions stand. Decision 2 is refined by ADR-0062: an imported font follows the same rules.
 
 ## Context
 

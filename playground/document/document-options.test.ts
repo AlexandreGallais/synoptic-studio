@@ -14,6 +14,7 @@ import {
   selectInput,
   selectPageElement,
   typeValue,
+  waitForPageTasks,
 } from "../user-actions";
 
 import { readExportedSvg } from "./read-exported-svg";
@@ -149,15 +150,18 @@ describe("The drawing's options: Embed fonts (US-036), no HTML layer (US-044)", 
     expect(exported.match(/font-weight: \d+/gu)).toEqual(["font-weight: 400", "font-weight: 700"]);
   });
 
-  it("[F15.AC2] leaves out a face its licence does not permit, said why", async () => {
-    await importFace({ ...TEST_SANS, fsType: 2 });
+  it("[F17.AC17] refuses at import a face its licence does not permit to embed, so no export holds it", async () => {
+    const bytes = new Uint8Array(testFaceFile({ ...TEST_SANS, fsType: 2 }));
+
+    chooseFiles("font-file", [new File([bytes], "TestSans.ttf")]);
+    await waitForPageTasks();
     tick("embed-fonts", true);
 
-    expect(document.querySelector("#canvas style")).toBeNull();
+    expect(readText("#font-message")).toBe(
+      "TestSans.ttf: Test Sans 400 refused, its fsType forbids embedding it in an exported SVG.",
+    );
 
-    expect(readLeftOut()).toEqual([
-      "Test Sans 400: not embedded, its licence (fsType) does not permit it.",
-    ]);
+    expect(readExport()).not.toContain("Test Sans");
   });
 
   it("[F15.AC2] embeds nothing once the option is off again", async () => {

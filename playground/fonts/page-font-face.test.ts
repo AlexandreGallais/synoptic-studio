@@ -2,6 +2,7 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { parseFontFace } from "../../src";
 import { fontCollection, testFaceFile } from "../../tests";
 import {
   chooseFiles,
@@ -11,7 +12,31 @@ import {
   waitForPageTasks,
 } from "../user-actions";
 
-import { addFontFile } from "./add-font-file";
+import { addFontFace } from "./add-font-face";
+
+import type { NamedFontFace } from "../../src";
+
+/**
+ * Reads a font file's bytes into a face and gives it to the page, as an import does.
+ *
+ * @param page - page document
+ * @param bytes - the bytes of a font file
+ * @param update - redraws the playground
+ * @returns the face added and its family
+ */
+function addFontFile(
+  page: Document,
+  bytes: Uint8Array,
+  update: () => void,
+): NamedFontFace | undefined {
+  const named = parseFontFace(bytes);
+
+  if (named !== undefined) {
+    addFontFace(page, named, update);
+  }
+
+  return named;
+}
 
 /** A face the fake browser creates: what `load()` answers. */
 type FakeFace = {

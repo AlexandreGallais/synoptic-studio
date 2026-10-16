@@ -1,5 +1,4 @@
 export * from "./add-font-face";
-export * from "./add-font-file";
 export type * from "./font-session";
 export * from "./font-sessions";
 export type * from "./installed-font";
@@ -8,6 +7,7 @@ export * from "./load-font-files";
 export * from "./read-face-name";
 export * from "./read-font-session";
 export * from "./read-joined-file";
+export * from "./unlisted-face-reasons";
 export * from "./write-font-fields";
 export * from "./write-font-options";
 export * from "./write-font-session";
