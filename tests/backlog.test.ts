@@ -1,3 +1,4 @@
+import { spawnSync } from "node:child_process";
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
@@ -12,6 +13,12 @@ type Item = {
 
 /** Root of the backlog. */
 const BACKLOG = join(import.meta.dirname, "..", "docs", "backlog");
+
+/** The Rust tool writing the stories index from the story files (EN-049). */
+const INDEX_TOOL = join(import.meta.dirname, "..", "tools", "backlog-index", "Cargo.toml");
+
+/** Time limit of a test building the index tool: a cold build of about 5 s, four times, and a margin. */
+const BUILD_TIMEOUT = 60_000;
 
 /** Allowed statuses per folder. */
 const STATUSES: Readonly<Record<string, readonly string[]>> = {
@@ -331,6 +338,22 @@ describe("backlog", () => {
 
     expect(mismatches.map((item) => item.file)).toEqual([]);
   });
+
+  it(
+    "[F18.AC5] keeps the stories index as the story files generate it",
+    { timeout: BUILD_TIMEOUT },
+    () => {
+      const result = spawnSync(
+        "cargo",
+        ["run", "--quiet", "--manifest-path", INDEX_TOOL, "--", BACKLOG, "--check"],
+        { encoding: "utf8" },
+      );
+
+      // The tool's message names the row that differs and says to run `npm run backlog:index`.
+      expect(result.stderr).toBe("");
+      expect(result.status).toBe(0);
+    },
+  );
 
   it("shows every feature and story in its parent's table, with the status written in its file", () => {
     const mismatches = items().filter(

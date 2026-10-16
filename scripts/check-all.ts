@@ -20,6 +20,7 @@ export const LANES: readonly (readonly string[])[] = [
     "deps:unused",
     "deps:tools",
     "deps:outdated",
+    "check:rust",
   ],
 ];
 

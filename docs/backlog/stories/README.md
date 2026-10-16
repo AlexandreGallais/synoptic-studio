@@ -41,6 +41,12 @@
 | [US-013](./E01-F03-US-013-points-list-selection.md)                               | F03     | List of points, selection, radius per vertex                                         | done   |
 | [AUD-004](./E01-F03-AUD-004-audit-f03.md)                                         | F03     | Audit F03: per-vertex corner radius                                                  | done   |
 | [VAL-004](./E01-F03-VAL-004-validate-radius-per-vertex.md)                        | F03     | Validate F03 on the reference cases                                                  | done   |
+| [SP-006](./E01-F09-SP-006-research-f09.md)                                        | F09     | Research for F09                                                                     | done   |
+| [EN-012](./E01-F09-EN-012-free-shape-in-its-box.md)                               | F09     | A free shape and its box in the model                                                | done   |
+| [CHK-006](./E01-F09-CHK-006-checkpoint-f09.md)                                    | F09     | Checkpoint in the middle of F09                                                      | done   |
+| [US-017](./E01-F09-US-017-rectangle-as-free-shape.md)                             | F09     | The rectangle as a free shape, stretched by its size                                 | done   |
+| [AUD-006](./E01-F09-AUD-006-audit-f09.md)                                         | F09     | Audit F09                                                                            | done   |
+| [VAL-006](./E01-F09-VAL-006-validate-stretchable-free-shape.md)                   | F09     | Validate F09                                                                         | done   |
 | [SP-005](./E01-F08-SP-005-research-f08.md)                                        | F08     | Research for F08                                                                     | done   |
 | [EN-013](./E01-F08-EN-013-polygon-numbered-from-its-base.md)                      | F08     | A regular polygon numbered from its base                                             | done   |
 | [EN-011](./E01-F08-EN-011-free-shape.md)                                          | F08     | A free shape of corners, fractions until edited                                      | done   |
@@ -50,12 +56,6 @@
 | [US-016](./E01-F08-US-016-delete-points.md)                                       | F08     | Delete points                                                                        | done   |
 | [AUD-005](./E01-F08-AUD-005-audit-f08.md)                                         | F08     | Audit F08: node editing                                                              | done   |
 | [VAL-005](./E01-F08-VAL-005-validate-node-editing.md)                             | F08     | Validate F08 on the reference cases                                                  | done   |
-| [SP-006](./E01-F09-SP-006-research-f09.md)                                        | F09     | Research for F09                                                                     | done   |
-| [EN-012](./E01-F09-EN-012-free-shape-in-its-box.md)                               | F09     | A free shape and its box in the model                                                | done   |
-| [CHK-006](./E01-F09-CHK-006-checkpoint-f09.md)                                    | F09     | Checkpoint in the middle of F09                                                      | done   |
-| [US-017](./E01-F09-US-017-rectangle-as-free-shape.md)                             | F09     | The rectangle as a free shape, stretched by its size                                 | done   |
-| [AUD-006](./E01-F09-AUD-006-audit-f09.md)                                         | F09     | Audit F09                                                                            | done   |
-| [VAL-006](./E01-F09-VAL-006-validate-stretchable-free-shape.md)                   | F09     | Validate F09                                                                         | done   |
 | [SP-007](./E01-F04-SP-007-research-f04.md)                                        | F04     | Research for F04                                                                     | done   |
 | [EN-014](./E01-F04-EN-014-angle-and-position.md)                                  | F04     | An angle and a position for every shape                                              | done   |
 | [EN-015](./E01-F04-EN-015-straight-box.md)                                        | F04     | The straight box of a drawn shape                                                    | done   |
@@ -79,28 +79,23 @@
 | [EN-022](./E14-F11-EN-022-folder-layout.md)                                       | F11     | Folders of the library and the playground                                            | done   |
 | [AUD-010](./E14-F11-AUD-010-audit-f11.md)                                         | F11     | Audit F11                                                                            | done   |
 | [EN-023](./E14-F11-EN-023-folders-by-domain.md)                                   | F11     | Folders by business domain, files and folders never side by side                     | done   |
+| [VAL-010](./E14-F11-VAL-010-validate-f11.md)                                      | F11     | Validate F11                                                                         | done   |
 | [SP-011](./E14-F12-SP-011-research-f12.md)                                        | F12     | Research for F12: curves in symbols, ways to type a handle, strokes                  | done   |
 | [EN-024](./E14-F12-EN-024-handles-model.md)                                       | F12     | A point's handles in the free shape model                                            | done   |
 | [EN-025](./E14-F12-EN-025-cubic-sides.md)                                         | F12     | Cubic sides in contours, path data and the straight box                              | done   |
 | [US-022](./E14-F12-US-022-handles-in-points-mode.md)                              | F12     | Switch a point to handles and type them as x and y                                   | done   |
 | [US-023](./E14-F12-US-023-handles-relative-to-point.md)                           | F12     | Type a handle as dx and dy from its point                                            | done   |
+| [CHK-011](./E14-F12-CHK-011-checkpoint-f12.md)                                    | F12     | Checkpoint in the middle of F12                                                      | done   |
 | [US-024](./E14-F12-US-024-handles-as-angle-and-length.md)                         | F12     | Type a handle as an angle and a length                                               | done   |
 | [US-025](./E14-F12-US-025-handles-as-share-or-data.md)                            | F12     | Type a side's handles as shares of the side, or paste curve data                     | done   |
 | [US-026](./E14-F12-US-026-handles-from-a-tension.md)                              | F12     | Smooth a point by a tension, its handles computed                                    | done   |
-| [CHK-011](./E14-F12-CHK-011-checkpoint-f12.md)                                    | F12     | Checkpoint in the middle of F12                                                      | done   |
 | [AUD-011](./E14-F12-AUD-011-audit-f12.md)                                         | F12     | Audit F12                                                                            | done   |
 | [EN-026](./E14-F12-EN-026-ways-kept-at-validation.md)                             | F12     | Keep only the ways and modes chosen at the validation                                | done   |
 | [SP-012](./E14-F12-SP-012-research-fillet-beside-curve.md)                        | F12     | Research: a corner radius beside a curved side                                       | done   |
 | [US-027](./E14-F12-US-027-radius-beside-curve.md)                                 | F12     | A corner beside a curved side keeps its radius                                       | done   |
 | [US-028](./E14-F12-US-028-handles-on-a-polygon.md)                                | F12     | Give handles to a point of a regular polygon                                         | done   |
 | [AUD-012](./E14-F12-AUD-012-audit-after-validation.md)                            | F12     | Audit the changes asked at the validation                                            | done   |
-| [SP-014](./E14-F13-SP-014-research-f13.md)                                        | F13     | Research for F13: the named calculations and their sources                           | done   |
-| [EN-028](./E14-F13-EN-028-name-math-and-geometry.md)                              | F13     | Pass 1: name the calculations of math and geometry                                   | done   |
-| [EN-029](./E14-F13-EN-029-name-model-and-playground.md)                           | F13     | Pass 1: name the calculations of the model, io, render and playground                | done   |
-| [CHK-013](./E14-F13-CHK-013-checkpoint-f13.md)                                    | F13     | Checkpoint between the two passes                                                    | done   |
-| [EN-030](./E14-F13-EN-030-second-pass.md)                                         | F13     | Pass 2: what pass 1 missed, and the duplicates                                       | done   |
-| [AUD-014](./E14-F13-AUD-014-audit-f13.md)                                         | F13     | Audit F13                                                                            | done   |
-| [VAL-013](./E14-F13-VAL-013-validate-f13.md)                                      | F13     | Validate F13                                                                         | done   |
+| [VAL-011](./E14-F12-VAL-011-validate-f12.md)                                      | F12     | Validate F12                                                                         | done   |
 | [SP-013](./E14-F10-SP-013-research-f10.md)                                        | F10     | Research for F10: an ellipse from four cubic sides                                   | done   |
 | [EN-027](./E14-F10-EN-027-round-shape-model.md)                                   | F10     | The round shape in the model, its curve and conversions                              | done   |
 | [US-029](./E14-F10-US-029-round-tool.md)                                          | F10     | Draw a circle or an ellipse with the Round tool                                      | done   |
@@ -108,8 +103,13 @@
 | [US-030](./E14-F10-US-030-convert-round-shape.md)                                 | F10     | Convert a round shape to a free shape, two ways                                      | done   |
 | [AUD-013](./E14-F10-AUD-013-audit-f10.md)                                         | F10     | Audit F10                                                                            | done   |
 | [VAL-012](./E14-F10-VAL-012-validate-f10.md)                                      | F10     | Validate F10                                                                         | done   |
-| [VAL-011](./E14-F12-VAL-011-validate-f12.md)                                      | F12     | Validate F12                                                                         | done   |
-| [VAL-010](./E14-F11-VAL-010-validate-f11.md)                                      | F11     | Validate F11                                                                         | done   |
+| [SP-014](./E14-F13-SP-014-research-f13.md)                                        | F13     | Research for F13: the named calculations and their sources                           | done   |
+| [EN-028](./E14-F13-EN-028-name-math-and-geometry.md)                              | F13     | Pass 1: name the calculations of math and geometry                                   | done   |
+| [EN-029](./E14-F13-EN-029-name-model-and-playground.md)                           | F13     | Pass 1: name the calculations of the model, io, render and playground                | done   |
+| [CHK-013](./E14-F13-CHK-013-checkpoint-f13.md)                                    | F13     | Checkpoint between the two passes                                                    | done   |
+| [EN-030](./E14-F13-EN-030-second-pass.md)                                         | F13     | Pass 2: what pass 1 missed, and the duplicates                                       | done   |
+| [AUD-014](./E14-F13-AUD-014-audit-f13.md)                                         | F13     | Audit F13                                                                            | done   |
+| [VAL-013](./E14-F13-VAL-013-validate-f13.md)                                      | F13     | Validate F13                                                                         | done   |
 | [REV-002](./E14-REV-002-review-e14.md)                                            | E14     | Review E14 with the Product Owner                                                    | done   |
 | [RET-002](./E14-RET-002-retrospective-e14.md)                                     | E14     | Retrospective of E14                                                                 | done   |
 | [SP-015](./E15-F05-SP-015-research-e15-text.md)                                   | F05     | Research for E15: text measured from font metrics and drawn as positioned lines      | done   |
