@@ -2,7 +2,7 @@ import type { ChecklistLine } from "./checklist-line";
 
 /**
  * The lines of E15's checklist on colors, fonts and F17's corrections (US-051): F16's options,
- * then F15's, then what F17 fixed.
+ * then F15's, then what F17 fixed, with VAL-018's readings to confirm, questions and warning.
  */
 export const EPIC_15_COLOR_AND_FONT_LINES: readonly ChecklistLine[] = [
   {
@@ -104,6 +104,41 @@ export const EPIC_15_COLOR_AND_FONT_LINES: readonly ChecklistLine[] = [
     feature: "F17",
     todo: "A rectangle 60 × 40 turned by 30, then a text in a box 60 × 40 turned by 30",
     see: "both: the turned frame thin and blue, the straight box dashed around it (US-050)",
+  },
+  {
+    feature: "F17",
+    todo: "Fit Box, then look at the box's fields and the Drawing's options",
+    see: "Width, Height, Max lines, Ellipsis, Vertical alignment; Embed fonts alone: no option for a word too long nor for how lines fill (US-042, US-043, US-044)",
+  },
+  {
+    feature: "F17",
+    todo: "Reading to confirm (US-046): Installed fonts, a family one face of which Chrome cannot give",
+    see: "its line says “<full name>: <Chrome's message> Import its file with Import a font”, the other faces kept; from a .ttc, only the face of its PostScript name",
+  },
+  {
+    feature: "F17",
+    todo: "Reading to confirm (US-049): “Hello World ”, Arial 16, box 50, Alignment Right, Background on",
+    see: "“World” ends at the box's edge, x 8.219, its band ending with it: the last space hung; kept, as CSS pre-wrap does, it would end at 3.773",
+  },
+  {
+    feature: "F17",
+    todo: "Reading to confirm (US-047): Import a font file the browser refuses to load",
+    see: "one line, “Broken 450 italic could not be loaded by the browser (…): measured with it, drawn with another face.”",
+  },
+  {
+    feature: "F17",
+    todo: "Question (AUD-019): Installed fonts, Helvetica Neue, “Pump P-101” Size 32, weight 400, then 700",
+    see: "at 700 the Condensed Bold, 155.08 wide, narrower than at 400, 180.27: say which face 700 should draw",
+  },
+  {
+    feature: "F17",
+    todo: "Question (AUD-019): in Safari, Import a font whose family has a digit, Source Sans 3",
+    see: "drawn in Source Sans 3: the name kept unquoted; refused or drawn in another face: names to quote",
+  },
+  {
+    feature: "F17",
+    todo: "Do not choose Apple Color Emoji, installed or imported, yet",
+    see: "its 192 MB collection exhausts the page's memory; the fix waits for a decision (AUD-019)",
   },
   {
     feature: "F17",

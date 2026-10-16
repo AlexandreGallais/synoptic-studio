@@ -126,9 +126,9 @@ describe("[F17.AC8] the checklist page (US-051)", () => {
 describe("[F17.AC8] E15's checklist (US-051)", () => {
   const text = EPIC_15_CHECKLIST.map((line) => `${line.todo} ${line.see}`).join("\n");
 
-  it("has about 40 lines, each with its own thing to try, from every feature of E15", () => {
+  it("has about 50 lines, each with its own thing to try, from every feature of E15", () => {
     expect(EPIC_15_CHECKLIST.length).toBeGreaterThanOrEqual(36);
-    expect(EPIC_15_CHECKLIST.length).toBeLessThanOrEqual(48);
+    expect(EPIC_15_CHECKLIST.length).toBeLessThanOrEqual(56);
 
     const todos = new Set(EPIC_15_CHECKLIST.map((line) => line.todo));
 
@@ -172,6 +172,17 @@ describe("[F17.AC8] E15's checklist (US-051)", () => {
     "turned frame",
   ])("names the option kept: %s", (option) => {
     expect(text).toContain(option);
+  });
+
+  it.each([
+    "Reading to confirm (US-046)",
+    "Reading to confirm (US-047)",
+    "Reading to confirm (US-049)",
+    "Question (AUD-019): Installed fonts, Helvetica Neue",
+    "Question (AUD-019): in Safari",
+    "Do not choose Apple Color Emoji",
+  ])("names VAL-018's reading, question or warning: %s", (line) => {
+    expect(text).toContain(line);
   });
 
   it.each(["balanced", "Wrap", "HTML layer", "at a character", "Break"])(
