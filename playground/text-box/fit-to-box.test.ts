@@ -213,4 +213,58 @@ describe("Text tool: the box typed is kept when the text comes back to Box (US-0
 
     expect([...readBoxFields(), readValue("text-maximum-lines")]).toEqual(["88", "40", "1"]);
   });
+
+  it("[F17.AC15] Reset puts back the fitted size, the box then measured again as never typed", () => {
+    typeValue("text-box-width", "100");
+    typeValue("text-box-height", "200");
+    clickElement("text-box-reset");
+
+    expect(readBoxFields()).toEqual(["88", "20"]);
+    expect(readModel()).toMatchObject({ boxHeight: 20, boxWidth: 88, isInBox: true });
+
+    chooseOption("text-fit", "content");
+    typeContent("Pump P-101\nTank");
+    chooseOption("text-fit", "box");
+
+    // Measured again, ⌈38.71875⌉ = 39 tall: after Reset the box no longer counts as typed.
+    expect(readBoxFields()).toEqual(["88", "39"]);
+  });
+
+  it("[F17.AC15] Reset leaves the box as it is when the text cannot be measured", () => {
+    typeValue("text-box-width", "100");
+    typeValue("text-size", "");
+    clickElement("text-box-reset");
+
+    expect(readBoxFields()).toEqual(["100", "20"]);
+  });
+
+  it("[F17.AC15] keeps the box typed through another tool and back", () => {
+    typeValue("text-box-height", "15");
+    clickElement("tool-rectangle");
+    clickElement("tool-text");
+    chooseOption("text-fit", "content");
+    chooseOption("text-fit", "box");
+
+    expect(readBoxFields()).toEqual(["88", "15"]);
+  });
+
+  it("[F17.AC15] does not count the maximum number of lines alone as a box typed", () => {
+    typeValue("text-maximum-lines", "1");
+    chooseOption("text-fit", "content");
+    typeContent("Pump P-101\nTank");
+    chooseOption("text-fit", "box");
+
+    expect(readBoxFields()).toEqual(["88", "39"]);
+  });
+
+  it("[F17.AC15] measures again a dimension whose field was emptied, the other kept as typed", () => {
+    typeValue("text-box-width", "50");
+    typeValue("text-box-height", "15");
+    typeValue("text-box-width", "");
+    chooseOption("text-fit", "content");
+    chooseOption("text-fit", "box");
+
+    // The width emptied counts as not typed: ⌈87.953125⌉ = 88, not 0 nor empty.
+    expect(readBoxFields()).toEqual(["88", "15"]);
+  });
 });

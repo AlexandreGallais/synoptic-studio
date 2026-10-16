@@ -130,4 +130,9 @@ export const EPIC_15_TEXT_LINES: readonly ChecklistLine[] = [
     todo: "Fit content again, then Box",
     see: "the box's fields go, the frame hugging the lines as in F05; then the box typed comes back, 50 × 100, not measured again (US-057)",
   },
+  {
+    feature: "F14",
+    todo: "Box Reset",
+    see: "the box takes back the size the lines fit; Fit content then Box measures them again (US-057)",
+  },
 ];

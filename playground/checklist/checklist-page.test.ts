@@ -159,6 +159,7 @@ describe("[F17.AC8] E15's checklist (US-051)", () => {
     "Fit Box",
     "Fit content",
     "Max lines",
+    "Box Reset",
     "Ellipsis",
     "Vertical alignment",
     "Line height",
