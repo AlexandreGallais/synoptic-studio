@@ -36,6 +36,12 @@ const GUARDS: readonly Guard[] = [
       "The Git hooks (lint-staged, commitlint, check:all) are never switched off: fix the cause instead.",
   },
   {
+    // Vitest with options only runs every test: the heavy lock is taken by `npm run test` (EN-047).
+    pattern: /^npx\s+vitest(?:\s+run)?(?:\s+--?[\w-]+(?:=\S+)?)*\s*$/u,
+    reason:
+      "A full Vitest run takes the heavy lock: run `npm run test`, or name the test files (ADR-0063).",
+  },
+  {
     // `+branch` in a refspec forces that one update.
     pattern: new RegExp(String.raw`${GIT}push\b(?=.*\s(?:--force|-f|\+\S+)(?:\s|$))`, "u"),
     reason: "Force pushes use --force-with-lease, and only on the agent's own story branch.",
