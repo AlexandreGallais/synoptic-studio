@@ -112,3 +112,5 @@ The lint already forbids `performance.now()` and `Date.now()` in tests (`.claude
 ## Not adopted
 
 `git rerere` (`REF-GIT-RERERE`) and a merge queue (`REF-GH-MERGE-QUEUE`, organizations only) stay out, as ADR-0065 decides.
+
+**Read by EN-046 (2026-10-17).** release-please's source confirms it: the release step lists the pull requests merged into its `target-branch` with the pending label (`REF-RELEASE-PLEASE-SOURCE`), so the step on `main` runs with `target-branch: develop`; while such a pull request waits for its tag, no new release pull request is opened. The tag itself is checked on the next release ([EN-046](../../backlog/stories/E17-F18-EN-046-release-pr-on-develop.md)).
