@@ -3,7 +3,7 @@ id: US-055
 epic: E15
 feature: F17
 title: A text put in a box keeps its fitted size
-status: ready
+status: done
 points: 2
 ---
 
