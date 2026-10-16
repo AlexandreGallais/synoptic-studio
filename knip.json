@@ -7,6 +7,15 @@
     "docs/.vitepress/theme/index.ts",
     ".ncurc.cjs"
   ],
-  "project": ["**/*.ts"],
+  "project": [
+    "*.ts",
+    ".claude/hooks/**/*.ts",
+    "docs/.vitepress/**/*.ts",
+    "eslint/**/*.ts",
+    "playground/**/*.ts",
+    "scripts/**/*.ts",
+    "src/**/*.ts",
+    "tests/**/*.ts"
+  ],
   "ignoreDependencies": ["@secretlint/secretlint-rule-preset-recommend", "fast-check"]
 }
