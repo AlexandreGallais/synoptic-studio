@@ -36,13 +36,13 @@ Every check tool is given the folders and files it checks, by name (EN-045): the
 
 `check:all`, `npm run test`, `golden:check` and `docs:build` run through the Rust tool `tools/heavy-lock/` (`cargo run --release`, ADR-0063, EN-047): each takes `.git/heavy.lock` in the Git common directory, shared by every worktree, and writes its process id, command, worktree and start in it.
 
-| Situation                                         | What happens                                                                        |
-| ------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| no lock                                           | the command takes it, runs, then removes it                                         |
-| a lock held by a running process                  | the command waits, and says once which process, command and worktree holds it       |
-| a lock whose process is gone (a force-quit)       | the command says so and takes it over at once                                       |
-| a command started by the lock's owner             | it runs inside that lock: `check:all` runs `npm run test` and `docs:build` itself   |
-| a folder `heavy.lock` (the lock taken by `mkdir`) | the command waits, its owner unknown: remove it with `rmdir` once its command ended |
+| Situation                                         | What happens                                                                                    |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| no lock                                           | the command takes it, runs, then removes it                                                     |
+| a lock held by a running process                  | the command waits, and says once which process, command and worktree holds it, and for how long |
+| a lock whose process is gone (a force-quit)       | the command says so and takes it over at once                                                   |
+| a command started by the lock's owner             | it runs inside that lock: `check:all` runs `npm run test` and `docs:build` itself               |
+| a folder `heavy.lock` (the lock taken by `mkdir`) | the command waits, its owner unknown: remove it with `rmdir` once its command ended             |
 
 A push inherits the lock through its pre-push hook (`check:all`). Single test files (`npx vitest run <paths>`) take no lock.
 
