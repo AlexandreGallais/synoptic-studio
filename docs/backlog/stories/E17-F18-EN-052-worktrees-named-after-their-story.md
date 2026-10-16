@@ -22,5 +22,5 @@ Name each worktree after its story and answer at once a command that a worktree 
 
 One task = one commit, referenced as `EN-052.Tn`.
 
-- [ ] T1 — `worktree:new` and its test; `branches:clean` prunes worktrees (1 h)
+- [x] T1 — `worktree:new` and its test; `branches:clean` prunes worktrees (1 h)
 - [ ] T2 — `guard-bash` hints in worktrees; `golden:write` refused in a worktree; tests (1 h)
