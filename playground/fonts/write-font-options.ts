@@ -7,19 +7,18 @@ import { WRITTEN_FONT_LISTS } from "./written-font-lists";
 import type { FontSession } from "./font-session";
 
 /**
- * Reads the families the font list offers, each once: those kept, Inter first, then the installed
- * ones the browser listed and not read yet, their names matched without regard to case.
+ * Reads the families the font list offers, each once: those kept, read and approved, Inter first
+ * when the browser draws it, their names matched without regard to case; an installed family the
+ * browser listed and not read yet is never offered, so that a family later refused never shows
+ * (US-059).
  *
  * @kind procedure
  * @param session - the session's fonts
  * @returns the families' names, in the list's order
- * @see docs/backlog/stories/E15-F15-US-036-import-choose-and-embed-a-font.md
+ * @see docs/backlog/stories/E15-F17-US-059-approved-fonts-only.md
  */
 function readFontListNames(session: FontSession): readonly string[] {
-  return distinctFamilyNames([
-    ...session.kept.map((family) => family.name),
-    ...session.installed.map((font) => font.family),
-  ]);
+  return distinctFamilyNames(session.kept.map((family) => family.name));
 }
 
 /**
@@ -42,7 +41,7 @@ function readFontChoice(names: readonly string[], family: string, measured: stri
 }
 
 /**
- * Writes the font list: one option per family the editor can measure or read, Inter first (no
+ * Writes the font list: one option per family the editor can measure, Inter first (no
  * name typed, so no font without metrics can be chosen, US-036), the family asked chosen, else the
  * one chosen before, else Inter.
  *

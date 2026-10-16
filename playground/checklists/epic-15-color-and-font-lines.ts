@@ -48,7 +48,7 @@ export const EPIC_15_COLOR_AND_FONT_LINES: readonly ChecklistLine[] = [
   {
     feature: "F15",
     todo: "Open the Font list",
-    see: "Inter, then the fonts imported, then the installed ones; no name can be typed",
+    see: "Inter when the browser draws it, then the fonts imported or installed and read; no name can be typed",
   },
   {
     feature: "F15",
@@ -147,8 +147,8 @@ export const EPIC_15_COLOR_AND_FONT_LINES: readonly ChecklistLine[] = [
   },
   {
     feature: "F17",
-    todo: "Reading to confirm (US-056): Inter not installed, open the page, Text tool; Installed fonts, allow; then import Inter's Regular and Bold files",
-    see: "Installed fonts first and in blue, an empty font list, no text; the first family read chosen and the text drawn in it; once imported, Inter listed with 400 and 700 only",
+    todo: "Inter not installed (US-056, US-059): open the page, Text tool; Installed fonts, allow, open the font list while it reads; then import Inter's Regular and Bold files",
+    see: "Installed fonts first and in blue; the font list empty and Content greyed, no text; while it reads, the list and Installed fonts greyed, holding only fonts read and approved; the first one chosen, the text drawn in it; once imported, Inter listed with 400 and 700 only",
   },
   {
     feature: "F17",

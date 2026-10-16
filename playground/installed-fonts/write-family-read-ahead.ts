@@ -34,14 +34,13 @@ function readReadAheadFonts(
  * Keeps what a family's reads gave (US-053): its faces' metrics without their files
  * (`readFontsWithReadAheadFace`), its faces remembered under the name their files give so that they
  * are read again when the family is chosen, and the family no longer listed as not read; a family
- * none of whose faces is read and listed leaves the font list, its reason kept (US-056). A family
- * chosen meanwhile, read when chosen, is left as it is.
+ * none of whose faces is read and listed never enters the font list, its reason kept (US-056).
  *
  * @kind procedure
  * @param document - page document
  * @param fonts - the family's faces, as the browser lists them
  * @param reads - their reads
- * @returns whether the family was read, left out and why, or chosen meanwhile
+ * @returns whether the family was read, or left out and why
  * @see docs/domain/shapes.md#text
  */
 export function writeFamilyReadAhead(
@@ -50,11 +49,6 @@ export function writeFamilyReadAhead(
   reads: readonly InstalledFaceRead[],
 ): FamilyOutcome {
   const session = readFontSession(document);
-
-  if (fonts.every((font) => !session.installed.includes(font))) {
-    return "chosen";
-  }
-
   const faces = readKeptFaces(reads);
   const family = faces[0]?.family;
 
