@@ -30,6 +30,7 @@ Written on 2026-10-15 from the Product Owner's validation of E15 (VAL-014 to VAL
 15. A box whose width or height the designer typed comes back as typed when the text returns from Fit content to Box, the maximum number of lines kept; a new text measures again (VAL-018, 2026-10-16, second pass: the box typed was measured again; provisional).
 16. The ellipsis of a cut text ends its last line shown holding text, the empty lines shown after it dropped, neither drawn nor counted in the block's height (VAL-018's second pass, 2026-10-16: "…" alone on an empty line; provisional).
 17. The font list holds only fonts read and approved, and cannot be used while the installed fonts are read; no text can be written before a font is available; a font imported by hand is refused when it lacks a basic Latin letter or its `fsType` forbids embedding, said why (Product Owner, 2026-10-16, after US-056: the list showed every installed family before they were read; ADR-0062).
+18. Every font offered can be exported with Embed fonts: the default font, chosen once the reading of the installed fonts ends, has its files read again as a font chosen by hand, a family whose files cannot be read again left out and the next tried (Product Owner, 2026-10-16, after US-059: the font chosen automatically was not embedded, its file not held).
 
 ## Stories
 
@@ -58,6 +59,7 @@ In delivery order.
 | [US-057](../stories/E15-F17-US-057-box-size-kept.md)                                       | User story | The box typed comes back when the text returns to Box                                | done   |
 | [US-058](../stories/E15-F17-US-058-ellipsis-on-a-line-holding-text.md)                     | User story | The ellipsis on the last line shown holding text                                     | done   |
 | [US-059](../stories/E15-F17-US-059-approved-fonts-only.md)                                 | User story | Only fonts read and approved, imported ones too                                      | done   |
+| [US-060](../stories/E15-F17-US-060-chosen-font-file-held.md)                               | User story | The font chosen automatically holds its files                                        | ready  |
 | [AUD-019](../stories/E15-F17-AUD-019-audit-f17.md)                                         | Audit      | Audit F17                                                                            | done   |
 | [VAL-018](../stories/E15-F17-VAL-018-validate-f17.md)                                      | Validation | Validate F17                                                                         | ready  |
 
@@ -82,6 +84,7 @@ In delivery order.
 | F17.AC15             | US-057                 | VAL-018             |
 | F17.AC16             | US-058                 | VAL-018             |
 | F17.AC17             | US-059                 | VAL-018             |
+| F17.AC18             | US-060                 | VAL-018             |
 
 ## Left for later
 

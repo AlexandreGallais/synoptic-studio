@@ -147,8 +147,8 @@ export const EPIC_15_COLOR_AND_FONT_LINES: readonly ChecklistLine[] = [
   },
   {
     feature: "F17",
-    todo: "Inter not installed (US-056, US-059): open the page, Text tool; Installed fonts, allow, open the font list while it reads; then import Inter's Regular and Bold files",
-    see: "Installed fonts first and in blue; the font list empty and Content greyed, no text; while it reads, the list and Installed fonts greyed, holding only fonts read and approved; the first one chosen, the text drawn in it; once imported, Inter listed with 400 and 700 only",
+    todo: "Inter not installed (US-056, US-059, US-060): open the page, Text tool; Installed fonts, allow, open the font list while it reads; tick Embed fonts; then import Inter's Regular and Bold files",
+    see: "Installed fonts first and in blue; the font list empty and Content greyed, no text; while it reads, the list and Installed fonts greyed, holding only fonts read and approved, no text; once read, the first one chosen, the text drawn in it, not listed as not embedded; once imported, Inter listed with 400 and 700 only",
   },
   {
     feature: "F17",

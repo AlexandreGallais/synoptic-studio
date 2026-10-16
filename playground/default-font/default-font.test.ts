@@ -12,6 +12,7 @@ import {
   readText,
   readValue,
   selectChoice,
+  selectInput,
   waitForPageTasks,
 } from "../user-actions";
 
@@ -136,6 +137,17 @@ function installedFamily(family: string, file: Promise<Blob>): InstalledFont {
 }
 
 /**
+ * An installed family as the browser lists it, one face of the test font, its file given at once
+ * (`installedFamily`).
+ *
+ * @param family - its name
+ * @returns its face
+ */
+function installedTestFamily(family: string): InstalledFont {
+  return installedFamily(family, Promise.resolve(testFaceBlob(family)));
+}
+
+/**
  * Makes the browser list installed faces, as Chrome does once the permission is granted.
  *
  * @param fonts - the faces, in the browser's order
@@ -155,6 +167,25 @@ function fakeLocalFonts(families: readonly string[]): void {
   fakeInstalledFonts(
     families.map((family) => installedFamily(family, Promise.resolve(testFaceBlob(family)))),
   );
+}
+
+/**
+ * Ticks Embed fonts, as the designer would: its `change` event.
+ */
+function tickEmbedFonts(): void {
+  const box = selectInput("embed-fonts");
+
+  box.checked = true;
+  box.dispatchEvent(new Event("change", { bubbles: true }));
+}
+
+/**
+ * Reads the faces the page lists as not embedded.
+ *
+ * @returns one line per face
+ */
+function readLeftOut(): readonly (string | null)[] {
+  return [...document.querySelectorAll("#font-left-out li")].map((item) => item.textContent);
 }
 
 /**
@@ -296,7 +327,7 @@ describe("Inter's faces kept only when the browser draws them (US-053)", () => {
       );
     });
 
-    // Test Sans read and approved, chosen at once; Test Emoji refused; Test Serif not read yet.
+    // Test Sans read and approved, the only family listed; Test Emoji refused; Test Serif not read yet.
     expect(readFamilies()).toEqual(["Test Sans"]);
     expect(readValue("text-font")).toBe("Test Sans");
     expect(readDisabledState("text-font")).toBe("true");
@@ -382,5 +413,94 @@ describe("Inter's faces kept only when the browser draws them (US-053)", () => {
     expect(document.querySelector("#canvas text")?.getAttribute("font-family")).toBe(
       '"Inter", sans-serif',
     );
+  });
+});
+
+describe("The font chosen automatically, its files held (US-060)", () => {
+  afterEach(() => {
+    Reflect.deleteProperty(globalThis, "queryLocalFonts");
+    vi.restoreAllMocks();
+  });
+
+  it("[F17.AC18] chooses the first approved family once the reading ends, its files read again, so that it is embedded", async () => {
+    const sans = installedTestFamily("Test Sans");
+
+    fakeCanvas({});
+
+    fakeInstalledFonts([sans, installedTestFamily("Test Serif")]);
+
+    openTextTool();
+
+    clickElement("installed-fonts");
+    await waitForPageTasks();
+
+    // Read ahead once, then read again when chosen: its file held.
+    expect(sans.blob).toHaveBeenCalledTimes(2);
+    expect(readValue("text-font")).toBe("Test Sans");
+
+    tickEmbedFonts();
+
+    expect(document.querySelector("#canvas text")).not.toBeNull();
+    expect(readLeftOut()).toEqual([]);
+  });
+
+  it("[F17.AC18] chooses no font before the reading ends", async () => {
+    const serif = Promise.withResolvers<Blob>();
+
+    fakeCanvas({});
+
+    fakeInstalledFonts([
+      installedTestFamily("Test Sans"),
+      installedFamily("Test Serif", serif.promise),
+    ]);
+
+    openTextTool();
+    clickElement("installed-fonts");
+
+    await vi.waitFor(() => {
+      expect(readText("#installed-fonts-progress")).toBe(
+        "Reading the installed fonts: 1 of 2 families…",
+      );
+    });
+
+    // Test Sans read and approved, Test Serif not read yet: no font chosen, no text drawn.
+    expect(readText("#font-message")).toBe(
+      "Installed families listed: 2. The font list can be used once they are read.",
+    );
+
+    expect(document.querySelector("#canvas text")).toBeNull();
+
+    serif.resolve(testFaceBlob("Test Serif"));
+    await waitForPageTasks();
+
+    expect(readText("#font-message")).toBe(
+      "Test Sans is chosen, the first font read: Inter is not installed on this computer.",
+    );
+  });
+
+  it("[F17.AC18] leaves out a family whose files are refused when read again, and chooses the next", async () => {
+    const blob = vi
+      .fn<() => Promise<Blob>>()
+      .mockResolvedValueOnce(testFaceBlob("Test Sans"))
+      .mockRejectedValue(new TypeError("The font Test Sans could not be accessed."));
+
+    fakeCanvas({});
+
+    fakeInstalledFonts([
+      { blob, family: "Test Sans", fullName: "Test Sans", postscriptName: "Test Sans" },
+      installedTestFamily("Test Serif"),
+    ]);
+
+    openTextTool();
+    clickElement("installed-fonts");
+    await waitForPageTasks();
+
+    expect(readFamilies()).toEqual(["Test Serif"]);
+    expect(readValue("text-font")).toBe("Test Serif");
+
+    tickEmbedFonts();
+
+    expect(document.querySelector("#canvas text")).not.toBeNull();
+    expect(readLeftOut()).toEqual([]);
   });
 });

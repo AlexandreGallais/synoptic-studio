@@ -50,7 +50,6 @@ async function readNextFamilies(
   );
 
   writeText(page.document, "installed-fonts-progress", readProgressLine(counted, false));
-  writeDefaultChoice(page.document);
   update();
 
   return await readNextFamilies(page, update, counted);
@@ -61,9 +60,9 @@ async function readNextFamilies(
  * on its own, the page answering between two files (US-053): a family keeps its faces' metrics,
  * not their files, which are read again when it is chosen; a family none of whose faces can be
  * read and approved never enters the font list; a line counts the families read, then says those
- * left out. The first family read and approved is chosen when no font is available
- * (`writeDefaultChoice`, US-056); once all are read, the page says when none can be used
- * (US-059).
+ * left out. Once all are read, the first family read and approved is chosen when no font is
+ * available, its files read again (`writeDefaultChoice`, US-056, US-060), else the page says that
+ * none can be used (US-059).
  *
  * @kind procedure
  * @param document - page document
@@ -90,6 +89,7 @@ export async function readInstalledFontsAhead(
   const count = await readNextFamilies({ document, view }, update, start);
 
   writeText(document, "installed-fonts-progress", readProgressLine(count, true));
+  await writeDefaultChoice(document, update);
 
   if (readFontSession(document).kept.length === 0) {
     writeText(document, "font-message", NO_FONT_APPROVED);
