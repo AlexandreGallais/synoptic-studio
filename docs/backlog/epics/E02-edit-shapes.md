@@ -57,6 +57,14 @@ Not scheduled; for a later pass on text:
 - **Trim trailing empty lines at run time**: line breaks with nothing after them take no space.
 - **One line in a box**: in box mode, an option to show everything on one line, ignoring line breaks, when the box is wide enough.
 
+## Ideas from the Product Owner (2026-10-16, second pass of VAL-018)
+
+Not scheduled; for the later UI/UX epic:
+
+- **One line in a box** (above): the Product Owner accepts it for later; it adds a model field, so it is not done now.
+- **A curated set of fonts**: the software ships fonts suited to synoptic views; installing a local font is a choice, through an "Install" button listing the local fonts to pick from, beside importing a font file. Not every font is accepted (Comic Sans, Braille and emoji fonts are of no use in a synoptic view).
+- **Turned text**: handle a turned text like rectangles, polygons and round shapes.
+
 ## Ideas from the Product Owner (2026-10-11, refinement of F04)
 
 - **A rotation mode**, entered by a button, showing the center of rotation (by default the center of the shape's box). The center is either **free**, fixed at an x and y; or one of the **nine anchors** of the shape's box, or a **point of the shape**, both following the shape when it moves or grows; or a **point or the center of another shape**, which only places it, at that x and y, without following that shape.
