@@ -180,7 +180,7 @@ describe("[F17.AC8] E15's checklist (US-051)", () => {
     "Reading to confirm (US-049)",
     "Question (AUD-019): Installed fonts, Helvetica Neue",
     "Question (AUD-019): in Safari",
-    "Do not choose Apple Color Emoji",
+    "Reading to confirm (US-052)",
   ])("names VAL-018's reading, question or warning: %s", (line) => {
     expect(text).toContain(line);
   });

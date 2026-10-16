@@ -137,8 +137,8 @@ export const EPIC_15_COLOR_AND_FONT_LINES: readonly ChecklistLine[] = [
   },
   {
     feature: "F17",
-    todo: "Do not choose Apple Color Emoji, installed or imported, yet",
-    see: "its 192 MB collection exhausts the page's memory; the fix waits for a decision (AUD-019)",
+    todo: "Reading to confirm (US-052): Installed fonts, choose Apple Color Emoji; then Import a font, Apple Color Emoji.ttc",
+    see: "no crash: its faces read, or one line naming the face or the file and the browser's reason",
   },
   {
     feature: "F17",

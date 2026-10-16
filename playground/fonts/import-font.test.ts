@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ARIAL_PATH, fontCollection, systemFont, testFaceFile } from "../../tests";
 import {
@@ -84,7 +84,35 @@ function typeContent(content: string): void {
   area.dispatchEvent(new Event("input", { bubbles: true }));
 }
 
+/** What a browser says when it cannot allocate a buffer, a file too large to hold. */
+const ALLOCATION_FAILED = "RangeError: Array buffer allocation failed";
+
+/**
+ * Makes the browser refuse to join a face of several parts — a face of a collection — as when
+ * its file is too large to hold, a face of one part joined as before.
+ */
+function refuseCollectionJoins(): void {
+  vi.stubGlobal(
+    "Blob",
+    new Proxy(Blob, {
+      construct(page, [parts]: readonly (readonly BlobPart[])[]): object {
+        if (parts !== undefined && parts.length > 1) {
+          throw new RangeError("Array buffer allocation failed");
+        }
+
+        const blob: unknown = Reflect.construct(page, [parts]);
+
+        return blob instanceof page ? blob : {};
+      },
+    }),
+  );
+}
+
 describe("Import a font (US-036)", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   beforeEach(() => {
     openServedPage("");
     clickElement("tool-text");
@@ -141,6 +169,23 @@ describe("Import a font (US-036)", () => {
 
     expect(readFontList()).toEqual(["Inter", "Test Sans", "Other Serif"]);
     expect(readValue("text-font")).toBe("Other Serif");
+  });
+
+  it("[F17.AC10] says a collection whose faces the browser cannot hold, the other files kept", async () => {
+    const collection = fontCollection([
+      testFaceFile({ ...TEST_SANS, family: "Other Serif" }),
+      testFaceFile({ ...TEST_SANS, family: "Other Serif", weightClass: 700 }),
+    ]);
+
+    refuseCollectionJoins();
+
+    await importFiles(
+      [fontFileOf(TEST_SANS, "TestSans.ttf"), new File([new Uint8Array(collection)], "Emoji.ttc")],
+      `Test Sans 400 imported. Emoji.ttc could not be read (${ALLOCATION_FAILED}).`,
+    );
+
+    expect(readFontList()).toEqual(["Inter", "Test Sans"]);
+    expect(readValue("text-font")).toBe("Test Sans");
   });
 
   it("[F15.AC1] refuses a file that is not a font, said why, the list unchanged", async () => {

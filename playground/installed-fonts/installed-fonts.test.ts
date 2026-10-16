@@ -161,6 +161,30 @@ function readOptions(id: string): readonly string[] {
   return [...selectChoice(id).options].map((option) => option.value);
 }
 
+/** What a browser says when it cannot allocate a buffer, a file too large to hold. */
+const ALLOCATION_FAILED = "RangeError: Array buffer allocation failed";
+
+/**
+ * Makes the browser refuse to join a face of several parts — a face of a collection — as when
+ * its file is too large to hold, a face of one part joined as before.
+ */
+function refuseCollectionJoins(): void {
+  vi.stubGlobal(
+    "Blob",
+    new Proxy(Blob, {
+      construct(page, [parts]: readonly (readonly BlobPart[])[]): object {
+        if (parts !== undefined && parts.length > 1) {
+          throw new RangeError("Array buffer allocation failed");
+        }
+
+        const blob: unknown = Reflect.construct(page, [parts]);
+
+        return blob instanceof page ? blob : {};
+      },
+    }),
+  );
+}
+
 describe("Installed fonts (US-036)", () => {
   beforeEach(() => {
     openServedPage("");
@@ -171,6 +195,7 @@ describe("Installed fonts (US-036)", () => {
 
   afterEach(() => {
     Reflect.deleteProperty(globalThis, "queryLocalFonts");
+    vi.unstubAllGlobals();
   });
 
   it("[F15.AC1] says where the browser cannot list them, Firefox and Safari, and points to Import a font", () => {
@@ -451,5 +476,30 @@ describe("Installed fonts (US-036)", () => {
     );
 
     expect(readValue("text-font")).toBe("Test Sans");
+  });
+
+  it("[F17.AC10] refuses a face whose file the browser cannot hold in one line, naming it, the others kept", async () => {
+    const collection = fontCollection([
+      postScriptFaceFile(TEST_SANS, "TestSans-Regular"),
+      postScriptFaceFile({ ...TEST_SANS, weightClass: 700 }, "TestSans-Bold"),
+    ]);
+
+    fakeLocalFonts([
+      installedFont("Test Sans", testFaceFile(TEST_SANS)),
+      collectionFont("Test Sans", "TestSans-Bold", collection),
+    ]);
+
+    clickElement("installed-fonts");
+    await waitForPageTasks();
+    refuseCollectionJoins();
+    chooseOption("text-font", "Test Sans");
+    await waitForPageTasks();
+
+    expect(readText("#font-message")).toBe(
+      `Test Sans: 1 faces read, 1 refused (TestSans-Bold: ${ALLOCATION_FAILED}).`,
+    );
+
+    expect(readValue("text-font")).toBe("Test Sans");
+    expect(readOptions("text-weight")).toEqual(["400"]);
   });
 });

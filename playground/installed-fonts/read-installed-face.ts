@@ -108,10 +108,35 @@ async function readFaceFromBytes(
 }
 
 /**
+ * Reads one installed face from the bytes the browser gives for it, or says why the browser
+ * could not give them.
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param font - a face the browser lists
+ * @param update - redraws the playground
+ * @returns the face read; or why it was refused
+ * @throws {DOMException} when the browser cannot hold the joined file
+ * @see REF-WICG-LOCAL-FONT-ACCESS
+ */
+async function readFaceRead(
+  document: Document,
+  font: InstalledFont,
+  update: () => void,
+): Promise<InstalledFaceRead> {
+  const bytes = await readFaceBytes(font);
+
+  return typeof bytes === "string"
+    ? { face: undefined, refusal: bytes }
+    : await readFaceFromBytes(document, { bytes, font }, update);
+}
+
+/**
  * Reads one installed face, as the browser gives its file (`blob()`,
  * `REF-WICG-LOCAL-FONT-ACCESS`), into a face added to the session's families; a face whose file
  * the browser cannot give, or that is not a font, is refused, said why in one line, and no error
- * is left uncaught.
+ * is left uncaught: one thrown while its file is read, joined or added — a file the browser
+ * cannot hold among them — refuses the face, named, with the error (US-052).
  *
  * @kind procedure
  * @param document - page document
@@ -125,9 +150,9 @@ export async function readInstalledFace(
   font: InstalledFont,
   update: () => void,
 ): Promise<InstalledFaceRead> {
-  const bytes = await readFaceBytes(font);
-
-  return typeof bytes === "string"
-    ? { face: undefined, refusal: bytes }
-    : await readFaceFromBytes(document, { bytes, font }, update);
+  try {
+    return await readFaceRead(document, font, update);
+  } catch (error: unknown) {
+    return { face: undefined, refusal: `${font.fullName}: ${String(error)}` };
+  }
 }
