@@ -1,4 +1,4 @@
-import { isSpanWithin } from "../../math";
+import { elementAddress, indexInRange, isSpanWithin } from "../../math";
 
 import type { CharacterGlyph } from "../../model";
 
@@ -41,9 +41,9 @@ function parseGroups(cmap: DataView, subtable: number): readonly Group[] | undef
     ? cmap.getUint32(subtable + NUM_GROUPS_OFFSET)
     : Infinity;
 
-  return isSpanWithin(subtable, GROUPS_OFFSET + GROUP_SIZE * count, cmap.byteLength)
+  return isSpanWithin(subtable, elementAddress(GROUPS_OFFSET, GROUP_SIZE, count), cmap.byteLength)
     ? Array.from({ length: count }, (unused, index) => {
-        const place = subtable + GROUPS_OFFSET + GROUP_SIZE * index;
+        const place = elementAddress(subtable + GROUPS_OFFSET, GROUP_SIZE, index);
 
         return {
           end: cmap.getUint32(place + END_CODE_FIELD),
@@ -81,6 +81,9 @@ export function parseSegmentedCoverageGlyphs(
           (candidate) => candidate.start <= codePoint && codePoint <= candidate.end,
         );
 
-        return [codePoint, group === undefined ? 0 : group.glyph + codePoint - group.start];
+        return [
+          codePoint,
+          group === undefined ? 0 : indexInRange(codePoint, group.start, group.glyph),
+        ];
       });
 }

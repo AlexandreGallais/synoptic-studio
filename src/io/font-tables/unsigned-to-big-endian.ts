@@ -1,3 +1,5 @@
+import { integerQuotient, nonNegativeRemainder } from "../../math";
+
 /** Values of one byte. */
 const BYTE_VALUES = 256;
 
@@ -14,8 +16,7 @@ const BYTE_VALUES = 256;
  * @see REF-OT-OTFF
  */
 export function unsignedToBigEndian(value: number, size: number): readonly number[] {
-  return Array.from(
-    { length: size },
-    (unused, index) => Math.floor(value / BYTE_VALUES ** (size - 1 - index)) % BYTE_VALUES,
+  return Array.from({ length: size }, (unused, index) =>
+    nonNegativeRemainder(integerQuotient(value, BYTE_VALUES ** (size - 1 - index)), BYTE_VALUES),
   );
 }

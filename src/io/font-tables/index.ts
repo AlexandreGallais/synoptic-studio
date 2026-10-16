@@ -7,6 +7,7 @@ export * from "./parse-collection-offsets";
 export * from "./parse-font-tables";
 export * from "./parse-record-places";
 export * from "./parse-table-directory";
+export * from "./parse-table-records";
 export * from "./parse-tag";
 export * from "./sfnt-version";
 export * from "./table-directory-layout";

@@ -1,4 +1,4 @@
-import { EPSILON } from "../../math";
+import { progressionTermsUpTo } from "../../math";
 
 import type { BlockLineHeights } from "./block-line-heights";
 import type { Text } from "../text";
@@ -20,7 +20,7 @@ function linesFitting(boxHeight: number, heights: BlockLineHeights, wrappedCount
   }
 
   return heights.line > 0
-    ? Math.floor((boxHeight - heights.firstLine) / heights.line + EPSILON) + 1
+    ? progressionTermsUpTo(heights.firstLine, heights.line, boxHeight)
     : wrappedCount;
 }
 
@@ -28,8 +28,8 @@ function linesFitting(boxHeight: number, heights: BlockLineHeights, wrappedCount
  * The number of lines a box shows: the most whose block fits in the box's height, at least one,
  * at most the maximum number of lines when one is set, and never more than the lines the text
  * wraps into, so that an empty text shows none (`DERIV-text-box`, step 5). A block of `n` lines
- * is `h(n) = f + (n − 1) × λ` tall, `f` its first line's height; a block that fits within a
- * rounding error (`EPSILON`) fits.
+ * is `h(n) = f + (n − 1) × λ` tall, `f` its first line's height, a term of an arithmetic
+ * progression (`progressionTermsUpTo`); a block that fits within a rounding error (`EPSILON`) fits.
  *
  * Formula: n = min(max(1, max{n ≥ 1 : h(n) ≤ H}), N or ∞, L), with max ∅ = 0, N = 0 for none;
  * max{…} = ⌊(H − f) / λ + ε⌋ + 1 when f ≤ H and λ > 0, every line when λ = 0.

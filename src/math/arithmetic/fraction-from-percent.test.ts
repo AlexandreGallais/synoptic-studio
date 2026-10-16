@@ -15,6 +15,10 @@ describe("fractionFromPercent (REF-CSS-COLOR-4 §7.1)", () => {
     expect(fractionFromPercent(percent)).toBeCloseTo(expected, 12);
   });
 
+  it("[F05.AC2] writes an opacity of 0 %, 50 % and 100 % as 0, 0.5 and 1", () => {
+    expect([0, 50, 100].map((percent) => fractionFromPercent(percent))).toEqual([0, 0.5, 1]);
+  });
+
   test.prop({ percent: fc.double({ max: 100, min: 0, noNaN: true }) })(
     "is undone by percentFromFraction",
     ({ percent }) => {

@@ -1,3 +1,5 @@
+import { elementAddress, integerQuotient } from "../../math";
+
 /** Size of one `hmtx` record: an advance width, then a left side bearing, two bytes each. */
 const METRIC_RECORD_SIZE = 4;
 
@@ -13,7 +15,7 @@ const METRIC_RECORD_SIZE = 4;
  */
 export function parseAdvanceWidths(hmtx: DataView, numberOfHMetrics: number): readonly number[] {
   return Array.from(
-    { length: Math.min(numberOfHMetrics, Math.floor(hmtx.byteLength / METRIC_RECORD_SIZE)) },
-    (unused, glyph) => hmtx.getUint16(METRIC_RECORD_SIZE * glyph),
+    { length: Math.min(numberOfHMetrics, integerQuotient(hmtx.byteLength, METRIC_RECORD_SIZE)) },
+    (unused, glyph) => hmtx.getUint16(elementAddress(0, METRIC_RECORD_SIZE, glyph)),
   );
 }

@@ -1,4 +1,4 @@
-import { isBitSet } from "../../math";
+import { isBitSet, isSpanWithin } from "../../math";
 import { faceWeight } from "../../model";
 
 import type { FontFace } from "../../model";
@@ -24,10 +24,10 @@ const ITALIC_BIT = 0;
  * @see REF-OT-OS2
  */
 export function parseFontStyle(os2: DataView): Pick<FontFace, "isItalic" | "weight"> | undefined {
-  return os2.byteLength < FS_SELECTION_OFFSET + Uint16Array.BYTES_PER_ELEMENT
-    ? undefined
-    : {
+  return isSpanWithin(FS_SELECTION_OFFSET, Uint16Array.BYTES_PER_ELEMENT, os2.byteLength)
+    ? {
         isItalic: isBitSet(os2.getUint16(FS_SELECTION_OFFSET), ITALIC_BIT),
         weight: faceWeight(os2.getUint16(WEIGHT_CLASS_OFFSET)),
-      };
+      }
+    : undefined;
 }

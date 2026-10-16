@@ -1,11 +1,13 @@
 import { isSameFamilyName } from "../font";
 
+import { faceStyleKey } from "./face-style-key";
+
 import type { FontFace, FontFamily } from "../font";
 import type { NamedFontFace } from "./named-font-face";
 
 /**
- * A family's faces with one face more: a face of the same weight and style is replaced, the
- * last file read winning (`docs/domain/shapes.md`, Fonts from files).
+ * A family's faces with one face more: a face of the same weight and style (`faceStyleKey`) is
+ * replaced, the last file read winning (`docs/domain/shapes.md`, Fonts from files).
  *
  * @kind domain
  * @param faces - the family's faces
@@ -14,10 +16,7 @@ import type { NamedFontFace } from "./named-font-face";
  * @see docs/domain/shapes.md#text
  */
 function facesWithFace(faces: readonly FontFace[], face: FontFace): readonly FontFace[] {
-  return [
-    ...faces.filter((kept) => kept.weight !== face.weight || kept.isItalic !== face.isItalic),
-    face,
-  ];
+  return [...faces.filter((kept) => faceStyleKey(kept) !== faceStyleKey(face)), face];
 }
 
 /**

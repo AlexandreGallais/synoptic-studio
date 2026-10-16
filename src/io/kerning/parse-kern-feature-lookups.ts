@@ -1,4 +1,4 @@
-import { isSpanWithin } from "../../math";
+import { elementAddress, isSpanWithin } from "../../math";
 
 /** The tag `kern`, as the 32-bit integer of its four bytes. */
 const KERN_TAG = 0x6b_65_72_6e;
@@ -29,9 +29,13 @@ function parseFeatureLookups(gpos: DataView, feature: number): readonly number[]
     ? gpos.getUint16(feature + 2)
     : Infinity;
 
-  return isSpanWithin(feature, LOOKUP_INDICES_OFFSET + FIELD_SIZE * count, gpos.byteLength)
+  return isSpanWithin(
+    feature,
+    elementAddress(LOOKUP_INDICES_OFFSET, FIELD_SIZE, count),
+    gpos.byteLength,
+  )
     ? Array.from({ length: count }, (unused, index) =>
-        gpos.getUint16(feature + LOOKUP_INDICES_OFFSET + FIELD_SIZE * index),
+        gpos.getUint16(elementAddress(feature + LOOKUP_INDICES_OFFSET, FIELD_SIZE, index)),
       )
     : undefined;
 }
@@ -50,10 +54,13 @@ function parseFeatureRecords(gpos: DataView, featureList: number): readonly numb
     ? gpos.getUint16(featureList)
     : Infinity;
 
-  return isSpanWithin(featureList, FIELD_SIZE + FEATURE_RECORD_SIZE * count, gpos.byteLength)
-    ? Array.from(
-        { length: count },
-        (unused, index) => featureList + FIELD_SIZE + FEATURE_RECORD_SIZE * index,
+  return isSpanWithin(
+    featureList,
+    elementAddress(FIELD_SIZE, FEATURE_RECORD_SIZE, count),
+    gpos.byteLength,
+  )
+    ? Array.from({ length: count }, (unused, index) =>
+        elementAddress(featureList + FIELD_SIZE, FEATURE_RECORD_SIZE, index),
       )
     : undefined;
 }

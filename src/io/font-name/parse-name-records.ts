@@ -1,4 +1,4 @@
-import { isSpanWithin } from "../../math";
+import { elementAddress, isSpanWithin } from "../../math";
 
 import type { NameRecord } from "./name-record";
 
@@ -31,7 +31,9 @@ function parseRecordCount(name: DataView): number {
     ? name.getUint16(COUNT_OFFSET)
     : 0;
 
-  return isSpanWithin(NAME_HEADER_SIZE, NAME_RECORD_SIZE * count, name.byteLength) ? count : 0;
+  return isSpanWithin(0, elementAddress(NAME_HEADER_SIZE, NAME_RECORD_SIZE, count), name.byteLength)
+    ? count
+    : 0;
 }
 
 /**
@@ -67,6 +69,6 @@ function parseNameRecord(name: DataView, at: number): NameRecord {
  */
 export function parseNameRecords(name: DataView): readonly NameRecord[] {
   return Array.from({ length: parseRecordCount(name) }, (unused, index) =>
-    parseNameRecord(name, NAME_HEADER_SIZE + NAME_RECORD_SIZE * index),
+    parseNameRecord(name, elementAddress(NAME_HEADER_SIZE, NAME_RECORD_SIZE, index)),
   ).filter((record) => isSpanWithin(record.offset, record.length, name.byteLength));
 }

@@ -1,4 +1,4 @@
-import { isSpanWithin } from "../../math";
+import { elementAddress, isSpanWithin } from "../../math";
 
 import { parseKernFeatureLookups } from "./parse-kern-feature-lookups";
 import { parsePairLookup } from "./parse-pair-lookup";
@@ -28,11 +28,11 @@ function parseLookupOffsets(gpos: DataView, lookupList: number): readonly number
     ? gpos.getUint16(lookupList)
     : Infinity;
 
-  return isSpanWithin(lookupList, FIELD_SIZE + FIELD_SIZE * count, gpos.byteLength)
+  return isSpanWithin(lookupList, elementAddress(FIELD_SIZE, FIELD_SIZE, count), gpos.byteLength)
     ? Array.from(
         { length: count },
         (unused, index) =>
-          lookupList + gpos.getUint16(lookupList + FIELD_SIZE + FIELD_SIZE * index),
+          lookupList + gpos.getUint16(elementAddress(lookupList + FIELD_SIZE, FIELD_SIZE, index)),
       )
     : undefined;
 }

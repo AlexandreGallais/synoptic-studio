@@ -1,4 +1,4 @@
-import { isSpanWithin } from "../../math";
+import { elementAddress, integerQuotient, isSpanWithin } from "../../math";
 
 /** Offset of `numTables` in the `cmap` header, after its version. */
 const NUM_TABLES_OFFSET = 2;
@@ -46,12 +46,11 @@ const WINDOWS_UNICODE_ENCODINGS: ReadonlySet<number> = new Set([
 export function parseUnicodeSubtables(cmap: DataView): readonly number[] {
   const count = Math.min(
     cmap.getUint16(NUM_TABLES_OFFSET),
-    Math.floor((cmap.byteLength - CMAP_HEADER_SIZE) / ENCODING_RECORD_SIZE),
+    integerQuotient(cmap.byteLength - CMAP_HEADER_SIZE, ENCODING_RECORD_SIZE),
   );
 
-  return Array.from(
-    { length: count },
-    (unused, index) => CMAP_HEADER_SIZE + ENCODING_RECORD_SIZE * index,
+  return Array.from({ length: count }, (unused, index) =>
+    elementAddress(CMAP_HEADER_SIZE, ENCODING_RECORD_SIZE, index),
   )
     .filter(
       (record) =>

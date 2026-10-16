@@ -1,4 +1,4 @@
-import { isSpanWithin } from "../../math";
+import { elementAddress, isSpanWithin } from "../../math";
 import { glyphPairKey } from "../../model";
 
 import type { KerningLookup, PairKerningRule } from "../../model";
@@ -83,7 +83,7 @@ function parseSubtableLength(kern: DataView, subtable: number): number {
 function parseSubtableStarts(kern: DataView): readonly number[] {
   const count = kern.getUint16(0) === 0 ? kern.getUint16(2) : 0;
 
-  if (!isSpanWithin(HEADER_SIZE, SUBTABLE_HEADER_SIZE * count, kern.byteLength)) {
+  if (!isSpanWithin(0, elementAddress(HEADER_SIZE, SUBTABLE_HEADER_SIZE, count), kern.byteLength)) {
     return [-1];
   }
 
@@ -125,8 +125,10 @@ function parsePairRecords(kern: DataView, subtable: number): readonly number[] |
     ? kern.getUint16(subtable + PAIR_COUNT_FIELD)
     : Infinity;
 
-  return isSpanWithin(subtable + PAIRS_OFFSET, PAIR_SIZE * count, kern.byteLength)
-    ? Array.from({ length: count }, (unused, index) => subtable + PAIRS_OFFSET + PAIR_SIZE * index)
+  return isSpanWithin(subtable, elementAddress(PAIRS_OFFSET, PAIR_SIZE, count), kern.byteLength)
+    ? Array.from({ length: count }, (unused, index) =>
+        elementAddress(subtable + PAIRS_OFFSET, PAIR_SIZE, index),
+      )
     : undefined;
 }
 

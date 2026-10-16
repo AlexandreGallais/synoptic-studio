@@ -1,4 +1,4 @@
-import { DEFAULT_FONT, formatFontFamily, lineWidth } from "../../src";
+import { DEFAULT_FONT, formatFontFamily, isWithinTolerance, lineWidth } from "../../src";
 
 import type { FontFace } from "../../src";
 
@@ -41,8 +41,8 @@ function readDrawnWidth(document: Document, face: Pick<FontFace, "isItalic" | "w
 
 /**
  * Reads whether the browser draws one of Inter's shipped faces as its metrics measure it: the
- * probe's drawn width (`readDrawnWidth`) within `TOLERANCE` of its width from the face's metrics
- * (`lineWidth`, `DERIV-text-width`).
+ * probe's drawn width (`readDrawnWidth`) within `TOLERANCE` (`isWithinTolerance`) of its width from
+ * the face's metrics (`lineWidth`, `DERIV-text-width`).
  *
  * @kind procedure
  * @param document - page document
@@ -57,7 +57,7 @@ function readDrawnFace(document: Document, face: FontFace): readonly FontFace[] 
     wordSpacing: 0,
   });
 
-  return Math.abs(readDrawnWidth(document, face) - measured) <= TOLERANCE ? [face] : [];
+  return isWithinTolerance(readDrawnWidth(document, face), measured, TOLERANCE) ? [face] : [];
 }
 
 /**

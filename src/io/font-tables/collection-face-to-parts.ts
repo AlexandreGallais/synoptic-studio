@@ -1,40 +1,17 @@
-import { scan } from "../../math";
+import { elementAddress, scan } from "../../math";
 
 import { lengthToFourByteBoundary } from "./length-to-four-byte-boundary";
-import { parseRecordPlaces } from "./parse-record-places";
+import { parseTableRecords } from "./parse-table-records";
 import { TABLE_DIRECTORY_LAYOUT } from "./table-directory-layout";
 import { unsignedToBigEndian } from "./unsigned-to-big-endian";
 
+import type { FontTableRecord } from "./font-table-record";
+
 /** One table of the face: where its record sits, and where the table sits, in the collection. */
-type FaceTable = {
+type FaceTable = FontTableRecord & {
   /** Offset of its table record, from the collection's start. */
   readonly record: number;
-  /** Offset of the table, from the collection's start. */
-  readonly offset: number;
-  /** Length of the table, in bytes. */
-  readonly length: number;
 };
-
-/**
- * Reads the tables of a face of a collection that fit in the file, each with its record.
- *
- * @kind format
- * @param view - the collection
- * @param directory - where the face's table directory starts
- * @returns its tables, in the order of its records
- * @see REF-OT-OTFF
- */
-function parseFaceTables(view: DataView, directory: number): readonly FaceTable[] {
-  const { lengthField, offsetField } = TABLE_DIRECTORY_LAYOUT;
-
-  return parseRecordPlaces(view, directory)
-    .map((record) => ({
-      length: view.getUint32(record + lengthField),
-      offset: view.getUint32(record + offsetField),
-      record,
-    }))
-    .filter((table) => table.offset + table.length <= view.byteLength);
-}
 
 /** A table of the face placed in its own file: where it starts and where the next one does. */
 type PlacedTable = {
@@ -57,7 +34,8 @@ type PlacedTable = {
  */
 function tablesToPlaces(tables: readonly FaceTable[]): readonly PlacedTable[] {
   const { headerSize, recordSize } = TABLE_DIRECTORY_LAYOUT;
-  const first = headerSize + recordSize * tables.length;
+  // The directory's size: the address just past its last record.
+  const first = elementAddress(headerSize, recordSize, tables.length);
 
   return scan<PlacedTable, FaceTable>(
     tables,
@@ -98,6 +76,21 @@ function placedTableToRecord(file: Readonly<Uint8Array>, placed: PlacedTable): r
 }
 
 /**
+ * The zeros that pad a table to the next four-byte boundary: its room in the file
+ * (`lengthToFourByteBoundary`) less its length, from 0 to 3.
+ *
+ * Formula: ⌈length / 4⌉ · 4 − length.
+ *
+ * @kind format
+ * @param length - the table's length, in bytes
+ * @returns the bytes of padding after it
+ * @see REF-OT-OTFF
+ */
+function paddingToFourByteBoundary(length: number): number {
+  return lengthToFourByteBoundary(length) - length;
+}
+
+/**
  * Gives a table placed in the face's file as its parts: a view of its bytes in the collection,
  * never copied, then the zeros up to the next table, when it needs any.
  *
@@ -113,22 +106,26 @@ function placedTableToParts<Buffer extends ArrayBufferLike>(
   placed: PlacedTable,
 ): readonly Readonly<Uint8Array<ArrayBuffer | Buffer>>[] {
   const { length, offset } = placed.table;
-  const padding = placed.end - placed.start - length;
+  const padding = paddingToFourByteBoundary(length);
   const table = file.subarray(offset, offset + length);
 
   return padding === 0 ? [table] : [table, new Uint8Array(padding)];
 }
 
 /**
- * Gives a face of a collection as the parts of a font file of its own, as Skia assembles one on
- * macOS (`REF-SKIA-MAC-STREAM-CODE`): first its table directory, written anew — its header copied
- * with `numTables` set to the tables kept, its records copied with each offset rewritten from the
- * new file's start —, then each of its tables in the order of its records, a view of the
- * collection's bytes, never copied, followed by the zeros that pad it to a four-byte boundary.
- * Joined in that order, the parts are the face's file; a table of 191 MB stays a view, where an
- * array of its numbers would pass the longest array an engine allows (US-052). The search fields
- * are copied, which a parser derives from `numTables` (`REF-OT-OTFF`); a table that does not fit
- * in the collection is left out.
+ * Gives a face of a collection as the parts of a font file of its own, in the layout Skia writes
+ * on macOS (`REF-SKIA-MAC-STREAM-CODE`): first its table directory, written anew — its header
+ * copied with `numTables` set to the tables kept, its records copied with each offset rewritten
+ * from the new file's start —, then each of its tables in the order of its records
+ * (`parseTableRecords`), a view of the collection's bytes, never copied, followed by the zeros
+ * that pad it to a four-byte boundary. Joined in that order, the parts are the face's file; a
+ * table of 191 MB stays a view, where an array of its numbers would pass the longest array an
+ * engine allows (US-052). Unlike Skia, which computes them again, the checksums and the search
+ * fields are copied: each table is copied whole, so its checksum still holds; the search fields
+ * are stale when a table is left out, and a parser derives them from `numTables`; the `head`
+ * table's `checksumAdjustment` is copied as the collection holds it, "not used for collection
+ * files" and stale for the face's file (`REF-OT-OTFF`). A table that does not fit in the
+ * collection is left out.
  *
  * @kind format
  * @template Buffer - the buffer the bytes sit in, kept by every view of them
@@ -144,7 +141,7 @@ export function collectionFaceToParts<Buffer extends ArrayBufferLike>(
 ): readonly Readonly<Uint8Array<ArrayBuffer | Buffer>>[] {
   const view = new DataView(file.buffer, file.byteOffset, file.byteLength);
   const { headerSize, numTablesOffset } = TABLE_DIRECTORY_LAYOUT;
-  const places = tablesToPlaces(parseFaceTables(view, directory));
+  const places = tablesToPlaces(parseTableRecords(view, directory));
   const numberTables = directory + numTablesOffset;
   const header = Uint8Array.from([
     ...file.subarray(directory, numberTables),

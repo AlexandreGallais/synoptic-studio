@@ -1,3 +1,4 @@
+import { isSpanWithin } from "../../math";
 import { SFNT_VERSION } from "../font-tables";
 
 import type { FontFormat } from "./font-format";
@@ -22,7 +23,8 @@ const OPEN_TYPE: FontFormat = { hint: "opentype", mediaType: "font/otf" };
 export function parseFontFormat(bytes: Readonly<Uint8Array>): FontFormat {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
   const hasCffOutlines =
-    view.byteLength >= Uint32Array.BYTES_PER_ELEMENT && view.getUint32(0) === SFNT_VERSION.cff;
+    isSpanWithin(0, Uint32Array.BYTES_PER_ELEMENT, view.byteLength) &&
+    view.getUint32(0) === SFNT_VERSION.cff;
 
   return hasCffOutlines ? OPEN_TYPE : TRUE_TYPE;
 }

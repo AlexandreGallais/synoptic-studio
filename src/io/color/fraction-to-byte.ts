@@ -1,7 +1,4 @@
-import { nearestInteger } from "../../math";
-
-/** The largest byte, `ff`: a component of 1. */
-const BYTE_MAX = 255;
+import { BYTE_MAXIMUM, nearestInteger } from "../../math";
 
 /**
  * The byte of a color component given as a fraction, `255 · x` rounded to the closest integer, a
@@ -17,5 +14,5 @@ const BYTE_MAX = 255;
  * @see REF-CSS-COLOR-4
  */
 export function fractionToByte(fraction: number): number {
-  return nearestInteger(BYTE_MAX * fraction);
+  return nearestInteger(BYTE_MAXIMUM * fraction);
 }

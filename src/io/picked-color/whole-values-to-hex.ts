@@ -1,4 +1,4 @@
-import { DEGREES_PER_TURN, nonNegativeRemainder } from "../../math";
+import { DEGREES_PER_TURN, PERCENT, nonNegativeRemainder } from "../../math";
 
 import { exactColorToHex } from "./exact-color-to-hex";
 import { toWholeColor } from "./to-whole-color";
@@ -9,8 +9,8 @@ import type { ColorModel, PickedColor } from "../../model";
 /** Each value's unit as a fraction's denominator: degrees for the hue, percent for the others. */
 const UNITS: Readonly<Record<keyof PickedColor, number>> = {
   hue: 1,
-  level: 100,
-  saturation: 100,
+  level: PERCENT,
+  saturation: PERCENT,
 };
 
 /**

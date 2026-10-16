@@ -1,4 +1,4 @@
-import { isSpanWithin, modulo } from "../../math";
+import { elementAddress, indexInRange, isSpanWithin, modulo } from "../../math";
 
 import type { CharacterGlyph } from "../../model";
 
@@ -54,11 +54,11 @@ function parseSegments(cmap: DataView, subtable: number): readonly Segment[] | u
 
   return isSpanWithin(ends, PAD_SIZE + SEGMENT_ARRAYS * arraySize, cmap.byteLength)
     ? Array.from({ length: arraySize / 2 }, (unused, index) => ({
-        delta: cmap.getInt16(rangeOffsets - arraySize + 2 * index),
-        end: cmap.getUint16(ends + 2 * index),
-        rangeOffset: cmap.getUint16(rangeOffsets + 2 * index),
-        rangeOffsetPlace: rangeOffsets + 2 * index,
-        start: cmap.getUint16(ends + arraySize + PAD_SIZE + 2 * index),
+        delta: cmap.getInt16(elementAddress(rangeOffsets - arraySize, 2, index)),
+        end: cmap.getUint16(elementAddress(ends, 2, index)),
+        rangeOffset: cmap.getUint16(elementAddress(rangeOffsets, 2, index)),
+        rangeOffsetPlace: elementAddress(rangeOffsets, 2, index),
+        start: cmap.getUint16(elementAddress(ends + arraySize + PAD_SIZE, 2, index)),
       }))
     : undefined;
 }
@@ -80,7 +80,11 @@ function glyphArrayToGlyph(
   segment: Segment,
   codePoint: number,
 ): number | undefined {
-  const entry = segment.rangeOffsetPlace + segment.rangeOffset + 2 * (codePoint - segment.start);
+  const entry = elementAddress(
+    segment.rangeOffsetPlace + segment.rangeOffset,
+    GLYPH_SIZE,
+    indexInRange(codePoint, segment.start, 0),
+  );
   const glyph = isSpanWithin(entry, GLYPH_SIZE, cmap.byteLength) ? cmap.getUint16(entry) : -1;
 
   if (glyph === -1) {

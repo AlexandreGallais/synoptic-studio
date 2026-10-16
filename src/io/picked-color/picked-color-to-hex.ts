@@ -1,9 +1,8 @@
+import { PERCENT } from "../../math";
+
 import { exactColorToHex } from "./exact-color-to-hex";
 
 import type { ColorModel, PickedColor } from "../../model";
-
-/** A whole saturation, lightness or brightness, in percent: an integer `x` is `x / 100`. */
-const PERCENT = 100;
 
 /**
  * The color of three whole values read in a model, each an exact fraction (a hue `h / 1`, a

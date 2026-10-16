@@ -1,4 +1,5 @@
 export * from "./distinct-family-names";
+export * from "./face-style-key";
 export * from "./face-weight";
 export * from "./fonts-with-face";
 export * from "./is-embeddable";

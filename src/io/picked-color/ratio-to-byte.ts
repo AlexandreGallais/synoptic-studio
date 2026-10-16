@@ -1,9 +1,6 @@
-import { nearestInteger } from "../../math";
+import { BYTE_MAXIMUM, ratioOnScale } from "../../math";
 
 import type { IntegerRatio } from "../../math";
-
-/** The largest byte, `ff`: a component of 1. */
-const BYTE_MAX = 255;
 
 /**
  * The byte of a component given as an exact fraction of integers, `255 · N / D` rounded to the
@@ -11,7 +8,7 @@ const BYTE_MAX = 255;
  * quotient is correctly rounded, so a half is seen as a half and any other value lies at least
  * `1 / (2D)` from one (`DERIV-color-spaces`, step 11). 0.1 is 25.5, which gives 26.
  *
- * Formula: round(255 · N / D).
+ * Formula: round(255 · N / D) (`ratioOnScale`).
  *
  * @kind format
  * @param ratio - the component, from 0 to 1, as a numerator and a denominator
@@ -19,5 +16,5 @@ const BYTE_MAX = 255;
  * @see DERIV-color-spaces
  */
 export function ratioToByte(ratio: IntegerRatio): number {
-  return nearestInteger((BYTE_MAX * ratio.numerator) / ratio.denominator);
+  return ratioOnScale(ratio, BYTE_MAXIMUM);
 }

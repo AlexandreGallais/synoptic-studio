@@ -1,5 +1,7 @@
+export * from "./addressing";
 export * from "./angle";
 export * from "./arithmetic";
+export * from "./binary";
 export * from "./bisection";
 export * from "./color";
 export * from "./exact-color";

@@ -1,7 +1,7 @@
+import { fractionFromPercent } from "../../math";
 import { formatSvgNumber } from "../path-data";
 
 import { formatFontFamily } from "./format-font-family";
-import { percentToOpacity } from "./percent-to-opacity";
 
 import type { Text } from "../../model";
 
@@ -10,10 +10,10 @@ export type SvgAttribute = readonly [name: string, value: string];
 
 /**
  * The attributes a text's `<text>` carries (ADR-0052, decision 4): its font family, then its
- * fallback and `sans-serif`; its size, weight and style; its color and opacity; its letter and
- * word spacing when not 0; `direction="rtl"` when it is written right to left. No `text-anchor`,
- * no `dominant-baseline` and no `text-decoration`: the library places the lines and draws the
- * decorations itself.
+ * fallback and `sans-serif`; its size, weight and style; its color and opacity, a fraction from 0
+ * to 1 (`fractionFromPercent`, `REF-SVG2-FILL-OPACITY`); its letter and word spacing when not 0;
+ * `direction="rtl"` when it is written right to left. No `text-anchor`, no `dominant-baseline` and
+ * no `text-decoration`: the library places the lines and draws the decorations itself.
  *
  * @kind format
  * @param text - its content, font, color, spacing and options
@@ -33,7 +33,7 @@ export function textToAttributes(text: Text): readonly SvgAttribute[] {
     ["font-weight", String(text.weight)],
     ["font-style", text.isItalic ? "italic" : "normal"],
     ["fill", text.color],
-    ["fill-opacity", formatSvgNumber(percentToOpacity(text.opacity))],
+    ["fill-opacity", formatSvgNumber(fractionFromPercent(text.opacity))],
     ...spacings.filter(([, value]) => value !== "0"),
     ...direction,
   ];

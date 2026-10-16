@@ -1,4 +1,4 @@
-import { modulo } from "../../math";
+import { ceiling, elementAddress, integerQuotient, modulo } from "../../math";
 
 /** The 64 characters of base 64, each at its 6-bit value: `A`–`Z` 0–25, `a`–`z` 26–51, `0`–`9` 52–61, `+` 62, `/` 63 (RFC 4648, Table 1). */
 const BASE64_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -34,9 +34,9 @@ const SIX_BITS = 64;
  */
 function bytesToSextets(first: number, second: number, third: number): readonly number[] {
   return [
-    Math.floor(first / TWO_BITS),
-    modulo(first, TWO_BITS) * FOUR_BITS + Math.floor(second / FOUR_BITS),
-    modulo(second, FOUR_BITS) * TWO_BITS + Math.floor(third / SIX_BITS),
+    integerQuotient(first, TWO_BITS),
+    modulo(first, TWO_BITS) * FOUR_BITS + integerQuotient(second, FOUR_BITS),
+    modulo(second, FOUR_BITS) * TWO_BITS + integerQuotient(third, SIX_BITS),
     modulo(third, SIX_BITS),
   ];
 }
@@ -89,7 +89,7 @@ function groupToBase64(bytes: Readonly<Uint8Array>, start: number): string {
  * @see REF-RFC-4648
  */
 export function bytesToBase64(bytes: Readonly<Uint8Array>): string {
-  return Array.from({ length: Math.ceil(bytes.length / GROUP_BYTES) }, (unused, index) =>
-    groupToBase64(bytes, GROUP_BYTES * index),
+  return Array.from({ length: ceiling(bytes.length / GROUP_BYTES) }, (unused, index) =>
+    groupToBase64(bytes, elementAddress(0, GROUP_BYTES, index)),
   ).join("");
 }

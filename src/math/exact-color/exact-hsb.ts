@@ -1,13 +1,11 @@
 import { brightness, chroma } from "../color";
 
+import { BYTE_MAXIMUM } from "./byte-maximum";
 import { exactHue } from "./exact-hue";
 import { saturationRatio } from "./saturation-ratio";
 
 import type { ByteRgb } from "./byte-rgb";
 import type { ExactColor } from "./exact-color";
-
-/** The largest byte, `ff`: a component of 1. */
-const BYTE_MAX = 255;
 
 /**
  * A color's HSB read from its bytes as exact fractions: the hue (`exactHue`), the saturation
@@ -27,7 +25,7 @@ export function exactHsb(bytes: ByteRgb): ExactColor {
 
   return {
     hue: exactHue(bytes),
-    level: { denominator: BYTE_MAX, numerator: largest },
+    level: { denominator: BYTE_MAXIMUM, numerator: largest },
     saturation: saturationRatio(chroma(bytes), largest),
   };
 }

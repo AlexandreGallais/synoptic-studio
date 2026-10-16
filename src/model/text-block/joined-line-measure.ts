@@ -6,18 +6,18 @@ import type { LineMeasure } from "./line-measure";
 import type { FontMetrics } from "../font";
 import type { Kerning } from "../kerning";
 
-/** Before a line's first character: no character, which kerns with nothing. */
+/** The end of a line with no character measured: no character, which kerns with nothing. */
 const NO_CHARACTER = -1;
 
 /** A combining mark or an invisible formatting character opening a string. */
 const JOINING_START = /^[\p{M}\p{Cf}]/u;
 
 /**
- * The advance of two lines joined, in font units: both advances, the kerning before the right
- * one's first character, which a line opening has with nothing, replaced by its kerning with the
- * left one's last (`DERIV-text-width`, step 2).
+ * The advance of two lines joined, in font units: both advances, and the kerning of the left
+ * one's last character with the right one's first, the new pair the join makes; none when the
+ * left one is empty (`DERIV-text-width`, step 2).
  *
- * Formula: adv(a + b) = adv(a) + adv(b) − kern(∅, b₁) + kern(aₙ, b₁).
+ * Formula: adv(a + b) = adv(a) + adv(b) + kern(aₙ, b₁), kern(∅, b₁) = 0.
  *
  * @kind domain
  * @param kerning - the font's kerning
@@ -27,18 +27,15 @@ const JOINING_START = /^[\p{M}\p{Cf}]/u;
  * @see DERIV-text-width
  */
 function joinedAdvance(kerning: Kerning, left: LineMeasure, right: LineMeasure): number {
-  return (
-    left.advance +
-    right.advance -
-    pairKerning(kerning, NO_CHARACTER, right.first) +
-    pairKerning(kerning, left.last, right.first)
-  );
+  const joint = left.last === NO_CHARACTER ? 0 : pairKerning(kerning, left.last, right.first);
+
+  return left.advance + right.advance + joint;
 }
 
 /**
  * The measure of two lines joined, from their measures: their advances, units and separators
- * added, the kerning before the right one's first character replaced by its kerning with the left
- * one's last, so that the width is the one the joined line would be measured to
+ * added with the kerning of the left one's last character and the right one's first, so that the
+ * width is the one the joined line would be measured to
  * (`DERIV-text-width`, step 2). A right line opening with a combining mark or a formatting
  * character may compose or count with the left one's last character, and a right line with no
  * character measured kerns with nothing, so the joined line is then measured again

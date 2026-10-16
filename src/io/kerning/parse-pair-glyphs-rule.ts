@@ -1,4 +1,4 @@
-import { isSpanWithin } from "../../math";
+import { elementAddress, isSpanWithin } from "../../math";
 import { glyphPairKey } from "../../model";
 
 import { parseCoverage } from "./parse-coverage";
@@ -60,8 +60,10 @@ function parsePairSet(
     ? gpos.getUint16(pairSet)
     : Infinity;
 
-  return isSpanWithin(pairSet, FIELD_SIZE + size * count, gpos.byteLength)
-    ? Array.from({ length: count }, (unused, index) => pairSet + FIELD_SIZE + size * index)
+  return isSpanWithin(pairSet, elementAddress(FIELD_SIZE, size, count), gpos.byteLength)
+    ? Array.from({ length: count }, (unused, index) =>
+        elementAddress(pairSet + FIELD_SIZE, size, index),
+      )
         .filter((record) => reading.glyphs.has(gpos.getUint16(record)))
         .map((record): readonly [number, number] => [
           gpos.getUint16(record),
@@ -82,11 +84,15 @@ function parsePairSet(
 function parsePairSetPlaces(gpos: DataView, subtable: number): readonly number[] | undefined {
   const count = gpos.getUint16(subtable + PAIR_SET_COUNT_OFFSET);
 
-  return isSpanWithin(subtable, PAIR_SET_OFFSETS + FIELD_SIZE * count, gpos.byteLength)
+  return isSpanWithin(
+    subtable,
+    elementAddress(PAIR_SET_OFFSETS, FIELD_SIZE, count),
+    gpos.byteLength,
+  )
     ? Array.from(
         { length: count },
         (unused, index) =>
-          subtable + gpos.getUint16(subtable + PAIR_SET_OFFSETS + FIELD_SIZE * index),
+          subtable + gpos.getUint16(elementAddress(subtable + PAIR_SET_OFFSETS, FIELD_SIZE, index)),
       )
     : undefined;
 }

@@ -1,4 +1,5 @@
 export * from "./alpha-to-percent";
+export * from "./byte-to-fraction";
 export * from "./bytes-to-hex";
 export * from "./fraction-to-byte";
 export * from "./hex-pair-to-byte";

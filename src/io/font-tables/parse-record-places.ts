@@ -1,3 +1,5 @@
+import { elementAddress } from "../../math";
+
 import { SFNT_VERSION } from "./sfnt-version";
 import { TABLE_DIRECTORY_LAYOUT } from "./table-directory-layout";
 
@@ -28,7 +30,8 @@ export function parseRecordPlaces(view: DataView, directory: number): readonly n
   const isFont = records <= view.byteLength && SFNT_VERSIONS.has(view.getUint32(directory));
   const count = isFont ? view.getUint16(directory + numTablesOffset) : 0;
 
-  return records + recordSize * count > view.byteLength
+  // The records end at the address of the one just past the last.
+  return elementAddress(records, recordSize, count) > view.byteLength
     ? []
-    : Array.from({ length: count }, (unused, index) => records + recordSize * index);
+    : Array.from({ length: count }, (unused, index) => elementAddress(records, recordSize, index));
 }

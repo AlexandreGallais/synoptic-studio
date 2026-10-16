@@ -1,4 +1,4 @@
-import { isSpanWithin } from "../../math";
+import { elementAddress, isSpanWithin } from "../../math";
 
 import { parsePairClassesRule } from "./parse-pair-classes-rule";
 import { parsePairGlyphsRule } from "./parse-pair-glyphs-rule";
@@ -82,12 +82,16 @@ function parseLookupSubtables(gpos: DataView, lookup: number): readonly Subtable
   const count = isSpanWithin(lookup, LOOKUP_HEADER_SIZE, gpos.byteLength)
     ? gpos.getUint16(lookup + SUBTABLE_COUNT_OFFSET)
     : Infinity;
-  const subtables = isSpanWithin(lookup, LOOKUP_HEADER_SIZE + FIELD_SIZE * count, gpos.byteLength)
+  const subtables = isSpanWithin(
+    lookup,
+    elementAddress(LOOKUP_HEADER_SIZE, FIELD_SIZE, count),
+    gpos.byteLength,
+  )
     ? Array.from({ length: count }, (unused, index) =>
         parseEffectiveSubtable(
           gpos,
           gpos.getUint16(lookup),
-          lookup + gpos.getUint16(lookup + LOOKUP_HEADER_SIZE + FIELD_SIZE * index),
+          lookup + gpos.getUint16(elementAddress(lookup + LOOKUP_HEADER_SIZE, FIELD_SIZE, index)),
         ),
       )
     : [undefined];

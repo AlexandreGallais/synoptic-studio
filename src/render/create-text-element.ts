@@ -4,9 +4,9 @@ import {
   formatPathData,
   formatRotation,
   formatSvgNumber,
-  percentToOpacity,
   textToAttributes,
 } from "../io";
+import { fractionFromPercent } from "../math";
 import { decorationCorners } from "../model";
 
 import { createPathElement } from "./create-path-element";
@@ -51,7 +51,8 @@ function decorationToPathData(decoration: LineDecoration): string {
 }
 
 /**
- * Creates a `<path>` filled with a color and an opacity from 0 to 100 %.
+ * Creates a `<path>` filled with a color and an opacity from 0 to 100 %, written as its fraction
+ * from 0 to 1 (`fractionFromPercent`, `REF-SVG2-FILL-OPACITY`).
  *
  * @kind procedure
  * @param document - document owning the element
@@ -64,7 +65,7 @@ function createFilledPath(document: Document, pathData: string, fill: ColorFill)
   const path = createPathElement(document, pathData);
 
   path.setAttribute("fill", fill.color);
-  path.setAttribute("fill-opacity", formatSvgNumber(percentToOpacity(fill.opacity)));
+  path.setAttribute("fill-opacity", formatSvgNumber(fractionFromPercent(fill.opacity)));
 
   return path;
 }

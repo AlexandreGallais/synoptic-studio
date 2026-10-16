@@ -1,100 +1,23 @@
 import { isSameFamilyName } from "../font";
 import { isGenericFamilyName } from "../text";
-import { textFontFace } from "../text-font";
 
 import { leftOutReasonOf } from "./left-out-reason-of";
+import { usedFaces } from "./used-faces";
 
 import type { DocumentOptions } from "../document";
 import type { FontFamily } from "../font";
-import type { NamedFontFace } from "../font-import";
 import type { Text } from "../text";
 import type { EmbeddedFace } from "./embedded-face";
 import type { FontEmbedding } from "./font-embedding";
 import type { LeftOutFace } from "./left-out-face";
 import type { LeftOutReason } from "./left-out-reason";
-
-/** A face texts are measured with, and whether one of them names its family. */
-type UsedFace = {
-  /** The face and its family's name, as read. */
-  readonly named: NamedFontFace;
-  /** Whether a text names its family, as its font or its fallback; false for a face reached only as the default font. */
-  readonly isNamed: boolean;
-};
+import type { UsedFace } from "./used-face";
 
 /** A face used, and why it is left out. */
 type JudgedFace = UsedFace & {
   /** Why it is not embedded; undefined for a face embedded. */
   readonly reason: LeftOutReason | undefined;
 };
-
-/**
- * Whether two faces are one: the same family, its name matched without regard to case
- * (`isSameFamilyName`), weight and style (`REF-CSS-FONTS-4`, §4.1).
- *
- * @kind domain
- * @param face - a face and its family
- * @param other - another
- * @returns true when they are the same face
- * @see DERIV-font-embedding
- */
-function isSameFace(face: NamedFontFace, other: NamedFontFace): boolean {
-  return (
-    isSameFamilyName(face.family, other.family) &&
-    face.face.weight === other.face.weight &&
-    face.face.isItalic === other.face.isItalic
-  );
-}
-
-/**
- * Whether a text names a family, as its font or its fallback, without regard to case.
- *
- * @kind domain
- * @param text - its font and its fallback
- * @param family - a family's name
- * @returns true when either names it
- * @see REF-CSS-FONTS-4
- */
-function isNamedBy(text: Text, family: string): boolean {
-  return isSameFamilyName(family, text.font) || isSameFamilyName(family, text.fallback);
-}
-
-/**
- * The face a text is measured with (`textFontFace`), and whether the text names its family.
- *
- * @kind domain
- * @param text - a text
- * @param fonts - the font families read
- * @returns the face, alone; none for a text measured with no face
- * @see DERIV-font-embedding
- */
-function textUsedFace(text: Text, fonts: readonly FontFamily[]): readonly UsedFace[] {
-  const named = textFontFace(text, fonts);
-
-  return named === undefined ? [] : [{ isNamed: isNamedBy(text, named.family), named }];
-}
-
-/**
- * The faces texts are measured with, each once, in the order of their first use
- * (`DERIV-font-embedding`, step 7), each named when one of its texts names its family.
- *
- * @kind domain
- * @param texts - the document's texts
- * @param fonts - the font families read
- * @returns the distinct faces
- * @see DERIV-font-embedding
- */
-function usedFaces(texts: readonly Text[], fonts: readonly FontFamily[]): readonly UsedFace[] {
-  const used = texts.flatMap((text) => textUsedFace(text, fonts));
-
-  return used
-    .filter(
-      (face, index) => used.findIndex((other) => isSameFace(face.named, other.named)) === index,
-    )
-    .map((face) => ({
-      ...face,
-      isNamed: used.some((other) => other.isNamed && isSameFace(face.named, other.named)),
-    }));
-}
 
 /**
  * Why a face used is left out, for itself: a family named like a generic family, which an

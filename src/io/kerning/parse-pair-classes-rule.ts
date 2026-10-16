@@ -1,4 +1,4 @@
-import { isSpanWithin } from "../../math";
+import { elementAddress, isSpanWithin, rowMajorOffset } from "../../math";
 
 import { parseClassDefinition } from "./parse-class-definition";
 import { parseCoverage } from "./parse-coverage";
@@ -44,7 +44,11 @@ function parseClassValues(gpos: DataView, subtable: number): readonly KerningRow
   return isSpanWithin(records, recordSize * firstCount * secondCount, gpos.byteLength)
     ? Array.from({ length: firstCount }, (unused, first) =>
         Array.from({ length: secondCount }, (unusedRecord, second) =>
-          parseXAdvance(gpos, records + recordSize * (secondCount * first + second), firstFormat),
+          parseXAdvance(
+            gpos,
+            elementAddress(records, recordSize, rowMajorOffset(first, second, secondCount)),
+            firstFormat,
+          ),
         ),
       )
     : undefined;

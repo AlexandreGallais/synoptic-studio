@@ -1,3 +1,4 @@
+export * from "./inset-box";
 export * from "./is-valid-rectangle";
 export type * from "./rectangle";
 export * from "./rectangle-as-free-shape";

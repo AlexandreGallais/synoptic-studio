@@ -1,4 +1,4 @@
-import { isBitSet, modulo, populationCount } from "../../math";
+import { elementAddress, isBitSet, modulo, populationCount } from "../../math";
 
 /**
  * The flags of the fields before `xAdvance`, X_PLACEMENT (bit 0) and Y_PLACEMENT (bit 1): the
@@ -26,5 +26,7 @@ const FIELD_SIZE = 2;
 export function parseXAdvance(view: DataView, record: number, valueFormat: number): number {
   const before = populationCount(modulo(valueFormat, FIELDS_BEFORE_X_ADVANCE));
 
-  return isBitSet(valueFormat, X_ADVANCE_BIT) ? view.getInt16(record + FIELD_SIZE * before) : 0;
+  return isBitSet(valueFormat, X_ADVANCE_BIT)
+    ? view.getInt16(elementAddress(record, FIELD_SIZE, before))
+    : 0;
 }

@@ -1,3 +1,5 @@
+import { elementAddress } from "../../math";
+
 import { parseTag } from "./parse-tag";
 
 /** The tag of a font collection's header, its first four bytes. */
@@ -29,9 +31,9 @@ export function parseCollectionOffsets(view: DataView): readonly number[] {
   const isCollection = view.byteLength >= offsetsStart && parseTag(view, 0) === COLLECTION_TAG;
   const count = isCollection ? view.getUint32(numFontsOffset) : 0;
 
-  return offsetsStart + offsetSize * count > view.byteLength
+  return elementAddress(offsetsStart, offsetSize, count) > view.byteLength
     ? []
     : Array.from({ length: count }, (unused, index) =>
-        view.getUint32(offsetsStart + offsetSize * index),
+        view.getUint32(elementAddress(offsetsStart, offsetSize, index)),
       );
 }

@@ -1,3 +1,4 @@
+export * from "./byte-maximum";
 export type * from "./byte-rgb";
 export type * from "./exact-color";
 export * from "./exact-hsb";
@@ -5,5 +6,8 @@ export * from "./exact-hsb-component";
 export * from "./exact-hsl";
 export * from "./exact-hsl-component";
 export * from "./exact-hue";
+export * from "./exact-largest-half-chroma";
 export type * from "./integer-ratio";
+export * from "./ratio-on-scale";
+export * from "./ratio-value";
 export * from "./saturation-ratio";

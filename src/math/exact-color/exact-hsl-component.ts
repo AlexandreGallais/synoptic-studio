@@ -1,5 +1,7 @@
 import { clamp, modulo } from "../arithmetic";
 
+import { exactLargestHalfChroma } from "./exact-largest-half-chroma";
+
 import type { ExactColor } from "./exact-color";
 import type { IntegerRatio } from "./integer-ratio";
 
@@ -39,7 +41,7 @@ function exactHslRamp(hue: IntegerRatio, n: number): IntegerRatio {
 
 /**
  * The half chroma `a = S · min(L, 1 − L)` of exact values, the saturation times the largest half
- * chroma the lightness allows (`largestHalfChroma`; REF-WIKI-HSL-HSV, HSL to RGB alternative;
+ * chroma the lightness allows (`exactLargestHalfChroma`; REF-WIKI-HSL-HSV, HSL to RGB alternative;
  * `DERIV-color-spaces`, steps 6 and 11).
  *
  * Formula: with S = s / e and L = l / w: a = s · min(l, w − l) / (e w).
@@ -51,11 +53,11 @@ function exactHslRamp(hue: IntegerRatio, n: number): IntegerRatio {
  * @see REF-WIKI-HSL-HSV
  */
 function exactHalfChroma(saturation: IntegerRatio, lightness: IntegerRatio): IntegerRatio {
+  const largest = exactLargestHalfChroma(lightness);
+
   return {
-    denominator: saturation.denominator * lightness.denominator,
-    numerator:
-      saturation.numerator *
-      Math.min(lightness.numerator, lightness.denominator - lightness.numerator),
+    denominator: saturation.denominator * largest.denominator,
+    numerator: saturation.numerator * largest.numerator,
   };
 }
 

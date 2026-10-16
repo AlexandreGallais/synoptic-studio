@@ -1,4 +1,4 @@
-import { isSpanWithin } from "../../math";
+import { elementAddress, indexInRange, isSpanWithin } from "../../math";
 
 import { parseGlyphRange } from "./parse-glyph-range";
 
@@ -41,10 +41,10 @@ function parseGlyphList(
 ): CoverageIndexes | undefined {
   const count = table.getUint16(coverage + 2);
 
-  return isSpanWithin(coverage, HEADER_SIZE + GLYPH_SIZE * count, table.byteLength)
+  return isSpanWithin(coverage, elementAddress(HEADER_SIZE, GLYPH_SIZE, count), table.byteLength)
     ? Object.fromEntries(
         Array.from({ length: count }, (unused, index): readonly [number, number] => [
-          table.getUint16(coverage + HEADER_SIZE + GLYPH_SIZE * index),
+          table.getUint16(elementAddress(coverage + HEADER_SIZE, GLYPH_SIZE, index)),
           index,
         ]).filter(([glyph]) => glyphs.has(glyph)),
       )
@@ -69,14 +69,32 @@ function parseGlyphRanges(
   glyphs: ReadonlySet<number>,
 ): CoverageIndexes | undefined {
   const count = table.getUint16(coverage + 2);
-  const ranges = Array.from(
-    { length: count },
-    (unused, index) => coverage + HEADER_SIZE + RANGE_RECORD_SIZE * index,
+  const ranges = Array.from({ length: count }, (unused, index) =>
+    elementAddress(coverage + HEADER_SIZE, RANGE_RECORD_SIZE, index),
   );
 
-  return isSpanWithin(coverage, HEADER_SIZE + RANGE_RECORD_SIZE * count, table.byteLength)
+  return isSpanWithin(
+    coverage,
+    elementAddress(HEADER_SIZE, RANGE_RECORD_SIZE, count),
+    table.byteLength,
+  )
     ? rangesToIndexes(table, ranges, glyphs)
     : undefined;
+}
+
+/**
+ * The coverage index of a glyph in a range record: the range's start coverage index plus the
+ * glyph's distance from the range's start glyph (`indexInRange`).
+ *
+ * @kind format
+ * @param table - the layout table holding the range record
+ * @param range - where the range record starts in the table
+ * @param glyph - a glyph of the range
+ * @returns its coverage index
+ * @see REF-OT-LAYOUT-COMMON
+ */
+function parseRangeIndex(table: DataView, range: number, glyph: number): number {
+  return indexInRange(glyph, table.getUint16(range), table.getUint16(range + START_INDEX_FIELD));
 }
 
 /**
@@ -99,9 +117,7 @@ function rangesToIndexes(
     [...glyphs].flatMap((glyph) => {
       const range = parseGlyphRange(table, ranges, glyph);
 
-      return range === undefined
-        ? []
-        : [[glyph, table.getUint16(range + START_INDEX_FIELD) + glyph - table.getUint16(range)]];
+      return range === undefined ? [] : [[glyph, parseRangeIndex(table, range, glyph)]];
     }),
   );
 }

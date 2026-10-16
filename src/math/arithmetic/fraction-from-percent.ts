@@ -1,5 +1,4 @@
-/** A whole, in percent. */
-const PERCENT = 100;
+import { PERCENT } from "./percent";
 
 /**
  * A percentage as a fraction, as CSS's `hslToRgb` divides the saturation and lightness by 100

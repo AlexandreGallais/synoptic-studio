@@ -1,17 +1,18 @@
-import { lineOffsetInBlock } from "./line-offset-in-block";
+import { alignedOffset } from "../../geometry";
 
-import type { TextAlignment, TextVerticalAlignment } from "../text";
+import type { Alignment } from "../../geometry";
+import type { TextVerticalAlignment } from "../text";
 
-/** Each vertical alignment read as the horizontal one that leaves the same share of room before. */
-const ACROSS: Readonly<Record<TextVerticalAlignment, TextAlignment>> = {
-  bottom: "right",
-  middle: "center",
-  top: "left",
+/** Each vertical alignment of a block as the place it takes on its box's height. */
+const ON_AXIS: Readonly<Record<TextVerticalAlignment, Alignment>> = {
+  bottom: "max",
+  middle: "mid",
+  top: "min",
 };
 
 /**
  * How far a block of lines starts below its box's top: the block is placed down the box by the
- * room it leaves, as a line is placed across its block (`lineOffsetInBlock`): at the top, none of
+ * room it leaves, as a line is placed across its block (`alignedOffset`): at the top, none of
  * it above; in the middle, half; at the bottom, all of it (`DERIV-text-box`, step 8). A block
  * taller than its box leaves a negative room: in the middle, it overflows both edges equally.
  *
@@ -29,5 +30,5 @@ export function blockOffsetInBox(
   blockHeight: number,
   verticalAlignment: TextVerticalAlignment,
 ): number {
-  return lineOffsetInBlock(boxHeight, blockHeight, ACROSS[verticalAlignment]);
+  return alignedOffset(boxHeight - blockHeight, ON_AXIS[verticalAlignment]);
 }

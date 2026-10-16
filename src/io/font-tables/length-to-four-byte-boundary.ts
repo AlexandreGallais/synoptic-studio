@@ -1,3 +1,5 @@
+import { ceiling } from "../../math";
+
 /** Tables start at a multiple of four bytes, the space between them padded with zeros. */
 const TABLE_ALIGNMENT = 4;
 
@@ -14,5 +16,5 @@ const TABLE_ALIGNMENT = 4;
  * @see REF-OT-OTFF
  */
 export function lengthToFourByteBoundary(length: number): number {
-  return Math.ceil(length / TABLE_ALIGNMENT) * TABLE_ALIGNMENT;
+  return ceiling(length / TABLE_ALIGNMENT) * TABLE_ALIGNMENT;
 }

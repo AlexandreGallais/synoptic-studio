@@ -1,13 +1,11 @@
+import { byteToFraction } from "./byte-to-fraction";
 import { hexToBytes } from "./hex-to-bytes";
 
 import type { Rgb } from "../../math";
 
-/** The largest byte, `ff`: a component of 1. */
-const BYTE_MAX = 255;
-
 /**
  * The components of a stored color, `#` and six lower-case digits, as fractions from 0 to 1, each
- * byte (`hexToBytes`) divided by 255, from which HSL and HSB are read: `#336699` is 0.2, 0.4, 0.6
+ * byte (`hexToBytes`) divided by 255 (`byteToFraction`), from which HSL and HSB are read: `#336699` is 0.2, 0.4, 0.6
  * (REF-CSS-COLOR-4, §5.2; `DERIV-color-spaces`, notation: `r = R / 255`).
  *
  * @kind format
@@ -19,8 +17,8 @@ export function hexToRgb(color: string): Rgb {
   const bytes = hexToBytes(color);
 
   return {
-    blue: bytes.blue / BYTE_MAX,
-    green: bytes.green / BYTE_MAX,
-    red: bytes.red / BYTE_MAX,
+    blue: byteToFraction(bytes.blue),
+    green: byteToFraction(bytes.green),
+    red: byteToFraction(bytes.red),
   };
 }

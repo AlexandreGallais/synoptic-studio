@@ -1,3 +1,5 @@
+import { elementAddress, integerQuotient } from "../../math";
+
 import type { NameRecord } from "./name-record";
 
 /** Bytes of one UTF-16 code unit. */
@@ -22,8 +24,8 @@ type NameDecoder = (name: DataView, record: NameRecord) => string | undefined;
  */
 function parseUtf16Name(name: DataView, record: NameRecord): string {
   return String.fromCodePoint(
-    ...Array.from({ length: Math.floor(record.length / CODE_UNIT_SIZE) }, (unused, index) =>
-      name.getUint16(record.offset + CODE_UNIT_SIZE * index),
+    ...Array.from({ length: integerQuotient(record.length, CODE_UNIT_SIZE) }, (unused, index) =>
+      name.getUint16(elementAddress(record.offset, CODE_UNIT_SIZE, index)),
     ),
   );
 }

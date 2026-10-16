@@ -1,4 +1,4 @@
-import { isSpanWithin } from "../../math";
+import { elementAddress, indexInRange, isSpanWithin } from "../../math";
 
 import { parseGlyphRange } from "./parse-glyph-range";
 
@@ -30,6 +30,20 @@ const CLASS_SIZE = 2;
 type GlyphClasses = Readonly<Record<number, number>>;
 
 /**
+ * Reads the class a class array (format 1) gives the glyph at an index of the array.
+ *
+ * @kind format
+ * @param table - the layout table holding the ClassDef table
+ * @param values - where the array's class values start in it
+ * @param index - the glyph's index in the array, from the start glyph (`indexInRange`)
+ * @returns its class
+ * @see REF-OT-LAYOUT-COMMON
+ */
+function parseArrayClass(table: DataView, values: number, index: number): number {
+  return table.getUint16(elementAddress(values, CLASS_SIZE, index));
+}
+
+/**
  * Reads a class array (format 1) for some glyphs: the class of each one from the start glyph on.
  *
  * @kind format
@@ -46,18 +60,17 @@ function parseClassArray(
   glyphs: ReadonlySet<number>,
 ): GlyphClasses | undefined {
   const start = table.getUint16(definition + 2);
+  const values = definition + CLASS_VALUES_OFFSET;
   const count = isSpanWithin(definition, CLASS_VALUES_OFFSET, table.byteLength)
     ? table.getUint16(definition + GLYPH_COUNT_OFFSET)
     : Infinity;
 
-  return isSpanWithin(definition, CLASS_VALUES_OFFSET + CLASS_SIZE * count, table.byteLength)
+  return isSpanWithin(values, elementAddress(0, CLASS_SIZE, count), table.byteLength)
     ? Object.fromEntries(
         [...glyphs]
-          .filter((glyph) => isSpanWithin(glyph - start, 1, count))
-          .map((glyph) => [
-            glyph,
-            table.getUint16(definition + CLASS_VALUES_OFFSET + CLASS_SIZE * (glyph - start)),
-          ]),
+          .map((glyph) => ({ glyph, index: indexInRange(glyph, start, 0) }))
+          .filter(({ index }) => isSpanWithin(index, 1, count))
+          .map(({ glyph, index }) => [glyph, parseArrayClass(table, values, index)]),
       )
     : undefined;
 }
@@ -80,12 +93,12 @@ function parseClassRanges(
   glyphs: ReadonlySet<number>,
 ): GlyphClasses | undefined {
   const count = table.getUint16(definition + 2);
-  const ranges = Array.from(
-    { length: count },
-    (unused, index) => definition + RANGES_OFFSET + RANGE_RECORD_SIZE * index,
+  const records = definition + RANGES_OFFSET;
+  const ranges = Array.from({ length: count }, (unused, index) =>
+    elementAddress(records, RANGE_RECORD_SIZE, index),
   );
 
-  return isSpanWithin(definition, RANGES_OFFSET + RANGE_RECORD_SIZE * count, table.byteLength)
+  return isSpanWithin(records, elementAddress(0, RANGE_RECORD_SIZE, count), table.byteLength)
     ? Object.fromEntries(
         [...glyphs].flatMap((glyph) => {
           const range = parseGlyphRange(table, ranges, glyph);

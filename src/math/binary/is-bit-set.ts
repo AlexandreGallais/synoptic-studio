@@ -1,11 +1,11 @@
-import { modulo } from "./modulo";
+import { integerQuotient, modulo } from "../arithmetic";
 
 /**
  * Tells whether a bit of a non-negative integer is 1, bits numbered from 0 at the least
  * significant.
  *
- * Formula: bit i of n is ⌊n / 2ⁱ⌋ mod 2. Written with division, since the bitwise operators of
- * ECMAScript work on 32-bit signed integers.
+ * Formula: bit i of n is ⌊n / 2ⁱ⌋ mod 2 (`integerQuotient`). Written with division, since the
+ * bitwise operators of ECMAScript work on 32-bit signed integers.
  *
  * @kind math
  * @param value - an integer ≥ 0
@@ -14,5 +14,5 @@ import { modulo } from "./modulo";
  * @see DERIV-bit-of-integer
  */
 export function isBitSet(value: number, bit: number): boolean {
-  return modulo(Math.floor(value / 2 ** bit), 2) === 1;
+  return modulo(integerQuotient(value, 2 ** bit), 2) === 1;
 }

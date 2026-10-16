@@ -1,4 +1,5 @@
-import { isSameFamilyName } from "../../model";
+import { firstOfEachClass } from "../../math";
+import { caseFoldedFamilyName } from "../../model";
 
 import { formatFontFamilyName } from "./format-font-family-name";
 
@@ -7,7 +8,8 @@ const LAST_FAMILY = "sans-serif";
 
 /**
  * The `font-family` of a text: its font, then its fallback, then `sans-serif`, each name once
- * (names matched without regard to case, as CSS matches them, and without the white space at their ends), separated by commas (CSS Fonts 4,
+ * (names matched without regard to case, as CSS matches them, and without the white space at
+ * their ends: the first of each class, `firstOfEachClass`), separated by commas (CSS Fonts 4,
  * §2.1); `Inter` with the fallback `sans-serif` gives `"Inter", sans-serif`.
  *
  * @kind format
@@ -17,9 +19,8 @@ const LAST_FAMILY = "sans-serif";
  * @see REF-CSS-FONTS-4
  */
 export function formatFontFamily(font: string, fallback: string): string {
-  const names = [font, fallback, LAST_FAMILY].filter(
-    (name, index, all) =>
-      all.findIndex((other) => isSameFamilyName(name.trim(), other.trim())) === index,
+  const names = firstOfEachClass([font, fallback, LAST_FAMILY], (name) =>
+    caseFoldedFamilyName(name.trim()),
   );
 
   return names.map((name) => formatFontFamilyName(name)).join(", ");
