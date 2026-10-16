@@ -194,6 +194,17 @@ fn names_each_refused_file_with_its_commit() {
     );
 }
 
+/// A command cut off from the Git repository running the tests: a hook (`pre-push` running
+/// `check:all`) sets `GIT_DIR` and its kin, which would point every `git` call at that repository.
+fn isolated(mut command: Command) -> Command {
+    for (name, _) in std::env::vars_os() {
+        if name.to_string_lossy().starts_with("GIT_") {
+            command.env_remove(name);
+        }
+    }
+    command
+}
+
 /// A Git repository in a fresh temporary folder, with a bare remote holding its first commit.
 struct Repository {
     root: PathBuf,
@@ -221,7 +232,7 @@ impl Repository {
     }
 
     fn git(&self, arguments: &[&str]) -> String {
-        let output = Command::new("git")
+        let output = isolated(Command::new("git"))
             .args(["-c", "commit.gpgsign=false"])
             .args(arguments)
             .current_dir(self.work())
@@ -248,7 +259,7 @@ impl Repository {
 
     /// The check run as `pre-push` runs it, for a new branch.
     fn check(&self, branch: &str, hash: &str) -> Output {
-        let mut child = Command::new(env!("CARGO_BIN_EXE_refuse-shared-files"))
+        let mut child = isolated(Command::new(env!("CARGO_BIN_EXE_refuse-shared-files")))
             .current_dir(self.work())
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
