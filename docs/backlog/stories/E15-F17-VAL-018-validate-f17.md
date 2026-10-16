@@ -40,5 +40,5 @@ Open points the audit found, for the Product Owner to decide here; nothing is bu
 One task = one commit, referenced as `VAL-018.Tn`.
 
 - [x] T1 — The checklist's lines of F17, tested (1 h)
-- [ ] T2 — The demo page (30 min)
+- [x] T2 — The demo page (30 min)
 - [ ] T3 — The Product Owner's validation (1 h)
