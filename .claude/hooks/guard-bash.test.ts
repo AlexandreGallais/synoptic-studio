@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { commandOf, deniedReason } from "./guard-bash";
+import { commandOf, deniedReason, worktreeReason } from "./guard-bash";
+
+/** A story's worktree, as a worker's Bash calls see it. */
+const WORKTREE = "/work/SVG editor/.claude/worktrees/us-061";
 
 describe("guard-bash hook", () => {
   it.each([
@@ -50,6 +53,40 @@ describe("guard-bash hook", () => {
     'git commit -F - <<"MSG"\ndocs: x\n\ngit push --force is denied\nMSG\ngit log -1',
   ])("allows %s", (command) => {
     expect(deniedReason(command)).toBeUndefined();
+  });
+
+  it.each([
+    `cd "${WORKTREE}" && git status`,
+    "git add -A && git commit -m x",
+    "git fetch origin; git rebase origin/develop",
+    "git log --oneline | head -5",
+    "npm run fix && git add scripts",
+  ])("[F18.AC8] denies %s in a worktree, with the form that works", (command) => {
+    const reason = worktreeReason(command, WORKTREE) ?? "";
+
+    expect(reason).toMatch(/^A worktree refuses a chained Git command: run `git [^`]+` alone/u);
+    expect(reason).not.toContain("\n");
+  });
+
+  it.each([
+    "git status",
+    "git commit -F - <<'EOF'\nfix: x\n\ngit push && git log\nEOF",
+    "npm run fix && npx tsc --noEmit",
+    "ls docs; cat AGENTS.md",
+  ])("allows %s in a worktree", (command) => {
+    expect(worktreeReason(command, WORKTREE)).toBeUndefined();
+    expect(worktreeReason(command, `${WORKTREE}/scripts`)).toBeUndefined();
+  });
+
+  it("allows a chained Git command outside a worktree", () => {
+    expect(worktreeReason("git add -A && git commit -m x", "/work/SVG editor")).toBeUndefined();
+    expect(worktreeReason("git status && git log", "/work/.claude/worktrees-old")).toBeUndefined();
+  });
+
+  it("[F18.AC8] refuses golden:write in a worktree and says why", () => {
+    expect(worktreeReason("npm run golden:write", WORKTREE)).toMatch(/shared by every worktree/u);
+    expect(worktreeReason("npm run golden:write", "/work/SVG editor")).toBeUndefined();
+    expect(worktreeReason("npm run golden:check", WORKTREE)).toBeUndefined();
   });
 
   it("reads the command of a Bash hook input, and nothing from anything else", () => {
