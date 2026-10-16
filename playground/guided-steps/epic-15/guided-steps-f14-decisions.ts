@@ -146,7 +146,7 @@ export const GUIDED_STEPS_F14_DECISIONS: readonly GuidedStep[] = [
   },
   {
     explanation: "Letter spacing 10; then Width 160.",
-    look: "The spacing moves nothing; at 160 the box's turned corner stays put: X 45.4101, Y 68.81462.",
+    look: "The spacing moves nothing; at 160 the box's turned corner stays put: X 47, Y 61, that corner (US-054).",
     title: "F14 · A turned box resized in place (US-038)",
     values: createTextBoxStepValues({
       angle: 23,

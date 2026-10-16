@@ -313,14 +313,17 @@ describe("the guided test of F05 (VAL-014): placing and turning", () => {
 
   it("[F05.AC5] the frame turns with the letters, blue as a turned shape's box", () => {
     openStep("The dashed frame");
-    expect(readTransforms()[1]).toBe("rotate(30 87.95313 38.71875)");
+    // X 0, Y 0 the turned top-left corner (US-054): the middle at R(30°) of k = (87.953125,
+    // 38.71875), (76.16964 − 19.35938, 43.97656 + 33.53142) = (56.81027, 77.50798).
+    expect(readTransforms()[1]).toBe("rotate(30 56.81027 77.50798)");
     // Turned, the frame is drawn as a turned shape's box, thin and blue (US-050).
     expect(document.querySelectorAll("#canvas g.text-frame path.turned-box")).toHaveLength(1);
   });
 
   it("the turn on the group holding the text and its four strokes", () => {
     openStep("Turned as a group (decision)");
-    expect(readTransforms()[0]).toBe("rotate(90 87.95313 38.71875)");
+    // The corner at (0, 0) (US-054): the middle at R(90°) of k, (−38.71875, 87.953125).
+    expect(readTransforms()[0]).toBe("rotate(90 -38.71875 87.95313)");
     expect(readStrokes()).toHaveLength(4);
   });
 
@@ -349,7 +352,8 @@ describe("the guided test of F05 (VAL-014): placing and turning", () => {
     typeValue("angle", "30");
     clickElement("tool-text");
     expect(["shape-x", "shape-y", "angle"].map((id) => readValue(id))).toEqual(["100", "50", "90"]);
-    expect(readTransforms()[0]).toBe("rotate(90 187.95313 88.71875)");
+    // The corner at (100, 50) (US-054): the middle (100 − 38.71875, 50 + 87.953125).
+    expect(readTransforms()[0]).toBe("rotate(90 61.28125 137.95313)");
   });
 });
 
@@ -470,13 +474,12 @@ describe("the guided test of F05 (VAL-014): the browser checks and the end", () 
     ]);
   });
 
-  it("[F05.AC5] a turned text grows in place: X 43.42272, Y 78.5829 at a letter spacing of 10", () => {
+  it("[F05.AC5] a turned text grows in place: X 47, Y 61, its corner, at a letter spacing of 10", () => {
     openStep("A turned text grows in place (US-038)");
     typeValue("text-letter-spacing", "10");
 
-    // "Pump P-101" in Inter 16, 87.953125 wide, at (47, 61) turned by 23, its corner
-    // (54.27808, 44.58648); 177.953125 wide: (54.27808 − 88.97656 + 78.12120, 44.58648 − 9.67969 + 43.67611).
-    expect([readValue("shape-x"), readValue("shape-y")]).toEqual(["43.42272", "78.5829"]);
+    // X and Y show the turned top-left corner (US-054), which a growing text keeps (ADR-0057).
+    expect([readValue("shape-x"), readValue("shape-y")]).toEqual(["47", "61"]);
   });
 
   it("[F05.AC5] a step forgets the text last drawn, so that it is never placed from it", () => {

@@ -68,7 +68,7 @@ function readTextStrokeColors(document: Document): TextStrokeColors {
 
 /**
  * Reads the text typed in the Text tool's fields, its font the family measured with (US-036), its box's among them (`readTextBoxOptions`), its underline's and strike-through's colors (`readTextStrokeColors`, US-041), its colors in their stored form (`toStoredColors`); its position and its angle are the shape's X, Y
- * and angle, its exact position while X and Y show the one last drawn (`readTextPosition`, US-038), the angle kept from 0 to 359 (`readAngle`). The choices are read as the page offers them, so they hold one
+ * and angle, its position the turned top-left corner X and Y show, exact while they show the one last drawn (`readTextPosition`, US-054), placed once measured (`writeTextPosition`), the angle kept from 0 to 359 (`readAngle`). The choices are read as the page offers them, so they hold one
  * of their values.
  *
  * @kind procedure

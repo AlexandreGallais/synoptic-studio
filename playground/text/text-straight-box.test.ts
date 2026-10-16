@@ -114,12 +114,13 @@ describe("Text tool: the straight box of a turned text (US-039)", () => {
       "Straight box: x -7.46875, y 7.46875, width 38.71875, height 23.78125",
     );
 
-    // The position fields keep the top-left of the block before it turns (US-032).
+    // X and Y show the turned top-left corner (US-054): the middle plus R(90°) of (−11.890625,
+    // −19.359375), (19.359375, −11.890625): (31.25, 7.46875), the straight box's top-right.
     expect(
       [selectPageElement("#shape-x"), selectPageElement("#shape-y")].map((field) =>
         field instanceof HTMLInputElement ? field.value : "",
       ),
-    ).toEqual(["0", "0"]);
+    ).toEqual(["31.25", "7.46875"]);
   });
 
   it("[F14.AC7] shows one frame only at 0°, and no line", () => {

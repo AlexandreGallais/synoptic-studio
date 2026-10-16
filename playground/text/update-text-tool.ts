@@ -117,8 +117,8 @@ function writeTextRefusal(document: Document, isFontMissing: boolean): void {
  * session's fonts (`writeFontFields`, US-036); the text drawn with its block, measured with the
  * metrics of the family chosen — the metrics, lines and block kept while their inputs stay the
  * same (`readTextMetrics`, `readTextMeasure`, US-048) — Inter or a font imported or installed and read (US-036), a
- * turned text whose block or box changed size placed so that its turned top-left corner stays
- * (`writeTextPosition`, US-038);
+ * turned text placed from the turned top-left corner X and Y show, which a change of size keeps
+ * (`writeTextPosition`, US-038, US-054);
  * each color's swatch painted with it (US-035);
  * a refused text clears the drawing and its straight box's line and says why, its fields outlined;
  * a text whose font has no face, Inter when the browser draws none of its faces (US-053), is not

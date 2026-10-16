@@ -395,10 +395,9 @@ describe("the guided test of F14 (VAL-015): the decisions to confirm", () => {
     typeValue("text-letter-spacing", "10");
     expect([readValue("shape-x"), readValue("shape-y")]).toEqual(["47", "61"]);
 
-    // Corner (107, 81) − R(60, 20) = (59.58433, 39.14604); then
-    // (59.58433 − 80 + 65.82577, 39.14604 − 20 + 49.66859).
+    // X and Y show the turned top-left corner (US-054), which a width typed keeps (ADR-0057).
     typeValue("text-box-width", "160");
-    expect([readValue("shape-x"), readValue("shape-y")]).toEqual(["45.4101", "68.81462"]);
+    expect([readValue("shape-x"), readValue("shape-y")]).toEqual(["47", "61"]);
   });
 
   it("[F14.AC7] a box 60 × 40 turned by 90: its straight box at (10, −10), 40 × 60", () => {

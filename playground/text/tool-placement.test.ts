@@ -72,7 +72,9 @@ describe("Each tool keeps its own X, Y and angle (US-032)", () => {
     expect(document.querySelectorAll("#canvas path.turned-box")).toHaveLength(0);
 
     clickElement("tool-text");
-    expect(readPlacement()).toEqual(["0", "0", "90"]);
+    // X and Y show the turned top-left corner (US-054): the middle plus R(90°) of
+    // (−87.953125, −38.71875), (38.71875, −87.953125): (126.671875, −49.234375).
+    expect(readPlacement()).toEqual(["126.67188", "-49.23438", "90"]);
     expect(readTextTransform()).toBe("rotate(90 87.95313 38.71875)");
   });
 
