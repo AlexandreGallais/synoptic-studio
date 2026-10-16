@@ -3,7 +3,7 @@ id: EN-059
 epic: E17
 feature: F18
 title: The done commit checks the docs a rule touches
-status: ready
+status: done
 points: 1
 ---
 
