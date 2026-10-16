@@ -47,3 +47,4 @@ One task = one commit, referenced as `US-056.Tn`.
 - [x] T3 — The verifier's findings, first: a family the designer chose while the others are read stays chosen, its message kept (the guard of `writeDefaultChoice`) (0.5 h)
 - [x] T4 — A face imported by hand that lacks the Latin letters is kept and listed, never judged (0.25 h)
 - [x] T5 — One order of the reasons a face or a family is left out, for a face, a family and the reading line (`LEFT_OUT_REASONS`), written once in `shapes.md`; a family whose faces have different reasons (0.5 h)
+- [x] T6 — The layout tested: Installed fonts before the font list, under the line saying to start with it (0.25 h)
