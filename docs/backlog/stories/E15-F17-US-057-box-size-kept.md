@@ -3,7 +3,7 @@ id: US-057
 epic: E15
 feature: F17
 title: The box typed comes back when the text returns to Box
-status: in-progress
+status: done
 points: 1
 ---
 
