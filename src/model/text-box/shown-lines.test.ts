@@ -192,6 +192,57 @@ describe("shownLines (DERIV-text-box steps 5 and 6)", () => {
     ]);
   });
 
+  it("[F17.AC16] puts the ellipsis of a text cut by its maximum on its last line shown holding text", () => {
+    // "Hello", "World", "", "Hello", at most 3 lines: the 3rd shown is empty, a line holding text
+    // is left out; "World…" (5348 + 2048) / 128 = 57.78125 ≤ 60, the empty line dropped.
+    const text: Text = { ...BOXED, content: "Hello\nWorld\n\nHello", maximumLines: 3 };
+
+    expect(shown(text)).toEqual({ lines: ["Hello", "World…"], widths: [36.4609375, 57.78125] });
+
+    // Two empty lines shown after "Hello": both dropped, "Hello…" 52.46094.
+    expect(shownLines(ARIAL_BOX_METRICS, { ...text, content: "Hello\n\n\nWorld" })).toEqual([
+      "Hello…",
+    ]);
+  });
+
+  it("[F17.AC16] puts the ellipsis of a text cut by its box's height on its last line holding text", () => {
+    // h(3) = 3 × 18.39844 = 55.19531 ≤ 60 < h(4) = 73.59375: 3 lines fit, the 3rd empty.
+    const text: Text = { ...BOXED, boxHeight: 60, content: "Hello\nWorld\n\nHello" };
+
+    expect(shownLines(ARIAL_BOX_METRICS, text)).toEqual(["Hello", "World…"]);
+  });
+
+  it("[F17.AC16] reads a line of spaces as empty, its spaces trimmed as at every line's end", () => {
+    // "   " wraps into "" (DERIV-text-box, step 2): it holds no text, so it is dropped as well.
+    const text: Text = { ...BOXED, content: "Hello\nWorld\n   \nHello", maximumLines: 3 };
+
+    expect(shownLines(ARIAL_BOX_METRICS, text)).toEqual(["Hello", "World…"]);
+  });
+
+  it("[F17.AC16] keeps the empty lines shown when the ellipsis is off, or nothing is cut", () => {
+    const text: Text = { ...BOXED, content: "Hello\nWorld\n\nHello", maximumLines: 3 };
+
+    expect(shownLines(ARIAL_BOX_METRICS, { ...text, hasEllipsis: false })).toEqual([
+      "Hello",
+      "World",
+      "",
+    ]);
+
+    // Only an empty line left out: no ellipsis, the empty line shown kept.
+    expect(shownLines(ARIAL_BOX_METRICS, { ...text, content: "Hello\n\n\n" })).toEqual([
+      "Hello",
+      "",
+      "",
+    ]);
+  });
+
+  it("[F17.AC16] ends a cut whose lines shown are all empty with the ellipsis on its last", () => {
+    // No line shown holds text: the ellipsis stays on the last one, as before (provisional).
+    const text: Text = { ...BOXED, content: "\n\nHello", maximumLines: 2 };
+
+    expect(shownLines(ARIAL_BOX_METRICS, text)).toEqual(["", "…"]);
+  });
+
   it("[F17.AC1] wraps every text automatically, as many words a line as fit", () => {
     // "Pump P-101 is" (5350 + 569 + 5465 + 569 + 1479) / 128 = 13 432 / 128 = 104.9375 ≤ 110;
     // with " running" 104.9375 + 4.44531 + 53.375 > 110: "running" alone.
@@ -233,6 +284,13 @@ describe("shownLines (DERIV-text-box steps 5 and 6)", () => {
 
       expect(lines.length).toBeLessThanOrEqual(maximum);
       expect(lines.length === 0).toBe(values.content === "");
+
+      // With the ellipsis on, an empty last line shown means nothing but empty lines was cut.
+      expect(
+        !values.hasEllipsis ||
+          lines.at(-1) !== "" ||
+          wrapped.slice(lines.length).every((line) => line === ""),
+      ).toBe(true);
 
       expect(
         lines.every(

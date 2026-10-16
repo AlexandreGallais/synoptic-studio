@@ -35,11 +35,58 @@ function shownLine(context: TextInBox, line: string, isLastOfCut: boolean): stri
 }
 
 /**
+ * The line of a text cut that ends with its ellipsis: none when only empty lines were left out;
+ * else the last line shown holding text, so that "…" never stands alone on an empty line, or the
+ * last line shown when none holds text. A line of spaces is empty, its spaces trimmed as at the
+ * end of every line (`DERIV-text-box`, steps 2 and 6, provisional).
+ *
+ * @kind domain
+ * @param shown - the lines the box shows
+ * @param leftOut - the lines left out after them
+ * @returns the index of the line that ends with the ellipsis, undefined when the text is not cut
+ * @see DERIV-text-box
+ */
+function lastOfCut(shown: readonly string[], leftOut: readonly string[]): number | undefined {
+  if (leftOut.every((line) => line === "")) {
+    return undefined;
+  }
+
+  const lastWithText = shown.findLastIndex((line) => line !== "");
+
+  return lastWithText === -1 ? shown.length - 1 : lastWithText;
+}
+
+/**
+ * The lines a box shows with the ellipsis on: the line of a text cut that takes the ellipsis
+ * (`lastOfCut`) ends with it, the empty lines shown after it dropped, and every other line wider
+ * than the box ends with one when its cut removes a unit (`shownLine`).
+ *
+ * @kind domain
+ * @param context - the text and the metrics of its face
+ * @param shown - the lines the box shows
+ * @param leftOut - the lines left out after them
+ * @returns the lines shown, with their ellipses
+ * @see DERIV-text-box
+ */
+function ellipsedLines(
+  context: TextInBox,
+  shown: readonly string[],
+  leftOut: readonly string[],
+): readonly string[] {
+  const last = lastOfCut(shown, leftOut);
+
+  return shown
+    .slice(0, last === undefined ? shown.length : last + 1)
+    .map((line, index) => shownLine(context, line, index === last));
+}
+
+/**
  * The lines a text shows: a text that fits its content shows all its lines (F05); in a box, the
  * lines it wraps into (`wrappedLines`), as many as its box and its maximum show
- * (`shownLineCount`), and, with the ellipsis on, the last line shown ends with an ellipsis when
- * lines other than empty ones were left out, as does a line wider than the box when its cut
- * removes a unit (`ellipsisCut`); with it off, a text cut stops at its last line shown and a word
+ * (`shownLineCount`), and, with the ellipsis on, when lines other than empty ones were left out,
+ * the last line shown holding text ends with an ellipsis and the empty lines shown after it are
+ * dropped (`lastOfCut`), as a line wider than the box ends with one when its cut removes a unit
+ * (`ellipsisCut`); with it off, a text cut stops at its last line shown and a word
  * too long is drawn whole (`DERIV-text-box`, steps 5 and 6).
  *
  * @kind domain
@@ -56,10 +103,7 @@ export function shownLines(metrics: FontMetrics, text: Text): readonly string[] 
   }
 
   const count = shownLineCount(text, textBlockLineHeights(metrics, text), wrapped.length);
-  const isCut = wrapped.slice(count).some((line) => line !== "");
   const shown = wrapped.slice(0, count);
 
-  return text.hasEllipsis
-    ? shown.map((line, index) => shownLine({ metrics, text }, line, isCut && index === count - 1))
-    : shown;
+  return text.hasEllipsis ? ellipsedLines({ metrics, text }, shown, wrapped.slice(count)) : shown;
 }
