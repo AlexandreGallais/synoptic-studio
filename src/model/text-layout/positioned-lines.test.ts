@@ -96,6 +96,23 @@ describe("positionedLines (DERIV-text-width steps 4 and 5)", () => {
     expect([line?.width, line?.left]).toEqual([-6.890625, 6.890625]);
   });
 
+  it("[F17.AC11] adds no letter spacing after a line's last letter, a right-aligned line ending at the block's edge (REF-CSS-TEXT-3, §7.2)", () => {
+    // "HH": 2 × 1479 × 16 / 2048 = 23.109375, spacing 10 once, between the H's: 33.109375.
+    // "H": 11.5546875, no spacing; aligned right it starts 33.109375 − 11.5546875 = 21.5546875.
+    // A spacing after each last letter would make them 43.109375 and 21.5546875 wide.
+    const lines = placed({
+      ...HELLO_TEXT,
+      alignment: "right",
+      content: "HH\nH",
+      letterSpacing: 10,
+    });
+
+    expect(lines.map((line) => [line.left, line.width, line.left + line.width])).toEqual([
+      [0, 33.109375, 33.109375],
+      [21.5546875, 11.5546875, 33.109375],
+    ]);
+  });
+
   it("[F14.AC2] places the lines a box shows, with their ellipsis", () => {
     // "Hello World Hello World" in a box 60 wide, at most 2 lines: "Hello" over "World…",
     // (5348 + 2048) / 128 = 57.78125 wide, the block as wide.
