@@ -4,6 +4,8 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import { clickElement, openServedPage, readText, typeValue } from "../user-actions";
 
+import { scheduleRedraw } from "./schedule-redraw";
+
 /** The animation frames asked and not run yet, as the browser holds them until its next repaint. */
 const FRAMES: FrameRequestCallback[] = [];
 
@@ -84,5 +86,17 @@ describe("A redraw per animation frame (US-048, REF-MDN-RAF)", () => {
     runFrames();
     // Two lines of 2478 × 32 / 2048 = 38.71875: 77.4375.
     expect(readBlockHeight()).toBe(77.4375);
+  });
+
+  it("redraws at once a document without a window", () => {
+    const calls: string[] = [];
+    const detached = document.implementation.createHTMLDocument("");
+
+    scheduleRedraw(detached, () => {
+      calls.push("draw");
+    });
+
+    expect(detached.defaultView).toBeNull();
+    expect(calls).toEqual(["draw"]);
   });
 });

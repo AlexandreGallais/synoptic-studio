@@ -298,6 +298,23 @@ describe("Installed fonts (US-036)", () => {
     expect(readValue("text-font")).toBe("Inter");
   });
 
+  it("[F15.AC1] says a reason shared by the faces refused once", async () => {
+    // Two faces whose files are not fonts: one reason, not "…; …" twice.
+    fakeLocalFonts([
+      installedFont("Test Bad", Uint8Array.from([1, 2, 3])),
+      installedFont("Test Bad", Uint8Array.from([4, 5, 6])),
+    ]);
+
+    clickElement("installed-fonts");
+    await waitForPageTasks();
+    chooseOption("text-font", "Test Bad");
+    await waitForPageTasks();
+
+    expect(readText("#font-message")).toBe(
+      "Test Bad could not be read (not a TrueType or OpenType font).",
+    );
+  });
+
   it("[F15.AC1] lists an installed family once when a kept family has its name in another case", async () => {
     fakeLocalFonts([installedFont("TEST SANS", testFaceFile(TEST_SANS))]);
     await importFace();

@@ -15,6 +15,10 @@ describe("parseCollectionFaces (REF-OT-OTFF)", () => {
     expect(parseCollectionFaces(fontCollection([FIRST, SECOND]))).toEqual([FIRST, SECOND]);
   });
 
+  it("[F17.AC4] gives the face of a collection of one face as its own file, without the collection's header", () => {
+    expect(parseCollectionFaces(fontCollection([FIRST]))).toEqual([FIRST]);
+  });
+
   it("[F17.AC4] gives a font file back as it is, the very bytes", () => {
     const faces = parseCollectionFaces(FIRST);
 
