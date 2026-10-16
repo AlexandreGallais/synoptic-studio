@@ -32,7 +32,7 @@
     "preview": "vite preview",
     "fix": "prettier --write --ignore-unknown \"*\" .claude/agents .claude/hooks .claude/rules .claude/skills .claude/settings.json .github .husky .vscode docs eslint playground scripts src tests && eslint --cache --cache-location node_modules/.cache/eslint/ --fix \"*.{ts,md}\" .claude/agents .claude/hooks .claude/rules .claude/skills .github docs eslint playground scripts src tests",
     "check": "npm run format:check && npm run lint && npm run lint:secrets && npm run typecheck && npm run test && npm run deps:audit && npm run deps:unused && npm run check:rust",
-    "check:rust": "for tool in backlog-index heavy-lock hooks shared-files worktree; do cargo fmt --check --manifest-path tools/$tool/Cargo.toml && cargo clippy --quiet --all-targets --manifest-path tools/$tool/Cargo.toml -- -D warnings && cargo test --quiet --manifest-path tools/$tool/Cargo.toml || exit 1; done",
+    "check:rust": "for tool in backlog-index heavy-lock hooks shared-files val-prepare worktree; do cargo fmt --check --manifest-path tools/$tool/Cargo.toml && cargo clippy --quiet --all-targets --manifest-path tools/$tool/Cargo.toml -- -D warnings && cargo test --quiet --manifest-path tools/$tool/Cargo.toml || exit 1; done",
     "check:all": "cargo run --release -q --manifest-path tools/heavy-lock/Cargo.toml -- node --harmony-temporal scripts/check-all.ts",
     "test": "cargo run --release -q --manifest-path tools/heavy-lock/Cargo.toml -- vitest run --coverage",
     "test:watch": "vitest",
@@ -64,6 +64,7 @@
     "backlog:status": "node scripts/backlog-status.ts",
     "backlog:index": "cargo run --quiet --manifest-path tools/backlog-index/Cargo.toml -- docs/backlog && prettier --write docs/backlog/stories/README.md",
     "story:finish": "cargo run --release -q --manifest-path tools/heavy-lock/Cargo.toml -- --lock merge node scripts/story-finish.ts",
+    "val:prepare": "cargo run --quiet --manifest-path tools/val-prepare/Cargo.toml -- .",
     "activity": "node --harmony-temporal scripts/activity.ts",
     "epic:check": "node --harmony-temporal scripts/epic-check.ts",
     "font:metrics": "node scripts/default-font-metrics.ts"

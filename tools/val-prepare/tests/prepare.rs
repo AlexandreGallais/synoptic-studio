@@ -1,0 +1,267 @@
+//! Tests of `val:prepare` (EN-056): the names and texts it writes, then the tool run on a copy of
+//! the playground's checklists. `[F18.AC12]` marks a test proving the feature's criterion.
+
+use std::fs;
+use std::path::{Path, PathBuf};
+use std::process::Command;
+
+use val_prepare::{
+    Feature, epic_number, feature_id, lines_module, parse_feature, plan, ts_string, with_checklist,
+    with_exports, with_feature_lines,
+};
+
+const CHECKLISTS: &str = "../../playground/checklists";
+
+fn feature_text(id: &str, epic: &str, count: usize) -> String {
+    let criteria: String = (1..=count)
+        .map(|number| format!("{number}. Criterion {number} of {id}.\n"))
+        .collect::<Vec<_>>()
+        .concat();
+
+    format!(
+        "---\nid: {id}\nepic: {epic}\ntitle: \"A title: with a colon\"\nstatus: in-progress\n---\n\n\
+         # {epic} · {id}\n\n## Acceptance criteria\n\n{criteria}\n## Stories\n\n1. Not a criterion.\n"
+    )
+}
+
+/// A repository of its own: a copy of the playground's checklists and one feature file per
+/// `(id, epic, criteria)`.
+fn repository(name: &str, features: &[(&str, &str, usize)]) -> PathBuf {
+    let root = std::env::temp_dir().join(format!("val-prepare-{}-{name}", std::process::id()));
+    let checklists = root.join("playground/checklists");
+    let backlog = root.join("docs/backlog/features");
+
+    let _ = fs::remove_dir_all(&root);
+    fs::create_dir_all(&checklists).unwrap();
+    fs::create_dir_all(&backlog).unwrap();
+
+    for file in [
+        "checklist-line.ts",
+        "checklists.ts",
+        "index.ts",
+        "epic-15-checklist.ts",
+    ] {
+        fs::copy(Path::new(CHECKLISTS).join(file), checklists.join(file)).unwrap();
+    }
+
+    for (id, epic, count) in features {
+        let file = backlog.join(format!("{epic}-{id}-a-feature.md"));
+        fs::write(file, feature_text(id, epic, *count)).unwrap();
+    }
+
+    root
+}
+
+fn read(root: &Path, path: &str) -> String {
+    fs::read_to_string(root.join(path)).unwrap()
+}
+
+#[test]
+fn reads_a_feature_id_in_either_case() {
+    assert_eq!(feature_id("f18").as_deref(), Some("F18"));
+    assert_eq!(feature_id(" F05 ").as_deref(), Some("F05"));
+    assert_eq!(feature_id("F"), None);
+    assert_eq!(feature_id("E17"), None);
+    assert_eq!(feature_id("F1a"), None);
+}
+
+#[test]
+fn numbers_an_epic_as_the_playground_folders() {
+    assert_eq!(epic_number("E17"), "17");
+    assert_eq!(epic_number("E01"), "1");
+    assert_eq!(epic_number("E00"), "0");
+}
+
+#[test]
+fn escapes_quotes_and_backslashes_in_a_string() {
+    assert_eq!(ts_string(r#"say "hi" \ `x`"#), r#""say \"hi\" \\ `x`""#);
+}
+
+#[test]
+fn reads_the_numbered_criteria_only() {
+    let feature = parse_feature(&feature_text("F18", "E17", 2)).unwrap();
+
+    assert_eq!(
+        feature,
+        Feature {
+            id: "F18".to_owned(),
+            epic: "E17".to_owned(),
+            title: "A title: with a colon".to_owned(),
+            criteria: vec![
+                "Criterion 1 of F18.".to_owned(),
+                "Criterion 2 of F18.".to_owned()
+            ],
+        }
+    );
+    assert!(parse_feature("# no front matter\n").is_err());
+}
+
+#[test]
+fn writes_one_line_per_criterion_tagged() {
+    let module = lines_module(&parse_feature(&feature_text("F18", "E17", 2)).unwrap());
+
+    assert!(module.contains("export const EPIC_17_F18_LINES: readonly ChecklistLine[] = ["));
+    assert!(module.contains("todo: \"F18.AC1: Criterion 1 of F18.\""));
+    assert!(module.contains("see: \"What to see for F18.AC2, to write\""));
+    assert_eq!(module.matches("feature: \"F18\"").count(), 2);
+}
+
+#[test]
+fn adds_once_to_an_epic_checklist_the_map_and_the_index() {
+    let epic = "import { A } from \"./a\";\n\nexport const E = [\n  ...A,\n];\n";
+    let added = with_feature_lines(epic, "epic-15-f99-lines", "EPIC_15_F99_LINES").unwrap();
+
+    assert_eq!(
+        added,
+        "import { EPIC_15_F99_LINES } from \"./epic-15-f99-lines\";\nimport { A } from \"./a\";\n\n\
+         export const E = [\n  ...A,\n  ...EPIC_15_F99_LINES,\n];\n"
+    );
+    assert_eq!(
+        with_feature_lines(&added, "epic-15-f99-lines", "EPIC_15_F99_LINES").unwrap(),
+        added
+    );
+    assert!(with_feature_lines("no list", "x", "X").is_err());
+
+    // The list as Prettier writes a short one, on one line.
+    let short = "export const E = [...A];\n";
+
+    assert_eq!(
+        with_feature_lines(short, "b", "B").unwrap(),
+        "import { B } from \"./b\";\nexport const E = [...A, ...B];\n"
+    );
+
+    let map = "export const C = new Map([\n  [\"E15\", EPIC_15_CHECKLIST],\n]);\n";
+    let mapped = with_checklist(map, "E17").unwrap();
+
+    assert!(
+        mapped.contains("  [\"E15\", EPIC_15_CHECKLIST],\n  [\"E17\", EPIC_17_CHECKLIST],\n]);")
+    );
+    assert!(mapped.starts_with("import { EPIC_17_CHECKLIST } from \"./epic-17-checklist\";\n"));
+    assert_eq!(with_checklist(&mapped, "E17").unwrap(), mapped);
+
+    let index = with_exports("export * from \"./a\";\n", &["a", "b"]);
+
+    assert_eq!(index, "export * from \"./a\";\nexport * from \"./b\";\n");
+}
+
+#[test]
+fn f18_ac12_prepares_a_new_epic_checklist_and_its_address() {
+    let root = repository("new-epic", &[("F18", "E17", 3)]);
+    let prepared = plan(&root, "F18").unwrap();
+    let paths: Vec<String> = prepared
+        .writes
+        .iter()
+        .map(|write| write.path.display().to_string())
+        .collect();
+
+    assert_eq!(
+        paths,
+        [
+            "playground/checklists/epic-17-f18-lines.ts",
+            "playground/checklists/epic-17-checklist.ts",
+            "playground/checklists/checklists.ts",
+            "playground/checklists/index.ts",
+        ]
+    );
+    assert!(paths.iter().all(|path| !path.contains("guided-steps")));
+    assert_eq!(prepared.address, "http://localhost:5173/?checklist=E17");
+    assert_eq!(prepared.warning, None);
+    assert!(
+        prepared.writes[1]
+            .text
+            .contains("  ...EPIC_17_F18_LINES,\n];")
+    );
+    assert!(
+        prepared.writes[2]
+            .text
+            .contains("[\"E17\", EPIC_17_CHECKLIST],")
+    );
+    assert!(prepared.writes[3].text.ends_with(
+        "export * from \"./epic-17-checklist\";\nexport * from \"./epic-17-f18-lines\";\n"
+    ));
+}
+
+#[test]
+fn f18_ac12_adds_a_feature_to_its_epic_existing_checklist() {
+    let root = repository("same-epic", &[("F99", "E15", 1)]);
+    let prepared = plan(&root, "F99").unwrap();
+
+    assert!(
+        prepared.writes[1]
+            .text
+            .contains("  ...EPIC_15_COLOR_AND_FONT_LINES,\n  ...EPIC_15_F99_LINES,\n];")
+    );
+    // E15 is already in the map: only its import and entry once.
+    assert_eq!(
+        prepared.writes[2].text,
+        read(&root, "playground/checklists/checklists.ts")
+    );
+}
+
+#[test]
+fn warns_above_twelve_criteria_and_not_at_twelve() {
+    let root = repository("limit", &[("F01", "E01", 12), ("F02", "E01", 13)]);
+
+    assert_eq!(plan(&root, "F01").unwrap().warning, None);
+    assert_eq!(
+        plan(&root, "F02").unwrap().warning.as_deref(),
+        Some("F02 has 13 criteria: merge its lines down to 12, one per thing to see")
+    );
+}
+
+#[test]
+fn refuses_an_unknown_feature_one_not_refined_and_lines_already_written() {
+    let root = repository("refusals", &[("F18", "E17", 1), ("F19", "E17", 0)]);
+
+    assert_eq!(
+        plan(&root, "F19").unwrap_err(),
+        "F19 has no numbered acceptance criteria yet: refine it first"
+    );
+
+    assert!(
+        plan(&root, "F77")
+            .unwrap_err()
+            .contains("no feature file for F77")
+    );
+
+    fs::write(
+        root.join("playground/checklists/epic-17-f18-lines.ts"),
+        "kept",
+    )
+    .unwrap();
+
+    assert!(
+        plan(&root, "F18")
+            .unwrap_err()
+            .contains("exists: its lines are kept")
+    );
+}
+
+#[test]
+fn f18_ac12_the_tool_writes_the_files_and_says_the_address() {
+    let root = repository("run", &[("F18", "E17", 2)]);
+    let output = Command::new(env!("CARGO_BIN_EXE_val-prepare"))
+        .args([root.to_str().unwrap(), "f18"])
+        .output()
+        .unwrap();
+    let stdout = String::from_utf8_lossy(&output.stdout);
+
+    assert!(output.status.success(), "{stdout}");
+    assert!(stdout.contains("http://localhost:5173/?checklist=E17"));
+    assert!(read(&root, "playground/checklists/epic-17-f18-lines.ts").contains("F18.AC2"));
+    assert!(read(&root, "playground/checklists/checklists.ts").contains("EPIC_17_CHECKLIST"));
+    assert!(!root.join("playground/guided-steps").exists());
+
+    let again = Command::new(env!("CARGO_BIN_EXE_val-prepare"))
+        .args([root.to_str().unwrap(), "F18"])
+        .output()
+        .unwrap();
+
+    assert!(!again.status.success());
+
+    let usage = Command::new(env!("CARGO_BIN_EXE_val-prepare"))
+        .output()
+        .unwrap();
+
+    assert_eq!(usage.status.code(), Some(2));
+}
