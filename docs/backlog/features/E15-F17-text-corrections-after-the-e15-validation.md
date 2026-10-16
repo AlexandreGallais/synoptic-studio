@@ -2,7 +2,7 @@
 id: F17
 epic: E15
 title: Text corrections after the E15 validation
-status: ready
+status: done
 ---
 
 # E15 · F17 — Text corrections after the E15 validation
@@ -85,6 +85,8 @@ In delivery order.
 | F17.AC16             | US-058                 | VAL-018             |
 | F17.AC17             | US-059                 | VAL-018             |
 | F17.AC18             | US-060                 | VAL-018             |
+
+**Closed on 2026-10-16**: every story is done; the Product Owner validated every criterion at VAL-018's third pass, and `npm run check:all` holds criterion 9.
 
 ## Left for later
 
