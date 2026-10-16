@@ -3,7 +3,7 @@ id: EN-057
 epic: E17
 feature: F18
 title: The register of exceptions, and a byte buffer for font collections
-status: draft
+status: ready
 points: 3
 ---
 

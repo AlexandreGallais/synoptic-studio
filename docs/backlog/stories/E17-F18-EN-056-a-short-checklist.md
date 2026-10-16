@@ -3,7 +3,7 @@ id: EN-056
 epic: E17
 feature: F18
 title: A short checklist, prepared by `val:prepare`
-status: draft
+status: ready
 points: 2
 ---
 

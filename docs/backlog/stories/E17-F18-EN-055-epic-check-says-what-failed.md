@@ -3,7 +3,7 @@ id: EN-055
 epic: E17
 feature: F18
 title: "`epic:check` says what failed; the golden check at push"
-status: draft
+status: ready
 points: 2
 ---
 

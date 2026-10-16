@@ -3,7 +3,7 @@ id: EN-047
 epic: E17
 feature: F18
 title: A lock for heavy commands and a limit on subagents
-status: draft
+status: ready
 points: 3
 ---
 

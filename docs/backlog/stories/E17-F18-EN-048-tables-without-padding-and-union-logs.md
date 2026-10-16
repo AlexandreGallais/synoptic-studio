@@ -3,7 +3,7 @@ id: EN-048
 epic: E17
 feature: F18
 title: Tables without padding, append-only logs merged by union
-status: draft
+status: ready
 points: 2
 ---
 

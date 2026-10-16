@@ -3,7 +3,7 @@ id: EN-060
 epic: E17
 feature: F18
 title: A documentation pass on E15's long pages
-status: draft
+status: ready
 points: 2
 ---
 

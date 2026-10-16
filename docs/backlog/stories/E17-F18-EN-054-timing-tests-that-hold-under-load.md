@@ -3,7 +3,7 @@ id: EN-054
 epic: E17
 feature: F18
 title: Timing tests that hold under load
-status: draft
+status: ready
 points: 1
 ---
 

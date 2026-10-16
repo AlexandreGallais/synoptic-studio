@@ -3,7 +3,7 @@ id: EN-049
 epic: E17
 feature: F18
 title: The stories index generated from the story files
-status: draft
+status: ready
 points: 2
 ---
 

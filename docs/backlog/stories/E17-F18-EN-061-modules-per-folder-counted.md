@@ -3,7 +3,7 @@ id: EN-061
 epic: E17
 feature: F18
 title: Modules per folder counted, no spread in a fold
-status: draft
+status: ready
 points: 1
 ---
 

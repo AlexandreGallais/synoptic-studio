@@ -3,7 +3,7 @@ id: EN-052
 epic: E17
 feature: F18
 title: Worktrees named after their story, commands that fit them
-status: draft
+status: ready
 points: 2
 ---
 

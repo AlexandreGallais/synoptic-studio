@@ -1,7 +1,7 @@
 ---
 id: E17
 title: Fast tooling with Oxc and Rust
-status: draft
+status: in-progress
 ---
 
 # E17 — Fast tooling with Oxc and Rust
@@ -47,15 +47,26 @@ The spike opens the epic. VoidZero's site (voidzero.dev) and Oxc's documentation
 
 ## Features
 
-In the order proposed by the agent; the Product Owner orders them at the refinement.
+Ordered by the Product Owner at the refinement of 2026-10-16.
 
-| Feature                                                                                                          | Status |
-| ---------------------------------------------------------------------------------------------------------------- | ------ |
-| [F19](../features/E17-F19-oxc-and-rust-tools.md) — Checks and agent tools on Oxc and Rust                        | draft  |
-| [F18](../features/E17-F18-a-safe-and-cheap-parallel-run.md) — A safe and cheap parallel run, and E15's leftovers | draft  |
-| [F20](../features/E17-F20-a-context-diet.md) — A context diet for every agent                                    | draft  |
+| Feature                                                                                                          | Status      |
+| ---------------------------------------------------------------------------------------------------------------- | ----------- |
+| [F18](../features/E17-F18-a-safe-and-cheap-parallel-run.md) — A safe and cheap parallel run, and E15's leftovers | in-progress |
+| [F19](../features/E17-F19-oxc-and-rust-tools.md) — Checks and agent tools on Oxc and Rust                        | draft       |
+| [F20](../features/E17-F20-a-context-diet.md) — A context diet for every agent                                    | draft       |
 
 F18 holds the stories decided at RET-003 (ADR-0063, ADR-0064, ADR-0065, ADR-0066), written then as F11 was at RET-001.
+
+## Refinement (2026-10-16)
+
+Decisions of the Product Owner at the start of the run, recorded as understood.
+
+- **Order**: F18, then F19, then F20. F19's spike (SP-021) runs in parallel with F18.
+- **`check:all` target**: set after F19's spike, from the lane-by-lane measure, not before.
+- **Rust**: already installed on the Product Owner's machine (stable 1.99.1 with cargo, clippy and rustfmt; the `wasm32` target present). Nothing to install.
+- **Claude Code settings**: the research of 2026-10-16 recommends four settings — a limit on simultaneous subagents, a one-hour prompt cache on long agents, workers started from a digest instead of all of `CLAUDE.md`, a model per agent type. Each becomes a story, and each change is shown to the Product Owner before it is applied: EN-063 (subagent limit, F18, beside EN-047), EN-064 (prompt cache), EN-065 (digest), EN-066 (model per agent type), all three in F20.
+- **E15's leftovers** (US-061, EN-057, EN-062) stay in F18.
+- **Model per task**: measured from E17 — Sonnet for logs, backlog, merges and step texts; Opus for mathematics, audits and research. The figures come from the session report.
 
 ## Not adopted
 

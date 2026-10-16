@@ -3,7 +3,7 @@ id: EN-051
 epic: E17
 feature: F18
 title: "`story:finish` one merge at a time, from a worktree too"
-status: draft
+status: ready
 points: 2
 ---
 

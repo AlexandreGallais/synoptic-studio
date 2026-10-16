@@ -3,7 +3,7 @@ id: AUD-020
 epic: E17
 feature: F18
 title: Audit F18
-status: draft
+status: ready
 points: 1
 ---
 

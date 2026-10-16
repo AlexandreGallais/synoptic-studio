@@ -3,7 +3,7 @@ id: EN-046
 epic: E17
 feature: F18
 title: Release pull request on develop, only the release on main
-status: draft
+status: ready
 points: 2
 ---
 

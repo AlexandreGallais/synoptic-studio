@@ -3,7 +3,7 @@ id: SP-020
 epic: E17
 feature: F18
 title: Research for F18, the sources of RET-003 recorded
-status: draft
+status: ready
 points: 1
 ---
 

@@ -3,7 +3,7 @@ id: EN-058
 epic: E17
 feature: F18
 title: A mutation runner as a tool
-status: draft
+status: ready
 points: 1
 ---
 
