@@ -43,7 +43,8 @@
         width: 100%;
         height: 100%;
       }
-      #canvas path {
+      /* A path without its own fill; a text's strokes carry their own color (US-031, US-041). */
+      #canvas path:not([fill]) {
         fill: var(--accent);
       }
       /* The box the shape is placed in, behind it (F07): a fill only, never a native stroke. */
@@ -55,7 +56,7 @@
         fill: #2563eb;
         fill-rule: evenodd;
       }
-      /* Its straight box, dashed: thin filled rectangles. */
+      /* Its straight box, and a selected text's measured block (US-032), dashed: thin filled rectangles. */
       #canvas path.straight-box {
         fill: #555;
       }
@@ -159,6 +160,55 @@
         min-height: 2.5rem;
         font: inherit;
       }
+      /* The checklist of an epic (US-051): one scrolling card on the left of the stage, a box per line. */
+      #checklist {
+        position: absolute;
+        top: 4rem;
+        bottom: 0.75rem;
+        left: 0.75rem;
+        width: min(26rem, calc(100% - 1.5rem));
+        padding: 0.75rem 1rem;
+        overflow: auto;
+        background: var(--panel);
+        border-left: 4px solid var(--accent);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+      }
+      #checklist h2 {
+        margin: 0 0 0.5rem;
+        font-size: 1rem;
+      }
+      #checklist-lines {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+      }
+      #checklist-lines li + li {
+        border-top: 1px solid var(--line);
+      }
+      #checklist-lines label {
+        display: grid;
+        grid-template-columns: auto auto 1fr;
+        gap: 0.1rem 0.5rem;
+        padding: 0.4rem 0;
+        cursor: pointer;
+      }
+      #checklist-lines input {
+        grid-row: span 2;
+        margin-top: 0.15rem;
+      }
+      .checklist-feature {
+        grid-row: span 2;
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+      .checklist-see {
+        grid-column: 3;
+        color: var(--muted);
+      }
+      #checklist-lines input:checked ~ span {
+        opacity: 0.55;
+      }
       aside {
         padding: 1rem;
         overflow: auto;
@@ -202,6 +252,154 @@
       label {
         display: block;
         margin-block: 0.35rem;
+      }
+      /* A color: its swatch, which opens the picker, its hexadecimal and its opacity (US-035). */
+      .color-pair {
+        grid-template-columns: 2.1rem 1fr 1fr;
+        align-items: end;
+      }
+      .swatch {
+        box-sizing: border-box;
+        width: 2.1rem;
+        height: 2.1rem;
+        margin-block: 0.35rem;
+        padding: 0;
+        cursor: pointer;
+      }
+      /* A font imported or installed (US-036): the file picker drawn as a button. */
+      #font-sources {
+        display: flex;
+        gap: 0.5rem;
+        margin: 0.35rem 0;
+      }
+      #font-file-button {
+        box-sizing: border-box;
+        display: inline-flex;
+        align-items: center;
+        min-height: 2.1rem;
+        margin: 0;
+        padding: 0 0.7rem;
+        cursor: pointer;
+        border: 1px solid var(--line);
+        border-radius: 0.35rem;
+      }
+      /* The first thing to do in the Text tool (US-056): read the installed fonts. */
+      #installed-fonts {
+        font-weight: 600;
+        color: #fff;
+        background: var(--accent);
+        border-color: var(--accent);
+      }
+      #font-file-button:focus-within {
+        outline: 2px solid var(--accent);
+      }
+      #font-file {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+      }
+      .font-message {
+        margin: 0;
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+      /* The faces a drawing does not embed (US-036), one per line. */
+      #font-left-out {
+        margin: 0.35rem 0;
+        padding-left: 1.1rem;
+      }
+      .color-message {
+        margin: 0;
+        font-size: 0.85rem;
+        color: #d04a4a;
+      }
+      /* The picker (US-035): HTML elements painted by CSS gradients, outside the SVG drawn. */
+      #color-picker {
+        display: grid;
+        gap: 0.5rem;
+        margin-block: 0.35rem;
+      }
+      #color-plane,
+      .color-slider {
+        position: relative;
+        touch-action: none;
+        cursor: crosshair;
+        border-radius: 0.35rem;
+      }
+      #color-plane {
+        height: 9rem;
+      }
+      /* HSB: white to the hue across, darkened to black down. */
+      #color-plane[data-model="hsb"] {
+        background:
+          linear-gradient(to top, #000, transparent),
+          linear-gradient(to right, #fff, var(--hue-color));
+      }
+      /* HSL: grey to the hue across at half lightness, white at the top, black at the bottom. */
+      #color-plane[data-model="hsl"] {
+        background:
+          linear-gradient(to bottom, #fff, #fff0 50%, #0000 50%, #000),
+          linear-gradient(to right, #808080, var(--hue-color));
+      }
+      .color-slider {
+        height: 0.9rem;
+      }
+      #color-hue {
+        background: linear-gradient(
+          to right,
+          #f00,
+          #ff0 16.667%,
+          #0f0 33.333%,
+          #0ff 50%,
+          #00f 66.667%,
+          #f0f 83.333%,
+          #f00
+        );
+      }
+      #color-opacity {
+        background:
+          linear-gradient(to right, transparent, var(--picked-color)),
+          repeating-conic-gradient(#8884 0 25%, transparent 0 50%) 0 0 / 0.6rem 0.6rem;
+      }
+      #color-plane .mark,
+      .color-slider .thumb {
+        position: absolute;
+        box-sizing: border-box;
+        width: 0.9rem;
+        height: 0.9rem;
+        pointer-events: none;
+        border: 2px solid #fff;
+        border-radius: 50%;
+        box-shadow: 0 0 0 1px #000a;
+        translate: -50% -50%;
+      }
+      .color-slider .thumb {
+        top: 50%;
+      }
+      #color-values {
+        display: grid;
+        grid-template-columns: 1.3fr 1fr 1fr 1fr;
+        gap: 0.35rem;
+      }
+      #color-values select {
+        padding-inline: 0.2rem;
+      }
+      #text-options input[type="text"],
+      #text-options textarea,
+      #text-options select {
+        box-sizing: border-box;
+        display: block;
+        width: 100%;
+        margin-top: 0.2rem;
+        padding: 0.3rem 0.4rem;
+        font: inherit;
+        border: 1px solid var(--line);
+        border-radius: 0.35rem;
+      }
+      #text-style button[aria-pressed="true"] {
+        color: #fff;
+        background: var(--accent);
       }
       input[type="number"] {
         box-sizing: border-box;
@@ -261,9 +459,9 @@
         font-size: 0.9rem;
         color: var(--muted);
       }
-      /* The label rule above would override the hidden attribute (US-007 review). */
+      /* The label rule above, and rules by id such as #turn, would override the hidden attribute (US-007 review, US-031). */
       [hidden] {
-        display: none;
+        display: none !important;
       }
       input[aria-invalid="true"] {
         outline: 2px solid #d04a4a;
@@ -312,6 +510,12 @@
             </svg>
             Round
           </button>
+          <button id="tool-text" type="button" aria-pressed="false" title="Text">
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M2.5 2.5h11v3H12V4H9v8.5h1.5V14h-5v-1.5H7V4H4v1.5H2.5z" />
+            </svg>
+            Text
+          </button>
         </p>
         <p id="tools" role="group" aria-label="Mode">
           <button id="mode-shape" type="button" aria-pressed="true" title="Edit the shape">
@@ -335,6 +539,10 @@
           </button>
         </p>
       </nav>
+      <section id="checklist" aria-labelledby="checklist-heading" hidden>
+        <h2 id="checklist-heading">Checklist of <span id="checklist-name"></span></h2>
+        <ol id="checklist-lines"></ol>
+      </section>
       <section id="guide" aria-label="Guided test" hidden>
         <h2>Guided test — step <span id="guide-number"></span> / <span id="guide-count"></span></h2>
         <h3 id="guide-title"></h3>
@@ -353,6 +561,7 @@
         <option value="rectangle" selected>Rectangle</option>
         <option value="polygon">Polygon</option>
         <option value="round">Round shape</option>
+        <option value="text">Text</option>
         <option value="free" hidden>Free shape</option>
       </select>
       <section id="polygon-options" aria-labelledby="polygon-heading">
@@ -378,7 +587,301 @@
           </div>
         </fieldset>
       </section>
-      <section aria-labelledby="size-heading">
+      <section id="text-options" aria-labelledby="text-heading" hidden>
+        <h2 id="text-heading">Text</h2>
+        <label
+          >Content
+          <textarea id="text-content" rows="3">
+Pump P-101
+Running</textarea>
+        </label>
+        <p id="font-first" class="font-message">
+          Start with Installed fonts: the font list offers only the fonts read.
+        </p>
+        <p id="font-sources">
+          <button id="installed-fonts" type="button">Installed fonts</button>
+          <label id="font-file-button"
+            >Import a font <input id="font-file" type="file" accept=".ttf,.otf,.ttc"
+          /></label>
+        </p>
+        <p id="font-message" class="font-message" role="status"></p>
+        <p id="installed-fonts-progress" class="font-message" role="status"></p>
+        <label
+          >Font
+          <select id="text-font">
+            <option value="Inter" selected>Inter</option>
+          </select></label
+        >
+        <div class="pair">
+          <label
+            >Size <input id="text-size" type="number" min="1" max="100000" step="1" value="32"
+          /></label>
+          <label
+            >Weight
+            <select id="text-weight">
+              <option value="100">100 Thin</option>
+              <option value="200">200 Extra light</option>
+              <option value="300">300 Light</option>
+              <option value="400" selected>400 Regular</option>
+              <option value="500">500 Medium</option>
+              <option value="600">600 Semi-bold</option>
+              <option value="700">700 Bold</option>
+              <option value="800">800 Extra bold</option>
+              <option value="900">900 Black</option>
+            </select></label
+          >
+        </div>
+        <p id="text-style">
+          <button id="text-bold" type="button" aria-pressed="false"><b>B</b> Bold</button>
+          <button id="text-italic" type="button" aria-pressed="false"><i>I</i> Italic</button>
+        </p>
+        <div id="text-color-fields" class="pair color-pair">
+          <button
+            id="text-color-swatch"
+            class="swatch"
+            type="button"
+            aria-label="Pick the color"
+            aria-expanded="false"
+            aria-controls="color-picker"
+            data-color="text-color"
+            data-opacity="text-opacity"
+            data-message="text-color-message"
+          ></button>
+          <label>Color <input id="text-color" type="text" value="#1e293b" /></label>
+          <label
+            >Opacity (%)
+            <input id="text-opacity" type="number" min="0" max="100" step="1" value="100"
+          /></label>
+        </div>
+        <p id="text-color-message" class="color-message" role="status"></p>
+        <div class="pair">
+          <label
+            >Letter spacing <input id="text-letter-spacing" type="number" step="1" value="0"
+          /></label>
+          <label
+            >Word spacing <input id="text-word-spacing" type="number" step="1" value="0"
+          /></label>
+        </div>
+        <label><input id="text-underline" type="checkbox" /> Underline</label>
+        <div id="text-underline-color-fields" class="pair color-pair">
+          <button
+            id="text-underline-color-swatch"
+            class="swatch"
+            type="button"
+            aria-label="Pick the underline's color"
+            aria-expanded="false"
+            aria-controls="color-picker"
+            data-color="text-underline-color"
+            data-opacity="text-underline-opacity"
+            data-message="text-underline-color-message"
+            data-follows="text-underline-follows"
+          ></button>
+          <label
+            >Underline color <input id="text-underline-color" type="text" value="#1e293b"
+          /></label>
+          <label
+            >Underline opacity (%)
+            <input id="text-underline-opacity" type="number" min="0" max="100" step="1" value="100"
+          /></label>
+        </div>
+        <p id="text-underline-color-message" class="color-message" role="status"></p>
+        <label
+          ><input id="text-underline-follows" type="checkbox" checked /> Underline follows the
+          text's color</label
+        >
+        <label><input id="text-strike" type="checkbox" /> Strike-through</label>
+        <div id="text-strike-color-fields" class="pair color-pair">
+          <button
+            id="text-strike-color-swatch"
+            class="swatch"
+            type="button"
+            aria-label="Pick the strike-through's color"
+            aria-expanded="false"
+            aria-controls="color-picker"
+            data-color="text-strike-color"
+            data-opacity="text-strike-opacity"
+            data-message="text-strike-color-message"
+            data-follows="text-strike-follows"
+          ></button>
+          <label
+            >Strike-through color <input id="text-strike-color" type="text" value="#1e293b"
+          /></label>
+          <label
+            >Strike-through opacity (%)
+            <input id="text-strike-opacity" type="number" min="0" max="100" step="1" value="100"
+          /></label>
+        </div>
+        <p id="text-strike-color-message" class="color-message" role="status"></p>
+        <label
+          ><input id="text-strike-follows" type="checkbox" checked /> Strike-through follows the
+          text's color</label
+        >
+        <label
+          >Case
+          <select id="text-case">
+            <option value="none" selected>As typed</option>
+            <option value="upper">UPPER CASE</option>
+            <option value="lower">lower case</option>
+            <option value="title">Title Case</option>
+            <option value="camel">camelCase</option>
+            <option value="pascal">PascalCase</option>
+            <option value="kebab">kebab-case</option>
+            <option value="snake">snake_case</option>
+            <option value="constant">CONSTANT_CASE</option>
+          </select></label
+        >
+        <div class="pair">
+          <label
+            >Direction
+            <select id="text-direction">
+              <option value="ltr" selected>Left to right</option>
+              <option value="rtl">Right to left</option>
+            </select></label
+          >
+          <label
+            >Alignment
+            <select id="text-alignment">
+              <option value="left" selected>Left</option>
+              <option value="center">Center</option>
+              <option value="right">Right</option>
+            </select></label
+          >
+        </div>
+        <label
+          >Fit
+          <select id="text-fit">
+            <option value="content" selected>Fit content</option>
+            <option value="box">Box</option>
+          </select></label
+        >
+        <div id="text-box-fields" hidden>
+          <div class="pair">
+            <label
+              >Width
+              <input id="text-box-width" type="number" min="0" max="100000" step="1" value="200"
+            /></label>
+            <label
+              >Height
+              <input id="text-box-height" type="number" min="0" max="100000" step="1" value="100"
+            /></label>
+          </div>
+          <button id="text-box-reset" type="button" title="Back to the size the text fits">
+            Reset
+          </button>
+          <label
+            >Max lines (0 none)
+            <input id="text-maximum-lines" type="number" min="0" max="100000" step="1" value="0"
+          /></label>
+          <label><input id="text-ellipsis" type="checkbox" checked /> Ellipsis</label>
+          <label
+            >Vertical alignment
+            <select id="text-vertical-alignment">
+              <option value="top" selected>Top</option>
+              <option value="middle">Middle</option>
+              <option value="bottom">Bottom</option>
+            </select></label
+          >
+        </div>
+        <div class="pair">
+          <label
+            >Line height (0 auto)
+            <input id="text-line-height" type="number" min="0" max="100000" step="1" value="0"
+          /></label>
+          <label><input id="text-trim" type="checkbox" /> Trim</label>
+        </div>
+        <label><input id="text-background" type="checkbox" /> Background</label>
+        <div id="text-background-color-fields" class="pair color-pair">
+          <button
+            id="text-background-color-swatch"
+            class="swatch"
+            type="button"
+            aria-label="Pick the background color"
+            aria-expanded="false"
+            aria-controls="color-picker"
+            data-color="text-background-color"
+            data-opacity="text-background-opacity"
+            data-message="text-background-color-message"
+          ></button>
+          <label
+            >Background color <input id="text-background-color" type="text" value="#ffff00"
+          /></label>
+          <label
+            >Background opacity (%)
+            <input
+              id="text-background-opacity"
+              type="number"
+              min="0"
+              max="100"
+              step="1"
+              value="100"
+          /></label>
+        </div>
+        <p id="text-background-color-message" class="color-message" role="status"></p>
+        <div id="color-picker" role="group" aria-label="Color picker" hidden>
+          <div
+            id="color-plane"
+            role="slider"
+            tabindex="0"
+            aria-label="Saturation and brightness"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+            data-model="hsb"
+          >
+            <div id="color-plane-mark" class="mark"></div>
+          </div>
+          <div
+            id="color-hue"
+            class="color-slider"
+            role="slider"
+            tabindex="0"
+            aria-label="Hue"
+            aria-valuemin="0"
+            aria-valuemax="359"
+            aria-valuenow="0"
+          >
+            <div id="color-hue-thumb" class="thumb"></div>
+          </div>
+          <div
+            id="color-opacity"
+            class="color-slider"
+            role="slider"
+            tabindex="0"
+            aria-label="Opacity"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="100"
+          >
+            <div id="color-opacity-thumb" class="thumb"></div>
+          </div>
+          <div id="color-values">
+            <label
+              >Model
+              <select id="color-model">
+                <option value="hsb" selected>HSB</option>
+                <option value="hsl">HSL</option>
+              </select></label
+            >
+            <label
+              >H (°) <input id="color-hue-value" type="number" min="0" max="360" step="0.1"
+            /></label>
+            <label
+              >S (%) <input id="color-saturation-value" type="number" min="0" max="100" step="0.1"
+            /></label>
+            <label
+              ><span id="color-level-name">B</span> (%)
+              <input id="color-level-value" type="number" min="0" max="100" step="0.1"
+            /></label>
+          </div>
+        </div>
+        <fieldset id="document-options">
+          <legend>Drawing</legend>
+          <label><input id="embed-fonts" type="checkbox" /> Embed fonts</label>
+          <ul id="font-left-out" class="font-message" aria-label="Faces not embedded" hidden></ul>
+          <button id="export-svg" type="button">Export SVG</button>
+        </fieldset>
+      </section>
+      <section id="size-section" aria-labelledby="size-heading">
         <h2 id="size-heading">Size</h2>
         <div class="pair">
           <label

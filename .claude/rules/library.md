@@ -19,7 +19,7 @@ paths:
 - Run `npx tsc --noEmit` before each commit: Vitest strips types, and the unused-imports autofix drops a type import written before the code that uses it (EN-005).
 - Zero vectors and signed zeros (ADR-0025): `atan2(+0, −0) = π`, `Math.sign(−0) = −0`, and `toEqual` tells `−0` from `0`. State the intended result for zero-length edges explicitly (see `turningAngle`, `unit`).
 - More than three parameters: group them in a named type (`CornerPoints`); tests with many columns use `it.each` over objects.
-- Playground visibility: page rules such as `label { display: block }` override the `hidden` attribute; keep the `[hidden] { display: none }` rule, and test what is displayed (`getComputedStyle`), the page head loaded (US-007).
+- Playground visibility: page rules such as `label { display: block }` override the `hidden` attribute; keep the `[hidden] { display: none !important }` rule — a rule by id with `display: grid` or `flex` overrides it too — and test what is displayed (`getComputedStyle`), the page head loaded (US-007, US-031).
 - A test refusing a value outside a string union (data read from outside) needs a cast: `// eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- <reason>` (US-009). A complexity limit in a test callback counts `?.` and `??`: destructure with one fallback instead.
 - Mutation checks by hand: save the file's content and copy it back; `git checkout` neither restores an untracked file nor keeps uncommitted work in a tracked one (F07).
 - happy-dom: `:checked` follows the `checked` attribute, not the state, and the lint autofix wraps selector values in `CSS.escape` (a space becomes `\ `, which happy-dom does not match): find radio buttons by their `checked` and `value` properties (US-010).
@@ -34,3 +34,8 @@ paths:
 - A required field added to a model type (ADR-0016, no optional field): `tsc` lists every literal to complete; in tests, add it where the other fields are written, and let a property draw it (`fc.boolean()`) where the test covers both values (EN-017).
 - A bisection in doubles stops shrinking at one unit in the last place, before its nominal step count; a bound it returns may sit on the wrong side of a `>=` by that much: state "within a rounding error", never "at least" (EN-017).
 - A clamp before a bisection on a monotone predicate is unobservable (false everywhere ends at the low end, true everywhere at the high end): a mutation survives it; drop it or say so (EN-017).
+- `functional/prefer-immutable-types` reports nested readonly arrays or records in parameters as shallow when a file is linted alone (lint-staged) though the full run passes: use named row types or flat keyed records (EN-031).
+- happy-dom: a `<select>` moved from a `DOMParser` document loses its `selected` option: choose the value again in the test (US-031).
+- Never change the float behavior of a shared math function for a new caller: `npm run golden:check` guards the results of E01 and E14 bit for bit, and a 10⁻¹⁴ drift fails it; add a named function instead (`nonNegativeRemainder` beside `modulo`, EN-038).
+- happy-dom keeps the line break right after `<textarea>` that a browser drops: the page's text opens with an empty first line in tests; a test that needs the content types it (US-051).
+- A worker never runs `npm run golden:write`: it writes `.git/metrics/golden.json`, shared by every worktree, and would make the check compare against its own branch; only the main thread writes it, before a refactor (F16).

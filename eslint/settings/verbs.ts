@@ -41,6 +41,7 @@ export const PROCEDURE_VERBS = [
   "reset",
   "run",
   "save",
+  "schedule",
   "select",
   "set",
   "show",
@@ -53,5 +54,6 @@ export const PROCEDURE_VERBS = [
   "unmount",
   "unsubscribe",
   "update",
+  "wait",
   "write",
 ];

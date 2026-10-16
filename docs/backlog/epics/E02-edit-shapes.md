@@ -42,6 +42,45 @@ status: draft
 - Stretching a shape by its width and height from a fixed point chosen in the 3 × 3 grid, as Inkscape; strokes keep their width in pixels.
 - When a polygon is converted to a free shape, a message saying what happens, with a **do not show again** box.
 
+## Ideas from the Product Owner (2026-10-15, validation of E15)
+
+For a later pass on the editor's ease of use; none is planned yet:
+
+- **A search field over the installed fonts**: typing filters the font list.
+- **A reset button on the stroke colors**: the underline's and the strike-through's colors get a button that makes them follow the text's color again, instead of the box "follows the text's color".
+- **Fewer options**: simplify the Text tool's options, the stroke colors perhaps removed (kept for now, VAL-016).
+
+## Ideas from the Product Owner (2026-10-16, first pass of VAL-018)
+
+Not scheduled; for a later pass on text:
+
+- **Trim trailing empty lines at run time**: line breaks with nothing after them take no space.
+- **One line in a box**: in box mode, an option to show everything on one line, ignoring line breaks, when the box is wide enough.
+
+## Ideas from the Product Owner (2026-10-16, second pass of VAL-018)
+
+Not scheduled; for the later UI/UX epic:
+
+- **One line in a box** (above): the Product Owner accepts it for later; it adds a model field, so it is not done now.
+- **A curated set of fonts**: the software ships fonts suited to synoptic views; installing a local font is a choice, through an "Install" button listing the local fonts to pick from, beside importing a font file. Not every font is accepted (Comic Sans, Braille and emoji fonts are of no use in a synoptic view).
+- **Turned text**: handle a turned text like rectangles, polygons and round shapes.
+
+## Ideas from the Product Owner (2026-10-16, decisions after US-056)
+
+Not scheduled; for the later UI/UX epic (US-059):
+
+- **Fonts shipped**: free fonts that can be exported, installed with the software.
+- **A font chosen from the computer**: the designer selects an installed font to import, and the software says whether it can be exported.
+- **A font that cannot be embedded**: exported once the designer forces it after a confirmation, or refused outright — to decide then (ADR-0062 refuses it for now).
+- **A font list that says more**: which fonts are usable, and which can be exported.
+- **Fonts installed automatically**.
+
+## Ideas from the Product Owner (2026-10-16, review of E15)
+
+To do at the later UI/UX epic (REV-003):
+
+- **Remove the text direction**: right to left is of no use, the Latin script being the strict target, as for fonts. It stays until then; that epic drops the options that make no sense, the aim being the fewest options doing the most.
+
 ## Ideas from the Product Owner (2026-10-11, refinement of F04)
 
 - **A rotation mode**, entered by a button, showing the center of rotation (by default the center of the shape's box). The center is either **free**, fixed at an x and y; or one of the **nine anchors** of the shape's box, or a **point of the shape**, both following the shape when it moves or grows; or a **point or the center of another shape**, which only places it, at that x and y, without following that shape.

@@ -30,7 +30,7 @@ How the agent is configured and steered. Sources: `REF-CC-BEST-PRACTICES`, `REF-
 
 ## The Product Owner's role
 
-The agent designs, implements, tests and documents. The Product Owner sets priorities, answers business questions, sets stories `ready`, runs the guided tests, merges features and releases. They read the result, not the code: checks, demos and audits stand for line-by-line review. They never touch the repository; the agent writes their decisions in neutral words.
+The agent designs, implements, tests and documents. The Product Owner sets priorities, answers business questions, sets stories `ready`, tries the checklists, merges features and releases. They read the result, not the code: checks, demos and audits stand for line-by-line review. They never touch the repository; the agent writes their decisions in neutral words.
 
 ## Lessons from the Product Owner
 

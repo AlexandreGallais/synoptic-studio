@@ -9,7 +9,7 @@ flowchart LR
     R[Refinement<br/>Product Owner and agent] --> SP[SP<br/>research spike]
     SP --> ST[US · EN<br/>stories, CHK midway]
     ST --> AUD[AUD<br/>independent audit]
-    AUD --> VAL[VAL<br/>guided test, demo]
+    AUD --> VAL[VAL<br/>checklist, demo]
     VAL --> REL[Release<br/>develop to main]
   end
   subgraph epic [Every feature released]
@@ -39,7 +39,7 @@ The type says **who can see the result**, not who wrote it or whether it is code
 | `SP`  | spike         | answers: sources read, derivations, research requests, before any code                                                  | the stories it unblocks                       | SP-009 — research for F06                      |
 | `CHK` | checkpoint    | midway through a feature: docs and methods brought up to date, consistency checked                                      | the agent                                     | CHK-008                                        |
 | `AUD` | audit         | the feature re-checked by an independent reviewer: formulas, values, sources, duplicates                                | the `auditor` agent, then the Product Owner   | AUD-009                                        |
-| `VAL` | validation    | the demo page and the guided test; the Product Owner's validation recorded                                              | the Product Owner                             | VAL-009                                        |
+| `VAL` | validation    | the demo page and the checklist page; the Product Owner's validation recorded                                           | the Product Owner                             | VAL-009                                        |
 | `NAM` | naming pass   | the whole code gone over twice: every calculation a field names is a named function, every result unchanged bit for bit | the `math-expert` and `auditor` agents        | F13, before the type existed                   |
 | `REV` | epic review   | the epic report and a user test crossing its features                                                                   | the Product Owner                             | REV-001                                        |
 | `RET` | retrospective | what helped and hurt, metrics, evolvability, playbook and configuration updated                                         | the Product Owner and the agent               | RET-001                                        |
@@ -53,7 +53,7 @@ The type says **who can see the result**, not who wrote it or whether it is code
 | --------------------- | ----------------------------------------------------- | -------------------------------------------------------------------------------- |
 | refinement            | answers the questionnaire, decides the business rules | prepares the questions (with the `functional-analyst` agent), writes the feature |
 | spike and stories     | starts a run (`/run`): its stories become `ready`     | researches, implements, tests, has each story reviewed                           |
-| validation            | runs the guided test, says what they see              | records the result and the remarks, opens the feature pull request               |
+| validation            | ticks the checklist, says what they see               | records the result and the remarks, opens the feature pull request               |
 | release               | merges the feature, then the release pull request     | prepares both, brings `develop` up to date                                       |
 | review, retrospective | answers, decides what changes                         | reports with figures, updates the playbook and the configuration                 |
 

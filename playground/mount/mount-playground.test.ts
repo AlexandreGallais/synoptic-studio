@@ -1,7 +1,6 @@
 // @vitest-environment happy-dom
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { GUIDED_STEPS } from "../guided-steps";
 import {
   chooseOption,
   chooseRadio,
@@ -298,8 +297,8 @@ describe("playground", () => {
   });
 
   it("[F02.AC4] sets the shape and the corners of each step of the guided test", () => {
-    // Back to step 1 (Previous stays on the first step), then on to step 10, the first of F02.
-    clickTimes("guide-previous", GUIDED_STEPS.length);
+    // Back to step 1 from the step shown, then on to step 10, the first of F02.
+    clickTimes("guide-previous", Number(readText("#guide-number")) - 1);
 
     expect(readValue("shape")).toBe("rectangle");
     expect(readDisplay("corners-field") === "none").toBe(true);
@@ -419,7 +418,7 @@ describe("playground", () => {
   });
 
   it("[F07.AC1] puts the anchor back on the center at each step of the guided test", () => {
-    clickTimes("guide-previous", GUIDED_STEPS.length);
+    clickTimes("guide-previous", Number(readText("#guide-number")) - 1);
     clickTimes("guide-next", 9);
 
     expect(readCheckedRadio("anchor")).toBe("mid mid");
@@ -431,7 +430,7 @@ describe("playground", () => {
 
   it("[F07.AC2] places the polygon of each F07 step of the guided test where the step says", () => {
     // Steps 20 to 28 are F07's; each path is the one its "Look at" announces.
-    clickTimes("guide-previous", GUIDED_STEPS.length);
+    clickTimes("guide-previous", Number(readText("#guide-number")) - 1);
     clickTimes("guide-next", 20);
 
     expect(readText("#path-data")).toBe("M100 100 L0 100 L50 13.39746 Z");

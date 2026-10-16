@@ -13,11 +13,11 @@ One short paragraph per idea, each technical word explained; a picture per geome
 
 ## Try it
 
-Run `npm run dev`: the playground opens on the guided test of this feature, a few short steps (`playground/guided-steps/current-guided-steps.ts`).
+Run `npm run dev` and open `http://localhost:5173/?checklist=E00`: the epic's checklist, one line per option of this feature and per decision to confirm, each with a check box (`playground/checklists/`, US-051).
 
-| Step | Do  | You should see |
-| ---- | --- | -------------- |
-| 1    |     |                |
+| Try | You should see |
+| --- | -------------- |
+|     |                |
 
 ## Limits
 

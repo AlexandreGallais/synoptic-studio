@@ -1,3 +1,5 @@
+import { isInIntegerRange } from "../../math";
+
 import { REGULAR_POLYGON_CORNER_RANGE } from "./regular-polygon-corner-range";
 
 /**
@@ -11,5 +13,5 @@ import { REGULAR_POLYGON_CORNER_RANGE } from "./regular-polygon-corner-range";
 export function isRegularPolygonCornerCount(corners: number): boolean {
   const { max, min } = REGULAR_POLYGON_CORNER_RANGE;
 
-  return Number.isSafeInteger(corners) && corners >= min && corners <= max;
+  return isInIntegerRange(corners, min, max);
 }

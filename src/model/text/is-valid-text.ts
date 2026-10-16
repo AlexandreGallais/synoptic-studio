@@ -1,0 +1,49 @@
+import { isInIntegerRange } from "../../math";
+import { isColor } from "../color";
+import { isShapePlacement } from "../placement";
+
+import { isFontName } from "./is-font-name";
+import { isValidTextBox } from "./is-valid-text-box";
+import { isValidTextDecorations } from "./is-valid-text-decorations";
+import { TEXT_OPTIONS } from "./text-options";
+import { TEXT_RANGES } from "./text-ranges";
+
+import type { Text } from "./text";
+
+/**
+ * Whether a text can enter the model: a size from 1 to 100 000, a weight from 100 to 900, an
+ * opacity from 0 to 100, a letter and a word spacing from −100 000 to 100 000, all integers; a
+ * color of `#` and six lower-case hexadecimal digits (`isColor`); an angle from 0 to 359 and a
+ * finite position, fractional once a turned text has grown (`isShapePlacement`, ADR-0035,
+ * ADR-0057); a case, an alignment and a direction among their values; a font name and a
+ * fallback name that are not empty, trimmed and free of control characters (`isFontName`); the
+ * options of its box (`isValidTextBox`); the colors of its underline and strike-through
+ * (`isValidTextDecorations`). Any content is allowed, the empty one included, which
+ * draws nothing.
+ *
+ * @kind domain
+ * @param text - the text to check
+ * @returns `true` when every value is allowed
+ * @see docs/domain/shapes.md#text
+ */
+export function isValidText(text: Text): boolean {
+  const { opacity, size, spacing, weight } = TEXT_RANGES;
+  const { alignments, cases, directions } = TEXT_OPTIONS;
+
+  return [
+    isInIntegerRange(text.size, size.first, size.last),
+    isInIntegerRange(text.weight, weight.first, weight.last),
+    isInIntegerRange(text.opacity, opacity.first, opacity.last),
+    ...[text.letterSpacing, text.wordSpacing].map((value) =>
+      isInIntegerRange(value, spacing.first, spacing.last),
+    ),
+    isColor(text.color),
+    isShapePlacement(text),
+    cases.includes(text.textCase),
+    alignments.includes(text.alignment),
+    directions.includes(text.direction),
+    ...[text.font, text.fallback].map((name) => isFontName(name)),
+    isValidTextBox(text),
+    isValidTextDecorations(text),
+  ].every(Boolean);
+}

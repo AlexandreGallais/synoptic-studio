@@ -1,3 +1,4 @@
+import { nearestInteger } from "../../src";
 import { selectElement, writeInputValue } from "../page";
 
 /** Fields of the shape that take whole numbers once a rectangle or a polygon is chosen. */
@@ -15,7 +16,7 @@ function writeRoundedField(document: Document, id: string): void {
   const field = selectElement(document, id);
 
   if (field instanceof HTMLInputElement && field.value !== "") {
-    writeInputValue(document, id, Math.round(Number(field.value)));
+    writeInputValue(document, id, nearestInteger(Number(field.value)));
   }
 }
 
@@ -48,7 +49,7 @@ function writeOneRadius(document: Document): void {
   delete radius.dataset["radii"];
 
   if (radius instanceof HTMLInputElement && radius.value === "") {
-    writeInputValue(document, "radius", Math.round(first));
+    writeInputValue(document, "radius", nearestInteger(first));
   }
 }
 
