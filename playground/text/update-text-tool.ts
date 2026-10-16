@@ -1,6 +1,6 @@
 import { isValidText, isValidTextBox } from "../../src";
 import { writeColorSwatches, writeFollowedColors } from "../color-fields";
-import { DEFAULT_FONT_MISSING } from "../default-font";
+import { DEFAULT_FONT_MISSING, writeFontAvailability } from "../default-font";
 import { writeLeftOutFaces } from "../document";
 import { writeFontFields } from "../fonts";
 import { selectElement, writeText } from "../page";
@@ -114,7 +114,8 @@ function writeTextRefusal(document: Document, isFontMissing: boolean): void {
  * weight before (US-037); the fields
  * read only in a box shown when Box is chosen, and while one of them is refused, so that the
  * value outlined stays in sight (US-033); the font and weight lists brought up to date with the
- * session's fonts (`writeFontFields`, US-036); the text drawn with its block, measured with the
+ * session's fonts (`writeFontFields`, US-036), the font list, Installed fonts and the Content
+ * field enabled only when they can be used (`writeFontAvailability`, US-059); the text drawn with its block, measured with the
  * metrics of the family chosen — the metrics, lines and block kept while their inputs stay the
  * same (`readTextMetrics`, `readTextMeasure`, US-048) — Inter or a font imported or installed and read (US-036), a
  * turned text placed from the turned top-left corner X and Y show, which a change of size keeps
@@ -130,6 +131,7 @@ function writeTextRefusal(document: Document, isFontMissing: boolean): void {
  */
 export function updateTextTool(document: Document): void {
   writeFontFields(document);
+  writeFontAvailability(document);
   writeFollowedColors(document);
 
   const text = readTextModel(document);

@@ -34,8 +34,10 @@ function readLocalFontAccess(view: object): LocalFontAccess | undefined {
 }
 
 /**
- * Shows the installed fonts, after the browser's permission, in the font list, after the
- * families kept, then reads their files in the background (`readInstalledFontsAhead`, US-053).
+ * Lists the installed fonts, after the browser's permission, then reads their files in the
+ * background (`readInstalledFontsAhead`, US-053), the font list offering each family only once it
+ * is read and approved and disabled until they all are (US-059); a reading that fails gives the
+ * list back.
  *
  * @kind procedure
  * @param document - page document
@@ -58,7 +60,7 @@ async function showInstalledFonts(
   writeText(
     document,
     "font-message",
-    `Installed families listed: ${String(families.size)}. Choose one in the font list.`,
+    `Installed families listed: ${String(families.size)}. The font list can be used once they are read.`,
   );
 
   update();
@@ -69,11 +71,15 @@ async function showInstalledFonts(
       await readInstalledFontsAhead(document, update);
     },
     (error) => {
+      writeFontSession(document, { ...readFontSession(document), installed: [] });
+
       writeText(
         document,
         "font-message",
         `The installed fonts could not be read: ${String(error)}`,
       );
+
+      update();
     },
   );
 }

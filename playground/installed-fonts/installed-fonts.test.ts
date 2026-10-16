@@ -16,6 +16,7 @@ import {
   chooseOption,
   clickElement,
   openServedPage,
+  readDisabledState,
   readText,
   readValue,
   selectChoice,
@@ -253,7 +254,11 @@ describe("Installed fonts (US-036)", () => {
     ]);
 
     clickElement("installed-fonts");
-    await waitForMessage("Installed families listed: 2. Choose one in the font list.");
+
+    await waitForMessage(
+      "Installed families listed: 2. The font list can be used once they are read.",
+    );
+
     await waitForPageTasks();
 
     expect(readOptions("text-font")).toEqual(["Inter", "Test Sans", "Test Serif"]);
@@ -296,7 +301,7 @@ describe("Installed fonts (US-036)", () => {
     expect(readFontFamily()).toBe('"Test Sans", sans-serif');
   });
 
-  it("[F15.AC1] keeps the family chosen before when the browser cannot give a family's file, chosen before it is read ahead", async () => {
+  it("[F17.AC17] never offers an installed family before it is read, the family imported kept when it cannot be", async () => {
     const { promise, reject } = Promise.withResolvers<Blob>();
     const broken = vi.fn<() => Promise<Blob>>(async () => await promise);
 
@@ -306,16 +311,18 @@ describe("Installed fonts (US-036)", () => {
 
     await importFace();
     clickElement("installed-fonts");
-    await waitForMessage("Installed families listed: 1. Choose one in the font list.");
-    chooseOption("text-font", "Test Serif");
-    reject(new Error("No file."));
-    await waitForPageTasks();
 
-    expect(readText("#font-message")).toBe(
-      "Test Serif could not be read (Test Serif: Error: No file.).",
+    await waitForMessage(
+      "Installed families listed: 1. The font list can be used once they are read.",
     );
 
     expect(readOptions("text-font")).toEqual(["Inter", "Test Sans"]);
+    expect(readDisabledState("text-font")).toBe("true");
+    reject(new Error("No file."));
+    await waitForPageTasks();
+
+    expect(readOptions("text-font")).toEqual(["Inter", "Test Sans"]);
+    expect(readDisabledState("text-font")).toBe("false");
     expect(readValue("text-font")).toBe("Test Sans");
     expect(readFontFamily()).toBe('"Test Sans", sans-serif');
   });
@@ -381,8 +388,8 @@ describe("Installed fonts (US-036)", () => {
       expect(readProgress()).toBe("Reading the installed fonts: 1 of 2 families…");
     });
 
-    // Test Sans read while Test Serif's file is awaited.
-    expect(readOptions("text-font")).toEqual(["Inter", "Test Sans", "Test Serif"]);
+    // Test Sans read while Test Serif's file is awaited: Test Serif not offered yet (US-059).
+    expect(readOptions("text-font")).toEqual(["Inter", "Test Sans"]);
     release();
     await waitForPageTasks();
     expect(readProgress()).toBe("Installed fonts read: 2 families.");
@@ -391,9 +398,14 @@ describe("Installed fonts (US-036)", () => {
   it("[F17.AC11] says an error of the reading ahead, never left uncaught", async () => {
     const [sans, release] = heldFont("Test Sans", testFaceFile(TEST_SANS));
 
-    fakeLocalFonts([sans]);
+    // Test Serif, still to read when the reading stops, keeps the list disabled unless it is cleared.
+    fakeLocalFonts([sans, installedFont("Test Serif", testFaceFile(TEST_SANS))]);
     clickElement("installed-fonts");
-    await waitForMessage("Installed families listed: 1. Choose one in the font list.");
+
+    await waitForMessage(
+      "Installed families listed: 2. The font list can be used once they are read.",
+    );
+
     // The progress line gone while Test Sans is read: its next write throws.
     selectPageElement("#installed-fonts-progress").remove();
     release();
@@ -402,6 +414,9 @@ describe("Installed fonts (US-036)", () => {
     expect(readText("#font-message")).toMatch(
       /^The installed fonts could not be read: Error: Playground page without #installed-fonts-progress/u,
     );
+
+    // The reading stopped, the font list can be used again (US-059).
+    expect(readDisabledState("text-font")).toBe("false");
   });
 
   it("[F17.AC11] keeps the file of a face imported when its installed family is read ahead", async () => {
@@ -429,19 +444,20 @@ describe("Installed fonts (US-036)", () => {
   });
 
   it("[F15.AC1] says a reason shared by the faces refused once", async () => {
-    // Two faces whose files are not fonts: one reason, not "…; …" twice; chosen before read ahead.
-    const [bad, release] = heldFont("Test Bad", Uint8Array.from([1, 2, 3]));
-
-    fakeLocalFonts([bad, installedFont("Test Bad", Uint8Array.from([4, 5, 6]))]);
+    // Two faces whose files are not fonts: one reason, not "…; …" twice.
+    fakeLocalFonts([
+      installedFont("Test Sans", testFaceFile(TEST_SANS)),
+      installedFont("Test Sans", Uint8Array.from([1, 2, 3])),
+      installedFont("Test Sans", Uint8Array.from([4, 5, 6])),
+    ]);
 
     clickElement("installed-fonts");
-    await waitForMessage("Installed families listed: 1. Choose one in the font list.");
-    chooseOption("text-font", "Test Bad");
-    release();
+    await waitForPageTasks();
+    chooseOption("text-font", "Test Sans");
     await waitForPageTasks();
 
     expect(readText("#font-message")).toBe(
-      "Test Bad could not be read (not a TrueType or OpenType font).",
+      "Test Sans: 1 faces read, 2 refused (not a TrueType or OpenType font).",
     );
   });
 
@@ -484,7 +500,7 @@ describe("Installed fonts (US-036)", () => {
     await waitForPageTasks();
 
     expect(readText("#font-message")).toBe(
-      "Installed families listed: 1. Choose one in the font list.",
+      "Installed families listed: 1. The font list can be used once they are read.",
     );
   });
 
@@ -684,26 +700,5 @@ describe("Installed fonts (US-036)", () => {
 
     expect(readOptions("text-font")).toEqual(["Inter", "Test Emoji"]);
     expect(readText("#font-message")).toBe("Test Emoji 400 imported.");
-  });
-
-  it("[F17.AC14] says a family chosen before it is read that lacks the Latin letters", async () => {
-    const [emoji, release] = heldFont(
-      "Test Emoji",
-      lettersMissingFaceFile({ ...TEST_SANS, family: "Test Emoji" }),
-    );
-
-    fakeLocalFonts([emoji]);
-
-    clickElement("installed-fonts");
-    await waitForMessage("Installed families listed: 1. Choose one in the font list.");
-    chooseOption("text-font", "Test Emoji");
-    release();
-    await waitForPageTasks();
-
-    expect(readText("#font-message")).toBe(
-      "Test Emoji could not be read (Test Emoji: it lacks letters of the basic Latin alphabet (A to Z, a to z)).",
-    );
-
-    expect(readOptions("text-font")).toEqual(["Inter"]);
   });
 });

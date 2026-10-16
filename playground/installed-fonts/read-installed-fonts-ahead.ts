@@ -1,4 +1,5 @@
 import { distinctFamilyNames, isSameFamilyName } from "../../src";
+import { NO_FONT_APPROVED } from "../default-font";
 import { readFontSession } from "../fonts";
 import { readCountWith, readProgressLine } from "../installed-fonts-count";
 import { writeText } from "../page";
@@ -59,7 +60,10 @@ async function readNextFamilies(
  * Reads the installed fonts the browser listed in the background, family after family, each face
  * on its own, the page answering between two files (US-053): a family keeps its faces' metrics,
  * not their files, which are read again when it is chosen; a family none of whose faces can be
- * read leaves the font list; a line counts the families read, then says those left out.
+ * read and approved never enters the font list; a line counts the families read, then says those
+ * left out. The first family read and approved is chosen when no font is available
+ * (`writeDefaultChoice`, US-056); once all are read, the page says when none can be used
+ * (US-059).
  *
  * @kind procedure
  * @param document - page document
@@ -86,5 +90,10 @@ export async function readInstalledFontsAhead(
   const count = await readNextFamilies({ document, view }, update, start);
 
   writeText(document, "installed-fonts-progress", readProgressLine(count, true));
+
+  if (readFontSession(document).kept.length === 0) {
+    writeText(document, "font-message", NO_FONT_APPROVED);
+  }
+
   update();
 }

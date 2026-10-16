@@ -3,12 +3,12 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { DEFAULT_FONT, lineWidth } from "../../src";
-import { testFaceFile } from "../../tests";
+import { lettersMissingFaceFile, testFaceFile } from "../../tests";
 import {
   chooseFiles,
-  chooseOption,
   clickElement,
   openServedPage,
+  readDisabledState,
   readText,
   readValue,
   selectChoice,
@@ -16,8 +16,16 @@ import {
 } from "../user-actions";
 
 import { DEFAULT_FONT_MISSING } from "./default-font-missing";
+import { NO_FONT_APPROVED } from "./no-font-approved";
 
+import type { TestFace } from "../../tests";
 import type { InstalledFont } from "../fonts";
+
+/** The test font named Test Sans, regular, embeddable. */
+const TEST_SANS: TestFace = { family: "Test Sans", fsType: 0, isItalic: false, weightClass: 400 };
+
+/** Said once the browser listed the three installed families of a test. */
+const LISTED = "Installed families listed: 3. The font list can be used once they are read.";
 
 /** The probe line the page measures in each of Inter's faces. */
 const PROBE = "Pump P-101 Running";
@@ -105,7 +113,7 @@ function readFamilies(): readonly string[] {
  * @returns a `Blob` of its bytes
  */
 function testFaceBlob(family: string): Blob {
-  const bytes = testFaceFile({ family, fsType: 0, isItalic: false, weightClass: 400 });
+  const bytes = testFaceFile({ ...TEST_SANS, family });
 
   return new Blob([new Uint8Array(bytes)]);
 }
@@ -253,19 +261,34 @@ describe("Inter's faces kept only when the browser draws them (US-053)", () => {
     );
   });
 
-  it("[F17.AC14] leaves a family the designer chose while the others are read as it is, its message kept", async () => {
-    const { promise, resolve } = Promise.withResolvers<Blob>();
+  it("[F17.AC17] lists only families read and approved, the list and Installed fonts disabled while they are read", async () => {
+    const sans = Promise.withResolvers<Blob>();
+    const serif = Promise.withResolvers<Blob>();
+    const emoji = new Blob([
+      new Uint8Array(lettersMissingFaceFile({ ...TEST_SANS, family: "Test Emoji" })),
+    ]);
 
     fakeCanvas({});
 
-    const sans = installedFamily("Test Sans", Promise.resolve(testFaceBlob("Test Sans")));
-    const serif = installedFamily("Test Serif", Promise.resolve(testFaceBlob("Test Serif")));
-
-    fakeInstalledFonts([sans, serif, installedFamily("Test Mono", promise)]);
+    fakeInstalledFonts([
+      installedFamily("Test Sans", sans.promise),
+      installedFamily("Test Emoji", Promise.resolve(emoji)),
+      installedFamily("Test Serif", serif.promise),
+    ]);
 
     openTextTool();
-
     clickElement("installed-fonts");
+
+    await vi.waitFor(() => {
+      expect(readText("#font-message")).toBe(LISTED);
+    });
+
+    // Listed, none read: no family in the list, not even for a moment.
+    expect(readFamilies()).toEqual([]);
+    expect(readDisabledState("text-font")).toBe("true");
+    expect(readDisabledState("installed-fonts")).toBe("true");
+
+    sans.resolve(testFaceBlob("Test Sans"));
 
     await vi.waitFor(() => {
       expect(readText("#installed-fonts-progress")).toBe(
@@ -273,19 +296,63 @@ describe("Inter's faces kept only when the browser draws them (US-053)", () => {
       );
     });
 
+    // Test Sans read and approved, chosen at once; Test Emoji refused; Test Serif not read yet.
+    expect(readFamilies()).toEqual(["Test Sans"]);
     expect(readValue("text-font")).toBe("Test Sans");
-    chooseOption("text-font", "Test Serif");
+    expect(readDisabledState("text-font")).toBe("true");
+    expect(readDisabledState("installed-fonts")).toBe("true");
 
-    await vi.waitFor(() => {
-      expect(readText("#font-message")).toBe("Test Serif: 1 faces read.");
-    });
-
-    resolve(testFaceBlob("Test Mono"));
+    serif.resolve(testFaceBlob("Test Serif"));
     await waitForPageTasks();
 
-    expect(readText("#installed-fonts-progress")).toBe("Installed fonts read: 3 families.");
-    expect(readValue("text-font")).toBe("Test Serif");
-    expect(readText("#font-message")).toBe("Test Serif: 1 faces read.");
+    expect(readFamilies()).toEqual(["Test Sans", "Test Serif"]);
+    expect(readDisabledState("text-font")).toBe("false");
+    expect(readDisabledState("installed-fonts")).toBe("false");
+    expect(readValue("text-font")).toBe("Test Sans");
+    expect(document.querySelector("#canvas text")).not.toBeNull();
+  });
+
+  it("[F17.AC17] offers no text to write while no font is available, and gives it once one is", async () => {
+    fakeCanvas({});
+    fakeLocalFonts(["Test Sans"]);
+    openTextTool();
+
+    expect(readDisabledState("text-font")).toBe("true");
+    expect(readDisabledState("text-content")).toBe("true");
+
+    clickElement("installed-fonts");
+    await waitForPageTasks();
+
+    expect(readDisabledState("text-content")).toBe("false");
+  });
+
+  it("[F17.AC17] leaves the Content field enabled when the browser draws Inter", () => {
+    fakeCanvas({ 400: 0 });
+    openTextTool();
+
+    expect(readDisabledState("text-font")).toBe("false");
+    expect(readDisabledState("text-content")).toBe("false");
+  });
+
+  it("[F17.AC17] says that no installed font can be used when every one is refused", async () => {
+    const emoji = new Blob([
+      new Uint8Array(lettersMissingFaceFile({ ...TEST_SANS, family: "Test Emoji" })),
+    ]);
+
+    fakeCanvas({});
+
+    fakeInstalledFonts([installedFamily("Test Emoji", Promise.resolve(emoji))]);
+
+    openTextTool();
+    clickElement("installed-fonts");
+    await waitForPageTasks();
+
+    expect(readFamilies()).toEqual([]);
+    expect(readDisabledState("text-font")).toBe("true");
+    expect(readDisabledState("text-content")).toBe("true");
+    expect(readDisabledState("installed-fonts")).toBe("false");
+    expect(readText("#font-message")).toBe(NO_FONT_APPROVED);
+    expect(document.querySelector("#canvas text")).toBeNull();
   });
 
   it("[F17.AC14] leaves a family chosen before the installed fonts are read as it is", async () => {

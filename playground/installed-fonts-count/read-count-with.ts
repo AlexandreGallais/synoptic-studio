@@ -17,9 +17,7 @@ function readLeftOutWith(
   family: string,
   outcome: FamilyOutcome,
 ): readonly LeftOutFamily[] {
-  return outcome === "chosen" || outcome === "read"
-    ? leftOut
-    : [...leftOut, { family, reason: outcome }];
+  return outcome === "read" ? leftOut : [...leftOut, { family, reason: outcome }];
 }
 
 /**

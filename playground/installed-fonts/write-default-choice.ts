@@ -3,11 +3,11 @@ import { readFontSession, writeFontOptions, writeFontSession } from "../fonts";
 import { writeText } from "../page";
 
 /**
- * Chooses a default font once a family is read while none is available (US-056, provisional):
+ * Chooses a default font once a family is read and approved while none is available (US-056):
  * when the family the text is measured with has no metrics kept — Inter, not drawn by the browser,
- * left out of the font list —, the first family of the list with metrics is chosen and measured
- * with, Inter first when it is kept, and the page says so. A family already measured with, chosen
- * or imported, is left as it is.
+ * left out of the font list —, the first family of the list, read and approved, is chosen and
+ * measured with, and the page says so. A font available, Inter drawn, a font imported or the
+ * family chosen so, is left as it is; the font list cannot be used during the reading (US-059).
  *
  * @kind procedure
  * @param document - page document
