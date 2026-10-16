@@ -6,6 +6,7 @@ What each working session dealt with, in the agent's words: the Product Owner's 
 
 - `#run` The Product Owner started a run on 2026-10-16: scope F18 (a safe and cheap parallel run, with E15's leftovers), and F19's spike (SP-021) in parallel. E17 and F18 are `in-progress`, F18's stories `ready`, on `feature/f18-safe-and-cheap-parallel-run`.
 - `#decision` Refinement of E17: order F18, F19, F20; the `check:all` target is set after F19's spike; Rust is already installed on the Product Owner's machine; four Claude Code settings recommended by research become stories (EN-063 in F18, EN-064 to EN-066 in F20), each shown to the Product Owner before it is applied; the model per task is measured from E17. Recorded in the epic file.
+- EN-055: `epic:check` names a failed `check:all` by its failing checks, their lanes and failing tests (Vitest, `cargo test`), counts the worktree isolation's refusals apart (549 in E15) and reports the calls started over an hour ago and never ended as lost, never as a failure; the pre-push runs `golden:check` after `check:all` whenever `.git/metrics/golden.json` exists (about 13 s, through the heavy lock); `npm run metrics -- --since <day>` covers the calls, requests and turns from 00:00 UTC that day on.
 
 ## 2026-10-16 — F17 validated, E15 reviewed
 

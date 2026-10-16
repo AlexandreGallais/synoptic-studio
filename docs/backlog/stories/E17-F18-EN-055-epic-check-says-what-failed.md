@@ -24,14 +24,3 @@ One task = one commit, referenced as `EN-055.Tn`.
 
 - [x] T1 — `epic:check`: failing tests, refusals apart, lost calls; tests (1 h)
 - [x] T2 — `golden:check` in the pre-push; `metrics --since` (1 h)
-
-## For the main thread
-
-### Journal
-
-- EN-055: `epic:check` names a failed `check:all` by its failing checks, their lanes and failing tests (Vitest, `cargo test`), counts the worktree isolation's refusals apart (549 in E15) and reports the calls started over an hour ago and never ended as lost, never as a failure; the pre-push runs `golden:check` after `check:all` whenever `.git/metrics/golden.json` exists (about 13 s, through the heavy lock); `npm run metrics -- --since <day>` covers the calls, requests and turns from 00:00 UTC that day on.
-
-### Improvements
-
-- `npm run metrics` read the transcripts of the folder named after the checkout it ran in: from a worktree it found none and reported 0 calls. It now reads the main checkout's folder (EN-055).
-- A golden file left in `.git/metrics/` after a refactor now fails every push whose library results differ, including a feature that changes them on purpose: delete or rewrite it (`golden:write`, main checkout only) once the refactor is merged.
