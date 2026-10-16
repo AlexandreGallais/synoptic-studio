@@ -11,8 +11,8 @@ Written at the end of each feature (`VAL`, demo page) and of each epic (`REV`, e
 3. Numbers from the playground rather than symbols: "a 100 × 25 rectangle with radius 100 gets radius 12.5".
 4. A picture (SVG produced by the library, or a sketch) for every geometric idea.
 5. Say the limits: what the feature does not do yet, and which feature will.
-6. The guided test is a few short steps, each with what to do and what to see; it lives in the playground for the feature being validated only. The Product Owner says what they see; the agent records the result and the remarks in neutral words (`docs/conventions/writing.md`).
-7. At the epic review, every step of the epic comes back at once: `?guide=epic` in the playground's address.
+6. A feature is validated on its epic's **checklist**, one page in the playground (`?checklist=E15`): one line per option kept and per decision to confirm, what to try and what to see, a check box before it, no Previous nor Next; the boxes ticked stay in that browser (US-051). The Product Owner says what they see; the agent records the result and the remarks in neutral words (`docs/conventions/writing.md`).
+7. The guided steps written up to E15 stay in the playground's epic list, `?guide=epic`, for a closer look; they are no longer the validation path.
 
 ## Pages
 
