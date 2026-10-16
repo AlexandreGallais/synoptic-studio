@@ -57,14 +57,14 @@ it("[F01.AC3] clamps a 100 × 25 rectangle with radius 100 to an effective radiu
 
 ## Test strategy
 
-| Item         | Rule                                                                                                                                                                                         |
-| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Levels       | examples computed by hand; properties (fast-check); criterion tests `[F01.ACn]`; guided tests in the playground (`VAL`, `REV`); regression and end-to-end suites with the applications (E12) |
-| Environments | the core in Node.js without a DOM; `render` with happy-dom; browsers for end-to-end (later)                                                                                                  |
-| Independence | the `auditor`, `verifier` and `math-expert` agents re-derive, recompute and try mutations; the Product Owner runs the guided tests                                                           |
-| Success      | every test green, 100 % coverage of `src/`, no `.skip` / `.only`, on every push and every release                                                                                            |
-| Regression   | every test runs before every push and on the pull request into `main`; a done feature's criterion tests are never deleted, only changed by a story citing the criterion                      |
-| Evidence     | each release carries its JUnit report (`test-report.xml`) as a release asset                                                                                                                 |
+| Item         | Rule                                                                                                                                                                                                      |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Levels       | examples computed by hand; properties (fast-check); criterion tests `[F01.ACn]`; the epic's checklist page in the playground (`VAL`, `REV`); regression and end-to-end suites with the applications (E12) |
+| Environments | the core in Node.js without a DOM; `render` with happy-dom; browsers for end-to-end (later)                                                                                                               |
+| Independence | the `auditor`, `verifier` and `math-expert` agents re-derive, recompute and try mutations; the Product Owner tries the checklists                                                                         |
+| Success      | every test green, 100 % coverage of `src/`, no `.skip` / `.only`, on every push and every release                                                                                                         |
+| Regression   | every test runs before every push and on the pull request into `main`; a done feature's criterion tests are never deleted, only changed by a story citing the criterion                                   |
+| Evidence     | each release carries its JUnit report (`test-report.xml`) as a release asset                                                                                                                              |
 
 ## Coverage
 

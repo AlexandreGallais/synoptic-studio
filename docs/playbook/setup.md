@@ -42,11 +42,11 @@ Setting up a new project the way this one ended E01. In order; each step names t
 
 ## Cases met in E01
 
-| Case                                                    | What the kit does                                               |
-| ------------------------------------------------------- | --------------------------------------------------------------- |
-| a need understood late (the rectangle was a free shape) | the interview asks early which things are kinds of one thing    |
-| waiting for CI after every story                        | local checks; one CI per release                                |
-| the same pages read again at every spike                | the source library                                              |
-| no idea how long the work took                          | metrics, session reports                                        |
-| the Product Owner's words kept in a public repository   | writing rules; decisions in neutral words                       |
-| a long guided test accumulating every feature's steps   | a short guided test per feature; the full recheck at the review |
+| Case                                                    | What the kit does                                                   |
+| ------------------------------------------------------- | ------------------------------------------------------------------- |
+| a need understood late (the rectangle was a free shape) | the interview asks early which things are kinds of one thing        |
+| waiting for CI after every story                        | local checks; one CI per release                                    |
+| the same pages read again at every spike                | the source library                                                  |
+| no idea how long the work took                          | metrics, session reports                                            |
+| the Product Owner's words kept in a public repository   | writing rules; decisions in neutral words                           |
+| a long guided test accumulating every feature's steps   | one checklist page per epic, a line per option; rerun at the review |

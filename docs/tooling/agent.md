@@ -33,7 +33,7 @@ flowchart LR
 | `/spike`      | the research spike of a feature (ADR-0020)                                        |
 | `/derivation` | a `DERIV-*` from read sources                                                     |
 | `/audit`      | the feature audit with the reviewing agents                                       |
-| `/review`     | the demo page and guided test of a feature; the epic review (ADR-0023)            |
+| `/review`     | the demo page and checklist of a feature; the epic review (ADR-0023)              |
 | `/retro`      | the epic retrospective: metrics, evolvability, playbook, configuration (ADR-0023) |
 | `/triage`     | open issues presented with a recommendation (ADR-0026)                            |
 
