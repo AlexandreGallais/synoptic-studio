@@ -5,6 +5,7 @@ export type * from "./read-ahead-font";
 export * from "./read-faces-in-turn";
 export * from "./read-family-fonts";
 export * from "./read-fonts-with-read-ahead-face";
+export * from "./read-fonts-without-faces-read-ahead";
 export * from "./read-installed-face";
 export * from "./read-installed-family";
 export * from "./read-installed-fonts-ahead";
