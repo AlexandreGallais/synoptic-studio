@@ -16,8 +16,9 @@ function writeDisabled(document: Document, id: string, isDisabled: boolean): voi
 
 /**
  * Lets the designer use the font controls only when they lead to a font read and approved
- * (US-059): while the installed fonts the browser listed are read, the font list and
- * **Installed fonts** are disabled, so that no font is chosen during the reading; while no font
+ * (US-059): while the installed fonts the browser listed are read, ahead and then the default
+ * font's files again (US-061), the font list and **Installed fonts** are disabled, so that no
+ * font is chosen during the reading; while no font
  * is available, the font list, empty, and the Content field are disabled, so that no text is
  * written before a font is.
  *
@@ -27,7 +28,7 @@ function writeDisabled(document: Document, id: string, isDisabled: boolean): voi
  */
 export function writeFontAvailability(document: Document): void {
   const session = readFontSession(document);
-  const isReading = session.installed.length > 0;
+  const { isReading } = session;
   const isFontMissing = session.kept.length === 0;
 
   writeDisabled(document, "text-font", isReading || isFontMissing);

@@ -27,5 +27,5 @@ As a symbol designer, I want the font list held while the default font is read a
 
 One task = one commit, referenced as `US-061.Tn`.
 
-- [ ] T1 — The list disabled during the second reading; tests (1 h)
+- [x] T1 — The list disabled during the second reading; tests (1 h)
 - [ ] T2 — A face refused at the second reading dropped; tests and playground (1 h)

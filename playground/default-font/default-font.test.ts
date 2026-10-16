@@ -504,3 +504,47 @@ describe("The font chosen automatically, its files held (US-060)", () => {
     expect(readLeftOut()).toEqual([]);
   });
 });
+
+describe("The font list held while the default font is read again (US-061)", () => {
+  afterEach(() => {
+    Reflect.deleteProperty(globalThis, "queryLocalFonts");
+    vi.restoreAllMocks();
+  });
+
+  it("[F18.AC14] keeps the font list disabled while the default font's files are read again, said so", async () => {
+    const again = Promise.withResolvers<Blob>();
+    const blob = vi
+      .fn<() => Promise<Blob>>()
+      .mockResolvedValueOnce(testFaceBlob("Test Sans"))
+      .mockReturnValueOnce(again.promise);
+
+    fakeCanvas({});
+
+    fakeInstalledFonts([
+      { blob, family: "Test Sans", fullName: "Test Sans", postscriptName: "Test Sans" },
+    ]);
+
+    openTextTool();
+    clickElement("installed-fonts");
+
+    await vi.waitFor(() => {
+      expect(readText("#installed-fonts-progress")).toBe("Installed fonts read: 1 families.");
+    });
+
+    // Every family read ahead, Test Sans's file read a second time and not given yet; the page's
+    // redraws run at once in a test (`openServedPage`), so the list read is the one drawn.
+    expect(readDisabledState("text-font")).toBe("true");
+    expect(readDisabledState("installed-fonts")).toBe("true");
+
+    expect(readText("#font-message")).toBe(
+      "Reading Test Sans, the default font: the font list can be used once it is read.",
+    );
+
+    again.resolve(testFaceBlob("Test Sans"));
+    await waitForPageTasks();
+
+    expect(readDisabledState("text-font")).toBe("false");
+    expect(readDisabledState("installed-fonts")).toBe("false");
+    expect(readValue("text-font")).toBe("Test Sans");
+  });
+});
