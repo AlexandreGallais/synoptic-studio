@@ -3,6 +3,10 @@
 //! directory, a file holding its owner's process id; another heavy command waits and says who holds
 //! it; a lock whose process no longer exists (after a force-quit) is taken over at once. A heavy
 //! command started by the owner (`check:all` running the tests) runs inside its lock.
+//!
+//! `--lock <name>` takes another lock the same way: `story:finish` takes `merge.lock`, so stories
+//! merge one at a time (ADR-0065, decision 5; EN-051). Each lock names its owner to the commands it
+//! starts in a variable of its own: a command under the merge lock never runs inside the heavy one.
 
 use std::fs::{self, OpenOptions};
 use std::io::{self, Write};
@@ -11,11 +15,42 @@ use std::process::Command;
 use std::thread;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
-/// Variable naming the owner's process id to the commands it starts: they run inside its lock.
-pub const OWNER_VARIABLE: &str = "HEAVY_LOCK_PID";
+/// The lock taken without `--lock`.
+pub const HEAVY: &str = "heavy";
 
-/// Name of the lock in the Git common directory.
-pub const LOCK_NAME: &str = "heavy.lock";
+/// File of a lock in the Git common directory, `heavy.lock` for the heavy lock.
+#[must_use]
+pub fn lock_file(name: &str) -> String {
+    format!("{name}.lock")
+}
+
+/// The lock's name from its file: `merge` for `…/merge.lock`.
+#[must_use]
+pub fn lock_name(path: &Path) -> String {
+    path.file_stem()
+        .map_or_else(String::new, |stem| stem.to_string_lossy().into_owned())
+}
+
+/// Variable naming the owner's process id to the commands it starts, `HEAVY_LOCK_PID` for the heavy
+/// lock: they run inside its lock.
+#[must_use]
+pub fn owner_variable(name: &str) -> String {
+    format!("{}_LOCK_PID", name.to_ascii_uppercase())
+}
+
+/// The lock and the command in the arguments: `--lock <name>` first chooses the lock, the heavy one
+/// otherwise; `None` without a command, or for a name other than lower-case ASCII letters.
+#[must_use]
+pub fn lock_and_command(argv: &[String]) -> Option<(&str, &[String])> {
+    let (name, command) = match argv {
+        [flag, name, command @ ..] if flag == "--lock" => (name.as_str(), command),
+        [flag, ..] if flag == "--lock" => return None,
+        command => (HEAVY, command),
+    };
+    let valid = !name.is_empty() && name.bytes().all(|byte| byte.is_ascii_lowercase());
+
+    (valid && !command.is_empty()).then_some((name, command))
+}
 
 /// `ESRCH`, "no such process", on macOS and Linux.
 const NO_SUCH_PROCESS: i32 = 3;
@@ -172,11 +207,13 @@ pub fn command_name(argv: &[String], script: Option<&str>) -> String {
 pub fn waiting_line(owner: Option<&LockOwner>, path: &Path, now: u64) -> String {
     match owner {
         None => format!(
-            "heavy lock {} held without a process id (taken by hand): waiting; remove it with rmdir once its command ended\n",
+            "{} lock {} held without a process id (taken by hand): waiting; remove it with rmdir once its command ended\n",
+            lock_name(path),
             path.display()
         ),
         Some(owner) => format!(
-            "heavy lock held by process {} ({} in {}{}): waiting\n",
+            "{} lock held by process {} ({} in {}{}): waiting\n",
+            lock_name(path),
             owner.pid,
             owner.command,
             Path::new(&owner.cwd)
@@ -189,10 +226,12 @@ pub fn waiting_line(owner: Option<&LockOwner>, path: &Path, now: u64) -> String 
 
 /// Line saying a dead owner's lock was taken over.
 #[must_use]
-pub fn take_over_line(owner: &LockOwner) -> String {
+pub fn take_over_line(owner: &LockOwner, path: &Path) -> String {
     format!(
-        "heavy lock of process {} ({}) taken over: that process no longer exists\n",
-        owner.pid, owner.command
+        "{} lock of process {} ({}) taken over: that process no longer exists\n",
+        lock_name(path),
+        owner.pid,
+        owner.command
     )
 }
 
@@ -259,7 +298,7 @@ pub struct Request<'a> {
     pub path: &'a Path,
     /// This command, as written in the lock.
     pub owner: LockOwner,
-    /// `HEAVY_LOCK_PID` in its environment.
+    /// The lock's owner variable in its environment, `HEAVY_LOCK_PID` for the heavy lock.
     pub owner_variable: Option<String>,
     /// Time between two looks at a held lock.
     pub poll: Duration,
@@ -285,7 +324,7 @@ fn look(request: &Request, held: Held, say: &mut impl Write) -> io::Result<Look>
         })),
         action => {
             if let (Action::TakeOver, Held::By(Some(dead))) = (action, &held) {
-                say.write_all(take_over_line(dead).as_bytes())?;
+                say.write_all(take_over_line(dead, request.path).as_bytes())?;
                 // Removed only if still the dead owner's: another waiter may have taken it over already.
                 remove_lock(request.path, dead.pid);
             }
@@ -357,7 +396,10 @@ pub fn run_locked(request: &Request, argv: &[String], say: &mut impl Write) -> i
 
     // Inside its owner's lock, the owner stays the one named to the commands it starts.
     if action == Action::Take {
-        child.env(OWNER_VARIABLE, request.owner.pid.to_string());
+        child.env(
+            owner_variable(&lock_name(request.path)),
+            request.owner.pid.to_string(),
+        );
     }
 
     let code = match child.status() {

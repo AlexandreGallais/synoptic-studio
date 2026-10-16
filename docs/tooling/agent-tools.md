@@ -119,7 +119,7 @@ The Rust tools live in this repository, beside the TypeScript, with their own ch
 
 The first is `tools/backlog-index/` (EN-049): a Cargo crate without a crates.io dependency, its tests beside its code, checked by `npm run check:rust` (`cargo fmt --check`, `cargo clippy -- -D warnings`, `cargo test`), part of `check` and `check:all`; its build output `target/` is ignored by Git and by every check tool. SP-021 proposes the lasting layout of the crates.
 
-The second is `tools/heavy-lock/` (EN-047), the heavy lock, run by `check:all`, `test`, `golden:check` and `docs:build` (`cargo run --release`) and checked by `check:rust` too.
+The second is `tools/heavy-lock/` (EN-047), the heavy lock, run by `check:all`, `test`, `golden:check` and `docs:build` (`cargo run --release`) and checked by `check:rust` too; with `--lock merge` it is the merge lock of `story:finish` (EN-051).
 
 The third is `tools/hooks/` (EN-047): the Claude Code hooks written in Rust and what they share — a small JSON reader, the transcript's times, the background tasks of a session, a temporary twin of `status-tasks.ts` until F19 ports the status line onto it. Its binary `limit-agents` refuses a fourth subagent ([agent](./agent.md#hooks)).
 
