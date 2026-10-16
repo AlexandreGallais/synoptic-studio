@@ -25,6 +25,7 @@ Written on 2026-10-15 from the Product Owner's validation of E15 (VAL-014 to VAL
 10. A large font collection is read without running out of memory: a face of a collection is given as views of its tables, only the face kept is assembled, and every error of a read is said in one line (VAL-018, 2026-10-16: Apple Color Emoji, 192 MB, crashed the page).
 11. The font and weight lists offer only what the browser can draw: the installed fonts are read in the background, a family that cannot be read left out, and Inter's shipped metrics used only for the faces the browser draws with them, Inter missing said (VAL-018, 2026-10-16: Inter measured, Helvetica drawn).
 12. X and Y of a turned text show its turned top-left corner, updated when it turns; a corner typed moves the text there, its angle and size kept (VAL-018, 2026-10-16: turning a text left X and Y unchanged; provisional).
+13. A text that fits its content keeps its size when it is put in a box: the box becomes its block rounded up to integers, measured again at each switch, a turned text keeping its corner (VAL-018, 2026-10-16: Box drew the text in the box last typed; provisional).
 
 ## Stories
 
@@ -48,6 +49,7 @@ In delivery order.
 | [US-052](../stories/E15-F17-US-052-large-collection-read-without-running-out-of-memory.md) | User story | Read a large font collection without running out of memory                           | done   |
 | [US-053](../stories/E15-F17-US-053-installed-fonts-read-ahead-and-real-weights.md)         | User story | Installed fonts read ahead, and only the weights the browser draws                   | done   |
 | [US-054](../stories/E15-F17-US-054-turned-text-position-shows-its-corner.md)               | User story | X and Y of a turned text show its turned top-left corner                             | done   |
+| [US-055](../stories/E15-F17-US-055-fit-to-box-keeps-the-size.md)                           | User story | A text put in a box keeps its fitted size                                            | ready  |
 | [AUD-019](../stories/E15-F17-AUD-019-audit-f17.md)                                         | Audit      | Audit F17                                                                            | done   |
 | [VAL-018](../stories/E15-F17-VAL-018-validate-f17.md)                                      | Validation | Validate F17                                                                         | ready  |
 
@@ -67,6 +69,7 @@ In delivery order.
 | F17.AC10             | US-052                 | VAL-018             |
 | F17.AC11             | US-053                 | VAL-018             |
 | F17.AC12             | US-054                 | VAL-018             |
+| F17.AC13             | US-055                 | VAL-018             |
 
 ## Left for later
 
