@@ -656,6 +656,16 @@ describe("Installed fonts (US-036)", () => {
     expect(readOptions("text-weight")).toEqual(["400"]);
   });
 
+  it("[F17.AC14] keeps a face imported by hand that lacks the Latin letters, the designer having chosen it", async () => {
+    const bytes = lettersMissingFaceFile({ ...TEST_SANS, family: "Test Emoji" });
+
+    chooseFiles("font-file", [new File([new Uint8Array(bytes)], "TestEmoji.ttf")]);
+    await waitForPageTasks();
+
+    expect(readOptions("text-font")).toEqual(["Inter", "Test Emoji"]);
+    expect(readText("#font-message")).toBe("Test Emoji 400 imported.");
+  });
+
   it("[F17.AC14] says a family chosen before it is read that lacks the Latin letters", async () => {
     const [emoji, release] = heldFont(
       "Test Emoji",
