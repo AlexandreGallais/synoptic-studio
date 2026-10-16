@@ -1,5 +1,6 @@
 export * from "./block-height";
 export type * from "./block-line-heights";
+export * from "./box-around-block";
 export * from "./ellipsis-cut";
 export * from "./shown-line-count";
 export * from "./shown-lines";

@@ -1,4 +1,5 @@
 export * from "./average";
+export * from "./ceiling";
 export * from "./clamp";
 export * from "./fraction-from-percent";
 export * from "./integer-range";

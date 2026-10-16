@@ -40,5 +40,5 @@ From the Product Owner's first pass of VAL-018 (2026-10-16), finding C1: choosin
 
 One task = one commit, referenced as `US-055.Tn`.
 
-- [ ] T1 — The box around a measured block, each side rounded up within a rounding error; `DERIV-text-box` step 11, `REF-ECMA-262-MATH-CEIL` (1 h)
+- [x] T1 — The box around a measured block, each side rounded up within a rounding error; `DERIV-text-box` step 11, `REF-ECMA-262-MATH-CEIL` (1 h)
 - [ ] T2 — Choosing Box after Fit content writes that box in the fields, a turned text keeping its corner; `shapes.md` (1 h)
