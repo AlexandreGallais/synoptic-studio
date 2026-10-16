@@ -50,6 +50,8 @@ Rules: [domain, "Text"](../domain/shapes.md#text); decisions: [ADR-0052](../adr/
 
 ## How to try it
 
+**Validation**: `npm run dev`, then `http://localhost:5173/?checklist=E15`: one page listing E15's options, one line each, what to try and what to see, a check box before it, the boxes ticked kept in this browser (US-051). Since then the plain address opens no guided test: the steps below come back only in `?guide=epic`, at the numbers given for the epic review.
+
 Install Inter 4.1 first (Font Book on macOS shows it). Then `npm run dev` and `http://localhost:5173`: 36 steps, each one line to do and one to look at; **Next** types the text. E15 is validated at once (VAL-017): they are steps 1 to 36 of its 176, before F14's, F16's and F15's; at the epic review, steps 88 to 123 of `?guide=epic`.
 
 | Steps | What                                                                                                                       |

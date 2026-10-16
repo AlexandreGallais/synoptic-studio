@@ -163,7 +163,7 @@
 | [US-048](./E15-F17-US-048-fluid-changes-held-keys.md)                         | F17     | Values changed fast redrawn without lag                                              | done   |
 | [US-049](./E15-F17-US-049-background-band-ends-with-its-line.md)              | F17     | A wrapped text's background band ends with its line                                  | done   |
 | [US-050](./E15-F17-US-050-turned-text-frames-as-shapes.md)                    | F17     | A turned text's frames drawn as a turned shape's                                     | done   |
-| [US-051](./E15-F17-US-051-validation-checklist-page.md)                       | F17     | Validation on one checklist page                                                     | ready  |
+| [US-051](./E15-F17-US-051-validation-checklist-page.md)                       | F17     | Validation on one checklist page                                                     | done   |
 | [EN-044](./E15-F17-EN-044-val-steps-as-a-checklist.md)                        | F17     | The run and review skills validate with a checklist page                             | ready  |
 | [AUD-019](./E15-F17-AUD-019-audit-f17.md)                                     | F17     | Audit F17                                                                            | ready  |
 | [VAL-018](./E15-F17-VAL-018-validate-f17.md)                                  | F17     | Validate F17                                                                         | ready  |

@@ -40,6 +40,8 @@ Rules: [domain, "Colors"](../domain/interaction.md#_5-colors-align-and-distribut
 
 ## How to try it
 
+**Validation**: `npm run dev`, then `http://localhost:5173/?checklist=E15`: one page listing E15's options, one line each, what to try and what to see, a check box before it, the boxes ticked kept in this browser (US-051). Since then the plain address opens no guided test: the steps below come back only in `?guide=epic`, at the numbers given for the epic review.
+
 `npm run dev` and `http://localhost:5173`: 42 steps, each one line to do and one to look at; **Next** types the text and its colors. E15 is validated at once (VAL-017): they are steps 78 to 119 of its 176, numbered so below; at the epic review, steps 165 to 206 of `?guide=epic`. Next does not choose the picker's model: a step that needs one names it.
 
 | Steps   | What                                                                                                    |

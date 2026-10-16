@@ -3,7 +3,7 @@ id: US-051
 epic: E15
 feature: F17
 title: Validation on one checklist page
-status: ready
+status: done
 points: 2
 ---
 
@@ -30,5 +30,5 @@ From the Product Owner's validation of E15 (2026-10-15): the long step-by-step g
 
 One task = one commit, referenced as `US-051.Tn`.
 
-- [ ] T1 — The checklist page in the playground, its lines from a list, tested (3 h)
-- [ ] T2 — E15's checklist written from the delivered features (2 h)
+- [x] T1 — The checklist page in the playground, its lines from a list, tested (3 h)
+- [x] T2 — E15's checklist written from the delivered features (2 h)
