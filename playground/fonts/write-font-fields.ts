@@ -7,12 +7,36 @@ import { writeFontSession } from "./write-font-session";
 import { writeWeightChoice } from "./write-weight-choice";
 import { WRITTEN_FONT_LISTS } from "./written-font-lists";
 
+import type { FontSession } from "./font-session";
+import type { FontFamily } from "../../src";
+
 /** The weight the page opens with, read when the list holds none chosen (`REF-CSS-FONTS-4`, §2.2). */
 const REGULAR = 400;
 
 /**
+ * Reads the kept family the text may be measured with, shown in the font list: any once the
+ * installed fonts are read; while they are, none read ahead — its files not read again —, so that
+ * no family read ahead is chosen before the reading ends (US-060), a family imported meanwhile
+ * measured with at once.
+ *
+ * @kind procedure
+ * @param session - the session's fonts
+ * @param chosen - the family shown in the font list
+ * @returns the kept family; undefined when none is kept under that name or it may not be measured with
+ * @see docs/backlog/stories/E15-F17-US-060-chosen-font-file-held.md
+ */
+function readMeasurableFamily(session: FontSession, chosen: string): FontFamily | undefined {
+  const isReadAhead =
+    session.installed.length > 0 &&
+    session.readAhead.some((read) => isSameFamilyName(read.family, chosen));
+
+  return isReadAhead ? undefined : session.kept.find((kept) => isSameFamilyName(kept.name, chosen));
+}
+
+/**
  * Keeps the family chosen in the font list as the one the text is measured with, when its metrics
- * are read: an installed family chosen and not read yet leaves the family chosen before it.
+ * are read: an installed family chosen and not read yet leaves the family chosen before it, and
+ * so does a family read ahead while the installed fonts are read (`readMeasurableFamily`, US-060).
  *
  * @kind procedure
  * @param document - page document
@@ -22,7 +46,7 @@ function writeMeasuredFamily(document: Document): void {
   const font = selectElement(document, "text-font");
   const chosen = font instanceof HTMLSelectElement ? font.value : "";
   const session = readFontSession(document);
-  const family = session.kept.find((kept) => isSameFamilyName(kept.name, chosen));
+  const family = readMeasurableFamily(session, chosen);
 
   if (family !== undefined) {
     writeFontSession(document, { ...session, measured: family.name });

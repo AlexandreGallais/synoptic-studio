@@ -173,6 +173,7 @@
 | [US-057](./E15-F17-US-057-box-size-kept.md)                                       | F17     | The box typed comes back when the text returns to Box                                | done   |
 | [US-058](./E15-F17-US-058-ellipsis-on-a-line-holding-text.md)                     | F17     | The ellipsis on the last line shown holding text                                     | done   |
 | [US-059](./E15-F17-US-059-approved-fonts-only.md)                                 | F17     | Only fonts read and approved, imported ones too                                      | done   |
+| [US-060](./E15-F17-US-060-chosen-font-file-held.md)                               | F17     | The font chosen automatically holds its files                                        | ready  |
 | [AUD-019](./E15-F17-AUD-019-audit-f17.md)                                         | F17     | Audit F17                                                                            | done   |
 | [VAL-018](./E15-F17-VAL-018-validate-f17.md)                                      | F17     | Validate F17                                                                         | ready  |
 | [NAM-001](./E15-NAM-001-naming-pass-e15.md)                                       | E15     | Naming pass over the code of E15                                                     | done   |
