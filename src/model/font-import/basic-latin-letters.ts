@@ -16,7 +16,7 @@ const LAST_LOWERCASE = 0x7a;
  * The code points of the ISO basic Latin alphabet, its 26 uppercase letters then its 26
  * lowercase ones, at "positions in hexadecimal notation 41 to 5A for uppercase and 61 to 7A for
  * lowercase" in ISO/IEC 10646 (`REF-WIKI-ISO-BASIC-LATIN`): the letters a font must map for the
- * editor to list it, Latin script being its target (ADR-0060, US-056).
+ * editor to list it, whatever its script (ADR-0061, US-056).
  */
 export const BASIC_LATIN_LETTERS: readonly number[] = [
   ...integerRange(FIRST_UPPERCASE, LAST_UPPERCASE),

@@ -1,6 +1,6 @@
 # ADR-0060 — No HTML layer; fonts embedded only when a file is written
 
-**Status**: Accepted (Product Owner, 2026-10-15, at the validation of E15, VAL-017). Supersedes ADR-0053, decision 1 (the HTML layer) and decision 3 for `switch` and `foreignObject`; amends its decision 2 (embedded fonts) on when the fonts are written; its decision 3 for `style` and its decision 4 stand. Amends ADR-0052, decisions 6 and 8.
+**Status**: Accepted (Product Owner, 2026-10-15, at the validation of E15, VAL-017). Supersedes ADR-0053, decision 1 (the HTML layer) and decision 3 for `switch` and `foreignObject`; amends its decision 2 (embedded fonts) on when the fonts are written; its decision 3 for `style` and its decision 4 stand. Amends ADR-0052, decisions 6 and 8. Decision 4 refined by ADR-0061 (2026-10-16): an installed font lacking a basic Latin letter is not listed, whatever its script.
 
 ## Context
 

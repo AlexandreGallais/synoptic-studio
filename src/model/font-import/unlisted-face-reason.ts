@@ -7,7 +7,7 @@ export type UnlistedFaceReason = "no-latin-letters" | "not-embeddable";
 
 /**
  * Why a face cannot be listed, the editor unable to draw, measure and embed it (US-056,
- * provisional): a file whose `fsType` does not permit embedding it whole (`FontFile.isEmbeddable`,
+ * ADR-0061): a file whose `fsType` does not permit embedding it whole (`FontFile.isEmbeddable`,
  * `DERIV-font-embedding`, step 3), said first, the one order of the reasons
  * (`shapes.md`, Only usable fonts listed); else a font that lacks a letter of the ISO basic
  * Latin alphabet (`hasBasicLatinLetters`). Metrics shipped without their file, Inter's, are
