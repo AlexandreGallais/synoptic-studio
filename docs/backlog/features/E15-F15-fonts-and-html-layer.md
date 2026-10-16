@@ -44,7 +44,7 @@ In delivery order.
 
 ## Left for later
 
-- Arabic and Indian scripts: not supported; the HTML layer that laid them out was removed at the validation, the editor targeting the Latin script (Product Owner, 2026-10-15, ADR-0060, F17).
+- Arabic and Indic scripts: not supported; the HTML layer that laid them out was removed at the validation, the editor targeting the Latin script (Product Owner, 2026-10-15, ADR-0060, F17).
 - A font embedded once in a synoptic view for all its symbols: with the views (E08); F15 embeds each face once per document, a symbol.
 - Fonts kept across sessions: with the editor's files (E02).
 - WOFF and WOFF2 files: not asked. Installed faces held in a collection: read by F17 (US-046).

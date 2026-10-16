@@ -1,6 +1,6 @@
 # ADR-0052 — Text measured from font metrics and drawn as positioned lines
 
-**Status**: Accepted, decision 4 amended by ADR-0054 and ADR-0055, decision 1 amended by ADR-0055, decisions 7 and 8 settled by ADR-0053 (agent, SP-015, 2026-10-14, from the Product Owner's decisions of F05's refinement, round 2: the library computes the lines, text readable by every SVG reader, measuring as fast as a sum of numbers, no text converted to paths). Settles Q31 for F05; the HTML layer and font embedding are left to ADR-0053 (F15). Adds `tspan` to the SVG elements allowed in symbols (ADR-0002).
+**Status**: Accepted, decision 4 amended by ADR-0054 and ADR-0055, decision 1 amended by ADR-0055, decisions 7 and 8 settled by ADR-0053, decisions 6 and 8 amended by ADR-0060 (no HTML layer; Arabic and Indic scripts not supported) (agent, SP-015, 2026-10-14, from the Product Owner's decisions of F05's refinement, round 2: the library computes the lines, text readable by every SVG reader, measuring as fast as a sum of numbers, no text converted to paths). Settles Q31 for F05; the HTML layer and font embedding are left to ADR-0053 (F15). Adds `tspan` to the SVG elements allowed in symbols (ADR-0002).
 
 ## Context
 

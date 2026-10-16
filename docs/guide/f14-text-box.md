@@ -39,7 +39,7 @@ Rules: [domain, "Text"](../domain/shapes.md#text); formulas: [`DERIV-text-box`](
 
 ![Two lines centered in the middle of a box 120 × 80](./images/f14-aligned.svg)
 
-**Background.** Each line gets a band from the ascender to the descender, as long as the line, its "…" included; an empty line has none. All bands are one `<path>` under the letters, so that where bands overlap, under a small line height, the overlap is filled once.
+**Background.** Each line gets a band from the ascender to the descender, as long as the line, its "…" included, ending with its last character other than a space (US-049); an empty line has none. All bands are one `<path>` under the letters, so that where bands overlap, under a small line height, the overlap is filled once.
 
 ![A yellow band behind each line](./images/f14-background.svg)
 
@@ -53,16 +53,16 @@ Rules: [domain, "Text"](../domain/shapes.md#text); formulas: [`DERIV-text-box`](
 
 Install Inter 4.1 first, as for F05. Then `npm run dev` and `http://localhost:5173`: 41 steps, each one line to do and one to look at; **Next** types the text and its box. E15 is validated at once (VAL-017): they are steps 37 to 77 of its 176, numbered so below; at the epic review, steps 124 to 164 of `?guide=epic`. These are the numbers of the run on 2026-10-15: F17 removed steps 39 and 55, the break at a character, a word too long now always kept whole (US-042), then steps 47, 65 and 66, the balanced wrap, lines now always wrapped automatically (US-043). The steps give each example in Inter 16, whose metrics ship with the library.
 
-| Steps | What                                                                                                                                                                      |
-| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 37–47 | Fit content or Box, width and height, long words broken or moved whole, the ellipsis, max lines, vertical alignment, alignment across the box, line height, trim, balance |
-| 48–49 | the background, its color and opacity                                                                                                                                     |
-| 50–51 | turned about the box's middle, values refused                                                                                                                             |
-| 52    | back to Fit content: the text draws as in F05                                                                                                                             |
-| 53–74 | the 22 decisions below, one step each with its example                                                                                                                    |
-| 75    | a turned box resized in place, its turned top-left corner kept (ADR-0057, US-038)                                                                                         |
-| 76    | a turned box's straight box, upright, with its x, y, width and height (US-039)                                                                                            |
-| 77    | back to the rectangle, drawn as before                                                                                                                                    |
+| Steps | What                                                                                                                                                                                                             |
+| ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 37–47 | Fit content or Box, width and height, a long word kept whole, the ellipsis, max lines, vertical alignment, alignment across the box, line height, trim (the break at a character and the balance removed by F17) |
+| 48–49 | the background, its color and opacity                                                                                                                                                                            |
+| 50–51 | turned about the box's middle, values refused                                                                                                                                                                    |
+| 52    | back to Fit content: the text draws as in F05                                                                                                                                                                    |
+| 53–74 | the 22 decisions below, one step each with its example                                                                                                                                                           |
+| 75    | a turned box resized in place, its turned top-left corner kept (ADR-0057, US-038)                                                                                                                                |
+| 76    | a turned box's straight box, upright, with its x, y, width and height (US-039)                                                                                                                                   |
+| 77    | back to the rectangle, drawn as before                                                                                                                                                                           |
 
 ## Decided by the agent, to confirm
 
