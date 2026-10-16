@@ -3,7 +3,7 @@ id: EN-045
 epic: E17
 feature: F18
 title: Every check tool given explicit targets
-status: in-progress
+status: done
 points: 2
 ---
 

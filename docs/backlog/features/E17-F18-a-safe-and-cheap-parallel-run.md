@@ -38,31 +38,31 @@ Written at RET-003 (2026-10-16) from the Product Owner's decisions (ADR-0063, AD
 
 In delivery order.
 
-| ID                                                                                   | Type       | Title                                                              | Status      |
-| ------------------------------------------------------------------------------------ | ---------- | ------------------------------------------------------------------ | ----------- |
-| [SP-020](../stories/E17-F18-SP-020-research-f18.md)                                  | Spike      | Research for F18, the sources of RET-003 recorded                  | draft       |
-| [EN-045](../stories/E17-F18-EN-045-explicit-tool-scopes.md)                          | Enabler    | Every check tool given explicit targets                            | in-progress |
-| [EN-047](../stories/E17-F18-EN-047-heavy-lock-and-agent-limit.md)                    | Enabler    | A lock for heavy commands and a limit on subagents                 | draft       |
-| [EN-048](../stories/E17-F18-EN-048-tables-without-padding-and-union-logs.md)         | Enabler    | Tables without padding, append-only logs merged by union           | draft       |
-| [EN-049](../stories/E17-F18-EN-049-stories-index-generated.md)                       | Enabler    | The stories index generated from the story files                   | draft       |
-| [EN-050](../stories/E17-F18-EN-050-shared-files-written-at-merge.md)                 | Enabler    | Shared files written only at merge                                 | draft       |
-| [EN-051](../stories/E17-F18-EN-051-story-finish-one-merge-at-a-time.md)              | Enabler    | `story:finish` one merge at a time, from a worktree too            | draft       |
-| [CHK-019](../stories/E17-F18-CHK-019-checkpoint-f18.md)                              | Checkpoint | Checkpoint in the middle of F18                                    | draft       |
-| [EN-052](../stories/E17-F18-EN-052-worktrees-named-after-their-story.md)             | Enabler    | Worktrees named after their story, commands that fit them          | draft       |
-| [EN-053](../stories/E17-F18-EN-053-session-figures-and-background-subagents.md)      | Enabler    | The session's figures at its end, background subagents seen        | draft       |
-| [EN-054](../stories/E17-F18-EN-054-timing-tests-that-hold-under-load.md)             | Enabler    | Timing tests that hold under load                                  | draft       |
-| [EN-055](../stories/E17-F18-EN-055-epic-check-says-what-failed.md)                   | Enabler    | `epic:check` says what failed; the golden check at push            | draft       |
-| [EN-056](../stories/E17-F18-EN-056-a-short-checklist.md)                             | Enabler    | A short checklist, prepared by `val:prepare`                       | draft       |
-| [EN-057](../stories/E17-F18-EN-057-register-of-exceptions-and-a-byte-buffer.md)      | Enabler    | The register of exceptions, and a byte buffer for font collections | draft       |
-| [US-061](../stories/E17-F18-US-061-font-list-held-while-the-default-font-is-read.md) | User story | Font list held while the default font is read again                | draft       |
-| [EN-058](../stories/E17-F18-EN-058-a-mutation-runner.md)                             | Enabler    | A mutation runner as a tool                                        | draft       |
-| [EN-059](../stories/E17-F18-EN-059-done-commit-checks-the-docs.md)                   | Enabler    | The done commit checks the docs a rule touches                     | draft       |
-| [EN-060](../stories/E17-F18-EN-060-documentation-pass-on-e15-pages.md)               | Enabler    | A documentation pass on E15's long pages                           | draft       |
-| [EN-061](../stories/E17-F18-EN-061-modules-per-folder-counted.md)                    | Enabler    | Modules per folder counted, no spread in a fold                    | draft       |
-| [EN-062](../stories/E17-F18-EN-062-inter-as-a-test-font.md)                          | Enabler    | Inter Regular as a test font file                                  | draft       |
-| [EN-046](../stories/E17-F18-EN-046-release-pr-on-develop.md)                         | Enabler    | Release pull request on develop, only the release on main          | draft       |
-| [AUD-020](../stories/E17-F18-AUD-020-audit-f18.md)                                   | Audit      | Audit F18                                                          | draft       |
-| [VAL-019](../stories/E17-F18-VAL-019-validate-f18.md)                                | Validation | Validate F18                                                       | draft       |
+| ID                                                                                   | Type       | Title                                                              | Status |
+| ------------------------------------------------------------------------------------ | ---------- | ------------------------------------------------------------------ | ------ |
+| [SP-020](../stories/E17-F18-SP-020-research-f18.md)                                  | Spike      | Research for F18, the sources of RET-003 recorded                  | draft  |
+| [EN-045](../stories/E17-F18-EN-045-explicit-tool-scopes.md)                          | Enabler    | Every check tool given explicit targets                            | done   |
+| [EN-047](../stories/E17-F18-EN-047-heavy-lock-and-agent-limit.md)                    | Enabler    | A lock for heavy commands and a limit on subagents                 | draft  |
+| [EN-048](../stories/E17-F18-EN-048-tables-without-padding-and-union-logs.md)         | Enabler    | Tables without padding, append-only logs merged by union           | draft  |
+| [EN-049](../stories/E17-F18-EN-049-stories-index-generated.md)                       | Enabler    | The stories index generated from the story files                   | draft  |
+| [EN-050](../stories/E17-F18-EN-050-shared-files-written-at-merge.md)                 | Enabler    | Shared files written only at merge                                 | draft  |
+| [EN-051](../stories/E17-F18-EN-051-story-finish-one-merge-at-a-time.md)              | Enabler    | `story:finish` one merge at a time, from a worktree too            | draft  |
+| [CHK-019](../stories/E17-F18-CHK-019-checkpoint-f18.md)                              | Checkpoint | Checkpoint in the middle of F18                                    | draft  |
+| [EN-052](../stories/E17-F18-EN-052-worktrees-named-after-their-story.md)             | Enabler    | Worktrees named after their story, commands that fit them          | draft  |
+| [EN-053](../stories/E17-F18-EN-053-session-figures-and-background-subagents.md)      | Enabler    | The session's figures at its end, background subagents seen        | draft  |
+| [EN-054](../stories/E17-F18-EN-054-timing-tests-that-hold-under-load.md)             | Enabler    | Timing tests that hold under load                                  | draft  |
+| [EN-055](../stories/E17-F18-EN-055-epic-check-says-what-failed.md)                   | Enabler    | `epic:check` says what failed; the golden check at push            | draft  |
+| [EN-056](../stories/E17-F18-EN-056-a-short-checklist.md)                             | Enabler    | A short checklist, prepared by `val:prepare`                       | draft  |
+| [EN-057](../stories/E17-F18-EN-057-register-of-exceptions-and-a-byte-buffer.md)      | Enabler    | The register of exceptions, and a byte buffer for font collections | draft  |
+| [US-061](../stories/E17-F18-US-061-font-list-held-while-the-default-font-is-read.md) | User story | Font list held while the default font is read again                | draft  |
+| [EN-058](../stories/E17-F18-EN-058-a-mutation-runner.md)                             | Enabler    | A mutation runner as a tool                                        | draft  |
+| [EN-059](../stories/E17-F18-EN-059-done-commit-checks-the-docs.md)                   | Enabler    | The done commit checks the docs a rule touches                     | draft  |
+| [EN-060](../stories/E17-F18-EN-060-documentation-pass-on-e15-pages.md)               | Enabler    | A documentation pass on E15's long pages                           | draft  |
+| [EN-061](../stories/E17-F18-EN-061-modules-per-folder-counted.md)                    | Enabler    | Modules per folder counted, no spread in a fold                    | draft  |
+| [EN-062](../stories/E17-F18-EN-062-inter-as-a-test-font.md)                          | Enabler    | Inter Regular as a test font file                                  | draft  |
+| [EN-046](../stories/E17-F18-EN-046-release-pr-on-develop.md)                         | Enabler    | Release pull request on develop, only the release on main          | draft  |
+| [AUD-020](../stories/E17-F18-AUD-020-audit-f18.md)                                   | Audit      | Audit F18                                                          | draft  |
+| [VAL-019](../stories/E17-F18-VAL-019-validate-f18.md)                                | Validation | Validate F18                                                       | draft  |
 
 ## Feature plan
 
