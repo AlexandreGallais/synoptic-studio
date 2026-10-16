@@ -179,3 +179,28 @@
 | [NAM-001](./E15-NAM-001-naming-pass-e15.md)                                       | E15     | Naming pass over the code of E15                                                     | done        |
 | [REV-003](./E15-REV-003-review-e15.md)                                            | E15     | Review E15 with the Product Owner                                                    | done        |
 | [RET-003](./E15-RET-003-retrospective-e15.md)                                     | E15     | Retrospective of E15                                                                 | in-progress |
+| [SP-020](./E17-F18-SP-020-research-f18.md)                                        | F18     | Research for F18, the sources of RET-003 recorded                                    | draft       |
+| [EN-047](./E17-F18-EN-047-heavy-lock-and-agent-limit.md)                          | F18     | A lock for heavy commands and a limit on subagents                                   | draft       |
+| [EN-048](./E17-F18-EN-048-tables-without-padding-and-union-logs.md)               | F18     | Tables without padding, append-only logs merged by union                             | draft       |
+| [EN-049](./E17-F18-EN-049-stories-index-generated.md)                             | F18     | The stories index generated from the story files                                     | draft       |
+| [EN-050](./E17-F18-EN-050-shared-files-written-at-merge.md)                       | F18     | Shared files written only at merge                                                   | draft       |
+| [EN-051](./E17-F18-EN-051-story-finish-one-merge-at-a-time.md)                    | F18     | `story:finish` one merge at a time, from a worktree too                              | draft       |
+| [CHK-019](./E17-F18-CHK-019-checkpoint-f18.md)                                    | F18     | Checkpoint in the middle of F18                                                      | draft       |
+| [EN-052](./E17-F18-EN-052-worktrees-named-after-their-story.md)                   | F18     | Worktrees named after their story, commands that fit them                            | draft       |
+| [EN-053](./E17-F18-EN-053-session-figures-and-background-subagents.md)            | F18     | The session's figures at its end, background subagents seen                          | draft       |
+| [EN-054](./E17-F18-EN-054-timing-tests-that-hold-under-load.md)                   | F18     | Timing tests that hold under load                                                    | draft       |
+| [EN-055](./E17-F18-EN-055-epic-check-says-what-failed.md)                         | F18     | `epic:check` says what failed; the golden check at push                              | draft       |
+| [EN-056](./E17-F18-EN-056-a-short-checklist.md)                                   | F18     | A short checklist, prepared by `val:prepare`                                         | draft       |
+| [EN-057](./E17-F18-EN-057-register-of-exceptions-and-a-byte-buffer.md)            | F18     | The register of exceptions, and a byte buffer for font collections                   | draft       |
+| [US-061](./E17-F18-US-061-font-list-held-while-the-default-font-is-read.md)       | F18     | Font list held while the default font is read again                                  | draft       |
+| [EN-058](./E17-F18-EN-058-a-mutation-runner.md)                                   | F18     | A mutation runner as a tool                                                          | draft       |
+| [EN-059](./E17-F18-EN-059-done-commit-checks-the-docs.md)                         | F18     | The done commit checks the docs a rule touches                                       | draft       |
+| [EN-060](./E17-F18-EN-060-documentation-pass-on-e15-pages.md)                     | F18     | A documentation pass on E15's long pages                                             | draft       |
+| [EN-061](./E17-F18-EN-061-modules-per-folder-counted.md)                          | F18     | Modules per folder counted, no spread in a fold                                      | draft       |
+| [EN-062](./E17-F18-EN-062-inter-as-a-test-font.md)                                | F18     | Inter Regular as a test font file                                                    | draft       |
+| [EN-046](./E17-F18-EN-046-release-pr-on-develop.md)                               | F18     | Release pull request on develop, only the release on main                            | draft       |
+| [AUD-020](./E17-F18-AUD-020-audit-f18.md)                                         | F18     | Audit F18                                                                            | draft       |
+| [VAL-019](./E17-F18-VAL-019-validate-f18.md)                                      | F18     | Validate F18                                                                         | draft       |
+| [NAM-002](./E17-NAM-002-naming-pass-e17.md)                                       | E17     | Naming pass over the code of E17                                                     | draft       |
+| [REV-004](./E17-REV-004-review-e17.md)                                            | E17     | Review E17 with the Product Owner                                                    | draft       |
+| [RET-004](./E17-RET-004-retrospective-e17.md)                                     | E17     | Retrospective of E17                                                                 | draft       |

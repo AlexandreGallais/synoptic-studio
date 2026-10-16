@@ -38,6 +38,8 @@ Decided by the Product Owner on 2026-10-12: text is too large a subject for one 
 
   `main` then never holds a commit that `develop` lacks, and `develop` follows `main` by a fast-forward. `develop` stays: it is the integration branch.
 
+  Moved at RET-003 to EN-046, in E17: the release of E15 (#259) waits until the end of E17 (Product Owner, 2026-10-16).
+
 ## Features
 
 | Feature                                                                                                             | Status |
