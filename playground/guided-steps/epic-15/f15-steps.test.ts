@@ -9,7 +9,6 @@ import {
   chooseOption,
   clickElement,
   openOnStep,
-  openServedPage,
   readDisplay,
   readText,
   readValue,
@@ -196,12 +195,11 @@ afterEach(() => {
 });
 
 describe("the guided test of E15 (VAL-017): F05, F14, F16 and F15 in a row", () => {
-  it("is the current guided test, F05's steps first and F15's last", () => {
-    openServedPage("");
+  it("ends the epic's guided test, F05's steps first and F15's last; no longer the current one", () => {
+    // E15 is validated on its checklist (US-051): the steps stay in `?guide=epic` only.
+    expect(CURRENT_GUIDED_STEPS).toEqual([]);
 
-    expect(readText("#guide-title")).toBe("F05 · Inter installed");
-
-    expect(CURRENT_GUIDED_STEPS.map((step) => step.title.slice(0, 3))).toEqual([
+    expect(GUIDED_STEPS.slice(-155).map((step) => step.title.slice(0, 3))).toEqual([
       ...Array.from({ length: 36 }, () => "F05"),
       ...Array.from({ length: 38 }, () => "F14"),
       ...Array.from({ length: 42 }, () => "F16"),

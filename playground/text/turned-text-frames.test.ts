@@ -48,6 +48,7 @@ function readRectangleFrames(angle: string): readonly (readonly (string | null)[
   clickElement("tool-rectangle");
   typeValue("width", "60");
   typeValue("height", "40");
+  typeValue("radius", "0");
   typeValue("shape-x", "0");
   typeValue("shape-y", "0");
   typeValue("angle", angle);

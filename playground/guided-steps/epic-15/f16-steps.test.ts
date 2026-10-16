@@ -15,7 +15,7 @@ import {
   setElementBox,
   typeValue,
 } from "../../user-actions";
-import { CURRENT_GUIDED_STEPS, GUIDED_STEPS } from "../lists";
+import { GUIDED_STEPS } from "../lists";
 
 /**
  * Opens the playground's epic list on a step of F16, found by its title, the plane laid out
@@ -132,8 +132,8 @@ function isChecked(id: string): boolean {
 }
 
 describe("the guided test of F16 (VAL-016): the ways to type and pick a color", () => {
-  it("is in the current guided test, and Next from F14's last step types F16's first", () => {
-    expect(CURRENT_GUIDED_STEPS.map((step) => step.title)).toContain("F16 · Six digits");
+  it("is in the epic's guided test, and Next from F14's last step types F16's first", () => {
+    expect(GUIDED_STEPS.map((step) => step.title)).toContain("F16 · Six digits");
 
     openStep("Six digits");
     clickElement("guide-previous");

@@ -160,6 +160,55 @@
         min-height: 2.5rem;
         font: inherit;
       }
+      /* The checklist of an epic (US-051): one scrolling card on the left of the stage, a box per line. */
+      #checklist {
+        position: absolute;
+        top: 4rem;
+        bottom: 0.75rem;
+        left: 0.75rem;
+        width: min(26rem, calc(100% - 1.5rem));
+        padding: 0.75rem 1rem;
+        overflow: auto;
+        background: var(--panel);
+        border-left: 4px solid var(--accent);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+      }
+      #checklist h2 {
+        margin: 0 0 0.5rem;
+        font-size: 1rem;
+      }
+      #checklist-lines {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+      }
+      #checklist-lines li + li {
+        border-top: 1px solid var(--line);
+      }
+      #checklist-lines label {
+        display: grid;
+        grid-template-columns: auto auto 1fr;
+        gap: 0.1rem 0.5rem;
+        padding: 0.4rem 0;
+        cursor: pointer;
+      }
+      #checklist-lines input {
+        grid-row: span 2;
+        margin-top: 0.15rem;
+      }
+      .checklist-feature {
+        grid-row: span 2;
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+      .checklist-see {
+        grid-column: 3;
+        color: var(--muted);
+      }
+      #checklist-lines input:checked ~ span {
+        opacity: 0.55;
+      }
       aside {
         padding: 1rem;
         overflow: auto;
@@ -483,6 +532,10 @@
           </button>
         </p>
       </nav>
+      <section id="checklist" aria-labelledby="checklist-heading" hidden>
+        <h2 id="checklist-heading">Checklist of <span id="checklist-name"></span></h2>
+        <ol id="checklist-lines"></ol>
+      </section>
       <section id="guide" aria-label="Guided test" hidden>
         <h2>Guided test — step <span id="guide-number"></span> / <span id="guide-count"></span></h2>
         <h3 id="guide-title"></h3>
