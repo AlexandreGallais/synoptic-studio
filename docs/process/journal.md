@@ -2,6 +2,11 @@
 
 What each working session dealt with, in the agent's words: the Product Owner's requests in neutral words, decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`).
 
+## 2026-10-16 — Run of E17 started: F18, with F19's spike in parallel
+
+- `#run` The Product Owner started a run on 2026-10-16: scope F18 (a safe and cheap parallel run, with E15's leftovers), and F19's spike (SP-021) in parallel. E17 and F18 are `in-progress`, F18's stories `ready`, on `feature/f18-safe-and-cheap-parallel-run`.
+- `#decision` Refinement of E17: order F18, F19, F20; the `check:all` target is set after F19's spike; Rust is already installed on the Product Owner's machine; four Claude Code settings recommended by research become stories (EN-063 in F18, EN-064 to EN-066 in F20), each shown to the Product Owner before it is applied; the model per task is measured from E17. Recorded in the epic file.
+
 ## 2026-10-16 — F17 validated, E15 reviewed
 
 - `#decision` VAL-018's third pass: US-059 and US-060 accepted, F17 done. Three points left by US-060 went to the improvement log for RET-003.
