@@ -61,7 +61,7 @@ In delivery order.
 | [US-059](../stories/E15-F17-US-059-approved-fonts-only.md)                                 | User story | Only fonts read and approved, imported ones too                                      | done   |
 | [US-060](../stories/E15-F17-US-060-chosen-font-file-held.md)                               | User story | The font chosen automatically holds its files                                        | done   |
 | [AUD-019](../stories/E15-F17-AUD-019-audit-f17.md)                                         | Audit      | Audit F17                                                                            | done   |
-| [VAL-018](../stories/E15-F17-VAL-018-validate-f17.md)                                      | Validation | Validate F17                                                                         | ready  |
+| [VAL-018](../stories/E15-F17-VAL-018-validate-f17.md)                                      | Validation | Validate F17                                                                         | done   |
 
 ## Feature plan
 
