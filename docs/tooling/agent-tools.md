@@ -119,6 +119,19 @@ Rust is installed on the machine. Decided at RET-003 (Product Owner, 2026-10-16)
 
 The Rust tools live in this repository, beside the TypeScript, with their own checks (rustfmt, clippy); the library stays dependency-free.
 
+**Every new script, hook or agent tool is written in Rust** (decided 2026-10-16, E17's goal): a crate of `tools/` without a crates.io dependency, its name added to `check:rust`; the TypeScript tools may still be edited until F19 rewrites them (`AGENTS.md`, `.claude/rules/tooling.md`, the worker brief).
+
+| Crate           | Story          | Run by                                                                                       |
+| --------------- | -------------- | -------------------------------------------------------------------------------------------- |
+| `backlog-index` | EN-049         | `npm run backlog:index`, `backlog:status`                                                    |
+| `heavy-lock`    | EN-047, EN-051 | `check:all`, `test`, `golden:check`, `docs:build`, `mutate`; `story:finish` (`--lock merge`) |
+| `hooks`         | EN-047         | the `limit-agents` hook                                                                      |
+| `shared-files`  | EN-050         | the `pre-push` hook; `story:finish` (`move-rows`)                                            |
+| `worktree`      | EN-052         | `npm run worktree:new`                                                                       |
+| `val-prepare`   | EN-056         | `npm run val:prepare`                                                                        |
+| `mutate`        | EN-058         | `npm run mutate`                                                                             |
+| `rule-docs`     | EN-059         | the `commit-msg` hook, at a `done` commit                                                    |
+
 The first is `tools/backlog-index/` (EN-049): a Cargo crate without a crates.io dependency, its tests beside its code, checked by `npm run check:rust` (`cargo fmt --check`, `cargo clippy -- -D warnings`, `cargo test`), part of `check` and `check:all`; its build output `target/` is ignored by Git and by every check tool. SP-021 proposes the lasting layout of the crates.
 
 The second is `tools/heavy-lock/` (EN-047), the heavy lock, run by `check:all`, `test`, `golden:check` and `docs:build` (`cargo run --release`) and checked by `check:rust` too; with `--lock merge` it is the merge lock of `story:finish` (EN-051).
@@ -131,4 +144,6 @@ The fifth is `tools/worktree/` (EN-052): its binary `worktree-new`, run by `npm 
 
 The sixth is `tools/val-prepare/` (EN-056): run by `npm run val:prepare -- <feature>` at a `VAL`, by the main thread, it reads the feature's numbered acceptance criteria and writes `playground/checklists/epic-<n>-<feature>-lines.ts`, one line per criterion to rewrite as what to try and what to see, adds them to the epic's checklist (`epic-<n>-checklist.ts`, made if missing), registers that checklist for `?checklist=<epic>` and prints the address. It writes no guided-steps file, refuses a feature without numbered criteria or whose lines exist, and warns above 12 criteria, the limit `checklist-line-limit.test.ts` holds per feature.
 
-The seventh is `tools/rule-docs/` (EN-059, F18.AC16): its binary `check-rule-docs`, run by the `commit-msg` hook when the message has a `Closes:` footer, keeps a rule's docs up to date. For each story the commit closes, it gathers the files of the story's commits — those whose `Refs:` or `Closes:` footer names the story or one of its tasks — and the files staged; when they change a file of `docs/domain/`, it asks for the Q row of `docs/domain/README.md`, the decisions to confirm of the feature's VAL (`docs/backlog/stories/*-F<nn>-VAL-*.md`) and the guide page (`docs/guide/f<nn>-*.md`, `e<nn>-*.md` for an epic's story) among them, and refuses the commit naming each one missing, unless the message holds the line `Rule-docs: none affected, <why>`. It runs at commit, not at push, so that the `done` commit itself is refused and made again, rather than amended after a push; a file changed counts, not the rows inside it.
+The seventh is `tools/mutate/` (EN-058): run by `npm run mutate` under the heavy lock, it copies the repository as a temporary worktree and reports each mutation caught or surviving (the row above).
+
+The eighth is `tools/rule-docs/` (EN-059, F18.AC16): its binary `check-rule-docs`, run by the `commit-msg` hook when the message has a `Closes:` footer, keeps a rule's docs up to date. For each story the commit closes, it gathers the files of the story's commits — those whose `Refs:` or `Closes:` footer names the story or one of its tasks — and the files staged; when they change a file of `docs/domain/`, it asks for the Q row of `docs/domain/README.md`, the decisions to confirm of the feature's VAL (`docs/backlog/stories/*-F<nn>-VAL-*.md`) and the guide page (`docs/guide/f<nn>-*.md`, `e<nn>-*.md` for an epic's story) among them, and refuses the commit naming each one missing, unless the message holds the line `Rule-docs: none affected, <why>`. It runs at commit, not at push, so that the `done` commit itself is refused and made again, rather than amended after a push; a file changed counts, not the rows inside it.
