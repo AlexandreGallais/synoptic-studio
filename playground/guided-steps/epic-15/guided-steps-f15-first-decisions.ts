@@ -90,8 +90,8 @@ export const GUIDED_STEPS_F15_FIRST_DECISIONS: readonly GuidedStep[] = [
   },
   {
     explanation:
-      "Import a font: NotoSansJavanese-Regular.otf (macOS: /System/Library/Fonts/Supplemental); tick Embed fonts.",
-    look: '“Noto Sans Javanese 400 imported.”; its rule\'s src data:font/otf;base64,…, format("opentype").',
+      "Import a font: STIXGeneral.otf (macOS: /System/Library/Fonts/Supplemental); tick Embed fonts.",
+    look: '“STIXGeneral 400 imported.”; its rule\'s src data:font/otf;base64,…, format("opentype").',
     title: "F15 · An OpenType file with CFF outlines (decision 15)",
     values: ARIAL_16,
   },

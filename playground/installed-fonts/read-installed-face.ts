@@ -1,18 +1,12 @@
 import { parseFontFace, parseNamedFaceParts, unlistedFaceReason } from "../../src";
-import { readJoinedFile } from "../fonts";
+import { UNLISTED_FACE_REASONS, readJoinedFile } from "../fonts";
 
 import type { InstalledFaceRead } from "./installed-face-read";
-import type { NamedFontFace, UnlistedFaceReason } from "../../src";
+import type { NamedFontFace } from "../../src";
 import type { InstalledFont } from "../fonts";
 
 /** Why a file read is refused: it is not a TrueType or OpenType font, nor a collection of them. */
 const NOT_A_FONT = "not a TrueType or OpenType font";
-
-/** Why a face read is left out, said after its name (US-056). */
-const UNLISTED: Readonly<Record<UnlistedFaceReason, string>> = {
-  "no-latin-letters": "it lacks letters of the basic Latin alphabet (A to Z, a to z)",
-  "not-embeddable": "its fsType forbids embedding it",
-};
 
 /** An installed face and the bytes the browser gave for it. */
 type GivenFace = {
@@ -85,7 +79,7 @@ function readUsableFace(font: InstalledFont, named: NamedFontFace): InstalledFac
 
   return leftOut === undefined
     ? { face: named, leftOut, refusal: "" }
-    : { face: undefined, leftOut, refusal: `${font.fullName}: ${UNLISTED[leftOut]}` };
+    : { face: undefined, leftOut, refusal: `${font.fullName}: ${UNLISTED_FACE_REASONS[leftOut]}` };
 }
 
 /**

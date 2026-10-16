@@ -137,8 +137,8 @@ export const EPIC_15_COLOR_AND_FONT_LINES: readonly ChecklistLine[] = [
   },
   {
     feature: "F17",
-    todo: "Reading to confirm (US-052): Installed fonts, choose Apple Color Emoji; then Import a font, Apple Color Emoji.ttc",
-    see: "no crash: its faces read, or one line naming the face or the file and the browser's reason",
+    todo: "Reading to confirm (US-052): Import a font, Apple Color Emoji.ttc (/System/Library/Fonts on macOS)",
+    see: "no crash; refused, the line saying it lacks letters of the basic Latin alphabet (US-059); Installed fonts never lists it either",
   },
   {
     feature: "F17",

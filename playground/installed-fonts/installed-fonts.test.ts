@@ -686,19 +686,36 @@ describe("Installed fonts (US-036)", () => {
     await waitForPageTasks();
 
     expect(readText("#font-message")).toBe(
-      "Test Sans: 1 faces read, 1 refused (Test Sans Bold: its fsType forbids embedding it).",
+      "Test Sans: 1 faces read, 1 refused (Test Sans Bold: its fsType forbids embedding it in an exported SVG).",
     );
 
     expect(readOptions("text-weight")).toEqual(["400"]);
   });
 
-  it("[F17.AC14] keeps a face imported by hand that lacks the Latin letters, the designer having chosen it", async () => {
+  it("[F17.AC17] refuses a face imported by hand that lacks the Latin letters, said why", async () => {
     const bytes = lettersMissingFaceFile({ ...TEST_SANS, family: "Test Emoji" });
 
     chooseFiles("font-file", [new File([new Uint8Array(bytes)], "TestEmoji.ttf")]);
     await waitForPageTasks();
 
-    expect(readOptions("text-font")).toEqual(["Inter", "Test Emoji"]);
-    expect(readText("#font-message")).toBe("Test Emoji 400 imported.");
+    expect(readOptions("text-font")).toEqual(["Inter"]);
+
+    expect(readText("#font-message")).toBe(
+      "TestEmoji.ttf: Test Emoji 400 refused, it lacks letters of the basic Latin alphabet (A to Z, a to z).",
+    );
+  });
+
+  it("[F17.AC17] refuses a face imported by hand whose fsType forbids embedding it, the others of its collection kept", async () => {
+    const locked = testFaceFile({ ...TEST_SANS, family: "Test Locked", fsType: 2 });
+    const bytes = fontCollection([testFaceFile(TEST_SANS), locked]);
+
+    chooseFiles("font-file", [new File([new Uint8Array(bytes)], "Test.ttc")]);
+    await waitForPageTasks();
+
+    expect(readOptions("text-font")).toEqual(["Inter", "Test Sans"]);
+
+    expect(readText("#font-message")).toBe(
+      "Test Sans 400 imported. Test.ttc: Test Locked 400 refused, its fsType forbids embedding it in an exported SVG.",
+    );
   });
 });

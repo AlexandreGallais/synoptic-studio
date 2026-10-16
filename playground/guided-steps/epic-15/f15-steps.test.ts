@@ -28,8 +28,8 @@ import type { TestFace } from "../../../tests";
 /** Arial 5.01 of macOS, read where the machine has it. */
 const ARIAL = systemFont(ARIAL_PATH);
 
-/** Noto Sans Javanese of macOS, an OpenType file with CFF outlines, read where the machine has it. */
-const NOTO_JAVANESE = systemFont("/System/Library/Fonts/Supplemental/NotoSansJavanese-Regular.otf");
+/** STIXGeneral of macOS, an OpenType file with CFF outlines and the basic Latin letters, read where the machine has it: Noto Sans Javanese, which lacks them, is refused at import (US-059). */
+const STIX_GENERAL = systemFont("/System/Library/Fonts/Supplemental/STIXGeneral.otf");
 
 /** The test font named Test Sans, regular, installable. */
 const TEST_SANS: TestFace = { family: "Test Sans", fsType: 0, isItalic: false, weightClass: 400 };
@@ -379,18 +379,25 @@ describe("the guided test of F15 (VAL-017): its decisions, each with its example
     expect(readOptions("text-font")).toEqual(["Inter"]);
   });
 
-  it.each([
-    { fsType: 8, leftOut: [] },
-    { fsType: 0, leftOut: [] },
-    {
-      fsType: 2,
-      leftOut: ["Test Sans 400: not embedded, its licence (fsType) does not permit it."],
+  it.each([{ fsType: 8 }, { fsType: 0 }])(
+    "decision 6: fsType $fsType embedded",
+    async ({ fsType }) => {
+      openStep("Which faces may be embedded (decision 6)");
+      await importTestFace({ ...TEST_SANS, fsType });
+      tickEmbedFonts();
+      expect(readLeftOut()).toEqual([]);
     },
-  ])("decision 6: fsType $fsType embedded unless restricted", async ({ fsType, leftOut }) => {
+  );
+
+  it("[F17.AC17] decision 6: fsType 2 refused at import, never embedded (ADR-0062)", async () => {
     openStep("Which faces may be embedded (decision 6)");
-    await importTestFace({ ...TEST_SANS, fsType });
-    tickEmbedFonts();
-    expect(readLeftOut()).toEqual(leftOut);
+
+    await importFiles(
+      [{ bytes: testFaceFile({ ...TEST_SANS, fsType: 2 }), name: "TestSans.ttf" }],
+      "TestSans.ttf: Test Sans 400 refused, its fsType forbids embedding it in an exported SVG.",
+    );
+
+    expect(readOptions("text-font")).toEqual(["Inter"]);
   });
 
   it("decision 7: Inter, its file not held, listed as not embedded", () => {
@@ -440,14 +447,14 @@ describe("the guided test of F15 (VAL-017): its decisions, each with its example
     expect(readOptions("text-font")).toEqual(["Inter", "Test Sans", "Test Serif"]);
   });
 
-  it.skipIf(NOTO_JAVANESE === undefined)(
-    "decision 15: Noto Sans Javanese, CFF outlines, embedded as font/otf and opentype",
+  it.skipIf(STIX_GENERAL === undefined)(
+    "decision 15: STIXGeneral, CFF outlines, embedded as font/otf and opentype",
     async () => {
       openStep("An OpenType file with CFF outlines (decision 15)");
 
       await importFiles(
-        [{ bytes: NOTO_JAVANESE ?? new Uint8Array(), name: "NotoSansJavanese-Regular.otf" }],
-        "Noto Sans Javanese 400 imported.",
+        [{ bytes: STIX_GENERAL ?? new Uint8Array(), name: "STIXGeneral.otf" }],
+        "STIXGeneral 400 imported.",
       );
 
       tickEmbedFonts();
