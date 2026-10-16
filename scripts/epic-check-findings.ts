@@ -71,18 +71,16 @@ const CHECK_LINE = /^(?<mark>[✓✗]) (?<name>\S+) [\d.]+ s$/u;
  * @returns each check with the lines after it, lines before the first check left out
  */
 function checkBlocks(lines: readonly string[]): readonly CheckBlock[] {
-  return lines.reduce<readonly CheckBlock[]>((found, line) => {
-    const check = CHECK_LINE.exec(line)?.groups;
-    const last = found.at(-1);
+  const checks = lines
+    .map((line, index) => ({ groups: CHECK_LINE.exec(line)?.groups ?? {}, index }))
+    .filter(({ groups }) => "name" in groups);
+  const ends = [...checks.slice(1).map(({ index }) => index), lines.length];
 
-    if (check !== undefined) {
-      return [...found, { isFailed: check["mark"] === "✗", lines: [], name: check["name"] ?? "" }];
-    }
-
-    return last === undefined
-      ? found
-      : [...found.slice(0, -1), { ...last, lines: [...last.lines, line] }];
-  }, []);
+  return checks.map(({ groups, index }, rank) => ({
+    isFailed: groups["mark"] === "✗",
+    lines: lines.slice(index + 1, ends[rank]),
+    name: groups["name"] ?? "",
+  }));
 }
 
 /**
