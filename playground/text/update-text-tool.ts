@@ -1,5 +1,6 @@
 import { isValidText, isValidTextBox } from "../../src";
 import { writeColorSwatches, writeFollowedColors } from "../color-fields";
+import { DEFAULT_FONT_MISSING } from "../default-font";
 import { writeLeftOutFaces } from "../document";
 import { writeFontFields } from "../fonts";
 import { selectElement, writeText } from "../page";
@@ -94,6 +95,20 @@ function showMeasuredText(document: Document, text: Text, metrics: FontMetrics):
 }
 
 /**
+ * Says why a text is not drawn, then clears the drawing: its font without a face, Inter missing
+ * (US-053), or a value refused.
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param isFontMissing - whether the text's font has no face the browser draws
+ * @see docs/backlog/stories/E15-F05-US-031-place-a-text.md
+ */
+function writeTextRefusal(document: Document, isFontMissing: boolean): void {
+  writeText(document, "status", isFontMissing ? DEFAULT_FONT_MISSING : REFUSED);
+  clearTextDrawing(document);
+}
+
+/**
  * Updates the page for the Text tool: the underline's and the strike-through's fields showing the
  * text's color while they follow it (`writeFollowedColors`, US-041); the bold button pressed at weight 700 or while it holds the
  * weight before (US-037); the fields
@@ -105,7 +120,9 @@ function showMeasuredText(document: Document, text: Text, metrics: FontMetrics):
  * turned text whose block or box changed size placed so that its turned top-left corner stays
  * (`writeTextPosition`, US-038);
  * each color's swatch painted with it (US-035);
- * a refused text clears the drawing and its straight box's line and says why, its fields outlined.
+ * a refused text clears the drawing and its straight box's line and says why, its fields outlined;
+ * a text whose font has no face, Inter when the browser draws none of its faces (US-053), is not
+ * drawn either, the page saying Inter is missing, no field outlined.
  *
  * @kind procedure
  * @param document - page document
@@ -122,7 +139,7 @@ export function updateTextTool(document: Document): void {
   writeBoldState(document, text.weight);
   writeTextBoxFields(document, text);
   writeColorSwatches(document);
-  writeTextValidity(document, isValid);
+  writeTextValidity(document, isValidText(text));
 
   if (isValid) {
     writeText(document, "status", "");
@@ -132,6 +149,5 @@ export function updateTextTool(document: Document): void {
     return;
   }
 
-  writeText(document, "status", REFUSED);
-  clearTextDrawing(document);
+  writeTextRefusal(document, metrics === undefined);
 }

@@ -142,6 +142,16 @@ export const EPIC_15_COLOR_AND_FONT_LINES: readonly ChecklistLine[] = [
   },
   {
     feature: "F17",
+    todo: "Reading to confirm (US-053): Installed fonts, allow, wait; then choose Helvetica",
+    see: "a line counting the families read, then those left out (ABC Oracle Book gone from the list); Helvetica 300, 400 and 700 only, “Helvetica: 6 faces read.”",
+  },
+  {
+    feature: "F17",
+    todo: "Reading to confirm (US-053): Inter not installed, open the page, Text tool; then import Inter's Regular and Bold files",
+    see: "Inter without weights, no text, a line saying Inter is not installed and how to get it; once imported, 400 and 700 only, the frame fitting the letters",
+  },
+  {
+    feature: "F17",
     todo: "Draw the rectangle, the polygon and the round shape",
     see: "each drawn as before E15",
   },

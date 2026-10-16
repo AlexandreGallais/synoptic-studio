@@ -68,7 +68,8 @@ function readMatchingWeight(document: Document, family: FontFamily, weight: numb
  * Writes the weight list of the family chosen in the font list, its faces' weights only, from the
  * lightest, and chooses the weight of the face that matches the weight asked and the italic
  * button (`readMatchingWeight`, `docs/domain/shapes.md`, Font face): a family of 400 and 700
- * gives 700 for 700 and 400 for 300. A family whose files are not read yet keeps the list as it is.
+ * gives 700 for 700 and 400 for 300. A family whose files are not read yet, or without faces —
+ * Inter when the browser draws none of its faces (US-053) —, keeps the list as it is.
  *
  * @kind procedure
  * @param document - page document
@@ -78,7 +79,7 @@ function readMatchingWeight(document: Document, family: FontFamily, weight: numb
 export function writeWeightChoice(document: Document, weight: number): void {
   const family = readChosenFamily(document);
 
-  if (family === undefined) {
+  if (family === undefined || family.faces.length === 0) {
     return;
   }
 
