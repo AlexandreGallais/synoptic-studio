@@ -64,7 +64,7 @@ A library of small named functions, each backed by a verified source, composed s
 
 | Level   | Flow                                                                                                                                                                                                                |
 | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Feature | refinement → `SP` spike → `US` / `EN` stories, `CHK` midway → `AUD` audit → `VAL` guided test and demo page (ADR-0020)                                                                                              |
+| Feature | refinement → `SP` spike → `US` / `EN` stories, `CHK` midway → `AUD` audit → `VAL` checklist page and demo page (ADR-0020)                                                                                           |
 | Epic    | its features → `NAM` naming pass over the whole code → `REV` review → `RET` retrospective with metrics (ADR-0023, ADR-0049)                                                                                         |
 | Branch  | `main` releases only; `develop` integration; `feature/f<nn>-<topic>` from `develop`; `<type>/<id>-<topic>` per story from its feature (ADR-0038)                                                                    |
 | Merge   | story → feature: rebase, by the Product Owner or, in an authorized run, by GitHub; feature → `develop`: merge commit, by GitHub once validated; `develop` → `main`: when the Product Owner asks, by them (ADR-0045) |
@@ -101,7 +101,7 @@ Stop format: what blocks, what was consulted, the precise question, the options 
 
 | Command                | Role                                                                                                              |
 | ---------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `npm run dev`          | playground on `http://localhost:5173` (`?guide=epic` for the epic's steps)                                        |
+| `npm run dev`          | playground on `http://localhost:5173` (`?checklist=E15` for an epic's checklist)                                  |
 | `npm run docs:dev`     | documentation site                                                                                                |
 | `npm run fix`          | Prettier + ESLint `--fix`                                                                                         |
 | `npm run check:all`    | every check (what `pre-push` and the CI run)                                                                      |

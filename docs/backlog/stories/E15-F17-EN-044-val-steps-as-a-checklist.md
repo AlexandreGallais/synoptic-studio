@@ -3,7 +3,7 @@ id: EN-044
 epic: E15
 feature: F17
 title: The run and review skills validate with a checklist page
-status: ready
+status: done
 points: 1
 ---
 
@@ -21,4 +21,4 @@ Change the method of a feature's validation (`VAL`) from guided steps to the che
 
 One task = one commit, referenced as `EN-044.Tn`.
 
-- [ ] T1 — The `run` and `review` skills, the guide's and the backlog's rules, the playbook updated (2 h)
+- [x] T1 — The `run` and `review` skills, the guide's and the backlog's rules, the playbook updated (2 h)
