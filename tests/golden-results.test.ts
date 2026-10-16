@@ -39,14 +39,23 @@ import type { CurveCorner, FreeShape, HandleFrame, TurnedBox, Vector } from "../
 /** The run's mode: `golden-write`, `golden-check`, or another for the usual test run. */
 const { MODE } = import.meta.env;
 
-/** Where the golden file is kept: the Git directory, shared by every worktree. */
-const GOLDEN = join(
-  execFileSync("git", ["rev-parse", "--path-format=absolute", "--git-common-dir"], {
+/** The Git directory shared by every worktree. */
+const COMMON_DIR = execFileSync(
+  "git",
+  ["rev-parse", "--path-format=absolute", "--git-common-dir"],
+  {
     encoding: "utf8",
-  }).trim(),
-  "metrics",
-  "golden.json",
-);
+  },
+).trim();
+
+/** Where the golden file is kept: the Git directory, shared by every worktree. */
+const GOLDEN = join(COMMON_DIR, "metrics", "golden.json");
+
+/** The run is in a linked worktree: its own Git directory is not the common one. */
+const isLinkedWorktree =
+  execFileSync("git", ["rev-parse", "--path-format=absolute", "--git-dir"], {
+    encoding: "utf8",
+  }).trim() !== COMMON_DIR;
 
 /** The same shapes on every run. */
 const SAMPLE = { numRuns: 60, seed: 13 };
@@ -253,6 +262,12 @@ function exactData(value: unknown): unknown {
 it.runIf(MODE === "golden-write" || MODE === "golden-check")(
   "gives the same results as the golden file, bit for bit",
   () => {
+    if (MODE === "golden-write" && isLinkedWorktree) {
+      throw new Error(
+        "golden:write writes .git/metrics/golden.json, shared by every worktree: only the main thread runs it, in the main checkout (EN-052).",
+      );
+    }
+
     const text = JSON.stringify(exactData([roundResults(), polygonResults(), freeResults()]));
 
     if (MODE === "golden-write" || !existsSync(GOLDEN)) {

@@ -12,6 +12,12 @@ type Guard = {
 /** `git` and its global options (`-C <path>`, `-c <name>=<value>`, `--no-pager`…), before a subcommand. */
 const GIT = String.raw`^git(?:\s+(?:-[Cc]\s+(?:"[^"]*"|'[^']*'|\S+)|--[a-z-]+(?:=\S+)?))*\s+`;
 
+/** Separators of a shell command's segments: `&&`, `||`, `;`, a pipe, a new line. */
+const SEGMENTS = /&&|\|\||[;|\n]/u;
+
+/** A folder inside a story's worktree (EN-052). */
+const IN_WORKTREE = /\/\.claude\/worktrees\/[^/]+(?:\/|$)/u;
+
 /** Commands denied in this repository, matched against each segment of a shell command. */
 const GUARDS: readonly Guard[] = [
   {
@@ -70,10 +76,39 @@ export function withoutHeredocs(command: string): string {
  */
 export function deniedReason(command: string): string | undefined {
   const segments = withoutHeredocs(command)
-    .split(/&&|\|\||[;|\n]/u)
+    .split(SEGMENTS)
     .map((segment) => segment.trim());
 
   return GUARDS.find((guard) => segments.some((segment) => guard.pattern.test(segment)))?.reason;
+}
+
+/**
+ * Reason for denying, in a worktree, a command Claude Code would refuse there: a Git command
+ * chained with another, `cd` included (549 refusals in E15). The hint names the form that works.
+ *
+ * @param command - shell command as the agent wrote it
+ * @param cwd - folder the command runs in
+ * @returns a one-line hint, or `undefined` outside a worktree or for a command that fits
+ */
+export function worktreeReason(command: string, cwd: string): string | undefined {
+  if (!IN_WORKTREE.test(cwd)) {
+    return undefined;
+  }
+
+  const segments = withoutHeredocs(command)
+    .split(SEGMENTS)
+    .map((segment) => segment.trim())
+    .filter((segment) => segment !== "");
+
+  if (segments.some((segment) => /^npm\s+run\s+golden:write\b/u.test(segment))) {
+    return "golden:write writes .git/metrics/golden.json, shared by every worktree: only the main thread runs it, in the main checkout.";
+  }
+
+  const gitCommand = segments.find((segment) => /^git\s/u.test(segment));
+
+  return gitCommand !== undefined && segments.length > 1
+    ? `A worktree refuses a chained Git command: run \`${gitCommand}\` alone, without cd — the working directory is already the worktree.`
+    : undefined;
 }
 
 /**
@@ -107,7 +142,10 @@ export function commandOf(input: unknown): string {
 
 if (import.meta.main) {
   const input: unknown = JSON.parse(readFileSync(0, "utf8"));
-  const reason = deniedReason(commandOf(input));
+  const cwd = field(input, "cwd");
+  const reason =
+    deniedReason(commandOf(input)) ??
+    worktreeReason(commandOf(input), typeof cwd === "string" ? cwd : "");
 
   if (reason !== undefined) {
     const decision = {
