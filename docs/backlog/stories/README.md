@@ -186,7 +186,7 @@
 | [EN-048](./E17-F18-EN-048-tables-without-padding-and-union-logs.md)               | F18     | Tables without padding, append-only logs merged by union                             | ready  |
 | [EN-049](./E17-F18-EN-049-stories-index-generated.md)                             | F18     | The stories index generated from the story files                                     | done   |
 | [EN-050](./E17-F18-EN-050-shared-files-written-at-merge.md)                       | F18     | Shared files written only at merge                                                   | done   |
-| [EN-051](./E17-F18-EN-051-story-finish-one-merge-at-a-time.md)                    | F18     | `story:finish` one merge at a time, from a worktree too                              | ready  |
+| [EN-051](./E17-F18-EN-051-story-finish-one-merge-at-a-time.md)                    | F18     | `story:finish` one merge at a time, from a worktree too                              | done   |
 | [CHK-019](./E17-F18-CHK-019-checkpoint-f18.md)                                    | F18     | Checkpoint in the middle of F18                                                      | ready  |
 | [EN-052](./E17-F18-EN-052-worktrees-named-after-their-story.md)                   | F18     | Worktrees named after their story, commands that fit them                            | ready  |
 | [EN-053](./E17-F18-EN-053-session-figures-and-background-subagents.md)            | F18     | The session's figures at its end, background subagents seen                          | done   |

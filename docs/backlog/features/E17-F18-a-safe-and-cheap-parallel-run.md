@@ -47,7 +47,7 @@ In delivery order.
 | [EN-048](../stories/E17-F18-EN-048-tables-without-padding-and-union-logs.md)         | Enabler    | Tables without padding, append-only logs merged by union           | ready  |
 | [EN-049](../stories/E17-F18-EN-049-stories-index-generated.md)                       | Enabler    | The stories index generated from the story files                   | done   |
 | [EN-050](../stories/E17-F18-EN-050-shared-files-written-at-merge.md)                 | Enabler    | Shared files written only at merge                                 | done   |
-| [EN-051](../stories/E17-F18-EN-051-story-finish-one-merge-at-a-time.md)              | Enabler    | `story:finish` one merge at a time, from a worktree too            | ready  |
+| [EN-051](../stories/E17-F18-EN-051-story-finish-one-merge-at-a-time.md)              | Enabler    | `story:finish` one merge at a time, from a worktree too            | done   |
 | [CHK-019](../stories/E17-F18-CHK-019-checkpoint-f18.md)                              | Checkpoint | Checkpoint in the middle of F18                                    | ready  |
 | [EN-052](../stories/E17-F18-EN-052-worktrees-named-after-their-story.md)             | Enabler    | Worktrees named after their story, commands that fit them          | ready  |
 | [EN-053](../stories/E17-F18-EN-053-session-figures-and-background-subagents.md)      | Enabler    | The session's figures at its end, background subagents seen        | done   |
