@@ -17,6 +17,7 @@ paths:
 - A test that reads files is mutation-checked once: break its input on purpose and see it fail.
 - A check tool is always given explicit targets (folders and files by name, never `.` nor `**/*`); a new tracked folder joins the targets in `package.json`, or `tests/check-targets.test.ts` fails (EN-045).
 - A tooling change that makes existing files invalid is committed together with their fix.
+- **Every new script, hook or agent tool is written in Rust** (E17, 2026-10-16): a crate of `tools/` without a crates.io dependency, its tests beside it, its name added to `check:rust` in `package.json` (`cargo fmt --check`, `clippy -D warnings`, `cargo test`). The TypeScript ones below may still be edited until F19 rewrites them.
 - Hooks in `.claude/hooks/` and `scripts/` run with `node` (type stripping): relative imports name the `.ts` file (lint scope `node-run`), exported pure functions tested, side effects under `if (import.meta.main)`. Temporal needs `node --harmony-temporal` on Node.js 24.
 - Stylelint is planned for SCSS but not installed (`braces` advisory GHSA-vfj7-8cjw-p6xm): see `docs/tooling/versions-and-security.md`.
 - The `guard-bash` hook skips the bodies of here-documents (`<<'EOF' … EOF`), which are data; a guarded command written elsewhere on the line (inside `-m "…"`) is still read: write such text in a here-document.

@@ -72,7 +72,7 @@ Agents to add when their epic comes, with their trigger:
 
 The Product Owner may talk to a second session while a run works in the background. Both share the same folder, and the run owns it (its branch, its uncommitted files). The second session:
 
-1. **Never touches the run's folder**: no `git switch`, `stash` nor commit there. It works in its own worktree from `develop`, in its scratchpad: `git worktree add -b <type>/<topic> <scratchpad>/<topic> origin/develop`, then `npm ci` in it (hooks and `check:all` need `node_modules`). Never link `node_modules` to the main folder: `npm ci` runs `prepare`, which installs the Git hooks; without it no hook runs, not even `pre-push`.
+1. **Never touches the run's folder**: no `git switch`, `stash` nor commit there. It works in its own worktree from `develop`: `npm run worktree:new -- <ID>` (`.claude/worktrees/<id>`, `node_modules` linked, Husky run so that its own hooks run, EN-052). Each of its Bash calls starts with `cd <worktree> || exit 9`, since a call starts in the main checkout.
 2. **Puts each decision in the repository**, the only state both sessions read: domain, ADR, backlog, `AGENTS.md`, skills. One branch, one pull request into `develop` (or straight to `develop` when the Product Owner allows it for tooling and backlog). Durable facts also go to the agent's memory, read by every new session.
 3. **Tells the run at once**: `ListAgents`, then `SendMessage` to the busy session with what changed, where it is written and what it changes for the run. A run never acts on a message alone: it waits for the change to reach `develop`, as with any decision.
 4. **Removes its worktree** once the pull request is merged (`git worktree remove <path>`, then delete the branch).
@@ -91,7 +91,7 @@ jq -r 'select(.type == "user") | .message.content | strings' <id>.jsonl | grep -
 
 ## Rules for this folder
 
-- Hooks are TypeScript run by `node` (type stripping), linted as tooling, tested (`.claude/hooks/*.test.ts`): pure functions exported, effects under `if (import.meta.main)`; a relative import names the `.ts` file (`REF-NODE-TS`).
+- A new hook is written in Rust, in `tools/hooks` (E17, 2026-10-16), like `limit-agents`. The TypeScript hooks still here run with `node` (type stripping), linted as tooling, tested (`.claude/hooks/*.test.ts`): pure functions exported, effects under `if (import.meta.main)`; a relative import names the `.ts` file (`REF-NODE-TS`); F19 rewrites them.
 - A rule enforced by a hook is not repeated as an instruction; a guard that blocks legitimate work is changed by a new ADR, never bypassed.
 - `.claude/settings.local.json` (personal, not committed) may add permissions; it never removes a guard.
 - Changes go to `develop` like CI changes (tooling), with `chore(tooling): …` commits.

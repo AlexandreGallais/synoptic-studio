@@ -55,6 +55,7 @@ A library of small named functions, each backed by a verified source, composed s
 
 ## Never
 
+- A new script, hook or agent tool in TypeScript: every new one is a Rust crate in `tools/`, checked by `check:rust` (E17, 2026-10-16).
 - A runtime dependency (`dependencies` stays empty); a dev package without its row in `docs/tooling/dependencies.md`, its release notes read, a version at least 7 days old.
 - Freehand in symbols, or Bézier curves other than cubic sides from typed handles or the round shape's (ADR-0046, ADR-0048); SVG primitives other than `svg`, `g`, `path`, `text`, `tspan`, `defs`, and `style` in `defs` for `@font-face` (ADR-0052, ADR-0053, ADR-0060: no `switch`, no `foreignObject`); native `stroke`.
 - `any`, `!`, `as` without `eslint-disable-next-line … -- justification`; classes; `enum`; a rule disabled to make code pass (fix the code, or tell the Product Owner the rule is wrong).
@@ -100,15 +101,15 @@ Stop format: what blocks, what was consulted, the precise question, the options 
 
 ## Commands
 
-| Command                | Role                                                                                                              |
-| ---------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `npm run dev`          | playground on `http://localhost:5173` (`?checklist=E15` for an epic's checklist)                                  |
-| `npm run docs:dev`     | documentation site                                                                                                |
-| `npm run fix`          | Prettier + ESLint `--fix`                                                                                         |
-| `npm run check:all`    | every check (what `pre-push` and the CI run)                                                                      |
-| `npm run library -- …` | local library of sources: `search`, `get`, `read`, `list`                                                         |
-| `npm run metrics`      | report of the agent's commands, time and tokens                                                                   |
-| agent tools            | `replace`, `backlog:status`, `story:finish`, `golden:*`, `activity`, `epic:check` (`docs/tooling/agent-tools.md`) |
+| Command                | Role                                                                                                                                                       |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run dev`          | playground on `http://localhost:5173` (`?checklist=E15` for an epic's checklist)                                                                           |
+| `npm run docs:dev`     | documentation site                                                                                                                                         |
+| `npm run fix`          | Prettier + ESLint `--fix`                                                                                                                                  |
+| `npm run check:all`    | every check (what `pre-push` and the CI run)                                                                                                               |
+| `npm run library -- …` | local library of sources: `search`, `get`, `read`, `list`                                                                                                  |
+| `npm run metrics`      | report of the agent's commands, time and tokens                                                                                                            |
+| agent tools            | `replace`, `backlog:status`, `worktree:new`, `story:finish`, `mutate`, `val:prepare`, `golden:*`, `activity`, `epic:check` (`docs/tooling/agent-tools.md`) |
 
 ## Pitfalls
 
