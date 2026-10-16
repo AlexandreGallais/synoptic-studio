@@ -32,6 +32,15 @@ describe("A redraw per animation frame (US-048, REF-MDN-RAF)", () => {
   beforeEach(() => {
     openServedPage("");
     clickElement("tool-text");
+
+    // Two lines typed, as the page opens with them in a browser, which drops the line break
+    // right after `<textarea>`; happy-dom keeps it.
+    const area = document.querySelector("#text-content");
+
+    if (area instanceof HTMLTextAreaElement) {
+      area.value = "Pump P-101\nRunning";
+    }
+
     typeValue("text-size", "16");
 
     // From here, the frames wait for the test to run them, as in a browser.

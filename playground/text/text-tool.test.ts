@@ -329,6 +329,7 @@ describe("Text tool", () => {
     expect(readDisplay("size-section") === "none").toBe(false);
     expect(readPressedState("tool-rectangle")).toBe("true");
     expect(document.querySelectorAll("#canvas text")).toHaveLength(0);
-    expect(readText("#path-data")).toMatch(/^M0 0 L/u);
+    // The rectangle the page opens with, its corners rounded by 10.
+    expect(readText("#path-data")).toMatch(/^M10 0 L/u);
   });
 });
