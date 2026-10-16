@@ -1,6 +1,7 @@
 import { addFontFace, readFontSession, writeFontOptions, writeFontSession } from "../fonts";
 
 import { readFamilyFonts } from "./read-family-fonts";
+import { readFontsWithoutFacesReadAhead } from "./read-fonts-without-faces-read-ahead";
 import { readInstalledFace } from "./read-installed-face";
 import { readKeptFaces } from "./read-kept-faces";
 
@@ -57,7 +58,9 @@ function readFamilyMessage(
  * a TrueType or OpenType font, is refused and counted, the others kept. A face held in a
  * collection is read from it (`readInstalledFace`), one face per entry of the browser's list, so
  * that a collection holding faces of several families gives the family chosen only. A family read
- * ahead, its metrics kept without its files, has its files read again (US-053). When no face is
+ * ahead, its metrics kept without its files, has its files read again (US-053); a face refused at
+ * that second reading has its metrics read ahead dropped (`readFontsWithoutFacesReadAhead`,
+ * US-061), so that it is no longer measured, the refusal said. When no face is
  * read again, the list stays on the family, whose metrics read ahead are kept: a family is offered
  * only once read ahead (US-059).
  *
@@ -85,6 +88,7 @@ export async function readInstalledFamily(
 
   writeFontSession(document, {
     ...session,
+    kept: readFontsWithoutFacesReadAhead(session.kept, faces),
     readAhead: session.readAhead.filter((read) => !fonts.includes(read.font)),
   });
 

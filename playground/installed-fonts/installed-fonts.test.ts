@@ -659,8 +659,8 @@ describe("Installed fonts (US-036)", () => {
     );
 
     expect(readValue("text-font")).toBe("Test Sans");
-    // 700's metrics, read ahead before the joins were refused, stay kept (US-053).
-    expect(readOptions("text-weight")).toEqual(["400", "700"]);
+    // 700's metrics, read ahead before the joins were refused, are dropped with it (US-061).
+    expect(readOptions("text-weight")).toEqual(["400"]);
   });
 
   it("[F17.AC14] leaves out the families that cannot be embedded or lack the Latin letters, counted by reason", async () => {
