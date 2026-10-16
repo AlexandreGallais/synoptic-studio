@@ -70,3 +70,27 @@ The Product Owner walked E15's checklist page on branch `feat/val-018-text-corre
 **Change C1**: switching from fit content to a box keeps the fit-content size as the box's size, then editable (to investigate; story to come).
 
 **Points not answered**: Helvetica Neue 700, an unquoted family name with a digit in Safari, and Apple Color Emoji.ttc. The Product Owner left the choice to the agent: Apple Color Emoji is handled by the recommended option (b) unless a business choice remains.
+
+## Result (second pass, 2026-10-16)
+
+The Product Owner walked E15's checklist page again on branch `feature/f17-text-corrections`, in Chrome. Four points are routed to stories; VAL-018 stays open until they are corrected and tried again.
+
+**Accepted**
+
+- Installed fonts read ahead: slow but fine; the reading is visible, the list is no longer guesswork, fonts that cannot be read are left out, and the weights offered are the real ones.
+- Apple Color Emoji no longer crashes the tab.
+- Rotation: X and Y follow the turned top-left corner, accepted for now; the box grows from that corner. Handling text like rectangles, polygons and round shapes is left to the later UI/UX epic.
+- Fit content then Box keeps the fitted width and height.
+- Letter spacing 10 with right alignment, left-to-right and right-to-left: the last letter touches the edge.
+- Colors, every letter case, trim, line height, background and the rest of the checklist; the critiques of the first pass are gone.
+
+**Routed to stories**
+
+| Id  | Seen                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Story  |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| F1  | Inter stays first in the list though it is not installed and cannot be drawn. Decision: a font that is not available is not listed, Inter included; the playground selects a default font once the installed fonts are read; "Installed fonts" comes first and shows clearly that it must be done first                                                                                                                                                                                                           | US-056 |
+| F2  | Fonts in the list must be usable: Apple Color Emoji gives a wrong box, and some fonts measure badly (an Arabic-script font such as Al Nile; Apple Braille is expected to be useless for Latin text). Decision: a font whose `fsType` forbids embedding is not listed. Agent's addition (ADR-0060, Latin the target): a font lacking the basic Latin letters is not listed either; the cause of the emoji box is checked first (Latin letters missing, the browser falling back while the measure uses `.notdef`?) | US-056 |
+| F3  | Fit content, Box, reduce the height, Fit content, Box: the width and height typed for the box are lost (measured again). Expected: the box size the designer set is kept when coming back to Box (the maximum of lines is already kept)                                                                                                                                                                                                                                                                           | US-057 |
+| F4  | Ellipsis on an empty line: 4 lines, the third empty, a maximum of 3 lines: the ellipsis lands on the empty third line. The rule asked for is the most logical one; the agent's proposal: the ellipsis goes on the last shown line that holds text, and the empty shown lines after it are dropped                                                                                                                                                                                                                 | US-058 |
+
+**Not now**: the single-line option (I3) and the curated set of fonts with an Install button (I4) are logged as ideas in E02.
