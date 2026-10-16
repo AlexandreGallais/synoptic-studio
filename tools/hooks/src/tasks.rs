@@ -19,6 +19,8 @@ pub enum Kind {
     Agent,
     /// A shell command in the background, a monitor.
     Command,
+    /// A message to a subagent whose result is still to come: a subagent if that result resumes one.
+    Message,
 }
 
 /// A background task the agent started, still running.
@@ -38,11 +40,13 @@ fn blocks(line: &Value) -> &[Value] {
     line.get("message").get("content").items()
 }
 
-/// Whether a `tool_use` block runs in the background: every subagent and monitor, and any call
-/// asked to run there.
+/// Whether a `tool_use` block may run in the background: every subagent and monitor, any call
+/// asked to run there, and a message to a subagent, which resumes it when it had stopped.
 fn is_background(block: &Value) -> bool {
-    matches!(block.get("name").text(), "Agent" | "Monitor")
-        || block.get("input").get("run_in_background") == &Value::Bool(true)
+    matches!(
+        block.get("name").text(),
+        "Agent" | "Monitor" | "SendMessage"
+    ) || block.get("input").get("run_in_background") == &Value::Bool(true)
 }
 
 /// The text of a member, or a fallback when it is missing or empty.
@@ -53,31 +57,44 @@ fn text_or<'a>(value: &'a Value, key: &str, fallback: &'a str) -> &'a str {
     }
 }
 
-/// The background task a `tool_use` block starts.
-fn task_of(block: &Value, start: i64) -> Task {
-    let input = block.get("input");
-    let is_agent = block.get("name").text() == "Agent";
-    let label = if is_agent {
-        format!(
+/// What a background task does: a subagent's type and task, a message's summary, a command's
+/// description.
+fn label_of(name: &str, input: &Value) -> String {
+    match name {
+        "Agent" => format!(
             "{}: {}",
             text_or(input, "subagent_type", "agent"),
             input.get("description").text()
-        )
-    } else {
-        let command: String = input
-            .get("command")
-            .text()
-            .chars()
-            .take(LABEL_LENGTH)
-            .collect();
+        ),
+        "SendMessage" => format!(
+            "resumed: {}",
+            text_or(input, "summary", input.get("to").text())
+        ),
+        _ => {
+            let command: String = input
+                .get("command")
+                .text()
+                .chars()
+                .take(LABEL_LENGTH)
+                .collect();
 
-        text_or(input, "description", &command).to_owned()
-    };
+            text_or(input, "description", &command).to_owned()
+        }
+    }
+}
+
+/// The background task a `tool_use` block starts.
+fn task_of(block: &Value, start: i64) -> Task {
+    let name = block.get("name").text();
 
     Task {
         id: block.get("id").text().to_owned(),
-        kind: if is_agent { Kind::Agent } else { Kind::Command },
-        label,
+        kind: match name {
+            "Agent" => Kind::Agent,
+            "SendMessage" => Kind::Message,
+            _ => Kind::Command,
+        },
+        label: label_of(name, block.get("input")),
         start,
     }
 }
@@ -125,15 +142,57 @@ pub fn notified_ids(raw: &str) -> Vec<String> {
         .collect()
 }
 
+/// The text of a tool result's content: a string, or its text blocks joined.
+fn result_text(block: &Value) -> String {
+    let content = block.get("content");
+
+    match content {
+        Value::String(text) => text.clone(),
+        _ => content
+            .items()
+            .iter()
+            .map(|item| item.get("text").text())
+            .collect(),
+    }
+}
+
+/// Ids of the calls a line answers with a result, and of those whose result resumes a subagent: a
+/// subagent that had stopped runs again in the background, its end notified under the message's
+/// call id (seen 2026-10-15: "Resuming agent …", then the notification 15 minutes later); a
+/// message to a subagent still running is only queued.
+#[must_use]
+pub fn answered_ids(line: &Value) -> (Vec<String>, Vec<String>) {
+    let results: Vec<&Value> = blocks(line)
+        .iter()
+        .filter(|block| block.get("type").text() == "tool_result")
+        .collect();
+    let id = |block: &&Value| block.get("tool_use_id").text().to_owned();
+
+    (
+        results.iter().map(id).collect(),
+        results
+            .iter()
+            .filter(|block| result_text(block).contains("\"resumedAgentId\""))
+            .map(id)
+            .collect(),
+    )
+}
+
 /// Background tasks still running after one transcript line: those it starts added, those notified
-/// as ended or answered with an error removed, those older than `LOST_TASK_MS` dropped.
+/// as ended or answered with an error removed, those older than `LOST_TASK_MS` dropped; a message
+/// to a subagent, once answered, becomes that subagent when its result resumes it, or is dropped.
 #[must_use]
 pub fn after_line(pending: Vec<Task>, raw: &str) -> Vec<Task> {
-    // Only lines that start, end or refuse a call change the tasks: the others are not parsed.
-    if !raw.contains("\"tool_use\"")
-        && !raw.contains("<task-notification>")
-        && !raw.contains("is_error")
-    {
+    let awaits_message = pending.iter().any(|task| task.kind == Kind::Message);
+
+    // Only lines that start, end or refuse a call change the tasks, and the results of messages:
+    // the others are not parsed.
+    let matters = raw.contains("\"tool_use\"")
+        || raw.contains("<task-notification>")
+        || raw.contains("is_error")
+        || (awaits_message && raw.contains("\"tool_result\""));
+
+    if !matters {
         return pending;
     }
 
@@ -145,11 +204,24 @@ pub fn after_line(pending: Vec<Task>, raw: &str) -> Vec<Task> {
     ended.extend(failed_ids(&line));
 
     let time = epoch_ms(line.get("timestamp").text());
+    let (answered, resumed) = answered_ids(&line);
 
     pending
         .into_iter()
         .chain(started_tasks(&line))
         .filter(|task| !ended.contains(&task.id) && (time == 0 || time - task.start < LOST_TASK_MS))
+        .filter_map(|task| {
+            if task.kind != Kind::Message || !answered.contains(&task.id) {
+                Some(task)
+            } else if resumed.contains(&task.id) {
+                Some(Task {
+                    kind: Kind::Agent,
+                    ..task
+                })
+            } else {
+                None
+            }
+        })
         .collect()
 }
 
@@ -183,10 +255,10 @@ pub fn cached_tasks(cache: &Value, transcript: &str) -> (Vec<Task>, usize) {
         .iter()
         .map(|task| Task {
             id: task.get("id").text().to_owned(),
-            kind: if task.get("kind").text() == "agent" {
-                Kind::Agent
-            } else {
-                Kind::Command
+            kind: match task.get("kind").text() {
+                "agent" => Kind::Agent,
+                "message" => Kind::Message,
+                _ => Kind::Command,
             },
             label: task.get("label").text().to_owned(),
             start: number(task.get("start")),

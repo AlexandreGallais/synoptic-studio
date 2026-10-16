@@ -5,7 +5,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 
 import { count, field, startOf, text } from "./status-json.ts";
-import { LOST_TASK_MS, endedIds, failedIds, startedTasks } from "./status-tasks.ts";
+import { LOST_TASK_MS, endedIds, failedIds, resumedIds, startedTasks } from "./status-tasks.ts";
 
 import type { BackgroundTask } from "./status-tasks.ts";
 
@@ -133,11 +133,32 @@ function withTasks(tally: TokenTally, line: unknown, raw: string): TokenTally {
     ...failedIds(line),
   ]);
   const time = startOf(line);
-  const pending = [...tally.pending, ...startedTasks(line)].filter(
-    (task) => !notified.has(task.id) && (time === 0 || time - task.start < LOST_TASK_MS),
-  );
+  const pending = [...tally.pending, ...startedTasks(line)]
+    .filter((task) => !notified.has(task.id) && (time === 0 || time - task.start < LOST_TASK_MS))
+    .flatMap((task) => settled(task, ended, resumedIds(line)));
 
   return { ...tally, finished: [...tally.finished, ...ended], pending };
+}
+
+/**
+ * A message to a subagent once its result arrives: a subagent running in the background when the
+ * result resumes it, nothing when the message was only queued; any other task unchanged.
+ *
+ * @param task - a background task
+ * @param answered - ids of the calls whose result the line brings
+ * @param resuming - ids of the calls whose result resumes a subagent
+ * @returns the task, as a subagent, or none
+ */
+function settled(
+  task: BackgroundTask,
+  answered: readonly string[],
+  resuming: readonly string[],
+): readonly BackgroundTask[] {
+  if (task.kind !== "message" || !answered.includes(task.id)) {
+    return [task];
+  }
+
+  return resuming.includes(task.id) ? [{ ...task, kind: "agent" }] : [];
 }
 
 /**
@@ -186,6 +207,16 @@ export function addTokens(tally: TokenTally, lines: string): TokenTally {
 }
 
 /**
+ * The kind of a background task read back from the cache.
+ *
+ * @param written - its kind as written, `agent`, `message`, anything else a command
+ * @returns `agent`, `message` or `command`
+ */
+function kindOf(written: string): BackgroundTask["kind"] {
+  return written === "agent" || written === "message" ? written : "command";
+}
+
+/**
  * Tally kept by the previous call, when it was for the same transcript.
  *
  * @param cached - parsed cache file
@@ -207,7 +238,7 @@ export function cachedTally(cached: unknown, transcript: string): TokenTally {
         output: count(tally, "output"),
         pending: (Array.isArray(pending) ? pending : []).map((task): BackgroundTask => ({
           id: text(task, "id"),
-          kind: text(task, "kind") === "agent" ? "agent" : "command",
+          kind: kindOf(text(task, "kind")),
           label: text(task, "label"),
           start: count(task, "start"),
         })),
