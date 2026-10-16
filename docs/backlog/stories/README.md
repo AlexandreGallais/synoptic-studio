@@ -166,6 +166,7 @@
 | [US-051](./E15-F17-US-051-validation-checklist-page.md)                           | F17     | Validation on one checklist page                                                     | done   |
 | [EN-044](./E15-F17-EN-044-val-steps-as-a-checklist.md)                            | F17     | The run and review skills validate with a checklist page                             | done   |
 | [US-052](./E15-F17-US-052-large-collection-read-without-running-out-of-memory.md) | F17     | Read a large font collection without running out of memory                           | done   |
+| [US-053](./E15-F17-US-053-installed-fonts-read-ahead-and-real-weights.md)         | F17     | Installed fonts read ahead, and only the weights the browser draws                   | ready  |
 | [AUD-019](./E15-F17-AUD-019-audit-f17.md)                                         | F17     | Audit F17                                                                            | done   |
 | [VAL-018](./E15-F17-VAL-018-validate-f17.md)                                      | F17     | Validate F17                                                                         | ready  |
 | [NAM-001](./E15-NAM-001-naming-pass-e15.md)                                       | E15     | Naming pass over the code of E15                                                     | draft  |
