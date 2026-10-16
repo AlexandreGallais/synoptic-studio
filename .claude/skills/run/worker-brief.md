@@ -4,7 +4,7 @@ The main thread gives this file's path to each worker, with the story id, its fe
 
 ## Setup
 
-1. The worktree is already the working directory: never `cd` into it. Its name is the story's (`npm run worktree:new -- <ID>` once EN-052 is built).
+1. The worktree is already the working directory: never `cd` into it. Its name is the story's: the main thread makes it with `npm run worktree:new -- <ID>`, on the story's branch.
 2. `git fetch origin`, then `git switch -c <type>/<id>-<topic> origin/<feature branch>` — one plain Git command per call, never chained with `&&`, `;` or a pipe: Claude Code refuses compound commands in a worktree (549 refusals in E15).
 3. If `node_modules` is missing: `ln -s "<main checkout>/node_modules" node_modules`.
 4. One scratch folder of its own: `<scratchpad>/<story id>-<role>`.
