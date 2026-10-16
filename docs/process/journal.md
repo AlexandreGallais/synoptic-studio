@@ -2,6 +2,15 @@
 
 What each working session dealt with, in the agent's words: the Product Owner's requests in neutral words, decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`).
 
+## 2026-10-16 — Run of E15 through F17, up to the validation
+
+- `#run` 2026-10-15 afternoon: the Product Owner's remarks before validation led to US-037 to US-041, EN-042, EN-043 and ADR-0057, ADR-0058, ADR-0059. F15 finished (EN-041, US-036, AUD-018). Pull requests #224–#235.
+- `#decision` 2026-10-15 evening: the Product Owner validated all of E15 (F05, F14, F16, F15 done). Every provisional decision was confirmed except three: a long word always stays whole, no balanced wrap, no HTML layer (ADR-0060, Latin script targeted); fonts are embedded only at export.
+- `#run` F17 planned and built overnight: SP-019, US-042 to US-051, EN-044, CHK-018, AUD-019 (#237–#250). VAL-018 prepared on `feat/val-018-text-corrections` as a checklist page (`?checklist=E15`, 53 lines), the new validation method.
+- `#process` Methods tried: no per-story review in F17 (the worker breaks its own tests once per criterion) with one thorough feature audit; lighter models (Sonnet) for clerical agents.
+- `#open` Apple Color Emoji (192 MB collection) exhausts memory: a decision on mutable byte copies is needed. Three AUD-019 questions are in VAL-018.
+- `#stop` VAL-018 needs the Product Owner; then NAM-001, REV-003, RET-003 and the `develop` → `main` pull request.
+
 ## 2026-10-15 — Run of E15 up to the validations of F05, F14 and F16
 
 - `#run` Started on 2026-10-14 in the evening; the main thread only dispatched, each story going to a worker subagent (ADR-0051, trial).
