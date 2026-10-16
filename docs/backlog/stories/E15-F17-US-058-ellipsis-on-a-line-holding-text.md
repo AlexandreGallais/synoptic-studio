@@ -38,3 +38,4 @@ From the Product Owner's second pass of VAL-018 (2026-10-16), finding F4: a text
 One task = one commit, referenced as `US-058.Tn`.
 
 - [x] T1 — The ellipsis on the last line shown holding text, the empty lines after it dropped; `DERIV-text-box` step 6, `shapes.md`, the checklist line (1 h)
+- [x] T2 — A property of `shownLines`: of the lines the box shows, only empty ones are dropped, and each line kept is its wrapped line or a start of it ended with the ellipsis (0.5 h)
