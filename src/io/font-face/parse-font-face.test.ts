@@ -2,10 +2,10 @@ import { describe, expect, it } from "vitest";
 
 import {
   APPLE_TRUE_TYPE_VERSION,
-  ARIAL_PATH,
   ENGLISH_US,
   HELLO_TEXT,
   HELVETICA_COLLECTION_PATH,
+  INTER_REGULAR,
   OPEN_TYPE_VERSION,
   TRUE_TYPE_VERSION,
   WINDOWS_PLATFORM,
@@ -35,9 +35,6 @@ import { parseFontFace } from "./parse-font-face";
 
 import type { Os2FaceFields } from "../../../tests";
 import type { FontFamily } from "../../model";
-
-/** Arial 5.01 of macOS, read where the machine has it. */
-const ARIAL = systemFont(ARIAL_PATH);
 
 /** Helvetica of macOS, a collection of 6 faces, read where the machine has it. */
 const HELVETICA = systemFont(HELVETICA_COLLECTION_PATH);
@@ -215,20 +212,19 @@ describe("parseFontFace (REF-OT-NAME, REF-OT-OS2)", () => {
     expect(metrics?.unitsPerEm).toBe(2000);
   });
 
-  it.skipIf(ARIAL === undefined)(
-    "[F15.AC1] reads Arial 5.01 of macOS: Arial, 400, upright, embeddable",
-    () => {
-      // REF-OT-NAME: no name ID 16, name ID 1 Arial; REF-OT-OS2: 400, fsSelection 0x0040, fsType 8.
-      const named = parseFontFace(ARIAL ?? new Uint8Array());
+  it("[F15.AC1] reads Inter Regular 4.1: Inter, 400, upright, embeddable", () => {
+    // REF-OT-NAME: no name ID 16, name ID 1 Inter; REF-OT-OS2: 400, fsSelection 0x00c0 (bit 6
+    // regular), fsType 0, installable; read again with fontTools 4.60.2
+    // (`REF-INTER-REGULAR-FILE`).
+    const named = parseFontFace(INTER_REGULAR);
 
-      expect(named).toMatchObject({
-        face: { file: { isEmbeddable: true }, isItalic: false, weight: 400 },
-        family: "Arial",
-      });
+    expect(named).toMatchObject({
+      face: { file: { isEmbeddable: true }, isItalic: false, weight: 400 },
+      family: "Inter",
+    });
 
-      expect(named?.face.metrics.unitsPerEm).toBe(2048);
-    },
-  );
+    expect(named?.face.metrics.unitsPerEm).toBe(2048);
+  });
 });
 
 describe("parseFontFace, faces of macOS and of collections (F17.AC4)", () => {

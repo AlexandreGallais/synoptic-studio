@@ -5,6 +5,16 @@
 
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+
+/**
+ * Inter Regular 4.1, the release's `extras/ttf/Inter-Regular.ttf` unchanged (`REF-INTER-RELEASE`),
+ * with its licence beside it in `inter-license.txt` (`REF-INTER-LICENSE`): a real font file that
+ * every machine reads (EN-062).
+ */
+export const INTER_REGULAR: Uint8Array = readFileSync(
+  join(import.meta.dirname, "inter-regular.ttf"),
+);
 
 /** Arial 5.01 of macOS, the font of the cross-check of `DERIV-text-width`. */
 export const ARIAL_PATH = "/System/Library/Fonts/Supplemental/Arial.ttf";
