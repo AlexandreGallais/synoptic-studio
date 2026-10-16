@@ -21,7 +21,7 @@ Look back at how E15 was built, decide what changes, review what the growing pro
 One task = one commit, referenced as `RET-003.Tn`.
 
 - [x] T1 — Worktrees ignored by Git and by the IDE's indexing (15 min)
-- [ ] T2 — The record, the logs' treated rows moved, the habits sheet (2 h)
+- [x] T2 — The record, the logs' treated rows moved, the habits sheet (2 h)
 - [ ] T3 — ADRs: the amended run, checks by level, merges of parallel branches, the register of exceptions (1 h)
 - [ ] T4 — Backlog: the stories that apply the decisions, the Oxc and Rust epic (1 h)
 - [ ] T5 — Agent configuration: rules, skills, the run's worker brief (1 h)
