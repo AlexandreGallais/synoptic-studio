@@ -3,7 +3,7 @@ id: US-053
 epic: E15
 feature: F17
 title: Installed fonts read ahead, and only the weights the browser draws
-status: ready
+status: done
 points: 5
 ---
 
