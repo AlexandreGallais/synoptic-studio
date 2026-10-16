@@ -1,7 +1,15 @@
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  realpathSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { delimiter, join } from "node:path";
 
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
@@ -20,6 +28,15 @@ const BASE = "feature/f99-topic";
 /** The story finished in a test. */
 const STORY = "chore/en-999-topic";
 
+/** The repository on GitHub. */
+const REPOSITORY = "owner/name";
+
+/** The story, its base and its repository, as `story:finish` reads them. */
+const STORY_OF_BASE = { base: BASE, branch: STORY, repository: REPOSITORY };
+
+/** The call deleting the story's branch on GitHub. */
+const REMOTE_DELETION = ["api", "-X", "DELETE", `repos/${REPOSITORY}/git/refs/heads/${STORY}`];
+
 /** Folder of this file's repositories, removed at the end. */
 const TEMPORARY = mkdtempSync(join(tmpdir(), "story-finish-"));
 
@@ -28,6 +45,22 @@ const SCRATCH = realpathSync(TEMPORARY);
 
 /** The environment before the tests, given back at the end. */
 const SAVED = { ...process.env };
+
+/** Where the stub of GitHub's command line writes each call: its folder, then its arguments. */
+const GH_CALLS = join(SCRATCH, "gh-calls");
+
+/**
+ * The calls made to the stub of GitHub's command line since the last reading, which empties them.
+ *
+ * @returns each call's folder and arguments, one line each
+ */
+function ghCalls(): readonly string[] {
+  const calls = existsSync(GH_CALLS) ? readFileSync(GH_CALLS, "utf8").trim().split("\n") : [];
+
+  rmSync(GH_CALLS, { force: true });
+
+  return calls;
+}
 
 /**
  * Output of Git in a folder.
@@ -121,6 +154,13 @@ beforeAll(() => {
 
   process.env["GIT_CONFIG_GLOBAL"] = config;
   process.env["GIT_CONFIG_NOSYSTEM"] = "1";
+
+  // GitHub's command line replaced by a stub first on PATH: it writes where it runs and what for.
+  const bin = join(SCRATCH, "bin");
+
+  mkdirSync(bin);
+  writeFileSync(join(bin, "gh"), `#!/bin/sh\necho "$PWD $*" >> "${GH_CALLS}"\n`, { mode: 0o755 });
+  process.env["PATH"] = `${bin}${delimiter}${process.env["PATH"] ?? ""}`;
 });
 
 afterAll(() => {
@@ -198,26 +238,31 @@ describe("story-finish", () => {
     const here = "/repo/.claude/worktrees/en-999";
 
     expect(
-      cleanUpPlan({ base: BASE, branch: STORY }, here, [
+      cleanUpPlan(STORY_OF_BASE, here, [
         { branch: BASE, path: "/repo" },
         { branch: STORY, path: here },
       ]),
     ).toStrictEqual({
       place: "/repo",
       remove: [
-        { cwd: "/repo", options: ["worktree", "remove", here] },
-        { cwd: "/repo", options: ["branch", "-D", STORY] },
+        { command: "git", cwd: "/repo", options: ["worktree", "remove", here] },
+        { command: "git", cwd: "/repo", options: ["branch", "-D", STORY] },
+        { command: "gh", cwd: "/repo", options: REMOTE_DELETION },
       ],
       update: [
-        { cwd: here, options: ["fetch", "--quiet", "--prune", "origin"] },
-        { cwd: "/repo", options: ["merge", "--ff-only", "--quiet", `origin/${BASE}`] },
+        { command: "git", cwd: here, options: ["fetch", "--quiet", "--prune", "origin"] },
+        {
+          command: "git",
+          cwd: "/repo",
+          options: ["merge", "--ff-only", "--quiet", `origin/${BASE}`],
+        },
       ],
     });
   });
 
   it("from a worktree whose base no checkout holds, switches the worktree to the base first", () => {
     const here = "/repo/.claude/worktrees/en-999";
-    const plan = cleanUpPlan({ base: BASE, branch: STORY }, here, [
+    const plan = cleanUpPlan(STORY_OF_BASE, here, [
       { branch: "develop", path: "/repo" },
       { branch: STORY, path: here },
     ]);
@@ -230,18 +275,26 @@ describe("story-finish", () => {
       [here, "merge"],
     ]);
 
-    expect(plan.remove.map((step) => step.options[0])).toStrictEqual(["worktree", "branch"]);
+    expect(plan.remove.map((step) => [step.cwd, step.options[0]])).toStrictEqual([
+      ["/repo", "worktree"],
+      ["/repo", "branch"],
+      ["/repo", "api"],
+    ]);
   });
 
   it("from the main checkout, switches to the base and removes no worktree", () => {
-    const plan = cleanUpPlan({ base: BASE, branch: STORY }, "/repo", [
+    const plan = cleanUpPlan(STORY_OF_BASE, "/repo", [
       { branch: STORY, path: "/repo" },
       { branch: BASE, path: "/repo/.claude/worktrees/other" },
     ]);
 
     expect(plan.place).toBe("/repo");
     expect(plan.update.map((step) => step.options[0])).toStrictEqual(["fetch", "switch", "merge"]);
-    expect(plan.remove).toStrictEqual([{ cwd: "/repo", options: ["branch", "-D", STORY] }]);
+
+    expect(plan.remove).toStrictEqual([
+      { command: "git", cwd: "/repo", options: ["branch", "-D", STORY] },
+      { command: "gh", cwd: "/repo", options: REMOTE_DELETION },
+    ]);
   });
 
   it("[F18.AC7] cleans up a merged story from its worktree without switching the main checkout", () => {
@@ -252,7 +305,7 @@ describe("story-finish", () => {
     git(worktree, "push", "--quiet", "origin", `${STORY}:${BASE}`);
 
     const plan = cleanUpPlan(
-      { base: BASE, branch: STORY },
+      STORY_OF_BASE,
       worktree,
       worktrees(git(worktree, "worktree", "list", "--porcelain")),
     );
@@ -269,13 +322,42 @@ describe("story-finish", () => {
     expect(git(main, "branch", "--show-current")).toBe(BASE);
     expect(git(main, "rev-parse", "HEAD")).toBe(git(main, "rev-parse", `origin/${BASE}`));
     expect(git(main, "log", "--format=%s", "-1")).toBe("write story");
+    expect(ghCalls()).toStrictEqual([`${main} ${REMOTE_DELETION.join(" ")}`]);
+  });
+
+  it("[F18.AC7] deletes the branch on GitHub from the main checkout once the worktree is removed", () => {
+    const { main, worktree } = runCheckouts("base-in-no-checkout");
+    const places: string[] = [];
+
+    // As in a run: the main checkout on another branch, the base checked out nowhere (PR #272).
+    git(main, "switch", "--quiet", "main");
+    git(worktree, "push", "--quiet", "origin", `${STORY}:${BASE}`);
+
+    const plan = cleanUpPlan(
+      STORY_OF_BASE,
+      worktree,
+      worktrees(git(worktree, "worktree", "list", "--porcelain")),
+    );
+
+    expect(
+      cleanUp("MERGED", plan, (cwd) => {
+        places.push(cwd);
+      }),
+    ).toBe(true);
+
+    expect(places).toStrictEqual([worktree]);
+    expect(existsSync(worktree)).toBe(false);
+    expect(git(main, "branch", "--show-current")).toBe("main");
+    expect(git(main, "branch", "--list", STORY)).toBe("");
+    expect(git(main, "rev-parse", BASE)).toBe(git(main, "rev-parse", `origin/${BASE}`));
+    expect(ghCalls()).toStrictEqual([`${main} ${REMOTE_DELETION.join(" ")}`]);
   });
 
   it("[F18.AC7] keeps the worktree and the branch of a pull request not merged", () => {
     const { main, worktree } = runCheckouts("open");
     const places: string[] = [];
     const plan = cleanUpPlan(
-      { base: BASE, branch: STORY },
+      STORY_OF_BASE,
       worktree,
       worktrees(git(worktree, "worktree", "list", "--porcelain")),
     );
@@ -289,6 +371,7 @@ describe("story-finish", () => {
     }
 
     expect(places).toStrictEqual([]);
+    expect(ghCalls()).toStrictEqual([]);
     expect(existsSync(worktree)).toBe(true);
     expect(git(main, "branch", "--list", STORY)).toBe(`+ ${STORY}`);
     expect(git(worktree, "branch", "--show-current")).toBe(STORY);
