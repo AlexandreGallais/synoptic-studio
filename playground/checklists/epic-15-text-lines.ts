@@ -17,18 +17,13 @@ export const EPIC_15_TEXT_LINES: readonly ChecklistLine[] = [
   },
   {
     feature: "F05",
-    todo: "Size 48, then 16",
-    see: "the text and its frame grow, then shrink, together",
+    todo: "Size 48, then 16, then 0, then back to 32",
+    see: "the text and its frame grow, then shrink, together; at 0 refused: the drawing gone, a message, the field in red; back when valid",
   },
   {
     feature: "F05",
-    todo: "Weight 100, press Bold, press it again; then weight 900",
-    see: "thin, then 700, then thin again; then black",
-  },
-  {
-    feature: "F05",
-    todo: "Italic on, then off",
-    see: "the letters slanted, then upright",
+    todo: "Weight 100, press Bold, press it again; then weight 900; Italic on, then off",
+    see: "thin, then 700, then thin again; then black; slanted, then upright",
   },
   {
     feature: "F05",
@@ -64,11 +59,6 @@ export const EPIC_15_TEXT_LINES: readonly ChecklistLine[] = [
     feature: "F05",
     todo: "X 100, Y 50, then Angle 90, 370 and −90",
     see: "text and frame move together; a quarter turn about the frame's middle, strokes turning too; 370 kept as 10, −90 as 270",
-  },
-  {
-    feature: "F05",
-    todo: "Size 0, then back to 32",
-    see: "refused: the drawing gone, a message, the field in red; back when valid",
   },
   {
     feature: "F05",
