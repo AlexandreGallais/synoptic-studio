@@ -1,0 +1,5 @@
+# Append-only logs: a merge keeps the lines both sides added, without conflict markers (ADR-0065,
+# REF-GIT-UNION); tests/logs.test.ts checks their rows stay unique and dated.
+docs/process/journal.md merge=union
+docs/process/improvements.md merge=union
+docs/process/feedback.md merge=union

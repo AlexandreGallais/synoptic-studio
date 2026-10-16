@@ -52,6 +52,10 @@ git branch -d <story-branch>
 
 The remote branch is deleted by GitHub on merge; `fetch.prune` keeps local references clean.
 
+## Logs merged by union
+
+The three append-only logs — `docs/process/journal.md`, `improvements.md` and `feedback.md` — carry `merge=union` in `.gitattributes` (ADR-0065): when two branches each add a row, a local merge keeps both, without conflict markers, in an order to check (`REF-GIT-UNION`). A row both sides added the same way could appear twice: `tests/logs.test.ts` fails and names it, and checks every row of `improvements.md` and `feedback.md` starts with a date and every session of the journal too. Never for a table kept in a sorted order nor a file with front matter. Whether GitHub's own merge of a pull request applies `merge=union` is not documented: tried once at a later merge before relying on it.
+
 ## Commit messages
 
 Conventional Commits (`REF-CONVENTIONAL-COMMITS`), checked by commitlint on every commit and in the CI of the pull requests into `main` (`commitlint.config.ts`):

@@ -25,3 +25,9 @@ One task = one commit, referenced as `EN-048.Tn`.
 
 - [ ] T1 — `proseWrap: "never"` and the docs reformatted once, in a commit of its own (1 h)
 - [ ] T2 — `.gitattributes` union lines and the uniqueness test, mutation-checked (1 h)
+
+## For the main thread
+
+### Improvements
+
+| 2026-10-17 | EN-048 | Whether GitHub's merge of a pull request applies `merge=union` is not documented (SP-020): try it once at a later merge that brings log rows from two sides, and see whether both are kept, before relying on it beyond local merges | tooling |
