@@ -5,7 +5,7 @@ import {
   ENGLISH_US,
   HELLO_TEXT,
   HELVETICA_COLLECTION_PATH,
-  INTER_REGULAR,
+  INTER_REGULAR_FILE,
   OPEN_TYPE_VERSION,
   TRUE_TYPE_VERSION,
   WINDOWS_PLATFORM,
@@ -216,7 +216,7 @@ describe("parseFontFace (REF-OT-NAME, REF-OT-OS2)", () => {
     // REF-OT-NAME: no name ID 16, name ID 1 Inter; REF-OT-OS2: 400, fsSelection 0x00c0 (bit 6
     // regular), fsType 0, installable; read again with fontTools 4.60.2
     // (`REF-INTER-REGULAR-FILE`).
-    const named = parseFontFace(INTER_REGULAR);
+    const named = parseFontFace(INTER_REGULAR_FILE);
 
     expect(named).toMatchObject({
       face: { file: { isEmbeddable: true }, isItalic: false, weight: 400 },

@@ -12,7 +12,7 @@ import { join } from "node:path";
  * with its licence beside it in `inter-license.txt` (`REF-INTER-LICENSE`): a real font file that
  * every machine reads (EN-062).
  */
-export const INTER_REGULAR: Uint8Array = readFileSync(
+export const INTER_REGULAR_FILE: Uint8Array = readFileSync(
   join(import.meta.dirname, "inter-regular.ttf"),
 );
 
