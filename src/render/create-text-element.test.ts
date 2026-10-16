@@ -34,7 +34,7 @@ describe("createTextElement (ADR-0052)", () => {
     ]);
   });
 
-  it("[F05.AC4] writes one <tspan> per line, each at its x and its baseline", () => {
+  it("[F05.AC4] [F17.AC9] writes one <tspan> per line, each at its x and its baseline", () => {
     const spans = [...(text?.querySelectorAll("tspan") ?? [])];
 
     // 'Hello' centered: (41.78125 − 36.4609375) / 2 = 2.66015625, written 2.66016; baselines
