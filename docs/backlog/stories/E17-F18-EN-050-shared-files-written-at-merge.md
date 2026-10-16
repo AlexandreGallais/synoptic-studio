@@ -3,7 +3,7 @@ id: EN-050
 epic: E17
 feature: F18
 title: Shared files written only at merge
-status: ready
+status: done
 points: 2
 ---
 
