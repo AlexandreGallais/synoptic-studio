@@ -32,7 +32,7 @@ Find, read and record the sources of F19 before any of its stories is written (A
 
 One task = one commit, referenced as `SP-021.Tn`.
 
-- [ ] T1 — Read voidzero.dev and Oxc's documentation; record the sources (3 h)
-- [ ] T2 — Register the gathered research notes as sources, each claim checked (3 h)
+- [x] T1 — Read voidzero.dev and Oxc's documentation; record the sources (3 h)
+- [x] T2 — Register the gathered research notes as sources, each claim checked (3 h)
 - [ ] T3 — Measure `check:all` lane by lane and test oxlint and oxfmt on this repository (4 h)
 - [ ] T4 — Write the research note, propose the `check:all` target, draft F19's criteria and stories (3 h)
