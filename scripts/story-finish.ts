@@ -185,11 +185,13 @@ export function worktrees(porcelain: string): readonly Worktree[] {
     });
 }
 
-/** A Git command and the folder it runs in. */
+/** A command and the folder it runs in. */
 type Step = {
+  /** The program: Git, or GitHub's command line for the branch on GitHub. */
+  readonly command: "gh" | "git";
   /** The folder. */
   readonly cwd: string;
-  /** Git's arguments. */
+  /** Its arguments. */
   readonly options: readonly string[];
 };
 
@@ -199,7 +201,7 @@ export type CleanUp = {
   readonly place: string;
   /** The base brought up to its remote. */
   readonly update: readonly Step[];
-  /** The story's worktree and branch removed. */
+  /** The story's worktree and branch removed, here then on GitHub, from the main checkout. */
   readonly remove: readonly Step[];
 };
 
@@ -209,6 +211,8 @@ export type Story = {
   readonly base: string;
   /** The story's branch. */
   readonly branch: string;
+  /** The repository on GitHub, `owner/name`. */
+  readonly repository: string;
 };
 
 /**
@@ -235,13 +239,15 @@ function baseCheckout(base: string, here: string, checkouts: readonly Worktree[]
  * @returns the step removing it
  */
 function worktreeRemovalStep(worktree: string, main: string): Step {
-  return { cwd: main, options: ["worktree", "remove", worktree] };
+  return { command: "git", cwd: main, options: ["worktree", "remove", worktree] };
 }
 
 /**
  * The clean-up of a merged story, from the checkout it was finished in. From a worktree, the base is
  * brought up to date where it is checked out — the main checkout in a run — without switching any
- * branch, then the worktree is removed; elsewhere the checkout switches to the base first.
+ * branch, then the worktree is removed; elsewhere the checkout switches to the base first. Every
+ * step after the worktree's removal runs from the main checkout: the worktree may be the checkout of
+ * the base, and a command started in a removed folder fails (EN-051, PR #272).
  *
  * @param story - the story's branch and its base
  * @param here - the checkout `story:finish` runs in
@@ -251,24 +257,41 @@ function worktreeRemovalStep(worktree: string, main: string): Step {
 export function cleanUpPlan(story: Story, here: string, checkouts: readonly Worktree[]): CleanUp {
   const main = checkouts.at(0)?.path ?? here;
   const place = baseCheckout(story.base, here, checkouts);
-  const fetch = { cwd: here, options: ["fetch", "--quiet", "--prune", "origin"] };
-  const toBase = place === here ? [{ cwd: here, options: ["switch", "--quiet", story.base] }] : [];
+  const fetch: Step = {
+    command: "git",
+    cwd: here,
+    options: ["fetch", "--quiet", "--prune", "origin"],
+  };
+  const toBase: Step[] =
+    place === here
+      ? [{ command: "git", cwd: here, options: ["switch", "--quiet", story.base] }]
+      : [];
   const worktreeRemoval = here === main ? [] : [worktreeRemovalStep(here, main)];
+  const remoteReference = `repos/${story.repository}/git/refs/heads/${story.branch}`;
 
   return {
     place,
-    remove: [...worktreeRemoval, { cwd: main, options: ["branch", "-D", story.branch] }],
+    remove: [
+      ...worktreeRemoval,
+      { command: "git", cwd: main, options: ["branch", "-D", story.branch] },
+      // Through GitHub's API rather than `git push --delete`, which would run the pre-push checks.
+      { command: "gh", cwd: main, options: ["api", "-X", "DELETE", remoteReference] },
+    ],
     update: [
       fetch,
       ...toBase,
-      { cwd: place, options: ["merge", "--ff-only", "--quiet", `origin/${story.base}`] },
+      {
+        command: "git",
+        cwd: place,
+        options: ["merge", "--ff-only", "--quiet", `origin/${story.base}`],
+      },
     ],
   };
 }
 
 /**
  * Cleans up a story once its pull request merged: the base brought up to date, the rows moved there,
- * the worktree and the branch removed. A pull request not merged keeps everything.
+ * the worktree and the branch removed here and on GitHub. A pull request not merged keeps everything.
  *
  * @param state - the pull request's state: `OPEN`, `MERGED` or `CLOSED`
  * @param plan - the clean-up's steps
@@ -281,13 +304,13 @@ export function cleanUp(state: string, plan: CleanUp, moveRowsIn: (cwd: string) 
   }
 
   for (const step of plan.update) {
-    run("git", step.options, step.cwd);
+    run(step.command, step.options, step.cwd);
   }
 
   moveRowsIn(plan.place);
 
   for (const step of plan.remove) {
-    run("git", step.options, step.cwd);
+    run(step.command, step.options, step.cwd);
   }
 
   return true;
@@ -329,7 +352,7 @@ if (import.meta.main) {
     here,
   );
   const plan = cleanUpPlan(
-    { base, branch },
+    { base, branch, repository },
     here,
     worktrees(run("git", ["worktree", "list", "--porcelain"], here)),
   );
@@ -339,8 +362,7 @@ if (import.meta.main) {
       moveRows(branch, cwd);
     })
   ) {
-    run("gh", ["api", "-X", "DELETE", `repos/${repository}/git/refs/heads/${branch}`], plan.place);
-    process.stdout.write(`merged; ${base} up to date in ${plan.place}, ${branch} deleted\n`);
+    process.stdout.write(`merged; ${base} up to date, ${branch} deleted here and on GitHub\n`);
   } else {
     process.stderr.write(
       `${state} after 3 min, ${branch} kept: read gh run list --workflow story-automerge.yml --limit 1\n`,
