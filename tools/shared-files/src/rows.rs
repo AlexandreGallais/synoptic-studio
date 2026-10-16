@@ -125,8 +125,21 @@ fn is_placeholder(line: &str) -> bool {
     PLACEHOLDERS.contains(&text.as_str())
 }
 
+/// Whether a line, its end trimmed, is a journal bullet opening with its tag and holding a text
+/// after it, such as ``- `#run` A finding.``.
+fn is_tagged_bullet(line: &str) -> bool {
+    line.strip_prefix("- `#")
+        .and_then(|rest| rest.split_once("` "))
+        .is_some_and(|(tag, _)| {
+            !tag.is_empty()
+                && tag
+                    .chars()
+                    .all(|letter| letter.is_ascii_lowercase() || letter == '-')
+        })
+}
+
 /// What a line under a log's heading is: a table log takes dated table rows, its header (a row
-/// followed by a separator) and separator dropped; the journal takes bullets.
+/// followed by a separator) and separator dropped; the journal takes tagged bullets.
 fn shape(place: Place, line: &str, next: Option<&str>) -> Shape {
     let line = line.trim_end();
 
@@ -141,7 +154,7 @@ fn shape(place: Place, line: &str, next: Option<&str>) -> Shape {
             Shape::Skip
         }
         Place::Table if is_table_row(line) && is_dated(line) => Shape::Row,
-        Place::NewestSection if line.starts_with("- ") => Shape::Row,
+        Place::NewestSection if is_tagged_bullet(line) => Shape::Row,
         _ => Shape::Other,
     }
 }
