@@ -80,7 +80,7 @@ fn removes_a_section_left_empty() {
     assert_eq!(taken.rows[0].0, LOGS[2]);
 
     // A section followed by another keeps one blank line before it.
-    let middle = "# S\n\n## For the main thread\n\n### Journal\n\n- a\n\n## Notes\n\nkept\n";
+    let middle = "# S\n\n## For the main thread\n\n### Journal\n\n- `#run` a\n\n## Notes\n\nkept\n";
 
     assert_eq!(take_rows(middle).story, "# S\n\n## Notes\n\nkept\n");
 }
@@ -145,13 +145,20 @@ fn moves_only_dated_table_rows_into_a_table_log() {
 }
 
 #[test]
-fn moves_only_bullets_into_the_journal() {
-    let story = "# S\n\n## For the main thread\n\n### Journal\n\n- `#run` A finding.\n| 2026-10-17 | a row |\nA paragraph.\n- None.\n- Nothing new\n\n## Next\n";
+fn moves_only_tagged_bullets_into_the_journal() {
+    // The journal's bullets open with a tag, searched with `grep`: `- \`#run\` …`.
+    let story = "# S\n\n## For the main thread\n\n### Journal\n\n- `#run` A finding.\n| 2026-10-17 | a row |\nA paragraph.\n- EN-055: untagged.\n- `#Run` Capital.\n- `#` Empty tag.\n- `#run`\n- None.\n- Nothing new\n- `#open-question` Another.\n\n## Next\n";
     let taken = take_rows(story);
 
     assert_eq!(
         taken.rows,
-        [(LOGS[0], vec!["- `#run` A finding.".to_owned()])]
+        [(
+            LOGS[0],
+            vec![
+                "- `#run` A finding.".to_owned(),
+                "- `#open-question` Another.".to_owned()
+            ]
+        )]
     );
     assert_eq!(
         taken.left,
@@ -159,13 +166,17 @@ fn moves_only_bullets_into_the_journal() {
             LOGS[0],
             vec![
                 "| 2026-10-17 | a row |".to_owned(),
-                "A paragraph.".to_owned()
+                "A paragraph.".to_owned(),
+                "- EN-055: untagged.".to_owned(),
+                "- `#Run` Capital.".to_owned(),
+                "- `#` Empty tag.".to_owned(),
+                "- `#run`".to_owned()
             ]
         )]
     );
     assert_eq!(
         taken.story,
-        "# S\n\n## For the main thread\n\n### Journal\n\n| 2026-10-17 | a row |\nA paragraph.\n\n## Next\n"
+        "# S\n\n## For the main thread\n\n### Journal\n\n| 2026-10-17 | a row |\nA paragraph.\n- EN-055: untagged.\n- `#Run` Capital.\n- `#` Empty tag.\n- `#run`\n\n## Next\n"
     );
 }
 
@@ -180,9 +191,10 @@ fn drops_a_subsection_holding_only_placeholders() {
         assert_eq!(taken.story, "# S\n", "{placeholder}");
     }
     // A bullet that only starts like a placeholder is a journal row.
-    let taken = take_rows("## For the main thread\n\n### Journal\n\n- None of the tests failed.\n");
+    let taken =
+        take_rows("## For the main thread\n\n### Journal\n\n- `#tests` None of them failed.\n");
 
-    assert_eq!(taken.rows[0].1, ["- None of the tests failed."]);
+    assert_eq!(taken.rows[0].1, ["- `#tests` None of them failed."]);
 }
 
 #[test]
