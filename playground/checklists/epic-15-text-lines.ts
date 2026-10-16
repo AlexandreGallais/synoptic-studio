@@ -97,6 +97,11 @@ export const EPIC_15_TEXT_LINES: readonly ChecklistLine[] = [
   },
   {
     feature: "F14",
+    todo: "The content “A”, “B”, an empty line, “C”, Max lines 3, then 0",
+    see: "“A” over “B…”, no “…” alone on the empty line, which takes no height (US-058); then the four lines",
+  },
+  {
+    feature: "F14",
     todo: "Vertical alignment Middle, then Bottom",
     see: "the block of lines moves down, the last line's bottom on the box's at Bottom",
   },

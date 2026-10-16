@@ -18,6 +18,23 @@ describe("textMeasure and measuredTextDrawing (US-048, DERIV-text-box)", () => {
     });
   });
 
+  it("[F17.AC16] gives no height to the empty lines dropped after the ellipsis", () => {
+    // 4 lines, the 3rd empty, at most 3: "Hello" over "World…" (57.78125), 2 × 18.3984375 tall.
+    const text = {
+      ...HELLO_TEXT,
+      boxHeight: 100,
+      boxWidth: 60,
+      content: "Hello\nWorld\n\nHello",
+      isInBox: true,
+      maximumLines: 3,
+    };
+
+    expect(textMeasure(ARIAL_BOX_METRICS, text)).toEqual({
+      block: { height: 36.796875, width: 57.78125 },
+      lines: ["Hello", "World…"],
+    });
+  });
+
   it("[F17.AC5] draws from the measure what textDrawing draws", () => {
     const text = { ...HELLO_TEXT, boxHeight: 60, boxWidth: 50, isInBox: true };
 
