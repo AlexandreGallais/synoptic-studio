@@ -196,7 +196,7 @@
 | [EN-057](./E17-F18-EN-057-register-of-exceptions-and-a-byte-buffer.md)            | F18     | The register of exceptions, and a byte buffer for font collections                   | done   |
 | [US-061](./E17-F18-US-061-font-list-held-while-the-default-font-is-read.md)       | F18     | Font list held while the default font is read again                                  | ready  |
 | [EN-058](./E17-F18-EN-058-a-mutation-runner.md)                                   | F18     | A mutation runner as a tool                                                          | done   |
-| [EN-059](./E17-F18-EN-059-done-commit-checks-the-docs.md)                         | F18     | The done commit checks the docs a rule touches                                       | ready  |
+| [EN-059](./E17-F18-EN-059-done-commit-checks-the-docs.md)                         | F18     | The done commit checks the docs a rule touches                                       | done   |
 | [EN-060](./E17-F18-EN-060-documentation-pass-on-e15-pages.md)                     | F18     | A documentation pass on E15's long pages                                             | ready  |
 | [EN-061](./E17-F18-EN-061-modules-per-folder-counted.md)                          | F18     | Modules per folder counted, no spread in a fold                                      | done   |
 | [EN-062](./E17-F18-EN-062-inter-as-a-test-font.md)                                | F18     | Inter Regular as a test font file                                                    | done   |
