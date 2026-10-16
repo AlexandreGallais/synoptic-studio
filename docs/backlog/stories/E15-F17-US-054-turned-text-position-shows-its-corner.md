@@ -3,7 +3,7 @@ id: US-054
 epic: E15
 feature: F17
 title: X and Y of a turned text show its turned top-left corner
-status: ready
+status: done
 points: 3
 ---
 
@@ -43,4 +43,4 @@ From the Product Owner's first pass of VAL-018 (2026-10-16), finding D4: turning
 
 One task = one commit, referenced as `US-054.Tn`.
 
-- [ ] T1 — X and Y show a turned text's top-left corner, a corner typed placing the text; `shapes.md` (2 h)
+- [x] T1 — X and Y show a turned text's top-left corner, a corner typed placing the text; `shapes.md` (2 h)

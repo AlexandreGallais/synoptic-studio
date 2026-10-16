@@ -47,7 +47,7 @@ In delivery order.
 | [EN-044](../stories/E15-F17-EN-044-val-steps-as-a-checklist.md)                            | Enabler    | The run and review skills validate with a checklist page                             | done   |
 | [US-052](../stories/E15-F17-US-052-large-collection-read-without-running-out-of-memory.md) | User story | Read a large font collection without running out of memory                           | done   |
 | [US-053](../stories/E15-F17-US-053-installed-fonts-read-ahead-and-real-weights.md)         | User story | Installed fonts read ahead, and only the weights the browser draws                   | done   |
-| [US-054](../stories/E15-F17-US-054-turned-text-position-shows-its-corner.md)               | User story | X and Y of a turned text show its turned top-left corner                             | ready  |
+| [US-054](../stories/E15-F17-US-054-turned-text-position-shows-its-corner.md)               | User story | X and Y of a turned text show its turned top-left corner                             | done   |
 | [AUD-019](../stories/E15-F17-AUD-019-audit-f17.md)                                         | Audit      | Audit F17                                                                            | done   |
 | [VAL-018](../stories/E15-F17-VAL-018-validate-f17.md)                                      | Validation | Validate F17                                                                         | ready  |
 
