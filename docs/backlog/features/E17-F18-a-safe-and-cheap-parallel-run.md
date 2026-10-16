@@ -45,7 +45,7 @@ In delivery order.
 | [EN-047](../stories/E17-F18-EN-047-heavy-lock-and-agent-limit.md)                    | Enabler    | A lock for heavy commands and a limit on subagents                 | ready  |
 | [EN-063](../stories/E17-F18-EN-063-subagent-limit-in-settings.md)                    | Enabler    | The subagent limit set in Claude Code's settings                   | ready  |
 | [EN-048](../stories/E17-F18-EN-048-tables-without-padding-and-union-logs.md)         | Enabler    | Tables without padding, append-only logs merged by union           | ready  |
-| [EN-049](../stories/E17-F18-EN-049-stories-index-generated.md)                       | Enabler    | The stories index generated from the story files                   | ready  |
+| [EN-049](../stories/E17-F18-EN-049-stories-index-generated.md)                       | Enabler    | The stories index generated from the story files                   | done   |
 | [EN-050](../stories/E17-F18-EN-050-shared-files-written-at-merge.md)                 | Enabler    | Shared files written only at merge                                 | ready  |
 | [EN-051](../stories/E17-F18-EN-051-story-finish-one-merge-at-a-time.md)              | Enabler    | `story:finish` one merge at a time, from a worktree too            | ready  |
 | [CHK-019](../stories/E17-F18-CHK-019-checkpoint-f18.md)                              | Checkpoint | Checkpoint in the middle of F18                                    | ready  |
