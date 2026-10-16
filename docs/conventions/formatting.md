@@ -10,7 +10,7 @@ Three tools, each with its own scope, **no duplicate** (ADR-0013):
 
 ## One command
 
-`npm run fix` = `prettier --write .` then `eslint --fix .`. After it, `npm run check` reports no layout issue. On commit, `lint-staged` (`.lintstagedrc.json`) runs Prettier and ESLint `--fix` on staged TypeScript and Markdown, Prettier on JSON, HTML, CSS and YAML, and secretlint on every staged file.
+`npm run fix` = `prettier --write` then `eslint --fix`, each on the folders and root files named in `package.json` (EN-045: a check tool is given explicit targets, never `.`). After it, `npm run check` reports no layout issue. On commit, `lint-staged` (`.lintstagedrc.json`) runs Prettier and ESLint `--fix` on staged TypeScript and Markdown, Prettier on JSON, HTML, CSS and YAML, and secretlint on every staged file.
 
 ## Blank lines (`@stylistic/padding-line-between-statements`)
 

@@ -21,29 +21,49 @@ Give each check tool of `check:all` the folders and files it must check, by name
 
 ## Measures
 
-Each step alone, one after the other, under the heavy-command lock, on the same machine (seconds):
+Each step alone, one after the other, under the heavy-command lock, on the same machine (seconds); the last rows are the slowest steps inside `check:all`, whose lanes run at the same time.
 
-| Step               | What it reads before                                           | Before |
-| ------------------ | -------------------------------------------------------------- | -----: |
-| `format:check`     | `.`, minus `.prettierignore` and `.gitignore`                  |   10.1 |
-| `lint`             | `.`, minus `IGNORED_FILES` (`.claude/worktrees/` read)         |   48.8 |
-| `lint:secrets`     | `**/*`, minus `.secretlintignore` and `.gitignore`             |    0.6 |
-| `typecheck`        | `tsconfig.json` `include` (already explicit)                   |    4.9 |
-| `test`             | Vitest `include` (already explicit), every core                |   97.3 |
-| `deps:audit`       | `package-lock.json`                                            |    1.1 |
-| `deps:unused`      | knip `project: **/*.ts`, minus `.gitignore`                    |    1.1 |
-| `deps:tools`       | `.github/workflows/`, `.nvmrc`                                 |    1.7 |
-| `deps:outdated`    | `package.json`                                                 |    2.5 |
-| `docs:build`       | `docs/` (VitePress), `src/index.ts` (TypeDoc)                  |   29.5 |
-| `playground:build` | `playground/`                                                  |    0.7 |
-| `check:all`        | the steps above in four lanes; `lint` 121.9 and `test` 122.4 s |  122.6 |
+| Step                        | Reads before                                           | Reads after                                                                   | Before | After |
+| --------------------------- | ------------------------------------------------------ | ----------------------------------------------------------------------------- | -----: | ----: |
+| `format:check`              | `.`, minus `.prettierignore` and `.gitignore`          | root files, `.claude/` folders, `.github`, `.husky`, `.vscode`, `docs`, code  |   10.1 |   9.2 |
+| `lint`                      | `.`, minus `IGNORED_FILES` (`.claude/worktrees/` read) | root `*.{ts,md}`, `.claude/` folders, `.github`, `docs`, code                 |   48.8 |  46.2 |
+| `lint:secrets`              | `**/*`, minus `.secretlintignore` and `.gitignore`     | `git ls-files`                                                                |    0.6 |   0.9 |
+| `typecheck`                 | `tsconfig.json` `include` (already explicit)           | unchanged                                                                     |    4.9 |   4.9 |
+| `test`                      | Vitest `include` (already explicit), every core        | unchanged, half the cores                                                     |   97.3 | 107.6 |
+| `deps:audit`                | `package-lock.json`                                    | unchanged                                                                     |    1.1 |   1.0 |
+| `deps:unused`               | knip `project: **/*.ts`, minus `.gitignore`            | knip `project`: root `*.ts`, `.claude/hooks`, `docs/.vitepress`, code folders |    1.1 |   0.9 |
+| `deps:tools`                | `.github/workflows/`, `.nvmrc`                         | unchanged                                                                     |    1.7 |   1.3 |
+| `deps:outdated`             | `package.json`                                         | unchanged                                                                     |    2.5 |   2.4 |
+| `docs:build`                | `docs/` (VitePress), `src/index.ts` (TypeDoc)          | unchanged                                                                     |   29.5 |  29.6 |
+| `playground:build`          | `playground/`                                          | unchanged                                                                     |    0.7 |   0.6 |
+| `check:all`                 | the steps above in four lanes                          |                                                                               |  122.6 | 112.1 |
+| `lint` in `check:all`       |                                                        |                                                                               |  121.9 |  64.2 |
+| `test` in `check:all`       |                                                        |                                                                               |  122.4 | 111.9 |
+| `docs:build` in `check:all` |                                                        |                                                                               |   71.7 |  43.4 |
+
+Alone, the tests take 10 % longer on half the cores; inside `check:all` they leave the other lanes room, and the whole run is 10 s shorter.
 
 In a checkout holding a worktree (the main one), before `.claude/worktrees/` was ignored by Git (RET-003): `lint` 82.8 s and 963 errors, `format:check` and `deps:unused` failed on the worktree's files, `check:all` 167.4 s.
+
+### Files each tool reads, before and after
+
+Listed with a copy of `src/` and `docs/` in `.claude/worktrees/probe/`, files in `records/` and `coverage/`, on `develop` after RET-003:
+
+| Tool       | Before | After | Left out                                  |
+| ---------- | -----: | ----: | ----------------------------------------- |
+| ESLint     |  3 373 | 2 004 | 1 369 files of `.claude/worktrees/probe/` |
+| Prettier   |  2 086 | 2 086 | none (`.gitignore` already left them out) |
+| secretlint |  2 092 | 2 092 | none                                      |
+| `tsc`      |  1 541 | 1 541 | none                                      |
+| Vitest     |    477 |   477 | none                                      |
+| knip       |  1 559 | 1 559 | none                                      |
+
+The new test file is counted in neither column. No file outside the ignored folders left any tool.
 
 ## Tasks
 
 One task = one commit, referenced as `EN-045.Tn`.
 
 - [x] T1 — The steps of `check:all` measured, what each reads written here (1 h)
-- [ ] T2 — Each tool given explicit targets, the ignored folders everywhere, Vitest at half the cores, a test that no tracked file drops out (2 h)
-- [ ] T3 — Measured again; `docs/tooling/` and the tooling rules updated (1 h)
+- [x] T2 — Each tool given explicit targets, the ignored folders everywhere, Vitest at half the cores, a test that no tracked file drops out (2 h)
+- [x] T3 — Measured again; `docs/tooling/` and the tooling rules updated (1 h)
