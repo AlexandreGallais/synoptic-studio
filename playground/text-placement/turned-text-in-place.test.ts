@@ -204,9 +204,11 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
   it("[F05.AC5] keeps the corner when the text goes into a box, then nothing moves on a spacing", () => {
     const corner = readCorner();
 
+    // The box takes the block rounded up, 88 × 20 (US-055), then 120 × 40.
+    chooseOption("text-fit", "box");
+    expectCorner(corner);
     typeValue("text-box-width", "120");
     typeValue("text-box-height", "40");
-    chooseOption("text-fit", "box");
     expectCorner(corner);
 
     const fields = readFields();
@@ -218,9 +220,9 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
   it("[F05.AC5] keeps the corner of a box 120 × 40 at (47, 61) set to 160 wide", () => {
     // Placed straight, then turned: X and Y of a turned text place its corner (US-054).
     typeValue("angle", "0");
+    chooseOption("text-fit", "box");
     typeValue("text-box-width", "120");
     typeValue("text-box-height", "40");
-    chooseOption("text-fit", "box");
     typeValue("shape-x", "47");
     typeValue("shape-y", "61");
     typeValue("angle", "23");

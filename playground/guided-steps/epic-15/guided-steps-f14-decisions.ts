@@ -101,7 +101,7 @@ export const GUIDED_STEPS_F14_DECISIONS: readonly GuidedStep[] = [
   },
   {
     explanation: "Tick Background; then Fit: Box.",
-    look: "Yellow, opaque; Max 0, Ellipsis on, Top (model box 0 × 0, page 200 × 100).",
+    look: "Yellow, opaque; Max 0, Ellipsis on, Top; Width and Height 88 × 20, the text rounded up (model box 0 × 0).",
     title: "F14 · Defaults (decision 17)",
     values: createTextBoxStepValues({}),
   },

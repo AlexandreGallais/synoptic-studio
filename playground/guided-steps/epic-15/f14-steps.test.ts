@@ -125,6 +125,16 @@ describe("the guided test of F14 (VAL-015): the box's options", () => {
   it("[F14.AC1] Box: “Hello” over “World”, the frame the box 50 × 100", () => {
     openStep("Fit content or Box");
     chooseOption("text-fit", "box");
+
+    // The box takes the text's block rounded up, nothing moving (US-055).
+    expect([readValue("text-box-width"), readValue("text-box-height"), readContents()]).toEqual([
+      "88",
+      "20",
+      ["Hello World"],
+    ]);
+
+    typeValue("text-box-width", "50");
+    typeValue("text-box-height", "100");
     expect([readDisplay("text-box-fields"), readContents()]).toEqual(["block", ["Hello", "World"]]);
     // Dashes 4 long every 7, 1 thick: the right side's last from 98 to 100 at x 49.
     expect(readFrame()).toContain("M49 98H50V100H49Z");
@@ -346,10 +356,11 @@ describe("the guided test of F14 (VAL-015): the decisions to confirm", () => {
     expect(readBackground().slice(1)).toEqual(["#ffff00", "1"]);
     chooseOption("text-fit", "box");
 
-    expect(["text-maximum-lines", "text-vertical-alignment"].map((id) => readValue(id))).toEqual([
-      "0",
-      "top",
-    ]);
+    expect(
+      ["text-maximum-lines", "text-vertical-alignment", "text-box-width", "text-box-height"].map(
+        (id) => readValue(id),
+      ),
+    ).toEqual(["0", "top", "88", "20"]);
 
     expect(selectPageElement("#text-ellipsis")).toHaveProperty("checked", true);
   });

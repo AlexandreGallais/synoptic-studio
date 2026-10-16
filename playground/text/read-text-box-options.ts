@@ -27,8 +27,8 @@ type TextBoxOptions = Pick<
  * (US-034). They are read whichever kind is chosen, so that the text
  * keeps them when it changes kind (`docs/domain/shapes.md`, "Box"); a number left empty is
  * `NaN`, which the model refuses (`isValidText`). The page opens the box at 200 × 100, a playground
- * starting value that shows a few lines at once; the model's default stays 0 × 0
- * (`TEXT_BOX_DEFAULTS`).
+ * starting value, replaced by the text's block rounded up when Box is chosen after Fit content
+ * (`writeFittedBox`, US-055); the model's default stays 0 × 0 (`TEXT_BOX_DEFAULTS`).
  *
  * @kind procedure
  * @param document - page document

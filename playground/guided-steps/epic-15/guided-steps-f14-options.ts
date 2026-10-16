@@ -18,8 +18,8 @@ const TWO_LINES = { content: "Pump P-101\nRunning" } as const;
  */
 export const GUIDED_STEPS_F14_OPTIONS: readonly GuidedStep[] = [
   {
-    explanation: "Fit: Box.",
-    look: "The box's fields appear; “Hello” over “World”; the dashed frame is the box, 50 × 100.",
+    explanation: "Fit: Box; then Width 50, Height 100.",
+    look: "The box's fields appear at 88 × 20, the text rounded up, “Hello World” unmoved; then “Hello” over “World”, the dashed frame the box 50 × 100.",
     title: "F14 · Fit content or Box",
     values: createTextBoxStepValues({ boxWidth: 50 }),
   },
