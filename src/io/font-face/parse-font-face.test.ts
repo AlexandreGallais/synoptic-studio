@@ -288,12 +288,12 @@ describe("parseFontFace, measuring with its face (F15.AC4)", () => {
     content: `ABC ${String(index)}\naBC`,
   }));
 
-  // This synthetic file's face measures them in about 7 ms alone, 10 ms with coverage (EN-039,
-  // 2026-10-15); the loaded pre-push run was seen 2.5 times slower, about 25 ms: 100 ms, Vitest's
-  // timeout, keeps a margin of four over it. No clock is read in the test.
+  // This synthetic file's face measures them in about 7 ms alone (EN-054, 2026-10-16); a loaded
+  // pre-push run was seen at 157 ms (RET-003): 400 ms, Vitest's timeout, holds over that load and
+  // is over four times the measure alone. No clock is read in the test.
   it(
-    "[F15.AC4] measures the blocks of 1 000 texts of two lines within 100 ms",
-    { timeout: 100 },
+    "[F15.AC4] measures the blocks of 1 000 texts of two lines in under 0.4 s",
+    { timeout: 400 },
     () => {
       const blocks = texts.map((text) =>
         metrics === undefined ? undefined : textBlock(metrics, text, shownLines(metrics, text)),
