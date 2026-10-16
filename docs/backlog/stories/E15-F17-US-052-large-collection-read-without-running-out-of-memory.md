@@ -3,7 +3,7 @@ id: US-052
 epic: E15
 feature: F17
 title: Read a large font collection without running out of memory
-status: ready
+status: done
 points: 3
 ---
 
@@ -38,5 +38,5 @@ From the Product Owner's first pass of VAL-018 (2026-10-16) and AUD-019's findin
 
 One task = one commit, referenced as `US-052.Tn`.
 
-- [ ] T1 — The library gives a face of a collection as its parts, and finds a face by its PostScript name read in the collection, with tests on Helvetica.ttc's bytes and Apple Color Emoji.ttc's `sbix` (2 h)
-- [ ] T2 — The playground joins a face's parts with a `Blob`, only for the face kept, every read error said in one line; `shapes.md` and the checklist line (2 h)
+- [x] T1 — The library gives a face of a collection as its parts, and finds a face by its PostScript name read in the collection, with tests on Helvetica.ttc's bytes and Apple Color Emoji.ttc's `sbix` (2 h)
+- [x] T2 — The playground joins a face's parts with a `Blob`, only for the face kept, every read error said in one line; `shapes.md` and the checklist line (2 h)
