@@ -199,7 +199,7 @@
 | [EN-059](./E17-F18-EN-059-done-commit-checks-the-docs.md)                         | F18     | The done commit checks the docs a rule touches                                       | ready  |
 | [EN-060](./E17-F18-EN-060-documentation-pass-on-e15-pages.md)                     | F18     | A documentation pass on E15's long pages                                             | ready  |
 | [EN-061](./E17-F18-EN-061-modules-per-folder-counted.md)                          | F18     | Modules per folder counted, no spread in a fold                                      | ready  |
-| [EN-062](./E17-F18-EN-062-inter-as-a-test-font.md)                                | F18     | Inter Regular as a test font file                                                    | ready  |
+| [EN-062](./E17-F18-EN-062-inter-as-a-test-font.md)                                | F18     | Inter Regular as a test font file                                                    | done   |
 | [EN-046](./E17-F18-EN-046-release-pr-on-develop.md)                               | F18     | Release pull request on develop, only the release on main                            | ready  |
 | [AUD-020](./E17-F18-AUD-020-audit-f18.md)                                         | F18     | Audit F18                                                                            | ready  |
 | [VAL-019](./E17-F18-VAL-019-validate-f18.md)                                      | F18     | Validate F18                                                                         | ready  |
