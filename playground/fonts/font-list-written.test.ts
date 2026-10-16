@@ -14,12 +14,13 @@ import {
 
 import type { InstalledFont } from "./installed-font";
 
-/** 590 installed faces of 186 families, as CoreText lists them on the spike's machine (SP-019). */
+/** 590 installed faces of 186 families, as CoreText lists them on the spike's machine (SP-019), each file read ahead (US-053). */
 const INSTALLED: readonly InstalledFont[] = Array.from({ length: 590 }, (unused, index) => {
   const family = `Family ${String(index % 186)}`;
+  const file = testFaceFile({ family, fsType: 0, isItalic: false, weightClass: 400 });
 
   return {
-    blob: vi.fn<() => Promise<Blob>>(),
+    blob: vi.fn<() => Promise<Blob>>().mockResolvedValue(new Blob([new Uint8Array(file)])),
     family,
     fullName: family,
     postscriptName: `${family}-${String(index)}`,

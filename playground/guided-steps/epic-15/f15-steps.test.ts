@@ -259,12 +259,14 @@ describe("the guided test of F15 (VAL-017): fonts, embedding, the export", () =>
     await waitForPageTasks();
 
     expect(readOptions("text-font")).toEqual(["Inter", "Test Sans"]);
-    expect(reads.map((read) => read.mock.calls.length)).toEqual([0, 0]);
+    // Read ahead once listed (US-053), then read again once chosen.
+    expect(reads.map((read) => read.mock.calls.length)).toEqual([1, 1]);
 
     chooseOption("text-font", "Test Sans");
     expect(readText("#font-message")).toBe("Reading Test Sans…");
     await waitForPageTasks();
     expect(readText("#font-message")).toBe("Test Sans: 2 faces read.");
+    expect(reads.map((read) => read.mock.calls.length)).toEqual([2, 2]);
   });
 
   it("[F15.AC1] installed fonts elsewhere: said where they can be listed", () => {
@@ -466,16 +468,17 @@ describe("the guided test of F15 (VAL-017): its decisions, each with its example
     expect(readValue("text-font")).toBe("Test Sans");
   });
 
-  it("decision 26: the installed families listed without reading a file", async () => {
+  it("decision 26: the installed families listed, then read ahead (US-053)", async () => {
     const reads = fakeLocalFonts([TEST_SANS]);
 
     openStep("Installed families read when chosen (decision 26)");
     clickElement("installed-fonts");
     await waitForPageTasks();
-    expect(reads.map((read) => read.mock.calls.length)).toEqual([0]);
+    // Read ahead once listed (US-053), then read again once chosen.
+    expect(reads.map((read) => read.mock.calls.length)).toEqual([1]);
     chooseOption("text-font", "Test Sans");
     await waitForPageTasks();
-    expect(reads.map((read) => read.mock.calls.length)).toEqual([1]);
+    expect(reads.map((read) => read.mock.calls.length)).toEqual([2]);
   });
 
   it("decision 27: 300 to a family of 400 alone gives 400; Bold keeps 400", async () => {
@@ -509,7 +512,7 @@ describe("the guided test of F15 (VAL-017): its decisions, each with its example
     );
   });
 
-  it("decision 31: while a family is read, the text keeps the family chosen before", async () => {
+  it("decision 31: a family read ahead is measured and drawn at once when chosen (US-053)", async () => {
     fakeLocalFonts([{ ...TEST_SANS, family: "Test Serif" }]);
     openStep("While a family is read (decision 31)");
     await importTestFace(TEST_SANS);
@@ -518,7 +521,7 @@ describe("the guided test of F15 (VAL-017): its decisions, each with its example
     chooseOption("text-font", "Test Serif");
 
     expect(selectPageElement("#canvas text").getAttribute("font-family")).toBe(
-      '"Test Sans", sans-serif',
+      '"Test Serif", sans-serif',
     );
   });
 

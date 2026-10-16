@@ -24,7 +24,7 @@ export const GUIDED_STEPS_F15_LAST_DECISIONS: readonly GuidedStep[] = [
   },
   {
     explanation: "In Chrome: Installed fonts, allow; wait; then Font Georgia.",
-    look: "The families listed at once, no file read; “Georgia: 4 faces read.” only once chosen.",
+    look: "The families listed at once, then read in the background (US-053); “Georgia: 4 faces read.” once chosen, its files read again.",
     title: "F15 · Installed families read when chosen (decision 26)",
     values: ARIAL_16,
   },
@@ -55,7 +55,7 @@ export const GUIDED_STEPS_F15_LAST_DECISIONS: readonly GuidedStep[] = [
   },
   {
     explanation: "In Chrome: Installed fonts; Font Georgia.",
-    look: "Arial kept until Georgia is read, then Georgia chosen; a family none of whose faces is read gives the list back to Arial, said why.",
+    look: "Georgia measured at once once read ahead (US-053); chosen before, Arial kept until it is read; a family none of whose faces is read gives the list back to Arial, said why.",
     title: "F15 · While a family is read (decision 31)",
     values: ARIAL_16,
   },

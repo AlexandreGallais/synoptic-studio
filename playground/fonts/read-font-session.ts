@@ -21,6 +21,7 @@ export function readFontSession(document: Document): FontSession {
       installed: [],
       kept: [DEFAULT_FONT],
       measured: DEFAULT_FONT.name,
+      readAhead: [],
     }
   );
 }

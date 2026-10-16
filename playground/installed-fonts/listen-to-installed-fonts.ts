@@ -1,8 +1,9 @@
-import { isSameFamilyName } from "../../src";
 import { readFontSession, writeFontOptions, writeFontSession } from "../fonts";
 import { runTask, selectElement, writeText } from "../page";
 
+import { readFamilyFonts } from "./read-family-fonts";
 import { readInstalledFamily } from "./read-installed-family";
+import { readInstalledFontsAhead } from "./read-installed-fonts-ahead";
 
 import type { InstalledFont } from "../fonts";
 
@@ -34,7 +35,7 @@ function readLocalFontAccess(view: object): LocalFontAccess | undefined {
 
 /**
  * Shows the installed fonts, after the browser's permission, in the font list, after the
- * families kept, their files read only when one is chosen.
+ * families kept, then reads their files in the background (`readInstalledFontsAhead`, US-053).
  *
  * @kind procedure
  * @param document - page document
@@ -61,6 +62,16 @@ async function showInstalledFonts(
   );
 
   update();
+
+  runTask(
+    document,
+    async () => {
+      await readInstalledFontsAhead(document, update);
+    },
+    (error) => {
+      writeText(document, "installed-fonts-progress", String(error));
+    },
+  );
 }
 
 /**
@@ -81,8 +92,9 @@ function readListError(error: unknown): string {
 /**
  * Reads the files of an installed family chosen in the font list (`readInstalledFamily`), says
  * what was read, then redraws; meanwhile the list shows it chosen, "Reading …" is said, and the
- * text keeps the family chosen before it (`FontSession.measured`), never Inter by default. A
- * family already kept is not read again.
+ * text keeps the family chosen before it (`FontSession.measured`), never Inter by default, or is
+ * measured at once with a family read ahead, its metrics kept (US-053). A family whose files are
+ * held, imported or read when chosen, is not read again.
  *
  * @kind procedure
  * @param document - page document
@@ -96,7 +108,7 @@ function listenToInstalledChoice(document: Document, update: () => void): void {
     const family = font instanceof HTMLSelectElement ? font.value : "";
     const session = readFontSession(document);
 
-    if (session.kept.some((kept) => isSameFamilyName(kept.name, family))) {
+    if (readFamilyFonts(session, family).length === 0) {
       return;
     }
 

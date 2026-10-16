@@ -9,6 +9,7 @@ import {
   testFaceFile,
   uint32,
 } from "../../tests";
+import { readFontSession } from "../fonts";
 import {
   chooseFiles,
   chooseOption,
@@ -79,6 +80,38 @@ function inaccessibleFont(fullName: string, message: string): InstalledFont {
     fullName,
     postscriptName: fullName.replaceAll(" ", "-"),
   };
+}
+
+/**
+ * An installed face whose file the browser gives only once released, so that a family can be
+ * chosen while it is read ahead.
+ *
+ * @param family - its family, as the browser names it
+ * @param bytes - its file's bytes
+ * @returns the face, and what gives its file to every read waiting for it
+ */
+function heldFont(family: string, bytes: Uint8Array): readonly [InstalledFont, () => void] {
+  const { promise, resolve } = Promise.withResolvers<Blob>();
+  const font = {
+    ...installedFont(family, bytes),
+    blob: vi.fn<() => Promise<Blob>>(async () => await promise),
+  };
+
+  return [
+    font,
+    (): void => {
+      resolve(new Blob([new Uint8Array(bytes)]));
+    },
+  ];
+}
+
+/**
+ * Reads what the page says while the installed fonts are read ahead.
+ *
+ * @returns its line
+ */
+function readProgress(): string {
+  return readText("#installed-fonts-progress");
 }
 
 /**
@@ -204,7 +237,7 @@ describe("Installed fonts (US-036)", () => {
     expect(readOptions("text-font")).toEqual(["Inter"]);
   });
 
-  it("[F15.AC1] lists the installed families once the permission is granted, their files unread", async () => {
+  it("[F17.AC11] lists the installed families once the permission is granted, then reads them ahead, a face that is not a font refused", async () => {
     const bold = vi.fn<() => Promise<Blob>>().mockResolvedValue(new Blob([]));
 
     fakeLocalFonts([
@@ -220,13 +253,16 @@ describe("Installed fonts (US-036)", () => {
 
     clickElement("installed-fonts");
     await waitForMessage("Installed families listed: 2. Choose one in the font list.");
+    await waitForPageTasks();
 
     expect(readOptions("text-font")).toEqual(["Inter", "Test Sans", "Test Serif"]);
     expect(readValue("text-font")).toBe("Inter");
-    expect(bold).not.toHaveBeenCalled();
+    // Each face read once ahead (US-053); Test Sans Bold's empty file refused, Test Sans kept.
+    expect(bold).toHaveBeenCalledOnce();
+    expect(readProgress()).toBe("Installed fonts read: 2 families.");
   });
 
-  it("[F15.AC1] reads the faces of a family chosen and measures the text with them, never with Inter meanwhile", async () => {
+  it("[F17.AC11] measures a family read ahead at once when chosen, then reads its files again", async () => {
     fakeLocalFonts([
       installedFont("Test Sans", testFaceFile(TEST_SANS)),
       installedFont("Test Sans", testFaceFile({ ...TEST_SANS, weightClass: 700 })),
@@ -240,14 +276,14 @@ describe("Installed fonts (US-036)", () => {
     await waitForPageTasks();
     chooseOption("text-font", "Test Sans");
 
-    // While its files are read: the choice shown, the text still measured and drawn in Inter.
+    // While its files are read again: measured at once with the metrics read ahead (US-053).
     expect([readValue("text-font"), readText("#font-message")]).toEqual([
       "Test Sans",
       "Reading Test Sans…",
     ]);
 
-    expect(readText("#contour")).toBe(before);
-    expect(readFontFamily()).toBe('"Inter", sans-serif');
+    expect(readText("#contour")).not.toBe(before);
+    expect(readFontFamily()).toBe('"Test Sans", sans-serif');
 
     await waitForPageTasks();
 
@@ -259,8 +295,9 @@ describe("Installed fonts (US-036)", () => {
     expect(readFontFamily()).toBe('"Test Sans", sans-serif');
   });
 
-  it("[F15.AC1] keeps the family chosen before when the browser cannot give a family's file", async () => {
-    const broken = vi.fn<() => Promise<Blob>>().mockRejectedValue(new Error("No file."));
+  it("[F15.AC1] keeps the family chosen before when the browser cannot give a family's file, chosen before it is read ahead", async () => {
+    const { promise, reject } = Promise.withResolvers<Blob>();
+    const broken = vi.fn<() => Promise<Blob>>(async () => await promise);
 
     fakeLocalFonts([
       { blob: broken, family: "Test Serif", fullName: "Test Serif", postscriptName: "TestSerif" },
@@ -268,8 +305,9 @@ describe("Installed fonts (US-036)", () => {
 
     await importFace();
     clickElement("installed-fonts");
-    await waitForPageTasks();
+    await waitForMessage("Installed families listed: 1. Choose one in the font list.");
     chooseOption("text-font", "Test Serif");
+    reject(new Error("No file."));
     await waitForPageTasks();
 
     expect(readText("#font-message")).toBe(
@@ -308,31 +346,81 @@ describe("Installed fonts (US-036)", () => {
     expect(readOptions("text-weight")).toEqual(["400"]);
   });
 
-  it("[F15.AC1] gives the list back to Inter for a file it cannot read, a collection's tag alone", async () => {
-    fakeLocalFonts([installedFont("Test Bad", Uint8Array.from([0x74, 0x74, 0x63, 0x66]))]);
-    clickElement("installed-fonts");
-    await waitForPageTasks();
-    chooseOption("text-font", "Test Bad");
-    await waitForPageTasks();
-
-    expect(readText("#font-message")).toBe(
-      "Test Bad could not be read (not a TrueType or OpenType font).",
-    );
-
-    expect(readOptions("text-font")).toEqual(["Inter"]);
-    expect(readValue("text-font")).toBe("Inter");
-  });
-
-  it("[F15.AC1] says a reason shared by the faces refused once", async () => {
-    // Two faces whose files are not fonts: one reason, not "…; …" twice.
+  it("[F17.AC11] leaves out of the list the families none of whose files can be read, a collection's tag alone, a face Chrome cannot give", async () => {
     fakeLocalFonts([
-      installedFont("Test Bad", Uint8Array.from([1, 2, 3])),
-      installedFont("Test Bad", Uint8Array.from([4, 5, 6])),
+      installedFont("Test Bad", Uint8Array.from([0x74, 0x74, 0x63, 0x66])),
+      installedFont("Test Sans", testFaceFile(TEST_SANS)),
+      {
+        ...inaccessibleFont("Test Gone", "The font Test-Gone could not be accessed."),
+        family: "Test Gone",
+      },
     ]);
 
     clickElement("installed-fonts");
     await waitForPageTasks();
+
+    expect(readOptions("text-font")).toEqual(["Inter", "Test Sans"]);
+    expect(readValue("text-font")).toBe("Inter");
+
+    expect(readProgress()).toBe(
+      "Installed fonts read: 1 families; 2 left out, their files could not be read (Test Bad, Test Gone).",
+    );
+  });
+
+  it("[F17.AC11] says how many families are read while they are, the page answering between two files", async () => {
+    const [serif, release] = heldFont(
+      "Test Serif",
+      testFaceFile({ ...TEST_SANS, family: "Test Serif" }),
+    );
+
+    fakeLocalFonts([installedFont("Test Sans", testFaceFile(TEST_SANS)), serif]);
+    clickElement("installed-fonts");
+
+    await vi.waitFor(() => {
+      expect(readProgress()).toBe("Reading the installed fonts: 1 of 2 families…");
+    });
+
+    // Test Sans read while Test Serif's file is awaited.
+    expect(readOptions("text-font")).toEqual(["Inter", "Test Sans", "Test Serif"]);
+    release();
+    await waitForPageTasks();
+    expect(readProgress()).toBe("Installed fonts read: 2 families.");
+  });
+
+  it("[F17.AC11] keeps the file of a face imported when its installed family is read ahead", async () => {
+    fakeLocalFonts([installedFont("Test Sans", testFaceFile(TEST_SANS))]);
+    await importFace();
+    clickElement("installed-fonts");
+    await waitForPageTasks();
+
+    const [, family] = readFontSession(document).kept;
+
+    expect(family?.faces.map((face) => face.file === undefined)).toEqual([false]);
+  });
+
+  it("[F17.AC11] keeps a family read ahead its metrics, not its files", async () => {
+    fakeLocalFonts([installedFont("Test Sans", testFaceFile(TEST_SANS))]);
+    clickElement("installed-fonts");
+    await waitForPageTasks();
+
+    const [, family] = readFontSession(document).kept;
+
+    expect([family?.name, family?.faces.map((face) => face.file)]).toEqual([
+      "Test Sans",
+      [undefined],
+    ]);
+  });
+
+  it("[F15.AC1] says a reason shared by the faces refused once", async () => {
+    // Two faces whose files are not fonts: one reason, not "…; …" twice; chosen before read ahead.
+    const [bad, release] = heldFont("Test Bad", Uint8Array.from([1, 2, 3]));
+
+    fakeLocalFonts([bad, installedFont("Test Bad", Uint8Array.from([4, 5, 6]))]);
+
+    clickElement("installed-fonts");
+    await waitForMessage("Installed families listed: 1. Choose one in the font list.");
     chooseOption("text-font", "Test Bad");
+    release();
     await waitForPageTasks();
 
     expect(readText("#font-message")).toBe(
@@ -383,15 +471,18 @@ describe("Installed fonts (US-036)", () => {
     );
   });
 
-  it("[F15.AC1] chooses the family its files name once read, not the browser's name (M12)", async () => {
+  it("[F15.AC1] lists a family under the name its files give once read, not the browser's name (M12)", async () => {
     fakeLocalFonts([installedFont("Test Sans Bold", testFaceFile(TEST_SANS))]);
     clickElement("installed-fonts");
     await waitForPageTasks();
-    chooseOption("text-font", "Test Sans Bold");
+
+    expect(readOptions("text-font")).toEqual(["Inter", "Test Sans"]);
+
+    chooseOption("text-font", "Test Sans");
     await waitForPageTasks();
 
+    expect(readText("#font-message")).toBe("Test Sans: 1 faces read.");
     expect(readValue("text-font")).toBe("Test Sans");
-    expect(readOptions("text-font")).toEqual(["Inter", "Test Sans"]);
   });
 
   it("[F15.AC1] says the browser cannot list them when queryLocalFonts is not a function (M6)", () => {
@@ -434,7 +525,7 @@ describe("Installed fonts (US-036)", () => {
     expect(readText("#font-message")).toBe("Test Sans: 2 faces read.");
     expect(readValue("text-font")).toBe("Test Sans");
     expect(readOptions("text-weight")).toEqual(["400", "700"]);
-    // Other Serif stays listed as installed, its file unread.
+    // Other Serif read ahead too, its metrics kept (US-053).
     expect(readOptions("text-font")).toEqual(["Inter", "Test Sans", "Other Serif"]);
   });
 
@@ -500,6 +591,7 @@ describe("Installed fonts (US-036)", () => {
     );
 
     expect(readValue("text-font")).toBe("Test Sans");
-    expect(readOptions("text-weight")).toEqual(["400"]);
+    // 700's metrics, read ahead before the joins were refused, stay kept (US-053).
+    expect(readOptions("text-weight")).toEqual(["400", "700"]);
   });
 });

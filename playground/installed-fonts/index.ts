@@ -1,5 +1,10 @@
 export type * from "./installed-face-read";
 export * from "./listen-to-fonts";
 export * from "./listen-to-installed-fonts";
+export type * from "./read-ahead-font";
+export * from "./read-family-fonts";
+export * from "./read-fonts-with-read-ahead-face";
 export * from "./read-installed-face";
 export * from "./read-installed-family";
+export * from "./read-installed-fonts-ahead";
+export * from "./read-kept-faces";

@@ -1,5 +1,5 @@
-import { parseNamedFaceParts } from "../../src";
-import { addFontFile, readJoinedFile } from "../fonts";
+import { parseFontFace, parseNamedFaceParts } from "../../src";
+import { readJoinedFile } from "../fonts";
 
 import type { InstalledFaceRead } from "./installed-face-read";
 import type { InstalledFont } from "../fonts";
@@ -63,22 +63,15 @@ async function readFaceFile(
 }
 
 /**
- * Reads the file of one face into a face added to the session's families (`addFontFile`), the
- * page given that face alone, as a font file of its own.
+ * Reads the file of one face into a face (`parseFontFace`), the session left as it is.
  *
  * @kind procedure
- * @param document - page document
  * @param file - the bytes of one face, a font file of its own
- * @param update - redraws the playground
  * @returns the face read; or why it was refused, a file that is not a font
- * @see REF-WICG-LOCAL-FONT-ACCESS
+ * @see REF-OT-OTFF
  */
-function readFaceFromFile(
-  document: Document,
-  file: Readonly<Uint8Array>,
-  update: () => void,
-): InstalledFaceRead {
-  const face = addFontFile(document, file, update);
+function readFaceFromFile(file: Readonly<Uint8Array>): InstalledFaceRead {
+  const face = parseFontFace(file);
 
   return { face, refusal: face === undefined ? NOT_A_FONT : "" };
 }
@@ -88,23 +81,17 @@ function readFaceFromFile(
  * a whole collection (`readFaceFile`).
  *
  * @kind procedure
- * @param document - page document
  * @param given - the face and the bytes the browser gave for it
- * @param update - redraws the playground
  * @returns the face read; or why it was refused
  * @throws {DOMException} when the browser cannot hold the joined file
  * @see REF-WICG-LOCAL-FONT-ACCESS
  */
-async function readFaceFromBytes(
-  document: Document,
-  given: GivenFace,
-  update: () => void,
-): Promise<InstalledFaceRead> {
+async function readFaceFromBytes(given: GivenFace): Promise<InstalledFaceRead> {
   const file = await readFaceFile(given.font, given.bytes);
 
   return file === undefined
     ? { face: undefined, refusal: `no face named ${given.font.postscriptName} in its collection` }
-    : readFaceFromFile(document, file, update);
+    : readFaceFromFile(file);
 }
 
 /**
@@ -112,46 +99,35 @@ async function readFaceFromBytes(
  * could not give them.
  *
  * @kind procedure
- * @param document - page document
  * @param font - a face the browser lists
- * @param update - redraws the playground
  * @returns the face read; or why it was refused
  * @throws {DOMException} when the browser cannot hold the joined file
  * @see REF-WICG-LOCAL-FONT-ACCESS
  */
-async function readFaceRead(
-  document: Document,
-  font: InstalledFont,
-  update: () => void,
-): Promise<InstalledFaceRead> {
+async function readFaceRead(font: InstalledFont): Promise<InstalledFaceRead> {
   const bytes = await readFaceBytes(font);
 
   return typeof bytes === "string"
     ? { face: undefined, refusal: bytes }
-    : await readFaceFromBytes(document, { bytes, font }, update);
+    : await readFaceFromBytes({ bytes, font });
 }
 
 /**
  * Reads one installed face, as the browser gives its file (`blob()`,
- * `REF-WICG-LOCAL-FONT-ACCESS`), into a face added to the session's families; a face whose file
+ * `REF-WICG-LOCAL-FONT-ACCESS`), into a face, the session left as it is; a face whose file
  * the browser cannot give, or that is not a font, is refused, said why in one line, and no error
  * is left uncaught: one thrown while its file is read, joined or added — a file the browser
- * cannot hold among them — refuses the face, named, with the error (US-052).
+ * cannot hold among them — refuses the face, named, with the error (US-052). The caller keeps the
+ * face, with its file when its family is chosen, its metrics alone when read ahead (US-053).
  *
  * @kind procedure
- * @param document - page document
  * @param font - a face the browser lists
- * @param update - redraws the playground
  * @returns the face read; or why it was refused
  * @see REF-WICG-LOCAL-FONT-ACCESS
  */
-export async function readInstalledFace(
-  document: Document,
-  font: InstalledFont,
-  update: () => void,
-): Promise<InstalledFaceRead> {
+export async function readInstalledFace(font: InstalledFont): Promise<InstalledFaceRead> {
   try {
-    return await readFaceRead(document, font, update);
+    return await readFaceRead(font);
   } catch (error: unknown) {
     return { face: undefined, refusal: `${font.fullName}: ${String(error)}` };
   }

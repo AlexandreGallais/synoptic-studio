@@ -1,3 +1,4 @@
+export * from "./add-font-face";
 export * from "./add-font-file";
 export type * from "./font-session";
 export * from "./font-sessions";

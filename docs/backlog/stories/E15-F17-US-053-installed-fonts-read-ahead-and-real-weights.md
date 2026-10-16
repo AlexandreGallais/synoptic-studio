@@ -48,6 +48,6 @@ From the Product Owner's first pass of VAL-018 (2026-10-16), findings D1, D3 and
 
 One task = one commit, referenced as `US-053.Tn`.
 
-- [ ] T1 — The installed fonts read in the background, a family that cannot be read left out, metrics kept without files, a family chosen read again; `shapes.md` (3 h)
+- [x] T1 — The installed fonts read in the background, a family that cannot be read left out, metrics kept without files, a family chosen read again; `shapes.md` (3 h)
 - [ ] T2 — Inter's faces kept only when the browser draws them, Inter missing said; `shapes.md`, references (2 h)
 - [ ] T3 — A test that a right-aligned line with a letter spacing ends at the block's edge (CSS Text 3 §7.2) (0.5 h)

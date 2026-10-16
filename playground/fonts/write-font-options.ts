@@ -23,18 +23,22 @@ function readFontListNames(session: FontSession): readonly string[] {
 }
 
 /**
- * Reads the family the font list chooses: the one asked when listed, else the first, Inter.
+ * Reads the family the font list chooses: the one asked when listed; else the family the text is
+ * measured with, so that a family left out of the list while it is chosen (US-053) gives the list
+ * back to it; else the first, Inter.
  *
  * @kind procedure
  * @param names - the families listed
  * @param family - the family asked
+ * @param measured - the family the text is measured with
  * @returns the name of the family chosen, as listed
  * @see docs/backlog/stories/E15-F15-US-036-fonts-embedding-and-html-layer.md
  */
-function readFontChoice(names: readonly string[], family: string): string {
+function readFontChoice(names: readonly string[], family: string, measured: string): string {
   const [first = ""] = names;
+  const asked = names.find((name) => isSameFamilyName(name, family));
 
-  return names.find((name) => isSameFamilyName(name, family)) ?? first;
+  return asked ?? names.find((name) => isSameFamilyName(name, measured)) ?? first;
 }
 
 /**
@@ -56,7 +60,7 @@ export function writeFontOptions(document: Document, family: string): void {
   writeSelectOptions(document, {
     id: "text-font",
     options: names.map((name) => ({ label: name, value: name })),
-    value: readFontChoice(names, family === "" ? chosen : family),
+    value: readFontChoice(names, family === "" ? chosen : family, session.measured),
   });
 
   WRITTEN_FONT_LISTS.set(font, session);
