@@ -204,6 +204,21 @@ describe("Inter's faces kept only when the browser draws them (US-053)", () => {
     expect(document.querySelector("#text-size")?.getAttribute("aria-invalid")).toBe("false");
   });
 
+  it("[F17.AC14] puts Installed fonts before the font list, under the line saying to start with it", () => {
+    openTextTool();
+
+    // querySelectorAll gives the elements in the page's order.
+    const order = [...document.querySelectorAll("#installed-fonts, #text-font")].map(
+      (element) => element.id,
+    );
+
+    expect(order).toEqual(["installed-fonts", "text-font"]);
+
+    expect(readText("#font-first").trim()).toBe(
+      "Start with Installed fonts: the font list offers only the fonts read.",
+    );
+  });
+
   it("[F17.AC14] lists no font while Inter is not drawn and no installed font is read", () => {
     fakeCanvas({});
     openTextTool();
