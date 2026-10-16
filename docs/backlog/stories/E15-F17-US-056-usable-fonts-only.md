@@ -43,4 +43,4 @@ From the Product Owner's second pass of VAL-018 (2026-10-16), items F1 and F2:
 One task = one commit, referenced as `US-056.Tn`.
 
 - [x] T1 — The basic Latin letters a font must map, and why a face cannot be listed: not embeddable, or a letter missing (`hasBasicLatinLetters`, `unlistedFaceReason`); `shapes.md`, `references.md`, the story registered (1 h)
-- [ ] T2 — The playground lists only usable fonts: installed faces left out and counted by reason, Inter left out when not drawn, the first family read chosen, Installed fonts first; `shapes.md`, the checklist lines (2 h)
+- [x] T2 — The playground lists only usable fonts: installed faces left out and counted by reason, Inter left out when not drawn, the first family read chosen, Installed fonts first; `shapes.md`, `files.md`, the checklist lines (2 h)

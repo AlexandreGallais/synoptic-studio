@@ -1,11 +1,18 @@
-import { parseFontFace, parseNamedFaceParts } from "../../src";
+import { parseFontFace, parseNamedFaceParts, unlistedFaceReason } from "../../src";
 import { readJoinedFile } from "../fonts";
 
 import type { InstalledFaceRead } from "./installed-face-read";
+import type { NamedFontFace, UnlistedFaceReason } from "../../src";
 import type { InstalledFont } from "../fonts";
 
 /** Why a file read is refused: it is not a TrueType or OpenType font, nor a collection of them. */
 const NOT_A_FONT = "not a TrueType or OpenType font";
+
+/** Why a face read is left out, said after its name (US-056). */
+const UNLISTED: Readonly<Record<UnlistedFaceReason, string>> = {
+  "no-latin-letters": "it lacks letters of the basic Latin alphabet (A to Z, a to z)",
+  "not-embeddable": "its fsType forbids embedding it",
+};
 
 /** An installed face and the bytes the browser gave for it. */
 type GivenFace = {
@@ -63,17 +70,40 @@ async function readFaceFile(
 }
 
 /**
- * Reads the file of one face into a face (`parseFontFace`), the session left as it is.
+ * Reads what a face read from its file gives (US-056): the face, kept, when the editor can draw,
+ * measure and embed it; else left out, said why (`unlistedFaceReason`): its `fsType` forbids
+ * embedding it, or it lacks a letter of the ISO basic Latin alphabet.
  *
  * @kind procedure
+ * @param font - the face, as the browser lists it
+ * @param named - the face read from its file
+ * @returns the face read; or why it was left out
+ * @see docs/domain/shapes.md#text
+ */
+function readUsableFace(font: InstalledFont, named: NamedFontFace): InstalledFaceRead {
+  const leftOut = unlistedFaceReason(named.face);
+
+  return leftOut === undefined
+    ? { face: named, leftOut, refusal: "" }
+    : { face: undefined, leftOut, refusal: `${font.fullName}: ${UNLISTED[leftOut]}` };
+}
+
+/**
+ * Reads the file of one face into a face (`parseFontFace`), the session left as it is, kept only
+ * when it can be listed (`readUsableFace`).
+ *
+ * @kind procedure
+ * @param font - the face, as the browser lists it
  * @param file - the bytes of one face, a font file of its own
- * @returns the face read; or why it was refused, a file that is not a font
+ * @returns the face read; or why it was refused, a file that is not a font or a face left out
  * @see REF-OT-OTFF
  */
-function readFaceFromFile(file: Readonly<Uint8Array>): InstalledFaceRead {
-  const face = parseFontFace(file);
+function readFaceFromFile(font: InstalledFont, file: Readonly<Uint8Array>): InstalledFaceRead {
+  const named = parseFontFace(file);
 
-  return { face, refusal: face === undefined ? NOT_A_FONT : "" };
+  return named === undefined
+    ? { face: undefined, leftOut: "unreadable", refusal: NOT_A_FONT }
+    : readUsableFace(font, named);
 }
 
 /**
@@ -90,8 +120,12 @@ async function readFaceFromBytes(given: GivenFace): Promise<InstalledFaceRead> {
   const file = await readFaceFile(given.font, given.bytes);
 
   return file === undefined
-    ? { face: undefined, refusal: `no face named ${given.font.postscriptName} in its collection` }
-    : readFaceFromFile(file);
+    ? {
+        face: undefined,
+        leftOut: "unreadable",
+        refusal: `no face named ${given.font.postscriptName} in its collection`,
+      }
+    : readFaceFromFile(given.font, file);
 }
 
 /**
@@ -108,7 +142,7 @@ async function readFaceRead(font: InstalledFont): Promise<InstalledFaceRead> {
   const bytes = await readFaceBytes(font);
 
   return typeof bytes === "string"
-    ? { face: undefined, refusal: bytes }
+    ? { face: undefined, leftOut: "unreadable", refusal: bytes }
     : await readFaceFromBytes({ bytes, font });
 }
 
@@ -117,7 +151,9 @@ async function readFaceRead(font: InstalledFont): Promise<InstalledFaceRead> {
  * `REF-WICG-LOCAL-FONT-ACCESS`), into a face, the session left as it is; a face whose file
  * the browser cannot give, or that is not a font, is refused, said why in one line, and no error
  * is left uncaught: one thrown while its file is read, joined or added — a file the browser
- * cannot hold among them — refuses the face, named, with the error (US-052). The caller keeps the
+ * cannot hold among them — refuses the face, named, with the error (US-052). A face whose
+ * `fsType` forbids embedding it, or that lacks a letter of the ISO basic Latin alphabet, is left
+ * out too, said why (US-056). The caller keeps the
  * face, with its file when its family is chosen, its metrics alone when read ahead (US-053).
  *
  * @kind procedure
@@ -129,6 +165,10 @@ export async function readInstalledFace(font: InstalledFont): Promise<InstalledF
   try {
     return await readFaceRead(font);
   } catch (error: unknown) {
-    return { face: undefined, refusal: `${font.fullName}: ${String(error)}` };
+    return {
+      face: undefined,
+      leftOut: "unreadable",
+      refusal: `${font.fullName}: ${String(error)}`,
+    };
   }
 }
