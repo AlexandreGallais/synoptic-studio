@@ -32,7 +32,7 @@ Scope: $ARGUMENTS. Never without the Product Owner's explicit start in this conv
 The main agent dispatches and stays free for the Product Owner, who may write at any time:
 
 - **One worker per story**, an `Agent` call (`general-purpose`) in the background, in a worktree named after its story. Its prompt is short: the story id, the feature branch, the worktree, and the path of [worker-brief.md](./worker-brief.md), the versioned brief every worker follows.
-- **At most three subagents at once** (a trial; two heavy and one light if the computer lags), **one heavy command at a time** through the lock: the hook of EN-047 refuses a fourth subagent; until it is merged, count them before each `Agent` call.
+- **At most three subagents at once** (a trial; two heavy and one light if the computer lags), **one heavy command at a time** through the lock: the hook `limit-agents` of EN-047 refuses a fourth subagent (once its line is in `.claude/settings.json`; until then, count them before each `Agent` call), and the heavy commands take the lock themselves.
 - **Separate files.** Parallel workers only on stories that touch separate files; the shared files (indexes, logs, feature file, checklist) are written by the main thread at merge, one merge at a time (ADR-0065).
 - **Heartbeat.** One chat line when a worker starts and when it ends, with an estimate of its duration.
 - **The main agent's part.** It answers the Product Owner, says where the work is (`npm run activity`, the status line), finishes each story (`npm run story:finish`) and writes the shared files.
