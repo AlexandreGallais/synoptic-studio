@@ -21,7 +21,7 @@ pub const IGNORED: [&str; 12] = [
 ];
 
 /// The rules on for every TypeScript file before the scopes, with the plugins' own lists
-/// (`rules::functional::NAMES`, EN-084).
+/// (`rules::functional::NAMES`, `imports::NAMES`, `stylistic::NAMES`, EN-084).
 pub const ON_EVERYWHERE: [&str; 17] = [
     "@typescript-eslint/naming-convention",
     "functional/immutable-data",
@@ -54,6 +54,22 @@ pub struct Scope {
     /// Each rule and whether the scope turns it on.
     pub rules: &'static [(&'static str, bool)],
 }
+
+/// The lint configuration, the tools and their configurations: Node.js code, where development
+/// packages may be imported.
+pub const TOOLING_FILES: &[&str] = &[
+    "eslint/**/*.ts",
+    "*.config.ts",
+    "*.setup.ts",
+    "*.test.ts",
+    "tests/*.ts",
+    "docs/.vitepress/**/*.ts",
+    ".claude/hooks/**/*.ts",
+    "scripts/**/*.ts",
+];
+
+/// The tests, where development packages may be imported.
+pub const TEST_FILES: &[&str] = &["**/*.test.ts"];
 
 /// The library and the playground, whose modules export one value each (ADR-0019).
 const SINGLE_EXPORT_FILES: &[&str] = &["src/**/*.ts", "playground/**/*.ts"];
@@ -125,16 +141,7 @@ pub const SCOPES: [Scope; 7] = [
     },
     Scope {
         name: "tooling",
-        files: &[
-            "eslint/**/*.ts",
-            "*.config.ts",
-            "*.setup.ts",
-            "*.test.ts",
-            "tests/*.ts",
-            "docs/.vitepress/**/*.ts",
-            ".claude/hooks/**/*.ts",
-            "scripts/**/*.ts",
-        ],
+        files: TOOLING_FILES,
         ignores: &[],
         rules: RELAXED,
     },
@@ -149,7 +156,7 @@ pub const SCOPES: [Scope; 7] = [
     },
     Scope {
         name: "tests",
-        files: &["**/*.test.ts"],
+        files: TEST_FILES,
         ignores: &[],
         rules: RELAXED,
     },
@@ -170,6 +177,8 @@ pub fn rules_for(path: &str) -> Vec<&'static str> {
     let mut on: Vec<&'static str> = ON_EVERYWHERE
         .iter()
         .chain(crate::rules::functional::NAMES)
+        .chain(crate::rules::imports::NAMES)
+        .chain(crate::rules::stylistic::NAMES)
         .copied()
         .collect();
 
@@ -229,6 +238,9 @@ mod tests {
         assert_eq!(
             rules_for("src/math/vector/norm.ts"),
             [
+                "@stylistic/multiline-comment-style",
+                "@stylistic/padding-line-between-statements",
+                "@stylistic/spaced-comment",
                 "@typescript-eslint/naming-convention",
                 "functional/functional-parameters",
                 "functional/immutable-data",
@@ -246,6 +258,8 @@ mod tests {
                 "functional/prefer-immutable-types",
                 "functional/readonly-type",
                 "functional/type-declaration-immutability",
+                "import-x/no-extraneous-dependencies",
+                "import-x/no-restricted-paths",
                 "local/canonical-import-path",
                 "local/folder-has-index",
                 "local/folder-layout",
@@ -313,6 +327,9 @@ mod tests {
         assert_eq!(
             rules_for("scripts/check-all.ts"),
             [
+                "@stylistic/multiline-comment-style",
+                "@stylistic/padding-line-between-statements",
+                "@stylistic/spaced-comment",
                 "@typescript-eslint/naming-convention",
                 "functional/no-classes",
                 "functional/no-let",
@@ -320,6 +337,8 @@ mod tests {
                 "functional/no-promise-reject",
                 "functional/no-this-expressions",
                 "functional/readonly-type",
+                "import-x/no-extraneous-dependencies",
+                "import-x/no-restricted-paths",
                 "no-restricted-syntax",
                 "require-atomic-updates",
                 "unicorn/no-non-function-verb-prefix",
@@ -328,6 +347,9 @@ mod tests {
         assert_eq!(
             rules_for("vite.config.ts"),
             [
+                "@stylistic/multiline-comment-style",
+                "@stylistic/padding-line-between-statements",
+                "@stylistic/spaced-comment",
                 "@typescript-eslint/naming-convention",
                 "functional/no-classes",
                 "functional/no-let",
@@ -335,6 +357,8 @@ mod tests {
                 "functional/no-promise-reject",
                 "functional/no-this-expressions",
                 "functional/readonly-type",
+                "import-x/no-extraneous-dependencies",
+                "import-x/no-restricted-paths",
                 "local/canonical-import-path",
                 "local/folder-has-index",
                 "no-restricted-syntax",

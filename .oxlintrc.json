@@ -374,6 +374,19 @@
             "enforceForJSX": true
           }
         ],
+        "no-unused-vars": [
+          "error",
+          {
+            "args": "after-used",
+            "caughtErrors": "all",
+            "fix": {
+              "imports": "safe-fix"
+            },
+            "ignoreRestSiblings": false,
+            "reportUsedIgnorePattern": true,
+            "vars": "all"
+          }
+        ],
         "no-void": "error",
         "operator-assignment": ["error", "always"],
         "prefer-exponentiation-operator": "error",

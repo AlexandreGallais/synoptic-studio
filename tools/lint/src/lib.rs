@@ -12,6 +12,7 @@ pub mod finding;
 pub mod glob;
 pub mod jsdoc;
 pub mod markdown;
+pub mod package;
 pub mod project;
 pub mod rules;
 pub mod scopes;
@@ -477,7 +478,7 @@ mod tests {
         let root = fixture("run-passes");
         write_files(&root, &["scripts/a.ts"]);
         // Each constant documented, as `jsdoc/require-jsdoc` asks (EN-083).
-        let code = "/** One. */\nconst A = new Set([1]);\n/** Two. */\nconst B = new Set([2]);\n/** One without two. */\nexport const C = A.difference(new Set(B.values()));\n";
+        let code = "/** One. */\nconst A = new Set([1]);\n/** Two. */\nconst B = new Set([2]);\n\n/** One without two. */\nexport const C = A.difference(new Set(B.values()));\n";
         fs::write(root.join("scripts/a.ts"), code).unwrap_or_default();
 
         let (report, clean) = run(&root, &["--fix".into(), "scripts".into()]);
@@ -490,7 +491,7 @@ mod tests {
                 .ok()
                 .as_deref(),
             Some(
-                "/** One. */\nconst A = new Set([1]);\n/** Two. */\nconst B = new Set([2]);\n/** One without two. */\nexport const C = A.difference(B);\n"
+                "/** One. */\nconst A = new Set([1]);\n/** Two. */\nconst B = new Set([2]);\n\n/** One without two. */\nexport const C = A.difference(B);\n"
             )
         );
     }

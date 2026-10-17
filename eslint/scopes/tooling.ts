@@ -10,7 +10,6 @@ export const TOOLING: TSESLint.FlatConfig.Config = {
   name: "scopes/tooling",
   rules: {
     ...RELAXED_PURITY,
-    "import-x/no-extraneous-dependencies": ["error", { devDependencies: true }],
     "import-x/no-nodejs-modules": "off",
     // typescript-eslint's rule factory is a capitalised function, not a constructor.
     "new-cap": [

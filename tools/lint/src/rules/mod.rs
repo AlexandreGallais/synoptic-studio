@@ -8,6 +8,7 @@ pub mod folder_has_index;
 pub mod folder_layout;
 pub mod functional;
 pub mod immutable_data;
+pub mod imports;
 pub mod jsdoc;
 pub mod kind_in_layer;
 pub mod kind_limits;
@@ -23,6 +24,7 @@ pub mod prefer_immutable_types;
 pub mod require_atomic_updates;
 pub mod require_kind;
 pub mod see_references;
+pub mod stylistic;
 pub mod type_declaration_immutability;
 pub mod unicorn;
 
@@ -83,6 +85,8 @@ pub const ALL: &[&dyn Rule] = &[
 pub fn named(names: &[&str]) -> Vec<&'static dyn Rule> {
     ALL.iter()
         .chain(functional::RULES)
+        .chain(imports::RULES)
+        .chain(stylistic::RULES)
         .chain(unicorn::RULES)
         .chain(unicorn::dom::RULES)
         .chain(unicorn::web::RULES)

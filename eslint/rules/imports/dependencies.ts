@@ -1,4 +1,4 @@
-import { LAYER_ZONES, MAX_MODULE_DEPENDENCIES } from "../../settings";
+import { MAX_MODULE_DEPENDENCIES } from "../../settings";
 
 import type { TSESLint } from "@typescript-eslint/utils";
 
@@ -14,18 +14,15 @@ export const IMPORTS_DEPENDENCIES: TSESLint.FlatConfig.Config = {
       "error",
       { allowUnsafeDynamicCyclicDependency: false, ignoreExternal: true },
     ],
-    // Zero runtime dependency (CLAUDE.md); dev dependencies are allowed in scopes/tooling.ts and scopes/tests.ts.
-    "import-x/no-extraneous-dependencies": [
-      "error",
-      { devDependencies: false, optionalDependencies: false, peerDependencies: false },
-    ],
+    // Run by the project's linter, development packages allowed in the tools and the tests (tools/lint, EN-084).
+    "import-x/no-extraneous-dependencies": "off",
     // Superseded by local/canonical-import-path, which encodes the barrel policy.
     "import-x/no-internal-modules": "off",
     "import-x/no-nodejs-modules": "error",
     // Cross-layer imports go up (`../geometry`); boundaries are enforced by no-restricted-paths.
     "import-x/no-relative-parent-imports": "off",
-    // Layer boundaries generated from eslint/settings/layers.ts.
-    "import-x/no-restricted-paths": ["error", { zones: LAYER_ZONES }],
+    // Run by the project's linter, its zones built from tools/lint/src/settings.rs (EN-084).
+    "import-x/no-restricted-paths": "off",
     // Not compatible with ESLint 10 flat config file enumeration; unused exports are reviewed manually.
     "import-x/no-unused-modules": "off",
   },
