@@ -18,7 +18,7 @@ use run_totals::marker::{Run, closed, opened, parse_run, render_run, whole};
 use run_totals::report::{report_table, status_text};
 use run_totals::stop::{parked_story, stop_text};
 use run_totals::tally::Tokens;
-use run_totals::totals::{parse_cache, render_cache, run_tokens};
+use run_totals::totals::{count_run, projects_dir};
 
 /// The Git directory shared by every worktree, absolute.
 fn common_dir() -> Result<PathBuf, String> {
@@ -36,38 +36,11 @@ fn common_dir() -> Result<PathBuf, String> {
     ))
 }
 
-/// Claude Code's transcripts folder of the main checkout: its path, every character other than a
-/// letter or a digit written `-`.
-fn projects_dir(common: &Path) -> PathBuf {
-    let checkout = common.parent().unwrap_or(common).to_string_lossy();
-    let name: String = checkout
-        .chars()
-        .map(|character| {
-            if character.is_ascii_alphanumeric() {
-                character
-            } else {
-                '-'
-            }
-        })
-        .collect();
-
-    PathBuf::from(env::var("HOME").unwrap_or_default())
-        .join(".claude")
-        .join("projects")
-        .join(name)
-}
-
 /// The run's tokens, the cache read before and written after.
 fn counted(run: &Run, metrics: &Path, common: &Path) -> Tokens {
-    let cache_path = metrics.join("run-cache.json");
-    let cache = parse_cache(&fs::read_to_string(&cache_path).unwrap_or_default(), run);
-    let (tokens, next) = run_tokens(run, &projects_dir(common), &cache);
+    let home = PathBuf::from(env::var("HOME").unwrap_or_default());
 
-    if next != cache {
-        let _ = fs::write(&cache_path, render_cache(&next));
-    }
-
-    tokens
+    count_run(run, metrics, &projects_dir(&home, common)).0
 }
 
 /// The week's usage in percent, from `usage.json`, when the status line wrote one.

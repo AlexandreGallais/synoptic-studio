@@ -189,3 +189,40 @@ pub fn run_tokens(run: &Run, projects: &Path, cache: &Cache) -> (Tokens, Cache) 
         },
     )
 }
+
+/// Claude Code's transcripts folder of a repository: `<home>/.claude/projects/` and the path of
+/// its main checkout, the folder holding `common` (the Git directory every worktree shares), every
+/// character other than an ASCII letter or digit written `-`.
+#[must_use]
+pub fn projects_dir(home: &Path, common: &Path) -> PathBuf {
+    let name: String = common
+        .parent()
+        .unwrap_or(common)
+        .to_string_lossy()
+        .chars()
+        .map(|character| {
+            if character.is_ascii_alphanumeric() {
+                character
+            } else {
+                '-'
+            }
+        })
+        .collect();
+
+    home.join(".claude").join("projects").join(name)
+}
+
+/// The run's tokens and each transcript's tally, `metrics/run-cache.json` read before and written
+/// after when it changed: `run-totals` and the progress page (EN-087) count from the same cache.
+#[must_use]
+pub fn count_run(run: &Run, metrics: &Path, projects: &Path) -> (Tokens, Cache) {
+    let cache_path = metrics.join("run-cache.json");
+    let cache = parse_cache(&fs::read_to_string(&cache_path).unwrap_or_default(), run);
+    let (tokens, next) = run_tokens(run, projects, &cache);
+
+    if next != cache {
+        let _ = fs::write(&cache_path, render_cache(&next));
+    }
+
+    (tokens, next)
+}
