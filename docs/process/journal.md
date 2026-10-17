@@ -7,6 +7,7 @@ What each working session dealt with, in the agent's words: the Product Owner's 
 - `#run` The Product Owner answered the queued questions: the subagent limit set in the settings (EN-063); ADR-0067's release order, the tables moved to F19 (ADR-0068) and the refused face dropped (US-061) confirmed; EN-062's macOS-only font tests not accepted, so EN-067 made every font test run on every system; the font list to offer only fonts read whole and checked (US-062).
 - `#run` They left F18's tool lines to the agent and declared the validation finished; F18 is done with EN-063, EN-067 and US-062 merged into its branch.
 - `#run` They asked to move on to F19 at once, without waiting for them: F19's branch starts from F18's, SP-021 rebased on it.
+- `#run` EN-068: the Rust tools form one Cargo workspace at the root (one `Cargo.lock`, one `target/`, Rust 1.99.1 pinned, warnings denied, `unsafe_code` forbidden); scripts and Git hooks run them with `cargo run --release -q -p <crate>` (0.03 to 0.05 s per call on a built workspace), `prepare` and `worktree:new` building them; `check:rust` is its own lane of `check:all` (9.4 s warm, 11.2 s before).
 
 ## 2026-10-17 — SP-021 answered, F19's run started
 

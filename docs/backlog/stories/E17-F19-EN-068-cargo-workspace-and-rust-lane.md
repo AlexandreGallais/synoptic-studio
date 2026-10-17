@@ -35,7 +35,3 @@ One task = one commit, referenced as `EN-068.Tn`.
 - `backlog-index` inherits `clippy::pedantic`, which it lacked: two findings fixed (an extension compared through `Path::extension`, an empty assertion through `assert_eq!`).
 - `rust-toolchain.toml` makes rustup install the `1.99.1` toolchain beside `stable` at its first use in a checkout (about 6 components, once).
 - `check:rust` measured on this machine: 11.2 s warm and 17.6 s cold before (eight crates one by one, no release build), 9.4 s warm and 14.1 s cold after (the workspace, release build included).
-
-### Journal
-
-- `#run` EN-068: the Rust tools form one Cargo workspace at the root (one `Cargo.lock`, one `target/`, Rust 1.99.1 pinned, warnings denied, `unsafe_code` forbidden); scripts and Git hooks run them with `cargo run --release -q -p <crate>` (0.03 to 0.05 s per call on a built workspace), `prepare` and `worktree:new` building them; `check:rust` is its own lane of `check:all` (9.4 s warm, 11.2 s before).
