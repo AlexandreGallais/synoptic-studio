@@ -23,4 +23,16 @@ SP-020 ([research note 0022](../../research/notes/0022-f18-parallel-run.md)): `C
 
 One task = one commit, referenced as `EN-063.Tn`.
 
-- [ ] T1 — Show the setting to the Product Owner, apply it, document it (1 h)
+- [x] T1 — Show the setting to the Product Owner, apply it, document it (1 h)
+
+## Decision
+
+On 2026-10-17 the Product Owner accepted the setting as recommended: in `.claude/settings.json`, the hook `limit-agents` of EN-047 runs before every `Agent` and every `SendMessage` call, so a fourth subagent is refused whether it is started or resumed, and `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` is set to 3 under `env` as a backup cap. The value stays 3, as ADR-0063 sets.
+
+The hook read a `SendMessage` like an `Agent` call, so it also refused a message to one of the three subagents running, which only queues and starts none: the main thread could no longer pass a remark of the Product Owner to a worker. It now lets a message through when it goes to the main conversation or to a running subagent, found by the agent id its launch or resume result names, or by the `name` its `Agent` call gave; a message to any other agent is refused when three run.
+
+## For the main thread
+
+### Journal
+
+- `#run` EN-063: the hook `limit-agents` runs on `Agent` and `SendMessage`, Claude Code's own cap set to 3; a message to a running subagent or to the main conversation goes through, a resume of a fourth is refused.

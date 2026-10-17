@@ -51,7 +51,7 @@ fn f18_ac2_refuses_a_fourth_subagent_naming_the_three_running() {
     assert_eq!(AGENT_LIMIT, 3);
     assert_eq!(
         refusal(&running, AGENT_LIMIT, 125_000),
-        Some("At most 3 subagents at once (ADR-0063): 3 running — general-purpose: a1 (2 min); general-purpose: a2 (2 min); general-purpose: a3 (2 min). Wait for one to end, then start this one.".to_owned())
+        Some("At most 3 subagents at once (ADR-0063): 3 running — general-purpose: a1 (2 min); general-purpose: a2 (2 min); general-purpose: a3 (2 min). Wait for one to end, then start or resume this one.".to_owned())
     );
     assert_eq!(refusal(&running[..2], AGENT_LIMIT, 0), None);
 }
@@ -68,6 +68,12 @@ fn answers_as_a_pre_tool_use_decision() {
 
 /// Runs the hook on an `Agent` call in a session whose transcript holds these lines.
 fn hook(lines: &[String], id: &str) -> String {
+    hook_on(lines, id, "Agent", "{}")
+}
+
+/// Runs the hook on a call of this tool, with this input, in a session whose transcript holds
+/// these lines.
+fn hook_on(lines: &[String], id: &str, tool: &str, tool_input: &str) -> String {
     let folder = std::env::temp_dir().join(format!("limit-agents-{}-{id}", std::process::id()));
 
     fs::create_dir_all(&folder).expect("folder");
@@ -76,7 +82,7 @@ fn hook(lines: &[String], id: &str) -> String {
     fs::write(&transcript, lines.join("\n") + "\n").expect("transcript");
 
     let input = format!(
-        r#"{{"tool_name":"Agent","tool_use_id":"{id}","cwd":{},"transcript_path":{}}}"#,
+        r#"{{"tool_name":"{tool}","tool_input":{tool_input},"tool_use_id":"{id}","cwd":{},"transcript_path":{}}}"#,
         quote(&folder.display().to_string()),
         quote(&transcript.display().to_string())
     );
@@ -146,4 +152,86 @@ fn the_hook_lets_the_call_through_when_it_cannot_read() {
 
     assert!(output.status.success());
     assert_eq!(String::from_utf8_lossy(&output.stdout), "");
+}
+
+/// A line answering a subagent's start in the background, naming its agent id as on 2026-10-17.
+fn launched(id: &str, agent: &str) -> String {
+    format!(
+        r#"{{"type":"user","timestamp":"2026-10-16T20:00:01Z","message":{{"content":[{{"type":"tool_result","tool_use_id":"{id}","content":[{{"type":"text","text":"Async agent launched successfully.\nagentId: {agent} (internal ID)"}}]}}]}},"toolUseResult":{{"status":"async_launched","isAsync":true}}}}"#
+    )
+}
+
+/// Three subagents started in the background: `s1` named `writer`, agent ids `aaa1` to `aaa3`.
+fn three_launched() -> Vec<String> {
+    vec![
+        started("s1").replace(
+            r#""description":"s1""#,
+            r#""description":"s1","name":"writer""#,
+        ),
+        launched("s1", "aaa1"),
+        started("s2"),
+        launched("s2", "aaa2"),
+        started("s3"),
+        launched("s3", "aaa3"),
+    ]
+}
+
+#[test]
+fn f18_ac2_the_hook_refuses_a_message_resuming_a_fourth_subagent() {
+    let lines = three_launched();
+    // `bbb4` is none of the three running: the message would resume a stopped fourth one.
+    let refused = parse(&hook_on(
+        &lines,
+        "m1",
+        "SendMessage",
+        r#"{"to":"bbb4","summary":"fix the review","message":"…"}"#,
+    ))
+    .expect("a decision");
+    let reason = refused
+        .get("hookSpecificOutput")
+        .get("permissionDecisionReason")
+        .text()
+        .to_owned();
+
+    assert!(
+        reason.contains("3 running — general-purpose: s1"),
+        "{reason}"
+    );
+    assert!(reason.contains("start or resume"), "{reason}");
+    // Two running: the resume of a third goes through.
+    assert_eq!(
+        hook_on(&lines[..4], "m2", "SendMessage", r#"{"to":"bbb4"}"#),
+        ""
+    );
+}
+
+#[test]
+fn f18_ac2_the_hook_lets_a_message_to_a_running_subagent_or_the_main_thread_through() {
+    let lines = three_launched();
+
+    // By agent id, by the name its `Agent` call gave, and to the main conversation: none starts one.
+    assert_eq!(hook_on(&lines, "m3", "SendMessage", r#"{"to":"aaa2"}"#), "");
+    assert_eq!(
+        hook_on(&lines, "m4", "SendMessage", r#"{"to":"writer"}"#),
+        ""
+    );
+    assert_eq!(hook_on(&lines, "m5", "SendMessage", r#"{"to":"main"}"#), "");
+    // A prefix of a running agent's id is another agent.
+    assert_ne!(hook_on(&lines, "m6", "SendMessage", r#"{"to":"aaa"}"#), "");
+}
+
+#[test]
+fn reads_the_agent_id_a_resume_names() {
+    // A message `m0` resumed agent `ccc9` (the result of 2026-10-16); it now runs under `m0`.
+    let resumed = r#"{"type":"user","message":{"content":[{"type":"tool_result","tool_use_id":"m0","content":[{"type":"text","text":"{\"success\":true,\"resumedAgentId\":\"ccc9\"}"}]}]}}"#;
+    let running = [
+        task("m0", Kind::Agent),
+        task("s2", Kind::Agent),
+        task("s3", Kind::Agent),
+    ];
+    let refs: Vec<&Task> = running.iter().collect();
+
+    assert!(hooks::limit::reaches_running("ccc9", &refs, resumed));
+    assert!(!hooks::limit::reaches_running("ccc", &refs, resumed));
+    assert!(!hooks::limit::reaches_running("", &refs, resumed));
 }
