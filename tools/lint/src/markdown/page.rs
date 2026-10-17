@@ -168,6 +168,22 @@ pub fn descendants(node: &Node) -> Vec<&Node> {
     children(node).iter().flat_map(nodes).collect()
 }
 
+/// A node's `value`, for the nodes that carry one.
+#[must_use]
+pub fn value(node: &Node) -> Option<&str> {
+    match node {
+        Node::Text(each) => Some(&each.value),
+        Node::InlineCode(each) => Some(&each.value),
+        Node::InlineMath(each) => Some(&each.value),
+        Node::Html(each) => Some(&each.value),
+        Node::Code(each) => Some(&each.value),
+        Node::Math(each) => Some(&each.value),
+        Node::Yaml(each) => Some(&each.value),
+        Node::Toml(each) => Some(&each.value),
+        _ => None,
+    }
+}
+
 /// A node's type as mdast names it (`inlineCode`, `tableCell`…), which `@eslint/markdown`'s
 /// selectors and messages use.
 #[must_use]
