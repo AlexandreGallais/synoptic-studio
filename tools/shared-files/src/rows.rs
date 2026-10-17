@@ -95,18 +95,23 @@ fn is_table_row(line: &str) -> bool {
     line.len() > 1 && line.starts_with('|') && line.ends_with('|')
 }
 
+/// The date a text starts with, `2026-10-17`, `None` when it does not start with one.
+fn date_at_start(text: &str) -> Option<&str> {
+    let date = text.get(..10)?;
+    let dated = date.bytes().enumerate().all(|(index, byte)| {
+        if index == 4 || index == 7 {
+            byte == b'-'
+        } else {
+            byte.is_ascii_digit()
+        }
+    });
+
+    dated.then_some(date)
+}
+
 /// Whether a table row's first cell starts with a date, `2026-10-17`, as every log row does.
 fn is_dated(row: &str) -> bool {
-    let cell = row[1..].trim_start().as_bytes();
-
-    cell.len() >= 10
-        && cell[..10].iter().enumerate().all(|(index, byte)| {
-            if index == 4 || index == 7 {
-                *byte == b'-'
-            } else {
-                byte.is_ascii_digit()
-            }
-        })
+    date_at_start(row[1..].trim_start()).is_some()
 }
 
 /// Whether a bullet or a one-cell row only says there is nothing, such as `- None.`.
@@ -268,13 +273,28 @@ pub fn take_rows(story: &str) -> Taken {
     }
 }
 
-/// A log with new rows at its place.
+/// The title of the journal's section opened for today's rows when the newest one is older.
+pub const CONTINUED: &str = "Run continued";
+
+/// The date opening a `## ` heading, `2026-10-17` in `## 2026-10-17 — Run`, `None` when undated.
+fn heading_date(heading: &str) -> Option<&str> {
+    date_at_start(heading.strip_prefix("## ")?)
+}
+
+/// A log with new rows at its place. In the journal, rows dated after its newest section go into
+/// a new section, `## <today> — Run continued`, opened above it.
 ///
 /// # Errors
 ///
 /// When the log has no table, or no `## ` section, to take them.
-pub fn insert_rows(log: &str, place: Place, rows: &[String]) -> Result<String, String> {
+pub fn insert_rows(
+    log: &str,
+    place: Place,
+    rows: &[String],
+    today: &str,
+) -> Result<String, String> {
     let lines: Vec<&str> = log.split('\n').collect();
+    let mut opened: Vec<String> = Vec::new();
     let at = match place {
         Place::Table => {
             let first = lines
@@ -292,20 +312,33 @@ pub fn insert_rows(log: &str, place: Place, rows: &[String]) -> Result<String, S
                 .iter()
                 .position(|line| line.starts_with("## "))
                 .ok_or("no dated section to take the rows")?;
-            let next = lines[first + 1..]
-                .iter()
-                .position(|line| line.starts_with("## "))
-                .map_or(lines.len(), |offset| first + 1 + offset);
 
-            lines[first..next]
-                .iter()
-                .rposition(|line| !line.trim().is_empty())
-                .map_or(next, |offset| first + offset + 1)
+            if heading_date(lines[first]).is_some_and(|date| date < today) {
+                opened.push(format!("## {today} — {CONTINUED}"));
+                opened.push(String::new());
+                opened.extend(rows.iter().cloned());
+                opened.push(String::new());
+                first
+            } else {
+                let next = lines[first + 1..]
+                    .iter()
+                    .position(|line| line.starts_with("## "))
+                    .map_or(lines.len(), |offset| first + 1 + offset);
+
+                lines[first..next]
+                    .iter()
+                    .rposition(|line| !line.trim().is_empty())
+                    .map_or(next, |offset| first + offset + 1)
+            }
         }
     };
     let mut text: Vec<&str> = lines[..at].to_vec();
 
-    text.extend(rows.iter().map(String::as_str));
+    if opened.is_empty() {
+        text.extend(rows.iter().map(String::as_str));
+    } else {
+        text.extend(opened.iter().map(String::as_str));
+    }
     text.extend(&lines[at..]);
 
     Ok(text.join("\n"))

@@ -3,7 +3,8 @@
 //! the known headings of the story file's `## For the main thread` into their logs, and prints each
 //! file it wrote, one per line: nothing when there were no rows. A log's rows are its own shape
 //! only — a dated table row for `improvements.md` and `feedback.md`, a bullet opening with its tag
-//! (``- `#run` …``) for the journal; a placeholder (`- None.`), a table's header and its separator
+//! (``- `#run` …``) for the journal, under a section dated today, `## <today> — Run continued`,
+//! opened when its newest section is older (AUD-020); a placeholder (`- None.`), a table's header and its separator
 //! are dropped, and any other line is left in the story file and named on standard error, never
 //! copied.
 
@@ -13,6 +14,7 @@ use std::io;
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
+use shared_files::date::today;
 use shared_files::rows::{insert_rows, take_rows};
 use shared_files::shared::story_of;
 
@@ -37,6 +39,7 @@ fn story_file(story: &str) -> io::Result<Option<PathBuf>> {
 fn move_rows(path: &Path) -> io::Result<Vec<String>> {
     let story = fs::read_to_string(path)?;
     let taken = take_rows(&story);
+    let today = today();
     let mut written = Vec::new();
 
     for (log, lines) in &taken.left {
@@ -51,7 +54,7 @@ fn move_rows(path: &Path) -> io::Result<Vec<String>> {
     }
 
     for (log, rows) in &taken.rows {
-        let text = insert_rows(&fs::read_to_string(log.path)?, log.place, rows)
+        let text = insert_rows(&fs::read_to_string(log.path)?, log.place, rows, &today)
             .map_err(|error| io::Error::other(format!("{}: {error}", log.path)))?;
 
         fs::write(log.path, text)?;
