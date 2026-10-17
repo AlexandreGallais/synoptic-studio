@@ -1,4 +1,6 @@
-# The Rust toolchain of the tools/ crates, pinned (EN-068, REF-RUSTUP-TOOLCHAIN).
+# The Rust toolchain of the tools/ crates, pinned (EN-068, REF-RUSTUP-TOOLCHAIN); the Windows target
+# only for `check:rust`'s check without linking (EN-070).
 [toolchain]
 channel = "1.99.1"
 components = ["rustfmt", "clippy"]
+targets = ["x86_64-pc-windows-msvc"]
