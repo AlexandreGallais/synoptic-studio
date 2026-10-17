@@ -1,13 +1,16 @@
 //! Unicorn's rules that oxlint lacks: arrays, collections and iteration (EN-078), and in their own
-//! folders control flow, errors, functions and numbers (EN-079); each one
-//! module with the cases of its documentation in `eslint-plugin-unicorn` 78.0.0 as tests, read
-//! from the syntax alone. No scope turns one off: they run on every TypeScript file.
+//! folders control flow, errors, functions and numbers (EN-079), modules, the platform and
+//! promises (EN-081); each one module with the cases of its documentation in
+//! `eslint-plugin-unicorn` 78.0.0 as tests, read from the syntax alone. No scope turns one off:
+//! they run on every TypeScript file, `no-top-level-side-effects` leaving by itself the files
+//! where `ESLint` turned it off.
 
 pub mod consistent_conditional_object_spread;
 pub mod control_flow;
 pub mod errors;
 pub mod functions;
 pub mod iteration_fallback_style;
+pub mod modules;
 pub mod no_array_from_fill;
 pub mod no_array_front_mutation;
 pub mod no_array_sort_for_min_max;
@@ -65,6 +68,7 @@ pub const RULES: &[&dyn Rule] = &[
     &no_duplicate_loops::NoDuplicateLoops,
     &no_duplicate_set_values::NoDuplicateSetValues,
     &errors::no_error_property_assignment::NoErrorPropertyAssignment,
+    &modules::no_global_object_property_assignment::NoGlobalObjectPropertyAssignment,
     &no_impossible_length_comparison::NoImpossibleLengthComparison,
     &no_loop_iterable_mutation::NoLoopIterableMutation,
     &no_mismatched_map_key::NoMismatchedMapKey,
@@ -75,9 +79,11 @@ pub const RULES: &[&dyn Rule] = &[
     &functions::no_repeated_call_wrappers::NoRepeatedCallWrappers,
     &no_return_array_push::NoReturnArrayPush,
     &numbers::no_subtraction_comparison::NoSubtractionComparison,
+    &modules::no_top_level_side_effects::NoTopLevelSideEffects,
     &functions::no_uncalled_method::NoUncalledMethod,
     &no_unnecessary_array_flat_map::NoUnnecessaryArrayFlatMap,
     &functions::no_unnecessary_default_arguments::NoUnnecessaryDefaultArguments,
+    &modules::no_unnecessary_global_this::NoUnnecessaryGlobalThis,
     &functions::no_unnecessary_parameters::NoUnnecessaryParameters,
     &no_unnecessary_splice::NoUnnecessarySplice,
     &no_unreadable_for_of_expression::NoUnreadableForOfExpression,
@@ -85,6 +91,7 @@ pub const RULES: &[&dyn Rule] = &[
     &control_flow::no_useless_boolean_cast::NoUselessBooleanCast,
     &control_flow::no_useless_else::NoUselessElse,
     &control_flow::no_useless_logical_operand::NoUselessLogicalOperand,
+    &modules::no_useless_re_export::NoUselessReExport,
     &functions::no_useless_recursion::NoUselessRecursion,
     &no_useless_set_construction::NoUselessSetConstruction,
     &errors::prefer_aggregate_error::PreferAggregateError,
@@ -100,14 +107,17 @@ pub const RULES: &[&dyn Rule] = &[
     &control_flow::prefer_else_if::PreferElseIf,
     &errors::prefer_error_is_error::PreferErrorIsError,
     &prefer_flat_math_min_max::PreferFlatMathMinMax,
+    &modules::prefer_global_number_constants::PreferGlobalNumberConstants,
     &prefer_group_by::PreferGroupBy,
     &prefer_has_check::PreferHasCheck,
     &control_flow::prefer_hoisting_branch_code::PreferHoistingBranchCode,
+    &modules::prefer_identifier_import_export_specifiers::PreferIdentifierImportExportSpecifiers,
     &prefer_includes_over_repeated_comparisons::PreferIncludesOverRepeatedComparisons,
     &prefer_iterable_in_constructor::PreferIterableInConstructor,
     &prefer_iterator_helpers::PreferIteratorHelpers,
     &prefer_iterator_to_array::PreferIteratorToArray,
     &prefer_iterator_to_array_at_end::PreferIteratorToArrayAtEnd,
+    &modules::prefer_json_import::PreferJsonImport,
     &prefer_map_from_entries::PreferMapFromEntries,
     &numbers::prefer_math_abs::PreferMathAbs,
     &control_flow::prefer_minimal_ternary::PreferMinimalTernary,
@@ -141,6 +151,7 @@ pub const NAMES: &[&str] = &[
     "unicorn/no-duplicate-loops",
     "unicorn/no-duplicate-set-values",
     "unicorn/no-error-property-assignment",
+    "unicorn/no-global-object-property-assignment",
     "unicorn/no-impossible-length-comparison",
     "unicorn/no-loop-iterable-mutation",
     "unicorn/no-mismatched-map-key",
@@ -151,9 +162,11 @@ pub const NAMES: &[&str] = &[
     "unicorn/no-repeated-call-wrappers",
     "unicorn/no-return-array-push",
     "unicorn/no-subtraction-comparison",
+    "unicorn/no-top-level-side-effects",
     "unicorn/no-uncalled-method",
     "unicorn/no-unnecessary-array-flat-map",
     "unicorn/no-unnecessary-default-arguments",
+    "unicorn/no-unnecessary-global-this",
     "unicorn/no-unnecessary-parameters",
     "unicorn/no-unnecessary-splice",
     "unicorn/no-unreadable-for-of-expression",
@@ -161,6 +174,7 @@ pub const NAMES: &[&str] = &[
     "unicorn/no-useless-boolean-cast",
     "unicorn/no-useless-else",
     "unicorn/no-useless-logical-operand",
+    "unicorn/no-useless-re-export",
     "unicorn/no-useless-recursion",
     "unicorn/no-useless-set-construction",
     "unicorn/prefer-aggregate-error",
@@ -176,14 +190,17 @@ pub const NAMES: &[&str] = &[
     "unicorn/prefer-else-if",
     "unicorn/prefer-error-is-error",
     "unicorn/prefer-flat-math-min-max",
+    "unicorn/prefer-global-number-constants",
     "unicorn/prefer-group-by",
     "unicorn/prefer-has-check",
     "unicorn/prefer-hoisting-branch-code",
+    "unicorn/prefer-identifier-import-export-specifiers",
     "unicorn/prefer-includes-over-repeated-comparisons",
     "unicorn/prefer-iterable-in-constructor",
     "unicorn/prefer-iterator-helpers",
     "unicorn/prefer-iterator-to-array",
     "unicorn/prefer-iterator-to-array-at-end",
+    "unicorn/prefer-json-import",
     "unicorn/prefer-map-from-entries",
     "unicorn/prefer-math-abs",
     "unicorn/prefer-minimal-ternary",
