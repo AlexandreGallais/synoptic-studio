@@ -79,7 +79,3 @@ On eight sample files (the core, the shell, the playground's entry, a script, a 
 - The 22 Unicorn rules above run in ESLint but appear in no story and not in note 0023's triage (neither kept nor dropped): EN-085 cannot take ESLint out before they are carried, sent to oxlint or dropped.
 - ADR-0014 still names `eslint/scopes/dom-layers.ts`, removed here (its five relaxed rules are scoped in `tools/lint/src/scopes.rs`): an accepted ADR is not rewritten; EN-085's ADR on Oxc may say where the relaxation lives now.
 - Shared lists edited: `rules::named` (three `chain` lines), `scopes::rules_for` (three `chain` lines), `scopes::linted_by` (the `no-useless-recursion` lines), `settings::LAYERS` (the `imports` column), `DROPPED_RULES` (three names), note 0023's counts (functional 10 and 2, `@stylistic` 3 and 2, typescript-eslint 0 and 2; all 267, 196 kept and 71 dropped with EN-083's), its dropped table (three rows) and its kept table.
-
-### Journal
-
-- `#run` EN-084: the other plugins' rules carried — 10 functional, 3 `@stylistic` and 2 Import rules to the Rust linter, the 2 `unused-imports` rules to oxlint's `no-unused-vars`, 3 dropped (`prefer-property-signatures`, `line-comment-position`, `member-ordering`); the same findings and fixes as ESLint on the documented and planted cases, none on the tree; `no-useless-recursion` left in the core; 22 Unicorn rules found in no story.
