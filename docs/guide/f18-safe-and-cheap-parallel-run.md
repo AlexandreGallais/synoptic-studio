@@ -50,7 +50,7 @@ Every test named here carries the criterion's tag, `[F18.ACn]` in TypeScript or 
 | AC4 logs merged by union | `.gitattributes`: `merge=union` on the journal, the improvement and feedback logs | `tests/logs.test.ts` |
 | AC5 the stories index generated | `npm run backlog:index` (`tools/backlog-index/`) | `tools/backlog-index/tests/check.rs`, `tests/backlog.test.ts` |
 | AC6 a shared file refused on a story branch | the pre-push hook names the file and the commit | `tools/shared-files/tests/shared.rs` |
-| AC7 one merge at a time | `story:finish` under `.git/merge.lock`, from a worktree | `scripts/story-finish.test.ts` |
+| AC7 one merge at a time | `story:finish` under `.git/merge.lock`, from a worktree | `tools/repo-tools/tests/story_finish.rs` (`scripts/story-finish.test.ts` until EN-103) |
 | AC8 worktrees named after their story | `npm run worktree:new -- <ID>`; `golden:write` refused in a worktree | `tools/worktree/tests/plan.rs`, `.claude/hooks/guard-bash.test.ts` |
 | AC9 the whole session reported | `npm run metrics:session -- --all`; background subagents on the status line | `scripts/session-report.test.ts`, `.claude/hooks/status-line.test.ts` |
 | AC10 timing tests under load | `[F15.AC4]` at 1 000 texts in under 0.4 s | `src/io/font-face/parse-font-face.test.ts` |

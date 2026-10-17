@@ -256,7 +256,10 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
 
   it("[F18.AC7] merges stories one at a time under the merge lock", () => {
     expect(SCRIPTS.get("story:finish")).toMatch(
-      new RegExp(String.raw`${HEAVY_LOCK.source}--lock merge node scripts/story-finish\.ts$`, "u"),
+      new RegExp(
+        String.raw`${HEAVY_LOCK.source}--lock merge cargo run --release -q -p repo-tools --bin story-finish --$`,
+        "u",
+      ),
     );
   });
 
