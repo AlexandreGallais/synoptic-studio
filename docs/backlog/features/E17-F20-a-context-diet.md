@@ -27,7 +27,7 @@ Asked by the Product Owner on 2026-10-16 (RET-003), building on the lighter cont
 2. Each agent type names its model and reason; one story worked on Sonnet is compared with Opus (EN-066).
 3. A worker that stops with its branch unpushed is told so, and the main thread gets a line to finish its story (EN-088).
 4. The status line and the session report give a run's duration and tokens since its start, across compactions and sessions (EN-092).
-5. A claude.ai page shows a run's tree, statuses, durations, agents, tokens and commits, updated after each story at the same address (EN-087).
+5. ~~A claude.ai page shows a run's tree, statuses, durations, agents, tokens and commits, updated after each story at the same address (EN-087).~~ Dropped on 2026-10-17: the Product Owner judged the page not useful; the run's duration and tokens stay on the status line and in the stop report (EN-092).
 6. A run works to the scope the Product Owner set, parks a question, and pushes only a question or a blocker (EN-086).
 7. The frequent Git sequences take one call each, and every page fetched goes through the library with its project (EN-100, EN-101).
 8. The agent-facing pages read as principles, measured in tokens before and after, no rule lost (EN-096 to EN-099).
