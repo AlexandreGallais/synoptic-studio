@@ -28,7 +28,7 @@ fn meta() -> hooks::json::Value {
 }
 
 #[test]
-fn reads_the_first_request_and_what_came_before_it() {
+fn f20_ac1_reads_the_first_request_and_what_came_before_it() {
     let start = first_request(TRANSCRIPT, &meta());
 
     // 2 + 21 144 + 17 684 = 38 830: the first answer's usage, never the second's.

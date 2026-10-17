@@ -30,13 +30,13 @@ One task = one commit, referenced as `EN-098.Tn`.
 
 ## Measures
 
-Tokens are estimated as characters / 4 (no tokenizer in the repository); words from `wc -w`. Pages in scope: the rule pages of `docs/process/` (`README.md`, `agile.md`, `retrospectives/README.md`); the logs (`journal.md`, `improvements.md`, `feedback.md`, `history.md`) and the retrospective records stay as written.
+Tokens are each page's characters divided by **2.30 characters per token**, the ratio EN-097 measured the same day on Markdown of the same kind, rounded to the hundred; words from `wc -w`. The story first estimated characters / 4; the audit restated its figures at 2.30, so that they compare with EN-096's and EN-097's (AUD-022). Pages in scope: the rule pages of `docs/process/` (`README.md`, `agile.md`, `retrospectives/README.md`); the logs (`journal.md`, `improvements.md`, `feedback.md`, `history.md`) and the retrospective records stay as written.
 
 | Page | Words before | Characters before | Tokens before (est.) |
 | --- | --- | --- | --- |
-| `README.md` | 867 | 5,404 | 1,351 |
-| `agile.md` | 1,080 | 6,097 | 1,524 |
-| `retrospectives/README.md` | 44 | 373 | 93 |
+| `README.md` | 867 | 5,404 | 2,300 |
+| `agile.md` | 1,080 | 6,097 | 2,700 |
+| `retrospectives/README.md` | 44 | 373 | 200 |
 
 ## Rules of the pages before
 
@@ -47,12 +47,12 @@ agile: A1 flowchart of a feature and an epic; A2 four levels; A3 nine story type
 
 | Page | Words | Characters | Tokens (est.) | Change |
 | --- | --- | --- | --- | --- |
-| `README.md` | 836 | 5,067 | 1,267 | -3.6 % words, -6.2 % tokens |
-| `agile.md` | 1,009 | 5,781 | 1,445 | -6.6 % words, -5.2 % tokens |
-| `retrospectives/README.md` | 44 | 373 | 93 | unchanged |
-| Total | 1,889 | 11,221 | 2,805 | -5.1 % words, -5.5 % tokens |
+| `README.md` | 836 | 5,067 | 2,200 | -3.6 % words, -6.2 % tokens |
+| `agile.md` | 1,009 | 5,781 | 2,500 | -6.6 % words, -5.2 % tokens |
+| `retrospectives/README.md` | 44 | 373 | 200 | unchanged |
+| Total | 1,889 | 11,221 | 4,900 | -5.1 % words, -5.5 % tokens |
 
-Total before: 1,991 words, 11,874 characters, 2,968 tokens. The saving is small because these pages were already short, tabular and mostly principle-shaped; the cuts below are what guarded nothing.
+Total before: 1,991 words, 11,874 characters, 5,200 tokens; the changes in tokens are those in characters, the ratio being the same before and after. The saving is small because these pages were already short, tabular and mostly principle-shaped; the cuts below are what guarded nothing.
 
 ## Trace of the rules
 
