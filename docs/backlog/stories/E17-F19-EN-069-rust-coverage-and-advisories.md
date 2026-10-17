@@ -3,7 +3,7 @@ id: EN-069
 epic: E17
 feature: F19
 title: A coverage floor and an advisory check for the Rust tools
-status: ready
+status: done
 points: 2
 ---
 

@@ -54,7 +54,7 @@ In delivery order, written on 2026-10-17 when the Product Owner started F19's ru
 | --- | --- | --- | --- |
 | [SP-021](../stories/E17-F19-SP-021-research-f19.md) | Spike | Research for F19, Oxc and Rust tools | done |
 | [EN-068](../stories/E17-F19-EN-068-cargo-workspace-and-rust-lane.md) | Enabler | The Cargo workspace at the root and the rust lane | done |
-| [EN-069](../stories/E17-F19-EN-069-rust-coverage-and-advisories.md) | Enabler | A coverage floor and an advisory check for the Rust tools | ready |
+| [EN-069](../stories/E17-F19-EN-069-rust-coverage-and-advisories.md) | Enabler | A coverage floor and an advisory check for the Rust tools | done |
 | [EN-070](../stories/E17-F19-EN-070-portable-rust-tools.md) | Enabler | Rust tools on portable standard calls | done |
 | [EN-071](../stories/E17-F19-EN-071-typescript-7-for-the-type-check.md) | Enabler | TypeScript 7 for the type check and the declarations | done |
 | [EN-072](../stories/E17-F19-EN-072-api-pages-from-a-rust-generator.md) | Enabler | The API pages from a Rust generator on Oxc | ready |
