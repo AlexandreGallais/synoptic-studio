@@ -3,7 +3,7 @@ id: SP-022
 epic: E17
 feature: F20
 title: Research for F20, the context diet
-status: draft
+status: done
 points: 1
 ---
 
@@ -22,7 +22,7 @@ Widened by the Product Owner on 2026-10-17: measure whether the agent works fast
 
 One task = one commit, referenced as `SP-022.Tn`.
 
-- [ ] T1 — Read, measure and record the sources (1 h)
+- [x] T1 — Read, measure and record the sources (1 h)
 
 ## Findings
 
