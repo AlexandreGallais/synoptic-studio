@@ -10,6 +10,7 @@ pub mod exits;
 pub mod expressions;
 pub mod finding;
 pub mod glob;
+pub mod jsdoc;
 pub mod markdown;
 pub mod project;
 pub mod rules;
