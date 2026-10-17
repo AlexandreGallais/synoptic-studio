@@ -5,16 +5,22 @@
 //! they run on every TypeScript file, `no-top-level-side-effects` leaving by itself the files
 //! where `ESLint` turned it off.
 
+pub mod comment_content;
+pub mod consistent_compound_words;
 pub mod consistent_conditional_object_spread;
 pub mod consistent_destructuring;
+pub mod consistent_optional_chaining;
+pub mod consistent_tuple_labels;
 pub mod control_flow;
 pub mod errors;
 pub mod escapes;
 pub mod functions;
+pub mod identifiers;
 pub mod iteration_fallback_style;
 pub mod known_values;
 pub mod layout;
 pub mod modules;
+pub mod name_replacements;
 pub mod no_array_from_fill;
 pub mod no_array_front_mutation;
 pub mod no_array_sort_for_min_max;
@@ -27,6 +33,7 @@ pub mod no_impossible_length_comparison;
 pub mod no_incorrect_template_string_interpolation;
 pub mod no_invalid_property_descriptor;
 pub mod no_invalid_well_known_symbol_methods;
+pub mod no_keyword_prefix;
 pub mod no_loop_iterable_mutation;
 pub mod no_mismatched_map_key;
 pub mod no_negated_array_predicate;
@@ -43,8 +50,11 @@ pub mod no_unsafe_string_replacement;
 pub mod no_unused_builtin_method_return;
 pub mod no_unused_iterator_helper;
 pub mod no_unused_properties;
+pub mod no_useless_compound_assignment;
+pub mod no_useless_delete_check;
 pub mod no_useless_set_construction;
 pub mod numbers;
+pub mod pattern;
 pub mod platform;
 pub mod prefer_array_from_map;
 pub mod prefer_array_iterable_methods;
@@ -54,6 +64,7 @@ pub mod prefer_direct_iteration;
 pub mod prefer_flat_math_min_max;
 pub mod prefer_group_by;
 pub mod prefer_has_check;
+pub mod prefer_https;
 pub mod prefer_includes_over_repeated_comparisons;
 pub mod prefer_iterable_in_constructor;
 pub mod prefer_iterator_helpers;
@@ -74,6 +85,7 @@ pub mod prefer_single_replace;
 pub mod prefer_split_limit;
 pub mod prefer_string_pad_start_end;
 pub mod prefer_string_repeat;
+pub mod prefer_type_literal_last;
 pub mod prefer_unicode_code_point_escapes;
 pub mod prefer_while_loop_condition;
 pub mod promises;
@@ -83,9 +95,14 @@ use super::Rule;
 
 /// The rules, in the order of their names.
 pub const RULES: &[&dyn Rule] = &[
+    &comment_content::CommentContent,
+    &consistent_compound_words::ConsistentCompoundWords,
     &consistent_conditional_object_spread::ConsistentConditionalObjectSpread,
     &consistent_destructuring::ConsistentDestructuring,
+    &consistent_optional_chaining::ConsistentOptionalChaining,
+    &consistent_tuple_labels::ConsistentTupleLabels,
     &iteration_fallback_style::IterationFallbackStyle,
+    &name_replacements::NameReplacements,
     &no_array_from_fill::NoArrayFromFill,
     &no_array_front_mutation::NoArrayFrontMutation,
     &no_array_sort_for_min_max::NoArraySortForMinMax,
@@ -105,6 +122,7 @@ pub const RULES: &[&dyn Rule] = &[
     &no_incorrect_template_string_interpolation::NoIncorrectTemplateStringInterpolation,
     &no_invalid_property_descriptor::NoInvalidPropertyDescriptor,
     &no_invalid_well_known_symbol_methods::NoInvalidWellKnownSymbolMethods,
+    &no_keyword_prefix::NoKeywordPrefix,
     &no_loop_iterable_mutation::NoLoopIterableMutation,
     &no_mismatched_map_key::NoMismatchedMapKey,
     &promises::no_multiple_promise_resolver_calls::NoMultiplePromiseResolverCalls,
@@ -134,6 +152,8 @@ pub const RULES: &[&dyn Rule] = &[
     &no_unused_iterator_helper::NoUnusedIteratorHelper,
     &no_unused_properties::NoUnusedProperties,
     &control_flow::no_useless_boolean_cast::NoUselessBooleanCast,
+    &no_useless_compound_assignment::NoUselessCompoundAssignment,
+    &no_useless_delete_check::NoUselessDeleteCheck,
     &control_flow::no_useless_else::NoUselessElse,
     &control_flow::no_useless_logical_operand::NoUselessLogicalOperand,
     &modules::no_useless_re_export::NoUselessReExport,
@@ -157,6 +177,7 @@ pub const RULES: &[&dyn Rule] = &[
     &prefer_group_by::PreferGroupBy,
     &prefer_has_check::PreferHasCheck,
     &control_flow::prefer_hoisting_branch_code::PreferHoistingBranchCode,
+    &prefer_https::PreferHttps,
     &modules::prefer_identifier_import_export_specifiers::PreferIdentifierImportExportSpecifiers,
     &prefer_includes_over_repeated_comparisons::PreferIncludesOverRepeatedComparisons,
     &prefer_iterable_in_constructor::PreferIterableInConstructor,
@@ -190,6 +211,7 @@ pub const RULES: &[&dyn Rule] = &[
     &prefer_string_repeat::PreferStringRepeat,
     &control_flow::prefer_switch::PreferSwitch,
     &promises::prefer_then_catch::PreferThenCatch,
+    &prefer_type_literal_last::PreferTypeLiteralLast,
     &numbers::prefer_unary_minus::PreferUnaryMinus,
     &prefer_unicode_code_point_escapes::PreferUnicodeCodePointEscapes,
     &prefer_while_loop_condition::PreferWhileLoopCondition,
@@ -198,9 +220,14 @@ pub const RULES: &[&dyn Rule] = &[
 
 /// Their names, on for every TypeScript file.
 pub const NAMES: &[&str] = &[
+    "unicorn/comment-content",
+    "unicorn/consistent-compound-words",
     "unicorn/consistent-conditional-object-spread",
     "unicorn/consistent-destructuring",
+    "unicorn/consistent-optional-chaining",
+    "unicorn/consistent-tuple-labels",
     "unicorn/iteration-fallback-style",
+    "unicorn/name-replacements",
     "unicorn/no-array-from-fill",
     "unicorn/no-array-front-mutation",
     "unicorn/no-array-sort-for-min-max",
@@ -220,6 +247,7 @@ pub const NAMES: &[&str] = &[
     "unicorn/no-incorrect-template-string-interpolation",
     "unicorn/no-invalid-property-descriptor",
     "unicorn/no-invalid-well-known-symbol-methods",
+    "unicorn/no-keyword-prefix",
     "unicorn/no-loop-iterable-mutation",
     "unicorn/no-mismatched-map-key",
     "unicorn/no-multiple-promise-resolver-calls",
@@ -249,6 +277,8 @@ pub const NAMES: &[&str] = &[
     "unicorn/no-unused-iterator-helper",
     "unicorn/no-unused-properties",
     "unicorn/no-useless-boolean-cast",
+    "unicorn/no-useless-compound-assignment",
+    "unicorn/no-useless-delete-check",
     "unicorn/no-useless-else",
     "unicorn/no-useless-logical-operand",
     "unicorn/no-useless-re-export",
@@ -272,6 +302,7 @@ pub const NAMES: &[&str] = &[
     "unicorn/prefer-group-by",
     "unicorn/prefer-has-check",
     "unicorn/prefer-hoisting-branch-code",
+    "unicorn/prefer-https",
     "unicorn/prefer-identifier-import-export-specifiers",
     "unicorn/prefer-includes-over-repeated-comparisons",
     "unicorn/prefer-iterable-in-constructor",
@@ -305,6 +336,7 @@ pub const NAMES: &[&str] = &[
     "unicorn/prefer-string-repeat",
     "unicorn/prefer-switch",
     "unicorn/prefer-then-catch",
+    "unicorn/prefer-type-literal-last",
     "unicorn/prefer-unary-minus",
     "unicorn/prefer-unicode-code-point-escapes",
     "unicorn/prefer-while-loop-condition",
