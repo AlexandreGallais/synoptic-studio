@@ -73,7 +73,7 @@
     "golden:check": "cargo run --release -q -p heavy-lock -- vitest run tests/golden-results.test.ts --mode golden-check",
     "backlog:status": "cargo run --release -q -p repo-tools --bin backlog-status --",
     "backlog:index": "cargo run --release -q -p backlog-index -- docs/backlog && cargo run --release -q -p format -- --write docs/backlog/stories/README.md",
-    "story:finish": "cargo run --release -q -p heavy-lock -- --lock merge node scripts/story-finish.ts",
+    "story:finish": "cargo run --release -q -p heavy-lock -- --lock merge cargo run --release -q -p repo-tools --bin story-finish --",
     "val:prepare": "cargo run --release -q -p val-prepare -- .",
     "activity": "node --harmony-temporal scripts/activity.ts",
     "epic:check": "cargo run --release -q -p repo-tools --bin epic-check --",

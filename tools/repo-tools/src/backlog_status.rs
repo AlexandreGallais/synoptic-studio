@@ -7,6 +7,8 @@ use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
 
+use crate::scripts::run_script;
+
 /// The text of each line, its `\r` kept apart: a line's end is never part of its value.
 fn split_line(line: &str) -> (&str, &str) {
     line.strip_suffix('\r')
@@ -144,6 +146,42 @@ pub fn parent_of(backlog: &Path, folder: &str, text: &str) -> io::Result<PathBuf
     let epics = backlog.join("epics");
 
     Ok(epics.join(file_of(&names_in(&epics)?, &front_field(text, "epic"))))
+}
+
+/// The file of an item in the repository's backlog, empty when none.
+#[must_use]
+pub fn item_file(root: &Path, id: &str) -> String {
+    names_in(&root.join("docs").join("backlog").join(folder_of(id)))
+        .map(|names| file_of(&names, id))
+        .unwrap_or_default()
+}
+
+/// Changes an item's status in its file, its index and its parent's table; a story's index is
+/// written again by the `backlog:index` script of the root's `package.json`, its output shown.
+/// False when that script failed.
+///
+/// # Errors
+/// When a file cannot be read or written, or the script cannot start.
+pub fn write_status(root: &Path, file: &str, id: &str, status: &str) -> io::Result<bool> {
+    let folder = folder_of(id);
+    let backlog = root.join("docs").join("backlog");
+    let path = backlog.join(folder).join(file);
+    let text = fs::read_to_string(&path)?;
+    let parent = parent_of(&backlog, folder, &text)?;
+    let mut indexed = true;
+
+    rewrite(&path, |text| with_front_status(text, status))?;
+    if folder == "stories" {
+        indexed = run_script(root, "backlog:index")?.success();
+    } else {
+        rewrite(&backlog.join(folder).join("README.md"), |text| {
+            with_row_status(text, id, status)
+        })?;
+    }
+    if folder != "epics" {
+        rewrite(&parent, |text| with_row_status(text, id, status))?;
+    }
+    Ok(indexed)
 }
 
 #[cfg(test)]

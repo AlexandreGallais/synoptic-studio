@@ -124,8 +124,10 @@ fn takes_the_lock_named_by_lock_before_the_command() {
     let argv = args(&[
         "--lock",
         "merge",
-        "node",
-        "scripts/story-finish.ts",
+        "cargo",
+        "run",
+        "--bin",
+        "story-finish",
         "feature/f18",
     ]);
 

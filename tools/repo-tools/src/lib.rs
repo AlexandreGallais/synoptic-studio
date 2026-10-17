@@ -6,3 +6,4 @@ pub mod backlog_status;
 pub mod check_all;
 pub mod epic_check;
 pub mod scripts;
+pub mod story_finish;
