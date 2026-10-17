@@ -31,6 +31,13 @@ describe("guard-bash hook", () => {
     "npx vitest run --coverage",
     "cd repo && npx vitest run --reporter=dot",
     "npx vitest",
+    // Every test run all the same (AUD-020): the current folder, a project, the binary itself.
+    "npx vitest run .",
+    "npx vitest run ./ --coverage",
+    "npx vitest run --project unit",
+    "npx vitest --reporter dot run",
+    "node_modules/.bin/vitest run",
+    "./node_modules/.bin/vitest run --project x",
   ])("denies %s", (command) => {
     expect(deniedReason(command)).toBeDefined();
   });
@@ -48,6 +55,9 @@ describe("guard-bash hook", () => {
     "npm run check:all",
     "npx vitest run scripts/check-all.test.ts",
     "npx vitest run src/geometry --coverage",
+    "npx vitest run --project unit scripts/story-finish.test.ts",
+    "node_modules/.bin/vitest run .claude/hooks/guard-bash.test.ts",
+    "npx vitest-preview",
     "npm run test",
     "cat > note.md <<'EOF'\nThe agent never runs gh pr merge.\nEOF",
     'git commit -F - <<"MSG"\ndocs: x\n\ngit push --force is denied\nMSG\ngit log -1',
@@ -64,8 +74,14 @@ describe("guard-bash hook", () => {
   ])("[F18.AC8] denies %s in a worktree, with the form that works", (command) => {
     const reason = worktreeReason(command, WORKTREE) ?? "";
 
-    expect(reason).toMatch(/^A worktree refuses a chained Git command: run `git [^`]+` alone/u);
+    // A subagent's calls start in the main checkout: the hint enters the worktree first.
+    expect(reason).toMatch(
+      /^A worktree refuses a chained Git command: run `cd "\/work\/SVG editor\/\.claude\/worktrees\/us-061" \|\| exit 9` then `git [^`]+` alone\.$/u,
+    );
+
     expect(reason).not.toContain("\n");
+    // From a folder inside the worktree, the hint still names the worktree's root.
+    expect(worktreeReason(command, `${WORKTREE}/scripts`)).toBe(reason);
   });
 
   it.each([
