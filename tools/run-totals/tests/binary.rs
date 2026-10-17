@@ -111,6 +111,62 @@ fn opens_counts_shows_and_ends_a_run() {
 }
 
 #[test]
+fn f20_should_stop_reads_the_week_and_the_parked_stories() {
+    let (home, repo) = setup("stop");
+    let stories = repo.join("docs/backlog/stories");
+
+    // No usage known yet, no story: go.
+    let unknown = totals(&repo, &home, &["should-stop"]);
+
+    assert!(unknown.status.success());
+    assert_eq!(stdout(&unknown), "go: week usage unknown\n");
+
+    fs::create_dir_all(&stories).expect("stories");
+    fs::write(
+        stories.join("E17-F20-US-020-b.md"),
+        "---\nid: US-020\nstatus: parked\n---\n",
+    )
+    .expect("story");
+    fs::write(
+        stories.join("E17-F20-EN-101-a.md"),
+        "---\nid: EN-101\nstatus: parked\n---\n",
+    )
+    .expect("story");
+    fs::write(
+        stories.join("E17-F20-EN-102-c.md"),
+        "---\nid: EN-102\nstatus: ready\n---\n",
+    )
+    .expect("story");
+    fs::create_dir_all(repo.join(".git/metrics")).expect("metrics");
+    // 89.4 rounds to 89, below 90: go, the parked stories sorted.
+    fs::write(
+        repo.join(".git/metrics/usage.json"),
+        "{\"sevenDay\":{\"usedPercent\":89.4,\"resetsAt\":\"x\"},\"time\":1}",
+    )
+    .expect("usage");
+
+    let below = totals(&repo, &home, &["should-stop"]);
+
+    assert!(below.status.success());
+    assert_eq!(
+        stdout(&below),
+        "go: week 89 % used, the limit is 90 %\nparked: EN-101, US-020\n"
+    );
+
+    // 89.5 rounds to 90: stop, exit 1.
+    fs::write(
+        repo.join(".git/metrics/usage.json"),
+        "{\"sevenDay\":{\"usedPercent\":89.5,\"resetsAt\":\"x\"},\"time\":1}",
+    )
+    .expect("usage");
+
+    let reached = totals(&repo, &home, &["should-stop"]);
+
+    assert_eq!(reached.status.code(), Some(1));
+    assert!(stdout(&reached).starts_with("stop: week 90 % used"));
+}
+
+#[test]
 fn refuses_outside_a_repository() {
     let home = env::temp_dir().join(format!("run-totals-bare-{}", std::process::id()));
 
@@ -123,4 +179,13 @@ fn refuses_outside_a_repository() {
         .expect("runs");
 
     assert!(!output.status.success());
+
+    let stop = clean(env!("CARGO_BIN_EXE_run-totals"), &home, &home)
+        .env("GIT_CEILING_DIRECTORIES", home.parent().expect("parent"))
+        .arg("should-stop")
+        .output()
+        .expect("runs");
+
+    // 2, not 1: no answer is not a stop.
+    assert_eq!(stop.status.code(), Some(2));
 }

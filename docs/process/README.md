@@ -10,7 +10,7 @@ How the project inspects itself and adapts (ADR-0023). The method on one page: [
 | any time | a critique of how the agent worked: what happened, what it should have done, what now prevents it | agent | a row in the [feedback log](./feedback.md) |
 | start of each story, each review | triage of open GitHub issues (`/triage`): each presented with a recommendation | agent, then Product Owner | decisions, backlog items, replies (ADR-0026) |
 | start of a feature | refinement interview, research spike `SP` | both, then agent | stories, sources |
-| during a run (ADR-0028) | stories chain on the feature branch; checkpoint `CHK` mid-feature; a test card per user story | agent | stories merged into the feature branch, cards to run |
+| during a run (ADR-0028) | stories chain on the feature branch up to the scope the Product Owner set, a time or an end; a question parks its story and the run goes on with independent stories; it stops only at its scope's end, on a blocker it cannot get around, when the Product Owner says so, or at 90 % of the week's usage (EN-086); checkpoint `CHK` mid-feature; a test card per user story | agent | stories merged into the feature branch, parked questions, cards to run |
 | end of a feature | audit `AUD` (with light evolvability check), validation `VAL` (demo page, checklist page) | agent, then Product Owner | findings, [guide](../guide/) page, feedback |
 | after `VAL` | local previews; what the Product Owner saw compared with what the demo meant to show | both | gaps recorded |
 | release | feature pull request merged into `develop`, then the release pull request into `main`; next feature prepared (interview, spike) | Product Owner, agent prepares | a release, next feature refined |

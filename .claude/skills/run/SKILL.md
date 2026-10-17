@@ -1,6 +1,6 @@
 ---
 name: run
-description: Autonomous run — chain the stories of an authorized scope on its feature branch, each with every check, merged into the feature branch once checked locally, until a point that needs the Product Owner. Use only when the Product Owner explicitly starts a run, naming a feature or a scope to chain (in French they say to launch or chain it).
+description: Autonomous run — chain the stories of an authorized scope on its feature branch, each with every check, merged into the feature branch once checked locally, until the scope the Product Owner set ends; a question parks its story and the run goes on. Use only when the Product Owner explicitly starts a run, naming a feature or a scope to chain (in French they say to launch or chain it).
 argument-hint: "[scope, e.g. F01 or EN-005..US-003]"
 ---
 
@@ -8,24 +8,24 @@ argument-hint: "[scope, e.g. F01 or EN-005..US-003]"
 
 **Silent run** (Product Owner, 2026-10-12): the chat belongs to the Product Owner, so the run writes nothing between tool calls. The commits and the status line (`.git/metrics/step`, updated at each step) show the progress; workers run as background agents; one summary at the stop, or a question when one blocks. Never write "waiting for an agent" or "message from the auditor".
 
-Scope: $ARGUMENTS. Never without the Product Owner's explicit start in this conversation. Without argument, the scope is the feature `in-progress` (from its next unfinished story up to its `VAL`); if none is in progress, propose the next feature in order — a new feature starts with its refinement interview, never directly with code.
+Scope: $ARGUMENTS. Never without the Product Owner's explicit start in this conversation. **The Product Owner sets the scope at the start**, as a time (until an hour) or an end (a story, a feature, an epic); the run sets no bound of its own and works to that scope, so that the Product Owner decides how much is delivered while they are away (decided 2026-10-17). Without argument, the scope is the feature `in-progress` (from its next unfinished story up to its `VAL`); if none is in progress, propose the next feature in order — a new feature starts with its refinement interview, never directly with code.
 
 **Order guard** (Product Owner, 2026-10-10): a run only takes the **next feature in the Product Owner's order**, never another one, so that the backlog's order stays the one place where the Product Owner sets priorities. The next feature is the one `in-progress`, else the first feature not `done` in the **Features** table of the first epic not `done` in `docs/backlog/epics/README.md` (table order, not file order). A scope naming another feature, or a story of another feature, is refused before anything else: stop, say which feature is next and why, and do nothing. To work on another feature, the Product Owner first changes the order in the tables (a backlog commit on `develop`), then starts the run again.
 
 ## Refinement of a new feature: two rounds (Product Owner, 2026-10-14)
 
 1. **First round**: the first questions (research done before, `functional-analyst` agent), each with options and numeric examples, then one open question asking for every remark, idea and constraint at length.
-2. **Second round**: from all they said, **every** remaining question at once, again ending with room for remarks. After it the Product Owner may leave: the run goes on without asking again, except for a business rule nobody could foresee.
+2. **Second round**: from all they said, **every** remaining question at once, again ending with room for remarks. After it the Product Owner may leave: the run goes on without asking again; a business rule nobody could foresee parks its story ([A question parks its story](#a-question-parks-its-story)).
 
 ## Before the first story
 
 - **First feature of an epic**: `npm run epic:check -- <epic> <first day>` before anything else, the code scanning alerts included; what it finds is fixed or listed for the Product Owner.
 
 0. **`/run` is the go-ahead** (ADR-0072): set the feature `in-progress` and its stories `ready` yourself (a `docs(backlog)` commit on `develop`); never ask the Product Owner to do it. Ask only business questions. Then `npm run run:start` (EN-092): it opens the run's totals, its duration and tokens counted from now; a run continued in a new session runs it again, which adds the session and keeps the start.
-1. Record the authorization in `docs/process/journal.md` (scope, date, the Product Owner's request in neutral words) — on `develop`.
+1. Record the authorization in `docs/process/journal.md` (the scope — the time or the end set —, date, the Product Owner's request in neutral words) — on `develop`.
 2. Feature branch: `feature/f<nn>-<topic>` exists on `origin`, or create it there from `develop` without switching the main checkout: `git fetch origin`, then `git push origin origin/develop:refs/heads/feature/f<nn>-<topic>`.
 3. `/triage` if issues are open: present them at the next stop, do not act on them.
-4. List the scope's stories in delivery order (feature plan); stop now if the next one is `VAL`, `REV` or `RET`, or if a business question of `docs/domain/README.md` blocks it.
+4. List the scope's stories in delivery order (feature plan); stop now if the next one is `VAL`, `REV` or `RET`; a story a business question of `docs/domain/README.md` blocks is parked, and the run starts with the next one that does not depend on it.
 
 ## Main thread kept free (ADR-0072)
 
@@ -50,7 +50,7 @@ The main agent dispatches and stays free for the Product Owner, who may write at
 - **Separate files.** Parallel workers only on stories that touch separate files; the shared files (indexes, logs, feature file, checklist) are written by the main thread at merge, one merge at a time (ADR-0065).
 - **Heartbeat.** One chat line when a worker starts and when it ends, with an estimate of its duration.
 - **The main agent's part.** It answers the Product Owner, says where the work is (`npm run activity`, the status line), finishes each story (`npm run story:finish`) and writes the shared files.
-- **Business questions** come back from the worker. Only the main agent asks them, in the questionnaire, with room for remarks.
+- **Business questions** come back from the worker. Only the main agent asks them, in the questionnaire, with room for remarks; each parks its story, never the run ([A question parks its story](#a-question-parks-its-story)).
 - **Only dispatch**, and **each comment acknowledged at once**: now, or once a named running agent has finished. A comment about tools, rules or configuration goes to another agent, on `develop`, in its own worktree, within the limit.
 
 ## For each story
@@ -66,13 +66,24 @@ The main agent dispatches and stays free for the Product Owner, who may write at
 8. Statuses: `npm run backlog:status -- <ID> <status>` changes the story's file, index and feature table at once; edits across files: `npm run replace` (`docs/tooling/agent-tools.md`).
 9. Next story.
 
+## A question parks its story
+
+A question for the Product Owner never stops the run (decided 2026-10-17): the time they are away is spent on the stories that do not need the answer. A business question, a research request, a stop of `AGENTS.md` or an auditor finding that changes a requirement is such a question.
+
+1. The worker reports the question, with what it read and the options, without choosing; it pushes what it did and stops its story. Its branch and worktree are kept.
+2. The main thread parks the story, in a worktree of the feature branch: `npm run backlog:status -- <ID> parked`, the question written in the story file under `## Question for the Product Owner`, then a `docs(backlog)` commit pushed to the feature branch. The story file, not the chat, keeps the question across sessions.
+3. It asks the question in the questionnaire.
+4. It goes on with the next story of the scope that does not depend on the parked one: a story that touches its files, builds on its code, or whose criteria the answer may change waits too.
+5. Once answered: the answer written in the story, status `ready` again, its worker resumed or a new one started on its branch.
+
 ## Stop when
 
-- the next story is `VAL`, `REV` or `RET`;
-- the feature's `VAL` is done and it was the epic's last feature: the next run's scope is the epic's `NAM` naming pass (ADR-0049), a story run like the others, with its own branch from `develop`;
-- a business question, a research request, a stop of `AGENTS.md`, or an auditor finding that changes a requirement;
-- a check still red after three attempts;
-- the scope is finished.
+A run stops only when it must; each stop is said in the message of [At the stop](#at-the-stop):
+
+- **its scope ends**: the time set has passed, or the end named is reached; the next story is `VAL`, `REV` or `RET`, which needs the Product Owner; or the feature's `VAL` is done and it was the epic's last feature (the next run's scope is the epic's `NAM` naming pass, ADR-0049, a story run like the others, with its own branch from `develop`);
+- **a blocker it cannot get around** and no independent story left: a check still red after three attempts, a tool or an access missing; every story left is parked, blocked, or depends on one that is;
+- **the Product Owner says stop**;
+- **the week's usage reaches 90 %**: `npm run run:should-stop`, run before each story, prints `stop` and exits 1 once `sevenDay.usedPercent` of `.git/metrics/usage.json` reaches it, and lists the parked stories of the checkout it runs in (run it in a worktree of the feature branch); the margin is the Product Owner's own work until the week resets.
 
 ## At the stop
 

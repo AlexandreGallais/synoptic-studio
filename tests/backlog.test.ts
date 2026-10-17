@@ -26,7 +26,7 @@ const BUILD_TIMEOUT = 60_000;
 const STATUSES: Readonly<Record<string, readonly string[]>> = {
   epics: ["draft", "ready", "in-progress", "done"],
   features: ["draft", "ready", "in-progress", "done"],
-  stories: ["draft", "ready", "in-progress", "done", "dropped"],
+  stories: ["draft", "ready", "in-progress", "parked", "done", "dropped"],
 };
 
 /** Identifier pattern per folder. */

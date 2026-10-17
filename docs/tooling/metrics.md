@@ -99,6 +99,7 @@ A turn restarts at each message, so a run of many hours showed only its last min
 | --- | --- | --- |
 | `/run` starts, or continues in a new session | `npm run run:start` | opens `.git/metrics/run.json` with the time and the session's id (`CLAUDE_CODE_SESSION_ID`, or the id typed after `--`); a run already open keeps its start and adds the session |
 | each status line refresh | `run-totals status` | the `run …` part, only while the marker is open |
+| before each story | `npm run run:should-stop` | `stop` and exit 1 once `sevenDay.usedPercent` of `usage.json` reaches 90 %, else `go`; then the parked stories (EN-086) |
 | any time | `npm run metrics:session -- --run` | the open or last run's table, `open` after its duration while it goes on |
 | the run's stop | `npm run run:end` | closes the marker, prints the table for the message to the Product Owner |
 
