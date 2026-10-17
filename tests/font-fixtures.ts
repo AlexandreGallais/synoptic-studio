@@ -4,7 +4,7 @@
 // library.
 
 import { createHash } from "node:crypto";
-import { existsSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 /**
@@ -15,19 +15,6 @@ import { join } from "node:path";
 export const INTER_REGULAR_FILE: Uint8Array = readFileSync(
   join(import.meta.dirname, "inter-regular.ttf"),
 );
-
-/** Arial 5.01 of macOS, the font of the cross-check of `DERIV-text-width`. */
-export const ARIAL_PATH = "/System/Library/Fonts/Supplemental/Arial.ttf";
-
-/**
- * A font file of the machine, if it has it: tests that need one skip without it.
- *
- * @param path - where the file sits
- * @returns its bytes; undefined when the machine has no such file
- */
-export function systemFont(path: string): Uint8Array | undefined {
-  return existsSync(path) ? readFileSync(path) : undefined;
-}
 
 /** `sfntVersion` of a font with TrueType outlines (`REF-OT-OTFF`). */
 export const TRUE_TYPE_VERSION = 0x00_01_00_00;

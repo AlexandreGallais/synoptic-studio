@@ -2,7 +2,7 @@
 // the fonts of macOS (EN-067): a collection of faces sharing tables, a second family beside Inter.
 // Tests only: never part of the library.
 
-import { fileTables } from "./collection-fixtures";
+import { fileTables, tablesFile } from "./collection-fixtures";
 import { INTER_REGULAR_FILE, tableOf, uint16 } from "./font-fixtures";
 import { ENGLISH_US, WINDOWS_PLATFORM, nameTable } from "./name-table-fixtures";
 
@@ -11,6 +11,9 @@ import type { FontTables } from "./collection-fixtures";
 /** Where `head` holds `unitsPerEm` (`REF-OT-HEAD`). */
 const UNITS_PER_EM_AT = 18;
 
+/** The units per em of `secondFamilyFile`, half Inter's 2048. */
+const SECOND_FAMILY_UNITS_PER_EM = 1024;
+
 /** Where `OS/2` holds `usWeightClass` and `fsSelection` (`REF-OT-OS2`). */
 const OS2_AT = { fsSelection: 62, weightClass: 4 };
 
@@ -18,8 +21,7 @@ const OS2_AT = { fsSelection: 62, weightClass: 4 };
  * Inter Regular 4.1's 17 tables, by tag, in its directory's order: GDEF, GPOS, GSUB, OS/2, cmap,
  * cvt, fpgm, gasp, glyf, head, hhea, hmtx, loca, maxp, name (1 948 bytes), post, prep.
  */
-export const INTER_TABLES: Readonly<Record<string, readonly number[]>> =
-  fileTables(INTER_REGULAR_FILE);
+const INTER_TABLES: Readonly<Record<string, readonly number[]>> = fileTables(INTER_REGULAR_FILE);
 
 /**
  * A table with some of its bytes written anew.
@@ -40,7 +42,7 @@ function patchedTable(table: readonly number[], at: number, bytes: readonly numb
 }
 
 /** A face built from Inter Regular's tables, named and styled anew. */
-export type InterFace = {
+type InterFace = {
   /** Its family, name ID 1. */
   readonly family: string;
   /** Its PostScript name, name ID 6. */
@@ -59,7 +61,7 @@ export type InterFace = {
  * @param face - its names, weight and style
  * @returns its tables, by tag, in Inter's order
  */
-export function interFaceTables(face: InterFace): FontTables {
+function interFaceTables(face: InterFace): FontTables {
   const os2 = INTER_TABLES["OS/2"] ?? [];
 
   return {
@@ -96,7 +98,7 @@ export function interFaceTables(face: InterFace): FontTables {
  * @param unitsPerEm - from 16 to 16 384
  * @returns a copy, its `head` changed
  */
-export function withUnitsPerEm(tables: FontTables, unitsPerEm: number): FontTables {
+function withUnitsPerEm(tables: FontTables, unitsPerEm: number): FontTables {
   return {
     ...tables,
     head: patchedTable(INTER_TABLES["head"] ?? [], UNITS_PER_EM_AT, uint16(unitsPerEm)),
@@ -109,7 +111,7 @@ export function withUnitsPerEm(tables: FontTables, unitsPerEm: number): FontTabl
  * and 86 bytes: 6 + 2 × 12 of header and records, 22 bytes for the family, 2 bytes a letter of the
  * PostScript name), sharing Inter's 15 other tables.
  */
-export const SHARED_SANS_FACES: readonly InterFace[] = [
+const SHARED_SANS_FACES: readonly InterFace[] = [
   {
     family: "Shared Sans",
     fsSelection: 0x00_c0,
@@ -134,3 +136,24 @@ export const SHARED_SANS_FACES: readonly InterFace[] = [
 export const SHARED_SANS_TABLES: readonly FontTables[] = SHARED_SANS_FACES.map((face) =>
   interFaceTables(face),
 );
+
+/**
+ * A second family beside Inter, built from Inter Regular's tables: named anew, 400 upright, its
+ * `unitsPerEm` 1024 rather than 2048, so that each text measures twice as wide and as tall as in
+ * Inter. Tagged `OTTO`, it stands for a file with CFF outlines: the editor reads that tag alone to
+ * embed it as `font/otf` (`parseFontFormat`, `REF-OT-OTFF`), never its outlines.
+ *
+ * @param family - its family, name ID 1
+ * @param sfntVersion - `TRUE_TYPE_VERSION`, or `OPEN_TYPE_VERSION` for CFF outlines
+ * @returns the file's bytes
+ */
+export function secondFamilyFile(family: string, sfntVersion: number): Uint8Array {
+  const face = interFaceTables({
+    family,
+    fsSelection: 0x00_c0,
+    postScriptName: family.replaceAll(" ", ""),
+    weightClass: 400,
+  });
+
+  return tablesFile(sfntVersion, withUnitsPerEm(face, SECOND_FAMILY_UNITS_PER_EM));
+}

@@ -1,7 +1,12 @@
 // @vitest-environment happy-dom
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { ARIAL_PATH, systemFont, testFaceFile } from "../../../tests";
+import {
+  OPEN_TYPE_VERSION,
+  TRUE_TYPE_VERSION,
+  secondFamilyFile,
+  testFaceFile,
+} from "../../../tests";
 import { readExportedSvg } from "../../document";
 import { readTextModel } from "../../text";
 import {
@@ -21,15 +26,8 @@ import { CURRENT_GUIDED_STEPS, GUIDED_STEPS } from "../lists";
 
 import type { TestFace } from "../../../tests";
 
-// Arial 5.01 of macOS at 16: a line (1854 + 434 + 67) × 16 / 2048 = 18.3984375 tall, its line gap
-// 67 × 16 / 2048 = 0.5234375 shared half above, so the layer is raised by 0.26171875; the
-// baseline 0.26171875 + 1854 × 16 / 2048 = 14.484375 below the line's top.
-
-/** Arial 5.01 of macOS, read where the machine has it. */
-const ARIAL = systemFont(ARIAL_PATH);
-
-/** STIXGeneral of macOS, an OpenType file with CFF outlines and the basic Latin letters, read where the machine has it: Noto Sans Javanese, which lacks them, is refused at import (US-059). */
-const STIX_GENERAL = systemFont("/System/Library/Fonts/Supplemental/STIXGeneral.otf");
+/** A second family built from Inter's tables, its units per em 1024: twice Inter's measures. */
+const OTHER_GROTESK = secondFamilyFile("Other Grotesk", TRUE_TYPE_VERSION);
 
 /** The test font named Test Sans, regular, installable. */
 const TEST_SANS: TestFace = { family: "Test Sans", fsType: 0, isItalic: false, weightClass: 400 };
@@ -80,14 +78,15 @@ async function importFiles(
 }
 
 /**
- * Imports Arial, as the steps ask, and waits for it to be read.
+ * Imports a second family, as the steps ask with a font of the machine, and waits for it to be
+ * read.
  *
  * @returns once it is read
  */
-async function importArial(): Promise<void> {
+async function importSecondFamily(): Promise<void> {
   await importFiles(
-    [{ bytes: ARIAL ?? new Uint8Array(), name: "Arial.ttf" }],
-    "Arial 400 imported.",
+    [{ bytes: OTHER_GROTESK, name: "OtherGrotesk.ttf" }],
+    "Other Grotesk 400 imported.",
   );
 }
 
@@ -275,12 +274,16 @@ describe("the guided test of F15 (VAL-017): fonts, embedding, the export", () =>
     expect(readText("#font-message")).toBe(UNSUPPORTED);
   });
 
-  it.skipIf(ARIAL === undefined)(
-    "[F15.AC1] measured with the font chosen: Arial 82.3984375 × 18.3984375, Inter 87.5546875 × 19.359375",
+  it(
+    "[F15.AC1] [F18.AC19] measured with the font chosen: a second family 175.109375 × 38.71875, Inter 87.5546875 × 19.359375",
+    // Inter's tables read: about 1 s alone, 20 s holds a loaded pre-push run.
+    { timeout: 20_000 },
     async () => {
+      // Hello World at 16: 11 207 units × 16 / 1024 wide, (1984 + 494) × 16 / 1024 tall in the
+      // second family, its units per em 1024; Inter's 2048 halves both.
       openStep("Measured with the font chosen");
-      await importArial();
-      expect(JSON.parse(readText("#contour"))).toEqual({ height: 18.3984375, width: 82.3984375 });
+      await importSecondFamily();
+      expect(JSON.parse(readText("#contour"))).toEqual({ height: 38.71875, width: 175.109375 });
       chooseOption("text-font", "Inter");
       expect(JSON.parse(readText("#contour"))).toEqual({ height: 19.359375, width: 87.5546875 });
     },
@@ -447,14 +450,17 @@ describe("the guided test of F15 (VAL-017): its decisions, each with its example
     expect(readOptions("text-font")).toEqual(["Inter", "Test Sans", "Test Serif"]);
   });
 
-  it.skipIf(STIX_GENERAL === undefined)(
-    "decision 15: STIXGeneral, CFF outlines, embedded as font/otf and opentype",
+  it(
+    "[F18.AC19] decision 15: a file tagged OTTO, CFF outlines, embedded as font/otf and opentype",
+    // Inter's tables read: about 1 s alone, 20 s holds a loaded pre-push run.
+    { timeout: 20_000 },
     async () => {
       openStep("An OpenType file with CFF outlines (decision 15)");
 
+      // OTTO in base64: T1RUTw, the start of the data URL.
       await importFiles(
-        [{ bytes: STIX_GENERAL ?? new Uint8Array(), name: "STIXGeneral.otf" }],
-        "STIXGeneral 400 imported.",
+        [{ bytes: secondFamilyFile("Other Serif", OPEN_TYPE_VERSION), name: "OtherSerif.otf" }],
+        "Other Serif 400 imported.",
       );
 
       tickEmbedFonts();
