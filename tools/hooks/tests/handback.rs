@@ -207,9 +207,22 @@ fn writes_json_back() {
     assert_eq!(quote("é"), "\"é\"");
 }
 
+/// A command without the `GIT_*` variables of the process running the tests: under the pre-push
+/// hook, `GIT_DIR` names the repository itself, and a set-up inheriting it rewrote its config.
+fn clean(program: &str) -> Command {
+    let mut command = Command::new(program);
+
+    for (name, _) in std::env::vars_os() {
+        if name.to_string_lossy().starts_with("GIT_") {
+            command.env_remove(name);
+        }
+    }
+    command
+}
+
 /// Runs Git in a folder, panicking on a failure.
 fn git(folder: &Path, arguments: &[&str]) -> String {
-    let output = Command::new("git")
+    let output = clean("git")
         .args(arguments)
         .current_dir(folder)
         .output()
@@ -276,7 +289,7 @@ fn hook(root: &Path, agent_type: &str, lines: &[String], message: &str) -> Strin
         quote(&root.join("project").display().to_string()),
         quote(&transcript.display().to_string())
     );
-    let mut child = Command::new(env!("CARGO_BIN_EXE_check-handback"))
+    let mut child = clean(env!("CARGO_BIN_EXE_check-handback"))
         .env("CLAUDE_PROJECT_DIR", root.join("project"))
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
@@ -361,5 +374,43 @@ fn the_hook_refuses_once_then_lets_through_and_names_story_finish() {
     // A read-only agent, an agent without a worktree: nothing.
     assert_eq!(hook(&root, "auditor", &[prompt], "r"), "");
     assert_eq!(hook(&root, "general-purpose", &["{}".to_owned()], "r"), "");
+    fs::remove_dir_all(&root).expect("cleaned");
+}
+
+/// A fresh folder for one test.
+fn scratch(name: &str) -> std::path::PathBuf {
+    let root = std::env::temp_dir().join(format!("check-handback-{name}-{}", std::process::id()));
+
+    let _ = fs::remove_dir_all(&root);
+    fs::create_dir_all(&root).expect("folder");
+    root
+}
+
+#[test]
+fn sets_up_a_project() {
+    let root = scratch("set-up");
+
+    project(&root);
+    fs::remove_dir_all(&root).expect("cleaned");
+}
+
+#[test]
+fn the_set_up_leaves_the_repository_of_git_dir_alone() {
+    let root = scratch("decoy");
+    let decoy = root.join("decoy");
+
+    fs::create_dir_all(&decoy).expect("decoy");
+    git(&decoy, &["init", "-q"]);
+    let config = decoy.join(".git/config");
+    let before = fs::read_to_string(&config).expect("config");
+
+    // The set-up run as under the pre-push hook, `GIT_DIR` naming another repository.
+    let _ = Command::new(std::env::current_exe().expect("test binary"))
+        .args(["--exact", "sets_up_a_project", "--quiet"])
+        .env("GIT_DIR", decoy.join(".git"))
+        .output()
+        .expect("set-up runs");
+
+    assert_eq!(fs::read_to_string(&config).expect("config"), before);
     fs::remove_dir_all(&root).expect("cleaned");
 }
