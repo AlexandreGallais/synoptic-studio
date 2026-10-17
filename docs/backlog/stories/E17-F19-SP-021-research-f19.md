@@ -36,6 +36,8 @@ One task = one commit, referenced as `SP-021.Tn`.
 - [x] T2 — Register the gathered research notes as sources, each claim checked (3 h)
 - [x] T3 — Measure `check:all` lane by lane and test oxlint and oxfmt on this repository (4 h)
 - [x] T4 — Write the research note, propose the `check:all` target, draft F19's criteria and stories (3 h)
+- [x] T5 — Research the Product Owner's answers: the rules that need types, JS plugins, TypeScript 7, Rust checks, the tools around the library, platforms (4 h)
+- [ ] T6 — Draft F19 again from the answers: criteria, stories, the clean-up story (2 h)
 
 ## Result
 
@@ -54,8 +56,22 @@ Answered in [research note 0023](../../research/notes/0023-f19-oxc-and-rust-tool
 - The rules to rewrite (`no-restricted-syntax` and the others): as JavaScript rules run by oxlint's plugin API, in the same pass, or in Rust as a second linter on the `oxc` crate, as the decision of 2026-10-16 on new tools in Rust would read.
 - A coverage floor for the Rust tools (no coverage tool installed), and an advisory check of crates (`cargo audit` or `cargo deny`, not installed).
 
+## Answers of the Product Owner (2026-10-17)
+
+Recorded as understood; the research each asked for is in [research note 0023](../../research/notes/0023-f19-oxc-and-rust-tools.md), section "The Product Owner's answers".
+
+- **`check:all`**: option B, about 70 to 90 s most of the time. Every tool moves to Oxc and Rust: no ESLint nor Prettier use left, every TypeScript script and hook rewritten in Rust; the library itself stays TypeScript, run as JavaScript.
+- **The 8 rules that need types**: none dropped without a stated reason; types from an existing tool where one gives them. Found: `tsgolint` carries none of the 8; `prefer-destructuring` runs natively with no loss for the project's options; `no-unsafe-enum-assignment` is dropped because `enum` is forbidden; `naming-convention` and the 5 functional rules are rewritten without types (or, as a question for the refinement, kept in a 9 s ESLint pass with types).
+- **The project's rules**: JS plugins if usual and not noticeably slower. Found: JS plugins are oxlint's documented way; the 10 rules add about 1 s on the whole repository, beside the test lane; so they stay JS plugins.
+- **Rust checks**: a coverage floor (`cargo-llvm-cov`) and an advisory check (`cargo-deny`, 0.5 s offline).
+- **TypeScript 7**: yes, now — 6 times faster here, the same errors and the same declarations; TypeScript 6 kept under an alias for TypeDoc.
+- **Scope widened**: Rust for the project's scripts, hooks, agent tools and the `library` MCP server (`rmcp`); Vite 8 already bundles with Rolldown; Vitest kept.
+- **Clean-up**: one story at the end of E17 removes every script, hook, configuration and dev package left unused.
+- **Platforms**: the library's tests never depend on macOS; the tools use Rust's portable standard calls where one exists (`File::lock`, Rust 1.89.0), with one cheap check.
+
 ## For the main thread
 
 - Notes index (`docs/research/notes/README.md`), a row after 0022: `[0023](./0023-f19-oxc-and-rust-tools.md)` — "Sources of F19: oxlint and oxfmt tried on the repository, the rules left to rewrite, `check:all` by lane, hooks timed, the Rust workspace".
 - Feature F19: its acceptance criteria and its stories, drafted in note 0023, sections "F19's acceptance criteria and stories (draft)" and "The Rust layout", for the refinement.
-- `.claude/rules/tooling.md`, at F19's ADR: TypeScript stays at 6.0 because TypeDoc 0.28.20 asks for it, not only typescript-eslint.
+- `.claude/rules/tooling.md`, at F19's ADR: `tsc` is TypeScript 7 (native); TypeScript 6 stays only under the alias `@typescript/typescript6`, because TypeDoc 0.28.20 needs its API (note 0023, "TypeScript 7, the native compiler").
+- Epic E17, closing table: the clean-up story drafted in F19 (last F19 story, or the first of the split feature) comes before NAM-002.
