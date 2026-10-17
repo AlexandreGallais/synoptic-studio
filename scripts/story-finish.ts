@@ -157,8 +157,17 @@ function cleanUpOrStop(state: string, plan: CleanUp, branch: string): boolean | 
   }
 }
 
-if (import.meta.main) {
-  const [base = "", title = "", body = ""] = process.argv.slice(2);
+/** The base branch, the pull request's title and its body file, as given on the command line. */
+const [BASE = "", TITLE = "", BODY_FILE = ""] = process.argv.slice(2);
+
+// Without its three arguments it stops: without a base, it rebased on `origin/undefined` (AUD-020, N2).
+if (import.meta.main && [BASE, TITLE, BODY_FILE].includes("")) {
+  process.stderr.write("usage: npm run story:finish -- <base> <title> <body file>\n");
+  process.exitCode = 1;
+}
+
+if (import.meta.main && ![BASE, TITLE, BODY_FILE].includes("")) {
+  const [base, title, body] = [BASE, TITLE, BODY_FILE];
   const here = run("git", ["rev-parse", "--show-toplevel"], process.cwd());
   const branch = run("git", ["branch", "--show-current"], here);
 
