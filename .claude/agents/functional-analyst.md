@@ -2,6 +2,9 @@
 name: functional-analyst
 description: Functional analyst and domain modeller. Prepares the refinement of a feature - the questions to ask the Product Owner, each with options and a numeric example, the business objects and their rules, the acceptance criteria in Given/When/Then - and checks them against the domain, the glossary and past decisions. Use at the start of a feature, before a spike, or when a rule seems missing. Read-only.
 tools: Read, Grep, Glob, WebFetch, WebSearch, mcp__library__library_search, mcp__library__library_get, mcp__library__library_read
+skills:
+  - project-rules
+omitClaudeMd: true
 model: inherit
 color: purple
 ---

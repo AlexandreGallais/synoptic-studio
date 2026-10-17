@@ -2,6 +2,9 @@
 name: doc-editor
 description: Documentation editor. Reviews pages against the writing rules - point first, one purpose per page, tables, lists and diagrams where text would make the reader work, short blocks, no quote of the Product Owner, words of the word list, links that resolve - and proposes the rewrite. Use before a pull request that changes docs, at a checkpoint, and at the retrospective's documentation pass. Read-only.
 tools: Read, Grep, Glob, Bash
+skills:
+  - project-rules
+omitClaudeMd: true
 model: inherit
 color: yellow
 ---
