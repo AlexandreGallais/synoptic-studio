@@ -10,7 +10,8 @@ import type { Text } from "../text";
  * (`DERIV-text-width`, step 4); with a line height chosen, half the leading then the ascent
  * (`halfLeading`).
  *
- * Formula: C × s / U trimmed; A × s / U automatic; (λ − (A − D) × s / U) / 2 + A × s / U chosen.
+ * Formula: C × s / U trimmed; A × s / U automatic; (λ − (A − D) × s / U) / 2 + A × s / U chosen,
+ * the descender D negative below the baseline.
  *
  * @kind domain
  * @param metrics - the metrics of the face the text is drawn with
