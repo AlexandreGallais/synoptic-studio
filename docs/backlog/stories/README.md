@@ -215,6 +215,7 @@
 | [EN-074](./E17-F19-EN-074-oxlint-with-native-and-type-aware-rules.md) | F19 | oxlint with its native and type-aware rules | ready |
 | [EN-075](./E17-F19-EN-075-project-linter-in-rust.md) | F19 | The project's Rust linter and its own rules | ready |
 | [EN-076](./E17-F19-EN-076-naming-and-functional-rules-without-types.md) | F19 | naming-convention and the functional rules without types | ready |
+| [EN-089](./E17-F19-EN-089-font-files-read-once-per-test-run.md) | F19 | Font files read once per test run | ready |
 | [CHK-020](./E17-F19-CHK-020-checkpoint-f19.md) | F19 | Checkpoint in the middle of F19 | ready |
 | [EN-077](./E17-F19-EN-077-markdown-rules-in-rust.md) | F19 | The Markdown rules in the Rust linter | ready |
 | [EN-078](./E17-F19-EN-078-unicorn-arrays-collections-iteration.md) | F19 | Unicorn's arrays, collections and iteration rules in Rust | ready |
