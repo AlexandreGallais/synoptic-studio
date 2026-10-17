@@ -315,16 +315,16 @@ Asked by the Product Owner on 2026-10-17: for each of the 265 rules oxlint runs 
 
 | Plugin | Rules | Kept | Dropped |
 | --- | --- | --- | --- |
-| Unicorn | 197 | 177 | 20 |
+| Unicorn | 197 | 173 | 24 |
 | JSDoc | 43 | 31 | 12 |
 | functional | 12 | 11 | 1 |
 | @stylistic | 5 | 4 | 1 |
 | Import | 4 | 2 | 2 |
 | typescript-eslint, without types | 2 | 1 | 1 |
 | unused-imports | 2 | 2 | 0 |
-| **All** | **265** | **228** | **37** |
+| **All** | **265** | **224** | **41** |
 
-The 37 dropped, each with its reason (the last four added by EN-074):
+The 41 dropped, each with its reason (four added by EN-074, the last four by EN-078):
 
 | Rule | Reason |
 | --- | --- |
@@ -365,23 +365,27 @@ The 37 dropped, each with its reason (the last four added by EN-074):
 | `unicorn/no-xor-as-exponentiation` | `no-bitwise` (native, kept) forbids `^` |
 | `unicorn/no-useless-continue` | `no-continue` (native, kept) forbids every `continue` |
 | `unicorn/no-leading-empty-lines` | oxfmt removes the blank lines at a file's start, and `npm run format:check` fails on them |
+| `unicorn/no-array-splice` | it only reports `splice()` on a `let` or `var` array, and `functional/no-let` and `no-var` forbid both |
+| `unicorn/no-array-concat-in-loop` | it only reports a `let` or `var` accumulator, and `functional/no-let` and `no-var` forbid both |
+| `unicorn/prefer-array-from-range` | it reads `Array(n)` and `new Array(n)` only, which `new-for-builtins` and `no-new-array` (native, kept) refuse, as a probe file showed |
+| `unicorn/prefer-get-or-insert-computed` | it reads `Map#getOrInsert()` only, which ES2025's library and Node.js 24 lack: `tsc` refuses the call (TS2550, tried on a probe file) |
 
 Confirmed against the code by EN-074 on 2026-10-17: no class, `this`, accessor, `enum`, `for…in`, `let`, CommonJS export nor JSDoc type in `src/`, `playground/`, `tests/` and the root configuration files; `fetch` and `node:sqlite` only in `scripts/`; `dependencies` empty. Each of the four drops above was tried on a probe file. The rewrite stories EN-078, EN-079 and EN-080 lost the four rules (44, 36 and 37 rules left).
 
-The 228 kept, by plugin and, for Unicorn, by the area of `eslint/rules/unicorn/`:
+The 224 kept, by plugin and, for Unicorn, by the area of `eslint/rules/unicorn/`:
 
 | Group | Kept | Rules |
 | --- | --- | --- |
 | @stylistic | 4 | `line-comment-position`, `multiline-comment-style`, `spaced-comment`, `padding-line-between-statements` |
 | Import | 2 | `no-extraneous-dependencies`, `no-restricted-paths` |
 | JSDoc | 31 | `check-param-names`, `check-syntax`, `check-template-names`, `escape-inline-tags`, `informative-docs`, `match-description`, `no-restricted-syntax`, `normalize-see-links`, `check-alignment`, `check-indentation`, `check-line-alignment`, `lines-before-block`, `multiline-blocks`, `no-bad-blocks`, `no-blank-block-descriptions`, `no-multi-asterisks`, `require-asterisk-prefix`, `require-hyphen-before-param-description`, `sort-tags`, `tag-lines`, `require-description`, `require-jsdoc`, `require-next-description`, `require-rejects`, `require-returns-check`, `require-template`, `require-template-description`, `require-throws`, `require-yields-check`, `no-types`, `ts-ban-ts-comment` |
-| Unicorn, arrays | 14 | `no-array-from-fill`, `no-array-front-mutation`, `no-array-splice`, `no-confusing-array-splice`, `no-impossible-length-comparison`, `no-negated-array-predicate`, `no-return-array-push`, `no-unnecessary-splice`, `prefer-array-from-range`, `prefer-array-last-methods`, `prefer-array-slice`, `prefer-flat-math-min-max`, `prefer-simple-sort-comparator`, `prefer-single-array-predicate` |
-| Unicorn, collections | 13 | `consistent-conditional-object-spread`, `no-duplicate-set-values`, `no-mismatched-map-key`, `no-object-methods-with-collections`, `no-unnecessary-array-flat-map`, `no-useless-set-construction`, `prefer-array-from-map`, `prefer-get-or-insert-computed`, `prefer-group-by`, `prefer-has-check`, `prefer-includes-over-repeated-comparisons`, `prefer-map-from-entries`, `prefer-set-methods` |
+| Unicorn, arrays | 12 | `no-array-from-fill`, `no-array-front-mutation`, `no-confusing-array-splice`, `no-impossible-length-comparison`, `no-negated-array-predicate`, `no-return-array-push`, `no-unnecessary-splice`, `prefer-array-last-methods`, `prefer-array-slice`, `prefer-flat-math-min-max`, `prefer-simple-sort-comparator`, `prefer-single-array-predicate` |
+| Unicorn, collections | 12 | `consistent-conditional-object-spread`, `no-duplicate-set-values`, `no-mismatched-map-key`, `no-object-methods-with-collections`, `no-unnecessary-array-flat-map`, `no-useless-set-construction`, `prefer-array-from-map`, `prefer-group-by`, `prefer-has-check`, `prefer-includes-over-repeated-comparisons`, `prefer-map-from-entries`, `prefer-set-methods` |
 | Unicorn, control-flow | 17 | `no-declarations-before-early-exit`, `no-duplicate-if-branches`, `no-duplicate-logical-operands`, `no-unnecessary-nested-ternary`, `no-useless-boolean-cast`, `no-useless-else`, `no-useless-logical-operand`, `prefer-boolean-return`, `prefer-combined-guards`, `prefer-early-return`, `prefer-else-if`, `prefer-hoisting-branch-code`, `prefer-minimal-ternary`, `prefer-simple-condition-first`, `prefer-simplified-conditions`, `prefer-smaller-scope`, `prefer-switch` |
 | Unicorn, dom | 19 | `better-dom-traversing`, `dom-node-dataset`, `no-canvas-to-image`, `no-incorrect-query-selector`, `no-invalid-dom-token`, `no-invalid-style-set-property`, `no-late-current-target-access`, `no-late-event-control`, `no-prevent-default-in-passive-listener`, `no-selector-as-dom-name`, `no-unsafe-dom-html`, `prefer-add-event-listener-options`, `prefer-dom-node-html-methods`, `prefer-dom-node-replace-children`, `prefer-observer-apis`, `prefer-path2d`, `prefer-scoped-selector`, `prefer-toggle-attribute`, `require-passive-events` |
 | Unicorn, errors | 4 | `no-error-property-assignment`, `prefer-aggregate-error`, `prefer-error-is-error`, `try-complexity` |
 | Unicorn, functions | 9 | `consistent-function-style`, `isolated-functions`, `no-repeated-call-wrappers`, `no-uncalled-method`, `no-unnecessary-default-arguments`, `no-unnecessary-parameters`, `no-useless-recursion`, `prefer-block-statement-over-iife`, `prefer-short-arrow-method` |
-| Unicorn, iteration | 17 | `iteration-fallback-style`, `no-array-concat-in-loop`, `no-array-sort-for-min-max`, `no-break-in-nested-loop`, `no-duplicate-loops`, `no-for-each`, `no-loop-iterable-mutation`, `no-unreadable-for-of-expression`, `no-unused-iterator-helper`, `prefer-array-iterable-methods`, `prefer-direct-iteration`, `prefer-iterable-in-constructor`, `prefer-iterator-helpers`, `prefer-iterator-to-array`, `prefer-iterator-to-array-at-end`, `prefer-object-iterable-methods`, `prefer-while-loop-condition` |
+| Unicorn, iteration | 16 | `iteration-fallback-style`, `no-array-sort-for-min-max`, `no-break-in-nested-loop`, `no-duplicate-loops`, `no-for-each`, `no-loop-iterable-mutation`, `no-unreadable-for-of-expression`, `no-unused-iterator-helper`, `prefer-array-iterable-methods`, `prefer-direct-iteration`, `prefer-iterable-in-constructor`, `prefer-iterator-helpers`, `prefer-iterator-to-array`, `prefer-iterator-to-array-at-end`, `prefer-object-iterable-methods`, `prefer-while-loop-condition` |
 | Unicorn, misc | 4 | `consistent-optional-chaining`, `no-useless-compound-assignment`, `no-useless-delete-check`, `prefer-https` |
 | Unicorn, modules | 8 | `default-export-style`, `no-global-object-property-assignment`, `no-top-level-side-effects`, `no-unnecessary-global-this`, `no-useless-re-export`, `prefer-global-number-constants`, `prefer-identifier-import-export-specifiers`, `prefer-json-import` |
 | Unicorn, naming | 7 | `comment-content`, `consistent-compound-words`, `consistent-tuple-labels`, `name-replacements`, `no-keyword-prefix`, `prefer-type-literal-last`, `single-line-block-comment-style` |
@@ -394,6 +398,8 @@ The 228 kept, by plugin and, for Unicorn, by the area of `eslint/rules/unicorn/`
 | functional | 11 | `no-let`, `prefer-property-signatures`, `readonly-type`, `no-classes`, `no-this-expressions`, `functional-parameters`, `no-expression-statements`, `no-loop-statements`, `no-promise-reject`, `no-throw-statements`, `no-try-statements` |
 | typescript-eslint, without types | 1 | `member-ordering` |
 | unused-imports | 2 | `no-unused-imports`, `no-unused-vars` |
+
+Rewritten by EN-078 on 2026-10-17, each rule checked again first (Product Owner's decisions of F19's run): of the 44 rules of the arrays, collections and iteration groups, 39 run in the project's linter (`tools/lint/src/rules/unicorn/`, the three rows above but `no-for-each`), each on the cases of its documentation, ESLint and the Rust linter giving the same 128 findings on those cases and none on the tree; `no-for-each` runs in oxlint as `unicorn/no-array-for-each`, its former name, with more findings on a `Map` or a `Set` and no fix; four are dropped (above). All 40 are `off` in ESLint.
 
 Kept on purpose although close to a drop: the DOM and web rules (the playground uses the DOM, files and `URL`), the loop, `throw` and `try` rules (allowed in the playground and the tests), the generator rules (one module yields), `functional/no-classes` and `no-this-expressions` (they are the bans themselves), the JSDoc layout rules and the comment rules of `@stylistic` (no source says oxfmt rewrites comments).
 
