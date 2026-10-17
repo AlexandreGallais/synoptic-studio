@@ -1,3 +1,7 @@
+| a linter or formatter rule, its parser, its test cases | MIT, BSD, Apache-2.0, ISC | in the tools only (`tools/`, scripts, hooks): ported with the package named in the module, its row in `NOTICE` and its text in `THIRD-PARTY-LICENSES.md` ([ADR-0076](../adr/0076-ported-tooling-code-under-its-licence.md)) |
+
+The rule of the first two rows holds for the library (`src/`) whatever the licence: no copy, no line-by-line translation, a reimplementation from the paper or the specification. The tools may port permissive code, because a rule's behaviour is its specification (ADR-0076); nothing copyleft is ported anywhere.
+
 # Research protocol
 
 Goal: every function, rule or decision is justified by an identified source. This page says **where to look**, **in which order**, and **when to stop and ask**.
@@ -63,6 +67,9 @@ Two sources are **independent** when neither cites nor copies the other and they
 | --- | --- | --- |
 | Inkscape, libavoid | GPL / LGPL | read to understand; **no copy, no line-by-line translation** |
 | Clipper2, Paper.js | Boost / MIT | same rule on principle: reimplement from the paper or the spec |
+| a linter's or formatter's rule, its parser, its test cases | MIT, BSD, Apache-2.0, ISC | in the tools only (`tools/`, scripts, hooks): ported with the package named in the module, its row in `NOTICE` and its text in `THIRD-PARTY-LICENSES.md` ([ADR-0076](../adr/0076-ported-tooling-code-under-its-licence.md)) |
+
+The first two rows hold for the library (`src/`) whatever the licence: no copy, no line-by-line translation, a reimplementation from the paper or the specification. The tools may port permissive code, a rule's behaviour being its specification (ADR-0076); nothing copyleft is ported anywhere.
 
 Project code is always justified by a level 1 to 4 source or a derivation, never by "it is done this way in X".
 

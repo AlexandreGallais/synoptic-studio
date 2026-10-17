@@ -80,3 +80,4 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0073](./0073-every-new-tool-in-rust.md) | Every new script, hook or agent tool written in Rust | Accepted |
 | [0074](./0074-the-agent-shapes-its-own-method-and-tools.md) | The agent shapes its own method and tools, the Product Owner decides | Accepted |
 | [0075](./0075-the-toolchain-on-oxc.md) | The toolchain on Oxc: oxlint, the project's Rust linter, oxfmt and TypeScript 7 | Accepted |
+| [0076](./0076-ported-tooling-code-under-its-licence.md) | Code ported into the tools under its licence, never into the library | Accepted |
