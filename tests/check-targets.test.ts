@@ -249,7 +249,7 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
     expect(SCRIPTS.get("check:rust")?.split(" && ")).toEqual([
       "cargo fmt --all --check",
       "cargo clippy --workspace --all-targets --locked --quiet",
-      "cargo test --workspace --locked --quiet",
+      "npm run --silent rust:coverage",
       "cargo check --workspace --all-targets --locked --quiet --target x86_64-pc-windows-msvc",
       "npm run --silent rust:build",
     ]);
@@ -258,6 +258,18 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
   it("[F19.AC10] installs the Windows target its check compiles for without linking", () => {
     expect(readFileSync(join(ROOT, "rust-toolchain.toml"), "utf8")).toMatch(
       /^targets = \["x86_64-pc-windows-msvc"\]$/mu,
+    );
+  });
+
+  it("[F19.AC9] runs the workspace's tests under a floor of lines and functions, failing aloud without the tool", () => {
+    const coverage = SCRIPTS.get("rust:coverage") ?? "";
+
+    expect(coverage).toMatch(
+      /^cargo llvm-cov --version > \/dev\/null 2>&1 \|\| \{ echo '[^']*cargo install --locked cargo-llvm-cov@0\.9\.1[^']*' >&2; exit 1; \}; /u,
+    );
+
+    expect(coverage).toContain(
+      "cargo llvm-cov --workspace --locked --quiet --summary-only --fail-under-lines 93 --fail-under-functions 93 || { echo 'Rust tests failed, or their coverage fell under the floor of 93 % of lines and 93 % of functions",
     );
   });
 });
@@ -281,7 +293,7 @@ describe("the Rust workspace at the root (EN-068)", () => {
 
   it("[F19.AC9] pins the toolchain and denies warnings", () => {
     expect(readFileSync(join(ROOT, "rust-toolchain.toml"), "utf8")).toMatch(
-      /^channel = "1\.99\.1"\ncomponents = \["rustfmt", "clippy"\]$/mu,
+      /^channel = "1\.99\.1"\ncomponents = \["rustfmt", "clippy", "llvm-tools"\]$/mu,
     );
 
     expect(readFileSync(join(ROOT, ".cargo", "config.toml"), "utf8")).toMatch(
