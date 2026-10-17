@@ -124,7 +124,7 @@ npm run metrics:session -- --all            # the same, framed and colored for t
 npm run metrics:session                     # the current turn only, saved for the comparison of turns
 ```
 
-It gives one row: the duration (wall and active), the tokens, the part the model wrote, the tool calls and failures, the commits (listed when there are eight or fewer); the subagents' transcripts count with the session's. A report of the current turn (without `--all`) is also saved as one line in `.git/metrics/turns.jsonl`; the **Turns** section of `npm run metrics` lists every turn, so that a retrospective compares them. A turn starts at the first prompt after the agent last ended its turn; messages sent while it works stay in the turn.
+It gives one row: the duration (wall and active), the tokens, the tokens per model that answered, the most first and without the `claude-` prefix (`opus-5-5 2,580,122,562 · haiku-5-5 237,698`, EN-066: each agent type names its model, so a run shows what Sonnet took), the part the model wrote, the tool calls and failures, the commits (listed when there are eight or fewer); the subagents' transcripts count with the session's. A report of the current turn (without `--all`) is also saved as one line in `.git/metrics/turns.jsonl`; the **Turns** section of `npm run metrics` lists every turn, so that a retrospective compares them. A turn starts at the first prompt after the agent last ended its turn; messages sent while it works stay in the turn.
 
 ## At each retrospective
 
