@@ -9,7 +9,7 @@ use oxc_span::Span;
 
 use crate::finding::Finding;
 use crate::rules::Rule;
-use crate::rules::unicorn::syntax::{same_reference, unwrap_chain};
+use crate::rules::unicorn::syntax::{same_reference, unwrap, unwrap_chain};
 use crate::source::Source;
 
 /// The rule.
@@ -27,7 +27,7 @@ struct Member<'b, 'a> {
 
 /// The member an expression is, through `?.` chains and TypeScript's wrappers.
 fn member_of<'b, 'a>(expression: &'b Expression<'a>) -> Option<Member<'b, 'a>> {
-    let unwrapped = unwrap_chain(expression);
+    let unwrapped = unwrap_chain(unwrap(expression));
     let chain_member = match unwrapped {
         Expression::ChainExpression(chain) => match &chain.expression {
             oxc_ast::ast::ChainElement::StaticMemberExpression(member) => {

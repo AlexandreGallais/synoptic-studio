@@ -409,7 +409,8 @@ fn expression_type(source: &Source, expression: &Expression) -> KeyType {
         if ["globalThis", "self", "window"].iter().any(|name| is_global(source, &member.object, name))
             && (UNSAFE_GLOBALS.contains(&member.property.name.as_str())
                 || MORE_UNSAFE_GLOBALS.contains(&member.property.name.as_str())));
-    let value = crate::rules::unicorn::known_values::constant_value(source, expression);
+    let value = crate::rules::unicorn::known_values::constant_value(source, expression)
+        .or_else(|| number_constant(source, expression));
     if is_unsafe_node(expression)
         || unsafe_global_property
         || kind_of(source, expression) == Some(Kind::Array)
@@ -420,6 +421,28 @@ fn expression_type(source: &Source, expression: &Expression) -> KeyType {
         return KeyType::Unsafe;
     }
     value.map_or(KeyType::Unknown, |_| KeyType::Safe)
+}
+
+/// The value of a constant of `Number`, which `getStaticValue` knows: the largest finite number,
+/// the infinities and `NaN` are unsafe keys, the others safe.
+fn number_constant(source: &Source, expression: &Expression) -> Option<Value> {
+    let Expression::StaticMemberExpression(member) = expression else {
+        return None;
+    };
+    if !is_global(source, &member.object, "Number") {
+        return None;
+    }
+    Some(Value::Number(match member.property.name.as_str() {
+        "MAX_VALUE" => f64::MAX,
+        "MIN_VALUE" => f64::from_bits(1),
+        "EPSILON" => f64::EPSILON,
+        "MAX_SAFE_INTEGER" => 9_007_199_254_740_991.0,
+        "MIN_SAFE_INTEGER" => -9_007_199_254_740_991.0,
+        "POSITIVE_INFINITY" => f64::INFINITY,
+        "NEGATIVE_INFINITY" => f64::NEG_INFINITY,
+        "NaN" => f64::NAN,
+        _ => return None,
+    }))
 }
 
 /// Whether a callee is a function of the file whose return type is written unsafe.

@@ -78,7 +78,10 @@ fn has_side_effect(expression: &Expression) -> bool {
         Expression::TemplateLiteral(template) => template.expressions.iter().any(has_side_effect),
         Expression::UnaryExpression(unary) => match unary.operator {
             UnaryOperator::Delete => true,
-            UnaryOperator::UnaryNegation | UnaryOperator::UnaryPlus | UnaryOperator::BitwiseNot => {
+            UnaryOperator::UnaryNegation
+            | UnaryOperator::UnaryPlus
+            | UnaryOperator::BitwiseNot
+            | UnaryOperator::LogicalNot => {
                 !is_primitive_literal(&unary.argument) || has_side_effect(&unary.argument)
             }
             _ => has_side_effect(&unary.argument),

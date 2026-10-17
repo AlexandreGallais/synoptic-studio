@@ -60,6 +60,8 @@ pub mod prefer_set_methods;
 pub mod prefer_simple_sort_comparator;
 pub mod prefer_single_array_predicate;
 pub mod prefer_while_loop_condition;
+#[cfg(test)]
+mod probes;
 pub mod promises;
 pub mod strings;
 pub mod syntax;
