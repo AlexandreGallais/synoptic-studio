@@ -4,17 +4,17 @@ import {
   APPLE_TRUE_TYPE_VERSION,
   ENGLISH_US,
   HELLO_TEXT,
-  INTER_REGULAR_FILE,
   OPEN_TYPE_VERSION,
-  SHARED_SANS_TABLES,
   TRUE_TYPE_VERSION,
   WINDOWS_PLATFORM,
   familyNameTable,
   fontFile,
   headTable,
+  interRegularFile,
   joinedParts,
   nameTable,
   os2FaceTable,
+  sharedSansTables,
   sharedTableCollection,
   testFontTables,
   uint32,
@@ -38,7 +38,7 @@ import type { FontFamily } from "../../model";
 
 /** The faces of a collection of three faces sharing Inter's tables, each joined into its file. */
 const SHARED_SANS_FILES = parseCollectionFaces(
-  sharedTableCollection(TRUE_TYPE_VERSION, SHARED_SANS_TABLES),
+  sharedTableCollection(TRUE_TYPE_VERSION, sharedSansTables()),
 ).map((parts) => joinedParts(parts));
 
 /**
@@ -218,7 +218,7 @@ describe("parseFontFace (REF-OT-NAME, REF-OT-OS2)", () => {
     // REF-OT-NAME: no name ID 16, name ID 1 Inter; REF-OT-OS2: 400, fsSelection 0x00c0 (bit 6
     // regular), fsType 0, installable; read again with fontTools 4.60.2
     // (`REF-INTER-REGULAR-FILE`).
-    const named = parseFontFace(INTER_REGULAR_FILE);
+    const named = parseFontFace(interRegularFile());
 
     expect(named).toMatchObject({
       face: { file: { isEmbeddable: true }, isItalic: false, weight: 400 },

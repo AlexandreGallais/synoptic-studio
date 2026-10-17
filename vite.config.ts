@@ -56,6 +56,8 @@ export default defineConfig(({ mode }) => ({
         "src/**/*.ts": { 100: true },
       },
     },
+    // Each test font file read once per run, its bytes handed to every test file (EN-089).
+    globalSetup: ["tests/font-files-setup.ts"],
     // Temporal is behind a flag in Node.js 24: the metrics scripts use it (REF-NODE-TS).
     execArgv: ["--harmony-temporal"],
     include: [
