@@ -86,4 +86,4 @@ On the Product Owner's machine:
 
 ## Decision on the strict form
 
-The main thread accepted on 2026-10-17 the strict form as applied here, to be confirmed by the Product Owner: wrapping every named type in `Readonly<…>` does not compile (a function type loses its call signature, a branded number stops being a number: 597 findings, then 60 type errors), so `readonly` / `Readonly<…>` is written in place, deeply, and a named type passes only when its own declaration is checked the same way; a type from the standard library or a package is never trusted by name. Nothing escapes, as decided on 2026-10-17.
+The strict form as applied here, accepted by the main thread and confirmed by the Product Owner on 2026-10-17: wrapping every named type in `Readonly<…>` does not compile (a function type loses its call signature, a branded number stops being a number: 597 findings, then 60 type errors), so `readonly` / `Readonly<…>` is written in place, deeply, and a named type passes only when its own declaration is checked the same way; a type from the standard library or a package is never trusted by name. Nothing escapes, as decided on 2026-10-17.
