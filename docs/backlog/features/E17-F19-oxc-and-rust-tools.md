@@ -46,6 +46,12 @@ Recorded as understood, with the research behind each in note 0023, section "The
 - **`default-font-metrics.ts`**: it runs the library to write `inter-metrics.json`; a Rust copy would duplicate the font reader (F21 holds it).
 - **secretlint, knip, npm-check-updates, commitlint, lint-staged, husky, validate-branch-name**: reviewed in [F21](./E17-F21-agent-tools-in-rust.md), which rewrites them in Rust.
 
+## Decisions of the run (Product Owner, 2026-10-17)
+
+- Nothing is added to ESLint from now on: every rule that moves goes to oxlint or to the project's Rust linter, and ESLint only loses rules until EN-085 removes it.
+- Each rewrite story checks each of its rules again before writing it: a rule that guards nothing useful here is dropped with its reason, not rewritten.
+- A rule found useful on the way — for the project's code or for the agent's work — is added to the Rust linter in F19, with its source and its tests.
+
 ## Stories
 
 In delivery order, written on 2026-10-17 when the Product Owner started F19's run. TypeScript 6 cannot leave at EN-071 as first drafted: ESLint's parser and TypeDoc read its API, which TypeScript 7 lacks until 7.1, so it stays under its alias until EN-072 replaces TypeDoc and EN-085 takes ESLint out. Each rewrite story turns its rules off in ESLint, so that a rule runs in one linter only until ESLint leaves.
