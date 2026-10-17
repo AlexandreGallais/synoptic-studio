@@ -201,7 +201,7 @@
 | [EN-061](./E17-F18-EN-061-modules-per-folder-counted.md)                          | F18     | Modules per folder counted, no spread in a fold                                      | done   |
 | [EN-062](./E17-F18-EN-062-inter-as-a-test-font.md)                                | F18     | Inter Regular as a test font file                                                    | done   |
 | [EN-046](./E17-F18-EN-046-release-pr-on-develop.md)                               | F18     | Release pull request on develop, only the release on main                            | done   |
-| [AUD-020](./E17-F18-AUD-020-audit-f18.md)                                         | F18     | Audit F18                                                                            | ready  |
+| [AUD-020](./E17-F18-AUD-020-audit-f18.md)                                         | F18     | Audit F18                                                                            | done   |
 | [VAL-019](./E17-F18-VAL-019-validate-f18.md)                                      | F18     | Validate F18                                                                         | ready  |
 | [SP-021](./E17-F19-SP-021-research-f19.md)                                        | F19     | Research for F19, Oxc and Rust tools                                                 | ready  |
 | [CHK-020](./E17-F19-CHK-020-checkpoint-f19.md)                                    | F19     | Checkpoint in the middle of F19                                                      | draft  |
