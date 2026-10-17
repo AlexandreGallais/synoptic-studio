@@ -10,7 +10,7 @@ const TAG_LENGTH = 4;
  * @returns its four characters
  * @see REF-OT-OTFF
  */
-export function parseTag(view: DataView, offset: number): string {
+export function parseTag(view: Readonly<DataView>, offset: number): string {
   return String.fromCodePoint(
     ...Array.from({ length: TAG_LENGTH }, (unused, index) => view.getUint8(offset + index)),
   );

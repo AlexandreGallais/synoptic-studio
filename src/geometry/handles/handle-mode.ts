@@ -5,4 +5,4 @@ import type { HANDLE_MODES } from "./handle-modes";
  * `angle`, on one line through the point, each its own length; `angle-and-length`, on one line
  * and of the same length.
  */
-export type HandleMode = (typeof HANDLE_MODES)[number];
+export type HandleMode = Readonly<(typeof HANDLE_MODES)[number]>;

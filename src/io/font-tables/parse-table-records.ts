@@ -20,7 +20,7 @@ import type { FontTableRecord } from "./font-table-record";
  * @see REF-OT-OTFF
  */
 export function parseTableRecords(
-  view: DataView,
+  view: Readonly<DataView>,
   directory: number,
 ): readonly (FontTableRecord & {
   /** Offset of the table's record, from the file's start. */

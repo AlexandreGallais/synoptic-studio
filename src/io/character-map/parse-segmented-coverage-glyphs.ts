@@ -36,7 +36,7 @@ type Group = {
  * @returns its groups, in order; undefined when its header or its groups pass the table's end
  * @see REF-OT-CMAP
  */
-function parseGroups(cmap: DataView, subtable: number): readonly Group[] | undefined {
+function parseGroups(cmap: Readonly<DataView>, subtable: number): readonly Group[] | undefined {
   const count = isSpanWithin(subtable, GROUPS_OFFSET, cmap.byteLength)
     ? cmap.getUint32(subtable + NUM_GROUPS_OFFSET)
     : Infinity;
@@ -68,7 +68,7 @@ function parseGroups(cmap: DataView, subtable: number): readonly Group[] | undef
  * @see REF-OT-CMAP
  */
 export function parseSegmentedCoverageGlyphs(
-  cmap: DataView,
+  cmap: Readonly<DataView>,
   subtable: number,
   characters: readonly number[],
 ): readonly CharacterGlyph[] | undefined {

@@ -31,7 +31,7 @@ export type HorizontalHeader = {
  * @returns the header's fields
  * @see REF-OT-HHEA
  */
-export function parseHorizontalHeader(hhea: DataView): HorizontalHeader {
+export function parseHorizontalHeader(hhea: Readonly<DataView>): HorizontalHeader {
   return {
     ascender: hhea.getInt16(ASCENDER_OFFSET),
     descender: hhea.getInt16(DESCENDER_OFFSET),

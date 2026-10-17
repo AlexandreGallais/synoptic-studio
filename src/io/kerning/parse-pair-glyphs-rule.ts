@@ -51,7 +51,7 @@ type PairSetReading = {
  * @see REF-OT-GPOS
  */
 function parsePairSet(
-  gpos: DataView,
+  gpos: Readonly<DataView>,
   pairSet: number,
   reading: PairSetReading,
 ): PairSet | undefined {
@@ -81,7 +81,10 @@ function parsePairSet(
  * @returns where each PairSet starts in the table; undefined when the offsets pass its end
  * @see REF-OT-GPOS
  */
-function parsePairSetPlaces(gpos: DataView, subtable: number): readonly number[] | undefined {
+function parsePairSetPlaces(
+  gpos: Readonly<DataView>,
+  subtable: number,
+): readonly number[] | undefined {
   const count = gpos.getUint16(subtable + PAIR_SET_COUNT_OFFSET);
 
   return isSpanWithin(
@@ -108,7 +111,7 @@ function parsePairSetPlaces(gpos: DataView, subtable: number): readonly number[]
  * @see REF-OT-GPOS
  */
 function pairSetsToRule(
-  gpos: DataView,
+  gpos: Readonly<DataView>,
   covered: Readonly<Record<number, number>>,
   reading: PairSetReading,
 ): PairKerningRule | undefined {
@@ -155,7 +158,7 @@ function setsToRule(sets: readonly (readonly [string, PairSet])[]): PairKerningR
  * @see REF-OT-GPOS
  */
 export function parsePairGlyphsRule(
-  gpos: DataView,
+  gpos: Readonly<DataView>,
   subtable: number,
   glyphs: ReadonlySet<number>,
 ): PairKerningRule | undefined {

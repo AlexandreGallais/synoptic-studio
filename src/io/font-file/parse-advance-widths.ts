@@ -13,7 +13,10 @@ const METRIC_RECORD_SIZE = 4;
  * @returns the advance of each record, font units
  * @see REF-OT-HMTX
  */
-export function parseAdvanceWidths(hmtx: DataView, numberOfHMetrics: number): readonly number[] {
+export function parseAdvanceWidths(
+  hmtx: Readonly<DataView>,
+  numberOfHMetrics: number,
+): readonly number[] {
   return Array.from(
     { length: Math.min(numberOfHMetrics, integerQuotient(hmtx.byteLength, METRIC_RECORD_SIZE)) },
     (unused, glyph) => hmtx.getUint16(elementAddress(0, METRIC_RECORD_SIZE, glyph)),

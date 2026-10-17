@@ -99,6 +99,10 @@ A variable or a parameter named `getX`, `setX`, `unsetX`, `deleteX`, `addX`, `re
 
 In the functional core, no existing object or array is changed: no assignment, `delete`, `++` or `--` on a member; no `copyWithin`, `fill`, `pop`, `push`, `reverse`, `shift`, `sort`, `splice`, `unshift`, `add`, `clear`, `delete` or `set` called by name, whatever the object; no `Object.assign`, `defineProperty`, `defineProperties` or `setPrototypeOf` on an existing object.
 
+### `functional/prefer-immutable-types` and `functional/type-declaration-immutability`
+
+In the functional core, every parameter with a written type and every declared type is deeply read-only, written in place (Product Owner, 2026-10-17): each property, index signature, mapped type, array and tuple marked `readonly`, or inside `Readonly<…>`. A named type passes only when its own declaration is checked the same way: a type of the same file, a type imported by a relative path from the core, a type parameter (its argument is the caller's type, checked where the caller writes it), `Pick`, `Omit`, `Partial`, `Required`, `NonNullable`, `Exclude` and `Extract` of such a type, `ReadonlyArray`, `ReadonlyMap` and `ReadonlySet`. A type of the standard library or of a package (`DataView`, `Temporal.PlainDate`) is never trusted by its name: it is written `Readonly<DataView>`. Autofixed: `readonly` and `Readonly<…>` are written where they are missing.
+
 ### `functional/no-mixed-types`
 
 A type holds only data or only functions; a member is a function when it is a method, a call or construct signature, or a property whose written type is a function type.

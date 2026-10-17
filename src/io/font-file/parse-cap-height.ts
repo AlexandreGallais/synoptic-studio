@@ -39,7 +39,7 @@ function emToFontUnits(em: number, unitsPerEm: number): number {
  * @returns the cap height, font units, above 0
  * @see REF-OT-OS2
  */
-export function parseCapHeight(os2: DataView, unitsPerEm: number): number {
+export function parseCapHeight(os2: Readonly<DataView>, unitsPerEm: number): number {
   const capHeight =
     isSpanWithin(CAP_HEIGHT_OFFSET, Int16Array.BYTES_PER_ELEMENT, os2.byteLength) &&
     parseOs2Version(os2) >= CAP_HEIGHT_VERSION

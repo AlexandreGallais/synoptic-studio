@@ -12,7 +12,7 @@
 It takes values and **returns** a result. Enforced by:
 
 - `no-param-reassign` (properties included) — everywhere;
-- `functional/immutable-data`, `functional/prefer-immutable-types` (`ReadonlyDeep` parameters), `functional/type-declaration-immutability` — in the core;
+- `functional/immutable-data`, `functional/prefer-immutable-types` (`ReadonlyDeep` parameters), `functional/type-declaration-immutability` — in the core, read from the written code by the project's linter: `readonly` or `Readonly<…>` written in place ([lint](./lint.md#functional-prefer-immutable-types-and-functional-type-declaration-immutability));
 - model types are `readonly`: the compiler rejects any mutation, even in the shell.
 
 Exception by nature: a `procedure` receiving a DOM element may call its methods (`append`, `setAttribute`). See ADR-0014.

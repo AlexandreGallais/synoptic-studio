@@ -21,7 +21,7 @@ import type { FontTables } from "../font-tables";
  * @see REF-OT-HMTX
  */
 function parseCharacterAdvances(
-  view: DataView,
+  view: Readonly<DataView>,
   tables: FontTables,
   glyphs: readonly CharacterGlyph[],
 ): Pick<FontMetrics, "advances" | "missingAdvance"> {
@@ -47,7 +47,7 @@ function parseCharacterAdvances(
  * @see REF-OT-GPOS
  */
 function parseKerningLookups(
-  view: DataView,
+  view: Readonly<DataView>,
   tables: FontTables,
   glyphs: readonly CharacterGlyph[],
 ): readonly KerningLookup[] | undefined {
@@ -70,7 +70,7 @@ function parseKerningLookups(
  * @see REF-OT-OTFF
  */
 function glyphsToMetrics(
-  view: DataView,
+  view: Readonly<DataView>,
   tables: FontTables,
   glyphs: readonly CharacterGlyph[],
 ): FontMetrics | undefined {
@@ -98,7 +98,7 @@ function glyphsToMetrics(
  * @see REF-OT-CMAP
  */
 export function fontTablesToMetrics(
-  view: DataView,
+  view: Readonly<DataView>,
   tables: FontTables,
   characters: readonly number[],
 ): FontMetrics | undefined {

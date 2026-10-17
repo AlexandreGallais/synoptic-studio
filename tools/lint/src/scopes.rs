@@ -21,11 +21,13 @@ pub const IGNORED: [&str; 12] = [
 ];
 
 /// The rules on for every TypeScript file before the scopes.
-pub const ON_EVERYWHERE: [&str; 14] = [
+pub const ON_EVERYWHERE: [&str; 16] = [
     "@typescript-eslint/naming-convention",
     "functional/immutable-data",
     "functional/no-mixed-types",
     "functional/no-return-void",
+    "functional/prefer-immutable-types",
+    "functional/type-declaration-immutability",
     "local/canonical-import-path",
     "local/folder-has-index",
     "local/kind-in-layer",
@@ -59,6 +61,8 @@ const SINGLE_EXPORT_FILES: &[&str] = &["src/**/*.ts", "playground/**/*.ts"];
 const RELAXED: &[(&str, bool)] = &[
     ("functional/immutable-data", false),
     ("functional/no-return-void", false),
+    ("functional/prefer-immutable-types", false),
+    ("functional/type-declaration-immutability", false),
     ("local/kind-in-layer", false),
     ("local/kind-limits", false),
     ("local/kind-naming", false),
@@ -91,6 +95,8 @@ pub const SCOPES: [Scope; 7] = [
         rules: &[
             ("functional/immutable-data", false),
             ("functional/no-return-void", false),
+            ("functional/prefer-immutable-types", false),
+            ("functional/type-declaration-immutability", false),
         ],
     },
     Scope {
@@ -177,6 +183,8 @@ mod tests {
                 "functional/immutable-data",
                 "functional/no-mixed-types",
                 "functional/no-return-void",
+                "functional/prefer-immutable-types",
+                "functional/type-declaration-immutability",
                 "local/canonical-import-path",
                 "local/folder-has-index",
                 "local/folder-layout",
@@ -202,7 +210,13 @@ mod tests {
             "src/math/a.test.ts",
         ] {
             let rules = rules_for(path);
-            assert!(!rules.contains(&"functional/immutable-data"), "{path}");
+            for rule in [
+                "functional/immutable-data",
+                "functional/prefer-immutable-types",
+                "functional/type-declaration-immutability",
+            ] {
+                assert!(!rules.contains(&rule), "{path} {rule}");
+            }
             assert!(rules.contains(&"functional/no-mixed-types"), "{path}");
             assert!(
                 rules.contains(&"@typescript-eslint/naming-convention"),

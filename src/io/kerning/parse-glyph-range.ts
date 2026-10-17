@@ -10,7 +10,7 @@
  * @see REF-OT-LAYOUT-COMMON
  */
 export function parseGlyphRange(
-  table: DataView,
+  table: Readonly<DataView>,
   ranges: readonly number[],
   glyph: number,
 ): number | undefined {

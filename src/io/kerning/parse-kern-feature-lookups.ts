@@ -24,7 +24,10 @@ const LOOKUP_INDICES_OFFSET = 4;
  * @returns its lookup indices; undefined when it passes the table's end
  * @see REF-OT-LAYOUT-COMMON
  */
-function parseFeatureLookups(gpos: DataView, feature: number): readonly number[] | undefined {
+function parseFeatureLookups(
+  gpos: Readonly<DataView>,
+  feature: number,
+): readonly number[] | undefined {
   const count = isSpanWithin(feature, LOOKUP_INDICES_OFFSET, gpos.byteLength)
     ? gpos.getUint16(feature + 2)
     : Infinity;
@@ -49,7 +52,10 @@ function parseFeatureLookups(gpos: DataView, feature: number): readonly number[]
  * @returns the offset of each FeatureRecord in the table; undefined when they pass its end
  * @see REF-OT-LAYOUT-COMMON
  */
-function parseFeatureRecords(gpos: DataView, featureList: number): readonly number[] | undefined {
+function parseFeatureRecords(
+  gpos: Readonly<DataView>,
+  featureList: number,
+): readonly number[] | undefined {
   const count = isSpanWithin(featureList, FIELD_SIZE, gpos.byteLength)
     ? gpos.getUint16(featureList)
     : Infinity;
@@ -95,7 +101,7 @@ function featuresToLookups(
  * @see REF-OT-LAYOUT-COMMON
  */
 export function parseKernFeatureLookups(
-  gpos: DataView,
+  gpos: Readonly<DataView>,
   featureList: number,
 ): readonly number[] | undefined {
   const records = parseFeatureRecords(gpos, featureList);

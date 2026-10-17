@@ -4,6 +4,7 @@
 //! the files are spread over the machine's threads. A Markdown page is parsed into its own tree
 //! and read by the Markdown rules (`markdown`, EN-077).
 
+pub mod deep_readonly;
 pub mod directives;
 pub mod finding;
 pub mod glob;
