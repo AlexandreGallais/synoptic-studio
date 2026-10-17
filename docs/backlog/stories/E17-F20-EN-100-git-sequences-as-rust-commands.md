@@ -3,7 +3,7 @@ id: EN-100
 epic: E17
 feature: F20
 title: The agent's frequent Git sequences as Rust commands
-status: draft
+status: ready
 points: 2
 ---
 

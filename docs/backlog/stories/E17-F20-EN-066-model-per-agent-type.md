@@ -3,7 +3,7 @@ id: EN-066
 epic: E17
 feature: F20
 title: A model chosen per agent type
-status: draft
+status: ready
 points: 2
 ---
 

@@ -3,7 +3,7 @@ id: EN-086
 epic: E17
 feature: F20
 title: A run that parks a question and pushes it, and stops only when it must
-status: draft
+status: ready
 points: 2
 ---
 

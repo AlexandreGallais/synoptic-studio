@@ -3,7 +3,7 @@ id: CHK-021
 epic: E17
 feature: F20
 title: Checkpoint in the middle of F20
-status: draft
+status: ready
 points: 1
 ---
 

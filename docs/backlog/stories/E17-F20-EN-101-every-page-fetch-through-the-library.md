@@ -3,7 +3,7 @@ id: EN-101
 epic: E17
 feature: F20
 title: Every page fetched through the library, with the project recorded
-status: draft
+status: ready
 points: 2
 ---
 

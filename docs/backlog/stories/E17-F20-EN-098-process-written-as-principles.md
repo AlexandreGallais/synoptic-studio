@@ -3,7 +3,7 @@ id: EN-098
 epic: E17
 feature: F20
 title: The process pages written as principles
-status: draft
+status: ready
 points: 2
 ---
 

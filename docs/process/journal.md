@@ -6,6 +6,7 @@ What each working session dealt with, in the agent's words: the Product Owner's 
 
 - `#run` VAL-020: F19 validated by the agent (ADR-0072): its 12 criteria proven again, 12 lines in E17's checklist, the demo page `docs/guide/f19-checks-on-oxc-and-rust.md`; `check:all` from 124 s to 39.6 to 41.3 s on a code change, 50.6 to 57.0 s with the site built.
 - `#run` The Product Owner refined F20 in two rounds the same evening (note 0024): a run never stops for a question, only on a blocker, at the scope set at its start or when told; notifications only for a question or a blocker; one worker type per task kind; Sonnet for simple tasks with a measured trial; Git sequences and every page fetch through the library as tools of our own in F20.
+- `#run` The Product Owner authorised an overnight run (2026-10-17): F20, then F21 refined by the agent, then E17's naming and tooling pass; it stops before E17's review and retrospective, on a blocker, or once their weekly usage reaches 90 %. Questions park their story and are pushed; the run goes on.
 
 ## 2026-10-17 — F18 validated, F19 started
 

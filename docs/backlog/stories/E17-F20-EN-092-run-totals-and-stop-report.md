@@ -3,7 +3,7 @@ id: EN-092
 epic: E17
 feature: F20
 title: The duration and tokens of a whole run
-status: draft
+status: ready
 points: 3
 ---
 

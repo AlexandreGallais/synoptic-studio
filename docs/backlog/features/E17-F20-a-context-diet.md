@@ -2,7 +2,7 @@
 id: F20
 epic: E17
 title: A context diet for every agent
-status: draft
+status: in-progress
 ---
 
 # E17 · F20 — A context diet for every agent
@@ -40,18 +40,18 @@ In delivery order. Stories stay `draft` until F20's `/run` sets them `ready`.
 | --- | --- | --- | --- |
 | [SP-022](../stories/E17-F20-SP-022-research-f20.md) | Spike | Research for F20, the context diet | done |
 | [EN-064](../stories/E17-F20-EN-064-one-hour-prompt-cache.md) | Enabler | A one-hour prompt cache on long agents | dropped |
-| [EN-065](../stories/E17-F20-EN-065-workers-started-from-a-digest.md) | Enabler | One worker type per task kind, each started from what its task needs | draft |
-| [EN-066](../stories/E17-F20-EN-066-model-per-agent-type.md) | Enabler | A model chosen per agent type | draft |
-| [EN-088](../stories/E17-F20-EN-088-subagent-stop-hook-in-rust.md) | Enabler | A SubagentStop hook in Rust that checks a worker's branch | draft |
-| [EN-092](../stories/E17-F20-EN-092-run-totals-and-stop-report.md) | Enabler | The duration and tokens of a whole run | draft |
-| [EN-087](../stories/E17-F20-EN-087-progress-page-as-an-artifact.md) | Enabler | A progress page as a claude.ai Artifact, updated during a run | draft |
-| [EN-086](../stories/E17-F20-EN-086-push-notification-at-each-stop.md) | Enabler | A run that parks a question and pushes it, and stops only when it must | draft |
-| [CHK-021](../stories/E17-F20-CHK-021-checkpoint-f20.md) | Checkpoint | Checkpoint in the middle of F20 | draft |
-| [EN-100](../stories/E17-F20-EN-100-git-sequences-as-rust-commands.md) | Enabler | The agent's frequent Git sequences as Rust commands | draft |
-| [EN-101](../stories/E17-F20-EN-101-every-page-fetch-through-the-library.md) | Enabler | Every page fetched through the library, with the project recorded | draft |
-| [EN-096](../stories/E17-F20-EN-096-docs-written-as-principles.md) | Enabler | The agent's rules and skills written as principles | draft |
-| [EN-097](../stories/E17-F20-EN-097-conventions-written-as-principles.md) | Enabler | The conventions written as principles | draft |
-| [EN-098](../stories/E17-F20-EN-098-process-written-as-principles.md) | Enabler | The process pages written as principles | draft |
-| [EN-099](../stories/E17-F20-EN-099-tooling-docs-written-as-principles.md) | Enabler | The tooling docs written as principles | draft |
-| [AUD-022](../stories/E17-F20-AUD-022-audit-f20.md) | Audit | Audit F20 | draft |
-| [VAL-021](../stories/E17-F20-VAL-021-validate-f20.md) | Validation | Validate F20 | draft |
+| [EN-065](../stories/E17-F20-EN-065-workers-started-from-a-digest.md) | Enabler | One worker type per task kind, each started from what its task needs | ready |
+| [EN-066](../stories/E17-F20-EN-066-model-per-agent-type.md) | Enabler | A model chosen per agent type | ready |
+| [EN-088](../stories/E17-F20-EN-088-subagent-stop-hook-in-rust.md) | Enabler | A SubagentStop hook in Rust that checks a worker's branch | ready |
+| [EN-092](../stories/E17-F20-EN-092-run-totals-and-stop-report.md) | Enabler | The duration and tokens of a whole run | ready |
+| [EN-087](../stories/E17-F20-EN-087-progress-page-as-an-artifact.md) | Enabler | A progress page as a claude.ai Artifact, updated during a run | ready |
+| [EN-086](../stories/E17-F20-EN-086-push-notification-at-each-stop.md) | Enabler | A run that parks a question and pushes it, and stops only when it must | ready |
+| [CHK-021](../stories/E17-F20-CHK-021-checkpoint-f20.md) | Checkpoint | Checkpoint in the middle of F20 | ready |
+| [EN-100](../stories/E17-F20-EN-100-git-sequences-as-rust-commands.md) | Enabler | The agent's frequent Git sequences as Rust commands | ready |
+| [EN-101](../stories/E17-F20-EN-101-every-page-fetch-through-the-library.md) | Enabler | Every page fetched through the library, with the project recorded | ready |
+| [EN-096](../stories/E17-F20-EN-096-docs-written-as-principles.md) | Enabler | The agent's rules and skills written as principles | ready |
+| [EN-097](../stories/E17-F20-EN-097-conventions-written-as-principles.md) | Enabler | The conventions written as principles | ready |
+| [EN-098](../stories/E17-F20-EN-098-process-written-as-principles.md) | Enabler | The process pages written as principles | ready |
+| [EN-099](../stories/E17-F20-EN-099-tooling-docs-written-as-principles.md) | Enabler | The tooling docs written as principles | ready |
+| [AUD-022](../stories/E17-F20-AUD-022-audit-f20.md) | Audit | Audit F20 | ready |
+| [VAL-021](../stories/E17-F20-VAL-021-validate-f20.md) | Validation | Validate F20 | ready |

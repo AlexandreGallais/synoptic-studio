@@ -3,7 +3,7 @@ id: EN-099
 epic: E17
 feature: F20
 title: The tooling docs written as principles
-status: draft
+status: ready
 points: 3
 ---
 
