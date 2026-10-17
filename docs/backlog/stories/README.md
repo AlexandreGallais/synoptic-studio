@@ -255,7 +255,7 @@
 | [EN-103](./E17-F21-EN-103-backlog-and-repository-tools-in-rust.md) | F21 | The backlog and repository tools in Rust | ready |
 | [EN-104](./E17-F21-EN-104-claude-code-hooks-in-rust.md) | F21 | The Claude Code hooks and the status line in Rust | ready |
 | [EN-105](./E17-F21-EN-105-one-row-or-section-of-a-page.md) | F21 | One row or one section of a repository page | done |
-| [EN-106](./E17-F21-EN-106-library-server-in-rust.md) | F21 | The library server and its command line in Rust on rmcp | ready |
+| [EN-106](./E17-F21-EN-106-library-server-in-rust.md) | F21 | The library server and its command line in Rust on rmcp | done |
 | [EN-107](./E17-F21-EN-107-metrics-tools-in-rust.md) | F21 | The metrics tools in Rust | ready |
 | [CHK-022](./E17-F21-CHK-022-checkpoint-f21.md) | F21 | Checkpoint in the middle of F21 | ready |
 | [EN-108](./E17-F21-EN-108-git-hooks-in-rust.md) | F21 | The Git hooks in Rust, without husky, lint-staged, commitlint nor validate-branch-name | ready |
