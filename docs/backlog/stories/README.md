@@ -209,7 +209,7 @@
 | [EN-068](./E17-F19-EN-068-cargo-workspace-and-rust-lane.md)                       | F19     | The Cargo workspace at the root and the rust lane                                    | ready  |
 | [EN-069](./E17-F19-EN-069-rust-coverage-and-advisories.md)                        | F19     | A coverage floor and an advisory check for the Rust tools                            | ready  |
 | [EN-070](./E17-F19-EN-070-portable-rust-tools.md)                                 | F19     | Rust tools on portable standard calls                                                | ready  |
-| [EN-071](./E17-F19-EN-071-typescript-7-for-the-type-check.md)                     | F19     | TypeScript 7 for the type check and the declarations                                 | ready  |
+| [EN-071](./E17-F19-EN-071-typescript-7-for-the-type-check.md)                     | F19     | TypeScript 7 for the type check and the declarations                                 | done   |
 | [EN-072](./E17-F19-EN-072-api-pages-from-a-rust-generator.md)                     | F19     | The API pages from a Rust generator on Oxc                                           | ready  |
 | [EN-073](./E17-F19-EN-073-oxfmt-instead-of-prettier.md)                           | F19     | oxfmt instead of Prettier                                                            | ready  |
 | [EN-074](./E17-F19-EN-074-oxlint-with-native-and-type-aware-rules.md)             | F19     | oxlint with its native and type-aware rules                                          | ready  |

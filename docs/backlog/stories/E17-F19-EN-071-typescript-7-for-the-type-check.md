@@ -3,7 +3,7 @@ id: EN-071
 epic: E17
 feature: F19
 title: TypeScript 7 for the type check and the declarations
-status: ready
+status: done
 points: 2
 ---
 
