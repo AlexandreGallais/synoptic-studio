@@ -8,7 +8,7 @@ flowchart LR
   C --> R[.claude/rules<br/>pitfalls per area]
   C --> S[.claude/skills<br/>procedures]
   C --> G[.claude/agents<br/>run's workers, expert reviewers]
-  C --> H[.claude/hooks<br/>guards, metrics, status line]
+  C --> H[tools/hooks<br/>guards, metrics, status line]
   C --> M[.mcp.json<br/>source library]
 ```
 
@@ -100,7 +100,7 @@ The model is taken from the first of these that names one (`REF-CC-SUBAGENTS`): 
 | `session-state` (Rust) | `SessionStart` | prints the branch, uncommitted files and the started features' progress; removes the files of calls left running for a day |
 | `track-tool-call` (Rust) | `PreToolUse`, in the background | writes the call starting, for the status line ([metrics](./metrics.md)) |
 | `log-tool-call` (Rust) | `PostToolUse`, `PostToolUseFailure`, in the background | logs each call and its duration |
-| `status-line.ts` | status line, every second | place in the backlog, step, session, call running ([metrics](./metrics.md#status-line)) |
+| `status-line` (Rust) | status line, every second | place in the backlog, step, session, call running ([metrics](./metrics.md#status-line)) |
 
 `limit-agents` and `check-handback` let the call through when they cannot read their input, so that a hook's own failure never blocks work. `library-pages` runs on every `WebFetch` and only on a shell command whose text names `curl` or `wget`, the handlers' `if`, `Bash(*curl*)` and `Bash(*wget*)` (`REF-CC-HOOKS`, `REF-CC-PERMISSIONS`): a command it refuses names one, `/usr/bin/curl` or `sh -c 'curl …'` too, so the filter skips none, and the other commands no longer wait on `cargo run`. It and `check-handback` stop after 30 seconds and let the call through, in place of the 600 of the default, so that a hook waiting on cargo's build lock during a `check:all` holds no call for ten minutes; a rebuild of the crate takes about a second, a run 50 ms (2026-10-18). The Rust hooks live in `tools/hooks`, each with its tests.
 
@@ -142,7 +142,7 @@ jq -r 'select(.type == "user") | .message.content | strings' <id>.jsonl | grep -
 
 ## Rules for this folder
 
-- A new hook is written in Rust, in `tools/hooks` (ADR-0073). The TypeScript hooks left run with `node`, linted and tested as tooling (`.claude/hooks/*.test.ts`): pure functions exported, effects under `if (import.meta.main)`, a relative import naming its `.ts` file (`REF-NODE-TS`), until F21 rewrites them.
+- Every hook and the status line are Rust binaries of `tools/hooks` (ADR-0073, EN-104), each tested in `tools/hooks/tests`; a ported hook writes the same bytes as the TypeScript one did, its JSON as `JSON.stringify` writes it.
 - A rule a hook enforces is not repeated as an instruction: the hook's refusal says it when it matters.
 - A guard that blocks legitimate work is changed by a new ADR, never bypassed; `.claude/settings.local.json` (personal, not committed) may add permissions, never remove a guard.
 - Changes go to `develop` as tooling, with `chore(tooling): …` commits.

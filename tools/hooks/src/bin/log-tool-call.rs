@@ -9,7 +9,7 @@ use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
-use hooks::git::{common_folder, git, hook_input};
+use hooks::git::{branch_of, checkout_of, hook_input};
 use hooks::json::{self, Value};
 use hooks::record::{CallContext, count, tool_call_record};
 use hooks::time::now_ms;
@@ -35,16 +35,16 @@ fn hook() -> u8 {
         "" => PathBuf::from("."),
         folder => PathBuf::from(folder),
     };
-    let Some(common) = common_folder(&cwd) else {
+    let Some(checkout) = checkout_of(&cwd) else {
         return 0;
     };
-    let folder = Path::new(&common).join("metrics");
+    let folder = checkout.common.join("metrics");
     let running = folder
         .join("running")
         .join(format!("{}.json", input.get("tool_use_id").text()));
     let step = fs::read_to_string(folder.join("step")).unwrap_or_default();
     let context = CallContext {
-        branch: git(&cwd, &["branch", "--show-current"]).unwrap_or_default(),
+        branch: branch_of(&checkout),
         snapshot: json_of(&folder.join("now.json")),
         started_at: count(&json_of(&running), "start"),
         step: step.split('\n').next().unwrap_or_default().to_owned(),

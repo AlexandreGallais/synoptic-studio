@@ -257,7 +257,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "node --harmony-temporal \"$(git rev-parse --show-toplevel)/.claude/hooks/status-line.ts\"",
+    "command": "cargo run --release -q --manifest-path \"$(git rev-parse --show-toplevel)/Cargo.toml\" -p hooks --bin status-line",
     "refreshInterval": 1
   },
   "enabledMcpjsonServers": ["library"],

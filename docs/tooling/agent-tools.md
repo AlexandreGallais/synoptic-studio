@@ -86,7 +86,7 @@ A tool is written when a retrospective's metrics show its signal — the hand wo
 | `api:diff` | the public exports before and after a change | a renamed export noticed late |
 | `svg:draw <shape.json>` | the SVG of a shape with its dashed box, for the guide's pictures | pictures written by hand from a probe |
 | `playground:probe <steps>` | runs guided steps without a browser and prints what each shows | probes written in the scratchpad |
-| the status line, `guard-bash`, `track-tool-call`, `log-tool-call` in Rust | the same lines, checks and records, each in a few milliseconds instead of a Node.js start (F21) | 65 ms before each shell command, 149 ms per refresh (2026-10-14) |
+
 | `transcript:find <text>` | the transcript lines holding an id or a text, with their time and type | a stuck task found by `grep` in a 30 MB transcript |
 | a summary of OpenType and CSS Fonts | the fields the project uses, read once | OS/2 read 38 times, CSS Fonts 4 27 times in E15 |
 
@@ -99,7 +99,7 @@ A tool is written when a retrospective's metrics show its signal — the hand wo
 | `backlog-index` | `backlog:index`, `backlog:status` | the stories index from each story's front matter; `--check` names the first row that differs |
 | `format` | `format`, `format:check`, `fix`, `lint-staged`, `backlog:index`, `story:finish` | the one formatter: oxfmt, then Markdown tables without padding (ADR-0068, [formatting](../conventions/formatting.md)); `--check` changes nothing |
 | `heavy-lock` | `check:all`, `test`, `golden:check`, `docs:build`, `mutate`; `story:finish` (`--lock merge`) | one heavy command at a time across worktrees, and the merge lock |
-| `hooks` | the `limit-agents`, `library-pages` and `check-handback` hooks, `context:size` | the Claude Code hooks in Rust and what they share ([agent](./agent.md#hooks)) |
+| `hooks` | every Claude Code hook (`guard-bash`, `limit-agents`, `library-pages`, `check-handback`, `track-tool-call`, `log-tool-call`, `session-state`), the status line, `context:size` | the Claude Code hooks and the status line in Rust, and what they share ([agent](./agent.md#hooks)) |
 | `shared-files` | the `pre-push` hook; `story:finish` | `refuse-shared-files` and `move-rows` ([below](#shared-files-and-their-rows)) |
 | `worktree` | `worktree:new` | a story's worktree with `node_modules`, Husky and the release binaries |
 | `git-sequences` | `git:sync`, `git:commit` | the frequent Git sequences in one call each |
