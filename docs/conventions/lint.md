@@ -71,6 +71,7 @@ A crate of the Rust workspace on Oxc's crates (`oxc_parser`, `oxc_ast`, `oxc_ast
 
 - **Each file once**: read, parsed with its comments, its semantic model built, then every rule its scopes turn on runs over that one AST — a rule reads the whole file (`check_file`) or each node of the linter's single walk (`check_node`); the files are spread over the machine's threads, and what the rules read beside the file (folder listings, the bibliography, the ADRs) is read once per run.
 - **One rule, one module** of `tools/lint/src/rules/`, its tests beside it, from the cases of the rule it carries and of its documentation; registered in `rules::ALL`. Adding a rule: the module, its line in `ALL`, its name in `ON_EVERYWHERE` or a scope of `tools/lint/src/scopes.rs`, its section below, its rule `off` in ESLint.
+- **Markdown pages** (EN-077): each page of the targets but `CHANGELOG.md` is parsed once by the crate `markdown` (`markdown-rs`, `REF-MARKDOWN-RS`) into an mdast tree, the one `@eslint/markdown` reads, with YAML front matter and GFM; the Markdown rules of `tools/lint/src/markdown/rules/` read that tree and the text under it.
 - **Scopes**: `tools/lint/src/scopes.rs` carries, in ESLint's order, the scopes of `eslint/scopes/` that set its rules; the project's values (kinds, layers, verbs, reference sources, the folder signal) are in `tools/lint/src/settings.rs`.
 - **Measured** on 2026-10-17: 0.05 to 0.06 s for the 1,535 files of `npm run lint`'s targets, all its rules on (0.11 s of CPU over the machine's threads).
 

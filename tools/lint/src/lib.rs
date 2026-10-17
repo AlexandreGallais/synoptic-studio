@@ -1,11 +1,13 @@
 //! The project's linter on Oxc's crates (EN-075): the project's own rules and the rules oxlint
 //! lacks, run after oxlint by `npm run lint` on the same targets. Each file is read and parsed
 //! once, its semantic model built once, and every rule its scopes turn on runs over that one AST;
-//! the files are spread over the machine's threads.
+//! the files are spread over the machine's threads. A Markdown page is parsed into its own tree
+//! and read by the Markdown rules (`markdown`, EN-077).
 
 pub mod directives;
 pub mod finding;
 pub mod glob;
+pub mod markdown;
 pub mod project;
 pub mod rules;
 pub mod scopes;
@@ -117,6 +119,9 @@ pub fn lint_files(project: &Project, paths: &[String]) -> Vec<Finding> {
 
 /// The findings of one file under its scopes' rules.
 fn lint_path(project: &Project, path: &str, allocator: &Allocator) -> Vec<Finding> {
+    if markdown::is_page(path) {
+        return markdown::lint_path(project, path);
+    }
     let rules = rules::named(&scopes::rules_for(path));
     if rules.is_empty() {
         return Vec::new();
@@ -414,12 +419,12 @@ mod tests {
 
         assert_eq!(
             report,
-            "scripts/sub/d.ts:1:1 local/folder-has-index Folder `scripts/sub` has no `index.ts`: create its barrel.\nlint: 1 finding(s) in 2 file(s)\n"
+            "scripts/sub/d.ts:1:1 local/folder-has-index Folder `scripts/sub` has no `index.ts`: create its barrel.\nlint: 1 finding(s) in 3 file(s)\n"
         );
         assert!(!clean);
         assert_eq!(
             crate::walk::files(&root, &[".".into(), "missing".into()]),
-            ["scripts/a.ts", "scripts/sub/d.ts"]
+            ["scripts/a.ts", "scripts/b.md", "scripts/sub/d.ts"]
         );
         // lint-staged's absolute paths are read from the root; a file outside it is left out.
         let absolute = root.join("scripts/a.ts").to_string_lossy().into_owned();

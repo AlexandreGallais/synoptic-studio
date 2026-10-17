@@ -19,6 +19,7 @@ pedantic = { level = "warn", priority = -1 }
 # Exact versions only (`name = "=x.y.z"`), each reviewed as a dev package is: its row in
 # docs/tooling/dependencies.md, its release notes read, at least 7 days old.
 [workspace.dependencies]
+markdown = "=1.0.0"
 oxc_allocator = "=0.153.0"
 oxc_ast = "=0.153.0"
 oxc_ast_visit = "=0.153.0"
