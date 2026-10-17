@@ -44,7 +44,3 @@ The tasks were regrouped on 2026-10-17: the scripts call `tools/format`, so the 
 - EN-085's ADR on the Oxc toolchain names `tools/format` as the formatter (oxfmt, then tables without padding) and `eslint-config-prettier`, still used by ESLint, as left to EN-085.
 - Rebased after EN-068 (Cargo workspace): `tools/format` is a workspace member; the scripts `format`, `format:check`, `fix`, `backlog:index`, `.lintstagedrc.json` and `scripts/story-finish-rows.ts` call it by `cargo run --release -q -p format --`. `.cargo/` and `tools/` are formatter targets (their TOML files), `target` is in oxfmt's `ignorePatterns`.
 - The reformatting commit (T3) unpads the tables of the shared files (logs, indexes, feature files): `refuse-shared-files` lets a padding-only change through since the fix merged before this story (`fix/en-073-shared-files-table-padding`).
-
-### Improvements
-
-| 2026-10-17 | EN-073 | `npm install` in a worktree replaces the `node_modules` link made by `worktree:new` with a full folder of its own; the main checkout is untouched, but the worktree no longer shares it | tool |
