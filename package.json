@@ -61,6 +61,8 @@
     "worktree:new": "cargo run --release -q -p worktree --bin worktree-new --",
     "git:sync": "cargo run --release -q -p git-sequences -- sync",
     "git:commit": "cargo run --release -q -p git-sequences -- commit",
+    "run:start": "cargo run --release -q -p run-totals -- start",
+    "run:end": "cargo run --release -q -p run-totals -- end",
     "branches:clean": "node --harmony-temporal --no-warnings=ExperimentalWarning scripts/branches-clean.ts",
     "records:save": "node --harmony-temporal --no-warnings=ExperimentalWarning scripts/records-save.ts",
     "replace": "node scripts/replace-text.ts",
