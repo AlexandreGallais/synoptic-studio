@@ -8,6 +8,7 @@ import {
   fontFile,
   joinedParts,
   nameTable,
+  partsDigest,
   sharedSansTables,
   sharedTableCollection,
   tablesFile,
@@ -74,6 +75,6 @@ describe("parseNamedFaceParts (REF-OT-OTFF, REF-OT-NAME)", () => {
     const parts = parseNamedFaceParts(collection, "SharedSans-Bold") ?? [];
 
     expect(parts.reduce((sum, part) => sum + part.length, 0)).toBe(409_776);
-    expect(joinedParts(parts)).toEqual(tablesFile(TRUE_TYPE_VERSION, faces[1] ?? {}));
+    expect(partsDigest(parts)).toBe(partsDigest([tablesFile(TRUE_TYPE_VERSION, faces[1] ?? {})]));
   });
 });
