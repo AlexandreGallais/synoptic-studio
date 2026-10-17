@@ -6,19 +6,25 @@
 //! where `ESLint` turned it off.
 
 pub mod consistent_conditional_object_spread;
+pub mod consistent_destructuring;
 pub mod control_flow;
 pub mod errors;
 pub mod functions;
 pub mod iteration_fallback_style;
+pub mod known_values;
+pub mod layout;
 pub mod modules;
 pub mod no_array_from_fill;
 pub mod no_array_front_mutation;
 pub mod no_array_sort_for_min_max;
 pub mod no_break_in_nested_loop;
+pub mod no_computed_property_existence_check;
 pub mod no_confusing_array_splice;
 pub mod no_duplicate_loops;
 pub mod no_duplicate_set_values;
 pub mod no_impossible_length_comparison;
+pub mod no_invalid_property_descriptor;
+pub mod no_invalid_well_known_symbol_methods;
 pub mod no_loop_iterable_mutation;
 pub mod no_mismatched_map_key;
 pub mod no_negated_array_predicate;
@@ -27,7 +33,12 @@ pub mod no_return_array_push;
 pub mod no_unnecessary_array_flat_map;
 pub mod no_unnecessary_splice;
 pub mod no_unreadable_for_of_expression;
+pub mod no_unreadable_new_expression;
+pub mod no_unreadable_object_destructuring;
+pub mod no_unsafe_property_key;
+pub mod no_unused_builtin_method_return;
 pub mod no_unused_iterator_helper;
+pub mod no_unused_properties;
 pub mod no_useless_set_construction;
 pub mod numbers;
 pub mod platform;
@@ -45,10 +56,13 @@ pub mod prefer_iterator_helpers;
 pub mod prefer_iterator_to_array;
 pub mod prefer_iterator_to_array_at_end;
 pub mod prefer_map_from_entries;
+pub mod prefer_object_define_properties;
+pub mod prefer_object_destructuring_defaults;
 pub mod prefer_object_iterable_methods;
 pub mod prefer_set_methods;
 pub mod prefer_simple_sort_comparator;
 pub mod prefer_single_array_predicate;
+pub mod prefer_single_object_destructuring;
 pub mod prefer_while_loop_condition;
 pub mod promises;
 pub mod syntax;
@@ -58,6 +72,7 @@ use super::Rule;
 /// The rules, in the order of their names.
 pub const RULES: &[&dyn Rule] = &[
     &consistent_conditional_object_spread::ConsistentConditionalObjectSpread,
+    &consistent_destructuring::ConsistentDestructuring,
     &iteration_fallback_style::IterationFallbackStyle,
     &no_array_from_fill::NoArrayFromFill,
     &no_array_front_mutation::NoArrayFrontMutation,
@@ -65,6 +80,7 @@ pub const RULES: &[&dyn Rule] = &[
     &promises::no_async_iterator_callback::NoAsyncIteratorCallback,
     &promises::no_async_promise_finally::NoAsyncPromiseFinally,
     &no_break_in_nested_loop::NoBreakInNestedLoop,
+    &no_computed_property_existence_check::NoComputedPropertyExistenceCheck,
     &no_confusing_array_splice::NoConfusingArraySplice,
     &control_flow::no_declarations_before_early_exit::NoDeclarationsBeforeEarlyExit,
     &control_flow::no_duplicate_if_branches::NoDuplicateIfBranches,
@@ -74,6 +90,8 @@ pub const RULES: &[&dyn Rule] = &[
     &errors::no_error_property_assignment::NoErrorPropertyAssignment,
     &modules::no_global_object_property_assignment::NoGlobalObjectPropertyAssignment,
     &no_impossible_length_comparison::NoImpossibleLengthComparison,
+    &no_invalid_property_descriptor::NoInvalidPropertyDescriptor,
+    &no_invalid_well_known_symbol_methods::NoInvalidWellKnownSymbolMethods,
     &no_loop_iterable_mutation::NoLoopIterableMutation,
     &no_mismatched_map_key::NoMismatchedMapKey,
     &promises::no_multiple_promise_resolver_calls::NoMultiplePromiseResolverCalls,
@@ -92,9 +110,14 @@ pub const RULES: &[&dyn Rule] = &[
     &functions::no_unnecessary_parameters::NoUnnecessaryParameters,
     &no_unnecessary_splice::NoUnnecessarySplice,
     &no_unreadable_for_of_expression::NoUnreadableForOfExpression,
+    &no_unreadable_new_expression::NoUnreadableNewExpression,
+    &no_unreadable_object_destructuring::NoUnreadableObjectDestructuring,
     &platform::no_unsafe_buffer_conversion::NoUnsafeBufferConversion,
     &platform::no_unsafe_json_serialization::NoUnsafeJsonSerialization,
+    &no_unsafe_property_key::NoUnsafePropertyKey,
+    &no_unused_builtin_method_return::NoUnusedBuiltinMethodReturn,
     &no_unused_iterator_helper::NoUnusedIteratorHelper,
+    &no_unused_properties::NoUnusedProperties,
     &control_flow::no_useless_boolean_cast::NoUselessBooleanCast,
     &control_flow::no_useless_else::NoUselessElse,
     &control_flow::no_useless_logical_operand::NoUselessLogicalOperand,
@@ -130,6 +153,8 @@ pub const RULES: &[&dyn Rule] = &[
     &numbers::prefer_math_abs::PreferMathAbs,
     &control_flow::prefer_minimal_ternary::PreferMinimalTernary,
     &numbers::prefer_number_is_safe_integer::PreferNumberIsSafeInteger,
+    &prefer_object_define_properties::PreferObjectDefineProperties,
+    &prefer_object_destructuring_defaults::PreferObjectDestructuringDefaults,
     &prefer_object_iterable_methods::PreferObjectIterableMethods,
     &promises::prefer_promise_static_methods::PreferPromiseStaticMethods,
     &promises::prefer_promise_try::PreferPromiseTry,
@@ -139,6 +164,7 @@ pub const RULES: &[&dyn Rule] = &[
     &prefer_simple_sort_comparator::PreferSimpleSortComparator,
     &control_flow::prefer_simplified_conditions::PreferSimplifiedConditions,
     &prefer_single_array_predicate::PreferSingleArrayPredicate,
+    &prefer_single_object_destructuring::PreferSingleObjectDestructuring,
     &control_flow::prefer_smaller_scope::PreferSmallerScope,
     &control_flow::prefer_switch::PreferSwitch,
     &promises::prefer_then_catch::PreferThenCatch,
@@ -150,6 +176,7 @@ pub const RULES: &[&dyn Rule] = &[
 /// Their names, on for every TypeScript file.
 pub const NAMES: &[&str] = &[
     "unicorn/consistent-conditional-object-spread",
+    "unicorn/consistent-destructuring",
     "unicorn/iteration-fallback-style",
     "unicorn/no-array-from-fill",
     "unicorn/no-array-front-mutation",
@@ -157,6 +184,7 @@ pub const NAMES: &[&str] = &[
     "unicorn/no-async-iterator-callback",
     "unicorn/no-async-promise-finally",
     "unicorn/no-break-in-nested-loop",
+    "unicorn/no-computed-property-existence-check",
     "unicorn/no-confusing-array-splice",
     "unicorn/no-declarations-before-early-exit",
     "unicorn/no-duplicate-if-branches",
@@ -166,6 +194,8 @@ pub const NAMES: &[&str] = &[
     "unicorn/no-error-property-assignment",
     "unicorn/no-global-object-property-assignment",
     "unicorn/no-impossible-length-comparison",
+    "unicorn/no-invalid-property-descriptor",
+    "unicorn/no-invalid-well-known-symbol-methods",
     "unicorn/no-loop-iterable-mutation",
     "unicorn/no-mismatched-map-key",
     "unicorn/no-multiple-promise-resolver-calls",
@@ -184,9 +214,14 @@ pub const NAMES: &[&str] = &[
     "unicorn/no-unnecessary-parameters",
     "unicorn/no-unnecessary-splice",
     "unicorn/no-unreadable-for-of-expression",
+    "unicorn/no-unreadable-new-expression",
+    "unicorn/no-unreadable-object-destructuring",
     "unicorn/no-unsafe-buffer-conversion",
     "unicorn/no-unsafe-json-serialization",
+    "unicorn/no-unsafe-property-key",
+    "unicorn/no-unused-builtin-method-return",
     "unicorn/no-unused-iterator-helper",
+    "unicorn/no-unused-properties",
     "unicorn/no-useless-boolean-cast",
     "unicorn/no-useless-else",
     "unicorn/no-useless-logical-operand",
@@ -222,6 +257,8 @@ pub const NAMES: &[&str] = &[
     "unicorn/prefer-math-abs",
     "unicorn/prefer-minimal-ternary",
     "unicorn/prefer-number-is-safe-integer",
+    "unicorn/prefer-object-define-properties",
+    "unicorn/prefer-object-destructuring-defaults",
     "unicorn/prefer-object-iterable-methods",
     "unicorn/prefer-promise-static-methods",
     "unicorn/prefer-promise-try",
@@ -231,6 +268,7 @@ pub const NAMES: &[&str] = &[
     "unicorn/prefer-simple-sort-comparator",
     "unicorn/prefer-simplified-conditions",
     "unicorn/prefer-single-array-predicate",
+    "unicorn/prefer-single-object-destructuring",
     "unicorn/prefer-smaller-scope",
     "unicorn/prefer-switch",
     "unicorn/prefer-then-catch",
