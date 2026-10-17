@@ -21,7 +21,7 @@ One task = one commit, referenced as `VAL-020.Tn`.
 
 - [x] T1 — Each criterion of F19 proven again, what was seen recorded (1 h)
 - [x] T2 — F19's lines in E17's checklist, `?checklist=E17`, each tried (1 h)
-- [ ] T3 — The demo page, `docs/guide/f19-checks-on-oxc-and-rust.md` (1 h)
+- [x] T3 — The demo page, `docs/guide/f19-checks-on-oxc-and-rust.md` (1 h)
 - [ ] T4 — The decisions of the validation recorded (0.5 h)
 
 ## Criteria proven again (2026-10-17)
