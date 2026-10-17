@@ -1137,7 +1137,7 @@
       }
     },
     {
-      "files": ["src/**/index.ts", "eslint/**/index.ts", "playground/*/**/index.ts"],
+      "files": ["src/**/index.ts", "playground/*/**/index.ts"],
       "rules": {
         "unicorn/no-empty-file": "off",
         "import/max-dependencies": "off"
@@ -1145,15 +1145,7 @@
       "plugins": ["import", "unicorn"]
     },
     {
-      "files": ["eslint/rules/*/all.ts"],
-      "rules": {
-        "import/max-dependencies": "off"
-      },
-      "plugins": ["import"]
-    },
-    {
       "files": [
-        "eslint/**/*.ts",
         "./*.config.ts",
         "./*.setup.ts",
         "./*.test.ts",
@@ -1167,7 +1159,6 @@
           "error",
           {
             "capIsNew": true,
-            "capIsNewExceptions": ["ESLintUtils.RuleCreator"],
             "newIsCap": true,
             "properties": true
           }

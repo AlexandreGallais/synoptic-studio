@@ -39,7 +39,7 @@ flowchart LR
 npm install
 npm run dev        # playground on http://localhost:5173
 npm run docs:dev   # documentation site
-npm run fix        # oxfmt (tools/format) + ESLint --fix
+npm run fix        # oxfmt (tools/format) + oxlint --fix + the project's Rust linter --fix
 npm run check:all  # every check: lint, types, tests (100 % coverage), audit, knip, docs build
 npm run build      # dist/
 ```

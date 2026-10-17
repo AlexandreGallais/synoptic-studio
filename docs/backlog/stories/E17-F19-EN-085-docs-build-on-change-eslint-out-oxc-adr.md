@@ -26,6 +26,17 @@ One task = one commit, referenced as `EN-085.Tn`.
 - [ ] T2 — ESLint, Prettier and TypeScript 6 out of the scripts, the hooks and `check:all`; three timed runs recorded (2 h)
 - [ ] T3 — The ADR, its table of the rules of `eslint/`, `.claude/rules/tooling.md` and the tooling docs (3 h)
 
+## Measures
+
+`check:all` under the heavy lock on the Product Owner's machine, 2026-10-17, after T2 (ESLint out), while another worktree's agent worked beside it:
+
+| Change against the base | Runs (s) | Slowest lanes |
+| --- | --- | --- |
+| code only: the docs lane skipped | 85.3, 39.4, 38.5 | `test` 38 to 47 s, `check:rust` 37 to 73 s; the first run built the Rust tools again after T2's change to `tools/lint` (`rust:build` 11.8 s, `check:rust` 73.4 s) |
+| docs changed: every lane | 76.6, 61.4, 56.9, 61.2, 68.0 | `docs:build` 56 to 76 s, `test` 50 to 70 s, `check:rust` 48 to 61 s; the first two failed in `test` under the docs build's load, their output not kept, and passed in the three runs after; to watch at AUD-021 (the installed fonts' test is the one known flaky) |
+
+A code story ends in about 39 s on a built workspace, under the 70 to 90 s of F19.AC8; a docs story in about 57 to 68 s. ESLint alone took 14.2 s, and 58 s for the three linters in a loaded `check:all` (CHK-020); `lint` now takes 2.2 to 5.2 s.
+
 ## Note
 
 Left by SP-021 for this story: `.claude/rules/tooling.md` gets the line that TypeScript 7 is the only TypeScript, that TypeScript 6 and TypeDoc are removed and that the API pages come from a Rust generator ([research note 0023](../../research/notes/0023-f19-oxc-and-rust-tools.md), "The Product Owner's second round").

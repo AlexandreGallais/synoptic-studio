@@ -26,7 +26,7 @@ function runTsc(tscArguments: readonly string[]): {
   return { status: result.status, stdout: result.stdout };
 }
 
-/** An import of TypeScript 6's API, under its own name or its alias. */
+/** An import of TypeScript's API, which TypeScript 7 lacks until 7.1, under its name or TypeScript 6's alias. */
 const TYPESCRIPT_IMPORT = /from\s+["'](?:typescript|@typescript\/typescript6)["']/u;
 
 describe("TypeScript 7", () => {
@@ -62,11 +62,12 @@ describe("TypeScript 7", () => {
     );
   });
 
-  it("[F19.AC6] keeps TypeScript 6 only as the API that typescript-eslint loads", () => {
+  it("[F19.AC6] is the only TypeScript, TypeScript 6 and its alias gone from the packages", () => {
     const manifest = readFileSync(join(ROOT, "package.json"), "utf8");
+    const lock = readFileSync(join(ROOT, "package-lock.json"), "utf8");
 
-    expect(manifest).toContain('"typescript": "npm:@typescript/typescript6@6.0.2"');
-    expect(manifest).toContain('"@typescript/native": "npm:typescript@7.0.2"');
+    expect(manifest).toContain('"typescript": "7.0.2"');
+    expect(`${manifest}${lock}`).not.toMatch(/@typescript\/(?:typescript6|native)/u);
   });
 
   it("[F19.AC6] leaves TypeScript 6's API unimported by the project's own code", () => {
