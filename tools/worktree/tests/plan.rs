@@ -217,6 +217,11 @@ fn node_modules() -> PathBuf {
 /// A main checkout with a story file, `node_modules` and a `pre-push` hook naming its checkout,
 /// its remote holding the feature branch.
 fn repository(name: &str) -> PathBuf {
+    repository_with(name, &[])
+}
+
+/// The same main checkout, holding more files: (path, text).
+fn repository_with(name: &str, files: &[(&str, &str)]) -> PathBuf {
     // Git names folders by their real path: macOS's `/var` is a link to `/private/var`.
     let root = std::env::temp_dir()
         .canonicalize()
@@ -230,11 +235,17 @@ fn repository(name: &str) -> PathBuf {
     std::os::unix::fs::symlink(node_modules(), main.join("node_modules")).unwrap();
     fs::write(
         main.join(".gitignore"),
-        "node_modules\n.claude/worktrees/\n",
+        "node_modules\n.claude/worktrees/\n/target/\n",
     )
     .unwrap();
     fs::write(main.join("docs/backlog/stories").join(FILE), "# US-061\n").unwrap();
     fs::write(main.join(".husky/pre-push"), "echo main > \"$MARKER\"\n").unwrap();
+    for (path, text) in files {
+        let path = main.join(path);
+
+        fs::create_dir_all(path.parent().unwrap()).unwrap();
+        fs::write(path, text).unwrap();
+    }
     // An absolute remote: a relative one would be read from each worktree's folder.
     let remote = root.join("remote.git");
     let remote = remote.to_str().unwrap();
@@ -298,6 +309,39 @@ fn f18_ac8_makes_a_worktree_named_after_its_story() {
     assert!(
         String::from_utf8_lossy(&again.stderr).contains("already exists"),
         "{again:?}"
+    );
+
+    let _ = fs::remove_dir_all(main.parent().unwrap());
+}
+
+#[test]
+fn f19_ac9_builds_the_release_binaries_of_a_new_worktree() {
+    // [F19.AC9] A worktree holding the Cargo workspace gets its tools' binaries, as `prepare`
+    // builds them in a clone: the scripts and hooks call `target/release/<tool>` (EN-068).
+    let main = repository_with(
+        "build",
+        &[
+            (
+                "Cargo.toml",
+                "[workspace]\nmembers = [\"tools/*\"]\nresolver = \"3\"\n",
+            ),
+            (
+                "Cargo.lock",
+                "version = 4\n\n[[package]]\nname = \"hello\"\nversion = \"0.1.0\"\n",
+            ),
+            (
+                "tools/hello/Cargo.toml",
+                "[package]\nname = \"hello\"\nversion = \"0.1.0\"\nedition = \"2024\"\n",
+            ),
+            ("tools/hello/src/main.rs", "fn main() {}\n"),
+        ],
+    );
+    let made = worktree_new(&main, "US-061");
+
+    assert!(made.status.success(), "{made:?}");
+    assert!(
+        main.join(".claude/worktrees/us-061/target/release/hello")
+            .exists()
     );
 
     let _ = fs::remove_dir_all(main.parent().unwrap());

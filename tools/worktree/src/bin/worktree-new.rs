@@ -1,7 +1,8 @@
 //! `worktree-new <ID> [--type <type>]` (`npm run worktree:new -- US-061`): fetches GitHub, adds
 //! `.claude/worktrees/us-061` on `feat/us-061-<topic>` from the story's feature branch, and links
 //! the main checkout's `node_modules` into it, then installs Husky's hooks folder in every
-//! worktree that has none, so that a push runs the worktree's own `.husky/pre-push` (EN-052).
+//! worktree that has none, so that a push runs the worktree's own `.husky/pre-push` (EN-052), and
+//! builds the release binaries of the Rust tools in the new worktree (EN-068).
 
 use std::env;
 use std::fs;
@@ -100,6 +101,30 @@ fn install_hooks(main: &Path) -> Result<(), String> {
     Ok(())
 }
 
+/// Builds the release binaries of the Rust tools in a new worktree holding the Cargo workspace, as
+/// `npm run prepare` does in a clone: its scripts and hooks call `target/release/<tool>` (EN-068).
+fn build_tools(dir: &Path) -> Result<(), String> {
+    if !dir.join("Cargo.toml").exists() {
+        return Ok(());
+    }
+
+    let output = Command::new("cargo")
+        .args(["build", "--release", "--workspace", "--locked", "--quiet"])
+        .current_dir(dir)
+        .output()
+        .map_err(|error| format!("cargo: {error}"))?;
+
+    if output.status.success() {
+        Ok(())
+    } else {
+        Err(format!(
+            "cargo build in {}: {}",
+            dir.display(),
+            String::from_utf8_lossy(&output.stderr).trim()
+        ))
+    }
+}
+
 fn run(argv: &[String]) -> Result<Plan, String> {
     let (id, branch_type) = arguments(argv)?;
     let common = PathBuf::from(git(&[
@@ -135,6 +160,7 @@ fn run(argv: &[String]) -> Result<Plan, String> {
 
     create(&plan, &main)?;
     install_hooks(&main)?;
+    build_tools(&plan.dir)?;
     Ok(plan)
 }
 

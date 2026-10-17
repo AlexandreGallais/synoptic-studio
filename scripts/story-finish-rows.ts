@@ -4,17 +4,8 @@
 
 import { execFileSync } from "node:child_process";
 
-/** The Rust tool moving a story's rows into the logs. */
-export const MOVE_ROWS = [
-  "run",
-  "--release",
-  "-q",
-  "--manifest-path",
-  "tools/shared-files/Cargo.toml",
-  "--bin",
-  "move-rows",
-  "--",
-];
+/** The Rust tool moving a story's rows into the logs, run from its release binary (EN-068). */
+export const MOVE_ROWS = ["scripts/rust-tool.sh", "move-rows"];
 
 /**
  * The message of the commit moving a merged story's rows into the logs.
@@ -76,7 +67,7 @@ export function pushAhead(cwd: string): boolean {
  * @param cwd - the checkout of the base
  */
 export function moveRows(branch: string, cwd: string): void {
-  const moved = run("cargo", [...MOVE_ROWS, branch], cwd);
+  const moved = run("sh", [...MOVE_ROWS, branch], cwd);
   const files = moved === "" ? [] : moved.split("\n");
 
   if (files.length > 0) {

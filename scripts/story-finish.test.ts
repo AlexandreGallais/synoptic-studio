@@ -219,7 +219,7 @@ describe("story-finish", () => {
     expect(manualSteps(plan, STORY).split("\n")).toStrictEqual([
       `cd "${here}" && git fetch --quiet --prune origin`,
       `cd "/repo" && git merge --ff-only --quiet origin/${BASE}`,
-      `cd "/repo" && cargo run --release -q --manifest-path tools/shared-files/Cargo.toml --bin move-rows -- ${STORY}`,
+      `cd "/repo" && scripts/rust-tool.sh move-rows ${STORY}`,
       `cd "/repo" && git commit -m "docs(docs): move the rows of EN-999 into the logs" -m "Refs: EN-999" -- <the files it printed>`,
       `cd "/repo" && git push`,
       `cd "/repo" && git worktree remove ${here}`,
