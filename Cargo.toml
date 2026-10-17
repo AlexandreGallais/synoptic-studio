@@ -1,0 +1,21 @@
+# The Rust tools of the repository, one virtual workspace (EN-068, research note 0023): no package
+# here, one crate per tool under tools/, one Cargo.lock and one target/ at the root.
+[workspace]
+members = ["tools/*"]
+resolver = "3"
+
+[workspace.package]
+edition = "2024"
+license = "Apache-2.0"
+publish = false
+
+# Shared by every crate through `[lints] workspace = true`; warnings are errors (.cargo/config.toml).
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+
+# Exact versions only (`name = "=x.y.z"`), each reviewed as a dev package is: its row in
+# docs/tooling/dependencies.md, its release notes read, at least 7 days old.
+[workspace.dependencies]

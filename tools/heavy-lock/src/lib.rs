@@ -14,9 +14,8 @@
 //! merge one at a time (ADR-0065, decision 5; EN-051). Each lock names its owner to the commands it
 //! starts in a variable of its own: a command under the merge lock never runs inside the heavy one.
 
-use std::fs::{self, File, OpenOptions};
+use std::fs::{self, File, OpenOptions, TryLockError};
 use std::io::{self, Read, Write};
-use std::os::fd::AsRawFd;
 use std::os::unix::fs::MetadataExt;
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -202,37 +201,19 @@ pub fn take_over_line(left_by: Option<&LockOwner>, path: &Path) -> String {
     }
 }
 
-/// Takes the kernel's exclusive advisory lock on an open file without waiting (`flock(2)` with
-/// `LOCK_EX | LOCK_NB`, `REF-MACOS-FLOCK`): `true` when taken, `false` when another open file holds
-/// it. The lock lasts until the file is closed, by this process or by its end.
+/// Takes the kernel's exclusive advisory lock on an open file without waiting (`File::try_lock`,
+/// `flock(2)` with `LOCK_EX | LOCK_NB` on Unix, `REF-RUST-FILE-LOCK`, `REF-MACOS-FLOCK`): `true`
+/// when taken, `false` when another open file holds it. The lock lasts until the file is closed, by
+/// this process or by its end.
 ///
 /// # Errors
 ///
 /// When the system refuses the lock for another reason than its being held.
 pub fn lock_exclusive(file: &File) -> io::Result<bool> {
-    unsafe extern "C" {
-        fn flock(fd: i32, operation: i32) -> i32;
-    }
-
-    /// `LOCK_EX`, an exclusive lock, on macOS and Linux.
-    const EXCLUSIVE: i32 = 2;
-    /// `LOCK_NB`, fail rather than wait, on macOS and Linux.
-    const NO_WAIT: i32 = 4;
-
-    loop {
-        // SAFETY: the descriptor stays open for the call, borrowed from `file`; the call reads
-        // nothing else and changes no memory.
-        if unsafe { flock(file.as_raw_fd(), EXCLUSIVE | NO_WAIT) } == 0 {
-            return Ok(true);
-        }
-
-        let error = io::Error::last_os_error();
-
-        match error.kind() {
-            io::ErrorKind::WouldBlock => return Ok(false),
-            io::ErrorKind::Interrupted => {}
-            _ => return Err(error),
-        }
+    match file.try_lock() {
+        Ok(()) => Ok(true),
+        Err(TryLockError::WouldBlock) => Ok(false),
+        Err(TryLockError::Error(error)) => Err(error),
     }
 }
 

@@ -130,6 +130,20 @@ function leftOut(targets: readonly string[], candidates: readonly string[]): rea
   return candidates.filter((path) => targets.every((target) => !covers(target, path)));
 }
 
+/**
+ * The crates of `tools/`: each folder holding a `Cargo.toml`.
+ *
+ * @returns their folder names, sorted
+ */
+function crateNames(): readonly string[] {
+  return readdirSync(join(ROOT, "tools"), { withFileTypes: true })
+    .filter(
+      (entry) => entry.isDirectory() && existsSync(join(ROOT, "tools", entry.name, "Cargo.toml")),
+    )
+    .map((entry) => entry.name)
+    .toSorted((left, right) => left.localeCompare(right));
+}
+
 describe("check tools given explicit targets (EN-045)", () => {
   it("[F18.AC20] gives Prettier the same targets in format, format:check and fix", () => {
     const targets = targetsOf("format:check", "prettier");
@@ -209,17 +223,53 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
   it("[F18.AC20] checks every crate of tools/ in check:rust, and only them", () => {
     const listed = /for tool in (?<tools>[\w -]+?); do/u.exec(SCRIPTS.get("check:rust") ?? "")
       ?.groups?.["tools"];
-    const crates = readdirSync(join(ROOT, "tools"), { withFileTypes: true })
-      .filter(
-        (entry) => entry.isDirectory() && existsSync(join(ROOT, "tools", entry.name, "Cargo.toml")),
-      )
-      .map((entry) => entry.name)
-      .toSorted((left, right) => left.localeCompare(right));
+    const crates = crateNames();
 
     expect(crates.length).toBeGreaterThan(0);
 
     expect((listed ?? "").split(" ").toSorted((left, right) => left.localeCompare(right))).toEqual(
       crates,
     );
+  });
+});
+
+describe("the Rust workspace at the root (EN-068)", () => {
+  const manifest = readFileSync(join(ROOT, "Cargo.toml"), "utf8");
+
+  it("[F19.AC9] gathers tools/* in a virtual workspace sharing its settings and lints", () => {
+    expect(manifest).not.toMatch(/^\[package\]$/mu);
+    expect(manifest).toMatch(/^members = \["tools\/\*"\]$/mu);
+    expect(manifest).toMatch(/^resolver = "3"$/mu);
+
+    expect(manifest).toMatch(
+      /^\[workspace\.package\]\nedition = "2024"\nlicense = "Apache-2\.0"\npublish = false$/mu,
+    );
+
+    expect(manifest).toMatch(/^\[workspace\.lints\.rust\]\nunsafe_code = "forbid"$/mu);
+    expect(manifest).toMatch(/^pedantic = \{ level = "warn", priority = -1 \}$/mu);
+    expect(manifest).toMatch(/^\[workspace\.dependencies\]$/mu);
+  });
+
+  it("[F19.AC9] pins the toolchain and denies warnings", () => {
+    expect(readFileSync(join(ROOT, "rust-toolchain.toml"), "utf8")).toMatch(
+      /^channel = "1\.99\.1"\ncomponents = \["rustfmt", "clippy"\]$/mu,
+    );
+
+    expect(readFileSync(join(ROOT, ".cargo", "config.toml"), "utf8")).toMatch(
+      /^\[build\]\nwarnings = "deny"$/mu,
+    );
+  });
+
+  it.each(crateNames())("[F19.AC9] makes %s a member inheriting the workspace's lints", (name) => {
+    const crate = readFileSync(join(ROOT, "tools", name, "Cargo.toml"), "utf8");
+
+    expect(crate).toMatch(/^\[lints\]\nworkspace = true$/mu);
+    expect(crate).toMatch(/^edition\.workspace = true$/mu);
+    expect(existsSync(join(ROOT, "tools", name, "Cargo.lock"))).toBe(false);
+  });
+
+  it("[F19.AC9] tracks one Cargo.lock, at the root, and no build output", () => {
+    expect(TRACKED.filter((path) => path.endsWith("Cargo.lock"))).toEqual(["Cargo.lock"]);
+    expect(TRACKED.filter((path) => /(?:^|\/)target\//u.test(path))).toEqual([]);
   });
 });
