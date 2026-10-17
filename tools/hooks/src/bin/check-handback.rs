@@ -13,7 +13,7 @@ use std::process::Command;
 
 use hooks::handback::{
     Branch, Commit, agent_transcript, allow_output, earlier_handbacks, feature_number, finish_line,
-    is_checked, missing, refusal, story_id, worktree_id,
+    is_checked, missing, read_refs, refusal, story_id, worktree_id,
 };
 use hooks::json::{self, Value};
 use hooks::limit::deny_output;
@@ -32,35 +32,28 @@ fn git(folder: &Path, arguments: &[&str]) -> Option<String> {
         .then(|| String::from_utf8_lossy(&output.stdout).trim().to_owned())
 }
 
-/// The feature branch on `origin` of a story, from its file's name in the worktree.
-fn feature_branch(worktree: &Path, story: &str) -> Option<String> {
-    let number = fs::read_dir(worktree.join("docs/backlog/stories"))
+/// The feature of a story, `f20`, from its file's name in the worktree.
+fn feature_of(worktree: &Path, story: &str) -> Option<String> {
+    fs::read_dir(worktree.join("docs/backlog/stories"))
         .ok()?
         .filter_map(Result::ok)
-        .find_map(|entry| feature_number(&entry.file_name().to_string_lossy(), story))?;
-    let pattern = format!("refs/remotes/origin/feature/{number}-*");
-    let refs = git(
-        worktree,
-        &["for-each-ref", "--format=%(refname:lstrip=3)", &pattern],
-    )?;
-
-    refs.lines().next().map(str::to_owned)
+        .find_map(|entry| feature_number(&entry.file_name().to_string_lossy(), story))
 }
 
-/// The story branch as its worktree sees it, with its commits not on the feature branch.
-fn branch(worktree: &Path, feature: Option<&str>) -> Option<Branch> {
-    let name = git(worktree, &["branch", "--show-current"]).filter(|name| !name.is_empty())?;
-    let head = git(worktree, &["rev-parse", "HEAD"])?;
-    let remote = git(
+/// The story branch as its worktree sees it, its commits not on the feature branch, and that
+/// feature branch: two Git calls.
+fn branch(worktree: &Path, story: &str) -> Option<(Branch, Option<String>)> {
+    let listing = git(
         worktree,
         &[
-            "rev-parse",
-            "--verify",
-            "-q",
-            &format!("refs/remotes/origin/{name}"),
+            "for-each-ref",
+            "--format=%(HEAD) %(objectname) %(refname)",
+            "refs/heads",
+            "refs/remotes/origin",
         ],
-    );
-    let range = feature.map_or("HEAD".to_owned(), |feature| {
+    )?;
+    let refs = read_refs(&listing, feature_of(worktree, story).as_deref())?;
+    let range = refs.feature.as_ref().map_or("HEAD".to_owned(), |feature| {
         format!("origin/{feature}..HEAD")
     });
     let commits = git(worktree, &["log", "--format=%H %s", &range])?
@@ -72,12 +65,15 @@ fn branch(worktree: &Path, feature: Option<&str>) -> Option<Branch> {
         })
         .collect();
 
-    Some(Branch {
-        name,
-        head,
-        remote,
-        commits,
-    })
+    Some((
+        Branch {
+            name: refs.name,
+            head: refs.head,
+            remote: refs.remote,
+            commits,
+        },
+        refs.feature,
+    ))
 }
 
 /// The hook's answer, `None` when it lets the hand-back through untouched.
@@ -104,8 +100,7 @@ fn answer(input: &Value) -> Option<String> {
     }
 
     let story = story_id(id);
-    let feature = feature_branch(&worktree, &story);
-    let branch = branch(&worktree, feature.as_deref())?;
+    let (branch, feature) = branch(&worktree, &story)?;
     let tool_input = input.get("tool_input");
     let items = missing(&branch, tool_input.get("message").text());
 
