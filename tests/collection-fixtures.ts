@@ -7,7 +7,7 @@ import { tagBytes } from "./font-fixtures";
 import { lettersMissingFaceFile } from "./name-table-fixtures";
 
 /** A table of zeros given by its length alone, too large to hold as numbers. */
-export type ZeroTable = {
+type ZeroTable = {
   /** Its length, in bytes, each zero. */
   readonly zeros: number;
 };
