@@ -79,6 +79,16 @@
 | `npm-check-updates` | `npm run deps:outdated`: fails when a dependency is not on its latest version | `npm outdated`: no per-package target (TypeScript limited to patches) |
 | `knip` | `npm run deps:unused`: unused files, exports and dependencies (`knip.json`), which lint cannot see across modules | `ts-prune`: unused exports only; ESLint `no-unused-vars`: one module at a time |
 
+## Rust tools
+
+Tools outside npm, for the checks of the Rust workspace (EN-069). Same rules: a row here, the release notes read, a version at least 7 days old. Each version is pinned where it is installed — `.github/workflows/ci.yml`, the install line of [agent tools](./agent-tools.md#rust), the messages of `rust:coverage` and `rust:advisories` in `package.json` — and `deps:outdated` does not see them: a newer release is looked for by hand (`cargo search <tool>`) at each retrospective.
+
+| Tool | Version, released | Why | Alternatives rejected |
+| --- | --- | --- | --- |
+| cargo-llvm-cov | 0.9.1, 2026-09-06 (41 days on 2026-10-17) | `rust:coverage`: the workspace's tests with LLVM's source-based coverage, failing under the floor of lines and functions (`REF-CARGO-LLVM-COV`); notes of 0.9.0 and 0.9.1 read: fixes (doctests in 2024-edition workspaces, build scripts left out of reports, Windows paths) and a `--show-missing-lines` format change, unused here | — |
+| cargo-deny | 0.20.2, 2026-07-09 (100 days) | `rust:advisories`: every crate of `Cargo.lock` against the RustSec database, offline from its local copy (`REF-CARGO-DENY-ADVISORIES`); notes of 0.20.2 read: the command line refactored, `--offline` now an option of `cargo deny` itself, written before `check`; a new `bans.std-replacements` lint, unused as `bans` does not run | `cargo audit` 0.22.2 (`REF-CARGO-AUDIT`): the same database, advisories only, where cargo-deny also checks licences, bans and sources |
+| llvm-tools, rustup's component (`llvm-tools-preview`) | of Rust 1.99.1, 2026-08-27 (51 days) | the `llvm-profdata` and `llvm-cov` that cargo-llvm-cov calls; listed in `rust-toolchain.toml`, so rustup installs it with the toolchain | a system LLVM: its version must match the compiler's |
+
 ## Assets
 
 Data the library ships that is not an npm package. Same rules: a row here, its licence and its release read, a release at least 7 days old.
