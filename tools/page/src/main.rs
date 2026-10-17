@@ -74,7 +74,13 @@ fn by_id(id: &str) -> Result<String, Failure> {
 
 fn main() -> ExitCode {
     let words: Vec<String> = env::args().skip(1).collect();
-    let result = match words.as_slice() {
+
+    tool_use::run("page", "", || print_part(&words))
+}
+
+/// Prints the row or section asked for; the exit code.
+fn print_part(words: &[String]) -> u8 {
+    let result = match words {
         [id] => by_id(id),
         [file, wanted] => in_page(Path::new(file), wanted),
         _ => Err((
@@ -87,11 +93,11 @@ fn main() -> ExitCode {
     match result {
         Ok(text) => {
             print!("{text}");
-            ExitCode::SUCCESS
+            0
         }
         Err((message, code)) => {
             eprintln!("{message}");
-            ExitCode::from(code)
+            code
         }
     }
 }
