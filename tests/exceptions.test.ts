@@ -25,8 +25,15 @@ type Row = Exception & {
 /** The openers of a line and of a block comment, kept apart from the words that follow them. */
 const COMMENT = { block: "/*", line: "//" };
 
-/** A directive turning rules off, in a line or a block comment, up to its `--` justification. */
-const DIRECTIVE = /(?:\/\/|\/\*)\s*eslint-disable(?:-next-line|-line)?\s+(?<rules>[^\n]*?)\s+--/gu;
+/**
+ * A directive turning rules off, in a line or a block comment, up to its `--` justification, or
+ * to the comment's end when it has none: a directive without its reason counts too.
+ */
+const DIRECTIVE =
+  /(?:\/\/|\/\*)\s*eslint-disable(?:-next-line|-line)?\s+(?<rules>[^\n]*?)\s*(?:--|\*\/|$)/gmu;
+
+/** A Rust attribute turning lints off, on an item or a whole module (`#![allow(…)]`). */
+const RUST_ALLOW = /#!?\[allow\((?<rules>[^)]*)\)\]/gu;
 
 /**
  * The rules a directive names, sorted and joined, so that their order does not count.
@@ -51,7 +58,7 @@ function sortedRules(rules: string): string {
  */
 function codeExceptions(file: string, code: string): readonly Exception[] {
   return code
-    .matchAll(DIRECTIVE)
+    .matchAll(file.endsWith(".rs") ? RUST_ALLOW : DIRECTIVE)
     .map((match) => ({ file, rules: sortedRules(match.groups?.["rules"] ?? "") }))
     .toArray();
 }
@@ -112,13 +119,13 @@ function unmatched(places: readonly Exception[], among: readonly Exception[]): r
     );
 }
 
-/** Every `.ts` file of the repository, tracked or new, with its content. */
+/** Every `.ts` and `.rs` file of the repository, tracked or new, with its content. */
 const FILES = execFileSync("git", ["ls-files", "--cached", "--others", "--exclude-standard"], {
   cwd: ROOT,
   encoding: "utf8",
 })
   .split("\n")
-  .filter((file) => file.endsWith(".ts"))
+  .filter((file) => file.endsWith(".ts") || file.endsWith(".rs"))
   .map((file) => ({ code: readFileSync(join(ROOT, file), "utf8"), file }));
 
 /** The exceptions the code holds. */
@@ -146,6 +153,28 @@ ${COMMENT.block} eslint-disable c-rule -- why */`,
     expect(
       codeExceptions("a.ts", `${COMMENT.line} needs an eslint-disable comment -- here`),
     ).toEqual([]);
+
+    // A directive without its `--` reason counts too, to the end of its line or of its comment.
+    expect(
+      codeExceptions(
+        "a.ts",
+        `${COMMENT.line} eslint-disable-next-line x\n${COMMENT.block} eslint-disable y */`,
+      ),
+    ).toEqual([
+      { file: "a.ts", rules: "x" },
+      { file: "a.ts", rules: "y" },
+    ]);
+
+    // Rust: an item's and a module's `allow`, never an ESLint directive in a Rust file.
+    expect(
+      codeExceptions(
+        "a.rs",
+        `#[allow(clippy::b, clippy::a)]\n#![allow(dead_code)]\n${COMMENT.line} eslint-disable z -- no`,
+      ),
+    ).toEqual([
+      { file: "a.rs", rules: "clippy::a, clippy::b" },
+      { file: "a.rs", rules: "dead_code" },
+    ]);
 
     expect(registerRows("| `a.ts` | `f` | `b-rule`, `a-rule` | why |\n| File | x |")).toEqual([
       { file: "a.ts", function: "f", reason: "why", rules: "a-rule, b-rule" },

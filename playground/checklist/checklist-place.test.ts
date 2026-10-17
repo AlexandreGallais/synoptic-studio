@@ -16,6 +16,9 @@ describe("[F18.AC12] the checklist's panel beside the drawing (EN-056)", () => {
     expect(stage.contains(checklist)).toBe(false);
     expect(stage.nextElementSibling).toBe(checklist);
     expect(getComputedStyle(document.body).display).toBe("flex");
+    // Side by side, the stage first: a row, the default when no rule sets it (happy-dom gives it
+    // empty then); a column or a reversed row would put the checklist under or left of the drawing.
+    expect(["", "row"]).toContain(getComputedStyle(document.body).flexDirection);
     // In the flow, its own width, never shrunk over by the drawing nor floating above it.
     // happy-dom gives an empty position when no rule sets one: the default, static.
     expect(["", "static"]).toContain(style.position);

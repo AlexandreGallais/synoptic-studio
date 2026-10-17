@@ -117,14 +117,21 @@ const FOLD_CALLBACK =
 /** A spread into the array or object a callback returns, as its arrow body or from a `return`. */
 const RETURNED_SPREAD = ":matches(ArrayExpression, ObjectExpression) > SpreadElement";
 
+/** The same spread in a branch of a conditional returned (`c ? [...acc, x] : acc`). */
+const BRANCH_SPREAD = `ConditionalExpression > ${RETURNED_SPREAD}`;
+
 /**
  * A spread of the accumulator at each step of a fold (`[...acc, x]`, `{ ...acc, k: v }`); a
  * selector cannot tell the accumulator from another name, so any spread into the returned
- * literal is reported (REF-OXLINT-ACCUMULATING-SPREAD, REF-ESLINT-RESTRICTED-SYNTAX).
+ * literal is reported (REF-OXLINT-ACCUMULATING-SPREAD, REF-ESLINT-RESTRICTED-SYNTAX). Known
+ * limit: a spread held in a variable, then returned (`const next = [...acc, x]; return next;`),
+ * is not reported, a selector following no name.
  */
 const FOLD_SPREAD = [
   `${FOLD_CALLBACK} > ${RETURNED_SPREAD}`,
   `${FOLD_CALLBACK} ReturnStatement > ${RETURNED_SPREAD}`,
+  `${FOLD_CALLBACK} > ${BRANCH_SPREAD}`,
+  `${FOLD_CALLBACK} ReturnStatement > ${BRANCH_SPREAD}`,
 ].join(", ");
 
 /** Syntax outside the project's style. */
