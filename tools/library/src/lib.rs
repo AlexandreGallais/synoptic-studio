@@ -1,1 +1,7 @@
-//! The local source library.
+//! The local source library (`docs/tooling/sources.md`, ADR-0039): its SQLite store, the pages
+//! fetched and cut into sections, the record of each use, the MCP server on `rmcp` and its command
+//! line (EN-106). The behaviour is the one the TypeScript scripts had, so that the same store and
+//! the same calls give the same answers.
+
+pub mod chunks;
+pub mod store;
