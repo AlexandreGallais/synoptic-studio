@@ -7,7 +7,6 @@
     "allow": [
       "Bash(npm run *)",
       "Bash(npx vitest *)",
-      "Bash(npx eslint *)",
       "Bash(git status*)",
       "Bash(git diff*)",
       "Bash(git log*)",
@@ -45,7 +44,9 @@
               "--release",
               "-q",
               "--manifest-path",
-              "${CLAUDE_PROJECT_DIR}/tools/hooks/Cargo.toml",
+              "${CLAUDE_PROJECT_DIR}/Cargo.toml",
+              "-p",
+              "hooks",
               "--bin",
               "limit-agents"
             ]
@@ -63,7 +64,9 @@
               "--release",
               "-q",
               "--manifest-path",
-              "${CLAUDE_PROJECT_DIR}/tools/hooks/Cargo.toml",
+              "${CLAUDE_PROJECT_DIR}/Cargo.toml",
+              "-p",
+              "hooks",
               "--bin",
               "limit-agents"
             ]
