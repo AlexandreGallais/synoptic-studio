@@ -12,6 +12,7 @@ What each working session dealt with, in the agent's words: the Product Owner's 
 - `#run` US-061: the font list held while the default font is read again (I77), a face refused at that reading dropped (I78); second criterion read as dropping, from the settled rule that every font offered can be exported.
 - `#run` EN-060: the documentation pass on E15's long pages split every bullet over 400 characters of the Text section of `shapes.md`, the Colors of `interaction.md` and `DERIV-text-box` into sub-bullets and tables, without changing a rule; a test keeps those parts within the limit.
 - `#run` EN-046: the release pull request now lives on `develop` and `main` only tags it (ADR-0067); the Product Owner merges the release pull request into `develop` before #259, checked at the release of 0.3.
+
 ## 2026-10-17 — Run of F18 stopped before its validation
 
 - `#run` The run of F18 resumed from a plain terminal on 2026-10-16 and stopped on 2026-10-17 before VAL-019: SP-020 (#262), EN-049 (#263), EN-047 and its lock fix, EN-054, EN-062, EN-050 (#268), EN-053 (#269), EN-057 (#270), EN-055 (#271), EN-051 (#272) and its fix (#275), EN-061 (#273), EN-052 (#274), EN-048, EN-056, EN-058, EN-059, US-061, CHK-019 (#282), EN-046, the move-rows fix (#283), EN-060 (#284), and AUD-020 with its fixes (#285, #286); the details are in the feature branch's journal and stories.
