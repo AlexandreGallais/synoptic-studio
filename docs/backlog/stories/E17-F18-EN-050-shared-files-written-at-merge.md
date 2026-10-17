@@ -20,8 +20,8 @@ Keep the shared files — the indexes, the logs, the feature file, the checklist
 
 One task = one commit, referenced as `EN-050.Tn`.
 
-- [ ] T1 — The list of shared files and the pre-push check; tests (1 h)
-- [ ] T2 — The rows moved at merge by `story:finish`; the worker brief updated (1 h)
+- [x] T1 — The list of shared files and the pre-push check; tests (1 h)
+- [x] T2 — The rows moved at merge by `story:finish`; the worker brief updated (1 h)
 
 ## For the main thread
 

@@ -19,6 +19,9 @@ Show the Product Owner F18 on one demo page: the figures before and after (subag
 ## Decisions to confirm
 
 - US-061: a face refused when its family is read again is dropped, and a text asking for it is measured with the nearest face held, as for a weight the family lacks; the alternative, only saying the refusal, would have measured a face then left it out of the export (rule of US-060). Chosen by the agent on 2026-10-17, the choice left to it by the criterion.
+- ADR-0067, decision 2: before each release, the Product Owner merges release-please's release pull request into `develop`; only then the pull request `develop` → `main`.
+- EN-048: tables without padding moved to F19's formatter (ADR-0068); F18.AC4 keeps the logs merged by union, rows kept unique.
+- EN-062: the tests on Helvetica, Apple Color Emoji, Arial and STIXGeneral stay macOS-only; F18.AC19 is read as the font reader's own tests on Inter Regular, which run everywhere.
 
 ## Tasks
 

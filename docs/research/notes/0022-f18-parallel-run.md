@@ -35,6 +35,8 @@ The built-in limit set to 3 (EN-063) stays a second guard: it holds even if the 
 
 **Open.** A process id reused by another process after a force-quit keeps the lock held; no source read gives a portable check. EN-047 may also record the start time and say so.
 
+**Answered** by EN-047 (a lock file written as a draft then hard-linked, holding the owner's process id and start time) and AUD-020 (2026-10-17): the lock is now held by `flock(2)` on that file, freed by the system when its process dies (`REF-MACOS-LOCKF`), so neither a force-quit nor a reused process id leaves it held.
+
 ## Tables without padding (EN-048)
 
 | Finding                                                                                                                                                       | Source                    |
@@ -55,6 +57,8 @@ A Markdown override with `printWidth: 1` and `embeddedLanguageFormatting: "off"`
 
 **Open, for the Product Owner** (ADR-0065 and its source disagree): decision 1 expects `proseWrap: "never"` to remove the padding, which it does only for tables wider than 80 characters; a narrow table that grows is still rewritten whole, and every wrapped paragraph is joined once. Options: keep decision 1 as it is and accept the narrow tables; add the Markdown override above; or another formatter for Markdown (E17's F19).
 
+**Answered** by EN-048 (2026-10-17): tables without padding moved to F19's formatter (ADR-0068); the logs keep their padded tables until then.
+
 ## Logs merged by union (EN-048, EN-050)
 
 | Finding                                                                                                  | Source                            |
@@ -66,14 +70,16 @@ A Markdown override with `printWidth: 1` and `embeddedLanguageFormatting: "off"`
 
 **Open.** Whether GitHub's merge of a pull request applies `merge=union`: no GitHub documentation says so; the only reports found are a 2016 pull request of RuboCop, where GitHub's web merge did not, and tickets of other hosts (level 6, never alone). Under ADR-0065 decision 4 only the main thread writes the logs, at merge, so union guards local merges (`develop` into a feature branch); EN-048 tries a GitHub merge once on a throwaway branch before relying on it there.
 
+**Still untried** (AUD-020, 2026-10-17): the union guards local merges only until a GitHub merge shows it; the trial is in the improvement log.
+
 ## Worktrees (EN-051, EN-052)
 
-| Finding                                                                                                                                                                                     | Source             |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
-| `.claude/worktrees/` belongs in `.gitignore` (already there)                                                                                                                                | `REF-CC-WORKTREES` |
-| `worktree.baseRef` is `"fresh"` (the remote's default branch) or `"head"`, never a branch name: a worker's worktree on a feature branch is created with Git directly, as the run skill does | `REF-CC-WORKTREES` |
-| `git worktree add` run by Bash fires no `WorktreeCreate` hook; a `PreToolUse` hook on Bash sees it                                                                                          | `REF-CC-HOOKS`     |
-| `git worktree remove` and `prune` clean a worktree and its private directory                                                                                                                | `REF-GIT-WORKTREE` |
+| Finding                                                                                                                                                                                                  | Source             |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
+| `.claude/worktrees/` belongs in `.gitignore` (already there)                                                                                                                                             | `REF-CC-WORKTREES` |
+| `worktree.baseRef` is `"fresh"` (the remote's default branch) or `"head"`, never a branch name: a worker's worktree on a feature branch is created with Git directly, by `npm run worktree:new` (EN-052) | `REF-CC-WORKTREES` |
+| `git worktree add` run by Bash fires no `WorktreeCreate` hook; a `PreToolUse` hook on Bash sees it                                                                                                       | `REF-CC-HOOKS`     |
+| `git worktree remove` and `prune` clean a worktree and its private directory                                                                                                                             | `REF-GIT-WORKTREE` |
 
 ## Timing tests (EN-054)
 
@@ -94,6 +100,8 @@ The lint already forbids `performance.now()` and `Date.now()` in tests (`.claude
 
 **Open.** With the release pull request merged into `develop`, its merge commit is on `develop`: the step on `main` must look for pull requests merged into `develop` (`target-branch: develop`, `skip-github-pull-request: true`) and tag that commit once `main` holds it. EN-046 checks this on the next release rather than assuming it.
 
+**Answered by EN-046 (2026-10-17).** release-please's source confirms it: the release step lists the pull requests merged into its `target-branch` with the pending label (`REF-RELEASE-PLEASE-SOURCE`), so the step on `main` runs with `target-branch: develop`; while such a pull request waits for its tag, no new release pull request is opened. The tag itself is checked on the next release ([EN-046](../../backlog/stories/E17-F18-EN-046-release-pr-on-develop.md)).
+
 ## The other stories
 
 | Story                  | Sources                                                                  | Open                                                                                                                                           |
@@ -112,5 +120,3 @@ The lint already forbids `performance.now()` and `Date.now()` in tests (`.claude
 ## Not adopted
 
 `git rerere` (`REF-GIT-RERERE`) and a merge queue (`REF-GH-MERGE-QUEUE`, organizations only) stay out, as ADR-0065 decides.
-
-**Read by EN-046 (2026-10-17).** release-please's source confirms it: the release step lists the pull requests merged into its `target-branch` with the pending label (`REF-RELEASE-PLEASE-SOURCE`), so the step on `main` runs with `target-branch: develop`; while such a pull request waits for its tag, no new release pull request is opened. The tag itself is checked on the next release ([EN-046](../../backlog/stories/E17-F18-EN-046-release-pr-on-develop.md)).

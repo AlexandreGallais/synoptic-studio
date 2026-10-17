@@ -19,7 +19,7 @@ Bring the docs and methods up to date in the middle of F18, with a light evolvab
 
 One task = one commit, referenced as `CHK-019.Tn`.
 
-- [ ] T1 — Docs and rules in step; light evolvability check (1 h)
+- [x] T1 — Docs and rules in step; light evolvability check (1 h)
 
 ## Result
 
@@ -38,7 +38,7 @@ One task = one commit, referenced as `CHK-019.Tn`.
 | `docs/process/improvements.md` | the rows `move-rows` had written as a second table and as bullets put back as rows of the one table; tonight's findings added                                                                                                                                                                                        |
 | `docs/process/feedback.md`     | four slips of the main thread                                                                                                                                                                                                                                                                                        |
 
-Already true, unchanged: `CLAUDE.md` (the heavy commands take the lock themselves, never by hand; worktrees named by `worktree:new`), `story:finish` from the story's worktree under the merge lock (agent-tools, commands, run skill), `ci.md`, `git-workflow.md` and `metrics.md`.
+Already true, unchanged: `CLAUDE.md` (the heavy commands take the lock themselves, never by hand; worktrees named by `worktree:new`), `story:finish` from the story's worktree under the merge lock (agent-tools, commands, run skill), `ci.md`, `git-workflow.md` and `metrics.md` — AUD-020 found them stale after all and corrected them (2026-10-17).
 
 ### Test cards written so far
 
@@ -52,6 +52,6 @@ Already true, unchanged: `CLAUDE.md` (the heavy commands take the lock themselve
 1. **Size**: `src/` holds 588 source files and 373 test files (model 252, geometry 118, math 111, io 100, render 7); the tooling counts 27 TypeScript scripts, 9 TypeScript hooks and 8 Rust crates (about 6 600 lines of Rust). No layer is a package yet: nothing yet.
 2. **Tools**: Stryker's trigger (stryker-js issue 6210) has not happened, and `npm run mutate` (EN-058) now covers the need: the row of `docs/tooling/dependencies.md` to close at RET-004. `size-limit` and API Extractor: no npm publication yet, nothing yet.
 3. **Fitness functions**: the modules per folder are counted (EN-061); the shared files are checked at push (EN-050). Still only written: "every new script in Rust" — a test could refuse a new `.ts` file under `scripts/` or `.claude/hooks/`: a story for F19.
-4. **Patterns**: `agent-tools.md` described each crate in a numbered paragraph ("the first", "the second"…), out of order once two stories added one at once: now one list. `status-tasks.ts` and its Rust twin in `tools/hooks` stay until F19.
+4. **Patterns**: `agent-tools.md` described each crate in a numbered paragraph ("the first", "the second"…), out of order once two stories added one at once: a crate table with a "Does" column since AUD-020. `status-tasks.ts` and its Rust twin in `tools/hooks` stay until F19.
 5. **Agent configuration**: `AGENTS.md` and `CLAUDE.md` together 153 lines, under 200. Recurring mistakes not yet covered by a check: the hand lock, a worker writing in the main checkout, `move-rows` taking any line: rows in the improvement log.
 6. **Process**: the main checkout on `develop` during a run served stale rules to the workers; the brief is now read in the worktree. Cadences kept.

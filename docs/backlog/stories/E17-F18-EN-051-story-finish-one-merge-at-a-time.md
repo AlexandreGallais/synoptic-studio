@@ -21,9 +21,9 @@ Merge parallel branches one after the other, and finish a story from its worktre
 
 One task = one commit, referenced as `EN-051.Tn`.
 
-- [ ] T1 — The merge lock and the rebase of the next branch; tests (1 h)
-- [ ] T2 — The clean-up from a worktree, conditional on `MERGED`; tests (1 h)
+- [x] T1 — The merge lock and the rebase of the next branch; tests (1 h)
+- [x] T2 — The clean-up from a worktree, conditional on `MERGED`; tests (1 h)
 
 ## Follow-up
 
-On this story's own merge (PR #272), the main checkout was on another branch, so the base was checked out in the story's worktree; `story:finish` removed that worktree, then ran the deletion of the branch on GitHub from it, and the command failed to start: the branch stayed on GitHub. The deletion is now a step of the clean-up, run from the main checkout like every step after the worktree's removal, still through GitHub's API so that no pre-push check runs. A test with real repositories and a stub of GitHub's command line covers that case.
+On this story's own merge (pull request #272), the main checkout was on another branch, so the base was checked out in the story's worktree; `story:finish` removed that worktree, then ran the deletion of the branch on GitHub from it, and the command failed to start: the branch stayed on GitHub. The deletion is now a step of the clean-up, run from the main checkout like every step after the worktree's removal, still through GitHub's API so that no pre-push check runs. A test with real repositories and a stub of GitHub's command line covers that case.

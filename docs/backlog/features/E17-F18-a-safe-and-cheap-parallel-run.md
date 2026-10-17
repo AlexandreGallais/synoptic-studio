@@ -9,7 +9,7 @@ status: in-progress
 
 **Benefit hypothesis**: once the tools enforce the agent limit, one heavy command at a time and conflict-free shared files, a run with parallel workers no longer freezes the computer nor leaves merge conflicts, and costs fewer tokens per story than E15's 24 M.
 
-Written at RET-003 (2026-10-16) from the Product Owner's decisions (ADR-0063, ADR-0064, ADR-0065, ADR-0066), as F11 was at RET-001. It also holds the leftovers of E15 decided there (US-061, EN-057, EN-062). The Product Owner refines and orders it with the rest of E17.
+Written at RET-003 (2026-10-16) from the Product Owner's decisions (ADR-0063, ADR-0064, ADR-0065, ADR-0066), as F11 was at RET-001. It also holds the leftovers of E15 decided there (US-061, EN-057, EN-062). Refined with E17 on 2026-10-16, ordered first.
 
 ## Acceptance criteria
 

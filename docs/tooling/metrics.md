@@ -127,7 +127,7 @@ The status line shows a tool call running for more than 5 minutes in red. A long
 
 ## Limits
 
-- Sessions run from another folder (a worktree in the scratchpad) have their transcripts under another project folder: they are not read yet.
+- Sessions started in another folder, such as a worktree of `.claude/worktrees/`, have their transcripts under another project folder: they are not read yet.
 - Claude Code deletes transcripts older than `cleanupPeriodDays` (30 by default): `.claude/settings.json` sets it to 3650, so that every retrospective still reads the tokens of its epic.
 - `.git/metrics/` lives in this clone only: a fresh clone starts empty. `npm run records:save` keeps a copy of it, of the transcripts and of the library in the private records repository `records/` (ADR-0041, ADR-0044), from which a new machine restores them.
 - Tokens are counted per model request, not per command: a command's cost shows as the request that wrote it and the one that read its result.

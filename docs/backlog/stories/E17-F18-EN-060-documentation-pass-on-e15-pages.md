@@ -20,7 +20,7 @@ Shorten the long pages of E15 with the `doc-editor` agent, after checking what A
 
 One task = one commit, referenced as `EN-060.Tn`.
 
-- [ ] T1 — The doc-editor pass and its fixes (3 h)
+- [x] T1 — The doc-editor pass and its fixes (3 h)
 
 ## For the main thread
 
