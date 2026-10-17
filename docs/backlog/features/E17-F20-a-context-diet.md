@@ -46,7 +46,7 @@ In delivery order. Stories stay `draft` until F20's `/run` sets them `ready`.
 | [EN-092](../stories/E17-F20-EN-092-run-totals-and-stop-report.md) | Enabler | The duration and tokens of a whole run | done |
 | [EN-087](../stories/E17-F20-EN-087-progress-page-as-an-artifact.md) | Enabler | A progress page as a claude.ai Artifact, updated during a run | done |
 | [EN-086](../stories/E17-F20-EN-086-push-notification-at-each-stop.md) | Enabler | A run that parks a question and pushes it, and stops only when it must | done |
-| [CHK-021](../stories/E17-F20-CHK-021-checkpoint-f20.md) | Checkpoint | Checkpoint in the middle of F20 | ready |
+| [CHK-021](../stories/E17-F20-CHK-021-checkpoint-f20.md) | Checkpoint | Checkpoint in the middle of F20 | done |
 | [EN-100](../stories/E17-F20-EN-100-git-sequences-as-rust-commands.md) | Enabler | The agent's frequent Git sequences as Rust commands | done |
 | [EN-101](../stories/E17-F20-EN-101-every-page-fetch-through-the-library.md) | Enabler | Every page fetched through the library, with the project recorded | done |
 | [EN-096](../stories/E17-F20-EN-096-docs-written-as-principles.md) | Enabler | The agent's rules and skills written as principles | done |
