@@ -46,3 +46,18 @@ pub const DOM_NAMES: &[&str] = &[
     "unicorn/prefer-location-assign",
     "unicorn/require-css-escape",
 ];
+
+#[cfg(test)]
+mod tests {
+    use super::{DOM_NAMES, NAMES, RULES};
+
+    #[test]
+    fn names_each_rule_once_in_one_list() {
+        let mut names: Vec<&str> = RULES.iter().map(|rule| rule.name()).collect();
+        let mut listed: Vec<&str> = NAMES.iter().chain(DOM_NAMES).copied().collect();
+        names.sort_unstable();
+        listed.sort_unstable();
+
+        assert_eq!(listed, names);
+    }
+}
