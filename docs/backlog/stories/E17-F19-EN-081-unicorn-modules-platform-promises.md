@@ -3,7 +3,7 @@ id: EN-081
 epic: E17
 feature: F19
 title: Unicorn's modules, platform and promises rules in Rust
-status: ready
+status: done
 points: 5
 ---
 

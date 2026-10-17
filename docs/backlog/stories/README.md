@@ -223,7 +223,7 @@
 | [EN-078](./E17-F19-EN-078-unicorn-arrays-collections-iteration.md) | F19 | Unicorn's arrays, collections and iteration rules in Rust | done |
 | [EN-079](./E17-F19-EN-079-unicorn-control-flow-functions-errors-numbers.md) | F19 | Unicorn's control-flow, functions, errors and numbers rules in Rust | done |
 | [EN-080](./E17-F19-EN-080-unicorn-objects-strings-naming-misc.md) | F19 | Unicorn's objects, strings, naming and miscellaneous rules in Rust | ready |
-| [EN-081](./E17-F19-EN-081-unicorn-modules-platform-promises.md) | F19 | Unicorn's modules, platform and promises rules in Rust | ready |
+| [EN-081](./E17-F19-EN-081-unicorn-modules-platform-promises.md) | F19 | Unicorn's modules, platform and promises rules in Rust | done |
 | [EN-082](./E17-F19-EN-082-unicorn-dom-and-web.md) | F19 | Unicorn's DOM and web rules in Rust | ready |
 | [EN-083](./E17-F19-EN-083-jsdoc-rules-in-rust.md) | F19 | JSDoc's rules in Rust | ready |
 | [EN-084](./E17-F19-EN-084-other-plugin-rules-in-rust.md) | F19 | The other plugins' rules in Rust | ready |
