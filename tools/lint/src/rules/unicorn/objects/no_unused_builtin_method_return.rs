@@ -339,21 +339,38 @@ fn resolve<'a>(
         Expression::StaticMemberExpression(_)
         | Expression::ComputedMemberExpression(_)
         | Expression::PrivateFieldExpression(_) => Receiver::Uncertain,
-        Expression::TSAsExpression(wrapper) => {
-            if is_supported_type(&wrapper.type_annotation, method) {
-                Receiver::Expression(expression)
-            } else {
-                Receiver::Uncertain
-            }
-        }
-        Expression::TSTypeAssertion(wrapper) => {
-            if is_supported_type(&wrapper.type_annotation, method) {
-                Receiver::Expression(expression)
-            } else {
-                Receiver::Uncertain
-            }
-        }
+        Expression::TSAsExpression(wrapper) => cast(
+            source,
+            &wrapper.type_annotation,
+            &wrapper.expression,
+            expression,
+            method,
+        ),
+        Expression::TSTypeAssertion(wrapper) => cast(
+            source,
+            &wrapper.type_annotation,
+            &wrapper.expression,
+            expression,
+            method,
+        ),
         _ => Receiver::Expression(expression),
+    }
+}
+
+/// What a cast receiver resolves to: itself when its type fits the method, or when the type says
+/// nothing (`any`, `unknown`, a type of the file) and the value cast fits it.
+fn cast<'a>(
+    source: &Source<'_, 'a>,
+    annotation: &TSType,
+    inner: &Expression,
+    expression: &'a Expression<'a>,
+    method: &str,
+) -> Receiver<'a, 'a> {
+    let opaque = kind_of_type(annotation).is_none() && temporal_type_name(annotation).is_none();
+    if is_supported_type(annotation, method) || (opaque && is_supported(source, inner, method)) {
+        Receiver::Expression(expression)
+    } else {
+        Receiver::Uncertain
     }
 }
 

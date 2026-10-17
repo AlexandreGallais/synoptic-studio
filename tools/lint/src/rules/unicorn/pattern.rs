@@ -682,7 +682,7 @@ impl Pattern {
                 .iter()
                 .any(|branch| self.node(branch, text, at, groups, rest)),
             Node::Repeat(inner, min, max, greedy) => {
-                self.repeat(inner, (*min, *max, *greedy), 0, text, at, groups, rest)
+                self.repeat(inner, (*min, *max, *greedy, 0), text, at, groups, rest)
             }
             Node::Look(inner, ahead, negated) => {
                 let found = if *ahead {
@@ -722,12 +722,10 @@ impl Pattern {
     }
 
     /// Whether a quantified node matches a further time or stops, greedy or lazy.
-    #[allow(clippy::too_many_arguments)]
     fn repeat(
         &self,
         inner: &Node,
-        (min, max, greedy): (usize, Option<usize>, bool),
-        count: usize,
+        (min, max, greedy, count): (usize, Option<usize>, bool, usize),
         text: &[char],
         at: usize,
         groups: &mut Groups,
@@ -741,8 +739,7 @@ impl Pattern {
                     (next != at || count < min)
                         && self.repeat(
                             inner,
-                            (min, max, greedy),
-                            count + 1,
+                            (min, max, greedy, count + 1),
                             text,
                             next,
                             groups,

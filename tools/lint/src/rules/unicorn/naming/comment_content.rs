@@ -1631,4 +1631,92 @@ mod tests {
         assert_eq!(check("// json and svg"), ["Prefer `JSON` over `json`."]);
         assert_eq!(check("// svg and json"), ["Prefer `SVG` over `svg`."]);
     }
+    /// Comment shapes of every kind the masks read, the places of their findings those `ESLint` gives.
+    const SHAPES: &str = r#"// foo(
+//   json,
+// )
+// bar(a, '(', "x", `y`, /* ( */ b) // c
+// json after bar
+// [link](http://x) json.parse(x)
+// key: 'json',
+// key: json # note
+// key: [json]
+// { json: 1 },
+// - { json: 2 }
+/*
+~~~
+json
+*/
+/**
+ * @example
+ * json
+ * @returns the json
+ */
+/**
+ * @template {T} json, K
+ * @template T,
+ * json
+ * @see json - the json
+ * @see {@link json}
+ * @see json is here
+ * @type {json}
+ * @returns {json} the svg
+ * @param {string} json the html
+ * @param [json='a'] the css
+ * @param "json" the dom
+ * @author json
+ * @kind json
+ * @public {json}
+ * @throws json
+ * @param {unclosed json
+ */
+/** Read {@link json|label} and {@link 'json' text} and {@link json} and {@linkcode a\b json}. */
+// it's 'json' and "json" and ``json`` and `json
+// json.io and (json.com). and a.js and json.example.co.uk
+// @scope/json and json/svg and svg/json! and a/b#c and json/file.ts
+// [json] [ref]: http://x and [json](x) and [a][json]
+// <svg json> and </json> and a < json > b
+// a?.json and json?.x and x[json] and json[0] and obj.json( and x ?.[json] and y.json
+/* global json */
+// eslint-disable-line json
+/* eslint-enable json */
+// foo(
+/* json */
+// json
+// application/json and image/png and text/x.json
+// $ npm json
+// > npm json
+// if (json) {
+// case json:
+// default:
+// else {
+// a[b].json
+// x[json][0]
+// f [x] ( json )
+// a = b.json(
+// new Json(
+// html, json; svg
+// json => svg"#;
+
+    #[test]
+    fn masks_code_tags_links_and_markup_as_eslint_does() {
+        let places: Vec<(usize, usize)> = lint(&CommentContent, "playground/a.ts", SHAPES)
+            .iter()
+            .map(|finding| (finding.line, finding.column))
+            .collect();
+        assert_eq!(
+            places,
+            [
+                (5, 4),
+                (19, 17),
+                (25, 20),
+                (39, 89),
+                (42, 20),
+                (43, 5),
+                (44, 35),
+                (50, 4),
+                (51, 4)
+            ]
+        );
+    }
 }
