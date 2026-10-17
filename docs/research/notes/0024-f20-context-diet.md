@@ -182,3 +182,14 @@ Only what the first round and the measures leave open.
 | Model per agent (EN-066) | Sonnet for logs, backlog, merges and step texts, and one measured trial of Sonnet on a real story worker compared with Opus (option B) |
 
 Questions 5 to 8 are still open.
+
+## The Product Owner's second round (2026-10-17), questions 5 to 8
+
+| Subject | Decision |
+| --- | --- |
+| Pushes (EN-086) | on the desktop and the phone; the Product Owner turns on Remote Control and **Push when Claude decides** once, on their side; the run skill says when to push: only a question or a blocker needed to finish the scope |
+| Tools of our own | the Git sequences and the library route for every page fetch, with the project recorded, in F20; the log of each tool's use and the reader of one row or section in F21 |
+| Agent-facing docs (EN-096) | one story per family of pages — the agent's rules and skills, the conventions, the process, the tooling docs — each measured in tokens before and after |
+| Remarks | none |
+
+The refinement is complete: F20's stories are rewritten from both rounds.

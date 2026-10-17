@@ -45,3 +45,10 @@ One task = one commit, referenced as `SP-022.Tn`.
 - **EN-064**: closed with the measure of note 0024, nothing to set.
 - **EN-065**: one worker type per task kind, each measured.
 - **EN-066**: Sonnet for logs, backlog, merges and step texts, and one measured trial of Sonnet on a real story worker against Opus.
+
+## The Product Owner's second round (2026-10-17), questions 5 to 8
+
+- **Pushes** (EN-086): on the desktop and the phone; the Product Owner turns on Remote Control and **Push when Claude decides** once; the run skill says when to push.
+- **Tools of our own**: the Git sequences (EN-100) and every page fetched through the library with the project recorded (EN-101) in F20; the log of each tool's use and the reader of one row or section in F21.
+- **Agent-facing docs**: one story per family of pages (EN-096 to EN-099), each measured in tokens.
+- **Remarks**: none.
