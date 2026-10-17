@@ -201,8 +201,22 @@ fn refuses_to_commit_on_main_and_to_force_a_shared_branch() {
     assert!(commit_refusal(&Branch::Main, Push::No).is_some());
     assert!(commit_refusal(&Branch::Detached, Push::No).is_some());
     assert!(commit_refusal(&branch_of("develop"), Push::Lease).is_some());
-    assert_eq!(commit_refusal(&branch_of("develop"), Push::Plain), None);
     assert_eq!(commit_refusal(&branch_of(STORY), Push::Lease), None);
+}
+
+#[test]
+fn f20_ac7_never_pushes_develop_but_pushes_a_feature_branch() {
+    // `develop` takes merged pull requests only (AUD-022): committed there, never pushed.
+    assert_eq!(
+        commit_refusal(&branch_of("develop"), Push::Plain).as_deref(),
+        Some("`develop` takes merged pull requests only: git:commit never pushes it")
+    );
+    assert_eq!(commit_refusal(&branch_of("develop"), Push::No), None);
+    // The main thread pushes the shared files of a merge on the feature branch.
+    assert_eq!(
+        commit_refusal(&branch_of("feature/f20-a-context-diet"), Push::Plain),
+        None
+    );
 }
 
 #[test]

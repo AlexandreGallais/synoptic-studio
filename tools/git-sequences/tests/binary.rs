@@ -15,10 +15,13 @@ const STORY_FILE: &str = "docs/backlog/stories/E17-F20-EN-100-git-sequences.md";
 
 static NEXT: AtomicUsize = AtomicUsize::new(0);
 
-/// A command without the `GIT_*` variables of the process running the tests.
+/// A command without the `GIT_*` variables of the process running the tests, nor the user's or the
+/// system's Git config: an empty home of its own.
 fn clean(program: &str, dir: &Path) -> Command {
     let mut command = Command::new(program);
+    let home = env::temp_dir().join(format!("git-sequences-home-{}", std::process::id()));
 
+    fs::create_dir_all(&home).expect("home made");
     command.current_dir(dir);
 
     for (name, _) in env::vars_os() {
@@ -27,6 +30,7 @@ fn clean(program: &str, dir: &Path) -> Command {
         }
     }
 
+    command.env("HOME", home).env("GIT_CONFIG_NOSYSTEM", "1");
     command
 }
 
@@ -231,6 +235,55 @@ fn never_touches_main() {
     // Nothing staged, nothing committed.
     assert_eq!(git(&repos.work, &["diff", "--cached", "--name-only"]), "");
     assert_eq!(git(&repos.work, &["log", "--format=%s", "-1"]), "first");
+}
+
+#[test]
+fn refuses_main_before_the_fetch() {
+    let repos = repos();
+
+    git(&repos.work, &["switch", "--quiet", "main"]);
+    git(
+        &repos.work,
+        &["remote", "set-url", "origin", "/nowhere/origin.git"],
+    );
+
+    let sync = tool(&repos.work, &["sync"], "");
+
+    // Refused for `main`, not for a fetch that could not run.
+    assert!(!sync.status.success());
+    assert!(stderr(&sync).contains("`main`"), "{}", stderr(&sync));
+    assert!(!stderr(&sync).contains("fetch"), "{}", stderr(&sync));
+}
+
+#[test]
+fn f20_ac7_commits_on_develop_but_never_pushes_it() {
+    let repos = repos();
+
+    git(&repos.work, &["switch", "--quiet", "-c", "develop"]);
+    write(&repos.work, "a.md", "a\n");
+
+    let pushed = tool(
+        &repos.work,
+        &["commit", "-F", "-", "--push", "a.md"],
+        "chore: x\n",
+    );
+
+    assert!(!pushed.status.success());
+    assert!(stderr(&pushed).contains("never pushes it"), "{}", stderr(&pushed));
+    assert_eq!(git(&repos.work, &["log", "--format=%s", "-1"]), "first");
+    // On a feature branch, the same call commits and pushes.
+    git(&repos.work, &["switch", "--quiet", FEATURE]);
+    let feature = tool(
+        &repos.work,
+        &["commit", "-F", "-", "--push", "a.md"],
+        "chore: x\n",
+    );
+
+    assert!(feature.status.success(), "{}", stderr(&feature));
+    assert_eq!(
+        git(&repos.work, &["rev-parse", &format!("origin/{FEATURE}")]),
+        git(&repos.work, &["rev-parse", "HEAD"])
+    );
 }
 
 #[test]
