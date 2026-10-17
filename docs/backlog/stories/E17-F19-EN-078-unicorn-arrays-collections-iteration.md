@@ -3,7 +3,7 @@ id: EN-078
 epic: E17
 feature: F19
 title: Unicorn's arrays, collections and iteration rules in Rust
-status: ready
+status: done
 points: 8
 ---
 
