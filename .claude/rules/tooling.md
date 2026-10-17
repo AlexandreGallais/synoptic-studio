@@ -1,6 +1,5 @@
 ---
 paths:
-  - "eslint/**"
   - "*.config.ts"
   - "*.test.ts"
   - "package.json"
@@ -10,9 +9,10 @@ paths:
 
 # Tooling pitfalls
 
-- **TypeScript 7 runs `tsc`** (`@typescript/native`, EN-071); **TypeScript 6 stays the `typescript` package** for `typescript-eslint` only, until it leaves (EN-085, whose ADR supersedes ADR-0009's pin); **VitePress is on 2.0 alpha** (1.6 bundles a vulnerable Vite 5). Change either only with an ADR.
+- **TypeScript 7 is the only TypeScript** (`typescript` 7.0.2, ADR-0075): TypeScript 6 and TypeDoc are removed, the API pages come from the Rust generator `tools/api-pages` (EN-072) and the declarations from Oxc (ADR-0071); TypeScript 7 has no API until 7.1, so no tool imports `typescript`. **VitePress is on 2.0 alpha** (1.6 bundles a vulnerable Vite 5). Change either only with an ADR.
+- **The linters are oxlint, then the project's Rust linter `tools/lint`; the formatter is oxfmt through `tools/format`** (ADR-0075): ESLint and Prettier are removed; a rule oxlint lacks is written in `tools/lint`, never as a JavaScript plugin.
 - Any new dev package: a row in `docs/tooling/dependencies.md` (tested), its release notes read, the latest version at least 7 days old, `npm audit` clean. A new GitHub Action or Node.js bump: `npm run deps:tools` checks them too.
-- A plugin upgrade makes `eslint/config.test.ts` fail until its new rules are decided in `eslint/rules/`: intended.
+- An oxlint upgrade may rename or remove rules: `tests/oxlint-config.test.ts` fails when `.oxlintrc.json` names a rule oxlint no longer has; read its release notes for new rules and decide them in `.oxlintrc.json`.
 - `unicorn/prefer-import-meta-properties` turns `new URL(".", import.meta.url)` into `import.meta.dirname` (no trailing slash): build paths with `join()`.
 - A test that reads files is mutation-checked once: break its input on purpose and see it fail.
 - A check tool is always given explicit targets (folders and files by name, never `.` nor `**/*`); a new tracked folder joins the targets in `package.json`, or `tests/check-targets.test.ts` fails (EN-045).

@@ -37,7 +37,7 @@ Why a JSDoc tag and not a decorator: a TypeScript decorator only applies to clas
 
 ## Limits per kind (`local/kind-limits`)
 
-Values: `tools/lint/src/settings.rs` (the project's linter, `local/kind-limits`); their loosest, the global ceilings of the core rules, in `eslint/settings/kinds.ts`.
+Values: `tools/lint/src/settings.rs` (the project's linter, `local/kind-limits`); their loosest, the global ceilings of the core rules (`complexity`, `max-lines-per-function`…), in `.oxlintrc.json`.
 
 | `@kind` | Code lines | Statements | Complexity | Depth |
 | --- | --- | --- | --- | --- |

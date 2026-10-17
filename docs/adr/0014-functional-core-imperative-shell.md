@@ -1,6 +1,6 @@
 # ADR-0014 — Functional core, imperative shell
 
-**Status**: Accepted
+**Status**: Accepted; the relaxation in the DOM layers, once in `eslint/scopes/dom-layers.ts`, is the scope `dom-layers` of `tools/lint/src/scopes.rs` since ADR-0075 (2026-10-17)
 
 ## Context
 

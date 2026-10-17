@@ -64,7 +64,7 @@ Vitest's limit of 5 s per test guards against a hang, never measures speed. A te
 
 ### Isolation
 
-Two Vitest projects (`vite.config.ts`): `shared`, where the files of a worker share the modules they load (`isolate: false`) — `src/`, `tests/`, `scripts/`, `eslint/`, the hooks and the docs, which keep no state between files — and `isolated`, the playground, whose page keeps its state in its modules and whose tests mock the library. A test of `shared` restores what it changes (`process.env`, a global stub) and declares no module mock (`vi.mock`); one that needs either moves to `isolated`.
+Two Vitest projects (`vite.config.ts`): `shared`, where the files of a worker share the modules they load (`isolate: false`) — `src/`, `tests/`, `scripts/`, the hooks and the docs, which keep no state between files — and `isolated`, the playground, whose page keeps its state in its modules and whose tests mock the library. A test of `shared` restores what it changes (`process.env`, a global stub) and declares no module mock (`vi.mock`); one that needs either moves to `isolated`.
 
 ## Properties (ADR-0022)
 
@@ -120,6 +120,6 @@ it("[F01.AC3] clamps a 100 × 25 rectangle with radius 100 to an effective radiu
 
 Not now (ADR-0020): while the library is being built, unit tests and feature audits are the safety net. Regression suites and end-to-end tests of the applications come when the applications exist.
 
-## Lint relaxations in tests (`.oxlintrc.json`'s `**/*.test.ts` override, `tools/lint/src/scopes.rs`, `eslint/scopes/tests.ts`)
+## Lint relaxations in tests (`.oxlintrc.json`'s `**/*.test.ts` override, `tools/lint/src/scopes.rs`)
 
 Literal numbers allowed, free function length, callback nesting up to 4, dev dependencies allowed, no `@kind`. Every other rule applies, including naming and JSDoc of module constants.

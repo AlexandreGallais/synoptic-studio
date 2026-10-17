@@ -14,12 +14,12 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0006](./0006-non-destructive-booleans.md) | Non-destructive boolean operations | Accepted |
 | [0007](./0007-corner-radius-clamping.md) | Corner radius clamping: local proportional reduction | Accepted |
 | [0008](./0008-quarter-turn-rotation.md) | Instance rotation by quarter turns | Accepted |
-| [0009](./0009-toolchain.md) | Toolchain: TypeScript 6, Vite, Vitest, ESLint, Prettier, VitePress | Accepted |
-| [0010](./0010-lint-first-strictness.md) | Strictness carried by ESLint first, TypeScript second | Accepted, partly superseded by 0071 |
+| [0009](./0009-toolchain.md) | Toolchain: TypeScript 6, Vite, Vitest, ESLint, Prettier, VitePress | Superseded by ADR-0075 |
+| [0010](./0010-lint-first-strictness.md) | Strictness carried by ESLint first, TypeScript second | Superseded by ADR-0075, partly by 0071 before |
 | [0011](./0011-function-kinds.md) | Function kinds: `@kind` tag and per-kind limits | Accepted |
 | [0012](./0012-folder-barrels.md) | One `index.ts` per folder, canonical import paths | Accepted |
-| [0013](./0013-prettier-alongside-eslint.md) | Prettier next to ESLint, not inside it | Accepted |
-| [0014](./0014-functional-core-imperative-shell.md) | Functional core, imperative shell | Accepted |
+| [0013](./0013-prettier-alongside-eslint.md) | Prettier next to ESLint, not inside it | Superseded by ADR-0075 |
+| [0014](./0014-functional-core-imperative-shell.md) | Functional core, imperative shell | Accepted, its DOM layers' scope moved to `tools/lint` by 0075 |
 | [0015](./0015-one-export-per-file.md) | One export per file, named like the file | Superseded by ADR-0019 |
 | [0016](./0016-explicit-inputs.md) | Explicit inputs: no default nor optional parameter in the library | Accepted |
 | [0017](./0017-in-repository-backlog.md) | Agile backlog kept in the repository | Accepted |
@@ -79,3 +79,4 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0072](./0072-how-a-run-works.md) | How a run works: the go-ahead, the branches and merges, three agents and one heavy command | Accepted |
 | [0073](./0073-every-new-tool-in-rust.md) | Every new script, hook or agent tool written in Rust | Accepted |
 | [0074](./0074-the-agent-shapes-its-own-method-and-tools.md) | The agent shapes its own method and tools, the Product Owner decides | Accepted |
+| [0075](./0075-the-toolchain-on-oxc.md) | The toolchain on Oxc: oxlint, the project's Rust linter, oxfmt and TypeScript 7 | Accepted |

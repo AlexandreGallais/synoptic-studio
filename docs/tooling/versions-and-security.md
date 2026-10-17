@@ -2,13 +2,13 @@
 
 ## Latest versions
 
-- `npm run deps:outdated` runs npm-check-updates with `.ncurc.cjs`: every package must be on its **latest version published at least 7 days ago** (cooldown, ADR-0038, `REF-NCU-COOLDOWN`), except `typescript`, TypeScript 6's API under its alias `@typescript/typescript6`, limited to patch upgrades of 6.0 until typescript-eslint leaves (EN-071, EN-085; TypeDoc left with EN-072); `tsc` is TypeScript 7, the package `@typescript/native`. Any available upgrade makes the command fail. The cooldown keeps a version published minutes ago from turning a check red (release 0.10.0), and lowers the risk of installing a compromised version (supply-chain attacks, `REF-NCU-COOLDOWN`).
+- `npm run deps:outdated` runs npm-check-updates with `.ncurc.cjs`: every package must be on its **latest version published at least 7 days ago** (cooldown, ADR-0038, `REF-NCU-COOLDOWN`), `typescript` included: TypeScript 7 is the only TypeScript since EN-085 (ADR-0075), TypeScript 6's alias gone with typescript-eslint and TypeDoc. Any available upgrade makes the command fail. The cooldown keeps a version published minutes ago from turning a check red (release 0.10.0), and lowers the risk of installing a compromised version (supply-chain attacks, `REF-NCU-COOLDOWN`).
 - It runs before every `git push` (`.husky/pre-push`) and in the CI of the pull requests into `main` (`check:all`).
 - **Upgrading** (Product Owner, 2026-10-12):
   1. list the upgrades: `npx ncu`;
   2. **read what changed** for each package, from the installed version to the new one: its changelog or GitHub release notes (`npm view <pkg> repository.url`, then the repository's `CHANGELOG.md` or `gh release list -R <owner>/<repo>`);
   3. a release that only fixes bugs needs nothing more; a release with **new features** is read for what this project could use (a new rule, a new option): adopt it or record why not; a **breaking change** (major version, or a note saying so) is read closely and the configuration is adapted in the same commit;
-  4. `npx ncu -u <pkg>`, `npm install`, `npm run check:all`; a plugin upgrade may add ESLint rules: decide them (see [lint](../conventions/lint.md));
+  4. `npx ncu -u <pkg>`, `npm install`, `npm run check:all`; an oxlint upgrade may add rules: decide them in `.oxlintrc.json` (see [lint](../conventions/lint.md));
   5. the commit body says what changed and what was done about it (`build(deps): …`), one commit per package with features or breaking changes.
 - `npm run deps:tools` (`scripts/tool-versions.ts`) does the same for the tools outside npm: every GitHub Action of `.github/workflows/` must be on its latest major version (a tag `vN+1` fails the check), and `.nvmrc` on the latest Node.js LTS major (official release index). It runs in `check:all`, with `GITHUB_TOKEN` in CI and `gh auth token` locally. The check fails as soon as a new major is out, and the agent upgrades it after reading its release notes (Product Owner decision, 2026-10-09: every tool, not only npm packages).
 - Pre-releases are not proposed by npm-check-updates; VitePress 2.0 alpha is the documented exception (ADR-0009).
