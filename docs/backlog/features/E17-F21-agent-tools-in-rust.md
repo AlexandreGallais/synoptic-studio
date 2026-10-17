@@ -9,7 +9,7 @@ status: draft
 
 **Benefit hypothesis**: with every hook, script and agent tool of the project, and the `library` MCP server, rewritten as Rust binaries, each call answers in milliseconds instead of Node.js's 60 to 280 ms, and E17 ends with no TypeScript or JavaScript tool of the project's own left.
 
-Split from [F19](./E17-F19-oxc-and-rust-tools.md) by the Product Owner on 2026-10-17; its sources come from F19's spike ([SP-021](../stories/E17-F19-SP-021-research-f19.md), [research note 0023](../../research/notes/0023-f19-oxc-and-rust-tools.md)). To refine with the Product Owner ([E17](../epics/E17-fast-tooling-with-oxc-and-rust.md)); it comes after F19, which builds the Cargo workspace it uses.
+Split from [F19](./E17-F19-oxc-and-rust-tools.md) by the Product Owner on 2026-10-17; its sources come from F19's spike ([SP-021](../stories/E17-F19-SP-021-research-f19.md), [research note 0023](../../research/notes/0023-f19-oxc-and-rust-tools.md)). Refined by the agent on 2026-10-17 from the decisions already taken (below), as authorised that day ([E17](../epics/E17-fast-tooling-with-oxc-and-rust.md)); it comes after F19, which builds the Cargo workspace it uses.
 
 ## Decisions of the Product Owner (2026-10-17)
 
@@ -21,11 +21,15 @@ Split from [F19](./E17-F19-oxc-and-rust-tools.md) by the Product Owner on 2026-1
 
 ## Acceptance criteria
 
-1. Every hook of `.claude/hooks/` is a Rust binary of the workspace, its output and its exit code unchanged, called by `.claude/settings.json`.
-2. Every script of `scripts/` is a Rust binary of the workspace, its output unchanged, called by `package.json`, except `default-font-metrics.ts`, which runs the library itself.
-3. The `library` MCP server is a Rust binary on `rmcp` (3.5.1 or later, at least 7 days old), with the same tools, the same answers and the same store, called by `.mcp.json`.
-4. Every dev package of `package.json` is kept with its reason or rewritten as a Rust binary of the workspace: the Git hooks and their checks, the dependency checks and the secret scan; the rewritten packages are removed.
-5. At the end of E17, no ESLint, Prettier or plugin package, configuration, TypeScript script or hook with a Rust twin, nor their tests and `docs/tooling/dependencies.md` rows, is left: the unused-file check and a search for their names find nothing; `dependencies` is still empty.
+1. Every hook of `.claude/hooks/` is a Rust binary of the workspace, its output and its exit code unchanged, called by `.claude/settings.json` (EN-104).
+2. Every script of `scripts/` is a Rust binary of the workspace, its output unchanged, called by `package.json`, except `default-font-metrics.ts`, which runs the library itself (EN-103, EN-107).
+3. The `library` MCP server is a Rust binary on `rmcp` (3.5.1 or later, at least 7 days old), with the same tools, the same answers and the same store, called by `.mcp.json` (EN-106).
+4. Every dev package of `package.json` is kept with its reason or rewritten as a Rust binary of the workspace: the Git hooks and their checks, the dependency checks and the secret scan; the rewritten packages are removed (EN-108 to EN-111).
+5. At the end of E17, no ESLint, Prettier or plugin package, configuration, TypeScript script or hook with a Rust twin, nor their tests and `docs/tooling/dependencies.md` rows, is left: the unused-file check and a search for their names find nothing; `dependencies` is still empty (EN-113).
+6. A release is prepared and published by a Rust tool of the workspace in place of release-please: the version and the changelog are committed in the pull request `develop` → `main` before it merges, the merge into `main` is tagged and its GitHub release published with the same notes, and no commit follows the merge; the notes follow the rules of `docs/tooling/releases.md`, drawn from `REF-KEEP-A-CHANGELOG` and `REF-COMMON-CHANGELOG` (EN-112).
+7. Each tool of the workspace records each use — the tool, its start, its duration, its exit code — through one shared function into `.git/metrics/tool-uses.jsonl`, and `npm run metrics` lists the uses per tool (EN-102).
+8. One command prints one row of a repository table or one section of a page, found by its id or its heading, and nothing else (EN-105).
+9. `check:all` fails, naming the lines, when a run changed `.git/config`, and every Rust test that runs `git` starts it without the inherited `GIT_*` variables (EN-103).
 
 ## The dev packages, one by one
 
@@ -51,36 +55,18 @@ Asked by the Product Owner on 2026-10-17: each dev package of `package.json` is 
 
 `npm audit` is part of npm, not a package: kept.
 
-## Stories to write
+## The refinement (2026-10-17)
 
-In delivery order; numbers are given at the refinement.
+Each row of the draft table of stories, now in this file's history, became one story; stories 11 and 12 were moved from F20 at its refinement (F20's research note 0024). The order below differs from the draft's for these reasons:
 
-| # | Type | Title | Criteria |
-| --- | --- | --- | --- |
-| 1 | Enabler | The hooks in Rust: `guard-bash`, `track-tool-call`, `log-tool-call`, `session-state`, the status line and its parts | 1 |
-| 2 | Enabler | The metrics tools in Rust: `metrics-*`, `session-report`, `turns`, `activity`, `watch-task` | 2 |
-| 3 | Enabler | The backlog and repository tools in Rust: `backlog-status`, `story-finish`, `epic-check`, `replace-text`, `branches-clean`, `records-save`, `tool-versions`, `check-all` | 2 |
-| 4 | Enabler | The library tools and MCP server in Rust on `rmcp`: `library-cli`, `library-mcp` and their store, pages, HTML, chunks and usage; a SQLite crate with full-text search chosen | 3 |
-| 5 | Enabler | The Git hooks in Rust: hooks installed without husky, the staged-file runner (lint-staged), the commit message (commitlint) and the branch name (validate-branch-name) | 4 |
-| 6 | Enabler | The dependency checks in Rust: latest versions at least 7 days old (npm-check-updates, `tool-versions.ts`), unused files, exports and packages (knip) on Oxc | 4 |
-| 7 | Enabler | The secret scan in Rust: secretlint's recommended patterns carried, each with its source and a test | 4 |
-| 8 | Enabler | The release in Rust: the changelog and the release pull request written by our own tool in place of release-please (its manifest and configuration), from the Conventional Commits; the release notes as readable as today's | 4 |
-| 9 | Enabler | The CI on the Rust tools: the pull request into `main` runs `check:all` with the Rust workspace built and cached, the cargo tools installed once | 4 |
-| 10 | Enabler | Clean-up of E17: every script, hook, configuration, test and dev package left unused removed, checked by the unused-file check and a search; last before NAM-002 | 5 |
-| 11 | Enabler | Each tool of our own records its use — the call, its time, its duration, its outcome — through one function shared by the crates, into `.git/metrics/tool-uses.jsonl`, listed by `npm run metrics` and reviewed at each retrospective; before story 10 | — |
-| 12 | Enabler | A command that prints one row or one section of a repository page by its id or heading (`REF-CC-HOOKS`, a heading of `docs/process/improvements.md`), as `library_read` does for the web: `docs/references.md` was read 121 times in three days, about 6,000 characters a read; before story 10 | — |
+- **The record of each tool's use first** (draft 11, EN-102): every tool ported after it records its use from its first commit, instead of being changed again.
+- **The backlog and repository tools early** (draft 3, EN-103): most frictions of F20's run sit in them, and every merge of F21's own run meets them. `tool-versions` moves to the dependency checks (draft 6, EN-109), where the feature's table of dev packages already put it.
+- **The library server before the metrics** (drafts 4 and 2, EN-106 then EN-107): the metrics' Sources section reads the library's store, so the SQLite crate is chosen once.
+- **The CI before the release** (drafts 9 and 8, EN-111 then EN-112): the release's publishing job runs a Rust binary on `main`, on the cached build.
+- **A spike** (SP-023): the feature frame asks for one (ADR-0020); it records the crates, the rewritten packages' behaviour and licences, and each tool's time before its port, so that each story states its time after against the same table (ADR-0069).
+- **Each port removes its own TypeScript twin** once its output is proven the same; the clean-up (draft 10, EN-113) finds what is left.
 
-Stories 11 and 12 were moved from F20 at its refinement (2026-10-17, [research note 0024](../../research/notes/0024-f20-context-diet.md)).
-
-### Story 10 — Clean-up of E17 (draft)
-
-Last story of E17's features, before NAM-002: once the tools run on Oxc and Rust, remove what nothing uses any more.
-
-- Given F19's removals of ESLint, Prettier, typescript-eslint, the ESLint plugins, TypeScript 6 and TypeDoc (EN-072, EN-073, EN-085), when the clean-up ends, then a search finds none of their names outside the history.
-- Given each `scripts/*.ts` and `.claude/hooks/*.ts` with a Rust twin, when the clean-up ends, then the TypeScript file and its test are gone, and `package.json`, `.mcp.json`, `.claude/settings.json` and the husky hooks call the Rust binary.
-- Given `docs/tooling/dependencies.md`, when the clean-up ends, then each removed package's row is gone and each Rust crate added has one.
-- Given the unused-file check of story 6 and a search of the tracked files for each removed name, when they run, then neither finds an unused file, an unused dev package, nor a name of a removed file outside the history (journal, retrospectives, ADRs).
-- Given `check:all`, when it runs after the clean-up, then it is green and its time is recorded for RET-004.
+Frictions logged during F20's run, folded into the stories: `story:finish`'s push of a rebased branch and the done step's conflicts, `git:sync`'s silent stop, the `.git/config` guard and the tests' `GIT_*` variables, `replace`'s unread block (EN-103); `guard-bash`'s working folder, its refusal of the brief's `cd` form, and a script missing from an older branch (EN-104); `model-tokens.ts` with the session report (EN-107); the formatter's message when nothing changed (EN-108).
 
 ## Decisions of 2026-10-17 (Product Owner)
 
@@ -92,6 +78,39 @@ Last story of E17's features, before NAM-002: once the tools run on Oxc and Rust
 
 - **For F21's feature file** (its draft table of stories, as a note): carry only what EN-093 kept, measured in `docs/conventions/rules.md` (Checks, hooks and conventions). Story 5 (Git hooks): the staged-file runner without ESLint's step; commitlint's rules as they are, with the 14 scopes (`eslint` dropped); **add** a check that a commit on a story branch carries `Refs: <ID>.Tn` or `Closes: <ID>` with the branch's own id; the branch-name pattern as one regular expression. Story 3 (repository tools): `check-all` without a `check` twin to keep in step (the story skill no longer runs `npm run check` per task); `replace-text` kept, it is the agent's most used edit tool. Story 2 (metrics): kept whole; the friction count by rule that EN-093 made by hand from the transcripts would be a cheap addition to `metrics-report` (findings by rule, per epic), so that the next review of the rules reads it instead of grepping.
 
+## Feature plan
+
+| Criterion | Realized by | Verified by |
+| --- | --- | --- |
+| 1 | EN-104 | AUD-023, VAL-022 |
+| 2 | EN-103, EN-107 | AUD-023, VAL-022 |
+| 3 | EN-106 | AUD-023, VAL-022 |
+| 4 | EN-108, EN-109, EN-110, EN-111 | AUD-023, VAL-022 |
+| 5 | EN-113 | AUD-023, VAL-022 |
+| 6 | EN-112 | AUD-023, VAL-022 |
+| 7 | EN-102 | AUD-023, VAL-022 |
+| 8 | EN-105 | AUD-023, VAL-022 |
+| 9 | EN-103 | AUD-023, VAL-022 |
+
 ## Stories
 
-Written at the refinement, with the checkpoint, audit and validation stories of every feature.
+In delivery order. Stories stay `draft` until F21's `/run` sets them `ready`.
+
+| ID | Type | Title | Status |
+| --- | --- | --- | --- |
+| [SP-023](../stories/E17-F21-SP-023-research-f21.md) | Spike | Research for F21 | draft |
+| [EN-102](../stories/E17-F21-EN-102-each-tool-records-its-use.md) | Enabler | Each tool of our own records its use | draft |
+| [EN-103](../stories/E17-F21-EN-103-backlog-and-repository-tools-in-rust.md) | Enabler | The backlog and repository tools in Rust | draft |
+| [EN-104](../stories/E17-F21-EN-104-claude-code-hooks-in-rust.md) | Enabler | The Claude Code hooks and the status line in Rust | draft |
+| [EN-105](../stories/E17-F21-EN-105-one-row-or-section-of-a-page.md) | Enabler | One row or one section of a repository page | draft |
+| [EN-106](../stories/E17-F21-EN-106-library-server-in-rust.md) | Enabler | The library server and its command line in Rust on rmcp | draft |
+| [EN-107](../stories/E17-F21-EN-107-metrics-tools-in-rust.md) | Enabler | The metrics tools in Rust | draft |
+| [CHK-022](../stories/E17-F21-CHK-022-checkpoint-f21.md) | Checkpoint | Checkpoint in the middle of F21 | draft |
+| [EN-108](../stories/E17-F21-EN-108-git-hooks-in-rust.md) | Enabler | The Git hooks in Rust, without husky, lint-staged, commitlint nor validate-branch-name | draft |
+| [EN-109](../stories/E17-F21-EN-109-dependency-checks-in-rust.md) | Enabler | The dependency checks in Rust, without npm-check-updates nor knip | draft |
+| [EN-110](../stories/E17-F21-EN-110-secret-scan-in-rust.md) | Enabler | The secret scan in Rust, without secretlint | draft |
+| [EN-111](../stories/E17-F21-EN-111-ci-on-the-rust-tools.md) | Enabler | The CI on the Rust tools, built and cached once | draft |
+| [EN-112](../stories/E17-F21-EN-112-release-tool-in-rust.md) | Enabler | The release made by our own tool, in place of release-please | draft |
+| [EN-113](../stories/E17-F21-EN-113-clean-up-of-e17.md) | Enabler | Clean-up of E17, every tool left unused removed | draft |
+| [AUD-023](../stories/E17-F21-AUD-023-audit-f21.md) | Audit | Audit F21 | draft |
+| [VAL-022](../stories/E17-F21-VAL-022-validate-f21.md) | Validation | Validate F21 | draft |
