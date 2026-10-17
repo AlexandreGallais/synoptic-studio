@@ -7,85 +7,9 @@ use oxc_ast::ast::{BindingPattern, Expression, ModuleExportName};
 use oxc_semantic::{ScopeId, SymbolId};
 use oxc_span::{GetSpan, Span};
 
-use super::syntax::Edit;
+use crate::rules::unicorn::modules::globals::{ES_GLOBALS, is_identifier_name};
+use crate::rules::unicorn::syntax::Edit;
 use crate::source::Source;
-
-/// The globals `ESLint` declares for the latest ECMAScript, which a new name must not hide.
-const ES_GLOBALS: [&str; 73] = [
-    "Array",
-    "Boolean",
-    "constructor",
-    "Date",
-    "decodeURI",
-    "decodeURIComponent",
-    "encodeURI",
-    "encodeURIComponent",
-    "Error",
-    "escape",
-    "eval",
-    "EvalError",
-    "Function",
-    "hasOwnProperty",
-    "Infinity",
-    "isFinite",
-    "isNaN",
-    "isPrototypeOf",
-    "Math",
-    "NaN",
-    "Number",
-    "Object",
-    "parseFloat",
-    "parseInt",
-    "propertyIsEnumerable",
-    "RangeError",
-    "ReferenceError",
-    "RegExp",
-    "String",
-    "SyntaxError",
-    "toLocaleString",
-    "toString",
-    "TypeError",
-    "undefined",
-    "unescape",
-    "URIError",
-    "valueOf",
-    "JSON",
-    "ArrayBuffer",
-    "DataView",
-    "Float32Array",
-    "Float64Array",
-    "Int16Array",
-    "Int32Array",
-    "Int8Array",
-    "Intl",
-    "Map",
-    "Promise",
-    "Proxy",
-    "Reflect",
-    "Set",
-    "Symbol",
-    "Uint16Array",
-    "Uint32Array",
-    "Uint8Array",
-    "Uint8ClampedArray",
-    "WeakMap",
-    "WeakSet",
-    "Atomics",
-    "SharedArrayBuffer",
-    "BigInt",
-    "BigInt64Array",
-    "BigUint64Array",
-    "globalThis",
-    "AggregateError",
-    "FinalizationRegistry",
-    "WeakRef",
-    "Float16Array",
-    "Iterator",
-    "AsyncDisposableStack",
-    "DisposableStack",
-    "SuppressedError",
-    "Temporal",
-];
 
 /// The words TypeScript reserves, which no new name may be.
 const RESERVED_WORDS: [&str; 60] = [
@@ -150,16 +74,6 @@ const RESERVED_WORDS: [&str; 60] = [
     "from",
     "of",
 ];
-
-/// Whether a text can be written as an identifier.
-#[must_use]
-pub fn is_identifier_name(name: &str) -> bool {
-    let mut characters = name.chars();
-    characters
-        .next()
-        .is_some_and(|first| first.is_alphabetic() || first == '$' || first == '_')
-        && characters.all(|each| each.is_alphanumeric() || each == '$' || each == '_')
-}
 
 /// The first letter in upper case.
 #[must_use]
