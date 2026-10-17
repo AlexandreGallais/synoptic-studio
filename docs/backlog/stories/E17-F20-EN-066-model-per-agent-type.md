@@ -23,7 +23,7 @@ One task = one commit, referenced as `EN-066.Tn`.
 
 - [ ] T1 — The model in each agent file, with its reason (1 h)
 - [ ] T2 — Tokens per model in the session report (2 h)
-- [x] T3 — One story worked on Sonnet, compared with one on Opus, recorded (2 h): the clerk and doc editor measured here; the story-worker trial runs on EN-096 (Sonnet) beside EN-097 (Opus), two stories of the same kind, its result recorded in CHK-021
+- [x] T3 — One story worked on Sonnet, compared with one on Opus, recorded (2 h): the clerk and doc editor measured here; the story-worker trial ran on EN-098 (Sonnet) beside EN-097 (Opus), two stories of the same kind, its result recorded in CHK-021
 
 ## Models
 
