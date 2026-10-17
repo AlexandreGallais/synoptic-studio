@@ -7,8 +7,10 @@
 //! they run on every TypeScript file, `no-top-level-side-effects` leaving by itself the files
 //! where `ESLint` turned it off.
 
+pub mod annotations;
 pub mod consistent_conditional_object_spread;
 pub mod control_flow;
+pub mod dom;
 pub mod errors;
 pub mod escapes;
 pub mod functions;
@@ -65,6 +67,7 @@ mod probes;
 pub mod promises;
 pub mod strings;
 pub mod syntax;
+pub mod web;
 
 use super::Rule;
 

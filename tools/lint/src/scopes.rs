@@ -173,12 +173,28 @@ pub fn rules_for(path: &str) -> Vec<&'static str> {
     on
 }
 
+/// The files where a DOM exists: the shell that renders and listens, the playground and the
+/// documentation's theme; the library's core never touches it (ADR-0005, ADR-0025).
+pub const DOM_FILES: &[&str] = &[
+    "src/render/**/*.ts",
+    "src/interaction/**/*.ts",
+    "playground/**/*.ts",
+    "docs/.vitepress/theme/**/*.ts",
+];
+
 /// The rules that run on a file: those its scopes set, then Unicorn's, which no scope turns
-/// off (EN-078).
+/// off (EN-078), its web rules, and its DOM rules where a DOM exists (EN-082).
 #[must_use]
 pub fn linted_by(path: &str) -> Vec<&'static str> {
+    use crate::rules::unicorn::{dom, web};
+
     let mut on = rules_for(path);
     on.extend(crate::rules::unicorn::NAMES);
+    on.extend(web::NAMES);
+    if matches_any(DOM_FILES, path) {
+        on.extend(dom::NAMES);
+        on.extend(web::DOM_NAMES);
+    }
     on
 }
 
@@ -305,12 +321,46 @@ mod tests {
     fn runs_unicorn_s_rules_after_the_scoped_ones_on_every_file() {
         for path in ["src/math/a.ts", "playground/a/b.test.ts", "scripts/a.ts"] {
             let on = super::linted_by(path);
+            let scoped = rules_for(path);
 
+            assert_eq!(on[..scoped.len()], scoped);
             assert_eq!(
-                on[..on.len() - crate::rules::unicorn::NAMES.len()],
-                rules_for(path)
+                on[scoped.len()..scoped.len() + crate::rules::unicorn::NAMES.len()],
+                *crate::rules::unicorn::NAMES,
+                "{path}"
             );
-            assert!(on.ends_with(crate::rules::unicorn::NAMES), "{path}");
+        }
+    }
+
+    #[test]
+    fn runs_the_dom_rules_only_where_a_dom_exists() {
+        use crate::rules::unicorn::{dom, web};
+
+        for path in [
+            "src/render/a.ts",
+            "playground/a/b.test.ts",
+            "docs/.vitepress/theme/a.ts",
+        ] {
+            let on = super::linted_by(path);
+
+            assert!(on.ends_with(web::DOM_NAMES), "{path}");
+            assert!(dom::NAMES.iter().all(|name| on.contains(name)), "{path}");
+            assert!(web::NAMES.iter().all(|name| on.contains(name)), "{path}");
+        }
+        for path in [
+            "src/math/a.ts",
+            "src/model/a.test.ts",
+            "scripts/a.ts",
+            "vite.config.ts",
+        ] {
+            let on = super::linted_by(path);
+
+            assert!(dom::NAMES.iter().all(|name| !on.contains(name)), "{path}");
+            assert!(
+                web::DOM_NAMES.iter().all(|name| !on.contains(name)),
+                "{path}"
+            );
+            assert!(web::NAMES.iter().all(|name| on.contains(name)), "{path}");
         }
     }
 }
