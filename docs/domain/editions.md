@@ -9,6 +9,8 @@ Where the project stops (ADR-0030): a finished free V1, then new features only i
 - **Local only** (Product Owner, 2026-10-11): it runs on the user's computer; like a desktop vector editor, the user opens a **working folder** and saves files one by one. No server side at all — no local server, no online service (Q5): the V1 is a local application, nothing more.
 - Stays as simple as possible: synoptic views, not drawing.
 - **Application shell** (open, Q23): a web view in a desktop app — all computation in the web view, native code only for saving files; Electron or a Rust-based desktop framework, to compare when the time comes.
+- **On GitHub only** (Q40, Product Owner, 2026-10-17): the library is never published on npm.
+- **English only, no accessibility layer** (Q41, Product Owner, 2026-10-17): no other language and no `title` nor `desc` in V1; synoptics are read on factory screens, not by screen readers.
 - After V1: bug fixes only.
 
 ## 2. Pro edition — ideas kept, out of V1
@@ -24,6 +26,7 @@ A private, paid product of the Product Owner, sold as a service or self-hosted, 
 | Full drawing interface                | a second interface for real, advanced drawing, like a desktop vector editor, next to the synoptic symbol and view editors, built on the same engine                                                                                                                                                                                                                | 2026-10-11 |
 | Online service (SaaS)                 | maybe later, not planned for now                                                                                                                                                                                                                                                                                                                                   | 2026-10-11 |
 | Text styles enforced                  | named text styles (title, body, description) set by an administrator, that every designer must follow; the free edition keeps text styles as local templates that forbid nothing (Product Owner, 2026-10-14, F05 refinement)                                                                                                                                       | 2026-10-14 |
+| Accessibility and other languages     | `title` and `desc` for screen readers, and the editors and symbols in other languages than English; out of V1 (Q41)                                                                                                                                                                                                                                                | 2026-10-17 |
 
 ## 3. Telling them apart
 

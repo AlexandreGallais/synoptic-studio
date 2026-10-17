@@ -38,6 +38,7 @@ One task = one commit, referenced as `SP-021.Tn`.
 - [x] T4 — Write the research note, propose the `check:all` target, draft F19's criteria and stories (3 h)
 - [x] T5 — Research the Product Owner's answers: the rules that need types, JS plugins, TypeScript 7, Rust checks, the tools around the library, platforms (4 h)
 - [x] T6 — Draft F19 again from the answers: criteria, stories, the clean-up story (2 h)
+- [x] T7 — Record the second round: the split into F21, TypeScript 7 alone and TypeDoc's replacement, the Rust linter, F20's stories, the product ideas (3 h)
 
 ## Result
 
@@ -69,9 +70,25 @@ Recorded as understood; the research each asked for is in [research note 0023](.
 - **Clean-up**: one story at the end of E17 removes every script, hook, configuration and dev package left unused.
 - **Platforms**: the library's tests never depend on macOS; the tools use Rust's portable standard calls where one exists (`File::lock`, Rust 1.89.0), with one cheap check.
 
+## Second round of the Product Owner (2026-10-17)
+
+Recorded as understood; details in note 0023, section "The Product Owner's second round".
+
+- **Split** accepted: F19 holds the checks (11 stories, the API generator added); F21, "Agent tools and the library server in Rust", holds the hooks, scripts, the `library` MCP server and the clean-up of E17, last before NAM-002.
+- **The 6 rules without types**: strict form, `readonly` or `Readonly<…>` written in place; nothing kept in ESLint.
+- **TypeScript 7 only**: TypeScript 6 removed; TypeDoc replaced by a Rust generator of the API pages on Oxc (recommended over `deno_doc`); Vite, Vitest and VitePress run with TypeScript 7 alone (tried).
+- **Every tool in Rust or Go**: the project's rules move from JS plugins to a Rust linter on Oxc's crates (0.153.0); third-party JS plugin rules left as a question for the refinement.
+- **F20**: three stories drafted — push notification, progress page as an Artifact, `SubagentStop` hook in Rust.
+- **Agent setup**: no cloud agents; scheduled tasks only when asked (`docs/tooling/agent.md`).
+- **Product**: Q40 (GitHub only, no npm), Q41 (no accessibility layer nor other language in V1, pro idea), Q42 (font subsetting at export, open).
+
 ## For the main thread
 
 - Notes index (`docs/research/notes/README.md`), a row after 0022: `[0023](./0023-f19-oxc-and-rust-tools.md)` — "Sources of F19: oxlint and oxfmt tried on the repository, the rules left to rewrite, `check:all` by lane, hooks timed, the Rust workspace".
-- Feature F19: rewritten in this branch from the answers of 2026-10-17 (criteria, stories, the proposed split, story 15 the clean-up); to merge with any change made to it on `develop` meanwhile.
-- `.claude/rules/tooling.md`, at F19's ADR: `tsc` is TypeScript 7 (native); TypeScript 6 stays only under the alias `@typescript/typescript6`, because TypeDoc 0.28.20 needs its API (note 0023, "TypeScript 7, the native compiler").
-- Epic E17, closing table: the clean-up story drafted in F19 (last F19 story, or the first of the split feature) comes before NAM-002.
+- Features F19, F20, F21 and the features index, epic E17's table: edited in this branch on 2026-10-17 (F19 rewritten, F21 created, three stories drafted in F20); to merge with any change made to them on `develop` meanwhile.
+- `.claude/rules/tooling.md`, at F19's ADR: TypeScript 7 is the only TypeScript; TypeScript 6 and TypeDoc are removed, the API pages come from a Rust generator (note 0023, "The Product Owner's second round").
+- Epic E17, closing table: F21's clean-up story comes before NAM-002.
+- Stories index and F20: number the three stories drafted in F20's "Stories to write" (push notification, progress page, `SubagentStop` hook) and create their files.
+- F21: create its checkpoint, audit and validation stories, and number its five drafted stories, at its refinement.
+- Improvements log (`docs/process/improvements.md`), a row of 2026-10-17: a speed budget test — for example 1,000 symbols drawn under a set time — wanted later by the Product Owner.
+- Journal: the Product Owner's two rounds of decisions on SP-021 of 2026-10-17 (note 0023).

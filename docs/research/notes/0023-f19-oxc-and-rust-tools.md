@@ -251,3 +251,49 @@ Not moved, and why: `default-font-metrics.ts` runs the library itself to write `
 ### Platforms
 
 The library's tests already run on Linux in the CI (`ubuntu-latest`); 10 test files read macOS fonts and skip elsewhere, which EN-062 (Inter as a test font, F18) starts to close. The Rust crates of F18 hold Unix-only parts: `heavy-lock` calls `flock` through `extern "C"` and `std::os::unix`, `mutate` runs `kill` and Unix symlinks, `worktree` and its tests use Unix symlinks, `rule-docs`'s test sets Unix permissions. Rust's standard `File::lock` and `File::try_lock`, stable since **Rust 1.89.0**, map to `flock` on Unix and `LockFileEx` on Windows (`REF-RUST-FILE-LOCK`): `heavy-lock` can drop its `unsafe` block. One cheap check is proposed: `cargo check --workspace --target x86_64-pc-windows-msvc` in the `rust` lane, which compiles without linking, so a Unix-only call fails on the Mac; its cost, one rustup target installed and one more check pass, is to measure in its story.
+
+## The Product Owner's second round (2026-10-17)
+
+Decisions taken after the answers above, recorded as understood; they supersede, where they differ, the recommendations of the section above.
+
+| Subject                   | Decision                                                                                                                                                                                            |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Split                     | accepted: F19 holds the checks; the agent tools in Rust, the `library` MCP server and the clean-up of E17 form [F21](../../backlog/features/E17-F21-agent-tools-in-rust.md)                         |
+| The 6 rules without types | rewritten in their strict form: `readonly` or `Readonly<…>` written in place, nothing trusted from a type defined elsewhere; nothing kept in ESLint (the 9 s pass is not adopted)                   |
+| TypeScript                | TypeScript 7 only; TypeScript 6 removed, so TypeDoc is replaced                                                                                                                                     |
+| Tools                     | every tool around the project in Rust or Go — the project's own in Rust, third-party ones rewritten natively; no JavaScript tool of the project's own; Vite, Vitest and VitePress stay              |
+| Project rules             | in Rust, in a linter of the project on Oxc's crates — this supersedes the JS-plugin decision above                                                                                                  |
+| F20                       | three stories added: a push notification at each stop, a progress page as a claude.ai Artifact, a `SubagentStop` hook in Rust                                                                       |
+| Agent setup               | cloud agents are not used in this project; scheduled tasks are used only when the Product Owner asks (`docs/tooling/agent.md`)                                                                      |
+| Product                   | the library on GitHub only, never on npm (Q40); no accessibility layer nor other language in V1, maybe in the pro edition (Q41); font subsetting at export wanted later, for fixed texts only (Q42) |
+
+### TypeDoc without TypeScript 6
+
+TypeDoc writes the API part of the documentation site: 536 Markdown pages in `docs/api/` (396 functions, 101 type aliases, 39 constants), their index and `typedoc-sidebar.json`, which `docs/.vitepress/config.ts` turns into the API sidebar; the folder is generated, never tracked. Its configuration also checks the library: a warning is an error, and an export not documented, a link not resolved or an export not reachable fails the build.
+
+| Option                             | Status on 2026-10-17                                                                                                                                                                                                                     | Verdict                                                                                                     |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| TypeDoc on TypeScript 7            | its maintainer works on it in spare time, aims at TypeScript 7.1's release candidate and gives no timeline (`REF-TYPEDOC-TS7`); 7.1's release candidate is planned for 2026-11-10 (`REF-TS71-PLAN`)                                      | not before mid-November at best, and still a JavaScript tool                                                |
+| `deno_doc`, a Rust crate           | "generate documentation for JavaScript and TypeScript modules", not Deno-specific (`REF-DENO-DOC`); 0.209.0 of 2026-10-10; built on `deno_ast` (another parser than Oxc's) and `deno_graph`, writes HTML or JSON, not our Markdown pages | possible, but a second parser stack and a conversion of its output to the pages VitePress reads             |
+| A Rust generator of our own on Oxc | the library has one export per file with an austere TSDoc block (`@kind`, `@see`, parameters, returns); each page is a signature read from the written annotations, a description and fixed sections; links are exported names           | **recommended**: the same crates as the project's linter, the three checks kept, the same pages and sidebar |
+
+No Go tool generating API documentation for TypeScript was found.
+
+### TypeScript 7 alone with Vite, Vitest and VitePress
+
+Tried on 2026-10-17 in a copy of the branch (`git archive`) with `typescript` 7.0.2 as the only TypeScript and TypeDoc, typescript-eslint and its packages removed (631 packages installed in 20 s, none of TypeScript 6):
+
+| Tool                                         | Result                                                                                                                                                                                                            |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `vite build --mode playground`, `vite build` | built, 0.7 s and 0.6 s                                                                                                                                                                                            |
+| `vitepress build docs`                       | built in 8.5 s (no API pages, TypeDoc being gone)                                                                                                                                                                 |
+| `vitest run`, 438 files                      | 3,019 of 3,020 tests passed in 49 s; the 4 files that failed read ESLint's configuration (which loads TypeScript's API), call Git (none in the copy), or list the removed packages — none because of TypeScript 7 |
+| `tsc --noEmit`                               | 0.9 s, one error: `eslint/scopes/language.ts` imports `typescript-eslint`, which leaves with ESLint                                                                                                               |
+
+Vite, Vitest and VitePress transform TypeScript themselves and run with TypeScript 7 alone.
+
+### The project's linter in Rust
+
+The project's rules, the three core rules oxlint lacks, `no-return-void`, the 6 rules without types and the 21 Markdown rules go into one Rust linter of the workspace, on Oxc's crates `oxc_parser`, `oxc_ast`, `oxc_semantic` and `oxc_allocator` (dependencies from crates.io, each with its row in `docs/tooling/dependencies.md`): 0.153.0 of 2026-10-05, since 0.154.0 (2026-10-13) is under 7 days old. Measured cost, from the proof of concept on the same crates: one rule's core over the 1,533 TypeScript files in **0.05 to 0.06 s** (against 0.40 s as a JS plugin), a first build of 25 s and then 2 s, a `target/` of 274 MB. The Markdown rules need a Markdown parser crate, chosen in their story.
+
+Left open by the decision that every tool is Rust or Go, a question for the refinement: the 265 rules that oxlint runs only as JS plugins of third-party packages (246 of JSDoc, Unicorn, Import and typescript-eslint not yet ported, 7 of `unused-imports` and `@stylistic`, 12 of `eslint-plugin-functional`) — each rewritten in the Rust linter, dropped with its reason, or waiting for oxlint to port it.

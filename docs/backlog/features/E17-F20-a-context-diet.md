@@ -23,6 +23,20 @@ Asked by the Product Owner on 2026-10-16 (RET-003), building on the lighter cont
 - Which inputs cost the most, and which can be cut without losing a rule.
 - What the one-line digest of an ADR holds, and how it stays in step with the ADR (a check).
 
+## Stories to write
+
+Asked by the Product Owner on 2026-10-17, during SP-021; numbers are given at the refinement, and each tool they rely on is sourced by SP-022 before the story is written.
+
+| #   | Type    | Title                                                                                   |
+| --- | ------- | --------------------------------------------------------------------------------------- |
+| 1   | Enabler | A push notification at each stop, question or validation ready                          |
+| 2   | Enabler | A progress page as a claude.ai Artifact, updated during a run                           |
+| 3   | Enabler | A `SubagentStop` hook in Rust that checks a worker's branch and prepares `story:finish` |
+
+- **Push notification** — Given a run that stops, asks a question or has a validation ready, when it happens, then a push notification reaches the Product Owner on the desktop and on the phone (Claude Code's push notifications, through Remote Control), one line saying what is waited for.
+- **Progress page** — Given a run, when it starts and after each story, then a claude.ai Artifact shows the tree epic → feature → story with each status, the story in progress, the durations and the running agents; it replaces the idea of a quarter-screen terminal view.
+- **`SubagentStop` hook** — Given a worker that stops, when the hook runs, then it checks that the worker's branch is pushed and its checks green, says what is missing otherwise, and prepares `story:finish` for the main thread; written in Rust in the workspace of F19.
+
 ## Stories
 
 Drafts from the refinement of 2026-10-16 (Claude Code settings recommended by research, each shown to the Product Owner before it is applied); the context diet's own stories are written after the measure.
