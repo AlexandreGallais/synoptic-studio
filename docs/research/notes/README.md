@@ -28,3 +28,4 @@ Content: summary in our own words (no copy of source text), formulas, references
 | [0021](./0021-f17-latin-script-and-defects.md) | Sources of F17: the scripts of industrial HMIs, installed faces from collections and their `TypeError`, a weight such as 450 drawn, the lag of a held key, a wrapped line's background band |
 | [0022](./0022-f18-parallel-run.md) | Sources of F18: counting running subagents, the heavy lock from any worktree, tables without padding, logs merged by union, worktrees, timing tests, the release flow |
 | [0023](./0023-f19-oxc-and-rust-tools.md) | Sources of F19: oxlint and oxfmt tried on the repository, the rules left to rewrite, `check:all` by lane, hooks timed, the Rust workspace |
+| [0024](./0024-f20-context-diet.md) | Sources of F20: what a call costs, the prompt cache measured, workers from a digest, a model per agent, pushes, the progress page, the stop hook, a run's totals, shell or a tool of our own |
