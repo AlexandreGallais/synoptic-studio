@@ -3,9 +3,9 @@ import { crossings, distanceFromSide, footOnSide } from "../fillet-side";
 import { filletCentre } from "./fillet-centre";
 import { isValidTangency } from "./is-valid-tangency";
 
-import type { FilletSide } from "../fillet-side";
 import type { FilletCandidate } from "./is-valid-tangency";
 import type { Point } from "../../math";
+import type { FilletSide } from "../fillet-side";
 
 /** Where a fillet touches its two sides. */
 export type FilletTangency = {

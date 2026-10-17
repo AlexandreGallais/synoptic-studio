@@ -54,3 +54,39 @@ Read against the code and, for the drops on what the compiler refuses, tried on 
 | `unicorn/no-useless-coercion` | nothing more than `typescript/no-unnecessary-type-conversion` (type-aware), on its ten cases | dropped |
 | `unicorn/no-useless-template-literals` | nothing more than `typescript/no-unnecessary-template-expression` and `no-implicit-coercion` | dropped |
 | `unicorn/require-proxy-trap-boolean-return` | nothing: TS2322 on its two cases | dropped |
+| `sort-imports` | the members of an import in order (`ignoreDeclarationSort`) | oxlint, native, the same options and the same three findings on a planted file |
+| `import-x/order` | the order of the import statements | oxfmt's `sortImports` (`.oxfmtrc.json`): the same groups; among the `import type` statements, siblings, then parents, then modules, where `import-x/order` accepted parents and siblings in any order (17 files reordered) |
+| `@typescript-eslint/no-invalid-this` | nothing: `this` is forbidden (`functional/no-this-expressions`), TS2683 | dropped |
+| `import-x/no-unresolved` | nothing: TS2307, with the same resolution | dropped |
+| `no-dupe-args`, `no-octal`, `no-octal-escape` | nothing: TS2300, TS1121, TS1487 | dropped |
+| `no-undef-init` | nothing: it reports `let` and `var` only, both forbidden; `unicorn/no-useless-undefined` (oxlint) reports `= undefined` | dropped |
+
+## Compared with ESLint
+
+- Tree: no finding from either side for the 30 rules; oxlint, the project's linter and ESLint all clean after the 17 files oxfmt reordered.
+- Planted cases: the Rust rules' findings at the same places as ESLint's on a file of the documented cases (3 + 3 + 3); oxlint's `oxc/erasing-op` (5), `oxc/misrefactored-assign-op` (3) and `no-useless-concat` (4, one more than Unicorn's: `' + '{PLUGINS}'`) on the same lines as Unicorn's; `sort-imports` the same three findings; on a test file of eleven imports out of order, `import-x/order` gave 16 findings, oxfmt's check refused the file, and once formatted `import-x/order` gave none.
+- What the compiler refuses: one probe file of each documented case of the 13 rules dropped for it, each line refused by `tsc` (TypeScript 7), then removed.
+
+## Timings (ADR-0069)
+
+Measured on this Mac, 2026-10-17, on `npm run lint`'s targets (load average 1.4 to 3.2):
+
+| Tool | Before (EN-084's tip) | After |
+| --- | --- | --- |
+| ESLint | 5.2–5.6 s; the 30 rules 691 ms (`TIMING=all`), `unicorn/no-invalid-argument-count` 292 ms, `import-x/no-unresolved` 126 ms, `import-x/order` 75 ms | 4.0–4.2 s, no rule: parsing only |
+| Rust linter (`tools/lint`), 2,051 files | 0.38–0.47 s (EN-084) | 0.35–0.38 s |
+| oxlint, with `--type-check` | 1.01 s | 1.08–1.09 s |
+
+## Tests and mutations
+
+Nine tests in the crate, the three rules on their documented cases and the cases their code distinguishes; in `tests/oxlint-config.test.ts`, ESLint runs none of the 22 Unicorn rules, the three oxlint carries are on, and ESLint runs no rule on any of the files `npm run lint` gives it. Mutations by hand: 6 tried, 4 caught at once; a regular expression on the right of a comparison led to a test; the optional read and call checks of `no-invalid-character-comparison` could never be reached (an optional read is a chain), and were removed. The configuration tests made to fail once: `prefer-math-constants` back on, `no-octal` out of `DROPPED_RULES`.
+
+## For the main thread
+
+- Rule-docs: none affected, the story moves lint rules between linters and the formatter and changes no rule of `docs/domain/`.
+- ESLint now runs no rule: EN-085 only removes the package, `eslint/` and the ESLint lane of `npm run lint`; `tests/oxlint-config.test.ts` and `eslint/config.test.ts` go with it.
+- Shared lists edited: `DROPPED_RULES` (22 names), `.oxlintrc.json` (four rules in its first override), `.oxfmtrc.json` (`sortImports`), Unicorn's `RULES` and `NAMES`, note 0023's counts (Unicorn 219, 154 kept and 65 dropped; Import 6, 3 and 3; typescript-eslint without types 3, 0 and 3; all 292, 203 kept and 89 dropped), its dropped table (18 rows), its kept table and its table of the core rules (five rows).
+
+### Journal
+
+- `#run` EN-095: the 30 rules ESLint still ran carried or dropped: 3 Unicorn rules in Rust, 4 rules native in oxlint, `import-x/order` written by oxfmt, 22 dropped; ESLint runs no rule, 4.1 s of parsing left for EN-085 to remove.

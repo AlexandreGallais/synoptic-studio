@@ -2,8 +2,8 @@ import { isSameFamilyName } from "../font";
 
 import { faceStyleKey } from "./face-style-key";
 
-import type { FontFace, FontFamily } from "../font";
 import type { NamedFontFace } from "./named-font-face";
+import type { FontFace, FontFamily } from "../font";
 
 /**
  * A family's faces with one face more: a face of the same weight and style (`faceStyleKey`) is

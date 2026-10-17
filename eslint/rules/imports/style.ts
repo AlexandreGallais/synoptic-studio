@@ -1,5 +1,3 @@
-import { IMPORT_ORDER } from "../../settings";
-
 import type { TSESLint } from "@typescript-eslint/utils";
 
 /** Shape and order of import and export statements. */
@@ -22,7 +20,8 @@ export const IMPORTS_STYLE: TSESLint.FlatConfig.Config = {
     "import-x/no-namespace": "error",
     // The second glob names `.vitepress`: `**` skips folders starting with a dot (minimatch).
     "import-x/no-unassigned-import": ["error", { allow: ["**/*.css", "**/.vitepress/**/*.css"] }],
-    "import-x/order": ["error", IMPORT_ORDER],
+    // Done by oxfmt's import sorting, `sortImports` of `.oxfmtrc.json` (EN-095).
+    "import-x/order": "off",
     // Namespace imports are banned (import-x/no-namespace).
     "import-x/prefer-namespace-import": "off",
     // Every file is a module: "type": "module" and TypeScript's moduleDetection "force".

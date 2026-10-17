@@ -319,12 +319,12 @@ Asked by the Product Owner on 2026-10-17: for each of the 265 rules oxlint runs 
 | JSDoc | 45 | 31 | 14 |
 | functional | 12 | 10 | 2 |
 | @stylistic | 5 | 3 | 2 |
-| Import | 4 | 2 | 2 |
-| typescript-eslint, without types | 2 | 0 | 2 |
+| Import | 6 | 3 | 3 |
+| typescript-eslint, without types | 3 | 0 | 3 |
 | unused-imports | 2 | 2 | 0 |
-| **All** | **289** | **202** | **87** |
+| **All** | **292** | **203** | **89** |
 
-The 87 dropped, each with its reason (four added by EN-074, four by EN-078, three by EN-079, thirteen by EN-081, four by EN-080, five by EN-082, two by EN-083, three by EN-084, the last sixteen by EN-095):
+The 89 dropped, each with its reason (four added by EN-074, four by EN-078, three by EN-079, thirteen by EN-081, four by EN-080, five by EN-082, two by EN-083, three by EN-084, the last eighteen by EN-095):
 
 | Rule | Reason |
 | --- | --- |
@@ -414,6 +414,8 @@ The 87 dropped, each with its reason (four added by EN-074, four by EN-078, thre
 | `unicorn/no-unsafe-promise-all-settled-values` | `tsc` refuses `.value` on a `PromiseSettledResult` not narrowed to a fulfilled one (TS2339 on its two documented cases, tried on a probe file) |
 | `unicorn/no-useless-coercion` | `typescript/no-unnecessary-type-conversion` (oxlint, type-aware, kept) reports each of its documented cases, from the types |
 | `unicorn/no-useless-template-literals` | `typescript/no-unnecessary-template-expression` (type-aware, kept) reports a static value interpolated and `no-implicit-coercion` (`disallowTemplateShorthand`, kept) a template of one expression: its documented cases, all reported |
+| `@typescript-eslint/no-invalid-this` | `this` cannot appear (`functional/no-this-expressions`, on every file), and `tsc` refuses a `this` of no type (`noImplicitThis` of `strict`, TS2683, tried on a probe file) |
+| `import-x/no-unresolved` | `tsc` refuses an import it cannot resolve (TS2307, tried on a probe file), and resolves the same paths: `moduleResolution: bundler`, `vite/client`'s types for `?raw` |
 | `unicorn/require-proxy-trap-boolean-return` | `tsc` refuses a `set` or `deleteProperty` trap that returns no boolean, the handler being a `ProxyHandler` (TS2322 on its documented cases, tried on a probe file) |
 
 Confirmed against the code by EN-074 on 2026-10-17: no class, `this`, accessor, `enum`, `for…in`, `let`, CommonJS export nor JSDoc type in `src/`, `playground/`, `tests/` and the root configuration files; `fetch` and `node:sqlite` only in `scripts/`; `dependencies` empty. Each of the four drops above was tried on a probe file. The rewrite stories EN-078, EN-079 and EN-080 lost the four rules (44, 36 and 37 rules left).
@@ -423,7 +425,7 @@ The 196 kept, by plugin and, for Unicorn, by the area of `eslint/rules/unicorn/`
 | Group | Kept | Rules |
 | --- | --- | --- |
 | @stylistic | 3 | `multiline-comment-style`, `spaced-comment`, `padding-line-between-statements` |
-| Import | 2 | `no-extraneous-dependencies`, `no-restricted-paths` |
+| Import | 3 | `no-extraneous-dependencies`, `no-restricted-paths`; `order`: oxfmt's `sortImports` since EN-095 |
 | JSDoc | 31 | `check-param-names`, `check-syntax`, `check-template-names`, `escape-inline-tags`, `informative-docs`, `match-description`, `no-restricted-syntax`, `normalize-see-links`, `check-alignment`, `check-indentation`, `check-line-alignment`, `lines-before-block`, `multiline-blocks`, `no-bad-blocks`, `no-blank-block-descriptions`, `no-multi-asterisks`, `require-asterisk-prefix`, `require-hyphen-before-param-description`, `sort-tags`, `tag-lines`, `require-description`, `require-jsdoc`, `require-next-description`, `require-rejects`, `require-returns-check`, `require-template`, `require-template-description`, `require-throws`, `require-yields-check`, `no-types`, `convert-to-jsdoc-comments` |
 | Unicorn, arrays | 12 | `no-array-from-fill`, `no-array-front-mutation`, `no-confusing-array-splice`, `no-impossible-length-comparison`, `no-negated-array-predicate`, `no-return-array-push`, `no-unnecessary-splice`, `prefer-array-last-methods`, `prefer-array-slice`, `prefer-flat-math-min-max`, `prefer-simple-sort-comparator`, `prefer-single-array-predicate` |
 | Unicorn, collections | 12 | `consistent-conditional-object-spread`, `no-duplicate-set-values`, `no-mismatched-map-key`, `no-object-methods-with-collections`, `no-unnecessary-array-flat-map`, `no-useless-set-construction`, `prefer-array-from-map`, `prefer-group-by`, `prefer-has-check`, `prefer-includes-over-repeated-comparisons`, `prefer-map-from-entries`, `prefer-set-methods` |
@@ -458,7 +460,7 @@ Rewritten by EN-083 on 2026-10-17 in the project's linter (`tools/lint/src/rules
 
 Rewritten by EN-084 on 2026-10-17, each rule checked again against the code first and run on the cases of its documentation (`eslint-plugin-functional` 10.0.1, `@stylistic` 5.10.0, `eslint-plugin-import-x` 4.17.1), then turned off in ESLint: 10 of the 12 functional rules (`tools/lint/src/rules/functional/`; the five statement rules off by scope in the shell, the tools and the tests, as ESLint had them, and the `arguments` part of `functional-parameters` left to oxlint's `prefer-rest-params`), 3 of the 5 `@stylistic` rules (`stylistic/`) and the 2 Import rules (`imports/`, their zones built from `LAYERS` of `tools/lint/src/settings.rs`); the 2 `unused-imports` rules run in oxlint as its native `no-unused-vars` with the same options, unused imports autofixed; three are dropped (above). `unicorn/no-useless-recursion` (EN-079) is left where `functional/no-loop-statements` runs, since the loop it suggests cannot be written there. ESLint and the new linters give the same findings and fixed text on the documented and planted cases, but for `no-unused-vars`, which reports a variable assigned and never read at its declaration where ESLint reports its last assignment, and leaves an unused `import * as` unremoved (forbidden by `import/no-namespace`); none on the tree.
 
-Carried by EN-095 on 2026-10-17: the 22 Unicorn rules ESLint still ran, which no story nor this triage counted (EN-084 found them), each checked again against the code first and run on the cases of its documentation in `eslint-plugin-unicorn` 78.0.0. Three run in the project's linter (`no-double-comparison` and `prefer-math-constants` in `tools/lint/src/rules/unicorn/numbers/`, `no-invalid-character-comparison` in `strings/`), each reported only, as the plugin only suggests; three run in oxlint, the same findings on their documented cases: `no-constant-zero-expression` as `oxc/erasing-op`, `no-misrefactored-assignment` as `oxc/misrefactored-assign-op`, `no-useless-concat` as ESLint's own `no-useless-concat`, which reports at the left literal rather than at the `+`, fixes nothing, and also reports `'$' + '{x}'`, a split the plugin leaves for `no-template-curly-in-string`; sixteen are dropped (above). `oxc/double-comparisons` misses `x <= y && x !== y` and `x >= y && x !== y`, and `oxc/approx-constant` misses `3.14`: both left to the Rust rules. None reports on the tree, in either linter.
+Carried by EN-095 on 2026-10-17: the 22 Unicorn rules ESLint still ran, which no story nor this triage counted (EN-084 found them), each checked again against the code first and run on the cases of its documentation in `eslint-plugin-unicorn` 78.0.0. Three run in the project's linter (`no-double-comparison` and `prefer-math-constants` in `tools/lint/src/rules/unicorn/numbers/`, `no-invalid-character-comparison` in `strings/`), each reported only, as the plugin only suggests; three run in oxlint, the same findings on their documented cases: `no-constant-zero-expression` as `oxc/erasing-op`, `no-misrefactored-assignment` as `oxc/misrefactored-assign-op`, `no-useless-concat` as ESLint's own `no-useless-concat`, which reports at the left literal rather than at the `+`, fixes nothing, and also reports `'$' + '{x}'`, a split the plugin leaves for `no-template-curly-in-string`; sixteen are dropped (above). `oxc/double-comparisons` misses `x <= y && x !== y` and `x >= y && x !== y`, and `oxc/approx-constant` misses `3.14`: both left to the Rust rules. None reports on the tree, in either linter. The 8 core and Import rules ESLint still ran went the same way: `sort-imports` runs in oxlint with its options (members only); `import-x/order` is written by oxfmt's `sortImports` (groups as before, the `import type` statements of siblings, parents, then modules; 17 files reordered, where `import-x/order` accepted parents and siblings in any order among the types; on a planted file of eleven misplaced imports, the order oxfmt writes is one `import-x/order` accepts); six are dropped (above, and in the table of the core rules below). ESLint then runs no rule on any file it is given (`tests/oxlint-config.test.ts`), so that EN-085 only removes it.
 
 Kept on purpose although close to a drop: the DOM and web rules (the playground uses the DOM, files and `URL`), the loop, `throw` and `try` rules (allowed in the playground and the tests), the generator rules (one module yields), `functional/no-classes` and `no-this-expressions` (they are the bans themselves), the JSDoc layout rules and the comment rules of `@stylistic` (no source says oxfmt rewrites comments).
 
@@ -512,13 +514,18 @@ The 8 rules `@oxlint/migrate` skipped as unstable ("nursery") run in oxlint when
 | `import/named` | dropped: TypeScript refuses an import of a name the module does not export (ts(2614)) |
 | `no-useless-assignment` | dropped: only `const` can be declared and no parameter is reassigned, so no value can be assigned and overwritten unread |
 
-The four ESLint core rules oxlint lacks, triaged the same way:
+The ESLint core rules oxlint lacks, triaged the same way (the four of EN-074, then the four ESLint still ran until EN-095, with `sort-imports`, left there until then):
 
 | Rule | Verdict |
 | --- | --- |
 | `no-restricted-syntax`, `require-atomic-updates` | kept, rewritten in the Rust linter (EN-075) |
 | `consistent-this` | dropped: `this` cannot appear (`functional/no-this-expressions`), so no alias of it can |
 | `strict` | dropped: every file is a module, so strict code, and `unicorn/prefer-module` (native, kept) reports any `"use strict"` directive |
+| `no-dupe-args` | dropped: `tsc` refuses two parameters of one name (TS2300, tried on a probe file) |
+| `no-octal` | dropped: `tsc` refuses `071` in a module (TS1121, tried on a probe file) |
+| `no-octal-escape` | dropped: `tsc` refuses `"\071"` in a module (TS1487, tried on a probe file) |
+| `no-undef-init` | dropped: it reports `let` and `var` only, which `functional/no-let` and `no-var` forbid; `unicorn/no-useless-undefined` (native, kept) reports `= undefined` |
+| `sort-imports` | kept: native in oxlint with the same options (members only), the same findings on planted cases (EN-095) |
 
 ## `tsc`'s two jobs and Oxc (EN-091, 2026-10-17)
 

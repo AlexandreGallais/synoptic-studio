@@ -1,6 +1,6 @@
+import type { TextStrokeKind } from "./text-stroke-kind";
 import type { ColorFill } from "../color";
 import type { Text } from "../text";
-import type { TextStrokeKind } from "./text-stroke-kind";
 
 /**
  * The color and the opacity an underline or a strike-through is drawn in (US-041): its own once

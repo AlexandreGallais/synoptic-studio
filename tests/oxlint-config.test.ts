@@ -378,6 +378,49 @@ describe("the last Unicorn rules (EN-095)", () => {
   });
 });
 
+/** The folders `npm run lint` gives ESLint, beside the root's TypeScript files. */
+const LINTED_FOLDERS: readonly string[] = [
+  ".claude/hooks/",
+  "docs/",
+  "eslint/",
+  "playground/",
+  "scripts/",
+  "src/",
+  "tests/",
+];
+
+/** The TypeScript files `npm run lint` gives ESLint, from the root, as Git tracks them. */
+const LINTED_FILES: readonly string[] = execFileSync("git", ["ls-files", "--", "*.ts"], {
+  cwd: ROOT,
+  encoding: "utf8",
+})
+  .split("\n")
+  .filter(
+    (path) =>
+      path.endsWith(".ts") &&
+      (!path.includes("/") || LINTED_FOLDERS.some((folder) => path.startsWith(folder))),
+  );
+
+describe("ESLint left with no rule (EN-095)", () => {
+  it(
+    "[F19.AC11] runs no rule on any file `npm run lint` gives it, so that EN-085 only removes it",
+    { timeout: 60_000 },
+    async () => {
+      const files = await Promise.all(
+        LINTED_FILES.map(async (path) =>
+          (await LINT.isPathIgnored(join(ROOT, path))) ? [] : [path],
+        ),
+      );
+      const running = await Promise.all(
+        files.flat().map(async (path) => await eslintRulesOf(path)),
+      );
+
+      expect(files.flat().length).toBeGreaterThan(1000);
+      expect([...new Set(running.flat())]).toEqual([]);
+    },
+  );
+});
+
 /** A folder holding a configuration of `oxc/no-accumulating-spread` alone. */
 const FOLD_FOLDER = mkdtempSync(join(tmpdir(), "fold-spread-"));
 

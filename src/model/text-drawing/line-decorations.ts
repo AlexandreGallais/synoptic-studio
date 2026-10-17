@@ -4,12 +4,12 @@ import { textStrokeFill } from "../text-stroke";
 import { decorationStroke } from "./decoration-stroke";
 import { isLineWithLength } from "./is-line-with-length";
 
-import type { FontMetrics } from "../font";
-import type { Text } from "../text";
-import type { TextStrokeKind } from "../text-stroke";
 import type { StrokeMetrics } from "./decoration-stroke";
 import type { DrawnStroke } from "./drawn-stroke";
+import type { FontMetrics } from "../font";
+import type { Text } from "../text";
 import type { PositionedLine } from "../text-layout";
+import type { TextStrokeKind } from "../text-stroke";
 
 /** A stroke a text asks for, with the font's position and thickness for it. */
 type AskedStroke = StrokeMetrics & {

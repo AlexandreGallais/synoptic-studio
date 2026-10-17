@@ -1,8 +1,8 @@
 import { cyclicItem, subtract } from "../../src";
 
+import type { SelectedCorner } from "./read-selected-corner";
 import type { HandleFrame } from "../../src";
 import type { ShapeReading } from "../shape";
-import type { SelectedCorner } from "./read-selected-corner";
 
 /** The frames of the two handles of a point. */
 export type HandleFrames = {

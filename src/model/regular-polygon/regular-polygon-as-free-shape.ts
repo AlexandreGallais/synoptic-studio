@@ -4,8 +4,8 @@ import { turnedCorners } from "../placement";
 
 import { regularPolygonCorners } from "./regular-polygon-corners";
 
-import type { FreeShape } from "../free-shape";
 import type { RegularPolygon } from "./regular-polygon";
+import type { FreeShape } from "../free-shape";
 
 /**
  * Free shape a regular polygon becomes by the conversion button (F08): its corners as drawn,

@@ -6,8 +6,8 @@ import { glyphPairKey } from "./glyph-pair-key";
 import { kerningOfCharacters } from "./kerning-of-characters";
 import { pairKerning } from "./pair-kerning";
 
-import type { CharacterGlyph } from "../font";
 import type { KerningLookup } from "./kerning-lookup";
+import type { CharacterGlyph } from "../font";
 
 /** A, V, T, o mapped to glyphs 1 to 4. */
 const GLYPHS: readonly CharacterGlyph[] = [
