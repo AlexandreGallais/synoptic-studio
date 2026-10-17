@@ -200,7 +200,7 @@ Tenths are `d = 10`, `e = w = 1000`, step 11's lines; an integer typed is `d = 1
 
 ## Cross-check
 
-At EN-043 the tests run the sample described below through the integers shown (`toWholeColor`) given back unchanged (`wholeValuesToHex`), in HSL and in HSB: 0 colors changed; a property test moves one value of any color by 1 and checks each byte within ½ of `255 · f(n)` computed in binary64 by `hsbToRgb` or `hslToRgb` from that integer and the exact others.
+At EN-043 the tests ran the sample described below through the integers shown (`toWholeColor`) given back unchanged (`wholeValuesToHex`), in HSL and in HSB: 0 colors changed. Values left as shown stand for the exact ones, so that round trip is the exact values' own: since EN-090 the sample runs through `hexToExactColor` and `exactColorToHex` alone, and a property test gives any color back through the integers shown (ADR-0070). A property test moves one value of any color by 1 and checks each byte within ½ of `255 · f(n)` computed in binary64 by `hsbToRgb` or `hslToRgb` from that integer and the exact others.
 
 At AUD-017 two reviewers ran every color through the picker's own path as it then was, its values shown to one decimal (`hexToPickedColor`) then turned back in exact integers (`pickedColorToHex`, step 11), in HSL and in HSB: 0 colors changed in each. Both functions take integers since US-040.
 

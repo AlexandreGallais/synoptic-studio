@@ -249,14 +249,15 @@ describe("parseFontFace, faces of macOS and of collections (F17.AC4)", () => {
   });
 
   it(
-    "[F17.AC4] [F18.AC19] reads the 3 faces of a collection sharing Inter's tables: 400, 700, 400 italic",
-    // Inter's metrics read three times, about 2.3 s alone: 20 s holds a loaded pre-push run.
+    "[F17.AC4] [F18.AC19] reads the 3 faces of a collection sharing Inter's tables, each tagged true as Chrome gives it on macOS: 400, 700, 400 italic",
+    // Inter's metrics read three times, about 2.3 s alone: 20 s holds a loaded pre-push run. Each
+    // face is read once, tagged `true`: an untagged face is the case of every other test here.
     { timeout: 20_000 },
     () => {
       // usWeightClass 400, 700, 400; fsSelection 0x00c0, 0x00a0, 0x0081: bit 0, italic, in the third.
       expect(
         SHARED_SANS_FILES.map((file) => {
-          const named = parseFontFace(file);
+          const named = parseFontFace(appleTagged(file));
 
           return [named?.family, named?.face.weight, named?.face.isItalic];
         }),
@@ -264,21 +265,6 @@ describe("parseFontFace, faces of macOS and of collections (F17.AC4)", () => {
         ["Shared Sans", 400, false],
         ["Shared Sans", 700, false],
         ["Shared Sans", 400, true],
-      ]);
-    },
-  );
-
-  it(
-    "[F17.AC4] [F18.AC19] reads each face of that collection tagged true, as Chrome gives it on macOS",
-    // Inter's metrics read three times, about 2.3 s alone: 20 s holds a loaded pre-push run.
-    { timeout: 20_000 },
-    () => {
-      const faces = SHARED_SANS_FILES.map((file) => parseFontFace(appleTagged(file)));
-
-      expect(faces.map((named) => named?.family)).toEqual([
-        "Shared Sans",
-        "Shared Sans",
-        "Shared Sans",
       ]);
     },
   );

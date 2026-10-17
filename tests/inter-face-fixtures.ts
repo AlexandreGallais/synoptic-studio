@@ -2,6 +2,7 @@
 // the fonts of macOS (EN-067): a collection of faces sharing tables, a second family beside Inter.
 // Tests only: never part of the library.
 
+import { builtOnce } from "./built-once";
 import { fileTables, tablesFile } from "./collection-fixtures";
 import { interRegularFile, tableOf, uint16 } from "./font-fixtures";
 import { ENGLISH_US, WINDOWS_PLATFORM, nameTable } from "./name-table-fixtures";
@@ -19,26 +20,6 @@ const OS2_AT = { fsSelection: 62, weightClass: 4 };
 
 /** The tables of a font, by tag, each frozen. */
 type FrozenTables = Readonly<Record<string, readonly number[]>>;
-
-/**
- * A function that builds its value at its first call and gives that same value afterwards: a
- * test file that never asks for it never builds it (EN-089).
- *
- * @template T - the value's type
- * @param build - builds the value
- * @returns the value, built once
- */
-function builtOnce<T>(build: () => T): () => T {
-  const built: T[] = [];
-
-  return () => {
-    if (built.length === 0) {
-      built.push(build());
-    }
-
-    return built[0] ?? build();
-  };
-}
 
 /**
  * Tables frozen, each array and their record, so that no test changes them for the next.
