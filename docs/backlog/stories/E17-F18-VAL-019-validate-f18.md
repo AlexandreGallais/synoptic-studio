@@ -3,7 +3,7 @@ id: VAL-019
 epic: E17
 feature: F18
 title: Validate F18
-status: ready
+status: done
 points: 1
 ---
 

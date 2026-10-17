@@ -2,7 +2,7 @@
 id: F18
 epic: E17
 title: A safe and cheap parallel run, and E15's leftovers
-status: in-progress
+status: done
 ---
 
 # E17 · F18 — A safe and cheap parallel run, and E15's leftovers
@@ -65,7 +65,7 @@ In delivery order.
 | [EN-062](../stories/E17-F18-EN-062-inter-as-a-test-font.md)                          | Enabler    | Inter Regular as a test font file                                  | done   |
 | [EN-046](../stories/E17-F18-EN-046-release-pr-on-develop.md)                         | Enabler    | Release pull request on develop, only the release on main          | done   |
 | [AUD-020](../stories/E17-F18-AUD-020-audit-f18.md)                                   | Audit      | Audit F18                                                          | done   |
-| [VAL-019](../stories/E17-F18-VAL-019-validate-f18.md)                                | Validation | Validate F18                                                       | ready  |
+| [VAL-019](../stories/E17-F18-VAL-019-validate-f18.md)                                | Validation | Validate F18                                                       | done   |
 
 ## Feature plan
 
