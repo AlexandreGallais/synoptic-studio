@@ -3,7 +3,7 @@ id: EN-097
 epic: E17
 feature: F20
 title: The conventions written as principles
-status: ready
+status: done
 points: 3
 ---
 
