@@ -11,6 +11,7 @@ pub mod kind_in_layer;
 pub mod kind_limits;
 pub mod kind_naming;
 pub mod naming_convention;
+pub mod no_conditional_statements;
 pub mod no_mixed_types;
 pub mod no_non_function_verb_prefix;
 pub mod no_restricted_syntax;
@@ -60,6 +61,7 @@ pub const ALL: &[&dyn Rule] = &[
     &kind_limits::KindLimits,
     &kind_naming::KindNaming,
     &naming_convention::NamingConvention,
+    &no_conditional_statements::NoConditionalStatements,
     &no_mixed_types::NoMixedTypes,
     &no_non_function_verb_prefix::NoNonFunctionVerbPrefix,
     &no_restricted_syntax::NoRestrictedSyntax,

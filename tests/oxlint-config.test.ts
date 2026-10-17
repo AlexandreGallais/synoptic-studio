@@ -237,6 +237,43 @@ describe(".oxlintrc.json", () => {
   });
 });
 
+/** The rules that asked the compiler for types, run by the project's linter without them (EN-076). */
+const RULES_WITHOUT_TYPES: ReadonlySet<string> = new Set([
+  "@typescript-eslint/naming-convention",
+  "functional/immutable-data",
+  "functional/no-conditional-statements",
+  "functional/no-mixed-types",
+  "functional/prefer-immutable-types",
+  "functional/type-declaration-immutability",
+  "unicorn/no-non-function-verb-prefix",
+]);
+
+describe("ESLint without type information (EN-076)", () => {
+  it(
+    "[F19.AC2] gives its parser no project and runs none of the rules that asked for types",
+    { timeout: 30_000 },
+    async () => {
+      const typed = await Promise.all(
+        SAMPLE_FILES.map(async (path) => {
+          const config: unknown = await LINT.calculateConfigForFile(join(ROOT, path));
+          const parserOptions = entriesOf(
+            propertyOf(propertyOf(config, "languageOptions"), "parserOptions"),
+          );
+          const project = ["project", "projectService"].filter((key) =>
+            Object.hasOwn(parserOptions, key),
+          );
+          const enabled = await eslintRulesOf(path);
+          const rules = enabled.filter((name) => RULES_WITHOUT_TYPES.has(name));
+
+          return [...project, ...rules].map((name) => `${path}: ${name}`);
+        }),
+      );
+
+      expect(typed.flat()).toEqual([]);
+    },
+  );
+});
+
 /** A folder holding a configuration of `oxc/no-accumulating-spread` alone. */
 const FOLD_FOLDER = mkdtempSync(join(tmpdir(), "fold-spread-"));
 
