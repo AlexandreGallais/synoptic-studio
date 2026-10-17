@@ -31,3 +31,8 @@ One task = one commit, referenced as `EN-086.Tn`.
 
 - [ ] T1 — The run skill: the scope set at the start, a question parking its story, the stops (2 h)
 - [ ] T2 — When to push, in the run skill; the Product Owner's setting in `docs/tooling/agent.md`; one push tried on each device (1 h)
+
+## For the main thread
+
+- T2's push on each device is left to the main thread: a worker has no `PushNotification` tool. Once the Product Owner's setting is on (`docs/tooling/agent.md`, Pushes), send one push and ask whether it arrived on the desktop and on the phone; record the answer in the `done` commit's body.
+- `run:should-stop` measured at 30 ms for the binary and 70 ms through `cargo run --release` (three runs each, 2026-10-17).

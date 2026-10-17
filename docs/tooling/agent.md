@@ -116,6 +116,17 @@ A file naming `opus` stays on Opus when the main conversation runs on another mo
 | `log-tool-call.ts` | `PostToolUse`, `PostToolUseFailure`, in the background | logs each call and its duration; removes it from the running calls |
 | `status-line.ts` | status line, every second | place in the backlog, step, session, call running ([metrics](./metrics.md)) |
 
+## Pushes
+
+During a run, the main thread pushes only a question that parks a story or a blocker it cannot get around, when either prevents finishing the scope; never a merge nor a stop (run skill, Pushes; EN-086). `PushNotification` sends a desktop notification, which needs nothing, and a phone push when Remote Control is connected (`REF-CC-TOOLS-REFERENCE`). The repository cannot turn the phone pushes on: a project's settings may turn Remote Control off, never on (`REF-CC-REMOTE-CONTROL`). The Product Owner sets it once, on their side:
+
+| Setting | Where |
+| --- | --- |
+| Remote Control for every session | `remoteControlAtStartup: true` in their user settings (`~/.claude/settings.json`), or `/remote-control` in one session |
+| phone pushes | **Push when Claude decides** on in `/config`, the Claude app signed in with the same account |
+
+A push is skipped while they type in or focus the terminal (`REF-CC-REMOTE-CONTROL`). Without the setting, or with pushes off, the question is still asked in the chat and written in its parked story.
+
 ## Parallel sessions
 
 The Product Owner may talk to a second session while a run works in the background. Both share the same folder, and the run owns it (its branch, its uncommitted files). The second session:
