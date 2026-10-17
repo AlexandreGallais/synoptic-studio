@@ -32,7 +32,7 @@ Recorded as understood, with the research behind each in note 0023, section "The
 3. The 10 project rules, `functional/no-return-void`, `no-restricted-syntax` (its 7 selectors), and `require-atomic-updates` run in the project's Rust linter on the `oxc` crates (0.153.0 or later, at least 7 days old, each crate in `docs/tooling/dependencies.md`), each with its tests carried over from `eslint/`.
 4. The 21 Markdown rules run in the same Rust linter, with the findings ESLint's Markdown plugin gave on the same pages.
 5. `npm run format:check` runs oxfmt on the same targets as Prettier, Markdown included.
-6. TypeScript 7.0.2 or later is the only TypeScript: the type check reports what TypeScript 6 reported and `build` writes the same declarations; no package of TypeScript 6 is left.
+6. TypeScript 7.0.2 or later is the only TypeScript: the type check reports what TypeScript 6 reported, through oxlint's type check (EN-091), and `build` writes declarations meaning the same, through Oxc's isolated declarations (EN-091, ADR-0071); no package of TypeScript 6 is left.
 7. The API pages of the documentation site (one per exported function, type and constant, the index and the sidebar) come from a Rust generator on Oxc instead of TypeDoc, and its checks hold: every export documented, every link resolved, nothing internal published.
 8. `check:all` runs the docs build only when `docs/`, `src/` or the playground changed, and ends in 70 to 90 s on a code story on the Product Owner's machine, lane times printed as now.
 9. A `rust` lane runs `cargo fmt --check`, Clippy with warnings denied, the tests, a coverage floor (`cargo-llvm-cov`) and `cargo deny check advisories` (offline in the pre-push).
@@ -70,7 +70,7 @@ In delivery order, written on 2026-10-17 when the Product Owner started F19's ru
 | [EN-076](../stories/E17-F19-EN-076-naming-and-functional-rules-without-types.md) | Enabler | naming-convention and the functional rules without types | ready |
 | [EN-089](../stories/E17-F19-EN-089-font-files-read-once-per-test-run.md) | Enabler | Font files read once per test run | done |
 | [EN-090](../stories/E17-F19-EN-090-tests-without-over-testing.md) | Enabler | Tests without over-testing, and the rules to keep them so | done |
-| [EN-091](../stories/E17-F19-EN-091-configuration-files-reviewed-for-speed.md) | Enabler | Every configuration file reviewed for speed, type errors reported with the lint | ready |
+| [EN-091](../stories/E17-F19-EN-091-configuration-files-reviewed-for-speed.md) | Enabler | Every configuration file reviewed for speed, type errors reported with the lint | done |
 | [CHK-020](../stories/E17-F19-CHK-020-checkpoint-f19.md) | Checkpoint | Checkpoint in the middle of F19 | ready |
 | [EN-077](../stories/E17-F19-EN-077-markdown-rules-in-rust.md) | Enabler | The Markdown rules in the Rust linter | ready |
 | [EN-078](../stories/E17-F19-EN-078-unicorn-arrays-collections-iteration.md) | Enabler | Unicorn's arrays, collections and iteration rules in Rust | ready |
