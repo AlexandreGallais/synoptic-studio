@@ -15,7 +15,6 @@
 | `npm run story:finish -- <base> <title> <body>` | in the story's worktree, under the [merge lock](./commands.md#one-heavy-command-at-a-time): rebases the story if its base moved, opens its pull request labelled `autonomous`, waits up to three minutes for GitHub's merge, brings the base up to date where it is checked out, moves the story's rows into the logs ([below](#shared-files-and-their-rows)), commits and pushes them, then removes the worktree and the branch here and on GitHub; not merged, it keeps them. Run again after a stop, it resumes where it stopped, and prints the commands left when a clean-up fails | a waiting loop and four cleaning commands |
 | `npm run run:start`, `run:end` | opens and closes the run's marker, and prints its duration and tokens by kind ([metrics](./metrics.md#a-runs-totals), `tools/run-totals/`) | a turn's figures, restarting at each message |
 | `npm run run:should-stop` | before each story: `stop` and exit 1 once the week's usage reaches 90 %, else `go` and exit 0 (unknown usage: `go`), then the parked stories of the checkout it runs in, so run it in a worktree of the feature branch; exit 2 outside a repository | the usage read by eye |
-| `npm run progress:page [-- address <url>]` | writes the run's progress page and prints where to publish it; `address <url>` keeps the address of the run's first publish ([agent](./agent.md#the-progress-page), `tools/progress-page/`) | a page written by the model at each update |
 | `npm run context:size -- <folder>…` | for each subagent of a session's folder: its type, its first request's tokens, the instruction files loaded before it, the size of its skill listing and task; then the median per type (`tools/hooks/`) | first requests counted by hand |
 | `npm run golden:write` / `golden:check` | about 400 results of the library from shapes drawn with a fixed seed, written before a refactor and compared bit for bit after each change (`NAM`, ADR-0049); `golden:write` refuses in a worktree, the file being shared; the pre-push runs `golden:check` when the file is written | a probe written for F13 |
 | `npm run activity` | the calls running, the latest calls of the main agent and each subagent, the end of the background commands' output | reading transcripts |
@@ -74,7 +73,6 @@ A tool is written when a retrospective's metrics show its signal — the hand wo
 | `worktree` | `worktree:new` | a story's worktree with `node_modules`, Husky and the release binaries |
 | `git-sequences` | `git:sync`, `git:commit` | the frequent Git sequences in one call each |
 | `run-totals` | `run:start`, `run:end`, `run:should-stop`, `metrics:session -- --run`, the status line | a run's marker, duration and tokens, counted incrementally; whether it stops at the week's limit |
-| `progress-page` | `progress:page` | the run's progress page |
 | `val-prepare` | `val:prepare` | a feature's checklist lines |
 | `mutate` | `mutate` | the mutations in a copy of the repository |
 | `lint` | `lint`, `fix`, `lint-staged`, after oxlint | the project's linter on Oxc: the project's rules, those oxlint lacks and the Markdown rules, each file parsed once ([lint](../conventions/lint.md)) |
@@ -82,7 +80,7 @@ A tool is written when a retrospective's metrics show its signal — the hand wo
 | `api-pages` | `docs:api`, `docs:dev`, `docs:build` | the API pages from `src/index.ts` and its TSDoc ([documentation site](./documentation-site.md)) |
 | `declarations` | `build` | the library's `.d.ts` from each module alone (ADR-0071, [build](./commands.md#build)) |
 
-`worktree`, `git-sequences` and `progress-page` decide what they do in their library, without Git nor files, and their binary only runs it, so that the decisions are tested without a repository (functional core, ADR-0014).
+`worktree` and `git-sequences` decide what they do in their library, without Git nor files, and their binary only runs it, so that the decisions are tested without a repository (functional core, ADR-0014).
 
 - **The workspace**: one virtual workspace at the root (`Cargo.toml`, `members = ["tools/*"]`), whose edition, licence, `publish = false` and lints (`clippy::pedantic`, `unsafe_code` forbidden) each crate inherits by `[lints] workspace = true`; the toolchain pinned by `rust-toolchain.toml`, with rustfmt, clippy, llvm-tools and the `x86_64-pc-windows-msvc` target; warnings denied (`.cargo/config.toml`); one `Cargo.lock` tracked and one `target/` ignored.
 - **Dependencies**: none from crates.io but the reviewed ones of `[workspace.dependencies]`, each pinned exactly with its row under [Crates](./dependencies.md#crates).

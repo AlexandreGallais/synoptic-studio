@@ -8,8 +8,7 @@ Measure first, then make each epic faster than the last (Product Owner, RET-001)
 | --- | --- | --- |
 | `.git/metrics/tool-calls.jsonl` | the hook `log-tool-call.ts`, after each tool call, in the background | one line per call ([the record of each call](#the-record-of-each-call)) |
 | `~/.claude/projects/<repository path>/` | Claude Code: one JSON Lines transcript per session, its subagents' beside it | every request with its tokens, every tool call and result, each line with its time, session and branch |
-| `.git/metrics/run.json`, `run-cache.json` | `npm run run:start` and `run:end`; the cache by `run-totals` and `progress:page` | the open or last run: start, end (0 while open), sessions; the cache, where each transcript was read up to ([a run's totals](#a-runs-totals)) |
-| `.git/metrics/progress.html`, `progress-page.json` | `npm run progress:page` | the run's progress page and its address ([agent](./agent.md#the-progress-page)) |
+| `.git/metrics/run.json`, `run-cache.json` | `npm run run:start` and `run:end`; the cache by `run-totals` | the open or last run: start, end (0 while open), sessions; the cache, where each transcript was read up to ([a run's totals](#a-runs-totals)) |
 | `.git/metrics/turns.jsonl` | `npm run metrics:session` without `--all` | one line per turn: start, session, duration, active time, tokens, calls, failures, commits |
 | `.git/metrics/usage.json` | the status line, at each refresh | the subscription's usage ([status line](#status-line)) |
 | `~/.local/share/agent-library/library.sqlite` | the source library ([sources](./sources.md)) | the pages read, their sections, every search and read with its project |
