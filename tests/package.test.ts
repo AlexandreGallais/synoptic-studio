@@ -112,10 +112,7 @@ describe("package.json", () => {
   });
 
   it("documents only installed packages and overrides", () => {
-    const installed = new Set([
-      ...Object.keys(manifest().devDependencies ?? {}),
-      "deepmerge-ts → ^8.0.0",
-    ]);
+    const installed = new Set(Object.keys(manifest().devDependencies ?? {}));
 
     expect(documentedPackages().filter((name) => !installed.has(name))).toEqual([]);
   });

@@ -1,10 +1,10 @@
-//! Which rules run on which file: the rules on for every TypeScript file, then the scopes of
-//! `eslint/scopes/` that turn this linter's rules on or off by path, in `ESLint`'s order, the later
-//! winning (EN-075); and the paths never linted.
+//! Which rules run on which file: the rules on for every TypeScript file, then the scopes, carried
+//! from `ESLint`'s configuration, that turn this linter's rules on or off by path, in its order, the
+//! later winning (EN-075, ADR-0075); and the paths never linted.
 
 use crate::glob::matches_any;
 
-/// Generated, vendored or copied paths, never linted (`eslint/settings/files.ts`).
+/// Generated, vendored or copied paths, never linted (once `eslint/settings/files.ts`).
 pub const IGNORED: [&str; 12] = [
     "dist/**",
     "coverage/**",
@@ -45,7 +45,7 @@ pub const ON_EVERYWHERE: [&str; 17] = [
 /// A scope: the files it covers, those it leaves out, and the rules it turns on or off.
 #[derive(Clone, Copy, Debug)]
 pub struct Scope {
-    /// Its name in `eslint/scopes/`.
+    /// Its name, as `ESLint`'s configuration gave it.
     pub name: &'static str,
     /// The globs of its files.
     pub files: &'static [&'static str],
@@ -55,10 +55,8 @@ pub struct Scope {
     pub rules: &'static [(&'static str, bool)],
 }
 
-/// The lint configuration, the tools and their configurations: Node.js code, where development
-/// packages may be imported.
+/// The tools and their configurations: Node.js code, where development packages may be imported.
 pub const TOOLING_FILES: &[&str] = &[
-    "eslint/**/*.ts",
     "*.config.ts",
     "*.setup.ts",
     "*.test.ts",
@@ -94,7 +92,8 @@ const RELAXED: &[(&str, bool)] = &[
     ("local/see-references", false),
 ];
 
-/// The scopes, in the order of `eslint/scopes/all.ts`; only those that set a rule of this linter.
+/// The scopes, in the order `ESLint`'s configuration applied them; only those that set a rule of
+/// this linter.
 pub const SCOPES: [Scope; 7] = [
     Scope {
         name: "single-export-modules",
@@ -131,11 +130,7 @@ pub const SCOPES: [Scope; 7] = [
     },
     Scope {
         name: "barrels",
-        files: &[
-            "src/**/index.ts",
-            "eslint/**/index.ts",
-            "playground/*/**/index.ts",
-        ],
+        files: &["src/**/index.ts", "playground/*/**/index.ts"],
         ignores: &[],
         rules: &[("local/barrel-exports", true)],
     },

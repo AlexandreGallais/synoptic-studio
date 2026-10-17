@@ -15,8 +15,7 @@
 
 | Package | Why | Alternatives rejected |
 | --- | --- | --- |
-| `@typescript/native` | TypeScript 7, the native compiler, under the alias of `REF-TS7-ANNOUNCEMENT` (`npm:typescript@7.0.2`): its type checker runs under oxlint's `--type-check` and as `npm run typecheck`, about 5 times faster than 6.0 (EN-071; the declarations of `build` are Oxc's since EN-091); becomes `typescript` again at EN-085 | TypeScript 6's `tsc`: about 4.3 s against 0.9 s on this tree |
-| `typescript` | TypeScript 6's API, as `npm:@typescript/typescript6@6.0.2` (binary `tsc6`), for the tool that imports `typescript` through a peer dependency until it leaves: typescript-eslint (EN-085); TypeDoc left with EN-072; patch upgrades only (`.ncurc.cjs`) | `typescript` 7 alone: no API until 7.1, so typescript-eslint cannot load it |
+| `typescript` | TypeScript 7.0.2, the native compiler (`REF-TS7-ANNOUNCEMENT`), the only TypeScript since EN-085: its type checker runs under oxlint's `--type-check` and as `npm run typecheck`, about 5 times faster than 6.0 (EN-071; the declarations of `build` are Oxc's since EN-091); it has no API until 7.1, and no tool of the repository imports one: TypeScript 6's, kept for typescript-eslint and TypeDoc, left with them (EN-072, EN-085, ADR-0075) | TypeScript 6's `tsc`: about 4.3 s against 0.9 s on this tree |
 | `@types/node` | Node.js types for the tooling (scripts, hooks, configuration files) | — |
 | `vite` | development server of the playground and library build (Product Owner requirement, ADR-0009) | — |
 | `vitest` | tests, sharing Vite's configuration and transforms | Jest: separate transform pipeline |
@@ -29,20 +28,8 @@
 
 | Package | Why | Alternatives rejected |
 | --- | --- | --- |
-| `eslint` | the linter; every rule decided explicitly (ADR-0010) | — |
-| `@eslint/js` | lists the live core rules for the completeness audit (`eslint/config.test.ts`) | deprecated `builtinRules` API |
-| `typescript-eslint` | TypeScript parser and type-aware rules | — |
-| `@typescript-eslint/utils` | typed helpers to write the custom `local/*` rules | untyped `Rule.RuleModule` |
-| `jiti` | loads `eslint.config.ts`, the method documented by ESLint (`REF-ESLINT-TS-CONFIG`) | experimental native flag |
-| `eslint-plugin-jsdoc` | mandatory, well-formed TSDoc | — |
-| `eslint-plugin-import-x` | cycles, layer boundaries, import order and resolution | `eslint-plugin-import`: slower, less maintained; a home-made cycle checker: re-inventing a maintained tool |
-| `eslint-plugin-unused-imports` | **removes** unused imports on save (core and typescript-eslint only report) | — |
-| `eslint-plugin-functional` | immutability and no classes: "a function never modifies its arguments" (ADR-0014) | — |
-| `eslint-plugin-unicorn` | ~370 modern best-practice rules | `eslint-plugin-sonarjs`: overlaps unicorn and complexity rules |
-| `@stylistic/eslint-plugin` | blank lines between statements and comment style, which the formatter does not decide | — |
-| `eslint-config-prettier` | turns off the ESLint rules that conflict with the formatter, oxfmt laying out as Prettier does (ADR-0013), until ESLint leaves (EN-085) | `eslint-plugin-prettier`: discouraged by Prettier (`REF-PRETTIER-LINTERS`) |
 | `oxfmt` | the formatter of every file kind the repository formats, Markdown included, natively in Rust (`REF-OXFMT`, `REF-OXFMT-LANGUAGES`), run by `tools/format`, which then writes Markdown tables without padding (ADR-0068, EN-073); 0.72.0, released 2026-10-05, its notes read (Markdown formatted by `oxc_formatter_markdown`), 0.73.0 being under 7 days old | Prettier 3.9: about 30 times slower (12.4 s against 0.4 s here), pads tables too, a JavaScript tool against the Rust rule (note 0023) |
-| `oxlint` | the one lint command (`npm run lint`): ESLint's native rules, typescript-eslint's, Unicorn's, JSDoc's and Import's built in Rust, with their options (`REF-OXLINT`, `REF-OXLINT-PLUGINS`), its configuration `.oxlintrc.json` written by `@oxlint/migrate --type-aware` from `eslint/` (`REF-OXLINT-MIGRATE`, EN-074); 1.87.0, released 2026-10-05, its notes read (suggestions and fixes only, no rule removed), 1.88.0 being under 7 days old | ESLint 10 with typescript-eslint: about 62 s on this tree against 2 s; kept only for the rules oxlint lacks until F19 rewrites them and EN-085 removes it |
+| `oxlint` | the one lint command (`npm run lint`): ESLint's native rules, typescript-eslint's, Unicorn's, JSDoc's and Import's built in Rust, with their options (`REF-OXLINT`, `REF-OXLINT-PLUGINS`), its configuration `.oxlintrc.json` written by `@oxlint/migrate --type-aware` from `eslint/` (`REF-OXLINT-MIGRATE`, EN-074); 1.87.0, released 2026-10-05, its notes read (suggestions and fixes only, no rule removed), 1.88.0 being under 7 days old | ESLint 10 with typescript-eslint: about 62 s on this tree against 2 s; removed by EN-085 once every rule it ran was carried or dropped (ADR-0075) |
 | `oxlint-tsgolint` | the type-aware rules of `oxlint` (`options.typeAware`), typescript-eslint's rules run on typescript-go: `no-floating-promises`, `strict-boolean-expressions`, the `no-unsafe-*` family… (`REF-OXLINT-TYPE-AWARE`, `REF-TSGOLINT`), loaded by `oxlint`, imported by no file (`knip.json`); 7.0.2004, released 2026-10-10, its notes read (fixes to `no-unsafe-return`, `no-misused-promises`, `no-floating-promises`, `no-deprecated` and line disable comments) | typescript-eslint's type-aware rules in ESLint: TypeScript 6's API and most of ESLint's 62 s |
 
 ### Documentation site
@@ -101,11 +88,10 @@ Licence: SIL Open Font License 1.1 (`REF-INTER-LICENSE`). The fonts may be "bund
 
 ## Overrides
 
-Checked at each retrospective: an override goes once the package that pulls the vulnerable version asks for a fixed one. Still needed on 2026-10-13: `eslint-plugin-functional` 10.0.1 asks for `deepmerge-ts` `^7.1.5`, and `mermaid` 12.1.0 for `katex` `^0.16.47` (since EN-077 removed `@eslint/markdown`, on 2026-10-17, the only package that pulls it).
+Checked at each retrospective: an override goes once the package that pulls the vulnerable version asks for a fixed one. Still needed on 2026-10-17: `mermaid` 12.1.0 asks for `katex` `^0.16.47` (since EN-077 removed `@eslint/markdown`, the only package that pulls it); the `deepmerge-ts` override left with `eslint-plugin-functional`, which pulled it (EN-085).
 
 | Override | Why |
 | --- | --- |
-| `deepmerge-ts` → `^8.0.0` | `eslint-plugin-functional` pulls a version affected by GHSA-ggr8-5vv4-36mx; 8.x fixes it |
 | `katex` → `^0.19.0` | `mermaid` pulls a version affected by GHSA-238p-pmpm-9mq7 (`>= 0.11.0, < 0.18.2`; math rendering, unused here); 0.19 fixes it |
 
 ## Crates

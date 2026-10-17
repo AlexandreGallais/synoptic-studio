@@ -2,10 +2,7 @@
   "editor.defaultFormatter": "oxc.oxc-vscode",
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
+    "source.fixAll.oxc": "explicit"
   },
-  "eslint.useFlatConfig": true,
-  "eslint.validate": ["typescript"],
-  "typescript.tsdk": "node_modules/typescript/lib",
   "files.eol": "\n"
 }

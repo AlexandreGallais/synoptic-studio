@@ -47,8 +47,6 @@ const TEST_PROJECTS: readonly TestProjectInlineConfiguration[] = [
     test: {
       include: [
         "src/**/*.test.ts",
-        "eslint/*.test.ts",
-        "eslint/settings/*.test.ts",
         "tests/*.test.ts",
         "docs/.vitepress/**/*.test.ts",
         ".claude/hooks/*.test.ts",

@@ -1,12 +1,9 @@
 import { execFileSync, spawnSync } from "node:child_process";
-import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { ESLint } from "eslint";
 import { describe, expect, it } from "vitest";
-
-import { DROPPED_RULES, RULE_THEMES, SCOPES } from "../eslint";
 
 /** Root of the repository. */
 const ROOT = join(import.meta.dirname, "..");
@@ -92,226 +89,28 @@ const OXLINT_RULES: ReadonlySet<string> = new Set(
   }),
 );
 
-/** Plugins whose name differs between ESLint and oxlint. */
-const PLUGIN_NAMES: Readonly<Record<string, string>> = {
-  "@typescript-eslint": "typescript",
-  "import-x": "import",
-};
-
-/**
- * The name oxlint gives an ESLint rule: `import-x` is `import`, and typescript-eslint's
- * extension rules are ESLint's own in oxlint unless oxlint has a `typescript/` one.
- *
- * @param name - the rule's name in ESLint's configuration
- * @returns its name in `.oxlintrc.json`
- */
-function oxlintNameOf(name: string): string {
-  const slash = name.lastIndexOf("/");
-  const plugin = name.slice(0, Math.max(slash, 0));
-  const renamed = `${PLUGIN_NAMES[plugin] ?? plugin}/${name.slice(slash + 1)}`;
-
-  return OXLINT_RULES.has(renamed) ? renamed : name.slice(slash + 1);
-}
-
-/**
- * A glob of ESLint's flat configuration as oxlint reads it: a pattern without a slash matches the
- * root only in ESLint, at any depth in oxlint unless it starts with `./`.
- *
- * @param pattern - the glob in ESLint's configuration
- * @returns the same glob for `.oxlintrc.json`
- */
-function oxlintGlobOf(pattern: string): string {
-  return pattern.includes("/") ? pattern : `./${pattern}`;
-}
-
-/** The scopes of `eslint/scopes/` as oxlint would read them: their files and native rules. */
-const CARRIED_SCOPES = SCOPES.map((scope) => {
-  const rules = Object.entries(scope.rules ?? {}).map(
-    ([name, setting]): readonly [string, RuleSetting] => [oxlintNameOf(name), setting],
-  );
-
-  return {
-    files: (scope.files ?? []).flat().map((pattern) => oxlintGlobOf(pattern)),
-    rules: Object.fromEntries(rules.filter(([name]) => OXLINT_RULES.has(name))),
-  };
-});
-
 /** Every rule `.oxlintrc.json` names, in any override, with its settings there. */
 const CONFIGURED = OVERRIDES.flatMap((override) => Object.entries(override.rules));
 
 /** The rules `.oxlintrc.json` names. */
 const CONFIGURED_NAMES: ReadonlySet<string> = new Set(CONFIGURED.map(([name]) => name));
 
-/** One file of each scope of ESLint's configuration, the library's layers and the tools'. */
-const SAMPLE_FILES = [
-  "src/math/sequence/scan.ts",
-  "src/math/sequence/scan.test.ts",
-  "src/index.ts",
-  "playground/index.ts",
-  "playground/checklist/read-ticked-lines.ts",
-  "eslint/config.ts",
-  "eslint/rules/core/all.ts",
-  "scripts/check-all.ts",
-  "tests/package.test.ts",
-  "vite.config.ts",
-];
-
-/**
- * Whether a rule's setting runs it: a severity other than off, alone or before its options.
- *
- * @param setting - the setting, as either linter writes it
- * @returns `false` for `off` or `0`
- */
-function isOn(setting: RuleSetting): boolean {
-  const [severity] = [setting].flat();
-
-  return severity !== "off" && severity !== 0;
-}
-
-/** ESLint, configured as `npm run lint` runs it. */
-const LINT = new ESLint({ cwd: ROOT });
-
-/**
- * The rules ESLint runs on a file: those its configuration sets to a severity other than off.
- *
- * @param path - the file, from the root
- * @returns the rules' names
- */
-async function eslintRulesOf(path: string): Promise<readonly string[]> {
-  const config: unknown = await LINT.calculateConfigForFile(join(ROOT, path));
-
-  return Object.entries(entriesOf(propertyOf(config, "rules")))
-    .filter(([, setting]) => isOn(setting))
-    .map(([name]) => name);
-}
-
-/** The setting of a rule in the first theme of `eslint/rules/` that decides it. */
-const THEME_SETTINGS: Readonly<Record<string, RuleSetting>> = Object.fromEntries(
-  RULE_THEMES.flatMap((theme) => Object.entries(theme.rules ?? {})),
-);
-
 describe(".oxlintrc.json", () => {
-  it("[F19.AC1] carries each scope of `eslint/scopes/` with native rules as an override of the same files and settings", () => {
-    const carried = CARRIED_SCOPES.filter((scope) => Object.keys(scope.rules).length > 0);
-
-    expect(OVERRIDES.slice(1)).toEqual(carried);
-  });
-
   it("[F19.AC1] names only rules oxlint has", () => {
     expect([...CONFIGURED_NAMES].filter((name) => !OXLINT_RULES.has(name))).toEqual([]);
   });
 
-  it(
-    "[F19.AC1] runs each rule in one linter: ESLint runs none that oxlint runs or the triage dropped",
-    { timeout: 30_000 },
-    async () => {
-      const dropped = new Set(DROPPED_RULES);
-      const doubled = await Promise.all(
-        SAMPLE_FILES.map(async (path) => {
-          const rules = await eslintRulesOf(path);
-
-          return rules
-            .filter((name) => CONFIGURED_NAMES.has(oxlintNameOf(name)) || dropped.has(name))
-            .map((name) => `${path}: ${name}`);
-        }),
-      );
-
-      expect(doubled.flat()).toEqual([]);
-    },
-  );
-
-  it("[F19.AC11] runs none of the rules the triage dropped", () => {
-    const enabled = new Set(
-      CONFIGURED.filter(([, setting]) => isOn(setting)).map(([name]) => name),
-    );
-
-    expect(
-      DROPPED_RULES.map((name) => oxlintNameOf(name)).filter((name) => enabled.has(name)),
-    ).toEqual([]);
-  });
-
   it("[F19.AC2] runs `prefer-destructuring` natively with typescript-eslint's options", () => {
-    expect(OVERRIDES[0]?.rules["prefer-destructuring"]).toEqual(
-      THEME_SETTINGS["@typescript-eslint/prefer-destructuring"],
-    );
+    // The options `@typescript-eslint/prefer-destructuring` had in `eslint/rules/` (EN-074).
+    expect(OVERRIDES[0]?.rules["prefer-destructuring"]).toEqual([
+      "error",
+      { array: false, object: true },
+      { enforceForRenamedProperties: false },
+    ]);
   });
 });
-
-/** The rules that asked the compiler for types, run by the project's linter without them (EN-076). */
-const RULES_WITHOUT_TYPES: ReadonlySet<string> = new Set([
-  "@typescript-eslint/naming-convention",
-  "functional/immutable-data",
-  "functional/no-conditional-statements",
-  "functional/no-mixed-types",
-  "functional/prefer-immutable-types",
-  "functional/type-declaration-immutability",
-  "unicorn/no-non-function-verb-prefix",
-]);
-
-describe("ESLint without type information (EN-076)", () => {
-  it(
-    "[F19.AC2] gives its parser no project and runs none of the rules that asked for types",
-    { timeout: 30_000 },
-    async () => {
-      const typed = await Promise.all(
-        SAMPLE_FILES.map(async (path) => {
-          const config: unknown = await LINT.calculateConfigForFile(join(ROOT, path));
-          const parserOptions = entriesOf(
-            propertyOf(propertyOf(config, "languageOptions"), "parserOptions"),
-          );
-          const project = ["project", "projectService"].filter((key) =>
-            Object.hasOwn(parserOptions, key),
-          );
-          const enabled = await eslintRulesOf(path);
-          const rules = enabled.filter((name) => RULES_WITHOUT_TYPES.has(name));
-
-          return [...project, ...rules].map((name) => `${path}: ${name}`);
-        }),
-      );
-
-      expect(typed.flat()).toEqual([]);
-    },
-  );
-});
-
-/** The other plugins' rules ESLint ran, carried by EN-084: to the project's linter, to oxlint, or dropped. */
-const OTHER_PLUGIN_RULES: readonly string[] = [
-  "@stylistic/line-comment-position",
-  "@stylistic/multiline-comment-style",
-  "@stylistic/padding-line-between-statements",
-  "@stylistic/spaced-comment",
-  "@typescript-eslint/member-ordering",
-  "functional/functional-parameters",
-  "functional/no-classes",
-  "functional/no-expression-statements",
-  "functional/no-let",
-  "functional/no-loop-statements",
-  "functional/no-promise-reject",
-  "functional/no-this-expressions",
-  "functional/no-throw-statements",
-  "functional/no-try-statements",
-  "functional/prefer-property-signatures",
-  "functional/readonly-type",
-  "import-x/no-extraneous-dependencies",
-  "import-x/no-restricted-paths",
-  "unused-imports/no-unused-imports",
-  "unused-imports/no-unused-vars",
-];
 
 describe("the other plugins' rules (EN-084)", () => {
-  it("[F19.AC11] leaves none of the 20 rules to ESLint", { timeout: 30_000 }, async () => {
-    const carried = new Set(OTHER_PLUGIN_RULES);
-    const left = await Promise.all(
-      SAMPLE_FILES.map(async (path) => {
-        const rules = await eslintRulesOf(path);
-
-        return rules.filter((name) => carried.has(name)).map((name) => `${path}: ${name}`);
-      }),
-    );
-
-    expect(left.flat()).toEqual([]);
-  });
-
   it("[F19.AC11] runs `no-unused-vars` in oxlint with the options `unused-imports` had", () => {
     expect(OVERRIDES[0]?.rules["no-unused-vars"]).toEqual([
       "error",
@@ -327,46 +126,7 @@ describe("the other plugins' rules (EN-084)", () => {
   });
 });
 
-/** The Unicorn rules ESLint still ran after EN-084, carried by EN-095: to the project's linter, to oxlint, or dropped. */
-const LAST_UNICORN_RULES: readonly string[] = [
-  "unicorn/consistent-class-member-order",
-  "unicorn/no-accidental-bitwise-operator",
-  "unicorn/no-boolean-sort-comparator",
-  "unicorn/no-chained-comparison",
-  "unicorn/no-collection-bracket-access",
-  "unicorn/no-constant-zero-expression",
-  "unicorn/no-double-comparison",
-  "unicorn/no-for-loop",
-  "unicorn/no-invalid-argument-count",
-  "unicorn/no-invalid-character-comparison",
-  "unicorn/no-misrefactored-assignment",
-  "unicorn/no-missing-local-resource",
-  "unicorn/no-nonstandard-builtin-properties",
-  "unicorn/no-shorthand-property-overrides",
-  "unicorn/no-transition-all",
-  "unicorn/no-undeclared-class-members",
-  "unicorn/no-unsafe-promise-all-settled-values",
-  "unicorn/no-useless-coercion",
-  "unicorn/no-useless-concat",
-  "unicorn/no-useless-template-literals",
-  "unicorn/prefer-math-constants",
-  "unicorn/require-proxy-trap-boolean-return",
-];
-
 describe("the last Unicorn rules (EN-095)", () => {
-  it("[F19.AC11] leaves none of the 22 rules to ESLint", { timeout: 30_000 }, async () => {
-    const carried = new Set(LAST_UNICORN_RULES);
-    const left = await Promise.all(
-      SAMPLE_FILES.map(async (path) => {
-        const rules = await eslintRulesOf(path);
-
-        return rules.filter((name) => carried.has(name)).map((name) => `${path}: ${name}`);
-      }),
-    );
-
-    expect(left.flat()).toEqual([]);
-  });
-
   it("[F19.AC11] runs the three oxlint carries natively, on every TypeScript file", () => {
     const rules = OVERRIDES[0]?.rules ?? {};
 
@@ -378,47 +138,23 @@ describe("the last Unicorn rules (EN-095)", () => {
   });
 });
 
-/** The folders `npm run lint` gives ESLint, beside the root's TypeScript files. */
-const LINTED_FOLDERS: readonly string[] = [
-  ".claude/hooks/",
-  "docs/",
-  "eslint/",
-  "playground/",
-  "scripts/",
-  "src/",
-  "tests/",
-];
+/** The files that ran ESLint or configured it, read as text. */
+const LINT_RUNNERS: readonly string[] = ["package.json", ".lintstagedrc.json"].map((path) =>
+  readFileSync(join(ROOT, path), "utf8"),
+);
 
-/** The TypeScript files `npm run lint` gives ESLint, from the root, as Git tracks them. */
-const LINTED_FILES: readonly string[] = execFileSync("git", ["ls-files", "--", "*.ts"], {
-  cwd: ROOT,
-  encoding: "utf8",
-})
-  .split("\n")
-  .filter(
-    (path) =>
-      path.endsWith(".ts") &&
-      (!path.includes("/") || LINTED_FOLDERS.some((folder) => path.startsWith(folder))),
-  );
+describe("ESLint out (EN-085)", () => {
+  it("[F19.AC1] leaves no ESLint package, configuration nor command", () => {
+    const manifest = parsed(LINT_RUNNERS[0] ?? "");
+    const packages = Object.keys(entriesOf(propertyOf(manifest, "devDependencies")));
 
-describe("ESLint left with no rule (EN-095)", () => {
-  it(
-    "[F19.AC11] runs no rule on any file `npm run lint` gives it, so that EN-085 only removes it",
-    { timeout: 60_000 },
-    async () => {
-      const files = await Promise.all(
-        LINTED_FILES.map(async (path) =>
-          (await LINT.isPathIgnored(join(ROOT, path))) ? [] : [path],
-        ),
-      );
-      const running = await Promise.all(
-        files.flat().map(async (path) => await eslintRulesOf(path)),
-      );
+    expect(packages.filter((name) => name.includes("eslint"))).toEqual([]);
+    expect(LINT_RUNNERS.filter((text) => /\beslint\s/u.test(text))).toEqual([]);
 
-      expect(files.flat().length).toBeGreaterThan(1000);
-      expect([...new Set(running.flat())]).toEqual([]);
-    },
-  );
+    expect(["eslint.config.ts", "eslint"].filter((path) => existsSync(join(ROOT, path)))).toEqual(
+      [],
+    );
+  });
 });
 
 /** A folder holding a configuration of `oxc/no-accumulating-spread` alone. */

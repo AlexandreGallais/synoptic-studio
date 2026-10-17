@@ -1,7 +1,6 @@
 node_modules
 dist
 coverage
-.eslintcache
 *.tsbuildinfo
 .DS_Store
 .idea/workspace.xml

@@ -2,14 +2,10 @@ import { execFileSync, spawnSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
-import { ESLint } from "eslint";
 import { describe, expect, it } from "vitest";
 
 /** Repository root. */
 const ROOT = join(import.meta.dirname, "..");
-
-/** The project's ESLint, read from its configuration. */
-const LINT = new ESLint({ cwd: ROOT });
 
 /** Time limit of a test asking a tool about every tracked file: about 4.3 s alone (EN-054), seven times. */
 const WALK_TIMEOUT = 30_000;
@@ -75,7 +71,7 @@ const TRACKED = execFileSync("git", ["ls-files"], { cwd: ROOT, encoding: "utf8" 
  * Targets given to a tool in one command of a script: its arguments that are not options.
  *
  * @param script - the npm script's name
- * @param tool - the command's start (`eslint`, the formatter's `cargo run … --`)
+ * @param tool - the command's start (`oxlint`, the formatter's `cargo run … --`)
  * @returns its paths and globs, unquoted
  */
 function targetsOf(script: string, tool: string): readonly string[] {
@@ -194,24 +190,18 @@ describe("check tools given explicit targets (EN-045)", () => {
     expect(existsSync(join(ROOT, ".prettierrc.json"))).toBe(false);
   });
 
-  it("[F18.AC20] gives ESLint the same targets in lint, lint:fix and fix", () => {
-    const targets = targetsOf("lint", "eslint");
-
-    expect(targets.length).toBeGreaterThan(0);
-    expect(targetsOf("lint:fix", "eslint")).toEqual(targets);
-    expect(targetsOf("fix", "eslint")).toEqual(targets);
-  });
-
-  it("[F19.AC1] gives oxlint the same targets in lint, lint:fix and fix, every TypeScript file ESLint lints", () => {
+  it("[F19.AC1] gives oxlint the same targets in lint, lint:fix and fix, every tracked TypeScript file", () => {
     const targets = targetsOf("lint", "oxlint");
-    const linted = TRACKED.filter(
-      (path) => path.endsWith(".ts") && leftOut(targetsOf("lint", "eslint"), [path]).length === 0,
-    );
+    const sources = TRACKED.filter((path) => path.endsWith(".ts"));
 
     expect(targets.length).toBeGreaterThan(0);
     expect(targetsOf("lint:fix", "oxlint")).toEqual(targets);
     expect(targetsOf("fix", "oxlint")).toEqual(targets);
-    expect(leftOut(targets, linted)).toEqual([]);
+
+    // The Rust crates hold TypeScript only as their tests' fixtures, which no linter reads.
+    expect(
+      leftOut(targets, sources).filter((path) => !/^tools\/[^/]+\/tests\/fixtures\//u.test(path)),
+    ).toEqual([]);
   });
 
   it("[F19.AC3] gives the project's linter oxlint's targets in lint, lint:fix and fix, after oxlint", () => {
@@ -232,34 +222,14 @@ describe("check tools given explicit targets (EN-045)", () => {
     }
   });
 
-  it("[F19.AC4] gives the project's linter every tracked Markdown page, ESLint none", () => {
+  it("[F19.AC4] gives the project's linter every tracked Markdown page", () => {
     const pages = TRACKED.filter((path) => path.endsWith(".md") && !UNLINTED_PAGES.has(path));
     const staged: unknown = JSON.parse(readFileSync(join(ROOT, ".lintstagedrc.json"), "utf8"));
 
     expect(pages.length).toBeGreaterThan(0);
     expect(leftOut(targetsOf("lint", PROJECT_LINT), pages)).toEqual([]);
-    expect(targetsOf("lint", "eslint").some((target) => target.includes("md"))).toBe(false);
     expect(staged).toHaveProperty(["*.md"], [`${FORMAT} --write`, `${PROJECT_LINT} --fix`]);
   });
-
-  it(
-    "[F18.AC20] leaves no tracked file that ESLint checks out of its targets",
-    { timeout: WALK_TIMEOUT },
-    async () => {
-      const linted = await Promise.all(
-        TRACKED.filter((path) => path.endsWith(".ts")).map(async (path) =>
-          (await LINT.isPathIgnored(join(ROOT, path))) ? "" : path,
-        ),
-      );
-
-      expect(
-        leftOut(
-          targetsOf("lint", "eslint"),
-          linted.filter((path) => path !== ""),
-        ),
-      ).toEqual([]);
-    },
-  );
 
   it(
     "[F19.AC5] leaves no file that oxfmt formats out of the formatter's targets",
@@ -375,12 +345,10 @@ describe("the Rust workspace at the root (EN-068)", () => {
     expect(existsSync(join(ROOT, "tools", name, "Cargo.lock"))).toBe(false);
   });
 
-  it("[F19.AC9] leaves the build output target/ to Git, ESLint, the formatter and secretlint", async () => {
-    const built = join(ROOT, "target", "release", "build", "page.md");
-
+  it("[F19.AC9] leaves the build output target/ to Git, oxlint, the formatter and secretlint", () => {
     expect(readFileSync(join(ROOT, ".gitignore"), "utf8")).toMatch(/^\/target\/$/mu);
     expect(readFileSync(join(ROOT, ".secretlintignore"), "utf8")).toMatch(/^target$/mu);
-    expect(await LINT.isPathIgnored(built)).toBe(true);
+    expect(readFileSync(join(ROOT, ".oxlintrc.json"), "utf8")).toContain('"target/**"');
     expect(readFileSync(join(ROOT, ".oxfmtrc.json"), "utf8")).toMatch(/^ {4}"target",?$/mu);
   });
 
