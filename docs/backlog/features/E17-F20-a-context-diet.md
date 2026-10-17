@@ -38,7 +38,7 @@ In delivery order. Stories stay `draft` until F20's `/run` sets them `ready`.
 
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
-| [SP-022](../stories/E17-F20-SP-022-research-f20.md) | Spike | Research for F20, the context diet | draft |
+| [SP-022](../stories/E17-F20-SP-022-research-f20.md) | Spike | Research for F20, the context diet | done |
 | [EN-064](../stories/E17-F20-EN-064-one-hour-prompt-cache.md) | Enabler | A one-hour prompt cache on long agents | dropped |
 | [EN-065](../stories/E17-F20-EN-065-workers-started-from-a-digest.md) | Enabler | One worker type per task kind, each started from what its task needs | draft |
 | [EN-066](../stories/E17-F20-EN-066-model-per-agent-type.md) | Enabler | A model chosen per agent type | draft |
