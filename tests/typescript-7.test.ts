@@ -62,7 +62,7 @@ describe("TypeScript 7", () => {
     );
   });
 
-  it("[F19.AC6] keeps TypeScript 6 only as the API that typescript-eslint and TypeDoc load", () => {
+  it("[F19.AC6] keeps TypeScript 6 only as the API that typescript-eslint loads", () => {
     const manifest = readFileSync(join(ROOT, "package.json"), "utf8");
 
     expect(manifest).toContain('"typescript": "npm:@typescript/typescript6@6.0.2"');

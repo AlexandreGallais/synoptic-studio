@@ -20,7 +20,7 @@
 | `npm run deps:unused` | knip: unused files, exports and dependencies (`knip.json`) |
 | `npm run deps:tools` | fails when a GitHub Action is not on its latest major version or `.nvmrc` not on the latest Node.js LTS |
 | `npm run check:all` | `check` + `deps:outdated` + `deps:tools` + docs build + playground build, in four parallel lanes (what CI and the pre-push hook run) |
-| `npm run docs:dev` / `docs:build` / `docs:preview` | documentation site (TypeDoc API generated first) |
+| `npm run docs:dev` / `docs:build` / `docs:preview` | documentation site (API pages written first by `tools/api-pages`, `npm run docs:api`) |
 | `npm run docs:api` | regenerate `docs/api/` from the TSDoc |
 | `npm run branches:clean` | fetches with prune, deletes the local branches merged into `develop` or whose own branch on GitHub was deleted (never `main`, `develop`, the current one, nor a story just started: never pushed and without a commit beyond the branch it was made from) and removes their worktrees (one holding changes or a running process's working folder is kept and named), reports the branches, stashes and worktrees left; after each merged feature and each release |
 | `npm run records:save` | copies the metrics, the transcripts and the source library into the private records repository `records/` (ignored by Git), commits and pushes (ADR-0041, ADR-0044); at the end of each session and each retrospective |

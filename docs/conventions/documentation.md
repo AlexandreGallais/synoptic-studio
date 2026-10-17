@@ -2,7 +2,7 @@
 
 ## Mandatory everywhere (`jsdoc/require-jsdoc`)
 
-Every top-level function, type and module constant carries a `/** … */` block; in `src/`, every **type member** too (`/** Abscissa, growing to the right. */`), since TypeDoc fails the docs build on an undocumented property.
+Every top-level function, type and module constant carries a `/** … */` block; in `src/`, every **type member** too (`/** Abscissa, growing to the right. */`), since the API pages' generator (`tools/api-pages`) fails the docs build on an undocumented property.
 
 ```ts
 /**
@@ -44,4 +44,4 @@ Every top-level function, type and module constant carries a `/** … */` block;
 
 ## API reference site
 
-TypeDoc turns this TSDoc into one page per exported symbol on the documentation site (`npm run docs:dev`, [documentation-site.md](../tooling/documentation-site.md)). The `@kind` tag is declared in `tsdoc.json`.
+`tools/api-pages` turns this TSDoc into one page per exported symbol on the documentation site (`npm run docs:dev`, [documentation-site.md](../tooling/documentation-site.md)). The `@kind` tag, like any block tag other than `@param`, `@returns` and `@template`, becomes a section of the page, after the return value.

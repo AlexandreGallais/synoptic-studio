@@ -1,6 +1,5 @@
-//! The order of `TypeDoc`'s `alphabetical-ignoring-documents` sort (`REF-TYPEDOC-OPTIONS`),
-//! which compares names with `localeCompare`: letters without regard to case, `_` before
-//! digits and letters, then lower case before upper case.
+//! The order of `TypeDoc`'s index and sidebar, as its pages of 2026-10-17 show it: letters
+//! without regard to case, `_` before digits and letters, then lower case before upper case.
 
 use std::cmp::Ordering;
 
