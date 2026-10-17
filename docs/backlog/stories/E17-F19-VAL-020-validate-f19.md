@@ -22,7 +22,7 @@ One task = one commit, referenced as `VAL-020.Tn`.
 - [x] T1 — Each criterion of F19 proven again, what was seen recorded (1 h)
 - [x] T2 — F19's lines in E17's checklist, `?checklist=E17`, each tried (1 h)
 - [x] T3 — The demo page, `docs/guide/f19-checks-on-oxc-and-rust.md` (1 h)
-- [ ] T4 — The decisions of the validation recorded (0.5 h)
+- [x] T4 — The decisions of the validation recorded (0.5 h)
 
 ## Criteria proven again (2026-10-17)
 
@@ -48,3 +48,24 @@ Nothing failed: no fix was needed.
 ## F19's lines in E17's checklist
 
 Drafted by `npm run val:prepare -- F19`, then written as 12 commands to run at the repository's root, each tried here on 2026-10-17 with the output it names (`playground/checklists/epic-17-f19-lines.ts`, `?checklist=E17`). The probes of lines 2 to 5 are files planted and deleted afterwards. The page's test lists the 24 lines of E17, names each command of F19's lines and none of the tools F19 removed; a line changed from `TS2322` to `TS2323` made it fail.
+
+## Decisions of the validation (2026-10-17)
+
+- **Validated by the agent**: F19 is a tooling feature, so the agent validates it and opens its pull request into `develop`, labeled `autonomous`, without waiting for the Product Owner, who may try the lines that concern them (ADR-0072, decided on 2026-10-17).
+- **F19.AC8 read as held below its range**: the 70 to 90 s of the criterion is the time aimed at, a ceiling for the usual case; a code change ends in 39.6 to 41.3 s and a change to the site in 50.6 to 57.0 s, both under it.
+- **The docs case measured with every lane**: its two runs failed in the test lane on the checklist's draft lines, which the page's test refuses as it should; the lanes' times stand, the failing test being one file among 486. The push of this branch runs `check:all` with the site built, all green.
+- **The checklist's counts left open**: the lines say `<n> file(s)` and `<n> files` where a count changes with each page added, so that a line stays true after the next story.
+
+## Result of the validation (2026-10-17)
+
+| Line | Seen by | Result |
+| --- | --- | --- |
+| 1 to 12 | the VAL worker | as written, each tried on this Mac; the probe files deleted |
+
+## For the main thread
+
+Rule-docs: none affected, a tooling validation, no rule of `docs/domain/` changed.
+
+### Journal
+
+- `#run` VAL-020: F19 validated by the agent (ADR-0072): its 12 criteria proven again, 12 lines in E17's checklist, the demo page `docs/guide/f19-checks-on-oxc-and-rust.md`; `check:all` from 124 s to 39.6 to 41.3 s on a code change, 50.6 to 57.0 s with the site built.
