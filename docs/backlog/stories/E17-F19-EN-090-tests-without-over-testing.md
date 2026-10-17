@@ -30,3 +30,60 @@ One task = one commit per group of folders, referenced as `EN-090.Tn`.
 - [ ] T2 — `src/` tests: duplicates removed or merged, shared fixtures; mutation and coverage checked (3 h)
 - [ ] T3 — `playground/`, `tests/`, `scripts/`, `eslint/` tests: the same (3 h)
 - [ ] T4 — The testing rules, the ADR, the epic routine; timings after (1 h)
+
+## Inventory
+
+Every `it`, `it.each` and `test.prop` call of the 492 test files, read with Oxc's parser (2 424 calls, 3 514 tests once the tables and the RuleTester cases are expanded), on 2026-10-17 at `1ed4be9b`. Each call was classed by its kind and by the claim its assertions make; candidates were found by three searches, then read one by one: two tests of identical body, the assertions of a test all held by another test of the same file, and one assertion or one call with the same arguments written in two files.
+
+| Folder | Examples | Tables | Properties | Of which name a criterion | Calls |
+| --- | --- | --- | --- | --- | --- |
+| `src/math` | 81 | 51 | 85 | 42 | 217 |
+| `src/geometry` | 217 | 3 | 104 | 81 | 324 |
+| `src/model` | 441 | 79 | 122 | 382 | 642 |
+| `src/io` | 232 | 37 | 31 | 122 | 300 |
+| `src/render` | 21 | 1 | 0 | 18 | 22 |
+| `playground` | 617 | 30 | 0 | 463 | 647 |
+| `tests` | 95 | 15 | 0 | 63 | 110 |
+| `scripts` | 113 | 0 | 0 | 16 | 113 |
+| `.claude/hooks`, `docs` | 37 | 4 | 0 | 5 | 41 |
+| `eslint` (RuleTester cases not counted) | 5 | 3 | 0 | 2 | 8 |
+
+### Claims proven twice, removed or merged
+
+| Kind | Kept | Removed or merged into it |
+| --- | --- | --- |
+| identical tests, two criterion tags | `src/model/regular-polygon/regular-polygon-contour.test.ts:24`, `[F02.AC1] [F07.AC1]` | `:233`, `[F07.AC1] draws F02's triangle when centered on both axes` |
+| an example checked against a property's oracle, no value computed by hand | the property `src/model/regular-polygon/regular-polygon-as-free-shape.test.ts:111`, its anchor now drawn and its angle checked | `:80`, the triangle turned by 90° |
+| a narrower property inside a wider one | `src/model/regular-polygon/regular-polygon-corners.test.ts:399` `[F03.AC1] [F07.AC4]`, equal radii drawn too | `:305`, `[F07.AC4]` with one radius for every corner |
+| two claims proven elsewhere, combined | `src/io/font-face/parse-font-face.test.ts:247`, the collection's faces read tagged `true` | `:267`, the same faces tagged `true` (the tag alone proven at `:233`) |
+| a higher level repeating a lower one | `src/io/picked-color/exact-color-to-hex.test.ts`, the sample of 731 000 colors moved there, where the round trip is the function's own claim | `src/io/picked-color/whole-values-to-hex.test.ts:103`, the sample through values left as shown, which stand for the exact ones (a property keeps that claim); `exact-color-to-hex.test.ts:55`, the property drawing random colors, which the sample holds |
+| a test card walked again | each step's own test: `playground/text/text-box.test.ts:119`, `:128`, `:137`, `:170`, `:180`, `:188`, `:195`, `:217`, `playground/text-box/fit-to-box.test.ts:177` (US-057), `playground/text/text-box-fields.test.ts:105`, and F14's guided steps | `playground/text/text-box.test.ts:227`, US-033's card from step 2 to step 12 |
+
+### Read and kept
+
+| Pair | Why both stay |
+| --- | --- |
+| a guided step's test and its panel's test (`playground/guided-steps/epic-15/f14-steps.test.ts` and `playground/text/text-box.test.ts`, 137 such tests whose assertions all appear elsewhere) | the step's own claim is the state it opens on and the result it states, as the Product Owner reads it at `VAL`; the same assertion text after other actions is another claim |
+| `playground/picker-controls/color-test-card.test.ts:60` and `:121`, US-035's and US-040's cards | steps no other test proves: the hue keys with the saturation held exact (`#9c3436`), a click on a plane of 200 × 300 (31, 67) |
+| `f05-steps.test.ts:504` and `f14-steps.test.ts:434`, identical bodies | two steps of two features, opened by their titles |
+| the bounds 0 and 100 beside a property over 0 .. 100 (`is-valid-text-decorations.test.ts:42`) | the bounds of a range stay as examples (ADR-0070) |
+| `regular-polygon-contour.test.ts:515`, the stretched hexagon of `stretchedPolygon` | it adds its own claim: placed at its position, its anchor without effect |
+| `tests/backlog.test.ts:405` and `:429` | a folder's index and a parent's table, two places |
+| `eslint/`, `scripts/` | no case written twice; the ESLint tests move to the Rust linter later in F19 |
+
+### Work done again, now done once
+
+| Where | Before | After |
+| --- | --- | --- |
+| `tests/color-fixtures.ts` | the 731 000 indices of the color sample built at the import of `tests`, in every file importing it | built at the first round trip (`builtOnce`), frozen |
+| `tests/backlog.test.ts` | every backlog file read again by each of 12 tests | read once per file, frozen |
+| `tests/named-calculations.test.ts` | every source file of `src/` and `playground/` read again by each of 12 rows | read once per file, frozen |
+| every test file outside the playground | Vitest's setup (the ESLint RuleTester), the `tests` barrel and the library loaded again in each of 435 files | loaded once per worker: Vitest project `shared`, `isolate: false`; the playground's 57 files stay `isolated` |
+
+## Timings
+
+`npm run test` on this Mac, alone under the heavy lock, 2026-10-17; Vitest's own `Duration`, the lock's wait left out.
+
+| Run | Tests | Files | Duration | Shares |
+| --- | --- | --- | --- | --- |
+| before (`1ed4be9b`) | 3 514 (1 skipped) | 492 | 104.5 s | setup 35 %, import 28 %, tests 24 %, transform 9 % |
