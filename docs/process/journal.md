@@ -25,6 +25,7 @@ What each working session dealt with, in the agent's words: the Product Owner's 
 - `#run` EN-083: JSDoc's rules carried to the Rust linter on a port of the plugin's block parser, 31 rules equal to ESLint on 1,942 recorded cases and on faults planted in copies of the tree's files; `ts-ban-ts-comment` and `type-formatting` dropped; ESLint 13.0 s to 8.6 s, the Rust linter 0.14 s to 0.21 s.
 - `#run` EN-084: the other plugins' rules carried — 10 functional, 3 `@stylistic` and 2 Import rules to the Rust linter, the 2 `unused-imports` rules to oxlint's `no-unused-vars`, 3 dropped (`prefer-property-signatures`, `line-comment-position`, `member-ordering`); the same findings and fixes as ESLint on the documented and planted cases, none on the tree; `no-useless-recursion` left in the core; 22 Unicorn rules found in no story.
 - `#run` EN-095: the 30 rules ESLint still ran carried or dropped: 3 Unicorn rules in Rust, 4 rules native in oxlint, `import-x/order` written by oxfmt, 22 dropped; ESLint runs no rule, 4.1 s of parsing left for EN-085 to remove.
+- `#run` EN-093: every rule, formatter setting, hook and convention reviewed for the agent's own work (`docs/conventions/rules.md`); 9 correctness rules added to oxlint, `@param` and `@returns` off in test files, `lint:fix` and the `eslint` scope dropped, ADR-0011 and ADR-0012 measured and kept, the width 100 measured and kept.; 11 Vitest correctness rules on test files; `docs/conventions/rule-catalogue.md` with profiles (T4).
 
 ## 2026-10-17 — SP-021 answered, F19's run started
 
