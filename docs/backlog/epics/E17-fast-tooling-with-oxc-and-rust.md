@@ -54,7 +54,7 @@ Ordered by the Product Owner at the refinement of 2026-10-16.
 | Feature | Status |
 | --- | --- |
 | [F18](../features/E17-F18-a-safe-and-cheap-parallel-run.md) — A safe and cheap parallel run, and E15's leftovers | done |
-| [F19](../features/E17-F19-oxc-and-rust-tools.md) — Checks on Oxc, TypeScript 7 and Rust | in-progress |
+| [F19](../features/E17-F19-oxc-and-rust-tools.md) — Checks on Oxc, TypeScript 7 and Rust | done |
 | [F20](../features/E17-F20-a-context-diet.md) — A context diet for every agent | draft |
 | [F21](../features/E17-F21-agent-tools-in-rust.md) — Agent tools and the library server in Rust | draft |
 

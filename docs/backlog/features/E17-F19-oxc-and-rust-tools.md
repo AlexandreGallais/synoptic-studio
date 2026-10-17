@@ -2,7 +2,7 @@
 id: F19
 epic: E17
 title: Checks on Oxc, TypeScript 7 and Rust
-status: in-progress
+status: done
 ---
 
 # E17 · F19 — Checks on Oxc, TypeScript 7 and Rust
@@ -94,7 +94,7 @@ In delivery order, written on 2026-10-17 when the Product Owner started F19's ru
 | [EN-093](../stories/E17-F19-EN-093-rules-and-format-chosen-by-the-agent.md) | Enabler | Every rule and tool reviewed by the agent for its own work | done |
 | [EN-085](../stories/E17-F19-EN-085-docs-build-on-change-eslint-out-oxc-adr.md) | Enabler | The docs build on change, ESLint out, the ADR on Oxc | done |
 | [AUD-021](../stories/E17-F19-AUD-021-audit-f19.md) | Audit | Audit F19 | done |
-| [VAL-020](../stories/E17-F19-VAL-020-validate-f19.md) | Validation | Validate F19 | ready |
+| [VAL-020](../stories/E17-F19-VAL-020-validate-f19.md) | Validation | Validate F19 | done |
 
 ## Feature plan
 

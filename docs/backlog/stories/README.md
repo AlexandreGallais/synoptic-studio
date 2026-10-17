@@ -232,7 +232,7 @@
 | [EN-093](./E17-F19-EN-093-rules-and-format-chosen-by-the-agent.md) | F19 | Every rule and tool reviewed by the agent for its own work | done |
 | [EN-085](./E17-F19-EN-085-docs-build-on-change-eslint-out-oxc-adr.md) | F19 | The docs build on change, ESLint out, the ADR on Oxc | done |
 | [AUD-021](./E17-F19-AUD-021-audit-f19.md) | F19 | Audit F19 | done |
-| [VAL-020](./E17-F19-VAL-020-validate-f19.md) | F19 | Validate F19 | ready |
+| [VAL-020](./E17-F19-VAL-020-validate-f19.md) | F19 | Validate F19 | done |
 | [SP-022](./E17-F20-SP-022-research-f20.md) | F20 | Research for F20, the context diet | draft |
 | [EN-064](./E17-F20-EN-064-one-hour-prompt-cache.md) | F20 | A one-hour prompt cache on long agents | draft |
 | [EN-065](./E17-F20-EN-065-workers-started-from-a-digest.md) | F20 | Workers started from a digest instead of all of CLAUDE.md | draft |

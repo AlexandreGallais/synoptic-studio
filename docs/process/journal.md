@@ -2,6 +2,11 @@
 
 What each working session dealt with, in the agent's words: the Product Owner's requests in neutral words, decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`).
 
+## 2026-10-17 — F19 validated, F20 refined
+
+- `#run` VAL-020: F19 validated by the agent (ADR-0072): its 12 criteria proven again, 12 lines in E17's checklist, the demo page `docs/guide/f19-checks-on-oxc-and-rust.md`; `check:all` from 124 s to 39.6 to 41.3 s on a code change, 50.6 to 57.0 s with the site built.
+- `#run` The Product Owner refined F20 in two rounds the same evening (note 0024): a run never stops for a question, only on a blocker, at the scope set at its start or when told; notifications only for a question or a blocker; one worker type per task kind; Sonnet for simple tasks with a measured trial; Git sequences and every page fetch through the library as tools of our own in F20.
+
 ## 2026-10-17 — F18 validated, F19 started
 
 - `#run` The Product Owner answered the queued questions: the subagent limit set in the settings (EN-063); ADR-0067's release order, the tables moved to F19 (ADR-0068) and the refused face dropped (US-061) confirmed; EN-062's macOS-only font tests not accepted, so EN-067 made every font test run on every system; the font list to offer only fonts read whole and checked (US-062).
