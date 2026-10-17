@@ -29,7 +29,7 @@ Recorded as understood, with the research behind each in note 0023, section "The
 
 1. `npm run lint` runs oxlint 1.87.0 or later (each version at least 7 days old) with its native rules and `tsgolint`'s type-aware rules, then the project's Rust linter, and reports nothing on the tree; every rule of `eslint/` is carried, rewritten, or dropped with its reason in the ADR.
 2. `@typescript-eslint/prefer-destructuring` is carried by the native `eslint/prefer-destructuring` with the same options; `no-unsafe-enum-assignment` is dropped because `enum` is forbidden; `naming-convention` and the five type-aware functional rules are rewritten without types in their strict form, each with tests of what it catches and of a type defined elsewhere that it refuses.
-3. The 10 project rules, `functional/no-return-void`, `no-restricted-syntax` (its 7 selectors), `require-atomic-updates` and `consistent-this` run in the project's Rust linter on the `oxc` crates (0.153.0 or later, at least 7 days old, each crate in `docs/tooling/dependencies.md`), each with its tests carried over from `eslint/`.
+3. The 10 project rules, `functional/no-return-void`, `no-restricted-syntax` (its 7 selectors), and `require-atomic-updates` run in the project's Rust linter on the `oxc` crates (0.153.0 or later, at least 7 days old, each crate in `docs/tooling/dependencies.md`), each with its tests carried over from `eslint/`.
 4. The 21 Markdown rules run in the same Rust linter, with the findings ESLint's Markdown plugin gave on the same pages.
 5. `npm run format:check` runs oxfmt on the same targets as Prettier, Markdown included.
 6. TypeScript 7.0.2 or later is the only TypeScript: the type check reports what TypeScript 6 reported and `build` writes the same declarations; no package of TypeScript 6 is left.
@@ -37,7 +37,7 @@ Recorded as understood, with the research behind each in note 0023, section "The
 8. `check:all` runs the docs build only when `docs/`, `src/` or the playground changed, and ends in 70 to 90 s on a code story on the Product Owner's machine, lane times printed as now.
 9. A `rust` lane runs `cargo fmt --check`, Clippy with warnings denied, the tests, a coverage floor (`cargo-llvm-cov`) and `cargo deny check advisories` (offline in the pre-push).
 10. The Rust tools use Rust's portable standard calls where one exists (`File::lock` instead of `flock`), and the `rust` lane checks them for Windows without linking.
-11. Every rule that oxlint runs today only as a JS plugin of a third-party package (265) is triaged — dropped with its reason when a project rule already forbids what it checks or when it guards nothing this code can contain, kept otherwise (note 0023: 232 kept, 33 dropped) — and each kept rule runs in the project's Rust linter, with tests of the cases its plugin's documentation gives; ESLint leaves at F19's end.
+11. Every rule that oxlint runs today only as a JS plugin of a third-party package (265) is triaged — dropped with its reason when a project rule already forbids what it checks or when it guards nothing this code can contain, kept otherwise (note 0023: 228 kept, 37 dropped, after EN-074 confirmed the triage against the code) — and each kept rule runs in the project's Rust linter, with tests of the cases its plugin's documentation gives; ESLint leaves at F19's end.
 12. The formatter prints Markdown tables without padding and keeps paragraphs as written (moved from F18, ADR-0068).
 
 ## Not moved, and why
@@ -59,7 +59,7 @@ In delivery order, written on 2026-10-17 when the Product Owner started F19's ru
 | [EN-071](../stories/E17-F19-EN-071-typescript-7-for-the-type-check.md) | Enabler | TypeScript 7 for the type check and the declarations | done |
 | [EN-072](../stories/E17-F19-EN-072-api-pages-from-a-rust-generator.md) | Enabler | The API pages from a Rust generator on Oxc | done |
 | [EN-073](../stories/E17-F19-EN-073-oxfmt-instead-of-prettier.md) | Enabler | oxfmt instead of Prettier | done |
-| [EN-074](../stories/E17-F19-EN-074-oxlint-with-native-and-type-aware-rules.md) | Enabler | oxlint with its native and type-aware rules | ready |
+| [EN-074](../stories/E17-F19-EN-074-oxlint-with-native-and-type-aware-rules.md) | Enabler | oxlint with its native and type-aware rules | done |
 | [EN-075](../stories/E17-F19-EN-075-project-linter-in-rust.md) | Enabler | The project's Rust linter and its own rules | ready |
 | [EN-076](../stories/E17-F19-EN-076-naming-and-functional-rules-without-types.md) | Enabler | naming-convention and the functional rules without types | ready |
 | [EN-089](../stories/E17-F19-EN-089-font-files-read-once-per-test-run.md) | Enabler | Font files read once per test run | done |
