@@ -7,7 +7,7 @@ flowchart LR
   A[AGENTS.md<br/>rules for any agent] --> C[CLAUDE.md<br/>imports AGENTS.md]
   C --> R[.claude/rules<br/>pitfalls per area]
   C --> S[.claude/skills<br/>procedures]
-  C --> G[.claude/agents<br/>expert reviewers]
+  C --> G[.claude/agents<br/>run's workers, expert reviewers]
   C --> H[.claude/hooks<br/>guards, metrics, status line]
   C --> M[.mcp.json<br/>source library]
 ```
@@ -36,10 +36,32 @@ flowchart LR
 | `/review` | the demo page and checklist of a feature; the epic review (ADR-0023) |
 | `/retro` | the epic retrospective: metrics, evolvability, playbook, configuration (ADR-0023) |
 | `/triage` | open issues presented with a recommendation (ADR-0026) |
+| `project-rules` | the digest of `AGENTS.md` and `CLAUDE.md`, preloaded by every agent type started without them (EN-065) |
+| `worker-brief` | the brief of a run's worker (ADR-0072), preloaded by `story-worker` and `researcher`, read by path by a `general-purpose` worker |
+
+## Run's workers
+
+A run starts each task with the agent type its task kind uses (EN-065, the run skill names which). Each type is started with `omitClaudeMd` (no `CLAUDE.md`, `AGENTS.md` nor the memory index), its rules preloaded as skills, and only the tools its task uses: a `general-purpose` worker also receives every tool's definition, the skill listing and the deferred tools' list (`REF-CC-SUBAGENTS`). First request measured by `context:size` on the same small task (EN-065, Measures):
+
+| Agent type | Task kind | Tools | Preloaded | First request, tokens | `general-purpose`, same task |
+| --- | --- | --- | --- | --- | --- |
+| `story-worker` | `US`, `EN`, `NAM`, `CHK`, the fixes of an `AUD`, the preparation of a `VAL` | Bash, Read, Edit, Write, Grep, Glob, the library | `project-rules`, `worker-brief` | 9,627 | 27,843 |
+| `researcher` | a research spike (`SP`) | the story worker's, `WebFetch`, `WebSearch` | `project-rules`, `worker-brief`, `spike` | 11,201 | 27,843 |
+| `clerk` | journal entries, log rows, backlog statuses, rebases and merges the main thread hands off | Bash, Read, Edit, Write, Grep, Glob | `project-rules` | 6,901 | 27,843 |
+
+Why: a worker's first request is read again at each of its requests, about 213 per worker in F18 and F19; the run's `general-purpose` worker started at 38,900 tokens ([research note 0024](../research/notes/0024-f20-context-diet.md)). A task none of the types fits keeps `general-purpose`, given the brief's path inside its worktree. A rule a typed worker misses is added to its brief or to `project-rules`, not to every agent's. A story's merge and finishing stay with the main thread (`story:finish`).
 
 ## Expert agents
 
-Read-only reviewers in a fresh context, each with the documents it reads first (`REF-CC-SUBAGENTS`). The skills start them in the background and in parallel; they report, they never edit. The agents that read sources (`auditor`, `math-expert`, `functional-analyst`) have the library's tools (`library_search`, `library_get`, `library_read`) and follow the same protocol as the main agent (`docs/tooling/sources.md`): library first, the web only for a page it cannot read. Until 2026-10-13 they had only `WebFetch` and `WebSearch`, so their pages never reached the library unless their prompt asked for it.
+Read-only reviewers in a fresh context, each with the documents it reads first (`REF-CC-SUBAGENTS`). The skills start them in the background and in parallel; they report, they never edit. The agents that read sources (`auditor`, `math-expert`, `functional-analyst`) have the library's tools (`library_search`, `library_get`, `library_read`) and follow the same protocol as the main agent (`docs/tooling/sources.md`): library first, the web only for a page it cannot read. Until 2026-10-13 they had only `WebFetch` and `WebSearch`, so their pages never reached the library unless their prompt asked for it. Since EN-065 each starts with `omitClaudeMd`, without `CLAUDE.md` nor `AGENTS.md`, and with `project-rules` preloaded: about 7,500 tokens fewer in its first request (EN-065, Measures).
+
+| Agent | First request before, tokens | After, tokens |
+| --- | --- | --- |
+| `auditor` | 15,103 | 7,608 |
+| `verifier` | 13,753 | 6,258 |
+| `doc-editor` | 13,641 | 6,146 |
+| `math-expert` | 15,450 | 7,925 |
+| `functional-analyst` | 15,439 | 7,916 |
 
 | Agent | Expert in | Started by |
 | --- | --- | --- |

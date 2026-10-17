@@ -31,7 +31,18 @@ Scope: $ARGUMENTS. Never without the Product Owner's explicit start in this conv
 
 The main agent dispatches and stays free for the Product Owner, who may write at any time:
 
-- **One worker per story**, an `Agent` call (`general-purpose`) in the background, in a worktree made by `npm run worktree:new -- <ID>` (EN-052). Its prompt is short: the story id, the feature branch, the worktree, that every Bash call starts with `cd "<worktree>" || exit 9`, and the path of the brief **inside the worktree**, `<worktree>/.claude/skills/worker-brief/SKILL.md` ([worker brief](../worker-brief/SKILL.md)).
+- **One worker per story**, an `Agent` call in the background, in a worktree made by `npm run worktree:new -- <ID>` (EN-052), of the agent type its task kind uses (EN-065, `docs/tooling/agent.md`, Run's workers):
+
+  | Task | Agent type |
+  | --- | --- |
+  | a `US`, `EN`, `NAM` or `CHK` story, the fixes of an `AUD`, the preparation of a `VAL` | `story-worker` |
+  | a research spike (`SP`) | `researcher` |
+  | a review, as the audit and spike skills start it | `auditor`, `verifier`, `doc-editor`, `math-expert`, `functional-analyst` |
+  | a journal entry, log rows, backlog statuses, a rebase or a merge the main thread hands off | `clerk` |
+  | a task none of them fits | `general-purpose` |
+
+  Its prompt is short: the story id, the feature branch, the worktree, that every Bash call starts with `cd "<worktree>" || exit 9`. A typed worker starts with the brief and the rules' digest preloaded (`worker-brief`, `project-rules`): its prompt does not give the brief's path. A `general-purpose` worker is also given the brief's path **inside the worktree**, `<worktree>/.claude/skills/worker-brief/SKILL.md` ([worker brief](../worker-brief/SKILL.md)). A rule a typed worker missed goes into its brief or `project-rules`, never into every agent's.
+
 - **The main checkout stays on `develop`** during a run: a rule, skill or brief read there is `develop`'s, older than the feature branch's. Read them in a worktree of the feature branch: an older brief gives older rules.
 - **A background Git command of the main thread** starts with `cd <worktree> || exit 9` and checks the branch name (`git branch --show-current`) before it pushes, finishes or removes anything.
 - **A rebase conflict** is resolved in the working file, never by `checkout --ours` or `--theirs`, then diffed against the story's version before `rebase --continue`: a whole side taken drops its non-conflicting lines.

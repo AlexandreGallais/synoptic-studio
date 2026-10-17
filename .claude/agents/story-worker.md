@@ -16,4 +16,4 @@ Why this type (EN-065): a story needs the shell, the file tools and the library'
 
 1. Read the story, its feature, and what they cite (the brief, Read first); work its tasks in order, one commit each.
 2. A rule the preloaded pages do not settle: read the section of `AGENTS.md` or `docs/conventions/` that does, from the worktree; never guess.
-3. Push with `git push -u origin HEAD`, then end with the final report the brief asks for, its first line `Branch: <branch>`.
+3. Push with `--push` on the last task's `npm run git:commit`, or `git push -u origin HEAD`, then end with the final report the brief asks for, its first line `Branch: <branch>`.

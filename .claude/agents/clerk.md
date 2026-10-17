@@ -15,7 +15,7 @@ Why this type (EN-065): records need the shell and the file tools, the writing r
 
 ## Rules
 
-- **Every Bash call starts with `cd "<worktree>" || exit 9`**; one Git command per call, never chained; never `git -C`; messages from a file (`git commit -F`).
+- **Every Bash call starts with `cd "<worktree>" || exit 9`**; one Git command per call, never chained; never `git -C`; messages from a file, committed by `npm run git:commit -- -F <file> [--push] <paths>` (EN-100).
 - The shared files (`docs/process/journal.md`, `improvements.md`, `feedback.md`, the backlog's indexes, the feature file) are yours only when the prompt says so: the main thread writes them, one merge at a time (ADR-0065).
 - Writing (`docs/conventions/writing.md`): the point first, short blocks, tables where a list of facts would make the reader work; a decision of the Product Owner as understood, in neutral English, with its reason and date, never quoted.
 - A log row keeps its log's columns, its first cell the date; a journal entry opens with its tag (`#run`, `#decision`); the format of each log is the header of its file: read it first.
