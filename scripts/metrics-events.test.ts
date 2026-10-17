@@ -21,6 +21,7 @@ const TRANSCRIPT = [
     message: {
       content: [{ text: "Checking.", type: "text" }],
       id: "msg_1",
+      model: "claude-opus-5-5",
       usage: USAGE,
     },
     sessionId: "s1",
@@ -34,6 +35,7 @@ const TRANSCRIPT = [
         { id: "toolu_1", input: { command: "npm  run\ncheck" }, name: "Bash", type: "tool_use" },
       ],
       id: "msg_1",
+      model: "claude-opus-5-5",
       usage: USAGE,
     },
     sessionId: "s1",
@@ -60,6 +62,7 @@ describe("transcriptEvents", () => {
       {
         branch: "main",
         id: "msg_1",
+        model: "claude-opus-5-5",
         session: "s1",
         time: start,
         tokens: { cacheRead: 100, cacheWrite: 20, input: 3, output: 7 },
