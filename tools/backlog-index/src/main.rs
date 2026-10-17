@@ -10,6 +10,7 @@ mod order;
 mod story;
 mod table;
 
+use std::ffi::OsStr;
 use std::fs;
 use std::io;
 use std::path::Path;
@@ -27,7 +28,10 @@ fn items(folder: &Path) -> io::Result<Vec<(String, String)>> {
     for entry in fs::read_dir(folder)? {
         let name = entry?.file_name().to_string_lossy().into_owned();
 
-        if name.ends_with(".md") && name != "README.md" && !name.starts_with('_') {
+        if Path::new(&name).extension() == Some(OsStr::new("md"))
+            && name != "README.md"
+            && !name.starts_with('_')
+        {
             let text = fs::read_to_string(folder.join(&name))?;
             items.push((name, text));
         }

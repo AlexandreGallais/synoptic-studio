@@ -1,12 +1,12 @@
 [package]
 name = "worktree"
 version = "0.1.0"
-edition = "2024"
+edition.workspace = true
 description = "A worktree named after its story, on its story branch (EN-052)"
-license = "Apache-2.0"
-publish = false
+license.workspace = true
+publish.workspace = true
 
 [dependencies]
 
-[lints.clippy]
-pedantic = { level = "warn", priority = -1 }
+[lints]
+workspace = true

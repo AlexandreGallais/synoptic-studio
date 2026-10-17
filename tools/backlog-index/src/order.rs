@@ -257,6 +257,9 @@ mod tests {
 
     #[test]
     fn gives_nothing_without_stories() {
-        assert!(ordered(&[], &[parent("E01", "", "| [F01](x) |\n")], &[]).is_empty());
+        assert_eq!(
+            ids(&ordered(&[], &[parent("E01", "", "| [F01](x) |\n")], &[])),
+            Vec::<&str>::new()
+        );
     }
 }

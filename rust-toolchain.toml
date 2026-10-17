@@ -1,0 +1,4 @@
+# The Rust toolchain of the tools/ crates, pinned (EN-068, REF-RUSTUP-TOOLCHAIN).
+[toolchain]
+channel = "1.99.1"
+components = ["rustfmt", "clippy"]
