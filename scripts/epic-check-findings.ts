@@ -9,7 +9,17 @@ import { stripVTControlCharacters } from "node:util";
 import { text } from "../.claude/hooks/status-json.ts";
 import { readRunningCall } from "../.claude/hooks/status-place.ts";
 
-import { LANES } from "./check-all.ts";
+/**
+ * The lanes of `check:all`, as `tools/repo-tools/src/check_all.rs` runs them (EN-103): kept here
+ * until `epic-check` is ported in turn.
+ */
+const LANES: readonly (readonly string[])[] = [
+  ["lint"],
+  ["test"],
+  ["docs:build", "playground:build"],
+  ["format:check", "lint:secrets", "deps:audit", "deps:unused", "deps:tools", "deps:outdated"],
+  ["check:rust"],
+];
 
 /** One line of the check's table. */
 export type Finding = {

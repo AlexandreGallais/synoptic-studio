@@ -107,7 +107,7 @@ Proven again on 2026-10-17 by VAL-020: its story holds the command and what was 
 | AC5 oxfmt | `npm run format:check`, Markdown included | `tools/format/tests/format.rs` |
 | AC6 TypeScript 7 alone | the type check in the lint, declarations by Oxc | `tests/type-check-with-lint.test.ts`, `tests/declarations.test.ts` |
 | AC7 the API pages from Rust | 537 pages, every export documented, every link resolved | `tools/api-pages/tests/` |
-| AC8 the site built on change | about 40 s for a code change | `scripts/check-all.test.ts` |
+| AC8 the site built on change | about 40 s for a code change | `tools/repo-tools/tests/check_all.rs` (`scripts/check-all.test.ts` until EN-103) |
 | AC9 the `rust` lane | format, Clippy, tests, coverage floor 93 %, advisories | `tests/check-targets.test.ts`, `tests/rust-advisories.test.ts` |
 | AC10 portable Rust | `File::lock`, checked for Windows | `tests/check-targets.test.ts` |
 | AC11 every plugin rule triaged, ESLint out | kept rules in Rust with their documented cases | `tools/lint/src/rules/unicorn/`, `tools/lint/src/rules/jsdoc/` |

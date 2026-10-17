@@ -33,7 +33,7 @@
     "fix": "cargo run --release -q -p format -- --write \"*\" .cargo .claude/agents .claude/hooks .claude/rules .claude/skills .claude/settings.json .github .husky .vscode docs playground scripts src tests tools && oxlint --type-check --fix --deny-warnings --report-unused-disable-directives-severity=error *.ts .claude/hooks docs playground scripts src tests && cargo run --release -q -p lint -- --fix *.ts *.md .claude/agents .claude/hooks .claude/rules .claude/skills .github docs playground scripts src tests",
     "check": "npm run format:check && npm run lint && npm run lint:secrets && npm run test && npm run deps:audit && npm run deps:unused && npm run check:rust",
     "check:rust": "cargo fmt --all --check && cargo clippy --workspace --all-targets --locked --quiet && npm run --silent rust:advisories && npm run --silent rust:coverage && cargo check --workspace --all-targets --locked --quiet --target x86_64-pc-windows-msvc",
-    "check:all": "cargo run --release -q -p heavy-lock -- node --harmony-temporal scripts/check-all.ts",
+    "check:all": "cargo run --release -q -p heavy-lock -- cargo run --release -q -p repo-tools --bin check-all",
     "test": "cargo run --release -q -p heavy-lock -- vitest run --coverage",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
