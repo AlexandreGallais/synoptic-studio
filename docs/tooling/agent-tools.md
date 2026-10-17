@@ -6,7 +6,7 @@
 
 | Command | Does | Replaces |
 | --- | --- | --- |
-| `npm run replace` | reads blocks `@@ file`, `<<<`, old text, `===`, new text, `>>>` on standard input, and writes nothing unless each old text is found exactly once | a Python script of `replace` calls |
+| `npm run replace` | reads blocks `@@ file`, `<<<`, old text, `===`, new text, `>>>` on standard input, and writes nothing unless each old text is found exactly once; a line outside a block but blank lines, or a text holding a line `<<<` or `>>>` (a block that lost its `@@` line or its `>>>`), refuses the whole input, naming the block and its line (EN-103) | a Python script of `replace` calls |
 | `npm run backlog:status -- <ID> <status>` | changes an item's status in its file, its folder's index and its parent's table, the three places `backlog.test.ts` checks; a story's index is written again rather than edited | three hand edits |
 | `npm run backlog:index` | writes `docs/backlog/stories/README.md` from each story's front matter, in the order of the epics' and features' tables (`tools/backlog-index/`, ADR-0065) | the index edited by hand on every branch |
 | `npm run worktree:new -- <ID> [--type <type>]` | adds `.claude/worktrees/<id>` on `<type>/<id>-<topic>` from the story's feature branch on GitHub (`origin/develop` for an epic's story), the type from its kind (`US`, `VAL` `feat`; `EN` `chore`; `NAM` `refactor`; others `docs`), links `node_modules`, runs Husky so that a push runs the branch's own hooks ([Git workflow](./git-workflow.md#hooks-husky)); refuses an existing folder and a branch name that is not a story's (`tools/worktree/`) | worktrees named `agent-a13cbef…` |
@@ -96,7 +96,7 @@ A tool is written when a retrospective's metrics show its signal — the hand wo
 | `declarations` | `build` | the library's `.d.ts` from each module alone (ADR-0071, [build](./commands.md#build)) |
 | `library` | `.mcp.json` (`library-mcp`), `library`, `metrics`, `records:save` | the local source library: its MCP server on `rmcp` and its command line, over one SQLite file ([sources](./sources.md)) |
 | `tool-use` | every binary of the workspace, by its `main` | each use of a tool, one line of `.git/metrics/tool-uses.jsonl` ([metrics](./metrics.md#the-uses-of-each-tool)) |
-| `repo-tools` | `check:all`, `backlog:status`, `epic:check`, `story:finish` | the backlog and repository tools ported from `scripts/` with their output unchanged (EN-103), one binary each: `check-all` ([the lanes](./commands.md#the-lanes-of-the-full-check)), `backlog-status`, `epic-check`, `story-finish` |
+| `repo-tools` | `check:all`, `backlog:status`, `epic:check`, `story:finish`, `replace` | the backlog and repository tools ported from `scripts/` with their output unchanged (EN-103), one binary each: `check-all` ([the lanes](./commands.md#the-lanes-of-the-full-check)), `backlog-status`, `epic-check`, `story-finish`, `replace` |
 | `test-support` | the Rust tests | `test_support::command`, a command without the inherited `GIT_*` variables, for every test that runs `git` ([tests that run Git](./commands.md#tests-that-run-git)) |
 
 `worktree` and `git-sequences` decide what they do in their library, without Git nor files, and their binary only runs it, so that the decisions are tested without a repository (functional core, ADR-0014).
