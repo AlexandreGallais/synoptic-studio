@@ -21,7 +21,7 @@ Scope: $ARGUMENTS. Never without the Product Owner's explicit start in this conv
 
 - **First feature of an epic**: `npm run epic:check -- <epic> <first day>` before anything else, the code scanning alerts included; what it finds is fixed or listed for the Product Owner.
 
-0. **`/run` is the go-ahead** (ADR-0072): set the feature `in-progress` and its stories `ready` yourself (a `docs(backlog)` commit on `develop`); never ask the Product Owner to do it. Ask only business questions.
+0. **`/run` is the go-ahead** (ADR-0072): set the feature `in-progress` and its stories `ready` yourself (a `docs(backlog)` commit on `develop`); never ask the Product Owner to do it. Ask only business questions. Then `npm run run:start` (EN-092): it opens the run's totals, its duration and tokens counted from now; a run continued in a new session runs it again, which adds the session and keeps the start.
 1. Record the authorization in `docs/process/journal.md` (scope, date, the Product Owner's request in neutral words) — on `develop`.
 2. Feature branch: `feature/f<nn>-<topic>` exists on `origin`, or create it there from `develop` without switching the main checkout: `git fetch origin`, then `git push origin origin/develop:refs/heads/feature/f<nn>-<topic>`.
 3. `/triage` if issues are open: present them at the next stop, do not act on them.
@@ -76,8 +76,9 @@ The main agent dispatches and stays free for the Product Owner, who may write at
 
 ## At the stop
 
-1. Journal entry (on `develop`): stories merged with their pull requests, findings, stop reason.
-2. Message to the Product Owner in French (`docs/conventions/writing.md`): what was built in plain words, the **test cards to run**, findings, questions, what the next step needs from them, and, at a session's end, the session report (`npm run metrics:session -- --all --markdown`).
+1. `npm run run:end` (EN-092): closes the run and prints its table, the duration and the tokens by kind, subagents included.
+2. Journal entry (on `develop`): stories merged with their pull requests, findings, stop reason.
+3. Message to the Product Owner in French (`docs/conventions/writing.md`): what was built in plain words, the **test cards to run**, findings, questions, what the next step needs from them, the run's table from step 1 as it is, nothing added to it, and, at a session's end, the session report (`npm run metrics:session -- --all --markdown`).
 
 ## Validation (`VAL`, with the Product Owner)
 
