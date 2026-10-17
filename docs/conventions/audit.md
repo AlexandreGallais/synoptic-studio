@@ -41,7 +41,7 @@ Procedure: the `/audit` skill. Sections A to E are first reviewed by the indepen
 ## F. Quality gates
 
 1. `npm run check:all` green; coverage 100 %; `npm run build` green.
-2. No `.skip` / `.only` in tests; every disable directive (`oxlint-disable`, `lint-disable`, `eslint-disable`) has a justification still valid and its row in the [register of exceptions](./exceptions.md).
+2. No `.skip` / `.only` in tests; every disable directive (`oxlint-disable`, `lint-disable`, Rust `allow`) has a justification still valid and its row in the [register of exceptions](./exceptions.md).
 3. The feature is demonstrable (playground or tests) for its `VAL` story.
 4. Agent configuration (`AGENTS.md`, `CLAUDE.md`, `.claude/rules/`, skills, agents) still matches the project; contradictions removed.
 

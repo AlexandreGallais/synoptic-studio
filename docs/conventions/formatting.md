@@ -18,7 +18,7 @@ One command formats every file the repository formats: `cargo run --release -q -
 | HTML (`playground/index.html`) | oxfmt, through the Prettier it bundles (`REF-OXFMT-LANGUAGES`); no Prettier package in `package.json` |
 | Markdown tables | oxfmt pads them, with no option against it; `tools/format` then removes the padding: each cell trimmed, one space around each `\|`, delimiter cells `---` with their colons |
 | Rust | `cargo fmt` (`check:rust`) |
-| SVG, XML, shell hooks, `LICENSE`, dotfiles | nothing, as before: neither Prettier nor oxfmt reads them |
+| SVG, XML, shell hooks, `LICENSE`, dotfiles | nothing: oxfmt does not read them |
 
 - **Tables without padding**: a wider cell changes its own row only, so parallel branches no longer conflict on a table's widths (ADR-0068). Paragraphs and list items stay on the lines they were written on (`proseWrap: "preserve"`).
 - **`--check`** changes nothing: oxfmt checks every file but Markdown; each Markdown file is formatted in a temporary copy, its tables unpadded, then compared with the file.

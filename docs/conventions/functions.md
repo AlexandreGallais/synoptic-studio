@@ -39,8 +39,8 @@ Why a JSDoc tag and not a decorator: a TypeScript decorator only applies to clas
 
 The rule behind the limits (`AGENTS.md`, golden rules, 2026-10-17): a function holds **one business context**. When a calculation needs two others that a field names, those two are named functions of their own, and the calculation reads as their composition (ADR-0049). The numeric limits below — lines, statements, complexity, depth, nested calls — are **guardrails** that flag a function holding more than one context; they never decide alone:
 
-- a split that gives two halves invented names (`placeA`, `placeB`, `placeRest`) of a context that cannot be divided is the sign of a limit that is wrong for that kind, not of a function to split: the limit is reshaped, with its evidence and an ADR superseding ADR-0011's values;
-- measured by EN-093 ([rules](./rules.md#function-limits-adr-0011-measured)): of 885 functions, 233 sit on a limit, almost all procedures at complexity 3 or depth 1; of the 265 called from one place only, a sample of 45 each names a context of its field (`edgeLengths`, `cubicVelocity`, `parseNameRecords`, `stretchedRightHalf`), none an invented half. The limits stay as they are.
+- **over a limit**: split the function where a field names the parts. When the only split gives halves invented names (`placeA`, `placeB`, `placeRest`) of a context that cannot be divided, the limit is wrong for that kind: stop and propose a new limit to the Product Owner, the function as evidence; a new limit is an ADR superseding ADR-0011's values. This is the one rule for a function over its limits, the procedures' included;
+- measured by EN-093 ([rules](./rules.md#function-limits-adr-0011-measured)): no limit forced an invented split; the limits stay as they are.
 
 ## Limits per kind (`local/kind-limits`)
 
@@ -56,7 +56,7 @@ Values: `tools/lint/src/settings.rs` (the project's linter, `local/kind-limits`)
 
 - Lines: lines holding code (blank and comment lines excluded), signature included.
 - Complexity: McCabe, decision points + 1 (`if`, `?:`, `&&`, `||`, `??`, `case`, loops, `catch`), **callbacks included**.
-- Every kind: 3 parameters at most (`@typescript-eslint/max-params`) — beyond, one named object.
+- Every kind: 3 parameters at most (`max-params`) — beyond, one named object.
 
 ## Long procedures: Composed Method
 
@@ -81,12 +81,12 @@ export function addPipe(editor: Editor, from: PortReference, to: PortReference):
 
 `orthogonalRoute`, `pipeFromRoute`, `addPipeCommand` are pure `domain` functions; `executeCommand` and `renderView` are `procedure`s. _(Illustrative example: these functions do not exist yet.)_
 
-Every decision (choosing a route, validating) lives in a tested pure function; the procedure only chains. If a procedure exceeds its limits after two splits, **stop and propose a split** to the Product Owner (`AGENTS.md`, Stop and ask when). There is deliberately no annotation lifting the limit.
+Every decision (choosing a route, validating) lives in a tested pure function; the procedure only chains. A procedure over its limits follows the [one rule](#one-business-context-per-function): split where a field names the parts, otherwise **stop and propose a new limit** to the Product Owner (`AGENTS.md`, Stop and ask when). There is deliberately no annotation lifting the limit.
 
 ## Forbidden
 
 - `any`, `!` (non-null assertion), `as` (except `as const`): an exception requires `// oxlint-disable-next-line rule -- justification` (oxlint runs these rules, `docs/conventions/lint.md`).
 - Classes, `this`, `enum` (use a union of literals), `for…in`, `get`/`set` accessors, dynamic `import()`.
   - Why no `enum`: it emits hidden JavaScript at run time, while a union of literals is erased entirely; Node.js's type stripping refuses it (`REF-NODE-TS`); and a union of literals transcribes directly into a Rust `enum` (portable core, ADR-0025).
-- A spread into the value a `reduce` callback returns (`[...acc, x]`, `{ ...acc, k: v }`): it copies the accumulator at every step, in quadratic time (EN-061, `REF-OXLINT-ACCUMULATING-SPREAD`); build the result with `map` or `flatMap`, or, outside `src/`, a loop over a local array — never by mutating the accumulator (ADR-0014). `no-restricted-syntax` reports any spread into that literal, the accumulator's or not.
+- A spread into the value a `reduce` callback returns (`[...acc, x]`, `{ ...acc, k: v }`): it copies the accumulator at every step, in quadratic time (EN-061, `REF-OXLINT-ACCUMULATING-SPREAD`); build the result with `map` or `flatMap`, or, outside `src/`, a loop over a local array — never by mutating the accumulator (ADR-0014). oxlint's `oxc/no-accumulating-spread` reports a spread of the accumulator, held in a variable or not (EN-061, EN-075); a spread of another value into the returned literal is no longer reported.
 - Magic numbers: only `-1`, `0`, `1`, `2` are allowed inline; everything else is a named, documented constant.

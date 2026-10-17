@@ -12,7 +12,7 @@ paths:
 - Barrels: the autofix writes `export type *` for a folder holding only types and never switches back to `export *` once it holds values; `barrels.test.ts` then fails — replace the line by `export *`.
 - `noUncheckedIndexedAccess`: an index read is `T | undefined`; an unreachable fallback branch breaks the 100 % coverage. Prefer an explicit, testable fallback (see `cyclicItem`).
 - Module constants: `UPPER_CASE` and documented; type members documented too (the API pages' generator, `tools/api-pages`, fails otherwise).
-- JSDoc description = sentences; `@param` / `@returns` = fragments without final period. `@kind` is a custom block tag, shown as its own section of an API page (`jsdoc/check-values` off on purpose).
+- JSDoc description = sentences; `@param` / `@returns` = fragments without final period. `@kind` is a custom block tag, shown as its own section of an API page (`definedTags` of `jsdoc/check-tag-names`).
 - Procedure verbs and per-kind limits: `tools/lint/src/settings.rs` (verbs added sorted; limits changed only with an ADR).
 - Tests: examples with hand-computed values justified in a comment, then properties with `test.prop({ … })` from `@fast-check/vitest` (record form: `max-params` is 3). `toBe` compares with `Object.is`, so `-0` differs from `0`: use `toBeCloseTo` for computed numbers.
 - DOM tests start with `// @vitest-environment happy-dom`.
@@ -23,7 +23,7 @@ paths:
 - A test refusing a value outside a string union (data read from outside) needs a cast: `// oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- <reason>`, on its own line above the code (US-009). A complexity limit in a test callback counts `?.` and `??`: destructure with one fallback instead.
 - Mutation checks by hand: save the file's content and copy it back; `git checkout` neither restores an untracked file nor keeps uncommitted work in a tracked one (F07).
 - happy-dom: `:checked` follows the `checked` attribute, not the state, and the lint autofix wraps selector values in `CSS.escape` (a space becomes `\ `, which happy-dom does not match): find radio buttons by their `checked` and `value` properties (US-010).
-- Playground limits (`max-lines` 200, `import-x/max-dependencies` 10, procedure statements 15): split by role into one-export files (`read-shape`, `show-shape`, `show-guided-step`, `write-*`), pass `update` as a callback rather than importing the page's redraw (EN-010).
+- Playground limits (`max-lines` 200, `import/max-dependencies` 10, procedure statements 15): split by role into one-export files (`read-shape`, `show-shape`, `show-guided-step`, `write-*`), pass `update` as a callback rather than importing the page's redraw (EN-010).
 - `data-*` attributes: the autofix turns `removeAttribute("data-x")` into `delete el.dataset.x`, which the type check refuses (TS4111, `npm run lint`): write `delete el.dataset["x"]` (US-011).
 - `expect.closeTo` inside `toMatchObject` / `toEqual` of objects is an `any` for the lint (`no-unsafe-assignment`): assert numbers one by one with `toBeCloseTo` (EN-010).
 - Scaling to an integer size: write `o + size · (p − o) / span`, multiplying first — `(29 / 7) · 7` is 29.000000000000004, `29 · 7 / 7` is 29 (F09, `DERIV-free-shape-stretch`).

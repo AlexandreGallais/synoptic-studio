@@ -123,7 +123,7 @@ Since 2026-10-16 every new script or tool is written in Rust, and the existing T
 - **The library stays dependency-free** (ADR-0025): crates are tools of the repository, never in `dependencies` nor in `dist`; `package.json`'s `files` is unchanged.
 - **Not available yet**: no `cargo audit` nor `cargo deny` (a crate's advisories) and no coverage tool (`cargo-llvm-cov`) are installed; the 100 % coverage rule applies to `src/` only, so Rust tools are tested like today's scripts, without a coverage floor, unless the Product Owner wants one.
 
-## The target of `check:all` (to set by the Product Owner)
+## The target of `check:all` (set on 2026-10-17: option B)
 
 | Option | `check:all` on this machine | What it takes |
 | --- | --- | --- |
@@ -163,7 +163,7 @@ TypeScript stays at 6.0: TypeDoc 0.28.20, the latest, asks for `typescript` up t
 
 ## The Product Owner's answers (2026-10-17) and the research they asked
 
-The Product Owner answered the spike's four questions on 2026-10-17 and widened its scope the same day. Each answer below is recorded as understood, with the research it asked for. Measures taken on 2026-10-17 from 08:57, under the heavy lock, on the same machine (load average 7 to 22 from other agents' work); tools tried in the spike's scratch folder, nothing added to `package.json`.
+The final state of these decisions is the feature file's "Decisions of the Product Owner" ([F19](../../backlog/features/E17-F19-oxc-and-rust-tools.md)); the rounds below record how they were reached, a later round superseding parts of an earlier one. The Product Owner answered the spike's four questions on 2026-10-17 and widened its scope the same day. Each answer below is recorded as understood, with the research it asked for. Measures taken on 2026-10-17 from 08:57, under the heavy lock, on the same machine (load average 7 to 22 from other agents' work); tools tried in the spike's scratch folder, nothing added to `package.json`.
 
 ### Decisions
 
@@ -541,3 +541,5 @@ What stays with `tsc` (TypeScript 7): `npm run typecheck` as a command of its ow
 ## Corrections of the audit (AUD-021, 2026-10-17)
 
 - **A disable directive that silences nothing**: ESLint's configuration reported one as an error (`linterOptions.reportUnusedDisableDirectives` and `reportUnusedInlineConfigs`, both `"error"`), a setting no story carried. oxlint reports an `oxlint-disable` comment that silences nothing only when asked (`--report-unused-disable-directives-severity=error`, `oxlint --help`, 1.87.0): `lint`, `fix` and lint-staged now pass it (`tests/oxlint-config.test.ts`). The project's linter already reports a `lint-disable` directive that silences nothing. `reportUnusedInlineConfigs` has no counterpart: oxlint reads no inline configuration comment (`/* eslint no-debugger: "off" */` left `debugger;` reported, tried on a probe file), so none can be left unused.
+- **The counts, reconciled once**: the counts that hold at F19's end are ADR-0075's. Of the 854 rules the theme files of `eslint/rules/` decided when ESLint left, 374 run in oxlint, 205 in the project's linter, 181 were dropped by the triage and 94 were already off; `tests/eslint-rules-accounted.test.ts` checks each rule's one fate and these four numbers against the rules recorded from Git (`tests/eslint-rules.txt`). The other counts of this note are those of a stage, over another set: the 265 rules oxlint ran only as JavaScript plugins at the spike (F19.AC11's 228 kept and 37 dropped), then the 292 of the triage's table once the rules found by later stories joined it (203 kept, 89 dropped; the list of kept rules below that table counts 196, a difference not traced). Neither is the final count. By plugin at F19's end, carried and dropped: Unicorn 273 and 74, JSDoc 43 and 20, Import 19 and 12, functional 16 and 2, @stylistic 3 and 2 (ADR-0075's tables, read by the test). ADR-0075 is accepted and stays as written.
+- **The Markdown rules (F19.AC4)**: of `@eslint/markdown`'s 21 rules the project ran, 20 run in the project's linter and `no-reference-like-urls` is dropped; the 21st rule the linter runs on pages is the project's `local/image-alt-text`. The reason for the drop covers every page: VitePress's build refuses such a dead link in `docs/`, and the weekly link check reports it on the others (`docs/conventions/lint.md`).

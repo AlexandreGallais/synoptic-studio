@@ -47,7 +47,7 @@ Asked by the Product Owner on 2026-10-17: each dev package of `package.json` is 
 | `secretlint`, `@secretlint/secretlint-rule-preset-recommend` | scans every staged and tracked file for secrets | rewritten: each pattern of the preset carried with its source and a test; the preset's patterns are read first, so that none is lost |
 | `npm-check-updates` | every package on its latest version at least 7 days old | rewritten: one registry request per package, the release dates compared; `deps:tools` (`tool-versions.ts`) joins it |
 | `knip` | unused files, exports and dev packages | rewritten on Oxc's parser and `oxc_resolver`, for this repository's layout (one export per file, barrels) |
-| `eslint`, `@eslint/js`, `typescript-eslint`, `@typescript-eslint/*`, `eslint-config-prettier`, the ESLint plugins, `@stylistic/eslint-plugin`, `prettier`, `jiti`, `typedoc` and its plugins, TypeScript 6 | lint, format, API pages | removed by F19 and this feature's clean-up |
+| `eslint`, `@eslint/js`, `typescript-eslint`, `@typescript-eslint/*`, `eslint-config-prettier`, the ESLint plugins, `@stylistic/eslint-plugin`, `prettier`, `jiti`, `typedoc` and its plugins, TypeScript 6 | lint, format, API pages | removed by F19 (EN-072, EN-073, EN-085) |
 
 `npm audit` is part of npm, not a package: kept.
 
@@ -72,7 +72,7 @@ In delivery order; numbers are given at the refinement.
 
 Last story of E17's features, before NAM-002: once the tools run on Oxc and Rust, remove what nothing uses any more.
 
-- Given the end of E17, when the clean-up ends, then ESLint, Prettier, typescript-eslint, every ESLint plugin, TypeScript 6 and TypeDoc are out of `package.json`, with `eslint.config.ts`, `eslint/`, `.prettierrc.json`, `.prettierignore` and `typedoc.json`.
+- Given F19's removals of ESLint, Prettier, typescript-eslint, the ESLint plugins, TypeScript 6 and TypeDoc (EN-072, EN-073, EN-085), when the clean-up ends, then a search finds none of their names outside the history.
 - Given each `scripts/*.ts` and `.claude/hooks/*.ts` with a Rust twin, when the clean-up ends, then the TypeScript file and its test are gone, and `package.json`, `.mcp.json`, `.claude/settings.json` and the husky hooks call the Rust binary.
 - Given `docs/tooling/dependencies.md`, when the clean-up ends, then each removed package's row is gone and each Rust crate added has one.
 - Given the unused-file check of story 6 and a search of the tracked files for each removed name, when they run, then neither finds an unused file, an unused dev package, nor a name of a removed file outside the history (journal, retrospectives, ADRs).

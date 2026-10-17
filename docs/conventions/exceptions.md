@@ -4,13 +4,13 @@ Every place where the code departs from a lint rule, with its reason (ADR-0066).
 
 | Where | Directive |
 | --- | --- |
-| one line of TypeScript | `// oxlint-disable-next-line rule -- reason` above the code for a rule oxlint runs, `// lint-disable-next-line rule -- reason` for one the project's linter runs (`tools/lint`), `// eslint-disable-next-line rule -- reason` for one ESLint runs ([lint](./lint.md#one-off-exceptions)) |
+| one line of TypeScript | `// oxlint-disable-next-line rule -- reason` above the code for a rule oxlint runs, `// lint-disable-next-line rule -- reason` for one the project's linter runs (`tools/lint`); oxlint reads an `eslint-disable` directive as its own, and the code writes none ([lint](./lint.md#one-off-exceptions)) |
 | one item of Rust | `#[allow(lint)]` on the item, its reason in a comment above it; `#![allow(lint)]` for a whole module |
 
 ## Keeping it in step
 
 - A new exception gets its row here in the same change; a removed one loses its row.
-- `tests/exceptions.test.ts` reads every tracked `.ts` and `.rs` file: each `eslint-disable`, `oxlint-disable` or `lint-disable` directive, with or without its `--` reason, and each Rust `allow` needs a row of its file and its rules, and each row needs its directive and its function in the file. A failure names the file and the rules.
+- `tests/exceptions.test.ts` reads every tracked `.ts` and `.rs` file: each `oxlint-disable` or `lint-disable` directive, and each `eslint-disable` one, which oxlint reads as its own, with or without its `--` reason, and each Rust `allow` needs a row of its file and its rules, and each row needs its directive and its function in the file. A failure names the file and the rules.
 - One row per directive: a directive that turns off two rules at once is one row, its rules in one cell.
 
 ## Library

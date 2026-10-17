@@ -22,7 +22,7 @@ A tool written once removes the writing. It is tested, linted and named after wh
 | `npm run golden:write` / `golden:check` | `golden:write` refuses in a worktree (the file is shared, EN-052); about 400 results of the library from shapes drawn with a fixed seed, written before a refactor and compared bit for bit after each change (`NAM`, ADR-0049); the pre-push runs `golden:check` whenever the file is written (EN-055) | a probe written for F13 |
 | `npm run activity` | the calls running, the latest calls of the main agent and of each subagent, the end of the background commands' output | reading transcripts to know what a subagent does |
 | `npm run epic:check -- <epic> <first day>` | the full check of what an epic produced, as a table for the retrospective: checks — a failed `check:all` named by its failing checks, their lanes and failing tests —, branches, pull requests, issues, failed calls with the worktree isolation's refusals counted apart, calls lost at a force-quit (started over an hour ago, never ended), backlog, records (EN-055) | a dozen commands at each retrospective |
-| `npm run check:all` | the release build, then the checks in five parallel lanes: 76 s, the docs build the slowest lane, then `check:rust`, the tests and the lint (CHK-020, 2026-10-17); 112 s at EN-045 (2026-10-16); 54 s instead of 90 s at RET-002 | the checks one after the other |
+| `npm run check:all` | the release build, then the checks in five parallel lanes: about 40 s on a code story, 57 to 68 s when the docs build runs (EN-085, 2026-10-17; the earlier measures in CHK-020, EN-045 and RET-002) | the checks one after the other |
 | `npm run val:prepare -- <feature>` | at a `VAL`, the feature's lines in its epic's checklist, one per numbered criterion to rewrite as what to try and what to see, the epic's checklist registered for `?checklist=<epic>` and its address printed; no guided-steps file; a Rust tool (`tools/val-prepare/`, EN-056) | guided steps written for each validation, unused since US-051 |
 | heavy lock (`tools/heavy-lock/`, Rust) | `check:all`, `npm run test`, `golden:check`, `docs:build` and `mutate` take `.git/heavy.lock`, holding a system file lock (`flock`), the owner's process id kept for the waiting message: one at a time across every worktree, the others wait and say which process holds it; a lock whose process is gone is taken over; a check started by `check:all` runs inside its lock (ADR-0072, EN-047, [commands](./commands.md#one-heavy-command-at-a-time)) | the lock taken by hand with `mkdir` in the worker's brief |
 | `npm run worktree:new -- <ID> [--type <type>]` | adds `.claude/worktrees/<id>` on `<type>/<id>-<topic>` from the story's feature branch on GitHub (`origin/develop` for an epic's story), the topic from the story's file name, the type from its kind (`US` and `VAL` `feat`, `EN` `chore`, `NAM` `refactor`, the others `docs`), links the main checkout's `node_modules` into it and runs Husky in each worktree without `.husky/_`, so a push runs the branch's own `pre-push` ([git workflow](./git-workflow.md#hooks-husky)); refuses a folder already there and a branch name that is not a story branch (`origin/…`); a Rust tool (`tools/worktree/`, EN-052) | worktrees named `agent-a13cbef…`; a branch named `origin/feature/…` by a word split |
@@ -74,7 +74,7 @@ Each tool replaces something the agent writes by hand today, and is written when
 
 | Tool | Does | Signal | Rust |
 | --- | --- | --- | --- |
-| `check:changed` | fix, lint, types and the tests related to the files changed since the base, errors only: the loop inside a task | `npx vitest` and `npx eslint` on chosen files by hand |  |
+| `check:changed` | fix, lint, types and the tests related to the files changed since the base, errors only: the loop inside a task | `npx vitest run` and `npm run lint` on chosen files by hand |  |
 | `test:mutate <file> <old> <new> <test>` | applies one change on purpose, runs the test, expects it to fail, restores the file | mutation checks done by hand with copies |  |
 | `api:diff` | the public exports before and after a change | a renamed export noticed late |  |
 
@@ -114,13 +114,13 @@ The other tools RET-003 asked for are built in F18 (the tools table above).
 
 Rust is installed on the machine. Decided at RET-003 (Product Owner, 2026-10-16): the agent's tooling moves to Oxc and Rust now, in E17, before E02 — not once each tool's cost justifies it, as RET-002 had planned. The measures of E15 say where Rust pays:
 
-| Where | E15's measure | Rust worth it |
-| --- | --- | --- |
-| lint (ESLint and its plugins) | 170 s in a loaded `check:all`, about 25 s alone at E14 | yes: oxlint, and the rules it lacks rewritten on Oxc (F19) |
-| format (Prettier) | 33 s in `check:all`; `npm run fix` 195 × 25 s | yes if oxfmt formats as Prettier does (F19's spike) |
-| hooks and status line | 65 ms per shell command, 149 ms per refresh; 13 127 calls ≈ 14 min | yes |
-| a context tool for each new agent | 24 M tokens per story; inputs read whole | yes, measured first (F20) |
-| tools run once in a while | seconds, against minutes of the model writing commands | no: the model is 93–100 % of each turn |
+| Where | E15's measure | Rust worth it | Result |
+| --- | --- | --- | --- |
+| lint (ESLint and its plugins) | 170 s in a loaded `check:all`, about 25 s alone at E14 | yes: oxlint, and the rules it lacks rewritten on Oxc (F19) | oxlint 1.5 s with the type check, `tools/lint` 0.24 s (F19, ADR-0075) |
+| format (Prettier) | 33 s in `check:all`; `npm run fix` 195 × 25 s | yes if oxfmt formats as Prettier does (F19's spike) | oxfmt 0.4 s against Prettier's 12.4 s (EN-073, ADR-0075) |
+| hooks and status line | 65 ms per shell command, 149 ms per refresh; 13 127 calls ≈ 14 min | yes | F21 |
+| a context tool for each new agent | 24 M tokens per story; inputs read whole | yes, measured first (F20) | F20 |
+| tools run once in a while | seconds, against minutes of the model writing commands | no: the model is 93–100 % of each turn | — |
 
 The Rust tools live in this repository, beside the TypeScript, with their own checks (rustfmt, clippy); the library stays dependency-free.
 

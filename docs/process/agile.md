@@ -10,13 +10,14 @@ flowchart LR
     SP --> ST[US · EN<br/>stories, CHK midway]
     ST --> AUD[AUD<br/>independent audit]
     AUD --> VAL[VAL<br/>checklist, demo]
-    VAL --> REL[Release<br/>develop to main]
+    VAL --> DEV[develop<br/>feature merged]
+    DEV -.-> REL[Release<br/>when the Product Owner asks]
   end
-  subgraph epic [Every feature released]
+  subgraph epic [Every feature merged]
     direction LR
     NAM[NAM<br/>naming, tooling and tests pass] --> REV[REV<br/>epic review, user test] --> RET[RET<br/>retrospective, metrics]
   end
-  REL -.-> NAM
+  DEV -.-> NAM
 ```
 
 ## Four levels

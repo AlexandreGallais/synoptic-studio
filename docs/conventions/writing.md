@@ -55,6 +55,10 @@ The Product Owner speaks freely while dictating; the documentation keeps their *
 
 The same holds for commit messages, the improvement and feedback logs, retrospectives, and messages to them (written in French, same shape).
 
+## Writing a rule
+
+State the principle in general terms, its reason, how to tell a case, and what to do when it conflicts with another rule. Give an example only where it removes a doubt. A date and a role (`Product Owner, 2026-10-17`) record when the rule was decided; they never replace its reason. One rule lives in one place; the other pages link it.
+
 ## Style
 
 - English, present tense, active voice, second person for instructions ("run `npm run fix`").
@@ -101,7 +105,7 @@ The [glossary](../domain/) defines the domain terms; this list fixes the words u
 | Page | Sections, in order |
 | --- | --- |
 | folder `README.md` | one sentence of purpose; table of pages |
-| ADR | Status; Context; Decision; Consequences; References |
+| ADR | Status; Context; Decision; Reasons (options table); Consequences; References |
 | derivation | statement and domain; steps, each citing a read source; cross-check; check table |
 | research note | date and origin; findings per topic with `REF-*`; retained table |
 | guide page | templates `docs/guide/_feature-demo.md`, `_epic-report.md` |

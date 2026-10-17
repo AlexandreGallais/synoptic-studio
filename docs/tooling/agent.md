@@ -98,7 +98,7 @@ jq -r 'select(.type == "user") | .message.content | strings' <id>.jsonl | grep -
 
 ## Rules for this folder
 
-- A new hook is written in Rust, in `tools/hooks` (E17, 2026-10-16), like `limit-agents`. The TypeScript hooks still here run with `node` (type stripping), linted as tooling, tested (`.claude/hooks/*.test.ts`): pure functions exported, effects under `if (import.meta.main)`; a relative import names the `.ts` file (`REF-NODE-TS`); F19 rewrites them.
+- A new hook is written in Rust, in `tools/hooks` (E17, 2026-10-16), like `limit-agents`. The TypeScript hooks still here run with `node` (type stripping), linted as tooling, tested (`.claude/hooks/*.test.ts`): pure functions exported, effects under `if (import.meta.main)`; a relative import names the `.ts` file (`REF-NODE-TS`); F21 rewrites them (ADR-0073).
 - A rule enforced by a hook is not repeated as an instruction; a guard that blocks legitimate work is changed by a new ADR, never bypassed.
 - `.claude/settings.local.json` (personal, not committed) may add permissions; it never removes a guard.
 - Changes go to `develop` like CI changes (tooling), with `chore(tooling): …` commits.
