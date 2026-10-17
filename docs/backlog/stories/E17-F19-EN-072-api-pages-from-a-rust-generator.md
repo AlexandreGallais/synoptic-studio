@@ -30,11 +30,3 @@ One task = one commit, referenced as `EN-072.Tn`.
 ## For the main thread
 
 Rule-docs: none affected, a tooling story that changes no rule of `docs/domain/`.
-
-### Journal
-
-- `#run` EN-072: the API pages come from `tools/api-pages`, a Rust crate on Oxc 0.153.0 (`oxc_parser`, `oxc_semantic`), TypeDoc and its plugins out; 527 of 537 pages and the sidebar byte for byte as TypeDoc's, the 10 others showing the written type where TypeDoc showed the compiler's; `npm run docs:api` 0.35 s against 3.5 s.
-
-### Improvements
-
-| 2026-10-17 | EN-072 | A Rust tool whose tests read TypeScript fixtures (`tools/*/tests/fixtures`) needs them left out of ESLint (`eslint/settings/files.ts`); pages compared byte for byte are kept as `.txt`, out of the formatter's and the link checker's reach | tool |
