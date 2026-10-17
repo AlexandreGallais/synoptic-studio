@@ -12,6 +12,14 @@ pub mod no_useless_else;
 pub mod no_useless_logical_operand;
 pub mod prefer_boolean_return;
 pub mod prefer_combined_guards;
+pub mod prefer_early_return;
+pub mod prefer_else_if;
+pub mod prefer_hoisting_branch_code;
+pub mod prefer_minimal_ternary;
+pub mod prefer_simple_condition_first;
+pub mod prefer_simplified_conditions;
+pub mod prefer_smaller_scope;
+pub mod prefer_switch;
 
 use super::Rule;
 
@@ -25,4 +33,12 @@ pub const RULES: &[&dyn Rule] = &[
     &no_useless_logical_operand::NoUselessLogicalOperand,
     &prefer_boolean_return::PreferBooleanReturn,
     &prefer_combined_guards::PreferCombinedGuards,
+    &prefer_early_return::PreferEarlyReturn,
+    &prefer_else_if::PreferElseIf,
+    &prefer_hoisting_branch_code::PreferHoistingBranchCode,
+    &prefer_minimal_ternary::PreferMinimalTernary,
+    &prefer_simple_condition_first::PreferSimpleConditionFirst,
+    &prefer_simplified_conditions::PreferSimplifiedConditions,
+    &prefer_smaller_scope::PreferSmallerScope,
+    &prefer_switch::PreferSwitch,
 ];

@@ -310,7 +310,32 @@ fn returns_boolean(source: &Source, callee: &IdentifierReference, depth: usize) 
 /// (`isBooleanContext`).
 #[must_use]
 pub fn is_boolean_context(source: &Source, id: NodeId) -> bool {
+    read_for_truth(source, id, true)
+}
+
+/// Whether a value is the test of an `if`, a loop or a conditional expression, through the `&&`
+/// and `||` around it (`isControlFlowTest`).
+#[must_use]
+pub fn is_control_flow_test(source: &Source, id: NodeId) -> bool {
+    read_for_truth(source, id, false)
+}
+
+/// Whether a value is read for its truth: as a test, or also negated or given to `Boolean()`.
+fn read_for_truth(source: &Source, id: NodeId, converted: bool) -> bool {
     let nodes = source.semantic.nodes();
+    let itself_converts = match nodes.kind(id) {
+        AstKind::UnaryExpression(unary) => unary.operator == UnaryOperator::LogicalNot,
+        AstKind::CallExpression(call) => {
+            !call.optional
+                && call.arguments.len() == 1
+                && matches!(&call.callee, Expression::Identifier(callee)
+                    if callee.name == "Boolean" && is_global(source, callee))
+        }
+        _ => false,
+    };
+    if converted && itself_converts {
+        return true;
+    }
     let mut current = id;
     loop {
         let span = nodes.kind(current).span();
@@ -318,10 +343,11 @@ pub fn is_boolean_context(source: &Source, id: NodeId) -> bool {
         let tested = |test: &Expression| test.span() == span;
         match nodes.kind(parent) {
             AstKind::UnaryExpression(unary) if unary.operator == UnaryOperator::LogicalNot => {
-                return true;
+                return converted;
             }
             AstKind::CallExpression(call) => {
-                return call.arguments.len() == 1
+                return converted
+                    && call.arguments.len() == 1
                     && call.arguments[0].span() == span
                     && matches!(&call.callee, Expression::Identifier(callee)
                         if callee.name == "Boolean" && is_global(source, callee))
@@ -415,6 +441,100 @@ pub fn has_side_effect(expression: &Expression) -> bool {
 #[must_use]
 pub fn suspends(expression: &Expression) -> bool {
     found(expression).suspends
+}
+
+/// Whether an expression may change anything or run a getter: `has_side_effect`, member reads
+/// and comparisons or arithmetic that may convert their operands included
+/// (`considerGetters` and `considerImplicitTypeConversion`).
+#[must_use]
+pub fn may_run_code(expression: &Expression) -> bool {
+    /// The search for a member read or a converting operator.
+    #[derive(Default)]
+    struct Search {
+        found: bool,
+    }
+    impl<'a> Visit<'a> for Search {
+        fn visit_expression(&mut self, expression: &Expression<'a>) {
+            match expression {
+                Expression::StaticMemberExpression(_)
+                | Expression::ComputedMemberExpression(_)
+                | Expression::PrivateFieldExpression(_) => self.found = true,
+                Expression::BinaryExpression(binary) => {
+                    let strict = matches!(
+                        binary.operator,
+                        oxc_ast::ast::BinaryOperator::StrictEquality
+                            | oxc_ast::ast::BinaryOperator::StrictInequality
+                    );
+                    let literals = binary.left.is_literal() && binary.right.is_literal();
+                    self.found |= !strict && !literals;
+                }
+                _ => {}
+            }
+            walk::walk_expression(self, expression);
+        }
+    }
+    let mut search = Search::default();
+    search.visit_expression(expression);
+    search.found || has_side_effect(expression)
+}
+
+/// Whether two expressions are the same reference: the same name, `this`, `super`, literal, or
+/// member read with the same key from the same object, TypeScript's wrappers left out
+/// (`utils/is-same-reference.js`).
+#[must_use]
+pub fn same_reference(left: &Expression, right: &Expression) -> bool {
+    let (left, right) = (unwrapped(left), unwrapped(right));
+    match (left, right) {
+        (Expression::Identifier(a), Expression::Identifier(b)) => a.name == b.name,
+        (Expression::ThisExpression(_), Expression::ThisExpression(_))
+        | (Expression::Super(_), Expression::Super(_))
+        | (Expression::NullLiteral(_), Expression::NullLiteral(_)) => true,
+        (Expression::StringLiteral(a), Expression::StringLiteral(b)) => a.value == b.value,
+        (Expression::NumericLiteral(a), Expression::NumericLiteral(b)) => {
+            a.value.to_bits() == b.value.to_bits()
+        }
+        (Expression::BooleanLiteral(a), Expression::BooleanLiteral(b)) => a.value == b.value,
+        (Expression::StaticMemberExpression(a), Expression::StaticMemberExpression(b)) => {
+            a.property.name == b.property.name && same_reference(&a.object, &b.object)
+        }
+        (Expression::ComputedMemberExpression(a), Expression::ComputedMemberExpression(b)) => {
+            same_reference(&a.expression, &b.expression) && same_reference(&a.object, &b.object)
+        }
+        (Expression::StaticMemberExpression(a), Expression::ComputedMemberExpression(b))
+        | (Expression::ComputedMemberExpression(b), Expression::StaticMemberExpression(a)) => {
+            matches!(&b.expression, Expression::StringLiteral(key) if key.value == a.property.name)
+                && same_reference(&a.object, &b.object)
+        }
+        _ => false,
+    }
+}
+
+/// An expression without its TypeScript wrappers, `as`, `satisfies`, `<T>` and `!`.
+#[must_use]
+pub fn unwrapped<'s, 'a>(expression: &'s Expression<'a>) -> &'s Expression<'a> {
+    match expression {
+        Expression::TSAsExpression(inner) => unwrapped(&inner.expression),
+        Expression::TSSatisfiesExpression(inner) => unwrapped(&inner.expression),
+        Expression::TSNonNullExpression(inner) => unwrapped(&inner.expression),
+        Expression::TSTypeAssertion(inner) => unwrapped(&inner.expression),
+        other => other,
+    }
+}
+
+/// A range's text with edits applied, each a range of the file and its new text; the edits
+/// lie inside the range and do not overlap.
+#[must_use]
+pub fn edited(source: &Source, range: Span, edits: &mut [(u32, u32, String)]) -> String {
+    edits.sort_by_key(|(start, end, _)| (*start, *end));
+    let mut result = String::new();
+    let mut at = range.start;
+    for (start, end, replacement) in edits.iter() {
+        result.push_str(text(source, Span::new(at, *start)));
+        result.push_str(replacement);
+        at = *end;
+    }
+    result.push_str(text(source, Span::new(at, range.end)));
+    result
 }
 
 /// The blanks that open the line of an offset.
