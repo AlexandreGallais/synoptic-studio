@@ -5,14 +5,13 @@ import {
   FUNCTIONAL_RULES,
   IMPORTS_RULES,
   JSDOC_RULES,
-  MARKDOWN_RULES,
   STYLISTIC_RULES,
   TYPESCRIPT_RULES,
   UNICORN_RULES,
   UNUSED_RULES,
 } from "./rules";
-import { LANGUAGE, MARKDOWN_LANGUAGE, OXLINT_OWNED, SCOPES } from "./scopes";
-import { IGNORED_FILES, MARKDOWN_FILES, TS_FILES } from "./settings";
+import { LANGUAGE, OXLINT_OWNED, SCOPES } from "./scopes";
+import { IGNORED_FILES, TS_FILES } from "./settings";
 
 import type { TSESLint } from "@typescript-eslint/utils";
 import type { Linter } from "eslint";
@@ -23,11 +22,6 @@ export const PRETTIER_OWNED: TSESLint.FlatConfig.Config = {
   files: TS_FILES,
   name: "prettier/owned",
 };
-
-/** Markdown rule themes, applied to Markdown pages only. */
-export const MARKDOWN_THEMES: readonly TSESLint.FlatConfig.Config[] = MARKDOWN_RULES.map(
-  (theme) => ({ ...theme, files: MARKDOWN_FILES }),
-);
 
 /** Rule themes, one entry per file of `eslint/rules/`; every rule of every plugin is decided once. */
 export const RULE_THEMES: readonly TSESLint.FlatConfig.Config[] = [
@@ -56,6 +50,4 @@ export const CONFIG: readonly (Linter.Config | TSESLint.FlatConfig.Config)[] = [
   ...RULE_THEMES,
   ...SCOPES,
   OXLINT_OWNED,
-  MARKDOWN_LANGUAGE,
-  ...MARKDOWN_THEMES,
 ];

@@ -1,8 +1,8 @@
 import js from "@eslint/js";
 import { describe, expect, it } from "vitest";
 
-import { MARKDOWN_THEMES, PRETTIER_OWNED, RULE_THEMES } from "./config";
-import { LANGUAGE, MARKDOWN_LANGUAGE, SCOPES } from "./scopes";
+import { PRETTIER_OWNED, RULE_THEMES } from "./config";
+import { LANGUAGE, SCOPES } from "./scopes";
 
 /**
  * Property of a value when it is an object, `undefined` otherwise.
@@ -35,10 +35,7 @@ function isLive(rule: unknown): boolean {
  * @returns sorted rule names
  */
 function liveRules(): string[] {
-  const plugins = [
-    ...Object.entries(LANGUAGE.plugins ?? {}),
-    ...Object.entries(MARKDOWN_LANGUAGE.plugins ?? {}),
-  ];
+  const plugins = Object.entries(LANGUAGE.plugins ?? {});
   const pluginRules = plugins.flatMap(([prefix, plugin]) =>
     Object.entries(plugin.rules ?? {})
       .filter(([, rule]: readonly [string, unknown]) => isLive(rule))
@@ -61,7 +58,7 @@ function configuredRules(configs: readonly { readonly rules?: object }[]): strin
 }
 
 /** Rules decided by the themes of `eslint/rules/`, duplicates included. */
-const THEME_RULES = configuredRules([...RULE_THEMES, ...MARKDOWN_THEMES]);
+const THEME_RULES = configuredRules(RULE_THEMES);
 
 /** Formatting rules switched off by eslint-config-prettier. */
 const PRETTIER_RULES = new Set(configuredRules([PRETTIER_OWNED]));

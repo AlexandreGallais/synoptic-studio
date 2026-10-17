@@ -28,7 +28,7 @@ pub trait MarkdownRule: Sync {
 }
 
 /// Pages never linted beside the linter's ignored paths: the changelog, written by
-/// release-please (`eslint/settings/files.ts`).
+/// release-please.
 pub const IGNORED: [&str; 1] = ["CHANGELOG.md"];
 
 /// Whether a path is a Markdown page the rules read.

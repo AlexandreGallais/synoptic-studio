@@ -88,7 +88,7 @@ A library of small named functions, each backed by a verified source, composed s
 ## Definition of done
 
 1. `npm run fix`.
-2. `npm run check:all` green: the formatter (oxfmt, then tables without padding), ESLint (0 warning, Markdown included), secretlint, `tsc`, Vitest (100 % of `src/`, the playground's floor), `npm audit`, knip, latest versions, docs and playground builds. Seen, not assumed; a failure is reported with its output.
+2. `npm run check:all` green: the formatter (oxfmt, then tables without padding), the linters (oxlint, the project's linter with the Markdown pages, ESLint; 0 warning), secretlint, `tsc`, Vitest (100 % of `src/`, the playground's floor), `npm audit`, knip, latest versions, docs and playground builds. Seen, not assumed; a failure is reported with its output.
 3. Docs up to date: domain, references, derivations, ADRs, backlog.
 4. A summary in French (`docs/conventions/writing.md`): result, changes, evidence, decisions needed, next step, session report.
 

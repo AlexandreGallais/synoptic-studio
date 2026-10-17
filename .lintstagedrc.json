@@ -7,7 +7,7 @@
   ],
   "*.md": [
     "cargo run --release -q -p format -- --write",
-    "eslint --cache --cache-location node_modules/.cache/eslint/ --fix --max-warnings=0 --no-warn-ignored"
+    "cargo run --release -q -p lint -- --fix"
   ],
   "*.{cjs,css,html,json,scss,toml,yaml,yml}": ["cargo run --release -q -p format -- --write"],
   "*": ["secretlint"]
