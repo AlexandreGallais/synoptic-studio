@@ -50,6 +50,7 @@ pub mod prefer_set_methods;
 pub mod prefer_simple_sort_comparator;
 pub mod prefer_single_array_predicate;
 pub mod prefer_while_loop_condition;
+pub mod promises;
 pub mod syntax;
 
 use super::Rule;
@@ -61,6 +62,8 @@ pub const RULES: &[&dyn Rule] = &[
     &no_array_from_fill::NoArrayFromFill,
     &no_array_front_mutation::NoArrayFrontMutation,
     &no_array_sort_for_min_max::NoArraySortForMinMax,
+    &promises::no_async_iterator_callback::NoAsyncIteratorCallback,
+    &promises::no_async_promise_finally::NoAsyncPromiseFinally,
     &no_break_in_nested_loop::NoBreakInNestedLoop,
     &no_confusing_array_splice::NoConfusingArraySplice,
     &control_flow::no_declarations_before_early_exit::NoDeclarationsBeforeEarlyExit,
@@ -73,6 +76,7 @@ pub const RULES: &[&dyn Rule] = &[
     &no_impossible_length_comparison::NoImpossibleLengthComparison,
     &no_loop_iterable_mutation::NoLoopIterableMutation,
     &no_mismatched_map_key::NoMismatchedMapKey,
+    &promises::no_multiple_promise_resolver_calls::NoMultiplePromiseResolverCalls,
     &no_negated_array_predicate::NoNegatedArrayPredicate,
     &numbers::no_negated_comparison::NoNegatedComparison,
     &no_object_methods_with_collections::NoObjectMethodsWithCollections,
@@ -102,6 +106,7 @@ pub const RULES: &[&dyn Rule] = &[
     &prefer_array_iterable_methods::PreferArrayIterableMethods,
     &prefer_array_last_methods::PreferArrayLastMethods,
     &prefer_array_slice::PreferArraySlice,
+    &promises::prefer_await::PreferAwait,
     &functions::prefer_block_statement_over_iife::PreferBlockStatementOverIife,
     &control_flow::prefer_boolean_return::PreferBooleanReturn,
     &control_flow::prefer_combined_guards::PreferCombinedGuards,
@@ -126,6 +131,8 @@ pub const RULES: &[&dyn Rule] = &[
     &control_flow::prefer_minimal_ternary::PreferMinimalTernary,
     &numbers::prefer_number_is_safe_integer::PreferNumberIsSafeInteger,
     &prefer_object_iterable_methods::PreferObjectIterableMethods,
+    &promises::prefer_promise_static_methods::PreferPromiseStaticMethods,
+    &promises::prefer_promise_try::PreferPromiseTry,
     &prefer_set_methods::PreferSetMethods,
     &functions::prefer_short_arrow_method::PreferShortArrowMethod,
     &control_flow::prefer_simple_condition_first::PreferSimpleConditionFirst,
@@ -134,6 +141,7 @@ pub const RULES: &[&dyn Rule] = &[
     &prefer_single_array_predicate::PreferSingleArrayPredicate,
     &control_flow::prefer_smaller_scope::PreferSmallerScope,
     &control_flow::prefer_switch::PreferSwitch,
+    &promises::prefer_then_catch::PreferThenCatch,
     &numbers::prefer_unary_minus::PreferUnaryMinus,
     &prefer_while_loop_condition::PreferWhileLoopCondition,
     &errors::try_complexity::TryComplexity,
@@ -146,6 +154,8 @@ pub const NAMES: &[&str] = &[
     "unicorn/no-array-from-fill",
     "unicorn/no-array-front-mutation",
     "unicorn/no-array-sort-for-min-max",
+    "unicorn/no-async-iterator-callback",
+    "unicorn/no-async-promise-finally",
     "unicorn/no-break-in-nested-loop",
     "unicorn/no-confusing-array-splice",
     "unicorn/no-declarations-before-early-exit",
@@ -158,6 +168,7 @@ pub const NAMES: &[&str] = &[
     "unicorn/no-impossible-length-comparison",
     "unicorn/no-loop-iterable-mutation",
     "unicorn/no-mismatched-map-key",
+    "unicorn/no-multiple-promise-resolver-calls",
     "unicorn/no-negated-array-predicate",
     "unicorn/no-negated-comparison",
     "unicorn/no-object-methods-with-collections",
@@ -187,6 +198,7 @@ pub const NAMES: &[&str] = &[
     "unicorn/prefer-array-iterable-methods",
     "unicorn/prefer-array-last-methods",
     "unicorn/prefer-array-slice",
+    "unicorn/prefer-await",
     "unicorn/prefer-block-statement-over-iife",
     "unicorn/prefer-boolean-return",
     "unicorn/prefer-combined-guards",
@@ -211,6 +223,8 @@ pub const NAMES: &[&str] = &[
     "unicorn/prefer-minimal-ternary",
     "unicorn/prefer-number-is-safe-integer",
     "unicorn/prefer-object-iterable-methods",
+    "unicorn/prefer-promise-static-methods",
+    "unicorn/prefer-promise-try",
     "unicorn/prefer-set-methods",
     "unicorn/prefer-short-arrow-method",
     "unicorn/prefer-simple-condition-first",
@@ -219,6 +233,7 @@ pub const NAMES: &[&str] = &[
     "unicorn/prefer-single-array-predicate",
     "unicorn/prefer-smaller-scope",
     "unicorn/prefer-switch",
+    "unicorn/prefer-then-catch",
     "unicorn/prefer-unary-minus",
     "unicorn/prefer-while-loop-condition",
     "unicorn/try-complexity",
