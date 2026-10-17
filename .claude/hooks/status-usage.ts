@@ -5,7 +5,7 @@
 import { field } from "./status-json.ts";
 
 /** One window of the subscription's rate limit: the share used and when it resets. */
-export type UsageWindow = {
+type UsageWindow = {
   /** Share of the window used, in percent, from 0 to 100. */
   readonly usedPercent: number;
   /** When the window resets, an ISO 8601 instant. */
