@@ -249,6 +249,7 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
     expect(SCRIPTS.get("check:rust")?.split(" && ")).toEqual([
       "cargo fmt --all --check",
       "cargo clippy --workspace --all-targets --locked --quiet",
+      "npm run --silent rust:advisories",
       "npm run --silent rust:coverage",
       "cargo check --workspace --all-targets --locked --quiet --target x86_64-pc-windows-msvc",
       "npm run --silent rust:build",
@@ -258,6 +259,26 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
   it("[F19.AC10] installs the Windows target its check compiles for without linking", () => {
     expect(readFileSync(join(ROOT, "rust-toolchain.toml"), "utf8")).toMatch(
       /^targets = \["x86_64-pc-windows-msvc"\]$/mu,
+    );
+  });
+
+  it("[F19.AC9] checks the crates against the RustSec advisories offline, failing aloud without the tool", () => {
+    const advisories = SCRIPTS.get("rust:advisories") ?? "";
+
+    expect(advisories).toMatch(
+      /^cargo deny --version > \/dev\/null 2>&1 \|\| \{ echo '[^']*cargo install --locked cargo-deny@0\.20\.2[^']*' >&2; exit 1; \}; /u,
+    );
+
+    expect(advisories).toContain(
+      "cargo deny --offline check advisories || { echo 'A Rust crate has a RustSec advisory, or the advisory database is missing: cargo deny fetch db",
+    );
+  });
+
+  it("[F19.AC9] fetches the advisory database in the CI before check:all", () => {
+    const workflow = readFileSync(join(ROOT, ".github", "workflows", "ci.yml"), "utf8");
+
+    expect(workflow).toMatch(
+      /- run: cargo install --locked cargo-llvm-cov@0\.9\.1 cargo-deny@0\.20\.2\n {6}- run: cargo deny fetch db\n {6}- run: npm run check:all\n/u,
     );
   });
 

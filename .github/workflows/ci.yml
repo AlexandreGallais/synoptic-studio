@@ -26,6 +26,10 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      # The Rust checks' tools (EN-069): the coverage floor and the RustSec advisories, whose
+      # database is fetched here, the pre-push hook reading its local copy offline.
+      - run: cargo install --locked cargo-llvm-cov@0.9.1 cargo-deny@0.20.2
+      - run: cargo deny fetch db
       - run: npm run check:all
         env:
           GITHUB_TOKEN: ${{ github.token }}

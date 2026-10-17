@@ -17,6 +17,7 @@
 
 - `npm run deps:audit` (`npm audit --audit-level=low`): **any** advisory fails.
 - It runs in `npm run check` (so before every push), before `npm run build`, and in the CI into `main`: a vulnerable dependency tree cannot be checked nor built.
+- The Rust crates: `npm run rust:advisories` (`cargo deny --offline check advisories`, EN-069) fails on any RustSec advisory of a crate of the root `Cargo.lock`, an unmaintained or a yanked one included; it runs in `check:rust`, from the local copy of the database (`cargo deny fetch db`), and in the CI into `main` after fetching it. The workspace has no crates.io dependency today, so only a new one can bring an advisory.
 - Fixing: upgrade the direct dependency; otherwise force the transitive one through `overrides` in `package.json` and document it in [dependencies](./dependencies.md#overrides).
 - Install scripts of dependencies are blocked by npm unless approved (`npm install-scripts`); none is needed today.
 

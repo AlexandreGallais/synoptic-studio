@@ -1,0 +1,10 @@
+# cargo-deny's configuration (EN-069, REF-CARGO-DENY-ADVISORIES): only its advisories check runs,
+# `cargo deny --offline check advisories` in check:rust, after `cargo deny fetch db` in the CI.
+[advisories]
+# The RustSec database, cargo-deny's default, kept under $CARGO_HOME/advisory-dbs.
+db-urls = ["https://github.com/rustsec/advisory-db"]
+# An unmaintained crate fails as a vulnerable one does, whether a tool uses it directly or not.
+unmaintained = "all"
+# A yanked crate fails too; no advisory is ignored.
+yanked = "deny"
+ignore = []
