@@ -33,5 +33,9 @@ Before, measured by SP-023 ([research note 0025](../../research/notes/0025-f21-a
 
 One task = one commit, referenced as `EN-105.Tn`.
 
-- [ ] T1 — The command: a row by its id, a section by its heading, the file found from the id; its tests on fixture pages (3 h)
-- [ ] T2 — The brief and the agent-tools page name it; characters and time measured (1 h)
+- [x] T1 — The command: a row by its id, a section by its heading, the file found from the id; its tests on fixture pages (3 h)
+- [x] T2 — The brief and the agent-tools page name it; characters and time measured (1 h)
+
+## For the main thread
+
+After, measured on 2026-10-18 (`docs/tooling/agent-tools.md`, Reading one row or one section): `page REF-CC-HOOKS` prints 2,335 characters, the row and its header, of the 198,307 of `docs/references.md`, in 3.2 ms against `cat`'s 2.9 ms (medians of 20 calls, the binary by its path); `npm run -s page` adds about 160 ms. The count of reads of `docs/references.md` in the hook log against SP-022's 121 is left to the run after this one. The open point on rows starting with a date (`docs/process/improvements.md`) is not a criterion: those rows are found by `grep` of the id, and the command keeps one meaning for an id, the first cell.

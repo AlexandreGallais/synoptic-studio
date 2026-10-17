@@ -17,7 +17,7 @@ How a run's worker works one story in its own worktree. The `story-worker` and `
 
 ## Read first
 
-- The story, its feature, and what they cite: ADRs, derivations, domain sections, `REF-*` rows.
+- The story, its feature, and what they cite: ADRs, derivations, domain sections, `REF-*` rows. A row or a section is read with `npm run -s page -- [<file>] <id or heading>` rather than `Read` of its whole page: `REF-CC-HOOKS` prints 2,335 characters of the 198,307 of `docs/references.md` (EN-105); `Read` stays for a page read whole or to edit.
 - The rules of the area the story touches: `.claude/rules/library.md` (`src/`, `playground/`), `.claude/rules/docs.md` (Markdown), `.claude/rules/tooling.md` (tooling, tests, `tools/`). A worktree subagent does not load them by itself.
 - `docs/conventions/README.md` and the pages it lists for what the story touches.
 
