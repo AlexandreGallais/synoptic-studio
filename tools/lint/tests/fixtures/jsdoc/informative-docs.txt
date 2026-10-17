@@ -1,0 +1,531 @@
+# informative-docs: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), a carriage return written ␍,
+# each run by ESLint 10.12.0 at src/a.ts with the project's options; recorded by EN-083.
+@@@ case 1 (documented invalid)
+
+        /** the  */
+        let myValue = 3;
+      
+@@@ findings
+2:9 This description only repeats the name it describes.
+@@@ case 2 (documented invalid)
+
+        /** The user id. */
+        let userId: string;
+      
+@@@ findings
+2:9 This description only repeats the name it describes.
+@@@ case 3 (documented invalid)
+
+        /** the my value */
+        let myValue = 3;
+      
+@@@ findings
+2:9 This description only repeats the name it describes.
+@@@ case 4 (documented invalid)
+
+        /** value **/
+        let myValue,
+          count = 3;
+      
+@@@ findings
+2:9 This description only repeats the name it describes.
+@@@ case 5 (documented invalid)
+
+        let myValue,
+          /** count **/
+          count = 3;
+      
+@@@ findings
+3:11 This description only repeats the name it describes.
+@@@ case 6 (documented invalid)
+
+        /**
+         * the foo.
+         */
+        function foo() {}
+      
+@@@ findings
+2:9 This description only repeats the name it describes.
+@@@ case 7 (documented invalid)
+
+        /**
+         * the value foo.
+         */
+        const value = function foo() {}
+      
+@@@ findings
+2:9 This description only repeats the name it describes.
+@@@ case 8 (documented invalid)
+
+        const value = {
+          /**
+           * the  prop.
+           */
+          prop: true,
+        }
+      
+@@@ findings
+3:11 This description only repeats the name it describes.
+@@@ case 9 (documented invalid)
+
+        /**
+         * name
+         */
+        class Name {}
+      
+@@@ findings
+2:9 This description only repeats the name it describes.
+@@@ case 10 (documented invalid)
+
+        /**
+         * abc def
+         */
+        const abc = class Def {}
+      
+@@@ findings
+2:9 This description only repeats the name it describes.
+@@@ case 11 (documented invalid)
+
+        class Abc {
+          /** the abc def! */
+          def;
+        }
+      
+@@@ findings
+3:11 This description only repeats the name it describes.
+@@@ case 12 (documented invalid)
+
+        const _ = class Abc {
+          /** the abc def! */
+          def;
+        }
+      
+@@@ findings
+3:11 This description only repeats the name it describes.
+@@@ case 13 (documented invalid)
+
+        class Abc {
+          /** the abc def! */
+          def() {};
+        }
+      
+@@@ findings
+3:11 This description only repeats the name it describes.
+@@@ case 14 (documented invalid)
+
+        class Abc {
+          /** def */
+          accessor def;
+        }
+      
+@@@ findings
+3:11 This description only repeats the name it describes.
+@@@ case 15 (documented invalid)
+
+        class Abc {
+          /** def */
+          def() {}
+        }
+      
+@@@ findings
+3:11 This description only repeats the name it describes.
+@@@ case 16 (documented invalid)
+
+        class Abc {
+          /** def */
+          abstract accessor def;
+        }
+      
+@@@ findings
+3:11 This description only repeats the name it describes.
+@@@ case 17 (documented invalid)
+
+        class Abc {
+          /** def */
+          abstract def();
+        }
+      
+@@@ findings
+3:11 This description only repeats the name it describes.
+@@@ case 18 (documented invalid)
+
+        class Abc {
+          /** def */
+          abstract def;
+        }
+      
+@@@ findings
+3:11 This description only repeats the name it describes.
+@@@ case 19 (documented invalid)
+
+        /** abc */
+        namespace Abc {}
+      
+@@@ findings
+2:9 This description only repeats the name it describes.
+@@@ case 20 (documented invalid)
+
+        class Abc {
+          /** def */
+          def();
+          def() {}
+        }
+      
+@@@ findings
+3:11 This description only repeats the name it describes.
+@@@ case 21 (documented invalid)
+
+        /** abc */
+        declare function abc();
+      
+@@@ findings
+2:9 This description only repeats the name it describes.
+@@@ case 22 (documented invalid)
+
+        /** abc */
+        enum Abc {}
+      
+@@@ findings
+2:9 This description only repeats the name it describes.
+@@@ case 23 (documented invalid)
+
+        enum Abc {
+          /** def */
+          def,
+        }
+      
+@@@ findings
+3:11 This description only repeats the name it describes.
+@@@ case 24 (documented invalid)
+
+        /** def */
+        interface Def {}
+      
+@@@ findings
+2:9 This description only repeats the name it describes.
+@@@ case 25 (documented invalid)
+
+        /** def */
+        type Def = {};
+      
+@@@ findings
+2:9 This description only repeats the name it describes.
+@@@ case 26 (documented invalid)
+
+        /**
+         * count
+         *
+         * @description the value
+         */
+        let value = 3;
+      
+@@@ findings
+5:1 This tag description only repeats the name it describes.
+@@@ case 27 (documented invalid)
+
+        /** @param {number} param - the param */
+        function takesOne(param) {}
+      
+@@@ findings
+2:1 This tag description only repeats the name it describes.
+@@@ case 28 (documented invalid)
+
+        /** @other param - takes one */
+        function takesOne(param) {}
+      
+@@@ findings
+2:1 This tag description only repeats the name it describes.
+@@@ case 29 (documented invalid)
+
+        /**
+         * takes one
+         * @other param - takes one
+         */
+        function takesOne(param) {}
+      
+@@@ findings
+2:9 This description only repeats the name it describes.
+4:1 This tag description only repeats the name it describes.
+@@@ case 30 (documented invalid)
+
+        /**
+         * - takes one
+         * @other param - takes one
+         */
+        function takesOne(param) {}
+      
+@@@ findings
+2:9 This description only repeats the name it describes.
+4:1 This tag description only repeats the name it describes.
+@@@ case 31 (documented invalid)
+
+        /** A smiley/winkey. */
+        let emoji;
+      
+@@@ findings
+@@@ case 32 (documented invalid)
+
+        /**
+         * package name from path
+         */
+        export function packageNameFromPath(path) {
+          const base = basename(path);
+          return /^v\d+(\.\d+)?$/.exec(base) || /^ts\d\.\d/.exec(base) ? basename(dirname(path)) : base;
+        }
+      
+@@@ findings
+2:9 This description only repeats the name it describes.
+@@@ case 33 (documented invalid)
+
+        /**
+         * package name from path
+         */
+        export default function packageNameFromPath(path) {
+          const base = basename(path);
+          return /^v\d+(\.\d+)?$/.exec(base) || /^ts\d\.\d/.exec(base) ? basename(dirname(path)) : base;
+        }
+      
+@@@ findings
+2:9 This description only repeats the name it describes.
+@@@ case 34 (documented valid)
+
+        /**   */
+        let myValue = 3;
+      
+@@@ findings
+@@@ case 35 (documented valid)
+
+        /** count */
+        let myValue = 3;
+      
+@@@ findings
+@@@ case 36 (documented valid)
+
+        /** Informative info user id. */
+        let userId: string;
+      
+@@@ findings
+@@@ case 37 (documented valid)
+
+        let myValue,
+          /** count value **/
+          count = 3;
+      
+@@@ findings
+@@@ case 38 (documented valid)
+
+        /**
+         * Does X Y Z work.
+         */
+        function foo() {}
+      
+@@@ findings
+@@@ case 39 (documented valid)
+
+        const value = {
+          /**
+           * the truthiness of the prop.
+           */
+          prop: true,
+        }
+      
+@@@ findings
+@@@ case 40 (documented valid)
+
+        const value = {
+          /**
+           * the truthiness of the prop.
+           */
+          ['prop']: true,
+        }
+      
+@@@ findings
+@@@ case 41 (documented valid)
+
+        /**
+         * abc def ghi
+         */
+        const abc = function def() {}
+      
+@@@ findings
+@@@ case 42 (documented valid)
+
+        /**
+         * name extra
+         */
+        class Name {}
+      
+@@@ findings
+@@@ case 43 (documented valid)
+
+        /**
+         * abc name extra
+         */
+        const abc = class Name {}
+      
+@@@ findings
+@@@ case 44 (documented valid)
+
+        class Abc {
+          /** ghi */
+          def;
+        }
+      
+@@@ findings
+@@@ case 45 (documented valid)
+
+        class Abc {
+          /** ghi */
+          accessor def;
+        }
+      
+@@@ findings
+@@@ case 46 (documented valid)
+
+        class Abc {
+          /** ghi */
+          def() {}
+        }
+      
+@@@ findings
+@@@ case 47 (documented valid)
+
+        class Abc {
+          /** ghi */
+          abstract accessor def;
+        }
+      
+@@@ findings
+@@@ case 48 (documented valid)
+
+        class Abc {
+          /** ghi */
+          abstract def();
+        }
+      
+@@@ findings
+@@@ case 49 (documented valid)
+
+        class Abc {
+          /** ghi */
+          abstract def;
+        }
+      
+@@@ findings
+@@@ case 50 (documented valid)
+
+        /** abc */
+        namespace Def {}
+      
+@@@ findings
+@@@ case 51 (documented valid)
+
+        class Abc {
+          /** ghi */
+          def();
+          def() {}
+        }
+      
+@@@ findings
+@@@ case 52 (documented valid)
+
+        /** abc */
+        declare function def();
+      
+@@@ findings
+@@@ case 53 (documented valid)
+
+        /** abc */
+        enum Def {}
+      
+@@@ findings
+@@@ case 54 (documented valid)
+
+        enum Abc {
+          /** def */
+          ghi,
+        }
+      
+@@@ findings
+@@@ case 55 (documented valid)
+
+        /** abc */
+        interface Def {}
+      
+@@@ findings
+@@@ case 56 (documented valid)
+
+        /** abc */
+        type Def = {};
+      
+@@@ findings
+@@@ case 57 (documented valid)
+
+        /** abc */
+        type Def = {};
+      
+@@@ findings
+@@@ case 58 (documented valid)
+
+        /**
+         * count
+         *
+         * @description increment value
+         */
+        let value = 3;
+      
+@@@ findings
+@@@ case 59 (documented valid)
+
+        /**
+         * count
+         *
+         * @unknownTag - increment value
+         */
+        let value = 3;
+      
+@@@ findings
+@@@ case 60 (documented valid)
+
+        /**
+         * @other param - takes one two
+         */
+        function takesOne(param) {}
+      
+@@@ findings
+@@@ case 61 (documented valid)
+
+        /**
+         * takes abc param
+         */
+        function takesOne(param) {}
+      
+@@@ findings
+@@@ case 62 (documented valid)
+
+        /**
+         * @class
+         *
+         * @param {number} value - Some useful text
+         */
+        function MyAmazingThing(value) {}
+      
+@@@ findings
+@@@ case 63 (documented valid)
+
+        /**
+         * My option.
+         * @default {}
+         */
+      
+@@@ findings
+4:1 This tag description only repeats the name it describes.
+@@@ case 64 (documented valid)
+
+        /**
+         * The
+         */
+      
+@@@ findings
+2:9 This description only repeats the name it describes.
+@@@ end

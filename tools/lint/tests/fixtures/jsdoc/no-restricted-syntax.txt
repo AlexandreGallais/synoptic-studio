@@ -1,0 +1,392 @@
+# no-restricted-syntax: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), a carriage return written ␍,
+# each run by ESLint 10.12.0 at src/a.ts with the project's options; recorded by EN-083.
+@@@ case 1 (documented invalid)
+
+      /**
+       *
+       */
+      function quux () {
+
+      }
+      
+@@@ findings
+@@@ case 2 (documented invalid)
+
+      /**
+       *
+       */
+      function quux () {
+
+      }
+      
+@@@ findings
+@@@ case 3 (documented invalid)
+
+      /**
+       *
+       */
+      function quux () {
+
+      }
+      
+@@@ findings
+@@@ case 4 (documented invalid)
+
+      /**
+       * @implements {Bar|Foo}
+       */
+      function quux () {
+
+      }
+      
+@@@ findings
+@@@ case 5 (documented invalid)
+
+      /**
+       * @implements {Bar|Foo}
+       */
+      function quux () {
+
+      }
+      
+@@@ findings
+@@@ case 6 (documented invalid)
+
+      /**
+       * @implements {Bar|Foo}
+       */
+      function quux () {
+
+      }
+      
+@@@ findings
+@@@ case 7 (documented invalid)
+
+      /**
+       * @implements {Bar|Foo}
+       */
+      function quux () {
+
+      }
+      
+@@@ findings
+@@@ case 8 (documented invalid)
+
+      /**
+       * @implements {Bar|Foo}
+       */
+      function quux () {
+
+      }
+      
+@@@ findings
+@@@ case 9 (documented invalid)
+
+        /**
+         * @param opt_a
+         * @param opt_b
+         */
+        function a () {}
+      
+@@@ findings
+@@@ case 10 (documented invalid)
+
+        /**
+         * @param opt_a
+         * @param opt_b
+         */
+        function a () {}
+      
+@@@ findings
+@@@ case 11 (documented invalid)
+
+        /**
+         * @param opt_a
+         * @param opt_b
+         */
+        function a () {}
+      
+@@@ findings
+@@@ case 12 (documented invalid)
+
+        /**
+         * @param opt_a
+         * @param opt_b
+         */
+        function a () {}
+      
+@@@ findings
+@@@ case 13 (documented invalid)
+
+        /**
+         * @param opt_a
+         * @param opt_b
+         */
+      
+@@@ findings
+@@@ case 14 (documented invalid)
+
+        /**
+         * @enum {String}
+         * Object holding values of some custom enum
+         */
+        const MY_ENUM = Object.freeze({
+          VAL_A: "myvala"
+        } as const);
+      
+@@@ findings
+@@@ case 15 (documented invalid)
+
+      /** @type {React.FunctionComponent<{ children: React.ReactNode }>}*/
+      const MyComponent = ({ children }) => {
+         return children;
+      }
+      
+@@@ findings
+@@@ case 16 (documented invalid)
+
+        /** Some text and more */
+      
+@@@ findings
+@@@ case 17 (documented invalid)
+
+        /** Some text and
+        * more
+        */
+      
+@@@ findings
+@@@ case 18 (documented invalid)
+
+        /** Some text
+        * @param sth Param text followed by no newline */
+      
+@@@ findings
+@@@ case 19 (documented invalid)
+
+        /**
+         *
+         */
+      
+@@@ findings
+@@@ case 20 (documented invalid)
+
+        /**
+         * @type {{a: string}}
+         */
+      
+@@@ findings
+@@@ case 21 (documented invalid)
+
+        /**
+         * @type {abc}
+         */
+      
+@@@ findings
+@@@ case 22 (documented invalid)
+
+      /**
+       *
+       */
+      function test(): string { }
+      
+@@@ findings
+@@@ case 23 (documented invalid)
+
+      /**
+       *
+       */
+      let test = (): string => { };
+      
+@@@ findings
+@@@ case 24 (documented invalid)
+
+      /**
+       * @returns
+       */
+      let test: () => string;
+      
+@@@ findings
+@@@ case 25 (documented invalid)
+
+      /**
+       *
+       */
+      class Test {
+        abstract Test(): string;
+      }
+      
+@@@ findings
+@@@ case 26 (documented invalid)
+
+      /**
+       * This has an inline {@link http://example.com}
+       */
+      function quux () {
+
+      }
+      
+@@@ findings
+@@@ case 27 (documented invalid)
+
+      /**
+       * @see This has an inline {@link http://example.com}
+       */
+      function quux () {
+
+      }
+      
+@@@ findings
+@@@ case 28 (documented valid)
+
+      /**
+       *
+       */
+      function quux () {
+
+      }
+      
+@@@ findings
+@@@ case 29 (documented valid)
+
+      /**
+       * @implements {Bar|Foo}
+       */
+      function quux () {
+
+      }
+      
+@@@ findings
+@@@ case 30 (documented valid)
+
+        /**
+         * @param ab
+         * @param cd
+         */
+        function a () {}
+      
+@@@ findings
+@@@ case 31 (documented valid)
+
+        /**
+         * @param ab
+         * @param cd
+         */
+        function a () {}
+      
+@@@ findings
+@@@ case 32 (documented valid)
+
+        /**
+         * @param ab
+         * @param cd
+         */
+      
+@@@ findings
+@@@ case 33 (documented valid)
+
+        /**
+         * @param ab
+         * @param cd
+         */
+      
+@@@ findings
+@@@ case 34 (documented valid)
+
+        /**
+         * @enum {String}
+         * Object holding values of some custom enum
+         */
+        const MY_ENUM = Object.freeze({
+          VAL_A: "myvala"
+        } as const);
+      
+@@@ findings
+@@@ case 35 (documented valid)
+
+        /**
+         * @param {(...args: any[]) => any} fn
+         * @returns {(...args: any[]) => any}
+         */
+      
+@@@ findings
+@@@ case 36 (documented valid)
+
+        /** Does something very important. */
+        function foo(): string;
+      
+@@@ findings
+@@@ case 37 (documented valid)
+
+        /** Some text and more */
+      
+@@@ findings
+@@@ case 38 (documented valid)
+
+        /** Some text and
+        * more */
+      
+@@@ findings
+@@@ case 39 (documented valid)
+
+        /** Some text
+        * @param sth Param text followed by newline
+        */
+      
+@@@ findings
+@@@ case 40 (documented valid)
+
+        /**
+         * @type {123}
+         */
+      
+@@@ findings
+@@@ case 41 (documented valid)
+
+        /**
+         * @type {boolean}
+         */
+      
+@@@ findings
+@@@ case 42 (documented valid)
+
+      /**
+       *
+       */
+      function test(): void { }
+      
+@@@ findings
+@@@ case 43 (documented valid)
+
+      /**
+       *
+       */
+      let test = (): undefined => { };
+      
+@@@ findings
+@@@ case 44 (documented valid)
+
+      /**
+       * @returns A description
+       */
+      let test: () => string;
+      
+@@@ findings
+@@@ case 45 (documented valid)
+
+      /**
+       *
+       */
+      class Test {
+        abstract Test(): void;
+      }
+      
+@@@ findings
+@@@ case 46 (documented valid)
+
+        /**
+         * @private
+         */
+        function quux () {}
+      
+@@@ findings
+@@@ end
