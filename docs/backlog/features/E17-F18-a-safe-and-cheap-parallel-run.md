@@ -57,7 +57,7 @@ In delivery order.
 | [EN-056](../stories/E17-F18-EN-056-a-short-checklist.md)                             | Enabler    | A short checklist, prepared by `val:prepare`                       | done   |
 | [EN-057](../stories/E17-F18-EN-057-register-of-exceptions-and-a-byte-buffer.md)      | Enabler    | The register of exceptions, and a byte buffer for font collections | done   |
 | [US-061](../stories/E17-F18-US-061-font-list-held-while-the-default-font-is-read.md) | User story | Font list held while the default font is read again                | done   |
-| [US-062](../stories/E17-F18-US-062-installed-fonts-read-whole-before-listed.md)      | User story | Installed fonts read whole before they are listed                  | ready  |
+| [US-062](../stories/E17-F18-US-062-installed-fonts-read-whole-before-listed.md)      | User story | Installed fonts read whole before they are listed                  | done   |
 | [EN-058](../stories/E17-F18-EN-058-a-mutation-runner.md)                             | Enabler    | A mutation runner as a tool                                        | done   |
 | [EN-059](../stories/E17-F18-EN-059-done-commit-checks-the-docs.md)                   | Enabler    | The done commit checks the docs a rule touches                     | done   |
 | [EN-060](../stories/E17-F18-EN-060-documentation-pass-on-e15-pages.md)               | Enabler    | A documentation pass on E15's long pages                           | done   |
