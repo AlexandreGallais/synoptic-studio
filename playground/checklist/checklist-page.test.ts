@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { EPIC_15_CHECKLIST } from "../checklists";
+import { EPIC_15_CHECKLIST, EPIC_17_CHECKLIST } from "../checklists";
 import { openServedPage, readDisplay, readText, selectPageElement } from "../user-actions";
 
 /**
@@ -190,6 +190,55 @@ describe("[F17.AC8] E15's checklist (US-051)", () => {
     "names no option removed by F17: %s",
     (option) => {
       expect(text).not.toContain(option);
+    },
+  );
+});
+
+describe("[F18.AC12] E17's checklist, F18's lines (VAL-019)", () => {
+  const text = EPIC_17_CHECKLIST.map((line) => `${line.todo} ${line.see}`).join("\n");
+
+  it("lists F18's 12 lines on the page, each with its own thing to try", () => {
+    openServedPage("?checklist=E17");
+
+    expect(readText("#checklist-name")).toBe("E17");
+    expect(readBoxes()).toHaveLength(12);
+
+    const todos = new Set(EPIC_17_CHECKLIST.map((line) => line.todo));
+
+    expect(todos.size).toBe(12);
+    expect(new Set(EPIC_17_CHECKLIST.map((line) => line.feature))).toEqual(new Set(["F18"]));
+  });
+
+  it.each([
+    "npm run test in two terminals",
+    "heavy lock held by process",
+    "four subagents",
+    "npm run worktree:new",
+    "npm run backlog:index",
+    "merge: union",
+    "npm run metrics:session",
+    "status line",
+    "npm run epic:check",
+    "npm run mutate",
+    "Installed fonts",
+    "Embed fonts",
+  ])("names the tool or option to try: %s", (option) => {
+    expect(text).toContain(option);
+  });
+
+  it.each([
+    "Decision to confirm (ADR-0068)",
+    "Decision to confirm (US-061)",
+    "Decision to confirm (EN-067)",
+    "Decision to confirm (ADR-0067)",
+  ])("names the decision to confirm: %s", (line) => {
+    expect(text).toContain(line);
+  });
+
+  it.each(["What to see", "to write", "Helvetica.ttc", "Apple Color Emoji", "/System/Library"])(
+    "holds no draft line nor macOS font file: %s",
+    (word) => {
+      expect(text).not.toContain(word);
     },
   );
 });
