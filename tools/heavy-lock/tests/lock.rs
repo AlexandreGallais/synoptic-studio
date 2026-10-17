@@ -1,17 +1,18 @@
-//! Tests of the heavy lock (EN-047); `[F18.AC3]` marks a test proving the feature's criterion.
+//! Tests of the heavy lock (EN-047, AUD-020); `[F18.AC3]` marks a test proving the feature's
+//! criterion.
 
-use std::fs;
+use std::fs::{self, File};
+use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::atomic::{AtomicUsize, Ordering};
-use std::sync::mpsc;
+use std::sync::mpsc::{self, Sender};
 use std::thread;
 use std::time::Duration;
 
 use heavy_lock::{
-    Action, Held, LockOwner, Request, acquire_reading, command_name, create_lock, held_for,
-    is_running, lock_action, read_lock, remove_lock, run_locked, short_duration, take_over_line,
-    waiting_line,
+    Acquired, Attempt, Held, Lock, LockOwner, Request, acquire_trying, command_name, held_for,
+    lock_exclusive, run_locked, short_duration, take_over_line, try_lock, waiting_line,
 };
 
 /// An owner as a heavy command writes it.
@@ -21,6 +22,16 @@ fn owner() -> LockOwner {
         cwd: "/work/repo/.claude/worktrees/en-047".to_owned(),
         pid: 4242,
         start: 1_000,
+    }
+}
+
+/// Another command's owner, `pid` its process id.
+fn other(pid: u32) -> LockOwner {
+    LockOwner {
+        command: "npm run check:all".to_owned(),
+        cwd: "/work/repo/.claude/worktrees/us-061".to_owned(),
+        pid,
+        start: 2_000,
     }
 }
 
@@ -52,6 +63,23 @@ impl TempLock {
 
         Self { folder, path }
     }
+
+    /// The files in its folder, sorted.
+    fn files(&self) -> Vec<String> {
+        let mut names: Vec<String> = fs::read_dir(&self.folder)
+            .expect("folder")
+            .map(|entry| {
+                entry
+                    .expect("entry")
+                    .file_name()
+                    .to_string_lossy()
+                    .into_owned()
+            })
+            .collect();
+
+        names.sort();
+        names
+    }
 }
 
 impl Drop for TempLock {
@@ -61,13 +89,54 @@ impl Drop for TempLock {
     }
 }
 
+/// The lock taken by `owner`, failing the test otherwise.
+fn take(path: &Path, owner: &LockOwner) -> Lock {
+    match try_lock(path, owner).expect("lock usable") {
+        Attempt::Taken(lock) => lock,
+        found => panic!("lock not taken: {found:?}"),
+    }
+}
+
+/// What `owner` finds held, failing the test if it takes the lock.
+fn held(path: &Path, owner: &LockOwner) -> Held {
+    match try_lock(path, owner).expect("lock usable") {
+        Attempt::Held(held) => held,
+        found => panic!("lock not held: {found:?}"),
+    }
+}
+
 /// Longest a run may take in a test: a lock never freed fails the test instead of hanging it.
 const TIME_LIMIT: Duration = Duration::from_secs(10);
 
-/// Runs a command under the lock at a path, as this test process, within `TIME_LIMIT`.
-///
-/// Returns its exit code and what it said.
-fn run(path: &Path, owner_variable: Option<String>, argv: &[String]) -> (i32, String) {
+/// What a run says, signalling its first line: the test frees the lock only once the run waits.
+struct Said {
+    text: Vec<u8>,
+    first: Option<Sender<()>>,
+}
+
+impl Write for Said {
+    fn write(&mut self, bytes: &[u8]) -> io::Result<usize> {
+        self.text.extend_from_slice(bytes);
+        if let Some(first) = self.first.take() {
+            // The test may have stopped waiting: nothing to tell then.
+            let _ = first.send(());
+        }
+        Ok(bytes.len())
+    }
+
+    fn flush(&mut self) -> io::Result<()> {
+        Ok(())
+    }
+}
+
+/// Starts a command under the lock at a path, as this test process, signalling `first` at its first
+/// line. Receives its exit code and what it said.
+fn start(
+    path: &Path,
+    owner_variable: Option<String>,
+    argv: &[String],
+    first: Sender<()>,
+) -> mpsc::Receiver<(i32, String)> {
     let (path, argv) = (path.to_owned(), argv.to_vec());
     let (send, receive) = mpsc::channel();
 
@@ -81,14 +150,22 @@ fn run(path: &Path, owner_variable: Option<String>, argv: &[String]) -> (i32, St
             owner_variable,
             poll: Duration::from_millis(5),
         };
-        let mut said = Vec::new();
-        let code = run_locked(&request, &argv, &mut said).expect("lock readable");
+        let mut said = Said {
+            text: Vec::new(),
+            first: Some(first),
+        };
+        let code = run_locked(&request, &argv, &mut said).expect("lock usable");
 
-        send.send((code, String::from_utf8_lossy(&said).into_owned()))
+        send.send((code, String::from_utf8_lossy(&said.text).into_owned()))
             .expect("test waiting");
     });
 
     receive
+}
+
+/// Runs a command under the lock at a path, as this test process, within `TIME_LIMIT`.
+fn run(path: &Path, owner_variable: Option<String>, argv: &[String]) -> (i32, String) {
+    start(path, owner_variable, argv, mpsc::channel().0)
         .recv_timeout(TIME_LIMIT)
         .expect("the run ends in time")
 }
@@ -133,49 +210,6 @@ fn keeps_a_command_on_one_line() {
 }
 
 #[test]
-fn knows_running_and_ended_processes() {
-    assert!(is_running(std::process::id()));
-    assert!(!is_running(dead_pid()));
-    // Process 1 belongs to root: signalling it is refused, yet it exists.
-    assert!(is_running(1));
-    assert!(!is_running(u32::MAX));
-}
-
-#[test]
-fn f18_ac3_takes_a_free_lock() {
-    assert_eq!(lock_action(&Held::Free, None, |_| true), Action::Take);
-}
-
-#[test]
-fn f18_ac3_waits_for_a_lock_held_by_a_running_process() {
-    assert_eq!(
-        lock_action(&Held::By(Some(owner())), None, |_| true),
-        Action::Wait
-    );
-}
-
-#[test]
-fn f18_ac3_takes_over_a_lock_whose_process_no_longer_exists() {
-    assert_eq!(
-        lock_action(&Held::By(Some(owner())), None, |_| false),
-        Action::TakeOver
-    );
-}
-
-#[test]
-fn waits_for_a_lock_naming_no_process() {
-    assert_eq!(lock_action(&Held::By(None), None, |_| false), Action::Wait);
-}
-
-#[test]
-fn runs_inside_the_lock_of_the_command_that_started_it_only() {
-    let held = Held::By(Some(owner()));
-
-    assert_eq!(lock_action(&held, Some("4242"), |_| true), Action::Inside);
-    assert_eq!(lock_action(&held, Some("4243"), |_| true), Action::Wait);
-}
-
-#[test]
 fn names_the_command_by_its_npm_script() {
     let argv = ["vitest".to_owned(), "run".to_owned()];
 
@@ -210,137 +244,187 @@ fn tells_the_age_of_a_lock_only_when_its_start_makes_sense() {
 
 #[test]
 fn f18_ac3_names_the_process_holding_the_lock() {
+    let path = Path::new("/repo/.git/heavy.lock");
+
     assert_eq!(
-        waiting_line(Some(&owner()), Path::new("/repo/.git/heavy.lock"), 1_125),
+        waiting_line(&Held::By(Some(owner())), path, 1_125),
         "heavy lock held by process 4242 (npm run test in en-047, for 2 min 05 s): waiting\n"
     );
     // Started 2 000 s from now: no age rather than a wrong one.
     assert_eq!(
-        waiting_line(Some(&owner()), Path::new("/repo/.git/heavy.lock"), 0),
+        waiting_line(&Held::By(Some(owner())), path, 0),
         "heavy lock held by process 4242 (npm run test in en-047): waiting\n"
     );
     assert_eq!(
-        waiting_line(None, Path::new("/repo/.git/heavy.lock"), 0),
-        "heavy lock /repo/.git/heavy.lock held without a process id (taken by hand): waiting; remove it with rmdir once its command ended\n"
+        take_over_line(Some(&owner()), path),
+        "heavy lock of process 4242 (npm run test) taken over: that process no longer holds it\n"
     );
     assert_eq!(
-        take_over_line(&owner(), Path::new("/repo/.git/heavy.lock")),
-        "heavy lock of process 4242 (npm run test) taken over: that process no longer exists\n"
+        take_over_line(None, path),
+        "heavy lock /repo/.git/heavy.lock naming no process taken over: no process holds it\n"
     );
 }
 
 #[test]
-fn creates_the_lock_once_and_removes_it_by_its_owner_only() {
+fn tells_rmdir_for_a_folder_and_rm_for_a_file() {
+    let path = Path::new("/repo/.git/heavy.lock");
+
+    assert_eq!(
+        waiting_line(&Held::Folder, path, 0),
+        "heavy lock /repo/.git/heavy.lock is a folder (taken by hand with mkdir): waiting; remove it with rmdir once its command ended\n"
+    );
+    assert_eq!(
+        waiting_line(&Held::By(None), path, 0),
+        "heavy lock /repo/.git/heavy.lock held by a process naming none: waiting; remove it with rm once its command ended\n"
+    );
+}
+
+#[test]
+fn f18_ac3_takes_a_free_lock_writes_its_owner_and_removes_it_when_dropped() {
     let lock = TempLock::new();
+    let taken = take(&lock.path, &owner());
 
-    assert!(create_lock(&lock.path, &owner()).expect("created"));
-    assert!(!create_lock(&lock.path, &LockOwner { pid: 7, ..owner() }).expect("refused"));
-    assert_eq!(read_lock(&lock.path), Held::By(Some(owner())));
-
-    remove_lock(&lock.path, 7);
-    assert!(lock.path.exists());
-
-    remove_lock(&lock.path, 4242);
-    assert_eq!(read_lock(&lock.path), Held::Free);
+    assert_eq!(
+        fs::read_to_string(&lock.path).expect("lock written"),
+        owner().to_text()
+    );
     // The owner's draft, linked as the lock, is never left behind.
-    assert_eq!(fs::read_dir(&lock.folder).expect("folder").count(), 0);
+    assert_eq!(lock.files(), ["heavy.lock"]);
+
+    drop(taken);
+    assert_eq!(lock.files(), Vec::<String>::new());
 }
 
 #[test]
-fn f18_ac3_waits_for_a_lock_released_right_after_it_was_read_then_takes_it() {
+fn f18_ac3_waits_for_a_lock_held_by_another_command_and_names_it() {
     let lock = TempLock::new();
-    let holder = LockOwner {
-        pid: std::process::id(),
-        ..owner()
-    };
-    let request = Request {
-        path: &lock.path,
-        owner: LockOwner { pid: 7, ..owner() },
-        owner_variable: None,
-        poll: Duration::ZERO,
-    };
-    let mut reads = 0;
-    let mut said = Vec::new();
+    let _taken = take(&lock.path, &owner());
 
-    fs::write(&lock.path, holder.to_text()).expect("held lock");
-
-    // The holder ends just after the first reading: the release lands between the waiter's look and
-    // anything it does next.
-    let action = acquire_reading(&request, &mut said, |path| {
-        let held = read_lock(path);
-
-        reads += 1;
-        if reads == 1 {
-            fs::remove_file(path).expect("released");
-        }
-        held
-    })
-    .expect("lock readable");
-    let said = String::from_utf8_lossy(&said);
-
-    assert_eq!(action, Action::Take);
-    assert_eq!(reads, 2);
+    assert_eq!(held(&lock.path, &other(7)), Held::By(Some(owner())));
+    // Still the holder's.
     assert_eq!(
-        said,
-        waiting_line(Some(&holder), &lock.path, heavy_lock::now())
+        fs::read_to_string(&lock.path).expect("lock kept"),
+        owner().to_text()
     );
-    assert_eq!(read_lock(&lock.path), Held::By(Some(request.owner.clone())));
 }
 
 #[test]
-fn looks_again_at_once_when_another_command_takes_the_free_lock_first() {
+fn f18_ac3_takes_over_a_lock_left_by_an_ended_process() {
     let lock = TempLock::new();
-    let first = LockOwner {
+    let dead = LockOwner {
         pid: dead_pid(),
         ..owner()
     };
-    let request = Request {
-        path: &lock.path,
-        owner: LockOwner {
-            pid: std::process::id(),
-            ..owner()
-        },
-        owner_variable: None,
-        poll: Duration::ZERO,
+
+    fs::write(&lock.path, dead.to_text()).expect("lock left behind");
+
+    let Attempt::TakenOver(taken, left_by) = try_lock(&lock.path, &other(7)).expect("lock usable")
+    else {
+        panic!("not taken over");
     };
-    let mut reads = 0;
-    let mut said = Vec::new();
 
-    // Seen free, then taken by an ended process before this command creates it; that process is then seen
-    // gone and its lock taken over.
-    let action = acquire_reading(&request, &mut said, |path| {
-        reads += 1;
-        if reads == 1 {
-            create_lock(path, &first).expect("taken first");
-            return Held::Free;
-        }
-        read_lock(path)
-    })
-    .expect("lock readable");
-
-    assert_eq!(action, Action::Take);
-    assert_eq!(reads, 2);
+    assert_eq!(left_by, Some(dead));
     assert_eq!(
-        String::from_utf8_lossy(&said),
-        take_over_line(&first, &lock.path)
+        fs::read_to_string(&lock.path).expect("lock written"),
+        other(7).to_text()
     );
+    assert_eq!(held(&lock.path, &owner()), Held::By(Some(other(7))));
+    drop(taken);
+    assert_eq!(lock.files(), Vec::<String>::new());
 }
 
 #[test]
-fn takes_a_folder_as_a_lock_held_by_hand() {
+fn takes_over_a_lock_naming_a_live_process_that_does_not_hold_it() {
+    // A process id used again by another process: this test process is alive, yet holds no lock.
+    let lock = TempLock::new();
+    let reused = LockOwner {
+        pid: std::process::id(),
+        ..owner()
+    };
+
+    fs::write(&lock.path, reused.to_text()).expect("lock left behind");
+
+    assert!(matches!(
+        try_lock(&lock.path, &other(7)).expect("lock usable"),
+        Attempt::TakenOver(_, Some(left_by)) if left_by == reused
+    ));
+}
+
+#[test]
+fn takes_over_an_empty_lock_file_no_process_holds() {
+    let lock = TempLock::new();
+
+    fs::write(&lock.path, "").expect("empty lock");
+
+    assert!(matches!(
+        try_lock(&lock.path, &owner()).expect("lock usable"),
+        Attempt::TakenOver(_, None)
+    ));
+}
+
+#[test]
+fn waits_for_an_empty_lock_file_another_tool_holds() {
+    let lock = TempLock::new();
+
+    fs::write(&lock.path, "").expect("empty lock");
+    let other_tool = File::open(&lock.path).expect("opened");
+    assert!(lock_exclusive(&other_tool).expect("locked"));
+
+    assert_eq!(held(&lock.path, &owner()), Held::By(None));
+}
+
+#[test]
+fn waits_for_a_folder_taken_by_hand() {
     let lock = TempLock::new();
 
     fs::create_dir(&lock.path).expect("folder");
 
-    assert_eq!(read_lock(&lock.path), Held::By(None));
-    assert!(!create_lock(&lock.path, &owner()).expect("refused"));
+    assert_eq!(held(&lock.path, &owner()), Held::Folder);
+    assert!(lock.path.is_dir());
 }
 
 #[test]
-fn fails_to_create_a_lock_in_a_missing_folder() {
+fn fails_to_take_a_lock_in_a_missing_folder() {
     let lock = TempLock::new();
 
-    assert!(create_lock(&lock.path.join("heavy.lock"), &owner()).is_err());
+    assert!(try_lock(&lock.path.join("heavy.lock"), &owner()).is_err());
+}
+
+#[test]
+fn f18_ac3_waits_for_a_lock_released_right_after_it_was_tried_then_takes_it() {
+    let lock = TempLock::new();
+    let holder = take(&lock.path, &other(7));
+    let mut holder = Some(holder);
+    let request = Request {
+        path: &lock.path,
+        owner: owner(),
+        owner_variable: None,
+        poll: Duration::ZERO,
+    };
+    let mut tries = 0;
+    let mut said = Vec::new();
+
+    // The holder ends just after the first try: the release lands between the waiter's look and
+    // anything it does next.
+    let acquired = acquire_trying(&request, &mut said, |path, asking| {
+        let found = try_lock(path, asking);
+
+        tries += 1;
+        holder = None;
+        found
+    })
+    .expect("lock usable");
+
+    assert!(matches!(acquired, Acquired::Taken(_)));
+    assert_eq!(tries, 2);
+    assert_eq!(
+        String::from_utf8_lossy(&said),
+        waiting_line(&Held::By(Some(other(7))), &lock.path, heavy_lock::now())
+    );
+    assert_eq!(
+        fs::read_to_string(&lock.path).expect("lock written"),
+        owner().to_text()
+    );
 }
 
 #[test]
@@ -348,7 +432,7 @@ fn f18_ac3_runs_the_command_under_the_lock_frees_it_and_returns_its_code() {
     let lock = TempLock::new();
 
     assert_eq!(run(&lock.path, None, &exit_with(3)), (3, String::new()));
-    assert_eq!(read_lock(&lock.path), Held::Free);
+    assert_eq!(lock.files(), Vec::<String>::new());
 }
 
 #[test]
@@ -361,13 +445,22 @@ fn names_the_owner_to_the_command_it_starts() {
 }
 
 #[test]
+fn holds_the_lock_while_its_command_runs() {
+    let lock = TempLock::new();
+    let script = format!("test -f '{}'", lock.path.display());
+    let argv = ["sh", "-c", &script].map(str::to_owned);
+
+    assert_eq!(run(&lock.path, None, &argv).0, 0);
+}
+
+#[test]
 fn returns_1_for_a_command_that_cannot_start() {
     let lock = TempLock::new();
     let (code, said) = run(&lock.path, None, &["/missing/command".to_owned()]);
 
     assert_eq!(code, 1);
     assert!(said.starts_with("/missing/command: "), "{said}");
-    assert_eq!(read_lock(&lock.path), Held::Free);
+    assert_eq!(lock.files(), Vec::<String>::new());
 }
 
 #[test]
@@ -382,35 +475,30 @@ fn f18_ac3_takes_over_at_once_the_lock_of_a_process_that_no_longer_exists() {
 
     assert_eq!(
         run(&lock.path, None, &exit_with(0)),
-        (0, take_over_line(&dead, &lock.path))
+        (0, take_over_line(Some(&dead), &lock.path))
     );
-    assert_eq!(read_lock(&lock.path), Held::Free);
+    assert_eq!(lock.files(), Vec::<String>::new());
 }
 
 #[test]
 fn f18_ac3_waits_for_a_running_owner_says_who_once_then_runs() {
     let lock = TempLock::new();
-    // This test process holds it, from another command than the one asking.
-    let holder = LockOwner {
-        pid: std::process::id(),
-        ..owner()
-    };
+    let holder = take(&lock.path, &other(7));
+    let (first, waiting) = mpsc::channel();
+    let ended = start(&lock.path, None, &exit_with(0), first);
 
-    fs::write(&lock.path, holder.to_text()).expect("held lock");
+    // Freed only once the run says it waits.
+    waiting.recv_timeout(TIME_LIMIT).expect("the run waits");
+    drop(holder);
 
-    let path = lock.path.clone();
-    let release = thread::spawn(move || {
-        thread::sleep(Duration::from_millis(100));
-        fs::remove_file(path).expect("released");
-    });
-    let (code, said) = run(&lock.path, None, &exit_with(0));
-
-    release.join().expect("release thread");
+    let (code, said) = ended
+        .recv_timeout(TIME_LIMIT)
+        .expect("the run ends in time");
 
     assert_eq!(code, 0);
     assert_eq!(said.lines().count(), 1, "{said}");
     assert!(
-        said.starts_with(&format!("heavy lock held by process {}", holder.pid)),
+        said.starts_with("heavy lock held by process 7 (npm run check:all in us-061"),
         "{said}"
     );
 }
@@ -419,9 +507,21 @@ fn f18_ac3_waits_for_a_running_owner_says_who_once_then_runs() {
 fn runs_inside_the_lock_of_the_command_that_started_it_and_leaves_it() {
     let lock = TempLock::new();
     let pid = std::process::id();
-
-    fs::write(&lock.path, LockOwner { pid, ..owner() }.to_text()).expect("held lock");
+    let _held = take(&lock.path, &LockOwner { pid, ..owner() });
 
     assert_eq!(run(&lock.path, Some(pid.to_string()), &exit_with(0)).0, 0);
-    assert!(lock.path.exists());
+    assert_eq!(lock.files(), ["heavy.lock"]);
+}
+
+#[test]
+fn waits_inside_a_lock_another_command_holds_whatever_its_variable() {
+    let lock = TempLock::new();
+    let holder = take(&lock.path, &other(7));
+    let (first, waiting) = mpsc::channel();
+    let ended = start(&lock.path, Some("8".to_owned()), &exit_with(0), first);
+
+    waiting.recv_timeout(TIME_LIMIT).expect("the run waits");
+    drop(holder);
+
+    assert_eq!(ended.recv_timeout(TIME_LIMIT).expect("ends").0, 0);
 }

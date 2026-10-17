@@ -2,15 +2,15 @@
 //! `[F18.AC7]` marks a test proving the feature's criterion.
 
 use std::fs;
+use std::io::{self, Write};
 use std::path::{Path, PathBuf};
-use std::process::Command;
-use std::sync::mpsc;
+use std::sync::mpsc::{self, Receiver, Sender};
 use std::thread;
 use std::time::Duration;
 
 use heavy_lock::{
-    HEAVY, LockOwner, Request, lock_and_command, lock_file, lock_name, owner_variable, run_locked,
-    take_over_line, waiting_line,
+    Attempt, HEAVY, Held, Lock, LockOwner, Request, lock_and_command, lock_file, lock_name,
+    owner_variable, run_locked, take_over_line, try_lock, waiting_line,
 };
 
 /// Longest a run may take in a test: a lock never freed fails the test instead of hanging it.
@@ -50,8 +50,45 @@ impl Drop for TempFolder {
     }
 }
 
+/// The lock taken by `owner`, failing the test otherwise.
+fn take(path: &Path, owner: &LockOwner) -> Lock {
+    match try_lock(path, owner).expect("lock usable") {
+        Attempt::Taken(lock) => lock,
+        found => panic!("lock not taken: {found:?}"),
+    }
+}
+
+/// What a run says, signalling its first line: the test frees the lock only once the run waits.
+struct Said {
+    text: Vec<u8>,
+    first: Option<Sender<()>>,
+}
+
+impl Write for Said {
+    fn write(&mut self, bytes: &[u8]) -> io::Result<usize> {
+        self.text.extend_from_slice(bytes);
+        if let Some(first) = self.first.take() {
+            // The test may have stopped waiting: nothing to tell then.
+            let _ = first.send(());
+        }
+        Ok(bytes.len())
+    }
+
+    fn flush(&mut self) -> io::Result<()> {
+        Ok(())
+    }
+}
+
 /// Runs a command under the lock at a path as the process `pid`, within `TIME_LIMIT`.
 fn run(path: &Path, pid: u32, argv: &[String]) -> (i32, String) {
+    start(path, pid, argv, mpsc::channel().0)
+        .recv_timeout(TIME_LIMIT)
+        .expect("the run ends in time")
+}
+
+/// Starts a command under the lock at a path as the process `pid`, signalling `first` at its first
+/// line. Receives its exit code and what it said.
+fn start(path: &Path, pid: u32, argv: &[String], first: Sender<()>) -> Receiver<(i32, String)> {
     let (path, argv) = (path.to_owned(), argv.to_vec());
     let (send, receive) = mpsc::channel();
 
@@ -62,16 +99,17 @@ fn run(path: &Path, pid: u32, argv: &[String]) -> (i32, String) {
             owner_variable: None,
             poll: Duration::from_millis(5),
         };
-        let mut said = Vec::new();
-        let code = run_locked(&request, &argv, &mut said).expect("lock readable");
+        let mut said = Said {
+            text: Vec::new(),
+            first: Some(first),
+        };
+        let code = run_locked(&request, &argv, &mut said).expect("lock usable");
 
-        send.send((code, String::from_utf8_lossy(&said).into_owned()))
+        send.send((code, String::from_utf8_lossy(&said.text).into_owned()))
             .expect("test waiting");
     });
 
     receive
-        .recv_timeout(TIME_LIMIT)
-        .expect("the run ends in time")
 }
 
 #[test]
@@ -123,12 +161,12 @@ fn says_which_lock_it_waits_for() {
     let path = Path::new("/repo/.git/merge.lock");
 
     assert_eq!(
-        waiting_line(Some(&owner()), path, 1_065),
+        waiting_line(&Held::By(Some(owner())), path, 1_065),
         "merge lock held by process 4242 (npm run story:finish in en-051, for 1 min 05 s): waiting\n"
     );
     assert_eq!(
-        take_over_line(&owner(), path),
-        "merge lock of process 4242 (npm run story:finish) taken over: that process no longer exists\n"
+        take_over_line(Some(&owner()), path),
+        "merge lock of process 4242 (npm run story:finish) taken over: that process no longer holds it\n"
     );
 }
 
@@ -141,25 +179,18 @@ fn f18_ac7_a_second_story_finish_waits_for_the_merge_lock_of_the_first() {
         ..owner()
     };
 
-    fs::write(&path, holder.to_text()).expect("held lock");
+    let held = take(&path, &holder);
+    let (first, waiting) = mpsc::channel();
+    // Another process than this one asks: the lock is not the waiter's own.
+    let ended = start(&path, holder.pid + 1, &args(&["true"]), first);
 
-    let release = {
-        let path = path.clone();
-        thread::spawn(move || {
-            thread::sleep(Duration::from_millis(100));
-            fs::remove_file(path).expect("released");
-        })
-    };
-    // A live process other than this one: the lock is not the waiter's own.
-    let mut sleeper = Command::new("sleep")
-        .arg("5")
-        .spawn()
-        .expect("sleep starts");
-    let (code, said) = run(&path, sleeper.id(), &args(&["true"]));
+    // Freed only once the second says it waits.
+    waiting.recv_timeout(TIME_LIMIT).expect("the second waits");
+    drop(held);
 
-    release.join().expect("release thread");
-    sleeper.kill().expect("sleep stops");
-    sleeper.wait().expect("sleep ends");
+    let (code, said) = ended
+        .recv_timeout(TIME_LIMIT)
+        .expect("the second ends in time");
 
     assert_eq!(code, 0);
     assert!(
@@ -185,7 +216,7 @@ fn a_held_merge_lock_does_not_hold_a_heavy_command() {
     let merge = folder.0.join(lock_file("merge"));
     let pid = std::process::id();
 
-    fs::write(&merge, LockOwner { pid, ..owner() }.to_text()).expect("held merge lock");
+    let _held = take(&merge, &LockOwner { pid, ..owner() });
 
     assert_eq!(
         run(&folder.0.join(lock_file(HEAVY)), pid + 1, &args(&["true"])),
