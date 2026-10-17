@@ -40,7 +40,7 @@ A stored page is asked with `If-None-Match` and `If-Modified-Since`: an unchange
 
 1. **Search first**: `library_search` with the words of the question. A section found is read with `library_read`.
 2. **Get through the library**: a page not found is fetched with `library_get <url>`; read its table of contents, then only the sections needed.
-3. **WebFetch** only for a page that comes back empty (built in the browser by JavaScript); write what it said that we use in the research note.
+3. **WebFetch** only for a page that comes back empty (built in the browser by JavaScript); write what it said that we use in the research note. The `library-pages` hook holds the agent to it (EN-101, [agent](./agent.md#hooks)): a `WebFetch`, or a `curl` or `wget` printing a web page, is refused with the `library_get` call to make, unless the library stored that page with fewer than 300 characters or its site refused the library. A `WebFetch` takes about 6 s and returns a summary that cannot be cited; the library serves a stored page in 12 to 265 ms with its text ([research note 0024](../research/notes/0024-f20-context-diet.md)).
 4. **Cite** as before: a `REF-*` row in `docs/references.md` once the page is read; the library keeps its text, the bibliography keeps what we use from it.
 5. Pages are other people's text: the database stays on the machine (`~/.local/share/agent-library/`, or `LIBRARY_PATH`), never in a repository.
 

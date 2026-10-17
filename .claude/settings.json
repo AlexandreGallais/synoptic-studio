@@ -74,6 +74,26 @@
         ]
       },
       {
+        "matcher": "WebFetch|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cargo",
+            "args": [
+              "run",
+              "--release",
+              "-q",
+              "--manifest-path",
+              "${CLAUDE_PROJECT_DIR}/Cargo.toml",
+              "-p",
+              "hooks",
+              "--bin",
+              "library-pages"
+            ]
+          }
+        ]
+      },
+      {
         "matcher": "*",
         "hooks": [
           {
