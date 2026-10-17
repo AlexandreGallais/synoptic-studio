@@ -111,3 +111,24 @@ With the rules triaged, oxlint gave 122 findings ESLint did not, in 11 rules, on
 | `typescript/no-unnecessary-condition` | 1, a type predicate inferred on an `any` item | code fixed: the parsed list typed `readonly unknown[]` first |
 
 `@typescript-eslint/prefer-destructuring` runs as the native `prefer-destructuring` with ESLint's options (`array: false`, `object: true`, `enforceForRenamedProperties: false`): with `array` off the rule never reads a type (`REF-TSESLINT-PREFER-DESTRUCTURING`, `REF-OXLINT-PREFER-DESTRUCTURING`); it reports nothing on the tree and an undestructured property on a probe file. `@typescript-eslint/no-unsafe-enum-assignment` is dropped: `enum` is forbidden (`no-restricted-syntax`), so it can never report (`REF-TSESLINT-NO-UNSAFE-ENUM-ASSIGNMENT`); its reason goes to the ADR of EN-085. One option of the migration is left out: `jsdoc/require-param`'s `enableRestElementFixer`, a fixer setting oxlint does not have.
+
+## The triage of the 265 confirmed (T4)
+
+Each verdict of note 0023's triage of the rules oxlint lacks was checked on 2026-10-17 against `src/`, `playground/`, `tests/` and the root configuration files: no class, `this`, accessor, `enum`, `for…in`, `let`, CommonJS export nor JSDoc type is there; `fetch` and `node:sqlite` appear only in `scripts/`, which moves to Rust in F21; `dependencies` is empty. The 33 drops hold. Four kept rules guard what another kept rule, the compiler or the formatter already refuses, so they are dropped too, each tried on a probe file; the rewrite stories lose them (EN-078 keeps 44 rules, EN-079 36, EN-080 37):
+
+| Rule | Reason |
+| --- | --- |
+| `unicorn/no-optional-chaining-on-undeclared-variable` | TypeScript refuses a name declared nowhere (ts(2304)), with or without `?.` |
+| `unicorn/no-xor-as-exponentiation` | `no-bitwise` (native, kept) forbids `^` |
+| `unicorn/no-useless-continue` | `no-continue` (native, kept) forbids every `continue` |
+| `unicorn/no-leading-empty-lines` | oxfmt removes the blank lines at a file's start, and `npm run format:check` fails on them |
+
+So 228 of the 265 are kept and 37 dropped. Kept after a second look: `jsdoc/ts-ban-ts-comment` (the native `typescript/ban-ts-comment` does not read a `@ts-` tag inside a JSDoc block, tried), the DOM and web rules (the playground), the loop, `throw` and `try` rules (allowed in the playground and the tests).
+
+The four ESLint core rules oxlint lacks, triaged the same way:
+
+| Rule | Verdict |
+| --- | --- |
+| `no-restricted-syntax`, `require-atomic-updates` | kept, rewritten in the Rust linter (EN-075, which loses `consistent-this`) |
+| `consistent-this` | dropped: `this` cannot appear (`functional/no-this-expressions`), so no alias of it can |
+| `strict` | dropped: every file is a module, so strict code, and `unicorn/prefer-module` (native, kept) reports any `"use strict"` directive |

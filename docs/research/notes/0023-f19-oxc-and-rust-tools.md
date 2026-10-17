@@ -315,16 +315,16 @@ Asked by the Product Owner on 2026-10-17: for each of the 265 rules oxlint runs 
 
 | Plugin | Rules | Kept | Dropped |
 | --- | --- | --- | --- |
-| Unicorn | 197 | 181 | 16 |
+| Unicorn | 197 | 177 | 20 |
 | JSDoc | 43 | 31 | 12 |
 | functional | 12 | 11 | 1 |
 | @stylistic | 5 | 4 | 1 |
 | Import | 4 | 2 | 2 |
 | typescript-eslint, without types | 2 | 1 | 1 |
 | unused-imports | 2 | 2 | 0 |
-| **All** | **265** | **232** | **33** |
+| **All** | **265** | **228** | **37** |
 
-The 33 dropped, each with its reason:
+The 37 dropped, each with its reason (the last four added by EN-074):
 
 | Rule | Reason |
 | --- | --- |
@@ -361,8 +361,14 @@ The 33 dropped, each with its reason:
 | `unicorn/prefer-abort-signal-timeout` | no network code: V1 is local only (Q5), and the code calls no `fetch`, `Response` nor `AbortSignal` |
 | `functional/no-class-inheritance` | `functional/no-classes` already forbids every class, inheritance included |
 | `@stylistic/lines-between-class-members` | no class can exist: `functional/no-classes` and `no-this-expressions` forbid classes and `this` |
+| `unicorn/no-optional-chaining-on-undeclared-variable` | TypeScript refuses a name declared nowhere (ts(2304)), with or without `?.` |
+| `unicorn/no-xor-as-exponentiation` | `no-bitwise` (native, kept) forbids `^` |
+| `unicorn/no-useless-continue` | `no-continue` (native, kept) forbids every `continue` |
+| `unicorn/no-leading-empty-lines` | oxfmt removes the blank lines at a file's start, and `npm run format:check` fails on them |
 
-The 232 kept, by plugin and, for Unicorn, by the area of `eslint/rules/unicorn/`:
+Confirmed against the code by EN-074 on 2026-10-17: no class, `this`, accessor, `enum`, `for…in`, `let`, CommonJS export nor JSDoc type in `src/`, `playground/`, `tests/` and the root configuration files; `fetch` and `node:sqlite` only in `scripts/`; `dependencies` empty. Each of the four drops above was tried on a probe file. The rewrite stories EN-078, EN-079 and EN-080 lost the four rules (44, 36 and 37 rules left).
+
+The 228 kept, by plugin and, for Unicorn, by the area of `eslint/rules/unicorn/`:
 
 | Group | Kept | Rules |
 | --- | --- | --- |
@@ -375,11 +381,11 @@ The 232 kept, by plugin and, for Unicorn, by the area of `eslint/rules/unicorn/`
 | Unicorn, dom | 19 | `better-dom-traversing`, `dom-node-dataset`, `no-canvas-to-image`, `no-incorrect-query-selector`, `no-invalid-dom-token`, `no-invalid-style-set-property`, `no-late-current-target-access`, `no-late-event-control`, `no-prevent-default-in-passive-listener`, `no-selector-as-dom-name`, `no-unsafe-dom-html`, `prefer-add-event-listener-options`, `prefer-dom-node-html-methods`, `prefer-dom-node-replace-children`, `prefer-observer-apis`, `prefer-path2d`, `prefer-scoped-selector`, `prefer-toggle-attribute`, `require-passive-events` |
 | Unicorn, errors | 4 | `no-error-property-assignment`, `prefer-aggregate-error`, `prefer-error-is-error`, `try-complexity` |
 | Unicorn, functions | 9 | `consistent-function-style`, `isolated-functions`, `no-repeated-call-wrappers`, `no-uncalled-method`, `no-unnecessary-default-arguments`, `no-unnecessary-parameters`, `no-useless-recursion`, `prefer-block-statement-over-iife`, `prefer-short-arrow-method` |
-| Unicorn, iteration | 18 | `iteration-fallback-style`, `no-array-concat-in-loop`, `no-array-sort-for-min-max`, `no-break-in-nested-loop`, `no-duplicate-loops`, `no-for-each`, `no-loop-iterable-mutation`, `no-unreadable-for-of-expression`, `no-unused-iterator-helper`, `no-useless-continue`, `prefer-array-iterable-methods`, `prefer-direct-iteration`, `prefer-iterable-in-constructor`, `prefer-iterator-helpers`, `prefer-iterator-to-array`, `prefer-iterator-to-array-at-end`, `prefer-object-iterable-methods`, `prefer-while-loop-condition` |
-| Unicorn, misc | 5 | `consistent-optional-chaining`, `no-optional-chaining-on-undeclared-variable`, `no-useless-compound-assignment`, `no-useless-delete-check`, `prefer-https` |
+| Unicorn, iteration | 17 | `iteration-fallback-style`, `no-array-concat-in-loop`, `no-array-sort-for-min-max`, `no-break-in-nested-loop`, `no-duplicate-loops`, `no-for-each`, `no-loop-iterable-mutation`, `no-unreadable-for-of-expression`, `no-unused-iterator-helper`, `prefer-array-iterable-methods`, `prefer-direct-iteration`, `prefer-iterable-in-constructor`, `prefer-iterator-helpers`, `prefer-iterator-to-array`, `prefer-iterator-to-array-at-end`, `prefer-object-iterable-methods`, `prefer-while-loop-condition` |
+| Unicorn, misc | 4 | `consistent-optional-chaining`, `no-useless-compound-assignment`, `no-useless-delete-check`, `prefer-https` |
 | Unicorn, modules | 8 | `default-export-style`, `no-global-object-property-assignment`, `no-top-level-side-effects`, `no-unnecessary-global-this`, `no-useless-re-export`, `prefer-global-number-constants`, `prefer-identifier-import-export-specifiers`, `prefer-json-import` |
-| Unicorn, naming | 8 | `comment-content`, `consistent-compound-words`, `consistent-tuple-labels`, `name-replacements`, `no-keyword-prefix`, `no-leading-empty-lines`, `prefer-type-literal-last`, `single-line-block-comment-style` |
-| Unicorn, numbers | 7 | `no-negated-comparison`, `no-redundant-comparison`, `no-subtraction-comparison`, `no-xor-as-exponentiation`, `prefer-math-abs`, `prefer-number-is-safe-integer`, `prefer-unary-minus` |
+| Unicorn, naming | 7 | `comment-content`, `consistent-compound-words`, `consistent-tuple-labels`, `name-replacements`, `no-keyword-prefix`, `prefer-type-literal-last`, `single-line-block-comment-style` |
+| Unicorn, numbers | 6 | `no-negated-comparison`, `no-redundant-comparison`, `no-subtraction-comparison`, `prefer-math-abs`, `prefer-number-is-safe-integer`, `prefer-unary-minus` |
 | Unicorn, objects | 12 | `consistent-destructuring`, `no-computed-property-existence-check`, `no-invalid-property-descriptor`, `no-invalid-well-known-symbol-methods`, `no-unreadable-new-expression`, `no-unreadable-object-destructuring`, `no-unsafe-property-key`, `no-unused-builtin-method-return`, `no-unused-properties`, `prefer-object-define-properties`, `prefer-object-destructuring-defaults`, `prefer-single-object-destructuring` |
 | Unicorn, platform | 11 | `consistent-json-file-read`, `no-invalid-intl-options`, `no-invalid-temporal-arithmetic`, `no-unsafe-buffer-conversion`, `no-unsafe-json-serialization`, `no-using-resource-escape`, `prefer-dispose`, `prefer-temporal`, `prefer-temporal-conversion`, `prefer-uint8array-base64`, `prefer-uint8array-hex` |
 | Unicorn, promises | 10 | `no-async-iterator-callback`, `no-async-promise-finally`, `no-multiple-promise-resolver-calls`, `prefer-array-from-async`, `prefer-await`, `prefer-promise-static-methods`, `prefer-promise-try`, `prefer-promise-with-resolvers`, `prefer-queue-microtask`, `prefer-then-catch` |
@@ -440,3 +446,11 @@ The 8 rules `@oxlint/migrate` skipped as unstable ("nursery") run in oxlint when
 | `import/export` | dropped: TypeScript refuses a name exported twice (ts(2323), ts(2528)) |
 | `import/named` | dropped: TypeScript refuses an import of a name the module does not export (ts(2614)) |
 | `no-useless-assignment` | dropped: only `const` can be declared and no parameter is reassigned, so no value can be assigned and overwritten unread |
+
+The four ESLint core rules oxlint lacks, triaged the same way:
+
+| Rule | Verdict |
+| --- | --- |
+| `no-restricted-syntax`, `require-atomic-updates` | kept, rewritten in the Rust linter (EN-075) |
+| `consistent-this` | dropped: `this` cannot appear (`functional/no-this-expressions`), so no alias of it can |
+| `strict` | dropped: every file is a module, so strict code, and `unicorn/prefer-module` (native, kept) reports any `"use strict"` directive |
