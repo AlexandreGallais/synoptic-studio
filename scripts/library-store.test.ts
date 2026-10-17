@@ -54,10 +54,14 @@ describe("library store", () => {
   });
 
   it("marks a page read again, and lists pages last read first", () => {
-    savePage(database, { ...PAGE, fetchedAt: 500, url: "https://example.org/old" }, []);
-    touchPage(database, PAGE.url, 2000);
+    // A store of its own: the page read again would change the one the other tests find.
+    const touched = openLibrary(":memory:");
 
-    expect(listPages(database).map((page) => [page.url, page.fetchedAt])).toEqual([
+    savePage(touched, PAGE, []);
+    savePage(touched, { ...PAGE, fetchedAt: 500, url: "https://example.org/old" }, []);
+    touchPage(touched, PAGE.url, 2000);
+
+    expect(listPages(touched).map((page) => [page.url, page.fetchedAt])).toEqual([
       [PAGE.url, 2000],
       ["https://example.org/old", 500],
     ]);
