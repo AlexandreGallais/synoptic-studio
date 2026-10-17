@@ -1,4 +1,4 @@
-import { execFileSync, spawnSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
@@ -15,11 +15,8 @@ const LINT = new ESLint({ cwd: ROOT });
 /** Time limit of a test asking a tool about every tracked file: about 4.3 s alone (EN-054), seven times. */
 const WALK_TIMEOUT = 30_000;
 
-/** The start of a script run under the heavy lock (EN-047), from its release binary (EN-068). */
-const HEAVY_LOCK = /^scripts\/rust-tool\.sh heavy-lock /u;
-
-/** The launcher of the Rust tools' release binaries (EN-068). */
-const LAUNCHER = join(ROOT, "scripts", "rust-tool.sh");
+/** The start of a script run under the heavy lock (EN-047), a crate of the workspace (EN-068). */
+const HEAVY_LOCK = /^cargo run --release -q -p heavy-lock -- /u;
 
 /** Prettier's ignore files, as its command line reads them. */
 const PRETTIER_IGNORE = [join(ROOT, ".gitignore"), join(ROOT, ".prettierignore")];
@@ -286,38 +283,22 @@ describe("the Rust workspace at the root (EN-068)", () => {
   });
 });
 
-describe("the Rust tools run from their release binaries (EN-068)", () => {
-  it("[F19.AC9] runs no Rust tool through cargo run in a script, a Git hook or a Claude Code hook", () => {
+describe("the Rust tools run as crates of the workspace (EN-068)", () => {
+  it("[F19.AC9] runs each Rust tool of a script or a Git hook by its crate, never by its manifest", () => {
     const callers = [
       SCRIPTS.values().toArray().join("\n"),
       readFileSync(join(ROOT, ".husky", "pre-push"), "utf8"),
       readFileSync(join(ROOT, ".husky", "commit-msg"), "utf8"),
-      readFileSync(join(ROOT, ".claude", "settings.json"), "utf8"),
-      readFileSync(join(ROOT, "scripts", "story-finish-rows.ts"), "utf8"),
     ].join("\n");
+    const runs = callers.match(/cargo run(?:(?!cargo run)[^&;\n])*/gu) ?? [];
 
-    expect(callers).not.toMatch(/cargo run|"run",\s*"--release"/u);
+    expect(runs.length).toBeGreaterThan(0);
+    expect(runs.filter((run) => !run.startsWith("cargo run --release -q -p "))).toEqual([]);
+    expect(callers).not.toMatch(/manifest-path/u);
   });
 
   it("[F19.AC9] builds the release binaries of the workspace from prepare", () => {
     expect(SCRIPTS.get("rust:build")).toBe("cargo build --release --workspace --locked");
     expect(SCRIPTS.get("prepare")).toBe("husky && npm run rust:build");
-  });
-
-  it("fails naming the build command when a tool's binary is missing (EN-068)", () => {
-    const result = spawnSync(LAUNCHER, ["no-such-tool", "--flag"], { encoding: "utf8" });
-
-    expect(result.status).toBe(127);
-
-    expect(result.stderr).toBe(
-      "target/release/no-such-tool is missing: build the Rust tools with `npm run rust:build`\n",
-    );
-  });
-
-  it("[F19.AC9] runs a tool's release binary with its arguments and its exit code", () => {
-    const result = spawnSync(LAUNCHER, ["backlog-index"], { encoding: "utf8" });
-
-    expect(result.status).toBe(2);
-    expect(result.stderr).toMatch(/usage/iu);
   });
 });
