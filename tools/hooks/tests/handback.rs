@@ -384,7 +384,7 @@ fn hook(root: &Path, agent_type: &str, lines: &[String], message: &str) -> Strin
 }
 
 #[test]
-fn the_hook_refuses_once_then_lets_through_and_names_story_finish() {
+fn f20_ac3_the_hook_refuses_once_then_lets_through_and_names_story_finish() {
     let root = std::env::temp_dir().join(format!("check-handback-{}", std::process::id()));
     let _ = fs::remove_dir_all(&root);
     let worktree = project(&root);

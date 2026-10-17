@@ -32,7 +32,7 @@ fn reports_the_duration_and_the_tokens_by_kind_only() {
 }
 
 #[test]
-fn shows_the_run_on_the_status_line() {
+fn f20_ac4_shows_the_run_on_the_status_line() {
     assert_eq!(
         status_text(7_500_000, &TOKENS, None),
         "run 2 h 05 · 43,100,000 tokens"

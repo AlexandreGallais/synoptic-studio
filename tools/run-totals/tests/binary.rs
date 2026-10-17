@@ -65,7 +65,7 @@ fn projects(home: &Path, repo: &Path) -> PathBuf {
 }
 
 #[test]
-fn opens_counts_shows_and_ends_a_run() {
+fn f20_ac4_opens_counts_shows_and_ends_a_run() {
     let (home, repo) = setup("run");
     let folder = projects(&home, &repo);
 
@@ -111,7 +111,7 @@ fn opens_counts_shows_and_ends_a_run() {
 }
 
 #[test]
-fn f20_should_stop_reads_the_week_and_the_parked_stories() {
+fn f20_ac6_should_stop_reads_the_week_and_the_parked_stories() {
     let (home, repo) = setup("stop");
     let stories = repo.join("docs/backlog/stories");
 

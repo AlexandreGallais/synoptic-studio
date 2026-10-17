@@ -358,17 +358,42 @@ function criteriaSection(item: Item): string {
 }
 
 /**
+ * Criterion identifiers of a section: one per numbered item, but a criterion struck through, `5.
+ * ~~…~~ Dropped on …`, which the Product Owner dropped and no test proves (AUD-022).
+ *
+ * @param section - the "Acceptance criteria" section of a feature
+ * @param feature - the feature's id, `F01`
+ * @returns `F01.AC1`, `F01.AC2`…
+ */
+function criteriaIn(section: string, feature: string): string[] {
+  return section
+    .matchAll(/^(?<number>\d+)\. (?!~~)/gmu)
+    .map((match) => `${feature}.AC${match.groups?.["number"] ?? ""}`)
+    .toArray();
+}
+
+/**
  * Criterion identifiers of a feature: one per numbered item of its "Acceptance criteria" section.
  *
  * @param item - feature item
  * @returns `F01.AC1`, `F01.AC2`…
  */
 function criteriaOf(item: Item): string[] {
-  return criteriaSection(item)
-    .matchAll(/^(?<number>\d+)\. /gmu)
-    .map((match) => `${item.fields["id"] ?? ""}.AC${match.groups?.["number"] ?? ""}`)
-    .toArray();
+  return criteriaIn(criteriaSection(item), item.fields["id"] ?? "");
 }
+
+/**
+ * Section "Measures" of a story.
+ *
+ * @param text - the story file
+ * @returns the section's text, empty when absent
+ */
+function measuresOf(text: string): string {
+  return /^## Measures\n(?<body>[\s\S]*?)(?=^## )/mu.exec(text)?.groups?.["body"] ?? "";
+}
+
+/** The stories that rewrote the agent-facing pages as principles (F20, criterion 8). */
+const PRINCIPLE_REWRITES = ["EN-096", "EN-097", "EN-098", "EN-099"];
 
 describe("backlog", () => {
   it("gives every item a well-formed id, a title and an allowed status", () => {
@@ -490,6 +515,24 @@ describe("backlog", () => {
     const tags = rustTags(text).match(/\[F\d{2}\.AC\d+\]/gu);
 
     expect(tags).toEqual(["[F18.AC6]", "[F18.AC3]"]);
+  });
+
+  it("leaves a criterion struck through out of the criteria to trace", () => {
+    const section = "1. Kept.\n2. ~~Dropped.~~ Dropped on 2026-10-17.\n3. Kept too.\n";
+
+    expect(criteriaIn(section, "F20")).toEqual(["F20.AC1", "F20.AC3"]);
+  });
+
+  it("[F20.AC8] measures each page rewritten as principles at 2.30 characters per token, its rules traced", () => {
+    const stories = readdirSync(join(BACKLOG, "stories"));
+    const unmeasured = PRINCIPLE_REWRITES.filter((id) => {
+      const file = stories.find((name) => name.startsWith(`E17-F20-${id}-`)) ?? "";
+      const text = readFileSync(join(BACKLOG, "stories", file), "utf8");
+
+      return !/\b2\.30?\b/u.test(measuresOf(text)) || !/^## (?:Rules|Trace)/mu.test(text);
+    });
+
+    expect(unmeasured).toEqual([]);
   });
 
   it("reads only the titles of this file's tests, never the tags its code names", () => {
