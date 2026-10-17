@@ -248,7 +248,7 @@
 | [EN-097](./E17-F20-EN-097-conventions-written-as-principles.md) | F20 | The conventions written as principles | done |
 | [EN-098](./E17-F20-EN-098-process-written-as-principles.md) | F20 | The process pages written as principles | done |
 | [EN-099](./E17-F20-EN-099-tooling-docs-written-as-principles.md) | F20 | The tooling docs written as principles | done |
-| [AUD-022](./E17-F20-AUD-022-audit-f20.md) | F20 | Audit F20 | ready |
+| [AUD-022](./E17-F20-AUD-022-audit-f20.md) | F20 | Audit F20 | done |
 | [VAL-021](./E17-F20-VAL-021-validate-f20.md) | F20 | Validate F20 | ready |
 | [NAM-002](./E17-NAM-002-naming-pass-e17.md) | E17 | Naming pass over the code of E17 | draft |
 | [REV-004](./E17-REV-004-review-e17.md) | E17 | Review E17 with the Product Owner | draft |
