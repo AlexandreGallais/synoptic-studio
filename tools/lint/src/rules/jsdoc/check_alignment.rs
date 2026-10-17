@@ -61,6 +61,7 @@ mod tests {
 
     #[test]
     fn reports_the_documented_cases_as_eslint_does() {
+        // [F19.AC11] A kept JSDoc rule, on the cases recorded from ESLint.
         check(&CheckAlignment, "check-alignment", "src/a.ts");
     }
 }

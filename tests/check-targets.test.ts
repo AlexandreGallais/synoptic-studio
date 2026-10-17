@@ -376,3 +376,49 @@ describe("the Rust tools run as crates of the workspace (EN-068)", () => {
     expect(SCRIPTS.get("prepare")).toBe("husky && npm run rust:build");
   });
 });
+
+/**
+ * The tracked Rust sources of the tools that ship, by path, read once, their comments left out:
+ * their tests run on the Product Owner's Mac only (a hook made executable on Unix alone).
+ */
+const RUST_SOURCES: ReadonlyMap<string, string> = new Map(
+  execFileSync("git", ["ls-files", "tools/*/src/*.rs"], { cwd: ROOT, encoding: "utf8" })
+    .split("\n")
+    .filter((path) => path !== "")
+    .map((path): [string, string] => [
+      path,
+      readFileSync(join(ROOT, path), "utf8")
+        .split("\n")
+        .filter((line) => !line.trimStart().startsWith("//"))
+        .join("\n"),
+    ]),
+);
+
+/**
+ * How many times a pattern occurs in a text.
+ *
+ * @param text - a source file
+ * @param pattern - a global regular expression
+ * @returns its count
+ */
+function countOf(text: string, pattern: RegExp): number {
+  return text.matchAll(pattern).toArray().length;
+}
+
+describe("Rust tools on portable calls (EN-070)", () => {
+  it("[F19.AC10] calls no system's own lock, and gives each Unix-only item its other-system twin", () => {
+    const unpaired = [...RUST_SOURCES]
+      .filter(
+        ([, text]) =>
+          countOf(text, /#\[cfg\(unix\)\]/gu) !==
+          countOf(text, /#\[cfg\((?:windows|not\(unix\))\)\]/gu),
+      )
+      .map(([path]) => path);
+    const native = [...RUST_SOURCES]
+      .filter(([, text]) => /\blibc::|\bflock\(|\bfcntl\(/u.test(text))
+      .map(([path]) => path);
+
+    expect(RUST_SOURCES.size).toBeGreaterThan(50);
+    expect({ native, unpaired }).toEqual({ native: [], unpaired: [] });
+  });
+});

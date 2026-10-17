@@ -204,6 +204,7 @@ mod tests {
 
     #[test]
     fn counts_decisions_with_logical_operators() {
+        // [F19.AC3] A rule of the project's `local` plugin, run in the project's linter.
         // Complexity 4: base 1 + `if` + `&&` + `||`.
         assert_eq!(
             found(
