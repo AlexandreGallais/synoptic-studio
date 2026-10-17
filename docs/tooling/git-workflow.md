@@ -4,12 +4,12 @@
 
 Git-flow without release branches (ADR-0038, `REF-GITFLOW`):
 
-| Branch                      | Holds                                                     | Receives                                                                                                                     | Checked by                            |
-| --------------------------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
-| `main`                      | released versions only                                    | pull requests from `develop` (merged by the Product Owner); no push                                                          | the CI of the pull request (`ci.yml`) |
-| `develop`                   | the integration branch: validated features, tooling, docs | agent pushes (tooling, docs, backlog); feature pull requests (GitHub, once validated); release pull requests (Product Owner) | local Git hooks                       |
-| `feature/f<nn>-<topic>`     | one feature while it is built (ADR-0028)                  | story pull requests (Product Owner, or GitHub in an autonomous run)                                                          | local Git hooks                       |
-| `<type>/<story-id>-<topic>` | one story, one commit per task                            | the agent's commits                                                                                                          | local Git hooks                       |
+| Branch | Holds | Receives | Checked by |
+| --- | --- | --- | --- |
+| `main` | released versions only | pull requests from `develop` (merged by the Product Owner); no push | the CI of the pull request (`ci.yml`) |
+| `develop` | the integration branch: validated features, tooling, docs | agent pushes (tooling, docs, backlog); feature pull requests (GitHub, once validated); release pull requests (Product Owner) | local Git hooks |
+| `feature/f<nn>-<topic>` | one feature while it is built (ADR-0028) | story pull requests (Product Owner, or GitHub in an autonomous run) | local Git hooks |
+| `<type>/<story-id>-<topic>` | one story, one commit per task | the agent's commits | local Git hooks |
 
 - **One branch = one feature**: `feature/f<nn>-<topic>`, created from the up-to-date `develop` when the feature starts, merged into `develop` by GitHub once the Product Owner validated it (`autonomous` label, ADR-0045), then deleted.
 - **One branch = one story**: `<type>/<story-id>-<topic>`, e.g. `feat/us-004-rectangle-contour`, made from the feature branch on GitHub with its worktree by `npm run worktree:new -- <ID>` (`.claude/worktrees/<id>`, EN-052). The type is the Conventional Commits type of the story's main change.
@@ -75,12 +75,12 @@ Conventional Commits (`REF-CONVENTIONAL-COMMITS`), checked by commitlint on ever
 
 Footers are Git trailers (`Key: value`) after a blank line:
 
-| Footer             | Meaning                                                                             | Example                                              |
-| ------------------ | ----------------------------------------------------------------------------------- | ---------------------------------------------------- |
-| `Refs:`            | task, story, feature, ADR, domain question, research request this commit relates to | `Refs: US-004.T2, ADR-0007, Q11`                     |
-| `Closes:`          | story completed by this commit (last task of the branch)                            | `Closes: US-004`                                     |
-| `BREAKING CHANGE:` | incompatible API change, described                                                  | `BREAKING CHANGE: polygonToPathData takes a Contour` |
-| `Co-Authored-By:`  | co-author                                                                           | added on commits written by Claude Code              |
+| Footer | Meaning | Example |
+| --- | --- | --- |
+| `Refs:` | task, story, feature, ADR, domain question, research request this commit relates to | `Refs: US-004.T2, ADR-0007, Q11` |
+| `Closes:` | story completed by this commit (last task of the branch) | `Closes: US-004` |
+| `BREAKING CHANGE:` | incompatible API change, described | `BREAKING CHANGE: polygonToPathData takes a Contour` |
+| `Co-Authored-By:` | co-author | added on commits written by Claude Code |
 
 ```text
 feat(geometry): add fillet setback
@@ -92,10 +92,10 @@ Refs: EN-001.T2, DERIV-local-radius-clamp
 
 ## Hooks (`.husky/`)
 
-| Hook         | Runs                                                                                                                                                                                                                                                                          |
-| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pre-commit` | `lint-staged` (`.lintstagedrc.json`): Prettier + ESLint `--fix` on staged TypeScript and Markdown, Prettier on JSON, HTML, CSS and YAML, secretlint on every staged file                                                                                                      |
-| `commit-msg` | commitlint, then for a `done` commit (`Closes:`) the docs of a rule its story changes (`tools/rule-docs`, EN-059)                                                                                                                                                             |
-| `pre-push`   | no shared file edited on a worker's story branch (`tools/shared-files`, ADR-0065), branch name (`.validate-branch-namerc.json`), `npm run check:all` (check, latest versions, docs and playground builds), then `npm run golden:check` when a golden file is written (EN-055) |
+| Hook | Runs |
+| --- | --- |
+| `pre-commit` | `lint-staged` (`.lintstagedrc.json`): the formatter (`tools/format`: oxfmt, then tables without padding) + ESLint `--fix` on staged TypeScript and Markdown, the formatter on JavaScript, JSON, HTML, CSS, YAML and TOML, secretlint on every staged file |
+| `commit-msg` | commitlint, then for a `done` commit (`Closes:`) the docs of a rule its story changes (`tools/rule-docs`, EN-059) |
+| `pre-push` | no shared file edited on a worker's story branch (`tools/shared-files`, ADR-0065), branch name (`.validate-branch-namerc.json`), `npm run check:all` (check, latest versions, docs and playground builds), then `npm run golden:check` when a golden file is written (EN-055) |
 
 Hooks are installed by `npm install` (`prepare` script): Husky writes `.husky/_`, a folder Git ignores, and names it as the hooks path, relative, so each checkout runs the hooks of its own branch. A worktree has no `.husky/_` of its own: `npm run worktree:new` runs Husky in every worktree without one, the new one included, so that a push from a story's worktree runs that branch's `.husky/pre-push`, not the main checkout's (EN-052). A worktree made by hand gets the same with `npx husky` run inside it. Bypassing them (`--no-verify`) is not allowed.

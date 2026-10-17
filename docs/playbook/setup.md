@@ -4,65 +4,65 @@ Setting up a new project the way this one ended E01. In order; each step names t
 
 ## Steps
 
-| #   | Step                                                                                                                                 | Copy from this repository                                                                | Why                                  |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- | ------------------------------------ |
-| 1   | Repository, license, `main` and `develop`, rulesets (merge commits into `main`, no bypass)                                           | `docs/tooling/ci.md` (settings), `docs/tooling/git-workflow.md`                          | ADR-0038                             |
-| 2   | TypeScript strict; ESLint as strict as possible, every rule decided; Prettier; EditorConfig                                          | `tsconfig.json`, `eslint/`, `.prettierrc.json`, `.editorconfig`                          | ADR-0009, ADR-0010                   |
-| 3   | Custom lint rules for the project's structure (one export per file, barrels, kinds, sources)                                         | `eslint/plugin/`                                                                         | ADR-0011, ADR-0012, ADR-0019         |
-| 4   | Vitest, 100 % coverage of the library, a floor for the demo app, property tests, fitness functions                                   | `vite.config.ts`, `vitest.setup.ts`, `tests/`                                            | ADR-0022                             |
-| 5   | Dependencies: one documented row each, latest versions at least 7 days old, audit, knip                                              | `tests/package.test.ts`, `.ncurc.cjs`, `knip.json`, `docs/tooling/dependencies.md`       | supply chain, ADR-0038               |
-| 6   | Git hooks: lint-staged, commitlint with closed scopes and backlog footers, branch names, full check before push                      | `.husky/`, `.lintstagedrc.json`, `commitlint.config.ts`, `.validate-branch-namerc.json`  | `docs/tooling/git-workflow.md`       |
-| 7   | One CI, on the pull request into `main`; CodeQL; weekly link check                                                                   | `.github/workflows/`                                                                     | ADR-0038                             |
-| 8   | Releases: release-please, test report attached, docs and demo published on release                                                   | `.github/workflows/release.yml`, `release-please-config.json`                            | `docs/tooling/releases.md`           |
-| 9   | Documentation site: VitePress, TypeDoc, Mermaid diagrams                                                                             | `docs/.vitepress/`                                                                       | `docs/tooling/documentation-site.md` |
-| 10  | Docs skeleton: domain, ADRs, conventions (writing rules first), references, derivations, research, backlog, process, guide, playbook | `docs/*/README.md`, templates `_*.md`, `docs/conventions/writing.md`                     | this playbook                        |
-| 11  | Backlog with tests: ids, statuses, parents' tables, feature frame                                                                    | `tests/backlog.test.ts`, `tests/references.test.ts`                                      | ADR-0017, ADR-0020                   |
-| 12  | Agent configuration: `AGENTS.md`, `CLAUDE.md`, rules, skills, expert agents, hooks, status line                                      | `AGENTS.md`, `CLAUDE.md`, `.claude/`                                                     | ADR-0021                             |
-| 13  | Metrics and the source library                                                                                                       | `scripts/metrics-*.ts`, `scripts/session-report.ts`, `scripts/library-*.ts`, `.mcp.json` | `docs/tooling/metrics.md`, ADR-0039  |
-| 14  | Start-of-project interview, then the first epic                                                                                      | [analysis.md](./analysis.md), `docs/domain/README.md`                                    | principle 6                          |
+| # | Step | Copy from this repository | Why |
+| --- | --- | --- | --- |
+| 1 | Repository, license, `main` and `develop`, rulesets (merge commits into `main`, no bypass) | `docs/tooling/ci.md` (settings), `docs/tooling/git-workflow.md` | ADR-0038 |
+| 2 | TypeScript strict; ESLint as strict as possible, every rule decided; one formatter (oxfmt, tables without padding); EditorConfig | `tsconfig.json`, `eslint/`, `.oxfmtrc.json`, `.editorconfig` | ADR-0009, ADR-0010 |
+| 3 | Custom lint rules for the project's structure (one export per file, barrels, kinds, sources) | `eslint/plugin/` | ADR-0011, ADR-0012, ADR-0019 |
+| 4 | Vitest, 100 % coverage of the library, a floor for the demo app, property tests, fitness functions | `vite.config.ts`, `vitest.setup.ts`, `tests/` | ADR-0022 |
+| 5 | Dependencies: one documented row each, latest versions at least 7 days old, audit, knip | `tests/package.test.ts`, `.ncurc.cjs`, `knip.json`, `docs/tooling/dependencies.md` | supply chain, ADR-0038 |
+| 6 | Git hooks: lint-staged, commitlint with closed scopes and backlog footers, branch names, full check before push | `.husky/`, `.lintstagedrc.json`, `commitlint.config.ts`, `.validate-branch-namerc.json` | `docs/tooling/git-workflow.md` |
+| 7 | One CI, on the pull request into `main`; CodeQL; weekly link check | `.github/workflows/` | ADR-0038 |
+| 8 | Releases: release-please, test report attached, docs and demo published on release | `.github/workflows/release.yml`, `release-please-config.json` | `docs/tooling/releases.md` |
+| 9 | Documentation site: VitePress, TypeDoc, Mermaid diagrams | `docs/.vitepress/` | `docs/tooling/documentation-site.md` |
+| 10 | Docs skeleton: domain, ADRs, conventions (writing rules first), references, derivations, research, backlog, process, guide, playbook | `docs/*/README.md`, templates `_*.md`, `docs/conventions/writing.md` | this playbook |
+| 11 | Backlog with tests: ids, statuses, parents' tables, feature frame | `tests/backlog.test.ts`, `tests/references.test.ts` | ADR-0017, ADR-0020 |
+| 12 | Agent configuration: `AGENTS.md`, `CLAUDE.md`, rules, skills, expert agents, hooks, status line | `AGENTS.md`, `CLAUDE.md`, `.claude/` | ADR-0021 |
+| 13 | Metrics and the source library | `scripts/metrics-*.ts`, `scripts/session-report.ts`, `scripts/library-*.ts`, `.mcp.json` | `docs/tooling/metrics.md`, ADR-0039 |
+| 14 | Start-of-project interview, then the first epic | [analysis.md](./analysis.md), `docs/domain/README.md` | principle 6 |
 
 ## Rhythm
 
-| When                     | What                                                                                               |
-| ------------------------ | -------------------------------------------------------------------------------------------------- |
-| each feature             | refinement questionnaire, spike, stories (a run), audit, validation, release                       |
-| each epic                | review with the full guided recheck; retrospective with metrics and one table of every logged item |
-| every four to five epics | every rule questioned against how the project went; harden by default                              |
-| any time                 | ideas to the improvement log, critiques to the feedback log                                        |
+| When | What |
+| --- | --- |
+| each feature | refinement questionnaire, spike, stories (a run), audit, validation, release |
+| each epic | review with the full guided recheck; retrospective with metrics and one table of every logged item |
+| every four to five epics | every rule questioned against how the project went; harden by default |
+| any time | ideas to the improvement log, critiques to the feedback log |
 
 ## Read first
 
-| Source                               | Why                                                        |
-| ------------------------------------ | ---------------------------------------------------------- |
-| `REF-CC-BEST-PRACTICES`              | verification the agent can run; independent reviewers      |
-| `REF-CC-MEMORY`, `REF-CC-HOOKS`      | short instruction files; hooks for what must always happen |
-| `REF-DIATAXIS`, `REF-NNG-SCANNING`   | pages people scan                                          |
-| `REF-SAFE-STORY`, `REF-KANBAN-GUIDE` | story types; flow without sprints                          |
-| `REF-GITFLOW`                        | `main` for releases, `develop` for integration             |
+| Source | Why |
+| --- | --- |
+| `REF-CC-BEST-PRACTICES` | verification the agent can run; independent reviewers |
+| `REF-CC-MEMORY`, `REF-CC-HOOKS` | short instruction files; hooks for what must always happen |
+| `REF-DIATAXIS`, `REF-NNG-SCANNING` | pages people scan |
+| `REF-SAFE-STORY`, `REF-KANBAN-GUIDE` | story types; flow without sprints |
+| `REF-GITFLOW` | `main` for releases, `develop` for integration |
 
 ## Starting parallel agents (E15)
 
 Copy before the first run with parallel workers:
 
-| Setting                                                                                                    | Why                                                                           |
-| ---------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| `.claude/worktrees/` in `.gitignore`, and out of the IDE's indexing with `coverage/`, `dist/`, `docs/api/` | the IDE indexed each worktree as a new project (256 % of the CPU)             |
-| a lock for heavy commands in `.git/`, holding its owner's process id                                       | one `check:all` saturates a laptop; a lock left by a force-quit is taken over |
-| a `PreToolUse` hook on `Agent` limiting subagents                                                          | a sentence was bent once, with a freeze                                       |
-| Prettier's `proseWrap: "never"`; generated indexes; `merge=union` on append-only logs                      | padded tables rewrite whole and conflict on every parallel merge              |
-| the worker brief versioned in the run skill, naming the commands that fit a worktree                       | 549 compound commands refused in worktrees                                    |
-| a register of exceptions to the rules, checked                                                             | each exception visible and justified                                          |
+| Setting | Why |
+| --- | --- |
+| `.claude/worktrees/` in `.gitignore`, and out of the IDE's indexing with `coverage/`, `dist/`, `docs/api/` | the IDE indexed each worktree as a new project (256 % of the CPU) |
+| a lock for heavy commands in `.git/`, holding its owner's process id | one `check:all` saturates a laptop; a lock left by a force-quit is taken over |
+| a `PreToolUse` hook on `Agent` limiting subagents | a sentence was bent once, with a freeze |
+| Prettier's `proseWrap: "never"`; generated indexes; `merge=union` on append-only logs | padded tables rewrite whole and conflict on every parallel merge |
+| the worker brief versioned in the run skill, naming the commands that fit a worktree | 549 compound commands refused in worktrees |
+| a register of exceptions to the rules, checked | each exception visible and justified |
 
 ## Cases met in E01
 
-| Case                                                    | What the kit does                                                   |
-| ------------------------------------------------------- | ------------------------------------------------------------------- |
-| a need understood late (the rectangle was a free shape) | the interview asks early which things are kinds of one thing        |
-| waiting for CI after every story                        | local checks; one CI per release                                    |
-| the same pages read again at every spike                | the source library                                                  |
-| no idea how long the work took                          | metrics, session reports                                            |
-| the Product Owner's words kept in a public repository   | writing rules; decisions in neutral words                           |
-| a long guided test accumulating every feature's steps   | one checklist page per epic, a line per option; rerun at the review |
-| a computer frozen by parallel agents (E15)              | the agent limit and the heavy lock in the tools                     |
-| merge conflicts on indexes and logs (E15)               | shared files written at merge; generated indexes; unpadded tables   |
-| a checklist of 50 lines (E15)                           | at most 12 lines per feature, each tried before the validation      |
+| Case | What the kit does |
+| --- | --- |
+| a need understood late (the rectangle was a free shape) | the interview asks early which things are kinds of one thing |
+| waiting for CI after every story | local checks; one CI per release |
+| the same pages read again at every spike | the source library |
+| no idea how long the work took | metrics, session reports |
+| the Product Owner's words kept in a public repository | writing rules; decisions in neutral words |
+| a long guided test accumulating every feature's steps | one checklist page per epic, a line per option; rerun at the review |
+| a computer frozen by parallel agents (E15) | the agent limit and the heavy lock in the tools |
+| merge conflicts on indexes and logs (E15) | shared files written at merge; generated indexes; unpadded tables |
+| a checklist of 50 lines (E15) | at most 12 lines per feature, each tried before the validation |

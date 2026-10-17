@@ -7,37 +7,37 @@ Pages people scan, not read: the point first, one purpose per page, and a table,
 
 ## Five rules
 
-| Rule                      | In practice                                                                                                                     | Source                                  |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
-| **Point first**           | the first sentence of a page or section says what it gives; conclusion before details (inverted pyramid)                        | `REF-NNG-SCANNING`, `REF-MS-STYLE`      |
-| **One page, one purpose** | a page is a concept, a task, a reference or a decision — never two (types below)                                                | `REF-DIATAXIS`, `REF-GITLAB-TOPICS`     |
-| **Show, then tell**       | comparisons in a table, steps in a numbered list, options in bullets, commands and data in code blocks, structures in a diagram | `REF-GOOGLE-LISTS`, `REF-GOOGLE-IMAGES` |
-| **Short blocks**          | paragraphs of one idea and at most four lines; a page longer than two screens gets headings every screen                        | `REF-NNG-SCANNING`                      |
-| **One fact, one place**   | link instead of repeating; `AGENTS.md` and folder indexes summarize and link                                                    | `REF-WTD-STYLE`                         |
+| Rule | In practice | Source |
+| --- | --- | --- |
+| **Point first** | the first sentence of a page or section says what it gives; conclusion before details (inverted pyramid) | `REF-NNG-SCANNING`, `REF-MS-STYLE` |
+| **One page, one purpose** | a page is a concept, a task, a reference or a decision — never two (types below) | `REF-DIATAXIS`, `REF-GITLAB-TOPICS` |
+| **Show, then tell** | comparisons in a table, steps in a numbered list, options in bullets, commands and data in code blocks, structures in a diagram | `REF-GOOGLE-LISTS`, `REF-GOOGLE-IMAGES` |
+| **Short blocks** | paragraphs of one idea and at most four lines; a page longer than two screens gets headings every screen | `REF-NNG-SCANNING` |
+| **One fact, one place** | link instead of repeating; `AGENTS.md` and folder indexes summarize and link | `REF-WTD-STYLE` |
 
 ## Page types
 
-| Type                  | Answers                        | Here                                                         |
-| --------------------- | ------------------------------ | ------------------------------------------------------------ |
-| Concept (explanation) | "Why is it like this?"         | `domain/`, ADRs, derivations, `guide/` demo pages            |
-| Task (how-to)         | "How do I do X?"               | `tooling/`, skills, "Changing a rule" sections               |
-| Reference             | "What is it, exactly?"         | API pages (TSDoc), `references.md`, tables in `conventions/` |
-| Decision              | "What did we choose, and why?" | ADRs, settled questions                                      |
+| Type | Answers | Here |
+| --- | --- | --- |
+| Concept (explanation) | "Why is it like this?" | `domain/`, ADRs, derivations, `guide/` demo pages |
+| Task (how-to) | "How do I do X?" | `tooling/`, skills, "Changing a rule" sections |
+| Reference | "What is it, exactly?" | API pages (TSDoc), `references.md`, tables in `conventions/` |
+| Decision | "What did we choose, and why?" | ADRs, settled questions |
 
 A reference page does not explain: it **links** to the explanation (`REF-DIATAXIS`). Titles say what the page holds, in fewer than 70 characters, never "Overview" or "Introduction" (`REF-GITLAB-TOPICS`).
 
 ## Building blocks
 
-| Use               | When                                                                              | How                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| ----------------- | --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Table**         | items sharing properties: options, comparisons, catalogs, rules with their source | one row per item, a first column naming it; no table of one column                                                                                                                                                                                                                                                                                                                                                    |
-| **Numbered list** | steps whose order matters                                                         | one action per step, starting with a verb                                                                                                                                                                                                                                                                                                                                                                             |
-| **Bulleted list** | items without order                                                               | introduced by a complete sentence ending with a colon; never one item; parallel wording (`REF-GOOGLE-LISTS`)                                                                                                                                                                                                                                                                                                          |
-| **Bold run-in**   | a few named ideas in a list                                                       | `- **Name**: what it is`                                                                                                                                                                                                                                                                                                                                                                                              |
-| **Code block**    | commands, data, file contents, text diagrams                                      | always with a language (`sh`, `ts`, `json`, `text`)                                                                                                                                                                                                                                                                                                                                                                   |
-| **Diagram**       | a flow, a structure, a lifecycle, a branch history; a geometry                    | a `mermaid` code block (flowchart, gitGraph, sequenceDiagram): text kept with the page, drawn by the site and by GitHub (`REF-MERMAID`, `REF-GH-DIAGRAMS`), parsed by `tests/diagrams.test.ts` so that a broken diagram fails the check, label lines of at most 32 characters (cut with `<br/>`) so that the text fits its box; a geometry: SVG drawn by the library in an `images/` folder; introduced by a sentence |
-| **Alert**         | what a scanning reader must not miss                                              | `> [!NOTE]`, `> [!TIP]`, `> [!IMPORTANT]`, `> [!WARNING]`: rendered by GitHub and VitePress (`REF-VITEPRESS-MARKDOWN`); one or two per page at most                                                                                                                                                                                                                                                                   |
-| **Paragraph**     | reasoning that needs sentences: context, why, trade-offs                          | short; the point in its first words                                                                                                                                                                                                                                                                                                                                                                                   |
+| Use | When | How |
+| --- | --- | --- |
+| **Table** | items sharing properties: options, comparisons, catalogs, rules with their source | one row per item, a first column naming it; no table of one column |
+| **Numbered list** | steps whose order matters | one action per step, starting with a verb |
+| **Bulleted list** | items without order | introduced by a complete sentence ending with a colon; never one item; parallel wording (`REF-GOOGLE-LISTS`) |
+| **Bold run-in** | a few named ideas in a list | `- **Name**: what it is` |
+| **Code block** | commands, data, file contents, text diagrams | always with a language (`sh`, `ts`, `json`, `text`) |
+| **Diagram** | a flow, a structure, a lifecycle, a branch history; a geometry | a `mermaid` code block (flowchart, gitGraph, sequenceDiagram): text kept with the page, drawn by the site and by GitHub (`REF-MERMAID`, `REF-GH-DIAGRAMS`), parsed by `tests/diagrams.test.ts` so that a broken diagram fails the check, label lines of at most 32 characters (cut with `<br/>`) so that the text fits its box; a geometry: SVG drawn by the library in an `images/` folder; introduced by a sentence |
+| **Alert** | what a scanning reader must not miss | `> [!NOTE]`, `> [!TIP]`, `> [!IMPORTANT]`, `> [!WARNING]`: rendered by GitHub and VitePress (`REF-VITEPRESS-MARKDOWN`); one or two per page at most |
+| **Paragraph** | reasoning that needs sentences: context, why, trade-offs | short; the point in its first words |
 
 Images (`REF-GOOGLE-IMAGES`): SVG first; alt text short and descriptive, under 155 characters, never "Image of"; no text in images that the page does not also say; an image only where words are not enough.
 
@@ -45,13 +45,13 @@ Images (`REF-GOOGLE-IMAGES`): SVG first; alt text short and descriptive, under 1
 
 The Product Owner speaks freely while dictating; the documentation keeps their **decisions and their reasons**, never their words.
 
-| Do                                                                                       | Do not                                                   |
-| ---------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| write the decision as understood, in complete neutral English                            | quote them, in French or in English                      |
-| attribute it to the role and the date: "Product Owner decision, 2026-10-11"              | write feelings, praise or familiar words                 |
+| Do | Do not |
+| --- | --- |
+| write the decision as understood, in complete neutral English | quote them, in French or in English |
+| attribute it to the role and the date: "Product Owner decision, 2026-10-11" | write feelings, praise or familiar words |
 | give the reason when it was given: "so that a width of 0 then back gives the same shape" | cut it short to one line when the rule needs a paragraph |
-| structure a long decision: a heading, a list of the rules, a table of the cases          | write it as a run of one-line bullets with no order      |
-| ask when the meaning is unclear                                                          | guess and record the guess as their decision             |
+| structure a long decision: a heading, a list of the rules, a table of the cases | write it as a run of one-line bullets with no order |
+| ask when the meaning is unclear | guess and record the guess as their decision |
 
 The same holds for commit messages, the improvement and feedback logs, retrospectives, and messages to them (written in French, same shape).
 
@@ -80,32 +80,32 @@ No tutorial, no history, no design discussion, no restating of the name (`jsdoc/
 
 The [glossary](../domain/) defines the domain terms; this list fixes the words used to write about them.
 
-| Use                                                 | Not                                         | Note                                                                                      |
-| --------------------------------------------------- | ------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| corner radius                                       | border radius, rounding                     | the requested value; "effective radius" for the reduced one                               |
-| fillet                                              | round, curve                                | the arc replacing a corner                                                                |
-| setback                                             | offset, inset                               | distance from a corner to a tangent point                                                 |
-| contour                                             | outline, polygon (for the list of vertices) | closed list of vertices, clockwise                                                        |
-| vertex, vertices                                    | point, node (in geometry)                   | "point" in the playground and the guide, where the user sees points                       |
-| path data                                           | `d` string, path string                     | the `d` attribute of `<path>`                                                             |
-| side                                                | edge (for a free shape with handles)        | the part of the contour between two points; "curved side" when cubic                      |
-| Mirror angle and length, Mirror angle, No mirroring | mirrored angle and length, mode angle       | the handle modes as the playground names them; stored `angle-and-length`, `angle`, `none` |
-| method (of typing a handle)                         | way                                         | `HANDLE_WAYS` in the code                                                                 |
-| Product Owner                                       | PO, client, user (for the Product Owner)    | "user" means the end user of the tools                                                    |
-| story, task                                         | ticket, issue (for backlog items)           | "issue" only for GitHub issues                                                            |
-| pull request                                        | PR, merge request                           |                                                                                           |
-| playground                                          | demo app, sandbox                           |                                                                                           |
+| Use | Not | Note |
+| --- | --- | --- |
+| corner radius | border radius, rounding | the requested value; "effective radius" for the reduced one |
+| fillet | round, curve | the arc replacing a corner |
+| setback | offset, inset | distance from a corner to a tangent point |
+| contour | outline, polygon (for the list of vertices) | closed list of vertices, clockwise |
+| vertex, vertices | point, node (in geometry) | "point" in the playground and the guide, where the user sees points |
+| path data | `d` string, path string | the `d` attribute of `<path>` |
+| side | edge (for a free shape with handles) | the part of the contour between two points; "curved side" when cubic |
+| Mirror angle and length, Mirror angle, No mirroring | mirrored angle and length, mode angle | the handle modes as the playground names them; stored `angle-and-length`, `angle`, `none` |
+| method (of typing a handle) | way | `HANDLE_WAYS` in the code |
+| Product Owner | PO, client, user (for the Product Owner) | "user" means the end user of the tools |
+| story, task | ticket, issue (for backlog items) | "issue" only for GitHub issues |
+| pull request | PR, merge request |  |
+| playground | demo app, sandbox |  |
 
 ## Page skeletons
 
-| Page               | Sections, in order                                                               |
-| ------------------ | -------------------------------------------------------------------------------- |
-| folder `README.md` | one sentence of purpose; table of pages                                          |
-| ADR                | Status; Context; Decision; Consequences; References                              |
-| derivation         | statement and domain; steps, each citing a read source; cross-check; check table |
-| research note      | date and origin; findings per topic with `REF-*`; retained table                 |
-| guide page         | templates `docs/guide/_feature-demo.md`, `_epic-report.md`                       |
-| backlog item       | templates `docs/backlog/_*.md`                                                   |
+| Page | Sections, in order |
+| --- | --- |
+| folder `README.md` | one sentence of purpose; table of pages |
+| ADR | Status; Context; Decision; Consequences; References |
+| derivation | statement and domain; steps, each citing a read source; cross-check; check table |
+| research note | date and origin; findings per topic with `REF-*`; retained table |
+| guide page | templates `docs/guide/_feature-demo.md`, `_epic-report.md` |
+| backlog item | templates `docs/backlog/_*.md` |
 
 ## Messages to the Product Owner
 
@@ -122,15 +122,15 @@ No raw logs: quote the one line that matters. Questions come last, so they are n
 
 ## Checked by ESLint
 
-Markdown pages are linted by `@eslint/markdown` (`eslint/rules/markdown/structure.ts`): heading levels, one `#` title, code block languages, no bare URL, no missing link fragment, table column counts. Layout is Prettier's.
+Markdown pages are linted by `@eslint/markdown` (`eslint/rules/markdown/structure.ts`): heading levels, one `#` title, code block languages, no bare URL, no missing link fragment, table column counts. Layout is the formatter's (oxfmt, tables without padding: `formatting.md`).
 
 ## Where things go
 
-| Content                                  | Place                                                  |
-| ---------------------------------------- | ------------------------------------------------------ |
-| business rule                            | `docs/domain/`                                         |
-| structural decision and its alternatives | new ADR                                                |
-| code rule                                | `docs/conventions/` (and the ESLint rule enforcing it) |
-| tooling procedure                        | `docs/tooling/`                                        |
-| planned work                             | `docs/backlog/`                                        |
-| source                                   | `docs/references.md` row, cited by ID                  |
+| Content | Place |
+| --- | --- |
+| business rule | `docs/domain/` |
+| structural decision and its alternatives | new ADR |
+| code rule | `docs/conventions/` (and the ESLint rule enforcing it) |
+| tooling procedure | `docs/tooling/` |
+| planned work | `docs/backlog/` |
+| source | `docs/references.md` row, cited by ID |
