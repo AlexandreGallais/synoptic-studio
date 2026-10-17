@@ -46,6 +46,7 @@ Each tool of our own records its own use (EN-102), whoever calls it — the agen
 
 - **Never in the tool's way**: a line that cannot be written — no `.git` above the folder, a read-only folder — is dropped without a word, the tool's output and exit code unchanged. The `metrics` folder is created when missing, never `.git` itself.
 - **One write per line**: the line goes to a file opened to append in a single write, so that two tools ending at once never mix their lines.
+- **Its cost**: 0.13 to 0.17 ms a call, about 121 bytes a line; the status line's `run-totals status`, once a second during a run, writes most of them, about 2.2 MB for a run of 5 hours ([EN-102's measures](../backlog/stories/E17-F21-EN-102-each-tool-records-its-use.md#measures-adr-0069)).
 - **Release builds only**: `package.json`, the Git hooks and `.claude/settings.json` run every tool with `--release`; a debug build is a test's, whose calls are not uses, so it records nothing.
 - No crate: the standard library appends the line ([research note 0025](../research/notes/0025-f21-agent-tools-in-rust.md)).
 
@@ -65,6 +66,8 @@ Each tool of our own records its own use (EN-102), whoever calls it — the agen
 | Turns | each turn the session report saved |
 | Sources | the source library's uses ([sources](./sources.md#uses)) |
 | Where the time of the latest turns went | the main agent's tools running, the model between two calls, the characters written |
+| The agent's tools | each tool of [the agent's tools](./agent-tools.md) run through npm, from the hook's log: count, total, median, longest, failed |
+| Tools | each Rust tool of the workspace by tool and subcommand, from [its own record](#the-uses-of-each-tool), whoever called it: calls, failed (an exit code other than 0), median, slowest |
 
 - **Active time** adds the gaps between moments of work, each capped at 5 minutes, so that a pause, a night or a wait for the Product Owner is not counted as work.
 - A moment belongs to the story of its branch, and to that story's first task commit made after it; work after the last task commit shows as `<story> (no task commit)`.
@@ -147,6 +150,7 @@ One row: duration (wall and active), tokens, tokens per model (`opus-5-5 2,580,1
 `RET` reads `npm run metrics` and answers with figures (retro skill):
 
 - which commands run most and cost most time: is one worth a script, a cache or a check run less often?
+- the **Tools** section, as a tools team reviews its tools: one never called is a candidate for removal, one failing often a bug or a misleading usage, one slow a target for the next story;
 - which stories and tasks took longest: their commits say why;
 - how many calls failed, and of which kind: a repeated failure gets a check or a rule;
 - how tokens grew per story against the last epic: what made the agent search or read more.

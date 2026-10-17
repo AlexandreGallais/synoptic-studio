@@ -1,6 +1,7 @@
 // Metrics report of the agent's work (docs/tooling/metrics.md): reads the Claude Code transcripts
-// of this repository and the log of the `log-tool-call` hook, prints a Markdown report — sessions,
-// commands by count and by time, slowest calls, time and tokens per story, feature and task.
+// of this repository, the log of the `log-tool-call` hook and the uses each Rust tool records,
+// prints a Markdown report — sessions, commands by count and by time, slowest calls, time and
+// tokens per story, feature and task, each tool's calls.
 // Run by `npm run metrics`, or `npm run metrics -- --since 2026-10-16` for the calls from that day
 // on, 00:00 UTC (EN-055); Temporal: `node --harmony-temporal`.
 
