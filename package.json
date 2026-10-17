@@ -52,6 +52,7 @@
     "playground:build": "vite build --mode playground",
     "metrics": "node --harmony-temporal scripts/metrics-report.ts",
     "metrics:session": "node --harmony-temporal scripts/session-report.ts",
+    "context:size": "cargo run --release -q -p hooks --bin context-size --",
     "library": "node --harmony-temporal --no-warnings=ExperimentalWarning scripts/library-cli.ts",
     "prepare": "husky && npm run rust:build",
     "rust:coverage": "cargo llvm-cov --version > /dev/null 2>&1 || { echo 'cargo-llvm-cov is missing: rustup installs llvm-tools from rust-toolchain.toml, then run cargo install --locked cargo-llvm-cov@0.9.1 (docs/tooling/commands.md)' >&2; exit 1; }; cargo llvm-cov --workspace --locked --quiet --summary-only --fail-under-lines 93 --fail-under-functions 93 || { echo 'Rust tests failed, or their coverage fell under the floor of 93 % of lines and 93 % of functions (docs/tooling/commands.md)' >&2; exit 1; }",

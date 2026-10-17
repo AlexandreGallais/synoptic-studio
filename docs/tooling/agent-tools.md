@@ -28,6 +28,7 @@ A tool written once removes the writing. It is tested, linted and named after wh
 | `npm run git:sync [-- --base <ref>]` | in a story's worktree: fetches `origin`, then rebases the story on its feature branch, found from the story's file as `worktree:new` finds it (`origin/develop` for an epic's story), or on the base typed; on any other branch, moves it forward to its upstream (`merge --ff-only`), never rebasing a shared branch; refuses `main` and a detached head; stops at the first failing step with Git's own message (a conflict leaves the rebase to resolve or abort); prints one line, the branch, its base and the commits ahead; a Rust tool (`tools/git-sequences/`, EN-100) | `git fetch origin` then `git rebase origin/<feature>`, two calls (39 times in three days, research note 0024) |
 | `npm run git:commit -- -F <file\|-> [--push\|--push-with-lease] [--] <paths>` | stages the files named (none: what is staged already), commits with the message of the file or of the standard input (a here-document: a message of several lines passes the shell guard), then pushes with `-u origin HEAD` when asked; `--push-with-lease` only on a story branch; refuses `main`, a detached head and an empty message before staging anything; never `--no-verify`, the hooks run even under `HUSKY=0`; each step's output shown only when it fails, then the sequence stops; prints the commit's hash and subject | `git add`, `git commit -F`, `git push`, three calls (`add` then `commit` 59 times, `commit` then `push` 46, research note 0024) |
 | `npm run worktree:new -- <ID> [--type <type>]` | adds `.claude/worktrees/<id>` on `<type>/<id>-<topic>` from the story's feature branch on GitHub (`origin/develop` for an epic's story), the topic from the story's file name, the type from its kind (`US` and `VAL` `feat`, `EN` `chore`, `NAM` `refactor`, the others `docs`), links the main checkout's `node_modules` into it and runs Husky in each worktree without `.husky/_`, so a push runs the branch's own `pre-push` ([git workflow](./git-workflow.md#hooks-husky)); refuses a folder already there and a branch name that is not a story branch (`origin/…`); a Rust tool (`tools/worktree/`, EN-052) | worktrees named `agent-a13cbef…`; a branch named `origin/feature/…` by a word split |
+| `npm run context:size -- <folder>…` | for each subagent of a session's folder (`~/.claude/projects/<project>/<session>`, its `subagents/` read) or of a `subagents/` folder: its type, the tokens of its first request, the instruction files loaded before it (`CLAUDE.md`, `AGENTS.md`, the memory index `MEMORY.md`), the characters of its skill listing and of its task; then the median per type; a Rust binary of `tools/hooks/` (EN-065) | the first requests counted by a script of the scratch folder at SP-022 |
 | `npm run mutate -- [--all] <files> [-- <command>]` | under the heavy lock, in a temporary copy of the repository, tries mutations on each file and reports each one caught, timed out or `SURVIVED` with its line; exits 1 when one survives ([mutate](#mutate)); a Rust tool (`tools/mutate/`, EN-058) | the runner written again at each audit (F05 to F17), Stryker blocked |
 
 ### mutate
@@ -97,12 +98,6 @@ These run at every tool call or every second, each one starting Node.js. Measure
 | `guard-bash`, `track-tool-call`, `log-tool-call` | the same checks and records | 65 ms before every shell command; 3 551 commands in E14 (about 4 min) | yes |
 | `transcript:find <text>` | the lines of the session's transcript holding an id or a text, with their time and type | the stuck task found by `grep` in a 30 MB transcript | yes |
 | `metrics` report | the same report, faster on large transcripts | the report taking more than a few seconds | yes |
-
-### Context
-
-| Tool | Does | Signal | Rust |
-| --- | --- | --- | --- |
-| `context:size` | what a session loads before its first word — `AGENTS.md`, `CLAUDE.md`, rules, memory index, skills' descriptions — in characters and an estimate of tokens | the conversation memory filling up fast (E17, F20 the context diet) | yes |
 
 ### Asked by E15 (RET-003)
 
