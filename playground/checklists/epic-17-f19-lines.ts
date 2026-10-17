@@ -20,7 +20,7 @@ export const EPIC_17_F19_LINES: readonly ChecklistLine[] = [
   },
   {
     feature: "F19",
-    todo: "Terminal: src/probe.ts holding // oxlint-disable-next-line no-console above export const quietCount = 1;, then npm run lint",
+    todo: "Terminal: src/probe.ts holding oxlint's next-line disable comment for no-console, then export const quietCount = 1;, then npm run lint",
     see: "“error: Unused oxlint-disable directive (no problems were reported).”",
   },
   {
