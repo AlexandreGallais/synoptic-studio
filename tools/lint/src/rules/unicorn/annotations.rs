@@ -28,6 +28,8 @@ pub struct Targets<'n> {
     pub names: &'n [&'n str],
     /// The names of types known to be something else.
     pub non_targets: &'n [&'n str],
+    /// The constructors whose `new` makes one of the types.
+    pub constructors: &'n [&'n str],
     /// The names a module exports that are the types, by module.
     pub imports: &'n [(&'n str, &'n [&'n str])],
     /// Whether `null` and `undefined` in a union are left out.
@@ -372,6 +374,14 @@ pub fn class_of_expression(
                 class_of_expression(source, scope, last, targets, depth + 1)
             })
         }
+        Expression::NewExpression(new) => match &new.callee {
+            Expression::Identifier(callee)
+                if targets.constructors.contains(&callee.name.as_str()) =>
+            {
+                Class::Target
+            }
+            _ => Class::Unknown,
+        },
         Expression::ConditionalExpression(conditional) => union(
             vec![
                 class_of_expression(source, scope, &conditional.consequent, targets, depth + 1),
@@ -380,5 +390,172 @@ pub fn class_of_expression(
             targets,
         ),
         _ => Class::Unknown,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use oxc_ast::AstKind;
+    use oxc_semantic::AstNode;
+
+    use super::{Class, Targets, class_of_expression};
+    use crate::finding::Finding;
+    use crate::rules::Rule;
+    use crate::source::Source;
+    use crate::testing::{lint, messages};
+
+    /// The targets of the probes: `Target` and what `lib` exports as `Imported`.
+    const TARGETS: Targets = Targets {
+        names: &["Target"],
+        non_targets: &["Other"],
+        constructors: &["Target"],
+        imports: &[("lib", &["Imported"])],
+        allow_nullish_in_mixed_union: false,
+        mixed_union: Class::Unknown,
+        prefer_definitions: true,
+    };
+
+    /// Reports the class of each value given to `probe(…)`.
+    struct Probe(Targets<'static>);
+
+    impl Rule for Probe {
+        fn name(&self) -> &'static str {
+            "probe/class"
+        }
+
+        fn checks_nodes(&self) -> bool {
+            true
+        }
+
+        fn check_node(&self, node: &AstNode, source: &Source, findings: &mut Vec<Finding>) {
+            if let AstKind::CallExpression(call) = node.kind()
+                && call.callee.is_specific_id("probe")
+                && let Some(value) = call.arguments[0].as_expression()
+            {
+                let class = class_of_expression(source, node.scope_id(), value, &self.0, 0);
+                findings.push(source.finding(self.name(), call.span.start, format!("{class:?}")));
+            }
+        }
+    }
+
+    /// The classes of the probes of a piece of code.
+    fn classes(targets: Targets<'static>, code: &str) -> Vec<String> {
+        messages(&lint(&Probe(targets), "src/a.ts", code))
+    }
+
+    #[test]
+    fn reads_written_types() {
+        // Names, keywords, nullish, readonly, other operators, parentheses, qualified names.
+        assert_eq!(
+            classes(
+                TARGETS,
+                "declare const a: Target, b: Other, c: string, d: null, e: readonly Target[], f: keyof X, g: (Target), h: A.B, i: Unknown;\nprobe(a); probe(b); probe(c); probe(d); probe(e); probe(f); probe(g); probe(h); probe(i);"
+            ),
+            [
+                "Target",
+                "NonTarget",
+                "NonTarget",
+                "Nullish",
+                "NonTarget",
+                "Unknown",
+                "Target",
+                "Unknown",
+                "Unknown"
+            ]
+        );
+        // Unions and intersections.
+        assert_eq!(
+            classes(
+                TARGETS,
+                "declare const a: Target | null, b: Target | Target, c: Other | null, d: Target & Other, e: Target & Unknown, f: Other & Other;\nprobe(a); probe(b); probe(c); probe(d); probe(e); probe(f);"
+            ),
+            [
+                "Unknown",
+                "Target",
+                "NonTarget",
+                "Target",
+                "Unknown",
+                "NonTarget"
+            ]
+        );
+        let lenient = Targets {
+            allow_nullish_in_mixed_union: true,
+            mixed_union: Class::NonTarget,
+            ..TARGETS
+        };
+        assert_eq!(
+            classes(
+                lenient,
+                "declare const a: Target | null, b: Target | Other, c: null | undefined;\nprobe(a); probe(b); probe(c);"
+            ),
+            ["Target", "NonTarget", "NonTarget"]
+        );
+        let mixed = Targets {
+            mixed_union: Class::Target,
+            prefer_definitions: false,
+            ..TARGETS
+        };
+        assert_eq!(
+            classes(
+                mixed,
+                "type Target = number;\ndeclare const a: Target | Other, b: Target;\nprobe(a); probe(b);"
+            ),
+            ["Target", "Target"]
+        );
+    }
+
+    #[test]
+    fn follows_the_declarations_of_the_file() {
+        assert_eq!(
+            classes(
+                TARGETS,
+                "type Alias = Target;\ninterface I extends Target {}\ninterface J {}\ninterface K extends Unknown {}\ninterface L extends Other, J {}\nenum E {}\ndeclare const a: Alias, b: I, c: J, d: K, e: L, f: E;\nprobe(a); probe(b); probe(c); probe(d); probe(e); probe(f);"
+            ),
+            [
+                "Target",
+                "Target",
+                "NonTarget",
+                "Unknown",
+                "NonTarget",
+                "Unknown"
+            ]
+        );
+        assert_eq!(
+            classes(
+                TARGETS,
+                "import { Imported, Else } from 'lib';\nimport { Target as Renamed, Free } from 'other';\nimport Default from 'other';\nimport Target2 from 'x';\nimport * as All from 'all';\ndeclare const a: Imported, b: Else, c: Renamed, d: Free, e: Default, f: All;\nprobe(a); probe(b); probe(c); probe(d); probe(e); probe(f);"
+            ),
+            [
+                "Target",
+                "NonTarget",
+                "NonTarget",
+                "Unknown",
+                "Unknown",
+                "Unknown"
+            ]
+        );
+    }
+
+    #[test]
+    fn reads_values_and_their_bindings() {
+        assert_eq!(
+            classes(
+                TARGETS,
+                "const a = new Target();\nconst b = x as Target;\nconst c = <Other>x;\nconst d = (y as Unknown)!;\nconst e = (z satisfies Other, new Target());\nconst f = t ? new Target() : new Target();\nlet g = new Target();\nfunction h(q: Target, p?: Target) { probe(p); probe(q); }\nprobe(a); probe(b); probe(c); probe(d); probe(e); probe(f); probe(g); probe(new Other()); probe(undeclared);"
+            ),
+            [
+                "Unknown",
+                "Target",
+                "Target",
+                "Target",
+                "NonTarget",
+                "Unknown",
+                "Target",
+                "Target",
+                "Unknown",
+                "Unknown",
+                "Unknown"
+            ]
+        );
     }
 }

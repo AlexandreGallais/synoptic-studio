@@ -71,6 +71,7 @@ const RECEIVERS: Targets = Targets {
         "ShadowRoot",
     ],
     non_targets: &NON_PARENT_NODES,
+    constructors: &[],
     imports: &[],
     allow_nullish_in_mixed_union: true,
     mixed_union: Class::NonTarget,
@@ -88,6 +89,7 @@ const INNER_HTML_RECEIVERS: Targets = Targets {
 const TEMPLATES: Targets = Targets {
     names: &["HTMLTemplateElement"],
     non_targets: &[],
+    constructors: &[],
     imports: &[],
     allow_nullish_in_mixed_union: true,
     mixed_union: Class::Target,
@@ -98,6 +100,7 @@ const TEMPLATES: Targets = Targets {
 const DOCUMENTS: Targets = Targets {
     names: &["Document", "HTMLDocument", "XMLDocument"],
     non_targets: &[],
+    constructors: &[],
     imports: &[],
     allow_nullish_in_mixed_union: false,
     mixed_union: Class::Target,
