@@ -13,14 +13,9 @@ import { delimiter, join } from "node:path";
 
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import {
-  cleanUp,
-  cleanUpPlan,
-  nextStep,
-  rebaseOnBase,
-  rowsMessage,
-  worktrees,
-} from "./story-finish";
+import { nextStep, rebaseOnBase, startStep } from "./story-finish";
+import { cleanUp, cleanUpPlan, manualSteps, worktrees } from "./story-finish-plan";
+import { commitRows, pushAhead, rowsMessage } from "./story-finish-rows";
 
 /** The feature branch the stories of a test merge into. */
 const BASE = "feature/f99-topic";
@@ -174,6 +169,63 @@ describe("story-finish", () => {
     expect(nextStep("OPEN", 17)).toBe("wait");
     expect(nextStep("OPEN", 18)).toBe("stop");
     expect(nextStep("CLOSED", 1)).toBe("stop");
+  });
+
+  it("opens a pull request when there is none, awaits an open one, cleans up after a merged one", () => {
+    expect(startStep("")).toBe("create");
+    expect(startStep("CLOSED")).toBe("create");
+    expect(startStep("OPEN")).toBe("await");
+    expect(startStep("MERGED")).toBe("clean");
+  });
+
+  it("commits only the files the rows went into, whatever else is staged in the base", () => {
+    const { main } = runCheckouts("rows-only");
+
+    commit(main, "journal.md", "# Journal\n");
+    writeFileSync(join(main, "journal.md"), "# Journal\n\n- `#run` a row\n");
+    // The main thread's own work, staged in the same checkout.
+    writeFileSync(join(main, "draft.md"), "a draft\n");
+    git(main, "add", "draft.md");
+
+    commitRows(STORY, ["journal.md"], main);
+
+    expect(git(main, "show", "--name-only", "--format=%s", "HEAD")).toBe(
+      "docs(docs): move the rows of EN-999 into the logs\n\njournal.md",
+    );
+
+    expect(git(main, "status", "--porcelain")).toBe("A  draft.md");
+  });
+
+  it("pushes the base when it holds commits its remote has not, and only then", () => {
+    const { main } = runCheckouts("ahead");
+
+    expect(pushAhead(main)).toBe(false);
+
+    // The rows' commit of a run stopped before its push.
+    commit(main, "journal.md", "# Journal\n");
+
+    expect(pushAhead(main)).toBe(true);
+    expect(git(main, "rev-parse", `origin/${BASE}`)).toBe(git(main, "rev-parse", "HEAD"));
+    expect(pushAhead(main)).toBe(false);
+  });
+
+  it("writes the clean-up's steps to type when it stopped midway, in their order", () => {
+    const here = "/repo/.claude/worktrees/en-999";
+    const plan = cleanUpPlan(STORY_OF_BASE, here, [
+      { branch: BASE, path: "/repo" },
+      { branch: STORY, path: here },
+    ]);
+
+    expect(manualSteps(plan, STORY).split("\n")).toStrictEqual([
+      `cd "${here}" && git fetch --quiet --prune origin`,
+      `cd "/repo" && git merge --ff-only --quiet origin/${BASE}`,
+      `cd "/repo" && cargo run --release -q --manifest-path tools/shared-files/Cargo.toml --bin move-rows -- ${STORY}`,
+      `cd "/repo" && git commit -m "docs(docs): move the rows of EN-999 into the logs" -m "Refs: EN-999" -- <the files it printed>`,
+      `cd "/repo" && git push`,
+      `cd "/repo" && git worktree remove ${here}`,
+      `cd "/repo" && git branch -D ${STORY}`,
+      `cd "/repo" && gh ${REMOTE_DELETION.join(" ")}`,
+    ]);
   });
 
   it("names the merged story in the commit moving its rows into the logs", () => {

@@ -6,53 +6,23 @@
 // base (ADR-0065, decision 4; EN-050). It runs under the merge lock of `tools/heavy-lock/`, so
 // stories merge one at a time: the next one waits, then rebases on the updated base before its pull
 // request (ADR-0065, decision 5; EN-051). From a worktree, it updates the base where it is
-// checked out, without switching branch, then removes the worktree. Run by
+// checked out, without switching branch, then removes the worktree. Run again after a stop, it
+// reuses the story's pull request, and goes straight to the clean-up once merged (AUD-020). Run by
 // `npm run story:finish -- <base> <title> <body file>` once the branch is pushed.
 
 import { execFileSync, spawnSync } from "node:child_process";
 import { setTimeout as delay } from "node:timers/promises";
+
+import { cleanUp, cleanUpPlan, manualSteps, worktrees } from "./story-finish-plan";
+import { moveRows, run } from "./story-finish-rows";
+
+import type { CleanUp } from "./story-finish-plan";
 
 /** Time between two readings of the pull request's state. */
 const POLL_MS = 10_000;
 
 /** Readings before giving up: three minutes. */
 const POLLS = 18;
-
-/** The Rust tool moving a story's rows into the logs. */
-const MOVE_ROWS = [
-  "run",
-  "--release",
-  "-q",
-  "--manifest-path",
-  "tools/shared-files/Cargo.toml",
-  "--bin",
-  "move-rows",
-  "--",
-];
-
-/**
- * The message of the commit moving a merged story's rows into the logs.
- *
- * @param branch - the story's branch, `chore/en-050-topic`
- * @returns the commit message, its `Refs:` footer naming the story
- */
-export function rowsMessage(branch: string): string {
-  const id = (branch.split("/", 2)[1] ?? "").split("-").slice(0, 2).join("-").toUpperCase();
-
-  return `docs(docs): move the rows of ${id} into the logs\n\nRefs: ${id}\n`;
-}
-
-/**
- * Output of a command.
- *
- * @param command - the program
- * @param options - its arguments
- * @param cwd - the folder it runs in
- * @returns its trimmed standard output
- */
-function run(command: string, options: readonly string[], cwd: string): string {
-  return execFileSync(command, options, { cwd, encoding: "utf8" }).trim();
-}
 
 /**
  * Whether a Git command ends with success.
@@ -89,26 +59,49 @@ export function rebaseOnBase(base: string, cwd: string): "rebased" | "up to date
   return "rebased";
 }
 
-/**
- * Moves a merged story's rows into the logs, then commits and pushes them on the base.
- *
- * @param branch - the merged story's branch
- * @param cwd - the checkout of the base
- */
-function moveRows(branch: string, cwd: string): void {
-  const moved = run("cargo", [...MOVE_ROWS, branch], cwd);
+/** A story's pull request as GitHub holds it, both fields `""` when it has none. */
+type PullRequest = {
+  /** `OPEN`, `MERGED` or `CLOSED`. */
+  readonly state: string;
+  /** Its address. */
+  readonly url: string;
+};
 
-  if (moved === "") {
-    return;
+/**
+ * Where a run of `story:finish` starts, from the story's pull request: one is opened when there is
+ * none or it was closed, an open one is awaited, and a merged one goes straight to the clean-up, so
+ * a run stopped midway is run again as it is (AUD-020).
+ *
+ * @param state - the pull request's state, `""` when there is none
+ * @returns `create`, `await` or `clean`
+ */
+export function startStep(state: string): "await" | "clean" | "create" {
+  if (state === "MERGED") {
+    return "clean";
   }
 
-  const files = moved.split("\n");
+  return state === "OPEN" ? "await" : "create";
+}
 
-  run("npx", ["prettier", "--write", ...files], cwd);
-  run("git", ["add", "--", ...files], cwd);
-  run("git", ["commit", "--quiet", "-m", rowsMessage(branch)], cwd);
-  execFileSync("git", ["push", "--quiet"], { cwd, stdio: "inherit" });
-  process.stdout.write(`rows moved into the logs and pushed: ${files.join(", ")}\n`);
+/**
+ * The pull request of a branch, read from GitHub.
+ *
+ * @param branch - the story's branch
+ * @param cwd - the story's checkout
+ * @returns its state and address, both `""` when it has none
+ */
+function pullRequestOf(branch: string, cwd: string): PullRequest {
+  const result = spawnSync(
+    "gh",
+    ["pr", "view", branch, "--json", "state,url", "-q", '.state + " " + .url'],
+    {
+      cwd,
+      encoding: "utf8",
+    },
+  );
+  const [state = "", url = ""] = result.status === 0 ? result.stdout.trim().split(" ") : [];
+
+  return { state, url };
 }
 
 /**
@@ -146,174 +139,22 @@ async function awaitMerge(url: string, readings: number, cwd: string): Promise<s
   return await awaitMerge(url, readings + 1, cwd);
 }
 
-/** A checkout of the repository: the main one or a linked worktree. */
-export type Worktree = {
-  /** The branch checked out, `""` when detached. */
-  readonly branch: string;
-  /** Its folder. */
-  readonly path: string;
-};
-
 /**
- * The value of a field in a block of `git worktree list --porcelain`.
+ * Cleans up a merged story, or says why the clean-up stopped midway.
  *
- * @param lines - the block's lines
- * @param key - the field, `worktree` or `branch`
- * @returns its value, `""` when absent
- */
-function fieldOf(lines: readonly string[], key: string): string {
-  return lines.find((line) => line.startsWith(`${key} `))?.slice(key.length + 1) ?? "";
-}
-
-/**
- * The checkouts of the repository, the main one first.
- *
- * @param porcelain - the output of `git worktree list --porcelain`
- * @returns each checkout's folder and branch
- */
-export function worktrees(porcelain: string): readonly Worktree[] {
-  return porcelain
-    .split(/\n\n+/u)
-    .filter((block) => block.startsWith("worktree "))
-    .map((block) => {
-      const lines = block.split("\n");
-
-      return {
-        branch: fieldOf(lines, "branch").replace(/^refs\/heads\//u, ""),
-        path: fieldOf(lines, "worktree"),
-      };
-    });
-}
-
-/** A command and the folder it runs in. */
-type Step = {
-  /** The program: Git, or GitHub's command line for the branch on GitHub. */
-  readonly command: "gh" | "git";
-  /** The folder. */
-  readonly cwd: string;
-  /** Its arguments. */
-  readonly options: readonly string[];
-};
-
-/** The clean-up of a merged story. */
-export type CleanUp = {
-  /** The checkout of the base, where its rows are moved. */
-  readonly place: string;
-  /** The base brought up to its remote. */
-  readonly update: readonly Step[];
-  /** The story's worktree and branch removed, here then on GitHub, from the main checkout. */
-  readonly remove: readonly Step[];
-};
-
-/** A story and the branch it merges into. */
-export type Story = {
-  /** The base branch, `feature/f18-topic`. */
-  readonly base: string;
-  /** The story's branch. */
-  readonly branch: string;
-  /** The repository on GitHub, `owner/name`. */
-  readonly repository: string;
-};
-
-/**
- * Where the base is brought up to date: from a worktree, the checkout holding the base if any; the
- * checkout `story:finish` runs in otherwise, which then switches to it.
- *
- * @param base - the base branch
- * @param here - the checkout `story:finish` runs in
- * @param checkouts - the repository's checkouts, the main one first
- * @returns the folder of that checkout
- */
-function baseCheckout(base: string, here: string, checkouts: readonly Worktree[]): string {
-  const isLinked = here !== checkouts[0]?.path;
-  const holder = isLinked ? checkouts.find((checkout) => checkout.branch === base) : undefined;
-
-  return holder?.path ?? here;
-}
-
-/**
- * The removal of a linked worktree, from the main checkout.
- *
- * @param worktree - the worktree's folder
- * @param main - the main checkout
- * @returns the step removing it
- */
-function worktreeRemovalStep(worktree: string, main: string): Step {
-  return { command: "git", cwd: main, options: ["worktree", "remove", worktree] };
-}
-
-/**
- * The clean-up of a merged story, from the checkout it was finished in. From a worktree, the base is
- * brought up to date where it is checked out — the main checkout in a run — without switching any
- * branch, then the worktree is removed; elsewhere the checkout switches to the base first. Every
- * step after the worktree's removal runs from the main checkout: the worktree may be the checkout of
- * the base, and a command started in a removed folder fails (EN-051, PR #272).
- *
- * @param story - the story's branch and its base
- * @param here - the checkout `story:finish` runs in
- * @param checkouts - the repository's checkouts, the main one first
- * @returns the steps to bring the base up to date, then to remove the story
- */
-export function cleanUpPlan(story: Story, here: string, checkouts: readonly Worktree[]): CleanUp {
-  const main = checkouts.at(0)?.path ?? here;
-  const place = baseCheckout(story.base, here, checkouts);
-  const fetch: Step = {
-    command: "git",
-    cwd: here,
-    options: ["fetch", "--quiet", "--prune", "origin"],
-  };
-  const toBase: Step[] =
-    place === here
-      ? [{ command: "git", cwd: here, options: ["switch", "--quiet", story.base] }]
-      : [];
-  const worktreeRemoval = here === main ? [] : [worktreeRemovalStep(here, main)];
-  const remoteReference = `repos/${story.repository}/git/refs/heads/${story.branch}`;
-
-  return {
-    place,
-    remove: [
-      ...worktreeRemoval,
-      { command: "git", cwd: main, options: ["branch", "-D", story.branch] },
-      // Through GitHub's API rather than `git push --delete`, which would run the pre-push checks.
-      { command: "gh", cwd: main, options: ["api", "-X", "DELETE", remoteReference] },
-    ],
-    update: [
-      fetch,
-      ...toBase,
-      {
-        command: "git",
-        cwd: place,
-        options: ["merge", "--ff-only", "--quiet", `origin/${story.base}`],
-      },
-    ],
-  };
-}
-
-/**
- * Cleans up a story once its pull request merged: the base brought up to date, the rows moved there,
- * the worktree and the branch removed here and on GitHub. A pull request not merged keeps everything.
- *
- * @param state - the pull request's state: `OPEN`, `MERGED` or `CLOSED`
+ * @param state - the pull request's state
  * @param plan - the clean-up's steps
- * @param moveRowsIn - moves the story's rows into the logs in a checkout of the base
- * @returns true when it cleaned up
+ * @param branch - the story's branch
+ * @returns true once cleaned up, false when not merged, the text of the error that stopped it
  */
-export function cleanUp(state: string, plan: CleanUp, moveRowsIn: (cwd: string) => void): boolean {
-  if (state !== "MERGED") {
-    return false;
+function cleanUpOrStop(state: string, plan: CleanUp, branch: string): boolean | string {
+  try {
+    return cleanUp(state, plan, (cwd) => {
+      moveRows(branch, cwd);
+    });
+  } catch (error) {
+    return String(error);
   }
-
-  for (const step of plan.update) {
-    run(step.command, step.options, step.cwd);
-  }
-
-  moveRowsIn(plan.place);
-
-  for (const step of plan.remove) {
-    run(step.command, step.options, step.cwd);
-  }
-
-  return true;
 }
 
 if (import.meta.main) {
@@ -321,31 +162,37 @@ if (import.meta.main) {
   const here = run("git", ["rev-parse", "--show-toplevel"], process.cwd());
   const branch = run("git", ["branch", "--show-current"], here);
 
-  if (rebaseOnBase(base, here) === "rebased") {
+  const existing = pullRequestOf(branch, here);
+  const start = startStep(existing.state);
+
+  if (start !== "clean" && rebaseOnBase(base, here) === "rebased") {
     execFileSync("git", ["push", "--quiet", "--force-with-lease"], { cwd: here, stdio: "inherit" });
     process.stdout.write(`${branch} rebased on origin/${base} and pushed\n`);
   }
 
-  const url = run(
-    "gh",
-    [
-      "pr",
-      "create",
-      "--base",
-      base,
-      "--label",
-      "autonomous",
-      "--title",
-      title,
-      "--body-file",
-      body,
-    ],
-    here,
-  );
+  const url =
+    start === "create"
+      ? run(
+          "gh",
+          [
+            "pr",
+            "create",
+            "--base",
+            base,
+            "--label",
+            "autonomous",
+            "--title",
+            title,
+            "--body-file",
+            body,
+          ],
+          here,
+        )
+      : existing.url;
 
   process.stdout.write(`${url}\n`);
 
-  const state = await awaitMerge(url, 0, here);
+  const state = start === "clean" ? "MERGED" : await awaitMerge(url, 0, here);
   const repository = run(
     "gh",
     ["repo", "view", "--json", "nameWithOwner", "-q", ".nameWithOwner"],
@@ -357,15 +204,19 @@ if (import.meta.main) {
     worktrees(run("git", ["worktree", "list", "--porcelain"], here)),
   );
 
-  if (
-    cleanUp(state, plan, (cwd) => {
-      moveRows(branch, cwd);
-    })
-  ) {
+  const outcome = cleanUpOrStop(state, plan, branch);
+
+  if (outcome === true) {
     process.stdout.write(`merged; ${base} up to date, ${branch} deleted here and on GitHub\n`);
+  } else if (outcome === false) {
+    process.stderr.write(
+      `${state} after 3 min, ${branch} kept: read gh run list --workflow story-automerge.yml --limit 1, then run again: it reuses the pull request\n`,
+    );
+
+    process.exitCode = 1;
   } else {
     process.stderr.write(
-      `${state} after 3 min, ${branch} kept: read gh run list --workflow story-automerge.yml --limit 1\n`,
+      `the clean-up stopped: ${outcome}\nRun again from the worktree while it exists, or finish by hand, skipping the steps already done:\n${manualSteps(plan, branch)}\n`,
     );
 
     process.exitCode = 1;
