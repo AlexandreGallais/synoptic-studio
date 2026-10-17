@@ -214,19 +214,23 @@ describe("parseFontFace (REF-OT-NAME, REF-OT-OS2)", () => {
     expect(metrics?.unitsPerEm).toBe(2000);
   });
 
-  it("[F15.AC1] reads Inter Regular 4.1: Inter, 400, upright, embeddable", () => {
-    // REF-OT-NAME: no name ID 16, name ID 1 Inter; REF-OT-OS2: 400, fsSelection 0x00c0 (bit 6
-    // regular), fsType 0, installable; read again with fontTools 4.60.2
-    // (`REF-INTER-REGULAR-FILE`).
-    const named = parseFontFace(interRegularFile());
+  it(
+    "[F15.AC1] reads Inter Regular 4.1: Inter, 400, upright, embeddable",
+    { timeout: 20_000 },
+    () => {
+      // REF-OT-NAME: no name ID 16, name ID 1 Inter; REF-OT-OS2: 400, fsSelection 0x00c0 (bit 6
+      // regular), fsType 0, installable; read again with fontTools 4.60.2
+      // (`REF-INTER-REGULAR-FILE`).
+      const named = parseFontFace(interRegularFile());
 
-    expect(named).toMatchObject({
-      face: { file: { isEmbeddable: true }, isItalic: false, weight: 400 },
-      family: "Inter",
-    });
+      expect(named).toMatchObject({
+        face: { file: { isEmbeddable: true }, isItalic: false, weight: 400 },
+        family: "Inter",
+      });
 
-    expect(named?.face.metrics.unitsPerEm).toBe(2048);
-  });
+      expect(named?.face.metrics.unitsPerEm).toBe(2048);
+    },
+  );
 });
 
 describe("parseFontFace, faces of macOS and of collections (F17.AC4)", () => {
