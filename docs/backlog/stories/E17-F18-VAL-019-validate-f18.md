@@ -41,7 +41,7 @@ One task = one commit, referenced as `VAL-019.Tn`.
 - [x] T1 — One test per criterion of F18, checked with F18 counted done (0.5 h)
 - [x] T2 — F18's lines in E17's checklist, `?checklist=E17` (1 h)
 - [x] T3 — The decisions the Product Owner confirmed on 2026-10-17 recorded (0.5 h)
-- [ ] T4 — The demo page, `docs/guide/f18-safe-and-cheap-parallel-run.md` (1 h)
+- [x] T4 — The demo page, `docs/guide/f18-safe-and-cheap-parallel-run.md` (1 h)
 - [ ] T5 — E15's lines that ask for macOS font files reviewed (0.5 h)
 - [ ] T6 — The Product Owner validates; the result recorded (1 h)
 
