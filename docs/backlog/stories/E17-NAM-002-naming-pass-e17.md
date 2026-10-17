@@ -13,3 +13,4 @@ Before the review, go over the code E17 changed twice so that every calculation 
 ## Acceptance criteria
 
 - Given the code E17 changed, when the two passes end, then every calculation a field names is a function of that name with its `@see`, and the full audit's findings (duplicates, shareable code, the merge of parallel branches) are fixed or logged.
+- Given every test and every tool of the repository, when the tooling and tests pass ends, then each claim proven twice is merged or removed, each slow preparation is done once, each wait or slow step found is fixed or logged, and `npm run test` and `check:all` are timed before and after (ADR-0069, ADR-0070).

@@ -14,7 +14,7 @@ flowchart LR
   end
   subgraph epic [Every feature released]
     direction LR
-    NAM[NAM<br/>naming pass, whole code] --> REV[REV<br/>epic review, user test] --> RET[RET<br/>retrospective, metrics]
+    NAM[NAM<br/>naming, tooling and tests pass] --> REV[REV<br/>epic review, user test] --> RET[RET<br/>retrospective, metrics]
   end
   REL -.-> NAM
 ```
@@ -40,7 +40,7 @@ The type says **who can see the result**, not who wrote it or whether it is code
 | `CHK` | checkpoint | midway through a feature: docs and methods brought up to date, consistency checked | the agent | CHK-008 |
 | `AUD` | audit | the feature re-checked by an independent reviewer: formulas, values, sources, duplicates | the `auditor` agent, then the Product Owner | AUD-009 |
 | `VAL` | validation | the demo page and the checklist page; the Product Owner's validation recorded | the Product Owner | VAL-009 |
-| `NAM` | naming pass | the whole code gone over twice: every calculation a field names is a named function, every result unchanged bit for bit | the `math-expert` and `auditor` agents | F13, before the type existed |
+| `NAM` | naming pass | the whole code gone over twice: every calculation a field names is a named function, every result unchanged bit for bit; then the whole repository's tooling and tests gone over — duplicates, slow steps, waits — each timed before and after (ADR-0069, ADR-0070) | the `math-expert`, `auditor` and `verifier` agents | F13, before the type existed |
 | `REV` | epic review | the epic report and a user test crossing its features | the Product Owner | REV-001 |
 | `RET` | retrospective | what helped and hurt, metrics, evolvability, playbook and configuration updated | the Product Owner and the agent | RET-001 |
 
