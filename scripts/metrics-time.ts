@@ -142,7 +142,7 @@ export function loggedCalls(): readonly unknown[] {
  * @param file - its name: `tool-calls.jsonl`, `tool-uses.jsonl`
  * @returns them parsed, none when the file is missing
  */
-export function metricsLines(file: string): readonly unknown[] {
+function metricsLines(file: string): readonly unknown[] {
   const common = execFileSync("git", ["rev-parse", "--path-format=absolute", "--git-common-dir"], {
     encoding: "utf8",
   }).trim();
