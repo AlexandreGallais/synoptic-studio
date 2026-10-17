@@ -1,5 +1,6 @@
-# require-rejects: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), a carriage return written ␍,
-# each run by ESLint 10.12.0 at src/a.ts with the project's options; recorded by EN-083.
+# require-rejects: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), then faults planted
+# in copies of files of the tree and cases written for branches, each run by ESLint 10.12.0 at src/a.ts with the project's options;
+# a carriage return written ␍; recorded by EN-083.
 @@@ case 1 (documented invalid)
 
         /**
@@ -393,4 +394,111 @@
         }
       
 @@@ findings
+@@@ case 33 (planted in a copy of a file of the tree)
+import { PENDING_TASKS } from "./pending-tasks";
+
+/**
+ * Runs a task, its failure handed to `onFailure`.
+ *
+ * @kind procedure
+ * @param task - the work to run
+ * @param onFailure - called with the error when the task fails
+ * @returns once the task is done or its failure handled
+ * @see docs/backlog/stories/E15-F15-US-036-import-choose-and-embed-a-font.md
+ */
+async function runSettled(
+  task: () => Promise<void>,
+  onFailure: (error: unknown) => void,
+): Promise<void> {
+  try {
+    await task();
+  } catch (error: unknown) {
+    onFailure(error);
+    throw error;
+  }
+}
+
+/**
+ * Runs an asynchronous task started by an event listener, which returns nothing and cannot await
+ * it — a font file read, the fonts the browser lists (US-036): the task's promise is kept with the
+ * page's pending tasks (`PENDING_TASKS`), never left floating, and its failure handed to
+ * `onFailure`.
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param task - the task to run
+ * @param onFailure - called with the error when the task fails
+ * @see docs/backlog/stories/E15-F15-US-036-import-choose-and-embed-a-font.md
+ */
+export function runTask(
+  document: Document,
+  task: () => Promise<void>,
+  onFailure: (error: unknown) => void,
+): void {
+  const running = runSettled(task, onFailure);
+
+  PENDING_TASKS.set(document, [...(PENDING_TASKS.get(document) ?? []), running]);
+}
+
+@@@ findings
+3:1 Promise-rejecting function requires `@rejects` tag
+@@@ case 34 (written for a branch the documented cases leave)
+/**
+ * Rejects in places.
+ */
+function places(a: boolean, list: number[]) {
+  if (a) { return Promise.reject(new Error("a")); }
+  for (const each of list) { reject(each); }
+  while (a) { Promise.reject(1); }
+  do { reject(2); } while (a);
+  for (;;) { reject(3); }
+  for (const each in list) { reject(4); }
+  label: reject(5);
+  switch (a) { case true: reject(6); }
+  try { a; } catch { reject(7); } finally { reject(8); }
+  return new Promise((resolve, reject) => { reject(9); });
+}
+@@@ findings
+1:1 Promise-rejecting function requires `@rejects` tag
+@@@ case 35 (written for a branch the documented cases leave)
+/**
+ * Inner async.
+ */
+function outer() {
+  async function inner() { throw new Error("x"); }
+}
+/**
+ * Async throwing in a loop.
+ */
+async function looping(list: number[]) {
+  for (const each of list) { throw new Error("x"); }
+}
+/**
+ * Arrow returning a rejection.
+ */
+const arrow = () => Promise.reject(1);
+/**
+ * Executor as a function.
+ */
+function executor() {
+  return new Promise(function (resolve, reject) { reject(1); });
+}
+/**
+ * Statement of a function.
+ */
+async function statement() {
+  (function () { throw new Error("x"); });
+}
+/**
+ * Documented.
+ *
+ * @rejects when it fails
+ */
+async function documented() { throw new Error("x"); }
+@@@ findings
+1:1 Promise-rejecting function requires `@rejects` tag
+7:1 Promise-rejecting function requires `@rejects` tag
+13:1 Promise-rejecting function requires `@rejects` tag
+17:1 Promise-rejecting function requires `@rejects` tag
+23:1 Promise-rejecting function requires `@rejects` tag
 @@@ end

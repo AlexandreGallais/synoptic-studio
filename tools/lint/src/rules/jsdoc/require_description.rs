@@ -53,6 +53,6 @@ mod tests {
 
     #[test]
     fn reports_the_documented_cases_as_eslint_does() {
-        check(&RequireDescription, "require-description", "src/a.ts", &[]);
+        check(&RequireDescription, "require-description", "src/a.ts");
     }
 }

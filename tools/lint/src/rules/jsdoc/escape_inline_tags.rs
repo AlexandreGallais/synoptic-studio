@@ -212,6 +212,6 @@ mod tests {
 
     #[test]
     fn reports_the_documented_cases_as_eslint_does() {
-        check(&EscapeInlineTags, "escape-inline-tags", "src/a.ts", &[]);
+        check(&EscapeInlineTags, "escape-inline-tags", "src/a.ts");
     }
 }

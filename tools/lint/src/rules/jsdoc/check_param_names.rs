@@ -592,6 +592,6 @@ mod tests {
 
     #[test]
     fn reports_the_documented_cases_as_eslint_does() {
-        check(&CheckParamNames, "check-param-names", "src/a.ts", &[]);
+        check(&CheckParamNames, "check-param-names", "src/a.ts");
     }
 }

@@ -122,6 +122,6 @@ mod tests {
 
     #[test]
     fn reports_the_documented_cases_as_eslint_does() {
-        check(&NoMultiAsterisks, "no-multi-asterisks", "src/a.ts", &[]);
+        check(&NoMultiAsterisks, "no-multi-asterisks", "src/a.ts");
     }
 }

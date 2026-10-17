@@ -132,7 +132,6 @@ mod tests {
             &RequireHyphenBeforeParamDescription,
             "require-hyphen-before-param-description",
             "src/a.ts",
-            &[],
         );
     }
 }

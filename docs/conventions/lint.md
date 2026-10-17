@@ -19,7 +19,7 @@ eslint/
   settings/               data tables (layers, kinds, verbs, globs, limits, dropped rules…)
   rules/<plugin>/<theme>.ts   one file per theme, one constant per file
   rules/<plugin>/all.ts   list of the plugin's themes
-  scopes/                 path overrides (core, shell, modules, tests, tooling, barrels)
+  scopes/                 path overrides (core, shell, tests, tooling, barrels)
 ```
 
 | Folder | Themes |
@@ -38,7 +38,6 @@ eslint/
 | `language.ts` | `**/*.ts` | typed parser, plugins, resolver |
 | `pure-layers.ts` | `src/math … src/io` | forbids the DOM and the host |
 | `dom-layers.ts` | `src/render`, `src/interaction`, `playground` | relaxes the pure statement rules |
-| `modules.ts` | `src/` | documented type members |
 | `playground.ts` | `playground/index.ts` | load-time effects allowed |
 | `barrels.ts` | `src/**/index.ts`, `eslint/**/index.ts`, `playground/*/**/index.ts` (not the entry); `eslint/rules/*/all.ts` | barrels: any number of imports; `all.ts` aggregators: any number of imports only |
 | `tooling.ts` | `eslint/`, root `*.config.ts`, `*.setup.ts`, `*.test.ts`, `tests/`, `docs/.vitepress/`, `.claude/hooks/`, `scripts/` | Node.js, dev dependencies |
@@ -71,6 +70,7 @@ A crate of the Rust workspace on Oxc's crates (`oxc_parser`, `oxc_ast`, `oxc_ast
 
 - **Each file once**: read, parsed with its comments, its semantic model built, then every rule its scopes turn on runs over that one AST — a rule reads the whole file (`check_file`) or each node of the linter's single walk (`check_node`); the files are spread over the machine's threads, and what the rules read beside the file (folder listings, the bibliography, the ADRs) is read once per run.
 - **One rule, one module** of `tools/lint/src/rules/`, its tests beside it, from the cases of the rule it carries and of its documentation; registered in `rules::ALL`. Adding a rule: the module, its line in `ALL`, its name in `ON_EVERYWHERE` or a scope of `tools/lint/src/scopes.rs`, its section below, its rule `off` in ESLint. Unicorn's rules sit in `tools/lint/src/rules/unicorn/`, listed in its `RULES` and `NAMES` and on for every file, which no scope changes (`scopes::linted_by`, EN-078); the groups of EN-079, EN-080 and EN-081 in their folders; what they share sits beside them: `syntax` (receivers, values, bindings), `known_values` (strings and keys), `escapes`, `layout` (a fix's indentation), `identifiers` (the names checked, a free name, a rename) and `pattern`, a small backtracking matcher that runs the plugin's regular expressions as it writes them (EN-080).
+- **JSDoc's rules** (EN-083) sit in `tools/lint/src/rules/jsdoc/`, listed in its `RULES` and `NAMES` and on for every file, `require-jsdoc` asking for the type members' blocks in the library only (the API pages read them). They read the blocks of `tools/lint/src/jsdoc/`, a port of the parser `eslint-plugin-jsdoc` reads (`comment-parser` with the tokenizers of `@es-joy/jsdoccomment`), which gives its tokens and tags on every block of the tree, and find the block a declaration carries as the plugin finds it. Their tests run the plugin's own cases, a fault planted in a copy of a file of the tree for each rule and cases written for the branches the plugin's cases leave, against what ESLint reported and fixed on them, recorded in `tools/lint/tests/fixtures/jsdoc/` (a carriage return written `␍`): the record stays the reference once ESLint leaves.
 - **Markdown pages** (EN-077): each page of the targets but `CHANGELOG.md` is parsed once by the crate `markdown` (`markdown-rs`, `REF-MARKDOWN-RS`) into an mdast tree, the one `@eslint/markdown` reads, with YAML front matter and GFM; the Markdown rules of `tools/lint/src/markdown/rules/` read that tree and the text under it.
 - **Scopes**: `tools/lint/src/scopes.rs` carries, in ESLint's order, the scopes of `eslint/scopes/` that set its rules; the project's values (kinds, layers, verbs, reference sources, the folder signal) are in `tools/lint/src/settings.rs`.
 - **Measured** on 2026-10-17: 0.05 s for the 1,538 files of `npm run lint`'s targets, all its rules on, the seven of EN-076 included. With Unicorn's 39 rules of EN-078: 0.12 s for the 2,048 files and pages, the same as without them; ESLint spent 285 ms on them. With the 33 of EN-080, after EN-079's and EN-081's: 0.22 s for the 2,053 files and pages (1.8 s of processor time over the threads, 0.75 s of it `unicorn/comment-content`); ESLint spent 1,071 ms on the 37 rules, its run from 14.2 s to 13.4 s.

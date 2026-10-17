@@ -37,6 +37,6 @@ mod tests {
 
     #[test]
     fn reports_the_documented_cases_as_eslint_does() {
-        check(&CheckSyntax, "check-syntax", "src/a.ts", &[]);
+        check(&CheckSyntax, "check-syntax", "src/a.ts");
     }
 }

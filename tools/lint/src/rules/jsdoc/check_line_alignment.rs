@@ -251,6 +251,6 @@ mod tests {
 
     #[test]
     fn reports_the_documented_cases_as_eslint_does() {
-        check(&CheckLineAlignment, "check-line-alignment", "src/a.ts", &[]);
+        check(&CheckLineAlignment, "check-line-alignment", "src/a.ts");
     }
 }

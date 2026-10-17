@@ -194,7 +194,7 @@ mod tests {
 
     #[test]
     fn reports_the_documented_cases_as_eslint_does() {
-        check(&CheckTemplateNames, "check-template-names", "src/a.ts", &[]);
+        check(&CheckTemplateNames, "check-template-names", "src/a.ts");
     }
 
     #[test]

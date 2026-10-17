@@ -129,11 +129,6 @@ mod tests {
 
     #[test]
     fn reports_the_documented_cases_as_eslint_does() {
-        check(
-            &RequireReturnsCheck,
-            "require-returns-check",
-            "src/a.ts",
-            &[],
-        );
+        check(&RequireReturnsCheck, "require-returns-check", "src/a.ts");
     }
 }

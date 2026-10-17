@@ -258,7 +258,7 @@ mod tests {
 
     #[test]
     fn reports_the_documented_cases_as_eslint_does() {
-        check(&InformativeDocs, "informative-docs", "src/a.ts", &[]);
+        check(&InformativeDocs, "informative-docs", "src/a.ts");
     }
 
     #[test]

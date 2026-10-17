@@ -30,9 +30,6 @@ export const IGNORED_FILES = [
 /** Vitest test files, co-located with the code they test. */
 export const TEST_FILES = ["**/*.test.ts"];
 
-/** Library source code (published). */
-export const LIBRARY_FILES = ["src/**/*.ts"];
-
 /** Library layers without DOM access: the functional core. */
 export const PURE_LAYER_FILES = [
   "src/math/**/*.ts",

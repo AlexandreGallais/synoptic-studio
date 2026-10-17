@@ -94,6 +94,6 @@ mod tests {
 
     #[test]
     fn reports_the_documented_cases_as_eslint_does() {
-        check(&NoBadBlocks, "no-bad-blocks", "src/a.ts", &[]);
+        check(&NoBadBlocks, "no-bad-blocks", "src/a.ts");
     }
 }
