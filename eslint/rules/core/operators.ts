@@ -33,7 +33,7 @@ export const CORE_OPERATORS: TSESLint.FlatConfig.Config = {
     "no-unsafe-optional-chaining": ["error", { disallowArithmeticOperators: true }],
     // Superseded by the type-aware @typescript-eslint/no-unused-expressions.
     "no-unused-expressions": "off",
-    // Superseded by unicorn/no-useless-concat (autofixable).
+    // Run by oxlint, in place of unicorn/no-useless-concat (EN-095).
     "no-useless-concat": "off",
     "no-void": "error",
     "operator-assignment": ["error", "always"],

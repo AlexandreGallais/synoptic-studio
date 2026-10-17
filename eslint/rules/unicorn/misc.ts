@@ -17,7 +17,8 @@ export const UNICORN_MISC: TSESLint.FlatConfig.Config = {
     "unicorn/no-immediate-mutation": "error",
     // Duplicate of the core rule of the same name (rules/core/operators.ts).
     "unicorn/no-loss-of-precision": "off",
-    "unicorn/no-misrefactored-assignment": "error",
+    // Run by oxlint as oxc/misrefactored-assign-op (EN-095).
+    "unicorn/no-misrefactored-assignment": "off",
     // DOM APIs return `null`; comparing with it stays allowed.
     "unicorn/no-null": ["error", { checkStrictEquality: false }],
     "unicorn/no-optional-chaining-on-undeclared-variable": "error",
