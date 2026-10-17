@@ -3,7 +3,7 @@ id: EN-082
 epic: E17
 feature: F19
 title: Unicorn's DOM and web rules in Rust
-status: ready
+status: done
 points: 5
 ---
 
