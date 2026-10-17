@@ -1,0 +1,264 @@
+//! The agent's frequent Git sequences, each in one call (EN-100, research note 0024): a worktree
+//! refuses chained Git commands, so `fetch` then `rebase`, and `add` then `commit` then `push`,
+//! cost one call of the agent per step. `git:sync` and `git:commit` run each sequence in the
+//! checkout they are started from and stop at the first failing step with Git's own message. What
+//! they run is decided here, without Git.
+
+use worktree::{base_branch, branch_refusal, story_id, story_of_file};
+
+/// The remote every sequence talks to.
+pub const REMOTE: &str = "origin";
+
+/// How a commit is pushed, if it is.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Push {
+    /// Not pushed.
+    No,
+    /// `git push -u origin HEAD`.
+    Plain,
+    /// `git push --force-with-lease -u origin HEAD`, after a rebase, on a story branch only.
+    Lease,
+}
+
+/// Where a commit message is read from.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum Source {
+    /// A file, so that a message of several lines passes the shell guard.
+    File(String),
+    /// The standard input, a here-document.
+    Stdin,
+}
+
+/// What the agent asked for.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum Request {
+    /// `sync [--base <ref>]`: fetch, then bring the branch up to date with its base.
+    Sync {
+        /// A base typed instead of the story's feature branch.
+        base: Option<String>,
+    },
+    /// `commit -F <file|-> [--push|--push-with-lease] [--] <path>…`.
+    Commit {
+        /// The message's source.
+        message: Source,
+        /// The files staged before the commit; none commits what is staged already.
+        paths: Vec<String>,
+        /// Whether the commit is pushed.
+        push: Push,
+    },
+}
+
+/// The usage printed on a malformed call.
+pub const USAGE: &str = "usage: npm run git:sync [-- --base <ref>] | npm run git:commit -- -F <file|-> [--push|--push-with-lease] [--] <path>…";
+
+/// The request of a command line, the subcommand first.
+///
+/// # Errors
+///
+/// An unknown subcommand or option, a missing value, or a commit without its message.
+pub fn parse(argv: &[String]) -> Result<Request, String> {
+    match argv.split_first() {
+        Some((command, rest)) if command == "sync" => parse_sync(rest),
+        Some((command, rest)) if command == "commit" => parse_commit(rest),
+        _ => Err(USAGE.to_owned()),
+    }
+}
+
+fn parse_sync(rest: &[String]) -> Result<Request, String> {
+    match rest {
+        [] => Ok(Request::Sync { base: None }),
+        [flag, base] if flag == "--base" && !base.starts_with('-') => Ok(Request::Sync {
+            base: Some(base.clone()),
+        }),
+        _ => Err(USAGE.to_owned()),
+    }
+}
+
+fn parse_commit(rest: &[String]) -> Result<Request, String> {
+    let mut message = None;
+    let mut push = Push::No;
+    let mut paths = Vec::new();
+    let mut words = rest.iter();
+
+    while let Some(word) = words.next() {
+        match word.as_str() {
+            "-F" | "--file" => {
+                let value = words.next().ok_or("-F needs a file, or - for stdin")?;
+
+                message = Some(if value == "-" {
+                    Source::Stdin
+                } else {
+                    Source::File(value.clone())
+                });
+            }
+            "--push" => push = Push::Plain,
+            "--push-with-lease" => push = Push::Lease,
+            "--" => paths.extend(words.by_ref().cloned()),
+            option if option.starts_with('-') => {
+                return Err(format!("unknown option `{option}`: {USAGE}"));
+            }
+            path => paths.push(path.to_owned()),
+        }
+    }
+
+    let message = message.ok_or_else(|| format!("no message: {USAGE}"))?;
+
+    Ok(Request::Commit {
+        message,
+        paths,
+        push,
+    })
+}
+
+/// The checked-out branch, as the sequences treat it.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum Branch {
+    /// `main`: releases only, never touched.
+    Main,
+    /// No branch checked out.
+    Detached,
+    /// `<type>/<id>-<topic>`, a story's branch.
+    Story(String),
+    /// Any other branch: `develop`, `feature/f20-…`.
+    Other(String),
+}
+
+/// The branch of `git rev-parse --abbrev-ref HEAD`.
+#[must_use]
+pub fn branch_of(name: &str) -> Branch {
+    match name.trim() {
+        "main" => Branch::Main,
+        "" | "HEAD" => Branch::Detached,
+        name if branch_refusal(name).is_none() => Branch::Story(name.to_owned()),
+        name => Branch::Other(name.to_owned()),
+    }
+}
+
+/// The story id of a story branch, `EN-100` for `chore/en-100-git-sequences`.
+#[must_use]
+pub fn story_of_branch(name: &str) -> Option<String> {
+    let (_, topic) = name.split_once('/')?;
+    let mut words = topic.splitn(3, '-');
+    let kind = words.next()?;
+    let number = words.next()?;
+
+    story_id(&format!("{kind}-{number}"))
+}
+
+/// How `git:sync` brings a branch up to date after the fetch.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum Target {
+    /// A story branch rebased on its base, `origin/feature/f20-…`.
+    Rebase(String),
+    /// Any other branch moved forward to its upstream, never rebased: it is shared.
+    FastForward,
+}
+
+/// The target of `git:sync` on a branch.
+///
+/// # Errors
+///
+/// On `main` or a detached head; a base typed on a branch that is not a story's; a story branch
+/// whose story file or feature branch is not found.
+pub fn sync_target(
+    branch: &Branch,
+    base: Option<&str>,
+    story_files: &[String],
+    remote_branches: &[String],
+) -> Result<Target, String> {
+    match (branch, base) {
+        (Branch::Main, _) => Err("`main` takes releases only: git:sync never touches it".into()),
+        (Branch::Detached, _) => Err("no branch checked out: check out a branch first".into()),
+        (Branch::Other(name), Some(_)) => Err(format!(
+            "`{name}` is shared and never rebased: run git:sync without --base to move it forward"
+        )),
+        (Branch::Other(_), None) => Ok(Target::FastForward),
+        (Branch::Story(_), Some(base)) => Ok(Target::Rebase(base.to_owned())),
+        (Branch::Story(name), None) => {
+            let id = story_of_branch(name)
+                .ok_or_else(|| format!("`{name}` names no story id such as en-100"))?;
+            let story = story_files
+                .iter()
+                .find_map(|file| story_of_file(&id, file))
+                .ok_or_else(|| {
+                    format!("no file `E…-{id}-<topic>.md` in docs/backlog/stories/: give --base")
+                })?;
+
+            base_branch(story.feature.as_deref(), remote_branches).map(Target::Rebase)
+        }
+    }
+}
+
+/// Why `git:commit` refuses to run on a branch, `None` when it may.
+#[must_use]
+pub fn commit_refusal(branch: &Branch, push: Push) -> Option<String> {
+    match (branch, push) {
+        (Branch::Main, _) => Some("`main` takes releases only: git:commit never touches it".into()),
+        (Branch::Detached, _) => Some("no branch checked out: check out a branch first".into()),
+        (Branch::Other(name), Push::Lease) => Some(format!(
+            "`{name}` is shared: a force push, even with lease, only goes to a story branch"
+        )),
+        _ => None,
+    }
+}
+
+/// Why a commit message is refused, `None` when it holds a subject.
+#[must_use]
+pub fn message_refusal(message: &str) -> Option<String> {
+    message
+        .lines()
+        .all(|line| line.trim().is_empty())
+        .then(|| "the commit message is empty".to_owned())
+}
+
+/// The Git steps of `git:sync` after its fetch.
+#[must_use]
+pub fn sync_steps(target: &Target) -> Vec<Vec<String>> {
+    let step = match target {
+        Target::Rebase(base) => vec!["rebase", "--quiet", base.as_str()],
+        Target::FastForward => vec!["merge", "--ff-only", "--quiet", "@{upstream}"],
+    };
+
+    vec![owned(&step)]
+}
+
+/// The fetch that opens `git:sync`.
+#[must_use]
+pub fn fetch_step() -> Vec<String> {
+    owned(&["fetch", "--quiet", REMOTE])
+}
+
+/// The Git steps of `git:commit`: the files staged, the commit from the standard input, the push.
+/// No step bypasses the hooks or forces without lease.
+#[must_use]
+pub fn commit_steps(paths: &[String], push: Push) -> Vec<Vec<String>> {
+    let mut steps = Vec::new();
+
+    if !paths.is_empty() {
+        let mut add = owned(&["add", "--"]);
+
+        add.extend(paths.iter().cloned());
+        steps.push(add);
+    }
+
+    steps.push(owned(&["commit", "--quiet", "-F", "-"]));
+
+    match push {
+        Push::No => {}
+        Push::Plain => steps.push(owned(&["push", "--quiet", "-u", REMOTE, "HEAD"])),
+        Push::Lease => steps.push(owned(&[
+            "push",
+            "--quiet",
+            "--force-with-lease",
+            "-u",
+            REMOTE,
+            "HEAD",
+        ])),
+    }
+
+    steps
+}
+
+fn owned(words: &[&str]) -> Vec<String> {
+    words.iter().map(|&word| word.to_owned()).collect()
+}

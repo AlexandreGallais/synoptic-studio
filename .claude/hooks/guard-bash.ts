@@ -157,6 +157,18 @@ export function worktreeReason(command: string, cwd: string): string | undefined
     : chainedGitHint(segments, root);
 }
 
+/** The Git sequences a Rust command runs in one call (EN-100), named in the hint. */
+const SEQUENCES: readonly { readonly pattern: RegExp; readonly hint: string }[] = [
+  {
+    pattern: /^git\s+(?:add|commit|push)\b/u,
+    hint: "`npm run git:commit -- -F <message file> [--push] <paths>` stages, commits and pushes",
+  },
+  {
+    pattern: /^git\s+(?:fetch|rebase|pull)\b/u,
+    hint: "`npm run git:sync` fetches and rebases the story on its feature branch",
+  },
+];
+
 /**
  * The hint for a Git command chained with another in a worktree: `cd` into the worktree first,
  * since a subagent's calls start in the main checkout, then the Git command alone (AUD-020).
@@ -168,9 +180,16 @@ export function worktreeReason(command: string, cwd: string): string | undefined
 function chainedGitHint(segments: readonly string[], root: string): string | undefined {
   const gitCommand = segments.find((segment) => /^git\s/u.test(segment));
 
-  return gitCommand !== undefined && segments.length > 1
-    ? `A worktree refuses a chained Git command: run \`cd "${root}" || exit 9\` then \`${gitCommand}\` alone.`
-    : undefined;
+  if (gitCommand === undefined || segments.length <= 1) {
+    return undefined;
+  }
+
+  const sequences = SEQUENCES.filter((sequence) =>
+    segments.some((segment) => sequence.pattern.test(segment)),
+  ).map((sequence) => sequence.hint);
+  const oneCall = sequences.length > 0 ? ` Or in one call: ${sequences.join("; ")}.` : "";
+
+  return `A worktree refuses a chained Git command: run \`cd "${root}" || exit 9\` then \`${gitCommand}\` alone.${oneCall}`;
 }
 
 /**

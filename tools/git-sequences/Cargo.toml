@@ -1,0 +1,13 @@
+[package]
+name = "git-sequences"
+version = "0.1.0"
+edition.workspace = true
+description = "The agent's frequent Git sequences, each in one call (EN-100)"
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+worktree = { path = "../worktree" }
+
+[lints]
+workspace = true
