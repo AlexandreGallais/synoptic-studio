@@ -336,6 +336,7 @@ mod tests {
             "const values = array?.flatMap(value => [value]);",
             "const values = array.flatMap(value => [value], thisArg);",
             "const values = new Set().flatMap(value => [value]);",
+            "const values = map.values().flatMap(value => [value]);",
             "const values = array.flatMap(() => condition ? [unknownValue] : []);",
             "const values = list.forEach(() => [1]);",
             "const values = array.flatMap(f, [1]);",

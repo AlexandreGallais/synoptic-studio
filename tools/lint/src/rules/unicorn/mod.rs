@@ -3,17 +3,24 @@
 //! from the syntax alone. No scope turns one off: they run on every TypeScript file.
 
 pub mod consistent_conditional_object_spread;
+pub mod iteration_fallback_style;
 pub mod no_array_from_fill;
 pub mod no_array_front_mutation;
+pub mod no_array_sort_for_min_max;
+pub mod no_break_in_nested_loop;
 pub mod no_confusing_array_splice;
+pub mod no_duplicate_loops;
 pub mod no_duplicate_set_values;
 pub mod no_impossible_length_comparison;
+pub mod no_loop_iterable_mutation;
 pub mod no_mismatched_map_key;
 pub mod no_negated_array_predicate;
 pub mod no_object_methods_with_collections;
 pub mod no_return_array_push;
 pub mod no_unnecessary_array_flat_map;
 pub mod no_unnecessary_splice;
+pub mod no_unreadable_for_of_expression;
+pub mod no_unused_iterator_helper;
 pub mod no_useless_set_construction;
 pub mod prefer_array_from_map;
 pub mod prefer_array_last_methods;
@@ -33,17 +40,24 @@ use super::Rule;
 /// The rules, in the order of their names.
 pub const RULES: &[&dyn Rule] = &[
     &consistent_conditional_object_spread::ConsistentConditionalObjectSpread,
+    &iteration_fallback_style::IterationFallbackStyle,
     &no_array_from_fill::NoArrayFromFill,
     &no_array_front_mutation::NoArrayFrontMutation,
+    &no_array_sort_for_min_max::NoArraySortForMinMax,
+    &no_break_in_nested_loop::NoBreakInNestedLoop,
     &no_confusing_array_splice::NoConfusingArraySplice,
+    &no_duplicate_loops::NoDuplicateLoops,
     &no_duplicate_set_values::NoDuplicateSetValues,
     &no_impossible_length_comparison::NoImpossibleLengthComparison,
+    &no_loop_iterable_mutation::NoLoopIterableMutation,
     &no_mismatched_map_key::NoMismatchedMapKey,
     &no_negated_array_predicate::NoNegatedArrayPredicate,
     &no_object_methods_with_collections::NoObjectMethodsWithCollections,
     &no_return_array_push::NoReturnArrayPush,
     &no_unnecessary_array_flat_map::NoUnnecessaryArrayFlatMap,
     &no_unnecessary_splice::NoUnnecessarySplice,
+    &no_unreadable_for_of_expression::NoUnreadableForOfExpression,
+    &no_unused_iterator_helper::NoUnusedIteratorHelper,
     &no_useless_set_construction::NoUselessSetConstruction,
     &prefer_array_from_map::PreferArrayFromMap,
     &prefer_array_last_methods::PreferArrayLastMethods,
@@ -61,17 +75,24 @@ pub const RULES: &[&dyn Rule] = &[
 /// Their names, on for every TypeScript file.
 pub const NAMES: &[&str] = &[
     "unicorn/consistent-conditional-object-spread",
+    "unicorn/iteration-fallback-style",
     "unicorn/no-array-from-fill",
     "unicorn/no-array-front-mutation",
+    "unicorn/no-array-sort-for-min-max",
+    "unicorn/no-break-in-nested-loop",
     "unicorn/no-confusing-array-splice",
+    "unicorn/no-duplicate-loops",
     "unicorn/no-duplicate-set-values",
     "unicorn/no-impossible-length-comparison",
+    "unicorn/no-loop-iterable-mutation",
     "unicorn/no-mismatched-map-key",
     "unicorn/no-negated-array-predicate",
     "unicorn/no-object-methods-with-collections",
     "unicorn/no-return-array-push",
     "unicorn/no-unnecessary-array-flat-map",
     "unicorn/no-unnecessary-splice",
+    "unicorn/no-unreadable-for-of-expression",
+    "unicorn/no-unused-iterator-helper",
     "unicorn/no-useless-set-construction",
     "unicorn/prefer-array-from-map",
     "unicorn/prefer-array-last-methods",

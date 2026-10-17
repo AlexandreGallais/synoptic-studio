@@ -388,7 +388,7 @@ pub fn is_known_non_indexed(source: &Source, expression: &Expression) -> bool {
     matches!(
         kind_of(source, expression),
         Some(Kind::Map | Kind::Set | Kind::WeakMap | Kind::WeakSet | Kind::Other)
-    )
+    ) || is_iterator(source, expression)
 }
 
 /// Whether an array rule skips a receiver known not to be an array, unless the receiver is
@@ -1238,4 +1238,189 @@ pub fn type_definition<'a>(
         AstKind::TSInterfaceDeclaration(_) | AstKind::Class(_) => TypeDefinition::Object,
         _ => TypeDefinition::Other,
     })
+}
+
+/// An expression without TypeScript's wrappers nor `?.` chains (`unwrapExpression`).
+#[must_use]
+pub fn unwrap_chain<'b, 'a>(expression: &'b Expression<'a>) -> &'b Expression<'a> {
+    match unwrap(expression) {
+        Expression::ChainExpression(chain) => match &chain.expression {
+            oxc_ast::ast::ChainElement::TSNonNullExpression(wrapper) => {
+                unwrap_chain(&wrapper.expression)
+            }
+            _ => expression,
+        },
+        other => other,
+    }
+}
+
+/// The call an expression is, through TypeScript's wrappers and a `?.` chain.
+#[must_use]
+pub fn call_of<'b, 'a>(expression: &'b Expression<'a>) -> Option<&'b CallExpression<'a>> {
+    match unwrap_chain(expression) {
+        Expression::CallExpression(call) => Some(call),
+        Expression::ChainExpression(chain) => match &chain.expression {
+            oxc_ast::ast::ChainElement::CallExpression(call) => Some(call),
+            _ => None,
+        },
+        _ => None,
+    }
+}
+
+/// The iterator types of TypeScript's library.
+const ITERATOR_TYPES: [&str; 9] = [
+    "ArrayIterator",
+    "Generator",
+    "IterableIterator",
+    "Iterator",
+    "IteratorObject",
+    "MapIterator",
+    "RegExpStringIterator",
+    "SetIterator",
+    "StringIterator",
+];
+
+/// Whether a call is a lazy iterator helper — `drop`, `filter`, `flatMap`, `map` or `take` with
+/// an argument — on an iterator.
+#[must_use]
+pub fn is_lazy_helper(source: &Source, call: &CallExpression, depth: u8) -> bool {
+    method_call(call).is_some_and(|method| {
+        matches!(method.name, "drop" | "filter" | "flatMap" | "map" | "take")
+            && !call.arguments.is_empty()
+            && is_iterator_at(source, method.object, depth + 1)
+    })
+}
+
+/// Whether an expression is known to be an iterator: an `Iterator` static method's result,
+/// `.entries()`, `.keys()`, `.values()` or `.matchAll()`, a lazy helper on one, a generator's
+/// call, a `const` holding one, or a binding annotated with an iterator type (`isIteratorExpression`).
+#[must_use]
+pub fn is_iterator(source: &Source, expression: &Expression) -> bool {
+    is_iterator_at(source, expression, 0)
+}
+
+/// `is_iterator`, a binding followed at most a few times.
+fn is_iterator_at(source: &Source, expression: &Expression, depth: u8) -> bool {
+    if depth > 6 {
+        return false;
+    }
+    let node = unwrap_chain(expression);
+    if let Some(call) = call_of(node) {
+        if let Some(method) = method_call(call) {
+            let iterator_static = matches!(method.name, "concat" | "from" | "zip" | "zipKeyed")
+                && (is_global(source, unwrap_chain(method.object), "Iterator")
+                    || matches!(unwrap_chain(method.object), Expression::StaticMemberExpression(member)
+                        if !member.optional
+                            && member.property.name == "Iterator"
+                            && is_global(source, unwrap_chain(&member.object), "globalThis")));
+            let iterator_method = (matches!(method.name, "entries" | "keys" | "values")
+                && call.arguments.is_empty())
+                || (method.name == "matchAll" && call.arguments.len() <= 1);
+            if iterator_static || iterator_method || is_lazy_helper(source, call, depth) {
+                return true;
+            }
+        }
+        if !call.optional && is_generator_function(source, &call.callee, depth) {
+            return true;
+        }
+    }
+    if let Expression::Identifier(_) = node {
+        if kind_of(source, node) == Some(Kind::Array) {
+            return false;
+        }
+        match binding_of(source, node) {
+            Some(Binding::Variable(declarator, VariableDeclarationKind::Const))
+                if declarator.type_annotation.is_none() =>
+            {
+                return declarator
+                    .init
+                    .as_ref()
+                    .is_some_and(|init| is_iterator_at(source, init, depth + 1));
+            }
+            Some(Binding::Variable(declarator, _)) => {
+                return declarator
+                    .type_annotation
+                    .as_ref()
+                    .is_some_and(|annotation| {
+                        is_iterator_type(source, &annotation.type_annotation)
+                    });
+            }
+            Some(Binding::Parameter(parameter)) => {
+                return parameter
+                    .type_annotation
+                    .as_ref()
+                    .is_some_and(|annotation| {
+                        is_iterator_type(source, &annotation.type_annotation)
+                    });
+            }
+            None => {}
+        }
+    }
+    false
+}
+
+/// Whether an annotation names one of the library's iterator types the file does not redefine.
+fn is_iterator_type(source: &Source, annotation: &TSType) -> bool {
+    match annotation {
+        TSType::TSTypeReference(reference) => match &reference.type_name {
+            TSTypeName::IdentifierReference(name) => {
+                ITERATOR_TYPES.contains(&name.name.as_str())
+                    && type_definition(
+                        source,
+                        source.semantic.scoping().root_scope_id(),
+                        name.name.as_str(),
+                    )
+                    .is_none()
+            }
+            _ => false,
+        },
+        TSType::TSUnionType(union) => {
+            union
+                .types
+                .iter()
+                .any(|each| is_iterator_type(source, each))
+                && union.types.iter().all(|each| {
+                    is_iterator_type(source, each)
+                        || matches!(
+                            each,
+                            TSType::TSNullKeyword(_) | TSType::TSUndefinedKeyword(_)
+                        )
+                })
+        }
+        _ => false,
+    }
+}
+
+/// Whether a callee is a synchronous generator function, declared or bound to a `const`.
+fn is_generator_function(source: &Source, callee: &Expression, depth: u8) -> bool {
+    if depth > 6 {
+        return false;
+    }
+    match unwrap_chain(callee) {
+        Expression::FunctionExpression(function) => function.generator && !function.r#async,
+        node @ Expression::Identifier(identifier) => {
+            let Some(symbol) = symbol_of(source, identifier) else {
+                return false;
+            };
+            let scoping = source.semantic.scoping();
+            let written = scoping
+                .get_resolved_reference_ids(symbol)
+                .iter()
+                .any(|reference| scoping.get_reference(*reference).is_write());
+            if written {
+                return false;
+            }
+            match source
+                .semantic
+                .nodes()
+                .kind(scoping.symbol_declaration(symbol))
+            {
+                AstKind::Function(function) => function.generator && !function.r#async,
+                AstKind::VariableDeclarator(_) => const_init(source, node)
+                    .is_some_and(|init| is_generator_function(source, init, depth + 1)),
+                _ => false,
+            }
+        }
+        _ => false,
+    }
 }
