@@ -13,10 +13,10 @@
 import { execFileSync, spawnSync } from "node:child_process";
 import { setTimeout as delay } from "node:timers/promises";
 
-import { cleanUp, cleanUpPlan, manualSteps, worktrees } from "./story-finish-plan";
-import { moveRows, run } from "./story-finish-rows";
+import { cleanUp, cleanUpPlan, manualSteps, worktrees } from "./story-finish-plan.ts";
+import { moveRows, run } from "./story-finish-rows.ts";
 
-import type { CleanUp } from "./story-finish-plan";
+import type { CleanUp } from "./story-finish-plan.ts";
 
 /** Time between two readings of the pull request's state. */
 const POLL_MS = 10_000;
