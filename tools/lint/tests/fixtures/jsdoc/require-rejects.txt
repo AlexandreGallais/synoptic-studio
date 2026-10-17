@@ -1,0 +1,396 @@
+# require-rejects: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), a carriage return written ␍,
+# each run by ESLint 10.12.0 at src/a.ts with the project's options; recorded by EN-083.
+@@@ case 1 (documented invalid)
+
+        /**
+         *
+         */
+        async function quux () {
+          throw new Error('abc');
+        }
+      
+@@@ findings
+2:9 Promise-rejecting function requires `@rejects` tag
+@@@ case 2 (documented invalid)
+
+        /**
+         *
+         */
+        const quux = async () => {
+          throw new Error('abc');
+        };
+      
+@@@ findings
+2:9 Promise-rejecting function requires `@rejects` tag
+@@@ case 3 (documented invalid)
+
+        /**
+         *
+         */
+        const quux = async function () {
+          throw new Error('abc');
+        };
+      
+@@@ findings
+2:9 Promise-rejecting function requires `@rejects` tag
+@@@ case 4 (documented invalid)
+
+        /**
+         *
+         */
+        async function quux () {
+          try {
+            await sthAsync();
+          } catch (err) {
+            if (cond) {
+              throw err;
+            }
+          }
+        }
+      
+@@@ findings
+2:9 Promise-rejecting function requires `@rejects` tag
+@@@ case 5 (documented invalid)
+
+        /**
+         *
+         */
+        function quux () {
+          return new Promise((resolve, reject) => {
+            reject(new Error('abc'));
+          });
+        }
+      
+@@@ findings
+2:9 Promise-rejecting function requires `@rejects` tag
+@@@ case 6 (documented invalid)
+
+        /**
+         *
+         */
+        async function quux () {
+          if (cond) {
+            throw new Error('abc');
+          }
+        }
+      
+@@@ findings
+2:9 Promise-rejecting function requires `@rejects` tag
+@@@ case 7 (documented invalid)
+
+        /**
+         *
+         */
+        async function quux () {
+          function inner () {
+            if (cond) {
+              throw new Error('abc');
+            }
+          }
+          inner();
+        }
+      
+@@@ findings
+2:9 Promise-rejecting function requires `@rejects` tag
+@@@ case 8 (documented invalid)
+
+        /**
+         *
+         */
+        async function quux () {
+          return Promise.reject(new Error('abc'));
+        }
+      
+@@@ findings
+2:9 Promise-rejecting function requires `@rejects` tag
+@@@ case 9 (documented invalid)
+
+        /**
+         *
+         */
+        function quux () {
+          if (cond) {
+            return Promise.reject(new Error('abc'));
+          }
+        }
+      
+@@@ findings
+2:9 Promise-rejecting function requires `@rejects` tag
+@@@ case 10 (documented invalid)
+
+        /**
+         *
+         */
+        async function quux () {
+          for (let i = 0; i < 10; i++) {
+            if (i > 5) {
+              throw new Error('abc');
+            }
+          }
+        }
+      
+@@@ findings
+2:9 Promise-rejecting function requires `@rejects` tag
+@@@ case 11 (documented invalid)
+
+        /**
+         *
+         */
+        async function quux () {
+          while (cond) {
+            throw new Error('abc');
+          }
+        }
+      
+@@@ findings
+2:9 Promise-rejecting function requires `@rejects` tag
+@@@ case 12 (documented invalid)
+
+        /**
+         *
+         */
+        async function quux () {
+          switch (val) {
+            case 1:
+              throw new Error('abc');
+            case 2:
+              break;
+          }
+        }
+      
+@@@ findings
+2:9 Promise-rejecting function requires `@rejects` tag
+@@@ case 13 (documented invalid)
+
+        /**
+         *
+         */
+        async function quux () {
+          const arr = [1, 2, 3];
+          for (const item of arr) {
+            if (item > 2) {
+              throw new Error('abc');
+            }
+          }
+        }
+      
+@@@ findings
+2:9 Promise-rejecting function requires `@rejects` tag
+@@@ case 14 (documented invalid)
+
+        /**
+         *
+         */
+        async function quux () {
+          const obj = {a: 1, b: 2};
+          for (const key in obj) {
+            if (key === 'a') {
+              throw new Error('abc');
+            }
+          }
+        }
+      
+@@@ findings
+2:9 Promise-rejecting function requires `@rejects` tag
+@@@ case 15 (documented invalid)
+
+        /**
+         *
+         */
+        async function quux () {
+          do {
+            throw new Error('abc');
+          } while (cond);
+        }
+      
+@@@ findings
+2:9 Promise-rejecting function requires `@rejects` tag
+@@@ case 16 (documented invalid)
+
+        /**
+         *
+         */
+        async function quux () {
+          label: {
+            throw new Error('abc');
+          }
+        }
+      
+@@@ findings
+2:9 Promise-rejecting function requires `@rejects` tag
+@@@ case 17 (documented invalid)
+
+        /**
+         *
+         */
+        async function quux () {
+          try {
+            doSomething();
+          } finally {
+            throw new Error('cleanup failed');
+          }
+        }
+      
+@@@ findings
+2:9 Promise-rejecting function requires `@rejects` tag
+@@@ case 18 (documented valid)
+
+        /**
+         * @rejects {Error}
+         */
+        async function quux () {
+          throw new Error('abc');
+        }
+      
+@@@ findings
+@@@ case 19 (documented valid)
+
+        /**
+         * @abstract
+         */
+        async function quux () {
+          throw new Error('abc');
+        }
+      
+@@@ findings
+@@@ case 20 (documented valid)
+
+        /**
+         *
+         */
+        function quux () {
+          return 42;
+        }
+      
+@@@ findings
+@@@ case 21 (documented valid)
+
+        /**
+         *
+         */
+        async function quux () {
+          return await sthAsync();
+        }
+      
+@@@ findings
+@@@ case 22 (documented valid)
+
+        /**
+         *
+         */
+        async function quux () {
+          if (cond) {
+            return;
+          }
+        }
+      
+@@@ findings
+@@@ case 23 (documented valid)
+
+        /**
+         *
+         */
+        async function quux () {
+          const obj = new SomeClass();
+        }
+      
+@@@ findings
+@@@ case 24 (documented valid)
+
+        /**
+         *
+         */
+        function quux () {
+          const p = new Promise(someVariable);
+        }
+      
+@@@ findings
+@@@ case 25 (documented valid)
+
+        /**
+         *
+         */
+        function quux () {
+          return new Promise(someVariable);
+        }
+      
+@@@ findings
+@@@ case 26 (documented valid)
+
+        /**
+         *
+         */
+        async function quux () {
+          someFunction();
+        }
+      
+@@@ findings
+@@@ case 27 (documented valid)
+
+        /**
+         *
+         */
+        async function quux () {
+          try {
+            doSomething();
+          } catch (err) {
+            console.error(err);
+          }
+        }
+      
+@@@ findings
+@@@ case 28 (documented valid)
+
+        /**
+         *
+         */
+        async function quux () {
+          try {
+            throw new Error('wholly caught');
+          } catch (err) {
+            console.error(err);
+          }
+        }
+      
+@@@ findings
+@@@ case 29 (documented valid)
+
+        /**
+         *
+         */
+        async function quux () {
+          if (cond) {
+            doSomething();
+          } else {
+            doOtherThing();
+          }
+        }
+      
+@@@ findings
+@@@ case 30 (documented valid)
+
+        /**
+         * @callback MyCallback
+         */
+      
+@@@ findings
+@@@ case 31 (documented valid)
+
+        /**
+         *
+         */
+        async function quux () {
+          throw new Error('abc');
+        }
+      
+@@@ findings
+2:9 Promise-rejecting function requires `@rejects` tag
+@@@ case 32 (documented valid)
+
+        /** @param bar Something. */
+        export function foo(bar: string): void {
+          throw new Error(`some error: ${bar}`);
+        }
+      
+@@@ findings
+@@@ end

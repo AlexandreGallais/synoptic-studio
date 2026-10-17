@@ -1,0 +1,367 @@
+# require-throws: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), a carriage return written ␍,
+# each run by ESLint 10.12.0 at src/a.ts with the project's options; recorded by EN-083.
+@@@ case 1 (documented invalid)
+
+          /**
+           *
+           */
+          function quux (foo) {
+            throw new Error('err')
+          }
+      
+@@@ findings
+2:11 Missing JSDoc @throws declaration.
+@@@ case 2 (documented invalid)
+
+        class Quux {
+          /**
+           *
+           */
+          constructor (foo) {
+            throw new Error('err')
+          }
+        }
+      
+@@@ findings
+3:11 Missing JSDoc @throws declaration.
+@@@ case 3 (documented invalid)
+
+          /**
+           *
+           */
+          function quux (foo) {
+            someLabel: {
+              throw new Error('err')
+            }
+          }
+      
+@@@ findings
+2:11 Missing JSDoc @throws declaration.
+@@@ case 4 (documented invalid)
+
+          /**
+           *
+           */
+          const quux = function (foo) {
+            throw new Error('err')
+          }
+      
+@@@ findings
+2:11 Missing JSDoc @throws declaration.
+@@@ case 5 (documented invalid)
+
+          /**
+           *
+           */
+          const quux = (foo) => {
+            throw new Error('err')
+          }
+      
+@@@ findings
+2:11 Missing JSDoc @throws declaration.
+@@@ case 6 (documented invalid)
+
+          /**
+           *
+           */
+          function quux (foo) {
+            while(true) {
+              throw new Error('err')
+            }
+          }
+      
+@@@ findings
+2:11 Missing JSDoc @throws declaration.
+@@@ case 7 (documented invalid)
+
+          /**
+           *
+           */
+          function quux (foo) {
+            do {
+              throw new Error('err')
+            } while(true)
+          }
+      
+@@@ findings
+2:11 Missing JSDoc @throws declaration.
+@@@ case 8 (documented invalid)
+
+          /**
+           *
+           */
+          function quux (foo) {
+            for(var i = 0; i <= 10; i++) {
+              throw new Error('err')
+            }
+          }
+      
+@@@ findings
+2:11 Missing JSDoc @throws declaration.
+@@@ case 9 (documented invalid)
+
+          /**
+           *
+           */
+          function quux (foo) {
+            for(num in [1,2,3]) {
+              throw new Error('err')
+            }
+          }
+      
+@@@ findings
+2:11 Missing JSDoc @throws declaration.
+@@@ case 10 (documented invalid)
+
+          /**
+           *
+           */
+          function quux (foo) {
+            for(const num of [1,2,3]) {
+              throw new Error('err')
+            }
+          }
+      
+@@@ findings
+2:11 Missing JSDoc @throws declaration.
+@@@ case 11 (documented invalid)
+
+          /**
+           *
+           */
+          function quux (foo) {
+            for(const index in [1,2,3]) {
+              throw new Error('err')
+            }
+          }
+      
+@@@ findings
+2:11 Missing JSDoc @throws declaration.
+@@@ case 12 (documented invalid)
+
+          /**
+           *
+           */
+          function quux (foo) {
+            with(foo) {
+              throw new Error('err')
+            }
+          }
+      
+@@@ findings
+2:11 Missing JSDoc @throws declaration.
+@@@ case 13 (documented invalid)
+
+          /**
+           *
+           */
+          function quux (foo) {
+            if (true) {
+              throw new Error('err')
+            }
+          }
+      
+@@@ findings
+2:11 Missing JSDoc @throws declaration.
+@@@ case 14 (documented invalid)
+
+          /**
+           *
+           */
+          function quux (foo) {
+            if (false) {
+              // do nothing
+            } else {
+              throw new Error('err')
+            }
+          }
+      
+@@@ findings
+2:11 Missing JSDoc @throws declaration.
+@@@ case 15 (documented invalid)
+
+          /**
+           *
+           */
+          function quux (foo) {
+            try {
+              throw new Error('err')
+            } catch(e) {
+              throw new Error(e.message)
+            }
+          }
+      
+@@@ findings
+2:11 Missing JSDoc @throws declaration.
+@@@ case 16 (documented invalid)
+
+          /**
+           *
+           */
+          function quux (foo) {
+            try {
+              // do nothing
+            } finally {
+              throw new Error(e.message)
+            }
+          }
+      
+@@@ findings
+2:11 Missing JSDoc @throws declaration.
+@@@ case 17 (documented invalid)
+
+          /**
+           *
+           */
+          function quux (foo) {
+            const a = 'b'
+            switch(a) {
+              case 'b':
+                throw new Error('err')
+            }
+          }
+      
+@@@ findings
+2:11 Missing JSDoc @throws declaration.
+@@@ case 18 (documented invalid)
+
+          /**
+           * @throws
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 19 (documented invalid)
+
+        /**
+         *
+         */
+        const directThrowAfterArrow = (b) => {
+          const a = () => {};
+          if (b) {
+            throw new Error('oops')
+          }
+          return a;
+        };
+      
+@@@ findings
+2:9 Missing JSDoc @throws declaration.
+@@@ case 20 (documented invalid)
+
+          /**
+           * @throws {never}
+           */
+          function quux (foo) {
+            throw new Error('err')
+          }
+      
+@@@ findings
+2:11 JSDoc @throws declaration set to "never" but throw value found.
+@@@ case 21 (documented valid)
+
+          /**
+           * @throws An error.
+           */
+          function quux () {
+            throw new Error('err')
+          }
+      
+@@@ findings
+@@@ case 22 (documented valid)
+
+          /**
+           *
+           */
+          function quux (foo) {
+            try {
+              throw new Error('err')
+            } catch(e) {}
+          }
+      
+@@@ findings
+@@@ case 23 (documented valid)
+
+          /**
+           * @throws {object}
+           */
+          function quux (foo) {
+            throw new Error('err')
+          }
+      
+@@@ findings
+@@@ case 24 (documented valid)
+
+          /**
+           * @inheritdoc
+           */
+          function quux (foo) {
+            throw new Error('err')
+          }
+      
+@@@ findings
+@@@ case 25 (documented valid)
+
+          /**
+           * @abstract
+           */
+          function quux (foo) {
+            throw new Error('err')
+          }
+      
+@@@ findings
+@@@ case 26 (documented valid)
+
+          /**
+           *
+           */
+          function quux (foo) {
+          }
+      
+@@@ findings
+@@@ case 27 (documented valid)
+
+          /**
+           * @type {MyCallback}
+           */
+          function quux () {
+            throw new Error('err')
+          }
+      
+@@@ findings
+@@@ case 28 (documented valid)
+
+        /**
+         *
+         */
+        const itself = (n) => n;
+        
+@@@ findings
+@@@ case 29 (documented valid)
+
+      /**
+       * Not tracking on nested function
+       */
+      const nested = () => () => {throw new Error('oops');};
+      
+@@@ findings
+@@@ case 30 (documented valid)
+
+      /**
+       */
+      async function foo() {
+        throw Error("bar");
+      }
+      
+@@@ findings
+@@@ case 31 (documented valid)
+
+        /**
+         * @throws {never}
+         */
+        function quux (foo) {
+        }
+      
+@@@ findings
+@@@ end

@@ -117,3 +117,22 @@ pub fn avoids(source: &Source, doc: &Doc, node: &AstNode, checks_special_methods
         .iter()
         .any(|tag| tag.tag == "inheritDoc" || tag.tag == "inheritdoc")
 }
+
+/// Whether the block of the class around a node holds a tag (`utils.classHasTag`).
+#[must_use]
+pub fn class_has_tag(source: &Source, node: &AstNode, name: &str) -> bool {
+    class_doc(source, node).is_some_and(|class| has_tag(&class, name))
+}
+
+/// Whether a node is a constructor or the function of one (`isConstructor`).
+#[must_use]
+pub fn is_constructor(source: &Source, node: &AstNode) -> bool {
+    matches!(node.kind(), AstKind::MethodDefinition(method) if method.kind == MethodDefinitionKind::Constructor)
+        || method_kind(source, node) == Some("constructor")
+}
+
+/// Whether a block holds one of these tags, case aside (`utils.hasATag`).
+#[must_use]
+pub fn has_a_tag(doc: &Doc, names: &[&str]) -> bool {
+    names.iter().any(|name| has_tag(doc, name))
+}

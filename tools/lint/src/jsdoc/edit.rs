@@ -129,10 +129,10 @@ impl Edit {
         self.pool.len() - 1
     }
 
-    /// Removes a tag's first line found in the block and the next lines of its description
-    /// (`removeTag`, its default options); a line opening or closing the block is emptied
-    /// instead; the lines after are renumbered.
-    pub fn remove_tag(&mut self, tag: usize) {
+    /// Removes, from a tag's first line found in the block and an offset of lines after it, the
+    /// next lines of its description (`removeTag` with `tagSourceOffset`); a line opening or
+    /// closing the block is emptied instead; the lines after are renumbered.
+    pub fn remove_tag(&mut self, tag: usize, offset: usize) {
         let first_number = self.order.first().map_or(0, |id| self.pool[*id].number);
         let mut last_index = None;
         for position in 0..self.tags[tag].len() {
@@ -151,12 +151,16 @@ impl Edit {
                     tokens.tag.is_empty() && tokens.end.is_empty()
                 })
                 .count();
-            let tokens = &self.pool[self.order[index]].tokens;
-            if (index == 0 && self.tags.len() >= 2)
+            let at = index + offset;
+            let Some(&line) = self.order.get(at) else {
+                break;
+            };
+            let tokens = &self.pool[line].tokens;
+            if (at == 0 && self.tags.len() >= 2)
                 || !tokens.end.is_empty()
                 || tokens.delimiter == "/**"
             {
-                let tokens = &mut self.pool[self.order[index]].tokens;
+                let tokens = &mut self.pool[line].tokens;
                 for token in [
                     &mut tokens.post_delimiter,
                     &mut tokens.tag,
@@ -170,22 +174,20 @@ impl Edit {
                     token.clear();
                 }
             } else {
-                let removed = if index == 0 {
-                    count + self.order.len()
-                } else {
-                    count
-                };
-                let end = (index + removed).min(self.order.len());
-                self.order.drain(index..end);
-                let tag_end = (position + removed).min(self.tags[tag].len());
-                self.tags[tag].drain(position..tag_end);
+                let removed =
+                    count.saturating_sub(offset) + if at == 0 { self.order.len() } else { 0 };
+                let end = (at + removed).min(self.order.len());
+                self.order.drain(at..end);
+                let tag_start = (position + offset).min(self.tags[tag].len());
+                let tag_end = (tag_start + removed).min(self.tags[tag].len());
+                self.tags[tag].drain(tag_start..tag_end);
             }
             last_index = Some(index);
             break;
         }
         if let Some(last) = last_index {
-            for (offset, id) in self.order.iter().skip(last).enumerate() {
-                self.pool[*id].number = first_number + last + offset;
+            for (step, id) in self.order.iter().skip(last).enumerate() {
+                self.pool[*id].number = first_number + last + step;
             }
         }
     }
@@ -274,5 +276,89 @@ impl Edit {
     #[must_use]
     pub fn tag_length(&self, tag: usize) -> usize {
         self.tags[tag].len()
+    }
+}
+
+/// Replaces a block's description lines, from its first line other than `/**` up to its first
+/// tag or `*/` line, by the lines a setter makes from the first line's start, delimiter and
+/// blank after it, the descriptions and the blanks after each delimiter (`setBlockDescription`).
+pub fn set_block_description(
+    block: &mut super::block::Block,
+    setter: impl FnOnce(&Tokens, &[String], &[String]) -> Vec<Tokens>,
+) {
+    let Some(start) = block
+        .source
+        .iter()
+        .position(|line| line.tokens.delimiter != "/**")
+    else {
+        return;
+    };
+    let end = (start..block.source.len())
+        .find(|index| {
+            let tokens = &block.source[*index].tokens;
+            !tokens.tag.is_empty() || !tokens.end.is_empty()
+        })
+        .unwrap_or(block.source.len());
+    if end == start {
+        return;
+    }
+    let first = &block.source[start].tokens;
+    let info = Tokens {
+        delimiter: first.delimiter.clone(),
+        post_delimiter: first.post_delimiter.clone(),
+        start: first.start.clone(),
+        ..Tokens::default()
+    };
+    let descriptions: Vec<String> = block.source[start..end]
+        .iter()
+        .map(|line| line.tokens.description.clone())
+        .collect();
+    let blanks: Vec<String> = block.source[start..end]
+        .iter()
+        .map(|line| line.tokens.post_delimiter.clone())
+        .collect();
+    let lines = setter(&info, &descriptions, &blanks)
+        .into_iter()
+        .map(|tokens| super::block::Line {
+            number: 0,
+            source: String::new(),
+            tokens,
+        });
+    block.source.splice(start..end, lines);
+}
+
+/// Sorts items as V8 sorts an array shorter than 64 items (`ArrayTimSort`): the run at its start
+/// counted, reversed when strictly descending, then the rest put in by binary insertion; the
+/// comparisons made in that order, so that a comparator noting them sees what V8 shows it.
+pub fn v8_sort<T: Clone>(items: &mut [T], mut compare: impl FnMut(&T, &T) -> std::cmp::Ordering) {
+    use std::cmp::Ordering;
+    let length = items.len();
+    if length < 2 {
+        return;
+    }
+    let mut run = 2;
+    let descending = compare(&items[1], &items[0]) == Ordering::Less;
+    while run < length {
+        let order = compare(&items[run], &items[run - 1]);
+        if (descending && order != Ordering::Less) || (!descending && order == Ordering::Less) {
+            break;
+        }
+        run += 1;
+    }
+    if descending {
+        items[..run].reverse();
+    }
+    for start in run..length {
+        let pivot = items[start].clone();
+        let (mut left, mut right) = (0, start);
+        while left < right {
+            let middle = left + (right - left) / 2;
+            if compare(&pivot, &items[middle]) == Ordering::Less {
+                right = middle;
+            } else {
+                left = middle + 1;
+            }
+        }
+        items[left..=start].rotate_right(1);
     }
 }

@@ -1,0 +1,1160 @@
+# sort-tags: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), a carriage return written ␍,
+# each run by ESLint 10.12.0 at src/a.ts with the project's options; recorded by EN-083.
+@@@ case 1 (documented invalid)
+
+        /**
+         * @returns {string}
+         * @param b
+         * @param a
+         */
+        function quux () {}
+      
+@@@ findings
+3:1 Tags are not in the prescribed order: kind, template, param, returns, yields, throws, rejects, see, deprecated
+@@@ output
+
+        /**
+         * @param b
+         * @param a
+         * @returns {string}
+         */
+        function quux () {}
+      
+@@@ case 2 (documented invalid)
+
+        /**
+         * Some description
+         * @returns {string}
+         * @param b
+         * @param a
+         */
+        function quux () {}
+      
+@@@ findings
+4:1 Tags are not in the prescribed order: kind, template, param, returns, yields, throws, rejects, see, deprecated
+@@@ output
+
+        /**
+         * Some description
+         * @param b
+         * @param a
+         * @returns {string}
+         */
+        function quux () {}
+      
+@@@ case 3 (documented invalid)
+
+        /**
+         * @returns {string}
+         * @param b A long
+         *   description
+         * @param a
+         */
+        function quux () {}
+      
+@@@ findings
+3:1 Tags are not in the prescribed order: kind, template, param, returns, yields, throws, rejects, see, deprecated
+@@@ output
+
+        /**
+         * @param b A long
+         *   description
+         * @param a
+         * @returns {string}
+         */
+        function quux () {}
+      
+@@@ case 4 (documented invalid)
+
+        /**
+         * Some description
+         * @returns {string}
+         * @param b A long
+         *   description
+         * @param a
+         */
+        function quux () {}
+      
+@@@ findings
+4:1 Tags are not in the prescribed order: kind, template, param, returns, yields, throws, rejects, see, deprecated
+@@@ output
+
+        /**
+         * Some description
+         * @param b A long
+         *   description
+         * @param a
+         * @returns {string}
+         */
+        function quux () {}
+      
+@@@ case 5 (documented invalid)
+
+        /**
+         * @param b A long
+         *   description
+         * @returns {string}
+         * @param a
+         */
+        function quux () {}
+      
+@@@ findings
+5:1 Tags are not in the prescribed order: kind, template, param, returns, yields, throws, rejects, see, deprecated
+@@@ output
+
+        /**
+         * @param b A long
+         *   description
+         * @param a
+         * @returns {string}
+         */
+        function quux () {}
+      
+@@@ case 6 (documented invalid)
+
+        /**
+         * @typedef Foo<T>
+         * @template {Object} T
+         * @prop {T} bar
+         */
+      
+@@@ findings
+3:1 Tags are not in the prescribed order: kind, template, param, returns, yields, throws, rejects, see, deprecated
+@@@ output
+
+        /**
+         * @template {Object} T
+         * @typedef Foo<T>
+         * @prop {T} bar
+         */
+      
+@@@ case 7 (documented invalid)
+
+        /**
+         * @def
+         * @xyz
+         * @abc
+         */
+        function quux () {}
+      
+@@@ findings
+@@@ case 8 (documented invalid)
+
+        /**
+         * @xyz
+         * @def
+         * @abc
+         */
+        function quux () {}
+      
+@@@ findings
+@@@ case 9 (documented invalid)
+
+        /**
+         * @xyz
+         * @def
+         * @abc
+         */
+        function quux () {}
+      
+@@@ findings
+@@@ case 10 (documented invalid)
+
+        /**
+         * @returns {string}
+         * @ignore
+         * @param b A long
+         *   description
+         * @param a
+         * @module
+         */
+        function quux () {}
+      
+@@@ findings
+3:1 Tags are not in the prescribed order: kind, template, param, returns, yields, throws, rejects, see, deprecated
+@@@ output
+
+        /**
+         * @param b A long
+         *   description
+         * @param a
+         * @returns {string}
+         * @ignore
+         * @module
+         */
+        function quux () {}
+      
+@@@ case 11 (documented invalid)
+
+        /**
+         * @xyz
+         * @abc
+         * @abc
+         * @def
+         * @xyz
+         */
+        function quux () {}
+      
+@@@ findings
+@@@ case 12 (documented invalid)
+
+        /**
+         * @param b A long
+         *   description
+         * @module
+         */
+        function quux () {}
+      
+@@@ findings
+@@@ case 13 (documented invalid)
+
+        /**
+         * @def
+         * @xyz
+         * @abc
+         */
+        function quux () {}
+      
+@@@ findings
+@@@ case 14 (documented invalid)
+
+        /**
+         * @def
+         * @xyz
+         *
+         *
+         * @abc
+         */
+        function quux () {}
+      
+@@@ findings
+4:1 Intra-group tags have unexpected whitespace
+@@@ output
+
+        /**
+         * @def
+         * @xyz
+         * @abc
+         */
+        function quux () {}
+      
+@@@ case 15 (documented invalid)
+
+        /**
+         * @def
+         * @xyz A multiline
+         * description
+         * @abc
+         */
+        function quux () {}
+      
+@@@ findings
+@@@ case 16 (documented invalid)
+
+        /**
+         * @def
+         * @xyz
+         * @xyz
+         *
+         *
+         * @abc
+         */
+        function quux () {}
+      
+@@@ findings
+5:1 Intra-group tags have unexpected whitespace
+@@@ output
+
+        /**
+         * @def
+         * @xyz
+         * @xyz
+         * @abc
+         */
+        function quux () {}
+      
+@@@ case 17 (documented invalid)
+
+        /**
+         * Foo
+         *
+         * @param {(
+         *  req: express.Request,
+         *  done: (error: any, user?: any, info?: any) => void
+         * ) => void} verify - callback to excute custom authentication logic
+         * @see https://github.com/jaredhanson/passport/blob/v0.4.1/lib/middleware/authenticate.js#L217
+         *
+         */
+      
+@@@ findings
+@@@ case 18 (documented invalid)
+
+        /**
+         * Summary. (use period)
+         *
+         * Description. (use period)
+         *
+         * @since      1.0.1
+         * @access     private
+         *
+         * @class
+         * @mixes    mixin
+         *
+         * @alias    realName
+         * @memberof namespace
+         *
+         * @see  Function/class relied on
+         * @global
+         *
+         * @tutorial Asd
+         * @license MIT
+         *
+         * @fires   eventName
+         * @fires   className#eventName
+         * @listens event:eventName
+         * @listens className~event:eventName
+         *
+         * @tutorial Asd
+         * @license MIT
+         *
+         * @yields {string} Yielded value description.
+         *
+         * @param {string} var1 - Description.
+         * @param {string} var2 - Description of optional variable.
+         * @param {string} var3 - Description of optional variable with default variable.
+         * @param {object} objectVar - Description.
+         * @param {string} objectVar.key - Description of a key in the objectVar parameter.
+         *
+         * @returns {string} Return value description.
+         */
+      
+@@@ findings
+7:1 Tags are not in the prescribed order: kind, template, param, returns, yields, throws, rejects, see, deprecated
+@@@ output
+
+        /**
+         * Summary. (use period)
+         *
+         * Description. (use period)
+         *
+         * @param {string} var1 - Description.
+         * @param {string} var2 - Description of optional variable.
+         * @param {string} var3 - Description of optional variable with default variable.
+         * @param {object} objectVar - Description.
+         * @param {string} objectVar.key - Description of a key in the objectVar parameter.
+         * @returns {string} Return value description.
+         * @yields {string} Yielded value description.
+         *
+         * @see  Function/class relied on
+         * @since      1.0.1
+         * @access     private
+         * @class
+         * @mixes    mixin
+         * @alias    realName
+         * @memberof namespace
+         * @global
+         * @tutorial Asd
+         * @license MIT
+         * @fires   eventName
+         * @fires   className#eventName
+         * @listens event:eventName
+         * @listens className~event:eventName
+         * @tutorial Asd
+         * @license MIT
+         *
+         */
+      
+@@@ case 19 (documented invalid)
+
+        /**
+         * Summary. (use period)
+         *
+         * Description. (use period)
+         *
+         * @since      1.0.1
+         * @access     private
+         *
+         * @class
+         * @mixes    mixin
+         *
+         * @alias    realName
+         * @memberof namespace
+         *
+         * @see  Function/class relied on
+         * @global
+         *
+         * @fires   eventName
+         * @fires   className#eventName
+         * @listens event:eventName
+         * @listens className~event:eventName
+         *
+         * @param {string} var1 - Description.
+         * @param {string} var2 - Description of optional variable.
+         * @param {string} var3 - Description of optional variable with default variable.
+         * @param {object} objectVar - Description.
+         * @param {string} objectVar.key - Description of a key in the objectVar parameter.
+         *
+         * @yields {string} Yielded value description.
+         *
+         * @returns {string} Return value description.
+         * @tutorial Asd
+         * @license MIT
+         *
+         * @tutorial Asd
+         * @license MIT
+         *
+         */
+      
+@@@ findings
+7:1 Tags are not in the prescribed order: kind, template, param, returns, yields, throws, rejects, see, deprecated
+@@@ output
+
+        /**
+         * Summary. (use period)
+         *
+         * Description. (use period)
+         *
+         * @param {string} var1 - Description.
+         * @param {string} var2 - Description of optional variable.
+         * @param {string} var3 - Description of optional variable with default variable.
+         * @param {object} objectVar - Description.
+         * @param {string} objectVar.key - Description of a key in the objectVar parameter.
+         * @returns {string} Return value description.
+         * @yields {string} Yielded value description.
+         *
+         * @see  Function/class relied on
+         * @since      1.0.1
+         * @access     private
+         * @class
+         * @mixes    mixin
+         * @alias    realName
+         * @memberof namespace
+         * @global
+         * @fires   eventName
+         * @fires   className#eventName
+         * @listens event:eventName
+         * @listens className~event:eventName
+         * @tutorial Asd
+         * @license MIT
+         * @tutorial Asd
+         * @license MIT
+         *
+         */
+      
+@@@ case 20 (documented invalid)
+
+        /**
+         * Summary. (use period)
+         *
+         * Description. (use period)
+         *
+         * @since      1.0.1
+         * @access     private
+         *
+         * @class
+         * @mixes    mixin
+         *
+         * @alias    realName
+         * @memberof namespace
+         *
+         * @see  Function/class relied on
+         * @global
+         *
+         * @fires   eventName
+         * @fires   className#eventName
+         * @listens event:eventName
+         * @listens className~event:eventName
+         *
+         * @param {string} var1 - Description.
+         * @param {string} var2 - Description of optional variable.
+         * @param {string} var3 - Description of optional variable with default variable.
+         * @param {object} objectVar - Description.
+         * @param {string} objectVar.key - Description of a key in the objectVar parameter.
+         *
+         * @yields {string} Yielded value description.
+         *
+         * @returns {string} Return value description.
+         *
+         * @tutorial Asd
+         * @license MIT
+         *
+         * @tutorial Asd
+         * @license MIT
+         *
+         */
+      
+@@@ findings
+7:1 Tags are not in the prescribed order: kind, template, param, returns, yields, throws, rejects, see, deprecated
+@@@ output
+
+        /**
+         * Summary. (use period)
+         *
+         * Description. (use period)
+         *
+         * @param {string} var1 - Description.
+         * @param {string} var2 - Description of optional variable.
+         * @param {string} var3 - Description of optional variable with default variable.
+         * @param {object} objectVar - Description.
+         * @param {string} objectVar.key - Description of a key in the objectVar parameter.
+         * @returns {string} Return value description.
+         * @yields {string} Yielded value description.
+         * @see  Function/class relied on
+         * @since      1.0.1
+         * @access     private
+         * @class
+         * @mixes    mixin
+         * @alias    realName
+         * @memberof namespace
+         * @global
+         * @fires   eventName
+         * @fires   className#eventName
+         * @listens event:eventName
+         * @listens className~event:eventName
+         * @tutorial Asd
+         * @license MIT
+         * @tutorial Asd
+         * @license MIT
+         *
+         */
+      
+@@@ case 21 (documented invalid)
+
+        /**
+         * Summary. (use period)
+         *
+         * Description. (use period)
+         *
+         * @since      1.0.1
+         * @access     private
+         *
+         * @class
+         * @mixes    mixin
+         *
+         * @alias    realName
+         * @memberof namespace
+         *
+         * @see  Function/class relied on
+         * @global
+         *
+         * @fires   eventName
+         *
+         * @fires   className#eventName
+         * @listens event:eventName
+         * @listens className~event:eventName
+         *
+         * @param {string} var1 - Description.
+         * @param {string} var2 - Description of optional variable.
+         * @param {string} var3 - Description of optional variable with default variable.
+         * @param {object} objectVar - Description.
+         * @param {string} objectVar.key - Description of a key in the objectVar parameter.
+         *
+         * @yields {string} Yielded value description.
+         *
+         * @returns {string} Return value description.
+         *
+         * @tutorial Asd
+         * @license MIT
+         * @tutorial Asd
+         * @license MIT
+         *
+         */
+      
+@@@ findings
+7:1 Tags are not in the prescribed order: kind, template, param, returns, yields, throws, rejects, see, deprecated
+@@@ output
+
+        /**
+         * Summary. (use period)
+         *
+         * Description. (use period)
+         *
+         * @param {string} var1 - Description.
+         * @param {string} var2 - Description of optional variable.
+         * @param {string} var3 - Description of optional variable with default variable.
+         * @param {object} objectVar - Description.
+         * @param {string} objectVar.key - Description of a key in the objectVar parameter.
+         * @returns {string} Return value description.
+         * @yields {string} Yielded value description.
+         * @see  Function/class relied on
+         * @since      1.0.1
+         * @access     private
+         * @class
+         * @mixes    mixin
+         * @alias    realName
+         * @memberof namespace
+         * @global
+         * @fires   eventName
+         * @fires   className#eventName
+         * @listens event:eventName
+         * @listens className~event:eventName
+         * @tutorial Asd
+         * @license MIT
+         * @tutorial Asd
+         * @license MIT
+         *
+         */
+      
+@@@ case 22 (documented invalid)
+
+        /**
+         * Summary. (use period)
+         *
+         * Description. (use period)
+         *
+         * @since      1.0.1
+         * @access     private
+         *
+         * @class
+         * @mixes    mixin
+         *
+         * @alias    realName
+         * @memberof namespace
+         *
+         * @see  Function/class relied on
+         * @global
+         *
+         * @fires   eventName
+         * @fires   className#eventName
+         * @listens event:eventName
+         *
+         * @listens className~event:eventName
+         *
+         * @param {string} var1 - Description.
+         * @param {string} var2 - Description of optional variable.
+         * @param {string} var3 - Description of optional variable with default variable.
+         * @param {object} objectVar - Description.
+         * @param {string} objectVar.key - Description of a key in the objectVar parameter.
+         *
+         * @yields {string} Yielded value description.
+         *
+         * @returns {string} Return value description.
+         *
+         * @tutorial Asd
+         * @license MIT
+         * @tutorial Asd
+         * @license MIT
+         *
+         */
+      
+@@@ findings
+7:1 Tags are not in the prescribed order: kind, template, param, returns, yields, throws, rejects, see, deprecated
+@@@ output
+
+        /**
+         * Summary. (use period)
+         *
+         * Description. (use period)
+         *
+         * @param {string} var1 - Description.
+         * @param {string} var2 - Description of optional variable.
+         * @param {string} var3 - Description of optional variable with default variable.
+         * @param {object} objectVar - Description.
+         * @param {string} objectVar.key - Description of a key in the objectVar parameter.
+         * @returns {string} Return value description.
+         * @yields {string} Yielded value description.
+         * @see  Function/class relied on
+         * @since      1.0.1
+         * @access     private
+         * @class
+         * @mixes    mixin
+         * @alias    realName
+         * @memberof namespace
+         * @global
+         * @fires   eventName
+         * @fires   className#eventName
+         * @listens event:eventName
+         * @listens className~event:eventName
+         * @tutorial Asd
+         * @license MIT
+         * @tutorial Asd
+         * @license MIT
+         *
+         */
+      
+@@@ case 23 (documented invalid)
+
+        /**
+         * Summary. (use period)
+         *
+         * Description. (use period)
+         *
+         * @since      1.0.1
+         * @access     private
+         *
+         * @class
+         * @mixes    mixin
+         *
+         * @alias    realName
+         * @memberof namespace
+         *
+         * @see  Function/class relied on
+         * @global
+         *
+         * @fires   eventName
+         * @fires   className#eventName
+         * @tutorial Asd
+         * @license MIT
+         *
+         * @listens event:eventName
+         * @listens className~event:eventName
+         *
+         * @param {string} var1 - Description.
+         * @param {string} var2 - Description of optional variable.
+         * @param {string} var3 - Description of optional variable with default variable.
+         * @param {object} objectVar - Description.
+         * @param {string} objectVar.key - Description of a key in the objectVar parameter.
+         *
+         * @yields {string} Yielded value description.
+         *
+         * @returns {string} Return value description.
+         */
+      
+@@@ findings
+7:1 Tags are not in the prescribed order: kind, template, param, returns, yields, throws, rejects, see, deprecated
+@@@ output
+
+        /**
+         * Summary. (use period)
+         *
+         * Description. (use period)
+         *
+         * @param {string} var1 - Description.
+         * @param {string} var2 - Description of optional variable.
+         * @param {string} var3 - Description of optional variable with default variable.
+         * @param {object} objectVar - Description.
+         * @param {string} objectVar.key - Description of a key in the objectVar parameter.
+         * @returns {string} Return value description.
+         * @yields {string} Yielded value description.
+         *
+         * @see  Function/class relied on
+         * @since      1.0.1
+         * @access     private
+         * @class
+         * @mixes    mixin
+         * @alias    realName
+         * @memberof namespace
+         * @global
+         * @fires   eventName
+         * @fires   className#eventName
+         * @tutorial Asd
+         * @license MIT
+         * @listens event:eventName
+         * @listens className~event:eventName
+         *
+         */
+      
+@@@ case 24 (documented invalid)
+
+        /**
+         * @def
+         * @zzz
+         * @abc
+         */
+        function quux () {}
+      
+@@@ findings
+@@@ case 25 (documented invalid)
+
+        /**
+         * Summary. (use period)
+         *
+         * Description. (use period)
+         *
+         * @since      1.0.1
+         * @access     private
+         *
+         * @class
+         * @mixes    mixin
+         *
+         * @alias    realName
+         * @memberof namespace
+         *
+         * @see  Function/class relied on
+         * @global
+         *
+         * @fires   eventName
+         * @fires   className#eventName
+         * @tutorial Asd
+         *
+         * @license MIT
+         *
+         *
+         */
+      
+@@@ findings
+7:1 Tags are not in the prescribed order: kind, template, param, returns, yields, throws, rejects, see, deprecated
+@@@ output
+
+        /**
+         * Summary. (use period)
+         *
+         * Description. (use period)
+         *
+         * @see  Function/class relied on
+         * @since      1.0.1
+         * @access     private
+         * @class
+         * @mixes    mixin
+         * @alias    realName
+         * @memberof namespace
+         * @global
+         * @fires   eventName
+         * @fires   className#eventName
+         * @tutorial Asd
+         * @license MIT
+         *
+         *
+         */
+      
+@@@ case 26 (documented invalid)
+
+        /**
+         * @xyz
+         * @def
+         * @abc
+         */
+        function quux () {}
+      
+@@@ findings
+@@@ case 27 (documented invalid)
+
+        /**
+         * @example
+         * enum Color { Red, Green, Blue }
+         * faker.helpers.enumValue(Color) // 1 (Green)
+         *
+         * enum Direction { North = 'North', South = 'South'}
+         * faker.helpers.enumValue(Direction) // 'South'
+         *
+         * enum HttpStatus { Ok = 200, Created = 201, BadRequest = 400, Unauthorized = 401 }
+         * faker.helpers.enumValue(HttpStatus) // 200 (Ok)
+         * @since 8.0.0
+         */
+      
+@@@ findings
+@@@ case 28 (documented invalid)
+
+        /**
+         * @param b
+         * @param a
+         * @returns {string}
+         * @example abc
+         *
+         *
+         * @example def
+         */
+        function quux () {}
+      
+@@@ findings
+6:1 Intra-group tags have unexpected whitespace
+@@@ output
+
+        /**
+         * @param b
+         * @param a
+         * @returns {string}
+         * @example abc
+         * @example def
+         */
+        function quux () {}
+      
+@@@ case 29 (documented valid)
+
+        /**
+         * @param b
+         * @param a
+         * @returns {string}
+         */
+        function quux () {}
+      
+@@@ findings
+@@@ case 30 (documented valid)
+
+        /**
+         * @abc
+         * @def
+         * @xyz
+         */
+        function quux () {}
+      
+@@@ findings
+@@@ case 31 (documented valid)
+
+        /**
+         * @def
+         * @xyz
+         * @abc
+         */
+        function quux () {}
+      
+@@@ findings
+@@@ case 32 (documented valid)
+
+        /**
+         * @def
+         * @xyz
+         * @abc
+         */
+        function quux () {}
+      
+@@@ findings
+@@@ case 33 (documented valid)
+
+        /** @def */
+        function quux () {}
+      
+@@@ findings
+@@@ case 34 (documented valid)
+
+        /**
+         * @def
+         * @xyz
+         *
+         * @abc
+         */
+        function quux () {}
+      
+@@@ findings
+4:1 Intra-group tags have unexpected whitespace
+@@@ output
+
+        /**
+         * @def
+         * @xyz
+         * @abc
+         */
+        function quux () {}
+      
+@@@ case 35 (documented valid)
+
+        /**
+         * @def
+         * @xyz A multiline
+         * description
+         *
+         * @abc
+         */
+        function quux () {}
+      
+@@@ findings
+4:1 Intra-group tags have unexpected whitespace
+@@@ output
+
+        /**
+         * @def
+         * @xyz A multiline
+         * description
+         * @abc
+         */
+        function quux () {}
+      
+@@@ case 36 (documented valid)
+
+        /**
+         * Foo
+         *
+         * @see https://github.com/jaredhanson/passport/blob/v0.4.1/lib/middleware/authenticate.js#L217
+         *
+         * @param {(
+         *  req: express.Request,
+         *  done: (error: any, user?: any, info?: any) => void
+         * ) => void} verify - callback to excute custom authentication logic
+         */
+      
+@@@ findings
+5:1 Tags are not in the prescribed order: kind, template, param, returns, yields, throws, rejects, see, deprecated
+@@@ output
+
+        /**
+         * Foo
+         *
+         * @param {(
+         *  req: express.Request,
+         *  done: (error: any, user?: any, info?: any) => void
+         * ) => void} verify - callback to excute custom authentication logic
+         * @see https://github.com/jaredhanson/passport/blob/v0.4.1/lib/middleware/authenticate.js#L217
+         *
+         */
+      
+@@@ case 37 (documented valid)
+
+        /**
+         * Constructor.
+         *
+         * @public
+         *
+         * @param {string} [message] - Error message.
+         */
+      
+@@@ findings
+5:1 Tags are not in the prescribed order: kind, template, param, returns, yields, throws, rejects, see, deprecated
+@@@ output
+
+        /**
+         * Constructor.
+         *
+         * @param {string} [message] - Error message.
+         * @public
+         *
+         */
+      
+@@@ case 38 (documented valid)
+
+        /**
+         * @param options.mode The mode to generate the birthdate. Supported modes are `'age'` and `'year'` .
+         *
+         * There are two modes available `'age'` and `'year'`:
+         * - `'age'`: The min and max options define the age of the person (e.g. `18` - `42`).
+         * - `'year'`: The min and max options define the range the birthdate may be in (e.g. `1900` - `2000`).
+         *
+         * Defaults to `year`.
+         *
+         * @example
+         */
+      
+@@@ findings
+@@@ case 39 (documented valid)
+
+        /**
+         * @example
+         * enum Color { Red, Green, Blue }
+         * faker.helpers.enumValue(Color) // 1 (Green)
+         *
+         * enum Direction { North = 'North', South = 'South'}
+         * faker.helpers.enumValue(Direction) // 'South'
+         *
+         * enum HttpStatus { Ok = 200, Created = 201, BadRequest = 400, Unauthorized = 401 }
+         * faker.helpers.enumValue(HttpStatus) // 200 (Ok)
+         *
+         * @since 8.0.0
+         */
+      
+@@@ findings
+3:1 Intra-group tags have unexpected whitespace
+@@@ output
+
+        /**
+         * @example
+         * enum Color { Red, Green, Blue }
+         * faker.helpers.enumValue(Color) // 1 (Green)
+         * enum Direction { North = 'North', South = 'South'}
+         * faker.helpers.enumValue(Direction) // 'South'
+         * enum HttpStatus { Ok = 200, Created = 201, BadRequest = 400, Unauthorized = 401 }
+         * faker.helpers.enumValue(HttpStatus) // 200 (Ok)
+         * @since 8.0.0
+         */
+      
+@@@ case 40 (documented valid)
+
+        /**
+         * @def
+         * @xyz
+         * @abc
+         */
+        function quux () {}
+      
+@@@ findings
+@@@ case 41 (documented valid)
+
+        /**
+         * Summary. (use period)
+         *
+         * Description. (use period)
+         *
+         * @since      1.0.1
+         * @access     private
+         *
+         * @class
+         * @mixes    mixin
+         *
+         * @alias    realName
+         * @memberof namespace
+         *
+         * @see  Function/class relied on
+         * @global
+         *
+         * @fires   eventName
+         * @fires   className#eventName
+         * @listens event:eventName
+         * @listens className~event:eventName
+         *
+         * @param {string} var1 - Description.
+         * @param {string} var2 - Description of optional variable.
+         * @param {string} var3 - Description of optional variable with default variable.
+         * @param {object} objectVar - Description.
+         * @param {string} objectVar.key - Description of a key in the objectVar parameter.
+         *
+         * @yields {string} Yielded value description.
+         *
+         * @returns {string} Return value description.
+         *
+         * @tutorial Asd
+         * @license MIT
+         *
+         * @tutorial Asd
+         * @license MIT
+         *
+         */
+      
+@@@ findings
+7:1 Tags are not in the prescribed order: kind, template, param, returns, yields, throws, rejects, see, deprecated
+@@@ output
+
+        /**
+         * Summary. (use period)
+         *
+         * Description. (use period)
+         *
+         * @param {string} var1 - Description.
+         * @param {string} var2 - Description of optional variable.
+         * @param {string} var3 - Description of optional variable with default variable.
+         * @param {object} objectVar - Description.
+         * @param {string} objectVar.key - Description of a key in the objectVar parameter.
+         * @returns {string} Return value description.
+         * @yields {string} Yielded value description.
+         * @see  Function/class relied on
+         * @since      1.0.1
+         * @access     private
+         * @class
+         * @mixes    mixin
+         * @alias    realName
+         * @memberof namespace
+         * @global
+         * @fires   eventName
+         * @fires   className#eventName
+         * @listens event:eventName
+         * @listens className~event:eventName
+         * @tutorial Asd
+         * @license MIT
+         * @tutorial Asd
+         * @license MIT
+         *
+         */
+      
+@@@ case 42 (documented valid)
+
+        /**
+         * @param b
+         * @param a
+         * @returns {string}
+         * @example abc
+         *
+         * @example def
+         */
+        function quux () {}
+      
+@@@ findings
+6:1 Intra-group tags have unexpected whitespace
+@@@ output
+
+        /**
+         * @param b
+         * @param a
+         * @returns {string}
+         * @example abc
+         * @example def
+         */
+        function quux () {}
+      
+@@@ end

@@ -1,0 +1,598 @@
+# require-yields-check: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), a carriage return written ␍,
+# each run by ESLint 10.12.0 at src/a.ts with the project's options; recorded by EN-083.
+@@@ case 1 (documented invalid)
+
+          /**
+           * @yields
+           */
+          function * quux (foo) {
+
+          }
+      
+@@@ findings
+2:11 JSDoc @yields declaration present but yield expression not available in function.
+@@@ case 2 (documented invalid)
+
+          /**
+           * @yields
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+2:11 JSDoc @yields declaration present but yield expression not available in function.
+@@@ case 3 (documented invalid)
+
+          /**
+           * @next
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+@@@ case 4 (documented invalid)
+
+          /**
+           * @next {SomeType}
+           */
+          function * quux (foo) {
+
+          }
+      
+@@@ findings
+@@@ case 5 (documented invalid)
+
+          /**
+           * @next {SomeType}
+           */
+          function * quux (foo) {
+            yield;
+          }
+      
+@@@ findings
+@@@ case 6 (documented invalid)
+
+          /**
+           * @next {SomeType}
+           */
+          function * quux (foo) {
+            yield 5;
+          }
+      
+@@@ findings
+@@@ case 7 (documented invalid)
+
+          /**
+           * @yield
+           */
+          function * quux (foo) {
+
+          }
+      
+@@@ findings
+@@@ case 8 (documented invalid)
+
+          /**
+           * @yield-returns {Something}
+           */
+          function * quux (foo) {
+            yield;
+          }
+      
+@@@ findings
+@@@ case 9 (documented invalid)
+
+          /**
+           * @yields {undefined} Foo.
+           * @yields {String} Foo.
+           */
+          function * quux () {
+
+            yield foo;
+          }
+        
+@@@ findings
+2:11 Found more than one @yields declaration.
+@@@ case 10 (documented invalid)
+
+          class Foo {
+            /**
+             * @yields {string}
+             */
+            * bar () {
+            }
+          }
+      
+@@@ findings
+3:13 JSDoc @yields declaration present but yield expression not available in function.
+@@@ case 11 (documented invalid)
+
+          /**
+           * @yields
+           */
+          function * quux () {
+
+          }
+      
+@@@ findings
+2:11 JSDoc @yields declaration present but yield expression not available in function.
+@@@ case 12 (documented invalid)
+
+          /**
+           * @next
+           */
+          function * quux () {
+
+          }
+      
+@@@ findings
+@@@ case 13 (documented invalid)
+
+        /**
+         * @yields {string}
+         */
+        function * f () {
+          function * g() {
+            yield 'foo'
+          }
+        }
+      
+@@@ findings
+2:9 JSDoc @yields declaration present but yield expression not available in function.
+@@@ case 14 (documented invalid)
+
+          /**
+           * @yields {Promise<void>}
+           */
+          async function * quux() {}
+      
+@@@ findings
+2:11 JSDoc @yields declaration present but yield expression not available in function.
+@@@ case 15 (documented invalid)
+
+          /**
+           * @yields {Promise<void>}
+           */
+          const quux = async function * () {}
+      
+@@@ findings
+2:11 JSDoc @yields declaration present but yield expression not available in function.
+@@@ case 16 (documented invalid)
+
+          /**
+           * @yields {never} Foo.
+           */
+          function * quux () {
+            yield 5;
+          }
+      
+@@@ findings
+2:11 JSDoc @yields declaration set with "never" but yield expression is present in function.
+@@@ case 17 (documented invalid)
+
+          /**
+           * @next {never}
+           */
+          function * quux (foo) {
+            const a = yield;
+          }
+      
+@@@ findings
+@@@ case 18 (documented valid)
+
+          /**
+           * @yields Foo.
+           */
+          function * quux () {
+
+            yield foo;
+          }
+      
+@@@ findings
+@@@ case 19 (documented valid)
+
+          /**
+           * @yields {string} Foo.
+           */
+          function * quux () {
+
+            yield foo;
+          }
+      
+@@@ findings
+@@@ case 20 (documented valid)
+
+          /**
+           *
+           */
+          function * quux () {
+          }
+      
+@@@ findings
+@@@ case 21 (documented valid)
+
+          /**
+           * @yields {undefined} Foo.
+           */
+          function * quux () {}
+      
+@@@ findings
+@@@ case 22 (documented valid)
+
+          /**
+           * @yields { void } Foo.
+           */
+          function quux () {}
+      
+@@@ findings
+@@@ case 23 (documented valid)
+
+          /**
+           * @yields Foo.
+           * @abstract
+           */
+          function * quux () {
+            throw new Error('must be implemented by subclass!');
+          }
+      
+@@@ findings
+@@@ case 24 (documented valid)
+
+          /**
+           * @yields Foo.
+           * @virtual
+           */
+          function * quux () {
+            throw new Error('must be implemented by subclass!');
+          }
+      
+@@@ findings
+@@@ case 25 (documented valid)
+
+          /**
+           * @yields Foo.
+           * @constructor
+           */
+          function * quux () {
+          }
+      
+@@@ findings
+@@@ case 26 (documented valid)
+
+          /**
+           * @interface
+           */
+          class Foo {
+            /**
+             * @yields {string}
+             */
+            * bar () {
+            }
+          }
+      
+@@@ findings
+@@@ case 27 (documented valid)
+
+          /**
+           * @record
+           */
+          class Foo {
+            /**
+             * @yields {string}
+             */
+            * bar () {
+            }
+          }
+      
+@@@ findings
+6:13 JSDoc @yields declaration present but yield expression not available in function.
+@@@ case 28 (documented valid)
+
+          /**
+           * @yields {undefined} Foo.
+           */
+          function * quux () {
+          }
+      
+@@@ findings
+@@@ case 29 (documented valid)
+
+          /**
+           * @yields {void} Foo.
+           */
+          function * quux () {
+          }
+      
+@@@ findings
+@@@ case 30 (documented valid)
+
+          /**
+           * @yields {never} Foo.
+           */
+          function * quux () {
+          }
+      
+@@@ findings
+@@@ case 31 (documented valid)
+
+          /**
+           * @yields {void} Foo.
+           */
+          function * quux () {
+            yield undefined;
+          }
+      
+@@@ findings
+@@@ case 32 (documented valid)
+
+          /**
+           * @yields {void} Foo.
+           */
+          function * quux () {
+            yield;
+          }
+      
+@@@ findings
+@@@ case 33 (documented valid)
+
+          /**
+           *
+           */
+          function * quux () {
+            yield undefined;
+          }
+      
+@@@ findings
+@@@ case 34 (documented valid)
+
+          /**
+           *
+           */
+          function * quux () {
+            yield;
+          }
+      
+@@@ findings
+@@@ case 35 (documented valid)
+
+          /**
+           * @yields {true}
+           */
+          function * quux () {
+            try {
+              yield true;
+            } catch (err) {
+            }
+            yield;
+          }
+      
+@@@ findings
+@@@ case 36 (documented valid)
+
+          /**
+           * @yields {true}
+           */
+          function * quux () {
+            try {
+            } finally {
+              yield true;
+            }
+            yield;
+          }
+      
+@@@ findings
+@@@ case 37 (documented valid)
+
+          /**
+           * @yields {true}
+           */
+          function * quux () {
+            try {
+              yield;
+            } catch (err) {
+            }
+            yield true;
+          }
+      
+@@@ findings
+@@@ case 38 (documented valid)
+
+          /**
+           * @yields {true}
+           */
+          function * quux () {
+            try {
+              something();
+            } catch (err) {
+              yield true;
+            }
+            yield;
+          }
+      
+@@@ findings
+@@@ case 39 (documented valid)
+
+          /**
+           * @yields {true}
+           */
+          function * quux () {
+            switch (true) {
+            case 'abc':
+              yield true;
+            }
+            yield;
+          }
+      
+@@@ findings
+@@@ case 40 (documented valid)
+
+          /**
+           * @yields {true}
+           */
+          function * quux () {
+            switch (true) {
+            case 'abc':
+              yield;
+            }
+            yield true;
+          }
+      
+@@@ findings
+@@@ case 41 (documented valid)
+
+          /**
+           * @yields {true}
+           */
+          function * quux () {
+            for (const i of abc) {
+              yield true;
+            }
+            yield;
+          }
+      
+@@@ findings
+@@@ case 42 (documented valid)
+
+          /**
+           * @yields {true}
+           */
+          function * quux () {
+            for (const a in b) {
+              yield true;
+            }
+          }
+      
+@@@ findings
+@@@ case 43 (documented valid)
+
+          /**
+           * @yields {true}
+           */
+          function * quux () {
+            for (let i=0; i<n; i+=1) {
+              yield true;
+            }
+          }
+      
+@@@ findings
+@@@ case 44 (documented valid)
+
+          /**
+           * @yields {true}
+           */
+          function * quux () {
+            while(true) {
+              yield true
+            }
+          }
+      
+@@@ findings
+@@@ case 45 (documented valid)
+
+          /**
+           * @yields {true}
+           */
+          function * quux () {
+            do {
+              yield true
+            }
+            while(true)
+          }
+      
+@@@ findings
+@@@ case 46 (documented valid)
+
+          /**
+           * @yields {true}
+           */
+          function * quux () {
+            if (true) {
+              yield;
+            }
+            yield true;
+          }
+      
+@@@ findings
+@@@ case 47 (documented valid)
+
+          /**
+           * @yields {true}
+           */
+          function * quux () {
+            if (true) {
+              yield true;
+            }
+          }
+      
+@@@ findings
+@@@ case 48 (documented valid)
+
+          /**
+           * @yields {true}
+           */
+          function * quux () {
+            var a = {};
+            with (a) {
+              yield true;
+            }
+          }
+      
+@@@ findings
+@@@ case 49 (documented valid)
+
+          /**
+           * @yields {true}
+           */
+          function * quux () {
+            if (true) {
+              yield;
+            } else {
+              yield true;
+            }
+            yield;
+          }
+      
+@@@ findings
+@@@ case 50 (documented valid)
+
+          /**
+           * @next {void}
+           */
+          function * quux (foo) {
+
+          }
+      
+@@@ findings
+@@@ case 51 (documented valid)
+
+          /**
+           * @next {SomeType}
+           */
+          function * quux (foo) {
+            const a = yield;
+          }
+      
+@@@ findings
+@@@ case 52 (documented valid)
+
+          /**
+           * @next {SomeType}
+           */
+          function * quux (foo) {
+            const a = yield 5;
+          }
+      
+@@@ findings
+@@@ case 53 (documented valid)
+
+          /**
+           * @next {never}
+           */
+          function * quux (foo) {
+
+          }
+      
+@@@ findings
+@@@ end
