@@ -192,3 +192,61 @@ Read in each installed package's `package.json` and licence file. A story that p
 | `npm-check-updates` | 23.1.1 | Apache-2.0 | no `NOTICE` file in the package; its author is Tomas Junnonen | EN-109, if code is ported |
 | `knip` | 6.41.0 | ISC | Copyright 2022-2026 Lars Kappert | EN-109, if code or cases are ported |
 | `release-please-action` | v5 | Apache-2.0 (`REF-RELEASE-PLEASE-ACTION`) | — | none: nothing ported |
+
+## Each tool's time before its port
+
+The "before" of every story of F21 (ADR-0069, decision 4), measured on 2026-10-18 between 00:06 and 00:25 local time. **Method**: one call is one process started and waited for, its wall time taken around it by a timer script in the scratch folder (Python's `perf_counter`), stdout and stderr read through pipes; 20 calls each, 5 for a tool over a second; median and mean in milliseconds. Each tool runs as `package.json` or `.claude/settings.json` runs it (`node --harmony-temporal …`, the binaries of `node_modules/.bin`), in a scratch clone of F20's branch so that nothing it writes reaches the repository, except the tools that read the session's transcripts (develop's version, run read-only from the main checkout) and the read-only checks (run in the spike's worktree). The library's tools ran on a copy of the store (`VACUUM INTO`).
+
+### What a call costs before any work
+
+| Program | Median | Mean |
+| --- | --- | --- |
+| `node -e ''`, Node.js starting alone | 28.9 | 29.6 |
+| `cargo --version`, rustup's proxy starting Cargo | 28.4 | 28.6 |
+| a Rust hook binary of `tools/hooks` called by its path (`target/release/library-pages`) | 2.7 | 2.8 |
+| **the same binary through `cargo run --release -q --manifest-path …`**, as `.claude/settings.json` calls it | **49.9** | 50.9 |
+| `npm run -s` of a script that runs `true` | 106.9 | 127.6 |
+| `npm run -s` of a script that runs the same binary through `cargo run` | 149.0 | 166.5 |
+
+**So the launcher costs more than the language.** A Rust tool called through `cargo run` pays about 47 ms of Cargo's start and freshness check on each call, more than Node.js's own start; through `npm run -s` and `cargo run`, about 150 ms before its first line runs. A port gains the milliseconds F21's hypothesis counts on only where the binary is called by its path. ADR-0073, decision 1, has every tool "run by `cargo run --release -q -p <crate>`": the question is the Product Owner's (written in EN-104).
+
+### The tools, story by story
+
+| Story | Tool, as called | Median | Mean | Calls | Notes |
+| --- | --- | --- | --- | --- | --- |
+| EN-104 | `guard-bash.ts`, before every Bash call | 56.1 | 56.7 | 20 | load 3.6 to 5.7 |
+| EN-104 | `track-tool-call.ts`, before every call | 86.6 | 87.3 | 20 |  |
+| EN-104 | `log-tool-call.ts`, after every call | 105.5 | 108.1 | 20 |  |
+| EN-104 | `session-state.ts`, at each session start | 161.1 | 161.9 | 20 |  |
+| EN-104 | the status line, `sh -c` with `git rev-parse` and `status-line.ts`, on a transcript of 217 MB | 169.9 | 177.7 | 20 | a second series; the first had one call at 1.2 s |
+| EN-104 | `limit-agents`, already Rust: by its path, then through `cargo run` | 40.8, 86.6 | 41.9, 88.5 | 20 |  |
+| EN-103 | `backlog-status.ts SP-023 draft`, its formatter run included | 355.2 | 409.3 | 20 |  |
+| EN-103 | `replace-text.ts`, a two-file edit | 60.8 | 61.2 | 20 |  |
+| EN-103 | `branches-clean.ts`, nothing to clean | 285.5 | 292.7 | 20 |  |
+| EN-103 | `records-save.ts`, the transcripts' folder missing | 706.2 | 673.1 | 20 | the real save also copies the transcripts' folder, 1.5 GB today, again at each call: not timed |
+| EN-103 | `check-all.ts`, `epic-check.ts`, `story-finish.ts` | — | — | — | not timed: the first two run `check:all` (about 113 s, note 0023), the third opens and merges a pull request; EN-103 times their own work apart from what they run |
+| EN-105 | `cat docs/references.md`, the whole page | 3.0 | 3.1 | 20 | 189,199 characters |
+| EN-105 | `grep REF-CC-HOOKS docs/references.md` | 4.7 | 4.7 | 20 | the row alone is 1,856 characters |
+| EN-106 | `library-mcp.ts`, start to its answer to `initialize` | 76.8 | 78.6 | 20 | an `rmcp` server built in the trial: 3.5 |
+| EN-106 | inside the running server: `library_search` of three words, `library_get` of a stored page, `library_read` of three sections | 2.3, 14.3, 6.7 | 2.3, 14.5, 6.9 | 20 each |  |
+| EN-106 | `npm run library -- search`, `get`, `read`, `list`, `stats` without npm (`node … library-cli.ts`) | 86.7, 94.7, 87.7, 89.6, 82.3 | 90.4, 98.0, 88.7, 90.3, 83.3 | 20 each |  |
+| EN-107 | `metrics-report.ts` (`npm run metrics`) on the 1.5 GB of transcripts | 8,197 | 8,165 | 5 | load 1.9 to 4.6; an earlier series of 5: 7,510 |
+| EN-107 | `session-report.ts --all` | 5,073 | 5,073 | 5 |  |
+| EN-107 | `session-report.ts` (the current turn) and `--run` | 5,940 and 18,680 | — | 1 each | one call each; `--run` built its cache in that call |
+| EN-107 | `activity.ts` | 248.1 | 255.4 | 20 |  |
+| EN-107 | `turns.ts` | 75.3 | 75.9 | 20 |  |
+| EN-107 | `watch-task.ts` | — | — | — | not timed: it runs for minutes under the Monitor; EN-107 measures its CPU time over one minute |
+| EN-108 | `commitlint --edit` on a message of five lines | 222.4 | 232.2 | 20 |  |
+| EN-108 | `validate-branch-name` | 43.9 | 44.7 | 20 |  |
+| EN-108 | `husky`, the first step of `prepare` | 48.4 | 48.5 | 20 |  |
+| EN-108 | `git commit` of one changed Markdown file, every hook run (lint-staged, commitlint, the shared-files check) | 842 | 985 | 20 | load 7.8 to 13 |
+| EN-108 | `git commit` of one changed TypeScript file, every hook run | 1,023 | 1,103 | 20 |  |
+| EN-109 | `ncu` (`deps:outdated`), network included | 2,142 | 2,135 | 5 |  |
+| EN-109 | `tool-versions.ts` (`deps:tools`), network included | 779 | 794 | 5 |  |
+| EN-109 | `knip` (`deps:unused`) | 598 | 610 | 5 |  |
+| EN-110 | `secretlint README.md`, one file | 123.1 | 126.7 | 20 |  |
+| EN-110 | `lint:secrets`, every tracked file | 911 | 916 | 5 |  |
+| EN-111 | the CI on a pull request into `main`: the `quality` job, `history`, the dependency review | 5 min 9 s to 8 min 29 s, 16 to 19 s, 5 to 8 s | — | 3 runs | GitHub's own timings, runs of 2026-10-16 and 2026-10-17 |
+| EN-112 | the release on `main`: `release-please`, the test report, the site | 16 s, 5 s, 56 s | — | 1 run | 2026-10-14, the release of 0.2.0 |
+
+EN-102 has no "before": a use is not recorded today; its measure is the time one record adds.
