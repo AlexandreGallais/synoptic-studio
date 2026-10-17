@@ -8,7 +8,7 @@ use oxc_ast::ast::{Expression, LogicalExpression, LogicalOperator};
 use oxc_semantic::AstNode;
 use oxc_span::{ContentEq, GetSpan, Span};
 
-use crate::expressions::{has_comment_in, text};
+use crate::expressions::{has_comment_in, text, unwrapped};
 use crate::finding::{Finding, Fix};
 use crate::rules::Rule;
 use crate::source::Source;
@@ -18,17 +18,6 @@ pub struct NoDuplicateLogicalOperands;
 
 /// The rule's message.
 const MESSAGE: &str = "This operand duplicates the left operand.";
-
-/// An expression without its TypeScript wrappers, `as`, `satisfies` and `!`.
-fn unwrapped<'s, 'a>(expression: &'s Expression<'a>) -> &'s Expression<'a> {
-    match expression {
-        Expression::TSAsExpression(inner) => unwrapped(&inner.expression),
-        Expression::TSSatisfiesExpression(inner) => unwrapped(&inner.expression),
-        Expression::TSNonNullExpression(inner) => unwrapped(&inner.expression),
-        Expression::TSTypeAssertion(inner) => unwrapped(&inner.expression),
-        other => other,
-    }
-}
 
 /// Whether an expression is a plain reference: a name, `this`, `super`, or a member read
 /// through one with a static key or a name, `this` or a literal as key, no optional chain.
