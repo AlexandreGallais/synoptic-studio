@@ -78,7 +78,7 @@ In delivery order, written on 2026-10-17 when the Product Owner started F19's ru
 | [EN-080](../stories/E17-F19-EN-080-unicorn-objects-strings-naming-misc.md) | Enabler | Unicorn's objects, strings, naming and miscellaneous rules in Rust | done |
 | [EN-081](../stories/E17-F19-EN-081-unicorn-modules-platform-promises.md) | Enabler | Unicorn's modules, platform and promises rules in Rust | done |
 | [EN-082](../stories/E17-F19-EN-082-unicorn-dom-and-web.md) | Enabler | Unicorn's DOM and web rules in Rust | done |
-| [EN-083](../stories/E17-F19-EN-083-jsdoc-rules-in-rust.md) | Enabler | JSDoc's rules in Rust | ready |
+| [EN-083](../stories/E17-F19-EN-083-jsdoc-rules-in-rust.md) | Enabler | JSDoc's rules in Rust | done |
 | [EN-084](../stories/E17-F19-EN-084-other-plugin-rules-in-rust.md) | Enabler | The other plugins' rules in Rust | ready |
 | [EN-094](../stories/E17-F19-EN-094-adrs-reviewed-with-the-product-owner.md) | Enabler | The ADRs reviewed with the Product Owner, the review applied | done |
 | [EN-093](../stories/E17-F19-EN-093-rules-and-format-chosen-by-the-agent.md) | Enabler | Every rule and tool reviewed by the agent for its own work | ready |
