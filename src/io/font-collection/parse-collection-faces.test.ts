@@ -2,14 +2,14 @@ import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import {
-  HELVETICA_COLLECTION_PATH,
   OPEN_TYPE_VERSION,
+  SHARED_SANS_TABLES,
   TRUE_TYPE_VERSION,
   fontCollection,
   fontFile,
   joinedParts,
-  partsDigest,
-  systemFont,
+  sharedTableCollection,
+  tablesFile,
 } from "../../../tests";
 
 import { parseCollectionFaces } from "./parse-collection-faces";
@@ -28,9 +28,6 @@ const FACE = fc.record({
   tables: fc.dictionary(fc.stringMatching(/^[a-z]{4}$/u), TABLE_BODY, { maxKeys: 4, minKeys: 1 }),
   version: fc.constantFrom(TRUE_TYPE_VERSION, OPEN_TYPE_VERSION),
 });
-
-/** Helvetica of macOS, a collection of 6 faces, read where the machine has it. */
-const HELVETICA = systemFont(HELVETICA_COLLECTION_PATH);
 
 describe("parseCollectionFaces (REF-OT-OTFF)", () => {
   it("[F17.AC4] gives each face of a collection as its own file, in the collection's order", () => {
@@ -59,28 +56,21 @@ describe("parseCollectionFaces (REF-OT-OTFF)", () => {
     expect(parseCollectionFaces(file)).toEqual([[file]]);
   });
 
-  it.skipIf(HELVETICA === undefined)(
-    "[F17.AC10] gives Helvetica.ttc's 6 faces byte for byte as collectionFaceToFile wrote them",
-    () => {
-      // Length and SHA-256 of each face as `collectionFaceToFile` wrote it before US-052, read on
-      // macOS 27's Helvetica.ttc (2 338 064 bytes) on 2026-10-16.
-      const faces = parseCollectionFaces(HELVETICA ?? new Uint8Array());
+  it("[F17.AC10] [F18.AC19] gives each face of a collection sharing Inter's tables as its own file", () => {
+    // Inter's tables padded take 411 640 − 284 = 411 356 bytes; its name (1 948) and OS/2 (96)
+    // replaced, each face holds 409 312 bytes of shared tables, 96 of OS/2 and its name of 88, 82
+    // (padded to 84) or 86 (padded to 88): with its directory of 284, 409 780, 409 776, 409 780.
+    const faces = SHARED_SANS_TABLES;
+    const read = parseCollectionFaces(sharedTableCollection(TRUE_TYPE_VERSION, faces));
 
-      expect(
-        faces.map((parts) => [
-          parts.reduce((sum, part) => sum + part.length, 0),
-          partsDigest(parts),
-        ]),
-      ).toEqual([
-        [416_420, "46be68e81b108459a4e5358eddc5caefca2aac7b10b5f7da710520dab4f4486a"],
-        [437_820, "1cce2b1746ac2d78a5e067040d2df303b711dd617dcfdef63b39df63d7c15379"],
-        [660_564, "9d2d4d1a5d517bbe16a4006cbae77def00e94c076aed5211bc5cdfb27d372f53"],
-        [355_044, "67563bf396bd908d9606535f933bd852a6c3762aea70d2b7433338fed55ceb49"],
-        [319_036, "b6d030e869c822f8df4083d4c32082349465bdd095f79956a696874477557f59"],
-        [325_764, "6e443176752ddf7760cf94daea14cd35f5433d948db8c7078fff497f128354f7"],
-      ]);
-    },
-  );
+    expect(read.map((parts) => parts.reduce((sum, part) => sum + part.length, 0))).toEqual([
+      409_780, 409_776, 409_780,
+    ]);
+
+    expect(read.map((parts) => joinedParts(parts))).toEqual(
+      faces.map((tables) => tablesFile(TRUE_TYPE_VERSION, tables)),
+    );
+  });
 
   test.prop({ faces: fc.array(FACE, { maxLength: 3, minLength: 1 }) })(
     "[F17.AC4] gives back the very faces a collection is made of",

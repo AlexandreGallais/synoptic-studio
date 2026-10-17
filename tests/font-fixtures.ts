@@ -4,20 +4,17 @@
 // library.
 
 import { createHash } from "node:crypto";
-import { existsSync, readFileSync } from "node:fs";
-
-/** Arial 5.01 of macOS, the font of the cross-check of `DERIV-text-width`. */
-export const ARIAL_PATH = "/System/Library/Fonts/Supplemental/Arial.ttf";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 
 /**
- * A font file of the machine, if it has it: tests that need one skip without it.
- *
- * @param path - where the file sits
- * @returns its bytes; undefined when the machine has no such file
+ * Inter Regular 4.1, the release's `extras/ttf/Inter-Regular.ttf` unchanged (`REF-INTER-RELEASE`),
+ * with its licence beside it in `inter-license.txt` (`REF-INTER-LICENSE`): a real font file that
+ * every machine reads (EN-062).
  */
-export function systemFont(path: string): Uint8Array | undefined {
-  return existsSync(path) ? readFileSync(path) : undefined;
-}
+export const INTER_REGULAR_FILE: Uint8Array = readFileSync(
+  join(import.meta.dirname, "inter-regular.ttf"),
+);
 
 /** `sfntVersion` of a font with TrueType outlines (`REF-OT-OTFF`). */
 export const TRUE_TYPE_VERSION = 0x00_01_00_00;
@@ -175,9 +172,6 @@ export function fontFile(
   ]);
 }
 
-/** Helvetica of macOS, a collection (`.ttc`) of 6 faces, the font of US-046's examples. */
-export const HELVETICA_COLLECTION_PATH = "/System/Library/Fonts/Helvetica.ttc";
-
 /** `sfntVersion` of a TrueType font as Apple's systems tag it, `true` (`REF-APPLE-TT-SCALER`). */
 export const APPLE_TRUE_TYPE_VERSION = 0x74_72_75_65;
 
@@ -204,14 +198,15 @@ export function fontCollection(faces: readonly Uint8Array[]): Uint8Array {
       (unused, record) => DIRECTORY.headerSize + DIRECTORY.recordSize * record + layout.offsetField,
     );
 
-    return fields.reduce<number[]>(
-      (bytes, field) => [
-        ...bytes.slice(0, field),
-        ...uint32(view.getUint32(field) + (bases[index] ?? 0)),
-        ...bytes.slice(field + layout.offsetSize),
-      ],
-      [...face],
-    );
+    // A local copy shifted in place: a fold spreading the bytes copied them at every field.
+    const copy = Uint8Array.from(face);
+    const shifted = new DataView(copy.buffer);
+
+    for (const field of fields) {
+      shifted.setUint32(field, view.getUint32(field) + (bases[index] ?? 0));
+    }
+
+    return [...copy];
   });
 
   return Uint8Array.from([
@@ -224,12 +219,9 @@ export function fontCollection(faces: readonly Uint8Array[]): Uint8Array {
   ]);
 }
 
-/** Apple Color Emoji of macOS, a collection of 2 faces whose `sbix` table is 191 MB (US-052). */
-export const APPLE_COLOR_EMOJI_PATH = "/System/Library/Fonts/Apple Color Emoji.ttc";
-
 /**
- * The parts of a face joined in their order into its file, as the playground joins them with a
- * `Blob`: small files only, its bytes spread.
+ * The parts of a face joined in their order into its file, as `facePartsToFile` joins them but
+ * written apart from it, to check it: small files only, its bytes spread.
  *
  * @param parts - the face's parts
  * @returns its file

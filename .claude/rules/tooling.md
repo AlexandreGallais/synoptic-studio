@@ -17,6 +17,7 @@ paths:
 - A test that reads files is mutation-checked once: break its input on purpose and see it fail.
 - A check tool is always given explicit targets (folders and files by name, never `.` nor `**/*`); a new tracked folder joins the targets in `package.json`, or `tests/check-targets.test.ts` fails (EN-045).
 - A tooling change that makes existing files invalid is committed together with their fix.
+- **Every new script, hook or agent tool is written in Rust** (E17, 2026-10-16): a crate of `tools/` without a crates.io dependency, its tests beside it, its name added to `check:rust` in `package.json` (`cargo fmt --check`, `clippy -D warnings`, `cargo test`). The TypeScript ones below may still be edited until F19 rewrites them.
 - Hooks in `.claude/hooks/` and `scripts/` run with `node` (type stripping): relative imports name the `.ts` file (lint scope `node-run`), exported pure functions tested, side effects under `if (import.meta.main)`. Temporal needs `node --harmony-temporal` on Node.js 24.
 - Stylelint is planned for SCSS but not installed (`braces` advisory GHSA-vfj7-8cjw-p6xm): see `docs/tooling/versions-and-security.md`.
 - The `guard-bash` hook skips the bodies of here-documents (`<<'EOF' … EOF`), which are data; a guarded command written elsewhere on the line (inside `-m "…"`) is still read: write such text in a here-document.
@@ -29,3 +30,4 @@ paths:
 - No force push on a feature branch, even with lease: rebase the story branch, or merge `develop` into the feature branch (E15, a ruleset bypass).
 - The shell is zsh: an unquoted `$ids` holding several lines is **one** word, so `for id in $ids` runs once with all of them (2026-10-13: a cleanup loop sent malformed requests for 7 minutes). Read lines with `while read -r id; do …; done <<< "$ids"` in a `bash` script, never hide the errors of a loop (`2>/dev/null`), and make every loop progress or stop: a round that changes nothing ends it and prints the error.
 - Never poll a subagent with a background loop (`until grep … sleep`): its end arrives as a notification on its own, and its transcript may never hold the string looked for (2026-10-13: four loops left running after the stop). Before a stop message, stop every background task still running (TaskStop).
+- A test running `git` in a temporary repository removes every `GIT_*` variable from its commands: the `pre-push` hook sets `GIT_DIR`, and `git init --bare` run under it turned the real repository bare (EN-050, `tools/shared-files/tests/shared.rs`).

@@ -38,4 +38,4 @@ paths:
 - happy-dom: a `<select>` moved from a `DOMParser` document loses its `selected` option: choose the value again in the test (US-031).
 - Never change the float behavior of a shared math function for a new caller: `npm run golden:check` guards the results of E01 and E14 bit for bit, and a 10⁻¹⁴ drift fails it; add a named function instead (`nonNegativeRemainder` beside `modulo`, EN-038).
 - happy-dom keeps the line break right after `<textarea>` that a browser drops: the page's text opens with an empty first line in tests; a test that needs the content types it (US-051).
-- A worker never runs `npm run golden:write`: it writes `.git/metrics/golden.json`, shared by every worktree, and would make the check compare against its own branch; only the main thread writes it, before a refactor (F16).
+- A worker never runs `npm run golden:write`: it writes `.git/metrics/golden.json`, shared by every worktree, and would make the check compare against its own branch; only the main thread writes it, before a refactor (F16); it refuses in a worktree (EN-052).

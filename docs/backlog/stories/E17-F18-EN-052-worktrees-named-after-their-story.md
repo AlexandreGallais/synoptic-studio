@@ -3,7 +3,7 @@ id: EN-052
 epic: E17
 feature: F18
 title: Worktrees named after their story, commands that fit them
-status: ready
+status: done
 points: 2
 ---
 
@@ -22,5 +22,11 @@ Name each worktree after its story and answer at once a command that a worktree 
 
 One task = one commit, referenced as `EN-052.Tn`.
 
-- [ ] T1 — `worktree:new` and its test; `branches:clean` prunes worktrees (1 h)
-- [ ] T2 — `guard-bash` hints in worktrees; `golden:write` refused in a worktree; tests (1 h)
+- [x] T1 — `worktree:new` and its test; `branches:clean` prunes worktrees (1 h)
+- [x] T2 — `guard-bash` hints in worktrees; `golden:write` refused in a worktree; tests (1 h)
+
+## For the main thread
+
+- Technical choices made by the worker: the branch type follows the story's kind (`US` and `VAL` `feat`, `EN` `chore`, `NAM` `refactor`, `SP`, `CHK`, `AUD`, `REV` and `RET` `docs`), `--type` overrides it; an epic's own story (no feature in its file name) starts from `origin/develop`; the story file is read from the checkout the tool runs in, so a story added on a feature branch only needs that branch checked out or its file on `develop`.
+- Husky writes the hooks path as `.husky/_`, relative, in the configuration shared by every worktree: the main checkout's was absolute (`<main>/.husky/_`), so every worktree ran the main checkout's hooks. The first `worktree:new` turns it relative and runs Husky in every worktree without `.husky/_` — those running at that moment included — so each runs the hooks of its own branch from then on.
+- The guard answers only when the call's working directory is a worktree (Claude Code's worktree isolation). A worker started without isolation, whose Bash calls start in the main checkout, still needs `cd <worktree> && git …`: it is allowed there, since denying it would leave only `git -C`.

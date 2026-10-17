@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { markdownReport, reportRows, sessionFigures, terminalReport } from "./session-report";
+import {
+  markdownReport,
+  reportRows,
+  reportedEvents,
+  sessionFigures,
+  terminalReport,
+} from "./session-report";
 
 /** Two requests and one failed tool call, 10 minutes apart. */
 const EVENTS = {
@@ -72,5 +78,49 @@ describe("session report", () => {
 
   it("frames the terminal report", () => {
     expect(terminalReport(figures)).toContain("Session report");
+  });
+});
+
+/**
+ * Transcript line of a request: an answer and its tokens.
+ *
+ * @param id - message id
+ * @param time - ISO 8601 timestamp
+ * @param stop - why the answer stopped: `end_turn` ends the agent's turn
+ * @returns one JSON line, 1 input token and 10 written
+ */
+function answer(id: string, time: string, stop: string): string {
+  return `{"type": "assistant", "sessionId": "s", "timestamp": "${time}", "message": {"id": "${id}", "stop_reason": "${stop}", "usage": {"input_tokens": 1, "output_tokens": 10}}}`;
+}
+
+describe("reportedEvents", () => {
+  // Three turns, each opened by a prompt of the Product Owner and closed by the agent; a subagent
+  // answered during the first one.
+  const main = [
+    '{"type": "user", "timestamp": "2026-10-15T08:00:00Z", "message": {"content": "first"}}',
+    answer("a", "2026-10-15T08:01:00Z", "end_turn"),
+    '{"type": "user", "timestamp": "2026-10-15T09:00:00Z", "message": {"content": "second"}}',
+    answer("b", "2026-10-15T09:10:00Z", "end_turn"),
+    '{"type": "user", "timestamp": "2026-10-15T18:00:00Z", "message": {"content": "third"}}',
+    answer("c", "2026-10-15T18:00:02Z", "end_turn"),
+  ].join("\n");
+  const subagent = answer("s1", "2026-10-15T08:00:30Z", "tool_use");
+
+  it("[F18.AC9] counts every turn of the session with --all, the subagents' requests included", () => {
+    const figures = sessionFigures(reportedEvents([main, subagent], true), []);
+
+    // Requests a, s1, b and c: 4 × 11 tokens; from 08:00:30 to 18:00:02.
+    expect(figures.requests).toBe(4);
+    expect(figures.inputTokens + figures.outputTokens).toBe(44);
+    expect(figures.wallMs).toBe(35_972_000);
+  });
+
+  it("counts the current turn only without --all: the 2.8 s seen for 10 h 40 of work", () => {
+    const figures = sessionFigures(reportedEvents([main, subagent], false), []);
+
+    // Request c alone, from the prompt at 18:00:00: one request, no duration.
+    expect(figures.requests).toBe(1);
+    expect(figures.wallMs).toBe(0);
+    expect(reportedEvents([], false)).toEqual({ calls: [], requests: [] });
   });
 });

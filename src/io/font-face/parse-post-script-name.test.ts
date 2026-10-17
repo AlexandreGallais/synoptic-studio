@@ -2,21 +2,18 @@ import { describe, expect, it } from "vitest";
 
 import {
   ENGLISH_US,
-  HELVETICA_COLLECTION_PATH,
+  SHARED_SANS_TABLES,
   TRUE_TYPE_VERSION,
   WINDOWS_PLATFORM,
   familyNameTable,
   fontFile,
   nameTable,
-  systemFont,
+  sharedTableCollection,
   testFontTables,
 } from "../../../tests";
-import { parseCollectionOffsets } from "../font-tables";
+import { parseCollectionOffsets } from "../font-collection";
 
 import { parsePostScriptName } from "./parse-post-script-name";
-
-/** Helvetica of macOS, a collection of 6 faces, read where the machine has it. */
-const HELVETICA = systemFont(HELVETICA_COLLECTION_PATH);
 
 describe("parsePostScriptName (REF-OT-NAME)", () => {
   it("[F17.AC4] reads name ID 6, not the family", () => {
@@ -36,28 +33,20 @@ describe("parsePostScriptName (REF-OT-NAME)", () => {
     expect(parsePostScriptName(file, 0)).toBe("Arial-BoldMT");
   });
 
-  it.skipIf(HELVETICA === undefined)(
-    "[F17.AC10] names each face of Helvetica.ttc, read in the collection",
-    () => {
-      // Each face read at its directory, 48, 380, 696, 1028, 1344 and 1644 (US-046), no face's
-      // file written (US-052).
-      const file = HELVETICA ?? new Uint8Array();
-      const offsets = parseCollectionOffsets(
-        new DataView(file.buffer, file.byteOffset, file.byteLength),
-      );
+  it("[F17.AC10] [F18.AC19] names each face of a collection sharing Inter's tables, read in the collection", () => {
+    // Each face read at its directory, 24, 308 and 592 (12 + 3 × 4, then 284 bytes each), no
+    // face's file written (US-052).
+    const file = sharedTableCollection(TRUE_TYPE_VERSION, SHARED_SANS_TABLES);
+    const offsets = parseCollectionOffsets(new DataView(file.buffer));
 
-      expect(offsets).toEqual([48, 380, 696, 1028, 1344, 1644]);
+    expect(offsets).toEqual([24, 308, 592]);
 
-      expect(offsets.map((offset) => parsePostScriptName(file, offset))).toEqual([
-        "Helvetica",
-        "Helvetica-Bold",
-        "Helvetica-Oblique",
-        "Helvetica-BoldOblique",
-        "Helvetica-Light",
-        "Helvetica-LightOblique",
-      ]);
-    },
-  );
+    expect(offsets.map((offset) => parsePostScriptName(file, offset))).toEqual([
+      "SharedSans-Regular",
+      "SharedSans-Bold",
+      "SharedSans-Italic",
+    ]);
+  });
 
   it.each([
     {

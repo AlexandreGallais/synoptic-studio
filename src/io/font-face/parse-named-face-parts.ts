@@ -1,4 +1,4 @@
-import { collectionFaceToParts, parseCollectionOffsets } from "../font-tables";
+import { collectionFaceToParts, parseCollectionOffsets } from "../font-collection";
 
 import { parsePostScriptName } from "./parse-post-script-name";
 

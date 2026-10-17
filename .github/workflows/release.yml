@@ -1,9 +1,10 @@
-# Versioning, changelog and documentation site (docs/tooling/releases.md).
+# Versioning, changelog and documentation site (docs/tooling/releases.md, ADR-0067): the release
+# pull request lives on develop, main only tags and publishes, so main holds no commit develop lacks.
 name: Release
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   workflow_dispatch:
 
 permissions:
@@ -11,7 +12,28 @@ permissions:
   pull-requests: write
 
 jobs:
+  # On develop: opens or updates the release pull request (`chore(develop): release x.y.z`), never a
+  # release (`REF-RELEASE-PLEASE-UPGRADE`). The Product Owner merges it when they ask for a release,
+  # before the pull request develop → main. Nothing opens while a merged one waits for its tag
+  # (`REF-RELEASE-PLEASE-SOURCE`).
+  release-pr:
+    if: github.ref_name == 'develop'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: googleapis/release-please-action@v5
+        with:
+          # Personal access token (docs/tooling/releases.md).
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+          target-branch: develop
+          skip-github-release: true
+
+  # On main: tags and publishes the release pull request merged into develop, now held by main; opens
+  # no pull request. Its target branch is develop, where release-please looks for the merged release
+  # pull request whose merge commit it tags (`REF-RELEASE-PLEASE-SOURCE`, `REF-RELEASE-PLEASE-DESIGN`).
   release-please:
+    if: github.ref_name == 'main'
     runs-on: ubuntu-latest
     outputs:
       releases_created: ${{ steps.release.outputs.releases_created }}
@@ -20,17 +42,11 @@ jobs:
       - id: release
         uses: googleapis/release-please-action@v5
         with:
-          # Personal access token: pull requests it updates trigger the CI, whose skipped jobs report
-          # the required checks (docs/tooling/releases.md).
           token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
-      # The release pull request merges itself (option B) once its CI has reported: every job skipped
-      # (ADR-0038). A merge commit, the only method on main, keeps develop an ancestor of main.
-      - if: steps.release.outputs.prs_created == 'true'
-        run: gh pr merge "${{ fromJSON(steps.release.outputs.pr).number }}" --auto --merge --repo "${{ github.repository }}"
-        env:
-          GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+          target-branch: develop
+          skip-github-pull-request: true
 
   # Attaches to the GitHub release the test results of the released code (ADR-0027): the report of
   # the CI of the last pull request merged into main, not a new run (ADR-0038).

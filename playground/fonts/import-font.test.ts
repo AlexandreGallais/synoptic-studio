@@ -2,7 +2,8 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { ARIAL_PATH, fontCollection, systemFont, testFaceFile } from "../../tests";
+import { facePartsToFile } from "../../src";
+import { TRUE_TYPE_VERSION, fontCollection, secondFamilyFile, testFaceFile } from "../../tests";
 import {
   chooseFiles,
   chooseOption,
@@ -18,8 +19,8 @@ import {
 
 import type { TestFace } from "../../tests";
 
-/** Arial 5.01 of macOS, read where the machine has it. */
-const ARIAL = systemFont(ARIAL_PATH);
+/** A second family built from Inter's tables, its units per em 1024: twice Inter's measures. */
+const OTHER_GROTESK = secondFamilyFile("Other Grotesk", TRUE_TYPE_VERSION);
 
 /** The test font named Test Sans, regular, installable. */
 const TEST_SANS: TestFace = { family: "Test Sans", fsType: 0, isItalic: false, weightClass: 400 };
@@ -87,30 +88,40 @@ function typeContent(content: string): void {
 /** What a browser says when it cannot allocate a buffer, a file too large to hold. */
 const ALLOCATION_FAILED = "RangeError: Array buffer allocation failed";
 
+/** The library, its join of a face's parts typed: the other functions are spread as they are. */
+type JoiningLibrary = Readonly<Record<string, unknown>> & {
+  /** Joins a face's parts into its file. */
+  readonly facePartsToFile: typeof facePartsToFile;
+};
+
+// The library's join of a face's parts, wrapped in a spy that a test can make refuse.
+vi.mock("../../src", async (importOriginal) => {
+  const library = await importOriginal<JoiningLibrary>();
+
+  return { ...library, facePartsToFile: vi.fn(library.facePartsToFile) };
+});
+
 /**
- * Makes the browser refuse to join a face of several parts — a face of a collection — as when
+ * Makes the editor refuse to join a face of several parts — a face of a collection — as when
  * its file is too large to hold, a face of one part joined as before.
  */
 function refuseCollectionJoins(): void {
-  vi.stubGlobal(
-    "Blob",
-    new Proxy(Blob, {
-      construct(page, [parts]: readonly (readonly BlobPart[])[]): object {
-        if (parts !== undefined && parts.length > 1) {
-          throw new RangeError("Array buffer allocation failed");
-        }
+  const join = vi.mocked(facePartsToFile);
+  const joined = join.getMockImplementation() ?? facePartsToFile;
 
-        const blob: unknown = Reflect.construct(page, [parts]);
+  join.mockImplementation((parts) => {
+    if (parts.length > 1) {
+      throw new RangeError("Array buffer allocation failed");
+    }
 
-        return blob instanceof page ? blob : {};
-      },
-    }),
-  );
+    return joined(parts);
+  });
 }
 
 describe("Import a font (US-036)", () => {
   afterEach(() => {
     vi.unstubAllGlobals();
+    vi.mocked(facePartsToFile).mockReset();
   });
 
   beforeEach(() => {
@@ -213,20 +224,23 @@ describe("Import a font (US-036)", () => {
     expect(readValue("text-font")).toBe("Test Sans");
   });
 
-  it.skipIf(ARIAL === undefined)(
-    "[F15.AC1] measures Hello World in Arial 16 with Arial's metrics, its kerning included",
+  it(
+    "[F15.AC1] [F18.AC19] measures Hello World at 16 in a second family with its metrics, its kerning included",
+    // Inter's tables read: about 1 s alone, 20 s holds a loaded pre-push run.
+    { timeout: 20_000 },
     async () => {
       await importFiles(
-        [new File([new Uint8Array(ARIAL ?? [])], "Arial.ttf")],
-        "Arial 400 imported.",
+        [new File([new Uint8Array(OTHER_GROTESK)], "OtherGrotesk.ttf")],
+        "Other Grotesk 400 imported.",
       );
 
       typeValue("text-size", "16");
       typeContent("Hello World");
 
-      // 82.6875 without kerning (US-036); Arial's kerning narrows it to 82.3984375. Inter would
-      // give 87.5546875 × 19.359375.
-      expect(readBlock()).toEqual({ height: 18.3984375, width: 82.3984375 });
+      // Inter's advances 11 279 units, its kerning W o −104 and r l +32: 11 207 × 16 / 1024 =
+      // 175.109375 (176.234375 without kerning); a line (1984 + 494) × 16 / 1024 = 38.71875.
+      // Inter itself gives 87.5546875 × 19.359375.
+      expect(readBlock()).toEqual({ height: 38.71875, width: 175.109375 });
 
       expect([...selectChoice("text-weight").options].map((option) => option.value)).toEqual([
         "400",

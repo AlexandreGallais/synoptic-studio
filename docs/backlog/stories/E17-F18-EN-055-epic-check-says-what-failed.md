@@ -3,7 +3,7 @@ id: EN-055
 epic: E17
 feature: F18
 title: "`epic:check` says what failed; the golden check at push"
-status: ready
+status: done
 points: 2
 ---
 
@@ -22,5 +22,5 @@ Make the epic's full check name what failed, and catch a drift of results at the
 
 One task = one commit, referenced as `EN-055.Tn`.
 
-- [ ] T1 — `epic:check`: failing tests, refusals apart, lost calls; tests (1 h)
-- [ ] T2 — `golden:check` in the pre-push; `metrics --since` (1 h)
+- [x] T1 — `epic:check`: failing tests, refusals apart, lost calls; tests (1 h)
+- [x] T2 — `golden:check` in the pre-push; `metrics --since` (1 h)

@@ -3,7 +3,7 @@ id: EN-058
 epic: E17
 feature: F18
 title: A mutation runner as a tool
-status: ready
+status: done
 points: 1
 ---
 
@@ -19,4 +19,8 @@ Make the mutation runner used by the audits a tool, since Stryker is still block
 
 One task = one commit, referenced as `EN-058.Tn`.
 
-- [ ] T1 — The tool, its test and its line in `docs/tooling/agent-tools.md` (2 h)
+- [x] T1 — The tool, its test and its line in `docs/tooling/agent-tools.md` (2 h)
+
+## For the main thread
+
+Tried on `src/math/arithmetic/is-span-within.ts` with the default command: 4 caught, 0 survived, in 8 min — `vitest related` reaches most of the suite through the barrels. `-- npx vitest run {test}` runs only the file's own test file.

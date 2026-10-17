@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  ARIAL_PATH,
   HELLO_TEXT,
+  INTER_REGULAR_FILE,
   NO_KERNING,
   OPEN_TYPE_VERSION,
   TRUE_TYPE_VERSION,
@@ -15,18 +15,21 @@ import {
   os2Table,
   pairPosFormat1,
   pairPosFormat2,
-  systemFont,
   testFontTables,
 } from "../../../tests";
-import { pairKerning, shownLines, textBlock } from "../../model";
+import {
+  DEFAULT_FONT,
+  MEASURED_BLOCKS,
+  blockCharacters,
+  pairKerning,
+  shownLines,
+  textBlock,
+} from "../../model";
 
 import { parseFontMetrics } from "./parse-font-metrics";
 
-/** Arial 5.01 of macOS, read where the machine has it (`DERIV-text-width`, cross-check). */
-const ARIAL = systemFont(ARIAL_PATH);
-
 /** The characters of "Hello World" and "AVATAR": H e l o space W r d, A V T R. */
-const ARIAL_CHARACTERS = [72, 101, 108, 111, 32, 87, 114, 100, 65, 86, 84, 82];
+const HELLO_CHARACTERS = [72, 101, 108, 111, 32, 87, 114, 100, 65, 86, 84, 82];
 
 /** A, B, C, a, and Z, which the test font does not map. */
 const CHARACTERS = [65, 66, 67, 97, 90];
@@ -124,69 +127,75 @@ describe("parseFontMetrics (REF-OT-OTFF)", () => {
     expect(pairKerning(kerning, 65, 67)).toBe(-20);
   });
 
-  it.skipIf(ARIAL === undefined)(
-    "[F05.AC1] reads Arial's advances and kerning pairs as the derivation's cross-check",
-    () => {
-      const metrics = parseFontMetrics(ARIAL ?? new Uint8Array(), ARIAL_CHARACTERS);
-      const kerning = metrics?.kerning ?? NO_KERNING;
+  it("[F18.AC19] reads Inter Regular of the test fixtures as inter-metrics.json holds it", () => {
+    const regular = DEFAULT_FONT.faces.find((face) => face.weight === 400 && !face.isItalic);
 
-      // DERIV-text-width, cross-check: read from the file's tables by the spike's script.
-      expect(metrics).toMatchObject({
-        advances: {
-          32: 569,
-          72: 1479,
-          87: 1933,
-          100: 1139,
-          101: 1139,
-          108: 455,
-          111: 1139,
-          114: 682,
-        },
-        unitsPerEm: 2048,
-      });
+    // The same file, read for the same characters, gives the shipped metrics field for field; the
+    // face is looked for first, so that two missing values never compare equal.
+    expect(regular).toBeDefined();
 
-      expect(pairKerning(kerning, 87, 111)).toBe(-37);
+    expect(parseFontMetrics(INTER_REGULAR_FILE, blockCharacters(MEASURED_BLOCKS))).toEqual(
+      regular?.metrics,
+    );
+  });
 
-      // A V, V A, A T, T A: −152 each.
-      expect([
-        pairKerning(kerning, 65, 86),
-        pairKerning(kerning, 86, 65),
-        pairKerning(kerning, 65, 84),
-        pairKerning(kerning, 84, 65),
-      ]).toEqual([-152, -152, -152, -152]);
-    },
-  );
+  it("[F05.AC1] reads Inter Regular's advances and kerning pairs from its file", () => {
+    const metrics = parseFontMetrics(INTER_REGULAR_FILE, HELLO_CHARACTERS);
+    const kerning = metrics?.kerning ?? NO_KERNING;
 
-  it.skipIf(ARIAL === undefined)(
-    "[F14.AC5] reads Arial's cap height from its OS/2 table of version 3",
-    () => {
-      // DERIV-text-box, cross-check: sCapHeight 1467.
-      expect(parseFontMetrics(ARIAL ?? new Uint8Array(), [72])?.capHeight).toBe(1467);
-    },
-  );
+    // Read again from the file's hmtx and GPOS tables with fontTools 4.60.2
+    // (`REF-INTER-REGULAR-FILE`): H 1522, e 1194, l 496, o 1228, space 576, W 2018, r 771,
+    // d 1254; W o −104, r l +32.
+    expect(metrics).toMatchObject({
+      advances: {
+        32: 576,
+        72: 1522,
+        87: 2018,
+        100: 1254,
+        101: 1194,
+        108: 496,
+        111: 1228,
+        114: 771,
+      },
+      unitsPerEm: 2048,
+    });
 
-  it.skipIf(ARIAL === undefined)(
-    "[F05.AC3] measures 'Hello World' and 'Hello' / 'World' in Arial 16 read from its file",
-    () => {
-      const metrics = parseFontMetrics(ARIAL ?? new Uint8Array(), ARIAL_CHARACTERS);
-      const blocks = ["Hello World", "Hello\nWorld"].map((content) =>
-        metrics === undefined
-          ? undefined
-          : textBlock(
-              metrics,
-              { ...HELLO_TEXT, content },
-              shownLines(metrics, { ...HELLO_TEXT, content }),
-            ),
-      );
+    expect([pairKerning(kerning, 87, 111), pairKerning(kerning, 114, 108)]).toEqual([-104, 32]);
 
-      // DERIV-text-width, checks: (10 584 − 37) × 16 / 2048 = 82.3984375, one line of 18.3984375;
-      // kerned "World", W o −37: 5311 × 16 / 2048 = 41.4921875, two lines.
-      expect(blocks).toEqual([
-        { height: 18.3984375, width: 82.3984375 },
-        { height: 36.796875, width: 41.4921875 },
-      ]);
-    },
-  );
+    // A V, V A: −140 each; A T, T A: −174 each.
+    expect([
+      pairKerning(kerning, 65, 86),
+      pairKerning(kerning, 86, 65),
+      pairKerning(kerning, 65, 84),
+      pairKerning(kerning, 84, 65),
+    ]).toEqual([-140, -140, -174, -174]);
+  });
+
+  it("[F14.AC5] reads Inter Regular's cap height from its OS/2 table of version 4", () => {
+    // sCapHeight 1490, read again with fontTools 4.60.2 (`REF-INTER-REGULAR-FILE`).
+    expect(parseFontMetrics(INTER_REGULAR_FILE, [72])?.capHeight).toBe(1490);
+  });
+
+  it("[F05.AC3] measures 'Hello World' and 'Hello' / 'World' in Inter Regular 16 read from its file", () => {
+    const metrics = parseFontMetrics(INTER_REGULAR_FILE, HELLO_CHARACTERS);
+    const blocks = ["Hello World", "Hello\nWorld"].map((content) =>
+      metrics === undefined
+        ? undefined
+        : textBlock(
+            metrics,
+            { ...HELLO_TEXT, content },
+            shownLines(metrics, { ...HELLO_TEXT, content }),
+          ),
+    );
+
+    // Advances 11 279, kerning W o −104 and r l +32: 11 207 × 16 / 2048 = 87.5546875; a line
+    // (1984 + 494 + 0) × 16 / 2048 = 19.359375. "World" 5767 − 104 + 32 = 5695, × 16 / 2048 =
+    // 44.4921875, wider than "Hello" 4936 × 16 / 2048 = 38.5625; two lines 38.71875.
+    expect(blocks).toEqual([
+      { height: 19.359375, width: 87.5546875 },
+      { height: 38.71875, width: 44.4921875 },
+    ]);
+  });
 
   it("gives undefined, never an error, when a kerning table passes its end", () => {
     // A GPOS of one kern lookup, cut by one byte: its subtable's coverage passes the table's end.

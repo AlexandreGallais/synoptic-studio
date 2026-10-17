@@ -2,15 +2,15 @@ import { describe, expect, it } from "vitest";
 
 import {
   ENGLISH_US,
-  HELVETICA_COLLECTION_PATH,
+  SHARED_SANS_TABLES,
   TRUE_TYPE_VERSION,
   WINDOWS_PLATFORM,
   fontCollection,
   fontFile,
   joinedParts,
   nameTable,
-  partsDigest,
-  systemFont,
+  sharedTableCollection,
+  tablesFile,
   testFontTables,
 } from "../../../tests";
 
@@ -42,9 +42,6 @@ const REGULAR = namedFace("ArialMT");
 /** Arial's bold face. */
 const BOLD = namedFace("Arial-BoldMT");
 
-/** Helvetica of macOS, a collection of 6 faces, read where the machine has it. */
-const HELVETICA = systemFont(HELVETICA_COLLECTION_PATH);
-
 describe("parseNamedFaceParts (REF-OT-OTFF, REF-OT-NAME)", () => {
   it("[F17.AC10] gives the face of that name in a collection, alone", () => {
     const collection = fontCollection([REGULAR, BOLD]);
@@ -70,18 +67,13 @@ describe("parseNamedFaceParts (REF-OT-OTFF, REF-OT-NAME)", () => {
     expect(parts?.[0]).toBe(REGULAR);
   });
 
-  it.skipIf(HELVETICA === undefined)(
-    "[F17.AC10] gives Helvetica-Bold, the second face of Helvetica.ttc, as before US-052",
-    () => {
-      // The second face's length and SHA-256 as `collectionFaceToFile` wrote it (see
-      // parse-collection-faces.test.ts).
-      const parts = parseNamedFaceParts(HELVETICA ?? new Uint8Array(), "Helvetica-Bold") ?? [];
+  it("[F17.AC10] [F18.AC19] gives SharedSans-Bold, the second face of a collection sharing Inter's tables", () => {
+    // The second face: 284 + 409 312 shared + 96 of OS/2 + 84 of name = 409 776 bytes.
+    const faces = SHARED_SANS_TABLES;
+    const collection = sharedTableCollection(TRUE_TYPE_VERSION, faces);
+    const parts = parseNamedFaceParts(collection, "SharedSans-Bold") ?? [];
 
-      expect(parts.reduce((sum, part) => sum + part.length, 0)).toBe(437_820);
-
-      expect(partsDigest(parts)).toBe(
-        "1cce2b1746ac2d78a5e067040d2df303b711dd617dcfdef63b39df63d7c15379",
-      );
-    },
-  );
+    expect(parts.reduce((sum, part) => sum + part.length, 0)).toBe(409_776);
+    expect(joinedParts(parts)).toEqual(tablesFile(TRUE_TYPE_VERSION, faces[1] ?? {}));
+  });
 });

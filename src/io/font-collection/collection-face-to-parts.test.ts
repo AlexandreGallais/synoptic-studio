@@ -1,20 +1,22 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  APPLE_COLOR_EMOJI_PATH,
+  LARGE_TABLE_LENGTH,
   OPEN_TYPE_VERSION,
+  SHARED_SANS_TABLES,
   TRUE_TYPE_VERSION,
   fontCollection,
   fontFile,
   joinedParts,
-  systemFont,
+  largeTableCollection,
+  sharedTableCollection,
   uint16,
   uint32,
 } from "../../../tests";
+import { parseTableDirectory } from "../font-tables";
 
 import { collectionFaceToParts } from "./collection-face-to-parts";
 import { parseCollectionOffsets } from "./parse-collection-offsets";
-import { parseTableDirectory } from "./parse-table-directory";
 
 /** A face of one table of 3 bytes: 28 + 4 = 32 bytes. */
 const FIRST = fontFile(TRUE_TYPE_VERSION, { abcd: [1, 2, 3] });
@@ -24,9 +26,6 @@ const SECOND = fontFile(OPEN_TYPE_VERSION, { cdef: [9, 8, 7, 6, 5], wxyz: [4, 3,
 
 /** The two faces in a collection: header 20 bytes, the first at 20, the second at 52. */
 const COLLECTION = fontCollection([FIRST, SECOND]);
-
-/** Apple Color Emoji of macOS, 192 120 460 bytes, read where the machine has it. */
-const EMOJI = systemFont(APPLE_COLOR_EMOJI_PATH);
 
 /**
  * The collection with some bytes changed.
@@ -70,7 +69,7 @@ function partPlaces(
   ]);
 }
 
-/** The `sbix` table of a collection's first face, as its directory says and as its part gives it. */
+/** The large table of a collection's first face, as its directory says and as its part gives it. */
 type SbixPlace = {
   /** The table's length, from its record. */
   readonly tableLength: number;
@@ -85,10 +84,10 @@ type SbixPlace = {
 /**
  * Finds the `sbix` table of a collection's first face and the part that gives it.
  *
- * @param file - the collection, Apple Color Emoji
+ * @param file - the collection of `largeTableCollection`
  * @returns the table's record and its part's place
  */
-function emojiSbix(file: Readonly<Uint8Array>): SbixPlace {
+function largeSbix(file: Readonly<Uint8Array>): SbixPlace {
   const view = new DataView(file.buffer, file.byteOffset, file.byteLength);
   const [directory = 0] = parseCollectionOffsets(view);
   const { sbix = { length: 0, offset: 0 } } = parseTableDirectory(view, directory);
@@ -174,14 +173,35 @@ describe("collectionFaceToParts (REF-OT-OTFF, REF-SKIA-MAC-STREAM-CODE)", () => 
     ]);
   });
 
-  it.skipIf(EMOJI === undefined)(
-    "[F17.AC10] gives Apple Color Emoji's 191 MB sbix table as a view, no array of its bytes",
+  it("[F17.AC4] [F18.AC19] gives a table two faces share as the same view of the collection for each", () => {
+    // Three faces of Inter's tables, their directories of 284 bytes at 24, 308 and 592: the first
+    // table, GDEF, written once at 24 + 3 × 284 = 876, its 1 036 bytes; the name tables differ.
+    const collection = sharedTableCollection(TRUE_TYPE_VERSION, SHARED_SANS_TABLES);
+    const faces = [24, 308, 592].map((directory) =>
+      collectionFaceToParts(collection, directory).map((part) => [
+        part.length,
+        part.buffer === collection.buffer ? part.byteOffset : "new",
+      ]),
+    );
+
+    expect(faces.map((parts) => parts[1])).toEqual([
+      [1036, 876],
+      [1036, 876],
+      [1036, 876],
+    ]);
+
+    expect(faces[0]).not.toEqual(faces[1]);
+  });
+
+  it(
+    "[F17.AC10] [F18.AC19] gives a table of 191 134 509 bytes as a view, no array of its bytes",
+    { timeout: 20_000 },
     () => {
       // Before US-052 the face was spread into an array of numbers, past the longest array V8
       // allows (about 134 million): "invalid array length", the process ended.
-      const sbix = emojiSbix(EMOJI ?? new Uint8Array());
+      const sbix = largeSbix(largeTableCollection(TRUE_TYPE_VERSION));
 
-      expect(sbix.tableLength).toBe(191_134_508);
+      expect(sbix.tableLength).toBe(LARGE_TABLE_LENGTH);
       expect(sbix.isView).toBe(true);
       expect(sbix.partOffset).toBe(sbix.tableOffset);
     },

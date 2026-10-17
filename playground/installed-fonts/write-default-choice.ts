@@ -106,8 +106,8 @@ function writeChosenFamily(document: Document, family: string): void {
 /**
  * Chooses a default font once the installed fonts are read while none is available (US-056,
  * US-060): the first family of the list (`readFamilyToChoose`) is chosen as a family chosen by
- * hand is, its faces' files read again (`readInstalledFamily`) so that it can be embedded, and
- * the page says so; a family none of whose files is read again leaves the list and the next is
+ * hand is, its faces' files read again (`readInstalledFamily`) so that it can be embedded, the
+ * page saying it reads them, the font list held meanwhile (US-061), then that it is chosen; a family none of whose files is read again leaves the list and the next is
  * tried. A font available, Inter drawn or a font imported, is left as it is.
  *
  * @kind procedure
@@ -122,6 +122,12 @@ export async function writeDefaultChoice(document: Document, update: () => void)
   if (first === undefined) {
     return;
   }
+
+  writeText(
+    document,
+    "font-message",
+    `Reading ${first.name}, the default font: the font list can be used once it is read.`,
+  );
 
   await readInstalledFamily(document, first.name, update);
 

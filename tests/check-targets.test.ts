@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
 import { ESLint } from "eslint";
@@ -12,8 +12,11 @@ const ROOT = join(import.meta.dirname, "..");
 /** The project's ESLint, read from its configuration. */
 const LINT = new ESLint({ cwd: ROOT });
 
-/** Time limit of a test asking a tool about every tracked file: four times its 3 s alone, and a margin. */
-const WALK_TIMEOUT = 20_000;
+/** Time limit of a test asking a tool about every tracked file: about 4.3 s alone (EN-054), seven times. */
+const WALK_TIMEOUT = 30_000;
+
+/** The start of a script run under the heavy lock (EN-047). */
+const HEAVY_LOCK = /^cargo run --release -q --manifest-path tools\/heavy-lock\/Cargo\.toml -- /u;
 
 /** Prettier's ignore files, as its command line reads them. */
 const PRETTIER_IGNORE = [join(ROOT, ".gitignore"), join(ROOT, ".prettierignore")];
@@ -186,5 +189,37 @@ describe("check tools given explicit targets (EN-045)", () => {
 
   it("[F18.AC20] runs secretlint on the tracked files only", () => {
     expect(SCRIPTS.get("lint:secrets")).toMatch(/^git ls-files -z \| xargs -0 secretlint /u);
+  });
+});
+
+describe("heavy commands and Rust tools (AUD-020)", () => {
+  it.each(["test", "check:all", "golden:check", "docs:build", "mutate"])(
+    "[F18.AC3] runs %s through the heavy lock",
+    (script) => {
+      expect(SCRIPTS.get(script)).toMatch(HEAVY_LOCK);
+    },
+  );
+
+  it("[F18.AC7] merges stories one at a time under the merge lock", () => {
+    expect(SCRIPTS.get("story:finish")).toMatch(
+      new RegExp(String.raw`${HEAVY_LOCK.source}--lock merge node scripts/story-finish\.ts$`, "u"),
+    );
+  });
+
+  it("[F18.AC20] checks every crate of tools/ in check:rust, and only them", () => {
+    const listed = /for tool in (?<tools>[\w -]+?); do/u.exec(SCRIPTS.get("check:rust") ?? "")
+      ?.groups?.["tools"];
+    const crates = readdirSync(join(ROOT, "tools"), { withFileTypes: true })
+      .filter(
+        (entry) => entry.isDirectory() && existsSync(join(ROOT, "tools", entry.name, "Cargo.toml")),
+      )
+      .map((entry) => entry.name)
+      .toSorted((left, right) => left.localeCompare(right));
+
+    expect(crates.length).toBeGreaterThan(0);
+
+    expect((listed ?? "").split(" ").toSorted((left, right) => left.localeCompare(right))).toEqual(
+      crates,
+    );
   });
 });

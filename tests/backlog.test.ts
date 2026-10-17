@@ -1,4 +1,5 @@
-import { readFileSync, readdirSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
@@ -12,6 +13,12 @@ type Item = {
 
 /** Root of the backlog. */
 const BACKLOG = join(import.meta.dirname, "..", "docs", "backlog");
+
+/** The Rust tool writing the stories index from the story files (EN-049). */
+const INDEX_TOOL = join(import.meta.dirname, "..", "tools", "backlog-index", "Cargo.toml");
+
+/** Time limit of a test building the index tool: a cold build of about 5 s, four times, and a margin. */
+const BUILD_TIMEOUT = 60_000;
 
 /** Allowed statuses per folder. */
 const STATUSES: Readonly<Record<string, readonly string[]>> = {
@@ -244,22 +251,93 @@ function hasKinds(
   return prefixes.every((prefix) => ids.some((id) => id.startsWith(prefix)));
 }
 
-/** Folders whose tests may verify acceptance criteria (ADR-0027); `tests` for the criteria on the code base itself (F11). */
-const TEST_ROOTS = ["src", "playground", "tests"];
+/**
+ * Folders whose TypeScript tests may verify acceptance criteria (ADR-0027): `tests` for the
+ * criteria on the code base itself (F11), the scripts, hooks and lint rules for the tooling's (F18).
+ */
+const TEST_ROOTS = ["src", "playground", "tests", "scripts", ".claude/hooks", "eslint"];
+
+/** The Rust tools, whose tests verify the tooling's criteria (F18). */
+const TOOLS = join(import.meta.dirname, "..", "tools");
+
+/** This file: it names tags in its own code, so only its tests' titles count. */
+const CHECKER = "backlog.test.ts";
 
 /**
- * Concatenated content of every test file, where `[F01.AC3]` tags are looked for.
+ * Titles of the tests of a file, the text a `[F18.AC5]` tag is written in.
  *
- * @returns text of all `*.test.ts` files under the test roots
+ * @param text - a test file
+ * @returns each `it("…"` title, one per line
+ */
+function testTitles(text: string): string {
+  return text
+    .matchAll(/\bit\(\s*"(?<title>[^"]*)"/gu)
+    .map((match) => match.groups?.["title"] ?? "")
+    .toArray()
+    .join("\n");
+}
+
+/**
+ * Criterion tags of a Rust file: a test named `f18_ac3_…` reads as `[F18.AC3]`, a `// [F18.AC6]`
+ * comment as itself; a `//!` module comment only describes the convention, so it is left out.
+ *
+ * @param text - a Rust file
+ * @returns its lines without module comments, then one tag per test named after a criterion
+ */
+function rustTags(text: string): string {
+  const code = text
+    .split("\n")
+    .filter((line) => !line.trimStart().startsWith("//!"))
+    .join("\n");
+  const names = code
+    .matchAll(/\bfn f(?<feature>\d{2})_ac(?<criterion>\d+)_/gu)
+    .map((match) => `[F${match.groups?.["feature"] ?? ""}.AC${match.groups?.["criterion"] ?? ""}]`)
+    .toArray();
+
+  return [code, ...names].join("\n");
+}
+
+/**
+ * Rust files of the tools that may hold tests: `tests/*.rs` and `src/**\/*.rs` of each crate,
+ * its build folder `target` left out.
+ *
+ * @returns their paths
+ */
+function rustFiles(): string[] {
+  return readdirSync(TOOLS).flatMap((crate) =>
+    ["tests", "src"].flatMap((folder) => {
+      const root = join(TOOLS, crate, folder);
+
+      return existsSync(root)
+        ? readdirSync(root, { recursive: true })
+            .map(String)
+            .filter((file) => file.endsWith(".rs"))
+            .map((file) => join(root, file))
+        : [];
+    }),
+  );
+}
+
+/**
+ * Concatenated text where `[F01.AC3]` tags are looked for: every `*.test.ts` file under the test
+ * roots (only the titles of this file's tests), and the Rust tools' tags.
+ *
+ * @returns the text of every test that may prove a criterion
  */
 function testSources(): string {
-  return TEST_ROOTS.flatMap((root) =>
+  const typescript = TEST_ROOTS.flatMap((root) =>
     readdirSync(join(import.meta.dirname, "..", root), { recursive: true })
       .map(String)
-      // This file names tags in its own text: it proves no criterion.
-      .filter((file) => file.endsWith(".test.ts") && file !== "backlog.test.ts")
-      .map((file) => readFileSync(join(import.meta.dirname, "..", root, file), "utf8")),
-  ).join("\n");
+      .filter((file) => file.endsWith(".test.ts"))
+      .map((file) => {
+        const text = readFileSync(join(import.meta.dirname, "..", root, file), "utf8");
+
+        return file === CHECKER ? testTitles(text) : text;
+      }),
+  );
+  const rust = rustFiles().map((file) => rustTags(readFileSync(file, "utf8")));
+
+  return [...typescript, ...rust].join("\n");
 }
 
 /**
@@ -332,6 +410,22 @@ describe("backlog", () => {
     expect(mismatches.map((item) => item.file)).toEqual([]);
   });
 
+  it(
+    "[F18.AC5] keeps the stories index as the story files generate it",
+    { timeout: BUILD_TIMEOUT },
+    () => {
+      const result = spawnSync(
+        "cargo",
+        ["run", "--quiet", "--manifest-path", INDEX_TOOL, "--", BACKLOG, "--check"],
+        { encoding: "utf8" },
+      );
+
+      // The tool's message names the row that differs and says to run `npm run backlog:index`.
+      expect(result.stderr).toBe("");
+      expect(result.status).toBe(0);
+    },
+  );
+
   it("shows every feature and story in its parent's table, with the status written in its file", () => {
     const mismatches = items().filter(
       (item) =>
@@ -380,6 +474,23 @@ describe("backlog", () => {
       .filter((criterion) => !sources.includes(`[${criterion}]`));
 
     expect(untraced).toEqual([]);
+  });
+
+  it("reads a Rust test named after a criterion as its tag, never a module comment", () => {
+    const text = [
+      "//! `[F18.AC7]` marks a test proving the feature's criterion.",
+      "fn f18_ac3_a_dead_owner_is_taken_over() {}",
+      "    // [F18.AC6] the push is refused.",
+    ].join("\n");
+    const tags = rustTags(text).match(/\[F\d{2}\.AC\d+\]/gu);
+
+    expect(tags).toEqual(["[F18.AC6]", "[F18.AC3]"]);
+  });
+
+  it("reads only the titles of this file's tests, never the tags its code names", () => {
+    const text = 'it(\n  "[F18.AC5] keeps the index",\n  () => {});\n// a `[F01.AC3]` tag\n';
+
+    expect(testTitles(text)).toBe("[F18.AC5] keeps the index");
   });
 
   it("uses each id once", () => {

@@ -1,0 +1,12 @@
+[package]
+name = "mutate"
+version = "0.1.0"
+edition = "2024"
+description = "Mutations of source files in a copy of the repository, caught or surviving (EN-058)"
+license = "Apache-2.0"
+publish = false
+
+[dependencies]
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }

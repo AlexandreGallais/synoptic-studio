@@ -2,11 +2,11 @@ import { describe, expect, it } from "vitest";
 
 import {
   APPLE_TRUE_TYPE_VERSION,
-  ARIAL_PATH,
   ENGLISH_US,
   HELLO_TEXT,
-  HELVETICA_COLLECTION_PATH,
+  INTER_REGULAR_FILE,
   OPEN_TYPE_VERSION,
+  SHARED_SANS_TABLES,
   TRUE_TYPE_VERSION,
   WINDOWS_PLATFORM,
   familyNameTable,
@@ -15,7 +15,7 @@ import {
   joinedParts,
   nameTable,
   os2FaceTable,
-  systemFont,
+  sharedTableCollection,
   testFontTables,
   uint32,
 } from "../../../tests";
@@ -28,19 +28,18 @@ import {
   textBlock,
   textFontMetrics,
 } from "../../model";
+import { parseCollectionFaces } from "../font-collection";
 import { parseFontMetrics } from "../font-file";
-import { parseCollectionFaces } from "../font-tables";
 
 import { parseFontFace } from "./parse-font-face";
 
 import type { Os2FaceFields } from "../../../tests";
 import type { FontFamily } from "../../model";
 
-/** Arial 5.01 of macOS, read where the machine has it. */
-const ARIAL = systemFont(ARIAL_PATH);
-
-/** Helvetica of macOS, a collection of 6 faces, read where the machine has it. */
-const HELVETICA = systemFont(HELVETICA_COLLECTION_PATH);
+/** The faces of a collection of three faces sharing Inter's tables, each joined into its file. */
+const SHARED_SANS_FILES = parseCollectionFaces(
+  sharedTableCollection(TRUE_TYPE_VERSION, SHARED_SANS_TABLES),
+).map((parts) => joinedParts(parts));
 
 /**
  * A font file tagged `true`, as Chrome gives on macOS a face whose CoreText format is TrueType
@@ -215,20 +214,19 @@ describe("parseFontFace (REF-OT-NAME, REF-OT-OS2)", () => {
     expect(metrics?.unitsPerEm).toBe(2000);
   });
 
-  it.skipIf(ARIAL === undefined)(
-    "[F15.AC1] reads Arial 5.01 of macOS: Arial, 400, upright, embeddable",
-    () => {
-      // REF-OT-NAME: no name ID 16, name ID 1 Arial; REF-OT-OS2: 400, fsSelection 0x0040, fsType 8.
-      const named = parseFontFace(ARIAL ?? new Uint8Array());
+  it("[F15.AC1] reads Inter Regular 4.1: Inter, 400, upright, embeddable", () => {
+    // REF-OT-NAME: no name ID 16, name ID 1 Inter; REF-OT-OS2: 400, fsSelection 0x00c0 (bit 6
+    // regular), fsType 0, installable; read again with fontTools 4.60.2
+    // (`REF-INTER-REGULAR-FILE`).
+    const named = parseFontFace(INTER_REGULAR_FILE);
 
-      expect(named).toMatchObject({
-        face: { file: { isEmbeddable: true }, isItalic: false, weight: 400 },
-        family: "Arial",
-      });
+    expect(named).toMatchObject({
+      face: { file: { isEmbeddable: true }, isItalic: false, weight: 400 },
+      family: "Inter",
+    });
 
-      expect(named?.face.metrics.unitsPerEm).toBe(2048);
-    },
-  );
+    expect(named?.face.metrics.unitsPerEm).toBe(2048);
+  });
 });
 
 describe("parseFontFace, faces of macOS and of collections (F17.AC4)", () => {
@@ -246,34 +244,38 @@ describe("parseFontFace, faces of macOS and of collections (F17.AC4)", () => {
     });
   });
 
-  it.skipIf(HELVETICA === undefined)(
-    "[F17.AC4] reads the 6 faces of Helvetica.ttc: 400, 700, 400 italic, 700 italic, 300, 300 italic",
+  it(
+    "[F17.AC4] [F18.AC19] reads the 3 faces of a collection sharing Inter's tables: 400, 700, 400 italic",
+    // Inter's metrics read three times, about 2.3 s alone: 20 s holds a loaded pre-push run.
+    { timeout: 20_000 },
     () => {
-      const faces = parseCollectionFaces(HELVETICA ?? new Uint8Array()).map((parts) =>
-        parseFontFace(joinedParts(parts)),
-      );
-
+      // usWeightClass 400, 700, 400; fsSelection 0x00c0, 0x00a0, 0x0081: bit 0, italic, in the third.
       expect(
-        faces.map((named) => [named?.family, named?.face.weight, named?.face.isItalic]),
+        SHARED_SANS_FILES.map((file) => {
+          const named = parseFontFace(file);
+
+          return [named?.family, named?.face.weight, named?.face.isItalic];
+        }),
       ).toEqual([
-        ["Helvetica", 400, false],
-        ["Helvetica", 700, false],
-        ["Helvetica", 400, true],
-        ["Helvetica", 700, true],
-        ["Helvetica", 300, false],
-        ["Helvetica", 300, true],
+        ["Shared Sans", 400, false],
+        ["Shared Sans", 700, false],
+        ["Shared Sans", 400, true],
       ]);
     },
   );
 
-  it.skipIf(HELVETICA === undefined)(
-    "[F17.AC4] reads each Helvetica face tagged true, as Chrome gives it on macOS",
+  it(
+    "[F17.AC4] [F18.AC19] reads each face of that collection tagged true, as Chrome gives it on macOS",
+    // Inter's metrics read three times, about 2.3 s alone: 20 s holds a loaded pre-push run.
+    { timeout: 20_000 },
     () => {
-      const faces = parseCollectionFaces(HELVETICA ?? new Uint8Array()).map((parts) =>
-        parseFontFace(appleTagged(joinedParts(parts))),
-      );
+      const faces = SHARED_SANS_FILES.map((file) => parseFontFace(appleTagged(file)));
 
-      expect(faces.filter((named) => named?.family === "Helvetica")).toHaveLength(6);
+      expect(faces.map((named) => named?.family)).toEqual([
+        "Shared Sans",
+        "Shared Sans",
+        "Shared Sans",
+      ]);
     },
   );
 });
@@ -288,12 +290,12 @@ describe("parseFontFace, measuring with its face (F15.AC4)", () => {
     content: `ABC ${String(index)}\naBC`,
   }));
 
-  // This synthetic file's face measures them in about 7 ms alone, 10 ms with coverage (EN-039,
-  // 2026-10-15); the loaded pre-push run was seen 2.5 times slower, about 25 ms: 100 ms, Vitest's
-  // timeout, keeps a margin of four over it. No clock is read in the test.
+  // This synthetic file's face measures them in about 7 ms alone (EN-054, 2026-10-16); a loaded
+  // pre-push run was seen at 157 ms (RET-003): 400 ms, Vitest's timeout, holds over that load and
+  // is over four times the measure alone. No clock is read in the test.
   it(
-    "[F15.AC4] measures the blocks of 1 000 texts of two lines within 100 ms",
-    { timeout: 100 },
+    "[F15.AC4] [F18.AC10] measures the blocks of 1 000 texts of two lines in under 0.4 s",
+    { timeout: 400 },
     () => {
       const blocks = texts.map((text) =>
         metrics === undefined ? undefined : textBlock(metrics, text, shownLines(metrics, text)),

@@ -1,0 +1,12 @@
+[package]
+name = "val-prepare"
+version = "0.1.0"
+edition = "2024"
+description = "A feature's lines in its epic's checklist, prepared for its validation (EN-056)"
+license = "Apache-2.0"
+publish = false
+
+[dependencies]
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }

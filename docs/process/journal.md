@@ -2,6 +2,24 @@
 
 What each working session dealt with, in the agent's words: the Product Owner's requests in neutral words, decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`).
 
+## 2026-10-17 — F18 validated, F19 started
+
+- `#run` The Product Owner answered the queued questions: the subagent limit set in the settings (EN-063); ADR-0067's release order, the tables moved to F19 (ADR-0068) and the refused face dropped (US-061) confirmed; EN-062's macOS-only font tests not accepted, so EN-067 made every font test run on every system; the font list to offer only fonts read whole and checked (US-062).
+- `#run` They left F18's tool lines to the agent and declared the validation finished; F18 is done with EN-063, EN-067 and US-062 merged into its branch.
+- `#run` They asked to move on to F19 at once, without waiting for them: F19's branch starts from F18's, SP-021 rebased on it.
+
+## 2026-10-17 — Run of F18 continued, up to its audit
+
+- `#run` EN-061 turned ADR-0043's 15-module signal into a test that counts every folder on disk, and the spread found in F14 into a lint selector; two places in the tooling copied their accumulator at every step and now build into a local list.
+- `#run` EN-052: `npm run worktree:new -- <ID>` (Rust, `tools/worktree/`) makes `.claude/worktrees/<id>` on the story's branch from its feature branch, links `node_modules` and installs Husky's hooks folder so a push runs the branch's own `pre-push`; `branches:clean` removes the worktrees of merged or deleted branches; `guard-bash` answers a chained Git command in a worktree with the plain command, and refuses `golden:write` there, which the golden test refuses too.
+- `#run` EN-056: the checklist became a column beside the drawing, a test caps each feature at 12 lines (E15's F05 cut from 14 to 12), and `val:prepare` (Rust) drafts a feature's lines from its criteria; the guided steps of E15 stay for `?guide=epic`.
+- `#run` EN-058: `npm run mutate` (`tools/mutate/`, Rust, std only) tries textual mutations — comparison, operator, constant, condition, return — in a temporary worktree outside the repository, under the heavy lock, and reports caught and surviving ones; the audit skill's A4 step points to it.
+- `#run` EN-059: a story's `done` commit that changes a rule in `docs/domain/` is refused by the `commit-msg` hook (`tools/rule-docs`, Rust) until its change holds the Q row, the feature's VAL decisions to confirm and the guide page, or the footer `Rule-docs: none affected, <why>`.
+- `#run` US-061: the font list held while the default font is read again (I77), a face refused at that reading dropped (I78); second criterion read as dropping, from the settled rule that every font offered can be exported.
+- `#run` EN-060: the documentation pass on E15's long pages split every bullet over 400 characters of the Text section of `shapes.md`, the Colors of `interaction.md` and `DERIV-text-box` into sub-bullets and tables, without changing a rule; a test keeps those parts within the limit.
+- `#run` EN-046: the release pull request now lives on `develop` and `main` only tags it (ADR-0067); the Product Owner merges the release pull request into `develop` before #259, checked at the release of 0.3.
+- `#run` EN-063: the hook `limit-agents` runs on `Agent` and `SendMessage`, Claude Code's own cap set to 3; a message to a running subagent or to the main conversation goes through, a resume of a fourth is refused.
+
 ## 2026-10-17 — Run of F18 stopped before its validation
 
 - `#run` The run of F18 resumed from a plain terminal on 2026-10-16 and stopped on 2026-10-17 before VAL-019: SP-020 (#262), EN-049 (#263), EN-047 and its lock fix, EN-054, EN-062, EN-050 (#268), EN-053 (#269), EN-057 (#270), EN-055 (#271), EN-051 (#272) and its fix (#275), EN-061 (#273), EN-052 (#274), EN-048, EN-056, EN-058, EN-059, US-061, CHK-019 (#282), EN-046, the move-rows fix (#283), EN-060 (#284), and AUD-020 with its fixes (#285, #286); the details are in the feature branch's journal and stories.
@@ -13,6 +31,9 @@ What each working session dealt with, in the agent's words: the Product Owner's 
 
 - `#run` The Product Owner started a run on 2026-10-16: scope F18 (a safe and cheap parallel run, with E15's leftovers), and F19's spike (SP-021) in parallel. E17 and F18 are `in-progress`, F18's stories `ready`, on `feature/f18-safe-and-cheap-parallel-run`.
 - `#decision` Refinement of E17: order F18, F19, F20; the `check:all` target is set after F19's spike; Rust is already installed on the Product Owner's machine; four Claude Code settings recommended by research become stories (EN-063 in F18, EN-064 to EN-066 in F20), each shown to the Product Owner before it is applied; the model per task is measured from E17. Recorded in the epic file.
+- `#run` EN-049 wrote the first Rust tool of the repository, the stories index generator, std-only.
+- `#run` EN-053 found the status line's wrong states in the transcript — a subagent resumed by a message was never counted — and fixed both the TypeScript status line and its Rust twin.
+- `#run` EN-055: `epic:check` names a failed `check:all` by its failing checks, their lanes and failing tests (Vitest, `cargo test`), counts the worktree isolation's refusals apart (549 in E15) and reports the calls started over an hour ago and never ended as lost, never as a failure; the pre-push runs `golden:check` after `check:all` whenever `.git/metrics/golden.json` exists (about 13 s, through the heavy lock); `npm run metrics -- --since <day>` covers the calls, requests and turns from 00:00 UTC that day on.
 
 ## 2026-10-16 — F17 validated, E15 reviewed
 

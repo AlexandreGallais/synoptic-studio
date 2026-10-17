@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { startedCalls, turnTime } from "./metrics-time";
+import { loggedSince, sinceStart, startedCalls, turnTime } from "./metrics-time";
 
 describe("metrics-time", () => {
   it("keeps the main agent's calls that have a start, in order, background ones left out", () => {
@@ -31,5 +31,23 @@ describe("metrics-time", () => {
       toolMs: 3500,
       turnStart: 0,
     });
+  });
+
+  it("[F18.AC11] starts a report at 00:00 UTC of its --since day, at 0 without it", () => {
+    // 2026-10-16 is 20 742 days after 1970-01-01: 20 742 × 86 400 000 ms = 1 792 108 800 000 ms.
+    expect(sinceStart(["--since", "2026-10-16"])).toBe(1_792_108_800_000);
+    expect(sinceStart([])).toBe(0);
+    expect(() => sinceStart(["--since"])).toThrow(RangeError);
+  });
+
+  it("[F18.AC11] keeps the logged calls that ended from that moment on", () => {
+    const records = [
+      { time: "2026-10-15T23:59:59Z", tool: "Bash" },
+      { time: "2026-10-16T00:00:00Z", tool: "Read" },
+      { time: "2026-10-17T08:00:00Z", tool: "Edit" },
+    ];
+
+    expect(loggedSince(records, 1_792_108_800_000)).toEqual(records.slice(1));
+    expect(loggedSince(records, 0)).toEqual(records);
   });
 });

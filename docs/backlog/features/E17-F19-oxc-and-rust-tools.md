@@ -13,7 +13,9 @@ To refine with the Product Owner, opened by its spike ([E17](../epics/E17-fast-t
 
 ## Acceptance criteria
 
-To write at the refinement, after the spike.
+To write at the refinement, after the spike. One is set already, moved from F18 (ADR-0068):
+
+1. The formatter prints Markdown tables without padding and keeps paragraphs as written.
 
 ## Open questions
 

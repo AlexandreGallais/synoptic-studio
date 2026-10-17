@@ -69,13 +69,30 @@ function headingLevel(line: string): number {
  * @returns one or more parts
  */
 function parts(text: string): readonly string[] {
-  return text.split("\n\n").reduce<readonly string[]>((done, paragraph) => {
-    const last = done.at(-1);
+  const [first = "", ...rest] = text.split("\n\n");
 
-    return last !== undefined && last.length + paragraph.length < MAX_CHUNK
-      ? [...done.slice(0, -1), `${last}\n\n${paragraph}`]
-      : [...done, paragraph];
-  }, []);
+  return partsFrom(rest, 0, first);
+}
+
+/**
+ * Parts from one paragraph on: each paragraph joins the part being built while it stays shorter
+ * than `MAX_CHUNK`, else opens the next part.
+ *
+ * @param paragraphs - the paragraphs after the first
+ * @param index - the next paragraph to place
+ * @param part - the part being built
+ * @returns that part, then the following ones
+ */
+function partsFrom(paragraphs: readonly string[], index: number, part: string): readonly string[] {
+  const next = paragraphs[index];
+
+  if (next === undefined) {
+    return [part];
+  }
+
+  return part.length + next.length < MAX_CHUNK
+    ? partsFrom(paragraphs, index + 1, `${part}\n\n${next}`)
+    : [part, ...partsFrom(paragraphs, index + 1, next)];
 }
 
 /**

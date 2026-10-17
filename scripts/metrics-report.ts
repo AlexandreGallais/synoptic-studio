@@ -1,12 +1,13 @@
 // Metrics report of the agent's work (docs/tooling/metrics.md): reads the Claude Code transcripts
 // of this repository and the log of the `log-tool-call` hook, prints a Markdown report — sessions,
 // commands by count and by time, slowest calls, time and tokens per story, feature and task.
-// Run by `npm run metrics` (Temporal: `node --harmony-temporal`).
+// Run by `npm run metrics`, or `npm run metrics -- --since 2026-10-16` for the calls from that day
+// on, 00:00 UTC (EN-055); Temporal: `node --harmony-temporal`.
 
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { homedir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 
 import { libraryPath, openLibrary } from "./library-store.ts";
 import { usageReport } from "./library-usage.ts";
@@ -18,7 +19,7 @@ import {
   markdownTable,
   statsTable,
 } from "./metrics-tables.ts";
-import { loggedCalls, turnSections } from "./metrics-time.ts";
+import { loggedCalls, sinceStart, turnSections } from "./metrics-time.ts";
 import { taskCommits, taskOf, unitOf, workStats } from "./metrics-work.ts";
 
 import type { ModelRequest, ToolCall } from "./metrics-events.ts";
@@ -44,12 +45,18 @@ const DAY_LENGTH = 10;
 const SESSION_SHOWN = 8;
 
 /**
- * Claude Code transcripts of this repository: the sessions and their subagents.
+ * Claude Code transcripts of this repository: the sessions and their subagents, filed under the
+ * main checkout even when the report runs in a worktree.
  *
  * @returns paths of the JSON Lines files
  */
 function transcriptFiles(): readonly string[] {
-  const folder = join(homedir(), ".claude", "projects", ROOT.replaceAll(/[^\dA-Za-z]/gu, "-"));
+  const common = execFileSync("git", ["rev-parse", "--path-format=absolute", "--git-common-dir"], {
+    cwd: ROOT,
+    encoding: "utf8",
+  }).trim();
+  const main = dirname(common).replaceAll(/[^\dA-Za-z]/gu, "-");
+  const folder = join(homedir(), ".claude", "projects", main);
 
   return existsSync(folder)
     ? readdirSync(folder, { encoding: "utf8", recursive: true })
@@ -239,9 +246,13 @@ function workSections(moments: readonly Moment[]): readonly string[] {
 if (import.meta.main) {
   const exact = hookDurations();
   const parsed = transcriptFiles().map((file) => transcriptEvents(readFileSync(file, "utf8")));
-  const requests = parsed.flatMap((entry) => entry.requests);
+  const since = sinceStart(process.argv.slice(2));
+  const requests = parsed
+    .flatMap((entry) => entry.requests)
+    .filter((request) => request.time >= since);
   const calls: readonly Timed[] = parsed
     .flatMap((entry) => entry.calls)
+    .filter((call) => call.start >= since)
     .map((call) => ({
       ...call,
       durationMs: exact.get(call.id) ?? call.end - call.start,
@@ -257,7 +268,12 @@ if (import.meta.main) {
     `(${String(exactCount)} timed exactly by the hook; the others from transcript times, which also`,
     "count the time spent writing the command). Active time: the gaps between moments of work,",
     "each capped at 5 minutes.",
-  ].join(" ");
+    since === 0
+      ? ""
+      : `Since ${Temporal.Instant.fromEpochMilliseconds(since).toString().slice(0, DAY_LENGTH)} (UTC) only; the sources from the start.`,
+  ]
+    .join(" ")
+    .trim();
 
   const library = openLibrary(libraryPath());
   const sections = [
@@ -265,7 +281,7 @@ if (import.meta.main) {
     summary,
     ...commandSections(calls),
     ...workSections(moments),
-    ...turnSections(),
+    ...turnSections(since),
     "## Sources",
     usageReport(library, 0),
   ];

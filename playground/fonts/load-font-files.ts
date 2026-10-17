@@ -1,8 +1,12 @@
-import { parseCollectionFaces, parseFontFace, unlistedFaceReason } from "../../src";
+import {
+  facePartsToFile,
+  parseCollectionFaces,
+  parseFontFace,
+  unlistedFaceReason,
+} from "../../src";
 
 import { addFontFace } from "./add-font-face";
 import { readFaceName } from "./read-face-name";
-import { readJoinedFile } from "./read-joined-file";
 import { UNLISTED_FACE_REASONS } from "./unlisted-face-reasons";
 import { writeFontOptions } from "./write-font-options";
 
@@ -18,22 +22,18 @@ type LoadedFile = {
 
 /**
  * Reads the faces of a font file: its face, or each face of a collection
- * (`parseCollectionFaces`), each joined from its parts (`readJoinedFile`) and read alone
- * (`parseFontFace`).
+ * (`parseCollectionFaces`), each joined from its parts into one buffer (`facePartsToFile`) and
+ * read alone (`parseFontFace`).
  *
  * @kind procedure
  * @param bytes - the bytes of a font file or of a collection
  * @returns the faces read, in the file's order; none for a file that is not a font
- * @throws {DOMException} when the browser cannot hold a face's joined file
+ * @throws {RangeError} when the engine cannot allocate a face's joined file
  * @see REF-OT-OTFF
  */
-async function readFileFaces(bytes: Uint8Array<ArrayBuffer>): Promise<readonly NamedFontFace[]> {
-  const files = await Promise.all(
-    parseCollectionFaces(bytes).map(async (parts) => await readJoinedFile(parts)),
-  );
-
-  return files.flatMap((file) => {
-    const named = parseFontFace(file);
+function readFileFaces(bytes: Uint8Array<ArrayBuffer>): readonly NamedFontFace[] {
+  return parseCollectionFaces(bytes).flatMap((parts) => {
+    const named = parseFontFace(facePartsToFile(parts));
 
     return named === undefined ? [] : [named];
   });
@@ -95,7 +95,8 @@ function readImportLine(
  * @param file - a file the designer chose
  * @param update - redraws the playground
  * @returns the line said, and the family of the last face kept, empty when none is kept
- * @throws {DOMException} when the browser cannot read the file's bytes, or hold a face's file
+ * @throws {DOMException} when the browser cannot read the file's bytes
+ * @throws {RangeError} when the engine cannot allocate a face's file
  * @see REF-W3C-FILE-API
  */
 async function loadFontFile(
@@ -103,7 +104,7 @@ async function loadFontFile(
   file: File,
   update: () => void,
 ): Promise<LoadedFile> {
-  const faces = await readFileFaces(new Uint8Array(await file.arrayBuffer()));
+  const faces = readFileFaces(new Uint8Array(await file.arrayBuffer()));
   const kept = faces.filter((named) => unlistedFaceReason(named.face) === undefined);
 
   for (const named of kept) {

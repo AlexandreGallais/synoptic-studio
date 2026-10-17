@@ -14,9 +14,13 @@ import {
 
 import type { InstalledFont } from "./installed-font";
 
-/** 590 installed faces of 186 families, as CoreText lists them on the spike's machine (SP-019), each file read ahead (US-053). */
-const INSTALLED: readonly InstalledFont[] = Array.from({ length: 590 }, (unused, index) => {
-  const family = `Family ${String(index % 186)}`;
+/**
+ * 60 installed faces of 20 families, three faces each, each file read ahead (US-053): the 590 faces
+ * of 186 families seen by SP-019 are counted once each by `distinctFamilyNames`' own test; a shorter
+ * list keeps this page test fast (EN-054).
+ */
+const INSTALLED: readonly InstalledFont[] = Array.from({ length: 60 }, (unused, index) => {
+  const family = `Family ${String(index % 20)}`;
   const file = testFaceFile({ family, fsType: 0, isItalic: false, weightClass: 400 });
 
   return {
@@ -56,15 +60,14 @@ describe("The font list written only when the session's fonts change (US-048)", 
     clickElement("tool-text");
     clickElement("installed-fonts");
     await waitForPageTasks();
-    // 590 faces read ahead take about 3 s alone, 10 s in a loaded pre-push run: a margin, not a bound on time.
-  }, 30_000);
+  });
 
   afterEach(() => {
     Reflect.deleteProperty(globalThis, "queryLocalFonts");
   });
 
-  it("[F17.AC5] lists 186 families after Inter, each once", () => {
-    expect(selectChoice("text-font").options).toHaveLength(187);
+  it("[F17.AC5] lists 20 families after Inter, each once", () => {
+    expect(selectChoice("text-font").options).toHaveLength(21);
   });
 
   it("[F17.AC5] leaves the list as it is when the size, then the opacity changes", () => {
@@ -90,6 +93,6 @@ describe("The font list written only when the session's fonts change (US-048)", 
     await waitForPageTasks();
 
     expect(isFontListMarked()).toBe(false);
-    expect(selectChoice("text-font").options).toHaveLength(188);
+    expect(selectChoice("text-font").options).toHaveLength(22);
   });
 });

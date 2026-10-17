@@ -1,5 +1,5 @@
-import { parseFontFace, parseNamedFaceParts, unlistedFaceReason } from "../../src";
-import { UNLISTED_FACE_REASONS, readJoinedFile } from "../fonts";
+import { facePartsToFile, parseFontFace, parseNamedFaceParts, unlistedFaceReason } from "../../src";
+import { UNLISTED_FACE_REASONS } from "../fonts";
 
 import type { InstalledFaceRead } from "./installed-face-read";
 import type { NamedFontFace } from "../../src";
@@ -45,22 +45,22 @@ async function readFaceBytes(font: InstalledFont): Promise<Uint8Array<ArrayBuffe
  * (`parseNamedFaceParts`): a face alone is its own file; in a whole collection, as a browser may
  * give it, the face of its PostScript name (name ID 6, as `FontData.postscriptName`) is found by
  * reading each face's name in the collection, and only that face is joined from its parts
- * (`readJoinedFile`), the other faces never written (US-052).
+ * into one buffer (`facePartsToFile`), the other faces never written (US-052, EN-057).
  *
  * @kind procedure
  * @param font - a face the browser lists
  * @param bytes - the bytes the browser gave for it
  * @returns its file; undefined when a collection holds no face of that name
- * @throws {DOMException} when the browser cannot hold the joined file
+ * @throws {RangeError} when the engine cannot allocate the joined file
  * @see REF-OT-OTFF
  */
-async function readFaceFile(
+function readFaceFile(
   font: InstalledFont,
   bytes: Uint8Array<ArrayBuffer>,
-): Promise<Uint8Array<ArrayBuffer> | undefined> {
+): Uint8Array<ArrayBuffer> | undefined {
   const parts = parseNamedFaceParts(bytes, font.postscriptName);
 
-  return parts === undefined ? undefined : await readJoinedFile(parts);
+  return parts === undefined ? undefined : facePartsToFile(parts);
 }
 
 /**
@@ -107,11 +107,11 @@ function readFaceFromFile(font: InstalledFont, file: Readonly<Uint8Array>): Inst
  * @kind procedure
  * @param given - the face and the bytes the browser gave for it
  * @returns the face read; or why it was refused
- * @throws {DOMException} when the browser cannot hold the joined file
+ * @throws {RangeError} when the engine cannot allocate the joined file
  * @see REF-WICG-LOCAL-FONT-ACCESS
  */
-async function readFaceFromBytes(given: GivenFace): Promise<InstalledFaceRead> {
-  const file = await readFaceFile(given.font, given.bytes);
+function readFaceFromBytes(given: GivenFace): InstalledFaceRead {
+  const file = readFaceFile(given.font, given.bytes);
 
   return file === undefined
     ? {
@@ -129,7 +129,7 @@ async function readFaceFromBytes(given: GivenFace): Promise<InstalledFaceRead> {
  * @kind procedure
  * @param font - a face the browser lists
  * @returns the face read; or why it was refused
- * @throws {DOMException} when the browser cannot hold the joined file
+ * @throws {RangeError} when the engine cannot allocate the joined file
  * @see REF-WICG-LOCAL-FONT-ACCESS
  */
 async function readFaceRead(font: InstalledFont): Promise<InstalledFaceRead> {
@@ -137,7 +137,7 @@ async function readFaceRead(font: InstalledFont): Promise<InstalledFaceRead> {
 
   return typeof bytes === "string"
     ? { face: undefined, leftOut: "unreadable", refusal: bytes }
-    : await readFaceFromBytes({ bytes, font });
+    : readFaceFromBytes({ bytes, font });
 }
 
 /**

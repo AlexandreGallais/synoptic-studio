@@ -1,8 +1,10 @@
 // The full check of what an epic produced, at the start and at the end of every epic (RET-002, the
 // agent's tools in docs/tooling/agent-tools.md): every check of the code and the site, the
 // branches and pull requests left, the code scanning alerts on GitHub, the calls that failed
-// during the epic and why, calls left running, the backlog of the epic, the private records
-// saved. Prints a Markdown table to copy into the retrospective's record. Run by `npm run epic:check -- <epic> <first day>`.
+// during the epic and why (the worktree isolation's refusals apart), calls lost at a force-quit,
+// the backlog of the epic, the private records saved. A failed check:all is named by its failing
+// checks, their lanes and their failing tests (EN-055). Prints a Markdown table to copy into the
+// retrospective's record. Run by `npm run epic:check -- <epic> <first day>`.
 
 // Temporal runs behind `--harmony-temporal` in Node.js 24: the npm script passes it.
 
@@ -10,67 +12,12 @@ import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
-import { text } from "../.claude/hooks/status-json.ts";
+import { checkAllFinding, failedCalls, lostCalls } from "./epic-check-findings.ts";
 
-/** One line of the check's table. */
-export type Finding = {
-  readonly detail: string;
-  readonly isOk: boolean;
-  readonly what: string;
-};
+import type { Finding } from "./epic-check-findings.ts";
 
 /** Root of the repository. */
 const ROOT = join(import.meta.dirname, "..");
-
-/** A running call's file older than this is stale: one hour. */
-const STALE_MS = 3_600_000;
-
-/** Characters of an error kept to group the failed calls. */
-const ERROR_TEXT = 60;
-
-/** Share of failed calls accepted, in percent. */
-const FAILED_PERCENT = 2;
-
-/** Percent of a whole. */
-const PERCENT = 100;
-
-/** Characters of a failed command's error kept. */
-const OUTPUT_KEPT = 300;
-
-/** Error lines shown for the failed calls. */
-const ERRORS_SHOWN = 5;
-
-/**
- * The calls that failed since a day, and their most frequent errors.
- *
- * @param records - parsed lines of the metrics log
- * @param since - first day, `YYYY-MM-DD`
- * @returns a finding: how many failed out of how many, the frequent errors
- */
-export function failedCalls(records: readonly unknown[], since: string): Finding {
-  const recent = records.filter((record) => text(record, "time") >= since);
-  const failed = recent.filter((record) => text(record, "error") !== "");
-  const errors = new Map<string, number>();
-
-  for (const record of failed) {
-    const key = `${text(record, "tool")}: ${text(record, "error").slice(0, ERROR_TEXT)}`;
-
-    errors.set(key, (errors.get(key) ?? 0) + 1);
-  }
-
-  const frequent = errors
-    .entries()
-    .toArray()
-    .toSorted((left, right) => right[1] - left[1])
-    .slice(0, ERRORS_SHOWN)
-    .map(([error, times]) => `${String(times)} × ${error}`);
-
-  return {
-    detail: [`${String(failed.length)} of ${String(recent.length)}`, ...frequent].join("; "),
-    isOk: failed.length * PERCENT <= recent.length * FAILED_PERCENT,
-    what: "calls failed during the epic (2 % at most)",
-  };
-}
 
 /**
  * Branches left besides `main`, `develop` and the one checked out.
@@ -103,14 +50,14 @@ export function leftBranches(branches: readonly string[], current: string): Find
  * Why a command failed: its own output — check:all names the checks that failed — else the error.
  *
  * @param error - what `execFileSync` threw
- * @returns the end of that text
+ * @returns that text, whole: `check:all`'s is read for its failing tests
  */
 function failureText(error: unknown): string {
   const output: unknown =
     typeof error === "object" && error !== null ? Reflect.get(error, "stdout") : undefined;
   const said = typeof output === "string" && output !== "" ? output : String(error);
 
-  return said.trim().slice(-OUTPUT_KEPT);
+  return said.trim();
 }
 
 /**
@@ -183,9 +130,11 @@ if (import.meta.main) {
   const metrics = join(common, "metrics");
   const now = Temporal.Now.instant().epochMilliseconds;
   const running = join(metrics, "running");
-  const stale = (existsSync(running) ? readdirSync(running) : []).filter(
-    (name) => now - statSync(join(running, name)).mtimeMs > STALE_MS,
-  );
+  const runningCalls = (existsSync(running) ? readdirSync(running) : []).map((name) => {
+    const record: unknown = JSON.parse(readFileSync(join(running, name), "utf8"));
+
+    return { ageMs: now - statSync(join(running, name)).mtimeMs, record };
+  });
   const checks = run("npm", ["run", "--silent", "check:all"]);
   const prs = run("gh", [
     "pr",
@@ -205,11 +154,7 @@ if (import.meta.main) {
   const records = run("git", ["-C", join(ROOT, "records"), "status", "--short"]);
   const recordsLog = run("git", ["-C", join(ROOT, "records"), "log", "-1", "--format=%cs %s"]);
   const findings: readonly Finding[] = [
-    {
-      detail: checks.out.split("\n").at(-1) ?? "",
-      isOk: checks.isOk,
-      what: "check:all (code, site, playground, dependencies)",
-    },
+    checkAllFinding(checks),
     leftBranches(
       run("git", ["branch", "-a", "--format=%(refname:short)"]).out.split("\n"),
       run("git", ["branch", "--show-current"]).out,
@@ -226,11 +171,7 @@ if (import.meta.main) {
       what: "code scanning alerts open (GitHub, Security)",
     },
     failedCalls(metricsLog(metrics), since),
-    {
-      detail: stale.length === 0 ? "none" : stale.join(", "),
-      isOk: stale.length === 0,
-      what: "calls left running over an hour",
-    },
+    lostCalls(runningCalls),
     openItems(epic),
     {
       detail: `${records.out === "" ? "nothing unsaved" : "unsaved changes"}; last save ${recordsLog.out}`,

@@ -147,19 +147,51 @@ export function loggedCalls(): readonly unknown[] {
 }
 
 /**
+ * The first moment a report covers, from its `--since <day>` option.
+ *
+ * @param options - the command's arguments
+ * @returns the day's start, 00:00 UTC, in epoch milliseconds; 0 without the option
+ */
+export function sinceStart(options: readonly string[]): number {
+  const index = options.indexOf("--since");
+
+  return index === -1
+    ? 0
+    : Temporal.PlainDate.from(options[index + 1] ?? "")
+        .toZonedDateTime("UTC")
+        .toInstant().epochMilliseconds;
+}
+
+/**
+ * The lines of the metrics log for calls that ended from a moment on.
+ *
+ * @param records - parsed lines of the metrics log
+ * @param since - the moment, epoch milliseconds
+ * @returns those lines, in order
+ */
+export function loggedSince(records: readonly unknown[], since: number): readonly unknown[] {
+  return records.filter(
+    (record) => Temporal.Instant.from(text(record, "time")).epochMilliseconds >= since,
+  );
+}
+
+/**
  * The report's sections on turns: each saved turn, then where the latest turns' time went.
  *
+ * @param since - the first moment covered, epoch milliseconds; 0 for every turn
  * @returns titles and tables, in order
  */
-export function turnSections(): readonly string[] {
+export function turnSections(since: number): readonly string[] {
+  const calls = loggedSince(loggedCalls(), since);
+
   return [
     "## Turns",
-    turnsTable(savedTurns()),
+    turnsTable(savedTurns().filter((turn) => turn.start >= since)),
     "## Where the time of the latest turns went",
     "Main agent only, calls timed by the hooks since RET-002: the tools running, and the model between two calls (reading, thinking, writing the next one; gaps over 5 minutes left out).",
-    timeTable(loggedCalls(), TURNS_SHOWN),
+    timeTable(calls, TURNS_SHOWN),
     "## The agent's tools",
     "Each tool of `docs/tooling/agent-tools.md` run through npm: how often, how long, how often it failed.",
-    toolsTable(loggedCalls()),
+    toolsTable(calls),
   ];
 }

@@ -2,10 +2,11 @@
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { DEFAULT_FONT, lineWidth } from "../../src";
+import { DEFAULT_FONT, lineWidth, parseFontMetrics } from "../../src";
 import { lettersMissingFaceFile, testFaceFile } from "../../tests";
 import {
   chooseFiles,
+  chooseOption,
   clickElement,
   openServedPage,
   readDisabledState,
@@ -87,6 +88,24 @@ function fakeCanvas(gaps: Readonly<Record<number, number>>): readonly string[] {
   vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(context as never);
 
   return asked;
+}
+
+/** The Text tool's content and size when the page opens: two lines, 32. */
+const OPENING_TEXT = { lines: ["Pump P-101", "Running"], size: 32 };
+
+/**
+ * The width of the box a text fits, its widest line rounded up (DERIV-text-box, step 11), measured
+ * with a face's metrics.
+ *
+ * @param metrics - the face's metrics, undefined for a file that is not a font
+ * @returns the box's width; NaN without metrics
+ */
+function fittedWidth(metrics: Parameters<typeof lineWidth>[0] | undefined): number {
+  const spacing = { letterSpacing: 0, size: OPENING_TEXT.size, wordSpacing: 0 };
+
+  return metrics === undefined
+    ? NaN
+    : Math.ceil(Math.max(...OPENING_TEXT.lines.map((line) => lineWidth(metrics, line, spacing))));
 }
 
 /**
@@ -502,5 +521,147 @@ describe("The font chosen automatically, its files held (US-060)", () => {
 
     expect(document.querySelector("#canvas text")).not.toBeNull();
     expect(readLeftOut()).toEqual([]);
+  });
+});
+
+describe("The font list held while the default font is read again (US-061)", () => {
+  afterEach(() => {
+    Reflect.deleteProperty(globalThis, "queryLocalFonts");
+    vi.restoreAllMocks();
+  });
+
+  it("[F18.AC14] keeps the font list disabled while the default font's files are read again, said so", async () => {
+    const again = Promise.withResolvers<Blob>();
+    const blob = vi
+      .fn<() => Promise<Blob>>()
+      .mockResolvedValueOnce(testFaceBlob("Test Sans"))
+      .mockReturnValueOnce(again.promise);
+
+    fakeCanvas({});
+
+    fakeInstalledFonts([
+      { blob, family: "Test Sans", fullName: "Test Sans", postscriptName: "Test Sans" },
+      installedTestFamily("Test Serif"),
+    ]);
+
+    openTextTool();
+    clickElement("installed-fonts");
+
+    await vi.waitFor(() => {
+      expect(readText("#installed-fonts-progress")).toBe("Installed fonts read: 2 families.");
+    });
+
+    // Every family read ahead, Test Sans's file read a second time and not given yet; the page's
+    // redraws run at once in a test (`openServedPage`), so the list read is the one drawn.
+    expect(readDisabledState("text-font")).toBe("true");
+    expect(readDisabledState("installed-fonts")).toBe("true");
+
+    expect(readText("#font-message")).toBe(
+      "Reading Test Sans, the default font: the font list can be used once it is read.",
+    );
+
+    // A choice sent to the list while it is held, as a script or an assistive tool could: kept
+    // out, the default font chosen once read (AUD-020, V11).
+    chooseOption("text-font", "Test Serif");
+    again.resolve(testFaceBlob("Test Sans"));
+    await waitForPageTasks();
+
+    expect(readDisabledState("text-font")).toBe("false");
+    expect(readDisabledState("installed-fonts")).toBe("false");
+    expect(readValue("text-font")).toBe("Test Sans");
+  });
+});
+
+/**
+ * Test Sans as the browser lists it, a regular face given each time and a bold face given once
+ * for the reading ahead, then refused, as Chrome refuses a face it can no longer find.
+ *
+ * @returns its two faces, regular first
+ */
+function boldRefusedAtSecondRead(): readonly InstalledFont[] {
+  const bold = new Blob([new Uint8Array(testFaceFile({ ...TEST_SANS, weightClass: 700 }))]);
+  const blob = vi
+    .fn<() => Promise<Blob>>()
+    .mockResolvedValueOnce(bold)
+    .mockRejectedValue(new TypeError("The font TestSans-Bold could not be accessed."));
+
+  return [
+    installedTestFamily("Test Sans"),
+    { blob, family: "Test Sans", fullName: "Test Sans Bold", postscriptName: "TestSans-Bold" },
+  ];
+}
+
+describe("A face refused at the second reading of its family no longer measured (US-061)", () => {
+  afterEach(() => {
+    Reflect.deleteProperty(globalThis, "queryLocalFonts");
+    vi.restoreAllMocks();
+  });
+
+  it("[F18.AC14] drops the bold face read ahead of the default font when its file is refused, so that no face is left out of the export", async () => {
+    fakeCanvas({});
+    fakeInstalledFonts(boldRefusedAtSecondRead());
+    openTextTool();
+
+    clickElement("installed-fonts");
+    await waitForPageTasks();
+
+    // Read ahead, Test Sans offered 400 and 700; read again, 700 refused: 400 alone is held.
+    expect(readValue("text-font")).toBe("Test Sans");
+    expect(readWeights()).toEqual(["400"]);
+
+    tickEmbedFonts();
+
+    expect(readLeftOut()).toEqual([]);
+  });
+
+  it("[F18.AC14] measures a text asking the refused weight with the face held, as for a weight the family lacks, the refusal said", async () => {
+    fakeCanvas({ 400: 0, 700: 0 });
+    fakeInstalledFonts(boldRefusedAtSecondRead());
+    openTextTool();
+    chooseOption("text-weight", "700");
+
+    clickElement("installed-fonts");
+    await waitForPageTasks();
+    chooseOption("text-font", "Test Sans");
+    await waitForPageTasks();
+
+    expect(readText("#font-message")).toBe(
+      "Test Sans: 1 faces read, 1 refused (Test Sans Bold: The font TestSans-Bold could not be accessed. Import its file with Import a font).",
+    );
+
+    // 700 asked, the family holding 400 alone: the text measured and drawn with 400.
+    expect(readWeights()).toEqual(["400"]);
+    expect(readValue("text-weight")).toBe("400");
+
+    // The box the drawn text fits: Test Sans 400's measure, not Inter 700's (AUD-020, V11).
+    const characters = Array.from(
+      OPENING_TEXT.lines.join(""),
+      (letter) => letter.codePointAt(0) ?? 0,
+    );
+    const held = fittedWidth(parseFontMetrics(testFaceFile(TEST_SANS), characters));
+    const inter = fittedWidth(DEFAULT_FONT.faces.find((face) => face.weight === 700)?.metrics);
+
+    expect(held).not.toBe(inter);
+    chooseOption("text-fit", "box");
+    expect(readValue("text-box-width")).toBe(String(held));
+
+    tickEmbedFonts();
+
+    expect(readLeftOut()).toEqual([]);
+  });
+
+  it("[F18.AC14] keeps Inter's shipped faces the browser draws when an installed Inter is read again", async () => {
+    fakeCanvas({ 400: 0, 700: 0 });
+    fakeLocalFonts(["Inter"]);
+    openTextTool();
+
+    clickElement("installed-fonts");
+    await waitForPageTasks();
+    chooseOption("text-font", "Inter");
+    await waitForPageTasks();
+
+    // Inter 400 read from its file; Inter 700 shipped, without a file, drawn by the browser.
+    expect(readText("#font-message")).toBe("Inter: 1 faces read.");
+    expect(readWeights()).toEqual(["400", "700"]);
   });
 });

@@ -1,0 +1,12 @@
+[package]
+name = "hooks"
+version = "0.1.0"
+edition = "2024"
+description = "Claude Code hooks of the repository, and the transcript reading they share (EN-047)"
+license = "Apache-2.0"
+publish = false
+
+[dependencies]
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }

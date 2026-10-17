@@ -1,4 +1,5 @@
 import type { LeftOutFamily } from "./left-out-family";
+import type { RefusedFace } from "./refused-face";
 
 /** What the reading ahead has counted so far. */
 export type ReadAheadCount = {
@@ -10,4 +11,6 @@ export type ReadAheadCount = {
   readonly read: number;
   /** The families left out, none of their faces listed, in the browser's order. */
   readonly leftOut: readonly LeftOutFamily[];
+  /** The faces refused in the families read, in the browser's order (US-062). */
+  readonly refused: readonly RefusedFace[];
 };

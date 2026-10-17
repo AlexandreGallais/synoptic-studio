@@ -50,11 +50,11 @@ The spike opens the epic. VoidZero's site (voidzero.dev) and Oxc's documentation
 
 Ordered by the Product Owner at the refinement of 2026-10-16.
 
-| Feature                                                                                                          | Status      |
-| ---------------------------------------------------------------------------------------------------------------- | ----------- |
-| [F18](../features/E17-F18-a-safe-and-cheap-parallel-run.md) — A safe and cheap parallel run, and E15's leftovers | in-progress |
-| [F19](../features/E17-F19-oxc-and-rust-tools.md) — Checks and agent tools on Oxc and Rust                        | draft       |
-| [F20](../features/E17-F20-a-context-diet.md) — A context diet for every agent                                    | draft       |
+| Feature                                                                                                          | Status |
+| ---------------------------------------------------------------------------------------------------------------- | ------ |
+| [F18](../features/E17-F18-a-safe-and-cheap-parallel-run.md) — A safe and cheap parallel run, and E15's leftovers | done   |
+| [F19](../features/E17-F19-oxc-and-rust-tools.md) — Checks and agent tools on Oxc and Rust                        | draft  |
+| [F20](../features/E17-F20-a-context-diet.md) — A context diet for every agent                                    | draft  |
 
 F18 holds the stories decided at RET-003 (ADR-0063, ADR-0064, ADR-0065, ADR-0066), written then as F11 was at RET-001.
 

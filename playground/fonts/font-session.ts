@@ -12,4 +12,6 @@ export type FontSession = {
   readonly readAhead: readonly ReadAheadFont[];
   /** The kept family the text is measured with: the one chosen in the font list, or, while an installed family chosen is read, the one chosen before it. */
   readonly measured: string;
+  /** Whether the installed fonts the browser listed are being read: ahead, family after family, then the default font's files again (US-059, US-061). */
+  readonly isReading: boolean;
 };

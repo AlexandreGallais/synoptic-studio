@@ -18,20 +18,19 @@
         --radius: 0.6rem;
         --shadow: 0 4px 16px #0003;
       }
+      /* Side by side: the drawing, the checklist when asked, the options, the pipeline when shown;
+         a column hidden gives its room to the drawing (EN-056). */
       body {
-        display: grid;
-        grid-template-columns: 1fr 20rem 24rem;
+        display: flex;
         height: 100vh;
         margin: 0;
         background: var(--stage);
       }
-      /* Without the pipeline column, the drawing takes its room. */
-      body:has(#output[hidden]) {
-        grid-template-columns: 1fr 20rem;
-      }
       /* The stage: the drawing, with the toolbar and the guided test floating over it. */
       #stage {
         position: relative;
+        flex: 1 1 0;
+        min-width: 0;
         overflow: hidden;
       }
       #canvas {
@@ -160,19 +159,15 @@
         min-height: 2.5rem;
         font: inherit;
       }
-      /* The checklist of an epic (US-051): one scrolling card on the left of the stage, a box per line. */
+      /* The checklist of an epic (US-051): a scrolling column right of the drawing, never over it
+         (EN-056), a box per line. */
       #checklist {
-        position: absolute;
-        top: 4rem;
-        bottom: 0.75rem;
-        left: 0.75rem;
-        width: min(26rem, calc(100% - 1.5rem));
+        flex: 0 0 24rem;
+        box-sizing: border-box;
         padding: 0.75rem 1rem;
         overflow: auto;
         background: var(--panel);
         border-left: 4px solid var(--accent);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
       }
       #checklist h2 {
         margin: 0 0 0.5rem;
@@ -210,6 +205,8 @@
         opacity: 0.55;
       }
       aside {
+        flex: 0 0 20rem;
+        box-sizing: border-box;
         padding: 1rem;
         overflow: auto;
         background: var(--panel);
@@ -539,10 +536,6 @@
           </button>
         </p>
       </nav>
-      <section id="checklist" aria-labelledby="checklist-heading" hidden>
-        <h2 id="checklist-heading">Checklist of <span id="checklist-name"></span></h2>
-        <ol id="checklist-lines"></ol>
-      </section>
       <section id="guide" aria-label="Guided test" hidden>
         <h2>Guided test — step <span id="guide-number"></span> / <span id="guide-count"></span></h2>
         <h3 id="guide-title"></h3>
@@ -554,6 +547,10 @@
         </p>
       </section>
     </div>
+    <section id="checklist" aria-labelledby="checklist-heading" hidden>
+      <h2 id="checklist-heading">Checklist of <span id="checklist-name"></span></h2>
+      <ol id="checklist-lines"></ol>
+    </section>
     <aside>
       <h1 id="shape-title">Rectangle</h1>
       <!-- The shape kind, kept as the page's state; the toolbar sets it. -->

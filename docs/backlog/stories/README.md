@@ -41,6 +41,12 @@
 | [US-013](./E01-F03-US-013-points-list-selection.md)                               | F03     | List of points, selection, radius per vertex                                         | done   |
 | [AUD-004](./E01-F03-AUD-004-audit-f03.md)                                         | F03     | Audit F03: per-vertex corner radius                                                  | done   |
 | [VAL-004](./E01-F03-VAL-004-validate-radius-per-vertex.md)                        | F03     | Validate F03 on the reference cases                                                  | done   |
+| [SP-006](./E01-F09-SP-006-research-f09.md)                                        | F09     | Research for F09                                                                     | done   |
+| [EN-012](./E01-F09-EN-012-free-shape-in-its-box.md)                               | F09     | A free shape and its box in the model                                                | done   |
+| [CHK-006](./E01-F09-CHK-006-checkpoint-f09.md)                                    | F09     | Checkpoint in the middle of F09                                                      | done   |
+| [US-017](./E01-F09-US-017-rectangle-as-free-shape.md)                             | F09     | The rectangle as a free shape, stretched by its size                                 | done   |
+| [AUD-006](./E01-F09-AUD-006-audit-f09.md)                                         | F09     | Audit F09                                                                            | done   |
+| [VAL-006](./E01-F09-VAL-006-validate-stretchable-free-shape.md)                   | F09     | Validate F09                                                                         | done   |
 | [SP-005](./E01-F08-SP-005-research-f08.md)                                        | F08     | Research for F08                                                                     | done   |
 | [EN-013](./E01-F08-EN-013-polygon-numbered-from-its-base.md)                      | F08     | A regular polygon numbered from its base                                             | done   |
 | [EN-011](./E01-F08-EN-011-free-shape.md)                                          | F08     | A free shape of corners, fractions until edited                                      | done   |
@@ -50,12 +56,6 @@
 | [US-016](./E01-F08-US-016-delete-points.md)                                       | F08     | Delete points                                                                        | done   |
 | [AUD-005](./E01-F08-AUD-005-audit-f08.md)                                         | F08     | Audit F08: node editing                                                              | done   |
 | [VAL-005](./E01-F08-VAL-005-validate-node-editing.md)                             | F08     | Validate F08 on the reference cases                                                  | done   |
-| [SP-006](./E01-F09-SP-006-research-f09.md)                                        | F09     | Research for F09                                                                     | done   |
-| [EN-012](./E01-F09-EN-012-free-shape-in-its-box.md)                               | F09     | A free shape and its box in the model                                                | done   |
-| [CHK-006](./E01-F09-CHK-006-checkpoint-f09.md)                                    | F09     | Checkpoint in the middle of F09                                                      | done   |
-| [US-017](./E01-F09-US-017-rectangle-as-free-shape.md)                             | F09     | The rectangle as a free shape, stretched by its size                                 | done   |
-| [AUD-006](./E01-F09-AUD-006-audit-f09.md)                                         | F09     | Audit F09                                                                            | done   |
-| [VAL-006](./E01-F09-VAL-006-validate-stretchable-free-shape.md)                   | F09     | Validate F09                                                                         | done   |
 | [SP-007](./E01-F04-SP-007-research-f04.md)                                        | F04     | Research for F04                                                                     | done   |
 | [EN-014](./E01-F04-EN-014-angle-and-position.md)                                  | F04     | An angle and a position for every shape                                              | done   |
 | [EN-015](./E01-F04-EN-015-straight-box.md)                                        | F04     | The straight box of a drawn shape                                                    | done   |
@@ -79,28 +79,23 @@
 | [EN-022](./E14-F11-EN-022-folder-layout.md)                                       | F11     | Folders of the library and the playground                                            | done   |
 | [AUD-010](./E14-F11-AUD-010-audit-f11.md)                                         | F11     | Audit F11                                                                            | done   |
 | [EN-023](./E14-F11-EN-023-folders-by-domain.md)                                   | F11     | Folders by business domain, files and folders never side by side                     | done   |
+| [VAL-010](./E14-F11-VAL-010-validate-f11.md)                                      | F11     | Validate F11                                                                         | done   |
 | [SP-011](./E14-F12-SP-011-research-f12.md)                                        | F12     | Research for F12: curves in symbols, ways to type a handle, strokes                  | done   |
 | [EN-024](./E14-F12-EN-024-handles-model.md)                                       | F12     | A point's handles in the free shape model                                            | done   |
 | [EN-025](./E14-F12-EN-025-cubic-sides.md)                                         | F12     | Cubic sides in contours, path data and the straight box                              | done   |
 | [US-022](./E14-F12-US-022-handles-in-points-mode.md)                              | F12     | Switch a point to handles and type them as x and y                                   | done   |
 | [US-023](./E14-F12-US-023-handles-relative-to-point.md)                           | F12     | Type a handle as dx and dy from its point                                            | done   |
+| [CHK-011](./E14-F12-CHK-011-checkpoint-f12.md)                                    | F12     | Checkpoint in the middle of F12                                                      | done   |
 | [US-024](./E14-F12-US-024-handles-as-angle-and-length.md)                         | F12     | Type a handle as an angle and a length                                               | done   |
 | [US-025](./E14-F12-US-025-handles-as-share-or-data.md)                            | F12     | Type a side's handles as shares of the side, or paste curve data                     | done   |
 | [US-026](./E14-F12-US-026-handles-from-a-tension.md)                              | F12     | Smooth a point by a tension, its handles computed                                    | done   |
-| [CHK-011](./E14-F12-CHK-011-checkpoint-f12.md)                                    | F12     | Checkpoint in the middle of F12                                                      | done   |
 | [AUD-011](./E14-F12-AUD-011-audit-f12.md)                                         | F12     | Audit F12                                                                            | done   |
 | [EN-026](./E14-F12-EN-026-ways-kept-at-validation.md)                             | F12     | Keep only the ways and modes chosen at the validation                                | done   |
 | [SP-012](./E14-F12-SP-012-research-fillet-beside-curve.md)                        | F12     | Research: a corner radius beside a curved side                                       | done   |
 | [US-027](./E14-F12-US-027-radius-beside-curve.md)                                 | F12     | A corner beside a curved side keeps its radius                                       | done   |
 | [US-028](./E14-F12-US-028-handles-on-a-polygon.md)                                | F12     | Give handles to a point of a regular polygon                                         | done   |
 | [AUD-012](./E14-F12-AUD-012-audit-after-validation.md)                            | F12     | Audit the changes asked at the validation                                            | done   |
-| [SP-014](./E14-F13-SP-014-research-f13.md)                                        | F13     | Research for F13: the named calculations and their sources                           | done   |
-| [EN-028](./E14-F13-EN-028-name-math-and-geometry.md)                              | F13     | Pass 1: name the calculations of math and geometry                                   | done   |
-| [EN-029](./E14-F13-EN-029-name-model-and-playground.md)                           | F13     | Pass 1: name the calculations of the model, io, render and playground                | done   |
-| [CHK-013](./E14-F13-CHK-013-checkpoint-f13.md)                                    | F13     | Checkpoint between the two passes                                                    | done   |
-| [EN-030](./E14-F13-EN-030-second-pass.md)                                         | F13     | Pass 2: what pass 1 missed, and the duplicates                                       | done   |
-| [AUD-014](./E14-F13-AUD-014-audit-f13.md)                                         | F13     | Audit F13                                                                            | done   |
-| [VAL-013](./E14-F13-VAL-013-validate-f13.md)                                      | F13     | Validate F13                                                                         | done   |
+| [VAL-011](./E14-F12-VAL-011-validate-f12.md)                                      | F12     | Validate F12                                                                         | done   |
 | [SP-013](./E14-F10-SP-013-research-f10.md)                                        | F10     | Research for F10: an ellipse from four cubic sides                                   | done   |
 | [EN-027](./E14-F10-EN-027-round-shape-model.md)                                   | F10     | The round shape in the model, its curve and conversions                              | done   |
 | [US-029](./E14-F10-US-029-round-tool.md)                                          | F10     | Draw a circle or an ellipse with the Round tool                                      | done   |
@@ -108,8 +103,13 @@
 | [US-030](./E14-F10-US-030-convert-round-shape.md)                                 | F10     | Convert a round shape to a free shape, two ways                                      | done   |
 | [AUD-013](./E14-F10-AUD-013-audit-f10.md)                                         | F10     | Audit F10                                                                            | done   |
 | [VAL-012](./E14-F10-VAL-012-validate-f10.md)                                      | F10     | Validate F10                                                                         | done   |
-| [VAL-011](./E14-F12-VAL-011-validate-f12.md)                                      | F12     | Validate F12                                                                         | done   |
-| [VAL-010](./E14-F11-VAL-010-validate-f11.md)                                      | F11     | Validate F11                                                                         | done   |
+| [SP-014](./E14-F13-SP-014-research-f13.md)                                        | F13     | Research for F13: the named calculations and their sources                           | done   |
+| [EN-028](./E14-F13-EN-028-name-math-and-geometry.md)                              | F13     | Pass 1: name the calculations of math and geometry                                   | done   |
+| [EN-029](./E14-F13-EN-029-name-model-and-playground.md)                           | F13     | Pass 1: name the calculations of the model, io, render and playground                | done   |
+| [CHK-013](./E14-F13-CHK-013-checkpoint-f13.md)                                    | F13     | Checkpoint between the two passes                                                    | done   |
+| [EN-030](./E14-F13-EN-030-second-pass.md)                                         | F13     | Pass 2: what pass 1 missed, and the duplicates                                       | done   |
+| [AUD-014](./E14-F13-AUD-014-audit-f13.md)                                         | F13     | Audit F13                                                                            | done   |
+| [VAL-013](./E14-F13-VAL-013-validate-f13.md)                                      | F13     | Validate F13                                                                         | done   |
 | [REV-002](./E14-REV-002-review-e14.md)                                            | E14     | Review E14 with the Product Owner                                                    | done   |
 | [RET-002](./E14-RET-002-retrospective-e14.md)                                     | E14     | Retrospective of E14                                                                 | done   |
 | [SP-015](./E15-F05-SP-015-research-e15-text.md)                                   | F05     | Research for E15: text measured from font metrics and drawn as positioned lines      | done   |
@@ -179,30 +179,32 @@
 | [NAM-001](./E15-NAM-001-naming-pass-e15.md)                                       | E15     | Naming pass over the code of E15                                                     | done   |
 | [REV-003](./E15-REV-003-review-e15.md)                                            | E15     | Review E15 with the Product Owner                                                    | done   |
 | [RET-003](./E15-RET-003-retrospective-e15.md)                                     | E15     | Retrospective of E15                                                                 | done   |
-| [SP-020](./E17-F18-SP-020-research-f18.md)                                        | F18     | Research for F18, the sources of RET-003 recorded                                    | ready  |
+| [SP-020](./E17-F18-SP-020-research-f18.md)                                        | F18     | Research for F18, the sources of RET-003 recorded                                    | done   |
 | [EN-045](./E17-F18-EN-045-explicit-tool-scopes.md)                                | F18     | Every check tool given explicit targets                                              | done   |
-| [EN-047](./E17-F18-EN-047-heavy-lock-and-agent-limit.md)                          | F18     | A lock for heavy commands and a limit on subagents                                   | ready  |
-| [EN-063](./E17-F18-EN-063-subagent-limit-in-settings.md)                          | F18     | The subagent limit set in Claude Code's settings                                     | ready  |
-| [EN-048](./E17-F18-EN-048-tables-without-padding-and-union-logs.md)               | F18     | Tables without padding, append-only logs merged by union                             | ready  |
-| [EN-049](./E17-F18-EN-049-stories-index-generated.md)                             | F18     | The stories index generated from the story files                                     | ready  |
-| [EN-050](./E17-F18-EN-050-shared-files-written-at-merge.md)                       | F18     | Shared files written only at merge                                                   | ready  |
-| [EN-051](./E17-F18-EN-051-story-finish-one-merge-at-a-time.md)                    | F18     | `story:finish` one merge at a time, from a worktree too                              | ready  |
-| [CHK-019](./E17-F18-CHK-019-checkpoint-f18.md)                                    | F18     | Checkpoint in the middle of F18                                                      | ready  |
-| [EN-052](./E17-F18-EN-052-worktrees-named-after-their-story.md)                   | F18     | Worktrees named after their story, commands that fit them                            | ready  |
-| [EN-053](./E17-F18-EN-053-session-figures-and-background-subagents.md)            | F18     | The session's figures at its end, background subagents seen                          | ready  |
-| [EN-054](./E17-F18-EN-054-timing-tests-that-hold-under-load.md)                   | F18     | Timing tests that hold under load                                                    | ready  |
-| [EN-055](./E17-F18-EN-055-epic-check-says-what-failed.md)                         | F18     | `epic:check` says what failed; the golden check at push                              | ready  |
-| [EN-056](./E17-F18-EN-056-a-short-checklist.md)                                   | F18     | A short checklist, prepared by `val:prepare`                                         | ready  |
-| [EN-057](./E17-F18-EN-057-register-of-exceptions-and-a-byte-buffer.md)            | F18     | The register of exceptions, and a byte buffer for font collections                   | ready  |
-| [US-061](./E17-F18-US-061-font-list-held-while-the-default-font-is-read.md)       | F18     | Font list held while the default font is read again                                  | ready  |
-| [EN-058](./E17-F18-EN-058-a-mutation-runner.md)                                   | F18     | A mutation runner as a tool                                                          | ready  |
-| [EN-059](./E17-F18-EN-059-done-commit-checks-the-docs.md)                         | F18     | The done commit checks the docs a rule touches                                       | ready  |
-| [EN-060](./E17-F18-EN-060-documentation-pass-on-e15-pages.md)                     | F18     | A documentation pass on E15's long pages                                             | ready  |
-| [EN-061](./E17-F18-EN-061-modules-per-folder-counted.md)                          | F18     | Modules per folder counted, no spread in a fold                                      | ready  |
-| [EN-062](./E17-F18-EN-062-inter-as-a-test-font.md)                                | F18     | Inter Regular as a test font file                                                    | ready  |
-| [EN-046](./E17-F18-EN-046-release-pr-on-develop.md)                               | F18     | Release pull request on develop, only the release on main                            | ready  |
-| [AUD-020](./E17-F18-AUD-020-audit-f18.md)                                         | F18     | Audit F18                                                                            | ready  |
-| [VAL-019](./E17-F18-VAL-019-validate-f18.md)                                      | F18     | Validate F18                                                                         | ready  |
+| [EN-047](./E17-F18-EN-047-heavy-lock-and-agent-limit.md)                          | F18     | A lock for heavy commands and a limit on subagents                                   | done   |
+| [EN-063](./E17-F18-EN-063-subagent-limit-in-settings.md)                          | F18     | The subagent limit set in Claude Code's settings                                     | done   |
+| [EN-067](./E17-F18-EN-067-font-tests-on-every-system.md)                          | F18     | Font tests on every system                                                           | done   |
+| [EN-048](./E17-F18-EN-048-tables-without-padding-and-union-logs.md)               | F18     | Tables without padding, append-only logs merged by union                             | done   |
+| [EN-049](./E17-F18-EN-049-stories-index-generated.md)                             | F18     | The stories index generated from the story files                                     | done   |
+| [EN-050](./E17-F18-EN-050-shared-files-written-at-merge.md)                       | F18     | Shared files written only at merge                                                   | done   |
+| [EN-051](./E17-F18-EN-051-story-finish-one-merge-at-a-time.md)                    | F18     | `story:finish` one merge at a time, from a worktree too                              | done   |
+| [CHK-019](./E17-F18-CHK-019-checkpoint-f18.md)                                    | F18     | Checkpoint in the middle of F18                                                      | done   |
+| [EN-052](./E17-F18-EN-052-worktrees-named-after-their-story.md)                   | F18     | Worktrees named after their story, commands that fit them                            | done   |
+| [EN-053](./E17-F18-EN-053-session-figures-and-background-subagents.md)            | F18     | The session's figures at its end, background subagents seen                          | done   |
+| [EN-054](./E17-F18-EN-054-timing-tests-that-hold-under-load.md)                   | F18     | Timing tests that hold under load                                                    | done   |
+| [EN-055](./E17-F18-EN-055-epic-check-says-what-failed.md)                         | F18     | `epic:check` says what failed; the golden check at push                              | done   |
+| [EN-056](./E17-F18-EN-056-a-short-checklist.md)                                   | F18     | A short checklist, prepared by `val:prepare`                                         | done   |
+| [EN-057](./E17-F18-EN-057-register-of-exceptions-and-a-byte-buffer.md)            | F18     | The register of exceptions, and a byte buffer for font collections                   | done   |
+| [US-061](./E17-F18-US-061-font-list-held-while-the-default-font-is-read.md)       | F18     | Font list held while the default font is read again                                  | done   |
+| [US-062](./E17-F18-US-062-installed-fonts-read-whole-before-listed.md)            | F18     | Installed fonts read whole before they are listed                                    | done   |
+| [EN-058](./E17-F18-EN-058-a-mutation-runner.md)                                   | F18     | A mutation runner as a tool                                                          | done   |
+| [EN-059](./E17-F18-EN-059-done-commit-checks-the-docs.md)                         | F18     | The done commit checks the docs a rule touches                                       | done   |
+| [EN-060](./E17-F18-EN-060-documentation-pass-on-e15-pages.md)                     | F18     | A documentation pass on E15's long pages                                             | done   |
+| [EN-061](./E17-F18-EN-061-modules-per-folder-counted.md)                          | F18     | Modules per folder counted, no spread in a fold                                      | done   |
+| [EN-062](./E17-F18-EN-062-inter-as-a-test-font.md)                                | F18     | Inter Regular as a test font file                                                    | done   |
+| [EN-046](./E17-F18-EN-046-release-pr-on-develop.md)                               | F18     | Release pull request on develop, only the release on main                            | done   |
+| [AUD-020](./E17-F18-AUD-020-audit-f18.md)                                         | F18     | Audit F18                                                                            | done   |
+| [VAL-019](./E17-F18-VAL-019-validate-f18.md)                                      | F18     | Validate F18                                                                         | done   |
 | [SP-021](./E17-F19-SP-021-research-f19.md)                                        | F19     | Research for F19, Oxc and Rust tools                                                 | ready  |
 | [CHK-020](./E17-F19-CHK-020-checkpoint-f19.md)                                    | F19     | Checkpoint in the middle of F19                                                      | draft  |
 | [AUD-021](./E17-F19-AUD-021-audit-f19.md)                                         | F19     | Audit F19                                                                            | draft  |
