@@ -80,7 +80,7 @@ In delivery order, written on 2026-10-17 when the Product Owner started F19's ru
 | [EN-082](../stories/E17-F19-EN-082-unicorn-dom-and-web.md) | Enabler | Unicorn's DOM and web rules in Rust | ready |
 | [EN-083](../stories/E17-F19-EN-083-jsdoc-rules-in-rust.md) | Enabler | JSDoc's rules in Rust | ready |
 | [EN-084](../stories/E17-F19-EN-084-other-plugin-rules-in-rust.md) | Enabler | The other plugins' rules in Rust | ready |
-| [EN-093](../stories/E17-F19-EN-093-rules-and-format-chosen-by-the-agent.md) | Enabler | Every lint and format rule reviewed by the agent for its own work | ready |
+| [EN-093](../stories/E17-F19-EN-093-rules-and-format-chosen-by-the-agent.md) | Enabler | Every rule and tool reviewed by the agent for its own work | ready |
 | [EN-085](../stories/E17-F19-EN-085-docs-build-on-change-eslint-out-oxc-adr.md) | Enabler | The docs build on change, ESLint out, the ADR on Oxc | ready |
 | [AUD-021](../stories/E17-F19-AUD-021-audit-f19.md) | Audit | Audit F19 | ready |
 | [VAL-020](../stories/E17-F19-VAL-020-validate-f19.md) | Validation | Validate F19 | ready |
