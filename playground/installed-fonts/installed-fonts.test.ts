@@ -299,7 +299,10 @@ describe("Installed fonts (US-036)", () => {
     expect(readValue("text-font")).toBe("Inter");
     // Each face read once ahead (US-053); Test Sans Bold's empty file refused, Test Sans kept.
     expect(bold).toHaveBeenCalledOnce();
-    expect(readProgress()).toBe("Installed fonts read: 2 families.");
+
+    expect(readProgress()).toBe(
+      "Installed fonts read: 2 families. 1 faces of the families read refused: 1 unreadable (Test Sans Bold).",
+    );
   });
 
   it("[F17.AC11] measures a family read ahead at once when chosen, then reads its files again", async () => {
@@ -640,7 +643,11 @@ describe("Installed fonts (US-036)", () => {
     chooseOption("text-font", "Test Sans");
     await waitForPageTasks();
 
-    // Refused at the first reading, never read again (US-062).
+    // Refused at the first reading, counted there, never read again (US-062).
+    expect(readProgress()).toBe(
+      "Installed fonts read: 1 families. 1 faces of the families read refused: 1 unreadable (TestSans-Bold).",
+    );
+
     expect(readText("#font-message")).toBe("Test Sans: 1 faces read.");
   });
 
@@ -745,7 +752,10 @@ describe("Installed fonts (US-036)", () => {
     clickElement("installed-fonts");
     await waitForPageTasks();
 
-    expect(readProgress()).toBe("Installed fonts read: 1 families.");
+    expect(readProgress()).toBe(
+      "Installed fonts read: 1 families. 1 faces of the families read refused: 1 not embeddable (Test Sans Bold).",
+    );
+
     chooseOption("text-font", "Test Sans");
     await waitForPageTasks();
 
@@ -829,6 +839,30 @@ describe("Installed fonts read whole before they are listed (US-062)", () => {
     expect(light.blob).toHaveBeenCalledOnce();
     expect(readText("#font-message")).toBe("Test Sans: 1 faces read.");
     expect(readOptions("text-weight")).toEqual(["400"]);
+  });
+
+  it("[F18.AC14] counts the faces refused in the families read by reason, after the families left out", async () => {
+    fakeLocalFonts([
+      installedFont("Test Bad", Uint8Array.from([1, 2, 3])),
+      installedFont("Test Sans", testFaceFile(TEST_SANS)),
+      inaccessibleFont("Test Sans Light", "The font Test-Sans-Light could not be accessed."),
+      {
+        ...installedFont("Test Sans", lettersMissingFaceFile({ ...TEST_SANS, weightClass: 700 })),
+        fullName: "Test Sans Bold",
+      },
+      {
+        ...installedFont("Test Sans", testFaceFile({ ...TEST_SANS, fsType: 2, weightClass: 900 })),
+        fullName: "Test Sans Black",
+      },
+    ]);
+
+    clickElement("installed-fonts");
+    await waitForPageTasks();
+
+    // Test Bad left out whole; three faces of Test Sans refused, said in the one order of the reasons.
+    expect(readProgress()).toBe(
+      "Installed fonts read: 1 families; 1 left out: 1 unreadable (Test Bad). 3 faces of the families read refused: 1 not embeddable (Test Sans Black); 1 no Latin letters (Test Sans Bold); 1 unreadable (Test Sans Light).",
+    );
   });
 
   it("[F18.AC14] releases each face's file once it is read and checked, its metrics alone kept", async () => {
