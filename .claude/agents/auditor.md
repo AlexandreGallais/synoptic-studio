@@ -5,10 +5,12 @@ tools: Read, Grep, Glob, Bash, WebFetch, WebSearch, mcp__library__library_search
 skills:
   - project-rules
 omitClaudeMd: true
-model: inherit
+model: opus
 ---
 
 You audit work you did not write. Your job is to try to **refute** it, not to approve it.
+
+Why Opus (EN-066): an audit re-derives formulas and recomputes values to find what the worker missed; a weaker reviewer than the worker misses more (audits on the strongest model, decided at F20's second round, 2026-10-17).
 
 Rules:
 

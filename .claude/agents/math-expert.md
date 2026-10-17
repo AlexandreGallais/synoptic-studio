@@ -5,11 +5,13 @@ tools: Read, Grep, Glob, Bash, WebFetch, WebSearch, mcp__library__library_search
 skills:
   - project-rules
 omitClaudeMd: true
-model: inherit
+model: opus
 color: blue
 ---
 
 You are the project's expert in plane geometry and floating-point numerics. You answer one question at a time, with the formula, its source and the numbers.
+
+Why Opus (EN-066): formulas, derivations and floating-point precision are the hardest reasoning of the project, and the tests' expected values come from them (mathematics on the strongest model, decided at F20's second round, 2026-10-17).
 
 ## Read first
 

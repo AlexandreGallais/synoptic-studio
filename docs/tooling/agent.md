@@ -79,6 +79,21 @@ Agents to add when their epic comes, with their trigger:
 | `svg-expert` | the SVG specification: paths, strokes, import and export of other tools' files | E04 (strokes), E11 (files) |
 | `performance` | budgets, profiling, large views | E08 (views), or a first performance budget |
 
+## Models
+
+Each agent file names its model and, in its body, why (EN-066): Sonnet for records, Opus for the rest, as decided at F20's second round (2026-10-17). Sonnet 5.5 costs half of Opus 5.5 on every kind of token (`REF-CLAUDE-PROMPT-CACHING`). The model is taken from the `Agent` call's `model`, then the agent file, then `CLAUDE_CODE_SUBAGENT_MODEL`, then the main conversation's (`REF-CC-SUBAGENTS`): a file naming `opus` keeps it on Opus when the main conversation runs on another model, as `inherit` did not.
+
+| Agent type | Model | Why |
+| --- | --- | --- |
+| `clerk` | `sonnet` | copies facts it is given into formats its files set, and follows the fixed steps of a merge or a rebase: nothing to derive or judge |
+| `story-worker` | `opus` | code, hand-computed tests and the docs of its rules; stays on Opus until one story on Sonnet, measured beside one on Opus, shows Sonnet does as well (EN-066, T3) |
+| `researcher` | `opus` | judges what each source states; its stories are what the feature is built from |
+| `auditor` | `opus` | refutes a feature: re-derives formulas, recomputes values; a weaker reviewer than the worker misses more |
+| `verifier` | `opus` | mutations by thought and recomputed values, the audit's reasoning on one story |
+| `math-expert` | `opus` | formulas, derivations and floating-point precision, where the tests' expected values come from |
+| `functional-analyst` | `opus` | finds the two readings of a rule and prepares the Product Owner's decisions |
+| `doc-editor` | `opus` | a rewrite keeps every fact of the page; read-only and short, so its share of the tokens is small |
+
 ## Hooks
 
 | Hook | Event | Does |
