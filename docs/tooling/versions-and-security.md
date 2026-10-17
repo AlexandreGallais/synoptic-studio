@@ -2,7 +2,7 @@
 
 ## Latest versions
 
-- `npm run deps:outdated` runs npm-check-updates with `.ncurc.cjs`: every package must be on its **latest version published at least 7 days ago** (cooldown, ADR-0038, `REF-NCU-COOLDOWN`), `typescript` included: TypeScript 7 is the only TypeScript since EN-085 (ADR-0075), TypeScript 6's alias gone with typescript-eslint and TypeDoc. Any available upgrade makes the command fail. The cooldown keeps a version published minutes ago from turning a check red (release 0.10.0), and lowers the risk of installing a compromised version (supply-chain attacks, `REF-NCU-COOLDOWN`).
+- `npm run deps:outdated` runs npm-check-updates with `.ncurc.cjs`: every package must be on its **latest version published at least 7 days ago** (cooldown, ADR-0072, `REF-NCU-COOLDOWN`), `typescript` included: TypeScript 7 is the only TypeScript since EN-085 (ADR-0075), TypeScript 6's alias gone with typescript-eslint and TypeDoc. Any available upgrade makes the command fail. The cooldown keeps a version published minutes ago from turning a check red (release 0.10.0), and lowers the risk of installing a compromised version (supply-chain attacks, `REF-NCU-COOLDOWN`).
 - It runs before every `git push` (`.husky/pre-push`) and in the CI of the pull requests into `main` (`check:all`).
 - **Upgrading** (Product Owner, 2026-10-12):
   1. list the upgrades: `npx ncu`;

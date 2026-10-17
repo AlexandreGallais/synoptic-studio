@@ -29,7 +29,7 @@ flowchart LR
 | Skill | Does |
 | --- | --- |
 | `/story` | a story from branch to pull request |
-| `/run` | an autonomous run on the feature branch, up to the validation (ADR-0028) |
+| `/run` | an autonomous run on the feature branch, up to the validation (ADR-0072) |
 | `/spike` | the research spike of a feature (ADR-0020) |
 | `/derivation` | a `DERIV-*` from read sources |
 | `/audit` | the feature audit with the reviewing agents |
@@ -62,7 +62,7 @@ Agents to add when their epic comes, with their trigger:
 | Hook | Event | Does |
 | --- | --- | --- |
 | `guard-bash.ts` | `PreToolUse` (shell) | denies `gh pr merge`, `--no-verify` (`commit -n`), hooks switched off (`HUSKY=0`, `core.hooksPath`), a force push without lease (`+branch` too), `git -C` included; a full Vitest run outside `npm run test`, which takes the heavy lock (EN-047) — no test path, or only `.`, through `npx` or `node_modules/.bin`, whatever its options (`--project x`); in a story's worktree, a Git command chained with another (`cd … && git …`, `git add && git commit`, a pipe), answered at once with the form to run: `cd "<worktree>" \|\| exit 9`, then the Git command alone, and `golden:write` (EN-052); skips here-document bodies |
-| `limit-agents` (Rust, `tools/hooks`) | `PreToolUse` (`Agent`, `SendMessage`) | refuses a fourth subagent at once (ADR-0063), started by `Agent` or resumed by `SendMessage`, naming the three running and their age; lets a message to the main conversation or to a subagent running through, since it starts none (the target matched by the agent id its launch or resume result names, or the `name` its `Agent` call gave); counts the session's background subagents from its transcript, where the status line's cache (`.git/metrics/status-line-turn.json`) stopped; lets the call through when it cannot read; test `tools/hooks/tests/limit.rs`; run by `cargo run --release`; backed up by `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` set to 3 under `env`, Claude Code's own cap, whose refusal names no subagent and which a resume escapes (`REF-CC-ENV-VARS`, EN-047, EN-063) |
+| `limit-agents` (Rust, `tools/hooks`) | `PreToolUse` (`Agent`, `SendMessage`) | refuses a fourth subagent at once (ADR-0072), started by `Agent` or resumed by `SendMessage`, naming the three running and their age; lets a message to the main conversation or to a subagent running through, since it starts none (the target matched by the agent id its launch or resume result names, or the `name` its `Agent` call gave); counts the session's background subagents from its transcript, where the status line's cache (`.git/metrics/status-line-turn.json`) stopped; lets the call through when it cannot read; test `tools/hooks/tests/limit.rs`; run by `cargo run --release`; backed up by `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` set to 3 under `env`, Claude Code's own cap, whose refusal names no subagent and which a resume escapes (`REF-CC-ENV-VARS`, EN-047, EN-063) |
 | `session-state.ts` | `SessionStart` | prints the branch, uncommitted files, progress of started features; removes the files of calls left running for a day |
 | `track-tool-call.ts` | `PreToolUse` (every tool), in the background | writes the call starting, for the status line ([metrics](./metrics.md)) |
 | `log-tool-call.ts` | `PostToolUse`, `PostToolUseFailure`, in the background | logs each call and its duration; removes it from the running calls |

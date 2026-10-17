@@ -30,3 +30,22 @@ One task = one commit, referenced as `EN-093.Tn`.
 - [ ] T1 — The review of every rule and setting, the verdicts (2 h)
 - [ ] T2 — The changes applied, the tree fixed, the tests (2 h)
 - [ ] T3 — The conventions, the ADR if any, the timings (1 h)
+- [ ] T4 — The rule catalogue by context, with profiles per kind of project, on paper only (2 h), added by the Product Owner on 2026-10-17
+
+## For the main thread
+
+- **Rule-docs**: no rule of `docs/domain/` changed; the done commit's footer: `Rule-docs: none affected, a review of the tooling's rules and conventions, no business rule changed`.
+- **No ADR**: no change of style: the format settings stay, the rules added guard correctness, and the changed conventions (tags on test helpers, the per-task check, `lint:fix`) are written in `docs/conventions/`; ADR-0011 and ADR-0012 kept, measured in `docs/conventions/rules.md`.
+- **No settings proposal** for `.claude/settings.json`.
+- **`eslint/settings/dropped-rules.ts` header wording**: moot, the file left with EN-085.
+- **For F21's feature file** (its draft table of stories, as a note): carry only what EN-093 kept, measured in `docs/conventions/rules.md` (Checks, hooks and conventions). Story 5 (Git hooks): the staged-file runner without ESLint's step; commitlint's rules as they are, with the 14 scopes (`eslint` dropped); **add** a check that a commit on a story branch carries `Refs: <ID>.Tn` or `Closes: <ID>` with the branch's own id; the branch-name pattern as one regular expression. Story 3 (repository tools): `check-all` without a `check` twin to keep in step (the story skill no longer runs `npm run check` per task); `replace-text` kept, it is the agent's most used edit tool. Story 2 (metrics): kept whole; the friction count by rule that EN-093 made by hand from the transcripts would be a cheap addition to `metrics-report` (findings by rule, per epic), so that the next review of the rules reads it instead of grepping.
+
+### Journal
+
+- `#run` EN-093: every rule, formatter setting, hook and convention reviewed for the agent's own work (`docs/conventions/rules.md`); 9 correctness rules added to oxlint, `@param` and `@returns` off in test files, `lint:fix` and the `eslint` scope dropped, ADR-0011 and ADR-0012 measured and kept, the width 100 measured and kept.
+
+### Improvements
+
+| 2026-10-17 | EN-093 | The flaky `installed-fonts.test.ts` rejected a held file before the page had asked for it: a promise rejected with no handler yet is an unhandled rejection, which a loaded machine made happen; reproduced by polling every millisecond, fixed by waiting for the file to be asked first. A test that rejects a held promise waits for its consumer first | tooling |
+| 2026-10-17 | EN-093 | oxlint's own correctness rules were never decided because the triage started from ESLint's rules: an upgrade of oxlint should read its new `correctness` and `suspicious` rules against the compiler and the project's linter, not only its renamed ones | tooling |
+| 2026-10-17 | EN-093 | The friction a rule causes is measurable from the transcripts (findings by rule); the top five since E01 were `kind-limits`, `informative-docs`, `folder-layout`, `max-nested-calls`, `complexity`, each the rule's intended work, which only a sample of the splits could show | process |
