@@ -85,6 +85,29 @@ pub fn quote(text: &str) -> String {
     quoted
 }
 
+/// A value written back as JSON text, members in their order: a hook's updated tool input.
+#[must_use]
+pub fn write(value: &Value) -> String {
+    match value {
+        Value::Null => "null".to_owned(),
+        Value::Bool(flag) => flag.to_string(),
+        Value::Number(number) => number.to_string(),
+        Value::String(text) => quote(text),
+        Value::Array(items) => format!(
+            "[{}]",
+            items.iter().map(write).collect::<Vec<_>>().join(",")
+        ),
+        Value::Object(members) => format!(
+            "{{{}}}",
+            members
+                .iter()
+                .map(|(name, member)| format!("{}:{}", quote(name), write(member)))
+                .collect::<Vec<_>>()
+                .join(",")
+        ),
+    }
+}
+
 /// Recursive descent over the bytes of a JSON text.
 struct Reader<'a> {
     bytes: &'a [u8],
