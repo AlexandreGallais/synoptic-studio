@@ -23,6 +23,8 @@ export const IGNORED_FILES = [
   ".claude/worktrees/**",
   // Private records, their own Git repository, ignored by this one (ADR-0044).
   "records/**",
+  // Build output of the Rust workspace (EN-068).
+  "target/**",
   // Only TypeScript is authored; the rare JavaScript file is a tool's required format (.ncurc.cjs).
   "**/*.{js,cjs,mjs}",
 ];

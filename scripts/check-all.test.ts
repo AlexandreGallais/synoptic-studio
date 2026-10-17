@@ -32,6 +32,10 @@ describe("check-all", () => {
     ]);
   });
 
+  it("[F19.AC9] runs the Rust checks in a lane of their own", () => {
+    expect(LANES).toContainEqual(["check:rust"]);
+  });
+
   it("reports a check by its time, a failed one with its output", () => {
     expect(reportOf({ durationMs: 23_940, isOk: true, name: "lint", output: "x" })).toBe(
       "✓ lint 23.9 s",

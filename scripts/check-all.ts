@@ -20,8 +20,9 @@ export const LANES: readonly (readonly string[])[] = [
     "deps:unused",
     "deps:tools",
     "deps:outdated",
-    "check:rust",
   ],
+  // The Rust workspace: rustfmt, Clippy, its tests, then its release binaries (EN-068).
+  ["check:rust"],
 ];
 
 /** Milliseconds per second. */
