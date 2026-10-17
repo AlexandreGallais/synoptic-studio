@@ -96,7 +96,7 @@ describe("epic-check", () => {
 
     expect(failingChecks(output)).toEqual([
       "test (lane test): scripts/epic-check.test.ts > epic-check > lists the branches, src/math/unit.test.ts > unit > keeps a zero vector",
-      "check:rust (lane format:check → lint:secrets → typecheck → deps:audit → deps:unused → deps:tools → deps:outdated → check:rust): heavy_lock_waits",
+      "check:rust (lane check:rust): heavy_lock_waits",
       "playground:build (lane docs:build → playground:build)",
     ]);
   });
