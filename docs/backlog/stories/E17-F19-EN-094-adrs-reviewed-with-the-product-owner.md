@@ -25,12 +25,14 @@ On 2026-10-17 the Product Owner went over every accepted ADR with the agent, one
 | 0039 | kept; its implementation moves to Rust in F21; SP-022 may extend it |
 | 0050 | decision 1 ("the agent's tools are TypeScript scripts") replaced: every new script, hook or agent tool is written in Rust (2026-10-16), the rule recorded by an ADR for the first time |
 | 0067, 0068 | confirmed (VAL-019): their status lines say so |
+| the agent's own method (Product Owner, 2026-10-17) | a new ADR: the agent is given growing freedom over its own method and tools; it logs each friction, error or slow step as it happens in the improvement log, with each reading that suggests a faster, cheaper or healthier way to work; each epic end holds a "method and tools" point at the retrospective, beside the tooling pass, where it presents what it wants to change — the backlog method itself included when it does not fit an agent — with its evidence, and new methods or Rust tools to adopt; the Product Owner decides |
 
 ## Acceptance criteria
 
 - Given the review, when the story ends, then a new ADR gathers the runs (superseding 0028, 0038, 0045 and 0063, and 0050's decisions 2 and 3, each status line updated), a new ADR records "every new tool in Rust" (superseding 0050's decision 1), 0022's status says decision 3 is replaced by `mutate`, 0020's says how a tooling feature is validated, and 0067 and 0068 read "Accepted".
 - Given EN-085, when its ADR on Oxc is written, then it supersedes 0009, 0010 and 0013 as decided here; this story writes that requirement in EN-085's file.
 - Given `AGENTS.md`, `CLAUDE.md`, the run skill and the worker brief, when the ADRs change, then they cite the new ADRs.
+- Given the decision on the agent's own method, when the story ends, then a new ADR records it, and `docs/process/agile.md` and the retro skill hold the logging during the work and the "method and tools" point of each epic end.
 
 ## Tasks
 
@@ -38,3 +40,4 @@ One task = one commit, referenced as `EN-094.Tn`.
 
 - [ ] T1 — The ADR of the runs, the ADR of the Rust tools, the status lines, the index (2 h)
 - [ ] T2 — EN-085's requirement, AGENTS.md, CLAUDE.md, skills and brief in step (1 h)
+- [ ] T3 — The ADR of the agent's own method, `agile.md` and the retro skill (1 h)
