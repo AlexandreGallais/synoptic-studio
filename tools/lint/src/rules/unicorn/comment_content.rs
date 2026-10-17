@@ -162,10 +162,27 @@ fn bounded(pattern: &str) -> String {
     format!("(?<!{WORD}){pattern}(?!{WORD})")
 }
 
-/// The plugin's replacements, ready to run (`prepareReplacements`).
+/// The replacements the project's configuration adds or drops, by pattern, `None` dropping one
+/// (`eslint/rules/unicorn/naming.ts`: `{replacements: {application: false}}`). The plugin's own
+/// pattern is `\bapplication\b(?!/)`: no pattern of the plugin is named `application`, so the
+/// option drops nothing, and `application` still becomes `app`, as in `ESLint`.
+const PROJECT_REPLACEMENTS: [(&str, Option<&str>); 1] = [("application", None)];
+
+/// The replacements in force: the plugin's, but those the project drops or rewrites, then the
+/// project's own (`prepareReplacements`).
 static REPLACEMENTS: LazyLock<Vec<Replacement>> = LazyLock::new(|| {
+    let own = PROJECT_REPLACEMENTS
+        .iter()
+        .filter_map(|(pattern, replacement)| {
+            replacement.map(|replacement| Replacement {
+                pattern: Pattern::new(pattern, "u"),
+                required: required_text(pattern),
+                text: replacement.to_owned(),
+            })
+        });
     DEFAULT_REPLACEMENTS
         .iter()
+        .filter(|(pattern, _, _)| !PROJECT_REPLACEMENTS.iter().any(|(each, _)| each == pattern))
         .map(|(pattern, replacement, case_sensitive)| Replacement {
             pattern: Pattern::new(&bounded(pattern), if *case_sensitive { "u" } else { "iu" }),
             required: required_text(pattern).map(|word| {
@@ -177,6 +194,7 @@ static REPLACEMENTS: LazyLock<Vec<Replacement>> = LazyLock::new(|| {
             }),
             text: (*replacement).to_owned(),
         })
+        .chain(own)
         .collect()
 });
 
@@ -1595,6 +1613,16 @@ mod tests {
         ] {
             assert_eq!(check(code), NONE, "{code}");
         }
+    }
+
+    #[test]
+    fn carries_the_project_option_as_eslint_reads_it() {
+        // `{application: false}` names no pattern of the plugin's, `\bapplication\b(?!/)`.
+        assert_eq!(
+            check("// The application runs."),
+            ["Prefer `app` over `application`."]
+        );
+        assert_eq!(check("// See application/json."), NONE);
     }
 
     #[test]
