@@ -9,26 +9,10 @@ use markdown::mdast::Node;
 
 use crate::finding::Finding;
 use crate::markdown::MarkdownRule;
-use crate::markdown::page::{Page, descendants, nodes, start, type_name};
+use crate::markdown::page::{Page, descendants, nodes, start, type_name, value};
 
 /// The rule.
 pub struct NoDuplicateHeadings;
-
-/// A node's `value`, for the nodes that carry one.
-#[must_use]
-pub fn value(node: &Node) -> Option<&str> {
-    match node {
-        Node::Text(each) => Some(&each.value),
-        Node::InlineCode(each) => Some(&each.value),
-        Node::InlineMath(each) => Some(&each.value),
-        Node::Html(each) => Some(&each.value),
-        Node::Code(each) => Some(&each.value),
-        Node::Math(each) => Some(&each.value),
-        Node::Yaml(each) => Some(&each.value),
-        Node::Toml(each) => Some(&each.value),
-        _ => None,
-    }
-}
 
 impl MarkdownRule for NoDuplicateHeadings {
     fn name(&self) -> &'static str {

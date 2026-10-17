@@ -126,3 +126,33 @@ An `index.ts` contains only `export * from "./x";`, one per module, sorted. Auto
 ### `local/canonical-import-path`
 
 Shortest legal import path: the file within the same folder, the folder otherwise, never `index` nor `.ts`. Autofixed.
+
+### Markdown rules
+
+On every Markdown page but `CHANGELOG.md` (EN-077), with `@eslint/markdown`'s names, options and messages (`REF-ESLINT-MARKDOWN-RULES`), so that a finding reads as it did in ESLint. Autofixed: `no-bare-urls`, `no-missing-atx-heading-space`, `no-reversed-media-syntax`, `no-space-in-emphasis`.
+
+| Rule | A page… |
+| --- | --- |
+| `markdown/fenced-code-language` | names the language of each fenced code block |
+| `markdown/fenced-code-meta` | writes no metadata after a fence's language (`never`) |
+| `markdown/heading-increment` | goes down one heading level at a time; front matter holds no title |
+| `markdown/no-bare-urls` | writes a URL as `<URL>` or `[text](URL)` |
+| `markdown/no-duplicate-definitions` | defines a link label or a footnote once (`[//]: #` comments apart) |
+| `markdown/no-duplicate-headings` | gives distinct titles to the headings under one parent (`checkSiblingsOnly`) |
+| `markdown/no-empty-definitions` | gives each definition a URL other than `#`, each footnote content |
+| `markdown/no-empty-images` | gives each image a source other than `#` |
+| `markdown/no-empty-links` | gives each link a destination other than `#` |
+| `markdown/no-html` | holds no HTML element but `<span>` (`<span v-pre>` shows double curly braces on the site) |
+| `markdown/no-invalid-label-refs` | writes no reference with a blank label, `[text][ ]` |
+| `markdown/no-missing-atx-heading-space` | puts a space after a heading's hashes |
+| `markdown/no-missing-label-refs` | defines each reference it uses; GitHub's alerts and `[verified]`, `[unverified]` apart |
+| `markdown/no-missing-link-fragments` | links `#fragment` only to a heading (GitHub's anchor), a `{#id}`, an HTML `id` or `name`, `#top` or `#L12` |
+| `markdown/no-multiple-h1` | has one first-level title, Markdown or `<h1>` |
+| `markdown/no-reversed-media-syntax` | writes `[label](URL)`, never `(label)[URL]` |
+| `markdown/no-space-in-emphasis` | puts no space inside emphasis markers, `** bold **` |
+| `markdown/no-unused-definitions` | uses each definition and footnote it holds |
+| `markdown/require-alt-text` | gives each image a text alternative; `alt=""` or `aria-hidden="true"` for a decorative one |
+| `markdown/table-column-count` | gives each table row as many cells as its header (`checkMissingCells`) |
+| `local/image-alt-text` | keeps a text alternative under 155 characters, never opening with "Image of" ([writing.md](./writing.md), `REF-GOOGLE-IMAGES`) |
+
+`markdown/no-reference-like-urls` is dropped: the pages link inline, reference definitions appear on one copied page (`.github/CODE_OF_CONDUCT.md`), and a link whose URL is a label is a dead link, which VitePress's build refuses in `docs/`. None of the 21 rules is the formatter's: oxfmt leaves `#Title`, `* text *`, a reversed link, a bare URL and an extra table cell as they are (checked on 2026-10-17).

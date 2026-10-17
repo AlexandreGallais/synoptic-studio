@@ -108,7 +108,8 @@ mod tests {
                 (
                     7,
                     11,
-                    "Label reference 'spaced' is invalid due to white space between [ and ].".to_owned()
+                    "Label reference 'spaced' is invalid due to white space between [ and ]."
+                        .to_owned()
                 ),
             ]
         );
