@@ -1,5 +1,6 @@
 /**
- * Rules dropped by the triage of EN-074 (Product Owner, 2026-10-17): what each one guards is
+ * Rules dropped by the triage of EN-074, and by the stories that rewrite the rules oxlint lacks
+ * after checking each again (EN-078) (Product Owner, 2026-10-17): what each one guards is
  * already refused by the compiler, by a rule kept, by the formatter or by the project's settings,
  * or this code cannot contain it. Off in ESLint and absent from `.oxlintrc.json`, so that no
  * linter runs them; each reason is in research note 0023, sections "Triage of the rules oxlint
@@ -105,6 +106,8 @@ export const DROPPED_RULES: readonly string[] = [
   "unicorn/consistent-export-decorator-position",
   "unicorn/custom-error-definition",
   "unicorn/no-accessor-recursion",
+  "unicorn/no-array-concat-in-loop",
+  "unicorn/no-array-splice",
   "unicorn/no-exports-in-scripts",
   "unicorn/no-incomplete-accessor-override",
   "unicorn/no-invalid-fetch-options",
@@ -126,7 +129,9 @@ export const DROPPED_RULES: readonly string[] = [
   "unicorn/no-xor-as-exponentiation",
   "unicorn/prefer-abort-signal-any",
   "unicorn/prefer-abort-signal-timeout",
+  "unicorn/prefer-array-from-range",
   "unicorn/prefer-class-fields",
+  "unicorn/prefer-get-or-insert-computed",
   "unicorn/prefer-private-class-fields",
   "unicorn/prefer-response-static-json",
   "unicorn/require-text-decoder-streaming",

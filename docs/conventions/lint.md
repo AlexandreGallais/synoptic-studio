@@ -70,10 +70,11 @@ After a plugin upgrade, `npm run test` lists the new rules to decide: add them t
 A crate of the Rust workspace on Oxc's crates (`oxc_parser`, `oxc_ast`, `oxc_ast_visit`, `oxc_semantic`, `oxc_allocator`; EN-075, research note 0023): `cargo run --release -q -p lint -- [--fix] <targets>`, on oxlint's targets. It prints each finding as `file:line:column rule message`, then a count, and fails on any.
 
 - **Each file once**: read, parsed with its comments, its semantic model built, then every rule its scopes turn on runs over that one AST — a rule reads the whole file (`check_file`) or each node of the linter's single walk (`check_node`); the files are spread over the machine's threads, and what the rules read beside the file (folder listings, the bibliography, the ADRs) is read once per run.
-- **One rule, one module** of `tools/lint/src/rules/`, its tests beside it, from the cases of the rule it carries and of its documentation; registered in `rules::ALL`. Adding a rule: the module, its line in `ALL`, its name in `ON_EVERYWHERE` or a scope of `tools/lint/src/scopes.rs`, its section below, its rule `off` in ESLint.
+- **One rule, one module** of `tools/lint/src/rules/`, its tests beside it, from the cases of the rule it carries and of its documentation; registered in `rules::ALL`. Adding a rule: the module, its line in `ALL`, its name in `ON_EVERYWHERE` or a scope of `tools/lint/src/scopes.rs`, its section below, its rule `off` in ESLint. Unicorn's rules sit in `tools/lint/src/rules/unicorn/`, listed in its `RULES` and `NAMES` and on for every file, which no scope changes (`scopes::linted_by`, EN-078).
 - **Markdown pages** (EN-077): each page of the targets but `CHANGELOG.md` is parsed once by the crate `markdown` (`markdown-rs`, `REF-MARKDOWN-RS`) into an mdast tree, the one `@eslint/markdown` reads, with YAML front matter and GFM; the Markdown rules of `tools/lint/src/markdown/rules/` read that tree and the text under it.
 - **Scopes**: `tools/lint/src/scopes.rs` carries, in ESLint's order, the scopes of `eslint/scopes/` that set its rules; the project's values (kinds, layers, verbs, reference sources, the folder signal) are in `tools/lint/src/settings.rs`.
-- **Measured** on 2026-10-17: 0.05 s for the 1,538 files of `npm run lint`'s targets, all its rules on, the seven of EN-076 included.
+- **Measured** on 2026-10-17: 0.05 s for the 1,538 files of `npm run lint`'s targets, all its rules on, the seven of EN-076 included. With Unicorn's 39 rules of EN-078: 0.12 s for the 2,048 files and pages, the same as without them; ESLint spent 285 ms on them.
+- **`--fix`** applies the fixes that do not overlap, lints again and repeats, ten passes at most, as ESLint does (EN-078).
 - **Without types**: Oxc has no type checker; a rule that asked the compiler for a type reads the written code instead, each in the form its section states (EN-076).
 
 ### `no-restricted-syntax`
@@ -151,6 +152,54 @@ An `index.ts` contains only `export * from "./x";`, one per module, sorted. Auto
 ### `local/canonical-import-path`
 
 Shortest legal import path: the file within the same folder, the folder otherwise, never `index` nor `.ts`. Autofixed.
+
+### Unicorn's arrays, collections and iteration rules
+
+On every TypeScript file (EN-078), with `eslint-plugin-unicorn` 78.0.0's names, messages and default options, each module tested on the cases of its documentation. Without types, a receiver is known from its literal, its `const` binding, its annotation or the file's type aliases, as ESLint read them once it linted without types (EN-076); an iterator (`.values()`, `.keys()`, `.entries()`, `.matchAll()`, `Iterator.from()`, a lazy helper, a generator's call) counts as no array. Autofixed where ESLint fixes; where it only suggests, reported only.
+
+| Rule | The code… | Fixed |
+| --- | --- | --- |
+| `unicorn/no-array-from-fill` | maps in `Array.from({length}, …)` rather than chaining `.fill()` |  |
+| `unicorn/no-array-front-mutation` | calls neither `shift()` nor `unshift()` on an array |  |
+| `unicorn/no-confusing-array-splice` | replaces one element by assignment or `with()`, inserts at an explicit index rather than `-1` |  |
+| `unicorn/no-impossible-length-comparison` | compares no `.length` nor `.size` with a negative bound, nor `>= 0` |  |
+| `unicorn/no-negated-array-predicate` | swaps `some()` and `every()` rather than negating the call | yes |
+| `unicorn/no-return-array-push` | uses no value of `push()` or `unshift()` |  |
+| `unicorn/no-unnecessary-splice` | writes `shift()`, `unshift()`, `pop()`, `push()` or `.length = 0` rather than their `splice()` | yes |
+| `unicorn/prefer-array-last-methods` | calls `findLast()`, `findLastIndex()`, `lastIndexOf()`, `reduceRight()` rather than after a reversal |  |
+| `unicorn/prefer-array-slice` | reads a `slice()`, never a `splice()` only read |  |
+| `unicorn/prefer-flat-math-min-max` | nests no `Math.min()` in `Math.min()`, nor `max` in `max` | yes |
+| `unicorn/prefer-simple-sort-comparator` | sorts by one key with a subtraction |  |
+| `unicorn/prefer-single-array-predicate` | joins predicates in one `some()` or `every()` |  |
+| `unicorn/consistent-conditional-object-spread` | spreads `...(condition && object)`, no empty branch nor boolean cast | yes |
+| `unicorn/no-duplicate-set-values` | writes each value of a `new Set([…])` once |  |
+| `unicorn/no-mismatched-map-key` | reads, after `map.has(key)`, the same key |  |
+| `unicorn/no-object-methods-with-collections` | calls no `Object.keys()`, `values()` nor `entries()` on a `Map` or a `Set` |  |
+| `unicorn/no-unnecessary-array-flat-map` | maps rather than `flatMap(x => [x])`, wraps no non-array in an array | after `filter()` |
+| `unicorn/no-useless-set-construction` | builds no `Set` around a `Set` method's argument, receiver or result | yes |
+| `unicorn/prefer-array-from-map` | maps in `Array.from(iterable, mapper)`, not after it nor in a filling loop | the loop |
+| `unicorn/prefer-group-by` | groups with `Object.groupBy()` or `Map.groupBy()` | yes |
+| `unicorn/prefer-has-check` | checks a key with `.has()` | yes |
+| `unicorn/prefer-includes-over-repeated-comparisons` | writes three or more `===` of one subject as `includes()` |  |
+| `unicorn/prefer-map-from-entries` | builds a `Map` for a value only read as a map | yes |
+| `unicorn/prefer-set-methods` | calls `union()`, `intersection()`, `difference()`, `isSubsetOf()`, `isDisjointFrom()` | not the filters |
+| `unicorn/iteration-fallback-style` | guards an optional loop source with `if` rather than `\|\| []` | `for…of` |
+| `unicorn/no-array-sort-for-min-max` | takes a minimum or a maximum without sorting |  |
+| `unicorn/no-break-in-nested-loop` | breaks no loop or `switch` nested in a loop |  |
+| `unicorn/no-duplicate-loops` | writes no `.map()` nor `.filter()` in a `for…of` header |  |
+| `unicorn/no-loop-iterable-mutation` | changes no iterable while a `for…of` reads it |  |
+| `unicorn/no-unreadable-for-of-expression` | keeps a `for…of` header simple |  |
+| `unicorn/no-unused-iterator-helper` | consumes every lazy iterator helper |  |
+| `unicorn/prefer-array-iterable-methods` | iterates the array, or `keys()`, rather than half-used `entries()` | yes |
+| `unicorn/prefer-direct-iteration` | iterates a collection rather than its default iterator method | yes |
+| `unicorn/prefer-iterable-in-constructor` | hands the iterable to the constructor rather than filling an empty collection | yes |
+| `unicorn/prefer-iterator-helpers` | uses iterator helpers rather than an array built to search or slice it |  |
+| `unicorn/prefer-iterator-to-array` | writes `iterator.toArray()` rather than `[...iterator]` | `Iterator` chains |
+| `unicorn/prefer-iterator-to-array-at-end` | calls `.toArray()` after the helpers |  |
+| `unicorn/prefer-object-iterable-methods` | reads `Object.values()` or `Object.entries()` rather than keys read back, and the reverse | yes |
+| `unicorn/prefer-while-loop-condition` | writes the condition in the `while` rather than breaking from an endless loop | yes |
+
+`unicorn/no-for-each` runs in oxlint as `unicorn/no-array-for-each`, its former name: the same findings on arrays, more on a `Map` or a `Set` (the newer rule skips them), and no fix, oxlint's being pending. Dropped, each with its reason in research note 0023: `unicorn/no-array-splice` and `unicorn/no-array-concat-in-loop` (they only report a `let` or `var` array, which `functional/no-let` and `no-var` forbid), `unicorn/prefer-array-from-range` (it reads `Array(n)` and `new Array(n)` only, which `new-for-builtins` and `no-new-array` refuse), `unicorn/prefer-get-or-insert-computed` (it reads `Map#getOrInsert()`, which ES2025's library and Node.js 24 lack: `tsc` refuses the call, TS2550).
 
 ### Markdown rules
 

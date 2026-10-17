@@ -36,6 +36,10 @@ use project::Project;
 use rules::Rule;
 use source::Source;
 
+/// The most passes `--fix` makes, `ESLint`'s number: each pass applies the fixes that do not
+/// overlap, then lints the files again.
+pub const FIX_PASSES: usize = 10;
+
 /// The rule a file that cannot be parsed is reported under.
 pub const PARSE_RULE: &str = "lint/parse";
 
@@ -191,12 +195,16 @@ pub fn run(root: &Path, arguments: &[String]) -> (String, bool) {
     let mut findings = lint_files(&project, &paths);
     let mut report = String::new();
     if fixing {
-        match fix(&project, findings) {
-            Ok(left) => findings = left,
-            Err(error) => {
+        // A fix that overlaps another waits for the next pass, as in ESLint's passes (EN-078).
+        for _ in 0..FIX_PASSES {
+            if !findings.iter().any(|finding| finding.fix.is_some()) {
+                break;
+            }
+            if let Err(error) = fix(&project, findings) {
                 let _ = writeln!(report, "lint: cannot write a fix: {error}");
                 return (report, false);
             }
+            findings = lint_files(&project, &paths);
         }
     }
     for finding in &findings {
@@ -458,6 +466,28 @@ mod tests {
         assert_eq!(
             fs::read_to_string(root.join(theme[0])).ok().as_deref(),
             Some("import \"./c\";\n")
+        );
+    }
+
+    #[test]
+    fn fixes_again_until_the_overlapping_fixes_are_done() {
+        let root = fixture("run-passes");
+        write_files(&root, &["scripts/a.ts"]);
+        let code = "const A = new Set([1]);\nconst B = new Set([2]);\nexport const C = A.difference(new Set(B.values()));\n";
+        fs::write(root.join("scripts/a.ts"), code).unwrap_or_default();
+
+        let (report, clean) = run(&root, &["--fix".into(), "scripts".into()]);
+
+        // `prefer-direct-iteration` drops `.values()`, then `no-useless-set-construction` the copy.
+        assert_eq!(report, "lint: 0 finding(s) in 1 file(s)\n");
+        assert!(clean);
+        assert_eq!(
+            fs::read_to_string(root.join("scripts/a.ts"))
+                .ok()
+                .as_deref(),
+            Some(
+                "const A = new Set([1]);\nconst B = new Set([2]);\nexport const C = A.difference(B);\n"
+            )
         );
     }
 
