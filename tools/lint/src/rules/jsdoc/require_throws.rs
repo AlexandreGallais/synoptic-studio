@@ -44,6 +44,6 @@ mod tests {
 
     #[test]
     fn reports_the_documented_cases_as_eslint_does() {
-        check(&RequireThrows, "require-throws", "src/a.ts", &[]);
+        check(&RequireThrows, "require-throws", "src/a.ts");
     }
 }

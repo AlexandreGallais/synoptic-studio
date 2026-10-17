@@ -1,5 +1,6 @@
-# require-asterisk-prefix: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), a carriage return written ␍,
-# each run by ESLint 10.12.0 at src/a.ts with the project's options; recorded by EN-083.
+# require-asterisk-prefix: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), then faults planted
+# in copies of files of the tree and cases written for branches, each run by ESLint 10.12.0 at src/a.ts with the project's options;
+# a carriage return written ␍; recorded by EN-083.
 @@@ case 1 (documented invalid)
 
 
@@ -399,4 +400,38 @@
           // with spaces
         }
       
+@@@ case 25 (planted in a copy of a file of the tree)
+/**
+ * Distance from a corner vertex to the tangent points of its fillet arc.
+ *
+   Formula: s = r · tan(|τ| / 2) = r / tan(θ / 2), τ = turning angle, θ = interior angle.
+ *
+ * @kind geometry
+ * @param radius - fillet radius, >= 0
+ * @param turningAngle - signed turning angle at the vertex in radians, in ]−π, π[
+ * @returns setback along each adjacent edge, 0 for aligned vertices
+ * @see DERIV-fillet-setback
+ */
+export function filletSetback(radius: number, turningAngle: number): number {
+  return radius * Math.tan(Math.abs(turningAngle) / 2);
+}
+
+@@@ findings
+4:1 Expected JSDoc line to have the prefix.
+@@@ output
+/**
+ * Distance from a corner vertex to the tangent points of its fillet arc.
+ *
+   * Formula: s = r · tan(|τ| / 2) = r / tan(θ / 2), τ = turning angle, θ = interior angle.
+ *
+ * @kind geometry
+ * @param radius - fillet radius, >= 0
+ * @param turningAngle - signed turning angle at the vertex in radians, in ]−π, π[
+ * @returns setback along each adjacent edge, 0 for aligned vertices
+ * @see DERIV-fillet-setback
+ */
+export function filletSetback(radius: number, turningAngle: number): number {
+  return radius * Math.tan(Math.abs(turningAngle) / 2);
+}
+
 @@@ end

@@ -183,8 +183,8 @@ pub const DOM_FILES: &[&str] = &[
 ];
 
 /// The rules that run on a file: those its scopes set, then Unicorn's, which no scope turns
-/// off (EN-078), JSDoc's (EN-083), Unicorn's web rules, and its DOM rules where a DOM exists
-/// (EN-082).
+/// off (EN-078), those of `eslint-plugin-jsdoc` (EN-083), Unicorn's web rules, and its DOM rules
+/// where a DOM exists (EN-082).
 #[must_use]
 pub fn linted_by(path: &str) -> Vec<&'static str> {
     use crate::rules::unicorn::{dom, web};

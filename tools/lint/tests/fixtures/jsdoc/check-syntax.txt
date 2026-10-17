@@ -1,5 +1,6 @@
-# check-syntax: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), a carriage return written ␍,
-# each run by ESLint 10.12.0 at src/a.ts with the project's options; recorded by EN-083.
+# check-syntax: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), then faults planted
+# in copies of files of the tree and cases written for branches, each run by ESLint 10.12.0 at src/a.ts with the project's options;
+# a carriage return written ␍; recorded by EN-083.
 @@@ case 1 (documented invalid)
 
           /**
@@ -201,4 +202,30 @@
           }
       
 @@@ findings
+@@@ case 19 (planted in a copy of a file of the tree)
+/** Specification of the story demonstrated by the page. */
+const STORY = "docs/backlog/stories/E01-F02-US-007-shape-selector-playground.md";
+
+/**
+ * Selects a required element of the page by its id.
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param id - `id` attribute, without `#`
+ * @returns the HTML element carrying this `id`
+ * @throws {Error=} when the page has no element with this id
+ * @see docs/backlog/stories/E01-F01-US-002-sharp-rectangle-in-playground.md
+ */
+export function selectElement(document: Document, id: string): HTMLElement {
+  const element = document.querySelector<HTMLElement>(`#${id}`);
+
+  if (element === null) {
+    throw new Error(`Playground page without #${id} (${STORY}).`);
+  }
+
+  return element;
+}
+
+@@@ findings
+11:1 Syntax should not be Google Closure Compiler style.
 @@@ end

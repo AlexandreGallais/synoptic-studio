@@ -201,6 +201,6 @@ mod tests {
 
     #[test]
     fn reports_the_documented_cases_as_eslint_does() {
-        check(&RequireTemplate, "require-template", "src/a.ts", &[]);
+        check(&RequireTemplate, "require-template", "src/a.ts");
     }
 }

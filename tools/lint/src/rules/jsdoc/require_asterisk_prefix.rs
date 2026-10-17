@@ -65,7 +65,6 @@ mod tests {
             &RequireAsteriskPrefix,
             "require-asterisk-prefix",
             "src/a.ts",
-            &[],
         );
     }
 }

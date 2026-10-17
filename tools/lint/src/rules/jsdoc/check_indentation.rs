@@ -179,6 +179,6 @@ mod tests {
 
     #[test]
     fn reports_the_documented_cases_as_eslint_does() {
-        check(&CheckIndentation, "check-indentation", "src/a.ts", &[]);
+        check(&CheckIndentation, "check-indentation", "src/a.ts");
     }
 }

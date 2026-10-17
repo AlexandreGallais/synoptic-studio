@@ -1,4 +1,4 @@
-//! `jsdoc/match-description` with the project's patterns (`JSDOC_DESCRIPTION_PATTERNS`): a
+//! `jsdoc/match-description` with the project's patterns (`docs/conventions/documentation.md`): a
 //! function's description is a sentence, from a capital letter or a backtick to a final period
 //! or colon; the descriptions of its `@param` and `@returns` tags are fragments, without final
 //! period; `@copyright`, `@example`, `@see` and `@todo` are not empty
@@ -144,6 +144,6 @@ mod tests {
 
     #[test]
     fn reports_the_documented_cases_as_eslint_does() {
-        check(&MatchDescription, "match-description", "src/a.ts", &[]);
+        check(&MatchDescription, "match-description", "src/a.ts");
     }
 }

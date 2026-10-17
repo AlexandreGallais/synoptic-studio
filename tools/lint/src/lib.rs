@@ -476,7 +476,8 @@ mod tests {
     fn fixes_again_until_the_overlapping_fixes_are_done() {
         let root = fixture("run-passes");
         write_files(&root, &["scripts/a.ts"]);
-        let code = "const A = new Set([1]);\nconst B = new Set([2]);\nexport const C = A.difference(new Set(B.values()));\n";
+        // Each constant documented, as `jsdoc/require-jsdoc` asks (EN-083).
+        let code = "/** One. */\nconst A = new Set([1]);\n/** Two. */\nconst B = new Set([2]);\n/** One without two. */\nexport const C = A.difference(new Set(B.values()));\n";
         fs::write(root.join("scripts/a.ts"), code).unwrap_or_default();
 
         let (report, clean) = run(&root, &["--fix".into(), "scripts".into()]);
@@ -489,7 +490,7 @@ mod tests {
                 .ok()
                 .as_deref(),
             Some(
-                "const A = new Set([1]);\nconst B = new Set([2]);\nexport const C = A.difference(B);\n"
+                "/** One. */\nconst A = new Set([1]);\n/** Two. */\nconst B = new Set([2]);\n/** One without two. */\nexport const C = A.difference(B);\n"
             )
         );
     }

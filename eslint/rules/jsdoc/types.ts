@@ -5,7 +5,8 @@ export const JSDOC_TYPES: TSESLint.FlatConfig.Config = {
   name: "jsdoc/types",
   rules: {
     "jsdoc/check-types": "error",
-    "jsdoc/no-types": "error",
+    // Run by the project's linter (tools/lint, EN-083).
+    "jsdoc/no-types": "off",
     // A word of a JSDoc comment is not a use: an import only the comments name is reported by
     // unused-imports (three playground tests kept an unused page import, EN-021; RET-002).
     "jsdoc/no-undefined-types": ["error", { markVariablesAsUsed: false }],

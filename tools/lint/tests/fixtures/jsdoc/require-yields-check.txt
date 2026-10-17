@@ -1,5 +1,6 @@
-# require-yields-check: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), a carriage return written ␍,
-# each run by ESLint 10.12.0 at src/a.ts with the project's options; recorded by EN-083.
+# require-yields-check: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), then faults planted
+# in copies of files of the tree and cases written for branches, each run by ESLint 10.12.0 at src/a.ts with the project's options;
+# a carriage return written ␍; recorded by EN-083.
 @@@ case 1 (documented invalid)
 
           /**
@@ -595,4 +596,428 @@
           }
       
 @@@ findings
+@@@ case 54 (planted in a copy of a file of the tree)
+/**
+ * Distance from a corner vertex to the tangent points of its fillet arc.
+ *
+ * Formula: s = r · tan(|τ| / 2) = r / tan(θ / 2), τ = turning angle, θ = interior angle.
+ *
+ * @kind geometry
+ * @param radius - fillet radius, >= 0
+ * @param turningAngle - signed turning angle at the vertex in radians, in ]−π, π[
+ * @returns setback along each adjacent edge, 0 for aligned vertices
+ * @yields the setback
+ * @see DERIV-fillet-setback
+ */
+export function filletSetback(radius: number, turningAngle: number): number {
+  return radius * Math.tan(Math.abs(turningAngle) / 2);
+}
+
+@@@ findings
+1:1 JSDoc @yields declaration present but yield expression not available in function.
+@@@ case 55 (written for a branch the documented cases leave)
+/**
+ * Yields everywhere.
+ *
+ * @yields values
+ */
+function* everywhere(a: boolean, list: number[]) {
+  const values = [yield 1];
+  let b;
+  b = yield 2;
+  const c = (yield 3) + 1;
+  const d = a && (yield 4);
+  f(yield 5);
+  const e = a ? yield 6 : 7;
+  const g = list[yield 8];
+  const h = { [yield 9]: yield 10, ...(yield 11) };
+  const i = (yield 12, 13);
+  const j = `${yield 14}`;
+  const k = !(yield 15);
+  const l = tag`${yield 16}`;
+  if (yield 17) {}
+  while (a) { yield 18; }
+  do { yield 19; } while (a);
+  for (;;) { yield 20; }
+  for (const each of list) { yield 21; }
+  for (const each in list) { yield 22; }
+  label: { yield 23; }
+  switch (a) { case true: yield 24; }
+  try { yield 25; } catch { yield 26; } finally { yield 27; }
+  const m = list?.[yield 28];
+  return yield 29;
+}
+@@@ findings
+@@@ case 56 (written for a branch the documented cases leave)
+/**
+ * Never yields.
+ *
+ * @yields {never} nothing
+ */
+function* neverYields() { yield 1; }
+/**
+ * Never, none.
+ *
+ * @yields {never} nothing
+ */
+function* neverNone() {}
+/**
+ * Two.
+ *
+ * @yields one
+ * @yields two
+ */
+function* twice() { yield 1; }
+/**
+ * Inner functions only.
+ *
+ * @yields values
+ */
+function* inner() {
+  function* nested() { yield 1; }
+  const f = function* () { yield 2; };
+  yield;
+}
+/**
+ * Maybe.
+ *
+ * @yields {undefined} nothing
+ */
+function* maybe() {}
+/**
+ * Interface.
+ *
+ * @interface
+ * @yields values
+ */
+function* face() {}
+@@@ findings
+1:1 JSDoc @yields declaration set with "never" but yield expression is present in function.
+13:1 Found more than one @yields declaration.
+20:1 JSDoc @yields declaration present but yield expression not available in function.
+@@@ case 57 (written for a branch the documented cases leave)
+/**
+ * arrayElement.
+ *
+ * @yields values
+ */
+function* arrayElement(a: boolean, x: any, f: any, list: number[]) {
+  const v = [yield 1];
+}
+/**
+ * arraySpread.
+ *
+ * @yields values
+ */
+function* arraySpread(a: boolean, x: any, f: any, list: number[]) {
+  const v = [...(yield 1)];
+}
+/**
+ * arrayHole.
+ *
+ * @yields values
+ */
+function* arrayHole(a: boolean, x: any, f: any, list: number[]) {
+  const v = [, 1];
+}
+/**
+ * assigned.
+ *
+ * @yields values
+ */
+function* assigned(a: boolean, x: any, f: any, list: number[]) {
+  x = yield 1;
+}
+/**
+ * assignedMember.
+ *
+ * @yields values
+ */
+function* assignedMember(a: boolean, x: any, f: any, list: number[]) {
+  x[yield 1] = 2;
+}
+/**
+ * binary.
+ *
+ * @yields values
+ */
+function* binary(a: boolean, x: any, f: any, list: number[]) {
+  const v = (yield 1) + 1;
+}
+/**
+ * logical.
+ *
+ * @yields values
+ */
+function* logical(a: boolean, x: any, f: any, list: number[]) {
+  const v = a || (yield 1);
+}
+/**
+ * called.
+ *
+ * @yields values
+ */
+function* called(a: boolean, x: any, f: any, list: number[]) {
+  f(yield 1);
+}
+/**
+ * calledSpread.
+ *
+ * @yields values
+ */
+function* calledSpread(a: boolean, x: any, f: any, list: number[]) {
+  f(...(yield 1));
+}
+/**
+ * chainCall.
+ *
+ * @yields values
+ */
+function* chainCall(a: boolean, x: any, f: any, list: number[]) {
+  f?.(yield 1);
+}
+/**
+ * chainMember.
+ *
+ * @yields values
+ */
+function* chainMember(a: boolean, x: any, f: any, list: number[]) {
+  x?.[yield 1];
+}
+/**
+ * conditional.
+ *
+ * @yields values
+ */
+function* conditional(a: boolean, x: any, f: any, list: number[]) {
+  const v = a ? 1 : yield 2;
+}
+/**
+ * conditionalTest.
+ *
+ * @yields values
+ */
+function* conditionalTest(a: boolean, x: any, f: any, list: number[]) {
+  const v = (yield 1) ? 1 : 2;
+}
+/**
+ * imported.
+ *
+ * @yields values
+ */
+function* imported(a: boolean, x: any, f: any, list: number[]) {
+  import(yield 1);
+}
+/**
+ * member.
+ *
+ * @yields values
+ */
+function* member(a: boolean, x: any, f: any, list: number[]) {
+  (yield 1).y;
+}
+/**
+ * memberComputed.
+ *
+ * @yields values
+ */
+function* memberComputed(a: boolean, x: any, f: any, list: number[]) {
+  x[yield 1];
+}
+/**
+ * objectValue.
+ *
+ * @yields values
+ */
+function* objectValue(a: boolean, x: any, f: any, list: number[]) {
+  const v = { a: yield 1 };
+}
+/**
+ * objectKey.
+ *
+ * @yields values
+ */
+function* objectKey(a: boolean, x: any, f: any, list: number[]) {
+  const v = { [yield 1]: 1 };
+}
+/**
+ * objectSpread.
+ *
+ * @yields values
+ */
+function* objectSpread(a: boolean, x: any, f: any, list: number[]) {
+  const v = { ...(yield 1) };
+}
+/**
+ * sequence.
+ *
+ * @yields values
+ */
+function* sequence(a: boolean, x: any, f: any, list: number[]) {
+  const v = (0, yield 1);
+}
+/**
+ * template.
+ *
+ * @yields values
+ */
+function* template(a: boolean, x: any, f: any, list: number[]) {
+  const v = `${yield 1}`;
+}
+/**
+ * tagged.
+ *
+ * @yields values
+ */
+function* tagged(a: boolean, x: any, f: any, list: number[]) {
+  const v = f`${yield 1}`;
+}
+/**
+ * unary.
+ *
+ * @yields values
+ */
+function* unary(a: boolean, x: any, f: any, list: number[]) {
+  const v = !(yield 1);
+}
+/**
+ * ifTest.
+ *
+ * @yields values
+ */
+function* ifTest(a: boolean, x: any, f: any, list: number[]) {
+  if (yield 1) {}
+}
+/**
+ * ifElse.
+ *
+ * @yields values
+ */
+function* ifElse(a: boolean, x: any, f: any, list: number[]) {
+  if (a) {} else { yield 1; }
+}
+/**
+ * whileBody.
+ *
+ * @yields values
+ */
+function* whileBody(a: boolean, x: any, f: any, list: number[]) {
+  while (a) { yield 1; }
+}
+/**
+ * doBody.
+ *
+ * @yields values
+ */
+function* doBody(a: boolean, x: any, f: any, list: number[]) {
+  do { yield 1; } while (a);
+}
+/**
+ * forBody.
+ *
+ * @yields values
+ */
+function* forBody(a: boolean, x: any, f: any, list: number[]) {
+  for (;;) { yield 1; }
+}
+/**
+ * forIn.
+ *
+ * @yields values
+ */
+function* forIn(a: boolean, x: any, f: any, list: number[]) {
+  for (const k in x) { yield 1; }
+}
+/**
+ * forOf.
+ *
+ * @yields values
+ */
+function* forOf(a: boolean, x: any, f: any, list: number[]) {
+  for (const k of list) { yield 1; }
+}
+/**
+ * labeled.
+ *
+ * @yields values
+ */
+function* labeled(a: boolean, x: any, f: any, list: number[]) {
+  here: { yield 1; }
+}
+/**
+ * switched.
+ *
+ * @yields values
+ */
+function* switched(a: boolean, x: any, f: any, list: number[]) {
+  switch (a) { case true: yield 1; }
+}
+/**
+ * triedBlock.
+ *
+ * @yields values
+ */
+function* triedBlock(a: boolean, x: any, f: any, list: number[]) {
+  try { yield 1; } catch {}
+}
+/**
+ * triedHandler.
+ *
+ * @yields values
+ */
+function* triedHandler(a: boolean, x: any, f: any, list: number[]) {
+  try {} catch { yield 1; }
+}
+/**
+ * triedFinally.
+ *
+ * @yields values
+ */
+function* triedFinally(a: boolean, x: any, f: any, list: number[]) {
+  try {} finally { yield 1; }
+}
+/**
+ * returned.
+ *
+ * @yields values
+ */
+function* returned(a: boolean, x: any, f: any, list: number[]) {
+  return yield 1;
+}
+/**
+ * returnedEmpty.
+ *
+ * @yields values
+ */
+function* returnedEmpty(a: boolean, x: any, f: any, list: number[]) {
+  return;
+}
+/**
+ * delegated.
+ *
+ * @yields values
+ */
+function* delegated(a: boolean, x: any, f: any, list: number[]) {
+  yield* list;
+}
+/**
+ * awaitedNot.
+ *
+ * @yields values
+ */
+function* awaitedNot(a: boolean, x: any, f: any, list: number[]) {
+  const v = new Set([1]);
+}
+/**
+ * nestedBlock.
+ *
+ * @yields values
+ */
+function* nestedBlock(a: boolean, x: any, f: any, list: number[]) {
+  { yield 1; }
+}
+@@@ findings
+17:1 JSDoc @yields declaration present but yield expression not available in function.
+289:1 JSDoc @yields declaration present but yield expression not available in function.
+305:1 JSDoc @yields declaration present but yield expression not available in function.
 @@@ end

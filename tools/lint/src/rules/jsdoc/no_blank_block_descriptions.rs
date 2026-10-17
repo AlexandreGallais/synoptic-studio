@@ -109,7 +109,6 @@ mod tests {
             &NoBlankBlockDescriptions,
             "no-blank-block-descriptions",
             "src/a.ts",
-            &[],
         );
     }
 }

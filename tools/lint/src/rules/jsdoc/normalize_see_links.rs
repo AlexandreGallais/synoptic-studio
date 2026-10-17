@@ -441,6 +441,6 @@ mod tests {
 
     #[test]
     fn reports_the_documented_cases_as_eslint_does() {
-        check(&NormalizeSeeLinks, "normalize-see-links", "src/a.ts", &[]);
+        check(&NormalizeSeeLinks, "normalize-see-links", "src/a.ts");
     }
 }

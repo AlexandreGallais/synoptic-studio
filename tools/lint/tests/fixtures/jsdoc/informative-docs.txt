@@ -1,5 +1,6 @@
-# informative-docs: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), a carriage return written ␍,
-# each run by ESLint 10.12.0 at src/a.ts with the project's options; recorded by EN-083.
+# informative-docs: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), then faults planted
+# in copies of files of the tree and cases written for branches, each run by ESLint 10.12.0 at src/a.ts with the project's options;
+# a carriage return written ␍; recorded by EN-083.
 @@@ case 1 (documented invalid)
 
         /** the  */
@@ -528,4 +529,24 @@
       
 @@@ findings
 2:9 This description only repeats the name it describes.
+@@@ case 65 (planted in a copy of a file of the tree)
+import { distance } from "../../math";
+import { cyclicItem } from "../contour";
+
+import type { Point } from "../../math";
+
+/**
+ * Edge lengths.
+ *
+ * @kind geometry
+ * @param contour - vertices in drawing order
+ * @returns one length per edge, the last edge closing the contour (Q11)
+ * @see DERIV-local-radius-clamp
+ */
+export function edgeLengths(contour: readonly Point[]): readonly number[] {
+  return contour.map((vertex, index) => distance(vertex, cyclicItem(contour, index + 1, vertex)));
+}
+
+@@@ findings
+6:1 This description only repeats the name it describes.
 @@@ end

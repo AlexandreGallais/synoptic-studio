@@ -1,6 +1,6 @@
-//! `jsdoc/require-jsdoc` with the project's contexts (`DOCUMENTED_CONTEXTS`): every function
-//! declaration, class, method, type alias, interface and module-level constant has a block, and in
-//! the library every type member too (`LIBRARY_DOCUMENTED_CONTEXTS`); an overload's
+//! `jsdoc/require-jsdoc` with the project's contexts (`docs/conventions/documentation.md`): every
+//! function declaration, class, method, type alias, interface and module-level constant has a
+//! block, and in the library every type member too, which the API pages read; an overload's
 //! implementation may lean on its first signature's block (`eslint-plugin-jsdoc` 65.3.1,
 //! `src/rules/requireJsdoc.js`, no fixer).
 
@@ -261,11 +261,11 @@ mod tests {
 
     #[test]
     fn reports_the_documented_cases_as_eslint_does() {
-        check(&RequireJsdoc, "require-jsdoc", "src/a.ts", &[]);
+        check(&RequireJsdoc, "require-jsdoc", "src/a.ts");
     }
 
     #[test]
     fn leaves_type_members_to_the_library() {
-        check(&RequireJsdoc, "require-jsdoc-scripts", "scripts/a.ts", &[]);
+        check(&RequireJsdoc, "require-jsdoc-scripts", "scripts/a.ts");
     }
 }

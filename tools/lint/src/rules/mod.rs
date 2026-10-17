@@ -77,7 +77,7 @@ pub const ALL: &[&dyn Rule] = &[
 ];
 
 /// The rules of a list of names, in the registry's order, then Unicorn's, its DOM and web rules,
-/// then JSDoc's.
+/// then those of `eslint-plugin-jsdoc`.
 #[must_use]
 pub fn named(names: &[&str]) -> Vec<&'static dyn Rule> {
     ALL.iter()

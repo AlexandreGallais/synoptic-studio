@@ -1,8 +1,9 @@
-//! The documented cases of a rule of `eslint-plugin-jsdoc` 65.3.1 run as tests: each case of the
-//! plugin's own tests (`test/rules/assertions/`, from which its documentation's examples are
-//! written), with what `ESLint` 10.12.0 reported on it under the project's options and the text
-//! its fixes left, recorded by EN-083 in `tests/fixtures/jsdoc/<rule>.txt` (a carriage return
-//! written `\u{240d}`, so that Git keeps it), the cases neither parser reads left out.
+//! The cases of a rule of `eslint-plugin-jsdoc` 65.3.1 run as tests: each case of the plugin's
+//! own tests (`test/rules/assertions/`, from which its documentation's examples are written), a
+//! fault planted in a copy of a file of the tree and cases written for branches, with what
+//! `ESLint` 10.12.0 reported on it under the project's options and the text its fixes left,
+//! recorded by EN-083 in `tests/fixtures/jsdoc/<rule>.txt` (a carriage return written `\u{240d}`,
+//! so that Git keeps it); the 7 cases `ESLint`'s TypeScript parser refuses are left out.
 
 use std::fmt::Write as _;
 
@@ -100,13 +101,13 @@ fn apply_first_wins(text: &str, fixes: &[&crate::finding::Fix]) -> String {
     apply(text, &kept)
 }
 
-/// Runs a rule on the documented cases of its fixture at a path.
+/// Runs a rule on the cases of its fixture at a path.
 ///
 /// # Panics
 ///
-/// Listing every case whose findings or fixed text differ from `ESLint`'s, but those named
-/// with a reason, and every case so named that does not differ.
-pub fn check(rule: &dyn Rule, fixture: &str, path: &str, known: &[(usize, &str)]) {
+/// Listing every case whose findings or fixed text differ from `ESLint`'s, a case Oxc cannot
+/// parse included.
+pub fn check(rule: &dyn Rule, fixture: &str, path: &str) {
     let file = format!(
         "{}/tests/fixtures/jsdoc/{fixture}.txt",
         env!("CARGO_MANIFEST_DIR")
@@ -117,43 +118,26 @@ pub fn check(rule: &dyn Rule, fixture: &str, path: &str, known: &[(usize, &str)]
     let all = cases(&text);
     assert!(!all.is_empty(), "no case in {file}");
     let mut report = String::new();
-    let mut skipped = Vec::new();
+    let mut differing = 0;
 
     for case in &all {
-        let findings = sorted(lint(rule, path, &case.code));
-        if findings.iter().any(|each| each.rule == crate::PARSE_RULE) {
-            skipped.push(case.number);
-            continue;
-        }
-        let found: Vec<String> = findings
+        let found: Vec<String> = sorted(lint(rule, path, &case.code))
             .iter()
             .map(|each| format!("{}:{} {}", each.line, each.column, each.message))
             .collect();
         let output = fixed_in_passes(rule, path, &case.code);
         let expected_output = case.output.clone().unwrap_or_else(|| case.code.clone());
-        let same = found == case.findings && output == expected_output;
-        let excused = known.iter().any(|(number, _)| *number == case.number);
-        if same == excused {
+        if found != case.findings || output != expected_output {
+            differing += 1;
             let _ = writeln!(
                 report,
-                "case {}{}:\n{}\n  expected {:?}\n  found    {:?}\n  expected output {:?}\n  found output    {:?}",
-                case.number,
-                if excused {
-                    " (named as known, yet the same)"
-                } else {
-                    ""
-                },
-                case.code,
-                case.findings,
-                found,
-                expected_output,
-                output
+                "case {}:\n{}\n  expected {:?}\n  found    {:?}\n  expected output {:?}\n  found output    {:?}",
+                case.number, case.code, case.findings, found, expected_output, output
             );
         }
     }
     assert!(
         report.is_empty(),
-        "{fixture}: {} case(s) differ from ESLint (skipped, unparsed: {skipped:?})\n{report}",
-        report.matches("\ncase ").count() + usize::from(report.starts_with("case "))
+        "{fixture}: {differing} case(s) differ from ESLint\n{report}"
     );
 }

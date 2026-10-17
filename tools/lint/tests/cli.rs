@@ -22,7 +22,11 @@ fn succeeds_on_a_clean_tree_and_fails_on_a_finding() {
     let root = std::env::temp_dir().join(format!("lint-cli-{}", std::process::id()));
     let _ = fs::remove_dir_all(&root);
     fs::create_dir_all(root.join("scripts")).unwrap_or_default();
-    fs::write(root.join("scripts/a.ts"), "export const A = 1;\n").unwrap_or_default();
+    fs::write(
+        root.join("scripts/a.ts"),
+        "/** One. */\nexport const A = 1;\n",
+    )
+    .unwrap_or_default();
 
     assert_eq!(
         lint(&root, &["scripts"]),

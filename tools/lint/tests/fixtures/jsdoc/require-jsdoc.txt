@@ -1,5 +1,6 @@
-# require-jsdoc: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), a carriage return written ␍,
-# each run by ESLint 10.12.0 at src/a.ts with the project's options; recorded by EN-083.
+# require-jsdoc: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), then faults planted
+# in copies of files of the tree and cases written for branches, each run by ESLint 10.12.0 at src/a.ts with the project's options;
+# a carriage return written ␍; recorded by EN-083.
 @@@ case 1 (documented invalid)
 
           /** This is comment */
@@ -2481,4 +2482,21 @@ var foo = {/**
         }
       
 @@@ findings
+@@@ case 225 (planted in a copy of a file of the tree)
+export function filletSetback(radius: number, turningAngle: number): number {
+  return radius * Math.tan(Math.abs(turningAngle) / 2);
+}
+
+@@@ findings
+1:8 Missing JSDoc comment.
+@@@ case 226 (planted in a copy of a file of the tree)
+/** How an `@font-face` rule names a font file's format: its media type in the `data:` URL and its format hint (`REF-CSS-FONTS-4`, §11.2). */
+export type FontFormat = {
+  readonly mediaType: string;
+  /** The hint of `format()`: `truetype`, or `opentype` for a file with CFF outlines. */
+  readonly hint: string;
+};
+
+@@@ findings
+3:3 Missing JSDoc comment.
 @@@ end

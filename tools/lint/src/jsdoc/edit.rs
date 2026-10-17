@@ -114,15 +114,6 @@ impl Edit {
             .join("\n")
     }
 
-    /// The tokens of a tag's lines, in order.
-    #[must_use]
-    pub fn tag_tokens(&self, tag: usize) -> Vec<Tokens> {
-        self.tags[tag]
-            .iter()
-            .map(|id| self.pool[*id].tokens.clone())
-            .collect()
-    }
-
     /// A new line in the pool.
     fn make(&mut self, number: usize, tokens: Tokens) -> usize {
         self.pool.push(Line { number, tokens });
@@ -360,5 +351,71 @@ pub fn v8_sort<T: Clone>(items: &mut [T], mut compare: impl FnMut(&T, &T) -> std
             }
         }
         items[left..=start].rotate_right(1);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{Edit, v8_sort, without_closing};
+    use crate::jsdoc::block::parse;
+
+    #[test]
+    fn removes_a_tag_and_its_description_lines() {
+        let block = parse("/**\n * Text.\n * @param a - one\n *   more\n * @param b - two\n */");
+        let mut edit = Edit::new(&block, "", "");
+
+        edit.remove_tag(0, 0);
+
+        assert_eq!(edit.text(), "/**\n * Text.\n * @param b - two\n */");
+    }
+
+    #[test]
+    fn empties_a_tag_on_the_closing_line_instead_of_removing_it() {
+        // The tag shares its line with `*/`: the line stays, all but its start, `*` and `*/` gone.
+        let block = parse("/**\n * Text.\n * @param a - one */");
+        let mut edit = Edit::new(&block, "", "");
+
+        edit.remove_tag(0, 0);
+
+        assert_eq!(edit.text(), "/**\n * Text.\n **/");
+    }
+
+    #[test]
+    fn moves_the_closing_delimiter_to_its_own_line() {
+        let block = parse("/**\n * @param a - one */");
+        let mut edit = Edit::new(&block, "  ", "");
+
+        assert!(edit.move_closing_to_own_line());
+        assert!(!edit.move_closing_to_own_line());
+        assert_eq!(edit.text(), "/**\n * @param a - one\n   */");
+    }
+
+    #[test]
+    fn copies_a_line_without_its_closing_and_the_blanks_before_it() {
+        // The last content is the name, then the type, then the tag: each trimmed at its end.
+        let named = parse("/**\n * @param a */").source[1].tokens.clone();
+        let typed = parse("/**\n * @returns {number} */").source[1]
+            .tokens
+            .clone();
+        let tag = parse("/**\n * @ignore */").source[1].tokens.clone();
+
+        assert_eq!(without_closing(&named, "\r").joined(), " * @param a\r");
+        assert_eq!(without_closing(&typed, "").joined(), " * @returns {number}");
+        assert_eq!(without_closing(&tag, "").joined(), " * @ignore");
+    }
+
+    #[test]
+    fn sorts_as_v8_with_its_comparisons() {
+        // The run 2, 1 is descending: reversed; 3 then 0 put in by binary insertion. Node.js 24
+        // shows the same comparisons for `[2, 1, 3, 0].sort((a, b) => a - b)`.
+        let mut items = [2, 1, 3, 0];
+        let mut compared = Vec::new();
+        v8_sort(&mut items, |left, right| {
+            compared.push((*left, *right));
+            left.cmp(right)
+        });
+
+        assert_eq!(items, [0, 1, 2, 3]);
+        assert_eq!(compared, [(1, 2), (3, 1), (3, 2), (0, 2), (0, 1)]);
     }
 }

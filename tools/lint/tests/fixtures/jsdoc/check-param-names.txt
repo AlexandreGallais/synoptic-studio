@@ -1,5 +1,6 @@
-# check-param-names: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), a carriage return written ␍,
-# each run by ESLint 10.12.0 at src/a.ts with the project's options; recorded by EN-083.
+# check-param-names: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), then faults planted
+# in copies of files of the tree and cases written for branches, each run by ESLint 10.12.0 at src/a.ts with the project's options;
+# a carriage return written ␍; recorded by EN-083.
 @@@ case 1 (documented invalid)
 
           /**
@@ -1657,4 +1658,281 @@ function quux (a, b) {}
         }>();
       
 @@@ findings
+@@@ case 120 (planted in a copy of a file of the tree)
+/**
+ * Distance from a corner vertex to the tangent points of its fillet arc.
+ *
+ * Formula: s = r · tan(|τ| / 2) = r / tan(θ / 2), τ = turning angle, θ = interior angle.
+ *
+ * @kind geometry
+ * @param radius - fillet radius, >= 0
+ * @param turnAngle - signed turning angle at the vertex in radians, in ]−π, π[
+ * @returns setback along each adjacent edge, 0 for aligned vertices
+ * @see DERIV-fillet-setback
+ */
+export function filletSetback(radius: number, turningAngle: number): number {
+  return radius * Math.tan(Math.abs(turningAngle) / 2);
+}
+
+@@@ findings
+8:1 Expected @param names to be "radius, turningAngle". Got "radius, turnAngle".
+@@@ case 121 (written for a branch the documented cases leave)
+/**
+ * Destructured.
+ *
+ * @param root - the root
+ * @param root.a - a
+ * @param root.b - b
+ * @param root.b.c - c
+ * @param list - list
+ * @param list."0" - first
+ * @param rest - rest
+ */
+function destructured({ a, b: { c } }: { a: number; b: { c: number } }, [first]: number[], ...rest: number[]) {}
+/**
+ * Missing properties.
+ *
+ * @param root - the root
+ */
+function missing({ a, b = 1, c: [d, ...e], f: { g } = {}, ...h }: object) {}
+/**
+ * Typed literal.
+ *
+ * @param options - options
+ * @param options.width - width
+ */
+function typed(options: { width: number; height: number; nested: { depth: number }; method(): void }) {}
+/**
+ * This.
+ *
+ * @param this - the context
+ * @param a - a
+ */
+function withThis(this: { x: number }, a: number) {}
+/**
+ * This plain.
+ *
+ * @param a - a
+ */
+function plainThis(this: Window, a: number) {}
+/**
+ * Defaults.
+ *
+ * @param a - a
+ * @param b - b
+ */
+function defaults(a = 1, { x }: { x: number } = { x: 1 }) {}
+/**
+ * Array rest.
+ *
+ * @param list - list
+ */
+function arrayRest(...[first, second]: number[]) {}
+/**
+ * Keys.
+ *
+ * @param root - root
+ * @param root.'a-b' - quoted
+ * @param root.1 - number
+ */
+function keys({ 'a-b': ab, 1: one, [computed]: c }: object) {}
+/**
+ * Extra.
+ *
+ * @param root - root
+ * @param root.a - a
+ * @param root.z - z
+ */
+function extra({ a }: { a: number }) {}
+/**
+ * Path before.
+ *
+ * @param root.a - a
+ * @param root - root
+ */
+function pathBefore(root: object) {}
+/**
+ * Path root.
+ *
+ * @param root - root
+ * @param other.a - a
+ */
+function pathRoot(root: object) {}
+/**
+ * Annotation name.
+ *
+ * @param other - other
+ * @param other.a - a
+ */
+function annotation(root: { a: number }) {}
+/**
+ * Duplicate.
+ *
+ * @param a - a
+ * @param a - again
+ */
+function duplicate(a: number) {}
+/**
+ * Order.
+ *
+ * @param b - b
+ * @param a - a
+ */
+function order(a: number, b: number) {}
+interface Shape {
+  /**
+   * Method.
+   *
+   * @param x - x
+   */
+  method(y: number): void;
+  /**
+   * Property.
+   *
+   * @param x - x
+   */
+  callback: (y: number) => void;
+}
+@@@ findings
+16:1 Missing @param "root.a"
+16:1 Missing @param "root.b"
+16:1 Missing @param "root.c"
+16:1 Missing @param "root.c.0"
+16:1 Missing @param "root.c.1"
+16:1 Missing @param "root.f"
+16:1 Missing @param "root.f.g"
+22:1 Missing @param "options.height"
+22:1 Missing @param "options.nested"
+22:1 Missing @param "options.nested.depth"
+22:1 Missing @param "options.method"
+29:1 Missing @param "this.x"
+42:1 Missing @param "b.x"
+49:1 Expected @param name to be "first". Got "list".
+55:1 Missing @param "root.computed"
+65:1 @param "root.z" does not exist on root
+71:1 @param path declaration ("root.a") appears before any real parameter.
+79:1 @param path declaration ("other.a") root node name ("other") does not match previous real parameter name ("root").
+84:1 Missing @param "root.a"
+85:1 @param "other" does not match parameter name "root"
+86:1 @param "other.a" does not exist on other
+93:1 Duplicate @param "a"
+99:1 Expected @param names to be "a, b". Got "b, a".
+107:1 Expected @param names to be "y". Got "x".
+113:1 Expected @param names to be "y". Got "x".
+@@@ output
+/**
+ * Destructured.
+ *
+ * @param root - the root
+ * @param root.a - a
+ * @param root.b - b
+ * @param root.b.c - c
+ * @param list - list
+ * @param list."0" - first
+ * @param rest - rest
+ */
+function destructured({ a, b: { c } }: { a: number; b: { c: number } }, [first]: number[], ...rest: number[]) {}
+/**
+ * Missing properties.
+ *
+ * @param root - the root
+ */
+function missing({ a, b = 1, c: [d, ...e], f: { g } = {}, ...h }: object) {}
+/**
+ * Typed literal.
+ *
+ * @param options - options
+ * @param options.width - width
+ */
+function typed(options: { width: number; height: number; nested: { depth: number }; method(): void }) {}
+/**
+ * This.
+ *
+ * @param this - the context
+ * @param a - a
+ */
+function withThis(this: { x: number }, a: number) {}
+/**
+ * This plain.
+ *
+ * @param a - a
+ */
+function plainThis(this: Window, a: number) {}
+/**
+ * Defaults.
+ *
+ * @param a - a
+ * @param b - b
+ */
+function defaults(a = 1, { x }: { x: number } = { x: 1 }) {}
+/**
+ * Array rest.
+ *
+ * @param list - list
+ */
+function arrayRest(...[first, second]: number[]) {}
+/**
+ * Keys.
+ *
+ * @param root - root
+ * @param root.'a-b' - quoted
+ * @param root.1 - number
+ */
+function keys({ 'a-b': ab, 1: one, [computed]: c }: object) {}
+/**
+ * Extra.
+ *
+ * @param root - root
+ * @param root.a - a
+ * @param root.z - z
+ */
+function extra({ a }: { a: number }) {}
+/**
+ * Path before.
+ *
+ * @param root.a - a
+ * @param root - root
+ */
+function pathBefore(root: object) {}
+/**
+ * Path root.
+ *
+ * @param root - root
+ * @param other.a - a
+ */
+function pathRoot(root: object) {}
+/**
+ * Annotation name.
+ *
+ * @param other - other
+ * @param other.a - a
+ */
+function annotation(root: { a: number }) {}
+/**
+ * Duplicate.
+ *
+ * @param a - a
+ */
+function duplicate(a: number) {}
+/**
+ * Order.
+ *
+ * @param a - a
+ * @param b - b
+ */
+function order(a: number, b: number) {}
+interface Shape {
+  /**
+   * Method.
+   *
+   * @param x - x
+   */
+  method(y: number): void;
+  /**
+   * Property.
+   *
+   * @param x - x
+   */
+  callback: (y: number) => void;
+}
 @@@ end

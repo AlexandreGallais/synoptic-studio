@@ -208,7 +208,6 @@ mod tests {
             &ConvertToJsdocComments,
             "convert-to-jsdoc-comments",
             "src/a.ts",
-            &[],
         );
     }
 }

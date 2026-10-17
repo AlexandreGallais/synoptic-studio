@@ -69,6 +69,6 @@ mod tests {
 
     #[test]
     fn reports_the_documented_cases_as_eslint_does() {
-        check(&NoTypes, "no-types", "src/a.ts", &[]);
+        check(&NoTypes, "no-types", "src/a.ts");
     }
 }

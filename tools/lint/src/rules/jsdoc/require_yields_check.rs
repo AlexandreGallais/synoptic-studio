@@ -63,6 +63,6 @@ mod tests {
 
     #[test]
     fn reports_the_documented_cases_as_eslint_does() {
-        check(&RequireYieldsCheck, "require-yields-check", "src/a.ts", &[]);
+        check(&RequireYieldsCheck, "require-yields-check", "src/a.ts");
     }
 }

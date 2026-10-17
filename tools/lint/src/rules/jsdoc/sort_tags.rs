@@ -1,5 +1,5 @@
-//! `jsdoc/sort-tags` with the project's sequence (`JSDOC_TAG_SEQUENCE`): `@kind`, then
-//! `@template`, `@param`, `@returns`, `@yields`, `@throws`, `@rejects`, then `@see`,
+//! `jsdoc/sort-tags` with the project's sequence (`docs/conventions/documentation.md`):
+//! `@kind`, then `@template`, `@param`, `@returns`, `@yields`, `@throws`, `@rejects`, then `@see`,
 //! `@deprecated`, other tags last; no blank line inside a group (`eslint-plugin-jsdoc` 65.3.1,
 //! `src/rules/sortTags.js`, group spacing not reported). Autofixed.
 
@@ -277,6 +277,6 @@ mod tests {
 
     #[test]
     fn reports_the_documented_cases_as_eslint_does() {
-        check(&SortTags, "sort-tags", "src/a.ts", &[]);
+        check(&SortTags, "sort-tags", "src/a.ts");
     }
 }

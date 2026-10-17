@@ -1,5 +1,6 @@
-# require-returns-check: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), a carriage return written ␍,
-# each run by ESLint 10.12.0 at src/a.ts with the project's options; recorded by EN-083.
+# require-returns-check: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), then faults planted
+# in copies of files of the tree and cases written for branches, each run by ESLint 10.12.0 at src/a.ts with the project's options;
+# a carriage return written ␍; recorded by EN-083.
 @@@ case 1 (documented invalid)
 
           /**
@@ -1434,4 +1435,790 @@
         }
       
 @@@ findings
+@@@ case 112 (planted in a copy of a file of the tree)
+/** Specification of the story demonstrated by the page. */
+const STORY = "docs/backlog/stories/E01-F02-US-007-shape-selector-playground.md";
+
+/**
+ * Selects a required element of the page by its id.
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param id - `id` attribute, without `#`
+ * @returns the HTML element carrying this `id`
+ * @throws {Error} when the page has no element with this id
+ * @see docs/backlog/stories/E01-F01-US-002-sharp-rectangle-in-playground.md
+ */
+export function selectElement(document: Document, id: string): HTMLElement {
+  const element = document.querySelector<HTMLElement>(`#${id}`);
+
+  if (element === null) {
+    throw new Error(`Playground page without #${id} (${STORY}).`);
+  }
+
+}
+
+@@@ findings
+4:1 JSDoc @returns declaration present but return expression not available in function.
+@@@ case 113 (planted in a copy of a file of the tree)
+import { PENDING_TASKS } from "./pending-tasks";
+
+/**
+ * Runs a task, its failure handed to `onFailure`.
+ *
+ * @kind procedure
+ * @param task - the work to run
+ * @param onFailure - called with the error when the task fails
+ * @returns once the task is done or its failure handled
+ * @see docs/backlog/stories/E15-F15-US-036-import-choose-and-embed-a-font.md
+ */
+async function runSettledPlain(
+  task: () => Promise<void>,
+  onFailure: (error: unknown) => void,
+): Promise<void> {
+  try {
+    await task();
+  } catch (error: unknown) {
+    onFailure(error);
+  }
+}
+
+/**
+ * Runs an asynchronous task started by an event listener, which returns nothing and cannot await
+ * it — a font file read, the fonts the browser lists (US-036): the task's promise is kept with the
+ * page's pending tasks (`PENDING_TASKS`), never left floating, and its failure handed to
+ * `onFailure`.
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param task - the task to run
+ * @param onFailure - called with the error when the task fails
+ * @see docs/backlog/stories/E15-F15-US-036-import-choose-and-embed-a-font.md
+ */
+export function runTask(
+  document: Document,
+  task: () => Promise<void>,
+  onFailure: (error: unknown) => void,
+): void {
+  const running = runSettled(task, onFailure);
+
+  PENDING_TASKS.set(document, [...(PENDING_TASKS.get(document) ?? []), running]);
+}
+
+@@@ findings
+@@@ case 114 (written for a branch the documented cases leave)
+/**
+ * Loops.
+ *
+ * @returns a number
+ */
+function loops(a: boolean, list: number[]): number {
+  do { if (a) { return 1; } } while (a);
+  for (const each in list) { return 2; }
+  for (const each of list) { return 3; }
+  for (let i = 0; i < 1; i++) { return 4; }
+  label: { return 5; }
+  return 6;
+}
+@@@ findings
+@@@ case 115 (written for a branch the documented cases leave)
+/**
+ * Infinite loops.
+ *
+ * @returns {number} a number
+ */
+function forever(): number {
+  while (true) { return 1; }
+}
+/**
+ * Infinite for.
+ *
+ * @returns {number} a number
+ */
+function forEver(): number {
+  for (;;) { return 1; }
+}
+/**
+ * Infinite do.
+ *
+ * @returns {number} a number
+ */
+function doForever(): number {
+  do { return 1; } while (true);
+}
+/**
+ * Branches.
+ *
+ * @returns {number} a number
+ */
+function branches(a: number): number {
+  if (a) { return 1; }
+}
+/**
+ * Switch.
+ *
+ * @returns {number} a number
+ */
+function switched(a: number): number {
+  switch (a) { case 1: return 1; default: return 2; }
+}
+/**
+ * Switch with break.
+ *
+ * @returns {number} a number
+ */
+function broken(a: number): number {
+  switch (a) { case 1: break; default: return 2; }
+  return 3;
+}
+/**
+ * Try.
+ *
+ * @returns {number} a number
+ */
+function tried(): number {
+  try { return 1; } catch { return 2; } finally { return 3; }
+}
+/**
+ * Try without finally return.
+ *
+ * @returns {number} a number
+ */
+function triedEmpty(): number {
+  try { return 1; } catch { return 2; } finally { return; }
+}
+/**
+ * Throws.
+ *
+ * @returns {number} a number
+ */
+function thrown(a: number): number {
+  if (a) { return 1; } else { throw new Error("no"); }
+}
+/**
+ * Labeled, for-in, for-of.
+ *
+ * @returns {number} a number
+ */
+function others(list: number[]): number {
+  label: for (const each of list) { return each; }
+}
+@@@ findings
+25:1 JSDoc @returns declaration present but return expression not available in function.
+58:1 JSDoc @returns declaration present but return expression not available in function.
+@@@ case 116 (written for a branch the documented cases leave)
+/**
+ * Never.
+ *
+ * @returns {never} nothing
+ */
+function never(): never {
+  return new Promise((resolve) => { resolve(1); });
+}
+/**
+ * Never, void promise.
+ *
+ * @returns {never} nothing
+ */
+function neverVoid(): never {
+  return new Promise<void>((resolve) => { resolve(); });
+}
+/**
+ * Never, resolver passed on.
+ *
+ * @returns {never} nothing
+ */
+function neverPassed(): never {
+  return new Promise((resolve) => { setTimeout(resolve, 1); });
+}
+/**
+ * Never, resolver shadowed.
+ *
+ * @returns {never} nothing
+ */
+function neverShadowed(): never {
+  return new Promise((resolve) => { [1].forEach((resolve) => resolve(2)); });
+}
+/**
+ * Never, nested.
+ *
+ * @returns {never} nothing
+ */
+function neverNested(a: boolean): never {
+  return new Promise((done) => {
+    const x = a ? done(1) : [done(2), ...[done(3)]];
+    if (a) { done(4); }
+    for (;;) { done(5); }
+    switch (a) { case true: done(6); }
+    try { done(7); } catch { done(8); } finally { done(9); }
+    return { [done(10)]: done(11), ...done(12) };
+  });
+}
+/**
+ * Never, expressions.
+ *
+ * @returns {never} nothing
+ */
+function neverExpressions(a: boolean): never {
+  return new Promise(async (done) => (a && done(1), `${done(2)}`, -done(3), await done(4), done?.(5), x[done(6)], (y = done(7))));
+}
+@@@ findings
+1:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+17:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+33:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+48:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+@@@ case 117 (written for a branch the documented cases leave)
+/**
+ * Arrow with an expression.
+ *
+ * @returns the five
+ */
+const five = (): number => 5;
+/**
+ * Declared.
+ *
+ * @returns the five
+ */
+declare function declared(): number;
+/**
+ * Declared void.
+ *
+ * @returns nothing
+ */
+declare function declaredVoid(): void;
+/**
+ * Undefined unions.
+ *
+ * @returns {undefined|string} maybe
+ */
+function maybe(): string | undefined {}
+/**
+ * Parenthesized.
+ *
+ * @returns {(void|string)} maybe
+ */
+function parenthesized(): string | undefined {}
+/**
+ * @typedef {undefined} Nothing
+ */
+/**
+ * Typedef.
+ *
+ * @returns {Nothing} nothing
+ */
+function typedef() {}
+/**
+ * Asserts.
+ *
+ * @returns {asserts a} it
+ */
+function asserting(a: unknown) {}
+/**
+ * Two returns.
+ *
+ * @returns one
+ * @returns two
+ */
+function twice() { return 1; }
+/**
+ * Async.
+ *
+ * @returns nothing
+ */
+async function later() {}
+/**
+ * Generator.
+ *
+ * @returns nothing
+ */
+function* generate() {}
+/**
+ * Constructor.
+ *
+ * @class
+ * @returns nothing
+ */
+function Made() {}
+@@@ findings
+13:1 JSDoc @returns declaration present but return expression not available in function.
+46:1 Found more than one @returns declaration.
+@@@ case 118 (written for a branch the documented cases leave)
+/**
+ * arrayElement.
+ *
+ * @returns {never} nothing
+ */
+function arrayElement(a: boolean, x: any, f: any): never {
+  return new Promise((done) => [done(1)]);
+}
+/**
+ * arraySpread.
+ *
+ * @returns {never} nothing
+ */
+function arraySpread(a: boolean, x: any, f: any): never {
+  return new Promise((done) => [...done(1)]);
+}
+/**
+ * arrayHole.
+ *
+ * @returns {never} nothing
+ */
+function arrayHole(a: boolean, x: any, f: any): never {
+  return new Promise((done) => [, 1]);
+}
+/**
+ * innerFunction.
+ *
+ * @returns {never} nothing
+ */
+function innerFunction(a: boolean, x: any, f: any): never {
+  return new Promise((done) => { (function () { done(1); }); });
+}
+/**
+ * innerShadow.
+ *
+ * @returns {never} nothing
+ */
+function innerShadow(a: boolean, x: any, f: any): never {
+  return new Promise((done) => { (function (done) { done(1); }); });
+}
+/**
+ * innerArrowBody.
+ *
+ * @returns {never} nothing
+ */
+function innerArrowBody(a: boolean, x: any, f: any): never {
+  return new Promise((done) => { (() => done(1)); });
+}
+/**
+ * assigned.
+ *
+ * @returns {never} nothing
+ */
+function assigned(a: boolean, x: any, f: any): never {
+  return new Promise((done) => { x = done(1); });
+}
+/**
+ * assignedMember.
+ *
+ * @returns {never} nothing
+ */
+function assignedMember(a: boolean, x: any, f: any): never {
+  return new Promise((done) => { x[done(1)] = 2; });
+}
+/**
+ * binary.
+ *
+ * @returns {never} nothing
+ */
+function binary(a: boolean, x: any, f: any): never {
+  return new Promise((done) => done(1) + 1);
+}
+/**
+ * awaited.
+ *
+ * @returns {never} nothing
+ */
+function awaited(a: boolean, x: any, f: any): never {
+  return new Promise(async (done) => { await done(1); });
+}
+/**
+ * unary.
+ *
+ * @returns {never} nothing
+ */
+function unary(a: boolean, x: any, f: any): never {
+  return new Promise((done) => !done(1));
+}
+/**
+ * Yielded.
+ *
+ * @returns {never} nothing
+ */
+function yielded(): never {
+  return new Promise(function* (done) { yield done(1); });
+}
+/**
+ * callSpread.
+ *
+ * @returns {never} nothing
+ */
+function callSpread(a: boolean, x: any, f: any): never {
+  return new Promise((done) => f(...done(1)));
+}
+/**
+ * callNested.
+ *
+ * @returns {never} nothing
+ */
+function callNested(a: boolean, x: any, f: any): never {
+  return new Promise((done) => f(g(done(1))));
+}
+/**
+ * chainCall.
+ *
+ * @returns {never} nothing
+ */
+function chainCall(a: boolean, x: any, f: any): never {
+  return new Promise((done) => done?.(1));
+}
+/**
+ * chainArgument.
+ *
+ * @returns {never} nothing
+ */
+function chainArgument(a: boolean, x: any, f: any): never {
+  return new Promise((done) => f?.(done));
+}
+/**
+ * chainMember.
+ *
+ * @returns {never} nothing
+ */
+function chainMember(a: boolean, x: any, f: any): never {
+  return new Promise((done) => x?.[done(1)]);
+}
+/**
+ * imported.
+ *
+ * @returns {never} nothing
+ */
+function imported(a: boolean, x: any, f: any): never {
+  return new Promise((done) => import(done(1)));
+}
+/**
+ * member.
+ *
+ * @returns {never} nothing
+ */
+function member(a: boolean, x: any, f: any): never {
+  return new Promise((done) => done(1).y);
+}
+/**
+ * objectValue.
+ *
+ * @returns {never} nothing
+ */
+function objectValue(a: boolean, x: any, f: any): never {
+  return new Promise((done) => ({ a: done(1) }));
+}
+/**
+ * objectKey.
+ *
+ * @returns {never} nothing
+ */
+function objectKey(a: boolean, x: any, f: any): never {
+  return new Promise((done) => ({ [done(1)]: 1 }));
+}
+/**
+ * objectSpread.
+ *
+ * @returns {never} nothing
+ */
+function objectSpread(a: boolean, x: any, f: any): never {
+  return new Promise((done) => ({ ...done(1) }));
+}
+/**
+ * sequence.
+ *
+ * @returns {never} nothing
+ */
+function sequence(a: boolean, x: any, f: any): never {
+  return new Promise((done) => (0, done(1)));
+}
+/**
+ * template.
+ *
+ * @returns {never} nothing
+ */
+function template(a: boolean, x: any, f: any): never {
+  return new Promise((done) => `${done(1)}`);
+}
+/**
+ * tagged.
+ *
+ * @returns {never} nothing
+ */
+function tagged(a: boolean, x: any, f: any): never {
+  return new Promise((done) => f`${done(1)}`);
+}
+/**
+ * logical.
+ *
+ * @returns {never} nothing
+ */
+function logical(a: boolean, x: any, f: any): never {
+  return new Promise((done) => a || done(1));
+}
+/**
+ * conditional.
+ *
+ * @returns {never} nothing
+ */
+function conditional(a: boolean, x: any, f: any): never {
+  return new Promise((done) => a ? 1 : done(1));
+}
+/**
+ * ifTest.
+ *
+ * @returns {never} nothing
+ */
+function ifTest(a: boolean, x: any, f: any): never {
+  return new Promise((done) => { if (done(1)) {} });
+}
+/**
+ * ifElse.
+ *
+ * @returns {never} nothing
+ */
+function ifElse(a: boolean, x: any, f: any): never {
+  return new Promise((done) => { if (a) {} else { done(1); } });
+}
+/**
+ * whileBody.
+ *
+ * @returns {never} nothing
+ */
+function whileBody(a: boolean, x: any, f: any): never {
+  return new Promise((done) => { while (a) { done(1); } });
+}
+/**
+ * doBody.
+ *
+ * @returns {never} nothing
+ */
+function doBody(a: boolean, x: any, f: any): never {
+  return new Promise((done) => { do { done(1); } while (a); });
+}
+/**
+ * forIn.
+ *
+ * @returns {never} nothing
+ */
+function forIn(a: boolean, x: any, f: any): never {
+  return new Promise((done) => { for (const k in x) { done(1); } });
+}
+/**
+ * forOf.
+ *
+ * @returns {never} nothing
+ */
+function forOf(a: boolean, x: any, f: any): never {
+  return new Promise((done) => { for (const k of x) { done(1); } });
+}
+/**
+ * labeled.
+ *
+ * @returns {never} nothing
+ */
+function labeled(a: boolean, x: any, f: any): never {
+  return new Promise((done) => { here: { done(1); } });
+}
+/**
+ * switched.
+ *
+ * @returns {never} nothing
+ */
+function switched(a: boolean, x: any, f: any): never {
+  return new Promise((done) => { switch (a) { case true: done(1); } });
+}
+/**
+ * triedBlock.
+ *
+ * @returns {never} nothing
+ */
+function triedBlock(a: boolean, x: any, f: any): never {
+  return new Promise((done) => { try { done(1); } catch {} });
+}
+/**
+ * triedHandler.
+ *
+ * @returns {never} nothing
+ */
+function triedHandler(a: boolean, x: any, f: any): never {
+  return new Promise((done) => { try {} catch { done(1); } });
+}
+/**
+ * triedFinally.
+ *
+ * @returns {never} nothing
+ */
+function triedFinally(a: boolean, x: any, f: any): never {
+  return new Promise((done) => { try {} finally { done(1); } });
+}
+/**
+ * declared.
+ *
+ * @returns {never} nothing
+ */
+function declared(a: boolean, x: any, f: any): never {
+  return new Promise((done) => { const y = done(1); });
+}
+/**
+ * returned.
+ *
+ * @returns {never} nothing
+ */
+function returned(a: boolean, x: any, f: any): never {
+  return new Promise((done) => { return done(1); });
+}
+/**
+ * emptyCall.
+ *
+ * @returns {never} nothing
+ */
+function emptyCall(a: boolean, x: any, f: any): never {
+  return new Promise((done) => { done(); });
+}
+/**
+ * noParameter.
+ *
+ * @returns {never} nothing
+ */
+function noParameter(a: boolean, x: any, f: any): never {
+  return new Promise(() => { });
+}
+/**
+ * patternParameter.
+ *
+ * @returns {never} nothing
+ */
+function patternParameter(a: boolean, x: any, f: any): never {
+  return new Promise(({ done }) => { });
+}
+/**
+ * Not a function executor.
+ *
+ * @returns {never} nothing
+ */
+function notFunction(x: any): never {
+  return new Promise(x);
+}
+/**
+ * No executor.
+ *
+ * @returns {never} nothing
+ */
+function noExecutor(): never {
+  return new Promise();
+}
+@@@ findings
+1:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+9:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+25:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+41:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+49:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+57:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+65:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+73:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+81:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+89:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+97:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+105:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+113:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+121:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+129:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+137:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+145:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+153:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+161:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+169:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+177:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+185:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+193:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+201:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+209:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+217:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+225:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+233:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+241:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+249:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+257:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+265:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+273:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+281:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+289:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+297:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+305:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+313:1 JSDoc @returns declaration set with "never" but return expression is present in function.
+@@@ case 119 (written for a branch the documented cases leave)
+/**
+ * Handler returns.
+ *
+ * @returns a number
+ */
+function handler(a: () => void): number {
+  try { a(); } catch { return 1; }
+}
+/**
+ * Finalizer returns.
+ *
+ * @returns a number
+ */
+function finalizer(a: () => void): number {
+  try { a(); } finally { return 1; }
+}
+/**
+ * Loop with a test.
+ *
+ * @returns {number} a number
+ */
+function tested(a: boolean): number {
+  do { return 1; } while (a);
+}
+/**
+ * For with a test.
+ *
+ * @returns {number} a number
+ */
+function forTested(a: number): number {
+  for (let i = 0; i < a; i++) { return 1; }
+}
+/**
+ * For-in.
+ *
+ * @returns {number} a number
+ */
+function forIn(x: object): number {
+  for (const k in x) { return 1; }
+}
+/**
+ * While with a test.
+ *
+ * @returns {number} a number
+ */
+function whileTested(a: boolean): number {
+  while (a) { return 1; }
+}
+/**
+ * Declared and typed.
+ *
+ * @returns {number} a number
+ */
+declare function declaredTyped(): number;
+/**
+ * Arrow typed.
+ *
+ * @returns {number} a number
+ */
+const arrowTyped = (): number => 1;
+/**
+ * Arrow typed, void promise.
+ *
+ * @returns {Promise<void>} a promise
+ */
+const arrowVoid = () => new Promise<void>((resolve) => resolve());
+/**
+ * Empty return in a loop.
+ *
+ * @returns {number} a number
+ */
+function emptyReturn(a: boolean): number {
+  while (a) { return; }
+  return 1;
+}
+@@@ findings
+61:1 JSDoc @returns declaration present but return expression not available in function.
+67:1 JSDoc @returns declaration present but return expression not available in function.
 @@@ end

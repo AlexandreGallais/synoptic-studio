@@ -44,7 +44,6 @@ mod tests {
             &RequireTemplateDescription,
             "require-template-description",
             "src/a.ts",
-            &[],
         );
     }
 }

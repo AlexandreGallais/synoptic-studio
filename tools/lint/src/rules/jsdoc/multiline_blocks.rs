@@ -101,6 +101,6 @@ mod tests {
 
     #[test]
     fn reports_the_documented_cases_as_eslint_does() {
-        check(&MultilineBlocks, "multiline-blocks", "src/a.ts", &[]);
+        check(&MultilineBlocks, "multiline-blocks", "src/a.ts");
     }
 }

@@ -1,5 +1,3 @@
-import { JSDOC_DESCRIPTION_PATTERNS } from "../../settings";
-
 import type { TSESLint } from "@typescript-eslint/utils";
 
 /** Wording and validity of descriptions, names and references. */
@@ -9,41 +7,33 @@ export const JSDOC_CONTENT: TSESLint.FlatConfig.Config = {
     "jsdoc/check-access": "error",
     // Deprecated upstream in favour of a processor; no `@example` blocks are written.
     "jsdoc/check-examples": "off",
-    "jsdoc/check-param-names": [
-      "error",
-      { checkDestructured: true, disableExtraPropertyReporting: false, enableFixer: true },
-    ],
+    // Run by the project's linter (tools/lint, EN-083).
+    "jsdoc/check-param-names": "off",
     "jsdoc/check-property-names": "error",
-    "jsdoc/check-syntax": "error",
+    // Run by the project's linter (tools/lint, EN-083).
+    "jsdoc/check-syntax": "off",
     // `@kind` is the project's function classification tag (ADR-0011).
     "jsdoc/check-tag-names": ["error", { definedTags: ["kind"], typed: true }],
-    "jsdoc/check-template-names": "error",
+    // Run by the project's linter (tools/lint, EN-083).
+    "jsdoc/check-template-names": "off",
     // Validates JSDoc 3 `@kind` values (class, function…), which the project redefines (ADR-0011); its other tags are banned.
     "jsdoc/check-values": "off",
     "jsdoc/empty-tags": "error",
-    "jsdoc/escape-inline-tags": "error",
+    // Run by the project's linter (tools/lint, EN-083).
+    "jsdoc/escape-inline-tags": "off",
     "jsdoc/implements-on-classes": "error",
     "jsdoc/imports-as-dependencies": "error",
-    // `@kind` holds a classification (e.g. `format` on `formatSvgNumber`), not a description.
-    "jsdoc/informative-docs": ["error", { excludedTags: ["kind"] }],
-    // Main description: sentences. `@param` / `@returns`: lower-case fragments without final period.
-    "jsdoc/match-description": ["error", JSDOC_DESCRIPTION_PATTERNS],
+    // Run by the project's linter (tools/lint, EN-083).
+    "jsdoc/informative-docs": "off",
+    // Run by the project's linter (tools/lint, EN-083).
+    "jsdoc/match-description": "off",
     // No naming constraint is expressed through JSDoc names.
     "jsdoc/match-name": "off",
     "jsdoc/no-defaults": "error",
-    "jsdoc/no-restricted-syntax": [
-      "error",
-      {
-        contexts: [
-          {
-            comment: "JsdocBlock:has(JsdocTag[tag=/^(todo|author|version|since)$/])",
-            context: "any",
-            message: "Track work and history in docs/ and git, not in JSDoc tags.",
-          },
-        ],
-      },
-    ],
-    "jsdoc/normalize-see-links": "error",
+    // Run by the project's linter (tools/lint, EN-083).
+    "jsdoc/no-restricted-syntax": "off",
+    // Run by the project's linter (tools/lint, EN-083).
+    "jsdoc/normalize-see-links": "off",
     // Checks tag descriptions as sentences; the project writes them as lower-case fragments (match-description).
     "jsdoc/require-description-complete-sentence": "off",
     // Types live in TypeScript annotations, never in JSDoc (jsdoc/no-types).

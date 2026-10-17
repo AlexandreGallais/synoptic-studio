@@ -41,7 +41,6 @@ mod tests {
             &RequireNextDescription,
             "require-next-description",
             "src/a.ts",
-            &[],
         );
     }
 }

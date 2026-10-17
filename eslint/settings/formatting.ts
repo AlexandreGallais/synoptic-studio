@@ -29,39 +29,6 @@ export const IMPORT_ORDER = {
   "newlines-between": "always",
 };
 
-/** Order of JSDoc block tags: classification, contract, references. */
-export const JSDOC_TAG_SEQUENCE = [
-  { tags: ["kind"] },
-  { tags: ["template", "param", "returns", "yields", "throws", "rejects"] },
-  { tags: ["see", "deprecated"] },
-];
-
-/** Declarations requiring a JSDoc block besides functions: types and module-level constants. */
-export const DOCUMENTED_CONTEXTS = [
-  "TSTypeAliasDeclaration",
-  "TSInterfaceDeclaration",
-  "Program > VariableDeclaration",
-  "ExportNamedDeclaration[declaration.type='VariableDeclaration']",
-];
-
-/** Library declarations requiring a JSDoc block: those above plus type members (the API pages' check). */
-export const LIBRARY_DOCUMENTED_CONTEXTS = [...DOCUMENTED_CONTEXTS, "TSPropertySignature"];
-
-/** Fragment without final period: `@param x - abscissa of the point`. */
-const TAG_FRAGMENT = {
-  match: String.raw`^[\s\S]*[^.\s]\s*$`,
-  message: "Tag descriptions are fragments without final period.",
-};
-
-/** JSDoc description shapes (`jsdoc/match-description`). */
-export const JSDOC_DESCRIPTION_PATTERNS = {
-  mainDescription: {
-    match: String.raw`^[A-Z\x60][\s\S]*[.:]\s*$`,
-    message: "Main descriptions are sentences: capital first letter, final period.",
-  },
-  tags: { param: TAG_FRAGMENT, returns: TAG_FRAGMENT },
-};
-
 /** Import style of Node.js built-in modules (`unicorn/import-style`): named imports. */
 export const NODE_IMPORT_STYLES = {
   "node:fs": { named: true },
