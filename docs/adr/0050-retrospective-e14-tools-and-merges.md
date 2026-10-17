@@ -1,6 +1,6 @@
 # ADR-0050 — The agent's tools, parallel checks, and validated epic stories that merge by themselves
 
-**Status**: Accepted (Product Owner, 2026-10-14, at RET-002). Extends ADR-0045 to an epic's closing stories.
+**Status**: Accepted (Product Owner, 2026-10-14, at RET-002). Extends ADR-0045 to an epic's closing stories. Decision 1 superseded by ADR-0073 (every new tool in Rust), decisions 2 and 3 by ADR-0072 (how a run works), both on 2026-10-17 at the review of the ADRs (EN-094); decisions 4 and 5 stand.
 
 ## Context
 

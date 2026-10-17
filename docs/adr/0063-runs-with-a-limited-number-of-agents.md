@@ -1,6 +1,6 @@
 # ADR-0063 — Runs with a limited number of agents, enforced by the tools
 
-**Status**: Accepted (Product Owner, 2026-10-16, at RET-003). Supersedes ADR-0051, which it keeps and amends. Decision 1 is a trial, measured at E17's retrospective.
+**Status**: Superseded by ADR-0072 (2026-10-17, review of the ADRs, EN-094): three subagents and one heavy command at a time are the rule, no longer a trial. Accepted (Product Owner, 2026-10-16, at RET-003). Supersedes ADR-0051, which it keeps and amends. Decision 1 is a trial, measured at E17's retrospective.
 
 ## Context
 
