@@ -52,6 +52,6 @@ In delivery order. Stories stay `draft` until F20's `/run` sets them `ready`.
 | [EN-096](../stories/E17-F20-EN-096-docs-written-as-principles.md) | Enabler | The agent's rules and skills written as principles | ready |
 | [EN-097](../stories/E17-F20-EN-097-conventions-written-as-principles.md) | Enabler | The conventions written as principles | done |
 | [EN-098](../stories/E17-F20-EN-098-process-written-as-principles.md) | Enabler | The process pages written as principles | done |
-| [EN-099](../stories/E17-F20-EN-099-tooling-docs-written-as-principles.md) | Enabler | The tooling docs written as principles | ready |
+| [EN-099](../stories/E17-F20-EN-099-tooling-docs-written-as-principles.md) | Enabler | The tooling docs written as principles | done |
 | [AUD-022](../stories/E17-F20-AUD-022-audit-f20.md) | Audit | Audit F20 | ready |
 | [VAL-021](../stories/E17-F20-VAL-021-validate-f20.md) | Validation | Validate F20 | ready |
