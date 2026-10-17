@@ -231,6 +231,9 @@
 | [EN-064](./E17-F20-EN-064-one-hour-prompt-cache.md)                               | F20     | A one-hour prompt cache on long agents                                               | draft  |
 | [EN-065](./E17-F20-EN-065-workers-started-from-a-digest.md)                       | F20     | Workers started from a digest instead of all of CLAUDE.md                            | draft  |
 | [EN-066](./E17-F20-EN-066-model-per-agent-type.md)                                | F20     | A model chosen per agent type                                                        | draft  |
+| [EN-086](./E17-F20-EN-086-push-notification-at-each-stop.md)                      | F20     | A push notification at each stop, question or validation ready                       | draft  |
+| [EN-087](./E17-F20-EN-087-progress-page-as-an-artifact.md)                        | F20     | A progress page as a claude.ai Artifact, updated during a run                        | draft  |
+| [EN-088](./E17-F20-EN-088-subagent-stop-hook-in-rust.md)                          | F20     | A SubagentStop hook in Rust that checks a worker's branch                            | draft  |
 | [CHK-021](./E17-F20-CHK-021-checkpoint-f20.md)                                    | F20     | Checkpoint in the middle of F20                                                      | draft  |
 | [AUD-022](./E17-F20-AUD-022-audit-f20.md)                                         | F20     | Audit F20                                                                            | draft  |
 | [VAL-021](./E17-F20-VAL-021-validate-f20.md)                                      | F20     | Validate F20                                                                         | draft  |
