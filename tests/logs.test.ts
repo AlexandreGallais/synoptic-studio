@@ -49,13 +49,14 @@ function rows(text: string): readonly string[] {
 }
 
 /**
- * The rows written more than once, each named once.
+ * The rows written more than once, each named once, compared without their padding: a table
+ * repeated with other column widths is still repeated.
  *
  * @param text - the log's content
- * @returns the repeated rows, in order of their first occurrence
+ * @returns the repeated rows, their spaces collapsed, in order of their first occurrence
  */
 function repeatedRows(text: string): readonly string[] {
-  const all = rows(text);
+  const all = rows(text).map((row) => row.replaceAll(/\s+/gu, " "));
 
   return [...new Set(all.filter((row, index) => all.indexOf(row) !== index))];
 }
@@ -79,6 +80,43 @@ function undatedSessions(text: string): readonly string[] {
 function undatedRows(text: string): readonly string[] {
   return rows(text).filter((row) => row.startsWith("|") && !DATE.test(row.slice(1).trim()));
 }
+
+/**
+ * The lines of a table log that break its one table: from its first table line to the end, any
+ * line that is not a row (a bullet, a paragraph, a blank line ending the table), and any header
+ * after the first.
+ *
+ * @param text - a log's content
+ * @returns the stray lines, in order
+ */
+function strayTableLines(text: string): readonly string[] {
+  const lines = text.replace(/\n$/u, "").split("\n");
+  const first = lines.findIndex((line) => line.startsWith("|"));
+  const table = first === -1 ? [] : lines.slice(first);
+  const headers = table.filter((line, index) => isSeparator(table[index + 1] ?? ""));
+
+  return [...table.filter((line) => !line.startsWith("|")), ...headers.slice(1)];
+}
+
+/** A journal bullet opening with its tag, `` - `#run` … ``. */
+const TAGGED = /^- `#[a-z-]+` /u;
+
+/**
+ * The journal's bullets without their tag, which `grep` finds them by.
+ *
+ * @param text - the journal's content
+ * @returns the untagged bullets, in order
+ */
+function untaggedBullets(text: string): readonly string[] {
+  return text.split("\n").filter((line) => line.startsWith("- ") && !TAGGED.test(line));
+}
+
+/** Each log's check of its shape: the two table logs hold one table, the journal tagged bullets. */
+const STRAY: Readonly<Record<string, (text: string) => readonly string[]>> = {
+  "docs/process/feedback.md": strayTableLines,
+  "docs/process/improvements.md": strayTableLines,
+  "docs/process/journal.md": untaggedBullets,
+};
 
 /** Each log's check of its dates: the journal dates its sessions, the two other logs their rows. */
 const UNDATED: Readonly<Record<string, (text: string) => readonly string[]>> = {
@@ -181,6 +219,35 @@ describe("append-only logs", () => {
 
   it.each(LOGS)("[F18.AC4] dates the entries of %s", (log) => {
     expect(UNDATED[log]?.(logText(log))).toStrictEqual([]);
+  });
+
+  it.each(LOGS)("[F18.AC6] keeps %s in its own shape", (log) => {
+    expect(STRAY[log]?.(logText(log))).toStrictEqual([]);
+  });
+
+  it("[F18.AC6] names the lines that break a table log or the journal", () => {
+    // EN-058's header, EN-055's bullet and a blank line ending the table, as move-rows wrote them.
+    const log =
+      "# Log\n\n| Date | Item |\n| --- | --- |\n| 2026-10-17 | a |\n| Date | Item |\n| --- | --- |\n\n- A bullet.\n  | 2026-10-17 | b |\n";
+
+    expect(strayTableLines(log)).toStrictEqual([
+      "",
+      "- A bullet.",
+      "  | 2026-10-17 | b |",
+      "| Date | Item |",
+    ]);
+
+    expect(strayTableLines("# Log\n\nNo table.\n")).toStrictEqual([]);
+
+    expect(
+      untaggedBullets("## 2026-10-17 — run\n\n- `#run` a\n- EN-055: b\n- `#Run` c\n"),
+    ).toStrictEqual(["- EN-055: b", "- `#Run` c"]);
+  });
+
+  it("[F18.AC4] names a table repeated with other padding", () => {
+    const log = "| 2026-10-17 | a |\n\n| 2026-10-17   | a      |\n";
+
+    expect(repeatedRows(log)).toStrictEqual(["| 2026-10-17 | a |"]);
   });
 
   it("[F18.AC4] names a row written twice by a union merge", () => {
