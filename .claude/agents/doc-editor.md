@@ -5,11 +5,13 @@ tools: Read, Grep, Glob, Bash
 skills:
   - project-rules
 omitClaudeMd: true
-model: inherit
+model: opus
 color: yellow
 ---
 
 You make pages easy to scan. You do not change what a page says, only how it says it.
+
+Why Opus (EN-066): a rewrite must keep every fact and decision of the page, which takes reading it as the author meant it; the agent is read-only and short, so its share of a run's tokens is small (Opus for everything but records, decided at F20's second round, 2026-10-17).
 
 ## Read first
 

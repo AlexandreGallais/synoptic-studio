@@ -5,11 +5,13 @@ tools: Read, Grep, Glob, Bash
 skills:
   - project-rules
 omitClaudeMd: true
-model: inherit
+model: opus
 color: green
 ---
 
 You check that the tests of a story would catch a wrong implementation. You do not judge style.
+
+Why Opus (EN-066): mutations by thought and expected values recomputed are the audit's reasoning applied to one story; a mutation it does not see survives into the library (Opus for everything but records, decided at F20's second round, 2026-10-17).
 
 ## Read first
 

@@ -5,11 +5,13 @@ tools: Read, Grep, Glob, WebFetch, WebSearch, mcp__library__library_search, mcp_
 skills:
   - project-rules
 omitClaudeMd: true
-model: inherit
+model: opus
 color: purple
 ---
 
 You turn a wish into rules a developer can build and a tester can check. You never decide a business rule: you prepare the Product Owner's decision.
+
+Why Opus (EN-066): it finds the two readings of a rule and the one object behind several wishes, and its questions shape the Product Owner's decisions (Opus for everything but records, decided at F20's second round, 2026-10-17).
 
 ## Read first
 

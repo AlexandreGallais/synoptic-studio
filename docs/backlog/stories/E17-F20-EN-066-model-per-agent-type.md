@@ -24,3 +24,18 @@ One task = one commit, referenced as `EN-066.Tn`.
 - [ ] T1 — The model in each agent file, with its reason (1 h)
 - [ ] T2 — Tokens per model in the session report (2 h)
 - [ ] T3 — One story worked on Sonnet, compared with one on Opus, recorded (2 h)
+
+## Models
+
+Set in T1, each agent file's `model` and a line of its body giving the reason (`tests/agent-models.test.ts` checks both); the same table is in [agent configuration](../../tooling/agent.md#models). An alias rather than `inherit`: a file naming `opus` keeps its agent on Opus when the main conversation runs on another model.
+
+| Agent type | Before | After | Why |
+| --- | --- | --- | --- |
+| `clerk` | `inherit` | `sonnet` | records copy facts the prompt gives into formats their files set, and a merge or a rebase follows fixed steps: nothing to derive or judge, at half the price |
+| `story-worker` | `inherit` | `opus` | code, hand-computed tests and the docs of its rules; stays on Opus until T3's measured trial shows Sonnet does as well |
+| `researcher` | `inherit` | `opus` | research on the strongest model: it judges what each source states, and the feature is built from its stories |
+| `auditor` | `inherit` | `opus` | audits on the strongest model: a weaker reviewer than the worker misses more |
+| `verifier` | `inherit` | `opus` | mutations by thought and recomputed values, the audit's reasoning on one story |
+| `math-expert` | `inherit` | `opus` | mathematics on the strongest model: the tests' expected values come from it |
+| `functional-analyst` | `inherit` | `opus` | finds the two readings of a rule and prepares the Product Owner's decisions |
+| `doc-editor` | `inherit` | `opus` | a rewrite keeps every fact of the page; read-only and short, so its share of the tokens is small |
