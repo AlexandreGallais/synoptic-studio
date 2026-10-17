@@ -1,6 +1,6 @@
 # The method on one page
 
-How work is cut, who writes what, and who accepts it. The full rules are in the [backlog](../backlog/); the reasons in ADR-0017, ADR-0020, ADR-0023 and ADR-0028.
+How work is cut, who writes what, and who accepts it. The full rules are in the [backlog](../backlog/); the reasons in ADR-0017, ADR-0020, ADR-0023, ADR-0072 and ADR-0074.
 
 ```mermaid
 flowchart LR
@@ -63,3 +63,12 @@ The type says **who can see the result**, not who wrote it or whether it is code
 | --- | --- |
 | every retrospective | metrics read (`npm run metrics`), overrides and "considered for later" tools re-checked, improvement and feedback logs emptied |
 | around the 4th or 5th epic, and at the end of the project | **review of every rule**: configuration, lint, hooks, skills, process — each one questioned against how the project went; harden by default, relax only with a reason (Product Owner, 2026-10-13) |
+
+## The agent's own method and tools
+
+The agent is given growing freedom over how it works (ADR-0074, Product Owner, 2026-10-17):
+
+| When | The agent | The Product Owner |
+| --- | --- | --- |
+| while working | writes each friction, error or slow step at once in the [improvement log](./improvements.md), and each reading that suggests a faster way to work, one cheaper in tokens or healthier; a worker writes its rows in its story file, under `## For the main thread` | — |
+| each epic end, at the retrospective, beside its tooling pass | presents a **method and tools** point: what it wants to change in its own work, the backlog method included when it does not fit an agent (for instance stories competing for shared files), new methods and Rust tools to adopt, each with its evidence — metrics, incidents, sources | decides each proposal |

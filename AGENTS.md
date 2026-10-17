@@ -77,7 +77,7 @@ A library of small named functions, each backed by a verified source, composed s
 | Level | Flow |
 | --- | --- |
 | Feature | refinement → `SP` spike → `US` / `EN` stories, `CHK` midway → `AUD` audit → `VAL` checklist page and demo page (ADR-0020) |
-| Epic | its features → `NAM` naming pass over the whole code → `REV` review → `RET` retrospective with metrics (ADR-0023, ADR-0049) |
+| Epic | its features → `NAM` naming pass over the whole code → `REV` review → `RET` retrospective with metrics and the agent's method and tools point (ADR-0023, ADR-0049, ADR-0074) |
 | Branch | `main` releases only; `develop` integration; `feature/f<nn>-<topic>` from `develop`; `<type>/<id>-<topic>` per story from its feature (ADR-0072) |
 | Merge | story → feature: rebase, by the Product Owner or, in an authorized run, by GitHub; feature → `develop`: merge commit, by GitHub once validated; `develop` → `main`: when the Product Owner asks, by them; a tooling feature validated by the agent (ADR-0072) |
 | Agents | at most 3 subagents at once: the hook `tools/hooks` `limit-agents` (test `tools/hooks/tests/limit.rs`) refuses a fourth, started or resumed, backed up by `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` set to 3 in `.claude/settings.json` (EN-063); one heavy command at a time, through the lock `tools/heavy-lock` (test `tools/heavy-lock/tests/lock.rs`) (ADR-0072, EN-047), the rule; shared files written by the main thread at merge (ADR-0065); checks by level from E02 (ADR-0064) |
