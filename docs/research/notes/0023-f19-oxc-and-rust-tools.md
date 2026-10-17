@@ -315,16 +315,16 @@ Asked by the Product Owner on 2026-10-17: for each of the 265 rules oxlint runs 
 
 | Plugin | Rules | Kept | Dropped |
 | --- | --- | --- | --- |
-| Unicorn | 197 | 148 | 49 |
+| Unicorn | 219 | 154 | 65 |
 | JSDoc | 45 | 31 | 14 |
 | functional | 12 | 10 | 2 |
 | @stylistic | 5 | 3 | 2 |
 | Import | 4 | 2 | 2 |
 | typescript-eslint, without types | 2 | 0 | 2 |
 | unused-imports | 2 | 2 | 0 |
-| **All** | **267** | **196** | **71** |
+| **All** | **289** | **202** | **87** |
 
-The 71 dropped, each with its reason (four added by EN-074, four by EN-078, three by EN-079, thirteen by EN-081, four by EN-080, five by EN-082, two by EN-083, the last three by EN-084):
+The 87 dropped, each with its reason (four added by EN-074, four by EN-078, three by EN-079, thirteen by EN-081, four by EN-080, five by EN-082, two by EN-083, three by EN-084, the last sixteen by EN-095):
 
 | Rule | Reason |
 | --- | --- |
@@ -399,6 +399,22 @@ The 71 dropped, each with its reason (four added by EN-074, four by EN-078, thre
 | `functional/prefer-property-signatures` | oxlint's `typescript/method-signature-style` (`property`, kept) reports every method signature of a type, the case this rule reports (tried on its documented case) |
 | `@stylistic/line-comment-position` | with `above`, it reports a line comment after code on its line; oxlint's `no-inline-comments` (kept) reports every comment beside code, line or block |
 | `@typescript-eslint/member-ordering` | it orders the members of classes, interfaces and type literals: no class (`functional/no-classes`), no interface (`typescript/consistent-type-definitions`), no method signature (`method-signature-style`), no call or construct signature beside data (`functional/no-mixed-types`) can be written, and no type of the tree puts an index signature beside properties: nothing is left to order |
+| `unicorn/consistent-class-member-order` | it orders the members of a class: no class can exist (`functional/no-classes`) |
+| `unicorn/no-undeclared-class-members` | it reads `this.…` in a class: neither a class nor `this` can exist (`functional/no-classes`, `no-this-expressions`) |
+| `unicorn/no-accidental-bitwise-operator` | `no-bitwise` (oxlint, kept) forbids `&`, `\|` and `\|=` on every file, the operators it reports |
+| `unicorn/no-boolean-sort-comparator` | `tsc` refuses a comparator returning a boolean to `sort()` or `toSorted()` (TS2345 on its three documented cases, tried on a probe file) |
+| `unicorn/no-chained-comparison` | `tsc` refuses `a < b < c` (TS2365) and `a === b === c` but where `c` is a boolean (TS2367), tried on a probe file |
+| `unicorn/no-collection-bracket-access` | `tsc` refuses `map['foo']` and `set['foo']` (TS7052, TS7053: no index signature) and lets `map['size']` through, as the rule does, tried on a probe file |
+| `unicorn/no-for-loop` | it reports a `for` loop over a `let` index, which `functional/no-let` and `no-var` forbid; `typescript/prefer-for-of` (oxlint, kept) reports such a loop too |
+| `unicorn/no-invalid-argument-count` | `tsc` refuses a wrong number of arguments to a typed function or a built-in (TS2554 on its five documented cases, tried on a probe file) |
+| `unicorn/no-missing-local-resource` | in TypeScript it reads `new URL('…', import.meta.url)` only, which the code never writes (it reads files by path); `tsc` resolves the imports, and ESLint reads no Markdown, HTML nor CSS here |
+| `unicorn/no-nonstandard-builtin-properties` | `tsc` refuses a property a built-in lacks, a call of what is no function and `new` on what is no constructor (TS2551, TS2339, TS2349, TS2351 on its six documented cases, tried on a probe file) |
+| `unicorn/no-shorthand-property-overrides` | it reads CSS and the `style` of JSX elements only: no CSS file is linted, and the code holds no `.tsx` |
+| `unicorn/no-transition-all` | it reads CSS, and DOM style strings only with type information: no CSS file is linted and ESLint runs without types since EN-076, so it checks nothing |
+| `unicorn/no-unsafe-promise-all-settled-values` | `tsc` refuses `.value` on a `PromiseSettledResult` not narrowed to a fulfilled one (TS2339 on its two documented cases, tried on a probe file) |
+| `unicorn/no-useless-coercion` | `typescript/no-unnecessary-type-conversion` (oxlint, type-aware, kept) reports each of its documented cases, from the types |
+| `unicorn/no-useless-template-literals` | `typescript/no-unnecessary-template-expression` (type-aware, kept) reports a static value interpolated and `no-implicit-coercion` (`disallowTemplateShorthand`, kept) a template of one expression: its documented cases, all reported |
+| `unicorn/require-proxy-trap-boolean-return` | `tsc` refuses a `set` or `deleteProperty` trap that returns no boolean, the handler being a `ProxyHandler` (TS2322 on its documented cases, tried on a probe file) |
 
 Confirmed against the code by EN-074 on 2026-10-17: no class, `this`, accessor, `enum`, `for…in`, `let`, CommonJS export nor JSDoc type in `src/`, `playground/`, `tests/` and the root configuration files; `fetch` and `node:sqlite` only in `scripts/`; `dependencies` empty. Each of the four drops above was tried on a probe file. The rewrite stories EN-078, EN-079 and EN-080 lost the four rules (44, 36 and 37 rules left).
 
@@ -416,14 +432,14 @@ The 196 kept, by plugin and, for Unicorn, by the area of `eslint/rules/unicorn/`
 | Unicorn, errors | 4 | `no-error-property-assignment`, `prefer-aggregate-error`, `prefer-error-is-error`, `try-complexity` |
 | Unicorn, functions | 7 | `no-repeated-call-wrappers`, `no-uncalled-method`, `no-unnecessary-default-arguments`, `no-unnecessary-parameters`, `no-useless-recursion`, `prefer-block-statement-over-iife`, `prefer-short-arrow-method` |
 | Unicorn, iteration | 16 | `iteration-fallback-style`, `no-array-sort-for-min-max`, `no-break-in-nested-loop`, `no-duplicate-loops`, `no-for-each`, `no-loop-iterable-mutation`, `no-unreadable-for-of-expression`, `no-unused-iterator-helper`, `prefer-array-iterable-methods`, `prefer-direct-iteration`, `prefer-iterable-in-constructor`, `prefer-iterator-helpers`, `prefer-iterator-to-array`, `prefer-iterator-to-array-at-end`, `prefer-object-iterable-methods`, `prefer-while-loop-condition` |
-| Unicorn, misc | 4 | `consistent-optional-chaining`, `no-useless-compound-assignment`, `no-useless-delete-check`, `prefer-https` |
+| Unicorn, misc | 5 | `consistent-optional-chaining`, `no-useless-compound-assignment`, `no-useless-delete-check`, `prefer-https`; `no-misrefactored-assignment`: oxlint's `oxc/misrefactored-assign-op` since EN-095 |
 | Unicorn, modules | 7 | `no-global-object-property-assignment`, `no-top-level-side-effects`, `no-unnecessary-global-this`, `no-useless-re-export`, `prefer-global-number-constants`, `prefer-identifier-import-export-specifiers`, `prefer-json-import` |
 | Unicorn, naming | 6 | `comment-content`, `consistent-compound-words`, `consistent-tuple-labels`, `name-replacements`, `no-keyword-prefix`, `prefer-type-literal-last` |
-| Unicorn, numbers | 6 | `no-negated-comparison`, `no-redundant-comparison`, `no-subtraction-comparison`, `prefer-math-abs`, `prefer-number-is-safe-integer`, `prefer-unary-minus` |
+| Unicorn, numbers | 9 | `no-negated-comparison`, `no-redundant-comparison`, `no-subtraction-comparison`, `prefer-math-abs`, `prefer-number-is-safe-integer`, `prefer-unary-minus`, `no-double-comparison`, `prefer-math-constants`; `no-constant-zero-expression`: oxlint's `oxc/erasing-op` since EN-095 |
 | Unicorn, objects | 12 | `consistent-destructuring`, `no-computed-property-existence-check`, `no-invalid-property-descriptor`, `no-invalid-well-known-symbol-methods`, `no-unreadable-new-expression`, `no-unreadable-object-destructuring`, `no-unsafe-property-key`, `no-unused-builtin-method-return`, `no-unused-properties`, `prefer-object-define-properties`, `prefer-object-destructuring-defaults`, `prefer-single-object-destructuring` |
 | Unicorn, platform | 2 | `no-unsafe-buffer-conversion`, `no-unsafe-json-serialization` |
 | Unicorn, promises | 7 | `no-async-iterator-callback`, `no-async-promise-finally`, `no-multiple-promise-resolver-calls`, `prefer-await`, `prefer-promise-static-methods`, `prefer-promise-try`, `prefer-then-catch` |
-| Unicorn, strings | 11 | `no-incorrect-template-string-interpolation`, `no-unnecessary-string-trim`, `no-unsafe-string-replacement`, `prefer-literal-ascii`, `prefer-regexp-escape`, `prefer-short-escape-sequences`, `prefer-single-replace`, `prefer-split-limit`, `prefer-string-pad-start-end`, `prefer-string-repeat`, `prefer-unicode-code-point-escapes` |
+| Unicorn, strings | 13 | `no-incorrect-template-string-interpolation`, `no-unnecessary-string-trim`, `no-unsafe-string-replacement`, `prefer-literal-ascii`, `prefer-regexp-escape`, `prefer-short-escape-sequences`, `prefer-single-replace`, `prefer-split-limit`, `prefer-string-pad-start-end`, `prefer-string-repeat`, `prefer-unicode-code-point-escapes`, `no-invalid-character-comparison`; `no-useless-concat`: oxlint's own `no-useless-concat` since EN-095 |
 | Unicorn, web | 9 | `no-blob-to-file`, `no-invalid-boolean-attribute-value`, `no-invalid-url-protocol-comparison`, `no-url-in-search-params`, `prefer-location-assign`, `prefer-url-can-parse`, `prefer-url-href`, `prefer-url-search-parameters`, `require-css-escape` |
 | functional | 10 | `no-let`, `readonly-type`, `no-classes`, `no-this-expressions`, `functional-parameters`, `no-expression-statements`, `no-loop-statements`, `no-promise-reject`, `no-throw-statements`, `no-try-statements` |
 | unused-imports | 2 | `no-unused-imports`, `no-unused-vars`: oxlint's own `no-unused-vars` since EN-084 |
@@ -441,6 +457,8 @@ Rewritten by EN-082 on 2026-10-17, each rule checked again against the code firs
 Rewritten by EN-083 on 2026-10-17 in the project's linter (`tools/lint/src/rules/jsdoc/`), each checked again against the code first and run on the cases of the plugin's own tests (`test/rules/assertions/` of `eslint-plugin-jsdoc` 65.3.1, from which its documentation's examples are written) and on a fault planted in a copy of a file of the tree, then turned off in ESLint: 30 of the 31 kept, all but `ts-ban-ts-comment`, and `convert-to-jsdoc-comments`, on in ESLint but missing from this triage's count, which turns a plain comment documenting a declaration into a block that editors and the API pages read. None runs natively in oxlint 1.87.0, whose JSDoc plugin holds the 12 rules of the triage below. The blocks are read by a port of the parser the plugin reads (`comment-parser` 1.4.9 with the tokenizers of `@es-joy/jsdoccomment`), which gives the same tokens, tags and problems on the 3,676 blocks of the tree and the 1,812 of the cases. ESLint and the Rust linter give the same findings and the same fixed text on 1,942 recorded cases — 1,894 runs of the plugin's cases (those of `require-jsdoc` at a library path and a tools path; 7 that ESLint's TypeScript parser refuses left out), 35 faults planted in copies of the tree's files, 13 cases written for the branches the plugin's cases leave — and the same 39 findings with every rule on over the 32 planted files; none on the tree.
 
 Rewritten by EN-084 on 2026-10-17, each rule checked again against the code first and run on the cases of its documentation (`eslint-plugin-functional` 10.0.1, `@stylistic` 5.10.0, `eslint-plugin-import-x` 4.17.1), then turned off in ESLint: 10 of the 12 functional rules (`tools/lint/src/rules/functional/`; the five statement rules off by scope in the shell, the tools and the tests, as ESLint had them, and the `arguments` part of `functional-parameters` left to oxlint's `prefer-rest-params`), 3 of the 5 `@stylistic` rules (`stylistic/`) and the 2 Import rules (`imports/`, their zones built from `LAYERS` of `tools/lint/src/settings.rs`); the 2 `unused-imports` rules run in oxlint as its native `no-unused-vars` with the same options, unused imports autofixed; three are dropped (above). `unicorn/no-useless-recursion` (EN-079) is left where `functional/no-loop-statements` runs, since the loop it suggests cannot be written there. ESLint and the new linters give the same findings and fixed text on the documented and planted cases, but for `no-unused-vars`, which reports a variable assigned and never read at its declaration where ESLint reports its last assignment, and leaves an unused `import * as` unremoved (forbidden by `import/no-namespace`); none on the tree.
+
+Carried by EN-095 on 2026-10-17: the 22 Unicorn rules ESLint still ran, which no story nor this triage counted (EN-084 found them), each checked again against the code first and run on the cases of its documentation in `eslint-plugin-unicorn` 78.0.0. Three run in the project's linter (`no-double-comparison` and `prefer-math-constants` in `tools/lint/src/rules/unicorn/numbers/`, `no-invalid-character-comparison` in `strings/`), each reported only, as the plugin only suggests; three run in oxlint, the same findings on their documented cases: `no-constant-zero-expression` as `oxc/erasing-op`, `no-misrefactored-assignment` as `oxc/misrefactored-assign-op`, `no-useless-concat` as ESLint's own `no-useless-concat`, which reports at the left literal rather than at the `+`, fixes nothing, and also reports `'$' + '{x}'`, a split the plugin leaves for `no-template-curly-in-string`; sixteen are dropped (above). `oxc/double-comparisons` misses `x <= y && x !== y` and `x >= y && x !== y`, and `oxc/approx-constant` misses `3.14`: both left to the Rust rules. None reports on the tree, in either linter.
 
 Kept on purpose although close to a drop: the DOM and web rules (the playground uses the DOM, files and `URL`), the loop, `throw` and `try` rules (allowed in the playground and the tests), the generator rules (one module yields), `functional/no-classes` and `no-this-expressions` (they are the bans themselves), the JSDoc layout rules and the comment rules of `@stylistic` (no source says oxfmt rewrites comments).
 

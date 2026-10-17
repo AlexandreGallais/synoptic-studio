@@ -327,6 +327,57 @@ describe("the other plugins' rules (EN-084)", () => {
   });
 });
 
+/** The Unicorn rules ESLint still ran after EN-084, carried by EN-095: to the project's linter, to oxlint, or dropped. */
+const LAST_UNICORN_RULES: readonly string[] = [
+  "unicorn/consistent-class-member-order",
+  "unicorn/no-accidental-bitwise-operator",
+  "unicorn/no-boolean-sort-comparator",
+  "unicorn/no-chained-comparison",
+  "unicorn/no-collection-bracket-access",
+  "unicorn/no-constant-zero-expression",
+  "unicorn/no-double-comparison",
+  "unicorn/no-for-loop",
+  "unicorn/no-invalid-argument-count",
+  "unicorn/no-invalid-character-comparison",
+  "unicorn/no-misrefactored-assignment",
+  "unicorn/no-missing-local-resource",
+  "unicorn/no-nonstandard-builtin-properties",
+  "unicorn/no-shorthand-property-overrides",
+  "unicorn/no-transition-all",
+  "unicorn/no-undeclared-class-members",
+  "unicorn/no-unsafe-promise-all-settled-values",
+  "unicorn/no-useless-coercion",
+  "unicorn/no-useless-concat",
+  "unicorn/no-useless-template-literals",
+  "unicorn/prefer-math-constants",
+  "unicorn/require-proxy-trap-boolean-return",
+];
+
+describe("the last Unicorn rules (EN-095)", () => {
+  it("[F19.AC11] leaves none of the 22 rules to ESLint", { timeout: 30_000 }, async () => {
+    const carried = new Set(LAST_UNICORN_RULES);
+    const left = await Promise.all(
+      SAMPLE_FILES.map(async (path) => {
+        const rules = await eslintRulesOf(path);
+
+        return rules.filter((name) => carried.has(name)).map((name) => `${path}: ${name}`);
+      }),
+    );
+
+    expect(left.flat()).toEqual([]);
+  });
+
+  it("[F19.AC11] runs the three oxlint carries natively, on every TypeScript file", () => {
+    const rules = OVERRIDES[0]?.rules ?? {};
+
+    expect([
+      rules["oxc/erasing-op"],
+      rules["oxc/misrefactored-assign-op"],
+      rules["no-useless-concat"],
+    ]).toEqual(["error", "error", "error"]);
+  });
+});
+
 /** A folder holding a configuration of `oxc/no-accumulating-spread` alone. */
 const FOLD_FOLDER = mkdtempSync(join(tmpdir(), "fold-spread-"));
 

@@ -8,12 +8,14 @@ export const UNICORN_STRINGS: TSESLint.FlatConfig.Config = {
     "unicorn/escape-case": "error",
     // Run by the project's linter (tools/lint, EN-080).
     "unicorn/no-incorrect-template-string-interpolation": "off",
-    "unicorn/no-invalid-character-comparison": "error",
+    // Run by the project's linter (tools/lint, EN-095).
+    "unicorn/no-invalid-character-comparison": "off",
     // Run by the project's linter (tools/lint, EN-080).
     "unicorn/no-unnecessary-string-trim": "off",
     // Run by the project's linter (tools/lint, EN-080).
     "unicorn/no-unsafe-string-replacement": "off",
-    "unicorn/no-useless-concat": "error",
+    // Run by oxlint as ESLint's own no-useless-concat (EN-095).
+    "unicorn/no-useless-concat": "off",
     "unicorn/no-useless-template-literals": "error",
     "unicorn/prefer-code-point": "error",
     "unicorn/prefer-escaped-irregular-whitespace": "error",

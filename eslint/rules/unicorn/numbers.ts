@@ -6,8 +6,10 @@ export const UNICORN_NUMBERS: TSESLint.FlatConfig.Config = {
   rules: {
     "unicorn/no-accidental-bitwise-operator": "error",
     "unicorn/no-chained-comparison": "error",
-    "unicorn/no-constant-zero-expression": "error",
-    "unicorn/no-double-comparison": "error",
+    // Run by oxlint as oxc/erasing-op (EN-095).
+    "unicorn/no-constant-zero-expression": "off",
+    // Run by the project's linter (tools/lint, EN-095).
+    "unicorn/no-double-comparison": "off",
     // Run by the project's linter (tools/lint, EN-079).
     "unicorn/no-negated-comparison": "off",
     // Run by the project's linter (tools/lint, EN-079).
@@ -23,7 +25,8 @@ export const UNICORN_NUMBERS: TSESLint.FlatConfig.Config = {
     "unicorn/prefer-bigint-literals": "error",
     // Run by the project's linter (tools/lint, EN-079).
     "unicorn/prefer-math-abs": "off",
-    "unicorn/prefer-math-constants": "error",
+    // Run by the project's linter (tools/lint, EN-095).
+    "unicorn/prefer-math-constants": "off",
     "unicorn/prefer-math-min-max": "error",
     "unicorn/prefer-math-trunc": "error",
     "unicorn/prefer-modern-math-apis": "error",

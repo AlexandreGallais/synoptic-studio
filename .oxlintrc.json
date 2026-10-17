@@ -29,6 +29,9 @@
       "files": ["**/*.ts"],
       "rules": {
         "oxc/no-accumulating-spread": "error",
+        "oxc/erasing-op": "error",
+        "oxc/misrefactored-assign-op": "error",
+        "no-useless-concat": "error",
         "curly": ["error", "all"],
         "no-async-promise-executor": "error",
         "no-await-in-loop": "error",
