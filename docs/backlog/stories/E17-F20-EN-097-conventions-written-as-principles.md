@@ -141,7 +141,3 @@ Where each rule of the list above stands after T2. "Kept" means the same rule, r
 - `Rule-docs: none affected, the pass rewords docs/conventions/ and changes no rule of docs/domain/`.
 - One rule changed on purpose: `writing.md`, Writing a rule (W6), as directed on 2026-10-17. One procedure changed: a rule added to the project's linter no longer needs its own section in `lint.md` (L10). Both are in the trace.
 - Cross-page anchors are not checked by the Markdown lint (`no-missing-link-fragments` reads the same page only); the new ones were checked by hand against the headings, and the docs build runs at the push.
-
-### Improvements
-
-| 2026-10-17 | EN-097 | Measuring a page in tokens needed this worker's own transcript and a ratio: `context:size` counts a session's first requests, not a file; a mode that counts the tokens of the files named would let EN-098 and EN-099 measure their pages the same way | tool |
