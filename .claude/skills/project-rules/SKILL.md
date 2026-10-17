@@ -34,7 +34,7 @@ synoptic-studio: a dependency-free TypeScript library `editor` that draws SVG sy
 ## Git
 
 - Never push to `main` or `develop`, never merge a pull request, never `--no-verify` (nor `commit -n`, `HUSKY=0`), never force push without lease; the `guard-bash` hook refuses them: never look for a way around.
-- Commits: Conventional Commits with a scope of `commitlint.config.ts`, a subject starting with a verb (an id first is refused as sentence case), footers within 100 characters; the message from a file (`git commit -F`). A commit refused by a hook leaves its files staged: `git status` before retrying.
+- Commits: Conventional Commits with a scope of `commitlint.config.ts`, a subject starting with a verb (an id first is refused as sentence case), footers within 100 characters; the message from a file, committed by `npm run git:commit -- -F <file> [--push] <paths>`, and a story brought up to its feature branch by `npm run git:sync` (EN-100). A commit refused by a hook leaves its files staged: `git status` before retrying.
 
 ## Stop and report
 

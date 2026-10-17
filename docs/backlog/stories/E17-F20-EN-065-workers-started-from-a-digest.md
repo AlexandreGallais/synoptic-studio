@@ -69,3 +69,12 @@ The reviewers already had their type; each now starts without `CLAUDE.md`, with 
 Every type saves: none keeps the `general-purpose` start. A run's merges and story finishing stay with the main thread (`story:finish`), which already holds what they need; the `clerk` takes the records it hands off.
 
 With `omitClaudeMd`, the memory index is not loaded either: the `story-worker`'s first request holds no instruction file. So the memory index travels with `CLAUDE.md`, not with the auto memory the page describes; the rules a worker needs from it (no personal information, the repository's tools rather than scripts) are in `project-rules`.
+
+### Trial on a real task (T4)
+
+A `story-worker`, started by a headless session with the run's prompt (story id, feature branch, worktree, the `cd` rule), worked T4 of this story: it read the story's measures, wrote the run's worker types into `docs/tooling/agent.md`, ran `npm run fix`, and committed with `Refs: EN-065.T4` and the attribution line, without pushing, as asked. Its edit of `.claude/skills/run/SKILL.md` and its writes to the scratch folder were refused by the headless session's permissions; it stopped there, tried no way around, and reported the edit to make, which the main thread applied in the same commit. No rule was missed: nothing added to its brief. Its first request: 9,627 tokens.
+
+## For the main thread
+
+- The `done` commit's footer: `Rule-docs: none affected, agent types and tooling docs only`.
+- Workers of a headless session (`claude -p`) cannot edit `.claude/` nor write outside their worktree; a run's workers in the Product Owner's session can.

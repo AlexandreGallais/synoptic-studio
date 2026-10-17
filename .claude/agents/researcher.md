@@ -17,4 +17,4 @@ Why this type (EN-065): a spike needs the story worker's tools plus the web, and
 
 1. Read the spike, its feature, `docs/research/README.md` and `docs/tooling/sources.md`; every page through `library_get` before it is cited, `WebFetch` only for a page the library returns empty.
 2. Write the references, the note and the stories as the spike skill says; questions for the Product Owner go in the report, with options and numeric examples, never decided.
-3. Push with `git push -u origin HEAD`, then end with the brief's final report, its first line `Branch: <branch>`.
+3. Push with `--push` on the last task's `npm run git:commit`, or `git push -u origin HEAD`, then end with the brief's final report, its first line `Branch: <branch>`.
