@@ -366,7 +366,10 @@ fn finds_a_worktree_entered_later_in_the_command() {
         later_folders("cd a; cd b; cd \"$X\"; cd ../c", "/r/a"),
         ["/r/a/b", "/r/a/c"]
     );
-    assert_eq!(later_folders("ls; echo cd", "/r"), [] as [std::string::String; 0]);
+    assert_eq!(
+        later_folders("ls; echo cd", "/r"),
+        [] as [std::string::String; 0]
+    );
 }
 
 #[test]
@@ -496,7 +499,10 @@ fn f21_ac1_refuses_a_script_missing_from_the_branch_naming_it_and_its_rebase() {
     // A script the branch has, and a folder below the package's, go through.
     assert_eq!(hook("npm run fix", &root).stdout, [] as [u8; 0]);
     fs::create_dir_all(root.join("sub")).expect("sub");
-    assert_eq!(hook("npm run -s fix", &root.join("sub")).stdout, [] as [u8; 0]);
+    assert_eq!(
+        hook("npm run -s fix", &root.join("sub")).stdout,
+        [] as [u8; 0]
+    );
     let _ = fs::remove_dir_all(&root);
 }
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { placeOf, readRunningCall, runningCall, runningLine } from "./status-place";
+import { placeOf, readRunningCall, runningLine } from "./status-place";
 
 /** Backlog files, as the status line lists them. */
 const FILES = [
@@ -39,25 +39,18 @@ function seconds(milliseconds: number): string {
 }
 
 describe("running calls", () => {
-  // Hook inputs are external JSON (snake_case keys): parsed as the hook parses them.
-  const input: unknown = JSON.parse(
-    '{"tool_name": "Bash", "cwd": "/repo", "tool_input": {"command": "npm run check", "description": "Run the checks"}}',
-  );
+  it("reads back a call starting as the track-tool-call hook writes it", () => {
+    const written: unknown = JSON.parse(
+      '{"agent":"main","description":"Run the checks","start":1000,"summary":"npm run check","tool":"Bash"}',
+    );
 
-  it("records a call starting and reads it back", () => {
-    const call = runningCall(input, 1000);
-
-    expect(call).toEqual({
+    expect(readRunningCall(written)).toEqual({
       agent: "main",
       description: "Run the checks",
       start: 1000,
       summary: "npm run check",
       tool: "Bash",
     });
-
-    const written: unknown = structuredClone(call);
-
-    expect(readRunningCall(written)).toEqual(call);
   });
 
   it("shows the oldest call, its description or else its command, and how long it runs", () => {
