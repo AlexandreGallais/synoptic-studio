@@ -3,7 +3,7 @@ id: EN-101
 epic: E17
 feature: F20
 title: Every page fetched through the library, with the project recorded
-status: ready
+status: done
 points: 2
 ---
 
@@ -21,8 +21,8 @@ points: 2
 
 One task = one commit, referenced as `EN-101.Tn`.
 
-- [ ] T1 — The project in the library's `uses` table and its stats (2 h)
-- [ ] T2 — The hook sending pages to the library, its tests, `docs/tooling/sources.md` updated (2 h)
+- [x] T1 — The project in the library's `uses` table and its stats (2 h)
+- [x] T2 — The hook sending pages to the library, its tests, `docs/tooling/sources.md` updated (2 h)
 
 ## Notes
 
