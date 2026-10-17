@@ -194,20 +194,37 @@ describe("[F17.AC8] E15's checklist (US-051)", () => {
   );
 });
 
-describe("[F18.AC12] E17's checklist, F18's lines (VAL-019)", () => {
-  const text = EPIC_17_CHECKLIST.map((line) => `${line.todo} ${line.see}`).join("\n");
-
-  it("lists F18's 12 lines on the page, each with its own thing to try", () => {
+describe("[F18.AC12] [F19.AC8] E17's checklist on the page (VAL-019, VAL-020)", () => {
+  it("lists F18's 12 lines then F19's 12, one check box each, each with its own thing to try", () => {
     openServedPage("?checklist=E17");
 
     expect(readText("#checklist-name")).toBe("E17");
-    expect(readBoxes()).toHaveLength(12);
+    expect(readBoxes()).toHaveLength(24);
 
     const todos = new Set(EPIC_17_CHECKLIST.map((line) => line.todo));
 
-    expect(todos.size).toBe(12);
-    expect(new Set(EPIC_17_CHECKLIST.map((line) => line.feature))).toEqual(new Set(["F18"]));
+    expect(todos.size).toBe(24);
+
+    expect(EPIC_17_CHECKLIST.map((line) => line.feature)).toEqual([
+      ...Array.from({ length: 12 }, () => "F18"),
+      ...Array.from({ length: 12 }, () => "F19"),
+    ]);
   });
+
+  it.each(["What to see", "to write", "Helvetica.ttc", "Apple Color Emoji", "/System/Library"])(
+    "holds no draft line nor macOS font file: %s",
+    (word) => {
+      expect(EPIC_17_CHECKLIST.map((line) => `${line.todo} ${line.see}`).join("\n")).not.toContain(
+        word,
+      );
+    },
+  );
+});
+
+describe("[F18.AC12] E17's checklist, F18's lines (VAL-019)", () => {
+  const text = EPIC_17_CHECKLIST.filter((line) => line.feature === "F18")
+    .map((line) => `${line.todo} ${line.see}`)
+    .join("\n");
 
   it.each([
     "npm run test in two terminals",
@@ -234,11 +251,33 @@ describe("[F18.AC12] E17's checklist, F18's lines (VAL-019)", () => {
   ])("names the decision to confirm: %s", (line) => {
     expect(text).toContain(line);
   });
+});
 
-  it.each(["What to see", "to write", "Helvetica.ttc", "Apple Color Emoji", "/System/Library"])(
-    "holds no draft line nor macOS font file: %s",
-    (word) => {
-      expect(text).not.toContain(word);
-    },
-  );
+describe("[F19.AC8] E17's checklist, F19's lines (VAL-020)", () => {
+  const text = EPIC_17_CHECKLIST.filter((line) => line.feature === "F19")
+    .map((line) => `${line.todo} ${line.see}`)
+    .join("\n");
+
+  it.each([
+    "npm run lint",
+    "TS2322",
+    "Unused oxlint-disable directive",
+    "markdown/table-column-count",
+    "npm run format:check",
+    "npm run format",
+    "Version 7.0.2",
+    "npm run build",
+    "npm run docs:api",
+    "skipped: nothing changed in their inputs",
+    "npm run check:rust",
+    "check for Windows",
+    "eslint-rules-accounted",
+    "cargo test --release -q -p lint",
+  ])("names the command or the output to see: %s", (option) => {
+    expect(text).toContain(option);
+  });
+
+  it.each(["eslint .", "prettier", "tsc6"])("names no tool F19 removed: %s", (tool) => {
+    expect(text.toLowerCase()).not.toContain(tool);
+  });
 });

@@ -20,7 +20,7 @@ Show the Product Owner F19 on one demo page, with the figures before and after.
 One task = one commit, referenced as `VAL-020.Tn`.
 
 - [x] T1 — Each criterion of F19 proven again, what was seen recorded (1 h)
-- [ ] T2 — F19's lines in E17's checklist, `?checklist=E17`, each tried (1 h)
+- [x] T2 — F19's lines in E17's checklist, `?checklist=E17`, each tried (1 h)
 - [ ] T3 — The demo page, `docs/guide/f19-checks-on-oxc-and-rust.md` (1 h)
 - [ ] T4 — The decisions of the validation recorded (0.5 h)
 
@@ -44,3 +44,7 @@ On this Mac (Apple M1 Pro), in the worktree of `feat/val-020-validate-f19`, at `
 | AC12 tables without padding | `cargo test -p format f19_ac12_`; a padded table planted, `npm run format` | 2 tests passed; `\| A    \| B   \|` written `\| A \| B \|`, its separator `\| --- \| --- \|` | holds |
 
 Nothing failed: no fix was needed.
+
+## F19's lines in E17's checklist
+
+Drafted by `npm run val:prepare -- F19`, then written as 12 commands to run at the repository's root, each tried here on 2026-10-17 with the output it names (`playground/checklists/epic-17-f19-lines.ts`, `?checklist=E17`). The probes of lines 2 to 5 are files planted and deleted afterwards. The page's test lists the 24 lines of E17, names each command of F19's lines and none of the tools F19 removed; a line changed from `TS2322` to `TS2323` made it fail.
