@@ -3,7 +3,7 @@ id: EN-088
 epic: E17
 feature: F20
 title: A SubagentStop hook in Rust that checks a worker's branch
-status: ready
+status: done
 points: 2
 ---
 
