@@ -32,9 +32,11 @@ function cleanEnvironment(path: string): NodeJS.ProcessEnv {
  * Runs the hook's golden line in a new repository, `npm` replaced by a stub that prints its arguments.
  *
  * @param hasGolden - whether the repository's Git directory holds a golden file
+ * @param isLinked - whether the line runs in a linked worktree, the golden file staying in the main
+ * checkout's Git directory, shared by every worktree
  * @returns what the line printed
  */
-function goldenLine(hasGolden: boolean): string {
+function goldenLine(hasGolden: boolean, isLinked: boolean): string {
   const folder = mkdtempSync(join(tmpdir(), "pre-push-"));
   const bin = join(folder, "bin");
   const environment = cleanEnvironment(`${bin}:${process.env["PATH"] ?? ""}`);
@@ -50,8 +52,28 @@ function goldenLine(hasGolden: boolean): string {
     writeFileSync(join(folder, ".git", "metrics", "golden.json"), "[]");
   }
 
+  const worktree = join(folder, "linked");
+
+  if (isLinked) {
+    const author = [
+      "-c",
+      "user.name=Test",
+      "-c",
+      "user.email=test@example.com",
+      "-c",
+      "commit.gpgsign=false",
+    ];
+
+    execFileSync("git", [...author, "commit", "-q", "--allow-empty", "-m", "start"], {
+      cwd: folder,
+      env: environment,
+    });
+
+    execFileSync("git", ["worktree", "add", "-q", worktree], { cwd: folder, env: environment });
+  }
+
   return execFileSync("sh", ["-e", "-c", GOLDEN_LINE], {
-    cwd: folder,
+    cwd: isLinked ? worktree : folder,
     encoding: "utf8",
     env: environment,
   });
@@ -65,10 +87,15 @@ afterEach(() => {
 
 describe("pre-push", () => {
   it("[F18.AC11] runs the golden check when a golden file is written", () => {
-    expect(goldenLine(true)).toBe("npm run golden:check\n");
+    expect(goldenLine(true, false)).toBe("npm run golden:check\n");
   });
 
   it("[F18.AC11] skips the golden check when no golden file is written", () => {
-    expect(goldenLine(false)).toBe("");
+    expect(goldenLine(false, false)).toBe("");
+  });
+
+  it("[F18.AC11] finds the golden file of the main checkout from a linked worktree", () => {
+    expect(goldenLine(true, true)).toBe("npm run golden:check\n");
+    expect(goldenLine(false, true)).toBe("");
   });
 });
