@@ -13,7 +13,10 @@ use test_support::command;
 fn inner_the_planted_variables_stay_out() {
     // Planted by the outer test: without them this test proves nothing.
     assert!(env::var_os("GIT_DIR").is_some(), "GIT_DIR planted");
-    assert!(env::var_os("GIT_INDEX_FILE").is_some(), "GIT_INDEX_FILE planted");
+    assert!(
+        env::var_os("GIT_INDEX_FILE").is_some(),
+        "GIT_INDEX_FILE planted"
+    );
 
     let output = command("sh")
         .args([
@@ -60,7 +63,11 @@ fn f21_ac9_a_git_dir_set_by_the_caller_does_not_reach_the_command() {
     let before = fs::read(&config).expect("config");
 
     let run = Command::new(env::current_exe().expect("test binary"))
-        .args(["--exact", "inner_the_planted_variables_stay_out", "--ignored"])
+        .args([
+            "--exact",
+            "inner_the_planted_variables_stay_out",
+            "--ignored",
+        ])
         .env("GIT_DIR", decoy.join(".git"))
         .env("GIT_INDEX_FILE", decoy.join(".git/index"))
         .env("OTHER", "kept")
