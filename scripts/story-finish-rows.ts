@@ -16,6 +16,9 @@ export const MOVE_ROWS = [
   "--",
 ];
 
+/** The repository's formatter writing files: oxfmt, then the tables without padding (EN-073). */
+const FORMAT_WRITE = ["run", "--release", "-q", "-p", "format", "--", "--write"];
+
 /**
  * The message of the commit moving a merged story's rows into the logs.
  *
@@ -80,7 +83,7 @@ export function moveRows(branch: string, cwd: string): void {
   const files = moved === "" ? [] : moved.split("\n");
 
   if (files.length > 0) {
-    run("npx", ["prettier", "--write", ...files], cwd);
+    run("cargo", [...FORMAT_WRITE, ...files], cwd);
     commitRows(branch, files, cwd);
   }
 
