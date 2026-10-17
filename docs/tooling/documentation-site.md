@@ -10,7 +10,7 @@
 
 ## Playground
 
-The playground is built by `npm run playground:build` (`vite build --mode playground`) into `docs/.vitepress/dist/playground/` and published with the site: it shows the state of `main` at the last release. `check:all` builds it too, so a broken playground fails the pre-push hook and the CI into `main`.
+The playground is built by `npm run playground:build` (`vite build --mode playground`) into `docs/.vitepress/dist/playground/` and published with the site: it shows the state of `main` at the last release. `check:all` builds it too when the branch changed the site, the library or the playground (EN-085, [commands](./commands.md)), so a broken playground fails the pre-push hook and the CI into `main`.
 
 ## Layout
 
