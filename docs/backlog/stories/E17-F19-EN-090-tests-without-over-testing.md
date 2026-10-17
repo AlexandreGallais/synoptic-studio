@@ -87,6 +87,23 @@ Every `it`, `it.each` and `test.prop` call of the 492 test files, read with Oxc'
 | Run | Tests | Files | Duration | Shares |
 | --- | --- | --- | --- | --- |
 | before (`1ed4be9b`) | 3 514 (1 skipped) | 492 | 104.5 s | setup 35 %, import 28 %, tests 24 %, transform 9 % |
+| after (`5e80683c`) | 3 509 (1 skipped) | 492 | 37.4 s | tests 51 %, import 15 %, setup 14 %, transform 12 % |
+
+Five tests fewer: the six pairs above, the sample's two models now in `exactColorToHex` and one property left in `wholeValuesToHex`. Inside `npm run check:all`, alone under the lock, the same day:
+
+| Run | Test lane | `check:all` | Its slowest lane |
+| --- | --- | --- | --- |
+| before (`1ed4be9b`) | 124.0 s | 124.0 s | the tests |
+| after (`98c82b61`) | 49.3 s | 60.1 s | ESLint, 60.1 s (EN-091, then F19's Rust linter) |
+
+Most of the 104.5 − 37.4 = 67 s saved alone come from sharing a worker's modules: a trial at the start, every file shared and nothing else changed, gave 33.4 s. The duplicates removed and the work done once give the rest, chiefly the sample of 731 000 colors run once per model instead of twice.
+
+### Evidence
+
+- `npm run mutate -- --all <file> -- npx vitest run '{test}'` on the six source files whose tests changed: 28 mutants, 28 caught (`whole-values-to-hex`, `exact-color-to-hex`, `regular-polygon-contour`, `regular-polygon-as-free-shape`, `regular-polygon-corners`, `parse-font-face`); on `playground/text/read-text-box-options.ts` and `playground/text-box/write-fitted-box.ts` against the text tests: 9 mutants, 9 caught.
+- The repository tests made to read once, mutated by hand: an `atan2` planted in `src/math/vector/norm.ts` fails `named-calculations` (`[F13.AC1]`); a story set back to `draft` fails three tests of `backlog`.
+- Coverage unchanged: `src/` at 100 %, the playground over its floor (statements 99.55 %, branches 96.62 % in all, as before).
+- The `shared` project run in five shuffled orders (`--sequence.shuffle`, seeds 7919 to 39595): one failure, inside one file and unrelated to the sharing — the store test that marks a page read again changed the page the first test finds; that test now has a store of its own, and the five orders pass.
 
 ## For the main thread
 
