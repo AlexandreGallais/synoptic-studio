@@ -1,9 +1,52 @@
+import { execFileSync } from "node:child_process";
+import { readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import { interRegularFile, partsDigest } from "./font-fixtures";
 import { sharedSansTables } from "./inter-face-fixtures";
 
+/** Repository root. */
+const ROOT = join(import.meta.dirname, "..");
+
+/** The only file that reads a test font file: Vitest's global setup. */
+const READER = "tests/font-files-setup.ts";
+
+/** The extensions of a font file or a collection. */
+const FONT_FILE = /\.(?:otf|ttc|ttf|woff2?)$/u;
+
+/**
+ * The files of the repository's TypeScript, tracked or new, that name one of the test font files.
+ *
+ * @param fonts - the names of the test font files
+ * @returns each file that names one, by its path from the root
+ */
+function filesNaming(fonts: readonly string[]): string[] {
+  const files = execFileSync(
+    "git",
+    ["ls-files", "--cached", "--others", "--exclude-standard", "*.ts"],
+    { cwd: ROOT, encoding: "utf8" },
+  )
+    .split("\n")
+    .filter((file) => file !== "");
+
+  return files.filter((file) => {
+    const text = readFileSync(join(ROOT, file), "utf8");
+
+    return fonts.some((font) => text.includes(font));
+  });
+}
+
 describe("the test font files, read once per run (EN-089)", () => {
+  it("are named by the global setup alone: no test reads a font file itself", () => {
+    const fonts = readdirSync(import.meta.dirname).filter((file) => FONT_FILE.test(file));
+
+    // One font file in tests/, Inter Regular (REF-INTER-REGULAR-FILE): its name is left out here.
+    expect(fonts).toHaveLength(1);
+    expect(filesNaming(fonts)).toEqual([READER]);
+  });
+
   it("reads Inter Regular 4.1 whole: 411 640 bytes, its SHA-256 that of the release", () => {
     // REF-INTER-REGULAR-FILE: 411 640 bytes, SHA-256 40d692fc…be0c82, read with shasum -a 256.
     const file = interRegularFile();
