@@ -198,7 +198,7 @@ export function manualSteps(plan: CleanUp, branch: string): string {
     .filter((line) => line !== "")
     .map((line) => `-m "${line}"`);
   const rows = [
-    `cd "${plan.place}" && cargo ${[...MOVE_ROWS, branch].join(" ")}`,
+    `cd "${plan.place}" && ${[...MOVE_ROWS, branch].join(" ")}`,
     `cd "${plan.place}" && git commit ${paragraphs.join(" ")} -- <the files it printed>`,
     `cd "${plan.place}" && git push`,
   ];
