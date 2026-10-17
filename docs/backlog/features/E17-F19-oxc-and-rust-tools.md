@@ -79,7 +79,7 @@ In delivery order, written on 2026-10-17 when the Product Owner started F19's ru
 | [EN-081](../stories/E17-F19-EN-081-unicorn-modules-platform-promises.md) | Enabler | Unicorn's modules, platform and promises rules in Rust | done |
 | [EN-082](../stories/E17-F19-EN-082-unicorn-dom-and-web.md) | Enabler | Unicorn's DOM and web rules in Rust | done |
 | [EN-083](../stories/E17-F19-EN-083-jsdoc-rules-in-rust.md) | Enabler | JSDoc's rules in Rust | done |
-| [EN-084](../stories/E17-F19-EN-084-other-plugin-rules-in-rust.md) | Enabler | The other plugins' rules in Rust | ready |
+| [EN-084](../stories/E17-F19-EN-084-other-plugin-rules-in-rust.md) | Enabler | The other plugins' rules in Rust | done |
 | [EN-094](../stories/E17-F19-EN-094-adrs-reviewed-with-the-product-owner.md) | Enabler | The ADRs reviewed with the Product Owner, the review applied | done |
 | [EN-093](../stories/E17-F19-EN-093-rules-and-format-chosen-by-the-agent.md) | Enabler | Every rule and tool reviewed by the agent for its own work | ready |
 | [EN-085](../stories/E17-F19-EN-085-docs-build-on-change-eslint-out-oxc-adr.md) | Enabler | The docs build on change, ESLint out, the ADR on Oxc | ready |
