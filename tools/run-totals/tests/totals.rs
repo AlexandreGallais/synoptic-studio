@@ -186,6 +186,10 @@ fn keeps_its_cache_for_one_run_only() {
     };
 
     assert_eq!(parse_cache(&text, &run(42, 0)), cache);
+    // A negative offset, a cache written by hand: read from the start (AUD-022).
+    let negative = text.replace("\"offset\":12", "\"offset\":-5");
+
+    assert_eq!(parse_cache(&negative, &run(42, 0)).files[0].1.offset, 0);
     // Another run, or the same run once it ended: counted again from the start.
     assert_eq!(
         parse_cache(&text, &run(43, 0)),

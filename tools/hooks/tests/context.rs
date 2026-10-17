@@ -47,6 +47,22 @@ fn f20_ac1_reads_the_first_request_and_what_came_before_it() {
 }
 
 #[test]
+fn counts_a_usage_field_missing_as_zero() {
+    let transcript = concat!(
+        r#"{"type":"user","message":{"role":"user","content":"Go."}}"#,
+        "\n",
+        r#"{"type":"assistant","message":{"usage":{"input_tokens":2,"cache_read_input_tokens":40}}}"#,
+        "\n",
+    );
+
+    // No `cache_creation_input_tokens`: 2 + 0 + 40 = 42 (AUD-022, a mutation of the 0 survived).
+    assert_eq!(
+        first_request(transcript, &meta()).map(|start| start.tokens),
+        Some(42)
+    );
+}
+
+#[test]
 fn reads_nothing_before_the_first_answer() {
     let unanswered = TRANSCRIPT.lines().take(3).collect::<Vec<_>>().join("\n");
 
