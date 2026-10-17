@@ -23,3 +23,17 @@ Widened by the Product Owner on 2026-10-17: measure whether the agent works fast
 One task = one commit, referenced as `SP-022.Tn`.
 
 - [ ] T1 — Read, measure and record the sources (1 h)
+
+## Findings
+
+[Research note 0024](../../research/notes/0024-f20-context-diet.md) answers each story's questions with a source or a measure, compares the shell with tools of our own for Git, file reading, web fetching and memory, drafts four stories, and holds the second round of questions.
+
+## The Product Owner's first round (2026-10-17)
+
+- **Progress page** (EN-087): the tree and statuses, durations per story and feature, the agents running, tokens per story and per run, the commits of each story and feature; other useful views at the agent's choice.
+- **Notifications** (EN-086): only when a question waits for the Product Owner and when a failure blocks, sent while the run keeps going on independent work; never at a plain stop nor at each merge.
+- **Run size**: a run delivers no more than the Product Owner can test on return; the bound is a second-round question.
+- **Run report** (EN-092): the run's duration and tokens only; gains and incidents go to the agent's logs and the retrospective.
+- **Context** (EN-065): each agent receives what its task needs, not everything.
+- **Agent-facing docs** (EN-096): reworded as principles, keeping the idea behind each decision.
+- **Tools of `package.json`**: their move to Rust belongs to F21.
