@@ -96,7 +96,7 @@ A tool is written when a retrospective's metrics show its signal — the hand wo
 | `declarations` | `build` | the library's `.d.ts` from each module alone (ADR-0071, [build](./commands.md#build)) |
 | `library` | `.mcp.json` (`library-mcp`), `library`, `metrics`, `records:save` | the local source library: its MCP server on `rmcp` and its command line, over one SQLite file ([sources](./sources.md)) |
 | `tool-use` | every binary of the workspace, by its `main` | each use of a tool, one line of `.git/metrics/tool-uses.jsonl` ([metrics](./metrics.md#the-uses-of-each-tool)) |
-| `repo-tools` | `check:all` | the backlog and repository tools ported from `scripts/` with their output unchanged (EN-103), one binary each: `check-all` ([the lanes](./commands.md#the-lanes-of-the-full-check)) |
+| `repo-tools` | `check:all`, `backlog:status`, `epic:check` | the backlog and repository tools ported from `scripts/` with their output unchanged (EN-103), one binary each: `check-all` ([the lanes](./commands.md#the-lanes-of-the-full-check)), `backlog-status`, `epic-check` |
 | `test-support` | the Rust tests | `test_support::command`, a command without the inherited `GIT_*` variables, for every test that runs `git` ([tests that run Git](./commands.md#tests-that-run-git)) |
 
 `worktree` and `git-sequences` decide what they do in their library, without Git nor files, and their binary only runs it, so that the decisions are tested without a repository (functional core, ADR-0014).

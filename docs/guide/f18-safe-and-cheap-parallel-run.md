@@ -54,7 +54,7 @@ Every test named here carries the criterion's tag, `[F18.ACn]` in TypeScript or 
 | AC8 worktrees named after their story | `npm run worktree:new -- <ID>`; `golden:write` refused in a worktree | `tools/worktree/tests/plan.rs`, `.claude/hooks/guard-bash.test.ts` |
 | AC9 the whole session reported | `npm run metrics:session -- --all`; background subagents on the status line | `scripts/session-report.test.ts`, `.claude/hooks/status-line.test.ts` |
 | AC10 timing tests under load | `[F15.AC4]` at 1 000 texts in under 0.4 s | `src/io/font-face/parse-font-face.test.ts` |
-| AC11 `epic:check` says what failed | failing tests, refusals counted apart, calls lost at a forced quit; `golden:check` at the push | `scripts/epic-check.test.ts`, `tests/pre-push.test.ts` |
+| AC11 `epic:check` says what failed | failing tests, refusals counted apart, calls lost at a forced quit; `golden:check` at the push | `tools/repo-tools/src/epic_check.rs` (`scripts/epic-check.test.ts` until EN-103), `tests/pre-push.test.ts` |
 | AC12 a short checklist | at most 12 lines per feature, beside the drawing; `npm run val:prepare -- <feature>` | `playground/checklists/checklist-line-limit.test.ts`, `playground/checklist/` |
 | AC13 the register of exceptions; a 192 MB collection read | every `eslint-disable` directive listed with its reason; a font collection read without copying its bytes | `tests/exceptions.test.ts`, `src/io/font-collection/` |
 | AC14 the font list held, a refused face not measured | US-061; US-062: each installed face read whole and checked before it is listed, its bytes released at once | `playground/default-font/default-font.test.ts` |
