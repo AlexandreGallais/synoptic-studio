@@ -571,12 +571,48 @@ pub fn needs_parentheses_as_operand(expression: &Expression) -> bool {
     )
 }
 
-/// Whether the text around a range holds parentheses that group it: `(` before, `)` after.
+/// The keywords after which `(` opens a group rather than a call's or a statement's list.
+const GROUPING_KEYWORDS: [&str; 12] = [
+    "return", "typeof", "void", "delete", "await", "yield", "in", "of", "case", "throw", "new",
+    "else",
+];
+
+/// Whether the text around a range holds parentheses that group it: `(` before, `)` after, the
+/// `(` not opening a call's arguments nor the head of `if`, `while`, `for`, `switch` or `catch`.
 #[must_use]
 pub fn is_parenthesized(source: &Source, span: Span) -> bool {
-    let before = source.text.get(..span.start as usize).unwrap_or_default();
-    let after = source.text.get(span.end as usize..).unwrap_or_default();
-    before.trim_end().ends_with('(') && after.trim_start().starts_with(')')
+    let all = source.text;
+    let open = all
+        .get(..span.start as usize)
+        .unwrap_or_default()
+        .trim_end();
+    let rest = all.get(span.end as usize..).unwrap_or_default();
+    if !open.ends_with('(') || !rest.trim_start().starts_with(')') {
+        return false;
+    }
+    let open_at = open.len() - 1;
+    let close_at = span.end as usize + (rest.len() - rest.trim_start().len());
+    let outside = all[..open_at].trim_end();
+    let word_start = outside
+        .rfind(|character: char| {
+            !(character.is_alphanumeric() || character == '_' || character == '$')
+        })
+        .map_or(0, |at| at + 1);
+    let syntactic = match outside.chars().last() {
+        Some(')' | ']' | '>') => true,
+        Some(character) if character.is_alphanumeric() || character == '_' || character == '$' => {
+            !GROUPING_KEYWORDS.contains(&&outside[word_start..])
+        }
+        _ => false,
+    };
+    !syntactic
+        || is_parenthesized(
+            source,
+            Span::new(
+                u32::try_from(open_at).unwrap_or(span.start),
+                u32::try_from(close_at + 1).unwrap_or(span.end),
+            ),
+        )
 }
 
 /// The text of an expression with the parentheses written around it, when it has some.
@@ -670,10 +706,16 @@ fn value_at_depth(source: &Source, expression: &Expression, depth: u8) -> Option
         Expression::TemplateLiteral(template) if template.expressions.is_empty() => Some(
             Value::Text(template.quasis.first()?.value.cooked?.to_string()),
         ),
-        Expression::Identifier(identifier) if identifier.name == "undefined" => {
+        Expression::Identifier(identifier)
+            if matches!(identifier.name.as_str(), "undefined" | "NaN" | "Infinity") =>
+        {
             symbol_of(source, identifier)
                 .is_none()
-                .then_some(Value::Undefined)
+                .then(|| match identifier.name.as_str() {
+                    "NaN" => Value::Number(f64::NAN),
+                    "Infinity" => Value::Number(f64::INFINITY),
+                    _ => Value::Undefined,
+                })
         }
         Expression::Identifier(_) if depth < 4 => {
             value_at_depth(source, const_init(source, unwrap(expression))?, depth + 1)
@@ -876,7 +918,7 @@ pub fn object_text(source: &Source, expression: &Expression) -> String {
             | Expression::StringLiteral(_)
             | Expression::TemplateLiteral(_)
             | Expression::TSNonNullExpression(_)
-    );
+    ) || (matches!(expression, Expression::NewExpression(_)) && inner.ends_with(')'));
     if tight {
         inner.to_owned()
     } else {
@@ -1121,4 +1163,79 @@ pub fn is_global_name_free(source: &Source, node: &AstNode, name: &str) -> bool 
         .scoping()
         .find_binding(node.scope_id(), oxc_ast::ast::Ident::from(name))
         .is_none()
+}
+
+/// Whether a node's value is only read for its truth: under `!`, in `Boolean(…)`, or as the
+/// test of an `if`, a loop or a ternary, through `&&` and `||` (`isBooleanContext`).
+#[must_use]
+pub fn is_boolean_context(source: &Source, id: NodeId) -> bool {
+    let nodes = source.semantic.nodes();
+    let mut child = id;
+    loop {
+        let parent = nodes.parent_node(child);
+        let decided = match parent.kind() {
+            AstKind::UnaryExpression(unary) => Some(unary.operator == UnaryOperator::LogicalNot),
+            AstKind::CallExpression(call) => Some(
+                is_global(source, &call.callee, "Boolean")
+                    && !call.optional
+                    && call.arguments.len() == 1
+                    && call.arguments[0]
+                        .as_expression()
+                        .is_some_and(|argument| argument.node_id() == child),
+            ),
+            AstKind::IfStatement(statement) => Some(statement.test.node_id() == child),
+            AstKind::ConditionalExpression(conditional) => {
+                Some(conditional.test.node_id() == child)
+            }
+            AstKind::WhileStatement(statement) => Some(statement.test.node_id() == child),
+            AstKind::DoWhileStatement(statement) => Some(statement.test.node_id() == child),
+            AstKind::ForStatement(statement) => Some(
+                statement
+                    .test
+                    .as_ref()
+                    .is_some_and(|test| test.node_id() == child),
+            ),
+            AstKind::LogicalExpression(logical)
+                if logical.operator != oxc_ast::ast::LogicalOperator::Coalesce =>
+            {
+                None
+            }
+            _ => Some(false),
+        };
+        match decided {
+            Some(decided) => return decided,
+            None => child = parent.id(),
+        }
+    }
+}
+
+/// What a type name the file declares stands for.
+pub enum TypeDefinition<'a> {
+    /// A type alias without parameters, and what it aliases.
+    Alias(&'a TSType<'a>),
+    /// An interface or a class: an object.
+    Object,
+    /// Anything else, a generic alias among them.
+    Other,
+}
+
+/// The declaration a type name refers to from a scope, when the file declares it.
+#[must_use]
+pub fn type_definition<'a>(
+    source: &Source<'_, 'a>,
+    scope: oxc_semantic::ScopeId,
+    name: &str,
+) -> Option<TypeDefinition<'a>> {
+    let symbol = source
+        .semantic
+        .scoping()
+        .find_binding(scope, oxc_ast::ast::Ident::from(name))?;
+    let declaration = source.semantic.scoping().symbol_declaration(symbol);
+    Some(match source.semantic.nodes().kind(declaration) {
+        AstKind::TSTypeAliasDeclaration(alias) if alias.type_parameters.is_none() => {
+            TypeDefinition::Alias(&alias.type_annotation)
+        }
+        AstKind::TSInterfaceDeclaration(_) | AstKind::Class(_) => TypeDefinition::Object,
+        _ => TypeDefinition::Other,
+    })
 }
