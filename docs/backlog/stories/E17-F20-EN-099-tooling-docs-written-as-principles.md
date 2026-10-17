@@ -50,99 +50,104 @@ Words by `wc -w`, characters by `wc -m`, tokens as characters / 2.3, the ratio E
 
 ## Rules of the pages
 
-The rules the pages held before the pass, one row each; the reference tables (commands, packages, workflows, hooks, crates, fields) count as one row per table.
+The rules the pages held before the pass, one row each; the reference tables (commands, packages, workflows, hooks, crates, fields) count as one row per table. **Now** names where each one reads after the pass: its page and section, or why it was cut or merged. No rule's meaning changed, except the one the story adds (`GIT_*`, below).
 
-| # | Page | Rule before |
-| --- | --- | --- |
-| G1 | `git-workflow.md` | `main` holds releases only and takes no push; `develop` integrates; one branch per feature, one per story, named by their patterns |
-| G2 | `git-workflow.md` | one commit per task, its id in a `Refs:` footer |
-| G3 | `git-workflow.md` | a story's pull request goes into its feature branch, rebase merge; `story:finish` does it in an autonomous run, the Product Owner merges outside one |
-| G4 | `git-workflow.md` | a feature joins `develop` from its `VAL` branch by a merge commit, labelled `autonomous` once the Product Owner said the validation is done |
-| G5 | `git-workflow.md` | a release only when the Product Owner asks; `develop` into `main` by a merge commit only, since a rebase would break `develop`'s ancestry; release-please's pull request merged into `develop` first |
-| G6 | `git-workflow.md` | after a release, `develop` fast-forwards to `main` |
-| G7 | `git-workflow.md` | no long-lived branch but `main`, `develop` and the current feature's |
-| G8 | `git-workflow.md` | branch names checked by `validate-branch-name` |
-| G9 | `git-workflow.md` | `branches:clean` after a feature, a release or a story merged by the Product Owner |
-| G10 | `git-workflow.md` | the three logs merge by union; never a sorted table nor a file with front matter; GitHub's merge untried, a conflict there resolved by hand and logged |
-| G11 | `git-workflow.md` | Conventional Commits: types, scopes, 100 characters, breaking changes |
-| G12 | `git-workflow.md` | footers `Refs:`, `Closes:`, `BREAKING CHANGE:`, `Co-Authored-By:` |
-| G13 | `git-workflow.md` | the hooks table; hooks installed by `npm install`, a worktree's by `worktree:new` or `npx husky`; never bypassed |
-| C1 | `ci.md` | work branches are checked by the local hooks only; nobody waits for a CI there |
-| C2 | `ci.md` | the CI runs once per release, on `develop` into `main`, merged only when green |
-| C3 | `ci.md` | the workflows table |
-| C4 | `ci.md` | the release pull request runs no CI; on `main` its jobs are skipped by `if:`, reported as success |
-| C5 | `ci.md` | a required workflow is never filtered by branch or path: it stays pending |
-| C6 | `ci.md` | secrets checked three times |
-| C7 | `ci.md` | code hygiene is the lint's job |
-| C8 | `ci.md` | the repository settings and rulesets |
-| C9 | `ci.md` | Dependabot opens security updates only, into `main`; version updates are the agent's |
-| K1 | `commands.md` | the commands table |
-| K2 | `commands.md` | `fix` before each commit; `check` not per task; `check:all` at the push |
-| K3 | `commands.md` | the lanes of `check:all`, the docs lane skipped when the branch touched nothing it builds |
-| K4 | `commands.md` | every check tool names its targets; a new tracked folder joins them, a test fails until it does |
-| K5 | `commands.md` | one heavy command at a time, through the heavy lock; its situations; never a lock taken by hand |
-| K6 | `commands.md` | the merge lock of `story:finish`, apart from the heavy one |
-| K7 | `commands.md` | the playground imports the public API only |
-| K8 | `commands.md` | the build's declarations fail on an exported constant whose type cannot be read |
-| R1 | `releases.md` | the release steps, the release pull request living on `develop` |
-| R2 | `releases.md` | docs and tooling wait in `develop` for the next release |
-| R3 | `releases.md` | merged in the wrong order, merge the release pull request then open a second one |
-| R4 | `releases.md` | `RELEASE_PLEASE_TOKEN` expires 2026-12-31: renew it before |
-| R5 | `releases.md` | below `1.0.0` until the Product Owner calls it stable; the bump table |
-| R6 | `releases.md` | the rollback to ADR-0038's flow |
-| D1 | `documentation-site.md` | the API pages and their checks, which fail the build |
-| D2 | `documentation-site.md` | the playground built and checked with the site |
-| D3 | `documentation-site.md` | relative links; never double curly braces |
-| D4 | `documentation-site.md` | PDF not set up, an ADR when needed |
-| P1 | `dependencies.md` | zero runtime dependency |
-| P2 | `dependencies.md` | every development package pinned exactly |
-| P3 | `dependencies.md` | one row per package, its reason and the alternatives; a test holds it |
-| P4 | `dependencies.md` | adding: alternatives searched, audit, row in the same change, an ADR for a structural choice; removing removes the row |
-| P5 | `dependencies.md` | crates, Rust tools and assets follow the same rules; the tools outside npm looked at by hand at each retrospective |
-| P6 | `dependencies.md` | Inter's licence: notice and licence beside the data, shipped |
-| P7 | `dependencies.md` | an override goes once its cause is fixed, checked at each retrospective |
-| P8 | `dependencies.md` | every Oxc crate at one version |
-| V1 | `versions-and-security.md` | every package on its latest version at least 7 days old, checked at the push and in the CI |
-| V2 | `versions-and-security.md` | upgrading: read what changed, adopt or record new features, adapt to breaking changes, one commit per package with features |
-| V3 | `versions-and-security.md` | Actions and Node.js on their latest major, upgraded after reading the notes |
-| V4 | `versions-and-security.md` | no pre-release but VitePress 2.0 alpha |
-| V5 | `versions-and-security.md` | any advisory fails, npm and RustSec |
-| V6 | `versions-and-security.md` | fixing: upgrade the direct dependency, else an override documented |
-| V7 | `versions-and-security.md` | install scripts stay blocked |
-| V8 | `versions-and-security.md` | stylelint installed when SCSS starts, with an exception list unless `braces` is fixed |
-| S1 | `sources.md` | search the library first, read sections |
-| S2 | `sources.md` | fetch through `library_get`; `WebFetch` only for a page that comes back empty; the hook holds it |
-| S3 | `sources.md` | cite a `REF-*` row once read |
-| S4 | `sources.md` | the database stays on the machine, never in a repository |
-| S5 | `sources.md` | freshness of a stored page |
-| S6 | `sources.md` | the retrospective reads the uses and asks why |
-| A1 | `agent.md` | `docs/` is the source of truth; the configuration adds procedures, pitfalls, guards and tools |
-| A2 | `agent.md` | the files, skills, agents and hooks tables |
-| A3 | `agent.md` | each task kind runs on its agent type; `general-purpose` when none fits; a rule a typed worker misses goes to its brief or `project-rules`; merges stay with the main thread |
-| A4 | `agent.md` | the progress page: written by a tool, one address per run, published at start, merges and stop, naming no person nor path |
-| A5 | `agent.md` | expert agents are read-only, library first |
-| A6 | `agent.md` | one model per agent type, its reason in its file; the precedence of models |
-| A7 | `agent.md` | pushes only for a question or a blocker that prevents finishing the scope |
-| A8 | `agent.md` | a second session never touches the run's folder, writes its decisions in the repository, tells the run, removes its worktree; the run picks up `develop` before each story |
-| A9 | `agent.md` | no cloud agents; a scheduled task only when the Product Owner asks |
-| A10 | `agent.md` | the journal before the transcripts |
-| A11 | `agent.md` | a new hook in Rust; a hook-enforced rule not repeated; a guard changed by an ADR, never bypassed; local settings never remove a guard; changes go to `develop` |
-| T1 | `agent-tools.md` | a repeated hand-written command becomes a tool, tested and named after what it does |
-| T2 | `agent-tools.md` | the tools table and `mutate`'s steps |
-| T3 | `agent-tools.md` | a tool is written when a retrospective's metrics show its signal; the specifications for later |
-| T4 | `agent-tools.md` | every new script, hook or agent tool in Rust, a crate of the workspace with only reviewed dependencies |
-| T5 | `agent-tools.md` | the crates table |
-| T6 | `agent-tools.md` | portable where the standard library allows, a Unix-only call behind `cfg(unix)` with its reason |
-| T7 | `agent-tools.md` | the coverage floor of the workspace, raised never lowered |
-| T8 | `agent-tools.md` | a fresh machine installs the Rust tools; without them the checks fail, never pass |
-| T9 | `agent-tools.md` | the Rust tests run in a repository of their own, every `GIT_*` variable removed |
-| T10 | `agent-tools.md` | shared files written by the main thread only; the guard, its padding exception and its accepted limits |
-| T11 | `agent-tools.md` | `rule-docs` runs at commit; `move-rows` and its table |
-| M1 | `metrics.md` | where the data lives, the record of each call |
-| M2 | `metrics.md` | the report, active time capped at 5 minutes, a moment's story and task |
-| M3 | `metrics.md` | the status line, its states and parts |
-| M4 | `metrics.md` | a run's totals |
-| M5 | `metrics.md` | the session report closes a session with `--all` |
-| M6 | `metrics.md` | the retrospective's questions |
-| M7 | `metrics.md` | a command over a minute runs in the background, watched, never behind a waiting loop |
-| M8 | `metrics.md` | the limits: worktree sessions not read, transcripts kept 3650 days, metrics per clone |
+| # | Page | Rule before | Now |
+| --- | --- | --- | --- |
+| G1 | `git-workflow.md` | `main` holds releases only and takes no push; `develop` integrates; one branch per feature, one per story, named by their patterns | Branches and pull requests, its table, with its reason: what reaches `main` went through a validation and a release |
+| G2 | `git-workflow.md` | one commit per task, its id in a `Refs:` footer | Branches and pull requests, "A story" |
+| G3 | `git-workflow.md` | a story's pull request goes into its feature branch, rebase merge; `story:finish` in an autonomous run, the Product Owner outside one | Branches and pull requests, "A story" |
+| G4 | `git-workflow.md` | a feature joins `develop` from its `VAL` branch by a merge commit, once the Product Owner said the validation is done | Branches and pull requests, "A feature", with its reason |
+| G5 | `git-workflow.md` | a release only when asked; `develop` into `main` by merge commit only; release-please's pull request first | Branches and pull requests, "A release", with its reason |
+| G6 | `git-workflow.md` | after a release, `develop` fast-forwards to `main` | Branches and pull requests, "After a release"; the four chained commands cut, the guard refusing chains in a worktree |
+| G7 | `git-workflow.md` | no long-lived branch but `main`, `develop` and the current feature's | Branches and pull requests, last bullet |
+| G8 | `git-workflow.md` | branch names checked by `validate-branch-name` | merged into G7's bullet; the pattern list cut, `.validate-branch-namerc.json` being the source |
+| G9 | `git-workflow.md` | `branches:clean` after a feature, a release or a story the Product Owner merged | After a merge |
+| G10 | `git-workflow.md` | the logs merge by union; never a sorted table nor front matter; GitHub's merge untried | Logs merged by union, with its test: union fits a file whose lines are independent |
+| G11 | `git-workflow.md` | Conventional Commits: types, scopes, 100 characters, breaking changes | Commit messages; the scope list cut and `commitlint.config.ts` named as its one source |
+| G12 | `git-workflow.md` | the four footers | Commit messages, its table; the example message cut, the table showing each footer |
+| G13 | `git-workflow.md` | the hooks table; installed by `npm install`, a worktree's by `worktree:new`; never bypassed | Hooks, with the reason a worktree needs its own `.husky/_` and what to do when a hook blocks legitimate work |
+| C1 | `ci.md` | work branches checked by the local hooks only; nobody waits for a CI | intro, with its reason: a CI per story would wait for checks the pre-push already ran |
+| C2 | `ci.md` | the CI runs once per release, merged only when green | intro |
+| C3 | `ci.md` | the workflows table | kept; the quality row links the lanes of `check:all` instead of repeating them |
+| C4 | `ci.md` | no CI on release-please's pull request; on `main` its jobs skipped by `if:` | merged into C5, as its consequence |
+| C5 | `ci.md` | a required workflow never filtered by branch or path | first bullet, as a principle: skip by the job's `if:`, never by the workflow's filter, with its reason |
+| C6 | `ci.md` | secrets checked three times | second bullet |
+| C7 | `ci.md` | code hygiene is the lint's job | third bullet |
+| C8 | `ci.md` | repository settings and rulesets | Repository settings, kept |
+| C9 | `ci.md` | Dependabot opens security updates only | Repository settings, last paragraph |
+| K1 | `commands.md` | the commands table | kept, each row trimmed of its timings and story ids; the agent's tools gain `context:size` |
+| K2 | `commands.md` | `fix` before each commit; `check` not per task; `check:all` at the push | "When to run what", with its reason: `check` repeats what the push runs |
+| K3 | `commands.md` | the lanes, the docs lane skipped when nothing it builds changed | The lanes of the full check, with its test: skip only when certain the lane has nothing to check |
+| K4 | `commands.md` | every check tool names its targets; a new folder joins them | Explicit targets, with its reason |
+| K5 | `commands.md` | one heavy command at a time; its situations; never a lock by hand | One heavy command at a time, with its reason (E15's freeze); two rows of the situations merged (folder or foreign file) |
+| K6 | `commands.md` | the merge lock, apart from the heavy one | One heavy command at a time, last paragraph |
+| K7 | `commands.md` | the playground imports the public API only | Playground, with its reason |
+| K8 | `commands.md` | the declarations fail on an exported constant whose type cannot be read | Build |
+| R1 | `releases.md` | the release steps on `develop` | kept, with its reason: `main` never holds a commit `develop` lacks |
+| R2 | `releases.md` | docs and tooling wait in `develop` | kept |
+| R3 | `releases.md` | merged in the wrong order, a second pull request | kept |
+| R4 | `releases.md` | the token expires 2026-12-31 | kept, with why a token rather than `GITHUB_TOKEN` |
+| R5 | `releases.md` | below `1.0.0` until the Product Owner calls it stable; the bump table | kept |
+| R6 | `releases.md` | the rollback | kept |
+| D1 | `documentation-site.md` | the API pages and their checks | Stack; the byte-for-byte comparison with TypeDoc of 2026-10-17 cut to its result, a history note |
+| D2 | `documentation-site.md` | the playground built and checked with the site | Playground |
+| D3 | `documentation-site.md` | relative links; no double curly braces | Writing pages; "English, one `#` title" cut, said by [writing](../../conventions/writing.md) |
+| D4 | `documentation-site.md` | PDF not set up, an ADR when needed | PDF, one sentence; the 2023 plugin's history cut |
+| P1 | `dependencies.md` | zero runtime dependency | Policy |
+| P2 | `dependencies.md` | pinned exactly | Policy, packages and crates in one bullet, with its reason |
+| P3 | `dependencies.md` | one row per package; a test holds it | Policy |
+| P4 | `dependencies.md` | adding and removing | Policy, the 7-day release and its notes stated once for every kind |
+| P5 | `dependencies.md` | crates, Rust tools and assets follow the same rules | Policy, last bullet; the three restatements under Rust tools, Assets and Crates cut |
+| P6 | `dependencies.md` | Inter's licence | Assets, kept |
+| P7 | `dependencies.md` | an override goes once its cause is fixed | Overrides, as its principle; the note on a removed override cut, history |
+| P8 | `dependencies.md` | every Oxc crate at one version | Crates, with its reason; the per-row versions and release notes cut, `Cargo.toml` holding the versions and the commits the notes read |
+| V1 | `versions-and-security.md` | latest version, 7 days old | Latest versions, both reasons stated |
+| V2 | `versions-and-security.md` | the upgrade procedure | Upgrading, with its reason: a check passing says nothing of what a release added |
+| V3 | `versions-and-security.md` | Actions and Node.js on their latest major | Latest versions, second paragraph |
+| V4 | `versions-and-security.md` | no pre-release but VitePress 2.0 alpha | Latest versions, third paragraph |
+| V5 | `versions-and-security.md` | any advisory fails, npm and RustSec | Vulnerabilities, first bullet, both merged |
+| V6 | `versions-and-security.md` | upgrade, else an override | Vulnerabilities |
+| V7 | `versions-and-security.md` | install scripts stay blocked | Vulnerabilities |
+| V8 | `versions-and-security.md` | stylelint when SCSS starts | Packages blocked by an advisory; the `markdownlint-cli2` row cut, replaced twice since and blocking nothing |
+| S1 | `sources.md` | search the library first | Rules for the agent, 1 |
+| S2 | `sources.md` | fetch through `library_get`; `WebFetch` only for an empty page; the hook | Rules for the agent, 2, with its reason; the hook's exceptions live in [agent](../../tooling/agent.md#hooks) |
+| S3 | `sources.md` | cite a `REF-*` row | Rules for the agent, 3 |
+| S4 | `sources.md` | the database never in a repository | Rules for the agent, 4, with its reason |
+| S5 | `sources.md` | freshness | Freshness, kept |
+| S6 | `sources.md` | the retrospective reads the uses | Uses; the migration of an older file cut, an implementation detail the code holds |
+| A1 | `agent.md` | `docs/` is the source of truth | intro |
+| A2 | `agent.md` | the files, skills, agents and hooks tables | kept; the three rule files in one row |
+| A3 | `agent.md` | each task kind on its agent type; the fallback; a missed rule into the brief; merges with the main thread | Run's workers, as a principle with its reason and cost; the measured tokens per type cut, kept in EN-065 and research note 0024 |
+| A4 | `agent.md` | the progress page | The progress page, kept; its timing measure cut |
+| A5 | `agent.md` | expert agents read-only, library first | Expert agents, with its reason; the history of their tools before 2026-10-13 and the before-and-after tokens cut (EN-065) |
+| A6 | `agent.md` | one model per type, its reason; precedence | Models, as a principle: the cheapest model that does the task as well |
+| A7 | `agent.md` | pushes only for a question or a blocker | Pushes, with its reason |
+| A8 | `agent.md` | a second session's four rules; the run picks up `develop` | Parallel sessions, with its reason: the repository is the only shared state |
+| A9 | `agent.md` | no cloud agents; a scheduled task only when asked | Cloud agents and scheduled tasks |
+| A10 | `agent.md` | the journal before the transcripts | Searching past conversations |
+| A11 | `agent.md` | new hooks in Rust; no repeated rule; guards changed by ADR; local settings; changes to `develop` | Rules for this folder, the hook-enforced rule with its reason |
+| T1 | `agent-tools.md` | a repeated command becomes a tool | intro, as a principle with its reason; the E14 measures kept as one example, the `check:all` one cut (history, now in commands) |
+| T2 | `agent-tools.md` | the tools table and `mutate`'s steps | Tools, kept; `check:all` moved out (commands holds it), the heavy lock reduced to a link |
+| T3 | `agent-tools.md` | a tool when its signal shows; the specifications | Specifications for later, as a principle with its reason; the six tables merged into one, the Rust column cut since every new tool is Rust |
+| T4 | `agent-tools.md` | every new tool in Rust, reviewed dependencies only | Rust, with ADR-0073's reasons; the E15 measures table cut, the decision being recorded in ADR-0073 |
+| T5 | `agent-tools.md` | the crates table | Rust, kept without the story column |
+| T6 | `agent-tools.md` | portable, Unix-only behind `cfg(unix)` | Rust, "Portable as a goal" |
+| T7 | `agent-tools.md` | the coverage floor, raised never lowered | Rust, "Coverage"; the per-crate figures of 2026-10-17 cut, the failure's table printing them |
+| T8 | `agent-tools.md` | a fresh machine; a missing tool fails | Rust, "A fresh machine" |
+| T9 | `agent-tools.md` | Rust tests in a repository of their own, `GIT_*` removed | widened by this story to every test: [Tests that run Git](../../tooling/commands.md#tests-that-run-git); Rust, "Tests", links it |
+| T10 | `agent-tools.md` | shared files, the guard, its padding exception and limits | Shared files and their rows, with its reason: parallel workers would conflict at each merge |
+| T11 | `agent-tools.md` | `rule-docs` at commit; `move-rows` | Shared files and their rows |
+| M1 | `metrics.md` | where the data lives, the record of each call | kept; `usage.json` added to the sources it was missing from |
+| M2 | `metrics.md` | the report, active time, a moment's story | The report, active time with its reason |
+| M3 | `metrics.md` | the status line | Status line; the incidents of 2026-10-14 and 2026-10-15 cut to the behaviour they fixed; ccstatusline's comparison cut to one sentence |
+| M4 | `metrics.md` | a run's totals | A run's totals; the measure of 2026-10-17 cut, history |
+| M5 | `metrics.md` | the session report with `--all` | Session report, with its reason |
+| M6 | `metrics.md` | the retrospective's questions | At each retrospective |
+| M7 | `metrics.md` | a long command in the background, watched | Watching a long task, with its reason |
+| M8 | `metrics.md` | the limits | Limits, kept |
+| — | `commands.md` | (new, 2026-10-17) | Tests that run Git: every test that runs `git`, or a binary that runs `git`, removes every inherited `GIT_*` variable, since the pre-push hook sets `GIT_DIR` |
+
+## For the main thread
+
+For EN-096's `.claude/rules/tooling.md`, which this story does not edit: its `GIT_*` line ("A test running `git` in a temporary repository removes every `GIT_*` variable…") widens to the rule learnt on 2026-10-17, written in [commands](../../tooling/commands.md#tests-that-run-git). Proposed wording: "Every test that runs `git`, or a binary that runs `git`, removes every inherited `GIT_*` variable from the commands it starts: the pre-push hook sets `GIT_DIR`, and a leaked one points the test at the real repository (a `git init --bare` turned it bare). See `docs/tooling/commands.md`, Tests that run Git."

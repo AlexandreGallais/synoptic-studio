@@ -2,12 +2,13 @@
 
 ## Policy
 
-- **Zero runtime dependency**: `dependencies` stays empty; the published library has no `import` of any package (`import-x/no-extraneous-dependencies` in `src/`).
-- Every development package is pinned to an **exact version** (`npm install -D --save-exact`).
-- Every package has **one row below** stating why it is needed and why this one rather than an alternative. The test `tests/package.test.ts` fails when a package of `package.json` has no row here, or when a row names a package that is not installed.
-- Adding a package: search alternatives (official docs, maintenance date, weekly use, license), check `npm audit`, add the row **in the same change**, mention it in the commit (`build(deps): …`). A package bringing a structural choice also gets an ADR.
-- Removing a package: remove its row.
-- A crate of crates.io, for the Rust tools of `tools/`, follows the same rules: an exact version in the root `Cargo.toml` (`[workspace.dependencies]`, `name = "=x.y.z"`), a row under [Crates](#crates), its release notes read, a release at least 7 days old; `tests/package.test.ts` fails when a crate of `Cargo.toml` has no row there, or a row names no crate of it.
+Every dependency is code the project did not write and must trust, so each one is chosen, pinned and justified.
+
+- **Zero runtime dependency**: `dependencies` stays empty; the published library imports no package (`import-x/no-extraneous-dependencies` in `src/`).
+- **Pinned exactly**: development packages by `npm install -D --save-exact`, crates as `name = "=x.y.z"` in the root `Cargo.toml`'s `[workspace.dependencies]`, so that a build never changes under a release nobody read.
+- **One row each** below, saying why it is needed and why this one rather than an alternative; `tests/package.test.ts` fails on a package or a crate without its row, and on a row naming nothing installed.
+- **Adding** one: compare the alternatives (docs, maintenance, use, licence), read its release notes, take a release at least 7 days old ([versions](./versions-and-security.md)), check the audit, and add its row in the same commit (`build(deps): …`); a structural choice also gets an ADR. **Removing** one removes its row.
+- The same rules hold for everything else the project takes from outside: the crates, the [Rust tools](#rust-tools) of the checks and the [assets](#assets).
 
 ## Packages
 
@@ -15,37 +16,36 @@
 
 | Package | Why | Alternatives rejected |
 | --- | --- | --- |
-| `typescript` | TypeScript 7.0.2, the native compiler (`REF-TS7-ANNOUNCEMENT`), the only TypeScript since EN-085: its type checker runs under oxlint's `--type-check` and as `npm run typecheck`, about 5 times faster than 6.0 (EN-071; the declarations of `build` are Oxc's since EN-091); it has no API until 7.1, and no tool of the repository imports one: TypeScript 6's, kept for typescript-eslint and TypeDoc, left with them (EN-072, EN-085, ADR-0075) | TypeScript 6's `tsc`: about 4.3 s against 0.9 s on this tree |
-| `@types/node` | Node.js types for the tooling (scripts, hooks, configuration files) | — |
-| `vite` | development server of the playground and library build (Product Owner requirement, ADR-0009; kept by ADR-0075, decision 1) | — |
-| `vitest` | tests, sharing Vite's configuration and transforms | Jest: separate transform pipeline |
-| `@vitest/coverage-v8` | test coverage of `src/`, with 100 % thresholds (lines, branches, functions, statements): every behavior of the library is tested | `@vitest/coverage-istanbul`: slower, instruments the code |
-| `happy-dom` | DOM implementation for the tests of `src/render/` (per-file `// @vitest-environment happy-dom`), so the shell keeps 100 % coverage | `jsdom`: heavier and slower |
-| `fast-check` | property-based tests of `math` and `geometry` (ADR-0022): random inputs, shrunk counterexamples, seeded replay; MIT, one dependency (`pure-rand`) | hand-written random loops: no shrinking, no replay; `jsverify`: unmaintained |
-| `@fast-check/vitest` | `test.prop` for Vitest: properties reported as tests, with the failing seed in the test name (ADR-0022) | calling `fc.assert` inside `it`: more boilerplate per property |
+| `typescript` | TypeScript 7, the native compiler (`REF-TS7-ANNOUNCEMENT`): its checker runs under oxlint's `--type-check` and as `npm run typecheck`; no tool of the repository imports its API, which 7.0 lacks (ADR-0075) | TypeScript 6's `tsc`: about 4.3 s against 0.9 s on this tree |
+| `@types/node` | Node.js types for the tooling | — |
+| `vite` | development server of the playground and library build (ADR-0009, ADR-0075) | — |
+| `vitest` | tests, sharing Vite's configuration and transforms | Jest: a separate transform pipeline |
+| `@vitest/coverage-v8` | coverage of `src/` with 100 % thresholds | `@vitest/coverage-istanbul`: slower, instruments the code |
+| `happy-dom` | a DOM for the tests of `src/render/` (`// @vitest-environment happy-dom`), so the shell keeps 100 % coverage | `jsdom`: heavier and slower |
+| `fast-check` | property-based tests of `math` and `geometry` (ADR-0022): random inputs, shrunk counterexamples, seeded replay | hand-written random loops: no shrinking, no replay; `jsverify`: unmaintained |
+| `@fast-check/vitest` | `test.prop`: properties reported as tests, the failing seed in the name | `fc.assert` inside `it`: more boilerplate |
 
 ### Lint
 
 | Package | Why | Alternatives rejected |
 | --- | --- | --- |
-| `oxfmt` | the formatter of every file kind the repository formats, Markdown included, natively in Rust (`REF-OXFMT`, `REF-OXFMT-LANGUAGES`), run by `tools/format`, which then writes Markdown tables without padding (ADR-0068, EN-073); 0.72.0, released 2026-10-05, its notes read (Markdown formatted by `oxc_formatter_markdown`), 0.73.0 being under 7 days old | Prettier 3.9: about 30 times slower (12.4 s against 0.4 s here), pads tables too, a JavaScript tool against the Rust rule (note 0023) |
-| `oxlint` | the one lint command (`npm run lint`): ESLint's native rules, typescript-eslint's, Unicorn's, JSDoc's and Import's built in Rust, with their options (`REF-OXLINT`, `REF-OXLINT-PLUGINS`), its configuration `.oxlintrc.json` written by `@oxlint/migrate --type-aware` from `eslint/` (`REF-OXLINT-MIGRATE`, EN-074); 1.87.0, released 2026-10-05, its notes read (suggestions and fixes only, no rule removed), 1.88.0 being under 7 days old | ESLint 10 with typescript-eslint: about 62 s on this tree against 2 s; removed by EN-085 once every rule it ran was carried or dropped (ADR-0075) |
-| `oxlint-tsgolint` | the type-aware rules of `oxlint` (`options.typeAware`), typescript-eslint's rules run on typescript-go: `no-floating-promises`, `strict-boolean-expressions`, the `no-unsafe-*` family… (`REF-OXLINT-TYPE-AWARE`, `REF-TSGOLINT`), loaded by `oxlint`, imported by no file (`knip.json`); 7.0.2004, released 2026-10-10, its notes read (fixes to `no-unsafe-return`, `no-misused-promises`, `no-floating-promises`, `no-deprecated` and line disable comments) | typescript-eslint's type-aware rules in ESLint: TypeScript 6's API and most of ESLint's 62 s |
+| `oxfmt` | the formatter of every file kind, Markdown included, in Rust (`REF-OXFMT`, `REF-OXFMT-LANGUAGES`), run by `tools/format` (ADR-0068) | Prettier: about 30 times slower, pads tables, a JavaScript tool |
+| `oxlint` | the lint: ESLint's, typescript-eslint's, Unicorn's, JSDoc's and Import's rules built in Rust (`REF-OXLINT`, `REF-OXLINT-PLUGINS`), configured by `.oxlintrc.json` | ESLint with typescript-eslint: about 62 s on this tree against 2 s (ADR-0075) |
+| `oxlint-tsgolint` | oxlint's type-aware rules on typescript-go (`REF-OXLINT-TYPE-AWARE`, `REF-TSGOLINT`), loaded by oxlint, imported by no file (`knip.json`) | typescript-eslint's type-aware rules: TypeScript 6's API |
 
 ### Documentation site
 
 | Package | Why | Alternatives rejected |
 | --- | --- | --- |
-| `vitepress` | Markdown documentation site built on Vite (`REF-VITEPRESS`); 2.0 alpha because 1.6 bundles a vulnerable Vite 5 (ADR-0075, decision 1) | Docusaurus: React and webpack/rspack toolchain, no native PDF either |
-
-| `mermaid` | diagrams written as text in `mermaid` code blocks (flowcharts, Git graphs, sequences), drawn by the site's theme in the browser and natively by GitHub (`REF-MERMAID`, `REF-GH-DIAGRAMS`) | `vitepress-plugin-mermaid`: last release 2024, VitePress 1 only; hand-drawn SVG: hard to keep up to date |
+| `vitepress` | Markdown documentation site on Vite (`REF-VITEPRESS`); 2.0 alpha because 1.6 bundles a vulnerable Vite 5 (ADR-0075) | Docusaurus: a React toolchain, no native PDF either |
+| `mermaid` | diagrams written as text, drawn by the site's theme and by GitHub (`REF-MERMAID`, `REF-GH-DIAGRAMS`) | `vitepress-plugin-mermaid`: VitePress 1 only; hand-drawn SVG: hard to keep up to date |
 
 ### Git workflow
 
 | Package | Why | Alternatives rejected |
 | --- | --- | --- |
 | `husky` | installs the Git hooks (`.husky/`) on `npm install` | `lefthook`: equally good, less widespread |
-| `lint-staged` | runs the formatter, the linters and secretlint on staged files only, before each commit (`.lintstagedrc.json`) | — |
+| `lint-staged` | runs the formatter, the linters and secretlint on staged files only (`.lintstagedrc.json`) | — |
 | `@commitlint/cli` | checks commit messages | — |
 | `@commitlint/config-conventional` | Conventional Commits rule set (`REF-CONVENTIONAL-COMMITS`) | — |
 | `@commitlint/types` | types of `commitlint.config.ts` | — |
@@ -55,67 +55,67 @@
 
 | Package | Why | Alternatives rejected |
 | --- | --- | --- |
-| `secretlint` | detects keys, tokens and passwords in any file: before each commit, before each push (`check:all`) and in the CI into `main` | `gitleaks`: a Go binary outside npm; GitHub secret scanning also runs, server side |
-| `@secretlint/secretlint-rule-preset-recommend` | secretlint's recommended rule set (cloud keys, GitHub, Slack, npm tokens, private keys…) | — |
+| `secretlint` | finds keys, tokens and passwords in any file, at commit, at push and in the CI | `gitleaks`: a Go binary outside npm |
+| `@secretlint/secretlint-rule-preset-recommend` | secretlint's recommended rules | — |
 
 ### Maintenance
 
 | Package | Why | Alternatives rejected |
 | --- | --- | --- |
-| `npm-check-updates` | `npm run deps:outdated`: fails when a dependency is not on its latest version | `npm outdated`: no per-package target (TypeScript limited to patches) |
-| `knip` | `npm run deps:unused`: unused files, exports and dependencies (`knip.json`), which lint cannot see across modules | `ts-prune`: unused exports only; ESLint `no-unused-vars`: one module at a time |
+| `npm-check-updates` | `npm run deps:outdated` | `npm outdated`: no per-package target |
+| `knip` | `npm run deps:unused`: unused files, exports and dependencies across modules | `ts-prune`: exports only; `no-unused-vars`: one module at a time |
 
 ## Rust tools
 
-Tools outside npm, for the checks of the Rust workspace (EN-069). Same rules: a row here, the release notes read, a version at least 7 days old. Each version is pinned where it is installed — `.github/workflows/ci.yml`, the install line of [agent tools](./agent-tools.md#rust), the messages of `rust:coverage` and `rust:advisories` in `package.json` — and `deps:outdated` does not see them: a newer release is looked for by hand (`cargo search <tool>`) at each retrospective.
+The tools outside npm that the Rust checks run. `deps:outdated` does not see them: each version is pinned where it is installed — `.github/workflows/ci.yml`, the install line of [agent tools](./agent-tools.md#rust), the messages of `rust:coverage` and `rust:advisories` in `package.json` — and a newer release is looked for by hand (`cargo search <tool>`) at each retrospective.
 
 | Tool | Version, released | Why | Alternatives rejected |
 | --- | --- | --- | --- |
-| cargo-llvm-cov | 0.9.1, 2026-09-06 (41 days on 2026-10-17) | `rust:coverage`: the workspace's tests with LLVM's source-based coverage, failing under the floor of lines and functions (`REF-CARGO-LLVM-COV`); notes of 0.9.0 and 0.9.1 read: fixes (doctests in 2024-edition workspaces, build scripts left out of reports, Windows paths) and a `--show-missing-lines` format change, unused here | — |
-| cargo-deny | 0.20.2, 2026-07-09 (100 days) | `rust:advisories`: every crate of `Cargo.lock` against the RustSec database, offline from its local copy (`REF-CARGO-DENY-ADVISORIES`); notes of 0.20.2 read: the command line refactored, `--offline` now an option of `cargo deny` itself, written before `check`; a new `bans.std-replacements` lint, unused as `bans` does not run | `cargo audit` 0.22.2 (`REF-CARGO-AUDIT`): the same database, advisories only, where cargo-deny also checks licences, bans and sources |
-| llvm-tools, rustup's component (`llvm-tools-preview`) | of Rust 1.99.1, 2026-08-27 (51 days) | the `llvm-profdata` and `llvm-cov` that cargo-llvm-cov calls; listed in `rust-toolchain.toml`, so rustup installs it with the toolchain | a system LLVM: its version must match the compiler's |
+| cargo-llvm-cov | 0.9.1, 2026-09-06 | `rust:coverage`: the workspace's tests under LLVM's source-based coverage, failing under a floor (`REF-CARGO-LLVM-COV`) | — |
+| cargo-deny | 0.20.2, 2026-07-09 | `rust:advisories`: every crate of `Cargo.lock` against the RustSec database, offline (`REF-CARGO-DENY-ADVISORIES`); `--offline` comes before `check` | `cargo audit` (`REF-CARGO-AUDIT`): the same database, advisories only |
+| llvm-tools, rustup's component | of the pinned Rust | the `llvm-profdata` and `llvm-cov` cargo-llvm-cov calls; listed in `rust-toolchain.toml`, installed with the toolchain | a system LLVM: its version must match the compiler's |
 
 ## Assets
 
-Data the library ships that is not an npm package. Same rules: a row here, its licence and its release read, a release at least 7 days old.
+Data the library ships that is not a package.
 
 | Asset | Why | Alternatives rejected |
 | --- | --- | --- |
-| Inter 4.1, metrics only (`REF-INTER-RELEASE`, 2024-11-16) | the default font: its advances, kerning pairs and vertical metrics ship as data, so that a text is measured with no font file (ADR-0052, EN-031); weights 100 to 900, upright and italic, the 18 static files of the release's `extras/ttf/`; `src/model/font/inter-metrics.json`, written by `npm run font:metrics`, 1.60 MB (306 kB compressed with gzip), for the 2080 code points of the measured blocks, of which Inter maps 1372 (no Hebrew) | Arial: `fsType` 8, editable embedding only (`REF-OT-OS2`), and no open licence read; the fonts of the reader's system: not known in advance |
-| Inter 4.1 Regular, the font file, tests only (`REF-INTER-REGULAR-FILE`) | a real font that the font reader's tests read on every system, compared with `inter-metrics.json` (EN-062, F18.AC19); `tests/inter-regular.ttf`, the release's `extras/ttf/Inter-Regular.ttf` unchanged, 412 kB, with `tests/inter-license.txt` beside it; never shipped (`files` of `package.json` names neither) | Arial, Helvetica: macOS fonts without an open licence, absent elsewhere, so their tests are skipped there |
+| Inter 4.1, metrics only (`REF-INTER-RELEASE`) | the default font: advances, kerning and vertical metrics as data, so that a text is measured without a font file (ADR-0052); `src/model/font/inter-metrics.json`, written by `npm run font:metrics` from the release's 18 static files | Arial: editable embedding only (`REF-OT-OS2`), no open licence; the reader's system fonts: unknown in advance |
+| Inter 4.1 Regular, the font file, tests only (`REF-INTER-REGULAR-FILE`) | a real font the font reader's tests read on every system: `tests/inter-regular.ttf`, unchanged, with `tests/inter-license.txt`; never shipped | Arial, Helvetica: absent outside macOS, without an open licence |
 
-Licence: SIL Open Font License 1.1 (`REF-INTER-LICENSE`). The fonts may be "bundled, embedded, redistributed and/or sold with any software"; each copy carries the copyright notice and the licence. The metrics file is a format change of the font, a Modified Version under the licence: it is distributed under the OFL with Inter's copyright notice and the licence text beside it, and keeps no reserved font name (Inter's notice names none). The licence does not reach the library's own code nor the documents made with the font. The notice and the licence sit beside the data, in `src/model/font/inter-license.txt`, the release's `LICENSE.txt` unchanged; that file ships with the package (`files` of `package.json`) and `NOTICE` names it.
+Inter is under the SIL Open Font License 1.1 (`REF-INTER-LICENSE`): it may be bundled and redistributed with software if each copy carries the copyright notice and the licence. The metrics file is a Modified Version under the licence, so it is distributed under the OFL with Inter's notice and keeps no reserved font name (Inter's notice names none). The licence reaches neither the library's own code nor the documents made with the font. The notice and the licence sit beside the data, `src/model/font/inter-license.txt`, shipped (`files` of `package.json`) and named by `NOTICE`.
 
 ## Overrides
 
-Checked at each retrospective: an override goes once the package that pulls the vulnerable version asks for a fixed one. Still needed on 2026-10-17: `mermaid` 12.1.0 asks for `katex` `^0.16.47` (since EN-077 removed `@eslint/markdown`, the only package that pulls it); the `deepmerge-ts` override left with `eslint-plugin-functional`, which pulled it (EN-085).
+An override forces a fixed version of a transitive package until the package that pulls it asks for a fixed one; checked at each retrospective, removed as soon as it is no longer needed.
 
 | Override | Why |
 | --- | --- |
-| `katex` → `^0.19.0` | `mermaid` pulls a version affected by GHSA-238p-pmpm-9mq7 (`>= 0.11.0, < 0.18.2`; math rendering, unused here); 0.19 fixes it |
+| `katex` → `^0.19.0` | `mermaid` pulls a version affected by GHSA-238p-pmpm-9mq7 (`>= 0.11.0, < 0.18.2`; math rendering, unused here) |
 
 ## Crates
 
-The crates.io dependencies of the Rust tools: Oxc's (`REF-OXC-CRATE`, MIT licence), at 0.153.0, published 2026-10-05, its release notes read (parser fixes for TypeScript diagnostics; nothing on the AST the tools read); 0.154.0 of 2026-10-13 is under 7 days old. The same version for every Oxc crate: they are released together and depend on each other at that exact version. And `markdown` (`REF-MARKDOWN-RS`, MIT licence), 1.0.0 of 2025-04-23, its release notes read ("Nothing changed since the last alpha", 1.0.0-alpha.24: serde for the options, Unicode updated), with its one dependency `unicode-id` 0.3.7 (2026-09-19).
+The crates.io dependencies of the Rust tools: Oxc's (`REF-OXC-CRATE`, MIT), all at one version since they are released together and depend on each other exactly, and `markdown` (`REF-MARKDOWN-RS`, MIT) with its one dependency `unicode-id`.
 
 | Crate | Why | Alternatives rejected |
 | --- | --- | --- |
-| `oxc_parser` | reads the library's TypeScript into an AST with its comments, so that `tools/api-pages` writes the API pages from the exports and their TSDoc (EN-072), as the project's linter (`tools/lint`, EN-075) does on the same crates | `deno_doc` (`REF-DENO-DOC`): a second parser stack (`deno_ast`, `deno_graph`) writing HTML or JSON, not the site's Markdown pages; TypeDoc: needs TypeScript 6's API (`REF-TYPEDOC-TS7`) |
-| `oxc_ast` | the AST's types, read by the tools | — (the parser's own types) |
-| `oxc_ast_visit` | walks the AST in source order, entering and leaving each node, so that the project's linter (`tools/lint`, EN-075) measures a function's complexity and depth and follows a function's reads and `await`s in order | — (Oxc's own walker, already built as a dependency of `oxc_semantic`) |
-| `oxc_allocator` | the arena the parser builds the AST in | — (the parser's own arena) |
-| `oxc_semantic` | resolves each name of a type to the module's symbols, so that a type parameter, an import and a global of the language are told apart: the check that no internal name is reachable from the API, and the linter's rules that follow a name to its declaration | resolving names by hand: misses shadowing and imports |
-| `oxc_span` | the source type (TypeScript) and the spans that give each export its line | — (the parser's own spans) |
-| `oxc_isolated_declarations` | writes the library's declarations from each module alone, without a type checker, in `tools/declarations` (EN-091, `REF-OXC-ISOLATED-DECLARATIONS`): the 589 files of `tsc` in meaning, in 0.06 s against 0.63 s; release notes of 0.153.0 read (two fixes: `undefined` added to `keyof` parameter types, readonly parameter types) | `tsc -p tsconfig.build.json`: a second compiler run for the same files; `oxc-transform` from npm: the same code behind a Node.js binding, a dev package more |
-| `oxc_codegen` | prints the declarations' AST as `.d.ts` text, comments kept (EN-091); release notes of 0.153.0 read (a parser fix, a sourcemap speed-up) | — (Oxc's own printer) |
-| `markdown` | parses each Markdown page into an mdast tree with byte offsets, GFM and YAML front matter, so that the project's linter runs the Markdown rules `@eslint/markdown` ran in ESLint (EN-077): the Rust sibling of the parser that plugin uses, so the same tree and the same findings | `pulldown-cmark` 0.13.4: events, not a tree, and its own reading of definitions and footnotes, every rule to adapt; `comrak` 0.56.0: an arena tree, seven required dependencies; a parser of our own: CommonMark's emphasis, tables and references are a project in themselves |
+| `oxc_parser` | reads TypeScript into an AST with its comments, for `tools/api-pages` and the project's linter `tools/lint` | `deno_doc` (`REF-DENO-DOC`): a second parser stack writing HTML or JSON; TypeDoc: needs TypeScript 6's API (`REF-TYPEDOC-TS7`) |
+| `oxc_ast` | the AST's types | — (the parser's own) |
+| `oxc_ast_visit` | walks the AST in source order, entering and leaving each node, for the linter's measures and its rules that follow reads and `await`s | — (Oxc's own walker) |
+| `oxc_allocator` | the arena the parser builds the AST in | — (the parser's own) |
+| `oxc_semantic` | resolves each name to its symbol, so that a type parameter, an import and a global are told apart | resolving names by hand: misses shadowing and imports |
+| `oxc_span` | the source type and the spans that give each node its line | — (the parser's own) |
+| `oxc_isolated_declarations` | the library's declarations from each module alone, without a type checker, in `tools/declarations` (`REF-OXC-ISOLATED-DECLARATIONS`) | `tsc -p tsconfig.build.json`: a second compiler run; `oxc-transform` from npm: the same code behind a Node.js binding |
+| `oxc_codegen` | prints the declarations as `.d.ts` text, comments kept | — (Oxc's own printer) |
+| `markdown` | parses Markdown into an mdast tree with offsets, GFM and front matter, for the linter's Markdown rules: the Rust sibling of the parser `@eslint/markdown` used, so the same tree | `pulldown-cmark`: events, not a tree; `comrak`: seven required dependencies; a parser of our own: a project in itself |
 
 ## Considered for later
 
-Not installed yet; to reconsider when the library grows (Product Owner, 2026-10-08).
+Not installed; reconsidered when the library grows (Product Owner, 2026-10-08).
 
 | Package | Would bring | When |
 | --- | --- | --- |
-| `size-limit` | size budget of the published bundle | before the first npm publication |
-| `@microsoft/api-extractor` | report of the public API, to detect breaking changes in pull requests | once the public API stabilizes |
-| `@stryker-mutator/core` | mutation testing: proves the tests catch real changes, not only cover lines | when stryker-js issue 6210 (Vitest 5 runs no test against mutants) is fixed and released — tried 2026-10-08, ADR-0022 |
+| `size-limit` | a size budget of the published bundle | before the first npm publication |
+| `@microsoft/api-extractor` | a report of the public API, to catch breaking changes | once the public API stabilizes |
+| `@stryker-mutator/core` | mutation testing of the whole suite | once stryker-js issue 6210 (Vitest 5 runs no test against mutants) is fixed (ADR-0022); `npm run mutate` covers it meanwhile |
