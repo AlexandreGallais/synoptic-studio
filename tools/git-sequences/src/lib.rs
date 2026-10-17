@@ -9,6 +9,9 @@ use worktree::{base_branch, branch_refusal, story_of_branch, story_of_file};
 /// The remote every sequence talks to.
 pub const REMOTE: &str = "origin";
 
+/// The integration branch: committed on by the main thread, pushed only through a pull request.
+const DEVELOP: &str = "develop";
+
 /// How a commit is pushed, if it is.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Push {
@@ -178,7 +181,9 @@ pub fn sync_target(
     }
 }
 
-/// Why `git:commit` refuses to run on a branch, `None` when it may.
+/// Why `git:commit` refuses to run on a branch, `None` when it may: never on `main` nor a detached
+/// head, never a push of `develop`, never a force push of a shared branch. A feature branch is
+/// pushed: the main thread writes the shared files of a merge there.
 #[must_use]
 pub fn commit_refusal(branch: &Branch, push: Push) -> Option<String> {
     match (branch, push) {
@@ -186,6 +191,9 @@ pub fn commit_refusal(branch: &Branch, push: Push) -> Option<String> {
         (Branch::Detached, _) => Some("no branch checked out: check out a branch first".into()),
         (Branch::Other(name), Push::Lease) => Some(format!(
             "`{name}` is shared: a force push, even with lease, only goes to a story branch"
+        )),
+        (Branch::Other(name), Push::Plain) if name == DEVELOP => Some(format!(
+            "`{name}` takes merged pull requests only: git:commit never pushes it"
         )),
         _ => None,
     }
