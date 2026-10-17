@@ -80,5 +80,6 @@ Every decision (choosing a route, validating) lives in a tested pure function; t
 
 - `any`, `!` (non-null assertion), `as` (except `as const`): an exception requires `// eslint-disable-next-line rule -- justification`.
 - Classes, `this`, `enum` (use a union of literals), `for…in`, `get`/`set` accessors, dynamic `import()`.
+  - Why no `enum`: it emits hidden JavaScript at run time, while a union of literals is erased entirely; Node.js's type stripping refuses it (`REF-NODE-TS`); and a union of literals transcribes directly into a Rust `enum` (portable core, ADR-0025).
 - A spread into the value a `reduce` callback returns (`[...acc, x]`, `{ ...acc, k: v }`): it copies the accumulator at every step, in quadratic time (EN-061, `REF-OXLINT-ACCUMULATING-SPREAD`); build the result with `map` or `flatMap`, or, outside `src/`, a loop over a local array — never by mutating the accumulator (ADR-0014). `no-restricted-syntax` reports any spread into that literal, the accumulator's or not.
 - Magic numbers: only `-1`, `0`, `1`, `2` are allowed inline; everything else is a named, documented constant.
