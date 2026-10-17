@@ -35,7 +35,7 @@ The built-in limit set to 3 (EN-063) stays a second guard: it holds even if the 
 
 **Open.** A process id reused by another process after a force-quit keeps the lock held; no source read gives a portable check. EN-047 may also record the start time and say so.
 
-**Answered** by EN-047 (a lock file written as a draft then hard-linked, holding the owner's process id and start time) and AUD-020 (2026-10-17): the lock is now held by `flock(2)` on that file, freed by the system when its process dies (`REF-MACOS-LOCKF`), so neither a force-quit nor a reused process id leaves it held.
+**Answered** by EN-047 (a lock file written as a draft then hard-linked, holding the owner's process id and start time) and AUD-020 (2026-10-17): the lock is now held by `flock(2)` on that file, freed by the system when its process dies (`REF-MACOS-FLOCK`), so neither a force-quit nor a reused process id leaves it held.
 
 ## Tables without padding (EN-048)
 

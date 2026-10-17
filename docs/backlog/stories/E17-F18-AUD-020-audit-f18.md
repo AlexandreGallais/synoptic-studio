@@ -122,7 +122,7 @@ Sources re-verified by the auditor: `REF-INTER-REGULAR-FILE` (archive and file d
 - Oxc's formatter on Markdown: does it print tables without padding and keep paragraphs as written (ADR-0068, F19's first criterion)? Read its options and try it on `docs/`.
 - `oxc/no-accumulating-spread` (`REF-OXLINT-ACCUMULATING-SPREAD`) against the project's selector: a spread in a conditional's branch and one held in a variable (the selector's known limit).
 - A shared crate module, or a Cargo workspace, for what the tools repeat: the story id, a short duration, the JSON reader, the transcript's tasks (A12).
-- `flock(2)` on Linux and macOS for the heavy lock (`REF-MACOS-LOCKF`; the Linux manual page to read) if the CI runs heavy commands.
+- `flock(2)` on Linux and macOS for the heavy lock (`REF-MACOS-FLOCK`; the Linux manual page to read) if the CI runs heavy commands.
 - GitHub's Ubuntu runner: `cargo`, `clippy` and `rustfmt` present for `check:rust` (the image's software list, to read), seen at the first pull request into `main`.
 - Whether GitHub's merge applies `merge=union`: tried at the first merge bringing log rows from two sides.
 
