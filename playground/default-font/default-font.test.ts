@@ -2,7 +2,7 @@
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { DEFAULT_FONT, lineWidth } from "../../src";
+import { DEFAULT_FONT, lineWidth, parseFontMetrics } from "../../src";
 import { lettersMissingFaceFile, testFaceFile } from "../../tests";
 import {
   chooseFiles,
@@ -88,6 +88,24 @@ function fakeCanvas(gaps: Readonly<Record<number, number>>): readonly string[] {
   vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(context as never);
 
   return asked;
+}
+
+/** The Text tool's content and size when the page opens: two lines, 32. */
+const OPENING_TEXT = { lines: ["Pump P-101", "Running"], size: 32 };
+
+/**
+ * The width of the box a text fits, its widest line rounded up (DERIV-text-box, step 11), measured
+ * with a face's metrics.
+ *
+ * @param metrics - the face's metrics, undefined for a file that is not a font
+ * @returns the box's width; NaN without metrics
+ */
+function fittedWidth(metrics: Parameters<typeof lineWidth>[0] | undefined): number {
+  const spacing = { letterSpacing: 0, size: OPENING_TEXT.size, wordSpacing: 0 };
+
+  return metrics === undefined
+    ? NaN
+    : Math.ceil(Math.max(...OPENING_TEXT.lines.map((line) => lineWidth(metrics, line, spacing))));
 }
 
 /**
@@ -523,13 +541,14 @@ describe("The font list held while the default font is read again (US-061)", () 
 
     fakeInstalledFonts([
       { blob, family: "Test Sans", fullName: "Test Sans", postscriptName: "Test Sans" },
+      installedTestFamily("Test Serif"),
     ]);
 
     openTextTool();
     clickElement("installed-fonts");
 
     await vi.waitFor(() => {
-      expect(readText("#installed-fonts-progress")).toBe("Installed fonts read: 1 families.");
+      expect(readText("#installed-fonts-progress")).toBe("Installed fonts read: 2 families.");
     });
 
     // Every family read ahead, Test Sans's file read a second time and not given yet; the page's
@@ -541,6 +560,9 @@ describe("The font list held while the default font is read again (US-061)", () 
       "Reading Test Sans, the default font: the font list can be used once it is read.",
     );
 
+    // A choice sent to the list while it is held, as a script or an assistive tool could: kept
+    // out, the default font chosen once read (AUD-020, V11).
+    chooseOption("text-font", "Test Serif");
     again.resolve(testFaceBlob("Test Sans"));
     await waitForPageTasks();
 
@@ -610,6 +632,18 @@ describe("A face refused at the second reading of its family no longer measured 
     // 700 asked, the family holding 400 alone: the text measured and drawn with 400.
     expect(readWeights()).toEqual(["400"]);
     expect(readValue("text-weight")).toBe("400");
+
+    // The box the drawn text fits: Test Sans 400's measure, not Inter 700's (AUD-020, V11).
+    const characters = Array.from(
+      OPENING_TEXT.lines.join(""),
+      (letter) => letter.codePointAt(0) ?? 0,
+    );
+    const held = fittedWidth(parseFontMetrics(testFaceFile(TEST_SANS), characters));
+    const inter = fittedWidth(DEFAULT_FONT.faces.find((face) => face.weight === 700)?.metrics);
+
+    expect(held).not.toBe(inter);
+    chooseOption("text-fit", "box");
+    expect(readValue("text-box-width")).toBe(String(held));
 
     tickEmbedFonts();
 
