@@ -39,3 +39,20 @@ Set in T1, each agent file's `model` and a line of its body giving the reason (`
 | `math-expert` | `inherit` | `opus` | mathematics on the strongest model: the tests' expected values come from it |
 | `functional-analyst` | `inherit` | `opus` | finds the two readings of a rule and prepares the Product Owner's decisions |
 | `doc-editor` | `inherit` | `opus` | a rewrite keeps every fact of the page; read-only and short, so its share of the tokens is small |
+
+## Measures
+
+Short real tasks, 2026-10-17, each run once by `claude -p --agent <type> --output-format json` in this story's worktree, with the agent files of T1; the model from the file, or forced by `--model` for the comparison. Tokens: input, cache writes, cache reads and output, from `modelUsage`; cost as Claude Code reports it.
+
+| Agent type | Task | Model | Requests | Time | Tokens | Written | Cost |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `clerk` | the journal entry of EN-066 from the journal's header and the branch's last two commits | `sonnet`, from the file | 7 | 10.3 s | 102,340 | 773 | $0.11 |
+| `clerk` | same | `opus`, forced | 6 | 9.4 s | 80,103 | 783 | $0.21 |
+| `doc-editor` | review of the section Models of `docs/tooling/agent.md` | `opus`, from the file | 6 | 27.3 s | 87,330 | 2,132 | $0.20 |
+| `doc-editor` | same | `sonnet`, forced | 4 | 15.4 s | 59,711 | 1,530 | $0.10 |
+
+- The file's `model` is applied: `clerk` answered on `claude-sonnet-5-5`, `doc-editor` on `claude-opus-5-5`, without `--model`.
+- `clerk`: the same entry on both models, the same facts and format; Sonnet took one more request and 28 % more tokens, and still cost half.
+- `doc-editor`: both found the same three problems (the order of the model's sources as a list, the unexplained `inherit`, the reason repeated in the table); Opus also flagged the story worker's condition as bound to go stale. Their common findings are applied to the section.
+- A run's real share per model comes from the session report's new row: on this session, `opus-5-5 2,580,122,562 · haiku-5-5 237,698`.
+- Not measured here: the trial of T3, one real story worked by a Sonnet `story-worker` beside a comparable Opus one, with its failed calls and its audit findings. A worker cannot start another agent: the main thread runs it, with `model: "sonnet"` on the `Agent` call.
