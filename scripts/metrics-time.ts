@@ -10,7 +10,7 @@ import { join } from "node:path";
 import { count, field, text } from "../.claude/hooks/status-json.ts";
 
 import { formatDuration, markdownTable } from "./metrics-tables.ts";
-import { toolsTable } from "./metrics-tools.ts";
+import { toolUsesTable, toolsTable, usesSince } from "./metrics-tools.ts";
 import { savedTurns, turnsTable } from "./turns.ts";
 
 /** A main-agent call with its start, as the metrics log holds it. */
@@ -133,10 +133,20 @@ function timeTable(records: readonly unknown[], latest: number): string {
  * @returns them parsed, none when the log is missing
  */
 export function loggedCalls(): readonly unknown[] {
+  return metricsLines("tool-calls.jsonl");
+}
+
+/**
+ * The lines of a JSON Lines file of the main checkout's `.git/metrics/`.
+ *
+ * @param file - its name: `tool-calls.jsonl`, `tool-uses.jsonl`
+ * @returns them parsed, none when the file is missing
+ */
+export function metricsLines(file: string): readonly unknown[] {
   const common = execFileSync("git", ["rev-parse", "--path-format=absolute", "--git-common-dir"], {
     encoding: "utf8",
   }).trim();
-  const log = join(common, "metrics", "tool-calls.jsonl");
+  const log = join(common, "metrics", file);
 
   return existsSync(log)
     ? readFileSync(log, "utf8")
@@ -176,7 +186,8 @@ export function loggedSince(records: readonly unknown[], since: number): readonl
 }
 
 /**
- * The report's sections on turns: each saved turn, then where the latest turns' time went.
+ * The report's sections on turns and tools: each saved turn, where the latest turns' time went,
+ * the agent's tools run through npm, then each Rust tool's recorded uses.
  *
  * @param since - the first moment covered, epoch milliseconds; 0 for every turn
  * @returns titles and tables, in order
@@ -193,5 +204,8 @@ export function turnSections(since: number): readonly string[] {
     "## The agent's tools",
     "Each tool of `docs/tooling/agent-tools.md` run through npm: how often, how long, how often it failed.",
     toolsTable(calls),
+    "## Tools",
+    "Each Rust tool of the workspace, as it records its own uses in `.git/metrics/tool-uses.jsonl`, whoever called it (EN-102): by tool and subcommand, a failure being an exit code other than 0.",
+    toolUsesTable(usesSince(metricsLines("tool-uses.jsonl"), since)),
   ];
 }
