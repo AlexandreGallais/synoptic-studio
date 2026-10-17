@@ -21,8 +21,10 @@ pub const IGNORED: [&str; 12] = [
 ];
 
 /// The rules on for every TypeScript file before the scopes.
-pub const ON_EVERYWHERE: [&str; 12] = [
+pub const ON_EVERYWHERE: [&str; 14] = [
     "@typescript-eslint/naming-convention",
+    "functional/immutable-data",
+    "functional/no-mixed-types",
     "functional/no-return-void",
     "local/canonical-import-path",
     "local/folder-has-index",
@@ -55,6 +57,7 @@ const SINGLE_EXPORT_FILES: &[&str] = &["src/**/*.ts", "playground/**/*.ts"];
 /// The rules off in the tests and the tools: the functional core's `no-return-void`, and the
 /// rules about function kinds, which belong to the library and the playground.
 const RELAXED: &[(&str, bool)] = &[
+    ("functional/immutable-data", false),
     ("functional/no-return-void", false),
     ("local/kind-in-layer", false),
     ("local/kind-limits", false),
@@ -85,7 +88,10 @@ pub const SCOPES: [Scope; 7] = [
             "playground/**/*.ts",
         ],
         ignores: &[],
-        rules: &[("functional/no-return-void", false)],
+        rules: &[
+            ("functional/immutable-data", false),
+            ("functional/no-return-void", false),
+        ],
     },
     Scope {
         name: "barrels",
@@ -168,6 +174,8 @@ mod tests {
             rules_for("src/math/vector/norm.ts"),
             [
                 "@typescript-eslint/naming-convention",
+                "functional/immutable-data",
+                "functional/no-mixed-types",
                 "functional/no-return-void",
                 "local/canonical-import-path",
                 "local/folder-has-index",
@@ -183,6 +191,24 @@ mod tests {
                 "unicorn/no-non-function-verb-prefix",
             ]
         );
+    }
+
+    #[test]
+    fn relaxes_the_functional_core_s_rules_in_the_shell_the_tools_and_the_tests() {
+        for path in [
+            "src/render/a.ts",
+            "playground/a/b.ts",
+            "scripts/a.ts",
+            "src/math/a.test.ts",
+        ] {
+            let rules = rules_for(path);
+            assert!(!rules.contains(&"functional/immutable-data"), "{path}");
+            assert!(rules.contains(&"functional/no-mixed-types"), "{path}");
+            assert!(
+                rules.contains(&"@typescript-eslint/naming-convention"),
+                "{path}"
+            );
+        }
     }
 
     #[test]
@@ -207,6 +233,7 @@ mod tests {
             rules_for("scripts/check-all.ts"),
             [
                 "@typescript-eslint/naming-convention",
+                "functional/no-mixed-types",
                 "no-restricted-syntax",
                 "require-atomic-updates",
                 "unicorn/no-non-function-verb-prefix",
@@ -216,6 +243,7 @@ mod tests {
             rules_for("vite.config.ts"),
             [
                 "@typescript-eslint/naming-convention",
+                "functional/no-mixed-types",
                 "local/canonical-import-path",
                 "local/folder-has-index",
                 "no-restricted-syntax",

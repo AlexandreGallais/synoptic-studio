@@ -6,10 +6,12 @@ pub mod barrel_exports;
 pub mod canonical_import_path;
 pub mod folder_has_index;
 pub mod folder_layout;
+pub mod immutable_data;
 pub mod kind_in_layer;
 pub mod kind_limits;
 pub mod kind_naming;
 pub mod naming_convention;
+pub mod no_mixed_types;
 pub mod no_non_function_verb_prefix;
 pub mod no_restricted_syntax;
 pub mod no_return_void;
@@ -51,10 +53,12 @@ pub const ALL: &[&dyn Rule] = &[
     &canonical_import_path::CanonicalImportPath,
     &folder_has_index::FolderHasIndex,
     &folder_layout::FolderLayout,
+    &immutable_data::ImmutableData,
     &kind_in_layer::KindInLayer,
     &kind_limits::KindLimits,
     &kind_naming::KindNaming,
     &naming_convention::NamingConvention,
+    &no_mixed_types::NoMixedTypes,
     &no_non_function_verb_prefix::NoNonFunctionVerbPrefix,
     &no_restricted_syntax::NoRestrictedSyntax,
     &no_return_void::NoReturnVoid,

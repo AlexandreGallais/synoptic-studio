@@ -95,6 +95,14 @@ Each name's casing by its role, with the project's options ([naming](./naming.md
 
 A variable or a parameter named `getX`, `setX`, `unsetX`, `deleteX`, `addX`, `removeX`, `destroyX` or `createX` holds a function. Whether it can be called is read from its written type or its initializer; an unknown value is not reported, as the rule reported nothing without types (EN-076, `REF-UNICORN-NON-FUNCTION-VERB-PREFIX`).
 
+### `functional/immutable-data`
+
+In the functional core, no existing object or array is changed: no assignment, `delete`, `++` or `--` on a member; no `copyWithin`, `fill`, `pop`, `push`, `reverse`, `shift`, `sort`, `splice`, `unshift`, `add`, `clear`, `delete` or `set` called by name, whatever the object; no `Object.assign`, `defineProperty`, `defineProperties` or `setPrototypeOf` on an existing object.
+
+### `functional/no-mixed-types`
+
+A type holds only data or only functions; a member is a function when it is a method, a call or construct signature, or a property whose written type is a function type.
+
 ### `local/require-kind`
 
 Every top-level function carries exactly one known `@kind`. ADR-0011.

@@ -4,10 +4,8 @@ import type { TSESLint } from "@typescript-eslint/utils";
 export const FUNCTIONAL_IMMUTABILITY: TSESLint.FlatConfig.Config = {
   name: "functional/immutability",
   rules: {
-    "functional/immutable-data": [
-      "error",
-      { ignoreClasses: false, ignoreImmediateMutation: false, ignoreNonConstDeclarations: false },
-    ],
+    // Run by the project's linter, without types (tools/lint, EN-076).
+    "functional/immutable-data": "off",
     "functional/no-let": ["error", { allowInForLoopInit: false, allowInFunctions: false }],
     "functional/prefer-immutable-types": [
       "error",

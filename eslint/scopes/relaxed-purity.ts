@@ -5,7 +5,6 @@
  */
 export const RELAXED_PURITY = {
   "functional/functional-parameters": "off",
-  "functional/immutable-data": "off",
   "functional/no-conditional-statements": "off",
   "functional/no-expression-statements": "off",
   "functional/no-loop-statements": "off",
