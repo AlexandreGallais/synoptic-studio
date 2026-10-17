@@ -1,11 +1,26 @@
-import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
-import { ANY_BYTE_RGB } from "../../../tests";
-import { bytesToHex } from "../color";
+import { changedColorCount } from "../../../tests";
+import { hexToRgb, rgbToHex } from "../color";
 
 import { exactColorToHex } from "./exact-color-to-hex";
 import { hexToExactColor } from "./hex-to-exact-color";
+
+import type { Rgb } from "../../math";
+import type { ColorModel } from "../../model";
+
+/**
+ * A color's components through its exact values and back, in a model.
+ *
+ * @param rgb - the color's components
+ * @param model - HSB or HSL
+ * @returns the components of the color rebuilt
+ */
+function exactRoundTrip(rgb: Rgb, model: ColorModel): Rgb {
+  const exact = hexToExactColor(rgbToHex(rgb), model, 0);
+
+  return hexToRgb(exactColorToHex(exact, model));
+}
 
 describe("exactColorToHex (DERIV-color-spaces steps 11 and 12)", () => {
   it("[F16.AC2] gives #004080 for HSB 210°, 100 %, 50 %", () => {
@@ -52,12 +67,13 @@ describe("exactColorToHex (DERIV-color-spaces steps 11 and 12)", () => {
     ).toBe("#ff8000");
   });
 
-  test.prop({ bytes: ANY_BYTE_RGB, model: fc.constantFrom("hsb" as const, "hsl" as const) })(
-    "gives every color back from its exact values",
-    ({ bytes, model }) => {
-      const color = bytesToHex([bytes.red, bytes.green, bytes.blue]);
-
-      expect(exactColorToHex(hexToExactColor(color, model, 0), model)).toBe(color);
+  // The sample of DERIV-color-spaces (cross-check): one color in 31 and every sector edge, about
+  // 731 000 colors, where a property's random colors would seldom fall on an edge.
+  it.each(["hsb", "hsl"] as const)(
+    "[F16.AC2] gives one color in 31 and every sector edge back from its exact %s values",
+    { timeout: 30_000 },
+    (model) => {
+      expect(changedColorCount((rgb) => exactRoundTrip(rgb, model))).toBe(0);
     },
   );
 });

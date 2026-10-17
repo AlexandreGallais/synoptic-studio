@@ -1,7 +1,7 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
-import { ANY_BYTE_RGB, changedColorCount } from "../../../tests";
+import { ANY_BYTE_RGB, rgbOfBytes } from "../../../tests";
 import { hsbToRgb, hslToRgb } from "../../math";
 import { bytesToHex, hexToBytes, hexToRgb, rgbToHex } from "../color";
 
@@ -101,11 +101,14 @@ describe("wholeValuesToHex (DERIV-color-spaces step 12, ADR-0058)", () => {
     expect(wholeValuesToHex(exact, "hsb", { hue: 200, level: 50, saturation: 50 })).toBe("#406b80");
   });
 
-  it.each(["hsb", "hsl"] as const)(
-    "[F16.AC2] gives one color in 31 and every sector edge back, its %s values left as shown",
-    { timeout: 30_000 },
-    (model) => {
-      expect(changedColorCount((rgb) => unchanged(rgb, model))).toBe(0);
+  // Every value left as shown stands for its exact value: the color is then `exactColorToHex`'s
+  // of its exact values, whose round trip its own test runs over DERIV-color-spaces' sample.
+  test.prop({ bytes: ANY_BYTE_RGB, model: fc.constantFrom("hsb" as const, "hsl" as const) })(
+    "[F16.AC2] gives any color back, its values left as shown",
+    ({ bytes, model }) => {
+      const rgb = rgbOfBytes(bytes.red, bytes.green, bytes.blue);
+
+      expect(rgbToHex(unchanged(rgb, model))).toBe(rgbToHex(rgb));
     },
   );
 

@@ -77,42 +77,18 @@ describe("regularPolygonAsFreeShape", () => {
     expect(isValidFreeShape(flat)).toBe(false);
   });
 
-  it("[F04.AC4] converts a turned triangle to a free shape that keeps its angle and its drawing", () => {
-    // The triangle's points do not fill its box: the free shape's box has another center, placed
-    // so that the drawing does not move (DERIV-turned-shape step 5).
-    const triangle = {
-      anchor: { horizontal: "mid", vertical: "max" },
-      stretched: false,
-      angle: 90,
-      corners: 3,
-      height: 100,
-      radii: [0, 0, 0],
-      width: 100,
-      x: 0,
-      y: 0,
-    } as const;
-    const shape = regularPolygonAsFreeShape(triangle);
-    const drawn = turnedCorners(freeShapeCorners(shape), shape).flatMap((corner) => [
-      corner.point.x,
-      corner.point.y,
-    ]);
-    const expected = turnedCorners(
-      regularPolygonCorners(triangle).map((corner) => curveCornerOf(corner)),
-      triangle,
-    ).flatMap((corner) => [corner.point.x, corner.point.y]);
-
-    expect(shape.angle).toBe(90);
-
-    for (const [index, value] of drawn.entries()) {
-      expect(value).toBeCloseTo(expected[index] ?? NaN, 9);
-    }
-  });
-
-  test.prop({ angle: fc.integer({ max: 359, min: 1 }), corners: fc.integer({ max: 12, min: 3 }) })(
-    "[F04.AC4] converts a polygon turned by any angle without moving it",
-    ({ angle, corners }) => {
+  test.prop({
+    angle: fc.integer({ max: 359, min: 1 }),
+    corners: fc.integer({ max: 12, min: 3 }),
+    horizontal: fc.constantFrom("min", "mid", "max"),
+    vertical: fc.constantFrom("min", "mid", "max"),
+  })(
+    "[F04.AC4] converts a polygon turned by any angle, from any anchor, keeping its angle and its drawing",
+    ({ angle, corners, horizontal, vertical }) => {
+      // The polygon's points need not fill its box: the free shape's box may have another center,
+      // placed so that the drawing does not move (DERIV-turned-shape step 5).
       const polygon = {
-        anchor: { horizontal: "min", vertical: "max" },
+        anchor: { horizontal, vertical },
         stretched: false,
         angle,
         corners,
@@ -131,6 +107,8 @@ describe("regularPolygonAsFreeShape", () => {
         regularPolygonCorners(polygon).map((corner) => curveCornerOf(corner)),
         polygon,
       ).flatMap((corner) => [corner.point.x, corner.point.y]);
+
+      expect(shape.angle).toBe(angle);
 
       for (const [index, value] of drawn.entries()) {
         expect(value).toBeCloseTo(expected[index] ?? NaN, 9);
