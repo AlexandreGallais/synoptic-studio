@@ -3,7 +3,7 @@ id: EN-074
 epic: E17
 feature: F19
 title: oxlint with its native and type-aware rules
-status: ready
+status: done
 points: 5
 ---
 
