@@ -71,7 +71,7 @@ In delivery order, written on 2026-10-17 when the Product Owner started F19's ru
 | [EN-089](../stories/E17-F19-EN-089-font-files-read-once-per-test-run.md) | Enabler | Font files read once per test run | done |
 | [EN-090](../stories/E17-F19-EN-090-tests-without-over-testing.md) | Enabler | Tests without over-testing, and the rules to keep them so | done |
 | [EN-091](../stories/E17-F19-EN-091-configuration-files-reviewed-for-speed.md) | Enabler | Every configuration file reviewed for speed, type errors reported with the lint | done |
-| [CHK-020](../stories/E17-F19-CHK-020-checkpoint-f19.md) | Checkpoint | Checkpoint in the middle of F19 | ready |
+| [CHK-020](../stories/E17-F19-CHK-020-checkpoint-f19.md) | Checkpoint | Checkpoint in the middle of F19 | done |
 | [EN-077](../stories/E17-F19-EN-077-markdown-rules-in-rust.md) | Enabler | The Markdown rules in the Rust linter | done |
 | [EN-078](../stories/E17-F19-EN-078-unicorn-arrays-collections-iteration.md) | Enabler | Unicorn's arrays, collections and iteration rules in Rust | ready |
 | [EN-079](../stories/E17-F19-EN-079-unicorn-control-flow-functions-errors-numbers.md) | Enabler | Unicorn's control-flow, functions, errors and numbers rules in Rust | ready |
