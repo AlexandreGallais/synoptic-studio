@@ -23,30 +23,19 @@ Asked by the Product Owner on 2026-10-16 (RET-003), building on the lighter cont
 - Which inputs cost the most, and which can be cut without losing a rule.
 - What the one-line digest of an ADR holds, and how it stays in step with the ADR (a check).
 
-## Stories to write
-
-Asked by the Product Owner on 2026-10-17, during SP-021; numbers are given at the refinement, and each tool they rely on is sourced by SP-022 before the story is written.
-
-| #   | Type    | Title                                                                                   |
-| --- | ------- | --------------------------------------------------------------------------------------- |
-| 1   | Enabler | A push notification at each stop, question or validation ready                          |
-| 2   | Enabler | A progress page as a claude.ai Artifact, updated during a run                           |
-| 3   | Enabler | A `SubagentStop` hook in Rust that checks a worker's branch and prepares `story:finish` |
-
-- **Push notification** — Given a run that stops, asks a question or has a validation ready, when it happens, then a push notification reaches the Product Owner on the desktop and on the phone (Claude Code's push notifications, through Remote Control), one line saying what is waited for.
-- **Progress page** — Given a run, when it starts and after each story, then a claude.ai Artifact shows the tree epic → feature → story with each status, the story in progress, the durations and the running agents; it replaces the idea of a quarter-screen terminal view.
-- **`SubagentStop` hook** — Given a worker that stops, when the hook runs, then it checks that the worker's branch is pushed and its checks green, says what is missing otherwise, and prepares `story:finish` for the main thread; written in Rust in the workspace of F19.
-
 ## Stories
 
-Drafts from the refinement of 2026-10-16 (Claude Code settings recommended by research, each shown to the Product Owner before it is applied); the context diet's own stories are written after the measure.
+Drafts from the refinement of 2026-10-16 (Claude Code settings recommended by research, each shown to the Product Owner before it is applied) and of 2026-10-17 (EN-086 to EN-088, asked during SP-021, each tool they rely on sourced by SP-022 before the story is set `ready`); the context diet's own stories are written after the measure.
 
-| ID                                                                   | Type       | Title                                                     | Status |
-| -------------------------------------------------------------------- | ---------- | --------------------------------------------------------- | ------ |
-| [SP-022](../stories/E17-F20-SP-022-research-f20.md)                  | Spike      | Research for F20, the context diet                        | draft  |
-| [EN-064](../stories/E17-F20-EN-064-one-hour-prompt-cache.md)         | Enabler    | A one-hour prompt cache on long agents                    | draft  |
-| [EN-065](../stories/E17-F20-EN-065-workers-started-from-a-digest.md) | Enabler    | Workers started from a digest instead of all of CLAUDE.md | draft  |
-| [EN-066](../stories/E17-F20-EN-066-model-per-agent-type.md)          | Enabler    | A model chosen per agent type                             | draft  |
-| [CHK-021](../stories/E17-F20-CHK-021-checkpoint-f20.md)              | Checkpoint | Checkpoint in the middle of F20                           | draft  |
-| [AUD-022](../stories/E17-F20-AUD-022-audit-f20.md)                   | Audit      | Audit F20                                                 | draft  |
-| [VAL-021](../stories/E17-F20-VAL-021-validate-f20.md)                | Validation | Validate F20                                              | draft  |
+| ID                                                                    | Type       | Title                                                          | Status |
+| --------------------------------------------------------------------- | ---------- | -------------------------------------------------------------- | ------ |
+| [SP-022](../stories/E17-F20-SP-022-research-f20.md)                   | Spike      | Research for F20, the context diet                             | draft  |
+| [EN-064](../stories/E17-F20-EN-064-one-hour-prompt-cache.md)          | Enabler    | A one-hour prompt cache on long agents                         | draft  |
+| [EN-065](../stories/E17-F20-EN-065-workers-started-from-a-digest.md)  | Enabler    | Workers started from a digest instead of all of CLAUDE.md      | draft  |
+| [EN-066](../stories/E17-F20-EN-066-model-per-agent-type.md)           | Enabler    | A model chosen per agent type                                  | draft  |
+| [EN-086](../stories/E17-F20-EN-086-push-notification-at-each-stop.md) | Enabler    | A push notification at each stop, question or validation ready | draft  |
+| [EN-087](../stories/E17-F20-EN-087-progress-page-as-an-artifact.md)   | Enabler    | A progress page as a claude.ai Artifact, updated during a run  | draft  |
+| [EN-088](../stories/E17-F20-EN-088-subagent-stop-hook-in-rust.md)     | Enabler    | A SubagentStop hook in Rust that checks a worker's branch      | draft  |
+| [CHK-021](../stories/E17-F20-CHK-021-checkpoint-f20.md)               | Checkpoint | Checkpoint in the middle of F20                                | draft  |
+| [AUD-022](../stories/E17-F20-AUD-022-audit-f20.md)                    | Audit      | Audit F20                                                      | draft  |
+| [VAL-021](../stories/E17-F20-VAL-021-validate-f20.md)                 | Validation | Validate F20                                                   | draft  |
