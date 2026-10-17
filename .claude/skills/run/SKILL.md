@@ -72,9 +72,17 @@ A question for the Product Owner never stops the run (decided 2026-10-17): the t
 
 1. The worker reports the question, with what it read and the options, without choosing; it pushes what it did and stops its story. Its branch and worktree are kept.
 2. The main thread parks the story, in a worktree of the feature branch: `npm run backlog:status -- <ID> parked`, the question written in the story file under `## Question for the Product Owner`, then a `docs(backlog)` commit pushed to the feature branch. The story file, not the chat, keeps the question across sessions.
-3. It asks the question in the questionnaire.
+3. It asks the question in the questionnaire and pushes it ([Pushes](#pushes)).
 4. It goes on with the next story of the scope that does not depend on the parked one: a story that touches its files, builds on its code, or whose criteria the answer may change waits too.
 5. Once answered: the answer written in the story, status `ready` again, its worker resumed or a new one started on its branch.
+
+## Pushes
+
+A push reaches the Product Owner away from the screen, so it is kept for what only they can unblock (decided 2026-10-17): `PushNotification` sends a desktop notification, and a phone push when Remote Control is connected (`REF-CC-TOOLS-REFERENCE`); Claude decides when to push, no setting chooses the events (`REF-CC-REMOTE-CONTROL`).
+
+- **Push** a question that parks a story, and a blocker the run cannot get around, once each, when either prevents finishing the scope: one line naming the story and what it waits for. The run goes on with independent work meanwhile, and stops only if none is left.
+- **Never push** a story merged, a stop at the scope's end, a plain stop, nor a run ending early: the message at the stop says those.
+- **The chat holds the question**, the push only points to it: a push is skipped while the Product Owner types in or focuses the terminal, and phone pushes are off until they turn them on in `/config` ([agent configuration](../../../docs/tooling/agent.md#pushes)). A push refused or turned off changes nothing: the question is in the chat and in the story file.
 
 ## Stop when
 
