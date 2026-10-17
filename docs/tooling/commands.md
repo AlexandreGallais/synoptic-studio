@@ -34,7 +34,7 @@ Every check tool is given the folders and files it checks, by name (EN-045): the
 
 ## One heavy command at a time
 
-`check:all`, `npm run test`, `golden:check` and `docs:build` run through the Rust tool `tools/heavy-lock/` (`cargo run --release`, ADR-0063, EN-047): each takes `.git/heavy.lock` in the Git common directory, shared by every worktree, writes its process id, command, worktree and start in it, and holds the system's lock on that file (`flock`, `REF-MACOS-FLOCK`) while its command runs. The system frees that lock when the process ends, even after a force-quit; the file only names the owner in the waiting message (AUD-020).
+`check:all`, `npm run test`, `golden:check`, `docs:build` and `mutate` run through the Rust tool `tools/heavy-lock/` (`cargo run --release`, ADR-0063, EN-047): each takes `.git/heavy.lock` in the Git common directory, shared by every worktree, writes its process id, command, worktree and start in it, and holds the system's lock on that file (`flock`, `REF-MACOS-FLOCK`) while its command runs. The system frees that lock when the process ends, even after a force-quit; the file only names the owner in the waiting message (AUD-020).
 
 | Situation                                           | What happens                                                                                                                                                                                    |
 | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

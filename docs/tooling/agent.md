@@ -43,7 +43,7 @@ Read-only reviewers in a fresh context, each with the documents it reads first (
 
 | Agent                | Expert in                                             | Started by                                               |
 | -------------------- | ----------------------------------------------------- | -------------------------------------------------------- |
-| `auditor`            | refuting a feature: formulas, values, sources, copies | `/audit`, `/run` (each story)                            |
+| `auditor`            | refuting a feature: formulas, values, sources, copies | `/audit` (ADR-0064: no review per story)                 |
 | `math-expert`        | plane geometry and floating-point numerics            | `/spike`, `/derivation`, `/run` (math stories), `/audit` |
 | `verifier`           | tests that would catch a wrong implementation         | `/story` (test plan), `/run`, `/audit`                   |
 | `functional-analyst` | business rules, domain objects, refinement questions  | `/spike`, a feature's refinement                         |
@@ -72,12 +72,12 @@ Agents to add when their epic comes, with their trigger:
 
 The Product Owner may talk to a second session while a run works in the background. Both share the same folder, and the run owns it (its branch, its uncommitted files). The second session:
 
-1. **Never touches the run's folder**: no `git switch`, `stash` nor commit there. It works in its own worktree from `develop`: `npm run worktree:new -- <ID>` (`.claude/worktrees/<id>`, `node_modules` linked, Husky run so that its own hooks run, EN-052). Each of its Bash calls starts with `cd <worktree> || exit 9`, since a call starts in the main checkout.
+1. **Never touches the run's folder**: no `git switch`, `stash` nor commit there. It works in its own worktree: `npm run worktree:new -- <ID>` (`.claude/worktrees/<id>`, `node_modules` linked, Husky run so that its own hooks run, EN-052) branches from the story's feature branch on GitHub, from `origin/develop` for an epic's story (`NAM`, `REV`, `RET`); a tooling change without a story id uses `git worktree add .claude/worktrees/<topic> -b <type>/<topic> origin/develop`. Each of its Bash calls starts with `cd "<worktree>" || exit 9`, since a call starts in the main checkout.
 2. **Puts each decision in the repository**, the only state both sessions read: domain, ADR, backlog, `AGENTS.md`, skills. One branch, one pull request into `develop` (or straight to `develop` when the Product Owner allows it for tooling and backlog). Durable facts also go to the agent's memory, read by every new session.
 3. **Tells the run at once**: `ListAgents`, then `SendMessage` to the busy session with what changed, where it is written and what it changes for the run. A run never acts on a message alone: it waits for the change to reach `develop`, as with any decision.
-4. **Removes its worktree** once the pull request is merged (`git worktree remove <path>`, then delete the branch).
+4. **Removes its worktree** once the pull request is merged: `npm run branches:clean` removes it with its branch.
 
-The run picks up `develop` before every story (run skill, step 1): when `develop` has new commits in `AGENTS.md`, `CLAUDE.md`, `.claude/`, `docs/domain/`, `docs/adr/`, `docs/backlog/` or `docs/conventions/`, it rebases the feature branch on `develop`, reads them and follows them from that story on. A skill or rule loaded at the start of the run is replaced by the new version; a change to the run's scope or stories is a stop. So the Product Owner never has to repeat in one chat what was decided in the other.
+The run picks up `develop` before every story (run skill, step 1): when `develop` has new commits in `AGENTS.md`, `CLAUDE.md`, `.claude/`, `docs/domain/`, `docs/adr/`, `docs/backlog/` or `docs/conventions/`, it merges `origin/develop` into the feature branch, in a worktree of that branch (no force push on a feature branch), reads them and follows them from that story on. A skill or rule loaded at the start of the run is replaced by the new version; a change to the run's scope or stories is a stop. So the Product Owner never has to repeat in one chat what was decided in the other.
 
 ## Searching past conversations
 
