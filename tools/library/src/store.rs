@@ -4,6 +4,7 @@
 //! schema is the one `library-store.ts` wrote, so that a file written here is read by an older
 //! checkout's scripts and the reverse, without a migration.
 
+use std::env;
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -91,6 +92,16 @@ pub fn library_file(variable: Option<String>, home: Option<String>) -> Option<Pa
                     .join("library.sqlite")
             })
         })
+}
+
+/// The library's file for this process: `AGENT_LIBRARY_FILE`, else the data folder of the home
+/// `HOME` names, or `USERPROFILE` on Windows.
+#[must_use]
+pub fn library_file_of_process() -> Option<PathBuf> {
+    library_file(
+        env::var(FILE_VARIABLE).ok(),
+        env::var("HOME").or_else(|_| env::var("USERPROFILE")).ok(),
+    )
 }
 
 /// Brings a library made before EN-101 up to the schema: its `uses` table moved into

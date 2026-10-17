@@ -1,6 +1,6 @@
 # ADR-0039 — A local library of the sources read: SQLite full-text search behind an MCP server
 
-**Status**: Accepted (Product Owner, RET-001, 2026-10-13). Partly supersedes ADR-0024, point 3 ("no database"), for the pages read online only: the session journal and the transcripts stay as they are.
+**Status**: Accepted (Product Owner, RET-001, 2026-10-13), partly superseded by ADR-0077 (2026-10-18): the file is named by `AGENT_LIBRARY_FILE` (decision 1), and the server is a Rust binary on `rmcp` (decision 4). Partly supersedes ADR-0024, point 3 ("no database"), for the pages read online only: the session journal and the transcripts stay as they are.
 
 ## Context
 

@@ -220,13 +220,50 @@ fn the_library_file_is_the_one_the_library_scripts_open() {
         ))
     );
     assert_eq!(library_file(None, None), None);
+    assert_eq!(
+        library_file(Some(String::new()), Some("/home/a".into())),
+        Some(PathBuf::from(
+            "/home/a/.local/share/agent-library/library.sqlite"
+        ))
+    );
+}
+
+#[test]
+fn the_hook_never_reads_the_library_at_library_path() {
+    let folder = std::env::temp_dir().join(format!("library-pages-path-{}", std::process::id()));
+
+    fs::create_dir_all(folder.join("home")).expect("folder");
+    let file = library(&folder);
+    let line = r#"{"tool_name":"WebFetch","tool_input":{"url":"https://x.org/app"}}"#;
+    // The empty page is in the file `LIBRARY_PATH` names, as Apple's python3 sets that variable;
+    // the hook reads the home's library, which has none, and refuses.
+    let mut child = Command::new(env!("CARGO_BIN_EXE_library-pages"))
+        .env_remove("AGENT_LIBRARY_FILE")
+        .env("LIBRARY_PATH", &file)
+        .env("HOME", folder.join("home"))
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .expect("hook starts");
+
+    child
+        .stdin
+        .take()
+        .expect("stdin")
+        .write_all(line.as_bytes())
+        .expect("input");
+    let output = child.wait_with_output().expect("hook ends");
+
+    fs::remove_dir_all(&folder).expect("cleaned");
+
+    assert!(String::from_utf8_lossy(&output.stdout).contains("\"deny\""));
 }
 
 /// Output of the hook for one tool call, run against a library file.
 fn hook(tool: &str, input: &str, library: &Path) -> String {
     let line = format!(r#"{{"tool_name":{},"tool_input":{input}}}"#, quote(tool));
     let mut child = Command::new(env!("CARGO_BIN_EXE_library-pages"))
-        .env("LIBRARY_PATH", library)
+        .env("AGENT_LIBRARY_FILE", library)
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .spawn()
@@ -356,7 +393,7 @@ fn hook_as(agent_type: &str, project: &Path, library: &Path) -> String {
         quote(agent_type)
     );
     let mut child = Command::new(env!("CARGO_BIN_EXE_library-pages"))
-        .env("LIBRARY_PATH", library)
+        .env("AGENT_LIBRARY_FILE", library)
         .env("CLAUDE_PROJECT_DIR", project)
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())

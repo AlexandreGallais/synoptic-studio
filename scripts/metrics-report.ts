@@ -10,8 +10,6 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 
-import { libraryPath, openLibrary } from "./library-store.ts";
-import { usageReport } from "./library-usage.ts";
 import { field, text, transcriptEvents } from "./metrics-events.ts";
 import {
   callStats,
@@ -276,7 +274,12 @@ if (import.meta.main) {
     .join(" ")
     .trim();
 
-  const library = openLibrary(libraryPath());
+  // The library's report, from its Rust command line (EN-106): the store is read in one place.
+  const sources = execFileSync(
+    "cargo",
+    ["run", "--release", "-q", "-p", "library", "--bin", "library", "--", "stats"],
+    { encoding: "utf8" },
+  ).trimEnd();
   const sections = [
     "# Metrics of the agent's work",
     summary,
@@ -284,7 +287,7 @@ if (import.meta.main) {
     ...workSections(moments),
     ...turnSections(since),
     "## Sources",
-    usageReport(library, 0),
+    sources,
   ];
 
   process.stdout.write(`${sections.join("\n\n")}\n`);

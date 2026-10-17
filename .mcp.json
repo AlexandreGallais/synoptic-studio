@@ -2,11 +2,17 @@
   "mcpServers": {
     "library": {
       "type": "stdio",
-      "command": "node",
+      "command": "cargo",
       "args": [
-        "--harmony-temporal",
-        "--no-warnings=ExperimentalWarning",
-        "${CLAUDE_PROJECT_DIR:-.}/scripts/library-mcp.ts"
+        "run",
+        "--release",
+        "-q",
+        "--manifest-path",
+        "${CLAUDE_PROJECT_DIR:-.}/Cargo.toml",
+        "-p",
+        "library",
+        "--bin",
+        "library-mcp"
       ]
     }
   }
