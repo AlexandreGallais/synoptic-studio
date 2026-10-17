@@ -66,7 +66,7 @@ Every feature is delivered in the same order, checked by `backlog.test.ts` (a fe
 | 3 | `AUD` audit | the feature in depth, the project in breadth ([audit.md](../conventions/audit.md)) |
 | 4 | `VAL` validation | plain-language demo page and checklist page; the Product Owner checks the feature's acceptance criteria |
 
-Every started epic closes with `NAM` (naming pass over the whole code, ADR-0049), `REV` (epic report and user test) then `RET` (retrospective, evolvability review, playbook) — ADR-0023, checked by the same test; E01 has no `NAM` (closed before it), nor E14 (F13 is its naming pass). Their files are `E01-REV-001-slug.md`, listed in the epic's **Closing** table.
+Every started epic closes with `NAM` (naming pass over the whole code, ADR-0049, with the pass over the whole repository's tooling and tests, ADR-0069, ADR-0070), `REV` (epic report and user test) then `RET` (retrospective, evolvability review, playbook) — ADR-0023, checked by the same test; E01 has no `NAM` (closed before it), nor E14 (F13 is its naming pass). Their files are `E01-REV-001-slug.md`, listed in the epic's **Closing** table.
 
 ## Statuses
 
