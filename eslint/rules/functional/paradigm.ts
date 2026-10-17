@@ -6,7 +6,8 @@ export const FUNCTIONAL_PARADIGM: TSESLint.FlatConfig.Config = {
   rules: {
     "functional/no-class-inheritance": "error",
     "functional/no-classes": "error",
-    "functional/no-mixed-types": "error",
+    // Run by the project's linter, its types read from the written code (tools/lint, EN-076).
+    "functional/no-mixed-types": "off",
     "functional/no-this-expressions": "error",
   },
 };

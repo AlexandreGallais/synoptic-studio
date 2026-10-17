@@ -19,6 +19,7 @@ Every place where the code departs from a lint rule, with its reason (ADR-0066).
 | File | Function | Rule | Reason |
 | --- | --- | --- | --- |
 | `src/io/font-collection/face-parts-to-file.ts` | `facePartsToFile` | `functional/no-expression-statements`, `functional/no-loop-statements` | a buffer of the final size, written once at known places inside the function, then returned: a collection's 191 MB table copied once, never spread into an array (ADR-0066) |
+| `src/io/font-collection/face-parts-to-file.ts` | `facePartsToFile` | `functional/immutable-data` | the same buffer, its one write: `set` read by name as a map's, a typed array's here (ADR-0066) |
 | `src/model/handles/are-valid-handles.test.ts` | `refuses an unknown mode, a vector not finite, a switch not boolean` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | data read from outside: an unknown mode |
 | `src/model/handles/are-valid-handles.test.ts` | `refuses an unknown mode, a vector not finite, a switch not boolean` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | data read from outside: a switch that is not a boolean |
 | `src/model/layout-box/is-anchor.test.ts` | `[F07.AC1] refuses any other value on either axis` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | data read from outside may hold any string |

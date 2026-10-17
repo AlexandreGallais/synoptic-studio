@@ -16,7 +16,6 @@ export const DOM_LAYERS: TSESLint.FlatConfig.Config = {
       "error",
       { allowArgumentsKeyword: false, allowRestParameter: true, enforceParameterCount: false },
     ],
-    "functional/immutable-data": "off",
     "functional/no-conditional-statements": "off",
     "functional/no-expression-statements": "off",
     "functional/no-loop-statements": "off",

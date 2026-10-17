@@ -35,6 +35,7 @@ export function facePartsToFile(parts: readonly Readonly<Uint8Array>[]): Uint8Ar
 
   /* eslint-disable functional/no-expression-statements, functional/no-loop-statements -- a buffer of the final size, written once at known places inside this function, then returned: no copy of 191 MB per part (ADR-0066) */
   for (const { part, start } of placed) {
+    // lint-disable-next-line functional/immutable-data -- the buffer of the final size, written once at known places, then returned (ADR-0066)
     file.set(part, start);
   }
   /* eslint-enable functional/no-expression-statements, functional/no-loop-statements */
