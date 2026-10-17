@@ -11,9 +11,15 @@ use api_pages::{Output, api, pages, problems, write};
 
 fn main() -> ExitCode {
     let arguments: Vec<String> = std::env::args().skip(1).collect();
-    let [entry, folder, site_path, title] = arguments.as_slice() else {
+
+    tool_use::run("api-pages", "", || write_pages(&arguments))
+}
+
+/// Reads the API, checks it and writes its pages; the exit code.
+fn write_pages(arguments: &[String]) -> u8 {
+    let [entry, folder, site_path, title] = arguments else {
         eprintln!("usage: api-pages <entry module> <output folder> <site path> <title>");
-        return ExitCode::from(2);
+        return 2;
     };
 
     let api = api::read(Path::new(entry));
@@ -23,7 +29,7 @@ fn main() -> ExitCode {
             eprintln!("{problem}");
         }
         eprintln!("api-pages: {} problem(s), no page written", problems.len());
-        return ExitCode::FAILURE;
+        return 1;
     }
 
     let output = Output {
@@ -34,9 +40,9 @@ fn main() -> ExitCode {
     let pages = pages(&api.exports, &output);
     if let Err(error) = write(&pages, output.folder) {
         eprintln!("api-pages: cannot write {folder}: {error}");
-        return ExitCode::FAILURE;
+        return 1;
     }
 
     println!("api-pages: {} pages written to {folder}", pages.len() - 2);
-    ExitCode::SUCCESS
+    0
 }

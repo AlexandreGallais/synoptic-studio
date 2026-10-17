@@ -47,7 +47,15 @@ fn pending_tasks(input: &Value, bytes: &[u8]) -> Vec<Task> {
     pending_after(tasks, &String::from_utf8_lossy(complete))
 }
 
-fn main() {
+fn main() -> std::process::ExitCode {
+    tool_use::run("limit-agents", "", || {
+        hook();
+        0
+    })
+}
+
+/// Reads the hook's input and prints its refusal, if any.
+fn hook() {
     let mut text = String::new();
 
     if io::stdin().read_to_string(&mut text).is_err() {

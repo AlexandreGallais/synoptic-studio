@@ -116,7 +116,15 @@ fn answer(input: &Value) -> Option<String> {
     Some(allow_output(tool_input, &line))
 }
 
-fn main() {
+fn main() -> std::process::ExitCode {
+    tool_use::run("check-handback", "", || {
+        hook();
+        0
+    })
+}
+
+/// Reads the hook's input and prints its answer, if any.
+fn hook() {
     let mut text = String::new();
 
     if io::stdin().read_to_string(&mut text).is_err() {

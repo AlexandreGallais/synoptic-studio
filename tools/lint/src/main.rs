@@ -7,13 +7,17 @@ use std::process::ExitCode;
 
 fn main() -> ExitCode {
     let arguments: Vec<String> = std::env::args().skip(1).collect();
-    let root = std::env::current_dir().unwrap_or_default();
-    let (report, clean) = lint::run(&root, &arguments);
-
-    print!("{report}");
-    if clean {
-        ExitCode::SUCCESS
+    let mode = if arguments.iter().any(|argument| argument == "--fix") {
+        "--fix"
     } else {
-        ExitCode::FAILURE
-    }
+        ""
+    };
+
+    tool_use::run("lint", mode, || {
+        let root = std::env::current_dir().unwrap_or_default();
+        let (report, clean) = lint::run(&root, &arguments);
+
+        print!("{report}");
+        u8::from(!clean)
+    })
 }

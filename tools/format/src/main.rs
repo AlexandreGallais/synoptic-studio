@@ -232,14 +232,15 @@ fn run(arguments: &[String]) -> Result<bool, String> {
 
 fn main() -> ExitCode {
     let arguments: Vec<String> = env::args().skip(1).collect();
+    let mode = arguments.first().map_or("", String::as_str);
 
-    match run(&arguments) {
-        Ok(true) => ExitCode::SUCCESS,
-        Ok(false) => ExitCode::FAILURE,
+    tool_use::run("format", mode, || match run(&arguments) {
+        Ok(true) => 0,
+        Ok(false) => 1,
         Err(message) => {
             eprintln!("format: {message}");
 
-            ExitCode::from(2)
+            2
         }
-    }
+    })
 }

@@ -36,7 +36,15 @@ fn library(url: &str) -> Library {
         })
 }
 
-fn main() {
+fn main() -> std::process::ExitCode {
+    tool_use::run("library-pages", "", || {
+        hook();
+        0
+    })
+}
+
+/// Reads the hook's input and prints its refusal, if any.
+fn hook() {
     let mut text = String::new();
 
     if io::stdin().read_to_string(&mut text).is_err() {
