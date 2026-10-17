@@ -245,6 +245,22 @@
 | [CHK-021](./E17-F20-CHK-021-checkpoint-f20.md) | F20 | Checkpoint in the middle of F20 | draft |
 | [AUD-022](./E17-F20-AUD-022-audit-f20.md) | F20 | Audit F20 | draft |
 | [VAL-021](./E17-F20-VAL-021-validate-f20.md) | F20 | Validate F20 | draft |
+| [SP-023](./E17-F21-SP-023-research-f21.md) | F21 | Research for F21 | draft |
+| [EN-102](./E17-F21-EN-102-each-tool-records-its-use.md) | F21 | Each tool of our own records its use | draft |
+| [EN-103](./E17-F21-EN-103-backlog-and-repository-tools-in-rust.md) | F21 | The backlog and repository tools in Rust | draft |
+| [EN-104](./E17-F21-EN-104-claude-code-hooks-in-rust.md) | F21 | The Claude Code hooks and the status line in Rust | draft |
+| [EN-105](./E17-F21-EN-105-one-row-or-section-of-a-page.md) | F21 | One row or one section of a repository page | draft |
+| [EN-106](./E17-F21-EN-106-library-server-in-rust.md) | F21 | The library server and its command line in Rust on rmcp | draft |
+| [EN-107](./E17-F21-EN-107-metrics-tools-in-rust.md) | F21 | The metrics tools in Rust | draft |
+| [CHK-022](./E17-F21-CHK-022-checkpoint-f21.md) | F21 | Checkpoint in the middle of F21 | draft |
+| [EN-108](./E17-F21-EN-108-git-hooks-in-rust.md) | F21 | The Git hooks in Rust, without husky, lint-staged, commitlint nor validate-branch-name | draft |
+| [EN-109](./E17-F21-EN-109-dependency-checks-in-rust.md) | F21 | The dependency checks in Rust, without npm-check-updates nor knip | draft |
+| [EN-110](./E17-F21-EN-110-secret-scan-in-rust.md) | F21 | The secret scan in Rust, without secretlint | draft |
+| [EN-111](./E17-F21-EN-111-ci-on-the-rust-tools.md) | F21 | The CI on the Rust tools, built and cached once | draft |
+| [EN-112](./E17-F21-EN-112-release-tool-in-rust.md) | F21 | The release made by our own tool, in place of release-please | draft |
+| [EN-113](./E17-F21-EN-113-clean-up-of-e17.md) | F21 | Clean-up of E17, every tool left unused removed | draft |
+| [AUD-023](./E17-F21-AUD-023-audit-f21.md) | F21 | Audit F21 | draft |
+| [VAL-022](./E17-F21-VAL-022-validate-f21.md) | F21 | Validate F21 | draft |
 | [NAM-002](./E17-NAM-002-naming-pass-e17.md) | E17 | Naming pass over the code of E17 | draft |
 | [REV-004](./E17-REV-004-review-e17.md) | E17 | Review E17 with the Product Owner | draft |
 | [RET-004](./E17-RET-004-retrospective-e17.md) | E17 | Retrospective of E17 | draft |
