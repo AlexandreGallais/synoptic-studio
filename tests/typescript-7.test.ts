@@ -8,7 +8,7 @@ import { describe, expect, it } from "vitest";
 /** Root of the repository. */
 const ROOT = join(import.meta.dirname, "..");
 
-/** The `tsc` that `npm run typecheck` and `npm run build` run. */
+/** The `tsc` that `npm run typecheck` runs; the declarations are Oxc's since EN-091. */
 const TSC = join(ROOT, "node_modules", ".bin", "tsc");
 
 /**
@@ -30,7 +30,7 @@ function runTsc(tscArguments: readonly string[]): {
 const TYPESCRIPT_IMPORT = /from\s+["'](?:typescript|@typescript\/typescript6)["']/u;
 
 describe("TypeScript 7", () => {
-  it("[F19.AC6] is the tsc of the type check and of the declarations", () => {
+  it("[F19.AC6] is the tsc of the type check", () => {
     expect(runTsc(["--version"]).stdout).toMatch(/^Version 7\./u);
   });
 

@@ -30,6 +30,16 @@ name = "backlog-index"
 version = "0.1.0"
 
 [[package]]
+name = "base64-simd"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "339abbe78e73178762e23bea9dfd08e697eb3f3301cd4be981c0f78ba5859195"
+dependencies = [
+ "outref",
+ "vsimd",
+]
+
+[[package]]
 name = "bitflags"
 version = "2.13.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -76,6 +86,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "417bef24afe1460300965a25ff4a24b8b45ad011948302ec221e8a0a81eb2c79"
 
 [[package]]
+name = "declarations"
+version = "0.1.0"
+dependencies = [
+ "oxc_allocator",
+ "oxc_codegen",
+ "oxc_isolated_declarations",
+ "oxc_parser",
+ "oxc_span",
+]
+
+[[package]]
 name = "displaydoc"
 version = "0.2.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -97,6 +118,12 @@ name = "either"
 version = "1.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0e9c71c2167ca323c882b99918929403426e2373ea17242ff5653e0d5e1058be"
+
+[[package]]
+name = "escape-simd"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "120339709b24832c07464b0838828361b735d793c409b8ca3147db0dae601542"
 
 [[package]]
 name = "fastrand"
@@ -228,6 +255,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8f42a60cbdf9a97f5d2305f08a87dc4e09308d1276d28c869c684d7777685682"
 
 [[package]]
+name = "json-escape-simd"
+version = "3.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6520172708e1b08b95f31bbf76cec064db4203a615cf2fb4e1128d6dd142b033"
+dependencies = [
+ "escape-simd",
+]
+
+[[package]]
 name = "litemap"
 version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -276,6 +312,12 @@ checksum = "071dfc062690e90b734c0b2273ce72ad0ffa95f0c74596bc250dcfd960262841"
 dependencies = [
  "autocfg",
 ]
+
+[[package]]
+name = "outref"
+version = "0.5.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1a80800c0488c3a21695ea981a54918fbb37abf04f4d0720c453632255e2ff0e"
 
 [[package]]
 name = "oxc_allocator"
@@ -332,6 +374,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "oxc_codegen"
+version = "0.153.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5534ee12503faae4e633c0dff6b873450116e5c97bd75adf6fb3d6274a9dc317"
+dependencies = [
+ "bitflags",
+ "cow-utils",
+ "oxc_allocator",
+ "oxc_ast",
+ "oxc_data_structures",
+ "oxc_ecmascript",
+ "oxc_index",
+ "oxc_semantic",
+ "oxc_sourcemap",
+ "oxc_span",
+ "oxc_str",
+ "oxc_syntax",
+ "rustc-hash",
+ "smallvec",
+]
+
+[[package]]
 name = "oxc_data_structures"
 version = "0.153.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -385,6 +449,24 @@ checksum = "191884bee6c3744909a51acc7d78d4ae370d817b25875b10642f632327b6296e"
 dependencies = [
  "nonmax",
  "serde",
+]
+
+[[package]]
+name = "oxc_isolated_declarations"
+version = "0.153.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "90deece7998f1c33d0f1b3625a01383549933f19fddbd8acf944586e9bf68c23"
+dependencies = [
+ "bitflags",
+ "oxc_allocator",
+ "oxc_ast",
+ "oxc_ast_visit",
+ "oxc_diagnostics",
+ "oxc_ecmascript",
+ "oxc_span",
+ "oxc_str",
+ "oxc_syntax",
+ "rustc-hash",
 ]
 
 [[package]]
@@ -449,6 +531,19 @@ dependencies = [
  "rustc-hash",
  "self_cell",
  "smallvec",
+]
+
+[[package]]
+name = "oxc_sourcemap"
+version = "9.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1133371a5fadc14b9f66a8fec14be3564a77647c7ab21b1ef0ec973bd82613ce"
+dependencies = [
+ "base64-simd",
+ "json-escape-simd",
+ "rustc-hash",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -633,6 +728,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "serde_json"
+version = "1.0.154"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e7e9cc8b1b85264074fbcc02a88680c4096b1e47df8f739dceb03bf482f04bd6"
+dependencies = [
+ "itoa",
+ "memchr",
+ "serde",
+ "serde_core",
+ "zmij",
+]
+
+[[package]]
 name = "shared-files"
 version = "0.1.0"
 
@@ -757,6 +865,12 @@ checksum = "b6c140620e7ffbb22c2dee59cafe6084a59b5ffc27a8859a5f0d494b5d52b6be"
 [[package]]
 name = "val-prepare"
 version = "0.1.0"
+
+[[package]]
+name = "vsimd"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5c3082ca00d5a5ef149bb8b555a72ae84c9c59f7250f013ac822ac2e49b19c64"
 
 [[package]]
 name = "worktree"

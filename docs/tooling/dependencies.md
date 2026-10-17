@@ -121,6 +121,8 @@ The crates.io dependencies of the Rust tools, all from Oxc (`REF-OXC-CRATE`, MIT
 | `oxc_allocator` | the arena the parser builds the AST in | — (the parser's own arena) |
 | `oxc_semantic` | resolves each name of a type to the module's symbols, so that a type parameter, an import and a global of the language are told apart: the check that no internal name is reachable from the API | resolving names by hand: misses shadowing and imports |
 | `oxc_span` | the source type (TypeScript) and the spans that give each export its line | — (the parser's own spans) |
+| `oxc_isolated_declarations` | writes the library's declarations from each module alone, without a type checker, in `tools/declarations` (EN-091, `REF-OXC-ISOLATED-DECLARATIONS`): the 589 files of `tsc` in meaning, in 0.06 s against 0.63 s; release notes of 0.153.0 read (two fixes: `undefined` added to `keyof` parameter types, readonly parameter types) | `tsc -p tsconfig.build.json`: a second compiler run for the same files; `oxc-transform` from npm: the same code behind a Node.js binding, a dev package more |
+| `oxc_codegen` | prints the declarations' AST as `.d.ts` text, comments kept (EN-091); release notes of 0.153.0 read (a parser fix, a sourcemap speed-up) | — (Oxc's own printer) |
 
 ## Considered for later
 
