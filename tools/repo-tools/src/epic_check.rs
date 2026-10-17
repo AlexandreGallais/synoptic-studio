@@ -245,8 +245,7 @@ pub fn lost_calls(calls: &[(i64, Value)]) -> Finding {
         .filter(|(age, _)| *age > STALE_MS)
         .map(|(_, record)| {
             let start = match record.get("start") {
-                #[allow(clippy::cast_possible_truncation)]
-                Value::Number(number) => *number as i64,
+                Value::Number(number) => format!("{number:.0}").parse().unwrap_or(0),
                 _ => 0,
             };
 
