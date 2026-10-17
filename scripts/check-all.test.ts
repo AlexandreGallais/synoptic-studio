@@ -1,4 +1,6 @@
-import { readFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
@@ -8,8 +10,10 @@ import {
   DOCS_LANE,
   LANES,
   baseCandidates,
+  changedSince,
   commandOf,
   lanesToRun,
+  nearestBase,
   readScripts,
   reportOf,
   touchesSite,
@@ -158,5 +162,74 @@ describe("check-all", () => {
     expect(baseCandidates("develop", remotes)).toEqual([]);
     expect(baseCandidates("main", remotes)).toEqual([]);
     expect(baseCandidates("HEAD", remotes)).toEqual([]);
+  });
+});
+
+/**
+ * Runs Git in a temporary repository, without the `GIT_*` variables the pre-push hook sets.
+ *
+ * @param folder - the repository's folder
+ * @param options - its arguments
+ * @returns its output, trimmed
+ */
+function gitIn(folder: string, options: readonly string[]): string {
+  const environment = Object.fromEntries(
+    Object.entries(process.env).filter(([name]) => !name.startsWith("GIT_")),
+  );
+
+  return execFileSync(
+    "git",
+    ["-c", "user.name=t", "-c", "user.email=t@t", "-c", "commit.gpgsign=false", ...options],
+    { cwd: folder, encoding: "utf8", env: environment },
+  ).trim();
+}
+
+describe("the change check:all reads (AUD-021)", () => {
+  it("[F19.AC8] builds the docs for a change to the Rust toolchain or crates", () => {
+    expect(touchesSite(["Cargo.lock"])).toBe(true);
+    expect(touchesSite(["Cargo.toml"])).toBe(true);
+    expect(touchesSite(["rust-toolchain.toml"])).toBe(true);
+    // A file named like an input is not that input.
+    expect(touchesSite(["package.json.bak"])).toBe(false);
+  });
+
+  it("[F19.AC8] counts a page moved out of docs/ under its old path too", () => {
+    const folder = mkdtempSync(join(tmpdir(), "check-all-rename-"));
+
+    gitIn(folder, ["init", "-q"]);
+    mkdirSync(join(folder, "docs"));
+    writeFileSync(join(folder, "docs", "page.md"), "# A page with enough text to be a rename\n");
+    gitIn(folder, ["add", "."]);
+    gitIn(folder, ["commit", "-q", "-m", "page"]);
+
+    const fork = gitIn(folder, ["rev-parse", "HEAD"]);
+
+    mkdirSync(join(folder, "notes"));
+    gitIn(folder, ["mv", "docs/page.md", "notes/page.md"]);
+    gitIn(folder, ["commit", "-q", "-m", "move"]);
+
+    const paths = changedSince(folder, fork);
+
+    expect(paths.toSorted(byName)).toEqual(["docs/page.md", "notes/page.md"]);
+    expect(touchesSite(paths)).toBe(true);
+  });
+
+  it("[F19.AC8] takes the base with the fewest commits ahead, the first on a tie", () => {
+    // A story of F19: 5 commits ahead of develop, 2 ahead of its feature branch.
+    expect(
+      nearestBase([
+        { ahead: 5, remote: "origin/develop" },
+        { ahead: 2, remote: "origin/feature/f19-x" },
+      ]),
+    ).toBe("origin/feature/f19-x");
+
+    expect(
+      nearestBase([
+        { ahead: 3, remote: "origin/develop" },
+        { ahead: 3, remote: "origin/feature/f19-x" },
+      ]),
+    ).toBe("origin/develop");
+
+    expect(nearestBase([])).toBeUndefined();
   });
 });

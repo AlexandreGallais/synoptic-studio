@@ -35,13 +35,17 @@ export const LANES: readonly (readonly string[])[] = [
 
 /**
  * What the docs lane reads: the site, the library its API pages come from, the playground built
- * into it, the API pages' generator, and the build's own configuration and packages.
+ * into it, the API pages' generator and the Rust toolchain and crates it is built with (an Oxc
+ * bump changes its pages), and the build's own configuration and packages.
  */
 const DOCS_INPUTS: readonly string[] = [
   "docs/",
   "src/",
   "playground/",
   "tools/api-pages/",
+  "Cargo.toml",
+  "Cargo.lock",
+  "rust-toolchain.toml",
   "package.json",
   "package-lock.json",
   "vite.config.ts",
@@ -92,20 +96,48 @@ export function baseCandidates(branch: string, remotes: readonly string[]): read
 }
 
 /**
- * Runs a Git command.
+ * Runs a Git command in a folder, without the `GIT_*` variables a hook sets (`GIT_DIR` would point
+ * it at another repository).
  *
+ * @param folder - the repository's folder
  * @param options - its arguments
  * @returns its output's lines, empty ones left out
  */
-function git(options: readonly string[]): readonly string[] {
-  return execFileSync("git", options, { encoding: "utf8" })
+function gitIn(folder: string, options: readonly string[]): readonly string[] {
+  const environment = Object.fromEntries(
+    Object.entries(process.env).filter(([name]) => !name.startsWith("GIT_")),
+  );
+
+  return execFileSync("git", options, { cwd: folder, encoding: "utf8", env: environment })
     .split("\n")
     .filter((line) => line !== "");
 }
 
 /**
- * The branch's base: of its candidates, the one whose fork point leaves the fewest commits of the
- * branch's own.
+ * Runs a Git command in the repository check:all checks.
+ *
+ * @param options - its arguments
+ * @returns its output's lines, empty ones left out
+ */
+function git(options: readonly string[]): readonly string[] {
+  return gitIn(join(import.meta.dirname, ".."), options);
+}
+
+/**
+ * Of a branch's candidate bases, the nearest: the one whose fork point leaves the fewest commits
+ * of the branch's own, the first given on a tie.
+ *
+ * @param candidates - each remote branch and the branch's commits ahead of it
+ * @returns the remote branch, or `undefined` without a candidate
+ */
+export function nearestBase(
+  candidates: readonly { readonly ahead: number; readonly remote: string }[],
+): string | undefined {
+  return candidates.toSorted((left, right) => left.ahead - right.ahead)[0]?.remote;
+}
+
+/**
+ * The branch's base: of its candidates, the nearest.
  *
  * @returns the remote branch, or `undefined` without a candidate
  */
@@ -113,12 +145,28 @@ function baseOf(): string | undefined {
   const branch = git(["rev-parse", "--abbrev-ref", "HEAD"])[0] ?? "HEAD";
   const remotes = git(["for-each-ref", "--format=%(refname:short)", "refs/remotes/origin/"]);
 
-  return baseCandidates(branch, remotes)
-    .map((remote) => ({
+  return nearestBase(
+    baseCandidates(branch, remotes).map((remote) => ({
       ahead: Number(git(["rev-list", "--count", `${remote}..HEAD`])[0]),
       remote,
-    }))
-    .toSorted((left, right) => left.ahead - right.ahead)[0]?.remote;
+    })),
+  );
+}
+
+/**
+ * The files changed in a repository since a commit, committed or not: a file renamed or moved
+ * counts under its old path and its new one (`--no-renames`), so that moving a page out of
+ * `docs/` still builds the site.
+ *
+ * @param folder - the repository's folder
+ * @param fork - the commit the branch started from
+ * @returns the changed files, relative to the repository's root
+ */
+export function changedSince(folder: string, fork: string): readonly string[] {
+  return [
+    ...gitIn(folder, ["diff", "--name-only", "--no-renames", fork]),
+    ...gitIn(folder, ["ls-files", "--others", "--exclude-standard"]),
+  ];
 }
 
 /** The files a branch changed against its base, with that base. */
@@ -136,10 +184,10 @@ function changeAgainstBase(): Change | undefined {
     ? undefined
     : {
         base,
-        paths: [
-          ...git(["diff", "--name-only", git(["merge-base", base, "HEAD"])[0] ?? base]),
-          ...git(["ls-files", "--others", "--exclude-standard"]),
-        ],
+        paths: changedSince(
+          join(import.meta.dirname, ".."),
+          git(["merge-base", base, "HEAD"])[0] ?? base,
+        ),
       };
 }
 
