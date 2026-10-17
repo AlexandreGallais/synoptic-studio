@@ -17,7 +17,7 @@ import type { Size, TurnedBox } from "../../src";
 function readDrawnBox(document: Document): TurnedBox | undefined {
   const { drawnBox } = selectElement(document, "shape").dataset;
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- written by writeDrawnBox only, from a valid shape
+  // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- written by writeDrawnBox only, from a valid shape
   return drawnBox === undefined ? undefined : (JSON.parse(drawnBox) as TurnedBox);
 }
 

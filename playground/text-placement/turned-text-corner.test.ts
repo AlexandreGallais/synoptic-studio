@@ -17,7 +17,7 @@ import {
  * @returns its position, the top-left of its frame before it turns, and its angle
  */
 function readStored(): { readonly angle: number; readonly x: number; readonly y: number } {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- the page writes the model as JSON
+  // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- the page writes the model as JSON
   return JSON.parse(readText("#model")) as {
     readonly angle: number;
     readonly x: number;

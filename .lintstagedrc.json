@@ -1,5 +1,10 @@
 {
-  "*.{ts,md}": [
+  "*.ts": [
+    "cargo run --release -q -p format -- --write",
+    "oxlint --fix --deny-warnings --no-error-on-unmatched-pattern",
+    "eslint --cache --cache-location node_modules/.cache/eslint/ --fix --max-warnings=0 --no-warn-ignored"
+  ],
+  "*.md": [
     "cargo run --release -q -p format -- --write",
     "eslint --cache --cache-location node_modules/.cache/eslint/ --fix --max-warnings=0 --no-warn-ignored"
   ],

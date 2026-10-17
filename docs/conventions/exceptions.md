@@ -4,14 +4,14 @@ Every place where the code departs from a lint rule, with its reason (ADR-0066).
 
 | Where | Directive |
 | --- | --- |
-| one line of TypeScript | `// eslint-disable-next-line rule -- reason` beside the code ([lint](./lint.md#one-off-exceptions)) |
+| one line of TypeScript | `// oxlint-disable-next-line rule -- reason` above the code for a rule oxlint runs, `// eslint-disable-next-line rule -- reason` for one ESLint runs ([lint](./lint.md#one-off-exceptions)) |
 | a few lines (TypeScript) | `/* eslint-disable rule -- reason */` then its `eslint-enable`, as the byte buffer written once of ADR-0066 |
 | one item of Rust | `#[allow(lint)]` on the item, its reason in a comment above it; `#![allow(lint)]` for a whole module |
 
 ## Keeping it in step
 
 - A new exception gets its row here in the same change; a removed one loses its row.
-- `tests/exceptions.test.ts` reads every tracked `.ts` and `.rs` file: each `eslint-disable` directive, with or without its `--` reason, and each Rust `allow` needs a row of its file and its rules, and each row needs its directive and its function in the file. A failure names the file and the rules.
+- `tests/exceptions.test.ts` reads every tracked `.ts` and `.rs` file: each `eslint-disable` or `oxlint-disable` directive, with or without its `--` reason, and each Rust `allow` needs a row of its file and its rules, and each row needs its directive and its function in the file. A failure names the file and the rules.
 - One row per directive: a directive that turns off two rules at once is one row, its rules in one cell.
 
 ## Library
@@ -55,7 +55,6 @@ Every place where the code departs from a lint rule, with its reason (ADR-0066).
 
 | File | Function | Rule | Reason |
 | --- | --- | --- | --- |
-| `eslint/scopes/language.ts` | `jsdoc` | `import-x/no-named-as-default` | the package's default export is the plugin |
 | `eslint/settings/identifiers.ts` | `ANY_FORMAT` | `unicorn/no-null` | the option schema of `naming-convention` requires `null` |
 | `tests/barrels.test.ts` | `runtimeExports` | `no-restricted-syntax` | loading each re-exported module is the point of this test |
 | `tools/hooks/src/tasks.rs` | `cached_tasks` | `clippy::cast_possible_truncation` | offsets and times are whole numbers the status line wrote, read back from JSON as floats |

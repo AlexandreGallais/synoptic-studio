@@ -5,7 +5,7 @@
 | `npm run dev` | Vite server on `playground/` (`http://localhost:5173`) |
 | `npm run build` | `npm audit`, then library build (`dist/editor.js`) + declarations (`dist/types/`) |
 | `npm run test` / `test:watch` | Vitest on half the machine's cores (`maxWorkers`, held by `tests/vitest-workers.test.ts`) under the heavy lock, with coverage of `src/` (100 % required) and `playground/` (a floor): library, playground, custom rules, ESLint audit, `tests/` (backlog, bibliography, barrels, diagrams, dependencies, fitness), scripts and hooks |
-| `npm run lint` / `lint:fix` | ESLint on the named targets (root `*.{ts,md}`, `.claude/` folders, `.github`, `docs`, `eslint`, `playground`, `scripts`, `src`, `tests`), zero warning tolerated |
+| `npm run lint` / `lint:fix` | oxlint first, on the TypeScript of the same targets, with its native and type-aware rules (`.oxlintrc.json`, EN-074); then ESLint, for the rules oxlint lacks until F19 rewrites them, on the named targets (root `*.{ts,md}`, `.claude/` folders, `.github`, `docs`, `eslint`, `playground`, `scripts`, `src`, `tests`); zero warning tolerated |
 | `npm run lint:secrets` | secretlint on every file tracked by Git (`git ls-files`): no key, token or password |
 | `npm run format` / `format:check` | the formatter, `tools/format` (oxfmt, then Markdown tables without padding, ADR-0068), on the named targets (root files, `.cargo`, `.claude/` folders, `.github`, `.husky`, `.vscode`, `docs`, `eslint`, `playground`, `scripts`, `src`, `tests`, `tools`); `format:check` changes nothing |
 | `npm run typecheck` | `tsc --noEmit`, TypeScript 7 (`@typescript/native`, EN-071): about 0.9 s; a type error exits with 1, not 2 as TypeScript 6 did |

@@ -2,9 +2,10 @@ import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
+import { ESLint } from "eslint";
 import { describe, expect, it } from "vitest";
 
-import { SCOPES } from "../eslint";
+import { DROPPED_RULES, RULE_THEMES, SCOPES } from "../eslint";
 
 /** Root of the repository. */
 const ROOT = join(import.meta.dirname, "..");
@@ -134,10 +135,103 @@ const CARRIED_SCOPES = SCOPES.map((scope) => {
   };
 });
 
+/** Every rule `.oxlintrc.json` names, in any override, with its settings there. */
+const CONFIGURED = OVERRIDES.flatMap((override) => Object.entries(override.rules));
+
+/** The rules `.oxlintrc.json` names. */
+const CONFIGURED_NAMES: ReadonlySet<string> = new Set(CONFIGURED.map(([name]) => name));
+
+/** One file of each scope of ESLint's configuration, the library's layers and the tools'. */
+const SAMPLE_FILES = [
+  "src/math/sequence/scan.ts",
+  "src/math/sequence/scan.test.ts",
+  "src/index.ts",
+  "playground/index.ts",
+  "playground/checklist/read-ticked-lines.ts",
+  "eslint/config.ts",
+  "eslint/rules/core/all.ts",
+  "scripts/check-all.ts",
+  "tests/package.test.ts",
+  "vite.config.ts",
+];
+
+/**
+ * Whether a rule's setting runs it: a severity other than off, alone or before its options.
+ *
+ * @param setting - the setting, as either linter writes it
+ * @returns `false` for `off` or `0`
+ */
+function isOn(setting: RuleSetting): boolean {
+  const [severity] = [setting].flat();
+
+  return severity !== "off" && severity !== 0;
+}
+
+/** ESLint, configured as `npm run lint` runs it. */
+const LINT = new ESLint({ cwd: ROOT });
+
+/**
+ * The rules ESLint runs on a file: those its configuration sets to a severity other than off.
+ *
+ * @param path - the file, from the root
+ * @returns the rules' names
+ */
+async function eslintRulesOf(path: string): Promise<readonly string[]> {
+  const config: unknown = await LINT.calculateConfigForFile(join(ROOT, path));
+
+  return Object.entries(entriesOf(propertyOf(config, "rules")))
+    .filter(([, setting]) => isOn(setting))
+    .map(([name]) => name);
+}
+
+/** The setting of a rule in the first theme of `eslint/rules/` that decides it. */
+const THEME_SETTINGS: Readonly<Record<string, RuleSetting>> = Object.fromEntries(
+  RULE_THEMES.flatMap((theme) => Object.entries(theme.rules ?? {})),
+);
+
 describe(".oxlintrc.json", () => {
   it("[F19.AC1] carries each scope of `eslint/scopes/` with native rules as an override of the same files and settings", () => {
     const carried = CARRIED_SCOPES.filter((scope) => Object.keys(scope.rules).length > 0);
 
     expect(OVERRIDES.slice(1)).toEqual(carried);
+  });
+
+  it("[F19.AC1] names only rules oxlint has", () => {
+    expect([...CONFIGURED_NAMES].filter((name) => !OXLINT_RULES.has(name))).toEqual([]);
+  });
+
+  it(
+    "[F19.AC1] runs each rule in one linter: ESLint runs none that oxlint runs or the triage dropped",
+    { timeout: 30_000 },
+    async () => {
+      const dropped = new Set(DROPPED_RULES);
+      const doubled = await Promise.all(
+        SAMPLE_FILES.map(async (path) => {
+          const rules = await eslintRulesOf(path);
+
+          return rules
+            .filter((name) => CONFIGURED_NAMES.has(oxlintNameOf(name)) || dropped.has(name))
+            .map((name) => `${path}: ${name}`);
+        }),
+      );
+
+      expect(doubled.flat()).toEqual([]);
+    },
+  );
+
+  it("[F19.AC11] runs none of the rules the triage dropped", () => {
+    const enabled = new Set(
+      CONFIGURED.filter(([, setting]) => isOn(setting)).map(([name]) => name),
+    );
+
+    expect(
+      DROPPED_RULES.map((name) => oxlintNameOf(name)).filter((name) => enabled.has(name)),
+    ).toEqual([]);
+  });
+
+  it("[F19.AC2] runs `prefer-destructuring` natively with typescript-eslint's options", () => {
+    expect(OVERRIDES[0]?.rules["prefer-destructuring"]).toEqual(
+      THEME_SETTINGS["@typescript-eslint/prefer-destructuring"],
+    );
   });
 });

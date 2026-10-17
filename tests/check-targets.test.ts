@@ -196,6 +196,18 @@ describe("check tools given explicit targets (EN-045)", () => {
     expect(targetsOf("fix", "eslint")).toEqual(targets);
   });
 
+  it("[F19.AC1] gives oxlint the same targets in lint, lint:fix and fix, every TypeScript file ESLint lints", () => {
+    const targets = targetsOf("lint", "oxlint");
+    const linted = TRACKED.filter(
+      (path) => path.endsWith(".ts") && leftOut(targetsOf("lint", "eslint"), [path]).length === 0,
+    );
+
+    expect(targets.length).toBeGreaterThan(0);
+    expect(targetsOf("lint:fix", "oxlint")).toEqual(targets);
+    expect(targetsOf("fix", "oxlint")).toEqual(targets);
+    expect(leftOut(targets, linted)).toEqual([]);
+  });
+
   it(
     "[F18.AC20] leaves no tracked file that ESLint checks out of its targets",
     { timeout: WALK_TIMEOUT },

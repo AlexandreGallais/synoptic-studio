@@ -27,7 +27,7 @@ const BOX_ONLY = [
  * @returns the JSON written in `#model`, parsed
  */
 function readModel(): Record<string, unknown> {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- written by JSON.stringify of a Text
+  // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- written by JSON.stringify of a Text
   return JSON.parse(readText("#model")) as Record<string, unknown>;
 }
 

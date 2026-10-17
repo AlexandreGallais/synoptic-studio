@@ -1,4 +1,6 @@
-# ESLint
+# Lint
+
+Two linters run one after the other until F19 ends (`npm run lint`): **oxlint** first, with its native rules and `tsgolint`'s type-aware ones (`.oxlintrc.json`, written by `@oxlint/migrate` from `eslint/`, EN-074), then **ESLint**, for the rules oxlint lacks, which F19 rewrites in the project's Rust linter before ESLint leaves (EN-085). Each rule runs in one linter only: the last entry of ESLint's configuration (`eslint/scopes/oxlint-owned.ts`) turns off every rule `.oxlintrc.json` names and every rule the triage dropped (`eslint/settings/dropped-rules.ts`; the reasons in research note 0023), and `tests/oxlint-config.test.ts` checks it, with the scopes carried as `overrides`.
 
 ## Principle
 
@@ -12,9 +14,9 @@
 ```text
 eslint.config.ts          entry point: export default CONFIG
 eslint/
-  config.ts               assembly: ignores → language → Prettier → themes → zones
+  config.ts               assembly: ignores → language → Prettier → themes → zones → oxlint's
   config.test.ts          completeness audit
-  settings/               data tables (layers, kinds, verbs, globs, limits…)
+  settings/               data tables (layers, kinds, verbs, globs, limits, dropped rules…)
   rules/<plugin>/<theme>.ts   one file per theme, one constant per file
   rules/<plugin>/all.ts   list of the plugin's themes
   scopes/                 path overrides (core, shell, modules, tests, tooling, barrels)
@@ -43,6 +45,7 @@ eslint/
 | `barrels.ts` | `src/**/index.ts`, `eslint/**/index.ts`, `playground/*/**/index.ts` (not the entry); `eslint/rules/*/all.ts` | barrels: `local/barrel-exports` and any number of imports; `all.ts` aggregators: any number of imports only |
 | `tooling.ts` | `eslint/`, root `*.config.ts`, `*.setup.ts`, `*.test.ts`, `tests/`, `docs/.vitepress/`, `.claude/hooks/`, `scripts/` | Node.js, dev dependencies, no `@kind`; in hooks and scripts run by Node.js (`node-run`), imports name the `.ts` file and no barrel is asked |
 | `tests.ts` | `**/*.test.ts` | literal numbers, free length, no `@kind` |
+| `oxlint-owned.ts` | `**/*.ts`, last | turns off every rule `.oxlintrc.json` names and every dropped rule |
 
 The `eslint/` folder itself keeps kebab-case files exporting one constant each; the one-export rule targets the library and the playground.
 
@@ -58,7 +61,7 @@ After a plugin upgrade, `npm run test` lists the new rules to decide: add them t
 
 ## One-off exceptions
 
-`// eslint-disable-next-line rule -- justification` — the justification is mandatory (`unicorn/no-abusive-eslint-disable`), an unused directive is an error. Each directive has its row in the [register of exceptions](./exceptions.md), in the same change (ADR-0066).
+`// oxlint-disable-next-line rule -- justification` for a rule oxlint runs, `// eslint-disable-next-line rule -- justification` for one ESLint still runs (ESLint ignores oxlint's directives and reports its own unused ones; oxlint reads both, so its report of unused directives waits until ESLint leaves) — the justification is mandatory (`unicorn/no-abusive-eslint-disable`). Each directive has its row in the [register of exceptions](./exceptions.md), in the same change (ADR-0066).
 
 ## Known autofix pitfall
 

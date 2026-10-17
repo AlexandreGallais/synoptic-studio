@@ -1,7 +1,6 @@
 import stylistic from "@stylistic/eslint-plugin";
 import functional from "eslint-plugin-functional";
 import { createNodeResolver, importX } from "eslint-plugin-import-x";
-// eslint-disable-next-line import-x/no-named-as-default -- the package's default export is the plugin.
 import jsdoc from "eslint-plugin-jsdoc";
 import unicorn from "eslint-plugin-unicorn";
 import unusedImports from "eslint-plugin-unused-imports";

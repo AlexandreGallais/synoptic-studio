@@ -27,10 +27,10 @@ const UNSUPPORTED =
  * @see REF-CHROME-LOCAL-FONTS
  */
 function readLocalFontAccess(view: object): LocalFontAccess | undefined {
-  return "queryLocalFonts" in view && typeof view.queryLocalFonts === "function"
-    ? // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- detected as Chrome advises; the DOM types do not hold this draft API, which answers a list of FontData
-      (view as LocalFontAccess)
-    : undefined;
+  const isAvailable = "queryLocalFonts" in view && typeof view.queryLocalFonts === "function";
+
+  // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- detected as Chrome advises; the DOM types do not hold this draft API, which answers a list of FontData
+  return isAvailable ? (view as LocalFontAccess) : undefined;
 }
 
 /**

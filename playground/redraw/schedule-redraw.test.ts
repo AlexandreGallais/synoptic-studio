@@ -26,7 +26,7 @@ function runFrames(): void {
  * @returns its height
  */
 function readBlockHeight(): number {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- written by showText from a TextBlock
+  // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- written by showText from a TextBlock
   return (JSON.parse(readText("#contour")) as { readonly height: number }).height;
 }
 
