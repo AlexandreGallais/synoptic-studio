@@ -27,3 +27,18 @@ One task = one commit, referenced as `EN-098.Tn`.
 - [ ] T1 — Measure the pages in tokens and list their rules (1 h)
 - [ ] T2 — Rewrite the pages as principles, each old rule traced (4 h)
 - [ ] T3 — Measure again and record the figures (1 h)
+
+## Measures
+
+Tokens are estimated as characters / 4 (no tokenizer in the repository); words from `wc -w`. Pages in scope: the rule pages of `docs/process/` (`README.md`, `agile.md`, `retrospectives/README.md`); the logs (`journal.md`, `improvements.md`, `feedback.md`, `history.md`) and the retrospective records stay as written.
+
+| Page | Words before | Characters before | Tokens before (est.) |
+| --- | --- | --- | --- |
+| `README.md` | 867 | 5,404 | 1,351 |
+| `agile.md` | 1,080 | 6,097 | 1,524 |
+| `retrospectives/README.md` | 44 | 373 | 93 |
+
+## Rules of the pages before (traced in T3)
+
+README: R1 cadences table (13 rows); R2 evolvability review (6 questions); R3 folders table; R4 V-model mapping.
+agile: A1 flowchart of a feature and an epic; A2 four levels; A3 nine story types; A4 EN or US tip; A5 who does what; A6 cadences beyond the epic; A7 the agent's own method and tools.
