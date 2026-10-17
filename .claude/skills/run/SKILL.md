@@ -24,13 +24,12 @@ Scope: $ARGUMENTS.
 4. The feature branch `feature/f<nn>-<topic>` exists on `origin`, or is created there from `develop` without switching the main checkout: `git fetch origin`, then `git push origin origin/develop:refs/heads/feature/f<nn>-<topic>`.
 5. `/triage` if issues are open: present them at the next stop, act on none.
 6. List the scope's stories in delivery order; stop now if the next is `VAL`, `REV` or `RET`. A story a business question of `docs/domain/README.md` blocks is parked, and the run starts with the next one independent of it.
-7. **The progress page** (EN-087): `npm run progress:page` writes it and prints the file and where to publish it. Publish that file as it is, an Artifact in one call, never a page written by hand: at the address it prints when the run has one, else as a new page, then `npm run progress:page -- address <url>` keeps the address. Give the Product Owner the address once, in the line saying the run started.
 
 ## The main thread
 
 The chat belongs to the Product Owner (2026-10-12), who may write at any time; so the main thread only dispatches, and the work goes to subagents.
 
-- **Silent between tool calls**: the commits, the status line (`.git/metrics/step`, updated at each step) and the progress page show the progress. The chat gets one line when a worker starts and when it ends, with an estimate of its duration; one summary at the stop; a question when one parks a story. Never "waiting for an agent" nor "message from the auditor".
+- **Silent between tool calls**: the commits and the status line (`.git/metrics/step`, updated at each step) show the progress. The chat gets one line when a worker starts and when it ends, with an estimate of its duration; one summary at the stop; a question when one parks a story. Never "waiting for an agent" nor "message from the auditor".
 - **Each comment of the Product Owner acknowledged at once**, saying when it is handled: now, or once a named running agent has finished. A comment about tools, rules or configuration goes to another agent, on `develop`, in its own worktree, within the limit.
 - **One worker per story**, an `Agent` call in the background, in a worktree made by `npm run worktree:new -- <ID>`, of the type its task kind uses (EN-065):
 
@@ -62,7 +61,6 @@ The chat belongs to the Product Owner (2026-10-12), who may write at any time; s
 8. **Finish it**: `npm run story:finish -- feature/f<nn>-<topic> "<title>" <body file>` in its worktree. It takes the merge lock (a second story waits, then rebases and pushes with lease, EN-051), opens the pull request with the `autonomous` label (never for `VAL`, `REV`, `RET` before the Product Owner validated them), waits at most three minutes for GitHub's merge (`story-automerge.yml`, no CI), updates the feature branch where it is checked out, moves the story file's rows into the logs (EN-050), and removes the worktree and the branches.
    - A rebase conflict: it stops, the branch as it was. Not merged: `gh run list --workflow story-automerge.yml --limit 1`, then `gh run view <run> --log-failed`; a branch behind its base: `gh pr update-branch <n> --rebase`.
    - "Dependencies not up-to-date" at the push: a version passed its 7-day cooldown meanwhile; read its release notes (`docs/tooling/versions-and-security.md`), update it on the story branch (`build(deps)`) and on `develop`.
-   - Once merged, `npm run progress:page` and publish its file again at its address.
 9. Statuses change with `npm run backlog:status -- <ID> <status>` (the file, the index and the feature's table at once), edits across files with `npm run replace`. Then the next story.
 
 ## A question parks its story
@@ -94,7 +92,7 @@ A run stops only when it must, and says which in its message:
 
 ## At the stop
 
-1. `npm run run:end` (EN-092): it closes the run and prints its table, the duration and the tokens by kind, subagents included. Then `npm run progress:page`, published a last time at its address.
+1. `npm run run:end` (EN-092): it closes the run and prints its table, the duration and the tokens by kind, subagents included.
 2. A journal entry on `develop`: the stories merged with their pull requests, the findings, the stop's reason.
 3. The message to the Product Owner, in French (`docs/conventions/writing.md`): what was built in plain words, the **test cards to run**, the findings, the questions, what the next step needs from them, the run's table of step 1 as it is, and at a session's end the session report.
 
