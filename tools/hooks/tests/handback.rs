@@ -6,8 +6,8 @@ use std::path::Path;
 use std::process::{Command, Stdio};
 
 use hooks::handback::{
-    Branch, Commit, Refs, agent_transcript, allow_output, earlier_handbacks, feature_number,
-    finish_line, is_checked, missing, read_refs, refusal, story_id, worktree_id,
+    Branch, Commit, LISTED_COMMITS, Refs, agent_transcript, allow_output, base_of,
+    earlier_handbacks, finish_line, is_checked, missing, read_refs, refusal, story_of, worktree_id,
 };
 use hooks::json::{parse, quote, write};
 
@@ -70,41 +70,73 @@ fn finds_the_first_worktree_named() {
 }
 
 #[test]
-fn names_the_story_and_its_feature() {
-    assert_eq!(story_id("en-088"), "EN-088");
+fn names_the_story_by_its_branch_then_its_folder() {
+    // A folder named otherwise than its story (AUD-022): the branch tells.
     assert_eq!(
-        feature_number("E17-F20-EN-088-a-hook.md", "EN-088"),
-        Some("f20".to_owned())
+        story_of("chore/en-087-drop-the-page", "en-087-drop").as_deref(),
+        Some("EN-087")
     );
-    assert_eq!(feature_number("E17-F20-EN-089-other.md", "EN-088"), None);
-    assert_eq!(feature_number("README.md", "EN-088"), None);
+    assert_eq!(
+        story_of("docs/f21-refinement", "en-088").as_deref(),
+        Some("EN-088")
+    );
+    assert_eq!(story_of("docs/f21-refinement", "f21-refinement"), None);
 }
 
 #[test]
-fn reads_the_branch_its_copy_and_its_feature_from_one_listing() {
+fn counts_from_the_feature_branch_or_develop_never_the_whole_history() {
+    let files = [
+        "README.md".to_owned(),
+        "E17-F20-EN-088-a-hook.md".to_owned(),
+        "E17-REV-009-review-e17.md".to_owned(),
+    ];
+    // `f2-b` listed before `f20-a`: the prefix `feature/f20-` keeps them apart.
+    let remotes = [
+        "origin/develop".to_owned(),
+        "origin/feature/f2-b".to_owned(),
+        "origin/feature/f20-a".to_owned(),
+    ];
+
+    assert_eq!(
+        base_of("EN-088", &files, &remotes).as_deref(),
+        Some("origin/feature/f20-a")
+    );
+    assert_eq!(
+        base_of("REV-009", &files, &remotes).as_deref(),
+        Some("origin/develop")
+    );
+    // No story file, or no feature branch on origin: no base.
+    assert_eq!(base_of("EN-089", &files, &remotes), None);
+    assert_eq!(base_of("EN-088", &files, &remotes[..2]), None);
+}
+
+#[test]
+fn reads_the_branch_its_copy_and_the_remote_branches_from_one_listing() {
     let listing = "  1111 refs/heads/feature/f20-a-diet\n\
                    * 2222 refs/heads/chore/en-123-a-topic\n\
                    \u{20} 3333 refs/remotes/origin/chore/en-123-a-topic\n\
                    \u{20} 4444 refs/remotes/origin/feature/f2-other\n\
                    \u{20} 1111 refs/remotes/origin/feature/f20-a-diet";
-    let refs = |number| read_refs(listing, number);
 
     assert_eq!(
-        refs(Some("f20")),
+        read_refs(listing),
         Some(Refs {
             name: "chore/en-123-a-topic".into(),
             head: "2222".into(),
             remote: Some("3333".into()),
-            feature: Some("feature/f20-a-diet".into()),
+            remote_branches: vec![
+                "origin/chore/en-123-a-topic".into(),
+                "origin/feature/f2-other".into(),
+                "origin/feature/f20-a-diet".into(),
+            ],
         })
     );
-    assert_eq!(refs(None).and_then(|refs| refs.feature), None);
     // Never pushed; a detached head names no branch.
     assert_eq!(
-        read_refs("* 2222 refs/heads/b", None).and_then(|refs| refs.remote),
+        read_refs("* 2222 refs/heads/b").and_then(|refs| refs.remote),
         None
     );
-    assert_eq!(read_refs("  2222 refs/heads/b", None), None);
+    assert_eq!(read_refs("  2222 refs/heads/b"), None);
 }
 
 #[test]
@@ -115,11 +147,14 @@ fn counts_the_hand_backs_before_this_one() {
         )
     };
     let lines = [call("t1"), call("t2"), "{".to_owned()].join("\n");
+    // A command that only names the tool is no hand-back.
+    let bash = r#"{"type":"assistant","message":{"content":[{"type":"tool_use","id":"b1","name":"Bash","input":{"command":"grep SubagentHandback x"}}]}}"#;
 
     // The current call t2 already written: one earlier; not written yet: two.
     assert_eq!(earlier_handbacks(&lines, "t2"), 1);
     assert_eq!(earlier_handbacks(&lines, "t3"), 2);
     assert_eq!(earlier_handbacks("", "t1"), 0);
+    assert_eq!(earlier_handbacks(bash, "t1"), 0);
 }
 
 #[test]
@@ -161,6 +196,37 @@ fn names_what_is_missing() {
 }
 
 #[test]
+fn lists_ten_unnamed_commits_and_counts_the_others() {
+    let mut many = branch("abcdef1234567890", Some("abcdef1234567890"));
+
+    many.commits = (0..12)
+        .map(|index| Commit {
+            hash: format!("{index:07}0000"),
+            subject: format!("s{index}"),
+        })
+        .collect();
+    let items = missing(&many, "done");
+    let listed: Vec<String> = (0..LISTED_COMMITS)
+        .map(|index| format!("{index:07} s{index}"))
+        .collect();
+
+    // 12 unnamed, 10 listed: 2 more.
+    assert_eq!(LISTED_COMMITS, 10);
+    assert_eq!(
+        items,
+        [format!(
+            "name each commit in the report: {}; and 2 more",
+            listed.join("; ")
+        )]
+    );
+    many.commits.truncate(LISTED_COMMITS);
+    assert_eq!(
+        missing(&many, "done"),
+        [format!("name each commit in the report: {}", listed.join("; "))]
+    );
+}
+
+#[test]
 fn words_the_refusal_and_the_line_for_the_main_thread() {
     let items = ["push `b`: origin has no such branch".to_owned()];
 
@@ -192,11 +258,11 @@ fn puts_the_line_above_the_report() {
 
     assert_eq!(decision.get("hookEventName").text(), "PreToolUse");
     assert_eq!(decision.get("permissionDecision").text(), "allow");
+    // The message first, the other fields kept, nothing added.
     assert_eq!(
-        decision.get("updatedInput").get("message").text(),
-        "Line.\n\nReport."
+        write(decision.get("updatedInput")),
+        r#"{"message":"Line.\n\nReport.","n":1}"#
     );
-    assert_eq!(write(decision.get("updatedInput").get("n")), "1");
 }
 
 #[test]
@@ -208,15 +274,19 @@ fn writes_json_back() {
 }
 
 /// A command without the `GIT_*` variables of the process running the tests: under the pre-push
-/// hook, `GIT_DIR` names the repository itself, and a set-up inheriting it rewrote its config.
+/// hook, `GIT_DIR` names the repository itself, and a set-up inheriting it rewrote its config. Nor
+/// the user's or the system's Git config: an empty home of its own.
 fn clean(program: &str) -> Command {
     let mut command = Command::new(program);
+    let home = std::env::temp_dir().join(format!("check-handback-home-{}", std::process::id()));
 
+    fs::create_dir_all(&home).expect("home");
     for (name, _) in std::env::vars_os() {
         if name.to_string_lossy().starts_with("GIT_") {
             command.env_remove(name);
         }
     }
+    command.env("HOME", home).env("GIT_CONFIG_NOSYSTEM", "1");
     command
 }
 
@@ -237,8 +307,13 @@ fn git(folder: &Path, arguments: &[&str]) -> String {
 
 /// A project with a remote, a feature branch and a story's worktree of one commit, not pushed.
 fn project(root: &Path) -> std::path::PathBuf {
+    project_in(root, "en-123")
+}
+
+/// The same, its worktree in a folder of this name.
+fn project_in(root: &Path, folder: &str) -> std::path::PathBuf {
     let remote = root.join("remote.git");
-    let worktree = root.join("project/.claude/worktrees/en-123");
+    let worktree = root.join("project/.claude/worktrees").join(folder);
 
     fs::create_dir_all(&worktree).expect("folders");
     git(root, &["init", "-q", "--bare", "remote.git"]);
@@ -405,12 +480,80 @@ fn the_set_up_leaves_the_repository_of_git_dir_alone() {
     let before = fs::read_to_string(&config).expect("config");
 
     // The set-up run as under the pre-push hook, `GIT_DIR` naming another repository.
-    let _ = Command::new(std::env::current_exe().expect("test binary"))
-        .args(["--exact", "sets_up_a_project", "--quiet"])
+    let run = Command::new(std::env::current_exe().expect("test binary"))
+        .args(["--exact", "sets_up_a_project"])
         .env("GIT_DIR", decoy.join(".git"))
         .output()
         .expect("set-up runs");
 
+    // The set-up ran, and passed, without touching the decoy.
+    assert!(run.status.success());
+    assert!(String::from_utf8_lossy(&run.stdout).contains("1 passed"));
     assert_eq!(fs::read_to_string(&config).expect("config"), before);
+    fs::remove_dir_all(&root).expect("cleaned");
+}
+
+/// The decision of the hook's answer.
+fn decision_of(output: &str) -> hooks::json::Value {
+    parse(output)
+        .expect("JSON")
+        .get("hookSpecificOutput")
+        .clone()
+}
+
+/// The prompt of a worker naming its worktree's folder.
+fn prompt_naming(folder: &str) -> String {
+    format!(r#"{{"type":"user","message":{{"content":"Worktree: `/x/.claude/worktrees/{folder}`"}}}}"#)
+}
+
+#[test]
+fn the_hook_reads_the_story_from_the_branch_when_the_folder_is_named_otherwise() {
+    let root = scratch("folder");
+    let worktree = project_in(&root, "en-123-drop");
+    let head = git(&worktree, &["rev-parse", "--short=7", "HEAD"]);
+
+    git(&worktree, &["push", "-q", "-u", "origin", "HEAD"]);
+    let through = decision_of(&hook(
+        &root,
+        "general-purpose",
+        &[prompt_naming("en-123-drop")],
+        &format!("Commits: {head}"),
+    ));
+
+    // The feature branch's own commit `start` is not the story's: nothing to name but `head`.
+    assert_eq!(through.get("permissionDecision").text(), "allow");
+    assert_eq!(
+        through.get("updatedInput").get("message").text(),
+        format!(
+            "check-handback: EN-123 on `chore/en-123-a-topic` pushed at {head}; next: `npm run story:finish -- feature/f20-a-diet`.\n\nCommits: {head}"
+        )
+    );
+    fs::remove_dir_all(&root).expect("cleaned");
+}
+
+#[test]
+fn the_hook_checks_no_commit_naming_without_a_base() {
+    let root = scratch("no-base");
+    let worktree = project(&root);
+    let head = git(&worktree, &["rev-parse", "--short=7", "HEAD"]);
+
+    git(&worktree, &["push", "-q", "-u", "origin", "HEAD"]);
+    fs::remove_file(worktree.join("docs/backlog/stories/E17-F20-EN-123-a-topic.md"))
+        .expect("story removed");
+    let through = decision_of(&hook(
+        &root,
+        "general-purpose",
+        &[prompt_naming("en-123")],
+        "Names no commit.",
+    ));
+
+    // No story file, so no base: the push alone is checked, never the whole history.
+    assert_eq!(through.get("permissionDecision").text(), "allow");
+    assert_eq!(
+        through.get("updatedInput").get("message").text(),
+        format!(
+            "check-handback: EN-123 on `chore/en-123-a-topic` pushed at {head}; next: `npm run story:finish`.\n\nNames no commit."
+        )
+    );
     fs::remove_dir_all(&root).expect("cleaned");
 }

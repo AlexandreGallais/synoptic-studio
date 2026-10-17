@@ -12,8 +12,8 @@ use std::path::Path;
 use std::process::Command;
 
 use hooks::handback::{
-    Branch, Commit, agent_transcript, allow_output, earlier_handbacks, feature_number, finish_line,
-    is_checked, missing, read_refs, refusal, story_id, worktree_id,
+    Branch, Commit, agent_transcript, allow_output, base_of, earlier_handbacks, finish_line,
+    is_checked, missing, read_refs, refusal, story_of, worktree_id,
 };
 use hooks::json::{self, Value};
 use hooks::limit::deny_output;
@@ -32,17 +32,22 @@ fn git(folder: &Path, arguments: &[&str]) -> Option<String> {
         .then(|| String::from_utf8_lossy(&output.stdout).trim().to_owned())
 }
 
-/// The feature of a story, `f20`, from its file's name in the worktree.
-fn feature_of(worktree: &Path, story: &str) -> Option<String> {
+/// Names of the story files of the worktree.
+fn story_files(worktree: &Path) -> Vec<String> {
     fs::read_dir(worktree.join("docs/backlog/stories"))
-        .ok()?
-        .filter_map(Result::ok)
-        .find_map(|entry| feature_number(&entry.file_name().to_string_lossy(), story))
+        .map(|entries| {
+            entries
+                .filter_map(Result::ok)
+                .map(|entry| entry.file_name().to_string_lossy().into_owned())
+                .collect()
+        })
+        .unwrap_or_default()
 }
 
-/// The story branch as its worktree sees it, its commits not on the feature branch, and that
-/// feature branch: two Git calls.
-fn branch(worktree: &Path, story: &str) -> Option<(Branch, Option<String>)> {
+/// The story of a worktree, its branch as the worktree sees it, its commits not on its base, and
+/// that base: two Git calls. Without a story or a base, no commit is listed: the report's naming
+/// is then not checked.
+fn branch(worktree: &Path, folder: &str) -> Option<(String, Branch, Option<String>)> {
     let listing = git(
         worktree,
         &[
@@ -52,27 +57,32 @@ fn branch(worktree: &Path, story: &str) -> Option<(Branch, Option<String>)> {
             "refs/remotes/origin",
         ],
     )?;
-    let refs = read_refs(&listing, feature_of(worktree, story).as_deref())?;
-    let range = refs.feature.as_ref().map_or("HEAD".to_owned(), |feature| {
-        format!("origin/{feature}..HEAD")
-    });
-    let commits = git(worktree, &["log", "--format=%H %s", &range])?
-        .lines()
-        .filter_map(|line| line.split_once(' '))
-        .map(|(hash, subject)| Commit {
-            hash: hash.into(),
-            subject: subject.into(),
-        })
-        .collect();
+    let refs = read_refs(&listing)?;
+    let story = story_of(&refs.name, folder);
+    let base = story
+        .as_deref()
+        .and_then(|story| base_of(story, &story_files(worktree), &refs.remote_branches));
+    let commits = match &base {
+        Some(base) => git(worktree, &["log", "--format=%H %s", &format!("{base}..HEAD")])?
+            .lines()
+            .filter_map(|line| line.split_once(' '))
+            .map(|(hash, subject)| Commit {
+                hash: hash.into(),
+                subject: subject.into(),
+            })
+            .collect(),
+        None => Vec::new(),
+    };
 
     Some((
+        story.unwrap_or_else(|| folder.to_owned()),
         Branch {
             name: refs.name,
             head: refs.head,
             remote: refs.remote,
             commits,
         },
-        refs.feature,
+        base.map(|base| base.trim_start_matches("origin/").to_owned()),
     ))
 }
 
@@ -99,8 +109,7 @@ fn answer(input: &Value) -> Option<String> {
         return None;
     }
 
-    let story = story_id(id);
-    let (branch, feature) = branch(&worktree, &story)?;
+    let (story, branch, feature) = branch(&worktree, id)?;
     let tool_input = input.get("tool_input");
     let items = missing(&branch, tool_input.get("message").text());
 

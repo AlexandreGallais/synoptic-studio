@@ -6,7 +6,7 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, Output};
 
 use worktree::{
-    Request, base_branch, branch_refusal, branch_type, plan, story_id, story_of_file,
+    Request, base_branch, branch_refusal, branch_type, plan, story_id, story_of_branch, story_of_file,
     worktrees_without_hooks,
 };
 
@@ -37,6 +37,21 @@ fn reads_a_story_id_in_either_case() {
     assert_eq!(story_id("US061"), None);
     assert_eq!(story_id("-061"), None);
     assert_eq!(story_id("U1-061"), None);
+}
+
+#[test]
+fn reads_the_story_of_a_branch() {
+    assert_eq!(
+        story_of_branch("chore/en-100-git-sequences-as-rust-commands").as_deref(),
+        Some("EN-100")
+    );
+    assert_eq!(
+        story_of_branch("docs/rev-003-review-e15").as_deref(),
+        Some("REV-003")
+    );
+    assert_eq!(story_of_branch("chore/en-100").as_deref(), Some("EN-100"));
+    assert_eq!(story_of_branch("chore/tidy-up"), None);
+    assert_eq!(story_of_branch("develop"), None);
 }
 
 #[test]

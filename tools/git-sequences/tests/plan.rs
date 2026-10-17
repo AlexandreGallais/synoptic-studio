@@ -2,7 +2,7 @@
 
 use git_sequences::{
     Branch, Push, Request, Source, Target, branch_of, commit_refusal, commit_steps, fetch_step,
-    message_refusal, parse, story_of_branch, sync_steps, sync_target,
+    message_refusal, parse, sync_steps, sync_target,
 };
 
 fn words(line: &str) -> Vec<String> {
@@ -92,18 +92,6 @@ fn tells_main_a_story_branch_and_the_shared_ones_apart() {
         Branch::Other("feature/f20-a-context-diet".to_owned())
     );
     assert_eq!(branch_of("develop"), Branch::Other("develop".to_owned()));
-}
-
-#[test]
-fn reads_the_story_of_a_branch() {
-    assert_eq!(story_of_branch(STORY).as_deref(), Some("EN-100"));
-    assert_eq!(
-        story_of_branch("docs/rev-003-review-e15").as_deref(),
-        Some("REV-003")
-    );
-    assert_eq!(story_of_branch("chore/en-100").as_deref(), Some("EN-100"));
-    assert_eq!(story_of_branch("chore/tidy-up"), None);
-    assert_eq!(story_of_branch("develop"), None);
 }
 
 #[test]

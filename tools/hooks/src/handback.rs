@@ -5,6 +5,8 @@
 
 use std::path::{Path, PathBuf};
 
+use worktree::{base_branch, story_id, story_of_branch, story_of_file};
+
 use crate::json::{Value, quote, write};
 
 /// Agent types that only read: never checked.
@@ -26,6 +28,10 @@ const WORKTREES: &str = ".claude/worktrees/";
 /// Characters of a hash shown.
 const SHORT_HASH: usize = 7;
 
+/// Unnamed commits listed in a refusal, the others counted: a story has a few, and a wrong base
+/// once listed 934 of them.
+pub const LISTED_COMMITS: usize = 10;
+
 /// A commit of the story branch.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Commit {
@@ -46,21 +52,21 @@ pub struct Branch {
 }
 
 /// What one listing of a worktree's references tells: its branch, its head, that branch's head on
-/// `origin` and its feature branch there.
+/// `origin` and the branches there.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Refs {
     pub name: String,
     pub head: String,
     /// The branch's head on `origin`, `None` when it was never pushed.
     pub remote: Option<String>,
-    /// The feature branch on `origin`, `feature/f20-…`, `None` when none matches.
-    pub feature: Option<String>,
+    /// The branches on `origin`, `origin/feature/f20-…`.
+    pub remote_branches: Vec<String>,
 }
 
 /// Reads `git for-each-ref --format='%(HEAD) %(objectname) %(refname)' refs/heads
 /// refs/remotes/origin`: one Git call in place of four, the hook's time being mostly Git's.
 #[must_use]
-pub fn read_refs(listing: &str, feature_number: Option<&str>) -> Option<Refs> {
+pub fn read_refs(listing: &str) -> Option<Refs> {
     let rows: Vec<(bool, &str, &str)> = listing
         .lines()
         .filter_map(|line| {
@@ -77,23 +83,17 @@ pub fn read_refs(listing: &str, feature_number: Option<&str>) -> Option<Refs> {
         .iter()
         .find(|(_, _, other)| *other == remote_name)
         .map(|(_, hash, _)| (*hash).to_owned());
-    let feature = feature_number.and_then(|number| {
-        let prefix = format!("refs/remotes/origin/feature/{number}-");
-
-        rows.iter()
-            .find_map(|(_, _, other)| {
-                other
-                    .strip_prefix("refs/remotes/origin/")
-                    .filter(|_| other.starts_with(&prefix))
-            })
-            .map(str::to_owned)
-    });
+    let remote_branches = rows
+        .iter()
+        .filter_map(|(_, _, other)| other.strip_prefix("refs/remotes/"))
+        .map(str::to_owned)
+        .collect();
 
     Some(Refs {
         name: name.to_owned(),
         head: (*head).to_owned(),
         remote,
-        feature,
+        remote_branches,
     })
 }
 
@@ -127,21 +127,23 @@ pub fn worktree_id(text: &str) -> Option<&str> {
     (end > 0).then(|| &rest[..end])
 }
 
-/// The story of a worktree: `en-088` → `EN-088`.
+/// The story of a worktree: its branch's, `chore/en-088-…` → `EN-088`, else its folder's when that
+/// is a story id, `None` otherwise: a folder may be named otherwise, `en-087-drop`.
 #[must_use]
-pub fn story_id(worktree: &str) -> String {
-    worktree.to_ascii_uppercase()
+pub fn story_of(branch: &str, folder: &str) -> Option<String> {
+    story_of_branch(branch).or_else(|| story_id(folder))
 }
 
-/// The feature of a story from its file's name, `E17-F20-EN-088-….md` → `f20`.
+/// The branch a story's commits are counted from: its feature branch on `origin`, or
+/// `origin/develop` for an epic's own story; `None` when its file or that branch is not found,
+/// never the whole history.
 #[must_use]
-pub fn feature_number(file_name: &str, story: &str) -> Option<String> {
-    let (prefix, _) = file_name.split_once(&format!("-{story}-"))?;
+pub fn base_of(story: &str, story_files: &[String], remote_branches: &[String]) -> Option<String> {
+    let story = story_files
+        .iter()
+        .find_map(|file| story_of_file(story, file))?;
 
-    prefix
-        .split('-')
-        .find(|part| part.starts_with('F'))
-        .map(str::to_ascii_lowercase)
+    base_branch(story.feature.as_deref(), remote_branches).ok()
 }
 
 /// Hand-backs the subagent called before this one, read from its transcript's lines.
@@ -190,9 +192,21 @@ pub fn missing(branch: &Branch, report: &str) -> Vec<String> {
         .collect();
 
     if !unnamed.is_empty() {
+        let more = unnamed.len().saturating_sub(LISTED_COMMITS);
+        let rest = if more == 0 {
+            String::new()
+        } else {
+            format!("; and {more} more")
+        };
+
         items.push(format!(
-            "name each commit in the report: {}",
-            unnamed.join("; ")
+            "name each commit in the report: {}{rest}",
+            unnamed
+                .iter()
+                .take(LISTED_COMMITS)
+                .cloned()
+                .collect::<Vec<_>>()
+                .join("; ")
         ));
     }
     items
