@@ -47,13 +47,11 @@ fn branch(worktree: &Path, folder: &str) -> Option<(String, Branch, Option<Strin
     )?;
     let refs = read_refs(&listing)?;
     let story = story_of(&refs.name, folder);
-    let base = story
-        .as_deref()
-        .and_then(|story| {
-            let files = worktree::story_files(worktree).unwrap_or_default();
+    let base = story.as_deref().and_then(|story| {
+        let files = worktree::story_files(worktree).unwrap_or_default();
 
-            base_of(story, &files, &refs.remote_branches)
-        });
+        base_of(story, &files, &refs.remote_branches)
+    });
     let commits = match &base {
         Some(base) => git(
             worktree,
