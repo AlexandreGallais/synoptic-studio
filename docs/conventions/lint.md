@@ -1,6 +1,6 @@
 # Lint
 
-Two linters run one after the other until F19 ends (`npm run lint`): **oxlint** first, with its native rules and `tsgolint`'s type-aware ones (`.oxlintrc.json`, written by `@oxlint/migrate` from `eslint/`, EN-074), then **ESLint**, for the rules oxlint lacks, which F19 rewrites in the project's Rust linter before ESLint leaves (EN-085). Each rule runs in one linter only: the last entry of ESLint's configuration (`eslint/scopes/oxlint-owned.ts`) turns off every rule `.oxlintrc.json` names and every rule the triage dropped (`eslint/settings/dropped-rules.ts`; the reasons in research note 0023), and `tests/oxlint-config.test.ts` checks it, with the scopes carried as `overrides`.
+Three linters run one after the other until F19 ends (`npm run lint`): **oxlint** first, with its native rules and `tsgolint`'s type-aware ones (`.oxlintrc.json`, written by `@oxlint/migrate` from `eslint/`, EN-074), then **the project's linter** (`tools/lint`, Rust, EN-075), with the project's own rules and those oxlint lacks, then **ESLint**, for the rules not yet moved, which F19 rewrites in the project's linter before ESLint leaves (EN-085). Each rule runs in one linter only: the last entry of ESLint's configuration (`eslint/scopes/oxlint-owned.ts`) turns off every rule `.oxlintrc.json` names and every rule the triage dropped (`eslint/settings/dropped-rules.ts`; the reasons in research note 0023), and `tests/oxlint-config.test.ts` checks it, with the scopes carried as `overrides`; a rule moved to the project's linter is `off` in its theme, with a comment naming `tools/lint`.
 
 ## Principle
 
@@ -20,7 +20,6 @@ eslint/
   rules/<plugin>/<theme>.ts   one file per theme, one constant per file
   rules/<plugin>/all.ts   list of the plugin's themes
   scopes/                 path overrides (core, shell, modules, tests, tooling, barrels)
-  plugin/                 custom plugin `local/*`: rules, utilities, tests
 ```
 
 | Folder | Themes |
@@ -33,18 +32,17 @@ eslint/
 | `rules/functional/` | immutability, purity, paradigm |
 | `rules/stylistic/` | spacing, comments, prettier-owned |
 | `rules/unused/` | unused |
-| `rules/local/` | kinds, modules, documentation |
 
 | Zone (`scopes/`) | Files | Effect |
 | --- | --- | --- |
 | `language.ts` | `**/*.ts` | typed parser, plugins, resolver |
 | `pure-layers.ts` | `src/math … src/io` | forbids the DOM and the host |
 | `dom-layers.ts` | `src/render`, `src/interaction`, `playground` | relaxes the pure statement rules |
-| `modules.ts` | `src/`, `playground/` | one export per file, kebab-case file named after it; files and domain folders kept apart (`local/folder-layout`); no default nor optional parameter and documented type members in `src/` |
+| `modules.ts` | `src/` | documented type members |
 | `playground.ts` | `playground/index.ts` | load-time effects allowed |
-| `barrels.ts` | `src/**/index.ts`, `eslint/**/index.ts`, `playground/*/**/index.ts` (not the entry); `eslint/rules/*/all.ts` | barrels: `local/barrel-exports` and any number of imports; `all.ts` aggregators: any number of imports only |
-| `tooling.ts` | `eslint/`, root `*.config.ts`, `*.setup.ts`, `*.test.ts`, `tests/`, `docs/.vitepress/`, `.claude/hooks/`, `scripts/` | Node.js, dev dependencies, no `@kind`; in hooks and scripts run by Node.js (`node-run`), imports name the `.ts` file and no barrel is asked |
-| `tests.ts` | `**/*.test.ts` | literal numbers, free length, no `@kind` |
+| `barrels.ts` | `src/**/index.ts`, `eslint/**/index.ts`, `playground/*/**/index.ts` (not the entry); `eslint/rules/*/all.ts` | barrels: any number of imports; `all.ts` aggregators: any number of imports only |
+| `tooling.ts` | `eslint/`, root `*.config.ts`, `*.setup.ts`, `*.test.ts`, `tests/`, `docs/.vitepress/`, `.claude/hooks/`, `scripts/` | Node.js, dev dependencies |
+| `tests.ts` | `**/*.test.ts` | literal numbers, free length |
 | `oxlint-owned.ts` | `**/*.ts`, last | turns off every rule `.oxlintrc.json` names and every dropped rule |
 
 The `eslint/` folder itself keeps kebab-case files exporting one constant each; the one-export rule targets the library and the playground.
@@ -53,7 +51,7 @@ The `eslint/` folder itself keeps kebab-case files exporting one constant each; 
 
 1. Find the theme: `grep -rn '"rule-name"' eslint/rules`.
 2. Change the value **in that file only**; if it becomes `off`, write the reason as a comment above it.
-3. A value taken from a table (`GLOBAL_FUNCTION_CEILING`, `PROCEDURE_VERBS`…) is changed in `eslint/settings/`.
+3. A value taken from a table is changed in `eslint/settings/` (`GLOBAL_FUNCTION_CEILING`…) or, for the project's linter, in `tools/lint/src/settings.rs` (`PROCEDURE_VERBS`, `KIND_LIMITS`…).
 4. A path-specific exception goes to `eslint/scopes/`, never to `rules/`.
 5. `npm run check`.
 
@@ -61,15 +59,32 @@ After a plugin upgrade, `npm run test` lists the new rules to decide: add them t
 
 ## One-off exceptions
 
-`// oxlint-disable-next-line rule -- justification` for a rule oxlint runs, `// eslint-disable-next-line rule -- justification` for one ESLint still runs (ESLint ignores oxlint's directives and reports its own unused ones; oxlint reads both, so its report of unused directives waits until ESLint leaves) — the justification is mandatory (`unicorn/no-abusive-eslint-disable`). Each directive has its row in the [register of exceptions](./exceptions.md), in the same change (ADR-0066).
+`// oxlint-disable-next-line rule -- justification` for a rule oxlint runs, `// lint-disable-next-line rule -- justification` for one the project's linter runs (it reports a directive that silences nothing or gives no justification), `// eslint-disable-next-line rule -- justification` for one ESLint still runs (ESLint ignores oxlint's directives and reports its own unused ones; oxlint reads both, so its report of unused directives waits until ESLint leaves) — the justification is mandatory (`unicorn/no-abusive-eslint-disable`). Each directive has its row in the [register of exceptions](./exceptions.md), in the same change (ADR-0066).
 
 ## Known autofix pitfall
 
 `unicorn/prefer-import-meta-properties` replaces `fileURLToPath(new URL(".", import.meta.url))` (trailing slash) with `import.meta.dirname` (no trailing slash): concatenated paths break. Always build paths with `join()`.
 
-## Custom rules (`local/*`)
+## The project's linter (`tools/lint`)
 
-Code: `eslint/plugin/rules/`, one test file per rule.
+A crate of the Rust workspace on Oxc's crates (`oxc_parser`, `oxc_ast`, `oxc_ast_visit`, `oxc_semantic`, `oxc_allocator`; EN-075, research note 0023): `cargo run --release -q -p lint -- [--fix] <targets>`, on oxlint's targets. It prints each finding as `file:line:column rule message`, then a count, and fails on any.
+
+- **Each file once**: read, parsed with its comments, its semantic model built, then every rule its scopes turn on runs over that one AST — a rule reads the whole file (`check_file`) or each node of the linter's single walk (`check_node`); the files are spread over the machine's threads, and what the rules read beside the file (folder listings, the bibliography, the ADRs) is read once per run.
+- **One rule, one module** of `tools/lint/src/rules/`, its tests beside it, from the cases of the rule it carries and of its documentation; registered in `rules::ALL`. Adding a rule: the module, its line in `ALL`, its name in `ON_EVERYWHERE` or a scope of `tools/lint/src/scopes.rs`, its section below, its rule `off` in ESLint.
+- **Scopes**: `tools/lint/src/scopes.rs` carries, in ESLint's order, the scopes of `eslint/scopes/` that set its rules; the project's values (kinds, layers, verbs, reference sources, the folder signal) are in `tools/lint/src/settings.rs`.
+- **Measured** on 2026-10-17: 0.05 to 0.06 s for the 1,535 files of `npm run lint`'s targets, all its rules on (0.11 s of CPU over the machine's threads).
+
+### `no-restricted-syntax`
+
+No `enum`, no `for…in`, no getter or setter, no `export * as name`, no dynamic import; in `src/`, no default nor optional parameter (ADR-0016). The spread of an accumulator in a fold is oxlint's `oxc/no-accumulating-spread` (EN-061, EN-075).
+
+### `require-atomic-updates`
+
+In an `async` function or a generator, no assignment to a variable, or to a property through a variable, read before an `await` or a `yield` and not since (ESLint's rule, `allowProperties: false`).
+
+### `functional/no-return-void`
+
+A function of the functional core returns a value: no `void`, `undefined` or `null` return type; without a written type, the body is read (no type checker).
 
 ### `local/require-kind`
 
@@ -77,11 +92,11 @@ Every top-level function carries exactly one known `@kind`. ADR-0011.
 
 ### `local/kind-in-layer`
 
-The `@kind` is allowed in the file's layer (`eslint/settings/layers.ts`).
+The `@kind` is allowed in the file's layer (`tools/lint/src/settings.rs`).
 
 ### `local/kind-limits`
 
-Lines, statements, complexity and depth bounded by `@kind` (`eslint/settings/kinds.ts`).
+Lines, statements, complexity and depth bounded by `@kind` (`tools/lint/src/settings.rs`).
 
 ### `local/kind-naming`
 
@@ -101,7 +116,7 @@ Every code folder holds an `index.ts`. ADR-0012.
 
 ### `local/folder-layout`
 
-In `src/` and `playground/`: a folder holds modules or domain folders, never both (only the barrel sits beside folders); a folder past 15 modules is reported unless `eslint/settings/folders.ts` lists it, with its reason in [files.md](./files.md#folders-past-15-modules). ADR-0043.
+In `src/` and `playground/`: a folder holds modules or domain folders, never both (only the barrel sits beside folders); a folder past 15 modules is reported unless `tools/lint/src/settings.rs` lists it, with its reason in [files.md](./files.md#folders-past-15-modules). ADR-0043.
 
 ### `local/barrel-exports`
 

@@ -421,6 +421,12 @@ mod tests {
             crate::walk::files(&root, &[".".into(), "missing".into()]),
             ["scripts/a.ts", "scripts/sub/d.ts"]
         );
+        // lint-staged's absolute paths are read from the root; a file outside it is left out.
+        let absolute = root.join("scripts/a.ts").to_string_lossy().into_owned();
+        assert_eq!(
+            crate::walk::files(&root, &[absolute, "/elsewhere/a.ts".into()]),
+            ["scripts/a.ts"]
+        );
         let (usage, clean) = run(&root, &["--fix".into()]);
         assert!(usage.starts_with("usage: lint"));
         assert!(!clean);

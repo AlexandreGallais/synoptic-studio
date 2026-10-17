@@ -65,9 +65,6 @@ export const TOOLING_FILES = [
   "scripts/**/*.ts",
 ];
 
-/** Hooks and scripts run by Node.js as they are (type stripping): imports name the `.ts` file. */
-export const NODE_RUN_FILES = [".claude/hooks/*.ts", "scripts/*.ts"];
-
 /** Root configuration files whose tools require a default export. */
 export const ROOT_CONFIG_FILES = [
   "*.config.ts",
@@ -83,9 +80,3 @@ export const BARREL_FILES = ["src/**/index.ts", "eslint/**/index.ts", "playgroun
 
 /** Lists of rule themes, one import per theme file. */
 export const AGGREGATOR_FILES = ["eslint/rules/*/all.ts"];
-
-/** Modules subject to one export per file, named like it (ADR-0019). */
-export const SINGLE_EXPORT_FILES = ["src/**/*.ts", "playground/**/*.ts"];
-
-/** Files exempt from one export per file: barrels, entry points and tests. */
-export const SINGLE_EXPORT_EXEMPT_FILES = ["**/index.ts", "**/*.test.ts"];

@@ -1,5 +1,3 @@
-import { RESTRICTED_SYNTAX } from "../../settings";
-
 import type { TSESLint } from "@typescript-eslint/utils";
 
 /** Dangerous or obsolete language features. */
@@ -20,8 +18,8 @@ export const CORE_LEGACY: TSESLint.FlatConfig.Config = {
     "no-multi-str": "error",
     "no-new-func": "error",
     "no-obj-calls": "error",
-    // Enums, `for…in`, labels, getters/setters and other constructs outside the project's style.
-    "no-restricted-syntax": ["error", ...RESTRICTED_SYNTAX],
+    // Enums, `for…in`, getters and setters, dynamic imports: Run by the project's linter (tools/lint, EN-075).
+    "no-restricted-syntax": "off",
     "no-script-url": "error",
     "no-with": "error",
   },

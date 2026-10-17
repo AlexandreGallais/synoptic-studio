@@ -1,33 +1,31 @@
 /**
  * Layered architecture: imports only go to lower layers (docs/conventions/architecture.md).
  *
- * `imports` lists the layers a layer may import; `kinds` lists the `@kind` values its
- * functions may carry. The playground only sees the public API (`src/index.ts`).
+ * `imports` lists the layers a layer may import; the `@kind` values its functions may carry are
+ * the project's linter's (`tools/lint/src/settings.rs`). The playground only sees the public API
+ * (`src/index.ts`).
  */
-export const LAYERS = [
-  { name: "math", path: "src/math", imports: [], kinds: ["math"] },
-  { name: "geometry", path: "src/geometry", imports: ["math"], kinds: ["math", "geometry"] },
-  { name: "model", path: "src/model", imports: ["math", "geometry"], kinds: ["domain"] },
+const LAYERS = [
+  { name: "math", path: "src/math", imports: [] },
+  { name: "geometry", path: "src/geometry", imports: ["math"] },
+  { name: "model", path: "src/model", imports: ["math", "geometry"] },
   {
     name: "routing",
     path: "src/routing",
     imports: ["math", "geometry", "model"],
-    kinds: ["geometry", "domain"],
   },
-  { name: "io", path: "src/io", imports: ["math", "geometry", "model"], kinds: ["format"] },
+  { name: "io", path: "src/io", imports: ["math", "geometry", "model"] },
   {
     name: "render",
     path: "src/render",
     imports: ["math", "geometry", "model", "routing", "io"],
-    kinds: ["format", "procedure"],
   },
   {
     name: "interaction",
     path: "src/interaction",
     imports: ["math", "geometry", "model", "routing", "io", "render"],
-    kinds: ["domain", "procedure"],
   },
-  { name: "playground", path: "playground", imports: [], kinds: ["procedure"] },
+  { name: "playground", path: "playground", imports: [] },
 ];
 
 /** Library entry point: the only file the playground may import. */

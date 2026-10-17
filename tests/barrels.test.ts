@@ -42,7 +42,7 @@ function typeOnlyTargets(barrel: string): string[] {
  * @returns its exported names, types excluded (they do not exist at run time)
  */
 async function runtimeExports(target: string): Promise<string[]> {
-  // eslint-disable-next-line no-restricted-syntax -- loading each re-exported module is the point of this test.
+  // lint-disable-next-line no-restricted-syntax -- loading each re-exported module is the point of this test.
   const module: unknown = await import(target);
 
   return typeof module === "object" && module !== null ? Object.keys(module) : [];

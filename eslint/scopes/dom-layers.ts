@@ -20,7 +20,6 @@ export const DOM_LAYERS: TSESLint.FlatConfig.Config = {
     "functional/no-conditional-statements": "off",
     "functional/no-expression-statements": "off",
     "functional/no-loop-statements": "off",
-    "functional/no-return-void": "off",
     "functional/no-throw-statements": "off",
     "functional/no-try-statements": "off",
     "functional/prefer-immutable-types": "off",

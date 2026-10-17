@@ -5,7 +5,6 @@ import {
   FUNCTIONAL_RULES,
   IMPORTS_RULES,
   JSDOC_RULES,
-  LOCAL_RULES,
   MARKDOWN_RULES,
   STYLISTIC_RULES,
   TYPESCRIPT_RULES,
@@ -40,7 +39,6 @@ export const RULE_THEMES: readonly TSESLint.FlatConfig.Config[] = [
   ...FUNCTIONAL_RULES,
   ...STYLISTIC_RULES,
   ...UNICORN_RULES,
-  ...LOCAL_RULES,
 ].map((theme) => ({ ...theme, files: TS_FILES }));
 
 /**

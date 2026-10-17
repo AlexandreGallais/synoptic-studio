@@ -12,7 +12,16 @@ pub fn files(root: &Path, targets: &[String]) -> Vec<String> {
     let mut found = Vec::new();
 
     for target in targets {
-        let path = target.trim_start_matches("./").trim_end_matches('/');
+        // lint-staged names each file by its absolute path.
+        let relative = Path::new(target)
+            .strip_prefix(root)
+            .map_or(target.as_str(), |inside| {
+                inside.to_str().unwrap_or_default()
+            });
+        if Path::new(relative).is_absolute() {
+            continue;
+        }
+        let path = relative.trim_start_matches("./").trim_end_matches('/');
         collect(root, path, &mut found);
     }
     found.sort_unstable();

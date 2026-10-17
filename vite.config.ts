@@ -36,10 +36,9 @@ const PLAYGROUND_BUILD: BuildEnvironmentOptions = {
 };
 
 /**
- * The three groups of tests: `shared`, whose files share a worker's loaded modules, the library
+ * The two groups of tests: `shared`, whose files share a worker's loaded modules, the library
  * imported once per worker instead of once per file, where no test keeps state between files;
- * `rules`, the ESLint rules' tests, shared the same way, the only ones given the setup that binds
- * the RuleTester to Vitest (EN-091); `isolated`, the playground's, whose page keeps its state in its
+ * `isolated`, the playground's, whose page keeps its state in its
  * modules and whose tests mock the library (EN-090, ADR-0070).
  */
 const TEST_PROJECTS: readonly TestProjectInlineConfiguration[] = [
@@ -57,16 +56,6 @@ const TEST_PROJECTS: readonly TestProjectInlineConfiguration[] = [
       ],
       isolate: false,
       name: "shared",
-    },
-  },
-  {
-    extends: true,
-    test: {
-      include: ["eslint/plugin/rules/*.test.ts"],
-      isolate: false,
-      name: "rules",
-      // Run before each of its files (REF-VITEST-SETUPFILES): only the rules' tests pay for it.
-      setupFiles: ["vitest.setup.ts"],
     },
   },
   {

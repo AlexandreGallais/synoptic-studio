@@ -17,10 +17,8 @@ export const FUNCTIONAL_PURITY: TSESLint.FlatConfig.Config = {
     "functional/no-expression-statements": ["error", { ignoreVoid: false }],
     "functional/no-loop-statements": "error",
     "functional/no-promise-reject": "error",
-    "functional/no-return-void": [
-      "error",
-      { allowNull: false, allowUndefined: false, ignoreInferredTypes: false },
-    ],
+    // Run by the project's linter (tools/lint, EN-075).
+    "functional/no-return-void": "off",
     "functional/no-throw-statements": ["error", { allowToRejectPromises: false }],
     "functional/no-try-statements": ["error", { allowCatch: false, allowFinally: false }],
     // Point-free callbacks pass extra arguments (index, array): unicorn/no-array-callback-reference forbids them.
