@@ -20,7 +20,8 @@ use hooks::pages::{
 
 /// What the library holds of a page, read by `sqlite3` without writing the file.
 fn library(url: &str) -> Library {
-    let Some(file) = library_file(env::var("LIBRARY_PATH").ok(), env::var("HOME").ok()) else {
+    let Some(file) = library_file(env::var("AGENT_LIBRARY_FILE").ok(), env::var("HOME").ok())
+    else {
         return Library::Missing;
     };
 

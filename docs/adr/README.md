@@ -43,7 +43,7 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0035](./0035-angle-and-position-for-every-shape.md) | An angle and a position for every shape | Accepted |
 | [0037](./0037-stretched-polygon.md) | A stretched option for the regular polygon | Accepted |
 | [0038](./0038-develop-branch-and-local-checks.md) | A `develop` branch, checks run locally, one CI on the pull request into `main` | Superseded by ADR-0072 |
-| [0039](./0039-local-source-library.md) | A local library of the sources read: SQLite full-text search behind an MCP server | Accepted |
+| [0039](./0039-local-source-library.md) | A local library of the sources read: SQLite full-text search behind an MCP server | Accepted, partly superseded by 0077 |
 | [0040](./0040-agents-md-for-any-agent.md) | `AGENTS.md` holds the rules for any coding agent | Accepted |
 | [0041](./0041-private-records-repository.md) | Private records in a sibling repository, saved by `npm run records:save` | Decision 1 superseded by ADR-0044 |
 | [0042](./0042-folders-by-theme.md) | Folders by theme, 15 modules as a signal, a shape's type in its folder | Superseded by ADR-0043 |
@@ -81,3 +81,4 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0074](./0074-the-agent-shapes-its-own-method-and-tools.md) | The agent shapes its own method and tools, the Product Owner decides | Accepted |
 | [0075](./0075-the-toolchain-on-oxc.md) | The toolchain on Oxc: oxlint, the project's Rust linter, oxfmt and TypeScript 7 | Accepted |
 | [0076](./0076-ported-tooling-code-under-its-licence.md) | Code ported into the tools under its licence, never into the library | Accepted |
+| [0077](./0077-the-library-server-in-rust-on-rmcp.md) | The library's server in Rust on rmcp, its file named by its own variable | Accepted |

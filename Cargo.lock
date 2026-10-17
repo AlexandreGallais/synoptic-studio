@@ -552,6 +552,7 @@ dependencies = [
  "serde_json",
  "shared-files",
  "tokio",
+ "tool-use",
 ]
 
 [[package]]

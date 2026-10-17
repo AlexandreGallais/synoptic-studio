@@ -9,8 +9,6 @@ import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 
-import { libraryPath } from "./library-store.ts";
-
 /** One record to save: a file, a folder, or a SQLite database copied consistently. */
 export type RecordCopy = {
   readonly from: string;
@@ -101,7 +99,14 @@ if (import.meta.main) {
     );
   }
 
-  for (const copy of recordCopies(main, homedir(), libraryPath())) {
+  // The library's file, as its Rust command line names it (EN-106).
+  const library = execFileSync(
+    "cargo",
+    ["run", "--release", "-q", "-p", "library", "--bin", "library", "--", "path"],
+    { encoding: "utf8" },
+  ).trim();
+
+  for (const copy of recordCopies(main, homedir(), library)) {
     process.stdout.write(`${save(copy, folder) ? "saved" : "missing"} ${copy.to}\n`);
   }
 
