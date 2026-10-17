@@ -6,7 +6,6 @@
 
 use std::env;
 use std::fs;
-use std::os::unix::fs::symlink;
 use std::path::{Path, PathBuf};
 use std::process::{Command, ExitCode};
 
@@ -51,6 +50,20 @@ fn story_files(top: &Path) -> Result<Vec<String>, String> {
         .collect())
 }
 
+/// Links a folder at `link` to the folder `target`: a symbolic link (`std::os::unix::fs::symlink`).
+// Unix-only: the standard library has no portable folder link; Windows gets its own call.
+#[cfg(unix)]
+fn link_folder(target: &Path, link: &Path) -> std::io::Result<()> {
+    std::os::unix::fs::symlink(target, link)
+}
+
+/// Links a folder at `link` to the folder `target`: a folder symbolic link on Windows
+/// (`std::os::windows::fs::symlink_dir`), which needs the Developer Mode or the right to make one.
+#[cfg(windows)]
+fn link_folder(target: &Path, link: &Path) -> std::io::Result<()> {
+    std::os::windows::fs::symlink_dir(target, link)
+}
+
 /// Creates the worktree of a plan and links `node_modules` into it.
 fn create(plan: &Plan, main: &Path) -> Result<(), String> {
     let dir = plan.dir.to_string_lossy();
@@ -68,7 +81,7 @@ fn create(plan: &Plan, main: &Path) -> Result<(), String> {
     let modules = main.join("node_modules");
 
     if modules.is_dir() {
-        symlink(&modules, plan.dir.join("node_modules"))
+        link_folder(&modules, &plan.dir.join("node_modules"))
             .map_err(|error| format!("node_modules: {error}"))?;
     }
 

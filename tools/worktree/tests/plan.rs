@@ -232,7 +232,11 @@ fn repository_with(name: &str, files: &[(&str, &str)]) -> PathBuf {
     let _ = fs::remove_dir_all(&root);
     fs::create_dir_all(main.join("docs/backlog/stories")).unwrap();
     fs::create_dir_all(main.join(".husky")).unwrap();
+    // Unix-only, as the tool's own link: Windows makes a folder link by another call.
+    #[cfg(unix)]
     std::os::unix::fs::symlink(node_modules(), main.join("node_modules")).unwrap();
+    #[cfg(windows)]
+    std::os::windows::fs::symlink_dir(node_modules(), main.join("node_modules")).unwrap();
     fs::write(
         main.join(".gitignore"),
         "node_modules\n.claude/worktrees/\n/target/\n",

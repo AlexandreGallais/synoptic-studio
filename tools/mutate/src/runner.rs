@@ -6,8 +6,6 @@
 
 use std::ffi::OsStr;
 use std::fs;
-use std::os::unix::fs::symlink;
-use std::os::unix::process::CommandExt;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use std::sync::atomic::{AtomicUsize, Ordering};
@@ -171,6 +169,42 @@ fn git(dir: &Path, arguments: &[&str]) -> Result<String, String> {
     }
 }
 
+/// Links a folder at `link` to the folder `target`: a symbolic link (`std::os::unix::fs::symlink`).
+// Unix-only: the standard library has no portable folder link; Windows gets its own call.
+#[cfg(unix)]
+fn link_folder(target: &Path, link: &Path) -> std::io::Result<()> {
+    std::os::unix::fs::symlink(target, link)
+}
+
+/// Links a folder at `link` to the folder `target`: a folder symbolic link on Windows
+/// (`std::os::windows::fs::symlink_dir`), which needs the Developer Mode or the right to make one.
+#[cfg(windows)]
+fn link_folder(target: &Path, link: &Path) -> std::io::Result<()> {
+    std::os::windows::fs::symlink_dir(target, link)
+}
+
+/// Puts a test command in a process group of its own, so that a time-out stops its children too.
+fn in_own_group(command: &mut Command) {
+    // Unix-only: process groups (`CommandExt::process_group`); elsewhere the command runs as is.
+    #[cfg(unix)]
+    std::os::unix::process::CommandExt::process_group(command, 0);
+    #[cfg(not(unix))]
+    let _ = command;
+}
+
+/// Stops a test command that ran over its limit, with its children where the system allows it.
+fn stop_with_children(child: &mut std::process::Child) {
+    // Unix-only: `kill` sends the signal to the whole group, which `Child::kill` cannot (`npx`
+    // leaves Vitest's workers behind); elsewhere only the command itself is stopped. The group, or
+    // the command, may already be gone; the caller's wait reaps it either way.
+    #[cfg(unix)]
+    let _ = Command::new("kill")
+        .args(["-KILL", &format!("-{}", child.id())])
+        .status();
+    #[cfg(not(unix))]
+    let _ = child.kill();
+}
+
 /// The temporary copy, removed when dropped.
 struct Copy {
     /// The repository's top.
@@ -209,7 +243,7 @@ impl Copy {
         let modules = top.join("node_modules");
 
         if let Ok(modules) = modules.canonicalize() {
-            symlink(modules, copy.dir.join("node_modules"))
+            link_folder(&modules, &copy.dir.join("node_modules"))
                 .map_err(|error| format!("node_modules: {error}"))?;
         }
 
@@ -267,12 +301,15 @@ fn test(
     let [program, arguments @ ..] = command else {
         return Err("no test command".to_owned());
     };
-    let mut child = isolated(program, dir)
+    let mut command = isolated(program, dir);
+
+    command
         .args(arguments.iter().map(|argument| expanded(argument, file)))
         .stdin(Stdio::null())
         .stdout(Stdio::null())
-        .stderr(Stdio::null())
-        .process_group(0)
+        .stderr(Stdio::null());
+    in_own_group(&mut command);
+    let mut child = command
         .spawn()
         .map_err(|error| format!("{program}: {error}"))?;
     let start = Instant::now();
@@ -286,10 +323,7 @@ fn test(
             });
         }
         if limit.is_some_and(|limit| start.elapsed() > limit) {
-            // The group may already be gone; the wait below reaps the child either way.
-            let _ = Command::new("kill")
-                .args(["-KILL", &format!("-{}", child.id())])
-                .status();
+            stop_with_children(&mut child);
             let _ = child.wait();
             return Ok(Ended::TimedOut);
         }
