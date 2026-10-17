@@ -16,6 +16,7 @@
 | `npm run run:start`, `run:end` | opens and closes the run's marker, and prints its duration and tokens by kind ([metrics](./metrics.md#a-runs-totals), `tools/run-totals/`) | a turn's figures, restarting at each message |
 | `npm run run:should-stop` | before each story: `stop` and exit 1 once the week's usage reaches 90 %, else `go` and exit 0 (unknown usage: `go`), then the parked stories of the checkout it runs in, so run it in a worktree of the feature branch; exit 2 outside a repository | the usage read by eye |
 | `npm run context:size -- <folder>…` | for each subagent of a session's folder: its type, its first request's tokens, the instruction files loaded before it, the size of its skill listing and task; then the median per type (`tools/hooks/`) | first requests counted by hand |
+| `npm run -s page -- [<file>] <id or heading>` | beside `Read`, for a row or a section: the rows whose first cell is the id, under their table's header line, else each section under that heading down to the next of its level or higher, after `<file>:<line>`; without a file, a `REF-` id's row of `docs/references.md`, or the first section of an ADR's, a derivation's or a backlog item's file (`ADR-0069`, `DERIV-fillet-arc`, `EN-092`, `F21`, `E17`); nothing found exits 1 naming the file. 3.2 ms against `cat`'s 2.9 ms, the binary alone, and about 165 ms through `npm` ([below](#reading-one-row-or-one-section)) (`tools/page/`) | `Read` of a whole page for one row: `docs/references.md` 121 times in three days |
 | `npm run golden:write` / `golden:check` | about 400 results of the library from shapes drawn with a fixed seed, written before a refactor and compared bit for bit after each change (`NAM`, ADR-0049); `golden:write` refuses in a worktree, the file being shared; the pre-push runs `golden:check` when the file is written | a probe written for F13 |
 | `npm run activity` | the calls running, the latest calls of the main agent and each subagent, the end of the background commands' output | reading transcripts |
 | `npm run epic:check -- <epic> <first day>` | an epic's full check for its retrospective: failed `check:all` runs with their failing checks and tests, branches, pull requests, issues, failed calls (the worktree refusals apart), calls lost at a force-quit, backlog, records | a dozen commands |
@@ -33,6 +34,19 @@
 | mutations | the first of each kind, every one with `--all`: a comparison flipped (`<` to `>=`, `===` to `!==`), `+` and `-` or `*` and `/` swapped, an integer `n` made `n + 1`, an `if` condition negated, a returned value made `undefined` |
 | where | found in the text, comments and strings skipped, operators only with a space on each side |
 | timeout | over four times the unchanged run plus 30 s |
+
+### Reading one row or one section
+
+`page` (EN-105) answers the agent's most frequent reads: `docs/references.md` was read 121 times in three days for one row each ([research note 0024](../research/notes/0024-f20-context-diet.md)). Measured on 2026-10-18, 20 calls each after one warm-up, interleaved, the release binary run by its path (load average about 3):
+
+| Read | Characters printed | Median | Mean |
+| --- | --- | --- | --- |
+| `cat docs/references.md` | 198,307 | 2.9 ms | 3.0 ms |
+| `page REF-CC-HOOKS`: its row and its table's header | 2,335 (1.2 %) | 3.2 ms | 3.2 ms |
+| `cat docs/tooling/agent.md` | 14,495 | 2.8 ms | 2.9 ms |
+| `page docs/tooling/agent.md Hooks` | 3,741 (26 %) | 3.1 ms | 3.1 ms |
+
+Through `npm run -s page`, npm adds about 160 ms (median 167 ms): still one call, and the characters are what the context keeps. `docs/process/improvements.md` is one table whose rows start with a date (SP-023): its rows are not found by an id.
 
 ## Specifications for later
 
