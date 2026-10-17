@@ -4,6 +4,7 @@
 //! `TypeDoc`'s configuration made.
 
 pub mod api;
+pub mod checks;
 pub mod doc;
 pub mod extract;
 pub mod index;
@@ -61,10 +62,15 @@ pub fn pages(exports: &[Export], output: &Output) -> Vec<(String, String)> {
     pages
 }
 
-/// What stops the pages: what cannot be read.
+/// What stops the pages: what cannot be read, then each check's failures.
 #[must_use]
 pub fn problems(api: &api::Api) -> Vec<String> {
-    api.problems.clone()
+    let names = names(&api.exports);
+    let mut problems = api.problems.clone();
+    problems.extend(checks::undocumented(&api.exports));
+    problems.extend(checks::unresolved_links(&api.exports, &names));
+    problems.extend(checks::internal(&api.exports, &names));
+    problems
 }
 
 /// The pages written into an emptied folder.
