@@ -152,6 +152,7 @@ mod tests {
 
     #[test]
     fn refuses_enums_for_in_and_accessors_everywhere() {
+        // [F19.AC3] Each selector of `no-restricted-syntax`, reported with its message.
         assert_eq!(
             tools("enum Color { Red }"),
             ["Use a union of string literals instead of an enum."]

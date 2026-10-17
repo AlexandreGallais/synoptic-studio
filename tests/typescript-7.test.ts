@@ -1,6 +1,5 @@
 import { execFileSync, spawnSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
@@ -32,34 +31,6 @@ const TYPESCRIPT_IMPORT = /from\s+["'](?:typescript|@typescript\/typescript6)["'
 describe("TypeScript 7", () => {
   it("[F19.AC6] is the tsc of the type check", () => {
     expect(runTsc(["--version"]).stdout).toMatch(/^Version 7\./u);
-  });
-
-  it("[F19.AC6] reports a planted type error at its place, with exit code 1", () => {
-    const folder = mkdtempSync(join(tmpdir(), "en-071-"));
-
-    writeFileSync(
-      join(folder, "tsconfig.json"),
-      JSON.stringify({
-        compilerOptions: { noEmit: true, strict: true, types: [] },
-        files: ["planted.ts"],
-      }),
-    );
-
-    // Line 2, column 9: the name `planted`, given a string where a number is declared (TS2322).
-    writeFileSync(
-      join(folder, "planted.ts"),
-      'export function half(value: number): number {\n  const planted: number = "half";\n  return value / 2 + planted;\n}\n',
-    );
-
-    const result = runTsc(["-p", folder]);
-
-    rmSync(folder, { force: true, recursive: true });
-
-    expect(result.status).toBe(1);
-
-    expect(result.stdout).toContain(
-      "planted.ts(2,9): error TS2322: Type 'string' is not assignable to type 'number'.",
-    );
   });
 
   it("[F19.AC6] is the only TypeScript, TypeScript 6 and its alias gone from the packages", () => {

@@ -443,6 +443,7 @@ mod tests {
 
     #[test]
     fn reports_and_fixes_the_documented_unions() {
+        // [F19.AC11] A kept Unicorn rule, on the cases of its plugin's documentation.
         assert_eq!(
             check("const union = new Set([...set, ...otherSet]);"),
             ["Use `Set#union()` instead of spreading Sets into a new Set."]

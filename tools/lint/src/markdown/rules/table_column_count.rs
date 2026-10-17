@@ -59,6 +59,7 @@ mod tests {
 
     #[test]
     fn reports_extra_and_missing_cells() {
+        // [F19.AC4] A Markdown rule on the cases of `@eslint/markdown`'s documentation.
         // The documented cases: an extra cell starts at column 23; a missing one is reported from
         // the character before the last cell's end, column 17.
         let page = "| Head1 | Head2 |\n| ----- | ----- |\n| R1C1  | R1C2  | R2C3  |\n\n| A |\n| - |\n| 1 | 2 |\n\n| Col A | Col B | Col C |\n| ----- | ----- | ----- |\n| 4     | 5     |\n";

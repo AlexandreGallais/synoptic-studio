@@ -158,6 +158,7 @@ mod tests {
 
     #[test]
     fn reports_a_written_return_type_of_nothing() {
+        // [F19.AC3] `functional/no-return-void`, a written return type of nothing.
         // The plugin's documentation: `function updateText(): void {}`; the finding on `: void`.
         assert_eq!(columns("function updateText(): void {}"), [22]);
         assert_eq!(

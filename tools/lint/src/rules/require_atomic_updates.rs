@@ -432,6 +432,7 @@ mod tests {
 
     #[test]
     fn reports_the_incorrect_cases_of_the_documentation() {
+        // [F19.AC3] ESLint's documented incorrect cases, each reported.
         for code in [
             "async function foo() { result += await something; }",
             "async function bar() { result = result + await something; }",
