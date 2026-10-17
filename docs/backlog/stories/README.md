@@ -214,7 +214,7 @@
 | [EN-073](./E17-F19-EN-073-oxfmt-instead-of-prettier.md) | F19 | oxfmt instead of Prettier | done |
 | [EN-074](./E17-F19-EN-074-oxlint-with-native-and-type-aware-rules.md) | F19 | oxlint with its native and type-aware rules | done |
 | [EN-075](./E17-F19-EN-075-project-linter-in-rust.md) | F19 | The project's Rust linter and its own rules | done |
-| [EN-076](./E17-F19-EN-076-naming-and-functional-rules-without-types.md) | F19 | naming-convention and the functional rules without types | ready |
+| [EN-076](./E17-F19-EN-076-naming-and-functional-rules-without-types.md) | F19 | naming-convention and the functional rules without types | done |
 | [EN-089](./E17-F19-EN-089-font-files-read-once-per-test-run.md) | F19 | Font files read once per test run | done |
 | [EN-090](./E17-F19-EN-090-tests-without-over-testing.md) | F19 | Tests without over-testing, and the rules to keep them so | done |
 | [EN-091](./E17-F19-EN-091-configuration-files-reviewed-for-speed.md) | F19 | Every configuration file reviewed for speed, type errors reported with the lint | done |
