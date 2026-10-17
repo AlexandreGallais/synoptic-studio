@@ -197,13 +197,8 @@ fn refuses_what_it_cannot_make() {
 /// A command cut off from the Git repository running the tests: a hook (`pre-push` running
 /// `check:all`) sets `GIT_DIR` and its kin, which would point every `git` call at that repository.
 fn isolated(program: &str, dir: &Path) -> Command {
-    let mut command = Command::new(program);
+    let mut command = test_support::command(program);
 
-    for (name, _) in std::env::vars_os() {
-        if name.to_string_lossy().starts_with("GIT_") {
-            command.env_remove(name);
-        }
-    }
     command
         .current_dir(dir)
         .env("GIT_AUTHOR_NAME", "test")

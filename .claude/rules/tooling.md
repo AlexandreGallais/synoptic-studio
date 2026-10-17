@@ -30,7 +30,7 @@ Each is a trap met in this repository's tooling, with the story that met it. The
 ## Tests of tooling
 
 - A timing test never reads the clock (the lint forbids `performance.now()` and `Date.now()`): it bounds the time with Vitest's per-test `timeout`, at least four times the test's duration alone, since a loaded `check:all` ran tests up to 2.5 times slower (EN-036, EN-054).
-- Every test removes every inherited `GIT_*` variable from each command it starts, `git` itself or a binary that runs it; the binary, run by the agent in the real repository, inherits nothing harmful and removes none: the `pre-push` hook sets `GIT_DIR`, and a leaked one writes to the real repository (a `git init --bare` turned it bare, EN-050). See [tests that run Git](../../docs/tooling/commands.md#tests-that-run-git).
+- Every test removes every inherited `GIT_*` variable from each command it starts, `git` itself or a binary that runs it (a Rust test starts it through `test_support::command`, EN-103); the binary, run by the agent in the real repository, inherits nothing harmful and removes none: the `pre-push` hook sets `GIT_DIR`, and a leaked one writes to the real repository (a `git init --bare` turned it bare, EN-050). See [tests that run Git](../../docs/tooling/commands.md#tests-that-run-git).
 
 ## Git and the shell
 

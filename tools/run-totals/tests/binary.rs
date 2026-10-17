@@ -10,14 +10,9 @@ use std::process::{Command, Output};
 
 /// A command run in `dir` without the `GIT_*` variables, its home in `home`.
 fn clean(program: &str, dir: &Path, home: &Path) -> Command {
-    let mut command = Command::new(program);
+    let mut command = test_support::command(program);
 
     command.current_dir(dir).env("HOME", home);
-    for (name, _) in env::vars_os() {
-        if name.to_string_lossy().starts_with("GIT_") {
-            command.env_remove(name);
-        }
-    }
     command
         .env("GIT_CONFIG_NOSYSTEM", "1")
         .env_remove("CLAUDE_CODE_SESSION_ID");
