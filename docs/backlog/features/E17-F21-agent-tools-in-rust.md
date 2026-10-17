@@ -78,6 +78,10 @@ Last story of E17's features, before NAM-002: once the tools run on Oxc and Rust
 - Given the unused-file check of story 6 and a search of the tracked files for each removed name, when they run, then neither finds an unused file, an unused dev package, nor a name of a removed file outside the history (journal, retrospectives, ADRs).
 - Given `check:all`, when it runs after the clean-up, then it is green and its time is recorded for RET-004.
 
+## Note from EN-093 (2026-10-17)
+
+- **For F21's feature file** (its draft table of stories, as a note): carry only what EN-093 kept, measured in `docs/conventions/rules.md` (Checks, hooks and conventions). Story 5 (Git hooks): the staged-file runner without ESLint's step; commitlint's rules as they are, with the 14 scopes (`eslint` dropped); **add** a check that a commit on a story branch carries `Refs: <ID>.Tn` or `Closes: <ID>` with the branch's own id; the branch-name pattern as one regular expression. Story 3 (repository tools): `check-all` without a `check` twin to keep in step (the story skill no longer runs `npm run check` per task); `replace-text` kept, it is the agent's most used edit tool. Story 2 (metrics): kept whole; the friction count by rule that EN-093 made by hand from the transcripts would be a cheap addition to `metrics-report` (findings by rule, per epic), so that the next review of the rules reads it instead of grepping.
+
 ## Stories
 
 Written at the refinement, with the checkpoint, audit and validation stories of every feature.
