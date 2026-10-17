@@ -46,9 +46,3 @@ Alone with its two neighbours, the shared-tables test of `parseCollectionFaces` 
 - Shared bytes are given as a fresh copy at each call (`new Uint8Array(…)`, a copy of 411 640 bytes costs microseconds); shared number arrays are frozen once (`Object.freeze`), which keeps their identity, so that a collection still writes a shared table once.
 - `toEqual` on typed arrays of hundreds of kilobytes compares element by element and was the slow part, not the parser: compare such files by length and SHA-256 (`partsDigest`) — the same claim, 30 times faster.
 - The largest shares of the lane are elsewhere: `setup` 36 % (`vitest.setup.ts` imports `@typescript-eslint/rule-tester` into each of the 492 files, though the ESLint tests alone need it) and `import` 28 % (the `tests` barrel loads every fixture module into every file); Vitest itself estimates 22 s saved with `isolate: false`.
-
-## For the main thread
-
-### Journal
-
-- `#run` EN-089: the test font file is read once per run by a Vitest global setup (193 reads to 1); the fixtures built from it are lazy and frozen; the shared-tables test of `parseCollectionFaces` 2.3 s to 75 ms; the lane 101.5 s to 96.3 s.
