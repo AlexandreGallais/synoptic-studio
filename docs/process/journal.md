@@ -2,6 +2,13 @@
 
 What each working session dealt with, in the agent's words: the Product Owner's requests in neutral words, decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`).
 
+## 2026-10-18 — F20 validated and merged, F21 refined and researched
+
+- `#run` VAL-021: F20 validated by the agent (ADR-0072): its seven criteria left proven again, criterion 5 struck; 12 lines in E17's checklist; the demo page `docs/guide/f20-a-context-diet.md`. A story worker's first request from 38,897 tokens (`general-purpose`) to 10,562 (`story-worker`); the agent pages from 182,100 tokens to 144,900 (−20 %); Git calls per story worker from a median of 12 to 4; a stored page read in 0.1 to 0.2 s instead of 6 s. The story worker stays on Opus, the Sonnet trial too small to compare: a decision for the Product Owner to confirm.
+- `#run` F20 merged into `develop` by PR #340 on 2026-10-18; F21's feature branch was created from `develop`.
+- `#run` F21 refined by the agent (as authorised on 2026-10-17) into stories EN-102 to EN-113 with SP-023, CHK-022, AUD-023 and VAL-022; the run goes on with F21.
+- `#tooling` SP-023: F21's crates chosen (`rmcp` 3.5.1, `rusqlite` 0.40.2 bundled except for Windows, `serde_json`, `regex`; `curl` instead of an HTTP crate, no `oxc_resolver`), each rewritten package's behaviour and licence read at its installed version, every tool timed before its port; the launcher (`cargo run`, `npm run`) costs more per call than Node.js. Decided by the agent under ADR-0069 (option C), to tell the Product Owner: the hooks, the status line, the Git hooks and the agent's own commands call `target/release/<binary>` directly, `npm run` kept for people; written in EN-104.
+
 ## 2026-10-17 — F19 validated, F20 refined
 
 - `#run` VAL-020: F19 validated by the agent (ADR-0072): its 12 criteria proven again, 12 lines in E17's checklist, the demo page `docs/guide/f19-checks-on-oxc-and-rust.md`; `check:all` from 124 s to 39.6 to 41.3 s on a code change, 50.6 to 57.0 s with the site built.

@@ -3,7 +3,7 @@ id: EN-111
 epic: E17
 feature: F21
 title: The CI on the Rust tools, built and cached once
-status: draft
+status: ready
 points: 2
 ---
 

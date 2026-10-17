@@ -3,7 +3,7 @@ id: EN-112
 epic: E17
 feature: F21
 title: The release made by our own tool, in place of release-please
-status: draft
+status: ready
 points: 8
 ---
 

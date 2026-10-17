@@ -3,7 +3,7 @@ id: EN-102
 epic: E17
 feature: F21
 title: Each tool of our own records its use
-status: draft
+status: ready
 points: 3
 ---
 

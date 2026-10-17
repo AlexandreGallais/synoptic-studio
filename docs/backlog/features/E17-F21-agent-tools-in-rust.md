@@ -2,7 +2,7 @@
 id: F21
 epic: E17
 title: Agent tools and the library server in Rust
-status: draft
+status: in-progress
 ---
 
 # E17 · F21 — Agent tools and the library server in Rust
@@ -98,19 +98,19 @@ In delivery order. Stories stay `draft` until F21's `/run` sets them `ready`.
 
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
-| [SP-023](../stories/E17-F21-SP-023-research-f21.md) | Spike | Research for F21 | draft |
-| [EN-102](../stories/E17-F21-EN-102-each-tool-records-its-use.md) | Enabler | Each tool of our own records its use | draft |
-| [EN-103](../stories/E17-F21-EN-103-backlog-and-repository-tools-in-rust.md) | Enabler | The backlog and repository tools in Rust | draft |
-| [EN-104](../stories/E17-F21-EN-104-claude-code-hooks-in-rust.md) | Enabler | The Claude Code hooks and the status line in Rust | draft |
-| [EN-105](../stories/E17-F21-EN-105-one-row-or-section-of-a-page.md) | Enabler | One row or one section of a repository page | draft |
-| [EN-106](../stories/E17-F21-EN-106-library-server-in-rust.md) | Enabler | The library server and its command line in Rust on rmcp | draft |
-| [EN-107](../stories/E17-F21-EN-107-metrics-tools-in-rust.md) | Enabler | The metrics tools in Rust | draft |
-| [CHK-022](../stories/E17-F21-CHK-022-checkpoint-f21.md) | Checkpoint | Checkpoint in the middle of F21 | draft |
-| [EN-108](../stories/E17-F21-EN-108-git-hooks-in-rust.md) | Enabler | The Git hooks in Rust, without husky, lint-staged, commitlint nor validate-branch-name | draft |
-| [EN-109](../stories/E17-F21-EN-109-dependency-checks-in-rust.md) | Enabler | The dependency checks in Rust, without npm-check-updates nor knip | draft |
-| [EN-110](../stories/E17-F21-EN-110-secret-scan-in-rust.md) | Enabler | The secret scan in Rust, without secretlint | draft |
-| [EN-111](../stories/E17-F21-EN-111-ci-on-the-rust-tools.md) | Enabler | The CI on the Rust tools, built and cached once | draft |
-| [EN-112](../stories/E17-F21-EN-112-release-tool-in-rust.md) | Enabler | The release made by our own tool, in place of release-please | draft |
-| [EN-113](../stories/E17-F21-EN-113-clean-up-of-e17.md) | Enabler | Clean-up of E17, every tool left unused removed | draft |
-| [AUD-023](../stories/E17-F21-AUD-023-audit-f21.md) | Audit | Audit F21 | draft |
-| [VAL-022](../stories/E17-F21-VAL-022-validate-f21.md) | Validation | Validate F21 | draft |
+| [SP-023](../stories/E17-F21-SP-023-research-f21.md) | Spike | Research for F21 | done |
+| [EN-102](../stories/E17-F21-EN-102-each-tool-records-its-use.md) | Enabler | Each tool of our own records its use | ready |
+| [EN-103](../stories/E17-F21-EN-103-backlog-and-repository-tools-in-rust.md) | Enabler | The backlog and repository tools in Rust | ready |
+| [EN-104](../stories/E17-F21-EN-104-claude-code-hooks-in-rust.md) | Enabler | The Claude Code hooks and the status line in Rust | ready |
+| [EN-105](../stories/E17-F21-EN-105-one-row-or-section-of-a-page.md) | Enabler | One row or one section of a repository page | ready |
+| [EN-106](../stories/E17-F21-EN-106-library-server-in-rust.md) | Enabler | The library server and its command line in Rust on rmcp | ready |
+| [EN-107](../stories/E17-F21-EN-107-metrics-tools-in-rust.md) | Enabler | The metrics tools in Rust | ready |
+| [CHK-022](../stories/E17-F21-CHK-022-checkpoint-f21.md) | Checkpoint | Checkpoint in the middle of F21 | ready |
+| [EN-108](../stories/E17-F21-EN-108-git-hooks-in-rust.md) | Enabler | The Git hooks in Rust, without husky, lint-staged, commitlint nor validate-branch-name | ready |
+| [EN-109](../stories/E17-F21-EN-109-dependency-checks-in-rust.md) | Enabler | The dependency checks in Rust, without npm-check-updates nor knip | ready |
+| [EN-110](../stories/E17-F21-EN-110-secret-scan-in-rust.md) | Enabler | The secret scan in Rust, without secretlint | ready |
+| [EN-111](../stories/E17-F21-EN-111-ci-on-the-rust-tools.md) | Enabler | The CI on the Rust tools, built and cached once | ready |
+| [EN-112](../stories/E17-F21-EN-112-release-tool-in-rust.md) | Enabler | The release made by our own tool, in place of release-please | ready |
+| [EN-113](../stories/E17-F21-EN-113-clean-up-of-e17.md) | Enabler | Clean-up of E17, every tool left unused removed | ready |
+| [AUD-023](../stories/E17-F21-AUD-023-audit-f21.md) | Audit | Audit F21 | ready |
+| [VAL-022](../stories/E17-F21-VAL-022-validate-f21.md) | Validation | Validate F21 | ready |

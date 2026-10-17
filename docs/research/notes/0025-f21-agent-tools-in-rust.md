@@ -294,7 +294,7 @@ Release-please's 0.2.0 entry, counted again in `CHANGELOG.md`: 163 lines of chan
 
 One question, written in EN-104, which waits for the answer:
 
-**How are the Rust tools called?** Measured above: a binary by its path, 2.7 ms; through `cargo run`, 49.9 ms; through `npm run` and `cargo run`, 149 ms. ADR-0073, decision 1, says `cargo run --release -q -p <crate>`. Over the three days counted in F20's research note 0024, the agent made at least 9,500 Bash calls (reads, searches and Git), and `guard-bash` runs before each one.
+**How are the Rust tools called?** Measured above: a binary by its path, 2.7 ms; through `cargo run`, 49.9 ms; through `npm run` and `cargo run`, 149 ms. ADR-0073, decision 1, says `cargo run --release -q -p <crate>`. Over the three days counted in F20's [research note 0024](./0024-f20-context-diet.md), the agent made at least 9,500 Bash calls (reads, searches and Git), and `guard-bash` runs before each one.
 
 - **A — keep `cargo run` everywhere**: always the binary of the current sources, nothing to rebuild by hand; `guard-bash` in Rust waits about 50 ms instead of 56 ms today, about 8 minutes per 9,500 calls instead of 9.
 - **B — the hooks, the status line and the Git hooks call `target/release/<binary>`**: about 3 ms, 30 seconds per 9,500 calls; a binary older than its sources is the risk, met by `rust:build` at `prepare` and after `git:sync` and `story:finish`, and by a check that fails naming the stale binary; ADR-0073's decision 1 superseded for these calls.

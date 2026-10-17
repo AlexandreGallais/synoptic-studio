@@ -3,7 +3,7 @@ id: EN-107
 epic: E17
 feature: F21
 title: The metrics tools in Rust
-status: draft
+status: ready
 points: 5
 ---
 

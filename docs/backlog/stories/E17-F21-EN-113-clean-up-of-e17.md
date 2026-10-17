@@ -3,7 +3,7 @@ id: EN-113
 epic: E17
 feature: F21
 title: Clean-up of E17, every tool left unused removed
-status: draft
+status: ready
 points: 3
 ---
 

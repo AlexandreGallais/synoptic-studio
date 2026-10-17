@@ -3,7 +3,7 @@ id: EN-103
 epic: E17
 feature: F21
 title: The backlog and repository tools in Rust
-status: draft
+status: ready
 points: 8
 ---
 
