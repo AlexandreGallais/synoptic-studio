@@ -1,7 +1,7 @@
 {
   "*.ts": [
     "cargo run --release -q -p format -- --write",
-    "oxlint --type-check --fix --deny-warnings --no-error-on-unmatched-pattern",
+    "oxlint --type-check --fix --deny-warnings --report-unused-disable-directives-severity=error --no-error-on-unmatched-pattern",
     "cargo run --release -q -p lint -- --fix"
   ],
   "*.md": [
