@@ -49,7 +49,7 @@ The V-model is not this project's lifecycle (requirements grow feature by featur
 | --- | --- | --- |
 | system specification | the need | [domain](../domain/) (vision, purpose, rules), epics |
 | software requirements | verifiable behaviors | feature acceptance criteria `F01.ACn` |
-| interface description | contracts | public API reference (TypeDoc), ADRs |
+| interface description | contracts | public API reference (`tools/api-pages`), ADRs |
 | design description | design and its reasons | ADRs, [conventions](../conventions/), derivations |
 | test plan | strategy | [test strategy](../conventions/testing.md#test-strategy) |
 | test description | test cases | tests, tagged `[F01.ACn]` when they prove a criterion |

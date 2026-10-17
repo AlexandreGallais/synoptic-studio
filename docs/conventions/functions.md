@@ -33,7 +33,7 @@ Every top-level function carries **exactly one** `@kind`. A function mixing two 
 | `format` | conversion between representations (model ↔ SVG, JSON) | no |
 | `procedure` | action with a side effect (DOM, state, events) | yes |
 
-Why a JSDoc tag and not a decorator: a TypeScript decorator only applies to classes and their members, never to a free function (`REF-TS-DECORATORS`). The tag plays the same role, and ESLint reads it.
+Why a JSDoc tag and not a decorator: a TypeScript decorator only applies to classes and their members, never to a free function (`REF-TS-DECORATORS`). The tag plays the same role, and the project's linter reads it (`tools/lint`).
 
 ## Limits per kind (`local/kind-limits`)
 

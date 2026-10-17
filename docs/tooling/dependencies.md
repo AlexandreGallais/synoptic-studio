@@ -15,9 +15,9 @@
 
 | Package | Why | Alternatives rejected |
 | --- | --- | --- |
-| `@typescript/native` | TypeScript 7, the native compiler, under the alias of `REF-TS7-ANNOUNCEMENT` (`npm:typescript@7.0.2`): its `tsc` runs the type check and writes the declarations of `build`, about 5 times faster than 6.0 (EN-071); becomes `typescript` again at EN-085 | TypeScript 6's `tsc`: about 4.3 s against 0.9 s on this tree |
+| `@typescript/native` | TypeScript 7, the native compiler, under the alias of `REF-TS7-ANNOUNCEMENT` (`npm:typescript@7.0.2`): its type checker runs under oxlint's `--type-check` and as `npm run typecheck`, about 5 times faster than 6.0 (EN-071; the declarations of `build` are Oxc's since EN-091); becomes `typescript` again at EN-085 | TypeScript 6's `tsc`: about 4.3 s against 0.9 s on this tree |
 | `typescript` | TypeScript 6's API, as `npm:@typescript/typescript6@6.0.2` (binary `tsc6`), for the tool that imports `typescript` through a peer dependency until it leaves: typescript-eslint (EN-085); TypeDoc left with EN-072; patch upgrades only (`.ncurc.cjs`) | `typescript` 7 alone: no API until 7.1, so typescript-eslint cannot load it |
-| `@types/node` | Node.js types for the tooling (ESLint plugin, configuration files) | — |
+| `@types/node` | Node.js types for the tooling (scripts, hooks, configuration files) | — |
 | `vite` | development server of the playground and library build (Product Owner requirement, ADR-0009) | — |
 | `vitest` | tests, sharing Vite's configuration and transforms | Jest: separate transform pipeline |
 | `@vitest/coverage-v8` | test coverage of `src/`, with 100 % thresholds (lines, branches, functions, statements): every behavior of the library is tested | `@vitest/coverage-istanbul`: slower, instruments the code |
@@ -39,8 +39,8 @@
 | `eslint-plugin-unused-imports` | **removes** unused imports on save (core and typescript-eslint only report) | — |
 | `eslint-plugin-functional` | immutability and no classes: "a function never modifies its arguments" (ADR-0014) | — |
 | `eslint-plugin-unicorn` | ~370 modern best-practice rules | `eslint-plugin-sonarjs`: overlaps unicorn and complexity rules |
-| `@stylistic/eslint-plugin` | blank lines between statements and comment style, which Prettier does not decide | — |
-| `eslint-config-prettier` | turns off the ESLint rules that conflict with Prettier (ADR-0013) | `eslint-plugin-prettier`: discouraged by Prettier (`REF-PRETTIER-LINTERS`) |
+| `@stylistic/eslint-plugin` | blank lines between statements and comment style, which the formatter does not decide | — |
+| `eslint-config-prettier` | turns off the ESLint rules that conflict with the formatter, oxfmt laying out as Prettier does (ADR-0013), until ESLint leaves (EN-085) | `eslint-plugin-prettier`: discouraged by Prettier (`REF-PRETTIER-LINTERS`) |
 | `oxfmt` | the formatter of every file kind the repository formats, Markdown included, natively in Rust (`REF-OXFMT`, `REF-OXFMT-LANGUAGES`), run by `tools/format`, which then writes Markdown tables without padding (ADR-0068, EN-073); 0.72.0, released 2026-10-05, its notes read (Markdown formatted by `oxc_formatter_markdown`), 0.73.0 being under 7 days old | Prettier 3.9: about 30 times slower (12.4 s against 0.4 s here), pads tables too, a JavaScript tool against the Rust rule (note 0023) |
 | `oxlint` | the one lint command (`npm run lint`): ESLint's native rules, typescript-eslint's, Unicorn's, JSDoc's and Import's built in Rust, with their options (`REF-OXLINT`, `REF-OXLINT-PLUGINS`), its configuration `.oxlintrc.json` written by `@oxlint/migrate --type-aware` from `eslint/` (`REF-OXLINT-MIGRATE`, EN-074); 1.87.0, released 2026-10-05, its notes read (suggestions and fixes only, no rule removed), 1.88.0 being under 7 days old | ESLint 10 with typescript-eslint: about 62 s on this tree against 2 s; kept only for the rules oxlint lacks until F19 rewrites them and EN-085 removes it |
 | `oxlint-tsgolint` | the type-aware rules of `oxlint` (`options.typeAware`), typescript-eslint's rules run on typescript-go: `no-floating-promises`, `strict-boolean-expressions`, the `no-unsafe-*` family… (`REF-OXLINT-TYPE-AWARE`, `REF-TSGOLINT`), loaded by `oxlint`, imported by no file (`knip.json`); 7.0.2004, released 2026-10-10, its notes read (fixes to `no-unsafe-return`, `no-misused-promises`, `no-floating-promises`, `no-deprecated` and line disable comments) | typescript-eslint's type-aware rules in ESLint: TypeScript 6's API and most of ESLint's 62 s |
@@ -58,7 +58,7 @@
 | Package | Why | Alternatives rejected |
 | --- | --- | --- |
 | `husky` | installs the Git hooks (`.husky/`) on `npm install` | `lefthook`: equally good, less widespread |
-| `lint-staged` | runs the formatter, ESLint and secretlint on staged files only, before each commit (`.lintstagedrc.json`) | — |
+| `lint-staged` | runs the formatter, the linters and secretlint on staged files only, before each commit (`.lintstagedrc.json`) | — |
 | `@commitlint/cli` | checks commit messages | — |
 | `@commitlint/config-conventional` | Conventional Commits rule set (`REF-CONVENTIONAL-COMMITS`) | — |
 | `@commitlint/types` | types of `commitlint.config.ts` | — |
