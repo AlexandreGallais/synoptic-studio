@@ -3,7 +3,7 @@ id: EN-089
 epic: E17
 feature: F19
 title: Font files read once per test run
-status: ready
+status: done
 points: 2
 ---
 
