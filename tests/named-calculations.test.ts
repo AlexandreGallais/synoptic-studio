@@ -3,6 +3,8 @@ import { basename, join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { builtOnce } from "./built-once";
+
 /** Repository root. */
 const ROOT = join(import.meta.dirname, "..");
 
@@ -37,6 +39,9 @@ function sourceFiles(): readonly SourceFile[] {
   );
 }
 
+/** The source files, read at the first search and shared, frozen, by every row (EN-090). */
+const readSources = builtOnce(() => Object.freeze(sourceFiles()));
+
 /**
  * Names of the files whose code matches a pattern.
  *
@@ -44,7 +49,7 @@ function sourceFiles(): readonly SourceFile[] {
  * @returns the file names, sorted
  */
 function filesWith(pattern: RegExp): readonly string[] {
-  return sourceFiles()
+  return readSources()
     .filter((file) => file.code.some((line) => pattern.test(line)))
     .map((file) => file.name)
     .toSorted((left, right) => left.localeCompare(right));
