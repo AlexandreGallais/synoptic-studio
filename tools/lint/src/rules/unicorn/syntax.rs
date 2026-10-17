@@ -248,7 +248,7 @@ pub enum Kind {
 }
 
 /// The typed arrays' names.
-const TYPED_ARRAYS: [&str; 11] = [
+const TYPED_ARRAYS: [&str; 12] = [
     "Int8Array",
     "Uint8Array",
     "Uint8ClampedArray",
@@ -256,6 +256,7 @@ const TYPED_ARRAYS: [&str; 11] = [
     "Uint16Array",
     "Int32Array",
     "Uint32Array",
+    "Float16Array",
     "Float32Array",
     "Float64Array",
     "BigInt64Array",
@@ -1422,5 +1423,156 @@ fn is_generator_function(source: &Source, callee: &Expression, depth: u8) -> boo
             }
         }
         _ => false,
+    }
+}
+
+/// The range `.name()` takes after the receiver of a method call, from its `.` to the call's end.
+#[must_use]
+pub fn method_call_tail(source: &Source, method: &MethodCall) -> Span {
+    let before = source
+        .text
+        .get(..method.property.start as usize)
+        .unwrap_or_default();
+    let dot = before.rfind('.').unwrap_or(before.len());
+    let dot = if before[..dot].ends_with('?') {
+        dot - 1
+    } else {
+        dot
+    };
+    Span::new(
+        u32::try_from(dot).unwrap_or(method.property.start),
+        method.call.span.end,
+    )
+}
+
+/// One replacement of a fix made of several.
+pub struct Edit {
+    /// The range replaced.
+    pub span: Span,
+    /// Its new text.
+    pub text: String,
+}
+
+/// One fix that makes several edits, the text between them kept; `None` when two overlap.
+#[must_use]
+pub fn combined_fix(source: &Source, mut edits: Vec<Edit>) -> Option<crate::finding::Fix> {
+    edits.sort_by_key(|edit| edit.span.start);
+    if edits
+        .windows(2)
+        .any(|pair| pair[0].span.end > pair[1].span.start)
+    {
+        return None;
+    }
+    let start = edits.first()?.span.start;
+    let end = edits.iter().map(|edit| edit.span.end).max()?;
+    let mut replaced = String::new();
+    let mut at = start;
+    for edit in &edits {
+        replaced.push_str(text(source, Span::new(at, edit.span.start)));
+        replaced.push_str(&edit.text);
+        at = edit.span.end;
+    }
+    Some(crate::finding::Fix {
+        start,
+        end,
+        text: replaced,
+    })
+}
+
+/// A name free in a scope and the scopes under it, the wanted one followed by as many `_` as
+/// it takes (`getAvailableVariableName`).
+#[must_use]
+pub fn available_name(source: &Source, scope: oxc_semantic::ScopeId, wanted: &str) -> String {
+    let scoping = source.semantic.scoping();
+    let mut name = wanted.to_owned();
+    loop {
+        let ident = oxc_ast::ast::Ident::from(name.as_str());
+        let visible = scoping.find_binding(scope, ident).is_some();
+        let below = scoping.iter_bindings().any(|(each, bindings)| {
+            scoping.scope_is_descendant_of(each, scope)
+                && bindings.keys().any(|key| key.as_str() == name)
+        });
+        let global = scoping
+            .root_unresolved_references()
+            .keys()
+            .any(|key| key.as_str() == name);
+        if !visible && !below && !global {
+            return name;
+        }
+        name.push('_');
+    }
+}
+
+/// The function an identifier names in the file: a declaration, or a `const` bound to a
+/// function or an arrow.
+#[must_use]
+pub fn function_named<'a>(
+    source: &Source<'_, 'a>,
+    expression: &Expression,
+) -> Option<FunctionLike<'a, 'a>> {
+    let Expression::Identifier(identifier) = unwrap_chain(expression) else {
+        return None;
+    };
+    let symbol = symbol_of(source, identifier)?;
+    let scoping = source.semantic.scoping();
+    match source
+        .semantic
+        .nodes()
+        .kind(scoping.symbol_declaration(symbol))
+    {
+        AstKind::Function(function) => Some(FunctionLike::Function(function)),
+        AstKind::VariableDeclarator(declarator) => match unwrap_chain(declarator.init.as_ref()?) {
+            Expression::FunctionExpression(function) => Some(FunctionLike::Function(function)),
+            Expression::ArrowFunctionExpression(arrow) => Some(FunctionLike::Arrow(arrow)),
+            _ => None,
+        },
+        _ => None,
+    }
+}
+
+/// A function or an arrow.
+pub enum FunctionLike<'b, 'a> {
+    /// A function declaration or expression.
+    Function(&'b Function<'a>),
+    /// An arrow.
+    Arrow(&'b ArrowFunctionExpression<'a>),
+}
+
+impl FunctionLike<'_, '_> {
+    /// Whether a callback may read the argument at an index: it declares that many parameters,
+    /// a rest parameter, or, for a `function`, reads `arguments`.
+    #[must_use]
+    pub fn may_read_argument(&self, source: &Source, index: usize) -> bool {
+        match self {
+            FunctionLike::Function(function) => {
+                function.params.items.len() > index
+                    || function.params.rest.is_some()
+                    || function
+                        .body
+                        .as_ref()
+                        .is_some_and(|body| reads_arguments(source, body.span))
+            }
+            FunctionLike::Arrow(arrow) => {
+                arrow.params.items.len() > index || arrow.params.rest.is_some()
+            }
+        }
+    }
+}
+
+/// Whether a range of the file reads `arguments`.
+fn reads_arguments(source: &Source, span: Span) -> bool {
+    source.semantic.nodes().iter().any(|node| {
+        matches!(node.kind(), AstKind::IdentifierReference(identifier)
+            if identifier.name == "arguments" && identifier.span.start >= span.start && identifier.span.end <= span.end)
+    })
+}
+
+/// The inline function an expression is, as a `FunctionLike`.
+#[must_use]
+pub fn function_like<'b, 'a>(expression: &'b Expression<'a>) -> Option<FunctionLike<'b, 'a>> {
+    match unwrap_chain(expression) {
+        Expression::FunctionExpression(function) => Some(FunctionLike::Function(function)),
+        Expression::ArrowFunctionExpression(arrow) => Some(FunctionLike::Arrow(arrow)),
+        _ => None,
     }
 }

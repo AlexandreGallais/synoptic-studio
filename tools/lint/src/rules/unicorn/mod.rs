@@ -23,16 +23,24 @@ pub mod no_unreadable_for_of_expression;
 pub mod no_unused_iterator_helper;
 pub mod no_useless_set_construction;
 pub mod prefer_array_from_map;
+pub mod prefer_array_iterable_methods;
 pub mod prefer_array_last_methods;
 pub mod prefer_array_slice;
+pub mod prefer_direct_iteration;
 pub mod prefer_flat_math_min_max;
 pub mod prefer_group_by;
 pub mod prefer_has_check;
 pub mod prefer_includes_over_repeated_comparisons;
+pub mod prefer_iterable_in_constructor;
+pub mod prefer_iterator_helpers;
+pub mod prefer_iterator_to_array;
+pub mod prefer_iterator_to_array_at_end;
 pub mod prefer_map_from_entries;
+pub mod prefer_object_iterable_methods;
 pub mod prefer_set_methods;
 pub mod prefer_simple_sort_comparator;
 pub mod prefer_single_array_predicate;
+pub mod prefer_while_loop_condition;
 pub mod syntax;
 
 use super::Rule;
@@ -60,16 +68,24 @@ pub const RULES: &[&dyn Rule] = &[
     &no_unused_iterator_helper::NoUnusedIteratorHelper,
     &no_useless_set_construction::NoUselessSetConstruction,
     &prefer_array_from_map::PreferArrayFromMap,
+    &prefer_array_iterable_methods::PreferArrayIterableMethods,
     &prefer_array_last_methods::PreferArrayLastMethods,
     &prefer_array_slice::PreferArraySlice,
+    &prefer_direct_iteration::PreferDirectIteration,
     &prefer_flat_math_min_max::PreferFlatMathMinMax,
     &prefer_group_by::PreferGroupBy,
     &prefer_has_check::PreferHasCheck,
     &prefer_includes_over_repeated_comparisons::PreferIncludesOverRepeatedComparisons,
+    &prefer_iterable_in_constructor::PreferIterableInConstructor,
+    &prefer_iterator_helpers::PreferIteratorHelpers,
+    &prefer_iterator_to_array::PreferIteratorToArray,
+    &prefer_iterator_to_array_at_end::PreferIteratorToArrayAtEnd,
     &prefer_map_from_entries::PreferMapFromEntries,
+    &prefer_object_iterable_methods::PreferObjectIterableMethods,
     &prefer_set_methods::PreferSetMethods,
     &prefer_simple_sort_comparator::PreferSimpleSortComparator,
     &prefer_single_array_predicate::PreferSingleArrayPredicate,
+    &prefer_while_loop_condition::PreferWhileLoopCondition,
 ];
 
 /// Their names, on for every TypeScript file.
@@ -95,16 +111,24 @@ pub const NAMES: &[&str] = &[
     "unicorn/no-unused-iterator-helper",
     "unicorn/no-useless-set-construction",
     "unicorn/prefer-array-from-map",
+    "unicorn/prefer-array-iterable-methods",
     "unicorn/prefer-array-last-methods",
     "unicorn/prefer-array-slice",
+    "unicorn/prefer-direct-iteration",
     "unicorn/prefer-flat-math-min-max",
     "unicorn/prefer-group-by",
     "unicorn/prefer-has-check",
     "unicorn/prefer-includes-over-repeated-comparisons",
+    "unicorn/prefer-iterable-in-constructor",
+    "unicorn/prefer-iterator-helpers",
+    "unicorn/prefer-iterator-to-array",
+    "unicorn/prefer-iterator-to-array-at-end",
     "unicorn/prefer-map-from-entries",
+    "unicorn/prefer-object-iterable-methods",
     "unicorn/prefer-set-methods",
     "unicorn/prefer-simple-sort-comparator",
     "unicorn/prefer-single-array-predicate",
+    "unicorn/prefer-while-loop-condition",
 ];
 
 #[cfg(test)]
