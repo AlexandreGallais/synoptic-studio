@@ -67,8 +67,8 @@ export const FOLDER_LAYOUT_RULE = createRule<Options, "mixed" | "past">({
       }
     },
   }),
-  defaultOptions: [{ listed: [], root: ".", signal: 15 }],
   meta: {
+    defaultOptions: [{ listed: [], root: ".", signal: 15 }],
     docs: { description: "Keep files and domain folders apart, and folders under the signal." },
     messages: {
       mixed: "Folder `{{path}}` holds domain folders: move `{{name}}` into one of them.",

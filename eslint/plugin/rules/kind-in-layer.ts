@@ -48,8 +48,8 @@ export const KIND_IN_LAYER_RULE = createRule<Options, "forbidden">({
       },
     };
   },
-  defaultOptions: [{ layers: [] }],
   meta: {
+    defaultOptions: [{ layers: [] }],
     docs: { description: "Restrict the `@kind` values allowed in each architectural layer." },
     messages: {
       forbidden: "Kind `{{kind}}` is not allowed in layer `{{layer}}` (allowed: {{kinds}}).",

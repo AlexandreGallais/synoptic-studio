@@ -38,6 +38,9 @@ const PLAYGROUND_BUILD: BuildEnvironmentOptions = {
  * Vite configuration: dev server on `playground/`, library build of `src/` (default mode) or
  * playground build (`--mode playground`), Vitest.
  *
+ * @param env - what Vite runs
+ * @param env.mode - `playground` for the playground build, the library build otherwise
+ * @returns the configuration of that mode
  * @see docs/tooling/commands.md
  */
 export default defineConfig(({ mode }) => ({

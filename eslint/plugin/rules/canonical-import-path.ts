@@ -88,8 +88,8 @@ export const CANONICAL_IMPORT_PATH_RULE = createRule<[], MessageIds>({
       ImportExpression: check,
     };
   },
-  defaultOptions: [],
   meta: {
+    defaultOptions: [],
     docs: {
       description:
         "Require the shortest legal relative import path (folder barrels, no index, no extension).",

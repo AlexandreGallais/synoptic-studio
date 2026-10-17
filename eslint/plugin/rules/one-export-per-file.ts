@@ -254,8 +254,8 @@ export const ONE_EXPORT_PER_FILE_RULE = createRule<[], MessageIds>({
       }
     },
   }),
-  defaultOptions: [],
   meta: {
+    defaultOptions: [],
     docs: { description: "Require one exported value per module, named like the file." },
     messages: {
       exportList:

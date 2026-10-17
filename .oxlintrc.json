@@ -142,7 +142,7 @@
         "preserve-caught-error": [
           "error",
           {
-            "requireCatchParameter": true
+            "requireCatchParameter": false
           }
         ],
         "arrow-body-style": ["error", "as-needed"],
@@ -211,6 +211,7 @@
         "id-length": [
           "error",
           {
+            "checkGeneric": false,
             "exceptions": [
               "a",
               "b",
@@ -375,6 +376,11 @@
         "no-void": "error",
         "operator-assignment": ["error", "always"],
         "prefer-exponentiation-operator": "error",
+        "prefer-destructuring": [
+          "error",
+          { "array": false, "object": true },
+          { "enforceForRenamedProperties": false }
+        ],
         "prefer-numeric-literals": "error",
         "prefer-template": "error",
         "radix": "error",
@@ -841,7 +847,10 @@
         "unicorn/no-negation-in-equality-check": "error",
         "unicorn/no-typeof-undefined": "error",
         "unicorn/no-useless-switch-case": "error",
-        "unicorn/no-useless-undefined": "error",
+        "unicorn/no-useless-undefined": [
+          "error",
+          { "checkArguments": false, "checkArrowFunctionBody": true }
+        ],
         "unicorn/prefer-logical-operator-over-ternary": "error",
         "unicorn/prefer-ternary": "error",
         "unicorn/switch-case-braces": "error",
@@ -919,7 +928,10 @@
         "unicorn/prefer-modern-math-apis": "error",
         "unicorn/prefer-native-coercion-functions": "error",
         "unicorn/prefer-number-coercion": "error",
-        "unicorn/prefer-number-properties": "error",
+        "unicorn/prefer-number-properties": [
+          "error",
+          { "checkInfinity": false, "checkNaN": false }
+        ],
         "unicorn/require-number-to-fixed-digits-argument": "error",
         "unicorn/new-for-builtins": "error",
         "unicorn/no-instanceof-builtins": "error",

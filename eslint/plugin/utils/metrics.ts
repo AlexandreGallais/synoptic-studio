@@ -76,7 +76,7 @@ function childrenOf(
 ): TSESTree.Node[] {
   const keys = sourceCode.visitorKeys[node.type] ?? [];
 
-  return keys.flatMap((key) => [slot(node, key)].flat()).filter(isNode);
+  return keys.flatMap((key) => [slot(node, key)].flat()).filter((value) => isNode(value));
 }
 
 /**

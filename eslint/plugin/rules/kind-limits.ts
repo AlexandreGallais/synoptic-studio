@@ -63,8 +63,8 @@ export const KIND_LIMITS_RULE = createRule<Options, "exceeded">({
       }
     },
   }),
-  defaultOptions: [{ limits: {} }],
   meta: {
+    defaultOptions: [{ limits: {} }],
     docs: { description: "Bound lines, statements, complexity and depth by function kind." },
     messages: {
       exceeded:

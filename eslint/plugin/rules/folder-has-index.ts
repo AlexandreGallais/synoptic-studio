@@ -22,8 +22,8 @@ export const FOLDER_HAS_INDEX_RULE = createRule<Options, "missing">({
       }
     },
   }),
-  defaultOptions: [{ exemptDirectories: ["."] }],
   meta: {
+    defaultOptions: [{ exemptDirectories: ["."] }],
     docs: { description: "Require an `index.ts` barrel in every source folder." },
     messages: { missing: "Folder `{{path}}` has no `index.ts`: create its barrel." },
     schema: [
