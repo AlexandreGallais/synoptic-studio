@@ -304,3 +304,51 @@ pub fn cached_tasks(cache: &Value, transcript: &str) -> (Vec<Task>, usize) {
         usize::try_from(number(tally.get("offset"))).unwrap_or(0),
     )
 }
+
+/// The id following `marker` in a text, made of letters and digits, empty when the marker is absent.
+fn id_after<'a>(text: &'a str, marker: &str) -> &'a str {
+    text.split_once(marker).map_or("", |(_, rest)| {
+        let end = rest
+            .find(|character: char| !character.is_ascii_alphanumeric())
+            .unwrap_or(rest.len());
+
+        &rest[..end]
+    })
+}
+
+/// The names the subagents started or resumed by these calls answer to in a `SendMessage`: the
+/// `name` an `Agent` call gave, and the agent id its result names, `agentId: …` when launched
+/// (seen 2026-10-17) or `"resumedAgentId":"…"` when a message resumed it (seen 2026-10-16).
+#[must_use]
+pub fn agent_names(lines: &str, ids: &[&str]) -> Vec<String> {
+    lines
+        .lines()
+        .filter(|raw| raw.starts_with('{') && ids.iter().any(|id| raw.contains(id)))
+        .filter_map(json::parse)
+        .flat_map(|line| {
+            blocks(&line)
+                .iter()
+                .filter_map(|block| match block.get("type").text() {
+                    "tool_use" if ids.contains(&block.get("id").text()) => {
+                        Some(block.get("input").get("name").text().to_owned())
+                    }
+                    "tool_result" if ids.contains(&block.get("tool_use_id").text()) => {
+                        let text = result_text(block);
+                        let launched = id_after(&text, "agentId: ");
+
+                        Some(
+                            if launched.is_empty() {
+                                id_after(&text, "\"resumedAgentId\":\"")
+                            } else {
+                                launched
+                            }
+                            .to_owned(),
+                        )
+                    }
+                    _ => None,
+                })
+                .collect::<Vec<_>>()
+        })
+        .filter(|name| !name.is_empty())
+        .collect()
+}
