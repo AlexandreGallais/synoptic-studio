@@ -16,6 +16,7 @@ pub mod source;
 #[cfg(test)]
 pub mod testing;
 pub mod walk;
+pub mod written;
 
 use std::fmt::Write as _;
 use std::fs;

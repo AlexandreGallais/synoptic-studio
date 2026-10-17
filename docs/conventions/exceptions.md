@@ -55,6 +55,5 @@ Every place where the code departs from a lint rule, with its reason (ADR-0066).
 
 | File | Function | Rule | Reason |
 | --- | --- | --- | --- |
-| `eslint/settings/identifiers.ts` | `ANY_FORMAT` | `unicorn/no-null` | the option schema of `naming-convention` requires `null` |
 | `tests/barrels.test.ts` | `runtimeExports` | `no-restricted-syntax` | loading each re-exported module is the point of this test |
 | `tools/hooks/src/tasks.rs` | `cached_tasks` | `clippy::cast_possible_truncation` | offsets and times are whole numbers the status line wrote, read back from JSON as floats |

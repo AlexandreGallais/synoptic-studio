@@ -40,7 +40,7 @@ function sourceFiles(): readonly SourceFile[] {
 }
 
 /** The source files, read at the first search and shared, frozen, by every row (EN-090). */
-const readSources = builtOnce(() => Object.freeze(sourceFiles()));
+const readSources: () => readonly SourceFile[] = builtOnce(() => Object.freeze(sourceFiles()));
 
 /**
  * Names of the files whose code matches a pattern.

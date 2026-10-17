@@ -2,6 +2,8 @@
 
 ## Casing (`@typescript-eslint/naming-convention`)
 
+Run by the project's linter (`tools/lint`, EN-076), which reads a name's type from its written annotation, or else its initializer: a module constant holding a function is an arrow or a function expression, or has its function type written (`const items: () => readonly Item[] = builtOnce(…)`); a boolean is `boolean`, `true` or `false` written, or a comparison, a negation or `Boolean(…)`. A type the code does not tell, such as a call's result, takes the next row.
+
 | Element | Form | Example |
 | --- | --- | --- |
 | function, local variable, parameter | `camelCase` | `filletSetback`, `interiorAngle` |

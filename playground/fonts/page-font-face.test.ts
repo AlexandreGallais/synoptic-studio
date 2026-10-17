@@ -45,10 +45,11 @@ type FakeFace = {
 };
 
 /** The faces the fake page's font set holds. */
-const addFace = vi.fn<(face: FakeFace) => void>();
+const addFace: (face: FakeFace) => void = vi.fn<(face: FakeFace) => void>();
 
 /** The fake `FontFace` constructor, recording its arguments. */
-const createdFaces = vi.fn<(family: string, source: Uint8Array, descriptors: object) => FakeFace>();
+const createdFaces: (family: string, source: Uint8Array, descriptors: object) => FakeFace =
+  vi.fn<(family: string, source: Uint8Array, descriptors: object) => FakeFace>();
 
 /**
  * Creates a face as the browser's `FontFace` constructor does, its load fulfilled or rejected.

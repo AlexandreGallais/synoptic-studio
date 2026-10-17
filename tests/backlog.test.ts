@@ -78,7 +78,7 @@ function readItems(): readonly Item[] {
 }
 
 /** Every backlog item, read at the first call and shared, frozen, by every test of the file (EN-090). */
-const items = builtOnce(() => Object.freeze(readItems()));
+const items: () => readonly Item[] = builtOnce(() => Object.freeze(readItems()));
 
 /**
  * Identifiers of the items of one folder.
