@@ -65,7 +65,7 @@ fn is_required(source: &Source, id: NodeId, span: Span) -> bool {
     match nodes.parent_kind(id) {
         AstKind::Directive(_)
         | AstKind::ImportDeclaration(_)
-        | AstKind::ExportNamedDeclaration(_)
+        | AstKind::ExportFromDeclaration(_)
         | AstKind::ExportAllDeclaration(_)
         | AstKind::ImportAttribute(_)
         | AstKind::ImportSpecifier(_)
