@@ -123,6 +123,19 @@
         "no-lonely-if": "error",
         "no-unmodified-loop-condition": "error",
         "no-unreachable": "error",
+        "no-unreachable-loop": "error",
+        "no-restricted-exports": [
+          "error",
+          {
+            "restrictDefaultExports": {
+              "direct": true,
+              "named": true,
+              "defaultFrom": true,
+              "namedFrom": true,
+              "namespaceFrom": true
+            }
+          }
+        ],
         "no-unsafe-finally": "error",
         "no-ex-assign": "error",
         "no-useless-catch": "error",
@@ -526,6 +539,11 @@
         "typescript/no-misused-spread": "error",
         "typescript/no-redundant-type-constituents": "error",
         "typescript/no-unnecessary-boolean-literal-compare": "error",
+        "typescript/no-unnecessary-condition": [
+          "error",
+          { "allowConstantLoopConditions": "never", "checkTypePredicates": true }
+        ],
+        "typescript/prefer-optional-chain": "error",
         "typescript/no-unnecessary-template-expression": "error",
         "typescript/no-unnecessary-type-arguments": "error",
         "typescript/no-unnecessary-type-constraint": "error",
@@ -800,6 +818,7 @@
         "unicorn/no-unnecessary-array-splice-count": "error",
         "unicorn/no-unreadable-array-destructuring": "error",
         "unicorn/no-useless-length-check": "error",
+        "unicorn/no-useless-iterator-to-array": "error",
         "unicorn/prefer-array-find": "error",
         "unicorn/prefer-array-flat": "error",
         "unicorn/prefer-array-index-of": "error",
@@ -1096,9 +1115,9 @@
     {
       "files": [
         "eslint/**/*.ts",
-        "*.config.ts",
-        "*.setup.ts",
-        "*.test.ts",
+        "./*.config.ts",
+        "./*.setup.ts",
+        "./*.test.ts",
         "tests/*.ts",
         "docs/.vitepress/**/*.ts",
         ".claude/hooks/**/*.ts",
@@ -1135,9 +1154,10 @@
       "plugins": ["typescript"]
     },
     {
-      "files": ["*.config.ts", "docs/.vitepress/config.ts", "docs/.vitepress/theme/index.ts"],
+      "files": ["./*.config.ts", "docs/.vitepress/config.ts", "docs/.vitepress/theme/index.ts"],
       "rules": {
-        "import/no-default-export": "off"
+        "import/no-default-export": "off",
+        "no-restricted-exports": "off"
       },
       "plugins": ["import"]
     }

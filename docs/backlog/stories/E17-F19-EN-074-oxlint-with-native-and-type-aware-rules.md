@@ -78,3 +78,18 @@ The 82 dropped, by reason ("types": a type-aware rule of `tsgolint`):
 | `jsdoc/check-access`, `jsdoc/check-property-names`, `jsdoc/require-property`, `jsdoc/require-property-description`, `jsdoc/require-property-name` | `@access`, `@typedef` and `@property` are refused by `jsdoc/check-tag-names` (`typed: true`) |
 
 Kept on purpose although close to a drop: `no-unreachable` (the compiler only suggests it, `allowUnreachableCode` left unset), `no-caller` and `prefer-rest-params` (`arguments` is allowed in the tests and the tools, where `functional/functional-parameters` is off), `unbound-method` (a DOM method passed without its object loses it), `no-plusplus`, `operator-assignment` and `logical-assignment-operators` (members can still change in the shell), and the type-aware `no-unnecessary-type-assertion` and `no-unsafe-type-assertion` (they check the assertions the register of exceptions allows).
+
+The 8 rules `@oxlint/migrate` skipped as unstable ("nursery") run in oxlint when named, so they are triaged too rather than left in ESLint:
+
+| Rule | Verdict |
+| --- | --- |
+| `no-unreachable-loop`, `no-restricted-exports` (its five `restrictDefaultExports` options; off in the root configurations, as in ESLint), `typescript/no-unnecessary-condition` (types), `typescript/prefer-optional-chain` (types), `unicorn/no-useless-iterator-to-array` | carried, named in `.oxlintrc.json` with ESLint's options; `no-restricted-exports` also reports `export { default } from`, which `import/no-default-export` lets through |
+| `import/export` | dropped: TypeScript refuses a name exported twice (ts(2323), ts(2528)) |
+| `import/named` | dropped: TypeScript refuses an import of a name the module does not export (ts(2614)) |
+| `no-useless-assignment` | dropped: only `const` can be declared and no parameter is reassigned, so no value can be assigned and overwritten unread |
+
+## The scopes as overrides (T2)
+
+`@oxlint/migrate` wrote one override per scope of `eslint/scopes/` that sets a native rule: the functional core (`no-restricted-globals`), the barrels and the aggregators (`import/max-dependencies`, `unicorn/no-empty-file`), the tooling (`new-cap`, `import/no-nodejs-modules`), the tests (`max-*`, `no-magic-numbers`) and the root configurations (`import/no-default-export`, `no-restricted-exports`); the other scopes set only rules oxlint lacks. One difference found on a probe file: a pattern without a slash (`*.test.ts`, `*.config.ts`, `*.setup.ts`) matches the root only in ESLint but any depth in oxlint, so a nested test got the tooling scope; written `./*.test.ts`, it matches the root only, as in ESLint.
+
+Checked on 2026-10-17 with probe files, one per scope, then removed: `document` reported in `src/math/` and not in `playground/`; `node:path` reported in `src/` and `playground/`, not in `eslint/`; a magic number reported outside a test, not in one; an empty `index.ts` accepted and an empty module reported; a default export accepted in a root `*.config.ts` and reported in `src/`. `tests/oxlint-config.test.ts` keeps the overrides equal to the scopes' native rules, files and settings (`[F19.AC1]`), and fails when a glob of the tooling scope is widened (tried).

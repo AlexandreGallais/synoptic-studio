@@ -431,3 +431,12 @@ The 82 dropped, by reason ("types": a type-aware rule of `tsgolint`):
 | `jsdoc/check-access`, `jsdoc/check-property-names`, `jsdoc/require-property`, `jsdoc/require-property-description`, `jsdoc/require-property-name` | `@access`, `@typedef` and `@property` are refused by `jsdoc/check-tag-names` (`typed: true`) |
 
 Kept on purpose although close to a drop: `no-unreachable` (the compiler only suggests it, `allowUnreachableCode` left unset), `no-caller` and `prefer-rest-params` (`arguments` is allowed in the tests and the tools, where `functional/functional-parameters` is off), `unbound-method` (a DOM method passed without its object loses it), `no-plusplus`, `operator-assignment` and `logical-assignment-operators` (members can still change in the shell), and the type-aware `no-unnecessary-type-assertion` and `no-unsafe-type-assertion` (they check the assertions the register of exceptions allows).
+
+The 8 rules `@oxlint/migrate` skipped as unstable ("nursery") run in oxlint when named, so they are triaged too rather than left in ESLint:
+
+| Rule | Verdict |
+| --- | --- |
+| `no-unreachable-loop`, `no-restricted-exports` (its five `restrictDefaultExports` options; off in the root configurations, as in ESLint), `typescript/no-unnecessary-condition` (types), `typescript/prefer-optional-chain` (types), `unicorn/no-useless-iterator-to-array` | carried, named in `.oxlintrc.json` with ESLint's options; `no-restricted-exports` also reports `export { default } from`, which `import/no-default-export` lets through |
+| `import/export` | dropped: TypeScript refuses a name exported twice (ts(2323), ts(2528)) |
+| `import/named` | dropped: TypeScript refuses an import of a name the module does not export (ts(2614)) |
+| `no-useless-assignment` | dropped: only `const` can be declared and no parameter is reassigned, so no value can be assigned and overwritten unread |
