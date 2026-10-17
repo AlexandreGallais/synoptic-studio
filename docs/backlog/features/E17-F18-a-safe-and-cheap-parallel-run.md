@@ -43,7 +43,7 @@ In delivery order.
 | [SP-020](../stories/E17-F18-SP-020-research-f18.md)                                  | Spike      | Research for F18, the sources of RET-003 recorded                  | done   |
 | [EN-045](../stories/E17-F18-EN-045-explicit-tool-scopes.md)                          | Enabler    | Every check tool given explicit targets                            | done   |
 | [EN-047](../stories/E17-F18-EN-047-heavy-lock-and-agent-limit.md)                    | Enabler    | A lock for heavy commands and a limit on subagents                 | done   |
-| [EN-063](../stories/E17-F18-EN-063-subagent-limit-in-settings.md)                    | Enabler    | The subagent limit set in Claude Code's settings                   | ready  |
+| [EN-063](../stories/E17-F18-EN-063-subagent-limit-in-settings.md)                    | Enabler    | The subagent limit set in Claude Code's settings                   | done   |
 | [EN-067](../stories/E17-F18-EN-067-font-tests-on-every-system.md)                    | Enabler    | Font tests on every system                                         | ready  |
 | [EN-048](../stories/E17-F18-EN-048-tables-without-padding-and-union-logs.md)         | Enabler    | Tables without padding, append-only logs merged by union           | done   |
 | [EN-049](../stories/E17-F18-EN-049-stories-index-generated.md)                       | Enabler    | The stories index generated from the story files                   | done   |
