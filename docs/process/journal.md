@@ -15,6 +15,7 @@ What each working session dealt with, in the agent's words: the Product Owner's 
 - `#run` EN-074: oxlint 1.87.0 and `tsgolint` 7.0.2004 run first in `npm run lint` (1.0 to 1.3 s), with 355 native and type-aware rules; 125 rules dropped by a triage before anything was enabled; ESLint turns off every rule oxlint runs or the triage dropped.
 - `#run` EN-090: claims proven twice merged or removed (6 pairs), slow preparations built once, the tests outside the playground sharing a worker's modules; ADR-0070 and the testing rules; the tooling and tests pass joins NAM.
 - `#run` EN-091: every configuration file reviewed for speed; the RuleTester's setup given to the rule tests only (test lane 39.6 s to about 30 s), type errors reported by oxlint's `--type-check` with the lint and `tsc` out of `check:all`, the declarations written by Oxc's isolated declarations (0.63 s to 0.06 s, two exports annotated), `check:all` 61.8 s to 51.5 s (ADR-0071).
+- `#run` EN-075: the project's linter in Rust (`tools/lint`, Oxc 0.153.0) runs after oxlint, each file parsed once and every rule over one AST, 0.05 s for the tree; the 10 project rules, `no-restricted-syntax`, `require-atomic-updates` and `functional/no-return-void` moved out of ESLint, the fold's spread to `oxc/no-accumulating-spread`; `npm run lint` from 27.5 s to 24.5 s.
 
 ## 2026-10-17 — SP-021 answered, F19's run started
 

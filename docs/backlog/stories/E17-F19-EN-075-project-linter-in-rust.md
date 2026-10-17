@@ -78,7 +78,3 @@ On the Product Owner's machine, other agents running beside it:
 - `@typescript-eslint/rule-tester` is removed from `package.json` and the lock (`npm install --package-lock-only`); the shared `node_modules` keeps it until the next `npm install`.
 - Rust coverage after EN-075: 95.9 % of the workspace's lines and 95.8 % of its functions (`tools/lint`: every module at 94 % or more, `settings.rs` aside, its constants); the floor of 93 % (`rust:coverage`, `docs/tooling/agent-tools.md`) may be raised once EN-090 is merged.
 - `Rule-docs: none affected, a tooling change: no rule of docs/domain/ changes`.
-
-### Journal
-
-- `#run` EN-075: the project's linter in Rust (`tools/lint`, Oxc 0.153.0) runs after oxlint, each file parsed once and every rule over one AST, 0.05 s for the tree; the 10 project rules, `no-restricted-syntax`, `require-atomic-updates` and `functional/no-return-void` moved out of ESLint, the fold's spread to `oxc/no-accumulating-spread`; `npm run lint` from 27.5 s to 24.5 s.
