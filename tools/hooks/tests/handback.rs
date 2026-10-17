@@ -6,8 +6,8 @@ use std::path::Path;
 use std::process::{Command, Stdio};
 
 use hooks::handback::{
-    Branch, Commit, agent_transcript, allow_output, earlier_handbacks, feature_number, finish_line,
-    is_checked, missing, refusal, story_id, worktree_id,
+    Branch, Commit, Refs, agent_transcript, allow_output, earlier_handbacks, feature_number,
+    finish_line, is_checked, missing, read_refs, refusal, story_id, worktree_id,
 };
 use hooks::json::{parse, quote, write};
 
@@ -81,6 +81,33 @@ fn names_the_story_and_its_feature() {
 }
 
 #[test]
+fn reads_the_branch_its_copy_and_its_feature_from_one_listing() {
+    let listing = "  1111 refs/heads/feature/f20-a-diet\n\
+                   * 2222 refs/heads/chore/en-123-a-topic\n\
+                   \u{20} 3333 refs/remotes/origin/chore/en-123-a-topic\n\
+                   \u{20} 4444 refs/remotes/origin/feature/f2-other\n\
+                   \u{20} 1111 refs/remotes/origin/feature/f20-a-diet";
+    let refs = |number| read_refs(listing, number);
+
+    assert_eq!(
+        refs(Some("f20")),
+        Some(Refs {
+            name: "chore/en-123-a-topic".into(),
+            head: "2222".into(),
+            remote: Some("3333".into()),
+            feature: Some("feature/f20-a-diet".into()),
+        })
+    );
+    assert_eq!(refs(None).and_then(|refs| refs.feature), None);
+    // Never pushed; a detached head names no branch.
+    assert_eq!(
+        read_refs("* 2222 refs/heads/b", None).and_then(|refs| refs.remote),
+        None
+    );
+    assert_eq!(read_refs("  2222 refs/heads/b", None), None);
+}
+
+#[test]
 fn counts_the_hand_backs_before_this_one() {
     let call = |id: &str| {
         format!(
@@ -99,9 +126,15 @@ fn counts_the_hand_backs_before_this_one() {
 fn finds_nothing_missing_when_pushed_and_named() {
     let pushed = branch("abcdef1234567890", Some("abcdef1234567890"));
 
-    assert_eq!(missing(&pushed, "Commits: abcdef1 add a thing"), [] as [std::string::String; 0]);
+    assert_eq!(
+        missing(&pushed, "Commits: abcdef1 add a thing"),
+        [] as [std::string::String; 0]
+    );
     // The subject names it as well as the hash.
-    assert_eq!(missing(&pushed, "feat(tooling): add a thing"), [] as [std::string::String; 0]);
+    assert_eq!(
+        missing(&pushed, "feat(tooling): add a thing"),
+        [] as [std::string::String; 0]
+    );
 }
 
 #[test]
@@ -280,7 +313,12 @@ fn the_hook_refuses_once_then_lets_through_and_names_story_finish() {
     };
 
     // Not pushed: refused once.
-    let refused = decision(&hook(&root, "general-purpose", std::slice::from_ref(&prompt), &head));
+    let refused = decision(&hook(
+        &root,
+        "general-purpose",
+        std::slice::from_ref(&prompt),
+        &head,
+    ));
     assert_eq!(refused.get("permissionDecision").text(), "deny");
     assert!(
         refused

@@ -45,6 +45,58 @@ pub struct Branch {
     pub commits: Vec<Commit>,
 }
 
+/// What one listing of a worktree's references tells: its branch, its head, that branch's head on
+/// `origin` and its feature branch there.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Refs {
+    pub name: String,
+    pub head: String,
+    /// The branch's head on `origin`, `None` when it was never pushed.
+    pub remote: Option<String>,
+    /// The feature branch on `origin`, `feature/f20-…`, `None` when none matches.
+    pub feature: Option<String>,
+}
+
+/// Reads `git for-each-ref --format='%(HEAD) %(objectname) %(refname)' refs/heads
+/// refs/remotes/origin`: one Git call in place of four, the hook's time being mostly Git's.
+#[must_use]
+pub fn read_refs(listing: &str, feature_number: Option<&str>) -> Option<Refs> {
+    let rows: Vec<(bool, &str, &str)> = listing
+        .lines()
+        .filter_map(|line| {
+            let (current, rest) = line.split_at_checked(2)?;
+            let (hash, name) = rest.split_once(' ')?;
+
+            Some((current == "* ", hash, name))
+        })
+        .collect();
+    let (_, head, name) = rows.iter().find(|(current, _, _)| *current)?;
+    let name = name.strip_prefix("refs/heads/")?;
+    let remote_name = format!("refs/remotes/origin/{name}");
+    let remote = rows
+        .iter()
+        .find(|(_, _, other)| *other == remote_name)
+        .map(|(_, hash, _)| (*hash).to_owned());
+    let feature = feature_number.and_then(|number| {
+        let prefix = format!("refs/remotes/origin/feature/{number}-");
+
+        rows.iter()
+            .find_map(|(_, _, other)| {
+                other
+                    .strip_prefix("refs/remotes/origin/")
+                    .filter(|_| other.starts_with(&prefix))
+            })
+            .map(str::to_owned)
+    });
+
+    Some(Refs {
+        name: name.to_owned(),
+        head: (*head).to_owned(),
+        remote,
+        feature,
+    })
+}
+
 /// Whether the hand-back of this agent is checked: a subagent of a type that may write; never the
 /// main thread (no agent id) nor an internal agent (an empty type).
 #[must_use]

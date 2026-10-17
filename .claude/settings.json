@@ -94,6 +94,26 @@
         ]
       },
       {
+        "matcher": "SubagentHandback",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cargo",
+            "args": [
+              "run",
+              "--release",
+              "-q",
+              "--manifest-path",
+              "${CLAUDE_PROJECT_DIR}/Cargo.toml",
+              "-p",
+              "hooks",
+              "--bin",
+              "check-handback"
+            ]
+          }
+        ]
+      },
+      {
         "matcher": "*",
         "hooks": [
           {
