@@ -13,7 +13,15 @@ pub mod no_late_current_target_access;
 pub mod no_late_event_control;
 pub mod no_prevent_default_in_passive_listener;
 pub mod no_selector_as_dom_name;
+pub mod no_unsafe_dom_html;
 pub mod nodes;
+pub mod prefer_add_event_listener_options;
+pub mod prefer_dom_node_html_methods;
+pub mod prefer_dom_node_replace_children;
+pub mod prefer_observer_apis;
+pub mod prefer_scoped_selector;
+pub mod prefer_toggle_attribute;
+pub mod require_passive_events;
 
 use crate::rules::Rule;
 
@@ -27,6 +35,14 @@ pub const RULES: &[&dyn Rule] = &[
     &no_late_event_control::NoLateEventControl,
     &no_prevent_default_in_passive_listener::NoPreventDefaultInPassiveListener,
     &no_selector_as_dom_name::NoSelectorAsDomName,
+    &no_unsafe_dom_html::NoUnsafeDomHtml,
+    &prefer_add_event_listener_options::PreferAddEventListenerOptions,
+    &prefer_dom_node_html_methods::PreferDomNodeHtmlMethods,
+    &prefer_dom_node_replace_children::PreferDomNodeReplaceChildren,
+    &prefer_observer_apis::PreferObserverApis,
+    &prefer_scoped_selector::PreferScopedSelector,
+    &prefer_toggle_attribute::PreferToggleAttribute,
+    &require_passive_events::RequirePassiveEvents,
 ];
 
 /// Their names, on for the files where a DOM exists.
@@ -39,6 +55,14 @@ pub const NAMES: &[&str] = &[
     "unicorn/no-late-event-control",
     "unicorn/no-prevent-default-in-passive-listener",
     "unicorn/no-selector-as-dom-name",
+    "unicorn/no-unsafe-dom-html",
+    "unicorn/prefer-add-event-listener-options",
+    "unicorn/prefer-dom-node-html-methods",
+    "unicorn/prefer-dom-node-replace-children",
+    "unicorn/prefer-observer-apis",
+    "unicorn/prefer-scoped-selector",
+    "unicorn/prefer-toggle-attribute",
+    "unicorn/require-passive-events",
 ];
 
 #[cfg(test)]

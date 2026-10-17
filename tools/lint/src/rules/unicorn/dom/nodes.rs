@@ -4,7 +4,7 @@
 
 use oxc_ast::ast::{Argument, CallExpression, Expression};
 
-use crate::rules::unicorn::syntax::{MethodCall, method_call, symbol_of};
+use crate::rules::unicorn::syntax::{MethodCall, const_init, method_call, symbol_of};
 use crate::source::Source;
 
 /// Whether an expression cannot be a DOM node: an array, a function, a class, a literal, an
@@ -98,4 +98,60 @@ pub fn member_object<'b, 'a>(expression: &'b Expression<'a>) -> Option<&'b Expre
         Expression::ComputedMemberExpression(member) => Some(&member.object),
         _ => None,
     }
+}
+
+/// Where the name of a member is written: after the dot, or the key between brackets.
+#[must_use]
+pub fn property_start(expression: &Expression) -> Option<u32> {
+    match expression {
+        Expression::StaticMemberExpression(member) => Some(member.property.span.start),
+        Expression::ComputedMemberExpression(member) => {
+            Some(oxc_span::GetSpan::span(&member.expression).start)
+        }
+        _ => None,
+    }
+}
+
+/// Whether an expression reads a global by a path, `document.write`, from the global name or
+/// through `window`, `globalThis`, `self` or `global`, or a `const` bound to it, the global not
+/// shadowed (`ReferenceTracker.iterateGlobalReferences`).
+#[must_use]
+pub fn is_global_path(source: &Source, expression: &Expression, path: &[&str]) -> bool {
+    let Some((last, rest)) = path.split_last() else {
+        return false;
+    };
+    if let Expression::Identifier(name) = expression
+        && symbol_of(source, name).is_some()
+    {
+        return const_init(source, expression)
+            .is_some_and(|init| is_global_path(source, init, path));
+    }
+    if rest.is_empty() {
+        return match expression {
+            Expression::Identifier(name) => name.name == *last && symbol_of(source, name).is_none(),
+            _ => {
+                static_property_name(expression).as_deref() == Some(last)
+                    && member_object(expression).is_some_and(|object| {
+                        ["window", "globalThis", "self", "global"]
+                            .iter()
+                            .any(|global| is_global_path(source, object, &[global]))
+                    })
+            }
+        };
+    }
+    static_property_name(expression).as_deref() == Some(last)
+        && member_object(expression).is_some_and(|object| is_global_path(source, object, rest))
+}
+
+/// A plain call of a method among some names, with at least a number of arguments, spread or
+/// not (`isMethodCall` with `minimumArguments`).
+#[must_use]
+pub fn plain_method_call_at_least<'b, 'a>(
+    call: &'b CallExpression<'a>,
+    names: &[&str],
+    least: usize,
+) -> Option<MethodCall<'b, 'a>> {
+    method_call(call).filter(|method| {
+        method.is_plain() && names.contains(&method.name) && call.arguments.len() >= least
+    })
 }
