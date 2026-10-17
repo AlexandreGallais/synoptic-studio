@@ -8,9 +8,10 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 use rusqlite::types::ValueRef;
-use rusqlite::{Connection, OptionalExtension, Row, params};
+use rusqlite::{Connection, OptionalExtension, Row, ToSql, params};
 
 use crate::chunks::Chunk;
+use crate::text;
 
 /// The variable naming the library's file. Not `LIBRARY_PATH`, the C toolchain's library search
 /// path, which Apple's `python3` sets to `/usr/local/lib` for the processes it starts (SP-023).
@@ -237,7 +238,7 @@ pub fn find_page(database: &Connection, url: &str) -> rusqlite::Result<Option<St
 #[must_use]
 pub fn fts_query(words: &str, operator: &str) -> String {
     words
-        .split(char::is_whitespace)
+        .split(text::is_space)
         .filter(|word| !word.is_empty())
         .map(|word| format!("\"{}\"", word.replace('"', "\"\"")))
         .collect::<Vec<_>>()
@@ -245,7 +246,11 @@ pub fn fts_query(words: &str, operator: &str) -> String {
 }
 
 /// Sections matching an FTS5 query, best first (BM25), each with a snippet around the words.
-fn matching_sections(database: &Connection, query: &str, limit: i64) -> rusqlite::Result<Vec<Hit>> {
+fn matching_sections(
+    database: &Connection,
+    query: &str,
+    limit: &dyn ToSql,
+) -> rusqlite::Result<Vec<Hit>> {
     let mut statement = database.prepare_cached(
         "SELECT chunks.url, position, heading, pages.title,
           snippet(chunks, 3, '[', ']', '…', 24) AS snippet
@@ -274,7 +279,7 @@ fn matching_sections(database: &Connection, query: &str, limit: i64) -> rusqlite
 pub fn search_library(
     database: &Connection,
     words: &str,
-    limit: i64,
+    limit: &dyn ToSql,
 ) -> rusqlite::Result<Vec<Hit>> {
     let all = matching_sections(database, &fts_query(words, "AND"), limit)?;
 

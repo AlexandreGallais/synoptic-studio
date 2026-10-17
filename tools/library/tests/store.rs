@@ -87,7 +87,7 @@ fn a_stored_page_and_its_sections_are_found() {
 fn a_search_finds_the_section_holding_every_word_stemmed_else_any_word() {
     let database = stored();
     let indexes = |words: &str| -> Vec<i64> {
-        search_library(&database, words, 5)
+        search_library(&database, words, &5)
             .unwrap()
             .iter()
             .map(|hit| hit.index)
@@ -100,7 +100,7 @@ fn a_search_finds_the_section_holding_every_word_stemmed_else_any_word() {
     assert_eq!(indexes("corner nowhere"), [0]);
     assert_eq!(indexes("nothing"), Vec::<i64>::new());
 
-    let hit = &search_library(&database, "arc", 5).unwrap()[0];
+    let hit = &search_library(&database, "arc", &5).unwrap()[0];
 
     assert_eq!(
         (
@@ -119,7 +119,7 @@ fn a_search_finds_the_section_holding_every_word_stemmed_else_any_word() {
 #[test]
 fn a_search_without_words_is_an_error_as_in_sqlite() {
     // `MATCH ''` is an FTS5 syntax error, which the TypeScript server gave back as the tool's error.
-    assert!(search_library(&stored(), "  ", 5).is_err());
+    assert!(search_library(&stored(), "  ", &5).is_err());
 }
 
 #[test]
@@ -239,7 +239,7 @@ fn a_store_as_the_typescript_server_left_it_is_read_and_written_without_a_migrat
     drop(written);
 
     let database = open_library(&path).unwrap();
-    let hits = search_library(&database, "duration_ms", 5).unwrap();
+    let hits = search_library(&database, "duration_ms", &5).unwrap();
 
     assert_eq!(hits.iter().map(|hit| hit.index).collect::<Vec<_>>(), [1]);
     assert_eq!(
