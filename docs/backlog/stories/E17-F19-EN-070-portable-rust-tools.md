@@ -3,7 +3,7 @@ id: EN-070
 epic: E17
 feature: F19
 title: Rust tools on portable standard calls
-status: ready
+status: done
 points: 2
 ---
 
@@ -30,3 +30,7 @@ One task = one commit, referenced as `EN-070.Tn`.
 ### Journal
 
 - `#run` EN-070: the Rust tools compile for Windows without linking (`cargo check --workspace --all-targets --target x86_64-pc-windows-msvc`, in `check:rust`); the Unix-only calls left — the lock file's device and inode, `mutate`'s process group and `kill`, the `node_modules` symbolic links, a test hook's execute bit — sit behind `cfg(unix)` with their reason, Windows linking folders by `symlink_dir`; a planted `std::os::unix` call fails the check on the Mac. Cost: the target 118 MB, installed by rustup in 9 s (once, from `rust-toolchain.toml`); the check 0.5 s cold, 0.04 s warm, 24 MB in `target/`.
+
+## Decision
+
+The main thread accepted on 2026-10-17 the one `std::os::unix` use left in `heavy-lock`, behind `cfg(unix)` with its reason, as within the Product Owner's rule of 2026-10-17: tools portable as a goal through standard calls, without heavy effort (Windows' file index is not stable in Rust).
