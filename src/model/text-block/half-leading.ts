@@ -9,7 +9,8 @@ import type { Text } from "../text";
  * and "Half the leading … is added above A … and the other half below D"; "L may be negative"
  * (`REF-CSS-INLINE-3`, §5.3; `DERIV-text-box`, step 7).
  *
- * Formula: (λ − (A − D) × s / U) / 2.
+ * Formula: (λ − (A − D) × s / U) / 2, the descender D negative below the baseline, so that
+ * CSS's depth below it is −D.
  *
  * @kind domain
  * @param metrics - the metrics of the face the text is drawn with
