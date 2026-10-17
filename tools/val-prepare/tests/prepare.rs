@@ -6,8 +6,8 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use val_prepare::{
-    Feature, epic_number, feature_id, lines_module, parse_feature, plan, ts_string, with_checklist,
-    with_exports, with_feature_lines,
+    Feature, LINE_LIMIT, epic_number, feature_id, lines_module, parse_feature, plan, ts_string,
+    with_checklist, with_exports, with_feature_lines,
 };
 
 const CHECKLISTS: &str = "../../playground/checklists";
@@ -301,4 +301,14 @@ fn f18_ac12_the_tool_writes_the_files_and_says_the_address() {
         .unwrap();
 
     assert_eq!(usage.status.code(), Some(2));
+}
+
+#[test]
+fn warns_at_the_limit_the_playground_holds() {
+    // One limit for both: the playground's test counts the lines a feature holds, this tool warns.
+    let limit = fs::read_to_string(Path::new(CHECKLISTS).join("checklist-line-limit.ts")).unwrap();
+
+    assert!(limit.contains(&format!(
+        "export const CHECKLIST_LINE_LIMIT = {LINE_LIMIT};"
+    )));
 }
