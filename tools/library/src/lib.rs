@@ -4,4 +4,9 @@
 //! the same calls give the same answers.
 
 pub mod chunks;
+pub mod html;
+pub mod pages;
 pub mod store;
+pub mod text;
+pub mod time;
+pub mod usage;
