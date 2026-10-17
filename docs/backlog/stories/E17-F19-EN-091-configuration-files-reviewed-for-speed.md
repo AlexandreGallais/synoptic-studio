@@ -27,6 +27,7 @@ One task = one commit, referenced as `EN-091.Tn`.
 - [ ] T1 — The review: every file, its settings, their cost; timings before (2 h)
 - [ ] T2 — Vitest's setup split by need; the changes kept; timings after (2 h)
 - [ ] T3 — Type errors with the lint, or `tsc` kept with its reason; `tsconfig` files trimmed (2 h)
+- [ ] T4 — The library's declarations written by Oxc's isolated declarations, `tsconfig.build.json` removed (asked by the Product Owner on 2026-10-17 during the story) (2 h)
 
 ## Review
 
@@ -82,3 +83,21 @@ Before (`1dcfa40b`), 2026-10-17. `npm run test` alone: 39.6 s (tests 52 %, impor
 | after T2, without coverage (for the review) | 25.4 s | tests 55 %, import 21 %, transform 13 % |
 
 The setup's share falls from 14 % to 1 %: 6 to 10 s saved. Coverage costs about 7 s of the lane. `tests/vitest-workers.test.ts` now checks that each tracked test file runs in exactly one project and that only `rules` has a setup; widening `shared` back to `eslint/**/*.test.ts` makes it fail, naming the 10 rule tests.
+
+## Type errors with the lint
+
+**Answer: yes.** Oxc has no type checker of its own: its README lists Oxlint, Oxfmt, the parser, transformer, minifier and resolver (`REF-OXC-README`). But oxlint's type-aware mode runs `tsgolint` on typescript-go, TypeScript 7's compiler (`REF-TSGOLINT`), and its `--type-check` flag adds "TypeScript compiler diagnostics" to the lint findings (`REF-OXLINT-CLI`); Oxc's guide says it "can replace a separate `tsc --noEmit` step in CI" (`REF-OXLINT-TYPE-AWARE`). The command line calls it "experimental".
+
+Tried here on 2026-10-17, oxlint 1.87.0 with `oxlint-tsgolint` 7.0.2004 against `tsc` 7.0.2:
+
+| Case | `tsc --noEmit` | `oxlint --type-check` |
+| --- | --- | --- |
+| the tree | no error | no error, no finding |
+| five errors planted in one module: a missing module (TS2307), a string given to a number (TS2322), an index read without `noUncheckedIndexedAccess`'s check (TS2322), `undefined` given to an optional property under `exactOptionalPropertyTypes` (TS2375), a possibly undefined value (TS18048) | the five, at their line and column | the same five, same codes, same places, beside the lint findings they cause (`restrict-plus-operands`, `no-unsafe-argument`) |
+| an error in `playground/` (TS2322) | reported | reported, same place |
+| two modules declaring one global with two types (TS2403, across files) | reported in the second file | reported, same place |
+| `tsconfig.json` given an unknown option and a removed one (`baseUrl`) | TS5023 and TS5102 | the unknown option only; the run stops at the first invalid option, as `tsc` stops before checking the code |
+
+So `tsc` leaves `check` and `check:all`: `npm run lint`, `lint:fix`, `npm run fix` and the pre-commit hook run oxlint with `--type-check`, and a type error comes listed with the lint findings instead of stopping a separate step. The type check costs oxlint about 0.3 s on the tree (0.76 to 0.81 s without it, 1.08 to 1.17 s with it, 3 runs each) against 0.67 to 0.70 s for `tsc` alone. `npm run typecheck` stays as a command of its own, and TypeScript 7 stays a dev package: `tsgolint` brings its own typescript-go, but the editors and `tests/typescript-7.test.ts` use `tsc`. The `tsconfig.json` option that oxlint does not report, `baseUrl`, is one TypeScript 7 removed and this project never had. `tests/type-check-with-lint.test.ts` proves a planted TS2322 reported by oxlint at its place, and that every oxlint pass carries `--type-check`; dropping the flag from its call makes it fail.
+
+`tsconfig.json` stays: `tsc`, oxlint's type-aware mode, Vite and Vitest read it. `tsconfig.build.json` leaves with T4.
