@@ -163,11 +163,10 @@ fn bounded(pattern: &str) -> String {
 }
 
 /// The replacements the project's configuration adds or drops, by pattern, `None` dropping one:
-/// `{replacements: {application: false}}`, as `eslint/rules/unicorn/naming.ts` set it until
-/// EN-080. The plugin's own pattern is `\bapplication\b(?!/)`: no pattern of the plugin is named
-/// `application`, so the option drops nothing, and `application` still becomes `app`, as in
-/// `ESLint`.
-const PROJECT_REPLACEMENTS: [(&str, Option<&str>); 1] = [("application", None)];
+/// `application` kept in comments. `eslint/rules/unicorn/naming.ts` named it `application` until
+/// EN-080, a key no pattern of the plugin has, so `ESLint` kept the replacement; the key is now
+/// the plugin's own pattern, so that the option does what it meant.
+const PROJECT_REPLACEMENTS: [(&str, Option<&str>); 1] = [(r"\bapplication\b(?!/)", None)];
 
 /// The replacements in force: the plugin's, but those the project drops or rewrites, then the
 /// project's own (`prepareReplacements`).
@@ -1578,7 +1577,7 @@ mod tests {
         );
         assert_eq!(
             check("// The application stores png files."),
-            ["Prefer `app` over `application`."]
+            ["Prefer `PNG` over `png`."]
         );
         assert_eq!(
             check("/* Parse the json. */"),
@@ -1617,13 +1616,13 @@ mod tests {
     }
 
     #[test]
-    fn carries_the_project_option_as_eslint_reads_it() {
-        // `{application: false}` names no pattern of the plugin's, `\bapplication\b(?!/)`.
-        assert_eq!(
-            check("// The application runs."),
-            ["Prefer `app` over `application`."]
-        );
+    fn keeps_application_as_the_project_option_means() {
+        assert_eq!(check("// The application runs."), NONE);
         assert_eq!(check("// See application/json."), NONE);
+        assert_eq!(
+            check("// The applications run."),
+            ["Prefer `apps` over `applications`."]
+        );
     }
 
     #[test]
