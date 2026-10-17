@@ -125,9 +125,10 @@ const EVENTS: [&str; 82] = [
 /// How the event rules read an annotation (`utils/is-event.js`).
 const EVENT_TARGETS: Targets = Targets {
     names: &EVENTS,
+    non_targets: &[],
     imports: &[("react", &REACT_EVENTS)],
     allow_nullish_in_mixed_union: false,
-    treat_mixed_union_as_non_target: false,
+    mixed_union: Class::Unknown,
     prefer_definitions: true,
 };
 

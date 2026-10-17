@@ -26,12 +26,14 @@ pub enum Class {
 pub struct Targets<'n> {
     /// The names of the types.
     pub names: &'n [&'n str],
+    /// The names of types known to be something else.
+    pub non_targets: &'n [&'n str],
     /// The names a module exports that are the types, by module.
     pub imports: &'n [(&'n str, &'n [&'n str])],
     /// Whether `null` and `undefined` in a union are left out.
     pub allow_nullish_in_mixed_union: bool,
-    /// Whether a union holding something else is something else.
-    pub treat_mixed_union_as_non_target: bool,
+    /// What a union mixing the types and something else is.
+    pub mixed_union: Class,
     /// Whether a name declared in the file wins over a known name.
     pub prefer_definitions: bool,
 }
@@ -58,10 +60,15 @@ fn union(classes: Vec<Class>, targets: &Targets) -> Class {
     if classes.is_empty() {
         return Class::NonTarget;
     }
-    if classes.iter().all(|each| *each == Class::Target) {
+    let target = if targets.mixed_union == Class::Target {
+        classes.contains(&Class::Target)
+    } else {
+        classes.iter().all(|each| *each == Class::Target)
+    };
+    if target {
         return Class::Target;
     }
-    let non_target = if targets.treat_mixed_union_as_non_target {
+    let non_target = if targets.mixed_union == Class::NonTarget {
         classes.contains(&Class::NonTarget)
     } else {
         classes.iter().all(|each| *each == Class::NonTarget)
@@ -77,6 +84,8 @@ fn union(classes: Vec<Class>, targets: &Targets) -> Class {
 fn known(name: &str, targets: &Targets) -> Class {
     if targets.names.contains(&name) {
         Class::Target
+    } else if targets.non_targets.contains(&name) {
+        Class::NonTarget
     } else {
         Class::Unknown
     }
