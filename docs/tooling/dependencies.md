@@ -7,6 +7,7 @@
 - Every package has **one row below** stating why it is needed and why this one rather than an alternative. The test `tests/package.test.ts` fails when a package of `package.json` has no row here, or when a row names a package that is not installed.
 - Adding a package: search alternatives (official docs, maintenance date, weekly use, license), check `npm audit`, add the row **in the same change**, mention it in the commit (`build(deps): …`). A package bringing a structural choice also gets an ADR.
 - Removing a package: remove its row.
+- A crate of crates.io, for the Rust tools of `tools/`, follows the same rules: an exact version in the root `Cargo.toml` (`[workspace.dependencies]`, `name = "=x.y.z"`), a row under [Crates](#crates), its release notes read, a release at least 7 days old; `tests/package.test.ts` fails when a crate of `Cargo.toml` has no row there, or a row names no crate of it.
 
 ## Packages
 
@@ -108,6 +109,18 @@ Checked at each retrospective: an override goes once the package that pulls the 
 | --- | --- |
 | `deepmerge-ts` → `^8.0.0` | `eslint-plugin-functional` pulls a version affected by GHSA-ggr8-5vv4-36mx; 8.x fixes it |
 | `katex` → `^0.19.0` | `@eslint/markdown` pulls a version affected by GHSA-238p-pmpm-9mq7 (math rendering, unused here); 0.19 fixes it |
+
+## Crates
+
+The crates.io dependencies of the Rust tools, all from Oxc (`REF-OXC-CRATE`, MIT licence), at 0.153.0, published 2026-10-05, its release notes read (parser fixes for TypeScript diagnostics; nothing on the AST the tools read); 0.154.0 of 2026-10-13 is under 7 days old. The same version for every Oxc crate: they are released together and depend on each other at that exact version.
+
+| Crate | Why | Alternatives rejected |
+| --- | --- | --- |
+| `oxc_parser` | reads the library's TypeScript into an AST with its comments, so that `tools/api-pages` writes the API pages from the exports and their TSDoc (EN-072), as the project's linter will on the same crates (note 0023) | `deno_doc` (`REF-DENO-DOC`): a second parser stack (`deno_ast`, `deno_graph`) writing HTML or JSON, not the site's Markdown pages; TypeDoc: needs TypeScript 6's API (`REF-TYPEDOC-TS7`) |
+| `oxc_ast` | the AST's types, read by the tools | — (the parser's own types) |
+| `oxc_allocator` | the arena the parser builds the AST in | — (the parser's own arena) |
+| `oxc_semantic` | resolves each name of a type to the module's symbols, so that a type parameter, an import and a global of the language are told apart: the check that no internal name is reachable from the API | resolving names by hand: misses shadowing and imports |
+| `oxc_span` | the source type (TypeScript) and the spans that give each export its line | — (the parser's own spans) |
 
 ## Considered for later
 
