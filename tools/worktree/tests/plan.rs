@@ -436,3 +436,17 @@ fn f18_ac8_a_push_from_a_new_worktree_runs_its_own_pre_push() {
 
     let _ = fs::remove_dir_all(main.parent().unwrap());
 }
+
+#[test]
+fn lists_the_story_files_of_a_checkout() {
+    let top = std::env::temp_dir().join(format!("worktree-stories-{}", std::process::id()));
+    let _ = fs::remove_dir_all(&top);
+
+    // No backlog: an error each caller reads its own way.
+    assert!(worktree::story_files(&top).is_err());
+    fs::create_dir_all(top.join(worktree::STORIES)).expect("folders");
+    fs::write(top.join(worktree::STORIES).join(FILE), "").expect("story");
+
+    assert_eq!(worktree::story_files(&top).expect("listed"), [FILE]);
+    fs::remove_dir_all(&top).expect("cleaned");
+}

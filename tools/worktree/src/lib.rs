@@ -210,6 +210,22 @@ pub fn plan(request: &Request, exists: impl Fn(&Path) -> bool) -> Result<Plan, S
     Ok(Plan { dir, branch, base })
 }
 
+/// Folder of the story files, from a checkout's top.
+pub const STORIES: &str = "docs/backlog/stories";
+
+/// Names of the story files of a checkout, the only reading of the disk here: `worktree:new`,
+/// `git:sync` and `check-handback` each list them (AUD-022).
+///
+/// # Errors
+///
+/// When the folder cannot be read: a checkout without a backlog.
+pub fn story_files(top: &Path) -> std::io::Result<Vec<String>> {
+    Ok(std::fs::read_dir(top.join(STORIES))?
+        .filter_map(Result::ok)
+        .map(|entry| entry.file_name().to_string_lossy().into_owned())
+        .collect())
+}
+
 /// Husky's hooks folder in a checkout: `core.hooksPath`, relative, names it in each worktree.
 pub const HOOKS: &str = ".husky/_";
 
