@@ -20,6 +20,7 @@ Recorded as understood, with the research behind each in note 0023, section "The
 - **Split**: this feature holds the checks; the agent tools in Rust, the library server and the clean-up of E17 form F21.
 - **Rules that need types**: `prefer-destructuring` native, `no-unsafe-enum-assignment` dropped because `enum` is forbidden; `naming-convention` and the five type-aware functional rules rewritten without types in their strict form — `readonly` or `Readonly<…>` written in place, nothing trusted from a type defined elsewhere; nothing kept in ESLint.
 - **The project's rules**: in Rust, in a linter of the project on Oxc's crates (`oxc_parser`, `oxc_ast`, `oxc_semantic`), not as JS plugins (this supersedes the JS-plugin decision taken earlier the same day).
+- **One linter**: oxlint, in Rust, for JavaScript and TypeScript. `tsgolint` (Go) only for rules that need types: 55 of the typescript-eslint rules the project enables do (`no-floating-promises`, `strict-boolean-expressions`, the `no-unsafe-*` family, `switch-exhaustiveness-check`…), so it stays for them; the type check itself is TypeScript 7's compiler, not a linter. Every rule oxlint lacks is rewritten in the project's Rust linter.
 - **TypeScript**: TypeScript 7 only; TypeScript 6 removed. TypeDoc, which needs TypeScript 6's API, is replaced.
 - **Rust**: a coverage floor and an advisory check of the crates.
 - **Platforms**: the library's tests never depend on macOS. The tools stay on the Product Owner's Mac: written with Rust's portable standard calls where one exists, a goal and not a blocker, with one cheap check and no three-system CI.
@@ -36,35 +37,39 @@ Recorded as understood, with the research behind each in note 0023, section "The
 8. `check:all` runs the docs build only when `docs/`, `src/` or the playground changed, and ends in 70 to 90 s on a code story on the Product Owner's machine, lane times printed as now.
 9. A `rust` lane runs `cargo fmt --check`, Clippy with warnings denied, the tests, a coverage floor (`cargo-llvm-cov`) and `cargo deny check advisories` (offline in the pre-push).
 10. The Rust tools use Rust's portable standard calls where one exists (`File::lock` instead of `flock`), and the `rust` lane checks them for Windows without linking.
-11. The formatter prints Markdown tables without padding and keeps paragraphs as written (moved from F18, ADR-0068).
+11. Every rule that oxlint runs today only as a JS plugin of a third-party package (265) runs in the project's Rust linter, with tests of the cases its plugin's documentation gives, or is dropped with its reason in the ADR.
+12. The formatter prints Markdown tables without padding and keeps paragraphs as written (moved from F18, ADR-0068).
 
 ## Questions for the refinement
 
-- The rules that run today as JS plugins of third-party packages (246 of JSDoc, Unicorn, Import and typescript-eslint not yet ported to oxlint, 7 of `unused-imports` and `@stylistic`, 12 of `eslint-plugin-functional`): under the decision that every tool is Rust or Go, each is rewritten in the Rust linter, dropped with its reason, or waits for oxlint to port it — a choice per plugin.
+- The rules oxlint runs today only as JS plugins of third-party packages are rewritten in the project's Rust linter (decision of 2026-10-17): 265 rules, of which 197 of Unicorn and 43 of JSDoc. That is most of F19's work: keep them in F19, or give them a feature of their own after it.
 
 ## Stories to write
 
 In delivery order; numbers are given at the refinement.
 
-| #   | Type    | Title                                                                                                                                        | Criteria |
-| --- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| 1   | Enabler | The Cargo workspace at the root, its toolchain file, warnings denied, the `rust` lane in `check:all`; the F18 crates moved in                | 9        |
-| 2   | Enabler | The Rust checks: a coverage floor with `cargo-llvm-cov`, `cargo deny check advisories`, their rows in `docs/tooling/dependencies.md`         | 9        |
-| 3   | Enabler | Portable Rust tools: `heavy-lock` on `File::lock`, `mutate`'s `kill` and the Unix symlinks replaced by std calls, `cargo check` for Windows  | 10       |
-| 4   | Enabler | TypeScript 7 alone: `tsc` 7, TypeScript 6 and TypeDoc removed, the exit code read as 1                                                       | 6        |
-| 5   | Enabler | The API pages from a Rust generator on Oxc, with TypeDoc's three checks                                                                      | 7        |
-| 6   | Enabler | oxfmt instead of Prettier: configuration, scripts, lint-staged, the 3 union types                                                            | 5, 11    |
-| 7   | Enabler | oxlint with its native and type-aware rules, the type check in it, the scopes as `overrides`, the 110 new findings decided                   | 1, 2     |
-| 8   | Enabler | The project's Rust linter on Oxc: the 10 project rules, `no-return-void`, `no-restricted-syntax` and the two core rules, their tests         | 3        |
-| 9   | Enabler | `naming-convention` and the five type-aware functional rules in the Rust linter, strict form                                                 | 2        |
-| 10  | Enabler | The 21 Markdown rules in the Rust linter                                                                                                     | 4        |
-| 11  | Enabler | The docs build only when the docs change; ESLint and Prettier out of `check:all`; ADR on the Oxc toolchain superseding ADR-0009 and ADR-0013 | 8        |
+| #   | Type    | Title                                                                                                                                                    | Criteria |
+| --- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| 1   | Enabler | The Cargo workspace at the root, its toolchain file, warnings denied, the `rust` lane in `check:all`; the F18 crates moved in                            | 9        |
+| 2   | Enabler | The Rust checks: a coverage floor with `cargo-llvm-cov`, `cargo deny check advisories`, their rows in `docs/tooling/dependencies.md`                     | 9        |
+| 3   | Enabler | Portable Rust tools: `heavy-lock` on `File::lock`, `mutate`'s `kill` and the Unix symlinks replaced by std calls, `cargo check` for Windows              | 10       |
+| 4   | Enabler | TypeScript 7 alone: `tsc` 7 for the type check and the declarations, TypeScript 6 and TypeDoc removed, the exit code read as 1                           | 6        |
+| 5   | Enabler | The API pages from a Rust generator on Oxc, with TypeDoc's three checks                                                                                  | 7        |
+| 6   | Enabler | oxfmt instead of Prettier: configuration, scripts, lint-staged, the 3 union types                                                                        | 5, 12    |
+| 7   | Enabler | oxlint with its native rules and `tsgolint`'s 55 type-aware rules, the scopes as `overrides`, the 110 new findings decided                               | 1, 2     |
+| 8   | Enabler | The project's Rust linter on Oxc: the 10 project rules, `no-return-void`, `no-restricted-syntax` and the two core rules, their tests                     | 3        |
+| 9   | Enabler | `naming-convention` and the five type-aware functional rules in the Rust linter, strict form                                                             | 2        |
+| 10  | Enabler | The 21 Markdown rules in the Rust linter                                                                                                                 | 4        |
+| 11  | Enabler | Unicorn's 197 rules oxlint lacks, in the Rust linter (split by area at the refinement)                                                                   | 11       |
+| 12  | Enabler | JSDoc's 43 rules oxlint lacks, in the Rust linter                                                                                                        | 11       |
+| 13  | Enabler | The 25 other plugin rules in the Rust linter: Import (4), typescript-eslint without types (2), `unused-imports` (2), `@stylistic` (5), `functional` (12) | 11       |
+| 14  | Enabler | The docs build only when the docs change; ESLint and Prettier out of `check:all`; ADR on the Oxc toolchain superseding ADR-0009 and ADR-0013             | 8        |
 
 ## Not moved, and why
 
 - **Vitest, Vite and VitePress**: kept by the Product Owner's decision. They run with TypeScript 7 alone (tried on 2026-10-17: they transform with Oxc, not `tsc`). Vite 8.3.4 already bundles with Rolldown 1.2.
 - **`default-font-metrics.ts`**: it runs the library to write `inter-metrics.json`; a Rust copy would duplicate the font reader (F21 holds it).
-- **secretlint, knip, npm-check-updates, `npm audit`, commitlint, lint-staged, husky**: third-party tools of 0.7 to 2.6 s each beside the test lane, no measured need; the husky hooks stay shell scripts calling the binaries. A Rust or Go replacement for each is a later question.
+- **secretlint, knip, npm-check-updates, commitlint, lint-staged, husky, validate-branch-name**: reviewed in [F21](./E17-F21-agent-tools-in-rust.md), which rewrites them in Rust.
 
 ## Stories
 
