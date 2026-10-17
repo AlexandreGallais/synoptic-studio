@@ -246,7 +246,7 @@
 | [EN-101](./E17-F20-EN-101-every-page-fetch-through-the-library.md) | F20 | Every page fetched through the library, with the project recorded | done |
 | [EN-096](./E17-F20-EN-096-docs-written-as-principles.md) | F20 | The agent's rules and skills written as principles | ready |
 | [EN-097](./E17-F20-EN-097-conventions-written-as-principles.md) | F20 | The conventions written as principles | done |
-| [EN-098](./E17-F20-EN-098-process-written-as-principles.md) | F20 | The process pages written as principles | ready |
+| [EN-098](./E17-F20-EN-098-process-written-as-principles.md) | F20 | The process pages written as principles | done |
 | [EN-099](./E17-F20-EN-099-tooling-docs-written-as-principles.md) | F20 | The tooling docs written as principles | ready |
 | [AUD-022](./E17-F20-AUD-022-audit-f20.md) | F20 | Audit F20 | ready |
 | [VAL-021](./E17-F20-VAL-021-validate-f20.md) | F20 | Validate F20 | ready |
