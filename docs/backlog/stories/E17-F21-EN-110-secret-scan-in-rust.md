@@ -9,7 +9,9 @@ points: 3
 
 # E17 · F21 · EN-110 — The secret scan in Rust, without secretlint
 
-`secretlint` and `@secretlint/secretlint-rule-preset-recommend` scan every staged file at each commit and every tracked file in `check:all` (`lint:secrets`). Rewritten in Rust (F21.AC4, the feature's table of dev packages): each pattern of the preset carried with its source and a test; the preset's patterns read first, at 13.0.7, so that none is lost. The preset is MIT-licensed if SP-023 confirms it: a pattern ported names its package and version, and `NOTICE` and `THIRD-PARTY-LICENSES.md` receive the licence (ADR-0076).
+`secretlint` and `@secretlint/secretlint-rule-preset-recommend` scan every staged file at each commit and every tracked file in `check:all` (`lint:secrets`). Rewritten in Rust (F21.AC4, the feature's table of dev packages): each pattern of the preset carried with its source and a test; the preset's patterns read first, at 13.0.7, so that none is lost. The preset is MIT-licensed, Copyright (c) 2020 azu, as SP-023 read in its installed package: a pattern ported names its package and version, and `NOTICE` and `THIRD-PARTY-LICENSES.md` receive the licence (ADR-0076).
+
+What the preset holds at 13.0.7, read by SP-023 ([research note 0025](../../research/notes/0025-f21-agent-tools-in-rust.md), The rewritten packages; `REF-SECRETLINT`, `REF-SECRETLINT-PRESET`): 27 detecting rules and the comment filter, 41 regular expressions. Rust's `regex` 1.13.1 runs them once these are handled in code: 25 look-behinds `(?<!\p{L})` and their look-aheads, each one character before or after the match; 2 backreferences (a password of one repeated character, a dummy); JavaScript's ASCII `\b`, written `(?-u:\b)`; each rule's options and dummy values with their defaults. The GCP rule also checks a binary `.p12` file's PKCS #12 MAC against the password `notasecret`, with HMAC over SHA-1 or SHA-256: RustCrypto's crates, each checked as every crate is, or a port of the two algorithms tested against the test vectors of their standards, read in that task; decided in T1. secretlint's own behaviour to keep: exit 0, 1 or 2, secrets masked, the built-in ignores, `.secretlintignore`, each folder's `.gitignore`, symlinks not followed, the `secretlint-disable` comments.
 
 ## Acceptance criteria
 
@@ -26,6 +28,8 @@ points: 3
 ## Measures (ADR-0069)
 
 Before and after on this Mac, 10 runs each: `lint:secrets` on every tracked file; the scan of one staged Markdown file inside a commit.
+
+Before, measured by SP-023 (0025, Each tool's time before its port), medians: `lint:secrets` on every tracked file 911 ms (5 runs); `secretlint` on one file 123 ms (20 calls).
 
 ## Tasks
 

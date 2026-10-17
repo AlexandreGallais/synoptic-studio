@@ -38,6 +38,8 @@ New crates of `tools/` (one per tool or one `repo-tools` crate with a binary eac
 
 Before (SP-023's table) and after, 20 calls each on this Mac: `backlog:status`, `epic:check`, `replace` on a two-file edit, `branches:clean` and `records:save` with nothing to do, `story:finish` up to its pull request on a test repository; `check:all`'s own overhead outside its lanes.
 
+Before, measured by SP-023 ([research note 0025](../../research/notes/0025-f21-agent-tools-in-rust.md), Each tool's time before its port), median of 20 calls: `backlog-status` 355 ms (its formatter included), `replace` on a two-file edit 61 ms, `branches-clean` with nothing to clean 286 ms, `records-save` without the transcripts' copy 706 ms; `check-all`, `epic-check` and `story-finish` not timed as a whole. Each "after" states the binary alone and the call as the agent makes it: `npm run -s` adds about 107 ms and `cargo run` about 47 ms to any binary (0025), so a port behind both cannot go under about 150 ms; how the binaries are called is EN-104's question to the Product Owner. No crate: the standard library and the `git` command (0025, The crates).
+
 ## Tasks
 
 One task = one commit, referenced as `EN-103.Tn`.

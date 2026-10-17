@@ -27,6 +27,8 @@ The metrics scripts — `metrics-report` with `metrics-events`, `-tables`, `-tim
 
 Before (0023's table and SP-023's) and after, 20 calls each on this Mac, on one recorded session: `metrics`, `metrics:session`, `metrics:session -- --run`, `activity`; `watch-task`'s CPU time over one minute.
 
+Before, measured by SP-023 ([research note 0025](../../research/notes/0025-f21-agent-tools-in-rust.md), Each tool's time before its port) on the project's 1.5 GB of transcripts, where 0023 measured 0.15 s for `session-report`: `metrics` 8.2 s (median of 5), `metrics:session -- --all` 5.1 s (5), `metrics:session` 5.9 s and `-- --run` 18.7 s (one call each), `activity` 248 ms, `turns` 75 ms (20 each). The transcripts are read as JSON lines with `serde_json`, already pulled by EN-106's `rmcp` (0025, The crates).
+
 ## Tasks
 
 One task = one commit, referenced as `EN-107.Tn`.

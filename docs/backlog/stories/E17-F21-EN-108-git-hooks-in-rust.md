@@ -32,6 +32,10 @@ Friction of F20's run folded in (2026-10-17): the formatter, run at each commit 
 
 Before and after, 20 rounds each on this Mac: a commit of one Markdown file and of one TypeScript file, hooks included; the commit-msg hook alone; the branch check alone; `npm install`'s `prepare`.
 
+Before, measured by SP-023 ([research note 0025](../../research/notes/0025-f21-agent-tools-in-rust.md), Each tool's time before its port), medians: a commit of one Markdown file 842 ms and of one TypeScript file 1,023 ms, hooks included (20 rounds, load 8 to 13); `commitlint --edit` 222 ms; `validate-branch-name` 44 ms; `husky` 48 ms.
+
+What each package does here, behaviour by behaviour, read at the installed versions (0025, The rewritten packages; `REF-HUSKY-INSTALL`, `REF-LINT-STAGED`, `REF-COMMITLINT`, `REF-VALIDATE-BRANCH-NAME`): husky's stubs and its `PATH` with `node_modules/.bin`, which the hooks need for `oxlint`; lint-staged's `--diff-filter=ACMR`, its base-name globs with dot files, its backup stash and its patch for partly staged files; commitlint's parser (the footer token at a line's start, `BREAKING CHANGE`), its rules and levels, its ignored merges and fixups, the URL exemption, `subject-case` through `es-toolkit`'s case functions. Licences: all MIT but `conventional-changelog-conventionalcommits` (ISC); a rule's code or cases ported brings its `NOTICE` row (0025, Licences). The branch pattern and the message rules need no crate beyond `regex` 1.13.1, shared with EN-110.
+
 ## Tasks
 
 One task = one commit, referenced as `EN-108.Tn`.
