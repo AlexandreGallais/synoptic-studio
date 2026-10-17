@@ -98,6 +98,5 @@ Recorded as understood; details in note 0023, section "The Product Owner's secon
 ## For the main thread
 
 - Features F19, F20, F21 and the features index, epic E17's table: edited in this branch on 2026-10-17 (F19 rewritten, F21 created, three stories drafted in F20); to merge with any change made to them on `develop` meanwhile.
-- `.claude/rules/tooling.md`, at F19's ADR: TypeScript 7 is the only TypeScript; TypeScript 6 and TypeDoc are removed, the API pages come from a Rust generator (note 0023, "The Product Owner's second round").
 - Stories index and F20: number the three stories drafted in F20's "Stories to write" (push notification, progress page, `SubagentStop` hook) and create their files.
 - F21: create its checkpoint, audit and validation stories, and number its five drafted stories, at its refinement.

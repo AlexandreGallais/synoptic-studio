@@ -3,7 +3,7 @@ id: VAL-020
 epic: E17
 feature: F19
 title: Validate F19
-status: draft
+status: ready
 points: 1
 ---
 

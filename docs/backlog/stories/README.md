@@ -206,9 +206,27 @@
 | [AUD-020](./E17-F18-AUD-020-audit-f18.md)                                         | F18     | Audit F18                                                                            | done   |
 | [VAL-019](./E17-F18-VAL-019-validate-f18.md)                                      | F18     | Validate F18                                                                         | done   |
 | [SP-021](./E17-F19-SP-021-research-f19.md)                                        | F19     | Research for F19, Oxc and Rust tools                                                 | ready  |
-| [CHK-020](./E17-F19-CHK-020-checkpoint-f19.md)                                    | F19     | Checkpoint in the middle of F19                                                      | draft  |
-| [AUD-021](./E17-F19-AUD-021-audit-f19.md)                                         | F19     | Audit F19                                                                            | draft  |
-| [VAL-020](./E17-F19-VAL-020-validate-f19.md)                                      | F19     | Validate F19                                                                         | draft  |
+| [EN-068](./E17-F19-EN-068-cargo-workspace-and-rust-lane.md)                       | F19     | The Cargo workspace at the root and the rust lane                                    | ready  |
+| [EN-069](./E17-F19-EN-069-rust-coverage-and-advisories.md)                        | F19     | A coverage floor and an advisory check for the Rust tools                            | ready  |
+| [EN-070](./E17-F19-EN-070-portable-rust-tools.md)                                 | F19     | Rust tools on portable standard calls                                                | ready  |
+| [EN-071](./E17-F19-EN-071-typescript-7-for-the-type-check.md)                     | F19     | TypeScript 7 for the type check and the declarations                                 | ready  |
+| [EN-072](./E17-F19-EN-072-api-pages-from-a-rust-generator.md)                     | F19     | The API pages from a Rust generator on Oxc                                           | ready  |
+| [EN-073](./E17-F19-EN-073-oxfmt-instead-of-prettier.md)                           | F19     | oxfmt instead of Prettier                                                            | ready  |
+| [EN-074](./E17-F19-EN-074-oxlint-with-native-and-type-aware-rules.md)             | F19     | oxlint with its native and type-aware rules                                          | ready  |
+| [EN-075](./E17-F19-EN-075-project-linter-in-rust.md)                              | F19     | The project's Rust linter and its own rules                                          | ready  |
+| [EN-076](./E17-F19-EN-076-naming-and-functional-rules-without-types.md)           | F19     | naming-convention and the functional rules without types                             | ready  |
+| [CHK-020](./E17-F19-CHK-020-checkpoint-f19.md)                                    | F19     | Checkpoint in the middle of F19                                                      | ready  |
+| [EN-077](./E17-F19-EN-077-markdown-rules-in-rust.md)                              | F19     | The Markdown rules in the Rust linter                                                | ready  |
+| [EN-078](./E17-F19-EN-078-unicorn-arrays-collections-iteration.md)                | F19     | Unicorn's arrays, collections and iteration rules in Rust                            | ready  |
+| [EN-079](./E17-F19-EN-079-unicorn-control-flow-functions-errors-numbers.md)       | F19     | Unicorn's control-flow, functions, errors and numbers rules in Rust                  | ready  |
+| [EN-080](./E17-F19-EN-080-unicorn-objects-strings-naming-misc.md)                 | F19     | Unicorn's objects, strings, naming and miscellaneous rules in Rust                   | ready  |
+| [EN-081](./E17-F19-EN-081-unicorn-modules-platform-promises.md)                   | F19     | Unicorn's modules, platform and promises rules in Rust                               | ready  |
+| [EN-082](./E17-F19-EN-082-unicorn-dom-and-web.md)                                 | F19     | Unicorn's DOM and web rules in Rust                                                  | ready  |
+| [EN-083](./E17-F19-EN-083-jsdoc-rules-in-rust.md)                                 | F19     | JSDoc's rules in Rust                                                                | ready  |
+| [EN-084](./E17-F19-EN-084-other-plugin-rules-in-rust.md)                          | F19     | The other plugins' rules in Rust                                                     | ready  |
+| [EN-085](./E17-F19-EN-085-docs-build-on-change-eslint-out-oxc-adr.md)             | F19     | The docs build on change, ESLint out, the ADR on Oxc                                 | ready  |
+| [AUD-021](./E17-F19-AUD-021-audit-f19.md)                                         | F19     | Audit F19                                                                            | ready  |
+| [VAL-020](./E17-F19-VAL-020-validate-f19.md)                                      | F19     | Validate F19                                                                         | ready  |
 | [SP-022](./E17-F20-SP-022-research-f20.md)                                        | F20     | Research for F20, the context diet                                                   | draft  |
 | [EN-064](./E17-F20-EN-064-one-hour-prompt-cache.md)                               | F20     | A one-hour prompt cache on long agents                                               | draft  |
 | [EN-065](./E17-F20-EN-065-workers-started-from-a-digest.md)                       | F20     | Workers started from a digest instead of all of CLAUDE.md                            | draft  |
