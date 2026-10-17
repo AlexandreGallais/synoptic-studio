@@ -12,6 +12,7 @@ What each working session dealt with, in the agent's words: the Product Owner's 
 - `#run` EN-069: the Rust workspace's tests run under `cargo llvm-cov` with a floor of 93 % of lines and 93 % of functions (measured 93.88 % and 93.45 % after EN-070), and `cargo deny --offline check advisories` checks its crates against RustSec in `check:rust`, the CI fetching the database; a planted smallvec 1.6.0 fails naming RUSTSEC-2021-0003; the lane went from about 12 s to 18 s.
 - `#run` EN-072: the API pages come from `tools/api-pages`, a Rust crate on Oxc 0.153.0 (`oxc_parser`, `oxc_semantic`), TypeDoc and its plugins out; 527 of 537 pages and the sidebar byte for byte as TypeDoc's, the 10 others showing the written type where TypeDoc showed the compiler's; `npm run docs:api` 0.35 s against 3.5 s.
 - `#run` EN-089: the test font file is read once per run by a Vitest global setup (193 reads to 1); the fixtures built from it are lazy and frozen; the shared-tables test of `parseCollectionFaces` 2.3 s to 75 ms; the lane 101.5 s to 96.3 s.
+- `#run` EN-074: oxlint 1.87.0 and `tsgolint` 7.0.2004 run first in `npm run lint` (1.0 to 1.3 s), with 355 native and type-aware rules; 125 rules dropped by a triage before anything was enabled; ESLint turns off every rule oxlint runs or the triage dropped.
 
 ## 2026-10-17 — SP-021 answered, F19's run started
 

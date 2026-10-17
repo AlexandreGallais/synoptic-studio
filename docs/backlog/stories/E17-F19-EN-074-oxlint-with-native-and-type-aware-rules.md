@@ -156,7 +156,3 @@ ESLint keeps its typed parser for the rules that still need it (`naming-conventi
 - F19's feature file: acceptance criterion 3 no longer lists `consistent-this` (dropped: `this` cannot appear), and criterion 11's triage counts become 228 kept and 37 dropped (four more dropped by EN-074); the 82 native and type-aware rules and three unstable ones dropped are in note 0023.
 - `Rule-docs: none affected, a tooling change: no rule of docs/domain/ changes`.
 - `node_modules` of this worktree is its own copy (`npm ci`), so that adding oxlint left the main checkout's untouched; the main checkout needs `npm install` after the merge.
-
-### Journal
-
-- `#run` EN-074: oxlint 1.87.0 and `tsgolint` 7.0.2004 run first in `npm run lint` (1.0 to 1.3 s), with 355 native and type-aware rules; 125 rules dropped by a triage before anything was enabled; ESLint turns off every rule oxlint runs or the triage dropped.
