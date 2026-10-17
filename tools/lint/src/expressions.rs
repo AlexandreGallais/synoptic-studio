@@ -509,10 +509,11 @@ pub fn same_reference(left: &Expression, right: &Expression) -> bool {
     }
 }
 
-/// An expression without its TypeScript wrappers, `as`, `satisfies`, `<T>` and `!`.
+/// An expression without its TypeScript wrappers, `as`, `satisfies`, `<T>` and `!`, nor parentheses.
 #[must_use]
 pub fn unwrapped<'s, 'a>(expression: &'s Expression<'a>) -> &'s Expression<'a> {
     match expression {
+        Expression::ParenthesizedExpression(inner) => unwrapped(&inner.expression),
         Expression::TSAsExpression(inner) => unwrapped(&inner.expression),
         Expression::TSSatisfiesExpression(inner) => unwrapped(&inner.expression),
         Expression::TSNonNullExpression(inner) => unwrapped(&inner.expression),
