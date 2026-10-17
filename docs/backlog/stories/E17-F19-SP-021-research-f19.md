@@ -39,6 +39,7 @@ One task = one commit, referenced as `SP-021.Tn`.
 - [x] T5 — Research the Product Owner's answers: the rules that need types, JS plugins, TypeScript 7, Rust checks, the tools around the library, platforms (4 h)
 - [x] T6 — Draft F19 again from the answers: criteria, stories, the clean-up story (2 h)
 - [x] T7 — Record the second round: the split into F21, TypeScript 7 alone and TypeDoc's replacement, the Rust linter, F20's stories, the product ideas (3 h)
+- [x] T8 — Record the third round: one linter with `tsgolint` for the 55 rules that need types, every missing rule in the Rust linter, the dev packages reviewed (2 h)
 
 ## Result
 
@@ -81,6 +82,12 @@ Recorded as understood; details in note 0023, section "The Product Owner's secon
 - **F20**: three stories drafted — push notification, progress page as an Artifact, `SubagentStop` hook in Rust.
 - **Agent setup**: no cloud agents; scheduled tasks only when asked (`docs/tooling/agent.md`).
 - **Product**: Q40 (GitHub only, no npm), Q41 (no accessibility layer nor other language in V1, pro idea), Q42 (font subsetting at export, open).
+
+## Third round of the Product Owner (2026-10-17)
+
+- **One linter**: oxlint; `tsgolint` kept only because 55 enabled typescript-eslint rules need types; the type check is TypeScript 7's compiler.
+- **Every rule oxlint lacks** (265, Unicorn 197 and JSDoc 43 among them) rewritten in the project's Rust linter: three more F19 stories.
+- **The dev packages** reviewed in F21: seven rewritten in Rust in three stories (Git hooks, dependency checks, secret scan), the rest kept with a reason.
 
 ## For the main thread
 
