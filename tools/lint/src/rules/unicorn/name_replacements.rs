@@ -569,6 +569,22 @@ mod tests {
     }
 
     #[test]
+    fn carries_the_default_options_eslint_runs_it_with() {
+        // `eslint/rules/unicorn/naming.ts` sets no option: names and file names are checked,
+        // properties, shorthand destructurings and imports of packages are not.
+        assert_eq!(check("const err = 1;").len(), 1);
+        assert_eq!(check_at("src/err.ts", "export {};").len(), 1);
+        assert_eq!(check("import * as utils from './utilities';").len(), 1);
+        for code in [
+            "const object = {err: 1};",
+            "const {err} = object;",
+            "import * as utils from 'package';",
+        ] {
+            assert_eq!(check(code), NONE, "{code}");
+        }
+    }
+
+    #[test]
     fn reports_a_file_name() {
         assert_eq!(
             check_at("src/utils.ts", "export {};"),
