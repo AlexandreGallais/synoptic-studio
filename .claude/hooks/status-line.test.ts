@@ -9,6 +9,7 @@ import {
   statusText,
 } from "./status-line";
 import { backgroundLines } from "./status-place";
+import { isRunOpen } from "./status-run";
 import { EMPTY_TALLY, addTokens, cachedTally } from "./status-tokens";
 
 // Transcript lines are external JSON (snake_case keys), written here as the transcript holds them.
@@ -52,6 +53,7 @@ const STATUS = {
   isRunningLong: false,
   model: "Opus 5.5",
   place: "E14 › F12",
+  run: "",
   running: "",
   silentMs: 1000,
   step: "",
@@ -372,6 +374,7 @@ describe("status line", () => {
       isRunningLong: false,
       model: "Opus 5.5",
       place: "E01 › RET-001 retrospective e01",
+      run: "",
       running: "",
       tally: { ...EMPTY_TALLY, output: 1234, total: 5_678_901 },
     };
@@ -431,5 +434,23 @@ describe("status line", () => {
     ]);
 
     expect(silent.split("\n", 3)[2]).toBe("\u{1B}[31m▶ Bash · Run the checks — 12 s\u{1B}[0m");
+  });
+
+  it("shows the open run beside the turn, and nothing of a run outside one (EN-092)", () => {
+    const run = "run 2 h 05 · 43,100,000 tokens";
+    const turn = statusText({ ...STATUS, run }).split("\n", 2)[1] ?? "";
+
+    expect(turn).toContain(
+      `tokens this turn (0 written)\u{1B}[2m · \u{1B}[0m\u{1B}[35m${run}\u{1B}[0m`,
+    );
+
+    expect(statusText(STATUS)).not.toContain("run ");
+  });
+
+  it("tells an open run's marker from a closed or missing one (EN-092)", () => {
+    expect(isRunOpen('{"start":5,"end":0,"sessions":["a"]}')).toBe(true);
+    expect(isRunOpen('{"start":5,"end":9,"sessions":["a"]}')).toBe(false);
+    expect(isRunOpen('{"end":0}')).toBe(false);
+    expect(isRunOpen("")).toBe(false);
   });
 });
