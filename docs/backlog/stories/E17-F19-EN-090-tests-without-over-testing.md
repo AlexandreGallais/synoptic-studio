@@ -87,3 +87,17 @@ Every `it`, `it.each` and `test.prop` call of the 492 test files, read with Oxc'
 | Run | Tests | Files | Duration | Shares |
 | --- | --- | --- | --- | --- |
 | before (`1ed4be9b`) | 3 514 (1 skipped) | 492 | 104.5 s | setup 35 %, import 28 %, tests 24 %, transform 9 % |
+
+## For the main thread
+
+- `docs/backlog/README.md` (a shared index, left alone): its `NAM` row (rule 4 and the closing paragraph) can name the tooling and tests pass now in the template, `docs/process/agile.md` and NAM-002 (ADR-0070 decision 7).
+- `vite.config.ts` changed for EN-091 to know: the `include` list moved into two projects, `shared` (`isolate: false`) and `isolated` (the playground), kept in the constant `TEST_PROJECTS`; `vitest.setup.ts` untouched. Once EN-091 moves the RuleTester out of the shared setup, the playground's setup share falls too.
+
+### Journal
+
+- `#run` EN-090: claims proven twice merged or removed (6 pairs), slow preparations built once, the tests outside the playground sharing a worker's modules; ADR-0070 and the testing rules; the tooling and tests pass joins NAM.
+
+### Improvements
+
+| 2026-10-17 | EN-090 | `npm run mutate` exits 0 when every file is skipped ("its related tests fail before any mutation"), and its copy of the repository holds only tracked files: a new untracked module imported by the tests skips them all silently; it should fail when nothing was tried, and name the failing baseline | tool |
+| 2026-10-17 | EN-090 | `npm run mutate -- … -- npx vitest run {test}` from zsh loses `{test}` unless quoted (`'{test}'`): the command then runs no test and every file is skipped | tool |
