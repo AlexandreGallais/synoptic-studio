@@ -43,6 +43,7 @@ export const DROPPED_RULES: readonly string[] = [
   "consistent-this",
   "constructor-super",
   "functional/no-class-inheritance",
+  "functional/prefer-property-signatures",
   "getter-return",
   "grouped-accessor-pairs",
   "guard-for-in",

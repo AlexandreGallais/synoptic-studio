@@ -6,10 +6,12 @@ export const FUNCTIONAL_IMMUTABILITY: TSESLint.FlatConfig.Config = {
   rules: {
     // Run by the project's linter, without types and in their strict form (tools/lint, EN-076).
     "functional/immutable-data": "off",
-    "functional/no-let": ["error", { allowInForLoopInit: false, allowInFunctions: false }],
+    // Run by the project's linter (tools/lint, EN-084).
+    "functional/no-let": "off",
     "functional/prefer-immutable-types": "off",
     "functional/prefer-property-signatures": "error",
-    "functional/readonly-type": ["error", "keyword"],
+    // Run by the project's linter (tools/lint, EN-084).
+    "functional/readonly-type": "off",
     "functional/type-declaration-immutability": "off",
   },
 };

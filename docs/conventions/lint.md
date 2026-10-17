@@ -37,7 +37,6 @@ eslint/
 | --- | --- | --- |
 | `language.ts` | `**/*.ts` | typed parser, plugins, resolver |
 | `pure-layers.ts` | `src/math … src/io` | forbids the DOM and the host |
-| `dom-layers.ts` | `src/render`, `src/interaction`, `playground` | relaxes the pure statement rules |
 | `playground.ts` | `playground/index.ts` | load-time effects allowed |
 | `barrels.ts` | `src/**/index.ts`, `eslint/**/index.ts`, `playground/*/**/index.ts` (not the entry); `eslint/rules/*/all.ts` | barrels: any number of imports; `all.ts` aggregators: any number of imports only |
 | `tooling.ts` | `eslint/`, root `*.config.ts`, `*.setup.ts`, `*.test.ts`, `tests/`, `docs/.vitepress/`, `.claude/hooks/`, `scripts/` | Node.js, dev dependencies |
@@ -112,6 +111,25 @@ A type holds only data or only functions; a member is a function when it is a me
 ### `functional/no-conditional-statements`
 
 In the functional core, an `if` or a `switch` is kept only when each branch returns, throws, breaks or continues, read from the tree: a call that never returns does not end a branch.
+
+### `eslint-plugin-functional`'s other rules
+
+With the plugin's names, messages and the project's options (EN-084), each module tested on the cases of its documentation (`eslint-plugin-functional` 10.0.1). On every TypeScript file; the five statement rules are off in the imperative shell, the tools and the tests (`tools/lint/src/scopes.rs`), and there `unicorn/no-useless-recursion` runs, which the functional core leaves since the loop it suggests cannot be written there.
+
+| Rule | The code… | Where |
+| --- | --- | --- |
+| `functional/no-let` | declares no `let`, in a `for` header or a function either | everywhere |
+| `functional/readonly-type` | marks a type literal's members `readonly` rather than wrapping it in `Readonly<…>`; autofixed | everywhere |
+| `functional/no-classes` | declares no class | everywhere |
+| `functional/no-this-expressions` | reads no `this` | everywhere |
+| `functional/no-promise-reject` | rejects no promise: no `Promise.reject()`, no executor's `reject`, no `throw` that an `async` function's own `try … catch` does not hold | everywhere |
+| `functional/functional-parameters` | gives each function a parameter, a callback and an IIFE included | the core |
+| `functional/no-expression-statements` | throws no value away: a `use` directive and a `yield` apart | the core |
+| `functional/no-loop-statements` | writes no loop | the core |
+| `functional/no-throw-statements` | throws nothing | the core |
+| `functional/no-try-statements` | writes no `try` | the core |
+
+`prefer-property-signatures` is dropped: oxlint's `typescript/method-signature-style` (`property`) reports every method signature. The `arguments` part of `functional-parameters` is oxlint's `prefer-rest-params`, on every file.
 
 ### `local/require-kind`
 

@@ -5,7 +5,6 @@ Every place where the code departs from a lint rule, with its reason (ADR-0066).
 | Where | Directive |
 | --- | --- |
 | one line of TypeScript | `// oxlint-disable-next-line rule -- reason` above the code for a rule oxlint runs, `// lint-disable-next-line rule -- reason` for one the project's linter runs (`tools/lint`), `// eslint-disable-next-line rule -- reason` for one ESLint runs ([lint](./lint.md#one-off-exceptions)) |
-| a few lines (TypeScript) | `/* eslint-disable rule -- reason */` then its `eslint-enable`, as the byte buffer written once of ADR-0066 |
 | one item of Rust | `#[allow(lint)]` on the item, its reason in a comment above it; `#![allow(lint)]` for a whole module |
 
 ## Keeping it in step
@@ -18,8 +17,8 @@ Every place where the code departs from a lint rule, with its reason (ADR-0066).
 
 | File | Function | Rule | Reason |
 | --- | --- | --- | --- |
-| `src/io/font-collection/face-parts-to-file.ts` | `facePartsToFile` | `functional/no-expression-statements`, `functional/no-loop-statements` | a buffer of the final size, written once at known places inside the function, then returned: a collection's 191 MB table copied once, never spread into an array (ADR-0066) |
-| `src/io/font-collection/face-parts-to-file.ts` | `facePartsToFile` | `functional/immutable-data` | the same buffer, its one write: `set` read by name as a map's, a typed array's here (ADR-0066) |
+| `src/io/font-collection/face-parts-to-file.ts` | `facePartsToFile` | `functional/no-loop-statements` | a buffer of the final size, written once at known places inside the function, then returned: a collection's 191 MB table copied once, never spread into an array (ADR-0066) |
+| `src/io/font-collection/face-parts-to-file.ts` | `facePartsToFile` | `functional/immutable-data`, `functional/no-expression-statements` | the same buffer, its one write: `set` read by name as a map's, a typed array's here, and its result left (ADR-0066) |
 | `src/model/handles/are-valid-handles.test.ts` | `refuses an unknown mode, a vector not finite, a switch not boolean` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | data read from outside: an unknown mode |
 | `src/model/handles/are-valid-handles.test.ts` | `refuses an unknown mode, a vector not finite, a switch not boolean` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | data read from outside: a switch that is not a boolean |
 | `src/model/layout-box/is-anchor.test.ts` | `[F07.AC1] refuses any other value on either axis` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | data read from outside may hold any string |

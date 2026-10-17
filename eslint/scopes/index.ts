@@ -1,6 +1,5 @@
 export * from "./all";
 export * from "./barrels";
-export * from "./dom-layers";
 export * from "./language";
 export * from "./oxlint-owned";
 export * from "./playground";
