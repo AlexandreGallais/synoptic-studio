@@ -4,9 +4,9 @@ import {
   APPLE_TRUE_TYPE_VERSION,
   ENGLISH_US,
   HELLO_TEXT,
-  HELVETICA_COLLECTION_PATH,
   INTER_REGULAR_FILE,
   OPEN_TYPE_VERSION,
+  SHARED_SANS_TABLES,
   TRUE_TYPE_VERSION,
   WINDOWS_PLATFORM,
   familyNameTable,
@@ -15,7 +15,7 @@ import {
   joinedParts,
   nameTable,
   os2FaceTable,
-  systemFont,
+  sharedTableCollection,
   testFontTables,
   uint32,
 } from "../../../tests";
@@ -36,8 +36,10 @@ import { parseFontFace } from "./parse-font-face";
 import type { Os2FaceFields } from "../../../tests";
 import type { FontFamily } from "../../model";
 
-/** Helvetica of macOS, a collection of 6 faces, read where the machine has it. */
-const HELVETICA = systemFont(HELVETICA_COLLECTION_PATH);
+/** The faces of a collection of three faces sharing Inter's tables, each joined into its file. */
+const SHARED_SANS_FILES = parseCollectionFaces(
+  sharedTableCollection(TRUE_TYPE_VERSION, SHARED_SANS_TABLES),
+).map((parts) => joinedParts(parts));
 
 /**
  * A font file tagged `true`, as Chrome gives on macOS a face whose CoreText format is TrueType
@@ -242,34 +244,38 @@ describe("parseFontFace, faces of macOS and of collections (F17.AC4)", () => {
     });
   });
 
-  it.skipIf(HELVETICA === undefined)(
-    "[F17.AC4] reads the 6 faces of Helvetica.ttc: 400, 700, 400 italic, 700 italic, 300, 300 italic",
+  it(
+    "[F17.AC4] [F18.AC19] reads the 3 faces of a collection sharing Inter's tables: 400, 700, 400 italic",
+    // Inter's metrics read three times, about 2.3 s alone: 20 s holds a loaded pre-push run.
+    { timeout: 20_000 },
     () => {
-      const faces = parseCollectionFaces(HELVETICA ?? new Uint8Array()).map((parts) =>
-        parseFontFace(joinedParts(parts)),
-      );
-
+      // usWeightClass 400, 700, 400; fsSelection 0x00c0, 0x00a0, 0x0081: bit 0, italic, in the third.
       expect(
-        faces.map((named) => [named?.family, named?.face.weight, named?.face.isItalic]),
+        SHARED_SANS_FILES.map((file) => {
+          const named = parseFontFace(file);
+
+          return [named?.family, named?.face.weight, named?.face.isItalic];
+        }),
       ).toEqual([
-        ["Helvetica", 400, false],
-        ["Helvetica", 700, false],
-        ["Helvetica", 400, true],
-        ["Helvetica", 700, true],
-        ["Helvetica", 300, false],
-        ["Helvetica", 300, true],
+        ["Shared Sans", 400, false],
+        ["Shared Sans", 700, false],
+        ["Shared Sans", 400, true],
       ]);
     },
   );
 
-  it.skipIf(HELVETICA === undefined)(
-    "[F17.AC4] reads each Helvetica face tagged true, as Chrome gives it on macOS",
+  it(
+    "[F17.AC4] [F18.AC19] reads each face of that collection tagged true, as Chrome gives it on macOS",
+    // Inter's metrics read three times, about 2.3 s alone: 20 s holds a loaded pre-push run.
+    { timeout: 20_000 },
     () => {
-      const faces = parseCollectionFaces(HELVETICA ?? new Uint8Array()).map((parts) =>
-        parseFontFace(appleTagged(joinedParts(parts))),
-      );
+      const faces = SHARED_SANS_FILES.map((file) => parseFontFace(appleTagged(file)));
 
-      expect(faces.filter((named) => named?.family === "Helvetica")).toHaveLength(6);
+      expect(faces.map((named) => named?.family)).toEqual([
+        "Shared Sans",
+        "Shared Sans",
+        "Shared Sans",
+      ]);
     },
   );
 });

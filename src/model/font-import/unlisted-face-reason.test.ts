@@ -13,7 +13,7 @@ const LATIN_METRICS = {
   advances: Object.fromEntries(BASIC_LATIN_LETTERS.map((codePoint) => [codePoint, 1139])),
 };
 
-/** Arial's metrics as Apple Color Emoji maps the Latin script: the space and digits, no letter. */
+/** Arial's metrics as a color emoji font maps the Latin script: the space and digits, no letter. */
 const NO_LETTER_METRICS = { ...ARIAL_METRICS, advances: { 32: 800, 48: 800 } };
 
 /**
@@ -53,7 +53,7 @@ describe("unlistedFaceReason (docs/domain/shapes.md, Installed fonts)", () => {
       expected: "not-embeddable",
       tested: face(LATIN_METRICS, file(false)),
     },
-    // Apple Color Emoji: fsType 4 permits embedding, no letter mapped.
+    // A color emoji font: fsType 4 permits embedding, no letter mapped.
     {
       case: "no letter",
       expected: "no-latin-letters",

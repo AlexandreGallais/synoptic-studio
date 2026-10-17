@@ -1,14 +1,30 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
-import { APPLE_COLOR_EMOJI_PATH, partsDigest, systemFont } from "../../../tests";
+import {
+  LARGE_TABLE_LENGTH,
+  TRUE_TYPE_VERSION,
+  largeTableCollection,
+  partsDigest,
+} from "../../../tests";
+import { unlistedFaceReason } from "../../model";
+import { parseFontFace } from "../font-face";
 
 import { collectionFaceToParts } from "./collection-face-to-parts";
 import { facePartsToFile } from "./face-parts-to-file";
 import { parseCollectionOffsets } from "./parse-collection-offsets";
 
-/** Apple Color Emoji of macOS, 192 120 460 bytes, read where the machine has it. */
-const EMOJI = systemFont(APPLE_COLOR_EMOJI_PATH);
+/**
+ * The parts of the first face of `largeTableCollection`, its large table among them as a view.
+ *
+ * @returns its directory written anew, then its tables as views of the collection
+ */
+function largeFaceParts(): readonly Uint8Array[] {
+  const collection = largeTableCollection(TRUE_TYPE_VERSION);
+  const [directory = 0] = parseCollectionOffsets(new DataView(collection.buffer));
+
+  return collectionFaceToParts(collection, directory);
+}
 
 describe("facePartsToFile (REF-ECMA-262-TYPEDARRAY-SET)", () => {
   it("[F18.AC13] writes each part after the one before it, in one buffer of their total size", () => {
@@ -61,22 +77,33 @@ describe("facePartsToFile (REF-ECMA-262-TYPEDARRAY-SET)", () => {
     },
   );
 
-  it.skipIf(EMOJI === undefined)(
-    "[F18.AC13] writes Apple Color Emoji's first face, its 191 MB sbix table included",
+  it(
+    "[F18.AC13] [F18.AC19] writes the first face of a collection holding a table of 191 134 509 bytes",
     { timeout: 20_000 },
     () => {
-      // The face's parts hold the sbix table of 191 134 508 bytes as a view: joined into one
-      // buffer, the file has the parts' total length and the digest of the parts read in order.
-      const collection = EMOJI ?? new Uint8Array();
-      const [directory = 0] = parseCollectionOffsets(
-        new DataView(collection.buffer, collection.byteOffset, collection.byteLength),
-      );
-      const parts = collectionFaceToParts(collection, directory);
+      // The face's parts hold the large table as a view: joined into one buffer, the file has the
+      // parts' total length and the digest of the parts read in order.
+      const parts = largeFaceParts();
       const file = facePartsToFile(parts);
 
       expect(file.length).toBe(parts.reduce((total, part) => total + part.length, 0));
-      expect(file.length).toBeGreaterThan(191_134_508);
+      expect(file.length).toBeGreaterThan(LARGE_TABLE_LENGTH);
       expect(partsDigest([file])).toBe(partsDigest(parts));
+    },
+  );
+
+  it(
+    "[F17.AC14] [F18.AC19] reads the face of that large file, then refuses it: no basic Latin letters",
+    { timeout: 20_000 },
+    () => {
+      // The face maps A, B, C and a alone: read, Test Symbols 400, but lacking 48 of the 52 letters.
+      const named = parseFontFace(facePartsToFile(largeFaceParts()));
+
+      expect(named).toMatchObject({ face: { weight: 400 }, family: "Test Symbols" });
+
+      expect(named === undefined ? undefined : unlistedFaceReason(named.face)).toBe(
+        "no-latin-letters",
+      );
     },
   );
 });

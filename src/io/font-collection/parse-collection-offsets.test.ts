@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  HELVETICA_COLLECTION_PATH,
+  SHARED_SANS_TABLES,
   TRUE_TYPE_VERSION,
   fontCollection,
   fontFile,
-  systemFont,
+  sharedTableCollection,
   tagBytes,
   uint16,
   uint32,
@@ -13,9 +13,6 @@ import {
 } from "../../../tests";
 
 import { parseCollectionOffsets } from "./parse-collection-offsets";
-
-/** Helvetica of macOS, read where the machine has it. */
-const HELVETICA = systemFont(HELVETICA_COLLECTION_PATH);
 
 describe("parseCollectionOffsets (REF-OT-OTFF)", () => {
   it("[F17.AC4] reads where each face of a collection sits", () => {
@@ -29,16 +26,13 @@ describe("parseCollectionOffsets (REF-OT-OTFF)", () => {
     expect(parseCollectionOffsets(viewOf([...collection]))).toEqual([20, 52]);
   });
 
-  it.skipIf(HELVETICA === undefined)(
-    "[F17.AC4] reads Helvetica.ttc's 6 faces, at 48, 380, 696, 1028, 1344 and 1644",
-    () => {
-      const file = HELVETICA ?? new Uint8Array();
+  it("[F17.AC4] [F18.AC19] reads the 3 faces of a collection sharing Inter's tables, at 24, 308 and 592", () => {
+    // Header 12 + 3 × 4 = 24 bytes; each directory of Inter's 17 tables 12 + 17 × 16 = 284 bytes,
+    // all three before the tables: at 24, 24 + 284 = 308 and 308 + 284 = 592.
+    const file = sharedTableCollection(TRUE_TYPE_VERSION, SHARED_SANS_TABLES);
 
-      expect(parseCollectionOffsets(new DataView(file.buffer, file.byteOffset))).toEqual([
-        48, 380, 696, 1028, 1344, 1644,
-      ]);
-    },
-  );
+    expect(parseCollectionOffsets(new DataView(file.buffer))).toEqual([24, 308, 592]);
+  });
 
   it("reads no face in a font file", () => {
     const file = [...fontFile(TRUE_TYPE_VERSION, {})];

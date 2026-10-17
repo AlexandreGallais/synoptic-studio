@@ -35,8 +35,8 @@ describe("hasBasicLatinLetters (REF-WIKI-ISO-BASIC-LATIN)", () => {
   });
 
   it.each([
-    // Apple Color Emoji 18.4 maps the space, #, * and the digits for its keycaps, no letter.
-    { case: "digits and the space, as Apple Color Emoji", codePoints: [0x20, 0x23, 0x2a, 0x30] },
+    // A color emoji font maps the space, #, * and the digits for its keycaps, no letter.
+    { case: "digits and the space, as a color emoji font", codePoints: [0x20, 0x23, 0x2a, 0x30] },
     // Arial's derivation subset: H e l o W r d A V T R, far from 52 letters.
     {
       case: "Arial's measured subset",
