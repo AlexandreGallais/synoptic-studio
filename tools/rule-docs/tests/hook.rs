@@ -2,18 +2,11 @@
 
 use std::fs;
 use std::path::PathBuf;
-use std::process::{Command, Output};
+use std::process::Output;
 
-/// A command cut off from the Git repository running the tests: a hook (`pre-push` running
-/// `check:all`) sets `GIT_DIR` and its kin, which would point every `git` call at that repository.
-fn isolated(mut command: Command) -> Command {
-    for (name, _) in std::env::vars_os() {
-        if name.to_string_lossy().starts_with("GIT_") {
-            command.env_remove(name);
-        }
-    }
-    command
-}
+// Every command starts without the inherited `GIT_*` variables: the pre-push hook running
+// `check:all` sets `GIT_DIR`, which would point every `git` call at this repository.
+use test_support::command;
 
 /// A Git repository in a fresh temporary folder whose `commit-msg` hook runs the check, on a
 /// story's branch with a story file of F98.
@@ -64,7 +57,7 @@ impl Repository {
     }
 
     fn git(&self, arguments: &[&str]) -> Output {
-        isolated(Command::new("git"))
+        command("git")
             .args(["-c", "commit.gpgsign=false"])
             .args(arguments)
             .current_dir(&self.root)

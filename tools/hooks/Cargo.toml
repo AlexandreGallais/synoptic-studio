@@ -10,5 +10,8 @@ publish.workspace = true
 tool-use = { path = "../tool-use" }
 worktree = { path = "../worktree" }
 
+[dev-dependencies]
+test-support = { path = "../test-support" }
+
 [lints]
 workspace = true

@@ -6,7 +6,7 @@
 
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::process::{Command, Output};
+use std::process::Output;
 
 /// A Markdown page with a table, a paragraph on two lines and a list item on two lines.
 const PAGE: &str = "# Page\n\n| Name | Size |\n| --- | ---: |\n| a | 1 |\n| bb | 22 |\n\nA paragraph\nwritten on two lines.\n\n- an item\n  continued\n";
@@ -39,11 +39,7 @@ fn repository(name: &str) -> PathBuf {
 
 /// Runs Git in a folder, without the variables a hook may set (`GIT_DIR`).
 fn git(folder: &Path, arguments: &[&str]) {
-    let mut command = Command::new("git");
-
-    for (key, _) in std::env::vars().filter(|(key, _)| key.starts_with("GIT_")) {
-        command.env_remove(key);
-    }
+    let mut command = test_support::command("git");
 
     assert!(
         command
@@ -57,7 +53,7 @@ fn git(folder: &Path, arguments: &[&str]) {
 
 /// Runs the formatter in a folder.
 fn format(folder: &Path, arguments: &[&str]) -> Output {
-    Command::new(env!("CARGO_BIN_EXE_format"))
+    test_support::command(env!("CARGO_BIN_EXE_format"))
         .args(arguments)
         .current_dir(folder)
         .output()

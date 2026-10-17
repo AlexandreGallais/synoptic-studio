@@ -29,11 +29,10 @@ impl Drop for TempFolder {
 
 /// A command run with none of the variables that would tie it to this repository or to a lock.
 fn clean(program: &str) -> Command {
-    let mut command = Command::new(program);
+    let mut command = test_support::command(program);
 
     for (name, _) in env::vars() {
-        if name.starts_with("GIT_") || name.ends_with("_LOCK_PID") || name == "npm_lifecycle_event"
-        {
+        if name.ends_with("_LOCK_PID") || name == "npm_lifecycle_event" {
             command.env_remove(name);
         }
     }

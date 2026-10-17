@@ -18,18 +18,11 @@ static NEXT: AtomicUsize = AtomicUsize::new(0);
 /// A command without the `GIT_*` variables of the process running the tests, nor the user's or the
 /// system's Git config: an empty home of its own.
 fn clean(program: &str, dir: &Path) -> Command {
-    let mut command = Command::new(program);
+    let mut command = test_support::command(program);
     let home = env::temp_dir().join(format!("git-sequences-home-{}", std::process::id()));
 
     fs::create_dir_all(&home).expect("home made");
     command.current_dir(dir);
-
-    for (name, _) in env::vars_os() {
-        if name.to_string_lossy().starts_with("GIT_") {
-            command.env_remove(name);
-        }
-    }
-
     command.env("HOME", home).env("GIT_CONFIG_NOSYSTEM", "1");
     command
 }
