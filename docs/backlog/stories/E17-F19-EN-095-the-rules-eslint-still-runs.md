@@ -3,7 +3,7 @@ id: EN-095
 epic: E17
 feature: F19
 title: The rules ESLint still runs, carried or dropped
-status: ready
+status: done
 points: 3
 ---
 
@@ -25,8 +25,8 @@ The decisions of F19's run apply (Product Owner, 2026-10-17): nothing added to E
 
 One task = one commit, referenced as `EN-095.Tn`.
 
-- [ ] T1 — The 22 Unicorn rules (2 h)
-- [ ] T2 — The 8 core and Import rules; the test that ESLint runs nothing (1 h)
+- [x] T1 — The 22 Unicorn rules (2 h)
+- [x] T2 — The 8 core and Import rules; the test that ESLint runs nothing (1 h)
 
 ## Each rule checked again (Product Owner, 2026-10-17)
 
