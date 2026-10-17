@@ -3,7 +3,7 @@ id: US-062
 epic: E17
 feature: F18
 title: Installed fonts read whole before they are listed
-status: ready
+status: done
 points: 3
 ---
 
@@ -39,8 +39,8 @@ Chrome, `npm run dev`, `http://localhost:5173/`, a stopwatch.
 
 One task = one commit, referenced as `US-062.Tn`.
 
-- [ ] T1 — Each face read whole and checked at the first reading, its bytes released; tests (2 h)
-- [ ] T2 — The counting line and the domain; durations measured; Product Owner test card (1 h)
+- [x] T1 — Each face read whole and checked at the first reading, its bytes released; tests (2 h)
+- [x] T2 — The counting line and the domain; durations measured; Product Owner test card (1 h)
 
 ## For the main thread
 
