@@ -1,10 +1,10 @@
 /**
  * Rules dropped by the triage of EN-074, and by the stories that rewrite the rules oxlint lacks
- * after checking each again (EN-078) (Product Owner, 2026-10-17): what each one guards is
+ * after checking each again, from EN-078 on (Product Owner, 2026-10-17): what each one guards is
  * already refused by the compiler, by a rule kept, by the formatter or by the project's settings,
- * or this code cannot contain it. Off in ESLint and absent from `.oxlintrc.json`, so that no
- * linter runs them; each reason is in research note 0023, sections "Triage of the rules oxlint
- * lacks" and "Triage of oxlint's native and type-aware rules".
+ * this code cannot contain it, or, as configured, it checks nothing. Off in ESLint and absent from
+ * `.oxlintrc.json`, so that no linter runs them; each reason is in research note 0023, sections
+ * "Triage of the rules oxlint lacks" and "Triage of oxlint's native and type-aware rules".
  */
 export const DROPPED_RULES: readonly string[] = [
   "@stylistic/lines-between-class-members",
@@ -141,15 +141,19 @@ export const DROPPED_RULES: readonly string[] = [
   "unicorn/prefer-array-from-range",
   "unicorn/prefer-class-fields",
   "unicorn/prefer-dispose",
+  "unicorn/prefer-escaped-irregular-whitespace",
   "unicorn/prefer-get-or-insert-computed",
   "unicorn/prefer-private-class-fields",
   "unicorn/prefer-promise-with-resolvers",
   "unicorn/prefer-queue-microtask",
   "unicorn/prefer-response-static-json",
+  "unicorn/prefer-string-match-all",
   "unicorn/prefer-temporal",
   "unicorn/prefer-temporal-conversion",
   "unicorn/prefer-uint8array-base64",
   "unicorn/prefer-uint8array-hex",
   "unicorn/require-text-decoder-streaming",
+  "unicorn/single-line-block-comment-style",
+  "unicorn/string-content",
   "vars-on-top",
 ];

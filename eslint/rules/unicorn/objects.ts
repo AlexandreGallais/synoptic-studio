@@ -6,33 +6,45 @@ export const UNICORN_OBJECTS: TSESLint.FlatConfig.Config = {
   rules: {
     "unicorn/class-reference-in-static-methods": "error",
     "unicorn/consistent-class-member-order": "error",
-    "unicorn/consistent-destructuring": "error",
+    // Run by the project's linter (tools/lint, EN-080).
+    "unicorn/consistent-destructuring": "off",
     "unicorn/new-for-builtins": "error",
     "unicorn/no-accessor-recursion": "error",
-    "unicorn/no-computed-property-existence-check": "error",
+    // Run by the project's linter (tools/lint, EN-080).
+    "unicorn/no-computed-property-existence-check": "off",
     "unicorn/no-incomplete-accessor-override": "error",
     "unicorn/no-instanceof-builtins": "error",
-    "unicorn/no-invalid-property-descriptor": "error",
-    "unicorn/no-invalid-well-known-symbol-methods": "error",
+    // Run by the project's linter (tools/lint, EN-080).
+    "unicorn/no-invalid-property-descriptor": "off",
+    // Run by the project's linter (tools/lint, EN-080).
+    "unicorn/no-invalid-well-known-symbol-methods": "off",
     "unicorn/no-nonstandard-builtin-properties": "error",
     "unicorn/no-static-only-class": "error",
     "unicorn/no-this-assignment": "error",
     "unicorn/no-this-outside-of-class": "error",
     "unicorn/no-undeclared-class-members": "error",
-    "unicorn/no-unreadable-new-expression": "error",
-    "unicorn/no-unreadable-object-destructuring": "error",
-    "unicorn/no-unsafe-property-key": "error",
-    "unicorn/no-unused-builtin-method-return": "error",
-    "unicorn/no-unused-properties": "error",
+    // Run by the project's linter (tools/lint, EN-080).
+    "unicorn/no-unreadable-new-expression": "off",
+    // Run by the project's linter (tools/lint, EN-080).
+    "unicorn/no-unreadable-object-destructuring": "off",
+    // Run by the project's linter (tools/lint, EN-080).
+    "unicorn/no-unsafe-property-key": "off",
+    // Run by the project's linter (tools/lint, EN-080).
+    "unicorn/no-unused-builtin-method-return": "off",
+    // Run by the project's linter (tools/lint, EN-080).
+    "unicorn/no-unused-properties": "off",
     "unicorn/no-useless-override": "error",
     "unicorn/prefer-class-fields": "error",
-    "unicorn/prefer-object-define-properties": "error",
-    "unicorn/prefer-object-destructuring-defaults": "error",
+    // Run by the project's linter (tools/lint, EN-080).
+    "unicorn/prefer-object-define-properties": "off",
+    // Run by the project's linter (tools/lint, EN-080).
+    "unicorn/prefer-object-destructuring-defaults": "off",
     "unicorn/prefer-object-from-entries": "error",
     "unicorn/prefer-private-class-fields": "error",
     "unicorn/prefer-prototype-methods": "error",
     "unicorn/prefer-reflect-apply": "error",
-    "unicorn/prefer-single-object-destructuring": "error",
+    // Run by the project's linter (tools/lint, EN-080).
+    "unicorn/prefer-single-object-destructuring": "off",
     "unicorn/require-proxy-trap-boolean-return": "error",
   },
 };

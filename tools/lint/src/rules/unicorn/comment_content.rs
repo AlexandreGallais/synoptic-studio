@@ -162,10 +162,11 @@ fn bounded(pattern: &str) -> String {
     format!("(?<!{WORD}){pattern}(?!{WORD})")
 }
 
-/// The replacements the project's configuration adds or drops, by pattern, `None` dropping one
-/// (`eslint/rules/unicorn/naming.ts`: `{replacements: {application: false}}`). The plugin's own
-/// pattern is `\bapplication\b(?!/)`: no pattern of the plugin is named `application`, so the
-/// option drops nothing, and `application` still becomes `app`, as in `ESLint`.
+/// The replacements the project's configuration adds or drops, by pattern, `None` dropping one:
+/// `{replacements: {application: false}}`, as `eslint/rules/unicorn/naming.ts` set it until
+/// EN-080. The plugin's own pattern is `\bapplication\b(?!/)`: no pattern of the plugin is named
+/// `application`, so the option drops nothing, and `application` still becomes `app`, as in
+/// `ESLint`.
 const PROJECT_REPLACEMENTS: [(&str, Option<&str>); 1] = [("application", None)];
 
 /// The replacements in force: the plugin's, but those the project drops or rewrites, then the
