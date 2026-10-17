@@ -56,7 +56,7 @@ impl Lab {
             .env("GIT_CONFIG_GLOBAL", self.root.join("gitconfig"))
             .env("GIT_CONFIG_NOSYSTEM", "1")
             .env_remove("RECORDS_PATH")
-            .env_remove("LIBRARY_PATH");
+            .env_remove("AGENT_LIBRARY_FILE");
         command
     }
 
@@ -291,7 +291,7 @@ fn records_save_copies_commits_then_says_nothing_changed() {
     let save = || {
         lab.command(env!("CARGO_BIN_EXE_records-save"), &repo)
             .env("RECORDS_PATH", &records)
-            .env("LIBRARY_PATH", &library)
+            .env("AGENT_LIBRARY_FILE", &library)
             .output()
             .expect("records-save")
     };

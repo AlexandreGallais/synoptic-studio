@@ -143,15 +143,19 @@ fn clean() -> Result<String, String> {
     Ok(report(&deleted, &kept, &left))
 }
 
-fn main() -> ExitCode {
+fn work() -> u8 {
     match clean() {
         Ok(report) => {
             println!("{report}");
-            ExitCode::SUCCESS
+            0
         }
         Err(error) => {
             eprintln!("branches-clean: {error}");
-            ExitCode::from(1)
+            1
         }
     }
+}
+
+fn main() -> ExitCode {
+    tool_use::run("branches-clean", "", work)
 }

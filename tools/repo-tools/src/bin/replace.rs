@@ -34,12 +34,12 @@ fn results(edits: &[Edit]) -> Result<Vec<(String, String)>, Vec<String>> {
 }
 
 /// Reports the problems and fails the command.
-fn refuse(problems: &[String]) -> ExitCode {
+fn refuse(problems: &[String]) -> u8 {
     eprintln!("{}\nnothing written", problems.join("\n"));
-    ExitCode::from(1)
+    1
 }
 
-fn main() -> ExitCode {
+fn work() -> u8 {
     let mut spec = String::new();
 
     if let Err(error) = io::stdin().read_to_string(&mut spec) {
@@ -57,12 +57,16 @@ fn main() -> ExitCode {
             for (file, text) in &written {
                 if let Err(error) = fs::write(file, text) {
                     eprintln!("{file}: {error}");
-                    return ExitCode::from(1);
+                    return 1;
                 }
             }
             println!("{} edits in {} files", edits.len(), written.len());
-            ExitCode::SUCCESS
+            0
         }
         Err(problems) => refuse(&problems),
     }
+}
+
+fn main() -> ExitCode {
+    tool_use::run("replace", "", work)
 }

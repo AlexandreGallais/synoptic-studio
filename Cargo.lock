@@ -555,6 +555,7 @@ dependencies = [
  "rusqlite",
  "serde_json",
  "shared-files",
+ "test-support",
  "tokio",
  "tool-use",
 ]
@@ -1073,6 +1074,7 @@ dependencies = [
  "hooks",
  "shared-files",
  "test-support",
+ "tool-use",
 ]
 
 [[package]]

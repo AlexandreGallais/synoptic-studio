@@ -52,11 +52,7 @@ impl Place {
 
     /// A command of a binary with the library named by its variable, no `GIT_*` inherited.
     fn command(&self, binary: &str) -> Command {
-        let mut command = Command::new(binary);
-
-        for (name, _) in std::env::vars().filter(|(name, _)| name.starts_with("GIT_")) {
-            command.env_remove(name);
-        }
+        let mut command = test_support::command(binary);
 
         command
             .env("AGENT_LIBRARY_FILE", self.library())

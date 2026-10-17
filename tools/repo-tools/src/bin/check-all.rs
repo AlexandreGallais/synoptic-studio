@@ -82,7 +82,7 @@ fn config_path(root: &Path) -> Option<PathBuf> {
     .map(|common| Path::new(common).join("config"))
 }
 
-fn main() -> ExitCode {
+fn work() -> u8 {
     let start = Instant::now();
     let root = env::current_dir().unwrap_or_else(|_| PathBuf::from("."));
     let scripts = read_scripts(&fs::read_to_string(root.join("package.json")).unwrap_or_default());
@@ -141,9 +141,9 @@ fn main() -> ExitCode {
     }
 
     println!("{}", summary(start.elapsed().as_millis(), &failed));
-    if failed.is_empty() {
-        ExitCode::SUCCESS
-    } else {
-        ExitCode::from(1)
-    }
+    u8::from(!failed.is_empty())
+}
+
+fn main() -> ExitCode {
+    tool_use::run("check-all", "", work)
 }

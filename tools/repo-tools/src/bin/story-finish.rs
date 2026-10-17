@@ -106,7 +106,7 @@ fn bring_up(base: &str, branch: &str, here: &Path) -> Result<(), String> {
     Ok(())
 }
 
-fn finish(base: &str, title: &str, body: &str) -> Result<ExitCode, String> {
+fn finish(base: &str, title: &str, body: &str) -> Result<u8, String> {
     let current = env::current_dir().map_err(|error| error.to_string())?;
     let top = run_words("git", &["rev-parse", "--show-toplevel"], &current)?;
     let here = Path::new(&top);
@@ -176,25 +176,25 @@ fn finish(base: &str, title: &str, body: &str) -> Result<ExitCode, String> {
     match clean_up(&state, &plan, |cwd| move_rows(&branch, cwd)) {
         Ok(true) => {
             println!("merged; {base} up to date, {branch} deleted here and on GitHub");
-            Ok(ExitCode::SUCCESS)
+            Ok(0)
         }
         Ok(false) => {
             eprintln!(
                 "{state} after 3 min, {branch} kept: read gh run list --workflow story-automerge.yml --limit 1, then run again: it reuses the pull request"
             );
-            Ok(ExitCode::from(1))
+            Ok(1)
         }
         Err(error) => {
             eprintln!(
                 "the clean-up stopped: {error}\nRun again from the worktree while it exists, or finish by hand, skipping the steps already done:\n{}",
                 manual_steps(&plan, &branch)
             );
-            Ok(ExitCode::from(1))
+            Ok(1)
         }
     }
 }
 
-fn main() -> ExitCode {
+fn work() -> u8 {
     let arguments: Vec<String> = env::args().skip(1).collect();
     let [base, title, body] = [0, 1, 2].map(|at| arguments.get(at).map_or("", String::as_str));
 
@@ -202,11 +202,15 @@ fn main() -> ExitCode {
     // (AUD-020, N2).
     if [base, title, body].contains(&"") {
         eprintln!("usage: npm run story:finish -- <base> <title> <body file>");
-        return ExitCode::from(1);
+        return 1;
     }
 
     finish(base, title, body).unwrap_or_else(|error| {
         eprintln!("story-finish: {error}");
-        ExitCode::from(1)
+        1
     })
+}
+
+fn main() -> ExitCode {
+    tool_use::run("story-finish", "", work)
 }

@@ -8,7 +8,7 @@ use std::process::ExitCode;
 
 use repo_tools::backlog_status::{item_file, write_status};
 
-fn main() -> ExitCode {
+fn work() -> u8 {
     let arguments: Vec<String> = env::args().skip(1).collect();
     let id = arguments.first().map_or("", String::as_str);
     let status = arguments.get(1).map_or("", String::as_str);
@@ -17,21 +17,21 @@ fn main() -> ExitCode {
 
     if file.is_empty() || status.is_empty() {
         eprintln!("usage: npm run backlog:status -- <ID> <status>; no item {id}");
-        return ExitCode::from(1);
+        return 1;
     }
 
     match write_status(&root, &file, id, status) {
         Ok(indexed) => {
             println!("{id} {status}: {file}, its index and its parent");
-            if indexed {
-                ExitCode::SUCCESS
-            } else {
-                ExitCode::from(1)
-            }
+            u8::from(!indexed)
         }
         Err(error) => {
             eprintln!("backlog-status: {error}");
-            ExitCode::from(1)
+            1
         }
     }
+}
+
+fn main() -> ExitCode {
+    tool_use::run("backlog-status", "", work)
 }
