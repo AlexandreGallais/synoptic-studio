@@ -1,5 +1,6 @@
 // Turns of work kept for later comparison (docs/tooling/metrics.md): each session report is saved
-// as one line in the Git directory, and the metrics report lists them all, so that a retrospective
+// as one line in the Git directory by `tools/metrics` (`turn_record`, EN-107), and the metrics
+// report lists them all, so that a retrospective
 // compares the turns of an epic — time, tokens, calls, failures, commits.
 
 import { execFileSync } from "node:child_process";
@@ -8,8 +9,6 @@ import { join } from "node:path";
 
 import { count, text } from "./metrics-events.ts";
 import { formatDuration, markdownTable } from "./metrics-tables.ts";
-
-import type { SessionFigures } from "./session-report.ts";
 
 /** One turn of work, as saved. */
 export type TurnRecord = {
@@ -67,32 +66,6 @@ export function savedTurns(): readonly TurnRecord[] {
         .filter((line) => line.startsWith("{"))
         .map((line) => readTurn(JSON.parse(line)))
     : [];
-}
-
-/**
- * Record of a turn from its figures.
- *
- * @param figures - figures of the session report
- * @param start - when the turn started, epoch milliseconds
- * @param session - session id
- * @returns the line to save
- */
-export function turnRecord(figures: SessionFigures, start: number, session: string): TurnRecord {
-  return {
-    activeMs: figures.activeMs,
-    calls: figures.calls,
-    commits: figures.commits.length,
-    failures: figures.failures,
-    outputTokens: figures.outputTokens,
-    session,
-    start,
-    tokens:
-      figures.inputTokens +
-      figures.cacheWriteTokens +
-      figures.cacheReadTokens +
-      figures.outputTokens,
-    wallMs: figures.wallMs,
-  };
 }
 
 /**
