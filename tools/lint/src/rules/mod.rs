@@ -2,9 +2,14 @@
 //! reads the parsed file once (`check_file`) or each node of the one walk the linter makes over
 //! the AST (`check_node`), never parsing again.
 
+pub mod barrel_exports;
+pub mod canonical_import_path;
+pub mod folder_has_index;
+pub mod folder_layout;
 pub mod kind_in_layer;
 pub mod kind_limits;
 pub mod kind_naming;
+pub mod one_export_per_file;
 pub mod require_kind;
 pub mod see_references;
 
@@ -37,9 +42,14 @@ pub trait Rule: Sync {
 
 /// Every rule of the linter.
 pub const ALL: &[&dyn Rule] = &[
+    &barrel_exports::BarrelExports,
+    &canonical_import_path::CanonicalImportPath,
+    &folder_has_index::FolderHasIndex,
+    &folder_layout::FolderLayout,
     &kind_in_layer::KindInLayer,
     &kind_limits::KindLimits,
     &kind_naming::KindNaming,
+    &one_export_per_file::OneExportPerFile,
     &require_kind::RequireKind,
     &see_references::SeeReferences,
 ];
