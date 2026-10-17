@@ -33,7 +33,3 @@ One task = one commit, referenced as `EN-092.Tn`.
 
 - The status line's turn tally (`.claude/hooks/status-tokens.ts`) keeps a request's first line, as `run-totals` did at first: on the main transcript every line of a request carries the same usage, so the turn is right; a subagent's lines carry a growing `output_tokens` (0.75 million counted first-line against 1.83 million last-line on the session of 2026-10-17), which F21's port of the status line should take from the last line.
 - Not tested live on the real `.git/metrics/run.json`, to leave the open run's marker alone: the next `/run` writes it with `npm run run:start`.
-
-### Journal
-
-- `#run` EN-092: a run's duration and tokens by kind, subagents included, counted by the Rust tool `run-totals` from `.git/metrics/run.json` (`run:start`, `run:end`, `metrics:session -- --run`), shown as `run …` on the status line; first count of a 990 MB session 0.74 s, then 0.01 s, 0.06 s through `cargo run`.
