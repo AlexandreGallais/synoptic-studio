@@ -52,16 +52,6 @@ flowchart LR
 - A story's merge and finish stay with the main thread (`story:finish`).
 - `npm run context:size` measures a type's first request; a change to a type is measured before and after.
 
-## The progress page
-
-A run shows its progress on one claude.ai Artifact the Product Owner opens once and leaves open, updated in place at each publish (`REF-CC-ARTIFACTS`).
-
-- **Written by a tool, published as it is**: `npm run progress:page` writes `.git/metrics/progress.html` from the feature branches on `origin`, the commits since the run's start, the subagents' files and the run's totals; the main thread publishes that file in one call. The model writes no page text, since styled text costs more output tokens than the terminal's.
-- **What it shows**: the run's start, duration, tokens by kind and the plan's usage; the agents running with their story, type, task, time and tokens; the tree epic → feature → story with each status, the stories in progress highlighted, and each story's and feature's duration, tokens and commits. A story lasts from its first commit or agent of the run to its `done` commit; a feature from its first story's start to its last story's end; an agent idle for 30 minutes counts as stopped.
-- **When**: at the run's start, after each merge and at its stop (run skill).
-- **One address per run**: a new session publishes a new page unless given the address, so the first publish's address is kept with the run's start (`npm run progress:page -- address <url>`, `.git/metrics/progress-page.json`) and printed at each later call. A new run starts a new page.
-- **Public by design**: static, about 6 KB, its style inline, no script, nothing loaded from elsewhere; it names stories, agent types and commits, never a person, a path nor a session id.
-
 ## Expert agents
 
 Read-only reviewers in a fresh context, each with the documents it reads first (`REF-CC-SUBAGENTS`): the skills start them in the background and in parallel; they report and never edit, so that a review cannot change what it reviews. Those that read sources (`auditor`, `math-expert`, `functional-analyst`) have the library's tools and follow its protocol ([sources](./sources.md)): library first, the web only for a page it cannot read. Each starts like a worker, with `omitClaudeMd` and `project-rules` preloaded.
