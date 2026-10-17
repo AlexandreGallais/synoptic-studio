@@ -8,14 +8,14 @@ Used by: ADR-0037, F06 (rule C chosen by the Product Owner, research note 0011).
 
 ## Notation
 
-| Symbol | Definition                                                                                         |
-| ------ | -------------------------------------------------------------------------------------------------- |
-| `m`    | sides of the right half after the half base: `(n − 1)/2` for an odd `n`, `n/2 − 1` for an even `n` |
-| `θⱼ`   | direction of side `j` of the regular polygon, `2πj/n`, `j = 1 … m`                                 |
-| `λ`    | vertical scale of those directions, `λ > 0`; `λ = 1` is the regular polygon                        |
-| `φⱼ`   | direction of side `j` of the stretched polygon                                                     |
-| `τ`    | turning angle at a corner                                                                          |
-| `A(λ)` | aspect of the unit polygon: its height over its width                                              |
+| Symbol | Definition |
+| --- | --- |
+| `m` | sides of the right half after the half base: `(n − 1)/2` for an odd `n`, `n/2 − 1` for an even `n` |
+| `θⱼ` | direction of side `j` of the regular polygon, `2πj/n`, `j = 1 … m` |
+| `λ` | vertical scale of those directions, `λ > 0`; `λ = 1` is the regular polygon |
+| `φⱼ` | direction of side `j` of the stretched polygon |
+| `τ` | turning angle at a corner |
+| `A(λ)` | aspect of the unit polygon: its height over its width |
 
 ## Step 1 — A symmetric polygon of sides 1, built from directions
 
@@ -68,18 +68,18 @@ The full polygon in drawing order (`DERIV-regular-polygon-fit` step 2, clockwise
 
 Values of note 0011, recomputed by the agent's own implementation of these steps (5 decimals, SVG frame, drawing order).
 
-| Case                              | Expected                                                                                                                     |
-| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| any `n`, `r` = the regular aspect | `λ = 1`: the polygon of F02 filling its box                                                                                  |
-| triangle 100 × 100                | (100, 100), (0, 100), (50, 0)                                                                                                |
-| square 300 × 50                   | (300, 50), (0, 50), (0, 0), (300, 0)                                                                                         |
-| pentagon 100 × 100                | (81.75623, 100), (18.24377, 100), (0, 39.16418), (50, 0), (100, 39.16418); every side 63.51246                               |
-| pentagon 300 × 50                 | (228.85967, 50), (71.14033, 50), (0, 12.85950), (150, 0), (300, 12.85950)                                                    |
-| hexagon 100 × 100                 | (77.42919, 100), (22.57081, 100), (0, 50), (22.57081, 0), (77.42919, 0), (100, 50); every side 54.85838                      |
-| hexagon 300 × 50                  | (204.90381, 50), (95.09619, 50), (0, 25), (95.09619, 0), (204.90381, 0), (300, 25)                                           |
-| hexagon 50 × 300                  | (41.47297, 300), (8.52703, 300), (0, 150), (8.52703, 0), (41.47297, 0), (50, 150)                                            |
-| octagon 100 × 50                  | (67.55767, 50), (32.44233, 50), (0, 39.16136), (0, 10.83864), (32.44233, 0), (67.55767, 0), (100, 10.83864), (100, 39.16136) |
-| heptagon 100 × 100                | (72.54712, 100), (27.45288, 100), (0, 64.22529), (9.67353, 20.18085), (50, 0), (90.32647, 20.18085), (100, 64.22529)         |
+| Case | Expected |
+| --- | --- |
+| any `n`, `r` = the regular aspect | `λ = 1`: the polygon of F02 filling its box |
+| triangle 100 × 100 | (100, 100), (0, 100), (50, 0) |
+| square 300 × 50 | (300, 50), (0, 50), (0, 0), (300, 0) |
+| pentagon 100 × 100 | (81.75623, 100), (18.24377, 100), (0, 39.16418), (50, 0), (100, 39.16418); every side 63.51246 |
+| pentagon 300 × 50 | (228.85967, 50), (71.14033, 50), (0, 12.85950), (150, 0), (300, 12.85950) |
+| hexagon 100 × 100 | (77.42919, 100), (22.57081, 100), (0, 50), (22.57081, 0), (77.42919, 0), (100, 50); every side 54.85838 |
+| hexagon 300 × 50 | (204.90381, 50), (95.09619, 50), (0, 25), (95.09619, 0), (204.90381, 0), (300, 25) |
+| hexagon 50 × 300 | (41.47297, 300), (8.52703, 300), (0, 150), (8.52703, 0), (41.47297, 0), (50, 150) |
+| octagon 100 × 50 | (67.55767, 50), (32.44233, 50), (0, 39.16136), (0, 10.83864), (32.44233, 0), (67.55767, 0), (100, 10.83864), (100, 39.16136) |
+| heptagon 100 × 100 | (72.54712, 100), (27.45288, 100), (0, 64.22529), (9.67353, 20.18085), (50, 0), (90.32647, 20.18085), (100, 64.22529) |
 
 By hand, without the harmonic identity of note 0011: hexagon 100 × 100. With `φ₂ = π − φ₁` (step 2), `A = 2 sin φ₁ / (1 + 2 cos φ₁)`; at `φ₁ = 65.7048°`, `2 sin φ₁ = 1.82288` and `1 + 2 cos φ₁ = 1.82288`: `A = 1 = r`. The half width `1/2 + cos φ₁ = 0.91144`, the scale `50 / 0.91144 = 54.858` is the side, and the base ends at `x = 50 ± 27.429`. Hexagon 300 × 50, at its guard: `φ₁ = 30°` turns exactly `π/6`; width `1 + 2 cos 30° = 2.73205`, height `2 sin 30° = 1`, `A = 0.36603 > 50/300`: `λ = λ_lo`, x scale `300 / 2.73205 = 109.808` (the base), base end `x = 150 + 54.904 = 204.904`.
 

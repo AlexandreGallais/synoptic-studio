@@ -30,13 +30,13 @@ One task = one commit, referenced as `VAL-003.Tn`. This story is not merged auto
 
 Written with the stories and the audit; counted at the validation (`[F07.ACn]` in test titles).
 
-| Criterion                                           | Tests | Where                                                                                |
-| --------------------------------------------------- | ----- | ------------------------------------------------------------------------------------ |
-| F07.AC1 — alignments stored, center by default      | 6     | `is-anchor`, `is-valid-regular-polygon`, `regular-polygon-contour`, playground       |
-| F07.AC2 — placement on the anchored edges           | 8     | `fit-in-box`, `regular-polygon-contour`, playground                                  |
-| F07.AC3 — no move on the filled axis                | 4     | `fit-in-box`, `regular-polygon-contour`, playground                                  |
-| F07.AC4 — the radius does not move the polygon      | 4     | `regular-polygon-corners`, playground; the flat-base property of the audit (AUD-003) |
-| F07.AC5 — 3 × 3 anchor grid, keyboard, center first | 3     | playground                                                                           |
+| Criterion | Tests | Where |
+| --- | --- | --- |
+| F07.AC1 — alignments stored, center by default | 6 | `is-anchor`, `is-valid-regular-polygon`, `regular-polygon-contour`, playground |
+| F07.AC2 — placement on the anchored edges | 8 | `fit-in-box`, `regular-polygon-contour`, playground |
+| F07.AC3 — no move on the filled axis | 4 | `fit-in-box`, `regular-polygon-contour`, playground |
+| F07.AC4 — the radius does not move the polygon | 4 | `regular-polygon-corners`, playground; the flat-base property of the audit (AUD-003) |
+| F07.AC5 — 3 × 3 anchor grid, keyboard, center first | 3 | playground |
 
 ## Validation (2026-10-11)
 
@@ -44,19 +44,19 @@ The Product Owner ran the playground of the feature branch from the US-010 card,
 
 Compared with what the feature meant to show: in a given box only three places differ, which the Product Owner saw. What the card did not show is that a corner place holds both alignments, and that the one that counts follows the box. Decision, left to the agent: the nine places are kept (`docs/domain/shapes.md`). Step 26 of the guided test was added to show it.
 
-| Remark                                       | Where it goes                               |
-| -------------------------------------------- | ------------------------------------------- |
-| Only five of the nine places seem useful     | nine kept, `docs/domain/shapes.md`, step 26 |
-| Polygon filling its box completely (earlier) | draft feature F06, unchanged                |
+| Remark | Where it goes |
+| --- | --- |
+| Only five of the nine places seem useful | nine kept, `docs/domain/shapes.md`, step 26 |
+| Polygon filling its box completely (earlier) | draft feature F06, unchanged |
 
 Then the guided test (steps 20 to 28): nothing looked wrong; at step 26 they saw the bottom-left place act as "left", as meant; they asked for the feature pull request.
 
 Compared with what the steps meant to show: step 26 meant that the bottom-left place acts as "left" in a wide box, which is what the Product Owner saw. No misunderstanding left. Further remarks:
 
-| Remark                                                                    | Where it goes                                                          |
-| ------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| Next should stay in place from step to step, to click it without moving   | fixed: large buttons at the top of the panel (`playground/index.html`) |
-| The "always touch" option is not useful: it breaks measures from the face | recorded as rejected, F07 and `docs/domain/shapes.md`                  |
-| A link that opens the guided test on a given step                         | done: `?step=N` in the address, which follows the step shown           |
+| Remark | Where it goes |
+| --- | --- |
+| Next should stay in place from step to step, to click it without moving | fixed: large buttons at the top of the panel (`playground/index.html`) |
+| The "always touch" option is not useful: it breaks measures from the face | recorded as rejected, F07 and `docs/domain/shapes.md` |
+| A link that opens the guided test on a given step | done: `?step=N` in the address, which follows the step shown |
 
 The buttons moved to the top and enlarged were confirmed.

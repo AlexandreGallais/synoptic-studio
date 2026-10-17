@@ -4,13 +4,13 @@ Used by: F04 (the straight box of a turned shape, EN-015). Sources: `REF-SVG2-CO
 
 ## Notation
 
-| Symbol  | Definition                                                                                        |
-| ------- | ------------------------------------------------------------------------------------------------- |
-| `C, r`  | center and radius of a fillet arc                                                                 |
-| `S, E`  | its start and end; `s = S − C`, `e = E − C`                                                       |
-| `σ`     | `+1` when the arc turns in the positive direction of angles (clockwise on screen), `−1` otherwise |
-| `u × v` | the perp dot product `uₓ v_y − u_y vₓ`                                                            |
-| `d`     | one of the four axis directions `(1, 0)`, `(0, 1)`, `(−1, 0)`, `(0, −1)`                          |
+| Symbol | Definition |
+| --- | --- |
+| `C, r` | center and radius of a fillet arc |
+| `S, E` | its start and end; `s = S − C`, `e = E − C` |
+| `σ` | `+1` when the arc turns in the positive direction of angles (clockwise on screen), `−1` otherwise |
+| `u × v` | the perp dot product `uₓ v_y − u_y vₓ` |
+| `d` | one of the four axis directions `(1, 0)`, `(0, 1)`, `(−1, 0)`, `(0, −1)` |
 
 ## Step 1 — A segment
 
@@ -34,9 +34,9 @@ The box of a contour is the box of: the ends of every piece, and the axis points
 
 ## Checks (test cases)
 
-| Case                                               | Points counted                                  | Expected box                                           |
-| -------------------------------------------------- | ----------------------------------------------- | ------------------------------------------------------ |
-| Square 100 × 100, sharp, turned 45° about (50, 50) | the four corners                                | x and y from −20.71068 to 120.71068                    |
-| Square 100 × 100, radius 50 (a circle), any angle  | the axis points of the four arcs                | x and y from 0 to 100                                  |
-| Square 100 × 100, radius 10, straight              | arc ends only: each quarter arc ends on an axis | x and y from 0 to 100                                  |
-| Square 100 × 100, radius 10, turned 45°            | the arcs crossing the axes                      | x and y from 50 − (40√2 + 10) = −16.56854 to 116.56854 |
+| Case | Points counted | Expected box |
+| --- | --- | --- |
+| Square 100 × 100, sharp, turned 45° about (50, 50) | the four corners | x and y from −20.71068 to 120.71068 |
+| Square 100 × 100, radius 50 (a circle), any angle | the axis points of the four arcs | x and y from 0 to 100 |
+| Square 100 × 100, radius 10, straight | arc ends only: each quarter arc ends on an axis | x and y from 0 to 100 |
+| Square 100 × 100, radius 10, turned 45° | the arcs crossing the axes | x and y from 50 − (40√2 + 10) = −16.56854 to 116.56854 |

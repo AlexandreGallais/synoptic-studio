@@ -1,6 +1,6 @@
 # The method on one page
 
-How work is cut, who writes what, and who accepts it. The full rules are in the [backlog](../backlog/); the reasons in ADR-0017, ADR-0020, ADR-0023 and ADR-0028.
+How work is cut, who writes what, and who accepts it. The full rules are in the [backlog](../backlog/); the reasons in ADR-0017, ADR-0020, ADR-0023, ADR-0072 and ADR-0074.
 
 ```mermaid
 flowchart LR
@@ -9,57 +9,68 @@ flowchart LR
     R[Refinement<br/>Product Owner and agent] --> SP[SP<br/>research spike]
     SP --> ST[US · EN<br/>stories, CHK midway]
     ST --> AUD[AUD<br/>independent audit]
-    AUD --> VAL[VAL<br/>guided test, demo]
-    VAL --> REL[Release<br/>develop to main]
+    AUD --> VAL[VAL<br/>checklist, demo]
+    VAL --> DEV[develop<br/>feature merged]
+    DEV -.-> REL[Release<br/>when the Product Owner asks]
   end
-  subgraph epic [Every feature released]
+  subgraph epic [Every feature merged]
     direction LR
-    NAM[NAM<br/>naming pass, whole code] --> REV[REV<br/>epic review, user test] --> RET[RET<br/>retrospective, metrics]
+    NAM[NAM<br/>naming, tooling and tests pass] --> REV[REV<br/>epic review, user test] --> RET[RET<br/>retrospective, metrics]
   end
-  REL -.-> NAM
+  DEV -.-> NAM
 ```
 
 ## Four levels
 
-| Level   | Is                                                | Example from E01                                 | Written by                   | Accepted by                  |
-| ------- | ------------------------------------------------- | ------------------------------------------------ | ---------------------------- | ---------------------------- |
-| Epic    | a business need, several features                 | E01 — draw symbol shapes from numbers            | Product Owner (agent drafts) | Product Owner, at `REV`      |
-| Feature | a capability the user can see and test            | F04 — turn a shape by any angle                  | Product Owner with the agent | Product Owner, at `VAL`      |
-| Story   | one behavior or one piece of work, finished alone | US-018 — turn and move a shape in the playground | agent, from the refinement   | the checks, then the feature |
-| Task    | one commit, an hour to a day                      | US-018.T2 — the angle field and the two boxes    | agent                        | the checks                   |
+| Level | Is | Example from E01 | Written by | Accepted by |
+| --- | --- | --- | --- | --- |
+| Epic | a business need, several features | E01 — draw symbol shapes from numbers | Product Owner (agent drafts) | Product Owner, at `REV` |
+| Feature | a capability the user can see and test | F04 — turn a shape by any angle | Product Owner with the agent | Product Owner, at `VAL` |
+| Story | one behavior or one piece of work, finished alone | US-018 — turn and move a shape in the playground | agent, from the refinement | the checks, then the feature |
+| Task | one commit, an hour to a day | US-018.T2 — the angle field and the two boxes | agent | the checks |
 
 ## Story types
 
 The type says **who can see the result**, not who wrote it or whether it is code.
 
-| Type  | Name          | The result                                                                                                              | Who checks it                                 | Example                                        |
-| ----- | ------------- | ----------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- | ---------------------------------------------- |
-| `US`  | user story    | a behavior a user sees in the playground or the tools; comes with a **test card**                                       | the Product Owner, on the card, then at `VAL` | US-014 — convert a polygon and move its points |
-| `EN`  | enabler       | work no user sees: a geometric function and its derivation, a model change, tooling                                     | the tests, the auditor                        | EN-017 — the stretched polygon's geometry      |
-| `SP`  | spike         | answers: sources read, derivations, research requests, before any code                                                  | the stories it unblocks                       | SP-009 — research for F06                      |
-| `CHK` | checkpoint    | midway through a feature: docs and methods brought up to date, consistency checked                                      | the agent                                     | CHK-008                                        |
-| `AUD` | audit         | the feature re-checked by an independent reviewer: formulas, values, sources, duplicates                                | the `auditor` agent, then the Product Owner   | AUD-009                                        |
-| `VAL` | validation    | the demo page and the guided test; the Product Owner's validation recorded                                              | the Product Owner                             | VAL-009                                        |
-| `NAM` | naming pass   | the whole code gone over twice: every calculation a field names is a named function, every result unchanged bit for bit | the `math-expert` and `auditor` agents        | F13, before the type existed                   |
-| `REV` | epic review   | the epic report and a user test crossing its features                                                                   | the Product Owner                             | REV-001                                        |
-| `RET` | retrospective | what helped and hurt, metrics, evolvability, playbook and configuration updated                                         | the Product Owner and the agent               | RET-001                                        |
+| Type | Name | The result | Who checks it | Example |
+| --- | --- | --- | --- | --- |
+| `US` | user story | a behavior a user sees in the playground or the tools; comes with a **test card** | the Product Owner, on the card, then at `VAL` | US-014 — convert a polygon and move its points |
+| `EN` | enabler | work no user sees: a geometric function and its derivation, a model change, tooling | the tests, the auditor | EN-017 — the stretched polygon's geometry |
+| `SP` | spike | answers: sources read, derivations, research requests, before any code | the stories it unblocks | SP-009 — research for F06 |
+| `CHK` | checkpoint | midway through a feature: docs and methods brought up to date, consistency checked | the agent | CHK-008 |
+| `AUD` | audit | the feature re-checked by an independent reviewer: formulas, values, sources, duplicates | the `auditor` agent, then the Product Owner | AUD-009 |
+| `VAL` | validation | the demo page and the checklist page; the Product Owner's validation recorded | the Product Owner | VAL-009 |
+| `NAM` | naming pass | the whole code gone over twice: every calculation a field names is a named function, every result unchanged bit for bit; then the whole repository's tooling and tests gone over — duplicates, slow steps, waits — each timed before and after (ADR-0069, ADR-0070) | the `math-expert`, `auditor` and `verifier` agents | F13, before the type existed |
+| `REV` | epic review | the epic report and a user test crossing its features | the Product Owner | REV-001 |
+| `RET` | retrospective | what helped and hurt, metrics, evolvability, playbook and configuration updated | the Product Owner and the agent | RET-001 |
 
 > [!TIP]
 > A story that changes code can be either: a function the user never sees directly is an `EN`; the playground field that uses it is a `US`. The Product Owner writes features and their criteria; the agent cuts them into stories.
 
 ## Who does what
 
-| Moment                | Product Owner                                         | Agent                                                                            |
-| --------------------- | ----------------------------------------------------- | -------------------------------------------------------------------------------- |
-| refinement            | answers the questionnaire, decides the business rules | prepares the questions (with the `functional-analyst` agent), writes the feature |
-| spike and stories     | starts a run (`/run`): its stories become `ready`     | researches, implements, tests, has each story reviewed                           |
-| validation            | runs the guided test, says what they see              | records the result and the remarks, opens the feature pull request               |
-| release               | merges the feature, then the release pull request     | prepares both, brings `develop` up to date                                       |
-| review, retrospective | answers, decides what changes                         | reports with figures, updates the playbook and the configuration                 |
+| Moment | Product Owner | Agent |
+| --- | --- | --- |
+| refinement | answers the questionnaire, decides the business rules | prepares the questions (with the `functional-analyst` agent), writes the feature |
+| spike and stories | starts a run (`/run`): its stories become `ready` | researches, implements, tests, checks each story by its level (ADR-0064) |
+| validation of a library or application feature | ticks the checklist, says what they see, says when the validation is done | records the result and the remarks, labels the feature pull request `autonomous`: GitHub merges it into `develop` (ADR-0072) |
+| validation of a tooling feature | tries the lines that concern them, if they wish | validates it on the checklist and demo page, labels its pull request `autonomous` without waiting (ADR-0072) |
+| release | asks for it; merges release-please's pull request into `develop`, then `develop` into `main` | opens `develop` → `main`, brings `develop` up to date after it |
+| review, retrospective | answers, decides what changes | reports with figures, updates the playbook and the configuration |
 
 ## Cadences beyond the epic
 
-| When                                                      | What                                                                                                                                                                                              |
-| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| every retrospective                                       | metrics read (`npm run metrics`), overrides and "considered for later" tools re-checked, improvement and feedback logs emptied                                                                    |
+| When | What |
+| --- | --- |
+| every retrospective | metrics read (`npm run metrics`), overrides and "considered for later" tools re-checked, improvement and feedback logs emptied |
 | around the 4th or 5th epic, and at the end of the project | **review of every rule**: configuration, lint, hooks, skills, process — each one questioned against how the project went; harden by default, relax only with a reason (Product Owner, 2026-10-13) |
+
+## The agent's own method and tools
+
+The agent is given growing freedom over how it works (ADR-0074, Product Owner, 2026-10-17):
+
+| When | The agent | The Product Owner |
+| --- | --- | --- |
+| while working | writes each friction, error or slow step at once in the [improvement log](./improvements.md), and each reading that suggests a faster way to work, one cheaper in tokens or healthier; a worker writes its rows in its story file, under `## For the main thread` | — |
+| each epic end, at the retrospective, beside its tooling pass | presents a **method and tools** point: what it wants to change in its own work, the backlog method included when it does not fit an agent (for instance stories competing for shared files), new methods and Rust tools to adopt, each with its evidence — metrics, incidents, sources | decides each proposal |

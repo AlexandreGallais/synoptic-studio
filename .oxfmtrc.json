@@ -1,0 +1,57 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "semi": true,
+  "singleQuote": false,
+  "quoteProps": "as-needed",
+  "trailingComma": "all",
+  "bracketSpacing": true,
+  "arrowParens": "always",
+  "objectWrap": "preserve",
+  "proseWrap": "preserve",
+  "printWidth": 100,
+  "sortPackageJson": false,
+  "sortImports": {
+    "groups": [
+      "builtin",
+      "external",
+      "internal",
+      "parent",
+      "sibling",
+      "index",
+      "type-index",
+      {
+        "newlinesBetween": false
+      },
+      "type-sibling",
+      {
+        "newlinesBetween": false
+      },
+      "type-parent",
+      {
+        "newlinesBetween": false
+      },
+      ["type-builtin", "type-external", "type-internal"]
+    ],
+    "ignoreCase": false,
+    "newlinesBetween": true,
+    "order": "asc"
+  },
+  "ignorePatterns": [
+    "dist",
+    "coverage",
+    "node_modules",
+    "package-lock.json",
+    ".idea",
+    "docs/api",
+    "docs/.vitepress/cache",
+    "docs/.vitepress/dist",
+    ".husky/_",
+    "CHANGELOG.md",
+    "records",
+    "src/model/font/inter-metrics.json",
+    ".claude/worktrees",
+    ".claude/settings.local.json",
+    "docs/.vitepress/.temp",
+    "target"
+  ]
+}

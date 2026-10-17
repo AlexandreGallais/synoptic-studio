@@ -57,7 +57,7 @@ With the flipped unit polygon of step 2 (`y′ₖ = −yₖ`, so `max yₖ − y
 
 On the axis the polygon fills, `Δ = 0` in theory and the three alignments give the same points; in floating point they differ by a rounding error relative to the box (about 1e-16 × its size, step 4), far below what the output writes (5 decimals, Q10): the written drawing is the same, unless a coordinate falls on a rounding boundary of the 5th decimal (none in boxes from 0 to 1000 for n = 3 … 12, review of EN-009).
 
-The default is `mid` on both axes: F02's centering. In the code, steps 3–5 are `boundingBox` and `fitInBox` (its share of the room: `alignmentFactor`, EN-009), and the whole fit is `regularPolygonContour` (US-005, US-009).
+The default is `mid` on both axes: F02's centering. In the code, steps 3–5 are `boundingBox` and `fitInBox` (its share of the room: `alignmentFactor`, EN-009, through `alignedOffset` since NAM-001), and the whole fit is `regularPolygonContour` (US-005, US-009).
 
 ## Step 6 — Maximal rounding: the incircle
 
@@ -69,23 +69,23 @@ The fillet's center `D` is the point of the bisector at distance `ρ` from both 
 
 ## Checks
 
-| `n` | Box       | `Wᵤ × Hᵤ`         | Result                 | Vertices in drawing order (5 decimals)                                                | Maximal radius |
-| --- | --------- | ----------------- | ---------------------- | ------------------------------------------------------------------------------------- | -------------- |
-| 3   | 100 × 100 | √3 × 1.5          | 100 × 86.60254 (width) | (100, 93.30127), (0, 93.30127), (50, 6.69873)                                         | 28.86751       |
-| 4   | 100 × 50  | √2 × √2           | 50 × 50 (height)       | (75, 50), (25, 50), (25, 0), (75, 0)                                                  | 25             |
-| 5   | 100 × 100 | 1.90211 × 1.80902 | 100 × 95.10565 (width) | (80.9017, 97.55283), (19.0983, 97.55283), (0, 38.7743), (50, 2.44717), (100, 38.7743) | 42.53254       |
-| 6   | 100 × 100 | 2 × √3            | 100 × 86.60254 (width) | (75, 93.30127), (25, 93.30127), (0, 50), (25, 6.69873), (75, 6.69873), (100, 50)      | 43.30127       |
-| 8   | 100 × 100 | 1.84776 × 1.84776 | 100 × 100 (both)       | (70.71068, 100), (29.28932, 100), …, (100, 70.71068)                                  | 50             |
+| `n` | Box | `Wᵤ × Hᵤ` | Result | Vertices in drawing order (5 decimals) | Maximal radius |
+| --- | --- | --- | --- | --- | --- |
+| 3 | 100 × 100 | √3 × 1.5 | 100 × 86.60254 (width) | (100, 93.30127), (0, 93.30127), (50, 6.69873) | 28.86751 |
+| 4 | 100 × 50 | √2 × √2 | 50 × 50 (height) | (75, 50), (25, 50), (25, 0), (75, 0) | 25 |
+| 5 | 100 × 100 | 1.90211 × 1.80902 | 100 × 95.10565 (width) | (80.9017, 97.55283), (19.0983, 97.55283), (0, 38.7743), (50, 2.44717), (100, 38.7743) | 42.53254 |
+| 6 | 100 × 100 | 2 × √3 | 100 × 86.60254 (width) | (75, 93.30127), (25, 93.30127), (0, 50), (25, 6.69873), (75, 6.69873), (100, 50) | 43.30127 |
+| 8 | 100 × 100 | 1.84776 × 1.84776 | 100 × 100 (both) | (70.71068, 100), (29.28932, 100), …, (100, 70.71068) | 50 |
 
 Anchored (F07): the room is all before (`max`) or all after (`min`) the shape instead of split in two.
 
-| `n` | Box       | Alignment (horizontal, vertical) | Vertices in drawing order (5 decimals)                                               |
-| --- | --------- | -------------------------------- | ------------------------------------------------------------------------------------ |
-| 3   | 100 × 100 | any, `max` (bottom)              | (100, 100), (0, 100), (50, 13.39746)                                                 |
-| 3   | 100 × 100 | any, `min` (top)                 | (100, 86.60254), (0, 86.60254), (50, 0)                                              |
-| 4   | 100 × 50  | `min` (left), any                | (50, 50), (0, 50), (0, 0), (50, 0)                                                   |
-| 4   | 100 × 50  | `max` (right), any               | (100, 50), (50, 50), (50, 0), (100, 0)                                               |
-| 6   | 100 × 100 | any, `max` (bottom)              | (75, 100), (25, 100), (0, 56.69873), (25, 13.39746), (75, 13.39746), (100, 56.69873) |
+| `n` | Box | Alignment (horizontal, vertical) | Vertices in drawing order (5 decimals) |
+| --- | --- | --- | --- |
+| 3 | 100 × 100 | any, `max` (bottom) | (100, 100), (0, 100), (50, 13.39746) |
+| 3 | 100 × 100 | any, `min` (top) | (100, 86.60254), (0, 86.60254), (50, 0) |
+| 4 | 100 × 50 | `min` (left), any | (50, 50), (0, 50), (0, 0), (50, 0) |
+| 4 | 100 × 50 | `max` (right), any | (100, 50), (50, 50), (50, 0), (100, 0) |
+| 6 | 100 × 100 | any, `max` (bottom) | (75, 100), (25, 100), (0, 56.69873), (25, 13.39746), (75, 13.39746), (100, 56.69873) |
 
 By hand: the triangle's room is `Δy = 100 − 86.60254 = 13.39746`; at the bottom the apex is at `y = 13.39746` and the base at `100`; at the top the apex is at `0` and the base at `86.60254`. The square of side 50 leaves `Δx = 50`: left from `x = 0`, right from `x = 50`. The hexagon is shifted down by `13.39746 − 6.69873 = 6.69873` from its centered place.
 

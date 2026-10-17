@@ -2,7 +2,10 @@
 // agent's tools in docs/tooling/agent-tools.md): the item's front matter, its folder's index and
 // its parent's table — a story's feature (or its epic, for `NAM`, `REV` and `RET`), a feature's
 // epic. Run by `npm run backlog:status -- <ID> <status>`, then `npm run fix` aligns the tables.
+// The stories index is not edited but generated again from the story files by the Rust tool of
+// `npm run backlog:index` (EN-049, ADR-0065).
 
+import { spawnSync } from "node:child_process";
 import { readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
@@ -92,6 +95,20 @@ export function folderOf(id: string): string {
 }
 
 /**
+ * Writes the stories index again from the story files (`npm run backlog:index`).
+ */
+function writeStoriesIndex(): void {
+  const result = spawnSync("npm", ["run", "--silent", "backlog:index"], {
+    cwd: join(import.meta.dirname, ".."),
+    stdio: "inherit",
+  });
+
+  if (result.status !== 0) {
+    process.exitCode = 1;
+  }
+}
+
+/**
  * Changes an item's status in its file, its index and its parent's table.
  *
  * @param folder - the item's folder
@@ -115,9 +132,13 @@ function writeStatus(
 
   rewrite(path, (text) => withFrontStatus(text, change.status));
 
-  rewrite(join(BACKLOG, folder, "README.md"), (text) =>
-    withRowStatus(text, change.id, change.status),
-  );
+  if (folder === "stories") {
+    writeStoriesIndex();
+  } else {
+    rewrite(join(BACKLOG, folder, "README.md"), (text) =>
+      withRowStatus(text, change.id, change.status),
+    );
+  }
 
   if (folder !== "epics") {
     rewrite(parent, (text) => withRowStatus(text, change.id, change.status));

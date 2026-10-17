@@ -17,4 +17,15 @@ export function loadPage(search: string): void {
   // The head carries the page's style: visibility is checked as the browser computes it.
   document.head.replaceChildren(...parsed.head.childNodes);
   document.body.replaceChildren(...parsed.body.childNodes);
+
+  // A test reads the page right after acting on it: its animation frames run at once, so that
+  // a redraw asked for the next frame (US-048) is drawn before the test reads it.
+  Object.defineProperty(document.defaultView ?? {}, "requestAnimationFrame", {
+    configurable: true,
+    value: (callback: FrameRequestCallback): number => {
+      callback(0);
+
+      return 0;
+    },
+  });
 }

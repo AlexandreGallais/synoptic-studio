@@ -12,10 +12,10 @@ Q19 (`docs/domain/README.md`): the largest number of corners a regular polygon m
 
 ## Already consulted
 
-| Source                                          | What it says                                                                                    | Why insufficient                                                  |
-| ----------------------------------------------- | ----------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| `REF-ISA-INTECH-2019`                           | ISA-5.1 has a "diamond" symbol since 2009, in a box, for safety systems                         | one symbol only, from a quiz page; its geometry is not stated     |
-| `REF-INKSCAPE-POLYGON`                          | a "Corners" field; no range stated                                                              | a drawing tool, not a symbol standard                             |
+| Source | What it says | Why insufficient |
+| --- | --- | --- |
+| `REF-ISA-INTECH-2019` | ISA-5.1 has a "diamond" symbol since 2009, in a box, for safety systems | one symbol only, from a quiz page; its geometry is not stated |
+| `REF-INKSCAPE-POLYGON` | a "Corners" field; no range stated | a drawing tool, not a symbol standard |
 | Search summaries (not read: pages refused, 403) | circle, square, circle in a square, hexagon (computer function) in ISA-5.1; triangles in valves | not readings; ISA-5.1, ISO 10628-2, ISO 14617, IEC 60617 are paid |
 
 ## Expected deliverable

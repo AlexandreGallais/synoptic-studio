@@ -12,12 +12,12 @@ Scrum inspects the product with stakeholders (Review) and the way of working (Re
 
 Three cadences, triggered by delivery, not by the calendar:
 
-| When                | Story               | Content                                                                                                                                                                                                                                              |
-| ------------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| continuously        | —                   | both sides write ideas, irritants and lessons in the [improvement log](../process/improvements.md)                                                                                                                                                   |
-| end of each feature | `AUD` then `VAL`    | audit (ADR-0020) including a light evolvability check; the validation includes a **plain-language demo page** in the [guide](../guide/) and a guided test in the playground; the Product Owner's feedback is recorded, drift becomes stories         |
-| end of each epic    | `REV` epic review   | an **epic report** in plain language (what was built, terms explained, pictures, limits), a guided user test of the whole epic, the Product Owner's feedback, backlog and domain adjustments                                                         |
-| end of each epic    | `RET` retrospective | both sides: improvement log, what helped, what hurt; **evolvability review** (size, tools, patterns, fitness functions, "considered for later" list, agent configuration); **playbook** update for future projects; decisions become ADRs or stories |
+| When | Story | Content |
+| --- | --- | --- |
+| continuously | — | both sides write ideas, irritants and lessons in the [improvement log](../process/improvements.md) |
+| end of each feature | `AUD` then `VAL` | audit (ADR-0020) including a light evolvability check; the validation includes a **plain-language demo page** in the [guide](../guide/) and a guided test in the playground; the Product Owner's feedback is recorded, drift becomes stories |
+| end of each epic | `REV` epic review | an **epic report** in plain language (what was built, terms explained, pictures, limits), a guided user test of the whole epic, the Product Owner's feedback, backlog and domain adjustments |
+| end of each epic | `RET` retrospective | both sides: improvement log, what helped, what hurt; **evolvability review** (size, tools, patterns, fitness functions, "considered for later" list, agent configuration); **playbook** update for future projects; decisions become ADRs or stories |
 
 `REV` and `RET` stories belong to the epic (no feature): files `E01-REV-001-….md`, checked by `backlog.test.ts` like the feature frame.
 

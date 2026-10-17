@@ -14,12 +14,12 @@ In the playground, a polygon has a new check box, **Stretched to its box**. Tick
 
 **Rounded corners.** The corners of a stretched polygon no longer all have the same angle, so one radius may round them by different amounts: the page then says the effective radius is mixed, and Points mode shows it for each point.
 
-| Term             | In plain words                                                                            |
-| ---------------- | ----------------------------------------------------------------------------------------- |
-| Stretched        | the polygon touches the four sides of its box                                             |
-| Side             | a straight edge of the polygon                                                            |
+| Term | In plain words |
+| --- | --- |
+| Stretched | the polygon touches the four sides of its box |
+| Side | a straight edge of the polygon |
 | Turn of a corner | the angle between the two sides meeting there; a regular hexagon turns 60° at each corner |
-| Rule C           | sides equal while every corner keeps half of its usual turn, then a plain stretch         |
+| Rule C | sides equal while every corner keeps half of its usual turn, then a plain stretch |
 
 ## Rule C in five boxes
 

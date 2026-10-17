@@ -1,0 +1,614 @@
+# multiline-blocks: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), then faults planted
+# in copies of files of the tree and cases written for branches, each run by ESLint 10.12.0 at src/a.ts with the project's options;
+# a carriage return written ␍; recorded by EN-083.
+@@@ case 1 (documented invalid)
+
+        /** Reported up here
+         * because the rest is multiline
+         */
+      
+@@@ findings
+2:9 Should have no text on the "0th" line (after the `/**`).
+@@@ output
+
+        /**
+         * Reported up here
+         * because the rest is multiline
+         */
+      
+@@@ case 2 (documented invalid)
+
+        /** Reported up here
+         * because the rest is multiline
+         */
+      
+@@@ findings
+2:9 Should have no text on the "0th" line (after the `/**`).
+@@@ output
+
+        /**
+         * Reported up here
+         * because the rest is multiline
+         */
+      
+@@@ case 3 (documented invalid)
+
+        /** @abc {aType} aName Reported up here
+         * because the rest is multiline
+         */
+      
+@@@ findings
+2:9 Should have no text on the "0th" line (after the `/**`).
+@@@ output
+
+        /**
+         * @abc {aType} aName Reported up here
+         * because the rest is multiline
+         */
+      
+@@@ case 4 (documented invalid)
+
+        /** @tag */
+      
+@@@ findings
+@@@ case 5 (documented invalid)
+
+        /** @tag {someType} */
+      
+@@@ findings
+@@@ case 6 (documented invalid)
+
+        /** @tag {someType} aName */
+      
+@@@ findings
+@@@ case 7 (documented invalid)
+
+        /** @tag */
+      
+@@@ findings
+@@@ case 8 (documented invalid)
+
+        /** desc */
+      
+@@@ findings
+@@@ case 9 (documented invalid)
+
+        /**
+         * Desc.
+         */
+      
+@@@ findings
+@@@ case 10 (documented invalid)
+
+        /** desc
+         *
+         */
+      
+@@@ findings
+2:9 Should have no text on the "0th" line (after the `/**`).
+@@@ output
+
+        /**
+         * desc
+         *
+         */
+      
+@@@ case 11 (documented invalid)
+
+        /** desc
+         *
+         */
+      
+@@@ findings
+2:9 Should have no text on the "0th" line (after the `/**`).
+@@@ output
+
+        /**
+         * desc
+         *
+         */
+      
+@@@ case 12 (documented invalid)
+
+        /**
+         *
+         */
+      
+@@@ findings
+@@@ case 13 (documented invalid)
+
+        /**
+         * This is not long enough to be permitted.
+         */
+      
+@@@ findings
+@@@ case 14 (documented invalid)
+
+        /**
+         * This is not long enough to be permitted.
+         */
+      
+@@@ findings
+@@@ case 15 (documented invalid)
+
+        /**
+         * This has the wrong tags so is not permitted.
+         * @notTheRightTag
+         */
+      
+@@@ findings
+@@@ case 16 (documented invalid)
+
+        /**
+         * This has too many tags so cannot be fixed ot a single line.
+         * @oneTag
+         * @anotherTag
+         */
+      
+@@@ findings
+@@@ case 17 (documented invalid)
+
+        /**
+         * This has a tag and description so cannot be fixed ot a single line.
+         * @oneTag
+         */
+      
+@@@ findings
+@@@ case 18 (documented invalid)
+
+        /**
+         * This has no tags so is not permitted.
+         */
+      
+@@@ findings
+@@@ case 19 (documented invalid)
+
+        /**
+         * This has the wrong tags so is not permitted.
+         * @notTheRightTag
+         */
+      
+@@@ findings
+@@@ case 20 (documented invalid)
+
+        /**
+         * @lends This can be safely fixed to a single line.
+         */
+      
+@@@ findings
+@@@ case 21 (documented invalid)
+
+        /**
+         * @type {aType} This can be safely fixed to a single line.
+         */
+      
+@@@ findings
+@@@ case 22 (documented invalid)
+
+        /**
+         * @aTag
+         */
+      
+@@@ findings
+@@@ case 23 (documented invalid)
+
+        /**
+         * This is a problem when single and multiline are blocked.
+         */
+      
+@@@ findings
+@@@ case 24 (documented invalid)
+
+        /** This comment is bad
+         * It should not have text on line zero
+         */
+      
+@@@ findings
+2:9 Should have no text on the "0th" line (after the `/**`).
+@@@ output
+
+        /**
+         * This comment is bad
+         * It should not have text on line zero
+         */
+      
+@@@ case 25 (documented invalid)
+
+        /**
+         * @lends This can be safely fixed
+         * to a single
+         * line. */
+      
+@@@ findings
+2:9 Should have no text on the final line (before the `*/`).
+@@@ output
+
+        /**
+         * @lends This can be safely fixed
+         * to a single
+         * line.
+         */
+      
+@@@ case 26 (documented invalid)
+
+        /**
+         * @someTag {aType} with Description */
+      
+@@@ findings
+2:9 Should have no text on the final line (before the `*/`).
+@@@ output
+
+        /**
+         * @someTag {aType} with Description
+         */
+      
+@@@ case 27 (documented invalid)
+
+        /**
+         * Description */
+      
+@@@ findings
+2:9 Should have no text on the final line (before the `*/`).
+@@@ output
+
+        /**
+         * Description
+         */
+      
+@@@ case 28 (documented invalid)
+
+        /**
+         * Description too short
+         */
+      
+@@@ findings
+@@@ case 29 (documented invalid)
+
+        /** Description too short
+         */
+      
+@@@ findings
+2:9 Should have no text on the "0th" line (after the `/**`).
+@@@ output
+
+        /**
+          Description too short
+         */
+      
+@@@ case 30 (documented invalid)
+
+        /**
+         * Description too short */
+      
+@@@ findings
+2:9 Should have no text on the final line (before the `*/`).
+@@@ output
+
+        /**
+         * Description too short
+         */
+      
+@@@ case 31 (documented invalid)
+
+        /**
+         * @someTag {someType} Description too short
+         */
+      
+@@@ findings
+@@@ case 32 (documented invalid)
+
+        /** @someTag {someType} Description too short
+         */
+      
+@@@ findings
+2:9 Should have no text on the "0th" line (after the `/**`).
+@@@ output
+
+        /**
+          @someTag {someType} Description too short
+         */
+      
+@@@ case 33 (documented invalid)
+
+        /**
+         * @someTag {someType} Description too short */
+      
+@@@ findings
+2:9 Should have no text on the final line (before the `*/`).
+@@@ output
+
+        /**
+         * @someTag {someType} Description too short
+         */
+      
+@@@ case 34 (documented invalid)
+/** Does it.␍
+ * More.␍
+ */␍
+export function f() {}␍
+
+@@@ findings
+1:1 Should have no text on the "0th" line (after the `/**`).
+@@@ output
+/**␍
+ * Does it.␍
+ * More.␍
+ */␍
+export function f() {}␍
+
+@@@ case 35 (documented invalid)
+/**␍
+ * Does it. @returns {string} x */␍
+export function f() { return ""; }␍
+
+@@@ findings
+1:1 Should have no text on the final line (before the `*/`).
+@@@ output
+/**␍
+ * Does it. @returns {string} x␍
+ */␍
+export function f() { return ""; }␍
+
+@@@ case 36 (documented valid)
+
+        /** Not reported */
+      
+@@@ findings
+@@@ case 37 (documented valid)
+
+        /**
+         *  Not reported
+         */
+      
+@@@ findings
+@@@ case 38 (documented valid)
+
+        /** Reported up here
+         * because the rest is multiline
+         */
+      
+@@@ findings
+2:9 Should have no text on the "0th" line (after the `/**`).
+@@@ output
+
+        /**
+         * Reported up here
+         * because the rest is multiline
+         */
+      
+@@@ case 39 (documented valid)
+
+        /** @tag */
+      
+@@@ findings
+@@@ case 40 (documented valid)
+
+        /** @lends */
+      
+@@@ findings
+@@@ case 41 (documented valid)
+
+        /** @tag */
+      
+@@@ findings
+@@@ case 42 (documented valid)
+
+        /** @tag */
+      
+@@@ findings
+@@@ case 43 (documented valid)
+
+        /**
+         *
+         */
+      
+@@@ findings
+@@@ case 44 (documented valid)
+
+        /**
+         *
+         */
+      
+@@@ findings
+@@@ case 45 (documented valid)
+
+        /** Test */
+      
+@@@ findings
+@@@ case 46 (documented valid)
+
+        /**
+         * This is long enough to be permitted by our config.
+         */
+      
+@@@ findings
+@@@ case 47 (documented valid)
+
+        /**
+         * This is long enough to be permitted by our config.
+         */
+      
+@@@ findings
+@@@ case 48 (documented valid)
+
+        /**
+         * This has the right tag so is permitted.
+         * @theRightTag
+         */
+      
+@@@ findings
+@@@ case 49 (documented valid)
+
+        /** This has no tags but is single line so is not permitted. */
+      
+@@@ findings
+@@@ case 50 (documented valid)
+
+        /**
+         * This has the wrong tags so is not permitted.
+         * @notTheRightTag
+         */
+      
+@@@ findings
+@@@ case 51 (documented valid)
+
+        /**
+         * This has the wrong tags so is not permitted.
+         * @theRightTag
+         */
+      
+@@@ findings
+@@@ case 52 (documented valid)
+
+      /** tag */
+      
+@@@ findings
+@@@ case 53 (documented valid)
+
+        /**
+         * @lends This is ok per multiline
+         */
+      
+@@@ findings
+@@@ case 54 (documented valid)
+
+        /**
+         * This has too many tags so cannot be fixed ot a single line.
+         * @oneTag
+         * @anotherTag
+         */
+      
+@@@ findings
+@@@ case 55 (documented valid)
+
+        /**
+         * This has too many tags so cannot be fixed ot a single line.
+         * @oneTag
+         * @anotherTag
+         */
+      
+@@@ findings
+@@@ case 56 (documented valid)
+
+        /**
+         * This has a tag and description so cannot be fixed ot a single line.
+         * @oneTag
+         */
+      
+@@@ findings
+@@@ case 57 (documented valid)
+
+        /**
+         * This has a tag and description so cannot be fixed ot a single line.
+         * @oneTag
+         */
+      
+@@@ findings
+@@@ case 58 (documented valid)
+
+        /** @someTag with Description */
+      
+@@@ findings
+@@@ case 59 (documented valid)
+
+        /**
+         * This description here is very much long enough, I'd say, wouldn't you?
+         */
+
+@@@ findings
+@@@ case 60 (documented valid)
+
+        /**
+         * This description here is
+         * on multiple lines.
+         */
+
+@@@ findings
+@@@ case 61 (documented valid)
+
+        /** This description here is on a single line, so it doesn't matter if it goes over. */
+
+@@@ findings
+@@@ case 62 (documented valid)
+
+        /**
+         * @someTag {someType} This description here is very much long enough, I'd say, wouldn't you?
+         */
+
+@@@ findings
+@@@ case 63 (documented valid)
+
+        /**
+         * @someTag {someType} This description here is
+         * on multiple lines.
+         */
+
+@@@ findings
+@@@ case 64 (documented valid)
+
+        /** @someTag {someTag} This description here is on a single line, so it doesn't matter if it goes over. */
+
+@@@ findings
+@@@ case 65 (documented valid)
+
+        /**
+         * Description short but has...
+         * @someTag
+         */
+      
+@@@ findings
+@@@ case 66 (documented valid)
+
+        /**
+         * @someTag
+         * @anotherTag
+         */
+      
+@@@ findings
+@@@ case 67 (documented valid)
+
+        /**
+         * @type {{
+            visible: import("vue").Ref<boolean>,
+            attack: import("vue").Ref<AttackPve|AttackPvp|undefined>,
+            hero: import("vue").Ref<HeroOwn|undefined>,
+            outpost: import("vue").Ref<Outpost|undefined>,
+            rewards: import("vue").Ref<Rewards|undefined>
+        * }}
+        */
+      
+@@@ findings
+@@@ case 68 (planted in a copy of a file of the tree)
+/** Distance from a corner vertex to the tangent points of its fillet arc.
+ *
+ * Formula: s = r · tan(|τ| / 2) = r / tan(θ / 2), τ = turning angle, θ = interior angle.
+ *
+ * @kind geometry
+ * @param radius - fillet radius, >= 0
+ * @param turningAngle - signed turning angle at the vertex in radians, in ]−π, π[
+ * @returns setback along each adjacent edge, 0 for aligned vertices
+ * @see DERIV-fillet-setback
+ */
+export function filletSetback(radius: number, turningAngle: number): number {
+  return radius * Math.tan(Math.abs(turningAngle) / 2);
+}
+
+@@@ findings
+1:1 Should have no text on the "0th" line (after the `/**`).
+@@@ output
+/**
+ * Distance from a corner vertex to the tangent points of its fillet arc.
+ *
+ * Formula: s = r · tan(|τ| / 2) = r / tan(θ / 2), τ = turning angle, θ = interior angle.
+ *
+ * @kind geometry
+ * @param radius - fillet radius, >= 0
+ * @param turningAngle - signed turning angle at the vertex in radians, in ]−π, π[
+ * @returns setback along each adjacent edge, 0 for aligned vertices
+ * @see DERIV-fillet-setback
+ */
+export function filletSetback(radius: number, turningAngle: number): number {
+  return radius * Math.tan(Math.abs(turningAngle) / 2);
+}
+
+@@@ end

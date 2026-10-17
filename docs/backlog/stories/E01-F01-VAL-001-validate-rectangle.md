@@ -33,8 +33,8 @@ The Product Owner ran the nine steps of the guided test in the local playground:
 
 Compared with what each step meant to show: every step was understood as intended; no misunderstanding of the need, no unclear step. Remarks, none blocking F01:
 
-| Remark                                                                                                                                        | Where it goes                                                      |
-| --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| Remark | Where it goes |
+| --- | --- |
 | Change the radius vertex by vertex, by clicking a vertex to see its configuration (Figma-like), e.g. a rectangle with a single rounded corner | F03 (per-vertex corner radius and node editing), noted in its file |
-| Measure the drawing precisely with the browser's SVG API (bounding box, lengths) to help the tests                                            | improvement log, for the end-to-end tests of E12                   |
-| Specialized expert agents (mathematics, code, agile…) with their own documentation, running as background tasks                               | improvement log, for the E01 retrospective                         |
+| Measure the drawing precisely with the browser's SVG API (bounding box, lengths) to help the tests | improvement log, for the end-to-end tests of E12 |
+| Specialized expert agents (mathematics, code, agile…) with their own documentation, running as background tasks | improvement log, for the E01 retrospective |

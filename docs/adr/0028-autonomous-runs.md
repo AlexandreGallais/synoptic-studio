@@ -1,6 +1,6 @@
 # ADR-0028 — Feature branches and autonomous runs: stories merge into their feature, the Product Owner merges the feature
 
-**Status**: Accepted (Product Owner, 2026-10-08), partly superseded by ADR-0038 (feature branches start from and merge into `develop`; no required checks on them) — amends `CLAUDE.md` and `docs/tooling/git-workflow.md` on two points: each feature has a short-lived integration branch, and story pull requests merge into it without the Product Owner.
+**Status**: Superseded by ADR-0072 (2026-10-17, review of the ADRs, EN-094), which gathers how a run works today. Accepted (Product Owner, 2026-10-08), partly superseded by ADR-0038 (feature branches start from and merge into `develop`; no required checks on them) — amends `CLAUDE.md` and `docs/tooling/git-workflow.md` on two points: each feature has a short-lived integration branch, and story pull requests merge into it without the Product Owner.
 
 ## Context
 

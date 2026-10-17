@@ -1,0 +1,326 @@
+# escape-inline-tags: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), then faults planted
+# in copies of files of the tree and cases written for branches, each run by ESLint 10.12.0 at src/a.ts with the project's options;
+# a carriage return written ␍; recorded by EN-083.
+@@@ case 1 (documented invalid)
+
+        /**
+         * @file Use @outside before `npm init @eslint/config`.
+         */
+      
+@@@ findings
+3:1 Unexpected inline JSDoc tag. Did you mean to use {@outside}, \@outside, or `@outside`?
+@@@ case 2 (documented invalid)
+
+        /**
+         * @file Run `npm init @eslint/config` with @outside.
+         */
+      
+@@@ findings
+3:1 Unexpected inline JSDoc tag. Did you mean to use {@outside}, \@outside, or `@outside`?
+@@@ case 3 (documented invalid)
+
+        /**
+         * @file Run `npm init @eslint/config without a closing backtick.
+         */
+      
+@@@ findings
+3:1 Unexpected inline JSDoc tag. Did you mean to use {@eslint}, \@eslint, or `@eslint`?
+@@@ case 4 (documented invalid)
+
+        /**
+         * @file Literal \`npm init @eslint/config` text.
+         */
+      
+@@@ findings
+3:1 Unexpected inline JSDoc tag. Did you mean to use {@eslint}, \@eslint, or `@eslint`?
+@@@ case 5 (documented invalid)
+
+        /**
+         *
+         * Whether to include a @yearly, @monthly etc text labels in the generated expression.
+         */
+      
+@@@ findings
+4:1 Unexpected inline JSDoc tag. Did you mean to use {@yearly}, \@yearly, or `@yearly`?
+4:1 Unexpected inline JSDoc tag. Did you mean to use {@monthly}, \@monthly, or `@monthly`?
+@@@ case 6 (documented invalid)
+
+        /**
+         * Some text
+         * Whether to include a @yearly, @monthly etc text labels in the generated expression.
+         */
+      
+@@@ findings
+4:1 Unexpected inline JSDoc tag. Did you mean to use {@yearly}, \@yearly, or `@yearly`?
+4:1 Unexpected inline JSDoc tag. Did you mean to use {@monthly}, \@monthly, or `@monthly`?
+@@@ case 7 (documented invalid)
+
+        /**
+         * Whether to include a @yearly, @yearly etc text labels in the generated expression.
+         */
+      
+@@@ findings
+3:1 Unexpected inline JSDoc tag. Did you mean to use {@yearly}, \@yearly, or `@yearly`?
+3:1 Unexpected inline JSDoc tag. Did you mean to use {@yearly}, \@yearly, or `@yearly`?
+@@@ case 8 (documented invalid)
+
+        /**
+         * Whether to include a @yearly,
+         * or @yearly etc text labels in the generated expression.
+         */
+      
+@@@ findings
+3:1 Unexpected inline JSDoc tag. Did you mean to use {@yearly}, \@yearly, or `@yearly`?
+4:1 Unexpected inline JSDoc tag. Did you mean to use {@yearly}, \@yearly, or `@yearly`?
+@@@ case 9 (documented invalid)
+
+        /**
+         * Whether to include a @yearly, @monthly etc text labels in the generated expression.
+         */
+      
+@@@ findings
+3:1 Unexpected inline JSDoc tag. Did you mean to use {@yearly}, \@yearly, or `@yearly`?
+3:1 Unexpected inline JSDoc tag. Did you mean to use {@monthly}, \@monthly, or `@monthly`?
+@@@ case 10 (documented invalid)
+
+        /**
+         * Some description @sth
+         */
+      
+@@@ findings
+3:1 Unexpected inline JSDoc tag. Did you mean to use {@sth}, \@sth, or `@sth`?
+@@@ case 11 (documented invalid)
+
+        /**
+         * Some description @sth
+         */
+      
+@@@ findings
+3:1 Unexpected inline JSDoc tag. Did you mean to use {@sth}, \@sth, or `@sth`?
+@@@ case 12 (documented invalid)
+
+        /**
+         * @param includeNonStandard Whether to include a @yearly, @monthly etc text labels in the generated expression.
+         */
+      
+@@@ findings
+3:1 Unexpected inline JSDoc tag. Did you mean to use {@yearly}, \@yearly, or `@yearly`?
+3:1 Unexpected inline JSDoc tag. Did you mean to use {@monthly}, \@monthly, or `@monthly`?
+@@@ case 13 (documented invalid)
+
+        /**
+         * Some description @scope and {@link @scope/pkg#Member}
+         */
+      
+@@@ findings
+3:1 Unexpected inline JSDoc tag. Did you mean to use {@scope}, \@scope, or `@scope`?
+@@@ case 14 (documented invalid)
+
+        /**
+         * Some description {@example @scope/pkg}
+         */
+      
+@@@ findings
+3:1 Unexpected inline JSDoc tag. Did you mean to use {@scope}, \@scope, or `@scope`?
+@@@ case 15 (documented invalid)
+
+        /**
+         * Some description {@link @scope/pkg#Member
+         */
+      
+@@@ findings
+3:1 Unexpected inline JSDoc tag. Did you mean to use {@scope}, \@scope, or `@scope`?
+@@@ case 16 (documented invalid)
+
+        /**
+         * Some description {@ @scope/pkg}
+         */
+      
+@@@ findings
+3:1 Unexpected inline JSDoc tag. Did you mean to use {@scope}, \@scope, or `@scope`?
+@@@ case 17 (documented invalid)
+
+        /**
+         * @param includeNonStandard Whether to include a @yearly, @monthly etc text labels in the generated expression.
+         */
+      
+@@@ findings
+3:1 Unexpected inline JSDoc tag. Did you mean to use {@yearly}, \@yearly, or `@yearly`?
+3:1 Unexpected inline JSDoc tag. Did you mean to use {@monthly}, \@monthly, or `@monthly`?
+@@@ case 18 (documented invalid)
+
+        /**
+         * @param aName @sth
+         */
+      
+@@@ findings
+3:1 Unexpected inline JSDoc tag. Did you mean to use {@sth}, \@sth, or `@sth`?
+@@@ case 19 (documented invalid)
+
+        /**
+         * @param aName @sth
+         *   and @another
+         * @param anotherName @yetAnother
+         */
+      
+@@@ findings
+3:1 Unexpected inline JSDoc tag. Did you mean to use {@sth}, \@sth, or `@sth`?
+4:1 Unexpected inline JSDoc tag. Did you mean to use {@another}, \@another, or `@another`?
+5:1 Unexpected inline JSDoc tag. Did you mean to use {@yetAnother}, \@yetAnother, or `@yetAnother`?
+@@@ case 20 (documented invalid)
+
+        /**
+         * @param aName @sth
+         */
+      
+@@@ findings
+3:1 Unexpected inline JSDoc tag. Did you mean to use {@sth}, \@sth, or `@sth`?
+@@@ case 21 (documented valid)
+
+        /**
+         * @file Main CLI that is run via the `npm init @eslint/config` command.
+         */
+      
+@@@ findings
+@@@ case 22 (documented valid)
+
+        /**
+         * @param value Run ``npm `init` @eslint/config``.
+         */
+      
+@@@ findings
+@@@ case 23 (documented valid)
+
+        /**
+         * A description with an escaped \@tag.
+         */
+      
+@@@ findings
+@@@ case 24 (documented valid)
+
+        /**
+         * A description with a markdown `@tag`.
+         */
+      
+@@@ findings
+@@@ case 25 (documented valid)
+
+        /**
+         * A description with a non@tag.
+         */
+      
+@@@ findings
+@@@ case 26 (documented valid)
+
+        /**
+         * @param {SomeType} aName A description with an escaped \@tag.
+         */
+      
+@@@ findings
+@@@ case 27 (documented valid)
+
+        /**
+         * @param {SomeType} aName A description with a markdown `@tag`.
+         */
+      
+@@@ findings
+@@@ case 28 (documented valid)
+
+        /**
+         * @param {SomeType} aName A description with a non@tag.
+         */
+      
+@@@ findings
+@@@ case 29 (documented valid)
+
+        /**
+         * {@link https://example.com}
+         */
+      
+@@@ findings
+@@@ case 30 (documented valid)
+
+        /**
+         * A description with a {@link https://example.com}
+         */
+      
+@@@ findings
+@@@ case 31 (documented valid)
+
+        /**
+         * Use this CodeMirror {@link @codemirror/state#StateField} reference.
+         */
+      
+@@@ findings
+@@@ case 32 (documented valid)
+
+        /**
+         * @someTag {@link https://example.com}
+         */
+      
+@@@ findings
+@@@ case 33 (documented valid)
+
+        /**
+         * @param {SomeType} aName {@link https://example.com}
+         */
+      
+@@@ findings
+@@@ case 34 (documented valid)
+
+        /**
+         * @param {SomeType} aName {@inheritDoc @scope-name/pkg-name#Member}
+         */
+      
+@@@ findings
+@@@ case 35 (documented valid)
+
+        /**
+         * @param {SomeType} aName A description with a {@link https://example.com}.
+         */
+      
+@@@ findings
+@@@ case 36 (documented valid)
+
+        /**
+         * A description with a multi-line inline tag {@link
+         * @scope/pkg#Member} reference.
+         */
+      
+@@@ findings
+@@@ case 37 (documented valid)
+
+        /**
+         * @example
+         * Here are some unescaped tags: @yearly, @monthly
+         */
+      
+@@@ findings
+@@@ case 38 (documented valid)
+
+        /**
+         * Whether to include a @yearly, @monthly etc text labels in the generated expression.
+         */
+      
+@@@ findings
+3:1 Unexpected inline JSDoc tag. Did you mean to use {@yearly}, \@yearly, or `@yearly`?
+3:1 Unexpected inline JSDoc tag. Did you mean to use {@monthly}, \@monthly, or `@monthly`?
+@@@ case 39 (planted in a copy of a file of the tree)
+/**
+ * Distance from a corner @vertex to the tangent points of its fillet arc.
+ *
+ * Formula: s = r · tan(|τ| / 2) = r / tan(θ / 2), τ = turning angle, θ = interior angle.
+ *
+ * @kind geometry
+ * @param radius - fillet radius, >= 0
+ * @param turningAngle - signed turning angle at the vertex in radians, in ]−π, π[
+ * @returns setback along each adjacent edge, 0 for aligned vertices
+ * @see DERIV-fillet-setback
+ */
+export function filletSetback(radius: number, turningAngle: number): number {
+  return radius * Math.tan(Math.abs(turningAngle) / 2);
+}
+
+@@@ findings
+2:1 Unexpected inline JSDoc tag. Did you mean to use {@vertex}, \@vertex, or `@vertex`?
+@@@ end

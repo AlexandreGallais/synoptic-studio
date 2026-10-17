@@ -1,4 +1,4 @@
-import { EPSILON } from "../../math";
+import { EPSILON, isWithinTolerance } from "../../math";
 import { distanceFromSide } from "../fillet-side";
 
 import { isClearOfSide } from "./is-clear-of-side";
@@ -38,7 +38,7 @@ export function isValidTangency(
   const gap = distanceFromSide(measured, centre, measured.limit) - radius;
 
   return (
-    Math.abs(gap) <= EPSILON * Math.max(1, radius) &&
+    isWithinTolerance(gap, 0, EPSILON * Math.max(1, radius)) &&
     candidate.measured < measured.limit &&
     isClearOfSide(measured, centre, radius) &&
     isClearOfSide(running, centre, radius)

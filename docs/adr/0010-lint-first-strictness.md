@@ -1,6 +1,6 @@
 # ADR-0010 — Strictness carried by ESLint first, TypeScript second
 
-**Status**: Accepted
+**Status**: Superseded by ADR-0075 (2026-10-17): the linter first stays, the linter being oxlint and the project's Rust linter; its consequences were partly superseded by ADR-0071 the same day (`tsc` out of `npm run check`, the declarations written by Oxc).
 
 ## Context
 

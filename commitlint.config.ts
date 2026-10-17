@@ -12,7 +12,6 @@ const SCOPES = [
   "ci",
   "deps",
   "docs",
-  "eslint",
   "geometry",
   "interaction",
   "io",
@@ -25,13 +24,14 @@ const SCOPES = [
 ];
 
 /**
- * Whether a commit was written by release-please, whose release commits have a fixed format.
+ * Whether a commit was written by release-please, whose release commits have a fixed format: its
+ * scope is the release pull request's branch, `develop` since ADR-0067, `main` before.
  *
  * @param message - full commit message
  * @returns `true` for a release commit
  */
-function isReleaseCommit(message: string): boolean {
-  return message.startsWith("chore(main): release");
+export function isReleaseCommit(message: string): boolean {
+  return /^chore\((?:develop|main)\): release /u.test(message);
 }
 
 /**

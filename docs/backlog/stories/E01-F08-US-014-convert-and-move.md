@@ -23,14 +23,14 @@ As a symbol designer, I want to turn a polygon into a free shape and to move a p
 
 Run `npm run dev` and open `http://localhost:5173/?guide=epic&step=10` (a hexagon in 100 × 100). A **free shape** is a shape whose points can be moved one by one; **converting** turns the polygon into one, without moving it. **X** and **Y** are the place of a point in the drawing.
 
-| Step | Do                                                                | You should see                                                                                                   |
-| ---- | ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| 1    | Click **Points**, then point 1 (the red one, bottom right)        | under the list, X 75 and Y 93.30127, greyed: a polygon is converted first; a button **Convert to free shape**    |
-| 2    | Click **Convert to free shape**                                   | nothing moves; the shape selector reads "Free shape"; width 100, height 86.60254; the anchor grid and Corners go |
-| 3    | With point 1 selected, type X 80 and press Enter                  | the bottom-right corner moves right to 80; its Y stays 93.30127; the other points stay where they were           |
-| 4    | Type width 50                                                     | the whole shape is stretched to 50 wide, the left side fixed                                                     |
-| 5    | Open `?step=1`, Points, click point 3, type X 150 and press Enter | the bottom-right corner goes to 150; the selector reads "Free shape", width 150                                  |
-| 6    | Type X 150.5 and press Enter                                      | nothing moves: a point takes whole numbers                                                                       |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | Click **Points**, then point 1 (the red one, bottom right) | under the list, X 75 and Y 93.30127, greyed: a polygon is converted first; a button **Convert to free shape** |
+| 2 | Click **Convert to free shape** | nothing moves; the shape selector reads "Free shape"; width 100, height 86.60254; the anchor grid and Corners go |
+| 3 | With point 1 selected, type X 80 and press Enter | the bottom-right corner moves right to 80; its Y stays 93.30127; the other points stay where they were |
+| 4 | Type width 50 | the whole shape is stretched to 50 wide, the left side fixed |
+| 5 | Open `?step=1`, Points, click point 3, type X 150 and press Enter | the bottom-right corner goes to 150; the selector reads "Free shape", width 150 |
+| 6 | Type X 150.5 and press Enter | nothing moves: a point takes whole numbers |
 
 A point moves when you press Enter or leave the field, so that a minus sign or an emptied field moves nothing on the way.
 

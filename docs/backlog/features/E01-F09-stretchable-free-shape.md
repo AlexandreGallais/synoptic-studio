@@ -30,20 +30,20 @@ status: done
 
 In delivery order.
 
-| ID                                                                       | Type       | Title                                                | Status |
-| ------------------------------------------------------------------------ | ---------- | ---------------------------------------------------- | ------ |
-| [SP-006](../stories/E01-F09-SP-006-research-f09.md)                      | Spike      | Research for F09                                     | done   |
-| [EN-012](../stories/E01-F09-EN-012-free-shape-in-its-box.md)             | Enabler    | A free shape and its box in the model                | done   |
-| [CHK-006](../stories/E01-F09-CHK-006-checkpoint-f09.md)                  | Checkpoint | Checkpoint in the middle of F09                      | done   |
-| [US-017](../stories/E01-F09-US-017-rectangle-as-free-shape.md)           | User story | The rectangle as a free shape, stretched by its size | done   |
-| [AUD-006](../stories/E01-F09-AUD-006-audit-f09.md)                       | Audit      | Audit F09                                            | done   |
-| [VAL-006](../stories/E01-F09-VAL-006-validate-stretchable-free-shape.md) | Validation | Validate F09                                         | done   |
+| ID | Type | Title | Status |
+| --- | --- | --- | --- |
+| [SP-006](../stories/E01-F09-SP-006-research-f09.md) | Spike | Research for F09 | done |
+| [EN-012](../stories/E01-F09-EN-012-free-shape-in-its-box.md) | Enabler | A free shape and its box in the model | done |
+| [CHK-006](../stories/E01-F09-CHK-006-checkpoint-f09.md) | Checkpoint | Checkpoint in the middle of F09 | done |
+| [US-017](../stories/E01-F09-US-017-rectangle-as-free-shape.md) | User story | The rectangle as a free shape, stretched by its size | done |
+| [AUD-006](../stories/E01-F09-AUD-006-audit-f09.md) | Audit | Audit F09 | done |
+| [VAL-006](../stories/E01-F09-VAL-006-validate-stretchable-free-shape.md) | Validation | Validate F09 | done |
 
 ## Feature plan
 
-| Acceptance criterion                         | Realized by    | Verified by                      |
-| -------------------------------------------- | -------------- | -------------------------------- |
-| 1 — rectangle tool creates a free shape      | EN-012, US-017 | `[F09.AC1]` tests, VAL-006       |
+| Acceptance criterion | Realized by | Verified by |
+| --- | --- | --- |
+| 1 — rectangle tool creates a free shape | EN-012, US-017 | `[F09.AC1]` tests, VAL-006 |
 | 2 — width and height stretch, top-left fixed | EN-012, US-017 | `[F09.AC2]` tests, card, VAL-006 |
-| 3 — stretching without loss                  | EN-012         | `[F09.AC3]` tests, card, VAL-006 |
-| 4 — the playground rectangle unchanged       | US-017         | `[F09.AC4]` tests, card, VAL-006 |
+| 3 — stretching without loss | EN-012 | `[F09.AC3]` tests, card, VAL-006 |
+| 4 — the playground rectangle unchanged | US-017 | `[F09.AC4]` tests, card, VAL-006 |

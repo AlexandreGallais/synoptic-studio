@@ -19,12 +19,12 @@ As a designer, I want to convert a round shape either to its 4 points on the cur
 
 ## Product Owner test
 
-| Step | Do                                                                     | You should see                                                               |
-| ---- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| 1    | **Round** 120 × 80, **Points**, **Convert to free shape**              | nothing moves; the shape reads **Free shape**, 4 points                      |
-| 2    | Click point 1                                                          | **Handles** pressed, Mirror angle and length: its handles can be typed (F12) |
-| 3    | **Round** 120 × 80 again, **Points**, **Convert to rounded rectangle** | a capsule: the 4 corners of the box, radius 40                               |
-| 4    | **Round**, width 0, **Points**                                         | a vertical line; both conversion buttons greyed                              |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | **Round** 120 × 80, **Points**, **Convert to free shape** | nothing moves; the shape reads **Free shape**, 4 points |
+| 2 | Click point 1 | **Handles** pressed, Mirror angle and length: its handles can be typed (F12) |
+| 3 | **Round** 120 × 80 again, **Points**, **Convert to rounded rectangle** | a capsule: the 4 corners of the box, radius 40 |
+| 4 | **Round**, width 0, **Points** | a vertical line; both conversion buttons greyed |
 
 ## Tasks
 
@@ -34,10 +34,10 @@ One task = one commit, referenced as `US-030.Tn`.
 
 ## Decisions during the story
 
-| Decision                                                                                               | Reason                                                                       |
-| ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
+| Decision | Reason |
+| --- | --- |
 | the converted shape writes its own radii in the Radius field: 0 for its points, 40 for the rounded box | as a converted polygon (F08): the free shape's radii are what is edited next |
-| **Convert to free shape** converts a polygon or a round shape; the hint line says "This shape"         | one button, one rule for both shapes that keep their points                  |
+| **Convert to free shape** converts a polygon or a round shape; the hint line says "This shape" | one button, one rule for both shapes that keep their points |
 
 ## Review
 

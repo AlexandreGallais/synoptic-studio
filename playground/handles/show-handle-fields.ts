@@ -6,9 +6,9 @@ import { readKeptAngle } from "./read-kept-angle";
 import { readSelectedCorner } from "./read-selected-corner";
 import { readTypingWay } from "./read-typing-way";
 
+import type { SelectedCorner } from "./read-selected-corner";
 import type { CurveCorner, HandleFrame, HandleWay } from "../../src";
 import type { ShapeReading } from "../shape";
-import type { SelectedCorner } from "./read-selected-corner";
 
 /** Names of the two values of a handle, by the way it is typed. */
 const VALUE_NAMES: Readonly<Record<HandleWay, readonly [string, string]>> = {

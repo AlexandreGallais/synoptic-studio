@@ -1,6 +1,6 @@
 # ADR-0009 — Toolchain: TypeScript 6, Vite, Vitest, ESLint, Prettier, VitePress
 
-**Status**: Accepted
+**Status**: Superseded by ADR-0075 (2026-10-17): the toolchain moved to Oxc and TypeScript 7; its rules on dependencies stay, restated there.
 
 ## Context
 

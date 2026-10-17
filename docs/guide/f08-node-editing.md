@@ -28,11 +28,11 @@ A rectangle can be edited straight away. A regular polygon is first turned into 
 
 **The rounding follows its point.** Each point carries its own rounding when it moves; a point added in the middle is sharp. In Points mode a Radius field of the points rounds the points selected, while the shape's Radius field, shown in both modes, rounds every corner.
 
-| Term           | In plain words                                                                    |
-| -------------- | --------------------------------------------------------------------------------- |
-| Free shape     | a shape whose points are edited one by one; the rectangle is one from the start   |
-| Convert        | turn a regular polygon into a free shape, without moving it                       |
-| Neighbours     | two points joined by a side; the last and the first are neighbours too            |
+| Term | In plain words |
+| --- | --- |
+| Free shape | a shape whose points are edited one by one; the rectangle is one from the start |
+| Convert | turn a regular polygon into a free shape, without moving it |
+| Neighbours | two points joined by a side; the last and the first are neighbours too |
 | Point selected | the point clicked in the list or on the drawing; X and Y show when exactly one is |
 
 ## Try it
@@ -49,9 +49,9 @@ Run `npm run dev` and open `http://localhost:5173/?guide=epic&step=39`: the **Gu
 
 Validated by the Product Owner on 2026-10-11 (`VAL-005`): moving, adding and deleting points, the update after a stretch and the decimals kept on the coordinate not typed work as they meant; the last point settled Q28 (ADR-0034).
 
-| Remark                                                                                                   | What was done or where it went               |
-| -------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
-| a Radius field for the points selected, the shape's own Radius field kept in Points mode                 | done at once                                 |
-| a field lost the focus at each key                                                                       | fixed: typing goes on, the arrow keys repeat |
-| moving several points at once by typing `+10`; arithmetic in every number field, as in a spreadsheet     | editor applications (`interaction.md`)       |
-| two points at the same place: flagged in the list, with an offer to delete one, never refused nor merged | editor applications (Q29)                    |
+| Remark | What was done or where it went |
+| --- | --- |
+| a Radius field for the points selected, the shape's own Radius field kept in Points mode | done at once |
+| a field lost the focus at each key | fixed: typing goes on, the arrow keys repeat |
+| moving several points at once by typing `+10`; arithmetic in every number field, as in a spreadsheet | editor applications (`interaction.md`) |
+| two points at the same place: flagged in the list, with an offer to delete one, never refused nor merged | editor applications (Q29) |

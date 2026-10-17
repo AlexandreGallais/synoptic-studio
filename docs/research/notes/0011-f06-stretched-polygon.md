@@ -36,25 +36,25 @@ No book, paper or tool documents such a polygon. The rule has to be a derivation
 With every corner kept turning at least half its regular turn (`π/n`), equal sides are possible for these ratios `h / w`:
 
 | `n` | Regular | Equal sides, corners kept |
-| --- | ------- | ------------------------- |
-| 5   | 0.95106 | 0.63167 – 1.67401         |
-| 6   | 0.86603 | 0.36603 – 1.27293         |
-| 7   | 0.97493 | 0.62434 – 1.55632         |
-| 8   | 1       | 0.61991 – 1.61313         |
-| 9   | 0.98481 | 0.67233 – 1.59293         |
-| 10  | 0.95106 | 0.54837 – 1.49813         |
-| 11  | 0.98982 | 0.60000 – 1.60040         |
-| 12  | 1       | 0.61699 – 1.62078         |
+| --- | --- | --- |
+| 5 | 0.95106 | 0.63167 – 1.67401 |
+| 6 | 0.86603 | 0.36603 – 1.27293 |
+| 7 | 0.97493 | 0.62434 – 1.55632 |
+| 8 | 1 | 0.61991 – 1.61313 |
+| 9 | 0.98481 | 0.67233 – 1.59293 |
+| 10 | 0.95106 | 0.54837 – 1.49813 |
+| 11 | 0.98982 | 0.60000 – 1.60040 |
+| 12 | 1 | 0.61699 – 1.62078 |
 
 The triangle and the square have no freedom: plain stretch, an isosceles triangle and a rectangle.
 
 ## The three rules
 
-| Rule                                    | What it does                                                                                                                          | Hexagon 300 × 50 (edge ratio, smallest corner turn) |
-| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
-| **A** — plain stretch                   | the regular polygon scaled on each axis to the box, as drawing tools do; simple, sides uneven                                         | 1.897, 18.4°                                        |
-| **B** — equal sides at any cost         | equal sides whenever they exist; corners may almost vanish, impossible past a ratio                                                   | 1, 14.2°                                            |
-| **C** — equal sides, then plain stretch | equal sides (λ family) while every corner turns at least `π/n`; past that limit, that limit polygon is scaled on each axis to the box | 1.117, 14.7°                                        |
+| Rule | What it does | Hexagon 300 × 50 (edge ratio, smallest corner turn) |
+| --- | --- | --- |
+| **A** — plain stretch | the regular polygon scaled on each axis to the box, as drawing tools do; simple, sides uneven | 1.897, 18.4° |
+| **B** — equal sides at any cost | equal sides whenever they exist; corners may almost vanish, impossible past a ratio | 1, 14.2° |
+| **C** — equal sides, then plain stretch | equal sides (λ family) while every corner turns at least `π/n`; past that limit, that limit polygon is scaled on each axis to the box | 1.117, 14.7° |
 
 Rule C, the answer's recommendation: always touches the four sides, symmetric, base flat, `n` convex corners in order, unique and continuous as `w` and `h` change, depends only on `h / w`, closed forms or one bisection. Where the box is within the range above, its sides are exactly equal.
 
@@ -62,16 +62,16 @@ Rule C, the answer's recommendation: always touches the four sides, symmetric, b
 
 Drawing order of F02: clockwise on screen from the right end of the base.
 
-| Shape, box         | Vertices                                                                           | Sides                          |
-| ------------------ | ---------------------------------------------------------------------------------- | ------------------------------ |
-| triangle 100 × 100 | (100, 100), (0, 100), (50, 0)                                                      | 100, 111.80340, 111.80340      |
-| square 300 × 50    | (300, 50), (0, 50), (0, 0), (300, 0)                                               | the rectangle                  |
-| pentagon 100 × 100 | (81.75623, 100), (18.24377, 100), (0, 39.16418), (50, 0), (100, 39.16418)          | all 63.51246                   |
-| pentagon 300 × 50  | (228.85967, 50), (71.14033, 50), (0, 12.85950), (150, 0), (300, 12.85950)          | 157.71933, 80.25188, 150.55021 |
-| hexagon 100 × 100  | (77.42919, 100), (22.57081, 100), (0, 50), (22.57081, 0), (77.42919, 0), (100, 50) | all 54.85838                   |
-| hexagon 300 × 50   | (204.90381, 50), (95.09619, 50), (0, 25), (95.09619, 0), (204.90381, 0), (300, 25) | 109.80762, 98.32744            |
-| hexagon 50 × 300   | (41.47297, 300), (8.52703, 300), (0, 150), (8.52703, 0), (41.47297, 0), (50, 150)  | 32.94593, 150.24217            |
-| octagon 100 × 100  | the regular octagon                                                                | all 41.42136                   |
+| Shape, box | Vertices | Sides |
+| --- | --- | --- |
+| triangle 100 × 100 | (100, 100), (0, 100), (50, 0) | 100, 111.80340, 111.80340 |
+| square 300 × 50 | (300, 50), (0, 50), (0, 0), (300, 0) | the rectangle |
+| pentagon 100 × 100 | (81.75623, 100), (18.24377, 100), (0, 39.16418), (50, 0), (100, 39.16418) | all 63.51246 |
+| pentagon 300 × 50 | (228.85967, 50), (71.14033, 50), (0, 12.85950), (150, 0), (300, 12.85950) | 157.71933, 80.25188, 150.55021 |
+| hexagon 100 × 100 | (77.42919, 100), (22.57081, 100), (0, 50), (22.57081, 0), (77.42919, 0), (100, 50) | all 54.85838 |
+| hexagon 300 × 50 | (204.90381, 50), (95.09619, 50), (0, 25), (95.09619, 0), (204.90381, 0), (300, 25) | 109.80762, 98.32744 |
+| hexagon 50 × 300 | (41.47297, 300), (8.52703, 300), (0, 150), (8.52703, 0), (41.47297, 0), (50, 150) | 32.94593, 150.24217 |
+| octagon 100 × 100 | the regular octagon | all 41.42136 |
 
 Hand check, hexagon 100 × 100: `φ₁ = 45° + asin(1/(2√2)) = 65.7048°`; the unit half-width `1/2 + cos φ₁ = 0.91144`; scale `50 / 0.91144 = 54.85838`, the side. The agent's own value before the research was 54.858.
 

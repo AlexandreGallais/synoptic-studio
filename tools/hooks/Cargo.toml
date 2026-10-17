@@ -1,0 +1,12 @@
+[package]
+name = "hooks"
+version = "0.1.0"
+edition.workspace = true
+description = "Claude Code hooks of the repository, and the transcript reading they share (EN-047)"
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+
+[lints]
+workspace = true

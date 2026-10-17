@@ -2,3 +2,31 @@ synoptic-studio
 Copyright 2026 Alexandre Gallais
 
 This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+This product includes metrics derived from the Inter font, Copyright (c) 2016 The Inter Project
+Authors, licensed under the SIL Open Font License, Version 1.1 (src/model/font/inter-license.txt).
+
+The project's tools (tools/, not distributed with the library) port code from, or copy test cases
+of, the packages below, each under its licence; the full texts are in THIRD-PARTY-LICENSES.md.
+
+- eslint-plugin-unicorn 78.0.0, MIT: Copyright (c) Sindre Sorhus <sindresorhus@gmail.com>
+  (https://sindresorhus.com)
+- eslint-plugin-jsdoc 65.3.1, BSD-3-Clause: Copyright (c) 2018, Gajus Kuizinas (http://gajus.com/)
+- are-docs-informative 0.1.1, MIT: its licence names no holder; its author is JoshuaKGoldberg
+- comment-parser 1.4.9, MIT: Copyright (c) 2014 Sergii Iavorskyi
+- @es-joy/jsdoccomment 0.98.0, MIT: Copyright JS Foundation and other contributors,
+  https://js.foundation; Copyright (c) 2021 Brett Zamir
+- eslint-plugin-functional 10.0.1, MIT: Copyright (c) 2016 Jonas Kello
+- @stylistic/eslint-plugin 5.10.0, MIT: Copyright OpenJS Foundation and other contributors,
+  <www.openjsf.org>; Copyright (c) 2023-PRESENT ESLint Stylistic contributors
+- eslint-plugin-import-x 4.17.1, MIT: Copyright (c) 2015 Ben Mosher
+- @typescript-eslint/eslint-plugin 8.71.2, MIT: Copyright (c) 2019 typescript-eslint and other
+  contributors
+- @eslint/markdown 8.0.3, MIT: Copyright OpenJS Foundation and other contributors,
+  https://openjsf.org
+- eslint 10.12.0, MIT: Copyright OpenJS Foundation and other contributors, <www.openjsf.org>
+- @eslint-community/eslint-utils 4.10.1, MIT: Copyright (c) 2018 Toru Nagashima
+- @eslint/css-tree 4.1.1, MIT: Copyright (C) 2016-2026 by Roman Dvornov; Copyright OpenJS
+  Foundation and other contributors, <www.openjsf.org>
+- @babel/helper-validator-identifier 7.29.7, MIT: Copyright (c) 2014-present Sebastian McKenzie
+  and other contributors

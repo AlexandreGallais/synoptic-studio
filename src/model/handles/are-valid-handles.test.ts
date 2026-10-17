@@ -17,8 +17,10 @@ describe("areValidHandles (ADR-0046)", () => {
 
   it("refuses an unknown mode, a vector not finite, a switch not boolean", () => {
     // Read from outside (the page's stored JSON): the type does not hold there.
-    const unknown = JSON.parse('{"isOn":false,"mode":"smooth"}') as Handles; // eslint-disable-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- data read from outside, as the playground does
-    const notBoolean = JSON.parse('{"isOn":1}') as Handles; // eslint-disable-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- data read from outside, as the playground does
+    // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- data read from outside, as the playground does
+    const unknown = JSON.parse('{"isOn":false,"mode":"smooth"}') as Handles;
+    // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- data read from outside, as the playground does
+    const notBoolean = JSON.parse('{"isOn":1}') as Handles;
 
     expect(areValidHandles({ ...NO_HANDLES, mode: unknown.mode })).toBe(false);
     expect(areValidHandles({ ...NO_HANDLES, before: { x: NaN, y: 0 } })).toBe(false);

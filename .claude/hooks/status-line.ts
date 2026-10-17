@@ -141,7 +141,7 @@ function counted(amount: number, noun: string): string {
  */
 export function backgroundText(tally: TokenTally): string {
   const agents = tally.pending.filter((task) => task.kind === "agent").length;
-  const commands = tally.pending.length - agents;
+  const commands = tally.pending.filter((task) => task.kind === "command").length;
 
   return [
     agents === 0 ? "" : counted(agents, "agent"),
@@ -164,7 +164,7 @@ function activityOf(silentMs: number, tally: TokenTally): string {
   const background = backgroundText(tally);
 
   if (background !== "" && tally.isWaiting) {
-    return `${COLOR.cyan}◌ chat free · waiting for ${background}${COLOR.reset}`;
+    return `${COLOR.cyan}◌ chat free · ${background} in the background${COLOR.reset}`;
   }
 
   const also = background === "" ? "" : ` · ${background} in the background`;
@@ -202,12 +202,13 @@ function sessionLine(status: Status): string {
  */
 export function statusText(status: Status): string {
   const place = `${COLOR.bold}${status.place}${COLOR.reset}`;
-  const step = status.step === "" ? "waiting" : status.step;
+  // No step written: the place alone, never a word that reads as a state ("waiting", RET-003).
+  const head = status.step === "" ? place : [place, status.step].join(SEPARATOR);
   const color = status.isRunningLong ? COLOR.red : COLOR.cyan;
   const running = status.running === "" ? [] : [`${color}${status.running}${COLOR.reset}`];
   const background = status.background.map((line) => `${COLOR.dim}${line}${COLOR.reset}`);
 
-  return [[place, step].join(SEPARATOR), sessionLine(status), ...running, ...background].join("\n");
+  return [head, sessionLine(status), ...running, ...background].join("\n");
 }
 
 /**
@@ -226,7 +227,7 @@ export function sessionSnapshot(status: Status, now: number): Readonly<Record<st
     isWaiting: status.tally.isWaiting,
     model: status.model,
     pendingAgents: agents,
-    pendingCommands: status.tally.pending.length - agents,
+    pendingCommands: status.tally.pending.filter((task) => task.kind === "command").length,
     time: now,
     turnOutputTokens: status.tally.output,
     turnStart: status.tally.start,

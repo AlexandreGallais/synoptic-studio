@@ -1,3 +1,4 @@
+import { integerQuotient } from "../arithmetic";
 import { withoutNegativeZero } from "../precision";
 import { quarterTurns } from "../rotation";
 
@@ -22,7 +23,7 @@ import type { Vector } from "../vector";
  * @see DERIV-turned-shape
  */
 export function turnDirection(angle: number): Vector {
-  const quarters = Math.floor(degreesInTurn(angle) / DEGREES_PER_QUARTER_TURN);
+  const quarters = integerQuotient(degreesInTurn(angle), DEGREES_PER_QUARTER_TURN);
   const rest = degreesToRadians(degreesInTurn(angle) - quarters * DEGREES_PER_QUARTER_TURN);
 
   return withoutNegativeZero(quarterTurns(directionAt(rest), quarters));

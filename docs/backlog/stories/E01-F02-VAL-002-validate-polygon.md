@@ -31,13 +31,13 @@ One task = one commit, referenced as `VAL-002.Tn`. This story is not merged auto
 
 Written with the stories and the audit; counted at the validation (`[F02.ACn]` in test titles).
 
-| Criterion                                                  | Tests | Where                                                                                     |
-| ---------------------------------------------------------- | ----- | ----------------------------------------------------------------------------------------- |
-| F02.AC1 — uniform fit, flat base, refused values           | 12    | `unit-regular-polygon`, `regular-polygon-contour`, `is-valid-regular-polygon`, playground |
-| F02.AC2 — global radius, incircle at most                  | 6     | `regular-polygon-corners`, playground                                                     |
-| F02.AC3 — 5 decimals, clockwise, starting vertex           | 7     | `unit-regular-polygon`, `regular-polygon-contour`, playground                             |
-| F02.AC4 — shape selector                                   | 6     | playground                                                                                |
-| F02.AC5 — sizes capped at 100 000, no limit in the library | 3     | playground, `is-valid-rectangle`                                                          |
+| Criterion | Tests | Where |
+| --- | --- | --- |
+| F02.AC1 — uniform fit, flat base, refused values | 12 | `unit-regular-polygon`, `regular-polygon-contour`, `is-valid-regular-polygon`, playground |
+| F02.AC2 — global radius, incircle at most | 6 | `regular-polygon-corners`, playground |
+| F02.AC3 — 5 decimals, clockwise, starting vertex | 7 | `unit-regular-polygon`, `regular-polygon-contour`, playground |
+| F02.AC4 — shape selector | 6 | playground |
+| F02.AC5 — sizes capped at 100 000, no limit in the library | 3 | playground, `is-valid-rectangle` |
 
 ## Validation (2026-10-09)
 
@@ -45,9 +45,9 @@ The Product Owner ran the playground of the feature branch themselves (`npm run 
 
 Compared with what the feature meant to show: no misunderstanding reported. The guided test of F02 (steps 10–20 of the playground) was added afterwards, for the published playground and the next readers. Remarks raised during the validation, none blocking F02:
 
-| Remark                                                                                                           | Where it goes        |
-| ---------------------------------------------------------------------------------------------------------------- | -------------------- |
-| Largest size of a shape: one unit is one screen pixel, no limit in the calculations, interface capped at 100 000 | Q20 settled, US-008  |
-| A polygon stretched to fill its whole box, as a second kind next to the fixed one                                | draft feature F06    |
-| The View Editor could ask for the target screen                                                                  | improvement log, E08 |
-| Oversized SVG imports accepted without loss, flagged, simplified when possible, refused when too complex         | E11, improvement log |
+| Remark | Where it goes |
+| --- | --- |
+| Largest size of a shape: one unit is one screen pixel, no limit in the calculations, interface capped at 100 000 | Q20 settled, US-008 |
+| A polygon stretched to fill its whole box, as a second kind next to the fixed one | draft feature F06 |
+| The View Editor could ask for the target screen | improvement log, E08 |
+| Oversized SVG imports accepted without loss, flagged, simplified when possible, refused when too complex | E11, improvement log |

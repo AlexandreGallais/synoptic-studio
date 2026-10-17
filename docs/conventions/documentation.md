@@ -2,7 +2,7 @@
 
 ## Mandatory everywhere (`jsdoc/require-jsdoc`)
 
-Every top-level function, type and module constant carries a `/** … */` block; in `src/`, every **type member** too (`/** Abscissa, growing to the right. */`), since TypeDoc fails the docs build on an undocumented property.
+Every top-level function, type and module constant carries a `/** … */` block; in `src/`, every **type member** too (`/** Abscissa, growing to the right. */`), since the API pages' generator (`tools/api-pages`) fails the docs build on an undocumented property.
 
 ```ts
 /**
@@ -21,7 +21,7 @@ Every top-level function, type and module constant carries a `/** … */` block;
 ## Shape (`jsdoc/match-description`, `jsdoc/sort-tags`, `jsdoc/tag-lines`)
 
 - Main description: **sentences** (capital letter, final period). The formula is written in it when one exists.
-- `@param name - …` and `@returns …`: **fragments** without final period.
+- `@param name - …` and `@returns …`: **fragments** without final period. Required everywhere but in test files (`*.test.ts`), whose helpers carry their description alone: their typed signature sits under it and only the test beside them reads them (EN-093, [rules](./rules.md#consistency-or-ceremony)); a tag written there is still checked.
 - Tag order: `@kind`, then `@template @param @returns @yields @throws @rejects`, then `@see @deprecated`. One blank line between the description and the tags, none between tags.
 - No type in JSDoc (`jsdoc/no-types`): TypeScript holds them.
 - One-line block when it fits on one line: `/** Separator between commands. */`.
@@ -31,12 +31,12 @@ Every top-level function, type and module constant carries a `/** … */` block;
 
 **Every function** cites at least one source. Accepted targets:
 
-| Form                    | Resolution                                                | Example                                       |
-| ----------------------- | --------------------------------------------------------- | --------------------------------------------- |
-| `REF-…`                 | row of `docs/references.md` **not marked `[unverified]`** | `@see REF-SVG2-PATHS`                         |
-| `DERIV-name`            | file `docs/derivations/name.md`                           | `@see DERIV-local-radius-clamp`               |
-| `ADR-NNNN`              | file `docs/adr/NNNN-*.md`                                 | `@see ADR-0007`                               |
-| `docs/…/file.md#anchor` | existing file                                             | `@see docs/domain/shapes.md#_2-corner-radius` |
+| Form | Resolution | Example |
+| --- | --- | --- |
+| `REF-…` | row of `docs/references.md` **not marked `[unverified]`** | `@see REF-SVG2-PATHS` |
+| `DERIV-name` | file `docs/derivations/name.md` | `@see DERIV-local-radius-clamp` |
+| `ADR-NNNN` | file `docs/adr/NNNN-*.md` | `@see ADR-0007` |
+| `docs/…/file.md#anchor` | existing file | `@see docs/domain/shapes.md#_2-corner-radius` |
 
 - A non-existent or `[unverified]` reference is a **lint error**. A source never consulted is never cited.
 - Non-trivial `math` / `geometry`: an external source (`REF-*`) or a derivation (`DERIV-*`) — not a mere pointer to the domain.
@@ -44,4 +44,4 @@ Every top-level function, type and module constant carries a `/** … */` block;
 
 ## API reference site
 
-TypeDoc turns this TSDoc into one page per exported symbol on the documentation site (`npm run docs:dev`, [documentation-site.md](../tooling/documentation-site.md)). The `@kind` tag is declared in `tsdoc.json`.
+`tools/api-pages` turns this TSDoc into one page per exported symbol on the documentation site (`npm run docs:dev`, [documentation-site.md](../tooling/documentation-site.md)). The `@kind` tag, like any block tag other than `@param`, `@returns` and `@template`, becomes a section of the page, after the return value.

@@ -1,0 +1,1318 @@
+# tag-lines: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), then faults planted
+# in copies of files of the tree and cases written for branches, each run by ESLint 10.12.0 at src/a.ts with the project's options;
+# a carriage return written ␍; recorded by EN-083.
+@@@ case 1 (documented invalid)
+
+      /**
+       * Some description
+       * @param {string} a
+       * @param {number} b
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {string} a
+       * @param {number} b
+       */
+      
+@@@ case 2 (documented invalid)
+
+      /**
+       * Some description
+       * @param {string} a
+       * @param {number} b
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {string} a
+       * @param {number} b
+       */
+      
+@@@ case 3 (documented invalid)
+
+      /**
+       * Some description
+       * @param {string} a
+       *
+       * @param {number} b
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+5:1 Expected no lines between tags
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {string} a
+       * @param {number} b
+       */
+      
+@@@ case 4 (documented invalid)
+
+      /**
+       * Some description
+       * @param {string} a
+       * @param {number} b
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {string} a
+       * @param {number} b
+       */
+      
+@@@ case 5 (documented invalid)
+
+      /**
+       * Some description
+       * @param {string} a
+       *
+       * @param {number} b
+       *
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+5:1 Expected no lines between tags
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {string} a
+       * @param {number} b
+       */
+      
+@@@ case 6 (documented invalid)
+
+      /**
+       * Some description
+       * @param {string} a
+       *
+       * @param {number} b
+       *
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+5:1 Expected no lines between tags
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {string} a
+       * @param {number} b
+       */
+      
+@@@ case 7 (documented invalid)
+
+      /**
+       * Some description
+       * @param {string} a
+       *
+       * @param {number} b
+       * @param {number} c
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+5:1 Expected no lines between tags
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {string} a
+       * @param {number} b
+       * @param {number} c
+       */
+      
+@@@ case 8 (documented invalid)
+
+      /**
+       * Some description
+       * @param {string} a
+       * @param {number} b
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {string} a
+       * @param {number} b
+       */
+      
+@@@ case 9 (documented invalid)
+
+      /**
+       * Some description
+       * @param {string} a
+       * @param {number} b
+       *
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+6:1 Expected no lines between tags
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {string} a
+       * @param {number} b
+       */
+      
+@@@ case 10 (documented invalid)
+
+      /**
+       * Some description
+       * @param {string} a
+       *
+       * @param {number} b
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+5:1 Expected no lines between tags
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {string} a
+       * @param {number} b
+       */
+      
+@@@ case 11 (documented invalid)
+
+      /**
+       * Some description
+       * @param {string} a
+       *
+       * @param {number} b
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+5:1 Expected no lines between tags
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {string} a
+       * @param {number} b
+       */
+      
+@@@ case 12 (documented invalid)
+
+      /**
+       * Some description
+       * @param {string} a
+       * @param {number} b
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {string} a
+       * @param {number} b
+       */
+      
+@@@ case 13 (documented invalid)
+
+      /**
+       * Some description
+       * @param {string} A broken up
+       *
+       * tag description.
+       * @param {number} b
+       *
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+8:1 Expected no lines between tags
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {string} A broken up
+       *
+       * tag description.
+       * @param {number} b
+       */
+      
+@@@ case 14 (documented invalid)
+
+      /**
+       * Some description
+       * @param {number} b
+       *
+       * @returns {string} A broken up
+       *
+       * tag description.
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+5:1 Expected no lines between tags
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {number} b
+       * @returns {string} A broken up
+       *
+       * tag description.
+       */
+      
+@@@ case 15 (documented invalid)
+
+      /**
+       * Some description
+       * @param {string} a
+       * @param {string} b
+       *
+       * @returns {SomeType} An extended
+       * description.
+       *
+       * This is still part of `@returns`.
+       *
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+6:1 Expected no lines between tags
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {string} a
+       * @param {string} b
+       * @returns {SomeType} An extended
+       * description.
+       *
+       * This is still part of `@returns`.
+       */
+      
+@@@ case 16 (documented invalid)
+
+      /**
+       * Some description
+       * @param {string} a
+       * @param {string} b
+       *
+       * @returns {SomeType} An extended
+       * description.
+       *
+       * This is still part of `@returns`.
+       *
+       *
+       *
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+6:1 Expected no lines between tags
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {string} a
+       * @param {string} b
+       * @returns {SomeType} An extended
+       * description.
+       *
+       * This is still part of `@returns`.
+       */
+      
+@@@ case 17 (documented invalid)
+
+      /**
+       * Some description
+       * @param {string} a
+       * @param {string} b
+       *
+       * @returns {SomeType} An extended
+       * description.
+       *
+       * This is still part of `@returns`.
+       *
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+6:1 Expected no lines between tags
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {string} a
+       * @param {string} b
+       * @returns {SomeType} An extended
+       * description.
+       *
+       * This is still part of `@returns`.
+       */
+      
+@@@ case 18 (documented invalid)
+
+        /**
+         * Some description
+         *
+         *
+         * @param {string} a
+         */
+      
+@@@ findings
+4:1 Expected only 1 line after block description
+@@@ output
+
+        /**
+         * Some description
+         *
+         * @param {string} a
+         */
+      
+@@@ case 19 (documented invalid)
+
+        /**
+         * Some description
+         *
+         *
+         *
+         * @param {string} a
+         */
+      
+@@@ findings
+4:1 Expected only 1 line after block description
+@@@ output
+
+        /**
+         * Some description
+         *
+         * @param {string} a
+         */
+      
+@@@ case 20 (documented invalid)
+
+        /**
+         * Some description
+         *
+         * @param {string} a
+         */
+      
+@@@ findings
+@@@ case 21 (documented invalid)
+
+        /**
+         * Some description
+         *
+         * @param {string} a
+         */
+      
+@@@ findings
+@@@ case 22 (documented invalid)
+
+        /**
+         * Some description
+         * @param {string} a
+         */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+@@@ output
+
+        /**
+         * Some description
+         *
+         * @param {string} a
+         */
+      
+@@@ case 23 (documented invalid)
+
+        /**
+         *
+         * Some description
+         *
+         * Abc
+         *
+         *
+         *
+         * Def
+         *
+         * @param {string} a
+         */
+      
+@@@ findings
+@@@ case 24 (documented invalid)
+
+        /**
+         *
+         * Some description
+         *
+         * Abc
+         *
+         *
+         *
+         * Def
+         *
+         * @param {string} a
+         */
+      
+@@@ findings
+@@@ case 25 (documented invalid)
+
+        /**
+         *
+         * Some description
+         *
+         * Abc
+         *
+         *
+         *
+         * Def
+         *
+         * @param {string} a
+         */
+      
+@@@ findings
+@@@ case 26 (documented invalid)
+
+        /**
+         * Some description.
+         *
+         *
+         *
+         * More.
+         */
+      
+@@@ findings
+@@@ case 27 (documented invalid)
+
+        /**
+         * Some description.
+         *
+         *
+         *
+         * More.
+         * @param {string} a
+         */
+      
+@@@ findings
+7:1 Expected 1 lines after block description
+@@@ output
+
+        /**
+         * Some description.
+         *
+         *
+         *
+         * More.
+         *
+         * @param {string} a
+         */
+      
+@@@ case 28 (documented invalid)
+
+        /**
+         * Some description.
+         * Abc
+         *
+         *
+         *
+         * More.
+         */
+      
+@@@ findings
+@@@ case 29 (documented invalid)
+
+        /**
+         * Some description.
+         *
+         * More.
+         */
+      
+@@@ findings
+@@@ case 30 (documented invalid)
+
+        /**
+         *
+         * Some description
+         *
+         * Abc
+         *
+         *
+         * Def
+         *
+         *
+         *
+         *
+         * @param {string} a
+         */
+      
+@@@ findings
+10:1 Expected only 1 line after block description
+@@@ output
+
+        /**
+         *
+         * Some description
+         *
+         * Abc
+         *
+         *
+         * Def
+         *
+         * @param {string} a
+         */
+      
+@@@ case 31 (documented invalid)
+
+        /**
+         * My Test Function, with some example code.
+         *
+         * ```js
+         *   new Foo();
+         * ```
+         *
+         *
+         * @param {string} bar
+         */
+        function myTestFunction(bar) {
+
+        }
+      
+@@@ findings
+8:1 Expected only 1 line after block description
+@@@ output
+
+        /**
+         * My Test Function, with some example code.
+         *
+         * ```js
+         *   new Foo();
+         * ```
+         *
+         * @param {string} bar
+         */
+        function myTestFunction(bar) {
+
+        }
+      
+@@@ case 32 (documented invalid)
+
+        /**
+         *
+         * Second Test Case
+         * @param {number} baz
+         *
+         */
+      
+@@@ findings
+4:1 Expected 1 lines after block description
+6:1 Expected no lines between tags
+@@@ output
+
+        /**
+         *
+         * Second Test Case
+         *
+         * @param {number} baz
+         */
+      
+@@@ case 33 (documented invalid)
+
+        /**
+         * Some text
+         */
+        function quux () {
+        }
+      
+@@@ findings
+@@@ case 34 (documented invalid)
+
+        export interface SubOptionTypeMap {
+          /**
+           * Checkboxes have two states - true (checked) and false (unchecked)
+           *
+           */
+          checkbox: boolean
+        }
+      
+@@@ findings
+@@@ case 35 (documented invalid)
+/**␍
+ * Some description.␍
+ * @param {string} a x␍
+ * @returns {string} y␍
+ */␍
+function quux (a) {}
+@@@ findings
+2:1 Expected 1 lines after block description
+@@@ output
+/**␍
+ * Some description.␍
+ *␍
+ * @param {string} a x␍
+ * @returns {string} y␍
+ */␍
+function quux (a) {}
+@@@ case 36 (documented invalid)
+/**␍
+ * Some description␍
+ * @param {string} a␍
+ */␍
+function quux (a) {}
+@@@ findings
+2:1 Expected 1 lines after block description
+@@@ output
+/**␍
+ * Some description␍
+ *␍
+ * @param {string} a␍
+ */␍
+function quux (a) {}
+@@@ case 37 (documented invalid)
+/**␍
+ * Some description␍
+ *␍
+ * @param {string} a␍
+ */␍
+function quux (a) {}
+@@@ findings
+@@@ case 38 (documented invalid)
+/**␍
+ *␍
+ * Some description␍
+ *␍
+ * Abc␍
+ *␍
+ *␍
+ *␍
+ * Def␍
+ *␍
+ * @param {string} a␍
+ */␍
+function quux (a) {}
+@@@ findings
+@@@ case 39 (documented valid)
+
+      /**
+       * Some description
+       * @param {string} a
+       * @param {number} b
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {string} a
+       * @param {number} b
+       */
+      
+@@@ case 40 (documented valid)
+
+      /**
+       * Some description
+       * @param {string} a
+       * @param {number} b
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {string} a
+       * @param {number} b
+       */
+      
+@@@ case 41 (documented valid)
+
+      /**
+       * @param {string} a
+       *
+       * @param {string} a
+       */
+      
+@@@ findings
+4:1 Expected no lines between tags
+@@@ output
+
+      /**
+       * @param {string} a
+       * @param {string} a
+       */
+      
+@@@ case 42 (documented valid)
+
+      /**
+       * @param {string} a
+       */
+      
+@@@ findings
+@@@ case 43 (documented valid)
+
+      /** @param {number} b */
+      
+@@@ findings
+@@@ case 44 (documented valid)
+
+      /**
+       * Some description
+       * @param {string} a
+       *
+       * @param {number} b
+       *
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+5:1 Expected no lines between tags
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {string} a
+       * @param {number} b
+       */
+      
+@@@ case 45 (documented valid)
+
+      /**
+       * Some description
+       * @param {string} a
+       *
+       *
+       * @param {number} b
+       *
+       *
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+5:1 Expected no lines between tags
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {string} a
+       * @param {number} b
+       */
+      
+@@@ case 46 (documented valid)
+
+      /**
+       * Some description
+       * @param {string} a
+       * @param {number} b
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {string} a
+       * @param {number} b
+       */
+      
+@@@ case 47 (documented valid)
+
+      /**
+       * Some description
+       * @param {string} a
+       * @param {number} b
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {string} a
+       * @param {number} b
+       */
+      
+@@@ case 48 (documented valid)
+
+      /**
+       * Some description
+       * @param {string} a
+       * @param {number} b
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {string} a
+       * @param {number} b
+       */
+      
+@@@ case 49 (documented valid)
+
+      /**
+       * Some description
+       * @param {number} a
+       * @param {number} b
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {number} a
+       * @param {number} b
+       */
+      
+@@@ case 50 (documented valid)
+
+      /**
+       * Some description
+       * @param {number} a
+       *
+       * @param {number} b
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+5:1 Expected no lines between tags
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {number} a
+       * @param {number} b
+       */
+      
+@@@ case 51 (documented valid)
+
+      /**
+       * Some description
+       * @param {number} a
+       * @param {number} b
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {number} a
+       * @param {number} b
+       */
+      
+@@@ case 52 (documented valid)
+
+      /**
+       * Some description
+       * @param {string} a
+       *
+       *
+       * @param {number} b
+       *
+       *
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+5:1 Expected no lines between tags
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {string} a
+       * @param {number} b
+       */
+      
+@@@ case 53 (documented valid)
+
+      /**
+       * Some description
+       * @param {string} a
+       * @param {number} b
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {string} a
+       * @param {number} b
+       */
+      
+@@@ case 54 (documented valid)
+
+      /**
+       * Some description
+       * @param {string} a
+       *
+       * This is still part of `@param`.
+       * @returns {SomeType} An extended
+       * description.
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {string} a
+       *
+       * This is still part of `@param`.
+       * @returns {SomeType} An extended
+       * description.
+       */
+      
+@@@ case 55 (documented valid)
+
+      /**
+       * Some description
+       * @param {string} a
+       * @returns {SomeType} An extended
+       * description.
+       *
+       * This is still part of `@returns`.
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {string} a
+       * @returns {SomeType} An extended
+       * description.
+       *
+       * This is still part of `@returns`.
+       */
+      
+@@@ case 56 (documented valid)
+
+      /**
+       * Some description
+       * @param {string} a
+       *
+       * This is still part of `@param`.
+       *
+       * @returns {SomeType} An extended
+       * description.
+       *
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+5:1 Expected no lines between tags
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {string} a
+       *
+       * This is still part of `@param`.
+       * @returns {SomeType} An extended
+       * description.
+       */
+      
+@@@ case 57 (documented valid)
+
+      /**
+       * Some description
+       * @param {string} a
+       *
+       * @returns {SomeType} An extended
+       * description.
+       *
+       * This is still part of `@returns`.
+       *
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+5:1 Expected no lines between tags
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {string} a
+       * @returns {SomeType} An extended
+       * description.
+       *
+       * This is still part of `@returns`.
+       */
+      
+@@@ case 58 (documented valid)
+
+      /**
+       * Some description
+       * @param {string} a
+       * @param {string} b
+       *
+       * @returns {SomeType} An extended
+       * description.
+       *
+       * This is still part of `@returns`.
+       */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+6:1 Expected no lines between tags
+@@@ output
+
+      /**
+       * Some description
+       *
+       * @param {string} a
+       * @param {string} b
+       * @returns {SomeType} An extended
+       * description.
+       *
+       * This is still part of `@returns`.
+       */
+      
+@@@ case 59 (documented valid)
+
+        /**
+         * Some description
+         *
+         * @param {string} a
+         */
+      
+@@@ findings
+@@@ case 60 (documented valid)
+
+        /**
+         * Some description
+         * @param {string} a
+         *
+         */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+5:1 Expected no lines between tags
+@@@ output
+
+        /**
+         * Some description
+         *
+         * @param {string} a
+         */
+      
+@@@ case 61 (documented valid)
+
+        /**
+         * Some description
+         *
+         *
+         * @param {string} a
+         */
+      
+@@@ findings
+4:1 Expected only 1 line after block description
+@@@ output
+
+        /**
+         * Some description
+         *
+         * @param {string} a
+         */
+      
+@@@ case 62 (documented valid)
+
+        /**
+         * Some description
+         * @param {string} a
+         */
+      
+@@@ findings
+3:1 Expected 1 lines after block description
+@@@ output
+
+        /**
+         * Some description
+         *
+         * @param {string} a
+         */
+      
+@@@ case 63 (documented valid)
+
+      /**
+       * @param {string} input
+       */
+      function processSass (input) {
+      }
+      
+@@@ findings
+@@@ case 64 (documented valid)
+
+      /**
+       *
+       * @param {string} input
+       */
+      function processSass (input) {
+      }
+      
+@@@ findings
+@@@ case 65 (documented valid)
+
+      /**
+       * Toggles the deselect all icon button action
+       */
+      function updateIconButton () {
+      }
+      
+@@@ findings
+@@@ case 66 (documented valid)
+
+      /** A class. */
+      class _Foo {
+        /** @param arg Argument. */
+        conststructor(arg: string) {
+          console.log(arg);
+        }
+      }
+      
+@@@ findings
+@@@ case 67 (documented valid)
+
+        /**
+         *
+         * Some description
+         *
+         * Abc
+         *
+         *
+         * Def
+         * @param {string} a
+         */
+      
+@@@ findings
+9:1 Expected 1 lines after block description
+@@@ output
+
+        /**
+         *
+         * Some description
+         *
+         * Abc
+         *
+         *
+         * Def
+         *
+         * @param {string} a
+         */
+      
+@@@ case 68 (documented valid)
+
+        export interface SubOptionTypeMap {
+          /**
+           * Checkboxes have two states - true (checked) and false (unchecked)
+           *
+           */
+          checkbox: boolean
+        }
+      
+@@@ findings
+@@@ case 69 (planted in a copy of a file of the tree)
+/**
+ * Distance from a corner vertex to the tangent points of its fillet arc.
+ *
+ * Formula: s = r · tan(|τ| / 2) = r / tan(θ / 2), τ = turning angle, θ = interior angle.
+ *
+ * @kind geometry
+ * @param radius - fillet radius, >= 0
+ *
+ * @param turningAngle - signed turning angle at the vertex in radians, in ]−π, π[
+ * @returns setback along each adjacent edge, 0 for aligned vertices
+ * @see DERIV-fillet-setback
+ */
+export function filletSetback(radius: number, turningAngle: number): number {
+  return radius * Math.tan(Math.abs(turningAngle) / 2);
+}
+
+@@@ findings
+8:1 Expected no lines between tags
+@@@ output
+/**
+ * Distance from a corner vertex to the tangent points of its fillet arc.
+ *
+ * Formula: s = r · tan(|τ| / 2) = r / tan(θ / 2), τ = turning angle, θ = interior angle.
+ *
+ * @kind geometry
+ * @param radius - fillet radius, >= 0
+ * @param turningAngle - signed turning angle at the vertex in radians, in ]−π, π[
+ * @returns setback along each adjacent edge, 0 for aligned vertices
+ * @see DERIV-fillet-setback
+ */
+export function filletSetback(radius: number, turningAngle: number): number {
+  return radius * Math.tan(Math.abs(turningAngle) / 2);
+}
+
+@@@ end

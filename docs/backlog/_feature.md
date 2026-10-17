@@ -17,10 +17,10 @@ status: draft
 
 In delivery order.
 
-| ID  | Type | Title | Status |
-| --- | ---- | ----- | ------ |
+| ID | Type | Title | Status |
+| --- | --- | --- | --- |
 
 ## Feature plan
 
 | Acceptance criterion | Realized by | Verified by |
-| -------------------- | ----------- | ----------- |
+| --- | --- | --- |

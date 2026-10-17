@@ -191,7 +191,7 @@ describe("isValidRegularPolygon", () => {
       x: 0,
       y: 0,
     };
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- data read from outside may hold any value
+    // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- data read from outside may hold any value
     const isText = "yes" as unknown as boolean;
 
     expect(isValidRegularPolygon({ ...polygon, stretched: true })).toBe(true);
@@ -199,7 +199,7 @@ describe("isValidRegularPolygon", () => {
   });
 
   it("[F07.AC1] refuses an alignment other than min, mid and max", () => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- data read from outside may hold any string
+    // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- data read from outside may hold any string
     const left = "left" as Alignment;
 
     expect(

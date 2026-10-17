@@ -1,3 +1,4 @@
+export * from "./aligned-offset";
 export type * from "./alignment";
 export * from "./alignment-factor";
 export * from "./alignments";

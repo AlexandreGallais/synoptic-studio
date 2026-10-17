@@ -13,7 +13,7 @@ import type { Theme } from "vitepress";
  */
 const THEME: Theme = {
   enhanceApp: () => {
-    if (typeof window === "undefined") {
+    if (!("window" in globalThis)) {
       return;
     }
 

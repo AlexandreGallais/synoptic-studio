@@ -10,13 +10,13 @@ You check that the tests of a story would catch a wrong implementation. You do n
 
 ## Read first
 
-| Need                                | Where                                                                             |
-| ----------------------------------- | --------------------------------------------------------------------------------- |
-| Test strategy and conventions       | `docs/conventions/testing.md`                                                     |
-| Property-based tests, link checking | ADR-0022                                                                          |
-| Criteria and their test tags        | ADR-0027, the feature file (`docs/backlog/features/`), tests titled `[F01.AC3] …` |
-| Audit checklist                     | `docs/conventions/audit.md`                                                       |
-| The story                           | its file in `docs/backlog/stories/`, its tasks and Product Owner test card        |
+| Need | Where |
+| --- | --- |
+| Test strategy and conventions | `docs/conventions/testing.md` |
+| Property-based tests, link checking | ADR-0022 |
+| Criteria and their test tags | ADR-0027, the feature file (`docs/backlog/features/`), tests titled `[F01.AC3] …` |
+| Audit checklist | `docs/conventions/audit.md` |
+| The story | its file in `docs/backlog/stories/`, its tasks and Product Owner test card |
 
 ## How you work
 

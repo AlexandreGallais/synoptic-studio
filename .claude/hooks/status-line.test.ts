@@ -4,6 +4,7 @@ import {
   backgroundText,
   clockDuration,
   isTurnDone,
+  sessionSnapshot,
   shortDuration,
   statusText,
 } from "./status-line";
@@ -31,6 +32,16 @@ function line(id: string, output: number): string {
  */
 function prompt(time: string): string {
   return `{"type": "user", "timestamp": "${time}", "message": {"content": "go on"}}`;
+}
+
+/**
+ * A `tool_use` block of an `Agent` call.
+ *
+ * @param id - the call's id, also its description
+ * @returns one JSON block
+ */
+function agent(id: string): string {
+  return `{"type": "tool_use", "id": "${id}", "name": "Agent", "input": {"subagent_type": "Explore", "description": "${id}"}}`;
 }
 
 /** What the status line shows, before a test changes some of it. */
@@ -133,7 +144,7 @@ describe("status line", () => {
     const launch =
       '{"type": "assistant", "timestamp": "2026-10-13T08:01:00Z", "message": {"id": "a", "content": [{"type": "tool_use", "id": "toolu_A", "name": "Agent", "input": {}}, {"type": "tool_use", "id": "toolu_B", "name": "Bash", "input": {"run_in_background": true}}, {"type": "tool_use", "id": "toolu_C", "name": "Bash", "input": {}}]}}';
     const results =
-      '{"type": "user", "message": {"content": [{"type": "tool_result", "tool_use_id": "toolu_A"}, {"type": "tool_result", "tool_use_id": "toolu_C"}]}}';
+      '{"type": "user", "message": {"content": [{"type": "tool_result", "tool_use_id": "toolu_A", "content": [{"type": "text", "text": "Async agent launched successfully."}]}, {"type": "tool_result", "tool_use_id": "toolu_C"}]}}';
     const ended = addTokens(
       EMPTY_TALLY,
       `${prompt("2026-10-13T08:00:00Z")}\n${launch}\n${results}\n{"timestamp": "2026-10-13T08:02:00Z", "message": {"id": "z", "stop_reason": "end_turn"}}\n`,
@@ -145,7 +156,7 @@ describe("status line", () => {
     expect(isTurnDone(ended)).toBe(false);
 
     expect(statusText({ ...STATUS, tally: ended })).toContain(
-      "◌ chat free · waiting for 1 agent, 1 command",
+      "◌ chat free · 1 agent, 1 command in the background",
     );
 
     const notified = addTokens(
@@ -155,6 +166,30 @@ describe("status line", () => {
 
     expect(notified.pending).toEqual([]);
     expect(isTurnDone(notified)).toBe(true);
+  });
+
+  it("[F18.AC2] ends a subagent run in the foreground with its result, never one launched in the background", () => {
+    const launch = `{"type": "assistant", "timestamp": "2026-10-17T01:00:00Z", "message": {"id": "a", "content": [${["fg", "bg", "text", "flag"].map((id) => agent(id)).join(", ")}, {"type": "tool_use", "id": "cmd", "name": "Bash", "input": {"command": "npm run test", "run_in_background": true}}]}}`;
+    // A foreground subagent's result: `status: "completed"` (the hooks reference), never notified.
+    const completed =
+      '{"type": "user", "message": {"content": [{"tool_use_id": "fg", "type": "tool_result", "content": [{"type": "text", "text": "The report."}]}]}, "toolUseResult": {"status": "completed", "content": []}}';
+    // As the transcripts write a launch in the background (2026-10-09): text and flags.
+    const launched =
+      '{"type": "user", "message": {"content": [{"tool_use_id": "bg", "type": "tool_result", "content": [{"type": "text", "text": "Async agent launched successfully. (This tool result is internal metadata.)"}]}]}, "toolUseResult": {"isAsync": true, "status": "async_launched"}}';
+    // The launch text without `toolUseResult` (a line of 2026-10-16), and the flags without the text.
+    const textOnly =
+      '{"type": "user", "message": {"content": [{"tool_use_id": "text", "type": "tool_result", "content": [{"type": "text", "text": "Async agent launched successfully."}]}]}}';
+    const flagsOnly =
+      '{"type": "user", "message": {"content": [{"tool_use_id": "flag", "type": "tool_result", "content": "started"}]}, "toolUseResult": {"isAsync": true}}';
+    // A command in the background answers at once too: only its notification ends it.
+    const command =
+      '{"type": "user", "message": {"content": [{"tool_use_id": "cmd", "type": "tool_result", "content": "Command running in background with ID: b1"}]}}';
+    const tally = addTokens(
+      EMPTY_TALLY,
+      `${[launch, completed, launched, textOnly, flagsOnly, command].join("\n")}\n`,
+    );
+
+    expect(tally.pending.map((task) => task.id)).toEqual(["bg", "text", "flag", "cmd"]);
   });
 
   it("ends a background call answered with an error: refused before it started, it never notifies", () => {
@@ -173,6 +208,48 @@ describe("status line", () => {
     expect(addTokens(started, `${refused}\n${END}\n`).pending).toEqual([]);
   });
 
+  it("[F18.AC9] counts a subagent resumed by a message until its notification, a queued message as nothing", () => {
+    // The lines that showed "your turn" for 15 minutes while a worker ran (2026-10-15, 12:07 to
+    // 12:22 UTC): a message resumed the stopped EN-039 worker, whose end was notified under the
+    // message's call id; no Agent call started it, so the status line saw nothing running.
+    const send =
+      '{"type": "assistant", "timestamp": "2026-10-15T12:07:38Z", "message": {"id": "m", "content": [{"type": "tool_use", "id": "toolu_013f", "name": "SendMessage", "input": {"to": "a93498ccc604c403b", "summary": "EN-039 audit findings to fix", "message": "EN-039 audit findings: fix …"}}]}}';
+    const resumed = String.raw`{"type": "user", "timestamp": "2026-10-15T12:07:40Z", "message": {"content": [{"tool_use_id": "toolu_013f", "type": "tool_result", "content": [{"type": "text", "text": "{\"success\":true,\"message\":\"Resuming agent a93498c\",\"resumedAgentId\":\"a93498ccc604c403b\"}"}]}]}}`;
+    const end =
+      '{"timestamp": "2026-10-15T12:07:46Z", "message": {"id": "z", "stop_reason": "end_turn"}}';
+    const running = addTokens(
+      EMPTY_TALLY,
+      `${prompt("2026-10-15T12:07:30Z")}\n${send}\n${resumed}\n${end}\n`,
+    );
+
+    expect(running.pending).toEqual([
+      {
+        id: "toolu_013f",
+        kind: "agent",
+        label: "resumed: EN-039 audit findings to fix",
+        start: 1_792_066_058_000,
+      },
+    ]);
+
+    expect(isTurnDone(running)).toBe(false);
+
+    const notified = addTokens(
+      running,
+      '{"type": "queue-operation", "timestamp": "2026-10-15T12:22:26Z", "content": "<task-notification>\\n<task-id>a93498ccc604c403b</task-id>\\n<tool-use-id>toolu_013f</tool-use-id>\\n<status>completed</status>"}\n',
+    );
+
+    expect(notified.pending).toEqual([]);
+    expect(isTurnDone(notified)).toBe(true);
+
+    // 13:54:35 UTC the same day: a message to a subagent still running is only queued.
+    const queued = send.replaceAll("toolu_013f", "toolu_01Wc");
+    const queuedResult = String.raw`{"type": "user", "message": {"content": [{"tool_use_id": "toolu_01Wc", "type": "tool_result", "content": [{"type": "text", "text": "{\"success\":true,\"message\":\"Message queued for delivery to a6ab5a436c6a3dc67 at its next tool round.\"}"}]}]}}`;
+    const asked = addTokens(EMPTY_TALLY, `${queued}\n`);
+
+    expect(asked.pending.map((task) => task.kind)).toEqual(["message"]);
+    expect(addTokens(asked, `${queuedResult}\n`).pending).toEqual([]);
+  });
+
   it("counts a monitor and a subagent as background tasks, with what they do", () => {
     const launch =
       '{"type": "assistant", "timestamp": "2026-10-14T16:00:00Z", "message": {"id": "a", "content": [{"type": "tool_use", "id": "toolu_M", "name": "Monitor", "input": {"description": "push F10", "command": "until …"}}, {"type": "tool_use", "id": "toolu_A", "name": "Agent", "input": {"subagent_type": "auditor", "description": "Review EN-030"}}, {"type": "tool_use", "id": "toolu_B", "name": "Bash", "input": {"command": "npm run check:all", "run_in_background": true}}]}}';
@@ -186,6 +263,42 @@ describe("status line", () => {
 
     expect(backgroundText(tally)).toBe("1 agent, 2 commands");
     expect(backgroundText(EMPTY_TALLY)).toBe("");
+  });
+
+  it("[F18.AC9] shows a worker in the background and its duration, never waiting nor your turn", () => {
+    const worker = {
+      id: "w",
+      kind: "agent",
+      label: "resumed: EN-039 audit findings to fix",
+    } as const;
+    const tally = {
+      ...EMPTY_TALLY,
+      pending: [
+        { ...worker, start: 0 },
+        { id: "m", kind: "message", label: "resumed: other", start: 0 },
+      ],
+      start: 1,
+    } as const;
+    const background = backgroundLines(tally.pending, [], {
+      duration: shortDuration,
+      now: 900_000,
+    });
+    const text = statusText({ ...STATUS, background, tally });
+
+    // 900 000 ms = 15 min, the time the resumed EN-039 worker ran; a message still unanswered
+    // is neither a line nor counted.
+    expect(text.split("\n")).toEqual([
+      "\u{1B}[1mE14 › F12\u{1B}[0m",
+      expect.stringContaining("◌ chat free · 1 agent in the background"),
+      "\u{1B}[2m↳ agent resumed: EN-039 audit findings to fix — 15 min\u{1B}[0m",
+    ]);
+
+    expect(text).not.toMatch(/waiting|your turn/u);
+
+    expect(sessionSnapshot({ ...STATUS, background, tally }, 0)).toMatchObject({
+      pendingAgents: 1,
+      pendingCommands: 0,
+    });
   });
 
   it("shows each background task, a subagent with the call it makes now", () => {
@@ -278,7 +391,7 @@ describe("status line", () => {
     expect(active).toContain("5,678,901 tokens this turn (1,234 written)");
     expect(active).toContain("conversation memory 34 % full");
     expect(active.split("\n")).toHaveLength(2);
-    expect(silent).toContain("waiting");
+    expect(silent.split("\n", 1)[0]).toBe("\u{1B}[1mE01 › RET-001 retrospective e01\u{1B}[0m");
     expect(silent).toContain("◌ silent for 3 min");
 
     expect(

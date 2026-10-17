@@ -137,7 +137,8 @@ function callText(call: RunningCall): string {
 
 /**
  * One line per background task: what it is, for how long it has run, and, for a subagent, the
- * call it is making now (the latest one started by a subagent of its type).
+ * call it is making now (the latest one started by a subagent of its type); a message whose result
+ * is still to come is left out.
  *
  * @param tasks - background tasks still running
  * @param calls - calls running, of the main agent and of the subagents
@@ -151,13 +152,15 @@ export function backgroundLines(
   calls: readonly RunningCall[],
   context: { readonly duration: (milliseconds: number) => string; readonly now: number },
 ): readonly string[] {
-  return tasks.map((task) => {
-    const type = task.label.split(":", 1)[0] ?? "";
-    const current = calls
-      .filter((call) => task.kind === "agent" && call.agent === type)
-      .toSorted((left, right) => right.start - left.start)[0];
-    const now = current === undefined ? "" : ` · now ${callText(current)}`;
+  return tasks
+    .filter((task) => task.kind !== "message")
+    .map((task) => {
+      const type = task.label.split(":", 1)[0] ?? "";
+      const current = calls
+        .filter((call) => task.kind === "agent" && call.agent === type)
+        .toSorted((left, right) => right.start - left.start)[0];
+      const now = current === undefined ? "" : ` · now ${callText(current)}`;
 
-    return `↳ ${task.kind} ${task.label} — ${context.duration(context.now - task.start)}${now}`;
-  });
+      return `↳ ${task.kind} ${task.label} — ${context.duration(context.now - task.start)}${now}`;
+    });
 }

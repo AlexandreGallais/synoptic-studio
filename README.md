@@ -6,11 +6,11 @@
 
 A dependency-free TypeScript library to draw **SVG symbols** for **synoptic views** — the schematic screens that supervise industrial plants — and the editors built on it. Shapes are typed as whole numbers, every output is a `<path>`, and every function names the source it comes from.
 
-|                   |                                                                                                                                                      |
-| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Documentation** | <https://alexandregallais.github.io/synoptic-studio/> — guide, domain, decisions, conventions, API                                                   |
-| **Playground**    | <https://alexandregallais.github.io/synoptic-studio/playground/> — the library at work, as of the last release                                       |
-| **Status**        | E01 "Draw symbol shapes from numbers" done; next, E14 "Draw curves" — see the [backlog](https://alexandregallais.github.io/synoptic-studio/backlog/) |
+|  |  |
+| --- | --- |
+| **Documentation** | <https://alexandregallais.github.io/synoptic-studio/> — guide, domain, decisions, conventions, API |
+| **Playground** | <https://alexandregallais.github.io/synoptic-studio/playground/> — the library at work, as of the last release |
+| **Status** | E01 "Draw symbol shapes from numbers" done; next, E14 "Draw curves" — see the [backlog](https://alexandregallais.github.io/synoptic-studio/backlog/) |
 
 ## What it does today
 
@@ -39,7 +39,7 @@ flowchart LR
 npm install
 npm run dev        # playground on http://localhost:5173
 npm run docs:dev   # documentation site
-npm run fix        # Prettier + ESLint --fix
+npm run fix        # oxfmt (tools/format) + oxlint --fix + the project's Rust linter --fix
 npm run check:all  # every check: lint, types, tests (100 % coverage), audit, knip, docs build
 npm run build      # dist/
 ```

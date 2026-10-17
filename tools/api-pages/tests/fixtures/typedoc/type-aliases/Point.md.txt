@@ -1,0 +1,31 @@
+[editor](../index.md) / Point
+
+# Type Alias: Point
+
+> **Point** = `object`
+
+Defined in: math/vector/point.ts:6
+
+Point of the plane in SVG user units (x to the right, y downwards).
+
+Model points are integers (ADR-0003); derived geometry may hold floats.
+
+## Properties
+
+### x
+
+> `readonly` **x**: `number`
+
+Defined in: math/vector/point.ts:8
+
+Abscissa, growing to the right.
+
+***
+
+### y
+
+> `readonly` **y**: `number`
+
+Defined in: math/vector/point.ts:10
+
+Ordinate, growing downwards (SVG frame).

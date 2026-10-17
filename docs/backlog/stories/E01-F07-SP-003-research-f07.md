@@ -26,13 +26,13 @@ Find, read and record the sources of every story of F07 before its implementatio
 
 ## Inventory
 
-| Story   | Needs                                                                       |
-| ------- | --------------------------------------------------------------------------- |
-| EN-009  | placement per alignment, anchored edges; `DERIV-regular-polygon-fit` step 5 |
-| US-009  | names of the settings; default; validity; F02 unchanged at center           |
-| US-010  | 3 × 3 picker behavior, keyboard; functional reference                       |
-| AUD-003 | the sources above, re-verified                                              |
-| VAL-003 | the check table of `DERIV-regular-polygon-fit`, anchored rows               |
+| Story | Needs |
+| --- | --- |
+| EN-009 | placement per alignment, anchored edges; `DERIV-regular-polygon-fit` step 5 |
+| US-009 | names of the settings; default; validity; F02 unchanged at center |
+| US-010 | 3 × 3 picker behavior, keyboard; functional reference |
+| AUD-003 | the sources above, re-verified |
+| VAL-003 | the check table of `DERIV-regular-polygon-fit`, anchored rows |
 
 ## Tasks
 

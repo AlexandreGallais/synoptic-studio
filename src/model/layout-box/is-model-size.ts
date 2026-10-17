@@ -1,3 +1,5 @@
+import { isInIntegerRange } from "../../math";
+
 /**
  * Whether a size or a radius can enter the model: an integer ≥ 0 (ADR-0003, Q15).
  *
@@ -10,5 +12,5 @@
  * @see docs/domain/shapes.md#_3-creation-tools
  */
 export function isModelSize(value: number): boolean {
-  return Number.isSafeInteger(value) && value >= 0;
+  return isInIntegerRange(value, 0, Number.MAX_SAFE_INTEGER);
 }

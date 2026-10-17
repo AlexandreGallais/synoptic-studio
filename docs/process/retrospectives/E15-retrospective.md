@@ -1,0 +1,202 @@
+# E15 — Retrospective
+
+**Dates**: 2026-10-14 to 2026-10-16. **Story**: RET-003. **Participants**: Product Owner, Claude Code.
+
+E15 placed text in symbols: five features in three days (text and its characters, a box of text, colors, fonts from files, and the corrections of the epic's validation). It was also the trial of the main thread kept free (ADR-0051). The trial kept the chat free, but four subagents running checks at once froze the computer, and parallel branches conflicted on shared files. The retrospective keeps the free main thread and makes the tools enforce its limits:
+
+- at most three subagents at once and one heavy command at a time, refused or queued by the tools themselves (ADR-0063);
+- one audit per feature instead of three reviewers per story, from E02 (ADR-0064);
+- shared files that no longer conflict when parallel branches merge (ADR-0065);
+- a register of every place the code departs from a rule (ADR-0066);
+- a new epic before E02, E17, to make the checks and the agent's tools fast with Oxc and Rust.
+
+## 1. Facts
+
+| Measure | E14 (RET-002) | E15 |
+| --- | --- | --- |
+| Days | 2 | 3 (2026-10-14 evening to 2026-10-16) |
+| Features | 4 | 5 (F05, F14, F16, F15, F17) |
+| Stories | 41 | 67: 30 US, 14 EN, 5 SP, 5 CHK, 5 AUD, 5 VAL, NAM-001, REV-003, RET-003 |
+| Commits on `develop` since the epic's first day | 173 | 336 |
+| ADRs | 9 (0043–0051) | 11 (0052–0062) |
+| Library modules | 228 | 517: `model` 224, `geometry` 106, `math` 96, `io` 85, `render` 6 |
+| Playground | — | 300 source files, 55 test files |
+| Tests | 1 211 | 3 265 in 477 files; 100 % of `src/` |
+| Full test run alone | about 25 s | 93 s with coverage |
+| `check:all` | 54–57 s | 217 s failed under load, then 170 s passed |
+| Active time by feature | ≈ 12 h 40 | F17 7 h 45, F05 7 h 00, F15 6 h 49, F14 5 h 38, F16 5 h 26 (≈ 32 h 40) |
+| Tokens by feature (cache included) | ≈ 724 M | F05 444 M, F17 345 M, F15 304 M, F16 237 M, F14 236 M (≈ 1 566 M) |
+| Tokens per story | ≈ 18 M | ≈ 24 M (+33 %) |
+| Main-thread turns | 19, median 21.4 min, longest 252 min | 37, median 12.7 min, longest 146 min; 12 over 30 min |
+| Subagents started | a few reviews | 138; at most 4 at once (2026-10-16, the freeze) |
+| Failed calls | 40 of 3 905 (1.0 %) | 675 of 13 127 (5.1 %); 1.0 % without 549 refusals by the worktree isolation |
+| CI | no failure | 0 of 3 CI runs failed; 1 of 126 story auto-merges refused (a branch named outside the pattern) |
+
+Per-feature figures come from `npm run metrics`, which covers the whole project; turns and failed calls are filtered from 2026-10-14 19:00 UTC.
+
+What the metrics say:
+
+- **The model writing is the cost.** `python3` edit scripts 2 172 calls and 590 min (median 7.2 s), `Write` 1 463 calls in E15 alone. The model's share of each recent main-thread turn is 93 to 100 %: shorter prompts and reports would shorten turns more than faster checks.
+- **Pushes are the heavy load.** `git push` 162 × 48 s (149 min), `npm run fix` 195 × 25 s, `git add` with its hooks 337 × 5.4 s. One `check:all` alone saturates the machine (load average 93 at its end).
+- **Waiting loops came back** with parallel branches: `until` 70 calls (61 min), `sleep` 51 (17 min).
+- **Padding costs tokens and conflicts.** Prettier pads Markdown tables: `improvements.md` is 138 KB for 34 KB of text, and the stories index was rewritten whole 18 times in E15.
+- **Sources.** 897 pages consulted, 77 % from the library; OpenType OS/2 (38 times) and CSS Fonts 4 (27) were read again at each font story.
+
+### Full check of the epic
+
+`npm run epic:check -- E15 2026-10-14`, run 2026-10-16 (220 s):
+
+| Check | Result | Detail |
+| --- | --- | --- |
+| check:all (code, site, playground, dependencies) | to look at | failed in 216.8 s: test |
+| branches left | ok | only `main`, `develop` and the retrospective's |
+| pull requests open | ok | #259, the release of E15 |
+| issues open | ok | 0 |
+| code scanning alerts open | ok | none |
+| calls failed during the epic (2 % at most) | to look at | 675 of 13 127; 549 refusals by the worktree isolation |
+| calls left running over an hour | to look at | four call records |
+| backlog of E15 | ok | every feature and story done |
+| private records | ok | nothing unsaved |
+| golden file of refactors | ok | present |
+
+The three lines to look at:
+
+| Line | Cause | Fix |
+| --- | --- | --- |
+| `check:all` failed on the test lane | load: the suite alone passed (3 264 tests, 93 s), and a second `check:all` passed in 170 s; two timing tests are near their limits (`font-list-written.test.ts` 7.9 s of 10 s, `[F15.AC4]` 157 ms of 100 ms under load) | EN-054 (margins, F15.AC4 reworded), EN-055 (`epic:check` prints the failing tests), EN-047 (one heavy command at a time) |
+| 675 failed calls | 549 are Claude Code refusing a compound command in a worktree (`cd … && git …`); without them 1.0 % | the worker brief (run skill) and EN-052 (a guard that answers at once with the right form); EN-055 counts the refusals apart |
+| four calls left running | the session force-quit after the freeze on 2026-10-16; their end never came | the four records deleted; EN-055 reports such calls as lost at a force-quit |
+
+## 2. Logged items, decided
+
+Every row of the improvement log (I1–I79, in the file's order on 2026-10-16) and of the feedback log (F1–F9), decided by the Product Owner on 2026-10-16.
+
+| Theme | Items | Decision | Where it went |
+| --- | --- | --- | --- |
+| Load | F6, I79: four subagents running checks froze the computer | a check, not a sentence: at most 3 subagents at once (a trial; 2 heavy + 1 light if the computer still lags), refused beyond with the names of those running; one heavy command at a time through a lock in `.git` with its owner's process id, taken over after a force-quit | ADR-0063, EN-047 |
+| IDE | WebStorm at 256 % of the CPU indexing the worktrees | `.claude/worktrees/`, `coverage/`, `dist/` and `docs/api/` excluded from its indexing; WebStorm has no switch for indexing by hand only: Power Save Mode pauses it | `.idea/SVG editor.iml`, RET-003.T1 |
+| Merges | F7, I73, I79, I58 (1), I2: parallel branches conflicted on shared files | (a) Markdown tables without padding, (b) append-only logs merged by union with a uniqueness test, (c) the stories index generated, (d) shared files written only by the main thread at merge, refused on a story branch, (e) one merge at a time; not `git rerere` | ADR-0065, EN-048 to EN-051 |
+| Worktrees | worktrees named `agent-a13cbef…` | `npm run worktree:new -- <ID>` names each one after its story | EN-052 |
+| Tools | I76, I55, I15: `story:finish` fails from a worktree; a branch deleted while its pull request was open | `story:finish` works from a worktree and deletes a branch only once its pull request is merged; `branches:clean` after each merge stays | EN-051 |
+| Tests | I74, I75, I47: timing tests failing under load | `[F15.AC4]` reworded to 1 000 texts measured in under 0.4 s; `font-list-written.test.ts` made faster | EN-054 |
+| Habits | F8: a behaviour explained without its situation | each behaviour explained by the situation it covers, in names or numbers | habits sheet |
+| Checks | I60, I58 (2, 3, 5), I28, I12, I61 (c): three reviewers per story | from E02: no independent review per story (the worker breaks each of its tests once), a thorough audit per feature, a full audit per epic beside the naming pass with the merge audit of parallel branches; edge cases written into the stories | ADR-0064 |
+| Runs | ADR-0051, I51, I52, I53, F4 | ADR-0051 kept and amended: the agent limit, the audit per feature, the worker brief versioned in the run skill, a heartbeat line at each worker's start and end with an estimate, the status line seeing background subagents | ADR-0063, EN-053, run skill |
+| Worktrees | I13, I14, I35, I56; 549 refusals | the worker brief names the commands that fit a worktree; a guard answers at once; `golden:write` refuses in a worktree; one scratch folder per agent; the lint, format and knip checks of the main checkout ignore worktrees | run skill, EN-052, EN-045 |
+| Metrics | I50, I59, F3: the session report showed one turn | cause found: `session-report.ts` counts the current turn without `--all`; the report only at a session's end, with `--all` | `CLAUDE.md`, EN-053 |
+| Status line | I52, I53: "waiting" or "return" while a worker ran | cause to find in the call records, then each background subagent shown with its duration | EN-053 |
+| Rust | I54: tools in Rust | now, not later: the agent's tooling moves to Oxc and Rust, in a new epic before E02, opened by a spike | E17 |
+| Checks | I34: a 10⁻¹⁴ drift seen only by hand | `golden:check` in the pre-push when a golden file exists; `epic:check` prints failing tests and counts worktree refusals apart; `metrics -- --since <day>` | EN-055 |
+| Speed | `check:all` from 57 s to 217 s | E17's goal: `check:all` far faster, measured by its spike | E17 |
+| Tools | I25, I40, I48: mutations scripted in copies | `npm run mutate -- <files>`; Stryker still blocked (issue 6210 open) | EN-058 |
+| Tools | I65: `val:prepare` writes guided steps no longer used | it writes the checklist lines instead | EN-056 |
+| Later | I1, I7: watchdog, backlog MCP server | not now: no feature needs the watchdog yet; the generated index and unpadded tables cut the backlog's reading cost first | improvement log |
+| Tokens | I61 (a, b, d), I9 | the model chosen per task (lighter for logs, backlog, merges, step texts; the strongest for math, audits, research), measured during E02; a lighter context per agent, planned in E02 | E02 epic |
+| Playground | I63, I64 | trial in E02: the playground's specification written during the session, its code updated once before the validation; heavy checks at the end of a session; which checks move is specified first | E02 epic |
+| Refinement | I58 (4, 5) | the Product Owner describes more at the refinement; the agent writes the edge cases into the story | habits sheet |
+| Later | I62, I3, I4 | not now: for the end of the project or the next one | improvement log |
+| Messages | I10: messages with a colour code | markers at the start of chat messages, never in repository files | `CLAUDE.md` |
+| Release | I11 | release-please's release pull request on `develop`, only the release on `main`, before #259 is merged | EN-046 |
+| Git | I16: a force push through a ruleset bypass | no force push on a feature branch, even with lease: the story is rebased instead | `.claude/rules/tooling.md` |
+| Git | I57: a side branch refused by the auto-merge | a side branch carries its story's id (`docs/val-018-…`) | `.claude/rules/tooling.md` |
+| CI | I32: link check | closed: it runs on Mondays; two external links are added to `.lycheeignore` if they still fail on 2026-10-19 | — |
+| Validation | I72, F5, I66 | at most 12 checklist lines per feature, counted by a test; one line per thing to see, each tried in a browser before the validation; the panel to the right of the drawing | EN-056, habits sheet |
+| Habits | F1, F2, F9 | offer only what the editor measures and whose use is clear; test the way back, the automatic path, a real computer's fonts, a turned text against a turned shape | habits sheet |
+| Docs | I43, I49 | the done commit of a story that changes a rule checks the Q row, the validation's decisions to confirm and the guide page | EN-059 |
+| Docs | I24, I31, I39, I45 | a documentation pass on E15's long pages | EN-060 |
+| Code | I27, I26 | a feature's folders planned at its spike; modules per folder counted by a test; no spread in a fold over tokens | EN-061 |
+| Code | I67: a 192 MB collection ends Node | an exception for a byte buffer written once, in one function, and a register of every place the code departs from a rule, kept in step by a check | ADR-0066, EN-057 |
+| Fonts | I77, I78: left by US-060 | the font list held while the default font is read again; a face refused at the second read is no longer measured | US-061 |
+| Tests | I21 | Inter Regular as a test font file, so that the CI reads a real font | EN-062 |
+| Later | I17 | not now: `size-limit` before the first npm publication | improvement log |
+| Later | I22 | not now: GPOS beyond the common case at the spike of a feature reading such fonts | improvement log |
+| Closed | I37 | the halves shown down confirmed at E15's validation | — |
+| Closed | I30, I46, I19, I20 | settled: balanced wrap and HTML layer removed (ADR-0060), VAL-014's measures made, fallback settled (ADR-0055) | — |
+| Closed | I18, I23, I29, I33, I36, I38, I42, I44, I68, I69, I70, I71 | treated by NAM-001; those left are written there with their reason | NAM-001 |
+| Later | I5, I6, I8 | not now: with the features that need them | improvement log |
+| Closed | I41 | done: `tests/fitness.test.ts` | — |
+
+## 3. What helped, what hurt
+
+| Side | Helped | Hurt |
+| --- | --- | --- |
+| Product Owner | the chat free during runs (ADR-0051 kept); the editor's text, colors and fonts; one checklist page per epic | a frozen computer and a forced quit; 22 minutes without a sign of work; merge conflicts left open; a checklist of about 50 lines with its panel over the drawing; a session report that showed one turn |
+| Agent | workers in worktrees; one audit per feature in F17; the tools of RET-002 (`replace`, `backlog:status`); the library of sources | three reviewers per story (the largest token line after the workers); 549 refused commands; shared indexes rewritten whole; `story:finish` failing from a worktree; no tool enforcing the load limit |
+
+## 4. The agent's own review
+
+| Mistake | Times in E15 | What now prevents it |
+| --- | --- | --- |
+| Compound shell commands refused in a worktree | 549 | worker brief; EN-052's guard |
+| A branch deleted while its pull request was open | 2 | EN-051: deleted only once merged |
+| Clean-up by hand after `story:finish` failed in a worktree | 4 | EN-051 |
+| Too many heavy subagents at once | 1, a freeze and a forced quit | ADR-0063, EN-047 |
+| A worker overwriting a shared file outside its worktree | 2 | EN-052: `golden:write` refuses in a worktree; one scratch folder per agent |
+| A reviewer switching branches in the main checkout | 1 | ADR-0064: no per-story reviewers; worker brief |
+| Shared files edited in parallel branches | every parallel merge of 2026-10-16 | ADR-0065, EN-048 to EN-051 |
+| A behaviour explained without an example | 1 | habits sheet |
+| A feature fixed for chosen inputs only | 1 (the automatic font not embeddable) | habits sheet |
+| Checklist lines written, not tried | VAL-018 | EN-056, habits sheet |
+| Docs and guide pages stale after correction stories | 16 remnants | EN-059 |
+
+Rules bent: "one worker per feature branch" (ADR-0051) on 2026-10-16, when three workers ran at once and caused the freeze and the conflicts; "no two agents on the same files" had no check. The session report rule gave wrong figures without anyone breaking it.
+
+Context lost: the forced quit of 2026-10-16 lost the running session; work resumed from the commits and scratch files.
+
+The feedback log's nine rows are written as habits in [Working with the agent](../../playbook/agent.md#lessons-from-the-product-owner):
+
+| Row | What happened | Habit |
+| --- | --- | --- |
+| F1 | before the validations: a font typed by name, the bold button not giving back a thin weight, a turned text moving | test the way back and the turned case |
+| F2 | at E15's validation: options that make text harder to understand, fonts refused | offer only what the editor measures and whose use is clear |
+| F3 | the session report restarted at each message | report the whole session, at its end |
+| F4 | 22 minutes of silence while a worker and an audit ran | a line at each worker's start and end, with an estimate |
+| F5 | the checklist too long, its panel over the drawing | at most 12 lines per feature, each tried, the panel beside the drawing |
+| F6 | four subagents at once froze the computer | the limit enforced by the tools |
+| F7 | branches touching the same files, conflicts left open | shared files written at merge, one merge at a time |
+| F8 | a behaviour described without its situation | explain with the situation, in names or numbers |
+| F9 | the automatic font could not be embedded | test the automatic path as well as the chosen one |
+
+## 5. Evolvability review
+
+| Question | Answer | Decision |
+| --- | --- | --- |
+| 1. Size | 517 library modules (× 2.3); six folders at the 15-module signal of ADR-0043; `check:all` 217 s; `inter-metrics.json` 1.6 MB | E17 for the checks; EN-061 counts modules per folder; `size-limit` before publication |
+| 2. Tools for later | `size-limit`: not published yet. `@microsoft/api-extractor`: the public API changes in E02. Stryker: issue 6210 still open on 2026-10-16 | keep the three; the scripted mutations become `npm run mutate` (EN-058) |
+| 2b. Overrides | `deepmerge-ts ^8.0.0` still needed (`eslint-plugin-functional` 10.0.1 asks `^7.1.5`); `katex ^0.19.0` still needed (`micromark-extension-math` 3.1.0 asks `^0.16.0`) | keep both |
+| 3. Fitness functions | added: ADR-0053's SVG elements (`tests/fitness.test.ts`); still only written: the golden check, modules per folder, the load limit, the guide pages | EN-055, EN-061, EN-047, EN-059 |
+| 4. Patterns | NAM-001 merged the duplicates; the functional lint had no place for a byte buffer written once; E15's guided steps unused | ADR-0066, EN-057; EN-056 |
+| 5. Agent configuration | `AGENTS.md` + `CLAUDE.md` 147 lines (limit 200); the run skill described three reviewers per story; the worker brief lived in scratch files | the brief versioned in `.claude/skills/run/`; a check for each repeated mistake |
+| 6. Process | 5 VALs and 5 AUDs; F17 a whole feature of corrections after the validation; Markdown backlog still fit, its padding costly | ADR-0064; trials of E02 (playground specification, heavy checks at a session's end) |
+
+## 6. Changes adopted
+
+- [ADR-0063](../../adr/0063-runs-with-a-limited-number-of-agents.md): ADR-0051 amended — at most 3 subagents (a trial), one heavy command at a time, the audit per feature, the worker brief in the run skill, a heartbeat.
+- [ADR-0064](../../adr/0064-checks-by-level.md): checks by level from E02.
+- [ADR-0065](../../adr/0065-parallel-branches-merged-without-conflicts.md): shared files that merge without conflicts.
+- [ADR-0066](../../adr/0066-a-register-of-exceptions.md): the register of exceptions, the byte buffer written once.
+- [E17](../../backlog/epics/E17-fast-tooling-with-oxc-and-rust.md), before E02: fast tooling with Oxc and Rust; its feature F18 holds the stories of this retrospective, EN-046 (release-please) first.
+- Rules: the session report at a session's end with `--all`; the chat markers; no force push on a feature branch; side branches named after their story; the agent limit pointing to its check.
+
+## 7. Playbook updates
+
+- Eight habits added to [Working with the agent](../../playbook/agent.md#lessons-from-the-product-owner).
+- The starter kit (`docs/playbook/setup.md`): worktrees ignored, the heavy-command lock, unpadded tables, generated indexes.
+- [The agent's tools](../../tooling/agent-tools.md): the tools E15 asked for, and what Rust and Oxc are worth.
+
+## 8. Best practices read for agent-built projects
+
+Read on 2026-10-16, through the local library unless marked.
+
+| Source | What it says that we use |
+| --- | --- |
+| Claude Code docs, [Create custom subagents](https://code.claude.com/docs/en/sub-agents) | a concurrent subagent limit set by `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`, refused with an error that says not to retry: the limit can be enforced by the harness |
+| Claude Code docs, [Hooks reference](https://code.claude.com/docs/en/hooks) | a `PreToolUse` hook can deny a tool call with a reason; `SubagentStart` cannot block: the agent limit lives in a `PreToolUse` hook on `Agent` |
+| Claude Code docs, [Run parallel sessions with worktrees](https://code.claude.com/docs/en/worktrees) | worktrees under `.claude/worktrees/<name>/`, to add to `.gitignore`; they share `.git`; a worktree subagent does not load `.claude/rules/`: the worker brief names them |
+| Anthropic engineering, [Building a C compiler with a team of parallel Claudes](https://www.anthropic.com/engineering/building-c-compiler) | the harness, not the prompt, prevents collisions (a lock file per task); split the work so that agents touch different files |
+| Git, [gitattributes](https://git-scm.com/docs/gitattributes) | the `union` merge driver keeps both sides' lines, in an order to verify: only for append-only logs, with a uniqueness test |
+| Git, [git-rerere](https://git-scm.com/docs/git-rerere) | replays a resolution recorded by hand: low gain here, not adopted |
+| Changesets and Towncrier | one file per change, the summary generated at release: the stories index generated from the story files |
+| Martin Fowler, [Eradicating Non-Determinism in Tests](https://martinfowler.com/articles/nonDeterminism.html) | quarantine a flaky test and fix it quickly; wrap the clock: timing tests with a margin, or counts instead of milliseconds |
+| Vitest, [maxWorkers](https://vitest.dev/config/maxworkers) | all cores by default: half the cores when several worktrees may test at once |
+| macOS `lockf(1)` (local manual) | a command run while holding a file lock: a lock for heavy commands without a dependency |

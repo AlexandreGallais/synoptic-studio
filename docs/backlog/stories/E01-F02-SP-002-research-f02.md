@@ -28,14 +28,14 @@ Find, read and record the sources of every story of F02 before its implementatio
 
 ## Inventory
 
-| Story   | Needs                                                                                                                      |
-| ------- | -------------------------------------------------------------------------------------------------------------------------- |
-| EN-008  | vertices of a regular polygon on the unit circle; flat base; screen frame; clockwise order; starting vertex (Q11, Q18)     |
-| US-005  | unit bounding box; uniform scale; centering; refused values, largest number of corners (Q19); derived, fractional vertices |
-| US-006  | F01 clamp on fractional vertices; effective radius of a polygon; maximal radius = inscribed circle (inradius, apothem)     |
-| US-007  | playground behavior only: no formula; Inkscape's tool as functional reference (`REF-INKSCAPE-POLYGON`)                     |
-| AUD-002 | the sources above, re-verified                                                                                             |
-| VAL-002 | the check table of `DERIV-regular-polygon-fit`                                                                             |
+| Story | Needs |
+| --- | --- |
+| EN-008 | vertices of a regular polygon on the unit circle; flat base; screen frame; clockwise order; starting vertex (Q11, Q18) |
+| US-005 | unit bounding box; uniform scale; centering; refused values, largest number of corners (Q19); derived, fractional vertices |
+| US-006 | F01 clamp on fractional vertices; effective radius of a polygon; maximal radius = inscribed circle (inradius, apothem) |
+| US-007 | playground behavior only: no formula; Inkscape's tool as functional reference (`REF-INKSCAPE-POLYGON`) |
+| AUD-002 | the sources above, re-verified |
+| VAL-002 | the check table of `DERIV-regular-polygon-fit` |
 
 ## Tasks
 

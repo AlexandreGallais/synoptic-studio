@@ -30,13 +30,13 @@ To refine again in E14:
 
 The Product Owner's decisions above stand; they asked for no further questions (2026-10-14). What they leave open is decided by the agent from them, and shown at VAL-012:
 
-| Question                   | Decision                                                                                                                                                                                                                                          |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| How the ellipse is drawn   | four cubic sides through its top, right, bottom and left points, handles 4(√2 − 1)/3 of the half axis: the curve its conversion to points with handles gives (the Product Owner wants those points, as in Figma); researched in SP-013 (ADR-0048) |
-| Its fields                 | width, height, angle and position, as E01 decided; no radius, no anchor, no point to edit                                                                                                                                                         |
-| Point 1                    | the top point, then clockwise: right, bottom, left — the curve has no top-left corner (Q11)                                                                                                                                                       |
-| The conversion             | **Convert to free shape**: its 4 points on the curve with their handles, unmoved; a second one, **Convert to rounded rectangle** (the 4 corners of its box, as E01 built it), was removed at VAL-012: destructive for an ellipse                  |
-| A box of width or height 0 | drawn as the line it is, as a rectangle; not converted, as a polygon (F08)                                                                                                                                                                        |
+| Question | Decision |
+| --- | --- |
+| How the ellipse is drawn | four cubic sides through its top, right, bottom and left points, handles 4(√2 − 1)/3 of the half axis: the curve its conversion to points with handles gives (the Product Owner wants those points, as in Figma); researched in SP-013 (ADR-0048) |
+| Its fields | width, height, angle and position, as E01 decided; no radius, no anchor, no point to edit |
+| Point 1 | the top point, then clockwise: right, bottom, left — the curve has no top-left corner (Q11) |
+| The conversion | **Convert to free shape**: its 4 points on the curve with their handles, unmoved; a second one, **Convert to rounded rectangle** (the 4 corners of its box, as E01 built it), was removed at VAL-012: destructive for an ellipse |
+| A box of width or height 0 | drawn as the line it is, as a rectangle; not converted, as a polygon (F08) |
 
 ## Acceptance criteria
 
@@ -49,25 +49,25 @@ The Product Owner's decisions above stand; they asked for no further questions (
 
 ## Stories
 
-| ID                                                         | Type       | Title                                                   | Status |
-| ---------------------------------------------------------- | ---------- | ------------------------------------------------------- | ------ |
-| [SP-013](../stories/E14-F10-SP-013-research-f10.md)        | Spike      | Research for F10: an ellipse from four cubic sides      | done   |
-| [EN-027](../stories/E14-F10-EN-027-round-shape-model.md)   | Enabler    | The round shape in the model, its curve and conversions | done   |
-| [US-029](../stories/E14-F10-US-029-round-tool.md)          | User story | Draw a circle or an ellipse with the Round tool         | done   |
-| [CHK-012](../stories/E14-F10-CHK-012-checkpoint-f10.md)    | Checkpoint | Checkpoint in the middle of F10                         | done   |
-| [US-030](../stories/E14-F10-US-030-convert-round-shape.md) | User story | Convert a round shape to a free shape, two ways         | done   |
-| [AUD-013](../stories/E14-F10-AUD-013-audit-f10.md)         | Audit      | Audit F10                                               | done   |
-| [VAL-012](../stories/E14-F10-VAL-012-validate-f10.md)      | Validation | Validate F10                                            | done   |
+| ID | Type | Title | Status |
+| --- | --- | --- | --- |
+| [SP-013](../stories/E14-F10-SP-013-research-f10.md) | Spike | Research for F10: an ellipse from four cubic sides | done |
+| [EN-027](../stories/E14-F10-EN-027-round-shape-model.md) | Enabler | The round shape in the model, its curve and conversions | done |
+| [US-029](../stories/E14-F10-US-029-round-tool.md) | User story | Draw a circle or an ellipse with the Round tool | done |
+| [CHK-012](../stories/E14-F10-CHK-012-checkpoint-f10.md) | Checkpoint | Checkpoint in the middle of F10 | done |
+| [US-030](../stories/E14-F10-US-030-convert-round-shape.md) | User story | Convert a round shape to a free shape, two ways | done |
+| [AUD-013](../stories/E14-F10-AUD-013-audit-f10.md) | Audit | Audit F10 | done |
+| [VAL-012](../stories/E14-F10-VAL-012-validate-f10.md) | Validation | Validate F10 | done |
 
 Set ready by the run (ADR-0045).
 
 ## Feature plan
 
-| Acceptance criterion | Realized by    | Verified by         |
-| -------------------- | -------------- | ------------------- |
-| F10.AC1              | EN-027, US-029 | AUD-013             |
-| F10.AC2              | US-029         | AUD-013             |
-| F10.AC3              | SP-013, EN-027 | AUD-013             |
-| F10.AC4              | EN-027, US-030 | AUD-013             |
-| F10.AC5              | EN-027, US-030 | AUD-013             |
-| F10.AC6              | every story    | `npm run check:all` |
+| Acceptance criterion | Realized by | Verified by |
+| --- | --- | --- |
+| F10.AC1 | EN-027, US-029 | AUD-013 |
+| F10.AC2 | US-029 | AUD-013 |
+| F10.AC3 | SP-013, EN-027 | AUD-013 |
+| F10.AC4 | EN-027, US-030 | AUD-013 |
+| F10.AC5 | EN-027, US-030 | AUD-013 |
+| F10.AC6 | every story | `npm run check:all` |

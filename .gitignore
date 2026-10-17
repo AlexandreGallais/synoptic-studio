@@ -1,7 +1,6 @@
 node_modules
 dist
 coverage
-.eslintcache
 *.tsbuildinfo
 .DS_Store
 .idea/workspace.xml
@@ -11,5 +10,11 @@ docs/.vitepress/cache
 docs/.vitepress/dist
 test-report.xml
 
+# Worktrees of agents and parallel sessions (RET-003)
+/.claude/worktrees/
+
 # Private records, their own Git repository (ADR-0044)
 /records/
+
+# Build output of the Rust tools, one folder for the workspace (EN-068)
+/target/
