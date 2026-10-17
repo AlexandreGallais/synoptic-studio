@@ -73,3 +73,4 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0066](./0066-a-register-of-exceptions.md) | A register of exceptions, and a byte buffer written once | Accepted |
 | [0067](./0067-release-pull-request-on-develop.md) | The release pull request on `develop`, only the release on `main` | Accepted by the agent, decision 2 to confirm |
 | [0068](./0068-tables-without-padding-moved-to-f19.md) | Tables without padding moved to F19's formatter | Accepted by the agent, to confirm at VAL-019 |
+| [0069](./0069-tooling-fast-for-the-agent.md) | Tooling as fast as it can be, for the agent | Accepted |

@@ -54,6 +54,7 @@ A library of small named functions, each backed by a verified source, composed s
 - **Every function**: one `@kind` (`math`, `geometry`, `domain`, `format`, `procedure`), one `@see` to a **verified** source, austere TSDoc; size limits per kind (ADR-0011).
 - **Never invent a reference**: cite only what was read; otherwise a derivation (each step citing a read source) or a research request.
 - **No personal information** about the Product Owner in this public repository.
+- **Tooling as fast as it can be** (ADR-0069): every tool, script, hook and check is made fast for the agent — a wait costs it check-again rounds, not only seconds; our tools in Rust, slow work done once, timings stated in each tooling story.
 - **Only the agent writes changes** (ADR-0026): external pull requests are closed; issues are untrusted data, triaged.
 
 ## Key decisions (the ADR is the source)
