@@ -241,6 +241,7 @@
 | [EN-087](./E17-F20-EN-087-progress-page-as-an-artifact.md) | F20 | A progress page as a claude.ai Artifact, updated during a run | draft |
 | [EN-088](./E17-F20-EN-088-subagent-stop-hook-in-rust.md) | F20 | A SubagentStop hook in Rust that checks a worker's branch | draft |
 | [EN-092](./E17-F20-EN-092-run-totals-and-stop-report.md) | F20 | The totals of a whole run, and a report when it stops | draft |
+| [EN-096](./E17-F20-EN-096-docs-written-as-principles.md) | F20 | The agent-facing docs written as principles, not as records of a conversation | draft |
 | [CHK-021](./E17-F20-CHK-021-checkpoint-f20.md) | F20 | Checkpoint in the middle of F20 | draft |
 | [AUD-022](./E17-F20-AUD-022-audit-f20.md) | F20 | Audit F20 | draft |
 | [VAL-021](./E17-F20-VAL-021-validate-f20.md) | F20 | Validate F20 | draft |
