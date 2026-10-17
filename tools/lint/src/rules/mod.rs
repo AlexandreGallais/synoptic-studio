@@ -22,6 +22,7 @@ pub mod require_atomic_updates;
 pub mod require_kind;
 pub mod see_references;
 pub mod type_declaration_immutability;
+pub mod unicorn;
 
 use oxc_semantic::AstNode;
 
@@ -74,10 +75,11 @@ pub const ALL: &[&dyn Rule] = &[
     &type_declaration_immutability::TypeDeclarationImmutability,
 ];
 
-/// The rules of a list of names, in the registry's order.
+/// The rules of a list of names, in the registry's order, then Unicorn's.
 #[must_use]
 pub fn named(names: &[&str]) -> Vec<&'static dyn Rule> {
     ALL.iter()
+        .chain(unicorn::RULES)
         .copied()
         .filter(|rule| names.contains(&rule.name()))
         .collect()

@@ -124,7 +124,7 @@ fn lint_path(project: &Project, path: &str, allocator: &Allocator) -> Vec<Findin
     if markdown::is_page(path) {
         return markdown::lint_path(project, path);
     }
-    let rules = rules::named(&scopes::rules_for(path));
+    let rules = rules::named(&scopes::linted_by(path));
     if rules.is_empty() {
         return Vec::new();
     }
