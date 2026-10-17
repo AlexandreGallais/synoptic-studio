@@ -126,6 +126,7 @@ const EVENTS: [&str; 82] = [
 const EVENT_TARGETS: Targets = Targets {
     names: &EVENTS,
     non_targets: &[],
+    constructors: &[],
     imports: &[("react", &REACT_EVENTS)],
     allow_nullish_in_mixed_union: false,
     mixed_union: Class::Unknown,

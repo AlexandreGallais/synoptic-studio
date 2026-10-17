@@ -60,22 +60,6 @@ pub fn plain_method_call<'b, 'a>(
     })
 }
 
-/// Whether an expression is the global name `document`, or `window.document` or
-/// `globalThis.document`.
-#[must_use]
-pub fn is_document(source: &Source, expression: &Expression) -> bool {
-    match expression {
-        Expression::Identifier(name) => name.name == "document",
-        Expression::StaticMemberExpression(member) => {
-            member.property.name == "document"
-                && matches!(&member.object, Expression::Identifier(object)
-                    if matches!(object.name.as_str(), "window" | "globalThis")
-                        && symbol_of(source, object).is_none())
-        }
-        _ => false,
-    }
-}
-
 /// The name of a member written statically: `a.name`, `a['name']` or ``a[`name`]``, or a
 /// number (`getStaticPropertyName`).
 #[must_use]
