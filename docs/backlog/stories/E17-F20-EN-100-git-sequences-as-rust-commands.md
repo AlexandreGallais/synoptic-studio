@@ -31,7 +31,3 @@ One task = one commit, referenced as `EN-100.Tn`.
 - **Still open, T2's comparison**: the Git calls per story counted from the hook log after the next run, against F19's.
 - **Use recorded**: each call is a Bash call in the hook log (`npm run git:sync`, `npm run git:commit`) until F21's log of the tools' own use.
 - `Rule-docs: none affected, a tool of the agent only`.
-
-### Journal
-
-- `#run` EN-100: `npm run git:sync` and `npm run git:commit` run fetch-and-rebase and add-commit-push in one call each; the worker brief, `/story` and `/run` name them.
