@@ -8,6 +8,7 @@ What each working session dealt with, in the agent's words: the Product Owner's 
 - `#run` They left F18's tool lines to the agent and declared the validation finished; F18 is done with EN-063, EN-067 and US-062 merged into its branch.
 - `#run` They asked to move on to F19 at once, without waiting for them: F19's branch starts from F18's, SP-021 rebased on it.
 - `#run` EN-068: the Rust tools form one Cargo workspace at the root (one `Cargo.lock`, one `target/`, Rust 1.99.1 pinned, warnings denied, `unsafe_code` forbidden); scripts and Git hooks run them with `cargo run --release -q -p <crate>` (0.03 to 0.05 s per call on a built workspace), `prepare` and `worktree:new` building them; `check:rust` is its own lane of `check:all` (9.4 s warm, 11.2 s before).
+- `#run` EN-070: the Rust tools compile for Windows without linking (`cargo check --workspace --all-targets --target x86_64-pc-windows-msvc`, in `check:rust`); the Unix-only calls left — the lock file's device and inode, `mutate`'s process group and `kill`, the `node_modules` symbolic links, a test hook's execute bit — sit behind `cfg(unix)` with their reason, Windows linking folders by `symlink_dir`; a planted `std::os::unix` call fails the check on the Mac. Cost: the target 118 MB, installed by rustup in 9 s (once, from `rust-toolchain.toml`); the check 0.5 s cold, 0.04 s warm, 24 MB in `target/`.
 
 ## 2026-10-17 — SP-021 answered, F19's run started
 
