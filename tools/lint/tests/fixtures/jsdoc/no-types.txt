@@ -1,0 +1,274 @@
+# no-types: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), a carriage return written ␍,
+# each run by ESLint 10.12.0 at src/a.ts with the project's options; recorded by EN-083.
+@@@ case 1 (documented invalid)
+
+          /**
+           * @param {number} foo
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+3:1 Types are not permitted on @param.
+@@@ output
+
+          /**
+           * @param foo
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ case 2 (documented invalid)
+
+      class quux {
+        /**
+         * @param {number} foo
+         */
+        bar (foo) {
+
+        }
+      }
+      
+@@@ findings
+4:1 Types are not permitted on @param.
+@@@ output
+
+      class quux {
+        /**
+         * @param foo
+         */
+        bar (foo) {
+
+        }
+      }
+      
+@@@ case 3 (documented invalid)
+
+          /**
+           * @param {number} foo
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+3:1 Types are not permitted on @param.
+@@@ output
+
+          /**
+           * @param foo
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ case 4 (documented invalid)
+
+      class quux {
+        /**
+         * @param {number} foo
+         */
+        quux (foo) {
+
+        }
+      }
+      
+@@@ findings
+4:1 Types are not permitted on @param.
+@@@ output
+
+      class quux {
+        /**
+         * @param foo
+         */
+        quux (foo) {
+
+        }
+      }
+      
+@@@ case 5 (documented invalid)
+
+          /**
+           * @function
+           * @param {number} foo
+           */
+      
+@@@ findings
+@@@ case 6 (documented invalid)
+
+          /**
+           * @callback
+           * @param {number} foo
+           */
+      
+@@@ findings
+@@@ case 7 (documented invalid)
+
+          /**
+           * @returns {number}
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+3:1 Types are not permitted on @returns.
+@@@ output
+
+          /**
+           * @returns
+           */
+          function quux () {
+
+          }
+      
+@@@ case 8 (documented invalid)
+
+          /**
+           * Beep
+           * Boop
+           *
+           * @returns {number}
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+6:1 Types are not permitted on @returns.
+@@@ output
+
+          /**
+           * Beep
+           * Boop
+           *
+           * @returns
+           */
+          function quux () {
+
+          }
+      
+@@@ case 9 (documented invalid)
+
+        export interface B {
+          /**
+           * @param {string} paramA
+           */
+          methodB(paramB: string): void
+        }
+      
+@@@ findings
+4:1 Types are not permitted on @param.
+@@@ output
+
+        export interface B {
+          /**
+           * @param paramA
+           */
+          methodB(paramB: string): void
+        }
+      
+@@@ case 10 (documented invalid)
+
+        /**
+         * @class
+         * @property {object} x
+         */
+        class Example {
+          x: number;
+        }
+      
+@@@ findings
+4:1 Types are not permitted on @property in the supplied context.
+@@@ output
+
+        /**
+         * @class
+         * @property x
+         */
+        class Example {
+          x: number;
+        }
+      
+@@@ case 11 (documented invalid)
+
+        /**
+         * Returns a Promise...
+         *
+         * @param {number} ms - The number of ...
+         */
+        const sleep = (ms: number): Promise<unknown> => {};
+      
+@@@ findings
+5:1 Types are not permitted on @param.
+@@@ output
+
+        /**
+         * Returns a Promise...
+         *
+         * @param ms - The number of ...
+         */
+        const sleep = (ms: number): Promise<unknown> => {};
+      
+@@@ case 12 (documented invalid)
+
+        /**
+         * Returns a Promise...
+         *
+         * @param {number} ms - The number of ...
+         */
+        export const sleep = (ms: number): Promise<unknown> => {};
+      
+@@@ findings
+5:1 Types are not permitted on @param.
+@@@ output
+
+        /**
+         * Returns a Promise...
+         *
+         * @param ms - The number of ...
+         */
+        export const sleep = (ms: number): Promise<unknown> => {};
+      
+@@@ case 13 (documented valid)
+
+          /**
+           * @param foo
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+@@@ case 14 (documented valid)
+
+          /**
+           * @param foo
+           */
+      
+@@@ findings
+@@@ case 15 (documented valid)
+
+          /**
+           * @function
+           * @param {number} foo
+           */
+      
+@@@ findings
+@@@ case 16 (documented valid)
+
+          /**
+           * @callback
+           * @param {number} foo
+           */
+      
+@@@ findings
+@@@ case 17 (documented valid)
+
+        /*** Oops that's too many asterisks by accident **/
+        function a () {}
+      
+@@@ findings
+@@@ end

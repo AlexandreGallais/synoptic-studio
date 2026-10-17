@@ -1,0 +1,639 @@
+# require-description: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), a carriage return written ␍,
+# each run by ESLint 10.12.0 at src/a.ts with the project's options; recorded by EN-083.
+@@@ case 1 (documented invalid)
+
+          /**
+           *
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+2:11 Missing JSDoc block description.
+@@@ case 2 (documented invalid)
+
+          /**
+           *
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+2:11 Missing JSDoc block description.
+@@@ case 3 (documented invalid)
+
+          /**
+           *
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+2:11 Missing JSDoc block description.
+@@@ case 4 (documented invalid)
+
+          /**
+           * @desc Not a blank description
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+2:11 Remove the @desc tag to leave a plain block description or add additional description text above the @desc line.
+@@@ case 5 (documented invalid)
+
+          /**
+           * @description Not a blank description
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+2:11 Remove the @description tag to leave a plain block description or add additional description text above the @description line.
+@@@ case 6 (documented invalid)
+
+          /**
+           *
+           */
+          class quux {
+
+          }
+      
+@@@ findings
+@@@ case 7 (documented invalid)
+
+          /**
+           *
+           */
+          class quux {
+
+          }
+      
+@@@ findings
+@@@ case 8 (documented invalid)
+
+          /**
+           *
+           */
+      
+@@@ findings
+@@@ case 9 (documented invalid)
+
+          /**
+           * @description
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+2:11 Remove the @description tag to leave a plain block description or add additional description text above the @description line.
+@@@ case 10 (documented invalid)
+
+          /**
+           *
+           */
+          interface quux {
+
+          }
+      
+@@@ findings
+@@@ case 11 (documented invalid)
+
+          /**
+           *
+           */
+          var quux = class {
+
+          };
+      
+@@@ findings
+@@@ case 12 (documented invalid)
+
+          /**
+           *
+           */
+          var quux = {
+
+          };
+      
+@@@ findings
+@@@ case 13 (documented invalid)
+
+          /**
+           * @someDesc
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+2:11 Missing JSDoc block description.
+@@@ case 14 (documented invalid)
+
+          /**
+           * @description
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+2:11 Remove the @description tag to leave a plain block description or add additional description text above the @description line.
+@@@ case 15 (documented invalid)
+
+          /**
+           * @description
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+2:11 Remove the @description tag to leave a plain block description or add additional description text above the @description line.
+@@@ case 16 (documented invalid)
+
+          /**
+           *
+           */
+          function quux () {
+          }
+      
+@@@ findings
+2:11 Missing JSDoc block description.
+@@@ case 17 (documented invalid)
+
+        class TestClass {
+          /**
+           *
+           */
+          constructor() { }
+        }
+        
+@@@ findings
+3:11 Missing JSDoc block description.
+@@@ case 18 (documented invalid)
+
+        class TestClass {
+          /**
+           *
+           */
+          constructor() { }
+        }
+        
+@@@ findings
+3:11 Missing JSDoc block description.
+@@@ case 19 (documented invalid)
+
+      class TestClass {
+        /**
+         *
+         */
+        get Test() { }
+      }
+      
+@@@ findings
+3:9 Missing JSDoc block description.
+@@@ case 20 (documented invalid)
+
+      class TestClass {
+        /**
+         *
+         */
+        get Test() { }
+      }
+      
+@@@ findings
+3:9 Missing JSDoc block description.
+@@@ case 21 (documented invalid)
+
+      class TestClass {
+        /**
+         *
+         */
+        set Test(value) { }
+      }
+      
+@@@ findings
+3:9 Missing JSDoc block description.
+@@@ case 22 (documented invalid)
+
+      class TestClass {
+        /**
+         *
+         */
+        set Test(value) { }
+      }
+      
+@@@ findings
+3:9 Missing JSDoc block description.
+@@@ case 23 (documented invalid)
+
+      /**
+       *
+       */
+      class Foo {
+          /**
+           *
+           */
+          constructor() {}
+
+          /**
+           *
+           */
+          bar() {}
+      }
+      
+@@@ findings
+6:11 Missing JSDoc block description.
+11:11 Missing JSDoc block description.
+@@@ case 24 (documented invalid)
+
+          /**
+           * @implements {Bar}
+           */
+          class quux {
+
+          }
+      
+@@@ findings
+@@@ case 25 (documented invalid)
+
+          /**
+           * Has some
+           *   description already.
+           * @implements {Bar}
+           */
+          class quux {
+
+          }
+      
+@@@ findings
+@@@ case 26 (documented invalid)
+
+          /**
+           * @implements {Bar
+           *   | Foo}
+           */
+          class quux {
+
+          }
+      
+@@@ findings
+@@@ case 27 (documented invalid)
+
+          /**
+           * @implements {Bar}
+           */
+          class quux {
+
+          }
+      
+@@@ findings
+@@@ case 28 (documented invalid)
+
+          /**
+           * @implements {Bar}
+           */
+          class quux {
+
+          }
+      
+@@@ findings
+@@@ case 29 (documented invalid)
+
+        app.use(
+          /** @type {express.ErrorRequestHandler} */
+          (err, req, res, next) => {
+            // foo
+          }
+        );
+      
+@@@ findings
+3:11 Missing JSDoc block description.
+@@@ case 30 (documented invalid)
+
+        app.use(
+          /** @type {express.ErrorRequestHandler} */
+          (
+            (err, req, res, next) => {
+              // foo
+            }
+          )
+        );
+      
+@@@ findings
+3:11 Missing JSDoc block description.
+@@@ case 31 (documented invalid)
+
+        /** @type {TreeViewItemData[]} */
+        this.treeViewSelection = [];
+      
+@@@ findings
+@@@ case 32 (documented valid)
+
+          /**
+           *
+           */
+      
+@@@ findings
+@@@ case 33 (documented valid)
+
+          /**
+           * @description
+           * // arbitrary description content
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+2:11 Remove the @description tag to leave a plain block description or add additional description text above the @description line.
+@@@ case 34 (documented valid)
+
+          /**
+           * @description
+           * quux(); // does something useful
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+2:11 Remove the @description tag to leave a plain block description or add additional description text above the @description line.
+@@@ case 35 (documented valid)
+
+          /**
+           * @description <caption>Valid usage</caption>
+           * quux(); // does something useful
+           *
+           * @description <caption>Invalid usage</caption>
+           * quux('random unwanted arg'); // results in an error
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+2:11 Remove the @description tag to leave a plain block description or add additional description text above the @description line.
+@@@ case 36 (documented valid)
+
+          /**
+           *
+           */
+          class quux {
+
+          }
+      
+@@@ findings
+@@@ case 37 (documented valid)
+
+          /**
+           *
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+2:11 Missing JSDoc block description.
+@@@ case 38 (documented valid)
+
+          /**
+           * @type {MyCallback}
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+2:11 Missing JSDoc block description.
+@@@ case 39 (documented valid)
+
+          /**
+           *
+           */
+          interface quux {
+
+          }
+      
+@@@ findings
+@@@ case 40 (documented valid)
+
+          interface quux {
+            /**
+             * If the thing should be checked.
+             */
+            checked?: boolean
+          }
+      
+@@@ findings
+@@@ case 41 (documented valid)
+
+          /**
+           *
+           */
+          var quux = class {
+
+          };
+      
+@@@ findings
+@@@ case 42 (documented valid)
+
+          /**
+           *
+           */
+          var quux = {
+
+          };
+      
+@@@ findings
+@@@ case 43 (documented valid)
+
+          /**
+           * Has an implicit description
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 44 (documented valid)
+
+          /**
+           * Has an implicit description
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 45 (documented valid)
+
+          /**
+           * Has an implicit description
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 46 (documented valid)
+
+          /**
+           * @description Has an explicit description
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+2:11 Remove the @description tag to leave a plain block description or add additional description text above the @description line.
+@@@ case 47 (documented valid)
+
+        /**
+         *
+         */
+        function quux () {
+
+        }
+      
+@@@ findings
+2:9 Missing JSDoc block description.
+@@@ case 48 (documented valid)
+
+        class TestClass {
+          /**
+           * Test.
+           */
+          constructor() { }
+        }
+        
+@@@ findings
+@@@ case 49 (documented valid)
+
+        class TestClass {
+          /**
+           *
+           */
+          constructor() { }
+        }
+        
+@@@ findings
+3:11 Missing JSDoc block description.
+@@@ case 50 (documented valid)
+
+      class TestClass {
+        /**
+         * Test.
+         */
+        get Test() { }
+      }
+      
+@@@ findings
+@@@ case 51 (documented valid)
+
+      class TestClass {
+        /**
+         *
+         */
+        get Test() { }
+      }
+      
+@@@ findings
+3:9 Missing JSDoc block description.
+@@@ case 52 (documented valid)
+
+      class TestClass {
+        /**
+         * Test.
+         */
+        set Test(value) { }
+      }
+      
+@@@ findings
+@@@ case 53 (documented valid)
+
+      class TestClass {
+        /**
+         *
+         */
+        set Test(value) { }
+      }
+      
+@@@ findings
+3:9 Missing JSDoc block description.
+@@@ case 54 (documented valid)
+
+          /**
+           * Multi
+           * line
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 55 (documented valid)
+
+          /** Single line */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 56 (documented valid)
+
+          /** @description something */
+          function quux () {
+
+          }
+      
+@@@ findings
+2:11 Remove the @description tag to leave a plain block description or add additional description text above the @description line.
+@@@ case 57 (documented valid)
+
+          /**
+           * @implements {Bar}
+           */
+          class quux {
+
+          }
+      
+@@@ findings
+@@@ case 58 (documented valid)
+
+          /**
+           * Has some
+           *   description already.
+           */
+          class quux {
+
+          }
+      
+@@@ findings
+@@@ case 59 (documented valid)
+
+          /**
+           * Has some
+           *   description already.
+           */
+          class quux {
+
+          }
+      
+@@@ findings
+@@@ case 60 (documented valid)
+
+          /**
+           * Has some
+           *   description already.
+           */
+      
+@@@ findings
+@@@ end

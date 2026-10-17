@@ -685,8 +685,7 @@ mod tests {
 
     #[test]
     fn reads_tags_with_their_type_name_and_description_over_lines() {
-        let text =
-            "/**\n * Sum\n *   of two.\n * @param {number} a - first\n *   term\n * @returns the sum\n */";
+        let text = "/**\n * Sum\n *   of two.\n * @param {number} a - first\n *   term\n * @returns the sum\n */";
         let block = parse(text);
         let param = &block.tags[0];
         let line = &block.source[3].tokens;

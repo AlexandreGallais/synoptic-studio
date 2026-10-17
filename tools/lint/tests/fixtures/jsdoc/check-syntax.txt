@@ -1,0 +1,204 @@
+# check-syntax: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), a carriage return written ␍,
+# each run by ESLint 10.12.0 at src/a.ts with the project's options; recorded by EN-083.
+@@@ case 1 (documented invalid)
+
+          /**
+           * @param {string=} foo
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+3:1 Syntax should not be Google Closure Compiler style.
+@@@ case 2 (documented invalid)
+
+          /**
+           * @param {string=} foo
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+3:1 Syntax should not be Google Closure Compiler style.
+@@@ case 3 (documented invalid)
+
+          /**
+           * @param {string=} foo
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+3:1 Syntax should not be Google Closure Compiler style.
+@@@ case 4 (documented invalid)
+
+          /**
+           * @param {string=} foo - The foo.
+           * @param {number=} bar
+           * @param {Array<string>=} [baz]
+           * @property {boolean=} qux.quux
+           */
+          function quux (foo, bar, baz) {
+
+          }
+      
+@@@ findings
+3:1 Syntax should not be Google Closure Compiler style.
+@@@ case 5 (documented invalid)
+
+          /**
+           * @returns {string=}
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+3:1 Syntax should not be Google Closure Compiler style.
+@@@ case 6 (documented invalid)
+
+          /**
+           * @param {string=} [foo=bar]
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+3:1 Syntax should not be Google Closure Compiler style.
+@@@ case 7 (documented invalid)
+
+          /**
+           * @param {string=}
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+3:1 Syntax should not be Google Closure Compiler style.
+@@@ case 8 (documented invalid)
+
+          /**
+           * @param {Array<
+           *   string
+           * >=} foo
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+3:1 Syntax should not be Google Closure Compiler style.
+@@@ case 9 (documented invalid)
+
+          /**
+           * @returns {() => void=}
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+3:1 Syntax should not be Google Closure Compiler style.
+@@@ case 10 (documented invalid)
+
+          /**
+           * @returns {Array<
+           *   string
+           * >=}
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+3:1 Syntax should not be Google Closure Compiler style.
+@@@ case 11 (documented invalid)
+
+          /**
+           * @type {number=}
+           */
+          const quux = 5;
+      
+@@@ findings
+3:1 Syntax should not be Google Closure Compiler style.
+@@@ case 12 (documented invalid)
+
+          /**
+           * @param {string=} foo
+           * @returns {Promise<void>=}
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+3:1 Syntax should not be Google Closure Compiler style.
+@@@ case 13 (documented invalid)
+
+          /**
+           * @param {string=} foo=bar
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+3:1 Syntax should not be Google Closure Compiler style.
+@@@ case 14 (documented valid)
+
+          /**
+           * @param {string=} foo
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+3:1 Syntax should not be Google Closure Compiler style.
+@@@ case 15 (documented valid)
+
+          /**
+           * @param {string} [foo]
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+@@@ case 16 (documented valid)
+
+          /**
+           * @param {string} [foo]
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+@@@ case 17 (documented valid)
+
+          /**
+           * @param {string=} foo
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+3:1 Syntax should not be Google Closure Compiler style.
+@@@ case 18 (documented valid)
+
+          /**
+           *
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+@@@ end

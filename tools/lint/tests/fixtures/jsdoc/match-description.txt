@@ -1,0 +1,989 @@
+# match-description: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), a carriage return written ␍,
+# each run by ESLint 10.12.0 at src/a.ts with the project's options; recorded by EN-083.
+@@@ case 1 (documented invalid)
+
+          /**
+           * foo.
+           */
+          const q = class {
+
+          }
+      
+@@@ findings
+@@@ case 2 (documented invalid)
+
+          /**
+           * foo.
+           */
+          const q = class {
+
+          }
+      
+@@@ findings
+@@@ case 3 (documented invalid)
+
+          /**
+           * foo.
+           */
+      
+@@@ findings
+@@@ case 4 (documented invalid)
+
+          /**
+           * foo.
+           */
+          const q = {
+
+          };
+      
+@@@ findings
+@@@ case 5 (documented invalid)
+
+          /**
+           * foo.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+3:1 Main descriptions are sentences: capital first letter, final period.
+@@@ case 6 (documented invalid)
+
+          /**
+           * Foo)
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+3:1 Main descriptions are sentences: capital first letter, final period.
+@@@ case 7 (documented invalid)
+
+          /**
+           * тест.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+3:1 Main descriptions are sentences: capital first letter, final period.
+@@@ case 8 (documented invalid)
+
+          /**
+           * тест.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+3:1 Main descriptions are sentences: capital first letter, final period.
+@@@ case 9 (documented invalid)
+
+          /**
+           * Abc.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 10 (documented invalid)
+
+          /**
+           * Abc.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 11 (documented invalid)
+
+          /**
+           * Foo
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+3:1 Main descriptions are sentences: capital first letter, final period.
+@@@ case 12 (documented invalid)
+
+          /**
+           * Foo.
+           *
+           * @param foo foo.
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+5:1 Tag descriptions are fragments without final period.
+@@@ case 13 (documented invalid)
+
+          /**
+           * Foo.
+           *
+           * @template Abc, Def foo.
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+@@@ case 14 (documented invalid)
+
+          /**
+           * Foo.
+           *
+           * @prop foo foo.
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+@@@ case 15 (documented invalid)
+
+          /**
+           * Foo.
+           *
+           * @summary foo.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+5:1 Main descriptions are sentences: capital first letter, final period.
+@@@ case 16 (documented invalid)
+
+          /**
+           * Foo.
+           *
+           * @author
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 17 (documented invalid)
+
+          /**
+           * Foo.
+           *
+           * @x-tag
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 18 (documented invalid)
+
+          /**
+           * Foo.
+           *
+           * @description foo foo.
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+5:1 Main descriptions are sentences: capital first letter, final period.
+@@@ case 19 (documented invalid)
+
+          /**
+           * Foo
+           *
+           * @param foo foo.
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+3:1 Main descriptions are sentences: capital first letter, final period.
+5:1 Tag descriptions are fragments without final period.
+@@@ case 20 (documented invalid)
+
+          /**
+           * Foo
+           *
+           * @param foo foo.
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+3:1 Main descriptions are sentences: capital first letter, final period.
+5:1 Tag descriptions are fragments without final period.
+@@@ case 21 (documented invalid)
+
+          /**
+           * Foo
+           *
+           * @param foo foo.
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+3:1 Main descriptions are sentences: capital first letter, final period.
+5:1 Tag descriptions are fragments without final period.
+@@@ case 22 (documented invalid)
+
+          /**
+           * Foo.
+           *
+           * @param foo bar
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+@@@ case 23 (documented invalid)
+
+          /**
+           * {@see Foo.bar} buz
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+3:1 Main descriptions are sentences: capital first letter, final period.
+@@@ case 24 (documented invalid)
+
+          /**
+           * Foo.
+           *
+           * @returns {number} foo
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+@@@ case 25 (documented invalid)
+
+          /**
+           * Foo.
+           *
+           * @returns foo.
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+5:1 Tag descriptions are fragments without final period.
+@@@ case 26 (documented invalid)
+
+          /**
+           * lorem ipsum dolor sit amet, consectetur adipiscing elit. pellentesque elit diam,
+           * iaculis eu dignissim sed, ultrices sed nisi. nulla at ligula auctor, consectetur neque sed,
+           * tincidunt nibh. vivamus sit amet vulputate ligula. vivamus interdum elementum nisl,
+           * vitae rutrum tortor semper ut. morbi porta ante vitae dictum fermentum.
+           * proin ut nulla at quam convallis gravida in id elit. sed dolor mauris, blandit quis ante at,
+           * consequat auctor magna. duis pharetra purus in porttitor mollis.
+           */
+          function longDescription (foo) {
+
+          }
+      
+@@@ findings
+3:1 Main descriptions are sentences: capital first letter, final period.
+@@@ case 27 (documented invalid)
+
+          /**
+           * @arg {number} foo - Foo
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+@@@ case 28 (documented invalid)
+
+          /**
+           * @argument {number} foo - Foo
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+@@@ case 29 (documented invalid)
+
+          /**
+           * @return {number} foo
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+@@@ case 30 (documented invalid)
+
+          /**
+           * Returns bar.
+           *
+           * @return {number} bar
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+@@@ case 31 (documented invalid)
+
+          /**
+           * @param notRet
+           * @returns Тест.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+3:1 Tag descriptions are fragments without final period.
+4:1 Tag descriptions are fragments without final period.
+@@@ case 32 (documented invalid)
+
+          /**
+           * @description notRet
+           * @returns Тест.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+3:1 Main descriptions are sentences: capital first letter, final period.
+4:1 Tag descriptions are fragments without final period.
+@@@ case 33 (documented invalid)
+
+          /**
+           * foo.
+           */
+          class quux {
+
+          }
+      
+@@@ findings
+@@@ case 34 (documented invalid)
+
+      class MyClass {
+        /**
+         * Abc
+         */
+        myClassField = 1
+      }
+      
+@@@ findings
+@@@ case 35 (documented invalid)
+
+          /**
+           * foo.
+           */
+          interface quux {
+
+          }
+      
+@@@ findings
+@@@ case 36 (documented invalid)
+
+          const myObject = {
+            /**
+             * Bad description
+             */
+            myProp: true
+          };
+      
+@@@ findings
+@@@ case 37 (documented invalid)
+
+        /**
+         * @param foo Foo bar
+         */
+        function quux (foo) {
+
+        }
+      
+@@@ findings
+@@@ case 38 (documented invalid)
+
+        /**
+         * Foo bar
+         */
+        function quux (foo) {
+
+        }
+      
+@@@ findings
+3:1 Main descriptions are sentences: capital first letter, final period.
+@@@ case 39 (documented invalid)
+
+          /**
+           * Description with extra new line
+           *
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+3:1 Main descriptions are sentences: capital first letter, final period.
+@@@ case 40 (documented invalid)
+
+         /**
+          *
+          * This function does lots of things.
+          */
+          function quux () {
+
+          }
+      
+@@@ findings
+3:1 Main descriptions are sentences: capital first letter, final period.
+@@@ case 41 (documented invalid)
+
+        /**
+         *
+         * @param
+         */
+      
+@@@ findings
+@@@ case 42 (documented invalid)
+
+        /** Does something very important. */
+        function foo(): string;
+      
+@@@ findings
+@@@ case 43 (documented invalid)
+
+          /**
+           * @copyright
+           */
+          function quux () {
+          }
+      
+@@@ findings
+3:1 JSDoc description must not be empty.
+@@@ case 44 (documented valid)
+
+          /**
+           *
+           */
+      
+@@@ findings
+@@@ case 45 (documented valid)
+
+          /**
+           *
+           */
+           function quux () {
+
+           }
+      
+@@@ findings
+3:1 Main descriptions are sentences: capital first letter, final period.
+@@@ case 46 (documented valid)
+
+          /**
+           * @param foo - Foo.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+3:1 Tag descriptions are fragments without final period.
+@@@ case 47 (documented valid)
+
+          /**
+           * Foo.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 48 (documented valid)
+
+          /**
+           * Foo.
+           * Bar.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 49 (documented valid)
+
+          /**
+           * Foo.
+           *
+           * Bar.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 50 (documented valid)
+
+          /**
+           * Foo.
+           *
+           * Bar.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 51 (documented valid)
+
+          /**
+           * Тест.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+3:1 Main descriptions are sentences: capital first letter, final period.
+@@@ case 52 (documented valid)
+
+          /**
+           * @param notRet
+           * @returns Тест.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+3:1 Tag descriptions are fragments without final period.
+4:1 Tag descriptions are fragments without final period.
+@@@ case 53 (documented valid)
+
+          /**
+           * @param notRet
+           * @description Тест.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+3:1 Tag descriptions are fragments without final period.
+4:1 Main descriptions are sentences: capital first letter, final period.
+@@@ case 54 (documented valid)
+
+          /**
+           * Foo
+           * bar.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 55 (documented valid)
+
+          /**
+           * @returns Foo bar.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+3:1 Tag descriptions are fragments without final period.
+@@@ case 56 (documented valid)
+
+          /**
+           * @returns {type1} Foo bar.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+3:1 Tag descriptions are fragments without final period.
+@@@ case 57 (documented valid)
+
+          /**
+           * @description Foo bar.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 58 (documented valid)
+
+          /**
+           * @description Foo
+           * bar.
+           * @param
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+5:1 Tag descriptions are fragments without final period.
+@@@ case 59 (documented valid)
+
+          /** @description Foo bar. */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 60 (documented valid)
+
+          /**
+           * @description Foo
+           * bar.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 61 (documented valid)
+
+          /**
+           * Foo. {@see Math.sin}.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 62 (documented valid)
+
+          /**
+           * Foo {@see Math.sin} bar.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 63 (documented valid)
+
+          /**
+           * Foo?
+           *
+           * Bar!
+           *
+           * Baz:
+           *   1. Foo.
+           *   2. Bar.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 64 (documented valid)
+
+          /**
+           * Hello:
+           * World.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 65 (documented valid)
+
+          /**
+           * Hello: world.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 66 (documented valid)
+
+          /**
+           * Foo
+           * Bar.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 67 (documented valid)
+
+          /**
+           * Foo.
+           *
+           * foo.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 68 (documented valid)
+
+          /**
+           * foo.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+3:1 Main descriptions are sentences: capital first letter, final period.
+@@@ case 69 (documented valid)
+
+          /**
+           * foo.
+           */
+          class quux {
+
+          }
+      
+@@@ findings
+@@@ case 70 (documented valid)
+
+          /**
+           * foo.
+           */
+          class quux {
+
+          }
+      
+@@@ findings
+@@@ case 71 (documented valid)
+
+      class MyClass {
+        /**
+         * Abc.
+         */
+        myClassField = 1
+      }
+      
+@@@ findings
+@@@ case 72 (documented valid)
+
+          /**
+           * Foo.
+           */
+          interface quux {
+
+          }
+      
+@@@ findings
+@@@ case 73 (documented valid)
+
+          const myObject = {
+            /**
+             * Bad description
+             */
+            myProp: true
+          };
+      
+@@@ findings
+@@@ case 74 (documented valid)
+
+          /**
+           * foo.
+           */
+          const q = class {
+
+          }
+      
+@@@ findings
+@@@ case 75 (documented valid)
+
+          /**
+           * foo.
+           */
+          const q = {
+
+          };
+      
+@@@ findings
+@@@ case 76 (documented valid)
+
+          /**
+           * @deprecated foo.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 77 (documented valid)
+
+          /**
+           * Foo.
+           *
+           * @summary Foo.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 78 (documented valid)
+
+          /**
+           * Foo.
+           *
+           * @author Somebody
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 79 (documented valid)
+
+          /**
+           * Foo.
+           *
+           * @x-tag something
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 80 (documented valid)
+
+          /**
+           * Foo.
+           *
+           * @prop foo Foo.
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+@@@ case 81 (documented valid)
+
+        /**
+         * @param foo Foo bar.
+         */
+        function quux (foo) {
+
+        }
+      
+@@@ findings
+3:1 Tag descriptions are fragments without final period.
+@@@ case 82 (documented valid)
+
+        /**
+         *
+         */
+        function quux () {
+
+        }
+      
+@@@ findings
+3:1 Main descriptions are sentences: capital first letter, final period.
+@@@ case 83 (documented valid)
+
+          /**
+           * Foo.
+           *
+           * @template Abc, Def Foo.
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+@@@ case 84 (documented valid)
+
+      /**
+       * Enable or disable plugin.
+       *
+       * When enabling with this function, the script will be attached to the `document` if:.
+       * - the script runs in browser context.
+       * - the `document` doesn't have the script already attached.
+       * - the `loadScript` option is set to `true`.
+       * @param enabled `true` to enable, `false` to disable. Default: `true`.
+       */
+      
+@@@ findings
+@@@ case 85 (documented valid)
+
+      /** Wrap attributes threshold. */
+      const quux = {};
+      
+@@@ findings
+@@@ case 86 (documented valid)
+
+        /**
+         * @constructor
+         * @todo Ok.
+         */
+        function quux () {
+        }
+      
+@@@ findings
+@@@ case 87 (documented valid)
+
+        /** Does something very important. */
+        function foo(): string;
+      
+@@@ findings
+@@@ case 88 (documented valid)
+
+        /**
+         * This is my favorite function, foo.
+         *
+         * @returns Nothing.
+         */
+        function foo(): void;
+      
+@@@ findings
+5:1 Tag descriptions are fragments without final period.
+@@@ case 89 (documented valid)
+
+          /**
+           * @copyright
+           */
+          function quux () {
+          }
+      
+@@@ findings
+3:1 JSDoc description must not be empty.
+@@@ case 90 (documented valid)
+
+        /**
+         * Example text. 🙂
+         */
+        export const example = () => { };
+      
+@@@ findings
+3:1 Main descriptions are sentences: capital first letter, final period.
+@@@ end

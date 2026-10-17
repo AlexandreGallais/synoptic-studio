@@ -6,6 +6,10 @@
 pub mod block;
 #[cfg(test)]
 pub mod cases;
+pub mod context;
+pub mod edit;
+pub mod params;
+pub mod text;
 
 use oxc_ast::AstKind;
 use oxc_ast::ast::{Comment, FunctionType};

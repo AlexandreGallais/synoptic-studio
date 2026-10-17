@@ -1,0 +1,550 @@
+# check-template-names: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), a carriage return written ␍,
+# each run by ESLint 10.12.0 at src/a.ts with the project's options; recorded by EN-083.
+@@@ case 1 (documented invalid)
+
+        /**
+         * @template D
+         * @template V
+         */
+        type Pairs<X, Y> = [X, Y | undefined];
+      
+@@@ findings
+3:1 @template D not in use
+4:1 @template V not in use
+@@@ case 2 (documented invalid)
+
+        /**
+         * @template D
+         * @template V
+         */
+        export type Pairs<X, Y> = [X, Y | undefined];
+      
+@@@ findings
+3:1 @template D not in use
+4:1 @template V not in use
+@@@ case 3 (documented invalid)
+
+        /**
+         * @template D
+         * @template V
+         * @typedef {[X, Y | undefined]} Pairs
+         */
+      
+@@@ findings
+3:1 @template D not in use
+4:1 @template V not in use
+@@@ case 4 (documented invalid)
+
+        /**
+         * @template D
+         * @template V
+         */
+        export type Pairs = [number, undefined];
+      
+@@@ findings
+3:1 @template D not in use
+4:1 @template V not in use
+@@@ case 5 (documented invalid)
+
+        /**
+         * @template D
+         * @template V
+         * @typedef {[undefined]} Pairs
+         */
+      
+@@@ findings
+3:1 @template D not in use
+4:1 @template V not in use
+@@@ case 6 (documented invalid)
+
+        /**
+         * @template D, U, V
+         */
+        export type Extras<D, U> = [D, U | undefined];
+      
+@@@ findings
+3:1 @template V not in use
+@@@ case 7 (documented invalid)
+
+        /**
+         * @template D, U, V
+         * @typedef {[D, U | undefined]} Extras
+         */
+      
+@@@ findings
+3:1 @template V not in use
+@@@ case 8 (documented invalid)
+
+        /**
+         * @template D
+         * @template V
+         * @typedef Pairs
+         * @property {V} foo
+         */
+      
+@@@ findings
+3:1 @template D not in use
+@@@ case 9 (documented invalid)
+
+        /**
+         * @template D
+         * @template V
+         */
+        interface GenericIdentityFn<Type> {
+          (arg: Type): Type;
+        }
+      
+@@@ findings
+3:1 @template D not in use
+4:1 @template V not in use
+@@@ case 10 (documented invalid)
+
+        /**
+         * @template D
+         * @template V
+         */
+        export interface GenericIdentityFn<Type> {
+          (arg: Type): Type;
+        }
+      
+@@@ findings
+3:1 @template D not in use
+4:1 @template V not in use
+@@@ case 11 (documented invalid)
+
+        /**
+         * @template D
+         * @template V
+         */
+        export default interface GenericIdentityFn<Type> {
+          (arg: Type): Type;
+        }
+      
+@@@ findings
+3:1 @template D not in use
+4:1 @template V not in use
+@@@ case 12 (documented invalid)
+
+        /**
+         * @template D
+         * @template V
+         */
+        function identity<Type>(arg: Type): Type {
+          return arg;
+        }
+      
+@@@ findings
+3:1 @template D not in use
+4:1 @template V not in use
+@@@ case 13 (documented invalid)
+
+        /**
+         * @template D
+         * @template V
+         */
+        export function identity<Type>(arg: Type): Type {
+          return arg;
+        }
+      
+@@@ findings
+3:1 @template D not in use
+4:1 @template V not in use
+@@@ case 14 (documented invalid)
+
+        /**
+         * @template D
+         * @template V
+         */
+        export default function identity<Type>(arg: Type): Type {
+          return arg;
+        }
+      
+@@@ findings
+3:1 @template D not in use
+4:1 @template V not in use
+@@@ case 15 (documented invalid)
+
+        /**
+         * @template D
+         * @template V
+         */
+        class GenericNumber<NumType> {
+          zeroValue: NumType;
+          add: (x: NumType, y: NumType) => NumType;
+        }
+      
+@@@ findings
+3:1 @template D not in use
+4:1 @template V not in use
+@@@ case 16 (documented invalid)
+
+        /**
+         * @template D
+         * @template V
+         */
+        export class GenericNumber<NumType> {
+          zeroValue: NumType;
+          add: (x: NumType, y: NumType) => NumType;
+        }
+      
+@@@ findings
+3:1 @template D not in use
+4:1 @template V not in use
+@@@ case 17 (documented invalid)
+
+        /**
+         * @template D
+         * @template V
+         */
+        export default class GenericNumber<NumType> {
+          zeroValue: NumType;
+          add: (x: NumType, y: NumType) => NumType;
+        }
+      
+@@@ findings
+3:1 @template D not in use
+4:1 @template V not in use
+@@@ case 18 (documented invalid)
+
+        /**
+         * @template D
+         * @template V
+         */
+        export default class <NumType> {
+          zeroValue: NumType;
+          add: (x: NumType, y: NumType) => NumType;
+        }
+      
+@@@ findings
+3:1 @template D not in use
+4:1 @template V not in use
+@@@ case 19 (documented invalid)
+
+        /**
+         * @template D
+         * @template V
+         * @callback
+         * @returns {[X, Y | undefined]}
+         */
+      
+@@@ findings
+3:1 @template D not in use
+4:1 @template V not in use
+@@@ case 20 (documented invalid)
+
+        /**
+         * @template D
+         * @template V
+         * @function
+         * @returns {[X, Y | undefined]}
+         */
+      
+@@@ findings
+3:1 @template D not in use
+4:1 @template V not in use
+@@@ case 21 (documented invalid)
+
+        /**
+         * @template D
+         * @template V
+         * @function
+         * @param {[X, Y | undefined]} someParam
+         */
+      
+@@@ findings
+3:1 @template D not in use
+4:1 @template V not in use
+@@@ case 22 (documented invalid)
+
+        /**
+         * @template
+         */
+      
+@@@ findings
+@@@ case 23 (documented valid)
+
+        /**
+         * @template D
+         * @template V
+         */
+        export type Pairs<D, V> = [D, V | undefined];
+      
+@@@ findings
+@@@ case 24 (documented valid)
+
+        /**
+         * @template D
+         * @template V
+         * @typedef {[D, V | undefined]} Pairs
+         */
+      
+@@@ findings
+@@@ case 25 (documented valid)
+
+        /**
+         * @template D, U, V
+         */
+        export type Extras<D, U, V> = [D, U, V | undefined];
+      
+@@@ findings
+@@@ case 26 (documented valid)
+
+        /**
+         * @template D, U, V
+         * @typedef {[D, U, V | undefined]} Extras
+         */
+      
+@@@ findings
+@@@ case 27 (documented valid)
+
+        /**
+         * @template X
+         * @typedef {[D, U, V | undefined]} Extras
+         * @typedef {[D, U, V | undefined]} Extras
+         */
+      
+@@@ findings
+@@@ case 28 (documented valid)
+
+        /**
+         * @typedef Foo
+         * @prop {string} bar
+         */
+      
+@@@ findings
+@@@ case 29 (documented valid)
+
+        /**
+         * @template D
+         * @template V
+         * @typedef Pairs
+         * @property {D} foo
+         * @property {V} bar
+         */
+      
+@@@ findings
+@@@ case 30 (documented valid)
+
+        /**
+         * @template Type
+         */
+        interface GenericIdentityFn<Type> {
+          (arg: Type): Type;
+        }
+      
+@@@ findings
+@@@ case 31 (documented valid)
+
+        /**
+         * @template Type
+         */
+        export interface GenericIdentityFn<Type> {
+          (arg: Type): Type;
+        }
+      
+@@@ findings
+@@@ case 32 (documented valid)
+
+        /**
+         * @template Type
+         */
+        export default interface GenericIdentityFn<Type> {
+          (arg: Type): Type;
+        }
+      
+@@@ findings
+@@@ case 33 (documented valid)
+
+        /**
+         * @template Type
+         */
+        function identity<Type>(arg: Type): Type {
+          return arg;
+        }
+      
+@@@ findings
+@@@ case 34 (documented valid)
+
+        /**
+         * @template Type
+         */
+        export function identity<Type>(arg: Type): Type {
+          return arg;
+        }
+      
+@@@ findings
+@@@ case 35 (documented valid)
+
+        /**
+         * @template Type
+         */
+        export default function identity<Type>(arg: Type): Type {
+          return arg;
+        }
+      
+@@@ findings
+@@@ case 36 (documented valid)
+
+        /**
+         * @template NumType
+         */
+        class GenericNumber<NumType> {
+          zeroValue: NumType;
+          add: (x: NumType, y: NumType) => NumType;
+        }
+      
+@@@ findings
+@@@ case 37 (documented valid)
+
+        /**
+         * @template NumType
+         */
+        export class GenericNumber<NumType> {
+          zeroValue: NumType;
+          add: (x: NumType, y: NumType) => NumType;
+        }
+      
+@@@ findings
+@@@ case 38 (documented valid)
+
+        /**
+         * @template NumType
+         */
+        export default class GenericNumber<NumType> {
+          zeroValue: NumType;
+          add: (x: NumType, y: NumType) => NumType;
+        }
+      
+@@@ findings
+@@@ case 39 (documented valid)
+
+        /**
+         * @template NumType
+         */
+        export default class <NumType> {
+          zeroValue: NumType;
+          add: (x: NumType, y: NumType) => NumType;
+        }
+      
+@@@ findings
+@@@ case 40 (documented valid)
+
+        /**
+         * Uses the provided callback to group the given array into the keys of a map.
+         * Based on the array grouping proposal: https://github.com/tc39/proposal-array-grouping/
+         *
+         * @template T
+         * @param {T[]} array
+         * @param {(value: T, index: number) => string} callbackFn
+         * @returns {Map<string, T[]>}
+         */
+        export function mapGroupBy(array, callbackFn) {
+        }
+      
+@@@ findings
+@@@ case 41 (documented valid)
+
+        /**
+         * @template D
+         * @template V
+         * @callback
+         * @returns {[D, V | undefined]}
+         */
+      
+@@@ findings
+@@@ case 42 (documented valid)
+
+        /**
+         * @template D
+         * @template V
+         * @function
+         * @returns {[D, V | undefined]}
+         */
+      
+@@@ findings
+@@@ case 43 (documented valid)
+
+        /**
+         * @template D
+         * @template V
+         * @function
+         * @param {[D, V | undefined]} someParam
+         */
+      
+@@@ findings
+@@@ case 44 (documented valid)
+
+        /**
+         * @template {string} U
+         */
+        export class User {
+          /**
+           * @type {U}
+           */
+          name;
+        }
+      
+@@@ findings
+@@@ case 45 (documented valid)
+
+        /**
+         * @template {string} U
+         */
+        export class User {
+          /**
+           * @param {U} name
+           */
+          constructor(name) {
+            this.name = name;
+          }
+          methodToIgnore() {}
+        }
+      
+@@@ findings
+@@@ case 46 (documented valid)
+
+        /**
+         * @template [ChannelDataType=undefined]
+         * @param {string} messageType - A key used for sending and receiving messages.
+         * @returns {MessageChannel<ChannelDataType>} A channel that can create messages of its
+         * own type.
+         */
+        export function createMessageChannel(messageType) {
+          // Note: It should also infer the type if the new channel is returned
+          // directly rather than returned as a typed variable.
+
+          /** @type {MessageChannel<ChannelDataType>} */
+          const messageChannel = new MessageChannel(messageType);
+
+          return messageChannel;
+        }
+      
+@@@ findings
+@@@ case 47 (documented valid)
+
+        /**
+         * @template T
+         * @augments {Set<T>}
+         */
+        export class MySet extends Set {}
+      
+@@@ findings
+@@@ case 48 (documented valid)
+
+        /**
+         * @template U
+         * @extends {Set<U>}
+         */
+        export class MySet extends Set {}
+      
+@@@ findings
+@@@ case 49 (documented valid)
+
+        /**
+         * @template T
+         * @implements {Iterable<T>}
+         */
+        export class MyIterable {}
+      
+@@@ findings
+@@@ end
