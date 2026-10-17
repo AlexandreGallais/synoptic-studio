@@ -44,7 +44,7 @@ In delivery order. Stories stay `draft` until F20's `/run` sets them `ready`.
 | [EN-066](../stories/E17-F20-EN-066-model-per-agent-type.md) | Enabler | A model chosen per agent type | done |
 | [EN-088](../stories/E17-F20-EN-088-subagent-stop-hook-in-rust.md) | Enabler | A SubagentStop hook in Rust that checks a worker's branch | done |
 | [EN-092](../stories/E17-F20-EN-092-run-totals-and-stop-report.md) | Enabler | The duration and tokens of a whole run | done |
-| [EN-087](../stories/E17-F20-EN-087-progress-page-as-an-artifact.md) | Enabler | A progress page as a claude.ai Artifact, updated during a run | ready |
+| [EN-087](../stories/E17-F20-EN-087-progress-page-as-an-artifact.md) | Enabler | A progress page as a claude.ai Artifact, updated during a run | done |
 | [EN-086](../stories/E17-F20-EN-086-push-notification-at-each-stop.md) | Enabler | A run that parks a question and pushes it, and stops only when it must | done |
 | [CHK-021](../stories/E17-F20-CHK-021-checkpoint-f20.md) | Checkpoint | Checkpoint in the middle of F20 | ready |
 | [EN-100](../stories/E17-F20-EN-100-git-sequences-as-rust-commands.md) | Enabler | The agent's frequent Git sequences as Rust commands | done |

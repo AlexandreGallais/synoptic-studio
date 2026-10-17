@@ -3,7 +3,7 @@ id: EN-087
 epic: E17
 feature: F20
 title: A progress page as a claude.ai Artifact, updated during a run
-status: ready
+status: done
 points: 3
 ---
 
