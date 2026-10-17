@@ -96,7 +96,7 @@ An override forces a fixed version of a transitive package until the package tha
 
 ## Crates
 
-The crates.io dependencies of the Rust tools: Oxc's (`REF-OXC-CRATE`, MIT), all at one version since they are released together and depend on each other exactly, and `markdown` (`REF-MARKDOWN-RS`, MIT) with its one dependency `unicode-id`.
+The crates.io dependencies of the Rust tools: Oxc's (`REF-OXC-CRATE`, MIT), all at one version since they are released together and depend on each other exactly, and `markdown` (`REF-MARKDOWN-RS`, MIT) with its one dependency `unicode-id`. The library's server (`tools/library`, EN-106) adds `rmcp`, `tokio`, `rusqlite` and `serde_json`, chosen and tried by SP-023 ([research note 0025](../research/notes/0025-f21-agent-tools-in-rust.md), The crates); each row gives the version, its date, its licence and what its release notes say.
 
 | Crate | Why | Alternatives rejected |
 | --- | --- | --- |
@@ -109,6 +109,12 @@ The crates.io dependencies of the Rust tools: Oxc's (`REF-OXC-CRATE`, MIT), all 
 | `oxc_isolated_declarations` | the library's declarations from each module alone, without a type checker, in `tools/declarations` (`REF-OXC-ISOLATED-DECLARATIONS`) | `tsc -p tsconfig.build.json`: a second compiler run; `oxc-transform` from npm: the same code behind a Node.js binding |
 | `oxc_codegen` | prints the declarations as `.d.ts` text, comments kept | — (Oxc's own printer) |
 | `markdown` | parses Markdown into an mdast tree with offsets, GFM and front matter, for the linter's Markdown rules: the Rust sibling of the parser `@eslint/markdown` used, so the same tree | `pulldown-cmark`: events, not a tree; `comrak`: seven required dependencies; a parser of our own: a project in itself |
+| `rmcp` | the MCP server of the library over `stdio` (`REF-RMCP`), the official Rust SDK; 3.5.1 of 2026-10-05, Apache-2.0; its notes for 3.5.1 fix the server's discovery and keep invalid-parameter errors in the answer. Without its default features, with `server` and `transport-io` only: `macros` is left out since the three tools are declared by hand with the schemas they had, and its other features pull `reqwest`, `hyper` and `oauth2` | the protocol written by hand, as `library-mcp.ts` did: the SDK was the Product Owner's choice (F21, 2026-10-17) |
+| `tokio` | the runtime `rmcp` runs on, with `rt`, `macros` and `io-std`; 1.53.2 of 2026-10-03, MIT; its notes for 1.53.2 list fixes of locks and timers only. 1.53.3 (2026-10-13) is under 7 days | — (`rmcp` requires it) |
+| `rusqlite` | reads and writes the library's SQLite file, FTS5 included (`REF-RUSQLITE`, `REF-SQLITE-FTS5`); 0.40.2 of 2026-08-08, MIT, its notes for 0.40.2 only lower its minimum Rust. `bundled` compiles SQLite 3.53.2 (public domain) into the binary on macOS and Linux; on Windows the system's SQLite is linked, since the bundled C fails the Windows check of `check:rust` | the `sqlite3` command: one process per query and its text output parsed; `sqlx`: async and a larger tree |
+| `serde_json` | the tools' arguments and the JSON of the protocol; 1.0.152 of 2026-10-10, MIT OR Apache-2.0, its notes fix two number cases of `arbitrary_precision`, a feature not used. 1.0.153 and 1.0.154 (2026-10-11) were under 7 days when it was taken: the lock went back to 1.0.152 | — (`rmcp`'s own) |
+
+The four bring 67 crates into `Cargo.lock` (2026-10-18), every target's included, MIT or Apache-2.0 but `foldhash` (Zlib) and `r-efi` (MIT OR Apache-2.0 OR LGPL-2.1-or-later, taken as MIT, UEFI targets only); `cargo deny` finds no advisory. The crates Cargo resolved under 7 days were pinned back with `cargo update -p <crate> --precise <version>`: `cc` 1.7.0, `equivalent` 1.0.2, `libc` 0.2.190, `schemars` and `schemars_derive` 1.2.2.
 
 ## Considered for later
 
