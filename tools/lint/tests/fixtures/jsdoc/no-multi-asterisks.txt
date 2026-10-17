@@ -1,0 +1,412 @@
+# no-multi-asterisks: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), a carriage return written ␍,
+# each run by ESLint 10.12.0 at src/a.ts with the project's options; recorded by EN-083.
+@@@ case 1 (documented invalid)
+
+      /**
+       *
+       **
+       */
+      
+@@@ findings
+4:1 Should be no multiple asterisks on middle lines.
+@@@ output
+
+      /**
+       *
+       *
+       */
+      
+@@@ case 2 (documented invalid)
+
+      /**
+       *
+       **
+       */
+      
+@@@ findings
+4:1 Should be no multiple asterisks on middle lines.
+@@@ output
+
+      /**
+       *
+       *
+       */
+      
+@@@ case 3 (documented invalid)
+
+      /**
+       *
+       **
+       */
+      
+@@@ findings
+4:1 Should be no multiple asterisks on middle lines.
+@@@ output
+
+      /**
+       *
+       *
+       */
+      
+@@@ case 4 (documented invalid)
+
+      /**
+       * With a description
+       * @tag {SomeType} and a tag with details
+       **
+       */
+      
+@@@ findings
+5:1 Should be no multiple asterisks on middle lines.
+@@@ output
+
+      /**
+       * With a description
+       * @tag {SomeType} and a tag with details
+       *
+       */
+      
+@@@ case 5 (documented invalid)
+
+      /**
+       **
+       *
+       */
+      
+@@@ findings
+3:1 Should be no multiple asterisks on middle lines.
+@@@ output
+
+      /**
+       *
+       *
+       */
+      
+@@@ case 6 (documented invalid)
+
+      /**
+       * Desc.
+       *
+       **/
+      
+@@@ findings
+5:1 Should be no multiple asterisks on end lines.
+@@@ output
+
+      /**
+       * Desc.
+       *
+       */
+      
+@@@ case 7 (documented invalid)
+
+      /**
+       * Desc.
+       *
+       **/
+      
+@@@ findings
+5:1 Should be no multiple asterisks on end lines.
+@@@ output
+
+      /**
+       * Desc.
+       *
+       */
+      
+@@@ case 8 (documented invalid)
+
+      /**
+       * Desc.
+       *
+       abc * **/
+      
+@@@ findings
+5:1 Should be no multiple asterisks on end lines.
+@@@ output
+
+      /**
+       * Desc.
+       *
+       abc*/
+      
+@@@ case 9 (documented invalid)
+
+      /**
+       * Desc.
+       *
+       **/
+      
+@@@ findings
+5:1 Should be no multiple asterisks on end lines.
+@@@ output
+
+      /**
+       * Desc.
+       *
+       */
+      
+@@@ case 10 (documented invalid)
+
+      /** Desc. **/
+      
+@@@ findings
+2:1 Should be no multiple asterisks on end lines.
+@@@ output
+
+      /** Desc. */
+      
+@@@ case 11 (documented invalid)
+
+      /** @someTag name desc. **/
+      
+@@@ findings
+2:1 Should be no multiple asterisks on end lines.
+@@@ output
+
+      /** @someTag name desc. */
+      
+@@@ case 12 (documented invalid)
+
+      /** abc * */
+      
+@@@ findings
+2:1 Should be no multiple asterisks on end lines.
+@@@ output
+
+      /** abc */
+      
+@@@ case 13 (documented invalid)
+
+      /**
+       * Preserve user's whitespace when fixing (though one may also
+       *   use an align rule)
+       *
+       * */
+      
+@@@ findings
+6:1 Should be no multiple asterisks on end lines.
+@@@ output
+
+      /**
+       * Preserve user's whitespace when fixing (though one may also
+       *   use an align rule)
+       *
+        */
+      
+@@@ case 14 (documented invalid)
+
+      /**
+       * The method does 2 things:
+       * * Thing 1
+       * * Thing 2
+       */
+      
+@@@ findings
+4:1 Should be no multiple asterisks on middle lines.
+@@@ output
+
+      /**
+       * The method does 2 things:
+       * Thing 1
+       * Thing 2
+       */
+      
+@@@ case 15 (documented invalid)
+
+      /**
+       * This muti-line comment contains some
+       * *non-standard bold* syntax
+       */
+      
+@@@ findings
+4:1 Should be no multiple asterisks on middle lines.
+@@@ output
+
+      /**
+       * This muti-line comment contains some
+       * non-standard bold* syntax
+       */
+      
+@@@ case 16 (documented invalid)
+
+      /** Desc. **/
+      
+@@@ findings
+2:1 Should be no multiple asterisks on end lines.
+@@@ output
+
+      /** Desc. */
+      
+@@@ case 17 (documented valid)
+
+      /**
+       *
+       * Desc. ***
+       */
+      
+@@@ findings
+@@@ case 18 (documented valid)
+
+      /**
+       * Desc. ***
+       *
+       */
+      
+@@@ findings
+@@@ case 19 (documented valid)
+
+      /**
+       * Desc.
+       *
+       * sth */
+      
+@@@ findings
+@@@ case 20 (documented valid)
+
+      /**
+       **
+       *
+       */
+      
+@@@ findings
+3:1 Should be no multiple asterisks on middle lines.
+@@@ output
+
+      /**
+       *
+       *
+       */
+      
+@@@ case 21 (documented valid)
+
+      /**
+       *
+       *
+       **/
+      
+@@@ findings
+5:1 Should be no multiple asterisks on end lines.
+@@@ output
+
+      /**
+       *
+       *
+       */
+      
+@@@ case 22 (documented valid)
+
+      /**
+       * With a desc.
+       * and ***
+       */
+      
+@@@ findings
+@@@ case 23 (documented valid)
+
+      /**
+       * and ***
+       * With a desc.
+       */
+      
+@@@ findings
+@@@ case 24 (documented valid)
+
+      /**
+       * With a desc.
+       * With a desc.
+       * Desc. */
+      
+@@@ findings
+@@@ case 25 (documented valid)
+
+      /**
+       * With a description
+       * @tag {SomeType} and a tag with details
+       *
+       */
+      
+@@@ findings
+@@@ case 26 (documented valid)
+
+      /** abc */
+      function foo() {
+          //
+      }
+      
+@@@ findings
+@@@ case 27 (documented valid)
+
+      /** foo */
+      function foo(): void {
+          //
+      }
+      
+@@@ findings
+@@@ case 28 (documented valid)
+
+      /** @aTag abc */
+      function foo() {
+          //
+      }
+      
+@@@ findings
+@@@ case 29 (documented valid)
+
+      /**
+       * **Bold**
+       */
+      
+@@@ findings
+@@@ case 30 (documented valid)
+
+      /**
+       * Preserve user's bold statement when fixing.
+       *
+       * **Bold example:** Hi there.
+       */
+      
+@@@ findings
+@@@ case 31 (documented valid)
+
+      /**
+       * The method does 2 things:
+       * * Thing 1
+       * * Thing 2
+       */
+      
+@@@ findings
+4:1 Should be no multiple asterisks on middle lines.
+@@@ output
+
+      /**
+       * The method does 2 things:
+       * Thing 1
+       * Thing 2
+       */
+      
+@@@ case 32 (documented valid)
+
+      /**
+       * This muti-line comment contains some
+       * *non-standard bold* syntax
+       */
+      
+@@@ findings
+4:1 Should be no multiple asterisks on middle lines.
+@@@ output
+
+      /**
+       * This muti-line comment contains some
+       * non-standard bold* syntax
+       */
+      
+@@@ case 33 (documented valid)
+
+      /** abc */
+      function foo() {
+          //
+      }
+      
+@@@ findings
+@@@ end

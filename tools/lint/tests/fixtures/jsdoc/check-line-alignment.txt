@@ -1,0 +1,2071 @@
+# check-line-alignment: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), a carriage return written ␍,
+# each run by ESLint 10.12.0 at src/a.ts with the project's options; recorded by EN-083.
+@@@ case 1 (documented invalid)
+
+        /**
+         * Function description.
+         *
+         * @param {string} lorem Description.
+         * @param {int} sit Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+@@@ case 2 (documented invalid)
+
+				/**
+				 * With tabs.
+				 *
+				 * @param {string} lorem Description.
+				 * @param {int} sit Description multi words.
+				 */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+@@@ case 3 (documented invalid)
+
+        /**
+         * Function description.
+         *
+         * @param {string} lorem - Description.
+         * @param {int} sit - Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+@@@ case 4 (documented invalid)
+
+        /**
+         * Function description.
+         *
+         * @param  {string} lorem Description.
+         *  @param {int}    sit   Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+5:1 Expected JSDoc block lines to not be aligned.
+6:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        /**
+         * Function description.
+         *
+         * @param {string} lorem Description.
+         * @param {int} sit Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ case 5 (documented invalid)
+
+        /**
+         * Function description.
+         *
+         * @param  {string} lorem Description.
+          * @param {int}    sit   Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+5:1 Expected JSDoc block lines to not be aligned.
+6:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        /**
+         * Function description.
+         *
+         * @param {string} lorem Description.
+          * @param {int} sit Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ case 6 (documented invalid)
+
+        /**
+         * Function description.
+         *
+         * @param  {string} lorem Description.
+         * @param  {int}    sit   Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+5:1 Expected JSDoc block lines to not be aligned.
+6:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        /**
+         * Function description.
+         *
+         * @param {string} lorem Description.
+         * @param {int} sit Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ case 7 (documented invalid)
+
+        /**
+         * Function description.
+         *
+         * @template  {string} Arg Description.
+         * @param     {Arg}    arg Description
+         */
+        function hello(arg) {}
+      
+@@@ findings
+5:1 Expected JSDoc block lines to not be aligned.
+6:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        /**
+         * Function description.
+         *
+         * @template {string} Arg Description.
+         * @param {Arg} arg Description
+         */
+        function hello(arg) {}
+      
+@@@ case 8 (documented invalid)
+
+        /**
+         * Function description.
+         *
+         * @param {string} lorem Description.
+         * @param {int} sit Description multi words.
+         */
+        function fn( lorem, sit ) {}
+      
+@@@ findings
+@@@ case 9 (documented invalid)
+
+        const object = {
+          /**
+           * Function description.
+           *
+           * @param {string} lorem Description.
+           * @param {int} sit Description multi words.
+           */
+          fn( lorem, sit ) {}
+        }
+      
+@@@ findings
+@@@ case 10 (documented invalid)
+
+        class ClassName {
+          /**
+           * Function description.
+           *
+           * @param {string} lorem Description.
+           * @param {int} sit Description multi words.
+           */
+          fn( lorem, sit ) {}
+        }
+      
+@@@ findings
+@@@ case 11 (documented invalid)
+
+        /**
+         * Function description.
+         *
+         * @arg {string} lorem Description.
+         * @arg {int} sit Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+@@@ case 12 (documented invalid)
+
+        /**
+         * @namespace
+         * @property {object} defaults Description.
+         * @property {int} defaults.lorem Description multi words.
+         */
+        const config = {
+            defaults: {
+                lorem: 1
+            }
+        }
+      
+@@@ findings
+@@@ case 13 (documented invalid)
+
+        /**
+         * My object.
+         *
+         * @typedef {Object} MyObject
+         *
+         * @property {string} lorem Description.
+         * @property {int} sit Description multi words.
+         */
+      
+@@@ findings
+@@@ case 14 (documented invalid)
+
+        /**
+         * My object.
+         *
+         * @typedef {Object} MyObject
+         *
+         * @property {{a: number, b: string, c}} lorem Description.
+         * @property {Object.<string, Class>} sit Description multi words.
+         * @property {Object.<string, Class>} amet Description} weird {multi} {{words}}.
+         * @property {Object.<string, Class>} dolor
+         */
+      
+@@@ findings
+@@@ case 15 (documented invalid)
+
+        /**
+         * My object.
+         *
+         * @typedef {Object} MyObject
+         *
+         * @property {{a: number, b: string, c}} lorem Description.
+         * @property {Object.<string, Class>} sit Description multi words.
+         * @property {Object.<string, Class>} amet Description} weird {multi} {{words}}.
+         * @property {Object.<string, Class>} dolor
+         */
+      
+@@@ findings
+@@@ case 16 (documented invalid)
+
+        /**
+         * My object.
+         *
+         * @typedef {Object} MyObject
+         *
+         * @property {{a: number, b: string, c}} lorem Description.
+         * @property {Object.<string, Class>} sit Description multi words.
+         * @property {Object.<string, Class>} amet Description} weird {multi} {{words}}.
+         * @property {Object.<string, Class>} dolor
+         */
+      
+@@@ findings
+@@@ case 17 (documented invalid)
+
+        /**
+         * My function.
+         *
+         * @param {string} lorem  Description.
+         * @param {int}    sit    Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+5:1 Expected JSDoc block lines to not be aligned.
+6:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        /**
+         * My function.
+         *
+         * @param {string} lorem Description.
+         * @param {int} sit Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ case 18 (documented invalid)
+
+        /**
+         * My function.
+         *
+         * @param {string} lorem Description.
+         * @param   {int}    sit   Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+6:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        /**
+         * My function.
+         *
+         * @param {string} lorem Description.
+         * @param {int} sit Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ case 19 (documented invalid)
+
+        /**
+         * My function.
+         *
+         * @param {string} lorem Description.
+         * @param   {int}    sit
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+6:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        /**
+         * My function.
+         *
+         * @param {string} lorem Description.
+         * @param {int} sit
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ case 20 (documented invalid)
+
+        /**
+         * My function.
+         *
+         * @param {string} lorem Description.
+         * @param   {int}    sit
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+6:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        /**
+         * My function.
+         *
+         * @param {string} lorem Description.
+         * @param {int} sit
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ case 21 (documented invalid)
+
+        /**
+         * Function description.
+         *
+         * @param {string} lorem Description.
+         * @param {int} sit Description multi
+           line without *.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+@@@ case 22 (documented invalid)
+
+        /**
+         * My function.
+         *
+         * @param {string} lorem Description.
+         * @param   {int}    sit
+         *
+         * @return  {string}  Return description
+         *    with multi line, but don't touch.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+6:1 Expected JSDoc block lines to not be aligned.
+8:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        /**
+         * My function.
+         *
+         * @param {string} lorem Description.
+         * @param {int} sit
+         *
+         * @return {string} Return description
+         * with multi line, but don't touch.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ case 23 (documented invalid)
+
+        /**
+         * Only return doc.
+         *
+         * @return {boolean}  Return description.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+5:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        /**
+         * Only return doc.
+         *
+         * @return {boolean} Return description.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ case 24 (documented invalid)
+
+      /**
+       * Creates OS based shortcuts for files, folders, and applications.
+       *
+       * @param  {object}  options  Options object for each OS.
+       * @return {boolean}          True = success, false = failed to create the icon
+       */
+       function quux () {}
+      
+@@@ findings
+5:1 Expected JSDoc block lines to not be aligned.
+6:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+      /**
+       * Creates OS based shortcuts for files, folders, and applications.
+       *
+       * @param {object} options Options object for each OS.
+       * @return {boolean} True = success, false = failed to create the icon
+       */
+       function quux () {}
+      
+@@@ case 25 (documented invalid)
+
+      /**
+       * Creates OS based shortcuts for files, folders, and applications.
+       *
+       * @param {object} options Options object for each OS.
+       * @return {boolean}          True = success, false = failed to create the icon
+       */
+       function quux () {}
+      
+@@@ findings
+6:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+      /**
+       * Creates OS based shortcuts for files, folders, and applications.
+       *
+       * @param {object} options Options object for each OS.
+       * @return {boolean} True = success, false = failed to create the icon
+       */
+       function quux () {}
+      
+@@@ case 26 (documented invalid)
+
+      /**
+       * Creates OS based shortcuts for files, folders, and applications.
+       *
+       * @param {object} options Options object for each OS.
+       * @return  True = success, false = failed to create the icon
+       */
+       function quux () {}
+      
+@@@ findings
+6:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+      /**
+       * Creates OS based shortcuts for files, folders, and applications.
+       *
+       * @param {object} options Options object for each OS.
+       * @return True = success, false = failed to create the icon
+       */
+       function quux () {}
+      
+@@@ case 27 (documented invalid)
+
+      /**
+       * Creates OS based shortcuts for files, folders, and applications.
+       *
+       * @param  options Options object for each OS.
+       * @return True = success, false = failed to create the icon
+       */
+       function quux () {}
+      
+@@@ findings
+5:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+      /**
+       * Creates OS based shortcuts for files, folders, and applications.
+       *
+       * @param options Options object for each OS.
+       * @return True = success, false = failed to create the icon
+       */
+       function quux () {}
+      
+@@@ case 28 (documented invalid)
+
+      /**
+       * Creates OS based shortcuts for files, folders, and applications.
+       *
+       * @param {object} options Options object for each OS.
+       * @param {object} other Other.
+       * @return  True = success, false = failed to create the icon
+       */
+       function quux () {}
+      
+@@@ findings
+7:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+      /**
+       * Creates OS based shortcuts for files, folders, and applications.
+       *
+       * @param {object} options Options object for each OS.
+       * @param {object} other Other.
+       * @return True = success, false = failed to create the icon
+       */
+       function quux () {}
+      
+@@@ case 29 (documented invalid)
+
+      /**
+       * Returns the value stored in the process.env for a given
+       * environment variable.
+       *
+       * @param  {string} withPercents    '%USERNAME%'
+       * @param  {string} withoutPercents 'USERNAME'
+       * @return {string}                 'bob' || '%USERNAME%'
+       */
+      function quux () {}
+      
+@@@ findings
+6:1 Expected JSDoc block lines to not be aligned.
+7:1 Expected JSDoc block lines to not be aligned.
+8:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+      /**
+       * Returns the value stored in the process.env for a given
+       * environment variable.
+       *
+       * @param {string} withPercents '%USERNAME%'
+       * @param {string} withoutPercents 'USERNAME'
+       * @return {string} 'bob' || '%USERNAME%'
+       */
+      function quux () {}
+      
+@@@ case 30 (documented invalid)
+
+      /**
+       * Function description
+       *           description with post delimiter.
+       *
+       * @param {string} lorem Description.
+       * @param {int}    sit   Description multi words.
+       */
+      const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+7:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+      /**
+       * Function description
+       *           description with post delimiter.
+       *
+       * @param {string} lorem Description.
+       * @param {int} sit Description multi words.
+       */
+      const fn = ( lorem, sit ) => {}
+      
+@@@ case 31 (documented invalid)
+
+      /**
+       * Function description.
+       *
+       * @param  {string} lorem Description.
+       * @param  {int}    sit   Description multi words.
+       *
+       * @return {string}       Return description.
+       */
+      const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+5:1 Expected JSDoc block lines to not be aligned.
+6:1 Expected JSDoc block lines to not be aligned.
+8:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+      /**
+       * Function description.
+       *
+       * @param {string} lorem Description.
+       * @param {int} sit Description multi words.
+       *
+       * @return {string} Return description.
+       */
+      const fn = ( lorem, sit ) => {}
+      
+@@@ case 32 (documented invalid)
+
+      /**
+       * Function description.
+       *
+       * @param  {string} lorem Description.
+       * @param  {int}    sit   Description multi words.
+       *
+       * @return {string}       Return description.
+       */
+      const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+5:1 Expected JSDoc block lines to not be aligned.
+6:1 Expected JSDoc block lines to not be aligned.
+8:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+      /**
+       * Function description.
+       *
+       * @param {string} lorem Description.
+       * @param {int} sit Description multi words.
+       *
+       * @return {string} Return description.
+       */
+      const fn = ( lorem, sit ) => {}
+      
+@@@ case 33 (documented invalid)
+
+      /**
+       * Function description.
+       *
+       *  @param   {string}  lorem Description.
+       * @param {int} sit Description multi words.
+       */
+      const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+5:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+      /**
+       * Function description.
+       *
+       * @param {string} lorem Description.
+       * @param {int} sit Description multi words.
+       */
+      const fn = ( lorem, sit ) => {}
+      
+@@@ case 34 (documented invalid)
+
+      /**
+       * Function description.
+       *
+       * @param {string} lorem   Description.
+       * @param {int} sit Description multi words.
+       */
+      const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+5:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+      /**
+       * Function description.
+       *
+       * @param {string} lorem Description.
+       * @param {int} sit Description multi words.
+       */
+      const fn = ( lorem, sit ) => {}
+      
+@@@ case 35 (documented invalid)
+␍
+        /**␍
+         * Function description.␍
+         *␍
+         * @param {string} lorem Description.␍
+         * @param {int} sit Description multi words.␍
+         * @param {string} sth   Multi␍
+         *                       line description.␍
+         */␍
+        const fn = ( lorem, sit ) => {}␍
+      
+@@@ findings
+7:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+␍
+        /**␍
+         * Function description.␍
+         *␍
+         * @param {string} lorem Description.␍
+         * @param {int} sit Description multi words.␍
+         * @param {string} sth Multi␍
+         * line description.␍
+         */␍
+        const fn = ( lorem, sit ) => {}␍
+      
+@@@ case 36 (documented invalid)
+
+        /**
+         * Function description.
+         *
+         * @param {string} lorem Description.
+         * @param {int} sit Description multi
+         *   line with asterisks.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+7:1 Expected wrap indent
+@@@ output
+
+        /**
+         * Function description.
+         *
+         * @param {string} lorem Description.
+         * @param {int} sit Description multi
+         * line with asterisks.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ case 37 (documented invalid)
+
+        /**
+         * Function description.
+         *
+         * @param {string} lorem - Description.
+         * @param {int}    sit   -   Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+6:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        /**
+         * Function description.
+         *
+         * @param {string} lorem - Description.
+         * @param {int} sit - Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ case 38 (documented invalid)
+
+        /**
+         * Function description.
+         *
+         * @param {string} lorem -  Description.
+         * @param {int}    sit   -   Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+5:1 Expected JSDoc block lines to not be aligned.
+6:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        /**
+         * Function description.
+         *
+         * @param {string} lorem - Description.
+         * @param {int} sit - Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ case 39 (documented invalid)
+
+        /**
+         * Function description.
+         *
+         * @param {string} lorem - Description.
+         * @param {int} sit -  Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+6:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        /**
+         * Function description.
+         *
+         * @param {string} lorem - Description.
+         * @param {int} sit - Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ case 40 (documented invalid)
+
+        /**
+         * Function description.
+         *
+         * @param {string} lorem - Description.
+         * @param {int}    sit   -  Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+6:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        /**
+         * Function description.
+         *
+         * @param {string} lorem - Description.
+         * @param {int} sit - Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ case 41 (documented invalid)
+
+        /**
+         * Function description.
+         *
+         * @param {string} lorem -  Description.
+         * @param {int}    sit   -   Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+5:1 Expected JSDoc block lines to not be aligned.
+6:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        /**
+         * Function description.
+         *
+         * @param {string} lorem - Description.
+         * @param {int} sit - Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ case 42 (documented invalid)
+
+        /**
+         * Function description.
+         *
+         * @param   {string} lorem -  Description.
+         * @param {int} sit -  Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+5:1 Expected JSDoc block lines to not be aligned.
+6:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        /**
+         * Function description.
+         *
+         * @param {string} lorem - Description.
+         * @param {int} sit - Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ case 43 (documented invalid)
+
+        /**
+         * @param {string} lorem Description
+         * with multiple lines.
+         */
+        function quux () {
+        }
+      
+@@@ findings
+@@@ case 44 (documented invalid)
+
+        /**
+         * Function description.
+         *
+         * @param {string} lorem Description.
+         * @param {int} sit Description multi
+         * line with asterisks.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+@@@ case 45 (documented invalid)
+
+        /**
+         * My function.
+         *
+         * @param {string} lorem Description.
+         * @param   {int}    sit   Description multiple
+         * lines.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+6:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        /**
+         * My function.
+         *
+         * @param {string} lorem Description.
+         * @param {int} sit Description multiple
+         * lines.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ case 46 (documented invalid)
+
+      /**
+       * @property {boolean} tls_verify_client_certificate - Whether our API should
+       *   enable TLS client authentication
+       */
+      function quux () {}
+      
+@@@ findings
+4:1 Expected wrap indent
+@@@ output
+
+      /**
+       * @property {boolean} tls_verify_client_certificate - Whether our API should
+       * enable TLS client authentication
+       */
+      function quux () {}
+      
+@@@ case 47 (documented invalid)
+
+      /**
+       * @property {boolean} tls_verify_client_certificate - Whether our API should
+       *   enable TLS client authentication
+       */
+      function quux () {}
+      
+@@@ findings
+4:1 Expected wrap indent
+@@@ output
+
+      /**
+       * @property {boolean} tls_verify_client_certificate - Whether our API should
+       * enable TLS client authentication
+       */
+      function quux () {}
+      
+@@@ case 48 (documented invalid)
+
+        /**
+         * @typedef   {object} CustomType
+         * @property {string} property
+         */
+      
+@@@ findings
+@@@ case 49 (documented invalid)
+
+        /**
+         * @typedef   {object} CustomType
+         * @property {string} property
+         */
+      
+@@@ findings
+@@@ case 50 (documented valid)
+
+        /**
+         * @typedef {object} CustomType
+         * @property {string} property
+         */
+      
+@@@ findings
+@@@ case 51 (documented valid)
+
+        /**
+         * @typedef {object} CustomType
+         * @property {string} property
+         */
+      
+@@@ findings
+@@@ case 52 (documented valid)
+
+        /**
+         * Function description.
+         *
+         * @param {string} lorem Description.
+         * @param {int}    sit   Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+6:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        /**
+         * Function description.
+         *
+         * @param {string} lorem Description.
+         * @param {int} sit Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ case 53 (documented valid)
+
+				/**
+				 * With tabs.
+				 *
+				 * @param {string} lorem Description.
+				 * @param {int}    sit   Description multi words.
+				 */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+6:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+				/**
+				 * With tabs.
+				 *
+				 * @param {string} lorem Description.
+				 * @param {int} sit Description multi words.
+				 */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ case 54 (documented valid)
+
+        /**
+         * Function description.
+         *
+         * @param {string} lorem - Description.
+         * @param {int}    sit   - Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+6:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        /**
+         * Function description.
+         *
+         * @param {string} lorem - Description.
+         * @param {int} sit - Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ case 55 (documented valid)
+
+        /**
+         * @param {string} lorem Description.
+         * @param {int}    sit
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+4:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        /**
+         * @param {string} lorem Description.
+         * @param {int} sit
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ case 56 (documented valid)
+
+        /**
+         * @param {int}    sit
+         * @param {string} lorem Description.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+3:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        /**
+         * @param {int} sit
+         * @param {string} lorem Description.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ case 57 (documented valid)
+
+        /**
+         * No params.
+         */
+        const fn = () => {}
+      
+@@@ findings
+@@@ case 58 (documented valid)
+
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+@@@ case 59 (documented valid)
+
+        /**
+         * Function description.
+         *
+         * @param {string} lorem Description.
+         * @param {int}    sit   Description multi words.
+         */
+        function fn( lorem, sit ) {}
+      
+@@@ findings
+6:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        /**
+         * Function description.
+         *
+         * @param {string} lorem Description.
+         * @param {int} sit Description multi words.
+         */
+        function fn( lorem, sit ) {}
+      
+@@@ case 60 (documented valid)
+
+        const object = {
+          /**
+           * Function description.
+           *
+           * @param {string} lorem Description.
+           * @param {int}    sit   Description multi words.
+           */
+          fn( lorem, sit ) {},
+        }
+      
+@@@ findings
+7:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        const object = {
+          /**
+           * Function description.
+           *
+           * @param {string} lorem Description.
+           * @param {int} sit Description multi words.
+           */
+          fn( lorem, sit ) {},
+        }
+      
+@@@ case 61 (documented valid)
+
+        class ClassName {
+          /**
+           * Function description.
+           *
+           * @param {string} lorem Description.
+           * @param {int}    sit   Description multi words.
+           */
+          fn( lorem, sit ) {}
+        }
+      
+@@@ findings
+7:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        class ClassName {
+          /**
+           * Function description.
+           *
+           * @param {string} lorem Description.
+           * @param {int} sit Description multi words.
+           */
+          fn( lorem, sit ) {}
+        }
+      
+@@@ case 62 (documented valid)
+
+        /**
+         * Function description.
+         *
+         * @arg {string} lorem Description.
+         * @arg {int}    sit   Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+6:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        /**
+         * Function description.
+         *
+         * @arg {string} lorem Description.
+         * @arg {int} sit Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ case 63 (documented valid)
+
+        /**
+         * @namespace
+         * @property {object} defaults       Description.
+         * @property {int}    defaults.lorem Description multi words.
+         */
+        const config = {
+            defaults: {
+                lorem: 1
+            }
+        }
+      
+@@@ findings
+4:1 Expected JSDoc block lines to not be aligned.
+5:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        /**
+         * @namespace
+         * @property {object} defaults Description.
+         * @property {int} defaults.lorem Description multi words.
+         */
+        const config = {
+            defaults: {
+                lorem: 1
+            }
+        }
+      
+@@@ case 64 (documented valid)
+
+        /**
+         * My object.
+         *
+         * @typedef {Object} MyObject
+         *
+         * @property {string} lorem Description.
+         * @property {int}    sit   Description multi words.
+         */
+      
+@@@ findings
+8:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        /**
+         * My object.
+         *
+         * @typedef {Object} MyObject
+         *
+         * @property {string} lorem Description.
+         * @property {int} sit Description multi words.
+         */
+      
+@@@ case 65 (documented valid)
+
+        /**
+         * My object.
+         *
+         * @typedef {Object} MyObject
+         *
+         * @property {{a: number, b: string, c}} lorem Description.
+         * @property {Object.<string, Class>}    sit   Description multi words.
+         * @property {Object.<string, Class>}    amet  Description} weird {multi} {{words}}.
+         * @property {Object.<string, Class>}    dolor
+         */
+      
+@@@ findings
+8:1 Expected JSDoc block lines to not be aligned.
+9:1 Expected JSDoc block lines to not be aligned.
+10:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        /**
+         * My object.
+         *
+         * @typedef {Object} MyObject
+         *
+         * @property {{a: number, b: string, c}} lorem Description.
+         * @property {Object.<string, Class>} sit Description multi words.
+         * @property {Object.<string, Class>} amet Description} weird {multi} {{words}}.
+         * @property {Object.<string, Class>} dolor
+         */
+      
+@@@ case 66 (documented valid)
+
+        /**
+         * My object.
+         *
+         * @typedef  {Object}                    MyObject
+         *
+         * @property {{a: number, b: string, c}} lorem    Description.
+         * @property {Object.<string, Class>}    sit      Description multi words.
+         * @property {Object.<string, Class>}    amet     Description} weird {multi} {{words}}.
+         * @property {Object.<string, Class>}    dolor
+         */
+      
+@@@ findings
+7:1 Expected JSDoc block lines to not be aligned.
+8:1 Expected JSDoc block lines to not be aligned.
+9:1 Expected JSDoc block lines to not be aligned.
+10:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        /**
+         * My object.
+         *
+         * @typedef  {Object}                    MyObject
+         *
+         * @property {{a: number, b: string, c}} lorem Description.
+         * @property {Object.<string, Class>} sit Description multi words.
+         * @property {Object.<string, Class>} amet Description} weird {multi} {{words}}.
+         * @property {Object.<string, Class>} dolor
+         */
+      
+@@@ case 67 (documented valid)
+
+        /**
+         * My object.
+         *
+         * @typedef  {Object}                    MyObject
+         *
+         * @property {{a: number, b: string, c}} lorem    Description.
+         * @property {Object.<string, Class>}    sit      Description multi words.
+         * @property {Object.<string, Class>}    amet     Description} weird {multi} {{words}}.
+         * @property {Object.<string, Class>}    dolor
+         */
+      
+@@@ findings
+7:1 Expected JSDoc block lines to not be aligned.
+8:1 Expected JSDoc block lines to not be aligned.
+9:1 Expected JSDoc block lines to not be aligned.
+10:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        /**
+         * My object.
+         *
+         * @typedef  {Object}                    MyObject
+         *
+         * @property {{a: number, b: string, c}} lorem Description.
+         * @property {Object.<string, Class>} sit Description multi words.
+         * @property {Object.<string, Class>} amet Description} weird {multi} {{words}}.
+         * @property {Object.<string, Class>} dolor
+         */
+      
+@@@ case 68 (documented valid)
+
+        /**
+         * My object.
+         *
+         * @template                             T
+         * @template                             W,X,Y,Z
+         * @template {string}                    K               - K must be a string or string literal
+         * @template {{ serious(): string }}     Seriousalizable - must have a serious method
+         *
+         * @param    {{a: number, b: string, c}} lorem           Description.
+         */
+      
+@@@ findings
+5:1 Expected JSDoc block lines to not be aligned.
+6:1 Expected JSDoc block lines to not be aligned.
+7:1 Expected JSDoc block lines to not be aligned.
+8:1 Expected JSDoc block lines to not be aligned.
+10:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        /**
+         * My object.
+         *
+         * @template T
+         * @template W,X,Y,Z
+         * @template {string} K - K must be a string or string literal
+         * @template {{ serious(): string }} Seriousalizable - must have a serious method
+         *
+         * @param {{a: number, b: string, c}} lorem Description.
+         */
+      
+@@@ case 69 (documented valid)
+
+        /** @param {number} lorem */
+        const fn = ( lorem ) => {}
+      
+@@@ findings
+@@@ case 70 (documented valid)
+
+      /**
+       * Creates OS based shortcuts for files, folders, and applications.
+       *
+       * @param  {object}  options Options object for each OS.
+       * @return {boolean}         True = success, false = failed to create the icon
+       */
+       function quux () {}
+      
+@@@ findings
+5:1 Expected JSDoc block lines to not be aligned.
+6:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+      /**
+       * Creates OS based shortcuts for files, folders, and applications.
+       *
+       * @param {object} options Options object for each OS.
+       * @return {boolean} True = success, false = failed to create the icon
+       */
+       function quux () {}
+      
+@@@ case 71 (documented valid)
+
+      /**
+       * Creates OS based shortcuts for files, folders, and applications.
+       *
+       * @param  {object}  options Options object for each OS.
+       * @return {boolean}
+       */
+       function quux () {}
+      
+@@@ findings
+5:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+      /**
+       * Creates OS based shortcuts for files, folders, and applications.
+       *
+       * @param {object} options Options object for each OS.
+       * @return {boolean}
+       */
+       function quux () {}
+      
+@@@ case 72 (documented valid)
+
+      /**
+       * Only return doc.
+       *
+       * @return {boolean} Return description.
+       */
+       function quux () {}
+      
+@@@ findings
+@@@ case 73 (documented valid)
+
+        /**
+         * Not validating without option.
+         *
+         * @param {string} lorem Description.
+         * @param {int} sit Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+@@@ case 74 (documented valid)
+
+      /**
+       * Creates OS based shortcuts for files, folders, and applications.
+       *
+       * @param {object} options Options object for each OS.
+       * @return {boolean} True = success, false = failed to create the icon
+       */
+      function quux (options) {}
+      
+@@@ findings
+@@@ case 75 (documented valid)
+
+      /**
+       * Creates OS based shortcuts for files, folders, and applications.
+       *
+       * @param {object} options Options object for each OS.
+       * @param {object} other Other.
+       * @return  True = success, false = failed to create the icon
+       */
+       function quux () {}
+      
+@@@ findings
+7:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+      /**
+       * Creates OS based shortcuts for files, folders, and applications.
+       *
+       * @param {object} options Options object for each OS.
+       * @param {object} other Other.
+       * @return True = success, false = failed to create the icon
+       */
+       function quux () {}
+      
+@@@ case 76 (documented valid)
+
+      /**
+       * @param parameter Description.
+       */
+      function func(parameter){
+
+      }
+      
+@@@ findings
+@@@ case 77 (documented valid)
+
+        /**
+         * Function description
+         *           description with post delimiter.
+         *
+         * @param {string} lorem Description.
+         * @param {int}    sit   Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+7:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        /**
+         * Function description
+         *           description with post delimiter.
+         *
+         * @param {string} lorem Description.
+         * @param {int} sit Description multi words.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ case 78 (documented valid)
+
+        /**
+         * Function description.
+         *
+         *  @param    {string}  lorem Description.
+         *  @param    {int}     sit   Description multi words.
+         *
+         *  @return   {string}        Return description.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+5:1 Expected JSDoc block lines to not be aligned.
+6:1 Expected JSDoc block lines to not be aligned.
+8:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        /**
+         * Function description.
+         *
+         * @param {string} lorem Description.
+         * @param {int} sit Description multi words.
+         *
+         * @return {string} Return description.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ case 79 (documented valid)
+
+        /**
+         * Function description.
+         *
+         *  @param   {string}  lorem Description.
+         *  @param   {int}  sit Description multi words.
+         *
+         *  @return   {string}  Return description.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+5:1 Expected JSDoc block lines to not be aligned.
+6:1 Expected JSDoc block lines to not be aligned.
+8:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        /**
+         * Function description.
+         *
+         * @param {string} lorem Description.
+         * @param {int} sit Description multi words.
+         *
+         * @return {string} Return description.
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ case 80 (documented valid)
+
+        /**
+         * @param {{
+         *        ids: number[]
+         *        }}            params
+         */
+        const fn = ({ids}) => {}
+      
+@@@ findings
+@@@ case 81 (documented valid)
+␍
+        /**␍
+         * Function description.␍
+         *␍
+         * @param {string} lorem Description.␍
+         * @param {int}    sit   Description multi words.␍
+         * @param {string} sth   Multi␍
+         *                       line description.␍
+         */␍
+        const fn = ( lorem, sit ) => {}␍
+      
+@@@ findings
+6:1 Expected JSDoc block lines to not be aligned.
+7:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+␍
+        /**␍
+         * Function description.␍
+         *␍
+         * @param {string} lorem Description.␍
+         * @param {int} sit Description multi words.␍
+         * @param {string} sth Multi␍
+         * line description.␍
+         */␍
+        const fn = ( lorem, sit ) => {}␍
+      
+@@@ case 82 (documented valid)
+
+      /**
+       * Function description.
+       *
+       * @param lorem Description.
+       * @param sit   Description multi words.
+       */
+      const fn = ( lorem, sit ) => {};
+
+      /**
+       * Function description.
+       *
+       * @return Return description.
+       */
+      const fn2 = () => {}
+      
+@@@ findings
+6:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+      /**
+       * Function description.
+       *
+       * @param lorem Description.
+       * @param sit Description multi words.
+       */
+      const fn = ( lorem, sit ) => {};
+
+      /**
+       * Function description.
+       *
+       * @return Return description.
+       */
+      const fn2 = () => {}
+      
+@@@ case 83 (documented valid)
+
+      /**
+       * Function description.
+       *
+       * @param lorem Description.
+       * @param sit   Description multi words.
+       * @return      Return description.
+       */
+      const fn = ( lorem, sit ) => {};
+
+      /**
+       * Function description.
+       *
+       * @param lorem Description.
+       * @param sit   Description multi words.
+       * @returns     Return description.
+       */
+      const fn2 = ( lorem, sit ) => {};
+
+      /**
+       * Function description.
+       *
+       * @param a Description.
+       * @param b Description multi words.
+       * @returns Return description.
+       */
+      const fn3 = ( a, b ) => {};
+      
+@@@ findings
+6:1 Expected JSDoc block lines to not be aligned.
+7:1 Expected JSDoc block lines to not be aligned.
+15:1 Expected JSDoc block lines to not be aligned.
+16:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+      /**
+       * Function description.
+       *
+       * @param lorem Description.
+       * @param sit Description multi words.
+       * @return Return description.
+       */
+      const fn = ( lorem, sit ) => {};
+
+      /**
+       * Function description.
+       *
+       * @param lorem Description.
+       * @param sit Description multi words.
+       * @returns Return description.
+       */
+      const fn2 = ( lorem, sit ) => {};
+
+      /**
+       * Function description.
+       *
+       * @param a Description.
+       * @param b Description multi words.
+       * @returns Return description.
+       */
+      const fn3 = ( a, b ) => {};
+      
+@@@ case 84 (documented valid)
+
+      /**
+       * Function description.
+       *
+       * @argument lorem Description.
+       * @return         Return description.
+       */
+      const fn = ( lorem ) => {};
+
+      /**
+       * Function description.
+       *
+       * @argument lorem Description.
+       * @returns        Return description.
+       */
+      const fn2 = ( lorem ) => {};
+      
+@@@ findings
+6:1 Expected JSDoc block lines to not be aligned.
+14:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+      /**
+       * Function description.
+       *
+       * @argument lorem Description.
+       * @return Return description.
+       */
+      const fn = ( lorem ) => {};
+
+      /**
+       * Function description.
+       *
+       * @argument lorem Description.
+       * @returns Return description.
+       */
+      const fn2 = ( lorem ) => {};
+      
+@@@ case 85 (documented valid)
+
+      /**
+       * Function description.
+       *
+       * @arg a   Description.
+       * @returns Return description.
+       */
+      const fn = ( a ) => {};
+      
+@@@ findings
+5:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+      /**
+       * Function description.
+       *
+       * @arg a Description.
+       * @returns Return description.
+       */
+      const fn = ( a ) => {};
+      
+@@@ case 86 (documented valid)
+
+      /**
+       * Function description.
+       *
+       * @arg   lorem Description.
+       * @param sit   Return description.
+       */
+      const fn = ( lorem, sit ) => {};
+      
+@@@ findings
+5:1 Expected JSDoc block lines to not be aligned.
+6:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+      /**
+       * Function description.
+       *
+       * @arg lorem Description.
+       * @param sit Return description.
+       */
+      const fn = ( lorem, sit ) => {};
+      
+@@@ case 87 (documented valid)
+
+      /**
+       * Function description.
+       *
+       * @arg      a Description.
+       * @argument b Second description.
+       * @returns    Return description.
+       */
+      const fn = ( a, b ) => {};
+      
+@@@ findings
+5:1 Expected JSDoc block lines to not be aligned.
+7:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+      /**
+       * Function description.
+       *
+       * @arg a Description.
+       * @argument b Second description.
+       * @returns Return description.
+       */
+      const fn = ( a, b ) => {};
+      
+@@@ case 88 (documented valid)
+
+        /**
+         * @param {string} lorem Description
+         *   with multiple lines.
+         */
+        function quux () {
+        }
+      
+@@@ findings
+4:1 Expected wrap indent
+@@@ output
+
+        /**
+         * @param {string} lorem Description
+         * with multiple lines.
+         */
+        function quux () {
+        }
+      
+@@@ case 89 (documented valid)
+
+        /**
+         * @param {string} lorem Description
+         *   with multiple lines.
+         */
+        function quux () {
+        }
+      
+@@@ findings
+4:1 Expected wrap indent
+@@@ output
+
+        /**
+         * @param {string} lorem Description
+         * with multiple lines.
+         */
+        function quux () {
+        }
+      
+@@@ case 90 (documented valid)
+
+      /**
+       * Function description.
+       *
+       * @param {string} lorem Description.
+       * @param {int}    sit   Description multi
+       *                         line with asterisks.
+       */
+      const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+6:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+      /**
+       * Function description.
+       *
+       * @param {string} lorem Description.
+       * @param {int} sit Description multi
+       * line with asterisks.
+       */
+      const fn = ( lorem, sit ) => {}
+      
+@@@ case 91 (documented valid)
+
+      /**
+       * Function description.
+       *
+       * @param {string} lorem Description.
+       * @param {int}    sit   Description multi
+       *                         line with
+       *                         asterisks.
+       */
+      const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+6:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+      /**
+       * Function description.
+       *
+       * @param {string} lorem Description.
+       * @param {int} sit Description multi
+       * line with
+       * asterisks.
+       */
+      const fn = ( lorem, sit ) => {}
+      
+@@@ case 92 (documented valid)
+
+        /**
+         * @param {
+         *   string | number
+         * } lorem Description
+         *   with multiple lines.
+         */
+        function quux () {
+        }
+      
+@@@ findings
+6:1 Expected wrap indent
+@@@ output
+
+        /**
+         * @param {
+         *   string | number
+         * } lorem Description
+         * with multiple lines.
+         */
+        function quux () {
+        }
+      
+@@@ case 93 (documented valid)
+
+      /**
+       * @param {string|string[]|TemplateResult|TemplateResult[]} event.detail.description -
+       *    Notification description
+       */
+      function quux () {}
+      
+@@@ findings
+4:1 Expected wrap indent
+@@@ output
+
+      /**
+       * @param {string|string[]|TemplateResult|TemplateResult[]} event.detail.description -
+       * Notification description
+       */
+      function quux () {}
+      
+@@@ case 94 (documented valid)
+
+      /**
+       * Returns cached value of negative scale of the world transform.
+       *
+       * @returns {number} -1 if world transform has negative scale, 1 otherwise.
+       */
+      
+@@@ findings
+@@@ case 95 (documented valid)
+
+        /**
+         * @param {string} lorem Description
+         *   with multiple lines preserving existing indentation when wrapIndent is disabled.
+         */
+        function quux () {
+        }
+      
+@@@ findings
+4:1 Expected wrap indent
+@@@ output
+
+        /**
+         * @param {string} lorem Description
+         * with multiple lines preserving existing indentation when wrapIndent is disabled.
+         */
+        function quux () {
+        }
+      
+@@@ case 96 (documented valid)
+
+        /**
+         * Function description with disableWrapIndent true, but wrapIndent defined.
+         * Preserves existing indentation regardless of wrapIndent value.
+         *
+         * @param {string} lorem Description
+         *   with multiple lines.
+         */
+        const fn = ( lorem ) => {}
+      
+@@@ findings
+7:1 Expected wrap indent
+@@@ output
+
+        /**
+         * Function description with disableWrapIndent true, but wrapIndent defined.
+         * Preserves existing indentation regardless of wrapIndent value.
+         *
+         * @param {string} lorem Description
+         * with multiple lines.
+         */
+        const fn = ( lorem ) => {}
+      
+@@@ case 97 (documented valid)
+
+        /**
+         * @return {Promise} A promise.
+         *   - On success, resolves.
+         *   - On error, rejects with details:
+         *     - When aborted, textStatus is "abort".
+         *     - On timeout, textStatus is "timeout".
+         */
+        function test() {}
+      
+@@@ findings
+@@@ case 98 (documented valid)
+
+        /**
+         * @param {string} lorem Description with list:
+         *   - First item
+         *   - Second item
+         *     - Nested item
+         *     - Another nested item
+         */
+        function test() {}
+      
+@@@ findings
+@@@ case 99 (documented valid)
+
+        /**
+         * @return {Promise} A promise.
+         *   1. First step
+         *   2. Second step with continuation
+         *      on another line
+         *   3. Third step
+         */
+        function test() {}
+      
+@@@ findings
+@@@ case 100 (documented valid)
+
+        /**
+         * @param {Object} options Configuration options.
+         *   * First option
+         *   * Second option with details:
+         *     * Nested detail
+         *     * Another detail
+         */
+        function test() {}
+      
+@@@ findings
+@@@ case 101 (documented valid)
+
+        /**
+         * @param {string} param Description with list:
+         *                         - Item 1
+         *                           - Nested item
+         */
+        function test(param) {}
+      
+@@@ findings
+@@@ case 102 (documented valid)
+
+        /**
+         * Function description.
+         *
+         * @param {string} lorem Description.
+         * @param {int}    sit   Description with list:
+         *                         - First item
+         *                         - Second item
+         *                           - Nested item
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ findings
+6:1 Expected JSDoc block lines to not be aligned.
+@@@ output
+
+        /**
+         * Function description.
+         *
+         * @param {string} lorem Description.
+         * @param {int} sit Description with list:
+         *                         - First item
+         *                         - Second item
+         *                           - Nested item
+         */
+        const fn = ( lorem, sit ) => {}
+      
+@@@ case 103 (documented valid)
+
+        /**
+         * @return {Promise} A promise.
+         *                     - On success, resolves.
+         *                     - On error, rejects with details:
+         *                       - When aborted, status is "abort".
+         *                       - On timeout, status is "timeout".
+         */
+        function test() {}
+      
+@@@ findings
+@@@ end

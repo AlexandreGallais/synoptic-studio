@@ -1,0 +1,402 @@
+# require-asterisk-prefix: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), a carriage return written ␍,
+# each run by ESLint 10.12.0 at src/a.ts with the project's options; recorded by EN-083.
+@@@ case 1 (documented invalid)
+
+
+        /**
+         @param {Number} foo
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ findings
+4:9 Expected JSDoc line to have the prefix.
+@@@ output
+
+
+        /**
+         * @param {Number} foo
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ case 2 (documented invalid)
+
+
+        /**
+         @param {Number} foo
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ findings
+4:9 Expected JSDoc line to have the prefix.
+@@@ output
+
+
+        /**
+         * @param {Number} foo
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ case 3 (documented invalid)
+
+
+        /**
+         * Desc
+
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ findings
+5:9 Expected JSDoc line to have the prefix.
+@@@ output
+
+
+        /**
+         * Desc
+         *
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ case 4 (documented invalid)
+
+
+        /**
+         *
+         Desc
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ findings
+5:9 Expected JSDoc line to have the prefix.
+@@@ output
+
+
+        /**
+         *
+         * Desc
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ case 5 (documented invalid)
+
+
+        /**
+         * Desc
+         *
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ findings
+@@@ case 6 (documented invalid)
+
+
+        /**
+         @param {Number} foo
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ findings
+4:9 Expected JSDoc line to have the prefix.
+@@@ output
+
+
+        /**
+         * @param {Number} foo
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ case 7 (documented invalid)
+
+
+        /**
+         * @param {Number} foo
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ findings
+@@@ case 8 (documented invalid)
+
+
+        /**
+         * @param {Number} foo
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ findings
+@@@ case 9 (documented invalid)
+
+
+        /**
+         @param {Number} foo
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ findings
+4:9 Expected JSDoc line to have the prefix.
+@@@ output
+
+
+        /**
+         * @param {Number} foo
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ case 10 (documented invalid)
+
+        /**
+          @param {Number} foo
+         */function quux (foo) {
+          // with spaces
+        }
+      
+@@@ findings
+3:9 Expected JSDoc line to have the prefix.
+@@@ output
+
+        /**
+          * @param {Number} foo
+         */function quux (foo) {
+          // with spaces
+        }
+      
+@@@ case 11 (documented invalid)
+
+
+        /**
+         * @param {Number} foo
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ findings
+@@@ case 12 (documented invalid)
+
+        /**
+          *@param {Number} foo
+         */function quux (foo) {
+          // with spaces
+        }
+      
+@@@ findings
+@@@ case 13 (documented valid)
+
+        /**
+         * Desc
+         *
+         * @param {Number} foo
+         *   This is more comment.
+         */
+        function quux (foo) {
+
+        }
+      
+@@@ findings
+@@@ case 14 (documented valid)
+
+        /**
+         * Desc
+         *
+         * @param {{
+         * foo: Bar,
+         * bar: Baz
+         * }} foo
+         *
+         */
+        function quux (foo) {
+
+        }
+      
+@@@ findings
+@@@ case 15 (documented valid)
+
+        /*  <- JSDoc must start with 2 stars.
+         So this is unchecked.
+         */
+        function quux (foo) {}
+      
+@@@ findings
+@@@ case 16 (documented valid)
+
+        /** @param {Number} foo */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ findings
+@@@ case 17 (documented valid)
+
+
+        /**
+         @param {Number} foo
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ findings
+4:9 Expected JSDoc line to have the prefix.
+@@@ output
+
+
+        /**
+         * @param {Number} foo
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ case 18 (documented valid)
+
+
+        /**
+         * @param {Number} foo
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ findings
+@@@ case 19 (documented valid)
+
+
+        /**
+         * @param {Number} foo
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ findings
+@@@ case 20 (documented valid)
+
+
+        /**
+         @param {Number} foo
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ findings
+4:9 Expected JSDoc line to have the prefix.
+@@@ output
+
+
+        /**
+         * @param {Number} foo
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ case 21 (documented valid)
+
+
+        /**
+         @param {Number} foo
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ findings
+4:9 Expected JSDoc line to have the prefix.
+@@@ output
+
+
+        /**
+         * @param {Number} foo
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ case 22 (documented valid)
+
+
+        /**
+         * Desc
+         *
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ findings
+@@@ case 23 (documented valid)
+
+
+        /**
+         * Desc
+
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ findings
+5:9 Expected JSDoc line to have the prefix.
+@@@ output
+
+
+        /**
+         * Desc
+         *
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ case 24 (documented valid)
+
+
+        /**
+         @param {Number} foo
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ findings
+4:9 Expected JSDoc line to have the prefix.
+@@@ output
+
+
+        /**
+         * @param {Number} foo
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ end

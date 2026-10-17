@@ -1,0 +1,477 @@
+# check-indentation: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), a carriage return written ␍,
+# each run by ESLint 10.12.0 at src/a.ts with the project's options; recorded by EN-083.
+@@@ case 1 (documented invalid)
+/**  Indented on first line
+ */
+@@@ findings
+1:1 There must be no indentation.
+@@@ case 2 (documented invalid)
+
+          /**  foo */
+          function quux () {
+
+          }
+      
+@@@ findings
+2:1 There must be no indentation.
+@@@ case 3 (documented invalid)
+
+          /**
+           * foo
+           *
+           * @param bar
+           *  baz
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+6:1 There must be no indentation.
+@@@ case 4 (documented invalid)
+
+        /**
+         * Foo
+         *   bar
+         */
+        class Moo {}
+      
+@@@ findings
+4:1 There must be no indentation.
+@@@ case 5 (documented invalid)
+
+          /**
+           * foo
+           *
+           * @example
+           * anArray.filter((a) => {
+           *   return a.b;
+           * });
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 6 (documented invalid)
+
+          /**
+           * foo
+           *
+           * @example
+           *   aaaa
+           * @returns
+           *   eeee
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+8:1 There must be no indentation.
+@@@ case 7 (documented invalid)
+
+          /**
+           * foo
+           * ```html
+           * <section>
+           *   <title>test</title>
+           * </section>
+           * ```
+           * @returns
+           *   eeee
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+10:1 There must be no indentation.
+@@@ case 8 (documented invalid)
+
+          /**
+           * foo
+           * ```   aaaa```
+           * @returns
+           *   eeee
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+6:1 There must be no indentation.
+@@@ case 9 (documented invalid)
+
+          /**
+          * @example <caption>
+          * Here is a long
+          *   indented summary of this
+          * example
+          * </caption>
+          * ```js
+          * function hi () {
+          *   alert('Hello');
+          * }
+          * ```
+          */
+      
+@@@ findings
+@@@ case 10 (documented invalid)
+
+          /**
+          * @example <caption>
+          * Here is a long
+          * summary of this
+          * example
+          * </caption>
+          * // Code is not wrapped into fenced code block
+          * function hi () {
+          *   alert('Hello');
+          * }
+          */
+      
+@@@ findings
+@@@ case 11 (documented invalid)
+
+        /**
+         *   @param {number} val Still disallowed
+         */
+      
+@@@ findings
+3:1 There must be no indentation.
+@@@ case 12 (documented invalid)
+
+        /**
+         *   Disallowed
+         *   Indentation
+         */
+      
+@@@ findings
+3:1 There must be no indentation.
+@@@ case 13 (documented invalid)
+
+        /**
+         * Some text
+         *   that is indented
+         *  but is inconsistent
+         */
+      
+@@@ findings
+4:1 There must be no indentation.
+@@@ case 14 (documented invalid)
+
+        /**  Indented on first line
+         */
+      
+@@@ findings
+2:1 There must be no indentation.
+@@@ case 15 (documented invalid)
+
+        /**
+         *text
+         */
+      
+@@@ findings
+3:1 There must be a space after the asterisk.
+@@@ case 16 (documented invalid)
+
+        /**
+         *@constant
+         */
+      
+@@@ findings
+3:1 There must be a space after the asterisk.
+@@@ case 17 (documented invalid)
+
+        /**
+         *@param {number} val
+         */
+      
+@@@ findings
+3:1 There must be a space after the asterisk.
+@@@ case 18 (documented invalid)
+
+        /**
+         * @param {number} a
+         *@returns {void}
+         */
+      
+@@@ findings
+4:1 There must be a space after the asterisk.
+@@@ case 19 (documented invalid)
+
+        /**
+         *@constant
+         */
+      
+@@@ findings
+3:1 There must be a space after the asterisk.
+@@@ case 20 (documented invalid)
+
+        /**
+         *text
+         */
+      
+@@@ findings
+3:1 There must be a space after the asterisk.
+@@@ case 21 (documented invalid)
+
+        /**
+         *   foo
+         *@constant
+         */
+      
+@@@ findings
+3:1 There must be no indentation.
+@@@ case 22 (documented valid)
+
+          /**
+           * foo
+           *
+           * @param bar
+           * baz
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 23 (documented valid)
+
+          /*** foo */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 24 (documented valid)
+
+          /**
+           * foo
+           *
+           * @example
+           * anArray.filter((a) => {
+           *   return a.b;
+           * });
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 25 (documented valid)
+
+          /**
+           * foo
+           *
+           * @example
+           * anArray.filter((a) => {
+           *   return a.b;
+           * });
+           * @returns
+           *   eeee
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+10:1 There must be no indentation.
+@@@ case 26 (documented valid)
+
+          /**
+           * foo
+           * ```html
+           * <section>
+           *   <title>test</title>
+           * </section>
+           * ```
+           * @returns eeee
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 27 (documented valid)
+
+          /**
+           * foo
+           * ```   aaaa```
+           * @returns eeee
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 28 (documented valid)
+
+          /**
+          * @example <caption>
+          * Here is a long
+          * summary of this
+          * example
+          * </caption>
+          * ```js
+          * function hi () {
+          *   alert('Hello');
+          * }
+          * ```
+          */
+      
+@@@ findings
+@@@ case 29 (documented valid)
+
+      /**
+       * @example
+       * ```
+       * @MyDecorator({
+       *   myOptions: 42
+       * })
+       * export class MyClass {}
+       * ```
+       */
+      function MyDecorator(options: { myOptions: number }) {
+        return (Base: Function) => {};
+      }
+      
+@@@ findings
+@@@ case 30 (documented valid)
+
+      /**
+       * @example ```
+       * @MyDecorator({
+       *   myOptions: 42
+       * })
+       * export class MyClass {}
+       * ```
+       */
+      function MyDecorator(options: { myOptions: number }) {
+        return (Base: Function) => {};
+      }
+      
+@@@ findings
+@@@ case 31 (documented valid)
+
+        /**
+         * Foobar
+         *
+         * This method does the following things:
+         * - foo...
+         *   this is the first step
+         * - bar
+         *   this is the second step
+         */
+      
+@@@ findings
+7:1 There must be no indentation.
+@@@ case 32 (documented valid)
+
+        /**
+         * Allowed
+         *   Indentation
+         */
+      
+@@@ findings
+4:1 There must be no indentation.
+@@@ case 33 (documented valid)
+
+        /**
+         * @param {number} val Multi-
+         *                     line
+         */
+      
+@@@ findings
+4:1 There must be no indentation.
+@@@ case 34 (documented valid)
+
+        /**
+         * - foo:
+         *   - bar
+         */
+      
+@@@ findings
+4:1 There must be no indentation.
+@@@ case 35 (documented valid)
+
+        /**
+         * Some text
+         *   that is indented
+         *   and continues at same level
+         *     and increases further
+         */
+      
+@@@ findings
+4:1 There must be no indentation.
+@@@ case 36 (documented valid)
+
+        /**
+         * Description
+         * @param {string} foo Param
+         *   with continuation
+         *   at same indentation
+         */
+      
+@@@ findings
+5:1 There must be no indentation.
+@@@ case 37 (documented valid)
+
+        /**
+         * Description
+         *
+         * More content
+         */
+      
+@@@ findings
+@@@ case 38 (documented valid)
+
+        /**
+         * @constant
+         */
+      
+@@@ findings
+@@@ case 39 (documented valid)
+
+        /**
+         * @param {number} a
+         *@returns {void}
+         */
+      
+@@@ findings
+4:1 There must be a space after the asterisk.
+@@@ case 40 (documented valid)
+
+        /**
+         *@constant
+         */
+      
+@@@ findings
+3:1 There must be a space after the asterisk.
+@@@ case 41 (documented valid)
+
+        /**
+         *text
+         */
+      
+@@@ findings
+3:1 There must be a space after the asterisk.
+@@@ case 42 (documented valid)
+
+        /**
+         * Two ordered items, the second holding a nested bullet list whose items
+         * carry inline link tags.
+         *
+         * 1. **First** runs first; if the session is missing, it re-authenticates
+         *    before the request leaves the method.
+         * 2. **{@link Second}** chain — nests them with outer to inner order:
+         *    - {@link Outer} (outermost): short-circuits with {@link Error} if
+         *      the gate is paused.
+         *    - {@link Middle}: consume a token and replay exactly once.
+         *    - {@link Inner} (innermost): retries with exponential backoff.
+         */
+      
+@@@ findings
+7:1 There must be no indentation.
+@@@ end
