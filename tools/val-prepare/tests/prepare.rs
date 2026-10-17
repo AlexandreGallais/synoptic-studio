@@ -162,8 +162,8 @@ fn adds_once_to_an_epic_checklist_the_map_and_the_index() {
 
 #[test]
 fn f18_ac12_prepares_a_new_epic_checklist_and_its_address() {
-    let root = repository("new-epic", &[("F18", "E17", 3)]);
-    let prepared = plan(&root, "F18").unwrap();
+    let root = repository("new-epic", &[("F99", "E99", 3)]);
+    let prepared = plan(&root, "F99").unwrap();
     let paths: Vec<String> = prepared
         .writes
         .iter()
@@ -173,14 +173,14 @@ fn f18_ac12_prepares_a_new_epic_checklist_and_its_address() {
     assert_eq!(
         paths,
         [
-            "playground/checklists/epic-17-f18-lines.ts",
-            "playground/checklists/epic-17-checklist.ts",
+            "playground/checklists/epic-99-f99-lines.ts",
+            "playground/checklists/epic-99-checklist.ts",
             "playground/checklists/checklists.ts",
             "playground/checklists/index.ts",
         ]
     );
     assert!(paths.iter().all(|path| !path.contains("guided-steps")));
-    assert_eq!(prepared.address, "http://localhost:5173/?checklist=E17");
+    assert_eq!(prepared.address, "http://localhost:5173/?checklist=E99");
     assert_eq!(prepared.warning, None);
     // Each generated module imports what it names from a file the playground holds or this run
     // writes, as the epic-15 modules do: the line type, the lines, the checklist.
@@ -196,25 +196,25 @@ fn f18_ac12_prepares_a_new_epic_checklist_and_its_address() {
     assert!(
         prepared.writes[1]
             .text
-            .starts_with("import { EPIC_17_F18_LINES } from \"./epic-17-f18-lines\";\n")
+            .starts_with("import { EPIC_99_F99_LINES } from \"./epic-99-f99-lines\";\n")
     );
     assert!(
         prepared.writes[2]
             .text
-            .contains("import { EPIC_17_CHECKLIST } from \"./epic-17-checklist\";\n")
+            .contains("import { EPIC_99_CHECKLIST } from \"./epic-99-checklist\";\n")
     );
     assert!(
         prepared.writes[1]
             .text
-            .contains("  ...EPIC_17_F18_LINES,\n];")
+            .contains("  ...EPIC_99_F99_LINES,\n];")
     );
     assert!(
         prepared.writes[2]
             .text
-            .contains("[\"E17\", EPIC_17_CHECKLIST],")
+            .contains("[\"E99\", EPIC_99_CHECKLIST],")
     );
     assert!(prepared.writes[3].text.ends_with(
-        "export * from \"./epic-17-checklist\";\nexport * from \"./epic-17-f18-lines\";\n"
+        "export * from \"./epic-99-checklist\";\nexport * from \"./epic-99-f99-lines\";\n"
     ));
 }
 
