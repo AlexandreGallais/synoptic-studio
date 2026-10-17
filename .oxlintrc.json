@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": [],
+  "plugins": ["oxc"],
   "categories": {
     "correctness": "off"
   },
@@ -28,6 +28,7 @@
     {
       "files": ["**/*.ts"],
       "rules": {
+        "oxc/no-accumulating-spread": "error",
         "curly": ["error", "all"],
         "no-async-promise-executor": "error",
         "no-await-in-loop": "error",

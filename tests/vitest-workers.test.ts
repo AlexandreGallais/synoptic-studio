@@ -27,7 +27,7 @@ describe("Vitest's workers (EN-047)", () => {
     expect(RESOLVED.test?.maxWorkers).toBe("50%");
   });
 
-  it("runs each test file in exactly one project, the RuleTester's setup in the rules' only", () => {
+  it("runs each test file in exactly one project, none with a setup file (the rules' tests are Rust's since EN-075)", () => {
     const projects = (RESOLVED.test?.projects ?? []).flatMap((project) =>
       typeof project === "object" && "test" in project ? [project.test] : [],
     );
@@ -43,6 +43,6 @@ describe("Vitest's workers (EN-047)", () => {
 
     expect(
       projects.filter((test) => test.setupFiles !== undefined).map((test) => test.name),
-    ).toEqual(["rules"]);
+    ).toEqual([]);
   });
 });

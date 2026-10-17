@@ -6,7 +6,6 @@ import unicorn from "eslint-plugin-unicorn";
 import unusedImports from "eslint-plugin-unused-imports";
 import tseslint from "typescript-eslint";
 
-import { LOCAL_PLUGIN } from "../plugin";
 import { PROJECT_ROOT, TS_FILES } from "../settings";
 
 import type { TSESLint } from "@typescript-eslint/utils";
@@ -26,7 +25,6 @@ export const LANGUAGE: TSESLint.FlatConfig.Config = {
     functional,
     "import-x": importX,
     jsdoc,
-    local: LOCAL_PLUGIN,
     unicorn,
     "unused-imports": unusedImports,
   },

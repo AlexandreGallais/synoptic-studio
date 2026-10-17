@@ -8,8 +8,8 @@ Setting up a new project the way this one ended E01. In order; each step names t
 | --- | --- | --- | --- |
 | 1 | Repository, license, `main` and `develop`, rulesets (merge commits into `main`, no bypass) | `docs/tooling/ci.md` (settings), `docs/tooling/git-workflow.md` | ADR-0038 |
 | 2 | TypeScript strict; ESLint as strict as possible, every rule decided; one formatter (oxfmt, tables without padding); EditorConfig | `tsconfig.json`, `eslint/`, `.oxfmtrc.json`, `.editorconfig` | ADR-0009, ADR-0010 |
-| 3 | Custom lint rules for the project's structure (one export per file, barrels, kinds, sources) | `eslint/plugin/` | ADR-0011, ADR-0012, ADR-0019 |
-| 4 | Vitest, 100 % coverage of the library, a floor for the demo app, property tests, fitness functions | `vite.config.ts`, `vitest.setup.ts`, `tests/` | ADR-0022 |
+| 3 | Custom lint rules for the project's structure (one export per file, barrels, kinds, sources) | `tools/lint/` (a Rust linter on Oxc's crates, one module per rule) | ADR-0011, ADR-0012, ADR-0019 |
+| 4 | Vitest, 100 % coverage of the library, a floor for the demo app, property tests, fitness functions | `vite.config.ts`, `tests/` | ADR-0022 |
 | 5 | Dependencies: one documented row each, latest versions at least 7 days old, audit, knip | `tests/package.test.ts`, `.ncurc.cjs`, `knip.json`, `docs/tooling/dependencies.md` | supply chain, ADR-0038 |
 | 6 | Git hooks: lint-staged, commitlint with closed scopes and backlog footers, branch names, full check before push | `.husky/`, `.lintstagedrc.json`, `commitlint.config.ts`, `.validate-branch-namerc.json` | `docs/tooling/git-workflow.md` |
 | 7 | One CI, on the pull request into `main`; CodeQL; weekly link check | `.github/workflows/` | ADR-0038 |

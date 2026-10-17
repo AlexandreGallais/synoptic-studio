@@ -20,6 +20,9 @@ const HEAVY_LOCK = /^cargo run --release -q -p heavy-lock -- /u;
 /** The command of the repository's formatter, oxfmt then the tables without padding (EN-073). */
 const FORMAT = "cargo run --release -q -p format --";
 
+/** The command of the project's linter, run after oxlint (EN-075). */
+const PROJECT_LINT = "cargo run --release -q -p lint --";
+
 /** oxfmt, as npm installs it. */
 const OXFMT = join(ROOT, "node_modules", ".bin", "oxfmt");
 
@@ -206,6 +209,20 @@ describe("check tools given explicit targets (EN-045)", () => {
     expect(targetsOf("lint:fix", "oxlint")).toEqual(targets);
     expect(targetsOf("fix", "oxlint")).toEqual(targets);
     expect(leftOut(targets, linted)).toEqual([]);
+  });
+
+  it("[F19.AC3] gives the project's linter oxlint's targets in lint, lint:fix and fix, after oxlint", () => {
+    const targets = targetsOf("lint", "oxlint");
+
+    for (const script of ["lint", "lint:fix", "fix"]) {
+      const commands = (SCRIPTS.get(script) ?? "").split("&&").map((part) => part.trim());
+
+      expect(targetsOf(script, PROJECT_LINT)).toEqual(targets);
+
+      expect(commands.findIndex((part) => part.startsWith(PROJECT_LINT))).toBe(
+        commands.findIndex((part) => part.startsWith("oxlint ")) + 1,
+      );
+    }
   });
 
   it(

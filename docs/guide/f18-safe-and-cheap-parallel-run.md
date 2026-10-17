@@ -61,7 +61,7 @@ Every test named here carries the criterion's tag, `[F18.ACn]` in TypeScript or 
 | AC15 `npm run mutate` | caught and surviving mutations, under the heavy lock | `tools/mutate/tests/run.rs` |
 | AC16 a done commit that changes a rule brings its docs | the `commit-msg` hook refuses it without the Q row, the decisions to confirm and the guide page | `tools/rule-docs/tests/` |
 | AC17 E15's long pages shortened | the Text section of `shapes.md`, the Colors of `interaction.md`, `DERIV-text-box` | `tests/long-page-bullets.test.ts` |
-| AC18 modules per folder counted; no spread in a fold | ADR-0043's signal of 15 modules counted on disk | `tests/folders.test.ts`, `eslint/settings/identifiers.test.ts` |
+| AC18 modules per folder counted; no spread in a fold | ADR-0043's signal of 15 modules counted on disk | `tests/folders.test.ts`, `tests/oxlint-config.test.ts` (oxlint's `oxc/no-accumulating-spread` since EN-075) |
 | AC19 the CI reads a real font file | Inter Regular read by every font test, on every system | `src/io/font-face/`, `src/io/font-collection/`, `playground/fonts/` |
 | AC20 explicit targets; Vitest on half the cores | no check walks the copies in `.claude/worktrees/` | `tests/check-targets.test.ts`, `tests/vitest-workers.test.ts` |
 

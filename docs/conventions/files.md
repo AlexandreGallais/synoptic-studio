@@ -46,7 +46,7 @@ A shape's type lives in its folder (`free-shape/free-shape.ts`); folders may use
 
 ### Folders past 15 modules
 
-15 modules per folder, tests and barrel not counted, is a signal (ADR-0043): a folder past it asks whether a domain is missing; it is split along that domain, or listed here with the reason none is. `local/folder-layout` fails on a folder past 15 not listed in `eslint/settings/folders.ts`; `tests/folders.test.ts` keeps that list and this table equal, and counts every folder of `src/` and `playground/` on disk itself, so that a folder past 15 missing from this table, or listed without a reason, fails the tests without the lint (EN-061).
+15 modules per folder, tests and barrel not counted, is a signal (ADR-0043): a folder past it asks whether a domain is missing; it is split along that domain, or listed here with the reason none is. `local/folder-layout` fails on a folder past 15 not listed in `tools/lint/src/settings.rs`, whose test keeps that list and this table equal; `tests/folders.test.ts` counts every folder of `src/` and `playground/` on disk itself, so that a folder past 15 missing from this table, or listed without a reason, fails the tests without the lint (EN-061).
 
 | Folder | Modules | Why it stays whole |
 | --- | --- | --- |

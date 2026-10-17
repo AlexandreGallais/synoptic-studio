@@ -1,6 +1,6 @@
 import { TEST_FILES } from "../settings";
 
-import { KINDLESS, RELAXED_PURITY } from "./relaxed-purity";
+import { RELAXED_PURITY } from "./relaxed-purity";
 
 import type { TSESLint } from "@typescript-eslint/utils";
 
@@ -10,7 +10,6 @@ export const TESTS: TSESLint.FlatConfig.Config = {
   name: "scopes/tests",
   rules: {
     ...RELAXED_PURITY,
-    ...KINDLESS,
     "@typescript-eslint/no-magic-numbers": "off",
     "import-x/no-extraneous-dependencies": ["error", { devDependencies: true }],
     "max-lines": "off",

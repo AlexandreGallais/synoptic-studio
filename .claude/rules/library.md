@@ -13,7 +13,7 @@ paths:
 - `noUncheckedIndexedAccess`: an index read is `T | undefined`; an unreachable fallback branch breaks the 100 % coverage. Prefer an explicit, testable fallback (see `cyclicItem`).
 - Module constants: `UPPER_CASE` and documented; type members documented too (the API pages' generator, `tools/api-pages`, fails otherwise).
 - JSDoc description = sentences; `@param` / `@returns` = fragments without final period. `@kind` is a custom block tag, shown as its own section of an API page (`jsdoc/check-values` off on purpose).
-- Procedure verbs: `eslint/settings/verbs.ts` (add, sorted). Per-kind limits: `eslint/settings/kinds.ts` (change only with an ADR).
+- Procedure verbs and per-kind limits: `tools/lint/src/settings.rs` (verbs added sorted; limits changed only with an ADR).
 - Tests: examples with hand-computed values justified in a comment, then properties with `test.prop({ … })` from `@fast-check/vitest` (record form: `max-params` is 3). `toBe` compares with `Object.is`, so `-0` differs from `0`: use `toBeCloseTo` for computed numbers.
 - DOM tests start with `// @vitest-environment happy-dom`.
 - Run `npm run fix` before each commit, which reports the type errors with the lint (oxlint `--type-check`, EN-091): Vitest strips types, and the unused-imports autofix drops a type import written before the code that uses it (EN-005).

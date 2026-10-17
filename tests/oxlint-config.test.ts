@@ -1,5 +1,6 @@
-import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { execFileSync, spawnSync } from "node:child_process";
+import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 import { ESLint } from "eslint";
@@ -233,5 +234,93 @@ describe(".oxlintrc.json", () => {
     expect(OVERRIDES[0]?.rules["prefer-destructuring"]).toEqual(
       THEME_SETTINGS["@typescript-eslint/prefer-destructuring"],
     );
+  });
+});
+
+/** A folder holding a configuration of `oxc/no-accumulating-spread` alone. */
+const FOLD_FOLDER = mkdtempSync(join(tmpdir(), "fold-spread-"));
+
+writeFileSync(
+  join(FOLD_FOLDER, "config.json"),
+  JSON.stringify({
+    categories: { correctness: "off" },
+    rules: { "oxc/no-accumulating-spread": "error" },
+  }),
+);
+
+/**
+ * Lines that `oxc/no-accumulating-spread` reports in a piece of code.
+ *
+ * @param code - TypeScript source
+ * @returns the line of each report
+ */
+function foldSpreadLines(code: string): readonly number[] {
+  const file = join(FOLD_FOLDER, "fold.ts");
+
+  writeFileSync(file, code);
+
+  // oxlint exits 1 on a finding: its report is read either way.
+  const { stdout: output } = spawnSync(
+    join(ROOT, "node_modules", ".bin", "oxlint"),
+    ["-c", join(FOLD_FOLDER, "config.json"), "--format", "unix", file],
+    { encoding: "utf8" },
+  );
+
+  return output
+    .matchAll(/^.+?:(?<line>\d+):\d+: /gmu)
+    .map((match) => Number(match.groups?.["line"]))
+    .toArray();
+}
+
+describe("no spread in a fold (EN-061), oxlint's `oxc/no-accumulating-spread` since EN-075", () => {
+  it("[F18.AC18] runs on every TypeScript file, its plugin on", () => {
+    expect(OVERRIDES[0]?.rules["oxc/no-accumulating-spread"]).toBe("error");
+    expect(itemsOf(propertyOf(CONFIG, "plugins"))).toContain("oxc");
+  });
+
+  it.each([
+    {
+      code: "[1].reduce((all, x) => [...all, x], []);",
+      title: "an array spread as the arrow's body",
+    },
+    {
+      code: "[1].reduce((all, x) => ({ ...all, [x]: x }), {});",
+      title: "an object spread as the arrow's body",
+    },
+    {
+      code: "[1].reduce(function (all, x) { return [...all, x]; }, []);",
+      title: "a spread returned from a block",
+    },
+    { code: "[1].reduceRight((all, x) => [...all, x], []);", title: "a spread in reduceRight" },
+    {
+      code: "[1].reduce((all, x) => (x > 0 ? [...all, x] : all), []);",
+      title: "a spread in a conditional's branch",
+    },
+    {
+      code: "[1].reduce(function (all, x) { return x > 0 ? all : { ...all, x }; }, {});",
+      title: "a spread in a conditional returned from a block",
+    },
+    {
+      // ESLint's selector missed it: oxlint follows the accumulator's name.
+      code: "[1].reduce((all, x) => { const next = [...all, x]; return next; }, []);",
+      title: "a spread held in a variable, then returned",
+    },
+  ])("[F18.AC18] reports $title", ({ code }) => {
+    expect(foldSpreadLines(code)).toEqual([1]);
+  });
+
+  it.each([
+    { code: "[1].reduce((sum, x) => sum + x, 0);", title: "a sum" },
+    { code: "[[1]].map((row) => [...row, 0]);", title: "a spread in a map" },
+    {
+      code: "[[1]].reduce((top, row) => Math.max(top, ...row), 0);",
+      title: "a spread passed to a call",
+    },
+    {
+      code: "[1].reduce((sum, x) => sum + x, [...[0]].length);",
+      title: "a spread in the initial value",
+    },
+  ])("lets $title pass", ({ code }) => {
+    expect(foldSpreadLines(code)).toEqual([]);
   });
 });

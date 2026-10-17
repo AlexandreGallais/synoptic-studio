@@ -26,11 +26,11 @@ type Row = Exception & {
 const COMMENT = { block: "/*", line: "//" };
 
 /**
- * A directive of ESLint or oxlint turning rules off, in a line or a block comment, up to its `--` justification, or
+ * A directive of ESLint, oxlint or the project's linter turning rules off, in a line or a block comment, up to its `--` justification, or
  * to the comment's end when it has none: a directive without its reason counts too.
  */
 const DIRECTIVE =
-  /(?:\/\/|\/\*)\s*(?:eslint|oxlint)-disable(?:-next-line|-line)?\s+(?<rules>[^\n]*?)\s*(?:--|\*\/|$)/gmu;
+  /(?:\/\/|\/\*)\s*(?:eslint|oxlint|lint)-disable(?:-next-line|-line)?\s+(?<rules>[^\n]*?)\s*(?:--|\*\/|$)/gmu;
 
 /** A Rust attribute turning lints off, on an item or a whole module (`#![allow(…)]`). */
 const RUST_ALLOW = /#!?\[allow\((?<rules>[^)]*)\)\]/gu;

@@ -23,12 +23,12 @@ Boolean prefixes: `is`, `has`, `can`, `should`, `are`, `was`, `will`, `did`, `do
 
 | `@kind` | Rule | Good | Rejected |
 | --- | --- | --- | --- |
-| `procedure` | starts with a **verb** from `eslint/settings/verbs.ts` | `renderShape`, `mountPlayground` | `shapeRenderer` |
+| `procedure` | starts with a **verb** from `tools/lint/src/settings.rs` | `renderShape`, `mountPlayground` | `shapeRenderer` |
 | `format` | reads as a **conversion**: `xToY`, `toX`, `fromX`, `parseX`, `formatX`, `serializeX`… | `polygonToPathData` | `svgPath` |
 | `math`, `geometry`, `domain` | **names the concept**, without vague verb (`get`, `compute`, `calculate`, `calc`, `make`, `do`, `handle`, `process`, `perform`) | `dot`, `filletSetback` | `computeDot`, `getSetback` |
 | all | returns a boolean ⇔ starts with a predicate word (`is`, `has`, `can`, `should`, `are`, `contains`, `includes`, `intersects`, `equals`) | `canConnect` | `connectable(): boolean`, `isPort(): Port` |
 
-To add a procedure verb: insert it (sorted) in `eslint/settings/verbs.ts` rather than bending a name.
+To add a procedure verb: insert it (sorted) in `PROCEDURE_VERBS` of `tools/lint/src/settings.rs` rather than bending a name.
 
 ## Every calculation named (ADR-0049)
 

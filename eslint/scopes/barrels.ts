@@ -9,7 +9,6 @@ export const BARRELS: TSESLint.FlatConfig.Config = {
   rules: {
     // A barrel's dependencies are its folder's modules, however many.
     "import-x/max-dependencies": "off",
-    "local/barrel-exports": "error",
     // A folder without modules yet (bootstrap) has an empty barrel.
     "unicorn/no-empty-file": "off",
   },

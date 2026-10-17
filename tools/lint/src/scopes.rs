@@ -215,6 +215,18 @@ mod tests {
     }
 
     #[test]
+    fn checks_the_folder_layout_of_the_library_the_playground_and_their_tests() {
+        for path in [
+            "src/math/vector/norm.ts",
+            "playground/points/index.ts",
+            "playground/points/delete-points.test.ts",
+        ] {
+            assert!(rules_for(path).contains(&"local/folder-layout"), "{path}");
+        }
+        assert!(!rules_for("tests/folders.test.ts").contains(&"local/folder-layout"));
+    }
+
+    #[test]
     fn ignores_generated_and_copied_paths() {
         assert!(is_ignored("docs/api/index.ts"));
         assert!(is_ignored("tools/api-pages/tests/fixtures/a.ts"));

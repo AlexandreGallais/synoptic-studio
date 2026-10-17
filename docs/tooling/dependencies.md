@@ -33,7 +33,6 @@
 | `@eslint/js` | lists the live core rules for the completeness audit (`eslint/config.test.ts`) | deprecated `builtinRules` API |
 | `typescript-eslint` | TypeScript parser and type-aware rules | — |
 | `@typescript-eslint/utils` | typed helpers to write the custom `local/*` rules | untyped `Rule.RuleModule` |
-| `@typescript-eslint/rule-tester` | tests of the custom rules with Vitest | ESLint's untyped RuleTester |
 | `jiti` | loads `eslint.config.ts`, the method documented by ESLint (`REF-ESLINT-TS-CONFIG`) | experimental native flag |
 | `eslint-plugin-jsdoc` | mandatory, well-formed TSDoc | — |
 | `eslint-plugin-import-x` | cycles, layer boundaries, import order and resolution | `eslint-plugin-import`: slower, less maintained; a home-made cycle checker: re-inventing a maintained tool |
