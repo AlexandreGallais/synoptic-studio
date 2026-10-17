@@ -592,3 +592,150 @@ pub fn is_path(expression: &Expression, path: &str) -> bool {
         _ => false,
     }
 }
+
+/// Whether an expression is `object.length`, `.length` read without `?.`.
+#[must_use]
+pub fn is_length_of(expression: &Expression, object: &Expression) -> bool {
+    matches!(unwrap(expression), Expression::StaticMemberExpression(member)
+        if !member.optional && member.property.name == "length" && same_reference(&member.object, object))
+}
+
+/// Whether an expression is `object.length - 1`.
+#[must_use]
+pub fn is_length_minus_one_of(expression: &Expression, object: &Expression) -> bool {
+    matches!(unwrap(expression), Expression::BinaryExpression(binary)
+        if binary.operator == oxc_ast::ast::BinaryOperator::Subtraction
+            && static_number(&binary.right) == Some(1.0)
+            && is_length_of(&binary.left, object))
+}
+
+/// Whether the value of a node is thrown away: it is a statement, through `?.`, or an element of
+/// a sequence whose value is not the one kept (`isValueNotUsable`).
+#[must_use]
+pub fn is_value_unused(source: &Source, id: NodeId) -> bool {
+    let nodes = source.semantic.nodes();
+    let mut child = id;
+    let mut parent = nodes.parent_node(child);
+    if matches!(parent.kind(), AstKind::ChainExpression(_)) {
+        child = parent.id();
+        parent = nodes.parent_node(child);
+    }
+    match parent.kind() {
+        AstKind::ExpressionStatement(_) => true,
+        AstKind::SequenceExpression(sequence) => {
+            sequence.expressions.last().map(Expression::node_id) != Some(child)
+                || is_value_unused(source, parent.id())
+        }
+        _ => false,
+    }
+}
+
+/// Whether evaluating an expression may change something: a call, an assignment, an update,
+/// `new`, `await`, `yield`, `delete`, or anything this check does not read.
+#[must_use]
+pub fn has_side_effect(expression: &Expression) -> bool {
+    match expression {
+        Expression::Identifier(_)
+        | Expression::ThisExpression(_)
+        | Expression::Super(_)
+        | Expression::NumericLiteral(_)
+        | Expression::StringLiteral(_)
+        | Expression::BooleanLiteral(_)
+        | Expression::NullLiteral(_)
+        | Expression::BigIntLiteral(_)
+        | Expression::RegExpLiteral(_)
+        | Expression::FunctionExpression(_)
+        | Expression::ArrowFunctionExpression(_) => false,
+        Expression::StaticMemberExpression(member) => has_side_effect(&member.object),
+        Expression::ComputedMemberExpression(member) => {
+            has_side_effect(&member.object) || has_side_effect(&member.expression)
+        }
+        Expression::TemplateLiteral(template) => template.expressions.iter().any(has_side_effect),
+        Expression::UnaryExpression(unary) => {
+            unary.operator == UnaryOperator::Delete || has_side_effect(&unary.argument)
+        }
+        Expression::BinaryExpression(binary) => {
+            has_side_effect(&binary.left) || has_side_effect(&binary.right)
+        }
+        Expression::LogicalExpression(logical) => {
+            has_side_effect(&logical.left) || has_side_effect(&logical.right)
+        }
+        Expression::ConditionalExpression(conditional) => {
+            has_side_effect(&conditional.test)
+                || has_side_effect(&conditional.consequent)
+                || has_side_effect(&conditional.alternate)
+        }
+        Expression::ArrayExpression(array) => array
+            .elements
+            .iter()
+            .any(|element| element.as_expression().is_none_or(has_side_effect)),
+        Expression::TSAsExpression(_)
+        | Expression::TSSatisfiesExpression(_)
+        | Expression::TSNonNullExpression(_)
+        | Expression::TSTypeAssertion(_)
+        | Expression::TSInstantiationExpression(_) => has_side_effect(unwrap(expression)),
+        _ => true,
+    }
+}
+
+/// The range a removed statement takes: its whole line when it stands alone on it.
+#[must_use]
+pub fn statement_removal(source: &Source, span: Span) -> Span {
+    let before = source.text.get(..span.start as usize).unwrap_or_default();
+    let line_start = before.rfind('\n').map_or(0, |at| at + 1);
+    let after = source.text.get(span.end as usize..).unwrap_or_default();
+    let line_end = after.find('\n').map_or(after.len(), |at| at + 1);
+    let alone = before[line_start..].trim().is_empty() && after[..line_end].trim().is_empty();
+    if alone {
+        Span::new(
+            u32::try_from(line_start).unwrap_or(span.start),
+            span.end + u32::try_from(line_end).unwrap_or(0),
+        )
+    } else {
+        span
+    }
+}
+
+/// The text of an expression as the object of a member, parenthesized unless it binds tighter
+/// than a member access.
+#[must_use]
+pub fn object_text(source: &Source, expression: &Expression) -> String {
+    let inner = text(source, expression.span());
+    let tight = matches!(
+        expression,
+        Expression::Identifier(_)
+            | Expression::ThisExpression(_)
+            | Expression::Super(_)
+            | Expression::StaticMemberExpression(_)
+            | Expression::ComputedMemberExpression(_)
+            | Expression::PrivateFieldExpression(_)
+            | Expression::CallExpression(_)
+            | Expression::ArrayExpression(_)
+            | Expression::StringLiteral(_)
+            | Expression::TemplateLiteral(_)
+            | Expression::TSNonNullExpression(_)
+    );
+    if tight {
+        inner.to_owned()
+    } else {
+        format!("({inner})")
+    }
+}
+
+/// Whether an expression reads through `?.` anywhere along its objects and callees.
+#[must_use]
+pub fn has_optional_chain(expression: &Expression) -> bool {
+    match unwrap(expression) {
+        Expression::ChainExpression(_) => true,
+        Expression::StaticMemberExpression(member) => {
+            member.optional || has_optional_chain(&member.object)
+        }
+        Expression::ComputedMemberExpression(member) => {
+            member.optional
+                || has_optional_chain(&member.object)
+                || has_optional_chain(&member.expression)
+        }
+        Expression::CallExpression(call) => call.optional || has_optional_chain(&call.callee),
+        _ => false,
+    }
+}

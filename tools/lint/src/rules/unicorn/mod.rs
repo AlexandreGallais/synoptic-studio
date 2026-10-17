@@ -8,6 +8,12 @@ pub mod no_confusing_array_splice;
 pub mod no_impossible_length_comparison;
 pub mod no_negated_array_predicate;
 pub mod no_return_array_push;
+pub mod no_unnecessary_splice;
+pub mod prefer_array_last_methods;
+pub mod prefer_array_slice;
+pub mod prefer_flat_math_min_max;
+pub mod prefer_simple_sort_comparator;
+pub mod prefer_single_array_predicate;
 pub mod syntax;
 
 use super::Rule;
@@ -20,6 +26,12 @@ pub const RULES: &[&dyn Rule] = &[
     &no_impossible_length_comparison::NoImpossibleLengthComparison,
     &no_negated_array_predicate::NoNegatedArrayPredicate,
     &no_return_array_push::NoReturnArrayPush,
+    &no_unnecessary_splice::NoUnnecessarySplice,
+    &prefer_array_last_methods::PreferArrayLastMethods,
+    &prefer_array_slice::PreferArraySlice,
+    &prefer_flat_math_min_max::PreferFlatMathMinMax,
+    &prefer_simple_sort_comparator::PreferSimpleSortComparator,
+    &prefer_single_array_predicate::PreferSingleArrayPredicate,
 ];
 
 /// Their names, on for every TypeScript file.
@@ -30,6 +42,12 @@ pub const NAMES: &[&str] = &[
     "unicorn/no-impossible-length-comparison",
     "unicorn/no-negated-array-predicate",
     "unicorn/no-return-array-push",
+    "unicorn/no-unnecessary-splice",
+    "unicorn/prefer-array-last-methods",
+    "unicorn/prefer-array-slice",
+    "unicorn/prefer-flat-math-min-max",
+    "unicorn/prefer-simple-sort-comparator",
+    "unicorn/prefer-single-array-predicate",
 ];
 
 #[cfg(test)]
