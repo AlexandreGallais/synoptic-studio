@@ -21,10 +21,10 @@ From the Product Owner's validation of E15 (2026-10-15): embedded fonts are appl
 
 ## Product Owner test
 
-| Step | Do                                                | You should see                                    |
-| ---- | ------------------------------------------------- | ------------------------------------------------- |
-| 1    | Import Arial, a text in Arial, **Embed fonts** on | the drawing as before, the list of faces left out |
-| 2    | **Export SVG**, open the file as text             | one `<style>` with an `@font-face` for Arial      |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | Import Arial, a text in Arial, **Embed fonts** on | the drawing as before, the list of faces left out |
+| 2 | **Export SVG**, open the file as text | one `<style>` with an `@font-face` for Arial |
 
 ## Tasks
 

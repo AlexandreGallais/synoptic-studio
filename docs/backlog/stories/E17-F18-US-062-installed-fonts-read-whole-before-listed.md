@@ -28,12 +28,12 @@ Decided by the Product Owner at VAL-019 (2026-10-17): the list holds only fonts 
 
 Chrome, `npm run dev`, `http://localhost:5173/`, a stopwatch.
 
-| Step | Do                                                         | You should see                                                                                         |
-| ---- | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| 1    | Text tool, **Installed fonts**, allow; start the stopwatch | `Reading the installed fonts: 12 of … families…`                                                       |
-| 2    | stop it when the line turns to `Installed fonts read: …`   | the line ends with `3 faces of the families read refused: …` (on this Mac); write the time in the chat |
-| 3    | choose Hoefler Text                                        | `Hoefler Text: … faces read.`, without `refused`                                                       |
-| 4    | tick **Embed fonts**                                       | no line `…: not embedded, its file not held.`                                                          |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | Text tool, **Installed fonts**, allow; start the stopwatch | `Reading the installed fonts: 12 of … families…` |
+| 2 | stop it when the line turns to `Installed fonts read: …` | the line ends with `3 faces of the families read refused: …` (on this Mac); write the time in the chat |
+| 3 | choose Hoefler Text | `Hoefler Text: … faces read.`, without `refused` |
+| 4 | tick **Embed fonts** | no line `…: not embedded, its file not held.` |
 
 ## Tasks
 

@@ -27,14 +27,14 @@ From the Product Owner's first pass of VAL-018 (2026-10-16), finding C1: choosin
 
 ## Product Owner test
 
-| Step | Do                                                                  | You should see                                                             |
-| ---- | ------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| 1    | Text tool, Fit content, type "Pump P-101", size 16                  | the text and its dashed frame, about 88 wide and 19.4 tall                 |
-| 2    | Choose Box                                                          | Width 88, Height 20; the text stays where it was, its frame now 88 × 20    |
-| 3    | Type 50 in Width, then 40 in Height                                 | "Pum…" (one line fits in 20), then "Pump" over "P-101", wrapped in the box |
-| 4    | Choose Fit content, add a second line "Tank", then choose Box again | Width 88, Height 39: measured again, not the 50 typed before               |
-| 5    | Fit content, angle 23, note X and Y, then choose Box                | X and Y unchanged; the text's top-left corner stays where it was drawn     |
-| 6    | Change Width and Height                                             | the box resizes as before, the text wrapped and placed in it               |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | Text tool, Fit content, type "Pump P-101", size 16 | the text and its dashed frame, about 88 wide and 19.4 tall |
+| 2 | Choose Box | Width 88, Height 20; the text stays where it was, its frame now 88 × 20 |
+| 3 | Type 50 in Width, then 40 in Height | "Pum…" (one line fits in 20), then "Pump" over "P-101", wrapped in the box |
+| 4 | Choose Fit content, add a second line "Tank", then choose Box again | Width 88, Height 39: measured again, not the 50 typed before |
+| 5 | Fit content, angle 23, note X and Y, then choose Box | X and Y unchanged; the text's top-left corner stays where it was drawn |
+| 6 | Change Width and Height | the box resizes as before, the text wrapped and placed in it |
 
 ## Tasks
 

@@ -29,10 +29,10 @@ From the Product Owner's test of 2026-10-16, after US-059: after **Installed fon
 
 ## Product Owner test
 
-| Step | Do                                                                   | You should see                                                                |
-| ---- | -------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| 1    | Chrome, Inter not installed: Text tool, Installed fonts, allow, wait | no text while it reads; once `Installed fonts read: …`, the first font chosen |
-| 2    | Tick Embed fonts                                                     | no line `…: not embedded, its file not held.` for the font chosen             |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | Chrome, Inter not installed: Text tool, Installed fonts, allow, wait | no text while it reads; once `Installed fonts read: …`, the first font chosen |
+| 2 | Tick Embed fonts | no line `…: not embedded, its file not held.` for the font chosen |
 
 ## Tasks
 

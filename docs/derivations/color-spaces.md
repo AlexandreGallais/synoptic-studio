@@ -4,28 +4,28 @@ Used by: EN-037 (the hexadecimal forms and the opacity), EN-038 (HSL and HSB fro
 
 ## Notation
 
-| Symbol        | Definition                                                                                                        |
-| ------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `R`, `G`, `B` | the red, green and blue bytes, integers from 0 to 255                                                             |
-| `r`, `g`, `b` | the same as fractions: `r = R / 255`, from 0 to 1                                                                 |
-| `M`, `m`      | `max(r, g, b)` and `min(r, g, b)`                                                                                 |
-| `C`           | the chroma, `M − m`                                                                                               |
-| `H`           | the hue, in degrees, from 0 included to 360 excluded                                                              |
-| `S_L`, `L`    | HSL's saturation and lightness, as fractions from 0 to 1 (shown in percent)                                       |
-| `S_V`, `V`    | HSB's saturation and brightness (HSV's value), as fractions (shown in percent)                                    |
-| `p`, `A`      | the opacity in percent, an integer from 0 to 100, and an alpha byte from 0 to 255                                 |
-| `round(x)`    | the nearest integer, a tie rounded up: `⌊x + 0.5⌋` (`REF-CSS-COLOR-4` §16.1.1), computed by `Math.round` (step 8) |
+| Symbol | Definition |
+| --- | --- |
+| `R`, `G`, `B` | the red, green and blue bytes, integers from 0 to 255 |
+| `r`, `g`, `b` | the same as fractions: `r = R / 255`, from 0 to 1 |
+| `M`, `m` | `max(r, g, b)` and `min(r, g, b)` |
+| `C` | the chroma, `M − m` |
+| `H` | the hue, in degrees, from 0 included to 360 excluded |
+| `S_L`, `L` | HSL's saturation and lightness, as fractions from 0 to 1 (shown in percent) |
+| `S_V`, `V` | HSB's saturation and brightness (HSV's value), as fractions (shown in percent) |
+| `p`, `A` | the opacity in percent, an integer from 0 to 100, and an alpha byte from 0 to 255 |
+| `round(x)` | the nearest integer, a tie rounded up: `⌊x + 0.5⌋` (`REF-CSS-COLOR-4` §16.1.1), computed by `Math.round` (step 8) |
 
 ## Step 1 — The hexadecimal forms
 
 A hex color is `#` and 3, 4, 6 or 8 hexadecimal digits, the case of the letters not mattering (`REF-CSS-COLOR-4`, §5.2):
 
-| Digits | Meaning                                                                 | Example                         |
-| ------ | ----------------------------------------------------------------------- | ------------------------------- |
-| 6      | `RRGGBB`, each pair a byte from `00` to `ff`, opaque                    | `#FF8000` is 255, 128, 0        |
-| 8      | `RRGGBBAA`, the last pair the alpha byte, `00` transparent, `ff` opaque | `#0000ffcc`: blue, alpha 204    |
-| 3      | `RGB`, each digit doubled                                               | `#f80` is `#ff8800`             |
-| 4      | `RGBA`, each digit doubled                                              | `#f80c` is `#ff8800`, alpha 204 |
+| Digits | Meaning | Example |
+| --- | --- | --- |
+| 6 | `RRGGBB`, each pair a byte from `00` to `ff`, opaque | `#FF8000` is 255, 128, 0 |
+| 8 | `RRGGBBAA`, the last pair the alpha byte, `00` transparent, `ff` opaque | `#0000ffcc`: blue, alpha 204 |
+| 3 | `RGB`, each digit doubled | `#f80` is `#ff8800` |
+| 4 | `RGBA`, each digit doubled | `#f80c` is `#ff8800`, alpha 204 |
 
 The stored form is `#` and six lower-case digits, the HTML-compatible serialization of an 8-bit sRGB color (`REF-CSS-COLOR-4`, §16.2.1: `#ff00ff`, "not `#FF00FF`").
 
@@ -90,19 +90,19 @@ Take the sector where `r ≥ g ≥ b` and `C > 0`, and `h = (g − b) / C`, from
 
 HSB: `V = r`, `V · S_V = C`, `V − C = b`.
 
-| n   | `k_n`             | `max(0, min(k, 4 − k, 1))` | `f(n)`                                    |
-| --- | ----------------- | -------------------------- | ----------------------------------------- |
-| 5   | `5 + h`, ≥ 5 or 0 | 0 (`4 − k < 0`)            | `V = r`                                   |
-| 3   | `3 + h`           | `4 − k = 1 − h`            | `V − C (1 − h) = b + C h = b + g − b = g` |
-| 1   | `1 + h`           | 1                          | `V − C = b`                               |
+| n | `k_n` | `max(0, min(k, 4 − k, 1))` | `f(n)` |
+| --- | --- | --- | --- |
+| 5 | `5 + h`, ≥ 5 or 0 | 0 (`4 − k < 0`) | `V = r` |
+| 3 | `3 + h` | `4 − k = 1 − h` | `V − C (1 − h) = b + C h = b + g − b = g` |
+| 1 | `1 + h` | 1 | `V − C = b` |
 
 HSL: `L = (r + b) / 2`, `a = S_L · min(L, 1 − L) = M − L = C / 2`, `L − C/2 = b`, `L + C/2 = r`.
 
-| n   | `k_n`           | `max(−1, min(k − 3, 9 − k, 1))` | `f(n)`                            |
-| --- | --------------- | ------------------------------- | --------------------------------- |
-| 0   | `2h`, at most 2 | −1 (`k − 3 ≤ −1`)               | `L + C/2 = r`                     |
-| 8   | `8 + 2h`        | `9 − k = 1 − 2h`                | `L − (C/2)(1 − 2h) = b + C h = g` |
-| 4   | `4 + 2h`        | 1 (`k − 3 ≥ 1`, `9 − k ≥ 3`)    | `L − C/2 = b`                     |
+| n | `k_n` | `max(−1, min(k − 3, 9 − k, 1))` | `f(n)` |
+| --- | --- | --- | --- |
+| 0 | `2h`, at most 2 | −1 (`k − 3 ≤ −1`) | `L + C/2 = r` |
+| 8 | `8 + 2h` | `9 − k = 1 − 2h` | `L − (C/2)(1 − 2h) = b + C h = g` |
+| 4 | `4 + 2h` | 1 (`k − 3 ≥ 1`, `9 − k ≥ 3`) | `L − C/2 = b` |
 
 The five other sectors permute the components and shift `k` by the same offsets; a grey (`C = 0`) gives `a = 0` and `V · S_V = 0`, so every component is `L` or `V`, the grey itself. The script of the cross-check runs every sector.
 
@@ -116,12 +116,12 @@ The library rounds with `Math.round` (`nearestInteger`, `REF-MDN-MATH-ROUND`), a
 
 A designer reads the HSL or HSB values and may type them back. Integers cannot keep every color: there are `360 × 101 × 101 = 3 672 360` integer triples for `16 777 216` colors. One decimal can. Every color was converted, its values rounded, and converted back:
 
-| Values shown | HSL: colors changed       | HSB: colors changed       |
-| ------------ | ------------------------- | ------------------------- |
-| unrounded    | 0                         | 0                         |
-| integers     | 15 001 662 (about 89.4 %) | 14 732 448 (about 87.8 %) |
-| one decimal  | 0                         | 0                         |
-| two decimals | 0                         | 0                         |
+| Values shown | HSL: colors changed | HSB: colors changed |
+| --- | --- | --- |
+| unrounded | 0 | 0 |
+| integers | 15 001 662 (about 89.4 %) | 14 732 448 (about 87.8 %) |
+| one decimal | 0 | 0 |
+| two decimals | 0 | 0 |
 
 The integer counts are those of the SP-017 script; another binary64 implementation of the same formulas gave counts up to 45 apart (AUD-017), since values lying exactly on a half are computed a last bit above or below it. The zeros do not depend on it.
 
@@ -212,25 +212,25 @@ That is too slow for every test run, so the tests run a sample with the same fun
 
 ## Checks (test cases)
 
-| Case                           | Computation                                                                             | Expected                        |
-| ------------------------------ | --------------------------------------------------------------------------------------- | ------------------------------- |
-| `#FF8000` to HSL               | `g = 128/255 = 0.50196`, `C = 1`, `H = 60 · 0.50196`; `L = 0.5`, `S_L = 1`              | 30.11765°, 100 %, 50 %          |
-| `#FF8000` to HSB               | `V = 1`, `S_V = 1 / 1`                                                                  | 30.11765°, 100 %, 100 %         |
-| HSL(30.1°, 100 %, 50 %)        | `f(8) = 0.5 + 0.5 · (30.1/30 − 1) = 0.50167`, `255 · 0.50167 = 127.925`                 | `#ff8000`                       |
-| HSL(30°, 100 %, 50 %)          | `f(8) = 0.5`, `127.5` rounds up                                                         | `#ff8000`                       |
-| `#336699` to HSL               | `r, g, b = 0.2, 0.4, 0.6`, `C = 0.4`, `H = 60 · (−0.5 + 4)`; `L = 0.4`, `S_L = 0.2/0.4` | 210°, 50 %, 40 %                |
-| `#336699` to HSB               | `V = 0.6`, `S_V = 0.4/0.6`                                                              | 210°, 66.66667 %, 60 %          |
-| HSB(210°, 67 %, 60 %)          | `f(5) = 0.6 − 0.6 · 0.67 = 0.198`, `255 · 0.198 = 50.49`                                | `#326699`, not `#336699`        |
-| HSB(210°, 66.7 %, 60 %)        | `f(5) = 0.6 − 0.6 · 0.667 = 0.1998`, `50.949`                                           | `#336699`                       |
-| `#808080`, a grey              | `C = 0`; `L = V = 128/255`                                                              | hue 0, saturation 0, 50.19608 % |
-| `#000001` at integer HSL       | HSL(240°, 100 %, 0.19608 %) shown 0 % lightness                                         | `#000000`; at 0.2 %: `#000001`  |
-| `#000000`, `#ffffff`           | `C = 0`; `L` is 0 or 1                                                                  | saturation 0, hue 0             |
-| `#f80`, `#F80C`                | each digit doubled; `cc` = 204                                                          | `#ff8800`; with alpha, 80 %     |
-| 50 % to a byte                 | `round(255 · 50 / 100) = round(127.5)`                                                  | 128 (`80`), not 127             |
-| byte 236 to a percent          | `round(100 · 236 / 255) = round(92.549)`                                                | 93 %                            |
-| every percent 0 to 100         | percent → byte → percent                                                                | the same percent                |
-| every color, one decimal shown | step 9                                                                                  | the same hexadecimal            |
-| `#336699`, brightness typed 61 | step 12: `210°`, `102 / 153` exact, `61 / 100`                                          | `#34689c`, not `#33679c`        |
-| `#336699`, saturation typed 67 | step 12: 67 is the value shown, so `102 / 153`                                          | `#336699`                       |
-| plane 200 × 100 at (200, 50)   | step 10: `S = 100 · 200 / 200`, `V = 100 · (100 − 50) / 100`; HSB at 210°               | 100 %, 50 %, `#004080`          |
-| hue slider 200 long at 100     | step 10: `360 · 100 / 200`                                                              | 180°                            |
+| Case | Computation | Expected |
+| --- | --- | --- |
+| `#FF8000` to HSL | `g = 128/255 = 0.50196`, `C = 1`, `H = 60 · 0.50196`; `L = 0.5`, `S_L = 1` | 30.11765°, 100 %, 50 % |
+| `#FF8000` to HSB | `V = 1`, `S_V = 1 / 1` | 30.11765°, 100 %, 100 % |
+| HSL(30.1°, 100 %, 50 %) | `f(8) = 0.5 + 0.5 · (30.1/30 − 1) = 0.50167`, `255 · 0.50167 = 127.925` | `#ff8000` |
+| HSL(30°, 100 %, 50 %) | `f(8) = 0.5`, `127.5` rounds up | `#ff8000` |
+| `#336699` to HSL | `r, g, b = 0.2, 0.4, 0.6`, `C = 0.4`, `H = 60 · (−0.5 + 4)`; `L = 0.4`, `S_L = 0.2/0.4` | 210°, 50 %, 40 % |
+| `#336699` to HSB | `V = 0.6`, `S_V = 0.4/0.6` | 210°, 66.66667 %, 60 % |
+| HSB(210°, 67 %, 60 %) | `f(5) = 0.6 − 0.6 · 0.67 = 0.198`, `255 · 0.198 = 50.49` | `#326699`, not `#336699` |
+| HSB(210°, 66.7 %, 60 %) | `f(5) = 0.6 − 0.6 · 0.667 = 0.1998`, `50.949` | `#336699` |
+| `#808080`, a grey | `C = 0`; `L = V = 128/255` | hue 0, saturation 0, 50.19608 % |
+| `#000001` at integer HSL | HSL(240°, 100 %, 0.19608 %) shown 0 % lightness | `#000000`; at 0.2 %: `#000001` |
+| `#000000`, `#ffffff` | `C = 0`; `L` is 0 or 1 | saturation 0, hue 0 |
+| `#f80`, `#F80C` | each digit doubled; `cc` = 204 | `#ff8800`; with alpha, 80 % |
+| 50 % to a byte | `round(255 · 50 / 100) = round(127.5)` | 128 (`80`), not 127 |
+| byte 236 to a percent | `round(100 · 236 / 255) = round(92.549)` | 93 % |
+| every percent 0 to 100 | percent → byte → percent | the same percent |
+| every color, one decimal shown | step 9 | the same hexadecimal |
+| `#336699`, brightness typed 61 | step 12: `210°`, `102 / 153` exact, `61 / 100` | `#34689c`, not `#33679c` |
+| `#336699`, saturation typed 67 | step 12: 67 is the value shown, so `102 / 153` | `#336699` |
+| plane 200 × 100 at (200, 50) | step 10: `S = 100 · 200 / 200`, `V = 100 · (100 − 50) / 100`; HSB at 210° | 100 %, 50 %, `#004080` |
+| hue slider 200 long at 100 | step 10: `360 · 100 / 200` | 180° |

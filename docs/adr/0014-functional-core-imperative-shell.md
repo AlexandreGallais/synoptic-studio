@@ -10,10 +10,10 @@ Product Owner rule: a function never modifies its arguments; it takes values and
 
 Split into two zones (`REF-BERNHARDT-FCIS`):
 
-| Zone                 | Layers                                       | Rules                                                                                                                                                                                                                                                         |
-| -------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Functional core**  | `math`, `geometry`, `model`, `routing`, `io` | no mutation (`functional/immutable-data`), no `let`, no loop (`map`/`reduce`), no expression statement, no `throw`/`try`, `ReadonlyDeep` parameters and types, no access to the DOM or the host (`document`, `window`, `console`, `Math.random`, `Date.now`…) |
-| **Imperative shell** | `render`, `interaction`, `playground`        | statement rules relaxed (loops, `if`, DOM calls); kept: `no-param-reassign` with properties, no `let`, no class                                                                                                                                               |
+| Zone | Layers | Rules |
+| --- | --- | --- |
+| **Functional core** | `math`, `geometry`, `model`, `routing`, `io` | no mutation (`functional/immutable-data`), no `let`, no loop (`map`/`reduce`), no expression statement, no `throw`/`try`, `ReadonlyDeep` parameters and types, no access to the DOM or the host (`document`, `window`, `console`, `Math.random`, `Date.now`…) |
+| **Imperative shell** | `render`, `interaction`, `playground` | statement rules relaxed (loops, `if`, DOM calls); kept: `no-param-reassign` with properties, no `let`, no class |
 
 Everywhere: no classes (`functional/no-classes`), no `this`; model data are `readonly` types — the compiler therefore prevents any mutation of the model, even from the shell.
 

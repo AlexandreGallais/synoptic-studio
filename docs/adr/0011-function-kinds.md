@@ -8,25 +8,25 @@ The Product Owner asked for a marker on every function, like an Angular decorato
 
 ## Options considered
 
-| Option                         | Verdict                                                                                                                                                                                                                                                |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| TypeScript decorator `@math`   | **Impossible**: a decorator only applies to classes and their members, never to a free function (`REF-TS-DECORATORS`, `REF-TC39-DECORATORS`). And classes are excluded from the project.                                                               |
-| Kind inferred from the folder  | Insufficient: `geometry/` holds `math` and `geometry`, `render/` holds `format` and `procedure`.                                                                                                                                                       |
-| Suffix in the name (`dotMath`) | Pollutes names, contradicts "standard mathematical name".                                                                                                                                                                                              |
-| **JSDoc tag `@kind`**          | Read by ESLint, visible on hover in the IDE, documents at the same time. **Chosen.**                                                                                                                                                                   |
-| `@category` tag (TypeDoc)      | Technically equivalent; discarded to keep the established vocabulary (`@kind`). Note: JSDoc 3 also defines a `@kind` (class, function…); the project redefines it, hence `jsdoc/check-values` is off. The tag is declared in `tsdoc.json` for TypeDoc. |
+| Option | Verdict |
+| --- | --- |
+| TypeScript decorator `@math` | **Impossible**: a decorator only applies to classes and their members, never to a free function (`REF-TS-DECORATORS`, `REF-TC39-DECORATORS`). And classes are excluded from the project. |
+| Kind inferred from the folder | Insufficient: `geometry/` holds `math` and `geometry`, `render/` holds `format` and `procedure`. |
+| Suffix in the name (`dotMath`) | Pollutes names, contradicts "standard mathematical name". |
+| **JSDoc tag `@kind`** | Read by ESLint, visible on hover in the IDE, documents at the same time. **Chosen.** |
+| `@category` tag (TypeDoc) | Technically equivalent; discarded to keep the established vocabulary (`@kind`). Note: JSDoc 3 also defines a `@kind` (class, function…); the project redefines it, hence `jsdoc/check-values` is off. The tag is declared in `tsdoc.json` for TypeDoc. |
 
 ## Decision
 
 Every top-level function carries exactly one `@kind` among `math`, `geometry`, `domain`, `format`, `procedure` (`local/require-kind`), allowed in its layer (`local/kind-in-layer`), and bounded by the limits of its kind (`local/kind-limits`):
 
-| `@kind`     | Lines  | Statements | Complexity | Depth |
-| ----------- | ------ | ---------- | ---------- | ----- |
-| `math`      | 10     | 4          | 3          | 1     |
-| `geometry`  | 20     | 8          | 5          | 2     |
-| `domain`    | 20     | 8          | 5          | 2     |
-| `format`    | 20     | 8          | 4          | 1     |
-| `procedure` | **40** | **15**     | **3**      | **1** |
+| `@kind` | Lines | Statements | Complexity | Depth |
+| --- | --- | --- | --- | --- |
+| `math` | 10 | 4 | 3 | 1 |
+| `geometry` | 20 | 8 | 5 | 2 |
+| `domain` | 20 | 8 | 5 | 2 |
+| `format` | 20 | 8 | 4 | 1 |
+| `procedure` | **40** | **15** | **3** | **1** |
 
 Naming per kind (`local/kind-naming`): a `procedure` starts with a verb from a closed list; `math`/`geometry`/`domain` reject vague verbs (`get`, `compute`…); `format` reads as a conversion (`xToY`, `toX`, `parseX`); every boolean function starts with a predicate word (`is`, `has`, `can`…), and only those do.
 

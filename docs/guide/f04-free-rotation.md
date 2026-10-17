@@ -22,12 +22,12 @@ In the playground, the **Angle and position** fields turn the shape you drew by 
 
 **Editing a turned shape keeps it in place.** A width typed keeps the shape's turned top-left corner where it is, as Figma; a point typed in the SVG's x and y moves only that point; adding or deleting a point, or converting a turned polygon to a free shape, moves nothing else.
 
-| Term         | In plain words                                                                                      |
-| ------------ | --------------------------------------------------------------------------------------------------- |
-| Angle        | how far the shape is turned, in whole degrees, clockwise on screen, from 0 to 359                   |
-| Turned box   | the shape's box turned with it, drawn as a thin blue frame                                          |
+| Term | In plain words |
+| --- | --- |
+| Angle | how far the shape is turned, in whole degrees, clockwise on screen, from 0 to 359 |
+| Turned box | the shape's box turned with it, drawn as a thin blue frame |
 | Straight box | the smallest upright rectangle around the drawn shape, dashed; its x and y are the shape's position |
-| Quarter turn | 90°                                                                                                 |
+| Quarter turn | 90° |
 
 ## Try it
 
@@ -43,6 +43,6 @@ Run `npm run dev` and open `http://localhost:5173/?guide=epic&step=47`: the **Gu
 
 Validated by the Product Owner on 2026-10-12 (`VAL-007`), after a first free try and the guided test: turning, moving and resizing a turned shape work together as they meant.
 
-| Remark                                                                                                      | What was done                                           |
-| ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| Remark | What was done |
+| --- | --- |
 | the shape did not seem to turn about its center: the view followed a turned shape into negative coordinates | fixed at once: the view stays put; a shape may leave it |

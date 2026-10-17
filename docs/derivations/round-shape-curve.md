@@ -4,11 +4,11 @@ Used by: F10 in E14 (EN-027, ADR-0048). Sources: `REF-POMAX-BEZIER` (a circular 
 
 ## Notation
 
-| Symbol   | Definition                                                        |
-| -------- | ----------------------------------------------------------------- |
-| `w, h`   | width and height of the round shape's box, integers ≥ 0           |
-| `a, b`   | the half axes, `w/2` and `h/2`; the centre of the box is `(a, b)` |
-| `κ`      | the handle of a quarter circle of radius 1, `4(√2 − 1)/3`         |
+| Symbol | Definition |
+| --- | --- |
+| `w, h` | width and height of the round shape's box, integers ≥ 0 |
+| `a, b` | the half axes, `w/2` and `h/2`; the centre of the box is `(a, b)` |
+| `κ` | the handle of a quarter circle of radius 1, `4(√2 − 1)/3` |
 | `P1..P4` | the shape's points: top, right, bottom, left, clockwise on screen |
 
 ## Step 1 — A quarter circle as a cubic
@@ -23,12 +23,12 @@ The ellipse filling the box is the unit circle scaled by `a` across and `b` down
 
 On screen, `y` grows downwards and clockwise goes top, right, bottom, left (Q11):
 
-| Point       | Position | Handle before | Handle after |
-| ----------- | -------- | ------------- | ------------ |
-| P1 (top)    | `(a, 0)` | `(−κa, 0)`    | `(κa, 0)`    |
-| P2 (right)  | `(w, b)` | `(0, −κb)`    | `(0, κb)`    |
-| P3 (bottom) | `(a, h)` | `(κa, 0)`     | `(−κa, 0)`   |
-| P4 (left)   | `(0, b)` | `(0, κb)`     | `(0, −κb)`   |
+| Point | Position | Handle before | Handle after |
+| --- | --- | --- | --- |
+| P1 (top) | `(a, 0)` | `(−κa, 0)` | `(κa, 0)` |
+| P2 (right) | `(w, b)` | `(0, −κb)` | `(0, κb)` |
+| P3 (bottom) | `(a, h)` | `(κa, 0)` | `(−κa, 0)` |
+| P4 (left) | `(0, b)` | `(0, κb)` | `(0, −κb)` |
 
 At each point the two handles are opposite and of the same length: Mirror angle and length (`REF-FIGMA-HANDLE-MIRRORING`). Each side is the cubic of `DERIV-cubic-sides` step 1 from a point, its handle after, the next point's handle before, to the next point; with radii 0 no corner is filleted.
 
@@ -42,13 +42,13 @@ With `w = 0`, `a = 0`: P1 and P3 are at `(0, 0)` and `(0, h)`, the horizontal ha
 
 ## Checks (test cases)
 
-| Case                   | Computation                          | Expected                            |
-| ---------------------- | ------------------------------------ | ----------------------------------- |
-| κ                      | `4(√2 − 1)/3`                        | 0.55228475                          |
-| 100 × 100, handles     | `50κ`                                | 27.61424                            |
-| 100 × 100, side 1 at ½ | `(50, 50) + 50 · (√2/2, −√2/2)`      | (85.35534, 14.64466), on the circle |
-| 120 × 80, top handles  | `60κ`                                | 33.13708                            |
-| 120 × 80, side handles | `40κ`                                | 22.09139                            |
-| 120 × 80, side 1 at ½  | `(60, 40) + (60 · √2/2, −40 · √2/2)` | (102.42641, 11.71573)               |
-| 100 × 100, largest gap | step 1, `50 × 0.00027`               | about 0.0136 from the circle        |
-| 0 × 50                 | step 5                               | the segment from (0, 0) to (0, 50)  |
+| Case | Computation | Expected |
+| --- | --- | --- |
+| κ | `4(√2 − 1)/3` | 0.55228475 |
+| 100 × 100, handles | `50κ` | 27.61424 |
+| 100 × 100, side 1 at ½ | `(50, 50) + 50 · (√2/2, −√2/2)` | (85.35534, 14.64466), on the circle |
+| 120 × 80, top handles | `60κ` | 33.13708 |
+| 120 × 80, side handles | `40κ` | 22.09139 |
+| 120 × 80, side 1 at ½ | `(60, 40) + (60 · √2/2, −40 · √2/2)` | (102.42641, 11.71573) |
+| 100 × 100, largest gap | step 1, `50 × 0.00027` | about 0.0136 from the circle |
+| 0 × 50 | step 5 | the segment from (0, 0) to (0, 50) |

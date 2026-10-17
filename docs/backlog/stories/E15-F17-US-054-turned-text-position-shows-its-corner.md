@@ -29,15 +29,15 @@ From the Product Owner's first pass of VAL-018 (2026-10-16), finding D4: turning
 
 ## Product Owner test
 
-| Step | Do                                                              | You should see                                                                               |
-| ---- | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| 1    | Text tool, Box, width 100, height 20, X 47, Y 61                | X 47, Y 61                                                                                   |
-| 2    | Type 23 in the angle                                            | X 54.88207, Y 42.2584: the turned top-left corner; the text turned about its middle          |
-| 3    | Type 60 in X                                                    | the text slides right, its top-left corner at x 60, its angle and its size unchanged; Y kept |
-| 4    | Press +90° twice                                                | X and Y change at each press, the text turning about its middle                              |
-| 5    | Fit content, letter spacing 10                                  | X and Y unchanged, the text grows along its direction from that corner                       |
-| 6    | Angle 0                                                         | X and Y show the top-left of the text, as before                                             |
-| 7    | Try again to turn a text by +90° in a box, with the ellipsis on | does the page still stop for a moment? If so, say the text, the box and the angle before     |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | Text tool, Box, width 100, height 20, X 47, Y 61 | X 47, Y 61 |
+| 2 | Type 23 in the angle | X 54.88207, Y 42.2584: the turned top-left corner; the text turned about its middle |
+| 3 | Type 60 in X | the text slides right, its top-left corner at x 60, its angle and its size unchanged; Y kept |
+| 4 | Press +90° twice | X and Y change at each press, the text turning about its middle |
+| 5 | Fit content, letter spacing 10 | X and Y unchanged, the text grows along its direction from that corner |
+| 6 | Angle 0 | X and Y show the top-left of the text, as before |
+| 7 | Try again to turn a text by +90° in a box, with the ellipsis on | does the page still stop for a moment? If so, say the text, the box and the angle before |
 
 ## Tasks
 

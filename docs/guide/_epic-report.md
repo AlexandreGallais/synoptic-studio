@@ -11,14 +11,14 @@ One section per feature: what it does, a picture, a link to its demo page.
 ## Words you will meet
 
 | Term | In plain words | Where it shows |
-| ---- | -------------- | -------------- |
+| --- | --- | --- |
 
 ## User test of the epic
 
 A scenario that crosses all the epic's features, step by step, in the playground.
 
-| Step | Do  | You should see | OK? |
-| ---- | --- | -------------- | --- |
+| Step | Do | You should see | OK? |
+| --- | --- | --- | --- |
 
 ## Decisions taken on the way
 

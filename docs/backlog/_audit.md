@@ -29,4 +29,4 @@ One task = one commit, referenced as `AUD-000.Tn`.
 ## Findings
 
 | Check | Result | Evidence | Action |
-| ----- | ------ | -------- | ------ |
+| --- | --- | --- | --- |

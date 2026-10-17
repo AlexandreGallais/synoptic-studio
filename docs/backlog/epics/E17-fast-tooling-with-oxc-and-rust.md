@@ -8,21 +8,21 @@ status: in-progress
 
 Decided by the Product Owner on 2026-10-16, at E15's retrospective (RET-003): the agent's checks and tools are made fast now, before E02, rather than later. The epic starts with research; nothing is decided before it. Its refinement with the Product Owner comes next, in two rounds.
 
-| Field                       | Content                                                                                                                                                                                                                          |
-| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| For                         | the Product Owner and the agent                                                                                                                                                                                                  |
-| who                         | wait for checks and pushes, and pay in tokens for every input an agent reads                                                                                                                                                     |
-| the solution                | the agent's tooling on Oxc and Rust, and a lighter context                                                                                                                                                                       |
-| is a                        | linter, formatter and agent tools that run in seconds, in this repository                                                                                                                                                        |
-| that                        | brings `check:all` and the pre-push wait far down, and gives each agent its context in fewer tokens                                                                                                                              |
-| unlike                      | `check:all` at 170 to 217 s (57 s at E14), ESLint and Prettier on Node.js, agents reading whole files                                                                                                                            |
-| our solution                | Oxc's tools where they carry the project's rules and settings; any rule they cannot carry rewritten in Rust on Oxc, here; Rust tools for the agent                                                                               |
-| Business outcomes           | faster pushes; fewer tokens per story; the computer usable while agents work                                                                                                                                                     |
-| Leading indicators          | `check:all`'s duration; tokens of each agent's input, before and after; the lint rules carried, counted                                                                                                                          |
+| Field | Content |
+| --- | --- |
+| For | the Product Owner and the agent |
+| who | wait for checks and pushes, and pay in tokens for every input an agent reads |
+| the solution | the agent's tooling on Oxc and Rust, and a lighter context |
+| is a | linter, formatter and agent tools that run in seconds, in this repository |
+| that | brings `check:all` and the pre-push wait far down, and gives each agent its context in fewer tokens |
+| unlike | `check:all` at 170 to 217 s (57 s at E14), ESLint and Prettier on Node.js, agents reading whole files |
+| our solution | Oxc's tools where they carry the project's rules and settings; any rule they cannot carry rewritten in Rust on Oxc, here; Rust tools for the agent |
+| Business outcomes | faster pushes; fewer tokens per story; the computer usable while agents work |
+| Leading indicators | `check:all`'s duration; tokens of each agent's input, before and after; the lint rules carried, counted |
 | Non-functional requirements | the library unchanged and still dependency-free (ADR-0025); it keeps targeting the latest ECMAScript, so no syntax lowering is needed; the private records stay apart, a SQLite store the Product Owner may browse with a viewer |
-| In scope                    | the linter, the formatter, the agent's tools and hooks, the checks' speed, the agent's context                                                                                                                                   |
-| Out of scope                | the library's code and behaviour; the editor's features                                                                                                                                                                          |
-| Closure criteria            | ESLint and its plugins removed; `check:all` under a duration set at the refinement; tokens per agent input measured lower; the release that closes the epic made with the flow of EN-046                                         |
+| In scope | the linter, the formatter, the agent's tools and hooks, the checks' speed, the agent's context |
+| Out of scope | the library's code and behaviour; the editor's features |
+| Closure criteria | ESLint and its plugins removed; `check:all` under a duration set at the refinement; tokens per agent input measured lower; the release that closes the epic made with the flow of EN-046 |
 
 ## Goal
 
@@ -50,12 +50,12 @@ The spike opens the epic. VoidZero's site (voidzero.dev) and Oxc's documentation
 
 Ordered by the Product Owner at the refinement of 2026-10-16.
 
-| Feature                                                                                                          | Status      |
-| ---------------------------------------------------------------------------------------------------------------- | ----------- |
-| [F18](../features/E17-F18-a-safe-and-cheap-parallel-run.md) — A safe and cheap parallel run, and E15's leftovers | done        |
-| [F19](../features/E17-F19-oxc-and-rust-tools.md) — Checks on Oxc, TypeScript 7 and Rust                          | in-progress |
-| [F20](../features/E17-F20-a-context-diet.md) — A context diet for every agent                                    | draft       |
-| [F21](../features/E17-F21-agent-tools-in-rust.md) — Agent tools and the library server in Rust                   | draft       |
+| Feature | Status |
+| --- | --- |
+| [F18](../features/E17-F18-a-safe-and-cheap-parallel-run.md) — A safe and cheap parallel run, and E15's leftovers | done |
+| [F19](../features/E17-F19-oxc-and-rust-tools.md) — Checks on Oxc, TypeScript 7 and Rust | in-progress |
+| [F20](../features/E17-F20-a-context-diet.md) — A context diet for every agent | draft |
+| [F21](../features/E17-F21-agent-tools-in-rust.md) — Agent tools and the library server in Rust | draft |
 
 F18 holds the stories decided at RET-003 (ADR-0063, ADR-0064, ADR-0065, ADR-0066), written then as F11 was at RET-001.
 
@@ -78,8 +78,8 @@ Decisions of the Product Owner at the start of the run, recorded as understood.
 
 After its last feature is validated (ADR-0023, ADR-0049, ADR-0064). F21's clean-up story, which removes every script, hook, configuration and dev package left unused, comes last among the features' stories, before NAM-002 (decided on 2026-10-17).
 
-| Story                                                                                   | Status |
-| --------------------------------------------------------------------------------------- | ------ |
-| [NAM-002](../stories/E17-NAM-002-naming-pass-e17.md) — Naming pass over the code of E17 | draft  |
-| [REV-004](../stories/E17-REV-004-review-e17.md) — Review E17 with the Product Owner     | draft  |
-| [RET-004](../stories/E17-RET-004-retrospective-e17.md) — Retrospective of E17           | draft  |
+| Story | Status |
+| --- | --- |
+| [NAM-002](../stories/E17-NAM-002-naming-pass-e17.md) — Naming pass over the code of E17 | draft |
+| [REV-004](../stories/E17-REV-004-review-e17.md) — Review E17 with the Product Owner | draft |
+| [RET-004](../stories/E17-RET-004-retrospective-e17.md) — Retrospective of E17 | draft |

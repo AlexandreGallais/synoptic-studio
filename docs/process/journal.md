@@ -175,15 +175,15 @@ What each working session dealt with, in the agent's words: the Product Owner's 
 
 Built in that order, each feature refined with the Product Owner, researched, implemented in stories, audited and validated in the playground:
 
-| Feature | What it delivered                                            | Key decisions                |
-| ------- | ------------------------------------------------------------ | ---------------------------- |
-| F01     | a rectangle with a corner radius, reduced to fit             | ADR-0007                     |
-| F02     | a regular polygon fitted in its box                          | `DERIV-regular-polygon-fit`  |
-| F07     | the polygon anchored in its box, nine places                 | `docs/domain/shapes.md`      |
-| F03     | a radius per corner, Points mode, the list of points         | ADR-0029                     |
-| F09     | the rectangle as a free shape, stretched without loss        | ADR-0032                     |
-| F08     | points moved, added and deleted; corners as point and radius | ADR-0031, ADR-0033, ADR-0034 |
-| F04     | any angle, a position for every shape, two boxes             | ADR-0035                     |
-| F06     | a polygon stretched to its box, rule C                       | ADR-0037                     |
+| Feature | What it delivered | Key decisions |
+| --- | --- | --- |
+| F01 | a rectangle with a corner radius, reduced to fit | ADR-0007 |
+| F02 | a regular polygon fitted in its box | `DERIV-regular-polygon-fit` |
+| F07 | the polygon anchored in its box, nine places | `docs/domain/shapes.md` |
+| F03 | a radius per corner, Points mode, the list of points | ADR-0029 |
+| F09 | the rectangle as a free shape, stretched without loss | ADR-0032 |
+| F08 | points moved, added and deleted; corners as point and radius | ADR-0031, ADR-0033, ADR-0034 |
+| F04 | any angle, a position for every shape, two boxes | ADR-0035 |
+| F06 | a polygon stretched to its box, rule C | ADR-0037 |
 
 F10 (round shape) moved to E14 when the ellipse proved needed; F05 (text) to E15. The review (REV-001) confirmed the closure criteria and E14 as the next epic.

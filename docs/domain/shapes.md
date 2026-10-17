@@ -62,18 +62,18 @@ A point of a free shape can bend its two sides with two handles, as in Figma, wi
 
 **Radius or handles.** Each point has a switch with two states, always visible; its final layout is part of the UX pass at the end of E14. On a regular polygon, the switch first converts it to a free shape, unmoved, as deleting a point does (Product Owner, VAL-011, 2026-10-13).
 
-| State         | The point is drawn                | Its corner radius                                                          |
-| ------------- | --------------------------------- | -------------------------------------------------------------------------- |
-| Corner radius | filleted (ADR-0007)               | drawn                                                                      |
-| Handles       | its two sides bent by its handles | kept, not drawn; back as it was when switched off (30 stays 30, 0 stays 0) |
+| State | The point is drawn | Its corner radius |
+| --- | --- | --- |
+| Corner radius | filleted (ADR-0007) | drawn |
+| Handles | its two sides bent by its handles | kept, not drawn; back as it was when switched off (30 stays 30, 0 stays 0) |
 
 **Handle modes.** Typing one handle sets the other by the point's mode, chosen per point:
 
-| Mode (playground)                 | Stored             | The other handle                                                                                           |
-| --------------------------------- | ------------------ | ---------------------------------------------------------------------------------------------------------- |
+| Mode (playground) | Stored | The other handle |
+| --- | --- | --- |
 | Mirror angle and length (default) | `angle-and-length` | opposite, same length: one handle at (130, 0) around a point at (100, 0) puts the other at (70, 0) (Figma) |
-| Mirror angle                      | `angle`            | opposite direction, its own length kept; unchanged when the typed handle has length 0 (Figma)              |
-| No mirroring                      | `none`             | unchanged (Figma)                                                                                          |
+| Mirror angle | `angle` | opposite direction, its own length kept; unchanged when the typed handle has length 0 (Figma) |
+| No mirroring | `none` | unchanged (Figma) |
 
 **Sides and box:**
 
@@ -84,16 +84,16 @@ A point of a free shape can bend its two sides with two handles, as in Figma, wi
 
 **Points added or deleted on a curve:**
 
-| Edit                                         | Effect                                                                                                                                                                                                                                                                                                                                                  |
-| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Edit | Effect |
+| --- | --- |
 | A point added in the middle of a curved side | the curve is split at its middle and the drawing does not move — unless a neighbour's fillet reached past the middle: it is then rebuilt on the half left and may shrink (Q34, settled at VAL-011); the new point is in handles mode, Mirror angle and length; a neighbour in Mirror angle and length goes to Mirror angle (`DERIV-cubic-sides` step 4) |
-| A point deleted                              | its two sides become one, keeping the outer handles                                                                                                                                                                                                                                                                                                     |
+| A point deleted | its two sides become one, keeping the outer handles |
 
 **Typing a handle.** Two methods, kept by the Product Owner at VAL-011 out of the seven tried (Q32, research note 0013, 2026-10-13). The method changes only how the stored vector is shown and typed.
 
-| Method                      | Typed                                                                           | Rules                                                                                                                                                                                            | Derivation           |
-| --------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------- |
-| x, y on the page            | the handle's end, as in Figma                                                   | —                                                                                                                                                                                                | —                    |
+| Method | Typed | Rules | Derivation |
+| --- | --- | --- | --- |
+| x, y on the page | the handle's end, as in Figma | — | — |
 | angle, length from the side | degrees clockwise on screen from the side the handle leaves along, and a length | angle brought into 0 to 359 as a shape's (370 becomes 10, −90 becomes 270); a negative length refused, and a side of length 0; an angle typed while the length is 0 kept until a length is typed | `DERIV-handle-angle` |
 
 With the same values at both ends of a side, the angle from the side gives a symmetric arch, the same at the four corners of a rectangle: outwards for angles from 180° to 359° on a clockwise contour (330° bends a side out by 30°), inwards for the others (Product Owner decision, 2026-10-13).
@@ -278,17 +278,17 @@ A text holds:
 
 **Case transforms** (Q36, the agent's proposal of 2026-10-15; kept by the Product Owner on 2026-10-15, sentence case removed as of no use, US-037): each line is written in the case on its own, its line breaks kept; a text whose case is not one of these, `sentence` among them, is refused. For "pump P-101 is running":
 
-| Case     | Rule                                                                                                                                                                  | Gives                   |
-| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
-| none     | as typed                                                                                                                                                              | `pump P-101 is running` |
-| upper    | every letter in upper case                                                                                                                                            | `PUMP P-101 IS RUNNING` |
-| lower    | every letter in lower case                                                                                                                                            | `pump p-101 is running` |
-| title    | the first letter of each run of characters between white space (space, no-break space, tab) in upper case, the spaces and the rest kept (`pump  on` gives `Pump  On`) | `Pump P-101 Is Running` |
-| camel    | the words, cut at spaces, hyphens and underscores, in lower case, each but the first capitalized, joined                                                              | `pumpP101IsRunning`     |
-| Pascal   | the same words, each capitalized, joined                                                                                                                              | `PumpP101IsRunning`     |
-| kebab    | the same words in lower case, joined by hyphens                                                                                                                       | `pump-p-101-is-running` |
-| snake    | the same words in lower case, joined by underscores                                                                                                                   | `pump_p_101_is_running` |
-| constant | the same words in upper case, joined by underscores                                                                                                                   | `PUMP_P_101_IS_RUNNING` |
+| Case | Rule | Gives |
+| --- | --- | --- |
+| none | as typed | `pump P-101 is running` |
+| upper | every letter in upper case | `PUMP P-101 IS RUNNING` |
+| lower | every letter in lower case | `pump p-101 is running` |
+| title | the first letter of each run of characters between white space (space, no-break space, tab) in upper case, the spaces and the rest kept (`pump  on` gives `Pump  On`) | `Pump P-101 Is Running` |
+| camel | the words, cut at spaces, hyphens and underscores, in lower case, each but the first capitalized, joined | `pumpP101IsRunning` |
+| Pascal | the same words, each capitalized, joined | `PumpP101IsRunning` |
+| kebab | the same words in lower case, joined by hyphens | `pump-p-101-is-running` |
+| snake | the same words in lower case, joined by underscores | `pump_p_101_is_running` |
+| constant | the same words in upper case, joined by underscores | `PUMP_P_101_IS_RUNNING` |
 
 A run of separators cuts once, so a line of separators only gives an empty line in the programmers' cases.
 
@@ -296,11 +296,11 @@ A run of separators cuts once, so a line of separators only gives an empty line 
 
 A text is measured with the face of its font family that CSS would choose (`REF-CSS-FONTS-4`, §5.2; EN-032): the faces of its style first (italic or upright), the other style when the family has none; then its weight if a face has it, otherwise:
 
-| Weight asked | Faces tried, in order                                                                                                               |
-| ------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
-| 400 to 500   | the heavier weights up to 500 in ascending order, then the lighter ones in descending order, then those past 500 in ascending order |
-| under 400    | the lighter ones in descending order, then the heavier ones in ascending order                                                      |
-| over 500     | the heavier ones in ascending order, then the lighter ones in descending order                                                      |
+| Weight asked | Faces tried, in order |
+| --- | --- |
+| 400 to 500 | the heavier weights up to 500 in ascending order, then the lighter ones in descending order, then those past 500 in ascending order |
+| under 400 | the lighter ones in descending order, then the heavier ones in ascending order |
+| over 500 | the heavier ones in ascending order, then the lighter ones in descending order |
 
 - **Examples**: Inter 450 is measured with Inter 500; a family of 300 and 700 only measures 400 with 300 and 600 with 700.
 - **Family name**: a family is found by its name without regard to case, as CSS matches family names (`REF-CSS-FONTS-4`, §5.1): "arial" names Arial.
@@ -548,14 +548,14 @@ See `interaction.md` §3.
 
 Functional reference: Inkscape's Path menu (`REF-INKSCAPE-BOOL`).
 
-| Operation    | French            | Result                                          |
-| ------------ | ----------------- | ----------------------------------------------- |
-| Union        | Union             | area covered by at least one shape              |
-| Difference   | Différence        | bottom shape minus top shape                    |
-| Intersection | Intersection      | common area                                     |
-| Exclusion    | Exclusion         | area covered by exactly one shape (XOR)         |
-| Division     | Division          | bottom shape cut into pieces by the top outline |
-| Cut path     | Découpe de chemin | outlines cut at intersections, without fill     |
+| Operation | French | Result |
+| --- | --- | --- |
+| Union | Union | area covered by at least one shape |
+| Difference | Différence | bottom shape minus top shape |
+| Intersection | Intersection | common area |
+| Exclusion | Exclusion | area covered by exactly one shape (XOR) |
+| Division | Division | bottom shape cut into pieces by the top outline |
+| Cut path | Découpe de chemin | outlines cut at intersections, without fill |
 
 Reference algorithms: `REF-MARTINEZ-2009` (sweep line, O((n+k) log n), holes and multiple shapes), `REF-GREINER-HORMANN` (simpler, tricky degenerate cases). An extension to circular arcs is needed.
 
@@ -572,13 +572,13 @@ Reference algorithms: `REF-MARTINEZ-2009` (sweep line, O((n+k) log n), holes and
 
 The stroke is **computed as a path**, not through the SVG `stroke` property (ADR-0002).
 
-| Property            | Values                     | Note                                                          |
-| ------------------- | -------------------------- | ------------------------------------------------------------- |
-| Width               | integer ≥ 0                | —                                                             |
-| Alignment           | `inner`, `center`, `outer` | model of the W3C `stroke-alignment` draft (`REF-SVG-STROKES`) |
-| Join                | `miter`, `round`, `bevel`  | + miter limit, as in SVG (`REF-SVG2-PAINT`)                   |
-| Cap (open contours) | `butt`, `round`, `square`  | —                                                             |
-| Dashes              | pattern of integers        | exact arc length: `r × θ`                                     |
+| Property | Values | Note |
+| --- | --- | --- |
+| Width | integer ≥ 0 | — |
+| Alignment | `inner`, `center`, `outer` | model of the W3C `stroke-alignment` draft (`REF-SVG-STROKES`) |
+| Join | `miter`, `round`, `bevel` | + miter limit, as in SVG (`REF-SVG2-PAINT`) |
+| Cap (open contours) | `butt`, `round`, `square` | — |
+| Dashes | pattern of integers | exact arc length: `r × θ` |
 
 Rules:
 

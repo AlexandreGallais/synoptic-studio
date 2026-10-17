@@ -17,7 +17,11 @@ type Options = [Vocabulary];
 
 /** Message identifiers of `local/kind-naming`. */
 type MessageIds =
-  "formatName" | "predicateName" | "predicateReturn" | "procedureVerb" | "vagueName";
+  | "formatName"
+  | "predicateName"
+  | "predicateReturn"
+  | "procedureVerb"
+  | "vagueName";
 
 /** Name check of one kind: the message to report when `isValid` fails. */
 type KindCheck = readonly [MessageIds, (vocabulary: Vocabulary, name: string) => boolean];

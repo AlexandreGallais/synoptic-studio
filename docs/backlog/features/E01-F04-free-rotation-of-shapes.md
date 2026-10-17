@@ -51,23 +51,23 @@ For the editor applications (E02, **Ideas from the Product Owner**): the rotatio
 
 In delivery order.
 
-| ID                                                              | Type       | Title                                   | Status |
-| --------------------------------------------------------------- | ---------- | --------------------------------------- | ------ |
-| [SP-007](../stories/E01-F04-SP-007-research-f04.md)             | Spike      | Research for F04                        | done   |
-| [EN-014](../stories/E01-F04-EN-014-angle-and-position.md)       | Enabler    | An angle and a position for every shape | done   |
-| [EN-015](../stories/E01-F04-EN-015-straight-box.md)             | Enabler    | The straight box of a drawn shape       | done   |
-| [US-018](../stories/E01-F04-US-018-turn-a-shape.md)             | User story | Turn and move a shape in the playground | done   |
-| [CHK-007](../stories/E01-F04-CHK-007-checkpoint-f04.md)         | Checkpoint | Checkpoint in the middle of F04         | done   |
-| [US-019](../stories/E01-F04-US-019-edit-a-turned-shape.md)      | User story | Edit a turned shape                     | done   |
-| [AUD-007](../stories/E01-F04-AUD-007-audit-f04.md)              | Audit      | Audit F04: free rotation of shapes      | done   |
-| [VAL-007](../stories/E01-F04-VAL-007-validate-free-rotation.md) | Validation | Validate F04 on the reference cases     | done   |
+| ID | Type | Title | Status |
+| --- | --- | --- | --- |
+| [SP-007](../stories/E01-F04-SP-007-research-f04.md) | Spike | Research for F04 | done |
+| [EN-014](../stories/E01-F04-EN-014-angle-and-position.md) | Enabler | An angle and a position for every shape | done |
+| [EN-015](../stories/E01-F04-EN-015-straight-box.md) | Enabler | The straight box of a drawn shape | done |
+| [US-018](../stories/E01-F04-US-018-turn-a-shape.md) | User story | Turn and move a shape in the playground | done |
+| [CHK-007](../stories/E01-F04-CHK-007-checkpoint-f04.md) | Checkpoint | Checkpoint in the middle of F04 | done |
+| [US-019](../stories/E01-F04-US-019-edit-a-turned-shape.md) | User story | Edit a turned shape | done |
+| [AUD-007](../stories/E01-F04-AUD-007-audit-f04.md) | Audit | Audit F04: free rotation of shapes | done |
+| [VAL-007](../stories/E01-F04-VAL-007-validate-free-rotation.md) | Validation | Validate F04 on the reference cases | done |
 
 ## Feature plan
 
-| Acceptance criterion                         | Realized by    | Verified by                      |
-| -------------------------------------------- | -------------- | -------------------------------- |
-| 1 — integer angle, clockwise, 0 to 359       | EN-014, US-018 | `[F04.AC1]` tests, card, VAL-007 |
-| 2 — turning keeps the shape                  | EN-014         | `[F04.AC2]` tests, card, VAL-007 |
-| 3 — position: x, y of the straight box       | EN-014, EN-015 | `[F04.AC3]` tests, card, VAL-007 |
-| 4 — a turned shape edited without jumping    | US-019         | `[F04.AC4]` tests, card, VAL-007 |
-| 5 — angle field, ±90° buttons, the two boxes | US-018         | `[F04.AC5]` tests, card, VAL-007 |
+| Acceptance criterion | Realized by | Verified by |
+| --- | --- | --- |
+| 1 — integer angle, clockwise, 0 to 359 | EN-014, US-018 | `[F04.AC1]` tests, card, VAL-007 |
+| 2 — turning keeps the shape | EN-014 | `[F04.AC2]` tests, card, VAL-007 |
+| 3 — position: x, y of the straight box | EN-014, EN-015 | `[F04.AC3]` tests, card, VAL-007 |
+| 4 — a turned shape edited without jumping | US-019 | `[F04.AC4]` tests, card, VAL-007 |
+| 5 — angle field, ±90° buttons, the two boxes | US-018 | `[F04.AC5]` tests, card, VAL-007 |

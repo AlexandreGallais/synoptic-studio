@@ -4,11 +4,11 @@ Used by: ADR-0046, F12 (EN-025). Sources: `REF-WIKI-BEZIER` (the cubic, its deri
 
 ## Notation
 
-| Symbol           | Definition                                                                               |
-| ---------------- | ---------------------------------------------------------------------------------------- |
+| Symbol | Definition |
+| --- | --- |
 | `P₀, P₁, P₂, P₃` | a cubic side: from point A = P₀ to point B = P₃, `P₁ = A + A.after`, `P₂ = B + B.before` |
-| `B(t)`           | the point of the curve at `t` from 0 to 1                                                |
-| `w₀ … w₃`        | the values of one axis, x or y, of the four points                                       |
+| `B(t)` | the point of the curve at `t` from 0 to 1 |
+| `w₀ … w₃` | the values of one axis, x or y, of the four points |
 
 ## Step 1 — The curve and its derivative
 
@@ -36,12 +36,12 @@ Turning a shape about a center is an affine map; applied to the control points, 
 
 ## Checks (test cases)
 
-| Case                                                 | Expected                                                                                                    |
-| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| (100, 0), (130, −15), (200, 0), (200, 0)             | y: a = −135, b = 180, c = −45, root t = ⅓; box (100, −20/3) – (200, 0)                                      |
-| (0, 0), (0, −40), (100, −40), (100, 0): `a = 0` on y | root t = ½; box (0, −30) – (100, 0)                                                                         |
-| (0, 0), (30, −30), (70, 30), (100, 0)                | roots (3 ∓ √3)/6; box (0, −5√3) – (100, 5√3)                                                                |
-| (0, 0), (0, 0), (150, 0), (100, 0)                   | x root 6/7; largest x 5400/49 ≈ 110.20408                                                                   |
-| four equal points (5, 5)                             | no root; box (5, 5) – (5, 5)                                                                                |
+| Case | Expected |
+| --- | --- |
+| (100, 0), (130, −15), (200, 0), (200, 0) | y: a = −135, b = 180, c = −45, root t = ⅓; box (100, −20/3) – (200, 0) |
+| (0, 0), (0, −40), (100, −40), (100, 0): `a = 0` on y | root t = ½; box (0, −30) – (100, 0) |
+| (0, 0), (30, −30), (70, 30), (100, 0) | roots (3 ∓ √3)/6; box (0, −5√3) – (100, 5√3) |
+| (0, 0), (0, 0), (150, 0), (100, 0) | x root 6/7; largest x 5400/49 ≈ 110.20408 |
+| four equal points (5, 5) | no root; box (5, 5) – (5, 5) |
 | (0, 0), (0, −40), (100, −40), (100, 0) split in half | M = (50, −30); halves (0, 0), (0, −20), (25, −30), (50, −30) and (50, −30), (75, −30), (100, −20), (100, 0) |
-| handle (30, −15) turned by 90°                       | (15, 30)                                                                                                    |
+| handle (30, −15) turned by 90° | (15, 30) |

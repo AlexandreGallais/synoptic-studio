@@ -8,19 +8,19 @@ The structure is **checked by a test** (`backlog.test.ts`): unique IDs, valid st
 
 ## Where we are
 
-| Done                                                                            | Now                                                              | Next                                          | Then |
-| ------------------------------------------------------------------------------- | ---------------------------------------------------------------- | --------------------------------------------- | ---- |
-| E01 — draw symbol shapes, E14 — curves, E15 — text, each with its retrospective | E17's refinement — fast tooling with Oxc and Rust, in two rounds | E17's stories, then the release of 0.3 (#259) | E02  |
+| Done | Now | Next | Then |
+| --- | --- | --- | --- |
+| E01 — draw symbol shapes, E14 — curves, E15 — text, each with its retrospective | E17's refinement — fast tooling with Oxc and Rust, in two rounds | E17's stories, then the release of 0.3 (#259) | E02 |
 
 The full order of the epics is the Product Owner's, in [epics](./epics/); each epic orders its features, each feature its stories.
 
 ## Roles in this project
 
-| Role          | Who                                  | Does                                                                                              |
-| ------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------- |
-| Product Owner | one person                           | writes and prioritizes epics, defines features with the team, accepts stories, validates features |
-| Scrum Master  | Claude Code                          | keeps the backlog and its links, prepares refinement, checks the method                           |
-| Developers    | Claude Code (with the Product Owner) | split features into stories and stories into tasks, implement, test, demonstrate                  |
+| Role | Who | Does |
+| --- | --- | --- |
+| Product Owner | one person | writes and prioritizes epics, defines features with the team, accepts stories, validates features |
+| Scrum Master | Claude Code | keeps the backlog and its links, prepares refinement, checks the method |
+| Developers | Claude Code (with the Product Owner) | split features into stories and stories into tasks, implement, test, demonstrate |
 
 The Product Owner is one person (`REF-SCRUM-GUIDE`). Claude Code never sets an epic or a feature to `ready` without the Product Owner's explicit agreement; a `/run` is that agreement for its feature and stories (ADR-0045). A story is set to `done` in the **last commit of its pull request**, merged into its feature branch (by the Product Owner, or by GitHub in an authorized run once the local checks passed at the push). The Product Owner's acceptance is given on the test cards and at the feature's validation, by merging the feature pull request: `develop` and `main` only ever hold a story as `done` once its feature is accepted (ADR-0028, ADR-0038).
 
@@ -33,12 +33,12 @@ EPIC          complete business need
    │  └─ TASK one unit of work (≤ 1 day)
 ```
 
-| Level   | File                                                             | Written by                                            | Validated by  |
-| ------- | ---------------------------------------------------------------- | ----------------------------------------------------- | ------------- |
-| Epic    | `epics/E01-slug.md`                                              | Product Owner (drafts may be proposed by Claude Code) | Product Owner |
-| Feature | `features/E01-F01-slug.md`                                       | Product Owner with the team                           | Product Owner |
-| Story   | `stories/E01-F01-US-001-slug.md` (also `EN`, `SP`, `AUD`, `VAL`) | developers                                            | Product Owner |
-| Task    | checklist inside its story file                                  | developers                                            | the developer |
+| Level | File | Written by | Validated by |
+| --- | --- | --- | --- |
+| Epic | `epics/E01-slug.md` | Product Owner (drafts may be proposed by Claude Code) | Product Owner |
+| Feature | `features/E01-F01-slug.md` | Product Owner with the team | Product Owner |
+| Story | `stories/E01-F01-US-001-slug.md` (also `EN`, `SP`, `AUD`, `VAL`) | developers | Product Owner |
+| Task | checklist inside its story file | developers | the developer |
 
 ## Rules
 
@@ -59,21 +59,21 @@ File names and titles carry the ancestry: `E01-F01-US-001-slug.md`, titled `E01 
 
 Every feature is delivered in the same order, checked by `backlog.test.ts` (a feature with stories has at least one `SP`, one `CHK`, one `AUD` and one `VAL`):
 
-| Step | Story                                            | Content                                                                                                                                                                                                                                    |
-| ---- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 1    | `SP` research spike                              | sources, derivations and research requests for **all** the feature's stories, before any code ([research protocol](../research/) §8)                                                                                                       |
-| 2    | `US`, `EN`, and a `CHK` checkpoint in the middle | implementation on the feature branch, one story per pull request, checked by the local Git hooks; in an authorized run they chain, and GitHub merges each one into the feature branch once it is labeled `autonomous` (ADR-0028, ADR-0038) |
-| 3    | `AUD` audit                                      | the feature in depth, the project in breadth ([audit.md](../conventions/audit.md))                                                                                                                                                         |
-| 4    | `VAL` validation                                 | plain-language demo page and checklist page; the Product Owner checks the feature's acceptance criteria                                                                                                                                    |
+| Step | Story | Content |
+| --- | --- | --- |
+| 1 | `SP` research spike | sources, derivations and research requests for **all** the feature's stories, before any code ([research protocol](../research/) §8) |
+| 2 | `US`, `EN`, and a `CHK` checkpoint in the middle | implementation on the feature branch, one story per pull request, checked by the local Git hooks; in an authorized run they chain, and GitHub merges each one into the feature branch once it is labeled `autonomous` (ADR-0028, ADR-0038) |
+| 3 | `AUD` audit | the feature in depth, the project in breadth ([audit.md](../conventions/audit.md)) |
+| 4 | `VAL` validation | plain-language demo page and checklist page; the Product Owner checks the feature's acceptance criteria |
 
 Every started epic closes with `NAM` (naming pass over the whole code, ADR-0049), `REV` (epic report and user test) then `RET` (retrospective, evolvability review, playbook) — ADR-0023, checked by the same test; E01 has no `NAM` (closed before it), nor E14 (F13 is its naming pass). Their files are `E01-REV-001-slug.md`, listed in the epic's **Closing** table.
 
 ## Statuses
 
-| Item          | Statuses                                                                                 |
-| ------------- | ---------------------------------------------------------------------------------------- |
-| Epic, feature | `draft` → `ready` → `in-progress` → `done`                                               |
-| Story         | `draft` → `ready` → `done` on `develop` (`in-progress` only on its branch; or `dropped`) |
+| Item | Statuses |
+| --- | --- |
+| Epic, feature | `draft` → `ready` → `in-progress` → `done` |
+| Story | `draft` → `ready` → `done` on `develop` (`in-progress` only on its branch; or `dropped`) |
 
 An epic or a feature becomes `in-progress` when its first story starts, and `done` when its closing stories are merged (`VAL` for a feature; `REV` and `RET` for an epic). The agent proposes the change, the Product Owner agrees (decision of 2026-10-08).
 
@@ -83,13 +83,13 @@ The order of the files in a folder is not the priority: the Product Owner's orde
 
 Every item is a Markdown file starting with a front-matter block (`key: value` lines, no nesting). Templates: `_epic.md`, `_feature.md`, `_story.md`, `_spike.md`, `_checkpoint.md`, `_audit.md`, `_review.md`, `_retro.md` in this folder (not published on the site).
 
-| Field    | Epic  | Feature     | Story                                                                               |
-| -------- | ----- | ----------- | ----------------------------------------------------------------------------------- |
-| `id`     | `E01` | `F01`       | `US-001`, `EN-001`, `SP-001`, `CHK-001`, `AUD-001`, `VAL-001`, `REV-001`, `RET-001` |
-| `title`  | ✔     | ✔           | ✔                                                                                   |
-| `status` | ✔     | ✔           | ✔                                                                                   |
-| parent   | —     | `epic: E01` | `epic: E01`, `feature: F01`                                                         |
-| other    | —     | —           | `points`                                                                            |
+| Field | Epic | Feature | Story |
+| --- | --- | --- | --- |
+| `id` | `E01` | `F01` | `US-001`, `EN-001`, `SP-001`, `CHK-001`, `AUD-001`, `VAL-001`, `REV-001`, `RET-001` |
+| `title` | ✔ | ✔ | ✔ |
+| `status` | ✔ | ✔ | ✔ |
+| parent | — | `epic: E01` | `epic: E01`, `feature: F01` |
+| other | — | — | `points` |
 
 ## Workflow
 
@@ -108,8 +108,8 @@ flowchart LR
   D -->|release, CI| M[main]
 ```
 
-| Index                   | Content                                |
-| ----------------------- | -------------------------------------- |
-| [epics](./epics/)       | business needs                         |
-| [features](./features/) | capabilities                           |
-| [stories](./stories/)   | small, accepted-on-their-own behaviors |
+| Index | Content |
+| --- | --- |
+| [epics](./epics/) | business needs |
+| [features](./features/) | capabilities |
+| [stories](./stories/) | small, accepted-on-their-own behaviors |

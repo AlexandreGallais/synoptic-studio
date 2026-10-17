@@ -14,10 +14,10 @@
 
 ## Reasons
 
-| Option                                                                           | For                                                                                      | Against                                                                                           |
-| -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| Rebuilt against the color last read (chosen)                                     | no drift: HSL 30, 100, 50 typed on `#1e293b` give `#ff8000`; the values typed stay shown | the values shown can differ from the hexadecimal's own; two paths to one color may part by a byte |
-| Rebuilt against the hexadecimal after each edit (ADR-0058, decision 2 as worded) | the values shown are always the hexadecimal's own                                        | each edit rounds the next one's base: `#ff8400` for HSL 30, 100, 50 typed on `#1e293b`            |
+| Option | For | Against |
+| --- | --- | --- |
+| Rebuilt against the color last read (chosen) | no drift: HSL 30, 100, 50 typed on `#1e293b` give `#ff8000`; the values typed stay shown | the values shown can differ from the hexadecimal's own; two paths to one color may part by a byte |
+| Rebuilt against the hexadecimal after each edit (ADR-0058, decision 2 as worded) | the values shown are always the hexadecimal's own | each edit rounds the next one's base: `#ff8400` for HSL 30, 100, 50 typed on `#1e293b` |
 
 ## Consequences
 

@@ -13,11 +13,11 @@ When the radii requested at both ends of an edge exceed its length, they must be
 
 Comparison:
 
-| Rule                | 2 corners at 100 on a 25 edge | 1 corner at 1000 on a 100 square | Effect on unrelated corners |
-| ------------------- | ----------------------------- | -------------------------------- | --------------------------- |
-| Figma (cap at half) | 12.5 each ✔                   | 50 → a flat part remains ✘       | none                        |
-| CSS (global factor) | 12.5 each ✔                   | 100 ✔                            | **all reduced** ✘           |
-| Local proportional  | 12.5 each ✔                   | 100 ✔                            | none ✔                      |
+| Rule | 2 corners at 100 on a 25 edge | 1 corner at 1000 on a 100 square | Effect on unrelated corners |
+| --- | --- | --- | --- |
+| Figma (cap at half) | 12.5 each ✔ | 50 → a flat part remains ✘ | none |
+| CSS (global factor) | 12.5 each ✔ | 100 ✔ | **all reduced** ✘ |
+| Local proportional | 12.5 each ✔ | 100 ✔ | none ✔ |
 
 ## Decision
 

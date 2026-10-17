@@ -22,7 +22,7 @@
 
 ## Packages blocked by an advisory
 
-| Package                                                                                              | Blocked by                                                                                                          | Since      | Decision                                                                                                                                                                                                                                                     |
-| ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Package | Blocked by | Since | Decision |
+| --- | --- | --- | --- |
 | `stylelint` (+ `stylelint-config-standard-scss`, `stylelint-order`, `stylelint-config-recess-order`) | `braces` ≤ 3.0.3, GHSA-vfj7-8cjw-p6xm (high, stack-exhaustion DoS), no patched version, pulled through `micromatch` | 2026-10-08 | not installed. Product Owner decision (2026-10-08): install it when SCSS starts, with `stylelint-order` and `stylelint-config-recess-order`, through a documented audit exception list (dev tools only, with a review date) unless `braces` is fixed by then |
-| `markdownlint-cli2`                                                                                  | same advisory                                                                                                       | 2026-10-08 | replaced by `@eslint/markdown`                                                                                                                                                                                                                               |
+| `markdownlint-cli2` | same advisory | 2026-10-08 | replaced by `@eslint/markdown` |

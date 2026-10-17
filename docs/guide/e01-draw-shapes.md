@@ -56,31 +56,31 @@ Tick **Stretched to its box** and the polygon touches all four sides of its box.
 
 ## Words you will meet
 
-| Term            | In plain words                                                                              | Where it shows                     |
-| --------------- | ------------------------------------------------------------------------------------------- | ---------------------------------- |
-| Box             | the width × height you type, drawn in grey behind a polygon                                 | every shape                        |
-| Radius          | how much a corner is rounded; the **effective** radius is what fits, your number is kept    | Radius field, **Effective radius** |
-| Regular polygon | a polygon with all its sides and all its corners equal                                      | Polygon                            |
-| Anchor          | where the polygon sits in the room its box leaves, one of nine places                       | Anchor grid                        |
-| Point, handle   | a corner of the shape, and the round button drawn on it in Points mode                      | Points mode                        |
-| Free shape      | a shape whose points are typed one by one; the rectangle is one, a polygon becomes one      | the panel's title, **Free shape**  |
-| Angle           | how far the shape is turned, clockwise, about the center of its box                         | Angle field, −90° and +90°         |
-| Turned box      | the box turned with the shape, drawn as a thin blue frame                                   | a turned shape                     |
-| Straight box    | the smallest upright rectangle around the drawn shape, dashed; its x and y are the position | X, Y, **Straight box**             |
-| Stretched       | a polygon touching the four sides of its box                                                | **Stretched to its box**           |
+| Term | In plain words | Where it shows |
+| --- | --- | --- |
+| Box | the width × height you type, drawn in grey behind a polygon | every shape |
+| Radius | how much a corner is rounded; the **effective** radius is what fits, your number is kept | Radius field, **Effective radius** |
+| Regular polygon | a polygon with all its sides and all its corners equal | Polygon |
+| Anchor | where the polygon sits in the room its box leaves, one of nine places | Anchor grid |
+| Point, handle | a corner of the shape, and the round button drawn on it in Points mode | Points mode |
+| Free shape | a shape whose points are typed one by one; the rectangle is one, a polygon becomes one | the panel's title, **Free shape** |
+| Angle | how far the shape is turned, clockwise, about the center of its box | Angle field, −90° and +90° |
+| Turned box | the box turned with the shape, drawn as a thin blue frame | a turned shape |
+| Straight box | the smallest upright rectangle around the drawn shape, dashed; its x and y are the position | X, Y, **Straight box** |
+| Stretched | a polygon touching the four sides of its box | **Stretched to its box** |
 
 ## User test of the epic
 
 Run `npm run dev` and open `http://localhost:5173/?guide=epic&step=67`. Steps 67 to 72 each mix several features. **Next** types the shape for you; the clicks and the extra values written in the step are yours.
 
-| Step | Do                                                                                                     | You should see                                                                                                          | OK? |
-| ---- | ------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- | --- |
-| 67   | Rectangle 160 × 100, radius 12 (F01); type Width 200 (F09)                                             | it widens, its left side fixed; **Effective radius: 12 (as requested)**                                                 |     |
-| 68   | Rectangle 160 × 40, radius 1000 (F01); type Angle 90 (F04)                                             | a capsule, effective radius 20; standing up, Width and Height still 160 and 40; straight box x 60, y −60                |     |
-| 69   | Triangle 120 × 120 anchored bottom (F02, F07); Points, point 1, Ctrl + point 2, radius 15 (F03)        | only the base corners rounded, the base still on y 120; **Effective radius: mixed**                                     |     |
-| 70   | Hexagon stretched in 160 × 100 (F06); Points, Convert (F08); points 1 and 2, add a middle point, Y 120 | converting moves nothing; a new point under the base; Height 120                                                        |     |
-| 71   | The same hexagon; Angle 30 (F04), then Points and Convert (F08), then Width 200                        | nothing moves when converting; once widened, point 3 stays at x 10.71797, y 10; the angle stays 30                      |     |
-| 72   | The stretched hexagon with radius 1000 (F06, F01); type X 0 (F04)                                      | every corner rounded by 50, the shape leaves the left and right of its box; **Straight box: x 0, y 0, width 124.08793** |     |
+| Step | Do | You should see | OK? |
+| --- | --- | --- | --- |
+| 67 | Rectangle 160 × 100, radius 12 (F01); type Width 200 (F09) | it widens, its left side fixed; **Effective radius: 12 (as requested)** |  |
+| 68 | Rectangle 160 × 40, radius 1000 (F01); type Angle 90 (F04) | a capsule, effective radius 20; standing up, Width and Height still 160 and 40; straight box x 60, y −60 |  |
+| 69 | Triangle 120 × 120 anchored bottom (F02, F07); Points, point 1, Ctrl + point 2, radius 15 (F03) | only the base corners rounded, the base still on y 120; **Effective radius: mixed** |  |
+| 70 | Hexagon stretched in 160 × 100 (F06); Points, Convert (F08); points 1 and 2, add a middle point, Y 120 | converting moves nothing; a new point under the base; Height 120 |  |
+| 71 | The same hexagon; Angle 30 (F04), then Points and Convert (F08), then Width 200 | nothing moves when converting; once widened, point 3 stays at x 10.71797, y 10; the angle stays 30 |  |
+| 72 | The stretched hexagon with radius 1000 (F06, F01); type X 0 (F04) | every corner rounded by 50, the shape leaves the left and right of its box; **Straight box: x 0, y 0, width 124.08793** |  |
 
 ## Decisions taken on the way
 
@@ -117,13 +117,13 @@ Held with the Product Owner on 2026-10-12 (`REV-001`).
 
 **The user test, step by step.**
 
-| Step | What they saw                                                                                                                                                             | Matches the step |
-| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
-| 67   | the rectangle widened to 200 and kept its radius of 12                                                                                                                    | yes              |
-| 68   | the capsule with an effective radius of 20 stood up at 90°; trying radius 20 by hand, the "reduced to fit" message went away, and smaller radii rounded less, as expected | yes              |
-| 69   | only the two corners of the base were rounded by 15                                                                                                                       | yes              |
-| 70   | nothing moved on converting; the point added in the middle of the base went down to y 120 and the height became 120                                                       | yes              |
-| 71   | turned by 30°, converted and widened, point 3 did not move; going back undid it all without a change                                                                      | yes              |
-| 72   | every corner had an effective radius of 50; with X 0 the shape seemed to go partly off the canvas — not blocking, kept for later (improvement log)                        | yes, one doubt   |
+| Step | What they saw | Matches the step |
+| --- | --- | --- |
+| 67 | the rectangle widened to 200 and kept its radius of 12 | yes |
+| 68 | the capsule with an effective radius of 20 stood up at 90°; trying radius 20 by hand, the "reduced to fit" message went away, and smaller radii rounded less, as expected | yes |
+| 69 | only the two corners of the base were rounded by 15 | yes |
+| 70 | nothing moved on converting; the point added in the middle of the base went down to y 120 and the height became 120 | yes |
+| 71 | turned by 30°, converted and widened, point 3 did not move; going back undid it all without a change | yes |
+| 72 | every corner had an effective radius of 50; with X 0 the shape seemed to go partly off the canvas — not blocking, kept for later (improvement log) | yes, one doubt |
 
 **What the demo meant and what they understood.** Each step showed what it meant to show. Two points were checked after the review (RET-001): at step 72 the shape and its handles sat left of the view, which now keeps a margin of 40 so that they stay in sight; the steps say to press Enter after a point's X or Y because those fields apply on Enter, so that typing a minus sign moves nothing yet.

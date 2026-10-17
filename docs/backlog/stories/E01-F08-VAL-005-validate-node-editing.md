@@ -38,13 +38,13 @@ Tested freely in the playground, before the guided test existed; each behavior b
 
 Routed:
 
-| Remark                                                                                                                  | Where                                                                                    |
-| ----------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| Move several selected points at once, relatively (`+10`)                                                                | `docs/domain/interaction.md` §3, for later (editor applications)                         |
-| Basic arithmetic in number fields, with parentheses                                                                     | `docs/domain/interaction.md` §3, for later                                               |
-| A radius field with the points, the shape's radius for the whole shape, shown in both modes                             | done in this story: a points' Radius field, the shape's field always shown               |
-| A field losing the focus at each key, so that typing or holding an arrow key failed                                     | fixed in this story: the field is no longer moved while typed in; a test keeps the focus |
-| Free shape, then polygon, then free shape again                                                                         | fixed in this story: the free shape comes back with its own size                         |
-| Degenerate shapes: points on one slanted line, two points at the same place, crossing edges; a cap on typed coordinates | Q29 settled: allowed, never changed on their own, flagged in the applications; no cap    |
-| A clickable zone laid over a symbol; a shared status zone on every symbol; the saved position of a symbol (Q30)         | `docs/domain/symbols-and-views.md` §1, for later                                         |
-| A rotation mode with a movable center, snapping to points and centers, 90° buttons, an angle field                      | F04 feature file, for its refinement                                                     |
+| Remark | Where |
+| --- | --- |
+| Move several selected points at once, relatively (`+10`) | `docs/domain/interaction.md` §3, for later (editor applications) |
+| Basic arithmetic in number fields, with parentheses | `docs/domain/interaction.md` §3, for later |
+| A radius field with the points, the shape's radius for the whole shape, shown in both modes | done in this story: a points' Radius field, the shape's field always shown |
+| A field losing the focus at each key, so that typing or holding an arrow key failed | fixed in this story: the field is no longer moved while typed in; a test keeps the focus |
+| Free shape, then polygon, then free shape again | fixed in this story: the free shape comes back with its own size |
+| Degenerate shapes: points on one slanted line, two points at the same place, crossing edges; a cap on typed coordinates | Q29 settled: allowed, never changed on their own, flagged in the applications; no cap |
+| A clickable zone laid over a symbol; a shared status zone on every symbol; the saved position of a symbol (Q30) | `docs/domain/symbols-and-views.md` §1, for later |
+| A rotation mode with a movable center, snapping to points and centers, 90° buttons, an angle field | F04 feature file, for its refinement |

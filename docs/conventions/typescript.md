@@ -8,14 +8,14 @@ TypeScript **6.0** (pinned). TypeScript 7 exists, but `typescript-eslint` does n
 
 What ESLint can check lives in ESLint; `tsconfig.json` keeps only what belongs to the type system:
 
-| Option                                                                    | Why in TypeScript                                                                 |
-| ------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| `strict`                                                                  | `any` inference, `null`, `this`, variance: out of ESLint's reach                  |
-| `noUncheckedIndexedAccess`                                                | `T[number]` becomes `T \| undefined`: a type, not syntax                          |
-| `exactOptionalPropertyTypes`                                              | `x?: T` does not accept an explicit `undefined`                                   |
-| `noImplicitOverride`, `noPropertyAccessFromIndexSignature`                | type semantics                                                                    |
-| `noImplicitReturns`                                                       | replaces `consistent-return`, which conflicts with `unicorn/no-useless-undefined` |
-| `verbatimModuleSyntax`, `isolatedModules`, `noUncheckedSideEffectImports` | module emission and resolution                                                    |
+| Option | Why in TypeScript |
+| --- | --- |
+| `strict` | `any` inference, `null`, `this`, variance: out of ESLint's reach |
+| `noUncheckedIndexedAccess` | `T[number]` becomes `T \| undefined`: a type, not syntax |
+| `exactOptionalPropertyTypes` | `x?: T` does not accept an explicit `undefined` |
+| `noImplicitOverride`, `noPropertyAccessFromIndexSignature` | type semantics |
+| `noImplicitReturns` | replaces `consistent-return`, which conflicts with `unicorn/no-useless-undefined` |
+| `verbatimModuleSyntax`, `isolatedModules`, `noUncheckedSideEffectImports` | module emission and resolution |
 
 Left to ESLint (off in `tsconfig.json`): `noUnusedLocals`, `noUnusedParameters`, `noFallthroughCasesInSwitch`.
 

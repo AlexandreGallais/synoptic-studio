@@ -6,14 +6,14 @@ What only Claude Code uses; the rules above hold for every agent. Configuration:
 
 ## Skills, agents, tools
 
-| Need                                | Use                                                                                                                                                                                                                                                                                                         |
-| ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| a story, a run, a spike, an audit   | `/story`, `/run` (only when the Product Owner starts one), `/spike`, `/audit`, `/derivation`                                                                                                                                                                                                                |
-| a demo, a review, a retrospective   | `/review` (VAL and REV), `/retro`                                                                                                                                                                                                                                                                           |
-| GitHub issues                       | `/triage`                                                                                                                                                                                                                                                                                                   |
-| a second opinion, in the background | agents `auditor`, `math-expert`, `verifier`, `functional-analyst`, `doc-editor` (read-only)                                                                                                                                                                                                                 |
-| a source                            | MCP `library_search`, then `library_get` and `library_read`; WebFetch only for a page they cannot read                                                                                                                                                                                                      |
-| a choice for the Product Owner      | the questionnaire (AskUserQuestion), options with numeric examples, no drawings in characters; its last question always leaves room for free remarks; a refinement in two rounds — first questions with a long free comment, then every remaining question at once, after which the Product Owner may leave |
+| Need | Use |
+| --- | --- |
+| a story, a run, a spike, an audit | `/story`, `/run` (only when the Product Owner starts one), `/spike`, `/audit`, `/derivation` |
+| a demo, a review, a retrospective | `/review` (VAL and REV), `/retro` |
+| GitHub issues | `/triage` |
+| a second opinion, in the background | agents `auditor`, `math-expert`, `verifier`, `functional-analyst`, `doc-editor` (read-only) |
+| a source | MCP `library_search`, then `library_get` and `library_read`; WebFetch only for a page they cannot read |
+| a choice for the Product Owner | the questionnaire (AskUserQuestion), options with numeric examples, no drawings in characters; its last question always leaves room for free remarks; a refinement in two rounds — first questions with a long free comment, then every remaining question at once, after which the Product Owner may leave |
 
 ## While working
 

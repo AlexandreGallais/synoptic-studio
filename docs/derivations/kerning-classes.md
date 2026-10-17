@@ -6,14 +6,14 @@ The kerning of `n` characters with each other is an `n × n` table. Read once fr
 
 ## Notation
 
-| Symbol         | Definition                                                                   |
-| -------------- | ---------------------------------------------------------------------------- |
-| `C`            | the characters kept, `n` of them                                             |
-| `K(a, b)`      | the kerning of `a` then `b`, font units, read in the font's lookups          |
-| `row(a)`       | the kerning of `a` as the first character: `(K(a, c))` for every `c` of `C`  |
-| `column(b)`    | the kerning of `b` as the second character: `(K(c, b))` for every `c` of `C` |
-| `L(a)`, `R(b)` | the left class of `a`, the right class of `b`                                |
-| `V(l, r)`      | the kerning kept for left class `l` and right class `r`                      |
+| Symbol | Definition |
+| --- | --- |
+| `C` | the characters kept, `n` of them |
+| `K(a, b)` | the kerning of `a` then `b`, font units, read in the font's lookups |
+| `row(a)` | the kerning of `a` as the first character: `(K(a, c))` for every `c` of `C` |
+| `column(b)` | the kerning of `b` as the second character: `(K(c, b))` for every `c` of `C` |
+| `L(a)`, `R(b)` | the left class of `a`, the right class of `b` |
+| `V(l, r)` | the kerning kept for left class `l` and right class `r` |
 
 ## Step 1 — Classes of characters that kern alike
 
@@ -42,10 +42,10 @@ A, V, T, o with A V −80, V A −80, A T −40, T A −40, T o −60: rows A `(
 
 ## Checks (test cases)
 
-| Case                                                    | Expected                                 |
-| ------------------------------------------------------- | ---------------------------------------- |
-| rows `(0, 0)`, `(−1, 2)`, `(0, 0)`, `(3, 0)`, `(−1, 2)` | classes 0, 1, 0, 2, 1                    |
-| rows `(1, 2)`, `(2, 1)`: equal sums, rows differ        | classes 1, 2                             |
-| the cross-check, T then o                               | −60                                      |
-| no kerning at all                                       | every character in class 0, `V = [[0]]`  |
-| random pairs of 6 glyphs                                | `V(L(a), R(b)) = K(a, b)` for every pair |
+| Case | Expected |
+| --- | --- |
+| rows `(0, 0)`, `(−1, 2)`, `(0, 0)`, `(3, 0)`, `(−1, 2)` | classes 0, 1, 0, 2, 1 |
+| rows `(1, 2)`, `(2, 1)`: equal sums, rows differ | classes 1, 2 |
+| the cross-check, T then o | −60 |
+| no kerning at all | every character in class 0, `V = [[0]]` |
+| random pairs of 6 glyphs | `V(L(a), R(b)) = K(a, b)` for every pair |

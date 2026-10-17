@@ -26,14 +26,14 @@ One task = one commit, referenced as `CHK-007.Tn`.
 
 ## Light evolvability check (2026-10-12)
 
-| Question            | Answer                                                                                                                                                                                      |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Size                | 100 modules in `src/` (model 45, geometry 30, math 14, io 6, render 5); 601 tests; `model` keeps growing: the split into subfolders already in the improvement log is now due before E02    |
-| Tools               | StrykerJS still blocked; mutations by hand and by the auditor caught six surviving mutants in this feature, all fixed                                                                       |
-| Fitness functions   | the playground is outside the 100 % coverage gate: four playground mutants survived US-018 until the review; a coverage threshold for `playground/` would have caught two (improvement log) |
-| Patterns            | one turning helper (`turnAbout`) used by the model, the playground's boxes and the coming edits; `positionKeepingPoint` will serve US-019's three edits                                     |
-| Agent configuration | `CLAUDE.md` state line brought up to date (126 lines); pitfalls added: local addresses in code font, one value written in a kept free shape, frames by fills                                |
-| Process             | the Product Owner asked for a run that shows only commits and one final summary, and for a watchdog that relaunches a stalled run (improvement log, end of E01)                             |
+| Question | Answer |
+| --- | --- |
+| Size | 100 modules in `src/` (model 45, geometry 30, math 14, io 6, render 5); 601 tests; `model` keeps growing: the split into subfolders already in the improvement log is now due before E02 |
+| Tools | StrykerJS still blocked; mutations by hand and by the auditor caught six surviving mutants in this feature, all fixed |
+| Fitness functions | the playground is outside the 100 % coverage gate: four playground mutants survived US-018 until the review; a coverage threshold for `playground/` would have caught two (improvement log) |
+| Patterns | one turning helper (`turnAbout`) used by the model, the playground's boxes and the coming edits; `positionKeepingPoint` will serve US-019's three edits |
+| Agent configuration | `CLAUDE.md` state line brought up to date (126 lines); pitfalls added: local addresses in code font, one value written in a kept free shape, frames by fills |
+| Process | the Product Owner asked for a run that shows only commits and one final summary, and for a watchdog that relaunches a stalled run (improvement log, end of E01) |
 
 ## Test cards so far
 

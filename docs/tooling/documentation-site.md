@@ -13,17 +13,17 @@ The playground is built by `npm run playground:build` (`vite build --mode playgr
 
 ## Layout
 
-| Folder               | Section of the site |
-| -------------------- | ------------------- |
-| `docs/index.md`      | home                |
-| `docs/domain/`       | Domain              |
-| `docs/adr/`          | Decisions           |
-| `docs/conventions/`  | Conventions         |
-| `docs/tooling/`      | Tooling             |
-| `docs/derivations/`  | Derivations         |
-| `docs/research/`     | Research            |
-| `docs/references.md` | References          |
-| `docs/api/`          | API (generated)     |
+| Folder | Section of the site |
+| --- | --- |
+| `docs/index.md` | home |
+| `docs/domain/` | Domain |
+| `docs/adr/` | Decisions |
+| `docs/conventions/` | Conventions |
+| `docs/tooling/` | Tooling |
+| `docs/derivations/` | Derivations |
+| `docs/research/` | Research |
+| `docs/references.md` | References |
+| `docs/api/` | API (generated) |
 
 Sidebar entries are built from the Markdown files of each folder (title = first `#` heading); `README.md` files are served as the folder's index. Dead links fail the build.
 

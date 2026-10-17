@@ -35,7 +35,7 @@ One task = one commit, referenced as `EN-073.Tn`.
 
 - [x] T1 — `.oxfmtrc.json` from the migration, the Rust pass `tools/format` (tables without padding, a test on a table whose cell grows), the scripts and `lint-staged` on it, Prettier's package and configuration out (3 h)
 - [x] T2 — The docs: formatting conventions, commands, the oxfmt row, ADR-0068's decision 2 marked as carried, the measures (1 h)
-- [ ] T3 — The tree formatted, in a commit of its own, last, after a rebase on the feature branch (1 h)
+- [x] T3 — The tree formatted, in a commit of its own, last, after a rebase on the feature branch (1 h)
 
 The tasks were regrouped on 2026-10-17: the scripts call `tools/format`, so the tool, the scripts and Prettier's removal share one commit (knip refuses an unused `prettier`), and the reformatted tree comes last to keep conflicts with the parallel stories small.
 

@@ -27,12 +27,12 @@ From the Product Owner's first pass of VAL-018 (2026-10-16) and AUD-019's findin
 
 ## Product Owner test
 
-| Step | Do                                                                    | You should see                                                                    |
-| ---- | --------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| 1    | List the installed fonts, choose Apple Color Emoji                    | no crash: "Apple Color Emoji: … read.", or one line saying why it was refused     |
-| 2    | Import `/System/Library/Fonts/Apple Color Emoji.ttc` with Import font | no crash: its faces imported, or one line naming the file and why it was refused  |
-| 3    | Choose Helvetica in the installed fonts                               | "Helvetica: 6 faces read.", a text in Helvetica 700 drawn and measured as before  |
-| 4    | Import `/System/Library/Fonts/Helvetica.ttc`                          | "Helvetica 400, Helvetica 700, … imported.", 6 faces, the text drawn as in step 3 |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | List the installed fonts, choose Apple Color Emoji | no crash: "Apple Color Emoji: … read.", or one line saying why it was refused |
+| 2 | Import `/System/Library/Fonts/Apple Color Emoji.ttc` with Import font | no crash: its faces imported, or one line naming the file and why it was refused |
+| 3 | Choose Helvetica in the installed fonts | "Helvetica: 6 faces read.", a text in Helvetica 700 drawn and measured as before |
+| 4 | Import `/System/Library/Fonts/Helvetica.ttc` | "Helvetica 400, Helvetica 700, … imported.", 6 faces, the text drawn as in step 3 |
 
 ## Tasks
 

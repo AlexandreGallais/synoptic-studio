@@ -10,18 +10,18 @@
 
 ## Decision
 
-| Level   | Check                                                                                                                                     |
-| ------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| Story   | no independent review; the worker writes the story's edge cases into its tests and mutation-checks each new test once                     |
-| Feature | a thorough audit (`AUD`): mathematics, sources, mutations, brute force, duplicates, docs                                                  |
-| Epic    | a full audit beside the naming pass (`NAM`): duplicates, shareable code, named calculations, and the merge audit of the parallel branches |
+| Level | Check |
+| --- | --- |
+| Story | no independent review; the worker writes the story's edge cases into its tests and mutation-checks each new test once |
+| Feature | a thorough audit (`AUD`): mathematics, sources, mutations, brute force, duplicates, docs |
+| Epic | a full audit beside the naming pass (`NAM`): duplicates, shareable code, named calculations, and the merge audit of the parallel branches |
 
 ## Reasons
 
-| Option                    | For                                                                                  | Against                                                        |
-| ------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------- |
-| Checks by level (chosen)  | fewer tokens and less time per story; every defect still found before the validation | a defect found later in the feature, its fix a little costlier |
-| Three reviewers per story | defects found at once                                                                | about a third more tokens per story                            |
+| Option | For | Against |
+| --- | --- | --- |
+| Checks by level (chosen) | fewer tokens and less time per story; every defect still found before the validation | a defect found later in the feature, its fix a little costlier |
+| Three reviewers per story | defects found at once | about a third more tokens per story |
 
 ## Consequences
 

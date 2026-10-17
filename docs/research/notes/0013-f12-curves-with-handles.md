@@ -6,15 +6,15 @@ Spike SP-011, 2026-10-13. How tools let a user type the handles of a curve, how 
 
 Running example: a side from point A (100, 0) to point B (200, 0); A's handle leaving towards B, 30 long, 30° above the side (the page's y grows downwards, as in SVG): its vector is (30 cos 30°, −30 sin 30°) ≈ (25.98, −15), rounded to the nearest whole number below.
 
-| Method                                          | Used by, source                                                                                                                                                                                                                    | A's handle typed as                                                          | Integers typed             |
-| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | -------------------------- |
-| 1. **x, y of the handle's end, on the page**    | SVG's absolute `C` (`REF-SVG2-PATHS`); asked for in Inkscape (`REF-INKSCAPE-HANDLE-COORDS`); the Product Owner's choice                                                                                                            | x = 126, y = −15                                                             | yes                        |
-| 2. **dx, dy from its point**                    | how Figma stores a handle, a tangent vector from its vertex (`REF-FIGMA-VECTOR-NETWORK`); SVG's relative `c`; the other option of the Inkscape request                                                                             | dx = 26, dy = −15                                                            | yes                        |
-| 3. **angle and length, from the page's x axis** | AutoCAD's relative polar input, `@30<30` there, its angles counterclockwise (`REF-AUTOCAD-POLAR`)                                                                                                                                  | angle = 330°, length = 30 (clockwise from 0 to 359, as a shape's angle, F04) | yes                        |
-| 4. **angle and length, from its side**          | none found in a tool: the Product Owner's idea, the angle measured from the direction of the side the handle leaves along, so that the same values bend any side the same way                                                      | angle = 330° from the side, length = 30                                      | yes                        |
-| 5. **share of the side**                        | CSS `cubic-bezier(x1, y1, x2, y2)` places both control points as fractions of a unit square between the ends (`REF-CSS-EASING`); here a share along the side and a share across it, the second handle measured from B              | 26 % along, 15 % across                                                      | yes, as whole percentages  |
-| 6. **paste curve data**                         | a segment of SVG path data `C x1 y1 x2 y2 x y` (`REF-SVG2-PATHS`), or a CSS `cubic-bezier()` value (`REF-CSS-EASING`), whose diagonal from (0, 0) to (1, 1) is laid on the side                                                    | `C 126 -15 …`                                                                | the text pasted            |
-| 7. **a tension, the handles computed**          | Inkscape's auto-smooth nodes, whose handles follow the neighbours (`REF-INKSCAPE-NODE-TYPES`); the cardinal spline's tangent `(1 − c)(next − previous) / 2`, c = 0 the Catmull–Rom spline, as handles `m / 3` (`REF-WIKI-HERMITE`) | tension 0 (Catmull–Rom), from the points before and after A                  | yes, as a whole percentage |
+| Method | Used by, source | A's handle typed as | Integers typed |
+| --- | --- | --- | --- |
+| 1. **x, y of the handle's end, on the page** | SVG's absolute `C` (`REF-SVG2-PATHS`); asked for in Inkscape (`REF-INKSCAPE-HANDLE-COORDS`); the Product Owner's choice | x = 126, y = −15 | yes |
+| 2. **dx, dy from its point** | how Figma stores a handle, a tangent vector from its vertex (`REF-FIGMA-VECTOR-NETWORK`); SVG's relative `c`; the other option of the Inkscape request | dx = 26, dy = −15 | yes |
+| 3. **angle and length, from the page's x axis** | AutoCAD's relative polar input, `@30<30` there, its angles counterclockwise (`REF-AUTOCAD-POLAR`) | angle = 330°, length = 30 (clockwise from 0 to 359, as a shape's angle, F04) | yes |
+| 4. **angle and length, from its side** | none found in a tool: the Product Owner's idea, the angle measured from the direction of the side the handle leaves along, so that the same values bend any side the same way | angle = 330° from the side, length = 30 | yes |
+| 5. **share of the side** | CSS `cubic-bezier(x1, y1, x2, y2)` places both control points as fractions of a unit square between the ends (`REF-CSS-EASING`); here a share along the side and a share across it, the second handle measured from B | 26 % along, 15 % across | yes, as whole percentages |
+| 6. **paste curve data** | a segment of SVG path data `C x1 y1 x2 y2 x y` (`REF-SVG2-PATHS`), or a CSS `cubic-bezier()` value (`REF-CSS-EASING`), whose diagonal from (0, 0) to (1, 1) is laid on the side | `C 126 -15 …` | the text pasted |
+| 7. **a tension, the handles computed** | Inkscape's auto-smooth nodes, whose handles follow the neighbours (`REF-INKSCAPE-NODE-TYPES`); the cardinal spline's tangent `(1 − c)(next − previous) / 2`, c = 0 the Catmull–Rom spline, as handles `m / 3` (`REF-WIKI-HERMITE`) | tension 0 (Catmull–Rom), from the points before and after A | yes, as a whole percentage |
 
 Findings:
 
@@ -25,13 +25,13 @@ Findings:
 
 ## The model of a point
 
-| Rule                                | Source or decision                                                                                                                                             |
-| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| A handle is a vector from its point | Figma's `tangentStart` / `tangentEnd` (`REF-FIGMA-VECTOR-NETWORK`): moving or turning the point carries its handles                                            |
-| A zero handle is a straight side    | "A line segment is just a cubic spline segment where both handles have a tangent of `{x: 0, y: 0}`" (`REF-FIGMA-VECTOR-NETWORK`)                               |
-| Three modes per point               | `NONE`, `ANGLE`, `ANGLE_AND_LENGTH` (`REF-FIGMA-HANDLE-MIRRORING`, `REF-FIGMA-EDIT-VECTOR`); default angle and length (Product Owner, F12)                     |
-| Radius and handles both stored      | Figma keeps `cornerRadius` and `handleMirroring` on the same vertex (`REF-FIGMA-VECTOR-NETWORK`); the Product Owner: the radius comes back when the handles go |
-| Stored exactly                      | the handles of a free shape are stored as typed vectors, exact like its points (ADR-0031, ADR-0034); each method converts to and from them                     |
+| Rule | Source or decision |
+| --- | --- |
+| A handle is a vector from its point | Figma's `tangentStart` / `tangentEnd` (`REF-FIGMA-VECTOR-NETWORK`): moving or turning the point carries its handles |
+| A zero handle is a straight side | "A line segment is just a cubic spline segment where both handles have a tangent of `{x: 0, y: 0}`" (`REF-FIGMA-VECTOR-NETWORK`) |
+| Three modes per point | `NONE`, `ANGLE`, `ANGLE_AND_LENGTH` (`REF-FIGMA-HANDLE-MIRRORING`, `REF-FIGMA-EDIT-VECTOR`); default angle and length (Product Owner, F12) |
+| Radius and handles both stored | Figma keeps `cornerRadius` and `handleMirroring` on the same vertex (`REF-FIGMA-VECTOR-NETWORK`); the Product Owner: the radius comes back when the handles go |
+| Stored exactly | the handles of a free shape are stored as typed vectors, exact like its points (ADR-0031, ADR-0034); each method converts to and from them |
 
 Proposed: a free shape's corner gets `handles: { isOn, mode, before, after }` beside its radius — `isOn` is the switch between the radius mode and the handles mode, `before` and `after` the vectors towards the previous and the next side. In handles mode the radius is kept but not drawn. Typing one handle sets the other by the mode: angle and length gives `before = −after`; angle keeps `before`'s length on the opposite direction (unchanged when the handle typed has length 0); none leaves it.
 
@@ -41,15 +41,15 @@ Handles live in the frame of the stored points, like them: stretching the shape 
 
 ## What curves change in the library
 
-| Change                    | Source                                                                                                                                                                                                                            |
-| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| A cubic piece in contours | SVG's `C x1 y1 x2 y2 x y` (`REF-SVG2-PATHS`); a side with a handle at either end becomes a cubic from A to B through A + A.after and B + B.before                                                                                 |
-| Path writer               | one more command, `C`, in `contourPiecesToPathData`                                                                                                                                                                               |
-| Straight box (bounding)   | the curve's extremes where the derivative is zero for t from 0 to 1, plus its ends (`REF-POMAX-BEZIER`, `REF-WIKI-BEZIER`), the roots taken without cancellation (`REF-WIKI-QUADRATIC`); a derivation with hand-computed examples |
-| Fit, stretch, turn        | affine maps applied to the control points (`REF-WIKI-BEZIER`); a handle takes only the linear part; the box is computed again after a turn, never turned                                                                          |
-| Strokes                   | "you cannot offset a Bézier curve perfectly with another Bézier curve" (`REF-POMAX-BEZIER`): approximated by splitting, with a tolerance, decided at E04 (strokes), not in F12                                                    |
-| Closing side              | a curved side from the last point to the first is written as an explicit `C` before `Z`; today the writer leaves the last straight side to `Z`                                                                                    |
-| Circles for F10           | a quarter circle as one cubic is off by about 0.00027 of its radius (`REF-POMAX-BEZIER`), which advises circular arcs for circles; F10 decides, elliptical arcs included                                                          |
+| Change | Source |
+| --- | --- |
+| A cubic piece in contours | SVG's `C x1 y1 x2 y2 x y` (`REF-SVG2-PATHS`); a side with a handle at either end becomes a cubic from A to B through A + A.after and B + B.before |
+| Path writer | one more command, `C`, in `contourPiecesToPathData` |
+| Straight box (bounding) | the curve's extremes where the derivative is zero for t from 0 to 1, plus its ends (`REF-POMAX-BEZIER`, `REF-WIKI-BEZIER`), the roots taken without cancellation (`REF-WIKI-QUADRATIC`); a derivation with hand-computed examples |
+| Fit, stretch, turn | affine maps applied to the control points (`REF-WIKI-BEZIER`); a handle takes only the linear part; the box is computed again after a turn, never turned |
+| Strokes | "you cannot offset a Bézier curve perfectly with another Bézier curve" (`REF-POMAX-BEZIER`): approximated by splitting, with a tolerance, decided at E04 (strokes), not in F12 |
+| Closing side | a curved side from the last point to the first is written as an explicit `C` before `Z`; today the writer leaves the last straight side to `Z` |
+| Circles for F10 | a quarter circle as one cubic is off by about 0.00027 of its radius (`REF-POMAX-BEZIER`), which advises circular arcs for circles; F10 decides, elliptical arcs included |
 
 ## Proposal
 

@@ -13,7 +13,7 @@ _function or rule concerned, file, what cannot be decided without an answer_
 ## Already consulted
 
 | Source | What it says | Why insufficient |
-| ------ | ------------ | ---------------- |
+| --- | --- | --- |
 
 ## Expected deliverable
 

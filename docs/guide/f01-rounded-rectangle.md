@@ -22,15 +22,15 @@ Type a width, a height and a corner radius: the rectangle is drawn with its corn
 
 ![A square of 100 with radius 50: a circle](./images/f01-circle.svg)
 
-| Term             | In plain words                                                                     |
-| ---------------- | ---------------------------------------------------------------------------------- |
-| Corner radius    | how much a corner is rounded; 0 means a sharp corner                               |
-| Requested radius | the number you type; it is kept in the model                                       |
+| Term | In plain words |
+| --- | --- |
+| Corner radius | how much a corner is rounded; 0 means a sharp corner |
+| Requested radius | the number you type; it is kept in the model |
 | Effective radius | the radius actually drawn; smaller when the rectangle is too small for the request |
-| Fillet           | the arc of circle that replaces a corner                                           |
-| Tangent point    | where the fillet touches a side                                                    |
-| Setback          | distance from the corner to a tangent point                                        |
-| Path data        | the text the SVG file uses to describe the outline (`M`, `L`, `A`, `Z` commands)   |
+| Fillet | the arc of circle that replaces a corner |
+| Tangent point | where the fillet touches a side |
+| Setback | distance from the corner to a tangent point |
+| Path data | the text the SVG file uses to describe the outline (`M`, `L`, `A`, `Z` commands) |
 
 ## Try it
 
@@ -46,6 +46,6 @@ Run `npm run dev` and open `http://localhost:5173/?guide=epic&step=1`: the **Gui
 
 Validated by the Product Owner on 2026-10-09 (`VAL-001`): the rectangle, its rounding and the reduced radius behave as they meant.
 
-| Remark                                         | Where it went |
-| ---------------------------------------------- | ------------- |
-| change the radius of one corner by clicking it | F03           |
+| Remark | Where it went |
+| --- | --- |
+| change the radius of one corner by clicking it | F03 |

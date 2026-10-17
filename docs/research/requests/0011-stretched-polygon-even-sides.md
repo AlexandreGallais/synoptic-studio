@@ -18,12 +18,12 @@ F06 (polygon stretched to fill its box), stories SP-009 and EN-017: the function
 
 ## Already consulted
 
-| Source                                     | What it says                                                                                                                                                        | Why insufficient                                                |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| Wikipedia, "Equilateral polygon"           | definitions; an equilateral quadrilateral is a rhombus; a cyclic equilateral polygon is regular                                                                     | no construction inside a rectangle                              |
-| Figma help, shape tools                    | the polygon tool, triangle by default                                                                                                                               | nothing on filling a box; the Product Owner's test: it does not |
-| `DERIV-regular-polygon-fit` (this project) | the uniform fit of a regular polygon in its box                                                                                                                     | the regular case only                                           |
-| Agent's own computation                    | hexagon in 100 × 100: top and bottom sides 54.858, the four others 54.858 (equal); pentagon in 100 × 100: equal sides of about 63.5, side corners at about y = 39.2 | no source; the impossible cases and the measure are open        |
+| Source | What it says | Why insufficient |
+| --- | --- | --- |
+| Wikipedia, "Equilateral polygon" | definitions; an equilateral quadrilateral is a rhombus; a cyclic equilateral polygon is regular | no construction inside a rectangle |
+| Figma help, shape tools | the polygon tool, triangle by default | nothing on filling a box; the Product Owner's test: it does not |
+| `DERIV-regular-polygon-fit` (this project) | the uniform fit of a regular polygon in its box | the regular case only |
+| Agent's own computation | hexagon in 100 × 100: top and bottom sides 54.858, the four others 54.858 (equal); pentagon in 100 × 100: equal sides of about 63.5, side corners at about y = 39.2 | no source; the impossible cases and the measure are open |
 
 ## Expected deliverable
 

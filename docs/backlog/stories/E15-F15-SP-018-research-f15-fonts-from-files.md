@@ -20,19 +20,19 @@ Find, read and record the sources of every story of F15 before its implementatio
 
 ## Questions
 
-| Question                                                                                                                      | Story          |
-| ----------------------------------------------------------------------------------------------------------------------------- | -------------- |
-| How does a browser page read a font file the designer chooses (File API, `<input type="file">`)?                              | EN-039, US-036 |
-| How does it read a font installed on the computer (Local Font Access API): permission, user gesture, browsers that have it?   | US-036         |
-| Which names, weight and style does a font file give for its face (`name`, `OS/2` `usWeightClass` and `fsSelection`)?          | EN-039         |
-| What does each `fsType` value and bit permit (installable, restricted, preview and print, editable, no subsetting, bitmap)?   | EN-039         |
-| How is a font written into an SVG: `@font-face`, a `data:` URL, base64, its media type and format hint; how long is it?       | EN-040         |
-| Which SVG readers draw an `@font-face` with a `data:` URL: browsers, resvg, Batik, Inkscape?                                  | EN-040         |
-| Which SVG element holds the style sheet, and where?                                                                           | EN-040         |
-| How does `switch` choose its child; which `requiredExtensions` value do browsers accept; what do resvg, Batik, Inkscape show? | EN-041         |
-| How do CSS properties lay out the HTML layer as the library lays out its lines (spaces, wrapping, ellipsis, maximum lines)?   | EN-041         |
-| Where does a browser put the first baseline (`hhea`, `OS/2` typographic or Windows metrics, the line gap)?                    | EN-041         |
-| What must every shape and text of E01, E14, F05, F14 and F16 keep?                                                            | every story    |
+| Question | Story |
+| --- | --- |
+| How does a browser page read a font file the designer chooses (File API, `<input type="file">`)? | EN-039, US-036 |
+| How does it read a font installed on the computer (Local Font Access API): permission, user gesture, browsers that have it? | US-036 |
+| Which names, weight and style does a font file give for its face (`name`, `OS/2` `usWeightClass` and `fsSelection`)? | EN-039 |
+| What does each `fsType` value and bit permit (installable, restricted, preview and print, editable, no subsetting, bitmap)? | EN-039 |
+| How is a font written into an SVG: `@font-face`, a `data:` URL, base64, its media type and format hint; how long is it? | EN-040 |
+| Which SVG readers draw an `@font-face` with a `data:` URL: browsers, resvg, Batik, Inkscape? | EN-040 |
+| Which SVG element holds the style sheet, and where? | EN-040 |
+| How does `switch` choose its child; which `requiredExtensions` value do browsers accept; what do resvg, Batik, Inkscape show? | EN-041 |
+| How do CSS properties lay out the HTML layer as the library lays out its lines (spaces, wrapping, ellipsis, maximum lines)? | EN-041 |
+| Where does a browser put the first baseline (`hhea`, `OS/2` typographic or Windows metrics, the line gap)? | EN-041 |
+| What must every shape and text of E01, E14, F05, F14 and F16 keep? | every story |
 
 ## Tasks
 

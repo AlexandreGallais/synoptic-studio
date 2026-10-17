@@ -17,22 +17,22 @@ flowchart TD
   T --> RD
 ```
 
-| Part                | File                        | Role                                                                                       |
-| ------------------- | --------------------------- | ------------------------------------------------------------------------------------------ |
-| storage             | `scripts/library-store.ts`  | SQLite file, table of pages, FTS5 index of their sections (`porter unicode61`, BM25)       |
-| conversion          | `scripts/library-html.ts`   | HTML to Markdown: main part kept, scripts, styles, navigation and footers dropped          |
+| Part | File | Role |
+| --- | --- | --- |
+| storage | `scripts/library-store.ts` | SQLite file, table of pages, FTS5 index of their sections (`porter unicode61`, BM25) |
+| conversion | `scripts/library-html.ts` | HTML to Markdown: main part kept, scripts, styles, navigation and footers dropped |
 | sections, freshness | `scripts/library-chunks.ts` | split at headings (code blocks respected), sections of 4 000 characters at most; staleness |
-| pages               | `scripts/library-pages.ts`  | read from the library or fetched and stored; table of contents                             |
-| MCP server          | `scripts/library-mcp.ts`    | `library_search`, `library_get`, `library_read` over stdio (`.mcp.json`)                   |
-| command line        | `scripts/library-cli.ts`    | `npm run library -- search \| get \| read \| list`                                         |
+| pages | `scripts/library-pages.ts` | read from the library or fetched and stored; table of contents |
+| MCP server | `scripts/library-mcp.ts` | `library_search`, `library_get`, `library_read` over stdio (`.mcp.json`) |
+| command line | `scripts/library-cli.ts` | `npm run library -- search \| get \| read \| list` |
 
 ## Freshness
 
-| Page                                                                     | Read online again |
-| ------------------------------------------------------------------------ | ----------------- |
-| changed less than 14 days before it was read (it may still be corrected) | after 1 day       |
-| any other page, or one that states no date                               | after 90 days     |
-| asked with `refresh`                                                     | now               |
+| Page | Read online again |
+| --- | --- |
+| changed less than 14 days before it was read (it may still be corrected) | after 1 day |
+| any other page, or one that states no date | after 90 days |
+| asked with `refresh` | now |
 
 A stored page is asked with `If-None-Match` and `If-Modified-Since`: an unchanged page costs a `304` and no download. A page the site refuses stays as stored, marked `failed`.
 

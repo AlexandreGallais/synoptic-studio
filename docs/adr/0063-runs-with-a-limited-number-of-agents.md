@@ -22,12 +22,12 @@
 
 ## Reasons
 
-| Option                             | For                                                       | Against                                      |
-| ---------------------------------- | --------------------------------------------------------- | -------------------------------------------- |
-| The limit in the tools (chosen)    | holds when the agent forgets; the refusal names what runs | a hook and a lock to write and test (EN-047) |
-| The limit as a sentence (ADR-0051) | nothing to build                                          | bent once, with a freeze                     |
-| A queue for refused subagents      | no work lost                                              | a hidden wait; not asked for                 |
-| Drop the trial                     | no parallel load                                          | the chat blocked for long turns again        |
+| Option | For | Against |
+| --- | --- | --- |
+| The limit in the tools (chosen) | holds when the agent forgets; the refusal names what runs | a hook and a lock to write and test (EN-047) |
+| The limit as a sentence (ADR-0051) | nothing to build | bent once, with a freeze |
+| A queue for refused subagents | no work lost | a hidden wait; not asked for |
+| Drop the trial | no parallel load | the chat blocked for long turns again |
 
 ## Consequences
 

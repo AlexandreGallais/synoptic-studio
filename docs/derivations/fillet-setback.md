@@ -4,15 +4,15 @@ Used by: EN-004, `DERIV-local-radius-clamp` step 1. Replaces the unverified `REF
 
 ## Notation
 
-| Symbol | Definition                                                    |
-| ------ | ------------------------------------------------------------- |
-| `B`    | corner vertex                                                 |
-| `θ`    | interior angle at `B`, between the two edges                  |
-| `τ`    | turning angle at `B` (`DERIV-turning-angle`), `θ = π − \|τ\|` |
-| `r`    | fillet radius, `r ≥ 0`                                        |
-| `D`    | center of the fillet                                          |
-| `E`    | tangent point on one edge                                     |
-| `s`    | setback: distance `BE` from the vertex to the tangent point   |
+| Symbol | Definition |
+| --- | --- |
+| `B` | corner vertex |
+| `θ` | interior angle at `B`, between the two edges |
+| `τ` | turning angle at `B` (`DERIV-turning-angle`), `θ = π − \|τ\|` |
+| `r` | fillet radius, `r ≥ 0` |
+| `D` | center of the fillet |
+| `E` | tangent point on one edge |
+| `s` | setback: distance `BE` from the vertex to the tangent point |
 
 ## Step 1 — Center on the bisector
 
@@ -38,13 +38,13 @@ Cross-check: road design uses the same relation for the tangent length of a circ
 
 ## Checks (test cases)
 
-| `r` | `\|τ\|`                         | `s`                                  |
-| --- | ------------------------------- | ------------------------------------ |
-| 10  | `π/2` (right corner)            | `10 · tan(π/4) = 10`                 |
-| 30  | `0` (aligned)                   | `0`: no arc                          |
-| 10  | `π/3`                           | `10 · tan(π/6) = 10 / √3 ≈ 5.773503` |
-| 0   | `π/2`                           | `0`: sharp corner                    |
-| 10  | `−π/2` (counter-clockwise turn) | `10`: only `\|τ\|` matters           |
+| `r` | `\|τ\|` | `s` |
+| --- | --- | --- |
+| 10 | `π/2` (right corner) | `10 · tan(π/4) = 10` |
+| 30 | `0` (aligned) | `0`: no arc |
+| 10 | `π/3` | `10 · tan(π/6) = 10 / √3 ≈ 5.773503` |
+| 0 | `π/2` | `0`: sharp corner |
+| 10 | `−π/2` (counter-clockwise turn) | `10`: only `\|τ\|` matters |
 
 ## Limits
 

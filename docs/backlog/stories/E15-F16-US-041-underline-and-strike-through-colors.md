@@ -32,13 +32,13 @@ The agent's reading: until the designer chooses one, each decoration's color fol
 
 Open `http://localhost:5173/` (or the guided steps 19 and 40 of F16, `http://localhost:5173/?step=19`), click **Text**, click on the drawing, type `P-101`, tick **Underline** and **Strike-through**.
 
-| Step | Do                                                       | You should see                                                                    |
-| ---- | -------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| 1    | Look at the strokes                                      | both in the text's color, as before; each **follows the text's color** box ticked |
-| 2    | Set the strike-through's color to `#ff0000`, opacity 100 | the strike-through red, its box unticked; the underline in the text's color       |
-| 3    | Open the underline's swatch, pick a blue at 50 %         | the underline see-through blue                                                    |
-| 4    | Change the text's color to green                         | the letters green; the strokes keep red, blue                                     |
-| 5    | Tick **Underline follows the text's color** again        | the underline green, as the letters                                               |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | Look at the strokes | both in the text's color, as before; each **follows the text's color** box ticked |
+| 2 | Set the strike-through's color to `#ff0000`, opacity 100 | the strike-through red, its box unticked; the underline in the text's color |
+| 3 | Open the underline's swatch, pick a blue at 50 % | the underline see-through blue |
+| 4 | Change the text's color to green | the letters green; the strokes keep red, blue |
+| 5 | Tick **Underline follows the text's color** again | the underline green, as the letters |
 
 ## Tasks
 

@@ -19,11 +19,11 @@
 
 ## Reasons
 
-| Option                                                                  | For                                                                                    | Against                                                                                                           |
-| ----------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| Release pull request on `develop`, merged by the Product Owner (chosen) | `main` gains no commit `develop` lacks; the version is fixed when the release is asked | one more merge per release                                                                                        |
-| Release pull request on `develop`, merged by the workflow               | no extra merge                                                                         | the version fixed at the first push to `develop`; later features left out of its changelog, the tag behind `main` |
-| Release pull request on `main` (ADR-0038)                               | one merge                                                                              | `develop` catches up with a commit at every release                                                               |
+| Option | For | Against |
+| --- | --- | --- |
+| Release pull request on `develop`, merged by the Product Owner (chosen) | `main` gains no commit `develop` lacks; the version is fixed when the release is asked | one more merge per release |
+| Release pull request on `develop`, merged by the workflow | no extra merge | the version fixed at the first push to `develop`; later features left out of its changelog, the tag behind `main` |
+| Release pull request on `main` (ADR-0038) | one merge | `develop` catches up with a commit at every release |
 
 ## Consequences
 

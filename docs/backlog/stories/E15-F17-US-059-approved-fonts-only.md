@@ -30,12 +30,12 @@ From the Product Owner's decisions of 2026-10-16, asked by questionnaire after U
 
 ## Product Owner test
 
-| Step | Do                                                                  | You should see                                                                                     |
-| ---- | ------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| 1    | Chrome, Inter not installed: open the page, Text tool               | an empty, greyed font list; the Content field greyed; no text                                      |
-| 2    | Click Installed fonts, allow, and open the font list while it reads | the list and Installed fonts greyed; only families already read and approved, no Apple Color Emoji |
-| 3    | Wait for `Installed fonts read: …`                                  | the list usable, the first approved family chosen, the text drawn in it                            |
-| 4    | Import a font: Apple Color Emoji (/System/Library/Fonts on macOS)   | refused, the line saying it lacks the basic Latin letters                                          |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | Chrome, Inter not installed: open the page, Text tool | an empty, greyed font list; the Content field greyed; no text |
+| 2 | Click Installed fonts, allow, and open the font list while it reads | the list and Installed fonts greyed; only families already read and approved, no Apple Color Emoji |
+| 3 | Wait for `Installed fonts read: …` | the list usable, the first approved family chosen, the text drawn in it |
+| 4 | Import a font: Apple Color Emoji (/System/Library/Fonts on macOS) | refused, the line saying it lacks the basic Latin letters |
 
 ## Tasks
 

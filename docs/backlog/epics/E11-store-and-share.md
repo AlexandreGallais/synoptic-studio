@@ -6,27 +6,27 @@ status: draft
 
 # E11 — Store and share as files in a working folder
 
-| Field                       | Content                                                                     |
-| --------------------------- | --------------------------------------------------------------------------- |
-| For                         | every user                                                                  |
-| who                         | need their work persisted and shared                                        |
-| the solution                | files in a working folder                                                   |
-| is a                        | files read and written in a folder on the user's computer, one by one       |
-| that                        | symbols, configurations, libraries, drawings and views reloaded identically |
-| unlike                      | no persistence                                                              |
-| our solution                | local only in the free V1 (ADR-0030)                                        |
-| Business outcomes           | everything saved is reloaded identically from the working folder            |
-| Leading indicators          | round trip demonstrated for each kind of file                               |
-| Non-functional requirements | lossless round trip of the integer model                                    |
-| In scope                    | file formats, working folder, import and export                             |
-| Out of scope                | any server (local or online), project management: pro edition (ADR-0030)    |
-| Closure criteria            | every kind of file survives a save / load round trip                        |
+| Field | Content |
+| --- | --- |
+| For | every user |
+| who | need their work persisted and shared |
+| the solution | files in a working folder |
+| is a | files read and written in a folder on the user's computer, one by one |
+| that | symbols, configurations, libraries, drawings and views reloaded identically |
+| unlike | no persistence |
+| our solution | local only in the free V1 (ADR-0030) |
+| Business outcomes | everything saved is reloaded identically from the working folder |
+| Leading indicators | round trip demonstrated for each kind of file |
+| Non-functional requirements | lossless round trip of the integer model |
+| In scope | file formats, working folder, import and export |
+| Out of scope | any server (local or online), project management: pro edition (ADR-0030) |
+| Closure criteria | every kind of file survives a save / load round trip |
 
 ## Candidate features
 
-| Feature        | Status    |
-| -------------- | --------- |
-| File formats   | to refine |
+| Feature | Status |
+| --- | --- |
+| File formats | to refine |
 | Working folder | to refine |
 
 ## Ideas for refinement

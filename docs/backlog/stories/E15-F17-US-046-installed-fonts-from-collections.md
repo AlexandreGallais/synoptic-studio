@@ -26,10 +26,10 @@ From the Product Owner's validation of E15 (2026-10-15): installed faces held in
 
 ## Product Owner test
 
-| Step | Do                                                             | You should see                           |
-| ---- | -------------------------------------------------------------- | ---------------------------------------- |
-| 1    | List the installed fonts, choose Helvetica (a `.ttc` on macOS) | "Helvetica: 6 faces read.", none refused |
-| 2    | Choose the family that failed with a `TypeError`               | its faces read, or one line saying why   |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | List the installed fonts, choose Helvetica (a `.ttc` on macOS) | "Helvetica: 6 faces read.", none refused |
+| 2 | Choose the family that failed with a `TypeError` | its faces read, or one line saying why |
 
 ## Tasks
 

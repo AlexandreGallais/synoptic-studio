@@ -18,11 +18,11 @@
 
 ## Reasons
 
-| Option                                              | For                                                                                         | Against                                                                                |
-| --------------------------------------------------- | ------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| Middle kept, the turned corner fixed (chosen)       | the text grows along its direction and stays in place; as shapes and Figma; the middle kept | the position is computed again at each change and may become fractional                |
-| Middle kept, the position fixed (ADR-0055 as built) | the position stays the integers typed                                                       | the text moves on the drawing whenever its block changes size                          |
-| Turn about the position                             | the position fixed, no computing                                                            | a text turns about its corner, unlike shapes; the refinement turns it about its middle |
+| Option | For | Against |
+| --- | --- | --- |
+| Middle kept, the turned corner fixed (chosen) | the text grows along its direction and stays in place; as shapes and Figma; the middle kept | the position is computed again at each change and may become fractional |
+| Middle kept, the position fixed (ADR-0055 as built) | the position stays the integers typed | the text moves on the drawing whenever its block changes size |
+| Turn about the position | the position fixed, no computing | a text turns about its corner, unlike shapes; the refinement turns it about its middle |
 
 ## Consequences
 

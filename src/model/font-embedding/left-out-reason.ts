@@ -5,4 +5,8 @@
  * or no text names its family, the face reached only as the default font.
  */
 export type LeftOutReason =
-  "family-incomplete" | "generic-name" | "no-file" | "not-named" | "not-permitted";
+  | "family-incomplete"
+  | "generic-name"
+  | "no-file"
+  | "not-named"
+  | "not-permitted";
