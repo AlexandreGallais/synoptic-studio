@@ -390,3 +390,44 @@ The 232 kept, by plugin and, for Unicorn, by the area of `eslint/rules/unicorn/`
 | unused-imports | 2 | `no-unused-imports`, `no-unused-vars` |
 
 Kept on purpose although close to a drop: the DOM and web rules (the playground uses the DOM, files and `URL`), the loop, `throw` and `try` rules (allowed in the playground and the tests), the generator rules (one module yields), `functional/no-classes` and `no-this-expressions` (they are the bans themselves), the JSDoc layout rules and the comment rules of `@stylistic` (no source says oxfmt rewrites comments).
+
+### Triage of oxlint's native and type-aware rules (EN-074)
+
+Decided by the Product Owner on 2026-10-17, before any rule was enabled or rewritten: every rule enabled today is triaged — oxlint's native rules, `tsgolint`'s type-aware ones and the 265 above — and a rule is dropped when what it guards is already forbidden by a rule kept, by TypeScript's compiler or by the project's settings, or when this code cannot contain what it checks; fewer rules make a faster lint, and a rule that guards nothing here is never rewritten. Done on 2026-10-17 from `@oxlint/migrate 1.87.0 --type-aware` run on `eslint/` (432 rules enabled, `@typescript-eslint/prefer-destructuring` aside), each claim of overlap tried on a probe file with oxlint 1.87.0 or `tsc` 7.0.2 and the project's `tsconfig.json`.
+
+| Group | Enabled | Kept | Dropped |
+| --- | --- | --- | --- |
+| ESLint core | 163 | 127 | 36 |
+| typescript-eslint, type-aware (`tsgolint`) | 53 | 46 | 7 |
+| typescript-eslint, without types | 47 | 30 | 17 |
+| Unicorn | 127 | 118 | 9 |
+| Import | 24 | 17 | 7 |
+| JSDoc | 18 | 12 | 6 |
+| **All** | **432** | **350** | **82** |
+
+The 82 dropped, by reason ("types": a type-aware rule of `tsgolint`):
+
+| Rules dropped | Reason |
+| --- | --- |
+| `constructor-super` (ts(2335)), `getter-return` (ts(2378)), `no-class-assign` (ts(2629)), `no-const-assign` (ts(2588)), `no-dupe-class-members` (ts(2393)), `no-dupe-keys` (ts(1117)), `no-func-assign` (ts(2630)), `no-import-assign` (ts(2632)), `no-new-native-nonconstructor` (ts(7009)), `no-obj-calls` (ts(2349)), `no-setter-return` (ts(2408)), `no-this-before-super` (ts(2376)), `no-unsafe-negation` (ts(2322), ts(2365)), `no-with` (ts(1101)), `no-delete-var` (ts(1102)), `no-nonoctal-decimal-escape` (ts(1488)), `import/default` (ts(1192)), `import/namespace` (ts(2339)), `import/no-amd` (ts(2304)), `import/no-webpack-loader-syntax` (ts(2307)) | TypeScript's compiler refuses the code the rule reports, with the error in parentheses (`REF-TSESLINT-ESLINT-RECOMMENDED` for the core rules; the import rules tried) |
+| `no-implicit-globals` | it checks scripts only; every file is a module (`moduleDetection: force`) |
+| `class-methods-use-this`, `max-classes-per-file`, `no-constructor-return`, `no-empty-static-block`, `no-useless-constructor`, `typescript/class-literal-property-style`, `typescript/explicit-member-accessibility`, `typescript/no-extraneous-class`, `typescript/no-unnecessary-parameter-property-assignment`, `typescript/parameter-properties`, `typescript/prefer-readonly` (types), `typescript/prefer-return-this-type` (types), `unicorn/no-static-only-class`, `unicorn/prefer-class-fields`, `unicorn/custom-error-definition`, `unicorn/no-useless-error-capture-stack-trace` | no class can exist, error subclasses included: `functional/no-classes` forbids them |
+| `typescript/no-misused-new`, `typescript/no-unsafe-declaration-merging` | no class can exist (`functional/no-classes`), nor an interface (`typescript/consistent-type-definitions: type`) |
+| `jsdoc/implements-on-classes` | no class can exist, and `@implements` is refused by `jsdoc/check-tag-names` (`typed: true`) |
+| `typescript/no-this-alias`, `unicorn/no-this-assignment` | `this` cannot appear: `functional/no-this-expressions` forbids it |
+| `accessor-pairs`, `grouped-accessor-pairs`, `unicorn/no-accessor-recursion`, `typescript/related-getter-setter-pairs` (types) | getters and setters are forbidden (`no-restricted-syntax`) |
+| `typescript/no-duplicate-enum-values`, `typescript/prefer-enum-initializers`, `typescript/prefer-literal-enum-member`, `typescript/no-mixed-enums` (types), `typescript/no-unsafe-enum-comparison` (types) | `enum` is forbidden (`no-restricted-syntax`) |
+| `guard-for-in`, `typescript/no-for-in-array` (types) | `for…in` is forbidden (`no-restricted-syntax`) |
+| `typescript/prefer-namespace-keyword`, `typescript/no-unnecessary-qualifier` (types) | namespaces are forbidden, declarations included (`typescript/no-namespace`), and enums too: no qualifier to check |
+| `prefer-const`, `init-declarations`, `no-unassigned-vars`, `vars-on-top`, `block-scoped-var`, `import/no-mutable-exports` | only `const` can be declared, and a `const` always has its value: `no-var` and `functional/no-let` forbid `var` and `let` |
+| `no-loop-func` | it reports a closure over a variable that a loop can change; only `const` can be declared and no parameter is reassigned (`no-param-reassign`) |
+| `sort-vars` | `one-var: never` leaves one declarator per declaration: nothing to sort |
+| `no-extra-label`, `no-label-var`, `no-unused-labels` | labels are forbidden by `no-labels` |
+| `no-eq-null` | `eqeqeq: always` already reports `== null` |
+| `typescript/no-confusing-non-null-assertion`, `typescript/no-extra-non-null-assertion`, `typescript/no-non-null-asserted-nullish-coalescing`, `typescript/no-non-null-asserted-optional-chain` | `!` is forbidden by `typescript/no-non-null-assertion` |
+| `import/no-commonjs`, `import/no-dynamic-require`, `typescript/no-require-imports` | `unicorn/prefer-module` reports every `require` call, dynamic ones included, and TypeScript refuses `import x = require()` in a module (ts(1202)) |
+| `unicorn/no-new-buffer` | `new Buffer()` is deprecated in Node.js's types: `typescript/no-deprecated` reports it |
+| `unicorn/no-invalid-fetch-options`, `unicorn/prefer-response-static-json` | the library and the playground are local only (Q5) and call no `fetch`; only two tools of `scripts/` do, and they move to Rust in F21 |
+| `jsdoc/check-access`, `jsdoc/check-property-names`, `jsdoc/require-property`, `jsdoc/require-property-description`, `jsdoc/require-property-name` | `@access`, `@typedef` and `@property` are refused by `jsdoc/check-tag-names` (`typed: true`) |
+
+Kept on purpose although close to a drop: `no-unreachable` (the compiler only suggests it, `allowUnreachableCode` left unset), `no-caller` and `prefer-rest-params` (`arguments` is allowed in the tests and the tools, where `functional/functional-parameters` is off), `unbound-method` (a DOM method passed without its object loses it), `no-plusplus`, `operator-assignment` and `logical-assignment-operators` (members can still change in the shell), and the type-aware `no-unnecessary-type-assertion` and `no-unsafe-type-assertion` (they check the assertions the register of exceptions allows).
