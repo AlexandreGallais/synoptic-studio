@@ -15,8 +15,57 @@ const GIT = String.raw`^git(?:\s+(?:-[Cc]\s+(?:"[^"]*"|'[^']*'|\S+)|--[a-z-]+(?:
 /** Separators of a shell command's segments: `&&`, `||`, `;`, a pipe, a new line. */
 const SEGMENTS = /&&|\|\||[;|\n]/u;
 
-/** A folder inside a story's worktree (EN-052). */
-const IN_WORKTREE = /\/\.claude\/worktrees\/[^/]+(?:\/|$)/u;
+/** A folder inside a story's worktree (EN-052), its root captured. */
+const IN_WORKTREE = /^(?<root>.*\/\.claude\/worktrees\/[^/]+)(?:\/|$)/u;
+
+/** Vitest run by `npx` or from `node_modules/.bin`, its arguments captured. */
+const VITEST = /^(?:npx\s+|(?:\.\/)?node_modules\/\.bin\/)vitest(?<rest>(?:\s.*)?)$/u;
+
+/** Vitest's options that take a value as the next word, not a path of tests. */
+const VITEST_VALUED = new Set([
+  "--config",
+  "--dir",
+  "--environment",
+  "--pool",
+  "--project",
+  "--reporter",
+  "--root",
+  "--shard",
+  "--testNamePattern",
+  "-c",
+  "-r",
+  "-t",
+]);
+
+/** The words a Vitest call takes for every test: none, or the current folder. */
+const EVERY_TEST = new Set([".", "./"]);
+
+/**
+ * Whether a segment runs Vitest on every test, outside the heavy lock (EN-047): no test path, or
+ * only the current folder, whatever its options (`--project x`, `--reporter dot`).
+ *
+ * @param segment - one segment of a shell command
+ * @returns true when no word names a test file or folder other than `.`
+ */
+export function isFullVitestRun(segment: string): boolean {
+  const rest = VITEST.exec(segment)?.groups?.["rest"];
+
+  if (rest === undefined) {
+    return false;
+  }
+
+  const words = rest.split(/\s+/u).filter((word) => word !== "" && word !== "run");
+  const paths = words.filter(
+    (word, index) =>
+      !word.startsWith("-") && !VITEST_VALUED.has(words[index - 1] ?? "") && !EVERY_TEST.has(word),
+  );
+
+  return paths.length === 0;
+}
+
+/** Why a full Vitest run is denied. */
+const FULL_VITEST =
+  "A full Vitest run takes the heavy lock: run `npm run test`, or name the test files (ADR-0063).";
 
 /** Commands denied in this repository, matched against each segment of a shell command. */
 const GUARDS: readonly Guard[] = [
@@ -40,12 +89,6 @@ const GUARDS: readonly Guard[] = [
       /^(?:export\s+|env\s+)?(?:\w+=\S*\s+)*HUSKY=0\b|^git\s.*(?:-c\s+|config\b.*\s)core\.hooksPath\b/u,
     reason:
       "The Git hooks (lint-staged, commitlint, check:all) are never switched off: fix the cause instead.",
-  },
-  {
-    // Vitest with options only runs every test: the heavy lock is taken by `npm run test` (EN-047).
-    pattern: /^npx\s+vitest(?:\s+run)?(?:\s+--?[\w-]+(?:=\S+)?)*\s*$/u,
-    reason:
-      "A full Vitest run takes the heavy lock: run `npm run test`, or name the test files (ADR-0063).",
   },
   {
     // `+branch` in a refspec forces that one update.
@@ -79,7 +122,14 @@ export function deniedReason(command: string): string | undefined {
     .split(SEGMENTS)
     .map((segment) => segment.trim());
 
-  return GUARDS.find((guard) => segments.some((segment) => guard.pattern.test(segment)))?.reason;
+  const guarded = GUARDS.find((guard) =>
+    segments.some((segment) => guard.pattern.test(segment)),
+  )?.reason;
+
+  // Vitest without a test path runs every test: the heavy lock is taken by `npm run test` (EN-047).
+  return (
+    guarded ?? (segments.some((segment) => isFullVitestRun(segment)) ? FULL_VITEST : undefined)
+  );
 }
 
 /**
@@ -91,7 +141,9 @@ export function deniedReason(command: string): string | undefined {
  * @returns a one-line hint, or `undefined` outside a worktree or for a command that fits
  */
 export function worktreeReason(command: string, cwd: string): string | undefined {
-  if (!IN_WORKTREE.test(cwd)) {
+  const root = IN_WORKTREE.exec(cwd)?.groups?.["root"];
+
+  if (root === undefined) {
     return undefined;
   }
 
@@ -100,14 +152,24 @@ export function worktreeReason(command: string, cwd: string): string | undefined
     .map((segment) => segment.trim())
     .filter((segment) => segment !== "");
 
-  if (segments.some((segment) => /^npm\s+run\s+golden:write\b/u.test(segment))) {
-    return "golden:write writes .git/metrics/golden.json, shared by every worktree: only the main thread runs it, in the main checkout.";
-  }
+  return segments.some((segment) => /^npm\s+run\s+golden:write\b/u.test(segment))
+    ? "golden:write writes .git/metrics/golden.json, shared by every worktree: only the main thread runs it, in the main checkout."
+    : chainedGitHint(segments, root);
+}
 
+/**
+ * The hint for a Git command chained with another in a worktree: `cd` into the worktree first,
+ * since a subagent's calls start in the main checkout, then the Git command alone (AUD-020).
+ *
+ * @param segments - the command's segments
+ * @param root - the worktree's folder
+ * @returns a one-line hint, or `undefined` when no Git command is chained
+ */
+function chainedGitHint(segments: readonly string[], root: string): string | undefined {
   const gitCommand = segments.find((segment) => /^git\s/u.test(segment));
 
   return gitCommand !== undefined && segments.length > 1
-    ? `A worktree refuses a chained Git command: run \`${gitCommand}\` alone, without cd — the working directory is already the worktree.`
+    ? `A worktree refuses a chained Git command: run \`cd "${root}" || exit 9\` then \`${gitCommand}\` alone.`
     : undefined;
 }
 
