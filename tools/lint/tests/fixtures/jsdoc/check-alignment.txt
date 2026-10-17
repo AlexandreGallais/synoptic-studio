@@ -1,0 +1,429 @@
+# check-alignment: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), a carriage return written ␍,
+# each run by ESLint 10.12.0 at src/a.ts with the project's options; recorded by EN-083.
+@@@ case 1 (documented invalid)
+
+        /**
+          * @param {Number} foo
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ findings
+3:1 Expected JSDoc block to be aligned.
+@@@ output
+
+        /**
+         * @param {Number} foo
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ case 2 (documented invalid)
+
+				/**
+				  * @param {Number} foo
+				 */
+				function quux (foo) {
+					// with tabs
+				}
+      
+@@@ findings
+3:1 Expected JSDoc block to be aligned.
+@@@ output
+
+				/**
+				 * @param {Number} foo
+				 */
+				function quux (foo) {
+					// with tabs
+				}
+      
+@@@ case 3 (documented invalid)
+
+/**
+  * @param {Number} foo
+ */
+function quux (foo) {
+  // with spaces
+}
+      
+@@@ findings
+3:1 Expected JSDoc block to be aligned.
+@@@ output
+
+/**
+ * @param {Number} foo
+ */
+function quux (foo) {
+  // with spaces
+}
+      
+@@@ case 4 (documented invalid)
+
+/**
+* @param {Number} foo
+*/
+function quux (foo) {
+  // with spaces
+}
+      
+@@@ findings
+3:1 Expected JSDoc block to be aligned.
+@@@ output
+
+/**
+ * @param {Number} foo
+ */
+function quux (foo) {
+  // with spaces
+}
+      
+@@@ case 5 (documented invalid)
+
+        /**
+         * @param {Number} foo
+          */
+        function quux (foo) {
+
+        }
+      
+@@@ findings
+4:1 Expected JSDoc block to be aligned.
+@@@ output
+
+        /**
+         * @param {Number} foo
+         */
+        function quux (foo) {
+
+        }
+      
+@@@ case 6 (documented invalid)
+
+         /**
+         * @param {Number} foo
+         */
+        function quux (foo) {
+
+        }
+      
+@@@ findings
+3:1 Expected JSDoc block to be aligned.
+@@@ output
+
+         /**
+          * @param {Number} foo
+          */
+        function quux (foo) {
+
+        }
+      
+@@@ case 7 (documented invalid)
+
+         /**
+          * @param {Number} foo
+         */
+        function quux (foo) {
+
+        }
+      
+@@@ findings
+4:1 Expected JSDoc block to be aligned.
+@@@ output
+
+         /**
+          * @param {Number} foo
+          */
+        function quux (foo) {
+
+        }
+      
+@@@ case 8 (documented invalid)
+
+       /**
+         * @param {Number} foo
+         */
+        function quux (foo) {
+
+        }
+      
+@@@ findings
+3:1 Expected JSDoc block to be aligned.
+@@@ output
+
+       /**
+        * @param {Number} foo
+        */
+        function quux (foo) {
+
+        }
+      
+@@@ case 9 (documented invalid)
+
+        /**
+           * A JSDoc not attached to any node.
+         */
+      
+@@@ findings
+3:1 Expected JSDoc block to be aligned.
+@@@ output
+
+        /**
+         * A JSDoc not attached to any node.
+         */
+      
+@@@ case 10 (documented invalid)
+
+        class Foo {
+          /**
+           *  Some method
+            * @param a
+           */
+          quux(a) {}
+        }
+      
+@@@ findings
+5:1 Expected JSDoc block to be aligned.
+@@@ output
+
+        class Foo {
+          /**
+           *  Some method
+           * @param a
+           */
+          quux(a) {}
+        }
+      
+@@@ case 11 (documented invalid)
+
+export const myVar = {/**
+  * This is JSDoc
+  */
+  myProperty: 'hello'
+}
+@@@ findings
+3:1 Expected JSDoc block to be aligned.
+@@@ output
+
+export const myVar = {/**
+                       * This is JSDoc
+                       */
+  myProperty: 'hello'
+}
+@@@ case 12 (documented invalid)
+
+        /**
+         * @param {Number} foo
+        * @access private
+        */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ findings
+4:1 Expected JSDoc block to be aligned.
+@@@ output
+
+        /**
+         * @param {Number} foo
+         * @access private
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ case 13 (documented invalid)
+
+        /**
+        Some desc.
+        @param {Number} foo
+        @access private
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ findings
+@@@ case 14 (documented invalid)
+
+        /**
+         * @typedef {object} MyType
+         * @property {string} [property]
+
+         */
+      
+@@@ findings
+5:1 Expected JSDoc block to be aligned.
+@@@ output
+
+        /**
+         * @typedef {object} MyType
+         * @property {string} [property]
+         
+         */
+      
+@@@ case 15 (documented invalid)
+
+        /**
+         * @typedef {object} MyType
+         * @property {string} [property]
+          *
+         */
+      
+@@@ findings
+5:1 Expected JSDoc block to be aligned.
+@@@ output
+
+        /**
+         * @typedef {object} MyType
+         * @property {string} [property]
+         *
+         */
+      
+@@@ case 16 (documented valid)
+
+        /**
+         * Desc
+         *
+         * @param {Number} foo
+         */
+        function quux (foo) {
+
+        }
+      
+@@@ findings
+@@@ case 17 (documented valid)
+
+        /**
+         * Desc
+         *
+         * @param {{
+          foo: Bar,
+          bar: Baz
+         * }} foo
+         *
+         */
+        function quux (foo) {
+
+        }
+      
+@@@ findings
+@@@ case 18 (documented valid)
+
+        /*  <- JSDoc must start with 2 stars.
+          *    So this is unchecked.
+         */
+        function quux (foo) {}
+      
+@@@ findings
+@@@ case 19 (documented valid)
+
+        /**
+          * @param {Number} foo
+          * @private
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ findings
+3:1 Expected JSDoc block to be aligned.
+@@@ output
+
+        /**
+         * @param {Number} foo
+         * @private
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ case 20 (documented valid)
+
+        /**
+          * @param {Number} foo
+          * @access private
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ findings
+3:1 Expected JSDoc block to be aligned.
+@@@ output
+
+        /**
+         * @param {Number} foo
+         * @access private
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ case 21 (documented valid)
+
+        /**
+        * @param {Number} foo
+        * @access private
+        */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ findings
+3:1 Expected JSDoc block to be aligned.
+@@@ output
+
+        /**
+         * @param {Number} foo
+         * @access private
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ case 22 (documented valid)
+
+        /**
+        Some desc.
+        @param {Number} foo
+        @access private
+        */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ findings
+6:1 Expected JSDoc block to be aligned.
+@@@ output
+
+        /**
+        Some desc.
+        @param {Number} foo
+        @access private
+         */
+        function quux (foo) {
+          // with spaces
+        }
+      
+@@@ case 23 (documented valid)
+
+        /**
+         * @typedef {object} MyType
+         * @property {string} [property]
+
+         */
+      
+@@@ findings
+5:1 Expected JSDoc block to be aligned.
+@@@ output
+
+        /**
+         * @typedef {object} MyType
+         * @property {string} [property]
+         
+         */
+      
+@@@ end

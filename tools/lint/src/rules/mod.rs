@@ -7,6 +7,7 @@ pub mod canonical_import_path;
 pub mod folder_has_index;
 pub mod folder_layout;
 pub mod immutable_data;
+pub mod jsdoc;
 pub mod kind_in_layer;
 pub mod kind_limits;
 pub mod kind_naming;
@@ -75,13 +76,15 @@ pub const ALL: &[&dyn Rule] = &[
     &type_declaration_immutability::TypeDeclarationImmutability,
 ];
 
-/// The rules of a list of names, in the registry's order, then Unicorn's, its DOM and web rules last.
+/// The rules of a list of names, in the registry's order, then Unicorn's, its DOM and web rules,
+/// then JSDoc's.
 #[must_use]
 pub fn named(names: &[&str]) -> Vec<&'static dyn Rule> {
     ALL.iter()
         .chain(unicorn::RULES)
         .chain(unicorn::dom::RULES)
         .chain(unicorn::web::RULES)
+        .chain(jsdoc::RULES)
         .copied()
         .filter(|rule| names.contains(&rule.name()))
         .collect()

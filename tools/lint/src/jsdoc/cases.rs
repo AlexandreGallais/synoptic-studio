@@ -1,8 +1,8 @@
 //! The documented cases of a rule of `eslint-plugin-jsdoc` 65.3.1 run as tests: each case of the
 //! plugin's own tests (`test/rules/assertions/`, from which its documentation's examples are
 //! written), with what `ESLint` 10.12.0 reported on it under the project's options and the text
-//! its fixes left, recorded by EN-083 in `tests/fixtures/jsdoc/<rule>.txt`, the cases neither
-//! parser reads left out.
+//! its fixes left, recorded by EN-083 in `tests/fixtures/jsdoc/<rule>.txt` (a carriage return
+//! written `\u{240d}`, so that Git keeps it), the cases neither parser reads left out.
 
 use std::fmt::Write as _;
 
@@ -111,7 +111,9 @@ pub fn check(rule: &dyn Rule, fixture: &str, path: &str, known: &[(usize, &str)]
         "{}/tests/fixtures/jsdoc/{fixture}.txt",
         env!("CARGO_MANIFEST_DIR")
     );
-    let text = std::fs::read_to_string(&file).unwrap_or_default();
+    let text = std::fs::read_to_string(&file)
+        .unwrap_or_default()
+        .replace('\u{240d}', "\r");
     let all = cases(&text);
     assert!(!all.is_empty(), "no case in {file}");
     let mut report = String::new();

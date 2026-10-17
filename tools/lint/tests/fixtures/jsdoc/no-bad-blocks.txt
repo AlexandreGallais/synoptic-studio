@@ -1,0 +1,185 @@
+# no-bad-blocks: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), a carriage return written ␍,
+# each run by ESLint 10.12.0 at src/a.ts with the project's options; recorded by EN-083.
+@@@ case 1 (documented invalid)
+
+          /*
+           * @param foo
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+2:11 Expected JSDoc-like comment to begin with two asterisks.
+@@@ output
+
+          /**
+           * @param foo
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ case 2 (documented invalid)
+
+          /*
+           * @property foo
+           */
+      
+@@@ findings
+2:11 Expected JSDoc-like comment to begin with two asterisks.
+@@@ output
+
+          /**
+           * @property foo
+           */
+      
+@@@ case 3 (documented invalid)
+
+          function quux() {
+
+          }
+      
+@@@ findings
+@@@ case 4 (documented invalid)
+/* @ts-ignore */
+@@@ findings
+@@@ case 5 (documented invalid)
+
+      /*
+       * Some description.
+       *
+       * @returns {string} Some string
+       */
+      function echo() {
+        return 'Something';
+      }
+      
+@@@ findings
+2:7 Expected JSDoc-like comment to begin with two asterisks.
+@@@ output
+
+      /**
+       * Some description.
+       *
+       * @returns {string} Some string
+       */
+      function echo() {
+        return 'Something';
+      }
+      
+@@@ case 6 (documented invalid)
+
+          /***
+           * @param foo
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+2:11 Expected JSDoc-like comment to begin with two asterisks.
+@@@ output
+
+          /**
+           * @param foo
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ case 7 (documented invalid)
+
+          /***
+           *
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+@@@ case 8 (documented valid)
+
+          /**
+           * @property foo
+           */
+      
+@@@ findings
+@@@ case 9 (documented valid)
+
+          /**
+           * @param foo
+           */
+           function quux () {
+
+           }
+      
+@@@ findings
+@@@ case 10 (documented valid)
+
+      function quux () {
+
+      }
+      
+@@@ findings
+@@@ case 11 (documented valid)
+
+           /* This could just be intended as a regular multiline comment,
+              so don't report this */
+           function quux () {
+
+           }
+      
+@@@ findings
+@@@ case 12 (documented valid)
+
+           /* Just a regular multiline comment with an `@` but not appearing
+               like a tag in a jsdoc-block, so don't report */
+           function quux () {
+
+           }
+      
+@@@ findings
+@@@ case 13 (documented valid)
+/* @ts-check */
+@@@ findings
+@@@ case 14 (documented valid)
+/* @ts-expect-error */
+@@@ findings
+@@@ case 15 (documented valid)
+/* @ts-ignore */
+@@@ findings
+@@@ case 16 (documented valid)
+/* @ts-nocheck */
+@@@ findings
+@@@ case 17 (documented valid)
+/* */
+@@@ findings
+@@@ case 18 (documented valid)
+/** */
+@@@ findings
+@@@ case 19 (documented valid)
+/* @custom */
+@@@ findings
+1:1 Expected JSDoc-like comment to begin with two asterisks.
+@@@ output
+/** @custom */
+@@@ case 20 (documented valid)
+
+          /***
+           * This is not JSDoc because of the 3 asterisks, but
+           * is allowed without `preventAllMultiAsteriskBlocks`, as
+           * some might wish normal multiline comments.
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+@@@ case 21 (documented valid)
+/***/
+@@@ findings
+@@@ case 22 (documented valid)
+/* eslint-disable @stylistic/max-len  */
+@@@ findings
+@@@ end

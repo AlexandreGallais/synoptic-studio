@@ -1,0 +1,127 @@
+# no-blank-block-descriptions: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), a carriage return written ␍,
+# each run by ESLint 10.12.0 at src/a.ts with the project's options; recorded by EN-083.
+@@@ case 1 (documented invalid)
+
+      /**
+       *
+       * @param {number} x
+       */
+      function functionWithClearName(x) {}
+      
+@@@ findings
+3:1 There should be no blank lines in block descriptions followed by tags.
+@@@ output
+
+      /**
+       * @param {number} x
+       */
+      function functionWithClearName(x) {}
+      
+@@@ case 2 (documented invalid)
+
+      /**
+       *
+       *
+       */
+      function functionWithClearName() {}
+      
+@@@ findings
+4:1 There should be no extra blank lines in block descriptions not followed by tags.
+@@@ output
+
+      /**
+       *
+       */
+      function functionWithClearName() {}
+      
+@@@ case 3 (documented invalid)
+
+      /**
+       *
+       * Some text
+       * @param {number} x
+       */
+      function functionWithClearName(x) {}
+      
+@@@ findings
+3:1 There should be no blank lines in block descriptions followed by tags.
+@@@ output
+
+      /**
+       * Some text
+       * @param {number} x
+       */
+      function functionWithClearName(x) {}
+      
+@@@ case 4 (documented invalid)
+
+        /**
+         *
+         * Seniority levels that participate in distribution, in display
+         * order. `custom` is never a real distribution key. Every test shown in this
+         * modal can recruit each of these levels, so all three are always editable.
+         */
+        const SENIORITY_ORDER = ['senior', 'middle', 'specialist'];
+      
+@@@ findings
+4:1 There should be no extra blank lines in block descriptions not followed by tags.
+@@@ output
+
+        /**
+         * Seniority levels that participate in distribution, in display
+         * order. `custom` is never a real distribution key. Every test shown in this
+         * modal can recruit each of these levels, so all three are always editable.
+         */
+        const SENIORITY_ORDER = ['senior', 'middle', 'specialist'];
+      
+@@@ case 5 (documented valid)
+
+      /**
+       * Non-empty description
+       * @param {number} x
+       */
+      function functionWithClearName(x) {}
+      
+@@@ findings
+@@@ case 6 (documented valid)
+
+      /**
+       * @param {number} x
+       */
+      function functionWithClearName(x) {}
+      
+@@@ findings
+@@@ case 7 (documented valid)
+
+      /**
+       *
+       */
+      function functionWithClearName() {}
+      
+@@@ findings
+@@@ case 8 (documented valid)
+
+      /**
+       */
+      function functionWithClearName() {}
+      
+@@@ findings
+@@@ case 9 (documented valid)
+
+      /** */
+      function functionWithClearName() {}
+      
+@@@ findings
+@@@ case 10 (documented valid)
+
+      /** Some desc. */
+      function functionWithClearName() {}
+      
+@@@ findings
+@@@ case 11 (documented valid)
+
+      /** @someTag */
+      function functionWithClearName() {}
+      
+@@@ findings
+@@@ end
