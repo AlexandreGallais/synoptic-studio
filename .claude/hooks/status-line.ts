@@ -20,6 +20,7 @@ import { join } from "node:path";
 import { count, field } from "./status-json.ts";
 import { backgroundLines, placeOf, readRunningCall, runningLine } from "./status-place.ts";
 import { turnTokens } from "./status-tokens.ts";
+import { usageSnapshot } from "./status-usage.ts";
 
 import type { RunningCall } from "./status-place.ts";
 import type { TokenTally } from "./status-tokens.ts";
@@ -327,5 +328,12 @@ if (import.meta.main) {
   };
 
   writeFileSync(join(folder, "now.json"), JSON.stringify(sessionSnapshot(status, now)));
+
+  const usage = usageSnapshot(input, now);
+
+  if (usage !== undefined) {
+    writeFileSync(join(folder, "usage.json"), JSON.stringify(usage));
+  }
+
   process.stdout.write(statusText(status));
 }

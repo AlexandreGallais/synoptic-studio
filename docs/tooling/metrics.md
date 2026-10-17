@@ -61,6 +61,8 @@ E14 › RET-002 retrospective e14 · status line, documentation
 ↳ agent auditor: Review EN-030 — 4 min · now Bash · List the files
 ```
 
+At each refresh it also writes the subscription's usage to `.git/metrics/usage.json`, for a run to stop before the weekly limit (EN-092): `sevenDay` and `fiveHour`, each with `usedPercent` (0 to 100) and `resetsAt` (ISO 8601), and `time`, when it was read (epoch milliseconds). Claude Code sends these windows only to Pro and Max subscribers, after the session's first response (`rate_limits`, `REF-CC-STATUSLINE`); a missing window is left out, and without either the last file is kept. No hook receives them.
+
 Its four states tell the Product Owner when the chat is free (RET-002):
 
 | State | Means |
