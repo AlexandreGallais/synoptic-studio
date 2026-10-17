@@ -10,20 +10,156 @@
 // starting that binary at the same moment failed with `could not execute process … No such file or
 // directory`. The release binaries are built once before the lanes, and a lane runs a script that
 // takes the heavy lock without it, as check:all already holds that lock.
+//
+// The docs and playground builds run only when the branch changed one of their inputs against its
+// base (EN-085, option B of research note 0023): the nearest of develop and the feature branches on
+// GitHub for a story, develop for a feature; on main, develop, a detached head or in the CI, no base
+// is looked for and every lane runs.
 
-import { spawn } from "node:child_process";
+import { execFileSync, spawn } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+
+/** The lane of the documentation site and the playground built into it. */
+export const DOCS_LANE: readonly string[] = ["docs:build", "playground:build"];
 
 /** Lanes of npm scripts: in order within a lane, the lanes at the same time. */
 export const LANES: readonly (readonly string[])[] = [
   ["lint"],
   ["test"],
-  ["docs:build", "playground:build"],
+  DOCS_LANE,
   ["format:check", "lint:secrets", "deps:audit", "deps:unused", "deps:tools", "deps:outdated"],
   // The Rust workspace: rustfmt, Clippy, its advisories, its tests (EN-068, EN-069).
   ["check:rust"],
 ];
+
+/**
+ * What the docs lane reads: the site, the library its API pages come from, the playground built
+ * into it, the API pages' generator, and the build's own configuration and packages.
+ */
+const DOCS_INPUTS: readonly string[] = [
+  "docs/",
+  "src/",
+  "playground/",
+  "tools/api-pages/",
+  "package.json",
+  "package-lock.json",
+  "vite.config.ts",
+];
+
+/**
+ * Whether changed files touch an input of the docs lane.
+ *
+ * @param paths - changed files, relative to the repository's root
+ * @returns true when one is in a folder of `DOCS_INPUTS` or is one of its files
+ */
+export function touchesSite(paths: readonly string[]): boolean {
+  return paths.some((path) =>
+    DOCS_INPUTS.some((input) => (input.endsWith("/") ? path.startsWith(input) : path === input)),
+  );
+}
+
+/**
+ * The lanes to run for a change.
+ *
+ * @param paths - the files changed against the branch's base, `undefined` when no base is known
+ * @returns every lane, the docs lane left out when the change is known and touches none of its inputs
+ */
+export function lanesToRun(paths: readonly string[] | undefined): readonly (readonly string[])[] {
+  return paths === undefined || touchesSite(paths)
+    ? LANES
+    : LANES.filter((lane) => lane !== DOCS_LANE);
+}
+
+/**
+ * The remote branches a branch may have started from (ADR-0072): develop and the feature branches
+ * for a story, develop for a feature, none for main, develop or a detached head.
+ *
+ * @param branch - the current branch's name, `HEAD` when detached
+ * @param remotes - the remote branches, as `origin/<name>`
+ * @returns the candidates, in the order given
+ */
+export function baseCandidates(branch: string, remotes: readonly string[]): readonly string[] {
+  if (["HEAD", "develop", "main"].includes(branch)) {
+    return [];
+  }
+
+  const isFeature = branch.startsWith("feature/");
+
+  return remotes.filter(
+    (remote) => remote === "origin/develop" || (!isFeature && remote.startsWith("origin/feature/")),
+  );
+}
+
+/**
+ * Runs a Git command.
+ *
+ * @param options - its arguments
+ * @returns its output's lines, empty ones left out
+ */
+function git(options: readonly string[]): readonly string[] {
+  return execFileSync("git", options, { encoding: "utf8" })
+    .split("\n")
+    .filter((line) => line !== "");
+}
+
+/**
+ * The branch's base: of its candidates, the one whose fork point leaves the fewest commits of the
+ * branch's own.
+ *
+ * @returns the remote branch, or `undefined` without a candidate
+ */
+function baseOf(): string | undefined {
+  const branch = git(["rev-parse", "--abbrev-ref", "HEAD"])[0] ?? "HEAD";
+  const remotes = git(["for-each-ref", "--format=%(refname:short)", "refs/remotes/origin/"]);
+
+  return baseCandidates(branch, remotes)
+    .map((remote) => ({
+      ahead: Number(git(["rev-list", "--count", `${remote}..HEAD`])[0]),
+      remote,
+    }))
+    .toSorted((left, right) => left.ahead - right.ahead)[0]?.remote;
+}
+
+/** The files a branch changed against its base, with that base. */
+type Change = { readonly base: string; readonly paths: readonly string[] };
+
+/**
+ * The files the branch changed against its base, committed or not.
+ *
+ * @returns the base and the changed files, or `undefined` without a base
+ */
+function changeAgainstBase(): Change | undefined {
+  const base = baseOf();
+
+  return base === undefined
+    ? undefined
+    : {
+        base,
+        paths: [
+          ...git(["diff", "--name-only", git(["merge-base", base, "HEAD"])[0] ?? base]),
+          ...git(["ls-files", "--others", "--exclude-standard"]),
+        ],
+      };
+}
+
+/**
+ * The change check:all runs for, outside the CI.
+ *
+ * @returns the change against the branch's base, or `undefined` in the CI, without a base, or when
+ * Git fails
+ */
+function changedPaths(): Change | undefined {
+  if (process.env["CI"] !== undefined) {
+    return undefined;
+  }
+
+  try {
+    return changeAgainstBase();
+  } catch {
+    return undefined;
+  }
+}
 
 /** The check run alone before the lanes: the release binaries every lane's tools run from. */
 export const BEFORE_LANES = "rust:build";
@@ -156,10 +292,19 @@ async function runLane(
 if (import.meta.main) {
   const start = Temporal.Now.instant().epochMilliseconds;
   const scripts = readScripts();
+  const change = changedPaths();
+  const toRun = lanesToRun(change?.paths);
+
+  if (toRun.length < LANES.length) {
+    process.stdout.write(
+      `- ${DOCS_LANE.join(", ")} skipped: nothing changed in their inputs against ${change?.base ?? "the base"}\n`,
+    );
+  }
+
   const built = await runCheck(BEFORE_LANES, scripts);
   // Without the release binaries every lane's `cargo run` would build them at once: none starts.
   const lanes = built.isOk
-    ? await Promise.all(LANES.map(async (lane) => await runLane(lane, scripts)))
+    ? await Promise.all(toRun.map(async (lane) => await runLane(lane, scripts)))
     : [];
   const failed = [built, ...lanes.flat()]
     .filter((result) => !result.isOk)

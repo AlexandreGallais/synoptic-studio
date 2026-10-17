@@ -3,7 +3,17 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { BEFORE_LANES, LANES, commandOf, readScripts, reportOf } from "./check-all";
+import {
+  BEFORE_LANES,
+  DOCS_LANE,
+  LANES,
+  baseCandidates,
+  commandOf,
+  lanesToRun,
+  readScripts,
+  reportOf,
+  touchesSite,
+} from "./check-all";
 
 /**
  * Order of two script names.
@@ -101,5 +111,52 @@ describe("check-all", () => {
     expect(reportOf({ durationMs: 1000, isOk: false, name: "test", output: "boom" })).toBe(
       "✗ test 1.0 s\nboom",
     );
+  });
+
+  it("[F19.AC8] builds the docs for a change in docs/, src/, the playground or the build's inputs", () => {
+    expect(touchesSite(["docs/adr/README.md"])).toBe(true);
+    expect(touchesSite(["scripts/check-all.ts", "src/math/angle/degrees.ts"])).toBe(true);
+    expect(touchesSite(["playground/main.ts"])).toBe(true);
+    expect(touchesSite(["tools/api-pages/src/main.rs"])).toBe(true);
+    expect(touchesSite(["package-lock.json"])).toBe(true);
+    expect(touchesSite(["vite.config.ts"])).toBe(true);
+
+    // A code story of the tools: none of the site's inputs.
+    expect(touchesSite(["scripts/check-all.ts", "tools/lint/src/lib.rs", "tests/x.test.ts"])).toBe(
+      false,
+    );
+
+    // A name that only starts like a folder of the site is not in it.
+    expect(touchesSite(["docsy.md", "srcmap.ts"])).toBe(false);
+    expect(touchesSite([])).toBe(false);
+  });
+
+  it("[F19.AC8] skips the docs lane only when the change is known and touches none of its inputs", () => {
+    expect(DOCS_LANE).toEqual(["docs:build", "playground:build"]);
+    expect(lanesToRun(["tools/lint/src/lib.rs"])).not.toContainEqual(DOCS_LANE);
+    expect(lanesToRun(["tools/lint/src/lib.rs"])).toHaveLength(LANES.length - 1);
+    expect(lanesToRun(["docs/index.md"])).toEqual(LANES);
+    // No base found (main, develop, the CI): every lane.
+    expect(lanesToRun(undefined)).toEqual(LANES);
+  });
+
+  it("[F19.AC8] compares a story with its feature or develop, a feature with develop, nothing else", () => {
+    const remotes = [
+      "origin/develop",
+      "origin/feature/f19-x",
+      "origin/feature/f21-y",
+      "origin/main",
+    ];
+
+    expect(baseCandidates("chore/en-085-x", remotes)).toEqual([
+      "origin/develop",
+      "origin/feature/f19-x",
+      "origin/feature/f21-y",
+    ]);
+
+    expect(baseCandidates("feature/f19-x", remotes)).toEqual(["origin/develop"]);
+    expect(baseCandidates("develop", remotes)).toEqual([]);
+    expect(baseCandidates("main", remotes)).toEqual([]);
+    expect(baseCandidates("HEAD", remotes)).toEqual([]);
   });
 });
