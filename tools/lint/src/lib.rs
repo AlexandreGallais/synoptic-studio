@@ -6,6 +6,8 @@
 
 pub mod deep_readonly;
 pub mod directives;
+pub mod exits;
+pub mod expressions;
 pub mod finding;
 pub mod glob;
 pub mod markdown;
@@ -128,7 +130,10 @@ fn lint_path(project: &Project, path: &str, allocator: &Allocator) -> Vec<Findin
     if markdown::is_page(path) {
         return markdown::lint_path(project, path);
     }
-    let rules = rules::named(&scopes::linted_by(path));
+    let rules: Vec<&dyn Rule> = rules::named(&scopes::linted_by(path))
+        .into_iter()
+        .chain(rules::everywhere())
+        .collect();
     if rules.is_empty() {
         return Vec::new();
     }
