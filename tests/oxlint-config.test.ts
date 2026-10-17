@@ -274,6 +274,59 @@ describe("ESLint without type information (EN-076)", () => {
   );
 });
 
+/** The other plugins' rules ESLint ran, carried by EN-084: to the project's linter, to oxlint, or dropped. */
+const OTHER_PLUGIN_RULES: readonly string[] = [
+  "@stylistic/line-comment-position",
+  "@stylistic/multiline-comment-style",
+  "@stylistic/padding-line-between-statements",
+  "@stylistic/spaced-comment",
+  "@typescript-eslint/member-ordering",
+  "functional/functional-parameters",
+  "functional/no-classes",
+  "functional/no-expression-statements",
+  "functional/no-let",
+  "functional/no-loop-statements",
+  "functional/no-promise-reject",
+  "functional/no-this-expressions",
+  "functional/no-throw-statements",
+  "functional/no-try-statements",
+  "functional/prefer-property-signatures",
+  "functional/readonly-type",
+  "import-x/no-extraneous-dependencies",
+  "import-x/no-restricted-paths",
+  "unused-imports/no-unused-imports",
+  "unused-imports/no-unused-vars",
+];
+
+describe("the other plugins' rules (EN-084)", () => {
+  it("[F19.AC11] leaves none of the 20 rules to ESLint", { timeout: 30_000 }, async () => {
+    const carried = new Set(OTHER_PLUGIN_RULES);
+    const left = await Promise.all(
+      SAMPLE_FILES.map(async (path) => {
+        const rules = await eslintRulesOf(path);
+
+        return rules.filter((name) => carried.has(name)).map((name) => `${path}: ${name}`);
+      }),
+    );
+
+    expect(left.flat()).toEqual([]);
+  });
+
+  it("[F19.AC11] runs `no-unused-vars` in oxlint with the options `unused-imports` had", () => {
+    expect(OVERRIDES[0]?.rules["no-unused-vars"]).toEqual([
+      "error",
+      {
+        args: "after-used",
+        caughtErrors: "all",
+        fix: { imports: "safe-fix" },
+        ignoreRestSiblings: false,
+        reportUsedIgnorePattern: true,
+        vars: "all",
+      },
+    ]);
+  });
+});
+
 /** A folder holding a configuration of `oxc/no-accumulating-spread` alone. */
 const FOLD_FOLDER = mkdtempSync(join(tmpdir(), "fold-spread-"));
 
