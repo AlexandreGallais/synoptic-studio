@@ -3,7 +3,7 @@ id: EN-073
 epic: E17
 feature: F19
 title: oxfmt instead of Prettier
-status: ready
+status: done
 points: 2
 ---
 
