@@ -3,7 +3,7 @@ id: EN-093
 epic: E17
 feature: F19
 title: Every rule and tool reviewed by the agent for its own work
-status: ready
+status: done
 points: 3
 ---
 
@@ -27,10 +27,10 @@ Left by EN-094 for this story: the docs that still cite the ADRs ADR-0072 supers
 
 One task = one commit, referenced as `EN-093.Tn`.
 
-- [ ] T1 — The review of every rule and setting, the verdicts (2 h)
-- [ ] T2 — The changes applied, the tree fixed, the tests (2 h)
-- [ ] T3 — The conventions, the ADR if any, the timings (1 h)
-- [ ] T4 — The rule catalogue by context, with profiles per kind of project, on paper only (2 h), added by the Product Owner on 2026-10-17
+- [x] T1 — The review of every rule and setting, the verdicts (2 h)
+- [x] T2 — The changes applied, the tree fixed, the tests (2 h)
+- [x] T3 — The conventions, the ADR if any, the timings (1 h)
+- [x] T4 — The rule catalogue by context, with profiles per kind of project, on paper only (2 h), added by the Product Owner on 2026-10-17
 
 ## For the main thread
 
@@ -42,7 +42,7 @@ One task = one commit, referenced as `EN-093.Tn`.
 
 ### Journal
 
-- `#run` EN-093: every rule, formatter setting, hook and convention reviewed for the agent's own work (`docs/conventions/rules.md`); 9 correctness rules added to oxlint, `@param` and `@returns` off in test files, `lint:fix` and the `eslint` scope dropped, ADR-0011 and ADR-0012 measured and kept, the width 100 measured and kept.
+- `#run` EN-093: every rule, formatter setting, hook and convention reviewed for the agent's own work (`docs/conventions/rules.md`); 9 correctness rules added to oxlint, `@param` and `@returns` off in test files, `lint:fix` and the `eslint` scope dropped, ADR-0011 and ADR-0012 measured and kept, the width 100 measured and kept.; 11 Vitest correctness rules on test files; `docs/conventions/rule-catalogue.md` with profiles (T4).
 
 ### Improvements
 
