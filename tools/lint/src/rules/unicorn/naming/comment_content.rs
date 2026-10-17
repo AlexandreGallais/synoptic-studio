@@ -167,10 +167,8 @@ fn bounded(pattern: &str) -> String {
 /// library and its applications). `eslint/rules/unicorn/naming.ts` named it `application` until
 /// EN-080, a key no pattern of the plugin has, so `ESLint` kept the replacement; the key is now
 /// the plugin's own pattern, so that the option does what it meant; the plural kept by EN-093.
-const PROJECT_REPLACEMENTS: [(&str, Option<&str>); 2] = [
-    (r"\bapplication\b(?!/)", None),
-    (r"\bapplications\b", None),
-];
+const PROJECT_REPLACEMENTS: [(&str, Option<&str>); 2] =
+    [(r"\bapplication\b(?!/)", None), (r"\bapplications\b", None)];
 
 /// The replacements in force: the plugin's, but those the project drops or rewrites, then the
 /// project's own (`prepareReplacements`).
