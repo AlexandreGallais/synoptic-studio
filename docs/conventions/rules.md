@@ -6,7 +6,7 @@ The rules, formatter settings, checks, hooks and conventions this repository run
 
 | What | Reviewed | Kept | Changed | Dropped | Added |
 | --- | --- | --- | --- | --- | --- |
-| oxlint's rules | 364 run, 507 not run | 362 | 2 (`jsdoc/require-param` and `require-returns` off in test files) | 0 | 9 correctness rules no triage had decided |
+| oxlint's rules | 364 run, 507 not run | 362 | 2 (`jsdoc/require-param` and `require-returns` off in test files) | 0 | 9 correctness rules no triage had decided, 11 of Vitest's in test files |
 | the project's linter (`tools/lint`) | 236 | 236 | 1 (`unicorn/comment-content` keeps `applications`) | 0 | 0 |
 | the formatter's settings (`.oxfmtrc.json`, `.editorconfig`, the table pass) | 13 | 13 | 0 | 0 | 0 |
 | checks, hooks, conventions, scripts | 23 | 19 | 2 (the story skill's per-task check, the `eslint` scope dropped) | 1 (`lint:fix`) | 1 proposed to F21 (the story id in each commit's footer) |
@@ -32,6 +32,18 @@ oxlint's correctness rules that no ESLint plugin had were never decided by the t
 | `oxc/number-arg-out-of-range` | `n.toString(40)` | a radix or precision out of range |
 | `oxc/only-used-in-recursion` | a parameter only passed to the recursive call | a dead parameter in a recursive fold |
 | `unicorn/no-length-as-slice-end` | `xs.slice(0, xs.length)` | dead code |
+
+oxlint's `vitest` plugin was off: nothing stopped a test left focused (`it.only`) from hiding the rest of the suite, since Vitest refuses `.only` on a CI only, and `check:all` runs locally. Its correctness rules that report nothing on the tree are on in test files, each with a planted test in the same file:
+
+| Rule | Reports |
+| --- | --- |
+| `vitest/no-focused-tests`, `vitest/no-disabled-tests` | a test left focused or skipped |
+| `vitest/no-identical-title`, `vitest/valid-title` | two tests under one name, an empty title |
+| `vitest/no-conditional-tests`, `vitest/no-conditional-expect` | a test or an assertion that runs only on some machines |
+| `vitest/valid-expect-in-promise`, `vitest/require-awaited-expect-poll` | an assertion in a promise nobody waits for |
+| `vitest/valid-describe-callback`, `vitest/no-duplicate-hooks`, `vitest/hoisted-apis-on-top` | a group without its function, a hook declared twice, a module mock where it is not hoisted |
+
+Left off: `vitest/no-standalone-expect` (603 findings, each an assertion in a helper a test calls), `vitest/expect-expect` (36, each a test asserting through such a helper), `vitest/valid-expect` (Vitest's message argument, `expect(value, name)`, reported as a second argument too many) and `vitest/no-commented-out-tests` (a script's header naming `it` in prose); the style rules of the plugin are left to a later review, the tests' forms being uniform already.
 
 Read and left off, each with its reason:
 
