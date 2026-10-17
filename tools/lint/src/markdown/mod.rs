@@ -101,6 +101,12 @@ pub mod testing {
             .collect()
     }
 
+    /// The messages of a rule's findings on a page, sorted by place.
+    #[must_use]
+    pub fn messages(rule: &dyn MarkdownRule, text: &str) -> Vec<String> {
+        crate::testing::messages(&lint(rule, text))
+    }
+
     /// A page's text with the fixes of a rule applied.
     #[must_use]
     pub fn fixed(rule: &dyn MarkdownRule, text: &str) -> String {
