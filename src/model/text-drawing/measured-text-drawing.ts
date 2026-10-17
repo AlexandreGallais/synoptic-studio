@@ -4,10 +4,10 @@ import { blockOffsetInBox, positionedLines, textFrame } from "../text-layout";
 import { lineDecorations } from "./line-decorations";
 import { textBackgrounds } from "./text-backgrounds";
 
-import type { FontMetrics } from "../font";
-import type { Text } from "../text";
 import type { DrawnText } from "./drawn-text";
 import type { MeasuredText } from "./measured-text";
+import type { FontMetrics } from "../font";
+import type { Text } from "../text";
 
 /**
  * What the SVG of a text draws (ADR-0052), from what it measures (`textMeasure`): its lines shown

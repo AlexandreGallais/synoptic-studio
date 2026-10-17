@@ -5,8 +5,8 @@ Three tools, each with its own scope, **no duplicate** (ADR-0013; Prettier repla
 | Tool | Decides | File |
 | --- | --- | --- |
 | EditorConfig | charset, line ending, indentation, line length (100), trailing spaces, final newline | `.editorconfig` |
-| The formatter (`tools/format`) | the whole layout of every file kind it knows: oxfmt, then Markdown tables without padding (ADR-0068, EN-073) | `.oxfmtrc.json` (Prettier's options, translated by `oxfmt --migrate=prettier`; `printWidth` 100) |
-| ESLint | what the formatter does not decide: blank lines between statements, comments, import order, JSDoc layout, braces | `eslint/rules/stylistic/`, `eslint/rules/imports/style.ts`, `eslint/rules/jsdoc/layout.ts` |
+| The formatter (`tools/format`) | the whole layout of every file kind it knows: oxfmt, then Markdown tables without padding (ADR-0068, EN-073); the order of the imports (`sortImports`, EN-095, [imports](./imports.md)) | `.oxfmtrc.json` (Prettier's options, translated by `oxfmt --migrate=prettier`; `printWidth` 100) |
+| The linters | what the formatter does not decide: blank lines between statements, comments, the members of an import, JSDoc layout, braces | `.oxlintrc.json`, `tools/lint` (ESLint runs none since EN-095) |
 
 ## One formatter
 

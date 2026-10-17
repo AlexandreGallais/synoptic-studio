@@ -21,7 +21,7 @@ export const CORE_MODULES: TSESLint.FlatConfig.Config = {
     ],
     // Layer boundaries: import-x/no-restricted-paths; path shape: local/canonical-import-path.
     "no-restricted-imports": "off",
-    // Members only: declaration order belongs to import-x/order.
+    // Members only: the declarations are ordered by oxfmt's import sorting (EN-095).
     "sort-imports": [
       "error",
       { ignoreCase: false, ignoreDeclarationSort: true, ignoreMemberSort: false },

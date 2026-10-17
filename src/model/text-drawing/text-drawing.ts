@@ -1,9 +1,9 @@
 import { measuredTextDrawing } from "./measured-text-drawing";
 import { textMeasure } from "./text-measure";
 
+import type { DrawnText } from "./drawn-text";
 import type { FontMetrics } from "../font";
 import type { Text } from "../text";
-import type { DrawnText } from "./drawn-text";
 
 /**
  * What the SVG of a text draws (ADR-0052): what it measures (`textMeasure`), its lines shown and

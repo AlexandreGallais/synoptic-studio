@@ -4,10 +4,10 @@ import { classesByCharacter } from "./classes-by-character";
 import { glyphPairKerning } from "./glyph-pair-kerning";
 import { kerningClasses } from "./kerning-classes";
 
-import type { CharacterGlyph } from "../font";
 import type { Kerning } from "./kerning";
 import type { KerningLookup } from "./kerning-lookup";
 import type { KerningRow } from "./kerning-row";
+import type { CharacterGlyph } from "../font";
 
 /**
  * The kerning of each pair of classes, read on a pair of characters of those classes; class 0

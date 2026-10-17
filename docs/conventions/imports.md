@@ -36,9 +36,9 @@ import type { Linter } from "eslint";
 
 Two statements from the same module are allowed when one is `import type` (`import-x/no-duplicates` keeps them apart); two value imports from the same module are merged.
 
-## Order (`import-x/order`, autofixed)
+## Order (oxfmt's `sortImports`, written by `npm run format`)
 
-Groups separated by a blank line: Node modules (`node:…`) → packages → parents (`../`) → siblings (`./`) → `import type`. Alphabetical within each group; members sorted (`sort-imports`).
+Groups separated by a blank line: Node modules (`node:…`) → packages → parents (`../`) → siblings (`./`) → `import type`, its siblings, then its parents, then its modules and packages, without blank lines. Alphabetical within each group, character by character, capitals first; members sorted (oxlint's `sort-imports`). oxfmt writes the order since EN-095, and `npm run format:check` refuses a file out of it; `import-x/order` accepted parents and siblings in any order among the `import type` statements, oxfmt orders them.
 
 ## Forbidden
 

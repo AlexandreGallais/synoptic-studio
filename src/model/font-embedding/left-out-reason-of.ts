@@ -1,5 +1,5 @@
-import type { FontFile } from "../font";
 import type { LeftOutReason } from "./left-out-reason";
+import type { FontFile } from "../font";
 
 /**
  * Why a face's file is not embedded: no file held, or a file whose `fsType` does not permit

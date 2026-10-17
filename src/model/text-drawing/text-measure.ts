@@ -1,9 +1,9 @@
 import { shownLines } from "../text-box";
 import { textBlock } from "../text-layout";
 
+import type { MeasuredText } from "./measured-text";
 import type { FontMetrics } from "../font";
 import type { Text } from "../text";
-import type { MeasuredText } from "./measured-text";
 
 /**
  * What a text measures: its lines shown (`shownLines`), wrapped in its box and cut at its maximum
