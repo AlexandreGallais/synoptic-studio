@@ -99,7 +99,7 @@ In delivery order. Stories stay `draft` until F21's `/run` sets them `ready`.
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
 | [SP-023](../stories/E17-F21-SP-023-research-f21.md) | Spike | Research for F21 | done |
-| [EN-102](../stories/E17-F21-EN-102-each-tool-records-its-use.md) | Enabler | Each tool of our own records its use | ready |
+| [EN-102](../stories/E17-F21-EN-102-each-tool-records-its-use.md) | Enabler | Each tool of our own records its use | done |
 | [EN-103](../stories/E17-F21-EN-103-backlog-and-repository-tools-in-rust.md) | Enabler | The backlog and repository tools in Rust | ready |
 | [EN-104](../stories/E17-F21-EN-104-claude-code-hooks-in-rust.md) | Enabler | The Claude Code hooks and the status line in Rust | ready |
 | [EN-105](../stories/E17-F21-EN-105-one-row-or-section-of-a-page.md) | Enabler | One row or one section of a repository page | done |
