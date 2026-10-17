@@ -42,9 +42,21 @@ One task = one commit, referenced as `VAL-019.Tn`.
 - [x] T2 — F18's lines in E17's checklist, `?checklist=E17` (1 h)
 - [x] T3 — The decisions the Product Owner confirmed on 2026-10-17 recorded (0.5 h)
 - [x] T4 — The demo page, `docs/guide/f18-safe-and-cheap-parallel-run.md` (1 h)
-- [ ] T5 — E15's lines that ask for macOS font files reviewed (0.5 h)
+- [x] T5 — E15's lines that ask for macOS font files reviewed (0.5 h)
 - [ ] T6 — The Product Owner validates; the result recorded (1 h)
 
 ## Criteria traced
 
 Each of the 20 criteria of F18 has at least one test titled or named after it, `[F18.ACn]` in a TypeScript test or `f18_acn_…` in a Rust tool's tests (2026-10-17): AC2 in `tools/hooks/tests/limit.rs` and `tasks.rs`, AC19 in ten font test files, the others in one to five files each. With F18's status set to `done` in a copy of its file, the criteria trace test of `tests/backlog.test.ts` passes; with a 21st criterion added and no test for it, it fails naming `F18.AC21`.
+
+## E15's lines that ask for macOS font files
+
+They are F15's and F17's lines, not F18's: left as they are, to be tried on a Mac, or rewritten when E15's checklist is next reworked.
+
+| File                                                                  | Line                                                                                                                                                            |
+| --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `playground/checklists/epic-15-color-and-font-lines.ts`               | F15: Import Arial from `/System/Library/Fonts/Supplemental`; F15: Import Helvetica.ttc from `/System/Library/Fonts`; F17 (US-052): Import Apple Color Emoji.ttc |
+| `playground/guided-steps/epic-15/guided-steps-f15.ts`                 | Arial.ttf from `/System/Library/Fonts/Supplemental`, Arial Bold.ttf and Arial Italic.ttf, Helvetica.ttc from `/System/Library/Fonts`                            |
+| `playground/guided-steps/epic-15/guided-steps-f15-first-decisions.ts` | Arial Bold Italic.ttf, Arial.ttf twice, Arial.ttf and Arial Bold.ttf after a reload, STIXGeneral.otf from `/System/Library/Fonts/Supplemental`                  |
+| `playground/guided-steps/epic-15/guided-steps-f15-last-decisions.ts`  | Arial.ttf, Arial Bold.ttf                                                                                                                                       |
+| `playground/guided-steps/epic-15/guided-steps-f14-options.ts`         | Arial.ttf, for the space hung at the end of a right-aligned line                                                                                                |
