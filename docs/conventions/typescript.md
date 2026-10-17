@@ -22,7 +22,7 @@ Left to ESLint (off in `tsconfig.json`): `noUnusedLocals`, `noUnusedParameters`,
 ## Files
 
 - `tsconfig.json`: type checking only (`noEmit`) of `src/`, `playground/`, `eslint/`, `tests/`, `scripts/`, `.claude/hooks/`, `docs/.vitepress/` and root files.
-- `tsconfig.build.json`: emits the declarations `dist/types/` from `src/` (tests excluded).
+- No `tsconfig.build.json`: `tools/declarations` writes the declarations `dist/types/` from `src/` (tests excluded), each module alone, on Oxc's isolated declarations (EN-091, ADR-0071). An exported constant whose value is not a plain literal therefore has its type written (`export const DEGREES_PER_HALF_TURN: number = DEGREES_PER_TURN / 2`), as an exported function has its return type.
 
 ## Typed rules
 

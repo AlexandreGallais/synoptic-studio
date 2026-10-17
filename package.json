@@ -28,7 +28,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "npm run deps:audit && vite build && tsc -p tsconfig.build.json",
+    "build": "npm run deps:audit && vite build && cargo run --release -q -p declarations -- src dist/types",
     "preview": "vite preview",
     "fix": "cargo run --release -q -p format -- --write \"*\" .cargo .claude/agents .claude/hooks .claude/rules .claude/skills .claude/settings.json .github .husky .vscode docs eslint playground scripts src tests tools && oxlint --type-check --fix --deny-warnings *.ts .claude/hooks docs eslint playground scripts src tests && eslint --cache --cache-location node_modules/.cache/eslint/ --fix \"*.{ts,md}\" .claude/agents .claude/hooks .claude/rules .claude/skills .github docs eslint playground scripts src tests",
     "check": "npm run format:check && npm run lint && npm run lint:secrets && npm run test && npm run deps:audit && npm run deps:unused && npm run check:rust",

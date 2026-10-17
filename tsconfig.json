@@ -34,7 +34,7 @@
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": false,
 
-    // Output: checking only; tsconfig.build.json emits the .d.ts
+    // Output: checking only; tools/declarations writes the library's .d.ts (EN-091)
     "noEmit": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true

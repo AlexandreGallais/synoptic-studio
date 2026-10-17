@@ -1,6 +1,6 @@
 # ADR-0010 — Strictness carried by ESLint first, TypeScript second
 
-**Status**: Accepted
+**Status**: Accepted, its consequences partly superseded by ADR-0071 (2026-10-17): `tsc` out of `npm run check`, the declarations written by Oxc.
 
 ## Context
 

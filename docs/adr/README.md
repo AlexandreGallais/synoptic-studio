@@ -15,7 +15,7 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0007](./0007-corner-radius-clamping.md) | Corner radius clamping: local proportional reduction | Accepted |
 | [0008](./0008-quarter-turn-rotation.md) | Instance rotation by quarter turns | Accepted |
 | [0009](./0009-toolchain.md) | Toolchain: TypeScript 6, Vite, Vitest, ESLint, Prettier, VitePress | Accepted |
-| [0010](./0010-lint-first-strictness.md) | Strictness carried by ESLint first, TypeScript second | Accepted |
+| [0010](./0010-lint-first-strictness.md) | Strictness carried by ESLint first, TypeScript second | Accepted, partly superseded by 0071 |
 | [0011](./0011-function-kinds.md) | Function kinds: `@kind` tag and per-kind limits | Accepted |
 | [0012](./0012-folder-barrels.md) | One `index.ts` per folder, canonical import paths | Accepted |
 | [0013](./0013-prettier-alongside-eslint.md) | Prettier next to ESLint, not inside it | Accepted |
@@ -75,3 +75,4 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0068](./0068-tables-without-padding-moved-to-f19.md) | Tables without padding moved to F19's formatter | Accepted by the agent, to confirm at VAL-019 |
 | [0069](./0069-tooling-fast-for-the-agent.md) | Tooling as fast as it can be, for the agent | Accepted |
 | [0070](./0070-tests-without-over-testing.md) | Tests without over-testing: one claim, one place; slow preparation done once | Accepted |
+| [0071](./0071-type-errors-with-the-lint-declarations-by-oxc.md) | Type errors with the lint, declarations by Oxc | Accepted |

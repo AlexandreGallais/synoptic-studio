@@ -3,7 +3,7 @@
 | Command | Role |
 | --- | --- |
 | `npm run dev` | Vite server on `playground/` (`http://localhost:5173`) |
-| `npm run build` | `npm audit`, then library build (`dist/editor.js`) + declarations (`dist/types/`) |
+| `npm run build` | `npm audit`, then library build (`dist/editor.js`) + declarations (`dist/types/`, by Oxc's isolated declarations, EN-091) |
 | `npm run test` / `test:watch` | Vitest on half the machine's cores (`maxWorkers`, held by `tests/vitest-workers.test.ts`) under the heavy lock, with coverage of `src/` (100 % required) and `playground/` (a floor): library, playground, custom rules, ESLint audit, `tests/` (backlog, bibliography, barrels, diagrams, dependencies, fitness), scripts and hooks |
 | `npm run lint` / `lint:fix` | oxlint first, on the TypeScript of the same targets, with its native and type-aware rules (`.oxlintrc.json`, EN-074) and TypeScript's own errors (`--type-check`, typescript-go 7 under `tsgolint`: the same errors as `tsc --noEmit` on the tree and on planted errors, about 1.1 s with them against 0.8 s without, EN-091, `REF-OXLINT-CLI`); then ESLint, for the rules oxlint lacks until F19 rewrites them, on the named targets (root `*.{ts,md}`, `.claude/` folders, `.github`, `docs`, `eslint`, `playground`, `scripts`, `src`, `tests`); zero warning tolerated |
 | `npm run lint:secrets` | secretlint on every file tracked by Git (`git ls-files`): no key, token or password |
@@ -58,7 +58,7 @@ A push inherits the lock through its pre-push hook (`check:all`). Single test fi
 
 ## Build
 
-Vite library mode (`build.lib`), a single unminified ESM output; `tsc -p tsconfig.build.json` emits the `.d.ts`. `package.json`: `"sideEffects": false`, `exports` points to `dist/`.
+Vite library mode (`build.lib`), a single unminified ESM output; `tools/declarations` writes the `.d.ts` from each module alone with Oxc's isolated declarations (`cargo run --release -q -p declarations -- src dist/types`, 0.06 s for 589 files against 0.63 s for `tsc`, EN-091, ADR-0071), and fails on an exported constant whose type is neither written nor read from a plain literal (TypeScript's TS9010). `package.json`: `"sideEffects": false`, `exports` points to `dist/`.
 
 ## CI
 

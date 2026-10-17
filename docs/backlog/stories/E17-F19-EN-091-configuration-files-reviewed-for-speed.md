@@ -101,3 +101,52 @@ Tried here on 2026-10-17, oxlint 1.87.0 with `oxlint-tsgolint` 7.0.2004 against 
 So `tsc` leaves `check` and `check:all`: `npm run lint`, `lint:fix`, `npm run fix` and the pre-commit hook run oxlint with `--type-check`, and a type error comes listed with the lint findings instead of stopping a separate step. The type check costs oxlint about 0.3 s on the tree (0.76 to 0.81 s without it, 1.08 to 1.17 s with it, 3 runs each) against 0.67 to 0.70 s for `tsc` alone. `npm run typecheck` stays as a command of its own, and TypeScript 7 stays a dev package: `tsgolint` brings its own typescript-go, but the editors and `tests/typescript-7.test.ts` use `tsc`. The `tsconfig.json` option that oxlint does not report, `baseUrl`, is one TypeScript 7 removed and this project never had. `tests/type-check-with-lint.test.ts` proves a planted TS2322 reported by oxlint at its place, and that every oxlint pass carries `--type-check`; dropping the flag from its call makes it fail.
 
 `tsconfig.json` stays: `tsc`, oxlint's type-aware mode, Vite and Vitest read it. `tsconfig.build.json` leaves with T4.
+
+## Declarations by Oxc
+
+Asked by the Product Owner on 2026-10-17 during the story: whether Oxc's isolated declarations can write the library's declarations instead of `tsc`, on one condition — the extra typing stays on the exported API (the return types of exported functions, exported constants whose type cannot be read from a plain value), never on local constants or every variable. The Product Owner favours it: an export with its type written makes the published API an explicit interface, which also shows a breaking change in the diff of the export itself.
+
+The trial, `isolatedDeclarations` turned on for `src/` (`tsc -p tsconfig.build.json --isolatedDeclarations`), then Oxc's `oxc_isolated_declarations` 0.153.0 on the same files:
+
+| Kind of error | In `src/` | Where |
+| --- | --- | --- |
+| exported function without its return type (TS9007) | 0 | the rule already asks for it (`explicit-module-boundary-types`) |
+| exported constant whose type is not read from its value (TS9010) | 2 | `src/math/angle/degrees-per-half-turn.ts` (`DEGREES_PER_TURN / 2`), `src/geometry/round-shape/quarter-circle-handle.ts` (a call) |
+| other (locals, variables, default exports) | 0 | — |
+
+Two annotations, both on exports: the condition holds, so the declarations are Oxc's (ADR-0071). Outside `src/`, which publishes no declarations, the rule would ask 87 annotations (64 in `eslint/`): it is not turned on there.
+
+| Declarations of the 589 modules | Time, 3 runs | Same as `tsc` |
+| --- | --- | --- |
+| `tsc -p tsconfig.build.json` | 0.63 s | — |
+| `tools/declarations` (Oxc) | 0.06 to 0.07 s | 103 files byte for byte; all 589 once whitespace is ignored, but for a type parameter list wrapped over lines and `.5` written for `0.5`: the same in meaning |
+
+`npm run build` runs `cargo run --release -q -p declarations -- src dist/types`; `tsconfig.build.json` is removed. `tools/declarations` refuses a module that breaks the rule, naming its file, line and TypeScript's code, and writes nothing; its six tests run it on libraries of their own (a mutation keeping the output on an error, and one keeping the test files, each fail them). `tests/declarations.test.ts` runs it on `src/`, so that an export missing its type fails the test lane, not only the CI's build; removing the annotation of `DEGREES_PER_HALF_TURN` makes it fail with TS9010 at line 4.
+
+## Timings after
+
+`npm run check:all` alone under the heavy lock, the four tasks applied, 2026-10-17:
+
+| Check | Before | After |
+| --- | --- | --- |
+| test | 61.8 s | 51.5 s |
+| check:rust | 60.3 s | 44.1 s |
+| docs:build, playground:build | 54.4 s, 0.7 s | 48.2 s, 0.7 s |
+| lint (type errors included after) | 49.3 s | 45.5 s |
+| typecheck | 1.4 s | — (in the lint) |
+| format:check, lint:secrets, deps:audit, deps:unused, deps:tools, deps:outdated | 1.1, 3.4, 1.1, 1.4, 1.3, 3.1 s | 1.0, 2.1, 1.0, 2.3, 1.4, 3.6 s |
+| `check:all` | 61.8 s | 51.5 s |
+
+The test lane is still the slowest, now with the site's build and ESLint close behind (EN-085 removes the second and builds the first on change only). `check:rust` fell with less load beside it; its own steps alone are unchanged (`rust:coverage` 13.5 s of it).
+
+## For the main thread
+
+- The feature file (shared, left alone): F19.AC6's row names TypeScript 7 for "the type check and the declarations"; the declarations are now Oxc's (ADR-0071), and the test `[F19.AC6] is the tsc of the type check` was retitled so.
+- ADR-0071 was numbered on `1dcfa40b`; if another story of the run takes 0071 first, renumber at merge (the ADR, its row in `docs/adr/README.md`, ADR-0010's status line, `docs/conventions/typescript.md`, `docs/tooling/commands.md`, this story).
+- `.oxlintrc.json` (EN-075's): `--type-check` is passed on the command line; `options.typeCheck: true` in the root configuration would carry it into editors and any other oxlint call (`REF-OXLINT-TYPE-AWARE`), once EN-075 is merged.
+- `.github/workflows/ci.yml` compiles `cargo-llvm-cov` and `cargo-deny` from source on each run: a prebuilt install would save minutes of CI, a new action to review (`deps:tools`); no local wait, so left.
+- The `done` commit: `Rule-docs: none affected, a tooling story that changes no rule of docs/domain/`.
+
+### Journal
+
+- `#run` EN-091: every configuration file reviewed for speed; the RuleTester's setup given to the rule tests only (test lane 39.6 s to about 30 s), type errors reported by oxlint's `--type-check` with the lint and `tsc` out of `check:all`, the declarations written by Oxc's isolated declarations (0.63 s to 0.06 s, two exports annotated), `check:all` 61.8 s to 51.5 s (ADR-0071).

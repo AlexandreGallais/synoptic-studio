@@ -454,3 +454,14 @@ The four ESLint core rules oxlint lacks, triaged the same way:
 | `no-restricted-syntax`, `require-atomic-updates` | kept, rewritten in the Rust linter (EN-075) |
 | `consistent-this` | dropped: `this` cannot appear (`functional/no-this-expressions`), so no alias of it can |
 | `strict` | dropped: every file is a module, so strict code, and `unicorn/prefer-module` (native, kept) reports any `"use strict"` directive |
+
+## `tsc`'s two jobs and Oxc (EN-091, 2026-10-17)
+
+Asked by the Product Owner during EN-091: which Oxc tool can take over each of `tsc`'s two jobs here, tried on this repository. The third round's line "the type check itself is TypeScript 7's compiler, not oxlint's `--type-check`" is replaced by the answer below (ADR-0071).
+
+| Job of `tsc` | Oxc's tool | Tried here | Kept |
+| --- | --- | --- | --- |
+| the type check (`tsc --noEmit`, 0.67 to 0.70 s) | none of its own: Oxc lists no type checker (`REF-OXC-README`); oxlint's `--type-check` adds the diagnostics of typescript-go, run by `tsgolint`, to the lint (`REF-OXLINT-CLI`, "experimental"; `REF-OXLINT-TYPE-AWARE`, "can replace a separate `tsc --noEmit` step") | the same errors as `tsc` on the tree (none) and on planted ones: TS2307, TS2322, TS2375, TS18048 in one module, TS2322 in the playground, TS2403 across two files; on an invalid `tsconfig.json` it stops at the first invalid option, as `tsc` stops before the code; 1.1 s for the lint with it against 0.8 s without | oxlint with `--type-check` in every lint pass; `tsc` out of `check:all` |
+| the declarations (`tsc -p tsconfig.build.json`, 0.63 s, 589 files) | `oxc_isolated_declarations` and `oxc_codegen` 0.153.0, for code under TypeScript's `isolatedDeclarations` (`REF-OXC-ISOLATED-DECLARATIONS`, `REF-TS-ISOLATED-DECLARATIONS`) | `src/` breaks the rule twice, both TS9010 on an exported constant computed from another (`DEGREES_PER_HALF_TURN`, `QUARTER_CIRCLE_HANDLE`), none on a function's return type nor a local: the whole tree would break it 87 times, 64 in `eslint/`. Annotated, Oxc writes the 589 files in 0.06 s: 103 byte for byte as `tsc`, the others differing only in indentation (tabs), a wrapped type parameter list and `.5` for `0.5`, the same in meaning | `tools/declarations`, a crate of the workspace; `tsconfig.build.json` removed |
+
+What stays with `tsc` (TypeScript 7): `npm run typecheck` as a command of its own, the editors, and the test that TypeScript 7 is the project's compiler. Nothing in Oxc's documentation covers a type check apart from oxlint's.
