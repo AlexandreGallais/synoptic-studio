@@ -12,6 +12,7 @@ What each working session dealt with, in the agent's words: the Product Owner's 
 - `#run` US-061: the font list held while the default font is read again (I77), a face refused at that reading dropped (I78); second criterion read as dropping, from the settled rule that every font offered can be exported.
 - `#run` EN-060: the documentation pass on E15's long pages split every bullet over 400 characters of the Text section of `shapes.md`, the Colors of `interaction.md` and `DERIV-text-box` into sub-bullets and tables, without changing a rule; a test keeps those parts within the limit.
 - `#run` EN-046: the release pull request now lives on `develop` and `main` only tags it (ADR-0067); the Product Owner merges the release pull request into `develop` before #259, checked at the release of 0.3.
+- `#run` EN-063: the hook `limit-agents` runs on `Agent` and `SendMessage`, Claude Code's own cap set to 3; a message to a running subagent or to the main conversation goes through, a resume of a fourth is refused.
 
 ## 2026-10-17 — Run of F18 stopped before its validation
 
