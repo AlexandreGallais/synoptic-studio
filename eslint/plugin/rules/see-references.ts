@@ -58,18 +58,18 @@ export const SEE_REFERENCES_RULE = createRule<Options, MessageIds>({
       }
     },
   }),
-  defaultOptions: [
-    {
-      requiredKinds: [],
-      sources: {
-        adrDirectory: "",
-        derivationsDirectory: "",
-        referencesFile: "",
-        unverifiedMarker: "",
-      },
-    },
-  ],
   meta: {
+    defaultOptions: [
+      {
+        requiredKinds: [],
+        sources: {
+          adrDirectory: "",
+          derivationsDirectory: "",
+          referencesFile: "",
+          unverifiedMarker: "",
+        },
+      },
+    ],
     docs: {
       description: "Require existing, verified `@see` references (REF-*, DERIV-*, ADR-*, docs/…).",
     },

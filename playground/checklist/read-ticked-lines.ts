@@ -27,8 +27,9 @@ function readWrittenValue(written: string): unknown {
  */
 function readTextList(written: string): readonly string[] {
   const value = readWrittenValue(written);
+  const items: readonly unknown[] = Array.isArray(value) ? value : [];
 
-  return Array.isArray(value) ? value.filter((item) => typeof item === "string") : [];
+  return items.filter((item) => typeof item === "string");
 }
 
 /**

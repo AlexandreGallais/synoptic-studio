@@ -49,8 +49,8 @@ export const REQUIRE_KIND_RULE = createRule<Options, MessageIds>({
       context.report({ data: details, messageId, node: node.id ?? node });
     },
   }),
-  defaultOptions: [{ kinds: [] }],
   meta: {
+    defaultOptions: [{ kinds: [] }],
     docs: { description: "Require exactly one known `@kind` JSDoc tag on top-level functions." },
     messages: {
       missing: "Top-level function without `@kind` tag (ADR-0011).",

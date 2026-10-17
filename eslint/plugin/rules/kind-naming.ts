@@ -170,10 +170,10 @@ export const KIND_NAMING_RULE = createRule<Options, MessageIds>({
       context.report({ data: { kind, name, word: firstWord(name) }, messageId, node: node.id });
     },
   }),
-  defaultOptions: [
-    { formatPattern: ".", predicatePrefixes: [], procedureVerbs: [], vaguePrefixes: [] },
-  ],
   meta: {
+    defaultOptions: [
+      { formatPattern: ".", predicatePrefixes: [], procedureVerbs: [], vaguePrefixes: [] },
+    ],
     docs: { description: "Enforce naming conventions depending on the function kind." },
     messages: {
       formatName:

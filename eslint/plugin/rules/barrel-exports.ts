@@ -108,8 +108,8 @@ export const BARREL_EXPORTS_RULE = createRule<[], MessageIds>({
       });
     },
   }),
-  defaultOptions: [],
   meta: {
+    defaultOptions: [],
     docs: { description: "Require barrels to re-export exactly every sibling module, sorted." },
     fixable: "code",
     messages: {
