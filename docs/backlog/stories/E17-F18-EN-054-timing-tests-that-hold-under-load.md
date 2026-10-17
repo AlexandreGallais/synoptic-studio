@@ -39,7 +39,3 @@ Each test with a duration limit, run alone on 2026-10-16 (`npx vitest run <file>
 | `scan.test.ts`, 200 000 items                                | 74 ms  | 1 s              | 13    |
 
 The font-list page test now lists 60 faces of 20 families: the 590 faces of 186 families stay counted once each by `distinct-family-names.test.ts`, a model test without a page. Both changed tests were broken once on purpose (a 1 ms limit, 20 options instead of 21) and failed.
-
-## For the main thread
-
-- Improvement log: I47, I74 and I75 handled by EN-054 (limits at least four times their measure alone, table above).

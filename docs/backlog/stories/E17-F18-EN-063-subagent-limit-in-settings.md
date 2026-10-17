@@ -17,6 +17,7 @@ SP-020 ([research note 0022](../../research/notes/0022-f18-parallel-run.md)): `C
 
 - Given the recommended setting shown to the Product Owner and accepted, when it is applied, then the settings file holds the limit and `docs/tooling/agent.md` names it beside the hook of EN-047.
 - Given the Product Owner declines or changes the value, when the story ends, then the decision is written in the story and in the docs.
+- Given three subagents running, when a `SendMessage` resumes a fourth, then it is refused like an `Agent` call, naming the three running (the hook's matcher covers `Agent` and `SendMessage`).
 
 ## Tasks
 

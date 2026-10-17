@@ -9,7 +9,7 @@ points: 2
 
 # E17 · F18 · EN-046 — Release pull request on develop, only the release on main
 
-Run release-please's release pull request on `develop` and only its GitHub release on `main`, so that a release adds no commit to `main` that `develop` lacks (F18.AC1; asked by the Product Owner on 2026-10-14). Done before the release that closes E17: the release pull request 0.3 (#259) waits until the end of E17 and is merged by the Product Owner then (2026-10-16), with this flow in place.
+Run release-please's release pull request on `develop` and only its GitHub release on `main`, so that a release adds no commit to `main` that `develop` lacks (F18.AC1; asked by the Product Owner on 2026-10-14). Done before the release that closes E17: the release pull request 0.3 (#259) waits until the end of E17, when the Product Owner merges it (decided 2026-10-16), with this flow in place.
 
 SP-020 ([research note 0022](../../research/notes/0022-f18-parallel-run.md)): the action's `target-branch`, `skip-github-release` and `skip-github-pull-request` split the release pull request from the release (`REF-RELEASE-PLEASE-ACTION`); a release tags the merge commit of the release pull request found by its label (`REF-RELEASE-PLEASE-DESIGN`), so the step on `main` looks for pull requests merged into `develop`, checked on the next release.
 
@@ -23,8 +23,8 @@ SP-020 ([research note 0022](../../research/notes/0022-f18-parallel-run.md)): th
 
 One task = one commit, referenced as `EN-046.Tn`.
 
-- [ ] T1 — Read release-please's documentation for the two steps and the target branch; record the source (1 h)
-- [ ] T2 — Change the workflow and its configuration; describe the flow in the tooling docs (1 h)
+- [x] T1 — Read release-please's documentation for the two steps and the target branch; record the source (1 h)
+- [x] T2 — Change the workflow and its configuration; describe the flow in the tooling docs (1 h)
 
 ## What the sources say (T1)
 

@@ -19,7 +19,7 @@ Keep the Q rows, the decisions to confirm and the guide pages up to date when a 
 
 One task = one commit, referenced as `EN-059.Tn`.
 
-- [ ] T1 — The check in `story:finish` or a hook; its test (2 h)
+- [x] T1 — The check in `story:finish` or a hook; its test (2 h)
 
 ## For the main thread
 
