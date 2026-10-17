@@ -451,8 +451,17 @@ A click lists the installed families after the browser's `local-fonts` permissio
   - the line then sums up (`Installed fonts read: 309 families; 3 left out: 1 not embeddable (…); 1 no Latin letters (Apple Color Emoji); 1 unreadable (ABC Oracle Book).`), each reason said only when a family has it (US-056);
   - a family none of whose faces can be read and listed never enters the font list;
   - a family read keeps its faces' metrics only, not their files, and is listed under the name its files give, its weights those of its faces read (Helvetica 300, 400 and 700); a face read ahead never replaces a face whose file is held, imported or chosen.
+- **Read whole before listed** — **Settled** (Product Owner, VAL-019, 2026-10-17, US-062): the font list holds only fonts known to be sound:
+  - at the first reading, each face's file is read whole, checked as an imported one is — a TrueType or OpenType font, the 52 basic Latin letters, its `fsType` permitting embedding —, then its bytes released at once, its metrics alone kept, so that the memory held stays that of one file at a time, a file of 192 MB among them;
+  - a face whose file cannot be read whole, or that is refused, is not listed and never read again; a family left with no face is not listed;
+  - the counting line then says the faces refused in the families read, counted by reason as the families left out are: `Installed fonts read: 2 families. 1 faces of the families read refused: 1 unreadable (Helvetica Light).` (the agent's wording, to confirm);
+  - a family chosen still has its faces' files read again, to draw and embed them; a refusal at that moment, possible only for a font removed meanwhile, is handled as US-061 says (below);
+  - measured on the Product Owner's Mac (2026-10-17), its 837 faces of 377 families read in the page's tests from the font files on disk, each face given as Chrome on macOS gives it:
+    - the first reading took 77.4 s before, 76.1 s after: its time is that of reading and checking the files, which it already did;
+    - the memory still held when the next file is read fell from 889 MB to 19 MB;
+    - Chrome's own duration, `blob()` included, is to be measured in the browser.
 - **A family chosen**, by hand or as the default font (US-060):
-  - it has the files of its faces read again, as imported ones are, so that the page draws it with its own outlines and can embed it, and is chosen under the name its files give (`Arial: 4 faces read.`), measured at once with the metrics read ahead;
+  - it has the files of its faces read at the first reading read again, as imported ones are, so that the page draws it with its own outlines and can embed it, and is chosen under the name its files give (`Arial: 4 faces read.`), measured at once with the metrics read ahead;
   - each face is read on its own, a face whose file the browser cannot give or that is not a font refused and counted, the others kept (`Arial: 3 faces read, 1 refused (…)`);
   - a face so refused while others of its family are read again has its metrics read ahead dropped, a text asking it then measured with the nearest face held, as for a weight the family lacks (Test Sans 400 read again and 700 refused: a text in 700 is measured and drawn in 400, the weight list offering 400 alone);
   - so no face is measured that the browser no longer gives, nor left out of an export as `its file not held`; Inter's shipped faces the browser draws are kept (F18, US-061);

@@ -1,7 +1,12 @@
 import { distinctFamilyNames, isSameFamilyName } from "../../src";
 import { NO_FONT_APPROVED } from "../default-font";
 import { readFontSession } from "../fonts";
-import { readCountWith, readProgressLine } from "../installed-fonts-count";
+import {
+  readCountWith,
+  readCountWithRefusedFaces,
+  readProgressLine,
+  readRefusedFaces,
+} from "../installed-fonts-count";
 import { writeText } from "../page";
 
 import { readFacesInTurn } from "./read-faces-in-turn";
@@ -43,10 +48,10 @@ async function readNextFamilies(
 
   const fonts = installed.filter((font) => isSameFamilyName(font.family, next.family));
   const reads = await readFacesInTurn(page.view, fonts);
-  const counted = readCountWith(
-    count,
-    next.family,
-    writeFamilyReadAhead(page.document, fonts, reads),
+  const outcome = writeFamilyReadAhead(page.document, fonts, reads);
+  const counted = readCountWithRefusedFaces(
+    readCountWith(count, next.family, outcome),
+    outcome === "read" ? readRefusedFaces(fonts, reads) : [],
   );
 
   writeText(page.document, "installed-fonts-progress", readProgressLine(counted, false));
@@ -82,7 +87,7 @@ export async function readInstalledFontsAhead(
 
   const { installed } = readFontSession(document);
   const total = distinctFamilyNames(installed.map((font) => font.family)).length;
-  const start: ReadAheadCount = { done: 0, leftOut: [], read: 0, total };
+  const start: ReadAheadCount = { done: 0, leftOut: [], read: 0, refused: [], total };
 
   writeText(document, "installed-fonts-progress", readProgressLine(start, false));
 
