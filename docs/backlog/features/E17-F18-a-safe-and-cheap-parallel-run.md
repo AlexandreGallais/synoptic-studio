@@ -57,6 +57,7 @@ In delivery order.
 | [EN-056](../stories/E17-F18-EN-056-a-short-checklist.md)                             | Enabler    | A short checklist, prepared by `val:prepare`                       | done   |
 | [EN-057](../stories/E17-F18-EN-057-register-of-exceptions-and-a-byte-buffer.md)      | Enabler    | The register of exceptions, and a byte buffer for font collections | done   |
 | [US-061](../stories/E17-F18-US-061-font-list-held-while-the-default-font-is-read.md) | User story | Font list held while the default font is read again                | done   |
+| [US-062](../stories/E17-F18-US-062-installed-fonts-read-whole-before-listed.md)      | User story | Installed fonts read whole before they are listed                  | ready  |
 | [EN-058](../stories/E17-F18-EN-058-a-mutation-runner.md)                             | Enabler    | A mutation runner as a tool                                        | done   |
 | [EN-059](../stories/E17-F18-EN-059-done-commit-checks-the-docs.md)                   | Enabler    | The done commit checks the docs a rule touches                     | done   |
 | [EN-060](../stories/E17-F18-EN-060-documentation-pass-on-e15-pages.md)               | Enabler    | A documentation pass on E15's long pages                           | done   |
@@ -83,7 +84,7 @@ In delivery order.
 | F18.AC11             | EN-055         | AUD-020, `[F18.AC11]` |
 | F18.AC12             | EN-056         | AUD-020, `[F18.AC12]` |
 | F18.AC13             | EN-057         | AUD-020, `[F18.AC13]` |
-| F18.AC14             | US-061         | AUD-020, `[F18.AC14]` |
+| F18.AC14             | US-061, US-062 | AUD-020, `[F18.AC14]` |
 | F18.AC15             | EN-058         | AUD-020, `[F18.AC15]` |
 | F18.AC16             | EN-059         | AUD-020, `[F18.AC16]` |
 | F18.AC17             | EN-060         | AUD-020, `[F18.AC17]` |
