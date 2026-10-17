@@ -122,7 +122,7 @@ No raw logs: quote the one line that matters. Questions come last, so they are n
 
 ## Checked by ESLint
 
-Markdown pages are linted by `@eslint/markdown` (`eslint/rules/markdown/structure.ts`): heading levels, one `#` title, code block languages, no bare URL, no missing link fragment, table column counts. Layout is the formatter's (oxfmt, tables without padding: `formatting.md`).
+Markdown pages are linted by the project's linter (`tools/lint`, [lint.md](./lint.md#markdown-rules)): heading levels, one `#` title, code block languages, no bare URL, no missing link fragment, table column counts, alternative texts. Layout is the formatter's (oxfmt, tables without padding: `formatting.md`).
 
 ## Where things go
 

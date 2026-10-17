@@ -23,6 +23,9 @@ const FORMAT = "cargo run --release -q -p format --";
 /** The command of the project's linter, run after oxlint (EN-075). */
 const PROJECT_LINT = "cargo run --release -q -p lint --";
 
+/** The Markdown pages the project's linter leaves out: the changelog, written by release-please. */
+const UNLINTED_PAGES = new Set(["CHANGELOG.md"]);
+
 /** oxfmt, as npm installs it. */
 const OXFMT = join(ROOT, "node_modules", ".bin", "oxfmt");
 
@@ -217,7 +220,11 @@ describe("check tools given explicit targets (EN-045)", () => {
     for (const script of ["lint", "lint:fix", "fix"]) {
       const commands = (SCRIPTS.get(script) ?? "").split("&&").map((part) => part.trim());
 
-      expect(targetsOf(script, PROJECT_LINT)).toEqual(targets);
+      expect(targetsOf(script, PROJECT_LINT)).toEqual(targetsOf("lint", PROJECT_LINT));
+
+      expect(targets.filter((target) => !targetsOf(script, PROJECT_LINT).includes(target))).toEqual(
+        [],
+      );
 
       expect(commands.findIndex((part) => part.startsWith(PROJECT_LINT))).toBe(
         commands.findIndex((part) => part.startsWith("oxlint ")) + 1,
@@ -225,12 +232,22 @@ describe("check tools given explicit targets (EN-045)", () => {
     }
   });
 
+  it("[F19.AC4] gives the project's linter every tracked Markdown page, ESLint none", () => {
+    const pages = TRACKED.filter((path) => path.endsWith(".md") && !UNLINTED_PAGES.has(path));
+    const staged = readFileSync(join(ROOT, ".lintstagedrc.json"), "utf8");
+
+    expect(pages.length).toBeGreaterThan(0);
+    expect(leftOut(targetsOf("lint", PROJECT_LINT), pages)).toEqual([]);
+    expect(targetsOf("lint", "eslint").some((target) => target.includes("md"))).toBe(false);
+    expect(staged).toContain(`"*.md": ["${FORMAT} --write", "${PROJECT_LINT} --fix"]`);
+  });
+
   it(
     "[F18.AC20] leaves no tracked file that ESLint checks out of its targets",
     { timeout: WALK_TIMEOUT },
     async () => {
       const linted = await Promise.all(
-        TRACKED.filter((path) => /\.(?:ts|md)$/u.test(path)).map(async (path) =>
+        TRACKED.filter((path) => path.endsWith(".ts")).map(async (path) =>
           (await LINT.isPathIgnored(join(ROOT, path))) ? "" : path,
         ),
       );

@@ -41,7 +41,6 @@
 | `eslint-plugin-unicorn` | ~370 modern best-practice rules | `eslint-plugin-sonarjs`: overlaps unicorn and complexity rules |
 | `@stylistic/eslint-plugin` | blank lines between statements and comment style, which Prettier does not decide | — |
 | `eslint-config-prettier` | turns off the ESLint rules that conflict with Prettier (ADR-0013) | `eslint-plugin-prettier`: discouraged by Prettier (`REF-PRETTIER-LINTERS`) |
-| `@eslint/markdown` | lints the structure of every Markdown page (headings, links, code languages, tables) inside ESLint, with the same "every rule decided" audit | `markdownlint-cli2`: depends on `braces`, vulnerable without fix (GHSA-vfj7-8cjw-p6xm) |
 | `oxfmt` | the formatter of every file kind the repository formats, Markdown included, natively in Rust (`REF-OXFMT`, `REF-OXFMT-LANGUAGES`), run by `tools/format`, which then writes Markdown tables without padding (ADR-0068, EN-073); 0.72.0, released 2026-10-05, its notes read (Markdown formatted by `oxc_formatter_markdown`), 0.73.0 being under 7 days old | Prettier 3.9: about 30 times slower (12.4 s against 0.4 s here), pads tables too, a JavaScript tool against the Rust rule (note 0023) |
 | `oxlint` | the one lint command (`npm run lint`): ESLint's native rules, typescript-eslint's, Unicorn's, JSDoc's and Import's built in Rust, with their options (`REF-OXLINT`, `REF-OXLINT-PLUGINS`), its configuration `.oxlintrc.json` written by `@oxlint/migrate --type-aware` from `eslint/` (`REF-OXLINT-MIGRATE`, EN-074); 1.87.0, released 2026-10-05, its notes read (suggestions and fixes only, no rule removed), 1.88.0 being under 7 days old | ESLint 10 with typescript-eslint: about 62 s on this tree against 2 s; kept only for the rules oxlint lacks until F19 rewrites them and EN-085 removes it |
 | `oxlint-tsgolint` | the type-aware rules of `oxlint` (`options.typeAware`), typescript-eslint's rules run on typescript-go: `no-floating-promises`, `strict-boolean-expressions`, the `no-unsafe-*` family… (`REF-OXLINT-TYPE-AWARE`, `REF-TSGOLINT`), loaded by `oxlint`, imported by no file (`knip.json`); 7.0.2004, released 2026-10-10, its notes read (fixes to `no-unsafe-return`, `no-misused-promises`, `no-floating-promises`, `no-deprecated` and line disable comments) | typescript-eslint's type-aware rules in ESLint: TypeScript 6's API and most of ESLint's 62 s |
@@ -102,12 +101,12 @@ Licence: SIL Open Font License 1.1 (`REF-INTER-LICENSE`). The fonts may be "bund
 
 ## Overrides
 
-Checked at each retrospective: an override goes once the package that pulls the vulnerable version asks for a fixed one. Still needed on 2026-10-13: `eslint-plugin-functional` 10.0.1 asks for `deepmerge-ts` `^7.1.5`, and `micromark-extension-math` 3.1.0 (through `@eslint/markdown`) for `katex` `^0.16.0`.
+Checked at each retrospective: an override goes once the package that pulls the vulnerable version asks for a fixed one. Still needed on 2026-10-13: `eslint-plugin-functional` 10.0.1 asks for `deepmerge-ts` `^7.1.5`, and `mermaid` 12.1.0 for `katex` `^0.16.47` (since EN-077 removed `@eslint/markdown`, on 2026-10-17, the only package that pulls it).
 
 | Override | Why |
 | --- | --- |
 | `deepmerge-ts` → `^8.0.0` | `eslint-plugin-functional` pulls a version affected by GHSA-ggr8-5vv4-36mx; 8.x fixes it |
-| `katex` → `^0.19.0` | `@eslint/markdown` pulls a version affected by GHSA-238p-pmpm-9mq7 (math rendering, unused here); 0.19 fixes it |
+| `katex` → `^0.19.0` | `mermaid` pulls a version affected by GHSA-238p-pmpm-9mq7 (`>= 0.11.0, < 0.18.2`; math rendering, unused here); 0.19 fixes it |
 
 ## Crates
 
@@ -123,7 +122,7 @@ The crates.io dependencies of the Rust tools: Oxc's (`REF-OXC-CRATE`, MIT licenc
 | `oxc_span` | the source type (TypeScript) and the spans that give each export its line | — (the parser's own spans) |
 | `oxc_isolated_declarations` | writes the library's declarations from each module alone, without a type checker, in `tools/declarations` (EN-091, `REF-OXC-ISOLATED-DECLARATIONS`): the 589 files of `tsc` in meaning, in 0.06 s against 0.63 s; release notes of 0.153.0 read (two fixes: `undefined` added to `keyof` parameter types, readonly parameter types) | `tsc -p tsconfig.build.json`: a second compiler run for the same files; `oxc-transform` from npm: the same code behind a Node.js binding, a dev package more |
 | `oxc_codegen` | prints the declarations' AST as `.d.ts` text, comments kept (EN-091); release notes of 0.153.0 read (a parser fix, a sourcemap speed-up) | — (Oxc's own printer) |
-| `markdown` | parses each Markdown page into an mdast tree with byte offsets, GFM and YAML front matter, so that the project's linter runs the Markdown rules of `@eslint/markdown` (EN-077): the Rust sibling of the parser that plugin uses, so the same tree and the same findings | `pulldown-cmark` 0.13.4: events, not a tree, and its own reading of definitions and footnotes, every rule to adapt; `comrak` 0.56.0: an arena tree, seven required dependencies; a parser of our own: CommonMark's emphasis, tables and references are a project in themselves |
+| `markdown` | parses each Markdown page into an mdast tree with byte offsets, GFM and YAML front matter, so that the project's linter runs the Markdown rules `@eslint/markdown` ran in ESLint (EN-077): the Rust sibling of the parser that plugin uses, so the same tree and the same findings | `pulldown-cmark` 0.13.4: events, not a tree, and its own reading of definitions and footnotes, every rule to adapt; `comrak` 0.56.0: an arena tree, seven required dependencies; a parser of our own: CommonMark's emphasis, tables and references are a project in themselves |
 
 ## Considered for later
 

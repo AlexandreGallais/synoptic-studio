@@ -3,9 +3,6 @@ import { join } from "node:path";
 /** Absolute path of the repository root. */
 export const PROJECT_ROOT = join(import.meta.dirname, "..", "..");
 
-/** Markdown pages (documentation, backlog, CLAUDE.md, README). */
-export const MARKDOWN_FILES = ["**/*.md"];
-
 /** Every TypeScript file linted by the project. */
 export const TS_FILES = ["**/*.ts"];
 
@@ -18,7 +15,6 @@ export const IGNORED_FILES = [
   "docs/.vitepress/cache/**",
   "docs/.vitepress/dist/**",
   "docs/.vitepress/.temp/**",
-  "CHANGELOG.md",
   // Worktrees of agents and parallel sessions: copies of the repository, checked in their own.
   ".claude/worktrees/**",
   // Private records, their own Git repository, ignored by this one (ADR-0044).
