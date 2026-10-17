@@ -2,9 +2,10 @@
 // used, how many tool calls and failures, which commits it made. The agent ends each session with
 // it (CLAUDE.md, with `--all`). Run by `npm run metrics:session [session id] [--all]
 // [--markdown]`: without an id, the session whose transcript changed last; without `--all`, the
-// current turn: from the prompt that started it.
+// current turn: from the prompt that started it. With `--run`, the open or last run's duration and
+// tokens by kind, counted by the Rust tool `run-totals` from `.git/metrics/run.json` (EN-092).
 
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import {
   appendFileSync,
   existsSync,
@@ -232,7 +233,18 @@ export function reportedEvents(transcripts: readonly string[], isAll: boolean): 
   };
 }
 
-if (import.meta.main) {
+if (import.meta.main && process.argv.includes("--run")) {
+  const report = spawnSync(
+    "cargo",
+    ["run", "--release", "-q", "-p", "run-totals", "--", "report"],
+    {
+      cwd: ROOT,
+      stdio: "inherit",
+    },
+  );
+
+  process.exitCode = report.status ?? 1;
+} else if (import.meta.main) {
   const options = process.argv.slice(2);
   const session = options.find((option) => !option.startsWith("--")) ?? "";
   const folder = join(homedir(), ".claude", "projects", ROOT.replaceAll(/[^\dA-Za-z]/gu, "-"));

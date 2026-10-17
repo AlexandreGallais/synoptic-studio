@@ -3,3 +3,6 @@
 //! what the status line and the report at the run's end show.
 
 pub mod marker;
+pub mod report;
+pub mod tally;
+pub mod totals;
