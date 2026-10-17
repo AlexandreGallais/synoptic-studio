@@ -3,7 +3,7 @@ id: EN-091
 epic: E17
 feature: F19
 title: Every configuration file reviewed for speed, type errors reported with the lint
-status: ready
+status: done
 points: 3
 ---
 
