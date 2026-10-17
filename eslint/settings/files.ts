@@ -25,6 +25,8 @@ export const IGNORED_FILES = [
   "records/**",
   // Build output of the Rust workspace (EN-068).
   "target/**",
+  // Inputs of a Rust tool's tests: modules of `src/` copied unchanged (EN-072), checked in `src/`.
+  "tools/*/tests/fixtures/**",
   // Only TypeScript is authored; the rare JavaScript file is a tool's required format (.ncurc.cjs).
   "**/*.{js,cjs,mjs}",
 ];

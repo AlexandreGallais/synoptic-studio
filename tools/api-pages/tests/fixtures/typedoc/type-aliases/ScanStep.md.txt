@@ -1,0 +1,37 @@
+[editor](../index.md) / ScanStep
+
+# Type Alias: ScanStep\<S, T\>
+
+> **ScanStep**\<`S`, `T`\> = (`state`, `item`) => `S`
+
+Defined in: math/sequence/scan-step.ts:7
+
+One step of a scan: the state after an item, from the state before it.
+
+## Type Parameters
+
+### S
+
+`S`
+
+type of the states
+
+### T
+
+`T`
+
+type of the items
+
+## Parameters
+
+### state
+
+`S`
+
+### item
+
+`T`
+
+## Returns
+
+`S`
