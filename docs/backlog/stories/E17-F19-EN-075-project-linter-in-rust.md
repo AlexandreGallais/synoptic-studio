@@ -3,7 +3,7 @@ id: EN-075
 epic: E17
 feature: F19
 title: The project's Rust linter and its own rules
-status: ready
+status: done
 points: 5
 ---
 
