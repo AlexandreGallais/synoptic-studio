@@ -169,6 +169,19 @@ mod tests {
             ]
         );
         assert_eq!(
+            core(
+                "a.copyWithin(0, 1);\na.fill(0);\na.pop();\na.shift();\na.unshift(1);\ns.clear();"
+            ),
+            [
+                "Modifying an array is not allowed.",
+                "Modifying an array is not allowed.",
+                "Modifying an array is not allowed.",
+                "Modifying an array is not allowed.",
+                "Modifying an array is not allowed.",
+                "Modifying a map or a set is not allowed.",
+            ]
+        );
+        assert_eq!(
             core("Object.assign(target, { a: 1 });\nObject.defineProperty(o.p, \"a\", {});"),
             [
                 "Modifying properties of existing object not allowed.",

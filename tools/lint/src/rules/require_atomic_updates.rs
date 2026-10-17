@@ -500,6 +500,13 @@ mod tests {
 
     #[test]
     fn joins_branches_and_reads_loops_once() {
+        // A read and a pause in either branch of an `if` stay outdated where the branches join.
+        for code in [
+            "async function f(a: boolean) { if (a) { } else { result; await something; } result = 1; }",
+            "async function f(a: boolean) { if (a) { result; await something; } else { } result = 1; }",
+        ] {
+            assert_eq!(found(code), [reassigned("result")], "{code}");
+        }
         assert_eq!(
             found("async function f(a: boolean) { a ? result : 0; result = await something; }")
                 .len(),

@@ -185,6 +185,15 @@ mod tests {
     }
 
     #[test]
+    fn splits_at_a_pipe_after_an_escaped_backslash() {
+        // `a\\|`: the two backslashes are one escaped backslash, so the pipe after them separates.
+        assert_eq!(
+            unpad("| h | i |\n| --- | --- |\n| a\\\\| b |\n"),
+            "| h | i |\n| --- | --- |\n| a\\\\ | b |\n"
+        );
+    }
+
+    #[test]
     fn keeps_empty_cells() {
         assert_eq!(
             unpad("| a   | b   |\n| --- | --- |\n|     | 1   |\n"),
@@ -203,6 +212,22 @@ mod tests {
     #[test]
     fn leaves_paragraphs_lists_and_code_as_written() {
         let text = "A paragraph\nwritten on two lines.\n\n- item one\n  continued\n\n```md\n| a   | b   |\n| --- | --- |\n```\n\n~~~~\n| a   |\n| --- |\n```\n~~~~\n";
+
+        assert_eq!(unpad(text), text);
+    }
+
+    #[test]
+    fn closes_a_fence_with_a_longer_one() {
+        // Three backticks open the block; four close it (CommonMark: at least as long).
+        assert_eq!(
+            unpad("```\n| a  |\n| --- |\n````\n| a  |\n| --- |\n"),
+            "```\n| a  |\n| --- |\n````\n| a |\n| --- |\n"
+        );
+    }
+
+    #[test]
+    fn leaves_a_delimiter_row_at_another_indent_alone() {
+        let text = "| a  |\n  | --- |\n";
 
         assert_eq!(unpad(text), text);
     }

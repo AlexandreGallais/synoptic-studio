@@ -14,7 +14,7 @@ const PAGE: &str = "# Page\n\n| Name | Size |\n| --- | ---: |\n| a | 1 |\n| bb |
 /// The same page once its first cell has grown past every other cell of its column.
 const GROWN: &str = "# Page\n\n| Name | Size |\n| --- | ---: |\n| a cell much wider than the others | 1 |\n| bb | 22 |\n\nA paragraph\nwritten on two lines.\n\n- an item\n  continued\n";
 
-/// A temporary repository holding the project's oxfmt and a configuration.
+/// A temporary repository holding the project's oxfmt and its configuration.
 fn repository(name: &str) -> PathBuf {
     let folder = std::env::temp_dir().join(format!("format-test-{name}-{}", std::process::id()));
     let project = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
@@ -30,11 +30,8 @@ fn repository(name: &str) -> PathBuf {
     )
     .unwrap();
     fs::write(folder.join(".gitignore"), "node_modules\n").unwrap();
-    fs::write(
-        folder.join(".oxfmtrc.json"),
-        "{\n  \"printWidth\": 100,\n  \"proseWrap\": \"preserve\",\n  \"ignorePatterns\": [\"CHANGELOG.md\"]\n}\n",
-    )
-    .unwrap();
+    // The project's own configuration, so that the tests prove what the repository formats.
+    fs::copy(project.join(".oxfmtrc.json"), folder.join(".oxfmtrc.json")).unwrap();
     git(&folder, &["init", "--quiet"]);
 
     folder

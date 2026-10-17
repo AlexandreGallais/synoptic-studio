@@ -55,6 +55,23 @@ function releaseBinariesOf(command: string): readonly string[] {
   return [...runs, ...builds, ...nested];
 }
 
+/**
+ * The release binaries the test files write: a test may start `cargo run --release -p <crate>` as
+ * well as a script, in the `test` lane (`tests/declarations.test.ts` runs `declarations`).
+ */
+const TEST_FILE_BINARIES: readonly string[] = execFileSync("git", ["ls-files", "*.test.ts"], {
+  cwd: join(import.meta.dirname, ".."),
+  encoding: "utf8",
+})
+  .split("\n")
+  .filter((path) => path !== "")
+  .flatMap((path) =>
+    readFileSync(join(import.meta.dirname, "..", path), "utf8")
+      .matchAll(/"run",\s*"--release",\s*"-q",\s*"-p",\s*"(?<crate>[\w-]+)"/gu)
+      .map((match) => match.groups?.["crate"] ?? "")
+      .toArray(),
+  );
+
 describe("check-all", () => {
   it("runs every check of check, the playground after the site", () => {
     const manifest = readFileSync(join(import.meta.dirname, "..", "package.json"), "utf8");
@@ -78,13 +95,15 @@ describe("check-all", () => {
   it("[F19.AC9] writes no release binary from two lanes, nor the workspace's during the lanes", () => {
     // EN-069's pre-push: one lane's `cargo run` replaced target/release/heavy-lock while another
     // lane's started it, which failed with `could not execute process … No such file or directory`.
-    const written = LANES.map((lane) =>
-      lane.flatMap((name) => releaseBinariesOf(commandOf(SCRIPTS.get(name) ?? ""))),
-    );
+    const written = LANES.map((lane) => [
+      ...lane.flatMap((name) => releaseBinariesOf(commandOf(SCRIPTS.get(name) ?? ""))),
+      ...(lane.includes("test") ? TEST_FILE_BINARIES : []),
+    ]);
     const shared = written
       .flat()
       .filter((crate) => written.filter((lane) => lane.includes(crate)).length > 1);
 
+    expect(TEST_FILE_BINARIES).toContain("declarations");
     expect(written.flat()).not.toContain("workspace");
     expect(new Set(shared)).toEqual(new Set());
   });

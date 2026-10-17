@@ -151,6 +151,21 @@ mod tests {
     }
 
     #[test]
+    fn reports_at_the_node_it_refuses() {
+        // A `lint-disable-next-line` directive is matched by line: the place must be the node's.
+        let places: Vec<(usize, usize)> = lint(
+            &NoRestrictedSyntax,
+            "scripts/a.ts",
+            "const x = 1;\n  enum Color { Red }",
+        )
+        .iter()
+        .map(|finding| (finding.line, finding.column))
+        .collect();
+
+        assert_eq!(places, [(2, 3)]);
+    }
+
+    #[test]
     fn refuses_enums_for_in_and_accessors_everywhere() {
         // [F19.AC3] Each selector of `no-restricted-syntax`, reported with its message.
         assert_eq!(
