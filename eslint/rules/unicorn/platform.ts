@@ -11,8 +11,10 @@ export const UNICORN_PLATFORM: TSESLint.FlatConfig.Config = {
     "unicorn/no-invalid-temporal-arithmetic": "error",
     "unicorn/no-new-buffer": "error",
     "unicorn/no-process-exit": "error",
-    "unicorn/no-unsafe-buffer-conversion": "error",
-    "unicorn/no-unsafe-json-serialization": "error",
+    // Run by the project's linter (tools/lint, EN-081).
+    "unicorn/no-unsafe-buffer-conversion": "off",
+    // Run by the project's linter (tools/lint, EN-081).
+    "unicorn/no-unsafe-json-serialization": "off",
     "unicorn/no-unsafe-sqlite-interpolation": "error",
     "unicorn/no-using-resource-escape": "error",
     "unicorn/prefer-date-now": "error",

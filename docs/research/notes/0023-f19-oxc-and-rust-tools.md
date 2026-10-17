@@ -315,16 +315,16 @@ Asked by the Product Owner on 2026-10-17: for each of the 265 rules oxlint runs 
 
 | Plugin | Rules | Kept | Dropped |
 | --- | --- | --- | --- |
-| Unicorn | 197 | 170 | 27 |
+| Unicorn | 197 | 157 | 40 |
 | JSDoc | 43 | 31 | 12 |
 | functional | 12 | 11 | 1 |
 | @stylistic | 5 | 4 | 1 |
 | Import | 4 | 2 | 2 |
 | typescript-eslint, without types | 2 | 1 | 1 |
 | unused-imports | 2 | 2 | 0 |
-| **All** | **265** | **221** | **44** |
+| **All** | **265** | **208** | **57** |
 
-The 44 dropped, each with its reason (four added by EN-074, four by EN-078, the last three by EN-079):
+The 57 dropped, each with its reason (four added by EN-074, four by EN-078, three by EN-079, the last thirteen by EN-081):
 
 | Rule | Reason |
 | --- | --- |
@@ -372,10 +372,23 @@ The 44 dropped, each with its reason (four added by EN-074, four by EN-078, the 
 | `unicorn/no-unnecessary-nested-ternary` | `no-nested-ternary` (oxlint, kept) forbids every nested conditional expression, so the nesting it simplifies cannot be written |
 | `unicorn/consistent-function-style` | every role defaults to `ignore`: with no option, as configured here, it reports nothing; `func-style`, `prefer-arrow-callback` and `object-shorthand` (oxlint) hold the project's choices |
 | `unicorn/isolated-functions` | it checks only functions given to `makeSynchronous`, `workerize`, `page.evaluate`, `browser.execute` or `executeScript`, or tagged `@isolated`: none in the code, and `dependencies` stays empty |
+| `unicorn/default-export-style` | it reads only a default-exported function or class; `import/no-default-export` (oxlint, kept) forbids default exports but in the root configuration files, which export a configuration value, and `functional/no-classes` forbids classes |
+| `unicorn/consistent-json-file-read` | with its default style it reports only `JSON.parse()` of a file read without an encoding, a `Buffer`, which `tsc` refuses (TS2345, tried on a probe file) |
+| `unicorn/no-invalid-intl-options` | it checks the option objects given to `Intl`, `localeCompare()` and `toLocaleString()`: the code passes none (no `Intl`; a locale at most, in the tests and the tools), and the library writes its numbers itself (`SVG_DECIMALS`) |
+| `unicorn/no-invalid-temporal-arithmetic` | `Temporal` and `Date` appear only in the tools (`.claude/hooks/`, `scripts/`), which move to Rust in F21; the library and the playground handle no date or time |
+| `unicorn/prefer-temporal` | `Temporal` and `Date` appear only in the tools (`.claude/hooks/`, `scripts/`), which move to Rust in F21; the library and the playground handle no date or time |
+| `unicorn/prefer-temporal-conversion` | `Temporal` and `Date` appear only in the tools (`.claude/hooks/`, `scripts/`), which move to Rust in F21; the library and the playground handle no date or time |
+| `unicorn/no-using-resource-escape` | `using` and the resources it disposes of (files, databases) belong to Node.js: the library is ECMAScript only (ADR-0025), the playground a browser page, and the code has no `using` nor `finally`; only the tools, which move to Rust in F21, open such resources |
+| `unicorn/prefer-dispose` | `using` and the resources it disposes of (files, databases) belong to Node.js: the library is ECMAScript only (ADR-0025), the playground a browser page, and the code has no `using` nor `finally`; only the tools, which move to Rust in F21, open such resources |
+| `unicorn/prefer-array-from-async` | it asks for `Array.fromAsync()`, which ES2025's library lacks: `tsc` refuses the call (TS2550, tried on a probe file) |
+| `unicorn/prefer-uint8array-base64` | it asks for `Uint8Array.fromBase64()` and `toBase64()`, which ES2025's library and Node.js 24 lack: `tsc` refuses them (TS2339, TS2550, tried on a probe file); the library writes base 64 itself (`bytesToBase64`) |
+| `unicorn/prefer-uint8array-hex` | it asks for `Uint8Array.fromHex()` and `toHex()`, which ES2025's library and Node.js 24 lack: `tsc` refuses them (TS2339, TS2550, tried on a probe file) |
+| `unicorn/prefer-promise-with-resolvers` | it only reports resolvers copied into `let` variables, and `functional/no-let` and `no-var` forbid both |
+| `unicorn/prefer-queue-microtask` | with no option it reads `process.nextTick()` only, a Node.js call the library (ECMAScript only, ADR-0025) and the playground (a browser page) cannot make; the code makes none |
 
 Confirmed against the code by EN-074 on 2026-10-17: no class, `this`, accessor, `enum`, `for…in`, `let`, CommonJS export nor JSDoc type in `src/`, `playground/`, `tests/` and the root configuration files; `fetch` and `node:sqlite` only in `scripts/`; `dependencies` empty. Each of the four drops above was tried on a probe file. The rewrite stories EN-078, EN-079 and EN-080 lost the four rules (44, 36 and 37 rules left).
 
-The 221 kept, by plugin and, for Unicorn, by the area of `eslint/rules/unicorn/`:
+The 208 kept, by plugin and, for Unicorn, by the area of `eslint/rules/unicorn/`:
 
 | Group | Kept | Rules |
 | --- | --- | --- |
@@ -390,12 +403,12 @@ The 221 kept, by plugin and, for Unicorn, by the area of `eslint/rules/unicorn/`
 | Unicorn, functions | 7 | `no-repeated-call-wrappers`, `no-uncalled-method`, `no-unnecessary-default-arguments`, `no-unnecessary-parameters`, `no-useless-recursion`, `prefer-block-statement-over-iife`, `prefer-short-arrow-method` |
 | Unicorn, iteration | 16 | `iteration-fallback-style`, `no-array-sort-for-min-max`, `no-break-in-nested-loop`, `no-duplicate-loops`, `no-for-each`, `no-loop-iterable-mutation`, `no-unreadable-for-of-expression`, `no-unused-iterator-helper`, `prefer-array-iterable-methods`, `prefer-direct-iteration`, `prefer-iterable-in-constructor`, `prefer-iterator-helpers`, `prefer-iterator-to-array`, `prefer-iterator-to-array-at-end`, `prefer-object-iterable-methods`, `prefer-while-loop-condition` |
 | Unicorn, misc | 4 | `consistent-optional-chaining`, `no-useless-compound-assignment`, `no-useless-delete-check`, `prefer-https` |
-| Unicorn, modules | 8 | `default-export-style`, `no-global-object-property-assignment`, `no-top-level-side-effects`, `no-unnecessary-global-this`, `no-useless-re-export`, `prefer-global-number-constants`, `prefer-identifier-import-export-specifiers`, `prefer-json-import` |
+| Unicorn, modules | 7 | `no-global-object-property-assignment`, `no-top-level-side-effects`, `no-unnecessary-global-this`, `no-useless-re-export`, `prefer-global-number-constants`, `prefer-identifier-import-export-specifiers`, `prefer-json-import` |
 | Unicorn, naming | 7 | `comment-content`, `consistent-compound-words`, `consistent-tuple-labels`, `name-replacements`, `no-keyword-prefix`, `prefer-type-literal-last`, `single-line-block-comment-style` |
 | Unicorn, numbers | 6 | `no-negated-comparison`, `no-redundant-comparison`, `no-subtraction-comparison`, `prefer-math-abs`, `prefer-number-is-safe-integer`, `prefer-unary-minus` |
 | Unicorn, objects | 12 | `consistent-destructuring`, `no-computed-property-existence-check`, `no-invalid-property-descriptor`, `no-invalid-well-known-symbol-methods`, `no-unreadable-new-expression`, `no-unreadable-object-destructuring`, `no-unsafe-property-key`, `no-unused-builtin-method-return`, `no-unused-properties`, `prefer-object-define-properties`, `prefer-object-destructuring-defaults`, `prefer-single-object-destructuring` |
-| Unicorn, platform | 11 | `consistent-json-file-read`, `no-invalid-intl-options`, `no-invalid-temporal-arithmetic`, `no-unsafe-buffer-conversion`, `no-unsafe-json-serialization`, `no-using-resource-escape`, `prefer-dispose`, `prefer-temporal`, `prefer-temporal-conversion`, `prefer-uint8array-base64`, `prefer-uint8array-hex` |
-| Unicorn, promises | 10 | `no-async-iterator-callback`, `no-async-promise-finally`, `no-multiple-promise-resolver-calls`, `prefer-array-from-async`, `prefer-await`, `prefer-promise-static-methods`, `prefer-promise-try`, `prefer-promise-with-resolvers`, `prefer-queue-microtask`, `prefer-then-catch` |
+| Unicorn, platform | 2 | `no-unsafe-buffer-conversion`, `no-unsafe-json-serialization` |
+| Unicorn, promises | 7 | `no-async-iterator-callback`, `no-async-promise-finally`, `no-multiple-promise-resolver-calls`, `prefer-await`, `prefer-promise-static-methods`, `prefer-promise-try`, `prefer-then-catch` |
 | Unicorn, strings | 14 | `no-incorrect-template-string-interpolation`, `no-unnecessary-string-trim`, `no-unsafe-string-replacement`, `prefer-escaped-irregular-whitespace`, `prefer-literal-ascii`, `prefer-regexp-escape`, `prefer-short-escape-sequences`, `prefer-single-replace`, `prefer-split-limit`, `prefer-string-match-all`, `prefer-string-pad-start-end`, `prefer-string-repeat`, `prefer-unicode-code-point-escapes`, `string-content` |
 | Unicorn, web | 12 | `no-blob-to-file`, `no-conflicting-constraints`, `no-ineffective-csp-directives`, `no-invalid-boolean-attribute-value`, `no-invalid-file-input-accept`, `no-invalid-url-protocol-comparison`, `no-url-in-search-params`, `prefer-location-assign`, `prefer-url-can-parse`, `prefer-url-href`, `prefer-url-search-parameters`, `require-css-escape` |
 | functional | 11 | `no-let`, `prefer-property-signatures`, `readonly-type`, `no-classes`, `no-this-expressions`, `functional-parameters`, `no-expression-statements`, `no-loop-statements`, `no-promise-reject`, `no-throw-statements`, `no-try-statements` |
@@ -405,6 +418,8 @@ The 221 kept, by plugin and, for Unicorn, by the area of `eslint/rules/unicorn/`
 Rewritten by EN-078 on 2026-10-17, each rule checked again first (Product Owner's decisions of F19's run): of the 44 rules of the arrays, collections and iteration groups, 39 run in the project's linter (`tools/lint/src/rules/unicorn/`, the three rows above but `no-for-each`), each on the cases of its documentation, ESLint and the Rust linter giving the same 128 findings on those cases and none on the tree; `no-for-each` runs in oxlint as `unicorn/no-array-for-each`, its former name, with more findings on a `Map` or a `Set` and no fix; four are dropped (above). All 40 are `off` in ESLint.
 
 Rewritten by EN-079 on 2026-10-17 in the project's linter (`tools/lint/src/rules/unicorn/`), each checked again against the code first and run on the cases of its documentation in `eslint-plugin-unicorn` 78.0.0, then turned off in ESLint: 16 of the 17 control-flow rules, all but `no-unnecessary-nested-ternary` (`prefer-smaller-scope` without its `let` case, which `functional/no-let` makes impossible), 7 of the 9 function rules, all but `consistent-function-style` and `isolated-functions`, the 4 error rules and the 6 number rules. ESLint and the Rust linter give the same findings on the documented and planted cases, but for cases that cannot occur here (a class, a configured global, a `let`, a top-level `return`), and none on the tree.
+
+Rewritten by EN-081 on 2026-10-17 in the project's linter (`tools/lint/src/rules/unicorn/modules/`, `platform/` and `promises/`), each checked again against the code first and run on the cases of its documentation in `eslint-plugin-unicorn` 78.0.0, then turned off in ESLint: 7 of the 8 module rules, all but `default-export-style` (`no-top-level-side-effects` leaving by itself the tools, the tests and the playground's entry, where ESLint turned it off), 2 of the 11 platform rules, `no-unsafe-buffer-conversion` and `no-unsafe-json-serialization`, and 7 of the 10 promise rules, all but `prefer-array-from-async`, `prefer-promise-with-resolvers` and `prefer-queue-microtask`. ESLint and the Rust linter give the same findings and fixes on the documented and planted cases, but for a string specifier ESLint reports twice at one place, a destructured `Number.NaN` whose fix by the plugin drops the local name (reported here without a fix), and a documented snippet Oxc refuses to parse; none on the tree.
 
 Kept on purpose although close to a drop: the DOM and web rules (the playground uses the DOM, files and `URL`), the loop, `throw` and `try` rules (allowed in the playground and the tests), the generator rules (one module yields), `functional/no-classes` and `no-this-expressions` (they are the bans themselves), the JSDoc layout rules and the comment rules of `@stylistic` (no source says oxfmt rewrites comments).
 
