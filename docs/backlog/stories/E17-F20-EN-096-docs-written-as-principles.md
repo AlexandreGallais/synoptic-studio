@@ -26,7 +26,7 @@ One task = one commit, referenced as `EN-096.Tn`.
 
 - [x] T1 — Measure the pages in tokens and list their rules (1 h)
 - [x] T2 — Rewrite the pages as principles, each old rule traced (4 h)
-- [ ] T3 — Measure again and record the figures (1 h)
+- [x] T3 — Measure again and record the figures (1 h)
 
 ## Measures
 
@@ -68,6 +68,52 @@ First request of each agent type, measured by `npm run context:size` on real tas
 | `researcher` | `project-rules`, `worker-brief`, `spike` | 11,201 | EN-065's measure (`docs/tooling/agent.md`) |
 | `clerk` | `project-rules` | 6,901 | EN-065's measure |
 | `auditor`, `verifier`, `doc-editor`, `math-expert`, `functional-analyst` | `project-rules` | 7,608 for the `auditor` | EN-065's measure |
+
+### After T2
+
+Measured the same way after T2, the EN-099 widening of the Git-tests rule included.
+
+| Page | Words before | Words after | Tokens before | Tokens after |
+| --- | --- | --- | --- | --- |
+| `AGENTS.md` | 2,042 | 1,867 | 5,600 | 5,000 |
+| `CLAUDE.md` | 532 | 464 | 1,400 | 1,300 |
+| `.claude/rules/docs.md` | 161 | 147 | 400 | 400 |
+| `.claude/rules/library.md` | 1,088 | 992 | 3,000 | 2,700 |
+| `.claude/rules/tooling.md` | 993 | 760 | 2,800 | 2,100 |
+| skill `audit` | 384 | 386 | 1,100 | 1,100 |
+| skill `derivation` | 172 | 168 | 500 | 500 |
+| skill `project-rules` | 707 | 848 | 2,000 | 2,300 |
+| skill `retro` | 825 | 727 | 2,300 | 2,000 |
+| skill `review` | 506 | 506 | 1,400 | 1,400 |
+| skill `run` | 3,270 | 2,835 | 8,700 | 7,500 |
+| skill `spike` | 285 | 287 | 800 | 800 |
+| skill `story` | 730 | 624 | 2,100 | 1,800 |
+| skill `triage` | 199 | 199 | 500 | 500 |
+| skill `worker-brief` | 1,291 | 1,003 | 3,600 | 2,700 |
+| agent `auditor` | 379 | 306 | 1,100 | 900 |
+| agent `clerk` | 416 | 387 | 1,100 | 1,000 |
+| agent `doc-editor` | 354 | 341 | 900 | 900 |
+| agent `functional-analyst` | 477 | 403 | 1,300 | 1,100 |
+| agent `math-expert` | 518 | 405 | 1,500 | 1,100 |
+| agent `researcher` | 306 | 250 | 800 | 700 |
+| agent `story-worker` | 288 | 230 | 800 | 600 |
+| agent `verifier` | 395 | 332 | 1,000 | 900 |
+| **all pages** | **16,318** | **14,467** | **44,900** | **39,500** (−12 %) |
+| the main thread's instructions, `CLAUDE.md` and `AGENTS.md` | 2,574 | 2,331 | 7,000 | 6,300 (−10 %) |
+
+What each agent type carries at its start, its agent file and its preloaded skills, in characters; the first request after the pass is the one measured before plus this change, until `context:size` measures a run's first agents of each type:
+
+| Agent type | Before, characters | After, characters | Change, tokens | First request, expected |
+| --- | --- | --- | --- | --- |
+| `story-worker` | 14,482 | 12,956 | −660 | about 10,000 (10,694 before) |
+| `researcher` | 16,621 | 15,110 | −660 | about 10,500 (11,201 before) |
+| `clerk` | 7,025 | 7,649 | +270 | about 7,200 (6,901 before) |
+| `auditor` | 7,071 | 7,384 | +140 | about 7,750 (7,608 before) |
+| `math-expert`, `functional-analyst`, `verifier`, `doc-editor` | 6,634 to 7,919 | 7,354 to 7,979 | +30 to +310 | — |
+
+- The savings come from four cuts: the rules repeated between `AGENTS.md`, `CLAUDE.md`, the rule files, the brief and the digest, each now in one place; the run skill's restatements of `CLAUDE.md` and of its own steps; the list of what `check:all` runs, which `docs/tooling/commands.md` holds; and the brief's code rules, which `project-rules` already gave the same workers.
+- `project-rules` grew by 300 tokens: it now carries what its readers had to open `AGENTS.md` for (the stop on a function over its limits, the commit pitfalls, the sources' protocol of three agents, coverage and property tests). The read-only types and the `clerk`, which preload it without the brief, start 30 to 310 tokens heavier; the workers, which run most of a run's requests, start about 660 lighter.
+- The first requests after the pass are to be measured by `npm run context:size` on the first story worker, researcher and clerk the next run starts (For the main thread).
 
 ## Rules before the pass
 
@@ -150,3 +196,9 @@ Where each rule of the list above stands after T2. "Kept" means the same rule, r
 | AT5, AT6, AT9 | kept: their reading tables shortened (rows merged), the method and the return unchanged; `math-expert`'s constants are in `project-rules` |
 | AT7, AT8 | kept: their steps **merged** into the brief, which already said them, but for the researcher's reading of the research protocol |
 | AT10 | **merged** into `project-rules` (Never invent a reference): it was the same paragraph in three agents |
+
+## For the main thread
+
+- The link of `.claude/rules/tooling.md` to `docs/tooling/commands.md#tests-that-run-git` resolves once EN-099 is merged into F20; until then its section does not exist.
+- Measure the first request of the next `story-worker`, `researcher` and `clerk` with `npm run context:size` and write it beside the expected figures of Measures, After T2.
+- `Rule-docs:` none affected: the story changes no rule of `docs/domain/`.
