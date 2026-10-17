@@ -97,11 +97,7 @@ Recorded as understood; details in note 0023, section "The Product Owner's secon
 
 ## For the main thread
 
-- Notes index (`docs/research/notes/README.md`), a row after 0022: `[0023](./0023-f19-oxc-and-rust-tools.md)` — "Sources of F19: oxlint and oxfmt tried on the repository, the rules left to rewrite, `check:all` by lane, hooks timed, the Rust workspace".
 - Features F19, F20, F21 and the features index, epic E17's table: edited in this branch on 2026-10-17 (F19 rewritten, F21 created, three stories drafted in F20); to merge with any change made to them on `develop` meanwhile.
 - `.claude/rules/tooling.md`, at F19's ADR: TypeScript 7 is the only TypeScript; TypeScript 6 and TypeDoc are removed, the API pages come from a Rust generator (note 0023, "The Product Owner's second round").
-- Epic E17, closing table: F21's clean-up story comes before NAM-002.
 - Stories index and F20: number the three stories drafted in F20's "Stories to write" (push notification, progress page, `SubagentStop` hook) and create their files.
 - F21: create its checkpoint, audit and validation stories, and number its five drafted stories, at its refinement.
-- Improvements log (`docs/process/improvements.md`), a row of 2026-10-17: a speed budget test — for example 1,000 symbols drawn under a set time — wanted later by the Product Owner.
-- Journal: the Product Owner's two rounds of decisions on SP-021 of 2026-10-17 (note 0023).

@@ -7,6 +7,12 @@ What each working session dealt with, in the agent's words: the Product Owner's 
 - `#run` The Product Owner answered the queued questions: the subagent limit set in the settings (EN-063); ADR-0067's release order, the tables moved to F19 (ADR-0068) and the refused face dropped (US-061) confirmed; EN-062's macOS-only font tests not accepted, so EN-067 made every font test run on every system; the font list to offer only fonts read whole and checked (US-062).
 - `#run` They left F18's tool lines to the agent and declared the validation finished; F18 is done with EN-063, EN-067 and US-062 merged into its branch.
 - `#run` They asked to move on to F19 at once, without waiting for them: F19's branch starts from F18's, SP-021 rebased on it.
+## 2026-10-17 — SP-021 answered, F19's run started
+
+- `#refinement` SP-021, first round: `check:all` set to option B, about 70 to 90 s most of the time (Oxc instead of ESLint and Prettier, the docs build only when the docs change); none of the 8 rules that need types dropped without a stated reason; a coverage floor and an advisory check for the Rust tools; TypeScript 7 now; the library stays TypeScript, every tool around it moves to Rust; one clean-up story at the end of E17; the library's tests never depend on macOS, the tools use Rust's portable standard calls where one exists (note 0023).
+- `#refinement` SP-021, second round: F19 holds the checks and F21 the agent tools, the `library` MCP server and E17's clean-up, last before NAM-002; the 6 rules without types rewritten in their strict form, nothing kept in ESLint; TypeScript 7 only, TypeDoc replaced by a Rust generator on Oxc; the project's rules in a Rust linter on Oxc's crates; three F20 stories drafted (push notification, progress page, `SubagentStop` hook); no cloud agents; Q40, Q41, Q42 recorded.
+- `#refinement` SP-021, third and fourth rounds: oxlint is the one linter, `tsgolint` kept for the 55 rules that need types; every one of the 265 rules oxlint lacks triaged (232 kept, 33 dropped with their reasons) and the kept ones rewritten in the Rust linter within F19, ESLint leaving at its end; the dev packages reviewed in F21.
+- `#run` The Product Owner started F19's run on 2026-10-17 and asked to move on to it at once, without waiting for them: SP-021 done, F19's 18 stories written `ready` (EN-068 to EN-085), F20's three drafted stories numbered (EN-086 to EN-088).
 
 ## 2026-10-17 — Run of F18 continued, up to its audit
 
