@@ -1,40 +1,42 @@
 # Formatting
 
-Three tools, each with its own scope, **no duplicate** (ADR-0075; Prettier replaced by oxfmt in EN-073):
+Layout is written by tools, never chosen by hand nor discussed in a review. Each tool owns one part of it, so that no two tools fight over a line (ADR-0075):
 
 | Tool | Decides | File |
 | --- | --- | --- |
 | EditorConfig | charset, line ending, indentation, line length (100), trailing spaces, final newline | `.editorconfig` |
-| The formatter (`tools/format`) | the whole layout of every file kind it knows: oxfmt, then Markdown tables without padding (ADR-0068, EN-073); the order of the imports (`sortImports`, EN-095, [imports](./imports.md)) | `.oxfmtrc.json` (Prettier's options, translated by `oxfmt --migrate=prettier`; `printWidth` 100) |
-| The linters | what the formatter does not decide: blank lines between statements, comments, the members of an import, JSDoc layout, braces | `.oxlintrc.json`, `tools/lint` |
+| the formatter (`tools/format`) | the whole layout of every file kind it knows: oxfmt, then Markdown tables without padding (ADR-0068); the order of imports (`sortImports`, [imports](./imports.md#order)) | `.oxfmtrc.json` (`printWidth` 100) |
+| the linters | what the formatter leaves: blank lines between statements, comments, import members, JSDoc layout, braces | `.oxlintrc.json`, `tools/lint` |
 
-## One formatter
+The reasons for each setting, measured on this repository's edits, are in [rules](./rules.md#the-formatters-settings).
 
-One command formats every file the repository formats: `cargo run --release -q -p format -- --write|--check <targets…>`, run by `npm run format`, `format:check`, `fix`, `backlog:index` and `lint-staged`. It runs oxfmt 0.72.0 on the targets, then writes each Markdown table without padding.
+## The formatter
+
+One command formats every file: `npm run format` (`--write`) or `format:check` (`--check`, which changes nothing). It runs oxfmt on its targets, then rewrites each Markdown table without padding.
 
 | File kind | Formatted by |
 | --- | --- |
-| TypeScript, JavaScript (`.cjs`), JSON, YAML, TOML (`Cargo.toml`), CSS, Markdown | oxfmt, natively in Rust (`REF-OXFMT-LANGUAGES`) |
-| HTML (`playground/index.html`) | oxfmt, through the Prettier it bundles (`REF-OXFMT-LANGUAGES`); no Prettier package in `package.json` |
-| Markdown tables | oxfmt pads them, with no option against it; `tools/format` then removes the padding: each cell trimmed, one space around each `\|`, delimiter cells `---` with their colons |
+| TypeScript, JavaScript (`.cjs`), JSON, YAML, TOML, CSS, Markdown | oxfmt (`REF-OXFMT-LANGUAGES`) |
+| HTML (`playground/index.html`) | oxfmt, through the Prettier it bundles; no Prettier package in `package.json` |
+| Markdown tables | oxfmt pads them, then `tools/format` removes the padding: each cell trimmed, one space around each `\|` |
 | Rust | `cargo fmt` (`check:rust`) |
-| SVG, XML, shell hooks, `LICENSE`, dotfiles | nothing: oxfmt does not read them |
+| SVG, XML, shell hooks, `LICENSE`, dotfiles | nothing |
 
-- **Tables without padding**: a wider cell changes its own row only, so parallel branches no longer conflict on a table's widths (ADR-0068). Paragraphs and list items stay on the lines they were written on (`proseWrap: "preserve"`).
-- **`--check`** changes nothing: oxfmt checks every file but Markdown; each Markdown file is formatted in a temporary copy, its tables unpadded, then compared with the file.
-- **Targets**: the folders and root files named in `package.json` (EN-045: never `.`); `*` stands for the root's files, which the tool lists itself, since oxfmt reads `*` at any depth. Files that `.oxfmtrc.json`'s `ignorePatterns` name (plain paths only) are skipped by both steps.
+- **Tables without padding**: a wider cell changes its own row only, so parallel branches do not conflict over a table's widths (ADR-0068).
+- **Prose stays on its lines**: a paragraph or a list item stays on the lines it was written on (`proseWrap: "preserve"`), so a reflow never touches lines nobody edited.
+- **Targets are named**: the folders and root files listed in `package.json`, never `.`, which would walk into the worktrees of `.claude/worktrees/` and the build outputs (EN-045). `.oxfmtrc.json`'s `ignorePatterns` holds plain paths only.
 
-`npm run fix` = the formatter, then oxlint and the project's linter with `--fix`. After it, `npm run check` reports no layout issue. On commit, `lint-staged` (`.lintstagedrc.json`) runs the formatter and the two linters with `--fix` on staged TypeScript, the formatter and the project's linter with `--fix` on staged Markdown, the formatter on the other kinds above, and secretlint on every staged file.
+Run `npm run fix` before each commit: it runs the formatter, then oxlint and the project's linter with `--fix`. After it, `npm run check` finds no layout issue. At the commit, `lint-staged` runs the same tools on the staged files, and secretlint on each of them.
 
 ## Blank lines (`@stylistic/padding-line-between-statements`)
 
-Code reads in paragraphs: declarations, then actions, then the result.
+Code reads in paragraphs: declarations, then actions, then the result. The autofix writes the blank lines:
 
-- blank line **after** a group of `const` / `let` (not between two `const`);
-- blank line **before** a `const` following a call;
-- blank line **around** blocks (`if`, `for`, functions…) and multi-line expressions;
-- blank line **before** `return` and before `export`;
-- blank line after the imports.
+- after a group of `const` or `let`, but not between two `const`;
+- before a declaration that follows a call;
+- around blocks (`if`, `for`, functions…) and multi-line expressions;
+- before `return` and before `export`;
+- after the imports.
 
 ```ts
 const pathData = polygonToPathData(polygon);
@@ -45,11 +47,11 @@ svg.append(createPathElement(document, pathData));
 
 ## Comments
 
-- Above the line, never at the end of it (`no-inline-comments`).
-- No `TODO` / `FIXME` (`no-warning-comments`): ongoing work goes to `docs/`.
+- Write a comment above its line, never at its end (`no-inline-comments`): it is read before the code it explains.
+- Write no `TODO` or `FIXME` (`no-warning-comments`): open work goes to the backlog, where it is found again.
 
 ## Format on save
 
-- **WebStorm / IntelliJ** (`.idea/`, in the repository): the Oxc plugin of the JetBrains Marketplace formats with oxfmt and shows oxlint's findings. An editor formats with oxfmt alone: the tables it pads are unpadded at the commit by `lint-staged`.
-- **VS Code** (`.vscode/`): recommended extensions `oxc.oxc-vscode`, `editorconfig.editorconfig`; `formatOnSave` then `source.fixAll.oxc`.
-- On save: unused imports disappear (oxlint's `no-unused-vars`), mixed imports split into `import` + `import type`; import paths and barrels are fixed by `npm run fix` (`local/canonical-import-path`, `local/barrel-exports`, the project's linter).
+- **WebStorm and IntelliJ** (`.idea/`, in the repository): the Oxc plugin from the JetBrains Marketplace formats with oxfmt and shows oxlint's findings. The editor alone pads tables; `lint-staged` unpads them at the commit.
+- **VS Code** (`.vscode/`): the recommended extensions are `oxc.oxc-vscode` and `editorconfig.editorconfig`; `formatOnSave`, then `source.fixAll.oxc`.
+- On save, unused imports disappear and mixed imports split into `import` and `import type`. Import paths and barrels are fixed by `npm run fix` (`local/canonical-import-path`, `local/barrel-exports`).

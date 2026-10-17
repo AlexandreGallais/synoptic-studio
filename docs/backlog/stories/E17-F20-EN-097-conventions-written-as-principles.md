@@ -71,3 +71,53 @@ Each rule of the pages, by page, with an id the trace of T2 uses. `rules.md` and
 - `writing.md`: W1 five rules (point first, one purpose, show then tell, short blocks, one fact one place); W2 page types, a reference links its explanation, titles; W3 building blocks; W4 images; W5 the Product Owner's decisions, never their words; W6 writing a rule; W7 style; W8 the austere TSDoc; W9 the word list; W10 page skeletons; W11 messages to the Product Owner; W12 what the linter checks; W13 where things go.
 - `audit.md`: Au1 the audit's evidence in its Findings table, a problem fixed or a story; Au2 the `auditor` first, its findings reproduced; Au3 to Au10 checks A to H.
 - `exceptions.md`: X1 a rule turned off for one place only, with its directive; X2 a row added or removed in the same change, checked by `tests/exceptions.test.ts`; X3 one row per directive; the rows.
+
+## Rules traced
+
+Where each rule of the list above stands after T2. "Kept" means the same rule, reworded as a principle with its reason; the section is the new one.
+
+| Rules | Now |
+| --- | --- |
+| R1, R2 | kept: `README.md`, introduction; "the configuration wins" now says the page is then fixed |
+| R3, R4 | kept: `README.md`, last paragraph |
+| A1, A2, A5 to A8 | kept: `architecture.md`, Pipeline, Layers, Functional core (a table), Portability |
+| A3, A4 | kept: `architecture.md`, Layers; A4 stated as its principle, a decision belongs to the lowest layer that can take it, with the click as its example |
+| A9 | **cut**: a fact of E01, stale since, and found by listing `src/` |
+| F1 to F6, F7, F8, F10 to F13, F15 to F17 | kept: `files.md`, One export per file, Names, Folders, Folders past 15 modules (heading and table unchanged: `tests/folders.test.ts` and `tools/lint` read them) |
+| F9 | kept, shortened: the full list of repository tests is `tests/` itself |
+| F14 | **cut**: the inventory of every domain folder (about 3,000 tokens, each folder's contents with the story that added it) guards nothing the disk does not show; replaced by its principle: list the layer's folders and pick the domain |
+| Fn1 to Fn4, Fn11 | kept: `functions.md`, One business context per function, now the page's first section since the limits serve it |
+| Fn5 to Fn8, Fn18 | kept: `functions.md`, Inputs and outputs |
+| Fn9, Fn10, Fn13, Fn14 | kept: `functions.md`, Kind, Limits per kind, Long procedures |
+| Fn12 | merged into Fn11's paragraph: one sentence and a link to the record in `rules.md` |
+| Fn15 to Fn17 | kept: `functions.md`, Forbidden, as a table of construct, reason and what to write instead; the reasons for classes and accessors come from `rules.md`, `let`, classes and `enum` |
+| N1 to N7 | kept: `naming.md`; the principle opens the page (a name is read instead of the code); the examples of named calculations keep their range, the stories that found them dropped |
+| N8 | kept: `naming.md`, last sentence |
+| N9 | **merged** into F2: it repeated it |
+| I1 to I5, I7 | kept: `imports.md`; the forbidden imports become a table of import, reason and check, with oxlint's rule names (`import/…`) where oxlint runs them |
+| I6 | kept: `imports.md`, Order; the history of `import-x/order` cut, and the order inside the `import type` group left to the formatter that writes it |
+| D1 to D12 | kept: `documentation.md`; the page opens with its reason (the block is read instead of the body) |
+| T1 | kept: `typescript.md`, Version; the history of TypeScript 6 cut |
+| T2 to T5 | kept: `typescript.md`; T4 now says why (each module is declared alone) |
+| Fo1, Fo2, Fo4, Fo6 to Fo10 | kept: `formatting.md`; Fo6 now gives its reason (EN-045) |
+| Fo3 | kept, shortened: how `tools/format` lists the root's files is the tool's, not the reader's |
+| Fo5 | **cut**: how `--check` compares a Markdown copy is the tool's inner working; the page keeps that `--check` changes nothing |
+| L1 to L9 | kept: `lint.md`, Principles, Zones, Changing a rule, One-off exceptions, Known autofix pitfall |
+| L10 | kept, shortened: `lint.md`, The project's linter; what an agent needs to add or fix a rule, the build history (EN numbers, crate list) cut |
+| L11, L15 | kept: `lint.md`, Rules read without types (a table), the two immutability sections, `no-restricted-syntax`, The project's own rules (a table, each with its page) |
+| L12, L13, L14, L16, L17 | **cut** as tables: each row restated a plugin rule under the plugin's own name and message, which the plugin's documentation, the module's tests and the theme table of `rules.md` already give; the rules still run, unchanged. What departs from a plugin stays: the zones where the functional statement rules run (Zones), the receivers read without types (Rules read without types), `<span>` allowed in Markdown (Markdown rules), the rules dropped (ADR-0075, research note 0023) |
+| L10 (adding a rule) | **changed**: a new rule no longer needs its own section in `lint.md`, only when it departs from its plugin or is the project's own |
+| Te1 to Te5, Te15 to Te18 | kept: `testing.md`, Tool and place, Expected values, Properties, Tests that prove a requirement, Coverage, Test strategy |
+| Te6, Te7, Te11, Te12 | kept, merged: `testing.md`, Shared fixtures and helpers, under one principle (prepared once, never what the test proves) |
+| Te8, Te9 | kept: `testing.md`, DOM and playground tests |
+| Te10 | kept: `testing.md`, One claim, one place |
+| Te13, Te14 | kept: `testing.md`, Isolation and time |
+| Te19 | kept: `testing.md`, Checking the tests themselves |
+| Te20 | **merged** into Te17: the strategy's Levels row already said it |
+| Te21 | **merged** into the tests row of `lint.md`'s zones, one line in `testing.md` linking it |
+| W1 to W5, W7 to W13 | kept: `writing.md`; the heading "API reference (TSDoc) — austere" shortened to "API reference (TSDoc)" |
+| W6 | **changed**, as the Product Owner directed on 2026-10-17: a rule is a principle, its reason or test, and what to do on conflict, never a transcript; examples given as a range; a rule kept only if it makes the code or the docs more correct or more uniform |
+| Au1 to Au10 | kept: `audit.md`; its last line (regression tests come with the applications) **merged** into the test strategy, which says it |
+| X1 to X3 | kept: `exceptions.md`; X2's one long sentence split into three; the rows unchanged (`tests/exceptions.test.ts` reads them) |
+| `rules.md` | kept as EN-093's record; its keeping test, a rule of its own, moved to `lint.md`, Principles, and its introduction says to read it only to change a rule |
+| `rule-catalogue.md` | kept as written: a catalogue for other projects, read at an epic's method review; `README.md` now lists it, with `rules.md`, as a record a worker does not load |
