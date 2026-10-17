@@ -32,21 +32,23 @@ One task = one commit, referenced as `EN-099.Tn`.
 
 Words by `wc -w`, characters by `wc -m`, tokens as characters / 2.3, the ratio EN-097 measured on the conventions.
 
-| Page | Words before | Characters before | Tokens before |
-| --- | --- | --- | --- |
-| `agent-tools.md` | 4,624 | 27,159 | 11,808 |
-| `agent.md` | 3,019 | 18,855 | 8,198 |
-| `ci.md` | 967 | 6,422 | 2,792 |
-| `commands.md` | 1,896 | 12,220 | 5,313 |
-| `dependencies.md` | 2,356 | 15,232 | 6,623 |
-| `documentation-site.md` | 651 | 4,188 | 1,821 |
-| `git-workflow.md` | 1,297 | 8,556 | 3,720 |
-| `metrics.md` | 2,909 | 17,096 | 7,433 |
-| `README.md` | 156 | 1,190 | 517 |
-| `releases.md` | 567 | 3,561 | 1,548 |
-| `sources.md` | 809 | 4,932 | 2,144 |
-| `versions-and-security.md` | 611 | 4,124 | 1,793 |
-| total | 19,862 | 123,535 | 53,711 |
+| Page | Words before | Words after | Tokens before | Tokens after | Change |
+| --- | --- | --- | --- | --- | --- |
+| `agent-tools.md` | 4,624 | 2,925 | 11,808 | 7,735 | −34 % |
+| `agent.md` | 3,019 | 2,349 | 8,198 | 6,408 | −22 % |
+| `ci.md` | 967 | 817 | 2,792 | 2,335 | −16 % |
+| `commands.md` | 1,896 | 1,472 | 5,313 | 4,123 | −22 % |
+| `dependencies.md` | 2,356 | 1,618 | 6,623 | 4,466 | −33 % |
+| `documentation-site.md` | 651 | 399 | 1,821 | 1,145 | −37 % |
+| `git-workflow.md` | 1,297 | 965 | 3,720 | 2,709 | −27 % |
+| `metrics.md` | 2,909 | 2,258 | 7,433 | 5,657 | −24 % |
+| `README.md` | 156 | 170 | 517 | 525 | +2 % |
+| `releases.md` | 567 | 457 | 1,548 | 1,209 | −22 % |
+| `sources.md` | 809 | 670 | 2,144 | 1,797 | −16 % |
+| `versions-and-security.md` | 611 | 425 | 1,793 | 1,222 | −32 % |
+| total | 19,862 | 14,525 | 53,711 | 39,330 | −27 % |
+
+Characters: 123,535 before, 90,459 after. The pages lose 14,381 tokens, more than a quarter, with one rule added (`GIT_*`). The largest cuts are history kept elsewhere (measures, decisions recorded in ADRs and stories) and rules restated on several pages; the smallest are on pages that were mostly reference tables (`ci.md`, `sources.md`).
 
 ## Rules of the pages
 
