@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { pageChunks } from "./library-chunks";
-import { answer } from "./library-mcp";
+import { answer, callTool } from "./library-mcp";
 import {
   epochOf,
   libraryPage,
@@ -92,7 +92,7 @@ async function toolCall(
   name: string,
   input: unknown,
 ): Promise<string> {
-  const response = await answer(database, {
+  const response = await answer(database, "studio", {
     id: 1,
     jsonrpc: "2.0",
     method: "tools/call",
@@ -170,14 +170,14 @@ describe("libraryPage and the MCP server", () => {
     vi.stubGlobal("fetch", vi.fn<typeof fetch>().mockResolvedValue(markdownResponse()));
 
     expect(
-      await answer(database, { jsonrpc: "2.0", method: "notifications/initialized" }),
+      await answer(database, "studio", { jsonrpc: "2.0", method: "notifications/initialized" }),
     ).toBeUndefined();
 
-    expect(await answer(database, { id: 1, method: "initialize" })).toMatchObject({
+    expect(await answer(database, "studio", { id: 1, method: "initialize" })).toMatchObject({
       result: { capabilities: { tools: {} } },
     });
 
-    expect(await answer(database, { id: 2, method: "nope" })).toMatchObject({
+    expect(await answer(database, "studio", { id: 2, method: "nope" })).toMatchObject({
       error: { code: -32_601 },
     });
 
@@ -196,5 +196,44 @@ describe("libraryPage and the MCP server", () => {
     expect(await toolCall(database, "library_search", { limit: 1, query: "duration" })).toContain(
       "§1",
     );
+  });
+});
+
+describe("one library for every project", () => {
+  it("serves a page fetched for one project to another without going online, each use named", async () => {
+    const database = openLibrary(":memory:");
+    const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(markdownResponse());
+
+    vi.stubGlobal("fetch", fetchMock);
+
+    await callTool(database, {
+      input: { url: "https://x.org/h.md" },
+      name: "library_get",
+      project: "studio",
+    });
+
+    await callTool(database, {
+      input: { url: "https://x.org/h.md" },
+      name: "library_get",
+      project: "atlas",
+    });
+
+    await callTool(database, {
+      input: { query: "duration" },
+      name: "library_search",
+      project: "atlas",
+    });
+
+    const uses = database
+      .prepare("SELECT project, tool, origin FROM project_uses ORDER BY rowid")
+      .all();
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    expect(uses).toEqual([
+      { origin: "online", project: "studio", tool: "get" },
+      { origin: "library", project: "atlas", tool: "get" },
+      { origin: "found", project: "atlas", tool: "search" },
+    ]);
   });
 });

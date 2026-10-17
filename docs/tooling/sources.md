@@ -19,7 +19,7 @@ flowchart TD
 
 | Part | File | Role |
 | --- | --- | --- |
-| storage | `scripts/library-store.ts` | SQLite file, table of pages, FTS5 index of their sections (`porter unicode61`, BM25) |
+| storage | `scripts/library-store.ts` | SQLite file, table of pages, FTS5 index of their sections (`porter unicode61`, BM25), uses with their project; a column added to an older file when it opens |
 | conversion | `scripts/library-html.ts` | HTML to Markdown: main part kept, scripts, styles, navigation and footers dropped |
 | sections, freshness | `scripts/library-chunks.ts` | split at headings (code blocks respected), sections of 4 000 characters at most; staleness |
 | pages | `scripts/library-pages.ts` | read from the library or fetched and stored; table of contents |
@@ -56,7 +56,9 @@ npm run library -- stats 2026-10-13               # sources consulted most, sear
 
 ## Uses
 
-Every search and every page read is recorded in the library (`uses` table): `npm run library -- stats [since]` and the **Sources** section of `npm run metrics` show the sources consulted most, the words searched and how many pages the library served without going online. At each retrospective the agent reads them and asks why: a source read again and again may deserve a summary in a domain page or a derivation; a search that finds nothing, a better word list.
+Every search and every page read is recorded in the library (`project_uses` table), with the project that asked: the name of the project's folder, the same for each of its worktrees (`projectOf`, EN-101); the uses recorded before EN-101 show as `(not recorded)`. A file made before it is migrated when it opens: its `uses` table moved into `project_uses`, then `uses` kept as a view of it, so that an older copy of the scripts on the machine still reads and writes it, its uses without a project. `npm run library -- stats [since]` and the **Sources** section of `npm run metrics` show the uses per project, the sources consulted most, the words searched and how many pages the library served without going online.
+
+The library is one file for the machine: a page fetched for one project is served to every other from the library until its freshness date, never fetched again before. At each retrospective the agent reads them and asks why: a source read again and again may deserve a summary in a domain page or a derivation; a search that finds nothing, a better word list.
 
 ## Limits
 

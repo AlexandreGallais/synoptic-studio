@@ -9,7 +9,7 @@ Measure first, then make each epic faster than the last (Product Owner, RET-001)
 | `.git/metrics/tool-calls.jsonl` | the hook `.claude/hooks/log-tool-call.ts`, after each tool call (`PostToolUse`, `PostToolUseFailure`, in the background) | one line per call: see [each call's record](#the-record-of-each-call) |
 | `~/.claude/projects/<repository path>/` | Claude Code: one JSON Lines transcript per session, subagents included | every request with its tokens, every tool call and its result, each line with its time, session and branch |
 | `.git/metrics/turns.jsonl` | `npm run metrics:session` without `--all` | one line per turn: start, session, duration, active time, tokens, tokens written, calls, failures, commits |
-| `~/.local/share/agent-library/library.sqlite` | the library server and `npm run library` ([sources](./sources.md)) | the pages read, their sections indexed, and every search and read (`uses` table) |
+| `~/.local/share/agent-library/library.sqlite` | the library server and `npm run library` ([sources](./sources.md)) | the pages read, their sections indexed, and every search and read with the project that asked (`project_uses` table) |
 
 The hook's log sits inside the Git directory: never committed, shared by every worktree, kept when transcripts are cleaned up. Its durations are exact: Claude Code measures the tool's execution and leaves out permission prompts (`duration_ms`, `REF-CC-HOOKS`). For calls made before the hook existed, the report estimates the duration from the transcript, from the request to the result; this also counts the time spent writing the command, so a long heredoc looks slow.
 

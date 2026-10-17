@@ -39,11 +39,47 @@ const SCHEMA = `
   CREATE VIRTUAL TABLE IF NOT EXISTS chunks USING fts5(
     url UNINDEXED, position UNINDEXED, heading, text, tokenize = 'porter unicode61'
   );
-  CREATE TABLE IF NOT EXISTS uses (
+  CREATE TABLE IF NOT EXISTS project_uses (
     time INTEGER NOT NULL, tool TEXT NOT NULL, url TEXT NOT NULL, query TEXT NOT NULL,
-    origin TEXT NOT NULL
+    origin TEXT NOT NULL, project TEXT NOT NULL
   );
 `;
+
+/**
+ * The uses as the library recorded them before EN-101, without their project: a view of
+ * `project_uses`, which an older copy of the library's scripts still reads and writes, its rows
+ * taking an empty project.
+ */
+const USES_VIEW = `
+  CREATE VIEW IF NOT EXISTS uses AS SELECT time, tool, url, query, origin FROM project_uses;
+  CREATE TRIGGER IF NOT EXISTS uses_insert INSTEAD OF INSERT ON uses BEGIN
+    INSERT INTO project_uses VALUES (NEW.time, NEW.tool, NEW.url, NEW.query, NEW.origin, '');
+  END;
+`;
+
+/**
+ * Brings a library made before EN-101 up to the schema: its `uses` table moved into
+ * `project_uses` with an empty project, then `uses` made a view of it, so that the machine's other
+ * copies of the scripts keep working on the shared file.
+ *
+ * @param database - open library, its tables created
+ */
+function migrateLibrary(database: DatabaseSync): void {
+  const old = database
+    .prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'uses'")
+    .get();
+
+  if (old !== undefined) {
+    database.exec(
+      `BEGIN IMMEDIATE;
+      INSERT INTO project_uses SELECT time, tool, url, query, origin, '' FROM uses;
+      DROP TABLE uses;
+      COMMIT;`,
+    );
+  }
+
+  database.exec(USES_VIEW);
+}
 
 /**
  * Path of the library: `LIBRARY_PATH`, else a file in the user's data folder.
@@ -71,6 +107,7 @@ export function openLibrary(path: string): DatabaseSync {
   const database = new DatabaseSync(path);
 
   database.exec(SCHEMA);
+  migrateLibrary(database);
 
   return database;
 }
