@@ -30,6 +30,7 @@ pub mod no_unreadable_for_of_expression;
 pub mod no_unused_iterator_helper;
 pub mod no_useless_set_construction;
 pub mod numbers;
+pub mod platform;
 pub mod prefer_array_from_map;
 pub mod prefer_array_iterable_methods;
 pub mod prefer_array_last_methods;
@@ -87,6 +88,8 @@ pub const RULES: &[&dyn Rule] = &[
     &functions::no_unnecessary_parameters::NoUnnecessaryParameters,
     &no_unnecessary_splice::NoUnnecessarySplice,
     &no_unreadable_for_of_expression::NoUnreadableForOfExpression,
+    &platform::no_unsafe_buffer_conversion::NoUnsafeBufferConversion,
+    &platform::no_unsafe_json_serialization::NoUnsafeJsonSerialization,
     &no_unused_iterator_helper::NoUnusedIteratorHelper,
     &control_flow::no_useless_boolean_cast::NoUselessBooleanCast,
     &control_flow::no_useless_else::NoUselessElse,
@@ -170,6 +173,8 @@ pub const NAMES: &[&str] = &[
     "unicorn/no-unnecessary-parameters",
     "unicorn/no-unnecessary-splice",
     "unicorn/no-unreadable-for-of-expression",
+    "unicorn/no-unsafe-buffer-conversion",
+    "unicorn/no-unsafe-json-serialization",
     "unicorn/no-unused-iterator-helper",
     "unicorn/no-useless-boolean-cast",
     "unicorn/no-useless-else",
