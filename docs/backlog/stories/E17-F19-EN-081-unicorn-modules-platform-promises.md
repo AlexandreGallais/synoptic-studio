@@ -43,7 +43,3 @@ Measured on this Mac, 2026-10-17, on `npm run lint`'s targets (2,048 files), ano
 - Open point: `expressions::has_side_effect` (EN-079) walks into the functions an expression holds, which `hasSideEffect` of `@eslint-community/eslint-utils` does not; `no-top-level-side-effects` uses its own search for that reason, and the rules of EN-079 that call it were left unchanged.
 - Shared lists edited beside EN-080: `rules::unicorn::RULES` and `NAMES`, the `pub mod` lines of `rules/unicorn/mod.rs`, `DROPPED_RULES`, and note 0023's counts (Unicorn 157 kept and 40 dropped, all 208 and 57, before EN-080's own).
 - Rule-docs: none affected, the story moves lint rules between linters and changes no rule of `docs/domain/`.
-
-### Journal
-
-- `#run` EN-081: 16 Unicorn rules on modules, the platform and promises carried to the Rust linter, 13 dropped (Node.js, `Temporal`, `using` and APIs `tsc` refuses under ES2025); the same findings and fixes as ESLint on the documented and planted cases, none on the tree; the resolver rule follows each function's paths where ESLint asks its code paths.
