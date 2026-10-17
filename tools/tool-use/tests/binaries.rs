@@ -57,6 +57,7 @@ fn f21_ac7_every_binary_of_the_workspace_records_its_use_under_its_name() {
         .filter(|(name, path)| {
             let source = fs::read_to_string(path).expect("binary source");
             !source.contains(&format!("tool_use::run(\"{name}\","))
+                && !source.contains(&format!("tool_use::run_or_poll(\"{name}\","))
         })
         .map(|(name, path)| format!("{name} ({})", path.display()))
         .collect();
