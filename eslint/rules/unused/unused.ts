@@ -4,17 +4,9 @@ import type { TSESLint } from "@typescript-eslint/utils";
 export const UNUSED_UNUSED: TSESLint.FlatConfig.Config = {
   name: "unused/unused",
   rules: {
-    "unused-imports/no-unused-imports": "error",
-    // Positional callbacks (`(entry, index) => …`) may skip leading parameters.
-    "unused-imports/no-unused-vars": [
-      "error",
-      {
-        args: "after-used",
-        caughtErrors: "all",
-        ignoreRestSiblings: false,
-        reportUsedIgnorePattern: true,
-        vars: "all",
-      },
-    ],
+    // Run by oxlint's `no-unused-vars`, its unused imports autofixed (EN-084).
+    "unused-imports/no-unused-imports": "off",
+    // Run by oxlint's `no-unused-vars`, with the same options (EN-084).
+    "unused-imports/no-unused-vars": "off",
   },
 };

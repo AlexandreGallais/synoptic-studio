@@ -50,9 +50,9 @@ pub fn kind_names() -> Vec<&'static str> {
     KIND_LIMITS.iter().map(|each| each.kind).collect()
 }
 
-/// A layer of the library, by its folder, and the kinds its functions may carry
-/// (docs/conventions/architecture.md; its imports are checked by `import-x/no-restricted-paths`
-/// from `eslint/settings/layers.ts`).
+/// A layer of the library, by its folder, the kinds its functions may carry and the layers it
+/// may import (docs/conventions/architecture.md; its imports are checked by
+/// `import-x/no-restricted-paths`, moved from `eslint/settings/layers.ts` by EN-084).
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Layer {
     /// The layer's name.
@@ -61,23 +61,53 @@ pub struct Layer {
     pub path: &'static str,
     /// The kinds it allows.
     pub kinds: &'static [&'static str],
+    /// The library's layers it may import; the playground imports the public API only.
+    pub imports: &'static [&'static str],
 }
 
 /// The layers, from the functional core to the playground.
 pub const LAYERS: [Layer; 8] = [
-    layer("math", "src/math", &["math"]),
-    layer("geometry", "src/geometry", &["math", "geometry"]),
-    layer("model", "src/model", &["domain"]),
-    layer("routing", "src/routing", &["geometry", "domain"]),
-    layer("io", "src/io", &["format"]),
-    layer("render", "src/render", &["format", "procedure"]),
-    layer("interaction", "src/interaction", &["domain", "procedure"]),
-    layer("playground", "playground", &["procedure"]),
+    layer("math", "src/math", &["math"], &[]),
+    layer("geometry", "src/geometry", &["math", "geometry"], &["math"]),
+    layer("model", "src/model", &["domain"], &["math", "geometry"]),
+    layer(
+        "routing",
+        "src/routing",
+        &["geometry", "domain"],
+        &["math", "geometry", "model"],
+    ),
+    layer("io", "src/io", &["format"], &["math", "geometry", "model"]),
+    layer(
+        "render",
+        "src/render",
+        &["format", "procedure"],
+        &["math", "geometry", "model", "routing", "io"],
+    ),
+    layer(
+        "interaction",
+        "src/interaction",
+        &["domain", "procedure"],
+        &["math", "geometry", "model", "routing", "io", "render"],
+    ),
+    layer("playground", "playground", &["procedure"], &[]),
 ];
 
+/// The library's entry point: the only module the playground may import.
+pub const PUBLIC_API_PATH: &str = "src/index.ts";
+
 /// One row of [`LAYERS`].
-const fn layer(name: &'static str, path: &'static str, kinds: &'static [&'static str]) -> Layer {
-    Layer { name, path, kinds }
+const fn layer(
+    name: &'static str,
+    path: &'static str,
+    kinds: &'static [&'static str],
+    imports: &'static [&'static str],
+) -> Layer {
+    Layer {
+        name,
+        path,
+        kinds,
+        imports,
+    }
 }
 
 /// Leading words reserved for functions returning a boolean.

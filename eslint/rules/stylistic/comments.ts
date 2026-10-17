@@ -5,11 +5,9 @@ export const STYLISTIC_COMMENTS: TSESLint.FlatConfig.Config = {
   name: "stylistic/comments",
   rules: {
     "@stylistic/line-comment-position": ["error", { position: "above" }],
-    "@stylistic/multiline-comment-style": ["error", "separate-lines", { checkJSDoc: false }],
-    "@stylistic/spaced-comment": [
-      "error",
-      "always",
-      { block: { balanced: true }, line: { markers: ["/"] } },
-    ],
+    // Run by the project's linter (tools/lint, EN-084).
+    "@stylistic/multiline-comment-style": "off",
+    // Run by the project's linter (tools/lint, EN-084).
+    "@stylistic/spaced-comment": "off",
   },
 };

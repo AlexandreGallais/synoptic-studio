@@ -45,7 +45,7 @@ svg.append(createPathElement(document, pathData));
 
 ## Comments
 
-- Above the line, never at the end of it (`no-inline-comments`, `@stylistic/line-comment-position`).
+- Above the line, never at the end of it (`no-inline-comments`).
 - No `TODO` / `FIXME` (`no-warning-comments`): ongoing work goes to `docs/`.
 
 ## Format on save

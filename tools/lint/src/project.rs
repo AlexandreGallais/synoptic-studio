@@ -1,12 +1,13 @@
 //! The repository the linter runs in: its root, and what the rules read from the disk beside the
 //! file, read once per run and shared by the threads (ADR-0069: work done once) — folder
-//! listings, the bibliography and the ADRs.
+//! listings, the bibliography, the ADRs and the packages of `package.json`.
 
 use std::collections::HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, OnceLock, PoisonError};
 
+use crate::package::{self, Dependencies};
 use crate::settings::ReferenceSources;
 
 /// An entry of a folder.
@@ -30,6 +31,7 @@ pub struct Project {
     folders: Mutex<HashMap<PathBuf, Arc<Vec<Entry>>>>,
     bibliography: OnceLock<HashMap<String, bool>>,
     decisions: OnceLock<Vec<String>>,
+    dependencies: OnceLock<Dependencies>,
 }
 
 impl Project {
@@ -42,6 +44,7 @@ impl Project {
             folders: Mutex::new(HashMap::new()),
             bibliography: OnceLock::new(),
             decisions: OnceLock::new(),
+            dependencies: OnceLock::new(),
         }
     }
 
@@ -100,6 +103,13 @@ impl Project {
                     })
                 })
                 .collect()
+        })
+    }
+
+    /// The packages `package.json` names, none when it cannot be read.
+    pub fn dependencies(&self) -> &Dependencies {
+        self.dependencies.get_or_init(|| {
+            package::parse(&fs::read_to_string(self.root.join("package.json")).unwrap_or_default())
         })
     }
 

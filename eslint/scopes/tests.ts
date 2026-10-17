@@ -11,7 +11,6 @@ export const TESTS: TSESLint.FlatConfig.Config = {
   rules: {
     ...RELAXED_PURITY,
     "@typescript-eslint/no-magic-numbers": "off",
-    "import-x/no-extraneous-dependencies": ["error", { devDependencies: true }],
     "max-lines": "off",
     "max-lines-per-function": "off",
     "max-nested-callbacks": ["error", { max: 4 }],

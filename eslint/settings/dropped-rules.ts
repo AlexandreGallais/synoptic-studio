@@ -7,11 +7,13 @@
  * "Triage of the rules oxlint lacks" and "Triage of oxlint's native and type-aware rules".
  */
 export const DROPPED_RULES: readonly string[] = [
+  "@stylistic/line-comment-position",
   "@stylistic/lines-between-class-members",
   "@typescript-eslint/class-literal-property-style",
   "@typescript-eslint/class-methods-use-this",
   "@typescript-eslint/explicit-member-accessibility",
   "@typescript-eslint/init-declarations",
+  "@typescript-eslint/member-ordering",
   "@typescript-eslint/no-confusing-non-null-assertion",
   "@typescript-eslint/no-dupe-class-members",
   "@typescript-eslint/no-duplicate-enum-values",

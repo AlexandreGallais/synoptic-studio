@@ -6,7 +6,7 @@ Typed numbers (integers) → **model** (integers) → evaluated **geometry** (fl
 
 ## Layers
 
-Imports only go to the listed layers. Source tables: the imports in `eslint/settings/layers.ts` (enforced by `import-x/no-restricted-paths`), the kinds of each layer in `tools/lint/src/settings.rs` (enforced by `local/kind-in-layer`).
+Imports only go to the listed layers. Source table: `LAYERS` in `tools/lint/src/settings.rs`, each layer's imports (enforced by `import-x/no-restricted-paths`) and kinds (enforced by `local/kind-in-layer`).
 
 | Layer | Role | May import | DOM | `@kind` |
 | --- | --- | --- | --- | --- |

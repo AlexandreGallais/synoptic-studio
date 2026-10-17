@@ -39,7 +39,7 @@ eslint/
 | `pure-layers.ts` | `src/math … src/io` | forbids the DOM and the host |
 | `playground.ts` | `playground/index.ts` | load-time effects allowed |
 | `barrels.ts` | `src/**/index.ts`, `eslint/**/index.ts`, `playground/*/**/index.ts` (not the entry); `eslint/rules/*/all.ts` | barrels: any number of imports; `all.ts` aggregators: any number of imports only |
-| `tooling.ts` | `eslint/`, root `*.config.ts`, `*.setup.ts`, `*.test.ts`, `tests/`, `docs/.vitepress/`, `.claude/hooks/`, `scripts/` | Node.js, dev dependencies |
+| `tooling.ts` | `eslint/`, root `*.config.ts`, `*.setup.ts`, `*.test.ts`, `tests/`, `docs/.vitepress/`, `.claude/hooks/`, `scripts/` | Node.js |
 | `tests.ts` | `**/*.test.ts` | literal numbers, free length |
 | `oxlint-owned.ts` | `**/*.ts`, last | turns off every rule `.oxlintrc.json` names and every dropped rule |
 
@@ -130,6 +130,29 @@ With the plugin's names, messages and the project's options (EN-084), each modul
 | `functional/no-try-statements` | writes no `try` | the core |
 
 `prefer-property-signatures` is dropped: oxlint's `typescript/method-signature-style` (`property`) reports every method signature. The `arguments` part of `functional-parameters` is oxlint's `prefer-rest-params`, on every file.
+
+### `@stylistic`'s comment and blank-line rules
+
+On every TypeScript file (EN-084), with `@stylistic` 5.10.0's names, messages and the project's options, each module tested on the cases of its documentation, and autofixed as the plugin fixes it.
+
+| Rule | The code… |
+| --- | --- |
+| `@stylistic/spaced-comment` | puts a space after `//`, `///` and `/*`, and before `*/` |
+| `@stylistic/multiline-comment-style` | writes a comment over several lines as `//` lines; a `JSDoc` block, an `/*!` block and a directive are left |
+| `@stylistic/padding-line-between-statements` | leaves a blank line after a group of `const` and `let`, before a declaration that follows an expression, around blocks, multi-line expressions, directives and imports, before a `return` and an export; a line of comments is no blank line |
+
+`line-comment-position` is dropped: oxlint's `no-inline-comments` reports every comment beside code.
+
+### `import-x`'s dependency rules
+
+On every TypeScript file (EN-084), with `eslint-plugin-import-x` 4.17.1's names and messages, each module tested on the cases of its documentation.
+
+| Rule | The code… |
+| --- | --- |
+| `import-x/no-extraneous-dependencies` | imports a package `package.json` lists in `dependencies` (empty), or, in the tools and the tests, in `devDependencies` too; types only, Node.js modules and packages not installed are left |
+| `import-x/no-restricted-paths` | imports from a layer only the layers it lists, and from the playground only `src/index.ts` (`LAYERS` of `tools/lint/src/settings.rs`); a path is resolved as Node.js does, a path that resolves to nothing left |
+
+`unused-imports/no-unused-imports` and `no-unused-vars` run in oxlint as `no-unused-vars`, with the same options, unused imports autofixed. typescript-eslint's `member-ordering` is dropped: no class, interface nor method signature can be written here, and no type of the tree mixes an index signature with properties.
 
 ### `local/require-kind`
 

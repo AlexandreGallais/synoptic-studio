@@ -46,5 +46,5 @@ Groups separated by a blank line: Node modules (`node:…`) → packages → par
 - `import * as` (`import-x/no-namespace`), `export default` (except root configuration files), dynamic `import()`.
 - Undeclared package, or `devDependencies` used from `src/` (`import-x/no-extraneous-dependencies`): **zero runtime dependency**.
 - Node modules (`node:fs`…) outside tooling (`import-x/no-nodejs-modules`).
-- Forbidden layer (`import-x/no-restricted-paths`, table `eslint/settings/layers.ts`).
-- Unused imports and variables: **removed automatically** (`unused-imports/no-unused-imports`).
+- Forbidden layer (`import-x/no-restricted-paths`, table `LAYERS` of `tools/lint/src/settings.rs`).
+- Unused imports and variables: imports **removed automatically** (oxlint's `no-unused-vars`).
