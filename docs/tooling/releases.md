@@ -8,7 +8,7 @@ The release pull request lives on `develop`; `main` only receives the release an
 | --- | --- | --- | --- |
 | 1. a push to `develop` | `develop` | release-please (`release-pr` job) | opens or updates the release pull request `chore(develop): release x.y.z`: the next version in `package.json` and the new section of `CHANGELOG.md`; no release (`skip-github-release`) |
 | 2. a release asked | `develop` | the Product Owner | merges the release pull request into `develop` (merge commit); until it is tagged, no new release pull request opens |
-| 3. the release | `main` | the agent opens, the Product Owner merges | the pull request `develop` → `main`, CI green, merge commit (ADR-0038) |
+| 3. the release | `main` | the agent opens, the Product Owner merges | the pull request `develop` → `main`, CI green, merge commit (ADR-0072) |
 | 4. a push to `main` | `main` | release-please (`release-please` job) | finds the release pull request merged into `develop` (`target-branch: develop`, `skip-github-pull-request`), tags its merge commit `vx.y.z` and publishes the GitHub release; opens no pull request |
 | 5. after the release | `main` | the same workflow | attaches the **test report** of the CI of the `develop` → `main` pull request (ADR-0027; no new test run), then **publishes the documentation site and the playground** to GitHub Pages (`docs` job, `https://alexandregallais.github.io/synoptic-studio/`) |
 | 6. catch-up | `develop` | the agent | `develop` follows `main` by a fast-forward: `git merge --ff-only origin/main` ([Git workflow](./git-workflow.md)) |

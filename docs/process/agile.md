@@ -52,9 +52,10 @@ The type says **who can see the result**, not who wrote it or whether it is code
 | Moment | Product Owner | Agent |
 | --- | --- | --- |
 | refinement | answers the questionnaire, decides the business rules | prepares the questions (with the `functional-analyst` agent), writes the feature |
-| spike and stories | starts a run (`/run`): its stories become `ready` | researches, implements, tests, has each story reviewed |
-| validation | ticks the checklist, says what they see | records the result and the remarks, opens the feature pull request |
-| release | merges the feature, then the release pull request | prepares both, brings `develop` up to date |
+| spike and stories | starts a run (`/run`): its stories become `ready` | researches, implements, tests, checks each story by its level (ADR-0064) |
+| validation of a library or application feature | ticks the checklist, says what they see, says when the validation is done | records the result and the remarks, labels the feature pull request `autonomous`: GitHub merges it into `develop` (ADR-0072) |
+| validation of a tooling feature | tries the lines that concern them, if they wish | validates it on the checklist and demo page, labels its pull request `autonomous` without waiting (ADR-0072) |
+| release | asks for it; merges release-please's pull request into `develop`, then `develop` into `main` | opens `develop` → `main`, brings `develop` up to date after it |
 | review, retrospective | answers, decides what changes | reports with figures, updates the playbook and the configuration |
 
 ## Cadences beyond the epic
