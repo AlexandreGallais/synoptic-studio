@@ -22,7 +22,7 @@ One task = one commit, referenced as `VAL-021.Tn`.
 - [x] T1 — Each criterion of F20 proven again, what was seen recorded (1 h)
 - [x] T2 — F20's lines in E17's checklist, `?checklist=E17`, each tried (1 h)
 - [x] T3 — The demo page, `docs/guide/f20-a-context-diet.md` (1 h)
-- [ ] T4 — The result of the validation recorded (0.5 h)
+- [x] T4 — The result of the validation recorded (0.5 h)
 
 ## Criteria proven again (2026-10-18)
 
@@ -43,3 +43,32 @@ All of `hooks`, `run-totals` and `git-sequences`: 118 Rust tests passed, 15 of t
 ## F20's lines in E17's checklist
 
 Drafted by `npm run val:prepare -- F20`, then written as 12 lines (`playground/checklists/epic-17-f20-lines.ts`, `?checklist=E17`), each tried here on 2026-10-18 with the output it names: nine commands run at the repository's root or in this worktree, the status line printed by `run-totals status` (`run 2 h 35 · 191,734,902 tokens · week 58 % used`), the hand-back line read in the run's transcript, and the run skill's sections read. `val:prepare` drafted a line for the struck criterion 5 too; it has none. The page's test lists the 36 lines of E17, names each command or output of F20's lines and nothing of the dropped progress page; a line changed from `the limit is 90 %` to `the limit is 89 %` made it fail.
+
+## Decisions of the validation (2026-10-18)
+
+- **Validated by the agent**: F20 is a tooling feature, so the agent validates it and opens its pull request into `develop`, labeled `autonomous`, without waiting for the Product Owner, who may try the lines that concern them (ADR-0072, decided on 2026-10-17).
+- **Criterion 5 left out**: struck from the feature on 2026-10-17, the progress page being judged not useful; no line, no test, and the demo page shows it struck.
+- **F20.AC2 read as held with an inconclusive trial**: the criterion asks for the comparison, which CHK-021 made and recorded; its outcome, the story worker kept on Opus, is a decision for the Product Owner to confirm, a line of the checklist.
+- **F20.AC6 held without the phone push**: the stop at 90 %, the parked question and the rule of pushes are tested and written; a push on the phone waits for the Product Owner's setting in `/config`, as AUD-022 left it.
+- **F20.AC7's project recorded by its test**: the library's uses read `(not recorded)` until F20 is on `develop` and the server restarted, since the running server is `develop`'s copy; `scripts/library-pages.test.ts` proves the project recorded and grouped.
+- **The Git calls per story compared, EN-100's open point**: F19's 31 workers made 1 to 32 Git calls, median 12, F20's 9 story workers 1 to 7, median 4; the stories differ in size, so this is an order of magnitude, not the tool's gain alone.
+
+## Result of the validation (2026-10-18)
+
+| Line | Seen by | Result |
+| --- | --- | --- |
+| 1 to 12 | the VAL worker | as written, each tried on this Mac; line 2's decision to confirm left to the Product Owner |
+
+## For the main thread
+
+Rule-docs: none affected, a tooling validation, no rule of `docs/domain/` changed.
+
+The `done` commit, made by this worker as the main thread asked, sets VAL-021 and F20 `done` and updates the State line of E17 in `AGENTS.md`; the journal entry is the main thread's to write, its text below.
+
+### Journal
+
+- `#run` VAL-021: F20 validated by the agent (ADR-0072): its seven criteria left proven again, criterion 5 struck; 12 lines in E17's checklist; the demo page `docs/guide/f20-a-context-diet.md`. A story worker's first request from 38,897 tokens (`general-purpose`) to 10,562 (`story-worker`); the agent pages from 182,100 tokens to 144,900 (−20 %); Git calls per story worker from a median of 12 to 4; a stored page read in 0.1 to 0.2 s instead of 6 s. The story worker stays on Opus, the Sonnet trial too small to compare: a decision for the Product Owner to confirm.
+
+### Improvements
+
+| 2026-10-18 | VAL-021 | `val:prepare` drafts a line for a criterion struck from the feature (F20's criterion 5) and rewrites the checklists' barrel `export type * from "./checklist-line"` as `export *`, which `npm run fix` writes back; it should skip a struck criterion and leave the barrel's other lines as they are | tool |
