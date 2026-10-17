@@ -26,3 +26,16 @@ One task = one commit, referenced as `EN-068.Tn`.
 - [ ] T1 — The root `Cargo.toml`, `rust-toolchain.toml` and `.cargo/config.toml`; the eight crates moved in, their lock files and `target/` folders removed (3 h)
 - [ ] T2 — The binaries' paths in `package.json`, `.claude/settings.json` and the husky hooks; `prepare` building them; the missing-binary message (2 h)
 - [ ] T3 — The `rust` lane in `check-all.ts`, its explicit targets (EN-045), `target/` ignored by every check tool (2 h)
+
+## For the main thread
+
+- After the merge, run `npm run rust:build` in the main checkout: the `limit-agents` hook, the `pre-push` and `commit-msg` hooks and `story:finish`'s `move-rows` now call `target/release/<binary>` there; until it is built, `limit-agents` lets every call through with a message naming that command, and the Git hooks fail with it. A binary is not rebuilt when its crate changes on a pull: `npm install` (`prepare`), `rust:build` or a `check:all` rebuilds it.
+- `scripts/rust-tool.sh` is a shell launcher, not a Rust tool: it must run before any binary of the workspace exists, to name the build command.
+- `unsafe_code = "forbid"` needed `heavy-lock` off its `unsafe` `flock` call: it takes the lock with `File::try_lock` now, the first task of EN-070 done here; its `std::os::unix` use for `is_at` stays for EN-070.
+- `backlog-index` inherits `clippy::pedantic`, which it lacked: two findings fixed (an extension compared through `Path::extension`, an empty assertion through `assert_eq!`).
+- `rust-toolchain.toml` makes rustup install the `1.99.1` toolchain beside `stable` at its first use in a checkout (about 6 components, once).
+- `check:rust` measured on this machine: 11.2 s warm and 17.6 s cold before (eight crates one by one, no release build), 9.4 s warm and 14.1 s cold after (the workspace, release build included).
+
+### Journal
+
+- `#run` EN-068: the Rust tools form one Cargo workspace at the root (one `Cargo.lock`, one `target/`, Rust 1.99.1 pinned, warnings denied, `unsafe_code` forbidden); scripts and hooks call `target/release/<binary>` through `scripts/rust-tool.sh`, built by `prepare` and `worktree:new`; `check:rust` is its own lane of `check:all` (9.4 s warm, 11.2 s before).
