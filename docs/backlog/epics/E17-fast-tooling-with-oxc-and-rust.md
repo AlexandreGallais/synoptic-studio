@@ -32,6 +32,7 @@ Go faster and lose less time on the agent's checks and tools, not on the library
 - **Rules in Rust when needed.** A lint rule or setting oxlint and oxfmt cannot carry as it is is rewritten by hand in Rust, on Oxc, in this repository: the plugins are open source, so each rule is read, then reimplemented. Rust's own tools (rustfmt, clippy), strict by default, are enough for the Rust code's own style.
 - **Agent tools in Rust** for what Oxc cannot replace, living in this repository: for example a tool that gives a new agent its context in fewer tokens and faster.
 - **Every new script in Rust** (decided 2026-10-16): from now on a new script, hook or agent tool is written in Rust, not TypeScript, so that no new TypeScript tool has to be rewritten later; the existing TypeScript tools may still be edited until F19 rewrites them.
+- **Everything around the library in Rust** (Product Owner, 2026-10-17): the library stays JavaScript; every tool around it — checks, hooks, agent tools, the release and its changelog, the secret scan, the CI's steps — becomes our own Rust or the fastest sound tool (Oxc, TypeScript 7), as fast as it can be for the agent (ADR-0069), depending on as few outside packages as possible, so that the tools connect easily and later project-management tools can build on them.
 - **`check:all` optimised hard**, and the pre-push wait with it.
 - **More agents without lag**: with the heavy-command lock in the tools (EN-047), ADR-0063's trial of three subagents stands, Vitest limited to half the machine's cores.
 

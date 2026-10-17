@@ -36,6 +36,7 @@ Drafts from the refinement of 2026-10-16 (Claude Code settings recommended by re
 | [EN-086](../stories/E17-F20-EN-086-push-notification-at-each-stop.md) | Enabler | A push notification at each stop, question or validation ready | draft |
 | [EN-087](../stories/E17-F20-EN-087-progress-page-as-an-artifact.md) | Enabler | A progress page as a claude.ai Artifact, updated during a run | draft |
 | [EN-088](../stories/E17-F20-EN-088-subagent-stop-hook-in-rust.md) | Enabler | A SubagentStop hook in Rust that checks a worker's branch | draft |
+| [EN-092](../stories/E17-F20-EN-092-run-totals-and-stop-report.md) | Enabler | The totals of a whole run, and a report when it stops | draft |
 | [CHK-021](../stories/E17-F20-CHK-021-checkpoint-f20.md) | Checkpoint | Checkpoint in the middle of F20 | draft |
 | [AUD-022](../stories/E17-F20-AUD-022-audit-f20.md) | Audit | Audit F20 | draft |
 | [VAL-021](../stories/E17-F20-VAL-021-validate-f20.md) | Validation | Validate F20 | draft |

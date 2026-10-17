@@ -64,9 +64,11 @@ In delivery order; numbers are given at the refinement.
 | 5 | Enabler | The Git hooks in Rust: hooks installed without husky, the staged-file runner (lint-staged), the commit message (commitlint) and the branch name (validate-branch-name) | 4 |
 | 6 | Enabler | The dependency checks in Rust: latest versions at least 7 days old (npm-check-updates, `tool-versions.ts`), unused files, exports and packages (knip) on Oxc | 4 |
 | 7 | Enabler | The secret scan in Rust: secretlint's recommended patterns carried, each with its source and a test | 4 |
-| 8 | Enabler | Clean-up of E17: every script, hook, configuration, test and dev package left unused removed, checked by the unused-file check and a search; last before NAM-002 | 5 |
+| 8 | Enabler | The release in Rust: the changelog and the release pull request written by our own tool in place of release-please (its manifest and configuration), from the Conventional Commits; the release notes as readable as today's | 4 |
+| 9 | Enabler | The CI on the Rust tools: the pull request into `main` runs `check:all` with the Rust workspace built and cached, the cargo tools installed once | 4 |
+| 10 | Enabler | Clean-up of E17: every script, hook, configuration, test and dev package left unused removed, checked by the unused-file check and a search; last before NAM-002 | 5 |
 
-### Story 8 — Clean-up of E17 (draft)
+### Story 10 — Clean-up of E17 (draft)
 
 Last story of E17's features, before NAM-002: once the tools run on Oxc and Rust, remove what nothing uses any more.
 

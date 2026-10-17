@@ -217,6 +217,7 @@
 | [EN-076](./E17-F19-EN-076-naming-and-functional-rules-without-types.md) | F19 | naming-convention and the functional rules without types | ready |
 | [EN-089](./E17-F19-EN-089-font-files-read-once-per-test-run.md) | F19 | Font files read once per test run | done |
 | [EN-090](./E17-F19-EN-090-tests-without-over-testing.md) | F19 | Tests without over-testing, and the rules to keep them so | ready |
+| [EN-091](./E17-F19-EN-091-configuration-files-reviewed-for-speed.md) | F19 | Every configuration file reviewed for speed, type errors reported with the lint | ready |
 | [CHK-020](./E17-F19-CHK-020-checkpoint-f19.md) | F19 | Checkpoint in the middle of F19 | ready |
 | [EN-077](./E17-F19-EN-077-markdown-rules-in-rust.md) | F19 | The Markdown rules in the Rust linter | ready |
 | [EN-078](./E17-F19-EN-078-unicorn-arrays-collections-iteration.md) | F19 | Unicorn's arrays, collections and iteration rules in Rust | ready |
@@ -236,6 +237,7 @@
 | [EN-086](./E17-F20-EN-086-push-notification-at-each-stop.md) | F20 | A push notification at each stop, question or validation ready | draft |
 | [EN-087](./E17-F20-EN-087-progress-page-as-an-artifact.md) | F20 | A progress page as a claude.ai Artifact, updated during a run | draft |
 | [EN-088](./E17-F20-EN-088-subagent-stop-hook-in-rust.md) | F20 | A SubagentStop hook in Rust that checks a worker's branch | draft |
+| [EN-092](./E17-F20-EN-092-run-totals-and-stop-report.md) | F20 | The totals of a whole run, and a report when it stops | draft |
 | [CHK-021](./E17-F20-CHK-021-checkpoint-f20.md) | F20 | Checkpoint in the middle of F20 | draft |
 | [AUD-022](./E17-F20-AUD-022-audit-f20.md) | F20 | Audit F20 | draft |
 | [VAL-021](./E17-F20-VAL-021-validate-f20.md) | F20 | Validate F20 | draft |
