@@ -9,9 +9,15 @@ use val_prepare::{feature_id, plan};
 
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
+
+    tool_use::run("val-prepare", "", || prepare(&args))
+}
+
+/// Writes the feature's checklist lines; its exit code.
+fn prepare(args: &[String]) -> u8 {
     let (Some(root), Some(id)) = (args.first(), args.get(1).and_then(|arg| feature_id(arg))) else {
         eprintln!("usage: npm run val:prepare -- <feature, F18>");
-        return ExitCode::from(2);
+        return 2;
     };
     let root = Path::new(root);
 
@@ -19,14 +25,14 @@ fn main() -> ExitCode {
         Ok(prepared) => prepared,
         Err(message) => {
             eprintln!("val:prepare: {message}");
-            return ExitCode::FAILURE;
+            return 1;
         }
     };
 
     for write in &prepared.writes {
         if let Err(error) = fs::write(root.join(&write.path), &write.text) {
             eprintln!("val:prepare: {}: {error}", write.path.display());
-            return ExitCode::FAILURE;
+            return 1;
         }
         println!("written {}", write.path.display());
     }
@@ -40,5 +46,5 @@ fn main() -> ExitCode {
         prepared.address
     );
 
-    ExitCode::SUCCESS
+    0
 }

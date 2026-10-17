@@ -171,6 +171,11 @@ fn run(argv: &[String]) -> Result<Plan, String> {
 }
 
 fn main() -> ExitCode {
+    tool_use::run("worktree-new", "", add_worktree)
+}
+
+/// Adds the story's worktree; the exit code.
+fn add_worktree() -> u8 {
     let argv: Vec<String> = env::args().skip(1).collect();
 
     match run(&argv) {
@@ -181,11 +186,11 @@ fn main() -> ExitCode {
                 plan.branch,
                 plan.base
             );
-            ExitCode::SUCCESS
+            0
         }
         Err(reason) => {
             eprintln!("worktree:new: {reason}");
-            ExitCode::from(1)
+            1
         }
     }
 }

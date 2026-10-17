@@ -178,15 +178,16 @@ fn run(argv: &[String]) -> Result<String, String> {
 
 fn main() -> ExitCode {
     let argv: Vec<String> = env::args().skip(1).collect();
+    let subcommand = argv.first().map_or("", String::as_str);
 
-    match run(&argv) {
+    tool_use::run("git-sequences", subcommand, || match run(&argv) {
         Ok(line) => {
             println!("{line}");
-            ExitCode::SUCCESS
+            0
         }
         Err(reason) => {
             eprintln!("git-sequences: {reason}");
-            ExitCode::from(1)
+            1
         }
-    }
+    })
 }

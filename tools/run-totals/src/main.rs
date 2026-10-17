@@ -154,32 +154,34 @@ fn run(words: &[String]) -> Result<String, String> {
 
 fn main() -> ExitCode {
     let words: Vec<String> = env::args().skip(1).collect();
+    let subcommand = words.first().map_or("", String::as_str);
 
+    tool_use::run("run-totals", subcommand, || answer(&words))
+}
+
+/// Answers the subcommand; its exit code.
+fn answer(words: &[String]) -> u8 {
     if words.first().map(String::as_str) == Some("should-stop") {
         return match should_stop() {
             Ok((stops, text)) => {
                 print!("{text}");
-                if stops {
-                    ExitCode::FAILURE
-                } else {
-                    ExitCode::SUCCESS
-                }
+                u8::from(stops)
             }
             Err(message) => {
                 eprintln!("{message}");
-                ExitCode::from(2)
+                2
             }
         };
     }
 
-    match run(&words) {
+    match run(words) {
         Ok(text) => {
             print!("{text}");
-            ExitCode::SUCCESS
+            0
         }
         Err(message) => {
             eprintln!("{message}");
-            ExitCode::FAILURE
+            1
         }
     }
 }

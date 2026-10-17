@@ -7,6 +7,7 @@ publish.workspace = true
 description = "Writes the stories index of the backlog from each story's front matter (EN-049, ADR-0065)."
 
 [dependencies]
+tool-use = { path = "../tool-use" }
 
 [lints]
 workspace = true

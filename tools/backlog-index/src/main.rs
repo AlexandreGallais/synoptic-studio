@@ -105,22 +105,30 @@ fn run(backlog: &Path, check: bool) -> io::Result<Result<(), String>> {
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
     let check = args.iter().any(|arg| arg == "--check");
+
+    tool_use::run("backlog-index", if check { "--check" } else { "" }, || {
+        index(&args, check)
+    })
+}
+
+/// Writes or checks the stories index; its exit code.
+fn index(args: &[String], check: bool) -> u8 {
     let folder = args.iter().find(|arg| !arg.starts_with("--"));
 
     let Some(folder) = folder else {
         eprintln!("usage: backlog-index <backlog folder> [--check]");
-        return ExitCode::from(2);
+        return 2;
     };
 
     match run(Path::new(folder), check) {
-        Ok(Ok(())) => ExitCode::SUCCESS,
+        Ok(Ok(())) => 0,
         Ok(Err(message)) => {
             eprintln!("{message}");
-            ExitCode::FAILURE
+            1
         }
         Err(error) => {
             eprintln!("backlog-index: {folder}: {error}");
-            ExitCode::from(2)
+            2
         }
     }
 }
