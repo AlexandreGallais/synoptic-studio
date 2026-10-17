@@ -234,15 +234,20 @@
 | [AUD-021](./E17-F19-AUD-021-audit-f19.md) | F19 | Audit F19 | done |
 | [VAL-020](./E17-F19-VAL-020-validate-f19.md) | F19 | Validate F19 | done |
 | [SP-022](./E17-F20-SP-022-research-f20.md) | F20 | Research for F20, the context diet | draft |
-| [EN-064](./E17-F20-EN-064-one-hour-prompt-cache.md) | F20 | A one-hour prompt cache on long agents | draft |
-| [EN-065](./E17-F20-EN-065-workers-started-from-a-digest.md) | F20 | Workers started from a digest instead of all of CLAUDE.md | draft |
+| [EN-064](./E17-F20-EN-064-one-hour-prompt-cache.md) | F20 | A one-hour prompt cache on long agents | dropped |
+| [EN-065](./E17-F20-EN-065-workers-started-from-a-digest.md) | F20 | One worker type per task kind, each started from what its task needs | draft |
 | [EN-066](./E17-F20-EN-066-model-per-agent-type.md) | F20 | A model chosen per agent type | draft |
-| [EN-086](./E17-F20-EN-086-push-notification-at-each-stop.md) | F20 | A push notification at each stop, question or validation ready | draft |
-| [EN-087](./E17-F20-EN-087-progress-page-as-an-artifact.md) | F20 | A progress page as a claude.ai Artifact, updated during a run | draft |
 | [EN-088](./E17-F20-EN-088-subagent-stop-hook-in-rust.md) | F20 | A SubagentStop hook in Rust that checks a worker's branch | draft |
-| [EN-092](./E17-F20-EN-092-run-totals-and-stop-report.md) | F20 | The totals of a whole run, and a report when it stops | draft |
-| [EN-096](./E17-F20-EN-096-docs-written-as-principles.md) | F20 | The agent-facing docs written as principles, not as records of a conversation | draft |
+| [EN-092](./E17-F20-EN-092-run-totals-and-stop-report.md) | F20 | The duration and tokens of a whole run | draft |
+| [EN-087](./E17-F20-EN-087-progress-page-as-an-artifact.md) | F20 | A progress page as a claude.ai Artifact, updated during a run | draft |
+| [EN-086](./E17-F20-EN-086-push-notification-at-each-stop.md) | F20 | A run that parks a question and pushes it, and stops only when it must | draft |
 | [CHK-021](./E17-F20-CHK-021-checkpoint-f20.md) | F20 | Checkpoint in the middle of F20 | draft |
+| [EN-100](./E17-F20-EN-100-git-sequences-as-rust-commands.md) | F20 | The agent's frequent Git sequences as Rust commands | draft |
+| [EN-101](./E17-F20-EN-101-every-page-fetch-through-the-library.md) | F20 | Every page fetched through the library, with the project recorded | draft |
+| [EN-096](./E17-F20-EN-096-docs-written-as-principles.md) | F20 | The agent's rules and skills written as principles | draft |
+| [EN-097](./E17-F20-EN-097-conventions-written-as-principles.md) | F20 | The conventions written as principles | draft |
+| [EN-098](./E17-F20-EN-098-process-written-as-principles.md) | F20 | The process pages written as principles | draft |
+| [EN-099](./E17-F20-EN-099-tooling-docs-written-as-principles.md) | F20 | The tooling docs written as principles | draft |
 | [AUD-022](./E17-F20-AUD-022-audit-f20.md) | F20 | Audit F20 | draft |
 | [VAL-021](./E17-F20-VAL-021-validate-f20.md) | F20 | Validate F20 | draft |
 | [NAM-002](./E17-NAM-002-naming-pass-e17.md) | E17 | Naming pass over the code of E17 | draft |

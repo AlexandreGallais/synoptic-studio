@@ -2,26 +2,28 @@
 id: EN-096
 epic: E17
 feature: F20
-title: The agent-facing docs written as principles, not as records of a conversation
+title: The agent's rules and skills written as principles
 status: draft
-points: 5
+points: 3
 ---
 
-# E17 · F20 · EN-096 — The agent-facing docs written as principles, not as records of a conversation
+# E17 · F20 · EN-096 — The agent's rules and skills written as principles
 
-Many rules in `AGENTS.md`, `CLAUDE.md`, `.claude/`, `docs/conventions/`, `docs/process/` and the ADRs were written close to how a decision was first explained in conversation: its examples, its order, its wording. An agent reading them later has to infer the principle behind the example, and may doubt where it applies. Asked by the Product Owner on 2026-10-17: rewrite them so that each states the idea in general terms — the principle, its reason, how to tell a case, what to do on conflict — explained better than the conversation did, with an example only where it removes a doubt.
+Asked by the Product Owner on 2026-10-17: many rules an agent reads were written close to how a decision was first explained in conversation — its examples, its order, its wording — so an agent has to infer the principle and may doubt where it applies. Each rule is rewritten to state the idea in general terms: the principle, its reason, how to tell a case, what to do on conflict, with an example only where it removes a doubt. The agent is critical of how a decision was explained, gives a wider range of examples when they help, and leaves out what does not matter: shorter docs that serve the reader beat exhaustive ones. Split at F20's refinement into one story per family of pages, each measured in tokens before and after (2026-10-17). A later idea, not for these stories: keep superseded ADRs out of the agent's context.
 
-Precised by the Product Owner the same day: the agent is to be critical of how a decision was explained, give a wider range of examples than the conversation when they help, and leave out what does not matter — shorter docs that serve the reader beat exhaustive ones. A later idea, not for this story: keep superseded ADRs out of the agent's context, the ADR that replaces one carrying, corrected, everything still in force.
-
-This belongs to F20 (the context an agent reads): a rule stated once, generally, is shorter to read and leaves fewer doubts.
+This story covers `AGENTS.md`, `CLAUDE.md`, `.claude/rules/`, `.claude/skills/`, `.claude/agents/` and the worker brief.
 
 ## Acceptance criteria
 
-- Given each page an agent reads to work (`AGENTS.md`, `CLAUDE.md`, `.claude/rules`, `.claude/skills`, the worker brief, `docs/conventions/`, `docs/process/`), when the pass ends, then every rule reads as a principle with its reason and its limits; dated decision notes stay as the record of when and by whom, never as the rule's body.
-- Given an accepted ADR, when its wording follows a conversation too closely, then it is left as written (an accepted ADR is not rewritten) and the page that applies it states the principle.
+- Given each page of `AGENTS.md`, `CLAUDE.md`, `.claude/rules/`, `.claude/skills/`, `.claude/agents/` and the worker brief, when the pass ends, then every rule reads as a principle with its reason and its limits; dated decision notes stay as the record of when and by whom, never as the rule's body.
+- Given an accepted ADR whose wording follows a conversation too closely, when a page applies it, then the ADR is left as written and the page states the principle.
 - Given a page or a section that guards nothing an agent needs, when the pass finds it, then it is cut, not rewritten.
-- Given the pages before and after, when they are compared, then their length in tokens is written in the story, and no rule was lost (each old rule is traced to its new sentence).
+- Given the pages before and after, when they are compared, then their length in tokens is written in the story, and no rule was lost: each old rule is traced to its new sentence.
 
 ## Tasks
 
-To write at F20's refinement.
+One task = one commit, referenced as `EN-096.Tn`.
+
+- [ ] T1 — Measure the pages in tokens and list their rules (1 h)
+- [ ] T2 — Rewrite the pages as principles, each old rule traced (4 h)
+- [ ] T3 — Measure again and record the figures (1 h)
