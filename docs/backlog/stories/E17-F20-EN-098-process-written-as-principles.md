@@ -38,7 +38,42 @@ Tokens are estimated as characters / 4 (no tokenizer in the repository); words f
 | `agile.md` | 1,080 | 6,097 | 1,524 |
 | `retrospectives/README.md` | 44 | 373 | 93 |
 
-## Rules of the pages before (traced in T3)
+## Rules of the pages before
 
 README: R1 cadences table (13 rows); R2 evolvability review (6 questions); R3 folders table; R4 V-model mapping.
 agile: A1 flowchart of a feature and an epic; A2 four levels; A3 nine story types; A4 EN or US tip; A5 who does what; A6 cadences beyond the epic; A7 the agent's own method and tools.
+
+### After
+
+| Page | Words | Characters | Tokens (est.) | Change |
+| --- | --- | --- | --- | --- |
+| `README.md` | 836 | 5,067 | 1,267 | -3.6 % words, -6.2 % tokens |
+| `agile.md` | 1,009 | 5,781 | 1,445 | -6.6 % words, -5.2 % tokens |
+| `retrospectives/README.md` | 44 | 373 | 93 | unchanged |
+| Total | 1,889 | 11,221 | 2,805 | -5.1 % words, -5.5 % tokens |
+
+Total before: 1,991 words, 11,874 characters, 2,968 tokens. The saving is small because these pages were already short, tabular and mostly principle-shaped; the cuts below are what guarded nothing.
+
+## Trace of the rules
+
+| Old rule | New place | Change |
+| --- | --- | --- |
+| R1 cadences | README, Cadences | review and retrospective rows merged into one; the run's row shortened |
+| R1 run stops (EN-086) | README, "A run stops only on one of four things" | stated as a principle: the four stops, the reason, a question never ends a run; meaning kept |
+| R2 evolvability review | README, Evolvability review | numbered list became a table; same six questions |
+| R3 folders | README, Pages | renamed, same rows, shorter descriptions |
+| R4 V-model mapping | README, Coming from the V-model | test plan and test cases merged in one row; the "Function" column cut |
+| A1 flowchart | agile.md | kept |
+| A2 four levels | agile.md | "Example" column cut |
+| A3 story types | agile.md | "Example" column cut; NAM row shortened; a test added to tell `US` from `EN` (who would notice) |
+| A4 EN or US tip | agile.md | shortened |
+| A5 who does what | agile.md | unchanged |
+| A6 cadences beyond the epic | agile.md | the 2026-10-13 decision kept as a dated record after the rule |
+| A7 agent's own method | agile.md | purpose stated first; same two rows |
+
+Removed or merged, with reasons: the two "Example" columns (stories a reader can search; a cell per row); the "Function" column of the V-model table (repeated the first column); the review and retrospective rows (one owner, one moment). No rule's meaning changed; EN-086's run rule is kept. `retrospectives/README.md` is a bare index and was left as is.
+
+## Model trial (EN-066, Sonnet 5.5)
+
+- Duration: about 3 minutes of wall clock from first read to last commit, measured by `date`.
+- Failed tool calls: 2 (`git:sync` refused with a dirty tree; a commit refused for the scope `process`, which `commitlint.config.ts` does not list).
