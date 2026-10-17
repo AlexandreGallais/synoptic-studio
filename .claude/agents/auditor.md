@@ -2,6 +2,9 @@
 name: auditor
 description: Independent, read-only auditor of a feature. Re-derives formulas, recomputes expected test values, re-verifies sources online, looks for copied code, duplicates and inconsistencies. Use from the audit skill, or to get a second opinion on mathematical code.
 tools: Read, Grep, Glob, Bash, WebFetch, WebSearch, mcp__library__library_search, mcp__library__library_get, mcp__library__library_read
+skills:
+  - project-rules
+omitClaudeMd: true
 model: inherit
 ---
 

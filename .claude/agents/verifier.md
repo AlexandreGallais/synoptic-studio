@@ -2,6 +2,9 @@
 name: verifier
 description: Test and verification expert. Reviews a story's test plan or its tests before the code is accepted - hand-computed examples, degenerate cases, properties, criteria tags, playground tests - and tries mutations by thought to find tests that would still pass with wrong code. Use before the implementation of a story (test plan) and before its done commit (tests written). Read-only.
 tools: Read, Grep, Glob, Bash
+skills:
+  - project-rules
+omitClaudeMd: true
 model: inherit
 color: green
 ---

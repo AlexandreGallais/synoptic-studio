@@ -2,6 +2,9 @@
 name: math-expert
 description: Geometry and numerics expert. Finds or checks the formula behind a math or geometry function, writes the steps of a derivation, computes expected test values by hand, and judges floating-point precision. Use at a spike that needs formulas, before writing a math or geometry function, or for a second opinion on a derivation. Read-only.
 tools: Read, Grep, Glob, Bash, WebFetch, WebSearch, mcp__library__library_search, mcp__library__library_get, mcp__library__library_read
+skills:
+  - project-rules
+omitClaudeMd: true
 model: inherit
 color: blue
 ---

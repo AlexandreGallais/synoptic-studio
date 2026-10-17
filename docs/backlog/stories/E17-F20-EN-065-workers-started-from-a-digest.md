@@ -53,5 +53,19 @@ Each type started by a headless session (`claude -p`) in this story's worktree, 
 | Task kind | Agent type | Preloaded | First request, tokens | `general-purpose`, same task | Run's `general-purpose` |
 | --- | --- | --- | --- | --- | --- |
 | story worker | `story-worker` | `project-rules`, `worker-brief` | 9,627 | 27,843 | 38,900 |
+| research spike | `researcher` | `project-rules`, `worker-brief`, `spike` | 11,201 | 27,843 | 38,306 to 39,228 |
+| logs, backlog and merges | `clerk` | `project-rules` | 6,901 | 27,843 | 38,839 to 39,419 |
+
+The reviewers already had their type; each now starts without `CLAUDE.md`, with `project-rules` preloaded. Before and after, on the same task:
+
+| Agent type | Before, tokens | After, tokens | Saved |
+| --- | --- | --- | --- |
+| `auditor` | 15,103 | 7,608 | 7,495 |
+| `verifier` | 13,753 | 6,258 | 7,495 |
+| `doc-editor` | 13,641 | 6,146 | 7,495 |
+| `math-expert` | 15,450 | 7,925 | 7,525 |
+| `functional-analyst` | 15,439 | 7,916 | 7,523 |
+
+Every type saves: none keeps the `general-purpose` start. A run's merges and story finishing stay with the main thread (`story:finish`), which already holds what they need; the `clerk` takes the records it hands off.
 
 With `omitClaudeMd`, the memory index is not loaded either: the `story-worker`'s first request holds no instruction file. So the memory index travels with `CLAUDE.md`, not with the auto memory the page describes; the rules a worker needs from it (no personal information, the repository's tools rather than scripts) are in `project-rules`.
