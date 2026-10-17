@@ -2,7 +2,7 @@
 id: F20
 epic: E17
 title: A context diet for every agent
-status: in-progress
+status: done
 ---
 
 # E17 · F20 — A context diet for every agent
@@ -54,4 +54,4 @@ In delivery order. Stories stay `draft` until F20's `/run` sets them `ready`.
 | [EN-098](../stories/E17-F20-EN-098-process-written-as-principles.md) | Enabler | The process pages written as principles | done |
 | [EN-099](../stories/E17-F20-EN-099-tooling-docs-written-as-principles.md) | Enabler | The tooling docs written as principles | done |
 | [AUD-022](../stories/E17-F20-AUD-022-audit-f20.md) | Audit | Audit F20 | done |
-| [VAL-021](../stories/E17-F20-VAL-021-validate-f20.md) | Validation | Validate F20 | ready |
+| [VAL-021](../stories/E17-F20-VAL-021-validate-f20.md) | Validation | Validate F20 | done |

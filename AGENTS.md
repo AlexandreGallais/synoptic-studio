@@ -21,7 +21,7 @@ A library of small named functions, each backed by a verified source, composed s
 | E01 shapes from numbers | delivered, RET-001 | rectangle, regular polygon, anchor, radius per corner, free shape, node editing, rotation, stretched polygon |
 | E14 curves | delivered, RET-002 | points with handles, the round shape as four cubic sides, every calculation named (ADR-0046 to ADR-0049) |
 | E15 text | delivered, RET-003 | font metrics from font files, a text in a box, colors, fonts embedded at export, the checklist page `?checklist=E15` (ADR-0052 to ADR-0062) |
-| E17 fast tooling, Oxc and Rust | in progress | F18 and F19 validated (checks on Oxc, TypeScript 7 and Rust); F20, the context diet; then F21, the agent's tools in Rust; the release of 0.3 (#259) at E17's end |
+| E17 fast tooling, Oxc and Rust | in progress | F18 and F19 validated (checks on Oxc, TypeScript 7 and Rust); F20 validated on 2026-10-18 (VAL-021: the context diet, a story worker's first request from 38,900 tokens to 10,600, the agent pages −20 %); then F21, the agent's tools in Rust; the release of 0.3 (#259) at E17's end |
 | E02 edit shapes | next | — |
 
 **Scope** (ADR-0030): a finished free V1, then new features only in a paid pro edition. A request that looks pro: say so and ask; pro ideas go to `docs/domain/editions.md`. Only `ready` stories are implemented; the Product Owner's `/run` is the go-ahead, after which the agent sets its scope `ready` itself (ADR-0072).

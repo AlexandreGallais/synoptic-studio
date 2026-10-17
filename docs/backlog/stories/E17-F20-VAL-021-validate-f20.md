@@ -3,7 +3,7 @@ id: VAL-021
 epic: E17
 feature: F20
 title: Validate F20
-status: ready
+status: done
 points: 1
 ---
 
