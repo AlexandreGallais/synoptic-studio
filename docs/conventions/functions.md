@@ -35,6 +35,13 @@ Every top-level function carries **exactly one** `@kind`. A function mixing two 
 
 Why a JSDoc tag and not a decorator: a TypeScript decorator only applies to classes and their members, never to a free function (`REF-TS-DECORATORS`). The tag plays the same role, and the project's linter reads it (`tools/lint`).
 
+## One business context per function
+
+The rule behind the limits (`AGENTS.md`, golden rules, 2026-10-17): a function holds **one business context**. When a calculation needs two others that a field names, those two are named functions of their own, and the calculation reads as their composition (ADR-0049). The numeric limits below — lines, statements, complexity, depth, nested calls — are **guardrails** that flag a function holding more than one context; they never decide alone:
+
+- a split that gives two halves invented names (`placeA`, `placeB`, `placeRest`) of a context that cannot be divided is the sign of a limit that is wrong for that kind, not of a function to split: the limit is reshaped, with its evidence and an ADR superseding ADR-0011's values;
+- measured by EN-093 ([rules](./rules.md#function-limits-adr-0011-measured)): of 885 functions, 233 sit on a limit, almost all procedures at complexity 3 or depth 1; of the 265 called from one place only, a sample of 45 each names a context of its field (`edgeLengths`, `cubicVelocity`, `parseNameRecords`, `stretchedRightHalf`), none an invented half. The limits stay as they are.
+
 ## Limits per kind (`local/kind-limits`)
 
 Values: `tools/lint/src/settings.rs` (the project's linter, `local/kind-limits`); their loosest, the global ceilings of the core rules (`complexity`, `max-lines-per-function`…), in `.oxlintrc.json`.

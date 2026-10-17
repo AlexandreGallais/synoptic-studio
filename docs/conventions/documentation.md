@@ -21,7 +21,7 @@ Every top-level function, type and module constant carries a `/** … */` block;
 ## Shape (`jsdoc/match-description`, `jsdoc/sort-tags`, `jsdoc/tag-lines`)
 
 - Main description: **sentences** (capital letter, final period). The formula is written in it when one exists.
-- `@param name - …` and `@returns …`: **fragments** without final period.
+- `@param name - …` and `@returns …`: **fragments** without final period. Required everywhere but in test files (`*.test.ts`), whose helpers carry their description alone: their typed signature sits under it and only the test beside them reads them (EN-093, [rules](./rules.md#consistency-or-ceremony)); a tag written there is still checked.
 - Tag order: `@kind`, then `@template @param @returns @yields @throws @rejects`, then `@see @deprecated`. One blank line between the description and the tags, none between tags.
 - No type in JSDoc (`jsdoc/no-types`): TypeScript holds them.
 - One-line block when it fits on one line: `/** Separator between commands. */`.

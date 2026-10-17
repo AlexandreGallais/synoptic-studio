@@ -31,6 +31,15 @@
         "oxc/no-accumulating-spread": "error",
         "oxc/erasing-op": "error",
         "oxc/misrefactored-assign-op": "error",
+        "oxc/bad-comparison-sequence": "error",
+        "oxc/bad-match-all-arg": "error",
+        "oxc/bad-min-max-func": "error",
+        "oxc/bad-replace-all-arg": "error",
+        "oxc/const-comparisons": "error",
+        "oxc/missing-throw": "error",
+        "oxc/number-arg-out-of-range": "error",
+        "oxc/only-used-in-recursion": "error",
+        "unicorn/no-length-as-slice-end": "error",
         "no-useless-concat": "error",
         "sort-imports": [
           "error",
@@ -1179,9 +1188,11 @@
           }
         ],
         "max-statements": "off",
-        "no-magic-numbers": "off"
+        "no-magic-numbers": "off",
+        "jsdoc/require-param": "off",
+        "jsdoc/require-returns": "off"
       },
-      "plugins": ["typescript"]
+      "plugins": ["typescript", "jsdoc"]
     },
     {
       "files": ["./*.config.ts", "docs/.vitepress/config.ts", "docs/.vitepress/theme/index.ts"],

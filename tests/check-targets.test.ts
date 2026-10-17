@@ -190,12 +190,11 @@ describe("check tools given explicit targets (EN-045)", () => {
     expect(existsSync(join(ROOT, ".prettierrc.json"))).toBe(false);
   });
 
-  it("[F19.AC1] gives oxlint the same targets in lint, lint:fix and fix, every tracked TypeScript file", () => {
+  it("[F19.AC1] gives oxlint the same targets in lint and fix, every tracked TypeScript file", () => {
     const targets = targetsOf("lint", "oxlint");
     const sources = TRACKED.filter((path) => path.endsWith(".ts"));
 
     expect(targets.length).toBeGreaterThan(0);
-    expect(targetsOf("lint:fix", "oxlint")).toEqual(targets);
     expect(targetsOf("fix", "oxlint")).toEqual(targets);
 
     // The Rust crates hold TypeScript only as their tests' fixtures, which no linter reads.
@@ -204,10 +203,10 @@ describe("check tools given explicit targets (EN-045)", () => {
     ).toEqual([]);
   });
 
-  it("[F19.AC3] gives the project's linter oxlint's targets in lint, lint:fix and fix, after oxlint", () => {
+  it("[F19.AC3] gives the project's linter oxlint's targets in lint and fix, after oxlint", () => {
     const targets = targetsOf("lint", "oxlint");
 
-    for (const script of ["lint", "lint:fix", "fix"]) {
+    for (const script of ["lint", "fix"]) {
       const commands = (SCRIPTS.get(script) ?? "").split("&&").map((part) => part.trim());
 
       expect(targetsOf(script, PROJECT_LINT)).toEqual(targetsOf("lint", PROJECT_LINT));

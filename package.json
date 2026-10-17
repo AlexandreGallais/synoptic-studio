@@ -38,7 +38,6 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "lint": "oxlint --type-check --deny-warnings *.ts .claude/hooks docs playground scripts src tests && cargo run --release -q -p lint -- *.ts *.md .claude/agents .claude/hooks .claude/rules .claude/skills .github docs playground scripts src tests",
-    "lint:fix": "oxlint --type-check --fix --deny-warnings *.ts .claude/hooks docs playground scripts src tests && cargo run --release -q -p lint -- --fix *.ts *.md .claude/agents .claude/hooks .claude/rules .claude/skills .github docs playground scripts src tests",
     "lint:secrets": "git ls-files -z | xargs -0 secretlint --no-glob",
     "format": "cargo run --release -q -p format -- --write \"*\" .cargo .claude/agents .claude/hooks .claude/rules .claude/skills .claude/settings.json .github .husky .vscode docs playground scripts src tests tools",
     "format:check": "cargo run --release -q -p format -- --check \"*\" .cargo .claude/agents .claude/hooks .claude/rules .claude/skills .claude/settings.json .github .husky .vscode docs playground scripts src tests tools",

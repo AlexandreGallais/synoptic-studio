@@ -355,6 +355,13 @@ describe("Installed fonts (US-036)", () => {
 
     expect(readOptions("text-font")).toEqual(["Inter", "Test Sans"]);
     expect(readDisabledState("text-font")).toBe("true");
+
+    // The file fails once the page reads it: rejected before, the promise has no handler yet and
+    // Node.js reports an unhandled rejection, which a loaded machine made happen (EN-093).
+    await vi.waitFor(() => {
+      expect(broken).toHaveBeenCalledOnce();
+    });
+
     reject(new Error("No file."));
     await waitForPageTasks();
 
