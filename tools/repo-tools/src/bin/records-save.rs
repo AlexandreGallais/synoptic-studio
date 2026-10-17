@@ -98,7 +98,7 @@ fn run() -> Result<(), String> {
 
     let home = env::var("HOME").unwrap_or_default();
     let library =
-        library_file(env::var("LIBRARY_PATH").ok(), Some(home.clone())).unwrap_or_default();
+        library_file(env::var("AGENT_LIBRARY_FILE").ok(), Some(home.clone())).unwrap_or_default();
 
     for copy in record_copies(&main, Path::new(&home), &library) {
         let saved = save(&copy, &folder)?;
@@ -129,12 +129,16 @@ fn run() -> Result<(), String> {
     Ok(())
 }
 
-fn main() -> ExitCode {
+fn work() -> u8 {
     match run() {
-        Ok(()) => ExitCode::SUCCESS,
+        Ok(()) => 0,
         Err(error) => {
             eprintln!("records-save: {error}");
-            ExitCode::from(1)
+            1
         }
     }
+}
+
+fn main() -> ExitCode {
+    tool_use::run("records-save", "", work)
 }

@@ -190,7 +190,7 @@ fn records_finding(root: &Path) -> Finding {
     }
 }
 
-fn main() -> ExitCode {
+fn work() -> u8 {
     let arguments: Vec<String> = env::args().skip(1).collect();
     let epic = arguments.first().map_or("", String::as_str);
     let since = arguments.get(1).map_or("", String::as_str);
@@ -231,9 +231,9 @@ fn main() -> ExitCode {
     ]);
 
     println!("{}", table(&findings));
-    if findings.iter().all(|finding| finding.is_ok) {
-        ExitCode::SUCCESS
-    } else {
-        ExitCode::from(1)
-    }
+    u8::from(!findings.iter().all(|finding| finding.is_ok))
+}
+
+fn main() -> ExitCode {
+    tool_use::run("epic-check", "", work)
 }
