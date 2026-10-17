@@ -34,7 +34,3 @@ One task = one commit, referenced as `EN-069.Tn`.
 - **Time**: `check:rust` about 17 to 20 s on a built workspace against 11 to 14 s with `cargo test` and EN-070's Windows check (four runs each, the machine loaded by other worktrees); the advisories take 0.3 s, the instrumented build and run of the tests the rest. check:all's total is unchanged: the test lane stays the slowest.
 - **Installed on this machine** (for the next worktrees): rustup's `llvm-tools`, `cargo install --locked cargo-llvm-cov@0.9.1 cargo-deny@0.20.2` (about 3 minutes), the RustSec database already under `~/.cargo/advisory-dbs/`. The CI job `quality` adds the same `cargo install` and `cargo deny fetch db` before `check:all`, not yet seen running.
 - `deps:outdated` and `deps:tools` do not see the two cargo tools: their versions are checked by hand (`docs/tooling/dependencies.md`, Rust tools).
-
-### Journal
-
-- `#run` EN-069: the Rust workspace's tests run under `cargo llvm-cov` with a floor of 93 % of lines and 93 % of functions (measured 93.88 % and 93.45 % after EN-070), and `cargo deny --offline check advisories` checks its crates against RustSec in `check:rust`, the CI fetching the database; a planted smallvec 1.6.0 fails naming RUSTSEC-2021-0003; the lane went from about 12 s to 18 s.
