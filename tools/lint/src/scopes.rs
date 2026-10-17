@@ -173,6 +173,15 @@ pub fn rules_for(path: &str) -> Vec<&'static str> {
     on
 }
 
+/// The rules that run on a file: those its scopes set, then Unicorn's, which no scope turns
+/// off (EN-078).
+#[must_use]
+pub fn linted_by(path: &str) -> Vec<&'static str> {
+    let mut on = rules_for(path);
+    on.extend(crate::rules::unicorn::NAMES);
+    on
+}
+
 #[cfg(test)]
 mod tests {
     use super::{is_ignored, rules_for};
@@ -290,5 +299,18 @@ mod tests {
         assert!(is_ignored("tools/api-pages/tests/fixtures/a.ts"));
         assert!(is_ignored("node_modules/a/b.ts"));
         assert!(!is_ignored("src/index.ts"));
+    }
+
+    #[test]
+    fn runs_unicorn_s_rules_after_the_scoped_ones_on_every_file() {
+        for path in ["src/math/a.ts", "playground/a/b.test.ts", "scripts/a.ts"] {
+            let on = super::linted_by(path);
+
+            assert_eq!(
+                on[..on.len() - crate::rules::unicorn::NAMES.len()],
+                rules_for(path)
+            );
+            assert!(on.ends_with(crate::rules::unicorn::NAMES), "{path}");
+        }
     }
 }

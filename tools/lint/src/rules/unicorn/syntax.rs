@@ -1,0 +1,594 @@
+//! What Unicorn's rules share, read from the syntax alone: method calls, TypeScript's wrappers
+//! peeled off, global names, static numbers, the binding an identifier reads, and the kind of
+//! collection a receiver is known to be (`eslint-plugin-unicorn`'s `utils/`, without type
+//! information).
+
+use oxc_ast::AstKind;
+use oxc_ast::ast::{
+    Argument, ArrowFunctionExpression, BindingPattern, CallExpression, Expression, FormalParameter,
+    FormalParameters, Function, IdentifierReference, Statement, TSType, TSTypeName,
+    TSTypeOperatorOperator, UnaryOperator, VariableDeclarationKind, VariableDeclarator,
+};
+use oxc_semantic::{AstNode, NodeId, SymbolId};
+use oxc_span::{GetSpan, Span};
+
+use crate::source::Source;
+
+/// A call of a method named statically, `object.name(…)`.
+#[derive(Clone, Copy)]
+pub struct MethodCall<'b, 'a> {
+    /// The call.
+    pub call: &'b CallExpression<'a>,
+    /// The receiver.
+    pub object: &'b Expression<'a>,
+    /// The method's name.
+    pub name: &'a str,
+    /// Where the name is written.
+    pub property: Span,
+    /// Whether the member is optional, `object?.name(…)`.
+    pub optional_member: bool,
+}
+
+impl<'b, 'a> MethodCall<'b, 'a> {
+    /// The arguments, when none is spread.
+    #[must_use]
+    pub fn arguments(&self) -> Option<Vec<&'b Expression<'a>>> {
+        self.call
+            .arguments
+            .iter()
+            .map(Argument::as_expression)
+            .collect()
+    }
+
+    /// Whether it is a plain call, neither its member nor its call optional.
+    #[must_use]
+    pub fn is_plain(&self) -> bool {
+        !self.optional_member && !self.call.optional
+    }
+}
+
+/// The method call a call is, when its callee is a static member.
+#[must_use]
+pub fn method_call<'b, 'a>(call: &'b CallExpression<'a>) -> Option<MethodCall<'b, 'a>> {
+    match &call.callee {
+        Expression::StaticMemberExpression(member) => Some(MethodCall {
+            call,
+            object: &member.object,
+            name: member.property.name.as_str(),
+            property: member.property.span,
+            optional_member: member.optional,
+        }),
+        _ => None,
+    }
+}
+
+/// The method call an expression is, with a name among some.
+#[must_use]
+pub fn method_named<'b, 'a>(
+    expression: &'b Expression<'a>,
+    names: &[&str],
+) -> Option<MethodCall<'b, 'a>> {
+    match expression {
+        Expression::CallExpression(call) => {
+            method_call(call).filter(|method| names.contains(&method.name))
+        }
+        _ => None,
+    }
+}
+
+/// An expression without the TypeScript wrappers that do nothing at run time: `as`,
+/// `satisfies`, `!`, `<T>` and `f<T>`.
+#[must_use]
+pub fn unwrap<'b, 'a>(expression: &'b Expression<'a>) -> &'b Expression<'a> {
+    match expression {
+        Expression::TSAsExpression(wrapper) => unwrap(&wrapper.expression),
+        Expression::TSSatisfiesExpression(wrapper) => unwrap(&wrapper.expression),
+        Expression::TSNonNullExpression(wrapper) => unwrap(&wrapper.expression),
+        Expression::TSTypeAssertion(wrapper) => unwrap(&wrapper.expression),
+        Expression::TSInstantiationExpression(wrapper) => unwrap(&wrapper.expression),
+        _ => expression,
+    }
+}
+
+/// The text of a range of the file.
+#[must_use]
+pub fn text<'a>(source: &Source<'_, 'a>, span: Span) -> &'a str {
+    source
+        .text
+        .get(span.start as usize..span.end as usize)
+        .unwrap_or_default()
+}
+
+/// Whether a range of the file holds a comment.
+#[must_use]
+pub fn has_comment(source: &Source, span: Span) -> bool {
+    source
+        .program
+        .comments
+        .iter()
+        .any(|comment| comment.span.start >= span.start && comment.span.end <= span.end)
+}
+
+/// The kind of the parent of a node.
+#[must_use]
+pub fn parent<'a>(source: &Source<'_, 'a>, id: NodeId) -> AstKind<'a> {
+    source.semantic.nodes().parent_kind(id)
+}
+
+/// The kind of the first ancestor of a node that is not a TypeScript wrapper nor an optional
+/// chain, with the id of the child it holds.
+#[must_use]
+pub fn outer_parent<'a>(source: &Source<'_, 'a>, id: NodeId) -> (AstKind<'a>, NodeId) {
+    let nodes = source.semantic.nodes();
+    let mut child = id;
+    loop {
+        let parent = nodes.parent_node(child);
+        match parent.kind() {
+            AstKind::TSAsExpression(_)
+            | AstKind::TSSatisfiesExpression(_)
+            | AstKind::TSNonNullExpression(_)
+            | AstKind::TSTypeAssertion(_)
+            | AstKind::TSInstantiationExpression(_)
+            | AstKind::ChainExpression(_) => child = parent.id(),
+            kind => return (kind, child),
+        }
+    }
+}
+
+/// Whether an expression is an identifier of a name that no binding of the file declares.
+#[must_use]
+pub fn is_global(source: &Source, expression: &Expression, name: &str) -> bool {
+    match expression {
+        Expression::Identifier(identifier) => {
+            identifier.name == name && symbol_of(source, identifier).is_none()
+        }
+        _ => false,
+    }
+}
+
+/// The symbol an identifier reads, when the file declares it.
+#[must_use]
+pub fn symbol_of(source: &Source, identifier: &IdentifierReference) -> Option<SymbolId> {
+    let reference = identifier.reference_id.get()?;
+    source
+        .semantic
+        .scoping()
+        .get_reference(reference)
+        .symbol_id()
+}
+
+/// The number an expression is written as: a numeric literal, signed or not, through
+/// TypeScript's wrappers.
+#[must_use]
+pub fn static_number(expression: &Expression) -> Option<f64> {
+    match unwrap(expression) {
+        Expression::NumericLiteral(literal) => Some(literal.value),
+        Expression::UnaryExpression(unary) => {
+            let value = static_number(&unary.argument)?;
+            match unary.operator {
+                UnaryOperator::UnaryNegation => Some(-value),
+                UnaryOperator::UnaryPlus => Some(value),
+                _ => None,
+            }
+        }
+        _ => None,
+    }
+}
+
+/// Where an identifier's binding is declared.
+pub enum Binding<'a> {
+    /// A variable, with its declaration's kind.
+    Variable(&'a VariableDeclarator<'a>, VariableDeclarationKind),
+    /// A parameter.
+    Parameter(&'a FormalParameter<'a>),
+}
+
+/// The declaration of the binding an identifier reads, when it is a variable or a parameter
+/// named directly (not destructured).
+#[must_use]
+pub fn binding_of<'a>(source: &Source<'_, 'a>, expression: &Expression) -> Option<Binding<'a>> {
+    let Expression::Identifier(identifier) = expression else {
+        return None;
+    };
+    let symbol = symbol_of(source, identifier)?;
+    let scoping = source.semantic.scoping();
+    if scoping.symbol_redeclarations(symbol).len() > 1 {
+        return None;
+    }
+    let declaration = scoping.symbol_declaration(symbol);
+    match source.semantic.nodes().kind(declaration) {
+        AstKind::VariableDeclarator(declarator)
+            if matches!(declarator.id, BindingPattern::BindingIdentifier(_)) =>
+        {
+            match source.semantic.nodes().parent_kind(declaration) {
+                AstKind::VariableDeclaration(statement) => {
+                    Some(Binding::Variable(declarator, statement.kind))
+                }
+                _ => None,
+            }
+        }
+        AstKind::FormalParameter(parameter)
+            if matches!(parameter.pattern, BindingPattern::BindingIdentifier(_)) =>
+        {
+            Some(Binding::Parameter(parameter))
+        }
+        _ => None,
+    }
+}
+
+/// The value a `const` binding is initialized with.
+#[must_use]
+pub fn const_init<'a>(
+    source: &Source<'_, 'a>,
+    expression: &Expression,
+) -> Option<&'a Expression<'a>> {
+    match binding_of(source, expression)? {
+        Binding::Variable(declarator, VariableDeclarationKind::Const) => declarator.init.as_ref(),
+        _ => None,
+    }
+}
+
+/// What a value is known to be, from its syntax, its binding or its annotation.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Kind {
+    /// An `Array` or a tuple.
+    Array,
+    /// A typed array: indexed, but not an `Array`.
+    TypedArray,
+    /// A `Map`, `ReadonlyMap` or `WeakMap`.
+    Map,
+    /// A `Set`, `ReadonlySet` or `WeakSet`.
+    Set,
+    /// Something else known: an object, a function, a string, an instance of another class.
+    Other,
+}
+
+/// The typed arrays' names.
+const TYPED_ARRAYS: [&str; 11] = [
+    "Int8Array",
+    "Uint8Array",
+    "Uint8ClampedArray",
+    "Int16Array",
+    "Uint16Array",
+    "Int32Array",
+    "Uint32Array",
+    "Float32Array",
+    "Float64Array",
+    "BigInt64Array",
+    "BigUint64Array",
+];
+
+/// The kind a type annotation names.
+#[must_use]
+pub fn kind_of_type(annotation: &TSType) -> Option<Kind> {
+    match annotation {
+        TSType::TSArrayType(_) | TSType::TSTupleType(_) => Some(Kind::Array),
+        TSType::TSTypeOperatorType(operator)
+            if operator.operator == TSTypeOperatorOperator::Readonly =>
+        {
+            kind_of_type(&operator.type_annotation)
+        }
+        TSType::TSParenthesizedType(inner) => kind_of_type(&inner.type_annotation),
+        TSType::TSTypeReference(reference) => match &reference.type_name {
+            TSTypeName::IdentifierReference(name) => match name.name.as_str() {
+                "Array" | "ReadonlyArray" => Some(Kind::Array),
+                "Map" | "ReadonlyMap" | "WeakMap" => Some(Kind::Map),
+                "Set" | "ReadonlySet" | "WeakSet" => Some(Kind::Set),
+                "CanvasRenderingContext2D" | "OffscreenCanvasRenderingContext2D" => {
+                    Some(Kind::Other)
+                }
+                other if TYPED_ARRAYS.contains(&other) => Some(Kind::TypedArray),
+                _ => None,
+            },
+            _ => None,
+        },
+        TSType::TSUnionType(union) => {
+            let mut kinds = union.types.iter().map(kind_of_type);
+            let first = kinds.next()??;
+            kinds.all(|kind| kind == Some(first)).then_some(first)
+        }
+        TSType::TSStringKeyword(_)
+        | TSType::TSNumberKeyword(_)
+        | TSType::TSBooleanKeyword(_)
+        | TSType::TSBigIntKeyword(_)
+        | TSType::TSSymbolKeyword(_)
+        | TSType::TSTypeLiteral(_)
+        | TSType::TSFunctionType(_)
+        | TSType::TSLiteralType(_)
+        | TSType::TSTemplateLiteralType(_) => Some(Kind::Other),
+        _ => None,
+    }
+}
+
+/// The kind of a value, when its syntax, its `const` binding or its annotation tells it.
+#[must_use]
+pub fn kind_of(source: &Source, expression: &Expression) -> Option<Kind> {
+    kind_at_depth(source, expression, 0)
+}
+
+/// `kind_of`, a binding followed at most a few times.
+fn kind_at_depth(source: &Source, expression: &Expression, depth: u8) -> Option<Kind> {
+    match expression {
+        Expression::TSAsExpression(wrapper) => kind_of_type(&wrapper.type_annotation)
+            .or_else(|| kind_at_depth(source, &wrapper.expression, depth)),
+        Expression::TSSatisfiesExpression(wrapper) => kind_of_type(&wrapper.type_annotation)
+            .or_else(|| kind_at_depth(source, &wrapper.expression, depth)),
+        Expression::TSTypeAssertion(wrapper) => kind_of_type(&wrapper.type_annotation)
+            .or_else(|| kind_at_depth(source, &wrapper.expression, depth)),
+        Expression::TSNonNullExpression(wrapper) => {
+            kind_at_depth(source, &wrapper.expression, depth)
+        }
+        Expression::ArrayExpression(_) => Some(Kind::Array),
+        Expression::ObjectExpression(_)
+        | Expression::FunctionExpression(_)
+        | Expression::ArrowFunctionExpression(_)
+        | Expression::ClassExpression(_)
+        | Expression::TemplateLiteral(_)
+        | Expression::StringLiteral(_)
+        | Expression::NumericLiteral(_)
+        | Expression::BooleanLiteral(_) => Some(Kind::Other),
+        Expression::NewExpression(new) => Some(match &new.callee {
+            Expression::Identifier(callee) if symbol_of(source, callee).is_none() => {
+                match callee.name.as_str() {
+                    "Array" => Kind::Array,
+                    "Map" | "WeakMap" => Kind::Map,
+                    "Set" | "WeakSet" => Kind::Set,
+                    name if TYPED_ARRAYS.contains(&name) => Kind::TypedArray,
+                    _ => Kind::Other,
+                }
+            }
+            _ => Kind::Other,
+        }),
+        Expression::CallExpression(call) => {
+            if is_global(source, &call.callee, "Array") {
+                return Some(Kind::Array);
+            }
+            let method = method_call(call)?;
+            let array_maker = is_global(source, method.object, "Array")
+                && matches!(method.name, "from" | "of")
+                && method.is_plain();
+            array_maker.then_some(Kind::Array)
+        }
+        Expression::Identifier(_) if depth < 4 => match binding_of(source, expression)? {
+            Binding::Variable(declarator, kind) => {
+                if let Some(annotation) = &declarator.type_annotation {
+                    return kind_of_type(&annotation.type_annotation);
+                }
+                if kind != VariableDeclarationKind::Const {
+                    return None;
+                }
+                kind_at_depth(source, declarator.init.as_ref()?, depth + 1)
+            }
+            Binding::Parameter(parameter) => parameter
+                .type_annotation
+                .as_ref()
+                .and_then(|annotation| kind_of_type(&annotation.type_annotation)),
+        },
+        _ => None,
+    }
+}
+
+/// Whether a receiver is known not to be an indexed collection (an `Array` or a typed array),
+/// as Unicorn's `isKnownNonIndexedCollection`.
+#[must_use]
+pub fn is_known_non_indexed(source: &Source, expression: &Expression) -> bool {
+    matches!(
+        kind_of(source, expression),
+        Some(Kind::Map | Kind::Set | Kind::Other)
+    )
+}
+
+/// Whether an array rule skips a receiver known not to be an array, unless the receiver is
+/// written as a literal, whose mismatch shows where it is called (`shouldSkipKnownNonArrayReceiver`).
+#[must_use]
+pub fn skips_non_array_receiver(source: &Source, expression: &Expression) -> bool {
+    !matches!(
+        expression,
+        Expression::ArrayExpression(_)
+            | Expression::FunctionExpression(_)
+            | Expression::StringLiteral(_)
+            | Expression::NumericLiteral(_)
+            | Expression::BooleanLiteral(_)
+            | Expression::NullLiteral(_)
+            | Expression::RegExpLiteral(_)
+            | Expression::BigIntLiteral(_)
+            | Expression::ObjectExpression(_)
+            | Expression::TemplateLiteral(_)
+    ) && is_known_non_indexed(source, expression)
+}
+
+/// A function written inline: its parameters, whether it is `async` or a generator or carries
+/// a return type or type parameters, and its body's statements or expression.
+pub struct Callback<'b, 'a> {
+    /// Its parameters.
+    pub params: &'b FormalParameters<'a>,
+    /// Whether it is `async`, a generator, or typed by a return type or type parameters.
+    pub special: bool,
+    /// Its concise body.
+    pub expression: Option<&'b Expression<'a>>,
+    /// Its block's statements.
+    pub statements: &'b [Statement<'a>],
+}
+
+/// The inline function an expression is: an arrow or a function expression.
+#[must_use]
+pub fn callback<'b, 'a>(expression: &'b Expression<'a>) -> Option<Callback<'b, 'a>> {
+    match expression {
+        Expression::ArrowFunctionExpression(arrow) => Some(arrow_callback(arrow)),
+        Expression::FunctionExpression(function) => function_callback(function),
+        _ => None,
+    }
+}
+
+/// An arrow's parts.
+fn arrow_callback<'b, 'a>(arrow: &'b ArrowFunctionExpression<'a>) -> Callback<'b, 'a> {
+    Callback {
+        params: &arrow.params,
+        special: arrow.r#async || arrow.return_type.is_some() || arrow.type_parameters.is_some(),
+        expression: arrow.get_expression(),
+        statements: arrow
+            .get_function_body()
+            .map_or(&[], |body| body.statements.as_slice()),
+    }
+}
+
+/// A function expression's parts.
+fn function_callback<'b, 'a>(function: &'b Function<'a>) -> Option<Callback<'b, 'a>> {
+    let body = function.body.as_ref()?;
+    Some(Callback {
+        params: &function.params,
+        special: function.r#async
+            || function.generator
+            || function.return_type.is_some()
+            || function.type_parameters.is_some(),
+        expression: None,
+        statements: body.statements.as_slice(),
+    })
+}
+
+impl<'b, 'a> Callback<'b, 'a> {
+    /// The expression it returns: its concise body, or the argument of its only statement when
+    /// that is a `return` (`getFunctionReturnExpression`).
+    #[must_use]
+    pub fn returned(&self) -> Option<&'b Expression<'a>> {
+        if self.expression.is_some() {
+            return self.expression;
+        }
+        match self.statements {
+            [Statement::ReturnStatement(statement)] => statement.argument.as_ref(),
+            _ => None,
+        }
+    }
+
+    /// The names of its parameters, when each is a plain identifier and none is rest.
+    #[must_use]
+    pub fn parameter_names(&self) -> Option<Vec<&'a str>> {
+        if self.params.rest.is_some() {
+            return None;
+        }
+        self.params
+            .items
+            .iter()
+            .map(|parameter| match &parameter.pattern {
+                BindingPattern::BindingIdentifier(identifier)
+                    if parameter.initializer.is_none() =>
+                {
+                    Some(identifier.name.as_str())
+                }
+                _ => None,
+            })
+            .collect()
+    }
+}
+
+/// Whether two expressions read the same reference: the same names along the same static
+/// members (`isSameReference`).
+#[must_use]
+pub fn same_reference(left: &Expression, right: &Expression) -> bool {
+    let (left, right) = (unwrap(left), unwrap(right));
+    match (left, right) {
+        (Expression::Identifier(a), Expression::Identifier(b)) => a.name == b.name,
+        (Expression::ThisExpression(_), Expression::ThisExpression(_))
+        | (Expression::Super(_), Expression::Super(_))
+        | (Expression::NullLiteral(_), Expression::NullLiteral(_)) => true,
+        (Expression::StringLiteral(a), Expression::StringLiteral(b)) => a.value == b.value,
+        (Expression::NumericLiteral(a), Expression::NumericLiteral(b)) => {
+            a.value.total_cmp(&b.value).is_eq()
+        }
+        (Expression::BooleanLiteral(a), Expression::BooleanLiteral(b)) => a.value == b.value,
+        _ => match (static_member(left), static_member(right)) {
+            (Some((a_object, a_name)), Some((b_object, b_name))) => {
+                a_name == b_name && same_reference(a_object, b_object)
+            }
+            _ => match (left, right) {
+                (
+                    Expression::ComputedMemberExpression(a),
+                    Expression::ComputedMemberExpression(b),
+                ) => {
+                    same_reference(&a.object, &b.object)
+                        && same_reference(&a.expression, &b.expression)
+                }
+                _ => false,
+            },
+        },
+    }
+}
+
+/// The object and the name of a member read statically: `a.b`, `a["b"]`, ``a[`b`]``, `a[0]`.
+#[must_use]
+pub fn static_member<'b, 'a>(
+    expression: &'b Expression<'a>,
+) -> Option<(&'b Expression<'a>, String)> {
+    match expression {
+        Expression::StaticMemberExpression(member) => {
+            Some((&member.object, member.property.name.to_string()))
+        }
+        Expression::ComputedMemberExpression(member) => match &member.expression {
+            Expression::StringLiteral(literal) => Some((&member.object, literal.value.to_string())),
+            Expression::NumericLiteral(literal) => {
+                Some((&member.object, literal.value.to_string()))
+            }
+            Expression::TemplateLiteral(template) if template.expressions.is_empty() => Some((
+                &member.object,
+                template.quasis.first()?.value.cooked?.to_string(),
+            )),
+            _ => None,
+        },
+        _ => None,
+    }
+}
+
+/// Whether an expression needs parentheses to stand as the operand of a unary operator.
+#[must_use]
+pub fn needs_parentheses_as_operand(expression: &Expression) -> bool {
+    matches!(
+        expression,
+        Expression::BinaryExpression(_)
+            | Expression::LogicalExpression(_)
+            | Expression::ConditionalExpression(_)
+            | Expression::AssignmentExpression(_)
+            | Expression::SequenceExpression(_)
+            | Expression::ArrowFunctionExpression(_)
+            | Expression::YieldExpression(_)
+            | Expression::TSAsExpression(_)
+            | Expression::TSSatisfiesExpression(_)
+    )
+}
+
+/// The text of an expression negated with `!`, parenthesized when needed
+/// (`getNegatedExpressionText`).
+#[must_use]
+pub fn negated_text(source: &Source, expression: &Expression) -> String {
+    let inner = text(source, expression.span());
+    if needs_parentheses_as_operand(expression) {
+        format!("!({inner})")
+    } else {
+        format!("!{inner}")
+    }
+}
+
+/// Whether a node is the whole of a statement that discards its value.
+#[must_use]
+pub fn is_discarded(source: &Source, node: &AstNode) -> bool {
+    matches!(
+        outer_parent(source, node.id()).0,
+        AstKind::ExpressionStatement(_)
+    )
+}
+
+/// Whether an expression is a path of static members from a name or `this`: `a.b.c`.
+#[must_use]
+pub fn is_path(expression: &Expression, path: &str) -> bool {
+    let (rest, last) = match path.rsplit_once('.') {
+        Some((rest, last)) => (Some(rest), last),
+        None => (None, path),
+    };
+    match (expression, rest) {
+        (Expression::StaticMemberExpression(member), Some(rest)) => {
+            member.property.name == last && is_path(&member.object, rest)
+        }
+        (Expression::Identifier(identifier), None) => identifier.name == last,
+        (Expression::ThisExpression(_), None) => last == "this",
+        _ => false,
+    }
+}
