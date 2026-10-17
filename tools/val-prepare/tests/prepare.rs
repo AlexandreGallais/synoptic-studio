@@ -23,10 +23,26 @@ fn feature_text(id: &str, epic: &str, count: usize) -> String {
          # {epic} · {id}\n\n## Acceptance criteria\n\n{criteria}\n## Stories\n\n1. Not a criterion.\n"
     )
 }
+/// A temporary repository, removed when the test ends, even on a failure.
+struct Root(PathBuf);
+
+impl Drop for Root {
+    fn drop(&mut self) {
+        let _ = fs::remove_dir_all(&self.0);
+    }
+}
+
+impl std::ops::Deref for Root {
+    type Target = PathBuf;
+
+    fn deref(&self) -> &PathBuf {
+        &self.0
+    }
+}
 
 /// A repository of its own: a copy of the playground's checklists and one feature file per
 /// `(id, epic, criteria)`.
-fn repository(name: &str, features: &[(&str, &str, usize)]) -> PathBuf {
+fn repository(name: &str, features: &[(&str, &str, usize)]) -> Root {
     let root = std::env::temp_dir().join(format!("val-prepare-{}-{name}", std::process::id()));
     let checklists = root.join("playground/checklists");
     let backlog = root.join("docs/backlog/features");
@@ -49,7 +65,7 @@ fn repository(name: &str, features: &[(&str, &str, usize)]) -> PathBuf {
         fs::write(file, feature_text(id, epic, *count)).unwrap();
     }
 
-    root
+    Root(root)
 }
 
 fn read(root: &Path, path: &str) -> String {
@@ -166,6 +182,27 @@ fn f18_ac12_prepares_a_new_epic_checklist_and_its_address() {
     assert!(paths.iter().all(|path| !path.contains("guided-steps")));
     assert_eq!(prepared.address, "http://localhost:5173/?checklist=E17");
     assert_eq!(prepared.warning, None);
+    // Each generated module imports what it names from a file the playground holds or this run
+    // writes, as the epic-15 modules do: the line type, the lines, the checklist.
+    assert!(
+        root.join("playground/checklists/checklist-line.ts")
+            .exists()
+    );
+    assert!(
+        prepared.writes[0]
+            .text
+            .starts_with("import type { ChecklistLine } from \"./checklist-line\";\n")
+    );
+    assert!(
+        prepared.writes[1]
+            .text
+            .starts_with("import { EPIC_17_F18_LINES } from \"./epic-17-f18-lines\";\n")
+    );
+    assert!(
+        prepared.writes[2]
+            .text
+            .contains("import { EPIC_17_CHECKLIST } from \"./epic-17-checklist\";\n")
+    );
     assert!(
         prepared.writes[1]
             .text

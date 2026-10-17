@@ -130,7 +130,10 @@ describe("parseFontMetrics (REF-OT-OTFF)", () => {
   it("[F18.AC19] reads Inter Regular of the test fixtures as inter-metrics.json holds it", () => {
     const regular = DEFAULT_FONT.faces.find((face) => face.weight === 400 && !face.isItalic);
 
-    // The same file, read for the same characters, gives the shipped metrics field for field.
+    // The same file, read for the same characters, gives the shipped metrics field for field; the
+    // face is looked for first, so that two missing values never compare equal.
+    expect(regular).toBeDefined();
+
     expect(parseFontMetrics(INTER_REGULAR_FILE, blockCharacters(MEASURED_BLOCKS))).toEqual(
       regular?.metrics,
     );

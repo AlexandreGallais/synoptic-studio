@@ -64,6 +64,14 @@ describe("no spread in a fold (EN-061)", () => {
       title: "a spread returned from a block",
     },
     { code: "[1].reduceRight((all, x) => [...all, x], []);", title: "a spread in reduceRight" },
+    {
+      code: "[1].reduce((all, x) => (x > 0 ? [...all, x] : all), []);",
+      title: "a spread in a conditional's branch",
+    },
+    {
+      code: "[1].reduce(function (all, x) { return x > 0 ? all : { ...all, x }; }, {});",
+      title: "a spread in a conditional returned from a block",
+    },
   ])("[F18.AC18] reports $title", async ({ code }) => {
     expect(await reportedLines(code)).toEqual([1]);
   });
@@ -78,6 +86,11 @@ describe("no spread in a fold (EN-061)", () => {
     {
       code: "[1].reduce((sum, x) => sum + x, [...[0]].length);",
       title: "a spread in the initial value",
+    },
+    {
+      // A known limit, written in the selector's comment: a selector follows no name.
+      code: "[1].reduce((all, x) => { const next = [...all, x]; return next; }, []);",
+      title: "a spread held in a variable, then returned",
     },
   ])("lets $title pass", async ({ code }) => {
     expect(await reportedLines(code)).toEqual([]);

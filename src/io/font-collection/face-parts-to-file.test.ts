@@ -33,6 +33,23 @@ describe("facePartsToFile (REF-ECMA-262-TYPEDARRAY-SET)", () => {
     expect(file.buffer).not.toBe(buffer.buffer);
   });
 
+  it(
+    "[F18.AC13] writes a part of 200 MB on any machine, the CI's Linux included",
+    { timeout: 20_000 },
+    () => {
+      // A view of 199 999 999 bytes from 1 in a buffer of 200 000 000, its last byte 5, then one
+      // byte 7: 200 000 000 bytes, the view's last at 199 999 998, the 7 at 199 999 999.
+      const buffer = new Uint8Array(200_000_000);
+      const large = buffer.fill(5, 199_999_999).subarray(1);
+      const file = facePartsToFile([large, Uint8Array.of(7)]);
+
+      expect(file.length).toBe(200_000_000);
+      expect(file[0]).toBe(0);
+      expect(file[199_999_998]).toBe(5);
+      expect(file[199_999_999]).toBe(7);
+    },
+  );
+
   it("gives an empty file for no part", () => {
     expect(facePartsToFile([])).toEqual(new Uint8Array());
   });

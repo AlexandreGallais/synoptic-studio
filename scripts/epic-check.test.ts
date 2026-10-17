@@ -6,6 +6,23 @@ import { checkAllFinding, failedCalls, failingChecks, lostCalls } from "./epic-c
 /** One hour and one second, in milliseconds: a running call's file older than an hour. */
 const OVER_AN_HOUR = 3_601_000;
 
+/**
+ * Calls of one day, the first one failed.
+ *
+ * @param count - how many calls
+ * @returns the records of the metrics log
+ */
+function oneFailedOf(count: number): readonly { error: string; time: string; tool: string }[] {
+  return [
+    { error: "Exit code 1", time: "2026-10-13T10:00:00Z", tool: "Bash" },
+    ...Array.from({ length: count - 1 }, () => ({
+      error: "",
+      time: "2026-10-13T10:00:00Z",
+      tool: "Bash",
+    })),
+  ];
+}
+
 describe("epic-check", () => {
   it("counts the calls failed since the epic's first day, the frequent errors first", () => {
     const records = [
@@ -46,6 +63,17 @@ describe("epic-check", () => {
       isOk: true,
       what: "calls failed during the epic (2 % at most)",
     });
+  });
+
+  it("accepts exactly 2 % of failed calls, and a call exactly an hour old as not yet lost", () => {
+    // 1 of 50 is 2 %, the limit itself: accepted; 1 of 49 is 2.04 %: over it.
+    expect(failedCalls(oneFailedOf(50), "2026-10-13").isOk).toBe(true);
+    expect(failedCalls(oneFailedOf(49), "2026-10-13").isOk).toBe(false);
+
+    // 3 600 000 ms is one hour exactly: not over an hour, so not lost.
+    const anHour = { ageMs: 3_600_000, record: { start: 0, summary: "ls", tool: "Bash" } };
+
+    expect(lostCalls([anHour]).detail).toBe("none");
   });
 
   it("[F18.AC11] names each failing check, its lane and its failing tests", () => {
