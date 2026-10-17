@@ -315,16 +315,16 @@ Asked by the Product Owner on 2026-10-17: for each of the 265 rules oxlint runs 
 
 | Plugin | Rules | Kept | Dropped |
 | --- | --- | --- | --- |
-| Unicorn | 197 | 153 | 44 |
+| Unicorn | 197 | 148 | 49 |
 | JSDoc | 43 | 31 | 12 |
 | functional | 12 | 11 | 1 |
 | @stylistic | 5 | 4 | 1 |
 | Import | 4 | 2 | 2 |
 | typescript-eslint, without types | 2 | 1 | 1 |
 | unused-imports | 2 | 2 | 0 |
-| **All** | **265** | **204** | **61** |
+| **All** | **265** | **199** | **66** |
 
-The 61 dropped, each with its reason (four added by EN-074, four by EN-078, three by EN-079, thirteen by EN-081, the last four by EN-080):
+The 66 dropped, each with its reason (four added by EN-074, four by EN-078, three by EN-079, thirteen by EN-081, four by EN-080, the last five by EN-082):
 
 | Rule | Reason |
 | --- | --- |
@@ -389,10 +389,15 @@ The 61 dropped, each with its reason (four added by EN-074, four by EN-078, thre
 | `unicorn/prefer-string-match-all` | it only reads a `RegExp#exec()` loop, which assigns a `let` in a `while` condition: `no-cond-assign` (`always`, native, kept) and `functional/no-let` refuse both, as a probe file showed |
 | `unicorn/single-line-block-comment-style` | with `single-line`, it only reports a block comment spread over lines without a JSDoc margin, which `@stylistic/multiline-comment-style` (`separate-lines`, kept) already refuses, as a probe file of its four shapes showed |
 | `unicorn/string-content` | it checks the patterns it is given, and the configuration gives none: it reports nothing |
+| `unicorn/no-conflicting-constraints` | it reads CSS queries, HTML form controls and JSX only (its listeners: `MediaQuery`, `Atrule`, `Tag`, `JSXOpeningElement`): no file of those is linted here, and the code holds no `.tsx` |
+| `unicorn/no-ineffective-csp-directives` | it reads HTML `<meta>` tags and JSX only (`Tag`, `JSXOpeningElement`): no file of those is linted here, and the code holds no `.tsx` |
+| `unicorn/no-invalid-file-input-accept` | it reads HTML and JSX file inputs only (`Tag`, `JSXOpeningElement`): no file of those is linted here; the one file input's `accept` is in `playground/index.html` |
+| `unicorn/no-canvas-to-image` | the code draws no canvas: shapes and text are drawn as SVG `<path>` and `<text>` (ADR-0001, ADR-0005), and the one canvas, in `playground/default-font/`, only measures text |
+| `unicorn/prefer-path2d` | the code draws no canvas path: shapes are SVG `<path>` (ADR-0001, ADR-0005), and the one canvas only measures text |
 
 Confirmed against the code by EN-074 on 2026-10-17: no class, `this`, accessor, `enum`, `for…in`, `let`, CommonJS export nor JSDoc type in `src/`, `playground/`, `tests/` and the root configuration files; `fetch` and `node:sqlite` only in `scripts/`; `dependencies` empty. Each of the four drops above was tried on a probe file. The rewrite stories EN-078, EN-079 and EN-080 lost the four rules (44, 36 and 37 rules left).
 
-The 204 kept, by plugin and, for Unicorn, by the area of `eslint/rules/unicorn/`:
+The 199 kept, by plugin and, for Unicorn, by the area of `eslint/rules/unicorn/`:
 
 | Group | Kept | Rules |
 | --- | --- | --- |
@@ -402,7 +407,7 @@ The 204 kept, by plugin and, for Unicorn, by the area of `eslint/rules/unicorn/`
 | Unicorn, arrays | 12 | `no-array-from-fill`, `no-array-front-mutation`, `no-confusing-array-splice`, `no-impossible-length-comparison`, `no-negated-array-predicate`, `no-return-array-push`, `no-unnecessary-splice`, `prefer-array-last-methods`, `prefer-array-slice`, `prefer-flat-math-min-max`, `prefer-simple-sort-comparator`, `prefer-single-array-predicate` |
 | Unicorn, collections | 12 | `consistent-conditional-object-spread`, `no-duplicate-set-values`, `no-mismatched-map-key`, `no-object-methods-with-collections`, `no-unnecessary-array-flat-map`, `no-useless-set-construction`, `prefer-array-from-map`, `prefer-group-by`, `prefer-has-check`, `prefer-includes-over-repeated-comparisons`, `prefer-map-from-entries`, `prefer-set-methods` |
 | Unicorn, control-flow | 16 | `no-declarations-before-early-exit`, `no-duplicate-if-branches`, `no-duplicate-logical-operands`, `no-useless-boolean-cast`, `no-useless-else`, `no-useless-logical-operand`, `prefer-boolean-return`, `prefer-combined-guards`, `prefer-early-return`, `prefer-else-if`, `prefer-hoisting-branch-code`, `prefer-minimal-ternary`, `prefer-simple-condition-first`, `prefer-simplified-conditions`, `prefer-smaller-scope`, `prefer-switch` |
-| Unicorn, dom | 19 | `better-dom-traversing`, `dom-node-dataset`, `no-canvas-to-image`, `no-incorrect-query-selector`, `no-invalid-dom-token`, `no-invalid-style-set-property`, `no-late-current-target-access`, `no-late-event-control`, `no-prevent-default-in-passive-listener`, `no-selector-as-dom-name`, `no-unsafe-dom-html`, `prefer-add-event-listener-options`, `prefer-dom-node-html-methods`, `prefer-dom-node-replace-children`, `prefer-observer-apis`, `prefer-path2d`, `prefer-scoped-selector`, `prefer-toggle-attribute`, `require-passive-events` |
+| Unicorn, dom | 17 | `better-dom-traversing`, `dom-node-dataset`, `no-incorrect-query-selector`, `no-invalid-dom-token`, `no-invalid-style-set-property`, `no-late-current-target-access`, `no-late-event-control`, `no-prevent-default-in-passive-listener`, `no-selector-as-dom-name`, `no-unsafe-dom-html`, `prefer-add-event-listener-options`, `prefer-dom-node-html-methods`, `prefer-dom-node-replace-children`, `prefer-observer-apis`, `prefer-scoped-selector`, `prefer-toggle-attribute`, `require-passive-events` |
 | Unicorn, errors | 4 | `no-error-property-assignment`, `prefer-aggregate-error`, `prefer-error-is-error`, `try-complexity` |
 | Unicorn, functions | 7 | `no-repeated-call-wrappers`, `no-uncalled-method`, `no-unnecessary-default-arguments`, `no-unnecessary-parameters`, `no-useless-recursion`, `prefer-block-statement-over-iife`, `prefer-short-arrow-method` |
 | Unicorn, iteration | 16 | `iteration-fallback-style`, `no-array-sort-for-min-max`, `no-break-in-nested-loop`, `no-duplicate-loops`, `no-for-each`, `no-loop-iterable-mutation`, `no-unreadable-for-of-expression`, `no-unused-iterator-helper`, `prefer-array-iterable-methods`, `prefer-direct-iteration`, `prefer-iterable-in-constructor`, `prefer-iterator-helpers`, `prefer-iterator-to-array`, `prefer-iterator-to-array-at-end`, `prefer-object-iterable-methods`, `prefer-while-loop-condition` |
@@ -414,7 +419,7 @@ The 204 kept, by plugin and, for Unicorn, by the area of `eslint/rules/unicorn/`
 | Unicorn, platform | 2 | `no-unsafe-buffer-conversion`, `no-unsafe-json-serialization` |
 | Unicorn, promises | 7 | `no-async-iterator-callback`, `no-async-promise-finally`, `no-multiple-promise-resolver-calls`, `prefer-await`, `prefer-promise-static-methods`, `prefer-promise-try`, `prefer-then-catch` |
 | Unicorn, strings | 11 | `no-incorrect-template-string-interpolation`, `no-unnecessary-string-trim`, `no-unsafe-string-replacement`, `prefer-literal-ascii`, `prefer-regexp-escape`, `prefer-short-escape-sequences`, `prefer-single-replace`, `prefer-split-limit`, `prefer-string-pad-start-end`, `prefer-string-repeat`, `prefer-unicode-code-point-escapes` |
-| Unicorn, web | 12 | `no-blob-to-file`, `no-conflicting-constraints`, `no-ineffective-csp-directives`, `no-invalid-boolean-attribute-value`, `no-invalid-file-input-accept`, `no-invalid-url-protocol-comparison`, `no-url-in-search-params`, `prefer-location-assign`, `prefer-url-can-parse`, `prefer-url-href`, `prefer-url-search-parameters`, `require-css-escape` |
+| Unicorn, web | 9 | `no-blob-to-file`, `no-invalid-boolean-attribute-value`, `no-invalid-url-protocol-comparison`, `no-url-in-search-params`, `prefer-location-assign`, `prefer-url-can-parse`, `prefer-url-href`, `prefer-url-search-parameters`, `require-css-escape` |
 | functional | 11 | `no-let`, `prefer-property-signatures`, `readonly-type`, `no-classes`, `no-this-expressions`, `functional-parameters`, `no-expression-statements`, `no-loop-statements`, `no-promise-reject`, `no-throw-statements`, `no-try-statements` |
 | typescript-eslint, without types | 1 | `member-ordering` |
 | unused-imports | 2 | `no-unused-imports`, `no-unused-vars` |
@@ -426,6 +431,7 @@ Rewritten by EN-079 on 2026-10-17 in the project's linter (`tools/lint/src/rules
 Rewritten by EN-081 on 2026-10-17 in the project's linter (`tools/lint/src/rules/unicorn/modules/`, `platform/` and `promises/`), each checked again against the code first and run on the cases of its documentation in `eslint-plugin-unicorn` 78.0.0, then turned off in ESLint: 7 of the 8 module rules, all but `default-export-style` (`no-top-level-side-effects` leaving by itself the tools, the tests and the playground's entry, where ESLint turned it off), 2 of the 11 platform rules, `no-unsafe-buffer-conversion` and `no-unsafe-json-serialization`, and 7 of the 10 promise rules, all but `prefer-array-from-async`, `prefer-promise-with-resolvers` and `prefer-queue-microtask`. ESLint and the Rust linter give the same findings and fixes on the documented and planted cases, but for a string specifier ESLint reports twice at one place, a destructured `Number.NaN` whose fix by the plugin drops the local name (reported here without a fix), and a documented snippet Oxc refuses to parse; none on the tree.
 
 Rewritten by EN-080 on 2026-10-17, each rule checked again first: of the 37 rules of the objects, strings, naming and miscellaneous groups, 33 run in the project's linter (`tools/lint/src/rules/unicorn/objects/`, `strings/`, `naming/` and `misc/`, the four rows above), each on the cases of its documentation, and four are dropped (above). ESLint and the Rust linter give the same 610 findings and the same fixed text on the documented cases and on 900 copies of the tree's files with their terms lower-cased, their names abbreviated and their links turned to `http:`, and none on the tree. All 33 are `off` in ESLint. The project's option of `comment-content`, `{replacements: {application: false}}`, names no pattern of the plugin's (its own is `\bapplication\b(?!/)`): ESLint read it as dropping nothing, and the Rust linter carries it so.
+Rewritten by EN-082 on 2026-10-17, each rule checked again against the code first and run on the cases of its documentation in `eslint-plugin-unicorn` 78.0.0, then turned off in ESLint: 16 of the 19 DOM rules and 9 of the 12 web rules run in the project's linter (`tools/lint/src/rules/unicorn/dom/` and `web/`), the DOM rules and `no-invalid-boolean-attribute-value`, `prefer-location-assign` and `require-css-escape` only where a DOM exists (`src/render/`, `src/interaction/`, `playground/`, `docs/.vitepress/theme/`: `scopes::DOM_FILES`), the URL and `Blob` rules on every file; `dom-node-dataset` runs in oxlint as `unicorn/prefer-dom-node-dataset`, its former name, which also autofixes the reads ESLint only suggests; five are dropped (above). ESLint and the Rust linter give the same findings and fixed text on the documented and planted cases, ESLint given the browser globals it is not configured with here (without them it reports no `document.write()` nor `Document.parseHTMLUnsafe()`), and none on the tree.
 
 Kept on purpose although close to a drop: the DOM and web rules (the playground uses the DOM, files and `URL`), the loop, `throw` and `try` rules (allowed in the playground and the tests), the generator rules (one module yields), `functional/no-classes` and `no-this-expressions` (they are the bans themselves), the JSDoc layout rules and the comment rules of `@stylistic` (no source says oxfmt rewrites comments).
 
