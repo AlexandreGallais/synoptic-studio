@@ -2,6 +2,13 @@
 
 What each working session dealt with, in the agent's words: the Product Owner's requests in neutral words, decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`).
 
+## 2026-10-17 — Run of F18 stopped before its validation
+
+- `#run` The run of F18 resumed from a plain terminal on 2026-10-16 and stopped on 2026-10-17 before VAL-019: SP-020 (#262), EN-049 (#263), EN-047 and its lock fix, EN-054, EN-062, EN-050 (#268), EN-053 (#269), EN-057 (#270), EN-055 (#271), EN-051 (#272) and its fix (#275), EN-061 (#273), EN-052 (#274), EN-048, EN-056, EN-058, EN-059, US-061, CHK-019 (#282), EN-046, the move-rows fix (#283), EN-060 (#284), and AUD-020 with its fixes (#285, #286); the details are in the feature branch's journal and stories.
+- `#decision` The Product Owner asked that every new script, hook or agent tool be written in Rust from now on (E17's goal): eight std-only crates under `tools/`, checked by `check:rust`.
+- `#decision` Tables without padding moved to F19 (ADR-0068, to confirm at VAL-019): Prettier pads every table unless prose is joined into long lines; the choice was left to the agent.
+- `#run` Stop reason: VAL-019 needs the Product Owner. Waiting for them: the `limit-agents` line in `.claude/settings.json` (EN-063, F18.AC2), the decisions to confirm in VAL-019, F19's four spike questions (SP-021, pushed on `docs/sp-021-research-f19`, merged at F19's start), and the rule GitHub bypasses for the main thread's direct commits on the feature branch.
+
 ## 2026-10-16 — Run of E17 started: F18, with F19's spike in parallel
 
 - `#run` The Product Owner started a run on 2026-10-16: scope F18 (a safe and cheap parallel run, with E15's leftovers), and F19's spike (SP-021) in parallel. E17 and F18 are `in-progress`, F18's stories `ready`, on `feature/f18-safe-and-cheap-parallel-run`.
