@@ -1,16 +1,13 @@
 //! Unicorn's rules that oxlint lacks: arrays, collections and iteration (EN-078), and in their own
-//! folders control flow, errors, functions and numbers (EN-079), modules, the platform and
-//! promises (EN-081); each one module with the cases of its documentation in
+//! folders control flow, errors, functions and numbers (EN-079), objects, strings, naming and
+//! the miscellaneous ones (EN-080), modules, the platform and promises (EN-081), with what they
+//! share beside them (`syntax`, `known_values`, `escapes`, `layout`, `identifiers`, `pattern`);
+//! each one module with the cases of its documentation in
 //! `eslint-plugin-unicorn` 78.0.0 as tests, read from the syntax alone. No scope turns one off:
 //! they run on every TypeScript file, `no-top-level-side-effects` leaving by itself the files
 //! where `ESLint` turned it off.
 
-pub mod comment_content;
-pub mod consistent_compound_words;
 pub mod consistent_conditional_object_spread;
-pub mod consistent_destructuring;
-pub mod consistent_optional_chaining;
-pub mod consistent_tuple_labels;
 pub mod control_flow;
 pub mod errors;
 pub mod escapes;
@@ -19,21 +16,17 @@ pub mod identifiers;
 pub mod iteration_fallback_style;
 pub mod known_values;
 pub mod layout;
+pub mod misc;
 pub mod modules;
-pub mod name_replacements;
+pub mod naming;
 pub mod no_array_from_fill;
 pub mod no_array_front_mutation;
 pub mod no_array_sort_for_min_max;
 pub mod no_break_in_nested_loop;
-pub mod no_computed_property_existence_check;
 pub mod no_confusing_array_splice;
 pub mod no_duplicate_loops;
 pub mod no_duplicate_set_values;
 pub mod no_impossible_length_comparison;
-pub mod no_incorrect_template_string_interpolation;
-pub mod no_invalid_property_descriptor;
-pub mod no_invalid_well_known_symbol_methods;
-pub mod no_keyword_prefix;
 pub mod no_loop_iterable_mutation;
 pub mod no_mismatched_map_key;
 pub mod no_negated_array_predicate;
@@ -41,19 +34,11 @@ pub mod no_object_methods_with_collections;
 pub mod no_return_array_push;
 pub mod no_unnecessary_array_flat_map;
 pub mod no_unnecessary_splice;
-pub mod no_unnecessary_string_trim;
 pub mod no_unreadable_for_of_expression;
-pub mod no_unreadable_new_expression;
-pub mod no_unreadable_object_destructuring;
-pub mod no_unsafe_property_key;
-pub mod no_unsafe_string_replacement;
-pub mod no_unused_builtin_method_return;
 pub mod no_unused_iterator_helper;
-pub mod no_unused_properties;
-pub mod no_useless_compound_assignment;
-pub mod no_useless_delete_check;
 pub mod no_useless_set_construction;
 pub mod numbers;
+pub mod objects;
 pub mod pattern;
 pub mod platform;
 pub mod prefer_array_from_map;
@@ -64,52 +49,40 @@ pub mod prefer_direct_iteration;
 pub mod prefer_flat_math_min_max;
 pub mod prefer_group_by;
 pub mod prefer_has_check;
-pub mod prefer_https;
 pub mod prefer_includes_over_repeated_comparisons;
 pub mod prefer_iterable_in_constructor;
 pub mod prefer_iterator_helpers;
 pub mod prefer_iterator_to_array;
 pub mod prefer_iterator_to_array_at_end;
-pub mod prefer_literal_ascii;
 pub mod prefer_map_from_entries;
-pub mod prefer_object_define_properties;
-pub mod prefer_object_destructuring_defaults;
 pub mod prefer_object_iterable_methods;
-pub mod prefer_regexp_escape;
 pub mod prefer_set_methods;
-pub mod prefer_short_escape_sequences;
 pub mod prefer_simple_sort_comparator;
 pub mod prefer_single_array_predicate;
-pub mod prefer_single_object_destructuring;
-pub mod prefer_single_replace;
-pub mod prefer_split_limit;
-pub mod prefer_string_pad_start_end;
-pub mod prefer_string_repeat;
-pub mod prefer_type_literal_last;
-pub mod prefer_unicode_code_point_escapes;
 pub mod prefer_while_loop_condition;
 pub mod promises;
+pub mod strings;
 pub mod syntax;
 
 use super::Rule;
 
 /// The rules, in the order of their names.
 pub const RULES: &[&dyn Rule] = &[
-    &comment_content::CommentContent,
-    &consistent_compound_words::ConsistentCompoundWords,
+    &naming::comment_content::CommentContent,
+    &naming::consistent_compound_words::ConsistentCompoundWords,
     &consistent_conditional_object_spread::ConsistentConditionalObjectSpread,
-    &consistent_destructuring::ConsistentDestructuring,
-    &consistent_optional_chaining::ConsistentOptionalChaining,
-    &consistent_tuple_labels::ConsistentTupleLabels,
+    &objects::consistent_destructuring::ConsistentDestructuring,
+    &misc::consistent_optional_chaining::ConsistentOptionalChaining,
+    &naming::consistent_tuple_labels::ConsistentTupleLabels,
     &iteration_fallback_style::IterationFallbackStyle,
-    &name_replacements::NameReplacements,
+    &naming::name_replacements::NameReplacements,
     &no_array_from_fill::NoArrayFromFill,
     &no_array_front_mutation::NoArrayFrontMutation,
     &no_array_sort_for_min_max::NoArraySortForMinMax,
     &promises::no_async_iterator_callback::NoAsyncIteratorCallback,
     &promises::no_async_promise_finally::NoAsyncPromiseFinally,
     &no_break_in_nested_loop::NoBreakInNestedLoop,
-    &no_computed_property_existence_check::NoComputedPropertyExistenceCheck,
+    &objects::no_computed_property_existence_check::NoComputedPropertyExistenceCheck,
     &no_confusing_array_splice::NoConfusingArraySplice,
     &control_flow::no_declarations_before_early_exit::NoDeclarationsBeforeEarlyExit,
     &control_flow::no_duplicate_if_branches::NoDuplicateIfBranches,
@@ -119,10 +92,10 @@ pub const RULES: &[&dyn Rule] = &[
     &errors::no_error_property_assignment::NoErrorPropertyAssignment,
     &modules::no_global_object_property_assignment::NoGlobalObjectPropertyAssignment,
     &no_impossible_length_comparison::NoImpossibleLengthComparison,
-    &no_incorrect_template_string_interpolation::NoIncorrectTemplateStringInterpolation,
-    &no_invalid_property_descriptor::NoInvalidPropertyDescriptor,
-    &no_invalid_well_known_symbol_methods::NoInvalidWellKnownSymbolMethods,
-    &no_keyword_prefix::NoKeywordPrefix,
+    &strings::no_incorrect_template_string_interpolation::NoIncorrectTemplateStringInterpolation,
+    &objects::no_invalid_property_descriptor::NoInvalidPropertyDescriptor,
+    &objects::no_invalid_well_known_symbol_methods::NoInvalidWellKnownSymbolMethods,
+    &naming::no_keyword_prefix::NoKeywordPrefix,
     &no_loop_iterable_mutation::NoLoopIterableMutation,
     &no_mismatched_map_key::NoMismatchedMapKey,
     &promises::no_multiple_promise_resolver_calls::NoMultiplePromiseResolverCalls,
@@ -140,20 +113,20 @@ pub const RULES: &[&dyn Rule] = &[
     &modules::no_unnecessary_global_this::NoUnnecessaryGlobalThis,
     &functions::no_unnecessary_parameters::NoUnnecessaryParameters,
     &no_unnecessary_splice::NoUnnecessarySplice,
-    &no_unnecessary_string_trim::NoUnnecessaryStringTrim,
+    &strings::no_unnecessary_string_trim::NoUnnecessaryStringTrim,
     &no_unreadable_for_of_expression::NoUnreadableForOfExpression,
-    &no_unreadable_new_expression::NoUnreadableNewExpression,
-    &no_unreadable_object_destructuring::NoUnreadableObjectDestructuring,
+    &objects::no_unreadable_new_expression::NoUnreadableNewExpression,
+    &objects::no_unreadable_object_destructuring::NoUnreadableObjectDestructuring,
     &platform::no_unsafe_buffer_conversion::NoUnsafeBufferConversion,
     &platform::no_unsafe_json_serialization::NoUnsafeJsonSerialization,
-    &no_unsafe_property_key::NoUnsafePropertyKey,
-    &no_unsafe_string_replacement::NoUnsafeStringReplacement,
-    &no_unused_builtin_method_return::NoUnusedBuiltinMethodReturn,
+    &objects::no_unsafe_property_key::NoUnsafePropertyKey,
+    &strings::no_unsafe_string_replacement::NoUnsafeStringReplacement,
+    &objects::no_unused_builtin_method_return::NoUnusedBuiltinMethodReturn,
     &no_unused_iterator_helper::NoUnusedIteratorHelper,
-    &no_unused_properties::NoUnusedProperties,
+    &objects::no_unused_properties::NoUnusedProperties,
     &control_flow::no_useless_boolean_cast::NoUselessBooleanCast,
-    &no_useless_compound_assignment::NoUselessCompoundAssignment,
-    &no_useless_delete_check::NoUselessDeleteCheck,
+    &misc::no_useless_compound_assignment::NoUselessCompoundAssignment,
+    &misc::no_useless_delete_check::NoUselessDeleteCheck,
     &control_flow::no_useless_else::NoUselessElse,
     &control_flow::no_useless_logical_operand::NoUselessLogicalOperand,
     &modules::no_useless_re_export::NoUselessReExport,
@@ -177,7 +150,7 @@ pub const RULES: &[&dyn Rule] = &[
     &prefer_group_by::PreferGroupBy,
     &prefer_has_check::PreferHasCheck,
     &control_flow::prefer_hoisting_branch_code::PreferHoistingBranchCode,
-    &prefer_https::PreferHttps,
+    &misc::prefer_https::PreferHttps,
     &modules::prefer_identifier_import_export_specifiers::PreferIdentifierImportExportSpecifiers,
     &prefer_includes_over_repeated_comparisons::PreferIncludesOverRepeatedComparisons,
     &prefer_iterable_in_constructor::PreferIterableInConstructor,
@@ -185,35 +158,35 @@ pub const RULES: &[&dyn Rule] = &[
     &prefer_iterator_to_array::PreferIteratorToArray,
     &prefer_iterator_to_array_at_end::PreferIteratorToArrayAtEnd,
     &modules::prefer_json_import::PreferJsonImport,
-    &prefer_literal_ascii::PreferLiteralAscii,
+    &strings::prefer_literal_ascii::PreferLiteralAscii,
     &prefer_map_from_entries::PreferMapFromEntries,
     &numbers::prefer_math_abs::PreferMathAbs,
     &control_flow::prefer_minimal_ternary::PreferMinimalTernary,
     &numbers::prefer_number_is_safe_integer::PreferNumberIsSafeInteger,
-    &prefer_object_define_properties::PreferObjectDefineProperties,
-    &prefer_object_destructuring_defaults::PreferObjectDestructuringDefaults,
+    &objects::prefer_object_define_properties::PreferObjectDefineProperties,
+    &objects::prefer_object_destructuring_defaults::PreferObjectDestructuringDefaults,
     &prefer_object_iterable_methods::PreferObjectIterableMethods,
     &promises::prefer_promise_static_methods::PreferPromiseStaticMethods,
     &promises::prefer_promise_try::PreferPromiseTry,
-    &prefer_regexp_escape::PreferRegexpEscape,
+    &strings::prefer_regexp_escape::PreferRegexpEscape,
     &prefer_set_methods::PreferSetMethods,
     &functions::prefer_short_arrow_method::PreferShortArrowMethod,
-    &prefer_short_escape_sequences::PreferShortEscapeSequences,
+    &strings::prefer_short_escape_sequences::PreferShortEscapeSequences,
     &control_flow::prefer_simple_condition_first::PreferSimpleConditionFirst,
     &prefer_simple_sort_comparator::PreferSimpleSortComparator,
     &control_flow::prefer_simplified_conditions::PreferSimplifiedConditions,
     &prefer_single_array_predicate::PreferSingleArrayPredicate,
-    &prefer_single_object_destructuring::PreferSingleObjectDestructuring,
-    &prefer_single_replace::PreferSingleReplace,
+    &objects::prefer_single_object_destructuring::PreferSingleObjectDestructuring,
+    &strings::prefer_single_replace::PreferSingleReplace,
     &control_flow::prefer_smaller_scope::PreferSmallerScope,
-    &prefer_split_limit::PreferSplitLimit,
-    &prefer_string_pad_start_end::PreferStringPadStartEnd,
-    &prefer_string_repeat::PreferStringRepeat,
+    &strings::prefer_split_limit::PreferSplitLimit,
+    &strings::prefer_string_pad_start_end::PreferStringPadStartEnd,
+    &strings::prefer_string_repeat::PreferStringRepeat,
     &control_flow::prefer_switch::PreferSwitch,
     &promises::prefer_then_catch::PreferThenCatch,
-    &prefer_type_literal_last::PreferTypeLiteralLast,
+    &naming::prefer_type_literal_last::PreferTypeLiteralLast,
     &numbers::prefer_unary_minus::PreferUnaryMinus,
-    &prefer_unicode_code_point_escapes::PreferUnicodeCodePointEscapes,
+    &strings::prefer_unicode_code_point_escapes::PreferUnicodeCodePointEscapes,
     &prefer_while_loop_condition::PreferWhileLoopCondition,
     &errors::try_complexity::TryComplexity,
 ];
