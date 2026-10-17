@@ -9,7 +9,8 @@
 // binary into target/release/ again even when it is up to date, removing it first, so a lane
 // starting that binary at the same moment failed with `could not execute process … No such file or
 // directory`. The release binaries are built once before the lanes, and a lane runs a script that
-// takes the heavy lock without it, as check:all already holds that lock.
+// takes the heavy lock without it, as check:all already holds that lock. A test file may start a
+// release binary too (`tests/declarations.test.ts`): the test of the lanes reads them as well.
 //
 // The docs and playground builds run only when the branch changed one of their inputs against its
 // base (EN-085, option B of research note 0023): the nearest of develop and the feature branches on

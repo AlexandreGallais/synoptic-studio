@@ -78,6 +78,22 @@ fn f19_ac7_fails_on_an_export_or_a_property_without_tsdoc() {
 }
 
 #[test]
+fn f19_ac7_fails_on_a_property_inside_a_type_argument_or_a_function_type() {
+    let library = planted(
+        "nested",
+        "/** A box. */\nexport type Box = Readonly<{\n  width: number;\n}>;\n\n/** A reader. */\nexport type Reader = (options: { readonly strict: boolean }) => number;\n",
+    );
+
+    assert_eq!(
+        failure(&library),
+        (
+            Some(1),
+            "math/vector/planted.ts:3: `Box.width` has no TSDoc block\nmath/vector/planted.ts:7: `Reader.strict` has no TSDoc block\napi-pages: 2 problem(s), no page written\n".to_owned()
+        )
+    );
+}
+
+#[test]
 fn f19_ac7_fails_on_a_link_naming_nothing_exported() {
     let library = planted(
         "link",

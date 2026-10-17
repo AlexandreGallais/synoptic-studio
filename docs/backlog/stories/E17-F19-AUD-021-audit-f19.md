@@ -26,6 +26,6 @@ One task = one commit, referenced as `AUD-021.Tn`.
 - [x] T5 — Criteria traced to tests (TRACE-1, V4, V17)
 - [x] T6 — Tests the verifier found missing (V2, V3, V5 to V12, V18)
 - [x] T7 — Licences of the ported code and copied cases (C3/C1-1)
-- [ ] T8 — Small code findings (A-API-1, E3-2, B1-1)
+- [x] T8 — Small code findings (A-API-1, E3-2, B1-1)
 - [ ] T9 — Documentation findings (DE-03 to DE-61, E1-1, E1-2)
 - [ ] T10 — Findings table

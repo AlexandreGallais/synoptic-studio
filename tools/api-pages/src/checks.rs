@@ -6,9 +6,25 @@ use crate::doc::links;
 use crate::model::{Body, Doc, Export, Member, Signature, Target, Type};
 use crate::page::Names;
 
-/// The members of the object types within a type, nested ones included.
+/// The members of the object types within a type, nested ones included: in a type's arguments
+/// (`Readonly<{ … }>`), a function type's parameters and result, and an indexed access.
 fn members<'t>(ty: &'t Type, found: &mut Vec<&'t Member>) {
     match ty {
+        Type::Reference { arguments, .. } => {
+            for argument in arguments {
+                members(argument, found);
+            }
+        }
+        Type::Function(signature) => {
+            for parameter in &signature.parameters {
+                members(&parameter.value, found);
+            }
+            members(&signature.returns, found);
+        }
+        Type::IndexedAccess(object, index) => {
+            members(object, found);
+            members(index, found);
+        }
         Type::Object(object) => {
             for member in object {
                 found.push(member);

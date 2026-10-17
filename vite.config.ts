@@ -17,7 +17,7 @@ const JUNIT_FILE = process.env["VITEST_JUNIT"];
 /** Coverage floor of the playground (RET-001), measured then rounded down; raised, never lowered. */
 const PLAYGROUND_COVERAGE = { branches: 89, functions: 100, lines: 98, statements: 98 };
 
-/** Library build: one ESM file from `src/index.ts`, declarations emitted by `tsc`. */
+/** Library build: one ESM file from `src/index.ts`, declarations written by `tools/declarations` (ADR-0071). */
 const LIBRARY_BUILD: BuildEnvironmentOptions = {
   emptyOutDir: true,
   lib: {
