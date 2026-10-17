@@ -64,7 +64,7 @@ Read against the code and, for the drops on what the compiler refuses, tried on 
 ## Compared with ESLint
 
 - Tree: no finding from either side for the 30 rules; oxlint, the project's linter and ESLint all clean after the 17 files oxfmt reordered.
-- Planted cases: the Rust rules' findings at the same places as ESLint's on a file of the documented cases (3 + 3 + 3); oxlint's `oxc/erasing-op` (5), `oxc/misrefactored-assign-op` (3) and `no-useless-concat` (4, one more than Unicorn's: `' + '{PLUGINS}'`) on the same lines as Unicorn's; `sort-imports` the same three findings; on a test file of eleven imports out of order, `import-x/order` gave 16 findings, oxfmt's check refused the file, and once formatted `import-x/order` gave none.
+- Planted cases: the Rust rules' findings at the same places as ESLint's on a file of the documented cases (3 + 3 + 3); oxlint's `oxc/erasing-op` (5), `oxc/misrefactored-assign-op` (3) and `no-useless-concat` (4, one more than Unicorn's: `'$' + '{PLUGINS}'`) on the same lines as Unicorn's; `sort-imports` the same three findings; on a test file of eleven imports out of order, `import-x/order` gave 16 findings, oxfmt's check refused the file, and once formatted `import-x/order` gave none.
 - What the compiler refuses: one probe file of each documented case of the 13 rules dropped for it, each line refused by `tsc` (TypeScript 7), then removed.
 
 ## Timings (ADR-0069)

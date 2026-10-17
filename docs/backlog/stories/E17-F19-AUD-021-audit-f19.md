@@ -19,4 +19,13 @@ Audit F19 in depth, the project in breadth ([audit.md](../../conventions/audit.m
 
 One task = one commit, referenced as `AUD-021.Tn`.
 
-- [ ] T1 — Audit and fixes (1 h)
+- [x] T1 — Repair the pages a replacement string broke (E3-1, DE-01, DE-02)
+- [ ] T2 — Every rule reached by a scope, every scoped name a rule (V1)
+- [ ] T3 — Unused disable directives reported by oxlint (A-LOST-1)
+- [ ] T4 — Renames and the Rust toolchain in the docs build's inputs (AC8-1)
+- [ ] T5 — Criteria traced to tests (TRACE-1, V4, V17)
+- [ ] T6 — Tests the verifier found missing (V2, V3, V5 to V11, V13, V18)
+- [ ] T7 — Licences of the ported code and copied cases (C3/C1-1)
+- [ ] T8 — Small code findings (A-API-1, E3-2, B1-1)
+- [ ] T9 — Documentation findings (DE-03 to DE-61, E1-1, E1-2)
+- [ ] T10 — Findings table
