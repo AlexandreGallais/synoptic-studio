@@ -10,7 +10,5 @@ export const RELAXED_PURITY = {
   "functional/no-loop-statements": "off",
   "functional/no-throw-statements": "off",
   "functional/no-try-statements": "off",
-  "functional/prefer-immutable-types": "off",
-  "functional/type-declaration-immutability": "off",
   "unicorn/no-top-level-side-effects": "off",
 } as const;

@@ -7,6 +7,9 @@ import { valueFormatToSize } from "./value-format-to-size";
 
 import type { ClassKerningRule, KerningRow } from "../../model";
 
+/** The `GPOS` table's bytes, only read. */
+type GposTable = Readonly<DataView>;
+
 /** Offsets of the fields of a PairPos format 2 subtable. */
 const FIELDS = {
   class1Count: 12,
@@ -32,7 +35,7 @@ const FIELDS = {
  * table's end
  * @see REF-OT-GPOS
  */
-function parseClassValues(gpos: DataView, subtable: number): readonly KerningRow[] | undefined {
+function parseClassValues(gpos: GposTable, subtable: number): readonly KerningRow[] | undefined {
   const firstFormat = gpos.getUint16(subtable + FIELDS.valueFormat1);
   const recordSize =
     valueFormatToSize(firstFormat) +
@@ -67,7 +70,7 @@ function parseClassValues(gpos: DataView, subtable: number): readonly KerningRow
  * @see REF-OT-GPOS
  */
 function parseFirstClasses(
-  gpos: DataView,
+  gpos: GposTable,
   subtable: number,
   glyphs: ReadonlySet<number>,
 ): Readonly<Record<number, number>> | undefined {
@@ -99,7 +102,7 @@ function parseFirstClasses(
  * @see REF-OT-GPOS
  */
 function parseClassParts(
-  gpos: DataView,
+  gpos: GposTable,
   subtable: number,
   glyphs: ReadonlySet<number>,
 ): ClassKerningRule | undefined {
@@ -128,7 +131,7 @@ function parseClassParts(
  * @see REF-OT-GPOS
  */
 export function parsePairClassesRule(
-  gpos: DataView,
+  gpos: GposTable,
   subtable: number,
   glyphs: ReadonlySet<number>,
 ): ClassKerningRule | undefined {

@@ -11,6 +11,6 @@ import type { FontTableRecord } from "./font-table-record";
  * @returns a view of the table alone
  * @see REF-OT-OTFF
  */
-export function tableToView(view: DataView, table: FontTableRecord): DataView {
+export function tableToView(view: Readonly<DataView>, table: FontTableRecord): DataView {
   return new DataView(view.buffer, view.byteOffset + table.offset, table.length);
 }

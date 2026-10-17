@@ -16,9 +16,11 @@ pub mod no_non_function_verb_prefix;
 pub mod no_restricted_syntax;
 pub mod no_return_void;
 pub mod one_export_per_file;
+pub mod prefer_immutable_types;
 pub mod require_atomic_updates;
 pub mod require_kind;
 pub mod see_references;
+pub mod type_declaration_immutability;
 
 use oxc_semantic::AstNode;
 
@@ -63,9 +65,11 @@ pub const ALL: &[&dyn Rule] = &[
     &no_restricted_syntax::NoRestrictedSyntax,
     &no_return_void::NoReturnVoid,
     &one_export_per_file::OneExportPerFile,
+    &prefer_immutable_types::PreferImmutableTypes,
     &require_atomic_updates::RequireAtomicUpdates,
     &require_kind::RequireKind,
     &see_references::SeeReferences,
+    &type_declaration_immutability::TypeDeclarationImmutability,
 ];
 
 /// The rules of a list of names, in the registry's order.

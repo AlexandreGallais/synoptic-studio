@@ -28,7 +28,10 @@ export type TextDecorations = Pick<
  * @returns the underline's and the strike-out's position and thickness, font units
  * @see REF-OT-POST
  */
-export function parseTextDecorations(post: DataView, os2: DataView): TextDecorations {
+export function parseTextDecorations(
+  post: Readonly<DataView>,
+  os2: Readonly<DataView>,
+): TextDecorations {
   return {
     strikeoutPosition: os2.getInt16(STRIKEOUT_POSITION_OFFSET),
     strikeoutSize: os2.getInt16(STRIKEOUT_SIZE_OFFSET),

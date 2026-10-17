@@ -23,7 +23,7 @@ const SEGMENTED_COVERAGE = 12;
  * @see REF-OT-CMAP
  */
 export function parseCharacterMap(
-  cmap: DataView,
+  cmap: Readonly<DataView>,
   characters: readonly number[],
 ): readonly CharacterGlyph[] | undefined {
   const subtables = parseUnicodeSubtables(cmap);

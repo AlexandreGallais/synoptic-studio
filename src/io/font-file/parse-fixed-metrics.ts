@@ -30,7 +30,7 @@ const MAX_UNITS_PER_EM = 16_384;
  * @see REF-OT-OS2
  */
 function parseOs2Metrics(
-  os2: DataView,
+  os2: Readonly<DataView>,
   unitsPerEm: number,
 ): Pick<FixedMetrics, "capHeight" | "embeddingPermissions"> {
   return {
@@ -53,15 +53,16 @@ function parseOs2Metrics(
  * `hmtx` record
  * @see REF-OT-HHEA
  */
-export function parseFixedMetrics(view: DataView, tables: FontTables): FixedMetrics | undefined {
-  const header = parseHorizontalHeader(tableToView(view, tables.hhea));
-  const { ascender, descender, lineGap } = header;
+export function parseFixedMetrics(
+  view: Readonly<DataView>,
+  tables: FontTables,
+): FixedMetrics | undefined {
+  const { numberOfHMetrics, ...lineMetrics } = parseHorizontalHeader(
+    tableToView(view, tables.hhea),
+  );
   const unitsPerEm = parseUnitsPerEm(tableToView(view, tables.head));
 
-  if (
-    header.numberOfHMetrics === 0 ||
-    !isInIntegerRange(unitsPerEm, MIN_UNITS_PER_EM, MAX_UNITS_PER_EM)
-  ) {
+  if (numberOfHMetrics === 0 || !isInIntegerRange(unitsPerEm, MIN_UNITS_PER_EM, MAX_UNITS_PER_EM)) {
     return undefined;
   }
 
@@ -70,9 +71,7 @@ export function parseFixedMetrics(view: DataView, tables: FontTables): FixedMetr
   return {
     ...parseTextDecorations(tableToView(view, tables.post), os2),
     ...parseOs2Metrics(os2, unitsPerEm),
-    ascender,
-    descender,
-    lineGap,
+    ...lineMetrics,
     unitsPerEm,
   };
 }

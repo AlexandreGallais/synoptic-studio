@@ -23,7 +23,9 @@ const ITALIC_BIT = 0;
  * @returns its weight and whether it is italic; undefined for a table shorter than 64 bytes
  * @see REF-OT-OS2
  */
-export function parseFontStyle(os2: DataView): Pick<FontFace, "isItalic" | "weight"> | undefined {
+export function parseFontStyle(
+  os2: Readonly<DataView>,
+): Pick<FontFace, "isItalic" | "weight"> | undefined {
   return isSpanWithin(FS_SELECTION_OFFSET, Uint16Array.BYTES_PER_ELEMENT, os2.byteLength)
     ? {
         isItalic: isBitSet(os2.getUint16(FS_SELECTION_OFFSET), ITALIC_BIT),

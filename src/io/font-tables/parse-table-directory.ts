@@ -16,7 +16,7 @@ import type { FontTableRecord } from "./font-table-record";
  * @see REF-OT-OTFF
  */
 export function parseTableDirectory(
-  view: DataView,
+  view: Readonly<DataView>,
   directory: number,
 ): Readonly<Record<string, FontTableRecord>> {
   return Object.fromEntries(
