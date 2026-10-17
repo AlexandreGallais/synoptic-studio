@@ -1,3 +1,8 @@
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { DatabaseSync } from "node:sqlite";
+
 import { describe, expect, it } from "vitest";
 
 import { pageChunks } from "./library-chunks";
@@ -65,5 +70,40 @@ describe("library store", () => {
       [PAGE.url, 2000],
       ["https://example.org/old", 500],
     ]);
+  });
+});
+
+describe("library migration", () => {
+  it("moves the uses of a library made before the project into a table that names it", () => {
+    const folder = mkdtempSync(join(tmpdir(), "library-"));
+    const path = join(folder, "library.sqlite");
+    const old = new DatabaseSync(path);
+
+    old.exec(
+      "CREATE TABLE uses (time INTEGER NOT NULL, tool TEXT NOT NULL, url TEXT NOT NULL, query TEXT NOT NULL, origin TEXT NOT NULL)",
+    );
+
+    old.exec("INSERT INTO uses VALUES (1, 'get', 'https://x.org', '', 'online')");
+    old.close();
+
+    const database = openLibrary(path);
+
+    // An older copy of the scripts still writes and reads `uses`, five columns, no project.
+    database.exec("INSERT INTO uses VALUES (2, 'read', 'https://x.org', '', 'library')");
+    // Opened again: nothing left to move, nothing created twice.
+    openLibrary(path).close();
+
+    const rows = database.prepare("SELECT time, project FROM project_uses ORDER BY time").all();
+    const view = database.prepare("SELECT COUNT(*) AS count FROM uses").get();
+
+    database.close();
+    rmSync(folder, { force: true, recursive: true });
+
+    expect(rows).toEqual([
+      { project: "", time: 1 },
+      { project: "", time: 2 },
+    ]);
+
+    expect(view).toEqual({ count: 2 });
   });
 });
