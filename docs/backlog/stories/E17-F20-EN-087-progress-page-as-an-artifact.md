@@ -47,7 +47,3 @@ The story stays `done`: its work was delivered and merged, then removed by a lat
 - Measured on the live run of 2026-10-17 (4 workers, 17 stories): the page was 6 KB, written in 0.1 s, 0.3 s through npm.
 - The improvement row of 2026-10-16 (a progress view in the terminal beside Claude Code) in `docs/process/improvements.md`: its end "handled by EN-087 as a progress page published during a run" becomes "tried by EN-087 as a progress page published during a run, then dropped on 2026-10-17: not useful", so the row is open again for the retrospective.
 - F20's feature file: its criterion 5 (a claude.ai page showing a run's progress, EN-087) no longer holds; mark it dropped with this decision, or remove it, when writing the feature file.
-
-### Feedback
-
-| 2026-10-17 | The run's progress page, a claude.ai Artifact published at the run's start and after each merge (EN-087), was built and used on a live run, then judged not useful by the Product Owner, who dropped it. | Show the Product Owner a sample of such a view before building a tool and the run's steps around it. | The page removed with its tool and its publish steps (EN-087, Decision of 2026-10-17). |
