@@ -44,7 +44,7 @@ export const DOCUMENTED_CONTEXTS = [
   "ExportNamedDeclaration[declaration.type='VariableDeclaration']",
 ];
 
-/** Library declarations requiring a JSDoc block: those above plus type members (TypeDoc validation). */
+/** Library declarations requiring a JSDoc block: those above plus type members (the API pages' check). */
 export const LIBRARY_DOCUMENTED_CONTEXTS = [...DOCUMENTED_CONTEXTS, "TSPropertySignature"];
 
 /** Fragment without final period: `@param x - abscissa of the point`. */

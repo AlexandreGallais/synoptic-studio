@@ -14,7 +14,7 @@ Setting up a new project the way this one ended E01. In order; each step names t
 | 6 | Git hooks: lint-staged, commitlint with closed scopes and backlog footers, branch names, full check before push | `.husky/`, `.lintstagedrc.json`, `commitlint.config.ts`, `.validate-branch-namerc.json` | `docs/tooling/git-workflow.md` |
 | 7 | One CI, on the pull request into `main`; CodeQL; weekly link check | `.github/workflows/` | ADR-0038 |
 | 8 | Releases: release-please, test report attached, docs and demo published on release | `.github/workflows/release.yml`, `release-please-config.json` | `docs/tooling/releases.md` |
-| 9 | Documentation site: VitePress, TypeDoc, Mermaid diagrams | `docs/.vitepress/` | `docs/tooling/documentation-site.md` |
+| 9 | Documentation site: VitePress, API pages from the TSDoc (a Rust generator on Oxc's parser here, TypeDoc before EN-072), Mermaid diagrams | `docs/.vitepress/` | `docs/tooling/documentation-site.md` |
 | 10 | Docs skeleton: domain, ADRs, conventions (writing rules first), references, derivations, research, backlog, process, guide, playbook | `docs/*/README.md`, templates `_*.md`, `docs/conventions/writing.md` | this playbook |
 | 11 | Backlog with tests: ids, statuses, parents' tables, feature frame | `tests/backlog.test.ts`, `tests/references.test.ts` | ADR-0017, ADR-0020 |
 | 12 | Agent configuration: `AGENTS.md`, `CLAUDE.md`, rules, skills, expert agents, hooks, status line | `AGENTS.md`, `CLAUDE.md`, `.claude/` | ADR-0021 |

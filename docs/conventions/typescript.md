@@ -22,7 +22,7 @@ Left to ESLint (off in `tsconfig.json`): `noUnusedLocals`, `noUnusedParameters`,
 ## Files
 
 - `tsconfig.json`: type checking only (`noEmit`) of `src/`, `playground/`, `eslint/`, `tests/`, `scripts/`, `.claude/hooks/`, `docs/.vitepress/` and root files.
-- `tsconfig.build.json`: emits the declarations `dist/types/` from `src/` (tests excluded); also used by TypeDoc.
+- `tsconfig.build.json`: emits the declarations `dist/types/` from `src/` (tests excluded).
 
 ## Typed rules
 

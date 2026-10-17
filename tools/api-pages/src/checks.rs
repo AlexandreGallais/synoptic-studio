@@ -1,4 +1,4 @@
-//! The three checks `TypeDoc`'s configuration made (`REF-TYPEDOC-OPTIONS`, `validation`): every
+//! The three checks `TypeDoc`'s configuration made (`REF-TYPEDOC-VALIDATION`): every
 //! export and every property documented, every `{@link}` naming an export, and no internal
 //! name reachable from the API. Each failure names its file, its line and its export.
 

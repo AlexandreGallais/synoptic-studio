@@ -16,7 +16,7 @@
 | Package | Why | Alternatives rejected |
 | --- | --- | --- |
 | `@typescript/native` | TypeScript 7, the native compiler, under the alias of `REF-TS7-ANNOUNCEMENT` (`npm:typescript@7.0.2`): its `tsc` runs the type check and writes the declarations of `build`, about 5 times faster than 6.0 (EN-071); becomes `typescript` again at EN-085 | TypeScript 6's `tsc`: about 4.3 s against 0.9 s on this tree |
-| `typescript` | TypeScript 6's API, as `npm:@typescript/typescript6@6.0.2` (binary `tsc6`), for the tools that import `typescript` through a peer dependency until they leave: typescript-eslint (EN-085) and TypeDoc (EN-072); patch upgrades only (`.ncurc.cjs`) | `typescript` 7 alone: no API until 7.1, so typescript-eslint and TypeDoc cannot load it |
+| `typescript` | TypeScript 6's API, as `npm:@typescript/typescript6@6.0.2` (binary `tsc6`), for the tool that imports `typescript` through a peer dependency until it leaves: typescript-eslint (EN-085); TypeDoc left with EN-072; patch upgrades only (`.ncurc.cjs`) | `typescript` 7 alone: no API until 7.1, so typescript-eslint cannot load it |
 | `@types/node` | Node.js types for the tooling (ESLint plugin, configuration files) | — |
 | `vite` | development server of the playground and library build (Product Owner requirement, ADR-0009) | — |
 | `vitest` | tests, sharing Vite's configuration and transforms | Jest: separate transform pipeline |
@@ -50,9 +50,7 @@
 | Package | Why | Alternatives rejected |
 | --- | --- | --- |
 | `vitepress` | Markdown documentation site built on Vite (`REF-VITEPRESS`); 2.0 alpha because 1.6 bundles a vulnerable Vite 5 (ADR-0009) | Docusaurus: React and webpack/rspack toolchain, no native PDF either |
-| `typedoc` | generates the API reference from the TSDoc; supports TypeScript 6.0 | — |
-| `typedoc-plugin-markdown` | TypeDoc output as Markdown pages (`REF-TYPEDOC-MARKDOWN`) | TypeDoc's HTML site: separate from the docs |
-| `typedoc-vitepress-theme` | VitePress-flavored Markdown and sidebar for the API pages | — |
+
 | `mermaid` | diagrams written as text in `mermaid` code blocks (flowcharts, Git graphs, sequences), drawn by the site's theme in the browser and natively by GitHub (`REF-MERMAID`, `REF-GH-DIAGRAMS`) | `vitepress-plugin-mermaid`: last release 2024, VitePress 1 only; hand-drawn SVG: hard to keep up to date |
 
 ### Git workflow

@@ -38,7 +38,7 @@ export const LIBRARY_SIGNATURES: TSESLint.FlatConfig.Config = {
   files: LIBRARY_FILES,
   name: "scopes/library-signatures",
   rules: {
-    // Type members are documented too: TypeDoc fails the docs build on an undocumented property.
+    // Type members are documented too: `tools/api-pages` fails the docs build on an undocumented property.
     "jsdoc/require-jsdoc": [
       "error",
       {
