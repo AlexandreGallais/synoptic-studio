@@ -158,6 +158,8 @@ Every group of rules sits on one side of one question: does it make the code alw
 | classes | banned (`functional/no-classes`) | the model is plain data (ADR-0025), functions over it are named one per file; a class would tie data to methods the API pages and the barrels do not expect |
 | `enum` | banned (`no-restricted-syntax`) | a union of string literals says the same, is erased at compile time, and Node.js runs the hooks and scripts by type stripping, which cannot run an `enum` |
 
+A project of another kind may want them: the [rule catalogue](./rule-catalogue.md) puts each of these rules under the contexts where it serves.
+
 ## Barrels (ADR-0012), measured
 
 The Product Owner asked what the barrels cost the tests. Six playground tests each importing one function, measured three times with Vitest in the isolated project (each file loads its modules again):

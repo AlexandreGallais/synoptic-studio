@@ -15,6 +15,7 @@ Almost everything here is **checked by the linters** (oxlint, `.oxlintrc.json`, 
 | [typescript.md](./typescript.md) | compiler options, TypeScript / linters split |
 | [formatting.md](./formatting.md) | EditorConfig, the formatter (oxfmt), blank lines, format on save |
 | [lint.md](./lint.md) | the two linters, their zones, adding or changing a rule, the project's rules |
+| [rule-catalogue.md](./rule-catalogue.md) | lint and format rules for other kinds of project, by category, with profiles (a functional library, a business library, an Angular application, tools), on paper only |
 | [rules.md](./rules.md) | every rule, formatter setting, check and hook, with what it guards and its verdict (EN-093); function limits and barrels measured |
 | [testing.md](./testing.md) | Vitest, hand-computed expected values |
 | [writing.md](./writing.md) | how documentation is written: page types, austere API reference, style |
