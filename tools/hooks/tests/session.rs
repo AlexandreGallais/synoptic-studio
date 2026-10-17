@@ -122,18 +122,13 @@ fn prints_the_state_with_or_without_a_feature_started() {
 }
 
 /// A command without the `GIT_*` variables of the process running the tests: under the pre-push
-/// hook, `GIT_DIR` names the repository itself (`.claude/rules/tooling.md`). A local helper until
-/// EN-103's shared test-support crate is merged.
+/// hook, `GIT_DIR` names the repository itself (`.claude/rules/tooling.md`); started through the
+/// shared `test_support::command` (EN-103), with a home of its own.
 fn clean(program: &str) -> Command {
-    let mut command = Command::new(program);
+    let mut command = test_support::command(program);
     let home = std::env::temp_dir().join(format!("session-home-{}", std::process::id()));
 
     fs::create_dir_all(&home).expect("home");
-    for (name, _) in std::env::vars_os() {
-        if name.to_string_lossy().starts_with("GIT_") {
-            command.env_remove(name);
-        }
-    }
     command
         .env("HOME", home)
         .env("GIT_CONFIG_NOSYSTEM", "1")

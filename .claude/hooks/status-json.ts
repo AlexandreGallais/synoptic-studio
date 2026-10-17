@@ -1,5 +1,7 @@
 // Reading the JSON of Claude Code's transcript lines and hook inputs (docs/tooling/metrics.md):
 // properties of unknown values, a line's time and the blocks of its message.
+// The hooks read JSON in Rust (`tools/hooks`, EN-104); this file stays for the metrics scripts that
+// import it until EN-107 ports them.
 
 /**
  * Property of a parsed JSON value.

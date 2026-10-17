@@ -8,7 +8,7 @@ use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 use std::time::SystemTime;
 
-use hooks::git::git;
+use hooks::git::{branch_of, checkout_of, git};
 use hooks::session::{STALE_MS, feature_line, is_feature_file, state_text, story_rows};
 
 fn main() -> ExitCode {
@@ -22,7 +22,7 @@ fn root() -> Option<PathBuf> {
         .ok()
         .filter(|folder| !folder.is_empty())
         .map(PathBuf::from)
-        .or_else(|| git(Path::new("."), &["rev-parse", "--show-toplevel"]).map(PathBuf::from))
+        .or_else(|| checkout_of(Path::new(".")).map(|checkout| checkout.top))
 }
 
 /// Removes the running files last written over `STALE_MS` ago: a call interrupted or denied never
@@ -46,21 +46,19 @@ fn hook() -> u8 {
     let Some(root) = root() else {
         return 1;
     };
-    let Some(common) = git(
-        &root,
-        &["rev-parse", "--path-format=absolute", "--git-common-dir"],
-    ) else {
+    let Some(checkout) = checkout_of(&root) else {
+        eprintln!("session-state: {} is not in a Git repository", root.display());
         return 1;
     };
 
     remove_stale_calls(
-        &Path::new(&common).join("metrics").join("running"),
+        &checkout.common.join("metrics").join("running"),
         SystemTime::now(),
     );
 
-    let (Some(status), Some(branch), Some(last)) = (
+    let branch = branch_of(&checkout);
+    let (Some(status), Some(last)) = (
         git(&root, &["status", "--porcelain"]),
-        git(&root, &["branch", "--show-current"]),
         git(&root, &["log", "-1", "--format=%h %s"]),
     ) else {
         return 1;

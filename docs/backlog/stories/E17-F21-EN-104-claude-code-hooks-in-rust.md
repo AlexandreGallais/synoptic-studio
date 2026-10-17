@@ -36,6 +36,18 @@ Before (0023's table, measured again by SP-023) and after, 20 to 30 calls each o
 
 Before, measured by SP-023 on F20's versions ([research note 0025](../../research/notes/0025-f21-agent-tools-in-rust.md), Each tool's time before its port), median of 20 calls: `guard-bash` 56.1 ms, `track-tool-call` 86.6 ms, `log-tool-call` 105.5 ms, `session-state` 161.1 ms, the status line 169.9 ms on a transcript of 217 MB. A Rust hook binary answers in 2.7 ms by its path and in 49.9 ms through `cargo run --release -q --manifest-path …`, the way `.claude/settings.json` calls the Rust hooks today: the port uses the binary by its path (Decisions).
 
+After, measured on 2026-10-18 at 01:55 on this Mac, load 2.0 to 2.4, the same method (a process started and waited for, 20 calls after one to warm, median and mean in milliseconds), each hook in a scratch repository of its own on the inputs it meets: a Bash call `cd "<worktree>" || exit 9; git status`, its `PostToolUse` with a result of 2,000 characters, the status line on this session's transcript of 223 MB, its cache warm.
+
+| Hook | Before, TypeScript as `settings.json` ran it | After, the binary by its path | After, through `cargo run --release -q --manifest-path …` |
+| --- | --- | --- | --- |
+| `guard-bash` | 58.8 (58.9) | 2.9 (3.0) | 46.9 (47.6) |
+| `track-tool-call` | 89.3 (90.5) | 3.0 (3.0) | 46.6 (47.9) |
+| `log-tool-call` | 106.1 (107.1) | 3.0 (3.1) | 46.9 (47.6) |
+| `session-state` | 120.6 (122.5) | 25.4 (26.6) | 69.8 (71.3) |
+| the status line, through `sh -c` as `settings.json` runs it | 180.4 (181.3) | 10.0 (10.3) | 50.7 (52.4) |
+
+The status line's CPU time over 60 draws, one a second: 14,682 ms before, 24.5 % of one core, since each draw read the whole transcript before slicing it at the cache's offset; 1,156 ms after, 1.9 % of one core, the transcript read from its offset. `track-tool-call`, `log-tool-call` and the status line read the Git folder and the branch from the files Git writes instead of starting Git; `session-state` still starts it twice, for `git status` and `git log`.
+
 ## Decisions
 
 - The agent, 2026-10-18, under ADR-0069, to tell the Product Owner: option C of SP-023's question. The hooks, the status line, the Git hooks and the agent's own commands call `target/release/<binary>` directly, `npm run` kept for people. A stale binary is met by a rebuild at `prepare`, after `git:sync` and after `story:finish`, and by a check that fails naming it. A new ADR, written by this story, supersedes ADR-0073 decision 1 for these calls.

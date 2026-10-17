@@ -1,7 +1,6 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "entry": [
-    ".claude/hooks/status-line.ts",
     "scripts/{tool-versions,metrics-report,session-report,watch-task,default-font-metrics}.ts",
     "docs/.vitepress/config.ts",
     "docs/.vitepress/theme/index.ts",

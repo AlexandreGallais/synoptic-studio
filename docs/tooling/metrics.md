@@ -77,7 +77,7 @@ Each tool of our own records its own use (EN-102), whoever calls it — the agen
 
 ## Status line
 
-The status line (`.claude/hooks/status-line.ts`, `REF-CC-STATUSLINE`), refreshed every second, tells the Product Owner where the work is and whether the chat is free: two lines, then one per call running and per background task.
+The status line (the `status-line` binary of `tools/hooks`, `REF-CC-STATUSLINE`), refreshed every second, tells the Product Owner where the work is and whether the chat is free: two lines, then one per call running and per background task.
 
 ```text
 E14 › RET-002 retrospective e14 · status line, documentation
@@ -100,9 +100,9 @@ A background task is a subagent, a monitor or a call run in the background, and 
 | --- | --- |
 | epic › feature › story | the branch checked out, matched with the backlog's file names; the branch itself outside a story |
 | the step | `.git/metrics/step`, one line the agent writes at each step; when empty, the place alone, so that no word is taken for a state |
-| the state | the transcript and its background tasks (`status-tasks.ts`) |
+| the state | the transcript and its background tasks (`tools/hooks/src/tasks.rs`, which `limit-agents` reads too) |
 | `⏱ turn` | the time since the turn started; once the agent ends its turn, `last turn`, stopped at its last answer. A turn starts at the first prompt after the agent ended its turn; a message sent while it works, or a compaction, stays in the turn |
-| tokens this turn | the exact sum of the turn's requests, as in the session report, the part written in brackets; they grow by steps, as a request's tokens reach the transcript only once its answer is complete |
+| tokens this turn | the exact sum of the turn's requests, as in the session report, the part written in brackets; they grow by steps, as a request's tokens reach the transcript only once its answer is complete. A request written over several lines is counted once, from its last line: a subagent's transcript repeats its usage with a growing `output_tokens` (EN-104) |
 | `run` | while a run is open: its duration, its tokens with the subagents', then the week's usage ([a run's totals](#a-runs-totals)) |
 | conversation memory | how full the context window is; near 100 %, Claude Code compacts the conversation |
 | `▶` | the main agent's oldest call running, its description and for how long; in red after 5 minutes |
