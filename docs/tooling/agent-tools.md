@@ -1,165 +1,111 @@
 # The agent's tools
 
-Small repository scripts that do in one command what the agent used to write by hand at each story. Decided at RET-002 (ADR-0050).
-
-## Why
-
-At the end of E14 the metrics showed where the time went:
-
-- **Writing the command costs more than running it.** 1 147 Python edit scripts took 389 minutes, and most of that was the model writing them.
-- **The checks run too often, one after the other.** `check:all` ran at each of 49 pushes (about 44 minutes), and `npm run fix` took 28 s each time.
-
-A tool written once removes the writing. It is tested, linted and named after what it does.
+**What the agent writes by hand again and again becomes a tool**, tested, linted and named after what it does (ADR-0050). The model writing a command costs more than the command running: at E14, 1,147 hand-written Python edit scripts took 389 minutes, most of it writing them. A tool also saves round trips: each call avoided saves about 3 s and a context read again ([research note 0024](../research/notes/0024-f20-context-diet.md)). So the agent uses these tools rather than ad-hoc scripts, and a sequence it repeats is a candidate for the next one.
 
 ## Tools
 
 | Command | Does | Replaces |
 | --- | --- | --- |
-| `npm run replace` | reads blocks `@@ file`, `<<<`, old text, `===`, new text, `>>>` on standard input and writes nothing unless each old text is found exactly once | a Python script of `replace` calls per edit |
-| `npm run backlog:status -- <ID> <status>` | changes an item's status in its file, its folder's index and its parent's table — the three places `backlog.test.ts` checks; a story's index is generated again rather than edited | three hand edits per status change |
-| `npm run backlog:index` | writes `docs/backlog/stories/README.md` from each story's front matter, epic by epic in the order of the epic's and the features' tables, those they do not list by file name; a Rust tool (`tools/backlog-index/`, EN-049, ADR-0065) | the index edited by hand on every branch |
-| `npm run story:finish -- <base> <title> <body>` | run in the story's worktree, under the merge lock (`heavy-lock --lock merge`, EN-051): rebases the story on its base if another merged meanwhile, opens its pull request with the `autonomous` label, waits at most three minutes for GitHub's merge, brings the base up to date where it is checked out without switching branch, moves the rows the story file holds for the logs into them, commits those files only and pushes (`move-rows`, EN-050), then removes the worktree and deletes the branch here and on GitHub; not merged, it keeps them. Run again after a stop, it reuses the story's pull request, and once merged goes straight to the clean-up, pushing a rows' commit left unpushed; a clean-up stopped midway prints its remaining commands to type, one per line; without its three arguments, it prints its usage and stops (AUD-020) | a waiting loop and four cleaning commands |
-| `npm run golden:write` / `golden:check` | `golden:write` refuses in a worktree (the file is shared, EN-052); about 400 results of the library from shapes drawn with a fixed seed, written before a refactor and compared bit for bit after each change (`NAM`, ADR-0049); the pre-push runs `golden:check` whenever the file is written (EN-055) | a probe written for F13 |
-| `npm run activity` | the calls running, the latest calls of the main agent and of each subagent, the end of the background commands' output | reading transcripts to know what a subagent does |
-| `npm run epic:check -- <epic> <first day>` | the full check of what an epic produced, as a table for the retrospective: checks — a failed `check:all` named by its failing checks, their lanes and failing tests —, branches, pull requests, issues, failed calls with the worktree isolation's refusals counted apart, calls lost at a force-quit (started over an hour ago, never ended), backlog, records (EN-055) | a dozen commands at each retrospective |
-| `npm run check:all` | the release build, then the checks in five parallel lanes: about 40 s on a code story, 57 to 68 s when the docs build runs (EN-085, 2026-10-17; the earlier measures in CHK-020, EN-045 and RET-002) | the checks one after the other |
-| `npm run val:prepare -- <feature>` | at a `VAL`, the feature's lines in its epic's checklist, one per numbered criterion to rewrite as what to try and what to see, the epic's checklist registered for `?checklist=<epic>` and its address printed; no guided-steps file; a Rust tool (`tools/val-prepare/`, EN-056) | guided steps written for each validation, unused since US-051 |
-| heavy lock (`tools/heavy-lock/`, Rust) | `check:all`, `npm run test`, `golden:check`, `docs:build` and `mutate` take `.git/heavy.lock`, holding a system file lock (`flock`), the owner's process id kept for the waiting message: one at a time across every worktree, the others wait and say which process holds it; a lock whose process is gone is taken over; a check started by `check:all` runs inside its lock (ADR-0072, EN-047, [commands](./commands.md#one-heavy-command-at-a-time)) | the lock taken by hand with `mkdir` in the worker's brief |
-| `npm run git:sync [-- --base <ref>]` | in a story's worktree: fetches `origin`, then rebases the story on its feature branch, found from the story's file as `worktree:new` finds it (`origin/develop` for an epic's story), or on the base typed; on any other branch, moves it forward to its upstream (`merge --ff-only`), never rebasing a shared branch; refuses `main` and a detached head; stops at the first failing step with Git's own message (a conflict leaves the rebase to resolve or abort); prints one line, the branch, its base and the commits ahead; a Rust tool (`tools/git-sequences/`, EN-100) | `git fetch origin` then `git rebase origin/<feature>`, two calls (39 times in three days, research note 0024) |
-| `npm run git:commit -- -F <file\|-> [--push\|--push-with-lease] [--] <paths>` | stages the files named (none: what is staged already), commits with the message of the file or of the standard input (a here-document: a message of several lines passes the shell guard), then pushes with `-u origin HEAD` when asked; `--push-with-lease` only on a story branch; refuses `main`, a detached head and an empty message before staging anything; never `--no-verify`, the hooks run even under `HUSKY=0`; each step's output shown only when it fails, then the sequence stops; prints the commit's hash and subject | `git add`, `git commit -F`, `git push`, three calls (`add` then `commit` 59 times, `commit` then `push` 46, research note 0024) |
-| `npm run run:start`, `run:end` | `/run` opens `.git/metrics/run.json` with its start and its session (a run already open adds the session); its stop closes it and prints the run's duration and tokens by kind, subagents included, as a Markdown table; `npm run metrics:session -- --run` prints the same table at any time; the status line shows `run …` while it is open; a Rust tool (`tools/run-totals/`, EN-092, [metrics](./metrics.md#a-runs-totals)) | a turn's figures only, restarting at each message |
-| `npm run run:should-stop` | before each story of a run: prints `stop` and exits 1 once the week's usage of `.git/metrics/usage.json` reaches 90 %, else `go` and exits 0 (usage unknown: `go`), then the parked stories of the backlog of the checkout it runs in — run it in a worktree of the feature branch; exits 2 outside a repository; 30 ms, 70 ms through `cargo run` (`tools/run-totals/`, EN-086) | the usage read by eye on the status line |
-| `npm run progress:page [-- address <url>]` | writes the run's progress page `.git/metrics/progress.html`, one static HTML file of about 6 KB: the run's start, duration and tokens by kind, the plan's usage, the agents running with their story and tokens, then each epic, feature and story of the feature branches on `origin` with its status, the story in progress, its duration, tokens and commits; prints the file and the address to publish it at, or that it is a new page; `address <url>` keeps the address the main thread got at its first publish, for this run only (`.git/metrics/progress-page.json`); 0.1 s, 0.3 s through npm; a Rust tool (`tools/progress-page/`, EN-087, [agent](./agent.md#the-progress-page)) | a progress page written by the model at each update |
-| `npm run worktree:new -- <ID> [--type <type>]` | adds `.claude/worktrees/<id>` on `<type>/<id>-<topic>` from the story's feature branch on GitHub (`origin/develop` for an epic's story), the topic from the story's file name, the type from its kind (`US` and `VAL` `feat`, `EN` `chore`, `NAM` `refactor`, the others `docs`), links the main checkout's `node_modules` into it and runs Husky in each worktree without `.husky/_`, so a push runs the branch's own `pre-push` ([git workflow](./git-workflow.md#hooks-husky)); refuses a folder already there and a branch name that is not a story branch (`origin/…`); a Rust tool (`tools/worktree/`, EN-052) | worktrees named `agent-a13cbef…`; a branch named `origin/feature/…` by a word split |
-| `npm run context:size -- <folder>…` | for each subagent of a session's folder (`~/.claude/projects/<project>/<session>`, its `subagents/` read) or of a `subagents/` folder: its type, the tokens of its first request, the instruction files loaded before it (`CLAUDE.md`, `AGENTS.md`, the memory index `MEMORY.md`), the characters of its skill listing and of its task; then the median per type; a Rust binary of `tools/hooks/` (EN-065) | the first requests counted by a script of the scratch folder at SP-022 |
-| `npm run mutate -- [--all] <files> [-- <command>]` | under the heavy lock, in a temporary copy of the repository, tries mutations on each file and reports each one caught, timed out or `SURVIVED` with its line; exits 1 when one survives ([mutate](#mutate)); a Rust tool (`tools/mutate/`, EN-058) | the runner written again at each audit (F05 to F17), Stryker blocked |
+| `npm run replace` | reads blocks `@@ file`, `<<<`, old text, `===`, new text, `>>>` on standard input, and writes nothing unless each old text is found exactly once | a Python script of `replace` calls |
+| `npm run backlog:status -- <ID> <status>` | changes an item's status in its file, its folder's index and its parent's table, the three places `backlog.test.ts` checks; a story's index is written again rather than edited | three hand edits |
+| `npm run backlog:index` | writes `docs/backlog/stories/README.md` from each story's front matter, in the order of the epics' and features' tables (`tools/backlog-index/`, ADR-0065) | the index edited by hand on every branch |
+| `npm run worktree:new -- <ID> [--type <type>]` | adds `.claude/worktrees/<id>` on `<type>/<id>-<topic>` from the story's feature branch on GitHub (`origin/develop` for an epic's story), the type from its kind (`US`, `VAL` `feat`; `EN` `chore`; `NAM` `refactor`; others `docs`), links `node_modules`, runs Husky so that a push runs the branch's own hooks ([Git workflow](./git-workflow.md#hooks-husky)); refuses an existing folder and a branch name that is not a story's (`tools/worktree/`) | worktrees named `agent-a13cbef…` |
+| `npm run git:sync [-- --base <ref>]` | in a story's worktree, fetches `origin` and rebases the story on its feature branch, found as `worktree:new` finds it, or on the base given; on another branch, fast-forwards it to its upstream, never rebasing a shared branch; refuses `main` and a detached head; stops at the first failing step with Git's message; prints the branch, its base and the commits ahead (`tools/git-sequences/`) | `git fetch`, then `git rebase`: two calls |
+| `npm run git:commit -- -F <file\|-> [--push\|--push-with-lease] [--] <paths>` | stages the paths named (none: what is staged), commits with the message of the file or of the standard input, pushes with `-u origin HEAD` when asked, `--push-with-lease` on a story branch only; refuses `main`, a detached head and an empty message before staging; the hooks always run; shows a step's output only when it fails, then stops; prints the hash and subject (`tools/git-sequences/`) | `git add`, `git commit`, `git push`: three calls |
+| `npm run story:finish -- <base> <title> <body>` | in the story's worktree, under the [merge lock](./commands.md#one-heavy-command-at-a-time): rebases the story if its base moved, opens its pull request labelled `autonomous`, waits up to three minutes for GitHub's merge, brings the base up to date where it is checked out, moves the story's rows into the logs ([below](#shared-files-and-their-rows)), commits and pushes them, then removes the worktree and the branch here and on GitHub; not merged, it keeps them. Run again after a stop, it resumes where it stopped, and prints the commands left when a clean-up fails | a waiting loop and four cleaning commands |
+| `npm run run:start`, `run:end` | opens and closes the run's marker, and prints its duration and tokens by kind ([metrics](./metrics.md#a-runs-totals), `tools/run-totals/`) | a turn's figures, restarting at each message |
+| `npm run run:should-stop` | before each story: `stop` and exit 1 once the week's usage reaches 90 %, else `go` and exit 0 (unknown usage: `go`), then the parked stories of the checkout it runs in, so run it in a worktree of the feature branch; exit 2 outside a repository | the usage read by eye |
+| `npm run progress:page [-- address <url>]` | writes the run's progress page and prints where to publish it; `address <url>` keeps the address of the run's first publish ([agent](./agent.md#the-progress-page), `tools/progress-page/`) | a page written by the model at each update |
+| `npm run context:size -- <folder>…` | for each subagent of a session's folder: its type, its first request's tokens, the instruction files loaded before it, the size of its skill listing and task; then the median per type (`tools/hooks/`) | first requests counted by hand |
+| `npm run golden:write` / `golden:check` | about 400 results of the library from shapes drawn with a fixed seed, written before a refactor and compared bit for bit after each change (`NAM`, ADR-0049); `golden:write` refuses in a worktree, the file being shared; the pre-push runs `golden:check` when the file is written | a probe written for F13 |
+| `npm run activity` | the calls running, the latest calls of the main agent and each subagent, the end of the background commands' output | reading transcripts |
+| `npm run epic:check -- <epic> <first day>` | an epic's full check for its retrospective: failed `check:all` runs with their failing checks and tests, branches, pull requests, issues, failed calls (the worktree refusals apart), calls lost at a force-quit, backlog, records | a dozen commands |
+| `npm run val:prepare -- <feature>` | at a `VAL`, one checklist line per numbered criterion of the feature, to rewrite as what to try and what to see; registers the epic's checklist and prints its address; refuses a feature without criteria or whose lines exist, warns above 12 (`tools/val-prepare/`) | guided steps written for each validation |
+| `npm run mutate -- [--all] <files> [-- <command>]` | under the heavy lock, in a temporary copy of the repository, tries mutations on each file and reports each caught, timed out or `SURVIVED` with its line; exits 1 when one survives ([below](#mutate), `tools/mutate/`) | a runner written again at each audit |
+| heavy lock (`tools/heavy-lock/`) | one heavy command at a time across every worktree ([commands](./commands.md#one-heavy-command-at-a-time)) | a lock taken by hand with `mkdir` |
 
 ### mutate
 
 | Step | What it does |
 | --- | --- |
-| copy | the repository as a temporary worktree outside it: tracked files with their uncommitted changes; removed at the end |
-| tests | each file's related tests (`npx vitest related {file} --run`); through the barrels they are most of the suite, about 1.5 min a run, so `-- npx vitest run {test}` runs only the file's own test file |
-| unchanged | the tests run once first; a file whose tests fail or that has none is skipped |
+| copy | the repository as a temporary worktree outside it, tracked files with their uncommitted changes; removed at the end |
+| tests | each file's related tests (`npx vitest related {file} --run`), which through the barrels are most of the suite; `-- npx vitest run {test}` runs only the file's own test file |
+| unchanged | the tests run once first; a file whose tests fail, or that has none, is skipped |
 | mutations | the first of each kind, every one with `--all`: a comparison flipped (`<` to `>=`, `===` to `!==`), `+` and `-` or `*` and `/` swapped, an integer `n` made `n + 1`, an `if` condition negated, a returned value made `undefined` |
 | where | found in the text, comments and strings skipped, operators only with a space on each side |
 | timeout | over four times the unchanged run plus 30 s |
 
 ## Specifications for later
 
-Each tool replaces something the agent writes by hand today, and is written when a retrospective's metrics show its signal. Every new one is written in Rust (decided 2026-10-16); before E17, the **Rust** column marked the tools that run so often, or read so much, that a compiled program would save time on its own (RET-002).
+A tool is written when a retrospective's metrics show its signal — the hand work it would replace, measured — and not before: a tool nobody needed is code to keep. Each is written in Rust ([below](#rust)).
 
-### Stories and backlog
-
-| Tool | Does | Signal | Rust |
-| --- | --- | --- | --- |
-| `story:start <ID>` | branch from the up-to-date feature branch, step file written, status `in-progress` in the three places | the same five commands at each story's start |  |
-| `story:new <type> <feature>` | the next free id, the story file from its template, its rows in the index and the feature's table | ids and rows corrected by `backlog.test.ts` |  |
-| `story:show <ID>` | the story's criteria, tasks, feature plan row and linked files, in one short text | story, feature and index files read again and again | yes |
-| `backlog:next` | the next story of the feature in progress, or the next feature in the Product Owner's order | the session-state hook not enough at the start of a run | yes |
-| `adr:new <title>` | the next number, the file from its template, its row in the index | ADR numbers or index rows fixed after a review |  |
-| `journal:add <tags> <text>` | an entry at the top of the journal, dated, with its tags | journal entries written by hand at each pause |  |
-| `log:feedback`, `log:idea` | a row in the feedback log or the improvement log, dated, its columns in order | rows with a missing column |  |
-
-### Commits and pull requests
-
-| Tool | Does | Signal | Rust |
-| --- | --- | --- | --- |
-| `commit:task <ID.Tn> <subject>` | the commit with its scope checked against the list, its `Refs` and attribution lines; on a refused commit, the errors only | refused commits (scope, sentence case, missing footer) |  |
-| `pr:body` | the pull request's body from the branch's commits, stories and evidence | pull request bodies written by hand |  |
-
-### Reading code without reading whole files
-
-| Tool | Does | Signal | Rust |
-| --- | --- | --- | --- |
-| `code:outline <path>` | a file's or a folder's exports, their kind, `@see` and first JSDoc line, without the bodies | `cat` and `sed -n` on whole files (1 224 and 907 calls in E14) | yes |
-| `code:find <name>` | where a function or type is defined, its tests, and every file that uses it | chains of `grep`, `ls` and `cat` to follow one name | yes |
-| `refs:show <REF>` | a `REF-*` or `DERIV-*` row and whether it is verified, and the functions that cite it | the bibliography read whole to check one reference | yes |
-
-### Checks and tests
-
-| Tool | Does | Signal | Rust |
-| --- | --- | --- | --- |
-| `check:changed` | fix, lint, types and the tests related to the files changed since the base, errors only: the loop inside a task | `npx vitest run` and `npm run lint` on chosen files by hand |  |
-| `test:mutate <file> <old> <new> <test>` | applies one change on purpose, runs the test, expects it to fail, restores the file | mutation checks done by hand with copies |  |
-| `api:diff` | the public exports before and after a change | a renamed export noticed late |  |
-
-### Pictures and the playground
-
-| Tool | Does | Signal | Rust |
-| --- | --- | --- | --- |
-| `svg:draw <shape.json>` | the SVG file of a shape, with its dashed box, for the guide's pictures | pictures written by hand from a probe (REV-002) |  |
-| `playground:probe <steps>` | runs guided steps without a browser and prints what each shows: path data, rows, messages | probes written in the scratchpad (REV-002) |  |
-
-### Hooks, status line and metrics
-
-These run at every tool call or every second, each one starting Node.js. Measured on 2026-10-14: about 55 ms for Node.js to start, 65 ms for `guard-bash` before each shell command, 149 ms for the status line at each refresh. In Rust each would take a few milliseconds.
-
-| Tool | Does | Signal | Rust |
-| --- | --- | --- | --- |
-| status line | the same lines, the transcript read from where it stopped | 149 ms each second | yes |
-| `guard-bash`, `track-tool-call`, `log-tool-call` | the same checks and records | 65 ms before every shell command; 3 551 commands in E14 (about 4 min) | yes |
-| `transcript:find <text>` | the lines of the session's transcript holding an id or a text, with their time and type | the stuck task found by `grep` in a 30 MB transcript | yes |
-| `metrics` report | the same report, faster on large transcripts | the report taking more than a few seconds | yes |
-
-### Asked by E15 (RET-003)
-
-The other tools RET-003 asked for are built in F18 (the tools table above).
-
-| Tool | Does | Signal | Rust |
-| --- | --- | --- | --- |
-| a summary of OpenType and CSS Fonts | the fields the project uses, read once | OS/2 read 38 times, CSS Fonts 4 27 times |  |
+| Tool | Does | Signal |
+| --- | --- | --- |
+| `story:start <ID>` | branch from the up-to-date feature branch, step file written, status `in-progress` in the three places | the same five commands at each story's start |
+| `story:new <type> <feature>` | the next free id, the story file from its template, its rows in the index and the feature's table | ids and rows corrected by `backlog.test.ts` |
+| `story:show <ID>` | the story's criteria, tasks, feature plan row and linked files, in one short text | story, feature and index files read again and again |
+| `backlog:next` | the next story of the feature in progress, or the next feature in the Product Owner's order | the session-state hook not enough at a run's start |
+| `adr:new <title>` | the next number, the file from its template, its row in the index | ADR numbers or index rows fixed after a review |
+| `journal:add <tags> <text>`, `log:feedback`, `log:idea` | a dated entry or row with its tags or columns in order | entries and rows with a missing column |
+| `commit:task <ID.Tn> <subject>` | the commit with its scope checked, its `Refs` and attribution lines; on a refused commit, the errors only | refused commits (scope, sentence case, footer) |
+| `pr:body` | the pull request's body from the branch's commits, stories and evidence | bodies written by hand |
+| `code:outline <path>` | a file's or folder's exports, kind, `@see` and first JSDoc line, without the bodies | `cat` and `sed -n` on whole files |
+| `code:find <name>` | where a function or type is defined, its tests, and every file that uses it | chains of `grep`, `ls` and `cat` |
+| `refs:show <REF>` | one `REF-*` or `DERIV-*` row, whether it is verified, and the functions that cite it | the bibliography read whole to check one row |
+| `check:changed` | fix, lint and the tests related to the files changed since the base, errors only | lint and tests run on chosen files by hand |
+| `api:diff` | the public exports before and after a change | a renamed export noticed late |
+| `svg:draw <shape.json>` | the SVG of a shape with its dashed box, for the guide's pictures | pictures written by hand from a probe |
+| `playground:probe <steps>` | runs guided steps without a browser and prints what each shows | probes written in the scratchpad |
+| the status line, `guard-bash`, `track-tool-call`, `log-tool-call` in Rust | the same lines, checks and records, each in a few milliseconds instead of a Node.js start (F21) | 65 ms before each shell command, 149 ms per refresh (2026-10-14) |
+| `transcript:find <text>` | the transcript lines holding an id or a text, with their time and type | a stuck task found by `grep` in a 30 MB transcript |
+| a summary of OpenType and CSS Fonts | the fields the project uses, read once | OS/2 read 38 times, CSS Fonts 4 27 times in E15 |
 
 ## Rust
 
-Rust is installed on the machine. Decided at RET-003 (Product Owner, 2026-10-16): the agent's tooling moves to Oxc and Rust now, in E17, before E02 — not once each tool's cost justifies it, as RET-002 had planned. The measures of E15 say where Rust pays:
+**Every new script, hook or agent tool is written in Rust** (ADR-0073; Product Owner, 2026-10-16): the agent runs its tools hundreds of times a session, a Rust tool starts without Node.js and reads Oxc's crates directly, and a tool written in TypeScript now would be rewritten later. The TypeScript tools may still be edited until F21 rewrites them; the rule covers the tools around the library, never `src/` nor the playground. A tool is a crate of `tools/`, a member of the root workspace, run by `cargo run --release -q -p <crate>`; the library itself stays dependency-free.
 
-| Where | E15's measure | Rust worth it | Result |
-| --- | --- | --- | --- |
-| lint (ESLint and its plugins) | 170 s in a loaded `check:all`, about 25 s alone at E14 | yes: oxlint, and the rules it lacks rewritten on Oxc (F19) | oxlint 1.5 s with the type check, `tools/lint` 0.24 s (F19, ADR-0075) |
-| format (Prettier) | 33 s in `check:all`; `npm run fix` 195 × 25 s | yes if oxfmt formats as Prettier does (F19's spike) | oxfmt 0.4 s against Prettier's 12.4 s (EN-073, ADR-0075) |
-| hooks and status line | 65 ms per shell command, 149 ms per refresh; 13 127 calls ≈ 14 min | yes | F21 |
-| a context tool for each new agent | 24 M tokens per story; inputs read whole | yes, measured first (F20) | F20 |
-| tools run once in a while | seconds, against minutes of the model writing commands | no: the model is 93–100 % of each turn | — |
+| Crate | Run by | Does |
+| --- | --- | --- |
+| `backlog-index` | `backlog:index`, `backlog:status` | the stories index from each story's front matter; `--check` names the first row that differs |
+| `format` | `format`, `format:check`, `fix`, `lint-staged`, `backlog:index`, `story:finish` | the one formatter: oxfmt, then Markdown tables without padding (ADR-0068, [formatting](../conventions/formatting.md)); `--check` changes nothing |
+| `heavy-lock` | `check:all`, `test`, `golden:check`, `docs:build`, `mutate`; `story:finish` (`--lock merge`) | one heavy command at a time across worktrees, and the merge lock |
+| `hooks` | the `limit-agents`, `library-pages` and `check-handback` hooks, `context:size` | the Claude Code hooks in Rust and what they share ([agent](./agent.md#hooks)) |
+| `shared-files` | the `pre-push` hook; `story:finish` | `refuse-shared-files` and `move-rows` ([below](#shared-files-and-their-rows)) |
+| `worktree` | `worktree:new` | a story's worktree with `node_modules`, Husky and the release binaries |
+| `git-sequences` | `git:sync`, `git:commit` | the frequent Git sequences in one call each |
+| `run-totals` | `run:start`, `run:end`, `run:should-stop`, `metrics:session -- --run`, the status line | a run's marker, duration and tokens, counted incrementally; whether it stops at the week's limit |
+| `progress-page` | `progress:page` | the run's progress page |
+| `val-prepare` | `val:prepare` | a feature's checklist lines |
+| `mutate` | `mutate` | the mutations in a copy of the repository |
+| `lint` | `lint`, `fix`, `lint-staged`, after oxlint | the project's linter on Oxc: the project's rules, those oxlint lacks and the Markdown rules, each file parsed once ([lint](../conventions/lint.md)) |
+| `rule-docs` | the `commit-msg` hook, at a `done` commit | asks a story that changes `docs/domain/` for its Q row, its VAL's decisions to confirm and its guide page, unless the message says `Rule-docs: none affected, <why>` |
+| `api-pages` | `docs:api`, `docs:dev`, `docs:build` | the API pages from `src/index.ts` and its TSDoc ([documentation site](./documentation-site.md)) |
+| `declarations` | `build` | the library's `.d.ts` from each module alone (ADR-0071, [build](./commands.md#build)) |
 
-The Rust tools live in this repository, beside the TypeScript, with their own checks (rustfmt, clippy); the library stays dependency-free.
+`worktree`, `git-sequences` and `progress-page` decide what they do in their library, without Git nor files, and their binary only runs it, so that the decisions are tested without a repository (functional core, ADR-0014).
 
-**Every new script, hook or agent tool is written in Rust** (decided 2026-10-16, E17's goal): a crate of `tools/` without a crates.io dependency other than the reviewed ones of `[workspace.dependencies]` ([Crates](dependencies.md#crates): Oxc's, EN-072), a member of the root workspace checked by `check:rust`; the TypeScript tools may still be edited until F21 rewrites them (`AGENTS.md`, `.claude/rules/tooling.md`, the worker brief).
+- **The workspace**: one virtual workspace at the root (`Cargo.toml`, `members = ["tools/*"]`), whose edition, licence, `publish = false` and lints (`clippy::pedantic`, `unsafe_code` forbidden) each crate inherits by `[lints] workspace = true`; the toolchain pinned by `rust-toolchain.toml`, with rustfmt, clippy, llvm-tools and the `x86_64-pc-windows-msvc` target; warnings denied (`.cargo/config.toml`); one `Cargo.lock` tracked and one `target/` ignored.
+- **Dependencies**: none from crates.io but the reviewed ones of `[workspace.dependencies]`, each pinned exactly with its row under [Crates](./dependencies.md#crates).
+- **Checks**: `npm run check:rust` — `cargo fmt`, Clippy, the advisories, the tests under the coverage floor, and a check for Windows — in `check` and the `rust` lane of `check:all`.
+- **Portable as a goal** (2026-10-17): a crate uses the standard call where one exists (`File::try_lock`, `fs::hard_link`); a Unix-only call — a file's inode, a process group, a folder symbolic link, an execute bit — sits behind `cfg(unix)` with its reason in a comment, and the Windows check fails on one planted outside it. Nothing runs on Windows in a CI.
+- **Coverage**: `npm run rust:coverage` fails under 93 % of lines or of functions of the whole workspace, the measure of 2026-10-17 rounded down. The floor is the workspace's, not each crate's: the table printed on failure shows which crate lacks tests. It is raised when a story raises the measure, never lowered.
+- **Advisories**: `npm run rust:advisories` checks `Cargo.lock` against RustSec, unmaintained and yanked crates failing too, no advisory ignored (`deny.toml`); `tests/rust-advisories.test.ts` plants a vulnerable crate and sees the check fail.
+- **Tests**: beside their crate's code; a test that runs Git, or the crate's binary that runs Git, removes every inherited `GIT_*` variable ([tests that run Git](./commands.md#tests-that-run-git)).
+- **A fresh machine** installs rustup (`https://rustup.rs`), which installs the pinned toolchain at the first `cargo` call, then `cargo install --locked cargo-llvm-cov@0.9.1 cargo-deny@0.20.2` and `cargo deny fetch db`. Without them `rust:coverage` and `rust:advisories` fail and name the command to run: a missing tool never passes a check.
 
-| Crate | Story | Run by | Does |
-| --- | --- | --- | --- |
-| `backlog-index` | EN-049 | `npm run backlog:index`, `backlog:status` | writes the stories index from each story's front matter; `--check` names the first row that differs |
-| `format` | EN-073 | `npm run format`, `format:check`, `fix`, `backlog:index`, `lint-staged`; `story:finish` (rows moved) | the repository's one formatter: oxfmt on the targets, then every Markdown table without padding (ADR-0068); `--check` changes nothing, formatting the Markdown in a temporary copy ([formatting](../conventions/formatting.md)) |
-| `heavy-lock` | EN-047, EN-051 | `check:all`, `test`, `golden:check`, `docs:build`, `mutate`; `story:finish` (`--lock merge`) | one heavy command at a time across worktrees; with `--lock merge`, the merge lock of `story:finish` |
-| `hooks` | EN-047 | the `limit-agents`, `library-pages` and `check-handback` hooks | the Claude Code hooks in Rust and what they share: a small JSON reader, the transcript's times, a session's background tasks, a temporary twin of `status-tasks.ts` until F21 ports the status line; `limit-agents` refuses a fourth subagent, `library-pages` sends a page read to the library (EN-101), `check-handback` refuses a worker's hand-back before its branch is pushed (EN-088) ([agent](./agent.md#hooks)) |
-| `shared-files` | EN-050 | the `pre-push` hook; `story:finish` (`move-rows`) | `refuse-shared-files` refuses a worker's story branch that changes a shared file; `move-rows` moves a story's rows into the logs (below) |
-| `worktree` | EN-052 | `npm run worktree:new` | makes a story's worktree, links `node_modules`, runs Husky, builds the Rust tools' release binaries in it; what it creates is decided by its library without Git |
-| `git-sequences` | EN-100 | `npm run git:sync`, `git:commit` | the agent's frequent Git sequences in one call each, in the checkout it runs from; what it runs is decided by its library without Git |
-| `run-totals` | EN-092, EN-086 | `npm run run:start`, `run:end`, `run:should-stop`, `metrics:session -- --run`, the status line | a run's marker, and its duration and tokens counted incrementally from its sessions' transcripts; whether the run stops at the week's limit, and its parked stories |
-| `progress-page` | EN-087 | `npm run progress:page` | the run's progress page from the feature branches, the commits since the run's start, its subagents' files and `run-totals`' count; what it shows is decided by its library without Git nor files |
-| `val-prepare` | EN-056 | `npm run val:prepare` | writes a feature's checklist lines, one per numbered criterion, registers the epic's checklist and prints its address; refuses a feature without criteria or whose lines exist, warns above 12 |
-| `mutate` | EN-058 | `npm run mutate` | the mutations in a copy of the repository ([mutate](#mutate)) |
-| `lint` | EN-075 | `npm run lint`, `fix`, `lint-staged`, after oxlint | the project's linter on Oxc's crates: the project's rules, the rules oxlint lacks and the Markdown rules (EN-077), each file parsed once and every rule run over that one AST, on every thread; `--fix` for the autofixed rules ([lint](../conventions/lint.md)) |
-| `rule-docs` | EN-059 | the `commit-msg` hook, at a `done` commit | asks a story that changes `docs/domain/` for its Q row, its VAL's decisions to confirm and its guide page, unless the message says `Rule-docs: none affected, <why>` |
-| `api-pages` | EN-072 | `npm run docs:api`, `docs:dev`, `docs:build` | the API pages of the documentation site from the exports of `src/index.ts` and their TSDoc, on Oxc's parser, the pages TypeDoc wrote ([documentation site](./documentation-site.md)) |
-| `declarations` | EN-091 | `npm run build` | the library's `.d.ts` from each module alone, on Oxc's isolated declarations (ADR-0071, [commands](./commands.md#build)) |
+## Shared files and their rows
 
-- **Every crate**: no crates.io dependency other than those of `[workspace.dependencies]`, each with its row in [Crates](dependencies.md#crates), its tests beside its code, checked by `npm run check:rust` (`cargo fmt`, Clippy, the tests under a coverage floor and a check for Windows without linking on the whole workspace), part of `check` and the `rust` lane of `check:all`, its release build run by `check:all` before its lanes, a member of the workspace below.
-- **The workspace** (EN-068, research note 0023): one virtual workspace at the root (`Cargo.toml`, `members = ["tools/*"]`, no package), whose edition, licence, `publish = false` and lints (`clippy::pedantic`, `unsafe_code` forbidden) each crate inherits (`[lints] workspace = true`); the toolchain pinned by `rust-toolchain.toml` (Rust 1.99.1 with rustfmt, clippy and llvm-tools, and the `x86_64-pc-windows-msvc` target, 118 MB, installed by rustup in about 9 s); warnings denied by `.cargo/config.toml` (`[build] warnings = "deny"`), so a planted warning fails the build; one `Cargo.lock` tracked and one `target/` at the root, ignored by Git and by every check tool; a crates.io dependency pinned exactly (`=x.y.z`) in `[workspace.dependencies]`, Oxc's crates since EN-072.
-- **Portable as a goal** (EN-070, decided 2026-10-17): a crate uses the standard call where one exists (`File::try_lock`, `fs::hard_link`); a call left Unix-only — a file's device and inode, a process group and its `kill`, a folder symbolic link, a hook's execute bit — sits behind `cfg(unix)` with its reason in a comment, and the Windows check of `check:rust` fails on one planted outside it. Nothing runs on Windows in a CI.
-- **Their coverage** (EN-069, `REF-CARGO-LLVM-COV`): `npm run rust:coverage` runs the workspace's tests under `cargo llvm-cov`, which fails under 93 % of lines or 93 % of functions of the whole workspace, the measure of 2026-10-17 rounded down (93.88 % of 3,299 lines, 93.45 % of 550 functions, after EN-070 and EN-073); per crate that day, lines then functions: `backlog-index` 98.5 % and 98.6 %, `format` 96.6 % and 94.3 %, `heavy-lock` 92.6 % and 100 %, `hooks` 97.9 % and 96.6 %, `mutate` 82.6 % and 74.0 %, `rule-docs` 94.0 % and 100 %, `shared-files` 96.3 % and 98.9 %, `val-prepare` 97.8 % and 95.1 %, `worktree` 87.6 % and 83.8 %. The floor covers the workspace, not each crate: a crate's uncovered code shows in the table printed on failure. It is raised, never lowered, when a story raises the measure.
-- **Their advisories** (EN-069, `REF-CARGO-DENY-ADVISORIES`): `npm run rust:advisories` checks every crate of the root `Cargo.lock` against the RustSec database, offline in `check:rust` from the copy `cargo deny fetch db` made, fetched afresh in the CI on the pull request into `main` (`deny.toml`: unmaintained and yanked crates fail too, no advisory ignored). cargo-deny is preferred to `cargo audit` (`REF-CARGO-AUDIT`): the same database, with licences, bans and sources in the same tool (research note 0023). `tests/rust-advisories.test.ts` plants smallvec 1.6.0 in a copy of the workspace's metadata and sees the check fail naming RUSTSEC-2021-0003; cargo-deny 0.20 takes `--offline` before `check`, not after it.
-- **A fresh machine** installs the Rust tools of the checks once: rustup (`https://rustup.rs`), which installs the toolchain and its components (rustfmt, clippy, llvm-tools) from `rust-toolchain.toml` at the first `cargo` call; then `cargo install --locked cargo-llvm-cov@0.9.1 cargo-deny@0.20.2` and `cargo deny fetch db`, which copies the RustSec database under `~/.cargo/advisory-dbs/`. Without them, `rust:coverage` or `rust:advisories` fails and names the command to run, never passes.
-- **Their tests** run in a repository of their own, every `GIT_*` variable removed, never on the real one.
-- **The shared files** (ADR-0065 decision 4) — the backlog's three indexes, the three logs of `docs/process/`, the feature files, the checklists `playground/checklists/epic-*` — are written by the main thread only, at merge. `refuse-shared-files`, first in the `pre-push` hook, refuses a worker's story branch (`US`, `EN`) whose commits not yet on the remote change one, naming each file and its commit; the story's `done` commit (`Closes: <ID>`) may still set its status in the indexes and the feature's table. A change that only pads or unpads a shared file's Markdown tables passes too — as many lines, each equal to its old line or the same table row once its cells are trimmed and a delimiter cell's dashes collapsed, alignment colons kept — so that the formatter writing tables without padding (ADR-0068, EN-073) can reformat them; a changed cell, an added or removed row, or any other line is still refused. The other branches — `develop`, the feature branches, the stories the main thread writes (`SP`, `CHK`, `AUD`, `VAL`, `NAM`, `REV`, `RET`) — pass.
-- **Accepted limits** of that guard (AUD-020, 2026-10-17): it runs on the pushing machine only, so commits pushed first under a branch that is not a story's, or straight to the feature branch, pass; GitHub checks nothing of it. It keeps workers from editing shared files by mistake, not on purpose.
-- **`rule-docs`** gathers the files of the story's commits — those whose `Refs:` or `Closes:` footer names the story or one of its tasks — and the files staged; a file changed counts, not the rows inside it. It runs at commit, not at push, so that the `done` commit itself is refused and made again, rather than amended after a push.
+The shared files — the backlog's three indexes, the three logs of `docs/process/`, the feature files, the checklists `playground/checklists/epic-*` — are written by the main thread only, at merge (ADR-0065, decision 4): parallel workers editing them would conflict at every merge.
 
-`move-rows <branch>`, run by `story:finish` once the story is merged and its base pulled, moves the rows the story file holds under `## For the main thread`, beneath `### Journal`, `### Improvements` or `### Feedback`, into that log, and drops those headings from the story file; `story:finish` then formats, commits and pushes them on the base (EN-050's follow-up, 2026-10-17):
+- `refuse-shared-files`, first in the `pre-push` hook, refuses a worker's story branch (`US`, `EN`) whose commits not yet on the remote change one, naming each file and its commit. It lets through the story's `done` commit (`Closes: <ID>`) setting its status, and a change that only pads or unpads a shared file's Markdown tables, so that the formatter can rewrite them; a changed cell, row or other line is still refused. The other branches — `develop`, the feature branches, the stories the main thread writes (`SP`, `CHK`, `AUD`, `VAL`, `NAM`, `REV`, `RET`) — pass.
+- Its limits are accepted (AUD-020): it runs on the pushing machine only, so a commit pushed first under another branch passes, and GitHub checks nothing. It keeps workers from editing shared files by mistake, not on purpose.
+- A worker writes the rows meant for a log in its story file, under `## For the main thread`, beneath `### Journal`, `### Improvements` or `### Feedback`. `move-rows`, run by `story:finish` once the story is merged, moves them into the logs and drops those headings; `story:finish` then formats, commits and pushes them on the base.
 
 | Log | Rows moved | Dropped | Left in the story file, named on standard error |
 | --- | --- | --- | --- |
-| `journal.md` | a bullet opening with its tag (``- `#run` …``), at the end of the newest section, or under a new section `## <today> — Run continued` opened above it when that one is older (AUD-020) | a placeholder (`- None.`, `- None new.`) | any other line: an untagged bullet, a paragraph |
-| `improvements.md`, `feedback.md` | a table row whose first cell is a date, after the table's last row | a placeholder, a table's header and separator | any other line: a bullet, a paragraph |
+| `journal.md` | a bullet opening with its tag (``- `#run` …``), at the end of the newest section, or under a new section `## <today> — Run continued` when that one is older | a placeholder (`- None.`) | any other line |
+| `improvements.md`, `feedback.md` | a table row whose first cell is a date, after the table's last row | a placeholder, a header and separator | any other line |
 
-`tests/logs.test.ts` fails on a line that breaks a table log's one table or an untagged journal bullet.
+`tests/logs.test.ts` fails on a line that breaks a log's table or an untagged journal bullet.
+
+`rule-docs` gathers the files of the story's commits — those whose `Refs:` or `Closes:` names the story or one of its tasks — and the files staged; a file changed counts, not the rows inside it. It runs at commit, not at push, so that a refused `done` commit is made again rather than amended after a push.

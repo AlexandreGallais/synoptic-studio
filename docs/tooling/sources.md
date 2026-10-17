@@ -1,6 +1,6 @@
 # Local source library
 
-The pages the agent reads online are kept on the machine, in a database it searches before going online (ADR-0039). A page is fetched once, then read by section: fewer requests, fewer tokens, and the same text for every later spike or audit.
+The pages the agent reads online are kept on the machine, in a database searched before going online (ADR-0039). A page is fetched once and then read by section: fewer requests, fewer tokens, and the same text for every later spike or audit.
 
 ## How it works
 
@@ -19,14 +19,16 @@ flowchart TD
 
 | Part | File | Role |
 | --- | --- | --- |
-| storage | `scripts/library-store.ts` | SQLite file, table of pages, FTS5 index of their sections (`porter unicode61`, BM25), uses with their project; a column added to an older file when it opens |
-| conversion | `scripts/library-html.ts` | HTML to Markdown: main part kept, scripts, styles, navigation and footers dropped |
-| sections, freshness | `scripts/library-chunks.ts` | split at headings (code blocks respected), sections of 4 000 characters at most; staleness |
-| pages | `scripts/library-pages.ts` | read from the library or fetched and stored; table of contents |
+| storage | `scripts/library-store.ts` | SQLite file: the pages, an FTS5 index of their sections (`porter unicode61`, BM25), the uses with their project |
+| conversion | `scripts/library-html.ts` | HTML to Markdown: the main part kept, scripts, styles, navigation and footers dropped |
+| sections, freshness | `scripts/library-chunks.ts` | split at headings, code blocks respected, 4,000 characters at most; staleness |
+| pages | `scripts/library-pages.ts` | read from the library, or fetched and stored; table of contents |
 | MCP server | `scripts/library-mcp.ts` | `library_search`, `library_get`, `library_read` over stdio (`.mcp.json`) |
-| command line | `scripts/library-cli.ts` | `npm run library -- search \| get \| read \| list` |
+| command line | `scripts/library-cli.ts` | `npm run library -- search \| get \| read \| list \| stats` |
 
 ## Freshness
+
+A page is read online again when it may have changed since:
 
 | Page | Read online again |
 | --- | --- |
@@ -34,15 +36,14 @@ flowchart TD
 | any other page, or one that states no date | after 90 days |
 | asked with `refresh` | now |
 
-A stored page is asked with `If-None-Match` and `If-Modified-Since`: an unchanged page costs a `304` and no download. A page the site refuses stays as stored, marked `failed`.
+A stored page is asked with `If-None-Match` and `If-Modified-Since`, so an unchanged page costs a `304`. A page its site refuses stays as stored, marked `failed`.
 
 ## Rules for the agent
 
-1. **Search first**: `library_search` with the words of the question. A section found is read with `library_read`.
-2. **Get through the library**: a page not found is fetched with `library_get <url>`; read its table of contents, then only the sections needed.
-3. **WebFetch** only for a page that comes back empty (built in the browser by JavaScript); write what it said that we use in the research note. The `library-pages` hook holds the agent to it (EN-101, [agent](./agent.md#hooks)): a `WebFetch`, or a `curl` or `wget` printing a web page, is refused with the `library_get` call to make, unless the library stored that page with fewer than 300 characters or its site refused the library. A `WebFetch` takes about 6 s and returns a summary that cannot be cited; the library serves a stored page in 12 to 265 ms with its text ([research note 0024](../research/notes/0024-f20-context-diet.md)).
-4. **Cite** as before: a `REF-*` row in `docs/references.md` once the page is read; the library keeps its text, the bibliography keeps what we use from it.
-5. Pages are other people's text: the database stays on the machine (`~/.local/share/agent-library/`, or `LIBRARY_PATH`), never in a repository.
+1. **Search first**: `library_search` with the question's words, then `library_read` on the sections found.
+2. **Fetch through the library**: `library_get <url>` for a page not found, then read only the sections needed. `WebFetch` only for a page the library returns empty (built in the browser by JavaScript), and what it said that is used goes into the research note: its answer is a summary that cannot be cited. The `library-pages` hook refuses any other `WebFetch`, `curl` or `wget` of a page with the `library_get` call to make ([agent](./agent.md#hooks)).
+3. **Cite** a `REF-*` row of `docs/references.md` once the page is read: the library keeps the text, the bibliography what the project uses from it.
+4. **Keep the database off every repository** (`~/.local/share/agent-library/`, or `LIBRARY_PATH`): the pages are other people's text.
 
 ## Command line
 
@@ -56,11 +57,11 @@ npm run library -- stats 2026-10-13               # sources consulted most, sear
 
 ## Uses
 
-Every search and every page read is recorded in the library (`project_uses` table), with the project that asked: the name of the project's folder, the same for each of its worktrees (`projectOf`, EN-101); the uses recorded before EN-101 show as `(not recorded)`. A file made before it is migrated when it opens: its `uses` table moved into `project_uses`, then `uses` kept as a view of it, so that an older copy of the scripts on the machine still reads and writes it, its uses without a project. `npm run library -- stats [since]` and the **Sources** section of `npm run metrics` show the uses per project, the sources consulted most, the words searched and how many pages the library served without going online.
+The library is one file for the machine: a page fetched for one project is served to every other until its freshness date. Each search and page read is recorded with the project that asked, the name of its folder, shared by its worktrees (`project_uses`). `npm run library -- stats [since]` and the **Sources** section of `npm run metrics` show the uses per project, the sources read most, the words searched and the share served without going online.
 
-The library is one file for the machine: a page fetched for one project is served to every other from the library until its freshness date, never fetched again before. At each retrospective the agent reads them and asks why: a source read again and again may deserve a summary in a domain page or a derivation; a search that finds nothing, a better word list.
+At each retrospective the agent reads them and asks why: a source read again and again may deserve a summary in a domain page or a derivation; a search that finds nothing, better words.
 
 ## Limits
 
 - The converter handles documentation pages, not applications: a page built in the browser comes back nearly empty.
-- Search is by words, stemmed in English; a search by meaning (embeddings) is left out until a question needs it (ADR-0039).
+- Search is by words, stemmed in English; a search by meaning is left out until a question needs it (ADR-0039).
