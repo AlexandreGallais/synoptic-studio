@@ -40,6 +40,7 @@ One task = one commit, referenced as `SP-021.Tn`.
 - [x] T6 — Draft F19 again from the answers: criteria, stories, the clean-up story (2 h)
 - [x] T7 — Record the second round: the split into F21, TypeScript 7 alone and TypeDoc's replacement, the Rust linter, F20's stories, the product ideas (3 h)
 - [x] T8 — Record the third round: one linter with `tsgolint` for the 55 rules that need types, every missing rule in the Rust linter, the dev packages reviewed (2 h)
+- [x] T9 — Triage the 265 rules oxlint lacks and size F19's rewrite stories from the kept count (2 h)
 
 ## Result
 
@@ -88,6 +89,11 @@ Recorded as understood; details in note 0023, section "The Product Owner's secon
 - **One linter**: oxlint; `tsgolint` kept only because 55 enabled typescript-eslint rules need types; the type check is TypeScript 7's compiler.
 - **Every rule oxlint lacks** (265, Unicorn 197 and JSDoc 43 among them) rewritten in the project's Rust linter: three more F19 stories.
 - **The dev packages** reviewed in F21: seven rewritten in Rust in three stories (Git hooks, dependency checks, secret scan), the rest kept with a reason.
+
+## Fourth round of the Product Owner (2026-10-17)
+
+- **`tsgolint` stays** for the 55 rules that need types only; oxlint is the one lint command.
+- **All the rules oxlint lacks are rewritten in F19**, ESLint leaving at its end; triaged first in note 0023: 232 kept, 33 dropped with their reasons (no class, no JSDoc types, no network, the tools gone to Rust, no `let`, no CommonJS, one package, no runtime dependency). F19 now has 18 drafted stories, seven of them rewrites sized from the kept count.
 
 ## For the main thread
 
