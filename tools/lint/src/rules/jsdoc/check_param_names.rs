@@ -119,7 +119,7 @@ impl Check<'_, '_> {
             &self.doc.indent,
             &jsdoc::new_line_end(source),
         );
-        edit.remove_tag(index);
+        edit.remove_tag(index, 0);
         edit.text()
     }
 
@@ -170,7 +170,7 @@ impl Check<'_, '_> {
         let unchanged: usize = (0..first).map(|tag| edit.tag_length(tag) - 1).sum();
         let offset = edit.first_tag_line() + first + unchanged;
         for index in 0..count {
-            edit.remove_tag(index + first);
+            edit.remove_tag(index + first, 0);
         }
         let mut extra = 0;
         for index in 0..count {

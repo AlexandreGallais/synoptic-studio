@@ -8,6 +8,7 @@ pub mod block;
 pub mod cases;
 pub mod context;
 pub mod edit;
+pub mod flow;
 pub mod params;
 pub mod text;
 
@@ -211,6 +212,56 @@ pub fn comment_before(source: &Source, offset: u32) -> Option<Comment> {
         .checked_sub(source.line(measured_from.saturating_sub(1)));
 
     (jsdoc && gap.is_some_and(|gap| gap <= 1)).then_some(comment)
+}
+
+/// The comment right before a node starting at an offset that is not a `JSDoc` block: a line
+/// comment or another block comment, a `(` before the node skipped, the node one line below it at
+/// most (`findJSDocComment` with `nonJSDoc`).
+#[must_use]
+pub fn plain_comment_before(source: &Source, offset: u32) -> Option<Comment> {
+    let mut paren = None;
+    let mut found = before(source, offset);
+    if let Before::Code('(', at) = found {
+        paren = Some(at);
+        found = before(source, at);
+    }
+    let Before::Comment(comment) = found else {
+        return None;
+    };
+    let jsdoc = comment.is_block()
+        && comment_text(source, &comment)
+            .strip_prefix("/**")
+            .is_some_and(|rest| rest.starts_with(is_space));
+    let measured_from = paren.map_or(comment.span.end, |at| at + 1);
+    let gap = source
+        .line(offset)
+        .checked_sub(source.line(measured_from.saturating_sub(1)));
+    (!jsdoc && gap.is_some_and(|gap| gap <= 1)).then_some(comment)
+}
+
+/// The comment right after a node ending at an offset, `;` skipped, starting on the node's last
+/// line (`getFollowingComment`, its first try).
+#[must_use]
+pub fn comment_after(source: &Source, end: u32) -> Option<Comment> {
+    let mut at = end as usize;
+    loop {
+        let rest = &source.text[at..];
+        let skipped = rest.len() - rest.trim_start_matches(is_space).len();
+        at += skipped;
+        if source.text[at..].starts_with(';') {
+            at += 1;
+            continue;
+        }
+        break;
+    }
+    let start = u32::try_from(at).unwrap_or(u32::MAX);
+    let comments = &source.program.comments;
+    let index = comments.partition_point(|comment| comment.span.start < start);
+    comments
+        .get(index)
+        .filter(|comment| comment.span.start == start)
+        .filter(|comment| source.line(end.saturating_sub(1)) == source.line(comment.span.start))
+        .copied()
 }
 
 /// Whether a node is an export declaration (`looksLikeExport`).

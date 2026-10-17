@@ -1,0 +1,522 @@
+# require-template: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), a carriage return written ␍,
+# each run by ESLint 10.12.0 at src/a.ts with the project's options; recorded by EN-083.
+@@@ case 1 (documented invalid)
+
+        /**
+         *
+         */
+        type Pairs<D, V> = [D, V | undefined];
+      
+@@@ findings
+2:9 Missing @template D
+2:9 Missing @template V
+@@@ case 2 (documented invalid)
+
+        /**
+         *
+         */
+        export type Pairs<D, V> = [D, V | undefined];
+      
+@@@ findings
+2:9 Missing @template D
+2:9 Missing @template V
+@@@ case 3 (documented invalid)
+
+        /**
+         * @typedef {[D, V | undefined]} Pairs
+         */
+      
+@@@ findings
+3:1 Missing @template D
+3:1 Missing @template V
+@@@ case 4 (documented invalid)
+
+        /**
+         * @typedef {[D, V | undefined]} Pairs
+         */
+      
+@@@ findings
+3:1 Missing @template D
+3:1 Missing @template V
+@@@ case 5 (documented invalid)
+
+        /**
+         * @template D, U
+         */
+        export type Extras<D, U, V> = [D, U, V | undefined];
+      
+@@@ findings
+2:9 Missing @template V
+@@@ case 6 (documented invalid)
+
+        /**
+         * @template D, U
+         * @typedef {[D, U, V | undefined]} Extras
+         */
+      
+@@@ findings
+4:1 Missing @template V
+@@@ case 7 (documented invalid)
+
+        /**
+         * @template D, V
+         */
+        export type Pairs<D, V> = [D, V | undefined];
+      
+@@@ findings
+@@@ case 8 (documented invalid)
+
+        /**
+         * @template D, V
+         * @typedef {[D, V | undefined]} Pairs
+         */
+      
+@@@ findings
+@@@ case 9 (documented invalid)
+
+        /**
+         * @template X
+         * @typedef {object} Pairs
+         * @property {D} foo
+         * @property {X} bar
+         */
+      
+@@@ findings
+5:1 Missing @template D
+@@@ case 10 (documented invalid)
+
+        /**
+         *
+         */
+        interface GenericIdentityFn<Type> {
+          (arg: Type): Type;
+        }
+      
+@@@ findings
+2:9 Missing @template Type
+@@@ case 11 (documented invalid)
+
+        /**
+         *
+         */
+        export interface GenericIdentityFn<Type> {
+          (arg: Type): Type;
+        }
+      
+@@@ findings
+2:9 Missing @template Type
+@@@ case 12 (documented invalid)
+
+        /**
+         *
+         */
+        export default interface GenericIdentityFn<Type> {
+          (arg: Type): Type;
+        }
+      
+@@@ findings
+2:9 Missing @template Type
+@@@ case 13 (documented invalid)
+
+        /**
+         *
+         */
+        function identity<Type>(arg: Type): Type {
+          return arg;
+        }
+      
+@@@ findings
+2:9 Missing @template Type
+@@@ case 14 (documented invalid)
+
+        /**
+         *
+         */
+        export function identity<Type>(arg: Type): Type {
+          return arg;
+        }
+      
+@@@ findings
+2:9 Missing @template Type
+@@@ case 15 (documented invalid)
+
+        /**
+         *
+         */
+        export default function identity<Type>(arg: Type): Type {
+          return arg;
+        }
+      
+@@@ findings
+2:9 Missing @template Type
+@@@ case 16 (documented invalid)
+
+        /**
+         *
+         */
+        class GenericNumber<NumType> {
+          zeroValue: NumType;
+          add: (x: NumType, y: NumType) => NumType;
+        }
+      
+@@@ findings
+2:9 Missing @template NumType
+@@@ case 17 (documented invalid)
+
+        /**
+         *
+         */
+        export class GenericNumber<NumType> {
+          zeroValue: NumType;
+          add: (x: NumType, y: NumType) => NumType;
+        }
+      
+@@@ findings
+2:9 Missing @template NumType
+@@@ case 18 (documented invalid)
+
+        /**
+         *
+         */
+        export default class GenericNumber<NumType> {
+          zeroValue: NumType;
+          add: (x: NumType, y: NumType) => NumType;
+        }
+      
+@@@ findings
+2:9 Missing @template NumType
+@@@ case 19 (documented invalid)
+
+        /**
+         *
+         */
+        export default class <NumType> {
+          zeroValue: NumType;
+          add: (x: NumType, y: NumType) => NumType;
+        }
+      
+@@@ findings
+2:9 Missing @template NumType
+@@@ case 20 (documented invalid)
+
+        /**
+         * @callback
+         * @param {[D, V | undefined]} someParam
+         */
+      
+@@@ findings
+4:1 Missing @template D
+4:1 Missing @template V
+@@@ case 21 (documented invalid)
+
+        /**
+         * @callback
+         * @returns {[D, V | undefined]}
+         */
+      
+@@@ findings
+4:1 Missing @template D
+4:1 Missing @template V
+@@@ case 22 (documented invalid)
+
+        /**
+         * @param bar
+         * @param baz
+         * @returns
+         */
+        function foo<T>(bar: T, baz: number): T;
+        function foo<T>(bar: T, baz: boolean): T;
+        function foo<T>(bar: T, baz: number | boolean): T {
+          return bar;
+        }
+      
+@@@ findings
+2:9 Missing @template T
+@@@ case 23 (documented invalid)
+
+        /**
+         * @template
+         */
+      
+@@@ findings
+@@@ case 24 (documented valid)
+
+        /**
+         * @template D
+         * @template V
+         */
+        export type Pairs<D, V> = [D, V | undefined];
+      
+@@@ findings
+@@@ case 25 (documented valid)
+
+        /**
+         * @template D
+         * @template V
+         * @typedef {[D, V | undefined]} Pairs
+         */
+      
+@@@ findings
+@@@ case 26 (documented valid)
+
+        /**
+         * @template D, U, V
+         */
+        export type Extras<D, U, V> = [D, U, V | undefined];
+      
+@@@ findings
+@@@ case 27 (documented valid)
+
+        /**
+         * @template D, U, V
+         * @typedef {[D, U, V | undefined]} Extras
+         */
+      
+@@@ findings
+@@@ case 28 (documented valid)
+
+        /**
+         * @typedef {[D, U, V | undefined]} Extras
+         * @typedef {[D, U, V | undefined]} Extras
+         */
+      
+@@@ findings
+@@@ case 29 (documented valid)
+
+        /**
+         * @typedef Foo
+         * @prop {string} bar
+         */
+      
+@@@ findings
+@@@ case 30 (documented valid)
+
+        /**
+         * @template D
+         * @template V
+         * @typedef {object} Pairs
+         * @property {D} foo
+         * @property {V} bar
+         */
+      
+@@@ findings
+@@@ case 31 (documented valid)
+
+        /**
+         * @template Type
+         */
+        interface GenericIdentityFn<Type> {
+          (arg: Type): Type;
+        }
+      
+@@@ findings
+@@@ case 32 (documented valid)
+
+        /**
+         * @template Type
+         */
+        export interface GenericIdentityFn<Type> {
+          (arg: Type): Type;
+        }
+      
+@@@ findings
+@@@ case 33 (documented valid)
+
+        /**
+         * @template Type
+         */
+        export default interface GenericIdentityFn<Type> {
+          (arg: Type): Type;
+        }
+      
+@@@ findings
+@@@ case 34 (documented valid)
+
+        /**
+         * @template Type
+         */
+        function identity<Type>(arg: Type): Type {
+          return arg;
+        }
+      
+@@@ findings
+@@@ case 35 (documented valid)
+
+        /**
+         * @template Type
+         */
+        export function identity<Type>(arg: Type): Type {
+          return arg;
+        }
+      
+@@@ findings
+@@@ case 36 (documented valid)
+
+        /**
+         * @template Type
+         */
+        export default function identity<Type>(arg: Type): Type {
+          return arg;
+        }
+      
+@@@ findings
+@@@ case 37 (documented valid)
+
+        /**
+         * @template NumType
+         */
+        class GenericNumber<NumType> {
+          zeroValue: NumType;
+          add: (x: NumType, y: NumType) => NumType;
+        }
+      
+@@@ findings
+@@@ case 38 (documented valid)
+
+        /**
+         * @template NumType
+         */
+        export class GenericNumber<NumType> {
+          zeroValue: NumType;
+          add: (x: NumType, y: NumType) => NumType;
+        }
+      
+@@@ findings
+@@@ case 39 (documented valid)
+
+        /**
+         * @template NumType
+         */
+        export default class GenericNumber<NumType> {
+          zeroValue: NumType;
+          add: (x: NumType, y: NumType) => NumType;
+        }
+      
+@@@ findings
+@@@ case 40 (documented valid)
+
+        /**
+         * @template NumType
+         */
+        export default class <NumType> {
+          zeroValue: NumType;
+          add: (x: NumType, y: NumType) => NumType;
+        }
+      
+@@@ findings
+@@@ case 41 (documented valid)
+
+        /**
+         * @callback
+         * @template D
+         * @template V
+         * @param {[D, V | undefined]} someParam
+         */
+      
+@@@ findings
+@@@ case 42 (documented valid)
+
+        /**
+         * @callback
+         * @template D
+         * @template V
+         * @returns {[D, V | undefined]}
+         */
+      
+@@@ findings
+@@@ case 43 (documented valid)
+
+        /**
+         * @callback
+         * @returns {[Something | undefined]}
+         */
+      
+@@@ findings
+@@@ case 44 (documented valid)
+
+        /**
+         * @template {string | Buffer} [T=string, U=number]
+         * @typedef {object} Dirent
+         * @property {T} name name
+         * @property {U} aNumber number
+         * @property {string} parentPath path
+         */
+      
+@@@ findings
+@@@ case 45 (documented valid)
+
+        /**
+         * @type {Something}
+         */
+        type Pairs<D, V> = [D, V | undefined];
+      
+@@@ findings
+2:9 Missing @template D
+2:9 Missing @template V
+@@@ case 46 (documented valid)
+
+        /**
+         * @inheritdoc
+         * @typedef {[D, V | undefined]} Pairs
+         */
+      
+@@@ findings
+@@@ case 47 (documented valid)
+
+        /**
+         * Test interface for type definitions.
+         *
+         * @typeParam Foo - dummy type param
+         */
+        export interface Test<Foo extends string> {
+          /**
+           *
+           */
+          bar: Foo;
+        }
+      
+@@@ findings
+2:9 Missing @template Foo
+@@@ case 48 (documented valid)
+
+        /**
+         * @template T
+         * @typedef {T extends Record<string, Record<string, infer F>> ? F : never} ExtractFunction
+         */
+      
+@@@ findings
+@@@ case 49 (documented valid)
+
+        /**
+         *
+         */
+        export interface CodeGenerationResultData extends Omit<Map<string, any>, "get" | "set" | "has" | "delete"> {
+            /**
+             *
+             */
+            get<K extends string>(key: K): CodeGenValue<K> | undefined;
+
+            set<K extends string>(key: K, value: CodeGenValue<K>): this;
+
+            has<K extends string>(key: K): boolean;
+
+            delete<K extends string>(key: K): boolean;
+        }
+      
+@@@ findings
+@@@ case 50 (documented valid)
+
+        /**
+         * @typedef {object} CodeGenMapOverloads
+         * @property {<K extends string>(key: K) => CodeGenValue<K> | undefined} get
+         * @property {<K extends string>(key: K, value: CodeGenValue<K>) => CodeGenerationResultData} set
+         * @property {<K extends string>(key: K) => boolean} has
+         * @property {<K extends string>(key: K) => boolean} delete
+         */
+
+        /**
+         * @typedef {Omit<Map<string, EXPECTED_ANY>, "get" | "set" | "has" | "delete"> & CodeGenMapOverloads} CodeGenerationResultData
+         */
+      
+@@@ findings
+@@@ end

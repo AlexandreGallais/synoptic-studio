@@ -331,7 +331,7 @@ pub fn inline_tags(text: &str) -> Vec<InlineTag> {
     found
 }
 
-/// The names a type reads, and those it declares (`infer U`, `[K in …]`), as far as a scan of
+/// The names a type reads, and those it declares (`infer U`, `[K in …]`, `<T>(…) => …`), as far as a scan of
 /// its words tells them: a word not after `.`, not a key before `:`, not a keyword, outside
 /// quotes (the `JsdocTypeName`, `JsdocTypeInfer` and `JsdocTypeTypeParameter` nodes of
 /// `jsdoc-type-pratt-parser`).
@@ -368,6 +368,8 @@ pub fn type_names(written: &str) -> TypeNames {
     let mut index = 0;
     let mut previous = ' ';
     let mut before_previous_word = String::new();
+    let mut generics: Vec<bool> = Vec::new();
+    let mut declares_next = false;
     while index < characters.len() {
         let character = characters[index];
         if character == '"' || character == '\'' || character == '`' {
@@ -381,6 +383,16 @@ pub fn type_names(written: &str) -> TypeNames {
         }
         let starts = character.is_alphabetic() || character == '_' || character == '$';
         if !starts {
+            if character == '<' && !matches!(previous, 'a' | ')' | ']' | '>') {
+                generics.push(true);
+                declares_next = true;
+            } else if character == '<' {
+                generics.push(false);
+            } else if character == '>' && previous != '=' {
+                generics.pop();
+            } else if character == ',' && generics.last() == Some(&true) {
+                declares_next = true;
+            }
             if !is_space(character) {
                 previous = character;
             }
@@ -412,13 +424,14 @@ pub fn type_names(written: &str) -> TypeNames {
                 .collect::<String>()
                 .trim_start()
                 .starts_with("in ");
-        if before_previous_word == "infer" || mapped_key {
+        if before_previous_word == "infer" || mapped_key || declares_next {
             names.declared.push(word.clone());
         } else if previous != '.' && !is_key && !TYPE_KEYWORDS.contains(&word.as_str()) {
             names.read.push(word.clone());
         }
         before_previous_word = word;
         previous = 'a';
+        declares_next = false;
     }
     names
 }

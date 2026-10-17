@@ -1,0 +1,1437 @@
+# require-returns-check: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), a carriage return written ␍,
+# each run by ESLint 10.12.0 at src/a.ts with the project's options; recorded by EN-083.
+@@@ case 1 (documented invalid)
+
+          /**
+           * @returns
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+2:11 JSDoc @returns declaration present but return expression not available in function.
+@@@ case 2 (documented invalid)
+
+          /**
+           * @return
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+@@@ case 3 (documented invalid)
+
+            /**
+             * @returns
+             */
+            const quux = () => {}
+        
+@@@ findings
+2:13 JSDoc @returns declaration present but return expression not available in function.
+@@@ case 4 (documented invalid)
+
+          /**
+           * @returns {undefined} Foo.
+           * @returns {String} Foo.
+           */
+          function quux () {
+
+            return foo;
+          }
+        
+@@@ findings
+2:11 Found more than one @returns declaration.
+@@@ case 5 (documented invalid)
+
+      const language = {
+        /**
+         * @param {string} name
+         * @returns {string}
+         */
+        get name() {
+          this._name = name;
+        }
+      }
+      
+@@@ findings
+3:9 JSDoc @returns declaration present but return expression not available in function.
+@@@ case 6 (documented invalid)
+
+          class Foo {
+            /**
+             * @returns {string}
+             */
+            bar () {
+            }
+          }
+      
+@@@ findings
+3:13 JSDoc @returns declaration present but return expression not available in function.
+@@@ case 7 (documented invalid)
+
+          /**
+           * @returns
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+2:11 JSDoc @returns declaration present but return expression not available in function.
+@@@ case 8 (documented invalid)
+
+        /**
+         * @returns {string}
+         */
+        function f () {
+          function g() {
+            return 'foo'
+          }
+
+          () => {
+            return 5
+          }
+        }
+      
+@@@ findings
+2:9 JSDoc @returns declaration present but return expression not available in function.
+@@@ case 9 (documented invalid)
+
+          /**
+           * @returns {Promise<void>}
+           */
+          async function quux() {}
+      
+@@@ findings
+@@@ case 10 (documented invalid)
+
+          /**
+           * @returns {IterableIterator<any>}
+           */
+          function * quux() {}
+      
+@@@ findings
+@@@ case 11 (documented invalid)
+
+          /**
+           * @returns {IterableIterator<any>}
+           */
+          function * quux() {}
+      
+@@@ findings
+@@@ case 12 (documented invalid)
+
+          /**
+           * @returns {Promise<void>}
+           */
+          function quux() {
+            return new Promise((resolve, reject) => {})
+          }
+      
+@@@ findings
+@@@ case 13 (documented invalid)
+
+          /**
+           * @returns {Promise<void>}
+           */
+          function quux() {
+            return new Promise((resolve, reject) => {
+              setTimeout(() => {
+                resolve();
+              });
+            })
+          }
+      
+@@@ findings
+@@@ case 14 (documented invalid)
+
+        /**
+         * Description.
+         * @returns {SomeType}
+         */
+        async function foo() {
+          return new Promise(resolve => resolve());
+        }
+      
+@@@ findings
+@@@ case 15 (documented invalid)
+
+        /**
+         * Description.
+         * @returns {void}
+         */
+        async function foo() {
+          return new Promise(resolve => resolve());
+        }
+      
+@@@ findings
+@@@ case 16 (documented invalid)
+
+          /**
+           * @returns { void } Foo.
+           */
+          function quux () {}
+      
+@@@ findings
+@@@ case 17 (documented invalid)
+
+          /**
+           * @returns {never} Foo.
+           */
+          function quux () {
+            return undefined;
+          }
+      
+@@@ findings
+2:11 JSDoc @returns declaration set with "never" but return expression is present in function.
+@@@ case 18 (documented invalid)
+
+          /**
+           * @returns {never}
+           */
+          function quux (foo) {
+            return foo;
+          }
+      
+@@@ findings
+2:11 JSDoc @returns declaration set with "never" but return expression is present in function.
+@@@ case 19 (documented invalid)
+
+      /**
+       * Reads a test fixture.
+       *
+       * @param path The path to resolve relative to the fixture base. It will be normalized for the
+       * operating system.
+       *
+       * @returns The file contents as buffer.
+       */
+      export function readFixture(path: string): void;
+      
+@@@ findings
+2:7 JSDoc @returns declaration present but return expression not available in function.
+@@@ case 20 (documented invalid)
+
+      /**
+       * Reads a test fixture.
+       *
+       * @param path The path to resolve relative to the fixture base. It will be normalized for the
+       * operating system.
+       *
+       * @returns The file contents as buffer.
+       */
+      export function readFixture(path: string);
+      
+@@@ findings
+2:7 JSDoc @returns declaration present but return expression not available in function.
+@@@ case 21 (documented invalid)
+
+      /**
+       * @returns {SomeType}
+       */
+      function quux (path) {
+        if (true) {
+          return;
+        }
+        return 15;
+      };
+      
+@@@ findings
+2:7 JSDoc @returns declaration present but return expression not available in function.
+@@@ case 22 (documented invalid)
+
+      /**
+       * Reads a test fixture.
+       *
+       * @param path The path to resolve relative to the fixture base. It will be normalized for the
+       * operating system.
+       *
+       * @returns The file contents as buffer.
+       */
+      export function readFixture(path: string): void {
+        return;
+      };
+      
+@@@ findings
+2:7 JSDoc @returns declaration present but return expression not available in function.
+@@@ case 23 (documented invalid)
+
+          /**
+           * @returns {true}
+           */
+          function quux () {
+            if (true) {
+              return true;
+            }
+          }
+      
+@@@ findings
+2:11 JSDoc @returns declaration present but return expression not available in function.
+@@@ case 24 (documented invalid)
+
+          /**
+           * @returns {true}
+           */
+          function quux () {
+            if (true) {
+            } else {
+              return;
+            }
+          }
+      
+@@@ findings
+2:11 JSDoc @returns declaration present but return expression not available in function.
+@@@ case 25 (documented invalid)
+
+          /**
+           * @returns {true}
+           */
+          function quux (someVar) {
+            switch (someVar) {
+            case 1:
+              return true;
+            case 2:
+              return;
+            }
+          }
+      
+@@@ findings
+2:11 JSDoc @returns declaration present but return expression not available in function.
+@@@ case 26 (documented invalid)
+
+          /**
+           * @returns {boolean}
+           */
+          const quux = (someVar) => {
+            if (someVar) {
+              return true;
+            }
+          };
+      
+@@@ findings
+2:11 JSDoc @returns declaration present but return expression not available in function.
+@@@ case 27 (documented invalid)
+
+          /**
+           * @returns {true}
+           */
+          function quux () {
+            try {
+              return true;
+            } catch (error) {
+            }
+          }
+      
+@@@ findings
+2:11 JSDoc @returns declaration present but return expression not available in function.
+@@@ case 28 (documented invalid)
+
+          /**
+           * @returns {true}
+           */
+          function quux () {
+            try {
+              return true;
+            } catch (error) {
+              return true;
+            } finally {
+              return;
+            }
+          }
+      
+@@@ findings
+2:11 JSDoc @returns declaration present but return expression not available in function.
+@@@ case 29 (documented invalid)
+
+          /**
+           * @returns {true}
+           */
+          function quux () {
+            if (true) {
+              throw new Error('abc');
+            }
+
+            throw new Error('def');
+          }
+      
+@@@ findings
+2:11 JSDoc @returns declaration present but return expression not available in function.
+@@@ case 30 (documented invalid)
+
+          /**
+           * @returns {true}
+           */
+          function quux () {
+            if (true) {
+              return true;
+            }
+
+            const a = () => {};
+          }
+      
+@@@ findings
+2:11 JSDoc @returns declaration present but return expression not available in function.
+@@@ case 31 (documented invalid)
+
+      /**
+       * @returns {SomeType} Baz.
+       */
+      function foo() {
+          switch (true) {
+              default:
+                  switch (false) {
+                      default: return;
+                  }
+                  return "baz";
+          }
+      };
+      
+@@@ findings
+2:7 JSDoc @returns declaration present but return expression not available in function.
+@@@ case 32 (documented invalid)
+
+        /**
+         * @returns {number}
+         */
+        function foo() {
+          let n = 1;
+          while (n > 0.5) {
+            n = Math.random();
+            if (n < 0.2) {
+              return n;
+            }
+          }
+        }
+      
+@@@ findings
+2:9 JSDoc @returns declaration present but return expression not available in function.
+@@@ case 33 (documented invalid)
+
+          /**
+           * @returns {number}
+           */
+          async function quux (foo) {
+
+          }
+      
+@@@ findings
+@@@ case 34 (documented invalid)
+
+      /**
+       * @typedef {{ ok: boolean }} MaybeResult
+       */
+
+      /**
+       * @returns {MaybeResult} Result.
+       */
+      const maybeResult = () => {
+        if (Math.random() > 0.5) {
+          return;
+        }
+      };
+      
+@@@ findings
+6:7 JSDoc @returns declaration present but return expression not available in function.
+@@@ case 35 (documented invalid)
+
+      /**
+       * @typedef {{ ok: boolean }} MaybeResult
+       */
+
+      /**
+       * @returns {MaybeResult|string} Result.
+       */
+      const maybeResult = () => {
+        if (Math.random() > 0.5) {
+          return;
+        }
+      };
+      
+@@@ findings
+6:7 JSDoc @returns declaration present but return expression not available in function.
+@@@ case 36 (documented invalid)
+
+      /**
+       * @typedef {{ ok: boolean }} MaybeResult
+       */
+
+      /**
+       * @returns {Array<MaybeResult|void>} Result.
+       */
+      const maybeResult = () => {
+        if (Math.random() > 0.5) {
+          return;
+        }
+      };
+      
+@@@ findings
+6:7 JSDoc @returns declaration present but return expression not available in function.
+@@@ case 37 (documented valid)
+
+          /**
+           * @returns Foo.
+           */
+          function quux () {
+
+            return foo;
+          }
+      
+@@@ findings
+@@@ case 38 (documented valid)
+
+          /**
+           * @returns {string} Foo.
+           */
+          function quux () {
+
+            return foo;
+          }
+      
+@@@ findings
+@@@ case 39 (documented valid)
+
+          /**
+           *
+           */
+          function quux () {
+          }
+      
+@@@ findings
+@@@ case 40 (documented valid)
+
+          /**
+           * @returns {SomeType} Foo.
+           */
+          const quux = () => foo;
+      
+@@@ findings
+@@@ case 41 (documented valid)
+
+          /**
+           * @returns {undefined} Foo.
+           */
+          function quux () {}
+      
+@@@ findings
+@@@ case 42 (documented valid)
+
+          /**
+           * @returns { void } Foo.
+           */
+          function quux () {}
+      
+@@@ findings
+@@@ case 43 (documented valid)
+
+          /**
+           * @returns {Promise<void>}
+           */
+          async function quux() {}
+      
+@@@ findings
+@@@ case 44 (documented valid)
+
+          /**
+           * @returns {Promise<void>}
+           */
+          const quux = async function () {}
+      
+@@@ findings
+@@@ case 45 (documented valid)
+
+          /**
+           * @returns {Promise<void>}
+           */
+          const quux = async () => {}
+      
+@@@ findings
+@@@ case 46 (documented valid)
+
+          /**
+           * @returns Foo.
+           * @abstract
+           */
+          function quux () {
+            throw new Error('must be implemented by subclass!');
+          }
+      
+@@@ findings
+@@@ case 47 (documented valid)
+
+          /**
+           * @returns Foo.
+           * @virtual
+           */
+          function quux () {
+            throw new Error('must be implemented by subclass!');
+          }
+      
+@@@ findings
+@@@ case 48 (documented valid)
+
+          /**
+           * @returns Foo.
+           * @constructor
+           */
+          function quux () {
+          }
+      
+@@@ findings
+@@@ case 49 (documented valid)
+
+          /**
+           * @interface
+           */
+          class Foo {
+            /**
+             * @returns {string}
+             */
+            bar () {
+            }
+          }
+      
+@@@ findings
+@@@ case 50 (documented valid)
+
+          /**
+           * @record
+           */
+          class Foo {
+            /**
+             * @returns {string}
+             */
+            bar () {
+            }
+          }
+      
+@@@ findings
+6:13 JSDoc @returns declaration present but return expression not available in function.
+@@@ case 51 (documented valid)
+
+          /**
+           * @returns {undefined} Foo.
+           */
+          function quux () {
+          }
+      
+@@@ findings
+@@@ case 52 (documented valid)
+
+          /**
+           * @returns {void} Foo.
+           */
+          function quux () {
+          }
+      
+@@@ findings
+@@@ case 53 (documented valid)
+
+          /**
+           * @returns {void} Foo.
+           */
+          function quux () {
+            return undefined;
+          }
+      
+@@@ findings
+@@@ case 54 (documented valid)
+
+          /**
+           * @returns {never} Foo.
+           */
+          function quux () {
+          }
+      
+@@@ findings
+@@@ case 55 (documented valid)
+
+          /**
+           * @returns {void} Foo.
+           */
+          function quux () {
+            return;
+          }
+      
+@@@ findings
+@@@ case 56 (documented valid)
+
+          /**
+           *
+           */
+          function quux () {
+            return undefined;
+          }
+      
+@@@ findings
+@@@ case 57 (documented valid)
+
+          /**
+           *
+           */
+          function quux () {
+            return;
+          }
+      
+@@@ findings
+@@@ case 58 (documented valid)
+
+          /**
+           * @returns {true}
+           */
+          function quux () {
+            try {
+              return true;
+            } catch (err) {
+            }
+            return true;
+          }
+      
+@@@ findings
+@@@ case 59 (documented valid)
+
+          /**
+           * @returns {true}
+           */
+          function quux () {
+            try {
+            } finally {
+              return true;
+            }
+            return true;
+          }
+      
+@@@ findings
+@@@ case 60 (documented valid)
+
+          /**
+           * @returns {true}
+           */
+          function quux () {
+            try {
+              something();
+            } catch (err) {
+              return true;
+            }
+            return true;
+          }
+      
+@@@ findings
+@@@ case 61 (documented valid)
+
+          /**
+           * @returns {true}
+           */
+          function quux () {
+            switch (true) {
+            case 'abc':
+              return true;
+            }
+            return true;
+          }
+      
+@@@ findings
+@@@ case 62 (documented valid)
+
+          /**
+           * @returns {true}
+           */
+          function quux () {
+            for (const i of abc) {
+              return true;
+            }
+            return true;
+          }
+      
+@@@ findings
+@@@ case 63 (documented valid)
+
+          /**
+           * @returns {true}
+           */
+          function quux () {
+            for (const a in b) {
+              return true;
+            }
+          }
+      
+@@@ findings
+@@@ case 64 (documented valid)
+
+          /**
+           * @returns {true}
+           */
+          function quux () {
+            for (const a of b) {
+              return true;
+            }
+          }
+      
+@@@ findings
+@@@ case 65 (documented valid)
+
+          /**
+           * @returns {true}
+           */
+          function quux () {
+            loop: for (const a of b) {
+              return true;
+            }
+          }
+      
+@@@ findings
+@@@ case 66 (documented valid)
+
+          /**
+           * @returns {true}
+           */
+          function quux () {
+            for (let i=0; i<n; i+=1) {
+              return true;
+            }
+          }
+      
+@@@ findings
+@@@ case 67 (documented valid)
+
+          /**
+           * @returns {true}
+           */
+          function quux () {
+            while(true) {
+              return true
+            }
+          }
+      
+@@@ findings
+@@@ case 68 (documented valid)
+
+          /**
+           * @returns {true}
+           */
+          function quux () {
+            do {
+              return true
+            }
+            while(true)
+          }
+      
+@@@ findings
+@@@ case 69 (documented valid)
+
+          /**
+           * @returns {true}
+           */
+          function quux () {
+            if (true) {
+              return true;
+            }
+            return true;
+          }
+      
+@@@ findings
+@@@ case 70 (documented valid)
+
+          /**
+           * @returns {true}
+           */
+          function quux () {
+            var a = {};
+            with (a) {
+              return true;
+            }
+          }
+      
+@@@ findings
+@@@ case 71 (documented valid)
+
+          /**
+           * @returns {true}
+           */
+          function quux () {
+            if (true) {
+              return true;
+            } else {
+              return true;
+            }
+            return true;
+          }
+      
+@@@ findings
+@@@ case 72 (documented valid)
+
+          /**
+           * @returns {Promise<number>}
+           */
+          async function quux() {
+            return 5;
+          }
+      
+@@@ findings
+@@@ case 73 (documented valid)
+
+          /**
+           * @returns {Promise<number>}
+           */
+          async function quux() {
+            return 5;
+          }
+      
+@@@ findings
+@@@ case 74 (documented valid)
+
+          /**
+           * @returns {Promise<void>}
+           */
+          function quux() {
+            return new Promise((resolve, reject) => {
+              setTimeout(() => {
+                resolve(true);
+              });
+            })
+          }
+      
+@@@ findings
+@@@ case 75 (documented valid)
+
+        /**
+         * Description.
+         * @returns {void}
+         */
+        async function foo() {
+          return new Promise(resolve => resolve());
+        }
+      
+@@@ findings
+@@@ case 76 (documented valid)
+
+          /**
+           * @returns { void } Foo.
+           */
+          function quux () {
+            return undefined;
+          }
+      
+@@@ findings
+@@@ case 77 (documented valid)
+
+          /**
+           * @returns { string } Foo.
+           */
+          function quux () {
+            return 'abc';
+          }
+      
+@@@ findings
+@@@ case 78 (documented valid)
+
+          /**
+           * @returns {IterableIterator<any>}
+           */
+          function * quux() {}
+      
+@@@ findings
+@@@ case 79 (documented valid)
+
+          /**
+           * @returns {IterableIterator<any>}
+           */
+          function * quux() {}
+      
+@@@ findings
+@@@ case 80 (documented valid)
+
+      /**
+       * @param {unknown} val
+       * @returns { asserts val is number }
+       */
+      function assertNumber(val) {
+        assert(typeof val === 'number');
+      }
+      
+@@@ findings
+@@@ case 81 (documented valid)
+
+      /**
+       * Reads a test fixture.
+       *
+       * @param path The path to resolve relative to the fixture base. It will be normalized for the
+       * operating system.
+       *
+       * @returns The file contents as buffer.
+       */
+      export function readFixture(path: string): Promise<Buffer>;
+      
+@@@ findings
+@@@ case 82 (documented valid)
+
+      /**
+       * Reads a test fixture.
+       *
+       * @param path The path to resolve relative to the fixture base. It will be normalized for the
+       * operating system.
+       *
+       * @returns {SomeType} The file contents as buffer.
+       */
+      export function readFixture(path: string): Promise<Buffer>;
+      
+@@@ findings
+@@@ case 83 (documented valid)
+
+      /**
+       * Reads a test fixture.
+       *
+       * @param path The path to resolve relative to the fixture base. It will be normalized for the
+       * operating system.
+       *
+       * @returns The file contents as buffer.
+       */
+      export function readFixture(path: string): Promise<Buffer> {
+        return new Promise(() => {});
+      }
+      
+@@@ findings
+@@@ case 84 (documented valid)
+
+      /**
+       * Reads a test fixture.
+       *
+       * @param path The path to resolve relative to the fixture base. It will be normalized for the
+       * operating system.
+       *
+       * @returns {void} The file contents as buffer.
+       */
+      export function readFixture(path: string);
+      
+@@@ findings
+@@@ case 85 (documented valid)
+
+      /**
+       * @returns {SomeType}
+       */
+      function quux (path) {
+        if (true) {
+          return 5;
+        }
+        return 15;
+      };
+      
+@@@ findings
+@@@ case 86 (documented valid)
+
+      /**
+       * @returns {SomeType} Foo.
+       */
+      const quux = () => new Promise((resolve) => {
+        resolve(3);
+      });
+      
+@@@ findings
+@@@ case 87 (documented valid)
+
+      /**
+       * @returns {SomeType} Foo.
+       */
+      const quux = function () {
+        return new Promise((resolve) => {
+          resolve(3);
+        });
+      };
+      
+@@@ findings
+@@@ case 88 (documented valid)
+
+          /**
+           * @returns {true}
+           */
+          function quux () {
+            if (true) {
+              return true;
+            }
+
+            throw new Error('Fail');
+          }
+      
+@@@ findings
+@@@ case 89 (documented valid)
+
+      /**
+       * @returns Baz.
+       */
+      function foo() {
+          switch (true) {
+              default:
+                  switch (false) {
+                      default: break;
+                  }
+                  return "baz";
+          }
+      };
+      
+@@@ findings
+@@@ case 90 (documented valid)
+
+      /**
+       * Return a V1 style query identifier.
+       *
+       * @param {string} id - The query identifier.
+       * @returns {string} V1 style query identifier.
+       */
+      function v1QueryId(id) {
+          switch (id) {
+              case 'addq':
+              case 'aliq':
+              case 'locq':
+                  return id.substring(3);
+              case 'lost':
+                  return id.substring(4);
+              default:
+                  return id;
+          }
+      }
+      
+@@@ findings
+@@@ case 91 (documented valid)
+
+      /**
+       * Parses the required header fields for the given SIP message.
+       *
+       * @param {string} logPrefix - The log prefix.
+       * @param {string} sipMessage - The SIP message.
+       * @param {string[]} headers - The header fields to be parsed.
+       * @returns {object} Object with parsed header fields.
+       */
+      function parseSipHeaders(logPrefix, sipMessage, headers) {
+          try {
+              return esappSip.parseHeaders(sipMessage, headers);
+          } catch (err) {
+              logger.error(logPrefix, 'Failed to parse');
+              return {};
+          }
+      }
+      
+@@@ findings
+@@@ case 92 (documented valid)
+
+          /**
+           * @returns {true}
+           */
+          function quux () {
+            try {
+            } catch (error) {
+            } finally {
+              return true;
+            }
+          }
+      
+@@@ findings
+@@@ case 93 (documented valid)
+
+      /** Returns true.
+       *
+       * @returns {boolean} true
+       */
+      function getTrue() {
+        try {
+          return true;
+        } finally {
+          console.log('returning...');
+        }
+      }
+      
+@@@ findings
+@@@ case 94 (documented valid)
+
+      /**
+       * Maybe return a boolean.
+       * @returns {boolean|void} true, or undefined.
+       */
+      function maybeTrue() {
+        if (Math.random() > 0.5) {
+          return true;
+        }
+      }
+      
+@@@ findings
+@@@ case 95 (documented valid)
+
+      /**
+       * @param {string} name
+       *
+       * @typedef {void | { loadTime: number; runTime: number; totalTime: number }} PerfResult
+       * @returns {PerfResult} Perf result
+       */
+      const perfCase = name => {
+        const loadStartTime = performance.now();
+
+        let syncFn;
+
+        try {
+          syncFn = require(`./${name}.cjs`);
+        } catch {
+          return;
+        }
+
+        const loadTime = performance.now() - loadStartTime;
+
+        let i = RUN_TIMES;
+
+        const runStartTime = performance.now();
+
+        while (i-- > 0) {
+          syncFn(__filename);
+        }
+
+        const runTime = performance.now() - runStartTime;
+
+        return {
+          loadTime,
+          runTime,
+          totalTime: runTime + loadTime,
+        };
+      };
+      
+@@@ findings
+@@@ case 96 (documented valid)
+
+      /**
+       * Maybe return a boolean.
+       * @return {boolean|void} true, or undefined.
+       */
+      function maybeTrue() {
+        if (Math.random() > 0.5) {
+          return true;
+        }
+      }
+      
+@@@ findings
+@@@ case 97 (documented valid)
+
+      /**
+       * @typedef {void | { ok: boolean }} MaybeResult
+       */
+
+      /**
+       * @returns {MaybeResult} Result.
+       */
+      const maybeResult = () => {
+        if (Math.random() > 0.5) {
+          return { ok: true };
+        }
+      };
+      
+@@@ findings
+@@@ case 98 (documented valid)
+
+      /**
+       * @typedef {void | { ok: boolean }} MaybeResult
+       */
+
+      /**
+       * @returns {MaybeResult} Result.
+       */
+      const maybeResult = () => {
+        if (Math.random() > 0.5) {
+          return { ok: true };
+        }
+      };
+      
+@@@ findings
+@@@ case 99 (documented valid)
+
+      /**
+       * @returns {MaybeResult} Result.
+       */
+      const maybeResult = () => {
+        if (Math.random() > 0.5) {
+          return { ok: true };
+        }
+      };
+
+      /**
+       * @typedef {void | { ok: boolean }} MaybeResult
+       */
+      
+@@@ findings
+@@@ case 100 (documented valid)
+
+      /**
+       * @typedef {undefined | { ok: boolean }} MaybeResult
+       */
+
+      /**
+       * @returns {MaybeResult|string} Result.
+       */
+      const maybeResult = () => {
+        if (Math.random() > 0.5) {
+          return { ok: true };
+        }
+      };
+      
+@@@ findings
+@@@ case 101 (documented valid)
+
+      /**
+       * @typedef {{ ok: boolean }} MaybeResult
+       */
+
+      /**
+       * @returns {MaybeResult|void} Result.
+       */
+      const maybeResult = () => {
+        if (Math.random() > 0.5) {
+          return { ok: true };
+        }
+      };
+      
+@@@ findings
+@@@ case 102 (documented valid)
+
+      /**
+       * @typedef {{ ok: boolean }} MaybeResult
+       */
+
+      /**
+       * @returns {(MaybeResult|void)} Result.
+       */
+      const maybeResult = () => {
+        if (Math.random() > 0.5) {
+          return { ok: true };
+        }
+      };
+      
+@@@ findings
+@@@ case 103 (documented valid)
+
+      /**
+       * @typedef {{ ok: boolean }} MaybeResult
+       */
+
+      /**
+       * @returns {(MaybeResult|undefined)} Result.
+       */
+      const maybeResult = () => {
+        if (Math.random() > 0.5) {
+          return { ok: true };
+        }
+      };
+      
+@@@ findings
+@@@ case 104 (documented valid)
+
+      /**
+       * @param {AST} astNode
+       * @returns {AST}
+       */
+      const getTSFunctionComment = function (astNode) {
+        switch (greatGrandparent.type) {
+        case 'VariableDeclarator':
+          if (greatGreatGrandparent.type === 'VariableDeclaration') {
+            return greatGreatGrandparent;
+          }
+
+        default:
+          return astNode;
+        }
+      };
+      
+@@@ findings
+@@@ case 105 (documented valid)
+
+      const f =
+        /**
+         * Description.
+         *
+         * @returns Result.
+         */
+        () => {
+          return function () {};
+        };
+      
+@@@ findings
+@@@ case 106 (documented valid)
+
+      /**
+       * Description.
+       *
+       * @returns Result.
+       */
+      export function f(): string {
+        return "";
+
+        interface I {}
+      }
+      
+@@@ findings
+@@@ case 107 (documented valid)
+
+      /**
+       * @param {boolean} bar A fun variable.
+       * @returns {*} Anything at all!
+       */
+      function foo( bar ) {
+        if ( bar ) {
+          return functionWithUnknownReturnType();
+        }
+      }
+      
+@@@ findings
+@@@ case 108 (documented valid)
+
+      /**
+       * @returns Baz.
+       */
+      function foo() {
+          switch (true) {
+              default:
+                  switch (false) {
+                      default: return;
+                  }
+                  return "baz";
+          }
+      };
+      
+@@@ findings
+@@@ case 109 (documented valid)
+
+      /**
+       * @returns
+       */
+      const quux = (someVar) => {
+        if (someVar) {
+          return true;
+        }
+      };
+  
+@@@ findings
+@@@ case 110 (documented valid)
+
+        /**
+         * @returns {number}
+         */
+        function foo() {
+          while (true) {
+            const n = Math.random();
+            if (n < 0.5) {
+              return n;
+            }
+          }
+        }
+      
+@@@ findings
+@@@ case 111 (documented valid)
+
+        /**
+         * @returns {number}
+         */
+        function foo() {
+          for (;;) {
+            const n = Math.random();
+            if (n < 0.5) {
+              return n;
+            }
+          }
+        }
+      
+@@@ findings
+@@@ end

@@ -1,0 +1,25 @@
+# require-template-description: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), a carriage return written ␍,
+# each run by ESLint 10.12.0 at src/a.ts with the project's options; recorded by EN-083.
+@@@ case 1 (documented invalid)
+
+        /**
+         * @template {SomeType}
+         */
+      
+@@@ findings
+2:9 @template should have a description
+@@@ case 2 (documented valid)
+
+        /**
+         * @template {SomeType} Has a description
+         */
+      
+@@@ findings
+@@@ case 3 (documented valid)
+
+        /**
+         * @template Has a description
+         */
+      
+@@@ findings
+@@@ end
