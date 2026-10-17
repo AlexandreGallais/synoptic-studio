@@ -2,7 +2,7 @@
 // where it is checked out, the rows moved there, the worktree and the branch removed here and on
 // GitHub; and the same steps as commands to type when it stopped midway (AUD-020).
 
-import { MOVE_ROWS, rowsMessage, run } from "./story-finish-rows";
+import { MOVE_ROWS, rowsMessage, run } from "./story-finish-rows.ts";
 
 /** A checkout of the repository: the main one or a linked worktree. */
 export type Worktree = {
