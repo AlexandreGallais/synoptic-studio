@@ -24,10 +24,10 @@ One task = one commit, referenced as `US-023.Tn`.
 
 ## Decisions during the story
 
-| Decision                                                                                      | Reason                                                        |
-| --------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| the way to type the handles is a list of the page (`#handle-method`), not stored in the model | it changes only how the same vectors are shown and typed      |
-| the fields keep their ids; their labels read x, y or dx, dy                                   | one set of fields for every way, as the next stories add more |
+| Decision | Reason |
+| --- | --- |
+| the way to type the handles is a list of the page (`#handle-method`), not stored in the model | it changes only how the same vectors are shown and typed |
+| the fields keep their ids; their labels read x, y or dx, dy | one set of fields for every way, as the next stories add more |
 
 ## Product Owner test
 

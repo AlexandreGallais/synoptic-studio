@@ -4,17 +4,17 @@ Used by: F05 (EN-031, EN-032, US-031, ADR-0052), then F14 for wrapping. Sources:
 
 ## Notation
 
-| Symbol       | Definition                                                                                                        |
-| ------------ | ----------------------------------------------------------------------------------------------------------------- |
-| `c₁ … cₙ`    | the characters of one line, after the case transform, composed (NFC), without formatting characters (Cf), `n ≥ 0` |
-| `g(c)`       | the glyph of character `c` in the font's `cmap`; 0 (`.notdef`) when the font has none                             |
-| `adv(g)`     | the advance of glyph `g` in `hmtx`, in font units                                                                 |
-| `kern(a, b)` | the kerning of the glyph pair `(a, b)`, in font units, 0 when the font lists none; negative tightens              |
-| `U`          | `unitsPerEm` of the font, an integer from 16 to 16 384                                                            |
-| `s`          | the text's size, an integer from 1 to 100 000, in user units                                                      |
-| `L`, `W`     | the letter spacing and the word spacing, in user units                                                            |
-| `m`          | the number of word separators in the line: spaces U+0020 and no-break spaces U+00A0                               |
-| `A, D, G`    | the `hhea` ascender, descender (negative below the baseline) and line gap, in font units                          |
+| Symbol | Definition |
+| --- | --- |
+| `c₁ … cₙ` | the characters of one line, after the case transform, composed (NFC), without formatting characters (Cf), `n ≥ 0` |
+| `g(c)` | the glyph of character `c` in the font's `cmap`; 0 (`.notdef`) when the font has none |
+| `adv(g)` | the advance of glyph `g` in `hmtx`, in font units |
+| `kern(a, b)` | the kerning of the glyph pair `(a, b)`, in font units, 0 when the font lists none; negative tightens |
+| `U` | `unitsPerEm` of the font, an integer from 16 to 16 384 |
+| `s` | the text's size, an integer from 1 to 100 000, in user units |
+| `L`, `W` | the letter spacing and the word spacing, in user units |
+| `m` | the number of word separators in the line: spaces U+0020 and no-break spaces U+00A0 |
+| `A, D, G` | the `hhea` ascender, descender (negative below the baseline) and line gap, in font units |
 
 ## Step 1 — One glyph's advance in user units
 
@@ -86,33 +86,33 @@ The block is at least 0 wide (step 4). A line of negative width keeps it, and st
 Arial 5.01 (macOS `Arial.ttf`): `U = 2048`, `A = 1854`, `D = −434`, `G = 67`, read by a script from the file's tables, and the advances below read the same way. Measured by the prototype parser of the spike and by hand, the two agree on every row of the table.
 
 | Character | `adv` | Character | `adv` |
-| --------- | ----- | --------- | ----- |
-| `H`       | 1479  | `W`       | 1933  |
-| `e`       | 1139  | `r`       | 682   |
-| `l`       | 455   | `d`       | 1139  |
-| `o`       | 1139  | space     | 569   |
-| `A`       | 1366  | `V`       | 1366  |
-| `T`       | 1251  | `R`       | 1479  |
+| --- | --- | --- | --- |
+| `H` | 1479 | `W` | 1933 |
+| `e` | 1139 | `r` | 682 |
+| `l` | 455 | `d` | 1139 |
+| `o` | 1139 | space | 569 |
+| `A` | 1366 | `V` | 1366 |
+| `T` | 1251 | `R` | 1479 |
 
 Kerning pairs used: `W o` −37; `A V`, `V A`, `A T`, `T A` −152 each.
 
 ## Checks (test cases)
 
-| Case                                  | Computation                                                                                                              | Expected                                     |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------- |
-| "Hello World", 16, no kerning         | `1479 + 1139 + 3 × 455 + 2 × 1139 + 569 + 1933 + 682 + 1139`                                                             | 10 584 units, `10 584 × 16 / 2048` = 82.6875 |
-| "Hello World", 16, kerned             | `(10 584 − 37) × 16 / 2048`                                                                                              | 82.39844                                     |
-| "Hello World", 16, `L = 2`, `W = 4`   | `82.6875 + 10 × 2 + 1 × 4`                                                                                               | 106.6875                                     |
-| "AVATAR", 16, no kerning              | `(3 × 1366 + 1366 + 1251 + 1479) × 16 / 2048` = `8194 × 16 / 2048`                                                       | 64.01563                                     |
-| "AVATAR", 16, kerned                  | `(8194 − 4 × 152) × 16 / 2048`                                                                                           | 59.26563                                     |
-| "H", 16, `L = 2`                      | one character: no letter spacing                                                                                         | 11.55469                                     |
-| empty line                            | `n = 0`                                                                                                                  | 0                                            |
-| line height, 16                       | `(1854 + 434 + 67) × 16 / 2048` = `2355 / 128`                                                                           | 18.39844                                     |
-| first baseline, 16                    | `1854 × 16 / 2048`                                                                                                       | 14.48438                                     |
-| block of "Hello" / "World", 16        | widths `(1479 + 1139 + 910 + 1139) × 16 / 2048` = 36.46094 and `(1933 + 1139 + 682 + 455 + 1139) × 16 / 2048` = 41.78125 | 41.78125 × 36.79688                          |
-| "Hello" / "World", 16, centered       | room `41.78125 − 36.46094`, half of it before "Hello"                                                                    | x 2.66016 and 0                              |
-| the same, aligned right               | all the room before "Hello"                                                                                              | x 5.32031 and 0                              |
-| the same, right to left, aligned left | `x = left + w`                                                                                                           | x 36.46094 and 41.78125                      |
-| baselines of the two lines, 16        | `14.48438`, then `14.48438 + 18.39844`                                                                                   | 14.48438 and 32.88281                        |
-| underline, `P = −256`, `T = 128`, 16  | `y = 14.48438 + 256 × 16 / 2048`, height `128 × 16 / 2048`                                                               | y 16.48438, 1 thick                          |
-| strike-out, `P = 512`, `T = 64`, 16   | `y = 14.48438 − 512 × 16 / 2048`, height `64 × 16 / 2048`                                                                | y 10.48438, 0.5 thick                        |
+| Case | Computation | Expected |
+| --- | --- | --- |
+| "Hello World", 16, no kerning | `1479 + 1139 + 3 × 455 + 2 × 1139 + 569 + 1933 + 682 + 1139` | 10 584 units, `10 584 × 16 / 2048` = 82.6875 |
+| "Hello World", 16, kerned | `(10 584 − 37) × 16 / 2048` | 82.39844 |
+| "Hello World", 16, `L = 2`, `W = 4` | `82.6875 + 10 × 2 + 1 × 4` | 106.6875 |
+| "AVATAR", 16, no kerning | `(3 × 1366 + 1366 + 1251 + 1479) × 16 / 2048` = `8194 × 16 / 2048` | 64.01563 |
+| "AVATAR", 16, kerned | `(8194 − 4 × 152) × 16 / 2048` | 59.26563 |
+| "H", 16, `L = 2` | one character: no letter spacing | 11.55469 |
+| empty line | `n = 0` | 0 |
+| line height, 16 | `(1854 + 434 + 67) × 16 / 2048` = `2355 / 128` | 18.39844 |
+| first baseline, 16 | `1854 × 16 / 2048` | 14.48438 |
+| block of "Hello" / "World", 16 | widths `(1479 + 1139 + 910 + 1139) × 16 / 2048` = 36.46094 and `(1933 + 1139 + 682 + 455 + 1139) × 16 / 2048` = 41.78125 | 41.78125 × 36.79688 |
+| "Hello" / "World", 16, centered | room `41.78125 − 36.46094`, half of it before "Hello" | x 2.66016 and 0 |
+| the same, aligned right | all the room before "Hello" | x 5.32031 and 0 |
+| the same, right to left, aligned left | `x = left + w` | x 36.46094 and 41.78125 |
+| baselines of the two lines, 16 | `14.48438`, then `14.48438 + 18.39844` | 14.48438 and 32.88281 |
+| underline, `P = −256`, `T = 128`, 16 | `y = 14.48438 + 256 × 16 / 2048`, height `128 × 16 / 2048` | y 16.48438, 1 thick |
+| strike-out, `P = 512`, `T = 64`, 16 | `y = 14.48438 − 512 × 16 / 2048`, height `64 × 16 / 2048` | y 10.48438, 0.5 thick |

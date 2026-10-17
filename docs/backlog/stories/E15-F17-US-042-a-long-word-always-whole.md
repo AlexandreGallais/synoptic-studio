@@ -22,11 +22,11 @@ From the Product Owner's validation of E15 (2026-10-15): the choice between brea
 
 ## Product Owner test
 
-| Step | Do                                                           | You should see                         |
-| ---- | ------------------------------------------------------------ | -------------------------------------- |
-| 1    | Text "running", Arial 16, in a box 50 × 40, the ellipsis off | "running" whole, a little past the box |
-| 2    | Turn the ellipsis on                                         | "runn…"                                |
-| 3    | Look for the option of a word too long                       | none                                   |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | Text "running", Arial 16, in a box 50 × 40, the ellipsis off | "running" whole, a little past the box |
+| 2 | Turn the ellipsis on | "runn…" |
+| 3 | Look for the option of a word too long | none |
 
 ## Tasks
 

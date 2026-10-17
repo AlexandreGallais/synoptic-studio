@@ -4,15 +4,15 @@ How the user acts on shapes in the editors: tools, selection, node editing, snap
 
 ## 1. Tools
 
-| Tool      | French            | Role                                      | Functional reference                  |
-| --------- | ----------------- | ----------------------------------------- | ------------------------------------- |
-| Selector  | Sélecteur         | select, move, resize objects              | Inkscape, Figma                       |
-| Node tool | Édition de nœuds  | select and modify the vertices of a shape | Inkscape (nodes), Figma (vector edit) |
-| Rectangle | Rectangle         | create a rectangle                        | —                                     |
-| Polygon   | Polygone régulier | create a polygon with n corners           | Inkscape Star/Polygon                 |
-| Text      | Texte             | create a text                             | —                                     |
-| Port      | Port              | place a connection point (Symbol Editor)  | —                                     |
-| Pipe      | Tuyau             | connect two ports (View Editor)           | draw.io                               |
+| Tool | French | Role | Functional reference |
+| --- | --- | --- | --- |
+| Selector | Sélecteur | select, move, resize objects | Inkscape, Figma |
+| Node tool | Édition de nœuds | select and modify the vertices of a shape | Inkscape (nodes), Figma (vector edit) |
+| Rectangle | Rectangle | create a rectangle | — |
+| Polygon | Polygone régulier | create a polygon with n corners | Inkscape Star/Polygon |
+| Text | Texte | create a text | — |
+| Port | Port | place a connection point (Symbol Editor) | — |
+| Pipe | Tuyau | connect two ports (View Editor) | draw.io |
 
 No pen tool and no freehand drawing (see `shapes.md` §3).
 
@@ -47,12 +47,12 @@ No pen tool and no freehand drawing (see `shapes.md` §3).
 
 Functional reference: Inkscape 1.2+ (`REF-INKSCAPE-SNAP`), Figma, draw.io.
 
-| Target       | Description                                                                                                                                     |
-| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Target | Description |
+| --- | --- |
 | Integer grid | every position is rounded to an integer: for a turned shape, the x and y of its straight box, its stored position staying fractional (ADR-0035) |
-| Objects      | edges, corners, centers, midpoints of bounding boxes; vertices; ports                                                                           |
-| Alignment    | temporary horizontal / vertical guides when a point aligns with a point of another object                                                       |
-| Distribution | stop at the position where the gap to a neighbor equals the existing gap between two other objects                                              |
+| Objects | edges, corners, centers, midpoints of bounding boxes; vertices; ports |
+| Alignment | temporary horizontal / vertical guides when a point aligns with a point of another object |
+| Distribution | stop at the position where the gap to a neighbor equals the existing gap between two other objects |
 
 Rules:
 
@@ -102,15 +102,15 @@ F16; decided at F05's refinement, round 2, 2026-10-14; the rules marked "confirm
   - a value left empty shows its value again, and a click on the opacity slider gives the nearest percent.
 - **The keyboard** (confirmed at VAL-016, `REF-WAI-APG-SLIDER`):
 
-  | Where     | Keys                          | Change                                                                |
-  | --------- | ----------------------------- | --------------------------------------------------------------------- |
-  | a slider  | Right, Up                     | adds 1 (1° or 1 %) to the whole value shown (30° gives 31°, ADR-0058) |
-  | a slider  | Left, Down                    | takes 1 away                                                          |
-  | a slider  | Page Up, Page Down            | add and take 10                                                       |
-  | a slider  | Home, End                     | go to 0 and to the end (359° for the hue, 100 % for the opacity)      |
-  | the plane | Left, Right                   | change the saturation by 1 %                                          |
-  | the plane | Up, Down                      | change the lightness or brightness                                    |
-  | the plane | Page Up, Page Down, Home, End | the same as on a slider, on the saturation                            |
+  | Where | Keys | Change |
+  | --- | --- | --- |
+  | a slider | Right, Up | adds 1 (1° or 1 %) to the whole value shown (30° gives 31°, ADR-0058) |
+  | a slider | Left, Down | takes 1 away |
+  | a slider | Page Up, Page Down | add and take 10 |
+  | a slider | Home, End | go to 0 and to the end (359° for the hue, 100 % for the opacity) |
+  | the plane | Left, Right | change the saturation by 1 % |
+  | the plane | Up, Down | change the lightness or brightness |
+  | the plane | Page Up, Page Down, Home, End | the same as on a slider, on the saturation |
 
   Each slider and the plane carry their name and value for a screen reader.
 

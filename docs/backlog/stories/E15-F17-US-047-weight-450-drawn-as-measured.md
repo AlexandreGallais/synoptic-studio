@@ -24,20 +24,20 @@ From the Product Owner's validation of E15 (2026-10-15): weight 450 of a family 
 
 Neither of SP-019's two causes: a third one, seen on 2026-10-16 in Chromium's headless shell with a test page that gives the browser IBM Plex Sans Regular, Text and Medium as `FontFace`s at 400, 450 and 500 and reads `getComputedTextLength()` of "Pump P-101" at 16 (`REF-CHROMIUM-FONT-FACE-CODE`):
 
-| Family given to `FontFace`                 | 400    | 450    | 500    | Drawn with                                   |
-| ------------------------------------------ | ------ | ------ | ------ | -------------------------------------------- |
-| `"IBM Plex Sans"`, a CSS string, as before | 90.703 | 91.922 | 91.922 | the installed family, its 500 face for 450   |
-| `IBM Plex Sans`, the name alone, the fix   | 90.703 | 91.266 | 91.922 | the faces given, 450 with IBM Plex Sans Text |
-| measured by the library                    | 90.688 | 91.264 | 91.92  |                                              |
+| Family given to `FontFace` | 400 | 450 | 500 | Drawn with |
+| --- | --- | --- | --- | --- |
+| `"IBM Plex Sans"`, a CSS string, as before | 90.703 | 91.922 | 91.922 | the installed family, its 500 face for 450 |
+| `IBM Plex Sans`, the name alone, the fix | 90.703 | 91.266 | 91.922 | the faces given, 450 with IBM Plex Sans Text |
+| measured by the library | 90.688 | 91.264 | 91.92 |  |
 
 Chrome keeps `FontFace`'s `family` argument as it is, never parsed as CSS: the quotes the page wrote (`formatFontFamilyName`) became part of the family's name, so no text's `font-family` matched the faces given, and every face loaded was ignored. The text was drawn with the installed family of that name, whose 450 the browser matches with its 500 face, 0.658 wider than measured; at 400 and 500 the installed faces are the same files, so the defect showed at 450 only, and an imported font that is not installed was drawn with the fallback. All three loads succeeded. The fix gives `FontFace` the family's name alone; a failed load is now said in one line.
 
 ## Product Owner test
 
-| Step | Do                                             | You should see                                            |
-| ---- | ---------------------------------------------- | --------------------------------------------------------- |
-| 1    | Choose IBM Plex Sans, weight 450, "Pump P-101" | letters a little heavier than 400, the frame hugging them |
-| 2    | Switch between 400, 450 and 500                | three different weights, the frame following              |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | Choose IBM Plex Sans, weight 450, "Pump P-101" | letters a little heavier than 400, the frame hugging them |
+| 2 | Switch between 400, 450 and 500 | three different weights, the frame following |
 
 ## Tasks
 

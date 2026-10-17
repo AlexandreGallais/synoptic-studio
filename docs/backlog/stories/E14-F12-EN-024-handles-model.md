@@ -29,12 +29,12 @@ One task = one commit, referenced as `EN-024.Tn`.
 
 ## Decisions during the story
 
-| Decision                                                                                                                   | Reason                                                                                                                                            |
-| -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Decision | Reason |
+| --- | --- |
 | `Handles`, `CurveCorner` and `mirroredHandle` in `geometry/handles/`; the default, validity and typing in `model/handles/` | the contour (EN-025) needs the type in the geometry layer; the business rules belong to the model (ADR-0043: the same domain name in both layers) |
-| a free shape's corners are `CurveCorner`s; rectangles and polygons keep plain `Corner`s                                    | only a free shape has handles; a conversion gives them off (`curveCornerOf`)                                                                      |
-| `turnedCorners` keeps the handles as they are                                                                              | turning them is part of the cubic sides (EN-025)                                                                                                  |
-| the page's model text shows the handles                                                                                    | it shows the model as stored                                                                                                                      |
+| a free shape's corners are `CurveCorner`s; rectangles and polygons keep plain `Corner`s | only a free shape has handles; a conversion gives them off (`curveCornerOf`) |
+| `turnedCorners` keeps the handles as they are | turning them is part of the cubic sides (EN-025) |
+| the page's model text shows the handles | it shows the model as stored |
 
 ## Review
 

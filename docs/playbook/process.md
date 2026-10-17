@@ -2,11 +2,11 @@
 
 The method on one page is in [agile.md](../process/agile.md); this page keeps what made it work, to reuse.
 
-| Level   | Opens with                                                        | Closes with                                                                                                      |
-| ------- | ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| Epic    | vision and open questions answered by the Product Owner           | `REV` review (plain-language report, full guided recheck), `RET` retrospective (metrics, evolvability, playbook) |
-| Feature | refinement questionnaire, `SP` research spike for all its stories | `AUD` audit by independent agents, `VAL` demo page and a checklist page                                          |
-| Story   | `ready` set by the Product Owner, its own branch                  | one commit per task, `done` in the last commit, pull request into the feature                                    |
+| Level | Opens with | Closes with |
+| --- | --- | --- |
+| Epic | vision and open questions answered by the Product Owner | `REV` review (plain-language report, full guided recheck), `RET` retrospective (metrics, evolvability, playbook) |
+| Feature | refinement questionnaire, `SP` research spike for all its stories | `AUD` audit by independent agents, `VAL` demo page and a checklist page |
+| Story | `ready` set by the Product Owner, its own branch | one commit per task, `done` in the last commit, pull request into the feature |
 
 What made it work:
 

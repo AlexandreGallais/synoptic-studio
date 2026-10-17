@@ -31,13 +31,13 @@ From the Product Owner's second pass of VAL-018 (2026-10-16), item F3: Fit conte
 
 ## Product Owner test
 
-| Step | Do                                                                 | You should see                                               |
-| ---- | ------------------------------------------------------------------ | ------------------------------------------------------------ |
-| 1    | Text tool, Fit content, type "Pump P-101", size 16, then Box       | Width 88, Height 20 (US-055)                                 |
-| 2    | Type 15 in Height                                                  | the box 88 × 15                                              |
-| 3    | Choose Fit content, add a second line "Tank", then choose Box      | Width 88, Height 15 again: the box typed, not measured again |
-| 4    | Press Reset                                                        | Width 88, Height 39: the size the two lines fit              |
-| 5    | Reopen the page, repeat step 1, then Fit content and Box once more | Width 88, Height 20 each time: a box never typed is measured |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | Text tool, Fit content, type "Pump P-101", size 16, then Box | Width 88, Height 20 (US-055) |
+| 2 | Type 15 in Height | the box 88 × 15 |
+| 3 | Choose Fit content, add a second line "Tank", then choose Box | Width 88, Height 15 again: the box typed, not measured again |
+| 4 | Press Reset | Width 88, Height 39: the size the two lines fit |
+| 5 | Reopen the page, repeat step 1, then Fit content and Box once more | Width 88, Height 20 each time: a box never typed is measured |
 
 ## Tasks
 

@@ -26,9 +26,9 @@ One task = one commit, referenced as `US-028.Tn`.
 
 ## Decisions during the story
 
-| Decision                                                                      | Reason                                                                                                                                                                   |
-| ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| a polygon of width or height 0, which cannot be converted, shows no switch    | as its **Convert** button is greyed (F08)                                                                                                                                |
+| Decision | Reason |
+| --- | --- |
+| a polygon of width or height 0, which cannot be converted, shows no switch | as its **Convert** button is greyed (F08) |
 | the switch is shown for a polygon's point, its fields only once it is pressed | the fields act on a free shape: the polygon is converted at the press, by the same step as **Convert to free shape** (`writeConvertedPolygon`, moved to the shape panel) |
 
 ## Product Owner test

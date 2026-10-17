@@ -28,11 +28,11 @@ Show the Product Owner F18 on one demo page: the figures before and after (subag
 
 The Product Owner answered the decisions above on 2026-10-17, before the checklist was tried.
 
-| Decision                 | Answer                                                                                                                                                                                                                                                                                                |
-| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| US-061, a refused face   | confirmed: a face refused at the second reading of its family is dropped, and a text asking for it is measured with the nearest face held; every face measured can then be embedded at export                                                                                                         |
-| ADR-0067, decision 2     | confirmed: the Product Owner merges release-please's release pull request into `develop` first, then the pull request `develop` → `main`, #259 for 0.3; on `main` release-please only tags and publishes                                                                                              |
-| ADR-0068, EN-048         | confirmed: the Markdown tables without padding move to F19's formatter; F18 keeps the append-only logs merged by union, their rows kept unique                                                                                                                                                        |
+| Decision | Answer |
+| --- | --- |
+| US-061, a refused face | confirmed: a face refused at the second reading of its family is dropped, and a text asking for it is measured with the nearest face held; every face measured can then be embedded at export |
+| ADR-0067, decision 2 | confirmed: the Product Owner merges release-please's release pull request into `develop` first, then the pull request `develop` → `main`, #259 for 0.3; on `main` release-please only tags and publishes |
+| ADR-0068, EN-048 | confirmed: the Markdown tables without padding move to F19's formatter; F18 keeps the append-only logs merged by union, their rows kept unique |
 | EN-062, macOS-only tests | not accepted: the tests check the code, not a font installed on one system, so none may depend on macOS's fonts. EN-067 was added to F18 and made every font test run on every system: a collection and a 191 MB table built from Inter Regular's tables, and a second family built from Inter's file |
 
 ## Tasks
@@ -54,25 +54,25 @@ Each of the 20 criteria of F18 has at least one test titled or named after it, `
 
 They are F15's and F17's lines, not F18's: left as they are, to be tried on a Mac, or rewritten when E15's checklist is next reworked.
 
-| File                                                                  | Line                                                                                                                                                            |
-| --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `playground/checklists/epic-15-color-and-font-lines.ts`               | F15: Import Arial from `/System/Library/Fonts/Supplemental`; F15: Import Helvetica.ttc from `/System/Library/Fonts`; F17 (US-052): Import Apple Color Emoji.ttc |
-| `playground/guided-steps/epic-15/guided-steps-f15.ts`                 | Arial.ttf from `/System/Library/Fonts/Supplemental`, Arial Bold.ttf and Arial Italic.ttf, Helvetica.ttc from `/System/Library/Fonts`                            |
-| `playground/guided-steps/epic-15/guided-steps-f15-first-decisions.ts` | Arial Bold Italic.ttf, Arial.ttf twice, Arial.ttf and Arial Bold.ttf after a reload, STIXGeneral.otf from `/System/Library/Fonts/Supplemental`                  |
-| `playground/guided-steps/epic-15/guided-steps-f15-last-decisions.ts`  | Arial.ttf, Arial Bold.ttf                                                                                                                                       |
-| `playground/guided-steps/epic-15/guided-steps-f14-options.ts`         | Arial.ttf, for the space hung at the end of a right-aligned line                                                                                                |
+| File | Line |
+| --- | --- |
+| `playground/checklists/epic-15-color-and-font-lines.ts` | F15: Import Arial from `/System/Library/Fonts/Supplemental`; F15: Import Helvetica.ttc from `/System/Library/Fonts`; F17 (US-052): Import Apple Color Emoji.ttc |
+| `playground/guided-steps/epic-15/guided-steps-f15.ts` | Arial.ttf from `/System/Library/Fonts/Supplemental`, Arial Bold.ttf and Arial Italic.ttf, Helvetica.ttc from `/System/Library/Fonts` |
+| `playground/guided-steps/epic-15/guided-steps-f15-first-decisions.ts` | Arial Bold Italic.ttf, Arial.ttf twice, Arial.ttf and Arial Bold.ttf after a reload, STIXGeneral.otf from `/System/Library/Fonts/Supplemental` |
+| `playground/guided-steps/epic-15/guided-steps-f15-last-decisions.ts` | Arial.ttf, Arial Bold.ttf |
+| `playground/guided-steps/epic-15/guided-steps-f14-options.ts` | Arial.ttf, for the space hung at the end of a right-aligned line |
 
 ## Result of the validation (2026-10-17)
 
 The Product Owner left the tool lines to the agent, F18 being a tooling feature, tried what concerned them and declared the validation finished on 2026-10-17.
 
-| Line              | Seen by           | Result                                                                                                                                                                                                                     |
-| ----------------- | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1, 3, 4, 5, 8, 11 | the VAL worker    | as written                                                                                                                                                                                                                 |
-| 2                 | the main thread   | a fourth subagent refused, by Claude Code's own cap (`CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`); the hook's own message not seen in this session, whose hooks were loaded before EN-063's line: to see again in a new session |
-| 6                 | the main thread   | the session report for the whole conversation: 682 min, 455 084 647 tokens, 3 537 calls, 123 commits                                                                                                                       |
-| 7                 | the main thread   | `epic:check -- E17 2026-10-16`: 87 failed calls of 6 224 (1.4 %), `check:all` green, no code scanning alert                                                                                                                |
-| 9, 10             | the Product Owner | tried; the second reading explained, see the remark below                                                                                                                                                                  |
-| 12                | the main thread   | read in the workflows and ADR-0067; seen for real at the release of 0.3                                                                                                                                                    |
+| Line | Seen by | Result |
+| --- | --- | --- |
+| 1, 3, 4, 5, 8, 11 | the VAL worker | as written |
+| 2 | the main thread | a fourth subagent refused, by Claude Code's own cap (`CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`); the hook's own message not seen in this session, whose hooks were loaded before EN-063's line: to see again in a new session |
+| 6 | the main thread | the session report for the whole conversation: 682 min, 455 084 647 tokens, 3 537 calls, 123 commits |
+| 7 | the main thread | `epic:check -- E17 2026-10-16`: 87 failed calls of 6 224 (1.4 %), `check:all` green, no code scanning alert |
+| 9, 10 | the Product Owner | tried; the second reading explained, see the remark below |
+| 12 | the main thread | read in the workflows and ADR-0067; seen for real at the release of 0.3 |
 
 Remark, routed to US-062: the font list must offer only fonts known to be sound. The first reading kept each face's metrics alone, so a face listed could still be refused when its family was chosen and its files read again; each face's file is now to be read whole and checked at the first reading, its bytes released at once (decided 2026-10-17).

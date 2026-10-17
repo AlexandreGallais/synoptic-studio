@@ -50,44 +50,44 @@ Recorded as understood, with the research behind each in note 0023, section "The
 
 In delivery order, written on 2026-10-17 when the Product Owner started F19's run. TypeScript 6 cannot leave at EN-071 as first drafted: ESLint's parser and TypeDoc read its API, which TypeScript 7 lacks until 7.1, so it stays under its alias until EN-072 replaces TypeDoc and EN-085 takes ESLint out. Each rewrite story turns its rules off in ESLint, so that a rule runs in one linter only until ESLint leaves.
 
-| ID                                                                                   | Type       | Title                                                               | Status |
-| ------------------------------------------------------------------------------------ | ---------- | ------------------------------------------------------------------- | ------ |
-| [SP-021](../stories/E17-F19-SP-021-research-f19.md)                                  | Spike      | Research for F19, Oxc and Rust tools                                | done   |
-| [EN-068](../stories/E17-F19-EN-068-cargo-workspace-and-rust-lane.md)                 | Enabler    | The Cargo workspace at the root and the rust lane                   | done   |
-| [EN-069](../stories/E17-F19-EN-069-rust-coverage-and-advisories.md)                  | Enabler    | A coverage floor and an advisory check for the Rust tools           | ready  |
-| [EN-070](../stories/E17-F19-EN-070-portable-rust-tools.md)                           | Enabler    | Rust tools on portable standard calls                               | done   |
-| [EN-071](../stories/E17-F19-EN-071-typescript-7-for-the-type-check.md)               | Enabler    | TypeScript 7 for the type check and the declarations                | done   |
-| [EN-072](../stories/E17-F19-EN-072-api-pages-from-a-rust-generator.md)               | Enabler    | The API pages from a Rust generator on Oxc                          | ready  |
-| [EN-073](../stories/E17-F19-EN-073-oxfmt-instead-of-prettier.md)                     | Enabler    | oxfmt instead of Prettier                                           | ready  |
-| [EN-074](../stories/E17-F19-EN-074-oxlint-with-native-and-type-aware-rules.md)       | Enabler    | oxlint with its native and type-aware rules                         | ready  |
-| [EN-075](../stories/E17-F19-EN-075-project-linter-in-rust.md)                        | Enabler    | The project's Rust linter and its own rules                         | ready  |
-| [EN-076](../stories/E17-F19-EN-076-naming-and-functional-rules-without-types.md)     | Enabler    | naming-convention and the functional rules without types            | ready  |
-| [CHK-020](../stories/E17-F19-CHK-020-checkpoint-f19.md)                              | Checkpoint | Checkpoint in the middle of F19                                     | ready  |
-| [EN-077](../stories/E17-F19-EN-077-markdown-rules-in-rust.md)                        | Enabler    | The Markdown rules in the Rust linter                               | ready  |
-| [EN-078](../stories/E17-F19-EN-078-unicorn-arrays-collections-iteration.md)          | Enabler    | Unicorn's arrays, collections and iteration rules in Rust           | ready  |
-| [EN-079](../stories/E17-F19-EN-079-unicorn-control-flow-functions-errors-numbers.md) | Enabler    | Unicorn's control-flow, functions, errors and numbers rules in Rust | ready  |
-| [EN-080](../stories/E17-F19-EN-080-unicorn-objects-strings-naming-misc.md)           | Enabler    | Unicorn's objects, strings, naming and miscellaneous rules in Rust  | ready  |
-| [EN-081](../stories/E17-F19-EN-081-unicorn-modules-platform-promises.md)             | Enabler    | Unicorn's modules, platform and promises rules in Rust              | ready  |
-| [EN-082](../stories/E17-F19-EN-082-unicorn-dom-and-web.md)                           | Enabler    | Unicorn's DOM and web rules in Rust                                 | ready  |
-| [EN-083](../stories/E17-F19-EN-083-jsdoc-rules-in-rust.md)                           | Enabler    | JSDoc's rules in Rust                                               | ready  |
-| [EN-084](../stories/E17-F19-EN-084-other-plugin-rules-in-rust.md)                    | Enabler    | The other plugins' rules in Rust                                    | ready  |
-| [EN-085](../stories/E17-F19-EN-085-docs-build-on-change-eslint-out-oxc-adr.md)       | Enabler    | The docs build on change, ESLint out, the ADR on Oxc                | ready  |
-| [AUD-021](../stories/E17-F19-AUD-021-audit-f19.md)                                   | Audit      | Audit F19                                                           | ready  |
-| [VAL-020](../stories/E17-F19-VAL-020-validate-f19.md)                                | Validation | Validate F19                                                        | ready  |
+| ID | Type | Title | Status |
+| --- | --- | --- | --- |
+| [SP-021](../stories/E17-F19-SP-021-research-f19.md) | Spike | Research for F19, Oxc and Rust tools | done |
+| [EN-068](../stories/E17-F19-EN-068-cargo-workspace-and-rust-lane.md) | Enabler | The Cargo workspace at the root and the rust lane | done |
+| [EN-069](../stories/E17-F19-EN-069-rust-coverage-and-advisories.md) | Enabler | A coverage floor and an advisory check for the Rust tools | ready |
+| [EN-070](../stories/E17-F19-EN-070-portable-rust-tools.md) | Enabler | Rust tools on portable standard calls | done |
+| [EN-071](../stories/E17-F19-EN-071-typescript-7-for-the-type-check.md) | Enabler | TypeScript 7 for the type check and the declarations | done |
+| [EN-072](../stories/E17-F19-EN-072-api-pages-from-a-rust-generator.md) | Enabler | The API pages from a Rust generator on Oxc | ready |
+| [EN-073](../stories/E17-F19-EN-073-oxfmt-instead-of-prettier.md) | Enabler | oxfmt instead of Prettier | ready |
+| [EN-074](../stories/E17-F19-EN-074-oxlint-with-native-and-type-aware-rules.md) | Enabler | oxlint with its native and type-aware rules | ready |
+| [EN-075](../stories/E17-F19-EN-075-project-linter-in-rust.md) | Enabler | The project's Rust linter and its own rules | ready |
+| [EN-076](../stories/E17-F19-EN-076-naming-and-functional-rules-without-types.md) | Enabler | naming-convention and the functional rules without types | ready |
+| [CHK-020](../stories/E17-F19-CHK-020-checkpoint-f19.md) | Checkpoint | Checkpoint in the middle of F19 | ready |
+| [EN-077](../stories/E17-F19-EN-077-markdown-rules-in-rust.md) | Enabler | The Markdown rules in the Rust linter | ready |
+| [EN-078](../stories/E17-F19-EN-078-unicorn-arrays-collections-iteration.md) | Enabler | Unicorn's arrays, collections and iteration rules in Rust | ready |
+| [EN-079](../stories/E17-F19-EN-079-unicorn-control-flow-functions-errors-numbers.md) | Enabler | Unicorn's control-flow, functions, errors and numbers rules in Rust | ready |
+| [EN-080](../stories/E17-F19-EN-080-unicorn-objects-strings-naming-misc.md) | Enabler | Unicorn's objects, strings, naming and miscellaneous rules in Rust | ready |
+| [EN-081](../stories/E17-F19-EN-081-unicorn-modules-platform-promises.md) | Enabler | Unicorn's modules, platform and promises rules in Rust | ready |
+| [EN-082](../stories/E17-F19-EN-082-unicorn-dom-and-web.md) | Enabler | Unicorn's DOM and web rules in Rust | ready |
+| [EN-083](../stories/E17-F19-EN-083-jsdoc-rules-in-rust.md) | Enabler | JSDoc's rules in Rust | ready |
+| [EN-084](../stories/E17-F19-EN-084-other-plugin-rules-in-rust.md) | Enabler | The other plugins' rules in Rust | ready |
+| [EN-085](../stories/E17-F19-EN-085-docs-build-on-change-eslint-out-oxc-adr.md) | Enabler | The docs build on change, ESLint out, the ADR on Oxc | ready |
+| [AUD-021](../stories/E17-F19-AUD-021-audit-f19.md) | Audit | Audit F19 | ready |
+| [VAL-020](../stories/E17-F19-VAL-020-validate-f19.md) | Validation | Validate F19 | ready |
 
 ## Feature plan
 
-| Acceptance criterion | Realized by                                                            | Verified by                    |
-| -------------------- | ---------------------------------------------------------------------- | ------------------------------ |
-| F19.AC1              | EN-074, EN-075, EN-085                                                 | AUD-021, VAL-020, `[F19.AC1]`  |
-| F19.AC2              | EN-074, EN-076                                                         | AUD-021, VAL-020, `[F19.AC2]`  |
-| F19.AC3              | EN-075                                                                 | AUD-021, VAL-020, `[F19.AC3]`  |
-| F19.AC4              | EN-077                                                                 | AUD-021, VAL-020, `[F19.AC4]`  |
-| F19.AC5              | EN-073                                                                 | AUD-021, VAL-020, `[F19.AC5]`  |
-| F19.AC6              | EN-071, EN-072, EN-085                                                 | AUD-021, VAL-020, `[F19.AC6]`  |
-| F19.AC7              | EN-072                                                                 | AUD-021, VAL-020, `[F19.AC7]`  |
-| F19.AC8              | EN-085                                                                 | AUD-021, VAL-020, `[F19.AC8]`  |
-| F19.AC9              | EN-068, EN-069                                                         | AUD-021, VAL-020, `[F19.AC9]`  |
-| F19.AC10             | EN-070                                                                 | AUD-021, VAL-020, `[F19.AC10]` |
-| F19.AC11             | EN-074, EN-078, EN-079, EN-080, EN-081, EN-082, EN-083, EN-084, EN-085 | AUD-021, VAL-020, `[F19.AC11]` |
-| F19.AC12             | EN-073                                                                 | AUD-021, VAL-020, `[F19.AC12]` |
+| Acceptance criterion | Realized by | Verified by |
+| --- | --- | --- |
+| F19.AC1 | EN-074, EN-075, EN-085 | AUD-021, VAL-020, `[F19.AC1]` |
+| F19.AC2 | EN-074, EN-076 | AUD-021, VAL-020, `[F19.AC2]` |
+| F19.AC3 | EN-075 | AUD-021, VAL-020, `[F19.AC3]` |
+| F19.AC4 | EN-077 | AUD-021, VAL-020, `[F19.AC4]` |
+| F19.AC5 | EN-073 | AUD-021, VAL-020, `[F19.AC5]` |
+| F19.AC6 | EN-071, EN-072, EN-085 | AUD-021, VAL-020, `[F19.AC6]` |
+| F19.AC7 | EN-072 | AUD-021, VAL-020, `[F19.AC7]` |
+| F19.AC8 | EN-085 | AUD-021, VAL-020, `[F19.AC8]` |
+| F19.AC9 | EN-068, EN-069 | AUD-021, VAL-020, `[F19.AC9]` |
+| F19.AC10 | EN-070 | AUD-021, VAL-020, `[F19.AC10]` |
+| F19.AC11 | EN-074, EN-078, EN-079, EN-080, EN-081, EN-082, EN-083, EN-084, EN-085 | AUD-021, VAL-020, `[F19.AC11]` |
+| F19.AC12 | EN-073 | AUD-021, VAL-020, `[F19.AC12]` |

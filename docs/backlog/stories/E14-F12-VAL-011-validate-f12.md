@@ -21,14 +21,14 @@ The Product Owner tries each way of typing a handle in the playground, guided by
 
 The Product Owner ran the guided steps and decided:
 
-| Remark                                                                                                                                                                                  | Routed to                              |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| Remark | Routed to |
+| --- | --- |
 | keep two methods: x and y on the page, as in Figma, and an angle and a length from the side, which gives the same values at the four corners of a rectangle, so that they can be copied | Q32 settled; EN-026 removes the others |
-| no pasted curve data (`C`, `cubic-bezier()`), no tension: not needed                                                                                                                    | EN-026                                 |
-| keep the three mirror modes                                                                                                                                                             | EN-026                                 |
-| a corner beside a curved side should keep its rounding instead of turning sharp                                                                                                         | F12.AC7; SP-012, then US-027           |
-| copying a group of a point's settings onto another point                                                                                                                                | E14's UX pass (epic)                   |
-| the status line showed the person's turn while subagents still ran                                                                                                                      | fixed on `develop` (feedback log)      |
+| no pasted curve data (`C`, `cubic-bezier()`), no tension: not needed | EN-026 |
+| keep the three mirror modes | EN-026 |
+| a corner beside a curved side should keep its rounding instead of turning sharp | F12.AC7; SP-012, then US-027 |
+| copying a group of a point's settings onto another point | E14's UX pass (epic) |
+| the status line showed the person's turn while subagents still ran | fixed on `develop` (feedback log) |
 
 The validation resumed once EN-026, SP-012, US-027 and AUD-012 are done; the guided steps are cut to the methods kept.
 
@@ -36,12 +36,12 @@ The validation resumed once EN-026, SP-012, US-027 and AUD-012 are done; the gui
 
 The Product Owner ran the nine steps and accepted every option as built:
 
-| Remark                                                                                      | Routed to             |
-| ------------------------------------------------------------------------------------------- | --------------------- |
-| the reduced radius beside a curve as built (47.7 and 46.9), the circle never crossing it    | ADR-0047, `shapes.md` |
-| a point added beside a large fillet splits the whole curve at its middle (Q34)              | Q34 settled           |
-| a lens, points on one line with bulging sides, stays refused (Q33)                          | Q33 settled           |
-| F10 (round shape) next, then F13 (every calculation named), presented together at their end | E14's feature order   |
+| Remark | Routed to |
+| --- | --- |
+| the reduced radius beside a curve as built (47.7 and 46.9), the circle never crossing it | ADR-0047, `shapes.md` |
+| a point added beside a large fillet splits the whole curve at its middle (Q34) | Q34 settled |
+| a lens, points on one line with bulging sides, stays refused (Q33) | Q33 settled |
+| F10 (round shape) next, then F13 (every calculation named), presented together at their end | E14's feature order |
 
 ## Tasks
 

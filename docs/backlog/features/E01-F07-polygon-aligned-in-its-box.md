@@ -36,22 +36,22 @@ Refined with the Product Owner on 2026-10-10 and 2026-10-11 (started with `/run`
 
 In delivery order.
 
-| ID                                                              | Type       | Title                                 | Status |
-| --------------------------------------------------------------- | ---------- | ------------------------------------- | ------ |
-| [SP-003](../stories/E01-F07-SP-003-research-f07.md)             | Spike      | Research for F07                      | done   |
-| [EN-009](../stories/E01-F07-EN-009-align-in-box.md)             | Enabler    | Align a fitted shape in its box       | done   |
-| [US-009](../stories/E01-F07-US-009-anchored-polygon.md)         | User story | Polygon anchored in its box           | done   |
-| [CHK-003](../stories/E01-F07-CHK-003-checkpoint-f07.md)         | Checkpoint | Checkpoint in the middle of F07       | done   |
-| [US-010](../stories/E01-F07-US-010-anchor-picker-playground.md) | User story | Choose the anchor in the playground   | done   |
-| [AUD-003](../stories/E01-F07-AUD-003-audit-f07.md)              | Audit      | Audit F07: polygon aligned in its box | done   |
-| [VAL-003](../stories/E01-F07-VAL-003-validate-anchor.md)        | Validation | Validate F07 on the reference cases   | done   |
+| ID | Type | Title | Status |
+| --- | --- | --- | --- |
+| [SP-003](../stories/E01-F07-SP-003-research-f07.md) | Spike | Research for F07 | done |
+| [EN-009](../stories/E01-F07-EN-009-align-in-box.md) | Enabler | Align a fitted shape in its box | done |
+| [US-009](../stories/E01-F07-US-009-anchored-polygon.md) | User story | Polygon anchored in its box | done |
+| [CHK-003](../stories/E01-F07-CHK-003-checkpoint-f07.md) | Checkpoint | Checkpoint in the middle of F07 | done |
+| [US-010](../stories/E01-F07-US-010-anchor-picker-playground.md) | User story | Choose the anchor in the playground | done |
+| [AUD-003](../stories/E01-F07-AUD-003-audit-f07.md) | Audit | Audit F07: polygon aligned in its box | done |
+| [VAL-003](../stories/E01-F07-VAL-003-validate-anchor.md) | Validation | Validate F07 on the reference cases | done |
 
 ## Feature plan
 
-| Acceptance criterion                     | Realized by            | Verified by                                                                |
-| ---------------------------------------- | ---------------------- | -------------------------------------------------------------------------- |
-| 1 — alignments stored, center by default | US-009                 | `[F07.AC1]` tests (US-009, US-010: 6), VAL-003                             |
-| 2 — placement on the anchored edges      | SP-003, EN-009, US-009 | `[F07.AC2]` tests (EN-009, US-009, US-010: 8), VAL-003                     |
-| 3 — no move on the filled axis           | EN-009, US-009         | `[F07.AC3]` tests (EN-009, US-009, US-010: 4), VAL-003                     |
-| 4 — radius does not move the polygon     | US-009                 | `[F07.AC4]` tests (US-009, US-010, AUD-003 property), US-010 card, VAL-003 |
-| 5 — 3 × 3 anchor grid in the playground  | US-010                 | `[F07.AC5]` playground tests (US-010: 3), VAL-003                          |
+| Acceptance criterion | Realized by | Verified by |
+| --- | --- | --- |
+| 1 — alignments stored, center by default | US-009 | `[F07.AC1]` tests (US-009, US-010: 6), VAL-003 |
+| 2 — placement on the anchored edges | SP-003, EN-009, US-009 | `[F07.AC2]` tests (EN-009, US-009, US-010: 8), VAL-003 |
+| 3 — no move on the filled axis | EN-009, US-009 | `[F07.AC3]` tests (EN-009, US-009, US-010: 4), VAL-003 |
+| 4 — radius does not move the polygon | US-009 | `[F07.AC4]` tests (US-009, US-010, AUD-003 property), US-010 card, VAL-003 |
+| 5 — 3 × 3 anchor grid in the playground | US-010 | `[F07.AC5]` playground tests (US-010: 3), VAL-003 |

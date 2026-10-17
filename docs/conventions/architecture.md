@@ -8,16 +8,16 @@ Typed numbers (integers) → **model** (integers) → evaluated **geometry** (fl
 
 Imports only go to the listed layers. Source table: `eslint/settings/layers.ts` (enforced by `import-x/no-restricted-paths` and `local/kind-in-layer`).
 
-| Layer              | Role                                                                 | May import                         | DOM | `@kind`               |
-| ------------------ | -------------------------------------------------------------------- | ---------------------------------- | --- | --------------------- |
-| `src/math/`        | scalars, vectors, tolerances, robust predicates                      | —                                  | no  | `math`                |
-| `src/geometry/`    | segments, arcs, intersections, corner radius, offset, booleans       | math                               | no  | `math`, `geometry`    |
-| `src/model/`       | shapes, symbols, ports, configurations, business types, views, pipes | math, geometry                     | no  | `domain`              |
-| `src/routing/`     | orthogonal pipe routing                                              | math, geometry, model              | no  | `geometry`, `domain`  |
-| `src/io/`          | SVG / JSON serialization                                             | math, geometry, model              | no  | `format`              |
-| `src/render/`      | model → SVG elements                                                 | all but interaction                | yes | `format`, `procedure` |
-| `src/interaction/` | tools, hit-testing, snapping, commands                               | every `src/` layer                 | yes | `domain`, `procedure` |
-| `playground/`      | demonstration application                                            | **public API `src/index.ts` only** | yes | `procedure`           |
+| Layer | Role | May import | DOM | `@kind` |
+| --- | --- | --- | --- | --- |
+| `src/math/` | scalars, vectors, tolerances, robust predicates | — | no | `math` |
+| `src/geometry/` | segments, arcs, intersections, corner radius, offset, booleans | math | no | `math`, `geometry` |
+| `src/model/` | shapes, symbols, ports, configurations, business types, views, pipes | math, geometry | no | `domain` |
+| `src/routing/` | orthogonal pipe routing | math, geometry, model | no | `geometry`, `domain` |
+| `src/io/` | SVG / JSON serialization | math, geometry, model | no | `format` |
+| `src/render/` | model → SVG elements | all but interaction | yes | `format`, `procedure` |
+| `src/interaction/` | tools, hit-testing, snapping, commands | every `src/` layer | yes | `domain`, `procedure` |
+| `playground/` | demonstration application | **public API `src/index.ts` only** | yes | `procedure` |
 
 A layer exists on disk only from its first module on (an empty folder has no meaningful barrel). Layers present after E01: `math`, `geometry`, `model`, `io`, `render`. The pure decisions of an interaction (which vertices a click selects, F03) live in `model`; `interaction` will hold the effects (events, hit-testing).
 

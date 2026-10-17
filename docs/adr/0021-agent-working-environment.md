@@ -10,13 +10,13 @@ The code is written by a coding agent (Claude Code). Its instruction file, `CLAU
 
 Configuration in `.claude/`, committed:
 
-| Mechanism                          | Content                                                                                                                                                             | Loaded                          |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
-| `CLAUDE.md`                        | rules true in every session, where to read, commands — under 200 lines                                                                                              | every session                   |
-| `.claude/rules/*.md` with `paths:` | pitfalls of one area: `src/`, docs Markdown, root tests and tooling                                                                                                 | when matching files are touched |
-| `.claude/skills/`                  | procedures: `story`, `spike`, `audit`, `derivation`                                                                                                                 | on demand, `/name`              |
-| `.claude/agents/auditor.md`        | read-only reviewer in a fresh context: re-derives, recomputes, tries to refute; reports only gaps affecting correctness or requirements                             | by the `audit` skill            |
-| `.claude/settings.json` hooks      | `PreToolUse` guard (deny `gh pr merge`, `--no-verify`, force push without lease); `SessionStart` state (branch, uncommitted files, `ready` / `in-progress` stories) | every matching event            |
+| Mechanism | Content | Loaded |
+| --- | --- | --- |
+| `CLAUDE.md` | rules true in every session, where to read, commands — under 200 lines | every session |
+| `.claude/rules/*.md` with `paths:` | pitfalls of one area: `src/`, docs Markdown, root tests and tooling | when matching files are touched |
+| `.claude/skills/` | procedures: `story`, `spike`, `audit`, `derivation` | on demand, `/name` |
+| `.claude/agents/auditor.md` | read-only reviewer in a fresh context: re-derives, recomputes, tries to refute; reports only gaps affecting correctness or requirements | by the `audit` skill |
+| `.claude/settings.json` hooks | `PreToolUse` guard (deny `gh pr merge`, `--no-verify`, force push without lease); `SessionStart` state (branch, uncommitted files, `ready` / `in-progress` stories) | every matching event |
 
 The source of truth stays in `docs/`: skills and rules point to it and add only the procedure or the pitfall. A rule that a hook enforces is not repeated as an instruction.
 

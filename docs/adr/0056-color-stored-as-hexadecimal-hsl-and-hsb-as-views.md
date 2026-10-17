@@ -18,13 +18,13 @@
 
 ## Reasons
 
-| Option                                   | For                                                                                                                                                       | Against                                                                           |
-| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| Hexadecimal stored, HSL and HSB as views | integers in the model (ADR-0003); what the designer copies is what is stored; as Figma describes its models, and as Inkscape's OKLch mode keeps hex codes | the picker keeps a little state of its own for greys                              |
-| HSL or HSB stored as fractions           | the picker's state needs no rounding                                                                                                                      | floats in the model; two spellings of one color; a file no SVG reader reads as is |
-| HSL or HSB stored as integers            | integers                                                                                                                                                  | 88 % to 89 % of the colors cannot be stored                                       |
-| Views shown as integers, as Figma        | shorter numbers                                                                                                                                           | typed back, most colors change by one byte                                        |
-| Views shown to one decimal (chosen)      | every color comes back exactly                                                                                                                            | one more digit to read                                                            |
+| Option | For | Against |
+| --- | --- | --- |
+| Hexadecimal stored, HSL and HSB as views | integers in the model (ADR-0003); what the designer copies is what is stored; as Figma describes its models, and as Inkscape's OKLch mode keeps hex codes | the picker keeps a little state of its own for greys |
+| HSL or HSB stored as fractions | the picker's state needs no rounding | floats in the model; two spellings of one color; a file no SVG reader reads as is |
+| HSL or HSB stored as integers | integers | 88 % to 89 % of the colors cannot be stored |
+| Views shown as integers, as Figma | shorter numbers | typed back, most colors change by one byte |
+| Views shown to one decimal (chosen) | every color comes back exactly | one more digit to read |
 
 ## Consequences
 

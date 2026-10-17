@@ -6,11 +6,11 @@ Used by: EN-003, `DERIV-local-radius-clamp` (notation `τᵢ`). Sources: `REF-MA
 
 Cyclic contour `v₀ … vₙ₋₁`; indices are taken modulo `n` (Q11): the vertex before `v₀` is `vₙ₋₁`, the vertex after `vₙ₋₁` is `v₀`.
 
-| Symbol          | Definition                                   |
-| --------------- | -------------------------------------------- |
-| `a = vᵢ − vᵢ₋₁` | incoming edge at `vᵢ`                        |
-| `b = vᵢ₊₁ − vᵢ` | outgoing edge at `vᵢ`                        |
-| `τᵢ`            | turning angle at `vᵢ`: angle from `a` to `b` |
+| Symbol | Definition |
+| --- | --- |
+| `a = vᵢ − vᵢ₋₁` | incoming edge at `vᵢ` |
+| `b = vᵢ₊₁ − vᵢ` | outgoing edge at `vᵢ` |
+| `τᵢ` | turning angle at `vᵢ`: angle from `a` to `b` |
 
 ## Step 1 — Edge vectors
 
@@ -33,13 +33,13 @@ The formulas hold in the mathematical frame (y up). In the SVG frame (y down) th
 
 ## Checks (test cases)
 
-| Vertices `vᵢ₋₁, vᵢ, vᵢ₊₁`                                                  | `a`, `b`           | `a⊥·b`, `a·b` | `τ`                                  |
-| -------------------------------------------------------------------------- | ------------------ | ------------- | ------------------------------------ |
-| (0, 0), (100, 0), (100, 50)                                                | (100, 0), (0, 50)  | 5000, 0       | `π/2` (clockwise on screen)          |
-| (0, 50), (0, 0), (100, 0) — first vertex of the rectangle, previous = last | (0, −50), (100, 0) | 5000, 0       | `π/2`                                |
-| (0, 0), (5, 0), (10, 0)                                                    | (5, 0), (5, 0)     | 0, 25         | `0` (aligned)                        |
-| (0, 0), (10, 0), (10, −10)                                                 | (10, 0), (0, −10)  | −100, 0       | `−π/2` (counter-clockwise on screen) |
-| (0, 0), (10, 0), (0, 0)                                                    | (10, 0), (−10, 0)  | 0, −100       | `π` (back-turn)                      |
+| Vertices `vᵢ₋₁, vᵢ, vᵢ₊₁` | `a`, `b` | `a⊥·b`, `a·b` | `τ` |
+| --- | --- | --- | --- |
+| (0, 0), (100, 0), (100, 50) | (100, 0), (0, 50) | 5000, 0 | `π/2` (clockwise on screen) |
+| (0, 50), (0, 0), (100, 0) — first vertex of the rectangle, previous = last | (0, −50), (100, 0) | 5000, 0 | `π/2` |
+| (0, 0), (5, 0), (10, 0) | (5, 0), (5, 0) | 0, 25 | `0` (aligned) |
+| (0, 0), (10, 0), (10, −10) | (10, 0), (0, −10) | −100, 0 | `−π/2` (counter-clockwise on screen) |
+| (0, 0), (10, 0), (0, 0) | (10, 0), (−10, 0) | 0, −100 | `π` (back-turn) |
 
 ## Limits
 

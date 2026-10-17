@@ -21,10 +21,10 @@ From the Product Owner's validation of E15 (2026-10-15): the balanced wrap is re
 
 ## Product Owner test
 
-| Step | Do                                                        | You should see                 |
-| ---- | --------------------------------------------------------- | ------------------------------ |
-| 1    | Text "Pump P-101 is running", Arial 16, in a box 110 × 60 | "Pump P-101 is" over "running" |
-| 2    | Look for the wrap style                                   | none                           |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | Text "Pump P-101 is running", Arial 16, in a box 110 × 60 | "Pump P-101 is" over "running" |
+| 2 | Look for the wrap style | none |
 
 ## Tasks
 

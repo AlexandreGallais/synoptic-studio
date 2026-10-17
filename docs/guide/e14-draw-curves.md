@@ -29,28 +29,28 @@ Nothing changes on screen. Each calculation that a field names (a rotation, a si
 
 ## Words you will meet
 
-| Term                    | In plain words                                                                                 | Where it shows                                |
-| ----------------------- | ---------------------------------------------------------------------------------------------- | --------------------------------------------- |
-| Point on a curve        | a point the outline passes through smoothly, shaped by its two handles                         | **Handles** switch, Points mode               |
-| Handle                  | a direction and a pull leaving a point: the curve starts towards it                            | the handle fields, before and after the point |
-| Mirror angle            | moving one handle turns the other one opposite; each keeps its own length                      | handle mode                                   |
-| Mirror angle and length | the other handle is the exact opposite: same angle, same length                                | handle mode                                   |
-| Angle from the side     | a handle measured from the side towards the neighbouring point, not from the page's horizontal | **Angle and length** input                    |
-| Round shape             | a circle or an ellipse that always fills its box; no radius to type                            | **Round** tool                                |
-| Cubic side              | the curve between two points, drawn from their handles                                         | the path's `C` commands                       |
+| Term | In plain words | Where it shows |
+| --- | --- | --- |
+| Point on a curve | a point the outline passes through smoothly, shaped by its two handles | **Handles** switch, Points mode |
+| Handle | a direction and a pull leaving a point: the curve starts towards it | the handle fields, before and after the point |
+| Mirror angle | moving one handle turns the other one opposite; each keeps its own length | handle mode |
+| Mirror angle and length | the other handle is the exact opposite: same angle, same length | handle mode |
+| Angle from the side | a handle measured from the side towards the neighbouring point, not from the page's horizontal | **Angle and length** input |
+| Round shape | a circle or an ellipse that always fills its box; no radius to type | **Round** tool |
+| Cubic side | the curve between two points, drawn from their handles | the path's `C` commands |
 
 ## User test of the epic
 
 The review was a free walk through the playground on `develop`, crossing the features in the order below.
 
-| Step | Do                                                                   | You should see                                              | OK? |
-| ---- | -------------------------------------------------------------------- | ----------------------------------------------------------- | --- |
-| 1    | **Round**, then widen it (F10)                                       | a circle, then an ellipse touching its box, as in Figma     | yes |
-| 2    | Points mode on the round shape (F10)                                 | its 4 points, no radius to type until it is converted       | yes |
-| 3    | **Convert to free shape**, then type handles in each mode (F10, F12) | nothing moves; the handles bend the sides as typed          | yes |
-| 4    | Put both handles of a point on the same side (F12)                   | the outline crosses itself and makes a loop                 | yes |
-| 5    | Delete a point; turn the shape with **Angle** (F08, F04, F12)        | the curves are kept; the shape turns about its box's centre | yes |
-| 6    | A triangle, handles of length 0 then longer, angle and length (F12)  | each handle follows its side towards the neighbouring point | yes |
+| Step | Do | You should see | OK? |
+| --- | --- | --- | --- |
+| 1 | **Round**, then widen it (F10) | a circle, then an ellipse touching its box, as in Figma | yes |
+| 2 | Points mode on the round shape (F10) | its 4 points, no radius to type until it is converted | yes |
+| 3 | **Convert to free shape**, then type handles in each mode (F10, F12) | nothing moves; the handles bend the sides as typed | yes |
+| 4 | Put both handles of a point on the same side (F12) | the outline crosses itself and makes a loop | yes |
+| 5 | Delete a point; turn the shape with **Angle** (F08, F04, F12) | the curves are kept; the shape turns about its box's centre | yes |
+| 6 | A triangle, handles of length 0 then longer, angle and length (F12) | each handle follows its side towards the neighbouring point | yes |
 
 ## Decisions taken on the way
 
@@ -83,10 +83,10 @@ Held with the Product Owner on 2026-10-14 (`REV-002`), right after the validatio
 
 **Remarks.**
 
-| Remark                                                                                                                                                                                               | Where it went                                                                                 |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| The angle measured from the side towards the neighbouring point is unusual, but coherent: the same values on two right-angled corners give the same curve.                                           | kept as built                                                                                 |
-| The interface stays simple: few options, many shapes possible.                                                                                                                                       | kept as built                                                                                 |
+| Remark | Where it went |
+| --- | --- |
+| The angle measured from the side towards the neighbouring point is unusual, but coherent: the same values on two right-angled corners give the same curve. | kept as built |
+| The interface stays simple: few options, many shapes possible. | kept as built |
 | Every shape's point 1 could be its lowest right point, as a polygon's is, so that all shapes start alike. A round shape would start at its bottom or its right point. Not urgent, for the end of V1. | note in [E10](../backlog/epics/E10-draw-static-drawings.md), before E11 fixes the file format |
 
 **Closure criteria.** A round shape and an ellipse render as specified. A propeller blade is a free shape with curved sides, which F12 draws; the propeller symbol itself is assembled once symbols exist (E05).

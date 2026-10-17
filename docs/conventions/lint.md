@@ -21,28 +21,28 @@ eslint/
   plugin/                 custom plugin `local/*`: rules, utilities, tests
 ```
 
-| Folder              | Themes                                                                                                                                          |
-| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `rules/core/`       | variables, functions, complexity, control-flow, operators, objects, classes, async, errors, modules, naming, comments, regex, legacy            |
-| `rules/typescript/` | type-safety, strictness, type-declarations, type-imports, signatures, promises, classes, extensions, naming                                     |
-| `rules/jsdoc/`      | presence, content, types, layout                                                                                                                |
-| `rules/imports/`    | resolution, dependencies, style, default-exports, module-systems                                                                                |
-| `rules/unicorn/`    | arrays, collections, iteration, strings, numbers, control-flow, functions, objects, errors, promises, modules, dom, web, platform, naming, misc |
-| `rules/functional/` | immutability, purity, paradigm                                                                                                                  |
-| `rules/stylistic/`  | spacing, comments, prettier-owned                                                                                                               |
-| `rules/unused/`     | unused                                                                                                                                          |
-| `rules/local/`      | kinds, modules, documentation                                                                                                                   |
+| Folder | Themes |
+| --- | --- |
+| `rules/core/` | variables, functions, complexity, control-flow, operators, objects, classes, async, errors, modules, naming, comments, regex, legacy |
+| `rules/typescript/` | type-safety, strictness, type-declarations, type-imports, signatures, promises, classes, extensions, naming |
+| `rules/jsdoc/` | presence, content, types, layout |
+| `rules/imports/` | resolution, dependencies, style, default-exports, module-systems |
+| `rules/unicorn/` | arrays, collections, iteration, strings, numbers, control-flow, functions, objects, errors, promises, modules, dom, web, platform, naming, misc |
+| `rules/functional/` | immutability, purity, paradigm |
+| `rules/stylistic/` | spacing, comments, prettier-owned |
+| `rules/unused/` | unused |
+| `rules/local/` | kinds, modules, documentation |
 
-| Zone (`scopes/`) | Files                                                                                                                | Effect                                                                                                                                                                                    |
-| ---------------- | -------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `language.ts`    | `**/*.ts`                                                                                                            | typed parser, plugins, resolver                                                                                                                                                           |
-| `pure-layers.ts` | `src/math … src/io`                                                                                                  | forbids the DOM and the host                                                                                                                                                              |
-| `dom-layers.ts`  | `src/render`, `src/interaction`, `playground`                                                                        | relaxes the pure statement rules                                                                                                                                                          |
-| `modules.ts`     | `src/`, `playground/`                                                                                                | one export per file, kebab-case file named after it; files and domain folders kept apart (`local/folder-layout`); no default nor optional parameter and documented type members in `src/` |
-| `playground.ts`  | `playground/index.ts`                                                                                                | load-time effects allowed                                                                                                                                                                 |
-| `barrels.ts`     | `src/**/index.ts`, `eslint/**/index.ts`, `playground/*/**/index.ts` (not the entry); `eslint/rules/*/all.ts`         | barrels: `local/barrel-exports` and any number of imports; `all.ts` aggregators: any number of imports only                                                                               |
-| `tooling.ts`     | `eslint/`, root `*.config.ts`, `*.setup.ts`, `*.test.ts`, `tests/`, `docs/.vitepress/`, `.claude/hooks/`, `scripts/` | Node.js, dev dependencies, no `@kind`; in hooks and scripts run by Node.js (`node-run`), imports name the `.ts` file and no barrel is asked                                               |
-| `tests.ts`       | `**/*.test.ts`                                                                                                       | literal numbers, free length, no `@kind`                                                                                                                                                  |
+| Zone (`scopes/`) | Files | Effect |
+| --- | --- | --- |
+| `language.ts` | `**/*.ts` | typed parser, plugins, resolver |
+| `pure-layers.ts` | `src/math … src/io` | forbids the DOM and the host |
+| `dom-layers.ts` | `src/render`, `src/interaction`, `playground` | relaxes the pure statement rules |
+| `modules.ts` | `src/`, `playground/` | one export per file, kebab-case file named after it; files and domain folders kept apart (`local/folder-layout`); no default nor optional parameter and documented type members in `src/` |
+| `playground.ts` | `playground/index.ts` | load-time effects allowed |
+| `barrels.ts` | `src/**/index.ts`, `eslint/**/index.ts`, `playground/*/**/index.ts` (not the entry); `eslint/rules/*/all.ts` | barrels: `local/barrel-exports` and any number of imports; `all.ts` aggregators: any number of imports only |
+| `tooling.ts` | `eslint/`, root `*.config.ts`, `*.setup.ts`, `*.test.ts`, `tests/`, `docs/.vitepress/`, `.claude/hooks/`, `scripts/` | Node.js, dev dependencies, no `@kind`; in hooks and scripts run by Node.js (`node-run`), imports name the `.ts` file and no barrel is asked |
+| `tests.ts` | `**/*.test.ts` | literal numbers, free length, no `@kind` |
 
 The `eslint/` folder itself keeps kebab-case files exporting one constant each; the one-export rule targets the library and the playground.
 

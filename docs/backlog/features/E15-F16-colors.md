@@ -22,27 +22,27 @@ Refined with F05 on 2026-10-14 (its rounds 1 and 2); its stories were written by
 
 In delivery order.
 
-| ID                                                                           | Type       | Title                                                                  | Status |
-| ---------------------------------------------------------------------------- | ---------- | ---------------------------------------------------------------------- | ------ |
-| [SP-017](../stories/E15-F16-SP-017-research-f16-colors.md)                   | Spike      | Research for F16: colors in hexadecimal, HSL and HSB, and their picker | done   |
-| [EN-037](../stories/E15-F16-EN-037-a-color-typed-in-hexadecimal.md)          | Enabler    | A color typed in hexadecimal, kept as six digits and an opacity        | done   |
-| [EN-038](../stories/E15-F16-EN-038-hsl-and-hsb-from-a-color.md)              | Enabler    | HSL and HSB from a hexadecimal color, and back                         | done   |
-| [CHK-016](../stories/E15-F16-CHK-016-checkpoint-f16.md)                      | Checkpoint | Checkpoint in the middle of F16                                        | done   |
-| [US-035](../stories/E15-F16-US-035-pick-a-color.md)                          | User story | Type or pick a color and its opacity                                   | done   |
-| [AUD-017](../stories/E15-F16-AUD-017-audit-f16.md)                           | Audit      | Audit F16                                                              | done   |
-| [EN-043](../stories/E15-F16-EN-043-integer-hsl-and-hsb-from-exact-values.md) | Enabler    | HSL and HSB as integers, one value edited with the exact others        | done   |
-| [US-040](../stories/E15-F16-US-040-whole-numbers-in-the-picker.md)           | User story | Whole numbers in the color picker                                      | done   |
-| [US-041](../stories/E15-F16-US-041-underline-and-strike-through-colors.md)   | User story | Choose the underline's and the strike-through's colors                 | done   |
-| [VAL-016](../stories/E15-F16-VAL-016-validate-f16.md)                        | Validation | Validate F16                                                           | done   |
+| ID | Type | Title | Status |
+| --- | --- | --- | --- |
+| [SP-017](../stories/E15-F16-SP-017-research-f16-colors.md) | Spike | Research for F16: colors in hexadecimal, HSL and HSB, and their picker | done |
+| [EN-037](../stories/E15-F16-EN-037-a-color-typed-in-hexadecimal.md) | Enabler | A color typed in hexadecimal, kept as six digits and an opacity | done |
+| [EN-038](../stories/E15-F16-EN-038-hsl-and-hsb-from-a-color.md) | Enabler | HSL and HSB from a hexadecimal color, and back | done |
+| [CHK-016](../stories/E15-F16-CHK-016-checkpoint-f16.md) | Checkpoint | Checkpoint in the middle of F16 | done |
+| [US-035](../stories/E15-F16-US-035-pick-a-color.md) | User story | Type or pick a color and its opacity | done |
+| [AUD-017](../stories/E15-F16-AUD-017-audit-f16.md) | Audit | Audit F16 | done |
+| [EN-043](../stories/E15-F16-EN-043-integer-hsl-and-hsb-from-exact-values.md) | Enabler | HSL and HSB as integers, one value edited with the exact others | done |
+| [US-040](../stories/E15-F16-US-040-whole-numbers-in-the-picker.md) | User story | Whole numbers in the color picker | done |
+| [US-041](../stories/E15-F16-US-041-underline-and-strike-through-colors.md) | User story | Choose the underline's and the strike-through's colors | done |
+| [VAL-016](../stories/E15-F16-VAL-016-validate-f16.md) | Validation | Validate F16 | done |
 
 ## Feature plan
 
-| Acceptance criterion | Realized by            | Verified by         |
-| -------------------- | ---------------------- | ------------------- |
-| F16.AC1              | EN-037, US-035         | AUD-017             |
-| F16.AC2              | US-035, EN-043, US-040 | AUD-017, VAL-016    |
-| F16.AC3              | EN-038                 | AUD-017             |
-| F16.AC4              | US-035, US-041         | `npm run check:all` |
+| Acceptance criterion | Realized by | Verified by |
+| --- | --- | --- |
+| F16.AC1 | EN-037, US-035 | AUD-017 |
+| F16.AC2 | US-035, EN-043, US-040 | AUD-017, VAL-016 |
+| F16.AC3 | EN-038 | AUD-017 |
+| F16.AC4 | US-035, US-041 | `npm run check:all` |
 
 ## Left for later
 

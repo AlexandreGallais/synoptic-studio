@@ -29,15 +29,15 @@ One task = one commit, referenced as `EN-023.Tn`.
 
 ## Decisions during the story
 
-| Decision                                                                                                                                     | Reason                                                                                                                                                              |
-| -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `math/` kept as a layer, its folders named after mathematical domains                                                                        | the layers of ADR-0005 and ADR-0014 are what the lint checks for purity; math has no business, so its domains are mathematical: vector, angle, bisection, precision |
-| `geometry/box/` split into `layout-box/` and `placement/`                                                                                    | the layout box (Q21) and the straight box of a turned shape (F04) are two domains of `docs/domain/shapes.md`; `placement/` now matches `model/placement/`           |
-| `rounded-corners/` and `model/radii/` both renamed `corner-radius/`, `polygon/` renamed `regular-polygon/`                                   | the same domain carries the same name in every layer                                                                                                                |
-| the playground's wiring in `mount/`, not in `page/`                                                                                          | `page/` is used by every panel and `mount/` uses every panel: one folder would import itself through the panels (`import-x/no-cycle`)                               |
-| `page/` kept: the fields every panel reads and writes                                                                                        | decided by the agent, as the Product Owner asked, rather than left as a question                                                                                    |
-| `isAnchor` and `isModelSize` in `model/layout-box/`, `boxAspect` in `geometry/regular-polygon/`, the angle's field in `playground/position/` | found by the review: each served the domain of another folder (the anchor and the size of the layout box, the stretched polygon, the Angle and position panel)      |
-| the list of folders past 15 in `eslint/settings/folders.ts`, the page kept equal by a test                                                   | the rule must read its list without parsing Markdown; the test keeps the reasons on the page                                                                        |
+| Decision | Reason |
+| --- | --- |
+| `math/` kept as a layer, its folders named after mathematical domains | the layers of ADR-0005 and ADR-0014 are what the lint checks for purity; math has no business, so its domains are mathematical: vector, angle, bisection, precision |
+| `geometry/box/` split into `layout-box/` and `placement/` | the layout box (Q21) and the straight box of a turned shape (F04) are two domains of `docs/domain/shapes.md`; `placement/` now matches `model/placement/` |
+| `rounded-corners/` and `model/radii/` both renamed `corner-radius/`, `polygon/` renamed `regular-polygon/` | the same domain carries the same name in every layer |
+| the playground's wiring in `mount/`, not in `page/` | `page/` is used by every panel and `mount/` uses every panel: one folder would import itself through the panels (`import-x/no-cycle`) |
+| `page/` kept: the fields every panel reads and writes | decided by the agent, as the Product Owner asked, rather than left as a question |
+| `isAnchor` and `isModelSize` in `model/layout-box/`, `boxAspect` in `geometry/regular-polygon/`, the angle's field in `playground/position/` | found by the review: each served the domain of another folder (the anchor and the size of the layout box, the stretched polygon, the Angle and position panel) |
+| the list of folders past 15 in `eslint/settings/folders.ts`, the page kept equal by a test | the rule must read its list without parsing Markdown; the test keeps the reasons on the page |
 
 ## Evidence
 

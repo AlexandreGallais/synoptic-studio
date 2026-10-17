@@ -21,10 +21,10 @@ From the Product Owner's validation of E15 (2026-10-15): the long step-by-step g
 
 ## Product Owner test
 
-| Step | Do                     | You should see                                     |
-| ---- | ---------------------- | -------------------------------------------------- |
-| 1    | Open E15's checklist   | one page of lines with check boxes, no Next button |
-| 2    | Tick two lines, reload | both still ticked                                  |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | Open E15's checklist | one page of lines with check boxes, no Next button |
+| 2 | Tick two lines, reload | both still ticked |
 
 ## Tasks
 

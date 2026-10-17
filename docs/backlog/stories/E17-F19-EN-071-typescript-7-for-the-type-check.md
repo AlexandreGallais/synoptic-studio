@@ -33,13 +33,13 @@ The layout is the one `REF-TS7-ANNOUNCEMENT` recommends for tools that import `t
 
 ## Results
 
-| Check, 2026-10-17                            | TypeScript 6.0.3                     | TypeScript 7.0.2                     |
-| -------------------------------------------- | ------------------------------------ | ------------------------------------ |
-| `tsc --noEmit`, 3 runs                       | 4.23 to 4.51 s                       | 0.88 to 1.06 s                       |
-| errors on the tree                           | 0                                    | 0                                    |
-| one type error planted in a copy             | TS2322 at `average.ts(14,9)`, exit 2 | TS2322 at `average.ts(14,9)`, exit 1 |
-| declarations of `tsconfig.build.json`        | 589 files                            | 589 files, byte for byte the same    |
-| ESLint and TypeDoc (`docs:api`) on the alias | —                                    | both run, loading TypeScript 6.0.3   |
+| Check, 2026-10-17 | TypeScript 6.0.3 | TypeScript 7.0.2 |
+| --- | --- | --- |
+| `tsc --noEmit`, 3 runs | 4.23 to 4.51 s | 0.88 to 1.06 s |
+| errors on the tree | 0 | 0 |
+| one type error planted in a copy | TS2322 at `average.ts(14,9)`, exit 2 | TS2322 at `average.ts(14,9)`, exit 1 |
+| declarations of `tsconfig.build.json` | 589 files | 589 files, byte for byte the same |
+| ESLint and TypeDoc (`docs:api`) on the alias | — | both run, loading TypeScript 6.0.3 |
 
 The tree now has 589 declaration files, two more than when the story was written. `scripts/check-all.ts` already counts any code other than 0 as a failure, so the exit code 1 needs no change there; `tests/typescript-7.test.ts` proves the planted error, its place and the code 1.
 

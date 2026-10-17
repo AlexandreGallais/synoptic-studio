@@ -4,13 +4,13 @@ Spike SP-013, 2026-10-14. Claude Code's own research; every source below was rea
 
 ## What was found
 
-| Question                    | Answer                                                                                                                                                  | Source                                                      |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| A quarter circle as a cubic | handles `4/3 · tan(θ/4)` of the radius, 0.55228 for a quarter; error about 0.00027 of the radius                                                        | `REF-POMAX-BEZIER`                                          |
-| A whole circle              | four cubics, handles `4(√2 − 1)/3`, radial error under one part in a thousand                                                                           | `REF-WIKI-BEZIER`                                           |
-| An ellipse                  | the circle's control points stretched: an affine map of a curve is that of its control points                                                           | `REF-WIKI-BEZIER`                                           |
-| What SVG does               | `A rx ry …` draws an elliptical arc exactly; the `ellipse` element is four elliptical arcs                                                              | `REF-SVG2-PATHS`, `REF-SVG2-SHAPES`                         |
-| What drawing tools do       | Inkscape keeps an ellipse a shape until "Object to Path"; Figma's handle modes are those of the converted points (what Figma itself gives was not read) | `REF-INKSCAPE-OBJECT-TO-PATH`, `REF-FIGMA-HANDLE-MIRRORING` |
+| Question | Answer | Source |
+| --- | --- | --- |
+| A quarter circle as a cubic | handles `4/3 · tan(θ/4)` of the radius, 0.55228 for a quarter; error about 0.00027 of the radius | `REF-POMAX-BEZIER` |
+| A whole circle | four cubics, handles `4(√2 − 1)/3`, radial error under one part in a thousand | `REF-WIKI-BEZIER` |
+| An ellipse | the circle's control points stretched: an affine map of a curve is that of its control points | `REF-WIKI-BEZIER` |
+| What SVG does | `A rx ry …` draws an elliptical arc exactly; the `ellipse` element is four elliptical arcs | `REF-SVG2-PATHS`, `REF-SVG2-SHAPES` |
+| What drawing tools do | Inkscape keeps an ellipse a shape until "Object to Path"; Figma's handle modes are those of the converted points (what Figma itself gives was not read) | `REF-INKSCAPE-OBJECT-TO-PATH`, `REF-FIGMA-HANDLE-MIRRORING` |
 
 ## Decision
 

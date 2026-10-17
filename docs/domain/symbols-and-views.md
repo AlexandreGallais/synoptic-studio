@@ -14,25 +14,25 @@
 
 ## 2. Ports (connection points)
 
-| Property       | Description                                                                                                                                    |
-| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`           | unique identifier within the symbol                                                                                                            |
-| Position       | integer point, relative to the symbol origin                                                                                                   |
+| Property | Description |
+| --- | --- |
+| `id` | unique identifier within the symbol |
+| Position | integer point, relative to the symbol origin |
 | Exit direction | `N`, `E`, `S`, `W` — needed by orthogonal routing (the pipe leaves the port perpendicularly to the edge); rotates with the instance (ADR-0008) |
-| Count          | free; e.g. a pump usually has 2, sometimes more                                                                                                |
+| Count | free; e.g. a pump usually has 2, sometimes more |
 
 ## 3. Animations
 
 An animatable part of a symbol reacts to a value set by a configuration rule:
 
-| Animation                     | Effect                                                         |
-| ----------------------------- | -------------------------------------------------------------- |
-| Color                         | the part takes a color                                         |
-| Color blinking                | the part alternates between colors                             |
-| Opacity / visibility blinking | the part blinks by opacity or display                          |
-| Visibility                    | the part is shown or hidden                                    |
-| Partial fill                  | the part is filled up to a level (e.g. a tank level)           |
-| Rotation                      | the part rotates by an angle obtained by remapping (see below) |
+| Animation | Effect |
+| --- | --- |
+| Color | the part takes a color |
+| Color blinking | the part alternates between colors |
+| Opacity / visibility blinking | the part blinks by opacity or display |
+| Visibility | the part is shown or hidden |
+| Partial fill | the part is filled up to a level (e.g. a tank level) |
+| Rotation | the part rotates by an angle obtained by remapping (see below) |
 
 ### Remapping (Q13)
 
@@ -59,12 +59,12 @@ An animation does not read a property raw: the property's range is **remapped** 
 
 ### Conventions from industrial diagrams (P&ID)
 
-| Convention                                                              | Source                             |
-| ----------------------------------------------------------------------- | ---------------------------------- |
-| Process lines horizontal and vertical, drawn cleanly                    | `REF-PID-LECTURE`                  |
-| Crossing: the horizontal line is continuous, the vertical one is broken | `REF-PID-LECTURE`                  |
-| Horizontal lines dominate; main flow from left to right                 | `REF-PID-LECTURE`, `REF-EDRAW-PID` |
-| Line weight by hierarchy (main process > secondary > utilities)         | `REF-EDRAW-PID`                    |
+| Convention | Source |
+| --- | --- |
+| Process lines horizontal and vertical, drawn cleanly | `REF-PID-LECTURE` |
+| Crossing: the horizontal line is continuous, the vertical one is broken | `REF-PID-LECTURE` |
+| Horizontal lines dominate; main flow from left to right | `REF-PID-LECTURE`, `REF-EDRAW-PID` |
+| Line weight by hierarchy (main process > secondary > utilities) | `REF-EDRAW-PID` |
 
 Standards to consult to go further: `REF-ISO-10628`, `REF-ISA-5-1`, `REF-ISA-101`, `REF-TOGHRAEI`.
 

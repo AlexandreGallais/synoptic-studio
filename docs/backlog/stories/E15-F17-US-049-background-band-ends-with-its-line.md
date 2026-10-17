@@ -25,10 +25,10 @@ Decided on 2026-10-16, provisional until VAL-018: the trailing spaces of a parag
 
 ## Product Owner test
 
-| Step | Do                                                       | You should see                      |
-| ---- | -------------------------------------------------------- | ----------------------------------- |
-| 1    | "Hello World " (a space at the end), background on       | each band ending with its word      |
-| 2    | "Hello World", Arial 16, in a box 50 × 40, background on | two bands, each as long as its word |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | "Hello World " (a space at the end), background on | each band ending with its word |
+| 2 | "Hello World", Arial 16, in a box 50 × 40, background on | two bands, each as long as its word |
 
 ## Tasks
 

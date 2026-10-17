@@ -55,8 +55,8 @@ The six questions of the [evolvability review](../process/) in one line each (si
 
 ## Findings table (in the `AUD` story)
 
-| Check                                        | Result | Evidence                                   | Action |
-| -------------------------------------------- | ------ | ------------------------------------------ | ------ |
-| A4 — mutation of `filletSetback` (sign of τ) | caught | `fillet-setback.test.ts` "direction" fails | —      |
+| Check | Result | Evidence | Action |
+| --- | --- | --- | --- |
+| A4 — mutation of `filletSetback` (sign of τ) | caught | `fillet-setback.test.ts` "direction" fails | — |
 
 Regression and end-to-end tests are added when the applications exist (ADR-0020), not by the feature audits.

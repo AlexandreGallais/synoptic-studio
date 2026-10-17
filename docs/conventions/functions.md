@@ -25,13 +25,13 @@ In `src/`: **no default parameter, no optional parameter**. Defaults belong to t
 
 Every top-level function carries **exactly one** `@kind`. A function mixing two kinds must be split.
 
-| `@kind`     | Definition                                              | Side effects |
-| ----------- | ------------------------------------------------------- | ------------ |
-| `math`      | pure numeric computation (scalars, vectors)             | no           |
-| `geometry`  | operation with a geometric meaning on geometric objects | no           |
-| `domain`    | business rule (symbol, port, parameter, pipe…)          | no           |
-| `format`    | conversion between representations (model ↔ SVG, JSON)  | no           |
-| `procedure` | action with a side effect (DOM, state, events)          | yes          |
+| `@kind` | Definition | Side effects |
+| --- | --- | --- |
+| `math` | pure numeric computation (scalars, vectors) | no |
+| `geometry` | operation with a geometric meaning on geometric objects | no |
+| `domain` | business rule (symbol, port, parameter, pipe…) | no |
+| `format` | conversion between representations (model ↔ SVG, JSON) | no |
+| `procedure` | action with a side effect (DOM, state, events) | yes |
 
 Why a JSDoc tag and not a decorator: a TypeScript decorator only applies to classes and their members, never to a free function (`REF-TS-DECORATORS`). The tag plays the same role, and ESLint reads it.
 
@@ -39,13 +39,13 @@ Why a JSDoc tag and not a decorator: a TypeScript decorator only applies to clas
 
 Values: `eslint/settings/kinds.ts`.
 
-| `@kind`     | Code lines | Statements | Complexity | Depth |
-| ----------- | ---------- | ---------- | ---------- | ----- |
-| `math`      | 10         | 4          | 3          | 1     |
-| `geometry`  | 20         | 8          | 5          | 2     |
-| `domain`    | 20         | 8          | 5          | 2     |
-| `format`    | 20         | 8          | 4          | 1     |
-| `procedure` | 40         | 15         | 3          | 1     |
+| `@kind` | Code lines | Statements | Complexity | Depth |
+| --- | --- | --- | --- | --- |
+| `math` | 10 | 4 | 3 | 1 |
+| `geometry` | 20 | 8 | 5 | 2 |
+| `domain` | 20 | 8 | 5 | 2 |
+| `format` | 20 | 8 | 4 | 1 |
+| `procedure` | 40 | 15 | 3 | 1 |
 
 - Lines: lines holding code (blank and comment lines excluded), signature included.
 - Complexity: McCabe, decision points + 1 (`if`, `?:`, `&&`, `||`, `??`, `case`, loops, `catch`), **callbacks included**.

@@ -35,14 +35,14 @@ From the Product Owner's first pass of VAL-018 (2026-10-16), findings D1, D3 and
 
 ## Product Owner test
 
-| Step | Do                                                                         | You should see                                                                                                |
-| ---- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| 1    | Open the page in Chrome, Inter not installed, choose the Text tool         | Inter in the font list without weights, no text drawn, a line saying Inter is not installed and how to get it |
-| 2    | Click Installed fonts, allow                                               | the families listed, then a line counting the families read, the page still answering                         |
-| 3    | Wait for the end of the reading                                            | `Installed fonts read: … families; … left out, …`; ABC Oracle Book no longer in the font list                 |
-| 4    | Choose Helvetica                                                           | `Helvetica: 6 faces read.`; weights 300, 400 and 700 only; the frame fits the letters at each weight          |
-| 5    | Import Inter 4.1's files (Inter-Regular.ttf, Inter-Bold.ttf), choose Inter | weights 400 and 700 only; the frame fits the letters                                                          |
-| 6    | A text "Running" in Helvetica, letter spacing 20, aligned right            | does the last letter end at the frame's right edge, or 20 short of it? (the measure adds no spacing after it) |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | Open the page in Chrome, Inter not installed, choose the Text tool | Inter in the font list without weights, no text drawn, a line saying Inter is not installed and how to get it |
+| 2 | Click Installed fonts, allow | the families listed, then a line counting the families read, the page still answering |
+| 3 | Wait for the end of the reading | `Installed fonts read: … families; … left out, …`; ABC Oracle Book no longer in the font list |
+| 4 | Choose Helvetica | `Helvetica: 6 faces read.`; weights 300, 400 and 700 only; the frame fits the letters at each weight |
+| 5 | Import Inter 4.1's files (Inter-Regular.ttf, Inter-Bold.ttf), choose Inter | weights 400 and 700 only; the frame fits the letters |
+| 6 | A text "Running" in Helvetica, letter spacing 20, aligned right | does the last letter end at the frame's right edge, or 20 short of it? (the measure adds no spacing after it) |
 
 ## Tasks
 

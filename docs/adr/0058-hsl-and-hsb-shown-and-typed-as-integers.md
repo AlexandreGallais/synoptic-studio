@@ -17,11 +17,11 @@
 
 ## Reasons
 
-| Option                                                 | For                                                                                         | Against                                                                                                                                  |
-| ------------------------------------------------------ | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| Integers shown, the others kept exact (chosen)         | whole numbers, as Figma shows; the hexadecimal stays exact; one value edited moves no other | the picker reaches fewer colors than the hexadecimal (accepted); a value typed by hand may give a color one byte away from the one meant |
-| One decimal shown (ADR-0056)                           | every value typed back gives its hexadecimal                                                | a decimal to read and type in every field                                                                                                |
-| Integers shown, the color rebuilt from the three shown | one rule                                                                                    | editing one value changes the others' bytes: `#336699` drifts to `#33679c`                                                               |
+| Option | For | Against |
+| --- | --- | --- |
+| Integers shown, the others kept exact (chosen) | whole numbers, as Figma shows; the hexadecimal stays exact; one value edited moves no other | the picker reaches fewer colors than the hexadecimal (accepted); a value typed by hand may give a color one byte away from the one meant |
+| One decimal shown (ADR-0056) | every value typed back gives its hexadecimal | a decimal to read and type in every field |
+| Integers shown, the color rebuilt from the three shown | one rule | editing one value changes the others' bytes: `#336699` drifts to `#33679c` |
 
 ## Consequences
 

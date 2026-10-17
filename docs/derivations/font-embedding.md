@@ -4,24 +4,24 @@ Used by: EN-039 (whether a font may be embedded), EN-040 (the font written as a 
 
 ## Notation
 
-| Symbol     | Definition                                                                         |
-| ---------- | ---------------------------------------------------------------------------------- |
-| `f`        | the `fsType` field of a font's `OS/2` table, an integer from 0 to 65 535           |
-| `v`        | the version of that `OS/2` table, an integer ≥ 0                                   |
-| `bit(i)`   | `isBitSet(f, i)`, bit `i` of `f`, 0 the least significant (`DERIV-bit-of-integer`) |
-| `n`        | the length of a font file, in bytes                                                |
-| `b₀ b₁ b₂` | three bytes of the file, each an integer from 0 to 255                             |
+| Symbol | Definition |
+| --- | --- |
+| `f` | the `fsType` field of a font's `OS/2` table, an integer from 0 to 65 535 |
+| `v` | the version of that `OS/2` table, an integer ≥ 0 |
+| `bit(i)` | `isBitSet(f, i)`, bit `i` of `f`, 0 the least significant (`DERIV-bit-of-integer`) |
+| `n` | the length of a font file, in bytes |
+| `b₀ b₁ b₂` | three bytes of the file, each an integer from 0 to 255 |
 
 ## Step 1 — What `fsType` says
 
 `REF-OT-OS2` (`fsType`): bits 0 to 3 are the usage permissions, valid values 0, 2, 4 and 8:
 
-| Value | Permission         | Embedding                                                                                               |
-| ----- | ------------------ | ------------------------------------------------------------------------------------------------------- |
-| 0     | installable        | may be embedded, and installed on the remote system                                                     |
-| 2     | restricted licence | "must not be modified, embedded or exchanged in any manner without first obtaining explicit permission" |
-| 4     | preview and print  | may be embedded and loaded temporarily "for purposes of viewing or printing"; the document read-only    |
-| 8     | editable           | may be embedded and loaded temporarily; editing permitted                                               |
+| Value | Permission | Embedding |
+| --- | --- | --- |
+| 0 | installable | may be embedded, and installed on the remote system |
+| 2 | restricted licence | "must not be modified, embedded or exchanged in any manner without first obtaining explicit permission" |
+| 4 | preview and print | may be embedded and loaded temporarily "for purposes of viewing or printing"; the document read-only |
+| 8 | editable | may be embedded and loaded temporarily; editing permitted |
 
 Bit 0 is "permanently reserved and must be zero"; bit 8, "No subsetting", forbids subsetting before embedding; bit 9, "Bitmap embedding only", forbids embedding any outline: a font without bitmaps "is considered unembeddable". Bits 4 to 7 and 10 to 15 are reserved. "Applications that implement support for font embedding must not embed fonts which are not licensed to permit embedding."
 
@@ -89,18 +89,18 @@ A face is one family name, one weight, one style and one file (`REF-CSS-FONTS-4`
 
 ## Checks (test cases)
 
-| Case                                                  | Computation                              | Expected                                 |
-| ----------------------------------------------------- | ---------------------------------------- | ---------------------------------------- |
-| Arial 5.01 (`fsType` 8, `OS/2` version 3)             | `bit(3)`: permits                        | embeddable                               |
-| Inter 4.1 (`fsType` 0)                                | no bit set                               | embeddable                               |
-| `fsType` 2                                            | `bit(1)`, no `bit(2)` nor `bit(3)`       | not embeddable                           |
-| `fsType` 4                                            | `bit(2)`                                 | embeddable                               |
-| `fsType` 10 (2 and 8), version 2                      | `bit(3)` wins                            | embeddable                               |
-| `fsType` 0x0100 (no subsetting)                       | bit 8 does not forbid the whole file     | embeddable                               |
-| `fsType` 0x0208 (bitmap only, editable), version 4    | `v ≥ 2` and `bit(9)`                     | not embeddable                           |
-| `fsType` 0x0208, version 1                            | bit 9 ignored, `bit(3)`                  | embeddable                               |
-| `fsType` 1 (reserved bit 0)                           | bits 1 to 3 clear: installable           | embeddable                               |
-| `""`, `"f"`, `"fo"`, `"foo"`, `"foobar"`              | `REF-RFC-4648` §10                       | `""`, `Zg==`, `Zm8=`, `Zm9v`, `Zm9vYmFy` |
-| `n` = 0, 1, 2, 3, 4                                   | `4 · ⌈n / 3⌉`                            | 0, 4, 4, 4, 8                            |
-| Arial 5.01, 773 236 bytes                             | `⌈773 236 / 3⌉ = 257 746`, `× 4`, `+ 21` | 1 030 984 characters, URL 1 031 005      |
-| a document of 10 texts, all in Arial regular and bold | 2 distinct faces                         | 2 rules                                  |
+| Case | Computation | Expected |
+| --- | --- | --- |
+| Arial 5.01 (`fsType` 8, `OS/2` version 3) | `bit(3)`: permits | embeddable |
+| Inter 4.1 (`fsType` 0) | no bit set | embeddable |
+| `fsType` 2 | `bit(1)`, no `bit(2)` nor `bit(3)` | not embeddable |
+| `fsType` 4 | `bit(2)` | embeddable |
+| `fsType` 10 (2 and 8), version 2 | `bit(3)` wins | embeddable |
+| `fsType` 0x0100 (no subsetting) | bit 8 does not forbid the whole file | embeddable |
+| `fsType` 0x0208 (bitmap only, editable), version 4 | `v ≥ 2` and `bit(9)` | not embeddable |
+| `fsType` 0x0208, version 1 | bit 9 ignored, `bit(3)` | embeddable |
+| `fsType` 1 (reserved bit 0) | bits 1 to 3 clear: installable | embeddable |
+| `""`, `"f"`, `"fo"`, `"foo"`, `"foobar"` | `REF-RFC-4648` §10 | `""`, `Zg==`, `Zm8=`, `Zm9v`, `Zm9vYmFy` |
+| `n` = 0, 1, 2, 3, 4 | `4 · ⌈n / 3⌉` | 0, 4, 4, 4, 8 |
+| Arial 5.01, 773 236 bytes | `⌈773 236 / 3⌉ = 257 746`, `× 4`, `+ 21` | 1 030 984 characters, URL 1 031 005 |
+| a document of 10 texts, all in Arial regular and bold | 2 distinct faces | 2 rules |

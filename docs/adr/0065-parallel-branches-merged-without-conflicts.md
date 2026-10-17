@@ -20,11 +20,11 @@
 
 ## Reasons
 
-| Option                   | For                                                                   | Against                                          |
-| ------------------------ | --------------------------------------------------------------------- | ------------------------------------------------ |
-| Avoid conflicts (chosen) | no conflict to resolve on indexes and logs; fewer tokens to read them | five changes in the tools (EN-048 to EN-051)     |
-| Resolve conflicts better | no change in the tools                                                | each conflict read and resolved again, in tokens |
-| A merge queue on GitHub  | checks each branch on the latest target                               | only for repositories owned by an organization   |
+| Option | For | Against |
+| --- | --- | --- |
+| Avoid conflicts (chosen) | no conflict to resolve on indexes and logs; fewer tokens to read them | five changes in the tools (EN-048 to EN-051) |
+| Resolve conflicts better | no change in the tools | each conflict read and resolved again, in tokens |
+| A merge queue on GitHub | checks each branch on the latest target | only for repositories owned by an organization |
 
 ## Consequences
 

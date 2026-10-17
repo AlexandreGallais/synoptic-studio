@@ -24,12 +24,12 @@ As a symbol designer, I want the font list held while the default font is read a
 
 Chrome, on a computer where Inter is **not** installed. Run `npm run dev`, open `http://localhost:5173/`.
 
-| Step | Do                                                                      | You should see                                                                                                                                            |
-| ---- | ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1    | choose the Text tool, click **Installed fonts**, allow                  | the font list and Installed fonts are greyed while the counting line runs (`Reading the installed fonts: 12 of 312 families…`)                            |
-| 2    | watch the moment the counting line turns into `Installed fonts read: …` | the list stays greyed, the line under the buttons says `Reading Helvetica, the default font: the font list can be used once it is read.` (a short moment) |
-| 3    | wait for the end                                                        | the list is enabled, Helvetica chosen, the line says `Helvetica is chosen, the first font read: Inter is not installed on this computer.`                 |
-| 4    | open the weight list, tick **Embed fonts**                              | only weights the browser could read again; no line `…: not embedded, its file not held.`                                                                  |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | choose the Text tool, click **Installed fonts**, allow | the font list and Installed fonts are greyed while the counting line runs (`Reading the installed fonts: 12 of 312 families…`) |
+| 2 | watch the moment the counting line turns into `Installed fonts read: …` | the list stays greyed, the line under the buttons says `Reading Helvetica, the default font: the font list can be used once it is read.` (a short moment) |
+| 3 | wait for the end | the list is enabled, Helvetica chosen, the line says `Helvetica is chosen, the first font read: Inter is not installed on this computer.` |
+| 4 | open the weight list, tick **Embed fonts** | only weights the browser could read again; no line `…: not embedded, its file not held.` |
 
 Look closely at step 2: before this story, the list became usable for a moment there, between the two readings. The second criterion cannot be reproduced by hand (the browser must give a face once, then refuse it): the tests prove it.
 

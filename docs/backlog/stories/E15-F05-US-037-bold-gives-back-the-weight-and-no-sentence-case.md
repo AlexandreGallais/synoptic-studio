@@ -29,15 +29,15 @@ Built on the latest branch of the chain, `feature/f15-fonts-html`, after US-036.
 
 Open `http://localhost:5173/`, click **Text**, click on the drawing and type `pump P-101 is running`.
 
-| Step | Do                                                           | You should see                                            |
-| ---- | ------------------------------------------------------------ | --------------------------------------------------------- |
-| 1    | Choose the weight Thin (100), click **Bold**                 | the text bold, the weight 700, the button pressed         |
-| 2    | Click **Bold** again                                         | the text thin again, the weight 100                       |
-| 3    | Choose 800, click **Bold** twice                             | 700, then 800                                             |
-| 4    | Choose 100, click **Bold**, choose 500, click **Bold** twice | 700, then 500: the weight chosen in the list replaced 100 |
-| 5    | Choose 700, click **Bold**                                   | 400, the button released                                  |
-| 6    | Open the case list                                           | no sentence case; title, camel, Pascal… still there       |
-| 7    | Choose **Title**                                             | `Pump P-101 Is Running`                                   |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | Choose the weight Thin (100), click **Bold** | the text bold, the weight 700, the button pressed |
+| 2 | Click **Bold** again | the text thin again, the weight 100 |
+| 3 | Choose 800, click **Bold** twice | 700, then 800 |
+| 4 | Choose 100, click **Bold**, choose 500, click **Bold** twice | 700, then 500: the weight chosen in the list replaced 100 |
+| 5 | Choose 700, click **Bold** | 400, the button released |
+| 6 | Open the case list | no sentence case; title, camel, Pascal… still there |
+| 7 | Choose **Title** | `Pump P-101 Is Running` |
 
 In the guided test (`?guide=epic`), the step **F05 · Bold button (decided, US-037)** walks through steps 1 to 3, and **F05 · Case (decision Q36)** through the nine cases.
 

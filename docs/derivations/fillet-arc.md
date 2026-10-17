@@ -6,14 +6,14 @@ Used by: EN-006 (geometry), EN-007 (path data). Builds on `DERIV-fillet-setback`
 
 Screen frame of SVG: x to the right, **y down** (`REF-SVG2-COORDS` §8.4).
 
-| Symbol          | Definition                                                                                                   |
-| --------------- | ------------------------------------------------------------------------------------------------------------ |
-| `P`, `V`, `N`   | previous, current and next vertices of the contour                                                           |
-| `u_in`, `u_out` | unit directions of the incoming edge `V − P` and the outgoing edge `N − V`                                   |
-| `τ`             | turning angle at `V` (`DERIV-turning-angle`), in ]−π, π[; `τ > 0` when the contour turns clockwise on screen |
-| `r`             | effective radius at `V` (after `DERIV-local-radius-clamp`), `r ≥ 0`                                          |
-| `s`             | setback, `s = r · tan(\|τ\| / 2)` (`DERIV-fillet-setback`)                                                   |
-| `w⊥`            | `w` rotated by a quarter turn: `(x, y)⊥ = (−y, x)`                                                           |
+| Symbol | Definition |
+| --- | --- |
+| `P`, `V`, `N` | previous, current and next vertices of the contour |
+| `u_in`, `u_out` | unit directions of the incoming edge `V − P` and the outgoing edge `N − V` |
+| `τ` | turning angle at `V` (`DERIV-turning-angle`), in ]−π, π[; `τ > 0` when the contour turns clockwise on screen |
+| `r` | effective radius at `V` (after `DERIV-local-radius-clamp`), `r ≥ 0` |
+| `s` | setback, `s = r · tan(\|τ\| / 2)` (`DERIV-fillet-setback`) |
+| `w⊥` | `w` rotated by a quarter turn: `(x, y)⊥ = (−y, x)` |
 
 ## Step 1 — Unit directions
 
@@ -58,21 +58,21 @@ When the contour is written as path data, a final segment is left to `closepath`
 
 Rectangle 100 × 50 from the top-left vertex, clockwise: `(0, 0)`, `(100, 0)`, `(100, 50)`, `(0, 50)`, effective radius 10 everywhere. Every corner has `τ = π/2`, so `s = 10 · tan(π/4) = 10`.
 
-| Vertex      | `u_in`    | `u_out`   | `T_in`      | `T_out`     | `u_in⊥`   | `C`        | flags |
-| ----------- | --------- | --------- | ----------- | ----------- | --------- | ---------- | ----- |
-| `(0, 0)`    | `(0, −1)` | `(1, 0)`  | `(0, 10)`   | `(10, 0)`   | `(1, 0)`  | `(10, 10)` | `0 1` |
-| `(100, 0)`  | `(1, 0)`  | `(0, 1)`  | `(90, 0)`   | `(100, 10)` | `(0, 1)`  | `(90, 10)` | `0 1` |
-| `(100, 50)` | `(0, 1)`  | `(−1, 0)` | `(100, 40)` | `(90, 50)`  | `(−1, 0)` | `(90, 40)` | `0 1` |
-| `(0, 50)`   | `(−1, 0)` | `(0, −1)` | `(10, 50)`  | `(0, 40)`   | `(0, −1)` | `(10, 40)` | `0 1` |
+| Vertex | `u_in` | `u_out` | `T_in` | `T_out` | `u_in⊥` | `C` | flags |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `(0, 0)` | `(0, −1)` | `(1, 0)` | `(0, 10)` | `(10, 0)` | `(1, 0)` | `(10, 10)` | `0 1` |
+| `(100, 0)` | `(1, 0)` | `(0, 1)` | `(90, 0)` | `(100, 10)` | `(0, 1)` | `(90, 10)` | `0 1` |
+| `(100, 50)` | `(0, 1)` | `(−1, 0)` | `(100, 40)` | `(90, 50)` | `(−1, 0)` | `(90, 40)` | `0 1` |
+| `(0, 50)` | `(−1, 0)` | `(0, −1)` | `(10, 50)` | `(0, 40)` | `(0, −1)` | `(10, 40)` | `0 1` |
 
 Other cases:
 
-| Case                                                                       | Computation                                         | Expected                                                                                               |
-| -------------------------------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| Concave corner: `u_in = (1, 0)`, `u_out = (0, −1)`, `V = (10, 0)`, `r = 5` | `perpDot = 1·(−1) − 0·0 = −1` → `τ = −π/2`, `s = 5` | `T_in = (5, 0)`, `T_out = (10, −5)`, `C = (5, 0) − 5·(0, 1) = (5, −5)`, flags `0 0`                    |
-| Aligned vertex, `r = 30`                                                   | `τ = 0` → `s = 0`                                   | `T_in = T_out = V`, no arc                                                                             |
-| Square 100 × 100, `r = 50`                                                 | `s = 50` on every corner                            | arcs meet: `T_out` of `(100, 0)` = `(100, 50)` = `T_in` of `(100, 100)`; no segment of positive length |
-| Zero-length edge (rectangle 0 × 50)                                        | unit vector `(0, 0)`, `τ = 0`                       | `s = 0`, no arc, no `NaN`                                                                              |
+| Case | Computation | Expected |
+| --- | --- | --- |
+| Concave corner: `u_in = (1, 0)`, `u_out = (0, −1)`, `V = (10, 0)`, `r = 5` | `perpDot = 1·(−1) − 0·0 = −1` → `τ = −π/2`, `s = 5` | `T_in = (5, 0)`, `T_out = (10, −5)`, `C = (5, 0) − 5·(0, 1) = (5, −5)`, flags `0 0` |
+| Aligned vertex, `r = 30` | `τ = 0` → `s = 0` | `T_in = T_out = V`, no arc |
+| Square 100 × 100, `r = 50` | `s = 50` on every corner | arcs meet: `T_out` of `(100, 0)` = `(100, 50)` = `T_in` of `(100, 100)`; no segment of positive length |
+| Zero-length edge (rectangle 0 × 50) | unit vector `(0, 0)`, `τ = 0` | `s = 0`, no arc, no `NaN` |
 
 Each center is at distance `r` from both tangent points, e.g. `‖(90, 10) − (100, 10)‖ = 10`.
 

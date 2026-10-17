@@ -26,24 +26,24 @@ From the Product Owner's validation of E15 (2026-10-15): holding an arrow key on
 
 Measured on 2026-10-16 in Chromium's headless shell (HeadlessChrome 153), on the playground built before the story (`feature/f17-text-corrections` after US-047) and after it: the Text tool, 590 installed faces of 186 families listed (a fake `queryLocalFonts`, as CoreText's count in SP-019), the size focused at 16, then the Up arrow held — 30 key repeats sent 33 ms apart through the DevTools protocol (`Input.dispatchKeyEvent`, `autoRepeat`) — the size ending at 46. Three runs each; the work is the time spent in the `input` listeners and in the animation frames.
 
-| Measure, three runs                       | Before              | After               |
-| ----------------------------------------- | ------------------- | ------------------- |
-| redraws for 30 repeats                    | 30, one per `input` | 30, one a frame     |
-| work in the `input` listeners, total      | 146.5, 141.8, 142.3 | 0.3, 0.4, 0.6 ms    |
-| work in the animation frames, total       | 0                   | 25.9, 23.0, 23.7 ms |
-| one redraw, mean                          | 4.7 to 4.9 ms       | 0.8 ms              |
-| one redraw, longest                       | 9.3 to 10.2 ms      | 1.5 to 1.8 ms       |
-| a key's wait before its listener, longest | 0.5 ms              | 0.4 to 0.8 ms       |
-| size drawn at the key's release           | 46                  | 46                  |
+| Measure, three runs | Before | After |
+| --- | --- | --- |
+| redraws for 30 repeats | 30, one per `input` | 30, one a frame |
+| work in the `input` listeners, total | 146.5, 141.8, 142.3 | 0.3, 0.4, 0.6 ms |
+| work in the animation frames, total | 0 | 25.9, 23.0, 23.7 ms |
+| one redraw, mean | 4.7 to 4.9 ms | 0.8 ms |
+| one redraw, longest | 9.3 to 10.2 ms | 1.5 to 1.8 ms |
+| a key's wait before its listener, longest | 0.5 ms | 0.4 to 0.8 ms |
+| size drawn at the key's release | 46 | 46 |
 
 On this machine a redraw already fitted in the 33 ms between two repeats before the story, so no repeat waited behind another in the headless browser; the Product Owner's lag of 2026-10-15 came with Embed fonts on, each face written in base 64 at every redraw (21 ms a face, SP-019), which US-045 moved to the export. After the story a redraw costs a sixth of what it did, and repeats faster than the display's frames are drawn once a frame. The repeats were 33 ms apart, longer than a frame: each gave its own frame; the gathering itself is shown by the tests (30 sizes typed before one frame, one redraw).
 
 ## Product Owner test
 
-| Step | Do                                                | You should see                                             |
-| ---- | ------------------------------------------------- | ---------------------------------------------------------- |
-| 1    | A text in a box; hold the Up arrow on the size    | the text grows smoothly, stopping when the key is released |
-| 2    | The same on the opacity, then on the box's height | no lag                                                     |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | A text in a box; hold the Up arrow on the size | the text grows smoothly, stopping when the key is released |
+| 2 | The same on the opacity, then on the box's height | no lag |
 
 ## Tasks
 

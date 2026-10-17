@@ -31,12 +31,12 @@ Every top-level function, type and module constant carries a `/** … */` block;
 
 **Every function** cites at least one source. Accepted targets:
 
-| Form                    | Resolution                                                | Example                                       |
-| ----------------------- | --------------------------------------------------------- | --------------------------------------------- |
-| `REF-…`                 | row of `docs/references.md` **not marked `[unverified]`** | `@see REF-SVG2-PATHS`                         |
-| `DERIV-name`            | file `docs/derivations/name.md`                           | `@see DERIV-local-radius-clamp`               |
-| `ADR-NNNN`              | file `docs/adr/NNNN-*.md`                                 | `@see ADR-0007`                               |
-| `docs/…/file.md#anchor` | existing file                                             | `@see docs/domain/shapes.md#_2-corner-radius` |
+| Form | Resolution | Example |
+| --- | --- | --- |
+| `REF-…` | row of `docs/references.md` **not marked `[unverified]`** | `@see REF-SVG2-PATHS` |
+| `DERIV-name` | file `docs/derivations/name.md` | `@see DERIV-local-radius-clamp` |
+| `ADR-NNNN` | file `docs/adr/NNNN-*.md` | `@see ADR-0007` |
+| `docs/…/file.md#anchor` | existing file | `@see docs/domain/shapes.md#_2-corner-radius` |
 
 - A non-existent or `[unverified]` reference is a **lint error**. A source never consulted is never cited.
 - Non-trivial `math` / `geometry`: an external source (`REF-*`) or a derivation (`DERIV-*`) — not a mere pointer to the domain.

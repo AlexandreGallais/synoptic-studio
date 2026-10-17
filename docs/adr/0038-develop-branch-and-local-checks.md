@@ -6,11 +6,11 @@
 
 During E01 every change ran the same checks several times on GitHub's servers, and the agent waited for them:
 
-| Change                                      | Workflows run on GitHub                                                                                                         |
-| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| a story pull request into a feature branch  | CI (about 2 min), CodeQL (about 1 min 10), story auto-merge; the agent polled them before the next story                        |
-| any push to `main` (docs, tooling, feature) | CI again (about 1 min 50), CodeQL, Release (about 1 min 20)                                                                     |
-| the release pull request that followed      | CI and CodeQL again, on a change of `CHANGELOG.md` and `package.json` only; then Release, which re-ran the tests for the report |
+| Change | Workflows run on GitHub |
+| --- | --- |
+| a story pull request into a feature branch | CI (about 2 min), CodeQL (about 1 min 10), story auto-merge; the agent polled them before the next story |
+| any push to `main` (docs, tooling, feature) | CI again (about 1 min 50), CodeQL, Release (about 1 min 20) |
+| the release pull request that followed | CI and CodeQL again, on a change of `CHANGELOG.md` and `package.json` only; then Release, which re-ran the tests for the report |
 
 Averages of the last 100 successful runs. The pre-push hook already ran the full `check:all` locally before each of these pushes. Every documentation push to `main` also made a release nobody needed (improvement log, 2026-10-11).
 
@@ -29,12 +29,12 @@ Sources read:
 2. **`develop` is the integration branch.** Tooling, documentation and backlog work is pushed to it directly by the agent; feature branches `feature/f<nn>-<topic>` start from it; at `VAL`, the feature pull request goes into `develop` and the Product Owner merges it. Several validated features may wait in `develop` for one release.
 3. **Merges draw the history** (`REF-GITFLOW`, `REF-GH-MERGE-METHODS`):
 
-   | Pull request        | Method                  | Why                                                                                            |
-   | ------------------- | ----------------------- | ---------------------------------------------------------------------------------------------- |
-   | story → feature     | rebase                  | a story is a few task commits; they line up on the feature branch                              |
-   | feature → `develop` | merge commit            | the feature stays visible as one branch and one merge, git-flow's `--no-ff`                    |
-   | `develop` → `main`  | merge commit (only one) | a rebase copies commits under new SHAs, and `develop` would no longer be an ancestor of `main` |
-   | release → `main`    | merge commit            | the only method `main` allows                                                                  |
+   | Pull request | Method | Why |
+   | --- | --- | --- |
+   | story → feature | rebase | a story is a few task commits; they line up on the feature branch |
+   | feature → `develop` | merge commit | the feature stays visible as one branch and one merge, git-flow's `--no-ff` |
+   | `develop` → `main` | merge commit (only one) | a rebase copies commits under new SHAs, and `develop` would no longer be an ancestor of `main` |
+   | release → `main` | merge commit | the only method `main` allows |
 
    `git log --first-parent main` then lists the releases, one merge each, and the graph shows each feature as a bridge on `develop`.
 

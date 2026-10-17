@@ -30,13 +30,13 @@ One task = one commit, referenced as `VAL-004.Tn`. This story is not merged auto
 
 Written with the stories and the audit; counted at the validation (`[F03.ACn]` in test titles).
 
-| Criterion                                                | Tests | Where                                                                                                                                                  |
-| -------------------------------------------------------- | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| F03.AC1 — a requested radius per vertex, clamped locally | 13    | `are-valid-radii`, `corners-with-radii`, `is-valid-rectangle`, `is-valid-regular-polygon`, `rectangle-corners`, `regular-polygon-corners` (properties) |
-| F03.AC2 — radius field for every vertex, Mixed           | 7     | `common-radius`, playground (`radius-field`)                                                                                                           |
-| F03.AC3 — radii kept by vertex number                    | 6     | `resize-radii`, playground (`radius-field`, `points-list`)                                                                                             |
-| F03.AC4 — tool bar, handles, point 1 and 2, list         | 6     | playground (`points-mode`, `points-list`)                                                                                                              |
-| F03.AC5 — selection, radius on the selection             | 14    | `radii-with-selection`, `selection`, playground (`points-list`)                                                                                        |
+| Criterion | Tests | Where |
+| --- | --- | --- |
+| F03.AC1 — a requested radius per vertex, clamped locally | 13 | `are-valid-radii`, `corners-with-radii`, `is-valid-rectangle`, `is-valid-regular-polygon`, `rectangle-corners`, `regular-polygon-corners` (properties) |
+| F03.AC2 — radius field for every vertex, Mixed | 7 | `common-radius`, playground (`radius-field`) |
+| F03.AC3 — radii kept by vertex number | 6 | `resize-radii`, playground (`radius-field`, `points-list`) |
+| F03.AC4 — tool bar, handles, point 1 and 2, list | 6 | playground (`points-mode`, `points-list`) |
+| F03.AC5 — selection, radius on the selection | 14 | `radii-with-selection`, `selection`, playground (`points-list`) |
 
 ## Validation (2026-10-11)
 
@@ -44,7 +44,7 @@ The Product Owner ran the playground of the feature branch from the test cards, 
 
 Compared with what the feature meant to show: point 1 and point 2 read as the start and the direction of the outline, as meant. No misunderstanding. The guided test of F03 (steps 29 to 33) was added afterwards, for the published playground and the next readers. Remarks:
 
-| Remark                                                                                                 | Where it goes                                 |
-| ------------------------------------------------------------------------------------------------------ | --------------------------------------------- |
-| A polygon could remember the radii of corners that went away (12 → 3 → 12), against F03.AC3 as decided | open question Q26, improvement log            |
-| No free contour yet, x and y not editable in the list                                                  | confirmed in F08 (node editing), next feature |
+| Remark | Where it goes |
+| --- | --- |
+| A polygon could remember the radii of corners that went away (12 → 3 → 12), against F03.AC3 as decided | open question Q26, improvement log |
+| No free contour yet, x and y not editable in the list | confirmed in F08 (node editing), next feature |
