@@ -6,8 +6,8 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, Output};
 
 use worktree::{
-    Request, base_branch, branch_refusal, branch_type, plan, story_id, story_of_branch, story_of_file,
-    worktrees_without_hooks,
+    Request, base_branch, branch_refusal, branch_type, plan, story_id, story_of_branch,
+    story_of_file, worktrees_without_hooks,
 };
 
 const FILE: &str = "E17-F18-US-061-font-list-held-while-the-default-font-is-read.md";

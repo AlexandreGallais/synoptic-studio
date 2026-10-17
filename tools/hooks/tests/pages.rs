@@ -411,7 +411,12 @@ fn the_settings_run_the_hook_on_every_web_fetch_and_every_command_naming_curl_or
 
     for entry in settings.get("hooks").get("PreToolUse").items() {
         for handler in entry.get("hooks").items() {
-            let args: Vec<&str> = handler.get("args").items().iter().map(|arg| arg.text()).collect();
+            let args: Vec<&str> = handler
+                .get("args")
+                .items()
+                .iter()
+                .map(hooks::json::Value::text)
+                .collect();
 
             if args.contains(&"library-pages") {
                 runs.push(format!(

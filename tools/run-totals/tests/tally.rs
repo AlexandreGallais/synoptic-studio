@@ -46,11 +46,12 @@ fn keeps_a_line_without_its_line_break_for_the_next_reading() {
     assert_eq!(tally.offset, first.len());
     assert_eq!(tally.tokens.total(), 2);
 
-    // The next reading starts at the offset: the whole second line, then m1 again is new.
+    // The next reading starts at the offset: the whole second line, 2 + 12 = 14.
     let next = read_chunk(&tally, &second, OPEN);
 
     assert_eq!(next.offset, first.len() + second.len());
     assert_eq!(next.tokens.total(), 14);
+    // m2 read again replaces itself, the last request's usage counted once: still 14.
     assert_eq!(read_chunk(&next, &second, OPEN).tokens.total(), 14);
 }
 

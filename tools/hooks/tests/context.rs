@@ -14,7 +14,7 @@ const TRANSCRIPT: &str = concat!(
     "\n",
     r#"{"type":"attachment","attachment":{"type":"instructions","files":[{"path":"/r/CLAUDE.md"},{"path":"/m/memory/MEMORY.md"}]}}"#,
     "\n",
-    r#"{"type":"user","message":{"role":"user","content":"a reminder"}}"#,
+    r#"{"type":"user","message":{"role":"user","content":"a later reminder"}}"#,
     "\n",
     r#"{"type":"assistant","message":{"usage":{"input_tokens":2,"cache_creation_input_tokens":21144,"cache_read_input_tokens":17684}}}"#,
     "\n",
@@ -31,7 +31,8 @@ fn meta() -> hooks::json::Value {
 fn f20_ac1_reads_the_first_request_and_what_came_before_it() {
     let start = first_request(TRANSCRIPT, &meta());
 
-    // 2 + 21 144 + 17 684 = 38 830: the first answer's usage, never the second's.
+    // 2 + 21 144 + 17 684 = 38 830: the first answer's usage, never the second's. The task is
+    // the first user line, 10 characters, never the later reminder's 16.
     assert_eq!(
         start,
         Some(Start {
@@ -77,6 +78,8 @@ fn lists_each_agent_then_each_type() {
 
     assert!(text.contains("| worker | a \\| b | 9 |  | 0 | 3 |\n"));
     assert!(text.contains("| auditor | 1 | 4 |\n| worker | 2 | 7 |\n"));
+    // One row per type, never one per agent.
+    assert_eq!(text.matches("| worker | 2 | 7 |").count(), 1);
 }
 
 #[test]

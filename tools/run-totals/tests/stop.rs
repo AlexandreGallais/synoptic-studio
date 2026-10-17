@@ -63,4 +63,6 @@ fn f20_ac6_ignores_a_story_not_parked_or_without_front_matter() {
     assert_eq!(parked_story(""), None);
     // Parked, but no id: nothing to name.
     assert_eq!(parked_story("---\nstatus: parked\n---\n"), None);
+    // A front matter never closed is none (AUD-022).
+    assert_eq!(parked_story("---\nid: EN-104\nstatus: parked\n"), None);
 }

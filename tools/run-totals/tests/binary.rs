@@ -53,6 +53,27 @@ fn stdout(output: &Output) -> String {
     String::from_utf8_lossy(&output.stdout).into_owned()
 }
 
+/// The text with each count of seconds, `0 s` or `1 s`, written `_ s`.
+fn seconds_hidden(text: &str) -> String {
+    let words: Vec<&str> = text.split(' ').collect();
+
+    words
+        .iter()
+        .enumerate()
+        .map(|(index, word)| {
+            let is_count = !word.is_empty() && word.bytes().all(|byte| byte.is_ascii_digit());
+            let unit = words.get(index + 1).copied().unwrap_or("");
+
+            if is_count && (unit == "s" || unit.starts_with("s,")) {
+                "_"
+            } else {
+                word
+            }
+        })
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
 /// The transcripts folder Claude Code keeps for `repo`.
 fn projects(home: &Path, repo: &Path) -> PathBuf {
     let name: String = repo
@@ -77,6 +98,13 @@ fn f20_ac4_opens_counts_shows_and_ends_a_run() {
     )
     .expect("transcript");
 
+    // A second session, after a restart: 2 + 20 + 200 + 2 000 = 2 222; 3 333 in all.
+    fs::write(
+        folder.join("s2.jsonl"),
+        "{\"type\":\"assistant\",\"timestamp\":\"2099-01-01T00:00:00Z\",\"message\":{\"id\":\"b\",\"usage\":{\"input_tokens\":2,\"cache_creation_input_tokens\":20,\"cache_read_input_tokens\":200,\"output_tokens\":2000}}}\n",
+    )
+    .expect("transcript");
+
     // No run yet: no status, no report, no end.
     assert_eq!(stdout(&totals(&repo, &home, &["status"])), "");
     assert!(!totals(&repo, &home, &["report"]).status.success());
@@ -96,16 +124,20 @@ fn f20_ac4_opens_counts_shows_and_ends_a_run() {
         "{\"sevenDay\":{\"usedPercent\":33.6,\"resetsAt\":\"x\"},\"time\":1}",
     )
     .expect("usage");
+    // The duration may have reached a second between two commands: only its form is checked.
     assert_eq!(
-        stdout(&totals(&repo, &home, &["status"])),
-        "run 0 s · 1,111 tokens · week 34 % used"
+        seconds_hidden(&stdout(&totals(&repo, &home, &["status"]))),
+        "run _ s · 3,333 tokens · week 34 % used"
     );
-    assert!(stdout(&totals(&repo, &home, &["report"])).contains("| 0 s, open | 1,111 |"));
+    assert!(
+        seconds_hidden(&stdout(&totals(&repo, &home, &["report"])))
+            .contains("| _ s, open | 3,333 |")
+    );
 
-    // Ended now: the 2099 request falls after the end.
-    let ended = stdout(&totals(&repo, &home, &["end"]));
+    // Ended now: the 2099 requests fall after the end.
+    let ended = seconds_hidden(&stdout(&totals(&repo, &home, &["end"])));
 
-    assert!(ended.contains("| 0 s | 0 | 0 | 0 | 0 | 0 |"), "{ended}");
+    assert!(ended.contains("| _ s | 0 | 0 | 0 | 0 | 0 |"), "{ended}");
     assert_eq!(stdout(&totals(&repo, &home, &["status"])), "");
     assert!(!totals(&repo, &home, &["unknown"]).status.success());
 }

@@ -517,6 +517,19 @@ describe("backlog", () => {
     expect(tags).toEqual(["[F18.AC6]", "[F18.AC3]"]);
   });
 
+  it("[F20.AC6] keeps each parked story's question in its file", () => {
+    const silent = items()
+      .filter((item) => item.fields["status"] === "parked")
+      .filter(
+        (item) =>
+          !readFileSync(join(BACKLOG, item.folder, item.file), "utf8").includes(
+            "\n## Question for the Product Owner\n",
+          ),
+      );
+
+    expect(silent.map((item) => item.file)).toEqual([]);
+  });
+
   it("leaves a criterion struck through out of the criteria to trace", () => {
     const section = "1. Kept.\n2. ~~Dropped.~~ Dropped on 2026-10-17.\n3. Kept too.\n";
 

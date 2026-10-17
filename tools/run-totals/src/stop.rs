@@ -5,7 +5,8 @@
 /// the subscription's week for the Product Owner).
 pub const WEEK_LIMIT_PERCENT: i64 = 90;
 
-/// The id of a story whose front matter says `status: parked`, `None` for any other file.
+/// The id of a story whose front matter, opened and closed by `---`, says `status: parked`; `None`
+/// for any other file.
 #[must_use]
 pub fn parked_story(text: &str) -> Option<String> {
     let mut lines = text.lines();
@@ -15,8 +16,9 @@ pub fn parked_story(text: &str) -> Option<String> {
     }
 
     let front: Vec<&str> = lines.take_while(|line| *line != "---").collect();
+    let is_closed = text.lines().skip(1).any(|line| line == "---");
 
-    if !front.contains(&"status: parked") {
+    if !is_closed || !front.contains(&"status: parked") {
         return None;
     }
 

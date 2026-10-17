@@ -269,7 +269,11 @@ fn f20_ac7_commits_on_develop_but_never_pushes_it() {
     );
 
     assert!(!pushed.status.success());
-    assert!(stderr(&pushed).contains("never pushes it"), "{}", stderr(&pushed));
+    assert!(
+        stderr(&pushed).contains("never pushes it"),
+        "{}",
+        stderr(&pushed)
+    );
     assert_eq!(git(&repos.work, &["log", "--format=%s", "-1"]), "first");
     // On a feature branch, the same call commits and pushes.
     git(&repos.work, &["switch", "--quiet", FEATURE]);

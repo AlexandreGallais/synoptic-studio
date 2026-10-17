@@ -57,13 +57,19 @@ fn lists_a_session_and_its_subagents_only() {
     append(&projects.join("s1/subagents/agent-a.jsonl"), "");
     append(&projects.join("s1/subagents/agent-a.meta.json"), "{}");
     append(&projects.join("other.jsonl"), "");
+    // A second session of the run, after a restart: its file, no subagent.
+    append(&projects.join("s2.jsonl"), "");
 
     assert_eq!(
-        transcripts(&projects, &["s1".to_owned(), "missing".to_owned()]),
+        transcripts(
+            &projects,
+            &["s1".to_owned(), "missing".to_owned(), "s2".to_owned()]
+        ),
         vec![
             projects.join("s1.jsonl"),
             projects.join("s1/subagents/agent-a.jsonl"),
             projects.join("s1/subagents/agent-b.jsonl"),
+            projects.join("s2.jsonl"),
         ]
     );
 }
@@ -98,13 +104,52 @@ fn f20_ac4_sums_the_session_and_its_subagents_and_reads_only_what_is_new() {
     // A cache whose offset is past the end of a rewritten file reads it again from the start.
     let mut stale = next.clone();
 
+    // Its tally is dropped with it: 999 counted would give 1 364.
     stale.files[1].1 = FileTally {
         offset: 1_000_000,
         last_id: String::new(),
         last: Tokens::default(),
-        tokens: Tokens::default(),
+        tokens: Tokens {
+            input: 999,
+            ..Tokens::default()
+        },
     };
     assert_eq!(run_tokens(&open_run(), &projects, &stale).0.total(), 365);
+}
+
+#[test]
+fn counts_a_cached_file_from_its_cache_and_only_its_new_lines() {
+    let projects = folder();
+    let main = projects.join("s1.jsonl");
+    let first = request("m1", "2026-10-17T10:00:00Z", 5);
+
+    append(&main, &first);
+    append(
+        &projects.join("s1/subagents/agent-a.jsonl"),
+        &request("a1", "2026-10-17T10:00:01Z", 7),
+    );
+    append(&main, &request("m2", "2026-10-17T12:00:00Z", 20));
+
+    // The cache says m1 was read, worth 1 000; the agent's file is not in it. 1 000 from the
+    // cache + 118 for a1 + 131 for m2 = 1 249; a cache ignored would give 116 + 118 + 131 = 365.
+    let cache = Cache {
+        start: 1,
+        end: 0,
+        files: vec![(
+            main.to_string_lossy().into_owned(),
+            FileTally {
+                offset: first.len(),
+                last_id: "m1".to_owned(),
+                last: Tokens::default(),
+                tokens: Tokens {
+                    input: 1000,
+                    ..Tokens::default()
+                },
+            },
+        )],
+    };
+
+    assert_eq!(run_tokens(&open_run(), &projects, &cache).0.total(), 1249);
 }
 
 #[test]

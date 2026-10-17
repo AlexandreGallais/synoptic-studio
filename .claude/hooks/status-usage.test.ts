@@ -39,4 +39,10 @@ describe("usageSnapshot", () => {
   it("returns nothing without rate limits, so that the last snapshot is kept", () => {
     expect(usageSnapshot(input(`{"model": {"display_name": "Opus 5.5"}}`), 5)).toBeUndefined();
   });
+
+  it("takes a window without its reset time for no window", () => {
+    const limits = input(`{"rate_limits": {"five_hour": {"used_percentage": 10}}}`);
+
+    expect(usageSnapshot(limits, 5)).toBeUndefined();
+  });
 });
