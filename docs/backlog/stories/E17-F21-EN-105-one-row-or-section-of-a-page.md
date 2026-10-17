@@ -3,7 +3,7 @@ id: EN-105
 epic: E17
 feature: F21
 title: One row or one section of a repository page
-status: ready
+status: done
 points: 2
 ---
 
