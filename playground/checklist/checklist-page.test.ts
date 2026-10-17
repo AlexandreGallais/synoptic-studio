@@ -194,20 +194,21 @@ describe("[F17.AC8] E15's checklist (US-051)", () => {
   );
 });
 
-describe("[F18.AC12] [F19.AC8] E17's checklist on the page (VAL-019, VAL-020)", () => {
-  it("lists F18's 12 lines then F19's 12, one check box each, each with its own thing to try", () => {
+describe("[F18.AC12] [F19.AC8] E17's checklist on the page (VAL-019 to VAL-021)", () => {
+  it("lists F18's 12 lines, F19's 12, then F20's 12, one check box each, each with its own thing to try", () => {
     openServedPage("?checklist=E17");
 
     expect(readText("#checklist-name")).toBe("E17");
-    expect(readBoxes()).toHaveLength(24);
+    expect(readBoxes()).toHaveLength(36);
 
     const todos = new Set(EPIC_17_CHECKLIST.map((line) => line.todo));
 
-    expect(todos.size).toBe(24);
+    expect(todos.size).toBe(36);
 
     expect(EPIC_17_CHECKLIST.map((line) => line.feature)).toEqual([
       ...Array.from({ length: 12 }, () => "F18"),
       ...Array.from({ length: 12 }, () => "F19"),
+      ...Array.from({ length: 12 }, () => "F20"),
     ]);
   });
 
@@ -280,4 +281,36 @@ describe("[F19.AC8] E17's checklist, F19's lines (VAL-020)", () => {
   it.each(["eslint .", "prettier", "tsc6"])("names no tool F19 removed: %s", (tool) => {
     expect(text.toLowerCase()).not.toContain(tool);
   });
+});
+
+describe("E17's checklist, F20's lines (VAL-021)", () => {
+  const text = EPIC_17_CHECKLIST.filter((line) => line.feature === "F20")
+    .map((line) => `${line.todo} ${line.see}`)
+    .join("\n");
+
+  it.each([
+    "npm run context:size",
+    "grep '^model:' .claude/agents/*.md",
+    "Decision to confirm (EN-066)",
+    "check-handback:",
+    "status line",
+    "npm run metrics:session -- --run",
+    "npm run run:should-stop",
+    "the limit is 90 %",
+    "A question parks its story",
+    "npm run git:sync",
+    "npm run git:commit",
+    "The library holds this page",
+    "npm run library -- stats",
+    "F20.AC8]",
+  ])("names the command or the output to see: %s", (option) => {
+    expect(text).toContain(option);
+  });
+
+  it.each(["progress page", "progress:page", "claude.ai"])(
+    "names nothing of the progress page F20 dropped: %s",
+    (word) => {
+      expect(text).not.toContain(word);
+    },
+  );
 });

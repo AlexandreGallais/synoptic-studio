@@ -20,7 +20,7 @@ Show the Product Owner F20 on one demo page, with the tokens before and after.
 One task = one commit, referenced as `VAL-021.Tn`.
 
 - [x] T1 — Each criterion of F20 proven again, what was seen recorded (1 h)
-- [ ] T2 — F20's lines in E17's checklist, `?checklist=E17`, each tried (1 h)
+- [x] T2 — F20's lines in E17's checklist, `?checklist=E17`, each tried (1 h)
 - [ ] T3 — The demo page, `docs/guide/f20-a-context-diet.md` (1 h)
 - [ ] T4 — The result of the validation recorded (0.5 h)
 
@@ -39,3 +39,7 @@ On this Mac (Apple M1 Pro), Claude Code 2.1.302, in the worktree of `feat/val-02
 | AC8 the pages as principles, measured, no rule lost | `npx vitest run tests/backlog.test.ts -t "F20.AC8]"`; `wc -m` of each family today, divided by 2.30 | 1 test passed (each of EN-096 to EN-099 measured at 2.30 characters per token, its rules traced); in tokens, before, after its story, today: rules and skills 44,900, 39,500, 39,300; conventions 78,300, 66,000, 65,900; process 5,200, 4,900, 4,900; tooling 53,711, 39,330, 34,900 (the progress page's rows removed since); in all 182,100, 149,700, 144,900, −20 % | holds |
 
 All of `hooks`, `run-totals` and `git-sequences`: 118 Rust tests passed, 15 of them tagged `f20_`; the 12 TypeScript tests tagged `[F20.ACn]` passed. Nothing failed: no fix was needed.
+
+## F20's lines in E17's checklist
+
+Drafted by `npm run val:prepare -- F20`, then written as 12 lines (`playground/checklists/epic-17-f20-lines.ts`, `?checklist=E17`), each tried here on 2026-10-18 with the output it names: nine commands run at the repository's root or in this worktree, the status line printed by `run-totals status` (`run 2 h 35 · 191,734,902 tokens · week 58 % used`), the hand-back line read in the run's transcript, and the run skill's sections read. `val:prepare` drafted a line for the struck criterion 5 too; it has none. The page's test lists the 36 lines of E17, names each command or output of F20's lines and nothing of the dropped progress page; a line changed from `the limit is 90 %` to `the limit is 89 %` made it fail.
