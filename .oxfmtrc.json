@@ -24,6 +24,7 @@
     "records",
     "src/model/font/inter-metrics.json",
     ".claude/worktrees",
+    ".claude/settings.local.json",
     "docs/.vitepress/.temp",
     "target"
   ]
