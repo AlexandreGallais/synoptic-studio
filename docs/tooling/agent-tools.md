@@ -48,6 +48,23 @@
 
 Through `npm run -s page`, npm adds about 160 ms (median 167 ms): still one call, and the characters are what the context keeps. `docs/process/improvements.md` is one table whose rows start with a date (SP-023): its rows are not found by an id.
 
+### The backlog and repository tools in Rust
+
+EN-103 ported seven scripts to the binaries of `tools/repo-tools/`, each compared with its script on the same inputs — this repository's backlog and metrics in a scratch clone, temporary repositories for `story-finish` and `branches-clean` — for the same output, files written and exit code. Measured on 2026-10-18, the TypeScript script by `node` as `package.json` ran it, the release binary by its path, medians in milliseconds; other agents' work kept the load average between 6 and 33, noted with each measure.
+
+| Tool and call | Script | Binary | Calls | Notes |
+| --- | --- | --- | --- | --- |
+| `check-all`, every script `true`, in the CI's mode | 230 | 119 | 20 | its own work outside the lanes |
+| `backlog-status SP-023 draft` | 327 | 172 | 20 | `backlog:index` and its formatter included, about 150 of the 172 |
+| `epic-check E16`, `check:all` a stub | 1,969 | 1,945 | 5 | the three `gh` calls take the rest |
+| `story-finish`, up to its pull request, `gh` a stub | 150 | 107 | 20 | a temporary repository |
+| `replace`, a two-file edit, the shell's own start taken off | 99 | 7 | 20 | load 15 to 17 |
+| `branches-clean`, nothing to clean, a local `origin` | 314 | 235 | 20 | `lsof` takes most of it |
+| `records-save`, nothing changed, no transcripts nor library | 92 | 16 | 20 |  |
+| `records-save`, the 48 MB library too | 186 | 41 | 5 |  |
+
+Through `npm run -s` and `cargo run`, any of them costs about 150 ms more (`backlog-status` without its arguments: 153.5 ms against 3.1 ms by its path), the floor [research note 0025](../research/notes/0025-f21-agent-tools-in-rust.md) measured; how the binaries are called is EN-104's question to the Product Owner.
+
 ## Specifications for later
 
 A tool is written when a retrospective's metrics show its signal — the hand work it would replace, measured — and not before: a tool nobody needed is code to keep. Each is written in Rust ([below](#rust)).
@@ -96,7 +113,7 @@ A tool is written when a retrospective's metrics show its signal — the hand wo
 | `declarations` | `build` | the library's `.d.ts` from each module alone (ADR-0071, [build](./commands.md#build)) |
 | `library` | `.mcp.json` (`library-mcp`), `library`, `metrics`, `records:save` | the local source library: its MCP server on `rmcp` and its command line, over one SQLite file ([sources](./sources.md)) |
 | `tool-use` | every binary of the workspace, by its `main` | each use of a tool, one line of `.git/metrics/tool-uses.jsonl` ([metrics](./metrics.md#the-uses-of-each-tool)) |
-| `repo-tools` | `check:all`, `backlog:status`, `epic:check`, `story:finish`, `replace` | the backlog and repository tools ported from `scripts/` with their output unchanged (EN-103), one binary each: `check-all` ([the lanes](./commands.md#the-lanes-of-the-full-check)), `backlog-status`, `epic-check`, `story-finish`, `replace` |
+| `repo-tools` | `check:all`, `backlog:status`, `epic:check`, `story:finish`, `replace`, `branches:clean`, `records:save` | the backlog and repository tools ported from `scripts/` with their output unchanged (EN-103), one binary each: `check-all` ([the lanes](./commands.md#the-lanes-of-the-full-check)), `backlog-status`, `epic-check`, `story-finish`, `replace`, `branches-clean`, `records-save` ([their times](#the-backlog-and-repository-tools-in-rust)) |
 | `test-support` | the Rust tests | `test_support::command`, a command without the inherited `GIT_*` variables, for every test that runs `git` ([tests that run Git](./commands.md#tests-that-run-git)) |
 
 `worktree` and `git-sequences` decide what they do in their library, without Git nor files, and their binary only runs it, so that the decisions are tested without a repository (functional core, ADR-0014).
