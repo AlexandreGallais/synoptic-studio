@@ -95,3 +95,58 @@ pub fn named(names: &[&str]) -> Vec<&'static dyn Rule> {
         .filter(|rule| names.contains(&rule.name()))
         .collect()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{ALL, Rule, functional, imports, jsdoc, named, stylistic, unicorn};
+    use crate::scopes::linted_by;
+
+    /// One path of each scope: the functional core, a barrel, the DOM layers, the playground, the
+    /// documentation's theme, a hook, a script, a test and a root configuration.
+    const PATHS: [&str; 11] = [
+        "src/math/a.ts",
+        "src/math/a/index.ts",
+        "src/render/a.ts",
+        "playground/a/b.ts",
+        "playground/a/index.ts",
+        "docs/.vitepress/theme/a.ts",
+        ".claude/hooks/a.ts",
+        "scripts/a.ts",
+        "scripts/a/b.ts",
+        "src/math/a.test.ts",
+        "vite.config.ts",
+    ];
+
+    #[test]
+    fn finds_a_rule_for_each_name_a_scope_turns_on() {
+        // [F19.AC3] [F19.AC11] A name a scope turns on is a rule that runs, never a typo.
+        for path in PATHS {
+            let names = linted_by(path);
+            let found: Vec<&str> = named(&names).iter().map(|rule| rule.name()).collect();
+            let missing: Vec<&&str> = names.iter().filter(|name| !found.contains(name)).collect();
+
+            assert!(missing.is_empty(), "{path}: no rule named {missing:?}");
+            assert_eq!(found.len(), names.len(), "{path}: a name twice");
+        }
+    }
+
+    #[test]
+    fn turns_each_rule_on_in_some_scope() {
+        // [F19.AC3] [F19.AC11] Every rule written runs on some file of the tree.
+        let on: Vec<&str> = PATHS.iter().flat_map(|path| linted_by(path)).collect();
+        let never: Vec<&str> = ALL
+            .iter()
+            .chain(functional::RULES)
+            .chain(imports::RULES)
+            .chain(stylistic::RULES)
+            .chain(unicorn::RULES)
+            .chain(unicorn::dom::RULES)
+            .chain(unicorn::web::RULES)
+            .chain(jsdoc::RULES)
+            .map(|rule: &&dyn Rule| rule.name())
+            .filter(|name| !on.contains(name))
+            .collect();
+
+        assert!(never.is_empty(), "rules no scope turns on: {never:?}");
+    }
+}

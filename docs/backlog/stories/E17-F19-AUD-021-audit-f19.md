@@ -20,7 +20,7 @@ Audit F19 in depth, the project in breadth ([audit.md](../../conventions/audit.m
 One task = one commit, referenced as `AUD-021.Tn`.
 
 - [x] T1 — Repair the pages a replacement string broke (E3-1, DE-01, DE-02)
-- [ ] T2 — Every rule reached by a scope, every scoped name a rule (V1)
+- [x] T2 — Every rule reached by a scope, every scoped name a rule (V1)
 - [ ] T3 — Unused disable directives reported by oxlint (A-LOST-1)
 - [ ] T4 — Renames and the Rust toolchain in the docs build's inputs (AC8-1)
 - [ ] T5 — Criteria traced to tests (TRACE-1, V4, V17)
