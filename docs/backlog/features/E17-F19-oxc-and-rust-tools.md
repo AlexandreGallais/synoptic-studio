@@ -76,7 +76,7 @@ In delivery order, written on 2026-10-17 when the Product Owner started F19's ru
 | [EN-078](../stories/E17-F19-EN-078-unicorn-arrays-collections-iteration.md) | Enabler | Unicorn's arrays, collections and iteration rules in Rust | done |
 | [EN-079](../stories/E17-F19-EN-079-unicorn-control-flow-functions-errors-numbers.md) | Enabler | Unicorn's control-flow, functions, errors and numbers rules in Rust | done |
 | [EN-080](../stories/E17-F19-EN-080-unicorn-objects-strings-naming-misc.md) | Enabler | Unicorn's objects, strings, naming and miscellaneous rules in Rust | ready |
-| [EN-081](../stories/E17-F19-EN-081-unicorn-modules-platform-promises.md) | Enabler | Unicorn's modules, platform and promises rules in Rust | ready |
+| [EN-081](../stories/E17-F19-EN-081-unicorn-modules-platform-promises.md) | Enabler | Unicorn's modules, platform and promises rules in Rust | done |
 | [EN-082](../stories/E17-F19-EN-082-unicorn-dom-and-web.md) | Enabler | Unicorn's DOM and web rules in Rust | ready |
 | [EN-083](../stories/E17-F19-EN-083-jsdoc-rules-in-rust.md) | Enabler | JSDoc's rules in Rust | ready |
 | [EN-084](../stories/E17-F19-EN-084-other-plugin-rules-in-rust.md) | Enabler | The other plugins' rules in Rust | ready |
