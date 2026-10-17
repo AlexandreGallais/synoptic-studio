@@ -86,7 +86,3 @@ Nine tests in the crate, the three rules on their documented cases and the cases
 - Rule-docs: none affected, the story moves lint rules between linters and the formatter and changes no rule of `docs/domain/`.
 - ESLint now runs no rule: EN-085 only removes the package, `eslint/` and the ESLint lane of `npm run lint`; `tests/oxlint-config.test.ts` and `eslint/config.test.ts` go with it.
 - Shared lists edited: `DROPPED_RULES` (22 names), `.oxlintrc.json` (four rules in its first override), `.oxfmtrc.json` (`sortImports`), Unicorn's `RULES` and `NAMES`, note 0023's counts (Unicorn 219, 154 kept and 65 dropped; Import 6, 3 and 3; typescript-eslint without types 3, 0 and 3; all 292, 203 kept and 89 dropped), its dropped table (18 rows), its kept table and its table of the core rules (five rows).
-
-### Journal
-
-- `#run` EN-095: the 30 rules ESLint still ran carried or dropped: 3 Unicorn rules in Rust, 4 rules native in oxlint, `import-x/order` written by oxfmt, 22 dropped; ESLint runs no rule, 4.1 s of parsing left for EN-085 to remove.
