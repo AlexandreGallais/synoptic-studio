@@ -317,14 +317,14 @@ Asked by the Product Owner on 2026-10-17: for each of the 265 rules oxlint runs 
 | --- | --- | --- | --- |
 | Unicorn | 197 | 148 | 49 |
 | JSDoc | 45 | 31 | 14 |
-| functional | 12 | 11 | 1 |
-| @stylistic | 5 | 4 | 1 |
+| functional | 12 | 10 | 2 |
+| @stylistic | 5 | 3 | 2 |
 | Import | 4 | 2 | 2 |
-| typescript-eslint, without types | 2 | 1 | 1 |
+| typescript-eslint, without types | 2 | 0 | 2 |
 | unused-imports | 2 | 2 | 0 |
-| **All** | **267** | **199** | **68** |
+| **All** | **267** | **196** | **71** |
 
-The 68 dropped, each with its reason (four added by EN-074, four by EN-078, three by EN-079, thirteen by EN-081, four by EN-080, five by EN-082, the last two by EN-083):
+The 71 dropped, each with its reason (four added by EN-074, four by EN-078, three by EN-079, thirteen by EN-081, four by EN-080, five by EN-082, two by EN-083, the last three by EN-084):
 
 | Rule | Reason |
 | --- | --- |
@@ -396,14 +396,17 @@ The 68 dropped, each with its reason (four added by EN-074, four by EN-078, thre
 | `unicorn/prefer-path2d` | the code draws no canvas path: shapes are SVG `<path>` (ADR-0001, ADR-0005), and the one canvas only measures text |
 | `jsdoc/ts-ban-ts-comment` | oxlint's `typescript/ban-ts-comment` (kept, stricter: `@ts-check` refused, descriptions of 10 characters at least) reports every comment it reports: on its 17 documented cases, oxlint reported each line it reports, and 7 more |
 | `jsdoc/type-formatting` | it formats the type expressions of JSDoc: `jsdoc/no-types` refuses them on parameters and return values, and the only ones the code writes are the error classes of `@throws` (`{RangeError}`), single names with nothing to format; on in ESLint, it was missing from this triage's count |
+| `functional/prefer-property-signatures` | oxlint's `typescript/method-signature-style` (`property`, kept) reports every method signature of a type, the case this rule reports (tried on its documented case) |
+| `@stylistic/line-comment-position` | with `above`, it reports a line comment after code on its line; oxlint's `no-inline-comments` (kept) reports every comment beside code, line or block |
+| `@typescript-eslint/member-ordering` | it orders the members of classes, interfaces and type literals: no class (`functional/no-classes`), no interface (`typescript/consistent-type-definitions`), no method signature (`method-signature-style`), no call or construct signature beside data (`functional/no-mixed-types`) can be written, and no type of the tree puts an index signature beside properties: nothing is left to order |
 
 Confirmed against the code by EN-074 on 2026-10-17: no class, `this`, accessor, `enum`, `for…in`, `let`, CommonJS export nor JSDoc type in `src/`, `playground/`, `tests/` and the root configuration files; `fetch` and `node:sqlite` only in `scripts/`; `dependencies` empty. Each of the four drops above was tried on a probe file. The rewrite stories EN-078, EN-079 and EN-080 lost the four rules (44, 36 and 37 rules left).
 
-The 199 kept, by plugin and, for Unicorn, by the area of `eslint/rules/unicorn/`:
+The 196 kept, by plugin and, for Unicorn, by the area of `eslint/rules/unicorn/`:
 
 | Group | Kept | Rules |
 | --- | --- | --- |
-| @stylistic | 4 | `line-comment-position`, `multiline-comment-style`, `spaced-comment`, `padding-line-between-statements` |
+| @stylistic | 3 | `multiline-comment-style`, `spaced-comment`, `padding-line-between-statements` |
 | Import | 2 | `no-extraneous-dependencies`, `no-restricted-paths` |
 | JSDoc | 31 | `check-param-names`, `check-syntax`, `check-template-names`, `escape-inline-tags`, `informative-docs`, `match-description`, `no-restricted-syntax`, `normalize-see-links`, `check-alignment`, `check-indentation`, `check-line-alignment`, `lines-before-block`, `multiline-blocks`, `no-bad-blocks`, `no-blank-block-descriptions`, `no-multi-asterisks`, `require-asterisk-prefix`, `require-hyphen-before-param-description`, `sort-tags`, `tag-lines`, `require-description`, `require-jsdoc`, `require-next-description`, `require-rejects`, `require-returns-check`, `require-template`, `require-template-description`, `require-throws`, `require-yields-check`, `no-types`, `convert-to-jsdoc-comments` |
 | Unicorn, arrays | 12 | `no-array-from-fill`, `no-array-front-mutation`, `no-confusing-array-splice`, `no-impossible-length-comparison`, `no-negated-array-predicate`, `no-return-array-push`, `no-unnecessary-splice`, `prefer-array-last-methods`, `prefer-array-slice`, `prefer-flat-math-min-max`, `prefer-simple-sort-comparator`, `prefer-single-array-predicate` |
@@ -422,9 +425,8 @@ The 199 kept, by plugin and, for Unicorn, by the area of `eslint/rules/unicorn/`
 | Unicorn, promises | 7 | `no-async-iterator-callback`, `no-async-promise-finally`, `no-multiple-promise-resolver-calls`, `prefer-await`, `prefer-promise-static-methods`, `prefer-promise-try`, `prefer-then-catch` |
 | Unicorn, strings | 11 | `no-incorrect-template-string-interpolation`, `no-unnecessary-string-trim`, `no-unsafe-string-replacement`, `prefer-literal-ascii`, `prefer-regexp-escape`, `prefer-short-escape-sequences`, `prefer-single-replace`, `prefer-split-limit`, `prefer-string-pad-start-end`, `prefer-string-repeat`, `prefer-unicode-code-point-escapes` |
 | Unicorn, web | 9 | `no-blob-to-file`, `no-invalid-boolean-attribute-value`, `no-invalid-url-protocol-comparison`, `no-url-in-search-params`, `prefer-location-assign`, `prefer-url-can-parse`, `prefer-url-href`, `prefer-url-search-parameters`, `require-css-escape` |
-| functional | 11 | `no-let`, `prefer-property-signatures`, `readonly-type`, `no-classes`, `no-this-expressions`, `functional-parameters`, `no-expression-statements`, `no-loop-statements`, `no-promise-reject`, `no-throw-statements`, `no-try-statements` |
-| typescript-eslint, without types | 1 | `member-ordering` |
-| unused-imports | 2 | `no-unused-imports`, `no-unused-vars` |
+| functional | 10 | `no-let`, `readonly-type`, `no-classes`, `no-this-expressions`, `functional-parameters`, `no-expression-statements`, `no-loop-statements`, `no-promise-reject`, `no-throw-statements`, `no-try-statements` |
+| unused-imports | 2 | `no-unused-imports`, `no-unused-vars`: oxlint's own `no-unused-vars` since EN-084 |
 
 Rewritten by EN-078 on 2026-10-17, each rule checked again first (Product Owner's decisions of F19's run): of the 44 rules of the arrays, collections and iteration groups, 39 run in the project's linter (`tools/lint/src/rules/unicorn/`, the three rows above but `no-for-each`), each on the cases of its documentation, ESLint and the Rust linter giving the same 128 findings on those cases and none on the tree; `no-for-each` runs in oxlint as `unicorn/no-array-for-each`, its former name, with more findings on a `Map` or a `Set` and no fix; four are dropped (above). All 40 are `off` in ESLint.
 
@@ -437,6 +439,8 @@ Rewritten by EN-080 on 2026-10-17, each rule checked again first: of the 37 rule
 Rewritten by EN-082 on 2026-10-17, each rule checked again against the code first and run on the cases of its documentation in `eslint-plugin-unicorn` 78.0.0, then turned off in ESLint: 16 of the 19 DOM rules and 9 of the 12 web rules run in the project's linter (`tools/lint/src/rules/unicorn/dom/` and `web/`), the DOM rules and `no-invalid-boolean-attribute-value`, `prefer-location-assign` and `require-css-escape` only where a DOM exists (`src/render/`, `src/interaction/`, `playground/`, `docs/.vitepress/theme/`: `scopes::DOM_FILES`), the URL and `Blob` rules on every file; `dom-node-dataset` runs in oxlint as `unicorn/prefer-dom-node-dataset`, its former name, which also autofixes the reads ESLint only suggests; five are dropped (above). ESLint and the Rust linter give the same findings and fixed text on the documented and planted cases, ESLint given the browser globals it is not configured with here (without them it reports no `document.write()` nor `Document.parseHTMLUnsafe()`), and none on the tree.
 
 Rewritten by EN-083 on 2026-10-17 in the project's linter (`tools/lint/src/rules/jsdoc/`), each checked again against the code first and run on the cases of the plugin's own tests (`test/rules/assertions/` of `eslint-plugin-jsdoc` 65.3.1, from which its documentation's examples are written) and on a fault planted in a copy of a file of the tree, then turned off in ESLint: 30 of the 31 kept, all but `ts-ban-ts-comment`, and `convert-to-jsdoc-comments`, on in ESLint but missing from this triage's count, which turns a plain comment documenting a declaration into a block that editors and the API pages read. None runs natively in oxlint 1.87.0, whose JSDoc plugin holds the 12 rules of the triage below. The blocks are read by a port of the parser the plugin reads (`comment-parser` 1.4.9 with the tokenizers of `@es-joy/jsdoccomment`), which gives the same tokens, tags and problems on the 3,676 blocks of the tree and the 1,812 of the cases. ESLint and the Rust linter give the same findings and the same fixed text on 1,942 recorded cases — 1,894 runs of the plugin's cases (those of `require-jsdoc` at a library path and a tools path; 7 that ESLint's TypeScript parser refuses left out), 35 faults planted in copies of the tree's files, 13 cases written for the branches the plugin's cases leave — and the same 39 findings with every rule on over the 32 planted files; none on the tree.
+
+Rewritten by EN-084 on 2026-10-17, each rule checked again against the code first and run on the cases of its documentation (`eslint-plugin-functional` 10.0.1, `@stylistic` 5.10.0, `eslint-plugin-import-x` 4.17.1), then turned off in ESLint: 10 of the 12 functional rules (`tools/lint/src/rules/functional/`; the five statement rules off by scope in the shell, the tools and the tests, as ESLint had them, and the `arguments` part of `functional-parameters` left to oxlint's `prefer-rest-params`), 3 of the 5 `@stylistic` rules (`stylistic/`) and the 2 Import rules (`imports/`, their zones built from `LAYERS` of `tools/lint/src/settings.rs`); the 2 `unused-imports` rules run in oxlint as its native `no-unused-vars` with the same options, unused imports autofixed; three are dropped (above). `unicorn/no-useless-recursion` (EN-079) is left where `functional/no-loop-statements` runs, since the loop it suggests cannot be written there. ESLint and the new linters give the same findings and fixed text on the documented and planted cases, but for `no-unused-vars`, which reports a variable assigned and never read at its declaration where ESLint reports its last assignment, and leaves an unused `import * as` unremoved (forbidden by `import/no-namespace`); none on the tree.
 
 Kept on purpose although close to a drop: the DOM and web rules (the playground uses the DOM, files and `URL`), the loop, `throw` and `try` rules (allowed in the playground and the tests), the generator rules (one module yields), `functional/no-classes` and `no-this-expressions` (they are the bans themselves), the JSDoc layout rules and the comment rules of `@stylistic` (no source says oxfmt rewrites comments).
 
