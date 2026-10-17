@@ -21,6 +21,6 @@ Replace the Unix-only parts of the F18 crates by Rust's portable standard calls 
 
 One task = one commit, referenced as `EN-070.Tn`.
 
-- [ ] T1 — `heavy-lock` on `File::lock`, its `unsafe` block removed (2 h)
+- [x] T1 — `heavy-lock` on `File::lock`, its `unsafe` block removed (2 h) — the lock itself moved to `File::try_lock` with `unsafe_code` forbidden in EN-068; left here: the file identity check (`dev`, `ino`), now behind `cfg(unix)`, stable Rust having no file index on Windows
 - [ ] T2 — `mutate`'s `kill`, the symlinks of `mutate` and `worktree`, `rule-docs`'s test permissions on standard calls or behind `cfg(unix)` (3 h)
 - [ ] T3 — The Windows target installed, `cargo check` for it in the `rust` lane, a planted call caught, the cost recorded (1 h)

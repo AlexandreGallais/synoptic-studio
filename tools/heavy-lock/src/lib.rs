@@ -16,7 +16,6 @@
 
 use std::fs::{self, File, OpenOptions, TryLockError};
 use std::io::{self, Read, Write};
-use std::os::unix::fs::MetadataExt;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::atomic::{AtomicUsize, Ordering};
@@ -220,9 +219,28 @@ pub fn lock_exclusive(file: &File) -> io::Result<bool> {
 /// Whether an open file is still the one at a path.
 fn is_at(file: &File, path: &Path) -> bool {
     match (file.metadata(), fs::symlink_metadata(path)) {
-        (Ok(open), Ok(named)) => open.dev() == named.dev() && open.ino() == named.ino(),
+        (Ok(open), Ok(named)) => same_file(&open, &named),
         _ => false,
     }
+}
+
+/// Whether two metadata name one file: its device and inode on Unix.
+// Unix-only: the standard library has no portable file identity.
+#[cfg(unix)]
+fn same_file(open: &fs::Metadata, named: &fs::Metadata) -> bool {
+    use std::os::unix::fs::MetadataExt;
+
+    open.dev() == named.dev() && open.ino() == named.ino()
+}
+
+/// Whether two metadata name one file, elsewhere: its creation and write times and its size.
+// Windows' file index (`MetadataExt::file_index`) is still a nightly-only API (`windows_by_handle`,
+// rust-lang/rust#63010), so the identity is approximated by what stable Rust reads.
+#[cfg(not(unix))]
+fn same_file(open: &fs::Metadata, named: &fs::Metadata) -> bool {
+    open.created().ok() == named.created().ok()
+        && open.modified().ok() == named.modified().ok()
+        && open.len() == named.len()
 }
 
 /// The owner written in an open lock file, `None` when it names none or cannot be read.
