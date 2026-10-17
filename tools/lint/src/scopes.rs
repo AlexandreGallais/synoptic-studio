@@ -21,7 +21,8 @@ pub const IGNORED: [&str; 12] = [
 ];
 
 /// The rules on for every TypeScript file before the scopes.
-pub const ON_EVERYWHERE: [&str; 10] = [
+pub const ON_EVERYWHERE: [&str; 12] = [
+    "@typescript-eslint/naming-convention",
     "functional/no-return-void",
     "local/canonical-import-path",
     "local/folder-has-index",
@@ -32,6 +33,7 @@ pub const ON_EVERYWHERE: [&str; 10] = [
     "local/see-references",
     "no-restricted-syntax",
     "require-atomic-updates",
+    "unicorn/no-non-function-verb-prefix",
 ];
 
 /// A scope: the files it covers, those it leaves out, and the rules it turns on or off.
@@ -165,6 +167,7 @@ mod tests {
         assert_eq!(
             rules_for("src/math/vector/norm.ts"),
             [
+                "@typescript-eslint/naming-convention",
                 "functional/no-return-void",
                 "local/canonical-import-path",
                 "local/folder-has-index",
@@ -177,6 +180,7 @@ mod tests {
                 "local/see-references",
                 "no-restricted-syntax",
                 "require-atomic-updates",
+                "unicorn/no-non-function-verb-prefix",
             ]
         );
     }
@@ -201,15 +205,22 @@ mod tests {
         assert!(test.contains(&"local/folder-layout"));
         assert_eq!(
             rules_for("scripts/check-all.ts"),
-            ["no-restricted-syntax", "require-atomic-updates"]
+            [
+                "@typescript-eslint/naming-convention",
+                "no-restricted-syntax",
+                "require-atomic-updates",
+                "unicorn/no-non-function-verb-prefix",
+            ]
         );
         assert_eq!(
             rules_for("vite.config.ts"),
             [
+                "@typescript-eslint/naming-convention",
                 "local/canonical-import-path",
                 "local/folder-has-index",
                 "no-restricted-syntax",
                 "require-atomic-updates",
+                "unicorn/no-non-function-verb-prefix",
             ]
         );
     }

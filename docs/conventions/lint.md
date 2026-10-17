@@ -87,6 +87,14 @@ In an `async` function or a generator, no assignment to a variable, or to a prop
 
 A function of the functional core returns a value: no `void`, `undefined` or `null` return type; without a written type, the body is read (no type checker).
 
+### `@typescript-eslint/naming-convention`
+
+Each name's casing by its role, with the project's options ([naming](./naming.md)), sorted and matched as typescript-eslint does: the first option that applies is the only one checked. Its `types` (a module constant holding a function, a boolean's prefix) are read from the written annotation, or else the initializer: a call's result is not read, and such a name takes the next option (EN-076, `REF-TSESLINT-NAMING-CONVENTION`).
+
+### `unicorn/no-non-function-verb-prefix`
+
+A variable or a parameter named `getX`, `setX`, `unsetX`, `deleteX`, `addX`, `removeX`, `destroyX` or `createX` holds a function. Whether it can be called is read from its written type or its initializer; an unknown value is not reported, as the rule reported nothing without types (EN-076, `REF-UNICORN-NON-FUNCTION-VERB-PREFIX`).
+
 ### `local/require-kind`
 
 Every top-level function carries exactly one known `@kind`. ADR-0011.

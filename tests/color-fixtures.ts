@@ -105,7 +105,9 @@ function sampledColorIndices(): readonly number[] {
  * The sampled colors' indices, computed at the first round trip and frozen, so that the files that
  * import the fixtures without a round trip never build them (EN-090).
  */
-const sampledIndices = builtOnce(() => Object.freeze(sampledColorIndices()));
+const sampledIndices: () => readonly number[] = builtOnce(() =>
+  Object.freeze(sampledColorIndices()),
+);
 
 /**
  * Whether a round trip gives a color's bytes back: its components converted and back, each

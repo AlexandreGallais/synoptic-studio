@@ -93,6 +93,11 @@ pub const PREDICATE_PREFIXES: [&str; 9] = [
     "should",
 ];
 
+/// Leading words of boolean variables and parameters (`naming-convention`, docs/conventions/naming.md).
+pub const BOOLEAN_PREFIXES: [&str; 9] = [
+    "are", "can", "did", "does", "has", "is", "should", "was", "will",
+];
+
 /// Vague leading verbs forbidden on the pure kinds: the name states the concept itself.
 pub const VAGUE_PREFIXES: [&str; 9] = [
     "calc",

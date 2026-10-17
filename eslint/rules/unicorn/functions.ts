@@ -11,7 +11,8 @@ export const UNICORN_FUNCTIONS: TSESLint.FlatConfig.Config = {
     "unicorn/isolated-functions": "error",
     "unicorn/max-nested-calls": "error",
     "unicorn/no-invalid-argument-count": "error",
-    "unicorn/no-non-function-verb-prefix": "error",
+    // Run by the project's linter, its types read from the written code (tools/lint, EN-076).
+    "unicorn/no-non-function-verb-prefix": "off",
     "unicorn/no-object-as-default-parameter": "error",
     "unicorn/no-repeated-call-wrappers": "error",
     "unicorn/no-uncalled-method": "error",
