@@ -225,8 +225,15 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
       "cargo fmt --all --check",
       "cargo clippy --workspace --all-targets --locked --quiet",
       "cargo test --workspace --locked --quiet",
+      "cargo check --workspace --all-targets --locked --quiet --target x86_64-pc-windows-msvc",
       "npm run --silent rust:build",
     ]);
+  });
+
+  it("[F19.AC10] installs the Windows target its check compiles for without linking", () => {
+    expect(readFileSync(join(ROOT, "rust-toolchain.toml"), "utf8")).toMatch(
+      /^targets = \["x86_64-pc-windows-msvc"\]$/mu,
+    );
   });
 });
 

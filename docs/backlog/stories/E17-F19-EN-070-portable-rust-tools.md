@@ -23,4 +23,10 @@ One task = one commit, referenced as `EN-070.Tn`.
 
 - [x] T1 — `heavy-lock` on `File::lock`, its `unsafe` block removed (2 h) — the lock itself moved to `File::try_lock` with `unsafe_code` forbidden in EN-068; left here: the file identity check (`dev`, `ino`), now behind `cfg(unix)`, stable Rust having no file index on Windows
 - [x] T2 — `mutate`'s `kill`, the symlinks of `mutate` and `worktree`, `rule-docs`'s test permissions on standard calls or behind `cfg(unix)` (3 h)
-- [ ] T3 — The Windows target installed, `cargo check` for it in the `rust` lane, a planted call caught, the cost recorded (1 h)
+- [x] T3 — The Windows target installed, `cargo check` for it in the `rust` lane, a planted call caught, the cost recorded (1 h)
+
+## For the main thread
+
+### Journal
+
+- `#run` EN-070: the Rust tools compile for Windows without linking (`cargo check --workspace --all-targets --target x86_64-pc-windows-msvc`, in `check:rust`); the Unix-only calls left — the lock file's device and inode, `mutate`'s process group and `kill`, the `node_modules` symbolic links, a test hook's execute bit — sit behind `cfg(unix)` with their reason, Windows linking folders by `symlink_dir`; a planted `std::os::unix` call fails the check on the Mac. Cost: the target 118 MB, installed by rustup in 9 s (once, from `rust-toolchain.toml`); the check 0.5 s cold, 0.04 s warm, 24 MB in `target/`.
