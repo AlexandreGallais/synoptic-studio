@@ -223,16 +223,13 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
     );
   });
 
-  it("[F18.AC20] checks every crate of tools/ in check:rust, and only them", () => {
-    const listed = /for tool in (?<tools>[\w -]+?); do/u.exec(SCRIPTS.get("check:rust") ?? "")
-      ?.groups?.["tools"];
-    const crates = crateNames();
-
-    expect(crates.length).toBeGreaterThan(0);
-
-    expect((listed ?? "").split(" ").toSorted((left, right) => left.localeCompare(right))).toEqual(
-      crates,
-    );
+  it("[F19.AC9] checks the whole Rust workspace in check:rust, then builds its binaries", () => {
+    expect(SCRIPTS.get("check:rust")?.split(" && ")).toEqual([
+      "cargo fmt --all --check",
+      "cargo clippy --workspace --all-targets --locked --quiet",
+      "cargo test --workspace --locked --quiet",
+      "npm run --silent rust:build",
+    ]);
   });
 });
 
@@ -269,6 +266,18 @@ describe("the Rust workspace at the root (EN-068)", () => {
     expect(crate).toMatch(/^\[lints\]\nworkspace = true$/mu);
     expect(crate).toMatch(/^edition\.workspace = true$/mu);
     expect(existsSync(join(ROOT, "tools", name, "Cargo.lock"))).toBe(false);
+  });
+
+  it("[F19.AC9] leaves the build output target/ to Git, ESLint, Prettier and secretlint", async () => {
+    const built = join(ROOT, "target", "release", "build", "page.md");
+
+    expect(readFileSync(join(ROOT, ".gitignore"), "utf8")).toMatch(/^\/target\/$/mu);
+    expect(readFileSync(join(ROOT, ".secretlintignore"), "utf8")).toMatch(/^target$/mu);
+    expect(await LINT.isPathIgnored(built)).toBe(true);
+
+    const formatted = await getFileInfo(built, { ignorePath: PRETTIER_IGNORE });
+
+    expect(formatted.ignored).toBe(true);
   });
 
   it("[F19.AC9] tracks one Cargo.lock, at the root, and no build output", () => {

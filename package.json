@@ -32,7 +32,7 @@
     "preview": "vite preview",
     "fix": "prettier --write --ignore-unknown \"*\" .claude/agents .claude/hooks .claude/rules .claude/skills .claude/settings.json .github .husky .vscode docs eslint playground scripts src tests && eslint --cache --cache-location node_modules/.cache/eslint/ --fix \"*.{ts,md}\" .claude/agents .claude/hooks .claude/rules .claude/skills .github docs eslint playground scripts src tests",
     "check": "npm run format:check && npm run lint && npm run lint:secrets && npm run typecheck && npm run test && npm run deps:audit && npm run deps:unused && npm run check:rust",
-    "check:rust": "for tool in backlog-index heavy-lock hooks mutate rule-docs shared-files val-prepare worktree; do cargo fmt --check --manifest-path tools/$tool/Cargo.toml && cargo clippy --quiet --all-targets --manifest-path tools/$tool/Cargo.toml -- -D warnings && cargo test --quiet --manifest-path tools/$tool/Cargo.toml || exit 1; done",
+    "check:rust": "cargo fmt --all --check && cargo clippy --workspace --all-targets --locked --quiet && cargo test --workspace --locked --quiet && npm run --silent rust:build",
     "check:all": "scripts/rust-tool.sh heavy-lock node --harmony-temporal scripts/check-all.ts",
     "test": "scripts/rust-tool.sh heavy-lock vitest run --coverage",
     "test:watch": "vitest",
