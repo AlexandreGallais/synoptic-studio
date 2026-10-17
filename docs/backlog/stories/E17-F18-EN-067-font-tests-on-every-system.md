@@ -3,7 +3,7 @@ id: EN-067
 epic: E17
 feature: F18
 title: Font tests on every system
-status: ready
+status: done
 points: 2
 ---
 
