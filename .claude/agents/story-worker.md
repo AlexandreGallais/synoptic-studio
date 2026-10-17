@@ -16,6 +16,4 @@ Why this type (EN-065): a story needs the shell, the file tools and the library'
 
 Why Opus (EN-066): a story writes code, tests computed by hand and the docs of its rules, where a wrong value costs an audit finding and a fix; Opus stays until one story worked on Sonnet, measured beside one on Opus, shows Sonnet does as well (EN-066, T3).
 
-1. Read the story, its feature, and what they cite (the brief, Read first); work its tasks in order, one commit each.
-2. A rule the preloaded pages do not settle: read the section of `AGENTS.md` or `docs/conventions/` that does, from the worktree; never guess.
-3. Push with `--push` on the last task's `npm run git:commit`, or `git push -u origin HEAD`, then end with the final report the brief asks for, its first line `Branch: <branch>`.
+Work the story's tasks in order, one commit each, as the brief says, and end with its final report.

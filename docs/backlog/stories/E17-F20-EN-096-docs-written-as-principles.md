@@ -25,7 +25,7 @@ This story covers `AGENTS.md`, `CLAUDE.md`, `.claude/rules/`, `.claude/skills/`,
 One task = one commit, referenced as `EN-096.Tn`.
 
 - [x] T1 — Measure the pages in tokens and list their rules (1 h)
-- [ ] T2 — Rewrite the pages as principles, each old rule traced (4 h)
+- [x] T2 — Rewrite the pages as principles, each old rule traced (4 h)
 - [ ] T3 — Measure again and record the figures (1 h)
 
 ## Measures
@@ -89,3 +89,64 @@ Each rule of the pages, by page, with an id the trace of T2 uses.
 - skill `spike`: SP1 to SP7 its seven steps.
 - skill `triage`: TR1 to TR6 its six steps.
 - agents: AT1 each type's role, tools, model and reason (front matter, first paragraphs); AT2 `auditor`'s rules (read-only, re-derive, recompute, re-open, provenance, duplicates, unnamed calculations, consistency, findings only on correctness); AT3 `clerk`'s rules; AT4 `doc-editor`'s reading and return; AT5 `functional-analyst`'s reading, method and return; AT6 `math-expert`'s reading, method and return; AT7 `researcher`'s three steps; AT8 `story-worker`'s three steps; AT9 `verifier`'s reading, method and return; AT10 the Sources section, the same in `auditor`, `functional-analyst` and `math-expert`.
+
+## Rules traced
+
+Where each rule of the list above stands after T2. "Kept" means the same rule, reworded as a principle with its reason where it had none; the place is the new one. One rule lives in one place: `AGENTS.md` for every agent, `CLAUDE.md` for what only Claude Code does, a skill or a rule file for its own task or area, and `project-rules` as the digest of `AGENTS.md` for typed subagents.
+
+| Rules | Now |
+| --- | --- |
+| AG1, AG3 to AG5 | kept: `AGENTS.md`, Project and Where to read; two rows of the reading table merged |
+| AG2 | kept, shortened: the State table names each epic's content in one line; the list of ADRs and features of E15 is in its file and retrospective |
+| AG6 to AG9, AG16 to AG19 | kept: `AGENTS.md`, Golden rules, each with its reason; AG9 adds that a page applying an ADR states its principle (this story's second criterion) |
+| AG10 to AG15, AG20 to AG23, AG26 (primitives, Bézier), AG27 (`any`, class, `enum`), AG36, AG41 | kept: `AGENTS.md`, Code; AG14's last sentence becomes the golden rule "A rule earns its place" |
+| AG24, AG25, AG27 (rule disabled), AG28 | kept: `AGENTS.md`, Never, with why the list exists; AG28 now holds To19, no force push on a feature branch |
+| AG29 to AG32, AG34, AG35 | kept: `AGENTS.md`, Work |
+| AG33 | kept as the principle in Work (Parallel work); the hook, its test file and the environment variable **moved** to `CLAUDE.md`, While working, since they are Claude Code's |
+| AG37 to AG40 | kept: `AGENTS.md`, Definition of done; the list of what `check:all` runs **cut** for a link to `docs/tooling/commands.md`, which holds it and changes with it |
+| AG42, AG43 | kept: `AGENTS.md`, Stop and ask, its principle first; the rows on sources (no readable source, values not computable, `[unverified]` reference) **merged** into one, the two business rows into one |
+| AG44 | kept: `AGENTS.md`, Commands, with `git:sync`, `git:commit`, `context:size` added |
+| AG45 to AG47 | kept: `AGENTS.md`, Git, with To15 and To16 and the derivations' scope (D8) **merged** into it: commit rules hold for every agent and every file, not only when a configuration file is open |
+| AG48 | **merged** into To10, which said the same |
+| CL1 to CL3 | kept: `CLAUDE.md`, Skills, agents, tools |
+| CL4 | kept: the questionnaire's rules in `CLAUDE.md`; the refinement in two rounds **moved** to the run skill only, which already held it |
+| CL5, CL6 | kept, merged: `CLAUDE.md`, "Show where the work is" |
+| CL7 | kept: `CLAUDE.md`, "Never wait in the foreground", with To21 **merged** into it (no polling of a subagent, background tasks stopped before a stop message): main-thread behaviour, misplaced in a rule file loaded only with configuration files |
+| CL8, CL11 | **moved** to the run skill, The main thread, where they already stood (silent run, heartbeat, only dispatch, each comment acknowledged); now one rule, its exception (the heartbeat line) stated beside it |
+| CL9 | kept: `CLAUDE.md`, Parallel limits, the mechanisms; the rule itself is `AGENTS.md`'s |
+| CL10, CL12 to CL17 | kept: `CLAUDE.md` |
+| D1 to D7, D9 | kept: `.claude/rules/docs.md`, opening with what the page guards; D5 and D9 merged (both dead links); D6 now names `backlog:status`, which writes the three places |
+| D8 | the scope **moved** to `AGENTS.md`, Git; the line length kept |
+| Li1 to Li33 | kept: `.claude/rules/library.md`, grouped under Modules and documentation, Numbers, Tests, The DOM and happy-dom, The playground; Li2 and Li3 merged, Li9's `-0` merged into Li12, Li17, Li30, Li32 merged (happy-dom against a browser), Li27 and Li28 merged (bisections), Li33 merged into Li31 (the golden file) |
+| To1 to To5, To7 to To10, To12 to To14, To17, To18, To20, To22 to To24 | kept: `.claude/rules/tooling.md`, grouped under The toolchain, Tools of our own, Tests of tooling, Git and the shell; To9 states its reason (fast and checked like the rest), the build's inner order cut; To22 widened to every test or binary that runs Git, with a link to `docs/tooling/commands.md` (EN-099) |
+| To6 | **merged** into `AGENTS.md`, Code (tests first), which said it |
+| To11 | **cut**: Stylelint is not installed, and the conditions for a new package (To3) already stop it; `docs/tooling/versions-and-security.md` keeps the advisory |
+| To15, To16 | **moved** to `AGENTS.md`, Git |
+| To19 | **moved** to `AGENTS.md`, Never |
+| To21 | **moved** to `CLAUDE.md` (CL7) |
+| PR1 | kept in step with the new `AGENTS.md`: the Sources sections of three agents (AT10), the property test and coverage of WB9, the stop on a function over its limits, the commit pitfalls and "A rule earns its place" **merged** into it |
+| WB1 to WB6, WB10 to WB15, WB17 to WB23 | kept: `worker-brief`, Setup, Read first, Work, Shared files, Heavy commands, Limits, Final report; each step's reason given (why the `cd`, why one Git command per call, why the shared files); the `Branch:` first line of the report **moved** here from the two agent files |
+| WB7 to WB9 | **merged** into `project-rules`, preloaded with the brief: they repeated it |
+| WB16 | **merged** into Li31 (`library.md`); `golden:write` refuses in a worktree by itself |
+| RU1, RU18, RU21 | kept, merged: the run skill, The main thread, "Silent between tool calls" and "Each comment acknowledged" |
+| RU2 to RU4 | kept: the run skill, The scope, each with its reason; the dates kept as the record |
+| RU5 to RU11 | kept: the run skill, Before the first story |
+| RU12 to RU15, RU17, RU19, RU20 | kept: the run skill, The main thread |
+| RU16 | **merged** into "Parallel work", which links `AGENTS.md` and `CLAUDE.md` instead of restating the limit a third time |
+| RU22 to RU30 | kept: the run skill, For each story; `run:should-stop` now its first step, as RU33 said; the worker follows its brief, no longer `/story` steps it cannot load |
+| RU31, RU32 | kept as written (EN-086): a question parks its story; pushes only for a question or a blocker that prevents finishing the scope |
+| RU33 | kept: the four stops, the 90 % one now with its reason |
+| RU34 | kept: At the stop |
+| RU35 to RU43 | kept: Validation; step 2's one sentence split into a list |
+| ST1 to ST11 | kept: the story skill; ST5's tests and implementation rules **cut** for a link to `AGENTS.md`, Code; ST9 merged into ST8; steps renumbered 1 to 9, the skills citing "steps 3–10" updated |
+| AU1 to AU12, SP1 to SP7, TR1 to TR6, RV1 to RV11 | kept as written: each step already a procedure with its reason |
+| DE1 to DE5 | kept |
+| DE6 | **moved** to `AGENTS.md`, Git (the derivations' scope) |
+| RE1 to RE15 | kept: the retro skill; RE2's two paragraphs merged into one list of facts and how to read them; RE11 (method and tools) and RE12 (tools) merged into one step; RE9 and RE10 (playbook, starter kit) merged |
+| AT1 | kept: each agent's front matter unchanged, its role and model reasons kept |
+| AT2 | kept: `auditor`, Rules; provenance, duplicates, unnamed calculations and consistency merged into one bullet pointing to the checklist; "before reading the function body" now gives its reason |
+| AT3 | kept: `clerk`; "edits across files with `npm run replace`" **merged** into `project-rules` |
+| AT4 | kept: `doc-editor`; its reading table made one sentence; it now also proposes the principle of a rule written as a transcript (`writing.md`, Writing a rule) |
+| AT5, AT6, AT9 | kept: their reading tables shortened (rows merged), the method and the return unchanged; `math-expert`'s constants are in `project-rules` |
+| AT7, AT8 | kept: their steps **merged** into the brief, which already said them, but for the researcher's reading of the research protocol |
+| AT10 | **merged** into `project-rules` (Never invent a reference): it was the same paragraph in three agents |
