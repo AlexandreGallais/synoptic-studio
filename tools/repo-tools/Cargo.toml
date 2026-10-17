@@ -1,0 +1,16 @@
+[package]
+name = "repo-tools"
+version = "0.1.0"
+edition.workspace = true
+description = "The backlog and repository tools the agent runs at each story and each push (EN-103)"
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+hooks = { path = "../hooks" }
+
+[dev-dependencies]
+test-support = { path = "../test-support" }
+
+[lints]
+workspace = true

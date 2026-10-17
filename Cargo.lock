@@ -1067,6 +1067,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "repo-tools"
+version = "0.1.0"
+dependencies = [
+ "hooks",
+ "test-support",
+]
+
+[[package]]
 name = "rmcp"
 version = "3.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
