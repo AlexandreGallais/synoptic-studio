@@ -244,3 +244,67 @@ describe("no spread in a fold (EN-061), oxlint's `oxc/no-accumulating-spread` si
     expect(foldSpreadLines(code)).toEqual([]);
   });
 });
+
+/** The scripts of `package.json`. */
+const SCRIPTS = propertyOf(parsed(LINT_RUNNERS[0] ?? ""), "scripts");
+
+/** The commands lint-staged runs on a TypeScript file. */
+const STAGED_TYPESCRIPT = itemsOf(propertyOf(parsed(LINT_RUNNERS[1] ?? ""), "*.ts"));
+
+/** Every oxlint command the repository runs: `lint`, `fix` and lint-staged's. */
+const OXLINT_COMMANDS: readonly string[] = [
+  String(propertyOf(SCRIPTS, "lint")),
+  String(propertyOf(SCRIPTS, "fix")),
+  ...STAGED_TYPESCRIPT.map(String),
+].flatMap((command) => command.split(" && ").filter((part) => part.startsWith("oxlint ")));
+
+/**
+ * The places oxlint reports in a piece of code, run with the options of the `lint` script.
+ *
+ * @param code - TypeScript source
+ * @returns `line:column message` for each report
+ */
+function lintScriptReports(code: string): readonly string[] {
+  const file = join(FOLD_FOLDER, "directive.ts");
+  const options = (OXLINT_COMMANDS[0] ?? "")
+    .split(" ")
+    .filter((word) => word.startsWith("--") && word !== "--type-check");
+
+  writeFileSync(file, code);
+
+  // oxlint exits 1 on a finding: its report is read either way.
+  const { stdout: output } = spawnSync(
+    join(ROOT, "node_modules", ".bin", "oxlint"),
+    ["-c", join(FOLD_FOLDER, "config.json"), ...options, "--format", "unix", file],
+    { encoding: "utf8" },
+  );
+
+  return output
+    .matchAll(/^.+?:(?<place>\d+:\d+): (?<message>.*)$/gmu)
+    .map((match) => `${match.groups?.["place"] ?? ""} ${match.groups?.["message"] ?? ""}`)
+    .toArray();
+}
+
+describe("a disable directive that silences nothing (ESLint's `reportUnusedDisableDirectives`)", () => {
+  it("[F19.AC1] is an error in every oxlint command", () => {
+    expect(OXLINT_COMMANDS).toHaveLength(3);
+
+    expect(
+      OXLINT_COMMANDS.filter(
+        (command) => !command.includes("--report-unused-disable-directives-severity=error"),
+      ),
+    ).toEqual([]);
+  });
+
+  it("[F19.AC1] is reported, with the `lint` script's options", () => {
+    const code = [
+      "// oxlint-disable-next-line oxc/no-accumulating-spread -- nothing to silence",
+      "export const sum = [1].reduce((total, x) => total + x, 0);",
+      "",
+    ].join("\n");
+
+    expect(lintScriptReports(code)).toEqual([
+      "1:1 Unused oxlint-disable directive (no problems were reported). [Error]",
+    ]);
+  });
+});
