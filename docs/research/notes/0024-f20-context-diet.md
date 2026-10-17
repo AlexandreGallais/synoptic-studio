@@ -170,3 +170,15 @@ Only what the first round and the measures leave open.
 6. **The tools of our own**: A: the four drafted stories in F20. B: Git sequences and the library in F20, the rest in F21. C: the shorter `cd` only, no new tool. A read of `docs/references.md` prints about 6,000 characters today, 121 times in three days; one row is a few hundred.
 7. **The agent-facing docs as principles (EN-096)**: A: one pass over every page, in one story. B: one story per family (rules and skills, conventions, process), each measured in tokens before and after. C: only the pages a worker reads, the others when touched.
 8. Any remark, idea or constraint for F20.
+
+## The Product Owner's second round (2026-10-17), questions 1 to 4
+
+| Subject | Decision |
+| --- | --- |
+| Run size | no bound set by the agent: the Product Owner sets a run's scope at its start, as a time ("until I am back tonight") or an end ("stop at epic E02"). A question never stops a run: it parks its story and the run goes on with independent work. A run stops only on a problem it cannot get around, at the end of its scope, or when the Product Owner says so |
+| Notifications (EN-086) | only for a question or a blocker that prevents finishing the scope asked; never to say the run ended early |
+| One-hour cache (EN-064) | closed with the measure above: nothing to set |
+| Workers' start (EN-065) | one worker type per task kind, each measured before and after (option C) |
+| Model per agent (EN-066) | Sonnet for logs, backlog, merges and step texts, and one measured trial of Sonnet on a real story worker compared with Opus (option B) |
+
+Questions 5 to 8 are still open.

@@ -37,3 +37,11 @@ One task = one commit, referenced as `SP-022.Tn`.
 - **Context** (EN-065): each agent receives what its task needs, not everything.
 - **Agent-facing docs** (EN-096): reworded as principles, keeping the idea behind each decision.
 - **Tools of `package.json`**: their move to Rust belongs to F21.
+
+## The Product Owner's second round (2026-10-17), questions 1 to 4
+
+- **Run size**: no bound set by the agent; the Product Owner sets each run's scope at its start, as a time or an end. A question parks its story and the run goes on with independent work; a run stops only on a problem it cannot get around, at its scope's end, or when the Product Owner says so.
+- **Notifications** (EN-086): only for a question or a blocker that prevents finishing the scope asked, never to say the run ended early.
+- **EN-064**: closed with the measure of note 0024, nothing to set.
+- **EN-065**: one worker type per task kind, each measured.
+- **EN-066**: Sonnet for logs, backlog, merges and step texts, and one measured trial of Sonnet on a real story worker against Opus.
