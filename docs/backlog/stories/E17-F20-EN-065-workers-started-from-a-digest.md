@@ -45,3 +45,13 @@ Measured with `npm run context:size` on the session of 2026-10-17 (77 subagents 
 What makes the difference: a `general-purpose` worker receives every tool's definition (`Agent`, `Artifact`, `Skill`, the MCP servers), the skill listing (26,805 characters) and the deferred tools' list; a typed agent with a `tools` list receives none of them. Every subagent, typed or not, received `CLAUDE.md` (5,155 characters), `AGENTS.md` (14,719) and the memory index `MEMORY.md` (5,454).
 
 **The memory index loads** in every subagent measured, typed or not, as an instruction file of type `AutoMem`, although `REF-CC-SUBAGENTS` says "the main conversation's auto memory isn't loaded".
+
+### After (T2, T3)
+
+Each type started by a headless session (`claude -p`) in this story's worktree, on one real small task: list the tasks of EN-066's story file, read with `Read`. The same task given to a `general-purpose` agent in the same way is the comparison; a headless session connects fewer MCP servers than the Product Owner's, so its `general-purpose` start (27,843) is below the run's (38,900).
+
+| Task kind | Agent type | Preloaded | First request, tokens | `general-purpose`, same task | Run's `general-purpose` |
+| --- | --- | --- | --- | --- | --- |
+| story worker | `story-worker` | `project-rules`, `worker-brief` | 9,627 | 27,843 | 38,900 |
+
+With `omitClaudeMd`, the memory index is not loaded either: the `story-worker`'s first request holds no instruction file. So the memory index travels with `CLAUDE.md`, not with the auto memory the page describes; the rules a worker needs from it (no personal information, the repository's tools rather than scripts) are in `project-rules`.
