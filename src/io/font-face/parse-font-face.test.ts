@@ -288,7 +288,7 @@ describe("parseFontFace, measuring with its face (F15.AC4)", () => {
   // pre-push run was seen at 157 ms (RET-003): 400 ms, Vitest's timeout, holds over that load and
   // is over four times the measure alone. No clock is read in the test.
   it(
-    "[F15.AC4] measures the blocks of 1 000 texts of two lines in under 0.4 s",
+    "[F15.AC4] [F18.AC10] measures the blocks of 1 000 texts of two lines in under 0.4 s",
     { timeout: 400 },
     () => {
       const blocks = texts.map((text) =>
