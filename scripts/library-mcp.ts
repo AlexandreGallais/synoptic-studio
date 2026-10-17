@@ -219,7 +219,9 @@ function protocolResult(method: string): unknown {
 }
 
 /**
- * Result of a tool call: its text, or the error it met.
+ * Result of a tool call: its text, or the error it met. A `library_get` that met one, its fetch
+ * failing before any answer (a name, a certificate, a time-out), is recorded as `failed`, so that
+ * the page hook lets the page be read otherwise (AUD-022).
  *
  * @param database - open library
  * @param project - the project that asks
@@ -231,15 +233,22 @@ async function toolResult(
   project: string,
   parameters: unknown,
 ): Promise<unknown> {
+  const input = field(parameters, "arguments");
+  const name = text(parameters, "name");
+
   try {
-    const answerText = await callTool(database, {
-      input: field(parameters, "arguments"),
-      name: text(parameters, "name"),
-      project,
-    });
+    const answerText = await callTool(database, { input, name, project });
 
     return { content: [{ text: answerText, type: "text" }], isError: false };
   } catch (error) {
+    if (name === "library_get") {
+      recordUse(
+        database,
+        { origin: "failed", project, query: "", tool: "get", url: text(input, "url") },
+        Temporal.Now.instant().epochMilliseconds,
+      );
+    }
+
     return { content: [{ text: String(error), type: "text" }], isError: true };
   }
 }

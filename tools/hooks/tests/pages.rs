@@ -7,7 +7,8 @@ use std::process::{Command, Stdio};
 
 use hooks::json::{parse, quote};
 use hooks::pages::{
-    EMPTY_PAGE, Library, library_file, library_query, library_state, page_of_command, refusal,
+    EMPTY_PAGE, Library, has_library_tools, library_file, library_query, library_state,
+    page_of_command, refusal, refusal_without_library,
 };
 
 #[test]
@@ -62,6 +63,83 @@ fn a_page_address_written_inside_a_here_document_is_data() {
 
     assert_eq!(page_of_command(command), None);
     assert!(page_of_command("cat <<'EOF' > a\nx\nEOF\ncurl https://example.org/a").is_some());
+    // `<<-` ends at its word indented by tabs.
+    assert!(page_of_command("cat <<-EOF\n\tcurl https://example.org/a\n\tEOF").is_none());
+}
+
+#[test]
+fn a_here_string_or_a_shift_opens_no_here_document() {
+    // AUD-022: either once skipped every later line, a page read with them.
+    for command in [
+        "cat <<< x\ncurl https://example.org/a",
+        "echo $((1<<2))\ncurl https://example.org/a",
+        "echo $(( 1 << 2 ))\ncurl https://example.org/a",
+        "echo $((x << n))\ncurl https://example.org/a",
+    ] {
+        assert_eq!(
+            page_of_command(command).as_deref(),
+            Some("https://example.org/a"),
+            "{command}"
+        );
+    }
+}
+
+#[test]
+fn a_quoted_address_is_kept_whole() {
+    // A `&` or a `;` inside quotes cuts no command (AUD-022).
+    assert_eq!(
+        page_of_command("curl -s 'https://example.org/a?b=1&c=2;d' | head").as_deref(),
+        Some("https://example.org/a?b=1&c=2;d")
+    );
+    assert_eq!(
+        page_of_command("curl \"https://example.org/a?b=1&c=2\" && echo done").as_deref(),
+        Some("https://example.org/a?b=1&c=2")
+    );
+    // Commands joined by `||` or `&&` are each read.
+    assert!(page_of_command("false || curl https://example.org/a").is_some());
+    assert!(page_of_command("echo x | curl https://example.org/a").is_some());
+}
+
+#[test]
+fn a_script_run_an_archive_unpacked_or_a_file_saved_is_not_a_page_read() {
+    for command in [
+        // An installer run, an archive unpacked.
+        "curl -fsSL https://sh.rustup.rs | sh -s -- -y",
+        "curl -sSf https://example.org/install | bash",
+        "curl -L https://example.org/release | tar -xz",
+        // A link check: the status only, the page thrown away.
+        "curl -s -o /dev/null -w '%{http_code}' https://example.org/a",
+        "curl -so /dev/null https://example.org/a",
+        // A file downloaded under a name of its own.
+        "curl -L -o v1.tar.gz https://example.org/archive/v1",
+        "curl --output data.bin https://example.org/x",
+        "wget -O v1.zip https://example.org/archive/v1",
+        // An interface for programs.
+        "curl -s https://registry.npmjs.org/vitest",
+        "curl -s https://crates.io/api/v1/crates/serde",
+    ] {
+        assert_eq!(page_of_command(command), None, "{command}");
+    }
+    // A page saved as a page is still read.
+    for command in [
+        "curl -o page.html https://example.org/a",
+        "curl -sLo notes https://example.org/a",
+        "curl -s https://example.org/a | sh-like-name",
+    ] {
+        assert!(page_of_command(command).is_some(), "{command}");
+    }
+}
+
+#[test]
+fn reads_every_form_of_a_wget_or_a_curl_that_prints() {
+    for command in [
+        "curl -X GET https://example.org/a",
+        "wget -O - https://example.org/a",
+        "wget --output-document=- https://example.org/a",
+    ] {
+        assert!(page_of_command(command).is_some(), "{command}");
+    }
+    assert_eq!(page_of_command("curl http://[::1]:8080/"), None);
 }
 
 #[test]
@@ -83,6 +161,8 @@ fn the_library_state_is_read_from_the_query_output() {
         library_state("12|failed"),
         Library::Stored { characters: 12 }
     );
+    // Stored with nothing in it: still stored.
+    assert_eq!(library_state("0|"), Library::Stored { characters: 0 });
     assert_eq!(library_state("-1|failed"), Library::Failed);
     assert_eq!(library_state("-1|"), Library::Missing);
     assert_eq!(library_state(""), Library::Missing);
@@ -113,6 +193,7 @@ fn a_page_the_library_returned_empty_may_be_fetched_otherwise() {
     let url = "https://example.org/app";
 
     // 299 characters: below the 300 of an empty page; a page refused by its site, not stored.
+    assert_eq!(EMPTY_PAGE, 300);
     assert_eq!(
         refusal(
             url,
@@ -253,4 +334,69 @@ fn the_hook_lets_the_call_through_when_it_cannot_read_its_input() {
 
     assert!(output.status.success());
     assert_eq!(String::from_utf8_lossy(&output.stdout), "");
+}
+
+#[test]
+fn an_agent_has_the_library_when_its_file_names_it_or_lists_no_tools() {
+    let with = "---\nname: auditor\ntools: Read, Bash, mcp__library__library_get\n---\n# Auditor";
+    let without = "---\nname: verifier\ntools: Read, Grep, Glob, Bash\n---\n# Verifier";
+    let every = "---\nname: any\n---\ntools: library_get named in the body only";
+
+    assert!(has_library_tools(with));
+    assert!(!has_library_tools(without));
+    assert!(has_library_tools(every));
+    assert!(refusal_without_library("https://x.org/a").contains("name \"https://x.org/a\""));
+}
+
+/// Output of the hook for a `curl` of a stored page by an agent of this type, its file in
+/// `project`.
+fn hook_as(agent_type: &str, project: &Path, library: &Path) -> String {
+    let line = format!(
+        r#"{{"tool_name":"Bash","tool_input":{{"command":"curl https://x.org/full"}},"agent_type":{}}}"#,
+        quote(agent_type)
+    );
+    let mut child = Command::new(env!("CARGO_BIN_EXE_library-pages"))
+        .env("LIBRARY_PATH", library)
+        .env("CLAUDE_PROJECT_DIR", project)
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .expect("hook starts");
+
+    child
+        .stdin
+        .take()
+        .expect("stdin")
+        .write_all(line.as_bytes())
+        .expect("input");
+    String::from_utf8(child.wait_with_output().expect("hook ends").stdout).expect("UTF-8")
+}
+
+#[test]
+fn the_hook_tells_an_agent_without_the_library_to_hand_the_page_to_its_caller() {
+    let folder = std::env::temp_dir().join(format!("library-pages-agents-{}", std::process::id()));
+    let agents = folder.join(".claude/agents");
+
+    fs::create_dir_all(&agents).expect("folders");
+    fs::write(
+        agents.join("verifier.md"),
+        "---\nname: verifier\ntools: Read, Bash\n---\n",
+    )
+    .expect("agent");
+    fs::write(
+        agents.join("researcher.md"),
+        "---\nname: researcher\ntools: Bash, mcp__library__library_get\n---\n",
+    )
+    .expect("agent");
+    let file = library(&folder);
+    let verifier = hook_as("verifier", &folder, &file);
+    let researcher = hook_as("researcher", &folder, &file);
+    let built_in = hook_as("general-purpose", &folder, &file);
+
+    fs::remove_dir_all(&folder).expect("cleaned");
+    // Refused all three: the guard stays; only the instruction differs.
+    assert!(verifier.contains("no library tools"), "{verifier}");
+    assert!(verifier.contains("\"deny\""), "{verifier}");
+    assert!(researcher.contains("holds"), "{researcher}");
+    assert!(built_in.contains("holds"), "{built_in}");
 }

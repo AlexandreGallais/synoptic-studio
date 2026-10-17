@@ -36,7 +36,7 @@ A page is read online again when it may have changed since:
 | any other page, or one that states no date | after 90 days |
 | asked with `refresh` | now |
 
-A stored page is asked with `If-None-Match` and `If-Modified-Since`, so an unchanged page costs a `304`. A page its site refuses stays as stored, marked `failed`.
+A stored page is asked with `If-None-Match` and `If-Modified-Since`, so an unchanged page costs a `304`. A page its site refuses stays as stored, marked `failed`, and so does a `get` whose fetch fails before any answer (a name, a certificate, a time-out).
 
 ## Rules for the agent
 
