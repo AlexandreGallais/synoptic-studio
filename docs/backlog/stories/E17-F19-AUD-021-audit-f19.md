@@ -109,10 +109,3 @@ Three independent reviews on 2026-10-17 (`auditor`, `verifier`, `doc-editor`), e
 ## For the main thread
 
 Rule-docs: none affected, tooling and documentation only, no rule of `docs/domain/` changed.
-
-### Improvements
-
-| 2026-10-17 | AUD-021 | The tools repeat `link_folder`, a Markdown cell splitter (two of them, disagreeing on backslashes) and a Git runner in four crates: one shared crate when F21 rewrites the tools (D1-1) | tooling |
-| 2026-10-17 | AUD-021 | `tests/exceptions.test.ts`, `font-files.test.ts` and `typescript-7.test.ts` each read every tracked source on their own; one reader shared through `tests/built-once.ts` (ADR-0070, decision 4) would read them once (V15) | tooling |
-| 2026-10-17 | AUD-021 | One fact in several places — the Rust rule eight times, the agent limit four, the two-round refinement twice, run skill steps of 8 to 12 lines — for F20's context diet (DE-49 to DE-53, DE-57, DE-58) | process |
-| 2026-10-17 | AUD-021 | A `$'` in a sentence passed to `String.prototype.replace` copied the rest of a page into it: text put into a file is returned by a function, never passed as the replacement (`.claude/rules/tooling.md`) | tooling |
