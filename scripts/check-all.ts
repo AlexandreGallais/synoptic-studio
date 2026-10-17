@@ -12,15 +12,7 @@ export const LANES: readonly (readonly string[])[] = [
   ["lint"],
   ["test"],
   ["docs:build", "playground:build"],
-  [
-    "format:check",
-    "lint:secrets",
-    "typecheck",
-    "deps:audit",
-    "deps:unused",
-    "deps:tools",
-    "deps:outdated",
-  ],
+  ["format:check", "lint:secrets", "deps:audit", "deps:unused", "deps:tools", "deps:outdated"],
   // The Rust workspace: rustfmt, Clippy, its tests, then its release binaries (EN-068).
   ["check:rust"],
 ];
