@@ -63,14 +63,7 @@ fn git_words(words: &[&str]) -> Result<String, String> {
 
 /// Names of the story files of the checkout, none when it has no backlog.
 fn story_files(top: &Path) -> Vec<String> {
-    fs::read_dir(top.join("docs/backlog/stories"))
-        .map(|entries| {
-            entries
-                .filter_map(Result::ok)
-                .map(|entry| entry.file_name().to_string_lossy().into_owned())
-                .collect()
-        })
-        .unwrap_or_default()
+    worktree::story_files(top).unwrap_or_default()
 }
 
 /// The message of a commit, from its file or the standard input.

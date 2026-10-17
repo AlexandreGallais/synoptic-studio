@@ -32,18 +32,6 @@ fn git(folder: &Path, arguments: &[&str]) -> Option<String> {
         .then(|| String::from_utf8_lossy(&output.stdout).trim().to_owned())
 }
 
-/// Names of the story files of the worktree.
-fn story_files(worktree: &Path) -> Vec<String> {
-    fs::read_dir(worktree.join("docs/backlog/stories"))
-        .map(|entries| {
-            entries
-                .filter_map(Result::ok)
-                .map(|entry| entry.file_name().to_string_lossy().into_owned())
-                .collect()
-        })
-        .unwrap_or_default()
-}
-
 /// The story of a worktree, its branch as the worktree sees it, its commits not on its base, and
 /// that base: two Git calls. Without a story or a base, no commit is listed: the report's naming
 /// is then not checked.
@@ -61,7 +49,11 @@ fn branch(worktree: &Path, folder: &str) -> Option<(String, Branch, Option<Strin
     let story = story_of(&refs.name, folder);
     let base = story
         .as_deref()
-        .and_then(|story| base_of(story, &story_files(worktree), &refs.remote_branches));
+        .and_then(|story| {
+            let files = worktree::story_files(worktree).unwrap_or_default();
+
+            base_of(story, &files, &refs.remote_branches)
+        });
     let commits = match &base {
         Some(base) => git(
             worktree,

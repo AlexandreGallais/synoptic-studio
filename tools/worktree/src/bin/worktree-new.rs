@@ -5,7 +5,6 @@
 //! builds the release binaries of the Rust tools in the new worktree (EN-068).
 
 use std::env;
-use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::{Command, ExitCode};
 
@@ -40,14 +39,8 @@ fn arguments(argv: &[String]) -> Result<(&str, Option<&str>), String> {
 
 /// Names of the story files of the checkout the tool runs in.
 fn story_files(top: &Path) -> Result<Vec<String>, String> {
-    let folder = top.join("docs/backlog/stories");
-    let entries =
-        fs::read_dir(&folder).map_err(|error| format!("{}: {error}", folder.display()))?;
-
-    Ok(entries
-        .filter_map(Result::ok)
-        .map(|entry| entry.file_name().to_string_lossy().into_owned())
-        .collect())
+    worktree::story_files(top)
+        .map_err(|error| format!("{}: {error}", top.join(worktree::STORIES).display()))
 }
 
 /// Links a folder at `link` to the folder `target`: a symbolic link (`std::os::unix::fs::symlink`).
