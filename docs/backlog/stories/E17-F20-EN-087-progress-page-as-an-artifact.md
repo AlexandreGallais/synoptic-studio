@@ -26,3 +26,15 @@ One task = one commit, referenced as `EN-087.Tn`.
 - [ ] T1 — The Rust tool writing the page from the backlog, Git and the metrics, with its tests (3 h)
 - [ ] T2 — The page published at the run's start and after each story, at the same address (2 h)
 - [ ] T3 — The run skill and `docs/tooling/agent.md` updated; the improvement row of 2026-10-16 marked as handled (1 h)
+
+## Decisions
+
+- **Which features**: those with a branch `feature/f<nn>-…` on `origin`, read from that branch, where the `done` commits land; the main checkout stays on `develop`, whose statuses are older.
+- **A story's agents**: the first story id in the agent's description (its `.meta.json`); an agent naming none counts in the run's tokens only, shown as those of the main thread and of agents outside the stories.
+- **Tokens**: counted by `run-totals`' library from the same cache (`run-cache.json`), so the page and `metrics:session -- --run` agree; `projects_dir` and the cache refresh moved into that library.
+- **An agent running**: its last assistant line neither hands back nor ends its turn, and its transcript was written within 30 minutes.
+
+## For the main thread
+
+- The improvement row of 2026-10-16 (a progress view in the terminal beside Claude Code) is answered by this page: mark it handled by EN-087 in `docs/process/improvements.md` when writing the logs (a shared file).
+- Measured on the live run of 2026-10-17 (4 workers, 17 stories): the page is 6 KB, written in 0.1 s, 0.3 s through npm.
