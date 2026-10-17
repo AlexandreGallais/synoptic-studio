@@ -75,11 +75,13 @@ pub const ALL: &[&dyn Rule] = &[
     &type_declaration_immutability::TypeDeclarationImmutability,
 ];
 
-/// The rules of a list of names, in the registry's order, then Unicorn's.
+/// The rules of a list of names, in the registry's order, then Unicorn's, its DOM and web rules last.
 #[must_use]
 pub fn named(names: &[&str]) -> Vec<&'static dyn Rule> {
     ALL.iter()
         .chain(unicorn::RULES)
+        .chain(unicorn::dom::RULES)
+        .chain(unicorn::web::RULES)
         .copied()
         .filter(|rule| names.contains(&rule.name()))
         .collect()

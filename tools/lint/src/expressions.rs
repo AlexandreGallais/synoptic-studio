@@ -522,6 +522,25 @@ pub fn unwrapped<'s, 'a>(expression: &'s Expression<'a>) -> &'s Expression<'a> {
     }
 }
 
+/// Whether a node is written rather than read: assigned, updated, deleted, destructured into or
+/// a loop's target (`utils/is-left-hand-side.js`).
+#[must_use]
+pub fn is_written(source: &Source, node: &AstNode) -> bool {
+    let span = node.kind().span();
+    match source.semantic.nodes().parent_kind(node.id()) {
+        AstKind::AssignmentExpression(assignment) => assignment.left.span() == span,
+        AstKind::ForOfStatement(statement) => statement.left.span() == span,
+        AstKind::ForInStatement(statement) => statement.left.span() == span,
+        AstKind::AssignmentTargetWithDefault(target) => target.binding.span() == span,
+        AstKind::UpdateExpression(_)
+        | AstKind::ArrayAssignmentTarget(_)
+        | AstKind::AssignmentTargetPropertyProperty(_)
+        | AstKind::AssignmentTargetRest(_) => true,
+        AstKind::UnaryExpression(unary) => unary.operator == UnaryOperator::Delete,
+        _ => false,
+    }
+}
+
 /// A range's text with edits applied, each a range of the file and its new text; the edits
 /// lie inside the range and do not overlap.
 #[must_use]
