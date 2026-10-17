@@ -8,7 +8,7 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 
 use run_totals::marker::Run;
 use run_totals::tally::{FileTally, Tokens};
-use run_totals::totals::{Cache, parse_cache, render_cache, run_tokens, transcripts};
+use run_totals::totals::{Cache, parse_cache, projects_dir, render_cache, run_tokens, transcripts};
 
 static NEXT: AtomicUsize = AtomicUsize::new(0);
 
@@ -177,5 +177,14 @@ fn stops_counting_at_the_end_of_a_closed_run() {
     assert_eq!(
         run_tokens(&run, &projects, &Cache::default()).0.total(),
         116
+    );
+}
+
+#[test]
+fn names_the_transcripts_folder_after_the_main_checkout() {
+    // The Git directory's parent is the checkout; `/`, ` ` and `.` become `-`.
+    assert_eq!(
+        projects_dir(Path::new("/h"), Path::new("/Users/a b/svg.editor/.git")),
+        PathBuf::from("/h/.claude/projects/-Users-a-b-svg-editor")
     );
 }
