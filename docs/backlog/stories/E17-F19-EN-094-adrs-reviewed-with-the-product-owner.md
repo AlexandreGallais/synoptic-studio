@@ -3,7 +3,7 @@ id: EN-094
 epic: E17
 feature: F19
 title: The ADRs reviewed with the Product Owner, the review applied
-status: ready
+status: done
 points: 3
 ---
 
@@ -38,6 +38,6 @@ On 2026-10-17 the Product Owner went over every accepted ADR with the agent, one
 
 One task = one commit, referenced as `EN-094.Tn`.
 
-- [ ] T1 — The ADR of the runs, the ADR of the Rust tools, the status lines, the index (2 h)
-- [ ] T2 — EN-085's requirement, AGENTS.md, CLAUDE.md, skills and brief in step (1 h)
-- [ ] T3 — The ADR of the agent's own method, `agile.md` and the retro skill (1 h)
+- [x] T1 — The ADR of the runs, the ADR of the Rust tools, the status lines, the index (2 h)
+- [x] T2 — EN-085's requirement, AGENTS.md, CLAUDE.md, skills and brief in step (1 h)
+- [x] T3 — The ADR of the agent's own method, `agile.md` and the retro skill (1 h)
