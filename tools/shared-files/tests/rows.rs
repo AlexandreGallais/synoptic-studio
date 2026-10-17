@@ -4,7 +4,11 @@ use std::fs;
 use std::path::PathBuf;
 use std::process::Command;
 
+use shared_files::date::{civil_from_days, today};
 use shared_files::rows::{LOGS, Place, SECTION, insert_rows, take_rows};
+
+/// The day of the tests that insert rows: the journal's newest section below is that day's.
+const TODAY: &str = "2026-10-16";
 
 /// A story file with rows for two logs and a note for the main thread.
 const STORY: &str = "\
@@ -204,15 +208,15 @@ fn appends_rows_after_the_first_table() {
     let rows = ["| 2 | b |".to_owned()];
 
     assert_eq!(
-        insert_rows(log, Place::Table, &rows).unwrap(),
+        insert_rows(log, Place::Table, &rows, TODAY).unwrap(),
         "# Log\n\nIntro.\n\n| Date | Item |\n| --- | --- |\n| 1 | a |\n| 2 | b |\n\nAfter.\n\n| other |\n"
     );
     // A table ending the file.
     assert_eq!(
-        insert_rows("| a |\n| - |\n", Place::Table, &rows).unwrap(),
+        insert_rows("| a |\n| - |\n", Place::Table, &rows, TODAY).unwrap(),
         "| a |\n| - |\n| 2 | b |\n"
     );
-    assert!(insert_rows("# Log\n", Place::Table, &rows).is_err());
+    assert!(insert_rows("# Log\n", Place::Table, &rows, TODAY).is_err());
 }
 
 #[test]
@@ -221,15 +225,62 @@ fn appends_journal_rows_to_the_newest_section() {
     let rows = ["- `#open` c".to_owned()];
 
     assert_eq!(
-        insert_rows(log, Place::NewestSection, &rows).unwrap(),
+        insert_rows(log, Place::NewestSection, &rows, TODAY).unwrap(),
         "# Journal\n\nNewest first.\n\n## 2026-10-16 — Run\n\n- `#run` a\n- `#open` c\n\n## 2026-10-15 — Old\n\n- `#run` b\n"
     );
     // The newest section ending the file.
     assert_eq!(
-        insert_rows("# J\n\n## Day\n\n- a\n", Place::NewestSection, &rows).unwrap(),
+        insert_rows("# J\n\n## Day\n\n- a\n", Place::NewestSection, &rows, TODAY).unwrap(),
         "# J\n\n## Day\n\n- a\n- `#open` c\n"
     );
-    assert!(insert_rows("# J\n", Place::NewestSection, &rows).is_err());
+    assert!(insert_rows("# J\n", Place::NewestSection, &rows, TODAY).is_err());
+}
+
+#[test]
+fn opens_a_section_dated_today_when_the_newest_one_is_older() {
+    let log = "# Journal\n\nNewest first.\n\n## 2026-10-16 — Run\n\n- `#run` a\n";
+    let rows = ["- `#run` b".to_owned(), "- `#open` c".to_owned()];
+
+    // The newest section is the day before: today's rows go into a new section above it.
+    assert_eq!(
+        insert_rows(log, Place::NewestSection, &rows, "2026-10-17").unwrap(),
+        "# Journal\n\nNewest first.\n\n## 2026-10-17 — Run continued\n\n- `#run` b\n- `#open` c\n\n## 2026-10-16 — Run\n\n- `#run` a\n"
+    );
+    // A newest section dated after today (a clock behind) still takes them.
+    assert_eq!(
+        insert_rows(log, Place::NewestSection, &rows, "2026-10-15").unwrap(),
+        "# Journal\n\nNewest first.\n\n## 2026-10-16 — Run\n\n- `#run` a\n- `#run` b\n- `#open` c\n"
+    );
+    // A table log never opens a section, whatever its dates.
+    assert_eq!(
+        insert_rows(
+            "## 2026-10-01\n\n| a |\n",
+            Place::Table,
+            &rows[..1],
+            "2026-10-17"
+        )
+        .unwrap(),
+        "## 2026-10-01\n\n| a |\n- `#run` b\n"
+    );
+}
+
+#[test]
+fn writes_the_date_a_number_of_days_after_1970_falls_on() {
+    // 0 days: 1970-01-01; -1: the day before.
+    assert_eq!(civil_from_days(0), "1970-01-01");
+    assert_eq!(civil_from_days(-1), "1969-12-31");
+    // 31 days of January + 28 of February 1970: 1970-03-01.
+    assert_eq!(civil_from_days(59), "1970-03-01");
+    // 30 years of 365 days + 7 leap days (1972 … 1996) = 10 957: 2000-01-01; + 31 + 28 = 11 016:
+    // 2000-02-29, a leap day of a year divisible by 400.
+    assert_eq!(civil_from_days(10_957), "2000-01-01");
+    assert_eq!(civil_from_days(11_016), "2000-02-29");
+    // 2026-10-17: 56 years × 365 = 20 440 days + 14 leap days (1972 … 2024) = 20 454, then
+    // 273 + 16 = 289 days of 2026 before it (Jan 31, Feb 28, Mar 31, Apr 30, May 31, Jun 30,
+    // Jul 31, Aug 31, Sep 30 = 273) → 20 743.
+    assert_eq!(civil_from_days(20_743), "2026-10-17");
+    assert_eq!(today().len(), 10);
+    assert!(today().as_str() > "2026-10-16");
 }
 
 #[test]
@@ -264,9 +315,13 @@ fn moves_the_rows_of_a_merged_story_into_the_logs() {
         String::from_utf8_lossy(&output.stdout),
         format!("docs/process/journal.md\ndocs/process/improvements.md\n{story}\n")
     );
+    // The journal's newest section is older than today: the rows open today's (AUD-020).
     assert_eq!(
         read("docs/process/journal.md"),
-        "# Journal\n\n## 2026-10-16 — Run\n\n- `#run` before\n- `#run` A finding.\n- `#open` A question left.\n"
+        format!(
+            "# Journal\n\n## {} — Run continued\n\n- `#run` A finding.\n- `#open` A question left.\n\n## 2026-10-16 — Run\n\n- `#run` before\n",
+            today()
+        )
     );
     assert!(
         read("docs/process/improvements.md")

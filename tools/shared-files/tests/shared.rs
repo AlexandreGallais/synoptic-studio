@@ -159,13 +159,18 @@ fn lets_the_done_commit_set_the_status_but_not_write_a_log() {
             "docs/backlog/stories/E17-F18-EN-050-shared-files-written-at-merge.md",
             "docs/backlog/stories/README.md",
             "docs/backlog/features/E17-F18-a-safe-and-cheap-parallel-run.md",
+            "playground/checklists/epic-15-text-lines.ts",
             "docs/process/improvements.md",
         ],
     );
 
+    // The done commit sets statuses; a checklist, like a log, stays the main thread's.
     assert_eq!(
         refused_files(&done, "EN-050"),
-        ["docs/process/improvements.md"]
+        [
+            "playground/checklists/epic-15-text-lines.ts",
+            "docs/process/improvements.md"
+        ]
     );
 }
 
@@ -259,6 +264,15 @@ impl Repository {
 
     /// The check run as `pre-push` runs it, for a new branch.
     fn check(&self, branch: &str, hash: &str) -> Output {
+        let zero = "0".repeat(40);
+
+        self.check_input(&format!(
+            "refs/heads/{branch} {hash} refs/heads/{branch} {zero}"
+        ))
+    }
+
+    /// The check run as `pre-push` runs it, given one line of its standard input.
+    fn check_input(&self, line: &str) -> Output {
         let mut child = isolated(Command::new(env!("CARGO_BIN_EXE_refuse-shared-files")))
             .current_dir(self.work())
             .stdin(Stdio::piped())
@@ -266,13 +280,8 @@ impl Repository {
             .stderr(Stdio::piped())
             .spawn()
             .unwrap();
-        let zero = "0".repeat(40);
 
-        writeln!(
-            child.stdin.take().unwrap(),
-            "refs/heads/{branch} {hash} refs/heads/{branch} {zero}"
-        )
-        .unwrap();
+        writeln!(child.stdin.take().unwrap(), "{line}").unwrap();
         child.wait_with_output().unwrap()
     }
 }
@@ -338,4 +347,31 @@ fn lets_through_a_clean_branch_and_the_main_thread_branches() {
         repository.check("feature/f99-topic", &logged).status.code(),
         Some(0)
     );
+}
+
+#[test]
+fn reads_the_branch_from_the_remote_ref_and_lets_a_deletion_through() {
+    let repository = Repository::new("refs");
+
+    repository.git(&["switch", "--quiet", "-c", "feat/us-999-topic"]);
+    repository.write("docs/process/journal.md", "# Journal\n\n## A row\n");
+
+    let hash = repository.commit("docs: a row in the journal");
+    let zero = "0".repeat(40);
+
+    // `git push origin HEAD:feat/us-999-topic`: the local ref is `HEAD`, the branch is the remote's.
+    let pushed =
+        repository.check_input(&format!("HEAD {hash} refs/heads/feat/us-999-topic {zero}"));
+
+    assert_eq!(pushed.status.code(), Some(1), "{pushed:?}");
+    assert!(
+        String::from_utf8_lossy(&pushed.stderr).contains("feat/us-999-topic is US-999's branch"),
+        "{pushed:?}"
+    );
+
+    // `git push --delete origin feat/us-1-x`: nothing pushed, nothing to check.
+    let deleted = repository.check_input(&format!("(delete) {zero} refs/heads/feat/us-1-x {hash}"));
+
+    assert_eq!(deleted.status.code(), Some(0), "{deleted:?}");
+    assert_eq!(String::from_utf8_lossy(&deleted.stderr), "");
 }
