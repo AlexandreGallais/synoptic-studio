@@ -135,15 +135,17 @@ const UNTAGGED_HELPER = [
 ].join("\n");
 
 /**
- * The JSDoc rules the repository's configuration reports on a file.
+ * The rules of one plugin the repository's configuration reports on a piece of code.
  *
  * @param name - the file's name, which picks its overrides
- * @returns the name of each JSDoc rule reported
+ * @param code - TypeScript source
+ * @param plugin - the plugin, as oxlint names it in its report
+ * @returns the name of each rule of that plugin reported, sorted
  */
-function jsdocRulesOn(name: string): readonly string[] {
+function pluginRulesOn(name: string, code: string, plugin: string): readonly string[] {
   const file = join(WHOLE_FOLDER, name);
 
-  writeFileSync(file, UNTAGGED_HELPER);
+  writeFileSync(file, code);
 
   // oxlint exits 1 on a finding: its report is read either way.
   const { stdout: output } = spawnSync(
@@ -153,7 +155,8 @@ function jsdocRulesOn(name: string): readonly string[] {
   );
 
   return output
-    .matchAll(/\[Error\/jsdoc\((?<rule>[a-z-]+)\)\]$/gmu)
+    .matchAll(/\[Error\/(?<plugin>[a-z]+)\((?<rule>[a-z-]+)\)\]$/gmu)
+    .filter((match) => match.groups?.["plugin"] === plugin)
     .map((match) => match.groups?.["rule"] ?? "")
     .toArray()
     .toSorted((left, right) => left.localeCompare(right));
@@ -161,10 +164,60 @@ function jsdocRulesOn(name: string): readonly string[] {
 
 describe("a test file's helpers described without their tags (EN-093)", () => {
   it("asks no `@param` nor `@returns` in a test file", () => {
-    expect(jsdocRulesOn("helper.test.ts")).toEqual([]);
+    expect(pluginRulesOn("helper.test.ts", UNTAGGED_HELPER, "jsdoc")).toEqual([]);
   });
 
   it("asks both everywhere else", () => {
-    expect(jsdocRulesOn("helper.ts")).toEqual(["require-param", "require-returns"]);
+    expect(pluginRulesOn("helper.ts", UNTAGGED_HELPER, "jsdoc")).toEqual([
+      "require-param",
+      "require-returns",
+    ]);
+  });
+});
+
+/** The imports of a planted test file. */
+const VITEST_IMPORT = 'import { beforeEach, describe, expect, it, vi } from "vitest";\n';
+
+/**
+ * Vitest's rules turned on in test files by EN-093, each with a planted test it reports: a test
+ * that does not run, runs under a taken name, or asserts in a way that never fails.
+ */
+const VITEST_RULES = [
+  { code: 'it("a", () => { vi.mock("./x"); expect(1).toBe(1); });', rule: "hoisted-apis-on-top" },
+  {
+    code: 'it("a", () => { if (Math.PI > 3) { expect(1).toBe(1); } });',
+    rule: "no-conditional-expect",
+  },
+  {
+    code: 'if (Math.PI > 3) { it("a", () => { expect(1).toBe(1); }); }',
+    rule: "no-conditional-tests",
+  },
+  { code: 'it.skip("a", () => { expect(1).toBe(1); });', rule: "no-disabled-tests" },
+  {
+    code: 'describe("d", () => { beforeEach(() => {}); beforeEach(() => {}); it("a", () => { expect(1).toBe(1); }); });',
+    rule: "no-duplicate-hooks",
+  },
+  { code: 'it.only("a", () => { expect(1).toBe(1); });', rule: "no-focused-tests" },
+  {
+    code: 'it("a", () => { expect(1).toBe(1); });\nit("a", () => { expect(2).toBe(2); });',
+    rule: "no-identical-title",
+  },
+  {
+    code: 'it("a", async () => { expect.poll(() => 1).toBe(1); });',
+    rule: "require-awaited-expect-poll",
+  },
+  { code: 'describe("d");', rule: "valid-describe-callback" },
+  {
+    code: 'it("a", () => { Promise.resolve(1).then((value) => { expect(value).toBe(1); }); });',
+    rule: "valid-expect-in-promise",
+  },
+  { code: 'it("", () => { expect(1).toBe(1); });', rule: "valid-title" },
+] as const;
+
+describe("Vitest's rules on in test files (EN-093)", () => {
+  it.each(VITEST_RULES)("reports $rule on its planted test", ({ code, rule }) => {
+    expect(new Set(pluginRulesOn("planted.test.ts", VITEST_IMPORT + code, "vitest"))).toEqual(
+      new Set([rule]),
+    );
   });
 });

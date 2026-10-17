@@ -1190,9 +1190,20 @@
         "max-statements": "off",
         "no-magic-numbers": "off",
         "jsdoc/require-param": "off",
-        "jsdoc/require-returns": "off"
+        "jsdoc/require-returns": "off",
+        "vitest/hoisted-apis-on-top": "error",
+        "vitest/no-conditional-expect": "error",
+        "vitest/no-conditional-tests": "error",
+        "vitest/no-disabled-tests": "error",
+        "vitest/no-duplicate-hooks": "error",
+        "vitest/no-focused-tests": "error",
+        "vitest/no-identical-title": "error",
+        "vitest/require-awaited-expect-poll": "error",
+        "vitest/valid-describe-callback": "error",
+        "vitest/valid-expect-in-promise": "error",
+        "vitest/valid-title": "error"
       },
-      "plugins": ["typescript", "jsdoc"]
+      "plugins": ["typescript", "jsdoc", "vitest"]
     },
     {
       "files": ["./*.config.ts", "docs/.vitepress/config.ts", "docs/.vitepress/theme/index.ts"],
