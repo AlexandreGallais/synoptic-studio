@@ -34,7 +34,20 @@ One task = one commit, referenced as `EN-087.Tn`.
 - **Tokens**: counted by `run-totals`' library from the same cache (`run-cache.json`), so the page and `metrics:session -- --run` agree; `projects_dir` and the cache refresh moved into that library.
 - **An agent running**: its last assistant line neither hands back nor ends its turn, and its transcript was written within 30 minutes.
 
+## Decision (2026-10-17)
+
+The page was dropped after the Product Owner saw it on a live run: it was not useful. The change of branch `chore/en-087-drop-the-progress-page` removed the crate `tools/progress-page`, the script `progress:page`, the run skill's publish steps (at the run's start, after each merge, at its stop), the section The progress page of `docs/tooling/agent.md` and the page's rows in `agent-tools.md`, `commands.md` and `metrics.md`; nothing writes `.git/metrics/progress.html` nor `progress-page.json` any more.
+
+Kept: `projects_dir` and `count_run` in `run-totals`' library, with the cache `run-cache.json`, since `run-totals`' own binary counts with them for `run:end`, `metrics:session -- --run` and the status line; `count_run` now returns the tokens only, the cache it also returned being read by the page alone. `run:start`, `run:end`, `run:should-stop` and the status line's run part are unchanged.
+
+The story stays `done`: its work was delivered and merged, then removed by a later decision; `dropped` is the backlog's status for a story abandoned before delivery (`docs/backlog/README.md`).
+
 ## For the main thread
 
-- The improvement row of 2026-10-16 (a progress view in the terminal beside Claude Code) is answered by this page: mark it handled by EN-087 in `docs/process/improvements.md` when writing the logs (a shared file).
-- Measured on the live run of 2026-10-17 (4 workers, 17 stories): the page is 6 KB, written in 0.1 s, 0.3 s through npm.
+- Measured on the live run of 2026-10-17 (4 workers, 17 stories): the page was 6 KB, written in 0.1 s, 0.3 s through npm.
+- The improvement row of 2026-10-16 (a progress view in the terminal beside Claude Code) in `docs/process/improvements.md`: its end "handled by EN-087 as a progress page published during a run" becomes "tried by EN-087 as a progress page published during a run, then dropped on 2026-10-17: not useful", so the row is open again for the retrospective.
+- F20's feature file: its criterion 5 (a claude.ai page showing a run's progress, EN-087) no longer holds; mark it dropped with this decision, or remove it, when writing the feature file.
+
+### Feedback
+
+| 2026-10-17 | The run's progress page, a claude.ai Artifact published at the run's start and after each merge (EN-087), was built and used on a live run, then judged not useful by the Product Owner, who dropped it. | Show the Product Owner a sample of such a view before building a tool and the run's steps around it. | The page removed with its tool and its publish steps (EN-087, Decision of 2026-10-17). |
