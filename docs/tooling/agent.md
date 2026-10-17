@@ -81,7 +81,16 @@ Agents to add when their epic comes, with their trigger:
 
 ## Models
 
-Each agent file names its model and, in its body, why (EN-066): Sonnet for records, Opus for the rest, as decided at F20's second round (2026-10-17). Sonnet 5.5 costs half of Opus 5.5 on every kind of token (`REF-CLAUDE-PROMPT-CACHING`). The model is taken from the `Agent` call's `model`, then the agent file, then `CLAUDE_CODE_SUBAGENT_MODEL`, then the main conversation's (`REF-CC-SUBAGENTS`): a file naming `opus` keeps it on Opus when the main conversation runs on another model, as `inherit` did not.
+Each agent type runs on one model, named in its file with the reason in the file's body (EN-066): Sonnet for the `clerk`, which writes the records, and Opus for the seven others, as decided at F20's second round (2026-10-17). Sonnet 5.5 costs half of Opus 5.5 on every kind of token (`REF-CLAUDE-PROMPT-CACHING`).
+
+The model is taken from the first of these that names one (`REF-CC-SUBAGENTS`):
+
+1. the `Agent` call's `model`;
+2. the agent file's `model`;
+3. `CLAUDE_CODE_SUBAGENT_MODEL`;
+4. the main conversation's model.
+
+A file naming `opus` stays on Opus when the main conversation runs on another model; the earlier `inherit` followed the main conversation. The session report gives the tokens per model ([metrics](./metrics.md)). Model and reason per agent type, the full reason in each agent file:
 
 | Agent type | Model | Why |
 | --- | --- | --- |
