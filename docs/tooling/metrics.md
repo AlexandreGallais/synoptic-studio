@@ -7,6 +7,7 @@ Measure first, then make each epic faster than the last (Product Owner, RET-001)
 | Source | Written by | Holds |
 | --- | --- | --- |
 | `.git/metrics/tool-calls.jsonl` | the hook `log-tool-call.ts`, after each tool call, in the background | one line per call ([the record of each call](#the-record-of-each-call)) |
+| `.git/metrics/tool-uses.jsonl` | each Rust tool of the workspace, at its end (`tools/tool-use`) | one line per use of a tool ([the uses of each tool](#the-uses-of-each-tool)) |
 | `~/.claude/projects/<repository path>/` | Claude Code: one JSON Lines transcript per session, its subagents' beside it | every request with its tokens, every tool call and result, each line with its time, session and branch |
 | `.git/metrics/run.json`, `run-cache.json` | `npm run run:start` and `run:end`; the cache by `run-totals` | the open or last run: start, end (0 while open), sessions; the cache, where each transcript was read up to ([a run's totals](#a-runs-totals)) |
 | `.git/metrics/turns.jsonl` | `npm run metrics:session` without `--all` | one line per turn: start, session, duration, active time, tokens, calls, failures, commits |
@@ -30,6 +31,23 @@ Each line of `tool-calls.jsonl` holds what the hook knows when the call ends, an
 | `turnStart`, `turnElapsedMs`, `turnTokens`, `turnOutputTokens` | the turn: its start, the time since, its tokens so far and the part written |
 | `contextPercent`, `model`, `pendingAgents`, `pendingCommands` | how full the context was, the model, the background tasks running |
 | `snapshotAgeMs` | how old the status line's snapshot was |
+
+## The uses of each tool
+
+Each tool of our own records its own use (EN-102), whoever calls it — the agent, a hook, a script, a person — so that the retrospective reviews them as a tools team would: which tool runs, how often it fails, how long it takes. A binary's `main` hands its work to `tool_use::run`, which times it and appends one line to `tool-uses.jsonl` in the main checkout's `.git/metrics/`, a worktree's uses included:
+
+| Field | Holds |
+| --- | --- |
+| `tool` | the binary: `git-sequences`, `format`, `check-handback` |
+| `subcommand` | what the call asked of it (`sync`, `--check`; for `heavy-lock`, the command it runs), empty for a tool of one mode |
+| `worktree` | the linked worktree's name (`en-102`), `main` for the main checkout |
+| `start`, `durationMs` | when it started (ISO 8601, UTC) and how long its work took, the record left out |
+| `exitCode` | the code it exited with |
+
+- **Never in the tool's way**: a line that cannot be written — no `.git` above the folder, a read-only folder — is dropped without a word, the tool's output and exit code unchanged. The `metrics` folder is created when missing, never `.git` itself.
+- **One write per line**: the line goes to a file opened to append in a single write, so that two tools ending at once never mix their lines.
+- **Release builds only**: `package.json`, the Git hooks and `.claude/settings.json` run every tool with `--release`; a debug build is a test's, whose calls are not uses, so it records nothing.
+- No crate: the standard library appends the line ([research note 0025](../research/notes/0025-f21-agent-tools-in-rust.md)).
 
 ## The report
 
