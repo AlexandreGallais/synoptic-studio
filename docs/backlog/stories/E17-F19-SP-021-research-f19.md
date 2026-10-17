@@ -37,7 +37,7 @@ One task = one commit, referenced as `SP-021.Tn`.
 - [x] T3 — Measure `check:all` lane by lane and test oxlint and oxfmt on this repository (4 h)
 - [x] T4 — Write the research note, propose the `check:all` target, draft F19's criteria and stories (3 h)
 - [x] T5 — Research the Product Owner's answers: the rules that need types, JS plugins, TypeScript 7, Rust checks, the tools around the library, platforms (4 h)
-- [ ] T6 — Draft F19 again from the answers: criteria, stories, the clean-up story (2 h)
+- [x] T6 — Draft F19 again from the answers: criteria, stories, the clean-up story (2 h)
 
 ## Result
 
@@ -72,6 +72,6 @@ Recorded as understood; the research each asked for is in [research note 0023](.
 ## For the main thread
 
 - Notes index (`docs/research/notes/README.md`), a row after 0022: `[0023](./0023-f19-oxc-and-rust-tools.md)` — "Sources of F19: oxlint and oxfmt tried on the repository, the rules left to rewrite, `check:all` by lane, hooks timed, the Rust workspace".
-- Feature F19: its acceptance criteria and its stories, drafted in note 0023, sections "F19's acceptance criteria and stories (draft)" and "The Rust layout", for the refinement.
+- Feature F19: rewritten in this branch from the answers of 2026-10-17 (criteria, stories, the proposed split, story 15 the clean-up); to merge with any change made to it on `develop` meanwhile.
 - `.claude/rules/tooling.md`, at F19's ADR: `tsc` is TypeScript 7 (native); TypeScript 6 stays only under the alias `@typescript/typescript6`, because TypeDoc 0.28.20 needs its API (note 0023, "TypeScript 7, the native compiler").
 - Epic E17, closing table: the clean-up story drafted in F19 (last F19 story, or the first of the split feature) comes before NAM-002.
