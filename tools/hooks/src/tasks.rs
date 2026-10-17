@@ -1,6 +1,7 @@
 //! Background tasks of a session, read from its transcript: which tool calls start one — a subagent,
-//! a monitor, a call run in the background — and which lines end one: its notification, or an error
-//! result when it was refused before it started. The Rust twin of `.claude/hooks/status-tasks.ts`
+//! a monitor, a call run in the background — and which lines end one: its notification, an error
+//! result when it was refused before it started, or a subagent's result when it ran in the
+//! foreground. The Rust twin of `.claude/hooks/status-tasks.ts`
 //! and of `withTasks` in `status-tokens.ts`, until F19 ports the status line and drops those.
 
 use crate::json::{self, Value};
@@ -156,6 +157,34 @@ fn result_text(block: &Value) -> String {
     }
 }
 
+/// Whether a tool result launches a subagent in the background, as every `Agent` result of the
+/// transcripts did up to 2026-10-17: `toolUseResult` holds `status: "async_launched"` and
+/// `isAsync: true`, and the text opens with "Async agent launched successfully" (one line of
+/// 2026-10-16 holds the text without `toolUseResult`).
+fn launched_in_background(line: &Value, block: &Value) -> bool {
+    let result = line.get("toolUseResult");
+
+    result.get("status").text() == "async_launched"
+        || result.get("isAsync") == &Value::Bool(true)
+        || result_text(block).contains("Async agent launched")
+}
+
+/// Ids of the calls a line answers with a result that is neither an error nor a launch in the
+/// background: a subagent run in the foreground ends with its result (`status: "completed"`, the
+/// hooks reference), never with a notification (AUD-020).
+#[must_use]
+pub fn completed_ids(line: &Value) -> Vec<String> {
+    blocks(line)
+        .iter()
+        .filter(|block| {
+            block.get("type").text() == "tool_result"
+                && block.get("is_error") != &Value::Bool(true)
+                && !launched_in_background(line, block)
+        })
+        .map(|block| block.get("tool_use_id").text().to_owned())
+        .collect()
+}
+
 /// Ids of the calls a line answers with a result, and of those whose result resumes a subagent: a
 /// subagent that had stopped runs again in the background, its end notified under the message's
 /// call id (seen 2026-10-15: "Resuming agent …", then the notification 15 minutes later); a
@@ -179,18 +208,21 @@ pub fn answered_ids(line: &Value) -> (Vec<String>, Vec<String>) {
 }
 
 /// Background tasks still running after one transcript line: those it starts added, those notified
-/// as ended or answered with an error removed, those older than `LOST_TASK_MS` dropped; a message
-/// to a subagent, once answered, becomes that subagent when its result resumes it, or is dropped.
+/// as ended or answered with an error removed, a subagent answered with its result in the
+/// foreground removed, those older than `LOST_TASK_MS` dropped; a message to a subagent, once
+/// answered, becomes that subagent when its result resumes it, or is dropped.
 #[must_use]
 pub fn after_line(pending: Vec<Task>, raw: &str) -> Vec<Task> {
-    let awaits_message = pending.iter().any(|task| task.kind == Kind::Message);
+    let awaits_result = pending
+        .iter()
+        .any(|task| matches!(task.kind, Kind::Message | Kind::Agent));
 
-    // Only lines that start, end or refuse a call change the tasks, and the results of messages:
-    // the others are not parsed.
+    // Only lines that start, end or refuse a call change the tasks, and the results of messages
+    // and subagents: the others are not parsed.
     let matters = raw.contains("\"tool_use\"")
         || raw.contains("<task-notification>")
         || raw.contains("is_error")
-        || (awaits_message && raw.contains("\"tool_result\""));
+        || (awaits_result && raw.contains("\"tool_result\""));
 
     if !matters {
         return pending;
@@ -205,11 +237,13 @@ pub fn after_line(pending: Vec<Task>, raw: &str) -> Vec<Task> {
 
     let time = epoch_ms(line.get("timestamp").text());
     let (answered, resumed) = answered_ids(&line);
+    let completed = completed_ids(&line);
 
     pending
         .into_iter()
         .chain(started_tasks(&line))
         .filter(|task| !ended.contains(&task.id) && (time == 0 || time - task.start < LOST_TASK_MS))
+        .filter(|task| task.kind != Kind::Agent || !completed.contains(&task.id))
         .filter_map(|task| {
             if task.kind != Kind::Message || !answered.contains(&task.id) {
                 Some(task)
