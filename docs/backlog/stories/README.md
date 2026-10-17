@@ -240,7 +240,7 @@
 | [EN-088](./E17-F20-EN-088-subagent-stop-hook-in-rust.md) | F20 | A SubagentStop hook in Rust that checks a worker's branch | done |
 | [EN-092](./E17-F20-EN-092-run-totals-and-stop-report.md) | F20 | The duration and tokens of a whole run | done |
 | [EN-087](./E17-F20-EN-087-progress-page-as-an-artifact.md) | F20 | A progress page as a claude.ai Artifact, updated during a run | ready |
-| [EN-086](./E17-F20-EN-086-push-notification-at-each-stop.md) | F20 | A run that parks a question and pushes it, and stops only when it must | ready |
+| [EN-086](./E17-F20-EN-086-push-notification-at-each-stop.md) | F20 | A run that parks a question and pushes it, and stops only when it must | done |
 | [CHK-021](./E17-F20-CHK-021-checkpoint-f20.md) | F20 | Checkpoint in the middle of F20 | ready |
 | [EN-100](./E17-F20-EN-100-git-sequences-as-rust-commands.md) | F20 | The agent's frequent Git sequences as Rust commands | done |
 | [EN-101](./E17-F20-EN-101-every-page-fetch-through-the-library.md) | F20 | Every page fetched through the library, with the project recorded | done |
