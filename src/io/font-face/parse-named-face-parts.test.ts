@@ -2,13 +2,14 @@ import { describe, expect, it } from "vitest";
 
 import {
   ENGLISH_US,
-  SHARED_SANS_TABLES,
   TRUE_TYPE_VERSION,
   WINDOWS_PLATFORM,
   fontCollection,
   fontFile,
   joinedParts,
   nameTable,
+  partsDigest,
+  sharedSansTables,
   sharedTableCollection,
   tablesFile,
   testFontTables,
@@ -69,11 +70,11 @@ describe("parseNamedFaceParts (REF-OT-OTFF, REF-OT-NAME)", () => {
 
   it("[F17.AC10] [F18.AC19] gives SharedSans-Bold, the second face of a collection sharing Inter's tables", () => {
     // The second face: 284 + 409 312 shared + 96 of OS/2 + 84 of name = 409 776 bytes.
-    const faces = SHARED_SANS_TABLES;
+    const faces = sharedSansTables();
     const collection = sharedTableCollection(TRUE_TYPE_VERSION, faces);
     const parts = parseNamedFaceParts(collection, "SharedSans-Bold") ?? [];
 
     expect(parts.reduce((sum, part) => sum + part.length, 0)).toBe(409_776);
-    expect(joinedParts(parts)).toEqual(tablesFile(TRUE_TYPE_VERSION, faces[1] ?? {}));
+    expect(partsDigest(parts)).toBe(partsDigest([tablesFile(TRUE_TYPE_VERSION, faces[1] ?? {})]));
   });
 });

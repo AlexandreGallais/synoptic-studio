@@ -26,13 +26,13 @@ Find, read and record the sources of every story of F03 before its implementatio
 
 ## Inventory
 
-| Story   | Needs                                                       |
-| ------- | ----------------------------------------------------------- |
-| EN-010  | clamping with unequal radii; model of the radii             |
-| US-011  | mixed value; radii kept by vertex number                    |
-| US-012  | node handles, first and second vertex marked                |
-| US-013  | multiple selection in a list and on a drawing               |
-| AUD-004 | the sources above, re-verified                              |
+| Story | Needs |
+| --- | --- |
+| EN-010 | clamping with unequal radii; model of the radii |
+| US-011 | mixed value; radii kept by vertex number |
+| US-012 | node handles, first and second vertex marked |
+| US-013 | multiple selection in a list and on a drawing |
+| AUD-004 | the sources above, re-verified |
 | VAL-004 | the check table of the clamp derivation, unequal radii rows |
 
 ## Tasks

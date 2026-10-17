@@ -4,17 +4,20 @@
 
 import { execFileSync } from "node:child_process";
 
-/** The Rust tool moving a story's rows into the logs. */
+/** The Rust tool moving a story's rows into the logs, a binary of the Cargo workspace (EN-068). */
 export const MOVE_ROWS = [
   "run",
   "--release",
   "-q",
-  "--manifest-path",
-  "tools/shared-files/Cargo.toml",
+  "-p",
+  "shared-files",
   "--bin",
   "move-rows",
   "--",
 ];
+
+/** The repository's formatter writing files: oxfmt, then the tables without padding (EN-073). */
+const FORMAT_WRITE = ["run", "--release", "-q", "-p", "format", "--", "--write"];
 
 /**
  * The message of the commit moving a merged story's rows into the logs.
@@ -80,7 +83,7 @@ export function moveRows(branch: string, cwd: string): void {
   const files = moved === "" ? [] : moved.split("\n");
 
   if (files.length > 0) {
-    run("npx", ["prettier", "--write", ...files], cwd);
+    run("cargo", [...FORMAT_WRITE, ...files], cwd);
     commitRows(branch, files, cwd);
   }
 

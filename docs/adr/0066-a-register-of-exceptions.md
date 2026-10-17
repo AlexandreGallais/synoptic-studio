@@ -16,11 +16,11 @@
 
 ## Reasons
 
-| Option                                          | For                                                                  | Against                                     |
-| ----------------------------------------------- | -------------------------------------------------------------------- | ------------------------------------------- |
-| One exception per function, registered (chosen) | the rule holds everywhere else; each exception visible and justified | one more page and one check                 |
-| A lint scope off for `src/io/`                  | simple                                                               | every reader of `io` loses the rule, unseen |
-| Plain arrays kept                               | no exception                                                         | large collections crash the editor          |
+| Option | For | Against |
+| --- | --- | --- |
+| One exception per function, registered (chosen) | the rule holds everywhere else; each exception visible and justified | one more page and one check |
+| A lint scope off for `src/io/` | simple | every reader of `io` loses the rule, unseen |
+| Plain arrays kept | no exception | large collections crash the editor |
 
 ## Consequences
 

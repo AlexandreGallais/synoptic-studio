@@ -27,12 +27,12 @@ One task = one commit, referenced as `US-026.Tn`.
 
 ## Decisions during the story
 
-| Decision                                                                                                                                                | Reason                                                                                                                       |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| a fourth handle mode, `auto`, with a `tension` stored in the handles                                                                                    | the handles are computed, so the point must say it is smoothed; the tension is the only value typed                          |
-| the automatic handles are computed from the points as drawn and stored as last computed (`smoothedCorners`), in the drawing and in the box of the curve | they follow the neighbours; a stretch commutes with them (both linear); the stored values read as they are drawn             |
-| a handle typed in mode `auto` turns the point to mode angle                                                                                             | the agent's choice: the handles stay on one line, the tension no longer applies; no source read states what a tool does here |
-| a point in mode `auto` next to a point deleted is smoothed again from its new neighbours                                                                | that is what mode `auto` means: its handles follow its neighbours; the outer side moves (domain)                             |
+| Decision | Reason |
+| --- | --- |
+| a fourth handle mode, `auto`, with a `tension` stored in the handles | the handles are computed, so the point must say it is smoothed; the tension is the only value typed |
+| the automatic handles are computed from the points as drawn and stored as last computed (`smoothedCorners`), in the drawing and in the box of the curve | they follow the neighbours; a stretch commutes with them (both linear); the stored values read as they are drawn |
+| a handle typed in mode `auto` turns the point to mode angle | the agent's choice: the handles stay on one line, the tension no longer applies; no source read states what a tool does here |
+| a point in mode `auto` next to a point deleted is smoothed again from its new neighbours | that is what mode `auto` means: its handles follow its neighbours; the outer side moves (domain) |
 
 ## Product Owner test
 

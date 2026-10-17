@@ -23,15 +23,15 @@
 
 ## Reasons
 
-| Option                                         | For                                                                                               | Against                                                                                                       |
-| ---------------------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `switch` with the XHTML extension (chosen)     | browsers lay out live; resvg, Batik and Inkscape draw the positioned lines, as read in their code | two copies of each text; the extension's value is not defined by SVG 2, only by what the engines do           |
-| `foreignObject` alone                          | one copy                                                                                          | "SVG editors cannot display it" (`REF-DRAWIO-SVG-TEXT`); nothing in resvg, Batik or Inkscape                  |
-| `requiredFeatures` instead                     | older SVG 1.1 readers                                                                             | SVG 2's conditional processing names only `requiredExtensions` and `systemLanguage` (`REF-SVG2-STRUCT`, §5.6) |
-| Fonts as `data:` URLs in `@font-face` (chosen) | browsers and Batik draw them; the SVG stands alone, also as an image                              | a third more bytes than the file (`DERIV-font-embedding`, step 6); resvg ignores them                         |
-| Fonts linked by URL                            | small SVG                                                                                         | not loaded in an SVG used as an image (`REF-MDN-SVG-AS-IMAGE`); a file that depends on another                |
-| Text converted to paths                        | the same drawing everywhere                                                                       | not wanted by the Product Owner (ADR-0052)                                                                    |
-| Both options off by default (chosen)           | every text of F05, F14 and F16 is written as before; no font sent without a choice                | a designer turns them on for each document                                                                    |
+| Option | For | Against |
+| --- | --- | --- |
+| `switch` with the XHTML extension (chosen) | browsers lay out live; resvg, Batik and Inkscape draw the positioned lines, as read in their code | two copies of each text; the extension's value is not defined by SVG 2, only by what the engines do |
+| `foreignObject` alone | one copy | "SVG editors cannot display it" (`REF-DRAWIO-SVG-TEXT`); nothing in resvg, Batik or Inkscape |
+| `requiredFeatures` instead | older SVG 1.1 readers | SVG 2's conditional processing names only `requiredExtensions` and `systemLanguage` (`REF-SVG2-STRUCT`, §5.6) |
+| Fonts as `data:` URLs in `@font-face` (chosen) | browsers and Batik draw them; the SVG stands alone, also as an image | a third more bytes than the file (`DERIV-font-embedding`, step 6); resvg ignores them |
+| Fonts linked by URL | small SVG | not loaded in an SVG used as an image (`REF-MDN-SVG-AS-IMAGE`); a file that depends on another |
+| Text converted to paths | the same drawing everywhere | not wanted by the Product Owner (ADR-0052) |
+| Both options off by default (chosen) | every text of F05, F14 and F16 is written as before; no font sent without a choice | a designer turns them on for each document |
 
 ## Consequences
 

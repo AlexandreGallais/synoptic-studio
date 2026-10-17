@@ -4,17 +4,17 @@ import {
   APPLE_TRUE_TYPE_VERSION,
   ENGLISH_US,
   HELLO_TEXT,
-  INTER_REGULAR_FILE,
   OPEN_TYPE_VERSION,
-  SHARED_SANS_TABLES,
   TRUE_TYPE_VERSION,
   WINDOWS_PLATFORM,
   familyNameTable,
   fontFile,
   headTable,
+  interRegularFile,
   joinedParts,
   nameTable,
   os2FaceTable,
+  sharedSansTables,
   sharedTableCollection,
   testFontTables,
   uint32,
@@ -38,7 +38,7 @@ import type { FontFamily } from "../../model";
 
 /** The faces of a collection of three faces sharing Inter's tables, each joined into its file. */
 const SHARED_SANS_FILES = parseCollectionFaces(
-  sharedTableCollection(TRUE_TYPE_VERSION, SHARED_SANS_TABLES),
+  sharedTableCollection(TRUE_TYPE_VERSION, sharedSansTables()),
 ).map((parts) => joinedParts(parts));
 
 /**
@@ -214,19 +214,23 @@ describe("parseFontFace (REF-OT-NAME, REF-OT-OS2)", () => {
     expect(metrics?.unitsPerEm).toBe(2000);
   });
 
-  it("[F15.AC1] reads Inter Regular 4.1: Inter, 400, upright, embeddable", () => {
-    // REF-OT-NAME: no name ID 16, name ID 1 Inter; REF-OT-OS2: 400, fsSelection 0x00c0 (bit 6
-    // regular), fsType 0, installable; read again with fontTools 4.60.2
-    // (`REF-INTER-REGULAR-FILE`).
-    const named = parseFontFace(INTER_REGULAR_FILE);
+  it(
+    "[F15.AC1] reads Inter Regular 4.1: Inter, 400, upright, embeddable",
+    { timeout: 20_000 },
+    () => {
+      // REF-OT-NAME: no name ID 16, name ID 1 Inter; REF-OT-OS2: 400, fsSelection 0x00c0 (bit 6
+      // regular), fsType 0, installable; read again with fontTools 4.60.2
+      // (`REF-INTER-REGULAR-FILE`).
+      const named = parseFontFace(interRegularFile());
 
-    expect(named).toMatchObject({
-      face: { file: { isEmbeddable: true }, isItalic: false, weight: 400 },
-      family: "Inter",
-    });
+      expect(named).toMatchObject({
+        face: { file: { isEmbeddable: true }, isItalic: false, weight: 400 },
+        family: "Inter",
+      });
 
-    expect(named?.face.metrics.unitsPerEm).toBe(2048);
-  });
+      expect(named?.face.metrics.unitsPerEm).toBe(2048);
+    },
+  );
 });
 
 describe("parseFontFace, faces of macOS and of collections (F17.AC4)", () => {
@@ -245,14 +249,15 @@ describe("parseFontFace, faces of macOS and of collections (F17.AC4)", () => {
   });
 
   it(
-    "[F17.AC4] [F18.AC19] reads the 3 faces of a collection sharing Inter's tables: 400, 700, 400 italic",
-    // Inter's metrics read three times, about 2.3 s alone: 20 s holds a loaded pre-push run.
+    "[F17.AC4] [F18.AC19] reads the 3 faces of a collection sharing Inter's tables, each tagged true as Chrome gives it on macOS: 400, 700, 400 italic",
+    // Inter's metrics read three times, about 2.3 s alone: 20 s holds a loaded pre-push run. Each
+    // face is read once, tagged `true`: an untagged face is the case of every other test here.
     { timeout: 20_000 },
     () => {
       // usWeightClass 400, 700, 400; fsSelection 0x00c0, 0x00a0, 0x0081: bit 0, italic, in the third.
       expect(
         SHARED_SANS_FILES.map((file) => {
-          const named = parseFontFace(file);
+          const named = parseFontFace(appleTagged(file));
 
           return [named?.family, named?.face.weight, named?.face.isItalic];
         }),
@@ -260,21 +265,6 @@ describe("parseFontFace, faces of macOS and of collections (F17.AC4)", () => {
         ["Shared Sans", 400, false],
         ["Shared Sans", 700, false],
         ["Shared Sans", 400, true],
-      ]);
-    },
-  );
-
-  it(
-    "[F17.AC4] [F18.AC19] reads each face of that collection tagged true, as Chrome gives it on macOS",
-    // Inter's metrics read three times, about 2.3 s alone: 20 s holds a loaded pre-push run.
-    { timeout: 20_000 },
-    () => {
-      const faces = SHARED_SANS_FILES.map((file) => parseFontFace(appleTagged(file)));
-
-      expect(faces.map((named) => named?.family)).toEqual([
-        "Shared Sans",
-        "Shared Sans",
-        "Shared Sans",
       ]);
     },
   );

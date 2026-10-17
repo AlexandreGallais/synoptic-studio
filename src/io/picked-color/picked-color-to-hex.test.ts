@@ -55,8 +55,9 @@ function exactHsbByte(tenths: readonly [bigint, bigint, bigint], n: number): num
 }
 
 /**
- * HSL's `f(n)` in exact rationals, the values in tenths: `l / 1000 − s / 1000 · min(l, 1000 − l) /
- * 1000 · q / 300`, with `q = clamp(min(K − 900, 2700 − K), −300, 300)`, written over 3 · 10⁸.
+ * HSL's `f(n)` in exact rationals, the values in tenths:
+ * `l / 1000 − s / 1000 · min(l, 1000 − l) / 1000 · q / 300`, with
+ * `q = clamp(min(K − 900, 2700 − K), −300, 300)`, written over 3 · 10⁸.
  *
  * @param tenths - hue, saturation and lightness in tenths
  * @param n - 0 for red, 8 for green, 4 for blue

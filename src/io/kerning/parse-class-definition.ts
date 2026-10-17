@@ -39,7 +39,7 @@ type GlyphClasses = Readonly<Record<number, number>>;
  * @returns its class
  * @see REF-OT-LAYOUT-COMMON
  */
-function parseArrayClass(table: DataView, values: number, index: number): number {
+function parseArrayClass(table: Readonly<DataView>, values: number, index: number): number {
   return table.getUint16(elementAddress(values, CLASS_SIZE, index));
 }
 
@@ -55,7 +55,7 @@ function parseArrayClass(table: DataView, values: number, index: number): number
  * @see REF-OT-LAYOUT-COMMON
  */
 function parseClassArray(
-  table: DataView,
+  table: Readonly<DataView>,
   definition: number,
   glyphs: ReadonlySet<number>,
 ): GlyphClasses | undefined {
@@ -88,7 +88,7 @@ function parseClassArray(
  * @see REF-OT-LAYOUT-COMMON
  */
 function parseClassRanges(
-  table: DataView,
+  table: Readonly<DataView>,
   definition: number,
   glyphs: ReadonlySet<number>,
 ): GlyphClasses | undefined {
@@ -122,7 +122,7 @@ function parseClassRanges(
  * @see REF-OT-LAYOUT-COMMON
  */
 export function parseClassDefinition(
-  table: DataView,
+  table: Readonly<DataView>,
   definition: number,
   glyphs: ReadonlySet<number>,
 ): GlyphClasses | undefined {

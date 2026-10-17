@@ -1,0 +1,9 @@
+[editor](../index.md) / DEGREES\_PER\_TURN
+
+# Variable: DEGREES\_PER\_TURN
+
+> `const` **DEGREES\_PER\_TURN**: `360` = `360`
+
+Defined in: math/angle/degrees-per-turn.ts:2
+
+Degrees in a whole turn: an angle and that angle plus 360 give the same direction.

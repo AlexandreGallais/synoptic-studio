@@ -23,7 +23,11 @@ const FIELD_SIZE = 2;
  * @returns the adjustment, font units
  * @see REF-OT-GPOS
  */
-export function parseXAdvance(view: DataView, record: number, valueFormat: number): number {
+export function parseXAdvance(
+  view: Readonly<DataView>,
+  record: number,
+  valueFormat: number,
+): number {
   const before = populationCount(modulo(valueFormat, FIELDS_BEFORE_X_ADVANCE));
 
   return isBitSet(valueFormat, X_ADVANCE_BIT)

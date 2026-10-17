@@ -4,11 +4,11 @@ Used by: EN-031 (`isBitSet`, reading the flags of a font's tables). Sources: `RE
 
 ## Notation
 
-| Symbol | Definition                                                          |
-| ------ | ------------------------------------------------------------------- |
-| `n`    | an integer ≥ 0                                                      |
-| `bₖ`   | the bit of number `k` of `n`, 0 or 1, `k = 0` the least significant |
-| `i`    | the number of the bit read, an integer ≥ 0                          |
+| Symbol | Definition |
+| --- | --- |
+| `n` | an integer ≥ 0 |
+| `bₖ` | the bit of number `k` of `n`, 0 or 1, `k = 0` the least significant |
+| `i` | the number of the bit read, an integer ≥ 0 |
 
 ## Step 1 — The integer as its bits
 
@@ -38,12 +38,12 @@ bᵢ = ⌊n / 2ⁱ⌋ mod 2
 
 ## Checks (test cases)
 
-| Case            | Computation             | Expected |
-| --------------- | ----------------------- | -------- |
-| 149, bit 0      | `149 mod 2`             | 1        |
-| 149, bit 1      | `74 mod 2`              | 0        |
-| 0xFFFF, bit 15  | `⌊65 535 / 32 768⌋ = 1` | 1        |
-| 0xFFFF, bit 16  | `⌊65 535 / 65 536⌋ = 0` | 0        |
-| 0x8000, bit 15  | `⌊32 768 / 32 768⌋ = 1` | 1        |
-| 0x8000, bit 14  | `⌊32 768 / 16 384⌋ = 2` | 0        |
-| 2³² + 1, bit 32 | `⌊(2³² + 1) / 2³²⌋ = 1` | 1        |
+| Case | Computation | Expected |
+| --- | --- | --- |
+| 149, bit 0 | `149 mod 2` | 1 |
+| 149, bit 1 | `74 mod 2` | 0 |
+| 0xFFFF, bit 15 | `⌊65 535 / 32 768⌋ = 1` | 1 |
+| 0xFFFF, bit 16 | `⌊65 535 / 65 536⌋ = 0` | 0 |
+| 0x8000, bit 15 | `⌊32 768 / 32 768⌋ = 1` | 1 |
+| 0x8000, bit 14 | `⌊32 768 / 16 384⌋ = 2` | 0 |
+| 2³² + 1, bit 32 | `⌊(2³² + 1) / 2³²⌋ = 1` | 1 |

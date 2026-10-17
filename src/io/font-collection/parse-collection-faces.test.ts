@@ -3,11 +3,12 @@ import { describe, expect, it } from "vitest";
 
 import {
   OPEN_TYPE_VERSION,
-  SHARED_SANS_TABLES,
   TRUE_TYPE_VERSION,
   fontCollection,
   fontFile,
   joinedParts,
+  partsDigest,
+  sharedSansTables,
   sharedTableCollection,
   tablesFile,
 } from "../../../tests";
@@ -56,19 +57,22 @@ describe("parseCollectionFaces (REF-OT-OTFF)", () => {
     expect(parseCollectionFaces(file)).toEqual([[file]]);
   });
 
+  // About 75 ms alone once the faces are compared by digest (EN-089): Vitest's 5 s holds.
   it("[F17.AC10] [F18.AC19] gives each face of a collection sharing Inter's tables as its own file", () => {
     // Inter's tables padded take 411 640 − 284 = 411 356 bytes; its name (1 948) and OS/2 (96)
     // replaced, each face holds 409 312 bytes of shared tables, 96 of OS/2 and its name of 88, 82
     // (padded to 84) or 86 (padded to 88): with its directory of 284, 409 780, 409 776, 409 780.
-    const faces = SHARED_SANS_TABLES;
+    const faces = sharedSansTables();
     const read = parseCollectionFaces(sharedTableCollection(TRUE_TYPE_VERSION, faces));
 
     expect(read.map((parts) => parts.reduce((sum, part) => sum + part.length, 0))).toEqual([
       409_780, 409_776, 409_780,
     ]);
 
-    expect(read.map((parts) => joinedParts(parts))).toEqual(
-      faces.map((tables) => tablesFile(TRUE_TYPE_VERSION, tables)),
+    // Each face's parts read in order hash as the file of its tables: the same bytes, compared
+    // by their SHA-256 rather than byte by byte (EN-089).
+    expect(read.map((parts) => partsDigest(parts))).toEqual(
+      faces.map((tables) => partsDigest([tablesFile(TRUE_TYPE_VERSION, tables)])),
     );
   });
 

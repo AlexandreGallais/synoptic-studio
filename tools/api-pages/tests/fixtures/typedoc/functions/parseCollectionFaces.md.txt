@@ -1,0 +1,43 @@
+[editor](../index.md) / parseCollectionFaces
+
+# Function: parseCollectionFaces()
+
+> **parseCollectionFaces**\<`Buffer`\>(`file`): readonly readonly `Readonly`\<`Uint8Array`\<`ArrayBuffer` \| `Buffer`\>\>[][]
+
+Defined in: io/font-collection/parse-collection-faces.ts:17
+
+Reads the faces a font file holds, each as the parts of a font file of its own: a collection
+(`.ttc`, its header `ttcf`) gives each of its faces' parts (`collectionFaceToParts`), views of
+its bytes, in the order of its `tableDirectoryOffsets`; any other file is given back as it is,
+one face of one part, or none.
+
+## Type Parameters
+
+### Buffer
+
+`Buffer` *extends* `ArrayBufferLike`
+
+the buffer the bytes sit in, kept by every view of them
+
+## Parameters
+
+### file
+
+`Readonly`\<`Uint8Array`\<`Buffer`\>\>
+
+the bytes of a font file or of a collection
+
+## Returns
+
+readonly readonly `Readonly`\<`Uint8Array`\<`ArrayBuffer` \| `Buffer`\>\>[][]
+
+the parts of each face, joined in their order into its file; the file itself when it
+is not a collection
+
+## Kind
+
+format
+
+## See
+
+REF-OT-OTFF

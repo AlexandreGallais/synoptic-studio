@@ -19,17 +19,17 @@ Find, read and record the sources of every story of F16 before its implementatio
 
 ## Questions
 
-| Question                                                                                                                              | Story       |
-| ------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| Which hexadecimal forms does a designer paste (3, 4, 6 or 8 digits, upper or lower case, with or without `#`), and what do they mean? | EN-037      |
-| How does an 8-bit alpha map to an opacity from 0 to 100 %, and back, without loss?                                                    | EN-037      |
-| How are HSL and HSB defined from red, green and blue, and back (CSS Color 4 sample code, HSV formulas)?                               | EN-038      |
-| What hue has a grey, whose hue is undefined?                                                                                          | EN-038      |
-| Which representation keeps hexadecimal → HSL or HSB → hexadecimal exact: integer degrees and percents, decimals, or none?             | EN-038      |
-| Which axes does the plane of a picker show, in HSL and in HSB?                                                                        | US-035      |
-| How is a picker's slider used with the keyboard (WAI-ARIA slider pattern)?                                                            | US-035      |
-| How do Figma and Inkscape show a color's hexadecimal value, its opacity and its HSL or HSB values?                                    | US-035      |
-| What must every shape and text of E01, E14, F05 and F14 keep?                                                                         | every story |
+| Question | Story |
+| --- | --- |
+| Which hexadecimal forms does a designer paste (3, 4, 6 or 8 digits, upper or lower case, with or without `#`), and what do they mean? | EN-037 |
+| How does an 8-bit alpha map to an opacity from 0 to 100 %, and back, without loss? | EN-037 |
+| How are HSL and HSB defined from red, green and blue, and back (CSS Color 4 sample code, HSV formulas)? | EN-038 |
+| What hue has a grey, whose hue is undefined? | EN-038 |
+| Which representation keeps hexadecimal → HSL or HSB → hexadecimal exact: integer degrees and percents, decimals, or none? | EN-038 |
+| Which axes does the plane of a picker show, in HSL and in HSB? | US-035 |
+| How is a picker's slider used with the keyboard (WAI-ARIA slider pattern)? | US-035 |
+| How do Figma and Inkscape show a color's hexadecimal value, its opacity and its HSL or HSB values? | US-035 |
+| What must every shape and text of E01, E14, F05 and F14 keep? | every story |
 
 ## Tasks
 

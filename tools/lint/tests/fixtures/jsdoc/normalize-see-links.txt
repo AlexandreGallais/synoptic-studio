@@ -1,0 +1,1263 @@
+# normalize-see-links: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), then faults planted
+# in copies of files of the tree and cases written for branches, each run by ESLint 10.12.0 at src/a.ts with the project's options;
+# a carriage return written ␍; recorded by EN-083.
+@@@ case 1 (documented invalid)
+
+        /**
+         * @see [Docs](https://api.example.com/v1?ids=1|2|3)
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://api.example.com/v1?ids=1%7C2%7C3|Docs}
+         */
+      
+@@@ case 2 (documented invalid)
+
+        /**
+         * @see [Unicode](https://example.com/päth)
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com/päth|Unicode}
+         */
+      
+@@@ case 3 (documented invalid)
+
+        /**
+         * @see [Caret](https://example.com/a^b)
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com/a^b|Caret}
+         */
+      
+@@@ case 4 (documented invalid)
+
+        /**
+         * @see [See {options}](https://example.com/api)
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com/api|See {options\}}
+         */
+      
+@@@ case 5 (documented invalid)
+
+        /**
+         * @see [a}b](https://example.com)
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com|a\}b}
+         */
+      
+@@@ case 6 (documented invalid)
+
+        /**
+         * @see [a\}b](https://example.com)
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com|a\}b}
+         */
+      
+@@@ case 7 (documented invalid)
+
+        /**
+         * @see [A\]B](https://example.com)
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com|A]B}
+         */
+      
+@@@ case 8 (documented invalid)
+
+        /**
+         * @see [Foo](https://example.com/a|b)
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com/a%7Cb|Foo}
+         */
+      
+@@@ case 9 (documented invalid)
+
+        /**
+         * @see [ ](https://example.com)
+         */
+      
+@@@ findings
+3:1 @see link cannot be safely normalized.
+@@@ case 10 (documented invalid)
+
+        /**
+         * @see {@link https://example.com|A]B}
+         */
+      
+@@@ findings
+@@@ case 11 (documented invalid)
+
+        /**
+         * @see [ ]{@link https://example.com}
+         */
+      
+@@@ findings
+3:1 @see link cannot be safely normalized.
+@@@ case 12 (documented invalid)
+
+        /**
+         * @see [Foo](https://example.com/a}b)
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com/a%7Db|Foo}
+         */
+      
+@@@ case 13 (documented invalid)
+
+        /**
+         * @see [Foo](https://example.com/a{b)
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com/a%7Bb|Foo}
+         */
+      
+@@@ case 14 (documented invalid)
+
+        /**
+         * @see [Braces](https://example.com/a{b}c)
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com/a%7Bb%7Dc|Braces}
+         */
+      
+@@@ case 15 (documented invalid)
+
+        /**
+         * @see [Existing](https://example.com/%7C?x=1&y=2#frag)
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com/%7C?x=1&y=2#frag|Existing}
+         */
+      
+@@@ case 16 (documented invalid)
+
+        /**
+         * @see [Percent](https://example.com/100%)
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com/100%25|Percent}
+         */
+      
+@@@ case 17 (documented invalid)
+
+        /**
+         * @see [A{B](https://example.com)
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com|A{B}
+         */
+      
+@@@ case 18 (documented invalid)
+
+        /**
+         * @see [a}b](https://example.com)
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com|a\}b}
+         */
+      
+@@@ case 19 (documented invalid)
+
+        /**
+         * @see {@link https://example.com|A|B}
+         */
+      
+@@@ findings
+@@@ case 20 (documented invalid)
+
+        /**
+         * @see {@link https://example.com|A`B}
+         */
+      
+@@@ findings
+@@@ case 21 (documented invalid)
+
+        /**
+         * @see {@link https://example.com|a\}b}
+         */
+      
+@@@ findings
+@@@ case 22 (documented invalid)
+
+        /**
+         * @see [A\]B]{@link https://example.com}
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com|A]B}
+         */
+      
+@@@ case 23 (documented invalid)
+
+        /**
+         * @see {@link https://example.com|A]B\}C}
+         */
+      
+@@@ findings
+@@@ case 24 (documented invalid)
+
+        /**
+         * @see [A}B\]C]{@link https://example.com}
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com|A\}B]C}
+         */
+      
+@@@ case 25 (documented invalid)
+
+        /**
+         * @see [Trailing\\](https://example.com)
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com|Trailing\\}
+         */
+      
+@@@ case 26 (documented invalid)
+
+        /**
+         * @see [See {{one} and {two}}](https://example.com)
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com|See {{one\} and {two\}\}}
+         */
+      
+@@@ case 27 (documented invalid)
+
+        /**
+         * @see [A}B|C](https://example.com)
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com|A\}B|C}
+         */
+      
+@@@ case 28 (documented invalid)
+
+        /**
+         * @see [Read the guide](https://example.com/read)
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com/read|Read the guide}
+         */
+      
+@@@ case 29 (documented invalid)
+
+        /**
+         * @see [Browse the API]{@link https://example.com/api}
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com/api|Browse the API}
+         */
+      
+@@@ case 30 (documented invalid)
+
+        /**
+         * @see [A](https://a.com) and [B](https://b.com)
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://a.com|A} and {@link https://b.com|B}
+         */
+      
+@@@ case 31 (documented invalid)
+
+        /**
+         * @see [A](https://a.com)
+         * @see [B](https://b.com)
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+4:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://a.com|A}
+         * @see {@link https://b.com|B}
+         */
+      
+@@@ case 32 (documented invalid)
+
+        /**
+         * @see [Unsafe](https://example.com/a|b?x=1&y=2#frag) and [Safe](https://example.com/safe)
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com/a%7Cb?x=1&y=2#frag|Unsafe} and {@link https://example.com/safe|Safe}
+         */
+      
+@@@ case 33 (documented invalid)
+
+        /**
+         * @see [JSDoc Markdown](https://example.com/jsdoc|markdown)
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com/jsdoc%7Cmarkdown|JSDoc Markdown}
+         */
+      
+@@@ case 34 (documented invalid)
+
+        /**
+         * @see [Package](@scope/pkg)
+         */
+      
+@@@ findings
+3:1 @see link cannot be safely normalized.
+@@@ case 35 (documented invalid)
+
+        /**
+         * @see [First](https://example.com/first)
+         *   and [Second](https://example.com/second)
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com/first|First}
+         *   and {@link https://example.com/second|Second}
+         */
+      
+@@@ case 36 (documented invalid)
+
+        /**
+         * @see [Example](https://example.com)
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com|Example}
+         */
+      
+@@@ case 37 (documented invalid)
+
+        /**
+         * @see [Guide]{@link https://example.com/guide}
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com/guide|Guide}
+         */
+      
+@@@ case 38 (documented invalid)
+
+        /**
+         * @see [API](https://example.com/api)
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com/api|API}
+         */
+      
+@@@ case 39 (documented invalid)
+
+        /**
+         * @see {@link https://example.com/reference|Reference}
+         */
+      
+@@@ findings
+@@@ case 40 (documented invalid)
+
+        /**
+         * @see [No fix](https://example.com/no-fix)
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com/no-fix|No fix}
+         */
+      
+@@@ case 41 (documented invalid)
+
+        /**
+         * @see [Incomplete](https://example.com/incomplete
+         */
+      
+@@@ findings
+3:1 @see link cannot be safely normalized.
+@@@ case 42 (documented invalid)
+
+        /**
+         * @see [Incomplete]{@link}
+         */
+      
+@@@ findings
+3:1 @see link cannot be safely normalized.
+@@@ case 43 (documented invalid)
+
+        /**
+         * @see {@link https://example.com|}
+         */
+      
+@@@ findings
+3:1 @see link cannot be safely normalized.
+@@@ case 44 (documented invalid)
+
+        /**
+         * @see `[Code](https://example.com/code)`
+         */
+      
+@@@ findings
+3:1 @see link cannot be safely normalized.
+@@@ case 45 (documented invalid)
+
+        /**
+         * @see [Package]{@link @scope/pkg}
+         */
+      
+@@@ findings
+3:1 @see link cannot be safely normalized.
+@@@ case 46 (documented invalid)
+
+        /**
+         * @see {@link https://example.com Space label}
+         */
+      
+@@@ findings
+3:1 @see link cannot be safely normalized.
+@@@ case 47 (documented invalid)
+
+        /**
+         * @see [JSDoc]{@link https://example.com/jsdoc}
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com/jsdoc|JSDoc}
+         */
+      
+@@@ case 48 (documented invalid)
+
+        /**
+         * @see [TypeScript](https://example.com/type{script})
+         */
+        const value: string = 'value';
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com/type%7Bscript%7D|TypeScript}
+         */
+        const value: string = 'value';
+      
+@@@ case 49 (documented invalid)
+
+        /**
+         * @see [Complex](https://example.com/a_(b))
+         */
+      
+@@@ findings
+3:1 @see link cannot be safely normalized.
+@@@ case 50 (documented invalid)
+
+        /**
+         * @see https://example.com/docs
+         */
+      
+@@@ findings
+@@@ case 51 (documented invalid)
+
+        /**
+         * @see http://example.com/docs
+         */
+      
+@@@ findings
+@@@ case 52 (documented invalid)
+
+        /**
+         * @see https://example.com/%7C?ids=1|2&brace={ok}#part}
+         */
+      
+@@@ findings
+@@@ case 53 (documented invalid)
+
+        /**
+         * @see https://example.com/prefix
+         */
+      
+@@@ findings
+@@@ case 54 (documented invalid)
+
+        /**
+         * @see https://example.com/report-only
+         */
+      
+@@@ findings
+@@@ case 55 (documented invalid)
+
+        /**
+         * @see [Docs](https://example.com/labeled)
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com/labeled|Docs}
+         */
+      
+@@@ case 56 (documented invalid)
+
+        /**
+         * @see [Docs]{@link https://example.com/labeled}
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com/labeled|Docs}
+         */
+      
+@@@ case 57 (documented invalid)
+
+        /**
+         * @see {@link https://example.com/labeled|Docs}
+         */
+      
+@@@ findings
+@@@ case 58 (documented invalid)
+
+        /**
+         * @see [See {options}](https://example.com/labeled)
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com/labeled|See {options\}}
+         */
+      
+@@@ case 59 (documented invalid)
+
+        /**
+         * @see [No fix](https://example.com/labeled)
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com/labeled|No fix}
+         */
+      
+@@@ case 60 (documented invalid)
+
+        /**
+         * @see https://example.com/period.
+         * @see https://example.com/comma,
+         * @see https://example.com/paren)
+         */
+      
+@@@ findings
+@@@ case 61 (documented invalid)
+/**
+ * @see https://example.com/trailing 
+ */
+@@@ findings
+@@@ case 62 (documented invalid)
+
+        /**
+         * @see
+         *   https://example.com/continued
+         */
+      
+@@@ findings
+@@@ case 63 (documented invalid)
+
+        /**
+         * @see http:MyClass#method
+         */
+      
+@@@ findings
+@@@ case 64 (documented valid)
+
+        /**
+         * @see {@link https://example.com/api|See {options\}}
+         */
+      
+@@@ findings
+@@@ case 65 (documented valid)
+
+        /**
+         * @see [A\]B]{@link https://example.com}
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com|A]B}
+         */
+      
+@@@ case 66 (documented valid)
+
+        /**
+         * @see [A\]B}C]{@link https://example.com}
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com|A]B\}C}
+         */
+      
+@@@ case 67 (documented valid)
+
+        /**
+         * @see {@link https://example.com|A\}B]C}
+         */
+      
+@@@ findings
+@@@ case 68 (documented valid)
+
+        /**
+         * @see {@link https://example.com|Trailing\\}
+         */
+      
+@@@ findings
+@@@ case 69 (documented valid)
+
+        /**
+         * @see {@link https://example.com|See {{one\} and {two\}\}}
+         */
+      
+@@@ findings
+@@@ case 70 (documented valid)
+
+        /**
+         * @see {@link https://api.example.com/v1?ids=1%7C2%7C3|Docs}
+         */
+      
+@@@ findings
+@@@ case 71 (documented valid)
+
+        /**
+         * @see [Foo]{@link https://example.com/a%7Cb}
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com/a%7Cb|Foo}
+         */
+      
+@@@ case 72 (documented valid)
+
+        /**
+         * @see [Foo]{@link https://example.com/a%7Db}
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com/a%7Db|Foo}
+         */
+      
+@@@ case 73 (documented valid)
+
+        /**
+         * @see [Foo]{@link https://example.com/a%7Bb}
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com/a%7Bb|Foo}
+         */
+      
+@@@ case 74 (documented valid)
+
+        /**
+         * @see {@link https://example.com/a%7Bb%7Dc|Braces}
+         */
+      
+@@@ findings
+@@@ case 75 (documented valid)
+
+        /**
+         * @see {@link https://example.com/%7C?x=1&y=2#frag|Existing}
+         */
+      
+@@@ findings
+@@@ case 76 (documented valid)
+
+        /**
+         * @see {@link https://example.com/100%25|Percent}
+         */
+      
+@@@ findings
+@@@ case 77 (documented valid)
+
+        /**
+         * @see {@link https://example.com|A{B}
+         */
+      
+@@@ findings
+@@@ case 78 (documented valid)
+
+        /**
+         * @see [a}b]{@link https://example.com}
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com|a\}b}
+         */
+      
+@@@ case 79 (documented valid)
+
+        /**
+         * @see {@link https://example.com|A|B}
+         */
+      
+@@@ findings
+@@@ case 80 (documented valid)
+
+        /**
+         * @see [A|B]{@link https://example.com}
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com|A|B}
+         */
+      
+@@@ case 81 (documented valid)
+
+        /**
+         * @see [A`B]{@link https://example.com}
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com|A`B}
+         */
+      
+@@@ case 82 (documented valid)
+
+        /**
+         * @see {@link https://example.com/a%7Cb?x=1&y=2#frag|Unsafe} and {@link https://example.com/safe|Safe}
+         */
+      
+@@@ findings
+@@@ case 83 (documented valid)
+
+        /**
+         * @see {@link https://example.com/read|Read the guide}
+         */
+      
+@@@ findings
+@@@ case 84 (documented valid)
+
+        /**
+         * @see {@link https://example.com/api|Browse the API}
+         */
+      
+@@@ findings
+@@@ case 85 (documented valid)
+
+        /**
+         * @see {@link https://a.com|A} and {@link https://b.com|B}
+         */
+      
+@@@ findings
+@@@ case 86 (documented valid)
+
+        /**
+         * @see {@link https://a.com|A}
+         * @see {@link https://b.com|B}
+         */
+      
+@@@ findings
+@@@ case 87 (documented valid)
+
+        /**
+         * @see {@link https://example.com/jsdoc%7Cmarkdown|JSDoc Markdown}
+         */
+      
+@@@ findings
+@@@ case 88 (documented valid)
+
+        /**
+         * @see {@link https://example.com/first|First}
+         *   and {@link https://example.com/second|Second}
+         */
+      
+@@@ findings
+@@@ case 89 (documented valid)
+
+        /**
+         * @see {@link https://example.com|Example}
+         */
+      
+@@@ findings
+@@@ case 90 (documented valid)
+
+        /**
+         * @see {@link https://example.com/guide|Guide}
+         */
+      
+@@@ findings
+@@@ case 91 (documented valid)
+
+        /**
+         * @see [API]{@link https://example.com/api}
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com/api|API}
+         */
+      
+@@@ case 92 (documented valid)
+
+        /**
+         * @see [Reference]{@link https://example.com/reference}
+         */
+      
+@@@ findings
+3:1 Expected @see link to use the pipe form.
+@@@ output
+
+        /**
+         * @see {@link https://example.com/reference|Reference}
+         */
+      
+@@@ case 93 (documented valid)
+
+        /**
+         * @see {@link https://example.com/jsdoc|JSDoc}
+         */
+      
+@@@ findings
+@@@ case 94 (documented valid)
+
+        /**
+         * @see {@link https://example.com/type%7Bscript%7D|TypeScript}
+         */
+        const value: string = 'value';
+      
+@@@ findings
+@@@ case 95 (documented valid)
+
+        /**
+         * @see https://example.com
+         */
+      
+@@@ findings
+@@@ case 96 (documented valid)
+
+        /**
+         * @see MyClass#method
+         */
+      
+@@@ findings
+@@@ case 97 (documented valid)
+
+        /**
+         * @see some text
+         */
+      
+@@@ findings
+@@@ case 98 (documented valid)
+
+        /**
+         * @see {@link https://example.com}
+         */
+      
+@@@ findings
+@@@ case 99 (documented valid)
+
+        /**
+         * @see {@link @scope/pkg|Package}
+         */
+      
+@@@ findings
+@@@ case 100 (documented valid)
+
+        /**
+         * @see @scope/pkg
+         */
+      
+@@@ findings
+@@@ case 101 (documented valid)
+
+        /**
+         * @returns [Example](https://example.com)
+         */
+      
+@@@ findings
+@@@ case 102 (documented valid)
+
+        /**
+         * @see {@code foo|bar}
+         */
+      
+@@@ findings
+@@@ case 103 (documented valid)
+
+        /**
+         * @see \[Escaped](https://example.com)
+         */
+      
+@@@ findings
+@@@ case 104 (documented valid)
+
+        /**
+         * @see {@link https://example.com/idempotent}
+         */
+      
+@@@ findings
+@@@ case 105 (documented valid)
+
+        /**
+         * @see Read https://example.com/docs
+         */
+      
+@@@ findings
+@@@ case 106 (documented valid)
+
+        /**
+         * @see Read https://example.com/docs
+         */
+      
+@@@ findings
+@@@ case 107 (documented valid)
+
+        /**
+         * @see MyClass#method
+         */
+      
+@@@ findings
+@@@ case 108 (documented valid)
+
+        /**
+         * @see ftp://example.com/file
+         */
+      
+@@@ findings
+@@@ case 109 (documented valid)
+
+        /**
+         * @see ftp://example.com/file
+         */
+      
+@@@ findings
+@@@ case 110 (documented valid)
+
+        /**
+         * @see mailto:docs@example.com
+         */
+      
+@@@ findings
+@@@ case 111 (documented valid)
+
+        /**
+         * @see mailto:docs@example.com
+         */
+      
+@@@ findings
+@@@ case 112 (documented valid)
+
+        /**
+         * @see file:///tmp/docs
+         */
+      
+@@@ findings
+@@@ case 113 (documented valid)
+
+        /**
+         * @see file:///tmp/docs
+         */
+      
+@@@ findings
+@@@ case 114 (documented valid)
+
+        /**
+         * @see //example.com/docs
+         */
+      
+@@@ findings
+@@@ case 115 (documented valid)
+
+        /**
+         * @see //example.com/docs
+         */
+      
+@@@ findings
+@@@ case 116 (documented valid)
+
+        /**
+         * @see `https://example.com/docs`
+         */
+      
+@@@ findings
+@@@ case 117 (documented valid)
+
+        /**
+         * @see `https://example.com/docs`
+         */
+      
+@@@ findings
+@@@ case 118 (documented valid)
+
+        /**
+         * @see {@link https://example.com/docs}
+         */
+      
+@@@ findings
+@@@ case 119 (documented valid)
+
+        /**
+         * @see
+         */
+      
+@@@ findings
+@@@ case 120 (documented valid)
+
+        /**
+         * @see
+         */
+      
+@@@ findings
+@@@ case 121 (documented valid)
+
+        /**
+         * @see https://example.com/one two
+         */
+      
+@@@ findings
+@@@ case 122 (documented valid)
+
+        /**
+         * @see HTTP://example.com/docs
+         */
+      
+@@@ findings
+@@@ case 123 (documented valid)
+
+        /**
+         * @see https://example.com/one https://example.com/two
+         */
+      
+@@@ findings
+@@@ case 124 (documented valid)
+
+        /**
+         * @see <https://example.com/docs>
+         */
+      
+@@@ findings
+@@@ case 125 (documented valid)
+
+        /**
+         * @see {@link https://example.com/%7C}
+         */
+      
+@@@ findings
+@@@ case 126 (planted in a copy of a file of the tree)
+/**
+ * Distance from a corner vertex to the tangent points of its fillet arc.
+ *
+ * Formula: s = r · tan(|τ| / 2) = r / tan(θ / 2), τ = turning angle, θ = interior angle.
+ *
+ * @kind geometry
+ * @param radius - fillet radius, >= 0
+ * @param turningAngle - signed turning angle at the vertex in radians, in ]−π, π[
+ * @returns setback along each adjacent edge, 0 for aligned vertices
+ * @see [the derivation](docs/derivations/fillet-setback.md)
+ */
+export function filletSetback(radius: number, turningAngle: number): number {
+  return radius * Math.tan(Math.abs(turningAngle) / 2);
+}
+
+@@@ findings
+10:1 Expected @see link to use the pipe form.
+@@@ output
+/**
+ * Distance from a corner vertex to the tangent points of its fillet arc.
+ *
+ * Formula: s = r · tan(|τ| / 2) = r / tan(θ / 2), τ = turning angle, θ = interior angle.
+ *
+ * @kind geometry
+ * @param radius - fillet radius, >= 0
+ * @param turningAngle - signed turning angle at the vertex in radians, in ]−π, π[
+ * @returns setback along each adjacent edge, 0 for aligned vertices
+ * @see {@link docs/derivations/fillet-setback.md|the derivation}
+ */
+export function filletSetback(radius: number, turningAngle: number): number {
+  return radius * Math.tan(Math.abs(turningAngle) / 2);
+}
+
+@@@ end

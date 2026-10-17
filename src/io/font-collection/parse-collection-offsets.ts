@@ -25,7 +25,7 @@ const COLLECTION_HEADER = {
  * or whose offsets do not fit in it
  * @see REF-OT-OTFF
  */
-export function parseCollectionOffsets(view: DataView): readonly number[] {
+export function parseCollectionOffsets(view: Readonly<DataView>): readonly number[] {
   const { numFontsOffset, offsetSize, offsetsStart } = COLLECTION_HEADER;
   const isCollection = view.byteLength >= offsetsStart && parseTag(view, 0) === COLLECTION_TAG;
   const count = isCollection ? view.getUint32(numFontsOffset) : 0;

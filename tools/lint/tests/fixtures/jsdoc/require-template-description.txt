@@ -1,0 +1,68 @@
+# require-template-description: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), then faults planted
+# in copies of files of the tree and cases written for branches, each run by ESLint 10.12.0 at src/a.ts with the project's options;
+# a carriage return written ␍; recorded by EN-083.
+@@@ case 1 (documented invalid)
+
+        /**
+         * @template {SomeType}
+         */
+      
+@@@ findings
+2:9 @template should have a description
+@@@ case 2 (documented valid)
+
+        /**
+         * @template {SomeType} Has a description
+         */
+      
+@@@ findings
+@@@ case 3 (documented valid)
+
+        /**
+         * @template Has a description
+         */
+      
+@@@ findings
+@@@ case 4 (planted in a copy of a file of the tree)
+import { collectionFaceToParts, parseCollectionOffsets } from "../font-collection";
+
+import { parsePostScriptName } from "./parse-post-script-name";
+
+/**
+ * Finds the face of a PostScript name (name ID 6, as a browser gives an installed face,
+ * `FontData.postscriptName`) in the bytes given for it, as the parts of its own file: a font file
+ * is its own face, one part; a collection of one face gives that face; a collection of several
+ * has each face's name read in the collection itself, at its directory, and gives the parts of
+ * the face of that name alone (`collectionFaceToParts`), the other faces never written (US-052).
+ *
+ * @kind format
+ * @template Buffer
+ * @param file - the bytes of a font file, or of a collection
+ * @param postScriptName - the PostScript name of the face looked for
+ * @returns the face's parts, joined in their order into its file; undefined when a collection of
+ * several faces holds none of that name
+ * @see REF-OT-OTFF
+ */
+export function parseNamedFaceParts<Buffer extends ArrayBufferLike>(
+  file: Readonly<Uint8Array<Buffer>>,
+  postScriptName: string,
+): readonly Readonly<Uint8Array<ArrayBuffer | Buffer>>[] | undefined {
+  const offsets = parseCollectionOffsets(
+    new DataView(file.buffer, file.byteOffset, file.byteLength),
+  );
+  const [only] = offsets;
+  const directory =
+    offsets.length === 1
+      ? only
+      : offsets.find((offset) => parsePostScriptName(file, offset) === postScriptName);
+
+  if (offsets.length === 0) {
+    return [file];
+  }
+
+  return directory === undefined ? undefined : collectionFaceToParts(file, directory);
+}
+
+@@@ findings
+5:1 @template should have a description
+@@@ end

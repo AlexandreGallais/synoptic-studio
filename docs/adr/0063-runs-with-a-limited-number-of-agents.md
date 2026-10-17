@@ -1,6 +1,6 @@
 # ADR-0063 — Runs with a limited number of agents, enforced by the tools
 
-**Status**: Accepted (Product Owner, 2026-10-16, at RET-003). Supersedes ADR-0051, which it keeps and amends. Decision 1 is a trial, measured at E17's retrospective.
+**Status**: Superseded by ADR-0072 (2026-10-17, review of the ADRs, EN-094): three subagents and one heavy command at a time are the rule, no longer a trial. Accepted (Product Owner, 2026-10-16, at RET-003). Supersedes ADR-0051, which it keeps and amends. Decision 1 is a trial, measured at E17's retrospective.
 
 ## Context
 
@@ -22,12 +22,12 @@
 
 ## Reasons
 
-| Option                             | For                                                       | Against                                      |
-| ---------------------------------- | --------------------------------------------------------- | -------------------------------------------- |
-| The limit in the tools (chosen)    | holds when the agent forgets; the refusal names what runs | a hook and a lock to write and test (EN-047) |
-| The limit as a sentence (ADR-0051) | nothing to build                                          | bent once, with a freeze                     |
-| A queue for refused subagents      | no work lost                                              | a hidden wait; not asked for                 |
-| Drop the trial                     | no parallel load                                          | the chat blocked for long turns again        |
+| Option | For | Against |
+| --- | --- | --- |
+| The limit in the tools (chosen) | holds when the agent forgets; the refusal names what runs | a hook and a lock to write and test (EN-047) |
+| The limit as a sentence (ADR-0051) | nothing to build | bent once, with a freeze |
+| A queue for refused subagents | no work lost | a hidden wait; not asked for |
+| Drop the trial | no parallel load | the chat blocked for long turns again |
 
 ## Consequences
 

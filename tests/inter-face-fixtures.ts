@@ -2,8 +2,9 @@
 // the fonts of macOS (EN-067): a collection of faces sharing tables, a second family beside Inter.
 // Tests only: never part of the library.
 
+import { builtOnce } from "./built-once";
 import { fileTables, tablesFile } from "./collection-fixtures";
-import { INTER_REGULAR_FILE, tableOf, uint16 } from "./font-fixtures";
+import { interRegularFile, tableOf, uint16 } from "./font-fixtures";
 import { ENGLISH_US, WINDOWS_PLATFORM, nameTable } from "./name-table-fixtures";
 
 import type { FontTables } from "./collection-fixtures";
@@ -17,11 +18,32 @@ const SECOND_FAMILY_UNITS_PER_EM = 1024;
 /** Where `OS/2` holds `usWeightClass` and `fsSelection` (`REF-OT-OS2`). */
 const OS2_AT = { fsSelection: 62, weightClass: 4 };
 
+/** The tables of a font, by tag, each frozen. */
+type FrozenTables = Readonly<Record<string, readonly number[]>>;
+
+/**
+ * Tables frozen, each array and their record, so that no test changes them for the next.
+ *
+ * @template T - a table's bytes
+ * @param tables - tables, by tag
+ * @returns the same tables, frozen
+ */
+function frozenTables<T extends object>(
+  tables: Readonly<Record<string, T>>,
+): Readonly<Record<string, T>> {
+  return Object.freeze(
+    Object.fromEntries(Object.entries(tables).map(([tag, body]) => [tag, Object.freeze(body)])),
+  );
+}
+
 /**
  * Inter Regular 4.1's 17 tables, by tag, in its directory's order: GDEF, GPOS, GSUB, OS/2, cmap,
- * cvt, fpgm, gasp, glyf, head, hhea, hmtx, loca, maxp, name (1 948 bytes), post, prep.
+ * cvt, fpgm, gasp, glyf, head, hhea, hmtx, loca, maxp, name (1 948 bytes), post, prep. Read once
+ * per test file that asks for them.
  */
-const INTER_TABLES: Readonly<Record<string, readonly number[]>> = fileTables(INTER_REGULAR_FILE);
+const interTables: () => FrozenTables = builtOnce(() =>
+  frozenTables(fileTables(interRegularFile())),
+);
 
 /**
  * A table with some of its bytes written anew.
@@ -62,10 +84,11 @@ type InterFace = {
  * @returns its tables, by tag, in Inter's order
  */
 function interFaceTables(face: InterFace): FontTables {
-  const os2 = INTER_TABLES["OS/2"] ?? [];
+  const inter = interTables();
+  const os2 = inter["OS/2"] ?? [];
 
   return {
-    ...INTER_TABLES,
+    ...inter,
     name: nameTable([
       {
         encoding: 1,
@@ -101,7 +124,7 @@ function interFaceTables(face: InterFace): FontTables {
 function withUnitsPerEm(tables: FontTables, unitsPerEm: number): FontTables {
   return {
     ...tables,
-    head: patchedTable(INTER_TABLES["head"] ?? [], UNITS_PER_EM_AT, uint16(unitsPerEm)),
+    head: patchedTable(interTables()["head"] ?? [], UNITS_PER_EM_AT, uint16(unitsPerEm)),
   };
 }
 
@@ -132,9 +155,14 @@ const SHARED_SANS_FACES: readonly InterFace[] = [
   },
 ];
 
-/** The tables of each face of `SHARED_SANS_FACES`, built by `interFaceTables`. */
-export const SHARED_SANS_TABLES: readonly FontTables[] = SHARED_SANS_FACES.map((face) =>
-  interFaceTables(face),
+/**
+ * The tables of each face of `SHARED_SANS_FACES`, built by `interFaceTables` at the first call in
+ * a test file, frozen, then the same arrays at every call, as a collection shares them.
+ *
+ * @returns the tables of each face
+ */
+export const sharedSansTables: () => readonly FontTables[] = builtOnce(() =>
+  Object.freeze(SHARED_SANS_FACES.map((face) => frozenTables(interFaceTables(face)))),
 );
 
 /**

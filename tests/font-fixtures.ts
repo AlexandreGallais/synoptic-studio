@@ -4,17 +4,29 @@
 // library.
 
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
+
+import { inject } from "vitest";
 
 /**
  * Inter Regular 4.1, the release's `extras/ttf/Inter-Regular.ttf` unchanged (`REF-INTER-RELEASE`),
  * with its licence beside it in `inter-license.txt` (`REF-INTER-LICENSE`): a real font file that
- * every machine reads (EN-062).
+ * every machine reads (EN-062). Read once per test run by `font-files-setup.ts` (EN-089); each
+ * call gives a fresh copy of those bytes, so that no test changes another's.
+ *
+ * @returns the file's 411 640 bytes
+ * @throws {TypeError} when the global setup did not provide them
  */
-export const INTER_REGULAR_FILE: Uint8Array = readFileSync(
-  join(import.meta.dirname, "inter-regular.ttf"),
-);
+export function interRegularFile(): Uint8Array {
+  // Called through `Reflect.apply`: TypeScript 7 cannot augment Vitest's `ProvidedContext`
+  // (TS2300), whose keys stay `never` for `inject`.
+  const provided: unknown = Reflect.apply(inject, undefined, ["interRegularFile"]);
+
+  if (!(provided instanceof Uint8Array)) {
+    throw new TypeError("font-files-setup.ts did not provide interRegularFile");
+  }
+
+  return new Uint8Array(provided);
+}
 
 /** `sfntVersion` of a font with TrueType outlines (`REF-OT-OTFF`). */
 export const TRUE_TYPE_VERSION = 0x00_01_00_00;

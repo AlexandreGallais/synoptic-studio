@@ -10,12 +10,12 @@ The user types numbers (integers). A simple, understandable and cheap chain of t
 
 One-way chain in 4 stages:
 
-| Stage         | Layer            | Content                                                   | Number type | `@kind`               |
-| ------------- | ---------------- | --------------------------------------------------------- | ----------- | --------------------- |
-| 1. Input      | `interaction/`   | interface values                                          | integers    | `procedure`           |
-| 2. Model      | `model/`         | declarative description (corners, sizes, radii, operands) | integers    | `domain`              |
-| 3. Evaluation | `geometry/`      | computed geometry: segments + arcs                        | floats      | `geometry`            |
-| 4. Output     | `io/`, `render/` | `d` string of the `<path>`, then DOM                      | text        | `format`, `procedure` |
+| Stage | Layer | Content | Number type | `@kind` |
+| --- | --- | --- | --- | --- |
+| 1. Input | `interaction/` | interface values | integers | `procedure` |
+| 2. Model | `model/` | declarative description (corners, sizes, radii, operands) | integers | `domain` |
+| 3. Evaluation | `geometry/` | computed geometry: segments + arcs | floats | `geometry` |
+| 4. Output | `io/`, `render/` | `d` string of the `<path>`, then DOM | text | `format`, `procedure` |
 
 Rules:
 

@@ -27,17 +27,17 @@ The text's color and its background color use it in the playground; the shapes' 
 
 Open `http://localhost:5173/`, click **Text** and click on the drawing (Inter 16, as the page opens).
 
-| Step | Do                                                                            | You should see                                                           |
-| ---- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| 1    | Type `F80` in **Color**, press Tab                                            | `#ff8800` in the field, the text orange                                  |
-| 2    | Turn **Background** on, paste `#0000ffcc` in its color, press Tab             | `#0000ff`, its opacity 80, a blue band a little transparent              |
-| 3    | Type `red` in **Color**, press Tab                                            | the field back to `#ff8800`, a red line under it saying why              |
-| 4    | Type `#ff8000` in **Color**, click its swatch                                 | the picker: hue at 30°, values 30°, 100 %, 100 %, plane in HSB           |
-| 5    | Choose **HSL**                                                                | values 30°, 100 %, 50 %; the plane white at the top, black at the bottom |
-| 6    | Choose **HSB**, type 210 in **H**, click the middle of the plane's right edge | `#004080`                                                                |
-| 7    | Type `#336699` in **Color**; 67 in **S**, then 61 in **B**, Tab after each    | `#336699` kept, then `#34689c`, S still 67                               |
-| 8    | Focus the hue slider, press Right, then Page Up, Home, End                    | 211°, 221°, 0°, 359°                                                     |
-| 9    | Press Escape                                                                  | the picker closed, the color kept (`#9c3436` after End)                  |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | Type `F80` in **Color**, press Tab | `#ff8800` in the field, the text orange |
+| 2 | Turn **Background** on, paste `#0000ffcc` in its color, press Tab | `#0000ff`, its opacity 80, a blue band a little transparent |
+| 3 | Type `red` in **Color**, press Tab | the field back to `#ff8800`, a red line under it saying why |
+| 4 | Type `#ff8000` in **Color**, click its swatch | the picker: hue at 30°, values 30°, 100 %, 100 %, plane in HSB |
+| 5 | Choose **HSL** | values 30°, 100 %, 50 %; the plane white at the top, black at the bottom |
+| 6 | Choose **HSB**, type 210 in **H**, click the middle of the plane's right edge | `#004080` |
+| 7 | Type `#336699` in **Color**; 67 in **S**, then 61 in **B**, Tab after each | `#336699` kept, then `#34689c`, S still 67 |
+| 8 | Focus the hue slider, press Right, then Page Up, Home, End | 211°, 221°, 0°, 359° |
+| 9 | Press Escape | the picker closed, the color kept (`#9c3436` after End) |
 
 The values above are whole numbers since US-040 (ADR-0058); steps 4, 5, 7, 8 and 9 changed with it.
 

@@ -5,6 +5,8 @@ import { fc } from "@fast-check/vitest";
 
 import { BYTE_MAXIMUM, DEGREES_PER_TURN, fractionToByte, integerRange } from "../src";
 
+import { builtOnce } from "./built-once";
+
 import type { IntegerRatio, Rgb } from "../src";
 
 /**
@@ -99,8 +101,13 @@ function sampledColorIndices(): readonly number[] {
   return [...new Set([...strided, ...edges])];
 }
 
-/** The sampled colors' indices, computed once for every round trip. */
-const SAMPLED_COLOR_INDICES = sampledColorIndices();
+/**
+ * The sampled colors' indices, computed at the first round trip and frozen, so that the files that
+ * import the fixtures without a round trip never build them (EN-090).
+ */
+const sampledIndices: () => readonly number[] = builtOnce(() =>
+  Object.freeze(sampledColorIndices()),
+);
 
 /**
  * Whether a round trip gives a color's bytes back: its components converted and back, each
@@ -131,5 +138,5 @@ function isKept(roundTrip: (rgb: Rgb) => Rgb, index: number): boolean {
  * @returns the number of sampled colors whose bytes changed
  */
 export function changedColorCount(roundTrip: (rgb: Rgb) => Rgb): number {
-  return SAMPLED_COLOR_INDICES.filter((index) => !isKept(roundTrip, index)).length;
+  return sampledIndices().filter((index) => !isKept(roundTrip, index)).length;
 }

@@ -24,7 +24,7 @@ const SFNT_VERSIONS: ReadonlySet<number> = new Set([
  * @returns the offset of each table record, from the file's start
  * @see REF-OT-OTFF
  */
-export function parseRecordPlaces(view: DataView, directory: number): readonly number[] {
+export function parseRecordPlaces(view: Readonly<DataView>, directory: number): readonly number[] {
   const { headerSize, numTablesOffset, recordSize } = TABLE_DIRECTORY_LAYOUT;
   const records = directory + headerSize;
   const isFont = records <= view.byteLength && SFNT_VERSIONS.has(view.getUint32(directory));

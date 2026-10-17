@@ -2,38 +2,38 @@
 
 Used by: F14 (EN-033 to EN-036, US-033, US-034), F17 (US-055, step 11). Builds on `DERIV-text-width`, which measures a line and places it across its block. Sources:
 
-| Source                   | For                                                                    |
-| ------------------------ | ---------------------------------------------------------------------- |
-| `REF-UAX14`              | break opportunities after spaces, spaces not measured for fit          |
-| `REF-CSS-TEXT-3`         | soft wrap opportunities, hanging spaces, `overflow-wrap`               |
-| `REF-WIKI-LINE-WRAP`     | the greedy wrap                                                        |
-| `REF-WIKI-KNUTH-PLASS`   | minimum raggedness by dynamic programming                              |
-| `REF-WIKI-PREFIX-SUM`    | the scan of the wrap's steps                                           |
-| `REF-CSS-TEXT-4`         | `text-wrap-style: balance`                                             |
-| `REF-CSS-OVERFLOW-3`     | `text-overflow: ellipsis`                                              |
-| `REF-CSS-OVERFLOW-4`     | `line-clamp`, `max-lines`, `block-ellipsis`                            |
-| `REF-CSS-INLINE-3`       | `line-height`, half-leading, cap height, `text-box-trim`, content area |
-| `REF-OT-OS2`             | `sCapHeight`                                                           |
-| `REF-OT-HHEA`            | ascender, descender, line gap                                          |
-| `REF-SVG2-PATHS`         | sub-paths of one `<path>`                                              |
-| `REF-SVG2-FILL-RULE`     | overlaps filled once                                                   |
-| `REF-ECMA-262-MATH-CEIL` | the ceiling of a number                                                |
+| Source | For |
+| --- | --- |
+| `REF-UAX14` | break opportunities after spaces, spaces not measured for fit |
+| `REF-CSS-TEXT-3` | soft wrap opportunities, hanging spaces, `overflow-wrap` |
+| `REF-WIKI-LINE-WRAP` | the greedy wrap |
+| `REF-WIKI-KNUTH-PLASS` | minimum raggedness by dynamic programming |
+| `REF-WIKI-PREFIX-SUM` | the scan of the wrap's steps |
+| `REF-CSS-TEXT-4` | `text-wrap-style: balance` |
+| `REF-CSS-OVERFLOW-3` | `text-overflow: ellipsis` |
+| `REF-CSS-OVERFLOW-4` | `line-clamp`, `max-lines`, `block-ellipsis` |
+| `REF-CSS-INLINE-3` | `line-height`, half-leading, cap height, `text-box-trim`, content area |
+| `REF-OT-OS2` | `sCapHeight` |
+| `REF-OT-HHEA` | ascender, descender, line gap |
+| `REF-SVG2-PATHS` | sub-paths of one `<path>` |
+| `REF-SVG2-FILL-RULE` | overlaps filled once |
+| `REF-ECMA-262-MATH-CEIL` | the ceiling of a number |
 
 ## Notation
 
-| Symbol    | Definition                                                                                                                                               |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `W`, `H`  | the box's width and height, integers in user units                                                                                                       |
-| `w(t)`    | the width of the string `t` measured as one line (`DERIV-text-width`, steps 1 to 3)                                                                      |
-| `trim(t)` | `t` without the spaces U+0020 at its end                                                                                                                 |
-| `s`, `U`  | the text's size and its font's units per em                                                                                                              |
-| `A, D, G` | the `hhea` ascender, descender (negative) and line gap, in font units                                                                                    |
-| `C`       | the cap height `sCapHeight` of `OS/2`, in font units; `0.66 × U` when the table is older than version 2, too short to hold the field, or gives 0 or less |
-| `λ`       | the line height in user units: the font's `(A − D + G) × s / U` when automatic, otherwise the integer chosen                                             |
-| `N`       | the maximum number of lines, 0 for none                                                                                                                  |
-| `L`       | the number of lines the wrap gives (steps 3 and 4), 0 for an empty text                                                                                  |
-| `v`       | the vertical alignment: 0 top, ½ middle, 1 bottom                                                                                                        |
-| `…`       | the ellipsis, U+2026                                                                                                                                     |
+| Symbol | Definition |
+| --- | --- |
+| `W`, `H` | the box's width and height, integers in user units |
+| `w(t)` | the width of the string `t` measured as one line (`DERIV-text-width`, steps 1 to 3) |
+| `trim(t)` | `t` without the spaces U+0020 at its end |
+| `s`, `U` | the text's size and its font's units per em |
+| `A, D, G` | the `hhea` ascender, descender (negative) and line gap, in font units |
+| `C` | the cap height `sCapHeight` of `OS/2`, in font units; `0.66 × U` when the table is older than version 2, too short to hold the field, or gives 0 or less |
+| `λ` | the line height in user units: the font's `(A − D + G) × s / U` when automatic, otherwise the integer chosen |
+| `N` | the maximum number of lines, 0 for none |
+| `L` | the number of lines the wrap gives (steps 3 and 4), 0 for an empty text |
+| `v` | the vertical alignment: 0 top, ½ middle, 1 bottom |
+| `…` | the ellipsis, U+2026 |
 
 ## Step 1 — Paragraphs and where a line may wrap
 
@@ -185,56 +185,56 @@ W = ⌈w − ε⌉,   H = ⌈h − ε⌉
 
 Arial 5.01 at size 16, kerning left out: `U = 2048`, `A = 1854`, `D = −434`, `G = 67` (`DERIV-text-width`); `OS/2` version 3, `sCapHeight = 1467`; advances read from the file by a script: `…` 2048, `.` 569, no-break space 569, `P` 1366, `u` 1139, `m` 1706, `p` 1139, `-` 682, `1` 1139, `0` 1139, `i` 455, `s` 1024, `n` 1139, `g` 1139, and those of `DERIV-text-width`. One font unit is `16 / 2048 = 1 / 128` user unit.
 
-| Word or string | Units | Width    |
-| -------------- | ----- | -------- |
-| `Hello`        | 4 667 | 36.46094 |
-| `World`        | 5 348 | 41.78125 |
-| `Pump`         | 5 350 | 41.79688 |
-| `P-101`        | 5 465 | 42.69531 |
-| `is`           | 1 479 | 11.55469 |
-| `running`      | 6 832 | 53.375   |
-| space          | 569   | 4.44531  |
-| `…`            | 2 048 | 16       |
-| `...`          | 1 707 | 13.33594 |
+| Word or string | Units | Width |
+| --- | --- | --- |
+| `Hello` | 4 667 | 36.46094 |
+| `World` | 5 348 | 41.78125 |
+| `Pump` | 5 350 | 41.79688 |
+| `P-101` | 5 465 | 42.69531 |
+| `is` | 1 479 | 11.55469 |
+| `running` | 6 832 | 53.375 |
+| space | 569 | 4.44531 |
+| `…` | 2 048 | 16 |
+| `...` | 1 707 | 13.33594 |
 
 ## Checks (test cases)
 
-| Case                                                                            | Computation                                                                                                                                      | Expected                                                                          |
-| ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------- |
-| "Hello World", box 50 wide, H large                                             | `4667 + 569 + 5348 = 10 584` units, 82.6875 > 50: wrap after the space                                                                           | "Hello" (36.46094) / "World" (41.78125)                                           |
-| "Hello World", box 60 wide, H large, at most 1 line                             | "Hello" + "…" = `(4667 + 2048) / 128` = 52.46094 ≤ 60                                                                                            | "Hello…", 52.46094 wide                                                           |
-| "Hello World", box 50 wide, H large, at most 1 line                             | 52.46094 > 50; without `o`: `(4667 − 1139 + 2048) / 128` = 43.5625 ≤ 50                                                                          | "Hell…", 43.5625 wide                                                             |
-| "Hello World Hello World", box 60, H large, at most 2 lines                     | four lines of one word; the second with "…": `(5348 + 2048) / 128` = 57.78125 ≤ 60                                                               | "Hello" / "World…", 57.78125 wide                                                 |
-| the same, box 60 × 40, no maximum                                               | `h(2) = 36.79688 ≤ 40 < h(3) = 55.19531`; `L = 4`                                                                                                | 2 lines: "Hello" / "World…"                                                       |
-| the same, box 60 × 10, no maximum                                               | no `n ≥ 1` fits: `max ∅ = 0`, raised to 1; `L = 4`                                                                                               | 1 line: "Hello…", 52.46094 wide                                                   |
-| (record, US-042) "Pump P-101 is running", box 50, break at a character          | "running" 53.375 > 50 starts its line; "runnin" `5693 / 128` = 44.47656 ≤ 50, with `g` 53.375                                                    | "Pump" / "P-101" / "is" / "runnin" / "g"                                          |
-| the same, move whole, ellipsis on                                               | "running" overflows: `(6832 − 1139 − 1139 − 455 + 2048) / 128` = 48.02344 ≤ 50, one unit more 51.57813                                           | "Pump" / "P-101" / "is" / "runn…"                                                 |
-| the same, move whole, at most 2 lines                                           | "P-101…" `7513 / 128` = 58.69531 > 50; "P-10…" `6374 / 128` = 49.79688                                                                           | "Pump" / "P-10…"                                                                  |
-| "Hello World", box 10 wide, H large, at most 1 line                             | the first unit stays: `(1479 + 2048) / 128`                                                                                                      | "H…", 27.55469 wide, overflowing                                                  |
-| "Hello World", box 60 wide, H large, at most 1 line, ellipsis off               | the text stops at the last line shown                                                                                                            | "Hello", 36.46094 wide                                                            |
-| "Hello World Hello World", box 60, H large, at most 2 lines, ellipsis off       | the same                                                                                                                                         | "Hello" / "World", 41.78125 wide                                                  |
-| "Pump P-101 is running", box 50, H large, move whole, ellipsis off              | the word drawn whole                                                                                                                             | "Pump" / "P-101" / "is" / "running", the last 53.375 wide, overflowing            |
-| two spaces then "Hello World", box 10 wide, H large, move whole, at most 1 line | the spaces are not the unit kept                                                                                                                 | the two spaces, "H" and "…"                                                       |
-| (record, US-042) "Hello", break at a character, box 5 wide                      | each letter alone, "ll" 7.11 > 5; a cut would remove nothing                                                                                     | "H" / "e" / "l" / "l" / "o", no ellipsis                                          |
-| "Hello", a line break, box 60, at most 1 line                                   | the line left out is empty                                                                                                                       | "Hello", no ellipsis                                                              |
-| "Hello" / "World" / "" / "Hello", box 60, at most 3 lines                       | "Hello" left out; the third shown is empty: dropped, "World" ellipsed `(5348 + 2048) / 128` = 57.78125                                           | "Hello" / "World…", a block 36.796875 tall                                        |
-| the same, box 60 × 60, no maximum                                               | `h(3) = 55.19531 ≤ 60 < h(4) = 73.59375`: 3 shown, the third empty                                                                               | "Hello" / "World…"                                                                |
-| the same, its third line three spaces                                           | trimmed to "" (step 2)                                                                                                                           | "Hello" / "World…"                                                                |
-| "Hello", a no-break space, "World", box 70 wide, at most 1 line                 | "Hello\u00A0W…" `9217 / 128` = 72.00781 > 70; "Hello\u00A0…" fits but ends with the no-break space                                               | "Hello…", 52.46094 wide                                                           |
-| an empty text in a box 60 × 60                                                  | `L = 0`                                                                                                                                          | no line, nothing drawn                                                            |
-| ellipsis missing from the face, a line cut                                      | three full stops: `3 × 569 / 128`                                                                                                                | "...", 13.33594 wide                                                              |
-| baselines of "Hello" / "World", automatic line height, H large                  | `λ = 2355 / 128` = 18.39844; first `1854 / 128`                                                                                                  | 14.48438, 32.88281                                                                |
-| the same, line height 24                                                        | `(24 − 2288 / 128) / 2 + 14.48438` = `3.0625 + 14.48438`                                                                                         | 17.54688, 41.54688; block 48 tall                                                 |
-| the same, trimmed, automatic line height                                        | first `1467 / 128`; block of 2 lines `18.39844 + 11.46094`                                                                                       | 11.46094, 29.85938; block 29.85938 tall                                           |
-| trimmed at size 32, H large                                                     | `1467 × 32 / 2048`                                                                                                                               | first baseline 22.92188 below the top                                             |
-| "Hello World", box 50 × 60, middle                                              | `L = 2`, so `n = min(3, ∞, 2) = 2` although `h(3) = 55.19531 ≤ 60`; room `60 − 36.79688` = 23.20313, half before; baseline `11.60156 + 14.48438` | top 11.60156, first baseline 26.08594                                             |
-| the same, bottom                                                                | all the room before: `23.20313 + 14.48438`                                                                                                       | first baseline 37.6875                                                            |
-| the same, trimmed, middle                                                       | `(60 − 29.85938) / 2 + 11.46094`                                                                                                                 | first baseline 26.53125                                                           |
-| (record, US-043) "Pump P-101 is running", box 110, balanced                     | greedy "Pump P-101 is" (104.9375) / "running" (53.375): `5.0625² + 56.625²` = 3232.01953                                                         | "Pump P-101" (88.9375) / "is running" (69.375): `21.0625² + 40.625²` = 2094.01953 |
-| (record, US-043) "AAA BB CC DDDDD", each 1 wide, box 6, balanced                | greedy "AAA BB" / "CC" / "DDDDD": `0² + 4² + 1²` = 17 (`REF-WIKI-KNUTH-PLASS`)                                                                   | "AAA" / "BB CC" / "DDDDD": `3² + 1² + 1²` = 11                                    |
-| (record, US-043) "Hello World Hello", box 90, balanced                          | "Hello World" / "Hello" and "Hello" / "World Hello" both cost `7.3125² + 53.53906²`                                                              | the later break: "Hello World" / "Hello"                                          |
-| background of "Hello" / "World" at (0, 0), fitting its content                  | `y = 14.48438 − 14.48438`, height `(1854 + 434) / 128`                                                                                           | x 0, y 0, 36.46094 × 17.875                                                       |
-| background of its second line "World"                                           | `y = 32.88281 − 14.48438`                                                                                                                        | y 18.39844, 41.78125 × 17.875                                                     |
-| a box 60 × 40 at (0, 0), turned                                                 | the middle of the box                                                                                                                            | about (30, 20)                                                                    |
-| "Pump P-101", Inter 16, its block 87.953125 × 19.359375, put in a box (step 11) | `⌈87.953125 − ε⌉`, `⌈19.359375 − ε⌉`                                                                                                             | a box 88 × 20                                                                     |
-| a block 88.0000000001 × 20 put in a box                                         | `88.0000000001 − 10⁻⁹ < 88`                                                                                                                      | a box 88 × 20                                                                     |
+| Case | Computation | Expected |
+| --- | --- | --- |
+| "Hello World", box 50 wide, H large | `4667 + 569 + 5348 = 10 584` units, 82.6875 > 50: wrap after the space | "Hello" (36.46094) / "World" (41.78125) |
+| "Hello World", box 60 wide, H large, at most 1 line | "Hello" + "…" = `(4667 + 2048) / 128` = 52.46094 ≤ 60 | "Hello…", 52.46094 wide |
+| "Hello World", box 50 wide, H large, at most 1 line | 52.46094 > 50; without `o`: `(4667 − 1139 + 2048) / 128` = 43.5625 ≤ 50 | "Hell…", 43.5625 wide |
+| "Hello World Hello World", box 60, H large, at most 2 lines | four lines of one word; the second with "…": `(5348 + 2048) / 128` = 57.78125 ≤ 60 | "Hello" / "World…", 57.78125 wide |
+| the same, box 60 × 40, no maximum | `h(2) = 36.79688 ≤ 40 < h(3) = 55.19531`; `L = 4` | 2 lines: "Hello" / "World…" |
+| the same, box 60 × 10, no maximum | no `n ≥ 1` fits: `max ∅ = 0`, raised to 1; `L = 4` | 1 line: "Hello…", 52.46094 wide |
+| (record, US-042) "Pump P-101 is running", box 50, break at a character | "running" 53.375 > 50 starts its line; "runnin" `5693 / 128` = 44.47656 ≤ 50, with `g` 53.375 | "Pump" / "P-101" / "is" / "runnin" / "g" |
+| the same, move whole, ellipsis on | "running" overflows: `(6832 − 1139 − 1139 − 455 + 2048) / 128` = 48.02344 ≤ 50, one unit more 51.57813 | "Pump" / "P-101" / "is" / "runn…" |
+| the same, move whole, at most 2 lines | "P-101…" `7513 / 128` = 58.69531 > 50; "P-10…" `6374 / 128` = 49.79688 | "Pump" / "P-10…" |
+| "Hello World", box 10 wide, H large, at most 1 line | the first unit stays: `(1479 + 2048) / 128` | "H…", 27.55469 wide, overflowing |
+| "Hello World", box 60 wide, H large, at most 1 line, ellipsis off | the text stops at the last line shown | "Hello", 36.46094 wide |
+| "Hello World Hello World", box 60, H large, at most 2 lines, ellipsis off | the same | "Hello" / "World", 41.78125 wide |
+| "Pump P-101 is running", box 50, H large, move whole, ellipsis off | the word drawn whole | "Pump" / "P-101" / "is" / "running", the last 53.375 wide, overflowing |
+| two spaces then "Hello World", box 10 wide, H large, move whole, at most 1 line | the spaces are not the unit kept | the two spaces, "H" and "…" |
+| (record, US-042) "Hello", break at a character, box 5 wide | each letter alone, "ll" 7.11 > 5; a cut would remove nothing | "H" / "e" / "l" / "l" / "o", no ellipsis |
+| "Hello", a line break, box 60, at most 1 line | the line left out is empty | "Hello", no ellipsis |
+| "Hello" / "World" / "" / "Hello", box 60, at most 3 lines | "Hello" left out; the third shown is empty: dropped, "World" ellipsed `(5348 + 2048) / 128` = 57.78125 | "Hello" / "World…", a block 36.796875 tall |
+| the same, box 60 × 60, no maximum | `h(3) = 55.19531 ≤ 60 < h(4) = 73.59375`: 3 shown, the third empty | "Hello" / "World…" |
+| the same, its third line three spaces | trimmed to "" (step 2) | "Hello" / "World…" |
+| "Hello", a no-break space, "World", box 70 wide, at most 1 line | "Hello\u00A0W…" `9217 / 128` = 72.00781 > 70; "Hello\u00A0…" fits but ends with the no-break space | "Hello…", 52.46094 wide |
+| an empty text in a box 60 × 60 | `L = 0` | no line, nothing drawn |
+| ellipsis missing from the face, a line cut | three full stops: `3 × 569 / 128` | "...", 13.33594 wide |
+| baselines of "Hello" / "World", automatic line height, H large | `λ = 2355 / 128` = 18.39844; first `1854 / 128` | 14.48438, 32.88281 |
+| the same, line height 24 | `(24 − 2288 / 128) / 2 + 14.48438` = `3.0625 + 14.48438` | 17.54688, 41.54688; block 48 tall |
+| the same, trimmed, automatic line height | first `1467 / 128`; block of 2 lines `18.39844 + 11.46094` | 11.46094, 29.85938; block 29.85938 tall |
+| trimmed at size 32, H large | `1467 × 32 / 2048` | first baseline 22.92188 below the top |
+| "Hello World", box 50 × 60, middle | `L = 2`, so `n = min(3, ∞, 2) = 2` although `h(3) = 55.19531 ≤ 60`; room `60 − 36.79688` = 23.20313, half before; baseline `11.60156 + 14.48438` | top 11.60156, first baseline 26.08594 |
+| the same, bottom | all the room before: `23.20313 + 14.48438` | first baseline 37.6875 |
+| the same, trimmed, middle | `(60 − 29.85938) / 2 + 11.46094` | first baseline 26.53125 |
+| (record, US-043) "Pump P-101 is running", box 110, balanced | greedy "Pump P-101 is" (104.9375) / "running" (53.375): `5.0625² + 56.625²` = 3232.01953 | "Pump P-101" (88.9375) / "is running" (69.375): `21.0625² + 40.625²` = 2094.01953 |
+| (record, US-043) "AAA BB CC DDDDD", each 1 wide, box 6, balanced | greedy "AAA BB" / "CC" / "DDDDD": `0² + 4² + 1²` = 17 (`REF-WIKI-KNUTH-PLASS`) | "AAA" / "BB CC" / "DDDDD": `3² + 1² + 1²` = 11 |
+| (record, US-043) "Hello World Hello", box 90, balanced | "Hello World" / "Hello" and "Hello" / "World Hello" both cost `7.3125² + 53.53906²` | the later break: "Hello World" / "Hello" |
+| background of "Hello" / "World" at (0, 0), fitting its content | `y = 14.48438 − 14.48438`, height `(1854 + 434) / 128` | x 0, y 0, 36.46094 × 17.875 |
+| background of its second line "World" | `y = 32.88281 − 14.48438` | y 18.39844, 41.78125 × 17.875 |
+| a box 60 × 40 at (0, 0), turned | the middle of the box | about (30, 20) |
+| "Pump P-101", Inter 16, its block 87.953125 × 19.359375, put in a box (step 11) | `⌈87.953125 − ε⌉`, `⌈19.359375 − ε⌉` | a box 88 × 20 |
+| a block 88.0000000001 × 20 put in a box | `88.0000000001 − 10⁻⁹ < 88` | a box 88 × 20 |

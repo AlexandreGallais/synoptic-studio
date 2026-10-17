@@ -19,12 +19,12 @@
 
 ## Reasons
 
-| Option                                    | For                                                                     | Against                                                                 |
-| ----------------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| No HTML layer (chosen)                    | one copy of each text; one way to draw it; fewer options                | no Arabic nor Indic script                                              |
-| The HTML layer kept (ADR-0053)            | browsers shape every script                                             | two copies of each text; no speed gained; scripts industrial views lack |
-| Fonts embedded at export or save (chosen) | a light drawing while editing; the file still stands alone once written | the drawing on screen differs from the file by its `<style>`            |
-| Fonts embedded in the drawing (ADR-0053)  | the drawing on screen is the file                                       | the whole file of every face rewritten at each redraw                   |
+| Option | For | Against |
+| --- | --- | --- |
+| No HTML layer (chosen) | one copy of each text; one way to draw it; fewer options | no Arabic nor Indic script |
+| The HTML layer kept (ADR-0053) | browsers shape every script | two copies of each text; no speed gained; scripts industrial views lack |
+| Fonts embedded at export or save (chosen) | a light drawing while editing; the file still stands alone once written | the drawing on screen differs from the file by its `<style>` |
+| Fonts embedded in the drawing (ADR-0053) | the drawing on screen is the file | the whole file of every face rewritten at each redraw |
 
 ## Consequences
 

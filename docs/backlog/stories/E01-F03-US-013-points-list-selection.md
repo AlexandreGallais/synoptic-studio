@@ -25,18 +25,18 @@ Since F08 (EN-013), a regular polygon is numbered from the right end of its base
 
 Run `npm run dev` and open `http://localhost:5173/?guide=epic&step=10` (a hexagon, no rounding). A **point** is a corner of the shape; **selecting** points says which ones the Radius field will round. **Mixed** means the selected points do not all have the same rounding.
 
-| Step | Do                                                          | You should see                                                                                                                                               |
-| ---- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 1    | Click **Points**                                            | the handles, and under the Radius field a list of 6 rows: `1 · x 25 · y 6.69873 · radius 0`, and so on; the Radius field is greyed and reads "Select points" |
-| 2    | Click the red handle on the drawing                         | it gets a yellow ring, row 1 turns yellow; the Radius field shows 0                                                                                          |
-| 3    | Type 20 in the Radius field                                 | only the top-left corner of the hexagon is rounded; row 1 says `radius 20`                                                                                   |
-| 4    | Click row 4 with Ctrl (Cmd on a Mac) held                   | rows 1 and 4 are yellow; the Radius field is empty and reads "Mixed" (20 and 0)                                                                              |
-| 5    | Type 10                                                     | the corners 1 and 4 are rounded alike, the others stay sharp                                                                                                 |
-| 6    | Click row 2, then row 5 with Shift held                     | rows 2 to 5 are yellow: a range                                                                                                                              |
-| 7    | On the drawing, click the handle of point 6 with Shift held | point 6 is added, no range on the drawing                                                                                                                    |
-| 8    | Click **Shape**                                             | the handles and the list disappear; the Radius field is empty and reads "Mixed": the corners differ                                                          |
-| 9    | Type 5 corners                                              | a pentagon; its corners 1 and 4 keep their rounding, the new ones none (back in Points mode, the list shows it)                                              |
-| 10   | In Shape mode, type 8 in the Radius field                   | every corner rounded alike: one value again                                                                                                                  |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | Click **Points** | the handles, and under the Radius field a list of 6 rows: `1 · x 25 · y 6.69873 · radius 0`, and so on; the Radius field is greyed and reads "Select points" |
+| 2 | Click the red handle on the drawing | it gets a yellow ring, row 1 turns yellow; the Radius field shows 0 |
+| 3 | Type 20 in the Radius field | only the top-left corner of the hexagon is rounded; row 1 says `radius 20` |
+| 4 | Click row 4 with Ctrl (Cmd on a Mac) held | rows 1 and 4 are yellow; the Radius field is empty and reads "Mixed" (20 and 0) |
+| 5 | Type 10 | the corners 1 and 4 are rounded alike, the others stay sharp |
+| 6 | Click row 2, then row 5 with Shift held | rows 2 to 5 are yellow: a range |
+| 7 | On the drawing, click the handle of point 6 with Shift held | point 6 is added, no range on the drawing |
+| 8 | Click **Shape** | the handles and the list disappear; the Radius field is empty and reads "Mixed": the corners differ |
+| 9 | Type 5 corners | a pentagon; its corners 1 and 4 keep their rounding, the new ones none (back in Points mode, the list shows it) |
+| 10 | In Shape mode, type 8 in the Radius field | every corner rounded alike: one value again |
 
 Look closely at: whether choosing points is easy, on the drawing and in the list; whether "Mixed" and "Select points" are clear words.
 

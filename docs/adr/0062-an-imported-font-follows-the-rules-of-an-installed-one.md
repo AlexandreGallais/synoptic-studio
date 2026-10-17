@@ -15,10 +15,10 @@
 
 ## Reasons
 
-| Option                                             | For                                                                 | Against                                                                              |
-| -------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| Same rules for an imported font (chosen)           | one rule for the font list; every font offered measures and exports | a font for Greek, Cyrillic or Hebrew alone, or locked by its licence, cannot be used |
-| An imported file not judged (ADR-0061, decision 2) | the designer's choice respected; scripts F05 built remain reachable | a wrong frame, or an export drawn with another font, from a font the list offers     |
+| Option | For | Against |
+| --- | --- | --- |
+| Same rules for an imported font (chosen) | one rule for the font list; every font offered measures and exports | a font for Greek, Cyrillic or Hebrew alone, or locked by its licence, cannot be used |
+| An imported file not judged (ADR-0061, decision 2) | the designer's choice respected; scripts F05 built remain reachable | a wrong frame, or an export drawn with another font, from a font the list offers |
 
 ## Consequences
 

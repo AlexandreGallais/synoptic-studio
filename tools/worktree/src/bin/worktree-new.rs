@@ -1,11 +1,11 @@
 //! `worktree-new <ID> [--type <type>]` (`npm run worktree:new -- US-061`): fetches GitHub, adds
 //! `.claude/worktrees/us-061` on `feat/us-061-<topic>` from the story's feature branch, and links
 //! the main checkout's `node_modules` into it, then installs Husky's hooks folder in every
-//! worktree that has none, so that a push runs the worktree's own `.husky/pre-push` (EN-052).
+//! worktree that has none, so that a push runs the worktree's own `.husky/pre-push` (EN-052), and
+//! builds the release binaries of the Rust tools in the new worktree (EN-068).
 
 use std::env;
 use std::fs;
-use std::os::unix::fs::symlink;
 use std::path::{Path, PathBuf};
 use std::process::{Command, ExitCode};
 
@@ -50,6 +50,20 @@ fn story_files(top: &Path) -> Result<Vec<String>, String> {
         .collect())
 }
 
+/// Links a folder at `link` to the folder `target`: a symbolic link (`std::os::unix::fs::symlink`).
+// Unix-only: the standard library has no portable folder link; Windows gets its own call.
+#[cfg(unix)]
+fn link_folder(target: &Path, link: &Path) -> std::io::Result<()> {
+    std::os::unix::fs::symlink(target, link)
+}
+
+/// Links a folder at `link` to the folder `target`: a folder symbolic link on Windows
+/// (`std::os::windows::fs::symlink_dir`), which needs the Developer Mode or the right to make one.
+#[cfg(windows)]
+fn link_folder(target: &Path, link: &Path) -> std::io::Result<()> {
+    std::os::windows::fs::symlink_dir(target, link)
+}
+
 /// Creates the worktree of a plan and links `node_modules` into it.
 fn create(plan: &Plan, main: &Path) -> Result<(), String> {
     let dir = plan.dir.to_string_lossy();
@@ -67,7 +81,7 @@ fn create(plan: &Plan, main: &Path) -> Result<(), String> {
     let modules = main.join("node_modules");
 
     if modules.is_dir() {
-        symlink(&modules, plan.dir.join("node_modules"))
+        link_folder(&modules, &plan.dir.join("node_modules"))
             .map_err(|error| format!("node_modules: {error}"))?;
     }
 
@@ -98,6 +112,30 @@ fn install_hooks(main: &Path) -> Result<(), String> {
     }
 
     Ok(())
+}
+
+/// Builds the release binaries of the Rust tools in a new worktree holding the Cargo workspace, as
+/// `npm run prepare` does in a clone: its scripts and hooks call `target/release/<tool>` (EN-068).
+fn build_tools(dir: &Path) -> Result<(), String> {
+    if !dir.join("Cargo.toml").exists() {
+        return Ok(());
+    }
+
+    let output = Command::new("cargo")
+        .args(["build", "--release", "--workspace", "--locked", "--quiet"])
+        .current_dir(dir)
+        .output()
+        .map_err(|error| format!("cargo: {error}"))?;
+
+    if output.status.success() {
+        Ok(())
+    } else {
+        Err(format!(
+            "cargo build in {}: {}",
+            dir.display(),
+            String::from_utf8_lossy(&output.stderr).trim()
+        ))
+    }
 }
 
 fn run(argv: &[String]) -> Result<Plan, String> {
@@ -135,6 +173,7 @@ fn run(argv: &[String]) -> Result<Plan, String> {
 
     create(&plan, &main)?;
     install_hooks(&main)?;
+    build_tools(&plan.dir)?;
     Ok(plan)
 }
 

@@ -20,12 +20,12 @@ As a designer, I want a Round tool that draws a circle in a square box and an el
 
 ## Product Owner test
 
-| Step | Do                                     | You should see                                                                               |
-| ---- | -------------------------------------- | -------------------------------------------------------------------------------------------- |
-| 1    | Click **Round**, width 100, height 100 | a circle touching its box; no Radius field, no Anchor                                        |
-| 2    | Width 120, height 80                   | an ellipse touching the four sides of its box; Straight box 120 × 80                         |
-| 3    | Angle 30                               | the ellipse turns about the centre of its box                                                |
-| 4    | **Points**, then click point 1         | its 4 points: 1 at the top, then right, bottom, left; no **Handles** switch, nothing to type |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | Click **Round**, width 100, height 100 | a circle touching its box; no Radius field, no Anchor |
+| 2 | Width 120, height 80 | an ellipse touching the four sides of its box; Straight box 120 × 80 |
+| 3 | Angle 30 | the ellipse turns about the centre of its box |
+| 4 | **Points**, then click point 1 | its 4 points: 1 at the top, then right, bottom, left; no **Handles** switch, nothing to type |
 
 Look closely: the curve is four Bézier sides, not a true ellipse; the gap is under 0.03 at this size (ADR-0048).
 

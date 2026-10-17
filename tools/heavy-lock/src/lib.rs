@@ -14,10 +14,8 @@
 //! merge one at a time (ADR-0065, decision 5; EN-051). Each lock names its owner to the commands it
 //! starts in a variable of its own: a command under the merge lock never runs inside the heavy one.
 
-use std::fs::{self, File, OpenOptions};
+use std::fs::{self, File, OpenOptions, TryLockError};
 use std::io::{self, Read, Write};
-use std::os::fd::AsRawFd;
-use std::os::unix::fs::MetadataExt;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::atomic::{AtomicUsize, Ordering};
@@ -202,46 +200,47 @@ pub fn take_over_line(left_by: Option<&LockOwner>, path: &Path) -> String {
     }
 }
 
-/// Takes the kernel's exclusive advisory lock on an open file without waiting (`flock(2)` with
-/// `LOCK_EX | LOCK_NB`, `REF-MACOS-FLOCK`): `true` when taken, `false` when another open file holds
-/// it. The lock lasts until the file is closed, by this process or by its end.
+/// Takes the kernel's exclusive advisory lock on an open file without waiting (`File::try_lock`,
+/// `flock(2)` with `LOCK_EX | LOCK_NB` on Unix, `REF-RUST-FILE-LOCK`, `REF-MACOS-FLOCK`): `true`
+/// when taken, `false` when another open file holds it. The lock lasts until the file is closed, by
+/// this process or by its end.
 ///
 /// # Errors
 ///
 /// When the system refuses the lock for another reason than its being held.
 pub fn lock_exclusive(file: &File) -> io::Result<bool> {
-    unsafe extern "C" {
-        fn flock(fd: i32, operation: i32) -> i32;
-    }
-
-    /// `LOCK_EX`, an exclusive lock, on macOS and Linux.
-    const EXCLUSIVE: i32 = 2;
-    /// `LOCK_NB`, fail rather than wait, on macOS and Linux.
-    const NO_WAIT: i32 = 4;
-
-    loop {
-        // SAFETY: the descriptor stays open for the call, borrowed from `file`; the call reads
-        // nothing else and changes no memory.
-        if unsafe { flock(file.as_raw_fd(), EXCLUSIVE | NO_WAIT) } == 0 {
-            return Ok(true);
-        }
-
-        let error = io::Error::last_os_error();
-
-        match error.kind() {
-            io::ErrorKind::WouldBlock => return Ok(false),
-            io::ErrorKind::Interrupted => {}
-            _ => return Err(error),
-        }
+    match file.try_lock() {
+        Ok(()) => Ok(true),
+        Err(TryLockError::WouldBlock) => Ok(false),
+        Err(TryLockError::Error(error)) => Err(error),
     }
 }
 
 /// Whether an open file is still the one at a path.
 fn is_at(file: &File, path: &Path) -> bool {
     match (file.metadata(), fs::symlink_metadata(path)) {
-        (Ok(open), Ok(named)) => open.dev() == named.dev() && open.ino() == named.ino(),
+        (Ok(open), Ok(named)) => same_file(&open, &named),
         _ => false,
     }
+}
+
+/// Whether two metadata name one file: its device and inode on Unix.
+// Unix-only: the standard library has no portable file identity.
+#[cfg(unix)]
+fn same_file(open: &fs::Metadata, named: &fs::Metadata) -> bool {
+    use std::os::unix::fs::MetadataExt;
+
+    open.dev() == named.dev() && open.ino() == named.ino()
+}
+
+/// Whether two metadata name one file, elsewhere: its creation and write times and its size.
+// Windows' file index (`MetadataExt::file_index`) is still a nightly-only API (`windows_by_handle`,
+// rust-lang/rust#63010), so the identity is approximated by what stable Rust reads.
+#[cfg(not(unix))]
+fn same_file(open: &fs::Metadata, named: &fs::Metadata) -> bool {
+    open.created().ok() == named.created().ok()
+        && open.modified().ok() == named.modified().ok()
+        && open.len() == named.len()
 }
 
 /// The owner written in an open lock file, `None` when it names none or cannot be read.

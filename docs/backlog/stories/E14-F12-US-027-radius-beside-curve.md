@@ -33,12 +33,12 @@ One task = one commit, referenced as `US-027.Tn`.
 
 ## Decisions during the story
 
-| Decision                                                                                                                                                                                    | Reason                                                                                                                                     |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Decision | Reason |
+| --- | --- |
 | one construction for every corner beside a curve: the centre runs along the parallel curve of one side until it is the radius from the other, a straight side read as a cubic at its thirds | the same code for a straight side and for two curves; a straight side's distance is taken along its one normal, so that it costs no search |
-| a radius fits when its circle stays clear of both whole sides, not only up to the tangent point                                                                                             | a circle crossing the curve further on would make the arc cross it; the derivation's curvature test is not needed (step 6)                 |
-| the cubic's cut ends are set to the arcs' ends                                                                                                                                              | pieces join bit for bit; the cut differs from the curve by a rounding error                                                                |
-| the corners between two straight sides keep the arcs of F01                                                                                                                                 | every drawing without handles stays the same, bit for bit (F12.AC5)                                                                        |
+| a radius fits when its circle stays clear of both whole sides, not only up to the tangent point | a circle crossing the curve further on would make the arc cross it; the derivation's curvature test is not needed (step 6) |
+| the cubic's cut ends are set to the arcs' ends | pieces join bit for bit; the cut differs from the curve by a rounding error |
+| the corners between two straight sides keep the arcs of F01 | every drawing without handles stays the same, bit for bit (F12.AC5) |
 
 ## Product Owner test
 

@@ -1,8 +1,8 @@
 import { cornersWithRadii } from "../corner-radius";
 import { curveCornerOf } from "../handles";
 
-import type { FreeShape } from "../free-shape";
 import type { Rectangle } from "./rectangle";
+import type { FreeShape } from "../free-shape";
 
 /** The unit square, top-left first, clockwise (Q11): the points the rectangle tool stores. */
 const UNIT_SQUARE = [

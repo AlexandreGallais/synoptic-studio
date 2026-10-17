@@ -16,7 +16,7 @@ Procedure: the `/audit` skill. Sections A to E are first reviewed by the indepen
 
 1. Feature: re-open every `@see` target online — still reachable, still saying what is cited; update the `[verified] YYYY-MM-DD` date in `docs/references.md`.
 2. Project: the weekly link check (`links.yml`) is green — run it on demand if needed; `[unverified]` rows: try again, or keep them uncited.
-3. No `@see` points to an `[unverified]` row (lint guarantees it; check no `eslint-disable` bypasses it).
+3. No `@see` points to an `[unverified]` row (lint guarantees it; check no disable directive bypasses it).
 
 ## C. Provenance (no copied code)
 
@@ -41,7 +41,7 @@ Procedure: the `/audit` skill. Sections A to E are first reviewed by the indepen
 ## F. Quality gates
 
 1. `npm run check:all` green; coverage 100 %; `npm run build` green.
-2. No `.skip` / `.only` in tests; every `eslint-disable` has a justification still valid.
+2. No `.skip` / `.only` in tests; every disable directive (`oxlint-disable`, `lint-disable`, Rust `allow`) has a justification still valid and its row in the [register of exceptions](./exceptions.md).
 3. The feature is demonstrable (playground or tests) for its `VAL` story.
 4. Agent configuration (`AGENTS.md`, `CLAUDE.md`, `.claude/rules/`, skills, agents) still matches the project; contradictions removed.
 
@@ -55,8 +55,8 @@ The six questions of the [evolvability review](../process/) in one line each (si
 
 ## Findings table (in the `AUD` story)
 
-| Check                                        | Result | Evidence                                   | Action |
-| -------------------------------------------- | ------ | ------------------------------------------ | ------ |
-| A4 — mutation of `filletSetback` (sign of τ) | caught | `fillet-setback.test.ts` "direction" fails | —      |
+| Check | Result | Evidence | Action |
+| --- | --- | --- | --- |
+| A4 — mutation of `filletSetback` (sign of τ) | caught | `fillet-setback.test.ts` "direction" fails | — |
 
 Regression and end-to-end tests are added when the applications exist (ADR-0020), not by the feature audits.

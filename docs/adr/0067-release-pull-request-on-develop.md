@@ -1,6 +1,6 @@
 # ADR-0067 — The release pull request on `develop`, only the release on `main`
 
-**Status**: Accepted by the agent (2026-10-17, EN-046, in the run of F18 the Product Owner started, from F18's first criterion asked on 2026-10-14); who merges the release pull request (decision 2) to be confirmed by the Product Owner at F18's validation. Supersedes, in ADR-0038: release-please's release pull request into `main`, which merged itself (points 1 and 5), and `develop` catching up with a release commit it lacked (point 7).
+**Status**: Accepted, decision 2 confirmed by the Product Owner at F18's validation (VAL-019, 2026-10-17). Accepted by the agent first (2026-10-17, EN-046, in the run of F18 the Product Owner started, from F18's first criterion asked on 2026-10-14). Supersedes, in ADR-0038: release-please's release pull request into `main`, which merged itself (points 1 and 5), and `develop` catching up with a release commit it lacked (point 7).
 
 ## Context
 
@@ -19,11 +19,11 @@
 
 ## Reasons
 
-| Option                                                                  | For                                                                                    | Against                                                                                                           |
-| ----------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| Release pull request on `develop`, merged by the Product Owner (chosen) | `main` gains no commit `develop` lacks; the version is fixed when the release is asked | one more merge per release                                                                                        |
-| Release pull request on `develop`, merged by the workflow               | no extra merge                                                                         | the version fixed at the first push to `develop`; later features left out of its changelog, the tag behind `main` |
-| Release pull request on `main` (ADR-0038)                               | one merge                                                                              | `develop` catches up with a commit at every release                                                               |
+| Option | For | Against |
+| --- | --- | --- |
+| Release pull request on `develop`, merged by the Product Owner (chosen) | `main` gains no commit `develop` lacks; the version is fixed when the release is asked | one more merge per release |
+| Release pull request on `develop`, merged by the workflow | no extra merge | the version fixed at the first push to `develop`; later features left out of its changelog, the tag behind `main` |
+| Release pull request on `main` (ADR-0038) | one merge | `develop` catches up with a commit at every release |
 
 ## Consequences
 

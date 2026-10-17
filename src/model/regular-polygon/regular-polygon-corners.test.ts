@@ -301,38 +301,6 @@ describe("regularPolygonCorners (properties)", () => {
   });
 });
 
-describe("regularPolygonCorners (anchored, properties)", () => {
-  test.prop({
-    corners: fc.integer({ max: 12, min: 3 }),
-    height: fc.integer({ max: 1000, min: 1 }),
-    radius: fc.integer({ max: 2000, min: 0 }),
-    width: fc.integer({ max: 1000, min: 1 }),
-  })(
-    "[F07.AC4] keeps the flat base on the bottom of the box at any radius",
-    ({ corners, height, radius, width }) => {
-      // Every polygon has a flat base; its fillets stop on it, and at the maximal radius the
-      // incircle still touches it at its middle (DERIV-regular-polygon-fit step 6).
-      const anchor = { horizontal: "mid", vertical: "max" } as const;
-      const pieces = roundedContour(
-        regularPolygonCorners({
-          angle: 0,
-          x: 0,
-          y: 0,
-          anchor,
-          stretched: false,
-          corners,
-          height,
-          radii: Array.from({ length: corners }, () => radius),
-          width,
-        }),
-      );
-      const lowest = Math.max(...pieces.flatMap((piece) => [piece.start.y, piece.end.y]));
-
-      expect(Math.abs(lowest - height)).toBeLessThan(EPSILON * Math.max(1, width, height));
-    },
-  );
-});
-
 describe("regularPolygonCorners (one radius per vertex)", () => {
   it("[F03.AC1] gives every vertex the same radius as F02 when the radii are equal", () => {
     const polygon = {
@@ -398,14 +366,18 @@ describe("regularPolygonCorners (one radius per vertex)", () => {
 describe("regularPolygonCorners (one radius per vertex, properties)", () => {
   test.prop({
     height: fc.integer({ max: 1000, min: 1 }),
+    isEqual: fc.boolean(),
     radii: fc.array(fc.nat({ max: 2000 }), { maxLength: 12, minLength: 12 }),
     sides: fc.integer({ max: 12, min: 3 }),
     width: fc.integer({ max: 1000, min: 1 }),
   })(
-    "[F03.AC1] keeps the flat base on the bottom of the box whatever the radius of each corner",
-    ({ height, radii, sides, width }) => {
+    "[F03.AC1] [F07.AC4] keeps the flat base on the bottom of the box whatever the radius of each corner, equal or not",
+    ({ height, isEqual, radii, sides, width }) => {
       // The anchor places the sharp polygon; fillets only cut inwards, and the base's straight
-      // part, or the point where its two fillets meet, stays on it (DERIV-local-radius-clamp).
+      // part, or the point where its two fillets meet, stays on it (DERIV-local-radius-clamp); at
+      // the maximal equal radius the incircle still touches it at its middle
+      // (DERIV-regular-polygon-fit step 6).
+      const chosen = isEqual ? radii.map(() => radii[0] ?? 0) : radii;
       const anchor = { horizontal: "mid", vertical: "max" } as const;
       const pieces = roundedContour(
         regularPolygonCorners({
@@ -416,7 +388,7 @@ describe("regularPolygonCorners (one radius per vertex, properties)", () => {
           stretched: false,
           corners: sides,
           height,
-          radii: radii.slice(0, sides),
+          radii: chosen.slice(0, sides),
           width,
         }),
       );

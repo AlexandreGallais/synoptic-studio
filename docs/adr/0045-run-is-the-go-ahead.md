@@ -1,6 +1,6 @@
 # ADR-0045 — `/run` is the go-ahead; validated features merge by themselves; releases when the Product Owner asks
 
-**Status**: Accepted (Product Owner, 2026-10-13). Supersedes, in ADR-0028 and ADR-0038: the Product Owner setting stories `ready` before a run, the Product Owner merging each feature pull request into `develop`, and a release pull request at the end of every feature.
+**Status**: Superseded by ADR-0072 (2026-10-17, review of the ADRs, EN-094), which gathers how a run works today. Accepted (Product Owner, 2026-10-13). Supersedes, in ADR-0028 and ADR-0038: the Product Owner setting stories `ready` before a run, the Product Owner merging each feature pull request into `develop`, and a release pull request at the end of every feature.
 
 ## Context
 

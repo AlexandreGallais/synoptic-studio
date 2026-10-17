@@ -24,13 +24,13 @@ ADR-0002 keeps text a native `<text>`. A text must be measured to be placed, wra
 
 ## Reasons
 
-| Option                                | For                                                                        | Against                                                                                                                |
-| ------------------------------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| Metrics and positioned lines (chosen) | drawn by every reader; measured anywhere, as fast as a sum; no dependency  | a reader's ligatures or a missing font change the drawn width a little; no shaping                                     |
-| HTML in a `foreignObject`             | the browser's whole layout: wrapping, ellipsis, every script               | drawn by browsers only (`REF-DRAWIO-SVG-TEXT`, `REF-BATIK-STATUS`); measured only in a page                            |
-| SVG 2 `inline-size`                   | wrapping by the reader                                                     | drawn by no browser (`REF-SVGWG-1087`)                                                                                 |
-| Measured by a canvas                  | the browser's own widths                                                   | browser only (`REF-MDN-TEXTMETRICS`); a native package in Node.js (`REF-NODE-CANVAS`), against "no runtime dependency" |
-| Text as paths                         | the same drawing everywhere (Figma's default, `REF-FIGMA-EXPORT-SETTINGS`) | not wanted by the Product Owner: the text must stay text                                                               |
+| Option | For | Against |
+| --- | --- | --- |
+| Metrics and positioned lines (chosen) | drawn by every reader; measured anywhere, as fast as a sum; no dependency | a reader's ligatures or a missing font change the drawn width a little; no shaping |
+| HTML in a `foreignObject` | the browser's whole layout: wrapping, ellipsis, every script | drawn by browsers only (`REF-DRAWIO-SVG-TEXT`, `REF-BATIK-STATUS`); measured only in a page |
+| SVG 2 `inline-size` | wrapping by the reader | drawn by no browser (`REF-SVGWG-1087`) |
+| Measured by a canvas | the browser's own widths | browser only (`REF-MDN-TEXTMETRICS`); a native package in Node.js (`REF-NODE-CANVAS`), against "no runtime dependency" |
+| Text as paths | the same drawing everywhere (Figma's default, `REF-FIGMA-EXPORT-SETTINGS`) | not wanted by the Product Owner: the text must stay text |
 
 ## Consequences
 

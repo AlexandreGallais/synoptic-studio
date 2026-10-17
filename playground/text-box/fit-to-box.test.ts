@@ -46,7 +46,7 @@ function typeContent(content: string): void {
  * @returns its box, its kind and its position
  */
 function readModel(): ShownText {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- written by JSON.stringify of a Text
+  // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- written by JSON.stringify of a Text
   return JSON.parse(readText("#model")) as ShownText;
 }
 

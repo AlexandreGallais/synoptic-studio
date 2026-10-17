@@ -23,7 +23,10 @@ const FIELD_SIZE = 2;
  * @returns the offset of each Lookup table in the table; undefined when the list passes its end
  * @see REF-OT-LAYOUT-COMMON
  */
-function parseLookupOffsets(gpos: DataView, lookupList: number): readonly number[] | undefined {
+function parseLookupOffsets(
+  gpos: Readonly<DataView>,
+  lookupList: number,
+): readonly number[] | undefined {
   const count = isSpanWithin(lookupList, FIELD_SIZE, gpos.byteLength)
     ? gpos.getUint16(lookupList)
     : Infinity;
@@ -48,7 +51,7 @@ function parseLookupOffsets(gpos: DataView, lookupList: number): readonly number
  * @see REF-OT-LAYOUT-COMMON
  */
 function indicesToLookups(
-  gpos: DataView,
+  gpos: Readonly<DataView>,
   indices: readonly number[],
   glyphs: ReadonlySet<number>,
 ): readonly KerningLookup[] | undefined {
@@ -75,7 +78,7 @@ function indicesToLookups(
  * @see REF-OT-GPOS
  */
 export function parseGposKerning(
-  gpos: DataView,
+  gpos: Readonly<DataView>,
   glyphs: ReadonlySet<number>,
 ): readonly KerningLookup[] | undefined {
   const indices = parseKernFeatureLookups(gpos, gpos.getUint16(FEATURE_LIST_FIELD));

@@ -10,10 +10,10 @@ F08 turns a regular polygon into a free shape whose vertices are stored, so that
 
 Options:
 
-| Option                           | The shape at conversion | Integers in the model                           |
-| -------------------------------- | ----------------------- | ----------------------------------------------- |
-| Round every vertex to an integer | moves by up to 0.5      | always                                          |
-| Keep the derived vertices, exact | unchanged               | not for the converted vertices, until they move |
+| Option | The shape at conversion | Integers in the model |
+| --- | --- | --- |
+| Round every vertex to an integer | moves by up to 0.5 | always |
+| Keep the derived vertices, exact | unchanged | not for the converted vertices, until they move |
 
 ## Decision
 

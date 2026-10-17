@@ -30,12 +30,12 @@ One task = one commit, referenced as `VAL-006.Tn`. This story is not merged auto
 
 Written with the stories and the audit; counted at the validation (`[F09.ACn]` in test titles).
 
-| Criterion                                          | Tests | Where                                                                                                 |
-| -------------------------------------------------- | ----- | ----------------------------------------------------------------------------------------------------- |
-| F09.AC1 — rectangle tool makes a free shape        | 2     | `is-valid-free-shape`, `free-shape-corners`; and every F01 and F03 rectangle test, now run through it |
-| F09.AC2 — width and height stretch, top-left fixed | 5     | `stretch-to-size` (two properties), `free-shape-corners`                                              |
-| F09.AC3 — stretching without loss                  | 3     | `stretch-to-size`, `free-shape-corners`, playground (`rectangle-free-shape`)                          |
-| F09.AC4 — the playground rectangle unchanged       | 3     | playground (`rectangle-free-shape`)                                                                   |
+| Criterion | Tests | Where |
+| --- | --- | --- |
+| F09.AC1 — rectangle tool makes a free shape | 2 | `is-valid-free-shape`, `free-shape-corners`; and every F01 and F03 rectangle test, now run through it |
+| F09.AC2 — width and height stretch, top-left fixed | 5 | `stretch-to-size` (two properties), `free-shape-corners` |
+| F09.AC3 — stretching without loss | 3 | `stretch-to-size`, `free-shape-corners`, playground (`rectangle-free-shape`) |
+| F09.AC4 — the playground rectangle unchanged | 3 | playground (`rectangle-free-shape`) |
 
 ## Validation (2026-10-11)
 
@@ -43,7 +43,7 @@ The Product Owner tested the feature branch from the US-017 card, before the gui
 
 Compared with what the feature meant to show: the free shape, its stretch and its size 0 were seen as meant. The guided test of F09 (steps 34 to 38) was added afterwards. Remarks:
 
-| Remark                                                                       | Where it goes                                    |
-| ---------------------------------------------------------------------------- | ------------------------------------------------ |
+| Remark | Where it goes |
+| --- | --- |
 | Radii kept apart from their points: store a point with its radius (a corner) | Q27 and F08, with the other changes of the model |
-| A domain-modelling expert agent for business objects                         | improvement log, RET-001                         |
+| A domain-modelling expert agent for business objects | improvement log, RET-001 |

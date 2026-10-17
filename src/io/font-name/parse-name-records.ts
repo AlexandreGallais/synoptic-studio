@@ -26,7 +26,7 @@ const RECORD_FIELDS = { encoding: 2, language: 4, length: 8, nameId: 6, offset: 
  * @returns its number of records
  * @see REF-OT-NAME
  */
-function parseRecordCount(name: DataView): number {
+function parseRecordCount(name: Readonly<DataView>): number {
   const count = isSpanWithin(0, NAME_HEADER_SIZE, name.byteLength)
     ? name.getUint16(COUNT_OFFSET)
     : 0;
@@ -46,7 +46,7 @@ function parseRecordCount(name: DataView): number {
  * @returns its platform, encoding, language and name ID, and where its string lies
  * @see REF-OT-NAME
  */
-function parseNameRecord(name: DataView, at: number): NameRecord {
+function parseNameRecord(name: Readonly<DataView>, at: number): NameRecord {
   return {
     encoding: name.getUint16(at + RECORD_FIELDS.encoding),
     language: name.getUint16(at + RECORD_FIELDS.language),
@@ -67,7 +67,7 @@ function parseNameRecord(name: DataView, at: number): NameRecord {
  * @returns its records whose string lies in the table
  * @see REF-OT-NAME
  */
-export function parseNameRecords(name: DataView): readonly NameRecord[] {
+export function parseNameRecords(name: Readonly<DataView>): readonly NameRecord[] {
   return Array.from({ length: parseRecordCount(name) }, (unused, index) =>
     parseNameRecord(name, elementAddress(NAME_HEADER_SIZE, NAME_RECORD_SIZE, index)),
   ).filter((record) => isSpanWithin(record.offset, record.length, name.byteLength));

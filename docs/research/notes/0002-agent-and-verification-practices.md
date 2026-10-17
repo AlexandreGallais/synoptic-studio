@@ -40,14 +40,14 @@
 
 ## 6. Retained for this project
 
-| Practice                                                                                                      | Where                                   |
-| ------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
-| Procedures out of `CLAUDE.md`, as skills: story, spike, audit, derivation                                     | `.claude/skills/` (ADR-0021)            |
-| Pitfalls scoped to the files they concern                                                                     | `.claude/rules/` (ADR-0021)             |
-| Independent auditor in a fresh context, read-only, reports only real gaps                                     | `.claude/agents/auditor.md` (ADR-0021)  |
+| Practice | Where |
+| --- | --- |
+| Procedures out of `CLAUDE.md`, as skills: story, spike, audit, derivation | `.claude/skills/` (ADR-0021) |
+| Pitfalls scoped to the files they concern | `.claude/rules/` (ADR-0021) |
+| Independent auditor in a fresh context, read-only, reports only real gaps | `.claude/agents/auditor.md` (ADR-0021) |
 | Guards that never depend on memory: no merge of a pull request, no `--no-verify`, no force push without lease | `.claude/settings.json` hook (ADR-0021) |
-| State reloaded at session start and after compaction                                                          | `SessionStart` hook (ADR-0021)          |
-| Interview the Product Owner when refining a feature                                                           | backlog method                          |
-| Property-based tests for `math` and `geometry`                                                                | `fast-check` (ADR-0022)                 |
-| Weekly link check of all Markdown                                                                             | `links.yml` workflow (ADR-0022)         |
-| Mutation testing tool                                                                                         | deferred, `REF-STRYKER-6210` (ADR-0022) |
+| State reloaded at session start and after compaction | `SessionStart` hook (ADR-0021) |
+| Interview the Product Owner when refining a feature | backlog method |
+| Property-based tests for `math` and `geometry` | `fast-check` (ADR-0022) |
+| Weekly link check of all Markdown | `links.yml` workflow (ADR-0022) |
+| Mutation testing tool | deferred, `REF-STRYKER-6210` (ADR-0022) |

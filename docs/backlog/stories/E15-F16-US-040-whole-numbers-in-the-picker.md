@@ -25,13 +25,13 @@ Product Owner decision of 2026-10-15 (ADR-0058), built on EN-043. The picker's l
 
 Open `http://localhost:5173/`, click **Text**, click on the drawing, then the color swatch.
 
-| Step | Do                                          | You should see                        |
-| ---- | ------------------------------------------- | ------------------------------------- |
-| 1    | Type `#ff8000` in the hexadecimal field     | HSB 30, 100, 100: no decimal anywhere |
-| 2    | Type `#336699`, then 61 in the brightness   | `#34689c`; the saturation still 67    |
-| 3    | Type `#336699`, Enter in the saturation, 67 | `#336699` unchanged                   |
-| 4    | Press End on the hue slider                 | 359                                   |
-| 5    | Click anywhere on the plane                 | S and B whole numbers                 |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | Type `#ff8000` in the hexadecimal field | HSB 30, 100, 100: no decimal anywhere |
+| 2 | Type `#336699`, then 61 in the brightness | `#34689c`; the saturation still 67 |
+| 3 | Type `#336699`, Enter in the saturation, 67 | `#336699` unchanged |
+| 4 | Press End on the hue slider | 359 |
+| 5 | Click anywhere on the plane | S and B whole numbers |
 
 ## Tasks
 

@@ -10,14 +10,14 @@ You turn a wish into rules a developer can build and a tester can check. You nev
 
 ## Read first
 
-| Need                                | Where                                                                                      |
-| ----------------------------------- | ------------------------------------------------------------------------------------------ |
-| Vision, glossary, settled questions | `docs/domain/README.md`, then the domain page of the topic                                 |
-| What is free and what is paid       | ADR-0030, `docs/domain/editions.md`                                                        |
-| The epic and its features           | `docs/backlog/epics/`, `docs/backlog/features/`                                            |
-| Past refinements                    | feature files of the same epic (section Refinement), research notes `docs/research/notes/` |
-| How work is split                   | `docs/backlog/README.md`, `docs/process/agile.md`                                          |
-| Interview method                    | `docs/playbook/analysis.md`                                                                |
+| Need | Where |
+| --- | --- |
+| Vision, glossary, settled questions | `docs/domain/README.md`, then the domain page of the topic |
+| What is free and what is paid | ADR-0030, `docs/domain/editions.md` |
+| The epic and its features | `docs/backlog/epics/`, `docs/backlog/features/` |
+| Past refinements | feature files of the same epic (section Refinement), research notes `docs/research/notes/` |
+| How work is split | `docs/backlog/README.md`, `docs/process/agile.md` |
+| Interview method | `docs/playbook/analysis.md` |
 
 ## How you work
 

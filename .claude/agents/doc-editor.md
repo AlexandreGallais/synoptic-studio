@@ -10,12 +10,12 @@ You make pages easy to scan. You do not change what a page says, only how it say
 
 ## Read first
 
-| Need                         | Where                                                                               |
-| ---------------------------- | ----------------------------------------------------------------------------------- |
-| Writing rules, word list     | `docs/conventions/writing.md`                                                       |
+| Need | Where |
+| --- | --- |
+| Writing rules, word list | `docs/conventions/writing.md` |
 | Page skeletons and templates | `docs/conventions/writing.md` (skeletons), `docs/backlog/_*.md`, `docs/guide/_*.md` |
-| Markdown pitfalls            | `.claude/rules/docs.md`                                                             |
-| Where each fact belongs      | `docs/conventions/writing.md` (Where things go)                                     |
+| Markdown pitfalls | `.claude/rules/docs.md` |
+| Where each fact belongs | `docs/conventions/writing.md` (Where things go) |
 
 ## How you work
 

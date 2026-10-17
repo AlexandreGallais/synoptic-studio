@@ -51,7 +51,7 @@ function nameRecordToRank(record: NameRecord): number {
  * @returns the names of that ID, not empty, in the table's order
  * @see REF-OT-NAME
  */
-function parseNameCandidates(name: DataView, nameId: number): readonly NameCandidate[] {
+function parseNameCandidates(name: Readonly<DataView>, nameId: number): readonly NameCandidate[] {
   return parseNameRecords(name)
     .filter((record) => record.nameId === nameId)
     .map((record) => ({ rank: nameRecordToRank(record), text: parseNameString(name, record) }))
@@ -70,7 +70,7 @@ function parseNameCandidates(name: DataView, nameId: number): readonly NameCandi
  * @returns the name; undefined when the table holds no readable string of that ID
  * @see REF-OT-NAME
  */
-export function parseFontName(name: DataView, nameId: number): string | undefined {
+export function parseFontName(name: Readonly<DataView>, nameId: number): string | undefined {
   return parseNameCandidates(name, nameId).reduce<NameCandidate | undefined>(
     (best, candidate) => (best === undefined || candidate.rank < best.rank ? candidate : best),
     undefined,

@@ -31,12 +31,12 @@ From the Product Owner's second pass of VAL-018 (2026-10-16), items F1 and F2:
 
 ## Product Owner test
 
-| Step | Do                                                                   | You should see                                                                                  |
-| ---- | -------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| 1    | Chrome, Inter not installed: open the page, Text tool                | Installed fonts first, in blue, under "Start with Installed fonts"; an empty font list; no text |
-| 2    | Click Installed fonts, allow                                         | the first family read chosen at once and the text drawn in it; the line counting the families   |
-| 3    | Wait for the line `Installed fonts read: …`, then open the font list | no Apple Color Emoji, Al Nile nor Apple Braille; the line counts them under "no Latin letters"  |
-| 4    | Choose Helvetica, then Size 32                                       | the dashed frame hugging the letters                                                            |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | Chrome, Inter not installed: open the page, Text tool | Installed fonts first, in blue, under "Start with Installed fonts"; an empty font list; no text |
+| 2 | Click Installed fonts, allow | the first family read chosen at once and the text drawn in it; the line counting the families |
+| 3 | Wait for the line `Installed fonts read: …`, then open the font list | no Apple Color Emoji, Al Nile nor Apple Braille; the line counts them under "no Latin letters" |
+| 4 | Choose Helvetica, then Size 32 | the dashed frame hugging the letters |
 
 ## Tasks
 

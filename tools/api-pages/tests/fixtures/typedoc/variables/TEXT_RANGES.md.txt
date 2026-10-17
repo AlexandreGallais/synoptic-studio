@@ -1,0 +1,143 @@
+[editor](../index.md) / TEXT\_RANGES
+
+# Variable: TEXT\_RANGES
+
+> `const` **TEXT\_RANGES**: `object`
+
+Defined in: model/text/text-ranges.ts:10
+
+The integers a text's numbers range over, both ends included (F05 refinement, round 2,
+2026-10-14): its size from 1 to 100 000 user units, its weight from 100 (thin) to 900 (black,
+`REF-CSS-FONTS-4`), its opacity and its background's from 0 to 100 %; its letter and word
+spacing from −100 000 to 100 000 user units, the size's bound (2026-10-15, provisional, to
+confirm at VAL-014); its box's sides, its maximum number of lines and its line height from 0
+to 100 000, 0 meaning no maximum and the automatic line height (F14, provisional, to confirm at
+VAL-015).
+
+## Type Declaration
+
+### boxSide
+
+> `readonly` **boxSide**: `object`
+
+Width and height of its box, in user units.
+
+#### boxSide.first
+
+> `readonly` **first**: `number`
+
+A box with no room.
+
+#### boxSide.last
+
+> `readonly` **last**: `number`
+
+Largest side.
+
+### lineHeight
+
+> `readonly` **lineHeight**: `object`
+
+Line height, in user units.
+
+#### lineHeight.first
+
+> `readonly` **first**: `number`
+
+Automatic: the font's.
+
+#### lineHeight.last
+
+> `readonly` **last**: `number`
+
+Largest line height.
+
+### maximumLines
+
+> `readonly` **maximumLines**: `object`
+
+Maximum number of lines shown in its box.
+
+#### maximumLines.first
+
+> `readonly` **first**: `number`
+
+No maximum.
+
+#### maximumLines.last
+
+> `readonly` **last**: `number`
+
+Largest maximum.
+
+### opacity
+
+> `readonly` **opacity**: `object`
+
+Opacity, in percent.
+
+#### opacity.first
+
+> `readonly` **first**: `number`
+
+Fully transparent.
+
+#### opacity.last
+
+> `readonly` **last**: `number`
+
+Fully opaque.
+
+### size
+
+> `readonly` **size**: `object`
+
+Size, the em, in user units.
+
+#### size.first
+
+> `readonly` **first**: `number`
+
+Smallest size.
+
+#### size.last
+
+> `readonly` **last**: `number`
+
+Largest size.
+
+### spacing
+
+> `readonly` **spacing**: `object`
+
+Letter spacing and word spacing, in user units.
+
+#### spacing.first
+
+> `readonly` **first**: `number`
+
+Tightest.
+
+#### spacing.last
+
+> `readonly` **last**: `number`
+
+Loosest.
+
+### weight
+
+> `readonly` **weight**: `object`
+
+Weight.
+
+#### weight.first
+
+> `readonly` **first**: `number`
+
+Thin.
+
+#### weight.last
+
+> `readonly` **last**: `number`
+
+Black.

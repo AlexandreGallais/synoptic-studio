@@ -12,7 +12,6 @@ const SCOPES = [
   "ci",
   "deps",
   "docs",
-  "eslint",
   "geometry",
   "interaction",
   "io",

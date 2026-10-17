@@ -1,5 +1,5 @@
-cargo run --release -q --manifest-path tools/shared-files/Cargo.toml --bin refuse-shared-files
-npx validate-branch-name
+cargo run --release -q -p shared-files --bin refuse-shared-files
+validate-branch-name
 npm run check:all
 # The golden file of a refactor (ADR-0049, EN-055): when one is written, a drift of results fails the push.
 if [ -f "$(git rev-parse --path-format=absolute --git-common-dir)/metrics/golden.json" ]; then npm run golden:check; fi

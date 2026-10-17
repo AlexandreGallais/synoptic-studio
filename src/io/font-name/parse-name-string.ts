@@ -9,7 +9,7 @@ const CODE_UNIT_SIZE = Uint16Array.BYTES_PER_ELEMENT;
 const ASCII_END = 0x80;
 
 /** A reader of a name's string, in its platform's encoding. */
-type NameDecoder = (name: DataView, record: NameRecord) => string | undefined;
+type NameDecoder = (name: Readonly<DataView>, record: NameRecord) => string | undefined;
 
 /**
  * Reads a name's string in UTF-16BE: one code unit per two bytes, big-endian, a character past
@@ -22,7 +22,7 @@ type NameDecoder = (name: DataView, record: NameRecord) => string | undefined;
  * @returns its string
  * @see REF-OT-NAME
  */
-function parseUtf16Name(name: DataView, record: NameRecord): string {
+function parseUtf16Name(name: Readonly<DataView>, record: NameRecord): string {
   return String.fromCodePoint(
     ...Array.from({ length: integerQuotient(record.length, CODE_UNIT_SIZE) }, (unused, index) =>
       name.getUint16(elementAddress(record.offset, CODE_UNIT_SIZE, index)),
@@ -40,7 +40,7 @@ function parseUtf16Name(name: DataView, record: NameRecord): string {
  * @returns its string; undefined when a byte is 128 or more
  * @see REF-APPLE-NAME
  */
-function parseAsciiName(name: DataView, record: NameRecord): string | undefined {
+function parseAsciiName(name: Readonly<DataView>, record: NameRecord): string | undefined {
   const bytes = Array.from({ length: record.length }, (unused, index) =>
     name.getUint8(record.offset + index),
   );
@@ -76,6 +76,6 @@ const NAME_DECODERS: Readonly<Record<string, NameDecoder>> = {
  * @returns its string; undefined for an encoding the library does not read
  * @see REF-OT-NAME
  */
-export function parseNameString(name: DataView, record: NameRecord): string | undefined {
+export function parseNameString(name: Readonly<DataView>, record: NameRecord): string | undefined {
   return NAME_DECODERS[`${String(record.platform)}/${String(record.encoding)}`]?.(name, record);
 }

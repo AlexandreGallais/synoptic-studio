@@ -7,14 +7,14 @@ Used by: EN-041 (the HTML layer's `foreignObject` placed over the text's lines).
 
 ## Notation
 
-| Symbol        | Definition                                                                                   |
-| ------------- | -------------------------------------------------------------------------------------------- |
-| `s`           | the text's size, user units                                                                  |
-| `u`           | the font's units per em                                                                      |
-| `A`, `D`, `G` | the ascender, the descent (positive) and the line gap of `hhea`, font units                  |
-| `k`           | `s / u`, the scale from font units to user units                                             |
-| `L`           | the line height the library uses, user units: automatic `k · (A + D + G)`, or the one chosen |
-| `A_b`, `D_b`  | the ascent and descent a browser uses, font units                                            |
+| Symbol | Definition |
+| --- | --- |
+| `s` | the text's size, user units |
+| `u` | the font's units per em |
+| `A`, `D`, `G` | the ascender, the descent (positive) and the line gap of `hhea`, font units |
+| `k` | `s / u`, the scale from font units to user units |
+| `L` | the line height the library uses, user units: automatic `k · (A + D + G)`, or the one chosen |
+| `A_b`, `D_b` | the ascent and descent a browser uses, font units |
 
 ## Step 1 — The library's first baseline
 
@@ -63,13 +63,13 @@ Arial 16 (`u` = 2048, `A` = 1854, `D` = 434, `G` = 67, `k` = 0.0078125), automat
 
 ## Checks (test cases)
 
-| Case                                                            | Computation                                                                                       | Expected                                                                                                                   |
-| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| Arial 16, automatic                                             | `k · G / 2 = 0.0078125 · 33.5`                                                                    | layer 0.26171875 above                                                                                                     |
-| Arial 16, line height 24                                        | chosen `L`: no shift; both baselines at `14.484375 + (24 − 17.875) / 2`                           | 17.546875, layer at the line's top                                                                                         |
-| Inter 4.1 16, automatic (`G` = 0)                               | `k · 0 / 2`                                                                                       | no shift                                                                                                                   |
-| Arial 160, automatic                                            | `0.078125 · 33.5`                                                                                 | layer 2.6171875 above                                                                                                      |
-| "Hello" over "World", Arial 16, automatic, trimmed (`C` = 1467) | untrimmed baseline 14.484375, trimmed `0.0078125 · 1467 = 11.4609375`: 3.0234375, plus 0.26171875 | top 3.28515625 above the block's, height `2 · 18.3984375` = 36.796875                                                      |
-| the same, fitting its content, not trimmed                      | top `−0.26171875`, height `n · L`                                                                 | 41.78125 × 36.796875, bottom at 36.53515625                                                                                |
-| a box 50 × 40 at (0, 0), Arial 16, automatic                    | the box raised by 0.26171875                                                                      | `y` −0.26171875, 50 × 40, bottom 39.73828125; bottom-aligned, last baseline at `40 − 0.0078125 · 501` = 36.0859375 in both |
-| the same box, trimmed, bottom-aligned                           | `(18.3984375 − 11.4609375) · 1 + 11.4609375 − 14.74609375`                                        | `y` 3.65234375; both last baselines at 40 (the library's trimmed block, 29.859375 tall, from 10.140625)                    |
+| Case | Computation | Expected |
+| --- | --- | --- |
+| Arial 16, automatic | `k · G / 2 = 0.0078125 · 33.5` | layer 0.26171875 above |
+| Arial 16, line height 24 | chosen `L`: no shift; both baselines at `14.484375 + (24 − 17.875) / 2` | 17.546875, layer at the line's top |
+| Inter 4.1 16, automatic (`G` = 0) | `k · 0 / 2` | no shift |
+| Arial 160, automatic | `0.078125 · 33.5` | layer 2.6171875 above |
+| "Hello" over "World", Arial 16, automatic, trimmed (`C` = 1467) | untrimmed baseline 14.484375, trimmed `0.0078125 · 1467 = 11.4609375`: 3.0234375, plus 0.26171875 | top 3.28515625 above the block's, height `2 · 18.3984375` = 36.796875 |
+| the same, fitting its content, not trimmed | top `−0.26171875`, height `n · L` | 41.78125 × 36.796875, bottom at 36.53515625 |
+| a box 50 × 40 at (0, 0), Arial 16, automatic | the box raised by 0.26171875 | `y` −0.26171875, 50 × 40, bottom 39.73828125; bottom-aligned, last baseline at `40 − 0.0078125 · 501` = 36.0859375 in both |
+| the same box, trimmed, bottom-aligned | `(18.3984375 − 11.4609375) · 1 + 11.4609375 − 14.74609375` | `y` 3.65234375; both last baselines at 40 (the library's trimmed block, 29.859375 tall, from 10.140625) |

@@ -23,24 +23,24 @@ Refined with the Product Owner on 2026-10-09 (Q18 settled, Q19 settled at 12 aft
 
 In delivery order.
 
-| ID                                                               | Type       | Title                                            | Status |
-| ---------------------------------------------------------------- | ---------- | ------------------------------------------------ | ------ |
-| [SP-002](../stories/E01-F02-SP-002-research-f02.md)              | Spike      | Research for F02                                 | done   |
-| [EN-008](../stories/E01-F02-EN-008-unit-regular-polygon.md)      | Enabler    | Unit regular polygon with a flat base            | done   |
-| [US-005](../stories/E01-F02-US-005-regular-polygon-contour.md)   | User story | Regular polygon contour fitted in its box        | done   |
-| [CHK-002](../stories/E01-F02-CHK-002-checkpoint-f02.md)          | Checkpoint | Checkpoint in the middle of F02                  | done   |
-| [US-006](../stories/E01-F02-US-006-round-polygon-corners.md)     | User story | Round the polygon's corners                      | done   |
-| [US-007](../stories/E01-F02-US-007-shape-selector-playground.md) | User story | Choose rectangle or polygon in the playground    | done   |
-| [AUD-002](../stories/E01-F02-AUD-002-audit-f02.md)               | Audit      | Audit F02: regular polygon with corner radius    | done   |
-| [US-008](../stories/E01-F02-US-008-cap-playground-sizes.md)      | User story | Cap the sizes typed in the playground at 100 000 | done   |
-| [VAL-002](../stories/E01-F02-VAL-002-validate-polygon.md)        | Validation | Validate F02 on the reference cases              | done   |
+| ID | Type | Title | Status |
+| --- | --- | --- | --- |
+| [SP-002](../stories/E01-F02-SP-002-research-f02.md) | Spike | Research for F02 | done |
+| [EN-008](../stories/E01-F02-EN-008-unit-regular-polygon.md) | Enabler | Unit regular polygon with a flat base | done |
+| [US-005](../stories/E01-F02-US-005-regular-polygon-contour.md) | User story | Regular polygon contour fitted in its box | done |
+| [CHK-002](../stories/E01-F02-CHK-002-checkpoint-f02.md) | Checkpoint | Checkpoint in the middle of F02 | done |
+| [US-006](../stories/E01-F02-US-006-round-polygon-corners.md) | User story | Round the polygon's corners | done |
+| [US-007](../stories/E01-F02-US-007-shape-selector-playground.md) | User story | Choose rectangle or polygon in the playground | done |
+| [AUD-002](../stories/E01-F02-AUD-002-audit-f02.md) | Audit | Audit F02: regular polygon with corner radius | done |
+| [US-008](../stories/E01-F02-US-008-cap-playground-sizes.md) | User story | Cap the sizes typed in the playground at 100 000 | done |
+| [VAL-002](../stories/E01-F02-VAL-002-validate-polygon.md) | Validation | Validate F02 on the reference cases | done |
 
 ## Feature plan
 
-| Acceptance criterion                        | Realized by                  | Verified by                                                  |
-| ------------------------------------------- | ---------------------------- | ------------------------------------------------------------ |
-| 1 — uniform fit, flat base, refused values  | SP-002 (Q19), EN-008, US-005 | `[F02.AC1]` tests (EN-008, US-005, US-007), VAL-002          |
-| 2 — global radius, inscribed circle at most | US-006 (F01 geometry reused) | `[F02.AC2]` tests (US-006, US-007), US-007 card, VAL-002     |
-| 3 — precision, orientation, starting vertex | EN-008, US-005               | `[F02.AC3]` tests (EN-008, US-005, AUD-002: output decimals) |
-| 4 — shape selector in the playground        | US-007                       | `[F02.AC4]` playground tests (US-007), VAL-002               |
-| 5 — sizes capped in the playground          | US-008                       | `[F02.AC5]` playground tests (US-008), VAL-002               |
+| Acceptance criterion | Realized by | Verified by |
+| --- | --- | --- |
+| 1 — uniform fit, flat base, refused values | SP-002 (Q19), EN-008, US-005 | `[F02.AC1]` tests (EN-008, US-005, US-007), VAL-002 |
+| 2 — global radius, inscribed circle at most | US-006 (F01 geometry reused) | `[F02.AC2]` tests (US-006, US-007), US-007 card, VAL-002 |
+| 3 — precision, orientation, starting vertex | EN-008, US-005 | `[F02.AC3]` tests (EN-008, US-005, AUD-002: output decimals) |
+| 4 — shape selector in the playground | US-007 | `[F02.AC4]` playground tests (US-007), VAL-002 |
+| 5 — sizes capped in the playground | US-008 | `[F02.AC5]` playground tests (US-008), VAL-002 |

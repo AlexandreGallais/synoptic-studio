@@ -12,7 +12,7 @@
 It takes values and **returns** a result. Enforced by:
 
 - `no-param-reassign` (properties included) — everywhere;
-- `functional/immutable-data`, `functional/prefer-immutable-types` (`ReadonlyDeep` parameters), `functional/type-declaration-immutability` — in the core;
+- `functional/immutable-data`, `functional/prefer-immutable-types` (`ReadonlyDeep` parameters), `functional/type-declaration-immutability` — in the core, read from the written code by the project's linter: `readonly` or `Readonly<…>` written in place ([lint](./lint.md#functional-prefer-immutable-types-and-functional-type-declaration-immutability));
 - model types are `readonly`: the compiler rejects any mutation, even in the shell.
 
 Exception by nature: a `procedure` receiving a DOM element may call its methods (`append`, `setAttribute`). See ADR-0014.
@@ -25,31 +25,38 @@ In `src/`: **no default parameter, no optional parameter**. Defaults belong to t
 
 Every top-level function carries **exactly one** `@kind`. A function mixing two kinds must be split.
 
-| `@kind`     | Definition                                              | Side effects |
-| ----------- | ------------------------------------------------------- | ------------ |
-| `math`      | pure numeric computation (scalars, vectors)             | no           |
-| `geometry`  | operation with a geometric meaning on geometric objects | no           |
-| `domain`    | business rule (symbol, port, parameter, pipe…)          | no           |
-| `format`    | conversion between representations (model ↔ SVG, JSON)  | no           |
-| `procedure` | action with a side effect (DOM, state, events)          | yes          |
+| `@kind` | Definition | Side effects |
+| --- | --- | --- |
+| `math` | pure numeric computation (scalars, vectors) | no |
+| `geometry` | operation with a geometric meaning on geometric objects | no |
+| `domain` | business rule (symbol, port, parameter, pipe…) | no |
+| `format` | conversion between representations (model ↔ SVG, JSON) | no |
+| `procedure` | action with a side effect (DOM, state, events) | yes |
 
-Why a JSDoc tag and not a decorator: a TypeScript decorator only applies to classes and their members, never to a free function (`REF-TS-DECORATORS`). The tag plays the same role, and ESLint reads it.
+Why a JSDoc tag and not a decorator: a TypeScript decorator only applies to classes and their members, never to a free function (`REF-TS-DECORATORS`). The tag plays the same role, and the project's linter reads it (`tools/lint`).
+
+## One business context per function
+
+The rule behind the limits (`AGENTS.md`, golden rules, 2026-10-17): a function holds **one business context**. When a calculation needs two others that a field names, those two are named functions of their own, and the calculation reads as their composition (ADR-0049). The numeric limits below — lines, statements, complexity, depth, nested calls — are **guardrails** that flag a function holding more than one context; they never decide alone:
+
+- **over a limit**: split the function where a field names the parts. When the only split gives halves invented names (`placeA`, `placeB`, `placeRest`) of a context that cannot be divided, the limit is wrong for that kind: stop and propose a new limit to the Product Owner, the function as evidence; a new limit is an ADR superseding ADR-0011's values. This is the one rule for a function over its limits, the procedures' included;
+- measured by EN-093 ([rules](./rules.md#function-limits-adr-0011-measured)): no limit forced an invented split; the limits stay as they are.
 
 ## Limits per kind (`local/kind-limits`)
 
-Values: `eslint/settings/kinds.ts`.
+Values: `tools/lint/src/settings.rs` (the project's linter, `local/kind-limits`); their loosest, the global ceilings of the core rules (`complexity`, `max-lines-per-function`…), in `.oxlintrc.json`.
 
-| `@kind`     | Code lines | Statements | Complexity | Depth |
-| ----------- | ---------- | ---------- | ---------- | ----- |
-| `math`      | 10         | 4          | 3          | 1     |
-| `geometry`  | 20         | 8          | 5          | 2     |
-| `domain`    | 20         | 8          | 5          | 2     |
-| `format`    | 20         | 8          | 4          | 1     |
-| `procedure` | 40         | 15         | 3          | 1     |
+| `@kind` | Code lines | Statements | Complexity | Depth |
+| --- | --- | --- | --- | --- |
+| `math` | 10 | 4 | 3 | 1 |
+| `geometry` | 20 | 8 | 5 | 2 |
+| `domain` | 20 | 8 | 5 | 2 |
+| `format` | 20 | 8 | 4 | 1 |
+| `procedure` | 40 | 15 | 3 | 1 |
 
 - Lines: lines holding code (blank and comment lines excluded), signature included.
 - Complexity: McCabe, decision points + 1 (`if`, `?:`, `&&`, `||`, `??`, `case`, loops, `catch`), **callbacks included**.
-- Every kind: 3 parameters at most (`@typescript-eslint/max-params`) — beyond, one named object.
+- Every kind: 3 parameters at most (`max-params`) — beyond, one named object.
 
 ## Long procedures: Composed Method
 
@@ -74,11 +81,12 @@ export function addPipe(editor: Editor, from: PortReference, to: PortReference):
 
 `orthogonalRoute`, `pipeFromRoute`, `addPipeCommand` are pure `domain` functions; `executeCommand` and `renderView` are `procedure`s. _(Illustrative example: these functions do not exist yet.)_
 
-Every decision (choosing a route, validating) lives in a tested pure function; the procedure only chains. If a procedure exceeds its limits after two splits, **stop and propose a split** to the Product Owner (`AGENTS.md`, Stop and ask when). There is deliberately no annotation lifting the limit.
+Every decision (choosing a route, validating) lives in a tested pure function; the procedure only chains. A procedure over its limits follows the [one rule](#one-business-context-per-function): split where a field names the parts, otherwise **stop and propose a new limit** to the Product Owner (`AGENTS.md`, Stop and ask when). There is deliberately no annotation lifting the limit.
 
 ## Forbidden
 
-- `any`, `!` (non-null assertion), `as` (except `as const`): an exception requires `// eslint-disable-next-line rule -- justification`.
+- `any`, `!` (non-null assertion), `as` (except `as const`): an exception requires `// oxlint-disable-next-line rule -- justification` (oxlint runs these rules, `docs/conventions/lint.md`).
 - Classes, `this`, `enum` (use a union of literals), `for…in`, `get`/`set` accessors, dynamic `import()`.
-- A spread into the value a `reduce` callback returns (`[...acc, x]`, `{ ...acc, k: v }`): it copies the accumulator at every step, in quadratic time (EN-061, `REF-OXLINT-ACCUMULATING-SPREAD`); build the result with `map` or `flatMap`, or, outside `src/`, a loop over a local array — never by mutating the accumulator (ADR-0014). `no-restricted-syntax` reports any spread into that literal, the accumulator's or not.
+  - Why no `enum`: it emits hidden JavaScript at run time, while a union of literals is erased entirely; Node.js's type stripping refuses it (`REF-NODE-TS`); and a union of literals transcribes directly into a Rust `enum` (portable core, ADR-0025).
+- A spread into the value a `reduce` callback returns (`[...acc, x]`, `{ ...acc, k: v }`): it copies the accumulator at every step, in quadratic time (EN-061, `REF-OXLINT-ACCUMULATING-SPREAD`); build the result with `map` or `flatMap`, or, outside `src/`, a loop over a local array — never by mutating the accumulator (ADR-0014). oxlint's `oxc/no-accumulating-spread` reports a spread of the accumulator, held in a variable or not (EN-061, EN-075); a spread of another value into the returned literal is no longer reported.
 - Magic numbers: only `-1`, `0`, `1`, `2` are allowed inline; everything else is a named, documented constant.

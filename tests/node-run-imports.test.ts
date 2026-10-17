@@ -3,7 +3,7 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-/** Folders whose files Node.js runs without a build (`NODE_RUN_FILES` of the lint settings). */
+/** Folders whose files Node.js runs without a build (the `node-run` scope of `tools/lint/src/scopes.rs`). */
 const NODE_RUN_FOLDERS = ["scripts", join(".claude", "hooks")];
 
 /** A relative import's specifier, static (`from "./x"`) or dynamic (`import("./x")`). */

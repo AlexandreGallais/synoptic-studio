@@ -4,4 +4,12 @@
  * kebab, snake and constant; sentence case was removed as of no use (US-037).
  */
 export type TextCase =
-  "none" | "upper" | "lower" | "title" | "camel" | "pascal" | "kebab" | "snake" | "constant";
+  | "none"
+  | "upper"
+  | "lower"
+  | "title"
+  | "camel"
+  | "pascal"
+  | "kebab"
+  | "snake"
+  | "constant";

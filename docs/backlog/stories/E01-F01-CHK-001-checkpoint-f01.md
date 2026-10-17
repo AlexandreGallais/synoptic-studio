@@ -26,14 +26,14 @@ One task = one commit, referenced as `CHK-001.Tn`.
 
 ## Light evolvability check (2026-10-09)
 
-| Question            | Answer                                                                                                                                                                                                                                                                                                                                                      |
-| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Size                | 39 modules in `src/` (geometry 18, math 11, render 4, io 3, model 3); `check:all` 23 s; no layer close to a package split                                                                                                                                                                                                                                   |
-| Tools               | StrykerJS still blocked (stryker-js issue 6210 open); the auditor subagent plays the mutation role meanwhile (one real defect found per code story). **`knip` trigger reached** (\"when `src/` has several layers\": five now) — decision for the retrospective, improvement log                                                                            |
-| Fitness functions   | layer imports and purity already linted; next candidate: a test that every exported function of `geometry` has a property test (AUD-001)                                                                                                                                                                                                                    |
-| Patterns            | rectangle fixtures are rebuilt in six `geometry` test files (three as `Corner[]`: `corner-setbacks`, `effective-radii`, `rounded-contour`; three as points: `cyclic-item`, `edge-lengths`, `turning-angles`; plus inline `CornerPoints` in `fillet-arc`); `CornerPoints` and `turningAngle(previous, vertex, next)` carry the same triple — improvement log |
-| Agent configuration | `CLAUDE.md` + rules 182 lines after T1 (179 before); three rules added to the library rules (`tsc` before commit, signed zeros, parameter objects); guards never hit in this run                                                                                                                                                                            |
-| Process             | autonomous run working: 3 stories merged by GitHub after the auditor and the checks; each audit changed the story before merge                                                                                                                                                                                                                              |
+| Question | Answer |
+| --- | --- |
+| Size | 39 modules in `src/` (geometry 18, math 11, render 4, io 3, model 3); `check:all` 23 s; no layer close to a package split |
+| Tools | StrykerJS still blocked (stryker-js issue 6210 open); the auditor subagent plays the mutation role meanwhile (one real defect found per code story). **`knip` trigger reached** (\"when `src/` has several layers\": five now) — decision for the retrospective, improvement log |
+| Fitness functions | layer imports and purity already linted; next candidate: a test that every exported function of `geometry` has a property test (AUD-001) |
+| Patterns | rectangle fixtures are rebuilt in six `geometry` test files (three as `Corner[]`: `corner-setbacks`, `effective-radii`, `rounded-contour`; three as points: `cyclic-item`, `edge-lengths`, `turning-angles`; plus inline `CornerPoints` in `fillet-arc`); `CornerPoints` and `turningAngle(previous, vertex, next)` carry the same triple — improvement log |
+| Agent configuration | `CLAUDE.md` + rules 182 lines after T1 (179 before); three rules added to the library rules (`tsc` before commit, signed zeros, parameter objects); guards never hit in this run |
+| Process | autonomous run working: 3 stories merged by GitHub after the auditor and the checks; each audit changed the story before merge |
 
 ## Product Owner test cards so far
 

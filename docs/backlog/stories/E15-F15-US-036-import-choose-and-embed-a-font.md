@@ -31,23 +31,23 @@ Updated on 2026-10-15 from a try of the playground before VAL-014 (Product Owner
 
 Open `http://localhost:5173/` in Chrome, click **Text** and click on the drawing. Type `Hello World` in **Content** and 16 in **Size**. The measured block is the `width` and `height` under **Contour** in the pipeline column. In the file dialog, Cmd+Shift+G opens a path such as `/System/Library/Fonts/Supplemental/Arial.ttf`.
 
-| Step | Do                                                                                       | You should see                                                                                                             |
-| ---- | ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| 1    | Open the **Font** list, then the **Weight** list                                         | Inter alone, no name to type; the nine weights 100 to 900; width 87.5546875                                                |
-| 2    | Click **Import a font**, choose `/System/Library/Fonts/Supplemental/Arial.ttf`           | "Arial 400 imported."; the list Inter, Arial, Arial chosen; weights 400 only; width 82.3984375, height 18.3984375          |
-| 3    | Click **Import a font**, choose `Arial Bold.ttf` in the same folder                      | "Arial 700 imported."; weights 400 and 700                                                                                 |
-| 4    | Click **Bold**, then choose Inter in the font list                                       | Bold pressed, weight 700; Inter keeps 700                                                                                  |
-| 5    | Choose weight 300, then Arial in the font list                                           | weight 400, Arial's face nearest to 300                                                                                    |
-| 6    | Click **Import a font**, choose any file that is not a font, such as a `.txt` file       | "… is not a TrueType or OpenType font file (.ttf, .otf): refused."; the list unchanged                                     |
-| 7    | Click **Installed fonts**, allow the browser                                             | "Installed families listed: N. Choose one in the font list."; the installed families after Arial                           |
-| 8    | Choose Georgia in the font list                                                          | "Georgia: 4 faces read."; the text in Georgia, its block changed; weights 400 and 700                                      |
-| 9    | Open the page in Firefox or Safari, click **Installed fonts**                            | a line saying the browser cannot list the installed fonts, pointing to **Import a font**                                   |
-| 10   | Back in Chrome with Arial chosen, turn **Embed fonts** on                                | the SVG output starts with `<defs>` holding one `<style>` and one `@font-face` for `"Arial"` at weight 400; no face listed |
-| 11   | Choose Inter                                                                             | "Inter 400: not embedded, its file not held." under the options; no `<style>`                                              |
-| 12   | Choose Arial, click **Export SVG**, open `drawing.svg` in Chrome                         | the text in Arial, as on the page, without the dashed frame                                                                |
-| 13   | Turn **Embed fonts** off and **HTML layer** on, type `مضخة` in **Content**               | the SVG output holds a `<switch>`; the letters joined in the drawing                                                       |
-| 14   | Click **Export SVG**; open `drawing.svg` in Chrome, then draw it with resvg if installed | Chrome joins the letters; resvg draws the positioned lines, letters apart                                                  |
-| 15   | Turn **HTML layer** off                                                                  | no `<switch>`, no `<defs>`: the drawing and the SVG output as before                                                       |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | Open the **Font** list, then the **Weight** list | Inter alone, no name to type; the nine weights 100 to 900; width 87.5546875 |
+| 2 | Click **Import a font**, choose `/System/Library/Fonts/Supplemental/Arial.ttf` | "Arial 400 imported."; the list Inter, Arial, Arial chosen; weights 400 only; width 82.3984375, height 18.3984375 |
+| 3 | Click **Import a font**, choose `Arial Bold.ttf` in the same folder | "Arial 700 imported."; weights 400 and 700 |
+| 4 | Click **Bold**, then choose Inter in the font list | Bold pressed, weight 700; Inter keeps 700 |
+| 5 | Choose weight 300, then Arial in the font list | weight 400, Arial's face nearest to 300 |
+| 6 | Click **Import a font**, choose any file that is not a font, such as a `.txt` file | "… is not a TrueType or OpenType font file (.ttf, .otf): refused."; the list unchanged |
+| 7 | Click **Installed fonts**, allow the browser | "Installed families listed: N. Choose one in the font list."; the installed families after Arial |
+| 8 | Choose Georgia in the font list | "Georgia: 4 faces read."; the text in Georgia, its block changed; weights 400 and 700 |
+| 9 | Open the page in Firefox or Safari, click **Installed fonts** | a line saying the browser cannot list the installed fonts, pointing to **Import a font** |
+| 10 | Back in Chrome with Arial chosen, turn **Embed fonts** on | the SVG output starts with `<defs>` holding one `<style>` and one `@font-face` for `"Arial"` at weight 400; no face listed |
+| 11 | Choose Inter | "Inter 400: not embedded, its file not held." under the options; no `<style>` |
+| 12 | Choose Arial, click **Export SVG**, open `drawing.svg` in Chrome | the text in Arial, as on the page, without the dashed frame |
+| 13 | Turn **Embed fonts** off and **HTML layer** on, type `مضخة` in **Content** | the SVG output holds a `<switch>`; the letters joined in the drawing |
+| 14 | Click **Export SVG**; open `drawing.svg` in Chrome, then draw it with resvg if installed | Chrome joins the letters; resvg draws the positioned lines, letters apart |
+| 15 | Turn **HTML layer** off | no `<switch>`, no `<defs>`: the drawing and the SVG output as before |
 
 ## Tasks
 

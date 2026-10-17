@@ -4,13 +4,13 @@ Used by: ADR-0032, F09; ADR-0033, F08 (fractional points and size); ADR-0046, F1
 
 ## Notation
 
-| Symbol          | Definition                                                                                                                                       |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `p₀ … pₙ₋₁`     | the points of the free shape, as stored, in contour order (Q11)                                                                                  |
+| Symbol | Definition |
+| --- | --- |
+| `p₀ … pₙ₋₁` | the points of the free shape, as stored, in contour order (Q11) |
 | `o = (oₓ, o_y)` | top-left of the box of their curve (`DERIV-cubic-sides` step 3; the box of the points when no side is curved): the smallest x and the smallest y |
-| `nₓ, n_y`       | width and height of that box: largest minus smallest coordinate on each axis                                                                     |
-| `w, h`          | width and height asked for the shape, integers ≥ 0                                                                                               |
-| `p'ᵢ`           | the point drawn                                                                                                                                  |
+| `nₓ, n_y` | width and height of that box: largest minus smallest coordinate on each axis |
+| `w, h` | width and height asked for the shape, integers ≥ 0 |
+| `p'ᵢ` | the point drawn |
 
 ## Step 1 — A scale about a fixed point
 
@@ -44,11 +44,11 @@ Check: the unit square drawn 200 × 100, a handle (0.1, 0.2) at (0, 0) pointing 
 
 ## Checks (test cases)
 
-| Case                                              | Computation                                   | Expected points drawn                                       |
-| ------------------------------------------------- | --------------------------------------------- | ----------------------------------------------------------- |
-| Rectangle tool, 100 × 50                          | `sx = 100`, `sy = 50`                         | (0, 0), (100, 0), (100, 50), (0, 50)                        |
-| Rectangle tool, 0 × 50, then 100 × 50             | `sx = 0`, then `100`                          | all x at 0, then the line above                             |
-| Points (1, 0), (2, 2), (0, 2) to 10 × 4           | `o = (0, 0)`, `n = 2 × 2`, `sx = 5`, `sy = 2` | (5, 0), (10, 4), (0, 4)                                     |
-| Points (3, 3), (5, 3), (5, 7) to 4 × 8            | `o = (3, 3)`, `n = 2 × 4`, `sx = 2`, `sy = 2` | (3, 3), (7, 3), (7, 11): top-left kept                      |
-| Points (0, 0), (7, 0), (7, 1) to 29 × 1           | `29 · 7 / 7`, not `29 / 7 · 7`                | (0, 0), (29, 0), (29, 1): the far edge exact                |
-| Points (0, 0), (3, 0), (3, 2), (0, 2) to 100 × 50 | `sx = 100 / 3`, `sy = 25`                     | (0, 0), (100, 0), (100, 50), (0, 50): a rectangle stays one |
+| Case | Computation | Expected points drawn |
+| --- | --- | --- |
+| Rectangle tool, 100 × 50 | `sx = 100`, `sy = 50` | (0, 0), (100, 0), (100, 50), (0, 50) |
+| Rectangle tool, 0 × 50, then 100 × 50 | `sx = 0`, then `100` | all x at 0, then the line above |
+| Points (1, 0), (2, 2), (0, 2) to 10 × 4 | `o = (0, 0)`, `n = 2 × 2`, `sx = 5`, `sy = 2` | (5, 0), (10, 4), (0, 4) |
+| Points (3, 3), (5, 3), (5, 7) to 4 × 8 | `o = (3, 3)`, `n = 2 × 4`, `sx = 2`, `sy = 2` | (3, 3), (7, 3), (7, 11): top-left kept |
+| Points (0, 0), (7, 0), (7, 1) to 29 × 1 | `29 · 7 / 7`, not `29 / 7 · 7` | (0, 0), (29, 0), (29, 1): the far edge exact |
+| Points (0, 0), (3, 0), (3, 2), (0, 2) to 100 × 50 | `sx = 100 / 3`, `sy = 25` | (0, 0), (100, 0), (100, 50), (0, 50): a rectangle stays one |

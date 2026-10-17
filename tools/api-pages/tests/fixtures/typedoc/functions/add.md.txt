@@ -1,0 +1,40 @@
+[editor](../index.md) / add
+
+# Function: add()
+
+> **add**(`point`, `vector`): [`Point`](../type-aliases/Point.md)
+
+Defined in: math/vector/add.ts:16
+
+Point moved by a vector, component-wise.
+
+Formula: p + v = (pₓ + vₓ, p_y + v_y) — vector addition, the point being read as its vector
+from the origin.
+
+## Parameters
+
+### point
+
+[`Point`](../type-aliases/Point.md)
+
+start point
+
+### vector
+
+[`Vector`](../type-aliases/Vector.md)
+
+displacement
+
+## Returns
+
+[`Point`](../type-aliases/Point.md)
+
+the moved point
+
+## Kind
+
+math
+
+## See
+
+REF-MATHWORLD-VECTOR-ADDITION

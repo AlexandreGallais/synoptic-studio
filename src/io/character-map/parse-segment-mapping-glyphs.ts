@@ -43,7 +43,7 @@ type Segment = {
  * @returns its segments, in order; undefined when its header or its arrays pass the table's end
  * @see REF-OT-CMAP
  */
-function parseSegments(cmap: DataView, subtable: number): readonly Segment[] | undefined {
+function parseSegments(cmap: Readonly<DataView>, subtable: number): readonly Segment[] | undefined {
   const arraySize = isSpanWithin(subtable, END_CODES_OFFSET, cmap.byteLength)
     ? cmap.getUint16(subtable + SEG_COUNT_X2_OFFSET)
     : Infinity;
@@ -75,7 +75,7 @@ function parseSegments(cmap: DataView, subtable: number): readonly Segment[] | u
  * @see REF-OT-CMAP
  */
 function glyphArrayToGlyph(
-  cmap: DataView,
+  cmap: Readonly<DataView>,
   segment: Segment,
   codePoint: number,
 ): number | undefined {
@@ -105,7 +105,7 @@ function glyphArrayToGlyph(
  * @see REF-OT-CMAP
  */
 function segmentToGlyph(
-  cmap: DataView,
+  cmap: Readonly<DataView>,
   segment: Segment | undefined,
   codePoint: number,
 ): number | undefined {
@@ -130,7 +130,7 @@ function segmentToGlyph(
  * @see REF-OT-CMAP
  */
 function segmentsToGlyphs(
-  cmap: DataView,
+  cmap: Readonly<DataView>,
   segments: readonly Segment[],
   characters: readonly number[],
 ): readonly CharacterGlyph[] | undefined {
@@ -161,7 +161,7 @@ function segmentsToGlyphs(
  * @see REF-OT-CMAP
  */
 export function parseSegmentMappingGlyphs(
-  cmap: DataView,
+  cmap: Readonly<DataView>,
   subtable: number,
   characters: readonly number[],
 ): readonly CharacterGlyph[] | undefined {

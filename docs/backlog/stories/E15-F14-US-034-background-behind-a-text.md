@@ -22,15 +22,15 @@ As a designer, I want a background color behind a text's lines, as a highlighter
 
 Open `http://localhost:5173/`, click **Text** and type **Size** 16 (Inter, weight 400, Fit content, as the page opens).
 
-| Step | Do                                                                                                                      | You should see                                                                                                                            |
-| ---- | ----------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| 1    | Type **Content** "Pump P-101", a line break, "Running"; tick **Background**                                             | a yellow band behind each line, as long as the line: 87.95 behind "Pump P-101", 61.80 behind "Running", each 19.36 tall, the two touching |
-| 2    | Type **Background color** `#22c55e`, **Background opacity** 40                                                          | the bands turn light green, the letters stay on top; the SVG shows one `<path … fill="#22c55e" fill-opacity="0.4">` before the `<text>`   |
-| 3    | Type **Content** "Pump P-101", two line breaks, "Running"                                                               | two bands only: the empty line in between has none                                                                                        |
-| 4    | Type **Content** "Pump P-101", one line break, "Running"; choose **Box**, **Width** 50, **Height** 100, **Max lines** 2 | "Pump" over "P-10…": bands 43.49 and 46.88 long, the second up to the end of its "…"                                                      |
-| 5    | Type **Angle** 30                                                                                                       | the bands turn with the text                                                                                                              |
-| 6    | Type **Background opacity** 101                                                                                         | nothing is drawn, the message names the background opacity                                                                                |
-| 7    | Type **Background opacity** 40 again, untick **Background**                                                             | the bands go; the text is as before                                                                                                       |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | Type **Content** "Pump P-101", a line break, "Running"; tick **Background** | a yellow band behind each line, as long as the line: 87.95 behind "Pump P-101", 61.80 behind "Running", each 19.36 tall, the two touching |
+| 2 | Type **Background color** `#22c55e`, **Background opacity** 40 | the bands turn light green, the letters stay on top; the SVG shows one `<path … fill="#22c55e" fill-opacity="0.4">` before the `<text>` |
+| 3 | Type **Content** "Pump P-101", two line breaks, "Running" | two bands only: the empty line in between has none |
+| 4 | Type **Content** "Pump P-101", one line break, "Running"; choose **Box**, **Width** 50, **Height** 100, **Max lines** 2 | "Pump" over "P-10…": bands 43.49 and 46.88 long, the second up to the end of its "…" |
+| 5 | Type **Angle** 30 | the bands turn with the text |
+| 6 | Type **Background opacity** 101 | nothing is drawn, the message names the background opacity |
+| 7 | Type **Background opacity** 40 again, untick **Background** | the bands go; the text is as before |
 
 ## Tasks
 

@@ -6,12 +6,12 @@
 
 Some files must never be public and never be lost: the agent's metrics (`.git/metrics/tool-calls.jsonl`, `turns.jsonl`), Claude Code's transcripts of the project (`~/.claude/projects/<project-path>/`), the source library (`library.sqlite`, ADR-0039). They hold the Product Owner's raw messages and local paths, so they stay out of this public repository; today they live on one disk only. The Product Owner asked for a private Git repository attached to the project, more such files to join it later.
 
-| Option                              | What the public repository shows                                                                          | CI                                                                               | Simplicity                                                                                                                                   |
-| ----------------------------------- | --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| Git submodule                       | a `.gitmodules` file with the private URL and a commit id that moves at every save (`REF-GIT-SUBMODULES`) | none if `actions/checkout` keeps its default (`REF-GH-CHECKOUT`), else a failure | a commit in the public repository after each save; a clone shows an empty folder; the files are still copied in, their sources are elsewhere |
-| A folder inside, ignored by Git     | its name in `.gitignore`                                                                                  | none                                                                             | every tool that walks the tree (secretlint, Prettier, ESLint, knip, VitePress) must skip 140 MB of transcripts                               |
-| **A sibling repository, outside**   | nothing but the script and its default folder name                                                        | none                                                                             | one script copies and commits; nothing to ignore                                                                                             |
-| An orphan branch of this repository | the branch itself: it would be public                                                                     | —                                                                                | rejected                                                                                                                                     |
+| Option | What the public repository shows | CI | Simplicity |
+| --- | --- | --- | --- |
+| Git submodule | a `.gitmodules` file with the private URL and a commit id that moves at every save (`REF-GIT-SUBMODULES`) | none if `actions/checkout` keeps its default (`REF-GH-CHECKOUT`), else a failure | a commit in the public repository after each save; a clone shows an empty folder; the files are still copied in, their sources are elsewhere |
+| A folder inside, ignored by Git | its name in `.gitignore` | none | every tool that walks the tree (secretlint, Prettier, ESLint, knip, VitePress) must skip 140 MB of transcripts |
+| **A sibling repository, outside** | nothing but the script and its default folder name | none | one script copies and commits; nothing to ignore |
+| An orphan branch of this repository | the branch itself: it would be public | — | rejected |
 
 ## Decision
 

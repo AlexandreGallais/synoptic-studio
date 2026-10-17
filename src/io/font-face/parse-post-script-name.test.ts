@@ -2,12 +2,12 @@ import { describe, expect, it } from "vitest";
 
 import {
   ENGLISH_US,
-  SHARED_SANS_TABLES,
   TRUE_TYPE_VERSION,
   WINDOWS_PLATFORM,
   familyNameTable,
   fontFile,
   nameTable,
+  sharedSansTables,
   sharedTableCollection,
   testFontTables,
 } from "../../../tests";
@@ -36,7 +36,7 @@ describe("parsePostScriptName (REF-OT-NAME)", () => {
   it("[F17.AC10] [F18.AC19] names each face of a collection sharing Inter's tables, read in the collection", () => {
     // Each face read at its directory, 24, 308 and 592 (12 + 3 × 4, then 284 bytes each), no
     // face's file written (US-052).
-    const file = sharedTableCollection(TRUE_TYPE_VERSION, SHARED_SANS_TABLES);
+    const file = sharedTableCollection(TRUE_TYPE_VERSION, sharedSansTables());
     const offsets = parseCollectionOffsets(new DataView(file.buffer));
 
     expect(offsets).toEqual([24, 308, 592]);

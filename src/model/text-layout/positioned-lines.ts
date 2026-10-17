@@ -4,10 +4,10 @@ import { initialTextPosition } from "./initial-text-position";
 import { lineBaseline } from "./line-baseline";
 import { lineOffsetInBlock } from "./line-offset-in-block";
 
-import type { FontMetrics } from "../font";
-import type { Text } from "../text";
 import type { PositionedLine } from "./positioned-line";
 import type { ShownBlock } from "./shown-block";
+import type { FontMetrics } from "../font";
+import type { Text } from "../text";
 
 /**
  * The lines of a text, placed: its lines shown (`shownLines`), each measured, moved across the

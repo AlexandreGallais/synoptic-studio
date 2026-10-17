@@ -1,8 +1,13 @@
 {
-  "*.{ts,md}": [
-    "prettier --write",
-    "eslint --cache --cache-location node_modules/.cache/eslint/ --fix --max-warnings=0 --no-warn-ignored"
+  "*.ts": [
+    "cargo run --release -q -p format -- --write",
+    "oxlint --type-check --fix --deny-warnings --report-unused-disable-directives-severity=error --no-error-on-unmatched-pattern",
+    "cargo run --release -q -p lint -- --fix"
   ],
-  "*.{json,html,css,scss,yml,yaml}": ["prettier --write"],
+  "*.md": [
+    "cargo run --release -q -p format -- --write",
+    "cargo run --release -q -p lint -- --fix"
+  ],
+  "*.{cjs,css,html,json,scss,toml,yaml,yml}": ["cargo run --release -q -p format -- --write"],
   "*": ["secretlint"]
 }

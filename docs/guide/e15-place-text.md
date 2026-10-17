@@ -34,36 +34,36 @@ The validation of 2026-10-15 removed three options (the choice for a word too lo
 
 ## Words you will meet
 
-| Term           | In plain words                                                                                           | Where it shows                   |
-| -------------- | -------------------------------------------------------------------------------------------------------- | -------------------------------- |
-| Measured block | the rectangle the text really takes, computed from the font's numbers, not read from the screen          | the dashed frame around a text   |
-| Font metrics   | the numbers inside a font file: each letter's width, the height above and below the line                 | Import a font, Installed fonts   |
-| Face           | one style of a font family: Regular, Bold, Italic, a weight such as 450                                  | the weight list                  |
-| Fit content    | the text takes the size its lines need                                                                   | Fit content / Box                |
-| Box            | a width and a height the text wraps into; what does not fit ends with "…"                                | Box, Max lines, Reset            |
-| Trim           | the space above the first line and below the last one cut down to the letters                            | Trim                             |
-| Line height    | the distance from one line to the next; 0 lets the font decide                                           | Line height                      |
-| Opacity        | how much a color covers what is behind it, from 0 % (invisible) to 100 %                                 | each color's Opacity             |
-| HSB, HSL       | two other ways to say a color — hue, saturation, brightness or lightness — computed from the hexadecimal | the picker                       |
-| Embedded font  | the font's file written inside the SVG, so the drawing carries it                                        | Embed fonts, Export SVG          |
-| `fsType`       | a flag in the font file saying whether its licence lets it be embedded                                   | the reason a font is not listed  |
-| Direction      | left to right, or right to left as Hebrew is written                                                     | Direction (to be removed, below) |
+| Term | In plain words | Where it shows |
+| --- | --- | --- |
+| Measured block | the rectangle the text really takes, computed from the font's numbers, not read from the screen | the dashed frame around a text |
+| Font metrics | the numbers inside a font file: each letter's width, the height above and below the line | Import a font, Installed fonts |
+| Face | one style of a font family: Regular, Bold, Italic, a weight such as 450 | the weight list |
+| Fit content | the text takes the size its lines need | Fit content / Box |
+| Box | a width and a height the text wraps into; what does not fit ends with "…" | Box, Max lines, Reset |
+| Trim | the space above the first line and below the last one cut down to the letters | Trim |
+| Line height | the distance from one line to the next; 0 lets the font decide | Line height |
+| Opacity | how much a color covers what is behind it, from 0 % (invisible) to 100 % | each color's Opacity |
+| HSB, HSL | two other ways to say a color — hue, saturation, brightness or lightness — computed from the hexadecimal | the picker |
+| Embedded font | the font's file written inside the SVG, so the drawing carries it | Embed fonts, Export SVG |
+| `fsType` | a flag in the font file saying whether its licence lets it be embedded | the reason a font is not listed |
+| Direction | left to right, or right to left as Hebrew is written | Direction (to be removed, below) |
 
 ## User test of the epic
 
 The review was the Product Owner's tour of the whole Text tool in Chrome on 2026-10-16, on `feature/f17-text-corrections`, right after the last validation pass.
 
-| Step | Do                                                                                  | You should see                                          | OK? |
-| ---- | ----------------------------------------------------------------------------------- | ------------------------------------------------------- | --- |
-| 1    | **Installed fonts**, then choose Arial (F15, F17)                                   | the text drawn and measured in Arial                    | yes |
-| 2    | Change the size; color white, an opacity, through the picker (F05, F16)             | the text follows each value                             | yes |
-| 3    | **Bold**, then italic (F05)                                                         | bold widens the box; italic leaves it as it is          | yes |
-| 4    | Letter spacing, reduced below 0; word spacing (F05)                                 | the letters and words tighten and spread                | yes |
-| 5    | Underline and strike-through, with their own color, then following the text (F16)   | each stroke in its color, or in the text's              | yes |
-| 6    | Every letter case (F05)                                                             | each line written in that case                          | yes |
-| 7    | **Fit content**, **Box**, **Reset**; Trim, Max lines, Line height, Background (F14) | the box, its wrap, its "…", its spacing and its bands   | yes |
-| 8    | **Import a font** (F15, F17)                                                        | the font listed and used, or refused with its reason    | yes |
-| 9    | Angle, then X and Y (F05, F17)                                                      | the text turns; X and Y show its turned top-left corner | yes |
+| Step | Do | You should see | OK? |
+| --- | --- | --- | --- |
+| 1 | **Installed fonts**, then choose Arial (F15, F17) | the text drawn and measured in Arial | yes |
+| 2 | Change the size; color white, an opacity, through the picker (F05, F16) | the text follows each value | yes |
+| 3 | **Bold**, then italic (F05) | bold widens the box; italic leaves it as it is | yes |
+| 4 | Letter spacing, reduced below 0; word spacing (F05) | the letters and words tighten and spread | yes |
+| 5 | Underline and strike-through, with their own color, then following the text (F16) | each stroke in its color, or in the text's | yes |
+| 6 | Every letter case (F05) | each line written in that case | yes |
+| 7 | **Fit content**, **Box**, **Reset**; Trim, Max lines, Line height, Background (F14) | the box, its wrap, its "…", its spacing and its bands | yes |
+| 8 | **Import a font** (F15, F17) | the font listed and used, or refused with its reason | yes |
+| 9 | Angle, then X and Y (F05, F17) | the text turns; X and Y show its turned top-left corner | yes |
 
 ## Decisions taken on the way
 
@@ -91,9 +91,9 @@ Held with the Product Owner on 2026-10-16 (`REV-003`), as a tour of the whole Te
 
 **Remarks.**
 
-| Remark                                                                                                                                                                        | Where it went                                                                             |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| Italic leaves the box as it is; the Product Owner prefers it so.                                                                                                              | kept as built                                                                             |
+| Remark | Where it went |
+| --- | --- |
+| Italic leaves the box as it is; the Product Owner prefers it so. | kept as built |
 | The text direction, right to left, is of no use: the target is the Latin script only, a strict choice as for fonts. Kept for now; it must be removed at the later UI/UX epic. | to-do in [E02, ideas](../backlog/epics/E02-edit-shapes.md); `docs/domain/shapes.md`, Text |
 
 **Closure criteria.** The text cases of `docs/domain/shapes.md` render as specified in the playground: the four features validated on 2026-10-15, F17 on 2026-10-16, and the tour above. E15 is closed; its retrospective (RET-003) follows.

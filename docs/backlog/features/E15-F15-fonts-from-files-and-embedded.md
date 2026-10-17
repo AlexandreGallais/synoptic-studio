@@ -22,25 +22,25 @@ Refined with F05 on 2026-10-14 (its rounds 1 and 2); its stories were written by
 
 In delivery order.
 
-| ID                                                                      | Type       | Title                                                                 | Status |
-| ----------------------------------------------------------------------- | ---------- | --------------------------------------------------------------------- | ------ |
-| [SP-018](../stories/E15-F15-SP-018-research-f15-fonts-from-files.md)    | Spike      | Research for F15: fonts from files, embedded fonts and the HTML layer | done   |
-| [EN-039](../stories/E15-F15-EN-039-a-font-file-read-and-kept.md)        | Enabler    | A font file read, named and kept, and whether it may be embedded      | done   |
-| [EN-040](../stories/E15-F15-EN-040-fonts-embedded-once-per-document.md) | Enabler    | Fonts embedded once per document as @font-face rules                  | done   |
-| [CHK-017](../stories/E15-F15-CHK-017-checkpoint-f15.md)                 | Checkpoint | Checkpoint in the middle of F15                                       | done   |
-| [EN-041](../stories/E15-F15-EN-041-the-html-layer-of-a-text.md)         | Enabler    | The HTML layer of a text in a switch, over its positioned lines       | done   |
-| [US-036](../stories/E15-F15-US-036-import-choose-and-embed-a-font.md)   | User story | Import or choose a font, embed it, and turn the HTML layer on         | done   |
-| [AUD-018](../stories/E15-F15-AUD-018-audit-f15.md)                      | Audit      | Audit F15                                                             | done   |
-| [VAL-017](../stories/E15-F15-VAL-017-validate-f15.md)                   | Validation | Validate F15                                                          | done   |
+| ID | Type | Title | Status |
+| --- | --- | --- | --- |
+| [SP-018](../stories/E15-F15-SP-018-research-f15-fonts-from-files.md) | Spike | Research for F15: fonts from files, embedded fonts and the HTML layer | done |
+| [EN-039](../stories/E15-F15-EN-039-a-font-file-read-and-kept.md) | Enabler | A font file read, named and kept, and whether it may be embedded | done |
+| [EN-040](../stories/E15-F15-EN-040-fonts-embedded-once-per-document.md) | Enabler | Fonts embedded once per document as @font-face rules | done |
+| [CHK-017](../stories/E15-F15-CHK-017-checkpoint-f15.md) | Checkpoint | Checkpoint in the middle of F15 | done |
+| [EN-041](../stories/E15-F15-EN-041-the-html-layer-of-a-text.md) | Enabler | The HTML layer of a text in a switch, over its positioned lines | done |
+| [US-036](../stories/E15-F15-US-036-import-choose-and-embed-a-font.md) | User story | Import or choose a font, embed it, and turn the HTML layer on | done |
+| [AUD-018](../stories/E15-F15-AUD-018-audit-f15.md) | Audit | Audit F15 | done |
+| [VAL-017](../stories/E15-F15-VAL-017-validate-f15.md) | Validation | Validate F15 | done |
 
 ## Feature plan
 
-| Acceptance criterion | Realized by                    | Verified by       |
-| -------------------- | ------------------------------ | ----------------- |
-| F15.AC1              | SP-018, EN-039, US-036         | AUD-018, VAL-017  |
-| F15.AC2              | EN-039, EN-040, US-036, US-045 | AUD-018, VAL-017  |
-| F15.AC3 (withdrawn)  | SP-018, EN-041, US-036         | removed by US-044 |
-| F15.AC4              | EN-039, EN-054                 | AUD-018           |
+| Acceptance criterion | Realized by | Verified by |
+| --- | --- | --- |
+| F15.AC1 | SP-018, EN-039, US-036 | AUD-018, VAL-017 |
+| F15.AC2 | EN-039, EN-040, US-036, US-045 | AUD-018, VAL-017 |
+| F15.AC3 (withdrawn) | SP-018, EN-041, US-036 | removed by US-044 |
+| F15.AC4 | EN-039, EN-054 | AUD-018 |
 
 ## Left for later
 

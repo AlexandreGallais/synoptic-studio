@@ -26,11 +26,11 @@ type Row = Exception & {
 const COMMENT = { block: "/*", line: "//" };
 
 /**
- * A directive turning rules off, in a line or a block comment, up to its `--` justification, or
+ * A directive of ESLint, oxlint or the project's linter turning rules off, in a line or a block comment, up to its `--` justification, or
  * to the comment's end when it has none: a directive without its reason counts too.
  */
 const DIRECTIVE =
-  /(?:\/\/|\/\*)\s*eslint-disable(?:-next-line|-line)?\s+(?<rules>[^\n]*?)\s*(?:--|\*\/|$)/gmu;
+  /(?:\/\/|\/\*)\s*(?:eslint|oxlint|lint)-disable(?:-next-line|-line)?\s+(?<rules>[^\n]*?)\s*(?:--|\*\/|$)/gmu;
 
 /** A Rust attribute turning lints off, on an item or a whole module (`#![allow(…)]`). */
 const RUST_ALLOW = /#!?\[allow\((?<rules>[^)]*)\)\]/gu;
@@ -163,6 +163,17 @@ ${COMMENT.block} eslint-disable c-rule -- why */`,
     ).toEqual([
       { file: "a.ts", rules: "x" },
       { file: "a.ts", rules: "y" },
+    ]);
+
+    // oxlint's directives count as ESLint's do: the rules oxlint runs are turned off by them (EN-074).
+    expect(
+      codeExceptions(
+        "a.ts",
+        `x; ${COMMENT.line} oxlint-disable-line d-rule -- why\n${COMMENT.line} oxlint-disable-next-line e-rule`,
+      ),
+    ).toEqual([
+      { file: "a.ts", rules: "d-rule" },
+      { file: "a.ts", rules: "e-rule" },
     ]);
 
     // Rust: an item's and a module's `allow`, never an ESLint directive in a Rust file.

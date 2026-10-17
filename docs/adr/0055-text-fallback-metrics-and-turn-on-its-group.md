@@ -16,13 +16,13 @@
 
 ## Reasons
 
-| Option                                       | For                                                                          | Against                                                                       |
-| -------------------------------------------- | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| Fallback's metrics, then the default font's  | measures what a reader lacking the font draws, as CSS's font list does       | one more look-up per text                                                     |
-| Default font's metrics only (ADR-0052)       | one rule                                                                     | measures Inter where a reader draws the fallback named, Arial for instance    |
-| Fallback name checked as the font's          | one rule for both names of the list; a line break cannot enter `font-family` | none: the playground writes `sans-serif`                                      |
-| Turn on the `g` (chosen)                     | the underline and strike-through turn with the letters; one `transform`      | the criterion named the `<text>`: met through its group                       |
-| Turn on the `<text>` and on each stroke path | the `<text>` carries it, as ADR-0052 wrote                                   | the same `transform` written once per path; a stroke forgotten stays straight |
+| Option | For | Against |
+| --- | --- | --- |
+| Fallback's metrics, then the default font's | measures what a reader lacking the font draws, as CSS's font list does | one more look-up per text |
+| Default font's metrics only (ADR-0052) | one rule | measures Inter where a reader draws the fallback named, Arial for instance |
+| Fallback name checked as the font's | one rule for both names of the list; a line break cannot enter `font-family` | none: the playground writes `sans-serif` |
+| Turn on the `g` (chosen) | the underline and strike-through turn with the letters; one `transform` | the criterion named the `<text>`: met through its group |
+| Turn on the `<text>` and on each stroke path | the `<text>` carries it, as ADR-0052 wrote | the same `transform` written once per path; a stroke forgotten stays straight |
 
 ## Consequences
 

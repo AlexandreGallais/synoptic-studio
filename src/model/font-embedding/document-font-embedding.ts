@@ -4,14 +4,14 @@ import { isGenericFamilyName } from "../text";
 import { leftOutReasonOf } from "./left-out-reason-of";
 import { usedFaces } from "./used-faces";
 
-import type { DocumentOptions } from "../document";
-import type { FontFamily } from "../font";
-import type { Text } from "../text";
 import type { EmbeddedFace } from "./embedded-face";
 import type { FontEmbedding } from "./font-embedding";
 import type { LeftOutFace } from "./left-out-face";
 import type { LeftOutReason } from "./left-out-reason";
 import type { UsedFace } from "./used-face";
+import type { DocumentOptions } from "../document";
+import type { FontFamily } from "../font";
+import type { Text } from "../text";
 
 /** A face used, and why it is left out. */
 type JudgedFace = UsedFace & {

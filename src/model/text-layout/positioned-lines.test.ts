@@ -9,8 +9,8 @@ import { shownLines } from "../text-box";
 import { positionedLines } from "./positioned-lines";
 import { textBlock } from "./text-block";
 
-import type { Text } from "../text";
 import type { PositionedLine } from "./positioned-line";
+import type { Text } from "../text";
 
 /**
  * The lines of a text in Arial 16 without kerning, placed in its measured block.

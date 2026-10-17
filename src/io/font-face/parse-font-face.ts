@@ -16,7 +16,7 @@ type ReadFont = {
   /** The bytes of the file. */
   readonly file: Readonly<Uint8Array>;
   /** A view of them. */
-  readonly view: DataView;
+  readonly view: Readonly<DataView>;
   /** Where its tables sit. */
   readonly tables: FontTables;
 };
@@ -31,7 +31,7 @@ type ReadFont = {
  * @returns the file, its version (name ID 5, empty without one) and its permission
  * @see DERIV-font-embedding
  */
-function parseFontFile(font: ReadFont, name: DataView): FontFile {
+function parseFontFile(font: ReadFont, name: Readonly<DataView>): FontFile {
   const os2 = tableToView(font.view, font.tables.os2);
 
   return {
@@ -55,7 +55,7 @@ function parseFontFile(font: ReadFont, name: DataView): FontFile {
  */
 function parseNamedFace(
   font: ReadFont,
-  name: DataView,
+  name: Readonly<DataView>,
   metrics: FontMetrics,
 ): NamedFontFace | undefined {
   const family = parseFamilyName(name);

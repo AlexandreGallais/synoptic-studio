@@ -24,11 +24,11 @@ In the playground, when you draw a **polygon**, a small grid of nine round butto
 
 ![The same square anchored bottom left: it goes to the left](./images/f07-square-bottom-left-wide.svg)
 
-| Term   | In plain words                                                                                           |
-| ------ | -------------------------------------------------------------------------------------------------------- |
-| Box    | the width × height you type, drawn in grey; the polygon fits inside it                                   |
-| Anchor | where the polygon sits in its box: one of nine places, from top left to bottom right                     |
-| Room   | the part of the box the polygon does not fill, above and below it or on its left and right               |
+| Term | In plain words |
+| --- | --- |
+| Box | the width × height you type, drawn in grey; the polygon fits inside it |
+| Anchor | where the polygon sits in its box: one of nine places, from top left to bottom right |
+| Room | the part of the box the polygon does not fill, above and below it or on its left and right |
 | Intent | the anchor you chose, kept even when it does not move the polygon, used as soon as the box changes shape |
 
 ## Try it
@@ -46,8 +46,8 @@ Run `npm run dev` and open `http://localhost:5173/?guide=epic&step=20`: the **Gu
 
 Validated by the Product Owner on 2026-10-11 (`VAL-003`), after the guided test.
 
-| Remark                                                                              | What was done                                                                                                                                 |
-| ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Remark | What was done |
+| --- | --- |
 | only five of the nine places matter for a polygon; the choice was left to the agent | the nine buttons stay: a corner button holds both choices, and the one that counts follows the shape of the box (step 26); E13 needs all nine |
-| the Next button moved as the text above it changed length                           | Next is large and stays in place; a link with `?step=N` opens a given step                                                                    |
-| an option pushing a rounded polygon onto its box                                    | judged not useful: measures are taken from the face that touches the box                                                                      |
+| the Next button moved as the text above it changed length | Next is large and stays in place; a link with `?step=N` opens a given step |
+| an option pushing a rounded polygon onto its box | judged not useful: measures are taken from the face that touches the box |

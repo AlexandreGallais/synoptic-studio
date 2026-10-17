@@ -63,7 +63,7 @@ type SubtableWalk = {
  * @returns its length in bytes; 0 when its header passes the table's end
  * @see REF-OT-KERN
  */
-function parseSubtableLength(kern: DataView, subtable: number): number {
+function parseSubtableLength(kern: Readonly<DataView>, subtable: number): number {
   return isSpanWithin(subtable, SUBTABLE_HEADER_SIZE, kern.byteLength)
     ? kern.getUint16(subtable + LENGTH_FIELD)
     : 0;
@@ -80,7 +80,7 @@ function parseSubtableLength(kern: DataView, subtable: number): number {
  * subtables announced; none for a version other than 0
  * @see REF-OT-KERN
  */
-function parseSubtableStarts(kern: DataView): readonly number[] {
+function parseSubtableStarts(kern: Readonly<DataView>): readonly number[] {
   const count = kern.getUint16(0) === 0 ? kern.getUint16(2) : 0;
 
   if (!isSpanWithin(0, elementAddress(HEADER_SIZE, SUBTABLE_HEADER_SIZE, count), kern.byteLength)) {
@@ -120,7 +120,10 @@ type KernStep = {
  * @returns the offset of each record in the table; undefined when they pass its end
  * @see REF-OT-KERN
  */
-function parsePairRecords(kern: DataView, subtable: number): readonly number[] | undefined {
+function parsePairRecords(
+  kern: Readonly<DataView>,
+  subtable: number,
+): readonly number[] | undefined {
   const count = isSpanWithin(subtable, PAIRS_OFFSET, kern.byteLength)
     ? kern.getUint16(subtable + PAIR_COUNT_FIELD)
     : Infinity;
@@ -144,7 +147,7 @@ function parsePairRecords(kern: DataView, subtable: number): readonly number[] |
  * @see REF-OT-KERN
  */
 function parseSteps(
-  kern: DataView,
+  kern: Readonly<DataView>,
   subtable: number,
   glyphs: ReadonlySet<number>,
 ): readonly KernStep[] | undefined {
@@ -211,7 +214,7 @@ function stepsToRule(steps: readonly KernStep[]): PairKerningRule {
  * @see REF-OT-KERN
  */
 export function parseKernTable(
-  kern: DataView,
+  kern: Readonly<DataView>,
   glyphs: ReadonlySet<number>,
 ): readonly KerningLookup[] | undefined {
   const subtables = parseSubtableStarts(kern)

@@ -1,0 +1,29 @@
+[editor](../index.md) / Vector
+
+# Type Alias: Vector
+
+> **Vector** = `object`
+
+Defined in: math/vector/vector.ts:2
+
+Vector of the plane: a displacement, in SVG user units.
+
+## Properties
+
+### x
+
+> `readonly` **x**: `number`
+
+Defined in: math/vector/vector.ts:4
+
+Horizontal component, positive to the right.
+
+***
+
+### y
+
+> `readonly` **y**: `number`
+
+Defined in: math/vector/vector.ts:6
+
+Vertical component, positive downwards (SVG frame).

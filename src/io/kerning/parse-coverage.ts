@@ -35,7 +35,7 @@ type CoverageIndexes = Readonly<Record<number, number>>;
  * @see REF-OT-LAYOUT-COMMON
  */
 function parseGlyphList(
-  table: DataView,
+  table: Readonly<DataView>,
   coverage: number,
   glyphs: ReadonlySet<number>,
 ): CoverageIndexes | undefined {
@@ -64,7 +64,7 @@ function parseGlyphList(
  * @see REF-OT-LAYOUT-COMMON
  */
 function parseGlyphRanges(
-  table: DataView,
+  table: Readonly<DataView>,
   coverage: number,
   glyphs: ReadonlySet<number>,
 ): CoverageIndexes | undefined {
@@ -93,7 +93,7 @@ function parseGlyphRanges(
  * @returns its coverage index
  * @see REF-OT-LAYOUT-COMMON
  */
-function parseRangeIndex(table: DataView, range: number, glyph: number): number {
+function parseRangeIndex(table: Readonly<DataView>, range: number, glyph: number): number {
   return indexInRange(glyph, table.getUint16(range), table.getUint16(range + START_INDEX_FIELD));
 }
 
@@ -109,7 +109,7 @@ function parseRangeIndex(table: DataView, range: number, glyph: number): number 
  * @see REF-OT-LAYOUT-COMMON
  */
 function rangesToIndexes(
-  table: DataView,
+  table: Readonly<DataView>,
   ranges: readonly number[],
   glyphs: ReadonlySet<number>,
 ): CoverageIndexes {
@@ -135,7 +135,7 @@ function rangesToIndexes(
  * @see REF-OT-LAYOUT-COMMON
  */
 export function parseCoverage(
-  table: DataView,
+  table: Readonly<DataView>,
   coverage: number,
   glyphs: ReadonlySet<number>,
 ): CoverageIndexes | undefined {

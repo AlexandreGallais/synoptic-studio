@@ -21,10 +21,10 @@ From the Product Owner's validation of E15 (2026-10-15): a turned text's turned 
 
 ## Product Owner test
 
-| Step | Do                                             | You should see                                  |
-| ---- | ---------------------------------------------- | ----------------------------------------------- |
-| 1    | A rectangle 60 × 40 turned by 30, selected     | its blue turned box and its dashed straight box |
-| 2    | A text in a box 60 × 40 turned by 30, selected | the same two frames, in the same styles         |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | A rectangle 60 × 40 turned by 30, selected | its blue turned box and its dashed straight box |
+| 2 | A text in a box 60 × 40 turned by 30, selected | the same two frames, in the same styles |
 
 ## Tasks
 

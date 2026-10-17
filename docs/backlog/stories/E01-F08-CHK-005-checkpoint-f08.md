@@ -26,14 +26,14 @@ One task = one commit, referenced as `CHK-005.Tn`.
 
 ## Light evolvability check (2026-10-11)
 
-| Question            | Answer                                                                                                                                                                              |
-| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Size                | 86 modules in `src/` (model 38, geometry 27, math 11, io 6, render 4); 45 playground modules; 448 tests; the subfolders of `model` stay for the E01 retrospective (improvement log) |
-| Tools               | StrykerJS still blocked; mutations by hand (five on US-014, all caught); `--cooldown` for version checks waits for the review of versions at the end of E01                         |
-| Fitness functions   | a stored playground value is checked again on reading (`isValidFreeShape`): a refused value never reaches the drawing                                                               |
-| Patterns            | two playground copies merged (`readShapeKind`, `writeInputValue`); the playground state spread over DOM attributes asks for a state module (improvement log)                        |
-| Agent configuration | the auditor found two crashes the tests missed: every playground story now tests a refused shape with each new control                                                              |
-| Process             | the run goes on as planned: US-015 (midpoint), US-016 (delete), AUD-005, VAL-005                                                                                                    |
+| Question | Answer |
+| --- | --- |
+| Size | 86 modules in `src/` (model 38, geometry 27, math 11, io 6, render 4); 45 playground modules; 448 tests; the subfolders of `model` stay for the E01 retrospective (improvement log) |
+| Tools | StrykerJS still blocked; mutations by hand (five on US-014, all caught); `--cooldown` for version checks waits for the review of versions at the end of E01 |
+| Fitness functions | a stored playground value is checked again on reading (`isValidFreeShape`): a refused value never reaches the drawing |
+| Patterns | two playground copies merged (`readShapeKind`, `writeInputValue`); the playground state spread over DOM attributes asks for a state module (improvement log) |
+| Agent configuration | the auditor found two crashes the tests missed: every playground story now tests a refused shape with each new control |
+| Process | the run goes on as planned: US-015 (midpoint), US-016 (delete), AUD-005, VAL-005 |
 
 ## Test cards for the next stop
 

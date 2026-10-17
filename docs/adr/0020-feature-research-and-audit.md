@@ -1,6 +1,6 @@
 # ADR-0020 — Every feature starts with a research spike and ends with an audit
 
-**Status**: Accepted
+**Status**: Accepted. Decision 4 amended on 2026-10-17 (Product Owner, review of the ADRs, EN-094): a tooling feature is validated by the agent, who opens its pull request into `develop` without waiting (ADR-0072).
 
 ## Context
 

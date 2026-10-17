@@ -23,17 +23,17 @@ Run at the validation of F01 (VAL-001), on the local playground the agent starts
 
 Words: the **radius** is how much a corner is rounded — the curve starts that many pixels before the corner; the **requested radius** is the number you type, kept as is; the **effective radius** is the one actually drawn, smaller when the rectangle is too small for the request.
 
-| Step | Do                                     | You should see                                                                                                         |
-| ---- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| 1    | Open the playground                    | a 120 × 80 rectangle with four rounded corners; under the inputs: "Effective radius: 10 (as requested)"                |
-| 2    | Type width 100, height 50, radius 10   | four corners rounded the same way; each curve starts 10 pixels before its corner                                       |
-| 3    | Type height 25, keep radius 100        | the short sides become half circles (a "pill"); the text says "Effective radius: 12.5 (requested 100, reduced to fit)" |
-| 4    | Type width 100, height 100, radius 50  | a circle                                                                                                               |
-| 5    | Type radius 1000                       | the same circle; the text says the radius was reduced to fit, to 50                                                    |
-| 6    | Type radius 100, width 100, height 300 | a vertical pill; effective radius 50                                                                                   |
-| 7    | Type width 300                         | a square with rounded corners; "Effective radius: 100 (as requested)" — the rounding grew back to what you asked       |
-| 8    | Type radius 0                          | sharp corners, as before this feature                                                                                  |
-| 9    | Type radius −3, then 2.5               | the inputs are outlined in red and a message says the values must be integers ≥ 0                                      |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | Open the playground | a 120 × 80 rectangle with four rounded corners; under the inputs: "Effective radius: 10 (as requested)" |
+| 2 | Type width 100, height 50, radius 10 | four corners rounded the same way; each curve starts 10 pixels before its corner |
+| 3 | Type height 25, keep radius 100 | the short sides become half circles (a "pill"); the text says "Effective radius: 12.5 (requested 100, reduced to fit)" |
+| 4 | Type width 100, height 100, radius 50 | a circle |
+| 5 | Type radius 1000 | the same circle; the text says the radius was reduced to fit, to 50 |
+| 6 | Type radius 100, width 100, height 300 | a vertical pill; effective radius 50 |
+| 7 | Type width 300 | a square with rounded corners; "Effective radius: 100 (as requested)" — the rounding grew back to what you asked |
+| 8 | Type radius 0 | sharp corners, as before this feature |
+| 9 | Type radius −3, then 2.5 | the inputs are outlined in red and a message says the values must be integers ≥ 0 |
 
 Look closely at: whether the rounding behaves as you expect when the rectangle is too small (steps 3, 5, 6), and whether the text explains it clearly.
 

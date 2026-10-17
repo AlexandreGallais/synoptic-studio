@@ -15,10 +15,10 @@
 
 ## Reasons
 
-| Option                                             | For                                                                     | Against                                                            |
-| -------------------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| Left out whatever its script (chosen)              | every font listed gives a frame that fits Latin letters; one plain rule | a Greek-, Cyrillic- or Hebrew-only installed font must be imported |
-| Kept when it maps the letters of a measured script | such fonts offered from the list                                        | a rule per script; a frame that misfits as soon as Latin is typed  |
+| Option | For | Against |
+| --- | --- | --- |
+| Left out whatever its script (chosen) | every font listed gives a frame that fits Latin letters; one plain rule | a Greek-, Cyrillic- or Hebrew-only installed font must be imported |
+| Kept when it maps the letters of a measured script | such fonts offered from the list | a rule per script; a frame that misfits as soon as Latin is typed |
 
 ## Consequences
 

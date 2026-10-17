@@ -25,13 +25,13 @@ From the Product Owner's second pass of VAL-018 (2026-10-16), finding F4: a text
 
 ## Product Owner test
 
-| Step | Do                                                               | You should see                                                |
-| ---- | ---------------------------------------------------------------- | ------------------------------------------------------------- |
-| 1    | Text tool, Box, width 200, height 100; content "A", "B", "", "C" | four lines, the 3rd empty                                     |
-| 2    | Max lines 3                                                      | "A" over "B…"; no "…" alone on an empty line                  |
-| 3    | Vertical alignment Bottom                                        | "B…" ends at the box's bottom: the empty line takes no height |
-| 4    | Max lines 0, then height 60 (three lines fit)                    | "A" over "B…" again, the cut made by the box's height         |
-| 5    | Ellipsis off                                                     | "A", "B" and the empty line, with no "…"                      |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | Text tool, Box, width 200, height 100; content "A", "B", "", "C" | four lines, the 3rd empty |
+| 2 | Max lines 3 | "A" over "B…"; no "…" alone on an empty line |
+| 3 | Vertical alignment Bottom | "B…" ends at the box's bottom: the empty line takes no height |
+| 4 | Max lines 0, then height 60 (three lines fit) | "A" over "B…" again, the cut made by the box's height |
+| 5 | Ellipsis off | "A", "B" and the empty line, with no "…" |
 
 ## Tasks
 

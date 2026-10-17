@@ -1,7 +1,7 @@
 {
-  // Policy: ESLint carries every rule it can check. Only the options the compiler alone can
-  // guarantee (type system, module resolution) are here. See docs/conventions/typescript.md
-  // and ADR-0010.
+  // Policy: the linters (oxlint, the project's Rust linter) carry every rule they can check. Only
+  // the options the compiler alone can guarantee (type system, module resolution) are here. See
+  // docs/conventions/typescript.md and ADR-0075.
   "compilerOptions": {
     // Target and modules
     "target": "es2025",
@@ -17,7 +17,7 @@
     "allowImportingTsExtensions": true,
     "types": ["node", "vite/client"],
 
-    // Type system: out of ESLint's reach
+    // Type system: out of the linters' reach
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
@@ -26,15 +26,15 @@
     "noPropertyAccessFromIndexSignature": true,
     "useUnknownInCatchVariables": true,
 
-    // Delegated to ESLint (off here so that they never block the build)
-    // noUnusedLocals / noUnusedParameters -> unused-imports/no-unused-vars
+    // Delegated to oxlint (off here so that they never block the build)
+    // noUnusedLocals / noUnusedParameters -> no-unused-vars
     // noFallthroughCasesInSwitch          -> no-fallthrough
     // allowUnreachableCode                -> no-unreachable
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": false,
 
-    // Output: checking only; tsconfig.build.json emits the .d.ts
+    // Output: checking only; tools/declarations writes the library's .d.ts (EN-091)
     "noEmit": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
@@ -42,7 +42,6 @@
   "include": [
     "src",
     "playground",
-    "eslint",
     "docs/.vitepress/**/*.ts",
     ".claude/hooks",
     "scripts",

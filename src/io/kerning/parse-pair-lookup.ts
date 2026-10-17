@@ -5,6 +5,9 @@ import { parsePairGlyphsRule } from "./parse-pair-glyphs-rule";
 
 import type { KerningLookup, KerningRule } from "../../model";
 
+/** The `GPOS` table's bytes, only read. */
+type GposTable = Readonly<DataView>;
+
 /** GPOS lookup type 2, pair adjustment. */
 const PAIR_ADJUSTMENT = 2;
 
@@ -52,7 +55,7 @@ type Subtable = {
  * @see REF-OT-GPOS
  */
 function parseEffectiveSubtable(
-  gpos: DataView,
+  gpos: GposTable,
   type: number,
   subtable: number,
 ): Subtable | undefined {
@@ -78,7 +81,7 @@ function parseEffectiveSubtable(
  * table's end
  * @see REF-OT-LAYOUT-COMMON
  */
-function parseLookupSubtables(gpos: DataView, lookup: number): readonly Subtable[] | undefined {
+function parseLookupSubtables(gpos: GposTable, lookup: number): readonly Subtable[] | undefined {
   const count = isSpanWithin(lookup, LOOKUP_HEADER_SIZE, gpos.byteLength)
     ? gpos.getUint16(lookup + SUBTABLE_COUNT_OFFSET)
     : Infinity;
@@ -124,7 +127,7 @@ function ruleToList(rule: KerningRule | undefined): readonly KerningRule[] | und
  * @see REF-OT-GPOS
  */
 function subtableToRules(
-  gpos: DataView,
+  gpos: GposTable,
   subtable: number,
   glyphs: ReadonlySet<number>,
 ): readonly KerningRule[] | undefined {
@@ -159,7 +162,7 @@ function subtableToRules(
  * @see REF-OT-GPOS
  */
 function subtablesToLookup(
-  gpos: DataView,
+  gpos: GposTable,
   subtables: readonly Subtable[],
   glyphs: ReadonlySet<number>,
 ): KerningLookup | undefined {
@@ -184,7 +187,7 @@ function subtablesToLookup(
  * @see REF-OT-LAYOUT-COMMON
  */
 export function parsePairLookup(
-  gpos: DataView,
+  gpos: GposTable,
   lookup: number,
   glyphs: ReadonlySet<number>,
 ): KerningLookup | undefined {

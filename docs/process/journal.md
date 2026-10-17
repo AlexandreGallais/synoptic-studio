@@ -2,11 +2,42 @@
 
 What each working session dealt with, in the agent's words: the Product Owner's requests in neutral words, decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`).
 
+## 2026-10-17 — F19 validated, F20 refined
+
+- `#run` VAL-020: F19 validated by the agent (ADR-0072): its 12 criteria proven again, 12 lines in E17's checklist, the demo page `docs/guide/f19-checks-on-oxc-and-rust.md`; `check:all` from 124 s to 39.6 to 41.3 s on a code change, 50.6 to 57.0 s with the site built.
+- `#run` The Product Owner refined F20 in two rounds the same evening (note 0024): a run never stops for a question, only on a blocker, at the scope set at its start or when told; notifications only for a question or a blocker; one worker type per task kind; Sonnet for simple tasks with a measured trial; Git sequences and every page fetch through the library as tools of our own in F20.
+
 ## 2026-10-17 — F18 validated, F19 started
 
 - `#run` The Product Owner answered the queued questions: the subagent limit set in the settings (EN-063); ADR-0067's release order, the tables moved to F19 (ADR-0068) and the refused face dropped (US-061) confirmed; EN-062's macOS-only font tests not accepted, so EN-067 made every font test run on every system; the font list to offer only fonts read whole and checked (US-062).
 - `#run` They left F18's tool lines to the agent and declared the validation finished; F18 is done with EN-063, EN-067 and US-062 merged into its branch.
 - `#run` They asked to move on to F19 at once, without waiting for them: F19's branch starts from F18's, SP-021 rebased on it.
+- `#run` EN-068: the Rust tools form one Cargo workspace at the root (one `Cargo.lock`, one `target/`, Rust 1.99.1 pinned, warnings denied, `unsafe_code` forbidden); scripts and Git hooks run them with `cargo run --release -q -p <crate>` (0.03 to 0.05 s per call on a built workspace), `prepare` and `worktree:new` building them; `check:rust` is its own lane of `check:all` (9.4 s warm, 11.2 s before).
+- `#run` EN-070: the Rust tools compile for Windows without linking (`cargo check --workspace --all-targets --target x86_64-pc-windows-msvc`, in `check:rust`); the Unix-only calls left — the lock file's device and inode, `mutate`'s process group and `kill`, the `node_modules` symbolic links, a test hook's execute bit — sit behind `cfg(unix)` with their reason, Windows linking folders by `symlink_dir`; a planted `std::os::unix` call fails the check on the Mac. Cost: the target 118 MB, installed by rustup in 9 s (once, from `rust-toolchain.toml`); the check 0.5 s cold, 0.04 s warm, 24 MB in `target/`.
+- `#run` EN-069: the Rust workspace's tests run under `cargo llvm-cov` with a floor of 93 % of lines and 93 % of functions (measured 93.88 % and 93.45 % after EN-070), and `cargo deny --offline check advisories` checks its crates against RustSec in `check:rust`, the CI fetching the database; a planted smallvec 1.6.0 fails naming RUSTSEC-2021-0003; the lane went from about 12 s to 18 s.
+- `#run` EN-072: the API pages come from `tools/api-pages`, a Rust crate on Oxc 0.153.0 (`oxc_parser`, `oxc_semantic`), TypeDoc and its plugins out; 527 of 537 pages and the sidebar byte for byte as TypeDoc's, the 10 others showing the written type where TypeDoc showed the compiler's; `npm run docs:api` 0.35 s against 3.5 s.
+- `#run` EN-089: the test font file is read once per run by a Vitest global setup (193 reads to 1); the fixtures built from it are lazy and frozen; the shared-tables test of `parseCollectionFaces` 2.3 s to 75 ms; the lane 101.5 s to 96.3 s.
+- `#run` EN-074: oxlint 1.87.0 and `tsgolint` 7.0.2004 run first in `npm run lint` (1.0 to 1.3 s), with 355 native and type-aware rules; 125 rules dropped by a triage before anything was enabled; ESLint turns off every rule oxlint runs or the triage dropped.
+- `#run` EN-090: claims proven twice merged or removed (6 pairs), slow preparations built once, the tests outside the playground sharing a worker's modules; ADR-0070 and the testing rules; the tooling and tests pass joins NAM.
+- `#run` EN-091: every configuration file reviewed for speed; the RuleTester's setup given to the rule tests only (test lane 39.6 s to about 30 s), type errors reported by oxlint's `--type-check` with the lint and `tsc` out of `check:all`, the declarations written by Oxc's isolated declarations (0.63 s to 0.06 s, two exports annotated), `check:all` 61.8 s to 51.5 s (ADR-0071).
+- `#run` EN-075: the project's linter in Rust (`tools/lint`, Oxc 0.153.0) runs after oxlint, each file parsed once and every rule over one AST, 0.05 s for the tree; the 10 project rules, `no-restricted-syntax`, `require-atomic-updates` and `functional/no-return-void` moved out of ESLint, the fold's spread to `oxc/no-accumulating-spread`; `npm run lint` from 27.5 s to 24.5 s.
+- `#run` EN-077: the Markdown rules in the project's linter, parsed once by `markdown-rs` (mdast, as `@eslint/markdown`); 20 rules moved, `no-reference-like-urls` dropped, `local/image-alt-text` added; `@eslint/markdown` removed from ESLint and the dependencies; the 518 pages in 0.1 s against 6.7 s in ESLint, `npm run lint` from 25.2–28.2 s to 22.7–25.3 s.
+- `#run` EN-076: naming-convention, the five functional rules and `no-non-function-verb-prefix` in the Rust linter without types; ESLint reads no type, `npm run lint` from 27 s to 18 s; the strict form taken to the letter gave 597 findings and 60 type errors, a named type is proven by its own declaration instead, to confirm.
+- `#run` EN-078: Unicorn's arrays, collections and iteration rules in the project's linter, 39 rewritten in Rust from their documented cases, `no-for-each` to oxlint's `no-array-for-each`, four dropped as unreachable here; the same 128 findings and fixes as ESLint on the cases, none on the tree; `lint --fix` repeats its pass up to ten times.
+- `#run` EN-079: 33 Unicorn rules on control flow, functions, errors and numbers carried to the Rust linter, 3 dropped (`no-unnecessary-nested-ternary`, `consistent-function-style`, `isolated-functions`); same findings as ESLint on the documented and planted cases, none on the tree; ESLint about 7 s faster.
+- `#run` EN-081: 16 Unicorn rules on modules, the platform and promises carried to the Rust linter, 13 dropped (Node.js, `Temporal`, `using` and APIs `tsc` refuses under ES2025); the same findings and fixes as ESLint on the documented and planted cases, none on the tree; the resolver rule follows each function's paths where ESLint asks its code paths.
+- `#run` EN-080: Unicorn's objects, strings, naming and miscellaneous rules in the project's linter, 33 rewritten in Rust from their documented cases, four dropped as guarding nothing here; the same 610 findings and fixes as ESLint on the cases and on 900 altered copies of the tree, none on the tree; fixes now land in ESLint's order; the `comment-content` option of the project found to drop nothing, then keyed by the plugin's pattern so that it keeps `application`.
+- `#run` EN-083: JSDoc's rules carried to the Rust linter on a port of the plugin's block parser, 31 rules equal to ESLint on 1,942 recorded cases and on faults planted in copies of the tree's files; `ts-ban-ts-comment` and `type-formatting` dropped; ESLint 13.0 s to 8.6 s, the Rust linter 0.14 s to 0.21 s.
+- `#run` EN-084: the other plugins' rules carried — 10 functional, 3 `@stylistic` and 2 Import rules to the Rust linter, the 2 `unused-imports` rules to oxlint's `no-unused-vars`, 3 dropped (`prefer-property-signatures`, `line-comment-position`, `member-ordering`); the same findings and fixes as ESLint on the documented and planted cases, none on the tree; `no-useless-recursion` left in the core; 22 Unicorn rules found in no story.
+- `#run` EN-095: the 30 rules ESLint still ran carried or dropped: 3 Unicorn rules in Rust, 4 rules native in oxlint, `import-x/order` written by oxfmt, 22 dropped; ESLint runs no rule, 4.1 s of parsing left for EN-085 to remove.
+- `#run` EN-093: every rule, formatter setting, hook and convention reviewed for the agent's own work (`docs/conventions/rules.md`); 9 correctness rules added to oxlint, `@param` and `@returns` off in test files, `lint:fix` and the `eslint` scope dropped, ADR-0011 and ADR-0012 measured and kept, the width 100 measured and kept.; 11 Vitest correctness rules on test files; `docs/conventions/rule-catalogue.md` with profiles (T4).
+
+## 2026-10-17 — SP-021 answered, F19's run started
+
+- `#refinement` SP-021, first round: `check:all` set to option B, about 70 to 90 s most of the time (Oxc instead of ESLint and Prettier, the docs build only when the docs change); none of the 8 rules that need types dropped without a stated reason; a coverage floor and an advisory check for the Rust tools; TypeScript 7 now; the library stays TypeScript, every tool around it moves to Rust; one clean-up story at the end of E17; the library's tests never depend on macOS, the tools use Rust's portable standard calls where one exists (note 0023).
+- `#refinement` SP-021, second round: F19 holds the checks and F21 the agent tools, the `library` MCP server and E17's clean-up, last before NAM-002; the 6 rules without types rewritten in their strict form, nothing kept in ESLint; TypeScript 7 only, TypeDoc replaced by a Rust generator on Oxc; the project's rules in a Rust linter on Oxc's crates; three F20 stories drafted (push notification, progress page, `SubagentStop` hook); no cloud agents; Q40, Q41, Q42 recorded.
+- `#refinement` SP-021, third and fourth rounds: oxlint is the one linter, `tsgolint` kept for the 55 rules that need types; every one of the 265 rules oxlint lacks triaged (232 kept, 33 dropped with their reasons) and the kept ones rewritten in the Rust linter within F19, ESLint leaving at its end; the dev packages reviewed in F21.
+- `#run` The Product Owner started F19's run on 2026-10-17 and asked to move on to it at once, without waiting for them: SP-021 done, F19's 18 stories written `ready` (EN-068 to EN-085), F20's three drafted stories numbered (EN-086 to EN-088).
 
 ## 2026-10-17 — Run of F18 continued, up to its audit
 
@@ -166,15 +197,15 @@ What each working session dealt with, in the agent's words: the Product Owner's 
 
 Built in that order, each feature refined with the Product Owner, researched, implemented in stories, audited and validated in the playground:
 
-| Feature | What it delivered                                            | Key decisions                |
-| ------- | ------------------------------------------------------------ | ---------------------------- |
-| F01     | a rectangle with a corner radius, reduced to fit             | ADR-0007                     |
-| F02     | a regular polygon fitted in its box                          | `DERIV-regular-polygon-fit`  |
-| F07     | the polygon anchored in its box, nine places                 | `docs/domain/shapes.md`      |
-| F03     | a radius per corner, Points mode, the list of points         | ADR-0029                     |
-| F09     | the rectangle as a free shape, stretched without loss        | ADR-0032                     |
-| F08     | points moved, added and deleted; corners as point and radius | ADR-0031, ADR-0033, ADR-0034 |
-| F04     | any angle, a position for every shape, two boxes             | ADR-0035                     |
-| F06     | a polygon stretched to its box, rule C                       | ADR-0037                     |
+| Feature | What it delivered | Key decisions |
+| --- | --- | --- |
+| F01 | a rectangle with a corner radius, reduced to fit | ADR-0007 |
+| F02 | a regular polygon fitted in its box | `DERIV-regular-polygon-fit` |
+| F07 | the polygon anchored in its box, nine places | `docs/domain/shapes.md` |
+| F03 | a radius per corner, Points mode, the list of points | ADR-0029 |
+| F09 | the rectangle as a free shape, stretched without loss | ADR-0032 |
+| F08 | points moved, added and deleted; corners as point and radius | ADR-0031, ADR-0033, ADR-0034 |
+| F04 | any angle, a position for every shape, two boxes | ADR-0035 |
+| F06 | a polygon stretched to its box, rule C | ADR-0037 |
 
 F10 (round shape) moved to E14 when the ellipse proved needed; F05 (text) to E15. The review (REV-001) confirmed the closure criteria and E14 as the next epic.

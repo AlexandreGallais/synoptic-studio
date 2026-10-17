@@ -27,11 +27,11 @@ One task = one commit, referenced as `US-024.Tn`.
 
 ## Decisions during the story
 
-| Decision                                                                                                     | Reason                                                                                               |
-| ------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
+| Decision | Reason |
+| --- | --- |
 | the four ways to type a handle are a model list, `HANDLE_WAYS`, with `fieldValuesOfHandle` and `typedHandle` | the conversions are business rules, tested on their own; the playground only reads and writes fields |
-| an angle typed while the handle has no length stays in its field until the length is typed                   | a handle of length 0 has no angle; typing the angle first would otherwise be lost                    |
-| the handle before's angle from the side is mirrored                                                          | the same values at both ends make a symmetric arch (Product Owner, 2026-10-13)                       |
+| an angle typed while the handle has no length stays in its field until the length is typed | a handle of length 0 has no angle; typing the angle first would otherwise be lost |
+| the handle before's angle from the side is mirrored | the same values at both ends make a symmetric arch (Product Owner, 2026-10-13) |
 
 ## Product Owner test
 

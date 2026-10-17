@@ -16,11 +16,11 @@ Nothing looks different in the playground, and that is the point: the rectangle 
 
 **Nothing is lost.** The points kept in the box never change when you resize: a width of 0 draws nothing, and the width typed back gives exactly the shape of before. Useful for animations, where a size can go to 0 and back.
 
-| Term       | In plain words                                                                  |
-| ---------- | ------------------------------------------------------------------------------- |
-| Free shape | a shape kept as its points in a box of their own, stretched to its size         |
-| Stretch    | change the width or the height, the points following in proportion              |
-| Box        | the rectangle around the points; its top-left stays in place when you resize it |
+| Term | In plain words |
+| --- | --- |
+| Free shape | a shape kept as its points in a box of their own, stretched to its size |
+| Stretch | change the width or the height, the points following in proportion |
+| Box | the rectangle around the points; its top-left stays in place when you resize it |
 
 ## Try it
 
@@ -36,6 +36,6 @@ Run `npm run dev` and open `http://localhost:5173/?guide=epic&step=34`: the **Gu
 
 Validated by the Product Owner on 2026-10-11 (`VAL-006`): width, height and the stretched points of the rectangle work as they meant.
 
-| Remark                                                                                | Where it went                             |
-| ------------------------------------------------------------------------------------- | ----------------------------------------- |
+| Remark | Where it went |
+| --- | --- |
 | a radius kept apart from its point is confusing: a point and its radius make a corner | the free shape of corners, F08 (ADR-0033) |

@@ -2,23 +2,25 @@
 
 Technical rules of the project: **how** code is written. The business **what** lives in [domain](../domain/), the **why** of choices in [ADRs](../adr/).
 
-Almost everything here is **checked by ESLint** (`eslint/`). When a rule is automatic, the page names the rule: when in doubt, the configuration wins.
+Almost everything here is **checked by the linters** (oxlint, `.oxlintrc.json`, and the project's linter, `tools/lint`). When a rule is automatic, the page names the rule: when in doubt, the configuration wins.
 
-| Page                                   | Content                                                                                   |
-| -------------------------------------- | ----------------------------------------------------------------------------------------- |
-| [architecture.md](./architecture.md)   | layers, functional core / imperative shell                                                |
-| [files.md](./files.md)                 | one export per file, file names, folders                                                  |
-| [functions.md](./functions.md)         | `@kind`, size limits, immutability, explicit inputs, long procedures                      |
-| [naming.md](./naming.md)               | casing, constants, booleans, names per kind                                               |
-| [imports.md](./imports.md)             | `index.ts` per folder, canonical paths, `import type`, cycles, boundaries                 |
-| [documentation.md](./documentation.md) | mandatory TSDoc, tag order, `@see` and references                                         |
-| [typescript.md](./typescript.md)       | compiler options, TypeScript / ESLint split                                               |
-| [formatting.md](./formatting.md)       | EditorConfig, Prettier, blank lines, format on save                                       |
-| [lint.md](./lint.md)                   | layout of `eslint/`, adding or changing a rule, custom rules                              |
-| [testing.md](./testing.md)             | Vitest, hand-computed expected values                                                     |
-| [writing.md](./writing.md)             | how documentation is written: page types, austere API reference, style                    |
-| [audit.md](./audit.md)                 | checklist of the feature audit: mathematics, sources, provenance, duplicates, consistency |
-| [exceptions.md](./exceptions.md)       | register of the places where the code turns a lint rule off, with their reasons           |
+| Page | Content |
+| --- | --- |
+| [architecture.md](./architecture.md) | layers, functional core / imperative shell |
+| [files.md](./files.md) | one export per file, file names, folders |
+| [functions.md](./functions.md) | `@kind`, size limits, immutability, explicit inputs, long procedures |
+| [naming.md](./naming.md) | casing, constants, booleans, names per kind |
+| [imports.md](./imports.md) | `index.ts` per folder, canonical paths, `import type`, cycles, boundaries |
+| [documentation.md](./documentation.md) | mandatory TSDoc, tag order, `@see` and references |
+| [typescript.md](./typescript.md) | compiler options, TypeScript / linters split |
+| [formatting.md](./formatting.md) | EditorConfig, the formatter (oxfmt), blank lines, format on save |
+| [lint.md](./lint.md) | the two linters, their zones, adding or changing a rule, the project's rules |
+| [rule-catalogue.md](./rule-catalogue.md) | lint and format rules for other kinds of project, by category, with profiles (a functional library, a business library, an Angular application, tools), on paper only |
+| [rules.md](./rules.md) | every rule, formatter setting, check and hook, with what it guards and its verdict (EN-093); function limits and barrels measured |
+| [testing.md](./testing.md) | Vitest, hand-computed expected values |
+| [writing.md](./writing.md) | how documentation is written: page types, austere API reference, style |
+| [audit.md](./audit.md) | checklist of the feature audit: mathematics, sources, provenance, duplicates, consistency |
+| [exceptions.md](./exceptions.md) | register of the places where the code turns a lint rule off, with their reasons |
 
 ## Language
 

@@ -3,12 +3,12 @@ import { describe, expect, it } from "vitest";
 import {
   LARGE_TABLE_LENGTH,
   OPEN_TYPE_VERSION,
-  SHARED_SANS_TABLES,
   TRUE_TYPE_VERSION,
   fontCollection,
   fontFile,
   joinedParts,
   largeTableCollection,
+  sharedSansTables,
   sharedTableCollection,
   uint16,
   uint32,
@@ -176,7 +176,7 @@ describe("collectionFaceToParts (REF-OT-OTFF, REF-SKIA-MAC-STREAM-CODE)", () => 
   it("[F17.AC4] [F18.AC19] gives a table two faces share as the same view of the collection for each", () => {
     // Three faces of Inter's tables, their directories of 284 bytes at 24, 308 and 592: the first
     // table, GDEF, written once at 24 + 3 × 284 = 876, its 1 036 bytes; the name tables differ.
-    const collection = sharedTableCollection(TRUE_TYPE_VERSION, SHARED_SANS_TABLES);
+    const collection = sharedTableCollection(TRUE_TYPE_VERSION, sharedSansTables());
     const faces = [24, 308, 592].map((directory) =>
       collectionFaceToParts(collection, directory).map((part) => [
         part.length,

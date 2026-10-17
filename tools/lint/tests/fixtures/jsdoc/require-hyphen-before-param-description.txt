@@ -1,0 +1,479 @@
+# require-hyphen-before-param-description: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), then faults planted
+# in copies of files of the tree and cases written for branches, each run by ESLint 10.12.0 at src/a.ts with the project's options;
+# a carriage return written ␍; recorded by EN-083.
+@@@ case 1 (documented invalid)
+
+          /**
+           * @param foo Foo.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+3:1 There must be a hyphen before @param description.
+@@@ output
+
+          /**
+           * @param foo - Foo.
+           */
+          function quux () {
+
+          }
+      
+@@@ case 2 (documented invalid)
+
+          /**
+           * @param foo Foo.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+3:1 There must be a hyphen before @param description.
+@@@ output
+
+          /**
+           * @param foo - Foo.
+           */
+          function quux () {
+
+          }
+      
+@@@ case 3 (documented invalid)
+
+          /**
+           * @param foo Foo.
+           * @returns {SomeType} - Hyphen here.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+3:1 There must be a hyphen before @param description.
+@@@ output
+
+          /**
+           * @param foo - Foo.
+           * @returns {SomeType} - Hyphen here.
+           */
+          function quux () {
+
+          }
+      
+@@@ case 4 (documented invalid)
+
+          /**
+           * @param foo Foo.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+3:1 There must be a hyphen before @param description.
+@@@ output
+
+          /**
+           * @param foo - Foo.
+           */
+          function quux () {
+
+          }
+      
+@@@ case 5 (documented invalid)
+
+          /**
+           * @param foo - Foo.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 6 (documented invalid)
+
+          /**
+           * @param foo    - Foo.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 7 (documented invalid)
+
+          /**
+           * @param foo - foo
+           * @param foo foo
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+4:1 There must be a hyphen before @param description.
+@@@ output
+
+          /**
+           * @param foo - foo
+           * @param foo - foo
+           */
+          function quux () {
+
+          }
+      
+@@@ case 8 (documented invalid)
+
+          /**
+           * @param foo foo
+           * bar
+           * @param bar - bar
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+3:1 There must be a hyphen before @param description.
+@@@ output
+
+          /**
+           * @param foo - foo
+           * bar
+           * @param bar - bar
+           */
+          function quux () {
+
+          }
+      
+@@@ case 9 (documented invalid)
+
+          /**
+           * @param foo
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+@@@ case 10 (documented invalid)
+
+          /**
+           * @typedef {SomeType} ATypeDefName
+           * @property foo Foo.
+           */
+      
+@@@ findings
+@@@ case 11 (documented invalid)
+
+          /**
+           * @template TempA, TempB A desc.
+           */
+      
+@@@ findings
+@@@ case 12 (documented invalid)
+
+          /**
+           * @typedef {SomeType} ATypeDefName
+           * @property foo - Foo.
+           */
+      
+@@@ findings
+@@@ case 13 (documented invalid)
+
+          /**
+           * @param foo Foo.
+           * @returns {SomeType} - A description.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+3:1 There must be a hyphen before @param description.
+@@@ output
+
+          /**
+           * @param foo - Foo.
+           * @returns {SomeType} - A description.
+           */
+          function quux () {
+
+          }
+      
+@@@ case 14 (documented invalid)
+
+      /**
+       * Split a unit to metric prefix and basic unit.
+       *
+       * @param {string} unit - Unit to split.
+       * @param {string} [basicUnit] - Basic unit regardless of the metric prefix.
+       *     If omitted, basic unit will be inferred by trying to remove the metric
+       *     prefix in `unit`.
+       *
+       * @returns {{ prefix: string, basicUnit: string }} - Split result.
+       *     If `unit` does not have a metric prefix, `''` is returned for `prefix`.
+       *     If `unit` does not have a basic unit, `''` is returned for `basicUnit`.
+       */
+      
+@@@ findings
+@@@ case 15 (documented invalid)
+
+      /**
+       * @returns {{
+       *   prefix: string, basicUnit: string
+       * }} - Split result.
+       */
+      
+@@@ findings
+@@@ case 16 (documented invalid)
+
+        /**
+         * @param {(
+         *  | string
+         *  | number
+         * )} input The input value
+         */
+        function test(input) {}
+      
+@@@ findings
+6:1 There must be a hyphen before @param description.
+@@@ output
+
+        /**
+         * @param {(
+         *  | string
+         *  | number
+         * )} input - The input value
+         */
+        function test(input) {}
+      
+@@@ case 17 (documented invalid)
+
+        /**
+         * @template [O=unknown]
+         * @param {string} name The name of the thing.
+         */
+        function test(name) {}
+      
+@@@ findings
+4:1 There must be a hyphen before @param description.
+@@@ output
+
+        /**
+         * @template [O=unknown]
+         * @param {string} name - The name of the thing.
+         */
+        function test(name) {}
+      
+@@@ case 18 (documented invalid)
+
+        /**
+         * @param foo -
+         * The possible values for `foo` are as follows.
+         * - `"option1"`: Description of option 1.
+         * - `"option2"`: Description of option 2.
+         */
+      
+@@@ findings
+3:1 There must be no hyphen followed by newline after the @param name.
+@@@ output
+
+        /**
+         * @param foo
+         * The possible values for `foo` are as follows.
+         * - `"option1"`: Description of option 1.
+         * - `"option2"`: Description of option 2.
+         */
+      
+@@@ case 19 (documented valid)
+
+          /**
+           * @param foo - Foo.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 20 (documented valid)
+
+          /**
+           * @param foo     - Foo.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 21 (documented valid)
+
+          /**
+           * @param foo - Foo.
+           * @returns {SomeType} A description.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 22 (documented valid)
+
+          /**
+           * @param foo Foo.
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+3:1 There must be a hyphen before @param description.
+@@@ output
+
+          /**
+           * @param foo - Foo.
+           */
+          function quux () {
+
+          }
+      
+@@@ case 23 (documented valid)
+
+          /**
+           * @param foo
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 24 (documented valid)
+
+          /**
+           *
+           */
+          function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 25 (documented valid)
+
+          /**
+           * @typedef {SomeType} ATypeDefName
+           * @property foo - Foo.
+           */
+      
+@@@ findings
+@@@ case 26 (documented valid)
+
+          /**
+           * @typedef {SomeType} ATypeDefName
+           * @property foo Foo.
+           */
+      
+@@@ findings
+@@@ case 27 (documented valid)
+
+          /**
+           * @typedef {SomeType} ATypeDefName
+           * @property foo - Foo.
+           */
+      
+@@@ findings
+@@@ case 28 (documented valid)
+
+      /** Entry point for module.
+       *
+       * @param {!Array<string>} argv Command-line arguments.
+       */
+      function main(argv) {
+      };
+      
+@@@ findings
+4:1 There must be a hyphen before @param description.
+@@@ output
+
+      /** Entry point for module.
+       *
+       * @param {!Array<string>} argv - Command-line arguments.
+       */
+      function main(argv) {
+      };
+      
+@@@ case 29 (documented valid)
+
+        /**
+         * @template {any} T - Arg 1
+         * @template {string | number} K - Arg 2
+         * @template {any} [R=(K extends keyof T ? T[K] : never)] - Arg 3  ->  Errors here
+         * @typedef {any} Test
+         */
+      
+@@@ findings
+@@@ case 30 (documented valid)
+
+        /**
+         * @param foo - The possible values for `foo` are as follows.
+         * - `"option1"`: Description of option 1.
+         * - `"option2"`: Description of option 2.
+         */
+      
+@@@ findings
+@@@ case 31 (documented valid)
+
+        /**
+         * @param foo
+         * The possible values for `foo` are as follows.
+         * - `"option1"`: Description of option 1.
+         * - `"option2"`: Description of option 2.
+         */
+      
+@@@ findings
+@@@ case 32 (documented valid)
+
+        /**
+         * @param foo
+         * - `"option1"`: Description of option 1.
+         * - `"option2"`: Description of option 2.
+         */
+      
+@@@ findings
+@@@ case 33 (planted in a copy of a file of the tree)
+/**
+ * Distance from a corner vertex to the tangent points of its fillet arc.
+ *
+ * Formula: s = r · tan(|τ| / 2) = r / tan(θ / 2), τ = turning angle, θ = interior angle.
+ *
+ * @kind geometry
+ * @param radius fillet radius, >= 0
+ * @param turningAngle - signed turning angle at the vertex in radians, in ]−π, π[
+ * @returns setback along each adjacent edge, 0 for aligned vertices
+ * @see DERIV-fillet-setback
+ */
+export function filletSetback(radius: number, turningAngle: number): number {
+  return radius * Math.tan(Math.abs(turningAngle) / 2);
+}
+
+@@@ findings
+7:1 There must be a hyphen before @param description.
+@@@ output
+/**
+ * Distance from a corner vertex to the tangent points of its fillet arc.
+ *
+ * Formula: s = r · tan(|τ| / 2) = r / tan(θ / 2), τ = turning angle, θ = interior angle.
+ *
+ * @kind geometry
+ * @param radius - fillet radius, >= 0
+ * @param turningAngle - signed turning angle at the vertex in radians, in ]−π, π[
+ * @returns setback along each adjacent edge, 0 for aligned vertices
+ * @see DERIV-fillet-setback
+ */
+export function filletSetback(radius: number, turningAngle: number): number {
+  return radius * Math.tan(Math.abs(turningAngle) / 2);
+}
+
+@@@ end

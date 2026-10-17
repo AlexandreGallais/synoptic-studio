@@ -21,10 +21,10 @@ From the Product Owner's validation of E15 (2026-10-15): the HTML layer brings n
 
 ## Product Owner test
 
-| Step | Do                                                  | You should see                          |
-| ---- | --------------------------------------------------- | --------------------------------------- |
-| 1    | Open the playground, look at the document's options | **Embed fonts** only, no **HTML layer** |
-| 2    | Export SVG a text in a box, open the file as text   | no `switch`, no `foreignObject`         |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | Open the playground, look at the document's options | **Embed fonts** only, no **HTML layer** |
+| 2 | Export SVG a text in a box, open the file as text | no `switch`, no `foreignObject` |
 
 ## Tasks
 

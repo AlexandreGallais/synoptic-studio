@@ -27,13 +27,13 @@ Built on the latest branch of the chain, `feature/f15-fonts-html`, after US-036 
 
 Open `http://localhost:5173/`, click **Text**, click on the drawing, type `Pump P-101`, choose the size 16 and the weight Regular, set X 47 and Y 61.
 
-| Step | Do                                  | You should see                                                                                                               |
-| ---- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| 1    | Set the angle to 45                 | the turned dashed frame, around it an upright dashed box; under X and Y: Straight box x 53.03586, y 32.73899, 75.8814 square |
-| 2    | Set the angle to 90                 | the upright box as tall as the text is long: x 81.29688, y 26.70313, width 19.35938, height 87.95313; X and Y still 47, 61   |
-| 3    | Choose **Box**, width 60, height 40 | an upright box 40 × 60 around the turned box: x 60.65625, y 26.70313, width 40, height 60                                    |
-| 4    | Set the angle to 0                  | one dashed frame only, and no straight box line, as before                                                                   |
-| 5    | Click **Rectangle**, angle 90       | the turned rectangle's straight box and its line, as before                                                                  |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | Set the angle to 45 | the turned dashed frame, around it an upright dashed box; under X and Y: Straight box x 53.03586, y 32.73899, 75.8814 square |
+| 2 | Set the angle to 90 | the upright box as tall as the text is long: x 81.29688, y 26.70313, width 19.35938, height 87.95313; X and Y still 47, 61 |
+| 3 | Choose **Box**, width 60, height 40 | an upright box 40 × 60 around the turned box: x 60.65625, y 26.70313, width 40, height 60 |
+| 4 | Set the angle to 0 | one dashed frame only, and no straight box line, as before |
+| 5 | Click **Rectangle**, angle 90 | the turned rectangle's straight box and its line, as before |
 
 In the guided test (`?guide=epic`), the step **F14 · The straight box of a turned text (US-039)** walks through step 3.
 

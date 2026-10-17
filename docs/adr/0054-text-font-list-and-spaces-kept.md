@@ -16,12 +16,12 @@ ADR-0052 lists what a text's `<text>` carries: its font family, "the font, then 
 
 ## Reasons
 
-| Option                                    | For                                                             | Against                                                                     |
-| ----------------------------------------- | --------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| Both `white-space` and `xml:space`        | every reader keeps the spaces; SVG 2 readers ignore `xml:space` | two attributes for one rule                                                 |
-| `xml:space` alone                         | read by SVG 1.1 and SVG 2 readers today                         | deprecated by SVG 2: "New content should not use 'xml:space'"               |
-| `white-space` alone                       | SVG 2's property                                                | SVG 1.1 readers (resvg, Batik) collapse the spaces and draw a narrower line |
-| `sans-serif` always last in the font list | a reader lacking both families still draws a sans-serif text    | none: a fallback that is already `sans-serif` is not written twice          |
+| Option | For | Against |
+| --- | --- | --- |
+| Both `white-space` and `xml:space` | every reader keeps the spaces; SVG 2 readers ignore `xml:space` | two attributes for one rule |
+| `xml:space` alone | read by SVG 1.1 and SVG 2 readers today | deprecated by SVG 2: "New content should not use 'xml:space'" |
+| `white-space` alone | SVG 2's property | SVG 1.1 readers (resvg, Batik) collapse the spaces and draw a narrower line |
+| `sans-serif` always last in the font list | a reader lacking both families still draws a sans-serif text | none: a fallback that is already `sans-serif` is not written twice |
 
 ## Consequences
 

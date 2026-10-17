@@ -57,7 +57,7 @@ function typeContent(content: string): void {
  * @returns its position, its angle and its frame's size
  */
 function readDrawn(): Point & Size & { readonly angle: number } {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- the page writes the model as JSON
+  // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- the page writes the model as JSON
   const model = JSON.parse(readText("#model")) as {
     readonly angle: number;
     readonly boxHeight: number;
@@ -66,7 +66,7 @@ function readDrawn(): Point & Size & { readonly angle: number } {
     readonly x: number;
     readonly y: number;
   };
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- the page writes the block as JSON
+  // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- the page writes the block as JSON
   const block = JSON.parse(readText("#contour")) as Size;
   const frame = model.isInBox ? { height: model.boxHeight, width: model.boxWidth } : block;
 

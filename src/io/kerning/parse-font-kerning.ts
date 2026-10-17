@@ -17,8 +17,8 @@ import type { KerningLookup } from "../../model";
  * @see REF-CSS-FONTS-4
  */
 export function parseFontKerning(
-  gpos: DataView | undefined,
-  kern: DataView | undefined,
+  gpos: Readonly<DataView> | undefined,
+  kern: Readonly<DataView> | undefined,
   glyphs: ReadonlySet<number>,
 ): readonly KerningLookup[] | undefined {
   const positioning = gpos === undefined ? [] : parseGposKerning(gpos, glyphs);
