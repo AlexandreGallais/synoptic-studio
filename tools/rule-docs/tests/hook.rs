@@ -37,6 +37,7 @@ impl Repository {
             ),
         )
         .unwrap();
+        // Unix-only: Git runs a hook only when it is executable there; Windows has no such bit.
         #[cfg(unix)]
         {
             use std::os::unix::fs::PermissionsExt;
