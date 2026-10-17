@@ -6,16 +6,15 @@ import unicorn from "eslint-plugin-unicorn";
 import unusedImports from "eslint-plugin-unused-imports";
 import tseslint from "typescript-eslint";
 
-import { PROJECT_ROOT, TS_FILES } from "../settings";
+import { TS_FILES } from "../settings";
 
 import type { TSESLint } from "@typescript-eslint/utils";
 
-/** Parser, type information, plugins and resolver shared by every linted file. */
+/** Parser, plugins and resolver shared by every linted file: no type information, which no rule left in ESLint reads (EN-076). */
 export const LANGUAGE: TSESLint.FlatConfig.Config = {
   files: TS_FILES,
   languageOptions: {
     parser: tseslint.parser,
-    parserOptions: { projectService: true, tsconfigRootDir: PROJECT_ROOT },
   },
   linterOptions: { reportUnusedDisableDirectives: "error", reportUnusedInlineConfigs: "error" },
   name: "scopes/language",

@@ -73,7 +73,8 @@ A crate of the Rust workspace on Oxc's crates (`oxc_parser`, `oxc_ast`, `oxc_ast
 - **One rule, one module** of `tools/lint/src/rules/`, its tests beside it, from the cases of the rule it carries and of its documentation; registered in `rules::ALL`. Adding a rule: the module, its line in `ALL`, its name in `ON_EVERYWHERE` or a scope of `tools/lint/src/scopes.rs`, its section below, its rule `off` in ESLint.
 - **Markdown pages** (EN-077): each page of the targets but `CHANGELOG.md` is parsed once by the crate `markdown` (`markdown-rs`, `REF-MARKDOWN-RS`) into an mdast tree, the one `@eslint/markdown` reads, with YAML front matter and GFM; the Markdown rules of `tools/lint/src/markdown/rules/` read that tree and the text under it.
 - **Scopes**: `tools/lint/src/scopes.rs` carries, in ESLint's order, the scopes of `eslint/scopes/` that set its rules; the project's values (kinds, layers, verbs, reference sources, the folder signal) are in `tools/lint/src/settings.rs`.
-- **Measured** on 2026-10-17: 0.05 to 0.06 s for the 1,535 files of `npm run lint`'s targets, all its rules on (0.11 s of CPU over the machine's threads).
+- **Measured** on 2026-10-17: 0.05 s for the 1,538 files of `npm run lint`'s targets, all its rules on, the seven of EN-076 included.
+- **Without types**: Oxc has no type checker; a rule that asked the compiler for a type reads the written code instead, each in the form its section states (EN-076).
 
 ### `no-restricted-syntax`
 
@@ -106,6 +107,10 @@ In the functional core, every parameter with a written type and every declared t
 ### `functional/no-mixed-types`
 
 A type holds only data or only functions; a member is a function when it is a method, a call or construct signature, or a property whose written type is a function type.
+
+### `functional/no-conditional-statements`
+
+In the functional core, an `if` or a `switch` is kept only when each branch returns, throws, breaks or continues, read from the tree: a call that never returns does not end a branch.
 
 ### `local/require-kind`
 

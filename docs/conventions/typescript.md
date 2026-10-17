@@ -26,4 +26,4 @@ Left to ESLint (off in `tsconfig.json`): `noUnusedLocals`, `noUnusedParameters`,
 
 ## Typed rules
 
-`typescript-eslint` uses the project service (`projectService`): `strict-boolean-expressions`, `no-unnecessary-condition`, `switch-exhaustiveness-check`, `no-floating-promises`… know the types. A file outside `tsconfig.json` cannot be linted: add it to `include`.
+The type-aware rules run in oxlint on `tsgolint` (`--type-check`, EN-074): `strict-boolean-expressions`, `no-unnecessary-condition`, `switch-exhaustiveness-check`, `no-floating-promises`… know the types. A file outside `tsconfig.json` cannot be checked: add it to `include`. ESLint reads no type since EN-076: the rules that asked for one run in the project's linter, reading the written code ([lint](./lint.md#the-project-s-linter-tools-lint)).

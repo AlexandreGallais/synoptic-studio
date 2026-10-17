@@ -13,7 +13,8 @@ export const FUNCTIONAL_PURITY: TSESLint.FlatConfig.Config = {
         enforceParameterCount: "atLeastOne",
       },
     ],
-    "functional/no-conditional-statements": ["error", { allowReturningBranches: true }],
+    // Run by the project's linter, its branches read from the tree (tools/lint, EN-076).
+    "functional/no-conditional-statements": "off",
     "functional/no-expression-statements": ["error", { ignoreVoid: false }],
     "functional/no-loop-statements": "error",
     "functional/no-promise-reject": "error",

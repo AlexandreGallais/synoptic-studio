@@ -21,9 +21,10 @@ pub const IGNORED: [&str; 12] = [
 ];
 
 /// The rules on for every TypeScript file before the scopes.
-pub const ON_EVERYWHERE: [&str; 16] = [
+pub const ON_EVERYWHERE: [&str; 17] = [
     "@typescript-eslint/naming-convention",
     "functional/immutable-data",
+    "functional/no-conditional-statements",
     "functional/no-mixed-types",
     "functional/no-return-void",
     "functional/prefer-immutable-types",
@@ -60,6 +61,7 @@ const SINGLE_EXPORT_FILES: &[&str] = &["src/**/*.ts", "playground/**/*.ts"];
 /// rules about function kinds, which belong to the library and the playground.
 const RELAXED: &[(&str, bool)] = &[
     ("functional/immutable-data", false),
+    ("functional/no-conditional-statements", false),
     ("functional/no-return-void", false),
     ("functional/prefer-immutable-types", false),
     ("functional/type-declaration-immutability", false),
@@ -94,6 +96,7 @@ pub const SCOPES: [Scope; 7] = [
         ignores: &[],
         rules: &[
             ("functional/immutable-data", false),
+            ("functional/no-conditional-statements", false),
             ("functional/no-return-void", false),
             ("functional/prefer-immutable-types", false),
             ("functional/type-declaration-immutability", false),
@@ -181,6 +184,7 @@ mod tests {
             [
                 "@typescript-eslint/naming-convention",
                 "functional/immutable-data",
+                "functional/no-conditional-statements",
                 "functional/no-mixed-types",
                 "functional/no-return-void",
                 "functional/prefer-immutable-types",
@@ -212,6 +216,7 @@ mod tests {
             let rules = rules_for(path);
             for rule in [
                 "functional/immutable-data",
+                "functional/no-conditional-statements",
                 "functional/prefer-immutable-types",
                 "functional/type-declaration-immutability",
             ] {
