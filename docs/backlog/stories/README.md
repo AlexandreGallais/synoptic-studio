@@ -210,7 +210,7 @@
 | [EN-069](./E17-F19-EN-069-rust-coverage-and-advisories.md) | F19 | A coverage floor and an advisory check for the Rust tools | done |
 | [EN-070](./E17-F19-EN-070-portable-rust-tools.md) | F19 | Rust tools on portable standard calls | done |
 | [EN-071](./E17-F19-EN-071-typescript-7-for-the-type-check.md) | F19 | TypeScript 7 for the type check and the declarations | done |
-| [EN-072](./E17-F19-EN-072-api-pages-from-a-rust-generator.md) | F19 | The API pages from a Rust generator on Oxc | ready |
+| [EN-072](./E17-F19-EN-072-api-pages-from-a-rust-generator.md) | F19 | The API pages from a Rust generator on Oxc | done |
 | [EN-073](./E17-F19-EN-073-oxfmt-instead-of-prettier.md) | F19 | oxfmt instead of Prettier | done |
 | [EN-074](./E17-F19-EN-074-oxlint-with-native-and-type-aware-rules.md) | F19 | oxlint with its native and type-aware rules | ready |
 | [EN-075](./E17-F19-EN-075-project-linter-in-rust.md) | F19 | The project's Rust linter and its own rules | ready |
