@@ -12,7 +12,7 @@ import {
   UNICORN_RULES,
   UNUSED_RULES,
 } from "./rules";
-import { LANGUAGE, MARKDOWN_LANGUAGE, SCOPES } from "./scopes";
+import { LANGUAGE, MARKDOWN_LANGUAGE, OXLINT_OWNED, SCOPES } from "./scopes";
 import { IGNORED_FILES, MARKDOWN_FILES, TS_FILES } from "./settings";
 
 import type { TSESLint } from "@typescript-eslint/utils";
@@ -44,10 +44,12 @@ export const RULE_THEMES: readonly TSESLint.FlatConfig.Config[] = [
 ].map((theme) => ({ ...theme, files: TS_FILES }));
 
 /**
- * Complete flat configuration: ignores, language, Prettier-owned rules, themes, then scopes.
+ * Complete flat configuration: ignores, language, Prettier-owned rules, themes, scopes, then the
+ * rules oxlint runs or no linter runs, off.
  *
  * Prettier comes before the themes so that the only formatting rule re-enabled on purpose
- * (`curly: all`, Prettier-compatible) wins. Scopes come last: they relax or tighten by path.
+ * (`curly: all`, Prettier-compatible) wins. Scopes come next: they relax or tighten by path; then
+ * the rules of oxlint and the dropped ones are turned off, whatever a scope set.
  */
 export const CONFIG: readonly (Linter.Config | TSESLint.FlatConfig.Config)[] = [
   { ignores: IGNORED_FILES, name: "ignores" },
@@ -55,6 +57,7 @@ export const CONFIG: readonly (Linter.Config | TSESLint.FlatConfig.Config)[] = [
   PRETTIER_OWNED,
   ...RULE_THEMES,
   ...SCOPES,
+  OXLINT_OWNED,
   MARKDOWN_LANGUAGE,
   ...MARKDOWN_THEMES,
 ];

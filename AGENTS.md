@@ -69,7 +69,7 @@ A library of small named functions, each backed by a verified source, composed s
 - A new script, hook or agent tool in TypeScript: every new one is a Rust crate in `tools/`, checked by `check:rust` (E17, 2026-10-16).
 - A runtime dependency (`dependencies` stays empty); a dev package without its row in `docs/tooling/dependencies.md`, its release notes read, a version at least 7 days old.
 - Freehand in symbols, or Bézier curves other than cubic sides from typed handles or the round shape's (ADR-0046, ADR-0048); SVG primitives other than `svg`, `g`, `path`, `text`, `tspan`, `defs`, and `style` in `defs` for `@font-face` (ADR-0052, ADR-0053, ADR-0060: no `switch`, no `foreignObject`); native `stroke`.
-- `any`, `!`, `as` without `eslint-disable-next-line … -- justification`; classes; `enum`; a rule disabled to make code pass (fix the code, or tell the Product Owner the rule is wrong).
+- `any`, `!`, `as` without `oxlint-disable-next-line … -- justification`; classes; `enum`; a rule disabled to make code pass (fix the code, or tell the Product Owner the rule is wrong).
 - An epic or feature set `ready` by the agent outside a `/run`, or a pull request merged by the agent; a push to `main`; `--no-verify`; a force push without lease.
 
 ## Work

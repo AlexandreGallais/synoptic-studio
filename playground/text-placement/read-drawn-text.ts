@@ -13,6 +13,6 @@ import type { DrawnTextRecord } from "./drawn-text-record";
 export function readDrawnText(document: Document): DrawnTextRecord | undefined {
   const { drawnText } = selectElement(document, "text-options").dataset;
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- written by writeTextPosition only, from a valid text
+  // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- written by writeTextPosition only, from a valid text
   return drawnText === undefined ? undefined : (JSON.parse(drawnText) as DrawnTextRecord);
 }

@@ -13,7 +13,7 @@ import type { FreeShape } from "../../src";
  * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
  */
 function readKeptText(kept: string): FreeShape | undefined {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- written by writeStoredFreeShape only, from a FreeShape; checked just below
+  // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- written by writeStoredFreeShape only, from a FreeShape; checked just below
   const shape = JSON.parse(kept) as FreeShape;
 
   return isValidFreeShape(shape) ? shape : undefined;

@@ -36,7 +36,7 @@ type TextBoxOptions = Pick<
  * @see docs/backlog/stories/E15-F14-US-033-put-a-text-in-a-box.md
  */
 export function readTextBoxOptions(document: Document): TextBoxOptions {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- the page offers only the values of this type
+  // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- the page offers only the values of this type
   const verticalAlignment = readFieldValue(
     document,
     "text-vertical-alignment",

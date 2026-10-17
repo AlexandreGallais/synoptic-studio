@@ -175,7 +175,7 @@ export const LIBRARY_RESTRICTED_SYNTAX = [
 const BOOLEAN_PREFIXES = ["are", "can", "did", "does", "has", "is", "should", "was", "will"];
 
 /** `format: null` disables the casing check; the option schema of naming-convention requires `null`. */
-// eslint-disable-next-line unicorn/no-null -- required by the naming-convention option schema.
+// oxlint-disable-next-line unicorn/no-null -- required by the naming-convention option schema.
 const ANY_FORMAT = null;
 
 /** `@typescript-eslint/naming-convention` policy (docs/conventions/naming.md). */

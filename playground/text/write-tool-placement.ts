@@ -22,7 +22,7 @@ type KeptPlacement = {
 function readKeptPlacement(document: Document, isText: boolean): KeptPlacement {
   const { dataset } = selectElement(document, "placement");
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- written by saveToolPlacement or TOOL_PLACEMENT.start only
+  // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- written by saveToolPlacement or TOOL_PLACEMENT.start only
   return JSON.parse(
     dataset[isText ? TOOL_PLACEMENT.textKey : TOOL_PLACEMENT.shapeKey] ?? TOOL_PLACEMENT.start,
   ) as KeptPlacement;

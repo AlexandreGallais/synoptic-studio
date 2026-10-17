@@ -132,3 +132,31 @@ The four ESLint core rules oxlint lacks, triaged the same way:
 | `no-restricted-syntax`, `require-atomic-updates` | kept, rewritten in the Rust linter (EN-075, which loses `consistent-this`) |
 | `consistent-this` | dropped: `this` cannot appear (`functional/no-this-expressions`), so no alias of it can |
 | `strict` | dropped: every file is a module, so strict code, and `unicorn/prefer-module` (native, kept) reports any `"use strict"` directive |
+
+## One linter per rule (T5)
+
+`npm run lint`, `lint:fix` and `fix` run oxlint first, on the TypeScript of ESLint's targets, then ESLint; the pre-commit runs oxlint on the staged TypeScript files before ESLint. ESLint's configuration ends with `eslint/scopes/oxlint-owned.ts`, which turns off, after the scopes, every rule `.oxlintrc.json` names and the 125 rules the triage dropped (`eslint/settings/dropped-rules.ts`). The checks of `eslint/config.test.ts` that concern these rules have their counterparts in `tests/oxlint-config.test.ts`, each made to fail once on purpose: oxlint names only rules it has, ESLint runs none of the rules oxlint runs or the triage dropped (computed on one file of each scope), oxlint runs no dropped rule, and `prefer-destructuring` keeps typescript-eslint's options; `tests/check-targets.test.ts` gives oxlint the same targets in the three scripts, covering every TypeScript file ESLint lints.
+
+The disable directives of the rules oxlint runs are written `oxlint-disable-next-line` (27 places, the same rules and reasons; two trailing ones moved above their line, and the one of `eslint/scopes/language.ts` removed with its row of the register, since oxlint's `import/no-named-as-default` does not report that import): ESLint ignores them and reports its own unused directives, as before. oxlint reads both kinds, so it would call ESLint's two remaining directives unused; its report of unused directives waits until ESLint leaves (EN-085). The register of exceptions reads both kinds (`tests/exceptions.test.ts`).
+
+## Measures
+
+`npm run lint` on the whole tree, on the Product Owner's machine, other agents running beside it:
+
+| Run | Time | Load average |
+| --- | --- | --- |
+| before: ESLint alone, every rule | 62.0 s (72 s of CPU) | 11 to 14 |
+| after: oxlint alone, 355 rules, 46 + 2 type-aware | 1.0 to 1.3 s (3.5 s of CPU) | 17 |
+| after: `npm run lint`, oxlint then ESLint with the rules oxlint lacks | 30.7 s and 55.7 s (41 to 46 s of CPU) | 17 to 29 |
+
+ESLint keeps its typed parser for the rules that still need it (`naming-convention` and the functional rules, until EN-076), so its share shrinks as each rewrite story turns its rules off.
+
+## For the main thread
+
+- F19's feature file: acceptance criterion 3 no longer lists `consistent-this` (dropped: `this` cannot appear), and criterion 11's triage counts become 228 kept and 37 dropped (four more dropped by EN-074); the 82 native and type-aware rules and three unstable ones dropped are in note 0023.
+- `Rule-docs: none affected, a tooling change: no rule of docs/domain/ changes`.
+- `node_modules` of this worktree is its own copy (`npm ci`), so that adding oxlint left the main checkout's untouched; the main checkout needs `npm install` after the merge.
+
+### Journal
+
+- `#run` EN-074: oxlint 1.87.0 and `tsgolint` 7.0.2004 run first in `npm run lint` (1.0 to 1.3 s), with 355 native and type-aware rules; 125 rules dropped by a triage before anything was enabled; ESLint turns off every rule oxlint runs or the triage dropped.

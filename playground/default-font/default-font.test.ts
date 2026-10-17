@@ -84,7 +84,7 @@ function fakeCanvas(gaps: Readonly<Record<number, number>>): readonly string[] {
     },
   };
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- happy-dom has no canvas: the fake holds only what the page reads, `font` and `measureText`
+  // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- happy-dom has no canvas: the fake holds only what the page reads, `font` and `measureText`
   vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(context as never);
 
   return asked;
