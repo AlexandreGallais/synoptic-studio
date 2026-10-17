@@ -52,7 +52,7 @@ Every check tool is given the folders and files it checks by name — the script
 
 ## Tests that run Git
 
-A test that runs `git`, or a binary that runs `git`, removes every inherited `GIT_*` variable from the commands it starts, then sets only those it needs (`GIT_CONFIG_GLOBAL` for a test configuration, for instance). The pre-push hook sets `GIT_DIR` before `check:all` runs the tests: inherited, it points the test's commands at the real repository instead of the temporary one, and a `git init --bare` run that way once turned the real repository bare (2026-10-17). It applies to every test language — Vitest's `env` of `spawnSync`, Rust's `Command::env_remove` — and to every test, even one that passes when run alone: the variable exists only under the hook.
+Every test removes every inherited `GIT_*` variable from each command it starts, `git` itself or a binary that runs it, then sets only those it needs (`GIT_CONFIG_GLOBAL` for a test configuration, for instance). The pre-push hook sets `GIT_DIR` before `check:all` runs the tests: inherited, it points the test's commands at the real repository instead of the temporary one, and a `git init --bare` run that way once turned the real repository bare (2026-10-17). It applies to every test language — Vitest's `env` of `spawnSync`, Rust's `Command::env_remove` — and to every test, even one that passes when run alone: the variable exists only under the hook. The rule binds the tests, not the binaries: run by the agent in the real repository, a binary inherits no `GIT_DIR` of a hook, so `git-sequences`, `check-handback` and `run-totals` remove none.
 
 ## One heavy command at a time
 
