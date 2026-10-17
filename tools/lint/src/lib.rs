@@ -211,7 +211,7 @@ mod tests {
     use oxc_ast::AstKind;
     use oxc_semantic::AstNode;
 
-    use super::{PARSE_RULE, fix, run};
+    use super::{PARSE_RULE, fix, lint_files, run};
     use crate::finding::{Finding, Fix};
     use crate::project::Project;
     use crate::rules::Rule;
@@ -395,7 +395,7 @@ mod tests {
     }
 
     #[test]
-    fn walks_the_targets_and_prints_a_count() {
+    fn walks_the_targets_and_prints_each_finding_then_a_count() {
         let root = fixture("run");
         write_files(
             &root,
@@ -412,8 +412,11 @@ mod tests {
             &["scripts".into(), "dist".into(), "./scripts/a.ts".into()],
         );
 
-        assert_eq!(report, "lint: 0 finding(s) in 2 file(s)\n");
-        assert!(clean);
+        assert_eq!(
+            report,
+            "scripts/sub/d.ts:1:1 local/folder-has-index Folder `scripts/sub` has no `index.ts`: create its barrel.\nlint: 1 finding(s) in 2 file(s)\n"
+        );
+        assert!(!clean);
         assert_eq!(
             crate::walk::files(&root, &[".".into(), "missing".into()]),
             ["scripts/a.ts", "scripts/sub/d.ts"]
@@ -421,8 +424,38 @@ mod tests {
         let (usage, clean) = run(&root, &["--fix".into()]);
         assert!(usage.starts_with("usage: lint"));
         assert!(!clean);
-        let (fixed, clean) = run(&root, &["--fix".into(), "scripts".into()]);
-        assert_eq!(fixed, "lint: 0 finding(s) in 2 file(s)\n");
+    }
+
+    #[test]
+    fn fixes_what_it_can_and_prints_the_rest() {
+        let root = fixture("run-fix");
+        // The site's theme: imports checked, no barrel asked.
+        let theme = [
+            "docs/.vitepress/a.ts",
+            "docs/.vitepress/c.ts",
+            "docs/.vitepress/clean.ts",
+        ];
+        write_files(&root, &theme);
+        fs::write(root.join(theme[0]), "import \"./c.ts\";\n").unwrap_or_default();
+
+        let (report, clean) = run(&root, &["--fix".into(), "docs".into()]);
+
+        assert_eq!(report, "lint: 0 finding(s) in 3 file(s)\n");
         assert!(clean);
+        assert_eq!(
+            fs::read_to_string(root.join(theme[0])).ok().as_deref(),
+            Some("import \"./c\";\n")
+        );
+    }
+
+    #[test]
+    fn reports_a_file_it_cannot_read() {
+        let root = fixture("unreadable");
+        let project = Project::new(&root, REFERENCE_SOURCES);
+
+        let findings = lint_files(&project, &["src/missing.ts".into()]);
+
+        assert_eq!(findings.len(), 1);
+        assert!(findings[0].message.starts_with("Cannot read the file"));
     }
 }
