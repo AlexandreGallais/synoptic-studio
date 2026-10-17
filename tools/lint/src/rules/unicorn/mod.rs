@@ -19,6 +19,11 @@ pub mod prefer_array_from_map;
 pub mod prefer_array_last_methods;
 pub mod prefer_array_slice;
 pub mod prefer_flat_math_min_max;
+pub mod prefer_group_by;
+pub mod prefer_has_check;
+pub mod prefer_includes_over_repeated_comparisons;
+pub mod prefer_map_from_entries;
+pub mod prefer_set_methods;
 pub mod prefer_simple_sort_comparator;
 pub mod prefer_single_array_predicate;
 pub mod syntax;
@@ -44,6 +49,11 @@ pub const RULES: &[&dyn Rule] = &[
     &prefer_array_last_methods::PreferArrayLastMethods,
     &prefer_array_slice::PreferArraySlice,
     &prefer_flat_math_min_max::PreferFlatMathMinMax,
+    &prefer_group_by::PreferGroupBy,
+    &prefer_has_check::PreferHasCheck,
+    &prefer_includes_over_repeated_comparisons::PreferIncludesOverRepeatedComparisons,
+    &prefer_map_from_entries::PreferMapFromEntries,
+    &prefer_set_methods::PreferSetMethods,
     &prefer_simple_sort_comparator::PreferSimpleSortComparator,
     &prefer_single_array_predicate::PreferSingleArrayPredicate,
 ];
@@ -67,6 +77,11 @@ pub const NAMES: &[&str] = &[
     "unicorn/prefer-array-last-methods",
     "unicorn/prefer-array-slice",
     "unicorn/prefer-flat-math-min-max",
+    "unicorn/prefer-group-by",
+    "unicorn/prefer-has-check",
+    "unicorn/prefer-includes-over-repeated-comparisons",
+    "unicorn/prefer-map-from-entries",
+    "unicorn/prefer-set-methods",
     "unicorn/prefer-simple-sort-comparator",
     "unicorn/prefer-single-array-predicate",
 ];
