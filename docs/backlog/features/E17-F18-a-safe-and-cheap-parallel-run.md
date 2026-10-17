@@ -58,7 +58,7 @@ In delivery order.
 | [US-061](../stories/E17-F18-US-061-font-list-held-while-the-default-font-is-read.md) | User story | Font list held while the default font is read again                | done   |
 | [EN-058](../stories/E17-F18-EN-058-a-mutation-runner.md)                             | Enabler    | A mutation runner as a tool                                        | done   |
 | [EN-059](../stories/E17-F18-EN-059-done-commit-checks-the-docs.md)                   | Enabler    | The done commit checks the docs a rule touches                     | done   |
-| [EN-060](../stories/E17-F18-EN-060-documentation-pass-on-e15-pages.md)               | Enabler    | A documentation pass on E15's long pages                           | ready  |
+| [EN-060](../stories/E17-F18-EN-060-documentation-pass-on-e15-pages.md)               | Enabler    | A documentation pass on E15's long pages                           | done   |
 | [EN-061](../stories/E17-F18-EN-061-modules-per-folder-counted.md)                    | Enabler    | Modules per folder counted, no spread in a fold                    | done   |
 | [EN-062](../stories/E17-F18-EN-062-inter-as-a-test-font.md)                          | Enabler    | Inter Regular as a test font file                                  | done   |
 | [EN-046](../stories/E17-F18-EN-046-release-pr-on-develop.md)                         | Enabler    | Release pull request on develop, only the release on main          | done   |
