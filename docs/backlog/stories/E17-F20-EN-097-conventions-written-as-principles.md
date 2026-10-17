@@ -30,28 +30,42 @@ One task = one commit, referenced as `EN-097.Tn`.
 
 ## Measures
 
-Pages of `docs/conventions/`, measured on 2026-10-17. Tokens are the input a worker pays to load a page: each page was printed whole into this story's worker, one call at a time where it could be, and the growth of the next request's input read from the transcript (`usage`, input and cache tokens); 170,731 characters gave 74,118 tokens, **2.30 characters per token** (Markdown with code, tables and identifiers; the tool's framing included). Each page's figure is its characters divided by 2.30, rounded to the hundred.
+Pages of `docs/conventions/`, measured on 2026-10-17 before T2 and after it. Tokens are the input a worker pays to load a page: each page was printed whole into this story's worker, one call at a time where it could be, and the growth of the next request's input read from the transcript (`usage`, input and cache tokens); 170,731 characters gave 74,118 tokens, **2.30 characters per token** (Markdown with code, tables and identifiers; the tool's framing included). Each page's figure, before and after alike, is its characters divided by 2.30, rounded to the hundred.
 
-| Page | Words before | Tokens before |
-| --- | --- | --- |
-| `README.md` | 337 | 1,100 |
-| `architecture.md` | 412 | 1,200 |
-| `audit.md` | 613 | 1,800 |
-| `documentation.md` | 416 | 1,300 |
-| `exceptions.md` | 993 | 3,800 |
-| `files.md` | 1,567 | 4,500 |
-| `formatting.md` | 616 | 1,800 |
-| `functions.md` | 988 | 2,900 |
-| `imports.md` | 411 | 1,400 |
-| `lint.md` | 4,347 | 13,600 |
-| `naming.md` | 614 | 1,600 |
-| `rule-catalogue.md` | 2,729 | 12,100 |
-| `rules.md` | 5,691 | 21,300 |
-| `testing.md` | 1,777 | 4,800 |
-| `typescript.md` | 283 | 1,000 |
-| `writing.md` | 1,638 | 4,100 |
-| **all pages** | **23,432** | **78,300** |
-| a library story's set: `README`, `architecture`, `files`, `functions`, `naming`, `imports`, `documentation`, `testing` | 6,522 | 18,800 |
+| Page | Words before | Words after | Tokens before | Tokens after |
+| --- | --- | --- | --- | --- |
+| `README.md` | 337 | 313 | 1,100 | 900 |
+| `architecture.md` | 412 | 482 | 1,200 | 1,300 |
+| `audit.md` | 613 | 602 | 1,800 | 1,700 |
+| `documentation.md` | 416 | 498 | 1,300 | 1,400 |
+| `exceptions.md` | 993 | 975 | 3,800 | 3,800 |
+| `files.md` | 1,567 | 570 | 4,500 | 1,500 |
+| `formatting.md` | 616 | 564 | 1,800 | 1,600 |
+| `functions.md` | 988 | 974 | 2,900 | 2,700 |
+| `imports.md` | 411 | 481 | 1,400 | 1,500 |
+| `lint.md` | 4,347 | 1,695 | 13,600 | 4,900 |
+| `naming.md` | 614 | 689 | 1,600 | 1,700 |
+| `rule-catalogue.md` | 2,729 | 2,729 | 12,100 | 12,100 |
+| `rules.md` | 5,691 | 5,684 | 21,300 | 21,300 |
+| `testing.md` | 1,777 | 1,588 | 4,800 | 4,200 |
+| `typescript.md` | 283 | 297 | 1,000 | 1,000 |
+| `writing.md` | 1,638 | 1,801 | 4,100 | 4,400 |
+| **all pages** | **23,432** | **19,942** | **78,300** | **66,000** (−16 %) |
+| the pages to apply, the two records (`rules.md`, `rule-catalogue.md`) left out | 15,012 | 11,529 | 44,900 | 32,600 (−27 %) |
+| a library story's set: `README`, `architecture`, `files`, `functions`, `naming`, `imports`, `documentation`, `testing` | 6,522 | 5,595 | 18,800 | 15,200 (−19 %) |
+
+- The savings come from three cuts: the inventory of domain folders in `files.md` (3,000 tokens), the tables of `lint.md` that restated plugin rules (8,700 tokens), and the duplicates of `testing.md`. A worker also stops loading the two records (33,400 tokens), which `README.md` now sets apart.
+- Five pages grew by 100 to 300 tokens each (`architecture`, `documentation`, `imports`, `naming`, `writing`): each rule now carries its reason, and `writing.md` holds the new section on how a rule is written.
+
+### Model trial (EN-066)
+
+| Measure | This story |
+| --- | --- |
+| model | Opus 5.5 (`claude-opus-5-5`), worker type `story-worker` |
+| duration, first call to the T3 commit | 12 min (22:00 to 22:12) |
+| requests | 63 before T3's commit |
+| tokens | 7.30 M input (almost all cache reads), 25,600 output, 178,500 in the last request |
+| failed tool calls | 1: the T2 commit refused by commitlint, scope `conventions` not in the list; retried as `docs(docs)` |
 
 ## Rules before the pass
 
@@ -121,3 +135,13 @@ Where each rule of the list above stands after T2. "Kept" means the same rule, r
 | X1 to X3 | kept: `exceptions.md`; X2's one long sentence split into three; the rows unchanged (`tests/exceptions.test.ts` reads them) |
 | `rules.md` | kept as EN-093's record; its keeping test, a rule of its own, moved to `lint.md`, Principles, and its introduction says to read it only to change a rule |
 | `rule-catalogue.md` | kept as written: a catalogue for other projects, read at an epic's method review; `README.md` now lists it, with `rules.md`, as a record a worker does not load |
+
+## For the main thread
+
+- `Rule-docs: none affected, the pass rewords docs/conventions/ and changes no rule of docs/domain/`.
+- One rule changed on purpose: `writing.md`, Writing a rule (W6), as directed on 2026-10-17. One procedure changed: a rule added to the project's linter no longer needs its own section in `lint.md` (L10). Both are in the trace.
+- Cross-page anchors are not checked by the Markdown lint (`no-missing-link-fragments` reads the same page only); the new ones were checked by hand against the headings, and the docs build runs at the push.
+
+### Improvements
+
+| 2026-10-17 | EN-097 | Measuring a page in tokens needed this worker's own transcript and a ratio: `context:size` counts a session's first requests, not a file; a mode that counts the tokens of the files named would let EN-098 and EN-099 measure their pages the same way | tool |
