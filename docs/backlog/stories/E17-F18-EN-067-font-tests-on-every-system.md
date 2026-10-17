@@ -24,5 +24,5 @@ The font tests are meant for macOS, Windows and Linux alike (Product Owner, 2026
 
 One task = one commit, referenced as `EN-067.Tn`.
 
-- [ ] T1 — A collection and a large table built by the tests (2 h)
-- [ ] T2 — The playground's second family (1 h)
+- [x] T1 — A collection and a large table built by the tests (2 h)
+- [x] T2 — The playground's second family (1 h)
