@@ -212,10 +212,9 @@ pub fn projects_dir(home: &Path, common: &Path) -> PathBuf {
     home.join(".claude").join("projects").join(name)
 }
 
-/// The run's tokens and each transcript's tally, `metrics/run-cache.json` read before and written
-/// after when it changed: `run-totals` and the progress page (EN-087) count from the same cache.
+/// The run's tokens, `metrics/run-cache.json` read before and written after when it changed.
 #[must_use]
-pub fn count_run(run: &Run, metrics: &Path, projects: &Path) -> (Tokens, Cache) {
+pub fn count_run(run: &Run, metrics: &Path, projects: &Path) -> Tokens {
     let cache_path = metrics.join("run-cache.json");
     let cache = parse_cache(&fs::read_to_string(&cache_path).unwrap_or_default(), run);
     let (tokens, next) = run_tokens(run, projects, &cache);
@@ -224,5 +223,5 @@ pub fn count_run(run: &Run, metrics: &Path, projects: &Path) -> (Tokens, Cache) 
         let _ = fs::write(&cache_path, render_cache(&next));
     }
 
-    (tokens, next)
+    tokens
 }

@@ -40,7 +40,7 @@ fn common_dir() -> Result<PathBuf, String> {
 fn counted(run: &Run, metrics: &Path, common: &Path) -> Tokens {
     let home = PathBuf::from(env::var("HOME").unwrap_or_default());
 
-    count_run(run, metrics, &projects_dir(&home, common)).0
+    count_run(run, metrics, &projects_dir(&home, common))
 }
 
 /// The week's usage in percent, from `usage.json`, when the status line wrote one.

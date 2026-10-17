@@ -64,7 +64,6 @@
     "run:start": "cargo run --release -q -p run-totals -- start",
     "run:end": "cargo run --release -q -p run-totals -- end",
     "run:should-stop": "cargo run --release -q -p run-totals -- should-stop",
-    "progress:page": "cargo run --release -q -p progress-page --",
     "branches:clean": "node --harmony-temporal --no-warnings=ExperimentalWarning scripts/branches-clean.ts",
     "records:save": "node --harmony-temporal --no-warnings=ExperimentalWarning scripts/records-save.ts",
     "replace": "node scripts/replace-text.ts",

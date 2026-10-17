@@ -28,7 +28,7 @@
 | `npm run metrics`, `metrics:session` | the report of the agent's work, the session report ([metrics](./metrics.md)) |
 | `npm run library -- …` | the local source library ([sources](./sources.md)) |
 | `npm run font:metrics -- <folder>` | writes `src/model/font/inter-metrics.json` from Inter's static TrueType files unpacked in the folder, which the repository does not keep |
-| `npm run replace`, `backlog:status`, `backlog:index`, `worktree:new`, `git:sync`, `git:commit`, `run:start`, `run:end`, `run:should-stop`, `progress:page`, `context:size`, `story:finish`, `mutate`, `val:prepare`, `golden:write`, `golden:check`, `activity`, `epic:check` | the agent's tools ([agent tools](./agent-tools.md)) |
+| `npm run replace`, `backlog:status`, `backlog:index`, `worktree:new`, `git:sync`, `git:commit`, `run:start`, `run:end`, `run:should-stop`, `context:size`, `story:finish`, `mutate`, `val:prepare`, `golden:write`, `golden:check`, `activity`, `epic:check` | the agent's tools ([agent tools](./agent-tools.md)) |
 
 **When to run what**: a task ends with `npm run fix` and the tests it touched (`npx vitest run <paths>`); `check:all` runs at the push, through the pre-push hook. `check` is not run per task: it repeats what the push runs.
 
