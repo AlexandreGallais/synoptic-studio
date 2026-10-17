@@ -2,22 +2,29 @@
 id: EN-092
 epic: E17
 feature: F20
-title: The totals of a whole run, and a report when it stops
+title: The duration and tokens of a whole run
 status: draft
 points: 3
 ---
 
-# E17 · F20 · EN-092 — The totals of a whole run, and a report when it stops
+# E17 · F20 · EN-092 — The duration and tokens of a whole run
 
-Asked by the Product Owner on 2026-10-17: the status line counts a "turn", whose time and tokens restart at each message, so a run of many hours shows only its last minutes (for instance "turn 21 min" while the run had lasted since the morning). They want the totals of the whole run — time, tokens of every kind, the subagents included — however long it lasts, even 48 hours across several messages and context summaries, to judge what a run costs for its length; and, when the agent stops with nothing left running, a message with the run's report.
+Asked by the Product Owner on 2026-10-17: the status line counts a "turn", whose time and tokens restart at each message, so a run of many hours shows only its last minutes. They want the run's duration and tokens, subagents included, however long it lasts, to see what a run consumes. Decided at F20's refinement: the run's report holds only its duration and tokens; measured gains and incidents go to the agent's own logs and the retrospective.
+
+Measured by SP-022 ([research note 0024](../../research/notes/0024-f20-context-diet.md)): a compaction keeps the session's file and id (up to 12 in one file), and each subagent writes its own transcript under the session's `subagents/` folder. So a run's totals are the sums of those transcripts from the run's start.
 
 ## Acceptance criteria
 
-- Given a run started by `/run`, when the status line is drawn, then it shows the run's time and tokens since its start, subagents included, beside the turn's, and calls it "run".
-- Given a run that goes on across context summaries and new messages, when the totals are counted, then nothing restarts until the run ends.
-- Given the agent stopping with no subagent and no background command left, when it stops, then it sends the Product Owner the run's report — duration, tokens by kind, stories merged, failures — through the push notification of EN-086 and in the chat.
-- Given `npm run metrics:session`, when it is asked for a run, then it gives the same totals.
+- Given `/run`, when it starts, then `.git/metrics/run.json` holds its start and its session's id; a session started while the run is open adds its id; the run's end closes it.
+- Given a run, when the status line is drawn, then it shows the run's duration and tokens since its start, subagents included, beside the turn's, and calls it "run".
+- Given a run that goes on across compactions and new messages, when the totals are counted, then nothing restarts until the run ends.
+- Given the run's end, when the agent stops, then its message to the Product Owner holds the run's duration and its tokens by kind, nothing else.
+- Given `npm run metrics:session -- --run`, when asked, then it gives the same totals.
 
 ## Tasks
 
-To write at F20's refinement.
+One task = one commit, referenced as `EN-092.Tn`.
+
+- [ ] T1 — The run's file written by `/run` and closed at its end (1 h)
+- [ ] T2 — The run's totals in the session report, read incrementally, with their tests (3 h)
+- [ ] T3 — The run's totals in the status line, and the report at the run's end (2 h)

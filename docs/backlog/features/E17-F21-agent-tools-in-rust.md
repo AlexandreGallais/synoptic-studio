@@ -67,6 +67,10 @@ In delivery order; numbers are given at the refinement.
 | 8 | Enabler | The release in Rust: the changelog and the release pull request written by our own tool in place of release-please (its manifest and configuration), from the Conventional Commits; the release notes as readable as today's | 4 |
 | 9 | Enabler | The CI on the Rust tools: the pull request into `main` runs `check:all` with the Rust workspace built and cached, the cargo tools installed once | 4 |
 | 10 | Enabler | Clean-up of E17: every script, hook, configuration, test and dev package left unused removed, checked by the unused-file check and a search; last before NAM-002 | 5 |
+| 11 | Enabler | Each tool of our own records its use — the call, its time, its duration, its outcome — through one function shared by the crates, into `.git/metrics/tool-uses.jsonl`, listed by `npm run metrics` and reviewed at each retrospective; before story 10 | — |
+| 12 | Enabler | A command that prints one row or one section of a repository page by its id or heading (`REF-CC-HOOKS`, a heading of `docs/process/improvements.md`), as `library_read` does for the web: `docs/references.md` was read 121 times in three days, about 6,000 characters a read; before story 10 | — |
+
+Stories 11 and 12 were moved from F20 at its refinement (2026-10-17, [research note 0024](../../research/notes/0024-f20-context-diet.md)).
 
 ### Story 10 — Clean-up of E17 (draft)
 
