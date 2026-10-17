@@ -79,6 +79,13 @@ The Product Owner may talk to a second session while a run works in the backgrou
 
 The run picks up `develop` before every story (run skill, step 1): when `develop` has new commits in `AGENTS.md`, `CLAUDE.md`, `.claude/`, `docs/domain/`, `docs/adr/`, `docs/backlog/` or `docs/conventions/`, it merges `origin/develop` into the feature branch, in a worktree of that branch (no force push on a feature branch), reads them and follows them from that story on. A skill or rule loaded at the start of the run is replaced by the new version; a change to the run's scope or stories is a stop. So the Product Owner never has to repeat in one chat what was decided in the other.
 
+## Cloud agents and scheduled tasks
+
+Decided by the Product Owner on 2026-10-17:
+
+- **Cloud agents** (agents run on a remote machine) are not used in this project: every agent works on the Product Owner's machine, in its repository.
+- **Scheduled tasks** (`CronCreate`) exist; the agent schedules one only when the Product Owner asks for it.
+
 ## Searching past conversations
 
 Claude Code keeps each conversation as a JSONL file in `~/.claude/projects/<project-path>/` (local, never committed here; saved in the private records, `records/`, ADR-0041 and ADR-0044). The session journal ([journal](../process/journal.md), ADR-0024) is read first; the transcripts are the full archive:
