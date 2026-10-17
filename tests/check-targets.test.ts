@@ -274,14 +274,13 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
     );
   });
 
-  it("[F19.AC9] checks the whole Rust workspace in check:rust, then builds its binaries", () => {
+  it("[F19.AC9] checks the whole Rust workspace in check:rust, its binaries built before the lanes", () => {
     expect(SCRIPTS.get("check:rust")?.split(" && ")).toEqual([
       "cargo fmt --all --check",
       "cargo clippy --workspace --all-targets --locked --quiet",
       "npm run --silent rust:advisories",
       "npm run --silent rust:coverage",
       "cargo check --workspace --all-targets --locked --quiet --target x86_64-pc-windows-msvc",
-      "npm run --silent rust:build",
     ]);
   });
 
