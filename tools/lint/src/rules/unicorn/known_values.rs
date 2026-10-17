@@ -203,3 +203,69 @@ pub fn constant_value(source: &Source, expression: &Expression) -> Option<Value>
         _ => None,
     }
 }
+
+/// Whether a type annotation is known to describe no string: a keyword other than `string`, an
+/// array, a tuple, an object type, a function, a literal other than a string, or a union of them
+/// with `null` and `undefined` (`isKnownNonString`, from the annotation).
+#[must_use]
+pub fn is_non_string_type(annotation: &TSType) -> bool {
+    match annotation {
+        TSType::TSBigIntKeyword(_)
+        | TSType::TSBooleanKeyword(_)
+        | TSType::TSNeverKeyword(_)
+        | TSType::TSNumberKeyword(_)
+        | TSType::TSSymbolKeyword(_)
+        | TSType::TSVoidKeyword(_)
+        | TSType::TSArrayType(_)
+        | TSType::TSTupleType(_)
+        | TSType::TSTypeLiteral(_)
+        | TSType::TSFunctionType(_)
+        | TSType::TSConstructorType(_)
+        | TSType::TSNullKeyword(_)
+        | TSType::TSUndefinedKeyword(_) => true,
+        TSType::TSLiteralType(literal) => !matches!(literal.literal, TSLiteral::StringLiteral(_)),
+        TSType::TSParenthesizedType(inner) => is_non_string_type(&inner.type_annotation),
+        TSType::TSTypeOperatorType(operator) => {
+            operator.operator == oxc_ast::ast::TSTypeOperatorOperator::Readonly
+                && is_non_string_type(&operator.type_annotation)
+        }
+        TSType::TSUnionType(union) => union.types.iter().all(is_non_string_type),
+        _ => false,
+    }
+}
+
+/// Whether a value is known not to be a string: by its binding's annotation, or written as an
+/// array, an object, a function, a class or a constant other than a string.
+#[must_use]
+pub fn is_known_non_string(source: &Source, expression: &Expression) -> bool {
+    let expression = unwrap(expression);
+    match expression {
+        Expression::ArrayExpression(_)
+        | Expression::ObjectExpression(_)
+        | Expression::ArrowFunctionExpression(_)
+        | Expression::FunctionExpression(_)
+        | Expression::ClassExpression(_) => true,
+        Expression::Identifier(_) => match binding_of(source, expression) {
+            Some(Binding::Variable(declarator, kind)) => {
+                if let Some(annotation) = &declarator.type_annotation {
+                    return is_non_string_type(&annotation.type_annotation);
+                }
+                kind == VariableDeclarationKind::Const
+                    && declarator
+                        .init
+                        .as_ref()
+                        .is_some_and(|init| is_known_non_string(source, init))
+            }
+            Some(Binding::Parameter(parameter)) => {
+                !parameter.optional
+                    && parameter
+                        .type_annotation
+                        .as_ref()
+                        .is_some_and(|annotation| is_non_string_type(&annotation.type_annotation))
+            }
+            None => static_value(source, expression)
+                .is_some_and(|value| !matches!(value, Value::Text(_))),
+        },
+        _ => static_value(source, expression).is_some_and(|value| !matches!(value, Value::Text(_))),
+    }
+}

@@ -9,6 +9,7 @@ pub mod consistent_conditional_object_spread;
 pub mod consistent_destructuring;
 pub mod control_flow;
 pub mod errors;
+pub mod escapes;
 pub mod functions;
 pub mod iteration_fallback_style;
 pub mod known_values;
@@ -23,6 +24,7 @@ pub mod no_confusing_array_splice;
 pub mod no_duplicate_loops;
 pub mod no_duplicate_set_values;
 pub mod no_impossible_length_comparison;
+pub mod no_incorrect_template_string_interpolation;
 pub mod no_invalid_property_descriptor;
 pub mod no_invalid_well_known_symbol_methods;
 pub mod no_loop_iterable_mutation;
@@ -32,10 +34,12 @@ pub mod no_object_methods_with_collections;
 pub mod no_return_array_push;
 pub mod no_unnecessary_array_flat_map;
 pub mod no_unnecessary_splice;
+pub mod no_unnecessary_string_trim;
 pub mod no_unreadable_for_of_expression;
 pub mod no_unreadable_new_expression;
 pub mod no_unreadable_object_destructuring;
 pub mod no_unsafe_property_key;
+pub mod no_unsafe_string_replacement;
 pub mod no_unused_builtin_method_return;
 pub mod no_unused_iterator_helper;
 pub mod no_unused_properties;
@@ -55,14 +59,22 @@ pub mod prefer_iterable_in_constructor;
 pub mod prefer_iterator_helpers;
 pub mod prefer_iterator_to_array;
 pub mod prefer_iterator_to_array_at_end;
+pub mod prefer_literal_ascii;
 pub mod prefer_map_from_entries;
 pub mod prefer_object_define_properties;
 pub mod prefer_object_destructuring_defaults;
 pub mod prefer_object_iterable_methods;
+pub mod prefer_regexp_escape;
 pub mod prefer_set_methods;
+pub mod prefer_short_escape_sequences;
 pub mod prefer_simple_sort_comparator;
 pub mod prefer_single_array_predicate;
 pub mod prefer_single_object_destructuring;
+pub mod prefer_single_replace;
+pub mod prefer_split_limit;
+pub mod prefer_string_pad_start_end;
+pub mod prefer_string_repeat;
+pub mod prefer_unicode_code_point_escapes;
 pub mod prefer_while_loop_condition;
 pub mod promises;
 pub mod syntax;
@@ -90,6 +102,7 @@ pub const RULES: &[&dyn Rule] = &[
     &errors::no_error_property_assignment::NoErrorPropertyAssignment,
     &modules::no_global_object_property_assignment::NoGlobalObjectPropertyAssignment,
     &no_impossible_length_comparison::NoImpossibleLengthComparison,
+    &no_incorrect_template_string_interpolation::NoIncorrectTemplateStringInterpolation,
     &no_invalid_property_descriptor::NoInvalidPropertyDescriptor,
     &no_invalid_well_known_symbol_methods::NoInvalidWellKnownSymbolMethods,
     &no_loop_iterable_mutation::NoLoopIterableMutation,
@@ -109,12 +122,14 @@ pub const RULES: &[&dyn Rule] = &[
     &modules::no_unnecessary_global_this::NoUnnecessaryGlobalThis,
     &functions::no_unnecessary_parameters::NoUnnecessaryParameters,
     &no_unnecessary_splice::NoUnnecessarySplice,
+    &no_unnecessary_string_trim::NoUnnecessaryStringTrim,
     &no_unreadable_for_of_expression::NoUnreadableForOfExpression,
     &no_unreadable_new_expression::NoUnreadableNewExpression,
     &no_unreadable_object_destructuring::NoUnreadableObjectDestructuring,
     &platform::no_unsafe_buffer_conversion::NoUnsafeBufferConversion,
     &platform::no_unsafe_json_serialization::NoUnsafeJsonSerialization,
     &no_unsafe_property_key::NoUnsafePropertyKey,
+    &no_unsafe_string_replacement::NoUnsafeStringReplacement,
     &no_unused_builtin_method_return::NoUnusedBuiltinMethodReturn,
     &no_unused_iterator_helper::NoUnusedIteratorHelper,
     &no_unused_properties::NoUnusedProperties,
@@ -149,6 +164,7 @@ pub const RULES: &[&dyn Rule] = &[
     &prefer_iterator_to_array::PreferIteratorToArray,
     &prefer_iterator_to_array_at_end::PreferIteratorToArrayAtEnd,
     &modules::prefer_json_import::PreferJsonImport,
+    &prefer_literal_ascii::PreferLiteralAscii,
     &prefer_map_from_entries::PreferMapFromEntries,
     &numbers::prefer_math_abs::PreferMathAbs,
     &control_flow::prefer_minimal_ternary::PreferMinimalTernary,
@@ -158,17 +174,24 @@ pub const RULES: &[&dyn Rule] = &[
     &prefer_object_iterable_methods::PreferObjectIterableMethods,
     &promises::prefer_promise_static_methods::PreferPromiseStaticMethods,
     &promises::prefer_promise_try::PreferPromiseTry,
+    &prefer_regexp_escape::PreferRegexpEscape,
     &prefer_set_methods::PreferSetMethods,
     &functions::prefer_short_arrow_method::PreferShortArrowMethod,
+    &prefer_short_escape_sequences::PreferShortEscapeSequences,
     &control_flow::prefer_simple_condition_first::PreferSimpleConditionFirst,
     &prefer_simple_sort_comparator::PreferSimpleSortComparator,
     &control_flow::prefer_simplified_conditions::PreferSimplifiedConditions,
     &prefer_single_array_predicate::PreferSingleArrayPredicate,
     &prefer_single_object_destructuring::PreferSingleObjectDestructuring,
+    &prefer_single_replace::PreferSingleReplace,
     &control_flow::prefer_smaller_scope::PreferSmallerScope,
+    &prefer_split_limit::PreferSplitLimit,
+    &prefer_string_pad_start_end::PreferStringPadStartEnd,
+    &prefer_string_repeat::PreferStringRepeat,
     &control_flow::prefer_switch::PreferSwitch,
     &promises::prefer_then_catch::PreferThenCatch,
     &numbers::prefer_unary_minus::PreferUnaryMinus,
+    &prefer_unicode_code_point_escapes::PreferUnicodeCodePointEscapes,
     &prefer_while_loop_condition::PreferWhileLoopCondition,
     &errors::try_complexity::TryComplexity,
 ];
@@ -194,6 +217,7 @@ pub const NAMES: &[&str] = &[
     "unicorn/no-error-property-assignment",
     "unicorn/no-global-object-property-assignment",
     "unicorn/no-impossible-length-comparison",
+    "unicorn/no-incorrect-template-string-interpolation",
     "unicorn/no-invalid-property-descriptor",
     "unicorn/no-invalid-well-known-symbol-methods",
     "unicorn/no-loop-iterable-mutation",
@@ -213,12 +237,14 @@ pub const NAMES: &[&str] = &[
     "unicorn/no-unnecessary-global-this",
     "unicorn/no-unnecessary-parameters",
     "unicorn/no-unnecessary-splice",
+    "unicorn/no-unnecessary-string-trim",
     "unicorn/no-unreadable-for-of-expression",
     "unicorn/no-unreadable-new-expression",
     "unicorn/no-unreadable-object-destructuring",
     "unicorn/no-unsafe-buffer-conversion",
     "unicorn/no-unsafe-json-serialization",
     "unicorn/no-unsafe-property-key",
+    "unicorn/no-unsafe-string-replacement",
     "unicorn/no-unused-builtin-method-return",
     "unicorn/no-unused-iterator-helper",
     "unicorn/no-unused-properties",
@@ -253,6 +279,7 @@ pub const NAMES: &[&str] = &[
     "unicorn/prefer-iterator-to-array",
     "unicorn/prefer-iterator-to-array-at-end",
     "unicorn/prefer-json-import",
+    "unicorn/prefer-literal-ascii",
     "unicorn/prefer-map-from-entries",
     "unicorn/prefer-math-abs",
     "unicorn/prefer-minimal-ternary",
@@ -262,17 +289,24 @@ pub const NAMES: &[&str] = &[
     "unicorn/prefer-object-iterable-methods",
     "unicorn/prefer-promise-static-methods",
     "unicorn/prefer-promise-try",
+    "unicorn/prefer-regexp-escape",
     "unicorn/prefer-set-methods",
     "unicorn/prefer-short-arrow-method",
+    "unicorn/prefer-short-escape-sequences",
     "unicorn/prefer-simple-condition-first",
     "unicorn/prefer-simple-sort-comparator",
     "unicorn/prefer-simplified-conditions",
     "unicorn/prefer-single-array-predicate",
     "unicorn/prefer-single-object-destructuring",
+    "unicorn/prefer-single-replace",
     "unicorn/prefer-smaller-scope",
+    "unicorn/prefer-split-limit",
+    "unicorn/prefer-string-pad-start-end",
+    "unicorn/prefer-string-repeat",
     "unicorn/prefer-switch",
     "unicorn/prefer-then-catch",
     "unicorn/prefer-unary-minus",
+    "unicorn/prefer-unicode-code-point-escapes",
     "unicorn/prefer-while-loop-condition",
     "unicorn/try-complexity",
 ];
