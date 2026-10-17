@@ -1,4 +1,4 @@
-scripts/rust-tool.sh refuse-shared-files
+cargo run --release -q -p shared-files --bin refuse-shared-files
 npx validate-branch-name
 npm run check:all
 # The golden file of a refactor (ADR-0049, EN-055): when one is written, a drift of results fails the push.

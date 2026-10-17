@@ -16,7 +16,7 @@ The main thread gives this file's path to each worker, with the story id, its fe
 ## Work
 
 - One export per file, named after it in kebab-case; folders by business domain (ADR-0043); one `@kind` and one `@see` to a verified source per function; every calculation named (ADR-0049); reuse existing functions, never copy.
-- **Every new script, hook or agent tool is written in Rust** (E17, 2026-10-16): a crate of `tools/`, without a crates.io dependency, `[lints] workspace = true` in its `Cargo.toml` (the root workspace checks it in `check:rust`), its binary called through `scripts/rust-tool.sh`; the existing TypeScript tools may still be edited until F19 rewrites them.
+- **Every new script, hook or agent tool is written in Rust** (E17, 2026-10-16): a crate of `tools/`, without a crates.io dependency, `[lints] workspace = true` in its `Cargo.toml` (the root workspace checks it in `check:rust`), run by `cargo run --release -q -p <crate>`; the existing TypeScript tools may still be edited until F19 rewrites them.
 - Tests first: hand-computed examples with the computation in a comment, degenerate cases, a property test for each `math` and `geometry` function; a test proving a criterion is titled `[F18.ACn] …`; 100 % of `src/`.
 - **Edge cases and mutations** (ADR-0064): write the story's edge cases into its tests; break each new test once on purpose and see it fail.
 - One commit per task, footer `Refs: <ID>.Tn`, scope from `commitlint.config.ts`, the attribution line; a refused commit leaves its files staged.

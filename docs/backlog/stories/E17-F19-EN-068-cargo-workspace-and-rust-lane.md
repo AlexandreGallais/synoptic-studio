@@ -29,8 +29,8 @@ One task = one commit, referenced as `EN-068.Tn`.
 
 ## For the main thread
 
-- After the merge, run `npm run rust:build` in the main checkout: the `limit-agents` hook, the `pre-push` and `commit-msg` hooks and `story:finish`'s `move-rows` now call `target/release/<binary>` there; until it is built, `limit-agents` lets every call through with a message naming that command, and the Git hooks fail with it. A binary is not rebuilt when its crate changes on a pull: `npm install` (`prepare`), `rust:build` or a `check:all` rebuilds it.
-- `scripts/rust-tool.sh` is a shell launcher, not a Rust tool: it must run before any binary of the workspace exists, to name the build command.
+- **Proposed to the Product Owner, not applied** (settings change): the `limit-agents` hook in `.claude/settings.json` keeps its approved form, `cargo run --release -q --manifest-path ${CLAUDE_PROJECT_DIR}/tools/hooks/Cargo.toml --bin limit-agents`, which works inside the workspace. The proposed form, the same as the scripts and Git hooks: `"command": "cargo"`, `"args": ["run", "--release", "-q", "--manifest-path", "${CLAUDE_PROJECT_DIR}/Cargo.toml", "-p", "hooks", "--bin", "limit-agents"]` — the workspace's manifest instead of the crate's, so that renaming or moving the crate changes one name; same speed, same build.
+- The scripts and Git hooks run each tool with `cargo run --release -q -p <crate> [--bin <binary>] --`, no launcher: measured on a built workspace, `cargo run` adds 0.03 to 0.05 s per call over the binary itself (`backlog-index` 0.03 to 0.04 s against 0.00 s; `heavy-lock -- true` 0.04 to 0.05 s), under the 0.3 s allowed. `prepare` keeps `rust:build`, so the first call is warm; `cargo run` rebuilds a tool whose crate changed. A nested `cargo build` under `cargo run -p heavy-lock` does not wait on Cargo's build lock (checked). The story's missing-binary criterion no longer arises: `cargo run` builds a missing binary.
 - `unsafe_code = "forbid"` needed `heavy-lock` off its `unsafe` `flock` call: it takes the lock with `File::try_lock` now, the first task of EN-070 done here; its `std::os::unix` use for `is_at` stays for EN-070.
 - `backlog-index` inherits `clippy::pedantic`, which it lacked: two findings fixed (an extension compared through `Path::extension`, an empty assertion through `assert_eq!`).
 - `rust-toolchain.toml` makes rustup install the `1.99.1` toolchain beside `stable` at its first use in a checkout (about 6 components, once).
@@ -38,4 +38,4 @@ One task = one commit, referenced as `EN-068.Tn`.
 
 ### Journal
 
-- `#run` EN-068: the Rust tools form one Cargo workspace at the root (one `Cargo.lock`, one `target/`, Rust 1.99.1 pinned, warnings denied, `unsafe_code` forbidden); scripts and hooks call `target/release/<binary>` through `scripts/rust-tool.sh`, built by `prepare` and `worktree:new`; `check:rust` is its own lane of `check:all` (9.4 s warm, 11.2 s before).
+- `#run` EN-068: the Rust tools form one Cargo workspace at the root (one `Cargo.lock`, one `target/`, Rust 1.99.1 pinned, warnings denied, `unsafe_code` forbidden); scripts and Git hooks run them with `cargo run --release -q -p <crate>` (0.03 to 0.05 s per call on a built workspace), `prepare` and `worktree:new` building them; `check:rust` is its own lane of `check:all` (9.4 s warm, 11.2 s before).

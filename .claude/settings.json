@@ -39,8 +39,16 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh",
-            "args": ["${CLAUDE_PROJECT_DIR}/scripts/rust-tool.sh", "limit-agents"]
+            "command": "cargo",
+            "args": [
+              "run",
+              "--release",
+              "-q",
+              "--manifest-path",
+              "${CLAUDE_PROJECT_DIR}/tools/hooks/Cargo.toml",
+              "--bin",
+              "limit-agents"
+            ]
           }
         ]
       },
@@ -49,8 +57,16 @@
         "hooks": [
           {
             "type": "command",
-            "command": "sh",
-            "args": ["${CLAUDE_PROJECT_DIR}/scripts/rust-tool.sh", "limit-agents"]
+            "command": "cargo",
+            "args": [
+              "run",
+              "--release",
+              "-q",
+              "--manifest-path",
+              "${CLAUDE_PROJECT_DIR}/tools/hooks/Cargo.toml",
+              "--bin",
+              "limit-agents"
+            ]
           }
         ]
       },
