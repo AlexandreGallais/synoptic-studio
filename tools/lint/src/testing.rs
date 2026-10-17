@@ -70,3 +70,6 @@ pub fn write_files(root: &Path, files: &[&str]) {
         fs::write(path, "export {};\n").unwrap_or_default();
     }
 }
+
+/// No finding, no message, no value: what a test expects of a case the rule accepts.
+pub const NONE: [&str; 0] = [];

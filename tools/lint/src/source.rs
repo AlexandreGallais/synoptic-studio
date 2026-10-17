@@ -258,5 +258,7 @@ mod tests {
         assert_eq!(tag_values(Some("* @kind "), "kind"), [""]);
         assert_eq!(tag_values(Some("* @kind\n * math"), "kind"), [""]);
         assert_eq!(tag_values(Some("* @kind"), "kind"), [""]);
+        // A longer tag holds the name of a shorter one: `@kindness` reads as `@kind` without value.
+        assert_eq!(tag_values(Some("* @kindness x"), "kind"), [""]);
     }
 }

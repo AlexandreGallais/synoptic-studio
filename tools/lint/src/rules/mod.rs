@@ -2,6 +2,12 @@
 //! reads the parsed file once (`check_file`) or each node of the one walk the linter makes over
 //! the AST (`check_node`), never parsing again.
 
+pub mod kind_in_layer;
+pub mod kind_limits;
+pub mod kind_naming;
+pub mod require_kind;
+pub mod see_references;
+
 use oxc_semantic::AstNode;
 
 use crate::finding::Finding;
@@ -30,7 +36,13 @@ pub trait Rule: Sync {
 }
 
 /// Every rule of the linter.
-pub const ALL: &[&dyn Rule] = &[];
+pub const ALL: &[&dyn Rule] = &[
+    &kind_in_layer::KindInLayer,
+    &kind_limits::KindLimits,
+    &kind_naming::KindNaming,
+    &require_kind::RequireKind,
+    &see_references::SeeReferences,
+];
 
 /// The rules of a list of names, in the registry's order.
 #[must_use]
