@@ -183,6 +183,7 @@
 | [EN-045](./E17-F18-EN-045-explicit-tool-scopes.md)                                | F18     | Every check tool given explicit targets                                              | done   |
 | [EN-047](./E17-F18-EN-047-heavy-lock-and-agent-limit.md)                          | F18     | A lock for heavy commands and a limit on subagents                                   | done   |
 | [EN-063](./E17-F18-EN-063-subagent-limit-in-settings.md)                          | F18     | The subagent limit set in Claude Code's settings                                     | ready  |
+| [EN-067](./E17-F18-EN-067-font-tests-on-every-system.md)                          | F18     | Font tests on every system                                                           | ready  |
 | [EN-048](./E17-F18-EN-048-tables-without-padding-and-union-logs.md)               | F18     | Tables without padding, append-only logs merged by union                             | done   |
 | [EN-049](./E17-F18-EN-049-stories-index-generated.md)                             | F18     | The stories index generated from the story files                                     | done   |
 | [EN-050](./E17-F18-EN-050-shared-files-written-at-merge.md)                       | F18     | Shared files written only at merge                                                   | done   |
