@@ -16,7 +16,7 @@ Written at RET-003 (2026-10-16) from the Product Owner's decisions (ADR-0063, AD
 1. Release pull request on `develop`, only the release on `main`.
 2. A fourth subagent refused, naming those running.
 3. One heavy command at a time across worktrees, a stale lock taken over.
-4. Tables without padding; append-only logs merged by union, rows kept unique.
+4. Append-only logs merged by union, rows kept unique (tables without padding moved to F19, EN-048, ADR-0068).
 5. The stories index generated.
 6. A story branch editing a shared file refused at the push.
 7. One merge at a time; `story:finish` from a worktree; a branch deleted only once merged.
