@@ -298,7 +298,8 @@ describe("a disable directive that silences nothing (ESLint's `reportUnusedDisab
 
   it("[F19.AC1] is reported, with the `lint` script's options", () => {
     const code = [
-      "// oxlint-disable-next-line oxc/no-accumulating-spread -- nothing to silence",
+      // Written in two pieces, so that the register of exceptions does not read it as a directive.
+      ["// oxlint", "disable-next-line oxc/no-accumulating-spread -- nothing to silence"].join("-"),
       "export const sum = [1].reduce((total, x) => total + x, 0);",
       "",
     ].join("\n");
