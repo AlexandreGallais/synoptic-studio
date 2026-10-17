@@ -21,7 +21,7 @@ One task = one commit, referenced as `VAL-021.Tn`.
 
 - [x] T1 — Each criterion of F20 proven again, what was seen recorded (1 h)
 - [x] T2 — F20's lines in E17's checklist, `?checklist=E17`, each tried (1 h)
-- [ ] T3 — The demo page, `docs/guide/f20-a-context-diet.md` (1 h)
+- [x] T3 — The demo page, `docs/guide/f20-a-context-diet.md` (1 h)
 - [ ] T4 — The result of the validation recorded (0.5 h)
 
 ## Criteria proven again (2026-10-18)
