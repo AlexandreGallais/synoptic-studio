@@ -34,15 +34,16 @@ Every check tool is given the folders and files it checks, by name (EN-045): the
 
 ## One heavy command at a time
 
-`check:all`, `npm run test`, `golden:check` and `docs:build` run through the Rust tool `tools/heavy-lock/` (`cargo run --release`, ADR-0063, EN-047): each takes `.git/heavy.lock` in the Git common directory, shared by every worktree, and writes its process id, command, worktree and start in it.
+`check:all`, `npm run test`, `golden:check` and `docs:build` run through the Rust tool `tools/heavy-lock/` (`cargo run --release`, ADR-0063, EN-047): each takes `.git/heavy.lock` in the Git common directory, shared by every worktree, writes its process id, command, worktree and start in it, and holds the system's lock on that file (`flock`, `REF-MACOS-FLOCK`) while its command runs. The system frees that lock when the process ends, even after a force-quit; the file only names the owner in the waiting message (AUD-020).
 
-| Situation                                         | What happens                                                                                                                                                                                    |
-| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| no lock                                           | the command takes it, runs, then removes it                                                                                                                                                     |
-| a lock held by a running process                  | the command waits, and says once which process, command and worktree holds it, and for how long                                                                                                 |
-| a lock whose process is gone (a force-quit)       | the command says so and takes it over at once                                                                                                                                                   |
-| a command started by the lock's owner             | it runs inside that lock: `check:all` runs `npm run test` and `docs:build` itself                                                                                                               |
-| a folder `heavy.lock` (the lock taken by `mkdir`) | the command waits, its owner unknown: remove it with `rmdir` once its command ended; never take it by hand — a `git push` inside it waits forever for its own pre-push `check:all` (2026-10-17) |
+| Situation                                           | What happens                                                                                                                                                                                    |
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| no lock                                             | the command takes it, runs, then removes it                                                                                                                                                     |
+| a lock held by a running command                    | the command waits, and says once which process, command and worktree holds it, and for how long                                                                                                 |
+| a lock file no process holds (left by a force-quit) | the command says so and takes it over at once, whatever process id the file names; of two commands taking it over at once, one runs, the other waits for it                                     |
+| a command started by the lock's owner               | it runs inside that lock: `check:all` runs `npm run test` and `docs:build` itself                                                                                                               |
+| a folder `heavy.lock` (the lock taken by `mkdir`)   | the command waits, its owner unknown: remove it with `rmdir` once its command ended; never take it by hand — a `git push` inside it waits forever for its own pre-push `check:all` (2026-10-17) |
+| a lock file held by another tool, naming no process | the command waits: remove it with `rm` once that tool's command ended                                                                                                                           |
 
 A push inherits the lock through its pre-push hook (`check:all`). Single test files (`npx vitest run <paths>`) take no lock.
 
