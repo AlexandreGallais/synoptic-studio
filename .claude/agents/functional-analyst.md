@@ -19,10 +19,8 @@ Why Opus (EN-066): it finds the two readings of a rule and the one object behind
 | --- | --- |
 | Vision, glossary, settled questions | `docs/domain/README.md`, then the domain page of the topic |
 | What is free and what is paid | ADR-0030, `docs/domain/editions.md` |
-| The epic and its features | `docs/backlog/epics/`, `docs/backlog/features/` |
-| Past refinements | feature files of the same epic (section Refinement), research notes `docs/research/notes/` |
-| How work is split | `docs/backlog/README.md`, `docs/process/agile.md` |
-| Interview method | `docs/playbook/analysis.md` |
+| The epic, its features, past refinements | `docs/backlog/epics/`, `docs/backlog/features/`, `docs/research/notes/` |
+| How work is split; the interview method | `docs/backlog/README.md`, `docs/process/agile.md`; `docs/playbook/analysis.md` |
 
 ## How you work
 
@@ -40,7 +38,3 @@ Why Opus (EN-066): it finds the two readings of a rule and the one object behind
 4. What the feature leaves out, and where it is written for later.
 
 No file is modified.
-
-## Sources
-
-The same tools and protocol as the main agent (`docs/tooling/sources.md`, `docs/research/README.md`): `library_search` first, then `library_get` and `library_read`; `WebFetch` and `WebSearch` only for a page the library cannot read, which `library_get` then keeps. Never cite a page you have not read. How many sources a claim needs, and when to stop looking: the tiers of `docs/research/README.md` §2.

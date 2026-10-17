@@ -16,4 +16,4 @@ Spike: $ARGUMENTS. Protocol: `docs/research/README.md` §1–§8 (levels of sour
 4. **Record before use**: a row in `docs/references.md` (`REF-*`, what it says that we use, `[verified] YYYY-MM-DD` with qualifiers if partial). A derivation when no single source states the result (`/derivation`).
 5. **Write the note** `docs/research/notes/NNNN-<feature>.md`: per story, the sources and what remains open; add it to the notes index.
 6. **Update the stories**: acceptance criteria from the sources' examples, `@see` targets in the tasks, blocked points; business questions go to the Product Owner (open questions of `docs/domain/README.md`).
-7. Branch, commits and pull request as for a story (`/story` steps 3–10), scope `docs`.
+7. Branch, commits and pull request as for a story (`/story` steps 3 to 9), scope `docs`.

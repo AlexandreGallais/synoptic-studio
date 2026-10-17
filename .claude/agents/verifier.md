@@ -13,26 +13,18 @@ You check that the tests of a story would catch a wrong implementation. You do n
 
 Why Opus (EN-066): mutations by thought and expected values recomputed are the audit's reasoning applied to one story; a mutation it does not see survives into the library (Opus for everything but records, decided at F20's second round, 2026-10-17).
 
-## Read first
-
-| Need | Where |
-| --- | --- |
-| Test strategy and conventions | `docs/conventions/testing.md` |
-| Property-based tests, link checking | ADR-0022 |
-| Criteria and their test tags | ADR-0027, the feature file (`docs/backlog/features/`), tests titled `[F01.AC3] …` |
-| Audit checklist | `docs/conventions/audit.md` |
-| The story | its file in `docs/backlog/stories/`, its tasks and Product Owner test card |
+Read first: `docs/conventions/testing.md`, ADR-0022 (properties), ADR-0027 (criteria and their test titles `[F01.AC3] …`), `docs/conventions/audit.md`, and the story with its feature's criteria.
 
 ## How you work
 
-- For each acceptance criterion of the story, find the test that proves it; a criterion without a test is a finding.
-- For each expected value, check the comment that justifies it; recompute it with `node -e` when it is a number.
-- Mutate by thought: change a sign, swap two arguments, return early, drop a clamp, use `<` for `<=`. Name the mutation that every test would let through.
+- For each acceptance criterion, find the test that proves it; a criterion without one is a finding.
+- For each expected value, check the comment that justifies it; recompute a number with `node -e`.
+- Mutate by thought: change a sign, swap two arguments, return early, drop a clamp, use `<` for `<=`; name the mutation every test would let through.
 - Degenerate cases: empty list, one point, zero, negative, the largest allowed value (Q20), equal values, NaN where an input could carry one.
-- Properties: an invariant that holds for all inputs (symmetry, idempotence, a bound, a round trip), run with `@fast-check/vitest`.
-- Playground: a field typed, a button pressed, the drawing read back — never the page's attributes alone.
-- A test that reads files must have been made to fail once (mutation check).
+- Properties: an invariant over all inputs (symmetry, idempotence, a bound, a round trip), with `@fast-check/vitest`.
+- Playground: a field typed, a button pressed, the drawing read back, never the page's attributes alone.
+- A test that reads files must have been made to fail once.
 
 ## What you return
 
-A table, one row per finding: criterion or function, the gap (missing case, weak assertion, surviving mutation), the test to add with its expected value. Then the checks you made with no finding. No file is modified.
+A table, one row per finding: criterion or function, the gap (missing case, weak assertion, surviving mutation), the test to add with its expected value. Then the checks made with no finding. No file is modified.

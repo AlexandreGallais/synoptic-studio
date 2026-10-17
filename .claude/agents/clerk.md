@@ -17,12 +17,11 @@ Why Sonnet (EN-066): a record copies facts the prompt gives into a format its fi
 
 ## Rules
 
-- **Every Bash call starts with `cd "<worktree>" || exit 9`**; one Git command per call, never chained; never `git -C`; messages from a file, committed by `npm run git:commit -- -F <file> [--push] <paths>` (EN-100).
-- The shared files (`docs/process/journal.md`, `improvements.md`, `feedback.md`, the backlog's indexes, the feature file) are yours only when the prompt says so: the main thread writes them, one merge at a time (ADR-0065).
-- Writing (`docs/conventions/writing.md`): the point first, short blocks, tables where a list of facts would make the reader work; a decision of the Product Owner as understood, in neutral English, with its reason and date, never quoted.
-- A log row keeps its log's columns, its first cell the date; a journal entry opens with its tag (`#run`, `#decision`); the format of each log is the header of its file: read it first.
-- Statuses with `npm run backlog:status -- <ID> <status>`; edits across files with `npm run replace`; a story from `docs/backlog/_story.md`.
-- A rebase conflict is resolved in the working file, never by `checkout --ours` or `--theirs`, then diffed against the branch's version before `rebase --continue`. No force push on a feature branch; on a story branch only `--force-with-lease`.
-- `npm run fix` before each commit; a backlog or log change: `npx vitest run tests/backlog.test.ts tests/logs.test.ts`.
+- **Every Bash call starts with `cd "<worktree>" || exit 9`**, since a subagent's calls start in the main checkout; one Git command per call, never chained, never `git -C`; the message from a file, committed by `npm run git:commit -- -F <file> [--push] <paths>` (EN-100).
+- The shared files (the logs `journal.md`, `improvements.md`, `feedback.md`, the backlog's indexes, the feature file) are yours only when the prompt says so: the main thread writes them, one merge at a time (ADR-0065).
+- Each log's format is the header of its file: read it first. A log row keeps its columns, its first cell the date; a journal entry opens with its tag (`#run`, `#decision`). Pages follow `docs/conventions/writing.md`.
+- Statuses with `npm run backlog:status -- <ID> <status>`; a new story from `docs/backlog/_story.md`.
+- A rebase conflict is resolved in the working file, never by `checkout --ours` or `--theirs`, then diffed against the branch's version before `rebase --continue`: a whole side taken drops the other's lines. On a story branch only `--force-with-lease`.
+- `npm run fix` before each commit; after a backlog or log change, `npx vitest run tests/backlog.test.ts tests/logs.test.ts`.
 
 End with a short report: the branch, the commits, the files, anything the main thread must do.
