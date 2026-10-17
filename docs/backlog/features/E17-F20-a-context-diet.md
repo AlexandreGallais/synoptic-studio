@@ -40,7 +40,7 @@ In delivery order. Stories stay `draft` until F20's `/run` sets them `ready`.
 | --- | --- | --- | --- |
 | [SP-022](../stories/E17-F20-SP-022-research-f20.md) | Spike | Research for F20, the context diet | done |
 | [EN-064](../stories/E17-F20-EN-064-one-hour-prompt-cache.md) | Enabler | A one-hour prompt cache on long agents | dropped |
-| [EN-065](../stories/E17-F20-EN-065-workers-started-from-a-digest.md) | Enabler | One worker type per task kind, each started from what its task needs | ready |
+| [EN-065](../stories/E17-F20-EN-065-workers-started-from-a-digest.md) | Enabler | One worker type per task kind, each started from what its task needs | done |
 | [EN-066](../stories/E17-F20-EN-066-model-per-agent-type.md) | Enabler | A model chosen per agent type | ready |
 | [EN-088](../stories/E17-F20-EN-088-subagent-stop-hook-in-rust.md) | Enabler | A SubagentStop hook in Rust that checks a worker's branch | ready |
 | [EN-092](../stories/E17-F20-EN-092-run-totals-and-stop-report.md) | Enabler | The duration and tokens of a whole run | ready |

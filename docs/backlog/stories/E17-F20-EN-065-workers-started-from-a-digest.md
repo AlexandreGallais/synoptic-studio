@@ -3,7 +3,7 @@ id: EN-065
 epic: E17
 feature: F20
 title: One worker type per task kind, each started from what its task needs
-status: ready
+status: done
 points: 5
 ---
 
