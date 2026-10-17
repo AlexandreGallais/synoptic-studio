@@ -17,7 +17,7 @@
 | --- | --- | --- |
 | `typescript` | TypeScript 7.0.2, the native compiler (`REF-TS7-ANNOUNCEMENT`), the only TypeScript since EN-085: its type checker runs under oxlint's `--type-check` and as `npm run typecheck`, about 5 times faster than 6.0 (EN-071; the declarations of `build` are Oxc's since EN-091); it has no API until 7.1, and no tool of the repository imports one: TypeScript 6's, kept for typescript-eslint and TypeDoc, left with them (EN-072, EN-085, ADR-0075) | TypeScript 6's `tsc`: about 4.3 s against 0.9 s on this tree |
 | `@types/node` | Node.js types for the tooling (scripts, hooks, configuration files) | — |
-| `vite` | development server of the playground and library build (Product Owner requirement, ADR-0009) | — |
+| `vite` | development server of the playground and library build (Product Owner requirement, ADR-0009; kept by ADR-0075, decision 1) | — |
 | `vitest` | tests, sharing Vite's configuration and transforms | Jest: separate transform pipeline |
 | `@vitest/coverage-v8` | test coverage of `src/`, with 100 % thresholds (lines, branches, functions, statements): every behavior of the library is tested | `@vitest/coverage-istanbul`: slower, instruments the code |
 | `happy-dom` | DOM implementation for the tests of `src/render/` (per-file `// @vitest-environment happy-dom`), so the shell keeps 100 % coverage | `jsdom`: heavier and slower |
@@ -36,7 +36,7 @@
 
 | Package | Why | Alternatives rejected |
 | --- | --- | --- |
-| `vitepress` | Markdown documentation site built on Vite (`REF-VITEPRESS`); 2.0 alpha because 1.6 bundles a vulnerable Vite 5 (ADR-0009) | Docusaurus: React and webpack/rspack toolchain, no native PDF either |
+| `vitepress` | Markdown documentation site built on Vite (`REF-VITEPRESS`); 2.0 alpha because 1.6 bundles a vulnerable Vite 5 (ADR-0075, decision 1) | Docusaurus: React and webpack/rspack toolchain, no native PDF either |
 
 | `mermaid` | diagrams written as text in `mermaid` code blocks (flowcharts, Git graphs, sequences), drawn by the site's theme in the browser and natively by GitHub (`REF-MERMAID`, `REF-GH-DIAGRAMS`) | `vitepress-plugin-mermaid`: last release 2024, VitePress 1 only; hand-drawn SVG: hard to keep up to date |
 

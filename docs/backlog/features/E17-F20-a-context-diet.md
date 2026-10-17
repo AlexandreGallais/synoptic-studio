@@ -9,7 +9,7 @@ status: draft
 
 **Benefit hypothesis**: each agent starts with only what it needs — a rule in one line rather than a paragraph, clear wording, an ADR read through a one-line digest — so that a session and each subagent spend fewer tokens and the conversation memory fills up more slowly.
 
-Asked by the Product Owner on 2026-10-16 (RET-003), building on the lighter context planned for E02 at RET-002. A Rust context tool of F19 may serve it.
+Asked by the Product Owner on 2026-10-16 (RET-003), building on the lighter context planned for E02 at RET-002. The tool `context:size` (`docs/tooling/agent-tools.md`, Context), written in Rust, is its measure.
 
 ## Goal
 

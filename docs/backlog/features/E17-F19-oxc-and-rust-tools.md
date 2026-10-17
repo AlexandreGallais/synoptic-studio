@@ -9,6 +9,8 @@ status: in-progress
 
 **Benefit hypothesis**: with oxlint, oxfmt, TypeScript 7 and a Rust linter of the project in place of ESLint, Prettier and TypeScript 6, `check:all` runs in 70 to 90 s most of the time, with every current rule kept or its loss stated.
 
+Measured at EN-085: `check:all` ends in about 40 s on a code story and 57 to 68 s when the docs build runs, under the 70 to 90 s aimed at.
+
 Opened by its spike ([SP-021](../stories/E17-F19-SP-021-research-f19.md), [research note 0023](../../research/notes/0023-f19-oxc-and-rust-tools.md)); refined with the Product Owner in four rounds on 2026-10-17, its run started the same day ([E17](../epics/E17-fast-tooling-with-oxc-and-rust.md)). The agent tools, the library server and the clean-up of E17 moved to [F21](./E17-F21-agent-tools-in-rust.md) on 2026-10-17.
 
 ## Decisions of the Product Owner (2026-10-17)
@@ -40,21 +42,28 @@ Recorded as understood, with the research behind each in note 0023, section "The
 11. Every rule that oxlint runs today only as a JS plugin of a third-party package (265) is triaged — dropped with its reason when a project rule already forbids what it checks or when it guards nothing this code can contain, kept otherwise (note 0023: 228 kept, 37 dropped, after EN-074 confirmed the triage against the code) — and each kept rule runs in the project's Rust linter, with tests of the cases its plugin's documentation gives; ESLint leaves at F19's end.
 12. The formatter prints Markdown tables without padding and keeps paragraphs as written (moved from F18, ADR-0068).
 
+## Corrections of the audit (AUD-021)
+
+- **AC1, AC11 — the counts**: ADR-0075's are the final ones, checked by a test against the rules recorded from Git: of the 854 rules `eslint/rules/` decided, 374 run in oxlint, 205 in the project's linter, 181 were dropped and 94 were already off. AC11's 265, 228 and 37 are the counts of the triage at the spike (research note 0023, "Corrections of the audit").
+- **AC1 — a directive that silences nothing**: ESLint reported one; oxlint now does too, as an error (`--report-unused-disable-directives-severity=error`).
+- **AC4 — the Markdown rules**: 20 of `@eslint/markdown`'s 21 rules run in the project's linter and `no-reference-like-urls` is dropped with its reason; with the project's `local/image-alt-text`, 21 rules run on the pages.
+- **AC8 — the docs build's inputs**: a file moved out of `docs/`, `src/` or the playground counts under its old path, and `Cargo.toml`, `Cargo.lock` and `rust-toolchain.toml` are inputs too.
+
 ## Not moved, and why
 
 - **Vitest, Vite and VitePress**: kept by the Product Owner's decision. They run with TypeScript 7 alone (tried on 2026-10-17: they transform with Oxc, not `tsc`). Vite 8.3.4 already bundles with Rolldown 1.2.
-- **`default-font-metrics.ts`**: it runs the library to write `inter-metrics.json`; a Rust copy would duplicate the font reader (F21 holds it).
+- **`default-font-metrics.ts`**: it runs the library to write `inter-metrics.json`; a Rust copy would duplicate the font reader, so it stays in TypeScript (F21, criterion 2).
 - **secretlint, knip, npm-check-updates, commitlint, lint-staged, husky, validate-branch-name**: reviewed in [F21](./E17-F21-agent-tools-in-rust.md), which rewrites them in Rust.
 
 ## Decisions of the run (Product Owner, 2026-10-17)
 
-- Nothing is added to ESLint from now on: every rule that moves goes to oxlint or to the project's Rust linter, and ESLint only loses rules until EN-085 removes it.
+- Nothing is added to ESLint from now on: every rule that moves goes to oxlint or to the project's Rust linter, and ESLint only lost rules until EN-085 removed it.
 - Each rewrite story checks each of its rules again before writing it: a rule that guards nothing useful here is dropped with its reason, not rewritten.
 - A rule found useful on the way — for the project's code or for the agent's work — is added to the Rust linter in F19, with its source and its tests.
 
 ## Stories
 
-In delivery order, written on 2026-10-17 when the Product Owner started F19's run. TypeScript 6 cannot leave at EN-071 as first drafted: ESLint's parser and TypeDoc read its API, which TypeScript 7 lacks until 7.1, so it stays under its alias until EN-072 replaces TypeDoc and EN-085 takes ESLint out. Each rewrite story turns its rules off in ESLint, so that a rule runs in one linter only until ESLint leaves.
+In delivery order, written on 2026-10-17 when the Product Owner started F19's run. TypeScript 6 cannot leave at EN-071 as first drafted: ESLint's parser and TypeDoc read its API, which TypeScript 7 lacks until 7.1, so it stays under its alias until EN-072 replaces TypeDoc and EN-085 takes ESLint out. Each rewrite story turned its rules off in ESLint, so that a rule ran in one linter only until ESLint left.
 
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |

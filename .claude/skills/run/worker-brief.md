@@ -27,14 +27,14 @@ The main thread gives this file's path to each worker, with the story id, its fe
 
 ## Heavy commands (ADR-0072)
 
-One heavy command at a time across every worktree: `check:all`, `npm run test`, `golden:check`, `docs:build`, and `git push` (its pre-push runs `check:all`). They take the lock `.git/heavy.lock` themselves (EN-047, `docs/tooling/commands.md`): run them as they are, in the background if they may last over 2 minutes; one waiting prints which process holds the lock. Never take the lock by hand with `mkdir`, nor wrap a command in such a lock: the command waits for a lock it cannot see the owner of, and a `git push` inside it waits forever for its own pre-push `check:all` (every worktree blocked 16 minutes on 2026-10-17).
+One heavy command at a time across every worktree: `check:all`, `npm run test`, `golden:check`, `docs:build`, and `git push` (its pre-push runs `check:all`). They take the lock `.git/heavy.lock` themselves (EN-047, `docs/tooling/commands.md`): run them as they are, in the background when they may last over a minute (`CLAUDE.md`, While working); one waiting prints which process holds the lock. Never take the lock by hand with `mkdir`, nor wrap a command in such a lock: the command waits for a lock it cannot see the owner of, and a `git push` inside it waits forever for its own pre-push `check:all`, and every other worktree with it.
 
 Between heavy commands, run single test files only (`npx vitest run <paths>`); a full run is `npm run test`, never `npx vitest run` without a path.
 
 ## Limits
 
 - Push with `git push -u origin HEAD` once the tasks are done; never `--no-verify`, never a force push.
-- Stop before the pull request and before the `done` commit: the main thread makes that commit in the worktree (`backlog:status`, `Closes:`, the `Rule-docs:` line when needed), then runs `story:finish` (decided 2026-10-17).
+- Stop before the pull request and before the `done` commit: the main thread makes that commit in the worktree (`backlog:status`, `Closes:`, the `Rule-docs:` line when needed), then runs `story:finish`: the `done` commit writes the shared files — the stories' index and the feature's table — which only the main thread writes, at merge (ADR-0065, decision 4; the pre-push check `refuse-shared-files` refuses them on a story branch, EN-050).
 - A story that changes a rule in `docs/domain/` brings in its tasks the Q row of `docs/domain/README.md`, the decisions to confirm of its feature's VAL and its guide page; the `done` commit's `commit-msg` hook refuses the story otherwise (`tools/rule-docs`, EN-059). One the change does not affect: say so in the final report, with its reason, for the footer line `Rule-docs: none affected, <why>` of the `done` commit.
 - A business rule missing, or code, domain and ADRs that contradict each other: stop and report the question.
 - Final report, brief: branch, commits, files, decisions taken, evidence, open points.

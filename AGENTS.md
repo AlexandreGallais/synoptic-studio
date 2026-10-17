@@ -51,7 +51,7 @@ A library of small named functions, each backed by a verified source, composed s
 - **Functional core, imperative shell** (ADR-0014): `math` → `io` are pure; `render`, `interaction`, `playground` carry the effects. A function never modifies its arguments.
 - **One export per file**, named in kebab-case after it (ADR-0019); no default nor optional parameter in `src/` (ADR-0016).
 - **Every calculation named** (ADR-0049): an operation or a run of steps that a field names — mathematics, geometry, physics, drafting, industry, the laboratory — is a call to a function of that name with its source, never bare arithmetic; a process is named the same way.
-- **Functions follow the domain, not a line count**: one function holds one business context, and a sub-calculation a field can name becomes its own named function. The size and complexity limits (ADR-0011) only catch functions that grew too far: when one would cut a context into halves no field names, the limit is wrong, not the code — report it and adjust the limit. A rule or a construct stays only if it makes the code more correct or more uniform; ceremony goes.
+- **Functions follow the domain, not a line count**: one function holds one business context, and a sub-calculation a field can name becomes its own named function. The size and complexity limits (ADR-0011) only catch functions that grew too far: when one would cut a context into halves no field names, the limit is wrong, not the code — stop and propose a new limit to the Product Owner ([functions](docs/conventions/functions.md#one-business-context-per-function)). A rule or a construct stays only if it makes the code more correct or more uniform; ceremony goes.
 - **Every function**: one `@kind` (`math`, `geometry`, `domain`, `format`, `procedure`), one `@see` to a **verified** source, austere TSDoc; size limits per kind (ADR-0011).
 - **Never invent a reference**: cite only what was read; otherwise a derivation (each step citing a read source) or a research request.
 - **No personal information** about the Product Owner in this public repository.
@@ -81,7 +81,7 @@ A library of small named functions, each backed by a verified source, composed s
 | Epic | its features → `NAM` naming pass over the whole code → `REV` review → `RET` retrospective with metrics and the agent's method and tools point (ADR-0023, ADR-0049, ADR-0074) |
 | Branch | `main` releases only; `develop` integration; `feature/f<nn>-<topic>` from `develop`; `<type>/<id>-<topic>` per story from its feature (ADR-0072) |
 | Merge | story → feature: rebase, by the Product Owner or, in an authorized run, by GitHub; feature → `develop`: merge commit, by GitHub once validated; `develop` → `main`: when the Product Owner asks, by them; a tooling feature validated by the agent (ADR-0072) |
-| Agents | at most 3 subagents at once: the hook `tools/hooks` `limit-agents` (test `tools/hooks/tests/limit.rs`) refuses a fourth, started or resumed, backed up by `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` set to 3 in `.claude/settings.json` (EN-063); one heavy command at a time, through the lock `tools/heavy-lock` (test `tools/heavy-lock/tests/lock.rs`) (ADR-0072, EN-047), the rule; shared files written by the main thread at merge (ADR-0065); checks by level from E02 (ADR-0064) |
+| Agents | at most 3 subagents at once: the hook `tools/hooks` `limit-agents` (test `tools/hooks/tests/limit.rs`) refuses a fourth, started or resumed, backed up by `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` set to 3 in `.claude/settings.json` (EN-063); one heavy command at a time, through the lock `tools/heavy-lock` (test `tools/heavy-lock/tests/lock.rs`) (ADR-0072, EN-047); shared files written by the main thread at merge (ADR-0065); checks by level from E02 (ADR-0064) |
 | Checks | local only on work branches (`pre-push` runs `check:all`); one CI, on the pull request into `main`; never wait for a CI elsewhere (ADR-0072) |
 | Story | one commit per task (`Refs: <ID>.Tn`), status `done` in the last commit (`Closes: <ID>`), a test card for a `US`, then a pull request into its feature |
 | Math | tests first: hand-computed examples, degenerate cases, then properties (ADR-0022); a test proving a criterion is titled `[F01.AC3] …` (ADR-0027) |
@@ -89,7 +89,7 @@ A library of small named functions, each backed by a verified source, composed s
 ## Definition of done
 
 1. `npm run fix`.
-2. `npm run check:all` green: the formatter (oxfmt, then tables without padding), the linters (oxlint with TypeScript's errors, the project's linter with the Markdown pages; 0 warning), secretlint, Vitest (100 % of `src/`, the playground's floor), `npm audit`, knip, latest versions, docs and playground builds. Seen, not assumed; a failure is reported with its output.
+2. `npm run check:all` green: the formatter (oxfmt, then tables without padding), the linters (oxlint with TypeScript's errors, the project's linter with the Markdown pages; 0 warning), secretlint, Vitest (100 % of `src/`, the playground's floor), `npm audit`, knip, `check:rust` (cargo fmt, Clippy, RustSec advisories, the 93 % coverage floor, a Windows build check), latest versions, docs and playground builds. Seen, not assumed; a failure is reported with its output.
 3. Docs up to date: domain, references, derivations, ADRs, backlog.
 4. A summary in French (`docs/conventions/writing.md`): result, changes, evidence, decisions needed, next step, session report.
 
@@ -103,7 +103,7 @@ A new test that reads files is **mutation-checked**: made to fail once on purpos
 | a math or geometry function has no readable source | derivation, or research request (`docs/research/requests/`) |
 | code, domain and ADRs contradict each other | report it, decide nothing alone |
 | expected test values cannot be computed by hand | derivation to validate, or research request |
-| a function is over its kind's limits after 2 splits | propose a split to the Product Owner |
+| a function is over its kind's limits and no split gives parts a field names | propose a new limit to the Product Owner, the function as evidence (`docs/conventions/functions.md`) |
 | an `[unverified]` reference is needed | read it now (library, then online), or derive it |
 | the same test fails after 3 attempts | stop, explain the analysis |
 | a runtime dependency or a forbidden primitive is needed | stop, propose an ADR |
