@@ -76,7 +76,7 @@ Decisions of the Product Owner at the start of the run, recorded as understood.
 
 ## Closing
 
-After its last feature is validated (ADR-0023, ADR-0049, ADR-0064).
+After its last feature is validated (ADR-0023, ADR-0049, ADR-0064). F21's clean-up story, which removes every script, hook, configuration and dev package left unused, comes last among the features' stories, before NAM-002 (decided on 2026-10-17).
 
 | Story                                                                                   | Status |
 | --------------------------------------------------------------------------------------- | ------ |
