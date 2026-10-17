@@ -28,3 +28,20 @@ One task = one commit, referenced as `EN-065.Tn`.
 - [ ] T2 — The story worker's type and its brief as a preloaded skill, tried on one real story (3 h)
 - [ ] T3 — The research, audit and log types, each measured (3 h)
 - [ ] T4 — The run skill and the worker brief name the types; `docs/tooling/agent.md` updated (1 h)
+
+## Measures
+
+Measured with `npm run context:size` on the session of 2026-10-17 (77 subagents of F18, F19 and F20's runs), Claude Code 2.1.302. A first request's tokens are its input, cache writes and cache reads.
+
+### Before (T1)
+
+| Task kind | Seen in F18–F19 | Agent type today | First request, tokens | What the task needs |
+| --- | --- | --- | --- | --- |
+| story worker | EN-045 to EN-095, AUD fixes, CHK, VAL preparation | `general-purpose` | 38,900 (median of 71) | Bash, Read, Edit, Write, Grep, Glob; the `library` server for a `@see` source; the worker brief and the rules of `AGENTS.md` a story applies |
+| research spike | SP-020, SP-021, SP-022 | `general-purpose` | 38,306 to 39,228 | the story worker's tools and `WebFetch`, `WebSearch`, the `library` server; the spike skill; the writing rules |
+| audit review | AUD-020, AUD-021 | `auditor`, `verifier`, `doc-editor` | 15,477, 13,994, 13,865 | read-only tools and their own prompt, which names what to read |
+| logs, backlog and merges | the run's set-up, journal entries, rebases | `general-purpose` | 38,839 to 39,419 | Bash, Read, Edit, Write, Grep, Glob; the writing rules, the shared files, one Git command per call |
+
+What makes the difference: a `general-purpose` worker receives every tool's definition (`Agent`, `Artifact`, `Skill`, the MCP servers), the skill listing (26,805 characters) and the deferred tools' list; a typed agent with a `tools` list receives none of them. Every subagent, typed or not, received `CLAUDE.md` (5,155 characters), `AGENTS.md` (14,719) and the memory index `MEMORY.md` (5,454).
+
+**The memory index loads** in every subagent measured, typed or not, as an instruction file of type `AutoMem`, although `REF-CC-SUBAGENTS` says "the main conversation's auto memory isn't loaded".
