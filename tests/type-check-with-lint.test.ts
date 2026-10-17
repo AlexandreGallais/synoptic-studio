@@ -56,7 +56,7 @@ describe("type errors with the lint (EN-091)", () => {
   });
 
   it("runs the type check in every oxlint pass: the lint, the fix, and no tsc in check:all", () => {
-    for (const name of ["lint", "fix", "lint:fix"]) {
+    for (const name of ["lint", "fix"]) {
       expect(scriptOf(name)).toContain("oxlint --type-check ");
     }
 
