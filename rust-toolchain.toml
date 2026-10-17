@@ -2,5 +2,5 @@
 # only for `check:rust`'s check without linking (EN-070).
 [toolchain]
 channel = "1.99.1"
-components = ["rustfmt", "clippy"]
+components = ["rustfmt", "clippy", "llvm-tools"]
 targets = ["x86_64-pc-windows-msvc"]
