@@ -8,7 +8,7 @@ import {
   terminalReport,
 } from "./session-report";
 
-/** Two requests and one failed tool call, 10 minutes apart. */
+/** Two requests, one on Opus and one on Sonnet, and one failed tool call, 10 minutes apart. */
 const EVENTS = {
   calls: [
     {
@@ -26,6 +26,7 @@ const EVENTS = {
     {
       branch: "develop",
       id: "m1",
+      model: "claude-opus-5-5",
       session: "s",
       time: 0,
       tokens: { cacheRead: 1000, cacheWrite: 200, input: 3, output: 50 },
@@ -33,6 +34,7 @@ const EVENTS = {
     {
       branch: "develop",
       id: "m2",
+      model: "claude-sonnet-5-5",
       session: "s",
       time: 60_000,
       tokens: { cacheRead: 2000, cacheWrite: 0, input: 1, output: 25 },
@@ -55,6 +57,11 @@ describe("session report", () => {
       inputTokens: 4,
       outputTokens: 75,
       requests: 2,
+      // Opus: 1000 + 200 + 3 + 50 = 1253; Sonnet: 2000 + 0 + 1 + 25 = 2026; the most first.
+      tokensByModel: [
+        ["claude-sonnet-5-5", 2026],
+        ["claude-opus-5-5", 1253],
+      ],
       wallMs: 600_000,
     });
   });
@@ -64,13 +71,54 @@ describe("session report", () => {
     expect(reportRows(figures)[1]).toEqual(["Tokens", "3,279"]);
   });
 
+  it("[F20.AC2] gives the tokens of each model, the most first, without the `claude-` prefix", () => {
+    expect(reportRows(figures)[2]).toEqual(["Per model", "sonnet-5-5 2,026 · opus-5-5 1,253"]);
+  });
+
+  it("names a request without a model, and leaves out a model without tokens", () => {
+    const figuresOf = sessionFigures(
+      {
+        calls: [],
+        requests: [
+          {
+            branch: "develop",
+            id: "m1",
+            model: "",
+            session: "s",
+            time: 0,
+            tokens: { cacheRead: 1000, cacheWrite: 200, input: 3, output: 50 },
+          },
+          // A synthetic answer written by Claude Code itself counts no token.
+          {
+            branch: "develop",
+            id: "m2",
+            model: "<synthetic>",
+            session: "s",
+            time: 60_000,
+            tokens: { cacheRead: 0, cacheWrite: 0, input: 0, output: 0 },
+          },
+        ],
+      },
+      [],
+    );
+
+    // Request m1 alone: 1253 tokens, under no model's name.
+    expect(figuresOf.tokensByModel).toEqual([["", 1253]]);
+    expect(reportRows(figuresOf)[2]).toEqual(["Per model", "unknown 1,253"]);
+
+    expect(reportRows(sessionFigures({ calls: [], requests: [] }, []))[2]).toEqual([
+      "Per model",
+      "none",
+    ]);
+  });
+
   it("writes a Markdown table and the commits", () => {
     const report = markdownReport(figures);
 
     expect(report.split("\n").slice(0, 3)).toEqual([
-      "| Duration | Tokens | Written | Tool calls | Commits |",
-      "| --- | --- | --- | --- | --- |",
-      "| 10 min 00 s (active 6 min 00 s) | 3,279 | 75 | 1 (1 failed) | 1 |",
+      "| Duration | Tokens | Per model | Written | Tool calls | Commits |",
+      "| --- | --- | --- | --- | --- | --- |",
+      "| 10 min 00 s (active 6 min 00 s) | 3,279 | sonnet-5-5 2,026 · opus-5-5 1,253 | 75 | 1 (1 failed) | 1 |",
     ]);
 
     expect(report).toContain("- `abc1234 docs: x`");

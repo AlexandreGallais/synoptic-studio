@@ -76,7 +76,7 @@ describe("guard-bash hook", () => {
 
     // A subagent's calls start in the main checkout: the hint enters the worktree first.
     expect(reason).toMatch(
-      /^A worktree refuses a chained Git command: run `cd "\/work\/SVG editor\/\.claude\/worktrees\/us-061" \|\| exit 9` then `git [^`]+` alone\.$/u,
+      /^A worktree refuses a chained Git command: run `cd "\/work\/SVG editor\/\.claude\/worktrees\/us-061" \|\| exit 9` then `git [^`]+` alone\.(?: Or in one call: .+\.)?$/u,
     );
 
     expect(reason).not.toContain("\n");
@@ -92,6 +92,26 @@ describe("guard-bash hook", () => {
   ])("allows %s in a worktree", (command) => {
     expect(worktreeReason(command, WORKTREE)).toBeUndefined();
     expect(worktreeReason(command, `${WORKTREE}/scripts`)).toBeUndefined();
+  });
+
+  it("names the Rust command of a frequent Git sequence (EN-100)", () => {
+    expect(worktreeReason("git add -A && git commit -m x", WORKTREE)).toMatch(
+      /Or in one call: `npm run git:commit -- -F <message file> \[--push\] <paths>`[^;]*\.$/u,
+    );
+
+    expect(worktreeReason("git fetch origin; git rebase origin/develop", WORKTREE)).toMatch(
+      /Or in one call: `npm run git:sync` fetches and rebases [^;]*\.$/u,
+    );
+
+    expect(worktreeReason("git log --oneline | head -5", WORKTREE)).not.toContain("one call");
+  });
+
+  it.each([
+    `cd "${WORKTREE}" || exit 9; npm run git:sync`,
+    `cd "${WORKTREE}" || exit 9\nnpm run git:commit -- -F - --push a.md <<'EOF'\nchore(tooling): x\n\nRefs: EN-100.T1\nEOF`,
+  ])("allows the Rust command of a Git sequence in a worktree: %s", (command) => {
+    expect(deniedReason(command)).toBeUndefined();
+    expect(worktreeReason(command, WORKTREE)).toBeUndefined();
   });
 
   it("allows a chained Git command outside a worktree", () => {

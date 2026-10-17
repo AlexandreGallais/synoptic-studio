@@ -2,28 +2,28 @@
 
 ## Latest versions
 
-- `npm run deps:outdated` runs npm-check-updates with `.ncurc.cjs`: every package must be on its **latest version published at least 7 days ago** (cooldown, ADR-0072, `REF-NCU-COOLDOWN`), `typescript` included: TypeScript 7 is the only TypeScript since EN-085 (ADR-0075), TypeScript 6's alias gone with typescript-eslint and TypeDoc. Any available upgrade makes the command fail. The cooldown keeps a version published minutes ago from turning a check red (release 0.10.0), and lowers the risk of installing a compromised version (supply-chain attacks, `REF-NCU-COOLDOWN`).
-- It runs before every `git push` (`.husky/pre-push`) and in the CI of the pull requests into `main` (`check:all`).
-- **Upgrading** (Product Owner, 2026-10-12):
-  1. list the upgrades: `npx ncu`;
-  2. **read what changed** for each package, from the installed version to the new one: its changelog or GitHub release notes (`npm view <pkg> repository.url`, then the repository's `CHANGELOG.md` or `gh release list -R <owner>/<repo>`);
-  3. a release that only fixes bugs needs nothing more; a release with **new features** is read for what this project could use (a new rule, a new option): adopt it or record why not; a **breaking change** (major version, or a note saying so) is read closely and the configuration is adapted in the same commit;
-  4. `npx ncu -u <pkg>`, `npm install`, `npm run check:all`; an oxlint upgrade may add rules: decide them in `.oxlintrc.json` (see [lint](../conventions/lint.md));
-  5. the commit body says what changed and what was done about it (`build(deps): …`), one commit per package with features or breaking changes.
-- `npm run deps:tools` (`scripts/tool-versions.ts`) does the same for the tools outside npm: every GitHub Action of `.github/workflows/` must be on its latest major version (a tag `vN+1` fails the check), and `.nvmrc` on the latest Node.js LTS major (official release index). It runs in `check:all`, with `GITHUB_TOKEN` in CI and `gh auth token` locally. The check fails as soon as a new major is out, and the agent upgrades it after reading its release notes (Product Owner decision, 2026-10-09: every tool, not only npm packages).
-- Pre-releases are not proposed by npm-check-updates; VitePress 2.0 alpha is the documented exception (ADR-0075, decision 1).
+Every package is on its **latest version published at least 7 days ago** (ADR-0072, `REF-NCU-COOLDOWN`). Latest, so that upgrades stay small and frequent; 7 days old, so that a release published minutes ago does not turn a check red and a compromised release has time to be found. `npm run deps:outdated` (npm-check-updates, `.ncurc.cjs`) fails on any available upgrade; it runs in `check:all`, so at each push and in the CI into `main`.
+
+`npm run deps:tools` holds the tools outside npm to the same rule: every GitHub Action of `.github/workflows/` on its latest major, `.nvmrc` on the latest Node.js LTS major (Product Owner, 2026-10-09). The Rust tools of the checks are looked at by hand ([dependencies](./dependencies.md#rust-tools)).
+
+A pre-release is never adopted, except VitePress 2.0 alpha (ADR-0075, decision 1).
+
+**Upgrading** (Product Owner, 2026-10-12) — an upgrade is read before it is installed, since a check passing says nothing of what a release added:
+
+1. list the upgrades: `npx ncu`;
+2. read what changed from the installed version to the new one: the changelog or the release notes (`npm view <pkg> repository.url`, then `CHANGELOG.md` or `gh release list -R <owner>/<repo>`);
+3. bug fixes only: nothing more. New features: adopt what the project can use (a rule, an option) or record why not. A breaking change: read it closely and adapt the configuration in the same commit;
+4. `npx ncu -u <pkg>`, `npm install`, `npm run check:all`; a linter upgrade may bring rules to decide ([lint](../conventions/lint.md));
+5. the commit body says what changed and what was done about it (`build(deps): …`), one commit per package with features or breaking changes.
 
 ## Vulnerabilities
 
-- `npm run deps:audit` (`npm audit --audit-level=low`): **any** advisory fails.
-- It runs in `npm run check` (so before every push), before `npm run build`, and in the CI into `main`: a vulnerable dependency tree cannot be checked nor built.
-- The Rust crates: `npm run rust:advisories` (`cargo deny --offline check advisories`, EN-069) fails on any RustSec advisory of a crate of the root `Cargo.lock`, an unmaintained or a yanked one included; it runs in `check:rust`, from the local copy of the database (`cargo deny fetch db`), and in the CI into `main` after fetching it. The workspace's crates.io dependencies are Oxc's crates and `markdown`, each pinned in `[workspace.dependencies]` with its row in [Crates](./dependencies.md#crates).
-- Fixing: upgrade the direct dependency; otherwise force the transitive one through `overrides` in `package.json` and document it in [dependencies](./dependencies.md#overrides).
-- Install scripts of dependencies are blocked by npm unless approved (`npm install-scripts`); none is needed today.
+- **Any advisory fails**, whatever its severity: `npm run deps:audit` (`npm audit --audit-level=low`) in `check` and `check:all`, before `npm run build` and in the CI; `npm run rust:advisories` for every crate of `Cargo.lock`, unmaintained and yanked ones included. A vulnerable tree can be neither checked nor built.
+- **Fixing**: upgrade the direct dependency; otherwise force the transitive one through `overrides` in `package.json`, documented under [Overrides](./dependencies.md#overrides).
+- Dependencies' install scripts stay blocked by npm unless approved; none is needed today.
 
 ## Packages blocked by an advisory
 
 | Package | Blocked by | Since | Decision |
 | --- | --- | --- | --- |
-| `stylelint` (+ `stylelint-config-standard-scss`, `stylelint-order`, `stylelint-config-recess-order`) | `braces` ≤ 3.0.3, GHSA-vfj7-8cjw-p6xm (high, stack-exhaustion DoS), no patched version, pulled through `micromatch` | 2026-10-08 | not installed. Product Owner decision (2026-10-08): install it when SCSS starts, with `stylelint-order` and `stylelint-config-recess-order`, through a documented audit exception list (dev tools only, with a review date) unless `braces` is fixed by then |
-| `markdownlint-cli2` | same advisory | 2026-10-08 | replaced by `@eslint/markdown`, itself replaced by the project's linter (EN-077) |
+| `stylelint` (+ `stylelint-config-standard-scss`, `stylelint-order`, `stylelint-config-recess-order`) | `braces` ≤ 3.0.3, GHSA-vfj7-8cjw-p6xm (high), no patched version, through `micromatch` | 2026-10-08 | installed when SCSS starts, through a documented audit exception (dev tools only, with a review date) unless `braces` is fixed by then (Product Owner, 2026-10-08) |

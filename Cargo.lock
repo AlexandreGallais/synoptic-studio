@@ -136,6 +136,13 @@ name = "format"
 version = "0.1.0"
 
 [[package]]
+name = "git-sequences"
+version = "0.1.0"
+dependencies = [
+ "worktree",
+]
+
+[[package]]
 name = "hashbrown"
 version = "0.17.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -151,6 +158,9 @@ version = "0.1.0"
 [[package]]
 name = "hooks"
 version = "0.1.0"
+dependencies = [
+ "worktree",
+]
 
 [[package]]
 name = "icu_collections"
@@ -694,6 +704,13 @@ dependencies = [
 [[package]]
 name = "rule-docs"
 version = "0.1.0"
+
+[[package]]
+name = "run-totals"
+version = "0.1.0"
+dependencies = [
+ "hooks",
+]
 
 [[package]]
 name = "rustc-hash"

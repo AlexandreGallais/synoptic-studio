@@ -1,0 +1,13 @@
+[package]
+name = "run-totals"
+version = "0.1.0"
+edition.workspace = true
+description = "The duration and tokens of a whole run, from its marker .git/metrics/run.json (EN-092)"
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+hooks = { path = "../hooks" }
+
+[lints]
+workspace = true

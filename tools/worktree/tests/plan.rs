@@ -6,8 +6,8 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, Output};
 
 use worktree::{
-    Request, base_branch, branch_refusal, branch_type, plan, story_id, story_of_file,
-    worktrees_without_hooks,
+    Request, base_branch, branch_refusal, branch_type, plan, story_id, story_of_branch,
+    story_of_file, worktrees_without_hooks,
 };
 
 const FILE: &str = "E17-F18-US-061-font-list-held-while-the-default-font-is-read.md";
@@ -37,6 +37,21 @@ fn reads_a_story_id_in_either_case() {
     assert_eq!(story_id("US061"), None);
     assert_eq!(story_id("-061"), None);
     assert_eq!(story_id("U1-061"), None);
+}
+
+#[test]
+fn reads_the_story_of_a_branch() {
+    assert_eq!(
+        story_of_branch("chore/en-100-git-sequences-as-rust-commands").as_deref(),
+        Some("EN-100")
+    );
+    assert_eq!(
+        story_of_branch("docs/rev-003-review-e15").as_deref(),
+        Some("REV-003")
+    );
+    assert_eq!(story_of_branch("chore/en-100").as_deref(), Some("EN-100"));
+    assert_eq!(story_of_branch("chore/tidy-up"), None);
+    assert_eq!(story_of_branch("develop"), None);
 }
 
 #[test]
@@ -420,4 +435,18 @@ fn f18_ac8_a_push_from_a_new_worktree_runs_its_own_pre_push() {
     assert_eq!(fs::read_to_string(&marker).unwrap(), "worktree\n");
 
     let _ = fs::remove_dir_all(main.parent().unwrap());
+}
+
+#[test]
+fn lists_the_story_files_of_a_checkout() {
+    let top = std::env::temp_dir().join(format!("worktree-stories-{}", std::process::id()));
+    let _ = fs::remove_dir_all(&top);
+
+    // No backlog: an error each caller reads its own way.
+    assert!(worktree::story_files(&top).is_err());
+    fs::create_dir_all(top.join(worktree::STORIES)).expect("folders");
+    fs::write(top.join(worktree::STORIES).join(FILE), "").expect("story");
+
+    assert_eq!(worktree::story_files(&top).expect("listed"), [FILE]);
+    fs::remove_dir_all(&top).expect("cleaned");
 }

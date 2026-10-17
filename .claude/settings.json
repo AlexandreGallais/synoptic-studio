@@ -7,7 +7,6 @@
     "allow": [
       "Bash(npm run *)",
       "Bash(npx vitest *)",
-      "Bash(npx eslint *)",
       "Bash(git status*)",
       "Bash(git diff*)",
       "Bash(git log*)",
@@ -45,7 +44,9 @@
               "--release",
               "-q",
               "--manifest-path",
-              "${CLAUDE_PROJECT_DIR}/tools/hooks/Cargo.toml",
+              "${CLAUDE_PROJECT_DIR}/Cargo.toml",
+              "-p",
+              "hooks",
               "--bin",
               "limit-agents"
             ]
@@ -63,9 +64,92 @@
               "--release",
               "-q",
               "--manifest-path",
-              "${CLAUDE_PROJECT_DIR}/tools/hooks/Cargo.toml",
+              "${CLAUDE_PROJECT_DIR}/Cargo.toml",
+              "-p",
+              "hooks",
               "--bin",
               "limit-agents"
+            ]
+          }
+        ]
+      },
+      {
+        "matcher": "WebFetch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cargo",
+            "args": [
+              "run",
+              "--release",
+              "-q",
+              "--manifest-path",
+              "${CLAUDE_PROJECT_DIR}/Cargo.toml",
+              "-p",
+              "hooks",
+              "--bin",
+              "library-pages"
+            ],
+            "timeout": 30
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(*curl*)",
+            "command": "cargo",
+            "args": [
+              "run",
+              "--release",
+              "-q",
+              "--manifest-path",
+              "${CLAUDE_PROJECT_DIR}/Cargo.toml",
+              "-p",
+              "hooks",
+              "--bin",
+              "library-pages"
+            ],
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "Bash(*wget*)",
+            "command": "cargo",
+            "args": [
+              "run",
+              "--release",
+              "-q",
+              "--manifest-path",
+              "${CLAUDE_PROJECT_DIR}/Cargo.toml",
+              "-p",
+              "hooks",
+              "--bin",
+              "library-pages"
+            ],
+            "timeout": 30
+          }
+        ]
+      },
+      {
+        "matcher": "SubagentHandback",
+        "hooks": [
+          {
+            "type": "command",
+            "timeout": 30,
+            "command": "cargo",
+            "args": [
+              "run",
+              "--release",
+              "-q",
+              "--manifest-path",
+              "${CLAUDE_PROJECT_DIR}/Cargo.toml",
+              "-p",
+              "hooks",
+              "--bin",
+              "check-handback"
             ]
           }
         ]

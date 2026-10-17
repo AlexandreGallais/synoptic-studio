@@ -2,9 +2,10 @@
 // used, how many tool calls and failures, which commits it made. The agent ends each session with
 // it (CLAUDE.md, with `--all`). Run by `npm run metrics:session [session id] [--all]
 // [--markdown]`: without an id, the session whose transcript changed last; without `--all`, the
-// current turn: from the prompt that started it.
+// current turn: from the prompt that started it. With `--run`, the open or last run's duration and
+// tokens by kind, counted by the Rust tool `run-totals` from `.git/metrics/run.json` (EN-092).
 
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import {
   appendFileSync,
   existsSync,
@@ -19,6 +20,7 @@ import { join } from "node:path";
 import { transcriptEvents, turnStartTime } from "./metrics-events.ts";
 import { formatDuration } from "./metrics-tables.ts";
 import { activeMs } from "./metrics-work.ts";
+import { modelTokens, tokensByModel } from "./model-tokens.ts";
 import { turnRecord } from "./turns.ts";
 
 import type { TranscriptEvents } from "./metrics-events.ts";
@@ -34,6 +36,8 @@ export type SessionFigures = {
   readonly inputTokens: number;
   readonly outputTokens: number;
   readonly requests: number;
+  /** Tokens per model that answered, the most first (EN-066). */
+  readonly tokensByModel: readonly (readonly [string, number])[];
   readonly wallMs: number;
 };
 
@@ -103,6 +107,7 @@ export function sessionFigures(
     inputTokens: tokenSum(events, "input"),
     outputTokens: tokenSum(events, "output"),
     requests: events.requests.length,
+    tokensByModel: tokensByModel(events),
     wallMs: times.length === 0 ? 0 : Math.max(...times) - Math.min(...times),
   };
 }
@@ -114,7 +119,7 @@ const COMMITS_LISTED = 8;
  * Rows of the report: label and value, the essentials only.
  *
  * @param figures - figures of the session
- * @returns duration, tokens, tokens written, tool calls, commits
+ * @returns duration, tokens, tokens per model, tokens written, tool calls, commits
  */
 export function reportRows(figures: SessionFigures): readonly (readonly [string, string])[] {
   const total =
@@ -123,6 +128,7 @@ export function reportRows(figures: SessionFigures): readonly (readonly [string,
   return [
     ["Duration", `${formatDuration(figures.wallMs)} (active ${formatDuration(figures.activeMs)})`],
     ["Tokens", formatCount(total)],
+    ["Per model", modelTokens(figures.tokensByModel)],
     ["Written", formatCount(figures.outputTokens)],
     ["Tool calls", `${formatCount(figures.calls)} (${formatCount(figures.failures)} failed)`],
     ["Commits", formatCount(figures.commits.length)],
@@ -232,7 +238,18 @@ export function reportedEvents(transcripts: readonly string[], isAll: boolean): 
   };
 }
 
-if (import.meta.main) {
+if (import.meta.main && process.argv.includes("--run")) {
+  const report = spawnSync(
+    "cargo",
+    ["run", "--release", "-q", "-p", "run-totals", "--", "report"],
+    {
+      cwd: ROOT,
+      stdio: "inherit",
+    },
+  );
+
+  process.exitCode = report.status ?? 1;
+} else if (import.meta.main) {
   const options = process.argv.slice(2);
   const session = options.find((option) => !option.startsWith("--")) ?? "";
   const folder = join(homedir(), ".claude", "projects", ROOT.replaceAll(/[^\dA-Za-z]/gu, "-"));

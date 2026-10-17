@@ -1,6 +1,6 @@
 # Every rule and why
 
-The rules, formatter settings, checks, hooks and conventions this repository runs, each with what it guards and the agent's verdict: kept, changed, dropped or added. Reviewed by the agent in EN-093 (2026-10-17), by one test: a rule stays if it serves the one who writes and reads this code — correctness, the domain, one form — and goes if it only costs time on what is already respected. A rule that guards correctness, the domain or an ADR's decision is never dropped without a new ADR.
+The record of EN-093 (2026-10-17): the rules, formatter settings, checks, hooks and conventions this repository runs, each with what it guards and its verdict (kept, changed, dropped or added), and the evidence behind it. Each was judged by the test of [lint](./lint.md#principles): a rule stays if it serves the one who writes and reads this code, and goes if it only costs time on what is already respected. Read this page to change a rule, not to apply one.
 
 ## Result
 

@@ -67,6 +67,10 @@ In delivery order; numbers are given at the refinement.
 | 8 | Enabler | The release in Rust: the changelog and the release pull request written by our own tool in place of release-please (its manifest and configuration), from the Conventional Commits; the release notes as readable as today's | 4 |
 | 9 | Enabler | The CI on the Rust tools: the pull request into `main` runs `check:all` with the Rust workspace built and cached, the cargo tools installed once | 4 |
 | 10 | Enabler | Clean-up of E17: every script, hook, configuration, test and dev package left unused removed, checked by the unused-file check and a search; last before NAM-002 | 5 |
+| 11 | Enabler | Each tool of our own records its use — the call, its time, its duration, its outcome — through one function shared by the crates, into `.git/metrics/tool-uses.jsonl`, listed by `npm run metrics` and reviewed at each retrospective; before story 10 | — |
+| 12 | Enabler | A command that prints one row or one section of a repository page by its id or heading (`REF-CC-HOOKS`, a heading of `docs/process/improvements.md`), as `library_read` does for the web: `docs/references.md` was read 121 times in three days, about 6,000 characters a read; before story 10 | — |
+
+Stories 11 and 12 were moved from F20 at its refinement (2026-10-17, [research note 0024](../../research/notes/0024-f20-context-diet.md)).
 
 ### Story 10 — Clean-up of E17 (draft)
 
@@ -77,6 +81,12 @@ Last story of E17's features, before NAM-002: once the tools run on Oxc and Rust
 - Given `docs/tooling/dependencies.md`, when the clean-up ends, then each removed package's row is gone and each Rust crate added has one.
 - Given the unused-file check of story 6 and a search of the tracked files for each removed name, when they run, then neither finds an unused file, an unused dev package, nor a name of a removed file outside the history (journal, retrospectives, ADRs).
 - Given `check:all`, when it runs after the clean-up, then it is green and its time is recorded for RET-004.
+
+## Decisions of 2026-10-17 (Product Owner)
+
+- The release tool replaces release-please entirely, the GitHub release included. The version bump and the changelog are written inside the pull request `develop` → `main`, before it merges, so that no commit is made by the CI after the merge. The release notes are to be better than release-please's, from what the documentation on good release notes says. The tool may improve anything else it finds.
+- The library server moves to Rust on a SQLite crate with full-text search, checked as every crate is (version at least 7 days old, licence, advisories).
+- F21 is refined by the agent from the decisions already taken (EN-093's verdicts, ADR-0073, ADR-0076); a question that only the Product Owner can answer parks its story and is pushed to them, and the run goes on.
 
 ## Note from EN-093 (2026-10-17)
 

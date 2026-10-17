@@ -1,29 +1,23 @@
 # Functions
 
-## One function = one named concept
+## One business context per function
 
-- The name is a standard mathematical, geometric or business term: `dot`, `cross`, `orientation`, `filletSetback`, `regularPolygonVertices`, `canConnect`.
-- A high-level function **reads like the formula**: a sequence of calls to named functions. Reading the names alone tells "this serves that, which serves that".
-- Top-level functions are `function` **declarations** (`func-style`): hoisted, so a module reads **top-down**, from the formula to its steps (`no-use-before-define` allows functions).
-- Arrow functions are reserved for inline callbacks.
+A function holds one business context, named by a term of its field. When a calculation needs two others that a field names, each of them is a function of its own, and the calculation reads as their composition (ADR-0049). The test is the name: if the parts cannot be named by their field, the function is one context.
 
-## A function never modifies its arguments
+- Name a function with the field's standard term: `dot`, `cross`, `orientation`, `filletSetback`, `regularPolygonVertices`, `canConnect`.
+- A high-level function reads like its formula, as a sequence of calls to named functions. The names alone tell what serves what.
+- Write top-level functions as `function` declarations (`func-style`). They are hoisted, so a module reads top-down, from the formula to its steps (`no-use-before-define` allows functions). Use arrow functions only for inline callbacks.
 
-It takes values and **returns** a result. Enforced by:
+The size limits below are guardrails that flag a function holding more than one context. They never decide alone:
 
-- `no-param-reassign` (properties included) — everywhere;
-- `functional/immutable-data`, `functional/prefer-immutable-types` (`ReadonlyDeep` parameters), `functional/type-declaration-immutability` — in the core, read from the written code by the project's linter: `readonly` or `Readonly<…>` written in place ([lint](./lint.md#functional-prefer-immutable-types-and-functional-type-declaration-immutability));
-- model types are `readonly`: the compiler rejects any mutation, even in the shell.
+- **Over a limit**: split the function where a field names the parts.
+- **When the only split gives invented halves** (`placeA`, `placeB`, `placeRest`) of a context that cannot be divided, the limit is wrong for that kind. Stop and propose a new limit to the Product Owner, with the function as evidence. A new limit is an ADR superseding ADR-0011's values.
 
-Exception by nature: a `procedure` receiving a DOM element may call its methods (`append`, `setAttribute`). See ADR-0014.
-
-## Explicit inputs (ADR-0016)
-
-In `src/`: **no default parameter, no optional parameter**. Defaults belong to the model (a symbol's parameters declare them), not to function signatures. A behavior variant is a distinct named function, or an explicit field of a named parameter object.
+There is deliberately no annotation lifting a limit. EN-093 measured the limits and kept them ([rules](./rules.md#function-limits-adr-0011-measured)).
 
 ## Kind `@kind` (ADR-0011)
 
-Every top-level function carries **exactly one** `@kind`. A function mixing two kinds must be split.
+Every top-level function carries exactly one `@kind`. A function that mixes two kinds is split. The project's linter reads the tag, which is a JSDoc tag because TypeScript decorators apply only to classes, never to a free function (`REF-TS-DECORATORS`).
 
 | `@kind` | Definition | Side effects |
 | --- | --- | --- |
@@ -33,18 +27,9 @@ Every top-level function carries **exactly one** `@kind`. A function mixing two 
 | `format` | conversion between representations (model ↔ SVG, JSON) | no |
 | `procedure` | action with a side effect (DOM, state, events) | yes |
 
-Why a JSDoc tag and not a decorator: a TypeScript decorator only applies to classes and their members, never to a free function (`REF-TS-DECORATORS`). The tag plays the same role, and the project's linter reads it (`tools/lint`).
-
-## One business context per function
-
-The rule behind the limits (`AGENTS.md`, golden rules, 2026-10-17): a function holds **one business context**. When a calculation needs two others that a field names, those two are named functions of their own, and the calculation reads as their composition (ADR-0049). The numeric limits below — lines, statements, complexity, depth, nested calls — are **guardrails** that flag a function holding more than one context; they never decide alone:
-
-- **over a limit**: split the function where a field names the parts. When the only split gives halves invented names (`placeA`, `placeB`, `placeRest`) of a context that cannot be divided, the limit is wrong for that kind: stop and propose a new limit to the Product Owner, the function as evidence; a new limit is an ADR superseding ADR-0011's values. This is the one rule for a function over its limits, the procedures' included;
-- measured by EN-093 ([rules](./rules.md#function-limits-adr-0011-measured)): no limit forced an invented split; the limits stay as they are.
-
 ## Limits per kind (`local/kind-limits`)
 
-Values: `tools/lint/src/settings.rs` (the project's linter, `local/kind-limits`); their loosest, the global ceilings of the core rules (`complexity`, `max-lines-per-function`…), in `.oxlintrc.json`.
+The values are in `tools/lint/src/settings.rs`. The loosest of them are the global ceilings of `.oxlintrc.json` (`complexity`, `max-lines-per-function`…), for code without a `@kind`.
 
 | `@kind` | Code lines | Statements | Complexity | Depth |
 | --- | --- | --- | --- | --- |
@@ -54,13 +39,13 @@ Values: `tools/lint/src/settings.rs` (the project's linter, `local/kind-limits`)
 | `format` | 20 | 8 | 4 | 1 |
 | `procedure` | 40 | 15 | 3 | 1 |
 
-- Lines: lines holding code (blank and comment lines excluded), signature included.
-- Complexity: McCabe, decision points + 1 (`if`, `?:`, `&&`, `||`, `??`, `case`, loops, `catch`), **callbacks included**.
-- Every kind: 3 parameters at most (`max-params`) — beyond, one named object.
+- **Lines** count the lines holding code, the signature included. Blank and comment lines do not count.
+- **Complexity** is McCabe's: decision points plus 1 (`if`, `?:`, `&&`, `||`, `??`, `case`, loops, `catch`), callbacks included.
+- **Parameters**: 3 at most for every kind (`max-params`). Beyond that, pass one named object.
 
 ## Long procedures: Composed Method
 
-A business procedure may be long (40 lines), never complicated (complexity 3, depth 1). It is written as a **list of named steps at the same level of abstraction** (`REF-BECK-SBPP`):
+A procedure may be long but never branched: 40 lines, but a complexity of 3 and a depth of 1. Write it as a list of named steps at the same level of abstraction (`REF-BECK-SBPP`). Every decision, such as choosing a route or validating, lives in a tested pure function, and the procedure only chains them:
 
 ```ts
 /**
@@ -79,14 +64,20 @@ export function addPipe(editor: Editor, from: PortReference, to: PortReference):
 }
 ```
 
-`orthogonalRoute`, `pipeFromRoute`, `addPipeCommand` are pure `domain` functions; `executeCommand` and `renderView` are `procedure`s. _(Illustrative example: these functions do not exist yet.)_
+Here `orthogonalRoute`, `pipeFromRoute` and `addPipeCommand` are pure `domain` functions, while `executeCommand` and `renderView` are procedures. _(Illustrative example: these functions do not exist yet.)_
 
-Every decision (choosing a route, validating) lives in a tested pure function; the procedure only chains. A procedure over its limits follows the [one rule](#one-business-context-per-function): split where a field names the parts, otherwise **stop and propose a new limit** to the Product Owner (`AGENTS.md`, Stop and ask when). There is deliberately no annotation lifting the limit.
+## Inputs and outputs
+
+- **A function never modifies its arguments**: it takes values and returns a result (ADR-0014). `no-param-reassign` (properties included) checks it everywhere. In the core, `functional/immutable-data`, `functional/prefer-immutable-types` and `functional/type-declaration-immutability` also apply: a parameter's type is written deeply read-only (`readonly`, `Readonly<…>`; [lint](./lint.md#functional-prefer-immutable-types-and-functional-type-declaration-immutability)). Model types are `readonly`, so the compiler refuses a mutation even in the shell. A `procedure` that receives a DOM element may still call its methods (`append`, `setAttribute`), since changing the DOM is its job.
+- **Explicit inputs** (ADR-0016): no default and no optional parameter in `src/`. A caller must see every value a function uses. Defaults belong to the model, where a symbol's parameters declare them. A variant of a behavior is a separate named function, or an explicit field of a named parameter object.
+- **No magic number**: only `-1`, `0`, `1` and `2` appear inline. Any other number is a named, documented constant, so its meaning and source are written once.
 
 ## Forbidden
 
-- `any`, `!` (non-null assertion), `as` (except `as const`): an exception requires `// oxlint-disable-next-line rule -- justification` (oxlint runs these rules, `docs/conventions/lint.md`).
-- Classes, `this`, `enum` (use a union of literals), `for…in`, `get`/`set` accessors, dynamic `import()`.
-  - Why no `enum`: it emits hidden JavaScript at run time, while a union of literals is erased entirely; Node.js's type stripping refuses it (`REF-NODE-TS`); and a union of literals transcribes directly into a Rust `enum` (portable core, ADR-0025).
-- A spread into the value a `reduce` callback returns (`[...acc, x]`, `{ ...acc, k: v }`): it copies the accumulator at every step, in quadratic time (EN-061, `REF-OXLINT-ACCUMULATING-SPREAD`); build the result with `map` or `flatMap`, or, outside `src/`, a loop over a local array — never by mutating the accumulator (ADR-0014). oxlint's `oxc/no-accumulating-spread` reports a spread of the accumulator, held in a variable or not (EN-061, EN-075); a spread of another value into the returned literal is no longer reported.
-- Magic numbers: only `-1`, `0`, `1`, `2` are allowed inline; everything else is a named, documented constant.
+| Construct | Why | Instead |
+| --- | --- | --- |
+| `any`, `!`, `as` (but `as const`) | the type can no longer be trusted | an exception needs `// oxlint-disable-next-line rule -- reason` and its row in the [register](./exceptions.md) |
+| classes, `this`, get and set accessors | the model is plain data, and functions over it are named one per file (ADR-0025) | functions over plain types |
+| `enum` | it emits hidden JavaScript, Node.js's type stripping refuses it (`REF-NODE-TS`), and a union transcribes directly into a Rust `enum` (ADR-0025) | a union of literals |
+| `for…in`, dynamic `import()` | inherited keys; a load the import graph cannot see | `Object.entries`, a static import |
+| a spread of a fold's accumulator (`[...acc, x]`, `{ ...acc, k: v }`) | it copies the accumulator at each step, in quadratic time (`REF-OXLINT-ACCUMULATING-SPREAD`, `oxc/no-accumulating-spread`) | `map` or `flatMap`; outside `src/`, a loop over a local array; never a mutated accumulator |

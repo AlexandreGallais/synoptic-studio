@@ -3,7 +3,7 @@ id: SP-022
 epic: E17
 feature: F20
 title: Research for F20, the context diet
-status: draft
+status: done
 points: 1
 ---
 
@@ -22,4 +22,33 @@ Widened by the Product Owner on 2026-10-17: measure whether the agent works fast
 
 One task = one commit, referenced as `SP-022.Tn`.
 
-- [ ] T1 — Read, measure and record the sources (1 h)
+- [x] T1 — Read, measure and record the sources (1 h)
+
+## Findings
+
+[Research note 0024](../../research/notes/0024-f20-context-diet.md) answers each story's questions with a source or a measure, compares the shell with tools of our own for Git, file reading, web fetching and memory, drafts four stories, and holds the second round of questions.
+
+## The Product Owner's first round (2026-10-17)
+
+- **Progress page** (EN-087): the tree and statuses, durations per story and feature, the agents running, tokens per story and per run, the commits of each story and feature; other useful views at the agent's choice.
+- **Notifications** (EN-086): only when a question waits for the Product Owner and when a failure blocks, sent while the run keeps going on independent work; never at a plain stop nor at each merge.
+- **Run size**: a run delivers no more than the Product Owner can test on return; the bound is a second-round question.
+- **Run report** (EN-092): the run's duration and tokens only; gains and incidents go to the agent's logs and the retrospective.
+- **Context** (EN-065): each agent receives what its task needs, not everything.
+- **Agent-facing docs** (EN-096): reworded as principles, keeping the idea behind each decision.
+- **Tools of `package.json`**: their move to Rust belongs to F21.
+
+## The Product Owner's second round (2026-10-17), questions 1 to 4
+
+- **Run size**: no bound set by the agent; the Product Owner sets each run's scope at its start, as a time or an end. A question parks its story and the run goes on with independent work; a run stops only on a problem it cannot get around, at its scope's end, or when the Product Owner says so.
+- **Notifications** (EN-086): only for a question or a blocker that prevents finishing the scope asked, never to say the run ended early.
+- **EN-064**: closed with the measure of note 0024, nothing to set.
+- **EN-065**: one worker type per task kind, each measured.
+- **EN-066**: Sonnet for logs, backlog, merges and step texts, and one measured trial of Sonnet on a real story worker against Opus.
+
+## The Product Owner's second round (2026-10-17), questions 5 to 8
+
+- **Pushes** (EN-086): on the desktop and the phone; the Product Owner turns on Remote Control and **Push when Claude decides** once; the run skill says when to push.
+- **Tools of our own**: the Git sequences (EN-100) and every page fetched through the library with the project recorded (EN-101) in F20; the log of each tool's use and the reader of one row or section in F21.
+- **Agent-facing docs**: one story per family of pages (EN-096 to EN-099), each measured in tokens.
+- **Remarks**: none.

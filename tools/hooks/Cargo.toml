@@ -2,11 +2,12 @@
 name = "hooks"
 version = "0.1.0"
 edition.workspace = true
-description = "Claude Code hooks of the repository, and the transcript reading they share (EN-047)"
+description = "Claude Code hooks of the repository, and the transcript reading they share (EN-047, EN-101)"
 license.workspace = true
 publish.workspace = true
 
 [dependencies]
+worktree = { path = "../worktree" }
 
 [lints]
 workspace = true

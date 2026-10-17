@@ -1,7 +1,8 @@
 // Status line of Claude Code (docs/tooling/metrics.md), three lines: where the work stands
 // (epic, feature, story, step); the current turn, from the person's prompt (active or silent,
-// time, exact tokens), with how full the conversation memory is and the model; the tool call running, if any. Input: the status line JSON on
-// stdin (`REF-CC-STATUSLINE`).
+// time, exact tokens), the run's duration and tokens while a `/run` is open (EN-092), how full
+// the conversation memory is and the model; the tool call running, if any. Input: the status line
+// JSON on stdin (`REF-CC-STATUSLINE`).
 
 // Temporal runs behind `--harmony-temporal` in Node.js 24: the status line command passes it.
 
@@ -19,7 +20,9 @@ import { join } from "node:path";
 
 import { count, field } from "./status-json.ts";
 import { backgroundLines, placeOf, readRunningCall, runningLine } from "./status-place.ts";
+import { runPart } from "./status-run.ts";
 import { turnTokens } from "./status-tokens.ts";
+import { usageSnapshot } from "./status-usage.ts";
 
 import type { RunningCall } from "./status-place.ts";
 import type { TokenTally } from "./status-tokens.ts";
@@ -36,6 +39,8 @@ export type Status = {
   readonly model: string;
   /** Epic, feature and story of the branch checked out. */
   readonly place: string;
+  /** The open run's part, `run 2 h 05 · 48,123,456 tokens`, empty outside a run (EN-092). */
+  readonly run: string;
   /** Whether that call has run for more than 5 minutes: shown in red, to be checked. */
   readonly isRunningLong: boolean;
   /** Line of the tool call running, possibly empty. */
@@ -63,6 +68,7 @@ const COLOR = {
   cyan: "\u{1B}[36m",
   dim: "\u{1B}[2m",
   green: "\u{1B}[32m",
+  magenta: "\u{1B}[35m",
   red: "\u{1B}[31m",
   reset: "\u{1B}[0m",
   yellow: "\u{1B}[33m",
@@ -181,13 +187,14 @@ function activityOf(silentMs: number, tally: TokenTally): string {
  * @returns one line with ANSI colors
  */
 function sessionLine(status: Status): string {
-  const { contextPercent, durationMs, model, silentMs, tally } = status;
+  const { contextPercent, durationMs, model, run, silentMs, tally } = status;
   const isDone = isTurnDone(tally);
 
   return [
     isDone ? `${COLOR.dim}◌ your turn${COLOR.reset}` : activityOf(silentMs, tally),
     `⏱ ${isDone ? "last turn" : "turn"} ${clockDuration(durationMs)}`,
     `${tally.total.toLocaleString("en-US")} tokens this turn (${tally.output.toLocaleString("en-US")} written)`,
+    ...(run === "" ? [] : [`${COLOR.magenta}${run}${COLOR.reset}`]),
     `conversation memory ${String(Math.round(contextPercent))} % full`,
     `${COLOR.dim}${model}${COLOR.reset}`,
   ].join(SEPARATOR);
@@ -319,6 +326,7 @@ if (import.meta.main) {
         : (isTurnDone(tally) && tally.end !== 0 ? tally.end : now) - tally.start,
     model: typeof model === "string" ? model : "",
     place: placeOf(git(["branch", "--show-current"]), backlog),
+    run: runPart(root, textOf(join(folder, "run.json"))),
     isRunningLong: calls.some((call) => now - call.start > LONG_CALL_MS),
     running: runningLine(calls, now, shortDuration),
     silentMs: existsSync(transcript) ? now - statSync(transcript).mtimeMs : 0,
@@ -327,5 +335,12 @@ if (import.meta.main) {
   };
 
   writeFileSync(join(folder, "now.json"), JSON.stringify(sessionSnapshot(status, now)));
+
+  const usage = usageSnapshot(input, now);
+
+  if (usage !== undefined) {
+    writeFileSync(join(folder, "usage.json"), JSON.stringify(usage));
+  }
+
   process.stdout.write(statusText(status));
 }

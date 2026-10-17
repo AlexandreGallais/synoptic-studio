@@ -6,9 +6,19 @@ import { createInterface } from "node:readline";
 
 import { libraryPage, tableOfContents } from "./library-pages.ts";
 import { libraryPath, openLibrary, searchLibrary } from "./library-store.ts";
-import { recordUse } from "./library-usage.ts";
+import { projectOf, recordUse } from "./library-usage.ts";
 
 import type { DatabaseSync } from "node:sqlite";
+
+/** A call of one of the library's tools. */
+export type ToolCall = {
+  /** Its arguments. */
+  readonly input: unknown;
+  /** `library_search`, `library_get` or `library_read`. */
+  readonly name: string;
+  /** The project that asks (`projectOf`). */
+  readonly project: string;
+};
 
 /** Protocol version this server speaks. */
 const PROTOCOL_VERSION = "2025-06-18";
@@ -90,10 +100,11 @@ function text(value: unknown, key: string): string {
  * Answer of `library_search`.
  *
  * @param database - open library
+ * @param project - the project that asks
  * @param input - arguments: `query`, optional `limit`
  * @returns one line per section found, with its address, number, heading and snippet
  */
-function searchAnswer(database: DatabaseSync, input: unknown): string {
+function searchAnswer(database: DatabaseSync, project: string, input: unknown): string {
   const limit = field(input, "limit");
   const hits = searchLibrary(
     database,
@@ -105,6 +116,7 @@ function searchAnswer(database: DatabaseSync, input: unknown): string {
   );
   const use = {
     origin: hits.length > 0 ? "found" : "none",
+    project,
     query: text(input, "query"),
     tool: "search",
     url: "",
@@ -119,17 +131,22 @@ function searchAnswer(database: DatabaseSync, input: unknown): string {
  * Answer of `library_read`.
  *
  * @param database - open library
+ * @param project - the project that asks
  * @param input - arguments: `url`, `sections` (numbers)
  * @returns the text of the sections asked, in page order
  */
-async function readAnswer(database: DatabaseSync, input: unknown): Promise<string> {
+async function readAnswer(
+  database: DatabaseSync,
+  project: string,
+  input: unknown,
+): Promise<string> {
   const asked = field(input, "sections");
   const wanted = new Set(Array.isArray(asked) ? asked.map(Number) : []);
   const entry = await libraryPage(database, text(input, "url"), false);
 
   recordUse(
     database,
-    { origin: entry.origin, query: "", tool: "read", url: entry.page.url },
+    { origin: entry.origin, project, query: "", tool: "read", url: entry.page.url },
     Temporal.Now.instant().epochMilliseconds,
   );
 
@@ -143,15 +160,16 @@ async function readAnswer(database: DatabaseSync, input: unknown): Promise<strin
  * Answer of `library_get`.
  *
  * @param database - open library
+ * @param project - the project that asks
  * @param input - arguments: `url`, optional `refresh`
  * @returns the page's table of contents
  */
-async function getAnswer(database: DatabaseSync, input: unknown): Promise<string> {
+async function getAnswer(database: DatabaseSync, project: string, input: unknown): Promise<string> {
   const entry = await libraryPage(database, text(input, "url"), field(input, "refresh") === true);
 
   recordUse(
     database,
-    { origin: entry.origin, query: "", tool: "get", url: entry.page.url },
+    { origin: entry.origin, project, query: "", tool: "get", url: entry.page.url },
     Temporal.Now.instant().epochMilliseconds,
   );
 
@@ -162,22 +180,19 @@ async function getAnswer(database: DatabaseSync, input: unknown): Promise<string
  * Text answer of a tool.
  *
  * @param database - open library
- * @param name - tool called: `library_search`, `library_get` or `library_read`
- * @param input - its arguments
+ * @param call - the tool, its arguments and the project that asks, recorded with the use
  * @returns the text to give back
  */
-export async function callTool(
-  database: DatabaseSync,
-  name: string,
-  input: unknown,
-): Promise<string> {
+export async function callTool(database: DatabaseSync, call: ToolCall): Promise<string> {
+  const { input, name, project } = call;
+
   if (name === "library_search") {
-    return searchAnswer(database, input);
+    return searchAnswer(database, project, input);
   }
 
   return name === "library_get"
-    ? await getAnswer(database, input)
-    : await readAnswer(database, input);
+    ? await getAnswer(database, project, input)
+    : await readAnswer(database, project, input);
 }
 
 /**
@@ -204,22 +219,36 @@ function protocolResult(method: string): unknown {
 }
 
 /**
- * Result of a tool call: its text, or the error it met.
+ * Result of a tool call: its text, or the error it met. A `library_get` that met one, its fetch
+ * failing before any answer (a name, a certificate, a time-out), is recorded as `failed`, so that
+ * the page hook lets the page be read otherwise (AUD-022).
  *
  * @param database - open library
+ * @param project - the project that asks
  * @param parameters - `name` and `arguments` of the call
  * @returns the MCP tool result
  */
-async function toolResult(database: DatabaseSync, parameters: unknown): Promise<unknown> {
+async function toolResult(
+  database: DatabaseSync,
+  project: string,
+  parameters: unknown,
+): Promise<unknown> {
+  const input = field(parameters, "arguments");
+  const name = text(parameters, "name");
+
   try {
-    const answerText = await callTool(
-      database,
-      text(parameters, "name"),
-      field(parameters, "arguments"),
-    );
+    const answerText = await callTool(database, { input, name, project });
 
     return { content: [{ text: answerText, type: "text" }], isError: false };
   } catch (error) {
+    if (name === "library_get") {
+      recordUse(
+        database,
+        { origin: "failed", project, query: "", tool: "get", url: text(input, "url") },
+        Temporal.Now.instant().epochMilliseconds,
+      );
+    }
+
     return { content: [{ text: String(error), type: "text" }], isError: true };
   }
 }
@@ -228,10 +257,15 @@ async function toolResult(database: DatabaseSync, parameters: unknown): Promise<
  * Answer to one JSON-RPC message, or nothing for a notification.
  *
  * @param database - open library
+ * @param project - the project the server runs for
  * @param message - parsed request
  * @returns the response object, `undefined` for a notification
  */
-export async function answer(database: DatabaseSync, message: unknown): Promise<unknown> {
+export async function answer(
+  database: DatabaseSync,
+  project: string,
+  message: unknown,
+): Promise<unknown> {
   const id = field(message, "id");
 
   if (id === undefined) {
@@ -241,7 +275,7 @@ export async function answer(database: DatabaseSync, message: unknown): Promise<
   const method = text(message, "method");
   const result =
     method === "tools/call"
-      ? await toolResult(database, field(message, "params"))
+      ? await toolResult(database, project, field(message, "params"))
       : protocolResult(method);
 
   return result === undefined
@@ -257,13 +291,15 @@ export async function answer(database: DatabaseSync, message: unknown): Promise<
  * Answers each line of the standard input on the standard output, until the input closes.
  *
  * @param database - open library
+ * @param project - the project the server runs for
  * @returns once the client has closed the input
  */
-async function serve(database: DatabaseSync): Promise<void> {
+async function serve(database: DatabaseSync, project: string): Promise<void> {
   const lines = createInterface({ input: process.stdin });
 
   for await (const line of lines) {
-    const response = line.trim() === "" ? undefined : await answer(database, JSON.parse(line));
+    const response =
+      line.trim() === "" ? undefined : await answer(database, project, JSON.parse(line));
 
     if (response !== undefined) {
       process.stdout.write(`${JSON.stringify(response)}\n`);
@@ -272,5 +308,9 @@ async function serve(database: DatabaseSync): Promise<void> {
 }
 
 if (import.meta.main) {
-  await serve(openLibrary(libraryPath()));
+  // Claude Code starts the server in the project's folder; `CLAUDE_PROJECT_DIR` names it when set.
+  await serve(
+    openLibrary(libraryPath()),
+    projectOf(process.env["CLAUDE_PROJECT_DIR"] ?? process.cwd()),
+  );
 }

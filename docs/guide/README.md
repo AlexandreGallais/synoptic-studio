@@ -37,6 +37,7 @@ Written at the end of each feature (`VAL`, demo page) and of each epic (`REV`, e
 | [F17 — Text corrections after the E15 validation](./f17-text-corrections.md) | the options removed, the defects fixed and why, the checklist, the readings and questions to confirm, Apple Color Emoji |
 | [F18 — A safe and cheap parallel run](./f18-safe-and-cheap-parallel-run.md) | the limits the tools enforce, the figures before and after, each criterion's evidence, the commands to try, the decisions confirmed |
 | [F19 — Checks on Oxc, TypeScript 7 and Rust](./f19-checks-on-oxc-and-rust.md) | the checks moved to native tools, the time before and after, the rules triaged, the tests made leaner, the ADRs, the audit, the commands to try |
+| [F20 — A context diet for every agent](./f20-a-context-diet.md) | an agent type per task, the first requests and the rules' size before and after, the models and their trial, the Git sequences and the library, the hand-back check, a run's totals and stops, the audit, the commands to try |
 | [E01 — Drawing symbol shapes from numbers](./e01-draw-shapes.md) | the eight features of E01, the words, a user test crossing them, the decisions |
 | [E14 — Drawing curves with handles, ellipses and round shapes](./e14-draw-curves.md) | the four features of E14, the words, the walk-through of the review, the decisions |
 | [E15 — Placing text in symbols](./e15-place-text.md) | the five features of E15, the words, the tour of the review, the decisions, the direction to remove |

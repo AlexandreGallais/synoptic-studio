@@ -2,8 +2,10 @@ import { describe, expect, it } from "vitest";
 
 import { readTurn, turnRecord, turnsTable } from "./turns";
 
+import type { SessionFigures } from "./session-report";
+
 /** Figures of a turn of 10 minutes. */
-const FIGURES = {
+const FIGURES: SessionFigures = {
   activeMs: 360_000,
   cacheReadTokens: 3000,
   cacheWriteTokens: 200,
@@ -13,6 +15,7 @@ const FIGURES = {
   inputTokens: 4,
   outputTokens: 75,
   requests: 2,
+  tokensByModel: [["claude-opus-5-5", 3279]],
   wallMs: 600_000,
 };
 

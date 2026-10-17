@@ -73,7 +73,7 @@ Every started epic closes with `NAM` (naming pass over the whole code, ADR-0049,
 | Item | Statuses |
 | --- | --- |
 | Epic, feature | `draft` → `ready` → `in-progress` → `done` |
-| Story | `draft` → `ready` → `done` on `develop` (`in-progress` only on its branch; or `dropped`) |
+| Story | `draft` → `ready` → `done` on `develop` (`in-progress` only on its branch; or `dropped`); `parked` while a question waits for the Product Owner, the question written in the story, then `ready` again once answered (EN-086) |
 
 An epic or a feature becomes `in-progress` when its first story starts, and `done` when its closing stories are merged (`VAL` for a feature; `REV` and `RET` for an epic). The agent proposes the change, the Product Owner agrees (decision of 2026-10-08).
 

@@ -3,11 +3,11 @@
 //   npm run library -- get <url> [--refresh] table of contents, fetched when missing or stale
 //   npm run library -- read <url> <n> [<n>…] sections of a page
 //   npm run library -- list                 stored pages, last read first
-//   npm run library -- stats [YYYY-MM-DD]   sources consulted most, searches, share served locally
+//   npm run library -- stats [YYYY-MM-DD]   projects, sources consulted most, searches, share local
 
 import { callTool } from "./library-mcp.ts";
 import { libraryPath, listPages, openLibrary } from "./library-store.ts";
-import { usageReport } from "./library-usage.ts";
+import { projectOf, usageReport } from "./library-usage.ts";
 
 if (import.meta.main) {
   const [command = "", ...rest] = process.argv.slice(2);
@@ -33,9 +33,13 @@ if (import.meta.main) {
 
     process.stdout.write(`${lines.join("\n")}\n`);
   } else if (inputs.has(command)) {
-    process.stdout.write(
-      `${await callTool(database, `library_${command}`, inputs.get(command))}\n`,
-    );
+    const call = {
+      input: inputs.get(command),
+      name: `library_${command}`,
+      project: projectOf(process.cwd()),
+    };
+
+    process.stdout.write(`${await callTool(database, call)}\n`);
   } else {
     process.stderr.write(
       "Usage: npm run library -- search <words> | get <url> [--refresh] | read <url> <n>… | list | stats [since]\n",

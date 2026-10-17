@@ -21,5 +21,5 @@
 | [F11](./E14-F11-code-base-ready-for-curves.md) | E14 | A code base ready for curves | done |
 | [F18](./E17-F18-a-safe-and-cheap-parallel-run.md) | E17 | A safe and cheap parallel run, and E15's leftovers | done |
 | [F19](./E17-F19-oxc-and-rust-tools.md) | E17 | Checks on Oxc, TypeScript 7 and Rust | done |
-| [F20](./E17-F20-a-context-diet.md) | E17 | A context diet for every agent | draft |
+| [F20](./E17-F20-a-context-diet.md) | E17 | A context diet for every agent | done |
 | [F21](./E17-F21-agent-tools-in-rust.md) | E17 | Agent tools and the library server in Rust | draft |

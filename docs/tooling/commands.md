@@ -3,81 +3,81 @@
 | Command | Role |
 | --- | --- |
 | `npm run dev` | Vite server on `playground/` (`http://localhost:5173`) |
-| `npm run build` | `npm audit`, then library build (`dist/editor.js`) + declarations (`dist/types/`, by Oxc's isolated declarations, EN-091) |
-| `npm run test` / `test:watch` | Vitest on half the machine's cores (`maxWorkers`, held by `tests/vitest-workers.test.ts`) under the heavy lock, with coverage of `src/` (100 % required) and `playground/` (a floor): library, playground, `tests/` (the linters' configuration, backlog, bibliography, barrels, diagrams, dependencies, fitness), scripts and hooks |
-| `npm run lint` | oxlint first, on the TypeScript of the same targets, with its native and type-aware rules (`.oxlintrc.json`, EN-074) and TypeScript's own errors (`--type-check`, typescript-go 7 under `tsgolint`: the same errors as `tsc --noEmit` on the tree and on planted errors, about 1.1 s with them against 0.8 s without, EN-091, `REF-OXLINT-CLI`); then the project's linter (`tools/lint`, EN-075), with the project's rules and those oxlint lacks, on the TypeScript and the Markdown pages (EN-077); each on the named targets (root `*.ts` and `*.md`, `.claude/` folders, `.github`, `docs`, `playground`, `scripts`, `src`, `tests`); zero warning tolerated; alone on 2026-10-17, oxlint 1.5 s with the type check, the project's linter 0.24 s on 2,048 files; 2.2 to 5.2 s for both in `check:all` (ADR-0075 compares them with ESLint) |
-| `npm run lint:secrets` | secretlint on every file tracked by Git (`git ls-files`): no key, token or password |
-| `npm run format` / `format:check` | the formatter, `tools/format` (oxfmt, then Markdown tables without padding, ADR-0068), on the named targets (root files, `.cargo`, `.claude/` folders, `.github`, `.husky`, `.vscode`, `docs`, `playground`, `scripts`, `src`, `tests`, `tools`); `format:check` changes nothing |
-| `npm run typecheck` | `tsc --noEmit`, TypeScript 7 (`typescript` 7.0.2, the only TypeScript since EN-085; EN-071): about 0.7 s; a type error exits with 1, not 2 as TypeScript 6 did; out of `check` and `check:all` since EN-091, the lint reporting the same errors |
-| `npm run fix` | the formatter, oxlint `--fix` with the type errors (EN-091), then the project's linter `--fix`: **run before each commit** |
-| `npm run check` | the formatter + the lint (type errors included) + secretlint + Vitest + `npm audit` + knip + `check:rust`, one after the other, without the builds; not run per task: a task ends with `fix` and its touched tests, and `check:all` runs at the push (EN-093) |
-| `npm run check:rust` | the Rust workspace's checks, its own lane of `check:all`: `cargo fmt --all --check`, `cargo clippy --workspace --all-targets --locked`, `rust:advisories`, `rust:coverage`, `cargo check --workspace --all-targets --target x86_64-pc-windows-msvc` (compiled for Windows without linking, so a Unix-only call outside `cfg(unix)` fails on the Mac, EN-070; EN-068, EN-069), its release binaries built by `check:all` before the lanes; warnings are errors through `.cargo/config.toml`; about 17 to 20 s on a built workspace against 11 to 14 s with `cargo test` (2026-10-17, four runs each on a loaded machine), the instrumented build of `rust:coverage` taking most of the difference |
-| `npm run rust:advisories` | `cargo deny --offline check advisories` (0.20.2, `REF-CARGO-DENY-ADVISORIES`, configured by `deny.toml`): every crate of the root `Cargo.lock` against the local copy of the RustSec database, unmaintained and yanked crates failing too, in about 0.3 s (EN-069); `cargo deny fetch db` refreshes that copy, and the CI fetches it before `check:all`; without cargo-deny or its database it fails and names the command to run |
-| `npm run rust:coverage` | the workspace's tests under `cargo llvm-cov` (0.9.1, `REF-CARGO-LLVM-COV`), failing under 93 % of lines or 93 % of functions of the workspace (EN-069, [agent tools](./agent-tools.md#rust)); about 11.5 s against 8.7 s for `cargo test` before EN-070, as it builds the workspace again instrumented; without `cargo-llvm-cov` it fails and names its install command |
-| `npm run rust:build` | the Rust tools' release binaries, `cargo build --release --workspace --locked`, into the root `target/release/`; run by `prepare` after `npm install` and by `worktree:new` in a new worktree; the scripts and Git hooks run each tool by `cargo run --release -q -p <crate>`, whose check that the binary is up to date costs about 0.03 to 0.05 s on a built workspace, so the first call after `prepare` is warm (EN-068) |
-| `npm run deps:audit` | `npm audit`, any severity fails |
-| `npm run deps:outdated` | fails when a dependency is not on its latest version |
+| `npm run build` | `npm audit`, then the library (`dist/editor.js`) and its declarations (`dist/types/`, [build](#build)) |
+| `npm run test` / `test:watch` | Vitest under the heavy lock, on half the machine's cores: the library, the playground, `tests/`, the scripts and hooks; coverage of `src/` 100 %, of `playground/` a floor |
+| `npm run lint` | oxlint with its type-aware rules and TypeScript's own errors (`--type-check`, `.oxlintrc.json`, `REF-OXLINT-CLI`), then the project's linter (`tools/lint`) with the project's rules and those oxlint lacks, on TypeScript and Markdown; zero warning tolerated |
+| `npm run lint:secrets` | secretlint on every file Git tracks: no key, token or password |
+| `npm run format` / `format:check` | the formatter, `tools/format`: oxfmt, then Markdown tables without padding (ADR-0068); `format:check` changes nothing |
+| `npm run typecheck` | `tsc --noEmit` (TypeScript 7); outside `check` and `check:all`, where the lint reports the same errors |
+| `npm run fix` | the formatter, oxlint `--fix`, the project's linter `--fix`: **before each commit** |
+| `npm run check` | format, lint, secretlint, Vitest, `npm audit`, knip and `check:rust` one after the other, without the builds |
+| `npm run check:all` | `rust:build`, then the [five lanes](#the-lanes-of-the-full-check) at once: what the pre-push hook and the CI run; about 40 s on a code story, a minute with the docs build |
+| `npm run check:rust` | the Rust workspace: `cargo fmt --check`, Clippy, `rust:advisories`, `rust:coverage`, and a check for Windows without linking, so that a Unix-only call outside `cfg(unix)` fails on the Mac; warnings are errors (`.cargo/config.toml`) |
+| `npm run rust:advisories` | cargo-deny against the local copy of the RustSec database (`deny.toml`, `REF-CARGO-DENY-ADVISORIES`): unmaintained and yanked crates fail too; `cargo deny fetch db` refreshes the copy |
+| `npm run rust:coverage` | the workspace's tests under `cargo llvm-cov` (`REF-CARGO-LLVM-COV`), failing under the [floor](./agent-tools.md#rust) |
+| `npm run rust:build` | the Rust tools' release binaries into `target/release/`; run by `prepare` and `worktree:new`, so that the first `cargo run --release -q -p <crate>` of a script or hook is warm |
+| `npm run deps:audit` | `npm audit`: any severity fails |
+| `npm run deps:outdated` | fails when a package is not on its latest version ([versions](./versions-and-security.md)) |
 | `npm run deps:unused` | knip: unused files, exports and dependencies (`knip.json`) |
-| `npm run deps:tools` | fails when a GitHub Action is not on its latest major version or `.nvmrc` not on the latest Node.js LTS |
-| `npm run check:all` | `rust:build`, then five parallel lanes (what CI and the pre-push hook run): about 40 s on a code story, 57 to 68 s with the docs build (EN-085; [its lanes](#the-lanes-of-the-full-check)) |
-| `npm run docs:dev` / `docs:build` / `docs:preview` | documentation site (API pages written first by `tools/api-pages`, `npm run docs:api`) |
-| `npm run docs:api` | regenerate `docs/api/` from the TSDoc |
-| `npm run branches:clean` | fetches with prune, deletes the local branches merged into `develop` or whose own branch on GitHub was deleted (never `main`, `develop`, the current one, nor a story just started: never pushed and without a commit beyond the branch it was made from) and removes their worktrees (one holding changes or a running process's working folder is kept and named), reports the branches, stashes and worktrees left; after each merged feature and each release |
-| `npm run records:save` | copies the metrics, the transcripts and the source library into the private records repository `records/` (ignored by Git), commits and pushes (ADR-0041, ADR-0044); at the end of each session and each retrospective |
-| `npm run metrics:session` | time and tokens of the current turn; `--markdown` for the chat, `--all` for the conversation ([metrics](./metrics.md#session-report)) |
-| `npm run library -- …` | the local source library: `search`, `get`, `read`, `list` ([sources](./sources.md)) |
-| `npm run metrics` | Markdown report of the agent's work: commands by count and time, slowest calls, time and tokens per session, feature, story and task ([metrics](./metrics.md)) |
-| `npm run replace`, `backlog:status`, `backlog:index`, `worktree:new`, `story:finish`, `mutate`, `val:prepare`, `golden:write`, `golden:check`, `activity`, `epic:check` | the agent's tools ([agent tools](./agent-tools.md)) |
-| `npm run font:metrics -- <folder>` | writes the default font's metrics, `src/model/font/inter-metrics.json`, from Inter 4.1's static TrueType files unpacked in the folder (EN-031); the font files are not kept in the repository |
-| `npm run playground:build` | static build of the playground into the docs site (`docs/.vitepress/dist/playground/`) |
+| `npm run deps:tools` | fails when a GitHub Action is not on its latest major, or `.nvmrc` not on the latest Node.js LTS |
+| `npm run docs:dev` / `docs:build` / `docs:preview` | the documentation site, its API pages written first ([documentation site](./documentation-site.md)) |
+| `npm run docs:api` | `docs/api/` from the TSDoc |
+| `npm run playground:build` | the playground, built into the site (`docs/.vitepress/dist/playground/`) |
+| `npm run branches:clean` | deletes the local branches merged into `develop` or gone from GitHub, with their worktrees, and reports what is left; never `main`, `develop`, the current branch, a story just started, nor a worktree holding changes or a running process |
+| `npm run records:save` | copies the metrics, the transcripts and the source library into the private records repository `records/` (ADR-0041, ADR-0044); at the end of each session and retrospective |
+| `npm run metrics`, `metrics:session` | the report of the agent's work, the session report ([metrics](./metrics.md)) |
+| `npm run library -- …` | the local source library ([sources](./sources.md)) |
+| `npm run font:metrics -- <folder>` | writes `src/model/font/inter-metrics.json` from Inter's static TrueType files unpacked in the folder, which the repository does not keep |
+| `npm run replace`, `backlog:status`, `backlog:index`, `worktree:new`, `git:sync`, `git:commit`, `run:start`, `run:end`, `run:should-stop`, `context:size`, `story:finish`, `mutate`, `val:prepare`, `golden:write`, `golden:check`, `activity`, `epic:check` | the agent's tools ([agent tools](./agent-tools.md)) |
+
+**When to run what**: a task ends with `npm run fix` and the tests it touched (`npx vitest run <paths>`); `check:all` runs at the push, through the pre-push hook. `check` is not run per task: it repeats what the push runs.
 
 ## The lanes of the full check
 
-`check:all` runs `rust:build` first (0.1 s on a built workspace), then the five lanes at once; within a lane, its scripts run in order.
+`check:all` builds the Rust binaries first, then runs the lanes at once, the scripts of a lane in order.
 
 | Lane | Runs | Skipped when |
 | --- | --- | --- |
 | lint | `lint` | never |
 | test | `test` | never |
-| docs | `docs:build`, then `playground:build` | the branch changed none of `docs/`, `src/`, `playground/`, `tools/api-pages/`, `Cargo.toml`, `Cargo.lock`, `rust-toolchain.toml`, `package.json`, `package-lock.json`, `vite.config.ts` against its base, committed or not, a moved file counting under its old path too (EN-085, AUD-021) |
+| docs | `docs:build`, then `playground:build` | the branch changed nothing the site is built from against its base — `docs/`, `src/`, `playground/`, `tools/api-pages/`, `Cargo.toml`, `Cargo.lock`, `rust-toolchain.toml`, `package.json`, `package-lock.json`, `vite.config.ts` — committed or not, a moved file counting under its old path too |
 | checks | `format:check`, `lint:secrets`, `deps:audit`, `deps:unused`, `deps:tools`, `deps:outdated` | never |
 | rust | `check:rust` | never |
 
-The base is the nearest of `origin/develop` and `origin/feature/*` for a story, `origin/develop` for a feature; on `main`, `develop`, a detached head, in the CI or when Git fails, every lane runs, and a line says when the docs lane is skipped. A lane runs a script that takes the heavy lock without it, `check:all` holding it, so that no release binary is written while a lane starts one: `cargo run` copies its binary into `target/release/` again even when it is up to date, and two lanes starting the same binary at once fail with `could not execute process … No such file or directory` (EN-069).
+The base is the nearest of `origin/develop` and `origin/feature/*` for a story, `origin/develop` for a feature. When the base is unclear — `main`, `develop`, a detached head, the CI, a Git error — every lane runs: skipping is allowed only when it is certain the lane has nothing to check. A line says when the docs lane is skipped. The lanes run inside `check:all`'s heavy lock, and no release binary is built once they start: two lanes starting the same binary while `cargo run` rewrites it fail with `could not execute process`.
 
 ## Explicit targets
 
-Every check tool is given the folders and files it checks, by name (EN-045): the scripts above, `knip.json` `project`, `tsconfig.json` `include`, Vitest's `include` and coverage `include`. None walks the repository from `.`, so the copies of the repository in `.claude/worktrees/` and the generated folders (`records/`, `coverage/`, `dist/`, the Rust tools' `target/`, `docs/api/`, `docs/.vitepress/{.temp,cache,dist}`) stay out; each tool's ignore list names them too. A new tracked folder must be added to the targets: `tests/check-targets.test.ts` fails until it is.
+Every check tool is given the folders and files it checks by name — the scripts, `knip.json`'s `project`, `tsconfig.json`'s `include`, Vitest's `include` and coverage — and never walks the repository from `.`. So the worktrees' copies in `.claude/worktrees/` and the generated folders (`records/`, `coverage/`, `dist/`, `target/`, `docs/api/`, VitePress's caches) stay out without each tool knowing them. A new tracked folder is added to the targets; `tests/check-targets.test.ts` fails until it is.
+
+## Tests that run Git
+
+Every test removes every inherited `GIT_*` variable from each command it starts, `git` itself or a binary that runs it, then sets only those it needs (`GIT_CONFIG_GLOBAL` for a test configuration, for instance). The pre-push hook sets `GIT_DIR` before `check:all` runs the tests: inherited, it points the test's commands at the real repository instead of the temporary one, and a `git init --bare` run that way once turned the real repository bare (2026-10-17). It applies to every test language — Vitest's `env` of `spawnSync`, Rust's `Command::env_remove` — and to every test, even one that passes when run alone: the variable exists only under the hook. The rule binds the tests, not the binaries: run by the agent in the real repository, a binary inherits no `GIT_DIR` of a hook, so `git-sequences`, `check-handback` and `run-totals` remove none.
 
 ## One heavy command at a time
 
-`check:all`, `npm run test`, `golden:check`, `docs:build` and `mutate` run through the Rust tool `tools/heavy-lock/` (`cargo run --release -q -p heavy-lock`, ADR-0072, EN-047, EN-068): each takes `.git/heavy.lock` in the Git common directory, shared by every worktree, writes its process id, command, worktree and start in it, and holds the system's lock on that file (`flock`, `REF-MACOS-FLOCK`) while its command runs. The system frees that lock when the process ends, even after a force-quit; the file only names the owner in the waiting message (AUD-020).
+`check:all`, `npm run test`, `golden:check`, `docs:build` and `mutate` take the heavy lock themselves (`tools/heavy-lock/`, ADR-0072): `.git/heavy.lock` in the Git common directory, shared by every worktree. Several at once, from parallel worktrees, froze the machine in E15. The lock is the system's file lock (`flock`, `REF-MACOS-FLOCK`), freed when the process ends, even after a force-quit; the file only names its owner — process, command, worktree, start — for the waiting message.
 
 | Situation | What happens |
 | --- | --- |
 | no lock | the command takes it, runs, then removes it |
-| a lock held by a running command | the command waits, and says once which process, command and worktree holds it, and for how long |
-| a lock file no process holds (left by a force-quit) | the command says so and takes it over at once, whatever process id the file names; of two commands taking it over at once, one runs, the other waits for it |
-| a command started by the lock's owner | it runs inside that lock: `check:all` runs `npm run test` and `docs:build` itself |
-| a folder `heavy.lock` (the lock taken by `mkdir`) | the command waits, its owner unknown: remove it with `rmdir` once its command ended; never take it by hand — a `git push` inside it waits forever for its own pre-push `check:all` (2026-10-17) |
-| a lock file held by another tool, naming no process | the command waits: remove it with `rm` once that tool's command ended |
+| the lock held by a running command | the command waits, and says once who holds it and for how long |
+| a lock file no process holds | the command says so and takes it over |
+| a command started by the lock's owner | it runs inside that lock: `check:all` runs `npm run test` and `docs:build` itself, a push inherits it through its pre-push |
+| a folder `heavy.lock`, or a file held by another tool | the command waits, its owner unknown: remove it (`rmdir`, `rm`) once its command ended |
 
-A push inherits the lock through its pre-push hook (`check:all`). Single test files (`npx vitest run <paths>`) take no lock.
+Never take the lock by hand (`mkdir`) nor wrap a command in a lock of one's own: the command inside waits for a lock it cannot see the owner of, and a `git push` waits forever for its own pre-push `check:all`. Single test files (`npx vitest run <paths>`) take no lock.
 
-`story:finish` takes a second lock the same way, `.git/merge.lock` (`heavy-lock --lock merge`, ADR-0065 decision 5, EN-051): two stories finishing at once merge one after the other, the second rebasing on the base the first updated. The two locks are apart: each names its owner to its commands in its own variable (`HEAVY_LOCK_PID`, `MERGE_LOCK_PID`), so the push under the merge lock still waits for the heavy one.
+`story:finish` takes a second lock the same way, `.git/merge.lock` (`heavy-lock --lock merge`, ADR-0065): two stories finishing at once merge one after the other, the second rebasing on the base the first updated. Each lock names its owner in its own variable (`HEAVY_LOCK_PID`, `MERGE_LOCK_PID`), so a push under the merge lock still waits for the heavy one.
 
 ## Playground
 
-`playground/index.html` loads `playground/index.ts`, which may only import the public API (`../src`). It is published with the docs site on each release: <https://alexandregallais.github.io/synoptic-studio/playground/> (menu _Playground_). It will show each pipeline stage (integer model → `d` → `<path>`) as features arrive.
+`playground/index.html` loads `playground/index.ts`, which imports the public API only (`../src`): the playground uses the library as a user would. It is published with the site at each release: <https://alexandregallais.github.io/synoptic-studio/playground/>.
 
 ## Build
 
-Vite library mode (`build.lib`), a single unminified ESM output; `tools/declarations` writes the `.d.ts` from each module alone with Oxc's isolated declarations (`cargo run --release -q -p declarations -- src dist/types`, 0.06 s for 589 files against 0.63 s for `tsc`, EN-091, ADR-0071), and fails on an exported constant whose type is neither written nor read from a plain literal (TypeScript's TS9010). `package.json`: `"sideEffects": false`, `exports` points to `dist/`.
-
-## CI
-
-See [ci.md](./ci.md).
+Vite's library mode, one unminified ESM file; `package.json` has `"sideEffects": false` and `exports` pointing to `dist/`. `tools/declarations` writes the `.d.ts` of each module alone with Oxc's isolated declarations (ADR-0071), so every exported constant needs a type it can read: one written, or a plain literal; otherwise the build fails (TypeScript's TS9010).
 
 ## IDE
 
-See [formatting](../conventions/formatting.md#format-on-save). WebStorm and VS Code settings are in the repository (`.idea/`, `.vscode/`).
+[Format on save](../conventions/formatting.md#format-on-save); WebStorm and VS Code settings are in the repository (`.idea/`, `.vscode/`).

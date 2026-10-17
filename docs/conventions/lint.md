@@ -1,13 +1,13 @@
 # Lint
 
-Two linters run one after the other (`npm run lint`, ADR-0075): **oxlint** first, with its native rules, `tsgolint`'s type-aware ones and TypeScript's errors (`.oxlintrc.json`, EN-074, ADR-0071), then **the project's linter** (`tools/lint`, Rust, EN-075), with the project's own rules, those oxlint lacks and the Markdown rules (EN-077). ESLint left with EN-085: each rule of its former `eslint/` folder is run by oxlint, run by the project's linter, or dropped with its reason, as ADR-0075 lists them.
+Two linters run one after the other in `npm run lint` (ADR-0075). **oxlint** runs first, with its native rules, the type-aware rules of `tsgolint` and TypeScript's errors (`.oxlintrc.json`, ADR-0071). **The project's linter** (`tools/lint`, Rust) runs next, with the project's own rules, the plugin rules oxlint lacks, and the Markdown rules.
 
-## Principle
+## Principles
 
-- **Every rule is decided once**, explicitly: `.oxlintrc.json` turns off oxlint's default category and names each rule it runs, with its options; no preset is imported. Each rule of the project's linter is a module of `tools/lint/src/rules/` with its tests.
-- Everything is an error. `npm run lint` runs oxlint with `--deny-warnings`, and the project's linter fails on any finding.
-- **Strictest by default, relaxed by zone**: the first override of `.oxlintrc.json` (`**/*.ts`) and the rules the project's linter turns on everywhere describe the strictest setting (the functional core's); the later overrides and the `SCOPES` of `tools/lint/src/scopes.rs` relax or tighten by path.
-- `tests/oxlint-config.test.ts` fails when `.oxlintrc.json` names a rule oxlint does not have, and when ESLint comes back.
+- **Every rule is decided once, explicitly.** `.oxlintrc.json` turns off oxlint's default category and names each rule it runs, with its options; no preset is imported. A preset changes with its package, while a named rule changes only by a commit that gives its reason. `tests/oxlint-config.test.ts` fails when `.oxlintrc.json` names a rule oxlint does not have.
+- **Everything is an error.** oxlint runs with `--deny-warnings`, and the project's linter fails on any finding. A warning nobody must fix is noise.
+- **Strictest by default, relaxed by zone.** The first override of `.oxlintrc.json` (`**/*.ts`) and the rules the project's linter turns on everywhere set the functional core's strictness. Later overrides, and the `SCOPES` of `tools/lint/src/scopes.rs`, relax or tighten by path.
+- **A rule stays if it serves the one who writes and reads this code**: it catches a bug the compiler lets through, it guards a domain rule or an ADR's decision, or it gives a construct one form. A rule that only costs time on what is already respected goes. A rule that guards correctness, the domain or an ADR is never dropped without a new ADR. EN-093 applied this test to every rule ([rules](./rules.md)).
 
 ## Zones
 
@@ -16,287 +16,97 @@ Two linters run one after the other (`npm run lint`, ADR-0075): **oxlint** first
 | pure layers (`.oxlintrc.json`) | `src/math`, `src/geometry`, `src/model`, `src/routing`, `src/io` | forbids the DOM and the host |
 | `dom-layers` (`tools/lint`) | `src/render/`, `src/interaction/`, `playground/` | the functional core's statement rules off (ADR-0014) |
 | barrels (both) | `src/**/index.ts`, `playground/*/**/index.ts` (not the entry) | any number of imports; the barrel's exports checked |
-| tooling (both) | root `*.config.ts`, `*.setup.ts`, `*.test.ts`, `tests/`, `docs/.vitepress/`, `.claude/hooks/`, `scripts/` | Node.js, development packages |
-| tests (both) | `**/*.test.ts` | literal numbers, free length |
+| tooling (both) | root `*.config.ts`, `*.setup.ts`, `*.test.ts`, `tests/`, `docs/.vitepress/`, `.claude/hooks/`, `scripts/` | Node.js, development packages, the core's statement rules off |
+| tests (both) | `**/*.test.ts` | literal numbers, free length, callbacks nested up to 4, no `@kind`, `@param` and `@returns` optional |
 | root configurations (`.oxlintrc.json`) | root `*.config.ts`, `docs/.vitepress/config.ts` and `theme/index.ts` | a default export |
 
 ## Changing a rule
 
 1. Find it: `grep -n '"rule-name"' .oxlintrc.json`, or its module in `tools/lint/src/rules/`.
-2. Change the value **there only**; a rule turned off leaves `.oxlintrc.json` or its scope, its reason in the commit and, for a rule of the project's linter, in the module's comment.
-3. A value taken from a table is changed in `tools/lint/src/settings.rs` (`PROCEDURE_VERBS`, `KIND_LIMITS`…).
-4. A path-specific exception goes to an override of `.oxlintrc.json` or a scope of `tools/lint/src/scopes.rs`, never to the rule itself.
-5. `npm run fix`, then `npm run lint` on the whole tree; `check:all` runs at the push (EN-093).
+2. Change its value there, and only there. A value taken from a table, such as `PROCEDURE_VERBS` or `KIND_LIMITS`, is changed in `tools/lint/src/settings.rs`.
+3. Give an exception for a path to an override of `.oxlintrc.json` or a scope of `tools/lint/src/scopes.rs`, never to the rule itself, so that the rule stays whole everywhere else.
+4. A rule turned off leaves `.oxlintrc.json` or its scope, with its reason in the commit and, for a rule of the project's linter, in its module's comment.
+5. Run `npm run fix`, then `npm run lint` on the whole tree. `check:all` runs at the push.
 
-After an oxlint upgrade, read its release notes for the new rules and decide them in `.oxlintrc.json`.
+After an oxlint upgrade, read its release notes for new rules, and decide each in `.oxlintrc.json`.
 
 ## One-off exceptions
 
-`// oxlint-disable-next-line rule -- justification` for a rule oxlint runs, `// lint-disable-next-line rule -- justification` for one the project's linter runs; each linter reports a directive that silences nothing (oxlint through `--report-unused-disable-directives-severity=error`, AUD-021), and the justification is mandatory (`unicorn/no-abusive-eslint-disable`). oxlint reads `@typescript-eslint/x` and `typescript/x` as the same rule; the directives use the first. Each directive has its row in the [register of exceptions](./exceptions.md), in the same change (ADR-0066).
+Turn a rule off for one line only, with its reason, and register the line ([register of exceptions](./exceptions.md), ADR-0066):
+
+```ts
+// oxlint-disable-next-line @typescript-eslint/consistent-type-assertions -- data read from outside
+// lint-disable-next-line local/kind-limits -- reason, for a rule of the project's linter
+```
+
+- The reason after `--` is mandatory (`unicorn/no-abusive-eslint-disable`).
+- A directive that silences nothing is an error in each linter (oxlint's `--report-unused-disable-directives-severity=error`).
+- oxlint reads `@typescript-eslint/x` and `typescript/x` as one rule; the directives use the first name.
+- Write no `eslint-disable` directive: oxlint reads it as its own.
 
 ## Known autofix pitfall
 
-`unicorn/prefer-import-meta-properties` replaces `fileURLToPath(new URL(".", import.meta.url))` (trailing slash) with `import.meta.dirname` (no trailing slash): concatenated paths break. Always build paths with `join()`.
+`unicorn/prefer-import-meta-properties` replaces `fileURLToPath(new URL(".", import.meta.url))`, which ends with a slash, by `import.meta.dirname`, which does not: a path concatenated to it breaks. Always build paths with `join()`.
 
 ## The project's linter (`tools/lint`)
 
-A crate of the Rust workspace on Oxc's crates (`oxc_parser`, `oxc_ast`, `oxc_ast_visit`, `oxc_semantic`, `oxc_allocator`; EN-075, research note 0023): `cargo run --release -q -p lint -- [--fix] <targets>`, on oxlint's targets. It prints each finding as `file:line:column rule message`, then a count, and fails on any.
+A crate of the Rust workspace on Oxc's parser and semantic model (research note 0023): `cargo run --release -q -p lint -- [--fix] <targets>`, on oxlint's targets. It prints each finding as `file:line:column rule message`, then a count, and fails on any.
 
-- **Each file once**: read, parsed with its comments, its semantic model built, then every rule its scopes turn on runs over that one AST — a rule reads the whole file (`check_file`) or each node of the linter's single walk (`check_node`); the files are spread over the machine's threads, and what the rules read beside the file (folder listings, the bibliography, the ADRs) is read once per run.
-- **One rule, one module** of `tools/lint/src/rules/`, its tests beside it, from the cases of the rule it carries and of its documentation; registered in `rules::ALL`. Adding a rule: the module, its line in `ALL`, its name in `ON_EVERYWHERE` or a scope of `tools/lint/src/scopes.rs`, its section below; a test fails when a rule is in no scope or a scoped name has no rule (`rules::tests`, AUD-021). Unicorn's rules sit in `tools/lint/src/rules/unicorn/`, listed in its `RULES` and `NAMES` and on for every file, which no scope changes (`scopes::linted_by`, EN-078); the groups of EN-079, EN-080 and EN-081 in their folders; what they share sits beside them: `syntax` (receivers, values, bindings), `known_values` (strings and keys), `escapes`, `layout` (a fix's indentation), `identifiers` (the names checked, a free name, a rename) and `pattern`, a small backtracking matcher that runs the plugin's regular expressions as it writes them (EN-080).
-- **JSDoc's rules** (EN-083) sit in `tools/lint/src/rules/jsdoc/`, listed in its `RULES` and `NAMES` and on for every file, `require-jsdoc` asking for the type members' blocks in the library only (the API pages read them). They read the blocks of `tools/lint/src/jsdoc/`, a port of the parser `eslint-plugin-jsdoc` reads (`comment-parser` with the tokenizers of `@es-joy/jsdoccomment`), which gives its tokens and tags on every block of the tree, and find the block a declaration carries as the plugin finds it. Their tests run the plugin's own cases, a fault planted in a copy of a file of the tree for each rule and cases written for the branches the plugin's cases leave, against what ESLint reported and fixed on them, recorded in `tools/lint/tests/fixtures/jsdoc/` (a carriage return written `␍`): that record is the reference since ESLint left (EN-085).
-- **Markdown pages** (EN-077): each page of the targets but `CHANGELOG.md` is parsed once by the crate `markdown` (`markdown-rs`, `REF-MARKDOWN-RS`) into an mdast tree, the one `@eslint/markdown` reads, with YAML front matter and GFM; the Markdown rules of `tools/lint/src/markdown/rules/` read that tree and the text under it.
-- **Scopes**: `tools/lint/src/scopes.rs` carries, in the order ESLint applied them, the scopes of the former `eslint/scopes/` that set its rules; the project's values (kinds, layers, verbs, reference sources, the folder signal) are in `tools/lint/src/settings.rs`.
-- **Measured** on 2026-10-17: 0.24 s for the 2,048 files and pages of `npm run lint`'s targets, every rule on (ADR-0075, Context); the timings of each story's rules are in EN-076, EN-078 and EN-080.
-- **`--fix`** applies the fixes in ESLint's order, from the first range, a fix touching or overlapping one applied waiting, then lints again and repeats, ten passes at most, as ESLint does (EN-078, EN-080).
-- **Without types**: Oxc has no type checker; a rule that asked the compiler for a type reads the written code instead, each in the form its section states (EN-076).
+- **One rule, one module** of `tools/lint/src/rules/`, with its tests beside it. A rule ported from a plugin keeps the plugin's name, message and options, and its tests run the cases of the plugin's documentation; the plugin's documentation is its reference. To add a rule: write the module, add its line in `rules::ALL`, and add its name to `ON_EVERYWHERE` or to a scope of `tools/lint/src/scopes.rs`. `rules::tests` fails when a rule is in no scope, or a scoped name has no rule.
+- **Each file once**: each file is read and parsed once, with its comments and semantic model, then every rule its scopes turn on runs over that tree. Markdown pages are parsed into an mdast tree (`REF-MARKDOWN-RS`). What the rules read beside a file, such as folder listings, the bibliography or the ADRs, is read once per run. The whole tree takes about 0.2 s.
+- **`--fix`** applies fixes as ESLint did: from the first range, a fix that touches one already applied waits for the next pass, and the file is linted again, ten passes at most.
+- **Project values** (kinds, layers, verbs, reference sources, the folder signal) are in `tools/lint/src/settings.rs`.
+- Every rule, by theme, with what it guards, is listed in [rules](./rules.md#every-rule-run-by-theme). Each rule dropped when ESLint left is listed with its reason in ADR-0075 and research note 0023.
 
-### `no-restricted-syntax`
+### Rules read without types
 
-No `enum`, no `for…in`, no getter or setter, no `export * as name`, no dynamic import; in `src/`, no default nor optional parameter (ADR-0016). The spread of an accumulator in a fold is oxlint's `oxc/no-accumulating-spread` (EN-061, EN-075).
+Oxc has no type checker, so a rule that once asked the compiler for a type reads the written code instead (EN-076). Where the code does not tell a type, the rule never guesses: each row says what it does then. Write the type out when a rule must see it.
 
-### `require-atomic-updates`
-
-In an `async` function or a generator, no assignment to a variable, or to a property through a variable, read before an `await` or a `yield` and not since (ESLint's rule, `allowProperties: false`).
-
-### `functional/no-return-void`
-
-A function of the functional core returns a value: no `void`, `undefined` or `null` return type; without a written type, the body is read (no type checker).
-
-### `@typescript-eslint/naming-convention`
-
-Each name's casing by its role, with the project's options ([naming](./naming.md)), sorted and matched as typescript-eslint does: the first option that applies is the only one checked. Its `types` (a module constant holding a function, a boolean's prefix) are read from the written annotation, or else the initializer: a call's result is not read, and such a name takes the next option (EN-076, `REF-TSESLINT-NAMING-CONVENTION`).
-
-### `unicorn/no-non-function-verb-prefix`
-
-A variable or a parameter named `getX`, `setX`, `unsetX`, `deleteX`, `addX`, `removeX`, `destroyX` or `createX` holds a function. Whether it can be called is read from its written type or its initializer; an unknown value is not reported, as the rule reported nothing without types (EN-076, `REF-UNICORN-NON-FUNCTION-VERB-PREFIX`).
+| Rule | How it reads the code |
+| --- | --- |
+| `@typescript-eslint/naming-convention` | a name's type from its annotation, else its initializer; a call's result is not read, so the next option applies ([naming](./naming.md#casing-typescript-eslint-naming-convention)) |
+| `unicorn/no-non-function-verb-prefix` | a `getX`, `setX`, `addX`, `createX`… holds a function, read from its written type or initializer; an unknown value is not reported |
+| `functional/no-return-void` | a core function returns a value: no `void`, `undefined` nor `null` return type; without a written type, the body is read |
+| `functional/no-mixed-types` | a type holds only data or only functions; a member is a function when it is a method, a call or construct signature, or a property typed as a function |
+| `functional/no-conditional-statements` | in the core, an `if` or `switch` stays only when each branch returns, throws, breaks or continues; a call that never returns does not end a branch |
+| `require-atomic-updates` | in an `async` function or a generator, no assignment to a variable, or to a property through a variable, read before an `await` or `yield` and not since |
+| Unicorn's array and collection rules | a receiver is an array or a collection when its literal, its `const` binding, its annotation or a type alias of the file says so; an iterator is no array |
 
 ### `functional/immutable-data`
 
-In the functional core, no existing object or array is changed: no assignment, `delete`, `++` or `--` on a member; no `copyWithin`, `fill`, `pop`, `push`, `reverse`, `shift`, `sort`, `splice`, `unshift`, `add`, `clear`, `delete` or `set` called by name, whatever the object; no `Object.assign`, `defineProperty`, `defineProperties` or `setPrototypeOf` on an existing object.
+In the functional core, no existing object or array is changed. That rules out an assignment, a `delete`, `++` or `--` on a member; a call by name of `copyWithin`, `fill`, `pop`, `push`, `reverse`, `shift`, `sort`, `splice`, `unshift`, `add`, `clear`, `delete` or `set`, whatever the object; and `Object.assign`, `defineProperty`, `defineProperties` or `setPrototypeOf` on an existing object.
 
 ### `functional/prefer-immutable-types` and `functional/type-declaration-immutability`
 
-In the functional core, every parameter with a written type and every declared type is deeply read-only, written in place (Product Owner, 2026-10-17): each property, index signature, mapped type, array and tuple marked `readonly`, or inside `Readonly<…>`. A named type passes only when its own declaration is checked the same way: a type of the same file, a type imported by a relative path from the core, a type parameter (its argument is the caller's type, checked where the caller writes it), `Pick`, `Omit`, `Partial`, `Required`, `NonNullable`, `Exclude` and `Extract` of such a type, `ReadonlyArray`, `ReadonlyMap` and `ReadonlySet`. A type of the standard library or of a package (`DataView`, `Temporal.PlainDate`) is never trusted by its name: it is written `Readonly<DataView>`. Autofixed: `readonly` and `Readonly<…>` are written where they are missing.
+In the functional core, every parameter with a written type, and every declared type, is deeply read-only, written in place: each property, index signature, mapped type, array and tuple is marked `readonly`, or sits inside `Readonly<…>`. The rule cannot look a type up, so a named type passes only when its own declaration is checked the same way:
 
-### `functional/no-mixed-types`
+- a type of the same file, or imported by a relative path from the core;
+- a type parameter, whose argument is checked where the caller writes it;
+- `Pick`, `Omit`, `Partial`, `Required`, `NonNullable`, `Exclude` or `Extract` of such a type;
+- `ReadonlyArray`, `ReadonlyMap` and `ReadonlySet`.
 
-A type holds only data or only functions; a member is a function when it is a method, a call or construct signature, or a property whose written type is a function type.
+A type of the standard library or of a package is never trusted by its name: write `Readonly<DataView>`, `Readonly<Temporal.PlainDate>`. The autofix writes `readonly` and `Readonly<…>` where they are missing.
 
-### `functional/no-conditional-statements`
+### `no-restricted-syntax`
 
-In the functional core, an `if` or a `switch` is kept only when each branch returns, throws, breaks or continues, read from the tree: a call that never returns does not end a branch.
+No `enum`, no `for…in`, no getter or setter, no `export * as name`, no dynamic import; in `src/`, no default nor optional parameter (ADR-0016).
 
-### `eslint-plugin-functional`'s other rules
+### The project's own rules
 
-With the plugin's names, messages and the project's options (EN-084), each module tested on the cases of its documentation (`eslint-plugin-functional` 10.0.1). On every TypeScript file; the five statement rules are off in the imperative shell, the tools and the tests (`tools/lint/src/scopes.rs`), and there `unicorn/no-useless-recursion` runs, which the functional core leaves since the loop it suggests cannot be written there.
-
-| Rule | The code… | Where |
+| Rule | Checks | Why |
 | --- | --- | --- |
-| `functional/no-let` | declares no `let`, in a `for` header or a function either | everywhere |
-| `functional/readonly-type` | marks a type literal's members `readonly` rather than wrapping it in `Readonly<…>`; autofixed | everywhere |
-| `functional/no-classes` | declares no class | everywhere |
-| `functional/no-this-expressions` | reads no `this` | everywhere |
-| `functional/no-promise-reject` | rejects no promise: no `Promise.reject()`, no executor's `reject`, no `throw` that an `async` function's own `try … catch` does not hold | everywhere |
-| `functional/functional-parameters` | gives each function a parameter, a callback and an IIFE included | the core |
-| `functional/no-expression-statements` | throws no value away: a `use` directive and a `yield` apart | the core |
-| `functional/no-loop-statements` | writes no loop | the core |
-| `functional/no-throw-statements` | throws nothing | the core |
-| `functional/no-try-statements` | writes no `try` | the core |
-
-`prefer-property-signatures` is dropped: oxlint's `typescript/method-signature-style` (`property`) reports every method signature. The `arguments` part of `functional-parameters` is oxlint's `prefer-rest-params`, on every file.
-
-### `@stylistic`'s comment and blank-line rules
-
-On every TypeScript file (EN-084), with `@stylistic` 5.10.0's names, messages and the project's options, each module tested on the cases of its documentation, and autofixed as the plugin fixes it.
-
-| Rule | The code… |
-| --- | --- |
-| `@stylistic/spaced-comment` | puts a space after `//`, `///` and `/*`, and before `*/` |
-| `@stylistic/multiline-comment-style` | writes a comment over several lines as `//` lines; a `JSDoc` block, an `/*!` block and a directive are left |
-| `@stylistic/padding-line-between-statements` | leaves a blank line after a group of `const` and `let`, before a declaration that follows an expression, around blocks, multi-line expressions, directives and imports, before a `return` and an export; a line of comments is no blank line |
-
-`line-comment-position` is dropped: oxlint's `no-inline-comments` reports every comment beside code.
-
-### `import-x`'s dependency rules
-
-On every TypeScript file (EN-084), with `eslint-plugin-import-x` 4.17.1's names and messages, each module tested on the cases of its documentation.
-
-| Rule | The code… |
-| --- | --- |
-| `import-x/no-extraneous-dependencies` | imports a package `package.json` lists in `dependencies` (empty), or, in the tools and the tests, in `devDependencies` too; types only, Node.js modules and packages not installed are left |
-| `import-x/no-restricted-paths` | imports from a layer only the layers it lists, and from the playground only `src/index.ts` (`LAYERS` of `tools/lint/src/settings.rs`); a path is resolved as Node.js does, a path that resolves to nothing left |
-
-`unused-imports/no-unused-imports` and `no-unused-vars` run in oxlint as `no-unused-vars`, with the same options, unused imports autofixed. typescript-eslint's `member-ordering` is dropped: no class, interface nor method signature can be written here, and no type of the tree mixes an index signature with properties.
-
-### `local/require-kind`
-
-Every top-level function carries exactly one known `@kind`. ADR-0011.
-
-### `local/kind-in-layer`
-
-The `@kind` is allowed in the file's layer (`tools/lint/src/settings.rs`).
-
-### `local/kind-limits`
-
-Lines, statements, complexity and depth bounded by `@kind` (`tools/lint/src/settings.rs`).
-
-### `local/kind-naming`
-
-Name fitting the kind: verb for `procedure`, conversion for `format`, no vague verb for `math`/`geometry`/`domain`, predicate prefix ⇔ boolean return.
-
-### `local/see-references`
-
-Every function has a `@see`; every `@see` points to an existing, **verified** reference (`REF-*`, `DERIV-*`, `ADR-NNNN`, `docs/…md`).
-
-### `local/one-export-per-file`
-
-One exported value per module, the file named in kebab-case after it; a type may sit next to it only if it is part of its signature. ADR-0019.
-
-### `local/folder-has-index`
-
-Every code folder holds an `index.ts`. ADR-0012.
-
-### `local/folder-layout`
-
-In `src/` and `playground/`: a folder holds modules or domain folders, never both (only the barrel sits beside folders); a folder past 15 modules is reported unless `tools/lint/src/settings.rs` lists it, with its reason in [files.md](./files.md#folders-past-15-modules). ADR-0043.
-
-### `local/barrel-exports`
-
-An `index.ts` contains only `export * from "./x";`, one per module, sorted. Autofixed.
-
-### `local/canonical-import-path`
-
-Shortest legal import path: the file within the same folder, the folder otherwise, never `index` nor `.ts`. Autofixed.
-
-### Unicorn's arrays, collections and iteration rules
-
-On every TypeScript file (EN-078), with `eslint-plugin-unicorn` 78.0.0's names, messages and default options, each module tested on the cases of its documentation. Without types, a receiver is known from its literal, its `const` binding, its annotation or the file's type aliases, as ESLint read them once it linted without types (EN-076); an iterator (`.values()`, `.keys()`, `.entries()`, `.matchAll()`, `Iterator.from()`, a lazy helper, a generator's call) counts as no array. Autofixed where ESLint fixes; where it only suggests, reported only.
-
-| Rule | The code… | Fixed |
-| --- | --- | --- |
-| `unicorn/no-array-from-fill` | maps in `Array.from({length}, …)` rather than chaining `.fill()` |  |
-| `unicorn/no-array-front-mutation` | calls neither `shift()` nor `unshift()` on an array |  |
-| `unicorn/no-confusing-array-splice` | replaces one element by assignment or `with()`, inserts at an explicit index rather than `-1` |  |
-| `unicorn/no-impossible-length-comparison` | compares no `.length` nor `.size` with a negative bound, nor `>= 0` |  |
-| `unicorn/no-negated-array-predicate` | swaps `some()` and `every()` rather than negating the call | yes |
-| `unicorn/no-return-array-push` | uses no value of `push()` or `unshift()` |  |
-| `unicorn/no-unnecessary-splice` | writes `shift()`, `unshift()`, `pop()`, `push()` or `.length = 0` rather than their `splice()` | yes |
-| `unicorn/prefer-array-last-methods` | calls `findLast()`, `findLastIndex()`, `lastIndexOf()`, `reduceRight()` rather than after a reversal |  |
-| `unicorn/prefer-array-slice` | reads a `slice()`, never a `splice()` only read |  |
-| `unicorn/prefer-flat-math-min-max` | nests no `Math.min()` in `Math.min()`, nor `max` in `max` | yes |
-| `unicorn/prefer-simple-sort-comparator` | sorts by one key with a subtraction |  |
-| `unicorn/prefer-single-array-predicate` | joins predicates in one `some()` or `every()` |  |
-| `unicorn/consistent-conditional-object-spread` | spreads `...(condition && object)`, no empty branch nor boolean cast | yes |
-| `unicorn/no-duplicate-set-values` | writes each value of a `new Set([…])` once |  |
-| `unicorn/no-mismatched-map-key` | reads, after `map.has(key)`, the same key |  |
-| `unicorn/no-object-methods-with-collections` | calls no `Object.keys()`, `values()` nor `entries()` on a `Map` or a `Set` |  |
-| `unicorn/no-unnecessary-array-flat-map` | maps rather than `flatMap(x => [x])`, wraps no non-array in an array | after `filter()` |
-| `unicorn/no-useless-set-construction` | builds no `Set` around a `Set` method's argument, receiver or result | yes |
-| `unicorn/prefer-array-from-map` | maps in `Array.from(iterable, mapper)`, not after it nor in a filling loop | the loop |
-| `unicorn/prefer-group-by` | groups with `Object.groupBy()` or `Map.groupBy()` | yes |
-| `unicorn/prefer-has-check` | checks a key with `.has()` | yes |
-| `unicorn/prefer-includes-over-repeated-comparisons` | writes three or more `===` of one subject as `includes()` |  |
-| `unicorn/prefer-map-from-entries` | builds a `Map` for a value only read as a map | yes |
-| `unicorn/prefer-set-methods` | calls `union()`, `intersection()`, `difference()`, `isSubsetOf()`, `isDisjointFrom()` | not the filters |
-| `unicorn/iteration-fallback-style` | guards an optional loop source with `if` rather than `\|\| []` | `for…of` |
-| `unicorn/no-array-sort-for-min-max` | takes a minimum or a maximum without sorting |  |
-| `unicorn/no-break-in-nested-loop` | breaks no loop or `switch` nested in a loop |  |
-| `unicorn/no-duplicate-loops` | writes no `.map()` nor `.filter()` in a `for…of` header |  |
-| `unicorn/no-loop-iterable-mutation` | changes no iterable while a `for…of` reads it |  |
-| `unicorn/no-unreadable-for-of-expression` | keeps a `for…of` header simple |  |
-| `unicorn/no-unused-iterator-helper` | consumes every lazy iterator helper |  |
-| `unicorn/prefer-array-iterable-methods` | iterates the array, or `keys()`, rather than half-used `entries()` | yes |
-| `unicorn/prefer-direct-iteration` | iterates a collection rather than its default iterator method | yes |
-| `unicorn/prefer-iterable-in-constructor` | hands the iterable to the constructor rather than filling an empty collection | yes |
-| `unicorn/prefer-iterator-helpers` | uses iterator helpers rather than an array built to search or slice it |  |
-| `unicorn/prefer-iterator-to-array` | writes `iterator.toArray()` rather than `[...iterator]` | `Iterator` chains |
-| `unicorn/prefer-iterator-to-array-at-end` | calls `.toArray()` after the helpers |  |
-| `unicorn/prefer-object-iterable-methods` | reads `Object.values()` or `Object.entries()` rather than keys read back, and the reverse | yes |
-| `unicorn/prefer-while-loop-condition` | writes the condition in the `while` rather than breaking from an endless loop | yes |
-
-`unicorn/no-for-each` runs in oxlint as `unicorn/no-array-for-each`, its former name: the same findings on arrays, more on a `Map` or a `Set` (the newer rule skips them), and no fix, oxlint's being pending. Dropped, each with its reason in research note 0023: `unicorn/no-array-splice` and `unicorn/no-array-concat-in-loop` (they only report a `let` or `var` array, which `functional/no-let` and `no-var` forbid), `unicorn/prefer-array-from-range` (it reads `Array(n)` and `new Array(n)` only, which `new-for-builtins` and `no-new-array` refuse), `unicorn/prefer-get-or-insert-computed` (it reads `Map#getOrInsert()`, which ES2025's library and Node.js 24 lack: `tsc` refuses the call, TS2550).
-
-### Unicorn's objects, strings, naming and miscellaneous rules
-
-On every TypeScript file (EN-080), with `eslint-plugin-unicorn` 78.0.0's names, messages and default options (`no-keyword-prefix` with the project's `checkProperties: false`), each module tested on the cases of its documentation and compared with ESLint on copies of the tree's files. Read without types, as those of EN-078. Autofixed where ESLint fixes; where it only suggests, reported only.
-
-| Rule | The code… | Fixed |
-| --- | --- | --- |
-| `unicorn/consistent-destructuring` | reads a property through its `const` destructuring, not again from the object |  |
-| `unicorn/no-computed-property-existence-check` | checks a dynamic key with `Object.hasOwn()`, not `object[key]` or `key in object` |  |
-| `unicorn/no-invalid-property-descriptor` | gives a property descriptor object of valid, consistent fields |  |
-| `unicorn/no-invalid-well-known-symbol-methods` | writes `[Symbol.dispose]` and `[Symbol.iterator]` synchronous, `[Symbol.asyncIterator]` as an async generator | `Symbol.asyncDispose` |
-| `unicorn/no-unreadable-new-expression` | names an instance before reading from it, and a constructor before `new` |  |
-| `unicorn/no-unreadable-object-destructuring` | destructures without computed keys, array patterns, a third level, or property targets |  |
-| `unicorn/no-unsafe-property-key` | uses strings, numbers or symbols as keys, never objects, functions or `BigInt`s |  |
-| `unicorn/no-unused-builtin-method-return` | uses the result of an array method, a `Set` operation or a `Temporal` update |  |
-| `unicorn/no-unused-properties` | reads every property of a local object literal or inline object type |  |
-| `unicorn/prefer-object-define-properties` | defines several properties of one object with one `Object.defineProperties()` | yes |
-| `unicorn/prefer-object-destructuring-defaults` | destructures with defaults rather than from defaults spread with an object |  |
-| `unicorn/prefer-single-object-destructuring` | destructures a local `const` once, and from its initializer when used only there | yes |
-| `unicorn/no-incorrect-template-string-interpolation` | interpolates with `${name}`, not `{name}` nor `$name}` |  |
-| `unicorn/no-unnecessary-string-trim` | trims one side before `startsWith()` or `endsWith()` | yes |
-| `unicorn/no-unsafe-string-replacement` | replaces with a literal or a function, never a computed string |  |
-| `unicorn/prefer-literal-ascii` | writes printable ASCII itself, not as a numeric escape | yes |
-| `unicorn/prefer-regexp-escape` | escapes with `RegExp.escape()` | the `replace()` snippet |
-| `unicorn/prefer-short-escape-sequences` | writes `\n`, `\t` and their kind rather than `\uXXXX` | yes |
-| `unicorn/prefer-single-replace` | replaces several single characters by one `replaceAll()` with a class | yes |
-| `unicorn/prefer-split-limit` | gives `split()` a limit when it reads only its first parts | yes |
-| `unicorn/prefer-string-pad-start-end` | pads with `padStart()` and `padEnd()` | a name to a literal width |
-| `unicorn/prefer-string-repeat` | writes repeated whitespace with `repeat()` | yes |
-| `unicorn/prefer-unicode-code-point-escapes` | writes `\u{…}` escapes | strings, templates, `u` and `v` patterns |
-| `unicorn/comment-content` | spells known names and acronyms in comments as they are written, prose only | yes |
-| `unicorn/consistent-compound-words` | writes a compound word of the plugin's list as one word in a declared name |  |
-| `unicorn/consistent-tuple-labels` | labels all elements of a tuple type, or none |  |
-| `unicorn/name-replacements` | writes no abbreviation of the plugin's list in a declared name or a file name | one replacement |
-| `unicorn/no-keyword-prefix` | starts no declared name with `new` or `class` followed by a capital |  |
-| `unicorn/prefer-type-literal-last` | puts inline object types last in a union, before `null` and `undefined` | yes |
-| `unicorn/consistent-optional-chaining` | reads members of one base the same way on each side of `&&` or `\|\|` |  |
-| `unicorn/no-useless-compound-assignment` | writes no `+= 0`, `*= 1` nor their kind |  |
-| `unicorn/no-useless-delete-check` | deletes without checking first | a collection's |
-| `unicorn/prefer-https` | links to the public web with `https:` | yes |
-
-Dropped, each with its reason in research note 0023: `unicorn/prefer-escaped-irregular-whitespace` (`no-irregular-whitespace` already refuses such characters in strings, templates and regular expressions), `unicorn/prefer-string-match-all` (an `exec()` loop needs a `let` assigned in a `while` condition, which `functional/no-let` and `no-cond-assign` refuse), `unicorn/single-line-block-comment-style` (what it reports, `@stylistic/multiline-comment-style` already refuses), `unicorn/string-content` (no pattern is configured: it reports nothing). The project's option of `comment-content`, `{replacements: {application: false}}`, names no pattern of the plugin's, whose own is `\bapplication\b(?!/)`: as in ESLint, `application` still becomes `app`.
-
-### Unicorn's last rules (EN-095)
-
-The 22 Unicorn rules ESLint still ran after EN-084, each checked again first. Three run in the project's linter, on every TypeScript file, with `eslint-plugin-unicorn` 78.0.0's names and messages, each tested on the cases of its documentation and compared with ESLint on planted cases; reported only, as the plugin only suggests:
-
-| Rule | The code… |
-| --- | --- |
-| `unicorn/no-double-comparison` | writes one comparison, `x <= y`, rather than two of the same operands, `x === y \|\| x < y` |
-| `unicorn/prefer-math-constants` | writes `Math.PI`, `Math.E` and their kind rather than a decimal approximating them, `3.14` |
-| `unicorn/no-invalid-character-comparison` | compares one character of a string with one character, never `text[0] === 'ab'` |
-
-Three run in oxlint: `no-constant-zero-expression` as `oxc/erasing-op`, `no-misrefactored-assignment` as `oxc/misrefactored-assign-op`, `no-useless-concat` as ESLint's own `no-useless-concat` (it reports at the left literal, fixes nothing, and also reports `'$' + '{x}'`). Sixteen are dropped, each with its reason in research note 0023: the compiler refuses what seven of them report (`no-boolean-sort-comparator`, `no-chained-comparison`, `no-collection-bracket-access`, `no-invalid-argument-count`, `no-nonstandard-builtin-properties`, `no-unsafe-promise-all-settled-values`, `require-proxy-trap-boolean-return`), a rule kept reports it (`no-accidental-bitwise-operator`, `no-for-loop`, `no-useless-coercion`, `no-useless-template-literals`), no class can exist (`consistent-class-member-order`, `no-undeclared-class-members`), or it reads what is not linted here (`no-missing-local-resource`, `no-shorthand-property-overrides`, `no-transition-all`).
+| `local/require-kind` | every top-level function carries exactly one known `@kind` | ADR-0011 |
+| `local/kind-in-layer` | the `@kind` is allowed in the file's layer | [architecture](./architecture.md#layers) |
+| `local/kind-limits` | lines, statements, complexity and depth by `@kind` | [functions](./functions.md#limits-per-kind-local-kind-limits) |
+| `local/kind-naming` | a verb for `procedure`, a conversion for `format`, no vague verb for `math`, `geometry` and `domain`, a predicate prefix exactly when it returns a boolean | [naming](./naming.md#names-by-kind-local-kind-naming) |
+| `local/see-references` | every function has a `@see`, each pointing to an existing, verified reference | [documentation](./documentation.md#see-references-local-see-references) |
+| `local/one-export-per-file` | one exported value per module, the file named after it, a type beside it only when part of its signature | ADR-0019 |
+| `local/folder-has-index` | every code folder holds an `index.ts` | ADR-0012 |
+| `local/folder-layout` | a folder holds modules or domain folders, never both; a folder past 15 modules is listed with its reason | ADR-0043, [files](./files.md#folders-past-15-modules) |
+| `local/barrel-exports` | an `index.ts` holds only sorted `export * from "./x";` lines; autofixed | ADR-0012 |
+| `local/canonical-import-path` | the shortest legal import path, never `index` nor `.ts`; autofixed | [imports](./imports.md#canonical-path-local-canonical-import-path-autofixed) |
+| `local/image-alt-text` | an image's text alternative under 155 characters, never opening with "Image of" | [writing](./writing.md#building-blocks) |
 
 ### Markdown rules
 
-On every Markdown page but `CHANGELOG.md` (EN-077), with `@eslint/markdown`'s names, options and messages (`REF-ESLINT-MARKDOWN-RULES`), so that a finding reads as it did in ESLint. Autofixed: `no-bare-urls`, `no-missing-atx-heading-space`, `no-reversed-media-syntax`, `no-space-in-emphasis`.
-
-| Rule | A page… |
-| --- | --- |
-| `markdown/fenced-code-language` | names the language of each fenced code block |
-| `markdown/fenced-code-meta` | writes no metadata after a fence's language (`never`) |
-| `markdown/heading-increment` | goes down one heading level at a time; front matter holds no title |
-| `markdown/no-bare-urls` | writes a URL as `<URL>` or `[text](URL)` |
-| `markdown/no-duplicate-definitions` | defines a link label or a footnote once (`[//]: #` comments apart) |
-| `markdown/no-duplicate-headings` | gives distinct titles to the headings under one parent (`checkSiblingsOnly`) |
-| `markdown/no-empty-definitions` | gives each definition a URL other than `#`, each footnote content |
-| `markdown/no-empty-images` | gives each image a source other than `#` |
-| `markdown/no-empty-links` | gives each link a destination other than `#` |
-| `markdown/no-html` | holds no HTML element but `<span>` (`<span v-pre>` shows double curly braces on the site) |
-| `markdown/no-invalid-label-refs` | writes no reference with a blank label, `[text][ ]` |
-| `markdown/no-missing-atx-heading-space` | puts a space after a heading's hashes |
-| `markdown/no-missing-label-refs` | defines each reference it uses; GitHub's alerts and `[verified]`, `[unverified]` apart |
-| `markdown/no-missing-link-fragments` | links `#fragment` only to a heading (GitHub's anchor), a `{#id}`, an HTML `id` or `name`, `#top` or `#L12` |
-| `markdown/no-multiple-h1` | has one first-level title, Markdown or `<h1>` |
-| `markdown/no-reversed-media-syntax` | writes `[label](URL)`, never `(label)[URL]` |
-| `markdown/no-space-in-emphasis` | puts no space inside emphasis markers, `** bold **` |
-| `markdown/no-unused-definitions` | uses each definition and footnote it holds |
-| `markdown/require-alt-text` | gives each image a text alternative; `alt=""` or `aria-hidden="true"` for a decorative one |
-| `markdown/table-column-count` | gives each table row as many cells as its header (`checkMissingCells`) |
-| `local/image-alt-text` | keeps a text alternative under 155 characters, never opening with "Image of" ([writing.md](./writing.md), `REF-GOOGLE-IMAGES`) |
-
-`markdown/no-reference-like-urls` is dropped: the pages link inline, reference definitions appear on one copied page (`.github/CODE_OF_CONDUCT.md`), and a link whose URL is a label is a dead link, which VitePress's build refuses in `docs/` and the weekly link check reports on every other page, `.claude/` and `.github/` included (`.github/workflows/links.yml`). None of the 21 rules is the formatter's: oxfmt leaves `#Title`, `* text *`, a reversed link, a bare URL and an extra table cell as they are (checked on 2026-10-17).
+Every Markdown page but `CHANGELOG.md` is checked by `@eslint/markdown`'s 20 rules, with that plugin's names, options and messages (`REF-ESLINT-MARKDOWN-RULES`), and by `local/image-alt-text`. They check heading levels, one title, link targets and their anchors, link definitions, table column counts, code fence languages, text alternatives, bare URLs and raw HTML (only `<span>` is allowed, for `<span v-pre>`). The list is in [rules](./rules.md#every-rule-run-by-theme). The formatter fixes none of these.

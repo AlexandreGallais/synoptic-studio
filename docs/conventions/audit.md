@@ -1,8 +1,8 @@
 # Feature audit
 
-The `AUD` story closing every feature (ADR-0020). It checks the feature **in depth** and the whole project **in breadth**. Each check leaves evidence in the story's **Findings** table; a problem is fixed in the audit, or becomes a story.
+The `AUD` story that closes every feature checks the feature in depth and the whole project in breadth (ADR-0020). Each check leaves its evidence in the story's **Findings** table. A problem found is fixed in the audit, or becomes a story.
 
-Procedure: the `/audit` skill. Sections A to E are first reviewed by the independent `auditor` subagent (fresh context, read-only, ADR-0021); each of its findings is reproduced before being recorded.
+The procedure is the `/audit` skill. The independent `auditor` subagent reviews sections A to E first, with a fresh, read-only context (ADR-0021). Each of its findings is reproduced before it is recorded.
 
 ## A. Mathematics (feature, in depth)
 
@@ -58,5 +58,3 @@ The six questions of the [evolvability review](../process/) in one line each (si
 | Check | Result | Evidence | Action |
 | --- | --- | --- | --- |
 | A4 — mutation of `filletSetback` (sign of τ) | caught | `fillet-setback.test.ts` "direction" fails | — |
-
-Regression and end-to-end tests are added when the applications exist (ADR-0020), not by the feature audits.

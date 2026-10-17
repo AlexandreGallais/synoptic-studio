@@ -51,6 +51,17 @@ pub fn story_id(text: &str) -> Option<String> {
     (is_kind && is_number).then_some(id)
 }
 
+/// The story id of a story branch, `EN-100` for `chore/en-100-git-sequences`.
+#[must_use]
+pub fn story_of_branch(name: &str) -> Option<String> {
+    let (_, topic) = name.split_once('/')?;
+    let mut words = topic.splitn(3, '-');
+    let kind = words.next()?;
+    let number = words.next()?;
+
+    story_id(&format!("{kind}-{number}"))
+}
+
 /// The story named by a file of `docs/backlog/stories/`, `E17-F18-US-061-<topic>.md`.
 #[must_use]
 pub fn story_of_file(id: &str, file: &str) -> Option<Story> {
@@ -197,6 +208,22 @@ pub fn plan(request: &Request, exists: impl Fn(&Path) -> bool) -> Result<Plan, S
     }
 
     Ok(Plan { dir, branch, base })
+}
+
+/// Folder of the story files, from a checkout's top.
+pub const STORIES: &str = "docs/backlog/stories";
+
+/// Names of the story files of a checkout, the only reading of the disk here: `worktree:new`,
+/// `git:sync` and `check-handback` each list them (AUD-022).
+///
+/// # Errors
+///
+/// When the folder cannot be read: a checkout without a backlog.
+pub fn story_files(top: &Path) -> std::io::Result<Vec<String>> {
+    Ok(std::fs::read_dir(top.join(STORIES))?
+        .filter_map(Result::ok)
+        .map(|entry| entry.file_name().to_string_lossy().into_owned())
+        .collect())
 }
 
 /// Husky's hooks folder in a checkout: `core.hooksPath`, relative, names it in each worktree.

@@ -14,6 +14,8 @@ type Tokens = {
 export type ModelRequest = {
   readonly branch: string;
   readonly id: string;
+  /** The model that answered (`message.model`), or an empty string when the line names none. */
+  readonly model: string;
   readonly session: string;
   readonly time: number;
   readonly tokens: Tokens;
@@ -184,7 +186,12 @@ export function transcriptEvents(transcript: string): TranscriptEvents {
 
       return [
         text(message, "id"),
-        { ...context, id: text(message, "id"), tokens: tokensOf(field(message, "usage")) },
+        {
+          ...context,
+          id: text(message, "id"),
+          model: text(message, "model"),
+          tokens: tokensOf(field(message, "usage")),
+        },
       ];
     }),
   );
