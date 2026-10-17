@@ -5,7 +5,14 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 
 import { count, field, startOf, text } from "./status-json.ts";
-import { LOST_TASK_MS, endedIds, failedIds, resumedIds, startedTasks } from "./status-tasks.ts";
+import {
+  LOST_TASK_MS,
+  completedIds,
+  endedIds,
+  failedIds,
+  resumedIds,
+  startedTasks,
+} from "./status-tasks.ts";
 
 import type { BackgroundTask } from "./status-tasks.ts";
 
@@ -132,9 +139,11 @@ function withTasks(tally: TokenTally, line: unknown, raw: string): TokenTally {
     ...(raw.includes("<task-notification>") ? ended : []),
     ...failedIds(line),
   ]);
+  const completed = new Set(completedIds(line));
   const time = startOf(line);
   const pending = [...tally.pending, ...startedTasks(line)]
     .filter((task) => !notified.has(task.id) && (time === 0 || time - task.start < LOST_TASK_MS))
+    .filter((task) => task.kind !== "agent" || !completed.has(task.id))
     .flatMap((task) => settled(task, ended, resumedIds(line)));
 
   return { ...tally, finished: [...tally.finished, ...ended], pending };

@@ -34,6 +34,16 @@ function prompt(time: string): string {
   return `{"type": "user", "timestamp": "${time}", "message": {"content": "go on"}}`;
 }
 
+/**
+ * A `tool_use` block of an `Agent` call.
+ *
+ * @param id - the call's id, also its description
+ * @returns one JSON block
+ */
+function agent(id: string): string {
+  return `{"type": "tool_use", "id": "${id}", "name": "Agent", "input": {"subagent_type": "Explore", "description": "${id}"}}`;
+}
+
 /** What the status line shows, before a test changes some of it. */
 const STATUS = {
   background: [],
@@ -134,7 +144,7 @@ describe("status line", () => {
     const launch =
       '{"type": "assistant", "timestamp": "2026-10-13T08:01:00Z", "message": {"id": "a", "content": [{"type": "tool_use", "id": "toolu_A", "name": "Agent", "input": {}}, {"type": "tool_use", "id": "toolu_B", "name": "Bash", "input": {"run_in_background": true}}, {"type": "tool_use", "id": "toolu_C", "name": "Bash", "input": {}}]}}';
     const results =
-      '{"type": "user", "message": {"content": [{"type": "tool_result", "tool_use_id": "toolu_A"}, {"type": "tool_result", "tool_use_id": "toolu_C"}]}}';
+      '{"type": "user", "message": {"content": [{"type": "tool_result", "tool_use_id": "toolu_A", "content": [{"type": "text", "text": "Async agent launched successfully."}]}, {"type": "tool_result", "tool_use_id": "toolu_C"}]}}';
     const ended = addTokens(
       EMPTY_TALLY,
       `${prompt("2026-10-13T08:00:00Z")}\n${launch}\n${results}\n{"timestamp": "2026-10-13T08:02:00Z", "message": {"id": "z", "stop_reason": "end_turn"}}\n`,
@@ -156,6 +166,30 @@ describe("status line", () => {
 
     expect(notified.pending).toEqual([]);
     expect(isTurnDone(notified)).toBe(true);
+  });
+
+  it("[F18.AC2] ends a subagent run in the foreground with its result, never one launched in the background", () => {
+    const launch = `{"type": "assistant", "timestamp": "2026-10-17T01:00:00Z", "message": {"id": "a", "content": [${["fg", "bg", "text", "flag"].map((id) => agent(id)).join(", ")}, {"type": "tool_use", "id": "cmd", "name": "Bash", "input": {"command": "npm run test", "run_in_background": true}}]}}`;
+    // A foreground subagent's result: `status: "completed"` (the hooks reference), never notified.
+    const completed =
+      '{"type": "user", "message": {"content": [{"tool_use_id": "fg", "type": "tool_result", "content": [{"type": "text", "text": "The report."}]}]}, "toolUseResult": {"status": "completed", "content": []}}';
+    // As the transcripts write a launch in the background (2026-10-09): text and flags.
+    const launched =
+      '{"type": "user", "message": {"content": [{"tool_use_id": "bg", "type": "tool_result", "content": [{"type": "text", "text": "Async agent launched successfully. (This tool result is internal metadata.)"}]}]}, "toolUseResult": {"isAsync": true, "status": "async_launched"}}';
+    // The launch text without `toolUseResult` (a line of 2026-10-16), and the flags without the text.
+    const textOnly =
+      '{"type": "user", "message": {"content": [{"tool_use_id": "text", "type": "tool_result", "content": [{"type": "text", "text": "Async agent launched successfully."}]}]}}';
+    const flagsOnly =
+      '{"type": "user", "message": {"content": [{"tool_use_id": "flag", "type": "tool_result", "content": "started"}]}, "toolUseResult": {"isAsync": true}}';
+    // A command in the background answers at once too: only its notification ends it.
+    const command =
+      '{"type": "user", "message": {"content": [{"tool_use_id": "cmd", "type": "tool_result", "content": "Command running in background with ID: b1"}]}}';
+    const tally = addTokens(
+      EMPTY_TALLY,
+      `${[launch, completed, launched, textOnly, flagsOnly, command].join("\n")}\n`,
+    );
+
+    expect(tally.pending.map((task) => task.id)).toEqual(["bg", "text", "flag", "cmd"]);
   });
 
   it("ends a background call answered with an error: refused before it started, it never notifies", () => {

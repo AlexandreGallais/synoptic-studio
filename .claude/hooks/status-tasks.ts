@@ -1,7 +1,7 @@
 // Background tasks of a session, for the status line (docs/tooling/metrics.md): which tool calls
 // start one — a subagent, a monitor, a call run in the background, a message that resumes a
-// subagent — and which transcript lines end one: its notification, or an error result when it was
-// refused before it started.
+// subagent — and which transcript lines end one: its notification, an error result when it was
+// refused before it started, or a subagent's result when it ran in the foreground.
 
 import { blocksOf, field, startOf, text, textOr } from "./status-json.ts";
 
@@ -112,6 +112,45 @@ export function resumedIds(line: unknown): readonly string[] {
       (block) =>
         text(block, "type") === "tool_result" &&
         JSON.stringify(field(block, "content") ?? "").includes("resumedAgentId"),
+    )
+    .map((block) => text(block, "tool_use_id"));
+}
+
+/**
+ * Whether a tool result launches a subagent in the background, as every `Agent` result of the
+ * transcripts did up to 2026-10-17: `toolUseResult` holds `status: "async_launched"` and
+ * `isAsync: true`, and the text opens with "Async agent launched successfully" (one line of
+ * 2026-10-16 holds the text without `toolUseResult`).
+ *
+ * @param line - parsed transcript line
+ * @param block - one of its `tool_result` blocks
+ * @returns true when the subagent runs on, its end to be notified
+ */
+function isLaunchedInBackground(line: unknown, block: unknown): boolean {
+  const result = field(line, "toolUseResult");
+
+  return (
+    text(result, "status") === "async_launched" ||
+    field(result, "isAsync") === true ||
+    JSON.stringify(field(block, "content") ?? "").includes("Async agent launched")
+  );
+}
+
+/**
+ * Ids of the calls a transcript line answers with a result that is neither an error nor a launch
+ * in the background: a subagent run in the foreground ends with its result (`status:
+ * "completed"`, the hooks reference), never with a notification (AUD-020).
+ *
+ * @param line - parsed transcript line
+ * @returns the ids of the calls it completes
+ */
+export function completedIds(line: unknown): readonly string[] {
+  return blocksOf(field(line, "message"))
+    .filter(
+      (block) =>
+        text(block, "type") === "tool_result" &&
+        field(block, "is_error") !== true &&
+        !isLaunchedInBackground(line, block),
     )
     .map((block) => text(block, "tool_use_id"));
 }

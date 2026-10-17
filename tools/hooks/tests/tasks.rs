@@ -2,8 +2,8 @@
 
 use hooks::json::parse;
 use hooks::tasks::{
-    Kind, LOST_TASK_MS, Task, after_line, cached_tasks, failed_ids, notified_ids, pending_after,
-    started_tasks,
+    Kind, LOST_TASK_MS, Task, after_line, cached_tasks, completed_ids, failed_ids, notified_ids,
+    pending_after, started_tasks,
 };
 
 /// A transcript line where the agent starts tool calls, given as JSON blocks.
@@ -22,6 +22,13 @@ fn agent(id: &str, kind: &str, description: &str) -> String {
 fn notification(id: &str) -> String {
     format!(
         r#"{{"type":"user","timestamp":"2026-10-16T21:00:00Z","message":{{"content":"<task-notification>\n<task-id>a1</task-id>\n<tool-use-id>{id}</tool-use-id>\n<status>completed</status>"}}}}"#
+    )
+}
+
+/// The result of an `Agent` call run in the background, as the transcripts write it (2026-10-09).
+fn launched(id: &str) -> String {
+    format!(
+        r#"{{"type":"user","message":{{"content":[{{"tool_use_id":"{id}","type":"tool_result","content":[{{"type":"text","text":"Async agent launched successfully. (This tool result is internal metadata.)\nagentId: add0a203ccde364b0"}}]}}]}},"toolUseResult":{{"isAsync":true,"status":"async_launched","agentId":"add0a203ccde364b0"}}}}"#
     )
 }
 
@@ -100,8 +107,8 @@ fn f18_ac2_follows_the_tasks_running_through_a_transcript() {
     let lines = [
         uses("2026-10-16T20:00:00Z", &agent("t1", "general-purpose", "one")),
         uses("2026-10-16T20:01:00Z", &[agent("t2", "Explore", "two"), agent("t3", "Plan", "three")].join(",")),
-        // A tool result is no end: a subagent answers at once that it started.
-        r#"{"type":"user","message":{"content":[{"type":"tool_result","tool_use_id":"t1","content":"launched"}]}}"#.to_owned(),
+        // A launch in the background is no end: a subagent answers at once that it started.
+        launched("t1"),
         notification("t2"),
         r#"{"type":"user","message":{"content":[{"type":"tool_result","tool_use_id":"t3","is_error":true}]}}"#.to_owned(),
         "not JSON {".to_owned(),
@@ -227,4 +234,51 @@ fn f18_ac9_counts_a_subagent_resumed_by_a_message_until_its_notification() {
     );
 
     assert_eq!(tasks[0].kind, Kind::Message);
+}
+
+#[test]
+fn f18_ac2_ends_a_subagent_run_in_the_foreground_with_its_result() {
+    let start = uses(
+        "2026-10-17T01:00:00Z",
+        &[
+            agent("fg", "Explore", "in the foreground"),
+            agent("bg", "Explore", "in the background"),
+            agent("text", "Explore", "launch text only"),
+            agent("flag", "Explore", "launch flags only"),
+            r#"{"type":"tool_use","id":"cmd","name":"Bash","input":{"command":"npm run test","run_in_background":true}}"#.to_owned(),
+        ]
+        .join(","),
+    );
+    // A foreground subagent's result: `status: "completed"` (the hooks reference), never notified.
+    let completed = r#"{"type":"user","message":{"content":[{"tool_use_id":"fg","type":"tool_result","content":[{"type":"text","text":"The report."}]}]},"toolUseResult":{"status":"completed","content":[]}}"#;
+    // The launch text without `toolUseResult` (a line of 2026-10-16), and the flags without the text.
+    let text_only = r#"{"type":"user","message":{"content":[{"tool_use_id":"text","type":"tool_result","content":[{"type":"text","text":"Async agent launched successfully."}]}]}}"#;
+    let flags_only = r#"{"type":"user","message":{"content":[{"tool_use_id":"flag","type":"tool_result","content":"started"}]},"toolUseResult":{"isAsync":true}}"#;
+    // A command in the background answers at once too: only its notification ends it.
+    let command = r#"{"type":"user","message":{"content":[{"tool_use_id":"cmd","type":"tool_result","content":"Command running in background with ID: b1"}]}}"#;
+    let lines = [
+        start,
+        completed.to_owned(),
+        launched("bg"),
+        text_only.to_owned(),
+        flags_only.to_owned(),
+        command.to_owned(),
+    ]
+    .join("\n");
+
+    assert_eq!(
+        pending_after(Vec::new(), &lines)
+            .iter()
+            .map(|task| task.id.as_str())
+            .collect::<Vec<_>>(),
+        ["bg", "text", "flag", "cmd"]
+    );
+    assert_eq!(
+        completed_ids(&parse(completed).unwrap()),
+        vec!["fg".to_owned()]
+    );
+    assert_eq!(
+        completed_ids(&parse(&launched("bg")).unwrap()),
+        Vec::<String>::new()
+    );
 }
