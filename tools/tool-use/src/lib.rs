@@ -55,21 +55,34 @@ pub struct Checkout {
 /// Runs a tool's work and records its use, in a release build only; returns the work's exit code
 /// unchanged, recorded or not.
 pub fn run(tool: &str, subcommand: &str, work: impl FnOnce() -> u8) -> ExitCode {
+    run_or_poll(tool, subcommand, false, work)
+}
+
+/// Runs a tool's work, its use recorded as [`run`] does unless the call is a poll: a subcommand
+/// another program calls on a timer, such as the status line's `run-totals status` once a second
+/// during a run, whose thousands of lines would say nothing of the tool's use (EN-102).
+pub fn run_or_poll(
+    tool: &str,
+    subcommand: &str,
+    is_poll: bool,
+    work: impl FnOnce() -> u8,
+) -> ExitCode {
     let folder = if cfg!(debug_assertions) {
         None
     } else {
         env::current_dir().ok()
     };
 
-    ExitCode::from(run_in(folder.as_deref(), tool, subcommand, work))
+    ExitCode::from(run_in(folder.as_deref(), tool, subcommand, is_poll, work))
 }
 
-/// Runs a tool's work and, given the folder it runs in, appends its use to that folder's checkout;
-/// a use that cannot be written is dropped. Returns the work's exit code.
+/// Runs a tool's work and, given the folder it runs in, appends its use to that folder's checkout,
+/// unless the call is a poll; a use that cannot be written is dropped. Returns the work's exit code.
 pub fn run_in(
     folder: Option<&Path>,
     tool: &str,
     subcommand: &str,
+    is_poll: bool,
     work: impl FnOnce() -> u8,
 ) -> u8 {
     let start_ms = epoch_ms_now();
@@ -77,7 +90,7 @@ pub fn run_in(
     let exit_code = work();
     let duration_ms = u64::try_from(clock.elapsed().as_millis()).unwrap_or(u64::MAX);
 
-    if let Some(checkout) = folder.and_then(checkout) {
+    if let Some(checkout) = folder.filter(|_| !is_poll).and_then(checkout) {
         let tool_use = ToolUse {
             tool: tool.to_owned(),
             subcommand: subcommand.to_owned(),

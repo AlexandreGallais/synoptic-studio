@@ -37,7 +37,7 @@ Measured on 2026-10-18 between 01:00 and 01:02 local time, load average 2.1 to 4
 | `format` without arguments, the same | 200 each | 2.75 ms | 2.88 ms | 2.87 ms | 3.02 ms |
 
 - **The record adds 0.13 to 0.17 ms to a call** (medians of the calls doing no work, 200 each), under the criterion's 1 ms; on `git:sync` and `format --check` it is lost in their own spread (±20 ms between calls).
-- **The file**: 464 lines, 56,305 bytes after these measures, 121 bytes a line. A run writes one line per call of each tool; the most frequent is `run-totals status`, which the status line calls once a second while a run is open: a run of 5 hours adds about 18,000 lines, 2.2 MB.
+- **The file**: 464 lines, 56,305 bytes after these measures, 121 bytes a line. A run writes one line per call of each tool; the most frequent would be `run-totals status`, which the status line calls once a second while a run is open, about 18,000 lines (2.2 MB) a run of 5 hours: marked a poll, it is not recorded (decided at merge, 2026-10-18).
 
 ## Tasks
 

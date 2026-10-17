@@ -12,7 +12,7 @@ use std::time::{Duration, Instant};
 
 use tool_use::{
     Checkout, MAIN_CHECKOUT, ToolUse, append, checkout, civil_from_days, iso_instant, json_line,
-    json_string, run, run_in,
+    json_string, run, run_in, run_or_poll,
 };
 
 /// Lines each of the two processes appends at once.
@@ -74,7 +74,7 @@ fn f21_ac7_writes_one_line_per_use_in_the_main_checkout() {
     let inside = root.0.join("tools").join("format");
     fs::create_dir_all(&inside).expect("a folder inside");
 
-    let code = run_in(Some(&inside), "format", "--check", || 3);
+    let code = run_in(Some(&inside), "format", "--check", false, || 3);
 
     assert_eq!(code, 3);
     let written = lines(&root.0.join(".git/metrics/tool-uses.jsonl"));
@@ -89,7 +89,7 @@ fn f21_ac7_writes_one_line_per_use_in_the_main_checkout() {
     assert!(line.ends_with(r#","exitCode":3}"#), "{line}");
     assert!(line.contains(r#"Z","durationMs":"#), "{line}");
 
-    run_in(Some(&inside), "lint", "", || 0);
+    run_in(Some(&inside), "lint", "", false, || 0);
     assert_eq!(
         lines(&root.0.join(".git/metrics/tool-uses.jsonl")).len(),
         2,
@@ -118,7 +118,10 @@ fn f21_ac7_writes_a_worktrees_use_in_the_main_checkout_naming_the_worktree() {
             worktree: "en-102".to_owned(),
         })
     );
-    assert_eq!(run_in(Some(&worktree), "git-sequences", "sync", || 0), 0);
+    assert_eq!(
+        run_in(Some(&worktree), "git-sequences", "sync", false, || 0),
+        0
+    );
     let written = lines(&root.0.join("main/.git/metrics/tool-uses.jsonl"));
     assert_eq!(written.len(), 1);
     assert!(
@@ -153,8 +156,8 @@ fn f21_ac7_drops_the_use_without_a_git_folder_and_keeps_the_code() {
     fs::write(root.0.join(".git"), "not a gitdir line\n").expect("a .git file of no worktree");
 
     assert_eq!(checkout(&root.0), None);
-    assert_eq!(run_in(Some(&root.0), "lint", "", || 1), 1);
-    assert_eq!(run_in(None, "lint", "", || 2), 2);
+    assert_eq!(run_in(Some(&root.0), "lint", "", false, || 1), 1);
+    assert_eq!(run_in(None, "lint", "", false, || 2), 2);
     assert_eq!(
         fs::read_dir(&root.0).expect("folder").count(),
         1,
@@ -168,7 +171,7 @@ fn f21_ac7_drops_the_use_when_metrics_cannot_be_made_and_keeps_the_code() {
     fs::create_dir_all(root.0.join(".git")).expect("Git folder");
     fs::write(root.0.join(".git/metrics"), "a file where the folder goes").expect("blocking file");
 
-    assert_eq!(run_in(Some(&root.0), "format", "--write", || 0), 0);
+    assert_eq!(run_in(Some(&root.0), "format", "--write", false, || 0), 0);
     assert!(append(&root.0.join(".git/metrics/tool-uses.jsonl"), "{}\n").is_err());
 }
 
@@ -190,14 +193,49 @@ fn f21_ac7_drops_the_use_in_a_read_only_folder_and_keeps_the_code() {
     fs::create_dir_all(&metrics).expect("metrics folder");
     fs::set_permissions(&metrics, fs::Permissions::from_mode(0o555)).expect("read-only");
 
-    assert_eq!(run_in(Some(&root.0), "mutate", "", || 1), 1);
+    assert_eq!(run_in(Some(&root.0), "mutate", "", false, || 1), 1);
     assert!(!metrics.join("tool-uses.jsonl").exists());
+}
+
+#[test]
+fn f21_ac7_a_poll_is_not_recorded_and_keeps_its_code_while_other_subcommands_are() {
+    let root = TempFolder::new("poll");
+    fs::create_dir_all(root.0.join(".git")).expect("Git folder");
+    let file = root.0.join(".git/metrics/tool-uses.jsonl");
+
+    assert_eq!(run_in(Some(&root.0), "run-totals", "status", true, || 1), 1);
+    assert!(!file.exists(), "a poll writes nothing, not even the file");
+    assert_eq!(run_in(Some(&root.0), "run-totals", "start", false, || 0), 0);
+    let written = lines(&file);
+    assert_eq!(written.len(), 1);
+    assert!(
+        written[0].contains(r#""subcommand":"start""#),
+        "{}",
+        written[0]
+    );
+}
+
+#[test]
+fn run_totals_marks_only_its_status_subcommand_as_a_poll() {
+    let source =
+        fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join("../run-totals/src/main.rs"))
+            .expect("run-totals' main");
+
+    assert!(
+        source
+            .contains(r#"tool_use::run_or_poll("run-totals", subcommand, subcommand == "status","#),
+        "run-totals records every subcommand but status"
+    );
 }
 
 #[test]
 fn a_debug_build_records_nothing_and_keeps_the_code() {
     // The tests are a debug build: `run` returns the code without looking for a Git folder.
     assert_eq!(run("lint", "", || 4), ExitCode::from(4));
+    assert_eq!(
+        run_or_poll("run-totals", "status", true, || 5),
+        ExitCode::from(5)
+    );
 }
 
 /// One of the two appending processes when its variable names a file; nothing otherwise.

@@ -46,7 +46,8 @@ Each tool of our own records its own use (EN-102), whoever calls it — the agen
 
 - **Never in the tool's way**: a line that cannot be written — no `.git` above the folder, a read-only folder — is dropped without a word, the tool's output and exit code unchanged. The `metrics` folder is created when missing, never `.git` itself.
 - **One write per line**: the line goes to a file opened to append in a single write, so that two tools ending at once never mix their lines.
-- **Its cost**: 0.13 to 0.17 ms a call, about 121 bytes a line; the status line's `run-totals status`, once a second during a run, writes most of them, about 2.2 MB for a run of 5 hours ([EN-102's measures](../backlog/stories/E17-F21-EN-102-each-tool-records-its-use.md#measures-adr-0069)).
+- **A poll is not recorded**: a subcommand another program calls on a timer is a poll, which its tool marks by calling `tool_use::run_or_poll` instead of `run`; its line is never written, its output and exit code unchanged. Today one: `run-totals status`, which the status line calls once a second during a run, about 18,000 lines a run of 5 hours that would say nothing of the tool's use; every other subcommand of `run-totals` is recorded. `tools/tool-use/tests/record.rs` proves both.
+- **Its cost**: 0.13 to 0.17 ms a call, about 121 bytes a line ([EN-102's measures](../backlog/stories/E17-F21-EN-102-each-tool-records-its-use.md#measures-adr-0069)).
 - **Release builds only**: `package.json`, the Git hooks and `.claude/settings.json` run every tool with `--release`; a debug build is a test's, whose calls are not uses, so it records nothing.
 - No crate: the standard library appends the line ([research note 0025](../research/notes/0025-f21-agent-tools-in-rust.md)).
 
