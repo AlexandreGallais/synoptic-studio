@@ -58,3 +58,4 @@ Every place where the code departs from a lint rule, with its reason (ADR-0066).
 | `tests/barrels.test.ts` | `runtimeExports` | `no-restricted-syntax` | loading each re-exported module is the point of this test |
 | `tools/hooks/src/context.rs` | `request_tokens` | `clippy::cast_possible_truncation`, `clippy::cast_sign_loss` | token counts are whole, positive and far below 2^53, read back from JSON as floats |
 | `tools/hooks/src/tasks.rs` | `cached_tasks` | `clippy::cast_possible_truncation` | offsets and times are whole numbers the status line wrote, read back from JSON as floats |
+| `tools/run-totals/src/marker.rs` | `whole` | `clippy::cast_possible_truncation` | times, offsets and token counts are whole numbers far below 2^53, read back from JSON as floats |
