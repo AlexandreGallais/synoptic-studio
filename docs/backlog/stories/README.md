@@ -221,7 +221,7 @@
 | [CHK-020](./E17-F19-CHK-020-checkpoint-f19.md) | F19 | Checkpoint in the middle of F19 | done |
 | [EN-077](./E17-F19-EN-077-markdown-rules-in-rust.md) | F19 | The Markdown rules in the Rust linter | done |
 | [EN-078](./E17-F19-EN-078-unicorn-arrays-collections-iteration.md) | F19 | Unicorn's arrays, collections and iteration rules in Rust | done |
-| [EN-079](./E17-F19-EN-079-unicorn-control-flow-functions-errors-numbers.md) | F19 | Unicorn's control-flow, functions, errors and numbers rules in Rust | ready |
+| [EN-079](./E17-F19-EN-079-unicorn-control-flow-functions-errors-numbers.md) | F19 | Unicorn's control-flow, functions, errors and numbers rules in Rust | done |
 | [EN-080](./E17-F19-EN-080-unicorn-objects-strings-naming-misc.md) | F19 | Unicorn's objects, strings, naming and miscellaneous rules in Rust | ready |
 | [EN-081](./E17-F19-EN-081-unicorn-modules-platform-promises.md) | F19 | Unicorn's modules, platform and promises rules in Rust | ready |
 | [EN-082](./E17-F19-EN-082-unicorn-dom-and-web.md) | F19 | Unicorn's DOM and web rules in Rust | ready |

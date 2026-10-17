@@ -3,7 +3,7 @@ id: EN-079
 epic: E17
 feature: F19
 title: Unicorn's control-flow, functions, errors and numbers rules in Rust
-status: ready
+status: done
 points: 8
 ---
 

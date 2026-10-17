@@ -74,7 +74,7 @@ In delivery order, written on 2026-10-17 when the Product Owner started F19's ru
 | [CHK-020](../stories/E17-F19-CHK-020-checkpoint-f19.md) | Checkpoint | Checkpoint in the middle of F19 | done |
 | [EN-077](../stories/E17-F19-EN-077-markdown-rules-in-rust.md) | Enabler | The Markdown rules in the Rust linter | done |
 | [EN-078](../stories/E17-F19-EN-078-unicorn-arrays-collections-iteration.md) | Enabler | Unicorn's arrays, collections and iteration rules in Rust | done |
-| [EN-079](../stories/E17-F19-EN-079-unicorn-control-flow-functions-errors-numbers.md) | Enabler | Unicorn's control-flow, functions, errors and numbers rules in Rust | ready |
+| [EN-079](../stories/E17-F19-EN-079-unicorn-control-flow-functions-errors-numbers.md) | Enabler | Unicorn's control-flow, functions, errors and numbers rules in Rust | done |
 | [EN-080](../stories/E17-F19-EN-080-unicorn-objects-strings-naming-misc.md) | Enabler | Unicorn's objects, strings, naming and miscellaneous rules in Rust | ready |
 | [EN-081](../stories/E17-F19-EN-081-unicorn-modules-platform-promises.md) | Enabler | Unicorn's modules, platform and promises rules in Rust | ready |
 | [EN-082](../stories/E17-F19-EN-082-unicorn-dom-and-web.md) | Enabler | Unicorn's DOM and web rules in Rust | ready |
