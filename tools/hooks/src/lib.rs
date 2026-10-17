@@ -4,6 +4,7 @@
 //! The first request of each subagent is measured by `context:size` (EN-065).
 
 pub mod context;
+pub mod guard;
 pub mod handback;
 pub mod json;
 pub mod limit;

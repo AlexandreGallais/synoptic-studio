@@ -28,8 +28,18 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node",
-            "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/guard-bash.ts"]
+            "command": "cargo",
+            "args": [
+              "run",
+              "--release",
+              "-q",
+              "--manifest-path",
+              "${CLAUDE_PROJECT_DIR}/Cargo.toml",
+              "-p",
+              "hooks",
+              "--bin",
+              "guard-bash"
+            ]
           }
         ]
       },
