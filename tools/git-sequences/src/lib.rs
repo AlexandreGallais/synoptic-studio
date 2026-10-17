@@ -4,7 +4,7 @@
 //! checkout they are started from and stop at the first failing step with Git's own message. What
 //! they run is decided here, without Git.
 
-use worktree::{base_branch, branch_refusal, story_id, story_of_file};
+use worktree::{base_branch, branch_refusal, story_of_branch, story_of_file};
 
 /// The remote every sequence talks to.
 pub const REMOTE: &str = "origin";
@@ -132,17 +132,6 @@ pub fn branch_of(name: &str) -> Branch {
         name if branch_refusal(name).is_none() => Branch::Story(name.to_owned()),
         name => Branch::Other(name.to_owned()),
     }
-}
-
-/// The story id of a story branch, `EN-100` for `chore/en-100-git-sequences`.
-#[must_use]
-pub fn story_of_branch(name: &str) -> Option<String> {
-    let (_, topic) = name.split_once('/')?;
-    let mut words = topic.splitn(3, '-');
-    let kind = words.next()?;
-    let number = words.next()?;
-
-    story_id(&format!("{kind}-{number}"))
 }
 
 /// How `git:sync` brings a branch up to date after the fetch.

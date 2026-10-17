@@ -158,6 +158,9 @@ version = "0.1.0"
 [[package]]
 name = "hooks"
 version = "0.1.0"
+dependencies = [
+ "worktree",
+]
 
 [[package]]
 name = "icu_collections"

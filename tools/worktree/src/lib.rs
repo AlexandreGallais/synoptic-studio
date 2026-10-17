@@ -51,6 +51,17 @@ pub fn story_id(text: &str) -> Option<String> {
     (is_kind && is_number).then_some(id)
 }
 
+/// The story id of a story branch, `EN-100` for `chore/en-100-git-sequences`.
+#[must_use]
+pub fn story_of_branch(name: &str) -> Option<String> {
+    let (_, topic) = name.split_once('/')?;
+    let mut words = topic.splitn(3, '-');
+    let kind = words.next()?;
+    let number = words.next()?;
+
+    story_id(&format!("{kind}-{number}"))
+}
+
 /// The story named by a file of `docs/backlog/stories/`, `E17-F18-US-061-<topic>.md`.
 #[must_use]
 pub fn story_of_file(id: &str, file: &str) -> Option<Story> {
