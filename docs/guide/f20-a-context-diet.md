@@ -92,7 +92,7 @@ Proven again on 2026-10-18 by VAL-021: its story holds the command and what was 
 | Criterion | What you get | Evidence |
 | --- | --- | --- |
 | AC1 an agent type per task kind, measured | a story worker starts at about 10,500 tokens instead of 38,900 | `tools/hooks/tests/context.rs`, `npm run context:size` |
-| AC2 a model per type, the trial | `clerk` on Sonnet, the others on Opus; tokens per model in the session report; the story worker kept on Opus | `tests/agent-models.test.ts`, `scripts/session-report.test.ts`, CHK-021 |
+| AC2 a model per type, the trial | `clerk` on Sonnet, the others on Opus; tokens per model in the session report; the story worker kept on Opus | `tests/agent-models.test.ts`, `tools/metrics/tests/session.rs`, CHK-021 |
 | AC3 the hand-back checked | refused once if not pushed or a commit unnamed; a line to finish the story | `tools/hooks/tests/handback.rs` |
 | AC4 the run's totals | on the status line and in `metrics:session -- --run`, across compactions and sessions | `tools/run-totals/tests/` |
 | ~~AC5 a progress page~~ | dropped on 2026-10-17 | — |

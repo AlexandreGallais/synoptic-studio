@@ -8,9 +8,10 @@ Measure first, then make each epic faster than the last (Product Owner, RET-001)
 | --- | --- | --- |
 | `.git/metrics/tool-calls.jsonl` | the hook `log-tool-call` (Rust), after each tool call, in the background | one line per call ([the record of each call](#the-record-of-each-call)) |
 | `.git/metrics/tool-uses.jsonl` | each Rust tool of the workspace, at its end (`tools/tool-use`) | one line per use of a tool ([the uses of each tool](#the-uses-of-each-tool)) |
-| `~/.claude/projects/<repository path>/` | Claude Code: one JSON Lines transcript per session, its subagents' beside it | every request with its tokens, every tool call and result, each line with its time, session and branch |
+| `~/.claude/projects/<main checkout's path>/` | Claude Code: one JSON Lines transcript per session, its subagents' beside it | every request with its tokens, every tool call and result, each line with its time, session and branch |
 | `.git/metrics/run.json`, `run-cache.json` | `npm run run:start` and `run:end`; the cache by `run-totals` | the open or last run: start, end (0 while open), sessions; the cache, where each transcript was read up to ([a run's totals](#a-runs-totals)) |
 | `.git/metrics/turns.jsonl` | `npm run metrics:session` without `--all` | one line per turn: start, session, duration, active time, tokens, calls, failures, commits |
+| `.git/metrics/transcripts-cache.jsonl` | the metrics' Rust tools (`tools/metrics`, EN-107) | each transcript's events as last read and the offset reached ([reading the transcripts](#reading-the-transcripts)) |
 | `.git/metrics/usage.json` | the status line, at each refresh | the subscription's usage ([status line](#status-line)) |
 | `~/.local/share/agent-library/library.sqlite` | the source library ([sources](./sources.md)) | the pages read, their sections, every search and read with its project |
 
@@ -144,7 +145,17 @@ npm run metrics:session -- --all            # the same, for the terminal
 npm run metrics:session                     # the current turn only, saved for the comparison of turns
 ```
 
-One row: duration (wall and active), tokens, tokens per model (`opus-5-5 2,580,122,562 · haiku-5-5 237,698`), the part written, tool calls and failures, commits (listed up to eight); the subagents count with the session. A report of the current turn is also saved in `.git/metrics/turns.jsonl`, which the **Turns** section lists for a retrospective to compare.
+One row: duration (wall and active), tokens, tokens per model (`opus-5-5 2,580,122,562 · haiku-5-5 237,698`), the part written, tool calls and failures, commits (listed up to eight); the subagents count with the session. A report of the current turn is also saved in `.git/metrics/turns.jsonl`, which the **Turns** section lists for a retrospective to compare. A session id as argument (its first characters suffice) reports that session instead of the one changed last.
+
+It is the binary `session-report` of `tools/metrics` (EN-107), the tokens per model included (EN-066's `model-tokens.ts` folded in), and reads the main checkout's transcripts from a worktree too: `scripts/session-report.ts` took the transcripts' folder from the folder it ran in, and failed in a worktree.
+
+## Reading the transcripts
+
+The metrics' tools read the transcripts as `run-totals` does: each transcript from the byte offset reached last time, its complete lines only. `.git/metrics/transcripts-cache.jsonl` keeps, per transcript, the offset and what was read before it — each request with its last line's model, tokens, time, branch and session; each tool call asked; each result with its time and outcome; whether the agent waits for a prompt, and when the current turn started — so that a report reads only what was written since. A transcript shorter than its offset was rewritten and is read again from its start; a cache of another version is dropped and rebuilt. The file is written aside and renamed, so a report reading it meanwhile sees a whole one.
+
+- **A request is counted once**, by its message id, with the values of its last line: a subagent's lines carry a growing `output_tokens`, the last line the final count (EN-092's measure).
+- **A call is counted once answered**, from its request's time to its result's; a later result of the same call replaces the first.
+- **Measured on one session of 1.1 GB** (2026-10-18): 3.8 s to read it without a cache, 0.16 s after. The lines are parsed by `serde_json`, a fifth faster than the hooks' own reader there.
 
 ## At each retrospective
 

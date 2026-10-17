@@ -51,7 +51,7 @@
     "docs:preview": "vitepress preview docs",
     "playground:build": "vite build --mode playground",
     "metrics": "node --harmony-temporal scripts/metrics-report.ts",
-    "metrics:session": "node --harmony-temporal scripts/session-report.ts",
+    "metrics:session": "cargo run --release -q -p metrics --bin session-report --",
     "context:size": "cargo run --release -q -p hooks --bin context-size --",
     "page": "cargo run --release -q -p page --",
     "library": "cargo run --release -q -p library --bin library --",

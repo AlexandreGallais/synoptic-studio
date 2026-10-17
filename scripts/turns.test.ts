@@ -1,42 +1,21 @@
 import { describe, expect, it } from "vitest";
 
-import { readTurn, turnRecord, turnsTable } from "./turns";
-
-import type { SessionFigures } from "./session-report";
-
-/** Figures of a turn of 10 minutes. */
-const FIGURES: SessionFigures = {
-  activeMs: 360_000,
-  cacheReadTokens: 3000,
-  cacheWriteTokens: 200,
-  calls: 4,
-  commits: ["abc docs: x", "def docs: y"],
-  failures: 1,
-  inputTokens: 4,
-  outputTokens: 75,
-  requests: 2,
-  tokensByModel: [["claude-opus-5-5", 3279]],
-  wallMs: 600_000,
-};
+import { readTurn, turnsTable } from "./turns";
 
 describe("turns", () => {
   const start = Temporal.Instant.from("2026-10-13T08:30:00Z").epochMilliseconds;
-  const record = turnRecord(FIGURES, start, "168220a7-35a5");
-
-  it("keeps the figures of a turn, tokens summed", () => {
-    // 4 + 200 + 3000 + 75 = 3279.
-    expect(record).toEqual({
-      activeMs: 360_000,
-      calls: 4,
-      commits: 2,
-      failures: 1,
-      outputTokens: 75,
-      session: "168220a7-35a5",
-      start,
-      tokens: 3279,
-      wallMs: 600_000,
-    });
-  });
+  // A turn of 10 minutes, as the session report saves it (tools/metrics, turn_record).
+  const record = {
+    activeMs: 360_000,
+    calls: 4,
+    commits: 2,
+    failures: 1,
+    outputTokens: 75,
+    session: "168220a7-35a5",
+    start,
+    tokens: 3279,
+    wallMs: 600_000,
+  };
 
   it("reads a saved line back, a missing field as 0 or empty", () => {
     const saved: unknown = structuredClone(record);
