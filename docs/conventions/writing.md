@@ -57,7 +57,18 @@ The same holds for commit messages, the improvement and feedback logs, retrospec
 
 ## Writing a rule
 
-State the principle in general terms, its reason, how to tell a case, and what to do when it conflicts with another rule. Give an example only where it removes a doubt. A date and a role (`Product Owner, 2026-10-17`) record when the rule was decided; they never replace its reason. One rule lives in one place; the other pages link it.
+A rule is written as a principle, never as the transcript of the conversation that decided it: the reader must be able to apply it to a case nobody discussed.
+
+| Part | What it says | Example |
+| --- | --- | --- |
+| principle | the idea in general terms, in one sentence | "A function never modifies its arguments." |
+| reason or test | why it holds, or how to tell whether a case falls under it | "A caller must be able to reuse a value it passed." |
+| on conflict | which rule wins, or whom to ask, when it meets another | "A procedure may still call a DOM element's methods: changing the DOM is its job." |
+
+- Give examples only where they remove a doubt, and then a range of them: the usual case, a case at the edge, and a case outside the rule.
+- Record when and by whom a rule was decided as a date and a role (`Product Owner, 2026-10-17`), never in place of its reason.
+- Keep a rule only if it makes the code or the docs more correct or more uniform. A rule that only adds writing, or repeats what a tool already enforces, is cut.
+- One rule lives in one place; the other pages link it.
 
 ## Style
 
@@ -69,7 +80,7 @@ State the principle in general terms, its reason, how to tell a case, and what t
 - Reference and convention pages: austere, no contractions. Guide pages: plain language, contractions allowed, every term defined at first use (`REF-PLAIN-LANGUAGE`).
 - House style: the em dash keeps a space on each side ( — ).
 
-## API reference (TSDoc) — austere
+## API reference (TSDoc)
 
 Clicking a function shows only what is needed to use it:
 
