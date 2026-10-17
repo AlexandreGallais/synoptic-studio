@@ -3,7 +3,7 @@ id: EN-096
 epic: E17
 feature: F20
 title: The agent's rules and skills written as principles
-status: ready
+status: done
 points: 3
 ---
 

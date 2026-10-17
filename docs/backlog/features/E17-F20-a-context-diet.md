@@ -49,7 +49,7 @@ In delivery order. Stories stay `draft` until F20's `/run` sets them `ready`.
 | [CHK-021](../stories/E17-F20-CHK-021-checkpoint-f20.md) | Checkpoint | Checkpoint in the middle of F20 | ready |
 | [EN-100](../stories/E17-F20-EN-100-git-sequences-as-rust-commands.md) | Enabler | The agent's frequent Git sequences as Rust commands | done |
 | [EN-101](../stories/E17-F20-EN-101-every-page-fetch-through-the-library.md) | Enabler | Every page fetched through the library, with the project recorded | done |
-| [EN-096](../stories/E17-F20-EN-096-docs-written-as-principles.md) | Enabler | The agent's rules and skills written as principles | ready |
+| [EN-096](../stories/E17-F20-EN-096-docs-written-as-principles.md) | Enabler | The agent's rules and skills written as principles | done |
 | [EN-097](../stories/E17-F20-EN-097-conventions-written-as-principles.md) | Enabler | The conventions written as principles | done |
 | [EN-098](../stories/E17-F20-EN-098-process-written-as-principles.md) | Enabler | The process pages written as principles | done |
 | [EN-099](../stories/E17-F20-EN-099-tooling-docs-written-as-principles.md) | Enabler | The tooling docs written as principles | done |
