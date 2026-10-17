@@ -72,3 +72,13 @@ Before (`1dcfa40b`), 2026-10-17. `npm run test` alone: 39.6 s (tests 52 %, impor
 | lint | 49.3 s |
 | format:check, lint:secrets, typecheck, deps:audit, deps:unused, deps:tools, deps:outdated | 1.1, 3.4, 1.4, 1.1, 1.4, 1.3, 3.1 s |
 | `check:all` | 61.8 s |
+
+`npm run test` alone, Vitest's own `Duration`:
+
+| Run | Duration | Shares |
+| --- | --- | --- |
+| before (`1dcfa40b`) | 39.6 s | tests 52 %, import 15 %, setup 14 %, transform 13 % |
+| after T2, the RuleTester in the `rules` project only, 3 runs | 29.7 s, 33.6 s, 32.4 s | tests 62 to 68 %, import 18 to 19 %, setup 1 % |
+| after T2, without coverage (for the review) | 25.4 s | tests 55 %, import 21 %, transform 13 % |
+
+The setup's share falls from 14 % to 1 %: 6 to 10 s saved. Coverage costs about 7 s of the lane. `tests/vitest-workers.test.ts` now checks that each tracked test file runs in exactly one project and that only `rules` has a setup; widening `shared` back to `eslint/**/*.test.ts` makes it fail, naming the 10 rule tests.
