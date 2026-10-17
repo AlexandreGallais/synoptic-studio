@@ -6,29 +6,40 @@ export const UNICORN_STRINGS: TSESLint.FlatConfig.Config = {
   rules: {
     "unicorn/consistent-template-literal-escape": "error",
     "unicorn/escape-case": "error",
-    "unicorn/no-incorrect-template-string-interpolation": "error",
+    // Run by the project's linter (tools/lint, EN-080).
+    "unicorn/no-incorrect-template-string-interpolation": "off",
     "unicorn/no-invalid-character-comparison": "error",
-    "unicorn/no-unnecessary-string-trim": "error",
-    "unicorn/no-unsafe-string-replacement": "error",
+    // Run by the project's linter (tools/lint, EN-080).
+    "unicorn/no-unnecessary-string-trim": "off",
+    // Run by the project's linter (tools/lint, EN-080).
+    "unicorn/no-unsafe-string-replacement": "off",
     "unicorn/no-useless-concat": "error",
     "unicorn/no-useless-template-literals": "error",
     "unicorn/prefer-code-point": "error",
     "unicorn/prefer-escaped-irregular-whitespace": "error",
-    "unicorn/prefer-literal-ascii": "error",
-    "unicorn/prefer-regexp-escape": "error",
+    // Run by the project's linter (tools/lint, EN-080).
+    "unicorn/prefer-literal-ascii": "off",
+    // Run by the project's linter (tools/lint, EN-080).
+    "unicorn/prefer-regexp-escape": "off",
     "unicorn/prefer-regexp-test": "error",
-    "unicorn/prefer-short-escape-sequences": "error",
-    "unicorn/prefer-single-replace": "error",
-    "unicorn/prefer-split-limit": "error",
+    // Run by the project's linter (tools/lint, EN-080).
+    "unicorn/prefer-short-escape-sequences": "off",
+    // Run by the project's linter (tools/lint, EN-080).
+    "unicorn/prefer-single-replace": "off",
+    // Run by the project's linter (tools/lint, EN-080).
+    "unicorn/prefer-split-limit": "off",
     "unicorn/prefer-string-match-all": "error",
-    "unicorn/prefer-string-pad-start-end": "error",
+    // Run by the project's linter (tools/lint, EN-080).
+    "unicorn/prefer-string-pad-start-end": "off",
     "unicorn/prefer-string-raw": "error",
-    "unicorn/prefer-string-repeat": "error",
+    // Run by the project's linter (tools/lint, EN-080).
+    "unicorn/prefer-string-repeat": "off",
     "unicorn/prefer-string-replace-all": "error",
     "unicorn/prefer-string-slice": "error",
     "unicorn/prefer-string-starts-ends-with": "error",
     "unicorn/prefer-string-trim-start-end": "error",
-    "unicorn/prefer-unicode-code-point-escapes": "error",
+    // Run by the project's linter (tools/lint, EN-080).
+    "unicorn/prefer-unicode-code-point-escapes": "off",
     "unicorn/string-content": "error",
   },
 };

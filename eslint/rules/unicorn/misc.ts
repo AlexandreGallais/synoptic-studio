@@ -7,7 +7,8 @@ export const UNICORN_MISC: TSESLint.FlatConfig.Config = {
     // JSON and CSS are formatted by Prettier, not linted.
     "unicorn/comma-spacing": "off",
     "unicorn/consistent-assert": "error",
-    "unicorn/consistent-optional-chaining": "error",
+    // Run by the project's linter (tools/lint, EN-080).
+    "unicorn/consistent-optional-chaining": "off",
     // JSON and CSS are formatted by Prettier, not linted.
     "unicorn/indent": "off",
     // Every folder exposes a barrel by design (ADR-0012).
@@ -21,10 +22,13 @@ export const UNICORN_MISC: TSESLint.FlatConfig.Config = {
     "unicorn/no-null": ["error", { checkStrictEquality: false }],
     "unicorn/no-optional-chaining-on-undeclared-variable": "error",
     "unicorn/no-unnecessary-slice-end": "error",
-    "unicorn/no-useless-compound-assignment": "error",
-    "unicorn/no-useless-delete-check": "error",
+    // Run by the project's linter (tools/lint, EN-080).
+    "unicorn/no-useless-compound-assignment": "off",
+    // Run by the project's linter (tools/lint, EN-080).
+    "unicorn/no-useless-delete-check": "off",
     // Duplicate of the core rule of the same name (rules/core/operators.ts).
     "unicorn/operator-assignment": "off",
-    "unicorn/prefer-https": "error",
+    // Run by the project's linter (tools/lint, EN-080).
+    "unicorn/prefer-https": "off",
   },
 };

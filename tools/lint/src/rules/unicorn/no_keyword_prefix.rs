@@ -1,6 +1,7 @@
 //! `unicorn/no-keyword-prefix`: no name starting with the keyword `new` or `class` followed by a
 //! capital, `newFoo` reading like `new Foo` (`eslint-plugin-unicorn` 78.0.0, with the project's
-//! `checkProperties: false`: a property, a member read and a key are left alone). A name passed
+//! `checkProperties: false`: a property, a member read and a key are left alone, third-party
+//! option names such as `newIsCap` not being the project's to rename). A name passed
 //! to or called as a function is left alone, as in `ESLint`.
 
 use std::collections::HashSet;

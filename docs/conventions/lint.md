@@ -70,11 +70,11 @@ After a plugin upgrade, `npm run test` lists the new rules to decide: add them t
 A crate of the Rust workspace on Oxc's crates (`oxc_parser`, `oxc_ast`, `oxc_ast_visit`, `oxc_semantic`, `oxc_allocator`; EN-075, research note 0023): `cargo run --release -q -p lint -- [--fix] <targets>`, on oxlint's targets. It prints each finding as `file:line:column rule message`, then a count, and fails on any.
 
 - **Each file once**: read, parsed with its comments, its semantic model built, then every rule its scopes turn on runs over that one AST — a rule reads the whole file (`check_file`) or each node of the linter's single walk (`check_node`); the files are spread over the machine's threads, and what the rules read beside the file (folder listings, the bibliography, the ADRs) is read once per run.
-- **One rule, one module** of `tools/lint/src/rules/`, its tests beside it, from the cases of the rule it carries and of its documentation; registered in `rules::ALL`. Adding a rule: the module, its line in `ALL`, its name in `ON_EVERYWHERE` or a scope of `tools/lint/src/scopes.rs`, its section below, its rule `off` in ESLint. Unicorn's rules sit in `tools/lint/src/rules/unicorn/`, listed in its `RULES` and `NAMES` and on for every file, which no scope changes (`scopes::linted_by`, EN-078).
+- **One rule, one module** of `tools/lint/src/rules/`, its tests beside it, from the cases of the rule it carries and of its documentation; registered in `rules::ALL`. Adding a rule: the module, its line in `ALL`, its name in `ON_EVERYWHERE` or a scope of `tools/lint/src/scopes.rs`, its section below, its rule `off` in ESLint. Unicorn's rules sit in `tools/lint/src/rules/unicorn/`, listed in its `RULES` and `NAMES` and on for every file, which no scope changes (`scopes::linted_by`, EN-078); what they share sits beside them: `syntax` (receivers, values, bindings), `known_values` (strings and keys), `escapes`, `layout` (a fix's indentation), `identifiers` (the names checked, a free name, a rename) and `pattern`, a small backtracking matcher that runs the plugin's regular expressions as it writes them (EN-080).
 - **Markdown pages** (EN-077): each page of the targets but `CHANGELOG.md` is parsed once by the crate `markdown` (`markdown-rs`, `REF-MARKDOWN-RS`) into an mdast tree, the one `@eslint/markdown` reads, with YAML front matter and GFM; the Markdown rules of `tools/lint/src/markdown/rules/` read that tree and the text under it.
 - **Scopes**: `tools/lint/src/scopes.rs` carries, in ESLint's order, the scopes of `eslint/scopes/` that set its rules; the project's values (kinds, layers, verbs, reference sources, the folder signal) are in `tools/lint/src/settings.rs`.
-- **Measured** on 2026-10-17: 0.05 s for the 1,538 files of `npm run lint`'s targets, all its rules on, the seven of EN-076 included. With Unicorn's 39 rules of EN-078: 0.12 s for the 2,048 files and pages, the same as without them; ESLint spent 285 ms on them.
-- **`--fix`** applies the fixes that do not overlap, lints again and repeats, ten passes at most, as ESLint does (EN-078).
+- **Measured** on 2026-10-17: 0.05 s for the 1,538 files of `npm run lint`'s targets, all its rules on, the seven of EN-076 included. With Unicorn's 39 rules of EN-078: 0.12 s for the 2,048 files and pages, the same as without them; ESLint spent 285 ms on them. With the 33 of EN-080: 0.21 s (1.7 s of processor time over the threads, half of it `unicorn/comment-content`); ESLint spent 1,071 ms on the 37 rules, its run from 14.2 s to 13.4 s.
+- **`--fix`** applies the fixes in ESLint's order, from the first range, a fix touching or overlapping one applied waiting, then lints again and repeats, ten passes at most, as ESLint does (EN-078, EN-080).
 - **Without types**: Oxc has no type checker; a rule that asked the compiler for a type reads the written code instead, each in the form its section states (EN-076).
 
 ### `no-restricted-syntax`
@@ -200,6 +200,48 @@ On every TypeScript file (EN-078), with `eslint-plugin-unicorn` 78.0.0's names, 
 | `unicorn/prefer-while-loop-condition` | writes the condition in the `while` rather than breaking from an endless loop | yes |
 
 `unicorn/no-for-each` runs in oxlint as `unicorn/no-array-for-each`, its former name: the same findings on arrays, more on a `Map` or a `Set` (the newer rule skips them), and no fix, oxlint's being pending. Dropped, each with its reason in research note 0023: `unicorn/no-array-splice` and `unicorn/no-array-concat-in-loop` (they only report a `let` or `var` array, which `functional/no-let` and `no-var` forbid), `unicorn/prefer-array-from-range` (it reads `Array(n)` and `new Array(n)` only, which `new-for-builtins` and `no-new-array` refuse), `unicorn/prefer-get-or-insert-computed` (it reads `Map#getOrInsert()`, which ES2025's library and Node.js 24 lack: `tsc` refuses the call, TS2550).
+
+### Unicorn's objects, strings, naming and miscellaneous rules
+
+On every TypeScript file (EN-080), with `eslint-plugin-unicorn` 78.0.0's names, messages and default options (`no-keyword-prefix` with the project's `checkProperties: false`), each module tested on the cases of its documentation and compared with ESLint on copies of the tree's files. Read without types, as those of EN-078. Autofixed where ESLint fixes; where it only suggests, reported only.
+
+| Rule | The code… | Fixed |
+| --- | --- | --- |
+| `unicorn/consistent-destructuring` | reads a property through its `const` destructuring, not again from the object |  |
+| `unicorn/no-computed-property-existence-check` | checks a dynamic key with `Object.hasOwn()`, not `object[key]` or `key in object` |  |
+| `unicorn/no-invalid-property-descriptor` | gives a property descriptor object of valid, consistent fields |  |
+| `unicorn/no-invalid-well-known-symbol-methods` | writes `[Symbol.dispose]` and `[Symbol.iterator]` synchronous, `[Symbol.asyncIterator]` as an async generator | `Symbol.asyncDispose` |
+| `unicorn/no-unreadable-new-expression` | names an instance before reading from it, and a constructor before `new` |  |
+| `unicorn/no-unreadable-object-destructuring` | destructures without computed keys, array patterns, a third level, or property targets |  |
+| `unicorn/no-unsafe-property-key` | uses strings, numbers or symbols as keys, never objects, functions or `BigInt`s |  |
+| `unicorn/no-unused-builtin-method-return` | uses the result of an array method, a `Set` operation or a `Temporal` update |  |
+| `unicorn/no-unused-properties` | reads every property of a local object literal or inline object type |  |
+| `unicorn/prefer-object-define-properties` | defines several properties of one object with one `Object.defineProperties()` | yes |
+| `unicorn/prefer-object-destructuring-defaults` | destructures with defaults rather than from defaults spread with an object |  |
+| `unicorn/prefer-single-object-destructuring` | destructures a local `const` once, and from its initializer when used only there | yes |
+| `unicorn/no-incorrect-template-string-interpolation` | interpolates with `${name}`, not `{name}` nor `$name}` |  |
+| `unicorn/no-unnecessary-string-trim` | trims one side before `startsWith()` or `endsWith()` | yes |
+| `unicorn/no-unsafe-string-replacement` | replaces with a literal or a function, never a computed string |  |
+| `unicorn/prefer-literal-ascii` | writes printable ASCII itself, not as a numeric escape | yes |
+| `unicorn/prefer-regexp-escape` | escapes with `RegExp.escape()` | the `replace()` snippet |
+| `unicorn/prefer-short-escape-sequences` | writes `\n`, `\t` and their kind rather than `\uXXXX` | yes |
+| `unicorn/prefer-single-replace` | replaces several single characters by one `replaceAll()` with a class | yes |
+| `unicorn/prefer-split-limit` | gives `split()` a limit when it reads only its first parts | yes |
+| `unicorn/prefer-string-pad-start-end` | pads with `padStart()` and `padEnd()` | a name to a literal width |
+| `unicorn/prefer-string-repeat` | writes repeated whitespace with `repeat()` | yes |
+| `unicorn/prefer-unicode-code-point-escapes` | writes `\u{…}` escapes | strings, templates, `u` and `v` patterns |
+| `unicorn/comment-content` | spells known names and acronyms in comments as they are written, prose only | yes |
+| `unicorn/consistent-compound-words` | writes a compound word of the plugin's list as one word in a declared name |  |
+| `unicorn/consistent-tuple-labels` | labels all elements of a tuple type, or none |  |
+| `unicorn/name-replacements` | writes no abbreviation of the plugin's list in a declared name or a file name | one replacement |
+| `unicorn/no-keyword-prefix` | starts no declared name with `new` or `class` followed by a capital |  |
+| `unicorn/prefer-type-literal-last` | puts inline object types last in a union, before `null` and `undefined` | yes |
+| `unicorn/consistent-optional-chaining` | reads members of one base the same way on each side of `&&` or `\|\|` |  |
+| `unicorn/no-useless-compound-assignment` | writes no `+= 0`, `*= 1` nor their kind |  |
+| `unicorn/no-useless-delete-check` | deletes without checking first | a collection's |
+| `unicorn/prefer-https` | links to the public web with `https:` | yes |
+
+Dropped, each with its reason in research note 0023: `unicorn/prefer-escaped-irregular-whitespace` (`no-irregular-whitespace` already refuses such characters in strings, templates and regular expressions), `unicorn/prefer-string-match-all` (an `exec()` loop needs a `let` assigned in a `while` condition, which `functional/no-let` and `no-cond-assign` refuse), `unicorn/single-line-block-comment-style` (what it reports, `@stylistic/multiline-comment-style` already refuses), `unicorn/string-content` (no pattern is configured: it reports nothing). The project's option of `comment-content`, `{replacements: {application: false}}`, names no pattern of the plugin's, whose own is `\bapplication\b(?!/)`: as in ESLint, `application` still becomes `app`.
 
 ### Markdown rules
 
