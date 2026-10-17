@@ -4,6 +4,8 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { builtOnce } from "./built-once";
+
 /** Backlog item: its folder and its front-matter fields. */
 type Item = {
   readonly fields: Readonly<Record<string, string>>;
@@ -63,7 +65,7 @@ function frontMatter(text: string): Record<string, string> {
  *
  * @returns items of all folders
  */
-function items(): Item[] {
+function readItems(): readonly Item[] {
   return Object.keys(STATUSES).flatMap((folder) =>
     readdirSync(join(BACKLOG, folder))
       .filter((file) => file.endsWith(".md") && file !== "README.md")
@@ -74,6 +76,9 @@ function items(): Item[] {
       })),
   );
 }
+
+/** Every backlog item, read at the first call and shared, frozen, by every test of the file (EN-090). */
+const items = builtOnce(() => Object.freeze(readItems()));
 
 /**
  * Identifiers of the items of one folder.
