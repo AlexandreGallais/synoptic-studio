@@ -154,6 +154,13 @@ mod tests {
         let code = "function f(a: string): number {\n  outer: switch (a) {\n    case \"a\":\n    case \"b\":\n      return 1;\n    case \"c\": { g(); return 2; }\n    case \"d\": g(); break;\n    case \"e\": break outer;\n    case \"f\": { g(); } { return 3; }\n    case \"g\": throw new Error();\n    default: { g(); }\n  }\n  return 0;\n}";
 
         assert_eq!(places(code), [(7, 5), (8, 5), (11, 5)]);
+        // A statement, then a block that leaves: the plugin reads blocks only when every statement is one.
+        assert_eq!(
+            places(
+                "function f(a: string): number {\n  switch (a) {\n    case \"x\": g(); { return 1; }\n    default: return 0;\n  }\n}"
+            ),
+            [(3, 5)]
+        );
         assert_eq!(
             places(
                 "function f(a: string): number { x: for (;;) { switch (a) { case \"a\": break x; default: return 1; } } }"

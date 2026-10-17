@@ -185,6 +185,12 @@ mod tests {
         assert_eq!(columns("const f = () => {};"), [11]);
         assert_eq!(columns("const f = () => undefined;"), [11]);
         assert_eq!(columns("const f = () => void 0;"), [11]);
+        // Ending on `throw`: TypeScript infers `void` for a declaration, `never` for an expression.
+        assert_eq!(columns("function f() { throw new Error(); }"), [1]);
+        assert_eq!(
+            columns("const f = function () { throw new Error(); };"),
+            Vec::<usize>::new()
+        );
         // The inner arrow's `return` is its own: the outer function returns nothing.
         assert_eq!(
             columns("function f() { const g = () => { return 1; }; g; }"),

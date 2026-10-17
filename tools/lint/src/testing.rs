@@ -47,6 +47,10 @@ pub fn fixed(code: &str, findings: &[Finding]) -> String {
 }
 
 /// A new empty folder under the system's temporary folder, named after a test.
+///
+/// # Panics
+///
+/// When the folder cannot be made: a test on files never written would pass for nothing.
 #[must_use]
 pub fn fixture(name: &str) -> PathBuf {
     static COUNT: AtomicUsize = AtomicUsize::new(0);
@@ -56,18 +60,22 @@ pub fn fixture(name: &str) -> PathBuf {
         COUNT.fetch_add(1, Ordering::Relaxed)
     ));
     let _ = fs::remove_dir_all(&folder);
-    fs::create_dir_all(&folder).unwrap_or_default();
+    fs::create_dir_all(&folder).expect("the fixture folder");
     folder
 }
 
 /// Writes files into a fixture folder, their folders created, each holding `export {};`.
+///
+/// # Panics
+///
+/// When a file or its folder cannot be written.
 pub fn write_files(root: &Path, files: &[&str]) {
     for file in files {
         let path = root.join(file);
         if let Some(parent) = path.parent() {
-            fs::create_dir_all(parent).unwrap_or_default();
+            fs::create_dir_all(parent).expect("the file's folder");
         }
-        fs::write(path, "export {};\n").unwrap_or_default();
+        fs::write(path, "export {};\n").expect("the file");
     }
 }
 

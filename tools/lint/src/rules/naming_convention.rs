@@ -661,6 +661,11 @@ mod tests {
             found("const maxSize = 1;\nconst MAX_SIZE = 2;"),
             ["Variable name `maxSize` must match one of the following formats: UPPER_CASE"]
         );
+        // Two underscores in a row join no words: `A__B` is not UPPER_CASE.
+        assert_eq!(
+            found("const A__B = 1;"),
+            ["Variable name `A__B` must match one of the following formats: UPPER_CASE"]
+        );
         // [F19.AC2] A global constant holding a function, read from its initializer or its type.
         assert_eq!(
             found(

@@ -55,6 +55,37 @@ describe("type errors with the lint (EN-091)", () => {
     );
   });
 
+  it("[F19.AC1] runs the type-aware rules of the repository's configuration: a floating promise", () => {
+    const folder = mkdtempSync(join(tmpdir(), "aud-021-"));
+
+    writeFileSync(
+      join(folder, "tsconfig.json"),
+      JSON.stringify({ compilerOptions: { noEmit: true, strict: true, types: [] } }),
+    );
+
+    // Line 2, column 1: a promise neither awaited nor handled, which only its type tells.
+    writeFileSync(join(folder, "floating.ts"), "declare function p(): Promise<number>;\np();\n");
+
+    const result = spawnSync(
+      OXLINT,
+      ["-c", join(ROOT, ".oxlintrc.json"), "--type-check", "--format", "unix", "floating.ts"],
+      {
+        cwd: folder,
+        encoding: "utf8",
+        env: {
+          ...process.env,
+          PATH: `${join(ROOT, "node_modules", ".bin")}:${process.env["PATH"] ?? ""}`,
+        },
+      },
+    );
+
+    rmSync(folder, { force: true, recursive: true });
+
+    expect(result.stdout).toContain(
+      "floating.ts:2:1: Promises must be awaited, add await operator. [Error/typescript(no-floating-promises)]",
+    );
+  });
+
   it("runs the type check in every oxlint pass: the lint, the fix, and no tsc in check:all", () => {
     for (const name of ["lint", "fix"]) {
       expect(scriptOf(name)).toContain("oxlint --type-check ");
