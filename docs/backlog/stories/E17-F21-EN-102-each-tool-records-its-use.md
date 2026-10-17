@@ -25,7 +25,7 @@ Moved from F20 at its refinement (2026-10-17, F20's research note 0024): each to
 
 ## Measures (ADR-0069)
 
-The time one record adds to a call, before and after, on `git:sync` and `format --check` (20 calls each, release build); the size of the file after one run.
+The time one record adds to a call, before and after, on `git:sync` and `format --check` (20 calls each, release build); the size of the file after one run. Nothing to time before: no use is recorded today ([research note 0025](../../research/notes/0025-f21-agent-tools-in-rust.md)). No crate: the standard library appends the line (0025, The crates).
 
 ## Tasks
 

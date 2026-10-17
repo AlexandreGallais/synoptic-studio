@@ -16,6 +16,7 @@ The pull request into `main` is the only CI run (ADR-0038, `docs/tooling/ci.md`)
 - Given a pull request into `main`, when the CI runs, then the workspace is built once in release mode, its `target/` and Cargo's registry cached by the official `actions/cache` keyed on `Cargo.lock` and `rust-toolchain.toml`, and `check:all`, `history` and `build` use that build.
 - Given `cargo-llvm-cov` and `cargo-deny`, when the CI needs them, then they come from a cache keyed on their versions, installed only when the key changes.
 - Given a second run on an unchanged `Cargo.lock`, when it starts, then no crate of the workspace's dependencies is compiled again, shown by the job's log.
+- Given that a cache saved by a pull request's run is scoped to its merge ref and restored only by re-runs of that pull request, while a run restores the caches of its base and of the default branch, `main` (`REF-GH-CACHE`, SP-023), when the next pull request into `main` starts, then it restores a cache saved by a run on `main` (the release workflow's run after the merge, or one of its own), never one saved by the previous pull request.
 - Given the workflows, when the story ends, then no step calls a dev package the earlier stories removed, and `docs/tooling/ci.md` describes the build and its caches.
 - Given the CI, when it is timed, then a run's duration, cold and with its caches, is stated before and after.
 
@@ -26,6 +27,8 @@ The pull request into `main` is the only CI run (ADR-0038, `docs/tooling/ci.md`)
 ## Measures (ADR-0069)
 
 Before and after: the CI's duration on a pull request into `main`, each job's, cold and with its caches (the run's own timings on GitHub); the cache's size.
+
+Before, read by SP-023 in GitHub's timings of three runs on 2026-10-16 and 2026-10-17 ([research note 0025](../../research/notes/0025-f21-agent-tools-in-rust.md)): the `quality` job 5 min 9 s to 8 min 29 s, `history` 16 to 19 s, the dependency review 5 to 8 s. GitHub removes a cache unused for 7 days and keeps 10 GB per repository (`REF-GH-CACHE`): with a release every week or two, a cache saved on `main` may be gone by the next pull request; the story states how often its run found one.
 
 ## Tasks
 

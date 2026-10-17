@@ -34,7 +34,24 @@ Find, read and record what F21's stories need before any of them starts (ADR-002
 
 One task = one commit, referenced as `SP-023.Tn`.
 
-- [ ] T1 — The crates: versions, ages, licences, advisories; what a command already installed can do instead (2 h)
-- [ ] T2 — The rewritten packages' behaviour and licences, read at their installed versions (3 h)
-- [ ] T3 — The time per call of every tool before its port, one table (2 h)
-- [ ] T4 — The research note, the references and the stories updated (1 h)
+- [x] T1 — The crates: versions, ages, licences, advisories; what a command already installed can do instead (2 h)
+- [x] T2 — The rewritten packages' behaviour and licences, read at their installed versions (3 h)
+- [x] T3 — The time per call of every tool before its port, one table (2 h)
+- [x] T4 — The research note, the references and the stories updated (1 h)
+
+## Results
+
+[Research note 0025](../../research/notes/0025-f21-agent-tools-in-rust.md). The times are medians and means of 20 calls, of 5 for a tool over a second, and of one call for `metrics:session` without `--all`, whose run in a scratch clone could not be repeated. One question for the Product Owner, written in EN-104: how the Rust tools are called (`cargo run` costs 47 ms per call, `npm run` 107 ms more). EN-104 is left `draft`, not `parked`: that status comes with F20 (EN-086), and this branch's backlog test refuses it until F20 is merged.
+
+## For the main thread
+
+### Journal
+
+- `#tooling` SP-023: F21's crates chosen (`rmcp` 3.5.1, `rusqlite` 0.40.2 bundled except for Windows, `serde_json`, `regex`; `curl` instead of an HTTP crate, no `oxc_resolver`), each rewritten package's behaviour and licence read at its installed version, every tool timed before its port; the launcher (`cargo run`, `npm run`) costs more per call than Node.js, a question for the Product Owner in EN-104.
+
+### Improvements
+
+| 2026-10-18 | agent | The Rust hooks of `.claude/settings.json` run through `cargo run --release -q --manifest-path …`: 49.9 ms per call against 2.7 ms for the binary by its path (SP-023); `library-pages` runs before every Bash call | tooling |
+| 2026-10-18 | agent | The library's store is named by `LIBRARY_PATH`, the C toolchain's library search path: Apple's `python3` sets it to `/usr/local/lib`, and a library script it starts opens or creates a store at `<path>:/usr/local/lib` (SP-023; renamed in EN-106) | tool |
+| 2026-10-18 | agent | `records:save` copies the whole transcripts' folder, 1.5 GB today, again at each call (SP-023) | tool |
+| 2026-10-18 | agent | The `library-pages` hook refuses any Bash command holding a URL, a `printf` of a commit message with the session's link included: the message was written with the Write tool instead (SP-023) | tool |

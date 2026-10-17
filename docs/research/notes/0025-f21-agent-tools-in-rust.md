@@ -250,3 +250,52 @@ The "before" of every story of F21 (ADR-0069, decision 4), measured on 2026-10-1
 | EN-112 | the release on `main`: `release-please`, the test report, the site | 16 s, 5 s, 56 s | — | 1 run | 2026-10-14, the release of 0.2.0 |
 
 EN-102 has no "before": a use is not recorded today; its measure is the time one record adds.
+
+## Good release notes, read again
+
+The four sources EN-112 cites were read again in the library on 2026-10-18; every rule of EN-112's table is in them as cited. Two differences between them, which EN-112 settles by following Common Changelog, the stricter one, and saying so in `docs/tooling/releases.md`:
+
+| Point | Keep a Changelog 1.1.0 (`REF-KEEP-A-CHANGELOG`) | Common Changelog (`REF-COMMON-CHANGELOG`) |
+| --- | --- | --- |
+| groups | `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `Security` | `Changed`, `Added`, `Removed`, `Fixed`, in that order; a deprecation goes under `Changed` (6.2) |
+| unreleased changes | an `Unreleased` section at the top | none: the entry is written at release time, its references added then (6.2) |
+| a release's heading | linkable versions, the date in ISO 8601 | `## [VERSION] - DATE`, the version without `v`, linked to a GitHub release "that should contain the same content" (2.2) |
+| a change | — | one line, imperative mood, self-describing, then its references in parentheses, each a Markdown link; breaking changes first, marked `**Breaking:**` (2.4.1, 2.4.2, 2.4.4) |
+
+Release-please's 0.2.0 entry, counted again in `CHANGELOG.md`: 163 lines of changes (29 under Features, 96 under Documentation, 19 Bug fixes, 16 Refactoring, 1 Performance, 1 Build and dependencies, 1 breaking change in its own block), 211 lines and 2,018 words with the links; the figures of EN-112 hold. GitHub's generated notes (`REF-GH-RELEASE-NOTES`) list merged pull requests by label: here, story and feature pull requests.
+
+## Answers to the spike's questions
+
+| Question | Answer | Where |
+| --- | --- | --- |
+| 1. The crates, their versions, licences and advisories; what a command does instead | `rmcp` 3.5.1 (Apache-2.0) with `tokio` 1.53.2, `rusqlite` 0.40.2 (MIT, SQLite bundled except for the Windows check), `serde` 1.0.229 and `serde_json` 1.0.152, `regex` 1.13.1; no advisory; `curl`, `git` and `gh` instead of HTTP and GitHub crates; no `oxc_resolver`; the crates under 7 days that Cargo picks by itself pinned back | The crates |
+| 2. What each rewritten package checks | read at the installed versions, behaviour by behaviour | The rewritten packages |
+| 3. Their licences | MIT, ISC and Apache-2.0, each copyright line listed; nothing copyleft | The rewritten packages, Licences |
+| 4. Each tool's time before its port | one table; the launcher (`cargo run`, `npm run`) costs more than the language | Each tool's time before its port |
+| 5. Good release notes, and where release-please falls short | the sources confirmed; their two differences settled by Common Changelog | Good release notes, read again |
+
+## The stories, updated
+
+| Story | What the research changed in it |
+| --- | --- |
+| EN-102 | no crate; nothing to time before |
+| EN-103 | no crate; its times before; `npm run` and `cargo run` named as the floor of a call |
+| EN-104 | its times before; the question of how the binaries are called, for the Product Owner |
+| EN-105 | its times before; `docs/process/improvements.md` is one table without sections, so its measure uses a section of `docs/tooling/agent.md` |
+| EN-106 | the crates chosen, `curl` for the fetch, the HTML ported without a crate, SQLite bundled except for the Windows check, the store's variable renamed; its times before |
+| EN-107 | `serde_json`; its times before, the transcripts now 1.5 GB |
+| EN-108 | the behaviours to keep, the licences; its times before |
+| EN-109 | no `oxc_resolver`; the prerelease rule of `ncu`, knip's plugins; the 7-day rule checked on `Cargo.lock`; its times before |
+| EN-110 | the preset confirmed MIT; 27 rules and 41 patterns, the look-arounds and the GCP rule; its times before |
+| EN-111 | a pull request's cache is not restored by the next pull request: the cache is saved by a run on `main` |
+| EN-112 | the sources confirmed; Common Changelog followed where the two sources differ; release-please's time |
+
+## For the Product Owner
+
+One question, written in EN-104, which waits for the answer:
+
+**How are the Rust tools called?** Measured above: a binary by its path, 2.7 ms; through `cargo run`, 49.9 ms; through `npm run` and `cargo run`, 149 ms. ADR-0073, decision 1, says `cargo run --release -q -p <crate>`. Over the three days counted in F20's research note 0024, the agent made at least 9,500 Bash calls (reads, searches and Git), and `guard-bash` runs before each one.
+
+- **A — keep `cargo run` everywhere**: always the binary of the current sources, nothing to rebuild by hand; `guard-bash` in Rust waits about 50 ms instead of 56 ms today, about 8 minutes per 9,500 calls instead of 9.
+- **B — the hooks, the status line and the Git hooks call `target/release/<binary>`**: about 3 ms, 30 seconds per 9,500 calls; a binary older than its sources is the risk, met by `rust:build` at `prepare` and after `git:sync` and `story:finish`, and by a check that fails naming the stale binary; ADR-0073's decision 1 superseded for these calls.
+- **C — B, and the agent's own commands call the binaries too** (`git:sync`, `backlog:status`, `replace`, `library`…), `npm run` kept for people: about 150 ms saved again on each such call, at the cost of commands the agent must learn by path.

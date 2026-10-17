@@ -28,6 +28,8 @@ Read through the library on 2026-10-17:
 | Conventional Commits only draft the categories; the lines are then rephrased: a draft generated, then edited | `REF-COMMON-CHANGELOG` (3.1, 4.2) |
 | The changelog says it follows Semantic Versioning; before 1.0.0 a release raises the minor version | `REF-KEEP-A-CHANGELOG` (Guiding principles), `REF-SEMVER` (Summary, FAQ) |
 
+Read again by SP-023 on 2026-10-18 ([research note 0025](../../research/notes/0025-f21-agent-tools-in-rust.md), Good release notes, read again): every rule above is in its source as cited. Where the two sources differ, the tool follows Common Changelog and `docs/tooling/releases.md` says so: no `Unreleased` section, the entry written at release time with its references; no `Deprecated` nor `Security` group, a deprecation listed under `Changed` (`REF-COMMON-CHANGELOG`, 6.2; `REF-KEEP-A-CHANGELOG`). What release-please does here and the tool takes over — the version from the commits with `bump-minor-pre-major`, `package.json`, `package-lock.json` and the changelog written, the merge commit tagged `vX.Y.Z`, the release published with the entry — is listed in 0025 (The rewritten packages; `REF-RELEASE-PLEASE-DESIGN`, `REF-RELEASE-PLEASE-CLI`).
+
 Where release-please's 0.2.0 falls short of them (`CHANGELOG.md`): one line per commit, 163 lines in all, 29 under Features and 96 under Documentation; the commits of a feature listed beside the feature's own merge commit (`F10 round shape…`, then `model: the round shape…`); the tooling's commits (`eslint`, `tooling`) among the library's; scopes in bold instead of words; a reference to a commit where a pull request exists; the breaking change in a block of its own, far from its group. GitHub's generated notes (`REF-GH-RELEASE-NOTES`) list merged pull requests by label, which here would be stories and features without their meaning for a user.
 
 ## Acceptance criteria
@@ -47,6 +49,8 @@ Where release-please's 0.2.0 falls short of them (`CHANGELOG.md`): one line per 
 ## Measures (ADR-0069)
 
 `release:prepare` and `release publish` timed on a copy of the repository at `v0.2.0`'s parent (10 runs, release build); the lines and words of the 0.2.0 entry, release-please's against ours.
+
+Before, from GitHub's timings of the 0.2.0 release on 2026-10-14 (SP-023): the `release-please` job on `main` 16 s, the test report 5 s, the site 56 s; release-please's entry for 0.2.0 is 163 lines of changes, 211 lines and 2,018 words with its links.
 
 ## Tasks
 
