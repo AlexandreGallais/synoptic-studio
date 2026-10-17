@@ -6,6 +6,7 @@ pub mod barrel_exports;
 pub mod canonical_import_path;
 pub mod folder_has_index;
 pub mod folder_layout;
+pub mod functional;
 pub mod immutable_data;
 pub mod jsdoc;
 pub mod kind_in_layer;
@@ -76,11 +77,12 @@ pub const ALL: &[&dyn Rule] = &[
     &type_declaration_immutability::TypeDeclarationImmutability,
 ];
 
-/// The rules of a list of names, in the registry's order, then Unicorn's, its DOM and web rules,
-/// then those of `eslint-plugin-jsdoc`.
+/// The rules of a list of names, in the registry's order, then the other plugins' (EN-084), then
+/// Unicorn's, its DOM and web rules, then those of `eslint-plugin-jsdoc`.
 #[must_use]
 pub fn named(names: &[&str]) -> Vec<&'static dyn Rule> {
     ALL.iter()
+        .chain(functional::RULES)
         .chain(unicorn::RULES)
         .chain(unicorn::dom::RULES)
         .chain(unicorn::web::RULES)

@@ -39,13 +39,6 @@ export const PURE_LAYER_FILES = [
   "src/io/**/*.ts",
 ];
 
-/** Library layers allowed to touch the DOM: the imperative shell. */
-export const DOM_LAYER_FILES = [
-  "src/render/**/*.ts",
-  "src/interaction/**/*.ts",
-  "playground/**/*.ts",
-];
-
 /** Lint configuration, custom ESLint plugin, agent hooks and scripts (Node.js tooling). */
 export const TOOLING_FILES = [
   "eslint/**/*.ts",

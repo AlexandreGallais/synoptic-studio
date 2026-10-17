@@ -20,7 +20,8 @@ pub const IGNORED: [&str; 12] = [
     ".git/**",
 ];
 
-/// The rules on for every TypeScript file before the scopes.
+/// The rules on for every TypeScript file before the scopes, with the plugins' own lists
+/// (`rules::functional::NAMES`, EN-084).
 pub const ON_EVERYWHERE: [&str; 17] = [
     "@typescript-eslint/naming-convention",
     "functional/immutable-data",
@@ -60,9 +61,14 @@ const SINGLE_EXPORT_FILES: &[&str] = &["src/**/*.ts", "playground/**/*.ts"];
 /// The rules off in the tests and the tools: the functional core's `no-return-void`, and the
 /// rules about function kinds, which belong to the library and the playground.
 const RELAXED: &[(&str, bool)] = &[
+    ("functional/functional-parameters", false),
     ("functional/immutable-data", false),
     ("functional/no-conditional-statements", false),
+    ("functional/no-expression-statements", false),
+    ("functional/no-loop-statements", false),
     ("functional/no-return-void", false),
+    ("functional/no-throw-statements", false),
+    ("functional/no-try-statements", false),
     ("functional/prefer-immutable-types", false),
     ("functional/type-declaration-immutability", false),
     ("local/kind-in-layer", false),
@@ -95,9 +101,14 @@ pub const SCOPES: [Scope; 7] = [
         ],
         ignores: &[],
         rules: &[
+            ("functional/functional-parameters", false),
             ("functional/immutable-data", false),
             ("functional/no-conditional-statements", false),
+            ("functional/no-expression-statements", false),
+            ("functional/no-loop-statements", false),
             ("functional/no-return-void", false),
+            ("functional/no-throw-statements", false),
+            ("functional/no-try-statements", false),
             ("functional/prefer-immutable-types", false),
             ("functional/type-declaration-immutability", false),
         ],
@@ -156,7 +167,11 @@ pub fn is_ignored(path: &str) -> bool {
 /// The rules that run on a file, sorted.
 #[must_use]
 pub fn rules_for(path: &str) -> Vec<&'static str> {
-    let mut on: Vec<&'static str> = ON_EVERYWHERE.to_vec();
+    let mut on: Vec<&'static str> = ON_EVERYWHERE
+        .iter()
+        .chain(crate::rules::functional::NAMES)
+        .copied()
+        .collect();
 
     for scope in SCOPES
         .iter()
@@ -184,7 +199,8 @@ pub const DOM_FILES: &[&str] = &[
 
 /// The rules that run on a file: those its scopes set, then Unicorn's, which no scope turns
 /// off (EN-078), those of `eslint-plugin-jsdoc` (EN-083), Unicorn's web rules, and its DOM rules
-/// where a DOM exists (EN-082).
+/// where a DOM exists (EN-082); `unicorn/no-useless-recursion` left where
+/// `functional/no-loop-statements` runs (EN-084).
 #[must_use]
 pub fn linted_by(path: &str) -> Vec<&'static str> {
     use crate::rules::unicorn::{dom, web};
@@ -196,6 +212,10 @@ pub fn linted_by(path: &str) -> Vec<&'static str> {
     if matches_any(DOM_FILES, path) {
         on.extend(dom::NAMES);
         on.extend(web::DOM_NAMES);
+    }
+    if on.contains(&"functional/no-loop-statements") {
+        // It suggests a loop, which the functional core may not write (EN-084).
+        on.retain(|each| *each != "unicorn/no-useless-recursion");
     }
     on
 }
@@ -210,11 +230,21 @@ mod tests {
             rules_for("src/math/vector/norm.ts"),
             [
                 "@typescript-eslint/naming-convention",
+                "functional/functional-parameters",
                 "functional/immutable-data",
+                "functional/no-classes",
                 "functional/no-conditional-statements",
+                "functional/no-expression-statements",
+                "functional/no-let",
+                "functional/no-loop-statements",
                 "functional/no-mixed-types",
+                "functional/no-promise-reject",
                 "functional/no-return-void",
+                "functional/no-this-expressions",
+                "functional/no-throw-statements",
+                "functional/no-try-statements",
                 "functional/prefer-immutable-types",
+                "functional/readonly-type",
                 "functional/type-declaration-immutability",
                 "local/canonical-import-path",
                 "local/folder-has-index",
@@ -242,8 +272,13 @@ mod tests {
         ] {
             let rules = rules_for(path);
             for rule in [
+                "functional/functional-parameters",
                 "functional/immutable-data",
                 "functional/no-conditional-statements",
+                "functional/no-expression-statements",
+                "functional/no-loop-statements",
+                "functional/no-throw-statements",
+                "functional/no-try-statements",
                 "functional/prefer-immutable-types",
                 "functional/type-declaration-immutability",
             ] {
@@ -279,7 +314,12 @@ mod tests {
             rules_for("scripts/check-all.ts"),
             [
                 "@typescript-eslint/naming-convention",
+                "functional/no-classes",
+                "functional/no-let",
                 "functional/no-mixed-types",
+                "functional/no-promise-reject",
+                "functional/no-this-expressions",
+                "functional/readonly-type",
                 "no-restricted-syntax",
                 "require-atomic-updates",
                 "unicorn/no-non-function-verb-prefix",
@@ -289,7 +329,12 @@ mod tests {
             rules_for("vite.config.ts"),
             [
                 "@typescript-eslint/naming-convention",
+                "functional/no-classes",
+                "functional/no-let",
                 "functional/no-mixed-types",
+                "functional/no-promise-reject",
+                "functional/no-this-expressions",
+                "functional/readonly-type",
                 "local/canonical-import-path",
                 "local/folder-has-index",
                 "no-restricted-syntax",
@@ -320,8 +365,30 @@ mod tests {
     }
 
     #[test]
+    fn leaves_useless_recursion_where_loops_are_forbidden() {
+        // It suggests a loop: the functional core may not write one (EN-084).
+        for path in ["src/math/a.ts", "src/io/b/c.ts", "src/index.ts"] {
+            assert!(
+                !super::linted_by(path).contains(&"unicorn/no-useless-recursion"),
+                "{path}"
+            );
+        }
+        for path in [
+            "src/render/a.ts",
+            "playground/a/b.ts",
+            "src/math/a.test.ts",
+            "scripts/a.ts",
+        ] {
+            assert!(
+                super::linted_by(path).contains(&"unicorn/no-useless-recursion"),
+                "{path}"
+            );
+        }
+    }
+
+    #[test]
     fn runs_unicorn_s_rules_after_the_scoped_ones_on_every_file() {
-        for path in ["src/math/a.ts", "playground/a/b.test.ts", "scripts/a.ts"] {
+        for path in ["src/render/a.ts", "playground/a/b.test.ts", "scripts/a.ts"] {
             let on = super::linted_by(path);
             let scoped = rules_for(path);
 
