@@ -41,21 +41,25 @@ impl fmt::Display for Finding {
     }
 }
 
-/// A text with its fixes applied, from the last to the first; a fix overlapping one already
-/// applied is left for the next run.
+/// A text with its fixes applied in `ESLint`'s order, from the first range to the last; a fix
+/// starting at or before the end of one already applied is left for the next run.
 #[must_use]
 pub fn apply(text: &str, fixes: &[&Fix]) -> String {
     let mut sorted: Vec<&Fix> = fixes.to_vec();
-    sorted.sort_by_key(|fix| std::cmp::Reverse(fix.start));
-    let mut result = text.to_owned();
-    let mut floor = u32::MAX;
+    sorted.sort_by_key(|fix| (fix.start, fix.end));
+    let mut result = String::with_capacity(text.len());
+    let mut last: Option<u32> = None;
 
     for fix in sorted {
-        if fix.end <= floor {
-            result.replace_range(fix.start as usize..fix.end as usize, &fix.text);
-            floor = fix.start;
+        if last.is_some_and(|end| end >= fix.start) || fix.start > fix.end {
+            continue;
         }
+        let from = last.unwrap_or(0) as usize;
+        result.push_str(text.get(from..fix.start as usize).unwrap_or_default());
+        result.push_str(&fix.text);
+        last = Some(fix.end);
     }
+    result.push_str(text.get(last.unwrap_or(0) as usize..).unwrap_or_default());
     result
 }
 
@@ -81,7 +85,7 @@ mod tests {
     }
 
     #[test]
-    fn applies_fixes_from_the_end_and_skips_an_overlap() {
+    fn applies_fixes_from_the_first_and_skips_an_overlap_or_a_touch() {
         let first = Fix {
             start: 0,
             end: 1,
@@ -99,6 +103,13 @@ mod tests {
         };
 
         assert_eq!(apply("abcde", &[&first, &last]), "AbcdE!");
-        assert_eq!(apply("abcde", &[&last, &overlapping]), "abcdE!");
+        assert_eq!(apply("abcde", &[&last, &overlapping]), "abcx");
+        let touching = Fix {
+            start: 1,
+            end: 4,
+            text: "-".into(),
+        };
+        assert_eq!(apply("abcde", &[&first, &touching, &last]), "AbcdE!");
+        assert_eq!(apply("abcde", &[&touching]), "a-e");
     }
 }
