@@ -14,6 +14,7 @@ What each working session dealt with, in the agent's words: the Product Owner's 
 - `#run` EN-089: the test font file is read once per run by a Vitest global setup (193 reads to 1); the fixtures built from it are lazy and frozen; the shared-tables test of `parseCollectionFaces` 2.3 s to 75 ms; the lane 101.5 s to 96.3 s.
 - `#run` EN-074: oxlint 1.87.0 and `tsgolint` 7.0.2004 run first in `npm run lint` (1.0 to 1.3 s), with 355 native and type-aware rules; 125 rules dropped by a triage before anything was enabled; ESLint turns off every rule oxlint runs or the triage dropped.
 - `#run` EN-090: claims proven twice merged or removed (6 pairs), slow preparations built once, the tests outside the playground sharing a worker's modules; ADR-0070 and the testing rules; the tooling and tests pass joins NAM.
+- `#run` EN-091: every configuration file reviewed for speed; the RuleTester's setup given to the rule tests only (test lane 39.6 s to about 30 s), type errors reported by oxlint's `--type-check` with the lint and `tsc` out of `check:all`, the declarations written by Oxc's isolated declarations (0.63 s to 0.06 s, two exports annotated), `check:all` 61.8 s to 51.5 s (ADR-0071).
 
 ## 2026-10-17 — SP-021 answered, F19's run started
 

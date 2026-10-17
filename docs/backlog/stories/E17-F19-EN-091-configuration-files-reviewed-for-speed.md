@@ -146,7 +146,3 @@ The test lane is still the slowest, now with the site's build and ESLint close b
 - `.oxlintrc.json` (EN-075's): `--type-check` is passed on the command line; `options.typeCheck: true` in the root configuration would carry it into editors and any other oxlint call (`REF-OXLINT-TYPE-AWARE`), once EN-075 is merged.
 - `.github/workflows/ci.yml` compiles `cargo-llvm-cov` and `cargo-deny` from source on each run: a prebuilt install would save minutes of CI, a new action to review (`deps:tools`); no local wait, so left.
 - The `done` commit: `Rule-docs: none affected, a tooling story that changes no rule of docs/domain/`.
-
-### Journal
-
-- `#run` EN-091: every configuration file reviewed for speed; the RuleTester's setup given to the rule tests only (test lane 39.6 s to about 30 s), type errors reported by oxlint's `--type-check` with the lint and `tsc` out of `check:all`, the declarations written by Oxc's isolated declarations (0.63 s to 0.06 s, two exports annotated), `check:all` 61.8 s to 51.5 s (ADR-0071).
