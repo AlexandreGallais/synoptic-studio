@@ -27,5 +27,13 @@ Show the Product Owner F18 on one demo page: the figures before and after (subag
 
 One task = one commit, referenced as `VAL-019.Tn`.
 
-- [ ] T1 — Demo page and checklist lines (1 h)
-- [ ] T2 — The Product Owner validates; the result recorded (1 h)
+- [x] T1 — One test per criterion of F18, checked with F18 counted done (0.5 h)
+- [ ] T2 — F18's lines in E17's checklist, `?checklist=E17` (1 h)
+- [ ] T3 — The decisions the Product Owner confirmed on 2026-10-17 recorded (0.5 h)
+- [ ] T4 — The demo page, `docs/guide/f18-safe-and-cheap-parallel-run.md` (1 h)
+- [ ] T5 — E15's lines that ask for macOS font files reviewed (0.5 h)
+- [ ] T6 — The Product Owner validates; the result recorded (1 h)
+
+## Criteria traced
+
+Each of the 20 criteria of F18 has at least one test titled or named after it, `[F18.ACn]` in a TypeScript test or `f18_acn_…` in a Rust tool's tests (2026-10-17): AC2 in `tools/hooks/tests/limit.rs` and `tasks.rs`, AC19 in ten font test files, the others in one to five files each. With F18's status set to `done` in a copy of its file, the criteria trace test of `tests/backlog.test.ts` passes; with a 21st criterion added and no test for it, it fails naming `F18.AC21`.
