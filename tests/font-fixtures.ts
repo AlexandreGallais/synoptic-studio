@@ -185,9 +185,6 @@ export function fontFile(
   ]);
 }
 
-/** Helvetica of macOS, a collection (`.ttc`) of 6 faces, the font of US-046's examples. */
-export const HELVETICA_COLLECTION_PATH = "/System/Library/Fonts/Helvetica.ttc";
-
 /** `sfntVersion` of a TrueType font as Apple's systems tag it, `true` (`REF-APPLE-TT-SCALER`). */
 export const APPLE_TRUE_TYPE_VERSION = 0x74_72_75_65;
 
@@ -234,9 +231,6 @@ export function fontCollection(faces: readonly Uint8Array[]): Uint8Array {
     ...moved.flat(),
   ]);
 }
-
-/** Apple Color Emoji of macOS, a collection of 2 faces whose `sbix` table is 191 MB (US-052). */
-export const APPLE_COLOR_EMOJI_PATH = "/System/Library/Fonts/Apple Color Emoji.ttc";
 
 /**
  * The parts of a face joined in their order into its file, as `facePartsToFile` joins them but
