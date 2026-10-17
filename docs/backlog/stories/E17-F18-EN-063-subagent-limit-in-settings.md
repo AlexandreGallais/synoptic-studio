@@ -3,7 +3,7 @@ id: EN-063
 epic: E17
 feature: F18
 title: The subagent limit set in Claude Code's settings
-status: ready
+status: done
 points: 1
 ---
 
