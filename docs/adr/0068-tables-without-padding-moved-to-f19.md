@@ -1,6 +1,6 @@
 # ADR-0068 — Tables without padding moved to F19's formatter
 
-**Status**: Accepted by the agent (2026-10-17, EN-048 and AUD-020, the choice left to it by the Product Owner on 2026-10-17); to confirm at F18's validation (VAL-019). Supersedes ADR-0065 decision 1 (Prettier's `proseWrap: "never"`); ADR-0065's other decisions stand.
+**Status**: Accepted by the agent (2026-10-17, EN-048 and AUD-020, the choice left to it by the Product Owner on 2026-10-17); to confirm at F18's validation (VAL-019). Supersedes ADR-0065 decision 1 (Prettier's `proseWrap: "never"`); ADR-0065's other decisions stand. Decision 2 carried by EN-073 (2026-10-17): oxfmt pads every table with no option against it, so the Rust tool `tools/format` runs oxfmt, then writes the tables without padding.
 
 ## Context
 
@@ -17,11 +17,11 @@
 
 ## Reasons
 
-| Option                                     | For                                  | Against                                                                                       |
-| ------------------------------------------ | ------------------------------------ | --------------------------------------------------------------------------------------------- |
-| Moved to F19's formatter (chosen)          | readable paragraphs; no tool to drop | padded tables keep conflicting until F19 (`agent-tools.md` at EN-051, EN-052, EN-058, EN-059) |
-| `proseWrap: "never"` (ADR-0065 decision 1) | Prettier's own option                | 61 tables still padded; 1 340 lines joined into lines of hundreds of characters               |
-| A local Prettier plugin                    | every table unpadded now             | a JavaScript tool against the Rust rule, on an undocumented behaviour, dropped at F19         |
+| Option | For | Against |
+| --- | --- | --- |
+| Moved to F19's formatter (chosen) | readable paragraphs; no tool to drop | padded tables keep conflicting until F19 (`agent-tools.md` at EN-051, EN-052, EN-058, EN-059) |
+| `proseWrap: "never"` (ADR-0065 decision 1) | Prettier's own option | 61 tables still padded; 1 340 lines joined into lines of hundreds of characters |
+| A local Prettier plugin | every table unpadded now | a JavaScript tool against the Rust rule, on an undocumented behaviour, dropped at F19 |
 
 ## Consequences
 

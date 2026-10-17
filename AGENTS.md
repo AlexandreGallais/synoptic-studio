@@ -6,40 +6,40 @@ Instructions for any coding agent working in this repository. Claude Code reads 
 
 TypeScript library `editor` to create **SVG symbols** for **synoptic views**, and the tools built on it (`docs/domain/README.md`):
 
-| Tool          | Does                                                                                        |
-| ------------- | ------------------------------------------------------------------------------------------- |
-| Symbol Editor | strict numeric shapes, ports, animatable parts                                              |
-| Configurator  | configuration trees, interfaces, property groups, business types and libraries              |
-| View Editor   | places business symbols, overrides defaults, chooses pop-up lines, draws pipes and drawings |
+| Tool | Does |
+| --- | --- |
+| Symbol Editor | strict numeric shapes, ports, animatable parts |
+| Configurator | configuration trees, interfaces, property groups, business types and libraries |
+| View Editor | places business symbols, overrides defaults, chooses pop-up lines, draws pipes and drawings |
 
 A library of small named functions, each backed by a verified source, composed so that they read like formulas; the playground (`playground/`) shows each stage. Principles: schematic, orthogonal, integer, documented, dependency-free.
 
 **State** (2026-10-17):
 
-| Epic                           | Where                              | Holds                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| ------------------------------ | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| E01 shapes from numbers        | delivered, RET-001 done            | rectangle, regular polygon, anchor, radius per corner, free shape, node editing, rotation, stretched polygon                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| E14 curves                     | delivered, RET-002 done            | points on a curve with handles (ADR-0046, ADR-0047), the round shape as four cubic sides (ADR-0048), every calculation named with a naming pass closing each epic (ADR-0049), the agent's tools and parallel checks (ADR-0050)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| E15 text                       | delivered, RET-003 done 2026-10-16 | F05: font metrics read from font files, Inter's shipped, a text measured and drawn as positioned lines (ADR-0052, ADR-0054); F14: a text in a box, wrapped at spaces, cut with an ellipsis, placed by line height, trim and vertical alignment, a background as a highlighter; F16: a color as `#` and six lower-case digits with an opacity, HSL and HSB as integers (ADR-0056, ADR-0058, ADR-0059); F15: font files read into named faces, embedded as `@font-face` when `fsType` permits (ADR-0053); F17, the validation's corrections: no HTML layer, Latin script the target, fonts embedded only at export, a feature validated on its checklist page `?checklist=E15` (ADR-0060 to ADR-0062); the text direction stays until the UI/UX epic; its runs keep the main thread free (ADR-0051, amended by ADR-0063 to ADR-0066) |
-| E17 fast tooling, Oxc and Rust | in progress                        | F18 validated on 2026-10-17 (VAL-019); F19 in progress (checks on Oxc, TypeScript 7 and Rust), then F20, then F21 (agent tools in Rust, E17's clean-up); the release of 0.3 (#259), merged by the Product Owner at E17's end                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| E02 edit shapes                | next                               | —                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Epic | Where | Holds |
+| --- | --- | --- |
+| E01 shapes from numbers | delivered, RET-001 done | rectangle, regular polygon, anchor, radius per corner, free shape, node editing, rotation, stretched polygon |
+| E14 curves | delivered, RET-002 done | points on a curve with handles (ADR-0046, ADR-0047), the round shape as four cubic sides (ADR-0048), every calculation named with a naming pass closing each epic (ADR-0049), the agent's tools and parallel checks (ADR-0050) |
+| E15 text | delivered, RET-003 done 2026-10-16 | F05: font metrics read from font files, Inter's shipped, a text measured and drawn as positioned lines (ADR-0052, ADR-0054); F14: a text in a box, wrapped at spaces, cut with an ellipsis, placed by line height, trim and vertical alignment, a background as a highlighter; F16: a color as `#` and six lower-case digits with an opacity, HSL and HSB as integers (ADR-0056, ADR-0058, ADR-0059); F15: font files read into named faces, embedded as `@font-face` when `fsType` permits (ADR-0053); F17, the validation's corrections: no HTML layer, Latin script the target, fonts embedded only at export, a feature validated on its checklist page `?checklist=E15` (ADR-0060 to ADR-0062); the text direction stays until the UI/UX epic; its runs keep the main thread free (ADR-0051, amended by ADR-0063 to ADR-0066) |
+| E17 fast tooling, Oxc and Rust | in progress | F18 validated on 2026-10-17 (VAL-019); F19 in progress (checks on Oxc, TypeScript 7 and Rust), then F20, then F21 (agent tools in Rust, E17's clean-up); the release of 0.3 (#259), merged by the Product Owner at E17's end |
+| E02 edit shapes | next | — |
 
 **Scope** (ADR-0030): a finished free V1, then new features only in a paid pro edition; a request that looks pro → say so and ask; pro ideas go to `docs/domain/editions.md`. Implement only `ready` stories: the Product Owner's `/run` is the go-ahead, the agent then sets its scope `ready` (ADR-0045).
 
 ## Where to read — before any task
 
-| Need                                                 | File                                                 |
-| ---------------------------------------------------- | ---------------------------------------------------- |
-| Domain: vision, glossary, settled and open questions | `docs/domain/README.md`, then the relevant file      |
-| Why a choice was made                                | `docs/adr/` (index in `README.md`)                   |
-| How code is written                                  | `docs/conventions/README.md`                         |
-| How docs are written                                 | `docs/conventions/writing.md`                        |
-| What to do next, the method                          | `docs/backlog/README.md`, `docs/process/agile.md`    |
-| Sources: where to look, when to stop, how to ask     | `docs/research/README.md`, `docs/tooling/sources.md` |
-| Bibliography `REF-*` / derivations `DERIV-*`         | `docs/references.md`, `docs/derivations/`            |
-| Tooling, Git, CI, releases, metrics                  | `docs/tooling/`                                      |
-| Cadences, logs, retrospectives                       | `docs/process/`                                      |
-| Plain-language guide; reusable method                | `docs/guide/`; `docs/playbook/`                      |
+| Need | File |
+| --- | --- |
+| Domain: vision, glossary, settled and open questions | `docs/domain/README.md`, then the relevant file |
+| Why a choice was made | `docs/adr/` (index in `README.md`) |
+| How code is written | `docs/conventions/README.md` |
+| How docs are written | `docs/conventions/writing.md` |
+| What to do next, the method | `docs/backlog/README.md`, `docs/process/agile.md` |
+| Sources: where to look, when to stop, how to ask | `docs/research/README.md`, `docs/tooling/sources.md` |
+| Bibliography `REF-*` / derivations `DERIV-*` | `docs/references.md`, `docs/derivations/` |
+| Tooling, Git, CI, releases, metrics | `docs/tooling/` |
+| Cadences, logs, retrospectives | `docs/process/` |
+| Plain-language guide; reusable method | `docs/guide/`; `docs/playbook/` |
 
 ## Golden rules
 
@@ -73,21 +73,21 @@ A library of small named functions, each backed by a verified source, composed s
 
 ## Work
 
-| Level   | Flow                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Feature | refinement → `SP` spike → `US` / `EN` stories, `CHK` midway → `AUD` audit → `VAL` checklist page and demo page (ADR-0020)                                                                                                                                                                                                                                                                                                                                                    |
-| Epic    | its features → `NAM` naming pass over the whole code → `REV` review → `RET` retrospective with metrics (ADR-0023, ADR-0049)                                                                                                                                                                                                                                                                                                                                                  |
-| Branch  | `main` releases only; `develop` integration; `feature/f<nn>-<topic>` from `develop`; `<type>/<id>-<topic>` per story from its feature (ADR-0038)                                                                                                                                                                                                                                                                                                                             |
-| Merge   | story → feature: rebase, by the Product Owner or, in an authorized run, by GitHub; feature → `develop`: merge commit, by GitHub once validated; `develop` → `main`: when the Product Owner asks, by them (ADR-0045)                                                                                                                                                                                                                                                          |
-| Agents  | at most 3 subagents at once: the hook `tools/hooks` `limit-agents` (test `tools/hooks/tests/limit.rs`) refuses a fourth, started or resumed, backed up by `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` set to 3 in `.claude/settings.json` (EN-063); one heavy command at a time, through the lock `tools/heavy-lock` (test `tools/heavy-lock/tests/lock.rs`) (ADR-0063, EN-047); shared files written by the main thread at merge (ADR-0065); checks by level from E02 (ADR-0064) |
-| Checks  | local only on work branches (`pre-push` runs `check:all`); one CI, on the pull request into `main`; never wait for a CI elsewhere                                                                                                                                                                                                                                                                                                                                            |
-| Story   | one commit per task (`Refs: <ID>.Tn`), status `done` in the last commit (`Closes: <ID>`), a test card for a `US`, then a pull request into its feature                                                                                                                                                                                                                                                                                                                       |
-| Math    | tests first: hand-computed examples, degenerate cases, then properties (ADR-0022); a test proving a criterion is titled `[F01.AC3] …` (ADR-0027)                                                                                                                                                                                                                                                                                                                             |
+| Level | Flow |
+| --- | --- |
+| Feature | refinement → `SP` spike → `US` / `EN` stories, `CHK` midway → `AUD` audit → `VAL` checklist page and demo page (ADR-0020) |
+| Epic | its features → `NAM` naming pass over the whole code → `REV` review → `RET` retrospective with metrics (ADR-0023, ADR-0049) |
+| Branch | `main` releases only; `develop` integration; `feature/f<nn>-<topic>` from `develop`; `<type>/<id>-<topic>` per story from its feature (ADR-0038) |
+| Merge | story → feature: rebase, by the Product Owner or, in an authorized run, by GitHub; feature → `develop`: merge commit, by GitHub once validated; `develop` → `main`: when the Product Owner asks, by them (ADR-0045) |
+| Agents | at most 3 subagents at once: the hook `tools/hooks` `limit-agents` (test `tools/hooks/tests/limit.rs`) refuses a fourth, started or resumed, backed up by `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` set to 3 in `.claude/settings.json` (EN-063); one heavy command at a time, through the lock `tools/heavy-lock` (test `tools/heavy-lock/tests/lock.rs`) (ADR-0063, EN-047); shared files written by the main thread at merge (ADR-0065); checks by level from E02 (ADR-0064) |
+| Checks | local only on work branches (`pre-push` runs `check:all`); one CI, on the pull request into `main`; never wait for a CI elsewhere |
+| Story | one commit per task (`Refs: <ID>.Tn`), status `done` in the last commit (`Closes: <ID>`), a test card for a `US`, then a pull request into its feature |
+| Math | tests first: hand-computed examples, degenerate cases, then properties (ADR-0022); a test proving a criterion is titled `[F01.AC3] …` (ADR-0027) |
 
 ## Definition of done
 
 1. `npm run fix`.
-2. `npm run check:all` green: Prettier, ESLint (0 warning, Markdown included), secretlint, `tsc`, Vitest (100 % of `src/`, the playground's floor), `npm audit`, knip, latest versions, docs and playground builds. Seen, not assumed; a failure is reported with its output.
+2. `npm run check:all` green: the formatter (oxfmt, then tables without padding), ESLint (0 warning, Markdown included), secretlint, `tsc`, Vitest (100 % of `src/`, the playground's floor), `npm audit`, knip, latest versions, docs and playground builds. Seen, not assumed; a failure is reported with its output.
 3. Docs up to date: domain, references, derivations, ADRs, backlog.
 4. A summary in French (`docs/conventions/writing.md`): result, changes, evidence, decisions needed, next step, session report.
 
@@ -95,31 +95,31 @@ A new test that reads files is **mutation-checked**: made to fail once on purpos
 
 ## Stop and ask when
 
-| Signal                                                  | Action                                                      |
-| ------------------------------------------------------- | ----------------------------------------------------------- |
-| a business rule is missing from `docs/domain/`          | ask the Product Owner                                       |
-| a math or geometry function has no readable source      | derivation, or research request (`docs/research/requests/`) |
-| code, domain and ADRs contradict each other             | report it, decide nothing alone                             |
-| expected test values cannot be computed by hand         | derivation to validate, or research request                 |
-| a function is over its kind's limits after 2 splits     | propose a split to the Product Owner                        |
-| an `[unverified]` reference is needed                   | read it now (library, then online), or derive it            |
-| the same test fails after 3 attempts                    | stop, explain the analysis                                  |
-| a runtime dependency or a forbidden primitive is needed | stop, propose an ADR                                        |
-| a feature is absent from the domain or the backlog      | ask whether it is in scope                                  |
+| Signal | Action |
+| --- | --- |
+| a business rule is missing from `docs/domain/` | ask the Product Owner |
+| a math or geometry function has no readable source | derivation, or research request (`docs/research/requests/`) |
+| code, domain and ADRs contradict each other | report it, decide nothing alone |
+| expected test values cannot be computed by hand | derivation to validate, or research request |
+| a function is over its kind's limits after 2 splits | propose a split to the Product Owner |
+| an `[unverified]` reference is needed | read it now (library, then online), or derive it |
+| the same test fails after 3 attempts | stop, explain the analysis |
+| a runtime dependency or a forbidden primitive is needed | stop, propose an ADR |
+| a feature is absent from the domain or the backlog | ask whether it is in scope |
 
 Stop format: what blocks, what was consulted, the precise question, the options **without choosing one**.
 
 ## Commands
 
-| Command                | Role                                                                                                                                                       |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `npm run dev`          | playground on `http://localhost:5173` (`?checklist=E15` for an epic's checklist)                                                                           |
-| `npm run docs:dev`     | documentation site                                                                                                                                         |
-| `npm run fix`          | Prettier + ESLint `--fix`                                                                                                                                  |
-| `npm run check:all`    | every check (what `pre-push` and the CI run)                                                                                                               |
-| `npm run library -- …` | local library of sources: `search`, `get`, `read`, `list`                                                                                                  |
-| `npm run metrics`      | report of the agent's commands, time and tokens                                                                                                            |
-| agent tools            | `replace`, `backlog:status`, `worktree:new`, `story:finish`, `mutate`, `val:prepare`, `golden:*`, `activity`, `epic:check` (`docs/tooling/agent-tools.md`) |
+| Command | Role |
+| --- | --- |
+| `npm run dev` | playground on `http://localhost:5173` (`?checklist=E15` for an epic's checklist) |
+| `npm run docs:dev` | documentation site |
+| `npm run fix` | the formatter (oxfmt, `tools/format`) + ESLint `--fix` |
+| `npm run check:all` | every check (what `pre-push` and the CI run) |
+| `npm run library -- …` | local library of sources: `search`, `get`, `read`, `list` |
+| `npm run metrics` | report of the agent's commands, time and tokens |
+| agent tools | `replace`, `backlog:status`, `worktree:new`, `story:finish`, `mutate`, `val:prepare`, `golden:*`, `activity`, `epic:check` (`docs/tooling/agent-tools.md`) |
 
 ## Pitfalls
 
