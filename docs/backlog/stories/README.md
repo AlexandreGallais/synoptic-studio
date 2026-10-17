@@ -227,7 +227,7 @@
 | [EN-082](./E17-F19-EN-082-unicorn-dom-and-web.md) | F19 | Unicorn's DOM and web rules in Rust | ready |
 | [EN-083](./E17-F19-EN-083-jsdoc-rules-in-rust.md) | F19 | JSDoc's rules in Rust | ready |
 | [EN-084](./E17-F19-EN-084-other-plugin-rules-in-rust.md) | F19 | The other plugins' rules in Rust | ready |
-| [EN-094](./E17-F19-EN-094-adrs-reviewed-with-the-product-owner.md) | F19 | The ADRs reviewed with the Product Owner, the review applied | ready |
+| [EN-094](./E17-F19-EN-094-adrs-reviewed-with-the-product-owner.md) | F19 | The ADRs reviewed with the Product Owner, the review applied | done |
 | [EN-093](./E17-F19-EN-093-rules-and-format-chosen-by-the-agent.md) | F19 | Every rule and tool reviewed by the agent for its own work | ready |
 | [EN-085](./E17-F19-EN-085-docs-build-on-change-eslint-out-oxc-adr.md) | F19 | The docs build on change, ESLint out, the ADR on Oxc | ready |
 | [AUD-021](./E17-F19-AUD-021-audit-f19.md) | F19 | Audit F19 | ready |

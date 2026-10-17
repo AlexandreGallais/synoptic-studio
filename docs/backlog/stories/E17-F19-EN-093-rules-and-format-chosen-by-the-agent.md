@@ -13,6 +13,8 @@ Once every rule runs in oxlint or the project's Rust linter, go over all of them
 
 Widened by the Product Owner on 2026-10-17 to the whole tooling: every check, hook and convention the agent works under — commitlint's rules, the branch-name check, the pre-commit and pre-push steps, the done-commit footers, the story and commit formats, the scripts of `package.json` — is asked the same questions: does it serve the work, and why; would removing it lower the quality, or was it a toy that only costs time; what is missing that would make the agent think less about how to do a thing, because it is always done the same way (as commitlint makes every commit message alike). The tools F21 rewrites in Rust are reviewed the same way before they are rewritten, so that only what serves is carried.
 
+Left by EN-094 for this story: the docs that still cite the ADRs ADR-0072 superseded (`docs/tooling/git-workflow.md`, `ci.md`, `agent.md`, `releases.md`, `commands.md`, `agent-tools.md`, `versions-and-security.md`, `docs/backlog/README.md`) are moved to ADR-0072, and `docs/process/agile.md`'s "Who does what" table follows ADR-0072 on who merges a feature.
+
 ## Acceptance criteria
 
 - Given every rule run by oxlint and the project's linter, when the review ends, then each is listed with what it guards and the agent's verdict — kept, changed, or dropped with its reason — and a dropped rule is never one that guards correctness, the domain's rules (`docs/domain/`) or an ADR's decision without a new ADR.
