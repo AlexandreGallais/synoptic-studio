@@ -22,6 +22,7 @@ Show the Product Owner F18 on one demo page: the figures before and after (subag
 - ADR-0067, decision 2: before each release, the Product Owner merges release-please's release pull request into `develop`; only then the pull request `develop` → `main`.
 - EN-048: tables without padding moved to F19's formatter (ADR-0068); F18.AC4 keeps the logs merged by union, rows kept unique.
 - EN-062: the tests on Helvetica, Apple Color Emoji, Arial and STIXGeneral stay macOS-only; F18.AC19 is read as the font reader's own tests on Inter Regular, which run everywhere.
+- US-062: the faces refused at the first reading are said once it ends, after the families left out, counted by reason and named, without the browser's reason: `Installed fonts read: 153 families; 224 left out: …. 3 faces of the families read refused: 1 not embeddable (STSongti-SC-Black); 2 no Latin letters (HoeflerText-Ornaments, IowanOldStyle-Titling).`; such a face is never read again, so the line `…: 1 faces read, 1 refused (…)` now appears only for a font removed between the two readings. The agent's wording, 2026-10-17.
 
 ## Decisions confirmed
 

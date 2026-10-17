@@ -5,9 +5,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { facePartsToFile } from "../../src";
 import {
   APPLE_TRUE_TYPE_VERSION,
+  LARGE_TABLE_LENGTH,
+  TRUE_TYPE_VERSION,
+  fileTables,
   fontCollection,
   lettersMissingFaceFile,
   postScriptFaceFile,
+  tablesFile,
   testFaceFile,
   uint32,
 } from "../../tests";
@@ -25,6 +29,8 @@ import {
   typeValue,
   waitForPageTasks,
 } from "../user-actions";
+
+import { readFacesInTurn } from "./read-faces-in-turn";
 
 import type { TestFace } from "../../tests";
 import type { InstalledFont } from "../fonts";
@@ -106,6 +112,23 @@ function heldFont(family: string, bytes: Uint8Array): readonly [InstalledFont, (
       resolve(new Blob([new Uint8Array(bytes)]));
     },
   ];
+}
+
+/**
+ * An installed face whose file is a font at the first reading and other bytes when read again,
+ * as a font replaced between the two readings.
+ *
+ * @param bytes - what its file holds when read again
+ * @returns a `FontData` giving Test Sans 400 once, then those bytes
+ */
+function garbledFont(bytes: Uint8Array): InstalledFont {
+  const first = new Blob([new Uint8Array(testFaceFile(TEST_SANS))]);
+  const blob = vi.fn<() => Promise<Blob>>().mockResolvedValueOnce(first);
+
+  return {
+    ...installedFont("Test Sans", bytes),
+    blob: blob.mockResolvedValue(new Blob([new Uint8Array(bytes)])),
+  };
 }
 
 /**
@@ -276,7 +299,10 @@ describe("Installed fonts (US-036)", () => {
     expect(readValue("text-font")).toBe("Inter");
     // Each face read once ahead (US-053); Test Sans Bold's empty file refused, Test Sans kept.
     expect(bold).toHaveBeenCalledOnce();
-    expect(readProgress()).toBe("Installed fonts read: 2 families.");
+
+    expect(readProgress()).toBe(
+      "Installed fonts read: 2 families. 1 faces of the families read refused: 1 unreadable (Test Sans Bold).",
+    );
   });
 
   it("[F17.AC11] measures a family read ahead at once when chosen, then reads its files again", async () => {
@@ -362,7 +388,7 @@ describe("Installed fonts (US-036)", () => {
     expect(readFontFamily()).toBe('"Test Sans", sans-serif');
   });
 
-  it("[F15.AC1] keeps the faces read and counts those refused, one good and two bad", async () => {
+  it("[F15.AC1] keeps the faces read and counts those refused, one good and two bad, at the first reading", async () => {
     const broken = vi.fn<() => Promise<Blob>>().mockRejectedValue(new Error("No file."));
 
     fakeLocalFonts([
@@ -381,10 +407,9 @@ describe("Installed fonts (US-036)", () => {
     chooseOption("text-font", "Test Sans");
     await waitForPageTasks();
 
-    expect(readText("#font-message")).toBe(
-      "Test Sans: 1 faces read, 2 refused (Test Sans Bold: Error: No file.; not a TrueType or OpenType font).",
-    );
-
+    // Both refused at the first reading, never read again (US-062).
+    expect(broken).toHaveBeenCalledOnce();
+    expect(readText("#font-message")).toBe("Test Sans: 1 faces read.");
     expect(readValue("text-font")).toBe("Test Sans");
     expect(readOptions("text-weight")).toEqual(["400"]);
   });
@@ -479,11 +504,15 @@ describe("Installed fonts (US-036)", () => {
   });
 
   it("[F15.AC1] says a reason shared by the faces refused once", async () => {
-    // Two faces whose files are not fonts: one reason, not "…; …" twice.
+    /**
+     * Two faces whose files are no longer fonts when read again: one reason, not "…; …" twice.
+     *
+     * @param bytes
+     */
     fakeLocalFonts([
       installedFont("Test Sans", testFaceFile(TEST_SANS)),
-      installedFont("Test Sans", Uint8Array.from([1, 2, 3])),
-      installedFont("Test Sans", Uint8Array.from([4, 5, 6])),
+      garbledFont(Uint8Array.from([1, 2, 3])),
+      garbledFont(Uint8Array.from([4, 5, 6])),
     ]);
 
     clickElement("installed-fonts");
@@ -614,15 +643,22 @@ describe("Installed fonts (US-036)", () => {
     chooseOption("text-font", "Test Sans");
     await waitForPageTasks();
 
-    expect(readText("#font-message")).toBe(
-      "Test Sans: 1 faces read, 1 refused (no face named TestSans-Bold in its collection).",
+    // Refused at the first reading, counted there, never read again (US-062).
+    expect(readProgress()).toBe(
+      "Installed fonts read: 1 families. 1 faces of the families read refused: 1 unreadable (TestSans-Bold).",
     );
+
+    expect(readText("#font-message")).toBe("Test Sans: 1 faces read.");
   });
 
   it("[F17.AC4] refuses a face Chrome cannot give (TypeError) in one line, naming it, the others kept", async () => {
+    // Given at the first reading, refused when read again (US-062).
     fakeLocalFonts([
       installedFont("Test Sans", testFaceFile(TEST_SANS)),
-      inaccessibleFont("Test Sans Light", "The font Test-Sans-Light could not be accessed."),
+      refusedAtSecondRead(
+        inaccessibleFont("Test Sans Light", "unused"),
+        new TypeError("The font Test-Sans-Light could not be accessed."),
+      ),
     ]);
 
     clickElement("installed-fonts");
@@ -704,7 +740,7 @@ describe("Installed fonts (US-036)", () => {
     );
   });
 
-  it("[F17.AC14] keeps a family's faces that can be listed, and says those left out when it is chosen", async () => {
+  it("[F17.AC14] keeps a family's faces that can be listed, and counts those left out", async () => {
     fakeLocalFonts([
       installedFont("Test Sans", testFaceFile(TEST_SANS)),
       {
@@ -716,13 +752,14 @@ describe("Installed fonts (US-036)", () => {
     clickElement("installed-fonts");
     await waitForPageTasks();
 
-    expect(readProgress()).toBe("Installed fonts read: 1 families.");
+    expect(readProgress()).toBe(
+      "Installed fonts read: 1 families. 1 faces of the families read refused: 1 not embeddable (Test Sans Bold).",
+    );
+
     chooseOption("text-font", "Test Sans");
     await waitForPageTasks();
 
-    expect(readText("#font-message")).toBe(
-      "Test Sans: 1 faces read, 1 refused (Test Sans Bold: its fsType forbids embedding it in an exported SVG).",
-    );
+    expect(readText("#font-message")).toBe("Test Sans: 1 faces read.");
 
     expect(readOptions("text-weight")).toEqual(["400"]);
   });
@@ -751,6 +788,126 @@ describe("Installed fonts (US-036)", () => {
 
     expect(readText("#font-message")).toBe(
       "Test Sans 400 imported. Test.ttc: Test Locked 400 refused, its fsType forbids embedding it in an exported SVG.",
+    );
+  });
+});
+
+/**
+ * An installed face whose file the browser gives at the first reading, then refuses, as a font
+ * removed between the two readings (US-061, US-062).
+ *
+ * @param font - the face, its file given once
+ * @param error - the error `blob()` rejects with afterwards
+ * @returns the same face, its second `blob()` rejected
+ */
+function refusedAtSecondRead(font: InstalledFont, error: Error): InstalledFont {
+  const file = new Blob([new Uint8Array(testFaceFile(TEST_SANS))]);
+
+  return {
+    ...font,
+    blob: vi.fn<() => Promise<Blob>>().mockResolvedValueOnce(file).mockRejectedValue(error),
+  };
+}
+
+describe("Installed fonts read whole before they are listed (US-062)", () => {
+  beforeEach(() => {
+    openServedPage("");
+    clickElement("tool-text");
+    chooseOption("text-weight", "400");
+  });
+
+  afterEach(() => {
+    Reflect.deleteProperty(globalThis, "queryLocalFonts");
+    vi.mocked(facePartsToFile).mockReset();
+  });
+
+  it("[F18.AC14] never lists nor reads again a face refused at the first reading, the family listed with its sound faces", async () => {
+    const light = inaccessibleFont(
+      "Test Sans Light",
+      "The font Test-Sans-Light could not be accessed.",
+    );
+
+    fakeLocalFonts([installedFont("Test Sans", testFaceFile(TEST_SANS)), light]);
+    clickElement("installed-fonts");
+    await waitForPageTasks();
+
+    expect(readOptions("text-font")).toEqual(["Inter", "Test Sans"]);
+    chooseOption("text-font", "Test Sans");
+    await waitForPageTasks();
+
+    // Light refused once, at the first reading; the second reading reads 400 alone.
+    expect(light.blob).toHaveBeenCalledOnce();
+    expect(readText("#font-message")).toBe("Test Sans: 1 faces read.");
+    expect(readOptions("text-weight")).toEqual(["400"]);
+  });
+
+  it("[F18.AC14] counts the faces refused in the families read by reason, after the families left out", async () => {
+    fakeLocalFonts([
+      installedFont("Test Bad", Uint8Array.from([1, 2, 3])),
+      installedFont("Test Sans", testFaceFile(TEST_SANS)),
+      inaccessibleFont("Test Sans Light", "The font Test-Sans-Light could not be accessed."),
+      {
+        ...installedFont("Test Sans", lettersMissingFaceFile({ ...TEST_SANS, weightClass: 700 })),
+        fullName: "Test Sans Bold",
+      },
+      {
+        ...installedFont("Test Sans", testFaceFile({ ...TEST_SANS, fsType: 2, weightClass: 900 })),
+        fullName: "Test Sans Black",
+      },
+    ]);
+
+    clickElement("installed-fonts");
+    await waitForPageTasks();
+
+    // Test Bad left out whole; three faces of Test Sans refused, said in the one order of the reasons.
+    expect(readProgress()).toBe(
+      "Installed fonts read: 1 families; 1 left out: 1 unreadable (Test Bad). 3 faces of the families read refused: 1 not embeddable (Test Sans Black); 1 no Latin letters (Test Sans Bold); 1 unreadable (Test Sans Light).",
+    );
+  });
+
+  it("[F18.AC14] releases each face's file once it is read and checked, its metrics alone kept", async () => {
+    const reads = await readFacesInTurn(globalThis, [
+      installedFont("Test Sans", testFaceFile(TEST_SANS)),
+      installedFont("Test Sans", testFaceFile({ ...TEST_SANS, weightClass: 700 })),
+    ]);
+
+    expect(reads.map((read) => [read.face?.face.weight, read.face?.face.file])).toEqual([
+      [400, undefined],
+      [700, undefined],
+    ]);
+  });
+
+  it("[F18.AC14] reads a face of 191 MB whole, checks it and releases it, the family listed", async () => {
+    const large = tablesFile(TRUE_TYPE_VERSION, {
+      ...fileTables(testFaceFile(TEST_SANS)),
+      sbix: { zeros: LARGE_TABLE_LENGTH },
+    });
+
+    fakeLocalFonts([installedFont("Test Sans", large)]);
+    clickElement("installed-fonts");
+    await waitForPageTasks();
+
+    const [, family] = readFontSession(document).kept;
+
+    expect(readOptions("text-font")).toEqual(["Inter", "Test Sans"]);
+    expect(family?.faces.map((face) => face.file)).toEqual([undefined]);
+  });
+
+  it("[F18.AC14] still reads a family chosen again, a face refused then dropped and said", async () => {
+    const bold = refusedAtSecondRead(
+      inaccessibleFont("Test Sans Bold", "unused"),
+      new TypeError("The font TestSans-Bold could not be accessed."),
+    );
+
+    fakeLocalFonts([installedFont("Test Sans", testFaceFile(TEST_SANS)), bold]);
+    clickElement("installed-fonts");
+    await waitForPageTasks();
+    expect(readProgress()).toBe("Installed fonts read: 1 families.");
+    chooseOption("text-font", "Test Sans");
+    await waitForPageTasks();
+
+    expect(readText("#font-message")).toBe(
+      "Test Sans: 1 faces read, 1 refused (Test Sans Bold: The font TestSans-Bold could not be accessed. Import its file with Import a font).",
     );
   });
 });
