@@ -9,15 +9,3 @@ pub mod no_subtraction_comparison;
 pub mod prefer_math_abs;
 pub mod prefer_number_is_safe_integer;
 pub mod prefer_unary_minus;
-
-use super::Rule;
-
-/// The rules, in the order of their names.
-pub const RULES: &[&dyn Rule] = &[
-    &no_negated_comparison::NoNegatedComparison,
-    &no_redundant_comparison::NoRedundantComparison,
-    &no_subtraction_comparison::NoSubtractionComparison,
-    &prefer_math_abs::PreferMathAbs,
-    &prefer_number_is_safe_integer::PreferNumberIsSafeInteger,
-    &prefer_unary_minus::PreferUnaryMinus,
-];

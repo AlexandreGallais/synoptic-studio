@@ -7,13 +7,3 @@ pub mod no_error_property_assignment;
 pub mod prefer_aggregate_error;
 pub mod prefer_error_is_error;
 pub mod try_complexity;
-
-use super::Rule;
-
-/// The rules, in the order of their names.
-pub const RULES: &[&dyn Rule] = &[
-    &no_error_property_assignment::NoErrorPropertyAssignment,
-    &prefer_aggregate_error::PreferAggregateError,
-    &prefer_error_is_error::PreferErrorIsError,
-    &try_complexity::TryComplexity,
-];

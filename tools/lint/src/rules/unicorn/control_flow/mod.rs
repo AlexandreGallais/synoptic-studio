@@ -20,25 +20,3 @@ pub mod prefer_simple_condition_first;
 pub mod prefer_simplified_conditions;
 pub mod prefer_smaller_scope;
 pub mod prefer_switch;
-
-use super::Rule;
-
-/// The rules, in the order of their names.
-pub const RULES: &[&dyn Rule] = &[
-    &no_declarations_before_early_exit::NoDeclarationsBeforeEarlyExit,
-    &no_duplicate_if_branches::NoDuplicateIfBranches,
-    &no_duplicate_logical_operands::NoDuplicateLogicalOperands,
-    &no_useless_boolean_cast::NoUselessBooleanCast,
-    &no_useless_else::NoUselessElse,
-    &no_useless_logical_operand::NoUselessLogicalOperand,
-    &prefer_boolean_return::PreferBooleanReturn,
-    &prefer_combined_guards::PreferCombinedGuards,
-    &prefer_early_return::PreferEarlyReturn,
-    &prefer_else_if::PreferElseIf,
-    &prefer_hoisting_branch_code::PreferHoistingBranchCode,
-    &prefer_minimal_ternary::PreferMinimalTernary,
-    &prefer_simple_condition_first::PreferSimpleConditionFirst,
-    &prefer_simplified_conditions::PreferSimplifiedConditions,
-    &prefer_smaller_scope::PreferSmallerScope,
-    &prefer_switch::PreferSwitch,
-];

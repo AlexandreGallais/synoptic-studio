@@ -17,16 +17,3 @@ pub mod no_useless_recursion;
 pub mod prefer_block_statement_over_iife;
 pub mod prefer_short_arrow_method;
 pub mod primitives;
-
-use super::Rule;
-
-/// The rules, in the order of their names.
-pub const RULES: &[&dyn Rule] = &[
-    &no_repeated_call_wrappers::NoRepeatedCallWrappers,
-    &no_uncalled_method::NoUncalledMethod,
-    &no_unnecessary_default_arguments::NoUnnecessaryDefaultArguments,
-    &no_unnecessary_parameters::NoUnnecessaryParameters,
-    &no_useless_recursion::NoUselessRecursion,
-    &prefer_block_statement_over_iife::PreferBlockStatementOverIife,
-    &prefer_short_arrow_method::PreferShortArrowMethod,
-];
