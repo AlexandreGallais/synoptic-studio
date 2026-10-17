@@ -26,3 +26,20 @@ One task = one commit, referenced as `EN-079.Tn`.
 - [ ] T3 — Functions (9): `consistent-function-style`, `isolated-functions`, `no-repeated-call-wrappers`, `no-uncalled-method`, `no-unnecessary-default-arguments`, `no-unnecessary-parameters`, `no-useless-recursion`, `prefer-block-statement-over-iife`, `prefer-short-arrow-method`, each with its documented cases as tests (3 h)
 - [ ] T4 — Errors and numbers (10): `no-error-property-assignment`, `prefer-aggregate-error`, `prefer-error-is-error`, `try-complexity`, `no-negated-comparison`, `no-redundant-comparison`, `no-subtraction-comparison`, `prefer-math-abs`, `prefer-number-is-safe-integer`, `prefer-unary-minus`, each with its documented cases as tests (3 h)
 - [ ] T5 — The rules turned off in ESLint, the findings compared on the tree and on planted cases, the triage updated (1 h)
+
+## Timings (ADR-0069)
+
+Measured on this Mac, 2026-10-17, on `npm run lint`'s targets (2,048 files):
+
+| Tool | Before | After |
+| --- | --- | --- |
+| Rust linter (`tools/lint`) | 0.12–0.13 s | 0.12–0.13 s, 33 rules more |
+| ESLint | 20.8–25.5 s | 13.9 s, 36 rules fewer |
+
+## For the main thread
+
+Rule-docs: none affected, the story moves lint rules between linters and changes no rule of `docs/domain/`.
+
+### Journal
+
+- `#run` EN-079: 33 Unicorn rules on control flow, functions, errors and numbers carried to the Rust linter, 3 dropped (`no-unnecessary-nested-ternary`, `consistent-function-style`, `isolated-functions`); same findings as ESLint on the documented and planted cases, none on the tree; ESLint about 7 s faster.

@@ -14,14 +14,21 @@ export const UNICORN_FUNCTIONS: TSESLint.FlatConfig.Config = {
     // Run by the project's linter, its types read from the written code (tools/lint, EN-076).
     "unicorn/no-non-function-verb-prefix": "off",
     "unicorn/no-object-as-default-parameter": "error",
-    "unicorn/no-repeated-call-wrappers": "error",
-    "unicorn/no-uncalled-method": "error",
-    "unicorn/no-unnecessary-default-arguments": "error",
-    "unicorn/no-unnecessary-parameters": "error",
+    // Run by the project's linter (tools/lint, EN-079).
+    "unicorn/no-repeated-call-wrappers": "off",
+    // Run by the project's linter (tools/lint, EN-079).
+    "unicorn/no-uncalled-method": "off",
+    // Run by the project's linter (tools/lint, EN-079).
+    "unicorn/no-unnecessary-default-arguments": "off",
+    // Run by the project's linter (tools/lint, EN-079).
+    "unicorn/no-unnecessary-parameters": "off",
     "unicorn/no-unreadable-iife": "error",
-    "unicorn/no-useless-recursion": "error",
-    "unicorn/prefer-block-statement-over-iife": "error",
+    // Run by the project's linter (tools/lint, EN-079).
+    "unicorn/no-useless-recursion": "off",
+    // Run by the project's linter (tools/lint, EN-079).
+    "unicorn/prefer-block-statement-over-iife": "off",
     "unicorn/prefer-default-parameters": "error",
-    "unicorn/prefer-short-arrow-method": "error",
+    // Run by the project's linter (tools/lint, EN-079).
+    "unicorn/prefer-short-arrow-method": "off",
   },
 };
