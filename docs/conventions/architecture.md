@@ -32,7 +32,7 @@ In practice: every decision is taken in the core; the shell only applies it.
 
 The core runs in any ECMAScript engine (browser, Node.js, server, worker) and can be transcribed into another language function by function:
 
-- ECMAScript only — no DOM, Node.js or host API (lint: `eslint/scopes/pure-layers.ts`);
+- ECMAScript only — no DOM, Node.js or host API (lint: the pure layers' override of `.oxlintrc.json`, `no-restricted-globals`);
 - plain read-only data in and out; no class, closure returned or exception;
 - the TSDoc states the mathematical intent where JavaScript differs from other languages (`%` sign, `.at` with a negative index, `-0`, `NaN`);
 - `number` is IEEE 754 binary64; `EPSILON` and `SVG_DECIMALS` are part of the specification.

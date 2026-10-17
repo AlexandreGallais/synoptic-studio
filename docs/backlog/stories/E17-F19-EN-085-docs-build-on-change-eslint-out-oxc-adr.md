@@ -33,10 +33,17 @@ One task = one commit, referenced as `EN-085.Tn`.
 | Change against the base | Runs (s) | Slowest lanes |
 | --- | --- | --- |
 | code only: the docs lane skipped | 85.3, 39.4, 38.5 | `test` 38 to 47 s, `check:rust` 37 to 73 s; the first run built the Rust tools again after T2's change to `tools/lint` (`rust:build` 11.8 s, `check:rust` 73.4 s) |
-| docs changed: every lane | 76.6, 61.4, 56.9, 61.2, 68.0 | `docs:build` 56 to 76 s, `test` 50 to 70 s, `check:rust` 48 to 61 s; the first two failed in `test` under the docs build's load, their output not kept, and passed in the three runs after; to watch at AUD-021 (the installed fonts' test is the one known flaky) |
+| docs changed: every lane | 76.6, 61.4, 56.9, 61.2, 68.0 | `docs:build` 56 to 76 s, `test` 50 to 70 s, `check:rust` 48 to 61 s; the first two failed in `test` under the docs build's load, their output filtered out by the timing loop, and passed in the three runs after; to watch at AUD-021 (the installed fonts' test is the one known flaky) |
 
 A code story ends in about 39 s on a built workspace, under the 70 to 90 s of F19.AC8; a docs story in about 57 to 68 s. ESLint alone took 14.2 s, and 58 s for the three linters in a loaded `check:all` (CHK-020); `lint` now takes 2.2 to 5.2 s.
 
 ## Note
 
 Left by SP-021 for this story: `.claude/rules/tooling.md` gets the line that TypeScript 7 is the only TypeScript, that TypeScript 6 and TypeDoc are removed and that the API pages come from a Rust generator ([research note 0023](../../research/notes/0023-f19-oxc-and-rust-tools.md), "The Product Owner's second round").
+
+## For the main thread
+
+- Rule-docs: none affected, the story changes the tooling and no rule of `docs/domain/`.
+- `.claude/settings.json` still allows `Bash(npx eslint *)`: to remove, the story may not edit that file.
+- The worktree has a `node_modules` of its own (`npm install` after the removal); the main checkout's, linked into the other worktrees, still holds ESLint and TypeScript 6 until `npm install` runs there after the merge.
+- ADR-0075 was the next free number on 2026-10-17; EN-093 may take one too: renumber the later one and its row of `docs/adr/README.md` at merge.

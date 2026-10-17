@@ -1,12 +1,12 @@
 # Formatting
 
-Three tools, each with its own scope, **no duplicate** (ADR-0013; Prettier replaced by oxfmt in EN-073):
+Three tools, each with its own scope, **no duplicate** (ADR-0075; Prettier replaced by oxfmt in EN-073):
 
 | Tool | Decides | File |
 | --- | --- | --- |
 | EditorConfig | charset, line ending, indentation, line length (100), trailing spaces, final newline | `.editorconfig` |
 | The formatter (`tools/format`) | the whole layout of every file kind it knows: oxfmt, then Markdown tables without padding (ADR-0068, EN-073); the order of the imports (`sortImports`, EN-095, [imports](./imports.md)) | `.oxfmtrc.json` (Prettier's options, translated by `oxfmt --migrate=prettier`; `printWidth` 100) |
-| The linters | what the formatter does not decide: blank lines between statements, comments, the members of an import, JSDoc layout, braces | `.oxlintrc.json`, `tools/lint` (ESLint runs none since EN-095) |
+| The linters | what the formatter does not decide: blank lines between statements, comments, the members of an import, JSDoc layout, braces | `.oxlintrc.json`, `tools/lint` |
 
 ## One formatter
 
@@ -24,7 +24,7 @@ One command formats every file the repository formats: `cargo run --release -q -
 - **`--check`** changes nothing: oxfmt checks every file but Markdown; each Markdown file is formatted in a temporary copy, its tables unpadded, then compared with the file.
 - **Targets**: the folders and root files named in `package.json` (EN-045: never `.`); `*` stands for the root's files, which the tool lists itself, since oxfmt reads `*` at any depth. Files that `.oxfmtrc.json`'s `ignorePatterns` name (plain paths only) are skipped by both steps.
 
-`npm run fix` = the formatter, then oxlint, the project's linter and ESLint with `--fix`. After it, `npm run check` reports no layout issue. On commit, `lint-staged` (`.lintstagedrc.json`) runs the formatter and the three linters with `--fix` on staged TypeScript, the formatter and the project's linter with `--fix` on staged Markdown, the formatter on the other kinds above, and secretlint on every staged file.
+`npm run fix` = the formatter, then oxlint and the project's linter with `--fix`. After it, `npm run check` reports no layout issue. On commit, `lint-staged` (`.lintstagedrc.json`) runs the formatter and the two linters with `--fix` on staged TypeScript, the formatter and the project's linter with `--fix` on staged Markdown, the formatter on the other kinds above, and secretlint on every staged file.
 
 ## Blank lines (`@stylistic/padding-line-between-statements`)
 
@@ -50,6 +50,6 @@ svg.append(createPathElement(document, pathData));
 
 ## Format on save
 
-- **WebStorm / IntelliJ** (`.idea/`, in the repository): the Oxc plugin of the JetBrains Marketplace formats with oxfmt; _ESLint_ → automatic configuration + "Run eslint --fix on save". An editor formats with oxfmt alone: the tables it pads are unpadded at the commit by `lint-staged`.
-- **VS Code** (`.vscode/`): recommended extensions `oxc.oxc-vscode`, `dbaeumer.vscode-eslint`, `editorconfig.editorconfig`; `formatOnSave` then `source.fixAll.eslint`.
-- On save: unused imports disappear (`unused-imports/no-unused-imports`), mixed imports split into `import` + `import type`, import paths and barrels are fixed (`local/canonical-import-path`, `local/barrel-exports`).
+- **WebStorm / IntelliJ** (`.idea/`, in the repository): the Oxc plugin of the JetBrains Marketplace formats with oxfmt and shows oxlint's findings. An editor formats with oxfmt alone: the tables it pads are unpadded at the commit by `lint-staged`.
+- **VS Code** (`.vscode/`): recommended extensions `oxc.oxc-vscode`, `editorconfig.editorconfig`; `formatOnSave` then `source.fixAll.oxc`.
+- On save: unused imports disappear (oxlint's `no-unused-vars`), mixed imports split into `import` + `import type`; import paths and barrels are fixed by `npm run fix` (`local/canonical-import-path`, `local/barrel-exports`, the project's linter).

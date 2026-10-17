@@ -1,63 +1,38 @@
 # Lint
 
-Three linters run one after the other until F19 ends (`npm run lint`): **oxlint** first, with its native rules and `tsgolint`'s type-aware ones (`.oxlintrc.json`, written by `@oxlint/migrate` from `eslint/`, EN-074), then **the project's linter** (`tools/lint`, Rust, EN-075), with the project's own rules and those oxlint lacks, then **ESLint**, which runs no rule since EN-095 (every rule moved, dropped, or left to oxfmt) and which EN-085 removes. Markdown pages are the project's linter's alone since EN-077: ESLint reads no page. Each rule runs in one linter only: the last entry of ESLint's configuration (`eslint/scopes/oxlint-owned.ts`) turns off every rule `.oxlintrc.json` names and every rule the triage dropped (`eslint/settings/dropped-rules.ts`; the reasons in research note 0023), and `tests/oxlint-config.test.ts` checks it, with the scopes carried as `overrides`, and that ESLint runs no rule on any file it is given; a rule moved to the project's linter is `off` in its theme, with a comment naming `tools/lint`.
+Two linters run one after the other (`npm run lint`, ADR-0075): **oxlint** first, with its native rules, `tsgolint`'s type-aware ones and TypeScript's errors (`.oxlintrc.json`, EN-074, ADR-0071), then **the project's linter** (`tools/lint`, Rust, EN-075), with the project's own rules, those oxlint lacks and the Markdown rules (EN-077). ESLint left with EN-085: each rule of its former `eslint/` folder is run by oxlint, run by the project's linter, or dropped with its reason, as ADR-0075 lists them.
 
 ## Principle
 
-- **Every rule of every plugin is decided once**, explicitly: enabled, configured, or disabled with its reason as a comment. No preset (`recommended`, `strict`…) is imported: the list is read, every rule is settled.
-- Everything is `error`. `npm run lint` uses `--max-warnings=0`.
-- **Strictest by default, relaxed by zone**: the files of `eslint/rules/` describe the strictest setting (the functional core's); `eslint/scopes/` relaxes or tightens by path.
-- The test `eslint/config.test.ts` (run by `npm run test`) fails when a rule is undecided, decided twice, non-existent, or when a zone touches an undecided rule.
+- **Every rule is decided once**, explicitly: `.oxlintrc.json` turns off oxlint's default category and names each rule it runs, with its options; no preset is imported. Each rule of the project's linter is a module of `tools/lint/src/rules/` with its tests.
+- Everything is an error. `npm run lint` runs oxlint with `--deny-warnings`, and the project's linter fails on any finding.
+- **Strictest by default, relaxed by zone**: the first override of `.oxlintrc.json` (`**/*.ts`) and the rules the project's linter turns on everywhere describe the strictest setting (the functional core's); the later overrides and the `SCOPES` of `tools/lint/src/scopes.rs` relax or tighten by path.
+- `tests/oxlint-config.test.ts` fails when `.oxlintrc.json` names a rule oxlint does not have, and when ESLint comes back.
 
-## Layout of `eslint/`
+## Zones
 
-```text
-eslint.config.ts          entry point: export default CONFIG
-eslint/
-  config.ts               assembly: ignores → language → Prettier → themes → zones → oxlint's
-  config.test.ts          completeness audit
-  settings/               data tables (layers, kinds, verbs, globs, limits, dropped rules…)
-  rules/<plugin>/<theme>.ts   one file per theme, one constant per file
-  rules/<plugin>/all.ts   list of the plugin's themes
-  scopes/                 path overrides (core, shell, tests, tooling, barrels)
-```
-
-| Folder | Themes |
-| --- | --- |
-| `rules/core/` | variables, functions, complexity, control-flow, operators, objects, classes, async, errors, modules, naming, comments, regex, legacy |
-| `rules/typescript/` | type-safety, strictness, type-declarations, type-imports, signatures, promises, classes, extensions, naming |
-| `rules/jsdoc/` | presence, content, types, layout |
-| `rules/imports/` | resolution, dependencies, style, default-exports, module-systems |
-| `rules/unicorn/` | arrays, collections, iteration, strings, numbers, control-flow, functions, objects, errors, promises, modules, dom, web, platform, naming, misc |
-| `rules/functional/` | immutability, purity, paradigm |
-| `rules/stylistic/` | spacing, comments, prettier-owned |
-| `rules/unused/` | unused |
-
-| Zone (`scopes/`) | Files | Effect |
+| Zone | Files | Effect |
 | --- | --- | --- |
-| `language.ts` | `**/*.ts` | typed parser, plugins, resolver |
-| `pure-layers.ts` | `src/math … src/io` | forbids the DOM and the host |
-| `playground.ts` | `playground/index.ts` | load-time effects allowed |
-| `barrels.ts` | `src/**/index.ts`, `eslint/**/index.ts`, `playground/*/**/index.ts` (not the entry); `eslint/rules/*/all.ts` | barrels: any number of imports; `all.ts` aggregators: any number of imports only |
-| `tooling.ts` | `eslint/`, root `*.config.ts`, `*.setup.ts`, `*.test.ts`, `tests/`, `docs/.vitepress/`, `.claude/hooks/`, `scripts/` | Node.js |
-| `tests.ts` | `**/*.test.ts` | literal numbers, free length |
-| `oxlint-owned.ts` | `**/*.ts`, last | turns off every rule `.oxlintrc.json` names and every dropped rule |
-
-The `eslint/` folder itself keeps kebab-case files exporting one constant each; the one-export rule targets the library and the playground.
+| pure layers (`.oxlintrc.json`) | `src/math`, `src/geometry`, `src/model`, `src/routing`, `src/io` | forbids the DOM and the host |
+| `dom-layers` (`tools/lint`) | `src/render/`, `src/interaction/`, `playground/` | the functional core's statement rules off (ADR-0014) |
+| barrels (both) | `src/**/index.ts`, `playground/*/**/index.ts` (not the entry) | any number of imports; the barrel's exports checked |
+| tooling (both) | root `*.config.ts`, `*.setup.ts`, `*.test.ts`, `tests/`, `docs/.vitepress/`, `.claude/hooks/`, `scripts/` | Node.js, development packages |
+| tests (both) | `**/*.test.ts` | literal numbers, free length |
+| root configurations (`.oxlintrc.json`) | root `*.config.ts`, `docs/.vitepress/config.ts` and `theme/index.ts` | a default export |
 
 ## Changing a rule
 
-1. Find the theme: `grep -rn '"rule-name"' eslint/rules`.
-2. Change the value **in that file only**; if it becomes `off`, write the reason as a comment above it.
-3. A value taken from a table is changed in `eslint/settings/` (`GLOBAL_FUNCTION_CEILING`…) or, for the project's linter, in `tools/lint/src/settings.rs` (`PROCEDURE_VERBS`, `KIND_LIMITS`…).
-4. A path-specific exception goes to `eslint/scopes/`, never to `rules/`.
+1. Find it: `grep -n '"rule-name"' .oxlintrc.json`, or its module in `tools/lint/src/rules/`.
+2. Change the value **there only**; a rule turned off leaves `.oxlintrc.json` or its scope, its reason in the commit and, for a rule of the project's linter, in the module's comment.
+3. A value taken from a table is changed in `tools/lint/src/settings.rs` (`PROCEDURE_VERBS`, `KIND_LIMITS`…).
+4. A path-specific exception goes to an override of `.oxlintrc.json` or a scope of `tools/lint/src/scopes.rs`, never to the rule itself.
 5. `npm run check`.
 
-After a plugin upgrade, `npm run test` lists the new rules to decide: add them to the right theme.
+After an oxlint upgrade, read its release notes for the new rules and decide them in `.oxlintrc.json`.
 
 ## One-off exceptions
 
-`// oxlint-disable-next-line rule -- justification` for a rule oxlint runs, `// lint-disable-next-line rule -- justification` for one the project's linter runs (it reports a directive that silences nothing or gives no justification), `// eslint-disable-next-line rule -- justification` for one ESLint still runs (ESLint ignores oxlint's directives and reports its own unused ones; oxlint reads both, so its report of unused directives waits until ESLint leaves) — the justification is mandatory (`unicorn/no-abusive-eslint-disable`). Each directive has its row in the [register of exceptions](./exceptions.md), in the same change (ADR-0066).
+`// oxlint-disable-next-line rule -- justification` for a rule oxlint runs, `// lint-disable-next-line rule -- justification` for one the project's linter runs (it reports a directive that silences nothing or gives no justification) — the justification is mandatory (`unicorn/no-abusive-eslint-disable`). Each directive has its row in the [register of exceptions](./exceptions.md), in the same change (ADR-0066).
 
 ## Known autofix pitfall
 
@@ -71,7 +46,7 @@ A crate of the Rust workspace on Oxc's crates (`oxc_parser`, `oxc_ast`, `oxc_ast
 - **One rule, one module** of `tools/lint/src/rules/`, its tests beside it, from the cases of the rule it carries and of its documentation; registered in `rules::ALL`. Adding a rule: the module, its line in `ALL`, its name in `ON_EVERYWHERE` or a scope of `tools/lint/src/scopes.rs`, its section below, its rule `off` in ESLint. Unicorn's rules sit in `tools/lint/src/rules/unicorn/`, listed in its `RULES` and `NAMES` and on for every file, which no scope changes (`scopes::linted_by`, EN-078); the groups of EN-079, EN-080 and EN-081 in their folders; what they share sits beside them: `syntax` (receivers, values, bindings), `known_values` (strings and keys), `escapes`, `layout` (a fix's indentation), `identifiers` (the names checked, a free name, a rename) and `pattern`, a small backtracking matcher that runs the plugin's regular expressions as it writes them (EN-080).
 - **JSDoc's rules** (EN-083) sit in `tools/lint/src/rules/jsdoc/`, listed in its `RULES` and `NAMES` and on for every file, `require-jsdoc` asking for the type members' blocks in the library only (the API pages read them). They read the blocks of `tools/lint/src/jsdoc/`, a port of the parser `eslint-plugin-jsdoc` reads (`comment-parser` with the tokenizers of `@es-joy/jsdoccomment`), which gives its tokens and tags on every block of the tree, and find the block a declaration carries as the plugin finds it. Their tests run the plugin's own cases, a fault planted in a copy of a file of the tree for each rule and cases written for the branches the plugin's cases leave, against what ESLint reported and fixed on them, recorded in `tools/lint/tests/fixtures/jsdoc/` (a carriage return written `␍`): the record stays the reference once ESLint leaves.
 - **Markdown pages** (EN-077): each page of the targets but `CHANGELOG.md` is parsed once by the crate `markdown` (`markdown-rs`, `REF-MARKDOWN-RS`) into an mdast tree, the one `@eslint/markdown` reads, with YAML front matter and GFM; the Markdown rules of `tools/lint/src/markdown/rules/` read that tree and the text under it.
-- **Scopes**: `tools/lint/src/scopes.rs` carries, in ESLint's order, the scopes of `eslint/scopes/` that set its rules; the project's values (kinds, layers, verbs, reference sources, the folder signal) are in `tools/lint/src/settings.rs`.
+- **Scopes**: `tools/lint/src/scopes.rs` carries, in the order ESLint applied them, the scopes of the former `eslint/scopes/` that set its rules; the project's values (kinds, layers, verbs, reference sources, the folder signal) are in `tools/lint/src/settings.rs`.
 - **Measured** on 2026-10-17: 0.05 s for the 1,538 files of `npm run lint`'s targets, all its rules on, the seven of EN-076 included. With Unicorn's 39 rules of EN-078: 0.12 s for the 2,048 files and pages, the same as without them; ESLint spent 285 ms on them. With the 33 of EN-080, after EN-079's and EN-081's: 0.22 s for the 2,053 files and pages (1.8 s of processor time over the threads, 0.75 s of it `unicorn/comment-content`); ESLint spent 1,071 ms on the 37 rules, its run from 14.2 s to 13.4 s.
 - **`--fix`** applies the fixes in ESLint's order, from the first range, a fix touching or overlapping one applied waiting, then lints again and repeats, ten passes at most, as ESLint does (EN-078, EN-080).
 - **Without types**: Oxc has no type checker; a rule that asked the compiler for a type reads the written code instead, each in the form its section states (EN-076).

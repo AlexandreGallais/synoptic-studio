@@ -120,7 +120,7 @@ In French, the same shape every time:
 
 No raw logs: quote the one line that matters. Questions come last, so they are not lost.
 
-## Checked by ESLint
+## Checked by the linter
 
 Markdown pages are linted by the project's linter (`tools/lint`, [lint.md](./lint.md#markdown-rules)): heading levels, one `#` title, code block languages, no bare URL, no missing link fragment, table column counts, alternative texts. Layout is the formatter's (oxfmt, tables without padding: `formatting.md`).
 

@@ -67,7 +67,7 @@ Conventional Commits (`REF-CONVENTIONAL-COMMITS`), checked by commitlint on ever
 ```
 
 - Types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `build`, `ci`, `perf`, `style`, `revert`. They drive the version ([releases](./releases.md)).
-- Scopes: one per layer (`math`, `geometry`, `model`, `routing`, `io`, `render`, `interaction`), plus `playground`, `eslint`, `docs`, `adr`, `backlog`, `ci`, `deps`, `tooling`.
+- Scopes: one per layer (`math`, `geometry`, `model`, `routing`, `io`, `render`, `interaction`), plus `playground`, `docs`, `adr`, `backlog`, `ci`, `deps`, `tooling`.
 - Header and body lines: 100 characters at most.
 - Breaking change: `feat(model)!: …` or a `BREAKING CHANGE:` footer.
 
@@ -94,7 +94,7 @@ Refs: EN-001.T2, DERIV-local-radius-clamp
 
 | Hook | Runs |
 | --- | --- |
-| `pre-commit` | `lint-staged` (`.lintstagedrc.json`): the formatter (`tools/format`: oxfmt, then tables without padding) + oxlint, the project's linter and ESLint with `--fix` on staged TypeScript, the project's linter with `--fix` on staged Markdown, the formatter on JavaScript, JSON, HTML, CSS, YAML and TOML, secretlint on every staged file |
+| `pre-commit` | `lint-staged` (`.lintstagedrc.json`): the formatter (`tools/format`: oxfmt, then tables without padding) + oxlint and the project's linter with `--fix` on staged TypeScript, the project's linter with `--fix` on staged Markdown, the formatter on JavaScript, JSON, HTML, CSS, YAML and TOML, secretlint on every staged file |
 | `commit-msg` | commitlint, then for a `done` commit (`Closes:`) the docs of a rule its story changes (`tools/rule-docs`, EN-059) |
 | `pre-push` | no shared file edited on a worker's story branch (`tools/shared-files`, ADR-0065), branch name (`.validate-branch-namerc.json`), `npm run check:all` (check, latest versions, docs and playground builds), then `npm run golden:check` when a golden file is written (EN-055) |
 

@@ -29,9 +29,9 @@ Never a `.ts` extension, never `/index`.
 A type-only import always uses its own `import type` statement (`@typescript-eslint/consistent-type-imports` with `separate-type-imports`, `import-x/consistent-type-specifier-style: prefer-top-level`). Both are autofixed: an import used only as a type becomes `import type`, and a mixed import is split:
 
 ```ts
-import { ESLint } from "eslint";
+import { defineConfig } from "vite";
 
-import type { Linter } from "eslint";
+import type { UserConfig } from "vite";
 ```
 
 Two statements from the same module are allowed when one is `import type` (`import-x/no-duplicates` keeps them apart); two value imports from the same module are merged.

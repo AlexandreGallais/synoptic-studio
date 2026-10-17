@@ -2,11 +2,11 @@
 
 ## Version
 
-TypeScript **7** (`@typescript/native`, the native compiler, EN-071) checks the types: through oxlint's `--type-check` in `npm run lint` (ADR-0071), and alone as `npm run typecheck`. TypeScript **6** stays as the `typescript` package, only for `typescript-eslint`, which cannot load 7, until ESLint leaves (EN-085, whose ADR supersedes ADR-0009's pin); `npm run deps:outdated` proposes only its patch upgrades (`.ncurc.cjs`).
+TypeScript **7** (`typescript` 7.0.2, the native compiler, EN-071) is the only TypeScript (ADR-0075): it checks the types through oxlint's `--type-check` in `npm run lint` (ADR-0071), and alone as `npm run typecheck`. TypeScript 6 left with typescript-eslint and TypeDoc (EN-085).
 
-## Split with the linters (ADR-0010)
+## Split with the linters (ADR-0075)
 
-What a linter can check lives in the linters (oxlint, the project's linter, ESLint until F19 ends); `tsconfig.json` keeps only what belongs to the type system:
+What a linter can check lives in the linters (oxlint, the project's linter); `tsconfig.json` keeps only what belongs to the type system:
 
 | Option | Why in TypeScript |
 | --- | --- |
@@ -21,7 +21,7 @@ Left to the linters (off in `tsconfig.json`): `noUnusedLocals`, `noUnusedParamet
 
 ## Files
 
-- `tsconfig.json`: type checking only (`noEmit`) of `src/`, `playground/`, `eslint/`, `tests/`, `scripts/`, `.claude/hooks/`, `docs/.vitepress/` and root files.
+- `tsconfig.json`: type checking only (`noEmit`) of `src/`, `playground/`, `tests/`, `scripts/`, `.claude/hooks/`, `docs/.vitepress/` and root files.
 - No `tsconfig.build.json`: `tools/declarations` writes the declarations `dist/types/` from `src/` (tests excluded), each module alone, on Oxc's isolated declarations (EN-091, ADR-0071). An exported constant whose value is not a plain literal therefore has its type written (`export const DEGREES_PER_HALF_TURN: number = DEGREES_PER_TURN / 2`), as an exported function has its return type.
 
 ## Typed rules

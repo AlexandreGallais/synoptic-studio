@@ -2,7 +2,7 @@
 
 Technical rules of the project: **how** code is written. The business **what** lives in [domain](../domain/), the **why** of choices in [ADRs](../adr/).
 
-Almost everything here is **checked by ESLint** (`eslint/`). When a rule is automatic, the page names the rule: when in doubt, the configuration wins.
+Almost everything here is **checked by the linters** (oxlint, `.oxlintrc.json`, and the project's linter, `tools/lint`). When a rule is automatic, the page names the rule: when in doubt, the configuration wins.
 
 | Page | Content |
 | --- | --- |
@@ -14,7 +14,7 @@ Almost everything here is **checked by ESLint** (`eslint/`). When a rule is auto
 | [documentation.md](./documentation.md) | mandatory TSDoc, tag order, `@see` and references |
 | [typescript.md](./typescript.md) | compiler options, TypeScript / linters split |
 | [formatting.md](./formatting.md) | EditorConfig, the formatter (oxfmt), blank lines, format on save |
-| [lint.md](./lint.md) | layout of `eslint/`, adding or changing a rule, custom rules |
+| [lint.md](./lint.md) | the two linters, their zones, adding or changing a rule, the project's rules |
 | [testing.md](./testing.md) | Vitest, hand-computed expected values |
 | [writing.md](./writing.md) | how documentation is written: page types, austere API reference, style |
 | [audit.md](./audit.md) | checklist of the feature audit: mathematics, sources, provenance, duplicates, consistency |
