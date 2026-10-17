@@ -1,6 +1,12 @@
+---
+name: worker-brief
+description: How a run's worker sets up its worktree, works a story, commits, takes the heavy lock and stops before the done commit (ADR-0072); preloaded by the story-worker and researcher agent types (EN-065).
+user-invocable: false
+---
+
 # Worker brief (ADR-0072)
 
-The main thread gives this file's path to each worker, with the story id, its feature branch and its worktree. A worktree subagent does not load `.claude/rules/` by itself: it reads them from this list.
+The `story-worker` and `researcher` agent types start with this brief and the `project-rules` digest preloaded, without `CLAUDE.md` nor `AGENTS.md` (EN-065); a `general-purpose` worker is given this file's path, `.claude/skills/worker-brief/SKILL.md` inside its worktree. The main thread's prompt names the story id, its feature branch and its worktree. A worktree subagent does not load `.claude/rules/` by itself: it reads them from this list.
 
 ## Setup
 
@@ -11,7 +17,7 @@ The main thread gives this file's path to each worker, with the story id, its fe
 
 ## Read first
 
-`AGENTS.md`, `CLAUDE.md`, `.claude/rules/library.md` (`src/`, `playground/`), `.claude/rules/docs.md` (Markdown), `.claude/rules/tooling.md`, `docs/conventions/README.md` and the pages it lists for what the story touches, the story file, its feature file, and the ADRs, derivations, domain sections and `REF-*` rows it cites.
+The rules of the area the story touches, from the worktree: `.claude/rules/library.md` (`src/`, `playground/`), `.claude/rules/docs.md` (Markdown), `.claude/rules/tooling.md` (tooling, tests, `tools/`); `docs/conventions/README.md` and the pages it lists for what the story touches; the story file, its feature file, and the ADRs, derivations, domain sections and `REF-*` rows it cites. A `general-purpose` worker also reads `AGENTS.md` and `CLAUDE.md`; a typed worker has their digest preloaded (`project-rules`) and opens `AGENTS.md` only for a section the digest does not cover.
 
 ## Work
 
@@ -20,6 +26,7 @@ The main thread gives this file's path to each worker, with the story id, its fe
 - Tests first: hand-computed examples with the computation in a comment, degenerate cases, a property test for each `math` and `geometry` function; a test proving a criterion is titled `[F18.ACn] …`; 100 % of `src/`.
 - **Edge cases and mutations** (ADR-0064): write the story's edge cases into its tests; break each new test once on purpose and see it fail.
 - One commit per task, footer `Refs: <ID>.Tn`, scope from `commitlint.config.ts`, the attribution line, the message in a file of the scratch folder (or a here-document on stdin, `-F -`), made by `npm run git:commit -- -F <file> <paths>`; a refused commit leaves its files staged.
+- Write the current step, one short line in French, to `.git/metrics/step` of the main checkout (`git rev-parse --git-common-dir` gives its folder): the status line shows it.
 - Before each commit: `npm run fix` (the type errors come with the lint, EN-091), the touched tests (`npx vitest run <paths>`). Edits across files: `npm run replace` or the Edit tool, never a Python script.
 - Docs in the same task as the code: domain, derivations, references, playground.
 - **Shared files** (ADR-0065): never edit the indexes of `docs/backlog/`, the logs (`journal.md`, `improvements.md`, `feedback.md`), the feature file nor the checklists (`playground/checklists/epic-*`): the pre-push hook refuses the branch and names the file (`tools/shared-files`, EN-050). Write the rows meant for a log in the story file, under `## For the main thread`, beneath `### Journal`, `### Improvements` or `### Feedback`, each row as the log writes it: `story:finish` moves them into the log at merge. Rows only, one per line: under `### Journal` a bullet opening with its tag (``- `#run` EN-050: …``); under `### Improvements` and `### Feedback` a table row of the log's columns, its first cell the date (`| 2026-10-17 | EN-050 | … | tool |`), with no header nor separator. Nothing to write: leave the heading out, never `- None.`. Any other line stays in the story file and is named by `move-rows`. Anything else for the main thread goes in that section, outside those headings.

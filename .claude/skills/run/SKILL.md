@@ -31,7 +31,7 @@ Scope: $ARGUMENTS. Never without the Product Owner's explicit start in this conv
 
 The main agent dispatches and stays free for the Product Owner, who may write at any time:
 
-- **One worker per story**, an `Agent` call (`general-purpose`) in the background, in a worktree made by `npm run worktree:new -- <ID>` (EN-052). Its prompt is short: the story id, the feature branch, the worktree, that every Bash call starts with `cd "<worktree>" || exit 9`, and the path of the brief **inside the worktree**, `<worktree>/.claude/skills/run/worker-brief.md` ([worker-brief.md](./worker-brief.md)).
+- **One worker per story**, an `Agent` call (`general-purpose`) in the background, in a worktree made by `npm run worktree:new -- <ID>` (EN-052). Its prompt is short: the story id, the feature branch, the worktree, that every Bash call starts with `cd "<worktree>" || exit 9`, and the path of the brief **inside the worktree**, `<worktree>/.claude/skills/worker-brief/SKILL.md` ([worker brief](../worker-brief/SKILL.md)).
 - **The main checkout stays on `develop`** during a run: a rule, skill or brief read there is `develop`'s, older than the feature branch's. Read them in a worktree of the feature branch: an older brief gives older rules.
 - **A background Git command of the main thread** starts with `cd <worktree> || exit 9` and checks the branch name (`git branch --show-current`) before it pushes, finishes or removes anything.
 - **A rebase conflict** is resolved in the working file, never by `checkout --ours` or `--theirs`, then diffed against the story's version before `rebase --continue`: a whole side taken drops its non-conflicting lines.
