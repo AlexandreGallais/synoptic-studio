@@ -23,8 +23,8 @@
 | `npm run docs:dev` / `docs:build` / `docs:preview` | the documentation site, its API pages written first ([documentation site](./documentation-site.md)) |
 | `npm run docs:api` | `docs/api/` from the TSDoc |
 | `npm run playground:build` | the playground, built into the site (`docs/.vitepress/dist/playground/`) |
-| `npm run branches:clean` | deletes the local branches merged into `develop` or gone from GitHub, with their worktrees, and reports what is left; never `main`, `develop`, the current branch, a story just started, nor a worktree holding changes or a running process |
-| `npm run records:save` | copies the metrics, the transcripts and the source library into the private records repository `records/` (ADR-0041, ADR-0044); at the end of each session and retrospective |
+| `npm run branches:clean` | deletes the local branches merged into `develop` or gone from GitHub, with their worktrees, and reports what is left; never `main`, `develop`, the current branch, a story just started, nor a worktree holding changes or a running process (`branches-clean` of `tools/repo-tools/`, EN-103) |
+| `npm run records:save` | copies the metrics, the transcripts and the source library into the private records repository `records/` (ADR-0041, ADR-0044); at the end of each session and retrospective. A file whose copy already has its size and modification time is not copied again, so the transcripts' gigabytes are written once; the library is copied by the system's `sqlite3 -readonly … "VACUUM INTO …"`, whose bytes differ from Node.js's SQLite but not its rows (`records-save` of `tools/repo-tools/`, EN-103) |
 | `npm run metrics`, `metrics:session` | the report of the agent's work, the session report ([metrics](./metrics.md)) |
 | `npm run library -- …` | the local source library ([sources](./sources.md)) |
 | `npm run font:metrics -- <folder>` | writes `src/model/font/inter-metrics.json` from Inter's static TrueType files unpacked in the folder, which the repository does not keep |
