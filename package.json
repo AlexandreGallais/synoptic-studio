@@ -71,12 +71,12 @@
     "mutate": "cargo run --release -q -p heavy-lock -- cargo run --release -q -p mutate --",
     "golden:write": "vitest run tests/golden-results.test.ts --mode golden-write",
     "golden:check": "cargo run --release -q -p heavy-lock -- vitest run tests/golden-results.test.ts --mode golden-check",
-    "backlog:status": "node scripts/backlog-status.ts",
+    "backlog:status": "cargo run --release -q -p repo-tools --bin backlog-status --",
     "backlog:index": "cargo run --release -q -p backlog-index -- docs/backlog && cargo run --release -q -p format -- --write docs/backlog/stories/README.md",
     "story:finish": "cargo run --release -q -p heavy-lock -- --lock merge node scripts/story-finish.ts",
     "val:prepare": "cargo run --release -q -p val-prepare -- .",
     "activity": "node --harmony-temporal scripts/activity.ts",
-    "epic:check": "node --harmony-temporal scripts/epic-check.ts",
+    "epic:check": "cargo run --release -q -p repo-tools --bin epic-check --",
     "font:metrics": "node scripts/default-font-metrics.ts"
   },
   "devDependencies": {

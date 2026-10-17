@@ -1071,6 +1071,7 @@ name = "repo-tools"
 version = "0.1.0"
 dependencies = [
  "hooks",
+ "shared-files",
  "test-support",
 ]
 
