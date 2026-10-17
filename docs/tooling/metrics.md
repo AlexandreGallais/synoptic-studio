@@ -8,6 +8,7 @@ Measure first, then make each epic faster than the last (Product Owner, RET-001)
 | --- | --- | --- |
 | `.git/metrics/tool-calls.jsonl` | the hook `.claude/hooks/log-tool-call.ts`, after each tool call (`PostToolUse`, `PostToolUseFailure`, in the background) | one line per call: see [each call's record](#the-record-of-each-call) |
 | `~/.claude/projects/<repository path>/` | Claude Code: one JSON Lines transcript per session, subagents included | every request with its tokens, every tool call and its result, each line with its time, session and branch |
+| `.git/metrics/run.json`, `run-cache.json` | `npm run run:start` and `run:end` (the run skill); the cache by `run-totals` at each count | the open or last run: its start, its end (0 while open) and its sessions' ids; the cache, the offset and tokens read in each transcript ([a run's totals](#a-runs-totals)) |
 | `.git/metrics/turns.jsonl` | `npm run metrics:session` without `--all` | one line per turn: start, session, duration, active time, tokens, tokens written, calls, failures, commits |
 | `~/.local/share/agent-library/library.sqlite` | the library server and `npm run library` ([sources](./sources.md)) | the pages read, their sections indexed, and every search and read with the project that asked (`project_uses` table) |
 
@@ -56,7 +57,7 @@ The status line at the bottom of Claude Code (`.claude/hooks/status-line.ts`, `R
 
 ```text
 E14 › RET-002 retrospective e14 · status line, documentation
-● working · 1 agent in the background · ⏱ turn 12 min 05 s · 3,815,104 tokens this turn (14,681 written) · conversation memory 41 % full · Opus 5.5
+● working · 1 agent in the background · ⏱ turn 12 min 05 s · 3,815,104 tokens this turn (14,681 written) · run 2 h 05 · 43,100,000 tokens · week 34 % used · conversation memory 41 % full · Opus 5.5
 ▶ Bash · Run the checks — 7 s
 ↳ agent auditor: Review EN-030 — 4 min · now Bash · List the files
 ```
@@ -83,11 +84,35 @@ A message to a subagent that had stopped (`SendMessage`, its result `Resuming ag
 | the state | see the table above; read from the transcript and its background tasks (`status-tasks.ts`) |
 | `⏱ turn` | time since the current turn started, to the second so that it moves at each refresh; once the agent ends its turn, `last turn` and the clock stopped at its last answer: the Product Owner's prompt after the agent last ended its turn; a message sent while the agent works, or a compaction, stays in the turn |
 | tokens this turn | exact sum of the turn's requests, read from the transcript, the same figures as the session report; the part the model wrote in brackets. They grow by steps: Claude Code writes a request's tokens into the transcript only once its answer is complete, so a long answer (a large file written) shows its tokens when it ends |
+| `run` | while a `/run` is open: its duration and its tokens since it started, subagents included, then the week's usage from `usage.json` when known ([a run's totals](#a-runs-totals)); absent outside a run |
 | conversation memory | how full the context window is (`context_window.used_percentage`): near 100 %, Claude Code compacts the conversation into a summary |
 | `▶` | the oldest call of the main agent still running, its description (or its command) and for how long: written by the `track-tool-call` hook when it starts, removed by `log-tool-call` when it ends; in red after 5 minutes |
 | `↳` | one line per background task: a subagent with its type, task, time and the call it makes now (the latest started by a subagent of its type), a command with its description |
 
 The tokens are summed incrementally: `.git/metrics/status-line-turn.json` keeps where the reading stopped, so each refresh reads only the new lines (about 0.1 s). The turn, not the terminal: Claude Code's own figures (`cost.total_duration_ms`, the session's tokens) add up every turn since the terminal opened, which says nothing about the work in progress. Popular status lines (ccstatusline, `REF-CCSTATUSLINE`) show the same families of facts — model, branch, tokens, usage limits, session time; usage limits are left out, Claude Code already shows them. This one adds the backlog place and the call running, which no generic one knows.
+
+## A run's totals
+
+A turn restarts at each message, so a run of many hours showed only its last minutes (EN-092). The run's totals count from its start to its end, whatever happens between:
+
+| Moment | Command | Does |
+| --- | --- | --- |
+| `/run` starts, or continues in a new session | `npm run run:start` | opens `.git/metrics/run.json` with the time and the session's id (`CLAUDE_CODE_SESSION_ID`, or the id typed after `--`); a run already open keeps its start and adds the session |
+| each status line refresh | `run-totals status` | the `run …` part, only while the marker is open |
+| any time | `npm run metrics:session -- --run` | the open or last run's table, `open` after its duration while it goes on |
+| the run's stop | `npm run run:end` | closes the marker, prints the table for the message to the Product Owner |
+
+The table holds the duration and the tokens by kind, nothing else (F20's refinement, 2026-10-17):
+
+```text
+| Duration | Tokens | Input | Cache written | Cache read | Output |
+| --- | --- | --- | --- | --- | --- |
+| 2 h 05 | 43,100,000 | 1,234 | 2,000,000 | 41,000,000 | 98,766 |
+```
+
+What is counted: every assistant request of each session's transcript and of its `subagents/` folder dated from the run's start to its end, one per message id. A compaction keeps the session's file and id, so nothing restarts (research note 0024). A request written over several lines counts with its last line's usage: a subagent's lines carry a growing `output_tokens`, the first line held 0.75 million of the 1.83 million output tokens of the session of 2026-10-17. The Rust tool `tools/run-totals` reads each transcript from the offset kept in `run-cache.json`, its complete lines only; the cache belongs to one run's start and end, so a run that ends is counted once more from its start.
+
+**Measured** on 2026-10-17, on the session of that day (990 MB: its transcript and 80 subagents'): the first count reads everything in 0.74 s, each later count 0.01 s; through `cargo run`, as the status line spawns it, 0.06 s; nothing is spawned outside a run. The totals match `metrics:session -- --all` (2,560,546,511 tokens, 1,833,232 written).
 
 ## Session report
 

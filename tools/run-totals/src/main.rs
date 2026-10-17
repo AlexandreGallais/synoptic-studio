@@ -1,14 +1,21 @@
-//! `run-totals start [session] | end` (`npm run run:start`, `run:end`; EN-092). `start` opens the run's marker
+//! `run-totals start [session] | end | report | status` (`npm run run:start`, `run:end`,
+//! `metrics:session -- --run`, the status line; EN-092). `start` opens the run's marker
 //! `.git/metrics/run.json`, or adds the session to the run already open; the session is the
-//! argument, else `CLAUDE_CODE_SESSION_ID`. `end` closes it.
+//! argument, else `CLAUDE_CODE_SESSION_ID`. `end` closes it and prints the report. `report` prints
+//! the duration and the tokens by kind of the open or last run. `status` prints the status line's
+//! part while a run is open, nothing otherwise.
 
 use std::env;
 use std::fs;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::{Command, ExitCode};
 
+use hooks::json::{Value, parse};
 use hooks::time::now_ms;
-use run_totals::marker::{closed, opened, parse_run, render_run};
+use run_totals::marker::{Run, closed, opened, parse_run, render_run, whole};
+use run_totals::report::{report_table, status_text};
+use run_totals::tally::Tokens;
+use run_totals::totals::{parse_cache, render_cache, run_tokens};
 
 /// The Git directory shared by every worktree, absolute.
 fn common_dir() -> Result<PathBuf, String> {
@@ -24,6 +31,50 @@ fn common_dir() -> Result<PathBuf, String> {
     Ok(PathBuf::from(
         String::from_utf8_lossy(&output.stdout).trim().to_owned(),
     ))
+}
+
+/// Claude Code's transcripts folder of the main checkout: its path, every character other than a
+/// letter or a digit written `-`.
+fn projects_dir(common: &Path) -> PathBuf {
+    let checkout = common.parent().unwrap_or(common).to_string_lossy();
+    let name: String = checkout
+        .chars()
+        .map(|character| {
+            if character.is_ascii_alphanumeric() {
+                character
+            } else {
+                '-'
+            }
+        })
+        .collect();
+
+    PathBuf::from(env::var("HOME").unwrap_or_default())
+        .join(".claude")
+        .join("projects")
+        .join(name)
+}
+
+/// The run's tokens, the cache read before and written after.
+fn counted(run: &Run, metrics: &Path, common: &Path) -> Tokens {
+    let cache_path = metrics.join("run-cache.json");
+    let cache = parse_cache(&fs::read_to_string(&cache_path).unwrap_or_default(), run);
+    let (tokens, next) = run_tokens(run, &projects_dir(common), &cache);
+
+    if next != cache {
+        let _ = fs::write(&cache_path, render_cache(&next));
+    }
+
+    tokens
+}
+
+/// The week's usage in percent, from `usage.json`, when the status line wrote one.
+fn week_percent(metrics: &Path) -> Option<i64> {
+    let json = parse(&fs::read_to_string(metrics.join("usage.json")).ok()?)?;
+
+    match json.get("sevenDay").get("usedPercent") {
+        Value::Number(percent) => Some(whole(&Value::Number(percent.round()))),
+        _ => None,
+    }
 }
 
 fn run(words: &[String]) -> Result<String, String> {
@@ -63,9 +114,25 @@ fn run(words: &[String]) -> Result<String, String> {
 
             fs::write(&marker, render_run(&ended)).map_err(|error| error.to_string())?;
 
-            Ok(format!("run ended after {} ms\n", ended.duration_ms(now)))
+            let tokens = counted(&ended, &metrics, &common);
+
+            Ok(report_table(ended.duration_ms(now), &tokens, false))
         }
-        _ => Err("usage: run-totals start [session] | end".to_owned()),
+        Some("report") => {
+            let last = current.ok_or("run-totals report: no run recorded")?;
+            let tokens = counted(&last, &metrics, &common);
+
+            Ok(report_table(last.duration_ms(now), &tokens, last.is_open()))
+        }
+        Some("status") => Ok(match current {
+            Some(open) if open.is_open() => {
+                let tokens = counted(&open, &metrics, &common);
+
+                status_text(open.duration_ms(now), &tokens, week_percent(&metrics))
+            }
+            _ => String::new(),
+        }),
+        _ => Err("usage: run-totals start [session] | end | report | status".to_owned()),
     }
 }
 
