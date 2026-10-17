@@ -3,7 +3,7 @@ id: EN-085
 epic: E17
 feature: F19
 title: The docs build on change, ESLint out, the ADR on Oxc
-status: ready
+status: done
 points: 3
 ---
 
