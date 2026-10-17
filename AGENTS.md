@@ -20,11 +20,11 @@ A library of small named functions, each backed by a verified source, composed s
 | --- | --- | --- |
 | E01 shapes from numbers | delivered, RET-001 done | rectangle, regular polygon, anchor, radius per corner, free shape, node editing, rotation, stretched polygon |
 | E14 curves | delivered, RET-002 done | points on a curve with handles (ADR-0046, ADR-0047), the round shape as four cubic sides (ADR-0048), every calculation named with a naming pass closing each epic (ADR-0049), the agent's tools and parallel checks (ADR-0050) |
-| E15 text | delivered, RET-003 done 2026-10-16 | F05: font metrics read from font files, Inter's shipped, a text measured and drawn as positioned lines (ADR-0052, ADR-0054); F14: a text in a box, wrapped at spaces, cut with an ellipsis, placed by line height, trim and vertical alignment, a background as a highlighter; F16: a color as `#` and six lower-case digits with an opacity, HSL and HSB as integers (ADR-0056, ADR-0058, ADR-0059); F15: font files read into named faces, embedded as `@font-face` when `fsType` permits (ADR-0053); F17, the validation's corrections: no HTML layer, Latin script the target, fonts embedded only at export, a feature validated on its checklist page `?checklist=E15` (ADR-0060 to ADR-0062); the text direction stays until the UI/UX epic; its runs keep the main thread free (ADR-0051, amended by ADR-0063 to ADR-0066) |
+| E15 text | delivered, RET-003 done 2026-10-16 | F05: font metrics read from font files, Inter's shipped, a text measured and drawn as positioned lines (ADR-0052, ADR-0054); F14: a text in a box, wrapped at spaces, cut with an ellipsis, placed by line height, trim and vertical alignment, a background as a highlighter; F16: a color as `#` and six lower-case digits with an opacity, HSL and HSB as integers (ADR-0056, ADR-0058, ADR-0059); F15: font files read into named faces, embedded as `@font-face` when `fsType` permits (ADR-0053); F17, the validation's corrections: no HTML layer, Latin script the target, fonts embedded only at export, a feature validated on its checklist page `?checklist=E15` (ADR-0060 to ADR-0062); the text direction stays until the UI/UX epic; its runs keep the main thread free (ADR-0051, amended by ADR-0063 to ADR-0066; runs gathered in ADR-0072) |
 | E17 fast tooling, Oxc and Rust | in progress | F18 validated on 2026-10-17 (VAL-019); F19 in progress (checks on Oxc, TypeScript 7 and Rust), then F20, then F21 (agent tools in Rust, E17's clean-up); the release of 0.3 (#259), merged by the Product Owner at E17's end |
 | E02 edit shapes | next | — |
 
-**Scope** (ADR-0030): a finished free V1, then new features only in a paid pro edition; a request that looks pro → say so and ask; pro ideas go to `docs/domain/editions.md`. Implement only `ready` stories: the Product Owner's `/run` is the go-ahead, the agent then sets its scope `ready` (ADR-0045).
+**Scope** (ADR-0030): a finished free V1, then new features only in a paid pro edition; a request that looks pro → say so and ask; pro ideas go to `docs/domain/editions.md`. Implement only `ready` stories: the Product Owner's `/run` is the go-ahead, the agent then sets its scope `ready` (ADR-0072).
 
 ## Where to read — before any task
 
@@ -66,7 +66,7 @@ A library of small named functions, each backed by a verified source, composed s
 
 ## Never
 
-- A new script, hook or agent tool in TypeScript: every new one is a Rust crate in `tools/`, checked by `check:rust` (E17, 2026-10-16).
+- A new script, hook or agent tool in TypeScript: every new one is a Rust crate in `tools/`, checked by `check:rust` (ADR-0073).
 - A runtime dependency (`dependencies` stays empty); a dev package without its row in `docs/tooling/dependencies.md`, its release notes read, a version at least 7 days old.
 - Freehand in symbols, or Bézier curves other than cubic sides from typed handles or the round shape's (ADR-0046, ADR-0048); SVG primitives other than `svg`, `g`, `path`, `text`, `tspan`, `defs`, and `style` in `defs` for `@font-face` (ADR-0052, ADR-0053, ADR-0060: no `switch`, no `foreignObject`); native `stroke`.
 - `any`, `!`, `as` without `oxlint-disable-next-line … -- justification`; classes; `enum`; a rule disabled to make code pass (fix the code, or tell the Product Owner the rule is wrong).
@@ -78,10 +78,10 @@ A library of small named functions, each backed by a verified source, composed s
 | --- | --- |
 | Feature | refinement → `SP` spike → `US` / `EN` stories, `CHK` midway → `AUD` audit → `VAL` checklist page and demo page (ADR-0020) |
 | Epic | its features → `NAM` naming pass over the whole code → `REV` review → `RET` retrospective with metrics (ADR-0023, ADR-0049) |
-| Branch | `main` releases only; `develop` integration; `feature/f<nn>-<topic>` from `develop`; `<type>/<id>-<topic>` per story from its feature (ADR-0038) |
-| Merge | story → feature: rebase, by the Product Owner or, in an authorized run, by GitHub; feature → `develop`: merge commit, by GitHub once validated; `develop` → `main`: when the Product Owner asks, by them (ADR-0045) |
-| Agents | at most 3 subagents at once: the hook `tools/hooks` `limit-agents` (test `tools/hooks/tests/limit.rs`) refuses a fourth, started or resumed, backed up by `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` set to 3 in `.claude/settings.json` (EN-063); one heavy command at a time, through the lock `tools/heavy-lock` (test `tools/heavy-lock/tests/lock.rs`) (ADR-0063, EN-047); shared files written by the main thread at merge (ADR-0065); checks by level from E02 (ADR-0064) |
-| Checks | local only on work branches (`pre-push` runs `check:all`); one CI, on the pull request into `main`; never wait for a CI elsewhere |
+| Branch | `main` releases only; `develop` integration; `feature/f<nn>-<topic>` from `develop`; `<type>/<id>-<topic>` per story from its feature (ADR-0072) |
+| Merge | story → feature: rebase, by the Product Owner or, in an authorized run, by GitHub; feature → `develop`: merge commit, by GitHub once validated; `develop` → `main`: when the Product Owner asks, by them; a tooling feature validated by the agent (ADR-0072) |
+| Agents | at most 3 subagents at once: the hook `tools/hooks` `limit-agents` (test `tools/hooks/tests/limit.rs`) refuses a fourth, started or resumed, backed up by `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` set to 3 in `.claude/settings.json` (EN-063); one heavy command at a time, through the lock `tools/heavy-lock` (test `tools/heavy-lock/tests/lock.rs`) (ADR-0072, EN-047), the rule; shared files written by the main thread at merge (ADR-0065); checks by level from E02 (ADR-0064) |
+| Checks | local only on work branches (`pre-push` runs `check:all`); one CI, on the pull request into `main`; never wait for a CI elsewhere (ADR-0072) |
 | Story | one commit per task (`Refs: <ID>.Tn`), status `done` in the last commit (`Closes: <ID>`), a test card for a `US`, then a pull request into its feature |
 | Math | tests first: hand-computed examples, degenerate cases, then properties (ADR-0022); a test proving a criterion is titled `[F01.AC3] …` (ADR-0027) |
 

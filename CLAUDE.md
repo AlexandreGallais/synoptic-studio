@@ -20,8 +20,8 @@ What only Claude Code uses; the rules above hold for every agent. Configuration:
 - What a subagent or a background command is doing: `npm run activity`; the status line says when the chat is free (`docs/tooling/metrics.md`).
 - Write the current step to `.git/metrics/step` (one short line, French): the status line shows it under the epic, feature and story.
 - A command expected to last more than a minute: `run_in_background`, then Monitor with `scripts/watch-task.ts` (stall, end, time limit — `docs/tooling/metrics.md`); never a foreground waiting loop. A call in red on the status line has run over 5 minutes: look at it.
-- During a run the main thread only dispatches (ADR-0063): every piece of work goes to a subagent, and each Product Owner comment is acknowledged at once, saying when it is handled; one chat line when a worker starts and ends, with an estimate.
-- At most three subagents at once and one heavy command at a time (ADR-0063): the heavy commands take the lock themselves (`tools/heavy-lock`), never by hand; the hook `limit-agents` refuses a fourth subagent, started by `Agent` or resumed by `SendMessage`, and Claude Code's own cap is set to 3 as a backup (EN-047, EN-063).
+- During a run the main thread only dispatches (ADR-0072): every piece of work goes to a subagent, and each Product Owner comment is acknowledged at once, saying when it is handled; one chat line when a worker starts and ends, with an estimate.
+- At most three subagents at once and one heavy command at a time (ADR-0072): the heavy commands take the lock themselves (`tools/heavy-lock`), never by hand; the hook `limit-agents` refuses a fourth subagent, started by `Agent` or resumed by `SendMessage`, and Claude Code's own cap is set to 3 as a backup (EN-047, EN-063).
 - A worktree is named after its story (`.claude/worktrees/us-061`), never left anonymous (`worktree:new`, EN-052).
 - During `/run`, say nothing between tool calls: the commits and the status line show the progress; one summary at the stop.
 - At a session's end only, the session report: `npm run metrics:session -- --all --markdown` (without `--all` it counts the current turn only).
