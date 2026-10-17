@@ -3,7 +3,7 @@ id: EN-109
 epic: E17
 feature: F21
 title: The dependency checks in Rust, without npm-check-updates nor knip
-status: draft
+status: ready
 points: 5
 ---
 

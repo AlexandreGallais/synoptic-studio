@@ -3,7 +3,7 @@ id: EN-106
 epic: E17
 feature: F21
 title: The library server and its command line in Rust on rmcp
-status: draft
+status: ready
 points: 8
 ---
 
