@@ -9,7 +9,10 @@ pub mod folder_layout;
 pub mod kind_in_layer;
 pub mod kind_limits;
 pub mod kind_naming;
+pub mod no_restricted_syntax;
+pub mod no_return_void;
 pub mod one_export_per_file;
+pub mod require_atomic_updates;
 pub mod require_kind;
 pub mod see_references;
 
@@ -49,7 +52,10 @@ pub const ALL: &[&dyn Rule] = &[
     &kind_in_layer::KindInLayer,
     &kind_limits::KindLimits,
     &kind_naming::KindNaming,
+    &no_restricted_syntax::NoRestrictedSyntax,
+    &no_return_void::NoReturnVoid,
     &one_export_per_file::OneExportPerFile,
+    &require_atomic_updates::RequireAtomicUpdates,
     &require_kind::RequireKind,
     &see_references::SeeReferences,
 ];
