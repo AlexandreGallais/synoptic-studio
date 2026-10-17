@@ -234,12 +234,12 @@ describe("check tools given explicit targets (EN-045)", () => {
 
   it("[F19.AC4] gives the project's linter every tracked Markdown page, ESLint none", () => {
     const pages = TRACKED.filter((path) => path.endsWith(".md") && !UNLINTED_PAGES.has(path));
-    const staged = readFileSync(join(ROOT, ".lintstagedrc.json"), "utf8");
+    const staged: unknown = JSON.parse(readFileSync(join(ROOT, ".lintstagedrc.json"), "utf8"));
 
     expect(pages.length).toBeGreaterThan(0);
     expect(leftOut(targetsOf("lint", PROJECT_LINT), pages)).toEqual([]);
     expect(targetsOf("lint", "eslint").some((target) => target.includes("md"))).toBe(false);
-    expect(staged).toContain(`"*.md": ["${FORMAT} --write", "${PROJECT_LINT} --fix"]`);
+    expect(staged).toHaveProperty(["*.md"], [`${FORMAT} --write`, `${PROJECT_LINT} --fix`]);
   });
 
   it(
