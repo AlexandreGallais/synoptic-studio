@@ -70,8 +70,3 @@ The evidence, on 2026-10-18, each on copies of the real store (`VACUUM INTO`), `
 - **The same cut**: the 431 pages of the store cut again by `page_chunks` give their 11,369 stored sections; 20,000 generated pages give the same Markdown and the same facts from both converters.
 - **Decisions taken**: `rmcp` without `macros` (the tools declared by hand keep their schemas); `serde` not taken (no derive needed); `serde_json` held at 1.0.152, the crates under 7 days pinned back by their publication time; the variable named `AGENT_LIBRARY_FILE`; a sixth command, `library path`, so that `records:save` and `metrics` read the library through the binary and every TypeScript twin goes; each call of the server recorded as a use of `library-mcp` (EN-102); ADR-0077 written, ADR-0039 marked partly superseded: its status says accepted from F21's decisions, to be changed to proposed if the Product Owner wants to confirm the variable's name.
 - **Rule docs**: none affected, the story changes tools only.
-
-### Improvements
-
-| 2026-10-18 | EN-106 | The library reads a page's sections by `url`, an `UNINDEXED` column of the FTS5 table `chunks`, so each `library_get` and `library_read` scans the store's 11,369 sections, about 6 ms of the 6.6 ms a call takes; a table of sections keyed by page, beside the index, would make it an index lookup, at the cost of a change of schema an older checkout must still read | tool |
-| 2026-10-18 | EN-106 | A measure that sets `HOME` to a scratch folder for a command run through `cargo run` makes rustup install the whole toolchain there (1.6 GB, 41 s for the first call): a timer script keeps `HOME` and names the library's file by its variable | tool |
