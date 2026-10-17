@@ -6,7 +6,8 @@
 use std::io::{self, Read};
 use std::process::{Command, ExitCode};
 
-use shared_files::shared::{Commit, refusal, worker_story};
+use shared_files::padding::padding_only;
+use shared_files::shared::{Commit, refusal, shared_kind, worker_story};
 
 /// The hash Git gives a deleted ref.
 const DELETED: char = '0';
@@ -26,18 +27,39 @@ fn git(arguments: &[&str]) -> io::Result<String> {
     Ok(String::from_utf8_lossy(&output.stdout).into_owned())
 }
 
+/// Whether a commit changes a shared file only in the padding of its tables; false for a file it
+/// adds or deletes, or a root commit.
+fn padded(commit: &str, path: &str) -> bool {
+    match (
+        git(&["show", &format!("{commit}^:{path}")]),
+        git(&["show", &format!("{commit}:{path}")]),
+    ) {
+        (Ok(old), Ok(new)) => padding_only(&old, &new),
+        _ => false,
+    }
+}
+
 /// The commits of a pushed hash that no remote branch holds yet.
 fn new_commits(hash: &str) -> io::Result<Vec<Commit>> {
     git(&["rev-list", "--no-merges", hash, "--not", "--remotes"])?
         .lines()
         .map(|commit| {
+            let files: Vec<String> =
+                git(&["diff-tree", "--no-commit-id", "--name-only", "-r", commit])?
+                    .lines()
+                    .map(str::to_owned)
+                    .collect();
+            let padded_files = files
+                .iter()
+                .filter(|path| shared_kind(path).is_some() && padded(commit, path))
+                .cloned()
+                .collect();
+
             Ok(Commit {
                 hash: commit.chars().take(8).collect(),
                 message: git(&["log", "-1", "--format=%B", commit])?,
-                files: git(&["diff-tree", "--no-commit-id", "--name-only", "-r", commit])?
-                    .lines()
-                    .map(str::to_owned)
-                    .collect(),
+                files,
+                padded: padded_files,
             })
         })
         .collect()

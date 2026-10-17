@@ -91,6 +91,8 @@ pub struct Commit {
     pub message: String,
     /// The files it changes, relative to the repository's root.
     pub files: Vec<String>,
+    /// The files among them whose change only pads or unpads their tables (`padding`).
+    pub padded: Vec<String>,
 }
 
 /// Whether a commit is the story's `done` commit (`Closes: <ID>`), written by the main thread.
@@ -105,7 +107,8 @@ pub fn closes(commit: &Commit, story: &str) -> bool {
 }
 
 /// The shared files a commit of a worker's branch may not change: all of them, except, in the
-/// story's `done` commit, its status in the indexes and its feature's table.
+/// story's `done` commit, its status in the indexes and its feature's table, and a change that
+/// only pads or unpads tables.
 #[must_use]
 pub fn refused_files(commit: &Commit, story: &str) -> Vec<String> {
     let done = closes(commit, story);
@@ -113,6 +116,7 @@ pub fn refused_files(commit: &Commit, story: &str) -> Vec<String> {
     commit
         .files
         .iter()
+        .filter(|path| !commit.padded.contains(path))
         .filter(|path| match shared_kind(path) {
             None => false,
             Some(Kind::Index | Kind::Feature) => !done,

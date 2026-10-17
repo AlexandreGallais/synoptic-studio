@@ -15,6 +15,7 @@ fn commit(message: &str, files: &[&str]) -> Commit {
         hash: "abcd1234".into(),
         message: message.into(),
         files: files.iter().map(|&path| path.to_owned()).collect(),
+        padded: Vec::new(),
     }
 }
 
@@ -374,4 +375,52 @@ fn reads_the_branch_from_the_remote_ref_and_lets_a_deletion_through() {
 
     assert_eq!(deleted.status.code(), Some(0), "{deleted:?}");
     assert_eq!(String::from_utf8_lossy(&deleted.stderr), "");
+}
+
+#[test]
+fn lets_through_a_log_unpadded_but_refuses_a_changed_or_added_row() {
+    let repository = Repository::new("padding");
+    let padded =
+        "# Journal\n\n| Date       | Item  |\n| ---------- | ----- |\n| 2026-10-17 | a row |\n";
+
+    repository.write("docs/process/journal.md", padded);
+    repository.commit("docs: a padded table");
+    repository.git(&["push", "--quiet", "origin", "develop"]);
+    repository.git(&["switch", "--quiet", "-c", "chore/en-997-topic"]);
+    repository.write(
+        "docs/process/journal.md",
+        "# Journal\n\n| Date | Item |\n| --- | --- |\n| 2026-10-17 | a row |\n",
+    );
+
+    let unpadded = repository.commit("style: tables without padding");
+    let output = repository.check("chore/en-997-topic", &unpadded);
+
+    // [F19.AC12] the formatter's padding change passes the shared files' check.
+    assert_eq!(
+        output.status.code(),
+        Some(0),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    for (name, text) in [
+        (
+            "a changed cell",
+            "# Journal\n\n| Date | Item |\n| --- | --- |\n| 2026-10-17 | a new row |\n",
+        ),
+        (
+            "an added row",
+            "# Journal\n\n| Date | Item |\n| --- | --- |\n| 2026-10-17 | a row |\n| 2026-10-18 | b |\n",
+        ),
+    ] {
+        repository.git(&["reset", "--quiet", "--hard", "develop"]);
+        repository.write("docs/process/journal.md", text);
+
+        let hash = repository.commit("docs: a log changed");
+        let output = repository.check("chore/en-997-topic", &hash);
+        let error = String::from_utf8_lossy(&output.stderr);
+
+        assert_eq!(output.status.code(), Some(1), "{name}: {error}");
+        assert!(error.contains("docs/process/journal.md"), "{name}: {error}");
+    }
 }
