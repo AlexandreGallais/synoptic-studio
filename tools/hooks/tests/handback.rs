@@ -222,7 +222,10 @@ fn lists_ten_unnamed_commits_and_counts_the_others() {
     many.commits.truncate(LISTED_COMMITS);
     assert_eq!(
         missing(&many, "done"),
-        [format!("name each commit in the report: {}", listed.join("; "))]
+        [format!(
+            "name each commit in the report: {}",
+            listed.join("; ")
+        )]
     );
 }
 
@@ -503,7 +506,9 @@ fn decision_of(output: &str) -> hooks::json::Value {
 
 /// The prompt of a worker naming its worktree's folder.
 fn prompt_naming(folder: &str) -> String {
-    format!(r#"{{"type":"user","message":{{"content":"Worktree: `/x/.claude/worktrees/{folder}`"}}}}"#)
+    format!(
+        r#"{{"type":"user","message":{{"content":"Worktree: `/x/.claude/worktrees/{folder}`"}}}}"#
+    )
 }
 
 #[test]

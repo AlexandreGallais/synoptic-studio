@@ -63,14 +63,17 @@ fn branch(worktree: &Path, folder: &str) -> Option<(String, Branch, Option<Strin
         .as_deref()
         .and_then(|story| base_of(story, &story_files(worktree), &refs.remote_branches));
     let commits = match &base {
-        Some(base) => git(worktree, &["log", "--format=%H %s", &format!("{base}..HEAD")])?
-            .lines()
-            .filter_map(|line| line.split_once(' '))
-            .map(|(hash, subject)| Commit {
-                hash: hash.into(),
-                subject: subject.into(),
-            })
-            .collect(),
+        Some(base) => git(
+            worktree,
+            &["log", "--format=%H %s", &format!("{base}..HEAD")],
+        )?
+        .lines()
+        .filter_map(|line| line.split_once(' '))
+        .map(|(hash, subject)| Commit {
+            hash: hash.into(),
+            subject: subject.into(),
+        })
+        .collect(),
         None => Vec::new(),
     };
 

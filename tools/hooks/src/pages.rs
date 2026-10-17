@@ -149,7 +149,8 @@ fn tool_of(words: &[String]) -> Option<(&str, &[String])> {
 /// script or an archive, not a page read.
 fn runs_or_unpacks(stages: &[String]) -> bool {
     stages.iter().skip(1).any(|stage| {
-        tool_of(&words(stage)).is_some_and(|(tool, _)| matches!(tool, "sh" | "bash" | "zsh" | "tar"))
+        tool_of(&words(stage))
+            .is_some_and(|(tool, _)| matches!(tool, "sh" | "bash" | "zsh" | "tar"))
     })
 }
 
