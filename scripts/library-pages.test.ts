@@ -236,4 +236,19 @@ describe("one library for every project", () => {
       { origin: "found", project: "atlas", tool: "search" },
     ]);
   });
+
+  it("records a get whose fetch throws as failed, so the page hook lets it be read otherwise", async () => {
+    const database = openLibrary(":memory:");
+
+    // A name that does not resolve: `fetch` rejects, no HTTP status comes back (AUD-022).
+    vi.stubGlobal("fetch", vi.fn<typeof fetch>().mockRejectedValue(new TypeError("fetch failed")));
+
+    expect(await toolCall(database, "library_get", { url: "https://x.invalid/a" })).toContain(
+      "fetch failed",
+    );
+
+    expect(database.prepare("SELECT tool, url, origin FROM project_uses").all()).toEqual([
+      { origin: "failed", tool: "get", url: "https://x.invalid/a" },
+    ]);
+  });
 });
