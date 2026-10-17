@@ -37,7 +37,3 @@ One task = one commit, referenced as `EN-078.Tn`.
 - Timings: the Rust linter's run on `npm run lint`'s 2,048 targets stays at 0.12 s with the 39 rules; ESLint spent 285 ms on the 40 (`TIMING=all`), its run from 14.4 s to 13.6 s.
 - The rules sit in `rules::unicorn::RULES`, chained once in `rules::named`, and are on everywhere through `scopes::linted_by`, so that EN-076's lines of `rules::ALL`, `ON_EVERYWHERE` and the scope tests stayed untouched.
 - Rule-docs: none affected, the story changes tooling only, no rule of `docs/domain/`.
-
-### Journal
-
-- `#run` EN-078: Unicorn's arrays, collections and iteration rules in the project's linter, 39 rewritten in Rust from their documented cases, `no-for-each` to oxlint's `no-array-for-each`, four dropped as unreachable here; the same 128 findings and fixes as ESLint on the cases, none on the tree; `lint --fix` repeats its pass up to ten times.

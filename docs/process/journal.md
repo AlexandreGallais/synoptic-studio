@@ -18,6 +18,7 @@ What each working session dealt with, in the agent's words: the Product Owner's 
 - `#run` EN-075: the project's linter in Rust (`tools/lint`, Oxc 0.153.0) runs after oxlint, each file parsed once and every rule over one AST, 0.05 s for the tree; the 10 project rules, `no-restricted-syntax`, `require-atomic-updates` and `functional/no-return-void` moved out of ESLint, the fold's spread to `oxc/no-accumulating-spread`; `npm run lint` from 27.5 s to 24.5 s.
 - `#run` EN-077: the Markdown rules in the project's linter, parsed once by `markdown-rs` (mdast, as `@eslint/markdown`); 20 rules moved, `no-reference-like-urls` dropped, `local/image-alt-text` added; `@eslint/markdown` removed from ESLint and the dependencies; the 518 pages in 0.1 s against 6.7 s in ESLint, `npm run lint` from 25.2–28.2 s to 22.7–25.3 s.
 - `#run` EN-076: naming-convention, the five functional rules and `no-non-function-verb-prefix` in the Rust linter without types; ESLint reads no type, `npm run lint` from 27 s to 18 s; the strict form taken to the letter gave 597 findings and 60 type errors, a named type is proven by its own declaration instead, to confirm.
+- `#run` EN-078: Unicorn's arrays, collections and iteration rules in the project's linter, 39 rewritten in Rust from their documented cases, `no-for-each` to oxlint's `no-array-for-each`, four dropped as unreachable here; the same 128 findings and fixes as ESLint on the cases, none on the tree; `lint --fix` repeats its pass up to ten times.
 
 ## 2026-10-17 — SP-021 answered, F19's run started
 
