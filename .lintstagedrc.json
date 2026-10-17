@@ -1,8 +1,8 @@
 {
   "*.{ts,md}": [
-    "prettier --write",
+    "cargo run --release -q -p format -- --write",
     "eslint --cache --cache-location node_modules/.cache/eslint/ --fix --max-warnings=0 --no-warn-ignored"
   ],
-  "*.{json,html,css,scss,yml,yaml}": ["prettier --write"],
+  "*.{cjs,css,html,json,scss,toml,yaml,yml}": ["cargo run --release -q -p format -- --write"],
   "*": ["secretlint"]
 }

@@ -1,0 +1,12 @@
+[package]
+name = "format"
+version = "0.1.0"
+edition.workspace = true
+description = "The repository's formatter: oxfmt, then Markdown tables without padding (ADR-0068, EN-073)"
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+
+[lints]
+workspace = true

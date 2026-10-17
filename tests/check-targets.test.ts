@@ -1,9 +1,8 @@
-import { execFileSync } from "node:child_process";
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { execFileSync, spawnSync } from "node:child_process";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 import { ESLint } from "eslint";
-import { getFileInfo } from "prettier";
 import { describe, expect, it } from "vitest";
 
 /** Repository root. */
@@ -18,8 +17,11 @@ const WALK_TIMEOUT = 30_000;
 /** The start of a script run under the heavy lock (EN-047), a crate of the workspace (EN-068). */
 const HEAVY_LOCK = /^cargo run --release -q -p heavy-lock -- /u;
 
-/** Prettier's ignore files, as its command line reads them. */
-const PRETTIER_IGNORE = [join(ROOT, ".gitignore"), join(ROOT, ".prettierignore")];
+/** The command of the repository's formatter, oxfmt then the tables without padding (EN-073). */
+const FORMAT = "cargo run --release -q -p format --";
+
+/** oxfmt, as npm installs it. */
+const OXFMT = join(ROOT, "node_modules", ".bin", "oxfmt");
 
 /**
  * Whether a parsed JSON value is an object.
@@ -67,7 +69,7 @@ const TRACKED = execFileSync("git", ["ls-files"], { cwd: ROOT, encoding: "utf8" 
  * Targets given to a tool in one command of a script: its arguments that are not options.
  *
  * @param script - the npm script's name
- * @param tool - the command's first word (`prettier`, `eslint`)
+ * @param tool - the command's start (`eslint`, the formatter's `cargo run … --`)
  * @returns its paths and globs, unquoted
  */
 function targetsOf(script: string, tool: string): readonly string[] {
@@ -75,11 +77,14 @@ function targetsOf(script: string, tool: string): readonly string[] {
     .split("&&")
     .map((part) => part.trim())
     .find((part) => part.startsWith(`${tool} `));
-  const words = (command ?? "").split(" ").slice(1);
+  const words = (command ?? "").slice(tool.length).trim().split(" ");
 
   // An option's value follows it: `--cache-location <folder>`.
   return words
-    .filter((word, index) => !word.startsWith("-") && words[index - 1] !== "--cache-location")
+    .filter(
+      (word, index) =>
+        word !== "" && !word.startsWith("-") && words[index - 1] !== "--cache-location",
+    )
     .map((word) => word.replaceAll('"', ""));
 }
 
@@ -144,13 +149,43 @@ function crateNames(): readonly string[] {
     .toSorted((left, right) => left.localeCompare(right));
 }
 
+/**
+ * Number of files oxfmt reads from some paths, the root's files for `*` as the formatter reads it.
+ *
+ * @param targets - the formatter's targets, none for the whole repository
+ * @returns the count oxfmt prints, `Finished in … on 2111 files`
+ */
+function oxfmtCount(targets: readonly string[]): number {
+  const paths = targets.flatMap((target) =>
+    target === "*"
+      ? readdirSync(ROOT).filter((name) => statSync(join(ROOT, name)).isFile())
+      : target,
+  );
+  const run = spawnSync(OXFMT, ["--check", "--no-error-on-unmatched-pattern", ...paths], {
+    cwd: ROOT,
+    encoding: "utf8",
+  });
+  const count = /on (?<count>\d+) files/u.exec(run.stdout)?.groups?.["count"] ?? "0";
+
+  return Number(count);
+}
+
 describe("check tools given explicit targets (EN-045)", () => {
-  it("[F18.AC20] gives Prettier the same targets in format, format:check and fix", () => {
-    const targets = targetsOf("format:check", "prettier");
+  it("[F18.AC20] gives the formatter the same targets in format, format:check and fix", () => {
+    const targets = targetsOf("format:check", FORMAT);
 
     expect(targets.length).toBeGreaterThan(0);
-    expect(targetsOf("format", "prettier")).toEqual(targets);
-    expect(targetsOf("fix", "prettier")).toEqual(targets);
+    expect(targetsOf("format", FORMAT)).toEqual(targets);
+    expect(targetsOf("fix", FORMAT)).toEqual(targets);
+  });
+
+  it("[F19.AC5] formats with the formatter only, staged files included, never Prettier", () => {
+    const staged = readFileSync(join(ROOT, ".lintstagedrc.json"), "utf8");
+    const scripts = SCRIPTS.values().toArray().join("\n");
+
+    expect(staged).toContain(`"${FORMAT} --write"`);
+    expect(`${staged}\n${scripts}`).not.toMatch(/\bprettier /u);
+    expect(existsSync(join(ROOT, ".prettierrc.json"))).toBe(false);
   });
 
   it("[F18.AC20] gives ESLint the same targets in lint, lint:fix and fix", () => {
@@ -181,23 +216,13 @@ describe("check tools given explicit targets (EN-045)", () => {
   );
 
   it(
-    "[F18.AC20] leaves no tracked file that Prettier formats out of its targets",
+    "[F19.AC5] leaves no file that oxfmt formats out of the formatter's targets",
     { timeout: WALK_TIMEOUT },
-    async () => {
-      const formatted = await Promise.all(
-        TRACKED.map(async (path) => {
-          const fileInfo = await getFileInfo(join(ROOT, path), { ignorePath: PRETTIER_IGNORE });
+    () => {
+      const named = oxfmtCount(targetsOf("format:check", FORMAT));
 
-          return fileInfo.ignored || fileInfo.inferredParser === null ? "" : path;
-        }),
-      );
-
-      expect(
-        leftOut(
-          targetsOf("format:check", "prettier"),
-          formatted.filter((path) => path !== ""),
-        ),
-      ).toEqual([]);
+      expect(named).toBeGreaterThan(0);
+      expect(named).toBe(oxfmtCount([]));
     },
   );
 
@@ -272,16 +297,13 @@ describe("the Rust workspace at the root (EN-068)", () => {
     expect(existsSync(join(ROOT, "tools", name, "Cargo.lock"))).toBe(false);
   });
 
-  it("[F19.AC9] leaves the build output target/ to Git, ESLint, Prettier and secretlint", async () => {
+  it("[F19.AC9] leaves the build output target/ to Git, ESLint, the formatter and secretlint", async () => {
     const built = join(ROOT, "target", "release", "build", "page.md");
 
     expect(readFileSync(join(ROOT, ".gitignore"), "utf8")).toMatch(/^\/target\/$/mu);
     expect(readFileSync(join(ROOT, ".secretlintignore"), "utf8")).toMatch(/^target$/mu);
     expect(await LINT.isPathIgnored(built)).toBe(true);
-
-    const formatted = await getFileInfo(built, { ignorePath: PRETTIER_IGNORE });
-
-    expect(formatted.ignored).toBe(true);
+    expect(readFileSync(join(ROOT, ".oxfmtrc.json"), "utf8")).toMatch(/^ {4}"target",?$/mu);
   });
 
   it("[F19.AC9] tracks one Cargo.lock, at the root, and no build output", () => {

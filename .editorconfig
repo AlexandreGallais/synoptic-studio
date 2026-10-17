@@ -1,6 +1,6 @@
 # EditorConfig — https://editorconfig.org
-# Single source of the shared editor settings. Prettier also reads end_of_line, indent_style,
-# indent_size and max_line_length (no duplicate in .prettierrc.json).
+# Single source of the shared editor settings. oxfmt also reads max_line_length; `.oxfmtrc.json`
+# repeats it as printWidth, as its migration from Prettier asks (EN-073).
 # See docs/conventions/formatting.md.
 
 root = true

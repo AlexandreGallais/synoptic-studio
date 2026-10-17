@@ -17,5 +17,5 @@
     "src/**/*.ts",
     "tests/**/*.ts"
   ],
-  "ignoreDependencies": ["@secretlint/secretlint-rule-preset-recommend", "fast-check"]
+  "ignoreDependencies": ["@secretlint/secretlint-rule-preset-recommend", "fast-check", "oxfmt"]
 }
