@@ -1,6 +1,8 @@
 //! MCP server of the local source library (`docs/tooling/sources.md`, ADR-0039), on `rmcp` over
 //! `stdio`, declared in `.mcp.json`. Claude Code starts it in the project's folder;
 //! `CLAUDE_PROJECT_DIR` names that folder when set, and each use records its project (EN-101).
+//! The session is recorded as a use of `library-mcp serve`, and each call as a use of
+//! `library-mcp <tool>` (EN-102).
 
 use std::env;
 use std::process::ExitCode;
@@ -11,11 +13,11 @@ use library::usage::project_of;
 use rmcp::ServiceExt;
 use rmcp::transport::stdio;
 
-#[tokio::main(flavor = "current_thread")]
-async fn main() -> ExitCode {
+/// Serves the library until the client closes the input; the exit code.
+async fn serve() -> u8 {
     let Some(file) = library_file_of_process() else {
         eprintln!("No library file: set AGENT_LIBRARY_FILE or HOME");
-        return ExitCode::FAILURE;
+        return 1;
     };
     let database = match open_library(&file) {
         Ok(database) => database,
@@ -24,7 +26,7 @@ async fn main() -> ExitCode {
                 "The library cannot be opened at {}: {error}",
                 file.display()
             );
-            return ExitCode::FAILURE;
+            return 1;
         }
     };
     let directory = env::var("CLAUDE_PROJECT_DIR")
@@ -35,7 +37,7 @@ async fn main() -> ExitCode {
                 .map(|folder| folder.to_string_lossy().into_owned())
         })
         .unwrap_or_default();
-    // Each call recorded as a use, in a release build only, as `tool_use::run` records (EN-102).
+    // Each call recorded as a use, in a release build only, as `tool_use::run` records.
     let uses_folder = if cfg!(debug_assertions) {
         None
     } else {
@@ -47,11 +49,29 @@ async fn main() -> ExitCode {
         Ok(running) => {
             // The client closing the input ends the server, whatever the reason given.
             let _ = running.waiting().await;
-            ExitCode::SUCCESS
+            0
         }
         Err(error) => {
             eprintln!("The library server did not start: {error}");
-            ExitCode::FAILURE
+            1
         }
     }
+}
+
+/// One session of the server, on a runtime of one thread; the exit code.
+fn session() -> u8 {
+    match tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+    {
+        Ok(runtime) => runtime.block_on(serve()),
+        Err(error) => {
+            eprintln!("The library server has no runtime: {error}");
+            1
+        }
+    }
+}
+
+fn main() -> ExitCode {
+    tool_use::run("library-mcp", "serve", session)
 }
