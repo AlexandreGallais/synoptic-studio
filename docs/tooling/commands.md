@@ -27,7 +27,7 @@
 | `npm run metrics:session` | time and tokens of the current turn; `--markdown` for the chat, `--all` for the conversation ([metrics](./metrics.md#session-report)) |
 | `npm run library -- …` | the local source library: `search`, `get`, `read`, `list` ([sources](./sources.md)) |
 | `npm run metrics` | Markdown report of the agent's work: commands by count and time, slowest calls, time and tokens per session, feature, story and task ([metrics](./metrics.md)) |
-| `npm run replace`, `backlog:status`, `backlog:index`, `worktree:new`, `git:sync`, `git:commit`, `run:start`, `run:end`, `run:should-stop`, `story:finish`, `mutate`, `val:prepare`, `golden:write`, `golden:check`, `activity`, `epic:check` | the agent's tools ([agent tools](./agent-tools.md)) |
+| `npm run replace`, `backlog:status`, `backlog:index`, `worktree:new`, `git:sync`, `git:commit`, `run:start`, `run:end`, `run:should-stop`, `progress:page`, `story:finish`, `mutate`, `val:prepare`, `golden:write`, `golden:check`, `activity`, `epic:check` | the agent's tools ([agent tools](./agent-tools.md)) |
 | `npm run font:metrics -- <folder>` | writes the default font's metrics, `src/model/font/inter-metrics.json`, from Inter 4.1's static TrueType files unpacked in the folder (EN-031); the font files are not kept in the repository |
 | `npm run playground:build` | static build of the playground into the docs site (`docs/.vitepress/dist/playground/`) |
 
