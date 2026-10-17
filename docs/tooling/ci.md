@@ -7,7 +7,7 @@ Checks run in two places (ADR-0038):
 
 | Workflow | Job | When | Does |
 | --- | --- | --- | --- |
-| `ci.yml` | quality | pull request into `main` | `npm run check:all`: the formatter (oxfmt), ESLint (0 warning), secretlint, `tsc`, Vitest (library, custom rules, ESLint audit, dependency and backlog tests), `npm audit`, knip, latest versions, `check:rust` (the Rust workspace's `cargo fmt`, Clippy, RustSec advisories, tests under the coverage floor, after the release build that `check:all` runs before its lanes and after `cargo install` of cargo-llvm-cov and cargo-deny and `cargo deny fetch db`: the runner needs rustup, which installs the toolchain pinned by `rust-toolchain.toml`, not yet seen in this CI), documentation and playground builds; then `npm run build`; keeps the JUnit test report |
+| `ci.yml` | quality | pull request into `main` | `npm run check:all`: the formatter (oxfmt), the linters (oxlint with TypeScript's errors, the project's linter, ESLint; 0 warning), secretlint, Vitest (library, playground, ESLint's configuration audit, dependency and backlog tests), `npm audit`, knip, latest versions, `check:rust` (the Rust workspace's `cargo fmt`, Clippy, RustSec advisories, tests under the coverage floor, after the release build that `check:all` runs before its lanes and after `cargo install` of cargo-llvm-cov and cargo-deny and `cargo deny fetch db`: the runner needs rustup, which installs the toolchain pinned by `rust-toolchain.toml`, not yet seen in this CI), documentation and playground builds; then `npm run build`; keeps the JUnit test report |
 | `ci.yml` | history | pull request into `main` | branch name (`validate-branch-name`) and commitlint on every commit of the pull request |
 | `ci.yml` | dependencies | pull request into `main` | GitHub dependency review: a new vulnerable dependency fails |
 | `codeql.yml` | analyze | pull request into `main`, push to `main`, weekly | CodeQL security and quality queries on the TypeScript code; the push keeps the analysis of `main` that pull requests are compared with (`REF-GH-CODEQL-TRIGGERS`) |
@@ -20,7 +20,7 @@ The release pull request goes into `develop` (`release-please--branches--develop
 
 Secrets are checked three times: `secretlint` on staged files before each commit, `secretlint` in `check:all` (pre-push hook and CI), and GitHub's secret scanning with push protection (repository setting).
 
-Code hygiene beyond lint is covered by ESLint rules: no `console`, no `debugger`, no `TODO`/`FIXME` comments, no unused code, no disabled rule without justification (see [lint](../conventions/lint.md)).
+Code hygiene beyond lint is covered by lint rules: no `console`, no `debugger`, no `TODO`/`FIXME` comments, no unused code, no disabled rule without justification (see [lint](../conventions/lint.md)).
 
 ## Repository settings (done once, by the owner)
 

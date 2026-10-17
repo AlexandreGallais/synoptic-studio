@@ -120,6 +120,6 @@ it("[F01.AC3] clamps a 100 × 25 rectangle with radius 100 to an effective radiu
 
 Not now (ADR-0020): while the library is being built, unit tests and feature audits are the safety net. Regression suites and end-to-end tests of the applications come when the applications exist.
 
-## ESLint relaxations in tests (`eslint/scopes/tests.ts`)
+## Lint relaxations in tests (`.oxlintrc.json`'s `**/*.test.ts` override, `tools/lint/src/scopes.rs`, `eslint/scopes/tests.ts`)
 
 Literal numbers allowed, free function length, callback nesting up to 4, dev dependencies allowed, no `@kind`. Every other rule applies, including naming and JSDoc of module constants.

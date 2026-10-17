@@ -88,7 +88,7 @@ A library of small named functions, each backed by a verified source, composed s
 ## Definition of done
 
 1. `npm run fix`.
-2. `npm run check:all` green: the formatter (oxfmt, then tables without padding), the linters (oxlint, the project's linter with the Markdown pages, ESLint; 0 warning), secretlint, `tsc`, Vitest (100 % of `src/`, the playground's floor), `npm audit`, knip, latest versions, docs and playground builds. Seen, not assumed; a failure is reported with its output.
+2. `npm run check:all` green: the formatter (oxfmt, then tables without padding), the linters (oxlint with TypeScript's errors, the project's linter with the Markdown pages, ESLint; 0 warning), secretlint, Vitest (100 % of `src/`, the playground's floor), `npm audit`, knip, latest versions, docs and playground builds. Seen, not assumed; a failure is reported with its output.
 3. Docs up to date: domain, references, derivations, ADRs, backlog.
 4. A summary in French (`docs/conventions/writing.md`): result, changes, evidence, decisions needed, next step, session report.
 
@@ -116,7 +116,7 @@ Stop format: what blocks, what was consulted, the precise question, the options 
 | --- | --- |
 | `npm run dev` | playground on `http://localhost:5173` (`?checklist=E15` for an epic's checklist) |
 | `npm run docs:dev` | documentation site |
-| `npm run fix` | the formatter (oxfmt, `tools/format`) + ESLint `--fix` |
+| `npm run fix` | the formatter (oxfmt, `tools/format`) + the linters' `--fix` (oxlint, the project's linter, ESLint) |
 | `npm run check:all` | every check (what `pre-push` and the CI run) |
 | `npm run library -- …` | local library of sources: `search`, `get`, `read`, `list` |
 | `npm run metrics` | report of the agent's commands, time and tokens |

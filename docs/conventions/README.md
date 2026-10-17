@@ -12,7 +12,7 @@ Almost everything here is **checked by ESLint** (`eslint/`). When a rule is auto
 | [naming.md](./naming.md) | casing, constants, booleans, names per kind |
 | [imports.md](./imports.md) | `index.ts` per folder, canonical paths, `import type`, cycles, boundaries |
 | [documentation.md](./documentation.md) | mandatory TSDoc, tag order, `@see` and references |
-| [typescript.md](./typescript.md) | compiler options, TypeScript / ESLint split |
+| [typescript.md](./typescript.md) | compiler options, TypeScript / linters split |
 | [formatting.md](./formatting.md) | EditorConfig, the formatter (oxfmt), blank lines, format on save |
 | [lint.md](./lint.md) | layout of `eslint/`, adding or changing a rule, custom rules |
 | [testing.md](./testing.md) | Vitest, hand-computed expected values |

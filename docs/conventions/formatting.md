@@ -24,7 +24,7 @@ One command formats every file the repository formats: `cargo run --release -q -
 - **`--check`** changes nothing: oxfmt checks every file but Markdown; each Markdown file is formatted in a temporary copy, its tables unpadded, then compared with the file.
 - **Targets**: the folders and root files named in `package.json` (EN-045: never `.`); `*` stands for the root's files, which the tool lists itself, since oxfmt reads `*` at any depth. Files that `.oxfmtrc.json`'s `ignorePatterns` name (plain paths only) are skipped by both steps.
 
-`npm run fix` = the formatter, then `eslint --fix`. After it, `npm run check` reports no layout issue. On commit, `lint-staged` (`.lintstagedrc.json`) runs the formatter and ESLint `--fix` on staged TypeScript and Markdown, the formatter on the other kinds above, and secretlint on every staged file.
+`npm run fix` = the formatter, then oxlint, the project's linter and ESLint with `--fix`. After it, `npm run check` reports no layout issue. On commit, `lint-staged` (`.lintstagedrc.json`) runs the formatter and the three linters with `--fix` on staged TypeScript, the formatter and the project's linter with `--fix` on staged Markdown, the formatter on the other kinds above, and secretlint on every staged file.
 
 ## Blank lines (`@stylistic/padding-line-between-statements`)
 

@@ -2,22 +2,22 @@
 
 ## Version
 
-TypeScript **6.0** (pinned). TypeScript 7 exists, but `typescript-eslint` does not support it yet (ADR-0009). `npm run deps:outdated` only proposes TypeScript patch upgrades (`.ncurc.cjs`).
+TypeScript **7** (`@typescript/native`, the native compiler, EN-071) checks the types: through oxlint's `--type-check` in `npm run lint` (ADR-0071), and alone as `npm run typecheck`. TypeScript **6** stays as the `typescript` package, only for `typescript-eslint`, which cannot load 7, until ESLint leaves (EN-085, whose ADR supersedes ADR-0009's pin); `npm run deps:outdated` proposes only its patch upgrades (`.ncurc.cjs`).
 
-## Split with ESLint (ADR-0010)
+## Split with the linters (ADR-0010)
 
-What ESLint can check lives in ESLint; `tsconfig.json` keeps only what belongs to the type system:
+What a linter can check lives in the linters (oxlint, the project's linter, ESLint until F19 ends); `tsconfig.json` keeps only what belongs to the type system:
 
 | Option | Why in TypeScript |
 | --- | --- |
-| `strict` | `any` inference, `null`, `this`, variance: out of ESLint's reach |
+| `strict` | `any` inference, `null`, `this`, variance: out of a linter's reach |
 | `noUncheckedIndexedAccess` | `T[number]` becomes `T \| undefined`: a type, not syntax |
 | `exactOptionalPropertyTypes` | `x?: T` does not accept an explicit `undefined` |
 | `noImplicitOverride`, `noPropertyAccessFromIndexSignature` | type semantics |
 | `noImplicitReturns` | replaces `consistent-return`, which conflicts with `unicorn/no-useless-undefined` |
 | `verbatimModuleSyntax`, `isolatedModules`, `noUncheckedSideEffectImports` | module emission and resolution |
 
-Left to ESLint (off in `tsconfig.json`): `noUnusedLocals`, `noUnusedParameters`, `noFallthroughCasesInSwitch`.
+Left to the linters (off in `tsconfig.json`): `noUnusedLocals`, `noUnusedParameters`, `noFallthroughCasesInSwitch`.
 
 ## Files
 
