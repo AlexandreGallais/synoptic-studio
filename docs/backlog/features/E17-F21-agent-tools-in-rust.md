@@ -47,7 +47,7 @@ Asked by the Product Owner on 2026-10-17: each dev package of `package.json` is 
 | `secretlint`, `@secretlint/secretlint-rule-preset-recommend` | scans every staged and tracked file for secrets | rewritten: each pattern of the preset carried with its source and a test; the preset's patterns are read first, so that none is lost |
 | `npm-check-updates` | every package on its latest version at least 7 days old | rewritten: one registry request per package, the release dates compared; `deps:tools` (`tool-versions.ts`) joins it |
 | `knip` | unused files, exports and dev packages | rewritten on Oxc's parser and `oxc_resolver`, for this repository's layout (one export per file, barrels) |
-| `eslint`, `@eslint/js`, `@eslint/markdown`, `typescript-eslint`, `@typescript-eslint/*`, `eslint-config-prettier`, the ESLint plugins, `@stylistic/eslint-plugin`, `prettier`, `jiti`, `typedoc` and its plugins, TypeScript 6 | lint, format, API pages | removed by F19 and this feature's clean-up |
+| `eslint`, `@eslint/js`, `typescript-eslint`, `@typescript-eslint/*`, `eslint-config-prettier`, the ESLint plugins, `@stylistic/eslint-plugin`, `prettier`, `jiti`, `typedoc` and its plugins, TypeScript 6 | lint, format, API pages | removed by F19 and this feature's clean-up |
 
 `npm audit` is part of npm, not a package: kept.
 

@@ -3,7 +3,7 @@ id: EN-077
 epic: E17
 feature: F19
 title: The Markdown rules in the Rust linter
-status: ready
+status: done
 points: 5
 ---
 
