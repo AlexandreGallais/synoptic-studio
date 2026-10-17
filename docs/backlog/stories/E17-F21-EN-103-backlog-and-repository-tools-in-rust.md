@@ -51,3 +51,10 @@ One task = one commit, referenced as `EN-103.Tn`.
 - [ ] T5 — `git:sync` names the uncommitted files that stop it (1 h)
 - [ ] T6 — `replace` in Rust, refusing a block it cannot read (3 h)
 - [ ] T7 — `branches:clean` and `records:save` in Rust; the docs and the run skill name the binaries (3 h)
+
+## For the main thread
+
+- ADR-0041, accepted, still names `scripts/records-save.ts` as the save's script; the save is now `records-save` of `tools/repo-tools/`. Left as written: an accepted ADR is superseded, never rewritten, and its decision is unchanged.
+- `.claude/hooks/guard-bash.test.ts` uses `npx vitest run scripts/check-all.test.ts` and `scripts/story-finish.test.ts` as sample commands; left to EN-104, which ports the hooks.
+- The first `records:save` after the merge commits the library once: the system's `sqlite3` writes other bytes than Node.js's SQLite for the same rows.
+- `story:finish` now amends the story's done commit when it writes its status rows again after a rebase; the done commit's hooks run again then.
