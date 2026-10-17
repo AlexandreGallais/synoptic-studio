@@ -400,3 +400,36 @@ fn the_hook_tells_an_agent_without_the_library_to_hand_the_page_to_its_caller() 
     assert!(researcher.contains("holds"), "{researcher}");
     assert!(built_in.contains("holds"), "{built_in}");
 }
+
+#[test]
+fn the_settings_run_the_hook_on_every_web_fetch_and_every_command_naming_curl_or_wget() {
+    // A command the hook refuses runs `curl` or `wget`, so its text names one: the settings' `if`
+    // filters `*curl*` and `*wget*` skip no command the hook would refuse (AUD-022).
+    let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../.claude/settings.json");
+    let settings = parse(&fs::read_to_string(path).expect("settings")).expect("JSON");
+    let mut runs = Vec::new();
+
+    for entry in settings.get("hooks").get("PreToolUse").items() {
+        for handler in entry.get("hooks").items() {
+            let args: Vec<&str> = handler.get("args").items().iter().map(|arg| arg.text()).collect();
+
+            if args.contains(&"library-pages") {
+                runs.push(format!(
+                    "{} {} {}",
+                    entry.get("matcher").text(),
+                    handler.get("if").text(),
+                    hooks::json::write(handler.get("timeout"))
+                ));
+            }
+        }
+    }
+
+    assert_eq!(
+        runs,
+        [
+            "WebFetch  30",
+            "Bash Bash(*curl*) 30",
+            "Bash Bash(*wget*) 30"
+        ]
+    );
+}

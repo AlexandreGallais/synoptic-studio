@@ -102,7 +102,7 @@ The model is taken from the first of these that names one (`REF-CC-SUBAGENTS`): 
 | `log-tool-call.ts` | `PostToolUse`, `PostToolUseFailure`, in the background | logs each call and its duration |
 | `status-line.ts` | status line, every second | place in the backlog, step, session, call running ([metrics](./metrics.md#status-line)) |
 
-`limit-agents` and `check-handback` let the call through when they cannot read their input, so that a hook's own failure never blocks work. The Rust hooks live in `tools/hooks`, each with its tests.
+`limit-agents` and `check-handback` let the call through when they cannot read their input, so that a hook's own failure never blocks work. `library-pages` runs on every `WebFetch` and only on a shell command whose text names `curl` or `wget`, the handlers' `if`, `Bash(*curl*)` and `Bash(*wget*)` (`REF-CC-HOOKS`, `REF-CC-PERMISSIONS`): a command it refuses names one, `/usr/bin/curl` or `sh -c 'curl …'` too, so the filter skips none, and the other commands no longer wait on `cargo run`. It and `check-handback` stop after 30 seconds and let the call through, in place of the 600 of the default, so that a hook waiting on cargo's build lock during a `check:all` holds no call for ten minutes; a rebuild of the crate takes about a second, a run 50 ms (2026-10-18). The Rust hooks live in `tools/hooks`, each with its tests.
 
 ## Pushes
 

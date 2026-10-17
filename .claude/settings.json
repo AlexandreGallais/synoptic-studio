@@ -74,7 +74,7 @@
         ]
       },
       {
-        "matcher": "WebFetch|Bash",
+        "matcher": "WebFetch",
         "hooks": [
           {
             "type": "command",
@@ -89,7 +89,47 @@
               "hooks",
               "--bin",
               "library-pages"
-            ]
+            ],
+            "timeout": 30
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(*curl*)",
+            "command": "cargo",
+            "args": [
+              "run",
+              "--release",
+              "-q",
+              "--manifest-path",
+              "${CLAUDE_PROJECT_DIR}/Cargo.toml",
+              "-p",
+              "hooks",
+              "--bin",
+              "library-pages"
+            ],
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "Bash(*wget*)",
+            "command": "cargo",
+            "args": [
+              "run",
+              "--release",
+              "-q",
+              "--manifest-path",
+              "${CLAUDE_PROJECT_DIR}/Cargo.toml",
+              "-p",
+              "hooks",
+              "--bin",
+              "library-pages"
+            ],
+            "timeout": 30
           }
         ]
       },
@@ -98,6 +138,7 @@
         "hooks": [
           {
             "type": "command",
+            "timeout": 30,
             "command": "cargo",
             "args": [
               "run",
