@@ -235,7 +235,7 @@
 | [VAL-020](./E17-F19-VAL-020-validate-f19.md) | F19 | Validate F19 | done |
 | [SP-022](./E17-F20-SP-022-research-f20.md) | F20 | Research for F20, the context diet | done |
 | [EN-064](./E17-F20-EN-064-one-hour-prompt-cache.md) | F20 | A one-hour prompt cache on long agents | dropped |
-| [EN-065](./E17-F20-EN-065-workers-started-from-a-digest.md) | F20 | One worker type per task kind, each started from what its task needs | ready |
+| [EN-065](./E17-F20-EN-065-workers-started-from-a-digest.md) | F20 | One worker type per task kind, each started from what its task needs | done |
 | [EN-066](./E17-F20-EN-066-model-per-agent-type.md) | F20 | A model chosen per agent type | ready |
 | [EN-088](./E17-F20-EN-088-subagent-stop-hook-in-rust.md) | F20 | A SubagentStop hook in Rust that checks a worker's branch | ready |
 | [EN-092](./E17-F20-EN-092-run-totals-and-stop-report.md) | F20 | The duration and tokens of a whole run | ready |
