@@ -83,17 +83,3 @@ One story worker is a single sample: about 450 tokens lighter where EN-096 expec
 
 - Commits of this story are docs only; `Rule-docs:` none affected, no rule of `docs/domain/` changed.
 - Of the eight frictions below, seven are in F21's stories on `docs/f21-refinement` (`0d1a6db9`); the hand-back check's wrong base is in none of EN-103, EN-104 nor EN-108 there: EN-104, the Claude Code hooks, is where it belongs.
-
-### Improvements
-
-| 2026-10-17 | CHK-021 | `story:finish` did not push a done commit rebased after its push, so `gh pr create` failed; folded into EN-103 (push with lease when the heads differ) | tool |
-| 2026-10-17 | CHK-021 | The status rows of a feature's Stories table conflicted at every merge, each done commit editing the same table; folded into EN-103 (rows written by `story:finish` after the rebase) | tool |
-| 2026-10-17 | CHK-021 | `guard-bash` judged a subagent's Git commands against the session's folder, the main checkout, not the worktree its `cd` entered; folded into EN-104 | tool |
-| 2026-10-17 | CHK-021 | `git:sync` on a tree with uncommitted changes exited 1 with no message; folded into EN-103 (it names the files) | tool |
-| 2026-10-17 | CHK-021 | `npm run -s git:*` in a branch older than EN-100 failed silently, the script missing from its `package.json`; folded into EN-104 (`guard-bash` names the missing script) | tool |
-| 2026-10-17 | CHK-021 | `check-handback` took the wrong base for a branch made from `develop`; not yet in F21's stories, EN-104 (the Claude Code hooks) its place | tool |
-| 2026-10-17 | CHK-021 | A test inherited the pre-push hook's `GIT_DIR` and wrote `core.bare=true` and a test user into the shared `.git/config`; folded into EN-103 (a shared Rust test helper, `.git/config` compared by `check:all`) | tooling |
-| 2026-10-17 | CHK-021 | The formatter printed "353 of 537 Markdown files changed" when it changed nothing; folded into EN-108 (silent when nothing changes) | tool |
-| 2026-10-17 | CHK-021 | The Markdown lint checks a page's anchors with GitHub's slugs and the site uses VitePress's, which differ on a heading with `'` or `/`; five links break on the site and seven on GitHub, and no check reads anchors across pages: one slug for both, checked across pages | tool |
-| 2026-10-17 | CHK-021 | `npm run metrics:session` in a worktree fails with a stack trace: it derives the transcripts' folder from the worktree's path; read the main checkout's (`git rev-parse --git-common-dir`) | tool |
-| 2026-10-17 | CHK-021 | A Sonnet subagent's transcript records almost no output tokens (279 for about 28,800 characters in EN-098), so per-model figures read from transcripts understate Sonnet; cost a model trial from `modelUsage` | tool |
