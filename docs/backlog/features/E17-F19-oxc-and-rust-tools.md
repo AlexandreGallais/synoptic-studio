@@ -57,7 +57,7 @@ In delivery order, written on 2026-10-17 when the Product Owner started F19's ru
 | [EN-069](../stories/E17-F19-EN-069-rust-coverage-and-advisories.md) | Enabler | A coverage floor and an advisory check for the Rust tools | done |
 | [EN-070](../stories/E17-F19-EN-070-portable-rust-tools.md) | Enabler | Rust tools on portable standard calls | done |
 | [EN-071](../stories/E17-F19-EN-071-typescript-7-for-the-type-check.md) | Enabler | TypeScript 7 for the type check and the declarations | done |
-| [EN-072](../stories/E17-F19-EN-072-api-pages-from-a-rust-generator.md) | Enabler | The API pages from a Rust generator on Oxc | ready |
+| [EN-072](../stories/E17-F19-EN-072-api-pages-from-a-rust-generator.md) | Enabler | The API pages from a Rust generator on Oxc | done |
 | [EN-073](../stories/E17-F19-EN-073-oxfmt-instead-of-prettier.md) | Enabler | oxfmt instead of Prettier | done |
 | [EN-074](../stories/E17-F19-EN-074-oxlint-with-native-and-type-aware-rules.md) | Enabler | oxlint with its native and type-aware rules | ready |
 | [EN-075](../stories/E17-F19-EN-075-project-linter-in-rust.md) | Enabler | The project's Rust linter and its own rules | ready |
