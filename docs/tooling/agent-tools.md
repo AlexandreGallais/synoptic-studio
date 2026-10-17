@@ -74,6 +74,7 @@ A tool is written when a retrospective's metrics show its signal — the hand wo
 | `git-sequences` | `git:sync`, `git:commit` | the frequent Git sequences in one call each |
 | `run-totals` | `run:start`, `run:end`, `run:should-stop`, `metrics:session -- --run`, the status line | a run's marker, duration and tokens, counted incrementally; whether it stops at the week's limit |
 | `val-prepare` | `val:prepare` | a feature's checklist lines |
+| `page` | `page` | one row or one section of a repository page, by its id or its heading ([above](#tools)) |
 | `mutate` | `mutate` | the mutations in a copy of the repository |
 | `lint` | `lint`, `fix`, `lint-staged`, after oxlint | the project's linter on Oxc: the project's rules, those oxlint lacks and the Markdown rules, each file parsed once ([lint](../conventions/lint.md)) |
 | `rule-docs` | the `commit-msg` hook, at a `done` commit | asks a story that changes `docs/domain/` for its Q row, its VAL's decisions to confirm and its guide page, unless the message says `Rule-docs: none affected, <why>` |
