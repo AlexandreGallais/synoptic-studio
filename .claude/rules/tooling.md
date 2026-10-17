@@ -10,7 +10,7 @@ paths:
 
 # Tooling pitfalls
 
-- **TypeScript is pinned to 6.0** (`typescript-eslint` does not support 7); **VitePress is on 2.0 alpha** (1.6 bundles a vulnerable Vite 5). Change either only with an ADR.
+- **TypeScript 7 runs `tsc`** (`@typescript/native`, EN-071); **TypeScript 6 stays the `typescript` package** for `typescript-eslint` and TypeDoc only, until they leave (EN-072, EN-085, whose ADR supersedes ADR-0009's pin); **VitePress is on 2.0 alpha** (1.6 bundles a vulnerable Vite 5). Change either only with an ADR.
 - Any new dev package: a row in `docs/tooling/dependencies.md` (tested), its release notes read, the latest version at least 7 days old, `npm audit` clean. A new GitHub Action or Node.js bump: `npm run deps:tools` checks them too.
 - A plugin upgrade makes `eslint/config.test.ts` fail until its new rules are decided in `eslint/rules/`: intended.
 - `unicorn/prefer-import-meta-properties` turns `new URL(".", import.meta.url)` into `import.meta.dirname` (no trailing slash): build paths with `join()`.
