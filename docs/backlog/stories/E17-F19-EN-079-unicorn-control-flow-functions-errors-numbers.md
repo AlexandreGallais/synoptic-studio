@@ -39,7 +39,3 @@ Measured on this Mac, 2026-10-17, on `npm run lint`'s targets (2,048 files):
 ## For the main thread
 
 Rule-docs: none affected, the story moves lint rules between linters and changes no rule of `docs/domain/`.
-
-### Journal
-
-- `#run` EN-079: 33 Unicorn rules on control flow, functions, errors and numbers carried to the Rust linter, 3 dropped (`no-unnecessary-nested-ternary`, `consistent-function-style`, `isolated-functions`); same findings as ESLint on the documented and planted cases, none on the tree; ESLint about 7 s faster.
