@@ -60,3 +60,18 @@ They are F15's and F17's lines, not F18's: left as they are, to be tried on a Ma
 | `playground/guided-steps/epic-15/guided-steps-f15-first-decisions.ts` | Arial Bold Italic.ttf, Arial.ttf twice, Arial.ttf and Arial Bold.ttf after a reload, STIXGeneral.otf from `/System/Library/Fonts/Supplemental`                  |
 | `playground/guided-steps/epic-15/guided-steps-f15-last-decisions.ts`  | Arial.ttf, Arial Bold.ttf                                                                                                                                       |
 | `playground/guided-steps/epic-15/guided-steps-f14-options.ts`         | Arial.ttf, for the space hung at the end of a right-aligned line                                                                                                |
+
+## Result of the validation (2026-10-17)
+
+The Product Owner left the tool lines to the agent, F18 being a tooling feature, tried what concerned them and declared the validation finished on 2026-10-17.
+
+| Line              | Seen by           | Result                                                                                                                                                                                                                     |
+| ----------------- | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1, 3, 4, 5, 8, 11 | the VAL worker    | as written                                                                                                                                                                                                                 |
+| 2                 | the main thread   | a fourth subagent refused, by Claude Code's own cap (`CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`); the hook's own message not seen in this session, whose hooks were loaded before EN-063's line: to see again in a new session |
+| 6                 | the main thread   | the session report for the whole conversation: 682 min, 455 084 647 tokens, 3 537 calls, 123 commits                                                                                                                       |
+| 7                 | the main thread   | `epic:check -- E17 2026-10-16`: 87 failed calls of 6 224 (1.4 %), `check:all` green, no code scanning alert                                                                                                                |
+| 9, 10             | the Product Owner | tried; the second reading explained, see the remark below                                                                                                                                                                  |
+| 12                | the main thread   | read in the workflows and ADR-0067; seen for real at the release of 0.3                                                                                                                                                    |
+
+Remark, routed to US-062: the font list must offer only fonts known to be sound. The first reading kept each face's metrics alone, so a face listed could still be refused when its family was chosen and its files read again; each face's file is now to be read whole and checked at the first reading, its bytes released at once (decided 2026-10-17).
