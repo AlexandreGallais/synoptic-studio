@@ -3,7 +3,7 @@ id: EN-080
 epic: E17
 feature: F19
 title: Unicorn's objects, strings, naming and miscellaneous rules in Rust
-status: ready
+status: done
 points: 8
 ---
 
