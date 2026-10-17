@@ -235,10 +235,14 @@ pub enum Kind {
     Array,
     /// A typed array: indexed, but not an `Array`.
     TypedArray,
-    /// A `Map`, `ReadonlyMap` or `WeakMap`.
+    /// A `Map` or a `ReadonlyMap`.
     Map,
-    /// A `Set`, `ReadonlySet` or `WeakSet`.
+    /// A `Set` or a `ReadonlySet`.
     Set,
+    /// A `WeakMap`.
+    WeakMap,
+    /// A `WeakSet`.
+    WeakSet,
     /// Something else known: an object, a function, a string, an instance of another class.
     Other,
 }
@@ -272,8 +276,10 @@ pub fn kind_of_type(annotation: &TSType) -> Option<Kind> {
         TSType::TSTypeReference(reference) => match &reference.type_name {
             TSTypeName::IdentifierReference(name) => match name.name.as_str() {
                 "Array" | "ReadonlyArray" => Some(Kind::Array),
-                "Map" | "ReadonlyMap" | "WeakMap" => Some(Kind::Map),
-                "Set" | "ReadonlySet" | "WeakSet" => Some(Kind::Set),
+                "Map" | "ReadonlyMap" => Some(Kind::Map),
+                "Set" | "ReadonlySet" => Some(Kind::Set),
+                "WeakMap" => Some(Kind::WeakMap),
+                "WeakSet" => Some(Kind::WeakSet),
                 "CanvasRenderingContext2D" | "OffscreenCanvasRenderingContext2D" => {
                     Some(Kind::Other)
                 }
@@ -319,6 +325,11 @@ fn kind_at_depth(source: &Source, expression: &Expression, depth: u8) -> Option<
             kind_at_depth(source, &wrapper.expression, depth)
         }
         Expression::ArrayExpression(_) => Some(Kind::Array),
+        Expression::ConditionalExpression(conditional) => {
+            let consequent = kind_at_depth(source, &conditional.consequent, depth)?;
+            (kind_at_depth(source, &conditional.alternate, depth)? == consequent)
+                .then_some(consequent)
+        }
         Expression::ObjectExpression(_)
         | Expression::FunctionExpression(_)
         | Expression::ArrowFunctionExpression(_)
@@ -331,8 +342,10 @@ fn kind_at_depth(source: &Source, expression: &Expression, depth: u8) -> Option<
             Expression::Identifier(callee) if symbol_of(source, callee).is_none() => {
                 match callee.name.as_str() {
                     "Array" => Kind::Array,
-                    "Map" | "WeakMap" => Kind::Map,
-                    "Set" | "WeakSet" => Kind::Set,
+                    "Map" => Kind::Map,
+                    "Set" => Kind::Set,
+                    "WeakMap" => Kind::WeakMap,
+                    "WeakSet" => Kind::WeakSet,
                     name if TYPED_ARRAYS.contains(&name) => Kind::TypedArray,
                     _ => Kind::Other,
                 }
@@ -374,7 +387,7 @@ fn kind_at_depth(source: &Source, expression: &Expression, depth: u8) -> Option<
 pub fn is_known_non_indexed(source: &Source, expression: &Expression) -> bool {
     matches!(
         kind_of(source, expression),
-        Some(Kind::Map | Kind::Set | Kind::Other)
+        Some(Kind::Map | Kind::Set | Kind::WeakMap | Kind::WeakSet | Kind::Other)
     )
 }
 
@@ -552,7 +565,156 @@ pub fn needs_parentheses_as_operand(expression: &Expression) -> bool {
             | Expression::YieldExpression(_)
             | Expression::TSAsExpression(_)
             | Expression::TSSatisfiesExpression(_)
+            | Expression::UpdateExpression(_)
+            | Expression::TSNonNullExpression(_)
+            | Expression::TSTypeAssertion(_)
     )
+}
+
+/// Whether the text around a range holds parentheses that group it: `(` before, `)` after.
+#[must_use]
+pub fn is_parenthesized(source: &Source, span: Span) -> bool {
+    let before = source.text.get(..span.start as usize).unwrap_or_default();
+    let after = source.text.get(span.end as usize..).unwrap_or_default();
+    before.trim_end().ends_with('(') && after.trim_start().starts_with(')')
+}
+
+/// The text of an expression with the parentheses written around it, when it has some.
+#[must_use]
+pub fn parenthesized_text(source: &Source, expression: &Expression) -> String {
+    let inner = text(source, expression.span());
+    if is_parenthesized(source, expression.span()) {
+        format!("({inner})")
+    } else {
+        inner.to_owned()
+    }
+}
+
+/// The text of an operand of a logical operator, parenthesized when the operator would bind it
+/// otherwise; written parentheses are kept when asked (`getLogicalExpressionChildText`): a
+/// call's own parentheses around its only argument are not one's.
+#[must_use]
+pub fn logical_operand_text(
+    source: &Source,
+    expression: &Expression,
+    operator: oxc_ast::ast::LogicalOperator,
+    keep_written: bool,
+) -> String {
+    if keep_written && is_parenthesized(source, expression.span()) {
+        return parenthesized_text(source, expression);
+    }
+    let needs = match expression {
+        Expression::LogicalExpression(logical) => logical.operator != operator,
+        Expression::AwaitExpression(_)
+        | Expression::BinaryExpression(_)
+        | Expression::ConditionalExpression(_)
+        | Expression::AssignmentExpression(_)
+        | Expression::ArrowFunctionExpression(_)
+        | Expression::YieldExpression(_)
+        | Expression::SequenceExpression(_) => true,
+        _ => false,
+    };
+    let inner = text(source, expression.span());
+    if needs {
+        format!("({inner})")
+    } else {
+        inner.to_owned()
+    }
+}
+
+/// A value an expression always has, read without running it.
+#[derive(Clone, Debug, PartialEq)]
+pub enum Value {
+    /// A string.
+    Text(String),
+    /// A number.
+    Number(f64),
+    /// A boolean.
+    Boolean(bool),
+    /// `null`.
+    Null,
+    /// `undefined`.
+    Undefined,
+    /// A `BigInt`, by its digits.
+    BigInt(String),
+}
+
+impl Value {
+    /// Whether two values are equal as `SameValueZero` compares them.
+    #[must_use]
+    pub fn same_value_zero(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Value::Number(a), Value::Number(b)) => {
+                (a.is_nan() && b.is_nan()) || (a - b).abs() == 0.0
+            }
+            _ => self == other,
+        }
+    }
+}
+
+/// The value an expression always has: a literal, a template without expressions, a signed
+/// number, `undefined`, a `const` bound to one, a sum or a concatenation of them.
+#[must_use]
+pub fn static_value(source: &Source, expression: &Expression) -> Option<Value> {
+    value_at_depth(source, expression, 0)
+}
+
+/// `static_value`, a binding followed at most a few times.
+fn value_at_depth(source: &Source, expression: &Expression, depth: u8) -> Option<Value> {
+    match unwrap(expression) {
+        Expression::StringLiteral(literal) => Some(Value::Text(literal.value.to_string())),
+        Expression::NumericLiteral(literal) => Some(Value::Number(literal.value)),
+        Expression::BooleanLiteral(literal) => Some(Value::Boolean(literal.value)),
+        Expression::NullLiteral(_) => Some(Value::Null),
+        Expression::BigIntLiteral(literal) => Some(Value::BigInt(literal.value.to_string())),
+        Expression::TemplateLiteral(template) if template.expressions.is_empty() => Some(
+            Value::Text(template.quasis.first()?.value.cooked?.to_string()),
+        ),
+        Expression::Identifier(identifier) if identifier.name == "undefined" => {
+            symbol_of(source, identifier)
+                .is_none()
+                .then_some(Value::Undefined)
+        }
+        Expression::Identifier(_) if depth < 4 => {
+            value_at_depth(source, const_init(source, unwrap(expression))?, depth + 1)
+        }
+        Expression::UnaryExpression(unary) => {
+            let value = value_at_depth(source, &unary.argument, depth)?;
+            match (unary.operator, value) {
+                (UnaryOperator::UnaryNegation, Value::Number(number)) => {
+                    Some(Value::Number(-number))
+                }
+                (UnaryOperator::UnaryPlus, Value::Number(number)) => Some(Value::Number(number)),
+                (UnaryOperator::LogicalNot, Value::Boolean(boolean)) => {
+                    Some(Value::Boolean(!boolean))
+                }
+                (UnaryOperator::Void, _) => Some(Value::Undefined),
+                _ => None,
+            }
+        }
+        Expression::BinaryExpression(binary) => {
+            let left = value_at_depth(source, &binary.left, depth)?;
+            let right = value_at_depth(source, &binary.right, depth)?;
+            match (binary.operator, left, right) {
+                (oxc_ast::ast::BinaryOperator::Addition, Value::Number(a), Value::Number(b)) => {
+                    Some(Value::Number(a + b))
+                }
+                (oxc_ast::ast::BinaryOperator::Addition, Value::Text(a), Value::Text(b)) => {
+                    Some(Value::Text(a + &b))
+                }
+                (oxc_ast::ast::BinaryOperator::Subtraction, Value::Number(a), Value::Number(b)) => {
+                    Some(Value::Number(a - b))
+                }
+                (
+                    oxc_ast::ast::BinaryOperator::Multiplication,
+                    Value::Number(a),
+                    Value::Number(b),
+                ) => Some(Value::Number(a * b)),
+                _ => None,
+            }
+        }
+        _ => None,
+    }
 }
 
 /// The text of an expression negated with `!`, parenthesized when needed
@@ -738,4 +900,225 @@ pub fn has_optional_chain(expression: &Expression) -> bool {
         Expression::CallExpression(call) => call.optional || has_optional_chain(&call.callee),
         _ => false,
     }
+}
+
+/// The nodes under a node, in source order: the ones its subtree holds.
+pub fn descendants<'s, 'a>(
+    source: &'s Source<'_, 'a>,
+    id: NodeId,
+) -> impl Iterator<Item = &'s AstNode<'a>> + 's {
+    let nodes = source.semantic.nodes();
+    (id.index() + 1..nodes.len())
+        .map(move |index| nodes.get_node(NodeId::new(index)))
+        .take_while(move |node| nodes.ancestor_ids(node.id()).any(|ancestor| ancestor == id))
+}
+
+/// The nodes from a node up to an ancestor, both included.
+pub fn path_up<'s, 'a>(
+    source: &'s Source<'_, 'a>,
+    from: NodeId,
+    to: NodeId,
+) -> impl Iterator<Item = &'s AstNode<'a>> + 's {
+    let nodes = source.semantic.nodes();
+    std::iter::once(nodes.get_node(from)).chain(
+        nodes
+            .ancestors(from)
+            .take_while(move |node| node.id() != to)
+            .chain(std::iter::once(nodes.get_node(to)))
+            .filter(move |_| from != to),
+    )
+}
+
+/// Whether a node starts a function or a class, whose body runs elsewhere.
+#[must_use]
+pub fn is_function_or_class(kind: &AstKind) -> bool {
+    matches!(
+        kind,
+        AstKind::Function(_) | AstKind::ArrowFunctionExpression(_) | AstKind::Class(_)
+    )
+}
+
+/// The identifier a reference starts from: `a` in `a.b[c]`.
+#[must_use]
+pub fn root_identifier<'b, 'a>(
+    expression: &'b Expression<'a>,
+) -> Option<&'b IdentifierReference<'a>> {
+    match unwrap(expression) {
+        Expression::Identifier(identifier) => Some(identifier),
+        Expression::StaticMemberExpression(member) => root_identifier(&member.object),
+        Expression::ComputedMemberExpression(member) => root_identifier(&member.object),
+        _ => None,
+    }
+}
+
+/// Whether two identifiers read the same binding; two undeclared ones, the same name.
+#[must_use]
+pub fn same_binding(
+    source: &Source,
+    left: &IdentifierReference,
+    right: &IdentifierReference,
+) -> bool {
+    match (symbol_of(source, left), symbol_of(source, right)) {
+        (None, None) => left.name == right.name,
+        (left, right) => left == right,
+    }
+}
+
+/// Whether two references read the same thing: the same path from the same binding.
+#[must_use]
+pub fn same_reference_binding(source: &Source, left: &Expression, right: &Expression) -> bool {
+    if !same_reference(left, right) {
+        return false;
+    }
+    match (root_identifier(left), root_identifier(right)) {
+        (Some(left), Some(right)) => same_binding(source, left, right),
+        _ => true,
+    }
+}
+
+/// Whether an expression is a reference: a name, a member, `this` or `super`.
+#[must_use]
+pub fn is_reference(expression: &Expression) -> bool {
+    matches!(
+        unwrap(expression),
+        Expression::Identifier(_)
+            | Expression::StaticMemberExpression(_)
+            | Expression::ComputedMemberExpression(_)
+            | Expression::PrivateFieldExpression(_)
+            | Expression::ThisExpression(_)
+            | Expression::Super(_)
+    )
+}
+
+/// Whether an expression calls something, outside the functions it holds.
+#[must_use]
+pub fn has_call(expression: &Expression) -> bool {
+    match expression {
+        Expression::CallExpression(_) => true,
+        Expression::StaticMemberExpression(member) => has_call(&member.object),
+        Expression::ComputedMemberExpression(member) => {
+            has_call(&member.object) || has_call(&member.expression)
+        }
+        Expression::TemplateLiteral(template) => template.expressions.iter().any(has_call),
+        Expression::UnaryExpression(unary) => has_call(&unary.argument),
+        Expression::AwaitExpression(unary) => has_call(&unary.argument),
+        Expression::BinaryExpression(binary) => has_call(&binary.left) || has_call(&binary.right),
+        Expression::LogicalExpression(logical) => {
+            has_call(&logical.left) || has_call(&logical.right)
+        }
+        Expression::ConditionalExpression(conditional) => {
+            has_call(&conditional.test)
+                || has_call(&conditional.consequent)
+                || has_call(&conditional.alternate)
+        }
+        Expression::NewExpression(new) => {
+            has_call(&new.callee)
+                || new
+                    .arguments
+                    .iter()
+                    .any(|argument| argument.as_expression().is_some_and(has_call))
+        }
+        Expression::ArrayExpression(array) => array
+            .elements
+            .iter()
+            .any(|element| element.as_expression().is_some_and(has_call)),
+        Expression::TSAsExpression(_)
+        | Expression::TSSatisfiesExpression(_)
+        | Expression::TSNonNullExpression(_)
+        | Expression::TSTypeAssertion(_)
+        | Expression::TSInstantiationExpression(_) => has_call(unwrap(expression)),
+        _ => false,
+    }
+}
+
+/// The statement a statement position holds: itself, or the only statement of its block.
+#[must_use]
+pub fn single_statement<'b, 'a>(statement: &'b Statement<'a>) -> Option<&'b Statement<'a>> {
+    match statement {
+        Statement::BlockStatement(block) => match block.body.as_slice() {
+            [only] => Some(only),
+            _ => None,
+        },
+        other => Some(other),
+    }
+}
+
+/// The text of an expression as the concise body of an arrow, parenthesized when it would start
+/// with `{` or is a sequence or an assignment (`getConciseArrowBodyText`).
+#[must_use]
+pub fn concise_body_text(source: &Source, expression: &Expression) -> String {
+    let inner = text(source, expression.span());
+    let needs = inner.starts_with('{')
+        || matches!(
+            expression,
+            Expression::SequenceExpression(_) | Expression::AssignmentExpression(_)
+        );
+    if needs {
+        format!("({inner})")
+    } else {
+        inner.to_owned()
+    }
+}
+
+/// Whether a node, outside the functions it holds, waits: `await`, `yield` or `for await`.
+#[must_use]
+pub fn has_suspension(source: &Source, id: NodeId) -> bool {
+    std::iter::once(source.semantic.nodes().get_node(id))
+        .chain(descendants(source, id))
+        .filter(|node| {
+            !path_up(source, node.id(), id)
+                .any(|each| each.id() != node.id() && is_function_or_class(&each.kind()))
+        })
+        .any(|node| match node.kind() {
+            AstKind::AwaitExpression(_) | AstKind::YieldExpression(_) => true,
+            AstKind::ForOfStatement(statement) => statement.r#await,
+            _ => false,
+        })
+}
+
+/// Whether a binding is read or written inside a range.
+#[must_use]
+pub fn is_referenced_in(source: &Source, symbol: SymbolId, span: Span) -> bool {
+    let scoping = source.semantic.scoping();
+    let nodes = source.semantic.nodes();
+    scoping
+        .get_resolved_reference_ids(symbol)
+        .iter()
+        .any(|reference| {
+            let at = nodes
+                .kind(scoping.get_reference(*reference).node_id())
+                .span();
+            at.start >= span.start && at.end <= span.end
+        })
+}
+
+/// The statement after a node in its list of statements; an exported declaration counts as its
+/// `export` statement.
+#[must_use]
+pub fn next_statement<'a>(source: &Source<'_, 'a>, id: NodeId) -> Option<&'a Statement<'a>> {
+    let nodes = source.semantic.nodes();
+    let mut statement = id;
+    if matches!(nodes.parent_kind(statement), AstKind::ExportDeclaration(_)) {
+        statement = nodes.parent_id(statement);
+    }
+    let list: &'a [Statement<'a>] = match nodes.parent_kind(statement) {
+        AstKind::Program(program) => &program.body,
+        AstKind::BlockStatement(block) => &block.body,
+        AstKind::FunctionBody(body) => &body.statements,
+        AstKind::SwitchCase(case) => &case.consequent,
+        AstKind::StaticBlock(block) => &block.body,
+        _ => return None,
+    };
+    let index = list.iter().position(|each| each.node_id() == statement)?;
+    list.get(index + 1)
+}
+
+/// Whether no binding named so hides the global at a node.
+#[must_use]
+pub fn is_global_name_free(source: &Source, node: &AstNode, name: &str) -> bool {
+    source
+        .semantic
+        .scoping()
+        .find_binding(node.scope_id(), oxc_ast::ast::Ident::from(name))
+        .is_none()
 }
