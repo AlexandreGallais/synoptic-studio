@@ -10,8 +10,8 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, ExitCode, Stdio};
 
 use git_sequences::{
-    Branch, Request, Source, Target, branch_of, commit_refusal, commit_steps, fetch_step,
-    message_refusal, parse, sync_steps, sync_target,
+    Branch, Request, Source, Target, branch_of, changes_refusal, changes_step, commit_refusal,
+    commit_steps, fetch_step, message_refusal, parse, sync_steps, sync_target,
 };
 
 /// Runs one Git step, the text given on its standard input; its output, or Git's own message.
@@ -111,6 +111,12 @@ fn sync(branch: &Branch, base: Option<&str>, top: &Path) -> Result<String, Strin
     .map(str::to_owned)
     .collect();
     let target = sync_target(branch, base, &story_files(top), &remotes)?;
+
+    if let Some(refusal) =
+        changes_refusal(branch_name(branch), &target, &git(&changes_step(), None)?)
+    {
+        return Err(refusal);
+    }
 
     for step in sync_steps(&target) {
         git(&step, None)?;

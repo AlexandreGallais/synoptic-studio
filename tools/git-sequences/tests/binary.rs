@@ -408,3 +408,34 @@ fn prints_its_usage_on_a_malformed_call() {
     assert!(!output.status.success());
     assert!(stderr(&output).contains("usage: npm run git:sync"));
 }
+
+#[test]
+fn f21_ac6_names_the_uncommitted_files_that_stop_a_rebase() {
+    let repos = repos();
+
+    move_feature_on(&repos, "feature.md", "feature\n");
+    // A tracked file changed, a new file staged; an untracked file blocks nothing.
+    write(&repos.work, "README.md", "changed\n");
+    write(&repos.work, "staged.md", "staged\n");
+    git(&repos.work, &["add", "staged.md"]);
+    write(&repos.work, "loose.md", "untracked\n");
+
+    let head = git(&repos.work, &["rev-parse", "HEAD"]);
+    let output = tool(&repos.work, &["sync"], "");
+
+    assert_eq!(output.status.code(), Some(1));
+    assert_eq!(
+        stderr(&output),
+        format!(
+            "git-sequences: {STORY} not rebased: the tree holds uncommitted changes, which the rebase refuses; commit or stash them, then run again:\n  M README.md\n  A staged.md\n"
+        )
+    );
+    assert_eq!(git(&repos.work, &["rev-parse", "HEAD"]), head);
+    assert_eq!(
+        git(
+            &repos.work,
+            &["status", "--porcelain", "--untracked-files=no"]
+        ),
+        "M README.md\nA  staged.md"
+    );
+}

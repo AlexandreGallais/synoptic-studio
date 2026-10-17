@@ -219,6 +219,32 @@ pub fn sync_steps(target: &Target) -> Vec<Vec<String>> {
     vec![owned(&step)]
 }
 
+/// The step listing the uncommitted changes of tracked files, staged or not, against `HEAD`: the
+/// changes a rebase refuses (an untracked file stops none).
+#[must_use]
+pub fn changes_step() -> Vec<String> {
+    owned(&["diff", "--name-status", "HEAD"])
+}
+
+/// Why `git:sync` does not rebase a tree with uncommitted changes, naming each file from
+/// `git diff --name-status HEAD` (EN-103: it stopped saying only Git's refusal); `None` for a
+/// fast-forward, which Git runs or refuses itself, or a clean tree.
+#[must_use]
+pub fn changes_refusal(name: &str, target: &Target, changes: &str) -> Option<String> {
+    let files: Vec<String> = changes
+        .lines()
+        .filter(|line| !line.is_empty())
+        .map(|line| format!("  {}", line.replacen('\t', " ", 1)))
+        .collect();
+
+    (matches!(target, Target::Rebase(_)) && !files.is_empty()).then(|| {
+        format!(
+            "{name} not rebased: the tree holds uncommitted changes, which the rebase refuses; commit or stash them, then run again:\n{}",
+            files.join("\n")
+        )
+    })
+}
+
 /// The fetch that opens `git:sync`.
 #[must_use]
 pub fn fetch_step() -> Vec<String> {
