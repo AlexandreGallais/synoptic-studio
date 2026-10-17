@@ -3,7 +3,7 @@ id: EN-076
 epic: E17
 feature: F19
 title: naming-convention and the functional rules without types
-status: ready
+status: done
 points: 5
 ---
 
@@ -87,3 +87,7 @@ On the Product Owner's machine:
 ### Journal
 
 - `#run` EN-076: naming-convention, the five functional rules and `no-non-function-verb-prefix` in the Rust linter without types; ESLint reads no type, `npm run lint` from 27 s to 18 s; the strict form taken to the letter gave 597 findings and 60 type errors, a named type is proven by its own declaration instead, to confirm.
+
+## Decision on the strict form
+
+The main thread accepted on 2026-10-17 the strict form as applied here, to be confirmed by the Product Owner: wrapping every named type in `Readonly<…>` does not compile (a function type loses its call signature, a branded number stops being a number: 597 findings, then 60 type errors), so `readonly` / `Readonly<…>` is written in place, deeply, and a named type passes only when its own declaration is checked the same way; a type from the standard library or a package is never trusted by name. Nothing escapes, as decided on 2026-10-17.

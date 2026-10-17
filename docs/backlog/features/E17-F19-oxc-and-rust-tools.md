@@ -28,7 +28,7 @@ Recorded as understood, with the research behind each in note 0023, section "The
 ## Acceptance criteria
 
 1. `npm run lint` runs oxlint 1.87.0 or later (each version at least 7 days old) with its native rules and `tsgolint`'s type-aware rules, then the project's Rust linter, and reports nothing on the tree; every rule of `eslint/` is carried, rewritten, or dropped with its reason in the ADR.
-2. `@typescript-eslint/prefer-destructuring` is carried by the native `eslint/prefer-destructuring` with the same options; `no-unsafe-enum-assignment` is dropped because `enum` is forbidden; `naming-convention` and the five type-aware functional rules are rewritten without types in their strict form, each with tests of what it catches and of a type defined elsewhere that it refuses.
+2. `@typescript-eslint/prefer-destructuring` is carried by the native `eslint/prefer-destructuring` with the same options; `no-unsafe-enum-assignment` is dropped because `enum` is forbidden; `naming-convention` and the five type-aware functional rules are rewritten without types in their strict form, each with tests of what it catches and of a type defined elsewhere that it refuses. `unicorn/no-non-function-verb-prefix`, the last rule of ESLint needing types, runs in the Rust linter too (EN-076).
 3. The 10 project rules, `functional/no-return-void`, `no-restricted-syntax` (its 7 selectors, the fold-spread one carried by oxlint's `oxc/no-accumulating-spread`), and `require-atomic-updates` run in the project's Rust linter on the `oxc` crates (0.153.0 or later, at least 7 days old, each crate in `docs/tooling/dependencies.md`), each with its tests carried over from `eslint/`.
 4. The 21 Markdown rules run in the same Rust linter, with the findings ESLint's Markdown plugin gave on the same pages.
 5. `npm run format:check` runs oxfmt on the same targets as Prettier, Markdown included.
@@ -67,7 +67,7 @@ In delivery order, written on 2026-10-17 when the Product Owner started F19's ru
 | [EN-073](../stories/E17-F19-EN-073-oxfmt-instead-of-prettier.md) | Enabler | oxfmt instead of Prettier | done |
 | [EN-074](../stories/E17-F19-EN-074-oxlint-with-native-and-type-aware-rules.md) | Enabler | oxlint with its native and type-aware rules | done |
 | [EN-075](../stories/E17-F19-EN-075-project-linter-in-rust.md) | Enabler | The project's Rust linter and its own rules | done |
-| [EN-076](../stories/E17-F19-EN-076-naming-and-functional-rules-without-types.md) | Enabler | naming-convention and the functional rules without types | ready |
+| [EN-076](../stories/E17-F19-EN-076-naming-and-functional-rules-without-types.md) | Enabler | naming-convention and the functional rules without types | done |
 | [EN-089](../stories/E17-F19-EN-089-font-files-read-once-per-test-run.md) | Enabler | Font files read once per test run | done |
 | [EN-090](../stories/E17-F19-EN-090-tests-without-over-testing.md) | Enabler | Tests without over-testing, and the rules to keep them so | done |
 | [EN-091](../stories/E17-F19-EN-091-configuration-files-reviewed-for-speed.md) | Enabler | Every configuration file reviewed for speed, type errors reported with the lint | done |
