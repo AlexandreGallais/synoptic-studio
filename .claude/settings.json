@@ -169,10 +169,17 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node",
+            "command": "cargo",
             "args": [
-              "--harmony-temporal",
-              "${CLAUDE_PROJECT_DIR}/.claude/hooks/track-tool-call.ts"
+              "run",
+              "--release",
+              "-q",
+              "--manifest-path",
+              "${CLAUDE_PROJECT_DIR}/Cargo.toml",
+              "-p",
+              "hooks",
+              "--bin",
+              "track-tool-call"
             ],
             "async": true
           }
@@ -185,8 +192,18 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node",
-            "args": ["--harmony-temporal", "${CLAUDE_PROJECT_DIR}/.claude/hooks/session-state.ts"]
+            "command": "cargo",
+            "args": [
+              "run",
+              "--release",
+              "-q",
+              "--manifest-path",
+              "${CLAUDE_PROJECT_DIR}/Cargo.toml",
+              "-p",
+              "hooks",
+              "--bin",
+              "session-state"
+            ]
           }
         ]
       }
@@ -197,8 +214,18 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node",
-            "args": ["--harmony-temporal", "${CLAUDE_PROJECT_DIR}/.claude/hooks/log-tool-call.ts"],
+            "command": "cargo",
+            "args": [
+              "run",
+              "--release",
+              "-q",
+              "--manifest-path",
+              "${CLAUDE_PROJECT_DIR}/Cargo.toml",
+              "-p",
+              "hooks",
+              "--bin",
+              "log-tool-call"
+            ],
             "async": true
           }
         ]
@@ -210,8 +237,18 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node",
-            "args": ["--harmony-temporal", "${CLAUDE_PROJECT_DIR}/.claude/hooks/log-tool-call.ts"],
+            "command": "cargo",
+            "args": [
+              "run",
+              "--release",
+              "-q",
+              "--manifest-path",
+              "${CLAUDE_PROJECT_DIR}/Cargo.toml",
+              "-p",
+              "hooks",
+              "--bin",
+              "log-tool-call"
+            ],
             "async": true
           }
         ]

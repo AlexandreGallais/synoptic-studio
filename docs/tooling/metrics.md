@@ -6,7 +6,7 @@ Measure first, then make each epic faster than the last (Product Owner, RET-001)
 
 | Source | Written by | Holds |
 | --- | --- | --- |
-| `.git/metrics/tool-calls.jsonl` | the hook `log-tool-call.ts`, after each tool call, in the background | one line per call ([the record of each call](#the-record-of-each-call)) |
+| `.git/metrics/tool-calls.jsonl` | the hook `log-tool-call` (Rust), after each tool call, in the background | one line per call ([the record of each call](#the-record-of-each-call)) |
 | `.git/metrics/tool-uses.jsonl` | each Rust tool of the workspace, at its end (`tools/tool-use`) | one line per use of a tool ([the uses of each tool](#the-uses-of-each-tool)) |
 | `~/.claude/projects/<repository path>/` | Claude Code: one JSON Lines transcript per session, its subagents' beside it | every request with its tokens, every tool call and result, each line with its time, session and branch |
 | `.git/metrics/run.json`, `run-cache.json` | `npm run run:start` and `run:end`; the cache by `run-totals` | the open or last run: start, end (0 while open), sessions; the cache, where each transcript was read up to ([a run's totals](#a-runs-totals)) |

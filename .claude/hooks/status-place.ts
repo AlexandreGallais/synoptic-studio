@@ -1,8 +1,7 @@
 // Where the work stands, for the status line (docs/tooling/metrics.md): the epic, feature and
 // story of the branch checked out, read from the backlog's file names, and the tool call running.
 
-import { toolSummary } from "./log-tool-call.ts";
-import { count, field, text, textOr } from "./status-json.ts";
+import { count, text, textOr } from "./status-json.ts";
 
 import type { BackgroundTask } from "./status-tasks.ts";
 
@@ -67,26 +66,6 @@ export function placeOf(branch: string, files: readonly string[]): string {
     : [groups["epic"], groups["feature"], `${id} ${words(groups["slug"] ?? "")}`]
         .filter((part) => part !== undefined && part !== `${id} `)
         .join(" › ");
-}
-
-/**
- * Record of a tool call starting, from the `PreToolUse` hook input.
- *
- * @param input - parsed hook JSON
- * @param start - when it starts, epoch milliseconds
- * @returns what the status line shows of it
- */
-export function runningCall(input: unknown, start: number): RunningCall {
-  const tool = text(input, "tool_name");
-  const toolInput = field(input, "tool_input");
-
-  return {
-    agent: textOr(input, "agent_type", "main"),
-    description: text(toolInput, "description"),
-    start,
-    summary: toolSummary(tool, toolInput, text(input, "cwd")),
-    tool,
-  };
 }
 
 /**
