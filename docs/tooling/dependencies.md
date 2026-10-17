@@ -111,7 +111,7 @@ Checked at each retrospective: an override goes once the package that pulls the 
 
 ## Crates
 
-The crates.io dependencies of the Rust tools, all from Oxc (`REF-OXC-CRATE`, MIT licence), at 0.153.0, published 2026-10-05, its release notes read (parser fixes for TypeScript diagnostics; nothing on the AST the tools read); 0.154.0 of 2026-10-13 is under 7 days old. The same version for every Oxc crate: they are released together and depend on each other at that exact version.
+The crates.io dependencies of the Rust tools: Oxc's (`REF-OXC-CRATE`, MIT licence), at 0.153.0, published 2026-10-05, its release notes read (parser fixes for TypeScript diagnostics; nothing on the AST the tools read); 0.154.0 of 2026-10-13 is under 7 days old. The same version for every Oxc crate: they are released together and depend on each other at that exact version. And `markdown` (`REF-MARKDOWN-RS`, MIT licence), 1.0.0 of 2025-04-23, its release notes read ("Nothing changed since the last alpha", 1.0.0-alpha.24: serde for the options, Unicode updated), with its one dependency `unicode-id` 0.3.7 (2026-09-19).
 
 | Crate | Why | Alternatives rejected |
 | --- | --- | --- |
@@ -123,6 +123,7 @@ The crates.io dependencies of the Rust tools, all from Oxc (`REF-OXC-CRATE`, MIT
 | `oxc_span` | the source type (TypeScript) and the spans that give each export its line | — (the parser's own spans) |
 | `oxc_isolated_declarations` | writes the library's declarations from each module alone, without a type checker, in `tools/declarations` (EN-091, `REF-OXC-ISOLATED-DECLARATIONS`): the 589 files of `tsc` in meaning, in 0.06 s against 0.63 s; release notes of 0.153.0 read (two fixes: `undefined` added to `keyof` parameter types, readonly parameter types) | `tsc -p tsconfig.build.json`: a second compiler run for the same files; `oxc-transform` from npm: the same code behind a Node.js binding, a dev package more |
 | `oxc_codegen` | prints the declarations' AST as `.d.ts` text, comments kept (EN-091); release notes of 0.153.0 read (a parser fix, a sourcemap speed-up) | — (Oxc's own printer) |
+| `markdown` | parses each Markdown page into an mdast tree with byte offsets, GFM and YAML front matter, so that the project's linter runs the Markdown rules of `@eslint/markdown` (EN-077): the Rust sibling of the parser that plugin uses, so the same tree and the same findings | `pulldown-cmark` 0.13.4: events, not a tree, and its own reading of definitions and footnotes, every rule to adapt; `comrak` 0.56.0: an arena tree, seven required dependencies; a parser of our own: CommonMark's emphasis, tables and references are a project in themselves |
 
 ## Considered for later
 
