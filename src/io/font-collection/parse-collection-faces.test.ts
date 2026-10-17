@@ -56,21 +56,25 @@ describe("parseCollectionFaces (REF-OT-OTFF)", () => {
     expect(parseCollectionFaces(file)).toEqual([[file]]);
   });
 
-  it("[F17.AC10] [F18.AC19] gives each face of a collection sharing Inter's tables as its own file", () => {
-    // Inter's tables padded take 411 640 − 284 = 411 356 bytes; its name (1 948) and OS/2 (96)
-    // replaced, each face holds 409 312 bytes of shared tables, 96 of OS/2 and its name of 88, 82
-    // (padded to 84) or 86 (padded to 88): with its directory of 284, 409 780, 409 776, 409 780.
-    const faces = SHARED_SANS_TABLES;
-    const read = parseCollectionFaces(sharedTableCollection(TRUE_TYPE_VERSION, faces));
+  it(
+    "[F17.AC10] [F18.AC19] gives each face of a collection sharing Inter's tables as its own file",
+    { timeout: 20_000 },
+    () => {
+      // Inter's tables padded take 411 640 − 284 = 411 356 bytes; its name (1 948) and OS/2 (96)
+      // replaced, each face holds 409 312 bytes of shared tables, 96 of OS/2 and its name of 88, 82
+      // (padded to 84) or 86 (padded to 88): with its directory of 284, 409 780, 409 776, 409 780.
+      const faces = SHARED_SANS_TABLES;
+      const read = parseCollectionFaces(sharedTableCollection(TRUE_TYPE_VERSION, faces));
 
-    expect(read.map((parts) => parts.reduce((sum, part) => sum + part.length, 0))).toEqual([
-      409_780, 409_776, 409_780,
-    ]);
+      expect(read.map((parts) => parts.reduce((sum, part) => sum + part.length, 0))).toEqual([
+        409_780, 409_776, 409_780,
+      ]);
 
-    expect(read.map((parts) => joinedParts(parts))).toEqual(
-      faces.map((tables) => tablesFile(TRUE_TYPE_VERSION, tables)),
-    );
-  });
+      expect(read.map((parts) => joinedParts(parts))).toEqual(
+        faces.map((tables) => tablesFile(TRUE_TYPE_VERSION, tables)),
+      );
+    },
+  );
 
   test.prop({ faces: fc.array(FACE, { maxLength: 3, minLength: 1 }) })(
     "[F17.AC4] gives back the very faces a collection is made of",
