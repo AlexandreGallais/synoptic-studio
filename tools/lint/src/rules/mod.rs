@@ -4,6 +4,7 @@
 
 pub mod barrel_exports;
 pub mod canonical_import_path;
+pub mod control_flow;
 pub mod folder_has_index;
 pub mod folder_layout;
 pub mod immutable_data;
@@ -74,6 +75,15 @@ pub const ALL: &[&dyn Rule] = &[
     &see_references::SeeReferences,
     &type_declaration_immutability::TypeDeclarationImmutability,
 ];
+
+/// Unicorn's rules on control flow, functions, errors and numbers (EN-079): no scope turns one
+/// off, so they run on every TypeScript file, after the scoped ones.
+pub const EVERYWHERE: &[&[&dyn Rule]] = &[control_flow::RULES];
+
+/// The rules that run on every TypeScript file whatever its scopes.
+pub fn everywhere() -> impl Iterator<Item = &'static dyn Rule> {
+    EVERYWHERE.iter().flat_map(|rules| rules.iter().copied())
+}
 
 /// The rules of a list of names, in the registry's order, then Unicorn's.
 #[must_use]
