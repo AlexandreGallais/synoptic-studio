@@ -206,7 +206,7 @@
 | [AUD-020](./E17-F18-AUD-020-audit-f18.md)                                         | F18     | Audit F18                                                                            | done   |
 | [VAL-019](./E17-F18-VAL-019-validate-f18.md)                                      | F18     | Validate F18                                                                         | done   |
 | [SP-021](./E17-F19-SP-021-research-f19.md)                                        | F19     | Research for F19, Oxc and Rust tools                                                 | done   |
-| [EN-068](./E17-F19-EN-068-cargo-workspace-and-rust-lane.md)                       | F19     | The Cargo workspace at the root and the rust lane                                    | ready  |
+| [EN-068](./E17-F19-EN-068-cargo-workspace-and-rust-lane.md)                       | F19     | The Cargo workspace at the root and the rust lane                                    | done   |
 | [EN-069](./E17-F19-EN-069-rust-coverage-and-advisories.md)                        | F19     | A coverage floor and an advisory check for the Rust tools                            | ready  |
 | [EN-070](./E17-F19-EN-070-portable-rust-tools.md)                                 | F19     | Rust tools on portable standard calls                                                | ready  |
 | [EN-071](./E17-F19-EN-071-typescript-7-for-the-type-check.md)                     | F19     | TypeScript 7 for the type check and the declarations                                 | done   |

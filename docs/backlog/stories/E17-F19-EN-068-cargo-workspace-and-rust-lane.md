@@ -3,7 +3,7 @@ id: EN-068
 epic: E17
 feature: F19
 title: The Cargo workspace at the root and the rust lane
-status: ready
+status: done
 points: 3
 ---
 
