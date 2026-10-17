@@ -7,6 +7,7 @@ What each working session dealt with, in the agent's words: the Product Owner's 
 - `#run` The Product Owner answered the queued questions: the subagent limit set in the settings (EN-063); ADR-0067's release order, the tables moved to F19 (ADR-0068) and the refused face dropped (US-061) confirmed; EN-062's macOS-only font tests not accepted, so EN-067 made every font test run on every system; the font list to offer only fonts read whole and checked (US-062).
 - `#run` They left F18's tool lines to the agent and declared the validation finished; F18 is done with EN-063, EN-067 and US-062 merged into its branch.
 - `#run` They asked to move on to F19 at once, without waiting for them: F19's branch starts from F18's, SP-021 rebased on it.
+
 ## 2026-10-17 — SP-021 answered, F19's run started
 
 - `#refinement` SP-021, first round: `check:all` set to option B, about 70 to 90 s most of the time (Oxc instead of ESLint and Prettier, the docs build only when the docs change); none of the 8 rules that need types dropped without a stated reason; a coverage floor and an advisory check for the Rust tools; TypeScript 7 now; the library stays TypeScript, every tool around it moves to Rust; one clean-up story at the end of E17; the library's tests never depend on macOS, the tools use Rust's portable standard calls where one exists (note 0023).
