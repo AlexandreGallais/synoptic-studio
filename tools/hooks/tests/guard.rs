@@ -8,7 +8,8 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, Output, Stdio};
 
 use hooks::guard::{
-    denied_reason, entered, is_full_vitest_run, later_folders, lexical_join, missing_script,
+    Entered, denied_reason, entered, entered_worktree_reason, is_full_vitest_run,
+    is_git_read_through_filters, is_read_only_filter, later_folders, lexical_join, missing_script,
     missing_script_reason, npm_script, scripts_of, segments, without_heredocs, worktree_reason,
     worktree_root,
 };
@@ -553,4 +554,91 @@ fn prints_the_denial_as_the_typescript_hook_did() {
         String::from_utf8_lossy(&output.stdout)
             .contains("A worktree refuses a chained Git command")
     );
+}
+
+#[test]
+fn f21_ac1_lets_one_git_command_read_through_filters_after_the_brief_s_cd() {
+    let judge = |rest: &str| {
+        let judged = entered(&format!("cd \"{WORKTREE}\" || exit 9; {rest}"), MAIN);
+
+        entered_worktree_reason(&judged)
+    };
+
+    // The recorded cases: `git log | head` passes, `git status; ls` is refused.
+    for rest in [
+        "git log --oneline | head -5",
+        "git log --oneline -4 2>&1 | tail -15",
+        "git status --porcelain | grep -v '^??' | wc -l",
+        "git diff --stat | sort | uniq -c | cut -c1-80",
+        "git show HEAD | sed -n '1,20p'",
+        "git log --format='%h %s' | awk '{print $1}'",
+    ] {
+        assert_eq!(judge(rest), None, "{rest}");
+    }
+    for rest in [
+        "git status; ls",
+        "git status; head README.md",
+        "git log && wc -l x",
+        "git status && ls",
+        "git status || ls",
+        "git log | head; git status",
+        "git log | head && git status",
+        "git log | git status",
+        "git log | tee out.txt",
+        "git log | head > out.txt",
+        "git log > out.txt | head",
+        "git log | sed -i '' 's/a/b/' x",
+        "git log | sed 's/a/b/'",
+        "git log | awk '{system(\"rm x\")}'",
+        "git log | awk '{print > \"f\"}'",
+        "ls | head",
+    ] {
+        assert!(judge(rest).is_some() || !rest.starts_with("git"), "{rest}");
+    }
+    // `ls | head` holds no Git command: nothing to refuse.
+    assert_eq!(judge("ls | head"), None);
+    // Without the brief's `cd … || exit`, a pipe after a Git command is refused as before.
+    assert!(worktree_reason("git log --oneline | head -5", WORKTREE).is_some());
+    let plain = entered(&format!("cd \"{WORKTREE}\" && git log | head"), MAIN);
+
+    assert!(entered_worktree_reason(&plain).is_some());
+    // In the worktree's own folder, with no `cd` at all: refused as before.
+    let unguarded = Entered {
+        folder: WORKTREE.to_owned(),
+        command: "git log | head".to_owned(),
+        guarded: false,
+    };
+
+    assert!(entered_worktree_reason(&unguarded).is_some());
+}
+
+#[test]
+fn tells_a_read_only_filter() {
+    for filter in [
+        "head -5",
+        "tail",
+        "grep -c x",
+        "wc -l",
+        "cut -d: -f1",
+        "sort -u",
+        "uniq",
+        "sed -n 1p",
+        "awk 'NR==1'",
+        "head 2>&1",
+    ] {
+        assert!(is_read_only_filter(filter), "{filter}");
+    }
+    for filter in [
+        "tee x",
+        "xargs rm",
+        "sed 1d",
+        "sed -n -i 1p x",
+        "awk '{getline}'",
+        "head > x",
+        "",
+    ] {
+        assert!(!is_read_only_filter(filter), "{filter}");
+    }
+    assert!(!is_git_read_through_filters("git log"));
+    assert!(!is_git_read_through_filters(""));
 }
