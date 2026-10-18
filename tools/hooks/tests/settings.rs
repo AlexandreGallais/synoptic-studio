@@ -73,7 +73,7 @@ fn f21_ac1_every_hook_and_the_status_line_call_a_hooks_binary_by_its_path() {
 /// The release binaries allowed without a prompt, each by name and, for a binary that also
 /// publishes or deletes, by its subcommand (AUD-023): `heavy-lock` runs any command given after it,
 /// `branches-clean` deletes branches and worktrees, `git-hooks install` sets the hooks folder and
-/// `release prepare` makes a release branch, so each of them asks.
+/// `release publish` makes a release, so each of them asks.
 const ALLOWED_BINARIES: [&str; 20] = [
     "activity",
     "backlog-status",

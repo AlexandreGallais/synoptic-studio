@@ -1,6 +1,7 @@
-# The release and the documentation site (docs/tooling/releases.md, ADR-0079): a release branch's
-# merge into main is published by the project's own tool, which makes no commit, so main holds
-# nothing develop lacks; the version and the changelog were committed in the pull request.
+# The documentation site and the release (docs/tooling/releases.md, ADR-0086): a push to main, a
+# review's merge, deploys the site and makes no release; the button of the Actions tab
+# (`workflow_dispatch`, `REF-GH-WORKFLOW-DISPATCH`) on main makes the release, its version from the
+# last tag and the commits since, with no commit.
 name: Release
 
 on:
@@ -20,15 +21,16 @@ env:
   CARGO_INCREMENTAL: 0
 
 jobs:
-  # On main: saves the Rust caches the next pull request into main restores (EN-111). A cache saved
-  # by a pull request's run is scoped to its merge ref and never restored by the next pull request;
-  # one saved on the default branch is restored by every run (`REF-GH-CACHE`). It builds what the
-  # CI's `check:all` compiles, with the same commands and flags, and checks nothing: the tests are
-  # compiled and listed, never run (ADR-0072: nothing is re-checked after the merge). Its keys and
-  # paths are ci.yml's. Without `restore-keys`, a new key starts from an empty target/, which so
-  # never keeps the artifacts of an older Cargo.lock.
+  # On a push to main: saves the Rust caches the next pull request into main restores (EN-111). A
+  # cache saved by a pull request's run is scoped to its merge ref and never restored by the next
+  # pull request; one saved on the default branch is restored by every run (`REF-GH-CACHE`). It
+  # fetches every target's crates, as the CI does before `check:all` (`REF-CARGO-FETCH`, EN-116),
+  # then builds what `check:all` compiles, with the same commands and flags, and checks nothing:
+  # the tests are compiled and listed, never run (ADR-0072: nothing is re-checked after the merge).
+  # Its keys and paths are ci.yml's. Without `restore-keys`, a new key starts from an empty
+  # target/, which so never keeps the artifacts of an older Cargo.lock.
   rust-cache:
-    if: github.ref_name == 'main'
+    if: github.ref_name == 'main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -54,6 +56,9 @@ jobs:
             ~/.cargo/git/db/
             target/
           key: rust-build-${{ runner.os }}-${{ hashFiles('rust-toolchain.toml', 'Cargo.lock') }}
+      # Every crate of Cargo.lock for every target, not the host's alone, which the build fetches:
+      # the CI's `cargo metadata --offline` and `cargo deny --offline` read them all (EN-116).
+      - run: cargo fetch --locked
       # The compilations of `rust:build` and `check:rust` (package.json): the release binaries,
       # Clippy, the tests under coverage, the Windows check.
       - run: npm run rust:build
@@ -61,26 +66,26 @@ jobs:
       - run: cargo llvm-cov --workspace --locked --no-report -- --list
       - run: cargo check --workspace --all-targets --locked --quiet --target x86_64-pc-windows-msvc
 
-  # On main: `release publish` makes the GitHub release `vx.y.z` of the version the merged release
-  # branch wrote, on the merge commit, which GitHub tags: its notes the entry of CHANGELOG.md, the
-  # test report of the pull request's CI attached (ADR-0027, ADR-0038: the report of the code
-  # released, not a new run). It makes no commit; a version already released does nothing, a run by
-  # hand among them. GITHUB_TOKEN suffices: nothing else has to start from the release, the site
-  # being published below.
+  # By the button on main: `release publish` computes the version from the last tag `vx.y.z` and
+  # the commits since, and makes the GitHub release on main's head, which GitHub tags: its notes
+  # the bodies of the pull requests into main merged since that tag, the test report of the last
+  # one's CI attached (ADR-0027, ADR-0038: the report of the code released, not a new run). It
+  # makes no commit; without a commit since the last tag it does nothing. GITHUB_TOKEN suffices:
+  # nothing has to start from the release, the site being deployed by the push.
   release:
-    if: github.ref_name == 'main'
+    if: github.event_name == 'workflow_dispatch' && github.ref_name == 'main'
     runs-on: ubuntu-latest
+    # The CI's report downloaded, the release made, the bodies read (`REF-GH-JOB-PERMISSIONS`).
     permissions:
       actions: read
       contents: write
-    outputs:
-      released: ${{ steps.publish.outputs.released }}
-      tag: ${{ steps.publish.outputs.tag }}
+      pull-requests: read
     steps:
       - uses: actions/checkout@v7
         with:
-          # The merge commit and its parents: the second one is the pull request's head.
-          fetch-depth: 2
+          # Every commit and tag (`REF-GH-CHECKOUT`): the last tag, the commits since and the
+          # merges of the pull requests; the head's second parent is the last one's head.
+          fetch-depth: 0
       # The rust-cache job's caches, restored only (`REF-GH-CACHE-RESTORE`): the release tool is
       # compiled on them, saved by that job at the previous push to main.
       - id: toolchain
@@ -102,17 +107,16 @@ jobs:
           key: rust-build-${{ runner.os }}-${{ hashFiles('rust-toolchain.toml', 'Cargo.lock') }}
           restore-keys: rust-build-${{ runner.os }}-
       - run: cargo build --release --locked -q -p release
-      - id: publish
-        run: target/release/release publish
+      - run: target/release/release publish
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
 
-  # Publishes the documentation site when a version is released (or on manual run).
-  # Runs here because a release created with GITHUB_TOKEN triggers no other workflow.
+  # On a push to main, a review's merge: deploys the documentation site and the playground, so
+  # that they follow each review without a release (ADR-0086). The button deploys nothing: the
+  # push of the head it releases already did.
   docs:
-    needs: release
-    if: needs.release.outputs.released == 'true' || github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
       contents: read

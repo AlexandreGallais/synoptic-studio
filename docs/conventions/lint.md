@@ -109,4 +109,4 @@ No `enum`, no `for…in`, no getter or setter, no `export * as name`, no dynamic
 
 ### Markdown rules
 
-Every Markdown page but `CHANGELOG.md` is checked by `@eslint/markdown`'s 20 rules, with that plugin's names, options and messages (`REF-ESLINT-MARKDOWN-RULES`), and by `local/image-alt-text`. They check heading levels, one title, link targets and their anchors, link definitions, table column counts, code fence languages, text alternatives, bare URLs and raw HTML (only `<span>` is allowed, for `<span v-pre>`). The list is in [rules](./rules.md#every-rule-run-by-theme). The formatter fixes none of these.
+Every Markdown page is checked by `@eslint/markdown`'s 20 rules, with that plugin's names, options and messages (`REF-ESLINT-MARKDOWN-RULES`), and by `local/image-alt-text`. They check heading levels, one title, link targets and their anchors, link definitions, table column counts, code fence languages, text alternatives, bare URLs and raw HTML (only `<span>` is allowed, for `<span v-pre>`). The list is in [rules](./rules.md#every-rule-run-by-theme). The formatter fixes none of these.

@@ -18,7 +18,6 @@
     "docs/.vitepress/cache/**",
     "docs/.vitepress/dist/**",
     "docs/.vitepress/.temp/**",
-    "CHANGELOG.md",
     ".claude/worktrees/**",
     "target/**",
     "**/*.{js,cjs,mjs}"

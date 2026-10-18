@@ -10,9 +10,13 @@ const ROOT = join(import.meta.dirname, "..");
 /** Text of the release workflow. */
 const WORKFLOW = readFileSync(join(ROOT, ".github", "workflows", "release.yml"), "utf8");
 
-/** A Markdown link or reference definition to a file of the repository named `CHANGELOG.md`. */
+/**
+ * A Markdown link or reference definition to a file of the repository named `CHANGELOG.md`; an
+ * address of another site, in code font or not, is left out (`docs/process/history.md` quotes
+ * Dependabot's links to the changelogs of the actions).
+ */
 const CHANGELOG_LINK =
-  /\]\((?!https?:)[^)\s]*CHANGELOG\.md|^\[[^\]]+\]: (?!https?:)\S*CHANGELOG\.md/mu;
+  /\]\((?!`?https?:)[^)\s]*CHANGELOG\.md|^\[[^\]]+\]: (?!https?:)\S*CHANGELOG\.md/mu;
 
 /**
  * One job of the release workflow, from its name to the next job.
@@ -98,7 +102,7 @@ describe("release flow (ADR-0086)", () => {
     const job = jobOf("rust-cache");
     const fetch = job.indexOf("- run: cargo fetch --locked\n");
 
-    expect(job).toContain("if: github.event_name == 'push' && github.ref_name == 'main'\n");
+    expect(job).toContain("if: github.ref_name == 'main' && github.event_name == 'push'\n");
     expect(fetch).toBeGreaterThan(job.indexOf("key: rust-build-"));
     expect(fetch).toBeLessThan(job.indexOf("- run: npm run rust:build\n"));
   });

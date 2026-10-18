@@ -8,6 +8,7 @@ use std::collections::HashSet;
 use std::fmt::Write as _;
 
 use crate::backlog::Backlog;
+use crate::body::written;
 use crate::commit::Commit;
 use crate::version::Bump;
 
@@ -278,8 +279,24 @@ pub fn references(line: &Line, repository: &str) -> String {
 /// a release without a change of its own.
 #[must_use]
 pub fn text(lines: &[Line], repository: &str) -> String {
-    let _ = (lines, repository);
-    String::new()
+    let changes: Vec<(Group, String)> = lines
+        .iter()
+        .map(|line| {
+            let breaking = if line.breaking { BREAKING_MARK } else { "" };
+
+            (
+                line.group,
+                format!(
+                    "{breaking}{DRAFT_MARK}{} {}",
+                    line.text,
+                    references(line, repository)
+                ),
+            )
+        })
+        .collect();
+    let notice = lines.is_empty().then_some(NO_CHANGE_NOTICE);
+
+    written(notice, &changes)
 }
 
 /// What the agent reads to rewrite the lines: each line's group, feature and story, then its

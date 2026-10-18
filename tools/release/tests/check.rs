@@ -165,4 +165,12 @@ fn refuses_a_change_outside_a_group_an_empty_group_and_an_empty_text() {
             "{empty:?}"
         );
     }
+    // A heading alone lists nothing either: the text's own finding stays at its first line.
+    assert_eq!(
+        findings("\n\n## [0.3.0] - 2026-10-18\n"),
+        [
+            "3: a release text holds no heading but its groups', `### …`: the version is the tag's",
+            "1: a release text lists its changes by group, or holds a notice saying why it has none",
+        ]
+    );
 }
