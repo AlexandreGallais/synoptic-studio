@@ -118,18 +118,19 @@ A tool is written when a retrospective's metrics show its signal — the hand wo
 | Crate | Run by | Does |
 | --- | --- | --- |
 | `backlog-index` | `backlog:index`, `backlog:status` | the stories index from each story's front matter; `--check` names the first row that differs |
-| `format` | `format`, `format:check`, `fix`, `lint-staged`, `backlog:index`, `story:finish` | the one formatter: oxfmt, then Markdown tables without padding (ADR-0068, [formatting](../conventions/formatting.md)); `--check` changes nothing |
+| `format` | `format`, `format:check`, `fix`, the pre-commit hook, `backlog:index`, `story:finish` | the one formatter: oxfmt, then Markdown tables without padding (ADR-0068, [formatting](../conventions/formatting.md)); `--check` changes nothing; `--write` prints nothing when no file changed, how many otherwise |
 | `heavy-lock` | `check:all`, `test`, `golden:check`, `docs:build`, `mutate`; `story:finish` (`--lock merge`) | one heavy command at a time across worktrees, and the merge lock |
 | `hooks` | every Claude Code hook (`guard-bash`, `limit-agents`, `library-pages`, `check-handback`, `track-tool-call`, `log-tool-call`, `session-state`), the status line, `context:size` | the Claude Code hooks and the status line in Rust, and what they share ([agent](./agent.md#hooks)) |
 | `shared-files` | the `pre-push` hook; `story:finish` | `refuse-shared-files` and `move-rows` ([below](#shared-files-and-their-rows)) |
 | `worktree` | `worktree:new` | a story's worktree with `node_modules`, the hooks folder and the release binaries |
+| `git-hooks` | `prepare`, `worktree:new`, the Git hooks of `.githooks/` | `install` sets the hooks folder; `pre-commit` runs the tasks on the staged files ([Git workflow](./git-workflow.md#hooks-githooks)) |
 | `git-sequences` | `git:sync`, `git:commit` | the frequent Git sequences in one call each |
 | `run-totals` | `run:start`, `run:end`, `run:should-stop`, `metrics:session -- --run`, the status line | a run's marker, duration and tokens, counted incrementally; whether it stops at the week's limit |
 | `metrics` | `metrics` (`metrics`), `metrics:session` (`session-report`), `activity` (`activity`), the Monitor (`watch-task`) | the metrics of the agent's work, the rules' findings per epic included, the transcripts read incrementally; what the agents do; the watchdog of a background task ([metrics](./metrics.md#reading-the-transcripts)) |
 | `val-prepare` | `val:prepare` | a feature's checklist lines |
 | `page` | `page` | one row or one section of a repository page, by its id or its heading ([above](#tools)) |
 | `mutate` | `mutate` | the mutations in a copy of the repository |
-| `lint` | `lint`, `fix`, `lint-staged`, after oxlint | the project's linter on Oxc: the project's rules, those oxlint lacks and the Markdown rules, each file parsed once ([lint](../conventions/lint.md)) |
+| `lint` | `lint`, `fix`, the pre-commit hook, after oxlint | the project's linter on Oxc: the project's rules, those oxlint lacks and the Markdown rules, each file parsed once ([lint](../conventions/lint.md)) |
 | `rule-docs` | the `commit-msg` hook, at a `done` commit | asks a story that changes `docs/domain/` for its Q row, its VAL's decisions to confirm and its guide page, unless the message says `Rule-docs: none affected, <why>` |
 | `api-pages` | `docs:api`, `docs:dev`, `docs:build` | the API pages from `src/index.ts` and its TSDoc ([documentation site](./documentation-site.md)) |
 | `declarations` | `build` | the library's `.d.ts` from each module alone (ADR-0071, [build](./commands.md#build)) |

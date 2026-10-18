@@ -144,3 +144,44 @@ fn refuses_a_call_without_targets() {
     );
     fs::remove_dir_all(&folder).unwrap();
 }
+
+#[test]
+fn f21_ac4_write_prints_nothing_when_nothing_changed() {
+    let folder = repository("silent");
+    let page = folder.join("page.md");
+    let code = folder.join("code.ts");
+
+    // Two files to format: the code's layout and the page's padded table.
+    fs::write(
+        &page,
+        "# Page\n\n| Name | Size |\n| ---- | ---: |\n| a    |    1 |\n",
+    )
+    .unwrap();
+    fs::write(&code, "const  a = {b:1}\n").unwrap();
+
+    let first = format(&folder, &["--write", "*"]);
+
+    assert!(first.status.success());
+    assert_eq!(
+        String::from_utf8_lossy(&first.stdout),
+        "Formatted: 2 files changed.\n"
+    );
+
+    // Formatted already: oxfmt pads the table again and the tables are unpadded again, so the
+    // page's content is what it was, and nothing is printed.
+    let second = format(&folder, &["--write", "*"]);
+
+    assert!(second.status.success());
+    assert_eq!(String::from_utf8_lossy(&second.stdout), "");
+
+    // One file changed, named by its count.
+    fs::write(&code, "const  a = 1\n").unwrap();
+
+    let third = format(&folder, &["--write", "page.md", "code.ts"]);
+
+    assert_eq!(
+        String::from_utf8_lossy(&third.stdout),
+        "Formatted: 1 file changed.\n"
+    );
+    fs::remove_dir_all(&folder).unwrap();
+}

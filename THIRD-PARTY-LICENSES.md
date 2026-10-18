@@ -18,6 +18,7 @@ The project's tools (`tools/`) port code from, or copy test cases of, the packag
 | `@eslint-community/eslint-utils` | 4.10.1 | MIT | `hasSideEffect`, ported to `tools/lint/src/expressions.rs` |
 | `@eslint/css-tree` | 4.1.1 | MIT | its list of CSS properties, copied into `tools/lint/src/rules/unicorn/dom/css_properties.rs` |
 | `@babel/helper-validator-identifier` | 7.29.7 | MIT | `isIdentifierName`, ported to `tools/lint/src/rules/unicorn/modules/globals.rs` |
+| `lint-staged` | 17.6.0 | MIT | its run on the staged files (the backup stash, the partly staged files, the fixes staged again), its matching and its chunks, ported to `tools/git-hooks/src/staged.rs` and `pre_commit.rs` |
 
 ## eslint-plugin-unicorn 78.0.0
 
@@ -397,4 +398,32 @@ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
 CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
+
+## lint-staged 17.6.0
+
+From `https://registry.npmjs.org/lint-staged/-/lint-staged-17.6.0.tgz`, `package/LICENSE`.
+
+```text
+The MIT License (MIT)
+
+Copyright (c) 2016 Andrey Okonetchnikov
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 ```
