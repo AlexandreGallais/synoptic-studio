@@ -298,7 +298,7 @@
 | [AUD-030](./E17-F28-AUD-030-audit-f28.md) | F28 | Audit F28 | done |
 | [VAL-029](./E17-F28-VAL-029-validate-f28.md) | F28 | Validate F28 | done |
 | [EN-135](./E17-F30-EN-135-the-develop-ci-started-by-the-auto-merge.md) | F30 | The develop CI, started by the auto-merge | done |
-| [EN-136](./E17-F30-EN-136-each-job-finds-its-tools.md) | F30 | Each CI job finds the tools its scripts call | ready |
+| [EN-136](./E17-F30-EN-136-each-job-finds-its-tools.md) | F30 | Each CI job finds the tools its scripts call | done |
 | [AUD-032](./E17-F30-AUD-032-audit-f30.md) | F30 | Audit F30 | ready |
 | [VAL-031](./E17-F30-VAL-031-validate-f30.md) | F30 | Validate F30 | ready |
 | [EN-137](./E17-F23-EN-137-the-log-rows-in-the-done-commit.md) | F23 | The log rows and the cards in the done commit | ready |
