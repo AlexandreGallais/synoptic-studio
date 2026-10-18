@@ -3,7 +3,7 @@ id: EN-116
 epic: E17
 feature: F22
 title: The CI's tests green on GitHub's runner
-status: draft
+status: ready
 points: 2
 ---
 

@@ -87,6 +87,7 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0080](./0080-the-git-hooks-in-githooks-installed-by-our-own-tool.md) | The Git hooks in `.githooks/`, installed by `git-hooks install` | Accepted |
 | [0081](./0081-the-private-records-in-a-local-folder-shared-by-projects.md) | The private records in a local folder shared by every project, never sent | Accepted |
 | [0082](./0082-npm-scripts-kept-for-a-person-or-a-caller.md) | The npm scripts kept for a person or a caller, the agent's tools by their binary only | Accepted |
-| [0083](./0083-the-release-made-by-the-merge-into-main-from-a-tag.md) | The release made by the merge into `main`: the version from the tags, no release branch nor version commit | Accepted, implemented by EN-117 |
-| [0084](./0084-small-features-tests-first-and-a-linear-history.md) | Small features, tests first, a linear history, and agents that work apart | Accepted, from E02 |
+| [0083](./0083-the-release-made-by-the-merge-into-main-from-a-tag.md) | The release made by the merge into `main`: the version from the tags, no release branch nor version commit | Superseded by 0086 |
+| [0084](./0084-small-features-tests-first-and-a-linear-history.md) | Small features, tests first, a linear history, and agents that work apart | Accepted, from E02, its decisions 3 and 4 and its parallel researchers superseded by 0086 |
 | [0085](./0085-tool-incident-cards-tools-changed-at-an-epics-end.md) | A tool that fails is a card; tools change only at an epic's end | Accepted |
+| [0086](./0086-one-story-at-a-time-into-develop-the-release-by-a-button.md) | One story at a time into `develop`, `main` at each reviewed feature, the release by a button | Accepted, implemented by EN-122 and EN-117 |

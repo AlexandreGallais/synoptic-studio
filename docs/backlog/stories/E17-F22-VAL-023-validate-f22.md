@@ -3,7 +3,7 @@ id: VAL-023
 epic: E17
 feature: F22
 title: Validate F22
-status: draft
+status: ready
 points: 1
 ---
 
