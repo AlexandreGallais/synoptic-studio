@@ -159,8 +159,26 @@ pub struct Request<'a> {
     pub story_files: &'a [String],
     /// Remote branches, `origin/feature/f18-<topic>`.
     pub remote_branches: &'a [String],
+    /// Each feature branch of `origin` with the names of its story files (`git ls-tree`), where a
+    /// story missing from the checkout is looked for: the main checkout on `develop` lacks the
+    /// stories written on a feature branch.
+    pub branch_files: &'a [(String, Vec<String>)],
     /// The main checkout, parent of the Git common directory.
     pub main: &'a Path,
+}
+
+/// The story of `id` on the one feature branch of `origin` holding its file, and that branch.
+///
+/// # Errors
+///
+/// When no branch holds its file, or several do, naming them.
+pub fn story_on_branches(
+    id: &str,
+    branch_files: &[(String, Vec<String>)],
+) -> Result<(Story, String), String> {
+    let _ = (id, branch_files);
+
+    Err(String::new())
 }
 
 /// The worktree, branch and base of a story, or why it cannot be made.

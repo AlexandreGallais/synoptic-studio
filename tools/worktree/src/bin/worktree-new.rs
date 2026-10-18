@@ -128,6 +128,7 @@ fn run(argv: &[String]) -> Result<Plan, String> {
         branch_type,
         story_files: &files,
         remote_branches: &remote_branches,
+        branch_files: &[],
         main: &main,
     };
     let plan = plan(&request, |path| path.symlink_metadata().is_ok())?;

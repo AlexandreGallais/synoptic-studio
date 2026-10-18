@@ -73,6 +73,25 @@ pub fn next_step(state: &str, readings: u32) -> Next {
     }
 }
 
+/// Who merges a story's pull request.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Merger {
+    /// `story-automerge.yml`, once the pull request is labelled `autonomous`: awaited.
+    GitHub,
+    /// The Product Owner: opened without the label, never awaited (AUD-024).
+    ProductOwner,
+}
+
+/// Who merges a story branch into its base, as `story-automerge.yml` lets it through: into a
+/// feature branch a `US`, `EN`, `SP`, `CHK`, `AUD` or `VAL`, into `develop` a `REV`; anything else,
+/// an epic's refinement `SP` into `develop` first, is the Product Owner's.
+#[must_use]
+pub fn merger(base: &str, branch: &str) -> Merger {
+    let _ = (base, branch);
+
+    Merger::GitHub
+}
+
 /// A checkout of the repository: the main one or a linked worktree.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Worktree {
@@ -650,6 +669,35 @@ mod tests {
         assert_eq!(next_step("OPEN", 17), Next::Wait);
         assert_eq!(next_step("OPEN", 18), Next::Stop);
         assert_eq!(next_step("CLOSED", 1), Next::Stop);
+    }
+
+    #[test]
+    fn f23_ac2_leaves_to_the_product_owner_what_the_auto_merge_does_not_take() {
+        // [F23.AC2] A `REV` into `develop` and a story into its feature are merged by GitHub;
+        // an epic's `SP`, or any other story, into `develop` by the Product Owner (AUD-024).
+        assert_eq!(merger("develop", "docs/rev-006-review"), Merger::GitHub);
+        assert_eq!(
+            merger("develop", "docs/sp-030-refinement-of-e18"),
+            Merger::ProductOwner
+        );
+        assert_eq!(
+            merger("develop", "chore/en-114-a-tool"),
+            Merger::ProductOwner
+        );
+        for branch in [
+            "feat/us-061-x",
+            "chore/en-118-x",
+            "docs/sp-023-x",
+            "docs/chk-012-x",
+            "docs/aud-025-x",
+            "feat/val-024-x",
+        ] {
+            assert_eq!(merger(BASE, branch), Merger::GitHub, "{branch}");
+        }
+        // A review into a feature, a branch without a story id: the auto-merge refuses both.
+        assert_eq!(merger(BASE, "docs/rev-006-review"), Merger::ProductOwner);
+        assert_eq!(merger(BASE, "fix/tidy-up"), Merger::ProductOwner);
+        assert_eq!(merger("develop", "fix/tidy-up"), Merger::ProductOwner);
     }
 
     #[test]

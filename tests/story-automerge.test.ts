@@ -14,6 +14,15 @@ const WORKFLOW = readFileSync(join(WORKFLOWS, "story-automerge.yml"), "utf8")
   .filter((line) => !line.trimStart().startsWith("#"))
   .join("\n");
 
+/** The pre-push hook's branch check, `BRANCH_PATTERN` (`tools/git-hooks`). */
+const BRANCH_RS = join(import.meta.dirname, "..", "tools", "git-hooks", "src", "branch.rs");
+
+/** The Git workflow's guidance on the branches. */
+const GIT_WORKFLOW = join(import.meta.dirname, "..", "docs", "tooling", "git-workflow.md");
+
+/** The agent's guide, whose parallel sessions make branches too. */
+const AGENT_GUIDE = join(import.meta.dirname, "..", "docs", "tooling", "agent.md");
+
 /** Indentation of a step's script lines under `run: |`. */
 const SCRIPT_INDENT = " ".repeat(10);
 
@@ -327,5 +336,64 @@ describe("the features' auto-merge starts the develop CI (ADR-0088, decision 5)"
     expect(WORKFLOW).toContain(
       "\non:\n  pull_request:\n    types: [labeled, opened, reopened, ready_for_review]\n\n",
     );
+  });
+});
+
+/**
+ * The pre-push hook's branch pattern, as JavaScript reads it: Rust's `\x{2028}` is `\u{2028}`.
+ *
+ * @returns the pattern of `BRANCH_PATTERN`, never matching when the constant is missing
+ */
+function prePushPattern(): RegExp {
+  const source = /BRANCH_PATTERN: &str = r"(?<pattern>[^"]+)";/u.exec(
+    readFileSync(BRANCH_RS, "utf8"),
+  )?.groups?.["pattern"];
+
+  return new RegExp((source ?? "$^").replaceAll(String.raw`\x{`, String.raw`\u{`), "u");
+}
+
+describe("one branch form for the pre-push, the auto-merge and the guidance (I50)", () => {
+  /** A feature branch, the base of a story. */
+  const feature = "feature/f23-the-path-of-a-story";
+
+  /** Work branches, with and without a story id the auto-merge takes. */
+  const names = [
+    "fix/shared-files-table-padding",
+    "chore/tidy-up",
+    "docs/f21-refinement",
+    "docs/val-remarks-e15",
+    "fix/en-12-short",
+    "refactor/nam-004-naming-pass",
+    "docs/ret-006-retrospective",
+    "fix/en-073-shared-files-table-padding",
+    "feat/us-061-font-list",
+    "docs/sp-030-refinement-of-e18",
+    "docs/chk-012-checkpoint",
+    "docs/aud-025-audit-f23",
+    "feat/val-024-validate-f23",
+    "docs/rev-006-review-2026-10-18",
+  ];
+
+  it("[F23.AC2] lets a work branch through the push only when the auto-merge takes it into a base", () => {
+    const pattern = prePushPattern();
+    const verdicts = names.map((name) => [name, pattern.test(name)]);
+    const merged = names.map((name) => [name, passes(feature, name) || passes("develop", name)]);
+
+    expect(verdicts).toStrictEqual(merged);
+    expect(pattern.test("fix/shared-files-table-padding")).toBe(false);
+    expect(pattern.test("fix/en-073-shared-files-table-padding")).toBe(true);
+  });
+
+  it("[F23.AC2] leaves an epic's refinement spike into develop to the Product Owner's merge", () => {
+    expect(passes("develop", "docs/sp-030-refinement-of-e18")).toBe(false);
+    expect(passes(feature, "docs/sp-030-refinement-of-e18")).toBe(true);
+  });
+
+  it("[F23.AC2] guides a fix without a story id to the id of the story it serves", () => {
+    const workflow = readFileSync(GIT_WORKFLOW, "utf8");
+
+    expect(workflow).toContain("takes the id of the story it serves (`fix/en-073-<topic>`)");
+    expect(workflow).not.toContain("`<type>/<topic>`");
+    expect(readFileSync(AGENT_GUIDE, "utf8")).not.toContain("<type>/<topic>");
   });
 });
