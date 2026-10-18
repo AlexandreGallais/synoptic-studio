@@ -39,13 +39,5 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": [
-    "src",
-    "playground",
-    "docs/.vitepress/**/*.ts",
-    ".claude/hooks",
-    "scripts",
-    "tests",
-    "*.ts"
-  ]
+  "include": ["src", "playground", "docs/.vitepress/**/*.ts", "scripts", "tests", "*.ts"]
 }

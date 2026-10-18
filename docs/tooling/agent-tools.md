@@ -42,6 +42,7 @@ The agent calls a tool by its release binary, from the root of its checkout, rat
 | `npm run epic:check -- <epic> <first day>` | `target/release/epic-check <epic> <first day>` |
 | `npm run val:prepare -- <feature>` | `target/release/val-prepare . <feature>` |
 | `npm run library -- …` | `target/release/library …` |
+| `npm run metrics`, `metrics:session -- …`, `activity` | `target/release/metrics`, `target/release/session-report …`, `target/release/activity` |
 | `npm run branches:clean`, `records:save` | `target/release/branches-clean`, `target/release/records-save` |
 | `npm run rust:fresh` | `target/release/stale-binaries` |
 
@@ -84,7 +85,7 @@ EN-103 ported seven scripts to the binaries of `tools/repo-tools/`, each compare
 | `records-save`, nothing changed, no transcripts nor library | 92 | 16 | 20 |  |
 | `records-save`, the 48 MB library too | 186 | 41 | 5 |  |
 
-Through `npm run -s` and `cargo run`, any of them costs about 150 ms more (`backlog-status` without its arguments: 153.5 ms against 3.1 ms by its path), the floor [research note 0025](../research/notes/0025-f21-agent-tools-in-rust.md) measured; how the binaries are called is EN-104's question to the Product Owner.
+Through `npm run -s` and `cargo run`, any of them costs about 150 ms more (`backlog-status` without its arguments: 153.5 ms against 3.1 ms by its path), the floor [research note 0025](../research/notes/0025-f21-agent-tools-in-rust.md) measured: so the agent calls them by their path ([above](#the-binaries-the-agent-calls), ADR-0078).
 
 ## Specifications for later
 

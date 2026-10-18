@@ -18,8 +18,8 @@ Scope: $ARGUMENTS.
 
 ## Before the first story
 
-1. The first feature of an epic: `npm run epic:check -- <epic> <first day>`, the code scanning alerts included; what it finds is fixed or listed for the Product Owner.
-2. **`/run` is the go-ahead**: set the feature `in-progress` and its stories `ready` yourself, a `docs(backlog)` commit on `develop`; never ask the Product Owner to, and ask them only business questions. Then `npm run run:start` (EN-092), which counts the run's duration and tokens from now; a run continued in a new session runs it again, which adds the session and keeps the start.
+1. The first feature of an epic: `target/release/epic-check <epic> <first day>`, the code scanning alerts included; what it finds is fixed or listed for the Product Owner.
+2. **`/run` is the go-ahead**: set the feature `in-progress` and its stories `ready` yourself, a `docs(backlog)` commit on `develop`; never ask the Product Owner to, and ask them only business questions. Then `target/release/run-totals start` (EN-092), which counts the run's duration and tokens from now; a run continued in a new session runs it again, which adds the session and keeps the start.
 3. Record the authorization in `docs/process/journal.md` on `develop`: the scope set, the date, the request in neutral words.
 4. The feature branch `feature/f<nn>-<topic>` exists on `origin`, or is created there from `develop` without switching the main checkout: `git fetch origin`, then `git push origin origin/develop:refs/heads/feature/f<nn>-<topic>`.
 5. `/triage` if issues are open: present them at the next stop, act on none.
@@ -31,7 +31,7 @@ The chat belongs to the Product Owner (2026-10-12), who may write at any time; s
 
 - **Silent between tool calls**: the commits and the status line (`.git/metrics/step`, updated at each step) show the progress. The chat gets one line when a worker starts and when it ends, with an estimate of its duration; one summary at the stop; a question when one parks a story. Never "waiting for an agent" nor "message from the auditor".
 - **Each comment of the Product Owner acknowledged at once**, saying when it is handled: now, or once a named running agent has finished. A comment about tools, rules or configuration goes to another agent, on `develop`, in its own worktree, within the limit.
-- **One worker per story**, an `Agent` call in the background, in a worktree made by `npm run worktree:new -- <ID>`, of the type its task kind uses (EN-065):
+- **One worker per story**, an `Agent` call in the background, in a worktree made by `target/release/worktree-new <ID>`, of the type its task kind uses (EN-065):
 
   | Task | Agent type |
   | --- | --- |
@@ -47,28 +47,28 @@ The chat belongs to the Product Owner (2026-10-12), who may write at any time; s
 - **A background Git command** of the main thread starts with `cd <worktree> || exit 9` and checks `git branch --show-current` before it pushes, finishes or removes anything.
 - **A rebase conflict** is resolved in the working file, never by `checkout --ours` or `--theirs`, then diffed against the story's version before `rebase --continue`: a whole side taken drops its other lines.
 - **Parallel work** within the limits of `AGENTS.md` (Work) and `CLAUDE.md`, and only on stories that touch separate files; the shared files (indexes, logs, feature file, checklist) are written by the main thread at merge, one merge at a time (ADR-0065).
-- **The main thread's own part**: answer the Product Owner, say where the work is (`npm run activity`, the status line), finish each story (`npm run story:finish`), write the shared files, and ask the business questions workers bring back, in the questionnaire, with room for remarks.
+- **The main thread's own part**: answer the Product Owner, say where the work is (`target/release/activity`, the status line), finish each story (`npm run story:finish`), write the shared files, and ask the business questions workers bring back, in the questionnaire, with room for remarks.
 
 ## For each story
 
-1. **Run `npm run run:should-stop`** in a worktree of the feature branch ([Stop when](#stop-when)).
+1. **Run `target/release/run-totals should-stop`** in a worktree of the feature branch ([Stop when](#stop-when)).
 2. **Pick up `develop`**, since the Product Owner may decide something in another session: `git fetch origin`, then `git log --oneline feature/f<nn>-<topic>..origin/develop -- AGENTS.md CLAUDE.md .claude docs/domain docs/adr docs/backlog docs/conventions`. Commits listed: merge `origin/develop` into the feature branch in a worktree of that branch, never the main checkout, push it without force, read their diffs and apply them from this story on; a changed skill or rule replaces what was loaded at the start, and a change to the run's stories or scope is a stop.
-3. **Its worktree**: `git fetch origin`, then `npm run worktree:new -- <ID>` (`.claude/worktrees/<id>` on `<type>/<id>-<topic>`, from the feature branch on GitHub).
-4. **Its worker** works the tasks as its brief says, pushes, and **stops before the `done` commit**, which writes the shared files only the main thread writes (ADR-0065, enforced by `refuse-shared-files`, EN-050). The main thread makes it in the story's worktree: `npm run backlog:status -- <ID> done`, then `npm run git:commit -- -F <message file> docs/backlog`, footer `Closes: <ID>`, and the `Rule-docs:` line when the report names one (`/story` step 7).
+3. **Its worktree**: `git fetch origin`, then `target/release/worktree-new <ID>` (`.claude/worktrees/<id>` on `<type>/<id>-<topic>`, from the feature branch on GitHub).
+4. **Its worker** works the tasks as its brief says, pushes, and **stops before the `done` commit**, which writes the shared files only the main thread writes (ADR-0065, enforced by `refuse-shared-files`, EN-050). The main thread makes it in the story's worktree: `target/release/backlog-status <ID> done`, then `target/release/git-sequences commit -F <message file> docs/backlog`, footer `Closes: <ID>`, and the `Rule-docs:` line when the report names one (`/story` step 7).
 5. A **user story** (`US`) gets its Product Owner test card in its file, `## Product Owner test`: the steps in the playground, the expected result of each, terms in plain words, what to look at closely.
 6. A **checkpoint** (`CHK`) brings docs and methods up to date as the project grows, checks that code, docs, `AGENTS.md`, `CLAUDE.md` and rules agree, runs the light evolvability check (`docs/process/README.md`), lists the test cards so far and logs what deserves the retrospective.
 7. **Checks by level** (ADR-0064): no review per story; the worker wrote the edge cases and mutation-checked each new test; the feature's `AUD` audits in depth, the epic's full audit sits beside its `NAM`.
 8. **Finish it**: `npm run story:finish -- feature/f<nn>-<topic> "<title>" <body file>` in its worktree (the `story-finish` binary of `tools/repo-tools/`, EN-103). It takes the merge lock (a second story waits, then rebases and pushes with lease, EN-051; the status rows the first story's done commit wrote are left to the base and the second's written again after the rebase, EN-103), opens the pull request with the `autonomous` label (never for `VAL`, `REV`, `RET` before the Product Owner validated them), waits at most three minutes for GitHub's merge (`story-automerge.yml`, no CI), updates the feature branch where it is checked out, moves the story file's rows into the logs (EN-050), and removes the worktree and the branches.
    - A rebase conflict outside the status rows: it stops, the branch as it was. Not merged: `gh run list --workflow story-automerge.yml --limit 1`, then `gh run view <run> --log-failed`; a branch behind its base: `gh pr update-branch <n> --rebase`.
    - "Dependencies not up-to-date" at the push: a version passed its 7-day cooldown meanwhile; read its release notes (`docs/tooling/versions-and-security.md`), update it on the story branch (`build(deps)`) and on `develop`.
-9. Statuses change with `npm run backlog:status -- <ID> <status>` (the file, the index and the feature's table at once; `backlog-status` of `tools/repo-tools/`), edits across files with `npm run replace`. Then the next story.
+9. Statuses change with `target/release/backlog-status <ID> <status>` (the file, the index and the feature's table at once), edits across files with `target/release/replace`; every agent tool by its binary from the checkout's root, as `docs/tooling/agent-tools.md` maps its script (ADR-0078), `npm run` kept for people and for `check:all`, `story:finish`, `mutate`, `golden:*`, `fix` and `test`. Then the next story.
 
 ## A question parks its story
 
 A question for the Product Owner never stops the run (2026-10-17): their time away is spent on the stories that do not need the answer. Such a question is a business question, a research request, a stop of `AGENTS.md`, or an audit finding that changes a requirement.
 
 1. The worker reports the question, what it read and the options, without choosing; it pushes what it did and stops. Its branch and worktree are kept.
-2. The main thread parks the story in a worktree of the feature branch: `npm run backlog:status -- <ID> parked`, the question written in the story file under `## Question for the Product Owner`, a `docs(backlog)` commit pushed. The file, not the chat, keeps the question across sessions.
+2. The main thread parks the story in a worktree of the feature branch: `target/release/backlog-status <ID> parked`, the question written in the story file under `## Question for the Product Owner`, a `docs(backlog)` commit pushed. The file, not the chat, keeps the question across sessions.
 3. It asks the question in the questionnaire and pushes it ([Pushes](#pushes)).
 4. It goes on with the next story independent of the parked one: a story that touches its files, builds on its code, or whose criteria the answer may change waits too.
 5. Once answered: the answer written in the story, status `ready` again, its worker resumed or a new one started on its branch.
@@ -88,11 +88,11 @@ A run stops only when it must, and says which in its message:
 - **its scope ends**: the time set has passed, or the end named is reached; the next story is `VAL`, `REV` or `RET`, which needs the Product Owner; or the feature's `VAL` is done and it was the epic's last feature (the next run's scope is then the epic's `NAM` naming pass, ADR-0049, a story like the others, its branch from `develop`);
 - **a blocker it cannot get around** and no independent story left: a check still red after three attempts, a tool or an access missing, every story left parked, blocked, or depending on one that is;
 - **the Product Owner says stop**;
-- **the week's usage reaches 90 %**, so that the margin stays the Product Owner's own work until the week resets: `npm run run:should-stop` prints `stop` and exits 1 once `sevenDay.usedPercent` of `.git/metrics/usage.json` reaches it, and lists the parked stories of the checkout it runs in.
+- **the week's usage reaches 90 %**, so that the margin stays the Product Owner's own work until the week resets: `target/release/run-totals should-stop` prints `stop` and exits 1 once `sevenDay.usedPercent` of `.git/metrics/usage.json` reaches it, and lists the parked stories of the checkout it runs in.
 
 ## At the stop
 
-1. `npm run run:end` (EN-092): it closes the run and prints its table, the duration and the tokens by kind, subagents included.
+1. `target/release/run-totals end` (EN-092): it closes the run and prints its table, the duration and the tokens by kind, subagents included.
 2. A journal entry on `develop`: the stories merged with their pull requests, the findings, the stop's reason.
 3. The message to the Product Owner, in French (`docs/conventions/writing.md`): what was built in plain words, the **test cards to run**, the findings, the questions, what the next step needs from them, the run's table of step 1 as it is, and at a session's end the session report.
 
@@ -100,15 +100,15 @@ A run stops only when it must, and says which in its message:
 
 The Product Owner may test over several sessions: never wait for them in a loop, and start nothing else until they have finished.
 
-1. `npm run worktree:new -- VAL-<nnn>`; there, merge `origin/develop` (no force push) and see `check:all` green.
+1. `target/release/worktree-new VAL-<nnn>`; there, merge `origin/develop` (no force push) and see `check:all` green.
 2. **Prepare**, as the `VAL` tasks:
    - one test per feature criterion `[F01.ACn]`;
-   - the feature's lines in its epic's checklist (`playground/checklists/`, `?checklist=E15`), drafted by `npm run val:prepare -- <feature>` from its criteria (EN-056): at most 12 per feature, one per thing to see, one per option kept and per decision to confirm, each what to try and what to see after a check box, the panel beside the drawing, no Previous nor Next; when no drawing changes, still one line saying what to check; each tried in a browser first, and tested in happy-dom (every option named, none removed);
+   - the feature's lines in its epic's checklist (`playground/checklists/`, `?checklist=E15`), drafted by `target/release/val-prepare . <feature>` from its criteria (EN-056): at most 12 per feature, one per thing to see, one per option kept and per decision to confirm, each what to try and what to see after a check box, the panel beside the drawing, no Previous nor Next; when no drawing changes, still one line saying what to check; each tried in a browser first, and tested in happy-dom (every option named, none removed);
    - the demo page in `docs/guide/` (`/review`), whose **How to try it** names the checklist's address. No new guided steps: those written up to E15 stay in `?guide=epic`.
 3. Tell the Product Owner how to launch it themselves, rather than starting servers for them: `npm run dev` then `http://localhost:5173/?checklist=<epic>`, and `npm run docs:dev` for the demo page.
 4. They try the lines in any order, tick each one seen, and say what they see; compare it with what each line meant to show (`/review`), record the result and each remark in neutral words in the `VAL` story and the demo page, and route the remarks (stories, improvement log, memory).
 5. Last commit: the `VAL` and the feature `done` (feature file, epic table, features index), `Closes:` both; rebase on `develop`, push.
 6. **Clean up, then ask** (2026-10-11): before the feature pull request nothing is stale — every status `done`, the **State** table of `AGENTS.md`, the demo page and the journal up to date, the feature branch deleted once its content is in the `VAL` branch, no stash nor stray file. Then tell the Product Owner all is clean and checked, and wait for their yes.
-7. Open **one** feature pull request from the `VAL` branch into `develop`, its body the stories with their pull requests, the evidence and the validation's result, labeled `autonomous` once the Product Owner said the validation is done: GitHub merges it with a merge commit. A **tooling feature** is validated by the agent, which labels it without waiting; the Product Owner may try the lines that concern them. Once merged: delete the `VAL` branch here and on GitHub, then `npm run branches:clean`, until `git branch -a` shows only `main` and `develop`.
+7. Open **one** feature pull request from the `VAL` branch into `develop`, its body the stories with their pull requests, the evidence and the validation's result, labeled `autonomous` once the Product Owner said the validation is done: GitHub merges it with a merge commit. A **tooling feature** is validated by the agent, which labels it without waiting; the Product Owner may try the lines that concern them. Once merged: delete the `VAL` branch here and on GitHub, then `target/release/branches-clean`, until `git branch -a` shows only `main` and `develop`.
 8. **Release, only when the Product Owner asks**, typically at a working day's end: the pull request `develop` → `main` (title `chore(release): <feature>`, body the features and changes since the last release). Its CI is the only one (about 2 minutes): read its checks once done (`gh pr checks <n>`), a failure at once (`gh run view <run> --log-failed`), fixed on `develop`. The Product Owner first merges release-please's pull request into `develop` (ADR-0067), then `develop` → `main` with a merge commit; release-please tags and publishes ([releases](../../../docs/tooling/releases.md)).
-9. After the feature's merge: a journal entry. After a release: `develop` brought up to `main` (`git switch develop && git pull && git merge --ff-only origin/main && git push`), `npm run branches:clean`, `git branch -a` showing only `main` and `develop`, a journal entry. The next `/run` starts the next feature.
+9. After the feature's merge: a journal entry. After a release: `develop` brought up to `main` (`git switch develop && git pull && git merge --ff-only origin/main && git push`), `target/release/branches-clean`, `git branch -a` showing only `main` and `develop`, a journal entry. The next `/run` starts the next feature.
