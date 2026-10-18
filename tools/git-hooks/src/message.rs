@@ -37,7 +37,7 @@ pub const SCOPES: [&str; 14] = [
 ];
 
 /// Scopes removed from `SCOPES` that commits already in the history still carry: `eslint`, gone
-/// with ESLint (EN-085), in F19's commits. The history check accepts them; the `commit-msg` hook
+/// with `ESLint` (EN-085), in F19's commits. The history check accepts them; the `commit-msg` hook
 /// does not (EN-128).
 pub const RETIRED_SCOPES: [&str; 1] = ["eslint"];
 
@@ -45,7 +45,22 @@ pub const RETIRED_SCOPES: [&str; 1] = ["eslint"];
 /// `RETIRED_SCOPES`, the message being as valid as when it was committed (EN-128).
 #[must_use]
 pub fn without_retired_scopes(report: Report) -> Report {
-    report
+    let retired = parse(&report.header, None)
+        .and_then(|commit| commit.scope)
+        .is_some_and(|scope| scope_in(&scope, &RETIRED_SCOPES));
+
+    if !retired {
+        return report;
+    }
+
+    Report {
+        errors: report
+            .errors
+            .into_iter()
+            .filter(|finding| finding.rule != "scope-enum")
+            .collect(),
+        ..report
+    }
 }
 
 /// `config-conventional`'s types.

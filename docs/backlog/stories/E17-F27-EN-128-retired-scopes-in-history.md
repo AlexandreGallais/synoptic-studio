@@ -18,6 +18,6 @@ points: 1
 ## Tasks
 
 - [x] T1 — The interface and its tests, failing (main thread)
-- [ ] T2 — `without_retired_scopes` in the history check (main thread)
+- [x] T2 — `without_retired_scopes` in the history check (main thread)
 
 One task = one commit, referenced as `EN-128.T1` in the commit footer.

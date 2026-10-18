@@ -178,7 +178,7 @@ fn f21_ac4_checks_each_commit_of_a_range() {
         .to_owned();
     assert!(
         repository
-            .commit("chore(eslint): add a rule\n")
+            .commit("chore(foo): add a rule\n")
             .status
             .success()
     );
@@ -201,8 +201,7 @@ fn f21_ac4_checks_each_commit_of_a_range() {
     let refused = run(&start, &bad);
     assert_eq!(refused.status.code(), Some(1));
     assert!(
-        text(&refused.stdout)
-            .starts_with(&format!("{bad}\n⧗   input: chore(eslint): add a rule\n"))
+        text(&refused.stdout).starts_with(&format!("{bad}\n⧗   input: chore(foo): add a rule\n"))
     );
 
     // Without a common ancestor the range is refused, never passed.
