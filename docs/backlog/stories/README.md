@@ -290,6 +290,9 @@
 | [EN-127](./E17-F26-EN-127-mutate-stops-on-linux.md) | F26 | The mutation runner stops a mutation on Linux | done |
 | [AUD-028](./E17-F26-AUD-028-audit-f26.md) | F26 | Audit F26 | done |
 | [VAL-027](./E17-F26-VAL-027-validate-f26.md) | F26 | Validate F26 | done |
+| [EN-128](./E17-F27-EN-128-retired-scopes-in-history.md) | F27 | The history check reads the scopes a commit was written with | ready |
+| [AUD-029](./E17-F27-AUD-029-audit-f27.md) | F27 | Audit F27 | ready |
+| [VAL-028](./E17-F27-VAL-028-validate-f27.md) | F27 | Validate F27 | ready |
 | [NAM-002](./E17-NAM-002-naming-pass-e17.md) | E17 | Naming pass over the code of E17 | done |
 | [REV-004](./E17-REV-004-review-e17.md) | E17 | Review E17 with the Product Owner | done |
 | [RET-004](./E17-RET-004-retrospective-e17.md) | E17 | Retrospective of E17 | done |
