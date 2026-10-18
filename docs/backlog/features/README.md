@@ -28,7 +28,7 @@
 | [F25](./E17-F25-the-test-lanes-rust-tools.md) | E17 | The test lane's Rust tools | done |
 | [F26](./E17-F26-mutate-stops-on-linux.md) | E17 | The mutation runner stops a mutation on Linux | done |
 | [F27](./E17-F27-retired-scopes-in-history.md) | E17 | The history check reads the scopes a commit was written with | done |
-| [F28](./E17-F28-one-workflow-per-purpose.md) | E17 | One workflow per purpose | in-progress |
+| [F28](./E17-F28-one-workflow-per-purpose.md) | E17 | One workflow per purpose | done |
 | [F23](./E17-F23-the-path-of-a-story.md) | E17 | The path of a story through the tools | ready |
 | [F29](./E17-F29-local-checks-stable-and-fast.md) | E17 | The local checks stable and fast | ready |
 | [F30](./E17-F30-a-ci-on-develop-that-blocks-nothing.md) | E17 | A CI on develop that blocks nothing | ready |

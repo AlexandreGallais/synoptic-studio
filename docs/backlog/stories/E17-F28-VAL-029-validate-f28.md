@@ -3,7 +3,7 @@ id: VAL-029
 epic: E17
 feature: F28
 title: Validate F28
-status: ready
+status: done
 points: 1
 ---
 
@@ -19,6 +19,10 @@ F28 is a tooling feature: the agent validates it on GitHub's Actions tab (ADR-00
 
 ## Tasks
 
-- [ ] T1 — Each criterion proven again, the demo page written (1 h)
+- [x] T1 — Each criterion proven again, the demo page written (1 h)
 
 One task = one commit, referenced as `VAL-029.T1`.
+
+## Result (2026-10-18)
+
+Validated by the agent (ADR-0072): `[F28.AC1]` to `[F28.AC3]` pass (84 TypeScript tests of the four workflow files' tests, `tools/release`'s tests); each workflow's file name, `name:` and first comment read and agreeing, `ci.yml`'s `name:` changed from _CI_ to _Checks into main_ so that it says its purpose (its jobs' names, which `main` requires, unchanged); the demo page `docs/guide/f28-one-workflow-per-purpose.md`. Pending: the times after EN-133, at the next review's CI into `main`.
