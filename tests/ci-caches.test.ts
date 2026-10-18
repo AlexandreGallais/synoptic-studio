@@ -180,9 +180,13 @@ describe("the Rust caches of the CI (EN-111)", () => {
     expect(CI).toContain("\non:\n  pull_request:\n    branches: [main]\n  workflow_dispatch:\n");
 
     for (const job of ["history", "dependencies"]) {
-      expect(jobOf(CI, job)).toContain(
-        `if: \${{ github.event_name == 'pull_request' && !startsWith(github.head_ref, 'release-please--') }}\n`,
-      );
+      expect(jobOf(CI, job)).toContain(`if: \${{ github.event_name == 'pull_request' }}\n`);
     }
+  });
+
+  it("[F21.AC5] skips no release-please branch, release-please gone (EN-112)", () => {
+    const codeql = readFileSync(join(ROOT, ".github", "workflows", "codeql.yml"), "utf8");
+
+    expect(`${CI}\n${codeql}`).not.toContain("release-please");
   });
 });

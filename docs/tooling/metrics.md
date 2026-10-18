@@ -207,4 +207,3 @@ A long task writes one progress line per step, and stops itself when a step chan
 - Claude Code deletes transcripts older than `cleanupPeriodDays`: `.claude/settings.json` sets it to 3650, so that every retrospective reads its epic's tokens.
 - `.git/metrics/` lives in this clone only; `npm run records:save` keeps a copy of it, the transcripts and the library in the private records (ADR-0041, ADR-0044), from which a new machine restores them.
 - Tokens are counted per model request, not per command: a command costs the request that wrote it and the one that read its result.
-- Temporal is behind `--harmony-temporal` in Node.js 24: the hook command and Vitest pass it.
