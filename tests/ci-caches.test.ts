@@ -109,7 +109,14 @@ describe("the Rust caches of the CI (EN-111)", () => {
     );
   });
 
-  it("[F21.AC4] starts each new key on main from an empty build, never an older key's", () => {
+  it("[F24.AC3] restores in the CI the build of an older key by its prefix, compiling what changed", () => {
+    // A new Cargo.lock misses the exact key: develop's or main's latest build is restored instead.
+    expect(lanes).toContain(
+      `key: rust-build-\${{ runner.os }}-\${{ hashFiles('rust-toolchain.toml', 'Cargo.lock') }}\n          restore-keys: rust-build-\${{ runner.os }}-\n`,
+    );
+  });
+
+  it("[F21.AC4] starts each new key on develop and main from an empty build, never an older key's", () => {
     expect(warm).not.toContain("restore-keys");
   });
 

@@ -19,7 +19,8 @@ concurrency:
 
 env:
   # The cargo tools of the Rust checks (EN-069), the versions of docs/tooling/dependencies.md; the
-  # same in release.yml, whose run on main saves the caches this workflow restores (EN-111).
+  # same in release.yml, whose run on a push to develop or main saves the caches this workflow
+  # restores (EN-111, EN-125).
   CARGO_LLVM_COV_VERSION: 0.9.1
   CARGO_DENY_VERSION: 0.20.2
   # No incremental build: its state, kept for the workspace's own crates only, would grow the cache
@@ -50,8 +51,9 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       # The caches are restored, never saved: a pull request's cache is scoped to its merge ref, so
-      # the next pull request would never restore it (`REF-GH-CACHE`); the run on main of
-      # release.yml saves them, and every pull request restores those. Their keys are release.yml's.
+      # the next pull request would never restore it (`REF-GH-CACHE`); release.yml saves them on a
+      # push to develop or main, and a pull request restores those of its head branch first, then
+      # of main: the review's, from develop, develop's (EN-125). Their keys are release.yml's.
       - id: toolchain
         run: echo "name=$(sed -n 's/^channel = "\(.*\)"$/\1/p' rust-toolchain.toml)-x86_64-unknown-linux-gnu" >> "$GITHUB_OUTPUT"
       # The pinned toolchain, its Windows target and components, and the cargo tools: installed only
