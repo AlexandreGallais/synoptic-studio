@@ -35,6 +35,21 @@ The tracked files, their lines, the TypeScript files of the tooling outside `too
 | --- | --- | --- | --- | --- |
 | E17's start (`6e15c0c6`, RET-003 merged) | 2,096 | 115,765 | 87 | 38 |
 | this story's start (`6fb8346a`, EN-112 done) | 2,732 | 277,803 | 48 | 13 |
+| after T8 (`c2306124`) | 2,734 | 278,279 | 48 | 13 |
+
+The ports of F21 had already removed every TypeScript twin and every rewritten package: the clean-up removes configuration lines and conditions, no file, and adds ADR-0080 and `tools/worktree/src/seed.rs`.
+
+`check:all` after the clean-up, on this Mac, 2026-10-18 from 04:24 local time, three runs one after the other on the branch at T8, the docs lane run since the branch changes docs; each check's time as `check:all` prints it, a lane's time the sum of its checks:
+
+| Run | Load (1 min) at its start | `check:all` | build before the lanes | `lint` | `test` | docs (`docs:build`, `playground:build`) | small checks (`format:check`, `lint:secrets`, `deps:audit`, `deps:unused`, `deps:outdated`) | `check:rust` |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | 2.7 | 113.0 s | 12.9 s | 8.6 s | 73.9 s | 69.0 s | 11.2 s | 100.0 s |
+| 2 | 18.3 | 74.6 s | 0.2 s | 2.3 s | 51.6 s | 60.0 s | 3.9 s | 74.3 s |
+| 3 | 23.9 | 74.6 s | 0.2 s | 2.0 s | 51.0 s | 59.0 s | 9.4 s | 74.3 s |
+
+Against E17's start, 170 to 217 s (the epic's frame): 74.6 s warm, 113.0 s on the first run after the branch's changes, `check:rust` the slowest lane in each. The first run rebuilt the release binaries and the caches the changes invalidated.
+
+`npm run fix` (T6): 3.0 s when no Rust file changed, 27.4 s when one did (Clippy's fix mode checks the workspace again). `worktree:new`'s build (T7), on a copy of the branch: 34.3 s from nothing, 15.7 s seeded (0.5 s of copy).
 
 ## The search (T1)
 
@@ -84,3 +99,11 @@ F18's criterion 1, for the `done` commit (the pre-push hook refuses a feature fi
 ```markdown
 1. ~~Release pull request on `develop`~~, only the release on `main`. The first half superseded on 2026-10-18 by [ADR-0079](../../adr/0079-the-release-on-a-release-branch-by-our-own-tool.md): the project's tool prepares a release on a release branch from `develop`, without release-please's pull request (EN-112).
 ```
+
+T9 is not done: `deps:outdated` at 02:24 UTC on 2026-10-18 found every crate on its latest version at least 7 days old; `serde_json` 1.0.153 (2026-10-11 14:20 UTC) and 1.0.154 (15:32 UTC) fall due later that day. Their notes, read on GitHub's releases page: 1.0.153 reports invalid UTF-8 at the first bad byte (#1345); 1.0.154 supports `preserve_order` in `no_std` builds (#1333), a feature not used here. The bump is `Cargo.toml`'s `serde_json = "=1.0.154"`, `cargo update -p serde_json --precise 1.0.154`, and the row of `docs/tooling/dependencies.md` (Crates) without its sentence on 1.0.153 and 1.0.154.
+
+F21's criterion 9 says `check:all` fails "when a run changed `.git/config`"; since T3 it fails when a run changed a line a test could break (`[core]`, `[user]`, `[commit]`, the remotes' URLs). The feature file is shared: the criterion's wording is the main thread's to align, if it wants to.
+
+### Journal
+
+- `#tooling` EN-113: E17's clean-up found no TypeScript twin nor rewritten package left; it removed the `.claude/hooks` lint globs, release-please's branch conditions of the CI and the Temporal flag; `check:all` guards only the lines of `.git/config` a test could break; `guard-bash` reads quotes and no longer refuses `HUSKY=0`; ADR-0080 names `.githooks/`; `npm run fix` fixes the Rust code; `worktree:new` seeds its build from the main checkout's (34.3 s to 15.7 s); no personal data in a request; `check:all` 74.6 s warm against 170 to 217 s at E17's start.
