@@ -259,7 +259,7 @@
 | [EN-107](./E17-F21-EN-107-metrics-tools-in-rust.md) | F21 | The metrics tools in Rust | done |
 | [CHK-022](./E17-F21-CHK-022-checkpoint-f21.md) | F21 | Checkpoint in the middle of F21 | done |
 | [EN-108](./E17-F21-EN-108-git-hooks-in-rust.md) | F21 | The Git hooks in Rust, without husky, lint-staged, commitlint nor validate-branch-name | done |
-| [EN-109](./E17-F21-EN-109-dependency-checks-in-rust.md) | F21 | The dependency checks in Rust, without npm-check-updates nor knip | ready |
+| [EN-109](./E17-F21-EN-109-dependency-checks-in-rust.md) | F21 | The dependency checks in Rust, without npm-check-updates nor knip | done |
 | [EN-110](./E17-F21-EN-110-secret-scan-in-rust.md) | F21 | The secret scan in Rust, without secretlint | done |
 | [EN-111](./E17-F21-EN-111-ci-on-the-rust-tools.md) | F21 | The CI on the Rust tools, built and cached once | done |
 | [EN-112](./E17-F21-EN-112-release-tool-in-rust.md) | F21 | The release made by our own tool, in place of release-please | ready |
