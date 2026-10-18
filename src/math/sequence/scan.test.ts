@@ -34,6 +34,7 @@ describe("scan (REF-WIKI-PREFIX-SUM)", () => {
     expect(scan(letters, (text, letter) => text + letter, "").at(-1)).toBe("abcdefghijklmnopqrst");
   });
 
+  // alone: 34 ms, the median of 5 runs of its file (EN-129); 1 s is 29 times it.
   it("scans 200 000 items in well under a second", { timeout: 1000 }, () => {
     // 1 + 2 + … + 200 000 = 200 000 × 200 001 / 2 = 20 000 100 000.
     const numbers = Array.from({ length: 200_000 }, (unused, index) => index + 1);

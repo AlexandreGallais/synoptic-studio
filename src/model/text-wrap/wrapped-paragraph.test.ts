@@ -143,7 +143,10 @@ describe("wrappedParagraph (DERIV-text-box steps 1 to 4)", () => {
     expect(wrappedParagraph(ARIAL_BOX_METRICS, "Hel", text)).toEqual(["Hel"]);
   });
 
-  it("wraps 16 000 words in well under a second, each measured once", { timeout: 1000 }, () => {
+  // alone: 128 ms, the median of 5 runs of its file (EN-129); 1 s, 7.8 times it, failed at 1139 ms
+  // in a loaded `check:all`. 3 s is 23 times it, and a wrap measuring each line again at each word
+  // takes 16.4 s alone.
+  it("wraps 16 000 words in under 3 s, each measured once", { timeout: 3000 }, () => {
     // 8000 times "Hello World ": in a box 100 wide, 8000 lines "Hello World". In a box 100 000
     // wide, 12 800 000 units: "Hello World " is 11 153 units, so about 2295 words a line, 7 lines
     // for 16 000; measuring each line again at each word would read some 4 × 10⁷ characters.

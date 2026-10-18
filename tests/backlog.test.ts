@@ -540,6 +540,8 @@ describe("backlog", () => {
 
   it(
     "[F18.AC5] keeps the stories index as the story files generate it",
+    // alone: 77 ms, the median of 5 runs of its file, the tool built (EN-129); 60 s holds its
+    // cold build too, about 5 s.
     { timeout: BUILD_TIMEOUT },
     () => {
       const result = spawnSync(
