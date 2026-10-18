@@ -190,10 +190,18 @@ fn stop_with_children(child: &mut std::process::Child) {
     // the command, may already be gone; the caller's wait reaps it either way.
     #[cfg(unix)]
     let _ = Command::new("kill")
-        .args(["-KILL", &format!("-{}", child.id())])
+        .args(group_kill_arguments(child.id()))
         .status();
     #[cfg(not(unix))]
     let _ = child.kill();
+}
+
+/// The arguments of `kill` that stop the process group `group` (POSIX `kill`): the group's
+/// negative id after `--`, since Linux's `kill` reads an argument starting with `-` before it as a
+/// signal (EN-127).
+#[cfg(unix)]
+fn group_kill_arguments(group: u32) -> Vec<String> {
+    vec!["-KILL".to_owned(), format!("-{group}")]
 }
 
 /// The temporary copy, removed when dropped.
@@ -411,4 +419,15 @@ pub fn run(request: &Request, report: &mut dyn FnMut(&Outcome)) -> Result<Vec<Ou
     }
 
     Ok(outcomes)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    #[cfg(unix)]
+    fn f26_ac1_names_the_group_after_the_end_of_kills_options() {
+        assert_eq!(group_kill_arguments(4242), ["-KILL", "--", "-4242"]);
+    }
 }
