@@ -1,5 +1,5 @@
 //! The hooks installed (EN-108, in place of husky 9.1.7, `REF-HUSKY-INSTALL`): `core.hooksPath` set
-//! once to the tracked folder `.githooks`, by `npm install`'s `prepare` and by `worktree:new`.
+//! once to the tracked folder `.githooks`, by `npm install`'s `prepare` and by `worktree-new`.
 //!
 //! The path is relative, so Git resolves it in each worktree's own root: a linked worktree runs the
 //! hooks of its own checkout without anything written in it (EN-052). husky wrote a stub per hook

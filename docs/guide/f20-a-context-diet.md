@@ -18,7 +18,7 @@ A run is the main thread handing each story to a subagent, a worker of its own, 
 
 ## Each agent starts lighter
 
-Measured by `npm run context:size` on the run's own transcripts (EN-065, then VAL-021 on 2026-10-18). Before, every worker was `general-purpose`: it received every tool's definition, the listing of every skill (26,805 characters), `CLAUDE.md`, `AGENTS.md` and the memory index. Now each task kind has its type, given only its tools and the digest `project-rules`, plus the worker brief for those that code.
+Measured by `target/release/context-size` on the run's own transcripts (EN-065, then VAL-021 on 2026-10-18). Before, every worker was `general-purpose`: it received every tool's definition, the listing of every skill (26,805 characters), `CLAUDE.md`, `AGENTS.md` and the memory index. Now each task kind has its type, given only its tools and the digest `project-rules`, plus the worker brief for those that code.
 
 | Task kind | Before: agent type, first request | After: agent type, first request |
 | --- | --- | --- |
@@ -52,7 +52,7 @@ The tooling docs shrank again when the progress page was removed. A worker also 
 
 ## Fewer calls
 
-- **The Git sequences in one call** (EN-100): `npm run git:sync` fetches the feature branch and rebases the story on it; `npm run git:commit -- -F <message file> [--push] <files>` stages, commits and pushes. Each stops at the first failing step with Git's own message, and never pushes `develop`. Each call saved is about 3 s of the model and, in a subagent, about 166,000 tokens read from the cache (note 0024). In F19 a story worker made 1 to 32 Git calls, median 12; in F20, 1 to 7, median 4 (the stories differ in size: an order of magnitude, not a measure of the tool alone).
+- **The Git sequences in one call** (EN-100): `target/release/git-sequences sync` fetches the feature branch and rebases the story on it; `target/release/git-sequences commit -F <message file> [--push] <files>` stages, commits and pushes. Each stops at the first failing step with Git's own message, and never pushes `develop`. Each call saved is about 3 s of the model and, in a subagent, about 166,000 tokens read from the cache (note 0024). In F19 a story worker made 1 to 32 Git calls, median 12; in F20, 1 to 7, median 4 (the stories differ in size: an order of magnitude, not a measure of the tool alone).
 - **Every page read through the library** (EN-101): a `WebFetch` or a `curl` of a page is refused with the `library_get` call to make, unless the library holds that page empty or its site refused it. Reading a stored page went from 6 s for a `WebFetch`, which returned a summary that cannot be cited, to 0.1–0.2 s for `library_get`, which returns the page's own text by sections. The library records which project asked, so that it can serve several.
 
 ## A worker's hand-back checked
@@ -61,8 +61,8 @@ A worker that ends with its branch not pushed, or whose report leaves a commit u
 
 ## A run's totals and its stops
 
-- **Its totals** (EN-092): `/run` opens a marker with its start; the status line shows `run <duration> · <tokens> tokens · week <n> % used`, counted from the run's start, subagents included, across compactions and sessions, and `npm run metrics:session -- --run` gives the same with each kind of token. At this validation: `run 2 h 35 · 191,734,902 tokens · week 58 % used`. The message at a run's end holds its duration and tokens, nothing else.
-- **Its scope and its stops** (EN-086): you set the scope at the start, a time or an end; the agent sets no bound of its own. A question parks its story, written in its file, is pushed once, and the run goes on with independent stories. A run stops at its scope's end, on a blocker it cannot get around, when you say so, or when the week's usage reaches 90 %: `npm run run:should-stop` prints `stop` from 90 % and `go` below, so that the margin stays yours. A merge or a plain stop is never pushed.
+- **Its totals** (EN-092): `/run` opens a marker with its start; the status line shows `run <duration> · <tokens> tokens · week <n> % used`, counted from the run's start, subagents included, across compactions and sessions, and `target/release/session-report --run` gives the same with each kind of token. At this validation: `run 2 h 35 · 191,734,902 tokens · week 58 % used`. The message at a run's end holds its duration and tokens, nothing else.
+- **Its scope and its stops** (EN-086): you set the scope at the start, a time or an end; the agent sets no bound of its own. A question parks its story, written in its file, is pushed once, and the run goes on with independent stories. A run stops at its scope's end, on a blocker it cannot get around, when you say so, or when the week's usage reaches 90 %: `target/release/run-totals should-stop` prints `stop` from 90 % and `go` below, so that the margin stays yours. A merge or a plain stop is never pushed.
 
 ## Tried, then dropped
 
@@ -91,13 +91,13 @@ Proven again on 2026-10-18 by VAL-021: its story holds the command and what was 
 
 | Criterion | What you get | Evidence |
 | --- | --- | --- |
-| AC1 an agent type per task kind, measured | a story worker starts at about 10,500 tokens instead of 38,900 | `tools/hooks/tests/context.rs`, `npm run context:size` |
+| AC1 an agent type per task kind, measured | a story worker starts at about 10,500 tokens instead of 38,900 | `tools/hooks/tests/context.rs`, `target/release/context-size` |
 | AC2 a model per type, the trial | `clerk` on Sonnet, the others on Opus; tokens per model in the session report; the story worker kept on Opus | `tests/agent-models.test.ts`, `tools/metrics/tests/session.rs`, CHK-021 |
 | AC3 the hand-back checked | refused once if not pushed or a commit unnamed; a line to finish the story | `tools/hooks/tests/handback.rs` |
-| AC4 the run's totals | on the status line and in `metrics:session -- --run`, across compactions and sessions | `tools/run-totals/tests/` |
+| AC4 the run's totals | on the status line and in `session-report --run`, across compactions and sessions | `tools/run-totals/tests/` |
 | ~~AC5 a progress page~~ | dropped on 2026-10-17 | — |
 | AC6 a run to its scope | a question parked, pushes for questions and blockers only, a stop at 90 % of the week | `tools/run-totals/tests/stop.rs`, `tests/backlog.test.ts` |
-| AC7 one call per sequence, pages through the library | `git:sync`, `git:commit`; `curl` and `WebFetch` sent to `library_get` | `tools/git-sequences/tests/`, `tools/hooks/tests/pages.rs` |
+| AC7 one call per sequence, pages through the library | `git-sequences sync`, `git-sequences commit`; `curl` and `WebFetch` sent to `library_get` | `tools/git-sequences/tests/`, `tools/hooks/tests/pages.rs` |
 | AC8 the pages as principles | −20 % tokens, every rule traced | `tests/backlog.test.ts` |
 
 ## How to try it
@@ -106,17 +106,17 @@ Run `npm run dev` and open `http://localhost:5173/?checklist=E17`: E17's checkli
 
 | Try | You should see |
 | --- | --- |
-| `npm run context:size -- ~/.claude/projects/<this project's folder>/<a session's id>/subagents` | the first request per agent type: about 38,900 for `general-purpose`, about 10,500 for `story-worker` |
+| `target/release/context-size ~/.claude/projects/<this project's folder>/<a session's id>/subagents` | the first request per agent type: about 38,900 for `general-purpose`, about 10,500 for `story-worker` |
 | `grep '^model:' .claude/agents/*.md` | `clerk` on `sonnet`, the seven others on `opus` |
 | a story worker's report, in the chat during a run | `check-handback: <story> on <branch> pushed at <hash>; next: …` above it |
 | the status line during a run | `run <duration> · <tokens> tokens · week <n> % used` |
-| `npm run metrics:session -- --run` | the run's duration and tokens by kind |
-| `npm run run:should-stop` | `go: week <n> % used, the limit is 90 %` |
+| `target/release/session-report --run` | the run's duration and tokens by kind |
+| `target/release/run-totals should-stop` | `go: week <n> % used, the limit is 90 %` |
 | `.claude/skills/run/SKILL.md`, A question parks its story, Pushes, Stop when | what parks, what is pushed, when a run stops |
-| `npm run git:sync` in a story's worktree | the story rebased on its feature branch, in about 1 s |
-| `npm run git:commit -- -F <message file> <files>` in a story's worktree | `<id>: <hash> <subject> on <branch>` |
+| `target/release/git-sequences sync` in a story's worktree | the story rebased on its feature branch, in about 1 s |
+| `target/release/git-sequences commit -F <message file> <files>` in a story's worktree | `<id>: <hash> <subject> on <branch>` |
 | ask the agent to `curl` a page the library holds | refused, with the `library_get` call to make |
-| `npm run library -- stats` | the uses grouped by project |
+| `target/release/library stats` | the uses grouped by project |
 | `cat docs/conventions/*.md \| wc -m` | about 151,600 characters, 65,900 tokens, against 78,300 before |
 
 ## Limits
@@ -124,7 +124,7 @@ Run `npm run dev` and open `http://localhost:5173/?checklist=E17`: E17's checkli
 - The library records the project once F20 is on `develop` and its server restarted: until then the running server is `develop`'s copy, and its uses read `(not recorded)`.
 - The push on the phone waits for your setting (**Push when Claude decides** in `/config`, [agent configuration](../tooling/agent.md#pushes)); without it, a question is still asked in the chat and written in its parked story.
 - The Sonnet trial did not settle the question; F21 or a later run can work one story twice to settle it.
-- `npm run metrics:session` without `--run` fails in a worktree, its transcripts' folder taken from the worktree's path; the scripts and hooks still in TypeScript, the `library` server, a log of each tool's use and a reader of one row or section are F21's.
+- `target/release/session-report` without `--run` fails in a worktree, its transcripts' folder taken from the worktree's path; the scripts and hooks still in TypeScript, the `library` server, a log of each tool's use and a reader of one row or section are F21's.
 
 ## Validation
 

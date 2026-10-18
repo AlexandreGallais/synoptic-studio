@@ -362,6 +362,6 @@ fn f21_ac2_backlog_status_names_an_item_it_does_not_find() {
     assert_eq!(output.status.code(), Some(1));
     assert_eq!(
         String::from_utf8_lossy(&output.stderr),
-        "usage: npm run backlog:status -- <ID> <status>; no item EN-1\n"
+        "usage: target/release/backlog-status <ID> <status>; no item EN-1\n"
     );
 }

@@ -86,11 +86,12 @@ describe("type errors with the lint (EN-091)", () => {
     );
   });
 
-  it("runs the type check in every oxlint pass: the lint, the fix, and no tsc in check:all", () => {
+  it("runs the type check in every oxlint pass: the lint, the fix, and no script runs tsc", () => {
     for (const name of ["lint", "fix"]) {
       expect(scriptOf(name)).toContain("oxlint --type-check ");
     }
 
-    expect(scriptOf("check")).not.toContain("typecheck");
+    // `typecheck` went with EN-115: `npx tsc --noEmit` stays for a person who wants tsc's own run.
+    expect(MANIFEST).not.toMatch(/\btsc\b/u);
   });
 });

@@ -35,8 +35,8 @@ pub const FORCE_PUSH: &str =
 /// Why a push to `main` or `develop` is denied.
 pub const PROTECTED_PUSH: &str = "main and develop are never pushed by the agent: a story's branch is pushed, and its pull request merges it (AGENTS.md, Never).";
 
-/// Why `golden:write` is denied in a worktree.
-pub const GOLDEN_WRITE: &str = "golden:write writes .git/metrics/golden.json, shared by every worktree: only the main thread runs it, in the main checkout.";
+/// Why writing the golden file is denied in a worktree.
+pub const GOLDEN_WRITE: &str = "Vitest's mode golden-write writes .git/metrics/golden.json, shared by every worktree: only the main thread runs it, in the main checkout.";
 
 /// Vitest's options that take a value as the next word, not a path of tests.
 const VITEST_VALUED: [&str; 12] = [
@@ -666,8 +666,8 @@ fn after_spaces_on_line(text: &str, at: usize) -> usize {
 
 /// The reason for denying, in a worktree, a command Claude Code would refuse there: a Git command
 /// chained with another, `cd` included (549 refusals in E15), the hint naming the form that works;
-/// or `golden:write`, which writes a file every worktree shares. `None` outside a worktree or for
-/// a command that fits.
+/// or Vitest's mode `golden-write`, which writes a file every worktree shares. `None` outside a
+/// worktree or for a command that fits.
 #[must_use]
 pub fn worktree_reason(command: &str, folder: &str) -> Option<String> {
     let root = worktree_root(folder)?;
@@ -682,14 +682,18 @@ pub fn worktree_reason(command: &str, folder: &str) -> Option<String> {
     chained_git_hint(&pieces, root)
 }
 
-/// `^npm\s+run\s+golden:write\b`.
+/// Whether a segment runs Vitest's mode `golden-write` (`--mode golden-write` or
+/// `--mode=golden-write`), the command of the golden file since `golden:write` went (EN-115).
 fn writes_golden(segment: &str) -> bool {
-    segment
-        .strip_prefix("npm")
-        .and_then(|_| after_some_spaces(segment, 3))
-        .filter(|at| segment[*at..].starts_with("run"))
-        .and_then(|at| after_some_spaces(segment, at + 3))
-        .is_some_and(|at| starts_with_word(segment, at, "golden:write"))
+    let words: Vec<&str> = segment
+        .split(is_space)
+        .filter(|word| !word.is_empty())
+        .collect();
+
+    words.contains(&"--mode=golden-write")
+        || words
+            .windows(2)
+            .any(|pair| pair == ["--mode", "golden-write"])
 }
 
 /// `^git\s+(?:<one of the subcommands>)\b`.
@@ -791,10 +795,11 @@ pub fn scripts_of(package: &str) -> Option<Vec<String>> {
 }
 
 /// Why a script missing from the branch's `package.json` is refused: `npm run -s` hides npm's own
-/// message, and a branch made before the script lacks it until it is rebased on its base.
+/// message; a branch made before the script lacks it until it is rebased on its base, and a tool
+/// whose script went (EN-115) is called by its binary.
 #[must_use]
 pub fn missing_script_reason(script: &str, branch: &str, base: &str) -> String {
     format!(
-        "`npm run {script}`: no script `{script}` in the package.json of branch `{branch}`. A branch made before the script gets it by a rebase on its base: run `git fetch origin`, then `git rebase {base}`, one call each."
+        "`npm run {script}`: no script `{script}` in the package.json of branch `{branch}`. A tool of the agent is called by its binary, `target/release/<binary>`, as docs/tooling/agent-tools.md lists them (EN-115). A branch made before a script gets it by a rebase on its base: run `git fetch origin`, then `git rebase {base}`, one call each."
     )
 }

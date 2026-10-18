@@ -16,7 +16,7 @@ Every dependency is code the project did not write and must trust, so each one i
 
 | Package | Why | Alternatives rejected |
 | --- | --- | --- |
-| `typescript` | TypeScript 7, the native compiler (`REF-TS7-ANNOUNCEMENT`): its checker runs under oxlint's `--type-check` and as `npm run typecheck`; no tool of the repository imports its API, which 7.0 lacks (ADR-0075) | TypeScript 6's `tsc`: about 4.3 s against 0.9 s on this tree |
+| `typescript` | TypeScript 7, the native compiler (`REF-TS7-ANNOUNCEMENT`): its checker runs under oxlint's `--type-check` and as `npx tsc --noEmit`; no tool of the repository imports its API, which 7.0 lacks (ADR-0075) | TypeScript 6's `tsc`: about 4.3 s against 0.9 s on this tree |
 | `@types/node` | Node.js types for the tooling | — |
 | `vite` | development server of the playground and library build (ADR-0009, ADR-0075) | — |
 | `vitest` | tests, sharing Vite's configuration and transforms | Jest: a separate transform pipeline |
@@ -56,7 +56,7 @@ Data the library ships that is not a package.
 
 | Asset | Why | Alternatives rejected |
 | --- | --- | --- |
-| Inter 4.1, metrics only (`REF-INTER-RELEASE`) | the default font: advances, kerning and vertical metrics as data, so that a text is measured without a font file (ADR-0052); `src/model/font/inter-metrics.json`, written by `npm run font:metrics` from the release's 18 static files | Arial: editable embedding only (`REF-OT-OS2`), no open licence; the reader's system fonts: unknown in advance |
+| Inter 4.1, metrics only (`REF-INTER-RELEASE`) | the default font: advances, kerning and vertical metrics as data, so that a text is measured without a font file (ADR-0052); `src/model/font/inter-metrics.json`, written by `node scripts/default-font-metrics.ts` from the release's 18 static files | Arial: editable embedding only (`REF-OT-OS2`), no open licence; the reader's system fonts: unknown in advance |
 | Inter 4.1 Regular, the font file, tests only (`REF-INTER-REGULAR-FILE`) | a real font the font reader's tests read on every system: `tests/inter-regular.ttf`, unchanged, with `tests/inter-license.txt`; never shipped | Arial, Helvetica: absent outside macOS, without an open licence |
 
 Inter is under the SIL Open Font License 1.1 (`REF-INTER-LICENSE`): it may be bundled and redistributed with software if each copy carries the copyright notice and the licence. The metrics file is a Modified Version under the licence, so it is distributed under the OFL with Inter's notice and keeps no reserved font name (Inter's notice names none). The licence reaches neither the library's own code nor the documents made with the font. The notice and the licence sit beside the data, `src/model/font/inter-license.txt`, shipped (`files` of `package.json`) and named by `NOTICE`.

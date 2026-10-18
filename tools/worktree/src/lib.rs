@@ -31,7 +31,7 @@ pub struct Story {
     pub topic: String,
 }
 
-/// What `worktree:new` creates.
+/// What `worktree-new` creates.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Plan {
     /// `<main checkout>/.claude/worktrees/us-061`.
@@ -215,8 +215,8 @@ pub fn plan(request: &Request, exists: impl Fn(&Path) -> bool) -> Result<Plan, S
 /// Folder of the story files, from a checkout's top.
 pub const STORIES: &str = "docs/backlog/stories";
 
-/// Names of the story files of a checkout, the only reading of the disk here: `worktree:new`,
-/// `git:sync` and `check-handback` each list them (AUD-022).
+/// Names of the story files of a checkout, the only reading of the disk here: `worktree-new`,
+/// `git-sequences sync` and `check-handback` each list them (AUD-022).
 ///
 /// # Errors
 ///

@@ -1,6 +1,6 @@
-//! `git-sequences sync|commit` (`npm run git:sync`, `npm run git:commit`, EN-100): one call for a
-//! Git sequence the agent ran step by step, in the checkout it is started from. Each step's output
-//! is kept back and printed only when the step fails, then the sequence stops; on success one line
+//! `git-sequences sync|commit` (EN-100): one call for a Git sequence the agent ran step by step,
+//! in the checkout it is started from. Each step's output is kept back and printed only when the
+//! step fails, then the sequence stops; on success one line
 //! says where the branch stands; the Git hooks run as for any commit. A sync then rebuilds the
 //! release binaries of a checkout that has a Cargo workspace (ADR-0078).
 

@@ -123,7 +123,7 @@ Run `npm run dev` and open `http://localhost:5173/?checklist=E17`: E17's checkli
 | a type error planted in `src/probe.ts`, then `npm run lint` | `error typescript(TS2322)` at its place |
 | an `oxlint-disable` directive over a line without a finding | `Unused oxlint-disable directive` |
 | a table row of three cells under two in `docs/probe.md` | `markdown/table-column-count` at that row |
-| `npm run format:check`; a padded table, then `npm run format` | `Markdown: 0 of <n> files not formatted.`; the table rewritten without padding |
+| `npm run format:check`; a padded table, then `npm run fix` | `Markdown: 0 of <n> files not formatted.`; the table rewritten without padding |
 | `npx tsc --version`, then `grep -c typescript6 package-lock.json` | `Version 7.0.2`, then `0` |
 | `npm run build`, then count `dist/types` | 589 declarations |
 | `npm run docs:api` | `api-pages: 537 pages written to docs/api` |

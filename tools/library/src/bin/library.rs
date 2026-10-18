@@ -1,10 +1,10 @@
 //! Command line of the local source library (`docs/tooling/sources.md`):
-//!   `npm run library -- search <words>`       sections best matching the words
-//!   `npm run library -- get <url> [--refresh]` table of contents, fetched when missing or stale
-//!   `npm run library -- read <url> <n> [<n>…]` sections of a page
-//!   `npm run library -- list`                 stored pages, last read first
-//!   `npm run library -- stats [YYYY-MM-DD]`   projects, sources consulted most, searches, share local
-//!   `npm run library -- path`                 the library's file, which `records:save` copies
+//!   `target/release/library search <words>`       sections best matching the words
+//!   `target/release/library get <url> [--refresh]` table of contents, fetched when missing or stale
+//!   `target/release/library read <url> <n> [<n>…]` sections of a page
+//!   `target/release/library list`                 stored pages, last read first
+//!   `target/release/library stats [YYYY-MM-DD]`   projects, sources consulted most, searches, share local
+//!   `target/release/library path`                 the library's file, which `records-save` copies
 //!
 //! The first five print what `library-cli.ts` printed; an error is printed on the error output,
 //! exit 1.
@@ -21,7 +21,7 @@ use rusqlite::Connection;
 use serde_json::{Value, json};
 
 /// The usage, printed for an unknown command.
-const USAGE: &str = "Usage: npm run library -- search <words> | get <url> [--refresh] | read <url> <n>… | list | stats [since] | path";
+const USAGE: &str = "Usage: target/release/library search <words> | get <url> [--refresh] | read <url> <n>… | list | stats [since] | path";
 
 /// What a command prints, or the error it met.
 fn output(database: &Connection, command: &str, rest: &[String]) -> Result<String, String> {

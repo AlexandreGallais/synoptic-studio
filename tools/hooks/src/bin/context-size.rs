@@ -1,4 +1,4 @@
-//! `npm run context:size -- <folder>…` (EN-065): what each subagent carried at its first request.
+//! `target/release/context-size <folder>…` (EN-065): what each subagent carried at its first request.
 //! A folder is a session's (its `subagents/` read) or a `subagents/` folder itself; the agents are
 //! listed in their files' order, then the median of each type.
 
@@ -54,7 +54,7 @@ fn sizes() -> u8 {
     let folders: Vec<String> = std::env::args().skip(1).collect();
 
     if folders.is_empty() {
-        eprintln!("Usage: npm run context:size -- <session or subagents folder>…");
+        eprintln!("Usage: target/release/context-size <session or subagents folder>…");
         return 2;
     }
 

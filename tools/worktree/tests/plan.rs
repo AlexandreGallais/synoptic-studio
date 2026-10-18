@@ -1,4 +1,4 @@
-//! Tests of `worktree:new` (EN-052): the plan from a story's file name, then the tool run in a
+//! Tests of `worktree-new` (EN-052): the plan from a story's file name, then the tool run in a
 //! repository of its own. `[F18.AC8]` marks a test proving the feature's criterion.
 
 use std::fs;
@@ -302,7 +302,7 @@ fn worktree_new(dir: &Path, id: &str) -> Output {
 
 #[test]
 fn f18_ac8_makes_a_worktree_named_after_its_story() {
-    // [F18.AC8] `worktree:new -- US-061` gives `.claude/worktrees/us-061` on the story's branch.
+    // [F18.AC8] `worktree-new US-061` gives `.claude/worktrees/us-061` on the story's branch.
     let main = repository("named");
     let made = worktree_new(&main, "US-061");
     let dir = main.join(".claude/worktrees/us-061");

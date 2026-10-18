@@ -6,7 +6,7 @@ One paragraph: what the epic delivered and what the retrospective changed.
 
 ## 1. Facts
 
-From `npm run metrics`, `git log`, the audits and the CI.
+From `target/release/metrics`, `git log`, the audits and the CI.
 
 | Measure | Value |
 | --- | --- |

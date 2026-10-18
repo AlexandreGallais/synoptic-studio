@@ -2,7 +2,7 @@
 
 ## Version
 
-TypeScript 7 (`typescript` 7.0.2, the native compiler) is the only TypeScript (ADR-0075). It checks the types inside `npm run lint`, through oxlint's `--type-check` (ADR-0071), and alone with `npm run typecheck`.
+TypeScript 7 (`typescript` 7.0.2, the native compiler) is the only TypeScript (ADR-0075). It checks the types inside `npm run lint`, through oxlint's `--type-check` (ADR-0071), and alone with `npx tsc --noEmit`.
 
 ## What TypeScript checks, what the linters check (ADR-0075)
 

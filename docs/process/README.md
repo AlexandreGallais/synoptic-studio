@@ -30,7 +30,7 @@ Asked in every `RET` and, lightly, in every `AUD`. The test for each question: d
 
 | Question | Look at |
 | --- | --- |
-| **Size** | files and functions per layer, longest procedures, duration of tests and `check:all`, the epic's `npm run metrics`; is a layer becoming a package? |
+| **Size** | files and functions per layer, longest procedures, duration of tests and `check:all`, the epic's `target/release/metrics`; is a layer becoming a package? |
 | **Tools** | each "considered for later" row of [dependencies](../tooling/dependencies.md): has its trigger happened? |
 | **Fitness functions** (`REF-FITNESS-FUNCTIONS`) | an architecture rule only written that a test could hold: layer imports, purity, size, performance |
 | **Patterns** | duplicated shapes of code or docs that ask for an abstraction; abstractions no longer used |

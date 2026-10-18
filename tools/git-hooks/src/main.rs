@@ -1,7 +1,7 @@
 //! `git-hooks <command>` (EN-108), run from a worktree's root:
 //!
 //! - `install`: sets `core.hooksPath` to `.githooks` once (`npm install`'s `prepare`,
-//!   `worktree:new`);
+//!   `worktree-new`);
 //! - `pre-commit [--tasks <file>]`: formats, lints and scans the staged files, the repository's
 //!   tasks or those of the file (`staged::parse_tasks`), and stages the fixes;
 //! - `commit-msg <file>`: checks the message as commitlint did, then, on a story branch, its

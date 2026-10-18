@@ -85,6 +85,6 @@ pub fn home(root: &Path, id: &str) -> Result<Home, String> {
     }
 
     Err(format!(
-        "{id}: not an id of REF-, ADR-, DERIV- nor of the backlog; name the page: npm run -s page -- <file> {id}"
+        "{id}: not an id of REF-, ADR-, DERIV- nor of the backlog; name the page: target/release/page <file> {id}"
     ))
 }

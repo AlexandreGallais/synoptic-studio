@@ -2,7 +2,7 @@
 //! `docs/tooling/metrics.md`, EN-104): appends one line per tool call to
 //! `.git/metrics/tool-calls.jsonl` — what ran, who ran it, when it started and ended, the size of
 //! what it read and returned, whether it failed, and the session's state at that moment as the
-//! status line last saw it — then removes the call's running file. `npm run metrics` reads it.
+//! status line last saw it — then removes the call's running file. `target/release/metrics` reads it.
 
 use std::fs::{self, OpenOptions};
 use std::io::Write;

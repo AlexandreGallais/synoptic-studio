@@ -26,7 +26,7 @@ Each is a trap met in this code, with the story that met it. The rules themselve
 - Zero vectors and signed zeros (ADR-0025): `atan2(+0, −0) = π`, `Math.sign(−0) = −0`, and `toEqual` and `toBe` tell `−0` from `0`. State the intended result for a zero-length edge (`turningAngle`, `unit`); compare computed numbers with `toBeCloseTo`.
 - Scale to an integer size by multiplying first, `o + size · (p − o) / span`: `(29 / 7) · 7` is 29.000000000000004, `29 · 7 / 7` is 29 (`DERIV-free-shape-stretch`).
 - A bisection in doubles stops at one unit in the last place, before its nominal step count, so a bound it returns may sit that far on the wrong side of a `>=`: say "within a rounding error", never "at least". A clamp before a bisection on a monotone predicate is unobservable, so a mutation survives it: drop it or say so (EN-017).
-- Never change the floats of a shared math function for a new caller: `npm run golden:check` guards the results of E01 and E14 bit for bit, and a 10⁻¹⁴ drift fails it; add a named function instead (`nonNegativeRemainder` beside `modulo`, EN-038). The golden file is written only by the main thread, before a refactor; `golden:write` refuses in a worktree (EN-052).
+- Never change the floats of a shared math function for a new caller: `npm run golden:check` guards the results of E01 and E14 bit for bit, and a 10⁻¹⁴ drift fails it; add a named function instead (`nonNegativeRemainder` beside `modulo`, EN-038). The golden file is written only by the main thread, before a refactor; `guard-bash` refuses its writing, Vitest's mode `golden-write`, in a worktree (EN-052, EN-115).
 
 ## Tests
 

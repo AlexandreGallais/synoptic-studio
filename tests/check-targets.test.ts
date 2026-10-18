@@ -173,11 +173,10 @@ function oxfmtCount(targets: readonly string[]): number {
 }
 
 describe("check tools given explicit targets (EN-045)", () => {
-  it("[F18.AC20] gives the formatter the same targets in format, format:check and fix", () => {
+  it("[F18.AC20] gives the formatter the same targets in format:check and fix", () => {
     const targets = targetsOf("format:check", FORMAT);
 
     expect(targets.length).toBeGreaterThan(0);
-    expect(targetsOf("format", FORMAT)).toEqual(targets);
     expect(targetsOf("fix", FORMAT)).toEqual(targets);
   });
 

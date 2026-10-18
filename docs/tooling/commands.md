@@ -4,34 +4,36 @@
 | --- | --- |
 | `npm run dev` | Vite server on `playground/` (`http://localhost:5173`) |
 | `npm run build` | `npm audit`, then the library (`dist/editor.js`) and its declarations (`dist/types/`, [build](#build)) |
-| `npm run test` / `test:watch` | Vitest under the heavy lock, on half the machine's cores: the library, the playground, `tests/`, the scripts and hooks; coverage of `src/` 100 %, of `playground/` a floor |
+| `npm run test` | Vitest under the heavy lock, on half the machine's cores: the library, the playground, `tests/`, the scripts and hooks; coverage of `src/` 100 %, of `playground/` a floor |
 | `npm run lint` | oxlint with its type-aware rules and TypeScript's own errors (`--type-check`, `.oxlintrc.json`, `REF-OXLINT-CLI`), then the project's linter (`tools/lint`) with the project's rules and those oxlint lacks, on TypeScript and Markdown; zero warning tolerated |
 | `npm run lint:secrets` | the secret scan (`tools/secret-scan`, secretlint's recommended rules in Rust) on every file Git tracks, less those `.secret-scan-ignore` and the `.gitignore` files name: no key, token or password; exits 1 naming each file, line and rule, the secret masked |
-| `npm run format` / `format:check` | the formatter, `tools/format`: oxfmt, then Markdown tables without padding (ADR-0068); `format:check` changes nothing |
-| `npm run typecheck` | `tsc --noEmit` (TypeScript 7); outside `check` and `check:all`, where the lint reports the same errors |
+| `npm run format:check` | the formatter, `tools/format`, with `--check`: oxfmt, then Markdown tables without padding (ADR-0068), changing nothing; `fix` runs it with `--write` |
 | `npm run fix` | the formatter, oxlint `--fix`, the project's linter `--fix`, then for the Rust code Clippy's fixes (`cargo clippy --fix`, the pedantic lints included) when a `.rs` or Cargo file changed, and `cargo fmt`: **before each commit** |
-| `npm run check` | format, lint, the secret scan, Vitest, `npm audit`, `deps:unused` and `check:rust` one after the other, without the builds |
 | `npm run check:all` | `rust:build`, then the [five lanes](#the-lanes-of-the-full-check) at once: what the pre-push hook and the CI run; about 40 s on a code story, a minute with the docs build |
 | `npm run check:rust` | the Rust workspace: `cargo fmt --check`, Clippy, `rust:advisories`, `rust:coverage`, and a check for Windows without linking, so that a Unix-only call outside `cfg(unix)` fails on the Mac, then `rust:fresh`; warnings are errors (`.cargo/config.toml`) |
 | `npm run rust:advisories` | cargo-deny against the local copy of the RustSec database (`deny.toml`, `REF-CARGO-DENY-ADVISORIES`): unmaintained and yanked crates fail too; `cargo deny fetch db` refreshes the copy |
 | `npm run rust:coverage` | the workspace's tests under `cargo llvm-cov` (`REF-CARGO-LLVM-COV`), failing under the [floor](./agent-tools.md#rust) |
-| `npm run rust:build` | the Rust tools' release binaries into `target/release/`; run by `prepare` and `worktree:new`, and the same build by `git:sync` and `story:finish`: the hooks, the status line, the Git hooks and the agent call these binaries by their path (ADR-0078), and the first `cargo run --release -q -p <crate>` of a script is warm |
+| `npm run rust:build` | the Rust tools' release binaries into `target/release/`; run by `prepare` and `worktree-new`, and the same build by `git-sequences sync` and `story:finish`: the hooks, the status line, the Git hooks and the agent call these binaries by their path (ADR-0078), and the first `cargo run --release -q -p <crate>` of a script is warm |
 | `npm run rust:fresh` | each release binary older than a file Cargo built it from, or missing, then exit 1 (`tools/stale-binaries/`, ADR-0078) |
 | `prepare` (run by `npm install`) | `rust:build`, then `target/release/git-hooks install`: the hooks folder `.githooks` set once ([Git workflow](./git-workflow.md#hooks-githooks)) |
 | `npm run deps:audit` | `npm audit`: any severity fails |
 | `npm run deps:outdated` | lists each npm package, GitHub Action, Node.js major and crate behind its latest version at least 7 days old, and each locked crate under 7 days, then exits 1; exits 2 naming a source that does not answer (`dependencies outdated` of `tools/deps/`, [versions](./versions-and-security.md)) |
 | `npm run deps:unused` | the unused files, exports, exported types and dev packages, the unlisted packages and the unresolved imports, then exits 1 (`dependencies unused` of `tools/deps/`, on Oxc's parser, in place of knip, EN-109) |
-| `npm run docs:dev` / `docs:build` / `docs:preview` | the documentation site, its API pages written first ([documentation site](./documentation-site.md)) |
+| `npm run docs:dev` / `docs:build` | the documentation site, its API pages written first ([documentation site](./documentation-site.md)) |
 | `npm run docs:api` | `docs/api/` from the TSDoc |
 | `npm run playground:build` | the playground, built into the site (`docs/.vitepress/dist/playground/`) |
-| `npm run branches:clean` | deletes the local branches merged into `develop` or gone from GitHub, with their worktrees, and reports what is left; never `main`, `develop`, the current branch, a story just started, nor a worktree holding changes or a running process (`branches-clean` of `tools/repo-tools/`, EN-103) |
-| `npm run records:save` | copies the metrics, the transcripts and the source library into `<AGENT_RECORDS_ROOT>/<project>`, a local folder outside the repository shared by every project, never sent (ADR-0081); at the end of each session and retrospective. A file whose copy already has its size and modification time is not copied again, so the transcripts' gigabytes are written once; the library, the file `AGENT_LIBRARY_FILE` names as for the `library` tools, is copied by the system's `sqlite3 -readonly … "VACUUM INTO …"`, whose bytes differ from Node.js's SQLite but not its rows (`records-save` of `tools/repo-tools/`, EN-103, EN-114) |
-| `npm run metrics`, `metrics:session` | the report of the agent's work, the session report ([metrics](./metrics.md)) |
-| `npm run library -- …` | the local source library ([sources](./sources.md)) |
-| `npm run font:metrics -- <folder>` | writes `src/model/font/inter-metrics.json` from Inter's static TrueType files unpacked in the folder, which the repository does not keep |
-| `npm run replace`, `backlog:status`, `backlog:index`, `worktree:new`, `git:sync`, `git:commit`, `run:start`, `run:end`, `run:should-stop`, `context:size`, `page`, `story:finish`, `mutate`, `val:prepare`, `release:prepare`, `golden:write`, `golden:check`, `activity`, `epic:check` | the agent's tools ([agent tools](./agent-tools.md)) |
+| `target/release/branches-clean` | deletes the local branches merged into `develop` or gone from GitHub, with their worktrees, and reports what is left; never `main`, `develop`, the current branch, a story just started, nor a worktree holding changes or a running process (`branches-clean` of `tools/repo-tools/`, EN-103) |
+| `target/release/records-save` | copies the metrics, the transcripts and the source library into `<AGENT_RECORDS_ROOT>/<project>`, a local folder outside the repository shared by every project, never sent (ADR-0081); at the end of each session and retrospective. A file whose copy already has its size and modification time is not copied again, so the transcripts' gigabytes are written once; the library, the file `AGENT_LIBRARY_FILE` names as for the `library` tools, is copied by the system's `sqlite3 -readonly … "VACUUM INTO …"`, whose bytes differ from Node.js's SQLite but not its rows (`records-save` of `tools/repo-tools/`, EN-103, EN-114) |
+| `target/release/metrics`, `target/release/session-report` | the report of the agent's work, the session report ([metrics](./metrics.md)) |
+| `target/release/library …` | the local source library ([sources](./sources.md)) |
+| `node scripts/default-font-metrics.ts <folder>` | writes `src/model/font/inter-metrics.json` from Inter's static TrueType files unpacked in the folder, which the repository does not keep |
+| `npm run backlog:index`, `story:finish`, `mutate`, `golden:check` | the agent's tools kept as scripts, each run by a tool, a hook or under a lock ([agent tools](./agent-tools.md)) |
+| `target/release/<binary>` | every other tool of the agent, by its binary ([agent tools](./agent-tools.md#the-binaries-the-agent-calls)) |
+| `npx vitest`, `npx tsc --noEmit`, `npx vitepress preview docs` | Vitest watching, TypeScript 7's own check (the lint reports the same errors), the built site served: for a person at the screen, no script (EN-115) |
 
-**When to run what**: a task ends with `npm run fix` and the tests it touched (`npx vitest run <paths>`); `check:all` runs at the push, through the pre-push hook. `check` is not run per task: it repeats what the push runs.
+`package.json` keeps the scripts a person runs and those something calls by their name — npm's lifecycle, a Git hook, the CI, a lane of `check:all`, a tool, another script — and no other (ADR-0082).
+
+**When to run what**: a task ends with `npm run fix` and the tests it touched (`npx vitest run <paths>`); `check:all` runs at the push, through the pre-push hook.
 
 ## The lanes of the full check
 

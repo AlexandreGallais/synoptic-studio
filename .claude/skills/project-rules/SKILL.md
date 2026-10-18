@@ -20,7 +20,7 @@ synoptic-studio: a dependency-free TypeScript library `editor` that draws SVG sy
 - A structural decision is a new ADR; an accepted ADR is superseded, never rewritten.
 - **Never invent a reference**: cite only what was read (a `REF-*` row of `docs/references.md`, `[verified]`, read alone with `target/release/page REF-…`); otherwise a derivation (`docs/derivations/`) or a research request. Sources come through the `library` server (`library_search`, `library_get`, `library_read`), which keeps each page read; the web only for a page it cannot read; how many sources a claim needs: `docs/research/README.md` §2.
 - **A rule earns its place**: it stays only if it makes the code or the docs more correct or more uniform (`docs/conventions/writing.md`, Writing a rule).
-- Use the repository's tools rather than ad-hoc scripts (`docs/tooling/agent-tools.md`), each called by its binary from the checkout's root, `target/release/<binary>`, as its table maps the scripts (ADR-0078): `target/release/replace` or the Edit tool for edits across files, never a Python edit script; `target/release/page [<file>] <id or heading>` rather than `Read` for one row or one section of a long page; `backlog-status`, `context-size`.
+- Use the repository's tools rather than ad-hoc scripts (`docs/tooling/agent-tools.md`), each called by its binary from the checkout's root, `target/release/<binary>`, as it lists them (ADR-0078, ADR-0082): `target/release/replace` or the Edit tool for edits across files, never a Python edit script; `target/release/page [<file>] <id or heading>` rather than `Read` for one row or one section of a long page; `backlog-status`, `context-size`.
 
 ## Code
 

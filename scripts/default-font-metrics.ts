@@ -3,7 +3,7 @@
 // the font files. Inter's static TrueType files are not kept in the repository: download the
 // release `Inter-4.1.zip` (`REF-INTER-RELEASE`), unpack its `extras/ttf/` folder, then run
 //
-//   npm run font:metrics -- <folder holding Inter-Regular.ttf and the other faces>
+//   node scripts/default-font-metrics.ts <folder holding Inter-Regular.ttf and the other faces>
 //
 // The library's own reader (`parseFontMetrics`) reads each face, loaded through Vite since the
 // library's imports name no file extension. The data is a Modified Version of the font under the

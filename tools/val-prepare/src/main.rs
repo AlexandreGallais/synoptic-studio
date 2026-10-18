@@ -1,5 +1,5 @@
 //! `val-prepare <repository root> <feature>` (EN-056): writes the feature's lines in its epic's
-//! checklist and prints the address that opens it. `npm run val:prepare -- F18`.
+//! checklist and prints the address that opens it. `target/release/val-prepare . F18`.
 
 use std::fs;
 use std::path::Path;
@@ -16,7 +16,7 @@ fn main() -> ExitCode {
 /// Writes the feature's checklist lines; its exit code.
 fn prepare(args: &[String]) -> u8 {
     let (Some(root), Some(id)) = (args.first(), args.get(1).and_then(|arg| feature_id(arg))) else {
-        eprintln!("usage: npm run val:prepare -- <feature, F18>");
+        eprintln!("usage: target/release/val-prepare . <feature, F18>");
         return 2;
     };
     let root = Path::new(root);
@@ -24,14 +24,14 @@ fn prepare(args: &[String]) -> u8 {
     let prepared = match plan(root, &id) {
         Ok(prepared) => prepared,
         Err(message) => {
-            eprintln!("val:prepare: {message}");
+            eprintln!("val-prepare: {message}");
             return 1;
         }
     };
 
     for write in &prepared.writes {
         if let Err(error) = fs::write(root.join(&write.path), &write.text) {
-            eprintln!("val:prepare: {}: {error}", write.path.display());
+            eprintln!("val-prepare: {}: {error}", write.path.display());
             return 1;
         }
         println!("written {}", write.path.display());

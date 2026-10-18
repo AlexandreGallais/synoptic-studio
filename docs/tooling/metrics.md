@@ -9,8 +9,8 @@ Measure first, then make each epic faster than the last (Product Owner, RET-001)
 | `.git/metrics/tool-calls.jsonl` | the hook `log-tool-call` (Rust), after each tool call, in the background | one line per call ([the record of each call](#the-record-of-each-call)) |
 | `.git/metrics/tool-uses.jsonl` | each Rust tool of the workspace, at its end (`tools/tool-use`) | one line per use of a tool ([the uses of each tool](#the-uses-of-each-tool)) |
 | `~/.claude/projects/<main checkout's path>/` | Claude Code: one JSON Lines transcript per session, its subagents' beside it | every request with its tokens, every tool call and result, each line with its time, session and branch |
-| `.git/metrics/run.json`, `run-cache.json` | `npm run run:start` and `run:end`; the cache by `run-totals` | the open or last run: start, end (0 while open), sessions; the cache, where each transcript was read up to ([a run's totals](#a-runs-totals)) |
-| `.git/metrics/turns.jsonl` | `npm run metrics:session` without `--all` | one line per turn: start, session, duration, active time, tokens, calls, failures, commits |
+| `.git/metrics/run.json`, `run-cache.json` | `target/release/run-totals start` and `end`; the cache by `run-totals` | the open or last run: start, end (0 while open), sessions; the cache, where each transcript was read up to ([a run's totals](#a-runs-totals)) |
+| `.git/metrics/turns.jsonl` | `target/release/session-report` without `--all` | one line per turn: start, session, duration, active time, tokens, calls, failures, commits |
 | `.git/metrics/transcripts-cache.jsonl` | the metrics' Rust tools (`tools/metrics`, EN-107) | each transcript's events as last read and the offset reached ([reading the transcripts](#reading-the-transcripts)) |
 | `.git/metrics/usage.json` | the status line, at each refresh | the subscription's usage ([status line](#status-line)) |
 | `~/.local/share/agent-library/library.sqlite` | the source library ([sources](./sources.md)) | the pages read, their sections, every search and read with its project |
@@ -54,7 +54,7 @@ Each tool of our own records its own use (EN-102), whoever calls it — the agen
 
 ## The report
 
-`npm run metrics` prints a Markdown report; `-- --since <day>` keeps only what happened from that day on, 00:00 UTC. It reads the main checkout's transcripts, also when run in a worktree.
+`target/release/metrics` prints a Markdown report; `--since <day>` keeps only what happened from that day on, 00:00 UTC. It reads the main checkout's transcripts, also when run in a worktree.
 
 | Section | What it shows |
 | --- | --- |
@@ -136,11 +136,11 @@ A turn restarts at each message, so a run's totals count from its start to its e
 
 | Moment | Command | Does |
 | --- | --- | --- |
-| `/run` starts, or continues in a new session | `npm run run:start` | opens `.git/metrics/run.json` with the time and the session's id; a run already open keeps its start and adds the session |
+| `/run` starts, or continues in a new session | `target/release/run-totals start` | opens `.git/metrics/run.json` with the time and the session's id; a run already open keeps its start and adds the session |
 | each status line refresh | `run-totals status` | the `run …` part, only while a run is open |
-| before each story | `npm run run:should-stop` | `stop` once the week's usage reaches 90 %, else `go`; then the parked stories |
-| any time | `npm run metrics:session -- --run` | the open or last run's table |
-| the run's stop | `npm run run:end` | closes the run, prints the table for the message to the Product Owner |
+| before each story | `target/release/run-totals should-stop` | `stop` once the week's usage reaches 90 %, else `go`; then the parked stories |
+| any time | `target/release/session-report --run` | the open or last run's table |
+| the run's stop | `target/release/run-totals end` | closes the run, prints the table for the message to the Product Owner |
 
 The table holds the duration and the tokens by kind, nothing else (F20's refinement, 2026-10-17):
 
@@ -157,9 +157,9 @@ It counts every assistant request of each session's transcript and its `subagent
 The last message of a session closes with the session report, made with `--all` (`CLAUDE.md`, [writing](../conventions/writing.md#messages-to-the-product-owner)): without it, the report counts the current turn only, which can be seconds of a day's work.
 
 ```sh
-npm run metrics:session -- --all --markdown # the whole session, as a Markdown table, for the chat
-npm run metrics:session -- --all            # the same, for the terminal
-npm run metrics:session                     # the current turn only, saved for the comparison of turns
+target/release/session-report --all --markdown # the whole session, as a Markdown table, for the chat
+target/release/session-report --all            # the same, for the terminal
+target/release/session-report                     # the current turn only, saved for the comparison of turns
 ```
 
 One row: duration (wall and active), tokens, tokens per model (`opus-5-5 2,580,122,562 · haiku-5-5 237,698`), the part written, tool calls and failures, commits (listed up to eight); the subagents count with the session. A report of the current turn is also saved in `.git/metrics/turns.jsonl`, which the **Turns** section lists for a retrospective to compare. A session id as argument (its first characters suffice) reports that session instead of the one changed last.
@@ -176,7 +176,7 @@ The metrics' tools read the transcripts as `run-totals` does: each transcript fr
 
 ## At each retrospective
 
-`RET` reads `npm run metrics` and answers with figures (retro skill):
+`RET` reads `target/release/metrics` and answers with figures (retro skill):
 
 - which commands run most and cost most time: is one worth a script, a cache or a check run less often?
 - the **Tools** section, as a tools team reviews its tools: one never called is a candidate for removal, one failing often a bug or a misleading usage, one slow a target for the next story;
@@ -205,5 +205,5 @@ A long task writes one progress line per step, and stops itself when a step chan
 
 - Sessions started in another folder, such as a worktree, keep their transcripts under another project folder, not read yet.
 - Claude Code deletes transcripts older than `cleanupPeriodDays`: `.claude/settings.json` sets it to 3650, so that every retrospective reads its epic's tokens.
-- `.git/metrics/` lives in this clone only; `npm run records:save` keeps a copy of it, the transcripts and the library in the private records, a local folder outside the repository (ADR-0081); nothing restores them on a new machine.
+- `.git/metrics/` lives in this clone only; `target/release/records-save` keeps a copy of it, the transcripts and the library in the private records, a local folder outside the repository (ADR-0081); nothing restores them on a new machine.
 - Tokens are counted per model request, not per command: a command costs the request that wrote it and the one that read its result.

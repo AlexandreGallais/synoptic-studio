@@ -26,7 +26,7 @@ One task = one commit, referenced as `EN-115.Tn`.
 
 - [x] T1 — The story file (15 min)
 - [x] T2 — The inventory of the 52 scripts and their callers (30 min)
-- [ ] T3 — The scripts without a caller removed; the code, the tests, the pages and the rules on the binaries; ADR-0082 (2 h)
+- [x] T3 — The scripts without a caller removed; the code, the tests, the pages and the rules on the binaries; ADR-0082 (2 h)
 
 ## Inventory
 
@@ -80,3 +80,18 @@ Searched on 2026-10-18 in `package.json`, `.githooks/`, `.github/`, `.mcp.json`,
 | `font:metrics` | none | `node scripts/default-font-metrics.ts` |
 
 26 kept, 26 removed.
+
+## Measures (ADR-0069)
+
+None: no command runs faster or slower. The agent already called each removed script's binary (ADR-0078); `check:all` runs the same lanes with the same commands; `guard-bash` reads a `package.json` of 26 scripts instead of 52 and compares the words of a command instead of one prefix, both well under the hook's 3 ms.
+
+## For the main thread
+
+- ADR-0082 is the agent's decision, to be told to the Product Owner: `story:finish` and `mutate` stay as scripts, though only the agent runs them, since calling their binary takes no lock and calling `heavy-lock` asks each time; dropping them too needs a permission rule for their binaries in `.claude/settings.json`, which is the Product Owner's.
+- Option B of ADR-0082, 9 more scripts removed by moving the lanes' commands into `check-all`, is left: it would write the formatter's and linters' targets twice and rewrite F18's and F19's criterion tests.
+- Left as written, as records: the validated checklists `playground/checklists/epic-17-f18-lines.ts` to `epic-17-f21-lines.ts` and their test `playground/checklist/checklist-page.test.ts`, which name scripts EN-115 removed; the journal, the retrospectives, the done stories, the ADRs' bodies and the research notes.
+- The story auto-merge into `develop` of a story outside a feature (the coordinator's extra task): not done. The edit of `.github/workflows/story-automerge.yml` widening its condition was refused by the permission check as a CI bypass, so neither the workflow, nor ADR-0072's flow, nor `AGENTS.md`'s Merge row changed; the Product Owner makes or allows that change.
+
+### Feedback
+
+| 2026-10-18 | The Product Owner was asked to merge by hand into `develop` EN-114 (#358), the agent's own tooling story, which `story-automerge.yml` does not merge: it accepts into `develop` only `feat/val-`, `nam`, `rev` and `ret` branches. | Handle a tooling story outside a feature alone, merged by GitHub like the others. | Not yet: EN-115's change to the workflow was refused by the permission check as a CI bypass; the Product Owner makes or allows it. |

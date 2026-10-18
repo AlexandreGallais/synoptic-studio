@@ -1,4 +1,4 @@
-//! `replace` (`npm run replace`, RET-002, EN-103): exact text replacements in several files at
+//! `replace` (`target/release/replace`, RET-002, EN-103): exact text replacements in several files at
 //! once, the blocks read from standard input, from the repository's root. Nothing is written unless
 //! every block is read and every old text is found exactly once; then it prints `<n> edits in <m>
 //! files`. Otherwise each problem, then `nothing written`, on standard error, and it exits 1.
