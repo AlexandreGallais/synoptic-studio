@@ -45,7 +45,6 @@
     "docs/api",
     "docs/.vitepress/cache",
     "docs/.vitepress/dist",
-    ".husky/_",
     "CHANGELOG.md",
     "records",
     "src/model/font/inter-metrics.json",

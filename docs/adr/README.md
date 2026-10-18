@@ -43,7 +43,7 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0035](./0035-angle-and-position-for-every-shape.md) | An angle and a position for every shape | Accepted |
 | [0037](./0037-stretched-polygon.md) | A stretched option for the regular polygon | Accepted |
 | [0038](./0038-develop-branch-and-local-checks.md) | A `develop` branch, checks run locally, one CI on the pull request into `main` | Superseded by ADR-0072 |
-| [0039](./0039-local-source-library.md) | A local library of the sources read: SQLite full-text search behind an MCP server | Accepted |
+| [0039](./0039-local-source-library.md) | A local library of the sources read: SQLite full-text search behind an MCP server | Accepted, partly superseded by 0077 |
 | [0040](./0040-agents-md-for-any-agent.md) | `AGENTS.md` holds the rules for any coding agent | Accepted |
 | [0041](./0041-private-records-repository.md) | Private records in a sibling repository, saved by `npm run records:save` | Decision 1 superseded by ADR-0044 |
 | [0042](./0042-folders-by-theme.md) | Folders by theme, 15 modules as a signal, a shape's type in its folder | Superseded by ADR-0043 |
@@ -71,13 +71,17 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0064](./0064-checks-by-level.md) | Checks by level: the story, the feature, the epic | Accepted, from E02 |
 | [0065](./0065-parallel-branches-merged-without-conflicts.md) | Parallel branches merged without conflicts on shared files | Accepted, decision 1 superseded by ADR-0068 |
 | [0066](./0066-a-register-of-exceptions.md) | A register of exceptions, and a byte buffer written once | Accepted |
-| [0067](./0067-release-pull-request-on-develop.md) | The release pull request on `develop`, only the release on `main` | Accepted, confirmed at VAL-019 |
+| [0067](./0067-release-pull-request-on-develop.md) | The release pull request on `develop`, only the release on `main` | Accepted, confirmed at VAL-019; decisions 1 to 3 and 5 superseded by 0079 |
 | [0068](./0068-tables-without-padding-moved-to-f19.md) | Tables without padding moved to F19's formatter | Accepted, confirmed at VAL-019 |
 | [0069](./0069-tooling-fast-for-the-agent.md) | Tooling as fast as it can be, for the agent | Accepted |
 | [0070](./0070-tests-without-over-testing.md) | Tests without over-testing: one claim, one place; slow preparation done once | Accepted |
 | [0071](./0071-type-errors-with-the-lint-declarations-by-oxc.md) | Type errors with the lint, declarations by Oxc | Accepted |
-| [0072](./0072-how-a-run-works.md) | How a run works: the go-ahead, the branches and merges, three agents and one heavy command | Accepted |
-| [0073](./0073-every-new-tool-in-rust.md) | Every new script, hook or agent tool written in Rust | Accepted |
+| [0072](./0072-how-a-run-works.md) | How a run works: the go-ahead, the branches and merges, three agents and one heavy command | Accepted, its release lines superseded by 0079 |
+| [0073](./0073-every-new-tool-in-rust.md) | Every new script, hook or agent tool written in Rust | Accepted, decision 1 partly superseded by 0078 |
 | [0074](./0074-the-agent-shapes-its-own-method-and-tools.md) | The agent shapes its own method and tools, the Product Owner decides | Accepted |
 | [0075](./0075-the-toolchain-on-oxc.md) | The toolchain on Oxc: oxlint, the project's Rust linter, oxfmt and TypeScript 7 | Accepted |
 | [0076](./0076-ported-tooling-code-under-its-licence.md) | Code ported into the tools under its licence, never into the library | Accepted |
+| [0077](./0077-the-library-server-in-rust-on-rmcp.md) | The library's server in Rust on rmcp, its file named by its own variable | Accepted |
+| [0078](./0078-the-agents-tools-called-by-their-binary.md) | The hooks, the Git hooks and the agent call the Rust tools by their binary's path | Accepted, its `.husky/` superseded by 0080 |
+| [0079](./0079-the-release-on-a-release-branch-by-our-own-tool.md) | The release prepared on a release branch from `develop`, published by our own tool | Accepted |
+| [0080](./0080-the-git-hooks-in-githooks-installed-by-our-own-tool.md) | The Git hooks in `.githooks/`, installed by `git-hooks install` | Accepted |

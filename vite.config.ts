@@ -49,7 +49,6 @@ const TEST_PROJECTS: readonly TestProjectInlineConfiguration[] = [
         "src/**/*.test.ts",
         "tests/*.test.ts",
         "docs/.vitepress/**/*.test.ts",
-        ".claude/hooks/*.test.ts",
         "scripts/*.test.ts",
       ],
       isolate: false,
@@ -89,8 +88,6 @@ export default defineConfig(({ mode }) => ({
     },
     // Each test font file read once per run, its bytes handed to every test file (EN-089).
     globalSetup: ["tests/font-files-setup.ts"],
-    // Temporal is behind a flag in Node.js 24: the metrics scripts use it (REF-NODE-TS).
-    execArgv: ["--harmony-temporal"],
     // Half the machine's cores: the other checks of `check:all` run beside the tests (EN-045).
     maxWorkers: "50%",
     projects: [...TEST_PROJECTS],

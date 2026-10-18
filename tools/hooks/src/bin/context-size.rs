@@ -45,12 +45,17 @@ fn start_of(transcript: &Path) -> Option<Start> {
     first_request(&fs::read_to_string(transcript).ok()?, &meta)
 }
 
-fn main() {
+fn main() -> std::process::ExitCode {
+    tool_use::run("context-size", "", sizes)
+}
+
+/// Prints the tables of the folders named; the exit code.
+fn sizes() -> u8 {
     let folders: Vec<String> = std::env::args().skip(1).collect();
 
     if folders.is_empty() {
         eprintln!("Usage: npm run context:size -- <session or subagents folder>…");
-        std::process::exit(2);
+        return 2;
     }
 
     let starts: Vec<Start> = folders
@@ -60,4 +65,5 @@ fn main() {
         .collect();
 
     print!("{}", tables(&starts));
+    0
 }

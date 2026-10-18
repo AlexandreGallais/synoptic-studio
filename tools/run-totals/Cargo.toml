@@ -8,6 +8,10 @@ publish.workspace = true
 
 [dependencies]
 hooks = { path = "../hooks" }
+tool-use = { path = "../tool-use" }
+
+[dev-dependencies]
+test-support = { path = "../test-support" }
 
 [lints]
 workspace = true

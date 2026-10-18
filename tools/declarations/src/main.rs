@@ -102,13 +102,18 @@ fn run(source: &Path, output: &Path) -> io::Result<Result<usize, Vec<String>>> {
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
 
-    let [source, output] = args.as_slice() else {
+    tool_use::run("declarations", "", || declare(&args))
+}
+
+/// Writes the declarations; the exit code.
+fn declare(args: &[String]) -> u8 {
+    let [source, output] = args else {
         eprintln!("usage: declarations <source folder> <output folder>");
-        return ExitCode::from(2);
+        return 2;
     };
 
     match run(Path::new(source), Path::new(output)) {
-        Ok(Ok(_)) => ExitCode::SUCCESS,
+        Ok(Ok(_)) => 0,
         Ok(Err(errors)) => {
             for error in errors {
                 eprintln!("{error}");
@@ -117,11 +122,11 @@ fn main() -> ExitCode {
                 "declarations: write the type of each exported constant above whose value is not \
                  a plain literal (TypeScript's isolatedDeclarations, EN-091)"
             );
-            ExitCode::FAILURE
+            1
         }
         Err(error) => {
             eprintln!("declarations: {source}: {error}");
-            ExitCode::from(2)
+            2
         }
     }
 }

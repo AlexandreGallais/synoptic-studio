@@ -90,22 +90,27 @@ fn check(input: &str) -> io::Result<String> {
 }
 
 fn main() -> ExitCode {
+    tool_use::run("refuse-shared-files", "", refuse)
+}
+
+/// Checks the pushed refs read on standard input; the exit code.
+fn refuse() -> u8 {
     let mut input = String::new();
 
     if let Err(error) = io::stdin().read_to_string(&mut input) {
         eprintln!("refuse-shared-files: {error}");
-        return ExitCode::from(1);
+        return 1;
     }
 
     match check(&input) {
-        Ok(refusals) if refusals.is_empty() => ExitCode::SUCCESS,
+        Ok(refusals) if refusals.is_empty() => 0,
         Ok(refusals) => {
             eprint!("{refusals}");
-            ExitCode::from(1)
+            1
         }
         Err(error) => {
             eprintln!("refuse-shared-files: {error}");
-            ExitCode::from(1)
+            1
         }
     }
 }

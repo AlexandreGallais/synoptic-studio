@@ -26,7 +26,7 @@ One command formats every file: `npm run format` (`--write`) or `format:check` (
 - **Prose stays on its lines**: a paragraph or a list item stays on the lines it was written on (`proseWrap: "preserve"`), so a reflow never touches lines nobody edited.
 - **Targets are named**: the folders and root files listed in `package.json`, never `.`, which would walk into the worktrees of `.claude/worktrees/` and the build outputs (EN-045). `.oxfmtrc.json`'s `ignorePatterns` holds plain paths only.
 
-Run `npm run fix` before each commit: it runs the formatter, then oxlint and the project's linter with `--fix`. After it, `npm run check` finds no layout issue. At the commit, `lint-staged` runs the same tools on the staged files, and secretlint on each of them.
+Run `npm run fix` before each commit: it runs the formatter, then oxlint and the project's linter with `--fix`. After it, `npm run check` finds no layout issue. At the commit, the pre-commit hook runs the same tools on the staged files, and the secret scan on each of them ([hooks](../tooling/git-workflow.md#hooks-githooks)).
 
 ## Blank lines (`@stylistic/padding-line-between-statements`)
 
@@ -52,6 +52,6 @@ svg.append(createPathElement(document, pathData));
 
 ## Format on save
 
-- **WebStorm and IntelliJ** (`.idea/`, in the repository): the Oxc plugin from the JetBrains Marketplace formats with oxfmt and shows oxlint's findings. The editor alone pads tables; `lint-staged` unpads them at the commit.
+- **WebStorm and IntelliJ** (`.idea/`, in the repository): the Oxc plugin from the JetBrains Marketplace formats with oxfmt and shows oxlint's findings. The editor alone pads tables; the pre-commit hook unpads them at the commit.
 - **VS Code** (`.vscode/`): the recommended extensions are `oxc.oxc-vscode` and `editorconfig.editorconfig`; `formatOnSave`, then `source.fixAll.oxc`.
 - On save, unused imports disappear and mixed imports split into `import` and `import type`. Import paths and barrels are fixed by `npm run fix` (`local/canonical-import-path`, `local/barrel-exports`).

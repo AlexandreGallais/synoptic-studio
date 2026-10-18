@@ -19,7 +19,7 @@ const FORMAT = "cargo run --release -q -p format --";
 /** The command of the project's linter, run after oxlint (EN-075). */
 const PROJECT_LINT = "cargo run --release -q -p lint --";
 
-/** The Markdown pages the project's linter leaves out: the changelog, written by release-please. */
+/** The Markdown pages the project's linter leaves out: the changelog, written by `release prepare` and checked by `release check`. */
 const UNLINTED_PAGES = new Set(["CHANGELOG.md"]);
 
 /** oxfmt, as npm installs it. */
@@ -182,10 +182,11 @@ describe("check tools given explicit targets (EN-045)", () => {
   });
 
   it("[F19.AC5] formats with the formatter only, staged files included, never Prettier", () => {
-    const staged = readFileSync(join(ROOT, ".lintstagedrc.json"), "utf8");
+    // The pre-commit hook's tasks, `tools/git-hooks/src/staged.rs`, are tested by their crate.
+    const staged = readFileSync(join(ROOT, "tools", "git-hooks", "src", "staged.rs"), "utf8");
     const scripts = SCRIPTS.values().toArray().join("\n");
 
-    expect(staged).toContain(`"${FORMAT} --write"`);
+    expect(staged).toContain('krate: "format"');
     expect(`${staged}\n${scripts}`).not.toMatch(/\bprettier /u);
     expect(existsSync(join(ROOT, ".prettierrc.json"))).toBe(false);
   });
@@ -223,11 +224,9 @@ describe("check tools given explicit targets (EN-045)", () => {
 
   it("[F19.AC4] gives the project's linter every tracked Markdown page", () => {
     const pages = TRACKED.filter((path) => path.endsWith(".md") && !UNLINTED_PAGES.has(path));
-    const staged: unknown = JSON.parse(readFileSync(join(ROOT, ".lintstagedrc.json"), "utf8"));
 
     expect(pages.length).toBeGreaterThan(0);
     expect(leftOut(targetsOf("lint", PROJECT_LINT), pages)).toEqual([]);
-    expect(staged).toHaveProperty(["*.md"], [`${FORMAT} --write`, `${PROJECT_LINT} --fix`]);
   });
 
   it(
@@ -241,8 +240,8 @@ describe("check tools given explicit targets (EN-045)", () => {
     },
   );
 
-  it("[F18.AC20] runs secretlint on the tracked files only", () => {
-    expect(SCRIPTS.get("lint:secrets")).toMatch(/^git ls-files -z \| xargs -0 secretlint /u);
+  it("[F18.AC20] runs the secret scan on the tracked files only", () => {
+    expect(SCRIPTS.get("lint:secrets")).toBe("cargo run --release -q -p secret-scan");
   });
 });
 
@@ -256,7 +255,10 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
 
   it("[F18.AC7] merges stories one at a time under the merge lock", () => {
     expect(SCRIPTS.get("story:finish")).toMatch(
-      new RegExp(String.raw`${HEAVY_LOCK.source}--lock merge node scripts/story-finish\.ts$`, "u"),
+      new RegExp(
+        String.raw`${HEAVY_LOCK.source}--lock merge cargo run --release -q -p repo-tools --bin story-finish --$`,
+        "u",
+      ),
     );
   });
 
@@ -267,6 +269,17 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
       "npm run --silent rust:advisories",
       "npm run --silent rust:coverage",
       "cargo check --workspace --all-targets --locked --quiet --target x86_64-pc-windows-msvc",
+      // The release binaries the hooks and the agent call by their path, none older than its sources (ADR-0078).
+      "npm run --silent rust:fresh",
+    ]);
+  });
+
+  it("fixes the Rust code in fix too: Clippy's fixes when a Rust file changed, then rustfmt (EN-113)", () => {
+    const steps = SCRIPTS.get("fix")?.split(" && ") ?? [];
+
+    expect(steps.slice(-2)).toEqual([
+      `{ [ -z "$(git status --porcelain -- '*.rs' '*Cargo.toml' Cargo.lock)" ] || cargo clippy --workspace --all-targets --locked --quiet --fix --allow-dirty --allow-staged; }`,
+      "cargo fmt --all",
     ]);
   });
 
@@ -291,9 +304,7 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
   it("[F19.AC9] fetches the advisory database in the CI before check:all", () => {
     const workflow = readFileSync(join(ROOT, ".github", "workflows", "ci.yml"), "utf8");
 
-    expect(workflow).toMatch(
-      /- run: cargo install --locked cargo-llvm-cov@0\.9\.1 cargo-deny@0\.20\.2\n {6}- run: cargo deny fetch db\n {6}- run: npm run check:all\n/u,
-    );
+    expect(workflow).toMatch(/- run: cargo deny fetch db\n {6}- run: npm run check:all\n/u);
   });
 
   it("[F19.AC9] runs the workspace's tests under a floor of lines and functions, failing aloud without the tool", () => {
@@ -344,9 +355,9 @@ describe("the Rust workspace at the root (EN-068)", () => {
     expect(existsSync(join(ROOT, "tools", name, "Cargo.lock"))).toBe(false);
   });
 
-  it("[F19.AC9] leaves the build output target/ to Git, oxlint, the formatter and secretlint", () => {
+  it("[F19.AC9] leaves the build output target/ to Git, oxlint, the formatter and the secret scan", () => {
     expect(readFileSync(join(ROOT, ".gitignore"), "utf8")).toMatch(/^\/target\/$/mu);
-    expect(readFileSync(join(ROOT, ".secretlintignore"), "utf8")).toMatch(/^target$/mu);
+    expect(readFileSync(join(ROOT, ".secret-scan-ignore"), "utf8")).toMatch(/^target$/mu);
     expect(readFileSync(join(ROOT, ".oxlintrc.json"), "utf8")).toContain('"target/**"');
     expect(readFileSync(join(ROOT, ".oxfmtrc.json"), "utf8")).toMatch(/^ {4}"target",?$/mu);
   });
@@ -361,8 +372,9 @@ describe("the Rust tools run as crates of the workspace (EN-068)", () => {
   it("[F19.AC9] runs each Rust tool of a script or a Git hook by its crate, never by its manifest", () => {
     const callers = [
       SCRIPTS.values().toArray().join("\n"),
-      readFileSync(join(ROOT, ".husky", "pre-push"), "utf8"),
-      readFileSync(join(ROOT, ".husky", "commit-msg"), "utf8"),
+      readFileSync(join(ROOT, ".githooks", "pre-push"), "utf8"),
+      readFileSync(join(ROOT, ".githooks", "tool.sh"), "utf8"),
+      readFileSync(join(ROOT, ".githooks", "commit-msg"), "utf8"),
     ].join("\n");
     const runs = callers.match(/cargo run(?:(?!cargo run)[^&;\n])*/gu) ?? [];
 
@@ -371,9 +383,29 @@ describe("the Rust tools run as crates of the workspace (EN-068)", () => {
     expect(callers).not.toMatch(/manifest-path/u);
   });
 
+  it("[F21.AC1] calls the release binaries by their path from the Git hooks (ADR-0078)", () => {
+    const hooks = ["pre-commit", "pre-push", "commit-msg"].map((hook) =>
+      readFileSync(join(ROOT, ".githooks", hook), "utf8"),
+    );
+    const tool = readFileSync(join(ROOT, ".githooks", "tool.sh"), "utf8");
+
+    // Each hook calls `tool <crate> <binary>`, which runs `target/release/<binary>`, and Cargo
+    // only when the binary is missing, a checkout not built yet (EN-108).
+    expect(hooks[0]).toMatch(/^tool git-hooks git-hooks pre-commit$/mu);
+    expect(hooks[1]).toMatch(/^tool shared-files refuse-shared-files$/mu);
+    expect(hooks[1]).toMatch(/^tool git-hooks git-hooks branch$/mu);
+    expect(hooks[2]).toMatch(/^tool git-hooks git-hooks commit-msg "\$1"$/mu);
+    expect(hooks[2]).toContain('then tool rule-docs check-rule-docs "$1"; fi');
+    expect(hooks.join("\n")).not.toContain("cargo run");
+
+    expect(tool).toMatch(
+      /if \[ -x "target\/release\/\$binary" \]; then\n\s+"target\/release\/\$binary" "\$@"\n\s+else\n\s+cargo run --release -q -p "\$crate" --bin "\$binary" -- "\$@"/u,
+    );
+  });
+
   it("[F19.AC9] builds the release binaries of the workspace from prepare", () => {
     expect(SCRIPTS.get("rust:build")).toBe("cargo build --release --workspace --locked");
-    expect(SCRIPTS.get("prepare")).toBe("husky && npm run rust:build");
+    expect(SCRIPTS.get("prepare")).toBe("npm run rust:build && target/release/git-hooks install");
   });
 });
 

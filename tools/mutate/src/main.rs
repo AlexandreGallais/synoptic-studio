@@ -15,10 +15,21 @@ const GRACE: Duration = Duration::from_secs(30);
 
 fn main() -> ExitCode {
     let argv: Vec<String> = env::args().skip(1).collect();
+    let mode = if argv.iter().any(|argument| argument == "--all") {
+        "--all"
+    } else {
+        ""
+    };
+
+    tool_use::run("mutate", mode, || mutate(&argv))
+}
+
+/// Tries the mutations the arguments ask for; its exit code.
+fn mutate(argv: &[String]) -> u8 {
     let (options, command) = argv
         .iter()
         .position(|argument| argument == "--")
-        .map_or((&argv[..], None), |at| (&argv[..at], Some(&argv[at + 1..])));
+        .map_or((argv, None), |at| (&argv[..at], Some(&argv[at + 1..])));
     let all = options.iter().any(|option| option == "--all");
     let files: Vec<String> = options.iter().filter(|o| *o != "--all").cloned().collect();
     let default: Vec<String> = VITEST_RELATED
@@ -33,11 +44,11 @@ fn main() -> ExitCode {
         eprintln!(
             "usage: npm run mutate -- [--all] <files…> [-- <test command with {{file}} or {{test}}>]"
         );
-        return ExitCode::from(2);
+        return 2;
     }
     let Ok(dir) = env::current_dir() else {
         eprintln!("mutate: no current folder");
-        return ExitCode::from(2);
+        return 2;
     };
     let request = Request {
         dir: &dir,
@@ -60,11 +71,11 @@ fn main() -> ExitCode {
                 )
             });
 
-            ExitCode::from(u8::from(survived))
+            u8::from(survived)
         }
         Err(error) => {
             eprintln!("mutate: {error}");
-            ExitCode::from(2)
+            2
         }
     }
 }

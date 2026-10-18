@@ -2,7 +2,7 @@
 
 use std::fs;
 use std::io::Write;
-use std::process::{Command, Stdio};
+use std::process::Stdio;
 
 use hooks::json::{parse, quote};
 use hooks::limit::{AGENT_LIMIT, deny_output, refusal, running_before};
@@ -86,7 +86,7 @@ fn hook_on(lines: &[String], id: &str, tool: &str, tool_input: &str) -> String {
         quote(&folder.display().to_string()),
         quote(&transcript.display().to_string())
     );
-    let mut child = Command::new(env!("CARGO_BIN_EXE_limit-agents"))
+    let mut child = test_support::command(env!("CARGO_BIN_EXE_limit-agents"))
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .spawn()
@@ -136,7 +136,7 @@ fn f18_ac2_the_hook_refuses_a_fourth_subagent_and_lets_a_third_through() {
 fn the_hook_lets_the_call_through_when_it_cannot_read() {
     assert_eq!(hook(&["{".to_owned()], "a1"), "");
 
-    let mut child = Command::new(env!("CARGO_BIN_EXE_limit-agents"))
+    let mut child = test_support::command(env!("CARGO_BIN_EXE_limit-agents"))
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .spawn()

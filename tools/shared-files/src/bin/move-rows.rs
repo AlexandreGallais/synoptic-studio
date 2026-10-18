@@ -70,12 +70,17 @@ fn move_rows(path: &Path) -> io::Result<Vec<String>> {
 }
 
 fn main() -> ExitCode {
+    tool_use::run("move-rows", "", move_story_rows)
+}
+
+/// Moves the rows of the branch's story; the exit code.
+fn move_story_rows() -> u8 {
     let Some(branch) = env::args().nth(1) else {
         eprintln!("usage: move-rows <story branch>");
-        return ExitCode::from(2);
+        return 2;
     };
     let Some(story) = story_of(&branch) else {
-        return ExitCode::SUCCESS;
+        return 0;
     };
     let result =
         story_file(&story).and_then(|file| file.map_or(Ok(Vec::new()), |path| move_rows(&path)));
@@ -85,11 +90,11 @@ fn main() -> ExitCode {
             for path in written {
                 println!("{path}");
             }
-            ExitCode::SUCCESS
+            0
         }
         Err(error) => {
             eprintln!("move-rows: {error}");
-            ExitCode::from(1)
+            1
         }
     }
 }

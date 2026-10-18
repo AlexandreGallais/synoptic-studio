@@ -1,7 +1,8 @@
 //! `git-sequences sync|commit` (`npm run git:sync`, `npm run git:commit`, EN-100): one call for a
 //! Git sequence the agent ran step by step, in the checkout it is started from. Each step's output
 //! is kept back and printed only when the step fails, then the sequence stops; on success one line
-//! says where the branch stands. `HUSKY` is removed from the steps' environment: the hooks run.
+//! says where the branch stands; the Git hooks run as for any commit. A sync then rebuilds the
+//! release binaries of a checkout that has a Cargo workspace (ADR-0078).
 
 use std::env;
 use std::fs;
@@ -10,15 +11,14 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, ExitCode, Stdio};
 
 use git_sequences::{
-    Branch, Request, Source, Target, branch_of, commit_refusal, commit_steps, fetch_step,
-    message_refusal, parse, sync_steps, sync_target,
+    Branch, Request, Source, Target, branch_of, changes_refusal, changes_step, commit_refusal,
+    commit_steps, fetch_step, message_refusal, parse, sync_steps, sync_target,
 };
 
 /// Runs one Git step, the text given on its standard input; its output, or Git's own message.
 fn git(step: &[String], input: Option<&str>) -> Result<String, String> {
     let mut child = Command::new("git")
         .args(step)
-        .env_remove("HUSKY")
         .stdin(if input.is_some() {
             Stdio::piped()
         } else {
@@ -112,6 +112,12 @@ fn sync(branch: &Branch, base: Option<&str>, top: &Path) -> Result<String, Strin
     .collect();
     let target = sync_target(branch, base, &story_files(top), &remotes)?;
 
+    if let Some(refusal) =
+        changes_refusal(branch_name(branch), &target, &git(&changes_step(), None)?)
+    {
+        return Err(refusal);
+    }
+
     for step in sync_steps(&target) {
         git(&step, None)?;
     }
@@ -157,6 +163,31 @@ fn commit(
     Ok(format!("{} on {}{pushed}", head, branch_name(branch)))
 }
 
+/// Rebuilds the checkout's release binaries after a sync brought new sources: its hooks, its Git
+/// hooks and the agent call them by their path (ADR-0078). A checkout without a Cargo workspace
+/// has none; a failed build stops with Cargo's message.
+fn rebuild(top: &Path) -> Result<bool, String> {
+    if !top.join("Cargo.toml").is_file() {
+        return Ok(false);
+    }
+
+    let output = Command::new("cargo")
+        .args(["build", "--release", "--workspace", "--locked", "--quiet"])
+        .current_dir(top)
+        .stdin(Stdio::null())
+        .output()
+        .map_err(|error| format!("cargo: {error}"))?;
+
+    if output.status.success() {
+        Ok(true)
+    } else {
+        Err(format!(
+            "synced, but the rebuild of target/release failed (cargo build --release --workspace --locked):\n{}",
+            String::from_utf8_lossy(&output.stderr).trim()
+        ))
+    }
+}
+
 fn run(argv: &[String]) -> Result<String, String> {
     let request = parse(argv)?;
     let top = PathBuf::from(git_words(&["rev-parse", "--show-toplevel"])?);
@@ -165,7 +196,13 @@ fn run(argv: &[String]) -> Result<String, String> {
         .file_name()
         .map_or_else(String::new, |name| name.to_string_lossy().into_owned());
     let result = match &request {
-        Request::Sync { base } => sync(&branch, base.as_deref(), &top),
+        Request::Sync { base } => sync(&branch, base.as_deref(), &top).and_then(|line| {
+            Ok(if rebuild(&top)? {
+                format!("{line}; release binaries rebuilt")
+            } else {
+                line
+            })
+        }),
         Request::Commit {
             message,
             paths,
@@ -178,15 +215,16 @@ fn run(argv: &[String]) -> Result<String, String> {
 
 fn main() -> ExitCode {
     let argv: Vec<String> = env::args().skip(1).collect();
+    let subcommand = argv.first().map_or("", String::as_str);
 
-    match run(&argv) {
+    tool_use::run("git-sequences", subcommand, || match run(&argv) {
         Ok(line) => {
             println!("{line}");
-            ExitCode::SUCCESS
+            0
         }
         Err(reason) => {
             eprintln!("git-sequences: {reason}");
-            ExitCode::from(1)
+            1
         }
-    }
+    })
 }

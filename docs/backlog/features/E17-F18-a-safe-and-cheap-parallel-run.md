@@ -13,7 +13,7 @@ Written at RET-003 (2026-10-16) from the Product Owner's decisions (ADR-0063, AD
 
 ## Acceptance criteria
 
-1. Release pull request on `develop`, only the release on `main`.
+1. ~~Release pull request on `develop`~~, only the release on `main`. The first half superseded on 2026-10-18 by [ADR-0079](../../adr/0079-the-release-on-a-release-branch-by-our-own-tool.md): the project's tool prepares a release on a release branch from `develop`, without release-please's pull request (EN-112).
 2. A fourth subagent refused, naming those running.
 3. One heavy command at a time across worktrees, a stale lock taken over.
 4. Append-only logs merged by union, rows kept unique (tables without padding moved to F19, EN-048, ADR-0068).

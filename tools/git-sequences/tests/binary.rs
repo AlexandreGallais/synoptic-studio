@@ -18,18 +18,11 @@ static NEXT: AtomicUsize = AtomicUsize::new(0);
 /// A command without the `GIT_*` variables of the process running the tests, nor the user's or the
 /// system's Git config: an empty home of its own.
 fn clean(program: &str, dir: &Path) -> Command {
-    let mut command = Command::new(program);
+    let mut command = test_support::command(program);
     let home = env::temp_dir().join(format!("git-sequences-home-{}", std::process::id()));
 
     fs::create_dir_all(&home).expect("home made");
     command.current_dir(dir);
-
-    for (name, _) in env::vars_os() {
-        if name.to_string_lossy().starts_with("GIT_") {
-            command.env_remove(name);
-        }
-    }
-
     command.env("HOME", home).env("GIT_CONFIG_NOSYSTEM", "1");
     command
 }
@@ -50,7 +43,6 @@ fn git(dir: &Path, words: &[&str]) -> String {
 fn tool(dir: &Path, words: &[&str], input: &str) -> Output {
     let mut child = clean(env!("CARGO_BIN_EXE_git-sequences"), dir)
         .args(words)
-        .env("HUSKY", "0")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
@@ -363,14 +355,14 @@ fn stops_at_the_first_failing_step() {
 }
 
 #[test]
-fn runs_the_hooks_even_when_husky_is_switched_off() {
+fn runs_the_hooks_and_stops_on_their_failure() {
     let repos = repos();
 
-    // The hook fails and prints the HUSKY it sees: the tool runs with HUSKY=0.
+    // The hook fails: the commit stops with its message.
     write(
         &repos.work,
         ".git/hooks/pre-commit",
-        "#!/bin/sh\necho \"hook refuses, HUSKY=[$HUSKY]\" >&2\nexit 1\n",
+        "#!/bin/sh\necho \"hook refuses\" >&2\nexit 1\n",
     );
     let chmod = clean("chmod", &repos.work)
         .args(["+x", ".git/hooks/pre-commit"])
@@ -383,7 +375,7 @@ fn runs_the_hooks_even_when_husky_is_switched_off() {
 
     assert!(!output.status.success());
     assert!(
-        stderr(&output).contains("hook refuses, HUSKY=[]"),
+        stderr(&output).contains("hook refuses"),
         "{}",
         stderr(&output)
     );
@@ -414,4 +406,108 @@ fn prints_its_usage_on_a_malformed_call() {
 
     assert!(!output.status.success());
     assert!(stderr(&output).contains("usage: npm run git:sync"));
+}
+
+#[test]
+fn f21_ac2_names_the_uncommitted_files_that_stop_a_rebase() {
+    let repos = repos();
+
+    move_feature_on(&repos, "feature.md", "feature\n");
+    // A tracked file changed, a new file staged; an untracked file blocks nothing.
+    write(&repos.work, "README.md", "changed\n");
+    write(&repos.work, "staged.md", "staged\n");
+    git(&repos.work, &["add", "staged.md"]);
+    write(&repos.work, "loose.md", "untracked\n");
+
+    let head = git(&repos.work, &["rev-parse", "HEAD"]);
+    let output = tool(&repos.work, &["sync"], "");
+
+    assert_eq!(output.status.code(), Some(1));
+    assert_eq!(
+        stderr(&output),
+        format!(
+            "git-sequences: {STORY} not rebased: the tree holds uncommitted changes, which the rebase refuses; commit or stash them, then run again:\n  M README.md\n  A staged.md\n"
+        )
+    );
+    assert_eq!(git(&repos.work, &["rev-parse", "HEAD"]), head);
+    assert_eq!(
+        git(
+            &repos.work,
+            &["status", "--porcelain", "--untracked-files=no"]
+        ),
+        "M README.md\nA  staged.md"
+    );
+}
+
+/// Runs a sync with a `cargo` stub first on `PATH`, a shell script (Unix only) which logs its call
+/// and exits with `code`.
+#[cfg(unix)]
+fn sync_with_cargo(repos: &Repos, code: u8) -> (Output, String) {
+    let stubs = repos.root.join("stubs");
+    let log = repos.root.join("cargo.log");
+
+    write(
+        &stubs,
+        "cargo",
+        &format!(
+            "#!/bin/sh\necho \"$PWD $*\" >> \"{}\"\necho 'error: it broke' >&2\nexit {code}\n",
+            log.display()
+        ),
+    );
+    fs::set_permissions(
+        stubs.join("cargo"),
+        <fs::Permissions as std::os::unix::fs::PermissionsExt>::from_mode(0o755),
+    )
+    .expect("stub runs");
+    let path = format!(
+        "{}:{}",
+        stubs.display(),
+        env::var("PATH").unwrap_or_default()
+    );
+    let output = clean(env!("CARGO_BIN_EXE_git-sequences"), &repos.work)
+        .arg("sync")
+        .env("PATH", path)
+        .stdin(Stdio::null())
+        .output()
+        .expect("the tool runs");
+
+    (output, fs::read_to_string(log).unwrap_or_default())
+}
+
+#[cfg(unix)]
+#[test]
+fn rebuilds_the_release_binaries_of_a_cargo_workspace_after_a_sync() {
+    let repos = repos();
+
+    move_feature_on(&repos, "feature.md", "feature\n");
+    // Without a workspace, nothing is built.
+    let (output, calls) = sync_with_cargo(&repos, 0);
+
+    assert!(output.status.success(), "{}", stderr(&output));
+    assert_eq!(calls, "");
+    assert!(!stdout(&output).contains("rebuilt"));
+    // With one, its release binaries are, in the checkout's folder.
+    write(&repos.work, "Cargo.toml", "[workspace]\n");
+    let (output, calls) = sync_with_cargo(&repos, 0);
+    let work = fs::canonicalize(&repos.work).expect("work");
+
+    assert!(output.status.success(), "{}", stderr(&output));
+    assert_eq!(
+        calls,
+        format!(
+            "{} build --release --workspace --locked --quiet\n",
+            work.display()
+        )
+    );
+    assert!(
+        stdout(&output).ends_with("; release binaries rebuilt\n"),
+        "{}",
+        stdout(&output)
+    );
+    // A failed build stops with Cargo's message.
+    let (output, _) = sync_with_cargo(&repos, 1);
+
+    assert_eq!(output.status.code(), Some(1));
+    assert!(stderr(&output).contains("synced, but the rebuild of target/release failed"));
+    assert!(stderr(&output).contains("error: it broke"));
 }

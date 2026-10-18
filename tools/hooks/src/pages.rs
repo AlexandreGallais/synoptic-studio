@@ -325,17 +325,38 @@ pub fn refusal_without_library(url: &str) -> String {
     )
 }
 
-/// The library's file, as its scripts open it: `LIBRARY_PATH`, else a file of the user's data
-/// folder; `None` without either.
+/// The variable naming the library's file. Not `LIBRARY_PATH`, the C toolchain's library search
+/// path, which Apple's `python3` sets to `/usr/local/lib` for the processes it starts (SP-023).
+pub const FILE_VARIABLE: &str = "AGENT_LIBRARY_FILE";
+
+/// The library's file, the one function the hooks, the library's server and its tools open it by
+/// (AUD-023): the value of `AGENT_LIBRARY_FILE`, else a file of the user's data folder; `None`
+/// without either. An empty value counts as none. Never `LIBRARY_PATH`, the C toolchain's search
+/// path (EN-106).
 #[must_use]
-pub fn library_file(library_path: Option<String>, home: Option<String>) -> Option<PathBuf> {
-    library_path.map(PathBuf::from).or_else(|| {
-        home.map(|home| {
-            PathBuf::from(home)
-                .join(".local")
-                .join("share")
-                .join("agent-library")
-                .join("library.sqlite")
+pub fn library_file(variable: Option<String>, home: Option<String>) -> Option<PathBuf> {
+    variable
+        .filter(|value| !value.is_empty())
+        .map(PathBuf::from)
+        .or_else(|| {
+            home.filter(|home| !home.is_empty()).map(|home| {
+                PathBuf::from(home)
+                    .join(".local")
+                    .join("share")
+                    .join("agent-library")
+                    .join("library.sqlite")
+            })
         })
-    })
+}
+
+/// The library's file for this process: `AGENT_LIBRARY_FILE`, else the data folder of the home
+/// `HOME` names, or `USERPROFILE` on Windows.
+#[must_use]
+pub fn library_file_of_process() -> Option<PathBuf> {
+    library_file(
+        std::env::var(FILE_VARIABLE).ok(),
+        std::env::var("HOME")
+            .or_else(|_| std::env::var("USERPROFILE"))
+            .ok(),
+    )
 }

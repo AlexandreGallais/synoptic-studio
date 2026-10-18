@@ -280,15 +280,10 @@ fn writes_json_back() {
 /// hook, `GIT_DIR` names the repository itself, and a set-up inheriting it rewrote its config. Nor
 /// the user's or the system's Git config: an empty home of its own.
 fn clean(program: &str) -> Command {
-    let mut command = Command::new(program);
+    let mut command = test_support::command(program);
     let home = std::env::temp_dir().join(format!("check-handback-home-{}", std::process::id()));
 
     fs::create_dir_all(&home).expect("home");
-    for (name, _) in std::env::vars_os() {
-        if name.to_string_lossy().starts_with("GIT_") {
-            command.env_remove(name);
-        }
-    }
     command.env("HOME", home).env("GIT_CONFIG_NOSYSTEM", "1");
     command
 }

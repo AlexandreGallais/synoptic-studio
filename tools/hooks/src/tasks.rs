@@ -1,10 +1,11 @@
 //! Background tasks of a session, read from its transcript: which tool calls start one — a subagent,
-//! a monitor, a call run in the background — and which lines end one: its notification, an error
-//! result when it was refused before it started, or a subagent's result when it ran in the
-//! foreground. The Rust twin of `.claude/hooks/status-tasks.ts`
-//! and of `withTasks` in `status-tokens.ts`, until F19 ports the status line and drops those.
+//! a monitor, a call run in the background, a message that resumes a subagent — and which lines end
+//! one: its notification, an error result when it was refused before it started, or a subagent's
+//! result when it ran in the foreground. Read by the status line and by `limit-agents`; rewritten from
+//! `.claude/hooks/status-tasks.ts` and `withTasks` of `status-tokens.ts` (EN-104), its only version.
 
-use crate::json::{self, Value};
+use crate::json::{self, Value, write};
+use crate::record::js_prefix;
 use crate::time::epoch_ms;
 
 /// Three hours: a background task older than this is taken as lost, its end never arrived.
@@ -24,6 +25,28 @@ pub enum Kind {
     Message,
 }
 
+impl Kind {
+    /// The kind as the status line's cache writes it.
+    #[must_use]
+    pub fn name(self) -> &'static str {
+        match self {
+            Kind::Agent => "agent",
+            Kind::Command => "command",
+            Kind::Message => "message",
+        }
+    }
+
+    /// The kind written in the cache: `agent`, `message`, anything else a command.
+    #[must_use]
+    pub fn read(written: &str) -> Kind {
+        match written {
+            "agent" => Kind::Agent,
+            "message" => Kind::Message,
+            _ => Kind::Command,
+        }
+    }
+}
+
 /// A background task the agent started, still running.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Task {
@@ -39,6 +62,13 @@ pub struct Task {
 /// The blocks of a transcript line's message, none for a text content.
 fn blocks(line: &Value) -> &[Value] {
     line.get("message").get("content").items()
+}
+
+/// The blocks of a line of one type: `tool_use`, `tool_result`.
+fn blocks_of<'a>(line: &'a Value, kind: &'a str) -> impl Iterator<Item = &'a Value> {
+    blocks(line)
+        .iter()
+        .filter(move |block| block.get("type").text() == kind)
 }
 
 /// Whether a `tool_use` block may run in the background: every subagent and monitor, any call
@@ -59,7 +89,7 @@ fn text_or<'a>(value: &'a Value, key: &str, fallback: &'a str) -> &'a str {
 }
 
 /// What a background task does: a subagent's type and task, a message's summary, a command's
-/// description.
+/// description or the start of its command.
 fn label_of(name: &str, input: &Value) -> String {
     match name {
         "Agent" => format!(
@@ -71,16 +101,12 @@ fn label_of(name: &str, input: &Value) -> String {
             "resumed: {}",
             text_or(input, "summary", input.get("to").text())
         ),
-        _ => {
-            let command: String = input
-                .get("command")
-                .text()
-                .chars()
-                .take(LABEL_LENGTH)
-                .collect();
-
-            text_or(input, "description", &command).to_owned()
-        }
+        _ => text_or(
+            input,
+            "description",
+            js_prefix(input.get("command").text(), LABEL_LENGTH),
+        )
+        .to_owned(),
     }
 }
 
@@ -105,26 +131,28 @@ fn task_of(block: &Value, start: i64) -> Task {
 pub fn started_tasks(line: &Value) -> Vec<Task> {
     let start = epoch_ms(line.get("timestamp").text());
 
-    blocks(line)
-        .iter()
-        .filter(|block| block.get("type").text() == "tool_use" && is_background(block))
+    blocks_of(line, "tool_use")
+        .filter(|block| is_background(block))
         .map(|block| task_of(block, start))
         .collect()
+}
+
+/// The id a tool result answers.
+fn answered(block: &Value) -> String {
+    block.get("tool_use_id").text().to_owned()
 }
 
 /// Ids of the calls a transcript line answers with an error: refused or failed before it started.
 #[must_use]
 pub fn failed_ids(line: &Value) -> Vec<String> {
-    blocks(line)
-        .iter()
-        .filter(|block| {
-            block.get("type").text() == "tool_result" && block.get("is_error") == &Value::Bool(true)
-        })
-        .map(|block| block.get("tool_use_id").text().to_owned())
+    blocks_of(line, "tool_result")
+        .filter(|block| block.get("is_error") == &Value::Bool(true))
+        .map(answered)
         .collect()
 }
 
-/// Ids of the calls whose end a line notifies (`<task-notification>`, naming the call that started it).
+/// Ids of the calls whose end a line notifies (`<task-notification>`, naming the call that started
+/// it): each `<tool-use-id>([\w-]+)</tool-use-id>`.
 #[must_use]
 pub fn notified_ids(raw: &str) -> Vec<String> {
     if !raw.contains("<task-notification>") {
@@ -134,12 +162,23 @@ pub fn notified_ids(raw: &str) -> Vec<String> {
     raw.split("<tool-use-id>")
         .skip(1)
         .filter_map(|rest| {
-            let id = rest.split("</tool-use-id>").next()?;
+            let (id, _) = rest.split_once("</tool-use-id>")?;
 
-            id.chars()
-                .all(|character| character.is_alphanumeric() || matches!(character, '_' | '-'))
-                .then(|| id.to_owned())
+            (!id.is_empty()
+                && id
+                    .bytes()
+                    .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'_' | b'-')))
+            .then(|| id.to_owned())
         })
+        .collect()
+}
+
+/// Ids of the tool calls a line ends: its tool results, then the calls its notification names.
+#[must_use]
+pub fn ended_ids(line: &Value, raw: &str) -> Vec<String> {
+    blocks_of(line, "tool_result")
+        .map(answered)
+        .chain(notified_ids(raw))
         .collect()
 }
 
@@ -157,6 +196,15 @@ fn result_text(block: &Value) -> String {
     }
 }
 
+/// A tool result's content written as JSON, `""` when it has none: the text the transcripts are
+/// searched in for the marks of a launch or a resume.
+fn content_json(block: &Value) -> String {
+    match block.get("content") {
+        Value::Null => "\"\"".to_owned(),
+        content => write(content),
+    }
+}
+
 /// Whether a tool result launches a subagent in the background, as every `Agent` result of the
 /// transcripts did up to 2026-10-17: `toolUseResult` holds `status: "async_launched"` and
 /// `isAsync: true`, and the text opens with "Async agent launched successfully" (one line of
@@ -166,7 +214,7 @@ fn launched_in_background(line: &Value, block: &Value) -> bool {
 
     result.get("status").text() == "async_launched"
         || result.get("isAsync") == &Value::Bool(true)
-        || result_text(block).contains("Async agent launched")
+        || content_json(block).contains("Async agent launched")
 }
 
 /// Ids of the calls a line answers with a result that is neither an error nor a launch in the
@@ -174,78 +222,54 @@ fn launched_in_background(line: &Value, block: &Value) -> bool {
 /// hooks reference), never with a notification (AUD-020).
 #[must_use]
 pub fn completed_ids(line: &Value) -> Vec<String> {
-    blocks(line)
-        .iter()
+    blocks_of(line, "tool_result")
         .filter(|block| {
-            block.get("type").text() == "tool_result"
-                && block.get("is_error") != &Value::Bool(true)
-                && !launched_in_background(line, block)
+            block.get("is_error") != &Value::Bool(true) && !launched_in_background(line, block)
         })
-        .map(|block| block.get("tool_use_id").text().to_owned())
+        .map(answered)
         .collect()
 }
 
-/// Ids of the calls a line answers with a result, and of those whose result resumes a subagent: a
-/// subagent that had stopped runs again in the background, its end notified under the message's
-/// call id (seen 2026-10-15: "Resuming agent …", then the notification 15 minutes later); a
-/// message to a subagent still running is only queued.
+/// Ids of the messages a line answers by resuming a subagent: a subagent that had stopped runs
+/// again in the background, its end notified under the message's call id (seen 2026-10-15:
+/// "Resuming agent …", then the notification 15 minutes later); a message to a subagent still
+/// running is only queued, its result resuming nothing.
 #[must_use]
-pub fn answered_ids(line: &Value) -> (Vec<String>, Vec<String>) {
-    let results: Vec<&Value> = blocks(line)
-        .iter()
-        .filter(|block| block.get("type").text() == "tool_result")
-        .collect();
-    let id = |block: &&Value| block.get("tool_use_id").text().to_owned();
-
-    (
-        results.iter().map(id).collect(),
-        results
-            .iter()
-            .filter(|block| result_text(block).contains("\"resumedAgentId\""))
-            .map(id)
-            .collect(),
-    )
+pub fn resumed_ids(line: &Value) -> Vec<String> {
+    blocks_of(line, "tool_result")
+        .filter(|block| content_json(block).contains("resumedAgentId"))
+        .map(answered)
+        .collect()
 }
 
-/// Background tasks still running after one transcript line: those it starts added, those notified
-/// as ended or answered with an error removed, a subagent answered with its result in the
-/// foreground removed, those older than `LOST_TASK_MS` dropped; a message to a subagent, once
-/// answered, becomes that subagent when its result resumes it, or is dropped.
+/// Background tasks still running after one parsed transcript line, and the calls it ends: those
+/// it starts added, those notified as ended or answered with an error removed, a subagent answered
+/// with its result in the foreground removed, those older than `LOST_TASK_MS` at the line's time
+/// dropped; a message to a subagent, once answered, becomes that subagent when its result resumes
+/// it, or is dropped.
 #[must_use]
-pub fn after_line(pending: Vec<Task>, raw: &str) -> Vec<Task> {
-    let awaits_result = pending
-        .iter()
-        .any(|task| matches!(task.kind, Kind::Message | Kind::Agent));
-
-    // Only lines that start, end or refuse a call change the tasks, and the results of messages
-    // and subagents: the others are not parsed.
-    let matters = raw.contains("\"tool_use\"")
-        || raw.contains("<task-notification>")
-        || raw.contains("is_error")
-        || (awaits_result && raw.contains("\"tool_result\""));
-
-    if !matters {
-        return pending;
-    }
-
-    let Some(line) = json::parse(raw) else {
-        return pending;
+pub fn after_parsed_line(pending: Vec<Task>, line: &Value, raw: &str) -> (Vec<Task>, Vec<String>) {
+    let ended = ended_ids(line, raw);
+    let mut notified = if raw.contains("<task-notification>") {
+        ended.clone()
+    } else {
+        Vec::new()
     };
-    let mut ended = notified_ids(raw);
 
-    ended.extend(failed_ids(&line));
+    notified.extend(failed_ids(line));
 
+    let completed = completed_ids(line);
+    let resumed = resumed_ids(line);
     let time = epoch_ms(line.get("timestamp").text());
-    let (answered, resumed) = answered_ids(&line);
-    let completed = completed_ids(&line);
-
-    pending
+    let tasks = pending
         .into_iter()
-        .chain(started_tasks(&line))
-        .filter(|task| !ended.contains(&task.id) && (time == 0 || time - task.start < LOST_TASK_MS))
+        .chain(started_tasks(line))
+        .filter(|task| {
+            !notified.contains(&task.id) && (time == 0 || time - task.start < LOST_TASK_MS)
+        })
         .filter(|task| task.kind != Kind::Agent || !completed.contains(&task.id))
         .filter_map(|task| {
-            if task.kind != Kind::Message || !answered.contains(&task.id) {
+            if task.kind != Kind::Message || !ended.contains(&task.id) {
                 Some(task)
             } else if resumed.contains(&task.id) {
                 Some(Task {
@@ -256,14 +280,30 @@ pub fn after_line(pending: Vec<Task>, raw: &str) -> Vec<Task> {
                 None
             }
         })
-        .collect()
+        .collect();
+
+    (tasks, ended)
+}
+
+/// Background tasks still running after one transcript line, as [`after_parsed_line`] gives them.
+/// With no task pending, only a line starting a call can change them: the others are not parsed.
+#[must_use]
+pub fn after_line(pending: Vec<Task>, raw: &str) -> Vec<Task> {
+    if pending.is_empty() && !raw.contains("\"tool_use\"") {
+        return pending;
+    }
+
+    match json::parse(raw) {
+        Some(line) => after_parsed_line(pending, &line, raw).0,
+        None => pending,
+    }
 }
 
 /// Background tasks still running after the complete lines of a transcript's text.
 #[must_use]
 pub fn pending_after(pending: Vec<Task>, lines: &str) -> Vec<Task> {
     lines
-        .lines()
+        .split('\n')
         .filter(|line| line.starts_with('{'))
         .fold(pending, after_line)
 }

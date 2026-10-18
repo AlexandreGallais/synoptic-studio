@@ -1,0 +1,12 @@
+[package]
+name = "tool-use"
+version = "0.1.0"
+edition.workspace = true
+description = "Each use of a tool of the workspace, one line in .git/metrics/tool-uses.jsonl (EN-102)"
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+
+[lints]
+workspace = true

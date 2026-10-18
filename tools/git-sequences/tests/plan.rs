@@ -1,8 +1,8 @@
 //! Tests of what `git:sync` and `git:commit` run (EN-100), decided without Git.
 
 use git_sequences::{
-    Branch, Push, Request, Source, Target, branch_of, commit_refusal, commit_steps, fetch_step,
-    message_refusal, parse, sync_steps, sync_target,
+    Branch, Push, Request, Source, Target, branch_of, changes_refusal, changes_step,
+    commit_refusal, commit_steps, fetch_step, message_refusal, parse, sync_steps, sync_target,
 };
 
 fn words(line: &str) -> Vec<String> {
@@ -225,6 +225,26 @@ fn refuses_an_empty_message() {
     assert!(message_refusal(" \n\t\n").is_some());
     assert_eq!(
         message_refusal("chore(tooling): add\n\nRefs: EN-100.T1\n"),
+        None
+    );
+}
+
+#[test]
+fn f21_ac2_refuses_to_rebase_a_tree_with_uncommitted_changes_naming_its_files() {
+    let rebase = Target::Rebase("origin/feature/f21-x".to_owned());
+    let changes = "M\tREADME.md\nA\tdocs/a b.md\n";
+
+    assert_eq!(changes_step(), words("diff --name-status HEAD"));
+    assert_eq!(
+        changes_refusal(STORY, &rebase, changes).as_deref(),
+        Some(
+            "chore/en-100-git-sequences-as-rust-commands not rebased: the tree holds uncommitted changes, which the rebase refuses; commit or stash them, then run again:\n  M README.md\n  A docs/a b.md"
+        )
+    );
+    // A clean tree, or a fast-forward, which Git runs or refuses itself.
+    assert_eq!(changes_refusal(STORY, &rebase, ""), None);
+    assert_eq!(
+        changes_refusal("develop", &Target::FastForward, changes),
         None
     );
 }

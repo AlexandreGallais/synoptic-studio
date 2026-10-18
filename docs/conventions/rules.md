@@ -15,7 +15,7 @@ The rules are kept almost whole because the evidence says they cost little and g
 
 - **Speed**: oxlint runs in 1.1 s with its type-aware rules, the project's linter in 0.4 s over 2,051 files and pages (this Mac, 2026-10-17). The 9 rules added changed neither: 1.07 to 1.28 s before and after, over three runs each.
 - **Exceptions**: 29 directives in the TypeScript of the tree ([register](./exceptions.md)), 26 of them one rule pair (`consistent-type-assertions` with `no-unsafe-type-assertion`) on browser APIs the DOM types lack. A rule that only costs time would show as directives; none does.
-- **Friction**: the findings the agent met in its own transcripts since E01, counted by rule (ESLint's report format, `records/transcripts`): `local/kind-limits` 340, `jsdoc/informative-docs` 310, `local/folder-layout` 266, `unicorn/max-nested-calls` 242, `complexity` 232, `no-magic-numbers` 208, `@typescript-eslint/naming-convention` 149, `local/kind-naming` 130, `func-style` 100. Each was read again below: each finding is a function split, a description made to say more than its name, a calculation named, a name made searchable. These are the rules' work, not their cost.
+- **Friction**: the findings the agent met in its own transcripts since E01, counted by rule (ESLint's report format, `records/transcripts`): `local/kind-limits` 340, `jsdoc/informative-docs` 310, `local/folder-layout` 266, `unicorn/max-nested-calls` 242, `complexity` 232, `no-magic-numbers` 208, `@typescript-eslint/naming-convention` 149, `local/kind-naming` 130, `func-style` 100. Each was read again below: each finding is a function split, a description made to say more than its name, a calculation named, a name made searchable. These are the rules' work, not their cost. Since EN-107 the **Findings** section of `npm run metrics` makes this count at each report, per epic, the hooks' refusals and the type, Clippy and `check:all` findings with it ([metrics](../tooling/metrics.md#findings)): the next review of the rules reads it there. Its first count, on 2026-10-18 over the 1.6 GB of transcripts this Mac keeps, is lower than the one above, made by hand from `records/transcripts`, but ranks the same rules first: `local/kind-limits` 250, `jsdoc/informative-docs` 222, `@typescript-eslint/no-magic-numbers` 219, `@typescript-eslint/no-unsafe-call` 216, `@typescript-eslint/naming-convention` 208, `unicorn/max-nested-calls` 207, `complexity` 189, `local/folder-layout` 144; the refusal most met, `guard-bash`'s chained Git command in a worktree, 73.
 
 ## Rules added
 
@@ -204,16 +204,16 @@ Measured on real edits: the last 500 changes of a TypeScript file in the history
 
 | What | Runs | Time | Verdict |
 | --- | --- | --- | --- |
-| `pre-commit`: lint-staged | the formatter, oxlint and the project's linter with `--fix`, then secretlint, on the staged files | 1 to 3 s | kept: the commit holds formatted, linted files, so a push never fails on layout; F21 carries the staged-file runner |
-| `commit-msg`: commitlint | Conventional Commits, the scopes, 100 characters a line | 0.7 s | kept: every message alike, read by release-please and by the agent's `git log`; F21 carries it |
-| commitlint's scope list | 14 scopes | — | kept: `docs(backlog)` 227 and `docs(docs)` 148 times in the last 3,000 commits, every scope a layer or an area; **changed**: `eslint` dropped, its folder gone with EN-085 |
+| `pre-commit`: the staged-file runner | the formatter, oxlint and the project's linter with `--fix`, then the secret scan, on the staged files | a commit of one Markdown file 356 ms, of one TypeScript file 617 ms, hooks included (lint-staged's: 716 and 989 ms, EN-108) | kept: the commit holds formatted, linted files, so a push never fails on layout; lint-staged's run ported to Rust (`git-hooks pre-commit`, EN-108) |
+| `commit-msg`: the message | Conventional Commits, the scopes, 100 characters a line | 24 ms (commitlint: 218 ms, EN-108) | kept: every message alike, read by `release prepare` and by the agent's `git log`; commitlint's rules ported to Rust (`git-hooks commit-msg`, EN-108) |
+| the scope list | 14 scopes, `SCOPES` in `tools/git-hooks/src/message.rs` | — | kept: `docs(backlog)` 227 and `docs(docs)` 148 times in the last 3,000 commits, every scope a layer or an area; **changed**: `eslint` dropped, its folder gone with EN-085 |
 | `commit-msg`: `rule-docs` on a done commit | a story that changes a rule brings its docs | 0.05 s | kept: a rule changed without its Q row, its VAL and its guide page is refused at the commit, not found at the review (EN-059) |
 | `pre-push`: `refuse-shared-files` | no shared file on a story branch | 0.05 s | kept: ADR-0065, no conflict on the indexes since |
-| `pre-push`: `validate-branch-name` | the branch's name | 0.3 s | kept: `story:finish` and the auto-merge read the story's id from it; F21 carries it as one pattern |
+| `pre-push`: the branch name | the branch's name, one pattern | 13 ms (validate-branch-name: 44 ms, EN-108) | kept: `story:finish` and the auto-merge read the story's id from it; one regular expression (`git-hooks branch`, EN-108) |
 | `pre-push`: `check:all` | every check, in lanes | about 40 s, 57 to 68 s with the docs build (EN-085) | kept: the story's only check (ADR-0072) |
 | `pre-push`: `golden:check` | results unchanged by a refactor | when a golden file is written | kept: ADR-0049's naming pass |
 | footers `Refs: <ID>.Tn`, `Closes: <ID>`, `Rule-docs:` | which task a commit carries | — | kept: one commit per task is found by its footer |
-| the story's id in each footer | — | — | **added, for F21**: the Rust `commit-msg` checks that a story branch's commit carries `Refs:` or `Closes:` with the branch's own id, so that a footer copied from another story is refused at once |
+| the story's id in each footer | — | — | **added** (EN-108): the `commit-msg` hook checks that a story branch's commit carries `Refs: <ID>.T<n>` or `Closes: <ID>` with the branch's own id, so that a footer copied from another story is refused at once |
 | one commit per task, the task's checkbox ticked in the done commit | — | — | kept: a task is one diff to read |
 | story file format (front matter, criteria, tasks, `## For the main thread`) | `backlog:status`, `story:finish`, `move-rows` read it | — | kept: tools read it, so it stays the same |
 | `npm run fix` | formatter, then each linter with `--fix` | 3 to 5 s | kept: the one command before a commit |
@@ -224,7 +224,7 @@ Measured on real edits: the last 500 changes of a TypeScript file in the history
 | `metrics`, `metrics:session`, `activity`, `records:save` | the agent's own metrics | — | kept: the retrospective reads them; F21 carries them |
 | `replace`, `backlog:status`, `backlog:index`, `story:finish`, `val:prepare`, `worktree:new`, `branches:clean`, `epic:check` | the agent's tools (`agent-tools.md`) | — | kept: each does in one command what was written by hand; F21 carries the TypeScript ones |
 | `golden:write`, `golden:check`, `mutate` | refactors and mutation checks | — | kept |
-| `deps:audit`, `deps:outdated`, `deps:tools`, `deps:unused` | dependencies | — | kept: AGENTS.md's 7-day rule and the empty `dependencies` |
+| `deps:audit`, `deps:outdated`, `deps:unused` | dependencies | — | kept: AGENTS.md's 7-day rule and the empty `dependencies` |
 | `font:metrics`, `docs:api`, `build`, `playground:build` | builds | — | kept |
 | `heavy-lock` on heavy commands | one heavy command at a time | — | kept: ADR-0072 |
 

@@ -16,7 +16,7 @@ Two linters run one after the other in `npm run lint` (ADR-0075). **oxlint** run
 | pure layers (`.oxlintrc.json`) | `src/math`, `src/geometry`, `src/model`, `src/routing`, `src/io` | forbids the DOM and the host |
 | `dom-layers` (`tools/lint`) | `src/render/`, `src/interaction/`, `playground/` | the functional core's statement rules off (ADR-0014) |
 | barrels (both) | `src/**/index.ts`, `playground/*/**/index.ts` (not the entry) | any number of imports; the barrel's exports checked |
-| tooling (both) | root `*.config.ts`, `*.setup.ts`, `*.test.ts`, `tests/`, `docs/.vitepress/`, `.claude/hooks/`, `scripts/` | Node.js, development packages, the core's statement rules off |
+| tooling (both) | root `*.config.ts`, `*.setup.ts`, `*.test.ts`, `tests/`, `docs/.vitepress/`, `scripts/` | Node.js, development packages, the core's statement rules off |
 | tests (both) | `**/*.test.ts` | literal numbers, free length, callbacks nested up to 4, no `@kind`, `@param` and `@returns` optional |
 | root configurations (`.oxlintrc.json`) | root `*.config.ts`, `docs/.vitepress/config.ts` and `theme/index.ts` | a default export |
 

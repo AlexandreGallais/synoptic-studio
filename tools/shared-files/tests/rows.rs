@@ -4,7 +4,7 @@ use std::fs;
 use std::path::PathBuf;
 use std::process::Command;
 
-use shared_files::date::{civil_from_days, today};
+use shared_files::date::{date_of_days, today};
 use shared_files::rows::{LOGS, Place, SECTION, insert_rows, take_rows};
 
 /// The day of the tests that insert rows: the journal's newest section below is that day's.
@@ -267,18 +267,18 @@ fn opens_a_section_dated_today_when_the_newest_one_is_older() {
 #[test]
 fn writes_the_date_a_number_of_days_after_1970_falls_on() {
     // 0 days: 1970-01-01; -1: the day before.
-    assert_eq!(civil_from_days(0), "1970-01-01");
-    assert_eq!(civil_from_days(-1), "1969-12-31");
+    assert_eq!(date_of_days(0), "1970-01-01");
+    assert_eq!(date_of_days(-1), "1969-12-31");
     // 31 days of January + 28 of February 1970: 1970-03-01.
-    assert_eq!(civil_from_days(59), "1970-03-01");
+    assert_eq!(date_of_days(59), "1970-03-01");
     // 30 years of 365 days + 7 leap days (1972 … 1996) = 10 957: 2000-01-01; + 31 + 28 = 11 016:
     // 2000-02-29, a leap day of a year divisible by 400.
-    assert_eq!(civil_from_days(10_957), "2000-01-01");
-    assert_eq!(civil_from_days(11_016), "2000-02-29");
+    assert_eq!(date_of_days(10_957), "2000-01-01");
+    assert_eq!(date_of_days(11_016), "2000-02-29");
     // 2026-10-17: 56 years × 365 = 20 440 days + 14 leap days (1972 … 2024) = 20 454, then
     // 273 + 16 = 289 days of 2026 before it (Jan 31, Feb 28, Mar 31, Apr 30, May 31, Jun 30,
     // Jul 31, Aug 31, Sep 30 = 273) → 20 743.
-    assert_eq!(civil_from_days(20_743), "2026-10-17");
+    assert_eq!(date_of_days(20_743), "2026-10-17");
     assert_eq!(today().len(), 10);
     assert!(today().as_str() > "2026-10-16");
 }

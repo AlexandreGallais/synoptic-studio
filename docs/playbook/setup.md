@@ -7,18 +7,18 @@ Setting up a new project the way this one ended E01. In order; each step names t
 | # | Step | Copy from this repository | Why |
 | --- | --- | --- | --- |
 | 1 | Repository, license, `main` and `develop`, rulesets (merge commits into `main`, no bypass) | `docs/tooling/ci.md` (settings), `docs/tooling/git-workflow.md` | ADR-0038 |
-| 2 | TypeScript strict; ESLint as strict as possible, every rule decided; one formatter (oxfmt, tables without padding); EditorConfig | `tsconfig.json`, `eslint/`, `.oxfmtrc.json`, `.editorconfig` | ADR-0009, ADR-0010 |
+| 2 | TypeScript strict; oxlint as strict as possible, every rule decided (ESLint until EN-085); one formatter (oxfmt, tables without padding); EditorConfig | `tsconfig.json`, `.oxlintrc.json`, `.oxfmtrc.json`, `.editorconfig` | ADR-0009, ADR-0010 |
 | 3 | Custom lint rules for the project's structure (one export per file, barrels, kinds, sources) | `tools/lint/` (a Rust linter on Oxc's crates, one module per rule) | ADR-0011, ADR-0012, ADR-0019 |
 | 4 | Vitest, 100 % coverage of the library, a floor for the demo app, property tests, fitness functions | `vite.config.ts`, `tests/` | ADR-0022 |
-| 5 | Dependencies: one documented row each, latest versions at least 7 days old, audit, knip | `tests/package.test.ts`, `.ncurc.cjs`, `knip.json`, `docs/tooling/dependencies.md` | supply chain, ADR-0038 |
-| 6 | Git hooks: lint-staged, commitlint with closed scopes and backlog footers, branch names, full check before push | `.husky/`, `.lintstagedrc.json`, `commitlint.config.ts`, `.validate-branch-namerc.json` | `docs/tooling/git-workflow.md` |
+| 5 | Dependencies: one documented row each, latest versions at least 7 days old, audit, unused code | `tests/package.test.ts`, `tools/deps/`, `docs/tooling/dependencies.md` | supply chain, ADR-0038 |
+| 6 | Git hooks: the staged files formatted and linted, Conventional Commits with closed scopes and the story's footer, branch names, full check before push | `.githooks/`, `tools/git-hooks/` (EN-108) | `docs/tooling/git-workflow.md` |
 | 7 | One CI, on the pull request into `main`; CodeQL; weekly link check | `.github/workflows/` | ADR-0038 |
-| 8 | Releases: release-please, test report attached, docs and demo published on release | `.github/workflows/release.yml`, `release-please-config.json` | `docs/tooling/releases.md` |
+| 8 | Releases: the project's release tool, a release branch, the test report attached, docs and demo published on release | `.github/workflows/release.yml`, `tools/release/` | `docs/tooling/releases.md` |
 | 9 | Documentation site: VitePress, API pages from the TSDoc (a Rust generator on Oxc's parser here, TypeDoc before EN-072), Mermaid diagrams | `docs/.vitepress/` | `docs/tooling/documentation-site.md` |
 | 10 | Docs skeleton: domain, ADRs, conventions (writing rules first), references, derivations, research, backlog, process, guide, playbook | `docs/*/README.md`, templates `_*.md`, `docs/conventions/writing.md` | this playbook |
 | 11 | Backlog with tests: ids, statuses, parents' tables, feature frame | `tests/backlog.test.ts`, `tests/references.test.ts` | ADR-0017, ADR-0020 |
 | 12 | Agent configuration: `AGENTS.md`, `CLAUDE.md`, rules, skills, expert agents, hooks, status line | `AGENTS.md`, `CLAUDE.md`, `.claude/` | ADR-0021 |
-| 13 | Metrics and the source library | `scripts/metrics-*.ts`, `scripts/session-report.ts`, `scripts/library-*.ts`, `.mcp.json` | `docs/tooling/metrics.md`, ADR-0039 |
+| 13 | Metrics and the source library | `tools/metrics/`, `tools/library/`, `.mcp.json` | `docs/tooling/metrics.md`, ADR-0039 |
 | 14 | Start-of-project interview, then the first epic | [analysis.md](./analysis.md), `docs/domain/README.md` | principle 6 |
 
 ## Rhythm
@@ -49,7 +49,7 @@ Copy before the first run with parallel workers:
 | `.claude/worktrees/` in `.gitignore`, and out of the IDE's indexing with `coverage/`, `dist/`, `docs/api/` | the IDE indexed each worktree as a new project (256 % of the CPU) |
 | a lock for heavy commands in `.git/`, holding its owner's process id | one `check:all` saturates a laptop; a lock left by a force-quit is taken over |
 | a `PreToolUse` hook on `Agent` limiting subagents | a sentence was bent once, with a freeze |
-| Prettier's `proseWrap: "never"`; generated indexes; `merge=union` on append-only logs | padded tables rewrite whole and conflict on every parallel merge |
+| Markdown tables without padding (`tools/format`, ADR-0068); generated indexes; `merge=union` on append-only logs | padded tables rewrite whole and conflict on every parallel merge |
 | the worker brief versioned in the run skill, naming the commands that fit a worktree | 549 compound commands refused in worktrees |
 | a register of exceptions to the rules, checked | each exception visible and justified |
 

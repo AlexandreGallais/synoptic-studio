@@ -62,7 +62,6 @@ pub const TOOLING_FILES: &[&str] = &[
     "*.test.ts",
     "tests/*.ts",
     "docs/.vitepress/**/*.ts",
-    ".claude/hooks/**/*.ts",
     "scripts/**/*.ts",
 ];
 
@@ -142,7 +141,7 @@ pub const SCOPES: [Scope; 7] = [
     },
     Scope {
         name: "node-run",
-        files: &[".claude/hooks/*.ts", "scripts/*.ts"],
+        files: &["scripts/*.ts"],
         ignores: &[],
         rules: &[
             ("local/canonical-import-path", false),
@@ -320,7 +319,7 @@ mod tests {
         assert!(!test.contains(&"local/one-export-per-file"));
         assert!(test.contains(&"local/folder-layout"));
         assert_eq!(
-            rules_for("scripts/check-all.ts"),
+            rules_for("scripts/default-font-metrics.ts"),
             [
                 "@stylistic/multiline-comment-style",
                 "@stylistic/padding-line-between-statements",

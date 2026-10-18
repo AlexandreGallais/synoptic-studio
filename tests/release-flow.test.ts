@@ -3,8 +3,6 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { isReleaseCommit } from "../commitlint.config";
-
 /** Text of the release workflow. */
 const WORKFLOW = readFileSync(
   join(import.meta.dirname, "..", ".github", "workflows", "release.yml"),
@@ -34,37 +32,29 @@ function jobOf(name: string): string {
     .join("\n");
 }
 
-describe("release flow (ADR-0067)", () => {
-  it("[F18.AC1] runs on pushes to main and to develop", () => {
-    expect(WORKFLOW).toContain("branches: [main, develop]");
+describe("release flow (ADR-0079)", () => {
+  it("[F21.AC6] runs on pushes to main only, and by hand", () => {
+    expect(WORKFLOW).toContain("on:\n  push:\n    branches: [main]\n  workflow_dispatch:\n");
   });
 
-  it("[F18.AC1] opens the release pull request on develop, never a release", () => {
-    const job = jobOf("release-pr");
-
-    expect(job).toContain("if: github.ref_name == 'develop'");
-    expect(job).toContain("target-branch: develop");
-    expect(job).toContain("skip-github-release: true");
-    expect(job).not.toContain("skip-github-pull-request");
-  });
-
-  it("[F18.AC1] only tags and publishes on main, from the pull request merged into develop", () => {
-    const job = jobOf("release-please");
+  it("[F21.AC6] publishes on main with the project's tool, on GITHUB_TOKEN", () => {
+    const job = jobOf("release");
 
     expect(job).toContain("if: github.ref_name == 'main'");
-    expect(job).toContain("target-branch: develop");
-    expect(job).toContain("skip-github-pull-request: true");
-    expect(job).not.toContain("skip-github-release");
+    expect(job).toContain("- run: cargo build --release --locked -q -p release\n");
+    expect(job).toContain("run: target/release/release publish\n");
+    expect(job).toContain(`GH_TOKEN: \${{ github.token }}`);
+    expect(job).toContain("fetch-depth: 2");
   });
 
-  it("[F18.AC1] merges no pull request by itself", () => {
-    expect(WORKFLOW).not.toMatch(/gh pr merge/u);
+  it("[F21.AC6] publishes the site after a release, its output read", () => {
+    const job = jobOf("docs");
+
+    expect(job).toContain("needs: release\n");
+    expect(job).toContain("if: needs.release.outputs.released == 'true'");
   });
 
-  it("lets the release commit of either branch through commitlint", () => {
-    expect(isReleaseCommit("chore(develop): release 0.3.0")).toBe(true);
-    expect(isReleaseCommit("chore(main): release 0.2.0")).toBe(true);
-    expect(isReleaseCommit("chore(develop): released by hand")).toBe(false);
-    expect(isReleaseCommit("feat(develop): release 0.3.0")).toBe(false);
+  it("[F18.AC1] [F21.AC6] only releases on main: no release-please, no personal token, no merge, no commit", () => {
+    expect(WORKFLOW).not.toMatch(/release-please|secrets\.|gh pr merge|git commit|git push/u);
   });
 });

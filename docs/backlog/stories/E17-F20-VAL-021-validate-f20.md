@@ -63,12 +63,4 @@ Drafted by `npm run val:prepare -- F20`, then written as 12 lines (`playground/c
 
 Rule-docs: none affected, a tooling validation, no rule of `docs/domain/` changed.
 
-The `done` commit, made by this worker as the main thread asked, sets VAL-021 and F20 `done` and updates the State line of E17 in `AGENTS.md`; the journal entry is the main thread's to write, its text below.
-
-### Journal
-
-- `#run` VAL-021: F20 validated by the agent (ADR-0072): its seven criteria left proven again, criterion 5 struck; 12 lines in E17's checklist; the demo page `docs/guide/f20-a-context-diet.md`. A story worker's first request from 38,897 tokens (`general-purpose`) to 10,562 (`story-worker`); the agent pages from 182,100 tokens to 144,900 (−20 %); Git calls per story worker from a median of 12 to 4; a stored page read in 0.1 to 0.2 s instead of 6 s. The story worker stays on Opus, the Sonnet trial too small to compare: a decision for the Product Owner to confirm.
-
-### Improvements
-
-| 2026-10-18 | VAL-021 | `val:prepare` drafts a line for a criterion struck from the feature (F20's criterion 5) and rewrites the checklists' barrel `export type * from "./checklist-line"` as `export *`, which `npm run fix` writes back; it should skip a struck criterion and leave the barrel's other lines as they are | tool |
+The `done` commit, made by this worker as the main thread asked, sets VAL-021 and F20 `done` and updates the State line of E17 in `AGENTS.md`; the main thread has written the journal entry and the improvement row.

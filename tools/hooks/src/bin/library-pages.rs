@@ -14,13 +14,13 @@ use std::process::Command;
 use hooks::json;
 use hooks::limit::deny_output;
 use hooks::pages::{
-    Library, has_library_tools, library_file, library_query, library_state, page_of_command,
-    refusal, refusal_without_library,
+    Library, has_library_tools, library_file_of_process, library_query, library_state,
+    page_of_command, refusal, refusal_without_library,
 };
 
 /// What the library holds of a page, read by `sqlite3` without writing the file.
 fn library(url: &str) -> Library {
-    let Some(file) = library_file(env::var("LIBRARY_PATH").ok(), env::var("HOME").ok()) else {
+    let Some(file) = library_file_of_process() else {
         return Library::Missing;
     };
 
@@ -36,7 +36,15 @@ fn library(url: &str) -> Library {
         })
 }
 
-fn main() {
+fn main() -> std::process::ExitCode {
+    tool_use::run("library-pages", "", || {
+        hook();
+        0
+    })
+}
+
+/// Reads the hook's input and prints its refusal, if any.
+fn hook() {
     let mut text = String::new();
 
     if io::stdin().read_to_string(&mut text).is_err() {

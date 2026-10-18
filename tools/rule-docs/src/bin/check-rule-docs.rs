@@ -85,20 +85,25 @@ fn check(message: &str) -> io::Result<String> {
 }
 
 fn main() -> ExitCode {
+    tool_use::run("check-rule-docs", "", check_message)
+}
+
+/// Checks the message file named; the exit code.
+fn check_message() -> u8 {
     let Some(path) = env::args().nth(1) else {
         eprintln!("usage: check-rule-docs <message file>");
-        return ExitCode::from(2);
+        return 2;
     };
 
     match fs::read_to_string(&path).and_then(|message| check(&message)) {
-        Ok(refusals) if refusals.is_empty() => ExitCode::SUCCESS,
+        Ok(refusals) if refusals.is_empty() => 0,
         Ok(refusals) => {
             eprint!("{refusals}");
-            ExitCode::from(1)
+            1
         }
         Err(error) => {
             eprintln!("check-rule-docs: {error}");
-            ExitCode::from(1)
+            1
         }
     }
 }

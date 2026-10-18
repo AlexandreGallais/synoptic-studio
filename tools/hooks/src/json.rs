@@ -62,7 +62,8 @@ pub fn parse(text: &str) -> Option<Value> {
     (reader.at == reader.bytes.len()).then_some(value)
 }
 
-/// A JSON string literal, quotes included, for the hooks' output.
+/// A JSON string literal, quotes included, for the hooks' output: escaped as JavaScript's
+/// `JSON.stringify` escapes it, so that a ported hook writes the same bytes.
 #[must_use]
 pub fn quote(text: &str) -> String {
     let mut quoted = String::with_capacity(text.len() + 2);
@@ -75,6 +76,8 @@ pub fn quote(text: &str) -> String {
             '\n' => quoted.push_str("\\n"),
             '\r' => quoted.push_str("\\r"),
             '\t' => quoted.push_str("\\t"),
+            '\u{8}' => quoted.push_str("\\b"),
+            '\u{c}' => quoted.push_str("\\f"),
             control if u32::from(control) < 0x20 => {
                 let _ = write!(quoted, "\\u{:04x}", u32::from(control));
             }
@@ -85,13 +88,66 @@ pub fn quote(text: &str) -> String {
     quoted
 }
 
-/// A value written back as JSON text, members in their order: a hook's updated tool input.
+/// A number as JavaScript writes it (ECMA-262, `Number::toString`): the shortest digits that read
+/// back the same, in plain notation from 1e-7 to 1e21, else in exponent notation, `1e+21`;
+/// `null` for a number that is not finite, as `JSON.stringify` writes it.
+#[must_use]
+pub fn number_text(number: f64) -> String {
+    if !number.is_finite() {
+        return "null".to_owned();
+    }
+    if number == 0.0 {
+        return "0".to_owned();
+    }
+
+    // Rust's `{:e}` writes the same shortest digits: `-1.5e-7`.
+    let scientific = format!("{:e}", number.abs());
+    let (mantissa, exponent) = scientific.split_once('e').unwrap_or((&scientific, "0"));
+    let digits: String = mantissa.chars().filter(char::is_ascii_digit).collect();
+    let count = i64::try_from(digits.len()).unwrap_or(i64::MAX);
+    let point = exponent.parse::<i64>().unwrap_or(0) + 1;
+    let sign = if number < 0.0 { "-" } else { "" };
+    let zeros = |amount: i64| "0".repeat(usize::try_from(amount).unwrap_or(0));
+    let at = usize::try_from(point).unwrap_or(0);
+
+    let body = if count <= point && point <= 21 {
+        format!("{digits}{}", zeros(point - count))
+    } else if 0 < point && point <= 21 {
+        format!("{}.{}", &digits[..at], &digits[at..])
+    } else if -6 < point && point <= 0 {
+        format!("0.{}{digits}", zeros(-point))
+    } else {
+        let rest = if digits.len() > 1 {
+            format!(".{}", &digits[1..])
+        } else {
+            String::new()
+        };
+        let exponent_sign = if point - 1 < 0 { "-" } else { "+" };
+
+        format!(
+            "{}{rest}e{exponent_sign}{}",
+            &digits[..1],
+            (point - 1).abs()
+        )
+    };
+
+    format!("{sign}{body}")
+}
+
+/// The length of a text in UTF-16 code units, as JavaScript's `length` counts it.
+#[must_use]
+pub fn js_length(text: &str) -> usize {
+    text.encode_utf16().count()
+}
+
+/// A value written back as JSON text, members in their order, as `JSON.stringify` writes it: a
+/// hook's updated tool input, the size of a call's input or result.
 #[must_use]
 pub fn write(value: &Value) -> String {
     match value {
         Value::Null => "null".to_owned(),
         Value::Bool(flag) => flag.to_string(),
-        Value::Number(number) => number.to_string(),
+        Value::Number(number) => number_text(*number),
         Value::String(text) => quote(text),
         Value::Array(items) => format!(
             "[{}]",

@@ -1,0 +1,346 @@
+//! `epic-check`, `branches-clean`, `records-save` and `backlog-status` run in repositories of
+//! their own, `npm` and `gh` stubs first on `PATH`. Every command starts through
+//! `test_support::command`, without the inherited `GIT_*` variables, its Git configuration a test
+//! file of its own.
+
+#![cfg(unix)]
+
+use std::env;
+use std::fs;
+use std::os::unix::fs::PermissionsExt;
+use std::path::{Path, PathBuf};
+use std::process::{Command, Output};
+
+/// A test's folder, its stubs and its Git configuration.
+struct Lab {
+    root: PathBuf,
+}
+
+impl Lab {
+    fn new(name: &str, stubs: &[(&str, &str)]) -> Lab {
+        let root = env::temp_dir().join(format!("repo-tools-{}-{name}", std::process::id()));
+
+        let _ = fs::remove_dir_all(&root);
+        fs::create_dir_all(root.join("bin")).expect("folder");
+
+        let root = fs::canonicalize(&root).expect("canonical");
+
+        for (name, text) in stubs {
+            let path = root.join("bin").join(name);
+
+            fs::write(&path, text).expect("stub");
+            fs::set_permissions(&path, fs::Permissions::from_mode(0o755)).expect("mode");
+        }
+        fs::write(
+            root.join("gitconfig"),
+            "[user]\n\tname = Test\n\temail = test@example.com\n[commit]\n\tgpgsign = false\n[init]\n\tdefaultBranch = main\n",
+        )
+        .expect("config");
+        Lab { root }
+    }
+
+    fn command(&self, program: &str, cwd: &Path) -> Command {
+        let mut command = test_support::command(program);
+
+        command
+            .current_dir(cwd)
+            .env(
+                "PATH",
+                format!(
+                    "{}:{}",
+                    self.root.join("bin").display(),
+                    env::var("PATH").unwrap_or_default()
+                ),
+            )
+            .env("HOME", self.root.join("home"))
+            .env("GIT_CONFIG_GLOBAL", self.root.join("gitconfig"))
+            .env("GIT_CONFIG_NOSYSTEM", "1")
+            .env_remove("RECORDS_PATH")
+            .env_remove("AGENT_LIBRARY_FILE");
+        command
+    }
+
+    fn git(&self, cwd: &Path, words: &[&str]) -> String {
+        let output = self.command("git", cwd).args(words).output().expect("git");
+
+        assert!(
+            output.status.success(),
+            "git {}: {}",
+            words.join(" "),
+            String::from_utf8_lossy(&output.stderr)
+        );
+        String::from_utf8_lossy(&output.stdout).trim().to_owned()
+    }
+
+    fn commit(&self, cwd: &Path, file: &str) {
+        fs::write(cwd.join(file), format!("{file}\n")).expect("file");
+        self.git(cwd, &["add", file]);
+        self.git(cwd, &["commit", "-q", "-m", file]);
+    }
+}
+
+impl Drop for Lab {
+    fn drop(&mut self) {
+        let _ = fs::remove_dir_all(&self.root);
+    }
+}
+
+fn text(output: &Output) -> String {
+    String::from_utf8_lossy(&output.stdout).into_owned()
+}
+
+#[test]
+fn f18_ac11_epic_check_prints_its_table_and_fails_on_a_finding() {
+    let lab = Lab::new(
+        "epic",
+        &[
+            (
+                "npm",
+                "#!/bin/sh\nprintf '%s\\n' '✓ lint 1.0 s' '✗ test 2.0 s' ' FAIL  a.test.ts > b' 'check:all failed in 3.0 s: test'; exit 1\n",
+            ),
+            (
+                "gh",
+                "#!/bin/sh\ncase \"$1\" in pr) echo '#7 a pull request' ;; issue) echo 0 ;; api) exit 1 ;; esac\n",
+            ),
+        ],
+    );
+    let repo = lab.root.join("repo");
+
+    fs::create_dir_all(repo.join("docs/backlog/features")).expect("folder");
+    fs::create_dir_all(repo.join("docs/backlog/stories")).expect("folder");
+    fs::write(
+        repo.join("docs/backlog/stories/E99-F99-EN-1-a.md"),
+        "status: done\n",
+    )
+    .expect("story");
+    fs::write(
+        repo.join("docs/backlog/stories/E99-F99-EN-2-b.md"),
+        "status: ready\n",
+    )
+    .expect("story");
+    lab.git(&repo, &["init", "-q"]);
+    lab.commit(&repo, "a");
+    lab.git(&repo, &["branch", "feat/old"]);
+    fs::create_dir_all(repo.join(".git/metrics/running")).expect("metrics");
+    fs::write(
+        repo.join(".git/metrics/tool-calls.jsonl"),
+        "{\"error\":\"\",\"time\":\"2026-10-13T10:00:00Z\",\"tool\":\"Bash\"}\nnot a record\n",
+    )
+    .expect("log");
+    fs::write(
+        repo.join(".git/metrics/running/1.json"),
+        "{\"start\":0,\"summary\":\"ls\",\"tool\":\"Bash\"}",
+    )
+    .expect("running");
+
+    let output = lab
+        .command(env!("CARGO_BIN_EXE_epic-check"), &repo)
+        .args(["E99", "2026-10-13"])
+        .output()
+        .expect("epic-check");
+    let table = text(&output);
+    let lines: Vec<&str> = table.lines().collect();
+
+    assert_eq!(output.status.code(), Some(1), "{table}");
+    assert_eq!(
+        lines[..6],
+        [
+            "| Check | Result | Detail |",
+            "| --- | --- | --- |",
+            "| check:all (code, site, playground, dependencies) | **to look at** | test (lane test): a.test.ts > b |",
+            "| branches left | **to look at** | feat/old |",
+            "| pull requests open | ok | #7 a pull request |",
+            "| issues open | ok | 0 |",
+        ]
+    );
+    // GitHub refused the alerts: its error is the detail.
+    assert!(lines[6].starts_with(
+        "| code scanning alerts open (GitHub, Security) | **to look at** | Error: Command failed: gh api repos/"
+    ));
+    assert_eq!(
+        lines[7],
+        "| calls failed during the epic (2 % at most) | ok | 0 of 1; apart: 0 refused by the worktree isolation |"
+    );
+    // The running call's file was just written: not lost.
+    assert!(lines[8].ends_with("| ok | none |"), "{}", lines[8]);
+    assert_eq!(
+        lines[9],
+        "| backlog of E99 | **to look at** | E99-F99-EN-2-b |"
+    );
+    assert!(lines[10].starts_with("| private records | **to look at** | unsaved changes; last save Error: Command failed: git -C "));
+    assert_eq!(
+        lines[lines.len() - 1],
+        "| golden file of refactors | ok | none written yet |"
+    );
+}
+
+#[test]
+fn f18_ac8_branches_clean_deletes_the_merged_and_gone_branches_and_keeps_a_fresh_story() {
+    let lab = Lab::new("branches", &[]);
+    let origin = lab.root.join("origin.git");
+    let main = lab.root.join("main");
+    let origin_path = origin.to_str().expect("path");
+
+    lab.git(&lab.root, &["init", "-q", "--bare", origin_path]);
+    lab.git(&lab.root, &["clone", "-q", origin_path, "main"]);
+    lab.commit(&main, "start");
+    lab.git(&main, &["push", "-q", "origin", "HEAD:main"]);
+    lab.git(&main, &["switch", "-q", "-c", "develop"]);
+    lab.git(&main, &["push", "-q", "-u", "origin", "develop"]);
+    lab.git(&main, &["switch", "-q", "-c", "feature/f99-x"]);
+    lab.git(&main, &["push", "-q", "-u", "origin", "feature/f99-x"]);
+    // A story merged into develop, its branch then deleted on GitHub, its worktree left.
+    lab.git(
+        &main,
+        &["switch", "-q", "-c", "feat/us-901-merged", "develop"],
+    );
+    lab.commit(&main, "merged");
+    lab.git(&main, &["push", "-q", "-u", "origin", "feat/us-901-merged"]);
+    lab.git(&main, &["switch", "-q", "develop"]);
+    lab.git(&main, &["merge", "-q", "--ff-only", "feat/us-901-merged"]);
+    lab.git(&main, &["push", "-q"]);
+    lab.git(
+        &main,
+        &["push", "-q", "origin", "--delete", "feat/us-901-merged"],
+    );
+    let merged = lab.root.join("us-901");
+    lab.git(
+        &main,
+        &[
+            "worktree",
+            "add",
+            "-q",
+            merged.to_str().expect("path"),
+            "feat/us-901-merged",
+        ],
+    );
+    // A story just made from its feature, without a commit.
+    let fresh = lab.root.join("en-903");
+    lab.git(
+        &main,
+        &[
+            "worktree",
+            "add",
+            "-q",
+            "-b",
+            "chore/en-903-fresh",
+            fresh.to_str().expect("path"),
+            "origin/feature/f99-x",
+        ],
+    );
+    lab.git(
+        &main,
+        &[
+            "branch",
+            "-q",
+            "--set-upstream-to=origin/feature/f99-x",
+            "chore/en-903-fresh",
+        ],
+    );
+
+    let output = lab
+        .command(env!("CARGO_BIN_EXE_branches-clean"), &main)
+        .output()
+        .expect("branches-clean");
+
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(
+        text(&output),
+        "deleted: feat/us-901-merged, feature/f99-x\nworktrees kept: none\nlocal: chore/en-903-fresh, develop, main\non GitHub: origin/develop, origin/feature/f99-x, origin/main\nstashes: 0\nworktrees: 2\n"
+    );
+    assert!(!merged.exists());
+    assert!(fresh.exists());
+}
+
+#[test]
+fn f21_ac2_records_save_copies_commits_then_says_nothing_changed() {
+    let lab = Lab::new("records", &[]);
+    let repo = lab.root.join("repo");
+    let records = lab.root.join("records");
+    let project: String = repo
+        .to_string_lossy()
+        .chars()
+        .map(|char| {
+            if char.is_ascii_alphanumeric() {
+                char
+            } else {
+                '-'
+            }
+        })
+        .collect();
+    let transcripts = lab.root.join("home/.claude/projects").join(project);
+    let library = lab.root.join("library.sqlite");
+
+    fs::create_dir_all(transcripts.join("sub")).expect("transcripts");
+    fs::write(transcripts.join("sub/s.jsonl"), "{}\n").expect("transcript");
+    lab.git(&lab.root, &["init", "-q", "repo"]);
+    lab.git(&lab.root, &["init", "-q", "records"]);
+    fs::create_dir_all(repo.join(".git/metrics")).expect("metrics");
+    fs::write(repo.join(".git/metrics/turns.jsonl"), "{}\n").expect("turns");
+    let made = Command::new("sqlite3")
+        .arg(&library)
+        .arg("create table t(x); insert into t values (1), (2);")
+        .status()
+        .expect("sqlite3");
+    assert!(made.success());
+
+    let save = || {
+        lab.command(env!("CARGO_BIN_EXE_records-save"), &repo)
+            .env("RECORDS_PATH", &records)
+            .env("AGENT_LIBRARY_FILE", &library)
+            .output()
+            .expect("records-save")
+    };
+    let first = save();
+    let second = save();
+    let rows = Command::new("sqlite3")
+        .arg(records.join("library/library.sqlite"))
+        .arg("select count(*) from t")
+        .output()
+        .expect("sqlite3");
+
+    assert_eq!(
+        text(&first),
+        format!(
+            "missing metrics/tool-calls.jsonl\nsaved metrics/turns.jsonl\nsaved transcripts\nsaved library/library.sqlite\nCommitted in {}.\n",
+            records.display()
+        )
+    );
+    assert!(text(&second).ends_with("Nothing changed since the last save.\n"));
+    assert_eq!(String::from_utf8_lossy(&rows.stdout), "2\n");
+    assert!(records.join("transcripts/sub/s.jsonl").exists());
+    assert!(
+        lab.git(&records, &["log", "--format=%s"])
+            .starts_with("Save records 20")
+    );
+
+    // No records repository: it says so and fails.
+    let none = lab
+        .command(env!("CARGO_BIN_EXE_records-save"), &repo)
+        .env("RECORDS_PATH", lab.root.join("nowhere"))
+        .output()
+        .expect("records-save");
+
+    assert_eq!(none.status.code(), Some(1));
+    assert!(String::from_utf8_lossy(&none.stderr).contains("No records repository in "));
+}
+
+#[test]
+fn f21_ac2_backlog_status_names_an_item_it_does_not_find() {
+    let lab = Lab::new("status", &[]);
+    let output = lab
+        .command(env!("CARGO_BIN_EXE_backlog-status"), &lab.root)
+        .args(["EN-1", "done"])
+        .output()
+        .expect("backlog-status");
+
+    assert_eq!(output.status.code(), Some(1));
+    assert_eq!(
+        String::from_utf8_lossy(&output.stderr),
+        "usage: npm run backlog:status -- <ID> <status>; no item EN-1\n"
+    );
+}

@@ -1,11 +1,14 @@
 # Quality gate of the pull requests into main: the only CI run (ADR-0038, docs/tooling/ci.md).
 # Work branches (stories, features, develop) are checked locally by the Git hooks. On the release
-# pull request every job is skipped by its `if:`, which GitHub reports as a success.
+# pull request every job is skipped by its `if:`, which GitHub reports as a success. Run by hand on
+# a branch (`workflow_dispatch`), it times the quality job alone, cold or on the caches (EN-111): the
+# jobs that read a pull request are skipped.
 name: CI
 
 on:
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -14,21 +17,66 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  # The cargo tools of the Rust checks (EN-069), the versions of docs/tooling/dependencies.md; the
+  # same in release.yml, whose run on main saves the caches this workflow restores (EN-111).
+  CARGO_LLVM_COV_VERSION: 0.9.1
+  CARGO_DENY_VERSION: 0.20.2
+  # No incremental build: its state, kept for the workspace's own crates only, would grow the cache
+  # and never be reused, those crates being compiled again in each run.
+  CARGO_INCREMENTAL: 0
+
 jobs:
   quality:
     name: Format, lint, secrets, types, tests, audit, versions, docs, build
-    if: ${{ !startsWith(github.head_ref, 'release-please--') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      # The caches are restored, never saved: a pull request's cache is scoped to its merge ref, so
+      # the next pull request would never restore it (`REF-GH-CACHE`); the run on main of
+      # release.yml saves them, and every pull request restores those. Their keys are release.yml's.
+      - id: toolchain
+        run: echo "name=$(sed -n 's/^channel = "\(.*\)"$/\1/p' rust-toolchain.toml)-x86_64-unknown-linux-gnu" >> "$GITHUB_OUTPUT"
+      # The pinned toolchain, its Windows target and components, and the cargo tools: installed only
+      # when a key changes (`REF-GH-CACHE-RESTORE`).
+      - id: tools
+        uses: actions/cache/restore@v6
+        with:
+          path: |
+            ~/.rustup/toolchains/${{ steps.toolchain.outputs.name }}
+            ~/.cargo/bin/cargo-llvm-cov
+            ~/.cargo/bin/cargo-deny
+          key: rust-tools-${{ runner.os }}-${{ hashFiles('rust-toolchain.toml') }}-cargo-llvm-cov-${{ env.CARGO_LLVM_COV_VERSION }}-cargo-deny-${{ env.CARGO_DENY_VERSION }}
+      - if: steps.tools.outputs.cache-hit != 'true'
+        run: cargo install --locked cargo-llvm-cov@${{ env.CARGO_LLVM_COV_VERSION }} cargo-deny@${{ env.CARGO_DENY_VERSION }}
+      # The crates downloaded and the workspace's build: its dependencies compiled once per
+      # Cargo.lock and toolchain, the workspace's own crates again (their checkout is newer).
+      - uses: actions/cache/restore@v6
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: rust-build-${{ runner.os }}-${{ hashFiles('rust-toolchain.toml', 'Cargo.lock') }}
+          restore-keys: rust-build-${{ runner.os }}-
       - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      # The Rust checks' tools (EN-069): the coverage floor and the RustSec advisories, whose
-      # database is fetched here, the pre-push hook reading its local copy offline.
-      - run: cargo install --locked cargo-llvm-cov@0.9.1 cargo-deny@0.20.2
+      # The release binaries, built once in their own step so that its log names every crate
+      # compiled; `check:all` builds them first again, now up to date.
+      - run: npm run rust:build
+      # The history job's binary, from this build rather than one of its own.
+      - uses: actions/upload-artifact@v7
+        with:
+          name: git-hooks
+          path: target/release/git-hooks
+          if-no-files-found: error
+          retention-days: 1
+      # The RustSec advisories, whose database is fetched here, the pre-push hook reading its local
+      # copy offline.
       - run: cargo deny fetch db
       - run: npm run check:all
         env:
@@ -44,26 +92,29 @@ jobs:
 
   history:
     name: Commit messages and branch name
-    if: ${{ !startsWith(github.head_ref, 'release-please--') }}
+    if: ${{ github.event_name == 'pull_request' }}
+    needs: quality
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v7
+      # The Rust checks of the Git hooks (EN-108), the binary the quality job built: the branch name,
+      # then each commit's message. An artifact keeps no file mode (`REF-GH-ARTIFACT-MODES`).
+      - uses: actions/download-artifact@v8
         with:
-          node-version-file: .nvmrc
-          cache: npm
-      - run: npm ci
-      - run: npx validate-branch-name --test "${{ github.head_ref }}"
+          name: git-hooks
+          path: target/release
+      - run: chmod +x target/release/git-hooks
+      - run: target/release/git-hooks branch --name "${{ github.head_ref }}"
       - run: >-
-          npx commitlint --verbose
+          target/release/git-hooks commits
           --from ${{ github.event.pull_request.base.sha }}
           --to ${{ github.event.pull_request.head.sha }}
 
   dependencies:
     name: Dependency review
-    if: ${{ !startsWith(github.head_ref, 'release-please--') }}
+    if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7

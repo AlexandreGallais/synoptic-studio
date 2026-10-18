@@ -1,0 +1,13 @@
+[package]
+name = "page"
+version = "0.1.0"
+edition.workspace = true
+description = "One row or one section of a repository page, by its id or its heading (EN-105)"
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+tool-use = { path = "../tool-use" }
+
+[lints]
+workspace = true

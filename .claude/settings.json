@@ -6,6 +6,26 @@
   "permissions": {
     "allow": [
       "Bash(npm run *)",
+      "Bash(target/release/activity *)",
+      "Bash(target/release/backlog-status *)",
+      "Bash(target/release/context-size *)",
+      "Bash(target/release/dependencies outdated *)",
+      "Bash(target/release/dependencies unused *)",
+      "Bash(target/release/epic-check *)",
+      "Bash(target/release/git-sequences commit *)",
+      "Bash(target/release/git-sequences sync *)",
+      "Bash(target/release/library *)",
+      "Bash(target/release/metrics *)",
+      "Bash(target/release/page *)",
+      "Bash(target/release/records-save *)",
+      "Bash(target/release/release check *)",
+      "Bash(target/release/release notes *)",
+      "Bash(target/release/replace *)",
+      "Bash(target/release/run-totals *)",
+      "Bash(target/release/session-report *)",
+      "Bash(target/release/stale-binaries *)",
+      "Bash(target/release/val-prepare *)",
+      "Bash(target/release/worktree-new *)",
       "Bash(npx vitest *)",
       "Bash(git status*)",
       "Bash(git diff*)",
@@ -28,8 +48,9 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node",
-            "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/guard-bash.ts"]
+            "command": "${CLAUDE_PROJECT_DIR}/target/release/guard-bash",
+            "args": [],
+            "onFailure": "block"
           }
         ]
       },
@@ -38,18 +59,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cargo",
-            "args": [
-              "run",
-              "--release",
-              "-q",
-              "--manifest-path",
-              "${CLAUDE_PROJECT_DIR}/Cargo.toml",
-              "-p",
-              "hooks",
-              "--bin",
-              "limit-agents"
-            ]
+            "command": "${CLAUDE_PROJECT_DIR}/target/release/limit-agents",
+            "args": []
           }
         ]
       },
@@ -58,18 +69,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cargo",
-            "args": [
-              "run",
-              "--release",
-              "-q",
-              "--manifest-path",
-              "${CLAUDE_PROJECT_DIR}/Cargo.toml",
-              "-p",
-              "hooks",
-              "--bin",
-              "limit-agents"
-            ]
+            "command": "${CLAUDE_PROJECT_DIR}/target/release/limit-agents",
+            "args": []
           }
         ]
       },
@@ -78,18 +79,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cargo",
-            "args": [
-              "run",
-              "--release",
-              "-q",
-              "--manifest-path",
-              "${CLAUDE_PROJECT_DIR}/Cargo.toml",
-              "-p",
-              "hooks",
-              "--bin",
-              "library-pages"
-            ],
+            "command": "${CLAUDE_PROJECT_DIR}/target/release/library-pages",
+            "args": [],
             "timeout": 30
           }
         ]
@@ -100,35 +91,15 @@
           {
             "type": "command",
             "if": "Bash(*curl*)",
-            "command": "cargo",
-            "args": [
-              "run",
-              "--release",
-              "-q",
-              "--manifest-path",
-              "${CLAUDE_PROJECT_DIR}/Cargo.toml",
-              "-p",
-              "hooks",
-              "--bin",
-              "library-pages"
-            ],
+            "command": "${CLAUDE_PROJECT_DIR}/target/release/library-pages",
+            "args": [],
             "timeout": 30
           },
           {
             "type": "command",
             "if": "Bash(*wget*)",
-            "command": "cargo",
-            "args": [
-              "run",
-              "--release",
-              "-q",
-              "--manifest-path",
-              "${CLAUDE_PROJECT_DIR}/Cargo.toml",
-              "-p",
-              "hooks",
-              "--bin",
-              "library-pages"
-            ],
+            "command": "${CLAUDE_PROJECT_DIR}/target/release/library-pages",
+            "args": [],
             "timeout": 30
           }
         ]
@@ -139,18 +110,8 @@
           {
             "type": "command",
             "timeout": 30,
-            "command": "cargo",
-            "args": [
-              "run",
-              "--release",
-              "-q",
-              "--manifest-path",
-              "${CLAUDE_PROJECT_DIR}/Cargo.toml",
-              "-p",
-              "hooks",
-              "--bin",
-              "check-handback"
-            ]
+            "command": "${CLAUDE_PROJECT_DIR}/target/release/check-handback",
+            "args": []
           }
         ]
       },
@@ -159,11 +120,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node",
-            "args": [
-              "--harmony-temporal",
-              "${CLAUDE_PROJECT_DIR}/.claude/hooks/track-tool-call.ts"
-            ],
+            "command": "${CLAUDE_PROJECT_DIR}/target/release/track-tool-call",
+            "args": [],
             "async": true
           }
         ]
@@ -175,8 +133,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node",
-            "args": ["--harmony-temporal", "${CLAUDE_PROJECT_DIR}/.claude/hooks/session-state.ts"]
+            "command": "${CLAUDE_PROJECT_DIR}/target/release/session-state",
+            "args": []
           }
         ]
       }
@@ -187,8 +145,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node",
-            "args": ["--harmony-temporal", "${CLAUDE_PROJECT_DIR}/.claude/hooks/log-tool-call.ts"],
+            "command": "${CLAUDE_PROJECT_DIR}/target/release/log-tool-call",
+            "args": [],
             "async": true
           }
         ]
@@ -200,8 +158,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node",
-            "args": ["--harmony-temporal", "${CLAUDE_PROJECT_DIR}/.claude/hooks/log-tool-call.ts"],
+            "command": "${CLAUDE_PROJECT_DIR}/target/release/log-tool-call",
+            "args": [],
             "async": true
           }
         ]
@@ -210,7 +168,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "node --harmony-temporal \"$(git rev-parse --show-toplevel)/.claude/hooks/status-line.ts\"",
+    "command": "\"$(git rev-parse --show-toplevel)/target/release/status-line\"",
     "refreshInterval": 1
   },
   "enabledMcpjsonServers": ["library"],

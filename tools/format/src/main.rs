@@ -1,11 +1,13 @@
 //! `format --write|--check <targets…>` (EN-073): the repository's one formatter, run from its root
-//! by `npm run format`, `format:check`, `fix` and `lint-staged`. It runs oxfmt on the targets, then
-//! writes every Markdown table of their `.md` files without padding (ADR-0068). `--check` changes
+//! by `npm run format`, `format:check`, `fix` and the pre-commit hook. It runs oxfmt on the targets,
+//! then writes every Markdown table of their `.md` files without padding (ADR-0068). `--write`
+//! prints nothing when no file changed, and how many changed otherwise (EN-108). `--check` changes
 //! nothing: oxfmt checks the other files, and each Markdown file is formatted in a temporary copy,
 //! its tables unpadded, then compared with the file.
 
 use std::env;
 use std::fs;
+use std::hash::{DefaultHasher, Hash, Hasher};
 use std::io;
 use std::path::{Path, PathBuf};
 use std::process::{Command, ExitCode};
@@ -28,16 +30,29 @@ fn oxfmt() -> PathBuf {
     Path::new("node_modules").join(".bin").join(name)
 }
 
-/// Runs oxfmt in a folder; true when it succeeds.
-fn run_oxfmt(arguments: &[String], folder: &Path) -> io::Result<bool> {
+/// Runs oxfmt in a folder; true when it succeeds. Its output is printed as it comes, or, when
+/// `quiet`, only on a failure: `--write` prints nothing when nothing changed (EN-108).
+fn run_oxfmt(arguments: &[String], folder: &Path, quiet: bool) -> io::Result<bool> {
     let program = env::current_dir()?.join(oxfmt());
-    let status = Command::new(program)
+    let mut command = Command::new(program);
+
+    command
         .arg("--no-error-on-unmatched-pattern")
         .args(arguments)
-        .current_dir(folder)
-        .status()?;
+        .current_dir(folder);
 
-    Ok(status.success())
+    if !quiet {
+        return Ok(command.status()?.success());
+    }
+
+    let output = command.output()?;
+
+    if !output.status.success() {
+        print!("{}", String::from_utf8_lossy(&output.stdout));
+        eprint!("{}", String::from_utf8_lossy(&output.stderr));
+    }
+
+    Ok(output.status.success())
 }
 
 /// The root's files, sorted, for the target `*`.
@@ -53,9 +68,9 @@ fn root_files() -> io::Result<Vec<String>> {
     Ok(files)
 }
 
-/// The Markdown files of the targets that oxfmt formats: tracked or new, not ignored by Git nor
-/// by `ignorePatterns`.
-fn markdown_files(targets: &[String], ignored: &[String]) -> io::Result<Vec<String>> {
+/// The files of the targets that oxfmt formats: tracked or new, not ignored by Git nor by
+/// `ignorePatterns`.
+fn listed_files(targets: &[String], ignored: &[String]) -> io::Result<Vec<String>> {
     let output = Command::new("git")
         .args([
             "ls-files",
@@ -77,12 +92,7 @@ fn markdown_files(targets: &[String], ignored: &[String]) -> io::Result<Vec<Stri
 
     let mut files: Vec<String> = String::from_utf8_lossy(&output.stdout)
         .split('\0')
-        .filter(|path| {
-            Path::new(path)
-                .extension()
-                .is_some_and(|extension| extension.eq_ignore_ascii_case("md"))
-        })
-        .filter(|path| !is_ignored(path, ignored) && Path::new(path).is_file())
+        .filter(|path| !path.is_empty() && !is_ignored(path, ignored) && Path::new(path).is_file())
         .map(str::to_owned)
         .collect();
 
@@ -91,21 +101,40 @@ fn markdown_files(targets: &[String], ignored: &[String]) -> io::Result<Vec<Stri
     Ok(files)
 }
 
-/// Writes the tables of each file without padding; the number of files changed.
-fn unpad_files(files: &[String]) -> io::Result<usize> {
-    let mut changed = 0;
+/// Whether a path names a Markdown file.
+fn is_markdown(path: &str) -> bool {
+    Path::new(path)
+        .extension()
+        .is_some_and(|extension| extension.eq_ignore_ascii_case("md"))
+}
 
+/// Writes the tables of each file without padding.
+fn unpad_files(files: &[String]) -> io::Result<()> {
     for file in files {
         let text = fs::read_to_string(file)?;
         let written = unpad(&text);
 
         if written != text {
             fs::write(file, written)?;
-            changed += 1;
         }
     }
 
-    Ok(changed)
+    Ok(())
+}
+
+/// The hash of each file's content, `None` for a file that cannot be read.
+fn fingerprints(files: &[String]) -> Vec<Option<u64>> {
+    files
+        .iter()
+        .map(|file| {
+            fs::read(file).ok().map(|bytes| {
+                let mut hasher = DefaultHasher::new();
+
+                bytes.hash(&mut hasher);
+                hasher.finish()
+            })
+        })
+        .collect()
 }
 
 /// A new temporary folder of this run.
@@ -147,7 +176,7 @@ fn unformatted_markdown(files: &[String]) -> io::Result<Vec<String>> {
 
         arguments.extend(copies);
 
-        if !run_oxfmt(&arguments, &copy)? {
+        if !run_oxfmt(&arguments, &copy, false)? {
             return Err(io::Error::other("oxfmt failed on the Markdown copies"));
         }
 
@@ -167,35 +196,57 @@ fn unformatted_markdown(files: &[String]) -> io::Result<Vec<String>> {
     result
 }
 
-/// Formats the targets in place.
-fn write(targets: &[String], markdown: &[String]) -> io::Result<bool> {
+/// Formats the targets in place, then names how many files changed, compared with their content
+/// before: nothing is printed when nothing changed, oxfmt having padded tables that the second step
+/// unpads again (EN-108).
+fn write(targets: &[String], files: &[String]) -> io::Result<bool> {
     let mut arguments = vec!["--write".to_owned()];
+    let before = fingerprints(files);
 
     arguments.extend_from_slice(targets);
 
-    if !run_oxfmt(&arguments, Path::new("."))? {
+    if !run_oxfmt(&arguments, Path::new("."), true)? {
         return Ok(false);
     }
 
-    let changed = unpad_files(markdown)?;
+    let markdown: Vec<String> = files
+        .iter()
+        .filter(|file| is_markdown(file))
+        .cloned()
+        .collect();
 
-    println!(
-        "Tables without padding: {changed} of {} Markdown files changed.",
-        markdown.len()
-    );
+    unpad_files(&markdown)?;
+
+    let changed = before
+        .iter()
+        .zip(fingerprints(files))
+        .filter(|(old, new)| **old != *new)
+        .count();
+
+    if changed > 0 {
+        println!(
+            "Formatted: {changed} {} changed.",
+            if changed == 1 { "file" } else { "files" }
+        );
+    }
 
     Ok(true)
 }
 
 /// Checks the targets without changing them.
-fn check(targets: &[String], markdown: &[String]) -> io::Result<bool> {
+fn check(targets: &[String], files: &[String]) -> io::Result<bool> {
     let mut arguments = vec!["--check".to_owned()];
+    let markdown: Vec<String> = files
+        .iter()
+        .filter(|file| is_markdown(file))
+        .cloned()
+        .collect();
 
     arguments.extend_from_slice(targets);
     arguments.push("!**/*.md".to_owned());
 
-    let others = run_oxfmt(&arguments, Path::new("."))?;
-    let differing = unformatted_markdown(markdown)?;
+    let others = run_oxfmt(&arguments, Path::new("."), false)?;
+    let differing = unformatted_markdown(&markdown)?;
 
     for file in &differing {
         println!("{file}: not formatted (oxfmt, then tables without padding)");
@@ -220,26 +271,27 @@ fn run(arguments: &[String]) -> Result<bool, String> {
     let ignored = patterns(&config)?;
     let roots = root_files().map_err(|error| error.to_string())?;
     let expanded = expand(targets, &roots)?;
-    let markdown = markdown_files(&expanded, &ignored).map_err(|error| error.to_string())?;
+    let files = listed_files(&expanded, &ignored).map_err(|error| error.to_string())?;
 
     if mode == "--write" {
-        write(&expanded, &markdown)
+        write(&expanded, &files)
     } else {
-        check(&expanded, &markdown)
+        check(&expanded, &files)
     }
     .map_err(|error| error.to_string())
 }
 
 fn main() -> ExitCode {
     let arguments: Vec<String> = env::args().skip(1).collect();
+    let mode = arguments.first().map_or("", String::as_str);
 
-    match run(&arguments) {
-        Ok(true) => ExitCode::SUCCESS,
-        Ok(false) => ExitCode::FAILURE,
+    tool_use::run("format", mode, || match run(&arguments) {
+        Ok(true) => 0,
+        Ok(false) => 1,
         Err(message) => {
             eprintln!("format: {message}");
 
-            ExitCode::from(2)
+            2
         }
-    }
+    })
 }

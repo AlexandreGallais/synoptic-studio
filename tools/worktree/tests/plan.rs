@@ -7,7 +7,7 @@ use std::process::{Command, Output};
 
 use worktree::{
     Request, base_branch, branch_refusal, branch_type, plan, story_id, story_of_branch,
-    story_of_file, worktrees_without_hooks,
+    story_of_file,
 };
 
 const FILE: &str = "E17-F18-US-061-font-list-held-while-the-default-font-is-read.md";
@@ -197,13 +197,8 @@ fn refuses_what_it_cannot_make() {
 /// A command cut off from the Git repository running the tests: a hook (`pre-push` running
 /// `check:all`) sets `GIT_DIR` and its kin, which would point every `git` call at that repository.
 fn isolated(program: &str, dir: &Path) -> Command {
-    let mut command = Command::new(program);
+    let mut command = test_support::command(program);
 
-    for (name, _) in std::env::vars_os() {
-        if name.to_string_lossy().starts_with("GIT_") {
-            command.env_remove(name);
-        }
-    }
     command
         .current_dir(dir)
         .env("GIT_AUTHOR_NAME", "test")
@@ -224,9 +219,20 @@ fn git(dir: &Path, arguments: &[&str]) -> String {
     String::from_utf8_lossy(&output.stdout).trim().to_owned()
 }
 
-/// The repository's own `node_modules`, Husky in it: the tool runs the real one.
+/// The repository's own `node_modules`, which the tool links into each worktree.
 fn node_modules() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../../node_modules")
+}
+
+/// An executable `pre-push` hook writing `name` into the file `$MARKER`.
+fn write_hook(path: &Path, name: &str) {
+    fs::write(path, format!("#!/bin/sh\necho {name} > \"$MARKER\"\n")).unwrap();
+    // Unix-only: Git runs a hook only when it is executable there; Windows has no such bit.
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        fs::set_permissions(path, fs::Permissions::from_mode(0o755)).unwrap();
+    }
 }
 
 /// A main checkout with a story file, `node_modules` and a `pre-push` hook naming its checkout,
@@ -246,7 +252,7 @@ fn repository_with(name: &str, files: &[(&str, &str)]) -> PathBuf {
 
     let _ = fs::remove_dir_all(&root);
     fs::create_dir_all(main.join("docs/backlog/stories")).unwrap();
-    fs::create_dir_all(main.join(".husky")).unwrap();
+    fs::create_dir_all(main.join(".githooks")).unwrap();
     // Unix-only, as the tool's own link: Windows makes a folder link by another call.
     #[cfg(unix)]
     std::os::unix::fs::symlink(node_modules(), main.join("node_modules")).unwrap();
@@ -258,7 +264,7 @@ fn repository_with(name: &str, files: &[(&str, &str)]) -> PathBuf {
     )
     .unwrap();
     fs::write(main.join("docs/backlog/stories").join(FILE), "# US-061\n").unwrap();
-    fs::write(main.join(".husky/pre-push"), "echo main > \"$MARKER\"\n").unwrap();
+    write_hook(&main.join(".githooks/pre-push"), "main");
     for (path, text) in files {
         let path = main.join(path);
 
@@ -367,60 +373,30 @@ fn f19_ac9_builds_the_release_binaries_of_a_new_worktree() {
 }
 
 #[test]
-fn lists_the_worktrees_without_hooks() {
-    let porcelain = "worktree /main\nHEAD 1\nbranch refs/heads/develop\n\n\
-                     worktree /main/.claude/worktrees/us-061\nHEAD 2\nbranch refs/heads/feat/x\n";
-    let has_hooks = |path: &Path| path == Path::new("/main/.husky/_");
-
-    assert_eq!(
-        worktrees_without_hooks(porcelain, has_hooks),
-        vec![PathBuf::from("/main/.claude/worktrees/us-061")]
-    );
-}
-
-#[test]
 fn f18_ac8_a_push_from_a_new_worktree_runs_its_own_pre_push() {
-    // As in the repository: Husky installed in the main checkout, the hooks path absolute, so a
-    // worktree without its own hooks folder ran the main checkout's `pre-push` (EN-055).
+    // The hooks path absolute, as Husky's was once, so a worktree ran the main checkout's
+    // `pre-push` (EN-055): the tool sets it to the relative `.githooks` (EN-108).
     let main = repository("hooks");
-    let husky = isolated(
-        main.join("node_modules/.bin/husky").to_str().unwrap(),
-        &main,
-    )
-    .output()
-    .unwrap();
-    let hooks = main.join(".husky/_");
+    let hooks = main.join(".githooks");
 
-    assert!(husky.stdout.is_empty(), "{husky:?}");
     git(
         &main,
         &["config", "core.hooksPath", hooks.to_str().unwrap()],
-    );
-    // A worktree made before the tool, without hooks of its own.
-    let older = main.join(".claude/worktrees/en-051");
-
-    git(
-        &main,
-        &[
-            "worktree",
-            "add",
-            "--quiet",
-            older.to_str().unwrap(),
-            "-b",
-            "chore/en-051-x",
-        ],
     );
 
     let made = worktree_new(&main, "US-061");
     let dir = main.join(".claude/worktrees/us-061");
 
     assert!(made.status.success(), "{made:?}");
-    assert!(older.join(".husky/_/h").exists());
+    assert_eq!(
+        git(&main, &["config", "--get", "core.hooksPath"]),
+        ".githooks"
+    );
 
     // The story's branch changes its own `pre-push`: that one runs.
     let marker = main.parent().unwrap().join("marker");
 
-    fs::write(dir.join(".husky/pre-push"), "echo worktree > \"$MARKER\"\n").unwrap();
+    write_hook(&dir.join(".githooks/pre-push"), "worktree");
     git(
         &dir,
         &["commit", "--quiet", "--all", "-m", "chore: change the hook"],

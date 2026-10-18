@@ -9,28 +9,14 @@
 use std::fs;
 use std::io::{self, Read};
 use std::path::Path;
-use std::process::Command;
 
+use hooks::git::git;
 use hooks::handback::{
     Branch, Commit, agent_transcript, allow_output, base_of, earlier_handbacks, finish_line,
     is_checked, missing, read_refs, refusal, story_of, worktree_id,
 };
 use hooks::json::{self, Value};
 use hooks::limit::deny_output;
-
-/// Git's output in a folder, trimmed; `None` when it fails.
-fn git(folder: &Path, arguments: &[&str]) -> Option<String> {
-    let output = Command::new("git")
-        .args(arguments)
-        .current_dir(folder)
-        .output()
-        .ok()?;
-
-    output
-        .status
-        .success()
-        .then(|| String::from_utf8_lossy(&output.stdout).trim().to_owned())
-}
 
 /// The story of a worktree, its branch as the worktree sees it, its commits not on its base, and
 /// that base: two Git calls. Without a story or a base, no commit is listed: the report's naming
@@ -116,7 +102,15 @@ fn answer(input: &Value) -> Option<String> {
     Some(allow_output(tool_input, &line))
 }
 
-fn main() {
+fn main() -> std::process::ExitCode {
+    tool_use::run("check-handback", "", || {
+        hook();
+        0
+    })
+}
+
+/// Reads the hook's input and prints its answer, if any.
+fn hook() {
     let mut text = String::new();
 
     if io::stdin().read_to_string(&mut text).is_err() {

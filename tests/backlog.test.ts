@@ -258,9 +258,9 @@ function hasKinds(
 
 /**
  * Folders whose TypeScript tests may verify acceptance criteria (ADR-0027): `tests` for the
- * criteria on the code base itself (F11), the scripts, hooks and lint rules for the tooling's (F18).
+ * criteria on the code base itself (F11), the scripts and lint rules for the tooling's (F18); the hooks are Rust since EN-104.
  */
-const TEST_ROOTS = ["src", "playground", "tests", "scripts", ".claude/hooks"];
+const TEST_ROOTS = ["src", "playground", "tests", "scripts"];
 
 /** The Rust tools, whose tests verify the tooling's criteria (F18). */
 const TOOLS = join(import.meta.dirname, "..", "tools");

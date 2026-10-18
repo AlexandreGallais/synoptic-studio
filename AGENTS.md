@@ -14,14 +14,14 @@ TypeScript library `editor` that creates **SVG symbols** for **synoptic views**,
 
 A library of small named functions, each backed by a verified source, composed so that they read like formulas; the playground (`playground/`) shows each stage. Principles: schematic, orthogonal, integer, documented, dependency-free.
 
-**State** (2026-10-17), the details in each epic's file and retrospective:
+**State** (2026-10-18), the details in each epic's file and retrospective:
 
 | Epic | Where | Holds |
 | --- | --- | --- |
 | E01 shapes from numbers | delivered, RET-001 | rectangle, regular polygon, anchor, radius per corner, free shape, node editing, rotation, stretched polygon |
 | E14 curves | delivered, RET-002 | points with handles, the round shape as four cubic sides, every calculation named (ADR-0046 to ADR-0049) |
 | E15 text | delivered, RET-003 | font metrics from font files, a text in a box, colors, fonts embedded at export, the checklist page `?checklist=E15` (ADR-0052 to ADR-0062) |
-| E17 fast tooling, Oxc and Rust | in progress | F18 and F19 validated (checks on Oxc, TypeScript 7 and Rust); F20 validated on 2026-10-18 (VAL-021: the context diet, a story worker's first request from 38,900 tokens to 10,600, the agent pages −20 %); then F21, the agent's tools in Rust; the release of 0.3 (#259) at E17's end |
+| E17 fast tooling, Oxc and Rust | in progress | F18 to F21 done: F18 and F19 validated (checks on Oxc, TypeScript 7 and Rust); F20 validated on 2026-10-18 (VAL-021: the context diet, a story worker's first request from 38,900 tokens to 10,600, the agent pages −20 %); F21 validated on 2026-10-18 (VAL-022: every tool of our own in Rust, a hook 3 ms instead of 59, `check:all` about 75 s, 13 dev packages, the release by our own tool); NAM-002 next; the release of 0.3 (#259) at E17's end |
 | E02 edit shapes | next | — |
 
 **Scope** (ADR-0030): a finished free V1, then new features only in a paid pro edition. A request that looks pro: say so and ask; pro ideas go to `docs/domain/editions.md`. Only `ready` stories are implemented; the Product Owner's `/run` is the go-ahead, after which the agent sets its scope `ready` itself (ADR-0072).
@@ -43,7 +43,7 @@ A library of small named functions, each backed by a verified source, composed s
 
 - **English everywhere** (code, comments, docs, commits), so that one language serves every reader; only the glossary keeps a French column. Messages to the Product Owner are in French.
 - **Every business rule lives in `docs/domain/`**, changed in the same commit as the code that applies it. A rule missing or ambiguous is asked, never invented: the Product Owner owns the domain.
-- **Never quote the Product Owner**: a decision is written as understood, in neutral English, with its reason and date (`docs/conventions/writing.md`). **No personal information** about them: the repository is public.
+- **Never quote the Product Owner**: a decision is written as understood, in neutral English, with its reason and date (`docs/conventions/writing.md`). **No personal information** about them: the repository is public. **Nor in a request**: no request an agent sends, nor one a tool codes, carries their name, e-mail address or account, in a header (`User-Agent`), a URL or a payload; a registry that asks for a contact gets the repository's URL, as `tools/deps` sends crates.io (an agent sent the e-mail address to crates.io on 2026-10-18, EN-113).
 - **Decisions in ADRs**: a structural decision is a new ADR; an accepted ADR is superseded, never rewritten, so that the record of why stays true. A page that applies an ADR states its principle.
 - **Never invent a reference**: cite only what was read; otherwise a derivation, each step citing a read source, or a research request.
 - **A rule earns its place**: a rule or a construct stays only if it makes the code or the docs more correct or more uniform; ceremony goes (`docs/conventions/writing.md`, Writing a rule).
@@ -108,10 +108,10 @@ Stop when going on would mean deciding what belongs to someone else, or guessing
 
 ## Git
 
-- Commits follow Conventional Commits with a scope of the closed list in `commitlint.config.ts` (`docs/process/` takes `docs(docs)`, a derivation `docs(geometry)`); the subject starts with a verb, since an id first (`F11 …`) is refused as sentence case; a body line starting with `word:` is read as a footer, so the colon goes later in the line.
+- Commits follow Conventional Commits with a scope of the closed list `SCOPES` in `tools/git-hooks/src/message.rs` (`docs/process/` takes `docs(docs)`, a derivation `docs(geometry)`); the subject starts with a verb, since an id first (`F11 …`) is refused as sentence case; a body line starting with `word:` is read as a footer, so the colon goes later in the line.
 - A commit refused by a hook leaves its files staged: check `git status` before retrying.
-- After each release, bring `develop` up to `main` (`git merge --ff-only origin/main`).
-- `RELEASE_PLEASE_TOKEN` **expires 2026-12-31**: remind the Product Owner in December.
+- A release is prepared on `release/x.y.z` from `develop` by `target/release/release prepare` and published from `main` by `release publish` (ADR-0079, `docs/tooling/releases.md`); after it, bring `develop` up to `main` (`git merge --ff-only origin/main`, a merge if `develop` moved) and delete the release branch.
+- The release needs no personal token, `GITHUB_TOKEN` alone: remind the Product Owner to delete the secret `RELEASE_PLEASE_TOKEN` and its token on GitHub until they say it is done.
 
 ## Commands
 
@@ -122,4 +122,4 @@ Stop when going on would mean deciding what belongs to someone else, or guessing
 | `npm run check:all` | every check, what `pre-push` and the CI run |
 | `npm run library -- …` | the local library of sources: `search`, `get`, `read`, `list` |
 | `npm run metrics` | the agent's commands, time and tokens |
-| agent tools | `replace`, `backlog:status`, `worktree:new`, `git:sync`, `git:commit`, `story:finish`, `mutate`, `val:prepare`, `golden:*`, `activity`, `epic:check`, `context:size` (`docs/tooling/agent-tools.md`) |
+| agent tools | `replace`, `backlog:status`, `worktree:new`, `git:sync`, `git:commit`, `story:finish`, `mutate`, `val:prepare`, `golden:*`, `activity`, `epic:check`, `context:size`, `page` (`docs/tooling/agent-tools.md`); the agent calls each by its release binary from the checkout's root, `target/release/<binary>`, as that page maps the scripts (ADR-0078) |

@@ -32,9 +32,24 @@ fn git_common_dir() -> io::Result<PathBuf> {
 
 fn main() -> ExitCode {
     let argv: Vec<String> = env::args().skip(1).collect();
-    let Some((name, command)) = lock_and_command(&argv) else {
+    // What it runs: the npm script that started it (`check:all`), else the command's program.
+    let script = env::var("npm_lifecycle_event").unwrap_or_default();
+    let subcommand = if script.is_empty() {
+        lock_and_command(&argv)
+            .and_then(|(_, command)| command.first())
+            .map_or_else(String::new, Clone::clone)
+    } else {
+        script
+    };
+
+    tool_use::run("heavy-lock", &subcommand, || lock_and_run(&argv))
+}
+
+/// Runs the command under its lock; its exit code.
+fn lock_and_run(argv: &[String]) -> u8 {
+    let Some((name, command)) = lock_and_command(argv) else {
         eprintln!("usage: heavy-lock [--lock <name>] <command> [arguments…]");
-        return ExitCode::from(2);
+        return 2;
     };
 
     let result = git_common_dir().and_then(|common| {
@@ -54,10 +69,10 @@ fn main() -> ExitCode {
     });
 
     match result {
-        Ok(code) => ExitCode::from(u8::try_from(code).unwrap_or(1)),
+        Ok(code) => u8::try_from(code).unwrap_or(1),
         Err(error) => {
             eprintln!("heavy-lock: {error}");
-            ExitCode::from(1)
+            1
         }
     }
 }

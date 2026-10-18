@@ -3,12 +3,14 @@
 //! GitHub. The topic comes from the story's file name, the branch type from the story's kind, the
 //! feature branch from the remote branches. What the tool runs is decided here, without Git.
 
+pub mod seed;
+
 use std::path::{Path, PathBuf};
 
 /// Folder of the worktrees, from the main checkout.
 pub const WORKTREES: &str = ".claude/worktrees";
 
-/// Branch types the pre-push hook accepts (`.validate-branch-namerc.json`).
+/// Branch types the pre-push hook accepts (`tools/git-hooks/src/branch.rs`).
 const BRANCH_TYPES: [&str; 11] = [
     "feat", "fix", "docs", "refactor", "test", "chore", "build", "ci", "perf", "style", "revert",
 ];
@@ -224,19 +226,4 @@ pub fn story_files(top: &Path) -> std::io::Result<Vec<String>> {
         .filter_map(Result::ok)
         .map(|entry| entry.file_name().to_string_lossy().into_owned())
         .collect())
-}
-
-/// Husky's hooks folder in a checkout: `core.hooksPath`, relative, names it in each worktree.
-pub const HOOKS: &str = ".husky/_";
-
-/// Worktrees without Husky's hooks folder, from `git worktree list --porcelain`: the folder is
-/// ignored by Git, so a new worktree has none and a push from it would run no hook of its own.
-#[must_use]
-pub fn worktrees_without_hooks(porcelain: &str, has_hooks: impl Fn(&Path) -> bool) -> Vec<PathBuf> {
-    porcelain
-        .lines()
-        .filter_map(|line| line.strip_prefix("worktree "))
-        .map(PathBuf::from)
-        .filter(|dir| !has_hooks(&dir.join(HOOKS)))
-        .collect()
 }

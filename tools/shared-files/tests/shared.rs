@@ -3,7 +3,9 @@
 use std::fs;
 use std::io::Write;
 use std::path::PathBuf;
-use std::process::{Command, Output, Stdio};
+use std::process::{Output, Stdio};
+
+use test_support::command;
 
 use shared_files::shared::{
     Commit, Kind, closes, refusal, refused_files, shared_kind, story_of, worker_story,
@@ -200,17 +202,6 @@ fn names_each_refused_file_with_its_commit() {
     );
 }
 
-/// A command cut off from the Git repository running the tests: a hook (`pre-push` running
-/// `check:all`) sets `GIT_DIR` and its kin, which would point every `git` call at that repository.
-fn isolated(mut command: Command) -> Command {
-    for (name, _) in std::env::vars_os() {
-        if name.to_string_lossy().starts_with("GIT_") {
-            command.env_remove(name);
-        }
-    }
-    command
-}
-
 /// A Git repository in a fresh temporary folder, with a bare remote holding its first commit.
 struct Repository {
     root: PathBuf,
@@ -238,7 +229,7 @@ impl Repository {
     }
 
     fn git(&self, arguments: &[&str]) -> String {
-        let output = isolated(Command::new("git"))
+        let output = command("git")
             .args(["-c", "commit.gpgsign=false"])
             .args(arguments)
             .current_dir(self.work())
@@ -274,7 +265,7 @@ impl Repository {
 
     /// The check run as `pre-push` runs it, given one line of its standard input.
     fn check_input(&self, line: &str) -> Output {
-        let mut child = isolated(Command::new(env!("CARGO_BIN_EXE_refuse-shared-files")))
+        let mut child = command(env!("CARGO_BIN_EXE_refuse-shared-files"))
             .current_dir(self.work())
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())

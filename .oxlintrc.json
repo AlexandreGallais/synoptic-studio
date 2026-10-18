@@ -1160,7 +1160,6 @@
         "./*.test.ts",
         "tests/*.ts",
         "docs/.vitepress/**/*.ts",
-        ".claude/hooks/**/*.ts",
         "scripts/**/*.ts"
       ],
       "rules": {
