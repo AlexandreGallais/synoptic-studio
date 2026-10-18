@@ -276,7 +276,7 @@
 | [VAL-022](./E17-F21-VAL-022-validate-f21.md) | F21 | Validate F21 | done |
 | [EN-122](./E17-F22-EN-122-one-story-at-a-time-into-develop.md) | F22 | One story at a time into develop | done |
 | [EN-123](./E17-F22-EN-123-epics-without-a-closing.md) | F22 | Epics without a closing, a review at each return | done |
-| [EN-116](./E17-F22-EN-116-ci-green-on-github-runners.md) | F22 | The CI's tests green on GitHub's runner | ready |
+| [EN-116](./E17-F22-EN-116-ci-green-on-github-runners.md) | F22 | The CI's tests green on GitHub's runner | done |
 | [EN-117](./E17-F22-EN-117-release-from-the-merge-into-main.md) | F22 | The release by a button, from the tags | ready |
 | [AUD-024](./E17-F22-AUD-024-audit-f22.md) | F22 | Audit F22 | ready |
 | [VAL-023](./E17-F22-VAL-023-validate-f22.md) | F22 | Validate F22 | ready |
