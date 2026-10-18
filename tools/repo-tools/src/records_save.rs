@@ -1,7 +1,7 @@
-//! The save of the private records (ADR-0041, ADR-0044, EN-103): the agent's traces, which hold the
-//! Product Owner's raw messages and local paths, copied into a private Git repository inside this
-//! one (ignored) and committed, then pushed when it has a remote. The folder is `RECORDS_PATH`,
-//! else `records/` inside the project.
+//! The save of the private records (ADR-0081, EN-114): the agent's traces, which hold the Product
+//! Owner's raw messages and local paths, copied into a local folder outside the repository, never
+//! sent anywhere. The folder `AGENT_RECORDS_ROOT` holds the records of every project, each in a
+//! folder named after its repository, so that two projects never write over each other.
 
 use std::fs;
 use std::io;
@@ -26,13 +26,39 @@ pub struct RecordCopy {
     pub to: &'static str,
 }
 
-/// The records folder: `RECORDS_PATH` when set and not empty, else `records` inside the main
-/// checkout (ADR-0044).
+/// The variable naming the folder of every project's records.
+pub const ROOT_VARIABLE: &str = "AGENT_RECORDS_ROOT";
+
+/// The file of a project's records holding the instant of its last save.
+pub const LAST_SAVE: &str = "last-save.txt";
+
+/// A project's name: its repository's, the last part of the `origin` remote's address without
+/// `.git`, the same in every clone; without a remote, the main checkout's folder.
 #[must_use]
-pub fn records_folder(variable: Option<&str>, main: &Path) -> PathBuf {
-    match variable {
-        Some(path) if !path.is_empty() => PathBuf::from(path),
-        _ => main.join("records"),
+pub fn project_name(origin: &str, main: &Path) -> String {
+    let address = origin.trim().trim_end_matches('/');
+    let last = address.rsplit(['/', ':']).next().unwrap_or_default();
+    let name = last.strip_suffix(".git").unwrap_or(last);
+
+    if name.is_empty() {
+        main.file_name()
+            .map(|folder| folder.to_string_lossy().into_owned())
+            .unwrap_or_default()
+    } else {
+        name.to_owned()
+    }
+}
+
+/// A project's records folder, `<AGENT_RECORDS_ROOT>/<project>` (ADR-0081).
+///
+/// # Errors
+/// When the variable is not set or empty: the records are never written to a folder nobody chose.
+pub fn records_folder(root: Option<&str>, project: &str) -> Result<PathBuf, String> {
+    match root {
+        Some(path) if !path.is_empty() => Ok(Path::new(path).join(project)),
+        _ => Err(format!(
+            "{ROOT_VARIABLE} is not set: name the folder of the records in the env of ~/.claude/settings.json."
+        )),
     }
 }
 
@@ -127,21 +153,33 @@ mod tests {
     use super::*;
 
     #[test]
-    fn puts_the_records_in_the_ignored_records_folder_unless_records_path_is_set() {
+    fn names_a_project_after_its_repository_else_its_folder() {
         let main = Path::new("/work/SVG editor");
 
+        for origin in [
+            "https://github.com/owner/synoptic-studio.git",
+            "https://github.com/owner/synoptic-studio/",
+            "git@github.com:owner/synoptic-studio.git",
+            "git@host:synoptic-studio",
+        ] {
+            assert_eq!(project_name(origin, main), "synoptic-studio", "{origin}");
+        }
+        assert_eq!(project_name("", main), "SVG editor");
+        assert_eq!(project_name("\n", main), "SVG editor");
+    }
+
+    #[test]
+    fn puts_each_projects_records_in_its_folder_of_the_chosen_root_never_elsewhere() {
         assert_eq!(
-            records_folder(None, main),
-            Path::new("/work/SVG editor/records")
+            records_folder(Some("/records"), "synoptic-studio"),
+            Ok(PathBuf::from("/records/synoptic-studio"))
         );
-        assert_eq!(
-            records_folder(Some(""), main),
-            Path::new("/work/SVG editor/records")
-        );
-        assert_eq!(
-            records_folder(Some("/backup/records"), main),
-            Path::new("/backup/records")
-        );
+        for unset in [None, Some("")] {
+            assert!(
+                records_folder(unset, "synoptic-studio")
+                    .is_err_and(|error| error.starts_with("AGENT_RECORDS_ROOT is not set"))
+            );
+        }
     }
 
     #[test]

@@ -2,14 +2,14 @@
 //! an epic produced, at its start and its end — every check of the code and the site, the branches
 //! and pull requests left, the code scanning alerts on GitHub, the calls that failed during the epic
 //! and why (the worktree isolation's refusals apart), calls lost at a force-quit, the backlog of the
-//! epic, the private records saved. A failed `check:all` is named by its failing checks, their lanes
+//! epic, the last save of the private records. A failed `check:all` is named by its failing checks, their lanes
 //! and their failing tests (EN-055). Prints a Markdown table to copy into the retrospective's
 //! record, from the repository's root.
 
 use std::env;
 use std::fs;
 use std::io::ErrorKind;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::process::{Command, ExitCode};
 use std::time::SystemTime;
 
@@ -18,6 +18,7 @@ use hooks::json::{Value, parse};
 use repo_tools::epic_check::{
     Finding, check_all_finding, failed_calls, left_branches, lost_calls, open_items, table,
 };
+use repo_tools::records_save::{LAST_SAVE, ROOT_VARIABLE, project_name, records_folder};
 
 /// A command's trimmed output and whether it succeeded: its own output when it failed — check:all
 /// names the checks that failed — else the error, as Node.js wrote it.
@@ -168,25 +169,35 @@ fn github_findings(root: &Path) -> Vec<Finding> {
     ]
 }
 
-/// The private records: anything unsaved, and the last save.
+/// The private records: their folder and the last save (ADR-0081).
 fn records_finding(root: &Path) -> Finding {
-    let folder = root.join("records");
-    let path = folder.to_string_lossy();
-    let records = run(root, "git", &["-C", &path, "status", "--short"]);
-    let log = run(root, "git", &["-C", &path, "log", "-1", "--format=%cs %s"]);
+    let origin = run(root, "git", &["config", "--get", "remote.origin.url"]).1;
+    let main = Path::new(
+        &run(
+            root,
+            "git",
+            &["rev-parse", "--path-format=absolute", "--git-common-dir"],
+        )
+        .1,
+    )
+    .parent()
+    .map_or_else(PathBuf::new, Path::to_path_buf);
+    let folder = records_folder(
+        env::var(ROOT_VARIABLE).ok().as_deref(),
+        &project_name(&origin, &main),
+    );
+    let last = folder
+        .as_ref()
+        .map(|folder| fs::read_to_string(folder.join(LAST_SAVE)).unwrap_or_default());
 
     Finding {
         what: "private records".to_owned(),
-        is_ok: records.0 && records.1.is_empty(),
-        detail: format!(
-            "{}; last save {}",
-            if records.1.is_empty() {
-                "nothing unsaved"
-            } else {
-                "unsaved changes"
-            },
-            log.1
-        ),
+        is_ok: last.as_ref().is_ok_and(|last| !last.is_empty()),
+        detail: match (&folder, &last) {
+            (Ok(_), Ok(last)) if !last.is_empty() => format!("last save {}", last.trim()),
+            (Ok(folder), _) => format!("never saved in {}", folder.display()),
+            (Err(error), _) => error.clone(),
+        },
     }
 }
 

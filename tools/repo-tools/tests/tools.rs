@@ -55,7 +55,7 @@ impl Lab {
             .env("HOME", self.root.join("home"))
             .env("GIT_CONFIG_GLOBAL", self.root.join("gitconfig"))
             .env("GIT_CONFIG_NOSYSTEM", "1")
-            .env_remove("RECORDS_PATH")
+            .env_remove("AGENT_RECORDS_ROOT")
             .env_remove("AGENT_LIBRARY_FILE");
         command
     }
@@ -167,7 +167,10 @@ fn f18_ac11_epic_check_prints_its_table_and_fails_on_a_finding() {
         lines[9],
         "| backlog of E99 | **to look at** | E99-F99-EN-2-b |"
     );
-    assert!(lines[10].starts_with("| private records | **to look at** | unsaved changes; last save Error: Command failed: git -C "));
+    assert!(
+        lines[10]
+            .starts_with("| private records | **to look at** | AGENT_RECORDS_ROOT is not set: ")
+    );
     assert_eq!(
         lines[lines.len() - 1],
         "| golden file of refactors | ok | none written yet |"
@@ -257,10 +260,10 @@ fn f18_ac8_branches_clean_deletes_the_merged_and_gone_branches_and_keeps_a_fresh
 }
 
 #[test]
-fn f21_ac2_records_save_copies_commits_then_says_nothing_changed() {
+fn en114_records_save_copies_into_the_projects_folder_of_the_chosen_root() {
     let lab = Lab::new("records", &[]);
     let repo = lab.root.join("repo");
-    let records = lab.root.join("records");
+    let root = lab.root.join("records");
     let project: String = repo
         .to_string_lossy()
         .chars()
@@ -277,8 +280,17 @@ fn f21_ac2_records_save_copies_commits_then_says_nothing_changed() {
 
     fs::create_dir_all(transcripts.join("sub")).expect("transcripts");
     fs::write(transcripts.join("sub/s.jsonl"), "{}\n").expect("transcript");
+    fs::create_dir_all(&root).expect("root");
     lab.git(&lab.root, &["init", "-q", "repo"]);
-    lab.git(&lab.root, &["init", "-q", "records"]);
+    lab.git(
+        &repo,
+        &[
+            "remote",
+            "add",
+            "origin",
+            "https://example.com/owner/studio.git",
+        ],
+    );
     fs::create_dir_all(repo.join(".git/metrics")).expect("metrics");
     fs::write(repo.join(".git/metrics/turns.jsonl"), "{}\n").expect("turns");
     let made = Command::new("sqlite3")
@@ -288,45 +300,54 @@ fn f21_ac2_records_save_copies_commits_then_says_nothing_changed() {
         .expect("sqlite3");
     assert!(made.success());
 
-    let save = || {
+    let save = |root: &Path| {
         lab.command(env!("CARGO_BIN_EXE_records-save"), &repo)
-            .env("RECORDS_PATH", &records)
+            .env("AGENT_RECORDS_ROOT", root)
             .env("AGENT_LIBRARY_FILE", &library)
             .output()
             .expect("records-save")
     };
-    let first = save();
-    let second = save();
+    let saved = save(&root);
+    let folder = root.join("studio");
     let rows = Command::new("sqlite3")
-        .arg(records.join("library/library.sqlite"))
+        .arg(folder.join("library/library.sqlite"))
         .arg("select count(*) from t")
         .output()
         .expect("sqlite3");
 
     assert_eq!(
-        text(&first),
+        text(&saved),
         format!(
-            "missing metrics/tool-calls.jsonl\nsaved metrics/turns.jsonl\nsaved transcripts\nsaved library/library.sqlite\nCommitted in {}.\n",
-            records.display()
+            "missing metrics/tool-calls.jsonl\nsaved metrics/turns.jsonl\nsaved transcripts\nsaved library/library.sqlite\nSaved in {}.\n",
+            folder.display()
         )
     );
-    assert!(text(&second).ends_with("Nothing changed since the last save.\n"));
     assert_eq!(String::from_utf8_lossy(&rows.stdout), "2\n");
-    assert!(records.join("transcripts/sub/s.jsonl").exists());
+    assert!(folder.join("transcripts/sub/s.jsonl").exists());
     assert!(
-        lab.git(&records, &["log", "--format=%s"])
-            .starts_with("Save records 20")
+        fs::read_to_string(folder.join("last-save.txt"))
+            .expect("last save")
+            .starts_with("20")
     );
+    // Nothing Git: the records are never committed nor sent.
+    assert!(!folder.join(".git").exists());
 
-    // No records repository: it says so and fails.
-    let none = lab
+    // A root that does not exist: it says so, fails and writes nothing.
+    let nowhere = lab.root.join("nowhere");
+    let missing = save(&nowhere);
+
+    assert_eq!(missing.status.code(), Some(1));
+    assert!(String::from_utf8_lossy(&missing.stderr).contains("nowhere does not exist"));
+    assert!(!nowhere.exists());
+
+    // No root chosen: it says so and fails.
+    let unset = lab
         .command(env!("CARGO_BIN_EXE_records-save"), &repo)
-        .env("RECORDS_PATH", lab.root.join("nowhere"))
         .output()
         .expect("records-save");
 
-    assert_eq!(none.status.code(), Some(1));
-    assert!(String::from_utf8_lossy(&none.stderr).contains("No records repository in "));
+    assert_eq!(unset.status.code(), Some(1));
+    assert!(String::from_utf8_lossy(&unset.stderr).contains("AGENT_RECORDS_ROOT is not set"));
 }
 
 #[test]

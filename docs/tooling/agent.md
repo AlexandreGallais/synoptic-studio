@@ -132,7 +132,7 @@ Product Owner, 2026-10-17: every agent works on the Product Owner's machine, in 
 
 ## Searching past conversations
 
-The session journal ([journal](../process/journal.md), ADR-0024) is read first; the transcripts, `~/.claude/projects/<project-path>/*.jsonl` (kept in the private records, ADR-0041, ADR-0044), are the full archive:
+The session journal ([journal](../process/journal.md), ADR-0024) is read first; the transcripts, `~/.claude/projects/<project-path>/*.jsonl` (kept in the private records, ADR-0081), are the full archive:
 
 ```sh
 cd ~/.claude/projects/<project-path>

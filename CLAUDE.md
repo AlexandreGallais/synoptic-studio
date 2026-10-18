@@ -22,7 +22,7 @@ What only Claude Code uses; the rules above hold for every agent. Configuration:
 - **Parallel limits** (AGENTS.md, Work): the heavy commands take the lock `tools/heavy-lock` themselves, never by hand; the hook `limit-agents` refuses a fourth subagent, started by `Agent` or resumed by `SendMessage`, and `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` is 3 as a backup (EN-047, EN-063).
 - A worktree is made by `target/release/worktree-new <ID>` and named after its story, never left anonymous (EN-052).
 - **Chat messages** start with a marker, never in repository files: ✅ done, ⏳ in progress or waiting, ⚠️ attention, ❌ error, ❓ question, 🟢 understood or agreed, 🟠 my mistake or a correction, ▶️ next step. Explain a behaviour by the situation it covers, in names or numbers, never in the words of the code.
-- At a session's end only, the session report: `target/release/session-report --all --markdown` (without `--all` it counts the current turn only). Before a pause, log the session in `docs/process/journal.md`, then `target/release/records-save` (ADR-0041, ADR-0044).
+- At a session's end only, the session report: `target/release/session-report --all --markdown` (without `--all` it counts the current turn only). Before a pause, log the session in `docs/process/journal.md`, then `target/release/records-save` (ADR-0081).
 
 ## Guards
 
