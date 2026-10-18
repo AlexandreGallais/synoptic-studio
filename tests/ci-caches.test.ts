@@ -151,4 +151,38 @@ describe("the Rust caches of the CI (EN-111)", () => {
       "- run: cargo check --workspace --all-targets --locked --quiet --target x86_64-pc-windows-msvc\n",
     );
   });
+
+  it("[F21.AC4] builds the site on main's caches, restored only", () => {
+    const site = jobOf(RELEASE, "docs");
+
+    expect(cachesOf(site)).toStrictEqual(cachesOf(warm));
+    expect(site.match(/uses: actions\/cache\/restore@v\d+/gu)).toHaveLength(2);
+    expect(site).not.toMatch(/uses: actions\/cache(?:\/save)?@/u);
+  });
+
+  it("[F21.AC4] checks the history with the quality job's binary, building none", () => {
+    const history = jobOf(CI, "history");
+
+    expect(quality).toContain(
+      "- run: npm run rust:build\n      - uses: actions/upload-artifact@v7\n        with:\n          name: git-hooks\n          path: target/release/git-hooks\n",
+    );
+
+    expect(history).toContain("needs: quality\n");
+
+    expect(history).toContain(
+      "- uses: actions/download-artifact@v8\n        with:\n          name: git-hooks\n          path: target/release\n      - run: chmod +x target/release/git-hooks\n",
+    );
+
+    expect(history).not.toContain("cargo ");
+  });
+
+  it("[F21.AC4] runs on demand the quality job alone, the jobs reading a pull request skipped", () => {
+    expect(CI).toContain("\non:\n  pull_request:\n    branches: [main]\n  workflow_dispatch:\n");
+
+    for (const job of ["history", "dependencies"]) {
+      expect(jobOf(CI, job)).toContain(
+        `if: \${{ github.event_name == 'pull_request' && !startsWith(github.head_ref, 'release-please--') }}\n`,
+      );
+    }
+  });
 });

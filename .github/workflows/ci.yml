@@ -1,11 +1,14 @@
 # Quality gate of the pull requests into main: the only CI run (ADR-0038, docs/tooling/ci.md).
 # Work branches (stories, features, develop) are checked locally by the Git hooks. On the release
-# pull request every job is skipped by its `if:`, which GitHub reports as a success.
+# pull request every job is skipped by its `if:`, which GitHub reports as a success. Run by hand on
+# a branch (`workflow_dispatch`), it times the quality job alone, cold or on the caches (EN-111): the
+# jobs that read a pull request are skipped.
 name: CI
 
 on:
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -66,6 +69,13 @@ jobs:
       # The release binaries, built once in their own step so that its log names every crate
       # compiled; `check:all` builds them first again, now up to date.
       - run: npm run rust:build
+      # The history job's binary, from this build rather than one of its own.
+      - uses: actions/upload-artifact@v7
+        with:
+          name: git-hooks
+          path: target/release/git-hooks
+          if-no-files-found: error
+          retention-days: 1
       # The RustSec advisories, whose database is fetched here, the pre-push hook reading its local
       # copy offline.
       - run: cargo deny fetch db
@@ -83,14 +93,20 @@ jobs:
 
   history:
     name: Commit messages and branch name
-    if: ${{ !startsWith(github.head_ref, 'release-please--') }}
+    if: ${{ github.event_name == 'pull_request' && !startsWith(github.head_ref, 'release-please--') }}
+    needs: quality
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      # The Rust checks of the Git hooks (EN-108): the branch name, then each commit's message.
-      - run: cargo build --release --locked -q -p git-hooks
+      # The Rust checks of the Git hooks (EN-108), the binary the quality job built: the branch name,
+      # then each commit's message. An artifact keeps no file mode (`REF-GH-ARTIFACT-MODES`).
+      - uses: actions/download-artifact@v8
+        with:
+          name: git-hooks
+          path: target/release
+      - run: chmod +x target/release/git-hooks
       - run: target/release/git-hooks branch --name "${{ github.head_ref }}"
       - run: >-
           target/release/git-hooks commits
@@ -99,7 +115,7 @@ jobs:
 
   dependencies:
     name: Dependency review
-    if: ${{ !startsWith(github.head_ref, 'release-please--') }}
+    if: ${{ github.event_name == 'pull_request' && !startsWith(github.head_ref, 'release-please--') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7

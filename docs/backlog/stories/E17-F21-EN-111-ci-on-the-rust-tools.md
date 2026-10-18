@@ -36,3 +36,13 @@ One task = one commit, referenced as `EN-111.Tn`.
 
 - [ ] T1 — The workspace built once and cached, the cargo tools cached by version; GitHub's cache documentation read and cited (3 h)
 - [ ] T2 — Each job on the cached build; the docs; a cold and a warm run timed by `workflow_dispatch` on the story's branch, the CI given that trigger (2 h)
+
+## For the main thread
+
+The workflows were not run: no GitHub Actions run is made from a worktree, and actionlint is not installed here. They were read against the pages of the library (`REF-GH-CACHE`, `REF-GH-CACHE-RESTORE`, `REF-GH-ARTIFACT-MODES`, `REF-GH-WORKFLOW-DISPATCH`), parsed as strict YAML, and their caches' keys, paths and commands are held by `tests/ci-caches.test.ts`. The timed runs of T2 could not be made on the story's branch: `workflow_dispatch` runs only once `ci.yml` with that trigger is on `main` (`REF-GH-WORKFLOW-DISPATCH`), and a branch restores only its own caches and `main`'s, which hold none until `rust-cache` has run there. The "after" measures come from the first runs on GitHub:
+
+1. **The pull request `develop` → `main` at E17's end runs cold**: `main` holds no cache yet. Its quality job's log shows `Cache not found` for `rust-tools-Linux-…` and `rust-build-Linux-…`, the `cargo install` step run, `npm run rust:build` compiling every crate; the history job starts after the quality job, downloads `git-hooks` and runs it, compiling nothing; the required checks keep their names. Its durations are the cold "after".
+2. **After its merge, `release.yml` on `main`**: the `rust-cache` job passes, `-- --list` printing the tests' names without running them, and its post steps say `Cache saved with key: rust-tools-Linux-…` and `rust-build-Linux-…`; the caches' sizes are on _Actions → Caches_. The `docs` job, beside it, may still miss them on that first run.
+3. **A warm run**: `gh workflow run ci.yml --ref develop` once the merge is on `main`, or the next pull request into `main` on an unchanged `Cargo.lock`: `Cache restored from key: …` for both, the `cargo install` step skipped, and the `npm run rust:build` step's log listing `Compiling` for the workspace's own crates only, no crate of crates.io (this story's third criterion). Its durations are the warm "after"; whether a pull request found `main`'s caches, unused for 7 days or less, is counted at each release.
+
+If the toolchain restored from `~/.rustup/toolchains` is not taken by rustup (a `info: syncing channel updates` line before the first build despite a cache hit), the tools cache still saves the cargo tools' compilation; the toolchain path would then be dropped from it.

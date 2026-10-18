@@ -49,7 +49,7 @@ Every dependency is code the project did not write and must trust, so each one i
 
 ## Rust tools
 
-The tools outside npm that the Rust checks run. `deps:outdated` does not see them: each version is pinned where it is installed — `.github/workflows/ci.yml`, the install line of [agent tools](./agent-tools.md#rust), the messages of `rust:coverage` and `rust:advisories` in `package.json` — and a newer release is looked for by hand (`cargo search <tool>`) at each retrospective.
+The tools outside npm that the Rust checks run. `deps:outdated` does not see them: each version is pinned where it is installed — the `env` of `.github/workflows/ci.yml` and `release.yml`, which key their cache ([CI](./ci.md#the-rust-build-and-its-caches)), the install line of [agent tools](./agent-tools.md#rust), the messages of `rust:coverage` and `rust:advisories` in `package.json` — and a newer release is looked for by hand (`cargo search <tool>`) at each retrospective.
 
 | Tool | Version, released | Why | Alternatives rejected |
 | --- | --- | --- | --- |
