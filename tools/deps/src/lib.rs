@@ -7,9 +7,11 @@
 pub mod actions;
 pub mod crates;
 pub mod fetch;
+pub mod modules;
 pub mod node;
 pub mod npm;
 pub mod outdated;
+pub mod unused;
 pub mod version;
 
 /// The cooldown: a version is taken once it is 7 days old (ADR-0038), in milliseconds.
