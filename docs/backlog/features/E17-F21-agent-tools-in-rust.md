@@ -29,7 +29,7 @@ Split from [F19](./E17-F19-oxc-and-rust-tools.md) by the Product Owner on 2026-1
 6. A release is prepared and published by a Rust tool of the workspace in place of release-please: the version and the changelog are committed in the pull request `develop` → `main` before it merges, the merge into `main` is tagged and its GitHub release published with the same notes, and no commit follows the merge; the notes follow the rules of `docs/tooling/releases.md`, drawn from `REF-KEEP-A-CHANGELOG` and `REF-COMMON-CHANGELOG` (EN-112).
 7. Each tool of the workspace records each use — the tool, its start, its duration, its exit code — through one shared function into `.git/metrics/tool-uses.jsonl`, and `npm run metrics` lists the uses per tool (EN-102).
 8. One command prints one row of a repository table or one section of a page, found by its id or its heading, and nothing else (EN-105).
-9. `check:all` fails, naming the lines, when a run changed a line of `.git/config` a test could break (`[core]`, `[user]`, `[commit]`, the remotes' URLs; EN-113), and every Rust test that runs `git` starts it without the inherited `GIT_*` variables (EN-103).
+9. `check:all` fails, naming the lines, when a run changed a line of `.git/config` a test could break (`[core]`, `[user]`, `[commit]`, `[url]`, `[include]`, `[includeIf]`, `[extensions]`, the remotes' URLs; EN-113, AUD-023), and every Rust test that runs `git` starts it without the inherited `GIT_*` variables (EN-103).
 
 ## The dev packages, one by one
 
