@@ -19,7 +19,13 @@ From the cards C1, C3 and C4, the row I50 (RET-004), the cards of 2026-10-18 on 
 
 ## Tasks
 
-- [ ] T1 — Each criterion's tests in `tools/worktree`, `story-finish`, `tests/backlog.test.ts` and `tests/story-automerge.test.ts`, failing (1 h)
-- [ ] T2 — `worktree-new`, `story-finish` and the branch form, the run skill and `docs/tooling/git-workflow.md` (2 h)
+- [x] T1 — Each criterion's tests in `tools/worktree`, `story-finish`, `tests/backlog.test.ts` and `tests/story-automerge.test.ts`, failing (1 h)
+- [x] T2 — `worktree-new`, `story-finish` and the branch form, the run skill and `docs/tooling/git-workflow.md` (2 h)
 
 One task = one commit, referenced as `EN-118.T1` in the commit footer.
+
+## For the main thread
+
+### Journal
+
+- `#tooling` EN-118: `story-finish develop` labels a `REV` and awaits it, opens an epic's `SP` without the label and says at once that it waits for the Product Owner's merge; `worktree-new` in the main checkout finds a story only on its feature branch (`git ls-tree`) and refuses one two branches hold; the pre-push refuses a work branch without the id of a story the auto-merge takes, six names of the history now refused (I50, cards C1, C3, C4).

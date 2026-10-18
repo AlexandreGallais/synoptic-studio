@@ -121,7 +121,7 @@ A push is skipped while the Product Owner types in or focuses the terminal. With
 
 The Product Owner may talk to a second session while a run works. Both share the main checkout, which belongs to the run (its branch, its uncommitted files), and the repository is the only state both read. So the second session:
 
-1. **Never touches the run's folder** (no `git switch`, `stash` nor commit there): it works in its own worktree, `target/release/worktree-new <ID>` for a story, or `git worktree add .claude/worktrees/<topic> -b <type>/<topic> origin/develop` for a tooling change without a story; each Bash call starts with `cd "<worktree>" || exit 9`.
+1. **Never touches the run's folder** (no `git switch`, `stash` nor commit there): it works in its own worktree, `target/release/worktree-new <ID>` for a story, or `git worktree add .claude/worktrees/<topic> -b <type>/<story-id>-<topic> origin/develop` for a tooling change without a story of its own, which takes the id of the story it serves: the pre-push hook refuses a branch without one, as the auto-merge does ([Git workflow](./git-workflow.md#branches-and-pull-requests)); each Bash call starts with `cd "<worktree>" || exit 9`.
 2. **Writes each decision in the repository** — domain, ADR, backlog, `AGENTS.md`, skills — on one branch into `develop`; a durable fact also goes to the agent's memory.
 3. **Tells the run**: `ListAgents`, then `SendMessage` with what changed, where and what it changes for the run. The run acts on the change once it reaches `develop`, never on the message alone.
 4. **Removes its worktree** once merged (`target/release/branches-clean`).

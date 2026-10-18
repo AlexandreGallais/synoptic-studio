@@ -5,7 +5,8 @@
 //! are left to the base and the rows written again after it, the push with lease of a head that
 //! differs from its remote's. The story's rows for the logs are in its `done` commit (ADR-0091):
 //! a story file still holding some stops it before its pull request, and nothing is committed on
-//! the base after the merge.
+//! the base after the merge. Who merges, GitHub or the Product Owner, as `story-automerge.yml`
+//! takes the branch into its base (EN-118).
 
 use std::fs;
 use std::io::{self, Write};
@@ -87,9 +88,22 @@ pub enum Merger {
 /// an epic's refinement `SP` into `develop` first, is the Product Owner's.
 #[must_use]
 pub fn merger(base: &str, branch: &str) -> Merger {
-    let _ = (base, branch);
+    let kind = story_of(branch)
+        .and_then(|id| id.split_once('-').map(|(kind, _)| kind.to_owned()))
+        .unwrap_or_default();
+    let taken: &[&str] = if base == "develop" {
+        &["REV"]
+    } else if base.starts_with("feature/") {
+        &["US", "EN", "SP", "CHK", "AUD", "VAL"]
+    } else {
+        &[]
+    };
 
-    Merger::GitHub
+    if taken.contains(&kind.as_str()) {
+        Merger::GitHub
+    } else {
+        Merger::ProductOwner
+    }
 }
 
 /// A checkout of the repository: the main one or a linked worktree.
@@ -698,6 +712,8 @@ mod tests {
         assert_eq!(merger(BASE, "docs/rev-006-review"), Merger::ProductOwner);
         assert_eq!(merger(BASE, "fix/tidy-up"), Merger::ProductOwner);
         assert_eq!(merger("develop", "fix/tidy-up"), Merger::ProductOwner);
+        // Nothing reaches `main` by the auto-merge.
+        assert_eq!(merger("main", "chore/en-118-x"), Merger::ProductOwner);
     }
 
     #[test]
