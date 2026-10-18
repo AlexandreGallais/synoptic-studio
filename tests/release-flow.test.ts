@@ -119,11 +119,12 @@ describe("release flow (ADR-0086)", () => {
     expect(WORKFLOW).not.toContain("deploy-pages");
   });
 
-  it("[F22.AC2] [F24.AC3] [F28.AC2] fetches every target's crates on develop before its caches are saved", () => {
+  it("[F22.AC2] [F24.AC3] [F28.AC2] fetches every target's crates on main before its caches are saved", () => {
     const job = jobOf(RUST_CACHES, "rust-caches");
     const fetch = job.indexOf("- run: cargo fetch --locked\n");
 
-    // Every push to develop, the one trigger of the workflow: no condition on the job.
+    // Every push to main, the one trigger of the workflow: no condition on the job; develop's
+    // caches are the develop CI's (tests/ci-caches.test.ts).
     expect(job).not.toMatch(/^ {4}if:/mu);
     expect(fetch).toBeGreaterThan(job.indexOf("key: rust-build-"));
     expect(fetch).toBeLessThan(job.indexOf("- run: npm run rust:build\n"));

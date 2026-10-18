@@ -50,6 +50,9 @@ function readsEventOrBranch(condition: string): boolean {
   return EVENT_OR_BRANCH.test(dereferenced);
 }
 
+/** The file of the develop CI, which the features' auto-merge dispatches (ADR-0088). */
+const DEVELOP_CI = "develop-ci.yml";
+
 /** The start of a step's first key. */
 const STEP = /^- /u;
 
@@ -423,6 +426,34 @@ describe("one workflow per purpose (ADR-0088)", () => {
     // Its jobs run on every pull request into main, the ruleset requiring each by its name.
     expect(text).toContain("\non:\n  pull_request:\n    branches: [main]\n\npermissions:\n");
     expect(CI.filter((line) => line.startsWith("    if:"))).toStrictEqual([]);
+  });
+});
+
+describe("the develop CI (ADR-0088, decisions 4 and 5)", () => {
+  it("[F30.AC1] starts the develop CI by a push to develop or a dispatch, no condition on the event or a branch", () => {
+    // A person's merge pushes to develop; the auto-merge's push by the GITHUB_TOKEN starts no run,
+    // so it dispatches the workflow (REF-GH-TOKEN-TRIGGERS). No other trigger: one run per merge.
+    expect(FILES).toContain(DEVELOP_CI);
+
+    const text = readFileSync(join(WORKFLOWS, DEVELOP_CI), "utf8");
+
+    expect(text).toContain(
+      "\non:\n  push:\n    branches: [develop]\n  workflow_dispatch:\n\npermissions:\n  contents: read\n\n",
+    );
+
+    expect(findingsOf(DEVELOP_CI)).toStrictEqual([]);
+    // No job under a condition: its steps' conditions are a cache missed or the run not cancelled.
+    expect(text).not.toMatch(/^ {4}if:/mu);
+  });
+
+  it("[F30.AC1] lets no workflow wait for another's run", () => {
+    // A `workflow_run` trigger would start after the develop CI, or after the auto-merge on main's
+    // file and commit (REF-GH-WORKFLOW-DISPATCH): none is kept.
+    const waiting = FILES.filter((file) =>
+      readFileSync(join(WORKFLOWS, file), "utf8").includes("workflow_run:"),
+    );
+
+    expect(waiting).toStrictEqual([]);
   });
 });
 
