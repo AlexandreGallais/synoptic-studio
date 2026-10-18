@@ -1,4 +1,4 @@
-//! `page [<file>] <id or heading>` (`npm run -s page`, EN-105): prints one row or one section of
+//! `page [<file>] <id or heading>` (`target/release/page`, EN-105): prints one row or one section of
 //! a repository page rather than the whole page. With a file: the rows whose first cell is the id,
 //! each preceded by its table's header line; else the sections under that heading, each preceded
 //! by `<file>:<line>`. Without a file: a `REF-` id's row in `docs/references.md`, or the first
@@ -84,7 +84,7 @@ fn print_part(words: &[String]) -> u8 {
         [id] => by_id(id),
         [file, wanted] => in_page(Path::new(file), wanted),
         _ => Err((
-            "usage: page [<file>] <id or heading>, as npm run -s page -- docs/tooling/agent.md Hooks"
+            "usage: page [<file>] <id or heading>, as target/release/page docs/tooling/agent.md Hooks"
                 .to_owned(),
             2,
         )),

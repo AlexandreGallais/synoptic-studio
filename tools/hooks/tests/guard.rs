@@ -296,12 +296,28 @@ fn allows_a_chained_git_command_outside_a_worktree() {
 
 #[test]
 fn f18_ac8_refuses_golden_write_in_a_worktree_and_says_why() {
-    assert!(
-        worktree_reason("npm run golden:write", WORKTREE)
-            .is_some_and(|reason| reason.contains("shared by every worktree"))
-    );
-    assert_eq!(worktree_reason("npm run golden:write", MAIN), None);
-    assert_eq!(worktree_reason("npm run golden:check", WORKTREE), None);
+    // The command of the golden file since `golden:write` went (EN-115), in its two spellings.
+    for command in [
+        "npx vitest run tests/golden-results.test.ts --mode golden-write",
+        "npx vitest run tests/golden-results.test.ts --mode=golden-write",
+        "cd x && npx vitest run --mode  golden-write tests/golden-results.test.ts",
+    ] {
+        assert!(
+            worktree_reason(command, WORKTREE)
+                .is_some_and(|reason| reason.contains("shared by every worktree")),
+            "{command}"
+        );
+        assert_eq!(worktree_reason(command, MAIN), None, "{command}");
+    }
+    // Checking the file, another mode, or the mode's name inside a text, writes nothing.
+    for command in [
+        "npx vitest run tests/golden-results.test.ts --mode golden-check",
+        "npm run golden:check",
+        "npx vitest run --mode golden-writer",
+        "echo golden-write",
+    ] {
+        assert_eq!(worktree_reason(command, WORKTREE), None, "{command}");
+    }
 }
 
 #[test]
@@ -447,7 +463,7 @@ fn f21_ac1_finds_a_script_missing_from_the_package_json() {
     assert_eq!(scripts_of("{"), None);
     assert_eq!(
         missing_script_reason("git:sync", "chore/en-090-x", "origin/feature/f20-y"),
-        "`npm run git:sync`: no script `git:sync` in the package.json of branch `chore/en-090-x`. A branch made before the script gets it by a rebase on its base: run `git fetch origin`, then `git rebase origin/feature/f20-y`, one call each."
+        "`npm run git:sync`: no script `git:sync` in the package.json of branch `chore/en-090-x`. A tool of the agent is called by its binary, `target/release/<binary>`, as docs/tooling/agent-tools.md lists them (EN-115). A branch made before a script gets it by a rebase on its base: run `git fetch origin`, then `git rebase origin/feature/f20-y`, one call each."
     );
 }
 

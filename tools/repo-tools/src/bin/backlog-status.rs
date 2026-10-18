@@ -1,4 +1,4 @@
-//! `backlog-status <ID> <status>` (`npm run backlog:status`, RET-002, EN-103), from the
+//! `backlog-status <ID> <status>` (`target/release/backlog-status`, RET-002, EN-103), from the
 //! repository's root: the item's front matter, its folder's index and its parent's table. A story's
 //! index is written again by the `backlog:index` script of `package.json`, run in the shell npm
 //! would run it in, its output shown.
@@ -16,7 +16,7 @@ fn work() -> u8 {
     let file = item_file(&root, id);
 
     if file.is_empty() || status.is_empty() {
-        eprintln!("usage: npm run backlog:status -- <ID> <status>; no item {id}");
+        eprintln!("usage: target/release/backlog-status <ID> <status>; no item {id}");
         return 1;
     }
 

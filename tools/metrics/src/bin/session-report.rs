@@ -1,4 +1,4 @@
-//! `session-report [session id] [--all] [--markdown] [--run]` (`npm run metrics:session`, EN-107):
+//! `session-report [session id] [--all] [--markdown] [--run]` (`target/release/session-report`, EN-107):
 //! the report of one working session — its duration, its tokens and those of each model, its tool
 //! calls and failures, its commits. Without an id, the session whose transcript changed last;
 //! without `--all`, the current turn only, from the prompt that started it, saved as one line of
@@ -68,7 +68,7 @@ fn report(arguments: &[String]) -> Result<String, String> {
         .collect();
     let figures = session_figures(&events, commits);
 
-    // Saved for the retrospective's comparison of turns (`npm run metrics`), unless `--all`.
+    // Saved for the retrospective's comparison of turns (`target/release/metrics`), unless `--all`.
     if let Some(first) = start.filter(|_| !is_all) {
         let session = events
             .requests

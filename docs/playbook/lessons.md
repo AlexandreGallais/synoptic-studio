@@ -14,7 +14,7 @@ What went wrong in this project, and the check that now prevents it. Newest firs
 | 2026-10-13 | Dependencies were upgraded, a major among them, without reading what changed | the upgrade procedure reads the release notes first (`docs/tooling/versions-and-security.md`) |
 | 2026-10-13 | The Product Owner's spoken words were quoted throughout a public repository | writing rules: decisions in neutral words; the `doc-editor` agent checks |
 | 2026-10-13 | Choosing a rectangle after a converted free shape left its fractional width and empty radius, and every field turned red | whole fields and one radius on choosing a shape; a test of that path |
-| 2026-10-13 | Nobody knew how long a story took nor how many tokens it used | metrics hooks, `npm run metrics`, a session report at each session's end |
+| 2026-10-13 | Nobody knew how long a story took nor how many tokens it used | metrics hooks, `target/release/metrics`, a session report at each session's end |
 | 2026-10-13 | Hooks and scripts run by Node.js lost their `.ts` extensions to the import autofix | a `node-run` lint scope |
 | 2026-10-09 | Validating a feature from a test card read beside the page was slow for the Product Owner | a guided test inside the playground: one step at a time, values typed by Next, what to look at; tested end to end |
 | 2026-10-09 | Story branches merged by GitHub auto-merge stayed on the remote; deleting them with `git push --delete` ran the full pre-push check each time | delete each merged branch right after the merge, through the GitHub API (`/run` step 9) |

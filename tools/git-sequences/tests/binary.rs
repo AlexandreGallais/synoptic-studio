@@ -405,7 +405,7 @@ fn prints_its_usage_on_a_malformed_call() {
     let output = tool(&repos.work, &["push"], "");
 
     assert!(!output.status.success());
-    assert!(stderr(&output).contains("usage: npm run git:sync"));
+    assert!(stderr(&output).contains("usage: target/release/git-sequences sync"));
 }
 
 #[test]

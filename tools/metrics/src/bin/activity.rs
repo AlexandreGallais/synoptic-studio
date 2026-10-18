@@ -1,4 +1,4 @@
-//! `activity [count]` (`npm run activity`, EN-107): what the agents are doing — the calls running
+//! `activity [count]` (`target/release/activity`, EN-107): what the agents are doing — the calls running
 //! now (`.git/metrics/running/`), the latest calls of the main agent and of each subagent from the
 //! hook's log (10 each, or `count`), and the last lines of each background command's output of the
 //! last hour. Its lines are those of `activity.ts`.

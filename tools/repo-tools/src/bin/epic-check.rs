@@ -1,4 +1,4 @@
-//! `epic-check <epic> <first day>` (`npm run epic:check`, RET-002, EN-103): the full check of what
+//! `epic-check <epic> <first day>` (`target/release/epic-check`, RET-002, EN-103): the full check of what
 //! an epic produced, at its start and its end — every check of the code and the site, the branches
 //! and pull requests left, the code scanning alerts on GitHub, the calls that failed during the epic
 //! and why (the worktree isolation's refusals apart), calls lost at a force-quit, the backlog of the

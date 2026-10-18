@@ -1,7 +1,7 @@
 //! Each use of a tool of the workspace, one line of `.git/metrics/tool-uses.jsonl` in the main
 //! checkout's Git folder, a linked worktree's uses included (EN-102, `docs/tooling/metrics.md`):
 //! the tool, its subcommand, the worktree, its start, its duration and its exit code, so that
-//! `npm run metrics` lists each tool's calls, failures and times.
+//! `target/release/metrics` lists each tool's calls, failures and times.
 //!
 //! A tool's `main` hands its work to [`run`], which times it and appends the line. The record never
 //! changes what the tool prints nor its exit code: a line that cannot be written (no Git folder, a

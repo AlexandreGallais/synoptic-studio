@@ -343,28 +343,18 @@ fn test_file_binaries() -> Vec<String> {
 }
 
 #[test]
-fn runs_every_check_of_check_the_playground_after_the_site() {
+fn runs_a_script_of_package_json_for_each_check_the_playground_after_the_site() {
+    // `script_command` falls back on `npm run <name>`, which npm refuses without the script: a
+    // lane naming a script that EN-115 removed would fail only when it runs.
     let scripts = scripts();
-    let check = scripts
+    let missing: Vec<&str> = LANES
         .iter()
-        .find(|(name, _)| name == "check")
-        .map(|(_, command)| command.clone())
-        .expect("a check script");
-    let mut listed: Vec<String> = check
-        .split("npm run ")
-        .skip(1)
-        .filter_map(|rest| rest.split_whitespace().next())
-        .map(str::to_owned)
-        .chain(["deps:outdated", "docs:build", "playground:build"].map(str::to_owned))
-        .collect();
-    let mut lanes: Vec<String> = LANES
-        .iter()
-        .flat_map(|lane| lane.iter().map(|&name| name.to_owned()))
+        .flat_map(|lane| lane.iter().copied())
+        .chain([BEFORE_LANES])
+        .filter(|name| !scripts.iter().any(|(script, _)| script == name))
         .collect();
 
-    listed.sort();
-    lanes.sort();
-    assert_eq!(lanes, listed);
+    assert_eq!(missing, Vec::<&str>::new());
     assert!(LANES.contains(&&["docs:build", "playground:build"][..]));
 }
 

@@ -72,7 +72,7 @@ The next release, 0.3.0, drafts 57 lines from the 753 commits since 0.2.0, in 0.
 
 ## Each tool records its use
 
-Each Rust tool writes one line per use — the tool, its start, its duration, its exit code — into `.git/metrics/tool-uses.jsonl`, through one shared function (EN-102), and `npm run metrics` lists them per tool in its section Tools: at this validation, 68,596 uses, `guard-bash` 61,388 of them, none failed. The status line's poll, `run-totals status`, called every second during a run, is not recorded: it would add about 18,000 lines a run of 5 hours and say nothing of the tool's use.
+Each Rust tool writes one line per use — the tool, its start, its duration, its exit code — into `.git/metrics/tool-uses.jsonl`, through one shared function (EN-102), and `target/release/metrics` lists them per tool in its section Tools: at this validation, 68,596 uses, `guard-bash` 61,388 of them, none failed. The status line's poll, `run-totals status`, called every second during a run, is not recorded: it would add about 18,000 lines a run of 5 hours and say nothing of the tool's use.
 
 ## What the audit found
 
@@ -112,8 +112,8 @@ Proven again on 2026-10-18 by VAL-022: its story holds the command and what was 
 | AC4 each dev package kept with its reason or rewritten | 13 packages; the Git hooks, the dependency checks and the secret scan ours; the CI on the cached build | `tools/git-hooks`, `tools/deps`, `tools/secret-scan`, `tools/format`, 49 tests; `tests/ci-caches.test.ts` |
 | AC5 nothing of the removed tools left | no file of a rewritten package; their names only where kept with a reason | `tests/package.test.ts`, EN-113's search |
 | AC6 the release by our own tool | a release branch, notes written for users, tag and release from `main`, no commit after the merge | `tools/release/tests/`, 15 tests; `tests/release-flow.test.ts` |
-| AC7 each tool records its use | `npm run metrics`, section Tools | `tools/tool-use/tests/`, `tools/metrics/tests/`, `tools/run-totals/tests/`, 13 tests |
-| AC8 one row or one section | `npm run -s page -- <id or heading>` | `tools/page/tests/`, 11 tests |
+| AC7 each tool records its use | `target/release/metrics`, section Tools | `tools/tool-use/tests/`, `tools/metrics/tests/`, `tools/run-totals/tests/`, 13 tests |
+| AC8 one row or one section | `target/release/page <id or heading>` | `tools/page/tests/`, 11 tests |
 | AC9 `.git/config` guarded, Git in tests without `GIT_*` | `check:all` names a line a lane changed | `tools/repo-tools/tests/`, `tools/test-support/`, 7 tests |
 
 ## How to try it
@@ -124,20 +124,20 @@ Run `npm run dev` and open `http://localhost:5173/?checklist=E17`: E17's checkli
 | --- | --- |
 | `ls .claude/hooks`, then `grep -o '"command": "[^"]*' .claude/settings.json` | no such folder; each hook running `target/release/<binary>` |
 | ask the agent, in a story's worktree, `git log --oneline -3 \| head -3`, then `git status; ls`, each after its `cd` | the first goes through, the second is refused with the form to run |
-| `npm run metrics`, section Tools | each tool's calls, failures and times; no `run-totals status` |
+| `target/release/metrics`, section Tools | each tool's calls, failures and times; no `run-totals status` |
 | `ls scripts` | `default-font-metrics.ts` and its test only |
-| `npm run -s library -- search fts5` | the stored sections holding the word, in a few milliseconds |
+| `target/release/library search fts5` | the stored sections holding the word, in a few milliseconds |
 | `npm run deps:unused` | nothing, exit 0 |
 | `printf 'Fixed the thing\n' > /tmp/msg`, then `target/release/git-hooks commit-msg /tmp/msg` | `subject may not be empty`, `type may not be empty`, exit 1 |
 | `time npm run -s lint:secrets` | nothing found, in about 0.3 s |
-| in a fresh clone of `develop` once F21 is merged: `npm install`, `npm run release:prepare` | `v0.2.0 → 0.3.0 on release/0.3.0: 57 line(s) drafted in CHANGELOG.md` |
-| `npm run -s page -- REF-CC-HOOKS` | that reference's row and its table's header, nothing else |
+| in a fresh clone of `develop` once F21 is merged: `npm install`, `target/release/release prepare` | `v0.2.0 → 0.3.0 on release/0.3.0: 57 line(s) drafted in CHANGELOG.md` |
+| `target/release/page REF-CC-HOOKS` | that reference's row and its table's header, nothing else |
 | `npm run check:all` | every check ✓ in about 75 s with nothing changed |
 
 ## Limits
 
 - The library's server is still started through `cargo run` (about 86 ms, once a session), so that each session runs the server of its sources.
-- A tool's recorded duration is its own work, not its process's start (about 3 ms), so `npm run metrics` reads a little lower than a timer around the process.
+- A tool's recorded duration is its own work, not its process's start (about 3 ms), so `target/release/metrics` reads a little lower than a timer around the process.
 - The release tool has not published yet: 0.3.0 will be its first run on `main`, with the CI's caches saved there for the first time (EN-111).
 - Starting Git is still written in 25 places, and the hooks keep their own JSON reader: E17's naming and tooling pass (NAM-002) is next.
 - `f21_ac2_reports_the_main_checkouts_work_from_a_worktree_its_findings_included` fails when the tests are run with `--release`, its binary recording its own use; `check:all` runs them in a debug build and passes (an improvement row).

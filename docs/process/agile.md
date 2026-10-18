@@ -63,7 +63,7 @@ The type says **who can see the result**, not who wrote it or whether it is code
 
 | When | What |
 | --- | --- |
-| every retrospective | metrics read (`npm run metrics`), overrides and "considered for later" tools re-checked, improvement and feedback logs emptied |
+| every retrospective | metrics read (`target/release/metrics`), overrides and "considered for later" tools re-checked, improvement and feedback logs emptied |
 | around the 4th or 5th epic, and at the end of the project | **review of every rule** (configuration, lint, hooks, skills, process): each is questioned against how the project went. Harden by default; relax only with a written reason (Product Owner decision, 2026-10-13) |
 
 ## The agent's own method and tools

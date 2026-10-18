@@ -33,7 +33,7 @@ Before: E15, as its retrospective (RET-003) measured them. After: F18's tools.
 | Two stories finishing at once | `story:finish` failing from a worktree | one merge at a time, from a worktree too; a branch deleted only once merged |
 | Compound commands refused in a worktree | 549 | the worker brief, and the guard naming the plain form |
 | The session report | one turn only | the whole conversation with `--all`; background subagents on the status line |
-| A checklist | 53 lines, its panel over the drawing | at most 12 lines per feature, a column beside the drawing, drafted by `val:prepare` |
+| A checklist | 53 lines, its panel over the drawing | at most 12 lines per feature, a column beside the drawing, drafted by `val-prepare` |
 | Font tests | four read macOS's own fonts, skipped elsewhere | every font test runs on every system, from Inter Regular's tables (EN-067) |
 
 The tokens per story (about 24 M in E15) are measured over the whole of E17 at its retrospective.
@@ -51,11 +51,11 @@ Every test named here carries the criterion's tag, `[F18.ACn]` in TypeScript or 
 | AC5 the stories index generated | `npm run backlog:index` (`tools/backlog-index/`) | `tools/backlog-index/tests/check.rs`, `tests/backlog.test.ts` |
 | AC6 a shared file refused on a story branch | the pre-push hook names the file and the commit | `tools/shared-files/tests/shared.rs` |
 | AC7 one merge at a time | `story:finish` under `.git/merge.lock`, from a worktree | `tools/repo-tools/tests/story_finish.rs` (`scripts/story-finish.test.ts` until EN-103) |
-| AC8 worktrees named after their story | `npm run worktree:new -- <ID>`; `golden:write` refused in a worktree | `tools/worktree/tests/plan.rs`, `tools/hooks/tests/guard.rs` |
-| AC9 the whole session reported | `npm run metrics:session -- --all`; background subagents on the status line | `tools/metrics/tests/session.rs`, `tools/hooks/tests/status.rs` (`status-line.test.ts` until EN-104) |
+| AC8 worktrees named after their story | `target/release/worktree-new <ID>`; the golden file's writing refused in a worktree | `tools/worktree/tests/plan.rs`, `tools/hooks/tests/guard.rs` |
+| AC9 the whole session reported | `target/release/session-report --all`; background subagents on the status line | `tools/metrics/tests/session.rs`, `tools/hooks/tests/status.rs` (`status-line.test.ts` until EN-104) |
 | AC10 timing tests under load | `[F15.AC4]` at 1 000 texts in under 0.4 s | `src/io/font-face/parse-font-face.test.ts` |
-| AC11 `epic:check` says what failed | failing tests, refusals counted apart, calls lost at a forced quit; `golden:check` at the push | `tools/repo-tools/src/epic_check.rs` (`scripts/epic-check.test.ts` until EN-103), `tests/pre-push.test.ts` |
-| AC12 a short checklist | at most 12 lines per feature, beside the drawing; `npm run val:prepare -- <feature>` | `playground/checklists/checklist-line-limit.test.ts`, `playground/checklist/` |
+| AC11 `epic-check` says what failed | failing tests, refusals counted apart, calls lost at a forced quit; `golden:check` at the push | `tools/repo-tools/src/epic_check.rs` (`scripts/epic-check.test.ts` until EN-103), `tests/pre-push.test.ts` |
+| AC12 a short checklist | at most 12 lines per feature, beside the drawing; `target/release/val-prepare . <feature>` | `playground/checklists/checklist-line-limit.test.ts`, `playground/checklist/` |
 | AC13 the register of exceptions; a 192 MB collection read | every `eslint-disable` directive listed with its reason; a font collection read without copying its bytes | `tests/exceptions.test.ts`, `src/io/font-collection/` |
 | AC14 the font list held, a refused face not measured | US-061; US-062: each installed face read whole and checked before it is listed, its bytes released at once | `playground/default-font/default-font.test.ts` |
 | AC15 `npm run mutate` | caught and surviving mutations, under the heavy lock | `tools/mutate/tests/run.rs` |
@@ -73,11 +73,11 @@ Run `npm run dev` and open `http://localhost:5173/?checklist=E17`: E17's checkli
 | --- | --- |
 | `npm run test` in two terminals at once | the second: `heavy lock held by process <pid> (npm run test in <folder>, for <n> s): waiting`, then it runs |
 | ask the agent to start four subagents at once | the fourth refused: `At most 3 subagents at once (ADR-0063): 3 running — …` |
-| `npm run worktree:new -- VAL-019`, then `npm run worktree:new -- US-61` | answered at once: `… val-019 already exists: remove it or name another story`, then `` `US-61` is not a story id such as US-061 `` |
+| `target/release/worktree-new VAL-019`, then `target/release/worktree-new US-61` | answered at once: `… val-019 already exists: remove it or name another story`, then `` `US-61` is not a story id such as US-061 `` |
 | `npm run backlog:index`, then `git status` | no file changed |
 | `git check-attr merge docs/process/journal.md` | `merge: union` |
-| `npm run metrics:session -- --all --markdown` | the time and tokens of the whole conversation |
-| `npm run epic:check -- E17 2026-10-16` (a few minutes: it runs `check:all`) | a table: failed calls, `apart: <n> refused by the worktree isolation`, calls lost at a forced quit |
+| `target/release/session-report --all --markdown` | the time and tokens of the whole conversation |
+| `target/release/epic-check E17 2026-10-16` (a few minutes: it runs `check:all`) | a table: failed calls, `apart: <n> refused by the worktree isolation`, calls lost at a forced quit |
 | `npm run mutate -- src/math/angle/central-angle.ts -- npx vitest run {test}` | three `caught` lines, then `3 caught, 0 survived, 0 file(s) skipped` |
 | Chrome, Inter not installed: Text tool, **Installed fonts**, allow | when the counting line ends, the list stays greyed: `Reading <family>, the default font: …`; then enabled |
 | Chrome: Text tool, **Installed fonts**, allow, wait for the end | the counting line ends with `… faces of the families read refused: …` when a face was refused; such a face is in no weight list |
@@ -99,7 +99,7 @@ Answered by the Product Owner on 2026-10-17; each also has its line in the check
 ## Limits
 
 - The tables of the logs were padded by Prettier until F19; since EN-073, the formatter writes them without padding (ADR-0068).
-- The tools are written in Rust from now on; the TypeScript ones (`story:finish`, `epic:check`, the status line) are rewritten by F19.
+- The tools are written in Rust from now on; the TypeScript ones (`story:finish`, `epic-check`, the status line) are rewritten by F19.
 - The guided steps and the E15 checklist lines that import Arial, Helvetica.ttc, STIXGeneral or Apple Color Emoji from macOS's folders stay as they are: they are F15's and F17's lines, tried on a Mac.
 - The tokens per story are compared with E15's at E17's retrospective.
 

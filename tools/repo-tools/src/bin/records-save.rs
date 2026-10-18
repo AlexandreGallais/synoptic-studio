@@ -1,4 +1,4 @@
-//! `records-save` (`npm run records:save`, ADR-0081, EN-114), at the end of every session and at
+//! `records-save` (`target/release/records-save`, ADR-0081, EN-114), at the end of every session and at
 //! every retrospective: the metrics logs, this project's transcripts and the source library copied
 //! into `<AGENT_RECORDS_ROOT>/<project>`, a local folder outside the repository, never sent
 //! anywhere. A missing source is skipped; the library is copied consistently by SQLite's `VACUUM

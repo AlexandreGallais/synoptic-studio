@@ -228,6 +228,8 @@ Measured on real edits: the last 500 changes of a TypeScript file in the history
 | `font:metrics`, `docs:api`, `build`, `playground:build` | builds | — | kept |
 | `heavy-lock` on heavy commands | one heavy command at a time | — | kept: ADR-0072 |
 
+Since EN-115 (2026-10-18, ADR-0082), `package.json` keeps only the scripts a person runs and those something calls by their name; the agent's tools of this table are called by their binary ([agent tools](../tooling/agent-tools.md)), and `check`, `typecheck`, `test:watch`, `docs:preview` and `golden:write` are gone with the scripts nothing called.
+
 ## Timings (ADR-0069)
 
 | Command | Before | After |

@@ -1,4 +1,4 @@
-//! Tests of what `git:sync` and `git:commit` run (EN-100), decided without Git.
+//! Tests of what `git-sequences sync` and `commit` run (EN-100), decided without Git.
 
 use git_sequences::{
     Branch, Push, Request, Source, Target, branch_of, changes_refusal, changes_step,
@@ -209,7 +209,7 @@ fn f20_ac7_never_pushes_develop_but_pushes_a_feature_branch() {
     // `develop` takes merged pull requests only (AUD-022): committed there, never pushed.
     assert_eq!(
         commit_refusal(&branch_of("develop"), Push::Plain).as_deref(),
-        Some("`develop` takes merged pull requests only: git:commit never pushes it")
+        Some("`develop` takes merged pull requests only: git-sequences commit never pushes it")
     );
     assert_eq!(commit_refusal(&branch_of("develop"), Push::No), None);
     // The main thread pushes the shared files of a merge on the feature branch.

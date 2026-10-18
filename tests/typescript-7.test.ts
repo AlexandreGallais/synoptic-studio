@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest";
 /** Root of the repository. */
 const ROOT = join(import.meta.dirname, "..");
 
-/** The `tsc` that `npm run typecheck` runs; the declarations are Oxc's since EN-091. */
+/** The `tsc` that `npx tsc --noEmit` runs; the declarations are Oxc's since EN-091. */
 const TSC = join(ROOT, "node_modules", ".bin", "tsc");
 
 /**

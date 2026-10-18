@@ -1,4 +1,4 @@
-//! The findings of `epic:check` (RET-002, EN-055, EN-103), read from logs and outputs: the
+//! The findings of `epic-check` (RET-002, EN-055, EN-103), read from logs and outputs: the
 //! branches left, the failed calls (the worktree isolation's refusals apart), the calls lost at a
 //! force-quit, the checks of a failed `check:all`, each named with its lane and its failing tests,
 //! and the table they make for the retrospective's record.

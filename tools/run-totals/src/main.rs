@@ -1,9 +1,9 @@
-//! `run-totals start [session] | end | report | status` (`npm run run:start`, `run:end`,
-//! `metrics:session -- --run`, the status line; EN-092). `start` opens the run's marker
+//! `run-totals start [session] | end | report | status` (by the agent, `session-report --run` and
+//! the status line; EN-092). `start` opens the run's marker
 //! `.git/metrics/run.json`, or adds the session to the run already open; the session is the
 //! argument, else `CLAUDE_CODE_SESSION_ID`. `end` closes it and prints the report. `report` prints
 //! the duration and the tokens by kind of the open or last run. `status` prints the status line's
-//! part while a run is open, nothing otherwise. `should-stop` (`npm run run:should-stop`, EN-086)
+//! part while a run is open, nothing otherwise. `should-stop` (EN-086)
 //! prints `stop` and exits 1 once the week's usage reaches 90 %, else `go` and exits 0, then the
 //! parked stories of the working tree's backlog; 2 outside a repository.
 

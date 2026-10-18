@@ -1,6 +1,6 @@
 //! The agent's frequent Git sequences, each in one call (EN-100, research note 0024): a worktree
 //! refuses chained Git commands, so `fetch` then `rebase`, and `add` then `commit` then `push`,
-//! cost one call of the agent per step. `git:sync` and `git:commit` run each sequence in the
+//! cost one call of the agent per step. `git-sequences sync` and `commit` run each sequence in the
 //! checkout they are started from and stop at the first failing step with Git's own message. What
 //! they run is decided here, without Git.
 
@@ -52,7 +52,7 @@ pub enum Request {
 }
 
 /// The usage printed on a malformed call.
-pub const USAGE: &str = "usage: npm run git:sync [-- --base <ref>] | npm run git:commit -- -F <file|-> [--push|--push-with-lease] [--] <path>…";
+pub const USAGE: &str = "usage: target/release/git-sequences sync [--base <ref>] | target/release/git-sequences commit -F <file|-> [--push|--push-with-lease] [--] <path>…";
 
 /// The request of a command line, the subcommand first.
 ///
@@ -137,7 +137,7 @@ pub fn branch_of(name: &str) -> Branch {
     }
 }
 
-/// How `git:sync` brings a branch up to date after the fetch.
+/// How `git-sequences sync` brings a branch up to date after the fetch.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Target {
     /// A story branch rebased on its base, `origin/feature/f20-…`.
@@ -146,7 +146,7 @@ pub enum Target {
     FastForward,
 }
 
-/// The target of `git:sync` on a branch.
+/// The target of `git-sequences sync` on a branch.
 ///
 /// # Errors
 ///
@@ -159,10 +159,12 @@ pub fn sync_target(
     remote_branches: &[String],
 ) -> Result<Target, String> {
     match (branch, base) {
-        (Branch::Main, _) => Err("`main` takes releases only: git:sync never touches it".into()),
+        (Branch::Main, _) => {
+            Err("`main` takes releases only: git-sequences sync never touches it".into())
+        }
         (Branch::Detached, _) => Err("no branch checked out: check out a branch first".into()),
         (Branch::Other(name), Some(_)) => Err(format!(
-            "`{name}` is shared and never rebased: run git:sync without --base to move it forward"
+            "`{name}` is shared and never rebased: run git-sequences sync without --base to move it forward"
         )),
         (Branch::Other(_), None) => Ok(Target::FastForward),
         (Branch::Story(_), Some(base)) => Ok(Target::Rebase(base.to_owned())),
@@ -181,19 +183,21 @@ pub fn sync_target(
     }
 }
 
-/// Why `git:commit` refuses to run on a branch, `None` when it may: never on `main` nor a detached
+/// Why `git-sequences commit` refuses to run on a branch, `None` when it may: never on `main` nor a detached
 /// head, never a push of `develop`, never a force push of a shared branch. A feature branch is
 /// pushed: the main thread writes the shared files of a merge there.
 #[must_use]
 pub fn commit_refusal(branch: &Branch, push: Push) -> Option<String> {
     match (branch, push) {
-        (Branch::Main, _) => Some("`main` takes releases only: git:commit never touches it".into()),
+        (Branch::Main, _) => {
+            Some("`main` takes releases only: git-sequences commit never touches it".into())
+        }
         (Branch::Detached, _) => Some("no branch checked out: check out a branch first".into()),
         (Branch::Other(name), Push::Lease) => Some(format!(
             "`{name}` is shared: a force push, even with lease, only goes to a story branch"
         )),
         (Branch::Other(name), Push::Plain) if name == DEVELOP => Some(format!(
-            "`{name}` takes merged pull requests only: git:commit never pushes it"
+            "`{name}` takes merged pull requests only: git-sequences commit never pushes it"
         )),
         _ => None,
     }
@@ -208,7 +212,7 @@ pub fn message_refusal(message: &str) -> Option<String> {
         .then(|| "the commit message is empty".to_owned())
 }
 
-/// The Git steps of `git:sync` after its fetch.
+/// The Git steps of `git-sequences sync` after its fetch.
 #[must_use]
 pub fn sync_steps(target: &Target) -> Vec<Vec<String>> {
     let step = match target {
@@ -226,7 +230,7 @@ pub fn changes_step() -> Vec<String> {
     owned(&["diff", "--name-status", "HEAD"])
 }
 
-/// Why `git:sync` does not rebase a tree with uncommitted changes, naming each file from
+/// Why `git-sequences sync` does not rebase a tree with uncommitted changes, naming each file from
 /// `git diff --name-status HEAD` (EN-103: it stopped saying only Git's refusal); `None` for a
 /// fast-forward, which Git runs or refuses itself, or a clean tree.
 #[must_use]
@@ -245,13 +249,13 @@ pub fn changes_refusal(name: &str, target: &Target, changes: &str) -> Option<Str
     })
 }
 
-/// The fetch that opens `git:sync`.
+/// The fetch that opens `git-sequences sync`.
 #[must_use]
 pub fn fetch_step() -> Vec<String> {
     owned(&["fetch", "--quiet", REMOTE])
 }
 
-/// The Git steps of `git:commit`: the files staged, the commit from the standard input, the push.
+/// The Git steps of `git-sequences commit`: the files staged, the commit from the standard input, the push.
 /// No step bypasses the hooks or forces without lease.
 #[must_use]
 pub fn commit_steps(paths: &[String], push: Push) -> Vec<Vec<String>> {

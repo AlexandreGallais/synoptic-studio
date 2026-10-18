@@ -120,6 +120,6 @@ Stop when going on would mean deciding what belongs to someone else, or guessing
 | `npm run dev`, `npm run docs:dev` | the playground on `http://localhost:5173` (`?checklist=E15` for an epic's checklist), the documentation site |
 | `npm run fix` | the formatter and the linters' fixes |
 | `npm run check:all` | every check, what `pre-push` and the CI run |
-| `npm run library -- …` | the local library of sources: `search`, `get`, `read`, `list` |
-| `npm run metrics` | the agent's commands, time and tokens |
-| agent tools | `replace`, `backlog:status`, `worktree:new`, `git:sync`, `git:commit`, `story:finish`, `mutate`, `val:prepare`, `golden:*`, `activity`, `epic:check`, `context:size`, `page` (`docs/tooling/agent-tools.md`); the agent calls each by its release binary from the checkout's root, `target/release/<binary>`, as that page maps the scripts (ADR-0078) |
+| `target/release/library …` | the local library of sources: `search`, `get`, `read`, `list` |
+| `target/release/metrics` | the agent's commands, time and tokens |
+| agent tools | `replace`, `backlog-status`, `worktree-new`, `git-sequences sync`, `git-sequences commit`, `val-prepare`, `activity`, `epic-check`, `context-size`, `page` (`docs/tooling/agent-tools.md`), each called by its release binary from the checkout's root, `target/release/<binary>` (ADR-0078); `npm run story:finish`, `mutate` and `golden:check`, the scripts kept for their lock or their hook (ADR-0082) |

@@ -1,4 +1,4 @@
-//! `val:prepare <feature>` (EN-056): a feature's lines in its epic's checklist, one per acceptance
+//! `val-prepare <root> <feature>` (EN-056): a feature's lines in its epic's checklist, one per acceptance
 //! criterion to rewrite as what to try and what to see, the epic's checklist registered for
 //! `?checklist=<epic>`, and no guided-steps file (Product Owner, 2026-10-15: the guided steps
 //! written up to E15 stay in `?guide=epic` only).
@@ -32,7 +32,7 @@ pub struct Write {
     pub text: String,
 }
 
-/// What `val:prepare` does: the files to write, the checklist's address, and a warning.
+/// What `val-prepare` does: the files to write, the checklist's address, and a warning.
 #[derive(Debug, PartialEq, Eq)]
 pub struct Plan {
     /// Each file written.
@@ -166,7 +166,7 @@ pub fn lines_module(feature: &Feature) -> String {
     format!(
         "import type {{ ChecklistLine }} from \"./checklist-line\";\n\n\
          /**\n * The lines of {epic}'s checklist for {id}, {title}.\n \
-         *\n * Prepared by `val:prepare` from its acceptance criteria (EN-056), then written as what to\n \
+         *\n * Prepared by `val-prepare` from its acceptance criteria (EN-056), then written as what to\n \
          * try and what to see, at most {LINE_LIMIT}.\n \
          */\n\
          export const {constant}: readonly ChecklistLine[] = [\n{lines}];\n",
@@ -291,7 +291,7 @@ fn feature_file(root: &Path, id: &str) -> Result<PathBuf, String> {
         .ok_or(format!("no feature file for {id} in {FEATURES}"))
 }
 
-/// What `val:prepare` writes for a feature, read from the repository at `root`.
+/// What `val-prepare` writes for a feature, read from the repository at `root`.
 ///
 /// # Errors
 ///

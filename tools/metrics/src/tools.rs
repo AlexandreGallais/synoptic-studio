@@ -11,7 +11,9 @@ use crate::format::format_duration;
 use crate::json::Json;
 use crate::tables::{TimedCall, call_stats, markdown_table, stats_table};
 
-/// The npm scripts that are the agent's tools.
+/// The npm scripts that are or were the agent's tools, read in the hook's log: those EN-115
+/// removed stay, since the logs of the runs before it name them; the agent now calls their
+/// binaries, counted in `tool-uses.jsonl` ([`tool_uses_table`]).
 const AGENT_TOOLS: [&str; 13] = [
     "activity",
     "backlog:status",

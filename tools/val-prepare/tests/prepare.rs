@@ -1,4 +1,4 @@
-//! Tests of `val:prepare` (EN-056): the names and texts it writes, then the tool run on a copy of
+//! Tests of `val-prepare` (EN-056): the names and texts it writes, then the tool run on a copy of
 //! the playground's checklists. `[F18.AC12]` marks a test proving the feature's criterion.
 
 use std::fs;

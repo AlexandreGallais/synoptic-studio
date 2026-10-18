@@ -33,8 +33,9 @@ import type { CurveCorner, FreeShape, HandleFrame, TurnedBox, Vector } from "../
 
 // The golden file of a refactor (ADR-0049, RET-002): about 400 results of the library — drawings,
 // conversions, handles — from shapes drawn by fast-check with a fixed seed, written before the
-// refactor (`npm run golden:write`) and compared bit for bit after each change
-// (`npm run golden:check`). Kept in the Git directory, never committed; skipped by `npm run test`.
+// refactor (`npx vitest run tests/golden-results.test.ts --mode golden-write`) and compared bit
+// for bit after each change (`npm run golden:check`). Kept in the Git directory, never committed;
+// skipped by `npm run test`.
 
 /** The run's mode: `golden-write`, `golden-check`, or another for the usual test run. */
 const { MODE } = import.meta.env;
@@ -264,7 +265,7 @@ it.runIf(MODE === "golden-write" || MODE === "golden-check")(
   () => {
     if (MODE === "golden-write" && isLinkedWorktree) {
       throw new Error(
-        "golden:write writes .git/metrics/golden.json, shared by every worktree: only the main thread runs it, in the main checkout (EN-052).",
+        "The mode golden-write writes .git/metrics/golden.json, shared by every worktree: only the main thread runs it, in the main checkout (EN-052).",
       );
     }
 

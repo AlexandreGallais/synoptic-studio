@@ -1,6 +1,6 @@
 # ADR-0078 — The hooks, the Git hooks and the agent call the Rust tools by their binary's path
 
-**Status**: Accepted (the agent, 2026-10-18, under ADR-0069, option C of SP-023's question, to be told to the Product Owner; written by EN-104). Supersedes ADR-0073, decision 1, for the calls it names: the Claude Code hooks, the status line, the Git hooks and the agent's own commands.
+**Status**: Accepted (the agent, 2026-10-18, under ADR-0069, option C of SP-023's question, to be told to the Product Owner; written by EN-104). Supersedes ADR-0073, decision 1, for the calls it names: the Claude Code hooks, the status line, the Git hooks and the agent's own commands. Decision 1's npm script kept for each of the agent's tools, and the page mapping them, superseded by ADR-0082 (2026-10-18, EN-115): the scripts of a person and of a caller only.
 
 ## Context
 

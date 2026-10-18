@@ -1,4 +1,4 @@
-//! `worktree-new <ID> [--type <type>]` (`npm run worktree:new -- US-061`): fetches GitHub, adds
+//! `worktree-new <ID> [--type <type>]` (`target/release/worktree-new US-061`): fetches GitHub, adds
 //! `.claude/worktrees/us-061` on `feat/us-061-<topic>` from the story's feature branch, and links
 //! the main checkout's `node_modules` into it, then sets the hooks folder `.githooks` if it is not
 //! yet, relative so that a push runs the worktree's own `.githooks/pre-push` (EN-052, EN-108), and
@@ -26,7 +26,7 @@ fn arguments(argv: &[String]) -> Result<(&str, Option<&str>), String> {
     match argv {
         [id] => Ok((id, None)),
         [id, flag, kind] if flag == "--type" => Ok((id, Some(kind))),
-        _ => Err("usage: npm run worktree:new -- <ID> [--type <type>]".to_owned()),
+        _ => Err("usage: target/release/worktree-new <ID> [--type <type>]".to_owned()),
     }
 }
 
@@ -136,7 +136,7 @@ fn run(argv: &[String]) -> Result<Plan, String> {
     install(&plan.dir).map_err(|reason| format!("git-hooks install: {reason}"))?;
     // A copy that fails only costs the build its head start: Cargo builds what is missing.
     if let Err(error) = seed_release(&main, &plan.dir) {
-        eprintln!("worktree:new: target/release not copied from the main checkout: {error}");
+        eprintln!("worktree-new: target/release not copied from the main checkout: {error}");
     }
     build_tools(&plan.dir)?;
     Ok(plan)
@@ -161,7 +161,7 @@ fn add_worktree() -> u8 {
             0
         }
         Err(reason) => {
-            eprintln!("worktree:new: {reason}");
+            eprintln!("worktree-new: {reason}");
             1
         }
     }

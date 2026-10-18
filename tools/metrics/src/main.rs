@@ -1,4 +1,4 @@
-//! `metrics [--since <YYYY-MM-DD>]` (`npm run metrics`, EN-107): the Markdown report of the
+//! `metrics [--since <YYYY-MM-DD>]` (`target/release/metrics`, EN-107): the Markdown report of the
 //! agent's work, from Claude Code's transcripts of the main checkout (read from where the last
 //! report left them, `.git/metrics/transcripts-cache.jsonl`), the hook's log of each call, the
 //! uses each Rust tool records, the saved turns, the Git log, the backlog's file names and the

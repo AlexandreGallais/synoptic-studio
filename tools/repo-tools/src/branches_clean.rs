@@ -51,7 +51,7 @@ pub struct LocalBranch {
 }
 
 /// The branch a local branch's own commits are counted from: the branch it was made from, which a
-/// worktree of `worktree:new` tracks, or `origin/develop`.
+/// worktree of `worktree-new` tracks, or `origin/develop`.
 #[must_use]
 pub fn base_of(fields: &BranchFields) -> String {
     if fields.upstream.is_empty() || fields.is_published() || fields.track == "[gone]" {
@@ -214,7 +214,7 @@ pub struct Left {
 mod tests {
     use super::*;
 
-    /// The feature branch a story's worktree is made from, as `worktree:new` tracks it.
+    /// The feature branch a story's worktree is made from, as `worktree-new` tracks it.
     const FEATURE: &str = "origin/feature/f18-safe-and-cheap-parallel-run";
 
     fn branch(name: &str, is_gone: bool, is_merged: bool, is_fresh: bool) -> LocalBranch {
@@ -280,7 +280,7 @@ mod tests {
 
     #[test]
     fn f18_ac8_reads_a_story_just_made_from_its_feature_as_fresh_never_gone() {
-        // `worktree:new` made it from the feature branch; no commit yet.
+        // `worktree-new` made it from the feature branch; no commit yet.
         let made = fields("fix/aud-020-topic", "", FEATURE);
 
         assert_eq!(

@@ -28,7 +28,7 @@ The library is the Rust crate `tools/library` (EN-106, ADR-0077): an MCP server 
 | uses | `tools/library/src/usage.rs` | one row per search and page read, with its project; the report of `stats` |
 | tools | `tools/library/src/tools.rs` | the answers of `library_search`, `library_get`, `library_read` |
 | MCP server | `tools/library/src/server.rs`, binary `library-mcp` | the three tools over stdio (`.mcp.json`), each call recorded as a use of the tool (EN-102) |
-| command line | binary `library` | `npm run library -- search \| get \| read \| list \| stats \| path` |
+| command line | binary `library` | `target/release/library search \| get \| read \| list \| stats \| path` |
 
 A page is fetched by `curl` with HTTP and HTTPS only, redirects followed (20 at most) and the response decompressed; `curl` is on macOS, Windows 10 and Linux. A fetch that gives no answer returns `curl`'s own message, `Error: curl: (6) Could not resolve host: …`, where the TypeScript server said `TypeError: fetch failed`.
 
@@ -54,17 +54,17 @@ A stored page is asked with `If-None-Match` and `If-Modified-Since`, so an uncha
 ## Command line
 
 ```sh
-npm run library -- search porter tokenizer        # best sections, with snippets
-npm run library -- get https://www.sqlite.org/fts5.html   # table of contents (fetched if needed)
-npm run library -- read https://www.sqlite.org/fts5.html 20 21
-npm run library -- list                           # stored pages, last read first
-npm run library -- stats 2026-10-13               # sources consulted most, searches, share served locally
-npm run library -- path                           # the library's file
+target/release/library search porter tokenizer        # best sections, with snippets
+target/release/library get https://www.sqlite.org/fts5.html   # table of contents (fetched if needed)
+target/release/library read https://www.sqlite.org/fts5.html 20 21
+target/release/library list                           # stored pages, last read first
+target/release/library stats 2026-10-13               # sources consulted most, searches, share served locally
+target/release/library path                           # the library's file
 ```
 
 ## Uses
 
-The library is one file for the machine: a page fetched for one project is served to every other until its freshness date. Each search and page read is recorded with the project that asked, the name of its folder, shared by its worktrees (`project_uses`). `npm run library -- stats [since]` and the **Sources** section of `npm run metrics` show the uses per project, the sources read most, the words searched and the share served without going online.
+The library is one file for the machine: a page fetched for one project is served to every other until its freshness date. Each search and page read is recorded with the project that asked, the name of its folder, shared by its worktrees (`project_uses`). `target/release/library stats [since]` and the **Sources** section of `target/release/metrics` show the uses per project, the sources read most, the words searched and the share served without going online.
 
 At each retrospective the agent reads them and asks why: a source read again and again may deserve a summary in a domain page or a derivation; a search that finds nothing, better words.
 
