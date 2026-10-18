@@ -3,8 +3,6 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { isReleaseCommit } from "../commitlint.config";
-
 /** Text of the release workflow. */
 const WORKFLOW = readFileSync(
   join(import.meta.dirname, "..", ".github", "workflows", "release.yml"),
@@ -59,12 +57,5 @@ describe("release flow (ADR-0067)", () => {
 
   it("[F18.AC1] merges no pull request by itself", () => {
     expect(WORKFLOW).not.toMatch(/gh pr merge/u);
-  });
-
-  it("lets the release commit of either branch through commitlint", () => {
-    expect(isReleaseCommit("chore(develop): release 0.3.0")).toBe(true);
-    expect(isReleaseCommit("chore(main): release 0.2.0")).toBe(true);
-    expect(isReleaseCommit("chore(develop): released by hand")).toBe(false);
-    expect(isReleaseCommit("feat(develop): release 0.3.0")).toBe(false);
   });
 });

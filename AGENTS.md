@@ -108,7 +108,7 @@ Stop when going on would mean deciding what belongs to someone else, or guessing
 
 ## Git
 
-- Commits follow Conventional Commits with a scope of the closed list in `commitlint.config.ts` (`docs/process/` takes `docs(docs)`, a derivation `docs(geometry)`); the subject starts with a verb, since an id first (`F11 …`) is refused as sentence case; a body line starting with `word:` is read as a footer, so the colon goes later in the line.
+- Commits follow Conventional Commits with a scope of the closed list `SCOPES` in `tools/git-hooks/src/message.rs` (`docs/process/` takes `docs(docs)`, a derivation `docs(geometry)`); the subject starts with a verb, since an id first (`F11 …`) is refused as sentence case; a body line starting with `word:` is read as a footer, so the colon goes later in the line.
 - A commit refused by a hook leaves its files staged: check `git status` before retrying.
 - After each release, bring `develop` up to `main` (`git merge --ff-only origin/main`).
 - `RELEASE_PLEASE_TOKEN` **expires 2026-12-31**: remind the Product Owner in December.

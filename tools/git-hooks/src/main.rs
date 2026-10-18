@@ -3,18 +3,38 @@
 //! - `install`: sets `core.hooksPath` to `.githooks` once (`npm install`'s `prepare`,
 //!   `worktree:new`);
 //! - `pre-commit [--tasks <file>]`: formats, lints and scans the staged files, the repository's
-//!   tasks or those of the file (`staged::parse_tasks`), and stages the fixes.
+//!   tasks or those of the file (`staged::parse_tasks`), and stages the fixes;
+//! - `commit-msg <file>`: checks the message as commitlint did, then, on a story branch, its
+//!   `Refs:` or `Closes:` footer;
+//! - `commits --from <commit> --to <commit>`: checks the message of each commit of the range, as
+//!   `commitlint --from --to` did in the CI.
 
 use std::env;
 use std::fs;
-use std::process::ExitCode;
+use std::process::{Command, ExitCode};
 
+use git_hooks::footer::footer_refusal;
 use git_hooks::install::{HOOKS_FOLDER, Installed, install};
+use git_hooks::message::{format_report, lint};
 use git_hooks::pre_commit::pre_commit;
 use git_hooks::staged::{parse_tasks, repository_tasks};
 
 /// The usage, printed on a call without a known command.
-const USAGE: &str = "usage: git-hooks install | pre-commit [--tasks <file>]";
+const USAGE: &str = "usage: git-hooks install | pre-commit [--tasks <file>] | commit-msg <file> \
+                     | commits --from <commit> --to <commit>";
+
+/// Git's comment character when `core.commentChar` is not set.
+const COMMENT: &str = "#";
+
+/// A Git command's output, `None` when it fails.
+fn git(arguments: &[&str]) -> Option<String> {
+    Command::new("git")
+        .args(arguments)
+        .output()
+        .ok()
+        .filter(|output| output.status.success())
+        .map(|output| String::from_utf8_lossy(&output.stdout).into_owned())
+}
 
 /// Sets the hooks folder; the exit code.
 fn run_install() -> u8 {
@@ -61,6 +81,91 @@ fn run_pre_commit(options: &[String]) -> u8 {
     }
 }
 
+/// Checks a message file as `commitlint --edit` did, the comment lines of `core.commentChar` left
+/// out, then the story footer of the current branch; the exit code.
+fn run_commit_msg(options: &[String]) -> u8 {
+    let [file] = options else {
+        eprintln!("{USAGE}");
+        return 2;
+    };
+    let text = match fs::read_to_string(file) {
+        Ok(text) => format!("{text}\n"),
+        Err(error) => {
+            eprintln!("git-hooks commit-msg: {file}: {error}");
+            return 2;
+        }
+    };
+
+    if text.trim().is_empty() {
+        eprintln!("✖   the commit message is empty [input]");
+        return 1;
+    }
+
+    let comment = git(&["config", "core.commentChar"])
+        .map(|value| value.trim().to_owned())
+        .filter(|value| !value.is_empty())
+        .unwrap_or_else(|| COMMENT.to_owned());
+    let report = lint(&text, Some(&comment));
+    let printed = report.as_ref().map(format_report).unwrap_or_default();
+
+    print!("{printed}");
+
+    if report.is_some_and(|report| !report.errors.is_empty()) {
+        return 1;
+    }
+
+    let branch = git(&["symbolic-ref", "--short", "-q", "HEAD"]).unwrap_or_default();
+
+    match footer_refusal(&text, branch.trim()) {
+        Some(refusal) => {
+            println!("{refusal}");
+            1
+        }
+        None => 0,
+    }
+}
+
+/// Checks the message of each commit after `--from` up to `--to`; the exit code.
+fn run_commits(options: &[String]) -> u8 {
+    let [from_flag, from, to_flag, to] = options else {
+        eprintln!("{USAGE}");
+        return 2;
+    };
+
+    if from_flag != "--from" || to_flag != "--to" {
+        eprintln!("{USAGE}");
+        return 2;
+    }
+
+    // As commitlint: a range without a common ancestor is a history cut short, never a pass.
+    if git(&["merge-base", from, to]).is_none() {
+        eprintln!("git-hooks commits: no merge base between {from} and {to}: fetch more history");
+        return 1;
+    }
+
+    let Some(log) = git(&["log", "-z", "--format=%H%n%B", &format!("{from}..{to}")]) else {
+        eprintln!("git-hooks commits: git log {from}..{to} failed");
+        return 1;
+    };
+    let mut refused = 0;
+
+    for record in log.split('\0').filter(|record| !record.is_empty()) {
+        let (hash, message) = record.split_once('\n').unwrap_or((record, ""));
+
+        if let Some(report) = lint(&format!("{message}\n"), None) {
+            let printed = format_report(&report);
+
+            if !printed.is_empty() {
+                println!("{hash}\n{printed}");
+            }
+
+            refused += usize::from(!report.errors.is_empty());
+        }
+    }
+
+    u8::from(refused > 0)
+}
+
 fn main() -> ExitCode {
     let arguments: Vec<String> = env::args().skip(1).collect();
     let command = arguments.first().map_or("", String::as_str);
@@ -69,6 +174,8 @@ fn main() -> ExitCode {
     tool_use::run("git-hooks", command, || match command {
         "install" => run_install(),
         "pre-commit" => run_pre_commit(options),
+        "commit-msg" => run_commit_msg(options),
+        "commits" => run_commits(options),
         _ => {
             eprintln!("{USAGE}");
             2
