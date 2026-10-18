@@ -20,8 +20,3 @@ test-support = { path = "../test-support" }
 
 [lints]
 workspace = true
-
-# `deps` is a folder of Cargo's build directory, refused as a binary's name.
-[[bin]]
-name = "dependencies"
-path = "src/main.rs"
