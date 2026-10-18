@@ -21,6 +21,7 @@
 | `npm run activity` | the calls running, the latest calls of the main agent and each subagent, the end of the background commands' output | reading transcripts |
 | `npm run epic:check -- <epic> <first day>` | an epic's full check for its retrospective: failed `check:all` runs with their failing checks and tests, branches, pull requests, issues, failed calls (the worktree refusals apart), calls lost at a force-quit, backlog, records | a dozen commands |
 | `npm run val:prepare -- <feature>` | at a `VAL`, one checklist line per numbered criterion of the feature, to rewrite as what to try and what to see; registers the epic's checklist and prints its address; refuses a feature without criteria or whose lines exist, warns above 12 (`tools/val-prepare/`) | guided steps written for each validation |
+| `npm run release:prepare [-- --date YYYY-MM-DD]` | when the Product Owner asks for a release, on a clean, up-to-date `develop`: the version from the commits since the last tag, the branch `release/x.y.z`, `package.json`, `package-lock.json` and the draft of the changelog's entry, each line marked `[draft]`, then the commits behind each line; `release check` checks the entry, `release notes` prints it for the pull request ([releases](./releases.md), `tools/release/`) | release-please's release pull request |
 | `npm run mutate -- [--all] <files> [-- <command>]` | under the heavy lock, in a temporary copy of the repository, tries mutations on each file and reports each caught, timed out or `SURVIVED` with its line; exits 1 when one survives ([below](#mutate), `tools/mutate/`) | a runner written again at each audit |
 | heavy lock (`tools/heavy-lock/`) | one heavy command at a time across every worktree ([commands](./commands.md#one-heavy-command-at-a-time)) | a lock taken by hand with `mkdir` |
 | `npm run rust:fresh` | each release binary older than a file Cargo built it from (its dep-info, `target/release/<binary>.d`) or missing, then exit 1; the last step of `check:rust`, and named by the `session-state` hook (`tools/stale-binaries/`, ADR-0078) | a hook running the code of a build before its sources changed |
@@ -41,6 +42,7 @@ The agent calls a tool by its release binary, from the root of its checkout, rat
 | `npm run -s page -- [<file>] <id or heading>` | `target/release/page [<file>] <id or heading>` |
 | `npm run epic:check -- <epic> <first day>` | `target/release/epic-check <epic> <first day>` |
 | `npm run val:prepare -- <feature>` | `target/release/val-prepare . <feature>` |
+| `npm run release:prepare` | `target/release/release prepare`, then `release check` and `release notes` |
 | `npm run library -- …` | `target/release/library …` |
 | `npm run metrics`, `metrics:session -- …`, `activity` | `target/release/metrics`, `target/release/session-report …`, `target/release/activity` |
 | `npm run branches:clean`, `records:save` | `target/release/branches-clean`, `target/release/records-save` |
@@ -131,6 +133,7 @@ A tool is written when a retrospective's metrics show its signal — the hand wo
 | `run-totals` | `run:start`, `run:end`, `run:should-stop`, `metrics:session -- --run`, the status line | a run's marker, duration and tokens, counted incrementally; whether it stops at the week's limit |
 | `metrics` | `metrics` (`metrics`), `metrics:session` (`session-report`), `activity` (`activity`), the Monitor (`watch-task`) | the metrics of the agent's work, the rules' findings per epic included, the transcripts read incrementally; what the agents do; the watchdog of a background task ([metrics](./metrics.md#reading-the-transcripts)) |
 | `val-prepare` | `val:prepare` | a feature's checklist lines |
+| `release` | `release:prepare`; the agent's `release check` and `release notes` | the release's version and the changelog's entry drafted, checked and read back ([releases](./releases.md)) |
 | `page` | `page` | one row or one section of a repository page, by its id or its heading ([above](#tools)) |
 | `mutate` | `mutate` | the mutations in a copy of the repository |
 | `lint` | `lint`, `fix`, the pre-commit hook, after oxlint | the project's linter on Oxc: the project's rules, those oxlint lacks and the Markdown rules, each file parsed once ([lint](../conventions/lint.md)) |
