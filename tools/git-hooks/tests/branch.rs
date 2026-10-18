@@ -1,0 +1,124 @@
+//! Tests of the branch name (EN-108, F21.AC4): the one expression gives validate-branch-name's
+//! verdict on every branch name of the repository's history, and refuses what it refused.
+
+use std::fs;
+use std::path::Path;
+
+use git_hooks::branch::{branch_refusal, is_valid_branch};
+
+#[test]
+fn f21_ac4_passes_every_branch_name_of_the_history() {
+    // The names of the pull requests (head and base), the merges and the branches, on 2026-10-18,
+    // each with validate-branch-name 1.3.2's verdict on `.validate-branch-namerc.json`: all pass.
+    let fixture = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/branch-names.txt");
+    let text = fs::read_to_string(fixture).unwrap();
+    let names: Vec<(&str, &str)> = text
+        .lines()
+        .filter_map(|line| line.split_once(' '))
+        .collect();
+
+    assert_eq!(names.len(), 295);
+    for (verdict, name) in names {
+        assert_eq!(is_valid_branch(name), verdict == "pass", "{name}");
+    }
+}
+
+#[test]
+fn f21_ac4_refuses_what_validate_branch_name_refused() {
+    // Each verdict is the JavaScript pattern's, tried on 2026-10-18.
+    for name in [
+        "worktree-agent-a13cbef",
+        "feat/US-061-topic",
+        "feature/f1-topic",
+        "feature/f123-topic",
+        "chore/x_y",
+        "chore/",
+        "Main",
+        "feat/a--b",
+        "feat/a-",
+        "release/1.0",
+        "dependabot/",
+        "release-please--",
+        "develop2",
+        "origin/develop",
+        "main\nx",
+    ] {
+        assert!(!is_valid_branch(name), "{name:?}");
+    }
+    for name in [
+        "release-please--branches--develop",
+        "feat/us-061-topic",
+        "docs/val-018-remarks",
+        "feature/f21-x",
+        "dependabot/npm_and_yarn/vite-8.3.4",
+    ] {
+        assert!(is_valid_branch(name), "{name}");
+    }
+}
+
+#[test]
+fn names_the_branch_and_the_rule_it_breaks() {
+    let refusal = branch_refusal("worktree-agent-a13").unwrap();
+
+    assert!(refusal.starts_with("✖   branch name \"worktree-agent-a13\" refused: it must be"));
+    assert!(refusal.contains("docs/tooling/git-workflow.md"));
+    assert_eq!(branch_refusal("develop"), None);
+}
+
+/// Runs `git-hooks branch` with these arguments in a folder.
+fn branch(folder: &Path, arguments: &[&str]) -> std::process::Output {
+    // Without the inherited `GIT_*` variables: the pre-push hook sets `GIT_DIR`.
+    test_support::command(env!("CARGO_BIN_EXE_git-hooks"))
+        .arg("branch")
+        .args(arguments)
+        .current_dir(folder)
+        .output()
+        .unwrap()
+}
+
+#[test]
+fn f21_ac4_checks_the_current_branch_or_the_one_named() {
+    let root = std::env::temp_dir().join(format!("git-hooks-branch-{}", std::process::id()));
+    let _ = fs::remove_dir_all(&root);
+    fs::create_dir_all(&root).unwrap();
+    let git = |arguments: &[&str]| {
+        let output = test_support::command("git")
+            .args([
+                "-c",
+                "commit.gpgsign=false",
+                "-c",
+                "user.name=test",
+                "-c",
+                "user.email=t@e",
+            ])
+            .args(arguments)
+            .current_dir(&root)
+            .output()
+            .unwrap();
+
+        assert!(output.status.success(), "{output:?}");
+    };
+
+    git(&["init", "--quiet", "--initial-branch=develop"]);
+    git(&["commit", "--quiet", "--allow-empty", "-m", "chore: start"]);
+    assert!(branch(&root, &[]).status.success());
+    assert!(
+        branch(&root, &["--name", "feat/us-061-topic"])
+            .status
+            .success()
+    );
+
+    let refused = branch(&root, &["--name", "worktree-agent-a13"]);
+    assert_eq!(refused.status.code(), Some(1));
+    assert!(String::from_utf8_lossy(&refused.stderr).contains("\"worktree-agent-a13\" refused"));
+
+    git(&["switch", "--quiet", "-c", "Topic"]);
+    assert_eq!(branch(&root, &[]).status.code(), Some(1));
+
+    // A detached HEAD has no branch to check: refused, as validate-branch-name did.
+    git(&["switch", "--quiet", "--detach"]);
+    let detached = branch(&root, &[]);
+    assert_eq!(detached.status.code(), Some(1));
+    assert!(String::from_utf8_lossy(&detached.stderr).contains("no branch"));
+    fs::remove_dir_all(&root).unwrap();
+}

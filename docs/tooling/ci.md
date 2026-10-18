@@ -8,7 +8,7 @@ Every check runs before the code leaves the machine; GitHub checks once more wha
 | Workflow | Job | When | Does |
 | --- | --- | --- | --- |
 | `ci.yml` | quality | pull request into `main` | `npm run check:all` ([commands](./commands.md#the-lanes-of-the-full-check)), after installing cargo-llvm-cov and cargo-deny and fetching the RustSec database; then `npm run build`; keeps the JUnit test report |
-| `ci.yml` | history | pull request into `main` | the branch name and commitlint on every commit of the pull request |
+| `ci.yml` | history | pull request into `main` | the Rust checks of the Git hooks, built for the job: the branch name (`git-hooks branch --name`) and the message of every commit of the pull request (`git-hooks commits`, [commit messages](./git-workflow.md#commit-messages)) |
 | `ci.yml` | dependencies | pull request into `main` | GitHub's dependency review: a new vulnerable dependency fails |
 | `codeql.yml` | analyze | pull request into `main`, push to `main`, weekly | CodeQL's security and quality queries on the TypeScript; the push keeps the analysis pull requests are compared with (`REF-GH-CODEQL-TRIGGERS`) |
 | `release.yml` | release-please | push to `main` or `develop` | the release pull request on `develop`, the tag and the GitHub release on `main`, the test report attached, the site published ([releases](./releases.md)) |
