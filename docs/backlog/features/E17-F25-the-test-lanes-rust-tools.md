@@ -22,7 +22,7 @@ In delivery order.
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
 | [EN-126](../stories/E17-F25-EN-126-the-test-lanes-rust-tools.md) | EN | The test lane's Rust tools | done |
-| [AUD-027](../stories/E17-F25-AUD-027-audit-f25.md) | AUD | Audit F25 | ready |
+| [AUD-027](../stories/E17-F25-AUD-027-audit-f25.md) | AUD | Audit F25 | done |
 | [VAL-026](../stories/E17-F25-VAL-026-validate-f25.md) | VAL | Validate F25 | ready |
 
 ## Feature plan

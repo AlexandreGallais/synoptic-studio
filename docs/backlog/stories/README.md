@@ -285,7 +285,7 @@
 | [AUD-026](./E17-F24-AUD-026-audit-f24.md) | F24 | Audit F24 | done |
 | [VAL-025](./E17-F24-VAL-025-validate-f24.md) | F24 | Validate F24 | done |
 | [EN-126](./E17-F25-EN-126-the-test-lanes-rust-tools.md) | F25 | The test lane's Rust tools | done |
-| [AUD-027](./E17-F25-AUD-027-audit-f25.md) | F25 | Audit F25 | ready |
+| [AUD-027](./E17-F25-AUD-027-audit-f25.md) | F25 | Audit F25 | done |
 | [VAL-026](./E17-F25-VAL-026-validate-f25.md) | F25 | Validate F25 | ready |
 | [NAM-002](./E17-NAM-002-naming-pass-e17.md) | E17 | Naming pass over the code of E17 | done |
 | [REV-004](./E17-REV-004-review-e17.md) | E17 | Review E17 with the Product Owner | done |
