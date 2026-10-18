@@ -1,8 +1,8 @@
 //! `git-sequences sync|commit` (`npm run git:sync`, `npm run git:commit`, EN-100): one call for a
 //! Git sequence the agent ran step by step, in the checkout it is started from. Each step's output
 //! is kept back and printed only when the step fails, then the sequence stops; on success one line
-//! says where the branch stands. `HUSKY` is removed from the steps' environment: the hooks run. A
-//! sync then rebuilds the release binaries of a checkout that has a Cargo workspace (ADR-0078).
+//! says where the branch stands; the Git hooks run as for any commit. A sync then rebuilds the
+//! release binaries of a checkout that has a Cargo workspace (ADR-0078).
 
 use std::env;
 use std::fs;
@@ -19,7 +19,6 @@ use git_sequences::{
 fn git(step: &[String], input: Option<&str>) -> Result<String, String> {
     let mut child = Command::new("git")
         .args(step)
-        .env_remove("HUSKY")
         .stdin(if input.is_some() {
             Stdio::piped()
         } else {
