@@ -17,7 +17,7 @@ use std::process::{Command, ExitCode};
 use git_hooks::branch::branch_refusal;
 use git_hooks::footer::footer_refusal;
 use git_hooks::install::{HOOKS_FOLDER, Installed, install};
-use git_hooks::message::{format_report, lint};
+use git_hooks::message::{format_report, lint, without_retired_scopes};
 use git_hooks::pre_commit::pre_commit;
 use git_hooks::staged::{parse_tasks, repository_tasks};
 use git_repository::stdout_of;
@@ -150,7 +150,7 @@ fn run_commits(options: &[String]) -> u8 {
     for record in log.split('\0').filter(|record| !record.is_empty()) {
         let (hash, message) = record.split_once('\n').unwrap_or((record, ""));
 
-        if let Some(report) = lint(&format!("{message}\n"), None) {
+        if let Some(report) = lint(&format!("{message}\n"), None).map(without_retired_scopes) {
             let printed = format_report(&report);
 
             if !printed.is_empty() {
