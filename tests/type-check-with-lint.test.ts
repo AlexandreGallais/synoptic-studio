@@ -41,10 +41,14 @@ describe("type errors with the lint (EN-091)", () => {
       'export function half(value: number): number {\n  const planted: number = "half";\n  return value / 2 + planted;\n}\n',
     );
 
-    const result = spawnSync(OXLINT, ["--type-aware", "--type-check", "planted.ts"], {
-      cwd: folder,
-      encoding: "utf8",
-    });
+    // The format named: without it oxlint picks one from the environment, GitHub's annotations
+    // under `GITHUB_ACTIONS` (`REF-OXLINT-OUTPUT-FORMATS`), this agent format under an agent's
+    // variables (`CLAUDECODE`, `AI_AGENT`, tried 2026-10-18), its default boxes elsewhere (EN-116).
+    const result = spawnSync(
+      OXLINT,
+      ["--type-aware", "--type-check", "--format", "agent", "planted.ts"],
+      { cwd: folder, encoding: "utf8" },
+    );
 
     rmSync(folder, { force: true, recursive: true });
 
