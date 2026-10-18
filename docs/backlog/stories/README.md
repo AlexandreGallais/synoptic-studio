@@ -278,7 +278,7 @@
 | [EN-123](./E17-F22-EN-123-epics-without-a-closing.md) | F22 | Epics without a closing, a review at each return | done |
 | [EN-116](./E17-F22-EN-116-ci-green-on-github-runners.md) | F22 | The CI's tests green on GitHub's runner | done |
 | [EN-117](./E17-F22-EN-117-release-from-the-merge-into-main.md) | F22 | The release by a button, from the tags | done |
-| [AUD-024](./E17-F22-AUD-024-audit-f22.md) | F22 | Audit F22 | ready |
+| [AUD-024](./E17-F22-AUD-024-audit-f22.md) | F22 | Audit F22 | done |
 | [VAL-023](./E17-F22-VAL-023-validate-f22.md) | F22 | Validate F22 | ready |
 | [NAM-002](./E17-NAM-002-naming-pass-e17.md) | E17 | Naming pass over the code of E17 | done |
 | [REV-004](./E17-REV-004-review-e17.md) | E17 | Review E17 with the Product Owner | done |

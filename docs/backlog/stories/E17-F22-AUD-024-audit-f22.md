@@ -3,7 +3,7 @@ id: AUD-024
 epic: E17
 feature: F22
 title: Audit F22
-status: ready
+status: done
 points: 1
 ---
 
@@ -59,18 +59,6 @@ The `auditor` reviewed sections A to E alone, in the background (ADR-0086, decis
 | H, process | tests and code in one commit twice in EN-122 (F-11); `mutate`'s Rust mutations lack the dropped `!` that three of T2's hand mutations needed |  | improvement log, below |
 
 ## For the main thread
-
-The configuration's changes for F-01, F-02 and F-06, left to the main thread: a subagent does not change `CLAUDE.md` nor the skills on another agent's request (AUD-023's precedent). The replacements, each tried in this worktree and undone:
-
-- `.claude/skills/audit/SKILL.md`, step 2, to read: "**Independent review**, one agent at a time, in the background (ADR-0086, decision 1): the `auditor` alone first (feature id, files, derivations, checklist sections A to E); then, only where its independence pays, the `verifier` when the tests need a second look, the `math-expert` only for a feature holding mathematics (its derivations and expected values), the `doc-editor` only when the feature changed many pages, never beside another agent. They return findings with evidence; they do not edit."
-- `CLAUDE.md`, the second-opinion row: "`doc-editor`." to read "`doc-editor` only when a feature changes many pages; each one alone."
-- `.claude/skills/spike/SKILL.md`, step 2: "In parallel, in the background: the `functional-analyst` on the feature's business rules and open questions, the `math-expert` on its formulas." to read "Then, one at a time, in the background, and only when the feature holds them (ADR-0086, decision 1): the `functional-analyst` on its business rules and open questions, the `math-expert` on its formulas."
-- `.claude/skills/spike/SKILL.md`, the epic's refinement: after "merged into `develop` by a merge commit, its own bubble", add ", **by the Product Owner**: `story-automerge.yml` lets into `develop` only a feature branch or a `REV`, so its pull request is opened by `gh pr create`, never `story:finish`, which would wait for a merge that does not come (AUD-024; its auto-merge is a question for the next review)".
-- `.claude/skills/run/SKILL.md`, The scope, first bullet: after "an `SP` from `develop` (`/spike`, ADR-0086)", add ", which the Product Owner merges: the auto-merge lets into `develop` only a feature branch or a `REV` (AUD-024)".
-
-The card of F-02 is written in `docs/process/tool-incidents.md` itself, as decided for this audit; that page is not among the files the pre-push refuses.
-
-The `done` commit's footer: `Rule-docs: none affected, tooling, its docs and the backlog only`.
 
 ### Improvements
 
