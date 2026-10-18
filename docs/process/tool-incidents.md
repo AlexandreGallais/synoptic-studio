@@ -56,3 +56,15 @@ The cards of E17 were decided at RET-004 ([record](./retrospectives/E17-retrospe
 
 - Seen (REV-004): the main checkout's `target/release/guard-bash` predated EN-115: a PR merged on GitHub (#359) leaves the main checkout's binaries stale, since only `story-finish` and `git-sequences sync` rebuild them.
 - Instead: `npm run rust:build` in the main checkout.
+
+## 2026-10-18 — `replace` without an argument
+
+- Used: `target/release/replace` alone, to see its usage, by the main thread and by EN-117's worker.
+- Failed: it prints nothing and waits on its standard input until the call's 120 s timeout.
+- Instead: the Edit tool, or a short script for a multi-file change.
+
+## 2026-10-18 — `worktree-new` from the main checkout for a story only on its feature branch
+
+- Used: `target/release/worktree-new EN-123` in the main checkout, on `develop`, while EN-123's file was only on `feature/f22-release-by-a-button`.
+- Failed: `no file E…-EN-123-<topic>.md in docs/backlog/stories/`: it reads the story files of the checkout it runs in.
+- Instead: run from a worktree of the feature branch.

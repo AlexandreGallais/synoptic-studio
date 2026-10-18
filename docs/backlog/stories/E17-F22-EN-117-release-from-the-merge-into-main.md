@@ -3,7 +3,7 @@ id: EN-117
 epic: E17
 feature: F22
 title: The release by a button, from the tags
-status: ready
+status: done
 points: 3
 ---
 
