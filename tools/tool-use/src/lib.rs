@@ -215,7 +215,8 @@ pub fn iso_instant(epoch_ms: i64) -> String {
 }
 
 /// The date of the proleptic Gregorian calendar a number of days after 1970-01-01 falls on, as
-/// year, month and day (H. Hinnant, `civil_from_days`, the inverse of `hooks`' `days_from_civil`).
+/// year, month and day (`REF-HINNANT-DATES`, `civil_from_days`, the inverse of `hooks`'
+/// `days_from_civil`); the one copy of the workspace.
 #[must_use]
 pub fn civil_from_days(days: i64) -> (i64, i64, i64) {
     let shifted = days + 719_468;

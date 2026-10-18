@@ -133,7 +133,7 @@ pub fn instant(seconds: u64, nanoseconds: u32) -> String {
 
     format!(
         "{}T{:02}:{:02}:{:02}{}{fraction}Z",
-        shared_files::date::civil_from_days(days),
+        shared_files::date::date_of_days(days),
         of_day / 3600,
         of_day % 3600 / 60,
         of_day % 60,

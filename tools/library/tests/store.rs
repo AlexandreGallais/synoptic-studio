@@ -7,8 +7,8 @@ use std::path::{Path, PathBuf};
 
 use library::chunks::Chunk;
 use library::store::{
-    StoredPage, find_page, fts_query, library_file, list_pages, open_library, page_sections,
-    save_page, search_library, touch_page,
+    StoredPage, find_page, fts_query, list_pages, open_library, page_sections, save_page,
+    search_library, touch_page,
 };
 use rusqlite::Connection;
 
@@ -292,25 +292,4 @@ fn a_missing_folder_is_made_for_a_new_library() {
     fs::remove_dir_all(&folder).unwrap();
 
     assert!(exists);
-}
-
-#[test]
-fn the_library_file_is_named_by_its_own_variable_else_the_user_data_folder() {
-    assert_eq!(
-        library_file(Some("/tmp/l.sqlite".to_owned()), Some("/home/a".to_owned())),
-        Some(PathBuf::from("/tmp/l.sqlite"))
-    );
-    assert_eq!(
-        library_file(None, Some("/home/a".to_owned())),
-        Some(PathBuf::from(
-            "/home/a/.local/share/agent-library/library.sqlite"
-        ))
-    );
-    assert_eq!(
-        library_file(Some(String::new()), Some("/home/a".to_owned())),
-        Some(PathBuf::from(
-            "/home/a/.local/share/agent-library/library.sqlite"
-        ))
-    );
-    assert_eq!(library_file(None, None), None);
 }
