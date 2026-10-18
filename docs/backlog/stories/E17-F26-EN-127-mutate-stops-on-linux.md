@@ -3,7 +3,7 @@ id: EN-127
 epic: E17
 feature: F26
 title: The mutation runner stops a mutation on Linux
-status: ready
+status: done
 points: 1
 ---
 
@@ -17,7 +17,7 @@ points: 1
 
 ## Tasks
 
-- [ ] T1 — The arguments' test, failing (main thread)
-- [ ] T2 — `stop_with_children` with `--` and `Child::kill` (main thread)
+- [x] T1 — The arguments' test, failing (main thread)
+- [x] T2 — `stop_with_children` with `--` and `Child::kill` (main thread)
 
 One task = one commit, referenced as `EN-127.T1` in the commit footer.
