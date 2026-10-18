@@ -74,3 +74,9 @@ The cards of E17 were decided at RET-004 ([record](./retrospectives/E17-retrospe
 - Used (found by AUD-024, not yet met in a run): an epic's refinement, an `SP` from `develop` (`/spike`, ADR-0086), finished by `story:finish develop …` with the `autonomous` label.
 - Fails: the workflow lets into `develop` only `feature/f<nn>-…` and `…/rev-<nnn>-…` heads (`.github/workflows/story-automerge.yml`, its branch check), so the `SP`'s pull request is refused and `story:finish` waits 3 minutes for a merge that never comes.
 - Instead: the spike and run skills say the Product Owner merges an epic's `SP`, its pull request opened by `gh pr create`; whether the auto-merge should take it is a question for the next review.
+
+## 2026-10-18 — `npm run fix` on a checklist barrel
+
+- Used: `npm run fix` after VAL-023's checklist lines, as at VAL-022.
+- Failed: it rewrote `export type * from "./checklist-line"` into `export *` in `playground/checklists/index.ts`, a type-only re-export turned into a value one.
+- Instead: the line set back by hand; `tests/barrels.test.ts` passes.
