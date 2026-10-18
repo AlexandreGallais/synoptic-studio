@@ -183,6 +183,72 @@ type Upload = {
 /** The cargo subcommands a job installs, each by `cargo install cargo-<subcommand>@<version>`. */
 const CARGO_TOOLS: readonly string[] = ["llvm-cov", "deny"];
 
+/**
+ * The commands built into Cargo, which every job's `cargo` runs: the Cargo Book's build, manifest
+ * and package commands but `clippy`, `fmt` and `miri`, external commands distributed as optional
+ * components of the toolchain (`REF-CARGO-COMMANDS`).
+ */
+const BUILT_IN: ReadonlySet<string> = new Set([
+  "bench",
+  "build",
+  "check",
+  "clean",
+  "doc",
+  "fetch",
+  "fix",
+  "run",
+  "rustc",
+  "rustdoc",
+  "test",
+  "add",
+  "info",
+  "generate-lockfile",
+  "locate-project",
+  "metadata",
+  "pkgid",
+  "remove",
+  "tree",
+  "update",
+  "vendor",
+  "init",
+  "install",
+  "new",
+  "search",
+  "uninstall",
+]);
+
+/** The cargo subcommands a component of the toolchain brings, by subcommand (`REF-CARGO-COMMANDS`). */
+const COMPONENT_OF: ReadonlyMap<string, string> = new Map([
+  ["clippy", "clippy"],
+  ["fmt", "rustfmt"],
+  ["miri", "miri"],
+]);
+
+/**
+ * The components `rust-toolchain.toml` pins, which rustup installs with the toolchain at the first
+ * cargo call of any job (`REF-RUSTUP-TOOLCHAIN`).
+ */
+const COMPONENTS: readonly string[] = (
+  /^components = \[(?<names>[^\]]*)\]$/mu.exec(
+    readFileSync(join(ROOT, "rust-toolchain.toml"), "utf8"),
+  )?.groups?.["names"] ?? ""
+)
+  .split(",")
+  .map((name) => name.trim().replaceAll('"', ""))
+  .filter((name) => name !== "");
+
+/**
+ * Whether a cargo subcommand is a tool a job installs: neither built into Cargo nor brought by a
+ * component the toolchain pins.
+ *
+ * @param name - the subcommand's name
+ * @param components - the components the toolchain pins
+ * @returns true when a step must install `cargo-<name>`
+ */
+function isCargoTool(name: string, components: readonly string[]): boolean {
+  return BUILT_IN.has(name) && COMPONENT_OF.has(name) && components.includes("");
+}
+
 /** The cargo subcommands that read every crate of `Cargo.lock` offline (`REF-CARGO-FETCH`). */
 const OFFLINE_READERS: readonly string[] = ["deny", "metadata"];
 
@@ -660,20 +726,47 @@ function toolsGiven(
   return new Set([...own, ...(node ? [NODE] : []), ...executables]);
 }
 
+/** The step of the CI's lanes that runs a lane's scripts, read from its matrix entry. */
+const SCRIPTS_LOOP = 'for script in $SCRIPTS; do npm run "$script"; done';
+
+/** A step of a job's run, with the commands it runs there. */
+type RunStep = {
+  readonly step: Step;
+  readonly commands: string;
+};
+
+/** One run of a job: its name and the steps it runs. */
+type JobRun = {
+  readonly name: string;
+  readonly steps: readonly RunStep[];
+};
+
 /**
- * The tools each job of a workflow calls without a step before installing or receiving them.
+ * The runs of a job: one per entry of its matrix, named `<job> (<lane>)`, with the steps the
+ * entry's fields choose and its scripts for the scripts' loop; else the job itself, every step.
+ *
+ * @param key - the job's key
+ * @param job - the job's lines
+ * @returns its runs, in its matrix's order
+ */
+function runsOf(key: string, job: readonly string[]): readonly JobRun[] {
+  return job.slice(0, 0).map(() => ({ name: key, steps: [] }));
+}
+
+/**
+ * The tools each run of each job of a workflow calls without a step before installing or
+ * receiving them.
  *
  * @param lines - the workflow's lines, comments and blank lines left out
- * @param skipped - the jobs read by another test, left out
- * @returns each as `<job>: <tool>`, once per job, in the order of the jobs and their steps
+ * @returns each as `<job>: <tool>`, or `<job> (<lane>): <tool>` for a lane of a matrix, once per
+ * run, in the order of the jobs, their runs and their steps
  */
-function missingTools(lines: readonly string[], skipped: readonly string[]): readonly string[] {
+function missingTools(lines: readonly string[]): readonly string[] {
   const jobs = jobsOf(lines);
   const uploads = uploadsOf(jobs);
 
   return jobs
     .entries()
-    .filter(([key]) => !skipped.includes(key))
     .flatMap(([key, job]) => {
       const steps = stepsOf(job);
       const waits = waitsFor(job);
@@ -1011,10 +1104,53 @@ const CALL = ['      - run: target/release/git-hooks branch --name "x"'];
  * @returns what the history job lacks
  */
 function history(needs: string, steps: readonly string[]): readonly string[] {
-  return missingTools(
-    ["jobs:", ...jobLines("lanes", "", UPLOAD), ...jobLines("history", needs, steps)],
-    [],
-  );
+  return missingTools([
+    "jobs:",
+    ...jobLines("lanes", "", UPLOAD),
+    ...jobLines("history", needs, steps),
+  ]);
+}
+
+/** The steps of a matrix job that install cargo-deny, the crates and the database for its lanes. */
+const LANE_ADVISORY_TOOLS = [
+  "      - if: matrix.cargo-deny && steps.tools.outputs.cache-hit != 'true'",
+  "        run: cargo install --locked cargo-deny@0.20.2",
+  "      - if: matrix.cargo-deny",
+  "        run: cargo fetch --locked",
+  "      - if: matrix.cargo-deny",
+  "        run: cargo deny fetch db",
+];
+
+/** The step of a matrix job that runs its lane's scripts, as `ci.yml` writes it. */
+const LANE_SCRIPTS = [
+  `      - run: ${SCRIPTS_LOOP}`,
+  "        env:",
+  `          SCRIPTS: \${{ matrix.scripts }}`,
+];
+
+/**
+ * A workflow of one matrix job, lane A given cargo-deny's steps by its field, lane B none.
+ *
+ * @param steps - the job's steps after its checkout
+ * @returns what each lane lacks
+ */
+function matrixLanes(steps: readonly string[]): readonly string[] {
+  return missingTools([
+    "jobs:",
+    "  lanes:",
+    "    runs-on: ubuntu-latest",
+    "    strategy:",
+    "      matrix:",
+    "        include:",
+    "          - name: A",
+    "            scripts: rust:advisories",
+    "            cargo-deny: true",
+    "          - name: B",
+    "            scripts: rust:advisories format:check",
+    "    steps:",
+    "      - uses: actions/checkout@v7",
+    ...steps,
+  ]);
 }
 
 describe("the tools of each job (EN-136)", () => {
@@ -1083,6 +1219,15 @@ describe("the tools of each job (EN-136)", () => {
     ]);
 
     expect(toolsCalled("target/release/release publish")).toStrictEqual(["target/release/release"]);
+
+    // Any cargo subcommand but Cargo's own and those of the pinned components (REF-CARGO-COMMANDS).
+    expect(COMPONENTS).toStrictEqual(["rustfmt", "clippy", "llvm-tools"]);
+    expect(toolsCalled("cargo nextest run && cargo build")).toStrictEqual(["cargo-nextest"]);
+    expect(toolsCalled("cargo fmt --check && cargo clippy && cargo metadata")).toStrictEqual([]);
+    expect(isCargoTool("fmt", ["clippy"])).toBe(true);
+    expect(isCargoTool("fmt", COMPONENTS)).toBe(false);
+    expect(isCargoTool("install", [])).toBe(false);
+    expect(isCargoTool("llvm-cov", COMPONENTS)).toBe(true);
     // Making a binary executable is no call of it.
     expect(toolsCalled("chmod +x target/release/git-hooks")).toStrictEqual([]);
 
@@ -1092,9 +1237,10 @@ describe("the tools of each job (EN-136)", () => {
     expect(calledBy("release.yml", "release")).toStrictEqual(["target/release/release"]);
     expect(calledBy("ci.yml", "history")).toStrictEqual(["target/release/git-hooks"]);
 
+    // The cargo tools in the order of their first call: the database's fetch, then the tests.
     expect(calledBy("develop-ci.yml", "rust")).toStrictEqual([
-      "cargo-llvm-cov",
       "cargo-deny",
+      "cargo-llvm-cov",
       DATABASE,
       CRATES,
       NODE,
@@ -1102,31 +1248,64 @@ describe("the tools of each job (EN-136)", () => {
   });
 
   it("[F30.AC2] installs or receives in each job every tool its steps and their scripts call", () => {
-    // The lanes of ci.yml are `[F28.AC3]`'s, each step chosen by a field of its lane.
+    // The lanes of ci.yml too, each by the steps its matrix entry's fields choose, in their order:
+    // `[F28.AC3]` checks that each lane has its steps, this test that they come before the call.
     const missing = [...KEPT].flatMap(([file, lines]) =>
-      missingTools(lines, file === "ci.yml" ? ["lanes"] : []).map(
-        (finding) => `${file} ${finding}`,
-      ),
+      missingTools(lines).map((finding) => `${file} ${finding}`),
     );
 
     expect(missing).toStrictEqual([]);
   });
 
+  it("[F30.AC2] reads each lane of a matrix by the steps its fields choose, before its scripts", () => {
+    const advisories = ["cargo-deny", DATABASE, CRATES];
+
+    // Lane B calls cargo-deny, which only lane A's fields install; its second script needs Node.js.
+    expect(matrixLanes([...LANE_ADVISORY_TOOLS, ...LANE_SCRIPTS])).toStrictEqual([
+      ...advisories.map((tool) => `lanes (B): ${tool}`),
+      `lanes (B): ${NODE}`,
+    ]);
+
+    // Installed after the scripts, the tools are missing in lane A too.
+    expect(matrixLanes([...LANE_SCRIPTS, ...LANE_ADVISORY_TOOLS])).toStrictEqual([
+      ...advisories.map((tool) => `lanes (A): ${tool}`),
+      ...advisories.map((tool) => `lanes (B): ${tool}`),
+      `lanes (B): ${NODE}`,
+    ]);
+
+    // The CI's own lanes, by their names, each running its scripts.
+    const runs = runsOf("lanes", LANES);
+
+    expect(runs.map((run) => run.name)).toStrictEqual(
+      matrixOf(LANES).map((entry) => `lanes (${entry.get("name") ?? ""})`),
+    );
+
+    expect(LANES).toContain(`      - run: ${SCRIPTS_LOOP}`);
+
+    expect(
+      runs
+        .at(-1)
+        ?.steps.map((step) => step.commands)
+        .filter((commands) => commands.startsWith("npm run")),
+    ).toStrictEqual(["npm run rust:coverage"]);
+
+    // A job without a matrix is one run of every step.
+    expect(runsOf("site", ["    steps:", "      - if: x", "        run: a"])).toHaveLength(1);
+  });
+
   it("[F30.AC2] fails naming the job and the tool it lacks, or installs after its call", () => {
     const advisories = ["      - run: npm run rust:advisories"];
 
-    expect(missingTools(oneJob("checks", advisories), [])).toStrictEqual([
+    expect(missingTools(oneJob("checks", advisories))).toStrictEqual([
       "checks: cargo-deny",
       `checks: ${DATABASE}`,
       `checks: ${CRATES}`,
     ]);
 
-    expect(missingTools(oneJob("checks", [...ADVISORY_TOOLS, ...advisories]), [])).toStrictEqual(
-      [],
-    );
+    expect(missingTools(oneJob("checks", [...ADVISORY_TOOLS, ...advisories]))).toStrictEqual([]);
 
     // Installed after its call, the tool is missing at it; the database's fetch calls cargo-deny.
-    expect(missingTools(oneJob("checks", [...advisories, ...ADVISORY_TOOLS]), [])).toStrictEqual([
+    expect(missingTools(oneJob("checks", [...advisories, ...ADVISORY_TOOLS]))).toStrictEqual([
       "checks: cargo-deny",
       `checks: ${DATABASE}`,
       `checks: ${CRATES}`,
@@ -1134,16 +1313,25 @@ describe("the tools of each job (EN-136)", () => {
 
     const fetchFirst = [...ADVISORY_TOOLS.slice(2), ...ADVISORY_TOOLS.slice(0, 2)];
 
-    expect(missingTools(oneJob("checks", fetchFirst), [])).toStrictEqual(["checks: cargo-deny"]);
+    expect(missingTools(oneJob("checks", fetchFirst))).toStrictEqual(["checks: cargo-deny"]);
 
     // A tool missing at two steps is named once.
-    expect(missingTools(oneJob("checks", [...advisories, ...advisories]), [])).toHaveLength(3);
-    // A job read by another test is left out.
-    expect(missingTools(oneJob("checks", advisories), ["checks"])).toStrictEqual([]);
+    expect(missingTools(oneJob("checks", [...advisories, ...advisories]))).toHaveLength(3);
+
+    // A cargo subcommand neither built into Cargo nor a pinned component is a tool to install.
+    const nextest = ["      - run: cargo nextest run --workspace"];
+
+    expect(missingTools(oneJob("checks", nextest))).toStrictEqual(["checks: cargo-nextest"]);
+
+    expect(
+      missingTools(
+        oneJob("checks", ["      - run: cargo install --locked cargo-nextest@0.9.0", ...nextest]),
+      ),
+    ).toStrictEqual([]);
 
     const publish = ["      - run: target/release/release publish"];
 
-    expect(missingTools(oneJob("release", publish), [])).toStrictEqual([
+    expect(missingTools(oneJob("release", publish))).toStrictEqual([
       "release: target/release/release",
     ]);
 
@@ -1153,19 +1341,17 @@ describe("the tools of each job (EN-136)", () => {
           "      - run: cargo build --release --locked -q -p release",
           ...publish,
         ]),
-        [],
       ),
     ).toStrictEqual([]);
 
     expect(
       missingTools(
         oneJob("release", ["      - run: cargo build --release --locked -q -p lint", ...publish]),
-        [],
       ),
     ).toStrictEqual(["release: target/release/release"]);
 
     expect(
-      missingTools(oneJob("release", ["      - run: npm run rust:build", ...publish]), []),
+      missingTools(oneJob("release", ["      - run: npm run rust:build", ...publish])),
     ).toStrictEqual([]);
   });
 
@@ -1185,7 +1371,7 @@ describe("the tools of each job (EN-136)", () => {
     });
 
     expect(lanes.map((entry) => entry.get("name"))).toStrictEqual(["Lint and types"]);
-    expect(missingTools(CI_KEPT, ["lanes"])).toStrictEqual([]);
+    expect(missingTools(CI_KEPT)).toStrictEqual([]);
 
     const lacking = ["history: target/release/git-hooks"];
 
@@ -1222,27 +1408,21 @@ describe("the tools of each job (EN-136)", () => {
     const build = ["      - run: npm run playground:build"];
     const install = ["      - run: npm ci"];
 
-    expect(missingTools(oneJob("site", build), [])).toStrictEqual([`site: ${NODE}`]);
+    expect(missingTools(oneJob("site", build))).toStrictEqual([`site: ${NODE}`]);
 
-    expect(missingTools(oneJob("site", [...SETUP_NODE, ...build]), [])).toStrictEqual([
+    expect(missingTools(oneJob("site", [...SETUP_NODE, ...build]))).toStrictEqual([
       `site: ${NODE}`,
     ]);
 
-    expect(missingTools(oneJob("site", [...install, ...build]), [])).toStrictEqual([
-      `site: ${NODE}`,
-    ]);
+    expect(missingTools(oneJob("site", [...install, ...build]))).toStrictEqual([`site: ${NODE}`]);
 
-    expect(missingTools(oneJob("site", [...SETUP_NODE, ...install, ...build]), [])).toStrictEqual(
-      [],
-    );
+    expect(missingTools(oneJob("site", [...SETUP_NODE, ...install, ...build]))).toStrictEqual([]);
 
     // Node.js itself, and a script npm runs that calls cargo alone, which needs neither.
     expect(
-      missingTools(oneJob("fonts", ["      - run: node scripts/default-font-metrics.ts"]), []),
+      missingTools(oneJob("fonts", ["      - run: node scripts/default-font-metrics.ts"])),
     ).toStrictEqual([`fonts: ${NODE}`]);
 
-    expect(missingTools(oneJob("build", ["      - run: npm run rust:build"]), [])).toStrictEqual(
-      [],
-    );
+    expect(missingTools(oneJob("build", ["      - run: npm run rust:build"]))).toStrictEqual([]);
   });
 });
