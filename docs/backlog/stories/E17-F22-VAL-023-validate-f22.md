@@ -69,7 +69,3 @@ Rule-docs: none affected, a tooling validation, no rule of `docs/domain/` change
 - `AGENTS.md`'s State row of E17 is updated by this story.
 - `docs/guide/README.md` still says a page is written "of each epic (`REV`, epic report)", and `docs/guide/e17-fast-tooling-with-oxc-and-rust.md` counts "the four features of E17": both older than ADR-0086 and F22, for the next review.
 - The worker brief and `project-rules` this worker was started with are `develop`'s, older than F22's (the brief still read "Several workers run at once"): an agent type's preloaded skills come from outside the worktree, so they follow F22 once it is merged into `develop`.
-
-### Journal
-
-- `#run` VAL-023: F22 validated by the agent (ADR-0072): its five criteria proven again (18 Rust tests `f22_ac…`, 18 TypeScript tests `[F22.ACn]`, `check:all` 116.2 s), 12 lines in E17's checklist, the demo page `docs/guide/f22-release-by-a-button.md`; `release notes` drafts 57 lines from the 930 commits `main` lacks. Pending until the next review: criterion 1's run on GitHub's runner, the CI of `develop` → `main` and the first press of the button, 0.3.0. Six decisions for the Product Owner to confirm: oxlint's format named and every crate fetched (EN-116), `release prepare` gone, a text ending at `---`, the version counting the library's and the playground's commits only (EN-117), notes that disagree refused and Dependabot's bodies left out (AUD-024).
