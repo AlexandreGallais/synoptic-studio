@@ -199,10 +199,20 @@ pub fn changed_lines(before: &str, after: &str) -> Vec<String> {
     lines
 }
 
-/// The sections of `.git/config` a test could break, every key of them guarded: a `core.bare` or
-/// a `core.hooksPath` turns the checkout into another, a `user` or `commit` key signs its commits
-/// as another (EN-103, EN-113).
-const GUARDED_SECTIONS: [&str; 3] = ["core", "user", "commit"];
+/// The sections of `.git/config` a test could break, every key of them guarded, their names in
+/// lower case: a `core.bare` or a `core.hooksPath` turns the checkout into another, a `user` or
+/// `commit` key signs its commits as another (EN-103, EN-113); a `url.<base>.insteadOf` sends its
+/// pushes elsewhere, an `include.path` or `includeIf.<condition>.path` reads another file, an
+/// `extensions` key changes how the repository is read (AUD-023).
+const GUARDED_SECTIONS: [&str; 7] = [
+    "core",
+    "user",
+    "commit",
+    "url",
+    "include",
+    "includeif",
+    "extensions",
+];
 
 /// The keys of a `[remote "…"]` section that are guarded: where the checkout pushes and fetches.
 const GUARDED_REMOTE_KEYS: [&str; 2] = ["url", "pushurl"];
@@ -211,37 +221,46 @@ const GUARDED_REMOTE_KEYS: [&str; 2] = ["url", "pushurl"];
 /// header: every key of `[core]`, `[user]` and `[commit]`, and the URLs of each remote. The rest
 /// is left out, the `[branch "…"]` tracking lines that a parallel worktree's `git push -u`
 /// writes first (a false failure at CHK-022). Section and key names are read without case, as
-/// Git reads them.
+/// Git reads them, and the rest of a header's line sets a key too (`[core] bare = true`,
+/// `REF-GIT-HOOKS-PATH`, Syntax).
 #[must_use]
 pub fn guarded_lines(text: &str) -> String {
     let (mut kept, mut header, mut section) = (String::new(), "", String::new());
 
     for line in text.split_inclusive('\n') {
         let trimmed = line.trim();
+        let (setting, on_header) = if let Some(inside) = trimmed.strip_prefix('[') {
+            // A `]` inside the subsection's quotes closes nothing.
+            let quotes_end = inside.rfind('"').map_or(0, |at| at + 1);
+            let close = inside[quotes_end..]
+                .find(']')
+                .map_or(inside.len(), |at| quotes_end + at + 1);
 
-        if let Some(inside) = trimmed.strip_prefix('[') {
             header = line;
             section = inside
                 .split(|letter: char| letter.is_whitespace() || matches!(letter, '"' | '.' | ']'))
                 .next()
                 .unwrap_or_default()
                 .to_ascii_lowercase();
-            continue;
-        }
-
-        let key = trimmed
+            (inside[close..].trim(), true)
+        } else {
+            (trimmed, false)
+        };
+        let key = setting
             .split(|letter: char| letter.is_whitespace() || letter == '=')
             .next()
             .unwrap_or_default()
             .to_ascii_lowercase();
-        let comment = trimmed.starts_with('#') || trimmed.starts_with(';');
+        let comment = setting.starts_with('#') || setting.starts_with(';');
         let guarded = GUARDED_SECTIONS.contains(&section.as_str())
             || (section == "remote" && GUARDED_REMOTE_KEYS.contains(&key.as_str()));
 
         if guarded && !key.is_empty() && !comment {
             kept.push_str(header);
+            if !on_header {
+                kept.push_str(line);
+            }
             header = "";
-            kept.push_str(line);
         }
     }
 
@@ -584,6 +603,32 @@ mod tests {
             "[CORE]\n\tBare = true\n[Remote \"o\"]\n\tPushURL = u\n"
         );
         assert_eq!(guarded_lines(""), "");
+    }
+
+    #[test]
+    fn f21_ac9_guards_the_urls_rewritten_the_files_included_and_a_key_on_its_header_line() {
+        // `url.<base>.insteadOf` sends every push elsewhere, `include.path` and
+        // `includeIf.<condition>.path` read another file, `extensions` changes how the repository
+        // is read: each of their keys is guarded (AUD-023, `REF-GIT-HOOKS-PATH`, Syntax).
+        assert_eq!(
+            guarded_lines(
+                "[url \"/tmp/x\"]\n\tinsteadOf = https://h/r.git\n[include]\n\tpath = /tmp/evil\n\
+                 [includeIf \"gitdir:/x/\"]\n\tpath = y\n[extensions]\n\tworktreeConfig = true\n"
+            ),
+            "[url \"/tmp/x\"]\n\tinsteadOf = https://h/r.git\n[include]\n\tpath = /tmp/evil\n\
+             [includeIf \"gitdir:/x/\"]\n\tpath = y\n[extensions]\n\tworktreeConfig = true\n"
+        );
+        // The rest of a header's line sets a key; a comment there, or a `;` comment line, sets
+        // none; a `]` inside a subsection's quotes ends nothing.
+        assert_eq!(
+            guarded_lines(
+                "[core] bare = true\n[gc] auto = 0\n[user] ; who\n\t; name = x\n[remote \"a]b\"] url = u\n"
+            ),
+            "[core] bare = true\n[remote \"a]b\"] url = u\n"
+        );
+        let header_key = "[core]\n[core] bare = true\n";
+
+        assert!(config_report("c", Some(b"[core]\n"), Some(header_key.as_bytes())).is_some());
     }
 
     #[test]
