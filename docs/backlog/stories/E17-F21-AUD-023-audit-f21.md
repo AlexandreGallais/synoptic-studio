@@ -3,7 +3,7 @@ id: AUD-023
 epic: E17
 feature: F21
 title: Audit F21
-status: ready
+status: done
 points: 2
 ---
 

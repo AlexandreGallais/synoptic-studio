@@ -26,4 +26,4 @@ What only Claude Code uses; the rules above hold for every agent. Configuration:
 
 ## Guards
 
-The `guard-bash` hook denies `gh pr merge`, `--no-verify` (and `commit -n`, a change of `core.hooksPath`) and force pushes without lease (`+branch` included): never look for a way around it. The area rules load with their files: `.claude/rules/library.md` (`src/`, `playground/`), `docs.md` (Markdown), `tooling.md` (configuration, tests, CI, `.claude/`).
+The `guard-bash` hook denies `gh pr merge`, `--no-verify` (and `commit -n`, a change of `core.hooksPath`) and force pushes without lease (`+branch` included), and pushes to `main` or `develop`: never look for a way around it. The area rules load with their files: `.claude/rules/library.md` (`src/`, `playground/`), `docs.md` (Markdown), `tooling.md` (configuration, tests, CI, `.claude/`).
