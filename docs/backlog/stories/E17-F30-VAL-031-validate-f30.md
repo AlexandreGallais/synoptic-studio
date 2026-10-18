@@ -3,7 +3,7 @@ id: VAL-031
 epic: E17
 feature: F30
 title: Validate F30
-status: ready
+status: done
 points: 1
 ---
 
@@ -19,6 +19,10 @@ The demo page also says that the F28 guide's row of `rust-caches.yml`, "a push t
 
 ## Tasks
 
-- [ ] T1 — Each criterion proven again, the demo page written (1 h)
+- [x] T1 — Each criterion proven again, the demo page written (1 h)
 
 One task = one commit, referenced as `VAL-031.T1`.
+
+## Result (2026-10-19)
+
+Validated by the agent (ADR-0072) on its tests and docs, as the Product Owner decided on 2026-10-18: `[F30.AC1]` and `[F30.AC2]` pass; the demo page `docs/guide/f30-a-ci-on-develop-that-blocks-nothing.md`. Pending: the first real runs of _Develop CI_, read at the review after the next merge into `main`.
