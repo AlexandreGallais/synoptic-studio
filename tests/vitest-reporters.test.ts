@@ -17,7 +17,7 @@ describe("Vitest's reporters in the CI (EN-124)", () => {
   });
 
   it("[F24.AC2] reports file by file, annotates a failure at its line and writes the JUnit report", () => {
-    // `VITEST_JUNIT` is set by the CI's test job only: the default reporter prints each file as it
+    // `VITEST_JUNIT` is set by the CI's lanes, read by Vitest alone: the default reporter prints each file as it
     // ends, the GitHub Actions one annotates each failure (`REF-VITEST-REPORTERS`).
     vi.stubEnv("VITEST_JUNIT", "test-report.xml");
 

@@ -486,7 +486,7 @@ fn f24_ac1_reads_the_jobs_of_a_matrix_to_its_end() {
 }
 
 #[test]
-fn f24_ac3_requires_on_main_every_job_of_the_ci_and_codeql_by_its_name() {
+fn f24_ac1_requires_on_main_every_job_of_the_ci_and_codeql_by_its_name() {
     let mut jobs = job_names(&workflow("ci.yml"));
     let mut required =
         required_checks(&fs::read_to_string(root().join("docs/tooling/ci.md")).expect("ci.md"));
