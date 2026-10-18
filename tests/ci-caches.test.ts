@@ -107,10 +107,11 @@ describe("the Rust caches of the CI (EN-111)", () => {
     expect(CI).not.toMatch(/uses: actions\/cache(?:\/save)?@/u);
   });
 
-  it("[F21.AC4] [F24.AC3] [F28.AC2] saves the same caches on a push to develop, under the same keys and paths", () => {
+  it("[F21.AC4] [F24.AC3] [F28.AC2] saves the same caches on a push to develop or main, under the same keys and paths", () => {
     // A pull request into main restores the caches of its head branch, develop, and of its base
-    // and default branch, main, whose build the site's workflow saves (REF-GH-CACHE).
-    expect(RUST_CACHES).toContain("\non:\n  push:\n    branches: [develop]\n\n");
+    // and default branch, main; a run on main restores main's alone (REF-GH-CACHE), so the site
+    // and the release find the caches the push to main saved.
+    expect(RUST_CACHES).toContain("\non:\n  push:\n    branches: [develop, main]\n\n");
     // No condition on the job: its one step's is the tools' cache missed.
     expect(warm.match(/if:/gu)).toHaveLength(1);
     expect(warm.match(/uses: actions\/cache@v\d+/gu)).toHaveLength(2);
@@ -137,8 +138,8 @@ describe("the Rust caches of the CI (EN-111)", () => {
   });
 
   it("[F21.AC4] [F28.AC2] starts each new key on develop and main from an empty build, never an older key's", () => {
+    // The one workflow that saves them, on both branches.
     expect(warm).not.toContain("restore-keys");
-    expect(site).not.toContain("restore-keys");
   });
 
   it("[F21.AC4] installs the cargo tools only on a missed key, at the versions the scripts name", () => {
@@ -201,20 +202,12 @@ describe("the Rust caches of the CI (EN-111)", () => {
     expect(RELEASE).not.toMatch(/uses: actions\/cache(?:\/save)?@/u);
   });
 
-  it("[F21.AC4] [F28.AC2] builds the site on the caches, saving under main its build, never the tools", () => {
-    // The tools' key promises cargo-llvm-cov and cargo-deny, which the site never installs: it
-    // restores that cache only. Its build, saved by actions/cache on a missed key, is main's.
+  it("[F21.AC4] [F28.AC2] builds the site on the caches rust-caches saves on main, restored only", () => {
+    // The tools' key promises cargo-llvm-cov and cargo-deny, which the site never installs, and
+    // rust-caches.yml saves both caches on the same push to main: the site saves neither.
     expect(cachesOf(site)).toStrictEqual(cachesOf(warm));
-
-    expect(site).toContain(
-      "- uses: actions/cache/restore@v6\n        with:\n          path: |\n            ~/.rustup/toolchains/",
-    );
-
-    expect(site).toContain(
-      "- uses: actions/cache@v6\n        with:\n          path: |\n            ~/.cargo/registry/index/",
-    );
-
-    expect(site.match(/uses: actions\/cache(?:\/restore)?@v\d+/gu)).toHaveLength(2);
+    expect(site.match(/uses: actions\/cache\/restore@v\d+/gu)).toHaveLength(2);
+    expect(SITE).not.toMatch(/uses: actions\/cache(?:\/save)?@/u);
     expect(site).not.toContain("cargo install");
   });
 
