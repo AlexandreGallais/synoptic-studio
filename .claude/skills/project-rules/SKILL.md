@@ -15,7 +15,7 @@ synoptic-studio: a dependency-free TypeScript library `editor` that draws SVG sy
 ## Always
 
 - **English** in every file and commit; only the glossary keeps a French column. A report to the main thread may stay in English; the main thread speaks French to the Product Owner.
-- **Never quote the Product Owner**: a decision is written in neutral English, with its reason and date (`docs/conventions/writing.md`). **No personal information** about them: the repository is public.
+- **Never quote the Product Owner**: a decision is written in neutral English, with its reason and date (`docs/conventions/writing.md`). **No personal information** about them: the repository is public. **Nor in a request** an agent sends or a tool codes: no name, e-mail address nor account of theirs in a header (`User-Agent`), a URL or a payload; a registry asking for a contact gets the repository's URL.
 - **Every business rule lives in `docs/domain/`**, changed in the same commit as the code; a rule missing or ambiguous is a stop, never an invention.
 - A structural decision is a new ADR; an accepted ADR is superseded, never rewritten.
 - **Never invent a reference**: cite only what was read (a `REF-*` row of `docs/references.md`, `[verified]`, read alone with `target/release/page REF-…`); otherwise a derivation (`docs/derivations/`) or a research request. Sources come through the `library` server (`library_search`, `library_get`, `library_read`), which keeps each page read; the web only for a page it cannot read; how many sources a claim needs: `docs/research/README.md` §2.
