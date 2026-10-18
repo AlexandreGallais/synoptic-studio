@@ -107,3 +107,14 @@ A story's life crosses all four features. This review's own story, REV-004, walk
 ## Review
 
 To be held with the Product Owner (`REV-004`, started on 2026-10-18). The agent's rerun of the checklist and the questions come first; the answers are recorded here in neutral words.
+
+**The checklist run again by the agent** on `develop`, 2026-10-18, line by line in [REV-004](../backlog/stories/E17-REV-004-review-e17.md), section E17's checklist run again: every tool works and every check is green, and no tool was changed during the review.
+
+| Result | Lines |
+| --- | --- |
+| ok | 26, among them the lint and its probes, the font tests, the heavy lock, the guard's refusals, the dev packages, the secret scan |
+| ok by their tests, needing Chrome or a run | 6 |
+| an npm script EN-115 removed: the binary works, the line names the old command | 14, and one expecting the removed `font:metrics` |
+| obsolete | 1: release-please's pull request, replaced by ADR-0079 |
+
+Also found: `epic-check` takes a dropped story for one to look at; `session-report` writes `1617 min 60 s`; the main checkout's hooks ran binaries built before EN-115's merge; `check:all` took 112.6 s and 105.9 s in this review's runs, the site built and the machine loaded, its median over 64 runs being 73 s.
