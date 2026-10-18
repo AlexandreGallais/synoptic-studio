@@ -9,7 +9,7 @@ status: draft
 
 **Benefit hypothesis**: what the user gains, stated so that it can be checked.
 
-Two to four `US` or `EN` stories, its research done before the refinement; a `CHK` only from five (ADR-0084).
+Two to four `US` or `EN` stories, its research done before the refinement (ADR-0084); a larger one is split into features, the split proposed to the Product Owner with an example. A feature with questions left starts with a short `SP` on its feature branch (ADR-0086).
 
 ## Acceptance criteria
 

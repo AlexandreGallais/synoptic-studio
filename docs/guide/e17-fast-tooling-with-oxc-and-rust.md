@@ -129,7 +129,7 @@ Also found: `epic-check` takes a dropped story for one to look at; `session-repo
 | NAM-002's logged tooling items and this review's findings | they wait for the tools point at an epic's end: tools are not fixed during an epic's features |
 | anything built that was not meant | nothing; no remark on the report; the records' private GitHub repository is left for the Product Owner to delete |
 | the decisions to confirm | confirmed: the tools called by their binary's path (ADR-0078), the story worker on Opus (EN-066), `AGENT_LIBRARY_FILE` (ADR-0077), one Git command let through when followed by read-only filters (EN-104), a tooling feature validated by the agent (ADR-0072); told: ADR-0080, ADR-0081, ADR-0082 |
-| the permissions for the `story-finish` and `mutate` binaries, and the story auto-merge into `develop` | parked until RET-005, the next epic's retrospective |
+| the permissions for the `story-finish` and `mutate` binaries, and the story auto-merge into `develop` | parked until the next review (ADR-0086: no epic has a retrospective) |
 | E17's checklist lines naming removed scripts | kept as records of what was validated, with the note under Limits; the checklist and its test unchanged (the agent's decision) |
 
 **Closure criteria.**

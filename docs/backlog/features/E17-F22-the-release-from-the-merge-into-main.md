@@ -37,7 +37,7 @@ In delivery order.
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
 | [EN-122](../stories/E17-F22-EN-122-one-story-at-a-time-into-develop.md) | EN | One story at a time into develop | done |
-| [EN-123](../stories/E17-F22-EN-123-epics-without-a-closing.md) | EN | Epics without a closing, a review at each return | ready |
+| [EN-123](../stories/E17-F22-EN-123-epics-without-a-closing.md) | EN | Epics without a closing, a review at each return | done |
 | [EN-116](../stories/E17-F22-EN-116-ci-green-on-github-runners.md) | EN | The CI's tests green on GitHub's runner | ready |
 | [EN-117](../stories/E17-F22-EN-117-release-from-the-merge-into-main.md) | EN | The release by a button, from the tags | ready |
 | [AUD-024](../stories/E17-F22-AUD-024-audit-f22.md) | AUD | Audit F22 | ready |

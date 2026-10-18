@@ -26,7 +26,7 @@ Setting up a new project the way this one ended E01. In order; each step names t
 | When | What |
 | --- | --- |
 | each feature | refinement questionnaire, spike, stories (a run), audit, validation, release |
-| each epic | review with the full guided recheck; retrospective with metrics and one table of every logged item |
+| each return of the Product Owner | a review of what was finished since the last merge into `main`, its naming pass, and the method with metrics and one table of every logged item and tool card (ADR-0086) |
 | every four to five epics | every rule questioned against how the project went; harden by default |
 | any time | ideas to the improvement log, critiques to the feedback log |
 
@@ -62,7 +62,7 @@ Copy before the first run with parallel workers:
 | a worker type with the project's rules preloaded, without `CLAUDE.md` | a story worker's first request from 38,897 to 10,562 tokens (EN-065) |
 | the Git sequences a worker repeats as one call each (`git-sequences sync`, `commit`) | Git calls per worker from a median of 12 to 4 |
 | one row or one section read by `page`, every page fetched through the library | `docs/references.md` read whole 121 times in three days before |
-| a tool that fails during a run written as a card, all fixed together at the epic's end | each fix during a run cost a worktree, a merge and a rebuild of every running story's binaries |
+| a tool that fails during a run written as a card, all fixed together at the next review (ADR-0086) | each fix during a run cost a worktree, a merge and a rebuild of every running story's binaries |
 
 ## Cases met in E01
 

@@ -6,6 +6,8 @@ status: draft
 
 # E00 — Verb + business result
 
+A list of features grouped by theme, with no closing of its own: each feature is reviewed at the next return of the Product Owner (ADR-0086). Its refinement is an `SP` story from `develop`: the Product Owner's account, the documentary research on what it describes, the features cut.
+
 | Field | Content |
 | --- | --- |
 | For | users concerned |
@@ -20,7 +22,6 @@ status: draft
 | Non-functional requirements | performance, determinism, precision… |
 | In scope | … |
 | Out of scope | … |
-| Closure criteria | what must be true to close the epic |
 
 ## Features
 

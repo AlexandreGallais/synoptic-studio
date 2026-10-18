@@ -46,4 +46,4 @@ The rules above say how a function is named. This one says what gets a function:
 | `\|m − n\| ≤ t` | `isWithinTolerance` | metrology |
 | reading which buttons are greyed, field by field | `readDisabledState` | the page |
 
-Bare arithmetic stays only where no field names the operation, or where naming it would change a floating-point result. In both cases, a comment says why. The review of each story and the `NAM` story of each epic look for calculations left unnamed ([agile process](../process/agile.md)).
+Bare arithmetic stays only where no field names the operation, or where naming it would change a floating-point result. In both cases, a comment says why. The feature's audit and the naming pass of each review, over the code changed since the last merge into `main` (ADR-0086), look for calculations left unnamed ([agile process](../process/agile.md)).

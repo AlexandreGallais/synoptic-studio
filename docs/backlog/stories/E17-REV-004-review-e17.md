@@ -136,12 +136,12 @@ The Product Owner answered the review on 2026-10-18; each answer is in the [E17 
 - **Tooling items**: NAM-002's logged items and this review's incident cards wait for the tools point at an epic's end; tools are not fixed during an epic's features (decided on 2026-10-18).
 - **What was built**: nothing built that was not meant; no remark on the report. The records' private GitHub repository is left for the Product Owner to delete.
 - **Decisions confirmed** the same day: the tools called by their binary's path (ADR-0078), the story worker on Opus (EN-066), `AGENT_LIBRARY_FILE` (ADR-0077), one Git command let through when followed by read-only filters (EN-104), a tooling feature validated by the agent (ADR-0072). Told: ADR-0080, ADR-0081, ADR-0082.
-- **Permissions parked** until RET-005, the next epic's retrospective: the `story-finish` and `mutate` binaries allowed, and the story auto-merge into `develop` for a tooling story outside a feature.
+- **Permissions parked** until the next retrospective, since ADR-0086 the next review: the `story-finish` and `mutate` binaries allowed, and the story auto-merge into `develop` for a tooling story outside a feature.
 - **E17's checklist**: the 16 lines naming removed scripts or release-please stay as records of what was validated; the report notes that EN-115 moved those tools to their binaries. The checklist and its test are unchanged (the agent's decision).
 
 **Closure criteria**: three met (ESLint removed, `check:all`, tokens per agent input); the closing release follows RET-004, and E17 closes at its publication.
 
-**Backlog changes**: none in this story. RET-004 weighs the tag idea and the release flow; RET-005 takes up the parked permissions.
+**Backlog changes**: none in this story. RET-004 weighs the tag idea and the release flow; the next review takes up the parked permissions (ADR-0086).
 
 ## For the main thread
 

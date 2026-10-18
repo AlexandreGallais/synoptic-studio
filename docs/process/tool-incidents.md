@@ -1,8 +1,8 @@
 # Tool incidents
 
-One card per time a tool failed or did not do what was needed: how it was used, why it failed, what was done instead (ADR-0085). A tool is never fixed during an epic's work: the cards are read at the epic's retrospective, at its "method and tools" point, and the tools change in the stories it decides. Written by the main thread at merge; a worker's card goes into its story file under `### Incidents`.
+One card per time a tool failed or did not do what was needed: how it was used, why it failed, what was done instead (ADR-0085). A tool is never fixed during a feature's work: the cards are read at the next review, held at each return of the Product Owner, at its "method and tools" point, and the tools change in that review or in the stories it decides (ADR-0086). Written by the main thread at merge; a worker's card goes into its story file under `### Incidents`.
 
-The cards of E17 were decided at RET-004 ([record](./retrospectives/E17-retrospective.md), C1 to C9): their fixes are the stories of [F23](../backlog/features/E02-F23-e17s-tool-incidents-fixed.md), C3's auto-merge and C7 parked until RET-005.
+The cards of E17 were decided at RET-004 ([record](./retrospectives/E17-retrospective.md), C1 to C9): their fixes are the stories of [F23](../backlog/features/E02-F23-e17s-tool-incidents-fixed.md), C3's auto-merge and C7 parked until the next review (ADR-0086).
 
 ## 2026-10-18 — `worktree-new EN-114`
 

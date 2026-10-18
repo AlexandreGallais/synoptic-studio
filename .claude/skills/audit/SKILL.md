@@ -8,7 +8,7 @@ argument-hint: "[audit id, e.g. AUD-001]"
 
 Audit: $ARGUMENTS. Checklist: `docs/conventions/audit.md` (A–G); findings go in the story's **Findings** table, with evidence.
 
-Checks by level (ADR-0064): stories have no independent review, so this audit is the feature's thorough one. At an epic's end, the same audit runs over the whole epic beside its `NAM`: duplicates, shareable code, named calculations, and the merge of its parallel branches.
+Checks by level (ADR-0064): stories have no independent review, so this audit is the feature's thorough one. At each review, the naming pass goes over the code changed since the last merge into `main` (ADR-0086): duplicates, shareable code, named calculations.
 
 1. **Scope**: the feature's functions (`@see` targets, tests, derivations) in depth; the whole project in breadth.
 2. **Independent review**, in the background and in parallel: the `auditor` (feature id, files, derivations, checklist sections A to E), the `math-expert` on the derivations and expected values, the `verifier` on the tests, the `doc-editor` on the pages the feature changed. They return findings with evidence; they do not edit.
@@ -18,5 +18,5 @@ Checks by level (ADR-0064): stories have no independent review, so this audit is
 6. **Fix** small findings in the audit's commits; larger ones become stories (Product Owner decides their priority).
 7. **Breadth checks**: `npm run check:all`; the weekly link check is green (or run lychee); `AGENTS.md`, `CLAUDE.md`, `.claude/rules/`, `docs/conventions/`, `docs/tooling/` still describe reality.
 8. **G**: list the sources and questions the next feature needs, for its spike.
-9. **H, light evolvability check**: the six questions of `docs/process/README.md` in one line each; anything worth acting on goes to the improvement log for the epic retrospective.
+9. **H, light evolvability check**: the six questions of `docs/process/README.md` in one line each; anything worth acting on goes to the improvement log for the next review.
 10. Branch, commits per task, pull request as for a story (`/story` steps 3 to 9).
