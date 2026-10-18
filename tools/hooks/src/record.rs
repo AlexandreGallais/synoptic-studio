@@ -227,24 +227,6 @@ fn member<'a>(value: &'a Value, key: &str) -> Option<&'a Value> {
     }
 }
 
-/// An instant as Temporal writes it: `2026-10-12T21:00:00Z`, its milliseconds only when not 0,
-/// without their trailing zeros, `2026-10-12T21:00:00.12Z`.
-#[must_use]
-pub fn instant_text(epoch_ms: i64) -> String {
-    let full = tool_use::iso_instant(epoch_ms);
-    let (seconds, fraction) = full.split_at(19);
-    let digits = fraction
-        .trim_start_matches('.')
-        .trim_end_matches('Z')
-        .trim_end_matches('0');
-
-    if digits.is_empty() {
-        format!("{seconds}Z")
-    } else {
-        format!("{seconds}.{digits}Z")
-    }
-}
-
 /// The record of one tool call, from the hook input of `PostToolUse` or `PostToolUseFailure`: the
 /// line appended to the metrics log, without its line feed.
 #[must_use]
@@ -286,7 +268,7 @@ pub fn tool_call_record(input: &Value, context: &CallContext) -> String {
         number_text(context.started_at),
         quote(&context.step),
         quote(&tool_summary(tool, tool_input, input.get("cwd").text())),
-        instant_text(context.time),
+        calendar::temporal_instant_ms(context.time),
         quote(tool),
         quote(input.get("tool_use_id").text()),
     )

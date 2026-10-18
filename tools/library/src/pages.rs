@@ -5,7 +5,7 @@
 
 use std::process::Command;
 
-use hooks::time::now_ms;
+use calendar::now_ms;
 use rusqlite::Connection;
 
 use crate::chunks::{Chunk, PageAge, is_stale, page_chunks};

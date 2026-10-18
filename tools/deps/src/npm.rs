@@ -8,7 +8,7 @@
 use serde_json::Value;
 
 use crate::version::Version;
-use crate::{Behind, COOLDOWN_MS};
+use crate::{Behind, is_past_cooldown};
 
 /// Whether a version of the metadata may be chosen: a version number, not deprecated, and not a
 /// pre-release unless pre-releases are taken.
@@ -31,7 +31,7 @@ fn published_ms(metadata: &Value, text: &str) -> Option<i64> {
 /// Whether a version is out of the cooldown at `now_ms`; a version without a date is, as
 /// `npm-check-updates` takes it.
 fn is_old_enough(metadata: &Value, text: &str, now_ms: i64) -> bool {
-    published_ms(metadata, text).is_none_or(|published| now_ms - published >= COOLDOWN_MS)
+    published_ms(metadata, text).is_none_or(|published| is_past_cooldown(published, now_ms))
 }
 
 /// The version an npm package pinned at `current` should be on at `now_ms`, when it is greater

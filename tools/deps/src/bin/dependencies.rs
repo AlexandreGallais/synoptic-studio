@@ -12,6 +12,7 @@ use std::process::Command;
 use deps::fetch::{self, Answer};
 use deps::outdated::{self, Network};
 use deps::unused;
+use git_repository::stdout_of;
 
 /// The network of a real run: `curl` and `gh`.
 struct Commands;
@@ -29,7 +30,7 @@ impl Network for Commands {
 /// `deps outdated`: the report, its exit code.
 fn check_outdated() -> u8 {
     let pins = outdated::read_pins(Path::new("."));
-    let report = outdated::outdated(&pins, &Commands, hooks::time::now_ms());
+    let report = outdated::outdated(&pins, &Commands, calendar::now_ms());
 
     for line in &report.lines {
         println!("{line}");
@@ -53,17 +54,9 @@ fn check_outdated() -> u8 {
 /// `dependencies unused`: the findings, exit 1 when there is one, 2 when Git cannot list the files.
 fn check_unused() -> u8 {
     let root = PathBuf::from(".");
-    let listed = match Command::new("git")
-        .args(unused::ls_files_arguments())
-        .output()
-    {
-        Ok(output) if output.status.success() => {
-            String::from_utf8_lossy(&output.stdout).into_owned()
-        }
-        _ => {
-            eprintln!("dependencies unused: git ls-files failed: run it from a checkout's root");
-            return 2;
-        }
+    let Ok(listed) = stdout_of(Command::new("git").args(unused::ls_files_arguments())) else {
+        eprintln!("dependencies unused: git ls-files failed: run it from a checkout's root");
+        return 2;
     };
     let tree = unused::Tree {
         files: unused::project_files(&root, &listed),

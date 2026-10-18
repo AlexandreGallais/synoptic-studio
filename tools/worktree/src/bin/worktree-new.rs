@@ -10,25 +10,15 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, ExitCode};
 
 use git_hooks::install::install;
+use git_repository::stdout_of;
 use worktree::seed::seed_release;
 use worktree::{Plan, Request, plan};
 
-/// Output of a Git command, or its error output as the reason.
+/// Output of a Git command, trimmed, or its error output as the reason.
 fn git(arguments: &[&str]) -> Result<String, String> {
-    let output = Command::new("git")
-        .args(arguments)
-        .output()
-        .map_err(|error| format!("git: {error}"))?;
-
-    if output.status.success() {
-        Ok(String::from_utf8_lossy(&output.stdout).trim().to_owned())
-    } else {
-        Err(format!(
-            "git {}: {}",
-            arguments.join(" "),
-            String::from_utf8_lossy(&output.stderr).trim()
-        ))
-    }
+    stdout_of(Command::new("git").args(arguments))
+        .map(|output| output.trim().to_owned())
+        .map_err(|failure| failure.to_string())
 }
 
 /// The story id and the branch type given by `--type`.

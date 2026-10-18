@@ -2,11 +2,7 @@
 //! in a table of contents and a list. JavaScript read them with Temporal (`Instant.from`,
 //! `PlainDate.from`); the same strings are accepted here, the same refused, as an error.
 
-use hooks::time::days_from_civil;
-use shared_files::date::date_of_days;
-
-/// Milliseconds in a day.
-const DAY_MS: i64 = 86_400_000;
+use calendar::{DAY_MS, days_from_civil, days_in_month, duration_ms};
 
 /// Characters of an ISO 8601 instant that give its day (`2026-10-12`).
 const DAY_LENGTH: usize = 10;
@@ -33,16 +29,7 @@ fn date_days(date: &str) -> Option<i64> {
         ),
         _ => return None,
     };
-    let leap = year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
-    let days_in_month = match month {
-        2 if leap => 29,
-        2 => 28,
-        4 | 6 | 9 | 11 => 30,
-        1..=12 => 31,
-        _ => return None,
-    };
-
-    (1..=days_in_month)
+    (1..=days_in_month(year, month)?)
         .contains(&day)
         .then(|| days_from_civil(year, month, day))
 }
@@ -81,7 +68,7 @@ fn time_ms(time: &str) -> Option<i64> {
         None => 0,
     };
 
-    (hour < 24 && minute < 60).then_some(((hour * 60 + minute) * 60 + second) * 1000 + milliseconds)
+    (hour < 24 && minute < 60).then_some(duration_ms(hour, minute, second, milliseconds))
 }
 
 /// Milliseconds an offset `Z`, `±HH`, `±HH:MM` or `±HHMM` adds to UTC.
@@ -103,7 +90,7 @@ fn offset_ms(offset: &str) -> Option<i64> {
         _ => return None,
     };
 
-    (hours < 24 && minutes < 60).then_some(sign * (hours * 60 + minutes) * 60_000)
+    (hours < 24 && minutes < 60).then_some(sign * duration_ms(hours, minutes, 0, 0))
 }
 
 /// Epoch milliseconds of an ISO 8601 instant, as `Temporal.Instant.from` reads it: a date, `T`,
@@ -159,18 +146,12 @@ pub fn epoch_of(date: &str) -> Result<i64, String> {
         .ok_or_else(|| "RangeError: Invalid time value for Temporal".to_owned())
 }
 
-/// The UTC date of an instant, `YYYY-MM-DD`.
-#[must_use]
-pub fn iso_date(epoch: i64) -> String {
-    date_of_days(epoch.div_euclid(DAY_MS))
-}
-
 /// A day written for a person: `2026-10-12`, or `not stated` for 0.
 #[must_use]
 pub fn day_of(epoch: i64) -> String {
     if epoch == 0 {
         "not stated".to_owned()
     } else {
-        iso_date(epoch)
+        calendar::iso_date(epoch)
     }
 }

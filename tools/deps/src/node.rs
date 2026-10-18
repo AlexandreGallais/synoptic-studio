@@ -23,7 +23,7 @@ pub fn latest_lts(index: &serde_json::Value, now_ms: i64) -> Option<Lts> {
             hooks::time::epoch_ms(&format!("{}T00:00:00Z", release["date"].as_str()?));
         let major = version.strip_prefix('v')?.split('.').next()?.parse().ok()?;
 
-        (published_ms > 0 && now_ms - published_ms >= crate::COOLDOWN_MS).then(|| Lts {
+        (published_ms > 0 && crate::is_past_cooldown(published_ms, now_ms)).then(|| Lts {
             major,
             version: version.to_owned(),
             published_ms,

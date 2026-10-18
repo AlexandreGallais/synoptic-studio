@@ -10,10 +10,11 @@ use std::process::{Command, Output, Stdio};
 use hooks::json::{Value, parse, quote};
 use hooks::status::{
     RunningCall, Status, background_lines, background_text, clock_duration, grouped, is_run_open,
-    is_turn_done, place_of, read_running_call, running_line, session_snapshot, short_duration,
-    status_text, usage_snapshot,
+    is_turn_done, place_of, read_running_call, running_line, session_snapshot, status_text,
+    usage_snapshot,
 };
 use hooks::tasks::{Kind, Task};
+use hooks::time::short_duration;
 use hooks::tokens::{Tally, add_tokens, cache_json, cached_tally, empty_tally, turn_tokens};
 
 /// 2026-10-13T08:00:00Z, 08:03:00Z and 09:00:00Z in epoch milliseconds: 09:00 is 31 h 33 min 05 s
@@ -291,10 +292,11 @@ fn ends_a_background_call_answered_with_an_error() {
 }
 
 #[test]
-fn f18_ac9_counts_a_subagent_resumed_by_a_message_until_its_notification() {
+fn f18_ac9_keeps_the_turn_open_while_a_resumed_subagent_runs() {
     // The lines that showed "your turn" for 15 minutes while a worker ran (2026-10-15, 12:07 to
     // 12:22 UTC): a message resumed the stopped EN-039 worker, its end notified under the
-    // message's call id.
+    // message's call id. The task itself, its label, start and end, and a message only queued,
+    // are `tasks.rs`' (NAM-002): here, what the tally of a transcript adds, the turn kept open.
     let send = r#"{"type": "assistant", "timestamp": "2026-10-15T12:07:38Z", "message": {"id": "m", "content": [{"type": "tool_use", "id": "toolu_013f", "name": "SendMessage", "input": {"to": "a93498ccc604c403b", "summary": "EN-039 audit findings to fix", "message": "EN-039 audit findings: fix …"}}]}}"#;
     let resumed = r#"{"type": "user", "timestamp": "2026-10-15T12:07:40Z", "message": {"content": [{"tool_use_id": "toolu_013f", "type": "tool_result", "content": [{"type": "text", "text": "{\"success\":true,\"message\":\"Resuming agent a93498c\",\"resumedAgentId\":\"a93498ccc604c403b\"}"}]}]}}"#;
     let running = add_tokens(
@@ -307,39 +309,13 @@ fn f18_ac9_counts_a_subagent_resumed_by_a_message_until_its_notification() {
         ]),
     );
 
-    // 2026-10-15T12:07:38Z: 19 h 34 min 33 s (70 473 s) after 1 791 995 585 000.
-    assert_eq!(
-        running.pending,
-        [task(
-            "toolu_013f",
-            Kind::Agent,
-            "resumed: EN-039 audit findings to fix",
-            1_792_066_058_000
-        )]
-    );
     assert!(!is_turn_done(&running));
     let notified = add_tokens(
         running,
         "{\"type\": \"queue-operation\", \"timestamp\": \"2026-10-15T12:22:26Z\", \"content\": \"<task-notification>\\n<task-id>a93498ccc604c403b</task-id>\\n<tool-use-id>toolu_013f</tool-use-id>\\n<status>completed</status>\"}\n",
     );
 
-    assert_eq!(notified.pending, []);
     assert!(is_turn_done(&notified));
-
-    // 13:54:35 UTC the same day: a message to a subagent still running is only queued.
-    let queued = send.replace("toolu_013f", "toolu_01Wc");
-    let queued_result = r#"{"type": "user", "message": {"content": [{"tool_use_id": "toolu_01Wc", "type": "tool_result", "content": [{"type": "text", "text": "{\"success\":true,\"message\":\"Message queued for delivery to a6ab5a436c6a3dc67 at its next tool round.\"}"}]}]}}"#;
-    let asked = add_tokens(empty_tally(), &text(&[&queued]));
-
-    assert_eq!(
-        asked
-            .pending
-            .iter()
-            .map(|task| task.kind)
-            .collect::<Vec<_>>(),
-        [Kind::Message]
-    );
-    assert_eq!(add_tokens(asked, &text(&[queued_result])).pending, []);
 }
 
 #[test]
@@ -496,15 +472,7 @@ fn writes_the_cache_as_the_typescript_status_line_did_then_the_last_request_s_co
 }
 
 #[test]
-fn writes_durations_in_seconds_minutes_then_hours() {
-    assert_eq!(short_duration(45_000), "45 s");
-    // Rounded half up, as `Math.round`: 44.5 s is 45 s.
-    assert_eq!(short_duration(44_500), "45 s");
-    assert_eq!(short_duration(44_499), "44 s");
-    // Below zero, as `Math.round`: −1.5 s is −1 s.
-    assert_eq!(short_duration(-1500), "-1 s");
-    assert_eq!(short_duration(12 * 60_000), "12 min");
-    assert_eq!(short_duration(125 * 60_000), "2 h 05");
+fn writes_durations_to_the_second() {
     assert_eq!(clock_duration(45_900), "45 s");
     assert_eq!(clock_duration(12 * 60_000 + 5000), "12 min 05 s");
     assert_eq!(clock_duration(125 * 60_000 + 9000), "2 h 05 min 09 s");

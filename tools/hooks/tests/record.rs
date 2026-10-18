@@ -8,8 +8,7 @@ use std::process::{Command, Output, Stdio};
 
 use hooks::json::{Value, js_length, number_text, parse, quote, write};
 use hooks::record::{
-    CallContext, instant_text, js_prefix, relative, running_call, session_moment, tool_call_record,
-    tool_summary,
+    CallContext, js_prefix, relative, running_call, session_moment, tool_call_record, tool_summary,
 };
 
 /// Fields of a hook input for a shell command that succeeded, as documented by `REF-CC-HOOKS`.
@@ -206,10 +205,7 @@ fn shortens_a_path_as_node_js_does() {
 }
 
 #[test]
-fn writes_instants_and_numbers_as_javascript_does() {
-    assert_eq!(instant_text(1_791_838_800_000), "2026-10-12T21:00:00Z");
-    assert_eq!(instant_text(1_791_838_800_120), "2026-10-12T21:00:00.12Z");
-    assert_eq!(instant_text(1_791_838_800_007), "2026-10-12T21:00:00.007Z");
+fn writes_numbers_as_javascript_does() {
     for (number, text) in [
         (0.0, "0"),
         (-0.0, "0"),

@@ -15,16 +15,15 @@ use std::fs::{self, OpenOptions};
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
-use std::time::{Instant, SystemTime, UNIX_EPOCH};
+use std::time::Instant;
+
+use calendar::{iso_instant, now_ms};
 
 /// The file of the uses, in the Git common folder.
 const USES_FILE: &str = "tool-uses.jsonl";
 
 /// The worktree named for the main checkout, whose Git folder is not a linked worktree's.
 pub const MAIN_CHECKOUT: &str = "main";
-
-/// Milliseconds in a day.
-const DAY_MS: i64 = 86_400_000;
 
 /// One use of a tool, as its line holds it.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -85,7 +84,7 @@ pub fn run_in(
     is_poll: bool,
     work: impl FnOnce() -> u8,
 ) -> u8 {
-    let start_ms = epoch_ms_now();
+    let start_ms = now_ms();
     let clock = Instant::now();
     let exit_code = work();
     let duration_ms = u64::try_from(clock.elapsed().as_millis()).unwrap_or(u64::MAX);
@@ -127,33 +126,21 @@ pub fn append(file: &Path, line: &str) -> io::Result<()> {
         .write_all(line.as_bytes())
 }
 
-/// The checkout a folder belongs to: the nearest `.git` above it, a folder for the main checkout, a
-/// file `gitdir: <path>` for a linked worktree, whose `commondir` names the common folder. `None`
-/// outside a Git repository, or for a `.git` file that cannot be read.
+/// The checkout a folder belongs to, as `git_repository::checkout_of` reads it from the files Git
+/// writes: the main checkout's, or a linked worktree's, named after its Git folder; a submodule,
+/// whose Git folder is its own common folder, counts as a main checkout. `None` outside a Git
+/// repository, or for a `.git` file that cannot be read.
 #[must_use]
 pub fn checkout(folder: &Path) -> Option<Checkout> {
-    let dot_git = folder
-        .ancestors()
-        .map(|ancestor| ancestor.join(".git"))
-        .find(|candidate| candidate.exists())?;
-
-    let (common, worktree) = if dot_git.is_dir() {
-        (dot_git, MAIN_CHECKOUT.to_owned())
+    let found = git_repository::checkout_of(folder)?;
+    let worktree = if found.git_dir == found.common {
+        MAIN_CHECKOUT.to_owned()
     } else {
-        let text = fs::read_to_string(&dot_git).ok()?;
-        let git_dir = dot_git.parent()?.join(text.strip_prefix("gitdir:")?.trim());
-        // A submodule's Git folder has no `commondir`: it is its own common folder.
-        match fs::read_to_string(git_dir.join("commondir")) {
-            Ok(relative) => (
-                git_dir.join(relative.trim()),
-                git_dir.file_name()?.to_string_lossy().into_owned(),
-            ),
-            Err(_) => (git_dir, MAIN_CHECKOUT.to_owned()),
-        }
+        found.git_dir.file_name()?.to_string_lossy().into_owned()
     };
 
     Some(Checkout {
-        uses_file: common.join("metrics").join(USES_FILE),
+        uses_file: found.common.join("metrics").join(USES_FILE),
         worktree,
     })
 }
@@ -195,51 +182,4 @@ pub fn json_string(text: &str) -> String {
     }
     quoted.push('"');
     quoted
-}
-
-/// A UTC instant written as ISO 8601 with milliseconds, `2026-10-16T00:00:00.123Z`, from epoch
-/// milliseconds; before 1970 too.
-#[must_use]
-pub fn iso_instant(epoch_ms: i64) -> String {
-    let days = epoch_ms.div_euclid(DAY_MS);
-    let in_day = epoch_ms.rem_euclid(DAY_MS);
-    let (year, month, day) = civil_from_days(days);
-
-    format!(
-        "{year:04}-{month:02}-{day:02}T{:02}:{:02}:{:02}.{:03}Z",
-        in_day / 3_600_000,
-        in_day / 60_000 % 60,
-        in_day / 1000 % 60,
-        in_day % 1000,
-    )
-}
-
-/// The date of the proleptic Gregorian calendar a number of days after 1970-01-01 falls on, as
-/// year, month and day (`REF-HINNANT-DATES`, `civil_from_days`, the inverse of `hooks`'
-/// `days_from_civil`); the one copy of the workspace.
-#[must_use]
-pub fn civil_from_days(days: i64) -> (i64, i64, i64) {
-    let shifted = days + 719_468;
-    let era = shifted.div_euclid(146_097);
-    let day_of_era = shifted - era * 146_097;
-    let year_of_era =
-        (day_of_era - day_of_era / 1460 + day_of_era / 36_524 - day_of_era / 146_096) / 365;
-    let day_of_year = day_of_era - (365 * year_of_era + year_of_era / 4 - year_of_era / 100);
-    let month_from_march = (5 * day_of_year + 2) / 153;
-    let day = day_of_year - (153 * month_from_march + 2) / 5 + 1;
-    let month = if month_from_march < 10 {
-        month_from_march + 3
-    } else {
-        month_from_march - 9
-    };
-    let year = year_of_era + era * 400 + i64::from(month <= 2);
-
-    (year, month, day)
-}
-
-/// Epoch milliseconds now, 0 for a clock before 1970.
-fn epoch_ms_now() -> i64 {
-    SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map_or(0, |elapsed| i64::try_from(elapsed.as_millis()).unwrap_or(0))
 }

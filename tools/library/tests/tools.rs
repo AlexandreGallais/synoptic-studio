@@ -22,7 +22,7 @@ const URL: &str = "https://x.org/h.md";
 fn stored() -> Connection {
     let database = open_library(Path::new(":memory:")).unwrap();
     let page = StoredPage {
-        fetched_at: hooks::time::now_ms(),
+        fetched_at: calendar::now_ms(),
         markdown: MARKDOWN.to_owned(),
         title: "Hooks".to_owned(),
         url: URL.to_owned(),

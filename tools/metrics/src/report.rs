@@ -15,12 +15,12 @@ use crate::format::{format_duration, grouped};
 use crate::json::Json;
 use crate::session::{is_jsonl, names_in};
 use crate::tables::{TimedCall, call_stats, command_key, js_prefix, markdown_table, stats_table};
-use crate::time::day_text;
 use crate::tools::{tool_uses_table, tools_table, uses_since};
 use crate::transcript::{Call, Transcript, all_events};
 use crate::turn_time::{TURNS_SHOWN, time_table};
 use crate::turns::{TurnRecord, turns_table};
 use crate::work::{Moment, WorkStats, commits_by_unit, task_commits, task_of, unit_of, work_stats};
+use calendar::iso_date;
 
 /// Rows shown in each ranked table.
 const TOP: usize = 20;
@@ -246,7 +246,7 @@ fn work_sections(
     let session_key = |moment: &Moment| {
         format!(
             "{} {}",
-            day_text(starts.get(moment.session.as_str()).copied().unwrap_or(0)),
+            iso_date(starts.get(moment.session.as_str()).copied().unwrap_or(0)),
             js_prefix(&moment.session, SESSION_SHOWN)
         )
     };
@@ -397,7 +397,7 @@ pub fn metrics_report<S: BuildHasher>(
     } else {
         format!(
             "Since {} (UTC) only; the sources from the start.",
-            day_text(inputs.since)
+            iso_date(inputs.since)
         )
     };
     let summary = [

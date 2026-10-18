@@ -9,7 +9,7 @@ use std::time::SystemTime;
 
 use serde_json::Value;
 
-use crate::format::to_fixed;
+use crate::format::{SECOND_MS, to_fixed};
 use crate::json::Json;
 use crate::session::names_in;
 use crate::tables::js_prefix;
@@ -44,9 +44,6 @@ const OUTPUT_LINES: usize = 5;
 
 /// Background commands older than this are left out: one hour, in milliseconds.
 const RECENT_MS: u128 = 3_600_000;
-
-/// Milliseconds in a second.
-const SECOND_MS: f64 = 1000.0;
 
 /// A logged call read from a line of the log: the agent `main` when it names none.
 #[must_use]

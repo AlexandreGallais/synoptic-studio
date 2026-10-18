@@ -4,7 +4,7 @@
 //! is older than the field, so old enough.
 
 use crate::version::Version;
-use crate::{Behind, COOLDOWN_MS};
+use crate::{Behind, is_past_cooldown};
 
 /// One version of the index.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -58,7 +58,7 @@ pub fn releases(index: &str) -> Vec<Release> {
 fn is_old_enough(release: &Release, now_ms: i64) -> bool {
     release
         .published_ms
-        .is_none_or(|published| now_ms - published >= COOLDOWN_MS)
+        .is_none_or(|published| is_past_cooldown(published, now_ms))
 }
 
 /// The greatest release, not yanked, at least 7 days old, a pre-release only when `takes_pre`,
@@ -99,7 +99,7 @@ pub fn too_new(name: &str, locked: &str, releases: &[Release], now_ms: i64) -> O
     let release = releases.iter().find(|release| release.version == version)?;
     let published_ms = release.published_ms?;
 
-    (now_ms - published_ms < COOLDOWN_MS).then(|| TooNew {
+    (!is_past_cooldown(published_ms, now_ms)).then(|| TooNew {
         name: name.to_owned(),
         locked: locked.to_owned(),
         published_ms,

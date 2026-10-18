@@ -10,6 +10,7 @@ use std::io::{self, Write};
 use std::path::Path;
 use std::process::{Command, Stdio};
 
+use git_repository::stdout_of;
 use shared_files::shared::story_of;
 
 use crate::backlog_status::{front_field, item_file, write_status};
@@ -424,17 +425,13 @@ fn stage(path: &str, number: u8, cwd: &Path) -> Option<String> {
 
 /// A Git command's output, its standard error kept back; `None` when it fails.
 fn run_quiet(words: &[&str], cwd: &Path) -> Option<String> {
-    let output = Command::new("git")
-        .args(words)
-        .current_dir(cwd)
-        .stdin(Stdio::null())
-        .output()
-        .ok()?;
-
-    output
-        .status
-        .success()
-        .then(|| String::from_utf8_lossy(&output.stdout).into_owned())
+    stdout_of(
+        Command::new("git")
+            .args(words)
+            .current_dir(cwd)
+            .stdin(Stdio::null()),
+    )
+    .ok()
 }
 
 /// Leaves the conflicts of the rebase step that stopped to the base, when each conflicted file is

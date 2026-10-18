@@ -12,13 +12,13 @@ use std::io::Write;
 use std::path::PathBuf;
 use std::process::ExitCode;
 
-use hooks::time::now_ms;
+use calendar::now_ms;
+use calendar::temporal_instant_ms;
 use metrics::cache::{CACHE_FILE, read_transcripts};
 use metrics::git::{common_dir, git};
 use metrics::session::{
     markdown_report, reported_events, session_figures, session_files, terminal_report,
 };
-use metrics::time::temporal_text;
 use metrics::turns::{render_turn, turn_record};
 use run_totals::marker::parse_run;
 use run_totals::report::report_table;
@@ -59,7 +59,7 @@ fn report(arguments: &[String]) -> Result<String, String> {
     let transcripts = read_transcripts(&files, &common.join("metrics").join(CACHE_FILE));
     let events = reported_events(&transcripts, is_all);
     let start = events.requests.iter().map(|request| request.time).min();
-    let since = format!("--since={}", temporal_text(start.unwrap_or(0)));
+    let since = format!("--since={}", temporal_instant_ms(start.unwrap_or(0)));
     let log = git(&["log", "--all", "--reverse", &since, "--format=%h %s"])?;
     let commits = log
         .lines()

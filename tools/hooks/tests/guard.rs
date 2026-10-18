@@ -10,7 +10,7 @@ use std::process::{Command, Output, Stdio};
 use hooks::guard::{
     Entered, FORCE_PUSH, HOOKS_OFF, MERGE, NO_VERIFY, PROTECTED_PUSH, denied_reason,
     denied_reason_on, entered, entered_worktree_reason, is_full_vitest_run,
-    is_git_read_through_filters, is_read_only_filter, later_folders, lexical_join, missing_script,
+    is_git_read_through_filters, is_read_only_filter, later_folders, missing_script,
     missing_script_reason, npm_script, scripts_of, segments, without_heredocs, worktree_reason,
     worktree_root,
 };
@@ -449,13 +449,6 @@ fn f21_ac1_finds_a_script_missing_from_the_package_json() {
         missing_script_reason("git:sync", "chore/en-090-x", "origin/feature/f20-y"),
         "`npm run git:sync`: no script `git:sync` in the package.json of branch `chore/en-090-x`. A branch made before the script gets it by a rebase on its base: run `git fetch origin`, then `git rebase origin/feature/f20-y`, one call each."
     );
-}
-
-#[test]
-fn joins_a_folder_without_reading_the_disk() {
-    assert_eq!(lexical_join("/a/b", "c/./d"), "/a/b/c/d");
-    assert_eq!(lexical_join("/a/b", "../../.."), "/");
-    assert_eq!(lexical_join("/a", "/x/y"), "/x/y");
 }
 
 /// A command without the `GIT_*` variables of the process running the tests: under the pre-push

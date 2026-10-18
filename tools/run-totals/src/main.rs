@@ -10,30 +10,26 @@
 use std::env;
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::process::{Command, ExitCode};
+use std::process::ExitCode;
 
+use calendar::now_ms;
+use git_repository::{Checkout, checkout_of};
 use hooks::json::{Value, parse};
-use hooks::time::now_ms;
 use run_totals::marker::{Run, closed, opened, parse_run, render_run, whole};
 use run_totals::report::{report_table, status_text};
 use run_totals::stop::{parked_story, stop_text};
 use run_totals::tally::Tokens;
 use run_totals::totals::{count_run, projects_dir};
 
+/// The checkout of the current folder, read from the files Git writes rather than by starting Git:
+/// the status line calls `status` once a second during a run (NAM-002).
+fn checkout() -> Result<Checkout, String> {
+    checkout_of(Path::new(".")).ok_or_else(|| "run-totals: not in a Git repository".to_owned())
+}
+
 /// The Git directory shared by every worktree, absolute.
 fn common_dir() -> Result<PathBuf, String> {
-    let output = Command::new("git")
-        .args(["rev-parse", "--path-format=absolute", "--git-common-dir"])
-        .output()
-        .map_err(|error| format!("git: {error}"))?;
-
-    if !output.status.success() {
-        return Err("run-totals: not in a Git repository".to_owned());
-    }
-
-    Ok(PathBuf::from(
-        String::from_utf8_lossy(&output.stdout).trim().to_owned(),
-    ))
+    checkout().map(|found| found.common)
 }
 
 /// The run's tokens, the cache read before and written after.
@@ -55,18 +51,7 @@ fn week_percent(metrics: &Path) -> Option<i64> {
 
 /// The working tree's root, absolute: a worktree's own, so that its branch's stories are read.
 fn top_level() -> Result<PathBuf, String> {
-    let output = Command::new("git")
-        .args(["rev-parse", "--show-toplevel"])
-        .output()
-        .map_err(|error| format!("git: {error}"))?;
-
-    if !output.status.success() {
-        return Err("run-totals: not in a Git repository".to_owned());
-    }
-
-    Ok(PathBuf::from(
-        String::from_utf8_lossy(&output.stdout).trim().to_owned(),
-    ))
+    checkout().map(|found| found.top)
 }
 
 /// The ids of the parked stories of this working tree's backlog, sorted.

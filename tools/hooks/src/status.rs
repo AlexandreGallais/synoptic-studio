@@ -6,8 +6,11 @@
 //! and `status-usage.ts` (EN-104), the same text byte for byte.
 
 use crate::json::{self, Value, number_text, quote};
+use calendar::{MINUTE_MS, SECOND_MS};
+
 use crate::record::{js_prefix, text_or};
 use crate::tasks::{Kind, Task};
+use crate::time::short_duration;
 use crate::tokens::{Tally, whole};
 
 /// Silence after which the session is shown as silent (2 minutes).
@@ -32,27 +35,12 @@ const YELLOW: &str = "\u{1b}[33m";
 /// The story ids as they appear in branch names.
 const STORY_PREFIXES: [&str; 9] = ["us", "en", "sp", "chk", "aud", "val", "nam", "rev", "ret"];
 
-/// A duration written short: `45 s`, `12 min` or `2 h 05`, as `Math.floor` and `Math.round` give:
-/// the minutes rounded down, the seconds to the nearest, a half up.
-#[must_use]
-pub fn short_duration(milliseconds: i64) -> String {
-    let minutes = milliseconds.div_euclid(60_000);
-
-    if minutes < 1 {
-        format!("{} s", (milliseconds + 500).div_euclid(1000))
-    } else if minutes < 60 {
-        format!("{minutes} min")
-    } else {
-        format!("{} h {:02}", minutes / 60, minutes % 60)
-    }
-}
-
 /// A duration to the second, so that the turn's clock moves at each refresh: `45 s`,
 /// `12 min 05 s` or `2 h 05 min 09 s`.
 #[must_use]
 pub fn clock_duration(milliseconds: i64) -> String {
-    let seconds = milliseconds.div_euclid(1000);
-    let minutes = seconds.div_euclid(60);
+    let seconds = milliseconds.div_euclid(SECOND_MS);
+    let minutes = milliseconds.div_euclid(MINUTE_MS);
     let seconds_text = format!("{:02} s", seconds % 60);
 
     if minutes < 1 {
@@ -479,7 +467,7 @@ fn usage_window(limits: &Value, key: &str) -> Option<String> {
         // Seconds since the epoch, a whole number.
         (Value::Number(used), Value::Number(_)) => Some(format!(
             "{{\"resetsAt\":\"{}\",\"usedPercent\":{}}}",
-            crate::record::instant_text(whole(window, "resets_at") * 1000),
+            calendar::temporal_instant_ms(whole(window, "resets_at") * SECOND_MS),
             number_text(*used)
         )),
         _ => None,

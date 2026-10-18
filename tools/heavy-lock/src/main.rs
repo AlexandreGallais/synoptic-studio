@@ -8,26 +8,28 @@ use std::path::PathBuf;
 use std::process::{Command, ExitCode};
 use std::time::Duration;
 
+use git_repository::{Failure, stdout_of};
 use heavy_lock::{
     LockOwner, Request, command_name, lock_and_command, lock_file, now, owner_variable, run_locked,
 };
 
-/// Time between two looks at a lock held by another command.
-const POLL: Duration = Duration::from_secs(5);
+/// Time between two looks at a lock held by another command: a waiting command starts at most a
+/// second after the lock frees (5 s until NAM-002, ADR-0069); a look opens a file and tries its
+/// lock, nothing more.
+const POLL: Duration = Duration::from_secs(1);
 
-/// The Git common directory, shared by every worktree.
+/// The Git common directory, shared by every worktree, as Git gives it: the lock's path must be
+/// the one every worktree and `GIT_DIR` set by a hook agree on (`REF-GIT-REV-PARSE`).
 fn git_common_dir() -> io::Result<PathBuf> {
-    let output = Command::new("git")
-        .args(["rev-parse", "--path-format=absolute", "--git-common-dir"])
-        .output()?;
-
-    if !output.status.success() {
-        return Err(io::Error::other("not inside a Git repository"));
+    match stdout_of(Command::new("git").args([
+        "rev-parse",
+        "--path-format=absolute",
+        "--git-common-dir",
+    ])) {
+        Ok(output) => Ok(PathBuf::from(output.trim())),
+        Err(Failure::NotStarted { error, .. }) => Err(error),
+        Err(Failure::Exited { .. }) => Err(io::Error::other("not inside a Git repository")),
     }
-
-    Ok(PathBuf::from(
-        String::from_utf8_lossy(&output.stdout).trim(),
-    ))
 }
 
 fn main() -> ExitCode {

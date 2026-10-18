@@ -3,27 +3,16 @@
 use std::path::PathBuf;
 use std::process::Command;
 
+use git_repository::stdout_of;
+
 /// What `git` prints for these arguments, run in the current folder; an error naming the command
-/// when it cannot run or fails.
+/// and its arguments when it cannot run or fails.
 ///
 /// # Errors
 ///
 /// `git` is missing, or exits with a code other than 0.
 pub fn git(arguments: &[&str]) -> Result<String, String> {
-    let output = Command::new("git")
-        .args(arguments)
-        .output()
-        .map_err(|error| format!("git: {error}"))?;
-
-    if !output.status.success() {
-        return Err(format!(
-            "git {}: {}",
-            arguments.first().copied().unwrap_or_default(),
-            String::from_utf8_lossy(&output.stderr).trim()
-        ));
-    }
-
-    Ok(String::from_utf8_lossy(&output.stdout).into_owned())
+    stdout_of(Command::new("git").args(arguments)).map_err(|failure| failure.to_string())
 }
 
 /// The Git folder shared by every worktree, absolute: `.git/metrics/` and the transcripts' folder

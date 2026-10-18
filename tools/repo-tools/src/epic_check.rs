@@ -3,8 +3,8 @@
 //! force-quit, the checks of a failed `check:all`, each named with its lane and its failing tests,
 //! and the table they make for the retrospective's record.
 
+use calendar::{HOUR_MS, iso_minute};
 use hooks::json::Value;
-use shared_files::date::date_of_days;
 
 use crate::check_all::LANES;
 
@@ -17,7 +17,7 @@ pub struct Finding {
 }
 
 /// A running call's file older than this is stale: one hour.
-const STALE_MS: i64 = 3_600_000;
+const STALE_MS: i64 = HOUR_MS;
 
 /// Characters of an error kept to group the failed calls.
 const ERROR_TEXT: usize = 60;
@@ -221,20 +221,6 @@ pub fn failing_checks(output: &str) -> Vec<String> {
         .collect()
 }
 
-/// An instant written to the minute, UTC: `2026-10-16T00:00`.
-#[must_use]
-pub fn minute_of(epoch_ms: i64) -> String {
-    let minutes = epoch_ms.div_euclid(60_000);
-    let (days, minute_of_day) = (minutes.div_euclid(1440), minutes.rem_euclid(1440));
-
-    format!(
-        "{}T{:02}:{:02}",
-        date_of_days(days),
-        minute_of_day / 60,
-        minute_of_day % 60
-    )
-}
-
 /// The calls whose start was written but whose end never was: Claude Code quit, or was forced to,
 /// while they ran. Each running call's record and how old its file is; those over an hour old are
 /// listed as lost, never a failure.
@@ -253,7 +239,7 @@ pub fn lost_calls(calls: &[(i64, Value)]) -> Finding {
                 start,
                 format!(
                     "{} {} {}",
-                    minute_of(start),
+                    iso_minute(start),
                     text(record, "tool"),
                     first_chars(text(record, "summary"), SUMMARY_SHOWN)
                 ),
@@ -666,8 +652,6 @@ mod tests {
             }
         );
         assert_eq!(lost_calls(&[]).detail, "none");
-        // 59 minutes before 1970: the minute counts back across midnight.
-        assert_eq!(minute_of(-60_000), "1969-12-31T23:59");
     }
 
     #[test]

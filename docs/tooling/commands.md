@@ -64,7 +64,7 @@ Every test removes every inherited `GIT_*` variable from each command it starts,
 | Situation | What happens |
 | --- | --- |
 | no lock | the command takes it, runs, then removes it |
-| the lock held by a running command | the command waits, and says once who holds it and for how long |
+| the lock held by a running command | the command waits, looking again each second, and says once who holds it and for how long |
 | a lock file no process holds | the command says so and takes it over |
 | a command started by the lock's owner | it runs inside that lock: `check:all` runs `npm run test` and `docs:build` itself, a push inherits it through its pre-push |
 | a folder `heavy.lock`, or a file held by another tool | the command waits, its owner unknown: remove it (`rmdir`, `rm`) once its command ended |

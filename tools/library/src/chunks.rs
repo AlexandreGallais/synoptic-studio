@@ -3,6 +3,8 @@
 //! freshness rule says when a stored page is read again online. The cut is the one
 //! `library-chunks.ts` made, lengths counted in UTF-16 code units as JavaScript counts them.
 
+use calendar::DAY_MS;
+
 use crate::text;
 
 /// One section of a page.
@@ -32,9 +34,6 @@ struct Section<'a> {
     heading: Vec<&'a str>,
     lines: Vec<&'a str>,
 }
-
-/// One day, in milliseconds.
-pub const DAY_MS: i64 = 86_400_000;
 
 /// A page changed less than this before it was read is young: it may still be corrected.
 const YOUNG_DAYS: i64 = 14;

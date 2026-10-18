@@ -110,6 +110,17 @@ fn groups_compatible_versions_by_their_left_most_non_zero_component() {
 // --- npm (REF-NCU-COOLDOWN) ---
 
 #[test]
+fn f21_ac4_a_version_is_past_the_cooldown_at_exactly_7_days() {
+    // 7 × 86 400 000 ms = 604 800 000 ms after its publication; one millisecond less is not.
+    assert_eq!(deps::COOLDOWN_MS, 604_800_000);
+    assert!(deps::is_past_cooldown(0, 604_800_000));
+    assert!(!deps::is_past_cooldown(0, 604_799_999));
+    assert!(deps::is_past_cooldown(now() - 604_800_000, now()));
+    // Published after now, a clock ahead: never past.
+    assert!(!deps::is_past_cooldown(now() + 1, now()));
+}
+
+#[test]
 fn f21_ac4_npm_takes_the_latest_tag_once_it_is_7_days_old() {
     let oxlint = json("npm/oxlint.json");
     // 1.88.0, the latest tag, published 2026-10-13T09:47:46.926Z: 4 days old at NOW, so the
