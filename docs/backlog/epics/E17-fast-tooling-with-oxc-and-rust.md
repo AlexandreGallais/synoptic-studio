@@ -62,7 +62,7 @@ Ordered by the Product Owner at the refinement of 2026-10-16.
 | [F25](../features/E17-F25-the-test-lanes-rust-tools.md) — The test lane's Rust tools (#370, 2026-10-18) | done |
 | [F26](../features/E17-F26-mutate-stops-on-linux.md) — The mutation runner stops a mutation on Linux (#370, 2026-10-18) | done |
 | [F27](../features/E17-F27-retired-scopes-in-history.md) — The history check reads the scopes a commit was written with (#370, 2026-10-18) | done |
-| [F29](../features/E17-F29-local-checks-stable-and-fast.md) — The local checks stable and fast (SP-024, 2026-10-18), first: a timing test fails about one push in three | ready |
+| [F29](../features/E17-F29-local-checks-stable-and-fast.md) — The local checks stable and fast (SP-024, 2026-10-18), first: a timing test fails about one push in three | done |
 | [F28](../features/E17-F28-one-workflow-per-purpose.md) — One workflow per purpose (2026-10-18, ADR-0088) | done |
 | [F30](../features/E17-F30-a-ci-on-develop-that-blocks-nothing.md) — A CI on develop that blocks nothing (SP-024, ADR-0088) | ready |
 | [F23](../features/E17-F23-the-path-of-a-story.md) — The path of a story through the tools (RET-004 and REV-006, moved from E02 by SP-024) | ready |

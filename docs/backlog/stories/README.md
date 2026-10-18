@@ -291,7 +291,7 @@
 | [EN-130](./E17-F29-EN-130-the-rust-lane-only-when-rust-changed.md) | F29 | The Rust lane only when Rust changed, its coverage a lane | done |
 | [EN-131](./E17-F29-EN-131-binaries-rebuilt-after-a-pull.md) | F29 | The binaries rebuilt after a pull | done |
 | [AUD-031](./E17-F29-AUD-031-audit-f29.md) | F29 | Audit F29 | done |
-| [VAL-030](./E17-F29-VAL-030-validate-f29.md) | F29 | Validate F29 | ready |
+| [VAL-030](./E17-F29-VAL-030-validate-f29.md) | F29 | Validate F29 | done |
 | [SP-024](./E17-F28-SP-024-the-tooling-features-of-2026-10-18.md) | F28 | The tooling features of 2026-10-18 | done |
 | [EN-132](./E17-F28-EN-132-the-site-the-release-and-the-caches-apart.md) | F28 | The site, the release and the Rust caches apart | done |
 | [EN-133](./E17-F28-EN-133-the-ci-into-main-its-checks-only.md) | F28 | The CI into main, its checks only | done |
