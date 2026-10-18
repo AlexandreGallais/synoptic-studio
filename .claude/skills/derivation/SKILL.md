@@ -13,4 +13,3 @@ Topic: $ARGUMENTS. Model: `docs/derivations/fillet-setback.md`; index: `docs/der
 3. **Cross-check** with an independent source or field (a different derivation, an engineering formula), marked as a cross-check, not as the proof.
 4. **Check table**: inputs and expected outputs computed by hand, including degenerate cases (0, aligned, extreme). The tests reuse this table literally.
 5. **Record**: `DERIV-<topic>` in the derivations index; the code cites it with `@see DERIV-<topic>`; an `[unverified]` reference it replaces stays uncited, with a note.
-6. Commit scope `docs(geometry)`.

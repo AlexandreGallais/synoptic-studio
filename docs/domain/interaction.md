@@ -4,15 +4,15 @@ How the user acts on shapes in the editors: tools, selection, node editing, snap
 
 ## 1. Tools
 
-| Tool      | French            | Role                                      | Functional reference                  |
-| --------- | ----------------- | ----------------------------------------- | ------------------------------------- |
-| Selector  | Sélecteur         | select, move, resize objects              | Inkscape, Figma                       |
-| Node tool | Édition de nœuds  | select and modify the vertices of a shape | Inkscape (nodes), Figma (vector edit) |
-| Rectangle | Rectangle         | create a rectangle                        | —                                     |
-| Polygon   | Polygone régulier | create a polygon with n corners           | Inkscape Star/Polygon                 |
-| Text      | Texte             | create a text                             | —                                     |
-| Port      | Port              | place a connection point (Symbol Editor)  | —                                     |
-| Pipe      | Tuyau             | connect two ports (View Editor)           | draw.io                               |
+| Tool | French | Role | Functional reference |
+| --- | --- | --- | --- |
+| Selector | Sélecteur | select, move, resize objects | Inkscape, Figma |
+| Node tool | Édition de nœuds | select and modify the vertices of a shape | Inkscape (nodes), Figma (vector edit) |
+| Rectangle | Rectangle | create a rectangle | — |
+| Polygon | Polygone régulier | create a polygon with n corners | Inkscape Star/Polygon |
+| Text | Texte | create a text | — |
+| Port | Port | place a connection point (Symbol Editor) | — |
+| Pipe | Tuyau | connect two ports (View Editor) | draw.io |
 
 No pen tool and no freehand drawing (see `shapes.md` §3).
 
@@ -47,12 +47,12 @@ No pen tool and no freehand drawing (see `shapes.md` §3).
 
 Functional reference: Inkscape 1.2+ (`REF-INKSCAPE-SNAP`), Figma, draw.io.
 
-| Target       | Description                                                                                                                                     |
-| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Target | Description |
+| --- | --- |
 | Integer grid | every position is rounded to an integer: for a turned shape, the x and y of its straight box, its stored position staying fractional (ADR-0035) |
-| Objects      | edges, corners, centers, midpoints of bounding boxes; vertices; ports                                                                           |
-| Alignment    | temporary horizontal / vertical guides when a point aligns with a point of another object                                                       |
-| Distribution | stop at the position where the gap to a neighbor equals the existing gap between two other objects                                              |
+| Objects | edges, corners, centers, midpoints of bounding boxes; vertices; ports |
+| Alignment | temporary horizontal / vertical guides when a point aligns with a point of another object |
+| Distribution | stop at the position where the gap to a neighbor equals the existing gap between two other objects |
 
 Rules:
 
@@ -61,7 +61,60 @@ Rules:
 
 ## 5. Colors, align and distribute
 
-- Colors: fill and stroke colors picked from a palette or typed.
+### Colors
+
+F16; decided at F05's refinement, round 2, 2026-10-14; the rules marked "confirmed at VAL-016" were read from that decision by the agent at SP-017, US-035 and AUD-017, 2026-10-15, confirmed at VAL-016; ADR-0056, `DERIV-color-spaces`.
+
+- **A color**: a hexadecimal value and an opacity, an integer from 0 to 100 %, in two fields always shown beside its swatch, for a quick copy and paste, as Figma's; RGB fields and CSS color names are not offered.
+- **Uses**: it serves the text's color today, its background (the agent's reading of F16's fourth criterion, confirmed at VAL-016), and its underline's and strike-through's (US-041), the shapes' fills and strokes with E04.
+- **Typed or pasted** (confirmed at VAL-016):
+  - with or without `#`, in upper or lower case, white space around it ignored, in 6 digits, in 3 digits each doubled (`f80` gives `#ff8800`), or in 8 or 4 digits whose last pair or digit is the alpha, which sets the opacity to the nearest percent (`#0000ffcc` gives `#0000ff` and 80 %, `#F80C` gives `#ff8800` and 80 %);
+  - it is kept as `#` and six lower-case digits, the form of CSS's HTML-compatible serialization (`REF-CSS-COLOR-4`, §16.2.1);
+  - the model accepts that form only, so every reader of a color (a field typed or pasted, data loaded) turns it to lower case first, and a color of F05 or F14 written in upper case is turned to lower case when read (agent, SP-017 audit, confirmed at VAL-016);
+  - anything else is refused when the field is left or Enter pressed: the field shows again the color it had when it got the focus, or the last one it kept, and a line under it says why (US-035, confirmed at VAL-016);
+  - while it is typed, the text is drawn with what the field holds, refused as any other field until it is a color;
+  - a color copied is six digits; the opacity is copied from its own field.
+- **The underline's and the strike-through's colors** (US-041, the agent's reading, confirmed at VAL-016):
+  - each has the same swatch, fields and picker as the text's, with a box "follows the text's color", ticked as the page opens;
+  - while ticked, its fields show the text's color and opacity and the stroke is drawn in them;
+  - a hexadecimal or an opacity committed (the field left or Enter pressed) and accepted, or picked, unticks it, a value refused or being typed leaving it ticked, the stroke keeping that color when the text's changes;
+  - ticked again, it follows the text's color again (`shapes.md`, Text).
+- **The picker** (US-035, AUD-017, confirmed at VAL-016; integers since ADR-0058, US-040):
+  - it opens on a click on the swatch and closes on another click on it, on Escape or on a click outside;
+  - it holds a hue slider from 0 to 359°, holding whole degrees (`#ff8000` at 30°; a hue rounding to 360 is shown 0; Product Owner, 2026-10-15, ADR-0058), and an opacity slider from 0 to 100 %;
+  - it holds a plane in HSL or in HSB, a choice between the two, HSB first (the agent's own choice, no source read, confirmed at VAL-016), the plane's three values (hue, saturation, lightness or brightness) as numbers, and the hexadecimal and opacity fields, so the hexadecimal translation is always shown;
+  - in the playground the picker opens under its color's fields, which stay in sight, a click on them does not close it, and Escape gives the focus back to the swatch;
+  - another model chosen reads the color's values again in it, its own hue, the same in both models, a grey keeping the hue the picker holds (`#7e7f80`, its hue typed 200 in HSB, shows HSL 210°, 1 %, 50 %, its own hue).
+- **The plane** shows the colors of the hue chosen: the saturation across, from 0 at the left to 100 % at the right, the lightness or brightness up, from 0 at the bottom to 100 % at the top; a click or a drag picks both (confirmed at VAL-016, `DERIV-color-spaces`, step 10).
+- **The values shown and typed** in HSL and HSB are whole numbers, never a decimal (`#ff8000` is HSL 30°, 100 %, 50 % and HSB 30°, 100 %, 100 %):
+  - the hexadecimal stays the truth: a color typed or pasted in hexadecimal is kept exactly as typed and never altered afterwards, and the values keep their decimals inside, unshown;
+  - the picker's inputs reach fewer colors than the hexadecimal does, which is accepted (Product Owner, 2026-10-15);
+  - editing one value rebuilds the color from that typed integer and the exact values of the two others, computed from the hexadecimal, so that editing one never moves the others (Product Owner, 2026-10-15, ADR-0058, superseding ADR-0056's one decimal; US-040);
+  - so `#336699` is HSB 210°, 66.66667 %, 60 %, shown 210, 67, 60; its brightness typed 61 gives `#34689c`, where the three shown integers would give `#33679c`;
+  - a value typed equal to the one shown changes nothing (agent's reading, confirmed at VAL-016);
+  - while the picker is open it holds the values given, and rebuilds each edit against the color its values were last read from (when it opened, a hexadecimal typed, another model chosen);
+  - a value equal to the one read stands for its exact value, a value typed stays as typed, so that H 30, S 100, L 50 typed one after the other on `#1e293b` give `#ff8000` (agent's reading, ADR-0059, US-040, confirmed at VAL-016);
+  - the picker's look is polished later.
+- **From HSL or HSB to the hexadecimal** (US-035, confirmed at VAL-016):
+  - a value typed or picked in HSL or HSB becomes the hexadecimal by rounding each of red, green and blue to the nearest integer, a tie rounded up; the hexadecimal and the opacity are what the text keeps;
+  - a grey has no hue of its own: it shows 0°, while an open picker keeps the hue its slider shows, so that a grey made lighter keeps it;
+  - a number typed beyond an end of a value counts at that end (a hue of 400 is 360, shown 0, while the slider's End key gives 359°; −10 gives 0);
+  - a value left empty shows its value again, and a click on the opacity slider gives the nearest percent.
+- **The keyboard** (confirmed at VAL-016, `REF-WAI-APG-SLIDER`):
+
+  | Where | Keys | Change |
+  | --- | --- | --- |
+  | a slider | Right, Up | adds 1 (1° or 1 %) to the whole value shown (30° gives 31°, ADR-0058) |
+  | a slider | Left, Down | takes 1 away |
+  | a slider | Page Up, Page Down | add and take 10 |
+  | a slider | Home, End | go to 0 and to the end (359° for the hue, 100 % for the opacity) |
+  | the plane | Left, Right | change the saturation by 1 % |
+  | the plane | Up, Down | change the lightness or brightness |
+  | the plane | Page Up, Page Down, Home, End | the same as on a slider, on the saturation |
+
+  Each slider and the plane carry their name and value for a screen reader.
+
+### Align and distribute
 
 - Align: left, horizontal center, right, top, vertical middle, bottom.
 - Distribute: equal horizontal / vertical spacing (constant gaps).

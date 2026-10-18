@@ -1,8 +1,10 @@
 # Code documentation (TSDoc)
 
-## Mandatory everywhere (`jsdoc/require-jsdoc`)
+A reader, the agent included, reads a function's block instead of its body, and the API pages are built from these blocks. So every block says what the code gives and where its formula comes from, and nothing else ([writing](./writing.md#api-reference-tsdoc)).
 
-Every top-level function, type and module constant carries a `/** … */` block; in `src/`, every **type member** too (`/** Abscissa, growing to the right. */`), since TypeDoc fails the docs build on an undocumented property.
+## Where (`jsdoc/require-jsdoc`)
+
+Every top-level function, type and module constant carries a `/** … */` block. In `src/`, every type member does too (`/** Abscissa, growing to the right. */`), because the API pages' generator (`tools/api-pages`) fails the docs build on an undocumented property.
 
 ```ts
 /**
@@ -20,28 +22,28 @@ Every top-level function, type and module constant carries a `/** … */` block;
 
 ## Shape (`jsdoc/match-description`, `jsdoc/sort-tags`, `jsdoc/tag-lines`)
 
-- Main description: **sentences** (capital letter, final period). The formula is written in it when one exists.
-- `@param name - …` and `@returns …`: **fragments** without final period.
-- Tag order: `@kind`, then `@template @param @returns @yields @throws @rejects`, then `@see @deprecated`. One blank line between the description and the tags, none between tags.
-- No type in JSDoc (`jsdoc/no-types`): TypeScript holds them.
-- One-line block when it fits on one line: `/** Separator between commands. */`.
-- Forbidden: `@todo`, `@author`, `@version`, `@since` (history is in git, ongoing work in `docs/`).
+- Write the description in sentences, with a capital letter and a final period. When there is a formula, write it in the description.
+- Write `@param name - …` and `@returns …` as fragments without a final period. A helper of a test file (`*.test.ts`) may skip them: its typed signature sits under its description, and only the test beside it reads it (EN-093). A tag written there is still checked.
+- Order the tags: `@kind`, then `@template @param @returns @yields @throws @rejects`, then `@see @deprecated`. Leave one blank line between the description and the tags, and none between tags.
+- Write no type in JSDoc (`jsdoc/no-types`): the signature holds it, and a second copy drifts.
+- Keep a block on one line when it fits: `/** Separator between commands. */`.
+- Never write `@todo`, `@author`, `@version` nor `@since`: history is in Git, and open work is in the backlog.
 
 ## `@see` references (`local/see-references`)
 
-**Every function** cites at least one source. Accepted targets:
+Every function cites at least one source it was written from, so that its formula can be checked against that source.
 
-| Form                    | Resolution                                                | Example                                       |
-| ----------------------- | --------------------------------------------------------- | --------------------------------------------- |
-| `REF-…`                 | row of `docs/references.md` **not marked `[unverified]`** | `@see REF-SVG2-PATHS`                         |
-| `DERIV-name`            | file `docs/derivations/name.md`                           | `@see DERIV-local-radius-clamp`               |
-| `ADR-NNNN`              | file `docs/adr/NNNN-*.md`                                 | `@see ADR-0007`                               |
-| `docs/…/file.md#anchor` | existing file                                             | `@see docs/domain/shapes.md#_2-corner-radius` |
+| Form | Resolution | Example |
+| --- | --- | --- |
+| `REF-…` | a row of `docs/references.md` **not marked `[unverified]`** | `@see REF-SVG2-PATHS` |
+| `DERIV-name` | file `docs/derivations/name.md` | `@see DERIV-local-radius-clamp` |
+| `ADR-NNNN` | file `docs/adr/NNNN-*.md` | `@see ADR-0007` |
+| `docs/…/file.md#anchor` | an existing file | `@see docs/domain/shapes.md#_2-corner-radius` |
 
-- A non-existent or `[unverified]` reference is a **lint error**. A source never consulted is never cited.
-- Non-trivial `math` / `geometry`: an external source (`REF-*`) or a derivation (`DERIV-*`) — not a mere pointer to the domain.
-- No verifiable source: write the derivation in `docs/derivations/`, or open a research request ([research protocol](../research/)).
+- A target that does not exist or is `[unverified]` is a lint error. A source never read is never cited.
+- A non-trivial `math` or `geometry` function cites an external source (`REF-*`) or a derivation (`DERIV-*`), not only the domain page.
+- When no source can be verified, write the derivation in `docs/derivations/` or open a research request ([research protocol](../research/)).
 
 ## API reference site
 
-TypeDoc turns this TSDoc into one page per exported symbol on the documentation site (`npm run docs:dev`, [documentation-site.md](../tooling/documentation-site.md)). The `@kind` tag is declared in `tsdoc.json`.
+`tools/api-pages` turns each exported symbol's TSDoc into a page of the documentation site (`npm run docs:dev`, [documentation site](../tooling/documentation-site.md)). Every block tag but `@param`, `@returns` and `@template` becomes a section of the page, after the return value: `@kind` among them.

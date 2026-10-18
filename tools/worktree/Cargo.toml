@@ -1,0 +1,18 @@
+[package]
+name = "worktree"
+version = "0.1.0"
+edition.workspace = true
+description = "A worktree named after its story, on its story branch (EN-052)"
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+git-repository = { path = "../git-repository" }
+git-hooks = { path = "../git-hooks" }
+tool-use = { path = "../tool-use" }
+
+[dev-dependencies]
+test-support = { path = "../test-support" }
+
+[lints]
+workspace = true

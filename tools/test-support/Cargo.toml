@@ -1,0 +1,12 @@
+[package]
+name = "test-support"
+version = "0.1.0"
+edition.workspace = true
+description = "What every test of the workspace that runs Git shares: commands without inherited GIT_* (EN-103)"
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+
+[lints]
+workspace = true

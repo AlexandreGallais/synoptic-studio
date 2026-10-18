@@ -1,0 +1,9 @@
+[editor](../index.md) / ALIGNMENTS
+
+# Variable: ALIGNMENTS
+
+> `const` **ALIGNMENTS**: readonly \[`"min"`, `"mid"`, `"max"`\]
+
+Defined in: geometry/layout-box/alignments.ts:2
+
+The three alignments of an axis, in screen order (`REF-SVG2-COORDS` §8.7).

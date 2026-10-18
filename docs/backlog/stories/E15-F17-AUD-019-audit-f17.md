@@ -1,0 +1,54 @@
+---
+id: AUD-019
+epic: E15
+feature: F17
+title: Audit F17
+status: done
+points: 3
+---
+
+# E15 · F17 · AUD-019 — Audit F17
+
+Full check of F17 in depth and of the project in breadth, following [audit.md](../../conventions/audit.md) (ADR-0020), with the `/audit` skill.
+
+## Acceptance criteria
+
+- Given the functions of F17, when audited, then every formula is re-derived, every expected value recomputed by hand, and each function survives a mutation spot-check.
+- Given the sources, when audited, then every `@see` of F17 is re-verified online and dated.
+- Given the project, when audited, then no code, test, doc or step of the removed options (the balanced wrap, the word broken at a character, the HTML layer) is left, and no duplicate, copied code nor inconsistency remains unrecorded.
+
+## Tasks
+
+One task = one commit, referenced as `AUD-019.Tn`.
+
+- [x] T1 — A. Independent review by the `auditor` subagent; mathematics, mutation spot-checks, missing properties (3 h)
+- [x] T2 — B. Sources re-verified (1 h)
+- [x] T3 — C, D, E. Provenance, duplicates, consistency, removed options left nowhere (2 h)
+- [x] T4 — F, G. Quality gates and research list for the next feature; findings table (1 h)
+
+## Findings
+
+| Check | Result | Evidence | Action |
+| --- | --- | --- | --- |
+| A1–A2 — collection rewriting re-derived (`REF-OT-OTFF` §7, §9) | right | header v1 and v2, records, 4-byte padding, no 32-bit overflow (no bitwise operation); every test offset recomputed (20, 52, 64/72/76, 108) | — |
+| A2 — every system collection read (127 `.ttc`, 543 faces, `/System/Library/Fonts{,/Supplemental}`) | 0 throws below 70 MB | 9405 tables, 0 unaligned, 0 checksum mismatches (Apple's head convention); Courier.ttc's 4 faces refused, no `OS/2` (existing rule) | — |
+| A2 — Apple Color Emoji.ttc, 192 MB | **fatal** | "invalid array length", heap exhausted in `collectionFaceToFile`'s spreads; Songti.ttc 8.5 s | decision then story: the fix needs a byte write the functional lint forbids (improvement log) |
+| A2 — wrap, trailing spaces, band (US-042, US-043, US-049) re-derived | right | "Hello" 36.46094, "World" 41.78125, right-aligned 8.21875 (not 3.77344), "runn…" 48.02344; spaces only give "", a long word whole | — |
+| A2 — weight 450 (`matchingFace`, CSS Fonts 4 §5.2) | right | {400, 700} asked 450 gives 400; {400, 500} gives 500 | US-047's "within 0.5" is too wide (improvement log) |
+| A3 — Chromium, headless shell | right | Helvetica.ttc and HelveticaNeue.ttc given as installed: 20 faces listed, "Helvetica: 6 faces read.", "Helvetica Neue: 14 faces read.", 0 refused, 0 console errors; the dashed frame within 0.01 of the drawn length at 300, 400, 500 | — |
+| A3 — Condensed Bold | **open** | Helvetica Neue Bold 700 drawn and measured as Condensed Bold, 155.08 wide against 180.27 at 400: a face of the same weight and style replaces the one before | question in VAL-018 |
+| A3 — US-048 cache, every field changed in Chromium | right | each field that changes the drawing redraws it, box fields in a box; a held key: 30 inputs, 30 frames, 0.02 ms per input, settled 1 ms after release | — |
+| A3 — checklist page | right | `?checklist=E15`: 46 lines; lines 1 and 3 ticked kept across a reload | — |
+| A3 — unquoted family to `FontFace` (US-047) | right in Firefox | headless Firefox loads "Source Sans 3", "3D Font", "Font-2" given unquoted; Safari not tried | question in VAL-018 |
+| A4 — mutations | 88 of 104 caught | 8 real gaps closed by AUD-019.T1, each test seen killing its mutant (one-face collection, exact-fit directory and offsets, Kelvin sign, trailing space in the fit, italic key, no-window redraw, one refusal reason); 8 equivalent (dead guards) | done |
+| A5 — properties | missing | no `test.prop` on the collection readers; no greedy property on the wrap | improvement log |
+| B — sources | verified | 10 rows re-read on 2026-10-16 (`REF-OT-OTFF`, Chromium `font_face.cc` and `font_metadata.cc`, Skia, OTS, CSS Fonts 4, Font Loading, Text 3, Local Font Access, Apple's scaler) | AUD-019.T2 |
+| B2 — rows cited by nothing | 3 | `REF-CSS-STYLE-ATTR`, `REF-CSS-TEXT-DECOR-3`, `REF-MDN-JUSTIFY-CONTENT`, left by US-044 | improvement log |
+| C — provenance | own code | the face is not built as Skia does (Skia recomputes checksums and search fields; the code copies them): "as Skia assembles one" overstates | improvement log |
+| D — duplicates, named calculations | 4 | directory size and padding bare; `formatFontFamily` beside `distinctFamilyNames`; `parseFaceTables` beside `parseTableDirectory` | NAM-001 (improvement log) |
+| E — removed options left | none in code | grep of balance, broken at characters, long word, wrap style, HTML layer, `foreignObject`, `percentToAlpha`, `minimum`, `isTextStrokeDrawn` over `src`, `playground`, `tests`, `eslint`: only records and absence tests | — |
+| E — removed options in docs | 16 fixed | ADR-0052 not marked amended by ADR-0060; Q24, guide pages f05, f14, f15 and README, `DERIV-text-box` steps 2 and 6 and its check rows, shapes.md (band "in a box", Scripts, IBM Plex line), an imported `.ttc` line in the checklist | AUD-019.T3 |
+| E — US-049's rule | open | the last line's trailing spaces hang, as `white-space: normal`; `pre-wrap` keeps them before a forced break (`REF-CSS-TEXT-3` §4.1.2) | question in VAL-018 |
+| F — quality gates | green | `tsc`, golden check, `check:all` at the push | — |
+| G — next | — | E15's review (REV) after VAL-018; the Condensed faces and the large collections, if kept, open with a source on `usWidthClass` (`REF-OT-OS2`) | — |
+| H — evolvability | one signal | the functional lint has no place for a byte buffer written once (the collection fix); the rest unchanged since CHK-018 | improvement log |

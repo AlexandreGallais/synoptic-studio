@@ -2,28 +2,28 @@
 
 ## Version
 
-TypeScript **6.0** (pinned). TypeScript 7 exists, but `typescript-eslint` does not support it yet (ADR-0009). `npm run deps:outdated` only proposes TypeScript patch upgrades (`.ncurc.cjs`).
+TypeScript 7 (`typescript` 7.0.2, the native compiler) is the only TypeScript (ADR-0075). It checks the types inside `npm run lint`, through oxlint's `--type-check` (ADR-0071), and alone with `npx tsc --noEmit`.
 
-## Split with ESLint (ADR-0010)
+## What TypeScript checks, what the linters check (ADR-0075)
 
-What ESLint can check lives in ESLint; `tsconfig.json` keeps only what belongs to the type system:
+Each check lives in one tool. What a linter can check is a lint rule. `tsconfig.json` keeps only what belongs to the type system:
 
-| Option                                                                    | Why in TypeScript                                                                 |
-| ------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| `strict`                                                                  | `any` inference, `null`, `this`, variance: out of ESLint's reach                  |
-| `noUncheckedIndexedAccess`                                                | `T[number]` becomes `T \| undefined`: a type, not syntax                          |
-| `exactOptionalPropertyTypes`                                              | `x?: T` does not accept an explicit `undefined`                                   |
-| `noImplicitOverride`, `noPropertyAccessFromIndexSignature`                | type semantics                                                                    |
-| `noImplicitReturns`                                                       | replaces `consistent-return`, which conflicts with `unicorn/no-useless-undefined` |
-| `verbatimModuleSyntax`, `isolatedModules`, `noUncheckedSideEffectImports` | module emission and resolution                                                    |
+| Option | Why in TypeScript |
+| --- | --- |
+| `strict` | `any` inference, `null`, `this`, variance: out of a linter's reach |
+| `noUncheckedIndexedAccess` | `T[number]` becomes `T \| undefined`: a type, not syntax |
+| `exactOptionalPropertyTypes` | `x?: T` does not accept an explicit `undefined` |
+| `noImplicitOverride`, `noPropertyAccessFromIndexSignature` | type semantics |
+| `noImplicitReturns` | replaces `consistent-return`, which conflicts with `unicorn/no-useless-undefined` |
+| `verbatimModuleSyntax`, `isolatedModules`, `noUncheckedSideEffectImports` | module emission and resolution |
 
-Left to ESLint (off in `tsconfig.json`): `noUnusedLocals`, `noUnusedParameters`, `noFallthroughCasesInSwitch`.
+The linters handle `noUnusedLocals`, `noUnusedParameters` and `noFallthroughCasesInSwitch`, so these options are off in `tsconfig.json`.
 
 ## Files
 
-- `tsconfig.json`: type checking only (`noEmit`) of `src/`, `playground/`, `eslint/`, `tests/`, `scripts/`, `.claude/hooks/`, `docs/.vitepress/` and root files.
-- `tsconfig.build.json`: emits the declarations `dist/types/` from `src/` (tests excluded); also used by TypeDoc.
+- `tsconfig.json` only checks types (`noEmit`). It covers `src/`, `playground/`, `tests/`, `scripts/`, `docs/.vitepress/` and the root files. A file outside its `include` is not type-checked, and the type-aware rules cannot read it: add it to `include`.
+- The declarations in `dist/types/` are written by `tools/declarations`, one module at a time, from `src/` without its tests (Oxc's isolated declarations, ADR-0071). Each module must therefore state its own types: an exported function writes its return type, and an exported constant whose value is not a plain literal writes its type (`export const DEGREES_PER_HALF_TURN: number = DEGREES_PER_TURN / 2`).
 
-## Typed rules
+## Rules that need types
 
-`typescript-eslint` uses the project service (`projectService`): `strict-boolean-expressions`, `no-unnecessary-condition`, `switch-exhaustiveness-check`, `no-floating-promises`… know the types. A file outside `tsconfig.json` cannot be linted: add it to `include`.
+The type-aware rules (`strict-boolean-expressions`, `no-unnecessary-condition`, `switch-exhaustiveness-check`, `no-floating-promises`…) run in oxlint on `tsgolint`. Oxc has no type checker, so a rule of the project's linter that needs a type reads the written code instead ([lint](./lint.md#the-project-s-linter-tools-lint)).

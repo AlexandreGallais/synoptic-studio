@@ -12,7 +12,7 @@ describe("isAnchor", () => {
   });
 
   it("[F07.AC1] refuses any other value on either axis", () => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- data read from outside may hold any string
+    // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- data read from outside may hold any string
     const bottom = "bottom" as Alignment;
 
     expect(isAnchor({ horizontal: bottom, vertical: "mid" })).toBe(false);

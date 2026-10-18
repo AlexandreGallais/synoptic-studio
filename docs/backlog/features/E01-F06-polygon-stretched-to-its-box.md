@@ -41,23 +41,23 @@ Refined with the Product Owner on 2026-10-12 (started with `/run` after E01's re
 
 In delivery order.
 
-| ID                                                                  | Type       | Title                                          | Status |
-| ------------------------------------------------------------------- | ---------- | ---------------------------------------------- | ------ |
-| [SP-009](../stories/E01-F06-SP-009-research-f06.md)                 | Spike      | Research for F06                               | done   |
-| [EN-017](../stories/E01-F06-EN-017-stretched-polygon.md)            | Enabler    | The stretched polygon in the model             | done   |
-| [CHK-009](../stories/E01-F06-CHK-009-checkpoint-f06.md)             | Checkpoint | Checkpoint in the middle of F06                | done   |
-| [US-021](../stories/E01-F06-US-021-stretched-option.md)             | User story | Stretch a polygon to its box in the playground | done   |
-| [AUD-009](../stories/E01-F06-AUD-009-audit-f06.md)                  | Audit      | Audit F06: polygon stretched to fill its box   | done   |
-| [VAL-009](../stories/E01-F06-VAL-009-validate-stretched-polygon.md) | Validation | Validate F06 on the reference cases            | done   |
+| ID | Type | Title | Status |
+| --- | --- | --- | --- |
+| [SP-009](../stories/E01-F06-SP-009-research-f06.md) | Spike | Research for F06 | done |
+| [EN-017](../stories/E01-F06-EN-017-stretched-polygon.md) | Enabler | The stretched polygon in the model | done |
+| [CHK-009](../stories/E01-F06-CHK-009-checkpoint-f06.md) | Checkpoint | Checkpoint in the middle of F06 | done |
+| [US-021](../stories/E01-F06-US-021-stretched-option.md) | User story | Stretch a polygon to its box in the playground | done |
+| [AUD-009](../stories/E01-F06-AUD-009-audit-f06.md) | Audit | Audit F06: polygon stretched to fill its box | done |
+| [VAL-009](../stories/E01-F06-VAL-009-validate-stretched-polygon.md) | Validation | Validate F06 on the reference cases | done |
 
 Story numbers 008 (SP, CHK, AUD, VAL), EN-016 and US-020 were used by F10 before it moved to E14 (research note 0010): they are not reused.
 
 ## Feature plan
 
-| Acceptance criterion                       | Realized by    | Verified by                      |
-| ------------------------------------------ | -------------- | -------------------------------- |
-| 1 — a stretched option, off by default     | EN-017         | `[F06.AC1]` tests, card, VAL-009 |
-| 2 — four sides touched, sides as even      | SP-009, EN-017 | `[F06.AC2]` tests, card, VAL-009 |
-| 3 — the rest of a polygon kept             | EN-017, US-021 | `[F06.AC3]` tests, card, VAL-009 |
-| 4 — converted without moving               | EN-017         | `[F06.AC4]` tests, card, VAL-009 |
-| 5 — check box, anchor off, effective radii | US-021         | `[F06.AC5]` tests, card, VAL-009 |
+| Acceptance criterion | Realized by | Verified by |
+| --- | --- | --- |
+| 1 — a stretched option, off by default | EN-017 | `[F06.AC1]` tests, card, VAL-009 |
+| 2 — four sides touched, sides as even | SP-009, EN-017 | `[F06.AC2]` tests, card, VAL-009 |
+| 3 — the rest of a polygon kept | EN-017, US-021 | `[F06.AC3]` tests, card, VAL-009 |
+| 4 — converted without moving | EN-017 | `[F06.AC4]` tests, card, VAL-009 |
+| 5 — check box, anchor off, effective radii | US-021 | `[F06.AC5]` tests, card, VAL-009 |

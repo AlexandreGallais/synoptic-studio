@@ -1,0 +1,468 @@
+# lines-before-block: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), then faults planted
+# in copies of files of the tree and cases written for branches, each run by ESLint 10.12.0 at src/a.ts with the project's options;
+# a carriage return written ␍; recorded by EN-083.
+@@@ case 1 (documented invalid)
+
+        someCode;
+        /**
+         *
+         */
+      
+@@@ findings
+3:9 Required 1 line(s) before JSDoc block
+@@@ output
+
+        someCode;
+
+        /**
+         *
+         */
+      
+@@@ case 2 (documented invalid)
+
+        someCode; /**
+         *
+         */
+      
+@@@ findings
+@@@ case 3 (documented invalid)
+
+        someCode; /** */
+      
+@@@ findings
+@@@ case 4 (documented invalid)
+
+        someCode;
+        /**
+         *
+         */
+      
+@@@ findings
+3:9 Required 1 line(s) before JSDoc block
+@@@ output
+
+        someCode;
+
+        /**
+         *
+         */
+      
+@@@ case 5 (documented invalid)
+
+        // Some comment
+        /**
+         *
+         */
+      
+@@@ findings
+3:9 Required 1 line(s) before JSDoc block
+@@@ output
+
+        // Some comment
+
+        /**
+         *
+         */
+      
+@@@ case 6 (documented invalid)
+
+        /* Some comment */
+        /**
+         *
+         */
+      
+@@@ findings
+3:9 Required 1 line(s) before JSDoc block
+@@@ output
+
+        /* Some comment */
+
+        /**
+         *
+         */
+      
+@@@ case 7 (documented invalid)
+
+        /**
+         * Some comment
+         */
+        /**
+         *
+         */
+      
+@@@ findings
+5:9 Required 1 line(s) before JSDoc block
+@@@ output
+
+        /**
+         * Some comment
+         */
+
+        /**
+         *
+         */
+      
+@@@ case 8 (documented invalid)
+
+        {
+          /**
+           * Description.
+           */
+          let value;
+        }
+      
+@@@ findings
+@@@ case 9 (documented invalid)
+
+        class MyClass {
+          /**
+           * Description.
+           */
+          method() {}
+        }
+      
+@@@ findings
+@@@ case 10 (documented invalid)
+
+        function myFunction() {
+          /**
+           * Description.
+           */
+          let value;
+        }
+      
+@@@ findings
+@@@ case 11 (documented invalid)
+
+        const values = [
+          /**
+           * Description.
+           */
+          value,
+        ];
+      
+@@@ findings
+@@@ case 12 (documented invalid)
+
+        const values = [
+          value1,
+          /**
+           * Description.
+           */
+          value2
+        ];
+      
+@@@ findings
+4:11 Required 1 line(s) before JSDoc block
+@@@ output
+
+        const values = [
+          value1,
+
+          /**
+           * Description.
+           */
+          value2
+        ];
+      
+@@@ case 13 (documented invalid)
+
+        const values = [
+          value1,
+          value2
+        ]
+        /**
+         * Description.
+         */
+      
+@@@ findings
+6:9 Required 1 line(s) before JSDoc block
+@@@ output
+
+        const values = [
+          value1,
+          value2
+        ]
+
+        /**
+         * Description.
+         */
+      
+@@@ case 14 (documented invalid)
+
+        const value = 123
+        /**
+         * Description.
+         */
+      
+@@@ findings
+3:9 Required 1 line(s) before JSDoc block
+@@@ output
+
+        const value = 123
+
+        /**
+         * Description.
+         */
+      
+@@@ case 15 (documented invalid)
+
+        type UnionDocumentation =
+          /** Description. */
+          | { someProp: number }
+          /** Description. */
+          | { otherProp: string }
+
+        type IntersectionDocumentation =
+          /** Description. */
+          { someProp: number } &
+          /** Description. */
+          { otherProp: string }
+      
+@@@ findings
+@@@ case 16 (documented invalid)
+
+        type IntersectionDocumentation = {
+          someProp: number;
+        } & /** Description. */ {
+          otherProp: string;
+        };
+      
+@@@ findings
+@@@ case 17 (documented invalid)
+
+        /** The parameters for a request */
+        export type RequestParams = {
+          /** The year to retrieve. */
+          year: `${number}`;
+          /**
+           * The month to retrieve.
+           */
+          month: `${number}`;
+        }
+      
+@@@ findings
+6:11 Required 1 line(s) before JSDoc block
+@@@ output
+
+        /** The parameters for a request */
+        export type RequestParams = {
+          /** The year to retrieve. */
+          year: `${number}`;
+
+          /**
+           * The month to retrieve.
+           */
+          month: `${number}`;
+        }
+      
+@@@ case 18 (documented valid)
+/**
+ *
+ */
+@@@ findings
+@@@ case 19 (documented valid)
+
+        someCode;
+
+        /**
+         *
+         */
+      
+@@@ findings
+@@@ case 20 (documented valid)
+
+        someCode;
+
+
+        /**
+         *
+         */
+      
+@@@ findings
+@@@ case 21 (documented valid)
+
+        // Some comment
+
+        /**
+         *
+         */
+      
+@@@ findings
+@@@ case 22 (documented valid)
+
+        /* Some comment */
+
+        /**
+         *
+         */
+      
+@@@ findings
+@@@ case 23 (documented valid)
+
+        /**
+         * Some comment
+         */
+
+        /**
+         *
+         */
+      
+@@@ findings
+@@@ case 24 (documented valid)
+
+        someCode; /** */
+      
+@@@ findings
+@@@ case 25 (documented valid)
+const a = {
+        someProp: /** @type {SomeCast} */ (someVal)
+      };
+      
+@@@ findings
+@@@ case 26 (documented valid)
+const a = /** @lends SomeClass */ {
+        someProp: (someVal)
+      };
+      
+@@@ findings
+@@@ case 27 (documented valid)
+
+        {
+          /**
+           * Description.
+           */
+          let value;
+        }
+      
+@@@ findings
+@@@ case 28 (documented valid)
+
+        class MyClass {
+          /**
+           * Description.
+           */
+          method() {}
+        }
+      
+@@@ findings
+@@@ case 29 (documented valid)
+
+        function myFunction() {
+          /**
+           * Description.
+           */
+          let value;
+        }
+      
+@@@ findings
+@@@ case 30 (documented valid)
+
+        class SomeClass {
+          constructor(
+            /**
+             * Description.
+             */
+            param
+          ) {};
+
+          method(
+            /**
+             * Description.
+             */
+            param
+          ) {};
+        }
+      
+@@@ findings
+@@@ case 31 (documented valid)
+
+        type FunctionAlias1 =
+          /**
+           * @param param - Description.
+           */
+          (param: number) => void;
+
+        type FunctionAlias2 = (
+          /**
+           * @param param - Description.
+           */
+          param: number
+        ) => void;
+      
+@@@ findings
+@@@ case 32 (documented valid)
+
+        type UnionDocumentation =
+          /** Description. */
+          | { someProp: number }
+
+          /** Description. */
+          | { otherProp: string }
+
+        type IntersectionDocumentation =
+          /** Description. */
+          { someProp: number } &
+
+          /** Description. */
+          { otherProp: string }
+      
+@@@ findings
+@@@ case 33 (documented valid)
+
+        type IntersectionDocumentation = {
+          someProp: number;
+        } & /** Description. */ {
+          otherProp: string;
+        };
+      
+@@@ findings
+@@@ case 34 (documented valid)
+
+        /** The parameters for a request */
+        export type RequestParams = {
+          /** The year to retrieve. */
+          year: `${number}`;
+          /** The month to retrieve. */
+          month: `${number}`;
+        }
+      
+@@@ findings
+@@@ case 35 (planted in a copy of a file of the tree)
+import { distance } from "../../math";
+import { cyclicItem } from "../contour";
+
+import type { Point } from "../../math";
+/**
+ * Length of every edge of a cyclic contour: edge `i` goes from vertex `i` to vertex `i + 1`.
+ *
+ * @kind geometry
+ * @param contour - vertices in drawing order
+ * @returns one length per edge, the last edge closing the contour (Q11)
+ * @see DERIV-local-radius-clamp
+ */
+export function edgeLengths(contour: readonly Point[]): readonly number[] {
+  return contour.map((vertex, index) => distance(vertex, cyclicItem(contour, index + 1, vertex)));
+}
+
+@@@ findings
+5:1 Required 1 line(s) before JSDoc block
+@@@ output
+import { distance } from "../../math";
+import { cyclicItem } from "../contour";
+
+import type { Point } from "../../math";
+
+/**
+ * Length of every edge of a cyclic contour: edge `i` goes from vertex `i` to vertex `i + 1`.
+ *
+ * @kind geometry
+ * @param contour - vertices in drawing order
+ * @returns one length per edge, the last edge closing the contour (Q11)
+ * @see DERIV-local-radius-clamp
+ */
+export function edgeLengths(contour: readonly Point[]): readonly number[] {
+  return contour.map((vertex, index) => distance(vertex, cyclicItem(contour, index + 1, vertex)));
+}
+
+@@@ end

@@ -19,11 +19,12 @@ As a _role_, I want _action_ so that _value_.
 
 User stories only (ADR-0028): what the Product Owner runs in the playground, with the expected result of each step and the words explained.
 
-| Step | Do  | You should see |
-| ---- | --- | -------------- |
+| Step | Do | You should see |
+| --- | --- | --- |
 
 ## Tasks
 
-- [ ] T1 — Verb + precise object + verifiable result (2 h)
+- [ ] T1 — The interface (files, names, signatures, TSDoc) and its tests from the criteria, failing (1 h)
+- [ ] T2 — Verb + precise object + the tests of T1 passing (2 h)
 
-One task = one commit, referenced as `US-000.T1` in the commit footer.
+One task = one commit, referenced as `US-000.T1` in the commit footer. At most three tasks: a larger story is split, the split proposed to the Product Owner with an example (EN-123).

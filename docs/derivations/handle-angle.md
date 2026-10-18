@@ -4,12 +4,12 @@ Used by: F12 (US-024, research note 0013 method 4, kept at VAL-011, Q32). Source
 
 ## Notation
 
-| Symbol   | Definition                                                                                   |
-| -------- | -------------------------------------------------------------------------------------------- |
-| `θ`, `L` | the angle typed, degrees, clockwise on screen (y down), and the length, ≥ 0                  |
-| `d(θ)`   | `turnDirection(θ)`: the unit vector at θ, `(cos θ, sin θ)` on screen                         |
-| `u`      | the unit direction of the side the handle leaves along, from its point towards the other end |
-| `R(θ)v`  | `v` turned by θ: `(vₓ cos θ − v_y sin θ, vₓ sin θ + v_y cos θ)`                              |
+| Symbol | Definition |
+| --- | --- |
+| `θ`, `L` | the angle typed, degrees, clockwise on screen (y down), and the length, ≥ 0 |
+| `d(θ)` | `turnDirection(θ)`: the unit vector at θ, `(cos θ, sin θ)` on screen |
+| `u` | the unit direction of the side the handle leaves along, from its point towards the other end |
+| `R(θ)v` | `v` turned by θ: `(vₓ cos θ − v_y sin θ, vₓ sin θ + v_y cos θ)` |
 
 ## Step 1 — A polar step
 
@@ -31,10 +31,10 @@ The angle of a vector from (1, 0) is `atan2(h_y, hₓ)` (`REF-MDN-ATAN2`), count
 
 ## Checks (test cases)
 
-| Case                                             | Expected         |
-| ------------------------------------------------ | ---------------- |
-| side (1, 0), after, 90°, 10                      | (0, 10)          |
-| side (1, 0), after, 330°, 30                     | (25.98076, −15)  |
-| side (0, 1), after, 330°, 30                     | (15, 25.98076)   |
-| side (−1, 0), before, 330°, 30                   | (−25.98076, −15) |
-| read back (15, 25.98076) from side (0, 1), after | 330°, 30         |
+| Case | Expected |
+| --- | --- |
+| side (1, 0), after, 90°, 10 | (0, 10) |
+| side (1, 0), after, 330°, 30 | (25.98076, −15) |
+| side (0, 1), after, 330°, 30 | (15, 25.98076) |
+| side (−1, 0), before, 330°, 30 | (−25.98076, −15) |
+| read back (15, 25.98076) from side (0, 1), after | 330°, 30 |

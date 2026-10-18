@@ -1,4 +1,11 @@
-import { ZERO_VECTOR, centralAngle, directionAt, hadamardProduct, polarAngle } from "../../math";
+import {
+  ZERO_VECTOR,
+  ceiling,
+  centralAngle,
+  directionAt,
+  hadamardProduct,
+  polarAngle,
+} from "../../math";
 
 import { chainEnd } from "./chain-end";
 import { HALF_SIDE } from "./half-side";
@@ -17,7 +24,7 @@ import { HALF_SIDE } from "./half-side";
  * @see DERIV-stretched-polygon
  */
 export function stretchedSideDirections(corners: number, scale: number): readonly number[] {
-  const directions = Array.from({ length: Math.ceil(corners / 2) - 1 }, (empty, index) => {
+  const directions = Array.from({ length: ceiling(corners / 2) - 1 }, (empty, index) => {
     const regular = directionAt(centralAngle(index + 1, corners));
 
     // The regular side's direction stretched vertically by the scale.

@@ -1,0 +1,1938 @@
+# check-param-names: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), then faults planted
+# in copies of files of the tree and cases written for branches, each run by ESLint 10.12.0 at src/a.ts with the project's options;
+# a carriage return written ␍; recorded by EN-083.
+@@@ case 1 (documented invalid)
+
+          /**
+           * @param {string} first - First value.
+           * @param {string} third - Third value.
+           *   More details about the third value.
+           * @param {string} second - Second value.
+           *
+           * Trailing text for the second value.
+           */
+          function quux (first, second, third) {
+
+          }
+      
+@@@ findings
+4:1 Expected @param names to be "first, second, third". Got "first, third, second".
+@@@ output
+
+          /**
+           * @param {string} first - First value.
+           * @param {string} second - Second value.
+           *
+           * Trailing text for the second value.
+           * @param {string} third - Third value.
+           *   More details about the third value.
+           */
+          function quux (first, second, third) {
+
+          }
+      
+@@@ case 2 (documented invalid)
+
+          /**
+           * @param bar number to return
+           * @param this desc
+           * @returns number returned back to caller
+           */
+          function foo(this: T, bar: number): number {
+            console.log(this.name);
+            return bar;
+          }
+      
+@@@ findings
+3:1 Expected @param names to be "this, bar". Got "bar, this".
+@@@ output
+
+          /**
+           * @param this desc
+           * @param bar number to return
+           * @returns number returned back to caller
+           */
+          function foo(this: T, bar: number): number {
+            console.log(this.name);
+            return bar;
+          }
+      
+@@@ case 3 (documented invalid)
+
+          /**
+           * @param foo
+           * @param extra
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+4:1 @param "extra" does not match an existing function parameter.
+@@@ case 4 (documented invalid)
+
+          /**
+           * @param foo
+           * @param extra
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+4:1 @param "extra" does not match an existing function parameter.
+@@@ case 5 (documented invalid)
+
+          /**
+           * @param {string} bar - A value.
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+3:1 Expected @param names to be "foo". Got "bar".
+@@@ case 6 (documented invalid)
+
+          /**
+           * @param {string} bar - A value.
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+3:1 Expected @param names to be "foo". Got "bar".
+@@@ case 7 (documented invalid)
+
+          /**
+           * @param foo
+           * @param foo.value
+           * @param bar
+           */
+          function quux (bar, foo) {
+
+          }
+      
+@@@ findings
+3:1 Expected @param names to be "bar, foo". Got "foo, bar".
+@@@ case 8 (documented invalid)
+
+          /**
+           * @param Foo
+           */
+          function quux (foo = 'FOO') {
+
+          }
+      
+@@@ findings
+3:1 Expected @param names to be "foo". Got "Foo".
+@@@ case 9 (documented invalid)
+
+          /**
+           * @arg Foo
+           */
+          function quux (foo = 'FOO') {
+
+          }
+      
+@@@ findings
+@@@ case 10 (documented invalid)
+
+          /**
+           * @param Foo
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+3:1 Expected @param names to be "foo". Got "Foo".
+@@@ case 11 (documented invalid)
+
+          /**
+           * @param Foo.Bar
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+3:1 @param path declaration ("Foo.Bar") appears before any real parameter.
+@@@ case 12 (documented invalid)
+
+          /**
+           * @param foo
+           * @param Foo.Bar
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+4:1 @param path declaration ("Foo.Bar") root node name ("Foo") does not match previous real parameter name ("foo").
+@@@ case 13 (documented invalid)
+
+          /**
+           * Assign the project to a list of employees.
+           * @param {string} employees[].name - The name of an employee.
+           * @param {string} employees[].department - The employee's department.
+           */
+          function assign (employees) {
+
+          };
+      
+@@@ findings
+4:1 @param path declaration ("employees[].name") appears before any real parameter.
+@@@ case 14 (documented invalid)
+
+          /**
+           * Assign the project to a list of employees.
+           * @param {string} employees[].name - The name of an employee.
+           * @param {string} employees[].name - The employee's department.
+           */
+          function assign (employees) {
+
+          };
+      
+@@@ findings
+5:1 Duplicate @param "employees[].name"
+@@@ output
+
+          /**
+           * Assign the project to a list of employees.
+           * @param {string} employees[].name - The name of an employee.
+           */
+          function assign (employees) {
+
+          };
+      
+@@@ case 15 (documented invalid)
+
+          /**
+           * @param foo
+           * @param foo.bar
+           * @param bar
+           */
+          function quux (bar, foo) {
+
+          }
+      
+@@@ findings
+3:1 Expected @param names to be "bar, foo". Got "foo, bar".
+@@@ case 16 (documented invalid)
+
+          /**
+           * @param foo
+           * @param bar
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+4:1 @param "bar" does not match an existing function parameter.
+@@@ case 17 (documented invalid)
+
+          /**
+           * @param foo
+           * @param foo
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+4:1 Duplicate @param "foo"
+@@@ output
+
+          /**
+           * @param foo
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ case 18 (documented invalid)
+
+      class bar {
+          /**
+           * @param foo
+           * @param foo
+           */
+          quux (foo) {
+
+          }
+      }
+      
+@@@ findings
+5:1 Duplicate @param "foo"
+@@@ output
+
+      class bar {
+          /**
+           * @param foo
+           */
+          quux (foo) {
+
+          }
+      }
+      
+@@@ case 19 (documented invalid)
+
+          /**
+           * @param foo
+           * @param foo
+           */
+          function quux (foo, bar) {
+
+          }
+      
+@@@ findings
+4:1 Duplicate @param "foo"
+@@@ output
+
+          /**
+           * @param foo
+           */
+          function quux (foo, bar) {
+
+          }
+      
+@@@ case 20 (documented invalid)
+
+          /**
+           * @param foo
+           * @param foo
+           */
+          function quux (foo, foo) {
+
+          }
+      
+@@@ findings
+4:1 Duplicate @param "foo"
+@@@ output
+
+          /**
+           * @param foo
+           */
+          function quux (foo, foo) {
+
+          }
+      
+@@@ case 21 (documented invalid)
+
+          /**
+           * @param cfg
+           * @param cfg.foo
+           * @param cfg.foo
+           */
+          function quux ({foo}) {
+
+          }
+      
+@@@ findings
+5:1 Duplicate @param "cfg.foo"
+@@@ output
+
+          /**
+           * @param cfg
+           * @param cfg.foo
+           */
+          function quux ({foo}) {
+
+          }
+      
+@@@ case 22 (documented invalid)
+
+          /**
+           * @param cfg
+           * @param cfg.foo
+           * @param cfg.foo
+           */
+          function quux ({foo}) {
+
+          }
+      
+@@@ findings
+5:1 Duplicate @param "cfg.foo"
+@@@ output
+
+          /**
+           * @param cfg
+           * @param cfg.foo
+           */
+          function quux ({foo}) {
+
+          }
+      
+@@@ case 23 (documented invalid)
+
+          /**
+           * @param cfg
+           * @param cfg.foo
+           */
+          function quux ({foo, bar}) {
+
+          }
+      
+@@@ findings
+3:1 Missing @param "cfg.bar"
+@@@ case 24 (documented invalid)
+
+          /**
+           * @param cfg
+           * @param cfg.foo
+           * @param [cfg.foo]
+           * @param baz
+           */
+          function quux ({foo}, baz) {
+
+          }
+      
+@@@ findings
+5:1 Duplicate @param "cfg.foo"
+@@@ output
+
+          /**
+           * @param cfg
+           * @param cfg.foo
+           * @param baz
+           */
+          function quux ({foo}, baz) {
+
+          }
+      
+@@@ case 25 (documented invalid)
+
+          /**
+           * @param cfg
+           * @param cfg.foo
+           * @param [cfg.foo="with a default"]
+           * @param baz
+           */
+          function quux ({foo, bar}, baz) {
+
+          }
+      
+@@@ findings
+3:1 Missing @param "cfg.bar"
+@@@ case 26 (documented invalid)
+
+          /**
+           * @param cfg
+           * @param cfg.foo
+           * @param [cfg.foo="with a default"]
+           * @param baz
+           */
+          function quux ({foo}, baz) {
+
+          }
+      
+@@@ findings
+5:1 Duplicate @param "cfg.foo"
+@@@ output
+
+          /**
+           * @param cfg
+           * @param cfg.foo
+           * @param baz
+           */
+          function quux ({foo}, baz) {
+
+          }
+      
+@@@ case 27 (documented invalid)
+
+          /**
+           * @param cfg
+           * @param [cfg.foo="with a default"]
+           * @param baz
+           */
+          function quux ({foo, bar}, baz) {
+
+          }
+      
+@@@ findings
+3:1 Missing @param "cfg.bar"
+@@@ case 28 (documented invalid)
+
+          /**
+           * @param args
+           */
+          function quux ({a, b}) {
+
+          }
+      
+@@@ findings
+3:1 Missing @param "args.a"
+3:1 Missing @param "args.b"
+@@@ case 29 (documented invalid)
+
+          /**
+           * @param args
+           */
+          function quux ({a, b} = {}) {
+
+          }
+      
+@@@ findings
+3:1 Missing @param "args.a"
+3:1 Missing @param "args.b"
+@@@ case 30 (documented invalid)
+
+        export class SomeClass {
+          /**
+           * @param prop
+           */
+          constructor(private property: string) {}
+        }
+      
+@@@ findings
+4:1 Expected @param names to be "property". Got "prop".
+@@@ case 31 (documented invalid)
+
+        export class SomeClass {
+          /**
+           * @param prop
+           * @param prop.foo
+           */
+          constructor(prop: { foo: string, bar: string }) {}
+        }
+      
+@@@ findings
+4:1 Missing @param "prop.bar"
+@@@ case 32 (documented invalid)
+
+        export class SomeClass {
+          /**
+           * @param prop
+           * @param prop.foo
+           * @param prop.bar
+           */
+          constructor(options: { foo: string, bar: string }) {}
+        }
+      
+@@@ findings
+4:1 @param "prop" does not match parameter name "options"
+4:1 Missing @param "options.foo"
+4:1 Missing @param "options.bar"
+5:1 @param "prop.foo" does not exist on prop
+6:1 @param "prop.bar" does not exist on prop
+@@@ case 33 (documented invalid)
+
+        export class SomeClass {
+          /**
+           * @param options
+           * @param options.foo
+           * @param options.bar
+           */
+          constructor(options: { foo: string }) {}
+        }
+      
+@@@ findings
+6:1 @param "options.bar" does not exist on options
+@@@ case 34 (documented invalid)
+
+          /**
+           * @param foo
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+@@@ case 35 (documented invalid)
+
+          /**
+           * @param {Error} error Exit code
+           * @param {number} [code = 1] Exit code
+           */
+          function quux (error, cde = 1) {
+          };
+      
+@@@ findings
+4:1 Expected @param names to be "error, cde". Got "error, code".
+@@@ case 36 (documented invalid)
+
+          /**
+           * @param foo
+           */
+          function quux ([a, b] = []) {
+
+          }
+      
+@@@ findings
+3:1 Missing @param "foo."0""
+3:1 Missing @param "foo."1""
+@@@ case 37 (documented invalid)
+
+      /**
+       * @param options
+       * @param options.foo
+       */
+      function quux ({foo, ...extra}) {
+      }
+      
+@@@ findings
+@@@ case 38 (documented invalid)
+
+          /**
+           * @param cfg
+           * @param cfg.foo
+           * @param cfg.bar
+           * @param cfg.extra
+           */
+          function quux ({foo, ...extra}) {
+
+          }
+      
+@@@ findings
+@@@ case 39 (documented invalid)
+
+      /**
+       * Converts an SVGRect into an object.
+       * @param {SVGRect} bbox - a SVGRect
+       */
+      const bboxToObj = function ({x, y, width, height}) {
+        return {x, y, width, height};
+      };
+      
+@@@ findings
+@@@ case 40 (documented invalid)
+
+      /**
+       * Converts an SVGRect into an object.
+       * @param {object} bbox - a SVGRect
+       */
+      const bboxToObj = function ({x, y, width, height}) {
+        return {x, y, width, height};
+      };
+      
+@@@ findings
+4:1 Missing @param "bbox.x"
+4:1 Missing @param "bbox.y"
+4:1 Missing @param "bbox.width"
+4:1 Missing @param "bbox.height"
+@@@ case 41 (documented invalid)
+
+      /**
+       * Testing
+       *
+       * @param options
+       * @param options.one One
+       * @param options.two Two
+       * @param options.four Four
+       */
+      function testingEslint(options: {
+        one: string;
+        two: string;
+        three: string;
+      }): string {
+        return one + two + three;
+      }
+      
+@@@ findings
+5:1 Missing @param "options.three"
+8:1 @param "options.four" does not exist on options
+@@@ case 42 (documented invalid)
+
+          /**
+           *
+           */
+          function quux() {
+
+          }
+      
+@@@ findings
+@@@ case 43 (documented invalid)
+
+          /**
+           * @param root
+           * @param foo
+           */
+          function quux ({foo, bar}, baz) {
+
+          }
+      
+@@@ findings
+3:1 Missing @param "root.foo"
+3:1 Missing @param "root.bar"
+@@@ case 44 (documented invalid)
+
+      /**
+       * Description.
+       * @param {Object} options
+       * @param {FooBar} foo
+       */
+      function quux ({ foo: { bar } }) {}
+      
+@@@ findings
+4:1 Missing @param "options.foo"
+4:1 Missing @param "options.foo.bar"
+@@@ case 45 (documented invalid)
+
+      /**
+       * Description.
+       * @param {Object} options
+       * @param options.foo
+       */
+      function quux ({ foo: { bar } }) {}
+      
+@@@ findings
+5:1 Missing @param "options.foo.bar"
+@@@ case 46 (documented invalid)
+
+      /**
+       * Description.
+       * @param {object} options Options.
+       * @param {object} options.foo A description.
+       * @param {object} options.foo.bar
+       */
+      function foo({ foo: { bar: { baz } }}) {}
+      
+@@@ findings
+6:1 Missing @param "options.foo.bar.baz"
+@@@ case 47 (documented invalid)
+
+      /**
+      * Returns a number.
+      * @param {Object} props Props.
+      * @param {Object} props.prop Prop.
+      * @param {string} props.prop.a String.
+      * @param {string} props.prop.b String.
+      * @return {number} A number.
+      */
+      export function testFn1 ({ prop = { a: 1, b: 2 } }) {
+      }
+      
+@@@ findings
+6:1 @param "props.prop.a" does not exist on props
+7:1 @param "props.prop.b" does not exist on props
+@@@ case 48 (documented invalid)
+
+          /**
+           * @param {object} cfg
+           * @param {string} cfg.foo
+           * @param {string} cfg.bar
+           * @param {object} cfg.extra
+           */
+          function quux ({foo}) {
+
+          }
+      
+@@@ findings
+5:1 @param "cfg.bar" does not exist on cfg
+6:1 @param "cfg.extra" does not exist on cfg
+@@@ case 49 (documented invalid)
+
+          /**
+           * @param {object} cfg
+           * @param {string} cfg.foo
+           * @param {string} cfg.bar
+           * @param {object} cfg.extra
+           */
+          function quux ({foo}) {
+
+          }
+      
+@@@ findings
+5:1 @param "cfg.bar" does not exist on cfg
+6:1 @param "cfg.extra" does not exist on cfg
+@@@ case 50 (documented invalid)
+
+          /**
+           * @param {object} root
+           * @param {object} root.cfg
+           * @param {object} root.cfg.a
+           * @param {string} root.cfg.a.foo
+           * @param {string} root.cfg.a.bar
+           * @param {object} root.cfg.a.extra
+           */
+          function quux ({cfg: {a: {foo}}}) {
+
+          }
+      
+@@@ findings
+7:1 @param "root.cfg.a.bar" does not exist on root
+8:1 @param "root.cfg.a.extra" does not exist on root
+@@@ case 51 (documented invalid)
+
+          /**
+           * @param {object} root
+           * @param {object} root.cfg
+           * @param {object} root.cfg.a
+           * @param {string} root.cfg.a.foo
+           * @param {string} root.cfg.a.bar
+           * @param {object} root.cfg.a.extra
+           */
+          function quux ({cfg: {a: {foo}}}) {
+
+          }
+      
+@@@ findings
+7:1 @param "root.cfg.a.bar" does not exist on root
+8:1 @param "root.cfg.a.extra" does not exist on root
+@@@ case 52 (documented invalid)
+
+          /**
+           * @param {object} root
+           * @param {object} root.cfg
+           * @param {string} root.cfg.foo
+           * @param {string} root.cfg.bar
+           * @param {object} root.cfg.extra
+           */
+          function quux ({cfg}) {
+
+          }
+      
+@@@ findings
+5:1 @param "root.cfg.foo" does not exist on root
+6:1 @param "root.cfg.bar" does not exist on root
+7:1 @param "root.cfg.extra" does not exist on root
+@@@ case 53 (documented invalid)
+
+          /**
+           * @param foo
+           * @param foo
+           *   on another line
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+4:1 Duplicate @param "foo"
+@@@ output
+
+          /**
+           * @param foo
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ case 54 (documented invalid)
+
+      /**
+       * @param barr This is the description of bar. Oops, we misspelled "bar" as "barr".
+       */
+      declare function foo(bar: number)
+      
+@@@ findings
+3:1 Expected @param names to be "bar". Got "barr".
+@@@ case 55 (documented invalid)
+
+        /**
+         * @param foo
+         * @param foo.bar
+         */
+        function quux (bar, foo) {
+        }
+      
+@@@ findings
+3:1 Expected @param names to be "bar, foo". Got "foo".
+@@@ case 56 (documented invalid)
+
+        /**
+         * @param foo
+         */
+        function quux (bar, baz) {
+        }
+      
+@@@ findings
+3:1 Expected @param names to be "bar, baz". Got "foo".
+@@@ case 57 (documented invalid)
+
+        /**
+         * @param bar
+         * @param foo
+         */
+        function quux (foo, bar) {
+        }
+      
+@@@ findings
+3:1 Expected @param names to be "foo, bar". Got "bar, foo".
+@@@ output
+
+        /**
+         * @param foo
+         * @param bar
+         */
+        function quux (foo, bar) {
+        }
+      
+@@@ case 58 (documented invalid)
+
+        /**
+         * @param foo
+         * @param bar
+         */
+        function quux (foo) {
+        }
+      
+@@@ findings
+4:1 @param "bar" does not match an existing function parameter.
+@@@ case 59 (documented invalid)
+
+        export interface B {
+            /**
+             * @param paramA Something something
+             */
+            methodB(paramB: string): void
+        };
+      
+@@@ findings
+4:1 Expected @param names to be "paramB". Got "paramA".
+@@@ case 60 (documented invalid)
+
+        interface A {
+          /**
+           * @param params Values for the placeholders
+           */
+          getText(key: string, ...params: string[]): string
+        }
+      
+@@@ findings
+4:1 Expected @param names to be "key, ...params". Got "params".
+@@@ case 61 (documented invalid)
+
+        /**
+         * @param arg Arg
+         */
+        export function fn(...[type, arg]: FnArgs): void {
+          // ...
+        }
+      
+@@@ findings
+3:1 Expected @param name to be "type". Got "arg".
+@@@ case 62 (documented invalid)
+
+        interface Foo {
+          /** @param wrongNameA ... */
+          method(name1: string): void
+          /** @param wrongNameB ... */
+          arrow: (name2: string) => void
+        }
+      
+@@@ findings
+3:1 Expected @param names to be "name1". Got "wrongNameA".
+5:1 Expected @param names to be "name2". Got "wrongNameB".
+@@@ case 63 (documented invalid)
+
+        /**
+         * @param b
+         * @param a */
+        function quux (a, b) {}
+      
+@@@ findings
+3:1 Expected @param names to be "a, b". Got "b, a".
+@@@ output
+
+        /**
+         * @param a
+         * @param b
+         */
+        function quux (a, b) {}
+      
+@@@ case 64 (documented invalid)
+
+        /**
+         * @param b
+         * @param a Some text
+         *   continued here */
+        function quux (a, b) {}
+      
+@@@ findings
+3:1 Expected @param names to be "a, b". Got "b, a".
+@@@ output
+
+        /**
+         * @param a Some text
+         *   continued here
+         * @param b
+         */
+        function quux (a, b) {}
+      
+@@@ case 65 (documented invalid)
+/**␍
+ * @param b␍
+ * @param a */␍
+function quux (a, b) {}
+@@@ findings
+2:1 Expected @param names to be "a, b". Got "b, a".
+@@@ output
+/**␍
+ * @param a␍
+ * @param b␍
+ */␍
+function quux (a, b) {}
+@@@ case 66 (documented valid)
+
+          /**
+           * @param bar
+           * @param foo
+           */
+          function quux (foo, bar) {
+
+          }
+      
+@@@ findings
+3:1 Expected @param names to be "foo, bar". Got "bar, foo".
+@@@ output
+
+          /**
+           * @param foo
+           * @param bar
+           */
+          function quux (foo, bar) {
+
+          }
+      
+@@@ case 67 (documented valid)
+
+          /**
+           * @param foo
+           * @param foo
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+4:1 Duplicate @param "foo"
+@@@ output
+
+          /**
+           * @param foo
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ case 68 (documented valid)
+
+          /**
+           *
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+@@@ case 69 (documented valid)
+
+          /**
+           * @param foo
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+@@@ case 70 (documented valid)
+
+          /**
+           * @param foo
+           * @param bar
+           */
+          function quux (foo, bar) {
+
+          }
+      
+@@@ findings
+@@@ case 71 (documented valid)
+
+          /**
+           * @param foo
+           * @param bar
+           */
+          function quux (foo, bar, baz) {
+
+          }
+      
+@@@ findings
+@@@ case 72 (documented valid)
+
+          /**
+           * @param foo
+           * @param foo.foo
+           * @param bar
+           */
+          function quux (foo, bar) {
+
+          }
+      
+@@@ findings
+@@@ case 73 (documented valid)
+
+          /**
+           * @param args
+           */
+          function quux (...args) {
+
+          }
+      
+@@@ findings
+@@@ case 74 (documented valid)
+
+          /**
+           * @param foo
+           * @param foo.a
+           * @param foo.b
+           */
+          function quux ({a, b}) {
+
+          }
+      
+@@@ findings
+@@@ case 75 (documented valid)
+
+          /**
+           * @param foo
+           * @param foo.a
+           * @param foo.b
+           */
+          function quux ({"a": A, b}) {
+
+          }
+      
+@@@ findings
+@@@ case 76 (documented valid)
+
+          /**
+           * @param foo
+           * @param foo."a"
+           * @param foo.b
+           */
+          function quux ({a: A, b}) {
+
+          }
+      
+@@@ findings
+@@@ case 77 (documented valid)
+
+          /**
+           * @param foo
+           * @param foo."a-b"
+           * @param foo.b
+           */
+          function quux ({"a-b": A, b}) {
+
+          }
+      
+@@@ findings
+@@@ case 78 (documented valid)
+
+          /**
+           * @param foo
+           * @param foo.bar
+           * @param foo.baz
+           * @param bar
+           */
+          function quux (foo, bar) {
+
+          }
+      
+@@@ findings
+@@@ case 79 (documented valid)
+
+          /**
+           * Assign the project to a list of employees.
+           * @param {object[]} employees - The employees who are responsible for the project.
+           * @param {string} employees[].name - The name of an employee.
+           * @param {string} employees[].department - The employee's department.
+           */
+          function assign (employees) {
+
+          };
+      
+@@@ findings
+@@@ case 80 (documented valid)
+
+        export class SomeClass {
+          /**
+           * @param property
+           */
+          constructor(private property: string) {}
+        }
+      
+@@@ findings
+@@@ case 81 (documented valid)
+
+        export class SomeClass {
+          /**
+           * @param options
+           * @param options.foo
+           * @param options.bar
+           */
+          constructor(options: { foo: string, bar: string }) {}
+        }
+      
+@@@ findings
+@@@ case 82 (documented valid)
+
+        export class SomeClass {
+          /**
+           * @param options
+           * @param options.foo
+           * @param options.bar
+           */
+          constructor({ foo, bar }: { foo: string, bar: string }) {}
+        }
+      
+@@@ findings
+@@@ case 83 (documented valid)
+
+        export class SomeClass {
+          /**
+           * @param options
+           * @param options.foo
+           * @param options.bar
+           */
+          constructor({ foo, bar }: { foo: string, bar: string }) {}
+        }
+      
+@@@ findings
+@@@ case 84 (documented valid)
+
+          /**
+           * @param {Error} error Exit code
+           * @param {number} [code = 1] Exit code
+           */
+          function quux (error, code = 1) {
+          };
+      
+@@@ findings
+@@@ case 85 (documented valid)
+
+          /**
+           * @param foo
+           * @param bar
+           */
+          function quux (foo) {
+
+          }
+      
+@@@ findings
+4:1 @param "bar" does not match an existing function parameter.
+@@@ case 86 (documented valid)
+
+          /**
+           * @param cfg
+           * @param cfg.foo
+           * @param baz
+           */
+          function quux ({foo}, baz) {
+
+          }
+      
+@@@ findings
+@@@ case 87 (documented valid)
+
+          /**
+           * @param cfg
+           * @param cfg.foo
+           * @param cfg2
+           */
+          function quux ({foo}, cfg2) {
+
+          }
+      
+@@@ findings
+@@@ case 88 (documented valid)
+
+          /**
+           * @param cfg
+           * @param cfg.foo
+           * @param baz
+           * @param baz.cfg
+           */
+          function quux ({foo}, {cfg}) {
+
+          }
+      
+@@@ findings
+@@@ case 89 (documented valid)
+
+      /**
+       * @param options
+       * @param options.foo
+       */
+      function quux ({foo, ...extra}) {
+      }
+      
+@@@ findings
+@@@ case 90 (documented valid)
+
+          /**
+           * @param foo
+           * @param bar
+           */
+          function quux (foo, bar, ...extra) {
+
+          }
+      
+@@@ findings
+@@@ case 91 (documented valid)
+
+      /**
+       * Converts an SVGRect into an object.
+       * @param {SVGRect} bbox - a SVGRect
+       */
+      const bboxToObj = function ({x, y, width, height}) {
+        return {x, y, width, height};
+      };
+      
+@@@ findings
+@@@ case 92 (documented valid)
+
+      /**
+      * Converts an SVGRect into an object.
+      * @param {object} bbox - a SVGRect
+      */
+      const bboxToObj = function ({x, y, width, height}) {
+        return {x, y, width, height};
+      };
+      
+@@@ findings
+4:1 Missing @param "bbox.x"
+4:1 Missing @param "bbox.y"
+4:1 Missing @param "bbox.width"
+4:1 Missing @param "bbox.height"
+@@@ case 93 (documented valid)
+
+      class CSS {
+        /**
+         * Set one or more CSS properties for the set of matched elements.
+         *
+         * @param {Object} propertyObject - An object of property-value pairs to set.
+         */
+        setCssObject(propertyObject: {[key: string]: string | number}): void {
+        }
+      }
+      
+@@@ findings
+@@@ case 94 (documented valid)
+
+      /**
+       * Logs a string.
+       *
+       * @param input - String to output.
+       */
+      export default function (input: {
+        [foo: string]: { a: string; b: string };
+      }): void {
+        input;
+      }
+      
+@@@ findings
+@@@ case 95 (documented valid)
+
+      export class Thing {
+        foo: any;
+
+        /**
+         * @param {} C
+         */
+        constructor(C: { new (): any }) {
+          this.foo = new C();
+        }
+      }
+      
+@@@ findings
+@@@ case 96 (documented valid)
+
+          /**
+           * @param foo
+           * @param root
+           */
+          function quux (foo, {bar}) {
+
+          }
+      
+@@@ findings
+3:1 Missing @param "root.bar"
+@@@ case 97 (documented valid)
+
+      class A {
+        /**
+         * Show a prompt.
+         * @param hideButton true if button should be hidden, false otherwise
+         * @param onHidden delegate to call when the prompt is hidden
+         */
+        public async showPrompt(hideButton: boolean, onHidden: {(): void}): Promise<void>
+        {
+        }
+      }
+
+@@@ findings
+@@@ case 98 (documented valid)
+
+      /**
+       * Description.
+       * @param {Object} options Options.
+       * @param {FooBar} options.foo foo description.
+       */
+      function quux ({ foo: { bar }}) {}
+      
+@@@ findings
+@@@ case 99 (documented valid)
+
+      /**
+       * Description.
+       * @param {FooBar} options
+       * @param {Object} options.foo
+       */
+      function quux ({ foo: { bar } }) {}
+      
+@@@ findings
+@@@ case 100 (documented valid)
+
+      /**
+       * Description.
+       * @param {Object} options
+       * @param {FooBar} options.foo
+       * @param {FooBar} options.baz
+       */
+      function quux ({ foo: { bar }, baz: { cfg } }) {}
+      
+@@@ findings
+@@@ case 101 (documented valid)
+
+      /**
+       * Item
+       *
+       * @param {object} props
+       * @param {object} props.data - case data
+       * @param {string} props.data.className - additional css class
+       * @param props.val
+       */
+      export default function Item({
+        data: {
+          className,
+        } = {},
+        val = 4
+      }) {
+      }
+      
+@@@ findings
+@@@ case 102 (documented valid)
+
+      /**
+       * @param obj
+       * @param obj.data
+       * @param obj.data."0"
+       * @param obj.data."1"
+       * @param obj.data."2"
+       * @param obj.defaulting
+       * @param obj.defaulting."0"
+       * @param obj.defaulting."1"
+       */
+      function Item({
+        data: [foo, bar, ...baz],
+        defaulting: [quux, xyz] = []
+      }) {
+      }
+      
+@@@ findings
+@@@ case 103 (documented valid)
+
+      /**
+      * Returns a number.
+      * @param {Object} props Props.
+      * @param {Object} props.prop Prop.
+      * @param {string} props.prop.a String.
+      * @param {string} props.prop.b String.
+      * @return {number} A number.
+      */
+      export function testFn1 ({ prop = { a: 1, b: 2 } }) {
+      }
+      
+@@@ findings
+6:1 @param "props.prop.a" does not exist on props
+7:1 @param "props.prop.b" does not exist on props
+@@@ case 104 (documented valid)
+
+          /**
+           * @param {object} root
+           * @param {object} root.cfg
+           * @param {string} root.cfg.foo
+           * @param {string} root.cfg.bar
+           * @param {object} root.cfg.extra
+           */
+          function quux ({cfg}) {
+
+          }
+      
+@@@ findings
+5:1 @param "root.cfg.foo" does not exist on root
+6:1 @param "root.cfg.bar" does not exist on root
+7:1 @param "root.cfg.extra" does not exist on root
+@@@ case 105 (documented valid)
+
+      class A {
+          /**
+           * @param cfg
+           * @param cfg.abc
+           */
+          constructor({
+              [new.target.prop]: cX,
+              abc
+          }) {
+          }
+      }
+      
+@@@ findings
+@@@ case 106 (documented valid)
+
+      /**
+       * @param root
+       * @param root."0" Ignored
+       * @param root."1" Our "b"
+       */
+      const foo = ([, b]) => b;
+      
+@@@ findings
+@@@ case 107 (documented valid)
+
+      /**
+       * @param arg1 This is the description for arg1.
+       */
+      function foo(this: void, arg1: number): void;
+      
+@@@ findings
+@@@ case 108 (documented valid)
+
+      declare global {
+        /**
+         * @param arg1 This is the number for foo.
+         */
+        function foo(this: void, arg1: number): void;
+      }
+      
+@@@ findings
+@@@ case 109 (documented valid)
+
+      class A {
+        /**
+         * Helper function
+         * @param collisionFunc
+         */
+        public registerCustomPickup(
+          collisionFunc: (this: void, player: EntityPlayer) => boolean = () => true,
+        ): void {}
+       }
+      
+@@@ findings
+@@@ case 110 (documented valid)
+
+      class A {
+        /**
+         * Helper function
+         * @param collisionFunc
+         */
+        @Exported
+        public registerCustomPickup(
+          collisionFunc: (this: void, player: EntityPlayer) => boolean = () => true,
+        ): void {}
+       }
+      
+@@@ findings
+@@@ case 111 (documented valid)
+
+      declare global {
+        /**
+         * @param r Range is 0-1.
+         * @param g Range is 0-1.
+         * @param b Range is 0-1.
+         */
+        function Color(
+          this: void,
+          r: float,
+          g: float,
+          b: float,
+        ): Color;
+      }
+      
+@@@ findings
+@@@ case 112 (documented valid)
+
+        /**
+         * @param this desc
+         * @param bar number to return
+         * @returns number returned back to caller
+         */
+        function foo(this: T, bar: number): number {
+          console.log(this.name);
+          return bar;
+        }
+      
+@@@ findings
+@@@ case 113 (documented valid)
+
+        /**
+         * @param bar number to return
+         * @param this desc
+         * @returns number returned back to caller
+         */
+        function foo(this: T, bar: number): number {
+          console.log(this.name);
+          return bar;
+        }
+      
+@@@ findings
+3:1 Expected @param names to be "this, bar". Got "bar, this".
+@@@ output
+
+        /**
+         * @param this desc
+         * @param bar number to return
+         * @returns number returned back to caller
+         */
+        function foo(this: T, bar: number): number {
+          console.log(this.name);
+          return bar;
+        }
+      
+@@@ case 114 (documented valid)
+
+        /**
+         * Documentation
+         */
+        function quux (foo, bar) {
+        }
+      
+@@@ findings
+@@@ case 115 (documented valid)
+
+        /**
+         * @param bar
+         * @param bar.baz
+         */
+        function quux (foo, bar) {
+        }
+      
+@@@ findings
+3:1 Expected @param names to be "foo, bar". Got "bar".
+@@@ case 116 (documented valid)
+
+        /**
+         * @param foo
+         */
+        function quux (foo, bar) {
+        }
+      
+@@@ findings
+@@@ case 117 (documented valid)
+
+        /**
+         * @param type Type
+         * @param arg Arg
+         */
+        export function fn(...[type, arg]: FnArgs): void {
+          // ...
+        }
+      
+@@@ findings
+@@@ case 118 (documented valid)
+
+        /**
+         * @param c c
+         * @param d d
+         */
+        const inner = (c: number, d: string): void => {
+          console.log(c);
+          console.log(d);
+        };
+      
+@@@ findings
+@@@ case 119 (documented valid)
+
+        const emit = defineEmits<{
+          /**
+           * Fired when an editable field is submitted.
+           * @param index the index of the editable field
+           */
+          submitField: [index: number];
+        }>();
+      
+@@@ findings
+@@@ case 120 (planted in a copy of a file of the tree)
+/**
+ * Distance from a corner vertex to the tangent points of its fillet arc.
+ *
+ * Formula: s = r · tan(|τ| / 2) = r / tan(θ / 2), τ = turning angle, θ = interior angle.
+ *
+ * @kind geometry
+ * @param radius - fillet radius, >= 0
+ * @param turnAngle - signed turning angle at the vertex in radians, in ]−π, π[
+ * @returns setback along each adjacent edge, 0 for aligned vertices
+ * @see DERIV-fillet-setback
+ */
+export function filletSetback(radius: number, turningAngle: number): number {
+  return radius * Math.tan(Math.abs(turningAngle) / 2);
+}
+
+@@@ findings
+8:1 Expected @param names to be "radius, turningAngle". Got "radius, turnAngle".
+@@@ case 121 (written for a branch the documented cases leave)
+/**
+ * Destructured.
+ *
+ * @param root - the root
+ * @param root.a - a
+ * @param root.b - b
+ * @param root.b.c - c
+ * @param list - list
+ * @param list."0" - first
+ * @param rest - rest
+ */
+function destructured({ a, b: { c } }: { a: number; b: { c: number } }, [first]: number[], ...rest: number[]) {}
+/**
+ * Missing properties.
+ *
+ * @param root - the root
+ */
+function missing({ a, b = 1, c: [d, ...e], f: { g } = {}, ...h }: object) {}
+/**
+ * Typed literal.
+ *
+ * @param options - options
+ * @param options.width - width
+ */
+function typed(options: { width: number; height: number; nested: { depth: number }; method(): void }) {}
+/**
+ * This.
+ *
+ * @param this - the context
+ * @param a - a
+ */
+function withThis(this: { x: number }, a: number) {}
+/**
+ * This plain.
+ *
+ * @param a - a
+ */
+function plainThis(this: Window, a: number) {}
+/**
+ * Defaults.
+ *
+ * @param a - a
+ * @param b - b
+ */
+function defaults(a = 1, { x }: { x: number } = { x: 1 }) {}
+/**
+ * Array rest.
+ *
+ * @param list - list
+ */
+function arrayRest(...[first, second]: number[]) {}
+/**
+ * Keys.
+ *
+ * @param root - root
+ * @param root.'a-b' - quoted
+ * @param root.1 - number
+ */
+function keys({ 'a-b': ab, 1: one, [computed]: c }: object) {}
+/**
+ * Extra.
+ *
+ * @param root - root
+ * @param root.a - a
+ * @param root.z - z
+ */
+function extra({ a }: { a: number }) {}
+/**
+ * Path before.
+ *
+ * @param root.a - a
+ * @param root - root
+ */
+function pathBefore(root: object) {}
+/**
+ * Path root.
+ *
+ * @param root - root
+ * @param other.a - a
+ */
+function pathRoot(root: object) {}
+/**
+ * Annotation name.
+ *
+ * @param other - other
+ * @param other.a - a
+ */
+function annotation(root: { a: number }) {}
+/**
+ * Duplicate.
+ *
+ * @param a - a
+ * @param a - again
+ */
+function duplicate(a: number) {}
+/**
+ * Order.
+ *
+ * @param b - b
+ * @param a - a
+ */
+function order(a: number, b: number) {}
+interface Shape {
+  /**
+   * Method.
+   *
+   * @param x - x
+   */
+  method(y: number): void;
+  /**
+   * Property.
+   *
+   * @param x - x
+   */
+  callback: (y: number) => void;
+}
+@@@ findings
+16:1 Missing @param "root.a"
+16:1 Missing @param "root.b"
+16:1 Missing @param "root.c"
+16:1 Missing @param "root.c.0"
+16:1 Missing @param "root.c.1"
+16:1 Missing @param "root.f"
+16:1 Missing @param "root.f.g"
+22:1 Missing @param "options.height"
+22:1 Missing @param "options.nested"
+22:1 Missing @param "options.nested.depth"
+22:1 Missing @param "options.method"
+29:1 Missing @param "this.x"
+42:1 Missing @param "b.x"
+49:1 Expected @param name to be "first". Got "list".
+55:1 Missing @param "root.computed"
+65:1 @param "root.z" does not exist on root
+71:1 @param path declaration ("root.a") appears before any real parameter.
+79:1 @param path declaration ("other.a") root node name ("other") does not match previous real parameter name ("root").
+84:1 Missing @param "root.a"
+85:1 @param "other" does not match parameter name "root"
+86:1 @param "other.a" does not exist on other
+93:1 Duplicate @param "a"
+99:1 Expected @param names to be "a, b". Got "b, a".
+107:1 Expected @param names to be "y". Got "x".
+113:1 Expected @param names to be "y". Got "x".
+@@@ output
+/**
+ * Destructured.
+ *
+ * @param root - the root
+ * @param root.a - a
+ * @param root.b - b
+ * @param root.b.c - c
+ * @param list - list
+ * @param list."0" - first
+ * @param rest - rest
+ */
+function destructured({ a, b: { c } }: { a: number; b: { c: number } }, [first]: number[], ...rest: number[]) {}
+/**
+ * Missing properties.
+ *
+ * @param root - the root
+ */
+function missing({ a, b = 1, c: [d, ...e], f: { g } = {}, ...h }: object) {}
+/**
+ * Typed literal.
+ *
+ * @param options - options
+ * @param options.width - width
+ */
+function typed(options: { width: number; height: number; nested: { depth: number }; method(): void }) {}
+/**
+ * This.
+ *
+ * @param this - the context
+ * @param a - a
+ */
+function withThis(this: { x: number }, a: number) {}
+/**
+ * This plain.
+ *
+ * @param a - a
+ */
+function plainThis(this: Window, a: number) {}
+/**
+ * Defaults.
+ *
+ * @param a - a
+ * @param b - b
+ */
+function defaults(a = 1, { x }: { x: number } = { x: 1 }) {}
+/**
+ * Array rest.
+ *
+ * @param list - list
+ */
+function arrayRest(...[first, second]: number[]) {}
+/**
+ * Keys.
+ *
+ * @param root - root
+ * @param root.'a-b' - quoted
+ * @param root.1 - number
+ */
+function keys({ 'a-b': ab, 1: one, [computed]: c }: object) {}
+/**
+ * Extra.
+ *
+ * @param root - root
+ * @param root.a - a
+ * @param root.z - z
+ */
+function extra({ a }: { a: number }) {}
+/**
+ * Path before.
+ *
+ * @param root.a - a
+ * @param root - root
+ */
+function pathBefore(root: object) {}
+/**
+ * Path root.
+ *
+ * @param root - root
+ * @param other.a - a
+ */
+function pathRoot(root: object) {}
+/**
+ * Annotation name.
+ *
+ * @param other - other
+ * @param other.a - a
+ */
+function annotation(root: { a: number }) {}
+/**
+ * Duplicate.
+ *
+ * @param a - a
+ */
+function duplicate(a: number) {}
+/**
+ * Order.
+ *
+ * @param a - a
+ * @param b - b
+ */
+function order(a: number, b: number) {}
+interface Shape {
+  /**
+   * Method.
+   *
+   * @param x - x
+   */
+  method(y: number): void;
+  /**
+   * Property.
+   *
+   * @param x - x
+   */
+  callback: (y: number) => void;
+}
+@@@ end

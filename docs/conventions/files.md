@@ -2,14 +2,12 @@
 
 ## One export per file (ADR-0019, `local/one-export-per-file`)
 
-In `src/` and `playground/` (barrels, entry points and tests excepted):
+A module exports exactly one value, a function or a constant, and the file is named after it. With one export per file, a name is found by its file, a diff touches one concept, and an import says what it uses. The rule covers `src/` and `playground/`. Barrels, entry points and tests are exempt.
 
-- a module exports **exactly one value** — a function or a constant — with `export <declaration>`;
-- the file is named the **kebab-case** of the export: `fillet-setback.ts`, `svg-namespace.ts`;
-- no `export { … }` list, no re-export (re-exports are the barrel's job);
-- a **type** may be exported next to the value only if it appears in the value's declaration (its parameter or return type): it is the function's contract;
-- any other type lives in its own file, named like it in kebab-case (`point.ts`), exporting only that type;
-- non-exported helpers may stay in the file only if they serve its single export; a helper shared by two modules becomes its own module.
+- Write `export <declaration>`. Never write an `export { … }` list, and never re-export: re-exporting is the barrel's job.
+- Name the file in kebab-case after its export: `filletSetback` lives in `fillet-setback.ts`.
+- A type may sit beside the value only when it appears in the value's signature (a parameter or return type), because it is part of the function's contract. Any other type gets its own file, named after it (`point.ts`).
+- A private helper may stay in the file only while it serves the one export. Once a second module needs it, it becomes a module of its own.
 
 ```text
 src/geometry/corner-radius/
@@ -22,32 +20,24 @@ src/math/vector/
 
 ## Names
 
-- Every file and folder: `kebab-case` (`unicorn/filename-case`); a module file is the kebab-case of its export.
-- Tests: `<module>.test.ts`, next to the module.
-- Repository-wide tests in `tests/`: `backlog`, `references`, `barrels`, `diagrams`, `package`, `fitness`, `folders`, and the fixtures shared by the tests of `src/` (`geometry-fixtures`, imported from `tests`).
-- The actions shared by the playground's tests: `playground/user-actions/`.
+- Every file and folder is named in kebab-case (`unicorn/filename-case`).
+- A test is named `<module>.test.ts` and sits beside its module.
+- Tests of the repository as a whole sit in `tests/`, for example `backlog`, `references`, `barrels`, `folders` and `fitness`. The fixtures shared by the tests of `src/` sit there too, imported from `tests`.
+- The actions shared by the playground's tests sit in `playground/user-actions/`.
 
 ## Folders
 
-Every code folder has an `index.ts` barrel (see [imports.md](./imports.md)). Folders are named after the **business domains** of `docs/domain/`, the same name in every layer where the domain has code — never a kind of code, "utils" or "helpers" (ADR-0043, `id-denylist`).
+Folders are named after the business domains of `docs/domain/`, and a domain keeps the same name in every layer where it has code: `src/geometry/corner-radius/` and `src/model/corner-radius/`. A folder is never named after a kind of code such as `utils` or `helpers` (ADR-0043, `id-denylist`): a domain name tells where a module belongs, a kind does not. To place a new module, list the layer's folders and pick its domain. A new domain gets its folder with its first module.
 
-A code folder holds **modules or domain folders, never both**: beside folders sits only the barrel (and the playground's entry). `local/folder-layout` reports a TypeScript file beside folders at once, in the editor; `tests/folders.test.ts` checks every other file.
-
-| Folder          | Domains                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/math/`     | `vector/` (the point, the vector, its products and distance), `angle/` (degrees and radians, quarter and half turns, explement, directions, signed and central angles), `rotation/` (rotate, quarter turns), `interpolation/` (midpoint, point between, regular partition), `arithmetic/` (average, clamp, modulo), `polynomial/` (the quadratic, its discriminant and roots), `bisection/`, `precision/` (`EPSILON`, without negative zero)                                                                                                                                                                               |
-| `src/geometry/` | `contour/` (arcs, segments, cubics, corners, `cyclicItem`), `corner-radius/` (fillets, clamp, turning angles), `handles/` (a point's handles, the empty handles and corner, their turn and stretch, F12), `regular-polygon/` (regular and stretched), `layout-box/` (alignment, anchor, fit, stretch, size, box size, half size, half the smaller side, area — Q21), `placement/` (straight box, turn — `shapes.md` §1), `curve/` (cubic sides, their box and split, F12), `fillet-side/`, `curve-fillet/` and `curve-contour/` (a fillet beside a curve, ADR-0047), `round-shape/` (the ellipse as four cubics, ADR-0048) |
-| `src/model/`    | one folder per shape, its type inside (`rectangle/`, `regular-polygon/`, `free-shape/`, `round-shape/`), `shape/` (the three kinds of shape told apart: `isFreeShape`, `isRegularPolygon`, `isRoundShape`), then `corner-radius/` (`shapes.md` §2), `handles/` (handles' validity and typing), `layout-box/` (anchor and size checks), `placement/` (position, angle, turned corners), `selection/` (`interaction.md`)                                                                                                                                                                                                     |
-| `src/io/`       | modules only: the writing of path data, one domain                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| `src/render/`   | modules only: the SVG elements, one domain                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `playground/`   | one folder per panel (`toolbar/`, `shape/`, `points/`, `handles/`, `position/`, `drawing/`, `guided-test/`), the steps of the guided tests (`guided-steps/`), the fields every panel reads and writes (`page/`), the wiring of the panels (`mount/`), the tests' actions (`user-actions/`)                                                                                                                                                                                                                                                                                                                                 |
-
-A shape's type lives in its folder (`free-shape/free-shape.ts`); folders may use each other's types, their value imports go one way (`import-x/no-cycle`). A test of the whole page sits in the folder of the panel it exercises. Why: [ADR-0043](../adr/0043-folders-by-domain.md).
+- Every code folder has an `index.ts` barrel ([imports](./imports.md)).
+- A folder holds modules or domain folders, never both. Beside folders sits only the barrel, and the playground's entry. `local/folder-layout` reports a TypeScript file beside folders, and `tests/folders.test.ts` checks every other file.
+- A shape's type lives in the shape's folder (`free-shape/free-shape.ts`). Folders may use each other's types, but their value imports go one way (`import-x/no-cycle`).
+- A test of the whole page sits in the folder of the panel it exercises.
 
 ### Folders past 15 modules
 
-15 modules per folder, tests and barrel not counted, is a signal (ADR-0043): a folder past it asks whether a domain is missing; it is split along that domain, or listed here with the reason none is. `local/folder-layout` fails on a folder past 15 not listed in `eslint/settings/folders.ts`; `tests/folders.test.ts` keeps that list and this table equal.
+Fifteen modules in a folder, tests and barrel not counted, is a signal that a domain is missing (ADR-0043). Split the folder along that domain. If no domain splits it, list it below with the reason. A split by kind of code (reading, writing, clicking) is not a domain, so it does not answer the signal. `local/folder-layout` fails on a folder past 15 that `tools/lint/src/settings.rs` does not list. A test of that file keeps its list equal to this table, and `tests/folders.test.ts` counts the folders on disk itself, so a folder missing here, or listed without a reason, fails (EN-061).
 
-| Folder                    | Modules | Why it stays whole                                                                                                                          |
-| ------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `playground/user-actions` | 24      | one theme, what a user does to the page; splitting it into reading, typing and clicking would split by kind of code, which ADR-0043 refuses |
+| Folder | Modules | Why it stays whole |
+| --- | --- | --- |
+| `playground/user-actions` | 28 | one theme, what a user does to the page; splitting it into reading, typing and clicking would split by kind of code, which ADR-0043 refuses |

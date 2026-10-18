@@ -21,11 +21,11 @@ Asked by the Product Owner on 2026-10-09, when settling Q20: one user unit is on
 
 ## Product Owner test
 
-| Step | Do                            | You should see                                                           |
-| ---- | ----------------------------- | ------------------------------------------------------------------------ |
-| 1    | Type width 250000             | the input shows 100000; the shape is drawn 100 000 wide (off the canvas) |
-| 2    | Type width 100000, then 99999 | each value is kept as typed                                              |
-| 3    | Type radius 500000            | the input shows 100000                                                   |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | Type width 250000 | the input shows 100000; the shape is drawn 100 000 wide (off the canvas) |
+| 2 | Type width 100000, then 99999 | each value is kept as typed |
+| 3 | Type radius 500000 | the input shows 100000 |
 
 ## Tasks
 

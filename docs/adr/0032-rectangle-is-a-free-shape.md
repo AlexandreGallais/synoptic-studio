@@ -8,9 +8,9 @@ F01 stored a rectangle as `{ width, height, radii }` and derived its four vertic
 
 Options for the model of a free shape:
 
-| Option                                                | Width 0, then back                 | A typed point    |
-| ----------------------------------------------------- | ---------------------------------- | ---------------- |
-| Drawn points only; resizing rewrites them             | lost (all on one line)             | stored as typed  |
+| Option | Width 0, then back | A typed point |
+| --- | --- | --- |
+| Drawn points only; resizing rewrites them | lost (all on one line) | stored as typed |
 | Stored points in their own box, plus width and height | exact (`DERIV-free-shape-stretch`) | decided with F08 |
 
 ## Decision

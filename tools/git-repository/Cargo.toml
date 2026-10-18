@@ -1,0 +1,15 @@
+[package]
+name = "git-repository"
+version = "0.1.0"
+edition.workspace = true
+description = "A checkout's Git folders read from the files Git writes, and a Git command's output (NAM-002)"
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+
+[dev-dependencies]
+test-support = { path = "../test-support" }
+
+[lints]
+workspace = true

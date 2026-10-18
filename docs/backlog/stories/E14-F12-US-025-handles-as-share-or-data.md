@@ -28,11 +28,11 @@ One task = one commit, referenced as `US-025.Tn`.
 
 ## Decisions during the story
 
-| Decision                                                                                          | Reason                                                                                                                               |
-| ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| shares are a fifth way of `HANDLE_WAYS`, typed in the same four fields                            | one set of fields for every way                                                                                                      |
-| a paste applies to the side after the point selected                                              | the side has a start and an end: the `C`'s end must be the next point, the `cubic-bezier()` diagonal runs from the point to the next |
-| a pasted curve switches both points to handles mode, each point's other handle following its mode | as typing a handle; the criterion asks it                                                                                            |
+| Decision | Reason |
+| --- | --- |
+| shares are a fifth way of `HANDLE_WAYS`, typed in the same four fields | one set of fields for every way |
+| a paste applies to the side after the point selected | the side has a start and an end: the `C`'s end must be the next point, the `cubic-bezier()` diagonal runs from the point to the next |
+| a pasted curve switches both points to handles mode, each point's other handle following its mode | as typing a handle; the criterion asks it |
 
 ## Product Owner test
 

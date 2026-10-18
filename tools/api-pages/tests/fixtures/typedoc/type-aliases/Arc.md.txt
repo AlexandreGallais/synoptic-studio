@@ -1,0 +1,72 @@
+[editor](../index.md) / Arc
+
+# Type Alias: Arc
+
+> **Arc** = `object`
+
+Defined in: geometry/contour/arc.ts:9
+
+Circular arc of an evaluated contour, the fillet of one corner (ADR-0001, `DERIV-fillet-arc`).
+
+`filletArc` returns a degenerate arc (start = end) for a corner without fillet; such arcs never
+appear in a rounded contour.
+
+## Properties
+
+### center
+
+> `readonly` **center**: [`Point`](Point.md)
+
+Defined in: geometry/contour/arc.ts:17
+
+Center of the circle, kept for hit-testing and snapping.
+
+***
+
+### end
+
+> `readonly` **end**: [`Point`](Point.md)
+
+Defined in: geometry/contour/arc.ts:15
+
+Tangent point on the outgoing edge, where the arc ends.
+
+***
+
+### kind
+
+> `readonly` **kind**: `"arc"`
+
+Defined in: geometry/contour/arc.ts:11
+
+Discriminant of a contour piece.
+
+***
+
+### positive
+
+> `readonly` **positive**: `boolean`
+
+Defined in: geometry/contour/arc.ts:21
+
+Whether the arc turns in the positive direction of angles: clockwise on screen (y down).
+
+***
+
+### radius
+
+> `readonly` **radius**: `number`
+
+Defined in: geometry/contour/arc.ts:19
+
+Radius, >= 0; an arc of a rounded contour always has a length (`hasLength`).
+
+***
+
+### start
+
+> `readonly` **start**: [`Point`](Point.md)
+
+Defined in: geometry/contour/arc.ts:13
+
+Tangent point on the incoming edge, where the arc starts.

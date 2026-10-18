@@ -21,7 +21,7 @@ const DECIMALS = 9;
 const HEIGHT_3 = 50 * Math.sqrt(3);
 
 describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
-  it("[F02.AC1] fits a triangle in 100 × 100: width reached, centered vertically", () => {
+  it("[F02.AC1] [F07.AC1] fits a triangle in 100 × 100, centered on both axes: width reached", () => {
     // s = 100/√3, height 1.5 s = 86.60254, top margin (100 − 86.60254)/2 = 6.69873.
     const margin = (100 - HEIGHT_3) / 2;
 
@@ -230,31 +230,6 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
 });
 
 describe("regularPolygonContour (anchored, F07)", () => {
-  it("[F07.AC1] draws F02's triangle when centered on both axes", () => {
-    // Top margin (100 − 86.60254)/2 = 6.69873, as F02.
-    const margin = (100 - HEIGHT_3) / 2;
-
-    expectPoints(
-      regularPolygonContour({
-        angle: 0,
-        x: 0,
-        y: 0,
-        anchor: CENTER,
-        stretched: false,
-        corners: 3,
-        height: 100,
-        radii: [0, 0, 0],
-        width: 100,
-      }),
-      [
-        { x: 100, y: 100 - margin },
-        { x: 0, y: 100 - margin },
-        { x: 50, y: margin },
-      ],
-      DECIMALS,
-    );
-  });
-
   it("[F07.AC2] puts the triangle's base on the bottom of 100 × 100: apex at 13.39746", () => {
     // Room 100 − 86.60254 = 13.39746, all of it above the triangle.
     const anchor = { horizontal: "mid", vertical: "max" } as const;

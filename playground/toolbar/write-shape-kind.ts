@@ -6,6 +6,7 @@ const TITLES = new Map([
   ["polygon", "Polygon"],
   ["rectangle", "Rectangle"],
   ["round", "Round shape"],
+  ["text", "Text"],
 ]);
 
 /**
@@ -26,6 +27,7 @@ export function writeShapeKind(document: Document): void {
 
   selectElement(document, "tool-polygon").setAttribute("aria-pressed", String(kind === "polygon"));
   selectElement(document, "tool-round").setAttribute("aria-pressed", String(kind === "round"));
+  selectElement(document, "tool-text").setAttribute("aria-pressed", String(kind === "text"));
   selectElement(document, "polygon-options").hidden = kind !== "polygon";
   writeText(document, "shape-title", TITLES.get(kind) ?? kind);
 }

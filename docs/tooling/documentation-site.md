@@ -2,37 +2,36 @@
 
 ## Stack
 
-- **VitePress** (`REF-VITEPRESS`): the `docs/` folder is the site. `npm run docs:dev` serves it, `npm run docs:build` builds it in `docs/.vitepress/dist/`.
-- **Diagrams**: a `mermaid` code block is drawn in the browser by the site's theme (`docs/.vitepress/theme/`), loaded with the page; GitHub draws the same block natively (`REF-MERMAID`, `REF-GH-DIAGRAMS`).
-- **TypeDoc** + `typedoc-plugin-markdown` + `typedoc-vitepress-theme` (`REF-TYPEDOC-MARKDOWN`): one Markdown page per exported symbol of `src/index.ts`, generated in `docs/api/` (not committed) with its sidebar. Each page shows the TSDoc: description, formula, `@kind`, parameters, `@see`. Types link to their pages, so one navigates from function to function.
-- TypeDoc runs with `treatWarningsAsErrors` and validation of undocumented or unexported symbols: an incomplete TSDoc fails the docs build.
+- **VitePress** (`REF-VITEPRESS`): the `docs/` folder is the site; `npm run docs:dev` serves it, `npm run docs:build` builds it into `docs/.vitepress/dist/`. A dead link fails the build.
+- **Diagrams**: a `mermaid` code block, drawn in the browser by the site's theme (`docs/.vitepress/theme/`) and natively by GitHub (`REF-MERMAID`, `REF-GH-DIAGRAMS`).
+- **API pages**: `npm run docs:api` runs `tools/api-pages` (Oxc's parser), which writes one page per exported function, type alias and constant of `src/index.ts` into `docs/api/` (not committed), with its index and the sidebar file `api-sidebar.json`. Each page shows the signature as written, its file and line, the TSDoc summary, its parameters, return value, properties and block tags (`@kind`, `@see`); types link to their pages. The pages are those TypeDoc's Markdown plugin wrote (`REF-TYPEDOC-MARKDOWN`), except that a type is shown as written rather than as the compiler resolves it.
+- **API checks**: the generator fails the docs build, naming file and line, on an export or a property without a TSDoc block, an `@param` naming no parameter, a `{@link}` naming nothing exported, a name of the library reachable from a public signature but not exported, and an annotation it cannot read (write the constant's type). The public API is documented or the build stops.
 
 ## Playground
 
-The playground is built by `npm run playground:build` (`vite build --mode playground`) into `docs/.vitepress/dist/playground/` and published with the site: it shows the state of `main` at the last release. `check:all` builds it too, so a broken playground fails the pre-push hook and the CI into `main`.
+`npm run playground:build` builds the playground into `docs/.vitepress/dist/playground/`, published with the site: it shows `main` at the last release. `check:all` builds it whenever the site is built ([lanes](./commands.md#the-lanes-of-the-full-check)), so a broken playground fails the push.
 
 ## Layout
 
-| Folder               | Section of the site |
-| -------------------- | ------------------- |
-| `docs/index.md`      | home                |
-| `docs/domain/`       | Domain              |
-| `docs/adr/`          | Decisions           |
-| `docs/conventions/`  | Conventions         |
-| `docs/tooling/`      | Tooling             |
-| `docs/derivations/`  | Derivations         |
-| `docs/research/`     | Research            |
-| `docs/references.md` | References          |
-| `docs/api/`          | API (generated)     |
+| Folder | Section of the site |
+| --- | --- |
+| `docs/index.md` | home |
+| `docs/domain/` | Domain |
+| `docs/adr/` | Decisions |
+| `docs/conventions/` | Conventions |
+| `docs/tooling/` | Tooling |
+| `docs/derivations/` | Derivations |
+| `docs/research/` | Research |
+| `docs/references.md` | References |
+| `docs/api/` | API (generated) |
 
-Sidebar entries are built from the Markdown files of each folder (title = first `#` heading); `README.md` files are served as the folder's index. Dead links fail the build.
+The sidebar is built from each folder's Markdown files, titled by their first `#` heading; a `README.md` is its folder's index.
 
 ## Writing pages
 
-- English, Markdown, one `#` title per page.
-- Link with relative Markdown links (`[ADR-0011](../adr/0011-function-kinds.md)`) so that VitePress checks them.
-- Never write double curly braces in a page, even in inline code: VitePress evaluates them as a Vue expression. Use a fenced code block or wrap the text in `<span v-pre>`.
+- Link with relative Markdown links (`[ADR-0011](../adr/0011-function-kinds.md)`), so that VitePress checks them.
+- Never write double curly braces, even in inline code: VitePress evaluates them as a Vue expression. Use a fenced code block or `<span v-pre>`.
 
 ## PDF
 
-Neither VitePress nor Docusaurus exports PDF natively; both rely on community tools (`vitepress-export-pdf`, last published in 2023 as a beta). This is not a reason to switch to Docusaurus. PDF export is **not set up yet**: when needed, the options are a maintained VitePress PDF plugin, or printing the built site with a headless browser. Decision to take then, through an ADR.
+Not set up: neither VitePress nor Docusaurus exports PDF natively. When it is needed, an ADR chooses between a maintained VitePress PDF plugin and printing the built site with a headless browser.

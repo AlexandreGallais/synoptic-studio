@@ -5,14 +5,14 @@
 
 ## Per story
 
-| Story  | Found                                                                                                                                 | Source                                                                                                                                    |
-| ------ | ------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| EN-008 | the nth roots of unity are the vertices of a regular n-gon on the unit circle; a vertex at angle `α` is `(cos α, sin α)`              | `REF-MATHWORLD-ROOT-OF-UNITY`, `REF-MATHWORLD-EULER-FORMULA`, `REF-OPENSTAX-UNIT-CIRCLE`                                                  |
-| EN-008 | flat base, decreasing angles for clockwise on screen, starting vertex by its index `⌊n/2⌋` (no float comparison)                      | derived: `DERIV-regular-polygon-fit` steps 1–2 (Q11, Q18)                                                                                 |
-| US-005 | unit bounding box, uniform scale, centering and y flip; a size of 0 collapses to the center                                           | `DERIV-regular-polygon-fit` steps 3–5                                                                                                     |
-| US-006 | at the maximal radius each fillet is an arc of the incircle, radius `½ a cot(π/n) = R cos(π/n)`                                       | `DERIV-regular-polygon-fit` step 6, `REF-MATHWORLD-REGULAR-POLYGON` (3), (4), `REF-MATHWORLD-INCIRCLE`, `REF-EUCLID-I47`, `REF-EUCLID-I8` |
-| US-006 | the F01 clamp and fillet need no change: they already work on any point, the polygon's vertices are derived and fractional (ADR-0003) | `src/geometry/` (read); `Corner.point` TSDoc and `shapes.md` §1 still say "integer coordinates": to correct                               |
-| US-007 | Inkscape's tool: a polygon mode with a "Corners" field; its rounding uses curves and is not kept (ADR-0001)                           | `REF-INKSCAPE-POLYGON` (now verified)                                                                                                     |
+| Story | Found | Source |
+| --- | --- | --- |
+| EN-008 | the nth roots of unity are the vertices of a regular n-gon on the unit circle; a vertex at angle `α` is `(cos α, sin α)` | `REF-MATHWORLD-ROOT-OF-UNITY`, `REF-MATHWORLD-EULER-FORMULA`, `REF-OPENSTAX-UNIT-CIRCLE` |
+| EN-008 | flat base, decreasing angles for clockwise on screen, starting vertex by its index `⌊n/2⌋` (no float comparison) | derived: `DERIV-regular-polygon-fit` steps 1–2 (Q11, Q18) |
+| US-005 | unit bounding box, uniform scale, centering and y flip; a size of 0 collapses to the center | `DERIV-regular-polygon-fit` steps 3–5 |
+| US-006 | at the maximal radius each fillet is an arc of the incircle, radius `½ a cot(π/n) = R cos(π/n)` | `DERIV-regular-polygon-fit` step 6, `REF-MATHWORLD-REGULAR-POLYGON` (3), (4), `REF-MATHWORLD-INCIRCLE`, `REF-EUCLID-I47`, `REF-EUCLID-I8` |
+| US-006 | the F01 clamp and fillet need no change: they already work on any point, the polygon's vertices are derived and fractional (ADR-0003) | `src/geometry/` (read); `Corner.point` TSDoc and `shapes.md` §1 still say "integer coordinates": to correct |
+| US-007 | Inkscape's tool: a polygon mode with a "Corners" field; its rounding uses curves and is not kept (ADR-0001) | `REF-INKSCAPE-POLYGON` (now verified) |
 
 ## Q19 — largest number of corners
 

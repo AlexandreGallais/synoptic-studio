@@ -30,14 +30,14 @@ The circle inside a triangle is smaller (radius 28.87), and lower than the middl
 
 ![An octagon with radius 10 in a 100 × 100 box](./images/f02-octagon.svg)
 
-| Term             | In plain words                                                                      |
-| ---------------- | ----------------------------------------------------------------------------------- |
-| Regular polygon  | a shape with equal sides and equal corners; "equilateral" is the word for triangles |
-| Box              | the width × height you type; the polygon fits inside it                             |
-| Flat base        | a horizontal side at the bottom                                                     |
-| Inscribed circle | the largest circle inside the polygon, touching every side in its middle            |
-| Requested radius | the number you type; it is kept in the model                                        |
-| Effective radius | the radius actually drawn; smaller when the shape is too small for the request      |
+| Term | In plain words |
+| --- | --- |
+| Regular polygon | a shape with equal sides and equal corners; "equilateral" is the word for triangles |
+| Box | the width × height you type; the polygon fits inside it |
+| Flat base | a horizontal side at the bottom |
+| Inscribed circle | the largest circle inside the polygon, touching every side in its middle |
+| Requested radius | the number you type; it is kept in the model |
+| Effective radius | the radius actually drawn; smaller when the shape is too small for the request |
 
 ## Sizes
 
@@ -58,8 +58,8 @@ Run `npm run dev` and open `http://localhost:5173/?guide=epic&step=10`: the **Gu
 
 Validated by the Product Owner on 2026-10-09 (`VAL-002`): the polygon works as they meant.
 
-| Idea raised along the way                          | Where it went |
-| -------------------------------------------------- | ------------- |
-| a polygon stretched to its box                     | F06           |
-| the View Editor asks which screen the view targets | E08           |
-| oversized SVG imports flagged and simplified       | E11           |
+| Idea raised along the way | Where it went |
+| --- | --- |
+| a polygon stretched to its box | F06 |
+| the View Editor asks which screen the view targets | E08 |
+| oversized SVG imports flagged and simplified | E11 |

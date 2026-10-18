@@ -33,16 +33,16 @@ One task = one commit, referenced as `EN-025.Tn`.
 
 ## Decisions during the story
 
-| Decision                                                                                                                                                   | Reason                                                                                                                        |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `curveContour` builds the rounded contour of the corners, the corners next to a curve made sharp, then puts a cubic in place of each curved side's segment | with every handle off it is `roundedContour`, piece for piece: E01's drawings cannot change                                   |
-| a side is curved only when a handle is on and not zero                                                                                                     | a zero handle is a straight side (`REF-FIGMA-VECTOR-NETWORK`); a point in handles mode with zero handles draws a sharp corner |
-| `stretchToSize` now calls `stretchedInBox` with the points' box; a free shape passes the box of its curve                                                  | one formula for both; the polygons keep theirs                                                                                |
-| `turnedCorners` takes `CurveCorner`s; a polygon's corners get their handles off first                                                                      | turning must turn the handles, and only free shapes have them                                                                 |
-| the derivative's roots without an EPSILON                                                                                                                  | the stable form drops degenerate roots by itself (`REF-WIKI-QUADRATIC`, math expert's review of SP-011)                       |
-| a handle whose point is off counts as (0, 0) in a cubic, and a split leaves it as stored                                                                   | an off point keeps its vectors but draws none (domain: no value lost when switching)                                          |
-| a split shortens the neighbours' handles; one in mode angle and length goes to mode angle                                                                  | the outline is kept and the handles stay on one line, of different lengths (audit and math expert)                            |
-| a lens — points on one line, sides bulging — stays refused                                                                                                 | a business question for the Product Owner (Q33)                                                                               |
+| Decision | Reason |
+| --- | --- |
+| `curveContour` builds the rounded contour of the corners, the corners next to a curve made sharp, then puts a cubic in place of each curved side's segment | with every handle off it is `roundedContour`, piece for piece: E01's drawings cannot change |
+| a side is curved only when a handle is on and not zero | a zero handle is a straight side (`REF-FIGMA-VECTOR-NETWORK`); a point in handles mode with zero handles draws a sharp corner |
+| `stretchToSize` now calls `stretchedInBox` with the points' box; a free shape passes the box of its curve | one formula for both; the polygons keep theirs |
+| `turnedCorners` takes `CurveCorner`s; a polygon's corners get their handles off first | turning must turn the handles, and only free shapes have them |
+| the derivative's roots without an EPSILON | the stable form drops degenerate roots by itself (`REF-WIKI-QUADRATIC`, math expert's review of SP-011) |
+| a handle whose point is off counts as (0, 0) in a cubic, and a split leaves it as stored | an off point keeps its vectors but draws none (domain: no value lost when switching) |
+| a split shortens the neighbours' handles; one in mode angle and length goes to mode angle | the outline is kept and the handles stay on one line, of different lengths (audit and math expert) |
+| a lens — points on one line, sides bulging — stays refused | a business question for the Product Owner (Q33) |
 
 ## Review
 

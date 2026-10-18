@@ -8,11 +8,11 @@ F01 and F02 store one requested radius for the whole shape (`radius`), given to 
 
 Options considered:
 
-| Option                                                     | One source of truth | "Mixed"            | Corner count changed                  |
-| ---------------------------------------------------------- | ------------------- | ------------------ | ------------------------------------- |
-| `radius` plus optional per-vertex overrides                | no: two places      | derived, two rules | overrides to re-index                 |
-| Four named radii, one per rectangle corner                 | yes                 | derived            | rectangle only, no polygon            |
-| `radii`: one requested radius per vertex, in contour order | yes                 | derived            | kept by vertex number (Product Owner) |
+| Option | One source of truth | "Mixed" | Corner count changed |
+| --- | --- | --- | --- |
+| `radius` plus optional per-vertex overrides | no: two places | derived, two rules | overrides to re-index |
+| Four named radii, one per rectangle corner | yes | derived | rectangle only, no polygon |
+| `radii`: one requested radius per vertex, in contour order | yes | derived | kept by vertex number (Product Owner) |
 
 ## Decision
 

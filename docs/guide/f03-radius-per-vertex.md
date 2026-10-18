@@ -26,12 +26,12 @@ Each corner of a rectangle or a regular polygon can have its own **rounding** (i
 
 **Fewer or more corners.** Each point keeps its rounding by its number: a hexagon with point 1 rounded becomes a pentagon with point 1 still rounded. A point that goes away takes its rounding with it, and a new point is sharp.
 
-| Term             | In plain words                                                                      |
-| ---------------- | ----------------------------------------------------------------------------------- |
-| Point            | a corner of the shape                                                               |
-| Handle           | the round mark drawn on a point in Points mode, to click it                         |
-| Rounding, radius | how much a corner is rounded: the radius of the circle drawn in it                  |
-| Mixed            | the selected points do not all have the same rounding                               |
+| Term | In plain words |
+| --- | --- |
+| Point | a corner of the shape |
+| Handle | the round mark drawn on a point in Points mode, to click it |
+| Rounding, radius | how much a corner is rounded: the radius of the circle drawn in it |
+| Mixed | the selected points do not all have the same rounding |
 | Effective radius | the rounding actually drawn, smaller when the corner is too small for the one asked |
 
 ## Try it
@@ -48,7 +48,7 @@ Run `npm run dev` and open `http://localhost:5173/?guide=epic&step=29`: the **Gu
 
 Validated by the Product Owner on 2026-10-11 (`VAL-004`): point 1 and point 2 show the direction of the contour as intended, and nothing is missing.
 
-| Remark                                                                                                     | Where it went     |
-| ---------------------------------------------------------------------------------------------------------- | ----------------- |
+| Remark | Where it went |
+| --- | --- |
 | a polygon could remember the rounding of removed points: 12 corners, then 3, then 12 again gets the 9 back | open question Q26 |
-| the free contour, with x and y typed in the list of points                                                 | F08               |
+| the free contour, with x and y typed in the list of points | F08 |

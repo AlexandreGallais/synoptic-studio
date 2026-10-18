@@ -21,15 +21,15 @@ As a symbol designer, I want to change the size and the points of a turned shape
 
 Launch the playground with `npm run dev`, then open `http://localhost:5173/?guide=epic&step=1`, type 0 in Radius (sharp corners, round numbers) and 90 in Angle: the 120 × 80 rectangle stands up, "Straight box: x 20, y -20, width 80, height 120". Point 1 (red in Points mode) is the top-left corner before turning; at 90° it is drawn at the top right, at (100, −20).
 
-| Step | Do                                                                         | You should see                                                                                                                                                                              |
-| ---- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1    | Type 200 in Width                                                          | The shape grows along its own top side, which now runs downwards on screen; its corner at (100, −20), top right on screen, does not move; "Straight box: x 20, y -20, width 80, height 200" |
-| 2    | Type 0 in Angle                                                            | A 200 × 80 rectangle, straight: "… width 200, height 80"; turning back loses nothing                                                                                                        |
-| 3    | Type 90 in Angle                                                           | The shape of step 1 again, at the same place                                                                                                                                                |
-| 4    | Click Points, then point 1 in the list                                     | X shows 100 and Y −20: the coordinates of the point as drawn, in the SVG                                                                                                                    |
-| 5    | Type 110 in X, then Enter                                                  | Only point 1 moves, 10 to the right; the three other corners stay exactly where they were                                                                                                   |
-| 6    | Select point 1 alone and press Delete                                      | A triangle of the three other points, which do not move                                                                                                                                     |
-| 7    | Choose Polygon, 3 corners, Angle 30, then Points and Convert to free shape | Nothing moves; the Angle field still says 30                                                                                                                                                |
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | Type 200 in Width | The shape grows along its own top side, which now runs downwards on screen; its corner at (100, −20), top right on screen, does not move; "Straight box: x 20, y -20, width 80, height 200" |
+| 2 | Type 0 in Angle | A 200 × 80 rectangle, straight: "… width 200, height 80"; turning back loses nothing |
+| 3 | Type 90 in Angle | The shape of step 1 again, at the same place |
+| 4 | Click Points, then point 1 in the list | X shows 100 and Y −20: the coordinates of the point as drawn, in the SVG |
+| 5 | Type 110 in X, then Enter | Only point 1 moves, 10 to the right; the three other corners stay exactly where they were |
+| 6 | Select point 1 alone and press Delete | A triangle of the three other points, which do not move |
+| 7 | Choose Polygon, 3 corners, Angle 30, then Points and Convert to free shape | Nothing moves; the Angle field still says 30 |
 
 Look closely: after each edit, the points you did not touch stay where they are drawn; the blue frame (the turned box) follows the shape, its center may move.
 

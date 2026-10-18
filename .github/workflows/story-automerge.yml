@@ -1,9 +1,9 @@
-# Autonomous runs (ADR-0028, ADR-0038, ADR-0045, ADR-0050): merges pull requests labeled
-# `autonomous` — a story into its feature branch (`feature/f01-…`, rebase), or into `develop` (merge
-# commit) a feature validated by the Product Owner from its `feat/val-…` branch, or an epic's
-# naming pass, review or retrospective they validated (`…/nam-…`, `…/rev-…`, `…/ret-…`). Their
-# checks ran locally before the push (pre-push hook, `check:all`): no CI runs on them. Nothing reaches `main` this way: the release is
-# merged by the Product Owner. The agent never merges; removing the label before the merge stops it.
+# Autonomous runs (ADR-0028, ADR-0045, ADR-0086): merges, always by a merge commit, a pull request
+# labeled `autonomous` — a story into its feature branch (`feature/f22-…`), or into `develop` a
+# feature branch or a review (`…/rev-…`, ADR-0086, decision 4). Their checks ran
+# locally before the push (pre-push hook, `check:all`): no CI runs on them. Nothing reaches `main`
+# this way: the Product Owner merges it after each review. The agent never merges; removing the
+# label before the merge stops it.
 name: Story auto-merge
 
 on:
@@ -21,33 +21,36 @@ jobs:
       contains(github.event.pull_request.labels.*.name, 'autonomous')
       && github.event.pull_request.author_association == 'OWNER'
       && (startsWith(github.event.pull_request.base.ref, 'feature/')
-        || (github.event.pull_request.base.ref == 'develop'
-          && (startsWith(github.event.pull_request.head.ref, 'feat/val-')
-            || contains(github.event.pull_request.head.ref, '/nam-')
-            || contains(github.event.pull_request.head.ref, '/rev-')
-            || contains(github.event.pull_request.head.ref, '/ret-'))))
+        || github.event.pull_request.base.ref == 'develop')
       && !github.event.pull_request.draft
     runs-on: ubuntu-latest
     steps:
-      - name: Check the branch is a story allowed in autonomous runs
+      - name: Check the branch is a story or a feature allowed in autonomous runs
         env:
+          BASE: ${{ github.event.pull_request.base.ref }}
           BRANCH: ${{ github.event.pull_request.head.ref }}
         run: |
-          if ! printf '%s' "$BRANCH" | grep -Eq '^[a-z]+/(us|en|sp|chk|aud|val|nam|rev|ret)-[0-9]{3}-'; then
-            echo "Branch $BRANCH is not a US, EN, SP, CHK, AUD, VAL, NAM, REV or RET branch: no auto-merge (ADR-0028, ADR-0045, ADR-0050)."
+          if [ "$BASE" = develop ]; then
+            allowed='^(feature/f[0-9]{2}-|[a-z]+/rev-[0-9]{3}-)'
+            kinds='a feature branch or a REV'
+          else
+            allowed='^[a-z]+/(us|en|sp|chk|aud|val)-[0-9]{3}-'
+            kinds='a US, EN, SP, CHK, AUD or VAL branch'
+          fi
+          if ! printf '%s' "$BRANCH" | grep -Eq "$allowed"; then
+            echo "Branch $BRANCH into $BASE is not $kinds: no auto-merge (ADR-0028, ADR-0045, ADR-0086)."
             exit 1
           fi
-      - name: Merge (rebase)
+      - name: Merge (merge commit)
         env:
-          # Built-in token: merges into a feature branch need no release, hence no personal token.
+          # Built-in token: a merge into a feature branch or develop needs no release, hence no
+          # personal token.
           GH_TOKEN: ${{ github.token }}
           PR_URL: ${{ github.event.pull_request.html_url }}
-          # A story is rebased onto its feature; a feature enters develop by a merge commit (ADR-0038).
-          METHOD: ${{ github.event.pull_request.base.ref == 'develop' && '--merge' || '--rebase' }}
         # GitHub computes the mergeability of a new pull request after a few seconds: retry.
         run: |
           for attempt in 1 2 3 4 5; do
-            gh pr merge "$PR_URL" --auto "$METHOD" && exit 0
+            gh pr merge "$PR_URL" --auto --merge && exit 0
             echo "Attempt $attempt: not mergeable yet."
             sleep 10
           done

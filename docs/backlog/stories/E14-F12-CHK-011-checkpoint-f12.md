@@ -25,14 +25,14 @@ One task = one commit, referenced as `CHK-011.Tn`.
 
 ## Light evolvability check (2026-10-13)
 
-| Question            | Answer                                                                                                                                                                                        |
-| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Size                | 145 modules in `src/` (geometry 63, model 55, math 17, io 6, render 4), 106 in the playground; 968 tests; every folder under 15 modules but the listed `user-actions` (`local/folder-layout`) |
-| Tools               | StrykerJS still waits; the verifier's mutations by hand found survivors in each story of F12, all killed; a CodeQL alert on a script was fixed at the release check                           |
-| Fitness functions   | a property per math and geometry function (F11), the folder layout in the lint; E01's drawings unchanged with every handle off is a test (`curveContour` against `roundedContour`)            |
-| Patterns            | `curveContour` and `roundedContour` share `filletArcs`; the playground's `readOnlySelected` exists twice (`points/`, `handles/`), three lines, kept for now                                   |
-| Agent configuration | `AGENTS.md` and `CLAUDE.md` at 143 lines; the math expert knew only ADR-0001, now ADR-0046 too; waiting loops on subagents are forbidden in the tooling rules                                 |
-| Process             | `/run` is the go-ahead (ADR-0045); each story had an auditor and a verifier, the math expert on the geometry; their findings changed code in every story                                      |
+| Question | Answer |
+| --- | --- |
+| Size | 145 modules in `src/` (geometry 63, model 55, math 17, io 6, render 4), 106 in the playground; 968 tests; every folder under 15 modules but the listed `user-actions` (`local/folder-layout`) |
+| Tools | StrykerJS still waits; the verifier's mutations by hand found survivors in each story of F12, all killed; a CodeQL alert on a script was fixed at the release check |
+| Fitness functions | a property per math and geometry function (F11), the folder layout in the lint; E01's drawings unchanged with every handle off is a test (`curveContour` against `roundedContour`) |
+| Patterns | `curveContour` and `roundedContour` share `filletArcs`; the playground's `readOnlySelected` exists twice (`points/`, `handles/`), three lines, kept for now |
+| Agent configuration | `AGENTS.md` and `CLAUDE.md` at 143 lines; the math expert knew only ADR-0001, now ADR-0046 too; waiting loops on subagents are forbidden in the tooling rules |
+| Process | `/run` is the go-ahead (ADR-0045); each story had an auditor and a verifier, the math expert on the geometry; their findings changed code in every story |
 
 ## Test cards so far
 

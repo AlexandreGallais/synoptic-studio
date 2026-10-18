@@ -1,0 +1,489 @@
+# convert-to-jsdoc-comments: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), then faults planted
+# in copies of files of the tree and cases written for branches, each run by ESLint 10.12.0 at src/a.ts with the project's options;
+# a carriage return written ␍; recorded by EN-083.
+@@@ case 1 (documented invalid)
+
+        // A single line comment
+        function quux () {}
+      
+@@@ findings
+2:1 Line comments should be JSDoc-style.
+@@@ output
+
+        /**
+         * A single line comment
+         */
+        function quux () {}
+      
+@@@ case 2 (documented invalid)
+
+        // A single line comment
+        function quux () {}
+      
+@@@ findings
+2:1 Line comments should be JSDoc-style.
+@@@ output
+
+        /**
+         * A single line comment
+         */
+        function quux () {}
+      
+@@@ case 3 (documented invalid)
+
+        // A single line comment
+        function quux () {}
+      
+@@@ findings
+2:1 Line comments should be JSDoc-style.
+@@@ output
+
+        /**
+         * A single line comment
+         */
+        function quux () {}
+      
+@@@ case 4 (documented invalid)
+
+        // A single line comment
+        function quux () {}
+      
+@@@ findings
+2:1 Line comments should be JSDoc-style.
+@@@ output
+
+        /**
+         * A single line comment
+         */
+        function quux () {}
+      
+@@@ case 5 (documented invalid)
+
+        /* A single line comment */
+        function quux () {}
+      
+@@@ findings
+2:1 Block comments should be JSDoc-style.
+@@@ output
+
+        /**
+         * A single line comment
+         */
+        function quux () {}
+      
+@@@ case 6 (documented invalid)
+
+        /* A single line comment */
+        function quux () {}
+      
+@@@ findings
+2:1 Block comments should be JSDoc-style.
+@@@ output
+
+        /**
+         * A single line comment
+         */
+        function quux () {}
+      
+@@@ case 7 (documented invalid)
+
+        // A single line comment
+        function quux () {}
+      
+@@@ findings
+2:1 Line comments should be JSDoc-style.
+@@@ output
+
+        /**
+         * A single line comment
+         */
+        function quux () {}
+      
+@@@ case 8 (documented invalid)
+
+        // A single line comment
+        function quux () {}
+      
+@@@ findings
+2:1 Line comments should be JSDoc-style.
+@@@ output
+
+        /**
+         * A single line comment
+         */
+        function quux () {}
+      
+@@@ case 9 (documented invalid)
+
+        /* A single line comment */
+        function quux () {}
+      
+@@@ findings
+2:1 Block comments should be JSDoc-style.
+@@@ output
+
+        /**
+         * A single line comment
+         */
+        function quux () {}
+      
+@@@ case 10 (documented invalid)
+
+          // Single line comment
+          function quux() {
+
+          }
+      
+@@@ findings
+2:1 Line comments should be JSDoc-style.
+@@@ output
+
+          /**
+           * Single line comment
+           */
+          function quux() {
+
+          }
+      
+@@@ case 11 (documented invalid)
+
+        /* Entity to represent a user in the system. */
+        @Entity('users', getVal())
+        export class User {
+        }
+      
+@@@ findings
+@@@ case 12 (documented invalid)
+
+        /* A single line comment */ function quux () {}
+      
+@@@ findings
+2:1 Block comments should be JSDoc-style.
+@@@ output
+
+        /**
+         * A single line comment
+         */ function quux () {}
+      
+@@@ case 13 (documented invalid)
+
+        var a = []; // Test comment
+      
+@@@ findings
+2:1 Line comments should be JSDoc-style.
+@@@ output
+
+        /**
+         * Test comment
+         */
+        var a = []; 
+      
+@@@ case 14 (documented invalid)
+
+        var a = []; // Test comment
+      
+@@@ findings
+2:1 Line comments should be JSDoc-style.
+@@@ output
+
+        /**
+         * Test comment
+         */
+        var a = []; 
+      
+@@@ case 15 (documented invalid)
+
+        var a = []; // Test comment
+      
+@@@ findings
+2:1 Line comments should be JSDoc-style.
+@@@ output
+
+        /**
+         * Test comment
+         */
+        var a = []; 
+      
+@@@ case 16 (documented invalid)
+
+        // Test comment
+        var a = [];
+      
+@@@ findings
+@@@ case 17 (documented invalid)
+
+        var a = []; // Test comment
+      
+@@@ findings
+2:1 Line comments should be JSDoc-style.
+@@@ output
+
+        /**
+         * Test comment
+         */
+        var a = []; 
+      
+@@@ case 18 (documented invalid)
+
+        interface B {
+          g: () => string; // Test comment
+        }
+      
+@@@ findings
+3:1 Line comments should be JSDoc-style.
+@@@ output
+
+        interface B {
+          /**
+           * Test comment
+           */
+          g: () => string; 
+        }
+      
+@@@ case 19 (documented invalid)
+
+        class TestClass {
+          public Test: (id: number) => string; // Test comment
+        }
+      
+@@@ findings
+3:1 Line comments should be JSDoc-style.
+@@@ output
+
+        class TestClass {
+          /**
+           * Test comment
+           */
+          public Test: (id: number) => string; 
+        }
+      
+@@@ case 20 (documented invalid)
+
+        var a = []; // Test comment
+      
+@@@ findings
+2:1 Line comments should be JSDoc-style.
+@@@ output
+
+        /**
+         * Test comment
+         */
+        var a = []; 
+      
+@@@ case 21 (documented invalid)
+
+        /*
+         * Seniority levels that participate in distribution, in display
+         * order. `custom` is never a real distribution key. Every test shown in this
+         * modal can recruit each of these levels, so all three are always editable.
+         */
+        const SENIORITY_ORDER = ['senior', 'middle', 'specialist'];
+      
+@@@ findings
+@@@ case 22 (documented invalid)
+
+        // one
+        // two
+        // three
+        type Foo = string;
+      
+@@@ findings
+@@@ case 23 (documented invalid)
+
+        // one
+        // two
+        // three
+        function quux () {}
+      
+@@@ findings
+2:1 Line comments should be JSDoc-style.
+@@@ output
+
+        /**
+         * one
+         * two
+         * three
+         */
+        function quux () {}
+      
+@@@ case 24 (documented invalid)
+
+        // separate paragraph
+
+        // one
+        // two
+        function quux () {}
+      
+@@@ findings
+4:1 Line comments should be JSDoc-style.
+@@@ output
+
+        // separate paragraph
+
+        /**
+         * one
+         * two
+         */
+        function quux () {}
+      
+@@@ case 25 (documented invalid)
+
+        // eslint-disable-next-line no-magic-numbers
+        // one
+        // two
+        function quux () {}
+      
+@@@ findings
+3:1 Line comments should be JSDoc-style.
+@@@ output
+
+        // eslint-disable-next-line no-magic-numbers
+        /**
+         * one
+         * two
+         */
+        function quux () {}
+      
+@@@ case 26 (documented invalid)
+
+        // Matches every compiled file, e.g. dist/**/*.js
+        function quux () {}
+      
+@@@ findings
+2:1 Line comments should be JSDoc-style.
+@@@ case 27 (documented invalid)
+
+        // see the pattern a*/b used by parsers
+        function quux () {}
+      
+@@@ findings
+2:1 Line comments should be JSDoc-style.
+@@@ case 28 (documented invalid)
+
+        // first line
+        // closes */ here
+        function quux () {}
+      
+@@@ findings
+2:1 Line comments should be JSDoc-style.
+@@@ case 29 (documented valid)
+
+        /** A single line comment */
+        function quux () {}
+      
+@@@ findings
+@@@ case 30 (documented valid)
+
+        /** A single line comment */
+        function quux () {}
+      
+@@@ findings
+@@@ case 31 (documented valid)
+
+        /** A single line comment */
+        function quux () {}
+      
+@@@ findings
+@@@ case 32 (documented valid)
+
+        /** A single line comment */
+        function quux () {}
+      
+@@@ findings
+@@@ case 33 (documented valid)
+
+        /* A single line comment */
+        function quux () {}
+      
+@@@ findings
+2:1 Block comments should be JSDoc-style.
+@@@ output
+
+        /**
+         * A single line comment
+         */
+        function quux () {}
+      
+@@@ case 34 (documented valid)
+
+        // A single line comment
+        function quux () {}
+      
+@@@ findings
+2:1 Line comments should be JSDoc-style.
+@@@ output
+
+        /**
+         * A single line comment
+         */
+        function quux () {}
+      
+@@@ case 35 (documented valid)
+
+        // @ts-expect-error
+        function quux () {}
+      
+@@@ findings
+@@@ case 36 (documented valid)
+
+        // @custom-something
+        function quux () {}
+      
+@@@ findings
+2:1 Line comments should be JSDoc-style.
+@@@ output
+
+        /**
+         * @custom-something
+         */
+        function quux () {}
+      
+@@@ case 37 (documented valid)
+
+        // Test comment
+        var a = [];
+      
+@@@ findings
+@@@ case 38 (planted in a copy of a file of the tree)
+/**
+ * Distance from a corner vertex to the tangent points of its fillet arc.
+ *
+ * Formula: s = r · tan(|τ| / 2) = r / tan(θ / 2), τ = turning angle, θ = interior angle.
+ *
+ * @kind geometry
+ * @param radius - fillet radius, >= 0
+ * @param turningAngle - signed turning angle at the vertex in radians, in ]−π, π[
+ * @returns setback along each adjacent edge, 0 for aligned vertices
+ * @see DERIV-fillet-setback
+ */
+export function filletSetback(radius: number, turningAngle: number): number {
+  // Half of an angle.
+  const half = (angle: number): number => angle / 2;
+
+  return radius * Math.tan(Math.abs(turningAngle) / 2);
+}
+
+@@@ findings
+13:1 Line comments should be JSDoc-style.
+@@@ output
+/**
+ * Distance from a corner vertex to the tangent points of its fillet arc.
+ *
+ * Formula: s = r · tan(|τ| / 2) = r / tan(θ / 2), τ = turning angle, θ = interior angle.
+ *
+ * @kind geometry
+ * @param radius - fillet radius, >= 0
+ * @param turningAngle - signed turning angle at the vertex in radians, in ]−π, π[
+ * @returns setback along each adjacent edge, 0 for aligned vertices
+ * @see DERIV-fillet-setback
+ */
+export function filletSetback(radius: number, turningAngle: number): number {
+  /**
+   * Half of an angle.
+   */
+  const half = (angle: number): number => angle / 2;
+
+  return radius * Math.tan(Math.abs(turningAngle) / 2);
+}
+
+@@@ end

@@ -4,17 +4,17 @@ Used by: F12 (SP-012, US-027). A corner in radius mode keeps its rounding when o
 
 ## Notation
 
-| Symbol   | Definition                                                                       |
-| -------- | -------------------------------------------------------------------------------- |
-| `V`      | the corner point                                                                 |
-| `a`      | unit direction of a straight side, from `V` towards its other point              |
-| `B(t)`   | the cubic side written from `V`: `B(0) = V`, `t` in `[0, 1]`                     |
-| `b`      | unit tangent of `B` at `V`                                                       |
-| `⊥`      | the quarter turn `(x, y) ↦ (−y, x)`                                              |
-| `σ`      | `sign(a⊥ · b)`: on which side of the straight side the curve leaves              |
-| `nL`     | `σ a⊥`, unit normal of the straight side, towards the curve                      |
-| `n(t)`   | `−σ unit(B′(t))⊥`, unit normal of the curve, towards the straight side           |
-| `r`      | the fillet radius, `r ≥ 0`                                                       |
+| Symbol | Definition |
+| --- | --- |
+| `V` | the corner point |
+| `a` | unit direction of a straight side, from `V` towards its other point |
+| `B(t)` | the cubic side written from `V`: `B(0) = V`, `t` in `[0, 1]` |
+| `b` | unit tangent of `B` at `V` |
+| `⊥` | the quarter turn `(x, y) ↦ (−y, x)` |
+| `σ` | `sign(a⊥ · b)`: on which side of the straight side the curve leaves |
+| `nL` | `σ a⊥`, unit normal of the straight side, towards the curve |
+| `n(t)` | `−σ unit(B′(t))⊥`, unit normal of the curve, towards the straight side |
+| `r` | the fillet radius, `r ≥ 0` |
 | `θ`, `τ` | the interior angle at `V` between `a` and `b`, and the turning angle `τ = π − θ` |
 
 ## Step 0 — A curve written from the corner
@@ -77,14 +77,14 @@ On the rectangle 120 × 80 with point 3's handles along the diagonal, a radius 6
 
 ## Checks (test cases)
 
-| Case                              | Input                                                                                                                | Expected                                                                                                                           |
-| --------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| straight cubic, handles at thirds | `V` (100, 0), straight side from (0, 0); cubic (100, 0) (100, 50/3) (100, 100/3) (100, 50); `r` 10                   | `t*` 0.2, `Tc` (100, 10), `D` (90, 10), `Tl` (90, 0), `s` 10                                                                       |
-| straight cubic, handle off at `V` | cubic (100, 0) (100, 0) (100, 100/3) (100, 50); `r` 10                                                               | same `Tc`, `D`, `Tl`; `t*` root of `t²(2 − t) = 0.2`, 0.347938                                                                     |
-| equilateral                       | straight cubic at thirds from (100, 0) to (50, 50√3); `r` 10                                                         | `s` = 10√3 = 17.32051, `Tc` (91.33975, 15), `D` (82.67949, 10)                                                                     |
-| quarter circle as a cubic         | `K = 400(√2 − 1)/3`; cubic (0, 0) (0, K) (K − 100, 100) (−100, 100); straight side from (−200, 0); `r` = 100(√2 − 1) | `t*` = ½, `Tc` (50√2 − 100, 50√2), `D` (100√2 − 200, 100√2 − 100)                                                                  |
-| two straight cubics               | from (100, 0) to (0, 0) and to (100, 50), at thirds; `r` 10                                                          | `t_a` 0.1, `t_b` 0.2, `D` (90, 10)                                                                                                 |
-| the Product Owner's rectangle     | 120 × 80, radius 20; point 3 in handles mode, handle after `(−1/√2, 1/√2)`, before its opposite                      | corner 2: `D` (100.15277, 20), `Tc` (120.15232, 19.86518); corner 4: `D` (20, 60.10582), `Tc` (19.90229, 80.10558); both radius 20 |
-| degenerate                        | `σ = 0`; `r` 0; a side of length 0 (its direction only rounding noise: `σ = 0`)                                      | no arc, no `NaN`                                                                                                                   |
+| Case | Input | Expected |
+| --- | --- | --- |
+| straight cubic, handles at thirds | `V` (100, 0), straight side from (0, 0); cubic (100, 0) (100, 50/3) (100, 100/3) (100, 50); `r` 10 | `t*` 0.2, `Tc` (100, 10), `D` (90, 10), `Tl` (90, 0), `s` 10 |
+| straight cubic, handle off at `V` | cubic (100, 0) (100, 0) (100, 100/3) (100, 50); `r` 10 | same `Tc`, `D`, `Tl`; `t*` root of `t²(2 − t) = 0.2`, 0.347938 |
+| equilateral | straight cubic at thirds from (100, 0) to (50, 50√3); `r` 10 | `s` = 10√3 = 17.32051, `Tc` (91.33975, 15), `D` (82.67949, 10) |
+| quarter circle as a cubic | `K = 400(√2 − 1)/3`; cubic (0, 0) (0, K) (K − 100, 100) (−100, 100); straight side from (−200, 0); `r` = 100(√2 − 1) | `t*` = ½, `Tc` (50√2 − 100, 50√2), `D` (100√2 − 200, 100√2 − 100) |
+| two straight cubics | from (100, 0) to (0, 0) and to (100, 50), at thirds; `r` 10 | `t_a` 0.1, `t_b` 0.2, `D` (90, 10) |
+| the Product Owner's rectangle | 120 × 80, radius 20; point 3 in handles mode, handle after `(−1/√2, 1/√2)`, before its opposite | corner 2: `D` (100.15277, 20), `Tc` (120.15232, 19.86518); corner 4: `D` (20, 60.10582), `Tc` (19.90229, 80.10558); both radius 20 |
+| degenerate | `σ = 0`; `r` 0; a side of length 0 (its direction only rounding noise: `σ = 0`) | no arc, no `NaN` |
 
 The rectangle's centres were checked independently: on the line `y = 20`, the point whose distance to 200 000 samples of the curve is 20 has `x` = 100.152770476, as the method.

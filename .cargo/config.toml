@@ -1,0 +1,4 @@
+# Warnings are errors in every build, check and Clippy run, the build cache kept (EN-068,
+# REF-CLIPPY-USAGE).
+[build]
+warnings = "deny"

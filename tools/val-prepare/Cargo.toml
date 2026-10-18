@@ -1,0 +1,13 @@
+[package]
+name = "val-prepare"
+version = "0.1.0"
+edition.workspace = true
+description = "A feature's lines in its epic's checklist, prepared for its validation (EN-056)"
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+tool-use = { path = "../tool-use" }
+
+[lints]
+workspace = true

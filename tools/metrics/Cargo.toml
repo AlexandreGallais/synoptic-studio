@@ -1,0 +1,22 @@
+[package]
+name = "metrics"
+version = "0.1.0"
+edition.workspace = true
+description = "The metrics of the agent's work: the report, the session report, the activity and the watchdog of a background task (EN-107)"
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+calendar = { path = "../calendar" }
+git-repository = { path = "../git-repository" }
+hooks = { path = "../hooks" }
+library = { path = "../library" }
+run-totals = { path = "../run-totals" }
+serde_json.workspace = true
+tool-use = { path = "../tool-use" }
+
+[dev-dependencies]
+test-support = { path = "../test-support" }
+
+[lints]
+workspace = true

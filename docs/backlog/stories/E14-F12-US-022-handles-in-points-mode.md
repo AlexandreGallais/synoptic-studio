@@ -28,12 +28,12 @@ One task = one commit, referenced as `US-022.Tn`.
 
 ## Decisions during the story
 
-| Decision                                                                                    | Reason                                                                                                                           |
-| ------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Decision | Reason |
+| --- | --- |
 | the switch is shown for one point selected of a rectangle or a free shape, not of a polygon | as the point's x and y (F08): a polygon's points are not typed; the rectangle becomes a free shape when its handles change (F09) |
-| handles live in a new playground folder, `handles/`                                         | a panel of its own (ADR-0043); `points/` calls it                                                                                |
-| the handles are drawn in Points mode only, a stem and a square in violet                    | as the points' marks; fills, never a native stroke (US-018)                                                                      |
-| a handle typed as a decimal changes nothing, its field keeps the text                       | as the point's x and y                                                                                                           |
+| handles live in a new playground folder, `handles/` | a panel of its own (ADR-0043); `points/` calls it |
+| the handles are drawn in Points mode only, a stem and a square in violet | as the points' marks; fills, never a native stroke (US-018) |
+| a handle typed as a decimal changes nothing, its field keeps the text | as the point's x and y |
 
 ## Product Owner test
 

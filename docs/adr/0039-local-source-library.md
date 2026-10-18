@@ -1,6 +1,6 @@
 # ADR-0039 — A local library of the sources read: SQLite full-text search behind an MCP server
 
-**Status**: Accepted (Product Owner, RET-001, 2026-10-13). Partly supersedes ADR-0024, point 3 ("no database"), for the pages read online only: the session journal and the transcripts stay as they are.
+**Status**: Accepted (Product Owner, RET-001, 2026-10-13), partly superseded by ADR-0077 (2026-10-18): the file is named by `AGENT_LIBRARY_FILE` (decision 1), and the server is a Rust binary on `rmcp` (decision 4). Partly supersedes ADR-0024, point 3 ("no database"), for the pages read online only: the session journal and the transcripts stay as they are.
 
 ## Context
 
@@ -8,11 +8,11 @@ Every spike and audit read the same documentation pages again (Claude Code, GitH
 
 Options weighed:
 
-| Option                                         | Search                                | Cost                                                                            |
-| ---------------------------------------------- | ------------------------------------- | ------------------------------------------------------------------------------- |
-| Markdown files in a folder, searched with `rg` | exact words, no ranking               | the agent reads whole files: many tokens                                        |
-| SQLite with FTS5 (full text, BM25 ranking)     | words, stemmed, ranked, with snippets | built into Node.js (`node:sqlite`): no dependency                               |
-| A vector database (embeddings, the "matrices") | by meaning                            | needs an embedding model: a runtime service or a large dependency, offline lost |
+| Option | Search | Cost |
+| --- | --- | --- |
+| Markdown files in a folder, searched with `rg` | exact words, no ranking | the agent reads whole files: many tokens |
+| SQLite with FTS5 (full text, BM25 ranking) | words, stemmed, ranked, with snippets | built into Node.js (`node:sqlite`): no dependency |
+| A vector database (embeddings, the "matrices") | by meaning | needs an embedding model: a runtime service or a large dependency, offline lost |
 
 Sources read: FTS5 ranks by BM25, "the better the match, the numerically smaller the value", and returns snippets; the porter tokenizer matches word forms (`REF-SQLITE-FTS5`). Node.js 24 ships SQLite as `node:sqlite` with `DatabaseSync`, without a flag (`REF-NODE-SQLITE`). An MCP server over stdio is a process exchanging newline-delimited JSON-RPC messages; tools are listed by `tools/list` and run by `tools/call` (`REF-MCP-TRANSPORTS`, `REF-MCP-TOOLS`, `REF-MCP-LIFECYCLE`); a project declares its servers in `.mcp.json` (`REF-CC-MCP`).
 

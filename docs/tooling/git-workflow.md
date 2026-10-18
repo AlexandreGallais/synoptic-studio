@@ -2,59 +2,61 @@
 
 ## Branches and pull requests
 
-Git-flow without release branches (ADR-0038, `REF-GITFLOW`):
+Git-flow with a merge commit for every merge (ADR-0072, ADR-0086, `REF-GITFLOW`): each branch holds one kind of work, so that what reaches `main` has been through a feature's validation and a review, and the graph shows a small bubble per story on its feature's line and a big bubble per feature on `develop`.
 
-| Branch                      | Holds                                                     | Receives                                                                                   | Checked by                            |
-| --------------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------- |
-| `main`                      | released versions only                                    | pull requests from `develop` (merged by the Product Owner) and release-please's; no push   | the CI of the pull request (`ci.yml`) |
-| `develop`                   | the integration branch: validated features, tooling, docs | direct pushes of the agent (tooling, docs, backlog), feature pull requests (Product Owner) | local Git hooks                       |
-| `feature/f<nn>-<topic>`     | one feature while it is built (ADR-0028)                  | story pull requests (Product Owner, or GitHub in an autonomous run)                        | local Git hooks                       |
-| `<type>/<story-id>-<topic>` | one story, one commit per task                            | the agent's commits                                                                        | local Git hooks                       |
+| Branch | Holds | Receives | Checked by |
+| --- | --- | --- | --- |
+| `main` | the reviewed work | the pull request `develop` → `main` after each review, merged by the Product Owner; no push | the CI of the pull request (`ci.yml`) |
+| `develop` | validated features, reviews, tooling, docs | validated features; each review's `REV`; the agent's pushes between features | local Git hooks |
+| `feature/f<nn>-<topic>` | one feature while it is built, deleted after its merge | its stories' pull requests | local Git hooks |
+| `<type>/<story-id>-<topic>` | one story, one commit per task | the agent's commits | local Git hooks |
 
-- **One branch = one feature**: `feature/f<nn>-<topic>`, created from the up-to-date `develop` when the feature starts, merged into `develop` by the Product Owner at the feature's validation, then deleted.
-- **One branch = one story**: `<type>/<story-id>-<topic>`, e.g. `feat/us-004-rectangle-contour`, created from the up-to-date feature branch. The type is the Conventional Commits type of the story's main change.
-- **One commit = one task** of the story, with the task ID in a footer (`Refs: US-004.T2`).
-- When the story's Definition of Done is met, Claude Code pushes the branch (the pre-push hook runs `check:all`) and opens a pull request **into the feature branch** (template `.github/pull_request_template.md`). No CI runs on it and nobody waits for one. Merge: **rebase merge** — by the Product Owner, or, in an authorized autonomous run, by GitHub as soon as the pull request is labeled `autonomous` (`story-automerge.yml`, ADR-0028).
-- At the feature's validation (`VAL`), Claude Code does the validation work on a `VAL` branch made from the feature branch, and opens **one feature pull request** from that branch into `develop`; the Product Owner merges it with a **merge commit** (git-flow's `--no-ff`: the feature stays visible as one bridge in the history, `REF-GITFLOW`).
-- **A release**: Claude Code opens a pull request from `develop` into `main`, usually right after a feature pull request is merged. The CI runs on it (about 2 minutes); the Product Owner merges it with a **merge commit**, the only method `main` allows: a rebase would copy the commits under new SHAs and `develop` would no longer be an ancestor of `main` (`REF-GH-MERGE-METHODS`). release-please then opens its release pull request, which merges itself.
-- **After a release**, Claude Code brings `develop` up to `main`: `git switch develop && git pull && git merge --ff-only origin/main && git push` (a plain `git merge origin/main` if `develop` moved meanwhile).
-- No long-lived branch other than `main`, `develop` and the current feature's.
-- Branch names are checked by `validate-branch-name` (pattern in `.validate-branch-namerc.json`): `main`, `develop`, `feature/f<nn>-<kebab-case>`, `<type>/<kebab-case>`, plus the bots' `dependabot/…` and `release-please--…`.
-
-How the history reads (ADR-0038): stories line up on their feature, each feature joins `develop` by a merge commit, each release joins `main` by another, and `develop` catches up with the release commit.
+- **A story** gets its branch and worktree from `target/release/worktree-new <ID>`, made from its feature branch on GitHub (a `REV`'s from `origin/develop`); the type is the Conventional Commits type of its main change. Each task is one commit, its id in a footer (`Refs: US-004.T2`). Once its Definition of Done is met, it goes into the feature branch by a **merge commit**: in an autonomous run `npm run story:finish` pushes, opens the pull request labelled `autonomous`, waits for GitHub's merge and cleans up; outside a run the agent opens the pull request and the Product Owner merges it. No CI runs on it: the pre-push hook already ran `check:all`. One story at a time: no two story branches are open at once.
+- **A feature** joins `develop` from its feature branch once the Product Owner said the validation is done (label `autonomous`), by a **merge commit**, so that it stays visible as one bubble in the history (`--no-ff`, `REF-GITFLOW`); the feature branch is then deleted, its name staying in the merge commit. It is never rebased: `develop` enters it by a merge.
+- **A review** is held at each return of the Product Owner, once or twice a day: a feature under way is finished first; then a `REV` story from `develop` holds the review of the features finished since the last merge into `main`, the naming pass over the code changed since then, the tool incident cards fixed, the method's improvements and the docs, and joins `develop` by a merge commit. The agent then opens `develop` → `main`, its body the features' texts for the release; the CI runs, and the Product Owner merges it by a **merge commit**, the only method `main` allows: a rebase would copy the commits under new hashes (`REF-GH-MERGE-METHODS`). The push to `main` deploys the site and makes no release.
+- **A release** is a button: the Product Owner runs `release.yml` on `main` from GitHub's Actions tab, and `release publish` computes the version from the last tag and the commits since, tags `main`'s head and makes the GitHub release; nothing is committed ([releases](./releases.md)).
+- No long-lived branch other than `main`, `develop` and the current feature's. The pre-push hook and the CI check the names by one pattern, `BRANCH_PATTERN` in `tools/git-hooks/src/branch.rs` (`git-hooks branch`); a release branch `release/x.y.z`, of the flow before ADR-0086, and the bot's `dependabot/…` pass.
 
 ```mermaid
 gitGraph
-  commit id: "v0.1.0"
+  commit id: "v0.2.0"
   branch develop
   checkout develop
-  commit id: "docs"
-  branch feature/f14-curves
-  checkout feature/f14-curves
-  commit id: "US-022.T1"
-  commit id: "US-022.T2"
-  commit id: "EN-019.T1"
+  branch feature/f22-release-by-a-button
+  checkout feature/f22-release-by-a-button
+  branch chore/en-122-topic
+  checkout chore/en-122-topic
+  commit id: "EN-122.T1"
+  commit id: "EN-122.T2"
+  checkout feature/f22-release-by-a-button
+  merge chore/en-122-topic id: "EN-122 merged"
+  branch feat/val-023-validate
+  checkout feat/val-023-validate
+  commit id: "VAL-023 done"
+  checkout feature/f22-release-by-a-button
+  merge feat/val-023-validate id: "VAL-023 merged"
   checkout develop
-  merge feature/f14-curves id: "F14 merged"
+  merge feature/f22-release-by-a-button id: "F22 merged"
+  branch docs/rev-006-review
+  checkout docs/rev-006-review
+  commit id: "REV-006"
+  checkout develop
+  merge docs/rev-006-review id: "REV-006 merged"
   checkout main
-  merge develop id: "release" tag: "v0.2.0"
-  checkout develop
-  merge main id: "catch up"
+  merge develop id: "reviewed"
 ```
 
 ## After a merge
 
-```sh
-git switch feature/f<nn>-<topic>   # or develop, after the feature pull request
-git pull --prune
-git branch -d <story-branch>
-```
+`story:finish` removes its story's worktree and branches itself. After any other merge — a feature, a review, a story the Product Owner merged — `target/release/branches-clean` deletes the merged or gone local branches with their worktrees and prunes the remote references; `git branch -a` then shows only `main` and `develop`.
 
-The remote branch is deleted by GitHub on merge; `fetch.prune` keeps local references clean.
+## Logs merged by union
+
+The append-only logs — `docs/process/journal.md`, `improvements.md`, `feedback.md` — carry `merge=union` in `.gitattributes` (ADR-0065): two branches that each add a row merge without conflict markers (`REF-GIT-UNION`). Union fits a file whose lines are independent; never use it for a table kept in order nor a file with front matter, where a merged line can break the whole. A row added twice the same way survives twice: `tests/logs.test.ts` names it, and checks each row's date. Whether GitHub's own merge applies `merge=union` is untried (AUD-020): until a pull request shows it, a conflict on a log at GitHub's merge is resolved by hand, and the first one is logged in the [improvement log](../process/improvements.md).
 
 ## Commit messages
 
-Conventional Commits (`REF-CONVENTIONAL-COMMITS`), checked by commitlint on every commit and in the CI of the pull requests into `main` (`commitlint.config.ts`):
+Conventional Commits (`REF-CONVENTIONAL-COMMITS`), checked at each commit (`commit-msg`) and in the CI into `main` (`git-hooks commits`) by commitlint 21.2.3's rules with `config-conventional`, ported to Rust (`tools/git-hooks/src/message.rs`, EN-108): the same verdict on every commit of `develop`'s history and on the refused cases of commitlint's own tests. `message.rs` is the list of what passes:
 
 ```text
 <type>(<scope>): <subject in imperative mood>
@@ -64,36 +66,27 @@ Conventional Commits (`REF-CONVENTIONAL-COMMITS`), checked by commitlint on ever
 <footers>
 ```
 
-- Types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `build`, `ci`, `perf`, `style`, `revert`. They drive the version ([releases](./releases.md)).
-- Scopes: one per layer (`math`, `geometry`, `model`, `routing`, `io`, `render`, `interaction`), plus `playground`, `eslint`, `docs`, `adr`, `backlog`, `ci`, `deps`, `tooling`.
-- Header and body lines: 100 characters at most.
-- Breaking change: `feat(model)!: …` or a `BREAKING CHANGE:` footer.
+- The type drives the version ([releases](./releases.md)): `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `build`, `ci`, `perf`, `style`, `revert`.
+- The scope is one of the 14 `SCOPES` of `tools/git-hooks/src/message.rs`, the one list: a layer of the library, or an area of the project (`docs`, `backlog`, `tooling`…). A scope removed from it stays in `RETIRED_SCOPES` (`eslint`, EN-085), which the CI's history check accepts in the commits already made with it, and the `commit-msg` hook refuses in a new one (EN-128).
+- The subject does not start with a capital: an id first (`SP-023 adds…`) is sentence case, refused; a quoted part is left out of the test. No final period.
+- Header, body and footer lines: 100 characters at most, a line holding a URL excepted. A breaking change: `feat(model)!: …` or a `BREAKING CHANGE:` footer.
+- A footer is a line starting with a token and `: ` (or ` #`): a body line starting with `word: ` ends the body. A missing blank line before the body or the footer is a warning only.
+- Merges, reverts, `fixup!`, `squash!` and `amend!` commits, versions and Dependabot's are not checked; a release makes no commit (ADR-0086).
+- **On a story branch** (`<type>/<id>-<topic>`, `docs/` excepted), each commit carries `Refs: <ID>.T<n>` or `Closes: <ID>` with the branch's own id; the hook names the footer expected. A feature branch, `develop` and a `docs/` branch are not asked for one.
 
-## Footers: links to the backlog and the docs
+| Footer | Meaning | Example |
+| --- | --- | --- |
+| `Refs:` | the task, story, ADR, domain question or research request the commit relates to | `Refs: US-004.T2, ADR-0007, Q11` |
+| `Closes:` | the story the commit completes | `Closes: US-004` |
+| `BREAKING CHANGE:` | an incompatible API change, described | `BREAKING CHANGE: polygonToPathData takes a Contour` |
+| `Co-Authored-By:` | a co-author | on commits written by Claude Code |
 
-Footers are Git trailers (`Key: value`) after a blank line:
+## Hooks (`.githooks/`)
 
-| Footer             | Meaning                                                                             | Example                                              |
-| ------------------ | ----------------------------------------------------------------------------------- | ---------------------------------------------------- |
-| `Refs:`            | task, story, feature, ADR, domain question, research request this commit relates to | `Refs: US-004.T2, ADR-0007, Q11`                     |
-| `Closes:`          | story completed by this commit (last task of the branch)                            | `Closes: US-004`                                     |
-| `BREAKING CHANGE:` | incompatible API change, described                                                  | `BREAKING CHANGE: polygonToPathData takes a Contour` |
-| `Co-Authored-By:`  | co-author                                                                           | added on commits written by Claude Code              |
+| Hook | Runs |
+| --- | --- |
+| `pre-commit` | `git-hooks pre-commit`, lint-staged's runner ported to Rust (`tools/git-hooks/src/staged.rs`): the formatter, oxlint and the project's linter with `--fix` on staged TypeScript and Markdown, the formatter on the other formats, the secret scan (`target/release/secret-scan`) on every staged file; the fixes staged again, a partly staged file keeping its unstaged lines, everything put back from a backup stash when a command fails. Each command's output is printed only when it fails |
+| `commit-msg` | `git-hooks commit-msg`: the [message](#commit-messages), the comment lines of `core.commentChar` left out, and a story branch's footer; then at a `done` commit the docs of a rule its story changes (`tools/rule-docs`) |
+| `pre-push` | no shared file on a worker's story branch (`tools/shared-files`, ADR-0065), the [branch name](#branches-and-pull-requests) (`git-hooks branch`), `npm run check:all`, then `npm run golden:check` when a golden file is written |
 
-```text
-feat(geometry): add fillet setback
-
-Setback of a corner fillet, d = r / tan(θ/2), with hand-computed tests.
-
-Refs: EN-001.T2, DERIV-local-radius-clamp
-```
-
-## Hooks (`.husky/`)
-
-| Hook         | Runs                                                                                                                                                                     |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `pre-commit` | `lint-staged` (`.lintstagedrc.json`): Prettier + ESLint `--fix` on staged TypeScript and Markdown, Prettier on JSON, HTML, CSS and YAML, secretlint on every staged file |
-| `commit-msg` | commitlint                                                                                                                                                               |
-| `pre-push`   | branch name (`.validate-branch-namerc.json`), `npm run check:all` (check, latest versions, docs and playground builds)                                                   |
-
-Hooks are installed by `npm install` (`prepare` script). Bypassing them (`--no-verify`) is not allowed.
+The hooks are short shell files, tracked, that call the release binaries by their path (`target/release/<binary>`), through `cargo run --release -q -p <crate>` when the binary is missing (`.githooks/tool.sh`). `npm install` installs them once (`prepare`, after the build): `git-hooks install` (`tools/git-hooks`) sets `core.hooksPath` to `.githooks`, relative, so each checkout and each linked worktree runs its own branch's hooks, with nothing written in it (EN-052, EN-108, ADR-0080); `target/release/worktree-new` sets it too when it is not. Hooks are never bypassed (`--no-verify`, `core.hooksPath` changed by hand): a hook that blocks legitimate work is changed, not skipped.

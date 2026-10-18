@@ -1,6 +1,6 @@
 # ADR-0044 — The private records inside the project folder, ignored by Git
 
-**Status**: Accepted (Product Owner, 2026-10-13). Supersedes ADR-0041 decision 1 (the records cloned beside the project); its other decisions stand.
+**Status**: Accepted (Product Owner, 2026-10-13). Supersedes ADR-0041 decision 1 (the records cloned beside the project); its other decisions stand. Superseded by ADR-0081 (the records in a local folder shared by every project, never sent).
 
 ## Context
 

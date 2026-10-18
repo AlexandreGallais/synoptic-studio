@@ -1,0 +1,47 @@
+[editor](../index.md) / bisection
+
+# Function: bisection()
+
+> **bisection**(`isBelow`, `low`, `high`): `number`
+
+Defined in: math/bisection/bisection.ts:20
+
+Bisection: the value of `[low, high]` where a predicate stops being true, the bracket halved
+`BISECTION_STEPS` times, so that the error is at most `2⁻⁶⁰ (high − low)`, or one unit in the
+last place of the result once a double can no longer be halved (about 54 steps for a bracket of 3). The predicate must be
+true below that value and false above it; true everywhere gives `high`, false everywhere `low`,
+within the same error.
+
+## Parameters
+
+### isBelow
+
+(`value`) => `boolean`
+
+whether a value lies below the one sought
+
+### low
+
+`number`
+
+lower end of the bracket
+
+### high
+
+`number`
+
+upper end of the bracket
+
+## Returns
+
+`number`
+
+the middle of the last bracket
+
+## Kind
+
+math
+
+## See
+
+REF-MATHWORLD-BISECTION

@@ -1,6 +1,6 @@
 # ADR-0022 — Property-based tests, weekly link check, mutation tool deferred
 
-**Status**: Accepted
+**Status**: Accepted, decisions 1 and 2. Decision 3 superseded on 2026-10-17 (Product Owner, review of the ADRs, EN-094): mutation testing is done by the project's own tool, `npm run mutate` (EN-058).
 
 ## Context
 

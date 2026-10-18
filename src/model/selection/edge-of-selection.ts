@@ -1,4 +1,4 @@
-import { modulo } from "../../math";
+import { isInIntegerRange, modulo } from "../../math";
 
 /**
  * Whether a number is the one of a point of the shape: a whole number from 0 to `count − 1`.
@@ -10,7 +10,7 @@ import { modulo } from "../../math";
  * @see docs/domain/interaction.md#_3-node-editing
  */
 function isPointOf(point: number, count: number): boolean {
-  return Number.isSafeInteger(point) && point >= 0 && point < count;
+  return isInIntegerRange(point, 0, count - 1);
 }
 
 /**

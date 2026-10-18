@@ -1,4 +1,4 @@
-import { DEGREES_PER_TURN } from "../../math";
+import { DEGREES_PER_TURN, isInIntegerRange } from "../../math";
 
 /**
  * Whether an angle can be stored by a shape: an integer from 0 to 359 (ADR-0035).
@@ -12,5 +12,5 @@ import { DEGREES_PER_TURN } from "../../math";
  * @see docs/domain/shapes.md#rotation-of-shapes
  */
 export function isShapeAngle(angle: number): boolean {
-  return Number.isSafeInteger(angle) && angle >= 0 && angle < DEGREES_PER_TURN;
+  return isInIntegerRange(angle, 0, DEGREES_PER_TURN - 1);
 }

@@ -1,0 +1,13 @@
+export * from "./generic-font-families";
+export * from "./is-font-name";
+export * from "./is-generic-family-name";
+export * from "./is-valid-text";
+export * from "./is-valid-text-box";
+export * from "./is-valid-text-decorations";
+export type * from "./text";
+export type * from "./text-alignment";
+export type * from "./text-case";
+export type * from "./text-direction";
+export * from "./text-options";
+export * from "./text-ranges";
+export type * from "./text-vertical-alignment";

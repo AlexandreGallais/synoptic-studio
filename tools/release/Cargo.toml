@@ -1,0 +1,17 @@
+[package]
+name = "release"
+version = "0.1.0"
+edition.workspace = true
+description = "The release by a button: the features' text, its check, the version from the tags and the GitHub release (EN-112, EN-117)"
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+regex = { workspace = true }
+tool-use = { path = "../tool-use" }
+
+[dev-dependencies]
+test-support = { path = "../test-support" }
+
+[lints]
+workspace = true

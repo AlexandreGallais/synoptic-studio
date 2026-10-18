@@ -20,16 +20,16 @@ The backlog is written **while** the questions go on: each answer lands at once 
 
 ## What to ask
 
-| Topic           | Questions                                                                                                                |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| Vision          | what exists today, what hurts, what the product changes, what it will never do                                           |
-| Users           | who uses it, how expert, on which machine and screen, alone or as a team                                                 |
-| Work            | the work as prescribed, as described, as really done; the exceptions and the degraded modes                              |
-| Objects         | which things the user names, which are kinds of one thing (a rectangle is a free shape), what is stored, what is derived |
-| Rules           | each rule with a numeric example; what happens at zero, at the largest value, when two values conflict                   |
-| Limits          | sizes, counts, speed, files, offline or online                                                                           |
-| Editions        | what is free, what is paid, what stays private                                                                           |
-| Reference tools | which tools the users know (Figma, Inkscape…), what to copy, what to do differently                                      |
+| Topic | Questions |
+| --- | --- |
+| Vision | what exists today, what hurts, what the product changes, what it will never do |
+| Users | who uses it, how expert, on which machine and screen, alone or as a team |
+| Work | the work as prescribed, as described, as really done; the exceptions and the degraded modes |
+| Objects | which things the user names, which are kinds of one thing (a rectangle is a free shape), what is stored, what is derived |
+| Rules | each rule with a numeric example; what happens at zero, at the largest value, when two values conflict |
+| Limits | sizes, counts, speed, files, offline or online |
+| Editions | what is free, what is paid, what stays private |
+| Reference tools | which tools the users know (Figma, Inkscape…), what to copy, what to do differently |
 
 ## How to ask
 
@@ -41,10 +41,10 @@ The backlog is written **while** the questions go on: each answer lands at once 
 
 ## What comes out
 
-| Output                             | Where                                  |
-| ---------------------------------- | -------------------------------------- |
-| vision, users, editions            | `docs/domain/README.md`, `editions.md` |
-| glossary (with the users' words)   | `docs/domain/README.md`                |
-| rules with examples                | `docs/domain/*.md`                     |
-| open questions, numbered           | `docs/domain/README.md`                |
-| epics in the Product Owner's order | `docs/backlog/epics/`                  |
+| Output | Where |
+| --- | --- |
+| vision, users, editions | `docs/domain/README.md`, `editions.md` |
+| glossary (with the users' words) | `docs/domain/README.md` |
+| rules with examples | `docs/domain/*.md` |
+| open questions, numbered | `docs/domain/README.md` |
+| epics in the Product Owner's order | `docs/backlog/epics/` |

@@ -1,6 +1,6 @@
 # ADR-0013 — Prettier next to ESLint, not inside it
 
-**Status**: Accepted
+**Status**: Superseded by ADR-0075 (2026-10-17): oxfmt formats beside oxlint and the project's Rust linter; Prettier and ESLint are removed.
 
 ## Context
 

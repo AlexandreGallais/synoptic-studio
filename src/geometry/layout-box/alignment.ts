@@ -5,4 +5,4 @@ import type { ALIGNMENTS } from "./alignments";
  * smallest coordinate (left or top on screen), `mid` in the middle, `max` at the largest (right
  * or bottom). SVG's `xMin`, `xMid`, `xMax` and `YMin`, `YMid`, `YMax` (`REF-SVG2-COORDS` §8.7).
  */
-export type Alignment = (typeof ALIGNMENTS)[number];
+export type Alignment = Readonly<(typeof ALIGNMENTS)[number]>;

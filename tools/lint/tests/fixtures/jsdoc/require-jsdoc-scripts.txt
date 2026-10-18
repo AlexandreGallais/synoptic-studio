@@ -1,0 +1,2478 @@
+# require-jsdoc: the documented cases of eslint-plugin-jsdoc 65.3.1 (test/rules/assertions), then faults planted
+# in copies of files of the tree and cases written for branches, each run by ESLint 10.12.0 at scripts/a.ts with the project's options;
+# a carriage return written ␍; recorded by EN-083.
+@@@ case 1 (documented invalid)
+
+          /** This is comment */
+          export interface Foo {
+            /** This is comment x2 */
+            tom: string;
+            catchJerry(): boolean;
+          }
+      
+@@@ findings
+@@@ case 2 (documented invalid)
+
+          /** This is comment */
+          export interface Foo {
+            /** This is comment x2 */
+            tom: string;
+            jerry: number;
+          }
+      
+@@@ findings
+@@@ case 3 (documented invalid)
+
+          /** This is comment */
+          export interface Foo {
+            bar(): string;
+          }
+      
+@@@ findings
+@@@ case 4 (documented invalid)
+
+          /** This is comment */
+          export interface Foo {
+            bar: string;
+          }
+      
+@@@ findings
+@@@ case 5 (documented invalid)
+
+      /**
+       * Foo interface documentation.
+       */
+      export interface Foo extends Bar {
+        /**
+         * baz method documentation.
+         */
+        baz(): void;
+
+        meow(): void;
+      }
+      
+@@@ findings
+@@@ case 6 (documented invalid)
+
+function quux (foo) {
+
+}
+@@@ findings
+2:1 Missing JSDoc comment.
+@@@ case 7 (documented invalid)
+
+       /**
+        * @func myFunction
+        */
+       function myFunction() {
+
+       }
+       
+@@@ findings
+@@@ case 8 (documented invalid)
+
+       /**
+        * @func myFunction
+        */
+
+
+       function myFunction() {
+
+       }
+       
+@@@ findings
+7:8 Missing JSDoc comment.
+@@@ case 9 (documented invalid)
+
+       /** @func myFunction */ function myFunction() {
+
+       }
+       
+@@@ findings
+@@@ case 10 (documented invalid)
+
+       function myFunction() {
+
+       }
+       
+@@@ findings
+2:8 Missing JSDoc comment.
+@@@ case 11 (documented invalid)
+
+          export var test = function () {
+
+          };
+      
+@@@ findings
+2:11 Missing JSDoc comment.
+@@@ case 12 (documented invalid)
+
+          function test () {
+
+          }
+          export var test2 = test;
+      
+@@@ findings
+2:11 Missing JSDoc comment.
+5:11 Missing JSDoc comment.
+@@@ case 13 (documented invalid)
+
+          export const test = () => {
+
+          };
+      
+@@@ findings
+2:11 Missing JSDoc comment.
+@@@ case 14 (documented invalid)
+
+          export const test = () => {
+
+          };
+      
+@@@ findings
+2:11 Missing JSDoc comment.
+@@@ case 15 (documented invalid)
+
+          export const test = () => {
+
+          };
+      
+@@@ findings
+2:11 Missing JSDoc comment.
+@@@ case 16 (documented invalid)
+
+          export const test = () => {
+
+          };
+      
+@@@ findings
+2:11 Missing JSDoc comment.
+@@@ case 17 (documented invalid)
+
+          export let test = class {
+
+          };
+      
+@@@ findings
+2:11 Missing JSDoc comment.
+2:29 Missing JSDoc comment.
+@@@ case 18 (documented invalid)
+
+        export default function () {}
+      
+@@@ findings
+2:24 Missing JSDoc comment.
+@@@ case 19 (documented invalid)
+
+        export default () => {}
+      
+@@@ findings
+@@@ case 20 (documented invalid)
+
+      export default (function () {})
+      
+@@@ findings
+@@@ case 21 (documented invalid)
+
+        export default class {}
+      
+@@@ findings
+2:24 Missing JSDoc comment.
+@@@ case 22 (documented invalid)
+
+          function quux (foo) {
+
+          }
+@@@ findings
+2:11 Missing JSDoc comment.
+@@@ case 23 (documented invalid)
+
+        function quux (foo) {
+
+        }
+@@@ findings
+2:9 Missing JSDoc comment.
+@@@ case 24 (documented invalid)
+
+        function quux (foo) {
+
+        }
+@@@ findings
+2:9 Missing JSDoc comment.
+@@@ case 25 (documented invalid)
+
+      function myFunction() {}
+      
+@@@ findings
+2:7 Missing JSDoc comment.
+@@@ case 26 (documented invalid)
+/**
+          * Description for A.
+          */
+         class A {
+            constructor(xs) {
+                 this.a = xs;
+            }
+         }
+@@@ findings
+5:24 Missing JSDoc comment.
+@@@ case 27 (documented invalid)
+
+        class A {
+            /**
+             * Description for constructor.
+             * @param {object[]} xs - xs
+             */
+            constructor(xs) {
+                this.a = xs;
+            }
+        }
+@@@ findings
+2:9 Missing JSDoc comment.
+@@@ case 28 (documented invalid)
+
+        class A extends B {
+            /**
+             * Description for constructor.
+             * @param {object[]} xs - xs
+             */
+            constructor(xs) {
+                this.a = xs;
+            }
+        }
+@@@ findings
+2:9 Missing JSDoc comment.
+@@@ case 29 (documented invalid)
+
+        export class A extends B {
+            /**
+             * Description for constructor.
+             * @param {object[]} xs - xs
+             */
+            constructor(xs) {
+                this.a = xs;
+            }
+        }
+@@@ findings
+2:16 Missing JSDoc comment.
+@@@ case 30 (documented invalid)
+
+        export default class A extends B {
+            /**
+             * Description for constructor.
+             * @param {object[]} xs - xs
+             */
+            constructor(xs) {
+                this.a = xs;
+            }
+        }
+@@@ findings
+2:24 Missing JSDoc comment.
+@@@ case 31 (documented invalid)
+
+      var myFunction = () => {}
+      
+@@@ findings
+2:7 Missing JSDoc comment.
+@@@ case 32 (documented invalid)
+
+      var myFunction = () => () => {}
+      
+@@@ findings
+2:7 Missing JSDoc comment.
+@@@ case 33 (documented invalid)
+
+      var foo = function() {}
+      
+@@@ findings
+2:7 Missing JSDoc comment.
+@@@ case 34 (documented invalid)
+
+      const foo = {bar() {}}
+      
+@@@ findings
+2:7 Missing JSDoc comment.
+@@@ case 35 (documented invalid)
+
+      var foo = {bar: function() {}}
+      
+@@@ findings
+2:7 Missing JSDoc comment.
+@@@ case 36 (documented invalid)
+
+        function foo (abc) {}
+      
+@@@ findings
+2:9 Missing JSDoc comment.
+@@@ case 37 (documented invalid)
+
+        function foo () {
+          return true;
+        }
+      
+@@@ findings
+2:9 Missing JSDoc comment.
+@@@ case 38 (documented invalid)
+
+          module.exports = function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 39 (documented invalid)
+
+          module.exports = function quux () {
+
+          }
+      
+@@@ findings
+@@@ case 40 (documented invalid)
+
+          module.exports = {
+            method: function() {
+
+            }
+          }
+      
+@@@ findings
+@@@ case 41 (documented invalid)
+
+          module.exports = {
+            test: {
+              test2: function() {
+
+              }
+            }
+          }
+      
+@@@ findings
+@@@ case 42 (documented invalid)
+
+          module.exports = {
+            test: {
+              test2: function() {
+
+              }
+            }
+          }
+      
+@@@ findings
+@@@ case 43 (documented invalid)
+
+          const test = module.exports = function () {
+
+          }
+      
+@@@ findings
+2:11 Missing JSDoc comment.
+@@@ case 44 (documented invalid)
+
+          /**
+          *
+          */
+          const test = module.exports = function () {
+
+          }
+
+          test.prototype.method = function() {}
+      
+@@@ findings
+@@@ case 45 (documented invalid)
+
+          const test = function () {
+
+          }
+          module.exports = {
+            test: test
+          }
+      
+@@@ findings
+2:11 Missing JSDoc comment.
+@@@ case 46 (documented invalid)
+
+          const test = () => {
+
+          }
+          module.exports = {
+            test: test
+          }
+      
+@@@ findings
+2:11 Missing JSDoc comment.
+@@@ case 47 (documented invalid)
+
+        class Test {
+            method() {
+
+            }
+        }
+        module.exports = Test;
+      
+@@@ findings
+2:9 Missing JSDoc comment.
+3:19 Missing JSDoc comment.
+@@@ case 48 (documented invalid)
+
+          export default function quux () {
+
+          }
+      
+@@@ findings
+2:26 Missing JSDoc comment.
+@@@ case 49 (documented invalid)
+
+          export default function quux () {
+
+          }
+      
+@@@ findings
+2:26 Missing JSDoc comment.
+@@@ case 50 (documented invalid)
+
+          function quux () {
+
+          }
+          export default quux;
+      
+@@@ findings
+2:11 Missing JSDoc comment.
+@@@ case 51 (documented invalid)
+
+          export function test() {
+
+          }
+      
+@@@ findings
+2:18 Missing JSDoc comment.
+@@@ case 52 (documented invalid)
+
+          export function test() {
+
+          }
+      
+@@@ findings
+2:18 Missing JSDoc comment.
+@@@ case 53 (documented invalid)
+
+          var test = function () {
+
+          }
+          var test2 = 2;
+          export { test, test2 }
+      
+@@@ findings
+2:11 Missing JSDoc comment.
+5:11 Missing JSDoc comment.
+@@@ case 54 (documented invalid)
+
+          var test = function () {
+
+          }
+          export { test as test2 }
+      
+@@@ findings
+2:11 Missing JSDoc comment.
+@@@ case 55 (documented invalid)
+
+         export default class A {
+
+         }
+      
+@@@ findings
+2:25 Missing JSDoc comment.
+@@@ case 56 (documented invalid)
+
+         export default class A {
+
+         }
+      
+@@@ findings
+2:25 Missing JSDoc comment.
+@@@ case 57 (documented invalid)
+
+          var test = function () {
+
+          }
+      
+@@@ findings
+2:11 Missing JSDoc comment.
+@@@ case 58 (documented invalid)
+
+          window.test = function () {
+
+          }
+      
+@@@ findings
+@@@ case 59 (documented invalid)
+
+          function test () {
+
+          }
+      
+@@@ findings
+2:11 Missing JSDoc comment.
+@@@ case 60 (documented invalid)
+
+        module.exports = function() {
+
+        }
+      
+@@@ findings
+@@@ case 61 (documented invalid)
+
+        export function someMethod() {
+
+        }
+      
+@@@ findings
+2:16 Missing JSDoc comment.
+@@@ case 62 (documented invalid)
+
+          const myObject = {
+            myProp: true
+          };
+      
+@@@ findings
+2:11 Missing JSDoc comment.
+@@@ case 63 (documented invalid)
+
+      /**
+       * Foo interface documentation.
+       */
+      export interface Foo extends Bar {
+        /**
+         * baz method documentation.
+         */
+        baz(): void;
+
+        meow(): void;
+      }
+      
+@@@ findings
+@@@ case 64 (documented invalid)
+
+      export default class Test {
+        constructor(a) {
+          this.a = a;
+        }
+      }
+      
+@@@ findings
+2:22 Missing JSDoc comment.
+3:20 Missing JSDoc comment.
+@@@ case 65 (documented invalid)
+
+      export default class Test {
+        constructor(a) {
+          this.a = a;
+        }
+        private abc(a) {
+          this.a = a;
+        }
+      }
+      
+@@@ findings
+2:22 Missing JSDoc comment.
+3:20 Missing JSDoc comment.
+6:20 Missing JSDoc comment.
+@@@ case 66 (documented invalid)
+
+      e = function () {
+      };
+      
+@@@ findings
+@@@ case 67 (documented invalid)
+
+      /**
+       *
+       */
+      export class Class {
+          test = 1;
+
+          foo() {
+              this.test = 2;
+          }
+      }
+      
+@@@ findings
+8:14 Missing JSDoc comment.
+@@@ case 68 (documented invalid)
+
+      class Dog {
+        eat() {
+
+        }
+      }
+      
+@@@ findings
+2:7 Missing JSDoc comment.
+3:12 Missing JSDoc comment.
+@@@ case 69 (documented invalid)
+
+      const hello = name => {
+        document.body.textContent = "Hello, " + name + "!";
+      };
+      
+@@@ findings
+2:7 Missing JSDoc comment.
+@@@ case 70 (documented invalid)
+
+      export const loginSuccessAction = (): BaseActionPayload => ({ type: LOGIN_SUCCESSFUL });
+      
+@@@ findings
+2:7 Missing JSDoc comment.
+@@@ case 71 (documented invalid)
+
+      export type Container = {
+        constants?: ObjByString;
+        enums?: { [key in string]: TypescriptEnum };
+        helpers?: { [key in string]: AnyFunction };
+      };
+      
+@@@ findings
+2:14 Missing JSDoc comment.
+@@@ case 72 (documented invalid)
+
+      class Foo {
+          constructor() {}
+
+          bar() {}
+      }
+      
+@@@ findings
+2:7 Missing JSDoc comment.
+3:22 Missing JSDoc comment.
+5:14 Missing JSDoc comment.
+@@@ case 73 (documented invalid)
+
+      class Example extends React.PureComponent {
+        componentDidMount() {}
+
+        render() {}
+
+        someOtherMethod () {}
+      }
+      
+@@@ findings
+2:7 Missing JSDoc comment.
+3:26 Missing JSDoc comment.
+5:15 Missing JSDoc comment.
+7:25 Missing JSDoc comment.
+@@@ case 74 (documented invalid)
+
+      function foo(arg: boolean): boolean {
+        return arg;
+      }
+
+      function bar(arg: true): true;
+      function bar(arg: false): false;
+      function bar(arg: boolean): boolean {
+        return arg;
+      }
+      
+@@@ findings
+2:7 Missing JSDoc comment.
+8:7 Missing JSDoc comment.
+@@@ case 75 (documented invalid)
+
+      export function foo(arg: boolean): boolean {
+        return arg;
+      }
+
+      export function bar(arg: true): true;
+      export function bar(arg: false): false;
+      export function bar(arg: boolean): boolean {
+        return arg;
+      }
+      
+@@@ findings
+2:14 Missing JSDoc comment.
+8:14 Missing JSDoc comment.
+@@@ case 76 (documented invalid)
+
+      module.exports.foo = (bar) => {
+        return bar + "biz"
+      }
+      
+@@@ findings
+@@@ case 77 (documented invalid)
+
+      class Animal {
+
+        #name: string;
+
+        private species: string;
+
+        public color: string;
+
+        @SomeAnnotation('optionalParameter')
+        tail: boolean;
+      }
+      
+@@@ findings
+2:7 Missing JSDoc comment.
+@@@ case 78 (documented invalid)
+
+      @Entity('users')
+      export class User {}
+      
+@@@ findings
+3:14 Missing JSDoc comment.
+@@@ case 79 (documented invalid)
+
+        /**
+         *
+         */
+        class Foo {
+            constructor() {}
+        }
+      
+@@@ findings
+6:24 Missing JSDoc comment.
+@@@ case 80 (documented invalid)
+
+        /**
+         *
+         */
+        class Foo {
+            constructor(notEmpty) {}
+        }
+      
+@@@ findings
+6:24 Missing JSDoc comment.
+@@@ case 81 (documented invalid)
+
+        /**
+         *
+         */
+        class Foo {
+            constructor() {
+                const notEmpty = true;
+                return notEmpty;
+            }
+        }
+      
+@@@ findings
+6:24 Missing JSDoc comment.
+@@@ case 82 (documented invalid)
+
+          /**
+           *
+           */
+          function quux() {
+
+          }
+      
+@@@ findings
+@@@ case 83 (documented invalid)
+
+      class Test {
+        aFunc() {}
+      }
+      
+@@@ findings
+2:7 Missing JSDoc comment.
+3:14 Missing JSDoc comment.
+@@@ case 84 (documented invalid)
+
+      export enum testEnum {
+        A, B
+      }
+      
+@@@ findings
+@@@ case 85 (documented invalid)
+
+      export interface Test {
+        aFunc: () => void;
+        aVar: string;
+      }
+      
+@@@ findings
+2:14 Missing JSDoc comment.
+@@@ case 86 (documented invalid)
+
+      export type testType = string | number;
+      
+@@@ findings
+2:14 Missing JSDoc comment.
+@@@ case 87 (documented invalid)
+
+      export interface Foo {
+          bar: number;
+          baz: string;
+          quux(): void;
+      }
+      
+@@@ findings
+2:14 Missing JSDoc comment.
+@@@ case 88 (documented invalid)
+
+      export class MyComponentComponent {
+        @Output()
+        public changed = new EventEmitter();
+
+        public test = 'test';
+
+        @Input()
+        public value = new EventEmitter();
+      }
+      
+@@@ findings
+2:14 Missing JSDoc comment.
+@@@ case 89 (documented invalid)
+
+      requestAnimationFrame(draw)
+
+      function bench() {
+      }
+      
+@@@ findings
+4:7 Missing JSDoc comment.
+@@@ case 90 (documented invalid)
+
+        class Foo {
+          set aName (val) {}
+        }
+      
+@@@ findings
+2:9 Missing JSDoc comment.
+3:21 Missing JSDoc comment.
+@@@ case 91 (documented invalid)
+
+        class Foo {
+          get aName () {}
+        }
+      
+@@@ findings
+2:9 Missing JSDoc comment.
+3:21 Missing JSDoc comment.
+@@@ case 92 (documented invalid)
+
+        const obj = {
+          get aName () {},
+        }
+      
+@@@ findings
+2:9 Missing JSDoc comment.
+@@@ case 93 (documented invalid)
+
+      function commandFinished () {
+        return new Promise((resolve) => {
+          client.on('ev', () => {
+            resolve();
+          });
+        });
+      }
+      
+@@@ findings
+2:7 Missing JSDoc comment.
+@@@ case 94 (documented invalid)
+
+      function comment () {
+        return "comment";
+      }
+      
+@@@ findings
+2:7 Missing JSDoc comment.
+@@@ case 95 (documented invalid)
+
+      function comment () {
+        return "comment";
+      }
+      
+@@@ findings
+2:7 Missing JSDoc comment.
+@@@ case 96 (documented invalid)
+
+      function comment () {
+        return "comment";
+      }
+      
+@@@ findings
+2:7 Missing JSDoc comment.
+@@@ case 97 (documented invalid)
+
+      export class InovaAutoCompleteComponent {
+        public disabled = false;
+      }
+      
+@@@ findings
+2:14 Missing JSDoc comment.
+@@@ case 98 (documented invalid)
+
+        export default (arg) => arg;
+      
+@@@ findings
+@@@ case 99 (documented invalid)
+
+      export function outer() {
+          function inner() {
+              console.log('foo');
+          }
+
+          inner();
+      }
+      
+@@@ findings
+2:14 Missing JSDoc comment.
+3:11 Missing JSDoc comment.
+@@@ case 100 (documented invalid)
+
+      export const outer = () => {
+          const inner = () => {
+              console.log('foo');
+          };
+
+          inner();
+      };
+      
+@@@ findings
+2:7 Missing JSDoc comment.
+@@@ case 101 (documented invalid)
+
+      /**
+       *
+       */
+      export class InovaAutoCompleteComponent {
+        public disabled = false;
+      }
+      
+@@@ findings
+@@@ case 102 (documented invalid)
+
+          /**
+          * Some comment.
+          */
+          export class Component {
+              public foo?: number;
+          }
+      
+@@@ findings
+@@@ case 103 (documented invalid)
+
+        /** Alpha of all types */
+        export type Alpha = {
+          one: string;
+          two: number;
+        };
+      
+@@@ findings
+@@@ case 104 (documented invalid)
+
+        export type Alpha = {
+          one: string;
+          two: number;
+        };
+      
+@@@ findings
+2:16 Missing JSDoc comment.
+@@@ case 105 (documented invalid)
+
+         class Utility {
+             /**
+              *
+              */
+             mthd() {
+                 return false;
+             }
+         }
+
+         module.exports = Utility;
+      
+@@@ findings
+2:10 Missing JSDoc comment.
+@@@ case 106 (documented invalid)
+
+        /**
+         *
+         */
+        module.exports = class Utility {
+          mthd() {
+            return false;
+          }
+        };
+      
+@@@ findings
+6:15 Missing JSDoc comment.
+@@@ case 107 (documented invalid)
+
+        function quux () {
+          return 3;
+        }
+
+        function b () {}
+      
+@@@ findings
+2:9 Missing JSDoc comment.
+6:9 Missing JSDoc comment.
+@@@ case 108 (documented invalid)
+
+        function quux () {
+          return 3;
+        }
+
+        var a = {};
+      
+@@@ findings
+2:9 Missing JSDoc comment.
+6:9 Missing JSDoc comment.
+@@@ case 109 (documented invalid)
+
+        function quux () {
+          return 3;
+        }
+
+        var a = {
+          b: 1,
+          c: 2
+        };
+      
+@@@ findings
+2:9 Missing JSDoc comment.
+6:9 Missing JSDoc comment.
+@@@ case 110 (documented invalid)
+
+        class A {
+          setId(newId: number): void {
+            this.id = id;
+          }
+        }
+      
+@@@ findings
+2:9 Missing JSDoc comment.
+3:16 Missing JSDoc comment.
+@@@ case 111 (documented invalid)
+
+        export class MyClass {
+
+          public myPublicProperty: number = 1;
+              /* ^ Missing JSDoc comment. eslint(jsdoc/require-jsdoc) - expected ✅ */
+
+          private myPrivateProp: number = -1;
+              /* ^ Missing JSDoc comment. eslint(jsdoc/require-jsdoc) - unexpected ❌ */
+
+          // ...
+        }
+      
+@@@ findings
+2:16 Missing JSDoc comment.
+@@@ case 112 (documented invalid)
+
+        /**
+         * Command options for the login command
+         */
+        export type LoginOptions = CmdOptions<{
+          username?: string;
+          password?: string;
+        }>;
+      
+@@@ findings
+@@@ case 113 (documented invalid)
+
+        type Props = {
+          variant: string
+        }
+
+        export type { Props as ComponentProps };
+      
+@@@ findings
+2:9 Missing JSDoc comment.
+@@@ case 114 (documented invalid)
+
+        export interface A {
+          a: string;
+        }
+
+        export class B implements A, B {
+          a = 'abc';
+          public f(): void {
+            //
+          }
+        }
+      
+@@@ findings
+2:16 Missing JSDoc comment.
+6:16 Missing JSDoc comment.
+8:19 Missing JSDoc comment.
+@@@ case 115 (documented invalid)
+
+        /**
+         * Test function with param.
+         * @param foo - Test param.
+         */
+        function myFunction(foo: string): void;
+        /**
+         * Test function without param.
+         */
+        function myFunction(): void;
+        function myFunction(foo?: string) {}
+      
+@@@ findings
+@@@ case 116 (documented invalid)
+
+        /**
+         * Test function without param.
+         */
+        function myFunction(): void;
+        /**
+         * Test function with param.
+         * @param foo - Test param.
+         */
+        function myFunction(foo: string): void;
+        function myFunction(foo?: string) {}
+      
+@@@ findings
+@@@ case 117 (documented invalid)
+
+        /**
+         * Test function with param.
+         * @param foo - Test param.
+         */
+        function myFunction(foo: string): void;
+        function myFunction(): void;
+        /**
+         * Function implementation
+         * @param foo
+         */
+        function myFunction(foo?: string) {}
+      
+@@@ findings
+@@@ case 118 (documented invalid)
+
+        /**
+         * Test function with param.
+         * @param foo - Test param.
+         */
+        function myFunction(foo: string): void;
+        function myFunction(): void;
+        function myFunction(foo?: string) {}
+      
+@@@ findings
+@@@ case 119 (documented invalid)
+
+        const foo = autolog(
+            function foo() {
+                log.debug('inside foo', 'this is a test helper function')
+            },
+            { withGovernance: true, withProfiling: true },
+        )
+      
+@@@ findings
+2:9 Missing JSDoc comment.
+@@@ case 120 (documented invalid)
+function quux (foo) {␍
+}
+@@@ findings
+1:1 Missing JSDoc comment.
+@@@ case 121 (documented valid)
+
+      interface FooBar {
+        fooBar: string;
+      }
+    
+@@@ findings
+2:7 Missing JSDoc comment.
+@@@ case 122 (documented valid)
+
+      /** This is comment */
+      interface FooBar {
+        fooBar: string;
+      }
+    
+@@@ findings
+@@@ case 123 (documented valid)
+
+        /** This is comment */
+        export class Foo {
+          someMethod() {
+            interface FooBar {
+              fooBar: string;
+            }
+          }
+        }
+    
+@@@ findings
+4:21 Missing JSDoc comment.
+5:13 Missing JSDoc comment.
+@@@ case 124 (documented valid)
+
+        /** This is comment */
+        function someFunction() {
+          interface FooBar {
+            fooBar: string;
+          }
+        }
+
+    
+@@@ findings
+4:11 Missing JSDoc comment.
+@@@ case 125 (documented valid)
+
+        /** This is comment */
+        export function foo() {
+          interface bar {
+            fooBar: string;
+          }
+        }
+    
+@@@ findings
+4:11 Missing JSDoc comment.
+@@@ case 126 (documented valid)
+
+        /**
+         *
+         */
+    
+@@@ findings
+@@@ case 127 (documented valid)
+
+      var array = [1,2,3];
+      array.forEach(function() {});
+
+      /**
+       * @class MyClass
+       **/
+      function MyClass() {}
+
+      /**
+       Function doing something
+       */
+      function myFunction() {}
+      /**
+       Function doing something
+       */
+      var myFunction = function() {};
+      /**
+       Function doing something
+       */
+      Object.myFunction = function () {};
+      var obj = {
+         /**
+          *  Function doing something
+          **/
+          myFunction: function () {} };
+
+      /**
+       @func myFunction
+       */
+      function myFunction() {}
+      /**
+       @method myFunction
+       */
+      function myFunction() {}
+      /**
+       @function myFunction
+       */
+      function myFunction() {}
+
+      /**
+       @func myFunction
+       */
+      var myFunction = function () {}
+      /**
+       @method myFunction
+       */
+      var myFunction = function () {}
+      /**
+       @function myFunction
+       */
+      var myFunction = function () {}
+
+      /**
+       @func myFunction
+       */
+      Object.myFunction = function() {}
+      /**
+       @method myFunction
+       */
+      Object.myFunction = function() {}
+      /**
+       @function myFunction
+       */
+      Object.myFunction = function() {}
+      (function(){})();
+
+      var object = {
+        /**
+         *  @func myFunction - Some function
+         */
+        myFunction: function() {} }
+      var object = {
+        /**
+         *  @method myFunction - Some function
+         */
+        myFunction: function() {} }
+      var object = {
+        /**
+         *  @function myFunction - Some function
+         */
+        myFunction: function() {} }
+
+      var array = [1,2,3];
+      array.filter(function() {});
+      Object.keys(this.options.rules || {}).forEach(function(name) {}.bind(this));
+      var object = { name: 'key'};
+      Object.keys(object).forEach(function() {})
+    
+@@@ findings
+2:7 Missing JSDoc comment.
+22:7 Missing JSDoc comment.
+68:7 Missing JSDoc comment.
+73:7 Missing JSDoc comment.
+78:7 Missing JSDoc comment.
+84:7 Missing JSDoc comment.
+87:7 Missing JSDoc comment.
+@@@ case 128 (documented valid)
+
+       /**
+        * @func myFunction
+        */
+
+       function myFunction() {
+
+       }
+       
+@@@ findings
+6:8 Missing JSDoc comment.
+@@@ case 129 (documented valid)
+
+     /**
+      * @func myFunction
+      */
+
+
+     function myFunction() {
+
+     }
+     
+@@@ findings
+7:6 Missing JSDoc comment.
+@@@ case 130 (documented valid)
+
+        /** @func myFunction */  function myFunction() {
+
+        }
+   
+@@@ findings
+@@@ case 131 (documented valid)
+
+        /**
+         * @func myFunction
+         */
+
+        function myFunction() {
+
+        }
+    
+@@@ findings
+6:9 Missing JSDoc comment.
+@@@ case 132 (documented valid)
+function myFunction() {}
+@@@ findings
+1:1 Missing JSDoc comment.
+@@@ case 133 (documented valid)
+var myFunction = function() {}
+@@@ findings
+1:1 Missing JSDoc comment.
+@@@ case 134 (documented valid)
+
+      /**
+       * Description for A.
+       */
+      class A {
+          /**
+           * Description for constructor.
+           * @param {object[]} xs - xs
+           */
+          constructor(xs) {
+              this.a = xs;
+          }
+      }
+@@@ findings
+@@@ case 135 (documented valid)
+/**
+        * Description for A.
+        */
+       class App extends Component {
+           /**
+            * Description for constructor.
+            * @param {object[]} xs - xs
+            */
+           constructor(xs) {
+               this.a = xs;
+           }
+       }
+@@@ findings
+@@@ case 136 (documented valid)
+/**
+       * Description for A.
+       */
+      export default class App extends Component {
+          /**
+           * Description for constructor.
+           * @param {object[]} xs - xs
+           */
+          constructor(xs) {
+              this.a = xs;
+          }
+      }
+@@@ findings
+@@@ case 137 (documented valid)
+/**
+         * Description for A.
+         */
+        export class App extends Component {
+            /**
+             * Description for constructor.
+             * @param {object[]} xs - xs
+             */
+            constructor(xs) {
+                this.a = xs;
+            }
+        }
+@@@ findings
+@@@ case 138 (documented valid)
+class A {
+          constructor(xs) {
+              this.a = xs;
+          }
+      }
+@@@ findings
+1:1 Missing JSDoc comment.
+2:22 Missing JSDoc comment.
+@@@ case 139 (documented valid)
+/**
+       * Function doing something
+       */
+       var myFunction = () => {}
+@@@ findings
+@@@ case 140 (documented valid)
+/**
+       * Function doing something
+       */
+       var myFunction = function () {}
+@@@ findings
+@@@ case 141 (documented valid)
+/**
+       * Function doing something
+       */
+       var myFunction = () => {}
+@@@ findings
+@@@ case 142 (documented valid)
+/**
+        Function doing something
+       */
+       var myFunction = () => () => {}
+@@@ findings
+@@@ case 143 (documented valid)
+setTimeout(() => {}, 10);
+@@@ findings
+@@@ case 144 (documented valid)
+/**
+       JSDoc Block
+       */
+       var foo = function() {}
+@@@ findings
+@@@ case 145 (documented valid)
+const foo = {/**
+       JSDoc Block
+       */
+       bar() {}}
+@@@ findings
+1:1 Missing JSDoc comment.
+@@@ case 146 (documented valid)
+var foo = {/**
+       JSDoc Block
+       */
+       bar: function() {}}
+@@@ findings
+1:1 Missing JSDoc comment.
+@@@ case 147 (documented valid)
+ var foo = { [function() {}]: 1 };
+@@@ findings
+1:2 Missing JSDoc comment.
+@@@ case 148 (documented valid)
+
+      function foo () {}
+    
+@@@ findings
+2:7 Missing JSDoc comment.
+@@@ case 149 (documented valid)
+
+      function foo () {
+        return;
+      }
+    
+@@@ findings
+2:7 Missing JSDoc comment.
+@@@ case 150 (documented valid)
+
+      const test = {};
+      /**
+       * test
+       */
+       test.method = function () {
+
+      }
+      module.exports = {
+        prop: { prop2: test.method }
+      }
+      
+@@@ findings
+2:7 Missing JSDoc comment.
+@@@ case 151 (documented valid)
+
+     /**
+      *
+      */
+     function test() {
+
+     }
+
+     module.exports = {
+       prop: { prop2: test }
+     }
+      
+@@@ findings
+@@@ case 152 (documented valid)
+
+      /**
+       *
+       */
+      test = function() {
+
+      }
+
+      module.exports = {
+        prop: { prop2: test }
+      }
+      
+@@@ findings
+@@@ case 153 (documented valid)
+
+      /**
+       *
+       */
+      test = function() {
+
+      }
+
+      exports.someMethod = {
+        prop: { prop2: test }
+      }
+      
+@@@ findings
+@@@ case 154 (documented valid)
+
+      /**
+       *
+       */
+      const test = () => {
+
+      }
+
+      module.exports = {
+      prop: { prop2: test }
+      }
+      
+@@@ findings
+@@@ case 155 (documented valid)
+
+      const test = () => {
+
+      }
+      module.exports = {
+        prop: { prop2: test }
+      }
+      
+@@@ findings
+2:7 Missing JSDoc comment.
+@@@ case 156 (documented valid)
+
+      /**
+       *
+       */
+      window.test = function() {
+
+      }
+
+      module.exports = {
+      prop: window
+      }
+      
+@@@ findings
+@@@ case 157 (documented valid)
+
+      test = function() {
+
+      }
+
+      /**
+       *
+       */
+      test = function() {
+
+      }
+
+      module.exports = {
+      prop: { prop2: test }
+      }
+      
+@@@ findings
+@@@ case 158 (documented valid)
+
+      test = function() {
+
+      }
+
+      test = 2;
+
+      module.exports = {
+      prop: { prop2: test }
+      }
+      
+@@@ findings
+@@@ case 159 (documented valid)
+
+      /**
+       *
+       */
+      function test() {
+
+      }
+
+      /**
+       *
+       */
+      test.prototype.method = function() {
+
+      }
+
+      module.exports = {
+      prop: { prop2: test }
+      }
+      
+@@@ findings
+@@@ case 160 (documented valid)
+
+    class Test {
+      /**
+       * Test
+       */
+      method() {
+
+      }
+    }
+    module.exports = Test;
+      
+@@@ findings
+2:5 Missing JSDoc comment.
+@@@ case 161 (documented valid)
+
+      /**
+       *
+       */
+      export default function quux () {
+
+      }
+    
+@@@ findings
+@@@ case 162 (documented valid)
+
+      /**
+       *
+       */
+      export default function quux () {
+
+      }
+    
+@@@ findings
+@@@ case 163 (documented valid)
+
+      /**
+       *
+       */
+      function quux () {
+
+      }
+      export default quux;
+    
+@@@ findings
+@@@ case 164 (documented valid)
+
+      function quux () {
+
+      }
+      export default quux;
+    
+@@@ findings
+2:7 Missing JSDoc comment.
+@@@ case 165 (documented valid)
+
+      /**
+       *
+       */
+      export function test() {
+
+      }
+    
+@@@ findings
+@@@ case 166 (documented valid)
+
+      /**
+       *
+       */
+      export function test() {
+
+      }
+    
+@@@ findings
+@@@ case 167 (documented valid)
+
+      /**
+       *
+       */
+      var test = function () {
+
+      }
+      var test2 = 2;
+      export { test, test2 }
+    
+@@@ findings
+8:7 Missing JSDoc comment.
+@@@ case 168 (documented valid)
+
+      /**
+       *
+       */
+      var test = function () {
+
+      }
+      export { test as test2 }
+    
+@@@ findings
+@@@ case 169 (documented valid)
+
+      /**
+       *
+       */
+      export default class A {
+
+      }
+    
+@@@ findings
+@@@ case 170 (documented valid)
+
+      /**
+       *
+       */
+      var test = function () {
+
+      }
+    
+@@@ findings
+@@@ case 171 (documented valid)
+
+      let test = function () {
+
+      }
+    
+@@@ findings
+2:7 Missing JSDoc comment.
+@@@ case 172 (documented valid)
+
+      let test = class {
+
+      }
+    
+@@@ findings
+2:7 Missing JSDoc comment.
+2:18 Missing JSDoc comment.
+@@@ case 173 (documented valid)
+
+      /**
+       *
+       */
+      let test = class {
+
+      }
+    
+@@@ findings
+@@@ case 174 (documented valid)
+
+      export function someMethod() {
+
+      }
+      
+@@@ findings
+2:14 Missing JSDoc comment.
+@@@ case 175 (documented valid)
+
+      exports.someMethod = function() {
+
+      }
+      
+@@@ findings
+@@@ case 176 (documented valid)
+
+        const myObject = {
+          myProp: true
+        };
+    
+@@@ findings
+2:9 Missing JSDoc comment.
+@@@ case 177 (documented valid)
+
+      function bear() {}
+      /**
+       *
+       */
+      function quux () {
+      }
+      export default quux;
+    
+@@@ findings
+2:7 Missing JSDoc comment.
+@@@ case 178 (documented valid)
+
+    /**
+     * This example interface is great!
+     */
+    export interface Example {
+      /**
+       * My super test string!
+       */
+      test: string
+    }
+    
+@@@ findings
+@@@ case 179 (documented valid)
+
+    /**
+     * This example interface is great!
+     */
+    interface Example {
+      /**
+       * My super test string!
+       */
+      test: string
+    }
+    
+@@@ findings
+@@@ case 180 (documented valid)
+
+    /**
+     * This example type is great!
+     */
+    export type Example = {
+      /**
+       * My super test string!
+       */
+      test: string
+    };
+    
+@@@ findings
+@@@ case 181 (documented valid)
+
+    /**
+     * This example type is great!
+     */
+    type Example = {
+      /**
+       * My super test string!
+       */
+      test: string
+    };
+    
+@@@ findings
+@@@ case 182 (documented valid)
+
+    /**
+     * This example enum is great!
+     */
+    export enum Example {
+      /**
+       * My super test enum!
+       */
+      test = 123
+    }
+    
+@@@ findings
+@@@ case 183 (documented valid)
+
+    /**
+     * This example enum is great!
+     */
+    enum Example {
+      /**
+       * My super test enum!
+       */
+      test = 123
+    }
+    
+@@@ findings
+@@@ case 184 (documented valid)
+
+    /**
+     * Class documentation
+     */
+     @logged
+    export default class Foo {
+     // ....
+    }
+    
+@@@ findings
+@@@ case 185 (documented valid)
+
+    const a = {};
+    const b = {
+      ...a
+    };
+
+    export default b;
+    
+@@@ findings
+2:5 Missing JSDoc comment.
+3:5 Missing JSDoc comment.
+@@@ case 186 (documented valid)
+
+    /**
+     * Foo interface documentation.
+     */
+    export interface Foo extends Bar {
+      /**
+       * baz method documentation.
+       */
+      baz(): void;
+
+      /**
+       * meow method documentation.
+       */
+      meow(): void;
+    }
+    
+@@@ findings
+@@@ case 187 (documented valid)
+
+    export default class Test {
+      private abc(a) {
+        this.a = a;
+      }
+    }
+    
+@@@ findings
+2:20 Missing JSDoc comment.
+3:18 Missing JSDoc comment.
+@@@ case 188 (documented valid)
+
+    /**
+     * Basic application controller.
+     */
+    @Controller()
+    export class AppController {
+      /**
+       * Returns the application information.
+       *
+       * @returns ...
+       */
+      @Get('/info')
+      public getInfo(): string {
+        return 'OK';
+      }
+    }
+    
+@@@ findings
+@@@ case 189 (documented valid)
+
+    /**
+     * Entity to represent a user in the system.
+     */
+    @Entity('users')
+    export class User {
+    }
+    
+@@@ findings
+@@@ case 190 (documented valid)
+
+    /**
+     * Entity to represent a user in the system.
+     */
+    @Entity('users', getVal())
+    export class User {
+    }
+    
+@@@ findings
+@@@ case 191 (documented valid)
+
+      /**
+       *
+       */
+      class Foo {
+          constructor() {}
+      }
+    
+@@@ findings
+6:22 Missing JSDoc comment.
+@@@ case 192 (documented valid)
+
+      /**
+       *
+       */
+      class Foo {
+          constructor() {}
+      }
+    
+@@@ findings
+6:22 Missing JSDoc comment.
+@@@ case 193 (documented valid)
+
+      class Foo {
+        get aName () {}
+        set aName (val) {}
+      }
+    
+@@@ findings
+2:7 Missing JSDoc comment.
+3:19 Missing JSDoc comment.
+4:19 Missing JSDoc comment.
+@@@ case 194 (documented valid)
+
+      const obj = {
+        get aName () {},
+        set aName (val) {}
+      }
+    
+@@@ findings
+2:7 Missing JSDoc comment.
+@@@ case 195 (documented valid)
+
+      class Foo {
+        set aName (val) {}
+      }
+    
+@@@ findings
+2:7 Missing JSDoc comment.
+3:19 Missing JSDoc comment.
+@@@ case 196 (documented valid)
+
+      class Foo {
+        get aName () {}
+      }
+    
+@@@ findings
+2:7 Missing JSDoc comment.
+3:19 Missing JSDoc comment.
+@@@ case 197 (documented valid)
+
+      class Foo {
+        /**
+         *
+         */
+        set aName (val) {}
+      }
+    
+@@@ findings
+2:7 Missing JSDoc comment.
+@@@ case 198 (documented valid)
+
+      class Foo {
+        /**
+         *
+         */
+        get aName () {}
+      }
+    
+@@@ findings
+2:7 Missing JSDoc comment.
+@@@ case 199 (documented valid)
+
+      class Foo {
+        get aName () {}
+        set aName (val) {}
+      }
+    
+@@@ findings
+2:7 Missing JSDoc comment.
+3:19 Missing JSDoc comment.
+4:19 Missing JSDoc comment.
+@@@ case 200 (documented valid)
+
+    class Base {
+      constructor() {
+      }
+    }
+    
+@@@ findings
+2:5 Missing JSDoc comment.
+3:18 Missing JSDoc comment.
+@@@ case 201 (documented valid)
+
+    /**
+     * This is a text.
+     */
+    export function a(); // Reports an error
+    
+@@@ findings
+@@@ case 202 (documented valid)
+
+    /**
+     * Foo
+     */
+    export function foo(): void {
+      function bar(): void {
+        console.log('bar');
+      }
+
+      console.log('foo');
+    }
+
+@@@ findings
+6:7 Missing JSDoc comment.
+@@@ case 203 (documented valid)
+
+    const foo = {
+      bar: () => {
+        // ...
+      }
+    }
+    
+@@@ findings
+2:5 Missing JSDoc comment.
+@@@ case 204 (documented valid)
+
+    /** Defines the current user's settings. */
+    @Injectable({
+      providedIn: 'root',
+    })
+    @State<Partial<UserSettingsStateModel>>
+    ({
+      name: 'userSettings',
+      defaults: {
+        isDev: !environment.production,
+      },
+    })
+    export class UserSettingsState { }
+    
+@@@ findings
+@@@ case 205 (documented valid)
+
+    /**
+     * Entity to represent a user in the system.
+     */
+    @Entity('users')
+    export class User {
+    }
+    
+@@@ findings
+@@@ case 206 (documented valid)
+
+        function main () {
+          class Utility {
+             /**
+              *
+              */
+             mthd() {
+                 return false;
+             }
+           }
+         }
+
+         module.exports = main;
+      
+@@@ findings
+2:9 Missing JSDoc comment.
+3:11 Missing JSDoc comment.
+@@@ case 207 (documented valid)
+
+        function main () {
+          const a = class Utility {
+             /**
+              *
+              */
+             mthd() {
+                 return false;
+             }
+           }
+         }
+
+         module.exports = main;
+      
+@@@ findings
+2:9 Missing JSDoc comment.
+3:21 Missing JSDoc comment.
+@@@ case 208 (documented valid)
+
+          function quux () {
+          return 3;
+        }
+
+        function b () {}
+      
+@@@ findings
+2:11 Missing JSDoc comment.
+6:9 Missing JSDoc comment.
+@@@ case 209 (documented valid)
+
+        function quux () {
+          return 3;
+        }
+
+        var a = {
+          b: 1,
+          c: 2
+        };
+      
+@@@ findings
+2:9 Missing JSDoc comment.
+6:9 Missing JSDoc comment.
+@@@ case 210 (documented valid)
+
+        class A {
+          setId(newId: number): void {
+            this.id = id;
+          }
+        }
+      
+@@@ findings
+2:9 Missing JSDoc comment.
+3:16 Missing JSDoc comment.
+@@@ case 211 (documented valid)
+
+    export default class Test {
+      private abc(a) {
+        this.a = a;
+      }
+    }
+    
+@@@ findings
+2:20 Missing JSDoc comment.
+3:18 Missing JSDoc comment.
+@@@ case 212 (documented valid)
+
+      export default {
+        created() {
+          this.getData();
+        },
+
+        beforeUpdate() {},
+
+        watch: {
+          someValue(val) {}
+        },
+
+        computed: {
+          loaded() {},
+          selection() {}
+        },
+
+        methods: {
+          getData(id) {}
+        }
+      };
+      
+@@@ findings
+@@@ case 213 (documented valid)
+
+        export class MyClass {
+          #myPrivateMethod(): void { }
+
+          #myPrivateProp = 5;
+        }
+      
+@@@ findings
+2:16 Missing JSDoc comment.
+3:27 Missing JSDoc comment.
+@@@ case 214 (documented valid)
+
+        /**
+         * Array map function with overload for NonEmptyArray
+         * @example
+         * const data = [{value: 'value'}] as const;
+         * const result1: NonEmptyReadonlyArray<'value'> = arrayMap(data, (value) => value.value); // pick type from data
+         * const result2: NonEmptyReadonlyArray<'value'> = arrayMap<'value', typeof data>(data, (value) => value.value); // enforce output type
+         * @template Target - The type of the array to map to
+         * @template Source - The type of the array to map from
+         * @param {Source} data - The array to map
+         * @param {MapCallback<Target, Source>} callback - Callback function to map data from the array
+         * @returns {AnyArrayType<Target>} Mapped array
+         * @since v0.2.0
+         */
+        export function arrayMap<Target, Source extends NonEmptyArray<unknown> | NonEmptyReadonlyArray<unknown>>(
+          data: Source,
+          callback: MapCallback<Target, Source>,
+        ): NonEmptyArray<Target>;
+        export function arrayMap<Target, Source extends Array<unknown>>(data: Source, callback: MapCallback<Target, Source>): Array<Target>;
+        export function arrayMap<Target, Source extends AnyArrayType>(data: Source, callback: MapCallback<Target, Source>): AnyArrayType<Target> {
+          return data.map(callback);
+        }
+      
+@@@ findings
+@@@ case 215 (documented valid)
+
+        /**
+         * Array map function with overload for NonEmptyArray
+         * @example
+         * const data = [{value: 'value'}] as const;
+         * const result1: NonEmptyReadonlyArray<'value'> = arrayMap(data, (value) => value.value); // pick type from data
+         * const result2: NonEmptyReadonlyArray<'value'> = arrayMap<'value', typeof data>(data, (value) => value.value); // enforce output type
+         * @template Target - The type of the array to map to
+         * @template Source - The type of the array to map from
+         * @param {Source} data - The array to map
+         * @param {MapCallback<Target, Source>} callback - Callback function to map data from the array
+         * @returns {AnyArrayType<Target>} Mapped array
+         * @since v0.2.0
+         */
+        export function arrayMap<Target, Source extends NonEmptyArray<unknown> | NonEmptyReadonlyArray<unknown>>(
+          data: Source,
+          callback: MapCallback<Target, Source>,
+        ): NonEmptyArray<Target>;
+        export function arrayMap<Target, Source extends Array<unknown>>(data: Source, callback: MapCallback<Target, Source>): Array<Target>;
+        export function arrayMap<Target, Source extends AnyArrayType>(data: Source, callback: MapCallback<Target, Source>): AnyArrayType<Target> {
+          return data.map(callback);
+        }
+      
+@@@ findings
+@@@ case 216 (documented valid)
+
+        export interface A {
+          a: string;
+          /**
+           * Documentation.
+           */
+          f(): void;
+        }
+
+        export class B implements A {
+          a = 'abc';
+          public f(): void {
+            //
+          }
+        }
+      
+@@@ findings
+2:16 Missing JSDoc comment.
+10:16 Missing JSDoc comment.
+@@@ case 217 (documented valid)
+
+        /**
+         * Test function with param.
+         * @param foo - Test param.
+         */
+        function myFunction(foo: string): void;
+        /**
+         * Test function without param.
+         */
+        function myFunction(): void;
+        function myFunction(foo?: string) {}
+      
+@@@ findings
+@@@ case 218 (documented valid)
+
+        /**
+         * Test function with param.
+         * @param foo - Test param.
+         */
+        function myFunction(foo: string): void;
+        /**
+         * Test function without param.
+         */
+        function myFunction(): void;
+        function myFunction(foo?: string) {}
+      
+@@@ findings
+@@@ case 219 (documented valid)
+
+        /**
+         * Test function with param.
+         * @param foo - Test param.
+         */
+        export function myFunction(foo: string): void;
+        /**
+         * Test function without param.
+         */
+        export function myFunction(): void;
+        export function myFunction(foo?: string) {}
+      
+@@@ findings
+@@@ case 220 (documented valid)
+
+        /**
+         *
+         */
+        const quux = () => {
+          /**
+           *
+           */
+          function myFunction(foo?: string) {}
+        };
+      
+@@@ findings
+@@@ case 221 (documented valid)
+
+        /**
+         * JSdoc for foo function
+         */
+        const foo = autolog(function foo() {
+            log.debug('inside foo', 'this is a test helper function')
+        })
+      
+@@@ findings
+@@@ case 222 (documented valid)
+
+        /**
+         * Description for myFunction
+         */
+        function myFunction(foo: string): string
+        function myFunction(foo: number): string
+        function myFunction(...args: any[]) {
+          return ''
+        }
+      
+@@@ findings
+@@@ case 223 (documented valid)
+
+        class Foo {
+          /**
+           * Description for bar
+           */
+          bar(foo: string): string
+          bar(foo: number): string
+          bar(...args: any[]) {
+            return ''
+          }
+        }
+      
+@@@ findings
+2:9 Missing JSDoc comment.
+@@@ case 224 (documented valid)
+
+        /** Foo here */
+        export class Foo {
+            /** with string */
+            constructor(arg1: string);
+            /** with number */
+            constructor(arg1: number);
+
+            constructor(arg1: string | number) {
+                // implementation
+            }
+        }
+      
+@@@ findings
+@@@ case 225 (planted in a copy of a file of the tree)
+export function filletSetback(radius: number, turningAngle: number): number {
+  return radius * Math.tan(Math.abs(turningAngle) / 2);
+}
+
+@@@ findings
+1:8 Missing JSDoc comment.
+@@@ case 226 (planted in a copy of a file of the tree)
+/** How an `@font-face` rule names a font file's format: its media type in the `data:` URL and its format hint (`REF-CSS-FONTS-4`, §11.2). */
+export type FontFormat = {
+  readonly mediaType: string;
+  /** The hint of `format()`: `truetype`, or `opentype` for a file with CFF outlines. */
+  readonly hint: string;
+};
+
+@@@ findings
+@@@ end

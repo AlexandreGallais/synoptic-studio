@@ -1,0 +1,61 @@
+import { modulo } from "../arithmetic";
+
+import { brightness } from "./brightness";
+import { chroma } from "./chroma";
+
+import type { Rgb } from "./rgb";
+
+/** The sides of the hexagon the hue is measured around. */
+const HEXAGON_SIDES = 6;
+
+/** Where the hue starts when green is the largest component: the second corner, green. */
+const GREEN_CORNER = 2;
+
+/** Where the hue starts when blue is the largest component: the fourth corner, blue. */
+const BLUE_CORNER = 4;
+
+/**
+ * The hue of a color that is no grey, as the distance around the hexagon the RGB cube projects to,
+ * in sixths of a turn from red, read from its largest component, red tested first
+ * (REF-WIKI-HSL-HSV, Hue and chroma: `H′`; REF-CSS-COLOR-4, §7.2; `DERIV-color-spaces`, step 3).
+ *
+ * Formula: H′ = ((g − b) / C) mod 6 when M = r, (b − r) / C + 2 when M = g, (r − g) / C + 4.
+ *
+ * @kind math
+ * @param rgb - the color's components, from 0 to 1, not all equal
+ * @param chromaOfColor - its chroma, > 0
+ * @returns the hue in sixths of a turn, from 0 included to 6 excluded
+ * @see REF-WIKI-HSL-HSV
+ */
+function hueOnHexagon(rgb: Rgb, chromaOfColor: number): number {
+  const largest = brightness(rgb);
+
+  if (largest === rgb.red) {
+    return modulo((rgb.green - rgb.blue) / chromaOfColor, HEXAGON_SIDES);
+  }
+
+  return largest === rgb.green
+    ? (rgb.blue - rgb.red) / chromaOfColor + GREEN_CORNER
+    : (rgb.red - rgb.green) / chromaOfColor + BLUE_CORNER;
+}
+
+/** The degrees of one side of the hue's hexagon, a sixth of a turn. */
+const DEGREES_PER_SIDE = 60;
+
+/**
+ * The hue of a color in degrees, red at 0°, green at 120°, blue at 240°: its distance around the
+ * hexagon times 60°; a grey, whose hue is undefined, has the hue 0 (REF-WIKI-HSL-HSV, Hue and
+ * chroma: `H = 60° × H′`, 0 when `C = 0`; ADR-0056; `DERIV-color-spaces`, step 3).
+ *
+ * Formula: H = 0 when C = 0, else 60° · H′.
+ *
+ * @kind math
+ * @param rgb - the color's components, from 0 to 1
+ * @returns the hue, from 0° included to 360° excluded
+ * @see REF-WIKI-HSL-HSV
+ */
+export function hue(rgb: Rgb): number {
+  const chromaOfColor = chroma(rgb);
+
+  return chromaOfColor === 0 ? 0 : DEGREES_PER_SIDE * hueOnHexagon(rgb, chromaOfColor);
+}

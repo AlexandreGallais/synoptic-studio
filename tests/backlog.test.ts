@@ -1,7 +1,10 @@
-import { readFileSync, readdirSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
+
+import { builtOnce } from "./built-once";
 
 /** Backlog item: its folder and its front-matter fields. */
 type Item = {
@@ -13,11 +16,17 @@ type Item = {
 /** Root of the backlog. */
 const BACKLOG = join(import.meta.dirname, "..", "docs", "backlog");
 
+/** The Rust tool writing the stories index from the story files (EN-049). */
+const INDEX_TOOL = join(import.meta.dirname, "..", "tools", "backlog-index", "Cargo.toml");
+
+/** Time limit of a test building the index tool: a cold build of about 5 s, four times, and a margin. */
+const BUILD_TIMEOUT = 60_000;
+
 /** Allowed statuses per folder. */
 const STATUSES: Readonly<Record<string, readonly string[]>> = {
   epics: ["draft", "ready", "in-progress", "done"],
   features: ["draft", "ready", "in-progress", "done"],
-  stories: ["draft", "ready", "in-progress", "done", "dropped"],
+  stories: ["draft", "ready", "in-progress", "parked", "done", "dropped"],
 };
 
 /** Identifier pattern per folder. */
@@ -56,7 +65,7 @@ function frontMatter(text: string): Record<string, string> {
  *
  * @returns items of all folders
  */
-function items(): Item[] {
+function readItems(): readonly Item[] {
   return Object.keys(STATUSES).flatMap((folder) =>
     readdirSync(join(BACKLOG, folder))
       .filter((file) => file.endsWith(".md") && file !== "README.md")
@@ -67,6 +76,9 @@ function items(): Item[] {
       })),
   );
 }
+
+/** Every backlog item, read at the first call and shared, frozen, by every test of the file (EN-090). */
+const items: () => readonly Item[] = builtOnce(() => Object.freeze(readItems()));
 
 /**
  * Identifiers of the items of one folder.
@@ -119,17 +131,30 @@ function hasValidStatus(item: Item): boolean {
 /** Parent field of each child folder. */
 const PARENT_FIELDS: Readonly<Record<string, string>> = { features: "epic", stories: "feature" };
 
-/** Story kinds attached to an epic rather than a feature: naming pass, review and retrospective (ADR-0023, ADR-0049). */
+/** Story kinds attached to an epic rather than a feature: naming pass, review and retrospective (ADR-0023, ADR-0049, ADR-0086). */
 const EPIC_STORY = /^(?:NAM|REV|RET)-/u;
 
 /**
- * Whether a story belongs directly to its epic (review, retrospective).
+ * Whether a story belongs directly to its epic: a review, a past naming pass or retrospective, or
+ * the spike of the epic's refinement, an `SP` without a feature (ADR-0086).
  *
  * @param item - backlog item
- * @returns `true` for a `NAM`, `REV` or `RET` story
+ * @returns `true` for a `NAM`, `REV` or `RET` story, or an `SP` story without a feature
  */
 function isEpicStory(item: Item): boolean {
-  return item.folder === "stories" && EPIC_STORY.test(item.fields["id"] ?? "");
+  return (
+    item.folder === "stories" && (EPIC_STORY.test(item.fields["id"] ?? "") || isRefinement(item))
+  );
+}
+
+/**
+ * Whether a story is the spike of an epic's refinement, made from `develop` (ADR-0086).
+ *
+ * @param item - story item
+ * @returns `true` for an `SP` story without a feature
+ */
+function isRefinement(item: Item): boolean {
+  return (item.fields["id"] ?? "").startsWith("SP-") && (item.fields["feature"] ?? "") === "";
 }
 
 /**
@@ -214,14 +239,99 @@ function parentStatuses(item: Item): ReadonlyMap<string, string> {
 /** Story kinds every feature needs: research spike, checkpoint, audit, validation (ADR-0020, ADR-0028). */
 const FRAME_PREFIXES = ["SP-", "CHK-", "AUD-", "VAL-"];
 
-/** Story kinds every started epic needs: review, retrospective (ADR-0023). */
-const CLOSING_PREFIXES = ["REV-", "RET-"];
+/** The first small feature (ADR-0084): its research may come before its refinement, from a retrospective. */
+const FIRST_SMALL_FEATURE = 22;
 
-/** Story kind every started epic needs before its review: the naming pass (ADR-0049). */
-const NAMING_PREFIXES = ["NAM-"];
+/** Story kinds every small feature needs: audit, validation (ADR-0084, decision 1). */
+const SMALL_FRAME_PREFIXES = ["AUD-", "VAL-"];
 
-/** Epics without a naming pass: E01 closed before ADR-0049, F13 is E14's (ADR-0049 §4). */
-const BEFORE_NAMING_PASS = new Set(["E01", "E14"]);
+/** The most stories (`US`, `EN`) a small feature holds; a larger one is split (ADR-0084, decision 1). */
+const MOST_STORIES = 4;
+
+/** The most tasks a story of a small feature or a review holds; a larger one is split (EN-123). */
+const MOST_TASKS = 3;
+
+/**
+ * Whether a feature is small, refined under ADR-0084: from F22.
+ *
+ * @param feature - its id, `F22`
+ * @returns `true` from F22
+ */
+function isSmall(feature: string): boolean {
+  return Number(feature.slice(1)) >= FIRST_SMALL_FEATURE;
+}
+
+/**
+ * The story kinds a feature needs: the whole frame before ADR-0084; after it, an audit and a
+ * validation.
+ *
+ * @param feature - its id, `F22`
+ * @returns the id prefixes its stories must hold
+ */
+function framePrefixes(feature: string): readonly string[] {
+  return isSmall(feature) ? SMALL_FRAME_PREFIXES : FRAME_PREFIXES;
+}
+
+/**
+ * The last naming pass and retrospective of an epic's closing, before ADR-0086 ended them: a
+ * higher id is a closing written since; E02's `NAM-003` and `RET-005` are removed by EN-123.
+ */
+const LAST_CLOSINGS: Readonly<Record<string, number>> = { NAM: 3, RET: 5 };
+
+/** The last review of an epic's closing (REV-005, E02's, removed by EN-123): a higher one is held at a return. */
+const LAST_EPIC_REVIEW = 5;
+
+/**
+ * Whether a story is an epic's closing written since ADR-0086: a `NAM` or a `RET` after the last.
+ *
+ * @param item - story item
+ * @returns `true` for `NAM-004` or `RET-006` and above
+ */
+function isNewClosing(item: Item): boolean {
+  const [kind = "", number = ""] = (item.fields["id"] ?? "").split("-", 2);
+  const last = LAST_CLOSINGS[kind];
+
+  return last !== undefined && Number(number) > last;
+}
+
+/**
+ * Whether a story is a review held at a return of the Product Owner (ADR-0086): a `REV` after
+ * the last epic review.
+ *
+ * @param item - story item
+ * @returns `true` for `REV-006` and above
+ */
+function isReturnReview(item: Item): boolean {
+  const [kind = "", number = ""] = (item.fields["id"] ?? "").split("-", 2);
+
+  return kind === "REV" && Number(number) > LAST_EPIC_REVIEW;
+}
+
+/**
+ * Number of tasks of a story: its `- [ ] T1` and `- [x] T1` lines.
+ *
+ * @param item - story item
+ * @returns its task lines, ticked or not
+ */
+function taskCount(item: Item): number {
+  return (
+    readFileSync(join(BACKLOG, item.folder, item.file), "utf8").match(/^- \[[ x]\] T\d/gmu)
+      ?.length ?? 0
+  );
+}
+
+/**
+ * A story item of an id alone, for the tests of the functions reading ids.
+ *
+ * @param id - its id, `REV-006`
+ * @returns the item, without file
+ */
+function storyOf(id: string): Item {
+  return { fields: { id }, file: "", folder: "stories" };
+}
+
+/** Templates of an epic's closing, gone with it (ADR-0086, decision 8). */
+const CLOSING_TEMPLATES = ["_naming-pass.md", "_retro.md"];
 
 /**
  * Whether the stories of one parent include every required kind.
@@ -244,22 +354,93 @@ function hasKinds(
   return prefixes.every((prefix) => ids.some((id) => id.startsWith(prefix)));
 }
 
-/** Folders whose tests may verify acceptance criteria (ADR-0027); `tests` for the criteria on the code base itself (F11). */
-const TEST_ROOTS = ["src", "playground", "tests"];
+/**
+ * Folders whose TypeScript tests may verify acceptance criteria (ADR-0027): `tests` for the
+ * criteria on the code base itself (F11), the scripts and lint rules for the tooling's (F18); the hooks are Rust since EN-104.
+ */
+const TEST_ROOTS = ["src", "playground", "tests", "scripts"];
+
+/** The Rust tools, whose tests verify the tooling's criteria (F18). */
+const TOOLS = join(import.meta.dirname, "..", "tools");
+
+/** This file: it names tags in its own code, so only its tests' titles count. */
+const CHECKER = "backlog.test.ts";
 
 /**
- * Concatenated content of every test file, where `[F01.AC3]` tags are looked for.
+ * Titles of the tests of a file, the text a `[F18.AC5]` tag is written in.
  *
- * @returns text of all `*.test.ts` files under the test roots
+ * @param text - a test file
+ * @returns each `it("…"` title, one per line
+ */
+function testTitles(text: string): string {
+  return text
+    .matchAll(/\bit\(\s*"(?<title>[^"]*)"/gu)
+    .map((match) => match.groups?.["title"] ?? "")
+    .toArray()
+    .join("\n");
+}
+
+/**
+ * Criterion tags of a Rust file: a test named `f18_ac3_…` reads as `[F18.AC3]`, a `// [F18.AC6]`
+ * comment as itself; a `//!` module comment only describes the convention, so it is left out.
+ *
+ * @param text - a Rust file
+ * @returns its lines without module comments, then one tag per test named after a criterion
+ */
+function rustTags(text: string): string {
+  const code = text
+    .split("\n")
+    .filter((line) => !line.trimStart().startsWith("//!"))
+    .join("\n");
+  const names = code
+    .matchAll(/\bfn f(?<feature>\d{2})_ac(?<criterion>\d+)_/gu)
+    .map((match) => `[F${match.groups?.["feature"] ?? ""}.AC${match.groups?.["criterion"] ?? ""}]`)
+    .toArray();
+
+  return [code, ...names].join("\n");
+}
+
+/**
+ * Rust files of the tools that may hold tests: `tests/*.rs` and `src/**\/*.rs` of each crate,
+ * its build folder `target` left out.
+ *
+ * @returns their paths
+ */
+function rustFiles(): string[] {
+  return readdirSync(TOOLS).flatMap((crate) =>
+    ["tests", "src"].flatMap((folder) => {
+      const root = join(TOOLS, crate, folder);
+
+      return existsSync(root)
+        ? readdirSync(root, { recursive: true })
+            .map(String)
+            .filter((file) => file.endsWith(".rs"))
+            .map((file) => join(root, file))
+        : [];
+    }),
+  );
+}
+
+/**
+ * Concatenated text where `[F01.AC3]` tags are looked for: every `*.test.ts` file under the test
+ * roots (only the titles of this file's tests), and the Rust tools' tags.
+ *
+ * @returns the text of every test that may prove a criterion
  */
 function testSources(): string {
-  return TEST_ROOTS.flatMap((root) =>
+  const typescript = TEST_ROOTS.flatMap((root) =>
     readdirSync(join(import.meta.dirname, "..", root), { recursive: true })
       .map(String)
-      // This file names tags in its own text: it proves no criterion.
-      .filter((file) => file.endsWith(".test.ts") && file !== "backlog.test.ts")
-      .map((file) => readFileSync(join(import.meta.dirname, "..", root, file), "utf8")),
-  ).join("\n");
+      .filter((file) => file.endsWith(".test.ts"))
+      .map((file) => {
+        const text = readFileSync(join(import.meta.dirname, "..", root, file), "utf8");
+
+        return file === CHECKER ? testTitles(text) : text;
+      }),
+  );
+  const rust = rustFiles().map((file) => rustTags(readFileSync(file, "utf8")));
+
+  return [...typescript, ...rust].join("\n");
 }
 
 /**
@@ -275,17 +456,42 @@ function criteriaSection(item: Item): string {
 }
 
 /**
+ * Criterion identifiers of a section: one per numbered item, but a criterion struck through, `5.
+ * ~~…~~ Dropped on …`, which the Product Owner dropped and no test proves (AUD-022).
+ *
+ * @param section - the "Acceptance criteria" section of a feature
+ * @param feature - the feature's id, `F01`
+ * @returns `F01.AC1`, `F01.AC2`…
+ */
+function criteriaIn(section: string, feature: string): string[] {
+  return section
+    .matchAll(/^(?<number>\d+)\. (?!~~)/gmu)
+    .map((match) => `${feature}.AC${match.groups?.["number"] ?? ""}`)
+    .toArray();
+}
+
+/**
  * Criterion identifiers of a feature: one per numbered item of its "Acceptance criteria" section.
  *
  * @param item - feature item
  * @returns `F01.AC1`, `F01.AC2`…
  */
 function criteriaOf(item: Item): string[] {
-  return criteriaSection(item)
-    .matchAll(/^(?<number>\d+)\. /gmu)
-    .map((match) => `${item.fields["id"] ?? ""}.AC${match.groups?.["number"] ?? ""}`)
-    .toArray();
+  return criteriaIn(criteriaSection(item), item.fields["id"] ?? "");
 }
+
+/**
+ * Section "Measures" of a story.
+ *
+ * @param text - the story file
+ * @returns the section's text, empty when absent
+ */
+function measuresOf(text: string): string {
+  return /^## Measures\n(?<body>[\s\S]*?)(?=^## )/mu.exec(text)?.groups?.["body"] ?? "";
+}
+
+/** The stories that rewrote the agent-facing pages as principles (F20, criterion 8). */
+const PRINCIPLE_REWRITES = ["EN-096", "EN-097", "EN-098", "EN-099"];
 
 describe("backlog", () => {
   it("gives every item a well-formed id, a title and an allowed status", () => {
@@ -332,6 +538,22 @@ describe("backlog", () => {
     expect(mismatches.map((item) => item.file)).toEqual([]);
   });
 
+  it(
+    "[F18.AC5] keeps the stories index as the story files generate it",
+    { timeout: BUILD_TIMEOUT },
+    () => {
+      const result = spawnSync(
+        "cargo",
+        ["run", "--quiet", "--manifest-path", INDEX_TOOL, "--", BACKLOG, "--check"],
+        { encoding: "utf8" },
+      );
+
+      // The tool's message names the row that differs and says to run `npm run backlog:index`.
+      expect(result.stderr).toBe("");
+      expect(result.status).toBe(0);
+    },
+  );
+
   it("shows every feature and story in its parent's table, with the status written in its file", () => {
     const mismatches = items().filter(
       (item) =>
@@ -342,34 +564,84 @@ describe("backlog", () => {
     expect(mismatches.map((item) => item.file)).toEqual([]);
   });
 
-  it("frames every feature with a spike, a checkpoint, an audit and a validation (ADR-0020, ADR-0028)", () => {
+  it("frames every feature with a spike, a checkpoint, an audit and a validation, a small one with an audit and a validation (ADR-0020, ADR-0028, ADR-0084)", () => {
     const stories = items().filter((item) => item.folder === "stories");
     const features = [...new Set(stories.map((story) => story.fields["feature"] ?? ""))].filter(
       (feature) => feature !== "",
     );
 
     expect(
-      features.filter((feature) => !hasKinds(stories, ["feature", feature], FRAME_PREFIXES)),
+      features.filter(
+        (feature) => !hasKinds(stories, ["feature", feature], framePrefixes(feature)),
+      ),
     ).toEqual([]);
   });
 
-  it("closes every started epic with a review and a retrospective (ADR-0023)", () => {
-    const stories = items().filter((item) => item.folder === "stories");
-    const epics = [...new Set(stories.map((story) => story.fields["epic"] ?? ""))];
-    const unclosed = epics.filter((epic) => !hasKinds(stories, ["epic", epic], CLOSING_PREFIXES));
+  it("[F22.AC5] asks no epic for a closing and accepts none since ADR-0086: no new naming pass nor retrospective", () => {
+    const closings = items().filter((item) => item.folder === "stories" && isNewClosing(item));
 
-    expect(unclosed).toEqual([]);
+    expect(closings.map((item) => item.file)).toEqual([]);
   });
 
-  it("closes every started epic since ADR-0049 with a naming pass", () => {
+  it("[F22.AC5] keeps no template of an epic's closing, and the review's template holds a return's review (ADR-0086)", () => {
+    const review = readFileSync(join(BACKLOG, "_review.md"), "utf8");
+
+    expect(CLOSING_TEMPLATES.filter((file) => existsSync(join(BACKLOG, file)))).toEqual([]);
+    expect(review).toContain("since the last merge into `main`");
+  });
+
+  it("[F22.AC5] holds at most 4 stories in a small feature (ADR-0084, decision 1)", () => {
     const stories = items().filter((item) => item.folder === "stories");
-    const epics = [...new Set(stories.map((story) => story.fields["epic"] ?? ""))];
-    const unnamed = epics.filter(
-      (epic) =>
-        !BEFORE_NAMING_PASS.has(epic) && !hasKinds(stories, ["epic", epic], NAMING_PREFIXES),
+    const features = [...new Set(stories.map((story) => story.fields["feature"] ?? ""))].filter(
+      (feature) => feature !== "" && isSmall(feature),
+    );
+    const large = features.filter(
+      (feature) =>
+        stories.filter(
+          (story) =>
+            story.fields["feature"] === feature && /^(?:US|EN)-/u.test(story.fields["id"] ?? ""),
+        ).length > MOST_STORIES,
     );
 
-    expect(unnamed).toEqual([]);
+    expect(large).toEqual([]);
+  });
+
+  it("[F22.AC5] holds at most 3 tasks in a story of a small feature or a return's review (EN-123)", () => {
+    const large = items().filter(
+      (item) =>
+        item.folder === "stories" &&
+        (isSmall(item.fields["feature"] ?? "F00") || isReturnReview(item)) &&
+        taskCount(item) > MOST_TASKS,
+    );
+
+    expect(large.map((item) => item.file)).toEqual([]);
+  });
+
+  it("attaches an epic's refinement spike to its epic, and a feature's spike to its feature (ADR-0086)", () => {
+    const refinement = storyOf("SP-030");
+    const featureSpike: Item = { ...refinement, fields: { feature: "F24", id: "SP-031" } };
+
+    expect([
+      parentField(refinement),
+      parentField(featureSpike),
+      parentField(storyOf("EN-123")),
+    ]).toEqual(["epic", "feature", "feature"]);
+  });
+
+  it("reads a return's review and a new closing by their ids", () => {
+    expect(
+      ["REV-005", "REV-006", "NAM-003", "NAM-004", "RET-006", "EN-123"].map((id) => [
+        isReturnReview(storyOf(id)),
+        isNewClosing(storyOf(id)),
+      ]),
+    ).toEqual([
+      [false, false],
+      [true, false],
+      [false, false],
+      [false, true],
+      [false, true],
+      [false, false],
+    ]);
   });
 
   it("traces every criterion of a done feature to a test tagged with its id (ADR-0027)", () => {
@@ -380,6 +652,54 @@ describe("backlog", () => {
       .filter((criterion) => !sources.includes(`[${criterion}]`));
 
     expect(untraced).toEqual([]);
+  });
+
+  it("reads a Rust test named after a criterion as its tag, never a module comment", () => {
+    const text = [
+      "//! `[F18.AC7]` marks a test proving the feature's criterion.",
+      "fn f18_ac3_a_dead_owner_is_taken_over() {}",
+      "    // [F18.AC6] the push is refused.",
+    ].join("\n");
+    const tags = rustTags(text).match(/\[F\d{2}\.AC\d+\]/gu);
+
+    expect(tags).toEqual(["[F18.AC6]", "[F18.AC3]"]);
+  });
+
+  it("[F20.AC6] keeps each parked story's question in its file", () => {
+    const silent = items()
+      .filter((item) => item.fields["status"] === "parked")
+      .filter(
+        (item) =>
+          !readFileSync(join(BACKLOG, item.folder, item.file), "utf8").includes(
+            "\n## Question for the Product Owner\n",
+          ),
+      );
+
+    expect(silent.map((item) => item.file)).toEqual([]);
+  });
+
+  it("leaves a criterion struck through out of the criteria to trace", () => {
+    const section = "1. Kept.\n2. ~~Dropped.~~ Dropped on 2026-10-17.\n3. Kept too.\n";
+
+    expect(criteriaIn(section, "F20")).toEqual(["F20.AC1", "F20.AC3"]);
+  });
+
+  it("[F20.AC8] measures each page rewritten as principles at 2.30 characters per token, its rules traced", () => {
+    const stories = readdirSync(join(BACKLOG, "stories"));
+    const unmeasured = PRINCIPLE_REWRITES.filter((id) => {
+      const file = stories.find((name) => name.startsWith(`E17-F20-${id}-`)) ?? "";
+      const text = readFileSync(join(BACKLOG, "stories", file), "utf8");
+
+      return !/\b2\.30?\b/u.test(measuresOf(text)) || !/^## (?:Rules|Trace)/mu.test(text);
+    });
+
+    expect(unmeasured).toEqual([]);
+  });
+
+  it("reads only the titles of this file's tests, never the tags its code names", () => {
+    const text = 'it(\n  "[F18.AC5] keeps the index",\n  () => {});\n// a `[F01.AC3]` tag\n';
+
+    expect(testTitles(text)).toBe("[F18.AC5] keeps the index");
   });
 
   it("uses each id once", () => {

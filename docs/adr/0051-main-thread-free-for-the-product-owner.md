@@ -1,6 +1,6 @@
 # ADR-0051 — The main thread kept free: stories worked by subagents
 
-**Status**: Accepted for a trial (Product Owner, 2026-10-14, at RET-002): the runs of E15 work this way; E15's retrospective measures it, then keeps or drops it.
+**Status**: Superseded by ADR-0063 (2026-10-16, RET-003), which keeps and amends it. Accepted for a trial (Product Owner, 2026-10-14, at RET-002): the runs of E15 work this way; E15's retrospective measures it, then keeps or drops it.
 
 ## Context
 
@@ -19,6 +19,15 @@ During a run the main agent works on the main thread. A message from the Product
 - **Cost.** A worker reads the context again: the metrics of the trial compare tokens per story with E14's.
 - **Reviews.** Subagents cannot start subagents, so the reviews stay with the main agent.
 - **Conflicts.** One worker per feature branch and one worktree each leave none on the code. The backlog files a story changes stay its own.
+
+## Amendment (2026-10-14)
+
+Added by the Product Owner during E15's run, so that the chat is always free:
+
+1. **The main thread only dispatches.** Every piece of work goes to a subagent: research, stories, tool or rule changes.
+2. **Each comment is acknowledged at once.** The main agent says it is taken into account and when: now, or once a named running agent has finished, if the comment concerns that agent's work. Comments may come one after another without waiting; each is acknowledged.
+3. **Tool and rule comments run in parallel.** A comment about tools, rules, skills or configuration, unrelated to the running story, goes at once to another agent, on `develop`, in its own worktree.
+4. **No two agents on the same files.** The main agent knows each running agent's topic and files.
 
 ## References
 

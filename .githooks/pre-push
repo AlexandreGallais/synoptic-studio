@@ -1,0 +1,9 @@
+#!/bin/sh
+set -e
+. "$(dirname "$0")/tool.sh"
+tool shared-files refuse-shared-files
+# The branch name, one pattern (`tools/git-hooks/src/branch.rs`).
+tool git-hooks git-hooks branch
+npm run check:all
+# The golden file of a refactor (ADR-0049, EN-055): when one is written, a drift of results fails the push.
+if [ -f "$(git rev-parse --path-format=absolute --git-common-dir)/metrics/golden.json" ]; then npm run golden:check; fi
