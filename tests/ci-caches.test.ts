@@ -167,6 +167,10 @@ describe("the Rust caches of the CI (EN-111)", () => {
     );
   });
 
+  it("[F24.AC3] restores in the release job the caches the lanes and rust-cache save", () => {
+    expect(cachesOf(jobOf(RELEASE, "release"))).toStrictEqual(cachesOf(warm));
+  });
+
   it("[F21.AC4] builds the site on main's caches, restored only", () => {
     const site = jobOf(RELEASE, "docs");
 

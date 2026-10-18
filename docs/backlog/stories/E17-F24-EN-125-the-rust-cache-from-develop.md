@@ -9,7 +9,7 @@ points: 2
 
 # E17 · F24 · EN-125 — The Rust cache saved from develop
 
-The Rust lane compiled every crate from nothing on GitHub's runner (over 21 min with coverage): the cache is saved only by a push to `main`, which has not happened since 0.2.0. Which branches' caches a pull request may restore is read from GitHub's documentation first.
+The Rust lane compiled every crate from nothing on GitHub's runner (over 26 min with coverage, cancelled after 26 min 07 s): the cache is saved only by a push to `main`, which has not happened since 0.2.0. Which branches' caches a pull request may restore is read from GitHub's documentation first.
 
 ## Acceptance criteria
 

@@ -12,7 +12,7 @@ const ROOT = import.meta.dirname;
 const PLAYGROUND_MODE = "playground";
 
 /**
- * Reporters of the CI's test job, which asks a JUnit report by `VITEST_JUNIT`: each file as it
+ * Reporters of the CI's test lane, `VITEST_JUNIT` set on every lane and read by Vitest alone, which asks a JUnit report by `VITEST_JUNIT`: each file as it
  * ends, each failure annotated at its line on the pull request, and the report attached to each
  * release (ADR-0027). A configured list replaces Vitest's own, so the GitHub Actions reporter is
  * named (`REF-VITEST-REPORTERS`).

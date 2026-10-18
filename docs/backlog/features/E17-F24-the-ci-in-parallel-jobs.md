@@ -7,9 +7,9 @@ status: in-progress
 
 # E17 · F24 — The CI in parallel jobs, its tests shown as they run
 
-**Benefit hypothesis**: the CI of a pull request into `main` shows one check per lane, each passing or failing on its own, the tests file by file with their failures annotated on the pull request, and the Rust lane reuses a cache, so that the first merge into `main` (0.3.0) sees a green CI in well under the 45 min the single job takes without a cache.
+**Benefit hypothesis**: the CI of a pull request into `main` shows one check per lane, each passing or failing on its own, the tests file by file with their failures annotated on the pull request, and the Rust lane reuses a cache, so that the first merge into `main` (0.3.0) sees a green CI without the 26 min the single job's Rust lane took without a cache.
 
-Decided by the Product Owner on 2026-10-18 at REV-006, while the CI of #370 ran: on GitHub's runner the single job took 139 s for `lint`, 265 s for `docs:build`, 326 s for `test` and more than 21 min for `check:rust` compiled without a cache, none visible until the end. A tooling feature, validated by the agent (ADR-0072), done before 0.3.0.
+Decided by the Product Owner on 2026-10-18 at REV-006, while the CI of #370 ran: on GitHub's runner the single job took 139 s for `lint`, 265 s for `docs:build`, 326 s for `test` and over 26 min for `check:rust` compiled without a cache (cancelled after 26 min 07 s), none visible until the end. A tooling feature, validated by the agent (ADR-0072), done before 0.3.0.
 
 ## Acceptance criteria
 
@@ -25,7 +25,7 @@ In delivery order.
 | --- | --- | --- | --- |
 | [EN-124](../stories/E17-F24-EN-124-the-ci-in-parallel-jobs.md) | EN | The CI in parallel jobs, its tests shown as they run | done |
 | [EN-125](../stories/E17-F24-EN-125-the-rust-cache-from-develop.md) | EN | The Rust cache saved from develop | done |
-| [AUD-026](../stories/E17-F24-AUD-026-audit-f24.md) | AUD | Audit F24 | ready |
+| [AUD-026](../stories/E17-F24-AUD-026-audit-f24.md) | AUD | Audit F24 | done |
 | [VAL-025](../stories/E17-F24-VAL-025-validate-f24.md) | VAL | Validate F24 | ready |
 
 ## Feature plan
