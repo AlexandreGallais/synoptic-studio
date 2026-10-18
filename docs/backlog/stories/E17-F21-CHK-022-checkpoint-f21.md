@@ -3,7 +3,7 @@ id: CHK-022
 epic: E17
 feature: F21
 title: Checkpoint in the middle of F21
-status: ready
+status: done
 points: 1
 ---
 
