@@ -19,7 +19,7 @@ Audit F29 following [audit.md](../../conventions/audit.md) (ADR-0020), the `audi
 
 - [x] T1 — The findings, and the tests of F3, F4, F7 and F8, seen failing (1 h)
 - [x] T2 — The findings fixed, the criteria traced (1 h)
-- [ ] T3 — ADR-0089: the five Git hooks and the rebuild after a pull (30 min)
+- [x] T3 — ADR-0089: the five Git hooks and the rebuild after a pull (30 min)
 
 One task = one commit, referenced as `AUD-031.T1`.
 
