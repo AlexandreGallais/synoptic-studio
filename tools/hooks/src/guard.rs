@@ -1,15 +1,19 @@
 //! The shell guard (ADR-0021), the `guard-bash` hook's judgement: the commands the project forbids
-//! whatever the instructions say, the forms a story's worktree refuses, and a script missing from
-//! the `package.json` a command runs against. Rewritten from `.claude/hooks/guard-bash.ts` (EN-104),
-//! its regular expressions matched by hand, the standard library only: each matcher below names
-//! the expression it replaces, backtracking included where it changes the answer.
+//! whatever the instructions say, read word by word ([`crate::forbidden`], AUD-023), the forms a
+//! story's worktree refuses, and a script missing from the `package.json` a command runs against.
+//! The worktree's forms were rewritten from `.claude/hooks/guard-bash.ts` (EN-104), its regular
+//! expressions matched by hand, the standard library only: each matcher below names the
+//! expression it replaces, backtracking included where it changes the answer.
 //!
 //! After the brief's `cd "<worktree>" || exit <n>`, one Git command goes through, alone or piped
-//! into read-only filters (`head`, `tail`, `grep`, `wc`, `cut`, `sort`, `uniq`, `sed -n`, `awk`
-//! without `system` nor a redirection), with or without `2>&1`; a second Git command, or any other
-//! command chained after it by `;`, `&&` or `||`, is refused (EN-104, decided 2026-10-18).
+//! into read-only filters ([`is_read_only_filter`]), with or without `2>&1`; a second Git command,
+//! or any other command chained after it by `;`, `&&` or `||`, is refused (EN-104, decided
+//! 2026-10-18).
 
 use std::path::{Component, Path, PathBuf};
+
+use crate::forbidden::{Arguments, Forbidden, abbreviates, invocations, reason};
+use crate::shell::{Simple, commands};
 
 /// Why a full Vitest run is denied.
 pub const FULL_VITEST: &str = "A full Vitest run takes the heavy lock: run `npm run test`, or name the test files (ADR-0063).";
@@ -27,6 +31,9 @@ pub const HOOKS_OFF: &str = "The Git hooks of .githooks/ (the staged files fixed
 /// Why a force push is denied.
 pub const FORCE_PUSH: &str =
     "Force pushes use --force-with-lease, and only on the agent's own story branch.";
+
+/// Why a push to `main` or `develop` is denied.
+pub const PROTECTED_PUSH: &str = "main and develop are never pushed by the agent: a story's branch is pushed, and its pull request merges it (AGENTS.md, Never).";
 
 /// Why `golden:write` is denied in a worktree.
 pub const GOLDEN_WRITE: &str = "golden:write writes .git/metrics/golden.json, shared by every worktree: only the main thread runs it, in the main checkout.";
@@ -87,47 +94,6 @@ fn after_some_spaces(text: &str, at: usize) -> Option<usize> {
     let end = after_spaces(text, at);
 
     (end > at).then_some(end)
-}
-
-/// The end of `\S*` from `at`.
-fn after_non_spaces(text: &str, at: usize) -> usize {
-    text[at..]
-        .char_indices()
-        .find(|(_, character)| is_space(*character))
-        .map_or(text.len(), |(index, _)| at + index)
-}
-
-/// Whether the text at `at` is a space or its end: `(?:\s|$)`.
-fn space_or_end(text: &str, at: usize) -> bool {
-    text[at..].chars().next().is_none_or(is_space)
-}
-
-/// The positions after `.*\s` from `at`: each space reached without crossing a line break, the
-/// position after it.
-fn after_any_then_space(text: &str, at: usize) -> Vec<usize> {
-    let mut ends = Vec::new();
-
-    for (index, character) in text[at..].char_indices() {
-        if is_space(character) {
-            ends.push(at + index + character.len_utf8());
-        }
-        if is_line_break(character) {
-            break;
-        }
-    }
-    ends
-}
-
-/// The positions `.*` reaches from `at`: every one up to the first line break.
-fn reached_by_any(text: &str, at: usize) -> Vec<usize> {
-    let end = text[at..]
-        .char_indices()
-        .find(|(_, character)| is_line_break(*character))
-        .map_or(text.len(), |(index, _)| at + index);
-
-    (at..=end)
-        .filter(|index| text.is_char_boundary(*index))
-        .collect()
 }
 
 /// Whether the text starts with a word followed by `\b`.
@@ -228,28 +194,6 @@ pub fn segments(command: &str) -> Vec<String> {
 /// segment (EN-113). An unclosed quote runs to the end.
 #[must_use]
 pub fn separated(command: &str) -> Vec<(&'static str, String)> {
-    split_at_separators(command, true)
-}
-
-/// The segments of a shell command split at every separator, quoted ones too: what a quoted text
-/// would run if a shell ran it (`sh -c "…; git push -f"`), which the guards of [`denied_reason`]
-/// read beside [`segments`]; each without the quotes around it, as the quoted shell reads it.
-#[must_use]
-pub fn every_segment(command: &str) -> Vec<String> {
-    split_at_separators(command, false)
-        .into_iter()
-        .map(|(_, segment)| {
-            segment
-                .trim_matches(|character: char| {
-                    is_space(character) || matches!(character, '"' | '\'')
-                })
-                .to_owned()
-        })
-        .collect()
-}
-
-/// The segments of a command with the separator before each, quotes read or not.
-fn split_at_separators(command: &str, quotes_read: bool) -> Vec<(&'static str, String)> {
     let mut pieces = Vec::new();
     let mut start = 0;
     let mut before = "";
@@ -260,28 +204,26 @@ fn split_at_separators(command: &str, quotes_read: bool) -> Vec<(&'static str, S
     while at < bytes.len() {
         let byte = bytes[at];
 
-        if quotes_read {
-            match (quote, byte) {
-                (Some(b'\''), b'\'') | (Some(b'"'), b'"') => {
-                    quote = None;
-                    at += 1;
-                    continue;
-                }
-                (None | Some(b'"'), b'\\') => {
-                    at += 2;
-                    continue;
-                }
-                (None, b'\'' | b'"') => {
-                    quote = Some(byte);
-                    at += 1;
-                    continue;
-                }
-                (Some(_), _) => {
-                    at += 1;
-                    continue;
-                }
-                (None, _) => {}
+        match (quote, byte) {
+            (Some(b'\''), b'\'') | (Some(b'"'), b'"') => {
+                quote = None;
+                at += 1;
+                continue;
             }
+            (None | Some(b'"'), b'\\') => {
+                at += 2;
+                continue;
+            }
+            (None, b'\'' | b'"') => {
+                quote = Some(byte);
+                at += 1;
+                continue;
+            }
+            (Some(_), _) => {
+                at += 1;
+                continue;
+            }
+            (None, _) => {}
         }
         let separator = match (byte, bytes.get(at + 1)) {
             (b'&', Some(b'&')) => "&&",
@@ -305,30 +247,6 @@ fn split_at_separators(command: &str, quotes_read: bool) -> Vec<(&'static str, S
     pieces
 }
 
-/// The programs that only read what a Git command prints: a filter piped after it changes
-/// nothing (EN-104, decided 2026-10-18).
-const READ_ONLY_FILTERS: [&str; 7] = ["head", "tail", "grep", "wc", "cut", "sort", "uniq"];
-
-/// Whether a segment only filters what is piped into it: `head`, `tail`, `grep`, `wc`, `cut`,
-/// `sort`, `uniq`, `sed -n` without `-i`, `awk` without `system` nor a redirection; none writes a
-/// file (`>`), `2>&1` aside.
-#[must_use]
-pub fn is_read_only_filter(segment: &str) -> bool {
-    let text = segment.replace("2>&1", "");
-    let mut words = text.split(is_space).filter(|word| !word.is_empty());
-    let program = words.next().unwrap_or_default();
-    let rest: Vec<&str> = words.collect();
-
-    if text.contains('>') {
-        return false;
-    }
-    match program {
-        "sed" => rest.first() == Some(&"-n") && !rest.iter().any(|word| word.starts_with("-i")),
-        "awk" => !text.contains("system") && !text.contains("getline"),
-        _ => READ_ONLY_FILTERS.contains(&program),
-    }
-}
-
 /// Whether a command is one Git command, then only read-only filters piped after it, its own
 /// `2>&1` allowed: `git log --oneline | head -5`.
 #[must_use]
@@ -338,222 +256,167 @@ pub fn is_git_read_through_filters(command: &str) -> bool {
         return false;
     };
 
+    let git = commands(first);
+
     runs_git_at_all(first)
-        && !first.replace("2>&1", "").contains('>')
+        && git.len() == 1
+        && git.iter().all(only_reads_and_duplicates)
         && !filters.is_empty()
         && filters
             .iter()
             .all(|(before, segment)| *before == "|" && is_read_only_filter(segment))
 }
 
-/// `^git\s`: a segment that runs Git.
-fn runs_git_at_all(segment: &str) -> bool {
-    segment.starts_with("git") && segment[3..].starts_with(is_space)
-}
+/// Whether a simple command holds no substitution and writes no file: its redirections only read
+/// one (`<`) or duplicate a descriptor (`2>&1`).
+fn only_reads_and_duplicates(simple: &Simple) -> bool {
+    !simple.substituted
+        && simple.redirections.iter().all(|redirection| {
+            let operator = redirection.trim_start_matches(|digit: char| digit.is_ascii_digit());
 
-/// The positions a Git subcommand may start at after `git` and its global options (`-C <path>`,
-/// `-c <name>=<value>`, `--no-pager`): `^git(?:\s+(?:-[Cc]\s+(?:"[^"]*"|'[^']*'|\S+)|--[a-z-]+(?:=\S+)?))*\s+`,
-/// every way it matches.
-fn git_subcommands(segment: &str) -> Vec<usize> {
-    if !segment.starts_with("git") {
-        return Vec::new();
-    }
-
-    let mut starts = Vec::new();
-    let mut frontier = vec![3];
-    let mut seen = Vec::new();
-
-    while let Some(position) = frontier.pop() {
-        if seen.contains(&position) {
-            continue;
-        }
-        seen.push(position);
-
-        let Some(word) = after_some_spaces(segment, position) else {
-            continue;
-        };
-
-        starts.push(word);
-        frontier.extend(option_ends(segment, word));
-    }
-    starts
-}
-
-/// The ends of one global option of Git starting at `at`, every way it matches.
-fn option_ends(segment: &str, at: usize) -> Vec<usize> {
-    let rest = &segment[at..];
-    let mut ends = Vec::new();
-
-    if rest.starts_with("-C") || rest.starts_with("-c") {
-        if let Some(value) = after_some_spaces(segment, at + 2) {
-            for quote in ['"', '\''] {
-                if segment[value..].starts_with(quote)
-                    && let Some(close) = segment[value + 1..].find(quote)
-                {
-                    ends.push(value + 1 + close + 1);
-                }
-            }
-            let end = after_non_spaces(segment, value);
-
-            if end > value {
-                ends.push(end);
-            }
-        }
-    } else if let Some(name) = rest.strip_prefix("--") {
-        let length = name
-            .bytes()
-            .take_while(|byte| byte.is_ascii_lowercase() || *byte == b'-')
-            .count();
-        let end = at + 2 + length;
-
-        if length > 0 {
-            let valued = segment[end..]
-                .starts_with('=')
-                .then(|| after_non_spaces(segment, end + 1))
-                .filter(|value_end| *value_end > end + 1);
-
-            ends.push(valued.unwrap_or(end));
-        }
-    }
-    ends
-}
-
-/// `-[A-Za-z]*n[A-Za-z]*(?:\s|$)` at `at`: short options of which one is `-n`.
-fn short_n(segment: &str, at: usize) -> bool {
-    let Some(letters) = segment[at..].strip_prefix('-') else {
-        return false;
-    };
-    let length = letters.bytes().take_while(u8::is_ascii_alphabetic).count();
-
-    letters[..length].contains('n') && space_or_end(segment, at + 1 + length)
-}
-
-/// `--no-verify\b` at `at`.
-fn no_verify(segment: &str, at: usize) -> bool {
-    starts_with_word(segment, at, "--no-verify")
-}
-
-/// `(?:--force|-f|\+\S+)(?:\s|$)` at `at`.
-fn forces(segment: &str, at: usize) -> bool {
-    let rest = &segment[at..];
-
-    (rest.starts_with("--force") && space_or_end(segment, at + 7))
-        || (rest.starts_with("-f") && space_or_end(segment, at + 2))
-        || (rest.starts_with('+') && after_non_spaces(segment, at + 1) > at + 1)
-}
-
-/// A commit or a push that skips the Git hooks: `commit\b.*\s(?:--no-verify\b|-…n…)`,
-/// `push\b.*\s--no-verify\b`.
-fn skips_hooks(segment: &str) -> bool {
-    git_subcommands(segment).into_iter().any(|start| {
-        let commit = starts_with_word(segment, start, "commit")
-            && after_any_then_space(segment, start + 6)
-                .into_iter()
-                .any(|at| no_verify(segment, at) || short_n(segment, at));
-        let push = starts_with_word(segment, start, "push")
-            && after_any_then_space(segment, start + 4)
-                .into_iter()
-                .any(|at| no_verify(segment, at));
-
-        commit || push
-    })
-}
-
-/// A push forced without lease: `push\b(?=.*\s(?:--force|-f|\+\S+)(?:\s|$))`.
-fn forces_push(segment: &str) -> bool {
-    git_subcommands(segment).into_iter().any(|start| {
-        starts_with_word(segment, start, "push")
-            && after_any_then_space(segment, start + 4)
-                .into_iter()
-                .any(|at| forces(segment, at))
-    })
-}
-
-/// `core.hooksPath` set for a Git command: `^git\s.*(?:-c\s+|config\b.*\s)core\.hooksPath\b`,
-/// unless the `config` command only reads it ([`reads_config`]).
-fn sets_hooks_path(segment: &str) -> bool {
-    let Some(space) = segment
-        .strip_prefix("git")
-        .and_then(|rest| rest.chars().next())
-        .filter(|character| is_space(*character))
-    else {
-        return false;
-    };
-    let hooks_path = |at: usize| starts_with_word(segment, at, HOOKS_PATH);
-
-    reached_by_any(segment, 3 + space.len_utf8())
-        .into_iter()
-        .any(|at| {
-            let by_option = segment[at..].starts_with("-c")
-                && after_some_spaces(segment, at + 2).is_some_and(hooks_path);
-            let by_config = starts_with_word(segment, at, "config")
-                && after_any_then_space(segment, at + 6)
-                    .into_iter()
-                    .any(|key| hooks_path(key) && !reads_config(segment, at + 6, key));
-
-            by_option || by_config
+            (operator.starts_with('<') && !operator.starts_with("<>"))
+                || (operator.starts_with(">&")
+                    && operator[2..]
+                        .bytes()
+                        .all(|byte| byte.is_ascii_digit() || byte == b'-'))
         })
 }
 
-/// The key the Git hooks' folder is set by.
-const HOOKS_PATH: &str = "core.hooksPath";
+/// The programs that only read what is piped into them, whatever their options, `grep`, `head`,
+/// `tail`, `wc` and `cut` (EN-104, decided 2026-10-18); `sort`, `uniq`, `sed` and `awk` are read
+/// further by [`is_read_only_filter`].
+const READ_ONLY_FILTERS: [&str; 5] = ["head", "tail", "grep", "wc", "cut"];
 
-/// The options of `git config` that only say where or how to read (EN-113).
-const CONFIG_READ_OPTIONS: [&str; 15] = [
-    "--get",
-    "--get-all",
-    "--get-regexp",
-    "get",
-    "--all",
-    "--local",
-    "--global",
-    "--system",
-    "--worktree",
-    "--show-origin",
-    "--show-scope",
-    "--null",
-    "-z",
-    "--includes",
-    "--no-includes",
-];
+/// Whether a segment only filters what is piped into it (AUD-023): one simple command, no
+/// substitution, no redirection writing a file (`2>&1` allowed), and its program `head`, `tail`,
+/// `grep`, `wc`, `cut`; `sort` without `-o` nor `--output` nor `--compress-program`, which runs a
+/// program; `uniq` with one file at most, a second being its output; `sed -n` whose scripts only
+/// choose lines and print them (no `s`, `w`, `e`, `r`), without `-i` nor any other option; `awk`
+/// whose program has no `system`, `getline`, pipe nor redirection, nor `-f` file.
+#[must_use]
+pub fn is_read_only_filter(segment: &str) -> bool {
+    let simples = commands(segment);
+    let [simple] = simples.as_slice() else {
+        return false;
+    };
+    let Some((program, arguments)) = simple.words.split_first() else {
+        return false;
+    };
 
-/// Whether a `git config` whose options run from `from` to the key at `key` only reads the key:
-/// every option one of [`CONFIG_READ_OPTIONS`] or a `--type=`, `--default=` or `--file=`, and
-/// either a getter among them (`--get`, `get`) or no value after the key, a redirection aside
-/// (`git config core.hooksPath 2>&1`). `--unset`, `--add`, `set` or a value change it (EN-113).
-fn reads_config(segment: &str, from: usize, key: usize) -> bool {
-    let options: Vec<&str> = segment[from..key]
-        .split(is_space)
-        .filter(|word| !word.is_empty())
-        .collect();
-    let read_only = options.iter().all(|option| {
-        CONFIG_READ_OPTIONS.contains(option)
-            || ["--type=", "--default=", "--file="]
-                .iter()
-                .any(|prefix| option.starts_with(prefix))
-    });
-    let getter = options
-        .iter()
-        .any(|option| matches!(*option, "--get" | "--get-all" | "--get-regexp" | "get"));
-    let no_value = segment[key + HOOKS_PATH.len()..]
-        .split(is_space)
-        .filter(|word| !word.is_empty())
-        .all(|word| {
-            word.trim_start_matches(|digit: char| digit.is_ascii_digit())
-                .starts_with('>')
-        });
+    if !only_reads_and_duplicates(simple) {
+        return false;
+    }
+    match program.as_str() {
+        "sort" => {
+            let read = Arguments::read(
+                arguments,
+                "ktSTo",
+                &[
+                    "--key",
+                    "--field-separator",
+                    "--buffer-size",
+                    "--temporary-directory",
+                    "--output",
+                ],
+            );
 
-    read_only && (getter || no_value)
+            !read.shorts.contains(&'o')
+                && !read.has_long("--output")
+                && !read.has_long("--compress-program")
+        }
+        "uniq" => {
+            let read = Arguments::read(
+                arguments,
+                "fsw",
+                &["--skip-fields", "--skip-chars", "--check-chars"],
+            );
+
+            read.operands.len() <= 1
+        }
+        "sed" => is_printing_sed(arguments),
+        "awk" => {
+            let read = Arguments::read(arguments, "vF", &[]);
+            let program = read.operands.first().map_or("", String::as_str);
+
+            !read.shorts.contains(&'f')
+                && !read
+                    .longs
+                    .iter()
+                    .any(|long| long.starts_with("--f") || long.starts_with("--e"))
+                && !["system", "getline", "|", ">"]
+                    .iter()
+                    .any(|word| program.contains(word))
+        }
+        name => READ_ONLY_FILTERS.contains(&name),
+    }
 }
 
-/// `^gh\s+pr\s+merge\b`.
-fn merges(segment: &str) -> bool {
-    segment
-        .strip_prefix("gh")
-        .and_then(|_| after_some_spaces(segment, 2))
-        .filter(|at| segment[*at..].starts_with("pr"))
-        .and_then(|at| after_some_spaces(segment, at + 2))
-        .is_some_and(|at| starts_with_word(segment, at, "merge"))
+/// Whether a `sed` only prints lines: `-n` given, its options `-n`, `-E`, `-r`, `-u`, `-z`, `-s`
+/// or `-e <script>` and their long names, each script made of addresses (numbers, `$`, `/regex/`,
+/// `~`, `,`) and the commands `p`, `P`, `l`, `=`, `q`, `Q`, `d`, `D`, `n`, `N`, `!`, `{`, `}`.
+fn is_printing_sed(arguments: &[String]) -> bool {
+    let read = Arguments::read(arguments, "e", &["--expression"]);
+    let known_long = [
+        "--quiet",
+        "--silent",
+        "--regexp-extended",
+        "--unbuffered",
+        "--null-data",
+        "--separate",
+    ];
+    let mut scripts: Vec<&str> = Vec::new();
+    let mut at = 0;
+
+    while let Some(word) = arguments.get(at) {
+        at += 1;
+        if word == "-e" || word == "--expression" {
+            scripts.extend(arguments.get(at).map(String::as_str));
+            at += 1;
+        } else if let Some(script) = word.strip_prefix("--expression=") {
+            scripts.push(script);
+        }
+    }
+    if scripts.is_empty() {
+        scripts.extend(read.operands.first().map(String::as_str));
+    }
+    read.shorts.contains(&'n')
+        && read.shorts.iter().all(|letter| "nErzsue".contains(*letter))
+        && read.longs.iter().all(|long| {
+            known_long.iter().any(|option| abbreviates(long, option))
+                || abbreviates(long, "--expression")
+        })
+        && !read
+            .longs
+            .iter()
+            .any(|long| abbreviates(long, "--in-place"))
+        && !scripts.is_empty()
+        && scripts.iter().all(|script| is_printing_sed_script(script))
+}
+
+/// Whether a `sed` script only chooses lines and prints them: see [`is_printing_sed`].
+fn is_printing_sed_script(script: &str) -> bool {
+    let mut characters = script.chars();
+
+    while let Some(character) = characters.next() {
+        if character == '/' {
+            let mut escaped = false;
+
+            for inner in characters.by_ref() {
+                if inner == '/' && !escaped {
+                    break;
+                }
+                escaped = inner == '\\' && !escaped;
+            }
+        } else if !(character.is_ascii_digit() || " \t\n,$;~+pPl=qQdDnN!{}".contains(character)) {
+            return false;
+        }
+    }
+    true
+}
+
+/// `^git\s`: a segment that runs Git.
+fn runs_git_at_all(segment: &str) -> bool {
+    segment.starts_with("git") && segment[3..].starts_with(is_space)
 }
 
 /// Whether a segment runs Vitest on every test, outside the heavy lock (EN-047): no test path, or
@@ -593,34 +456,40 @@ pub fn is_full_vitest_run(segment: &str) -> bool {
     })
 }
 
-/// A guard: whether a segment is forbidden, and why.
-type Guard = (fn(&str) -> bool, &'static str);
+/// The reason given for what a forbidden command does.
+#[must_use]
+pub fn forbidden_text(forbidden: Forbidden) -> &'static str {
+    match forbidden {
+        Forbidden::Merge => MERGE,
+        Forbidden::NoVerify => NO_VERIFY,
+        Forbidden::HooksOff => HOOKS_OFF,
+        Forbidden::ForcePush => FORCE_PUSH,
+        Forbidden::ProtectedPush => PROTECTED_PUSH,
+    }
+}
 
-/// The reason for denying a shell command, if one of its segments is forbidden: the first guard
-/// matching, then a full Vitest run, which takes the heavy lock through `npm run test` (EN-047).
-/// The segments are read both as the shell splits them and split inside quotes too, so that a
-/// command quoted for `sh -c` is judged as well (EN-113).
+/// The reason for denying a shell command, the current branch unknown: see [`denied_reason_on`].
 #[must_use]
 pub fn denied_reason(command: &str) -> Option<&'static str> {
-    let text = without_heredocs(command);
-    let mut pieces = segments(&text);
+    denied_reason_on(command, &String::new)
+}
 
-    pieces.extend(every_segment(&text));
-    let guards: [Guard; 4] = [
-        (merges, MERGE),
-        (skips_hooks, NO_VERIFY),
-        (sets_hooks_path, HOOKS_OFF),
-        (forces_push, FORCE_PUSH),
-    ];
+/// The reason for denying a shell command: the first command it runs that is forbidden, every
+/// simple command and the command each wrapper runs read word by word (AUD-023,
+/// [`crate::forbidden`]), then a full Vitest run, which takes the heavy lock through `npm run test`
+/// (EN-047). `branch` gives the current branch, asked only for a push naming no destination.
+#[must_use]
+pub fn denied_reason_on(command: &str, branch: &dyn Fn() -> String) -> Option<&'static str> {
+    let found = invocations(&without_heredocs(command));
 
-    guards
+    found
         .iter()
-        .find(|(matches, _)| pieces.iter().any(|segment| matches(segment)))
-        .map(|(_, reason)| *reason)
+        .find_map(|invocation| reason(invocation, branch))
+        .map(forbidden_text)
         .or_else(|| {
-            pieces
+            found
                 .iter()
-                .any(|segment| is_full_vitest_run(segment))
+                .any(|invocation| is_full_vitest_run(&invocation.words.join(" ")))
                 .then_some(FULL_VITEST)
         })
 }

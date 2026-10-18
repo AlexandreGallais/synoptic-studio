@@ -8,7 +8,8 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, Output, Stdio};
 
 use hooks::guard::{
-    Entered, denied_reason, entered, entered_worktree_reason, every_segment, is_full_vitest_run,
+    Entered, FORCE_PUSH, HOOKS_OFF, MERGE, NO_VERIFY, PROTECTED_PUSH, denied_reason,
+    denied_reason_on, entered, entered_worktree_reason, is_full_vitest_run,
     is_git_read_through_filters, is_read_only_filter, later_folders, lexical_join, missing_script,
     missing_script_reason, npm_script, scripts_of, segments, without_heredocs, worktree_reason,
     worktree_root,
@@ -70,7 +71,6 @@ fn allows_the_commands_that_only_look_alike() {
         "gh pr view 21",
         "gh pr create --fill",
         "git push --force-with-lease origin feat/x",
-        "git push origin main",
         "git -C \"/work/SVG editor\" push -u origin feat/x",
         "git commit -m \"x\" --amend",
         "git log -n 3",
@@ -130,7 +130,6 @@ fn matches_as_the_regular_expressions_did_on_their_edges() {
     assert_eq!(denied_reason("git commit -m n"), None);
     // `--no-verify` as a word only, and `-f` as a word only.
     assert_eq!(denied_reason("git push --no-verifyx"), None);
-    assert_eq!(denied_reason("git push -fu origin x"), None);
     // A quoted `-C` path holding a space, and the same path read as words.
     assert!(denied_reason("git -C 'a b' --no-pager push +x").is_some());
     assert!(denied_reason("git --git-dir=.git push --force").is_some());
@@ -193,9 +192,8 @@ fn splits_nothing_inside_quotes_nor_at_an_escaped_separator() {
     );
     // An unclosed quote runs to the end.
     assert_eq!(segments("echo 'a; b"), ["echo 'a; b"]);
-    // Every separator, quoted or not, for the guards, the quotes around each segment left out.
-    assert_eq!(every_segment("grep 'a|b'"), ["grep 'a", "b"]);
-    assert_eq!(every_segment("sh -c \"a; b\""), ["sh -c \"a", "b"]);
+    // A backslash inside single quotes is a character: the quote after it closes them.
+    assert_eq!(segments("echo 'a\\' ; b"), ["echo 'a\\'", "b"]);
 }
 
 #[test]
@@ -668,6 +666,12 @@ fn tells_a_read_only_filter() {
         "sed -n 1p",
         "awk 'NR==1'",
         "head 2>&1",
+        "sort -k2 -t: -u",
+        "uniq -c",
+        "uniq -f 1 in.txt",
+        "sed -n '/^a/,/b$/p'",
+        "sed -nE -e '1,5p' -e '$p'",
+        "grep -c x < in.txt",
     ] {
         assert!(is_read_only_filter(filter), "{filter}");
     }
@@ -679,9 +683,177 @@ fn tells_a_read_only_filter() {
         "awk '{getline}'",
         "head > x",
         "",
+        // Writers and runners found by AUD-023's review.
+        "sort -o out.txt",
+        "sort -uo out.txt",
+        "sort --output=out.txt",
+        "sort --out out.txt",
+        "sort --compress-program=sh",
+        "uniq - out.txt",
+        "uniq in.txt out.txt",
+        "sed -n 'w out.txt'",
+        "sed -n 's/a/b/w out.txt'",
+        "sed -n '1e date'",
+        "sed -n --in-place 1p x",
+        "sed -n --in 1p x",
+        "awk '{print | \"sh\"}'",
+        "awk -f prog.awk",
+        "head $(git status)",
+        "grep `git push`",
+        "head &> x",
     ] {
         assert!(!is_read_only_filter(filter), "{filter}");
     }
     assert!(!is_git_read_through_filters("git log"));
     assert!(!is_git_read_through_filters(""));
+}
+
+/// The cases of AUD-023's review, each with the reason expected, `None` for a command that goes
+/// through: forms that passed the text matchers, and commands they refused for a text.
+const AUDIT_CASES: [(&str, Option<&str>); 77] = [
+    // A force push, its option bundled, quoted, after a global option, an assignment, a wrapper,
+    // in a subshell, a substitution, a `-c` text, an `eval`, or across a line continuation.
+    ("git push -uf origin x", Some(FORCE_PUSH)),
+    ("git push -fu origin x", Some(FORCE_PUSH)),
+    ("git push \"-f\"", Some(FORCE_PUSH)),
+    ("git push \"--force\" origin x", Some(FORCE_PUSH)),
+    ("git push --forc origin x", Some(FORCE_PUSH)),
+    ("git push origin '+x'", Some(FORCE_PUSH)),
+    ("git push --mirror origin", Some(FORCE_PUSH)),
+    ("git -P push -f", Some(FORCE_PUSH)),
+    ("git --git-dir .git push -f", Some(FORCE_PUSH)),
+    ("/usr/bin/git push -f", Some(FORCE_PUSH)),
+    ("GIT_DIR=. git push -f", Some(FORCE_PUSH)),
+    ("env git push -f", Some(FORCE_PUSH)),
+    ("env -u HOME A=1 git push -f", Some(FORCE_PUSH)),
+    ("env -S 'git push -f'", Some(FORCE_PUSH)),
+    ("command git push -f", Some(FORCE_PUSH)),
+    ("sudo -u me git push -f", Some(FORCE_PUSH)),
+    ("nohup nice -n 5 timeout 10 git push -f", Some(FORCE_PUSH)),
+    ("(git push -f)", Some(FORCE_PUSH)),
+    ("{ git push -f; }", Some(FORCE_PUSH)),
+    ("if git push -f; then :; fi", Some(FORCE_PUSH)),
+    ("x=$(git push -f)", Some(FORCE_PUSH)),
+    ("echo \"$(git push -f)\"", Some(FORCE_PUSH)),
+    ("echo `git push -f`", Some(FORCE_PUSH)),
+    ("cat <(git push -f)", Some(FORCE_PUSH)),
+    ("bash -c \"git push -f\"", Some(FORCE_PUSH)),
+    ("bash -o pipefail -lc 'git push -f'", Some(FORCE_PUSH)),
+    ("eval git push -f", Some(FORCE_PUSH)),
+    ("eval 'git push -f'", Some(FORCE_PUSH)),
+    ("git push \\\n -f", Some(FORCE_PUSH)),
+    ("git push $'-\\x66'", Some(FORCE_PUSH)),
+    ("echo x | xargs git push -f", Some(FORCE_PUSH)),
+    (r"find . -exec git push -f \;", Some(FORCE_PUSH)),
+    ("target/release/heavy-lock git push -f", Some(FORCE_PUSH)),
+    (
+        "cargo run -q -p heavy-lock -- git push -f",
+        Some(FORCE_PUSH),
+    ),
+    (
+        "cargo run -q -p heavy-lock -- --lock merge git push -f",
+        Some(FORCE_PUSH),
+    ),
+    ("git -c alias.p=push p -f", Some(FORCE_PUSH)),
+    ("git -c 'alias.p=!git push -f' p", Some(FORCE_PUSH)),
+    // The hooks skipped: quoted, abbreviated, by a merge.
+    ("git commit \"--no-verify\" -m x", Some(NO_VERIFY)),
+    ("git commit \"-n\" -m x", Some(NO_VERIFY)),
+    ("git commit --no-veri -m x", Some(NO_VERIFY)),
+    ("git commit -anm x", Some(NO_VERIFY)),
+    (
+        "target/release/heavy-lock git commit -n -m x",
+        Some(NO_VERIFY),
+    ),
+    ("git merge --no-verify x", Some(NO_VERIFY)),
+    ("git push --no-verify origin x", Some(NO_VERIFY)),
+    // The hooks' folder set: in any case, glued, quoted, by the environment.
+    ("git config core.hookspath /tmp", Some(HOOKS_OFF)),
+    ("git -c core.hookspath=x commit -m x", Some(HOOKS_OFF)),
+    ("git -ccore.hooksPath=x status", Some(HOOKS_OFF)),
+    ("git --config-env=core.hooksPath=X status", Some(HOOKS_OFF)),
+    ("git config \"core.hooksPath\" x", Some(HOOKS_OFF)),
+    (
+        "git config -f .git/config core.hooksPath x",
+        Some(HOOKS_OFF),
+    ),
+    ("git config --remove-section core", Some(HOOKS_OFF)),
+    ("git config --edit", Some(HOOKS_OFF)),
+    (
+        "GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=core.hooksPath GIT_CONFIG_VALUE_0=x git commit -m x",
+        Some(HOOKS_OFF),
+    ),
+    (
+        "export GIT_CONFIG_PARAMETERS=\"'core.hooksPath'='x'\"",
+        Some(HOOKS_OFF),
+    ),
+    // A merge after an assignment or a wrapper, or through the API.
+    ("GH_X=1 gh pr merge 3", Some(MERGE)),
+    ("env gh pr merge 3", Some(MERGE)),
+    ("command gh pr merge 3", Some(MERGE)),
+    ("gh pr -R o/r merge 3", Some(MERGE)),
+    ("target/release/heavy-lock gh pr merge 3", Some(MERGE)),
+    ("gh api -X PUT repos/o/r/pulls/3/merge", Some(MERGE)),
+    // A push to `main` or `develop`, named, deleted, by pattern, or all branches.
+    ("git push origin HEAD:develop", Some(PROTECTED_PUSH)),
+    ("git push origin :develop", Some(PROTECTED_PUSH)),
+    ("git push origin main", Some(PROTECTED_PUSH)),
+    ("git push origin x:refs/heads/main", Some(PROTECTED_PUSH)),
+    ("git push --delete origin develop", Some(PROTECTED_PUSH)),
+    (
+        "git push origin 'refs/heads/*:refs/heads/*'",
+        Some(PROTECTED_PUSH),
+    ),
+    ("git push origin :", Some(PROTECTED_PUSH)),
+    ("git push --all origin", Some(PROTECTED_PUSH)),
+    // What the text matchers refused, and goes through.
+    ("git commit -m \"fix -n flag\"", None),
+    ("git commit -m n", None),
+    ("git config core.hooksPath > /dev/null", None),
+    ("grep -E \"x|gh pr merge\" notes.md", None),
+    ("node -e \"console.log('git push -f')\"", None),
+    ("echo 'git push --force'", None),
+    ("git push --force-with-lease origin docs/aud-023-x", None),
+    ("git push -u origin feature/f21-agent-tools-in-rust", None),
+    ("git push origin docs/aud-023-x:docs/aud-023-x", None),
+];
+
+#[test]
+fn judges_each_case_of_the_audit_word_by_word() {
+    for (command, expected) in AUDIT_CASES {
+        assert_eq!(denied_reason(command), expected, "{command}");
+    }
+}
+
+#[test]
+fn refuses_a_push_naming_no_destination_on_a_protected_branch() {
+    let on = |branch: &'static str| move || branch.to_owned();
+
+    for command in [
+        "git push",
+        "git push origin",
+        "git push -u origin HEAD",
+        "git push origin @",
+    ] {
+        assert_eq!(
+            denied_reason_on(command, &on("develop")),
+            Some(PROTECTED_PUSH),
+            "{command}"
+        );
+        assert_eq!(
+            denied_reason_on(command, &on("main")),
+            Some(PROTECTED_PUSH),
+            "{command}"
+        );
+        assert_eq!(
+            denied_reason_on(command, &on("docs/aud-023-x")),
+            None,
+            "{command}"
+        );
+    }
+    // A destination named: the current branch is not asked.
+    let never = || -> String { panic!("the branch is not asked") };
+
+    assert_eq!(denied_reason_on("git push origin x:y", &never), None);
+    assert_eq!(denied_reason_on("git status", &never), None);
 }

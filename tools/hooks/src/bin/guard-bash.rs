@@ -1,5 +1,6 @@
 //! `PreToolUse` hook on `Bash` (ADR-0021, EN-104): denies the shell commands the project forbids,
-//! whatever the instructions say (`hooks::guard`). A command opening with `cd "<folder>"` is judged
+//! whatever the instructions say (`hooks::guard`), a push naming no destination judged by the
+//! current branch of the folder it runs in. A command opening with `cd "<folder>"` is judged
 //! in that folder: a story's worktree refuses a Git command chained with another, the brief's
 //! `cd "<worktree>" || exit 9` aside, and a script missing from that folder's `package.json` is
 //! refused with the rebase that brings it. Input: the hook JSON on stdin; output: a deny decision
@@ -12,7 +13,7 @@ use std::path::Path;
 use std::process::{Command, ExitCode};
 
 use hooks::guard::{
-    denied_reason, entered, entered_worktree_reason, later_folders, missing_script,
+    denied_reason_on, entered, entered_worktree_reason, later_folders, missing_script,
     missing_script_reason, scripts_of, worktree_reason,
 };
 use hooks::json;
@@ -34,17 +35,20 @@ fn hook() -> u8 {
         return 1;
     };
     let command = input.get("tool_input").get("command").text();
-    let reason = denied_reason(command).map(str::to_owned).or_else(|| {
-        let judged = entered(command, input.get("cwd").text());
-
-        entered_worktree_reason(&judged)
-            .or_else(|| {
-                later_folders(command, &judged.folder)
-                    .iter()
-                    .find_map(|folder| worktree_reason(&judged.command, folder))
-            })
-            .or_else(|| missing_script_refusal(&judged.command, &judged.folder))
-    });
+    let judged = entered(command, input.get("cwd").text());
+    // A push naming no destination updates the current branch of the folder it runs in.
+    let branch = || git(Path::new(&judged.folder), &["branch", "--show-current"]);
+    let reason = denied_reason_on(command, &branch)
+        .map(str::to_owned)
+        .or_else(|| {
+            entered_worktree_reason(&judged)
+                .or_else(|| {
+                    later_folders(command, &judged.folder)
+                        .iter()
+                        .find_map(|folder| worktree_reason(&judged.command, folder))
+                })
+                .or_else(|| missing_script_refusal(&judged.command, &judged.folder))
+        });
 
     if let Some(reason) = reason {
         print!("{}", deny_output(&reason));
