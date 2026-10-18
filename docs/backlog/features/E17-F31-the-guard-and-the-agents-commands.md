@@ -2,7 +2,7 @@
 id: F31
 epic: E17
 title: The guard and the agent's commands
-status: ready
+status: in-progress
 ---
 
 # E17 · F31 — The guard and the agent's commands
