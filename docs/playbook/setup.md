@@ -13,7 +13,7 @@ Setting up a new project the way this one ended E01. In order; each step names t
 | 5 | Dependencies: one documented row each, latest versions at least 7 days old, audit, unused code | `tests/package.test.ts`, `tools/deps/`, `docs/tooling/dependencies.md` | supply chain, ADR-0038 |
 | 6 | Git hooks: the staged files formatted and linted, Conventional Commits with closed scopes and the story's footer, branch names, full check before push | `.githooks/`, `tools/git-hooks/` (EN-108) | `docs/tooling/git-workflow.md` |
 | 7 | One CI, on the pull request into `main`; CodeQL; weekly link check | `.github/workflows/` | ADR-0038 |
-| 8 | Releases: the project's release tool, a release branch, the test report attached, docs and demo published on release | `.github/workflows/release.yml`, `tools/release/` | `docs/tooling/releases.md` |
+| 8 | Releases: the project's release tool, by a button on `main`, the test report attached; docs and demo published at each push to `main` | `.github/workflows/release.yml`, `.github/workflows/site.yml`, `tools/release/` | `docs/tooling/releases.md` |
 | 9 | Documentation site: VitePress, API pages from the TSDoc (a Rust generator on Oxc's parser here, TypeDoc before EN-072), Mermaid diagrams | `docs/.vitepress/` | `docs/tooling/documentation-site.md` |
 | 10 | Docs skeleton: domain, ADRs, conventions (writing rules first), references, derivations, research, backlog, process, guide, playbook | `docs/*/README.md`, templates `_*.md`, `docs/conventions/writing.md` | this playbook |
 | 11 | Backlog with tests: ids, statuses, parents' tables, feature frame | `tests/backlog.test.ts`, `tests/references.test.ts` | ADR-0017, ADR-0020 |

@@ -5,7 +5,8 @@
 //!   no file and makes no branch;
 //! - `check <file>` checks a release text, the body of a pull request into `main`, up to its
 //!   first line `---`;
-//! - `publish`, by the button of `release.yml` on `main`, computes the version from the last tag,
+//! - `publish`, by the button of `release.yml`, refuses a ref other than the branch `main`
+//!   (`GITHUB_REF`, a tag named `main` refused), computes the version from the last tag,
 //!   makes the GitHub release on the head with the bodies of the pull requests merged since and
 //!   the test report, and does nothing without a commit since that tag.
 
@@ -100,7 +101,10 @@ fn check_text(args: &[String]) -> u8 {
 fn publish_release() -> u8 {
     let folder = std::env::temp_dir().join(format!("release-publish-{}", std::process::id()));
     let mut runner = run;
-    let published = publish(&mut runner, &folder);
+    // The fully-formed ref the run is on, which GitHub sets in every job (`REF-GH-VARIABLES`):
+    // `refs/heads/main` for the branch, `refs/tags/main` for a tag of that name.
+    let reference = std::env::var("GITHUB_REF").unwrap_or_default();
+    let published = publish(&mut runner, &reference, &folder);
     let _ = fs::remove_dir_all(&folder);
 
     match published {

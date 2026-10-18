@@ -2,6 +2,11 @@
 
 What each working session dealt with, in the agent's words: the Product Owner's requests in neutral words, decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`).
 
+## 2026-10-18 — The tooling features after 0.3.0's merge
+
+- `#run` After REV-006 and the merge of #370 into `main`, the Product Owner asked for F24 to F27 (the CI in jobs, the test lane's tools, the mutation runner on Linux, retired scopes in the history check), then for the tooling left to be cut into small features by real theme, done now in E17 until the week's 90 %, without questions: SP-024 writes them. Their rule: one workflow per purpose, its trigger its only condition; workflows on `develop` never blocking; the review and the method's work at the session's end, before the merge into `main`.
+- `#run` EN-133: the Rust lane keeps `npm ci`, since the formatter's tests, run by `cargo llvm-cov`, run the project's oxfmt; the release binaries' build inside `npm ci` took 49 s to 2 min 12 s per lane at run 39145798246, and a build passed as an artifact would add its time before every lane rather than save it.
+
 ## 2026-10-18 — F22's run, then the first review at a return
 
 - `#run` The run on F22 ended at its scope, F22 merged into `develop` by PR #368: EN-122 (#362), EN-123 (#363), EN-116 (#364), EN-117 (#365), AUD-024 (#366), VAL-023 (#367), each a merge commit into `feature/f22-release-by-a-button`; 3 h 24, 134.9 M tokens (133.0 M cache reads), one worker at a time.

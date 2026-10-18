@@ -17,7 +17,7 @@
 
 ## Consequences
 
-- `tools/shared-files` lists `tool-incidents.md` among the logs, `move-rows` takes `### Incidents`, and `tests/logs.test.ts` checks the cards' form: a story of [F23](../backlog/features/E02-F23-e17s-tool-incidents-fixed.md).
+- `tools/shared-files` lists `tool-incidents.md` among the logs, `move-rows` takes `### Incidents`, and `tests/logs.test.ts` checks the cards' form: a story of [F23](../backlog/features/E17-F23-the-path-of-a-story.md).
 - The nine cards of 2026-10-18 moved into the repository at RET-004.
 
 ## References

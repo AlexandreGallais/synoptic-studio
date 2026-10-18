@@ -26,7 +26,7 @@
 
 ## Consequences
 
-- The guard allows a push with lease on a feature branch only through `git-sequences sync`'s rebase of that branch onto `develop`: a story of E02's first feature, [F23](../backlog/features/E02-F23-e17s-tool-incidents-fixed.md).
+- The guard allows a push with lease on a feature branch only through `git-sequences sync`'s rebase of that branch onto `develop`: a story of E02's first feature, [F23](../backlog/features/E17-F23-the-path-of-a-story.md).
 - `AGENTS.md` (Work, Never), the run skill, the worker brief, `docs/process/agile.md` and the backlog's templates say it.
 - The trial of decision 4 is measured at E02's retrospective, which keeps, changes or drops it.
 
