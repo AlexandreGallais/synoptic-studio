@@ -232,37 +232,93 @@ const FIRST_SMALL_FEATURE = 22;
 /** Story kinds every small feature needs: audit, validation (ADR-0084, decision 1). */
 const SMALL_FRAME_PREFIXES = ["AUD-", "VAL-"];
 
-/** Stories (`US`, `EN`) from which a small feature needs a checkpoint too (ADR-0084, decision 1). */
-const CHECKPOINT_FROM = 5;
+/** The most stories (`US`, `EN`) a small feature holds; a larger one is split (ADR-0084, decision 1). */
+const MOST_STORIES = 4;
+
+/** The most tasks a story of a small feature or a review holds; a larger one is split (EN-123). */
+const MOST_TASKS = 3;
+
+/**
+ * Whether a feature is small, refined under ADR-0084: from F22.
+ *
+ * @param feature - its id, `F22`
+ * @returns `true` from F22
+ */
+function isSmall(feature: string): boolean {
+  return Number(feature.slice(1)) >= FIRST_SMALL_FEATURE;
+}
 
 /**
  * The story kinds a feature needs: the whole frame before ADR-0084; after it, an audit and a
- * validation, and a checkpoint from five stories.
+ * validation.
  *
- * @param stories - every story item
  * @param feature - its id, `F22`
  * @returns the id prefixes its stories must hold
  */
-function framePrefixes(stories: readonly Item[], feature: string): readonly string[] {
-  if (Number(feature.slice(1)) < FIRST_SMALL_FEATURE) {
-    return FRAME_PREFIXES;
-  }
-
-  const built = stories.filter(
-    (story) => story.fields["feature"] === feature && /^(?:US|EN)-/u.test(story.fields["id"] ?? ""),
-  ).length;
-
-  return built < CHECKPOINT_FROM ? SMALL_FRAME_PREFIXES : [...SMALL_FRAME_PREFIXES, "CHK-"];
+function framePrefixes(feature: string): readonly string[] {
+  return isSmall(feature) ? SMALL_FRAME_PREFIXES : FRAME_PREFIXES;
 }
 
-/** Story kinds every started epic needs: review, retrospective (ADR-0023). */
-const CLOSING_PREFIXES = ["REV-", "RET-"];
+/**
+ * The last naming pass and retrospective of an epic's closing, before ADR-0086 ended them: a
+ * higher id is a closing written since; E02's `NAM-003` and `RET-005` are removed by EN-123.
+ */
+const LAST_CLOSINGS: Readonly<Record<string, number>> = { NAM: 3, RET: 5 };
 
-/** Story kind every started epic needs before its review: the naming pass (ADR-0049). */
-const NAMING_PREFIXES = ["NAM-"];
+/** The last review of an epic's closing (REV-005, E02's, removed by EN-123): a higher one is held at a return. */
+const LAST_EPIC_REVIEW = 5;
 
-/** Epics without a naming pass: E01 closed before ADR-0049, F13 is E14's (ADR-0049 §4). */
-const BEFORE_NAMING_PASS = new Set(["E01", "E14"]);
+/**
+ * Whether a story is an epic's closing written since ADR-0086: a `NAM` or a `RET` after the last.
+ *
+ * @param item - story item
+ * @returns `true` for `NAM-004` or `RET-006` and above
+ */
+function isNewClosing(item: Item): boolean {
+  const [kind = "", number = ""] = (item.fields["id"] ?? "").split("-", 2);
+  const last = LAST_CLOSINGS[kind];
+
+  return last !== undefined && Number(number) > last;
+}
+
+/**
+ * Whether a story is a review held at a return of the Product Owner (ADR-0086): a `REV` after
+ * the last epic review.
+ *
+ * @param item - story item
+ * @returns `true` for `REV-006` and above
+ */
+function isReturnReview(item: Item): boolean {
+  const [kind = "", number = ""] = (item.fields["id"] ?? "").split("-", 2);
+
+  return kind === "REV" && Number(number) > LAST_EPIC_REVIEW;
+}
+
+/**
+ * Number of tasks of a story: its `- [ ] T1` and `- [x] T1` lines.
+ *
+ * @param item - story item
+ * @returns its task lines, ticked or not
+ */
+function taskCount(item: Item): number {
+  return (
+    readFileSync(join(BACKLOG, item.folder, item.file), "utf8").match(/^- \[[ x]\] T\d/gmu)
+      ?.length ?? 0
+  );
+}
+
+/**
+ * A story item of an id alone, for the tests of the functions reading ids.
+ *
+ * @param id - its id, `REV-006`
+ * @returns the item, without file
+ */
+function storyOf(id: string): Item {
+  return { fields: { id }, file: "", folder: "stories" };
+}
+
+/** Templates of an epic's closing, gone with it (ADR-0086, decision 8). */
+const CLOSING_TEMPLATES = ["_naming-pass.md", "_retro.md"];
 
 /**
  * Whether the stories of one parent include every required kind.
@@ -503,28 +559,65 @@ describe("backlog", () => {
 
     expect(
       features.filter(
-        (feature) => !hasKinds(stories, ["feature", feature], framePrefixes(stories, feature)),
+        (feature) => !hasKinds(stories, ["feature", feature], framePrefixes(feature)),
       ),
     ).toEqual([]);
   });
 
-  it("closes every started epic with a review and a retrospective (ADR-0023)", () => {
-    const stories = items().filter((item) => item.folder === "stories");
-    const epics = [...new Set(stories.map((story) => story.fields["epic"] ?? ""))];
-    const unclosed = epics.filter((epic) => !hasKinds(stories, ["epic", epic], CLOSING_PREFIXES));
+  it("asks no epic for a closing and accepts none since ADR-0086: no new naming pass nor retrospective", () => {
+    const closings = items().filter((item) => item.folder === "stories" && isNewClosing(item));
 
-    expect(unclosed).toEqual([]);
+    expect(closings.map((item) => item.file)).toEqual([]);
   });
 
-  it("closes every started epic since ADR-0049 with a naming pass", () => {
+  it("keeps no template of an epic's closing, and the review's template holds a return's review (ADR-0086)", () => {
+    const review = readFileSync(join(BACKLOG, "_review.md"), "utf8");
+
+    expect(CLOSING_TEMPLATES.filter((file) => existsSync(join(BACKLOG, file)))).toEqual([]);
+    expect(review).toContain("since the last merge into `main`");
+  });
+
+  it("holds at most 4 stories in a small feature (ADR-0084, decision 1)", () => {
     const stories = items().filter((item) => item.folder === "stories");
-    const epics = [...new Set(stories.map((story) => story.fields["epic"] ?? ""))];
-    const unnamed = epics.filter(
-      (epic) =>
-        !BEFORE_NAMING_PASS.has(epic) && !hasKinds(stories, ["epic", epic], NAMING_PREFIXES),
+    const features = [...new Set(stories.map((story) => story.fields["feature"] ?? ""))].filter(
+      (feature) => feature !== "" && isSmall(feature),
+    );
+    const large = features.filter(
+      (feature) =>
+        stories.filter(
+          (story) =>
+            story.fields["feature"] === feature && /^(?:US|EN)-/u.test(story.fields["id"] ?? ""),
+        ).length > MOST_STORIES,
     );
 
-    expect(unnamed).toEqual([]);
+    expect(large).toEqual([]);
+  });
+
+  it("holds at most 3 tasks in a story of a small feature or a return's review (EN-123)", () => {
+    const large = items().filter(
+      (item) =>
+        item.folder === "stories" &&
+        (isSmall(item.fields["feature"] ?? "F00") || isReturnReview(item)) &&
+        taskCount(item) > MOST_TASKS,
+    );
+
+    expect(large.map((item) => item.file)).toEqual([]);
+  });
+
+  it("reads a return's review and a new closing by their ids", () => {
+    expect(
+      ["REV-005", "REV-006", "NAM-003", "NAM-004", "RET-006", "EN-123"].map((id) => [
+        isReturnReview(storyOf(id)),
+        isNewClosing(storyOf(id)),
+      ]),
+    ).toEqual([
+      [false, false],
+      [true, false],
+      [false, false],
+      [false, true],
+      [false, true],
+      [false, false],
+    ]);
   });
 
   it("traces every criterion of a done feature to a test tagged with its id (ADR-0027)", () => {
