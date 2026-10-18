@@ -26,7 +26,7 @@ One command formats every file: `npm run format` (`--write`) or `format:check` (
 - **Prose stays on its lines**: a paragraph or a list item stays on the lines it was written on (`proseWrap: "preserve"`), so a reflow never touches lines nobody edited.
 - **Targets are named**: the folders and root files listed in `package.json`, never `.`, which would walk into the worktrees of `.claude/worktrees/` and the build outputs (EN-045). `.oxfmtrc.json`'s `ignorePatterns` holds plain paths only.
 
-Run `npm run fix` before each commit: it runs the formatter, then oxlint and the project's linter with `--fix`. After it, `npm run check` finds no layout issue. At the commit, the pre-commit hook runs the same tools on the staged files, and secretlint on each of them ([hooks](../tooling/git-workflow.md#hooks-githooks)).
+Run `npm run fix` before each commit: it runs the formatter, then oxlint and the project's linter with `--fix`. After it, `npm run check` finds no layout issue. At the commit, the pre-commit hook runs the same tools on the staged files, and the secret scan on each of them ([hooks](../tooling/git-workflow.md#hooks-githooks)).
 
 ## Blank lines (`@stylistic/padding-line-between-statements`)
 

@@ -19,15 +19,17 @@ static X_OAUTH: LazyLock<Pattern> = LazyLock::new(|| {
     Pattern::plain(&format!(
         "https?://(?P<token>{DOT}{{1,256}}):x-oauth-basic@github{DOT}com/"
     ))
+    .needing(&[":x-oauth-basic@github"])
 });
 
 /// `_authToken=` and the rest of the line, unless it starts with `$`.
-static AUTH_TOKEN: LazyLock<Pattern> =
-    LazyLock::new(|| Pattern::plain(&format!("_authToken=(?P<token>[^$]{DOT}*)")));
+static AUTH_TOKEN: LazyLock<Pattern> = LazyLock::new(|| {
+    Pattern::plain(&format!("_authToken=(?P<token>[^$]{DOT}*)")).needing(&["_authToken="])
+});
 
 /// An npm access token: `npm_` and 36 characters.
 static ACCESS_TOKEN: LazyLock<Pattern> =
-    LazyLock::new(|| Pattern::bounded("npm_[A-Za-z0-9_]{36}", "A-Za-z0-9_"));
+    LazyLock::new(|| Pattern::bounded("npm_[A-Za-z0-9_]{36}", "A-Za-z0-9_").needing(&["npm_"]));
 
 /// The rule's findings: by the file's name first, then the access tokens.
 pub fn report(source: &Source<'_>, findings: &mut Vec<Finding>) {

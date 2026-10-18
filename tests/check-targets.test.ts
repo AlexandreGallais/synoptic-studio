@@ -240,8 +240,8 @@ describe("check tools given explicit targets (EN-045)", () => {
     },
   );
 
-  it("[F18.AC20] runs secretlint on the tracked files only", () => {
-    expect(SCRIPTS.get("lint:secrets")).toMatch(/^git ls-files -z \| xargs -0 secretlint /u);
+  it("[F18.AC20] runs the secret scan on the tracked files only", () => {
+    expect(SCRIPTS.get("lint:secrets")).toBe("cargo run --release -q -p secret-scan");
   });
 });
 
@@ -348,9 +348,9 @@ describe("the Rust workspace at the root (EN-068)", () => {
     expect(existsSync(join(ROOT, "tools", name, "Cargo.lock"))).toBe(false);
   });
 
-  it("[F19.AC9] leaves the build output target/ to Git, oxlint, the formatter and secretlint", () => {
+  it("[F19.AC9] leaves the build output target/ to Git, oxlint, the formatter and the secret scan", () => {
     expect(readFileSync(join(ROOT, ".gitignore"), "utf8")).toMatch(/^\/target\/$/mu);
-    expect(readFileSync(join(ROOT, ".secretlintignore"), "utf8")).toMatch(/^target$/mu);
+    expect(readFileSync(join(ROOT, ".secret-scan-ignore"), "utf8")).toMatch(/^target$/mu);
     expect(readFileSync(join(ROOT, ".oxlintrc.json"), "utf8")).toContain('"target/**"');
     expect(readFileSync(join(ROOT, ".oxfmtrc.json"), "utf8")).toMatch(/^ {4}"target",?$/mu);
   });

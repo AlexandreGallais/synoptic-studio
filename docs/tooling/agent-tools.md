@@ -125,6 +125,7 @@ A tool is written when a retrospective's metrics show its signal — the hand wo
 | `shared-files` | the `pre-push` hook; `story:finish` | `refuse-shared-files` and `move-rows` ([below](#shared-files-and-their-rows)) |
 | `worktree` | `worktree:new` | a story's worktree with `node_modules`, the hooks folder and the release binaries |
 | `git-hooks` | `prepare`, `worktree:new`, the Git hooks of `.githooks/` | `install` sets the hooks folder; `pre-commit` runs the tasks on the staged files ([Git workflow](./git-workflow.md#hooks-githooks)) |
+| `secret-scan` | `lint:secrets`, the pre-commit hook | secretlint's recommended rules and its comment filter in Rust: every tracked file, `--staged`, or the paths given, less `.secret-scan-ignore`'s and the `.gitignore` files'; exits 0, 1 on a finding, 2 on a fatal error (EN-110) |
 | `git-sequences` | `git:sync`, `git:commit` | the frequent Git sequences in one call each |
 | `run-totals` | `run:start`, `run:end`, `run:should-stop`, `metrics:session -- --run`, the status line | a run's marker, duration and tokens, counted incrementally; whether it stops at the week's limit |
 | `metrics` | `metrics` (`metrics`), `metrics:session` (`session-report`), `activity` (`activity`), the Monitor (`watch-task`) | the metrics of the agent's work, the rules' findings per epic included, the transcripts read incrementally; what the agents do; the watchdog of a background task ([metrics](./metrics.md#reading-the-transcripts)) |

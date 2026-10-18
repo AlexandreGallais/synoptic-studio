@@ -22,6 +22,7 @@ static TOKEN: LazyLock<Pattern> = LazyLock::new(|| {
         "ops_(?P<base64>ey[A-Za-z0-9+/=]{100,1280}fQ={0,2})",
         "A-Za-z0-9+/=",
     )
+    .needing(&["ops_"])
 });
 
 /// Whether base64 decodes to a JSON object or array.

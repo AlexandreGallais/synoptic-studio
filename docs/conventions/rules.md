@@ -204,7 +204,7 @@ Measured on real edits: the last 500 changes of a TypeScript file in the history
 
 | What | Runs | Time | Verdict |
 | --- | --- | --- | --- |
-| `pre-commit`: the staged-file runner | the formatter, oxlint and the project's linter with `--fix`, then secretlint, on the staged files | a commit of one Markdown file 356 ms, of one TypeScript file 617 ms, hooks included (lint-staged's: 716 and 989 ms, EN-108) | kept: the commit holds formatted, linted files, so a push never fails on layout; lint-staged's run ported to Rust (`git-hooks pre-commit`, EN-108) |
+| `pre-commit`: the staged-file runner | the formatter, oxlint and the project's linter with `--fix`, then the secret scan, on the staged files | a commit of one Markdown file 356 ms, of one TypeScript file 617 ms, hooks included (lint-staged's: 716 and 989 ms, EN-108) | kept: the commit holds formatted, linted files, so a push never fails on layout; lint-staged's run ported to Rust (`git-hooks pre-commit`, EN-108) |
 | `commit-msg`: the message | Conventional Commits, the scopes, 100 characters a line | 24 ms (commitlint: 218 ms, EN-108) | kept: every message alike, read by release-please and by the agent's `git log`; commitlint's rules ported to Rust (`git-hooks commit-msg`, EN-108) |
 | the scope list | 14 scopes, `SCOPES` in `tools/git-hooks/src/message.rs` | — | kept: `docs(backlog)` 227 and `docs(docs)` 148 times in the last 3,000 commits, every scope a layer or an area; **changed**: `eslint` dropped, its folder gone with EN-085 |
 | `commit-msg`: `rule-docs` on a done commit | a story that changes a rule brings its docs | 0.05 s | kept: a rule changed without its Q row, its VAL and its guide page is refused at the commit, not found at the review (EN-059) |

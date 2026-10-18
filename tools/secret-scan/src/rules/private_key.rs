@@ -20,7 +20,7 @@ static PEM: LazyLock<Pattern> = LazyLock::new(|| {
 
     Pattern::plain(&format!(
         "-----BEGIN[ ]?{label}\\n?(?P<body>[A-Za-z0-9+/={SPACE}\\\\]{{100,10000}})\\n?-----END[ ]?{label}"
-    ))
+    )).needing(&["-----BEGIN"])
 });
 
 /// Base64 alone, `=` at its end only.

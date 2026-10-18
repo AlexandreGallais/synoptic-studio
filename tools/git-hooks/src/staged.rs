@@ -100,8 +100,11 @@ pub fn repository_tasks() -> Vec<Task> {
         program: Program::Package("oxlint"),
         arguments: OXLINT.iter().map(|&option| option.to_owned()).collect(),
     };
-    let secretlint = Step {
-        program: Program::Package("secretlint"),
+    let secret_scan = Step {
+        program: Program::Tool {
+            krate: "secret-scan",
+            binary: "secret-scan",
+        },
         arguments: Vec::new(),
     };
 
@@ -120,7 +123,7 @@ pub fn repository_tasks() -> Vec<Task> {
         },
         Task {
             pattern: "*".to_owned(),
-            steps: vec![secretlint],
+            steps: vec![secret_scan],
         },
     ]
 }

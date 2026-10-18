@@ -45,14 +45,15 @@ static BEFORE: LazyLock<Vec<Token>> = LazyLock::new(|| {
             rule_id: "@secretlint/secretlint-rule-slack",
             pattern: Pattern::plain(&format!(
                 "{BOUNDARY}(?:xoxb|xoxp|xapp|xoxa|xoxo|xoxr)-(?:[0-9]-)?(?:[a-zA-Z0-9]{{1,40}}-)+[a-zA-Z0-9]{{1,40}}{BOUNDARY}"
-            )),
+            )).needing(&["xox", "xapp-"]),
             message: |found| Some(one("SLACK_TOKEN", "found slack token", whole(found))),
         },
         Token {
             rule_id: "@secretlint/secretlint-rule-slack",
             pattern: Pattern::plain(
                 r"(?i-u:https://hooks\.slack\.com/services/T[a-zA-Z0-9]{1,40}/B[a-zA-Z0-9]{1,40}/[a-zA-Z0-9]{1,40})",
-            ),
+            )
+            .needing(&["://"]),
             message: |found| {
                 Some(one(
                     "IncomingWebhook",
@@ -67,7 +68,7 @@ static BEFORE: LazyLock<Vec<Token>> = LazyLock::new(|| {
             pattern: Pattern::bounded(
                 r"SG\.[A-Za-z0-9_]{1,128}\.[A-Za-z0-9_]{1,128}([-_]?)[A-Za-z0-9_]{1,128}",
                 "A-Za-z0-9_",
-            ),
+            ).needing(&["SG."]),
             message: |found| {
                 let key = whole(found);
 
@@ -76,7 +77,7 @@ static BEFORE: LazyLock<Vec<Token>> = LazyLock::new(|| {
         },
         Token {
             rule_id: "@secretlint/secretlint-rule-shopify",
-            pattern: Pattern::bounded("(shppa|shpca|shpat|shpss)_[a-zA-Z0-9]{32,64}", "a-zA-Z0-9"),
+            pattern: Pattern::bounded("(shppa|shpca|shpat|shpss)_[a-zA-Z0-9]{32,64}", "a-zA-Z0-9").needing(&["shp"]),
             message: |found| Some(one("SHOPIFY_KEY", "found Shopify api key", whole(found))),
         },
         Token {
@@ -84,7 +85,7 @@ static BEFORE: LazyLock<Vec<Token>> = LazyLock::new(|| {
             pattern: Pattern::bounded(
                 "(?P<prefix>sk_live|sk_test|rk_live|rk_test)_[a-zA-Z0-9]{24,99}",
                 "a-zA-Z0-9",
-            ),
+            ).needing(&["k_live_", "k_test_"]),
             message: |found| {
                 let (id, label) = match found.group("prefix")? {
                     "sk_live" => ("STRIPE_SECRET_KEY_LIVE", "found Stripe Live Secret Key"),
@@ -108,12 +109,12 @@ static BEFORE: LazyLock<Vec<Token>> = LazyLock::new(|| {
             pattern: Pattern::bounded(
                 "(?P<type>ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9_]{36}",
                 "A-Za-z0-9_",
-            ),
+            ).needing(&["gh"]),
             message: github,
         },
         Token {
             rule_id: "@secretlint/secretlint-rule-github",
-            pattern: Pattern::bounded("(?P<type>github_pat)_[A-Za-z0-9_]{82}", "A-Za-z0-9_"),
+            pattern: Pattern::bounded("(?P<type>github_pat)_[A-Za-z0-9_]{82}", "A-Za-z0-9_").needing(&["github_pat_"]),
             message: github,
         },
         Token {
@@ -121,12 +122,12 @@ static BEFORE: LazyLock<Vec<Token>> = LazyLock::new(|| {
             pattern: Pattern::bounded(
                 r"(?P<type>ghs)_[0-9]{1,20}_[A-Za-z0-9_-]{1,1000}\.[A-Za-z0-9_-]{1,10000}\.[A-Za-z0-9_-]{1,1000}",
                 "A-Za-z0-9_-",
-            ),
+            ).needing(&["ghs_"]),
             message: github,
         },
         Token {
             rule_id: "@secretlint/secretlint-rule-gitlab",
-            pattern: Pattern::bounded("glpat-[A-Za-z0-9_-]{20,128}", "A-Za-z0-9_-"),
+            pattern: Pattern::bounded("glpat-[A-Za-z0-9_-]{20,128}", "A-Za-z0-9_-").needing(&["glpat-"]),
             message: |found| {
                 Some(one(
                     "GITLAB_PERSONAL_ACCESS_TOKEN",
@@ -137,7 +138,7 @@ static BEFORE: LazyLock<Vec<Token>> = LazyLock::new(|| {
         },
         Token {
             rule_id: "@secretlint/secretlint-rule-grafana",
-            pattern: Pattern::bounded("glc_[A-Za-z0-9+/]{32,400}={0,2}", "A-Za-z0-9+/="),
+            pattern: Pattern::bounded("glc_[A-Za-z0-9+/]{32,400}={0,2}", "A-Za-z0-9+/=").needing(&["glc_"]),
             message: |found| {
                 Some(one(
                     "GRAFANA_CLOUD_API_TOKEN",
@@ -148,7 +149,7 @@ static BEFORE: LazyLock<Vec<Token>> = LazyLock::new(|| {
         },
         Token {
             rule_id: "@secretlint/secretlint-rule-grafana",
-            pattern: Pattern::bounded("glsa_[A-Za-z0-9]{32}_[A-Fa-f0-9]{8}", "A-Fa-f0-9"),
+            pattern: Pattern::bounded("glsa_[A-Za-z0-9]{32}_[A-Fa-f0-9]{8}", "A-Fa-f0-9").needing(&["glsa_"]),
             message: |found| {
                 Some(one(
                     "GRAFANA_SERVICE_ACCOUNT_TOKEN",
@@ -161,12 +162,12 @@ static BEFORE: LazyLock<Vec<Token>> = LazyLock::new(|| {
             rule_id: "@secretlint/secretlint-rule-openai",
             pattern: Pattern::plain(&format!(
                 "sk-(?:proj|svcacct|admin)-(?:[A-Za-z0-9_-]{{74}}|[A-Za-z0-9_-]{{58}})T3BlbkFJ(?:[A-Za-z0-9_-]{{74}}|[A-Za-z0-9_-]{{58}}){BOUNDARY}|sk-[a-zA-Z0-9]{{20}}T3BlbkFJ[a-zA-Z0-9]{{20}}"
-            )),
+            )).needing(&["sk-"]),
             message: |found| Some(one("OPENAI_TOKEN", "found OpenAI API token", whole(found))),
         },
         Token {
             rule_id: "@secretlint/secretlint-rule-anthropic",
-            pattern: Pattern::bounded("sk-ant-api0[0-9]-[A-Za-z0-9_-]{90,128}AA", "A-Za-z0-9_-"),
+            pattern: Pattern::bounded("sk-ant-api0[0-9]-[A-Za-z0-9_-]{90,128}AA", "A-Za-z0-9_-").needing(&["sk-ant-api0"]),
             message: |found| {
                 Some(one(
                     "ANTHROPIC_API_KEY",
@@ -177,12 +178,12 @@ static BEFORE: LazyLock<Vec<Token>> = LazyLock::new(|| {
         },
         Token {
             rule_id: "@secretlint/secretlint-rule-groq",
-            pattern: Pattern::bounded("gsk_[a-zA-Z0-9]{52}", "a-zA-Z0-9"),
+            pattern: Pattern::bounded("gsk_[a-zA-Z0-9]{52}", "a-zA-Z0-9").needing(&["gsk_"]),
             message: |found| Some(one("GROQ_API_KEY", "found Groq API key", whole(found))),
         },
         Token {
             rule_id: "@secretlint/secretlint-rule-huggingface",
-            pattern: Pattern::bounded("hf_[a-zA-Z]{34}", "a-zA-Z"),
+            pattern: Pattern::bounded("hf_[a-zA-Z]{34}", "a-zA-Z").needing(&["hf_"]),
             message: |found| {
                 Some(one(
                     "HUGGINGFACE_USER_ACCESS_TOKEN",
@@ -193,7 +194,7 @@ static BEFORE: LazyLock<Vec<Token>> = LazyLock::new(|| {
         },
         Token {
             rule_id: "@secretlint/secretlint-rule-linear",
-            pattern: Pattern::bounded("lin_api_[a-zA-Z0-9_]{32,128}", "a-zA-Z0-9_"),
+            pattern: Pattern::bounded("lin_api_[a-zA-Z0-9_]{32,128}", "a-zA-Z0-9_").needing(&["lin_api_"]),
             message: |found| {
                 Some(one(
                     "LINEAR_API_TOKEN",
@@ -204,7 +205,7 @@ static BEFORE: LazyLock<Vec<Token>> = LazyLock::new(|| {
         },
         Token {
             rule_id: "@secretlint/secretlint-rule-notion",
-            pattern: Pattern::bounded("ntn_[0-9]{11}[A-Za-z0-9]{35}", "A-Za-z0-9"),
+            pattern: Pattern::bounded("ntn_[0-9]{11}[A-Za-z0-9]{35}", "A-Za-z0-9").needing(&["ntn_"]),
             message: |found| {
                 Some(one(
                     "NOTION_INTEGRATION_TOKEN",
@@ -222,7 +223,8 @@ static AFTER: LazyLock<Vec<Token>> = LazyLock::new(|| {
         // @secretlint/secretlint-rule-hashicorp-vault: service, batch and recovery tokens.
         Token {
             rule_id: "@secretlint/secretlint-rule-hashicorp-vault",
-            pattern: Pattern::bounded(r"hvs\.[A-Za-z0-9_-]{90,120}", "A-Za-z0-9_-"),
+            pattern: Pattern::bounded(r"hvs\.[A-Za-z0-9_-]{90,120}", "A-Za-z0-9_-")
+                .needing(&["hvs."]),
             message: |found| {
                 Some(one(
                     "HASHICORP_VAULT_SERVICE_TOKEN",
@@ -233,7 +235,8 @@ static AFTER: LazyLock<Vec<Token>> = LazyLock::new(|| {
         },
         Token {
             rule_id: "@secretlint/secretlint-rule-hashicorp-vault",
-            pattern: Pattern::bounded(r"hvb\.[A-Za-z0-9_-]{138,300}", "A-Za-z0-9_-"),
+            pattern: Pattern::bounded(r"hvb\.[A-Za-z0-9_-]{138,300}", "A-Za-z0-9_-")
+                .needing(&["hvb."]),
             message: |found| {
                 Some(one(
                     "HASHICORP_VAULT_BATCH_TOKEN",
@@ -244,7 +247,8 @@ static AFTER: LazyLock<Vec<Token>> = LazyLock::new(|| {
         },
         Token {
             rule_id: "@secretlint/secretlint-rule-hashicorp-vault",
-            pattern: Pattern::bounded(r"hvr\.[A-Za-z0-9_-]{90,120}", "A-Za-z0-9_-"),
+            pattern: Pattern::bounded(r"hvr\.[A-Za-z0-9_-]{90,120}", "A-Za-z0-9_-")
+                .needing(&["hvr."]),
             message: |found| {
                 Some(one(
                     "HASHICORP_VAULT_RECOVERY_TOKEN",
@@ -258,7 +262,8 @@ static AFTER: LazyLock<Vec<Token>> = LazyLock::new(|| {
             pattern: Pattern::bounded(
                 "(?P<prefix>vcp|vci|vca|vcr|vck)_[A-Za-z0-9]{20,60}",
                 "A-Za-z0-9",
-            ),
+            )
+            .needing(&["vc"]),
             message: |found| {
                 let (id, label) = match found.group("prefix")? {
                     "vcp" => (
@@ -279,7 +284,8 @@ static AFTER: LazyLock<Vec<Token>> = LazyLock::new(|| {
         },
         Token {
             rule_id: "@secretlint/secretlint-rule-databricks",
-            pattern: Pattern::bounded("dapi[A-Fa-f0-9]{32}(?:-[0-9])?", "A-Fa-f0-9"),
+            pattern: Pattern::bounded("dapi[A-Fa-f0-9]{32}(?:-[0-9])?", "A-Fa-f0-9")
+                .needing(&["dapi"]),
             message: |found| {
                 Some(one(
                     "DATABRICKS_PERSONAL_ACCESS_TOKEN",
@@ -290,7 +296,8 @@ static AFTER: LazyLock<Vec<Token>> = LazyLock::new(|| {
         },
         Token {
             rule_id: "@secretlint/secretlint-rule-docker",
-            pattern: Pattern::bounded("dckr_pat_[a-zA-Z0-9_-]{27}", "a-zA-Z0-9_-"),
+            pattern: Pattern::bounded("dckr_pat_[a-zA-Z0-9_-]{27}", "a-zA-Z0-9_-")
+                .needing(&["dckr_pat_"]),
             message: |found| {
                 Some(one(
                     "DOCKER_PERSONAL_ACCESS_TOKEN",
@@ -301,7 +308,8 @@ static AFTER: LazyLock<Vec<Token>> = LazyLock::new(|| {
         },
         Token {
             rule_id: "@secretlint/secretlint-rule-figma",
-            pattern: Pattern::bounded("figd_[A-Za-z0-9_-]{40,200}", "A-Za-z0-9_-"),
+            pattern: Pattern::bounded("figd_[A-Za-z0-9_-]{40,200}", "A-Za-z0-9_-")
+                .needing(&["figd_"]),
             message: |found| {
                 Some(one(
                     "FIGMA_PERSONAL_ACCESS_TOKEN",
@@ -315,7 +323,8 @@ static AFTER: LazyLock<Vec<Token>> = LazyLock::new(|| {
             pattern: Pattern::bounded(
                 "(?P<prefix>cfk|cfut|cfat)_[A-Za-z0-9]{40}[0-9a-f]{8}",
                 "A-Za-z0-9",
-            ),
+            )
+            .needing(&["cf"]),
             message: |found| {
                 let (id, label) = match found.group("prefix")? {
                     "cfk" => (
@@ -342,7 +351,8 @@ static AFTER: LazyLock<Vec<Token>> = LazyLock::new(|| {
             pattern: Pattern::bounded(
                 "tskey-(?P<type>[a-z]{2,20})-[0-9A-Za-z_]{8,40}-[0-9A-Za-z_]{16,60}",
                 "0-9A-Za-z_",
-            ),
+            )
+            .needing(&["tskey-"]),
             message: |found| {
                 let (id, label) = match found.group("type")? {
                     "api" => ("TAILSCALE_API_KEY", "found Tailscale API access token"),
