@@ -13,21 +13,22 @@
 
 1. **One agent at a time, in the background.** A run works one story at a time, one worker for it, in the background, so that the main thread stays free for the Product Owner, who may ask and try ideas while it works; a review or a research runs alone too. No two stories, features or researchers at once. A slower run is accepted for its lower usage.
 2. **Every story starts from `develop` and returns to it.** Its branch `<type>/<id>-<topic>` is made from `origin/develop`; finished, it opens its pull request into `develop`, merged by a merge commit (one loop per story in the graph), by GitHub's auto-merge in a run. No feature branch.
-3. **A run goes on past a feature's end.** When the scope set is an epic, a finished feature waits for the Product Owner's review while the run starts the next one. The agent marks each finished feature on `develop` by the branch `review/f<nn>` at the merge commit of its `VAL`, so that `main` only ever receives a whole feature.
-4. **`main` receives a feature reviewed by the Product Owner.** At the review the agent brings the feature's docs up to date and opens `review/f<nn>` → `main`, its body the feature's text for the release (decision 6) checked by `release check`; its CI is the only one (ADR-0072). The Product Owner merges it by a merge commit; the push to `main` deploys the site and makes no release.
+3. **A run goes on past a feature's end, a review waits for the feature under way.** When the scope set is an epic, a finished feature waits for the Product Owner's review while the run starts the next one; no branch marks it. `develop` → `main` is opened only when `develop`'s head is a finished feature, its `VAL` merged, so that `main` only ever receives whole features: a review asked while the next feature is under way waits for that feature's end, and the agent says so.
+4. **`main` receives the features reviewed by the Product Owner.** At the review the agent brings the features' docs up to date and opens one pull request `develop` → `main` for every feature finished since the last merge into `main`, its body their texts for the release (decision 6) checked by `release check`; its CI is the only one (ADR-0072). The Product Owner merges it by a merge commit; the push to `main` deploys the site and makes no release.
 5. **The release is a button.** The Product Owner runs `release.yml` on `main` from GitHub's Actions tab. `release publish` computes the version from the last tag `vx.y.z` and the commits since, tags `main`'s head and makes the GitHub release; nothing is committed and no number is typed. The version lives only in the tag, the release and, later, a published package, written into it at publish time; `package.json` holds `0.0.0-development`.
-6. **The notes are the features' texts.** The release's notes join the bodies of the pull requests into `main` merged since the last tag, each written at its feature's review; `CHANGELOG.md` is deleted, 0.1.0's and 0.2.0's entries staying in their GitHub releases.
+6. **The notes are the features' texts.** The release's notes join the bodies of the pull requests into `main` merged since the last tag, each holding the texts of the features it brings, written at their review; `CHANGELOG.md` is deleted, 0.1.0's and 0.2.0's entries staying in their GitHub releases.
 
 ## Reasons
 
 - One agent at a time trades speed for usage: no merge nor rebase is done twice, and each worker's cold start is paid once per story.
 - A story merged into `develop` by a merge commit keeps the graph the Product Owner reads, without a feature branch to rebase.
+- A review taken when `develop`'s head is a finished feature needs no branch to mark it, and one pull request brings every feature finished since the last merge into `main`.
 - A button computes the number, so the Product Owner chooses when to release without choosing, or mistyping, the number (ADR-0083's reason against a tag typed by hand).
 - The features' texts are written once, by the agent who knows the feature, and read by the Product Owner at the review; commits would give a raw list (0.2.0's draft had 163 change lines before sorting).
 
 ## Consequences
 
-- `story-automerge.yml` merges a story into `develop` by a merge commit; `worktree-new` starts a story from `origin/develop`; `story:finish` takes `develop` as its base; the run skill, the worker brief, `project-rules`, `AGENTS.md` (Work, Git) and `docs/tooling/git-workflow.md` describe the flow (EN-122).
+- `story-automerge.yml` merges a story into `develop` by a merge commit; `worktree-new` starts a story from `origin/develop`; `story:finish` takes `develop` as its base; the run skill, the worker brief, `project-rules`, `AGENTS.md` (Work, Git) and `docs/tooling/git-workflow.md` describe the flow, the run skill saying that a review asked mid-feature waits for that feature's end (EN-122).
 - `release prepare` and `release notes` draft a feature's text, `release check` reads it, `release publish` runs from the button; `release.yml`'s push to `main` deploys the site only (EN-117).
 - F22 is the first feature made so: its feature branch, opened at the run's start, is deleted unused.
 
