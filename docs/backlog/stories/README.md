@@ -295,7 +295,7 @@
 | [SP-024](./E17-F28-SP-024-the-tooling-features-of-2026-10-18.md) | F28 | The tooling features of 2026-10-18 | done |
 | [EN-132](./E17-F28-EN-132-the-site-the-release-and-the-caches-apart.md) | F28 | The site, the release and the Rust caches apart | done |
 | [EN-133](./E17-F28-EN-133-the-ci-into-main-its-checks-only.md) | F28 | The CI into main, its checks only | done |
-| [AUD-030](./E17-F28-AUD-030-audit-f28.md) | F28 | Audit F28 | ready |
+| [AUD-030](./E17-F28-AUD-030-audit-f28.md) | F28 | Audit F28 | done |
 | [VAL-029](./E17-F28-VAL-029-validate-f28.md) | F28 | Validate F28 | ready |
 | [EN-135](./E17-F30-EN-135-the-develop-ci-started-by-the-auto-merge.md) | F30 | The develop CI, started by the auto-merge | ready |
 | [EN-136](./E17-F30-EN-136-each-job-finds-its-tools.md) | F30 | Each CI job finds the tools its scripts call | ready |
