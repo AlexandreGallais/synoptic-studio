@@ -31,7 +31,7 @@ jobs:
     name: ${{ matrix.name }}
     runs-on: ubuntu-latest
     strategy:
-      # Each lane runs to its end, whichever other fails (`REF-GH-MATRIX`).
+      # Each lane runs to its end, whichever other fails (`REF-GH-JOB-PERMISSIONS`).
       fail-fast: false
       # The lanes of `check:all` (tools/repo-tools/src/check_all.rs), each its scripts in order; the
       # library's build after the docs lane. One job per lane, as `[F24.AC1]` checks.

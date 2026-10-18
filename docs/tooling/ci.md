@@ -24,7 +24,7 @@ Every check runs before the code leaves the machine; GitHub checks once more wha
 
 ## The lanes as jobs
 
-`check:all` stays what the pre-push hook runs, its lanes at the same time on one machine. On GitHub's runner, the single job that ran it showed nothing until its end: its lanes took 139 s (`lint`), 265 s (`docs:build`), 326 s (`test`) and over 21 min (`check:rust`, compiled without a cache), run 39131147001 (EN-124). So `ci.yml` runs each lane as a job of its own, the entries of one matrix (`REF-GH-MATRIX`):
+`check:all` stays what the pre-push hook runs, its lanes at the same time on one machine. On GitHub's runner, the single job that ran it showed nothing until its end: its lanes took 139 s (`lint`), 265 s (`docs:build`), 326 s (`test`) and over 21 min (`check:rust`, compiled without a cache), run 39131147001 (EN-124). So `ci.yml` runs each lane as a job of its own, the entries of one matrix (`REF-GH-JOB-PERMISSIONS`):
 
 | Check | Lane's scripts, in turn |
 | --- | --- |

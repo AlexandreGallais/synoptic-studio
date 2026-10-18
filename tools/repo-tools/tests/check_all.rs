@@ -452,7 +452,7 @@ fn f24_ac1_runs_each_lane_of_check_all_in_exactly_one_job_of_the_ci() {
         jobs.iter()
             .any(|(_, scripts)| scripts.last().is_some_and(|last| last == "build"))
     );
-    // Each job a check of its own name, run to its end whichever other fails (`REF-GH-MATRIX`).
+    // Each job a check of its own name, run to its end whichever other fails (`REF-GH-JOB-PERMISSIONS`).
     assert!(text.contains("\n    name: ${{ matrix.name }}\n"));
     assert!(text.contains("\n      fail-fast: false\n"));
     assert!(text.contains(
