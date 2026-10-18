@@ -3,7 +3,7 @@ id: EN-113
 epic: E17
 feature: F21
 title: Clean-up of E17, every tool left unused removed
-status: ready
+status: done
 points: 3
 ---
 
@@ -78,19 +78,19 @@ Kept, with their reason:
 
 One task = one commit, referenced as `EN-113.Tn`.
 
-- [ ] T1 — The search and the unused-file check; every file, test, rule, configuration and package left removed (4 h)
-- [ ] T2 — `docs/tooling/dependencies.md`, the docs and the agent's rules in step (2 h)
+- [x] T1 — The search and the unused-file check; every file, test, rule, configuration and package left removed (4 h)
+- [x] T2 — `docs/tooling/dependencies.md`, the docs and the agent's rules in step (2 h)
 
 Added by the main thread on 2026-10-18, from the frictions of F21's run:
 
-- [ ] T3 — The `.git/config` guard of `check-all` compares only what a test could break: `[core]`, `[user]`, `[commit]` and the remotes' URLs, not the branch tracking lines a parallel worktree's `push -u` writes (a false positive at CHK-022) (1 h)
-- [ ] T4 — `guard-bash`: a `|` inside quotes splits nothing; `HUSKY=0` no longer refused, husky being gone, while `--no-verify`, `commit -n` and any change of `core.hooksPath` still are; reading the hooks path is let through; its messages name the Rust Git hooks (2 h)
-- [ ] T5 — A new ADR for the Git hooks installed in `.githooks/` by `git-hooks install`, superseding ADR-0078's `.husky/` (1 h)
-- [ ] T6 — `npm run fix` runs `cargo fmt` and `cargo clippy --fix` too (1 h)
-- [ ] T7 — `worktree:new` copies the main checkout's `target/release` before building (1 h)
-- [ ] T8 — A rule: no personal data of the Product Owner in a request an agent sends or a tool codes (30 min)
-- [ ] T9 — The dependency bump due on 2026-10-18 (`serde_json` 1.0.152 → 1.0.154) (30 min)
-- [ ] T10 — `check:all` timed for RET-004, three runs (1 h)
+- [x] T3 — The `.git/config` guard of `check-all` compares only what a test could break: `[core]`, `[user]`, `[commit]` and the remotes' URLs, not the branch tracking lines a parallel worktree's `push -u` writes (a false positive at CHK-022) (1 h)
+- [x] T4 — `guard-bash`: a `|` inside quotes splits nothing; `HUSKY=0` no longer refused, husky being gone, while `--no-verify`, `commit -n` and any change of `core.hooksPath` still are; reading the hooks path is let through; its messages name the Rust Git hooks (2 h)
+- [x] T5 — A new ADR for the Git hooks installed in `.githooks/` by `git-hooks install`, superseding ADR-0078's `.husky/` (1 h)
+- [x] T6 — `npm run fix` runs `cargo fmt` and `cargo clippy --fix` too (1 h)
+- [x] T7 — `worktree:new` copies the main checkout's `target/release` before building (1 h)
+- [x] T8 — A rule: no personal data of the Product Owner in a request an agent sends or a tool codes (30 min)
+- [ ] T9 — The dependency bump due on 2026-10-18 (`serde_json` 1.0.152 → 1.0.154) (30 min): not due before 15:32 UTC; notes read (story); done by the main thread as a `build(deps)` commit once due
+- [x] T10 — `check:all` timed for RET-004, three runs (1 h)
 
 ## For the main thread
 
