@@ -21,7 +21,7 @@ In delivery order.
 
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
-| [EN-128](../stories/E17-F27-EN-128-retired-scopes-in-history.md) | EN | The history check reads the scopes a commit was written with | ready |
+| [EN-128](../stories/E17-F27-EN-128-retired-scopes-in-history.md) | EN | The history check reads the scopes a commit was written with | done |
 | [AUD-029](../stories/E17-F27-AUD-029-audit-f27.md) | AUD | Audit F27 | ready |
 | [VAL-028](../stories/E17-F27-VAL-028-validate-f27.md) | VAL | Validate F27 | ready |
 

@@ -3,7 +3,7 @@ id: EN-128
 epic: E17
 feature: F27
 title: The history check reads the scopes a commit was written with
-status: ready
+status: done
 points: 1
 ---
 
