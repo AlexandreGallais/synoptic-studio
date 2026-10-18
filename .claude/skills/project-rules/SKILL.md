@@ -33,7 +33,7 @@ synoptic-studio: a dependency-free TypeScript library `editor` that draws SVG sy
 
 ## Git
 
-- Never push to `main` or `develop`, never merge a pull request, never `--no-verify` (nor `commit -n`, nor a change of `core.hooksPath`), never force push without lease, nor at all on a feature branch but its rebase onto `develop` before its validation (ADR-0084); never fix a tool during an epic's work: work around it and report it for a card (ADR-0085); the `guard-bash` hook refuses most of them: never look for a way around it.
+- Never push to `main` or `develop`, never merge a pull request, never `--no-verify` (nor `commit -n`, nor a change of `core.hooksPath`), never force push without lease, nor at all on a feature branch, `develop` or `main` (ADR-0086); never fix a tool during an epic's work: work around it and report it for a card (ADR-0085); the `guard-bash` hook refuses most of them: never look for a way around it.
 - Commits: Conventional Commits with a scope of `SCOPES` in `tools/git-hooks/src/message.rs` (`docs/process/` takes `docs(docs)`, a derivation `docs(geometry)`), a subject starting with a verb (an id first is refused as sentence case), no body line starting with `word:` (read as a footer), footers within 100 characters. The message comes from a file, committed by `target/release/git-sequences commit -F <file> [--push] <paths>`; a story is brought up to its feature branch by `target/release/git-sequences sync` (EN-100). A commit refused by a hook leaves its files staged: `git status` before retrying.
 
 ## Stop and report

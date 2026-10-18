@@ -3,7 +3,7 @@ id: AUD-024
 epic: E17
 feature: F22
 title: Audit F22
-status: draft
+status: ready
 points: 1
 ---
 

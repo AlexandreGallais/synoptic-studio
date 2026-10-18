@@ -15,7 +15,7 @@ Target: $ARGUMENTS. Decision: ADR-0023. Writing rules: `docs/conventions/writing
 3. List the page in `docs/guide/README.md`; open the pull request; ask the Product Owner to try the checklist's lines, in any order and over several sessions if they wish, and tell you what they see; write the result and each remark in neutral English, never their words (`docs/conventions/writing.md`): the **Validation** table of the page, remark by remark, with what was done or where it went. Read their messages for intent.
 4. Feedback that reveals a misunderstanding: record it, propose stories or domain changes, never adjust silently.
 5. Compare the Product Owner's account (often spoken) with what each test card and the demo meant to show: did they understand what you wanted to show? Record each gap as a misunderstood need (backlog) or an unclear demo (improve the cards and this skill).
-6. Then the feature pull request into `develop` and the release pull request into `main` (`/run`, Validation), and the next feature prepared with the Product Owner: interview, research spike, feature branch.
+6. Then the feature pull request into `develop` (`/run`, Validation), the pull request `develop` → `main` after the next review (`/run`, Review), and the next feature prepared with the Product Owner: interview, research spike, feature branch.
 
 ## Epic review (REV)
 

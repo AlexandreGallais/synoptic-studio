@@ -28,7 +28,7 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0020](./0020-feature-research-and-audit.md) | Every feature starts with a research spike and ends with an audit | Accepted, decision 4 amended by ADR-0072 |
 | [0021](./0021-agent-working-environment.md) | Agent working environment: skills, rules, hooks and an independent auditor | Accepted, partly superseded by 0038 and 0040 |
 | [0022](./0022-property-based-testing-and-link-checking.md) | Property-based tests, weekly link check, mutation tool deferred | Accepted, decision 3 superseded (`mutate`, EN-058) |
-| [0023](./0023-inspection-cadence.md) | Inspection cadence: demo at each feature, review and retrospective at each epic | Accepted, extended by ADR-0049 |
+| [0023](./0023-inspection-cadence.md) | Inspection cadence: demo at each feature, review and retrospective at each epic | Accepted, extended by ADR-0049; its review and retrospective per epic superseded by 0086 (each review) |
 | [0024](./0024-session-journal.md) | Session journal and transcript search instead of a database | Accepted, partly superseded by 0039 |
 | [0025](./0025-portable-core.md) | A portable core: any JavaScript engine, transcribable to another language | Accepted |
 | [0026](./0026-contributions-through-issues.md) | Contributions through issues only; the agent writes every change | Accepted |
@@ -53,7 +53,7 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0046](./0046-cubic-sides-in-symbols.md) | Cubic Bézier sides in symbols, from points with handles | Accepted |
 | [0047](./0047-fillet-beside-a-curve.md) | A corner fillet beside a cubic side: tangent arc, the curve cut, a radius too large reduced | Accepted |
 | [0048](./0048-round-shape-as-cubic-sides.md) | The round shape drawn as four cubic sides, not elliptical arcs | Accepted |
-| [0049](./0049-every-calculation-named.md) | Every calculation named, and a naming pass closes each epic | Accepted |
+| [0049](./0049-every-calculation-named.md) | Every calculation named, and a naming pass closes each epic | Accepted; its naming pass per epic superseded by 0086 (each review) |
 | [0050](./0050-retrospective-e14-tools-and-merges.md) | The agent's tools, parallel checks, and validated epic stories that merge by themselves | Accepted, decision 1 superseded by ADR-0073, decisions 2 and 3 by ADR-0072 |
 | [0051](./0051-main-thread-free-for-the-product-owner.md) | The main thread kept free: stories worked by subagents | Superseded by ADR-0063 |
 | [0052](./0052-text-measured-and-drawn-as-positioned-lines.md) | Text measured from font metrics and drawn as positioned lines (`text`, `tspan`) | Accepted, decision 4 amended by ADR-0054 and ADR-0055, decision 1 by ADR-0055, decisions 7 and 8 settled by ADR-0053, decisions 6 and 8 amended by ADR-0060 |
@@ -87,6 +87,7 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0080](./0080-the-git-hooks-in-githooks-installed-by-our-own-tool.md) | The Git hooks in `.githooks/`, installed by `git-hooks install` | Accepted |
 | [0081](./0081-the-private-records-in-a-local-folder-shared-by-projects.md) | The private records in a local folder shared by every project, never sent | Accepted |
 | [0082](./0082-npm-scripts-kept-for-a-person-or-a-caller.md) | The npm scripts kept for a person or a caller, the agent's tools by their binary only | Accepted |
-| [0083](./0083-the-release-made-by-the-merge-into-main-from-a-tag.md) | The release made by the merge into `main`: the version from the tags, no release branch nor version commit | Accepted, implemented by EN-117 |
-| [0084](./0084-small-features-tests-first-and-a-linear-history.md) | Small features, tests first, a linear history, and agents that work apart | Accepted, from E02 |
-| [0085](./0085-tool-incident-cards-tools-changed-at-an-epics-end.md) | A tool that fails is a card; tools change only at an epic's end | Accepted |
+| [0083](./0083-the-release-made-by-the-merge-into-main-from-a-tag.md) | The release made by the merge into `main`: the version from the tags, no release branch nor version commit | Superseded by 0086 |
+| [0084](./0084-small-features-tests-first-and-a-linear-history.md) | Small features, tests first, a linear history, and agents that work apart | Accepted, from E02; in decision 3 its rebases and its `develop` → `main` at the epic's end, decision 4 and its parallel researchers superseded by 0086 |
+| [0085](./0085-tool-incident-cards-tools-changed-at-an-epics-end.md) | A tool that fails is a card; tools change only at an epic's end | Accepted; tools changed at each review since 0086 |
+| [0086](./0086-one-story-at-a-time-into-develop-the-release-by-a-button.md) | One story at a time, a merge commit for every merge, a review at each return, the release by a button | Accepted, implemented by EN-122, EN-117 and EN-123 |

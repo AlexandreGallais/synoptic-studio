@@ -6,7 +6,7 @@ user-invocable: false
 
 # Worker brief (ADR-0072)
 
-How a run's worker works one story in its own worktree. The `story-worker` and `researcher` types start with this brief and `project-rules` preloaded, without `CLAUDE.md` nor `AGENTS.md` (EN-065); a `general-purpose` worker is given this file's path inside its worktree and reads `AGENTS.md` and `CLAUDE.md` too. The main thread's prompt names the story, its feature branch and its worktree.
+How a run's worker works one story in its own worktree. The `story-worker` and `researcher` types start with this brief and `project-rules` preloaded, without `CLAUDE.md` nor `AGENTS.md` (EN-065); a `general-purpose` worker is given this file's path inside its worktree and reads `AGENTS.md` and `CLAUDE.md` too. The main thread's prompt names the story, its feature branch and its worktree. A run works one story at a time, one worker for it, in the background (ADR-0086).
 
 ## Setup
 
@@ -32,7 +32,7 @@ How a run's worker works one story in its own worktree. The `story-worker` and `
 
 ## Shared files (ADR-0065)
 
-Several workers run at once, so the files every story touches are written only by the main thread, at merge: the indexes of `docs/backlog/`, the logs (`journal.md`, `improvements.md`, `feedback.md`), the feature file and the checklists (`playground/checklists/epic-*`). The pre-push hook refuses a branch that changes one and names it (EN-050).
+The files every story touches are written only by the main thread, at merge, so that a story's pull request never conflicts with the rows the main thread wrote meanwhile: the indexes of `docs/backlog/`, the logs (`journal.md`, `improvements.md`, `feedback.md`), the feature file and the checklists (`playground/checklists/epic-*`). The pre-push hook refuses a branch that changes one and names it (EN-050).
 
 A row meant for a log goes in the story file, under `## For the main thread`, beneath `### Journal`, `### Improvements` or `### Feedback`, written as the log writes it; `story:finish` moves it at merge:
 

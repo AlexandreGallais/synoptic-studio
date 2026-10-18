@@ -27,7 +27,7 @@ flowchart LR
 | Skill | Does |
 | --- | --- |
 | `/story` | a story from branch to pull request |
-| `/run` | an autonomous run on the feature branch, up to the validation (ADR-0072) |
+| `/run` | an autonomous run on the feature branch, one story at a time, up to the scope set (ADR-0072, ADR-0086) |
 | `/spike` | a feature's research spike (ADR-0020) |
 | `/derivation` | a `DERIV-*` from read sources |
 | `/audit` | the feature audit with the reviewing agents |
