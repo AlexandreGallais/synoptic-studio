@@ -14,7 +14,8 @@ use std::process::{Command, Output, Stdio};
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::time::{Duration, SystemTime};
 
-use git_hooks::rebuild::{AfterPull, BUILD, message, rebuilt};
+use git_hooks::rebuild::{AfterPull, message, rebuilt};
+use stale_binaries::RELEASE_BUILD;
 
 static NEXT: AtomicUsize = AtomicUsize::new(0);
 
@@ -239,7 +240,7 @@ fn build_call(repos: &Repos) -> String {
     format!(
         "{} {}\n",
         fs::canonicalize(&repos.work).unwrap().display(),
-        BUILD.join(" ")
+        RELEASE_BUILD.join(" ")
     )
 }
 

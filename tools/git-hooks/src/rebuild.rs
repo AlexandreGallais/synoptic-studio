@@ -6,16 +6,12 @@
 //! when one is a Rust input (`stale_binaries::touches_rust`, EN-130). A post hook cannot undo the
 //! pull: a failed build is printed with the command to run again, never an error.
 
-use std::fs;
 use std::path::Path;
 use std::process::{Command, Stdio};
 use std::time::SystemTime;
 
 use git_repository::stdout_of;
-use stale_binaries::{binaries, touches_rust};
-
-/// Cargo's arguments: `npm run rust:build`'s build, quiet, as `git-sequences sync` runs it.
-pub const BUILD: [&str; 5] = ["build", "--release", "--workspace", "--locked", "--quiet"];
+use stale_binaries::{RELEASE_BUILD, binaries, binary_written, touches_rust};
 
 /// The command a person runs again after a failed rebuild.
 pub const AGAIN: &str = "npm run rust:build";
@@ -48,15 +44,10 @@ pub fn pulled_files(root: &Path) -> Vec<String> {
 /// order of `stale_binaries::binaries`.
 #[must_use]
 pub fn built_times(root: &Path) -> Vec<(String, Option<SystemTime>)> {
-    let release = root.join("target").join("release");
-
     binaries(root)
         .into_iter()
         .map(|binary| {
-            let file = release.join(format!("{binary}{}", std::env::consts::EXE_SUFFIX));
-            let time = fs::metadata(file)
-                .and_then(|metadata| metadata.modified())
-                .ok();
+            let time = binary_written(root, &binary);
 
             (binary, time)
         })
@@ -110,7 +101,7 @@ pub fn after_pull(root: &Path) -> AfterPull {
 
     let before = built_times(root);
     let built = Command::new("cargo")
-        .args(BUILD)
+        .args(RELEASE_BUILD)
         .current_dir(root)
         .stdin(Stdio::null())
         .output();

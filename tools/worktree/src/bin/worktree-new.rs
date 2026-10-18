@@ -11,6 +11,7 @@ use std::process::{Command, ExitCode};
 
 use git_hooks::install::install;
 use git_repository::stdout_of;
+use stale_binaries::RELEASE_BUILD;
 use worktree::seed::seed_release;
 use worktree::{Plan, Request, plan};
 
@@ -82,7 +83,7 @@ fn build_tools(dir: &Path) -> Result<(), String> {
     }
 
     let output = Command::new("cargo")
-        .args(["build", "--release", "--workspace", "--locked", "--quiet"])
+        .args(RELEASE_BUILD)
         .current_dir(dir)
         .output()
         .map_err(|error| format!("cargo: {error}"))?;

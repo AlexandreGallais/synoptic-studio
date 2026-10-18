@@ -70,7 +70,7 @@ The ADR is the source of each rule; `docs/conventions/` says how.
 Each is a step the project cannot take back cheaply; hooks refuse most of them, and none is worked around.
 
 - A runtime dependency (`dependencies` stays empty); a dev package or crate without its row in `docs/tooling/dependencies.md`, its release notes read and a version at least 7 days old.
-- A new script, hook or agent tool in TypeScript: every new one is a Rust crate of `tools/`, checked by `check:rust` (ADR-0073).
+- A new script, hook or agent tool in TypeScript: every new one is a Rust crate of `tools/`, checked by `check:rust` and `rust:coverage` (ADR-0073).
 - A lint rule disabled to make code pass: fix the code, or tell the Product Owner the rule is wrong.
 - An epic or feature set `ready` outside a `/run`; a pull request merged by the agent; a push to `main`; `--no-verify`; a force push without lease, or any force push on a feature branch, `develop` or `main` (ADR-0086).
 - A tool fixed during a feature's work: a tool that fails is worked around and written as a card in `docs/process/tool-incidents.md`, fixed at the next review (ADR-0085, ADR-0086).

@@ -19,8 +19,8 @@ points: 2
 
 ## Tasks
 
-- [ ] T1 — The Rust inputs and the lanes' tests in `tools/repo-tools/tests/check_all.rs`, failing (1 h)
-- [ ] T2 — The Rust lanes skipped without a Rust change, the coverage a lane, `ci.yml`'s matrix and `docs/tooling/commands.md` updated (2 h)
+- [x] T1 — The Rust inputs and the lanes' tests in `tools/repo-tools/tests/check_all.rs`, failing (1 h)
+- [x] T2 — The Rust lanes skipped without a Rust change, the coverage a lane, `ci.yml`'s matrix and `docs/tooling/commands.md` updated (2 h)
 
 One task = one commit, referenced as `EN-130.T1` in the commit footer.
 

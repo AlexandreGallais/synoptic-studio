@@ -18,7 +18,7 @@ Audit F29 following [audit.md](../../conventions/audit.md) (ADR-0020), the `audi
 ## Tasks
 
 - [x] T1 — The findings, and the tests of F3, F4, F7 and F8, seen failing (1 h)
-- [ ] T2 — The findings fixed, the criteria traced (1 h)
+- [x] T2 — The findings fixed, the criteria traced (1 h)
 - [ ] T3 — ADR-0089: the five Git hooks and the rebuild after a pull (30 min)
 
 One task = one commit, referenced as `AUD-031.T1`.
@@ -49,6 +49,32 @@ Reviewed by the `auditor` alone (ADR-0086), each finding reproduced before it is
 | C4 | A4 — `skipped_groups`: `!touches_rust` made `touches_rust` | caught | `f29_ac2_skips_the_rust_lanes_only_when_…` and `f29_ac2_skips_the_rust_lanes_for_a_story_…` fail | restored |
 | C5 | A4 — `RUST_INPUTS`: `tools/` made `tool/` | caught | five `f29_ac2_…` fail, among them `…_counts_a_new_crate_…` | restored |
 | C6 | A5 — properties: F29 adds no `math` nor `geometry` function | no finding | `src/` unchanged by F29 | — |
-| C7 | B — `REF-GITHOOKS` read again for `post-merge` after a conflict | done | its row: "does not run when the merge failed on conflicts" | — |
+| C7 | B — `REF-GITHOOKS` read again through the library for `post-merge` after a conflict, 2026-10-18 | done | githooks, `post-merge`: "is not executed, if the merge failed due to conflicts"; the row already says so | — |
 | C8 | C, D — no third-party code; F9 the only duplicate | no finding | the crates F29 changed | — |
-| C9 | F — `check:all` green on the head | run by the pre-push hook | the push of T3 | — |
+| C9 | `[F29.AC1]` traced | caught | `[F29.AC1] names the file and the line …` fails on F3's three mutations; `[F29.AC1] gives every limit …` fails on the four limits of `playground/` (T1) | fixed by T2: each measured alone, the median of 5 runs of its file (421, 788, 773 and 895 ms; 20 s is 22 to 47 times them) |
+| C10 | `[F29.AC2]` traced | caught | C4, C5 and F8's mutation | restored |
+| C11 | `[F29.AC3]` traced | caught | C2, C3 and F7's mutation | restored |
+| C12 | F — `check:all` green on the head | run by the pre-push hook | the push of T3 | — |
+
+## G. Next feature
+
+F30 runs the Rust tests on Linux in a `develop` CI. That CI sets `CI`, so `check-all`'s lanes there run whatever the branch changed (F8), and no post hook runs on a runner's fresh checkout: it builds its binaries itself. The RustSec database, outside the Rust inputs (F12), is fetched by each run, as `[F28.AC3]` checks. Sources: those of F30's spike, `REF-GH-WORKFLOW-DISPATCH`, `REF-GH-CACHE`, `REF-GH-TOKEN-TRIGGERS`, already read; none new from F29.
+
+## H. Light evolvability check
+
+- Size: `tests/fitness.test.ts` holds the timing check's helpers and a made-up file beside the fitness checks; the timing check may become a test file of its own when it grows again.
+- Tools: none failed; `cargo build` without `--locked` once wrote the two new path dependencies into `Cargo.lock`.
+- Fitness functions: `[F29.AC1]` now reads `playground/` and shows each fault on a made-up file; the post hooks' exit code and `check-all`'s `CI` guard each have a test that fails on a mutation.
+- Patterns: the release build is one constant of `stale-binaries`, the four places that rebuild using it.
+- Agent configuration: `AGENTS.md` names the coverage lane; the `project-rules` skill did not repeat the sentence.
+- Process: the auditor found two claims of the stories (F7's exit code, F8's `CI` guard) that their tests passed whatever the code did: a test of a post hook asserts what the hook returns, not what Git does.
+
+## For the main thread
+
+- F1: `Rust coverage` joins the required checks of `main`'s ruleset (24687556) when F29 merges into `develop`; no file changes for it.
+- F29's criterion 1 names the timing tests of `src/` and `tests/`; since T1 `[F29.AC1]` reads `playground/` too (F4). The feature file is unchanged: widening the criterion's words to the three folders is the main thread's call.
+- `docs/domain/` is not affected: F29 is tooling. Footer `Rule-docs: none affected, a tooling feature, no business rule changed`.
+
+### Improvements
+
+| 2026-10-18 | AUD-031 | A test of a Git post hook asserts the hook's own exit code and output, run by hand, besides Git's: Git ignores a post hook's code, so a test of the pull alone passes whatever the hook returns (F7) | process |

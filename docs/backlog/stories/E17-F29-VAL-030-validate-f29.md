@@ -9,7 +9,7 @@ points: 1
 
 # E17 · F29 · VAL-030 — Validate F29
 
-F29 is a tooling feature: the agent validates it on the local checks (ADR-0072).
+F29 is a tooling feature: the agent validates it on the local checks (ADR-0072). The pull that brings F29's post hooks into a checkout runs them with its older `git-hooks`, which has no `post-merge`: after it, `npm run rust:build` is run once, and criterion 3 is proven on a later pull (AUD-031, F5).
 
 ## Acceptance criteria
 
