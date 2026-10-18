@@ -118,3 +118,22 @@ To be held with the Product Owner (`REV-004`, started on 2026-10-18). The agent'
 | obsolete | 1: release-please's pull request, replaced by ADR-0079 |
 
 Also found: `epic-check` takes a dropped story for one to look at; `session-report` writes `1617 min 60 s`; the main checkout's hooks ran binaries built before EN-115's merge; `check:all` took 112.6 s and 105.9 s in this review's runs, the site built and the machine loaded, its median over 64 runs being 73 s.
+
+**The closure criteria**, as the agent reads them before the session:
+
+| Criterion | Met? | Evidence |
+| --- | --- | --- |
+| ESLint and its plugins removed | met | no ESLint package nor configuration left; its 854 rules accounted for (ADR-0075) |
+| `check:all` under the duration set at the refinement, about 70 to 90 s most of the time | met most of the time, to confirm | 74.6 s (EN-113), 74.9 s (VAL-022), 83.9 s with the site built (NAM-002), a median of 73 s over 64 runs; 112.6 s and 105.9 s in this review's runs, the site built and the machine loaded |
+| tokens per agent input measured lower | met | a story worker's first request 38,897 → 10,562 tokens; a spike 38,339 → 11,971; an audit 15,477 → 8,505 (VAL-021) |
+| the release that closes the epic, with the flow of EN-046 | not met | no release since 0.2.0; EN-046's flow was replaced by ADR-0079, whose tool drafts 0.3.0 but has not published yet |
+
+**Open questions for the session:**
+
+1. Is `check:all` at a median of 73 s, and 106 to 113 s on a loaded machine with the site built, the criterion met?
+2. Is the closing release 0.3.0, made with ADR-0079's flow instead of EN-046's, and does E17 close once it is published, or before?
+3. The decisions the agent took, to keep or refuse: the tools called by their binary (ADR-0078), the release branch (ADR-0079), the Git hooks in `.githooks/` (ADR-0080), 26 npm scripts with `story:finish` and `mutate` kept (ADR-0082); and those left to confirm by VAL-021 and VAL-022: `AGENT_LIBRARY_FILE` (ADR-0077), one Git command through read-only filters (EN-104), `run-totals status` not recorded (EN-102), the story worker on Opus (EN-066).
+4. Was anything built that was not meant? The progress page was built, then dropped (EN-087); the records' private GitHub repository waits to be deleted (EN-114).
+5. E17's checklist: rewrite its 16 out-of-date lines on the binaries, or keep the validated lines as records with a note?
+6. Two permissions only you set: the binaries of `story:finish` and `mutate` allowed, so that their scripts can go (ADR-0082); the story auto-merge for a tooling story outside a feature.
+7. Is E02, editing shapes with precision, still the next epic after the retrospective, and do NAM-002's logged tooling items wait for a later tooling pass, or come first?

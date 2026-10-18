@@ -20,7 +20,7 @@ One task = one commit, referenced as `REV-004.Tn`.
 
 - [x] T1 — The epic's report, `docs/guide/e17-fast-tooling-with-oxc-and-rust.md`, listed in the guide's index (1 h)
 - [x] T2 — E17's checklist run again by the agent on `develop`, line by line (1 h)
-- [ ] T3 — The questions for the Product Owner: the closure criteria, what was built, the next epic (30 min)
+- [x] T3 — The questions for the Product Owner: the closure criteria, what was built, the next epic (30 min)
 - [ ] T4 — Session with the Product Owner: their answers recorded, the backlog adjusted (1 h)
 
 ## E17's checklist run again (2026-10-18)
@@ -102,3 +102,46 @@ Each of the 48 lines of `?checklist=E17` run by the agent on `develop` at `e8f36
 - **Two tools print a wrong detail**: `epic-check` takes a `dropped` story for one to look at; `session-report` writes `60 s` instead of carrying the minute.
 - **`check:all` was slower than the lines say** in this review's two runs, the site built and the machine loaded: 112.6 s and 105.9 s. Its median over the 64 runs `target/release/metrics` records is 73 s.
 - **Outside the checklist**: the main checkout's hooks run a `guard-bash` built at 06:55, before EN-115 was merged, so a removed script is refused with the reason before EN-115's criterion 4 (the binary not named); the F18 demo page still reads "Not yet validated (`VAL-019`)" though F18 was validated on 2026-10-17; `.claude/settings.json` still allows `Bash(npm run library *)`, a script removed; RET-004's criterion names `npm run epic:check`.
+
+## Questions for the Product Owner
+
+Open until the session (T4); the epic's report holds the same list.
+
+### The closure criteria
+
+| Criterion | Met? | Evidence |
+| --- | --- | --- |
+| ESLint and its plugins removed | met | no `eslint` package in `package.json` nor `package-lock.json`, no ESLint configuration; the 854 rules accounted for (`tests/eslint-rules-accounted.test.ts`, ADR-0075) |
+| `check:all` under a duration set at the refinement | met most of the time, to confirm | the target set at SP-021 (2026-10-17): about 70 to 90 s most of the time. 74.6 s (EN-113), 74.9 s (VAL-022), 83.9 s with the site built (NAM-002); median 73 s over the 64 runs `target/release/metrics` records; this review's two runs 112.6 s and 105.9 s, the site built, load average 9 to 49 |
+| tokens per agent input measured lower | met | a story worker's first request 38,897 → 10,562 tokens, a research spike 38,339 → 11,971, an audit 15,477 → 8,505 (VAL-021; `target/release/context-size` on 30 story workers this day) |
+| the release that closes the epic made with the flow of EN-046 | not met | no tag since `v0.2.0`; EN-046's flow (release-please's pull request into `develop`) was replaced by ADR-0079's release branch and the project's tool, which drafts 0.3.0 (57 lines) but has not published yet |
+
+### Questions
+
+1. Is `check:all` at a median of 73 s, and 106 to 113 s on a loaded machine with the site built, the criterion met?
+2. Is the closing release 0.3.0, made with ADR-0079's flow instead of EN-046's, and is E17 closed once it is published, or before?
+3. The agent's decisions to be told, each kept unless refused: the tools called by their binary (ADR-0078), the release branch from `develop` (ADR-0079), the Git hooks in `.githooks/` (ADR-0080), 26 npm scripts with `story:finish` and `mutate` kept since their binaries take no lock (ADR-0082); and the decisions VAL-021 and VAL-022 left to confirm: `AGENT_LIBRARY_FILE` (ADR-0077), one Git command through read-only filters (EN-104), `run-totals status` not recorded (EN-102), the story worker on Opus (EN-066).
+4. Anything built that was not meant? The progress page was built, then dropped (EN-087); the private records' GitHub repository is left for deletion (EN-114).
+5. E17's checklist: rewrite its 16 out-of-date lines on the binaries and ADR-0079, with their test, or keep the validated lines as records and add a note?
+6. Permissions only the Product Owner sets: allowing `target/release/story-finish` and `mutate`, so that their scripts can go (ADR-0082); the story auto-merge for a tooling story outside a feature (EN-115's feedback row).
+7. Is E02, editing shapes with precision, still the next epic after RET-004, and do NAM-002's logged tooling items (the `rust` lane's split, the guard's matchers, the hooks' JSON reader, the version and story-id readers) wait for a later tooling pass, or come first?
+
+## For the main thread
+
+Incident cards (tools are not fixed during the work, decided on 2026-10-18):
+
+- **The main checkout's hooks ran stale binaries.** Seen: `npm run worktree:new` refused with the reason before EN-115 (`gets it by a rebase`, no binary named), from `target/release/guard-bash` of the main checkout, built at 06:55, which lacks EN-115's text; the worktree's binary, built at 10:16, has it. Cause, likely: EN-115 (#359) merged on GitHub, not by `story:finish`, so nothing rebuilt the main checkout's binaries. Remedy: `npm run rust:build` in the main checkout; then a rebuild after any pull of `develop`.
+- **`epic-check` takes a dropped story for an open one.** Seen: the backlog row lists `E17-F20-EN-064-one-hour-prompt-cache`, `status: dropped`, as **to look at**, and exits 1. Cause: `tools/repo-tools/src/epic_check.rs` keeps every story without the line `status: done`.
+- **`session-report` writes `1617 min 60 s`.** Seen in `target/release/session-report --all --markdown`: the seconds rounded to 60 without carrying the minute.
+- **E17's checklist names removed scripts**: 14 lines, one more expecting `font:metrics`, one obsolete (release-please); `playground/checklist/checklist-page.test.ts` asserts the old commands. Out of date too: `docs/guide/f18-safe-and-cheap-parallel-run.md`, Validation, still "Not yet validated"; `.claude/settings.json` allows `Bash(npm run library *)`; RET-004's criterion names `npm run epic:check`.
+
+`check:all` measured on `develop` at `e8f360ef` in this worktree: 112.6 s (`time` 115.3 s; the site built, the worktree's first run, load average 12 at its end), then 105.9 s inside `epic-check`.
+
+Rule-docs: none affected, a review of a tooling epic, no rule of `docs/domain/` changed.
+
+### Improvements
+
+| 2026-10-18 | REV-004 | `epic-check` lists a `dropped` story among the backlog to look at: a story `dropped` or `done` is closed | tool |
+| 2026-10-18 | REV-004 | `session-report` rounds seconds to 60 without carrying the minute (`1617 min 60 s`): round the whole duration first | tool |
+| 2026-10-18 | REV-004 | The main checkout's release binaries are not rebuilt when `develop` is pulled after a merge made on GitHub: the hooks ran a `guard-bash` older than EN-115 | tool |
+| 2026-10-18 | REV-004 | E17's checklist and its test name 14 npm scripts EN-115 removed, `font:metrics` and release-please's pull request: rewrite them on the binaries and ADR-0079, or mark them as records | process |
