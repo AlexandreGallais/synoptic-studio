@@ -231,6 +231,14 @@ pub fn rows_message(branch: &str) -> String {
     format!("docs(docs): move the rows of {id} into the logs\n\nRefs: {id}\n")
 }
 
+/// The rows and card lines a story file still holds for the logs, which its `done` commit moves
+/// (`move-rows`, ADR-0091): `story-finish` opens no pull request while there are some.
+#[must_use]
+pub fn rows_left(story: &str) -> usize {
+    let _ = story;
+    0
+}
+
 /// A step written as a command to type: `cd "<folder>" && <command> <arguments>`.
 fn typed(step: &Step) -> String {
     format!(
@@ -749,11 +757,7 @@ mod tests {
                 format!("cd \"{here}\" && git fetch --quiet --prune origin"),
                 format!("cd \"/repo\" && git merge --ff-only --quiet origin/{BASE}"),
                 "cd \"/repo\" && cargo build --release --workspace --locked --quiet".to_owned(),
-                format!(
-                    "cd \"/repo\" && cargo run --release -q -p shared-files --bin move-rows -- {STORY}"
-                ),
-                "cd \"/repo\" && git commit -m \"docs(docs): move the rows of EN-999 into the logs\" -m \"Refs: EN-999\" -- <the files it printed>".to_owned(),
-                "cd \"/repo\" && git push".to_owned(),
+                // [F23.AC1] no rows moved nor pushed after the merge: they are in the done commit.
                 format!("cd \"/repo\" && git worktree remove {here}"),
                 format!("cd \"/repo\" && git branch -D {STORY}"),
                 format!("cd \"/repo\" && gh {}", remote_deletion().join(" ")),
@@ -762,15 +766,14 @@ mod tests {
     }
 
     #[test]
-    fn names_the_merged_story_in_the_commit_moving_its_rows_into_the_logs() {
-        assert_eq!(
-            rows_message("chore/en-050-shared-files-written-at-merge"),
-            "docs(docs): move the rows of EN-050 into the logs\n\nRefs: EN-050\n"
-        );
-        assert_eq!(
-            rows_message("feat/us-061-font-list"),
-            "docs(docs): move the rows of US-061 into the logs\n\nRefs: US-061\n"
-        );
+    fn f23_ac1_counts_the_rows_and_card_lines_a_story_file_still_holds() {
+        // Two journal bullets and one card of two lines: 4; a note, a placeholder and a line of
+        // another shape are not rows (`move-rows` leaves them).
+        let story = "# S\n\n## For the main thread\n\nA note.\n\n### Journal\n\n- `#run` a\n- `#open` b\n\n### Feedback\n\n- None.\n\n### Improvements\n\n- Not a row.\n\n### Incidents\n\n#### 2026-10-19 — a card\n\n- Used: c\n";
+
+        assert_eq!(rows_left(story), 4);
+        assert_eq!(rows_left("# S\n\n## For the main thread\n\nA note.\n"), 0);
+        assert_eq!(rows_left("# S\n"), 0);
     }
 
     #[test]

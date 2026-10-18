@@ -387,3 +387,171 @@ fn leaves_a_line_of_another_shape_in_the_story_and_names_it() {
 
     let _ = fs::remove_dir_all(&root);
 }
+
+/// A story file holding two tool cards under `### Incidents`, as a worker writes them (ADR-0085).
+const CARDS: &str = "\
+# EN-999
+
+## For the main thread
+
+### Incidents
+
+#### 2026-10-19 — `replace` without an argument
+
+- Used: `target/release/replace` alone, to see its usage.
+- Failed: it waits on its standard input.
+- Instead: the Edit tool.
+
+#### 2026-10-19 — `page` on a heading
+
+- Seen: no section found for a heading with a colon.
+- Instead: `Read` with an offset.
+";
+
+/// The lines `take_rows` takes from [`CARDS`], each card's heading first, its blank lines dropped.
+fn card_rows() -> Vec<String> {
+    [
+        "#### 2026-10-19 — `replace` without an argument",
+        "- Used: `target/release/replace` alone, to see its usage.",
+        "- Failed: it waits on its standard input.",
+        "- Instead: the Edit tool.",
+        "#### 2026-10-19 — `page` on a heading",
+        "- Seen: no section found for a heading with a colon.",
+        "- Instead: `Read` with an offset.",
+    ]
+    .map(str::to_owned)
+    .to_vec()
+}
+
+#[test]
+fn f23_ac1_takes_the_cards_under_incidents() {
+    let taken = take_rows(CARDS);
+
+    assert_eq!(LOGS[3].path, "docs/process/tool-incidents.md");
+    assert_eq!(LOGS[3].place, Place::Cards);
+    assert_eq!(taken.rows, [(LOGS[3], card_rows())]);
+    assert_eq!(taken.left, Vec::new());
+    // The cards were the section's only content: it goes.
+    assert_eq!(taken.story, "# EN-999\n");
+}
+
+#[test]
+fn f23_ac1_leaves_an_undated_card_and_a_line_outside_a_card() {
+    // A bullet before any card, a card whose heading has no date and its bullet, a paragraph.
+    let story = "## For the main thread\n\n### Incidents\n\n- A bullet before any card.\n\n#### Someday — undated\n\n- Used: a\n\n#### 2026-10-19 — dated\n\n- Used: b\nA paragraph.\n\n### Journal\n\n- `#run` a row\n";
+    let taken = take_rows(story);
+
+    assert_eq!(
+        taken.rows,
+        [
+            (LOGS[0], vec!["- `#run` a row".to_owned()]),
+            (
+                LOGS[3],
+                vec!["#### 2026-10-19 — dated".to_owned(), "- Used: b".to_owned()]
+            ),
+        ]
+    );
+    assert_eq!(
+        taken.left,
+        [(
+            LOGS[3],
+            [
+                "- A bullet before any card.",
+                "#### Someday — undated",
+                "- Used: a",
+                "A paragraph."
+            ]
+            .map(str::to_owned)
+            .to_vec()
+        )]
+    );
+    assert_eq!(
+        taken.story,
+        "## For the main thread\n\n### Incidents\n\n- A bullet before any card.\n#### Someday — undated\n- Used: a\nA paragraph.\n"
+    );
+}
+
+#[test]
+fn f23_ac1_ends_the_cards_at_the_next_log_heading_and_keeps_a_deeper_heading() {
+    // A `#####` heading is not a card: it ends the cards, kept as any other heading.
+    let story = "## For the main thread\n\n### Incidents\n\n#### 2026-10-19 — a card\n\n- Used: a\n\n##### A note\n\nkept\n";
+    let taken = take_rows(story);
+
+    assert_eq!(
+        taken.rows,
+        [(
+            LOGS[3],
+            vec![
+                "#### 2026-10-19 — a card".to_owned(),
+                "- Used: a".to_owned()
+            ]
+        )]
+    );
+    assert_eq!(
+        taken.story,
+        "## For the main thread\n\n##### A note\n\nkept\n"
+    );
+}
+
+#[test]
+fn f23_ac1_appends_the_cards_at_the_end_of_the_incidents_log() {
+    let log = "# Tool incidents\n\nIntro.\n\n## 2026-10-18 — old\n\n- Used: a\n- Failed: b\n- Instead: c\n";
+
+    // Each card under a `## ` heading, a blank line before it and after its heading, oldest first.
+    assert_eq!(
+        insert_rows(log, Place::Cards, &card_rows(), TODAY).unwrap(),
+        format!(
+            "{log}\n## 2026-10-19 — `replace` without an argument\n\n- Used: `target/release/replace` alone, to see its usage.\n- Failed: it waits on its standard input.\n- Instead: the Edit tool.\n\n## 2026-10-19 — `page` on a heading\n\n- Seen: no section found for a heading with a colon.\n- Instead: `Read` with an offset.\n"
+        )
+    );
+    // A log without a card yet, or ending with blank lines, or without its final line break.
+    let one = ["#### 2026-10-19 — x".to_owned(), "- Used: y".to_owned()];
+
+    for log in ["# T\n", "# T\n\n\n", "# T"] {
+        assert_eq!(
+            insert_rows(log, Place::Cards, &one, TODAY).unwrap(),
+            "# T\n\n## 2026-10-19 — x\n\n- Used: y\n",
+            "{log:?}"
+        );
+    }
+}
+
+#[test]
+fn f23_ac1_moves_the_cards_of_a_story_into_the_incidents_log() {
+    let root: PathBuf =
+        std::env::temp_dir().join(format!("move-rows-cards-{}", std::process::id()));
+    let _ = fs::remove_dir_all(&root);
+    fs::create_dir_all(root.join("docs/backlog/stories")).unwrap();
+    fs::create_dir_all(root.join("docs/process")).unwrap();
+
+    let story = "docs/backlog/stories/E17-F23-EN-999-a-story.md";
+    let incidents =
+        "# Tool incidents\n\n## 2026-10-18 — old\n\n- Used: a\n- Failed: b\n- Instead: c\n";
+
+    fs::write(root.join(story), CARDS).unwrap();
+    fs::write(root.join("docs/process/tool-incidents.md"), incidents).unwrap();
+
+    let output = test_support::command(env!("CARGO_BIN_EXE_move-rows"))
+        .arg("chore/en-999-a-story")
+        .current_dir(&root)
+        .output()
+        .unwrap();
+    let read = |path: &str| fs::read_to_string(root.join(path)).unwrap();
+
+    // [F23.AC1] the cards are at the end of the incidents log, gone from the story file.
+    assert!(output.status.success(), "{output:?}");
+    assert_eq!(
+        String::from_utf8_lossy(&output.stdout),
+        format!("docs/process/tool-incidents.md\n{story}\n")
+    );
+    assert!(
+        read("docs/process/tool-incidents.md").starts_with(&format!(
+            "{incidents}\n## 2026-10-19 — `replace` without an argument\n\n- Used: "
+        )),
+        "{}",
+        read("docs/process/tool-incidents.md")
+    );
+    assert_eq!(read(story), "# EN-999\n");
+
+    let _ = fs::remove_dir_all(&root);
+}

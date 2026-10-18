@@ -12,6 +12,9 @@ pub enum Place {
     Table,
     /// At the end of its newest dated section, the first `## ` heading (`journal.md`, newest first).
     NewestSection,
+    /// At its end, each card under a `## ` heading (`tool-incidents.md`, oldest first): a card is
+    /// written `#### <date> — <title>` in a story file, its bullets under it (ADR-0085).
+    Cards,
 }
 
 /// A log fed from story files: the heading naming it there, its path and where its rows go.
@@ -26,7 +29,7 @@ pub struct Log {
 }
 
 /// The logs whose rows the tool moves.
-pub const LOGS: [Log; 3] = [
+pub const LOGS: [Log; 4] = [
     Log {
         heading: "### Journal",
         path: "docs/process/journal.md",
@@ -41,6 +44,11 @@ pub const LOGS: [Log; 3] = [
         heading: "### Feedback",
         path: "docs/process/feedback.md",
         place: Place::Table,
+    },
+    Log {
+        heading: "### Incidents",
+        path: "docs/process/tool-incidents.md",
+        place: Place::Cards,
     },
 ];
 
@@ -296,6 +304,7 @@ pub fn insert_rows(
     let lines: Vec<&str> = log.split('\n').collect();
     let mut opened: Vec<String> = Vec::new();
     let at = match place {
+        Place::Cards => return Err("no card taken yet".to_owned()),
         Place::Table => {
             let first = lines
                 .iter()
