@@ -25,15 +25,3 @@ ADR-0086, decided by the Product Owner on 2026-10-18 during F22's run: an epic i
 - [ ] T2 — The templates, E02's closing stories removed, the skills, `docs/process/agile.md`, `AGENTS.md`, `project-rules`, the worker brief and `docs/tooling/ci.md` (2 h)
 
 One task = one commit, referenced as `EN-123.T1` in the commit footer.
-
-## For the main thread
-
-### Journal
-
-- `#decision` The Product Owner, during F22's run (2026-10-18): a refinement opens each epic as a bubble on `develop`, with the documentary research on what they describe, and a feature when questions remain; the agent refuses a feature over 4 stories and proposes its split; the epics' division by theme is to be reworked with the Product Owner at the next review.
-- `#decision` The Product Owner, during EN-123 (2026-10-18): a fresh worker per story, never one agent chaining stories (EN-122's worker ended near 255,000 tokens, a start costs about 10,600); the specialists only where their independence pays, the `auditor` and the `verifier` at a feature's audit, the `math-expert` and the `functional-analyst` only for mathematics or business rules to check; no agent for small tasks, the main thread writing statuses, journal, `done` commits and merges itself, the `clerk` unused until a review removes it.
-
-### Improvements
-
-| 2026-10-18 | EN-123 | Carried from RET-005, removed with E02's closing: the story auto-merge into `develop` for the agent's stories (cards C3, C7), the permissions of the `story-finish` and `mutate` binaries, ADR-0082's option B and a configuration file for local paths such as the records' root, all parked until the next review; ADR-0084's trial of two agents per story is superseded by ADR-0086's one agent at a time and needs no measure | process |
-| 2026-10-18 | EN-123 | A review held at a return is a story outside a feature, yet the backlog tools attach such a story to an epic: its file and its `epic` field name the epic of the first feature it reviews, a convention to confirm or replace at the next review (a review across two epics sits in one epic's Closing table) | process |
