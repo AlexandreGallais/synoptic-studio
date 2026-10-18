@@ -5,7 +5,8 @@
 //!   no file and makes no branch;
 //! - `check <file>` checks a release text, the body of a pull request into `main`, up to its
 //!   first line `---`;
-//! - `publish`, by the button of `release.yml` on `main`, computes the version from the last tag,
+//! - `publish`, by the button of `release.yml`, refuses a branch other than `main`
+//!   (`GITHUB_REF_NAME`), computes the version from the last tag,
 //!   makes the GitHub release on the head with the bodies of the pull requests merged since and
 //!   the test report, and does nothing without a commit since that tag.
 

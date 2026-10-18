@@ -1,0 +1,76 @@
+# The documentation site and the playground (docs/tooling/releases.md, ADR-0086, ADR-0088): a push
+# to main, a review's merge, deploys them to GitHub Pages, so that they follow each review without
+# a release, and saves under main the Rust build it compiled. A push to develop deploys nothing,
+# nor does the release's button: the push of the head it releases already did.
+name: Site
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  # The versions in the cargo tools' key, the same as ci.yml's (EN-069, EN-111): the site restores
+  # that cache for its toolchain and installs no tool.
+  CARGO_LLVM_COV_VERSION: 0.9.1
+  CARGO_DENY_VERSION: 0.20.2
+  # No incremental build: its state would grow the build's cache and never be reused.
+  CARGO_INCREMENTAL: 0
+
+jobs:
+  site:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+      # The API pages' build runs Rust binaries, compiled on the caches of ci.yml's keys and paths.
+      # The tools' cache is restored only (`REF-GH-CACHE-RESTORE`): its key promises cargo-llvm-cov
+      # and cargo-deny, which this job never installs, so a cache it saved would lack them. A run
+      # on main restores only main's caches and rust-caches.yml saves under develop, so it is found
+      # only while one saved on main before EN-132 lasts; otherwise the toolchain of
+      # rust-toolchain.toml is installed at the first cargo call, as in a cold CI run. The
+      # build's is saved under main on a missed key (`REF-GH-CACHE`), with what this job compiled:
+      # the cache a pull request restores when its head branch has none. Without `restore-keys`,
+      # a new key starts from an empty target/, as on develop.
+      - id: toolchain
+        run: echo "name=$(sed -n 's/^channel = "\(.*\)"$/\1/p' rust-toolchain.toml)-x86_64-unknown-linux-gnu" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache/restore@v6
+        with:
+          path: |
+            ~/.rustup/toolchains/${{ steps.toolchain.outputs.name }}
+            ~/.cargo/bin/cargo-llvm-cov
+            ~/.cargo/bin/cargo-deny
+          key: rust-tools-${{ runner.os }}-${{ hashFiles('rust-toolchain.toml') }}-cargo-llvm-cov-${{ env.CARGO_LLVM_COV_VERSION }}-cargo-deny-${{ env.CARGO_DENY_VERSION }}
+      - uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: rust-build-${{ runner.os }}-${{ hashFiles('rust-toolchain.toml', 'Cargo.lock') }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run docs:build
+        env:
+          DOCS_BASE: /${{ github.event.repository.name }}/
+      - run: npm run playground:build
+        env:
+          PLAYGROUND_BASE: /${{ github.event.repository.name }}/playground/
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: docs/.vitepress/dist
+      - id: deploy
+        uses: actions/deploy-pages@v5

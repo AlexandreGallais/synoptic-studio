@@ -123,8 +123,8 @@ describe("release flow (ADR-0086)", () => {
     const job = jobOf(RUST_CACHES, "rust-caches");
     const fetch = job.indexOf("- run: cargo fetch --locked\n");
 
-    // Every push to develop, the one trigger of the workflow.
-    expect(job).not.toContain("if:");
+    // Every push to develop, the one trigger of the workflow: no condition on the job.
+    expect(job).not.toMatch(/^ {4}if:/mu);
     expect(fetch).toBeGreaterThan(job.indexOf("key: rust-build-"));
     expect(fetch).toBeLessThan(job.indexOf("- run: npm run rust:build\n"));
   });

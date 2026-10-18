@@ -1,10 +1,11 @@
-//! `release publish`, by the button of `release.yml` on `main` (ADR-0086): the version from the
-//! last tag `vx.y.z` and the commits since (`REF-SEMVER`), its notes the bodies of the pull
-//! requests into `main` merged since that tag but Dependabot's, each checked as `release check`
-//! does and all against the commits, then the
-//! GitHub release made on `main`'s head, which GitHub tags, the test report of the last pull
-//! request's CI attached. It makes no commit. Every Git and GitHub call goes through a [`Run`],
-//! so that a test gives the answers.
+//! `release publish`, by the button of `release.yml` (ADR-0086), on `main` alone, the tool
+//! refusing another branch before any call, since the workflow chooses nothing by an `if:`
+//! (ADR-0088): the version from the last tag `vx.y.z` and the commits since (`REF-SEMVER`), its
+//! notes the bodies of the pull requests into `main` merged since that tag but Dependabot's, each
+//! checked as `release check` does and all against the commits, then the GitHub release made on
+//! `main`'s head, which GitHub tags, the test report of the last pull request's CI attached. It
+//! makes no commit. Every Git and GitHub call goes through a [`Run`], so that a test gives the
+//! answers.
 
 use std::fs;
 use std::path::Path;
@@ -45,8 +46,14 @@ pub const RELEASE_BRANCH: &str = "main";
 ///
 /// The branch, `GITHUB_REF_NAME` of the run, is another one, or empty.
 pub fn on_release_branch(branch: &str) -> Result<(), String> {
-    let _ = branch;
-    Ok(())
+    if branch == RELEASE_BRANCH {
+        Ok(())
+    } else {
+        Err(format!(
+            "the run is on the branch {branch:?}, not {RELEASE_BRANCH:?}: a release is made from \
+             {RELEASE_BRANCH} only, so press the button on {RELEASE_BRANCH} (GITHUB_REF_NAME)"
+        ))
+    }
 }
 
 /// The first line of a command's output, trimmed.

@@ -111,7 +111,8 @@ describe("the Rust caches of the CI (EN-111)", () => {
     // A pull request into main restores the caches of its head branch, develop, and of its base
     // and default branch, main, whose build the site's workflow saves (REF-GH-CACHE).
     expect(RUST_CACHES).toContain("\non:\n  push:\n    branches: [develop]\n\n");
-    expect(warm).not.toContain("if:");
+    // No condition on the job: its one step's is the tools' cache missed.
+    expect(warm.match(/if:/gu)).toHaveLength(1);
     expect(warm.match(/uses: actions\/cache@v\d+/gu)).toHaveLength(2);
     expect(cachesOf(warm)).toStrictEqual(cachesOf(lanes));
   });
