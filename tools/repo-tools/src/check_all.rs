@@ -199,21 +199,73 @@ pub fn changed_lines(before: &str, after: &str) -> Vec<String> {
     lines
 }
 
+/// The sections of `.git/config` a test could break, every key of them guarded: a `core.bare` or
+/// a `core.hooksPath` turns the checkout into another, a `user` or `commit` key signs its commits
+/// as another (EN-103, EN-113).
+const GUARDED_SECTIONS: [&str; 3] = ["core", "user", "commit"];
+
+/// The keys of a `[remote "…"]` section that are guarded: where the checkout pushes and fetches.
+const GUARDED_REMOTE_KEYS: [&str; 2] = ["url", "pushurl"];
+
+/// The lines of a `.git/config` a test could break, with their endings, each under its section's
+/// header: every key of `[core]`, `[user]` and `[commit]`, and the URLs of each remote. The rest
+/// is left out, the `[branch "…"]` tracking lines that a parallel worktree's `git push -u`
+/// writes first (a false failure at CHK-022). Section and key names are read without case, as
+/// Git reads them.
+#[must_use]
+pub fn guarded_lines(text: &str) -> String {
+    let (mut kept, mut header, mut section) = (String::new(), "", String::new());
+
+    for line in text.split_inclusive('\n') {
+        let trimmed = line.trim();
+
+        if let Some(inside) = trimmed.strip_prefix('[') {
+            header = line;
+            section = inside
+                .split(|letter: char| letter.is_whitespace() || matches!(letter, '"' | '.' | ']'))
+                .next()
+                .unwrap_or_default()
+                .to_ascii_lowercase();
+            continue;
+        }
+
+        let key = trimmed
+            .split(|letter: char| letter.is_whitespace() || letter == '=')
+            .next()
+            .unwrap_or_default()
+            .to_ascii_lowercase();
+        let comment = trimmed.starts_with('#') || trimmed.starts_with(';');
+        let guarded = GUARDED_SECTIONS.contains(&section.as_str())
+            || (section == "remote" && GUARDED_REMOTE_KEYS.contains(&key.as_str()));
+
+        if guarded && !key.is_empty() && !comment {
+            kept.push_str(header);
+            header = "";
+            kept.push_str(line);
+        }
+    }
+
+    kept
+}
+
 /// The report of `.git/config` read before and after the lanes (`None` when it could not be
-/// read): nothing when its bytes are the same, else the failure naming the lines added or removed.
-/// Nothing is restored: what changed it is a bug to find, and the old content is in the report.
+/// read): nothing when its [`guarded_lines`] are the same, else the failure naming the guarded
+/// lines added or removed. Nothing is restored: what changed it is a bug to find, and the old
+/// content is in the report.
 #[must_use]
 pub fn config_report(path: &str, before: Option<&[u8]>, after: Option<&[u8]>) -> Option<String> {
-    if before == after {
+    let guarded =
+        |bytes: Option<&[u8]>| bytes.map(|bytes| guarded_lines(&String::from_utf8_lossy(bytes)));
+    let (old, new) = (guarded(before), guarded(after));
+
+    if old == new {
         return None;
     }
 
-    let text = |bytes: Option<&[u8]>| {
-        bytes
-            .map(|bytes| String::from_utf8_lossy(bytes).into_owned())
-            .unwrap_or_default()
-    };
-    let mut lines = changed_lines(&text(before), &text(after));
+    let mut lines = changed_lines(
+        old.as_deref().unwrap_or_default(),
+        new.as_deref().unwrap_or_default(),
+    );
     let what = match (before, after) {
         (Some(_), None) => "removed",
         (None, Some(_)) => "created",
@@ -496,15 +548,68 @@ mod tests {
             Some("✗ c removed while the checks ran, restored nothing:\n- [core]\n- \tbare = false")
         );
         assert_eq!(
-            config_report("c", None, Some(b"x\n")).as_deref(),
-            Some("✗ c created while the checks ran, restored nothing:\n+ x")
+            config_report("c", None, Some(b"[user]\n\tname = t\n")).as_deref(),
+            Some("✗ c created while the checks ran, restored nothing:\n+ [user]\n+ \tname = t")
         );
         // Bytes differ, lines the same: a line ending changed.
         assert_eq!(
-            config_report("c", Some(b"x\n"), Some(b"x\r\n")).as_deref(),
+            config_report("c", Some(b"[core]\nbare\n"), Some(b"[core]\r\nbare\r\n")).as_deref(),
             Some(
                 "✗ c changed while the checks ran, restored nothing:\n  the same lines, their endings or bytes changed"
             )
+        );
+    }
+
+    /// A main checkout's `.git/config`: the four guarded sections and a branch tracked.
+    const CONFIG: &str = "[core]\n\tbare = false\n\thooksPath = .githooks\n[user]\n\tname = t\n\
+                          [commit]\n\tgpgsign = false\n[remote \"origin\"]\n\turl = https://h/r.git\n\
+                          \tfetch = +refs/heads/*:refs/remotes/origin/*\n[branch \"develop\"]\n\
+                          \tremote = origin\n\tmerge = refs/heads/develop\n";
+
+    #[test]
+    fn keeps_core_user_commit_and_the_remotes_urls_only() {
+        // The fetch refspec and the branch's tracking lines are left out, the remote's header
+        // kept above its URL.
+        assert_eq!(
+            guarded_lines(CONFIG),
+            "[core]\n\tbare = false\n\thooksPath = .githooks\n[user]\n\tname = t\n[commit]\n\
+             \tgpgsign = false\n[remote \"origin\"]\n\turl = https://h/r.git\n"
+        );
+        // Names without case, as Git reads them; comments and blank lines left out; a section
+        // without a guarded key leaves no header.
+        assert_eq!(
+            guarded_lines(
+                "[CORE]\n# a comment\n\n\tBare = true\n[Remote \"o\"]\n\tPushURL = u\n[gc]\n\tauto = 0\n[remote \"p\"]\n\tfetch = f\n"
+            ),
+            "[CORE]\n\tBare = true\n[Remote \"o\"]\n\tPushURL = u\n"
+        );
+        assert_eq!(guarded_lines(""), "");
+    }
+
+    #[test]
+    fn f21_ac9_lets_a_branch_tracked_by_another_worktree_through() {
+        // A parallel worktree's `git push -u` writes its branch's tracking lines into the
+        // common `.git/config` (CHK-022): no failure.
+        let tracked = format!(
+            "{CONFIG}[branch \"chore/en-113-x\"]\n\tremote = origin\n\tmerge = refs/heads/chore/en-113-x\n"
+        );
+
+        assert_eq!(
+            config_report("c", Some(CONFIG.as_bytes()), Some(tracked.as_bytes())),
+            None
+        );
+        // A remote's URL changed, or a hooks path, fails.
+        let moved = CONFIG.replace("https://h/r.git", "/tmp/r.git");
+        assert_eq!(
+            config_report("c", Some(CONFIG.as_bytes()), Some(moved.as_bytes())).as_deref(),
+            Some(
+                "✗ c changed while the checks ran, restored nothing:\n- \turl = https://h/r.git\n+ \turl = /tmp/r.git"
+            )
+        );
+        let unhooked = CONFIG.replace("\thooksPath = .githooks\n", "");
+        assert_eq!(
+            config_report("c", Some(CONFIG.as_bytes()), Some(unhooked.as_bytes())).as_deref(),
+            Some("✗ c changed while the checks ran, restored nothing:\n- \thooksPath = .githooks")
         );
     }
 }
