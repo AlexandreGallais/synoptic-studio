@@ -81,14 +81,18 @@ describe("the Rust caches of the CI (EN-111)", () => {
   const warm = jobOf(RELEASE, "rust-cache");
 
   it("[F21.AC4] restores the toolchain, the cargo tools and the build in the CI, never saves them", () => {
-    // A pull request's cache is scoped to its merge ref: only a run on main saves (REF-GH-CACHE).
+    // A pull request's cache is scoped to its merge ref: only a push to develop or main saves
+    // (REF-GH-CACHE).
     expect(cachesOf(lanes)).toHaveLength(2);
     expect(lanes.match(/uses: actions\/cache\/restore@v\d+/gu)).toHaveLength(2);
     expect(CI).not.toMatch(/uses: actions\/cache(?:\/save)?@/u);
   });
 
-  it("[F21.AC4] saves the same caches on main, under the same keys and paths", () => {
-    expect(warm).toContain("if: github.ref_name == 'main'");
+  it("[F21.AC4] [F24.AC3] saves the same caches on a push to develop or main, under the same keys and paths", () => {
+    // A pull request into main restores the caches of its head branch, develop, and of its base
+    // and default branch, main (REF-GH-CACHE).
+    expect(RELEASE).toContain("\non:\n  push:\n    branches: [develop, main]\n");
+    expect(warm).toContain("if: github.event_name == 'push'\n");
     expect(warm.match(/uses: actions\/cache@v\d+/gu)).toHaveLength(2);
     expect(cachesOf(warm)).toStrictEqual(cachesOf(lanes));
   });

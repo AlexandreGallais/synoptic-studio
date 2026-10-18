@@ -1,12 +1,13 @@
-# The documentation site and the release (docs/tooling/releases.md, ADR-0086): a push to main, a
-# review's merge, deploys the site and makes no release; the button of the Actions tab
-# (`workflow_dispatch`, `REF-GH-WORKFLOW-DISPATCH`) on main makes the release, its version from the
-# last tag and the commits since, with no commit.
+# The documentation site, the release and the Rust caches (docs/tooling/releases.md, ADR-0086): a
+# push to main, a review's merge, deploys the site and makes no release; the button of the Actions
+# tab (`workflow_dispatch`, `REF-GH-WORKFLOW-DISPATCH`) on main makes the release, its version from
+# the last tag and the commits since, with no commit. A push to develop or main saves the Rust
+# caches the CI restores (EN-125).
 name: Release
 
 on:
   push:
-    branches: [main]
+    branches: [develop, main]
   workflow_dispatch:
 
 permissions:
@@ -21,16 +22,18 @@ env:
   CARGO_INCREMENTAL: 0
 
 jobs:
-  # On a push to main: saves the Rust caches the next pull request into main restores (EN-111). A
-  # cache saved by a pull request's run is scoped to its merge ref and never restored by the next
-  # pull request; one saved on the default branch is restored by every run (`REF-GH-CACHE`). It
-  # fetches every target's crates, as the CI does before `check:all` (`REF-CARGO-FETCH`, EN-116),
-  # then builds what `check:all` compiles, with the same commands and flags, and checks nothing:
-  # the tests are compiled and listed, never run (ADR-0072: nothing is re-checked after the merge).
-  # Its keys and paths are ci.yml's. Without `restore-keys`, a new key starts from an empty
-  # target/, which so never keeps the artifacts of an older Cargo.lock.
+  # On a push to develop or main: saves the Rust caches the next pull request into main restores
+  # (EN-111, EN-125). A cache saved by a pull request's run is scoped to its merge ref and never
+  # restored by the next pull request; a pull request's run restores those of its head branch, of
+  # its base branch and of the default branch, so the review's, from develop into main, those
+  # saved on develop and on main (`REF-GH-CACHE`). It fetches every target's crates, as the CI
+  # does before its lanes (`REF-CARGO-FETCH`, EN-116), then builds what `check:all` compiles, with
+  # the same commands and flags, and checks nothing: the tests are compiled and listed, never run
+  # (ADR-0072: nothing is re-checked after the merge). Its keys and paths are ci.yml's. Without
+  # `restore-keys`, a new key starts from an empty target/, which so never keeps the artifacts of
+  # an older Cargo.lock.
   rust-cache:
-    if: github.ref_name == 'main' && github.event_name == 'push'
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -113,10 +116,10 @@ jobs:
           GH_REPO: ${{ github.repository }}
 
   # On a push to main, a review's merge: deploys the documentation site and the playground, so
-  # that they follow each review without a release (ADR-0086). The button deploys nothing: the
-  # push of the head it releases already did.
+  # that they follow each review without a release (ADR-0086). A push to develop deploys nothing,
+  # nor does the button: the push of the head it releases already did.
   docs:
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' && github.ref_name == 'main'
     runs-on: ubuntu-latest
     permissions:
       contents: read

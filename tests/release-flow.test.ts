@@ -71,8 +71,11 @@ function versionAt(value: unknown, keys: readonly string[]): string {
 }
 
 describe("release flow (ADR-0086)", () => {
-  it("[F22.AC2] runs on pushes to main and by its button", () => {
-    expect(WORKFLOW).toContain("on:\n  push:\n    branches: [main]\n  workflow_dispatch:\n");
+  it("[F22.AC2] [F24.AC3] runs on pushes to develop and main and by its button", () => {
+    // A push to develop saves the Rust caches alone, which the review's pull request restores.
+    expect(WORKFLOW).toContain(
+      "on:\n  push:\n    branches: [develop, main]\n  workflow_dispatch:\n",
+    );
   });
 
   it("[F22.AC2] releases by the button on main only, with the project's tool, on GITHUB_TOKEN", () => {
@@ -90,19 +93,20 @@ describe("release flow (ADR-0086)", () => {
     expect(job).not.toContain("outputs:");
   });
 
-  it("[F22.AC2] deploys the site on a push to main, never by the button", () => {
+  it("[F22.AC2] deploys the site on a push to main, never on develop nor by the button", () => {
     const job = jobOf("docs");
 
-    expect(job).toContain("if: github.event_name == 'push'\n");
+    expect(job).toContain("if: github.event_name == 'push' && github.ref_name == 'main'\n");
     expect(job).not.toContain("needs:");
     expect(job).toContain("uses: actions/deploy-pages@");
   });
 
-  it("[F22.AC2] fetches every target's crates on main before its caches are saved", () => {
+  it("[F22.AC2] [F24.AC3] fetches every target's crates on develop and main before its caches are saved", () => {
     const job = jobOf("rust-cache");
     const fetch = job.indexOf("- run: cargo fetch --locked\n");
 
-    expect(job).toContain("if: github.ref_name == 'main' && github.event_name == 'push'\n");
+    // Every push the workflow runs on, so to develop and to main.
+    expect(job).toContain("if: github.event_name == 'push'\n");
     expect(fetch).toBeGreaterThan(job.indexOf("key: rust-build-"));
     expect(fetch).toBeLessThan(job.indexOf("- run: npm run rust:build\n"));
   });

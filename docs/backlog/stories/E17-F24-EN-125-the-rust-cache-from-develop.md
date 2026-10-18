@@ -18,7 +18,7 @@ The Rust lane compiled every crate from nothing on GitHub's runner (over 21 min 
 
 ## Tasks
 
-- [ ] T1 — The cache's scope read and written; the job saving it on a push to `develop` and `main`, a test of the workflow's triggers failing first (1 h)
+- [x] T1 — The cache's scope read and written; the job saving it on a push to `develop` and `main`, a test of the workflow's triggers failing first (1 h)
 - [ ] T2 — The Rust lane restoring it; the times measured (1 h)
 
 One task = one commit, referenced as `EN-125.T1` in the commit footer.
