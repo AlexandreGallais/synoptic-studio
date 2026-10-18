@@ -230,7 +230,7 @@ fn refuses_an_empty_message() {
 }
 
 #[test]
-fn f21_ac6_refuses_to_rebase_a_tree_with_uncommitted_changes_naming_its_files() {
+fn f21_ac2_refuses_to_rebase_a_tree_with_uncommitted_changes_naming_its_files() {
     let rebase = Target::Rebase("origin/feature/f21-x".to_owned());
     let changes = "M\tREADME.md\nA\tdocs/a b.md\n";
 

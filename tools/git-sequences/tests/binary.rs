@@ -409,7 +409,7 @@ fn prints_its_usage_on_a_malformed_call() {
 }
 
 #[test]
-fn f21_ac6_names_the_uncommitted_files_that_stop_a_rebase() {
+fn f21_ac2_names_the_uncommitted_files_that_stop_a_rebase() {
     let repos = repos();
 
     move_feature_on(&repos, "feature.md", "feature\n");

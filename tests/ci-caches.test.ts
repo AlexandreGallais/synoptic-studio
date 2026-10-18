@@ -184,7 +184,7 @@ describe("the Rust caches of the CI (EN-111)", () => {
     }
   });
 
-  it("[F21.AC5] skips no release-please branch, release-please gone (EN-112)", () => {
+  it("[F21.AC6] skips no release-please branch, release-please gone (EN-112)", () => {
     const codeql = readFileSync(join(ROOT, ".github", "workflows", "codeql.yml"), "utf8");
 
     expect(`${CI}\n${codeql}`).not.toContain("release-please");

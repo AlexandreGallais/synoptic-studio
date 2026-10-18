@@ -17,7 +17,7 @@ fn metrics(dir: &Path, home: &Path, arguments: &[&str]) -> Output {
 }
 
 #[test]
-fn reports_the_main_checkouts_work_from_a_worktree_its_findings_included() {
+fn f21_ac2_reports_the_main_checkouts_work_from_a_worktree_its_findings_included() {
     let (home, repo, worktree) = setup("report");
     let folder = projects(&home, &repo);
     let lines = [

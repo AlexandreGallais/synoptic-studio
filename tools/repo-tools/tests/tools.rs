@@ -257,7 +257,7 @@ fn f18_ac8_branches_clean_deletes_the_merged_and_gone_branches_and_keeps_a_fresh
 }
 
 #[test]
-fn records_save_copies_commits_then_says_nothing_changed() {
+fn f21_ac2_records_save_copies_commits_then_says_nothing_changed() {
     let lab = Lab::new("records", &[]);
     let repo = lab.root.join("repo");
     let records = lab.root.join("records");
@@ -330,7 +330,7 @@ fn records_save_copies_commits_then_says_nothing_changed() {
 }
 
 #[test]
-fn backlog_status_names_an_item_it_does_not_find() {
+fn f21_ac2_backlog_status_names_an_item_it_does_not_find() {
     let lab = Lab::new("status", &[]);
     let output = lab
         .command(env!("CARGO_BIN_EXE_backlog-status"), &lab.root)

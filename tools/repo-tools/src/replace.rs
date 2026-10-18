@@ -194,7 +194,7 @@ mod tests {
     }
 
     #[test]
-    fn f21_ac7_refuses_a_second_block_without_its_file_line() {
+    fn f21_ac2_refuses_a_second_block_without_its_file_line() {
         let spec = "@@ a.md\n<<<\nx\n===\ny\n>>>\n<<<\nz\n===\nw\n>>>\n";
 
         assert_eq!(
@@ -204,7 +204,7 @@ mod tests {
     }
 
     #[test]
-    fn f21_ac7_refuses_a_block_that_lost_its_end_or_its_frame() {
+    fn f21_ac2_refuses_a_block_that_lost_its_end_or_its_frame() {
         // Its `>>>` lost: the next block would have become its new text.
         let spec = "@@ a.md\n<<<\nx\n===\ny\n@@ b.md\n<<<\nz\n===\nw\n>>>\n";
 
