@@ -2,7 +2,7 @@
 id: F29
 epic: E17
 title: The local checks stable and fast
-status: ready
+status: done
 ---
 
 # E17 · F29 — The local checks stable and fast
@@ -13,7 +13,7 @@ Decided by the Product Owner on 2026-10-18, first of the tooling features cut by
 
 ## Acceptance criteria
 
-1. Every timing test of `src/` and `tests/` has a limit at least four times its duration alone, measured and written beside it, and passes in a loaded `check:all` (`.claude/rules/tooling.md`) (EN-129).
+1. Every timing test of `src/`, `tests/` and `playground/` has a limit at least four times its duration alone, measured and written beside it, and passes in a loaded `check:all` (`.claude/rules/tooling.md`) (EN-129).
 2. `check:all` skips the Rust lanes, saying so, when the branch changed no Rust input against its base, as it skips the docs lane, and runs the Rust coverage as a lane of its own (EN-130).
 3. After a pull or a merge in a checkout, the release binaries whose sources changed are rebuilt before the next tool runs (EN-131).
 
@@ -23,11 +23,11 @@ In delivery order.
 
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
-| [EN-129](../stories/E17-F29-EN-129-timing-tests-that-hold-under-load.md) | EN | Timing tests that hold under load | ready |
-| [EN-130](../stories/E17-F29-EN-130-the-rust-lane-only-when-rust-changed.md) | EN | The Rust lane only when Rust changed, its coverage a lane | ready |
-| [EN-131](../stories/E17-F29-EN-131-binaries-rebuilt-after-a-pull.md) | EN | The binaries rebuilt after a pull | ready |
-| [AUD-031](../stories/E17-F29-AUD-031-audit-f29.md) | AUD | Audit F29 | ready |
-| [VAL-030](../stories/E17-F29-VAL-030-validate-f29.md) | VAL | Validate F29 | ready |
+| [EN-129](../stories/E17-F29-EN-129-timing-tests-that-hold-under-load.md) | EN | Timing tests that hold under load | done |
+| [EN-130](../stories/E17-F29-EN-130-the-rust-lane-only-when-rust-changed.md) | EN | The Rust lane only when Rust changed, its coverage a lane | done |
+| [EN-131](../stories/E17-F29-EN-131-binaries-rebuilt-after-a-pull.md) | EN | The binaries rebuilt after a pull | done |
+| [AUD-031](../stories/E17-F29-AUD-031-audit-f29.md) | AUD | Audit F29 | done |
+| [VAL-030](../stories/E17-F29-VAL-030-validate-f29.md) | VAL | Validate F29 | done |
 
 ## Feature plan
 

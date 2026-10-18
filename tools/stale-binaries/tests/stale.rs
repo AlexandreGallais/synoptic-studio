@@ -5,7 +5,9 @@ use std::fs::{self, File, FileTimes};
 use std::path::{Path, PathBuf};
 use std::time::{Duration, SystemTime};
 
-use stale_binaries::{binaries, dep_info_files, package_name, stale_binaries, verdict};
+use stale_binaries::{
+    binaries, binary_written, dep_info_files, package_name, stale_binaries, verdict,
+};
 
 /// A file written with its text, then given a time `seconds` after a fixed instant.
 fn file(path: &Path, text: &str, seconds: u64) {
@@ -117,6 +119,19 @@ fn f21_ac1_names_each_binary_older_than_its_sources_and_each_missing_one() {
             "target/release/y is missing"
         ]
     );
+    let _ = fs::remove_dir_all(&root);
+}
+
+#[test]
+fn reads_when_each_release_binary_was_written() {
+    let root = workspace("written");
+
+    // `alpha` and `x` written 20 s after the instant, `y` never built (AUD-031, F9).
+    assert_eq!(
+        binary_written(&root, "alpha"),
+        Some(SystemTime::UNIX_EPOCH + Duration::from_mins(16667))
+    );
+    assert_eq!(binary_written(&root, "y"), None);
     let _ = fs::remove_dir_all(&root);
 }
 

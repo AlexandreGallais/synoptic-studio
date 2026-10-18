@@ -1,10 +1,10 @@
 //! `check-all` (`npm run check:all`, RET-002, EN-103): every check of the repository in parallel
 //! lanes, run from the repository's root under the heavy lock `npm run check:all` takes. Each check
 //! prints a line with its time, a failed one its output after it; the last line says whether all
-//! passed. The release binaries are built first, alone; the docs lane runs only when the branch
-//! changed one of its inputs against its base (EN-085): the nearest of `develop` and the feature
-//! branches on GitHub for a story, `develop` for a feature; on `main`, `develop`, a detached head
-//! or in the CI every lane runs. `.git/config` of the main checkout is read before and after the
+//! passed. The release binaries are built first, alone; the docs lane, and the Rust lanes, run only
+//! when the branch changed one of their inputs against its base (EN-085, EN-130), each skipping
+//! said by a line: the nearest of `develop` and the feature branches on GitHub for a story,
+//! `develop` for a feature; on `main`, `develop`, a detached head or in the CI every lane runs. `.git/config` of the main checkout is read before and after the
 //! lanes: a lane that changed a line a test could break fails the run, its lines named, nothing
 //! restored (F21.AC9, EN-113).
 
@@ -17,8 +17,8 @@ use std::thread;
 use std::time::Instant;
 
 use repo_tools::check_all::{
-    BEFORE_LANES, LANES, change_against_base, command_of, config_report, git_lines, lanes_to_run,
-    report_of, skipped_line, summary,
+    BEFORE_LANES, change_against_base, command_of, config_report, git_lines, lanes_to_run,
+    report_of, skipped_lines, summary,
 };
 use repo_tools::scripts::{read_scripts, script_command, shell};
 
@@ -95,12 +95,10 @@ fn work() -> u8 {
     };
     let to_run = lanes_to_run(change.as_ref().map(|(_, paths)| paths.as_slice()));
 
-    if to_run.len() < LANES.len() {
-        let base = change
-            .as_ref()
-            .map_or("the base", |(base, _)| base.as_str());
-
-        println!("{}", skipped_line(base));
+    if let Some((base, paths)) = &change {
+        for line in skipped_lines(paths, base) {
+            println!("{line}");
+        }
     }
 
     let config = config_path(&root);

@@ -9,7 +9,10 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Output;
 
-use repo_tools::check_all::{BEFORE_LANES, LANES, changed_since, command_of, touches_site};
+use repo_tools::check_all::{
+    BEFORE_LANES, DOCS_LANE, LANES, RUST_LANES, changed_since, command_of, lanes_to_run,
+    skipped_lines, touches_rust, touches_site,
+};
 use repo_tools::scripts::read_scripts;
 use test_support::command;
 
@@ -555,4 +558,311 @@ fn f19_ac9_writes_no_release_binary_from_two_lanes_nor_the_workspace_during_the_
         release_binaries("npm run --silent lint", &scripts),
         ["lint"]
     );
+}
+
+/// Paths given as owned strings, as `check-all` reads them from Git.
+fn owned(paths: &[&str]) -> Vec<String> {
+    paths.iter().map(|&path| path.to_owned()).collect()
+}
+
+/// The root's tracked entries the Rust lanes do not read whole — neither Cargo, rustup nor
+/// cargo-deny, a file inside one that the crates' tests read being named among the Rust inputs
+/// (`.github/workflows/`): a new entry fails `[F29.AC2]` until it is listed here or there.
+const NOT_RUST_INPUTS: &[&str] = &[
+    ".claude",
+    ".editorconfig",
+    ".gitattributes",
+    ".githooks",
+    ".github",
+    ".gitignore",
+    ".idea",
+    ".lycheeignore",
+    ".mcp.json",
+    ".npmrc",
+    ".nvmrc",
+    ".oxlintrc.json",
+    ".secret-scan-ignore",
+    ".vscode",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "LICENSE",
+    "NOTICE",
+    "README.md",
+    "SECURITY.md",
+    "THIRD-PARTY-LICENSES.md",
+    "docs",
+    "playground",
+    "scripts",
+    "src",
+    "tests",
+    "tsconfig.json",
+    "vite.config.ts",
+];
+
+#[test]
+fn f29_ac2_reads_cargo_s_inputs_and_the_files_the_crates_tests_read() {
+    // Cargo's own: a crate, the workspace's manifest and lock, the toolchain, Cargo's settings,
+    // cargo-deny's.
+    for path in [
+        "tools/lint/src/lib.rs",
+        "Cargo.toml",
+        "Cargo.lock",
+        "rust-toolchain.toml",
+        ".cargo/config.toml",
+        "deny.toml",
+    ] {
+        assert!(touches_rust(&owned(&[path])), "{path}");
+    }
+    // Read by the crates' tests outside tools/: the scripts, the formatter's oxfmt and settings,
+    // the CI and its required checks, the lint's folders, the hooks' settings, the checklists,
+    // and the test files.
+    for path in [
+        "package.json",
+        "package-lock.json",
+        ".oxfmtrc.json",
+        ".github/workflows/ci.yml",
+        "docs/tooling/ci.md",
+        "docs/conventions/files.md",
+        ".claude/settings.json",
+        "playground/checklists/epic-17.ts",
+        "src/math/angle/degrees.test.ts",
+        "tests/declarations.test.ts",
+    ] {
+        assert!(touches_rust(&owned(&[path])), "{path}");
+    }
+    // A story of Markdown, of the library's code or of a script: none of them.
+    assert!(!touches_rust(&owned(&[
+        "docs/backlog/stories/x.md",
+        "docs/tooling/commands.md",
+        "src/math/angle/degrees.ts",
+        "playground/main.ts",
+        "scripts/default-font-metrics.ts",
+        "README.md",
+        ".github/dependabot.yml",
+        ".claude/rules/tooling.md"
+    ])));
+    // A name that only starts like a folder or a file of them is not one.
+    assert!(!touches_rust(&owned(&[
+        "toolsy/x.rs",
+        "Cargo.toml.bak",
+        "deny.tomlx",
+        ".cargox/config.toml",
+        "x.test.ts.snap"
+    ])));
+    assert!(!touches_rust(&[]));
+}
+
+#[test]
+fn f29_ac2_counts_a_new_crate_of_the_workspace_without_a_change_of_the_list() {
+    // The workspace's members are the folders of `tools/` (`members = ["tools/*"]`): a crate not
+    // yet written is one of the inputs, and so is every crate there.
+    let manifest = fs::read_to_string(root().join("Cargo.toml")).expect("manifest");
+    let members = manifest
+        .lines()
+        .find_map(|line| line.trim().strip_prefix("members = "))
+        .expect("members");
+    let crates: Vec<String> = fs::read_dir(root().join("tools"))
+        .expect("tools")
+        .filter_map(Result::ok)
+        .filter(|entry| entry.path().join("Cargo.toml").is_file())
+        .map(|entry| format!("tools/{}/Cargo.toml", entry.file_name().to_string_lossy()))
+        .collect();
+
+    assert_eq!(members, "[\"tools/*\"]");
+    assert!(touches_rust(&owned(&["tools/a-crate-to-come/src/main.rs"])));
+    assert!(crates.len() > 10, "{crates:?}");
+    assert_eq!(
+        crates
+            .iter()
+            .filter(|path| !touches_rust(std::slice::from_ref(path)))
+            .collect::<Vec<_>>(),
+        Vec::<&String>::new()
+    );
+}
+
+#[test]
+fn f29_ac2_names_each_root_entry_as_a_rust_input_or_one_the_rust_lanes_never_read() {
+    // A file added at the root that Cargo reads (a `clippy.toml`, a `rustfmt.toml`) fails here
+    // until it joins the Rust inputs, or this list if no Rust lane reads it.
+    let tracked = git(&root(), &["ls-files"]);
+    let mut entries: Vec<&str> = tracked
+        .lines()
+        .filter_map(|path| path.split('/').next())
+        .collect();
+    // The entry as a file, and a file inside it as a folder.
+    let read = |entry: &str| touches_rust(&[entry.to_owned(), format!("{entry}/x")]);
+
+    entries.sort_unstable();
+    entries.dedup();
+    let unnamed: Vec<&str> = entries
+        .iter()
+        .copied()
+        .filter(|entry| !NOT_RUST_INPUTS.contains(entry) && !read(entry))
+        .collect();
+    let both: Vec<&str> = NOT_RUST_INPUTS
+        .iter()
+        .copied()
+        .filter(|entry| read(entry))
+        .collect();
+
+    assert!(
+        entries.contains(&"tools") && entries.contains(&"docs"),
+        "{entries:?}"
+    );
+    assert_eq!(unnamed, Vec::<&str>::new());
+    // An entry the Rust lanes read whole is never listed as one they do not.
+    assert_eq!(both, Vec::<&str>::new());
+}
+
+#[test]
+fn f29_ac2_runs_the_rust_coverage_as_a_lane_of_its_own() {
+    let scripts = scripts();
+    let script = |name: &str| {
+        scripts
+            .iter()
+            .find(|(script, _)| script == name)
+            .map_or(String::new(), |(_, command)| command.clone())
+    };
+
+    assert_eq!(RUST_LANES, [&["check:rust"][..], &["rust:coverage"][..]]);
+    assert!(
+        RUST_LANES.iter().all(|lane| LANES.contains(lane)),
+        "{LANES:?}"
+    );
+    // The coverage left out of `check:rust`, which keeps rustfmt, Clippy, the advisories, the
+    // check for Windows and the binaries' freshness.
+    assert!(!script("check:rust").contains("rust:coverage"));
+    assert!(script("check:rust").contains("rust:advisories"));
+    assert!(script("rust:coverage").contains(
+        "cargo llvm-cov --workspace --locked --quiet --summary-only --fail-under-lines 93 --fail-under-functions 93"
+    ));
+}
+
+#[test]
+fn f29_ac2_skips_the_rust_lanes_only_when_the_change_is_known_and_touches_none_of_their_inputs() {
+    let docs = owned(&["docs/index.md"]);
+    let script = owned(&["scripts/default-font-metrics.ts"]);
+    let tools = owned(&["tools/lint/src/lib.rs"]);
+    let without = |paths: &[String]| {
+        LANES
+            .iter()
+            .copied()
+            .filter(|lane| !lanes_to_run(Some(paths)).contains(lane))
+            .collect::<Vec<_>>()
+    };
+
+    // A story of Markdown: the Rust lanes left out, the docs lane run.
+    assert_eq!(without(&docs), RUST_LANES);
+    // A script outside both: the docs lane and the Rust lanes left out.
+    assert_eq!(without(&script), [&[DOCS_LANE][..], RUST_LANES].concat());
+    // A crate changed: every Rust lane run.
+    assert_eq!(without(&tools), [DOCS_LANE]);
+    // No base known (main, develop, a detached head, the CI): every lane.
+    assert_eq!(lanes_to_run(None), LANES);
+
+    let skipped = "skipped: nothing changed in their inputs against origin/develop";
+
+    assert_eq!(
+        skipped_lines(&docs, "origin/develop"),
+        [format!("- check:rust, rust:coverage {skipped}")]
+    );
+    assert_eq!(
+        skipped_lines(&script, "origin/develop"),
+        [
+            format!("- docs:build, playground:build {skipped}"),
+            format!("- check:rust, rust:coverage {skipped}")
+        ]
+    );
+    assert_eq!(
+        skipped_lines(&owned(&["docs/index.md", "Cargo.lock"]), "origin/develop"),
+        Vec::<String>::new()
+    );
+}
+
+#[test]
+fn f29_ac2_runs_every_lane_in_the_ci_even_with_a_base_known() {
+    let root = scratch("ci-known-base");
+    let origin = root.join("origin.git");
+    let folder = repository("ci-known-base-work", &[]);
+
+    git(
+        &root,
+        &["init", "-q", "--bare", origin.to_str().expect("path")],
+    );
+    git(&folder, &["add", "package.json"]);
+    git(&folder, &["commit", "-q", "-m", "start"]);
+    git(
+        &folder,
+        &["remote", "add", "origin", origin.to_str().expect("path")],
+    );
+    git(&folder, &["push", "-q", "origin", "HEAD:develop"]);
+    git(&folder, &["fetch", "-q", "origin"]);
+    git(&folder, &["switch", "-q", "-c", "docs/en-1-page"]);
+    // A story of docs alone: outside the CI it skips both Rust lanes (the test above).
+    fs::create_dir_all(folder.join("docs")).expect("folder");
+    fs::write(folder.join("docs/page.md"), "# Page\n").expect("page");
+
+    let output = check_all(&folder, true);
+    let text = stdout(&output);
+
+    fs::remove_dir_all(&root).expect("cleaned");
+    fs::remove_dir_all(&folder).expect("cleaned");
+    // In the CI the change is never read (AUD-031, F8): every lane runs, none said skipped.
+    assert!(output.status.success(), "{text}");
+    assert!(!text.contains("skipped"), "{text}");
+    for lane in LANES.iter().flat_map(|lane| lane.iter()) {
+        assert!(text.contains(&format!("✓ {lane} ")), "{lane}: {text}");
+    }
+}
+
+#[test]
+fn f29_ac2_skips_the_rust_lanes_for_a_story_that_changed_none_of_their_inputs() {
+    let root = scratch("rust-skipped");
+    let origin = root.join("origin.git");
+    let folder = repository(
+        "rust-skipped-work",
+        &[("check:rust", "exit 1"), ("rust:coverage", "exit 1")],
+    );
+
+    git(
+        &root,
+        &["init", "-q", "--bare", origin.to_str().expect("path")],
+    );
+    git(&folder, &["add", "package.json"]);
+    git(&folder, &["commit", "-q", "-m", "start"]);
+    git(
+        &folder,
+        &["remote", "add", "origin", origin.to_str().expect("path")],
+    );
+    git(&folder, &["push", "-q", "origin", "HEAD:develop"]);
+    git(&folder, &["fetch", "-q", "origin"]);
+    git(&folder, &["switch", "-q", "-c", "chore/en-1-docs"]);
+    fs::create_dir_all(folder.join("docs")).expect("folder");
+    fs::write(folder.join("docs/page.md"), "# Page\n").expect("page");
+
+    let output = check_all(&folder, false);
+    let text = stdout(&output);
+
+    // A crate of tools/, even uncommitted, brings both lanes back.
+    fs::create_dir_all(folder.join("tools/x")).expect("folder");
+    fs::write(folder.join("tools/x/lib.rs"), "\n").expect("file");
+    let again = check_all(&folder, false);
+    let again_text = stdout(&again);
+
+    fs::remove_dir_all(&root).expect("cleaned");
+    fs::remove_dir_all(&folder).expect("cleaned");
+    assert!(output.status.success(), "{text}");
+    assert!(text.starts_with(
+        "- check:rust, rust:coverage skipped: nothing changed in their inputs against origin/develop\n"
+    ), "{text}");
+    // Neither lane reported, passed nor failed.
+    for lane in ["check:rust", "rust:coverage"] {
+        assert!(!text.contains(&format!("✓ {lane} ")), "{text}");
+        assert!(!text.contains(&format!("✗ {lane} ")), "{text}");
+    }
+    assert!(text.contains("✓ docs:build "), "{text}");
+    assert_eq!(again.status.code(), Some(1), "{again_text}");
+    assert!(again_text.contains("✗ check:rust "), "{again_text}");
+    assert!(again_text.contains("✗ rust:coverage "), "{again_text}");
+    assert!(!again_text.contains("skipped"), "{again_text}");
 }

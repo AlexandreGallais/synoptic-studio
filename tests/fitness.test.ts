@@ -373,3 +373,191 @@ describe("the SVG elements the library writes (ADR-0060)", () => {
     expect(group.querySelector("tspan")?.textContent).toBe("H...");
   });
 });
+
+/** A per-test limit, `{ timeout: 1000 }` or with a constant of the same file, outside a comment. */
+const TIMEOUT = /^(?!\s*(?:\/\/|\/\*|\*)).*\{ timeout: (?<limit>\w+) \}/u;
+
+/** A test's duration alone, written beside its limit: `alone: 210 ms` (EN-129). */
+const ALONE = /\balone: (?<measure>\d[\d ]*) ms\b/u;
+
+/** The line opening a test or a suite: `it(`, `it.each(…)(`, `test(`, `describe(`. */
+const TEST_OPENING = /^\s*(?:it|test|describe)\b[\w.]*\(/u;
+
+/** How many times its duration alone a limit is at least (`.claude/rules/tooling.md`). */
+const LIMIT_FACTOR = 4;
+
+/**
+ * Limits of `src/`, `tests/` and `playground/` at AUD-031, 17 of EN-129 and 4 of the playground:
+ * the check may never read fewer (an empty list passes).
+ */
+const LIMITS_AT_AUD_031 = 21;
+
+/** A per-test limit of a test file, with what its comment says. */
+type TimingLimit = {
+  readonly at: string;
+  readonly limit: number | undefined;
+  readonly measure: number | undefined;
+};
+
+/**
+ * Text of every test file of `src/`, `tests/` and `playground/`, the three folders holding a
+ * per-test limit (AUD-031).
+ *
+ * @returns path from the repository root, and text, of each file
+ */
+function timedTestFiles(): readonly { readonly path: string; readonly text: string }[] {
+  return ["src", "tests", "playground"].flatMap((root) =>
+    readdirSync(join(ROOT, root), { recursive: true })
+      .map(String)
+      .filter((name) => name.endsWith(".test.ts"))
+      .map((name) => ({
+        path: join(root, name),
+        text: readFileSync(join(ROOT, root, name), "utf8"),
+      })),
+  );
+}
+
+/**
+ * Value of a limit: a number, written with `_` or not, or a constant the file declares.
+ *
+ * @param written - what follows `timeout:`
+ * @param text - text of the test file
+ * @returns the limit in milliseconds, undefined when it cannot be read
+ */
+function limitValue(written: string, text: string): number | undefined {
+  const declaration = new RegExp(`^const ${written} = (?<value>\\d[\\d_]*);`, "mu");
+  const declared = declaration.exec(text);
+  const literal = /^\d[\d_]*$/u.test(written) ? written : declared?.groups?.["value"];
+
+  return literal === undefined ? undefined : Number(literal.replaceAll("_", ""));
+}
+
+/**
+ * Lines beside a limit: from the comment above the test opening it down to the limit's line.
+ *
+ * @param lines - lines of the test file
+ * @param index - index of the limit's line
+ * @returns the lines its measure may be written on
+ */
+function besideLimit(lines: readonly string[], index: number): readonly string[] {
+  const opening = lines.findLastIndex((line, at) => at <= index && TEST_OPENING.test(line));
+  const start = opening === -1 ? index : opening;
+  const above = lines.slice(0, start).findLastIndex((line) => !/^\s*\/\//u.test(line));
+
+  return lines.slice(above + 1, index + 1);
+}
+
+/**
+ * Every per-test limit of a test file, with its value and the measure written beside it.
+ *
+ * @param path - path of the file from the repository root
+ * @param text - text of the file
+ * @returns one entry per `timeout:`, located by file and line
+ */
+function timingLimits(path: string, text: string): readonly TimingLimit[] {
+  const lines = text.split("\n");
+
+  return lines
+    .map((line, index) => ({ index, written: TIMEOUT.exec(line)?.groups?.["limit"] }))
+    .filter(({ written }) => written !== undefined)
+    .map(({ index, written }) => {
+      const measure = besideLimit(lines, index)
+        .map((beside) => ALONE.exec(beside)?.groups?.["measure"])
+        .find((found) => found !== undefined);
+
+      return {
+        at: `${path}:${String(index + 1)}`,
+        limit: limitValue(written ?? "", text),
+        measure: measure === undefined ? undefined : Number(measure.replaceAll(" ", "")),
+      };
+    });
+}
+
+/**
+ * What is wrong with a limit, if anything.
+ *
+ * @param timing - the limit and its measure
+ * @returns the fault, naming the file and the line, or undefined when the limit holds
+ */
+function limitFault(timing: TimingLimit): string | undefined {
+  if (timing.limit === undefined) {
+    return `${timing.at}: a limit that is no number nor constant of the file`;
+  }
+
+  if (timing.measure === undefined) {
+    return `${timing.at}: a limit of ${String(timing.limit)} ms without its "alone: … ms"`;
+  }
+
+  return timing.limit < LIMIT_FACTOR * timing.measure
+    ? `${timing.at}: ${String(timing.limit)} ms, under four times ${String(timing.measure)} ms alone`
+    : undefined;
+}
+
+/**
+ * A per-test limit of a made-up test file, written so that this file's own scan reads none.
+ *
+ * @param written - what follows `timeout:`
+ * @returns `{ timeout: <written> }`
+ */
+function limit(written: string): string {
+  return `{ timeout: ${written} }`;
+}
+
+describe("the timing tests (EN-129)", () => {
+  const limits = timedTestFiles().flatMap(({ path, text }) => timingLimits(path, text));
+
+  it("reads every limit of src, tests and playground, not an empty list", () => {
+    expect(limits.length).toBeGreaterThanOrEqual(LIMITS_AT_AUD_031);
+  });
+
+  it("[F29.AC1] gives every limit its measure alone, the limit at least four times it", () => {
+    expect(limits.map((timing) => limitFault(timing)).filter(Boolean)).toEqual([]);
+  });
+
+  // A made-up test file (AUD-031, F3): the limits of the repository all hold, so only this one
+  // shows each fault found, and a factor other than four failing.
+  const madeUp = [
+    "const LONG = 1_200;",
+    "",
+    'describe("a suite", () => {',
+    "  // alone: 100 ms, three times it.",
+    `  it("is under four times", () => {}, ${limit("300")});`,
+    "",
+    `  it("has no measure", () => {}, ${limit("500")});`,
+    "",
+    "  // alone: 300 ms, four times it.",
+    `  it("holds at four times exactly", () => {}, ${limit("LONG")});`,
+    "",
+    "  // alone: 300 ms.",
+    `  it("reads a constant the file lacks", () => {}, ${limit("MISSING")});`,
+    "",
+    "  // alone: 1 000 ms, a constant at 1.2 times it.",
+    `  it("reads a constant under four times", () => {}, ${limit("LONG")});`,
+    "});",
+  ].join("\n");
+
+  it("[F29.AC1] reads each limit of a made-up file with its value and its measure", () => {
+    // Lines 5, 7, 10, 13 and 16; `LONG` is 1 200 ms, `MISSING` declared nowhere.
+    expect(timingLimits("tests/made-up.test.ts", madeUp)).toEqual([
+      { at: "tests/made-up.test.ts:5", limit: 300, measure: 100 },
+      { at: "tests/made-up.test.ts:7", limit: 500, measure: undefined },
+      { at: "tests/made-up.test.ts:10", limit: 1200, measure: 300 },
+      { at: "tests/made-up.test.ts:13", limit: undefined, measure: 300 },
+      { at: "tests/made-up.test.ts:16", limit: 1200, measure: 1000 },
+    ]);
+  });
+
+  it("[F29.AC1] names the file and the line of each fault of a made-up file", () => {
+    // 300 < 4 × 100 = 400; 500 without a measure; 1 200 = 4 × 300 holds; MISSING unread;
+    // 1 200 < 4 × 1 000 = 4 000.
+    expect(
+      timingLimits("tests/made-up.test.ts", madeUp).map((timing) => limitFault(timing)),
+    ).toEqual([
+      "tests/made-up.test.ts:5: 300 ms, under four times 100 ms alone",
+      'tests/made-up.test.ts:7: a limit of 500 ms without its "alone: … ms"',
+      undefined,
+      "tests/made-up.test.ts:13: a limit that is no number nor constant of the file",
+      "tests/made-up.test.ts:16: 1200 ms, under four times 1000 ms alone",
+    ]);
+  });
+});

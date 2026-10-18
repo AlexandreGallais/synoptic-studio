@@ -276,7 +276,8 @@ describe("the guided test of F15 (VAL-017): fonts, embedding, the export", () =>
 
   it(
     "[F15.AC1] [F18.AC19] measured with the font chosen: a second family 175.109375 × 38.71875, Inter 87.5546875 × 19.359375",
-    // Inter's tables read: about 1 s alone, 20 s holds a loaded pre-push run.
+    // Inter's tables read. alone: 773 ms, the median of 5 runs of its file (AUD-031); 20 s is 25
+    // times it.
     { timeout: 20_000 },
     async () => {
       // Hello World at 16: 11 207 units × 16 / 1024 wide, (1984 + 494) × 16 / 1024 tall in the
@@ -452,7 +453,8 @@ describe("the guided test of F15 (VAL-017): its decisions, each with its example
 
   it(
     "[F18.AC19] decision 15: a file tagged OTTO, CFF outlines, embedded as font/otf and opentype",
-    // Inter's tables read: about 1 s alone, 20 s holds a loaded pre-push run.
+    // Inter's tables read. alone: 895 ms, the median of 5 runs of its file (AUD-031); 20 s is 22
+    // times it.
     { timeout: 20_000 },
     async () => {
       openStep("An OpenType file with CFF outlines (decision 15)");

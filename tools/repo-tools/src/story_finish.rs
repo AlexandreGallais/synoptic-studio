@@ -12,6 +12,7 @@ use std::process::{Command, Stdio};
 
 use git_repository::stdout_of;
 use shared_files::shared::story_of;
+use stale_binaries::RELEASE_BUILD;
 
 use crate::backlog_status::{front_field, item_file, write_status};
 
@@ -205,11 +206,7 @@ pub fn clean_up_plan(story: Story, here: &str, checkouts: &[Worktree]) -> CleanU
     // The base's checkout rebuilds its release binaries, which its hooks and the agent call by
     // their path (ADR-0078); a worktree switched to the base is removed, so nothing is built there.
     if place != here || here == main {
-        update.push(Step::new(
-            "cargo",
-            place,
-            &["build", "--release", "--workspace", "--locked", "--quiet"],
-        ));
+        update.push(Step::new("cargo", place, &RELEASE_BUILD));
     }
     if here != main {
         remove.push(Step::new("git", main, &["worktree", "remove", here]));

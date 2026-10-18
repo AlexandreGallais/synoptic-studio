@@ -3,7 +3,7 @@ id: EN-129
 epic: E17
 feature: F29
 title: Timing tests that hold under load
-status: ready
+status: done
 points: 2
 ---
 
@@ -19,7 +19,21 @@ points: 2
 
 ## Tasks
 
-- [ ] T1 — `[F29.AC1]` in `tests/fitness.test.ts`, failing on the limits written without their measure (1 h)
-- [ ] T2 — Each timing test measured alone, its limit and comment set, `check:all` run 5 times (2 h)
+- [x] T1 — `[F29.AC1]` in `tests/fitness.test.ts`, failing on the limits written without their measure (1 h)
+- [x] T2 — Each timing test measured alone, its limit and comment set, `check:all` run 5 times (2 h)
 
 One task = one commit, referenced as `EN-129.T1` in the commit footer.
+
+## Report
+
+`check:all` run 5 times in a row on 2026-10-18 after T2, the tests of `src/` run beside the other lanes, every lane passing each time (copied from PR #394 and the worker's logs by AUD-031):
+
+| Run | `test` lane | `check:all` |
+| --- | --- | --- |
+| 1 | 63.0 s | 101.4 s |
+| 2 | 50.9 s | 69.9 s |
+| 3 | 50.5 s | 70.3 s |
+| 4 | 51.3 s | 70.0 s |
+| 5 | 50.5 s | 70.7 s |
+
+The load average (1, 5 and 15 minutes) read before the runs: 3.40, 7.63, 7.71 at 21:33, then 2.41, 6.11, 7.11 at 21:35; during the runs it rose up to 23, as PR #394 gives it, the reading of each run not kept apart.

@@ -287,11 +287,11 @@
 | [EN-128](./E17-F27-EN-128-retired-scopes-in-history.md) | F27 | The history check reads the scopes a commit was written with | done |
 | [AUD-029](./E17-F27-AUD-029-audit-f27.md) | F27 | Audit F27 | done |
 | [VAL-028](./E17-F27-VAL-028-validate-f27.md) | F27 | Validate F27 | done |
-| [EN-129](./E17-F29-EN-129-timing-tests-that-hold-under-load.md) | F29 | Timing tests that hold under load | ready |
-| [EN-130](./E17-F29-EN-130-the-rust-lane-only-when-rust-changed.md) | F29 | The Rust lane only when Rust changed, its coverage a lane | ready |
-| [EN-131](./E17-F29-EN-131-binaries-rebuilt-after-a-pull.md) | F29 | The binaries rebuilt after a pull | ready |
-| [AUD-031](./E17-F29-AUD-031-audit-f29.md) | F29 | Audit F29 | ready |
-| [VAL-030](./E17-F29-VAL-030-validate-f29.md) | F29 | Validate F29 | ready |
+| [EN-129](./E17-F29-EN-129-timing-tests-that-hold-under-load.md) | F29 | Timing tests that hold under load | done |
+| [EN-130](./E17-F29-EN-130-the-rust-lane-only-when-rust-changed.md) | F29 | The Rust lane only when Rust changed, its coverage a lane | done |
+| [EN-131](./E17-F29-EN-131-binaries-rebuilt-after-a-pull.md) | F29 | The binaries rebuilt after a pull | done |
+| [AUD-031](./E17-F29-AUD-031-audit-f29.md) | F29 | Audit F29 | done |
+| [VAL-030](./E17-F29-VAL-030-validate-f29.md) | F29 | Validate F29 | done |
 | [SP-024](./E17-F28-SP-024-the-tooling-features-of-2026-10-18.md) | F28 | The tooling features of 2026-10-18 | done |
 | [EN-132](./E17-F28-EN-132-the-site-the-release-and-the-caches-apart.md) | F28 | The site, the release and the Rust caches apart | done |
 | [EN-133](./E17-F28-EN-133-the-ci-into-main-its-checks-only.md) | F28 | The CI into main, its checks only | done |
@@ -318,7 +318,7 @@
 | [EN-141](./E17-F33-EN-141-a-bench-binary.md) | F33 | A bench binary for the stories' measures | ready |
 | [AUD-035](./E17-F33-AUD-035-audit-f33.md) | F33 | Audit F33 | ready |
 | [VAL-034](./E17-F33-VAL-034-validate-f33.md) | F33 | Validate F33 | ready |
-| [EN-134](./E17-F34-EN-134-the-other-workflows-reviewed.md) | F34 | The auto-merge per base and the other workflows reviewed | parked |
+| [EN-134](./E17-F34-EN-134-the-other-workflows-reviewed.md) | F34 | The auto-merge per base and the other workflows reviewed | ready |
 | [AUD-036](./E17-F34-AUD-036-audit-f34.md) | F34 | Audit F34 | ready |
 | [VAL-035](./E17-F34-VAL-035-validate-f34.md) | F34 | Validate F34 | ready |
 | [NAM-002](./E17-NAM-002-naming-pass-e17.md) | E17 | Naming pass over the code of E17 | done |

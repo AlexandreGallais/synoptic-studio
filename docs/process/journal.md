@@ -5,7 +5,10 @@ What each working session dealt with, in the agent's words: the Product Owner's 
 ## 2026-10-18 — The tooling features after 0.3.0's merge
 
 - `#run` After REV-006 and the merge of #370 into `main`, the Product Owner asked for F24 to F27 (the CI in jobs, the test lane's tools, the mutation runner on Linux, retired scopes in the history check), then for the tooling left to be cut into small features by real theme, done now in E17 until the week's 90 %, without questions: SP-024 writes them. Their rule: one workflow per purpose, its trigger its only condition; workflows on `develop` never blocking; the review and the method's work at the session's end, before the merge into `main`.
+- `#decision` The Product Owner answered SP-024's questions on 2026-10-18: `external-prs.yml` removed by a new ADR, CodeQL on TypeScript and the workflows and still required, `links.yml` kept weekly and non-blocking, F30 validated on its tests; EN-134 set `ready` again.
+- `#run` The Product Owner allowed this run to go on until the week's usage reaches 92.5 % instead of 90 % (2026-10-18), 90 % kept if a tool stops it there.
 - `#run` EN-133: the Rust lane keeps `npm ci`, since the formatter's tests, run by `cargo llvm-cov`, run the project's oxfmt; the release binaries' build inside `npm ci` took 49 s to 2 min 12 s per lane at run 39145798246, and a build passed as an artifact would add its time before every lane rather than save it.
+- `#run` EN-130: `check:all` skips `check:rust` and `rust:coverage` together, saying so, when the branch changed no Rust input against its base (Cargo's inputs and the files the crates' tests read outside `tools/`, every `*.test.ts` among them); the coverage is a lane of its own and the CI's job `Rust coverage`; every root entry is named a Rust input or not, so a `clippy.toml` added fails until classified.
 
 ## 2026-10-18 — F22's run, then the first review at a return
 

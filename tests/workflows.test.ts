@@ -430,16 +430,17 @@ describe("the steps of the CI's lanes (EN-133)", () => {
   const entries = matrixOf(LANES);
 
   it("[F28.AC3] reads the lanes and the steps of the CI", () => {
-    // The parse itself: five lanes, each named and given its scripts, and the steps after them.
+    // The parse itself: six lanes, each named and given its scripts, and the steps after them.
     expect(entries.map((entry) => entry.get("name"))).toStrictEqual([
       "Lint and types",
       "TypeScript tests",
       "Docs, playground and build",
       "Format, secrets and dependencies",
       "Rust",
+      "Rust coverage",
     ]);
 
-    expect(entries.map((entry) => entry.get("scripts")).at(-1)).toBe("check:rust");
+    expect(entries.map((entry) => entry.get("scripts")).at(-1)).toBe("rust:coverage");
 
     expect(
       matrixOf([
@@ -474,7 +475,8 @@ describe("the steps of the CI's lanes (EN-133)", () => {
 
     // A field the entry lacks is empty, so the step is left out.
     expect(runsIn({ condition: "matrix.a", text: "" }, new Map())).toBe(false);
-    expect(cargoCallsOf(new Map([["scripts", "check:rust"]]))).toContain("llvm-cov");
+    expect(cargoCallsOf(new Map([["scripts", "rust:coverage"]]))).toContain("llvm-cov");
+    expect(cargoCallsOf(new Map([["scripts", "check:rust"]]))).not.toContain("llvm-cov");
     // The test lane calls cargo-deny through `[F19.AC9]`'s test, not through its script.
     expect(cargoCallsOf(new Map([["scripts", "test"]]))).toContain("deny");
   });

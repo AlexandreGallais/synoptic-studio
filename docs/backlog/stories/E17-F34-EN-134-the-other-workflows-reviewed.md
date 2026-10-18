@@ -3,7 +3,7 @@ id: EN-134
 epic: E17
 feature: F34
 title: The auto-merge per base and the other workflows reviewed
-status: parked
+status: ready
 points: 2
 ---
 
@@ -32,3 +32,10 @@ Parked by the run on 2026-10-18 until answered (SP-024, research note 0026):
 2. CodeQL's languages, `Analyze` being a required check of `main` (1 min 09 s): (a) TypeScript only, as now; (b) with `actions`, the workflows; (c) with `actions` and `rust` (131,597 lines), the blocking check longer. And: does `Analyze` stay required?
 3. `links.yml`: its one run (by hand, 2026-10-15) failed on 2 dead links out of 826. (a) Keep it weekly, blocking nothing; (b) remove it.
 4. F30's validation: the `develop` CI can run only once its file is on `main`. (a) VAL-031 checks the tests and docs, the review after the next merge into `main` reads its first runs; (b) another way.
+
+## Answers of the Product Owner (2026-10-18)
+
+1. `external-prs.yml` removed, by a new ADR superseding ADR-0026's second barrier; the repository's "Collaborators only" setting stays the protection.
+2. CodeQL analyses TypeScript and `actions` (the workflows), and `Analyze` stays a required check of `main`.
+3. `links.yml` kept, weekly and by hand, blocking nothing; its two dead links fixed.
+4. F30 is validated on its tests and docs; the review after the next merge into `main` reads the `develop` CI's first runs.

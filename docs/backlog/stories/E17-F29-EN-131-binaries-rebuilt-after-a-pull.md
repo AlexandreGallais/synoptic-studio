@@ -3,7 +3,7 @@ id: EN-131
 epic: E17
 feature: F29
 title: The binaries rebuilt after a pull
-status: ready
+status: done
 points: 2
 ---
 
@@ -19,7 +19,13 @@ A pull request merged on GitHub leaves the main checkout's release binaries olde
 
 ## Tasks
 
-- [ ] T1 — The `post-merge` and `post-rewrite` hooks of `tools/git-hooks`, their tests failing (1 h)
-- [ ] T2 — The hooks in `.githooks/`, set by `git-hooks install`, `docs/tooling/git-workflow.md` updated (1 h)
+- [x] T1 — The `post-merge` and `post-rewrite` hooks of `tools/git-hooks`, their tests failing (1 h)
+- [x] T2 — The hooks in `.githooks/`, set by `git-hooks install`, `docs/tooling/git-workflow.md` updated (1 h)
 
 One task = one commit, referenced as `EN-131.T1` in the commit footer.
+
+## For the main thread
+
+- ADR-0078, decision 2, lists where a stale binary is rebuilt (`prepare`, `git:sync`, `story:finish`), and ADR-0080, decision 1, names three hooks in `.githooks/`; EN-131 adds a fourth rebuild and two hooks, `post-merge` and `post-rewrite`. Neither ADR was rewritten: a new ADR superseding those two points, or none if the main thread judges them extended rather than changed, is its call.
+- Technical choices made by the worker: the changed files are read with `git diff --name-only ORIG_HEAD HEAD` (`REF-GIT-REV-PARSE`), so a squash merge, which moves no `HEAD`, builds nothing; the hook rebuilds on EN-130's whole list (`RUST_INPUTS`), a change of `package.json` alone running a Cargo build that writes nothing and prints nothing; the binaries named are those whose file time changed during the build. `RUST_INPUTS`, `touches` and `touches_rust` moved from `repo-tools` to `stale-binaries`, re-exported by `check_all`: `git-hooks` depending on `repo-tools` made a cycle (`hooks` → `worktree` → `git-hooks`).
+- A `git-sequences sync` in a worktree now runs the `post-rewrite` rebuild during its rebase, then its own rebuild, which finds nothing to do.

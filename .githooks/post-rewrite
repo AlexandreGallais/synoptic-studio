@@ -1,0 +1,6 @@
+#!/bin/sh
+. "$(dirname "$0")/tool.sh"
+# After a rebase, the release binaries rebuilt when it brought a change of a Rust input; an amend
+# builds nothing (`tools/git-hooks/src/rebuild.rs`, EN-131). Never `set -e`: a post hook cannot
+# undo the rebase.
+tool git-hooks git-hooks post-rewrite "$@"
