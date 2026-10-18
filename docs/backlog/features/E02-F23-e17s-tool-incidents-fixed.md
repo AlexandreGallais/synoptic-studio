@@ -11,6 +11,13 @@ status: draft
 
 Decided by the Product Owner on 2026-10-18 at E17's retrospective ([RET-004](../stories/E17-RET-004-retrospective-e17.md), P8 and P9): E02's first feature, a tooling feature validated by the agent (ADR-0072), four stories. Its sources are the tool incident cards C1 to C9 ([tool incidents](../../process/tool-incidents.md)) and the improvement rows the record assigns to it (§2); its refinement is drafted here, to be completed when E02 starts.
 
+## Added at REV-006 (2026-10-18)
+
+To place at F23's refinement, F23 split into two features if it goes over 4 stories (ADR-0084):
+
+- A story's log rows written in its `done` commit, inside its bubble: `story:finish` no longer pushes a commit `move the rows of …` on the feature branch, and the pre-push guard lets the `done` commit change the logs (ADR-0086, one story at a time).
+- The cards written during F22: `replace` waiting on its input without an argument; `worktree-new` reading the story files of its own checkout; `npm run fix` turning a type-only re-export into a value one; `story-automerge.yml` refusing an epic's refinement `SP` into `develop` (kept refused: the Product Owner merges it).
+
 ## Acceptance criteria
 
 1. A story attached to `develop` rather than a feature gets its worktree, its pull request and its log rows by the same tools as any story; `tool-incidents.md` is a log of the shared files, `move-rows` moves a worker's `### Incidents`, and a test checks the cards' form (EN-118).

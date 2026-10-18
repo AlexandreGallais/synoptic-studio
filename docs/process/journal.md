@@ -2,6 +2,13 @@
 
 What each working session dealt with, in the agent's words: the Product Owner's requests in neutral words, decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`).
 
+## 2026-10-18 — F22's run, then the first review at a return
+
+- `#run` The run on F22 ended at its scope, F22 merged into `develop` by PR #368: EN-122 (#362), EN-123 (#363), EN-116 (#364), EN-117 (#365), AUD-024 (#366), VAL-023 (#367), each a merge commit into `feature/f22-release-by-a-button`; 3 h 24, 134.9 M tokens (133.0 M cache reads), one worker at a time.
+- `#run` At the run's start the pre-push `check:all` failed twice on its `test` lane under load and passed when run again unchanged; EN-116 then raised two timeouts it found on GitHub's runner.
+- `#decision` GitHub's `feature branches` ruleset set to merge commits only, without linear history, with the Product Owner's agreement (ADR-0086).
+- `#review` REV-006, the first review held at a return of the Product Owner (ADR-0086): F22's decisions confirmed; the log rows of a story to go into its `done` commit and F22's four tool cards added to F23; then `develop` → `main` for 0.3.0.
+
 ## 2026-10-18 — F20 validated and merged, F21 refined and researched
 
 - `#run` VAL-021: F20 validated by the agent (ADR-0072): its seven criteria left proven again, criterion 5 struck; 12 lines in E17's checklist; the demo page `docs/guide/f20-a-context-diet.md`. A story worker's first request from 38,897 tokens (`general-purpose`) to 10,562 (`story-worker`); the agent pages from 182,100 tokens to 144,900 (−20 %); Git calls per story worker from a median of 12 to 4; a stored page read in 0.1 to 0.2 s instead of 6 s. The story worker stays on Opus, the Sonnet trial too small to compare: a decision for the Product Owner to confirm.
