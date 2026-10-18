@@ -8,7 +8,11 @@
 
 use std::fs;
 use std::path::Path;
+use std::process::{Command, Stdio};
 use std::time::SystemTime;
+
+use git_repository::stdout_of;
+use stale_binaries::{binaries, touches_rust};
 
 /// Cargo's arguments: `npm run rust:build`'s build, quiet, as `git-sequences sync` runs it.
 pub const BUILD: [&str; 5] = ["build", "--release", "--workspace", "--locked", "--quiet"];
@@ -31,39 +35,91 @@ pub enum AfterPull {
 /// no `ORIG_HEAD` or cannot compare them.
 #[must_use]
 pub fn pulled_files(root: &Path) -> Vec<String> {
-    let _ = root;
-    Vec::new()
+    stdout_of(
+        Command::new("git")
+            .args(["diff", "--name-only", "ORIG_HEAD", "HEAD", "--"])
+            .current_dir(root),
+    )
+    .map(|output| output.lines().map(str::to_owned).collect())
+    .unwrap_or_default()
 }
 
 /// When each release binary of the checkout was last written, `None` for a missing one, in the
 /// order of `stale_binaries::binaries`.
 #[must_use]
 pub fn built_times(root: &Path) -> Vec<(String, Option<SystemTime>)> {
-    let _ = fs::metadata(root);
-    Vec::new()
+    let release = root.join("target").join("release");
+
+    binaries(root)
+        .into_iter()
+        .map(|binary| {
+            let file = release.join(format!("{binary}{}", std::env::consts::EXE_SUFFIX));
+            let time = fs::metadata(file)
+                .and_then(|metadata| metadata.modified())
+                .ok();
+
+            (binary, time)
+        })
+        .collect()
 }
 
-/// The binaries whose time changed between two readings of [`built_times`], in their order.
+/// The binaries of the second reading of [`built_times`] written since the first, in its order:
+/// a time that changed, or a binary missing before; one missing after was not built.
 #[must_use]
 pub fn rebuilt(
     before: &[(String, Option<SystemTime>)],
     after: &[(String, Option<SystemTime>)],
 ) -> Vec<String> {
-    let _ = (before, after);
-    Vec::new()
+    after
+        .iter()
+        .filter(|(binary, time)| {
+            time.is_some()
+                && before
+                    .iter()
+                    .find(|(name, _)| name == binary)
+                    .is_none_or(|(_, earlier)| earlier != time)
+        })
+        .map(|(binary, _)| binary.clone())
+        .collect()
 }
 
 /// What the hook prints: the binaries rebuilt on one line, the failure with the command to run
 /// again; nothing when nothing was rebuilt.
 #[must_use]
 pub fn message(outcome: &AfterPull) -> String {
-    let _ = outcome;
-    String::new()
+    match outcome {
+        AfterPull::Rebuilt(binaries) if !binaries.is_empty() => format!(
+            "git-hooks: release binaries rebuilt after the pull: {}\n",
+            binaries.join(", ")
+        ),
+        AfterPull::Failed(error) => format!(
+            "git-hooks: the pull is done, but the rebuild of target/release failed; run `{AGAIN}` again:\n{}\n",
+            error.trim_end()
+        ),
+        AfterPull::Unchanged | AfterPull::Rebuilt(_) => String::new(),
+    }
 }
 
-/// Rebuilds the checkout's release binaries when the pull that just ended changed a Rust input.
+/// Rebuilds the checkout's release binaries when the pull that just ended changed a Rust input;
+/// a checkout without a Cargo workspace has none.
 #[must_use]
 pub fn after_pull(root: &Path) -> AfterPull {
-    let _ = root;
-    AfterPull::Unchanged
+    if !root.join("Cargo.toml").is_file() || !touches_rust(&pulled_files(root)) {
+        return AfterPull::Unchanged;
+    }
+
+    let before = built_times(root);
+    let built = Command::new("cargo")
+        .args(BUILD)
+        .current_dir(root)
+        .stdin(Stdio::null())
+        .output();
+
+    match built {
+        Ok(output) if output.status.success() => {
+            AfterPull::Rebuilt(rebuilt(&before, &built_times(root)))
+        }
+        Ok(output) => AfterPull::Failed(String::from_utf8_lossy(&output.stderr).into_owned()),
+        Err(error) => AfterPull::Failed(format!("cargo: {error}")),
+    }
 }
