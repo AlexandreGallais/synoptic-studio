@@ -7,7 +7,7 @@ Setting up a new project the way this one ended E01. In order; each step names t
 | # | Step | Copy from this repository | Why |
 | --- | --- | --- | --- |
 | 1 | Repository, license, `main` and `develop`, rulesets (merge commits into `main`, no bypass) | `docs/tooling/ci.md` (settings), `docs/tooling/git-workflow.md` | ADR-0038 |
-| 2 | TypeScript strict; ESLint as strict as possible, every rule decided; one formatter (oxfmt, tables without padding); EditorConfig | `tsconfig.json`, `eslint/`, `.oxfmtrc.json`, `.editorconfig` | ADR-0009, ADR-0010 |
+| 2 | TypeScript strict; oxlint as strict as possible, every rule decided (ESLint until EN-085); one formatter (oxfmt, tables without padding); EditorConfig | `tsconfig.json`, `.oxlintrc.json`, `.oxfmtrc.json`, `.editorconfig` | ADR-0009, ADR-0010 |
 | 3 | Custom lint rules for the project's structure (one export per file, barrels, kinds, sources) | `tools/lint/` (a Rust linter on Oxc's crates, one module per rule) | ADR-0011, ADR-0012, ADR-0019 |
 | 4 | Vitest, 100 % coverage of the library, a floor for the demo app, property tests, fitness functions | `vite.config.ts`, `tests/` | ADR-0022 |
 | 5 | Dependencies: one documented row each, latest versions at least 7 days old, audit, unused code | `tests/package.test.ts`, `tools/deps/`, `docs/tooling/dependencies.md` | supply chain, ADR-0038 |
@@ -49,7 +49,7 @@ Copy before the first run with parallel workers:
 | `.claude/worktrees/` in `.gitignore`, and out of the IDE's indexing with `coverage/`, `dist/`, `docs/api/` | the IDE indexed each worktree as a new project (256 % of the CPU) |
 | a lock for heavy commands in `.git/`, holding its owner's process id | one `check:all` saturates a laptop; a lock left by a force-quit is taken over |
 | a `PreToolUse` hook on `Agent` limiting subagents | a sentence was bent once, with a freeze |
-| Prettier's `proseWrap: "never"`; generated indexes; `merge=union` on append-only logs | padded tables rewrite whole and conflict on every parallel merge |
+| Markdown tables without padding (`tools/format`, ADR-0068); generated indexes; `merge=union` on append-only logs | padded tables rewrite whole and conflict on every parallel merge |
 | the worker brief versioned in the run skill, naming the commands that fit a worktree | 549 compound commands refused in worktrees |
 | a register of exceptions to the rules, checked | each exception visible and justified |
 

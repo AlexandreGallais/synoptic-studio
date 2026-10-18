@@ -10,7 +10,7 @@ The digest of `AGENTS.md` for an agent type started without it (`omitClaudeMd`, 
 
 ## The repository
 
-synoptic-studio: a dependency-free TypeScript library `editor` that draws SVG symbols for synoptic views; its playground (`playground/`), docs (`docs/`, the ADRs in `docs/adr/`, the backlog in `docs/backlog/`) and tooling (`tools/` in Rust, `scripts/` in TypeScript until F21).
+synoptic-studio: a dependency-free TypeScript library `editor` that draws SVG symbols for synoptic views; its playground (`playground/`), docs (`docs/`, the ADRs in `docs/adr/`, the backlog in `docs/backlog/`) and tooling (`tools/` in Rust; `scripts/default-font-metrics.ts` alone in TypeScript, since it runs the library itself).
 
 ## Always
 
