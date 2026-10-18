@@ -5,7 +5,7 @@
 
 use std::path::{Path, PathBuf};
 
-use worktree::{BASE, story_id, story_of_branch, story_of_file};
+use worktree::{base_branch, story_id, story_of_branch, story_of_file};
 
 use crate::json::{Value, quote, write};
 
@@ -47,22 +47,24 @@ pub struct Branch {
     pub head: String,
     /// The branch's head on `origin`, `None` when it was never pushed.
     pub remote: Option<String>,
-    /// Its commits not on its base, `origin/develop`.
+    /// Its commits not on its feature branch.
     pub commits: Vec<Commit>,
 }
 
-/// What one listing of a worktree's references tells: its branch, its head and that branch's head
-/// on `origin`.
+/// What one listing of a worktree's references tells: its branch, its head, that branch's head on
+/// `origin` and the branches there.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Refs {
     pub name: String,
     pub head: String,
     /// The branch's head on `origin`, `None` when it was never pushed.
     pub remote: Option<String>,
+    /// The branches on `origin`, `origin/feature/f20-…`.
+    pub remote_branches: Vec<String>,
 }
 
 /// Reads `git for-each-ref --format='%(HEAD) %(objectname) %(refname)' refs/heads
-/// refs/remotes/origin`: one Git call in place of three, the hook's time being mostly Git's.
+/// refs/remotes/origin`: one Git call in place of four, the hook's time being mostly Git's.
 #[must_use]
 pub fn read_refs(listing: &str) -> Option<Refs> {
     let rows: Vec<(bool, &str, &str)> = listing
@@ -81,11 +83,17 @@ pub fn read_refs(listing: &str) -> Option<Refs> {
         .iter()
         .find(|(_, _, other)| *other == remote_name)
         .map(|(_, hash, _)| (*hash).to_owned());
+    let remote_branches = rows
+        .iter()
+        .filter_map(|(_, _, other)| other.strip_prefix("refs/remotes/"))
+        .map(str::to_owned)
+        .collect();
 
     Some(Refs {
         name: name.to_owned(),
         head: (*head).to_owned(),
         remote,
+        remote_branches,
     })
 }
 
@@ -126,14 +134,16 @@ pub fn story_of(branch: &str, folder: &str) -> Option<String> {
     story_of_branch(branch).or_else(|| story_id(folder))
 }
 
-/// The branch a story's commits are counted from: `origin/develop`, every story's base
-/// (ADR-0086); `None` when its file is not found, never the whole history.
+/// The branch a story's commits are counted from: its feature branch on `origin`, or
+/// `origin/develop` for an epic's own story; `None` when its file or that branch is not found,
+/// never the whole history.
 #[must_use]
-pub fn base_of(story: &str, story_files: &[String]) -> Option<String> {
-    story_files
+pub fn base_of(story: &str, story_files: &[String], remote_branches: &[String]) -> Option<String> {
+    let story = story_files
         .iter()
-        .find_map(|file| story_of_file(story, file))
-        .map(|_| BASE.to_owned())
+        .find_map(|file| story_of_file(story, file))?;
+
+    base_branch(story.feature.as_deref(), remote_branches).ok()
 }
 
 /// Hand-backs the subagent called before this one, read from its transcript's lines.
@@ -217,7 +227,7 @@ pub fn finish_line(
     story: &str,
     branch: &str,
     head: &str,
-    base: Option<&str>,
+    feature: Option<&str>,
     items: &[String],
 ) -> String {
     if !items.is_empty() {
@@ -227,8 +237,8 @@ pub fn finish_line(
         );
     }
 
-    let next = base.map_or("npm run story:finish".to_owned(), |base| {
-        format!("npm run story:finish -- {base}")
+    let next = feature.map_or("npm run story:finish".to_owned(), |feature| {
+        format!("npm run story:finish -- {feature}")
     });
 
     format!("check-handback: {story} on `{branch}` pushed at {head}; next: `{next}`.")

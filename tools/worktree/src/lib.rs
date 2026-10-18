@@ -1,7 +1,7 @@
 //! A worktree named after its story (EN-052, `docs/tooling/agent-tools.md`): `US-061` gets
-//! `.claude/worktrees/us-061` on the branch `feat/us-061-<topic>`, made from `develop` on GitHub,
-//! every story's base since ADR-0086. The topic comes from the story's file name, the branch type
-//! from the story's kind. What the tool runs is decided here, without Git.
+//! `.claude/worktrees/us-061` on the branch `feat/us-061-<topic>`, made from its feature branch on
+//! GitHub. The topic comes from the story's file name, the branch type from the story's kind, the
+//! feature branch from the remote branches. What the tool runs is decided here, without Git.
 
 pub mod seed;
 
@@ -15,8 +15,8 @@ const BRANCH_TYPES: [&str; 11] = [
     "feat", "fix", "docs", "refactor", "test", "chore", "build", "ci", "perf", "style", "revert",
 ];
 
-/// Base of every story, of a feature or of an epic alone: no feature branch (ADR-0086).
-pub const BASE: &str = "origin/develop";
+/// Base of a story that belongs to no feature (a review, a retrospective).
+const DEVELOP: &str = "origin/develop";
 
 /// A story as its file name gives it.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -38,7 +38,7 @@ pub struct Plan {
     pub dir: PathBuf,
     /// `feat/us-061-<topic>`.
     pub branch: String,
-    /// `origin/develop`.
+    /// `origin/feature/f18-<topic>`.
     pub base: String,
 }
 
@@ -123,7 +123,33 @@ pub fn branch_refusal(name: &str) -> Option<String> {
     (!is_story_branch).then(|| format!("`{name}` is not `<type>/<id>-<topic>` in kebab-case"))
 }
 
-/// Inputs of a plan, read by the tool from the arguments and the story files.
+/// The feature branch on GitHub a story starts from.
+///
+/// # Errors
+///
+/// When no remote branch, or more than one, is the story's feature branch.
+pub fn base_branch(feature: Option<&str>, remote_branches: &[String]) -> Result<String, String> {
+    let Some(feature) = feature else {
+        return Ok(DEVELOP.to_owned());
+    };
+    let prefix = format!("origin/feature/{}-", feature.to_ascii_lowercase());
+    let found: Vec<&String> = remote_branches
+        .iter()
+        .filter(|name| name.starts_with(&prefix))
+        .collect();
+
+    match found.as_slice() {
+        [branch] => Ok((*branch).clone()),
+        [] => Err(format!(
+            "no branch `{prefix}…` on GitHub: push the feature branch first"
+        )),
+        _ => Err(format!(
+            "several branches `{prefix}…` on GitHub: delete the stale ones"
+        )),
+    }
+}
+
+/// Inputs of a plan, read by the tool from the arguments, the story files and Git.
 pub struct Request<'a> {
     /// The story id as typed, `us-061` or `US-061`.
     pub id: &'a str,
@@ -131,6 +157,8 @@ pub struct Request<'a> {
     pub branch_type: Option<&'a str>,
     /// Names of the files of `docs/backlog/stories/`.
     pub story_files: &'a [String],
+    /// Remote branches, `origin/feature/f18-<topic>`.
+    pub remote_branches: &'a [String],
     /// The main checkout, parent of the Git common directory.
     pub main: &'a Path,
 }
@@ -139,8 +167,8 @@ pub struct Request<'a> {
 ///
 /// # Errors
 ///
-/// A malformed id, a story without its file, a branch type unknown, a branch name refused, or a
-/// worktree folder already there.
+/// A malformed id, a story without its file, a branch type unknown, a branch name refused, a base
+/// branch not found, or a worktree folder already there.
 pub fn plan(request: &Request, exists: impl Fn(&Path) -> bool) -> Result<Plan, String> {
     let id = story_id(request.id)
         .ok_or_else(|| format!("`{}` is not a story id such as US-061", request.id))?;
@@ -171,6 +199,7 @@ pub fn plan(request: &Request, exists: impl Fn(&Path) -> bool) -> Result<Plan, S
         return Err(reason);
     }
 
+    let base = base_branch(story.feature.as_deref(), request.remote_branches)?;
     let dir = request.main.join(WORKTREES).join(&lower);
 
     if exists(&dir) {
@@ -180,11 +209,7 @@ pub fn plan(request: &Request, exists: impl Fn(&Path) -> bool) -> Result<Plan, S
         ));
     }
 
-    Ok(Plan {
-        dir,
-        branch,
-        base: BASE.to_owned(),
-    })
+    Ok(Plan { dir, branch, base })
 }
 
 /// Folder of the story files, from a checkout's top.

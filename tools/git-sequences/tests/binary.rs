@@ -1,5 +1,5 @@
 //! Tests of `git-sequences` run in repositories of its own (EN-100): a bare `origin`, a clone on
-//! a story branch from `develop` (ADR-0086), and a second clone that moves `develop` on.
+//! a story branch from its feature branch, and a second clone that moves the feature branch on.
 //! Every `GIT_*` variable is removed from the commands (`.claude/rules/tooling.md`).
 
 use std::env;
@@ -10,7 +10,6 @@ use std::process::{Command, Output, Stdio};
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 const STORY: &str = "chore/en-100-git-sequences";
-const DEVELOP: &str = "develop";
 const FEATURE: &str = "feature/f20-a-context-diet";
 const STORY_FILE: &str = "docs/backlog/stories/E17-F20-EN-100-git-sequences.md";
 
@@ -81,7 +80,7 @@ fn write(dir: &Path, path: &str, text: &str) {
     fs::write(file, text).expect("file written");
 }
 
-/// Repositories of one test: `origin.git`, `work` on the story branch, `other` on `develop`.
+/// Repositories of one test: `origin.git`, `work` on the story branch, `other` on the feature.
 struct Repos {
     root: PathBuf,
     work: PathBuf,
@@ -122,8 +121,8 @@ fn repos() -> Repos {
     git(&work, &["add", "."]);
     git(&work, &["commit", "--quiet", "-m", "first"]);
     git(&work, &["push", "--quiet", "origin", "main"]);
-    git(&work, &["switch", "--quiet", "-c", DEVELOP]);
-    git(&work, &["push", "--quiet", "-u", "origin", DEVELOP]);
+    git(&work, &["switch", "--quiet", "-c", FEATURE]);
+    git(&work, &["push", "--quiet", "-u", "origin", FEATURE]);
     git(&work, &["switch", "--quiet", "-c", STORY]);
     git(
         &root,
@@ -131,7 +130,7 @@ fn repos() -> Repos {
             "clone",
             "--quiet",
             "-b",
-            DEVELOP,
+            FEATURE,
             &origin.to_string_lossy(),
             "other",
         ],
@@ -141,48 +140,47 @@ fn repos() -> Repos {
     Repos { root, work, other }
 }
 
-/// A commit of `path` on `develop`, pushed from the other clone.
-fn move_develop_on(repos: &Repos, path: &str, text: &str) {
+/// A commit of `path` on the feature branch, pushed from the other clone.
+fn move_feature_on(repos: &Repos, path: &str, text: &str) {
     write(&repos.other, path, text);
     git(&repos.other, &["add", path]);
     git(
         &repos.other,
-        &["commit", "--quiet", "-m", "develop moves on"],
+        &["commit", "--quiet", "-m", "feature moves on"],
     );
-    git(&repos.other, &["push", "--quiet", "origin", DEVELOP]);
+    git(&repos.other, &["push", "--quiet", "origin", FEATURE]);
 }
 
 #[test]
-fn f22_ac4_rebases_the_story_on_the_fetched_develop_in_one_call() {
-    // [F22.AC4] A story of F20 is rebased on `develop`, never on a feature branch (ADR-0086).
+fn rebases_the_story_on_its_fetched_feature_branch_in_one_call() {
     let repos = repos();
 
     write(&repos.work, "story.md", "story\n");
     git(&repos.work, &["add", "story.md"]);
     git(&repos.work, &["commit", "--quiet", "-m", "story work"]);
-    move_develop_on(&repos, "develop.md", "develop\n");
+    move_feature_on(&repos, "feature.md", "feature\n");
 
     let output = tool(&repos.work, &["sync"], "");
 
     assert!(output.status.success(), "{}", stderr(&output));
     assert!(
-        stdout(&output).contains(&format!("{STORY} rebased on origin/{DEVELOP}, 1 commit(s)")),
+        stdout(&output).contains(&format!("{STORY} rebased on origin/{FEATURE}, 1 commit(s)")),
         "{}",
         stdout(&output)
     );
-    // `develop`'s commit is under the story's.
+    // The feature's commit is under the story's.
     assert_eq!(
         git(&repos.work, &["log", "--format=%s", "-2"]),
-        "story work\ndevelop moves on"
+        "story work\nfeature moves on"
     );
 }
 
 #[test]
-fn moves_develop_forward_without_rebasing_it() {
+fn moves_a_feature_branch_forward_without_rebasing_it() {
     let repos = repos();
 
-    git(&repos.work, &["switch", "--quiet", DEVELOP]);
-    move_develop_on(&repos, "develop.md", "develop\n");
+    git(&repos.work, &["switch", "--quiet", FEATURE]);
+    move_feature_on(&repos, "feature.md", "feature\n");
 
     let output = tool(&repos.work, &["sync"], "");
 
@@ -190,7 +188,7 @@ fn moves_develop_forward_without_rebasing_it() {
     assert!(stdout(&output).contains("up to date with its upstream: "));
     assert_eq!(
         git(&repos.work, &["log", "--format=%s", "-1"]),
-        "develop moves on"
+        "feature moves on"
     );
 }
 
@@ -200,7 +198,7 @@ fn stops_at_a_conflict_with_gits_own_message() {
 
     write(&repos.work, "README.md", "story side\n");
     git(&repos.work, &["commit", "--quiet", "-am", "story side"]);
-    move_develop_on(&repos, "README.md", "develop side\n");
+    move_feature_on(&repos, "README.md", "feature side\n");
 
     let output = tool(&repos.work, &["sync"], "");
 
@@ -253,7 +251,7 @@ fn refuses_main_before_the_fetch() {
 fn f20_ac7_commits_on_develop_but_never_pushes_it() {
     let repos = repos();
 
-    git(&repos.work, &["switch", "--quiet", DEVELOP]);
+    git(&repos.work, &["switch", "--quiet", "-c", "develop"]);
     write(&repos.work, "a.md", "a\n");
 
     let pushed = tool(
@@ -269,8 +267,8 @@ fn f20_ac7_commits_on_develop_but_never_pushes_it() {
         stderr(&pushed)
     );
     assert_eq!(git(&repos.work, &["log", "--format=%s", "-1"]), "first");
-    // On a feature branch left from before ADR-0086, the same call commits and pushes.
-    git(&repos.work, &["switch", "--quiet", "-c", FEATURE]);
+    // On a feature branch, the same call commits and pushes.
+    git(&repos.work, &["switch", "--quiet", FEATURE]);
     let feature = tool(
         &repos.work,
         &["commit", "-F", "-", "--push", "a.md"],
@@ -387,7 +385,7 @@ fn runs_the_hooks_and_stops_on_their_failure() {
 fn refuses_a_force_push_on_a_shared_branch() {
     let repos = repos();
 
-    git(&repos.work, &["switch", "--quiet", DEVELOP]);
+    git(&repos.work, &["switch", "--quiet", FEATURE]);
     write(&repos.work, "a.md", "a\n");
 
     let output = tool(
@@ -414,7 +412,7 @@ fn prints_its_usage_on_a_malformed_call() {
 fn f21_ac2_names_the_uncommitted_files_that_stop_a_rebase() {
     let repos = repos();
 
-    move_develop_on(&repos, "develop.md", "develop\n");
+    move_feature_on(&repos, "feature.md", "feature\n");
     // A tracked file changed, a new file staged; an untracked file blocks nothing.
     write(&repos.work, "README.md", "changed\n");
     write(&repos.work, "staged.md", "staged\n");
@@ -481,7 +479,7 @@ fn sync_with_cargo(repos: &Repos, code: u8) -> (Output, String) {
 fn rebuilds_the_release_binaries_of_a_cargo_workspace_after_a_sync() {
     let repos = repos();
 
-    move_develop_on(&repos, "develop.md", "develop\n");
+    move_feature_on(&repos, "feature.md", "feature\n");
     // Without a workspace, nothing is built.
     let (output, calls) = sync_with_cargo(&repos, 0);
 
