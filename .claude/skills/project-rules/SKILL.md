@@ -34,7 +34,7 @@ synoptic-studio: a dependency-free TypeScript library `editor` that draws SVG sy
 ## Git
 
 - Never push to `main` or `develop`, never merge a pull request, never `--no-verify` (nor `commit -n`, `HUSKY=0`), never force push without lease, nor at all on a feature branch; the `guard-bash` hook refuses most of them: never look for a way around it.
-- Commits: Conventional Commits with a scope of `commitlint.config.ts` (`docs/process/` takes `docs(docs)`, a derivation `docs(geometry)`), a subject starting with a verb (an id first is refused as sentence case), no body line starting with `word:` (read as a footer), footers within 100 characters. The message comes from a file, committed by `target/release/git-sequences commit -F <file> [--push] <paths>`; a story is brought up to its feature branch by `target/release/git-sequences sync` (EN-100). A commit refused by a hook leaves its files staged: `git status` before retrying.
+- Commits: Conventional Commits with a scope of `SCOPES` in `tools/git-hooks/src/message.rs` (`docs/process/` takes `docs(docs)`, a derivation `docs(geometry)`), a subject starting with a verb (an id first is refused as sentence case), no body line starting with `word:` (read as a footer), footers within 100 characters. The message comes from a file, committed by `target/release/git-sequences commit -F <file> [--push] <paths>`; a story is brought up to its feature branch by `target/release/git-sequences sync` (EN-100). A commit refused by a hook leaves its files staged: `git status` before retrying.
 
 ## Stop and report
 

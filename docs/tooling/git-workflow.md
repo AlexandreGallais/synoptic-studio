@@ -49,7 +49,7 @@ The append-only logs — `docs/process/journal.md`, `improvements.md`, `feedback
 
 ## Commit messages
 
-Conventional Commits (`REF-CONVENTIONAL-COMMITS`), checked by commitlint at each commit and in the CI into `main`; `commitlint.config.ts` is the list of what passes:
+Conventional Commits (`REF-CONVENTIONAL-COMMITS`), checked at each commit (`commit-msg`) and in the CI into `main` (`git-hooks commits`) by commitlint 21.2.3's rules with `config-conventional`, ported to Rust (`tools/git-hooks/src/message.rs`, EN-108): the same verdict on every commit of `develop`'s history and on the refused cases of commitlint's own tests. `message.rs` is the list of what passes:
 
 ```text
 <type>(<scope>): <subject in imperative mood>
@@ -60,8 +60,12 @@ Conventional Commits (`REF-CONVENTIONAL-COMMITS`), checked by commitlint at each
 ```
 
 - The type drives the version ([releases](./releases.md)): `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `build`, `ci`, `perf`, `style`, `revert`.
-- The scope is one of `SCOPES` in `commitlint.config.ts`: a layer of the library, or an area of the project (`docs`, `backlog`, `tooling`…).
-- Header and body lines: 100 characters at most. A breaking change: `feat(model)!: …` or a `BREAKING CHANGE:` footer.
+- The scope is one of the 14 `SCOPES` of `tools/git-hooks/src/message.rs`, the one list: a layer of the library, or an area of the project (`docs`, `backlog`, `tooling`…).
+- The subject does not start with a capital: an id first (`SP-023 adds…`) is sentence case, refused; a quoted part is left out of the test. No final period.
+- Header, body and footer lines: 100 characters at most, a line holding a URL excepted. A breaking change: `feat(model)!: …` or a `BREAKING CHANGE:` footer.
+- A footer is a line starting with a token and `: ` (or ` #`): a body line starting with `word: ` ends the body. A missing blank line before the body or the footer is a warning only.
+- Merges, reverts, `fixup!`, `squash!` and `amend!` commits, versions, release-please's release commits and Dependabot's are not checked.
+- **On a story branch** (`<type>/<id>-<topic>`, `docs/` excepted), each commit carries `Refs: <ID>.T<n>` or `Closes: <ID>` with the branch's own id; the hook names the footer expected. A feature branch, `develop` and a `docs/` branch are not asked for one.
 
 | Footer | Meaning | Example |
 | --- | --- | --- |
@@ -75,7 +79,7 @@ Conventional Commits (`REF-CONVENTIONAL-COMMITS`), checked by commitlint at each
 | Hook | Runs |
 | --- | --- |
 | `pre-commit` | `git-hooks pre-commit`, lint-staged's runner ported to Rust (`tools/git-hooks/src/staged.rs`): the formatter, oxlint and the project's linter with `--fix` on staged TypeScript and Markdown, the formatter on the other formats, secretlint on every staged file; the fixes staged again, a partly staged file keeping its unstaged lines, everything put back from a backup stash when a command fails. Each command's output is printed only when it fails |
-| `commit-msg` | commitlint, then at a `done` commit the docs of a rule its story changes (`tools/rule-docs`) |
+| `commit-msg` | `git-hooks commit-msg`: the [message](#commit-messages), the comment lines of `core.commentChar` left out, and a story branch's footer; then at a `done` commit the docs of a rule its story changes (`tools/rule-docs`) |
 | `pre-push` | no shared file on a worker's story branch (`tools/shared-files`, ADR-0065), the branch name, `npm run check:all`, then `npm run golden:check` when a golden file is written |
 
 The hooks are short shell files, tracked, that call the release binaries by their path (`target/release/<binary>`), through `cargo run --release -q -p <crate>` when the binary is missing (`.githooks/tool.sh`). `npm install` installs them once (`prepare`, after the build): `git-hooks install` (`tools/git-hooks`) sets `core.hooksPath` to `.githooks`, relative, so each checkout and each linked worktree runs its own branch's hooks, with nothing written in it (EN-052, EN-108); `npm run worktree:new` sets it too when it is not. Hooks are never bypassed (`--no-verify`, `core.hooksPath` changed by hand): a hook that blocks legitimate work is changed, not skipped.
