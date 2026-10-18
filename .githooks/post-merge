@@ -1,0 +1,5 @@
+#!/bin/sh
+. "$(dirname "$0")/tool.sh"
+# After a merge or a fast-forward, the release binaries rebuilt when the pull changed a Rust input
+# (`tools/git-hooks/src/rebuild.rs`, EN-131). Never `set -e`: a post hook cannot undo the pull.
+tool git-hooks git-hooks post-merge "$@"

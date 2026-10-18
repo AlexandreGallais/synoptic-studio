@@ -399,8 +399,8 @@ describe("the Rust tools run as crates of the workspace (EN-068)", () => {
   });
 
   it("[F21.AC1] calls the release binaries by their path from the Git hooks (ADR-0078)", () => {
-    const hooks = ["pre-commit", "pre-push", "commit-msg"].map((hook) =>
-      readFileSync(join(ROOT, ".githooks", hook), "utf8"),
+    const hooks = ["pre-commit", "pre-push", "commit-msg", "post-merge", "post-rewrite"].map(
+      (hook) => readFileSync(join(ROOT, ".githooks", hook), "utf8"),
     );
     const tool = readFileSync(join(ROOT, ".githooks", "tool.sh"), "utf8");
 
@@ -411,6 +411,9 @@ describe("the Rust tools run as crates of the workspace (EN-068)", () => {
     expect(hooks[1]).toMatch(/^tool git-hooks git-hooks branch$/mu);
     expect(hooks[2]).toMatch(/^tool git-hooks git-hooks commit-msg "\$1"$/mu);
     expect(hooks[2]).toContain('then tool rule-docs check-rule-docs "$1"; fi');
+    // After a pull, the binaries rebuilt when a Rust input changed (EN-131).
+    expect(hooks[3]).toMatch(/^tool git-hooks git-hooks post-merge "\$@"$/mu);
+    expect(hooks[4]).toMatch(/^tool git-hooks git-hooks post-rewrite "\$@"$/mu);
     expect(hooks.join("\n")).not.toContain("cargo run");
 
     expect(tool).toMatch(
