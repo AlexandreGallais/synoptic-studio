@@ -189,17 +189,24 @@ fn stop_with_children(child: &mut std::process::Child) {
     // leaves Vitest's workers behind); elsewhere only the command itself is stopped. The group, or
     // the command, may already be gone; the caller's wait reaps it either way.
     #[cfg(unix)]
-    let _ = Command::new("kill")
-        .args(group_kill_arguments(child.id()))
-        .status();
-    // The command itself too, should the group's signal not reach it.
+    {
+        let _ = Command::new("kill")
+            .args(group_kill_arguments(child.id()))
+            .status();
+        // The command itself too, should the group's signal not reach it.
+        let _ = child.kill();
+    }
+    #[cfg(not(unix))]
     let _ = child.kill();
 }
 
 /// The arguments of `kill` that stop the process group `group` (POSIX `kill`): the group's
 /// negative id after `--`, since Linux's `kill` reads an argument starting with `-` before it as a
 /// signal (EN-127).
-#[cfg(unix)]
+#[cfg_attr(
+    all(not(unix), not(test)),
+    expect(dead_code, reason = "only Unix stops a process group with kill")
+)]
 fn group_kill_arguments(group: u32) -> [String; 3] {
     ["-KILL".to_owned(), "--".to_owned(), format!("-{group}")]
 }
@@ -426,7 +433,6 @@ mod tests {
     use super::*;
 
     #[test]
-    #[cfg(unix)]
     fn f26_ac1_names_the_group_after_the_end_of_kills_options() {
         assert_eq!(group_kill_arguments(4242), ["-KILL", "--", "-4242"]);
     }
