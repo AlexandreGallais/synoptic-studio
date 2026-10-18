@@ -2,13 +2,15 @@
 //! `.claude/worktrees/us-061` on `feat/us-061-<topic>` from the story's feature branch, and links
 //! the main checkout's `node_modules` into it, then sets the hooks folder `.githooks` if it is not
 //! yet, relative so that a push runs the worktree's own `.githooks/pre-push` (EN-052, EN-108), and
-//! builds the release binaries of the Rust tools in the new worktree (EN-068).
+//! builds the release binaries of the Rust tools in the new worktree (EN-068), from a copy of the
+//! main checkout's `target/release` (EN-113).
 
 use std::env;
 use std::path::{Path, PathBuf};
 use std::process::{Command, ExitCode};
 
 use git_hooks::install::install;
+use worktree::seed::seed_release;
 use worktree::{Plan, Request, plan};
 
 /// Output of a Git command, or its error output as the reason.
@@ -142,6 +144,10 @@ fn run(argv: &[String]) -> Result<Plan, String> {
     create(&plan, &main)?;
     // The setting is the repository's, shared by every worktree: set once, as `prepare` does.
     install(&plan.dir).map_err(|reason| format!("git-hooks install: {reason}"))?;
+    // A copy that fails only costs the build its head start: Cargo builds what is missing.
+    if let Err(error) = seed_release(&main, &plan.dir) {
+        eprintln!("worktree:new: target/release not copied from the main checkout: {error}");
+    }
     build_tools(&plan.dir)?;
     Ok(plan)
 }
