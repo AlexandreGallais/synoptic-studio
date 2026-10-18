@@ -9,7 +9,7 @@ points: 2
 
 # E17 · F28 · EN-133 — The CI into main, its checks only
 
-The CI of `develop` → `main` is the one blocking check (ADR-0088, decision 3). At run 39145798246 (7 min 59 s) each of its five lanes ran `npm ci` (1 min 51 s to 2 min 13 s), whose `prepare` builds the release binaries, so the step `npm run rust:build`, kept to name the crates it compiles, took 0 s; the cargo tools were installed again in two lanes (2 min 47 s, 2 min 57 s), the `develop` cache missing, which F30 fixes. Its `workflow_dispatch`, for timing the lanes on a branch (EN-111), makes two jobs skip themselves by `if: github.event_name == 'pull_request'` (research note 0026, §2 and §3).
+The CI of `develop` → `main` is the one blocking check (ADR-0088, decision 3). At run 39145798246 (7 min 59 s) each of its five lanes ran `npm ci` (1 min 51 s to 2 min 33 s), whose `prepare` builds the release binaries, so the step `npm run rust:build`, kept to name the crates it compiles, took 0 s; the cargo tools were installed again in two lanes (2 min 47 s, 2 min 57 s), the `develop` cache missing, which F30 fixes. Its `workflow_dispatch`, for timing the lanes on a branch (EN-111), makes two jobs skip themselves by `if: github.event_name == 'pull_request'` (research note 0026, §2 and §3).
 
 ## Acceptance criteria
 

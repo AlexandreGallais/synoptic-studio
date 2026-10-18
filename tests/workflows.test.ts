@@ -22,10 +22,33 @@ const EXCEPTIONS: readonly string[] = ["story-automerge.yml"];
 
 /**
  * The contexts that name the event or a branch (`REF-GH-CONTEXTS`), which a condition may not
- * read (ADR-0088, decision 2); `\b` keeps `github.ref` from matching `github.repository`.
+ * read (ADR-0088, decision 2), written by property dereference: the event's name, the run's ref,
+ * its name and its type, a pull request's branches, and any ref or branch of the event's payload
+ * (`github.event.ref`, `….pull_request.head.ref`, `….workflow_run.head_branch`). The look-ahead
+ * reads each name whole: `github.ref` never matches the start of a longer name.
  */
 const EVENT_OR_BRANCH =
-  /github\.(?:event_name|ref_name|ref|base_ref|head_ref|event\.pull_request\.base\.ref)\b/u;
+  /\bgithub\.(?:event_name|ref(?:_name|_type)?|base_ref|head_ref|event\.(?:[\w-]+\.)*(?:ref|base_ref|head_ref|head_branch))(?![\w-])/u;
+
+/** An index into a context, `['ref']`, which reads as the property dereference `.ref`. */
+const INDEX = /\[\s*'[^']*'\s*\]/gu;
+
+/**
+ * Whether a condition reads the event or a branch. An index (`github['ref']`) reads as a property
+ * dereference (`REF-GH-CONTEXTS`, `REF-GH-EXPRESSIONS`), and a name in any case is caught: GitHub
+ * ignores case when comparing strings, its pages do not say whether it reads a context's name so,
+ * and catching both cases makes no false finding.
+ *
+ * @param condition - a condition's expression
+ * @returns true when it names one of their contexts
+ */
+function readsEventOrBranch(condition: string): boolean {
+  const dereferenced = condition
+    .toLowerCase()
+    .replaceAll(INDEX, (index) => `.${index.replaceAll(/[[\]'\s]/gu, "")}`);
+
+  return EVENT_OR_BRANCH.test(dereferenced);
+}
 
 /** The start of a step's first key. */
 const STEP = /^- /u;
@@ -75,7 +98,7 @@ function findingsOf(file: string): readonly string[] {
       .join(" ")
       .trim();
 
-    if (!EVENT_OR_BRANCH.test(condition)) {
+    if (!readsEventOrBranch(condition)) {
       return [];
     }
 
@@ -337,6 +360,42 @@ describe("one workflow per purpose (ADR-0088)", () => {
     );
 
     expect(findings).toStrictEqual([]);
+  });
+
+  it("[F28.AC1] reads every context naming the event or a branch, by either syntax and in any case", () => {
+    // One example per form: each context, the index syntax `github['ref']`, which GitHub reads as
+    // `github.ref` (REF-GH-CONTEXTS), and the names in another case.
+    const reading = [
+      "github.event_name == 'push'",
+      "github.ref == 'refs/heads/main'",
+      "github.ref_name == 'main'",
+      "github.ref_type == 'tag'",
+      "github.base_ref == 'main'",
+      "github.head_ref == 'develop'",
+      "github.event.ref == 'refs/heads/main'",
+      "github.event.pull_request.base.ref == 'main'",
+      "github.event.pull_request.head.ref == 'develop'",
+      "github.event.workflow_run.head_branch == 'develop'",
+      "github['ref'] == 'refs/heads/main'",
+      "github[ 'event' ]['pull_request'].head['ref'] == 'develop'",
+      "GITHUB.REF_NAME == 'main'",
+      "GitHub.Event.Pull_Request.Head.Ref == 'develop'",
+      "startsWith(github.ref, 'refs/tags/')",
+    ];
+    // What stays: a lane's field, a missed cache, a pull request's label, author or draft state,
+    // and a context whose name only starts like one of them.
+    const kept = [
+      "matrix.git-hooks",
+      "steps.tools.outputs.cache-hit != 'true'",
+      "contains(github.event.pull_request.labels.*.name, 'autonomous')",
+      "github.event.pull_request.user.login == github.repository_owner",
+      "!github.event.pull_request.draft",
+      "github.repository == 'o/r'",
+      "github.event.pull_request.head.repo.full_name == github.repository",
+    ];
+
+    expect(reading.filter((condition) => !readsEventOrBranch(condition))).toStrictEqual([]);
+    expect(kept.filter((condition) => readsEventOrBranch(condition))).toStrictEqual([]);
   });
 
   it("[F28.AC1] lists as exceptions only workflows that still choose by the event or a branch", () => {

@@ -40,18 +40,22 @@ pub const DEPENDABOT_BRANCH: &str = "dependabot/";
 /// choosing nothing by an `if:` (ADR-0088), so the tool refuses the others.
 pub const RELEASE_BRANCH: &str = "main";
 
-/// Checks that the run is on [`RELEASE_BRANCH`], before any Git or GitHub call.
+/// The fully-formed ref of [`RELEASE_BRANCH`], `refs/heads/<branch>` (`REF-GH-VARIABLES`): its
+/// short name alone would be a tag's too.
+pub const RELEASE_REF: &str = "refs/heads/main";
+
+/// Checks that the run is on [`RELEASE_REF`], before any Git or GitHub call.
 ///
 /// # Errors
 ///
-/// The branch, `GITHUB_REF_NAME` of the run, is another one, or empty.
-pub fn on_release_branch(branch: &str) -> Result<(), String> {
-    if branch == RELEASE_BRANCH {
+/// The ref, `GITHUB_REF` of the run, is another one, a tag named `main` included, or empty.
+pub fn on_release_branch(reference: &str) -> Result<(), String> {
+    if reference == RELEASE_REF {
         Ok(())
     } else {
         Err(format!(
-            "the run is on the branch {branch:?}, not {RELEASE_BRANCH:?}: a release is made from \
-             {RELEASE_BRANCH} only, so press the button on {RELEASE_BRANCH} (GITHUB_REF_NAME)"
+            "the run is on the ref {reference:?}, not {RELEASE_REF:?}: a release is made from the \
+             branch {RELEASE_BRANCH} only, so press the button on {RELEASE_BRANCH} (GITHUB_REF)"
         ))
     }
 }
@@ -148,17 +152,17 @@ fn ci_run(run: &mut Run<'_>) -> Result<(String, String), String> {
     Ok((head, ci_run))
 }
 
-/// Publishes the release of the head of `main`, the run's `branch`, the notes and the report
+/// Publishes the release of the head of `main`, the run's `reference`, the notes and the report
 /// written in `folder`.
 ///
 /// # Errors
 ///
-/// The branch is not `main`, no tag `vx.y.z` is behind the head, a body breaks a rule or two hold
-/// a notice, the bodies list changes the commits do not make or none the commits make, the head
-/// is not a merge, no successful CI run of the pull request's head is found, or a Git or GitHub
-/// command fails.
-pub fn publish(run: &mut Run<'_>, branch: &str, folder: &Path) -> Result<Published, String> {
-    on_release_branch(branch)?;
+/// The ref is not `refs/heads/main`, no tag `vx.y.z` is behind the head, a body breaks a rule or
+/// two hold a notice, the bodies list changes the commits do not make or none the commits make,
+/// the head is not a merge, no successful CI run of the pull request's head is found, or a Git or
+/// GitHub command fails.
+pub fn publish(run: &mut Run<'_>, reference: &str, folder: &Path) -> Result<Published, String> {
+    on_release_branch(reference)?;
     let (previous, current) = last_release(run, "HEAD")?;
     let range = format!("{previous}..HEAD");
     let released = commits(run, &range)?;
