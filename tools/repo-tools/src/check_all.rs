@@ -20,6 +20,10 @@ use git_repository::stdout_of;
 /// The lane of the documentation site and the playground built into it.
 pub const DOCS_LANE: &[&str] = &["docs:build", "playground:build"];
 
+/// The lanes of the Rust workspace: rustfmt, Clippy, its advisories and the check for Windows,
+/// then its tests under the coverage floor, a lane of its own (EN-068, EN-069, EN-130).
+pub const RUST_LANES: &[&[&str]] = &[&["check:rust"]];
+
 /// Lanes of npm scripts: in order within a lane, the lanes at the same time.
 pub const LANES: &[&[&str]] = &[
     &["lint"],
@@ -58,19 +62,63 @@ const DOCS_INPUTS: &[&str] = &[
     "vite.config.ts",
 ];
 
-/// Whether changed files touch an input of the docs lane: a file in one of its folders, or one of
-/// its files.
-#[must_use]
-pub fn touches_site(paths: &[String]) -> bool {
+/// What the Rust lanes read: Cargo's inputs — the crates, a new one by its folder alone, the
+/// workspace's manifest and lock, the toolchain, Cargo's configuration and cargo-deny's — and the
+/// files of the repository the crates' tests read outside `tools/`, each named beside it.
+const RUST_INPUTS: &[&str] = &[
+    "tools/",
+    "Cargo.toml",
+    "Cargo.lock",
+    "rust-toolchain.toml",
+    ".cargo/",
+    "deny.toml",
+    // The lanes' scripts, read against `LANES` (`repo-tools`, `[F19.AC9]`, `[F24.AC1]`).
+    "package.json",
+    // The oxfmt the formatter's tests run, and its settings (`format`).
+    "package-lock.json",
+    ".oxfmtrc.json",
+    // The CI's matrix and the checks `main` requires, read against `LANES` (`[F24.AC1]`).
+    ".github/workflows/",
+    "docs/tooling/ci.md",
+    // The folders past the signal, read against the lint's settings (`lint`).
+    "docs/conventions/files.md",
+    // The hooks' settings, read against their binaries (`hooks`).
+    ".claude/settings.json",
+    // The playground's checklists, copied by `val-prepare`'s tests.
+    "playground/checklists/",
+    // The test files, read for the binaries they start (`repo-tools`, `[F19.AC9]`).
+    "*.test.ts",
+];
+
+/// Whether changed files touch one of the inputs: a file ending with its suffix (`*.test.ts`), in
+/// its folder (`docs/`), or the file itself.
+fn touches(paths: &[String], inputs: &[&str]) -> bool {
     paths.iter().any(|path| {
-        DOCS_INPUTS.iter().any(|input| {
-            if input.ends_with('/') {
+        inputs.iter().any(|input| {
+            if let Some(suffix) = input.strip_prefix('*') {
+                path.ends_with(suffix)
+            } else if input.ends_with('/') {
                 path.starts_with(input)
             } else {
                 path == input
             }
         })
     })
+}
+
+/// Whether changed files touch an input of the docs lane: a file in one of its folders, or one of
+/// its files.
+#[must_use]
+pub fn touches_site(paths: &[String]) -> bool {
+    touches(paths, DOCS_INPUTS)
+}
+
+/// Whether changed files touch an input of the Rust lanes ([`RUST_INPUTS`]).
+#[must_use]
+pub fn touches_rust(paths: &[String]) -> bool {
+    let _ = (paths, RUST_INPUTS);
+
+    true
 }
 
 /// The lanes to run: every lane, the docs lane left out when the change is known (`Some`) and
@@ -141,13 +189,18 @@ pub fn report_of(name: &str, is_ok: bool, milliseconds: u128, output: &str) -> S
     }
 }
 
-/// The line skipping the docs lane, against the base the change was read from.
+/// The lines skipping the lanes a known change leaves out, the docs lane's first, then the Rust
+/// lanes', against the base the change was read from.
 #[must_use]
-pub fn skipped_line(base: &str) -> String {
-    format!(
+pub fn skipped_lines(paths: &[String], base: &str) -> Vec<String> {
+    if touches_site(paths) {
+        return Vec::new();
+    }
+
+    vec![format!(
         "- {} skipped: nothing changed in their inputs against {base}",
         DOCS_LANE.join(", ")
-    )
+    )]
 }
 
 /// The last line of `check:all`: passed, or failed naming the failed checks.
@@ -436,8 +489,10 @@ mod tests {
             "check:all failed in 1.0 s: lint, test"
         );
         assert_eq!(
-            skipped_line("origin/develop"),
-            "- docs:build, playground:build skipped: nothing changed in their inputs against origin/develop"
+            skipped_lines(&owned(&["tools/lint/src/lib.rs"]), "origin/develop"),
+            [
+                "- docs:build, playground:build skipped: nothing changed in their inputs against origin/develop"
+            ]
         );
     }
 
@@ -470,11 +525,11 @@ mod tests {
     #[test]
     fn f19_ac8_skips_the_docs_lane_only_when_the_change_is_known_and_touches_none_of_its_inputs() {
         let tools = owned(&["tools/lint/src/lib.rs"]);
-        let docs = owned(&["docs/index.md"]);
+        let both = owned(&["docs/index.md", "tools/lint/src/lib.rs"]);
 
         assert!(!lanes_to_run(Some(&tools)).contains(&DOCS_LANE));
         assert_eq!(lanes_to_run(Some(&tools)).len(), LANES.len() - 1);
-        assert_eq!(lanes_to_run(Some(&docs)), LANES);
+        assert_eq!(lanes_to_run(Some(&both)), LANES);
         // No base found (main, develop, the CI): every lane.
         assert_eq!(lanes_to_run(None), LANES);
     }

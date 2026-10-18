@@ -17,8 +17,8 @@ use std::thread;
 use std::time::Instant;
 
 use repo_tools::check_all::{
-    BEFORE_LANES, LANES, change_against_base, command_of, config_report, git_lines, lanes_to_run,
-    report_of, skipped_line, summary,
+    BEFORE_LANES, change_against_base, command_of, config_report, git_lines, lanes_to_run,
+    report_of, skipped_lines, summary,
 };
 use repo_tools::scripts::{read_scripts, script_command, shell};
 
@@ -95,12 +95,10 @@ fn work() -> u8 {
     };
     let to_run = lanes_to_run(change.as_ref().map(|(_, paths)| paths.as_slice()));
 
-    if to_run.len() < LANES.len() {
-        let base = change
-            .as_ref()
-            .map_or("the base", |(base, _)| base.as_str());
-
-        println!("{}", skipped_line(base));
+    if let Some((base, paths)) = &change {
+        for line in skipped_lines(paths, base) {
+            println!("{line}");
+        }
     }
 
     let config = config_path(&root);
