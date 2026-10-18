@@ -59,7 +59,7 @@ fn edits_two_files_and_says_how_many_edits() {
 }
 
 #[test]
-fn f21_ac7_refuses_the_whole_input_for_a_block_it_cannot_read_and_edits_nothing() {
+fn f21_ac2_refuses_the_whole_input_for_a_block_it_cannot_read_and_edits_nothing() {
     let folder = folder("unread");
     // The second block lost its `@@ b.md` line: the script edited a.md and said "1 edits".
     let output = replace(

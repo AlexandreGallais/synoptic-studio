@@ -913,7 +913,7 @@ mod tests {
     }
 
     #[test]
-    fn f21_ac5_leaves_conflicting_table_rows_to_the_base_and_keeps_the_rest() {
+    fn f21_ac2_leaves_conflicting_table_rows_to_the_base_and_keeps_the_rest() {
         let text = "# F\n\n| ID | Status |\n<<<<<<< HEAD\n| [A](a) | done |\n| [B](b) | ready |\n=======\n| [A](a) | ready |\n| [B](b) | done |\n>>>>>>> 1234 (docs(backlog): set B done)\n| [C](c) | draft |\n";
 
         assert_eq!(

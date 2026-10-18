@@ -259,7 +259,7 @@ fn text(output: &Output) -> (String, String) {
 }
 
 #[test]
-fn f21_ac5_two_stories_of_one_feature_finish_one_after_the_other_without_a_conflict() {
+fn f21_ac2_two_stories_of_one_feature_finish_one_after_the_other_without_a_conflict() {
     let lab = Lab::new("two");
 
     lab.backlog();
@@ -332,7 +332,7 @@ fn f21_ac5_two_stories_of_one_feature_finish_one_after_the_other_without_a_confl
 }
 
 #[test]
-fn f21_ac4_pushes_with_lease_a_branch_rebased_by_hand_before_its_pull_request() {
+fn f21_ac2_pushes_with_lease_a_branch_rebased_by_hand_before_its_pull_request() {
     let lab = Lab::new("lease");
 
     lab.backlog();

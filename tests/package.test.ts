@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
@@ -23,6 +23,24 @@ const DEPENDENCIES_PAGE = DEPENDENCIES_TEXT.split("## Crates", 1)[0] ?? "";
 /** Crates part of docs/tooling/dependencies.md (from "Crates" to "Considered for later"). */
 const CRATES_PAGE =
   DEPENDENCIES_TEXT.split("## Crates", 2)[1]?.split("## Considered for later", 1)[0] ?? "";
+
+/** The packages a Rust tool of the workspace replaced in E17 (F21.AC5, EN-108 to EN-113). */
+const REPLACED_PACKAGE =
+  /eslint|prettier|husky|lint-staged|commitlint|secretlint|knip|npm-check-updates|release-please/u;
+
+/** The configuration files of those packages, at the repository's root. */
+const REPLACED_CONFIGURATIONS = [
+  ".husky",
+  ".lintstagedrc.json",
+  ".prettierrc.json",
+  ".prettierignore",
+  ".secretlintrc.json",
+  "commitlint.config.js",
+  "eslint.config.ts",
+  "knip.json",
+  "release-please-config.json",
+  ".release-please-manifest.json",
+];
 
 /** The root Cargo.toml, whose `[workspace.dependencies]` lists the crates of crates.io. */
 const CARGO_MANIFEST = readFileSync(join(import.meta.dirname, "..", "Cargo.toml"), "utf8");
@@ -101,6 +119,23 @@ describe("package.json", () => {
 
   it("has no runtime dependency", () => {
     expect(Object.keys(manifest().dependencies ?? {})).toEqual([]);
+  });
+
+  it("[F21.AC5] keeps no package that a Rust tool replaced, nor its configuration nor its workflow step", () => {
+    const root = join(import.meta.dirname, "..");
+    const workflows = join(root, ".github", "workflows");
+    const steps = readdirSync(workflows)
+      .map((name) => readFileSync(join(workflows, name), "utf8"))
+      .join("\n");
+    const packages = [
+      ...Object.keys(manifest().devDependencies ?? {}),
+      ...documentedPackages(),
+    ].filter((name) => REPLACED_PACKAGE.test(name));
+    const configurations = REPLACED_CONFIGURATIONS.filter((name) => existsSync(join(root, name)));
+
+    expect(packages).toEqual([]);
+    expect(configurations).toEqual([]);
+    expect(REPLACED_PACKAGE.exec(steps) ?? []).toEqual([]);
   });
 
   it("documents every development dependency in docs/tooling/dependencies.md", () => {
