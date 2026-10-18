@@ -14,8 +14,8 @@ Decided by the Product Owner on 2026-10-18, after 0.3.0's merge into `main`: the
 ## Acceptance criteria
 
 1. Each workflow of `.github/workflows/` holds one purpose, named for it in its file name, its `name:` and its first comment; its trigger is the only condition that chooses whether it runs and which of its jobs run, no `if:` reading the event or a branch (ADR-0088, decision 2), `story-automerge.yml` left to F34 (EN-132, EN-133).
-2. The site's deployment, on a push to `main`, and the release, by its button alone, are two workflows; the release refuses a branch other than `main` by its tool; the Rust caches are saved by a workflow of their own on a push to `develop`, and `main`'s by the site's build (EN-132).
-3. The CI of the pull requests into `main` runs only on them, and each of its steps is needed by a script of its job's lane; the time of each job before and after is written in `docs/tooling/ci.md` (EN-133).
+2. The site's deployment, on a push to `main`, and the release, by its button alone, are two workflows; the release refuses a branch other than `main` by its tool; the Rust caches are saved by a workflow of their own on a push to `develop` or `main`, the site restoring them (EN-132, AUD-030).
+3. The CI of the pull requests into `main` runs only on them, and each of its steps is needed by a script of its job's lane; the time of each job before is written in `docs/tooling/ci.md` by EN-133, and the time after is measured at the next review's CI into `main` and written there by that review (EN-133, AUD-030).
 
 ## Stories
 

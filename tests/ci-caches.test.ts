@@ -21,13 +21,13 @@ function workflowOf(file: string): string {
 /** Text of the CI of the pull requests into main. */
 const CI = workflowOf("ci.yml");
 
-/** Text of the Rust caches' workflow, whose run on a push to develop saves the caches. */
+/** Text of the Rust caches' workflow, whose run on a push to develop or main saves the caches. */
 const RUST_CACHES = workflowOf("rust-caches.yml");
 
 /** Text of the release's workflow, run by its button. */
 const RELEASE = workflowOf("release.yml");
 
-/** Text of the site's workflow, whose run on a push to main saves the build it compiled. */
+/** Text of the site's workflow, whose run on a push to main restores the caches, saving none. */
 const SITE = workflowOf("site.yml");
 
 /** The manifest of the repository, parsed. */

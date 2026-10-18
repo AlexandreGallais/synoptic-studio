@@ -22,19 +22,32 @@ const EXCEPTIONS: readonly string[] = ["story-automerge.yml"];
 
 /**
  * The contexts that name the event or a branch (`REF-GH-CONTEXTS`), which a condition may not
- * read (ADR-0088, decision 2); `\b` keeps `github.ref` from matching `github.repository`.
+ * read (ADR-0088, decision 2), written by property dereference: the event's name, the run's ref,
+ * its name and its type, a pull request's branches, and any ref or branch of the event's payload
+ * (`github.event.ref`, `….pull_request.head.ref`, `….workflow_run.head_branch`). The look-ahead
+ * reads each name whole: `github.ref` never matches the start of a longer name.
  */
 const EVENT_OR_BRANCH =
-  /github\.(?:event_name|ref_name|ref|base_ref|head_ref|event\.pull_request\.base\.ref)\b/u;
+  /\bgithub\.(?:event_name|ref(?:_name|_type)?|base_ref|head_ref|event\.(?:[\w-]+\.)*(?:ref|base_ref|head_ref|head_branch))(?![\w-])/u;
+
+/** An index into a context, `['ref']`, which reads as the property dereference `.ref`. */
+const INDEX = /\[\s*'[^']*'\s*\]/gu;
 
 /**
- * Whether a condition reads the event or a branch.
+ * Whether a condition reads the event or a branch. An index (`github['ref']`) reads as a property
+ * dereference (`REF-GH-CONTEXTS`, `REF-GH-EXPRESSIONS`), and a name in any case is caught: GitHub
+ * ignores case when comparing strings, its pages do not say whether it reads a context's name so,
+ * and catching both cases makes no false finding.
  *
  * @param condition - a condition's expression
  * @returns true when it names one of their contexts
  */
 function readsEventOrBranch(condition: string): boolean {
-  return EVENT_OR_BRANCH.test(condition);
+  const dereferenced = condition
+    .toLowerCase()
+    .replaceAll(INDEX, (index) => `.${index.replaceAll(/[[\]'\s]/gu, "")}`);
+
+  return EVENT_OR_BRANCH.test(dereferenced);
 }
 
 /** The start of a step's first key. */

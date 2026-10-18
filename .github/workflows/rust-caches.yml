@@ -1,12 +1,13 @@
-# The Rust caches of develop (docs/tooling/ci.md, ADR-0088): a push to develop saves the
-# toolchain, the cargo tools and the Rust build the next pull request into main restores (EN-111,
-# EN-125). A merge by the auto-merge's token starts no run (`REF-GH-TOKEN-TRIGGERS`): only a
-# person's push to develop does, until F30's dispatch. main's build is saved by site.yml.
+# The Rust caches of develop and main (docs/tooling/ci.md, ADR-0088): a push to either saves the
+# toolchain, the cargo tools and the Rust build under its branch, develop's for the next pull
+# request into main, main's for the site and the release, which restore them (EN-111, EN-125,
+# AUD-030). A merge by the auto-merge's token starts no run (`REF-GH-TOKEN-TRIGGERS`): only a
+# person's push to develop does, until F30's dispatch; a review's merge into main is one.
 name: Rust caches
 
 on:
   push:
-    branches: [develop]
+    branches: [develop, main]
 
 permissions:
   contents: read
@@ -23,11 +24,13 @@ jobs:
   # A cache saved by a pull request's run is scoped to its merge ref and never restored by the
   # next pull request; a pull request's run restores those of its head branch, of its base branch
   # and of the default branch, so the review's, from develop into main, those saved on develop
-  # first (`REF-GH-CACHE`). It fetches every target's crates, as the CI does before its lanes
-  # (`REF-CARGO-FETCH`, EN-116), then builds what `check:all` compiles, with the same commands and
-  # flags, and checks nothing: the tests are compiled and listed, never run (ADR-0072: nothing is
-  # re-checked after the merge). Its keys and paths are ci.yml's. Without `restore-keys`, a new key
-  # starts from an empty target/, which so never keeps the artifacts of an older Cargo.lock.
+  # first, and a run on main those saved on main alone (`REF-GH-CACHE`). It fetches every target's
+  # crates, as the CI does before its lanes (`REF-CARGO-FETCH`, EN-116), then builds in release
+  # what `check:all` compiles, with the same commands and flags, but the debug build of
+  # backlog-index that tests/backlog.test.ts runs by `cargo run`, and checks nothing: the tests are
+  # compiled and listed, never run (ADR-0072: nothing is re-checked after the merge). Its keys and
+  # paths are ci.yml's. Without `restore-keys`, a new key starts from an empty target/, which so
+  # never keeps the artifacts of an older Cargo.lock.
   rust-caches:
     runs-on: ubuntu-latest
     permissions:

@@ -17,8 +17,8 @@ Audit F28 following [audit.md](../../conventions/audit.md) (ADR-0020), the `audi
 
 ## Tasks
 
-- [ ] T1 — The findings, and the failing tests of F3, F4 and F10 (1 h)
-- [ ] T2 — The findings fixed, the criteria traced (1 h)
+- [x] T1 — The findings, and the failing tests of F3, F4 and F10 (1 h)
+- [x] T2 — The findings fixed, the criteria traced (1 h)
 
 One task = one commit, referenced as `AUD-030.T1`.
 
@@ -38,3 +38,34 @@ Reviewed by the `auditor` alone (ADR-0086), each finding reproduced before it is
 | F8 | E3 — stale text: `docs/playbook/setup.md` (a release branch); `ci.md` (the "`rust-cache` job"); `rust-caches.yml` and `ci.md` ("compiles what `check:all` compiles", the test lane building `backlog-index` in debug by `cargo run` in `tests/backlog.test.ts`) | reproduced | as listed | the wording fixed, the debug build named as the exception (T2) |
 | F9 | E3 — EN-133 gives `npm ci` 1 min 51 s to 2 min 13 s | reproduced: its steps took 1 min 51 s (lint), 2 min 13 s (tests), 2 min 33 s (docs), 2 min 28 s (format), 2 min 13 s (Rust) | `gh api …/runs/39145798246/jobs` | 2 min 33 s (T2) |
 | F10 | E1 — `release publish` reads `GITHUB_REF_NAME`, which a tag named `main` gives too (`REF-GH-VARIABLES`) | reproduced by reading: `GITHUB_REF_NAME` is "the short ref name of the branch or tag" | `tools/release/src/main.rs`, `publish_release` | `GITHUB_REF` read, compared with `refs/heads/main`; tests first (T1), then the fix (T2) |
+| C1 | A1, A2 — F28 holds no formula: its code is the workflows, the tests that read them and `release publish`'s check of the ref | no finding | `tests/workflows.test.ts`, `tests/ci-caches.test.ts`, `tools/release/src/publish.rs` | — |
+| C2 | A4 — `on_release_branch`: `reference == RELEASE_REF` mutated to `reference.ends_with(RELEASE_BRANCH)` | caught | `f28_ac2_refuses_a_branch_other_than_main_and_makes_nothing`, `f28_ac2_exits_1_from_the_binary_on_a_branch_other_than_main` fail | restored |
+| C3 | A4 — `readsEventOrBranch` without `toLowerCase` | caught | `[F28.AC1] reads every context …` fails on `GITHUB.REF_NAME`, `GitHub.Event.Pull_Request.Head.Ref` | restored |
+| C4 | A4 — `readsEventOrBranch` without the index read as a dereference | caught | `[F28.AC1] reads every context …` fails on the two `['…']` examples | restored |
+| C5 | A4 — the pattern's look-ahead `(?![\w-])` removed | survives | no context of the `github` context's table extends one of the names read but `github.ref_protected`, which a condition may read or not as ADR-0088 decides nothing on it | kept, so that each name is read whole; no action |
+| C6 | `[F28.AC1]` traced: an `if: GitHub.Event_Name == 'push'` step added to `site.yml` | caught | `[F28.AC1] chooses no job nor step …` names `site.yml:76` | restored |
+| C7 | `[F28.AC2]` traced: `rust-caches.yml` on `develop` alone and the site saving its build, as before T2 | caught | `[F21.AC4] [F24.AC3] [F28.AC2] saves the same caches …` and `[F21.AC4] [F28.AC2] builds the site …` fail at T1; `f28_ac2_…` fail at T1 on a tag named `main` | fixed by T2 |
+| C8 | `[F28.AC3]` traced: the test lane's `cargo-deny: true` removed from `ci.yml` (#370's case) | caught | `[F28.AC3] installs each cargo tool …` and `… fetches the RustSec database …` fail, `TypeScript tests: missing` | restored |
+| C9 | A5 — properties: F28 adds no `math` nor `geometry` function | no finding | `src/` unchanged by F28 | — |
+| C10 | B — `REF-GH-VARIABLES` and `REF-GH-CONTEXTS` read again through the library, 2026-10-18; `REF-GH-EXPRESSIONS` added for the index operator and the case of strings | done | the pages' sections Default environment variables, Available contexts, `github` context, Operators | rows updated (T2) |
+| C11 | C, D — no third-party code; `readsEventOrBranch` is the one reader of a condition's contexts | no finding | `tests/workflows.test.ts` | — |
+| C12 | F — `check:all` green on the head | run by the pre-push hook | the push of T2 | — |
+
+## G. Next feature
+
+F30 makes `rust-caches.yml` the `develop` CI, started by the auto-merge's dispatch (ADR-0088, decision 4). Since T2 the same file also runs on a push to `main`: F30's spike decides whether the Rust tests it adds run on `main` too or whether `main`'s caches stay a workflow of their own. Sources: `REF-GH-WORKFLOW-DISPATCH`, `REF-GH-CACHE`, `REF-GH-TOKEN-TRIGGERS`, already read.
+
+## H. Light evolvability check
+
+- Size: F28 grew `tests/workflows.test.ts` to 535 lines; EN-136 extends it, and may split its readers into a module of their own.
+- Tools: no tool failed; the pre-push hook ran `check:all`.
+- Fitness functions: `[F28.AC1]` now reads both syntaxes and any case; nothing yet checks that a workflow's name and comment agree (VAL-029 reads it).
+- Patterns: a workflow's trigger as its only condition held; the release's check of its ref moved from the short name to the full ref.
+- Agent configuration: unchanged.
+- Process: the auditor found three behaviour gaps (F3, F4, F10) that the stories' own tests missed, each fixed with its test first.
+
+## For the main thread
+
+- F28's feature file changed (criteria 2 and 3), allowed on an `AUD` branch. Criterion 2 changed beyond F2's decision, to agree with F3's: the caches are saved on `develop` and `main` by `rust-caches.yml`, the site restoring them.
+- `docs/domain/` is not affected: F28 is tooling. Footer `Rule-docs: none affected, a tooling feature, no business rule changed`.
+- Whether GitHub reads a context's name in any case is not written in its pages: `GitHub ignores case when comparing strings` is about values. `[F28.AC1]` catches both cases, which makes no false finding either way.
