@@ -32,9 +32,3 @@ Audited by the main thread (ADR-0086: a one-line condition, no specialist's inde
 | 3 | The test lane's `scripts` value is `test` in `ci.yml`'s matrix, the one the conditions name | no finding |
 | 4 | Every other lane running `cargo deny`: none but `check:rust` (`rust:deny` in its scripts) and the tests' `[F19.AC9]` | no finding |
 | 5 | The cause missed at F24: AUD-026 checked that each lane runs once, not what each lane's tests need from the other lanes | a row for the next review |
-
-## For the main thread
-
-### Improvements
-
-| 2026-10-18 | AUD-027 | A lane split (F24) checked each lane ran once but not what a lane's tests need from another lane's setup: `[F19.AC9]` in the test lane needed the Rust lane's `cargo-deny` and database (#370, exit 101); a test that each lane's scripts find their tools would have caught it | tool |
