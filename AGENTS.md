@@ -73,19 +73,20 @@ Each is a step the project cannot take back cheaply; hooks refuse most of them, 
 - A new script, hook or agent tool in TypeScript: every new one is a Rust crate of `tools/`, checked by `check:rust` (ADR-0073).
 - A lint rule disabled to make code pass: fix the code, or tell the Product Owner the rule is wrong.
 - An epic or feature set `ready` outside a `/run`; a pull request merged by the agent; a push to `main`; `--no-verify`; a force push without lease, or any force push on a feature branch, `develop` or `main` (ADR-0086).
-- A tool fixed during an epic's work: a tool that fails is worked around and written as a card in `docs/process/tool-incidents.md`, fixed at the epic's end (ADR-0085).
+- A tool fixed during a feature's work: a tool that fails is worked around and written as a card in `docs/process/tool-incidents.md`, fixed at the next review (ADR-0085, ADR-0086).
 
 ## Work
 
 | Level | Flow |
 | --- | --- |
-| Feature | 2 to 4 stories, one feature at a time: research before the refinement (`SP` spike) → `US` / `EN` stories (`CHK` midway from 5) → `AUD` audit → `VAL` checklist and demo page (ADR-0020, ADR-0084) |
-| Epic | its features → `NAM` naming pass over the whole code → `REV` review → `RET` retrospective, with the agent's method and tools (ADR-0023, ADR-0049, ADR-0074) |
+| Feature | 2 to 4 stories of at most 3 tasks, one feature at a time: a short `SP` first on its branch when questions remain → `US` / `EN` stories → `AUD` audit → `VAL` checklist and demo page; a larger feature or story is not written: its split is proposed to the Product Owner, with an example (ADR-0020, ADR-0084, ADR-0086) |
+| Epic | a list of features grouped by theme, with no closing: its refinement an `SP` from `develop` (the Product Owner's account, the documentary research, the features cut); the naming pass, the review and the method at each review (ADR-0086) |
 | Branch | `main` the reviewed work; `develop` integration, nothing pushed to it while a feature is open; `feature/f<nn>-<topic>` from `develop` once the previous feature merged, deleted after its merge; `<type>/<id>-<topic>` per story from its feature, a `REV`'s from `develop` (ADR-0072, ADR-0084, ADR-0086) |
 | Merge | every merge a merge commit: story → feature, by the Product Owner or, in a run, by GitHub; feature → `develop` once validated (a tooling feature validated by the agent); `REV` → `develop`, then `develop` → `main` by the Product Owner, after each review (ADR-0086) |
 | Review | at each return of the Product Owner, once or twice a day: a feature under way is finished first, then a `REV` from `develop` holds the review of the features finished since the last merge into `main`, the naming pass over the code changed since then, the tool incident cards fixed, the method's improvements decided with the Product Owner and the docs brought up to date (ADR-0086) |
 | Story | `T1` the interface and its tests, failing, `T2` the code that passes them, one commit per task (`Refs: <ID>.Tn`), `done` in the last (`Closes: <ID>`), a test card for a `US`, a pull request into its feature (ADR-0084) |
-| One agent at a time | one story at a time, one worker for it in the background, a review or a research alone too; one heavy command at a time; the shared files written by the main thread at merge (ADR-0065, ADR-0072, ADR-0086) |
+| One agent at a time | one story at a time, a fresh worker for each in the background, never one agent chaining stories (its cost is its context re-read at each call, not its start); a review or a research alone too; one heavy command at a time; the shared files written by the main thread at merge (ADR-0065, ADR-0072, ADR-0086) |
+| Specialists | only where their independence pays: the `auditor`, and the `verifier` when tests need a second look, at a feature's audit; the `math-expert` and the `functional-analyst` only for a story holding mathematics or business rules to check, never by default; no agent for small tasks: the main thread writes the statuses, the journal, the `done` commits and the merges itself, the `clerk` unused (ADR-0086) |
 | Checks | local on work branches (`pre-push` runs `check:all`); one CI, on the pull request into `main`, never waited for elsewhere; checks by level, the depth in the feature's audit (ADR-0064, ADR-0072) |
 
 ## Definition of done

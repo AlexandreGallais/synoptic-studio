@@ -10,8 +10,9 @@ What only Claude Code uses; the rules above hold for every agent. Configuration:
 | --- | --- |
 | a story, a spike, an audit, a derivation | `/story`, `/spike`, `/audit`, `/derivation` |
 | a run of stories, only when the Product Owner starts one | `/run`, whose rules then hold for the main thread |
-| a demo, a review, a retrospective; GitHub issues | `/review` (VAL and REV), `/retro`; `/triage` |
-| a second opinion, in the background | the read-only agents `auditor`, `math-expert`, `verifier`, `functional-analyst`, `doc-editor` |
+| a demo, the review at each return; GitHub issues | `/review` (VAL and REV), `/retro` for its method part; `/triage` |
+| a story, in the background | a fresh `story-worker` per story, never one agent chaining stories: its cost is its context re-read at each call (ADR-0086) |
+| a second opinion, in the background, only where its independence pays | the read-only `auditor`, and the `verifier` when tests need a second look, at a feature's audit; `math-expert` and `functional-analyst` only for mathematics or business rules to check; `doc-editor`. No agent for small tasks: the main thread writes the statuses, the journal, the `done` commits and the merges, the `clerk` unused (ADR-0086) |
 | a source | the `library` server: `library_search`, then `library_get` and `library_read`; `WebFetch` only for a page it cannot read |
 | a choice for the Product Owner | the questionnaire (AskUserQuestion): options with numeric examples, no drawing in characters, a last question left open for remarks |
 

@@ -131,17 +131,30 @@ function hasValidStatus(item: Item): boolean {
 /** Parent field of each child folder. */
 const PARENT_FIELDS: Readonly<Record<string, string>> = { features: "epic", stories: "feature" };
 
-/** Story kinds attached to an epic rather than a feature: naming pass, review and retrospective (ADR-0023, ADR-0049). */
+/** Story kinds attached to an epic rather than a feature: naming pass, review and retrospective (ADR-0023, ADR-0049, ADR-0086). */
 const EPIC_STORY = /^(?:NAM|REV|RET)-/u;
 
 /**
- * Whether a story belongs directly to its epic (review, retrospective).
+ * Whether a story belongs directly to its epic: a review, a past naming pass or retrospective, or
+ * the spike of the epic's refinement, an `SP` without a feature (ADR-0086).
  *
  * @param item - backlog item
- * @returns `true` for a `NAM`, `REV` or `RET` story
+ * @returns `true` for a `NAM`, `REV` or `RET` story, or an `SP` story without a feature
  */
 function isEpicStory(item: Item): boolean {
-  return item.folder === "stories" && EPIC_STORY.test(item.fields["id"] ?? "");
+  return (
+    item.folder === "stories" && (EPIC_STORY.test(item.fields["id"] ?? "") || isRefinement(item))
+  );
+}
+
+/**
+ * Whether a story is the spike of an epic's refinement, made from `develop` (ADR-0086).
+ *
+ * @param item - story item
+ * @returns `true` for an `SP` story without a feature
+ */
+function isRefinement(item: Item): boolean {
+  return (item.fields["id"] ?? "").startsWith("SP-") && (item.fields["feature"] ?? "") === "";
 }
 
 /**
@@ -602,6 +615,17 @@ describe("backlog", () => {
     );
 
     expect(large.map((item) => item.file)).toEqual([]);
+  });
+
+  it("attaches an epic's refinement spike to its epic, and a feature's spike to its feature (ADR-0086)", () => {
+    const refinement = storyOf("SP-030");
+    const featureSpike: Item = { ...refinement, fields: { feature: "F24", id: "SP-031" } };
+
+    expect([
+      parentField(refinement),
+      parentField(featureSpike),
+      parentField(storyOf("EN-123")),
+    ]).toEqual(["epic", "feature", "feature"]);
   });
 
   it("reads a return's review and a new closing by their ids", () => {

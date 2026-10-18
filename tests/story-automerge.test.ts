@@ -82,6 +82,9 @@ describe("story auto-merge (ADR-0086)", () => {
     expect(passes(feature, "chore/tidy-up")).toBe(false);
     expect(passes(feature, "chore/en-12-short")).toBe(false);
     expect(passes("develop", "docs/f21-refinement")).toBe(false);
+    // No epic has a closing since ADR-0086: a naming pass or a retrospective is no longer merged.
+    expect(passes("develop", "refactor/nam-004-naming-pass")).toBe(false);
+    expect(passes("develop", "docs/ret-006-retrospective")).toBe(false);
     expect(passes("develop", "feature/f2-short")).toBe(false);
     expect(passes("develop", "dependabot/npm_and_yarn/vite-8.3.4")).toBe(false);
   });

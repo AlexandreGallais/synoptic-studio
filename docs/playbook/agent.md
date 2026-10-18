@@ -72,4 +72,4 @@ The Product Owner's critiques of E01, E14, E15 and E17, written as habits: what 
 | resolve a merge conflict | edit the conflicted file, then diff the result with the story's own version; never take a whole side (E17) |
 | pass values to a shell command | quote each value on its own; zsh does not split a variable into words (E17) |
 | build a view for the Product Owner | show a sample of it first, before the tool and the steps around it (E17) |
-| meet a tool that fails during a run | write a card (the use, the failure, what was done instead) and work around it; tools are fixed at the epic's end (E17) |
+| meet a tool that fails during a run | write a card (the use, the failure, what was done instead) and work around it; tools are fixed at the next review (E17, ADR-0086) |

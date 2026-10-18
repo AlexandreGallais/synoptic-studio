@@ -1,12 +1,17 @@
 ---
 name: spike
-description: Run the research spike (SP story) that opens a feature, sourcing every story before any code. Use when starting a feature or a story of type SP.
+description: Run a research spike (SP story) — an epic's refinement from `develop`, or the short spike that opens a feature with questions left — sourcing every story before any code. Use when starting an epic or a feature with open questions, or for a story of type SP.
 argument-hint: "[spike id, e.g. SP-001]"
 ---
 
 # Research spike
 
 Spike: $ARGUMENTS. Protocol: `docs/research/README.md` §1–§8 (levels of sources, stop rule, recording).
+
+Two kinds (ADR-0086):
+
+- **An epic's refinement**, when a new epic starts: an `SP` story from `develop`, without a feature (`docs/backlog/_spike.md`), merged into `develop` by a merge commit, its own bubble. It records the Product Owner's account of what the epic describes, the documentary research on it (steps 2 to 5), and cuts its features, each of 2 to 4 `US` or `EN` stories, each story of at most 3 tasks. A feature or a story larger than that is not written: the agent proposes its split to the Product Owner, with an example (ADR-0084).
+- **A feature's spike**, only when questions remain after the refinement: a short `SP`, the first story of its feature branch, its own small bubble. The steps below, for that feature's stories.
 
 1. **Inventory**: for each story of the feature, list every formula, algorithm, specification point and interface behavior it needs (the spike's Questions section).
 2. **Internal first**: `docs/references.md`, `docs/derivations/`, `docs/research/notes/`, the domain files, then the local library (`library_search`). Reuse before searching. In parallel, in the background: the `functional-analyst` on the feature's business rules and open questions, the `math-expert` on its formulas.
