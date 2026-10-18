@@ -1,4 +1,4 @@
-//! The metrics of the agent's work (`docs/tooling/metrics.md`, EN-107), ported from the TypeScript
+//! The metrics of the agent's work (`docs/tooling/metrics.md`, EN-107), rewritten from the TypeScript
 //! scripts with their output unchanged: the metrics report (`npm run metrics`), its findings of the
 //! rules added, and the session report (`npm run metrics:session`), both read from Claude Code's
 //! transcripts incrementally; what the agents do (`npm run activity`); the watchdog of a

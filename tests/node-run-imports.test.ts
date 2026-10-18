@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 /** Folders whose files Node.js runs without a build (the `node-run` scope of `tools/lint/src/scopes.rs`). */
-const NODE_RUN_FOLDERS = ["scripts", join(".claude", "hooks")];
+const NODE_RUN_FOLDERS = ["scripts"];
 
 /** A relative import's specifier, static (`from "./x"`) or dynamic (`import("./x")`). */
 const RELATIVE_SPECIFIER = /(?:from |import\()"(?<specifier>\.\.?\/[^"]+)"/gu;

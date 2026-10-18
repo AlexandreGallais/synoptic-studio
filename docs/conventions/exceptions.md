@@ -59,4 +59,14 @@ Every place where the code turns a lint rule off, with its reason (ADR-0066). A 
 | `tools/hooks/src/context.rs` | `request_tokens` | `clippy::cast_possible_truncation`, `clippy::cast_sign_loss` | token counts are whole, positive and far below 2^53, read back from JSON as floats |
 | `tools/hooks/src/tasks.rs` | `cached_tasks` | `clippy::cast_possible_truncation` | offsets and times are whole numbers the status line wrote, read back from JSON as floats |
 | `tools/hooks/src/tokens.rs` | `whole` | `clippy::cast_possible_truncation` | tokens, offsets and times are whole numbers far below 2^53, read back from JSON as floats |
+| `tools/metrics/src/bin/activity.rs` | `kept` | `clippy::cast_possible_truncation`, `clippy::cast_sign_loss` | a count of calls given on the command line, checked finite and at least 1 before its whole part is taken |
+| `tools/metrics/src/bin/watch-task.rs` | `main` | `clippy::cast_precision_loss` | the clock's epoch milliseconds, far below 2^53, added to the watch's length in seconds as JavaScript did |
+| `tools/metrics/src/format.rs` | `duration_text` | `clippy::cast_precision_loss` | a report's durations, whole milliseconds far below 2^53, written by the float rounding of the TypeScript reports |
+| `tools/metrics/src/json.rs` | `whole` | `clippy::cast_possible_truncation` | times, durations and token counts are whole numbers far below 2^53, read back from JSON as floats |
+| `tools/metrics/src/report.rs` | `metrics_report` | `clippy::cast_precision_loss` | a call's duration from its transcript's times, whole milliseconds far below 2^53, beside the hook's exact ones read as floats |
+| `tools/metrics/src/turn_time.rs` | `time_table` | `clippy::cast_possible_truncation` | a turn's start, read from the hook's log as a float, is whole epoch milliseconds far below 2^53 |
+| `tools/metrics/src/turn_time.rs` | `time_table` | `clippy::cast_possible_truncation` | the characters a turn wrote, summed from the log's whole counts read as floats |
+| `tools/metrics/src/watch.rs` | `watch_step` | `clippy::cast_precision_loss` | the milliseconds an output was silent, far below 2^53, compared with the stall's length as JavaScript did |
+| `tools/metrics/src/watch.rs` | `watch_until` | `clippy::cast_precision_loss` | the clock's epoch milliseconds, far below 2^53, compared with a time limit that may be no number, as JavaScript did |
+| `tools/metrics/tests/common/mod.rs` | `clean` | `dead_code` | the helpers every test binary of the crate shares, each binary using a part of them |
 | `tools/run-totals/src/marker.rs` | `whole` | `clippy::cast_possible_truncation` | times, offsets and token counts are whole numbers far below 2^53, read back from JSON as floats |
