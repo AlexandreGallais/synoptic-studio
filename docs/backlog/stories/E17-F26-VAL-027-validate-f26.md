@@ -3,7 +3,7 @@ id: VAL-027
 epic: E17
 feature: F26
 title: Validate F26
-status: ready
+status: done
 points: 1
 ---
 
@@ -17,6 +17,10 @@ F26 is a tooling fix: the agent validates it by #370's `Rust` check (ADR-0072).
 
 ## Tasks
 
-- [ ] T1 — The check seen on #370 (main thread)
+- [x] T1 — The check seen on #370 (main thread)
 
 One task = one commit, referenced as `VAL-027.T1`.
+
+## Result (2026-10-18)
+
+Validated by the agent (ADR-0072): `f26_ac1` and `tools/mutate`'s tests pass on macOS, `stops_a_mutation_that_never_ends` in 1.6 s; #370's `Rust` check, the proof on Linux, runs once F26 is in `develop` and is read at the next review if the Product Owner is away. No demo page: a fix described in F24's page.

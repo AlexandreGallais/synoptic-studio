@@ -29,3 +29,7 @@ Open the checks of the pull request `develop` → `main`: five lane checks appea
 ## Fixed by F25
 
 The first run of #370 with these jobs failed its `TypeScript tests` check: `[F19.AC9]` runs `cargo deny` from the tests, and only the `Rust` job installed it and fetched the RustSec database. Since F25 (EN-126) the test job does both too.
+
+## Fixed by F26
+
+The same run's `Rust` check never ended: `tools/mutate`'s test `stops_a_mutation_that_never_ends` waited 46 min, Linux's `kill` reading the process group's `-<pid>` as a signal. Since F26 (EN-127) the group comes after `--`, and the command itself is killed after it.
