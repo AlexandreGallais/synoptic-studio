@@ -274,6 +274,15 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
     ]);
   });
 
+  it("fixes the Rust code in fix too: Clippy's fixes when a Rust file changed, then rustfmt (EN-113)", () => {
+    const steps = SCRIPTS.get("fix")?.split(" && ") ?? [];
+
+    expect(steps.slice(-2)).toEqual([
+      `{ [ -z "$(git status --porcelain -- '*.rs' '*Cargo.toml' Cargo.lock)" ] || cargo clippy --workspace --all-targets --locked --quiet --fix --allow-dirty --allow-staged; }`,
+      "cargo fmt --all",
+    ]);
+  });
+
   it("[F19.AC10] installs the Windows target its check compiles for without linking", () => {
     expect(readFileSync(join(ROOT, "rust-toolchain.toml"), "utf8")).toMatch(
       /^targets = \["x86_64-pc-windows-msvc"\]$/mu,

@@ -9,7 +9,7 @@
 | `npm run lint:secrets` | the secret scan (`tools/secret-scan`, secretlint's recommended rules in Rust) on every file Git tracks, less those `.secret-scan-ignore` and the `.gitignore` files name: no key, token or password; exits 1 naming each file, line and rule, the secret masked |
 | `npm run format` / `format:check` | the formatter, `tools/format`: oxfmt, then Markdown tables without padding (ADR-0068); `format:check` changes nothing |
 | `npm run typecheck` | `tsc --noEmit` (TypeScript 7); outside `check` and `check:all`, where the lint reports the same errors |
-| `npm run fix` | the formatter, oxlint `--fix`, the project's linter `--fix`: **before each commit** |
+| `npm run fix` | the formatter, oxlint `--fix`, the project's linter `--fix`, then for the Rust code Clippy's fixes (`cargo clippy --fix`, the pedantic lints included) when a `.rs` or Cargo file changed, and `cargo fmt`: **before each commit** |
 | `npm run check` | format, lint, the secret scan, Vitest, `npm audit`, `deps:unused` and `check:rust` one after the other, without the builds |
 | `npm run check:all` | `rust:build`, then the [five lanes](#the-lanes-of-the-full-check) at once: what the pre-push hook and the CI run; about 40 s on a code story, a minute with the docs build |
 | `npm run check:rust` | the Rust workspace: `cargo fmt --check`, Clippy, `rust:advisories`, `rust:coverage`, and a check for Windows without linking, so that a Unix-only call outside `cfg(unix)` fails on the Mac, then `rust:fresh`; warnings are errors (`.cargo/config.toml`) |
