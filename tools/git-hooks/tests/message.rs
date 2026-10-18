@@ -7,7 +7,7 @@ use git_hooks::case::Case;
 use git_hooks::message::{
     Commit, SUBJECT_CASES, body_leading_blank, ends_with_full_stop, footer_leading_blank,
     format_report, header_trim, header_within, is_ignored, lint, max_line_length, parse, scope_in,
-    subject_cases,
+    subject_cases, without_retired_scopes,
 };
 
 fn parsed(message: &str) -> Commit {
@@ -445,4 +445,39 @@ fn f21_ac4_passes_the_project_s_messages_and_names_what_it_refuses() {
     let headless = lint("#c\n\nbody\n", Some("#")).expect("a report");
     assert!(headless.errors.iter().any(|finding| finding.message
         == "header must not be longer than 100 characters, current length is undefined"));
+}
+
+#[test]
+fn f27_ac1_accepts_a_retired_scope_in_the_history_only() {
+    let rules = |message: &str, history: bool| {
+        let report = lint(message, None).expect("a report");
+        let report = if history {
+            without_retired_scopes(report)
+        } else {
+            report
+        };
+
+        report
+            .errors
+            .iter()
+            .map(|finding| finding.rule)
+            .collect::<Vec<_>>()
+    };
+
+    // The hook's verdict: `eslint` left the list with EN-085.
+    assert_eq!(
+        rules("chore(eslint): run oxlint first\n", false),
+        ["scope-enum"]
+    );
+    // The history's: the message was valid when committed.
+    assert_eq!(rules("chore(eslint): run oxlint first\n", true), [""; 0]);
+    // Another error stays, and a scope never in the list is still refused.
+    assert_eq!(
+        rules("chore(eslint): Run oxlint first\n", true),
+        ["subject-case"]
+    );
+    assert_eq!(
+        rules("chore(foo): run oxlint first\n", true),
+        ["scope-enum"]
+    );
 }
