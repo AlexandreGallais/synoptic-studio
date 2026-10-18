@@ -714,6 +714,19 @@ fn reads_curl_s_write_out_for_each_address() {
 }
 
 #[test]
+fn curl_reads_no_curlrc() {
+    // Only a first `--disable` keeps `~/.curlrc` out (`REF-CURL`, AUD-023).
+    assert_eq!(fetch::CURL_OPTIONS[0], "--disable");
+    assert_eq!(
+        fetch::CURL_OPTIONS
+            .iter()
+            .filter(|option| **option == "--disable")
+            .count(),
+        1
+    );
+}
+
+#[test]
 fn a_command_that_fails_or_is_missing_answers_nothing() {
     let addresses = ["https://registry.npmjs.org/oxlint".to_owned()];
 

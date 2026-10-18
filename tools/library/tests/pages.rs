@@ -257,6 +257,14 @@ fn curl_is_asked_for_http_only_its_facts_after_a_mark() {
     );
     // The address is given as the value of `--url`, never read as an option.
     assert_eq!(arguments[arguments.len() - 2..], ["--url", "-x"]);
+    // `~/.curlrc` is never read, which only a first `--disable` keeps out (`REF-CURL`, AUD-023),
+    // and a request that hangs ends after a minute.
+    assert_eq!(arguments[0], "--disable");
+    assert!(
+        arguments
+            .windows(2)
+            .any(|pair| pair == ["--max-time", "60"])
+    );
 }
 
 #[test]
