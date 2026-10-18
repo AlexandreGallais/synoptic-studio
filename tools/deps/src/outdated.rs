@@ -193,11 +193,31 @@ fn index_address(name: &str) -> String {
 
 /// The npm packages' lines and failures.
 fn npm_report(pins: &Pins, answers: &[Answer], now_ms: i64, report: &mut Report) {
-    for ((name, current), answer) in pins.npm.iter().zip(answers) {
-        match json(answer) {
-            Ok(metadata) => report.lines.extend(
-                npm::behind(name, current, &metadata, now_ms).map(|b| behind_line("npm", &b)),
-            ),
+    // Each package's metadata read on a thread of its own: `vite`'s is 39 MB of JSON.
+    let results: Vec<Result<Option<String>, String>> = thread::scope(|scope| {
+        let handles: Vec<_> = pins
+            .npm
+            .iter()
+            .zip(answers)
+            .map(|((name, current), answer)| {
+                scope.spawn(move || {
+                    json(answer).map(|metadata| {
+                        npm::behind(name, current, &metadata, now_ms)
+                            .map(|b| behind_line("npm", &b))
+                    })
+                })
+            })
+            .collect();
+
+        handles
+            .into_iter()
+            .map(|handle| handle.join().unwrap_or_else(|_| Err("not read".to_owned())))
+            .collect()
+    });
+
+    for ((name, _), result) in pins.npm.iter().zip(results) {
+        match result {
+            Ok(line) => report.lines.extend(line),
             Err(error) => report
                 .failures
                 .push(format!("npm registry: {name}: {error}")),

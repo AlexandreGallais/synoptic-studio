@@ -45,6 +45,7 @@ The agent calls a tool by its release binary, from the root of its checkout, rat
 | `npm run metrics`, `metrics:session -- …`, `activity` | `target/release/metrics`, `target/release/session-report …`, `target/release/activity` |
 | `npm run branches:clean`, `records:save` | `target/release/branches-clean`, `target/release/records-save` |
 | `npm run rust:fresh` | `target/release/stale-binaries` |
+| `npm run deps:outdated`, `deps:unused` | `target/release/dependencies outdated`, `target/release/dependencies unused` |
 
 ### mutate
 

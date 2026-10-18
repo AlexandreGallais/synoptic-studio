@@ -15,7 +15,7 @@ Each is a trap met in this repository's tooling, with the story that met it. The
 
 - **TypeScript 7 is the only TypeScript, VitePress is on 2.0 alpha** (ADR-0075): TypeScript 7 has no API until 7.1, so no tool imports `typescript`; the API pages come from `tools/api-pages`, the declarations from Oxc (ADR-0071); VitePress 1.6 bundles a vulnerable Vite 5. Either changes only with an ADR.
 - **oxlint, then the project's Rust linter `tools/lint`; oxfmt through `tools/format`** (ADR-0075): a rule oxlint lacks is written in `tools/lint`, never as a JavaScript plugin. An oxlint upgrade may rename or remove rules: `tests/oxlint-config.test.ts` fails on a rule oxlint no longer has; read its release notes and decide its new rules in `.oxlintrc.json`.
-- A new dev package needs its row in `docs/tooling/dependencies.md`, its release notes read, a version at least 7 days old and `npm audit` clean; a GitHub Action or a Node.js bump is checked by `npm run deps:tools` too.
+- A new dev package needs its row in `docs/tooling/dependencies.md`, its release notes read, a version at least 7 days old and `npm audit` clean; a GitHub Action, a Node.js bump and a crate, `Cargo.lock`'s included, are checked by `npm run deps:outdated` too.
 - A check tool is given explicit targets, never `.` nor `**/*`: a new tracked folder joins the targets in `package.json`, or `tests/check-targets.test.ts` fails (EN-045). A tooling change that makes existing files invalid is committed with their fix.
 - Vite's `?raw` imports are typed by `vite/client` (tsconfig `types`): never a `.d.ts` file for them.
 

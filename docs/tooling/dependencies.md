@@ -31,7 +31,7 @@ Every dependency is code the project did not write and must trust, so each one i
 | --- | --- | --- |
 | `oxfmt` | the formatter of every file kind, Markdown included, in Rust (`REF-OXFMT`, `REF-OXFMT-LANGUAGES`), run by `tools/format` (ADR-0068) | Prettier: about 30 times slower, pads tables, a JavaScript tool |
 | `oxlint` | the lint: ESLint's, typescript-eslint's, Unicorn's, JSDoc's and Import's rules built in Rust (`REF-OXLINT`, `REF-OXLINT-PLUGINS`), configured by `.oxlintrc.json` | ESLint with typescript-eslint: about 62 s on this tree against 2 s (ADR-0075) |
-| `oxlint-tsgolint` | oxlint's type-aware rules on typescript-go (`REF-OXLINT-TYPE-AWARE`, `REF-TSGOLINT`), loaded by oxlint, imported by no file (`knip.json`) | typescript-eslint's type-aware rules: TypeScript 6's API |
+| `oxlint-tsgolint` | oxlint's type-aware rules on typescript-go (`REF-OXLINT-TYPE-AWARE`, `REF-TSGOLINT`), loaded by oxlint, imported by no file (`PLUGIN_USES` of `tools/deps/src/unused.rs`) | typescript-eslint's type-aware rules: TypeScript 6's API |
 
 ### Documentation site
 
@@ -40,16 +40,9 @@ Every dependency is code the project did not write and must trust, so each one i
 | `vitepress` | Markdown documentation site on Vite (`REF-VITEPRESS`); 2.0 alpha because 1.6 bundles a vulnerable Vite 5 (ADR-0075) | Docusaurus: a React toolchain, no native PDF either |
 | `mermaid` | diagrams written as text, drawn by the site's theme and by GitHub (`REF-MERMAID`, `REF-GH-DIAGRAMS`) | `vitepress-plugin-mermaid`: VitePress 1 only; hand-drawn SVG: hard to keep up to date |
 
-### Maintenance
-
-| Package | Why | Alternatives rejected |
-| --- | --- | --- |
-| `npm-check-updates` | `npm run deps:outdated` | `npm outdated`: no per-package target |
-| `knip` | `npm run deps:unused`: unused files, exports and dependencies across modules | `ts-prune`: exports only; `no-unused-vars`: one module at a time |
-
 ## Rust tools
 
-The tools outside npm that the Rust checks run. `deps:outdated` does not see them: each version is pinned where it is installed — the `env` of `.github/workflows/ci.yml` and `release.yml`, which key their cache ([CI](./ci.md#the-rust-build-and-its-caches)), the install line of [agent tools](./agent-tools.md#rust), the messages of `rust:coverage` and `rust:advisories` in `package.json` — and a newer release is looked for by hand (`cargo search <tool>`) at each retrospective.
+The tools outside npm that the Rust checks run. `deps:outdated` does not see them (it reads `Cargo.toml` and `Cargo.lock`, not the installed tools): each version is pinned where it is installed — the `env` of `.github/workflows/ci.yml` and `release.yml`, which key their cache ([CI](./ci.md#the-rust-build-and-its-caches)), the install line of [agent tools](./agent-tools.md#rust), the messages of `rust:coverage` and `rust:advisories` in `package.json` — and a newer release is looked for by hand (`cargo search <tool>`) at each retrospective.
 
 | Tool | Version, released | Why | Alternatives rejected |
 | --- | --- | --- | --- |
