@@ -2,7 +2,7 @@
 id: F24
 epic: E17
 title: The CI in parallel jobs, its tests shown as they run
-status: in-progress
+status: done
 ---
 
 # E17 · F24 — The CI in parallel jobs, its tests shown as they run
@@ -26,7 +26,7 @@ In delivery order.
 | [EN-124](../stories/E17-F24-EN-124-the-ci-in-parallel-jobs.md) | EN | The CI in parallel jobs, its tests shown as they run | done |
 | [EN-125](../stories/E17-F24-EN-125-the-rust-cache-from-develop.md) | EN | The Rust cache saved from develop | done |
 | [AUD-026](../stories/E17-F24-AUD-026-audit-f24.md) | AUD | Audit F24 | done |
-| [VAL-025](../stories/E17-F24-VAL-025-validate-f24.md) | VAL | Validate F24 | ready |
+| [VAL-025](../stories/E17-F24-VAL-025-validate-f24.md) | VAL | Validate F24 | done |
 
 ## Feature plan
 

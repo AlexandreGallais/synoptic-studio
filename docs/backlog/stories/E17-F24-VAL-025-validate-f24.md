@@ -3,7 +3,7 @@ id: VAL-025
 epic: E17
 feature: F24
 title: Validate F24
-status: ready
+status: done
 points: 1
 ---
 
@@ -17,6 +17,10 @@ F24 is a tooling feature: the agent validates it and opens its pull request into
 
 ## Tasks
 
-- [ ] T1 — Each criterion proven again, the demo page written (1 h)
+- [x] T1 — Each criterion proven again, the demo page written (1 h)
 
 One task = one commit, referenced as `VAL-025.T1`.
+
+## Result (2026-10-18)
+
+Validated by the agent (ADR-0072), lightly as the Product Owner chose, the proof being #370's own CI: F24's tagged tests pass (3 Rust `f24_ac…`, 6 TypeScript `[F24.ACn]`); the demo page `docs/guide/f24-the-ci-in-parallel-jobs.md`. No checklist line: nothing is drawn, the checks of #370 are what to look at. Pending until the next review: the five checks seen on #370, and criterion 3's warm time, measured when #370 runs on `develop`'s cache.
