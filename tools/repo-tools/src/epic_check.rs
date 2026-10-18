@@ -4,7 +4,7 @@
 //! and the table they make for the retrospective's record.
 
 use hooks::json::Value;
-use shared_files::date::civil_from_days;
+use shared_files::date::date_of_days;
 
 use crate::check_all::LANES;
 
@@ -229,7 +229,7 @@ pub fn minute_of(epoch_ms: i64) -> String {
 
     format!(
         "{}T{:02}:{:02}",
-        civil_from_days(days),
+        date_of_days(days),
         minute_of_day / 60,
         minute_of_day % 60
     )

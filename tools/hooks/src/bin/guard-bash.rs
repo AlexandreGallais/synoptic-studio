@@ -10,8 +10,9 @@
 use std::fs;
 use std::io::{self, Read};
 use std::path::Path;
-use std::process::{Command, ExitCode};
+use std::process::ExitCode;
 
+use hooks::git::git;
 use hooks::guard::{
     denied_reason_on, entered, entered_worktree_reason, later_folders, missing_script,
     missing_script_reason, scripts_of, worktree_reason,
@@ -37,7 +38,8 @@ fn hook() -> u8 {
     let command = input.get("tool_input").get("command").text();
     let judged = entered(command, input.get("cwd").text());
     // A push naming no destination updates the current branch of the folder it runs in.
-    let branch = || git(Path::new(&judged.folder), &["branch", "--show-current"]);
+    let branch =
+        || git(Path::new(&judged.folder), &["branch", "--show-current"]).unwrap_or_default();
     let reason = denied_reason_on(command, &branch)
         .map(str::to_owned)
         .or_else(|| {
@@ -75,7 +77,7 @@ fn missing_script_refusal(command: &str, folder: &str) -> Option<String> {
     let scripts = scripts_of(&fs::read_to_string(&package).ok()?)?;
     let script = missing_script(command, &scripts)?;
     let root = package.parent()?;
-    let branch = git(root, &["branch", "--show-current"]);
+    let branch = git(root, &["branch", "--show-current"]).unwrap_or_default();
     let upstream = git(
         root,
         &[
@@ -84,7 +86,8 @@ fn missing_script_refusal(command: &str, folder: &str) -> Option<String> {
             "--symbolic-full-name",
             "@{upstream}",
         ],
-    );
+    )
+    .unwrap_or_default();
     // A story branch pushed tracks its own copy: its base is then not known here.
     let base = if upstream.is_empty() || upstream == format!("origin/{branch}") {
         "origin/<base>".to_owned()
@@ -93,16 +96,4 @@ fn missing_script_refusal(command: &str, folder: &str) -> Option<String> {
     };
 
     Some(missing_script_reason(&script, &branch, &base))
-}
-
-/// The trimmed output of a Git command run in a folder, empty when it fails.
-fn git(folder: &Path, arguments: &[&str]) -> String {
-    Command::new("git")
-        .args(arguments)
-        .current_dir(folder)
-        .output()
-        .ok()
-        .filter(|output| output.status.success())
-        .map(|output| String::from_utf8_lossy(&output.stdout).trim().to_owned())
-        .unwrap_or_default()
 }

@@ -8,8 +8,8 @@ use std::process::Command;
 use crate::guard::lexical_join;
 use crate::json::{self, Value};
 
-/// Git's output in a folder, trimmed; `None` when it cannot run or fails, its error printed to
-/// the hook's own error output.
+/// Git's output in a folder, trimmed; `None` when it cannot run or fails, its message dropped: a
+/// hook that exits 0 shows Claude no error output. The one Git call of the hooks (AUD-023).
 #[must_use]
 pub fn git(folder: &Path, arguments: &[&str]) -> Option<String> {
     let output = Command::new("git")
@@ -18,12 +18,10 @@ pub fn git(folder: &Path, arguments: &[&str]) -> Option<String> {
         .output()
         .ok()?;
 
-    if output.status.success() {
-        Some(String::from_utf8_lossy(&output.stdout).trim().to_owned())
-    } else {
-        eprint!("{}", String::from_utf8_lossy(&output.stderr));
-        None
-    }
+    output
+        .status
+        .success()
+        .then(|| String::from_utf8_lossy(&output.stdout).trim().to_owned())
 }
 
 /// Where a folder's checkout keeps its Git data, read from the files Git writes rather than from

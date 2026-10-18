@@ -3,7 +3,7 @@
 //! `PlainDate.from`); the same strings are accepted here, the same refused, as an error.
 
 use hooks::time::days_from_civil;
-use shared_files::date::civil_from_days;
+use shared_files::date::date_of_days;
 
 /// Milliseconds in a day.
 const DAY_MS: i64 = 86_400_000;
@@ -162,7 +162,7 @@ pub fn epoch_of(date: &str) -> Result<i64, String> {
 /// The UTC date of an instant, `YYYY-MM-DD`.
 #[must_use]
 pub fn iso_date(epoch: i64) -> String {
-    civil_from_days(epoch.div_euclid(DAY_MS))
+    date_of_days(epoch.div_euclid(DAY_MS))
 }
 
 /// A day written for a person: `2026-10-12`, or `not stated` for 0.

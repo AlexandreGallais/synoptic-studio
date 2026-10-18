@@ -220,6 +220,9 @@ fn the_library_file_is_the_one_the_library_scripts_open() {
         ))
     );
     assert_eq!(library_file(None, None), None);
+    // An empty home names no folder, as the library's server reads it (AUD-023: the two copies
+    // differed there).
+    assert_eq!(library_file(None, Some(String::new())), None);
     assert_eq!(
         library_file(Some(String::new()), Some("/home/a".into())),
         Some(PathBuf::from(

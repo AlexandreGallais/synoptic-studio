@@ -8,7 +8,8 @@ const MINUTE: i64 = 60 * SECOND;
 const HOUR: i64 = 60 * MINUTE;
 const DAY: i64 = 24 * HOUR;
 
-/// Days from 1970-01-01 to a date of the proleptic Gregorian calendar (H. Hinnant, `days_from_civil`).
+/// Days from 1970-01-01 to a date of the proleptic Gregorian calendar (`REF-HINNANT-DATES`,
+/// `days_from_civil`).
 #[must_use]
 pub fn days_from_civil(year: i64, month: i64, day: i64) -> i64 {
     let year = if month <= 2 { year - 1 } else { year };

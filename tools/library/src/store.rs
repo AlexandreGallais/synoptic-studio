@@ -4,19 +4,14 @@
 //! schema is the one `library-store.ts` wrote, so that a file written here is read by an older
 //! checkout's scripts and the reverse, without a migration.
 
-use std::env;
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 use rusqlite::types::ValueRef;
 use rusqlite::{Connection, OptionalExtension, Row, ToSql, params};
 
 use crate::chunks::Chunk;
 use crate::text;
-
-/// The variable naming the library's file. Not `LIBRARY_PATH`, the C toolchain's library search
-/// path, which Apple's `python3` sets to `/usr/local/lib` for the processes it starts (SP-023).
-pub const FILE_VARIABLE: &str = "AGENT_LIBRARY_FILE";
 
 /// A stored page and what it says about itself.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
@@ -76,33 +71,8 @@ const USES_VIEW: &str = "
   END;
 ";
 
-/// The library's file: the value of `AGENT_LIBRARY_FILE`, else a file of the user's data folder;
-/// `None` without either. An empty value counts as none.
-#[must_use]
-pub fn library_file(variable: Option<String>, home: Option<String>) -> Option<PathBuf> {
-    variable
-        .filter(|value| !value.is_empty())
-        .map(PathBuf::from)
-        .or_else(|| {
-            home.filter(|home| !home.is_empty()).map(|home| {
-                PathBuf::from(home)
-                    .join(".local")
-                    .join("share")
-                    .join("agent-library")
-                    .join("library.sqlite")
-            })
-        })
-}
-
-/// The library's file for this process: `AGENT_LIBRARY_FILE`, else the data folder of the home
-/// `HOME` names, or `USERPROFILE` on Windows.
-#[must_use]
-pub fn library_file_of_process() -> Option<PathBuf> {
-    library_file(
-        env::var(FILE_VARIABLE).ok(),
-        env::var("HOME").or_else(|_| env::var("USERPROFILE")).ok(),
-    )
-}
+/// The library's file, found as the hooks find it: one function for both (AUD-023).
+pub use hooks::pages::{FILE_VARIABLE, library_file, library_file_of_process};
 
 /// Brings a library made before EN-101 up to the schema: its `uses` table moved into
 /// `project_uses` with an empty project, then `uses` made a view of it.
