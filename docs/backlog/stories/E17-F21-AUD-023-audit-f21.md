@@ -81,7 +81,3 @@ F21.AC9, in `docs/backlog/features/E17-F21-agent-tools-in-rust.md`, to read (the
 ```markdown
 9. `check:all` fails, naming the lines, when a run changed a line of `.git/config` a test could break (`[core]`, `[user]`, `[commit]`, `[url]`, `[include]`, `[includeIf]`, `[extensions]`, the remotes' URLs; EN-113, AUD-023), and every Rust test that runs `git` starts it without the inherited `GIT_*` variables (EN-103).
 ```
-
-### Improvements
-
-| 2026-10-18 | AUD-023 | `tools/hooks` parses JSON with its own `hooks::json` while the library, the dependency checks and the release tool use `serde_json`, already reviewed (research note 0025 said the hooks would move to it): one parser for the workspace, in the next tooling pass | tool |
