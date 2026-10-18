@@ -185,7 +185,7 @@ Decided by the Product Owner on 2026-10-18.
 - [F22](../../backlog/features/E17-F22-the-release-from-the-merge-into-main.md), E17's last feature: EN-116 (the CI green on GitHub's runner), EN-117 (the release of ADR-0083), AUD-024, VAL-023; no checkpoint.
 - [ADR-0084](../../adr/0084-small-features-tests-first-and-a-linear-history.md), from E02: features of 2 to 4 stories, one at a time; `T1` the interface and its failing tests, `T2` the code; a linear history with the feature rebased with lease when `develop` moved; two agents per story as a trial on two stories; researchers on separate topics; a lighter main thread. Written into `AGENTS.md` (Work, Never), the project rules, the run skill, the worker brief, `docs/process/agile.md`, `docs/backlog/README.md`, the templates and `tests/backlog.test.ts`.
 - [ADR-0085](../../adr/0085-tool-incident-cards-tools-changed-at-an-epics-end.md), amending ADR-0074: a tool that fails is a card in [tool incidents](../tool-incidents.md), tools changed only at an epic's end; the nine cards moved there.
-- [F23](../../backlog/features/E02-F23-e17s-tool-incidents-fixed.md), E02's first feature, draft: EN-118 to EN-121, AUD-025, VAL-024; E02's closing stories NAM-003, REV-005 and RET-005 drafted, RET-005 holding what is parked until it.
+- [F23](../../backlog/features/E17-F23-the-path-of-a-story.md), E02's first feature, draft: EN-118 to EN-121, AUD-025, VAL-024; E02's closing stories NAM-003, REV-005 and RET-005 drafted, RET-005 holding what is parked until it.
 - The limit of three subagents kept (ADR-0072).
 - The improvement log from 113 rows to 32, the feedback log emptied into the habits sheet.
 
