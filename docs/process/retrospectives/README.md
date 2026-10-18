@@ -9,3 +9,4 @@ A retrospective reads `target/release/metrics --since <epic's first day>` ([metr
 | E01 | [E01-retrospective.md](./E01-retrospective.md) |
 | E14 | [E14-retrospective.md](./E14-retrospective.md) |
 | E15 | [E15-retrospective.md](./E15-retrospective.md) |
+| E17 | [E17-retrospective.md](./E17-retrospective.md) |
