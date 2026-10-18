@@ -80,3 +80,9 @@ The cards of E17 were decided at RET-004 ([record](./retrospectives/E17-retrospe
 - Used: `npm run fix` after VAL-023's checklist lines, as at VAL-022.
 - Failed: it rewrote `export type * from "./checklist-line"` into `export *` in `playground/checklists/index.ts`, a type-only re-export turned into a value one.
 - Instead: the line set back by hand; `tests/barrels.test.ts` passes.
+
+## 2026-10-19 — `mutate` on a Rust file, a number inside a comment
+
+- Used: `npm run mutate -- --all tools/worktree/src/lib.rs -- cargo test -q -p worktree`.
+- Failed: it changed `025` into `26` inside the doc comment `(AUD-025)` and reported it `SURVIVED`, a mutation of no code; its report of a Rust return also reads `→ undefined`.
+- Instead: the survivor read and recorded as a comment, no action.

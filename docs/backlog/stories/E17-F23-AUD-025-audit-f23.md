@@ -3,7 +3,7 @@ id: AUD-025
 epic: E17
 feature: F23
 title: Audit F23
-status: ready
+status: done
 points: 1
 ---
 
@@ -62,17 +62,3 @@ The `auditor` reviewed sections A to E alone, read-only, in the background (ADR-
 
 - The run skill's step 6 (`stop now if the next is VAL or REV`) and its scope end (`the next story is VAL or REV, which needs the Product Owner`) were left as they are: N5's decision named step 8 and the review step only, and a tooling feature's `VAL` is the agent's (ADR-0072). Whether the run stops before a tooling `VAL` is yours to word.
 - No rule of `docs/domain/` changed: for the done commit's footer, `Rule-docs: none affected, F23's audit fixes tooling only`.
-
-### Improvements
-
-| 2026-10-19 | AUD-025 | Allow `target/release/move-rows` in `.claude/settings.json` beside `backlog-status`, and list it in `docs/tooling/agent-tools.md`'s binaries the agent calls: each `done` commit asks for it now (N10) | tool |
-| 2026-10-19 | AUD-025 | One reader of a story id from a branch: `shared_files::shared::story_of` (any digits) and `worktree::story_of_branch` (three digits) read it with different rules | tool |
-| 2026-10-19 | AUD-025 | Split `tools/repo-tools/src/story_finish.rs` (1,009 lines, its unit tests inside) by role: the pull request's states, the rebase, the clean-up, the rows' refusal | tool |
-
-### Incidents
-
-#### 2026-10-19 — `mutate` on a Rust file, a number inside a comment
-
-- Used: `npm run mutate -- --all tools/worktree/src/lib.rs -- cargo test -q -p worktree`.
-- Failed: it changed `025` into `26` inside the doc comment `(AUD-025)` and reported it `SURVIVED`, a mutation of no code; its report of a Rust return also reads `→ undefined`.
-- Instead: the survivor read and recorded as a comment, no action.

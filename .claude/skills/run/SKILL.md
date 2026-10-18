@@ -23,7 +23,7 @@ Scope: $ARGUMENTS.
 3. Record the authorization in `docs/process/journal.md` on `develop`: the scope set, the date, the request in neutral words.
 4. The feature branch `feature/f<nn>-<topic>` exists on `origin`, or is created there from `develop`, once the previous feature merged (ADR-0084), without switching the main checkout; while it is open nothing is pushed to `develop`, the main thread's docs and log rows going to the feature branch: `git fetch origin`, then `git push origin origin/develop:refs/heads/feature/f<nn>-<topic>`. It is never rebased: `develop` enters it by a merge (ADR-0086).
 5. `/triage` if issues are open: present them at the next stop, act on none.
-6. List the scope's stories in delivery order; stop now if the next is `VAL` or `REV`. A story a business question of `docs/domain/README.md` blocks is parked, and the run starts with the next one independent of it.
+6. List the scope's stories in delivery order; stop now if the next is a library feature's `VAL` or a `REV`, which need the Product Owner (a tooling feature's `VAL` is the agent's, ADR-0072). A story a business question of `docs/domain/README.md` blocks is parked, and the run starts with the next one independent of it.
 
 ## The main thread
 
@@ -87,7 +87,7 @@ A push reaches the Product Owner away from the screen, so it is kept for what on
 
 A run stops only when it must, and says which in its message:
 
-- **its scope ends**: the time set has passed, or the end named is reached; the next story is `VAL` or `REV`, which needs the Product Owner;
+- **its scope ends**: the time set has passed, or the end named is reached; the next story is a library feature's `VAL` or a `REV`, which needs the Product Owner;
 - **a blocker it cannot get around** and no independent story left: a check still red after three attempts, a tool or an access missing, every story left parked, blocked, or depending on one that is;
 - **the Product Owner says stop**;
 - **the week's usage reaches 90 %**, so that the margin stays the Product Owner's own work until the week resets: `target/release/run-totals should-stop` prints `stop` and exits 1 once `sevenDay.usedPercent` of `.git/metrics/usage.json` reaches it, and lists the parked stories of the checkout it runs in.
