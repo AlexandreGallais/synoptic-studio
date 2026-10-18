@@ -1,6 +1,6 @@
 # ADR-0074 — The agent shapes its own method and tools, the Product Owner decides
 
-**Status**: Accepted (Product Owner, 2026-10-17, review of the ADRs, EN-094).
+**Status**: Accepted (Product Owner, 2026-10-17, review of the ADRs, EN-094). Amended by ADR-0085 (2026-10-18, RET-004): a tool that fails is a card, read first at the "method and tools" point; tools change only at an epic's end.
 
 ## Context
 

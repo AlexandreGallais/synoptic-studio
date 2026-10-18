@@ -2,7 +2,7 @@
 
 **Dates**: 2026-10-16 to 2026-10-18. **Story**: RET-004. **Participants**: Product Owner, Claude Code.
 
-E17 made the agent's checks and tools fast: four features in three days (a safe and cheap parallel run, the checks on Oxc, TypeScript 7 and Rust, a context diet for every agent, the agent's tools and the library server in Rust). ESLint, Prettier, TypeDoc, secretlint, Husky and release-please left; `check:all` went from 170–217 s to a median of about 73 s; the dev packages from 38 to 13; a story worker's first request from 38,897 to 10,562 tokens. The tooling it wrote is now larger than the library: 131,597 lines of Rust in 27 crates, against 15,096 lines of library code. This record holds the facts, the agent's account, every logged row and tool incident with a recommendation, and the Product Owner's method wishes of 2026-10-18 as proposals; the decisions are written once the Product Owner has answered.
+E17 made the agent's checks and tools fast: four features in three days (a safe and cheap parallel run, the checks on Oxc, TypeScript 7 and Rust, a context diet for every agent, the agent's tools and the library server in Rust). ESLint, Prettier, TypeDoc, secretlint, Husky and release-please left; `check:all` went from 170–217 s to a median of about 73 s; the dev packages from 38 to 13; a story worker's first request from 38,897 to 10,562 tokens. The tooling it wrote is now larger than the library: 131,597 lines of Rust in 27 crates, against 15,096 lines of library code. This record holds the facts, the agent's account, every logged row and tool incident with a recommendation, and the Product Owner's method wishes of 2026-10-18 as proposals, all adopted that day: the release from the merge into `main` (ADR-0083) with a CI green first (F22), small features with tests first and a linear history from E02 (ADR-0084), and the tools' failures as cards fixed at an epic's end (ADR-0085), E17's own fixed by F23, E02's first feature.
 
 ## 1. Facts
 
@@ -66,29 +66,29 @@ The lines to look at, and one the check does not read:
 
 The published site and the playground answer (HTTP 200, 2026-10-18); their pass by hand is left to the main thread with the Product Owner, a subagent having no browser.
 
-## 2. Logged items, to decide
+## 2. Logged items, decided
 
-Every row of the improvement log (I1–I113, in the file's order on 2026-10-18), of the feedback log (F1–F6), every tool incident card of the private records' `tool-incidents.md` (C1–C9, 2026-10-18) and the run's notes. The decisions are the Product Owner's, written once they have answered.
+Every row of the improvement log (I1–I113, in the file's order on 2026-10-18), of the feedback log (F1–F6), every tool incident card of the private records' `tool-incidents.md` (C1–C9, 2026-10-18, now in [tool incidents](../tool-incidents.md)) and the run's notes. Decided by the Product Owner on 2026-10-18, each proposal's recommendation adopted; the treated rows left the logs, 32 rows kept in the improvement log with their reason.
 
-| Theme | Items | Recommendation | Decision | Where it would go |
+| Theme | Items | Recommendation | Decision | Where it went |
 | --- | --- | --- | --- | --- |
-| Release | CI red on #259 (§1) | P1: a story that makes the three tests hold on GitHub's runner, before 0.3.0 | to decide | a story before the release |
-| Release | the Product Owner's tag idea; I17 | P2: the version from a tag; I17 closed, release-please gone | to decide | ADR superseding ADR-0079, a story |
-| Stories outside a feature | C1, C3, C4, C6; I50 | P8, story 1: `worktree-new`, `story-finish`, the backlog test and the shared rows accept a story attached to `develop`; the auto-merge itself stays parked (C3's merge, C7) | to decide | tooling feature |
-| Guard in a worktree | C2; I12, I22, I40, I87, I93, I103 | P8, story 2: one call printing a worktree's state (`git-sequences state`), read-only chains let through, the guard's text matchers on its word reader with AUD-023's cases, `mkdir …heavy.lock` refused, a URL in a commit message let through, a worker's write into the main checkout refused once its prompt names its worktree | to decide | tooling feature |
-| Reports | C5; I36, I72, I82, I83, I88, I91, I92, I110, I111; `epic-check` blind to the CI; the library's visits per project | P8, story 3: the status line drops the calls of ended agents, `metrics` names the command after `\|\| exit 9` and cuts its Findings per epic, `epic-check` closes `dropped` stories and reads the CI of the pull request into `main`, `session-report` carries the minute, `val-prepare` skips a struck criterion | to decide | tooling feature |
-| Builds and lanes | C8, C9; I51, I90, I97, I100, I106, I107, I112 | P8, story 4: the main checkout's binaries rebuilt after a pull, `check:rust` only when Rust changed and its coverage a lane of its own, the tests reading Inter held under load, a `bench` binary for the stories' measures | to decide | tooling feature |
-| Checks to add | I37, I54, I55, I56, I58, I60, I81, I99 | into P8's stories where they touch the same tool: `backlog:index --check` reaching the index tool and not the formatter, the cargo tools' versions, the editor's TypeScript path, the Rust coverage floor 93 → 95 %, `typeCheck` in `.oxlintrc.json`, `move-rows` naming the notes it leaves, one anchor slug for GitHub and the site, a test refusing `npm run <binary>` in the agent's pages | to decide | tooling feature |
-| Mutations | I16, I38, I46, I47 | `mutate` fails when nothing was tried, names the failing baseline, finds a file's own test; when a story next needs it | to decide | not now, with the next `AUD` that uses it |
-| Code debt of the tools and tests | I32, I68, I69, I101, I104, I105, I108 | one story-id reader, one JSON parser, one Semantic Versioning reader, a shared Git test helper, one reader of the tracked sources for the tests: in the next tooling epic's naming pass | to decide | not now, NAM of the next tooling epic |
-| Records | I86 | `records-save` copies only what changed since its last save (42 s for 1.9 GB today) | to decide | not now: 4 saves in E17 |
-| Library and product | I1–I10, I35, I41–I43, I109 | kept with their trigger, as at RET-003 | to decide | improvement log |
-| Oxc | I48, I66 | kept: checked at each epic's tooling pass, an upgrade of oxlint reads its new `correctness` and `suspicious` rules | to decide | improvement log |
-| Library server, worktrees | I44, I89 | not now: a library call takes 6 ms; no story ran `npm install` in a worktree since EN-073 | to decide | improvement log |
-| GitHub union merge | I13 | kept until a pull request shows it | to decide | improvement log |
-| Process lessons | I20, I27, I63, I64, I67, I70, I71 | closed: each is a rule or a habit already (`.claude/rules/tooling.md`, ADR-0070, the context diet of F20) | to decide | — |
-| Done during E17 | I11, I14, I15, I18, I19, I21, I23–I26, I28–I31, I33, I34, I39, I45, I49, I52, I53, I57, I59, I61, I62, I65, I69, I73–I80, I84, I85, I94–I96, I98, I102, I113 | closed: each row names the story that settled it, or the tool it named is gone (ESLint, Prettier, release-please, npm scripts of EN-115); I62's Stryker issue 6210 still open on 2026-10-14, its row kept in `dependencies.md` | to decide | — |
-| Method | the Product Owner's wishes a to d, the run's notes | P2 to P7 (§6) | to decide | ADRs, `docs/process/agile.md`, the run skill |
+| Release | CI red on #259 (§1) | P1: a story that makes the three tests hold on GitHub's runner, before 0.3.0 | adopted: the CI first | EN-116 (F22) |
+| Release | the Product Owner's tag idea; I17 | P2: the version from a tag; I17 closed, release-please gone | adopted: option B, 0.3.0 its first release; I17 closed | ADR-0083, EN-117 (F22) |
+| Stories outside a feature | C1, C3, C4, C6; I50 | P8, story 1: `worktree-new`, `story-finish`, the backlog test and the shared rows accept a story attached to `develop`; the auto-merge itself stays parked (C3's merge, C7) | adopted (P8) | EN-118 (F23), ADR-0085 |
+| Guard in a worktree | C2; I12, I22, I40, I87, I93, I103 | P8, story 2: one call printing a worktree's state (`git-sequences state`), read-only chains let through, the guard's text matchers on its word reader with AUD-023's cases, `mkdir …heavy.lock` refused, a URL in a commit message let through, a worker's write into the main checkout refused once its prompt names its worktree | adopted (P8), with the push with lease of a rebased feature | EN-119 (F23), ADR-0084 |
+| Reports | C5; I36, I72, I82, I83, I88, I91, I92, I110, I111; `epic-check` blind to the CI; the library's visits per project | P8, story 3: the status line drops the calls of ended agents, `metrics` names the command after `\|\| exit 9` and cuts its Findings per epic, `epic-check` closes `dropped` stories and reads the CI of the pull request into `main`, `session-report` carries the minute, `val-prepare` skips a struck criterion | adopted (P8) | EN-120 (F23) |
+| Builds and lanes | C8, C9; I51, I90, I97, I100, I106, I107, I112 | P8, story 4: the main checkout's binaries rebuilt after a pull, `check:rust` only when Rust changed and its coverage a lane of its own, the tests reading Inter held under load, a `bench` binary for the stories' measures | adopted (P8) | EN-121 (F23) |
+| Checks to add | I37, I54, I55, I56, I58, I60, I81, I99 | into P8's stories where they touch the same tool: `backlog:index --check` reaching the index tool and not the formatter, the cargo tools' versions, the editor's TypeScript path, the Rust coverage floor 93 → 95 %, `typeCheck` in `.oxlintrc.json`, `move-rows` naming the notes it leaves, one anchor slug for GitHub and the site, a test refusing `npm run <binary>` in the agent's pages | adopted (P8) | EN-121 (F23) |
+| Mutations | I16, I38, I46, I47 | `mutate` fails when nothing was tried, names the failing baseline, finds a file's own test; when a story next needs it | not now, as recommended | improvement log |
+| Code debt of the tools and tests | I32, I68, I69, I101, I104, I105, I108 | one story-id reader, one JSON parser, one Semantic Versioning reader, a shared Git test helper, one reader of the tracked sources for the tests: in the next tooling epic's naming pass | not now, as recommended | improvement log |
+| Records | I86 | `records-save` copies only what changed since its last save (42 s for 1.9 GB today) | not now, as recommended | improvement log |
+| Library and product | I1–I10, I35, I41–I43, I109 | kept with their trigger, as at RET-003 | kept (P11) | improvement log |
+| Oxc | I48, I66 | kept: checked at each epic's tooling pass, an upgrade of oxlint reads its new `correctness` and `suspicious` rules | kept (P11) | improvement log |
+| Library server, worktrees | I44, I89 | not now: a library call takes 6 ms; no story ran `npm install` in a worktree since EN-073 | not now, as recommended | improvement log |
+| GitHub union merge | I13 | kept until a pull request shows it | kept (P11) | improvement log |
+| Process lessons | I20, I27, I63, I64, I67, I70, I71 | closed: each is a rule or a habit already (`.claude/rules/tooling.md`, ADR-0070, the context diet of F20) | closed (P10) | — |
+| Done during E17 | I11, I14, I15, I18, I19, I21, I23–I26, I28–I31, I33, I34, I39, I45, I49, I52, I53, I57, I59, I61, I62, I65, I69, I73–I80, I84, I85, I94–I96, I98, I102, I113 | closed: each row names the story that settled it, or the tool it named is gone (ESLint, Prettier, release-please, npm scripts of EN-115); I62's Stryker issue 6210 still open on 2026-10-14, its row kept in `dependencies.md` | closed (P10) | — |
+| Method | the Product Owner's wishes a to d, the run's notes | P2 to P7 (§6) | adopted: P3 to P7 | ADR-0084, ADR-0085, `AGENTS.md`, the run skill, `docs/process/agile.md`, the backlog's templates |
 | Parked until RET-005 | story auto-merge into `develop` for agent stories (C3, C7); the permissions of the `story-finish` and `mutate` binaries; ADR-0082's option B; a configuration file for local paths such as the records' root | not proposed now (Product Owner, 2026-10-18) | parked | RET-005 |
 | Habits | F1–F6 | written as habits (§4), the rows leave the log | — | habits sheet |
 
@@ -96,7 +96,7 @@ Every row of the improvement log (I1–I113, in the file's order on 2026-10-18),
 
 | Side | Helped | Hurt |
 | --- | --- | --- |
-| Product Owner | to ask | to ask |
+| Product Owner | nothing added beyond their remarks of 2026-10-18 | features too large to validate in a day, tools fixed during the run, the main thread's context grown too large: their wishes of 2026-10-18, P3 to P9 |
 | Agent | the heavy lock and the agent limit held by the tools (no freeze in E17); the Rust tools by their binary (3 ms a hook); `page` and the library for one row or one section; `git-sequences` (Git calls per worker from a median of 12 to 4); the worker brief with the project rules preloaded | 176 refusals of chained Git commands; features of 17 to 28 stories, F19 alone 10 h 37 and 1,967 M tokens; tools fixed during the run, each fix a worktree, a merge and a rebuild; a CI red on `develop` → `main` unseen until the release; the main thread's context, grown by every merge and log move |
 
 ## 4. The agent's own review
@@ -146,7 +146,7 @@ The trial of three subagents (ADR-0063) was measured: three at once, the heavy l
 
 The agent's account (ADR-0074). E17 was the agent's own epic: it wrote, tested and validated its tools, and most of its time went into features far larger than a story worker can see whole. F19 took 28 stories and 10 h 37 to carry 265 lint rules into Rust; its stories were right-sized, the feature was not, and the Product Owner waited for one validation at its end. Tools fixed during the run cost more than their fixes: each needed a worktree, a merge, a rebuild of the main checkout's binaries and a rebase of every running story. What would go faster: smaller features, one at a time, the tools fixed together at the epic's end from cards; what would spend less: fewer reads by the main thread, merges and log moves done by agents; what would do better: tests written apart from the code, and a CI read before a release.
 
-The proposals, grouped for the questionnaire (at most 12 decisions). Each says what changes for the Product Owner.
+The proposals, grouped for the questionnaire (at most 12 decisions). Each says what changes for the Product Owner. The Product Owner adopted all eleven on 2026-10-18 as recommended: P6 as a trial on two stories of E02, measured against one worker; P8 as E02's first feature, F23; P1 and P2 as E17's last feature, F22, before 0.3.0.
 
 | # | Proposal | Recommendation | Evidence | What changes, for example |
 | --- | --- | --- | --- | --- |
@@ -179,7 +179,15 @@ The cost of B and C: a checkout of `v0.3.0` reads `0.0.0-development` in `packag
 
 ## 7. Changes adopted
 
-To write once the Product Owner has decided P1 to P11 and the rows of §2.
+Decided by the Product Owner on 2026-10-18.
+
+- [ADR-0083](../../adr/0083-the-release-made-by-the-merge-into-main-from-a-tag.md), superseding ADR-0079: the merge of `develop` into `main` makes the tag and the GitHub release, the version from the tags, no release branch nor version commit; 0.3.0 its first release, E17 closing at its publication.
+- [F22](../../backlog/features/E17-F22-the-release-from-the-merge-into-main.md), E17's last feature: EN-116 (the CI green on GitHub's runner), EN-117 (the release of ADR-0083), AUD-024, VAL-023; no checkpoint.
+- [ADR-0084](../../adr/0084-small-features-tests-first-and-a-linear-history.md), from E02: features of 2 to 4 stories, one at a time; `T1` the interface and its failing tests, `T2` the code; a linear history with the feature rebased with lease when `develop` moved; two agents per story as a trial on two stories; researchers on separate topics; a lighter main thread. Written into `AGENTS.md` (Work, Never), the project rules, the run skill, the worker brief, `docs/process/agile.md`, `docs/backlog/README.md`, the templates and `tests/backlog.test.ts`.
+- [ADR-0085](../../adr/0085-tool-incident-cards-tools-changed-at-an-epics-end.md), amending ADR-0074: a tool that fails is a card in [tool incidents](../tool-incidents.md), tools changed only at an epic's end; the nine cards moved there.
+- [F23](../../backlog/features/E02-F23-e17s-tool-incidents-fixed.md), E02's first feature, draft: EN-118 to EN-121, AUD-025, VAL-024; E02's closing stories NAM-003, REV-005 and RET-005 drafted, RET-005 holding what is parked until it.
+- The limit of three subagents kept (ADR-0072).
+- The improvement log from 113 rows to 32, the feedback log emptied into the habits sheet.
 
 ## 8. Playbook updates
 

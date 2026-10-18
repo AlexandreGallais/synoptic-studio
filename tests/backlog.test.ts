@@ -226,6 +226,35 @@ function parentStatuses(item: Item): ReadonlyMap<string, string> {
 /** Story kinds every feature needs: research spike, checkpoint, audit, validation (ADR-0020, ADR-0028). */
 const FRAME_PREFIXES = ["SP-", "CHK-", "AUD-", "VAL-"];
 
+/** The first small feature (ADR-0084): its research may come before its refinement, from a retrospective. */
+const FIRST_SMALL_FEATURE = 22;
+
+/** Story kinds every small feature needs: audit, validation (ADR-0084, decision 1). */
+const SMALL_FRAME_PREFIXES = ["AUD-", "VAL-"];
+
+/** Stories (`US`, `EN`) from which a small feature needs a checkpoint too (ADR-0084, decision 1). */
+const CHECKPOINT_FROM = 5;
+
+/**
+ * The story kinds a feature needs: the whole frame before ADR-0084; after it, an audit and a
+ * validation, and a checkpoint from five stories.
+ *
+ * @param stories - every story item
+ * @param feature - its id, `F22`
+ * @returns the id prefixes its stories must hold
+ */
+function framePrefixes(stories: readonly Item[], feature: string): readonly string[] {
+  if (Number(feature.slice(1)) < FIRST_SMALL_FEATURE) {
+    return FRAME_PREFIXES;
+  }
+
+  const built = stories.filter(
+    (story) => story.fields["feature"] === feature && /^(?:US|EN)-/u.test(story.fields["id"] ?? ""),
+  ).length;
+
+  return built < CHECKPOINT_FROM ? SMALL_FRAME_PREFIXES : [...SMALL_FRAME_PREFIXES, "CHK-"];
+}
+
 /** Story kinds every started epic needs: review, retrospective (ADR-0023). */
 const CLOSING_PREFIXES = ["REV-", "RET-"];
 
@@ -466,14 +495,16 @@ describe("backlog", () => {
     expect(mismatches.map((item) => item.file)).toEqual([]);
   });
 
-  it("frames every feature with a spike, a checkpoint, an audit and a validation (ADR-0020, ADR-0028)", () => {
+  it("frames every feature with a spike, a checkpoint, an audit and a validation, a small one with an audit and a validation (ADR-0020, ADR-0028, ADR-0084)", () => {
     const stories = items().filter((item) => item.folder === "stories");
     const features = [...new Set(stories.map((story) => story.fields["feature"] ?? ""))].filter(
       (feature) => feature !== "",
     );
 
     expect(
-      features.filter((feature) => !hasKinds(stories, ["feature", feature], FRAME_PREFIXES)),
+      features.filter(
+        (feature) => !hasKinds(stories, ["feature", feature], framePrefixes(stories, feature)),
+      ),
     ).toEqual([]);
   });
 

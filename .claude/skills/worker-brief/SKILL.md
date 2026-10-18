@@ -23,6 +23,7 @@ How a run's worker works one story in its own worktree. The `story-worker` and `
 
 ## Work
 
+- **Tests first** (ADR-0084): `T1` the interface and its tests from the criteria, seen failing, which stands for breaking each new test once; `T2` the code; the pre-push `check:all` runs on the head.
 - **One commit per task**, footer `Refs: <ID>.Tn` and the attribution lines, the message in a file of the scratch folder or a here-document (`-F -`), made by `target/release/git-sequences commit`.
 - **Before each commit**: `npm run fix`, which reports the type errors with the lint (EN-091), and the touched tests (`npx vitest run <paths>`, `cargo test -p <crate>`).
 - **Edge cases and mutations** (ADR-0064): no review checks a story, so its worker writes the story's edge cases into its tests and breaks each new test once on purpose to see it fail.

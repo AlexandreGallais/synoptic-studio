@@ -1,6 +1,6 @@
 # ADR-0079 — The release prepared on a release branch from `develop`, published by our own tool
 
-**Status**: Accepted (the agent, 2026-10-18, EN-112, from F21's decisions of 2026-10-17; the option chosen to be shown to the Product Owner). Supersedes ADR-0067, decisions 1 to 3: release-please's release pull request on `develop`, its merge by the Product Owner, and release-please's tag on `main`; decision 5, release-please's commit let through, goes with them. Decision 4 stays: after a release, `develop` follows `main`. Supersedes too ADR-0072's lines that restate ADR-0067 on the release.
+**Status**: Superseded by ADR-0083 (Product Owner, 2026-10-18, RET-004: the merge into `main` makes the tag, no release branch nor version commit; in force until EN-117 lands). Accepted (the agent, 2026-10-18, EN-112, from F21's decisions of 2026-10-17; the option chosen to be shown to the Product Owner). Supersedes ADR-0067, decisions 1 to 3: release-please's release pull request on `develop`, its merge by the Product Owner, and release-please's tag on `main`; decision 5, release-please's commit let through, goes with them. Decision 4 stays: after a release, `develop` follows `main`. Supersedes too ADR-0072's lines that restate ADR-0067 on the release.
 
 ## Context
 
