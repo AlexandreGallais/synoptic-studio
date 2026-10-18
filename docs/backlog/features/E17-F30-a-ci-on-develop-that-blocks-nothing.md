@@ -24,7 +24,7 @@ In delivery order.
 | --- | --- | --- | --- |
 | [EN-135](../stories/E17-F30-EN-135-the-develop-ci-started-by-the-auto-merge.md) | EN | The develop CI, started by the auto-merge | done |
 | [EN-136](../stories/E17-F30-EN-136-each-job-finds-its-tools.md) | EN | Each CI job finds the tools its scripts call | done |
-| [AUD-032](../stories/E17-F30-AUD-032-audit-f30.md) | AUD | Audit F30 | ready |
+| [AUD-032](../stories/E17-F30-AUD-032-audit-f30.md) | AUD | Audit F30 | done |
 | [VAL-031](../stories/E17-F30-VAL-031-validate-f30.md) | VAL | Validate F30 | ready |
 
 ## Feature plan

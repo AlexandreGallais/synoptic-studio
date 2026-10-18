@@ -1,6 +1,6 @@
 # ADR-0088 — One workflow per purpose, its trigger its only condition; the CI into `main` the only blocking one
 
-**Status**: Accepted (Product Owner, 2026-10-18, after 0.3.0's merge into `main`). Supersedes ADR-0087's decision 2: the Rust cache is no longer saved by `release.yml` on a push to `develop`, which the auto-merge's merges never start, but by the `develop` CI below. Supersedes, in ADR-0072 (The run, decision 1), "no workflow runs on … a push to `develop`", already narrowed by ADR-0087: a workflow may run on `develop`, never blocking. The rest of ADR-0072's decision 1 stands: the checks of work branches run locally, before the push. Implemented by F28 and F30 ([research note 0026](../research/notes/0026-the-tooling-features-of-2026-10-18.md)).
+**Status**: Accepted (Product Owner, 2026-10-18, after 0.3.0's merge into `main`). Supersedes ADR-0087's decision 2: the Rust cache is no longer saved by `release.yml` on a push to `develop`, which the auto-merge's merges never start, but by the `develop` CI below. Supersedes, in ADR-0072 (The run, decision 1), "no workflow runs on … a push to `develop`", already narrowed by ADR-0087: a workflow may run on `develop`, never blocking. The rest of ADR-0072's decision 1 stands: the checks of work branches run locally, before the push. Implemented by F28 and F30 ([research note 0026](../research/notes/0026-the-tooling-features-of-2026-10-18.md)). Its second consequence superseded by ADR-0090 (2026-10-19): the `develop` CI is a workflow of its own, `rust-caches.yml` kept for `main`.
 
 ## Context
 

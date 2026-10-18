@@ -244,17 +244,22 @@ describe("the Rust caches of the CI (EN-111)", () => {
 
     // The cargo tools installed on a missed key, the npm packages, whose `prepare` builds the
     // release binaries and which the formatter's tests run, every target's crates and the RustSec
-    // database the advisories read offline (EN-116, EN-126).
+    // database the advisories read offline (EN-116, EN-126). The install and the checks are named,
+    // the saves reading their outcome (REF-GH-CONTEXTS).
     expect(job).toContain(
-      `- if: steps.tools.outputs.cache-hit != 'true'\n        run: cargo install --locked cargo-llvm-cov@\${{ env.CARGO_LLVM_COV_VERSION }} cargo-deny@\${{ env.CARGO_DENY_VERSION }}\n`,
+      `- if: steps.tools.outputs.cache-hit != 'true'\n        id: install\n        run: cargo install --locked cargo-llvm-cov@\${{ env.CARGO_LLVM_COV_VERSION }} cargo-deny@\${{ env.CARGO_DENY_VERSION }}\n`,
     );
 
     expect(job).toContain("- run: npm ci\n      - run: cargo fetch --locked\n");
-    expect(job).toContain("- run: cargo deny fetch db\n      - run: npm run check:rust\n");
+
+    expect(job).toContain(
+      "- run: cargo deny fetch db\n      - id: checks\n        run: npm run check:rust\n",
+    );
+
     // The tests under coverage run even after a failing check, the run not cancelled
     // (REF-GH-EXPRESSIONS), so that a red check still compiles them.
     expect(job).toContain(`- if: \${{ !cancelled() }}\n        run: npm run rust:coverage\n`);
-    expect(coverage).toBeGreaterThan(job.indexOf("- run: npm run check:rust\n"));
+    expect(coverage).toBeGreaterThan(job.indexOf("  run: npm run check:rust\n"));
     // Saved after the tests, even when one failed, unless their key was hit (REF-GH-CACHE-SAVE).
     expect(job.indexOf("uses: actions/cache/save@")).toBeGreaterThan(coverage);
   });
@@ -274,12 +279,32 @@ describe("the Rust caches of the CI (EN-111)", () => {
     expect(job).not.toContain("restore-keys");
     expect(job).toContain("- id: tools\n        uses: actions/cache/restore@");
     expect(job).toContain("- id: build\n        uses: actions/cache/restore@");
+  });
 
-    for (const id of ["tools", "build"]) {
-      expect(job).toContain(
-        `- if: \${{ !cancelled() && steps.${id}.outputs.cache-hit != 'true' }}\n        uses: actions/cache/save@`,
-      );
-    }
+  it("[F30.AC1] saves in the develop CI the tools once installed, the build once checked, never half made", () => {
+    const job = jobOf(DEVELOP_CI, "rust");
+
+    // A saved cache never changes (REF-GH-CACHE): the tools saved after a failed install would
+    // miss a binary under their full key, every run then skipping the install and failing; a build
+    // saved after npm CI's or the checks' failure would lack their compilations for the life of
+    // its Cargo.lock. A step after a failure is skipped (REF-GH-EXPRESSIONS), so the checks passed
+    // means npm CI, the fetches and the install passed too; a failing test does not stop the save.
+    expect(job).toContain(
+      `- if: \${{ !cancelled() && steps.tools.outputs.cache-hit != 'true' && steps.install.outcome == 'success' }}\n        uses: actions/cache/save@`,
+    );
+
+    expect(job).toContain(
+      `- if: \${{ !cancelled() && steps.build.outputs.cache-hit != 'true' && steps.checks.outcome == 'success' }}\n        uses: actions/cache/save@`,
+    );
+  });
+
+  it("[F30.AC1] lets no run of the develop CI cancel another, nor a failing check pass", () => {
+    // A concurrency group cancels a pending run, or with `cancel-in-progress` the running one,
+    // whose caches then go unsaved; `continue-on-error` would turn a red check green.
+    expect(DEVELOP_CI).toContain("\njobs:\n");
+    expect(DEVELOP_CI).not.toMatch(/^\s*concurrency:/mu);
+    expect(DEVELOP_CI).not.toContain("cancel-in-progress");
+    expect(DEVELOP_CI).not.toContain("continue-on-error");
   });
 
   it("[F30.AC1] requires no check of the develop CI in main's ruleset", () => {

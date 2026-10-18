@@ -248,12 +248,47 @@ describe("the features' auto-merge starts the develop CI (ADR-0088, decision 5)"
     expect(run.calls).toStrictEqual([...attempt, ...attempt, dispatch]);
   });
 
-  it("[F30.AC1] fails naming the pull request, dispatching nothing, when it is not merged after its retries", () => {
-    // Five attempts, none reading MERGED, the last state empty: 5 × 2 calls and no dispatch.
+  it("[F30.AC1] fails naming the pull request, its auto-merge disabled, when it is not merged into develop after its retries", () => {
+    // Five attempts, none reading MERGED, the last state empty: 5 × 2 calls, no dispatch, then the
+    // auto-merge `--auto` enabled is disabled: GitHub's later merge, by the GITHUB_TOKEN's actor,
+    // would start no develop CI (REF-GH-TOKEN-TRIGGERS); a person's merge pushes and starts it.
     const run = merge("develop", {
       dispatchStatus: 0,
       mergeStatus: 0,
       states: ["OPEN", "OPEN", "OPEN", "OPEN"],
+    });
+
+    expect(run.status).toBe(1);
+
+    expect(run.calls).toStrictEqual([
+      ...Array.from({ length: 5 }, () => attempt).flat(),
+      `gh pr merge ${PR_URL} --disable-auto`,
+    ]);
+
+    expect(run.output).toContain(`${PR_URL} is not merged after 5 attempts`);
+    expect(run.output).toContain("auto-merge disabled");
+  });
+
+  it("[F30.AC1] still fails, naming the pull request, when its auto-merge cannot be disabled", () => {
+    // Every `gh pr merge` fails, `--disable-auto` included: the step still fails, and says so.
+    const run = merge("develop", {
+      dispatchStatus: 0,
+      mergeStatus: 1,
+      states: ["OPEN", "OPEN", "OPEN", "OPEN", "OPEN"],
+    });
+
+    expect(run.status).toBe(1);
+    expect(run.calls.at(-1)).toBe(`gh pr merge ${PR_URL} --disable-auto`);
+    expect(run.output).toContain(`The auto-merge of ${PR_URL} could not be disabled.`);
+    expect(run.output).toContain(`${PR_URL} is not merged after 5 attempts`);
+  });
+
+  it("[F30.AC1] keeps the auto-merge of a story not merged into its feature branch after its retries", () => {
+    // No develop CI follows a merge into a feature branch: GitHub's later merge is kept.
+    const run = merge("feature/f30-a-ci-on-develop-that-blocks-nothing", {
+      dispatchStatus: 0,
+      mergeStatus: 0,
+      states: ["OPEN", "OPEN", "OPEN", "OPEN", "OPEN"],
     });
 
     expect(run.status).toBe(1);

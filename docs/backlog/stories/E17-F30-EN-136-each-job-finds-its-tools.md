@@ -13,7 +13,7 @@ F24 split `check:all`'s lanes into jobs and checked that each lane runs once, no
 
 ## Acceptance criteria
 
-- Given each job of each workflow but `ci.yml`'s lanes (`rust-caches.yml`, `site.yml`, `release.yml`, `ci.yml`'s `history`), when `[F30.AC2]` reads it, then every tool called by its steps and the npm scripts they run is installed by a step of that job, or received as an artifact; a job lacking one fails naming the job and the tool.
+- Given each job of each workflow but `ci.yml`'s lanes (`rust-caches.yml`, `site.yml`, `release.yml`, `ci.yml`'s `history`, `develop-ci.yml`; since AUD-032 the lanes too, each by its matrix entry), when `[F30.AC2]` reads it, then every tool called by its steps and the npm scripts they run is installed by a step of that job, or received as an artifact; a job lacking one fails naming the job and the tool.
 - Given the `history` job of `ci.yml`, when `[F30.AC2]` reads it, then the `git-hooks` binary it runs is the artifact the lint lane uploads, under the same name and path, made executable; a job running it without the download fails naming the job.
 - Given a job that runs a program npm installs or Node.js itself, when none of its steps sets Node.js up and installs the packages, then the test fails naming the job and Node.js.
 - Given `[F28.AC3]`'s reading of the jobs, their steps and the cargo calls of the tests, when `[F30.AC2]` is written, then it extends that reading, never a copy of it.
