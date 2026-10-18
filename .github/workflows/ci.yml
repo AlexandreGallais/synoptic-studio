@@ -1,14 +1,13 @@
 # Quality gate of the pull requests into main: the only CI run (ADR-0038, docs/tooling/ci.md).
 # Work branches (stories, features, develop) are checked locally by the Git hooks. Each lane of
 # `check:all` is a job of its own, in parallel, each its own check on the pull request (EN-124).
-# Run by hand on a branch (`workflow_dispatch`), it times the lanes alone, cold or on the caches
-# (EN-111): the jobs that read a pull request are skipped.
+# Its trigger is its only condition (ADR-0088): every job runs on every pull request into main,
+# each step of a lane chosen by a field of the lane's matrix entry (EN-133).
 name: CI
 
 on:
   pull_request:
     branches: [main]
-  workflow_dispatch:
 
 permissions:
   contents: read
@@ -35,19 +34,27 @@ jobs:
       # Each lane runs to its end, whichever other fails (`REF-GH-JOB-PERMISSIONS`).
       fail-fast: false
       # The lanes of `check:all` (tools/repo-tools/src/check_all.rs), each its scripts in order; the
-      # library's build after the docs lane. One job per lane, as `[F24.AC1]` checks.
+      # library's build after the docs lane. One job per lane, as `[F24.AC1]` checks. The other
+      # fields choose the lane's steps, a field it lacks being empty (`REF-GH-CONTEXTS`): the
+      # cargo tools its scripts or tests call, and the artifact it keeps (`[F28.AC3]`, EN-133).
       matrix:
         include:
           - name: Lint and types
             scripts: lint
+            git-hooks: true
+          # cargo-deny for `[F19.AC9]`'s advisories test (EN-126).
           - name: TypeScript tests
             scripts: test
+            cargo-deny: true
+            test-report: true
           - name: Docs, playground and build
             scripts: docs:build playground:build build
           - name: Format, secrets and dependencies
             scripts: format:check lint:secrets deps:audit deps:unused deps:outdated
           - name: Rust
             scripts: check:rust
+            cargo-llvm-cov: true
+            cargo-deny: true
     steps:
       - uses: actions/checkout@v7
       # The caches are restored, never saved: a pull request's cache is scoped to its merge ref, so
@@ -57,8 +64,8 @@ jobs:
       # (EN-125, EN-132). Their keys are rust-caches.yml's.
       - id: toolchain
         run: echo "name=$(sed -n 's/^channel = "\(.*\)"$/\1/p' rust-toolchain.toml)-x86_64-unknown-linux-gnu" >> "$GITHUB_OUTPUT"
-      # The pinned toolchain, its Windows target and components, and the cargo tools: installed only
-      # when a key changes (`REF-GH-CACHE-RESTORE`), by the lanes running them: Rust, and the tests' cargo deny.
+      # The pinned toolchain, its Windows target and components, and the cargo tools: each tool
+      # installed only when the key changes (`REF-GH-CACHE-RESTORE`), by the lanes calling it.
       - id: tools
         uses: actions/cache/restore@v6
         with:
@@ -67,8 +74,10 @@ jobs:
             ~/.cargo/bin/cargo-llvm-cov
             ~/.cargo/bin/cargo-deny
           key: rust-tools-${{ runner.os }}-${{ hashFiles('rust-toolchain.toml') }}-cargo-llvm-cov-${{ env.CARGO_LLVM_COV_VERSION }}-cargo-deny-${{ env.CARGO_DENY_VERSION }}
-      - if: (matrix.scripts == 'check:rust' || matrix.scripts == 'test') && steps.tools.outputs.cache-hit != 'true'
-        run: cargo install --locked cargo-llvm-cov@${{ env.CARGO_LLVM_COV_VERSION }} cargo-deny@${{ env.CARGO_DENY_VERSION }}
+      - if: matrix.cargo-llvm-cov && steps.tools.outputs.cache-hit != 'true'
+        run: cargo install --locked cargo-llvm-cov@${{ env.CARGO_LLVM_COV_VERSION }}
+      - if: matrix.cargo-deny && steps.tools.outputs.cache-hit != 'true'
+        run: cargo install --locked cargo-deny@${{ env.CARGO_DENY_VERSION }}
       # The crates downloaded and the workspace's build: its dependencies compiled once per
       # Cargo.lock and toolchain, the workspace's own crates again (their checkout is newer).
       - uses: actions/cache/restore@v6
@@ -84,12 +93,12 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
+      # Every lane runs a program npm installs: oxlint, Vitest, VitePress, the formatter's oxfmt,
+      # and in the Rust lane the formatter's tests, which run oxfmt. Its `prepare` builds the
+      # release binaries every lane's tools run from, its log naming every crate compiled.
       - run: npm ci
-      # The release binaries every lane's tools run from, built in their own step so that its log
-      # names every crate compiled.
-      - run: npm run rust:build
       # The history job's binary, from the lint lane's build.
-      - if: matrix.scripts == 'lint'
+      - if: matrix.git-hooks
         uses: actions/upload-artifact@v7
         with:
           name: git-hooks
@@ -98,11 +107,12 @@ jobs:
           retention-days: 1
       # Every crate of Cargo.lock, for every target (`REF-CARGO-FETCH`): the build downloads only the
       # host's, but `cargo metadata`, which cargo-deny and `[F19.AC9]` run offline, reads them all;
-      # a cache of an older Cargo.lock lacks the new ones (EN-116).
-      - run: cargo fetch --locked
+      # a cache of an older Cargo.lock lacks the new ones (EN-116). By the lanes calling cargo-deny.
+      - if: matrix.cargo-deny
+        run: cargo fetch --locked
       # The RustSec advisories, whose database is fetched here, the pre-push hook reading its local
       # copy offline: by the Rust lane and the test lane, whose `[F19.AC9]` runs cargo deny (EN-126).
-      - if: matrix.scripts == 'check:rust' || matrix.scripts == 'test'
+      - if: matrix.cargo-deny
         run: cargo deny fetch db
       # The lane's scripts in turn, the first failing one ending the job; their output as it comes,
       # the tests file by file, a failing test annotated at its line (`REF-VITEST-REPORTERS`).
@@ -112,7 +122,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           # Test report of the version, attached to its GitHub release by release.yml (ADR-0027).
           VITEST_JUNIT: test-report.xml
-      - if: matrix.scripts == 'test'
+      - if: matrix.test-report
         uses: actions/upload-artifact@v7
         with:
           name: test-report
@@ -121,7 +131,6 @@ jobs:
 
   history:
     name: Commit messages and branch name
-    if: ${{ github.event_name == 'pull_request' }}
     needs: lanes
     runs-on: ubuntu-latest
     steps:
@@ -143,7 +152,6 @@ jobs:
 
   dependencies:
     name: Dependency review
-    if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
