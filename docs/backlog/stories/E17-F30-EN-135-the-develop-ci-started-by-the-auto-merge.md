@@ -3,7 +3,7 @@ id: EN-135
 epic: E17
 feature: F30
 title: The develop CI, started by the auto-merge
-status: ready
+status: done
 points: 3
 ---
 
