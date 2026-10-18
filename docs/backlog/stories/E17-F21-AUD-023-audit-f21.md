@@ -23,9 +23,9 @@ Audit F21 in depth and the project in breadth, following [audit.md](../../conven
 
 One task = one commit, referenced as `AUD-023.Tn`.
 
-- [ ] T1 — A. Independent review by the `auditor` subagent; criteria traced, mutation spot-checks (3 h)
-- [ ] T2 — B to E. Sources, crates and licences, duplicates, consistency (2 h)
-- [ ] T3 — F, G. Quality gates and times; findings table (1 h)
+- [x] T1 — A. Independent review by the `auditor` subagent; criteria traced, mutation spot-checks (3 h)
+- [x] T2 — B to E. Sources, crates and licences, duplicates, consistency (2 h)
+- [x] T3 — F, G. Quality gates and times; findings table (1 h)
 
 ## Findings
 
@@ -56,6 +56,12 @@ One task = one commit, referenced as `AUD-023.Tn`.
 | E3, `docs/tooling/agent.md` | said `guard-bash` refuses `git -C`, which no code does | `rg "git -C" tools/hooks` | fixed (`dd942ec9`): the claim removed, the row rewritten |
 | E3, `CLAUDE.md` and `.claude/rules/tooling.md` | the guard's list lacks pushes to `main` and `develop`; the rule says the guard reads a command inside `-m "…"`, no longer true |  | for the main thread, below: agent configuration |
 | A4, `npm run mutate` on `guard.rs`, `forbidden.rs`, `shell.rs`, `check_all.rs` (`-- cargo test -q -p hooks -p repo-tools`) | 14 caught, 1 survived; the four `return … → undefined` only fail to compile in Rust, so 10 of 11 that run are caught | `forbidden.rs:25` `DEPTH` 8 → 9 survived | no action: the depth only stops a runaway recursion of wrappers; nine nested (`eval eval …`) is no command an agent writes, and a test would pin the limit, not a behaviour |
+| AC3, crate rows of `docs/tooling/dependencies.md` | the five crates F21 added (`rmcp`, `tokio`, `rusqlite`, `serde_json`, `regex`) held their exact version, publication date, licence and release notes, not their age when added; `oxc_syntax` (EN-109) held none of them | `git log -S` on `Cargo.toml`: all added on 2026-10-18 | fixed: each row states its age that day (13, 15, 71, 8, 95 days); `oxc_syntax` 0.153.0 of 2026-10-05, 13 days, MIT, its notes read (`REF-OXC-CRATES-0153`) |
+| AC3, `cargo deny`, `NOTICE`, `THIRD-PARTY-LICENSES.md` | no advisory (`rust:advisories` in the pre-push `check:all`, green); every port named in a module (`lint-staged`, `@commitlint/*`, `conventional-commits-parser`, `conventional-changelog-conventionalcommits`, `es-toolkit`, `semver`, `secretlint`, `@secretlint/*`, `structured-source`) has its entry; `npm-check-updates`, `knip` and release-please were written anew, their modules say so | `tests/third-party-licences.test.ts` green | none needed |
+| AC4, each tool's recorded uses (`target/release/metrics`, Tools) against its story's after | not slower: `guard-bash` 0 ms (2.9 stated), `track-tool-call` 0 (3.0), `log-tool-call` 2 (3.0), `page` 0 (3.2), `replace` 0 (7), `backlog-status` 172 (172), the library's server 1, 6, 6 ms (0.7, 6.6, 6.6) and command line 4 to 10 ms (5.7 to 11.3), `git-hooks commit-msg` 12 (23.7), `branch` 4 (12.8), `install` 21 (21.4), `activity` 135 (125 to 138), `check:all` 70 s (74.6 s, EN-113). A record counts the tool's work, not its process start, so it reads lower than a timer around the process | `.git/metrics/tool-uses.jsonl` of 2026-10-18 | none |
+| AC4, the ones above their figure | `dependencies outdated` 1.7 s against 1.48 s, the network taking 1.27 s of it; `dependencies unused` 111 to 209 ms after EN-109's last change against 120; `session-state` 56 and 108 ms, its two uses during EN-104 itself, against 25.4; `worktree-new` 44.2 s for this story's worktree against 15.7 s seeded, during a `check:all` of the main checkout, its only use since the seeding (`6d851a23`) | the same file | no action: within the load and the network, or no use since the final version; `worktree-new` and `session-state` to read again at RET-004 |
+| G, for NAM-002 | 25 `Command::new("git")` calls in 19 files left across the binaries (`format`, `deps`, `heavy-lock`, `metrics`, `run-totals`, `records-save`, `branches-clean`, `story-finish`, `secret-scan`, `worktree-new`, `refuse-shared-files`, `check-rule-docs`…), each crate its own; `hooks::json` beside `serde_json`; the text matchers of `guard.rs` kept for the worktree's forms (`after_spaces`, `starts_with_word`…), which the word reader of `shell.rs` could serve | `rg 'Command::new\("git"\)' tools/*/src` | for NAM-002's tooling pass |
+| G, for E02 | nothing of the library: F21 changed no file of `src/`; what E02's stories meet is the guard's new refusals (a push to `main` or `develop`, the current branch's too) and the release binaries allowed by name |  | nothing to prepare |
 | H, size | `tools/hooks` grew by `forbidden.rs` (675 lines) and `shell.rs` (352); `guard.rs` 818 | `wc -l` | nothing yet |
 | H, tools | the "considered for later" rows' triggers (first npm publication, a stable API, stryker-js 6210) have not happened | `docs/tooling/dependencies.md` | nothing yet |
 | H, fitness functions | the settings' permissions and the guard's fail-closed handler are now tests (`settings.rs`); no Rust test starting Git by itself is one (`test-support`) |  | done in this audit |
@@ -65,12 +71,16 @@ One task = one commit, referenced as `AUD-023.Tn`.
 
 ## For the main thread
 
-Two lines of the agent's configuration, which a story's worker leaves to the main thread:
+Two lines of the agent's configuration, left to the main thread: a subagent does not change `CLAUDE.md` nor `.claude/rules/` on another agent's request, which is no consent of the Product Owner's:
 
 - `CLAUDE.md`, the `guard-bash` sentence: add "and pushes to `main` or `develop`" after "force pushes without lease (`+branch` included)".
 - `.claude/rules/tooling.md`, the `guard-bash` bullet, to read: "The `guard-bash` hook skips the bodies of here-documents, which are data, and reads each command word by word as the shell does: a guarded command inside a quoted text goes through (`-m "… -n …"`), unless a shell runs that text (`bash -c`, `eval`, `$(…)`), whose commands are judged too (AUD-023)."
 
-F21.AC9 names `[core]`, `[user]`, `[commit]` and the remotes' URLs; the check now also guards `[url]`, `[include]`, `[includeIf]` and `[extensions]` (`6e093809`): the feature file is the main thread's to align, if wanted.
+F21.AC9, in `docs/backlog/features/E17-F21-agent-tools-in-rust.md`, to read (the check now guards more sections, `6e093809`):
+
+```markdown
+9. `check:all` fails, naming the lines, when a run changed a line of `.git/config` a test could break (`[core]`, `[user]`, `[commit]`, `[url]`, `[include]`, `[includeIf]`, `[extensions]`, the remotes' URLs; EN-113, AUD-023), and every Rust test that runs `git` starts it without the inherited `GIT_*` variables (EN-103).
+```
 
 ### Improvements
 
