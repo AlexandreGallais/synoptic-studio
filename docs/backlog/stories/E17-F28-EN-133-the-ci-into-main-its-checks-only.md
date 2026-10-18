@@ -3,7 +3,7 @@ id: EN-133
 epic: E17
 feature: F28
 title: The CI into main, its checks only
-status: ready
+status: done
 points: 2
 ---
 
