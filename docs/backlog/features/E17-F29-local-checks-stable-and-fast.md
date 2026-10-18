@@ -2,7 +2,7 @@
 id: F29
 epic: E17
 title: The local checks stable and fast
-status: ready
+status: done
 ---
 
 # E17 · F29 — The local checks stable and fast
@@ -27,7 +27,7 @@ In delivery order.
 | [EN-130](../stories/E17-F29-EN-130-the-rust-lane-only-when-rust-changed.md) | EN | The Rust lane only when Rust changed, its coverage a lane | done |
 | [EN-131](../stories/E17-F29-EN-131-binaries-rebuilt-after-a-pull.md) | EN | The binaries rebuilt after a pull | done |
 | [AUD-031](../stories/E17-F29-AUD-031-audit-f29.md) | AUD | Audit F29 | done |
-| [VAL-030](../stories/E17-F29-VAL-030-validate-f29.md) | VAL | Validate F29 | ready |
+| [VAL-030](../stories/E17-F29-VAL-030-validate-f29.md) | VAL | Validate F29 | done |
 
 ## Feature plan
 
