@@ -9,7 +9,7 @@ How the project is built, checked, documented, versioned and released, and how t
 | [versions-and-security.md](./versions-and-security.md) | latest versions, upgrades, vulnerabilities |
 | [git-workflow.md](./git-workflow.md) | branches, pull requests, commits, hooks |
 | [ci.md](./ci.md) | the one CI into `main`, rulesets, repository settings |
-| [releases.md](./releases.md) | versions, changelog and GitHub releases by `tools/release` |
+| [releases.md](./releases.md) | the features' texts, the version from the tags and the GitHub release by a button, by `tools/release` |
 | [documentation-site.md](./documentation-site.md) | VitePress site, API pages, playground |
 | [agent.md](./agent.md) | the agent's configuration: files, skills, agent types and models, hooks, parallel sessions |
 | [agent-tools.md](./agent-tools.md) | the agent's own tools, the Rust workspace, the shared files |

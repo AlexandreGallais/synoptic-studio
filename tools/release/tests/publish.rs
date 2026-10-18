@@ -2,15 +2,15 @@
 //! and the commits since, the GitHub release made on `main`'s head with the bodies of the pull
 //! requests merged since that tag joined and the test report of the last one's CI, no commit nor
 //! tag made by Git; nothing done without a commit since the tag; a release of tooling only a
-//! patch with its notice; refused for a body that breaks a rule, two notices, a head that is not a
-//! merge, a pull request without a successful CI run. GitHub is played by a fake: nothing here
-//! tags nor releases the real repository.
+//! patch with its notice; the body of a Dependabot pull request left out (AUD-024); refused for a
+//! body that breaks a rule, two notices, notes that disagree with the commits (AUD-024), a head
+//! that is not a merge, a pull request without a successful CI run. GitHub is played by a fake:
+//! nothing here tags nor releases the real repository.
 
 use std::cell::RefCell;
 use std::fs;
 use std::path::PathBuf;
 
-use release::draft::NO_CHANGE_NOTICE;
 use release::publish::{Published, publish};
 
 /// A folder of its own, removed when the test ends.
@@ -213,21 +213,137 @@ fn f22_ac3_does_nothing_without_a_commit_since_the_last_tag() {
     assert!(!out.0.exists());
 }
 
+/// The notice of no change, copied by hand from `docs/tooling/releases.md` (How the draft is
+/// made), not taken from the code it tests.
+const NOTICE: &str =
+    "_No change to the library nor the playground: documentation and tooling only._";
+
+/// Commits of the tooling and the docs only, which no user of the library sees.
+fn tooling_only() -> String {
+    record('1', "feat(tooling): a status line", "") + &record('2', "docs(docs): log the run", "")
+}
+
 #[test]
 fn f22_ac3_releases_tooling_only_as_a_patch_with_its_notice() {
     let out = folder("tooling");
-    let tooling = record('1', "feat(tooling): a status line", "")
-        + &record('2', "docs(docs): log the run", "");
-    let notice = format!("{NO_CHANGE_NOTICE}\n\n---\n\nThe evidence.");
-    let fake = Fake::new(on_main("v0.2.0", &tooling, [&notice, NO_CHANGE_NOTICE]));
+    let evidence = format!("{NOTICE}\r\n\r\n---\r\n\r\nThe evidence.");
+    let fake = Fake::new(on_main("v0.2.0", &tooling_only(), [&evidence, NOTICE]));
 
+    // A feat of the tooling raises nothing: 0.2.0 → 0.2.1.
     assert_eq!(
         published(&fake, &out),
         Ok(Published::Released("v0.2.1".to_owned()))
     );
     assert_eq!(
         fs::read_to_string(out.0.join("notes.md")).unwrap(),
-        format!("{NO_CHANGE_NOTICE}\n")
+        format!("{NOTICE}\n")
+    );
+}
+
+#[test]
+fn f22_ac3_refuses_notes_that_disagree_with_the_commits() {
+    let out = folder("disagree");
+    let released = |commits: &str, bodies: [&str; 2]| {
+        let fake = Fake::new(on_main("v0.2.0", commits, bodies));
+        let result = published(&fake, &out);
+
+        assert!(
+            !fake
+                .calls
+                .borrow()
+                .iter()
+                .any(|call| call.starts_with("gh release")),
+            "{:?}",
+            fake.calls.borrow()
+        );
+        result
+    };
+
+    // Tooling only, but #21's body lists a change: the notes would say what no commit did.
+    assert_eq!(
+        released(&tooling_only(), [BODY_21, NOTICE]),
+        Err(
+            "pull request #21 lists changes, but no commit since v0.2.0 changes the library nor \
+             the playground: write the notice of no change in its body (docs/tooling/releases.md)"
+                .to_owned()
+        )
+    );
+    // A feat of the library, but no body lists a change: a minor version with empty notes.
+    let refused = "commits since v0.2.0 change the library or the playground, but no pull \
+                   request's body lists a change: write the features' texts in the review's body \
+                   (docs/tooling/releases.md)"
+        .to_owned();
+    assert_eq!(
+        released(&a_feature(), [NOTICE, NOTICE]),
+        Err(refused.clone())
+    );
+    assert_eq!(
+        released(&a_feature(), ["_Read the guide._", NOTICE]),
+        Err(refused)
+    );
+}
+
+/// The merges of `main` after the tag with Dependabot's security update #22 the latest, then the
+/// reviews #21 and #20.
+const WITH_DEPENDABOT: &str = "m0\u{1f}p0 q0\u{1f}Merge pull request #22 from o/dependabot/cargo/regex-1.11.1\u{1e}\n\
+     m1\u{1f}p1 q1\u{1f}Merge pull request #21 from o/develop\u{1e}\n\
+     m2\u{1f}p2 q2\u{1f}Merge pull request #20 from o/develop\u{1e}\n";
+
+/// Dependabot's body, which `release check` refuses: a paragraph, then details.
+const DEPENDABOT_BODY: &str = "Bumps [regex](https://github.com/rust-lang/regex) from 1.11.0 to \
+                               1.11.1.\n<details>\n<summary>Commits</summary>\n</details>";
+
+/// Dependabot's commit, outside Conventional Commits.
+fn dependabot() -> String {
+    record(
+        '3',
+        "Bump regex from 1.11.0 to 1.11.1",
+        "Signed-off-by: dependabot[bot] <support@github.com>\n",
+    )
+}
+
+#[test]
+fn f22_ac2_leaves_out_the_body_of_a_dependabot_pull_request() {
+    let with = |commits: &str, merges: &str| {
+        let mut answers = on_main("v0.2.0", commits, [BODY_21, BODY_20]);
+
+        answers.insert(0, answer("git log --first-parent", Ok(merges.to_owned())));
+        answers.insert(0, answer("gh pr view 22", Ok(DEPENDABOT_BODY.to_owned())));
+        Fake::new(answers)
+    };
+    let out = folder("dependabot");
+    let fake = with(&(dependabot() + &a_feature()), WITH_DEPENDABOT);
+
+    // Its commit is no feat: the review's feat alone gives 0.3.0, its notes #21's and #20's.
+    assert_eq!(
+        published(&fake, &out),
+        Ok(Published::Released("v0.3.0".to_owned()))
+    );
+    assert!(
+        !fake
+            .calls
+            .borrow()
+            .iter()
+            .any(|call| call.starts_with("gh pr view 22")),
+        "{:?}",
+        fake.calls.borrow()
+    );
+    assert_eq!(
+        fs::read_to_string(out.0.join("notes.md")).unwrap(),
+        "### Added\n\n- Choose a text's colors ([#12](https://github.com/o/r/pull/12))\n\n\
+         ### Fixed\n\n- Refuse a NaN ([#11](https://github.com/o/r/pull/11))\n"
+    );
+
+    // Dependabot's alone since the tag: a patch, its notes the notice of no change.
+    let alone = "m0\u{1f}p0 q0\u{1f}Merge pull request #22 from o/dependabot/npm_and_yarn/vite-7.1.2\u{1e}\n";
+    let only = with(&dependabot(), alone);
+    assert_eq!(
+        published(&only, &out),
+        Ok(Published::Released("v0.2.1".to_owned()))
+    );
+    assert_eq!(
+        fs::read_to_string(out.0.join("notes.md")).unwrap(),
+        format!("{NOTICE}\n")
     );
 }
 

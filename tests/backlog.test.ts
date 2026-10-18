@@ -577,20 +577,20 @@ describe("backlog", () => {
     ).toEqual([]);
   });
 
-  it("asks no epic for a closing and accepts none since ADR-0086: no new naming pass nor retrospective", () => {
+  it("[F22.AC5] asks no epic for a closing and accepts none since ADR-0086: no new naming pass nor retrospective", () => {
     const closings = items().filter((item) => item.folder === "stories" && isNewClosing(item));
 
     expect(closings.map((item) => item.file)).toEqual([]);
   });
 
-  it("keeps no template of an epic's closing, and the review's template holds a return's review (ADR-0086)", () => {
+  it("[F22.AC5] keeps no template of an epic's closing, and the review's template holds a return's review (ADR-0086)", () => {
     const review = readFileSync(join(BACKLOG, "_review.md"), "utf8");
 
     expect(CLOSING_TEMPLATES.filter((file) => existsSync(join(BACKLOG, file)))).toEqual([]);
     expect(review).toContain("since the last merge into `main`");
   });
 
-  it("holds at most 4 stories in a small feature (ADR-0084, decision 1)", () => {
+  it("[F22.AC5] holds at most 4 stories in a small feature (ADR-0084, decision 1)", () => {
     const stories = items().filter((item) => item.folder === "stories");
     const features = [...new Set(stories.map((story) => story.fields["feature"] ?? ""))].filter(
       (feature) => feature !== "" && isSmall(feature),
@@ -606,7 +606,7 @@ describe("backlog", () => {
     expect(large).toEqual([]);
   });
 
-  it("holds at most 3 tasks in a story of a small feature or a return's review (EN-123)", () => {
+  it("[F22.AC5] holds at most 3 tasks in a story of a small feature or a return's review (EN-123)", () => {
     const large = items().filter(
       (item) =>
         item.folder === "stories" &&

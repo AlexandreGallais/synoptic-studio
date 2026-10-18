@@ -153,7 +153,7 @@ function checkAdvisories(metadataPath: string): {
 
 describe("the advisories of the Rust crates (EN-069)", () => {
   it(
-    "[F19.AC9] fails on a crate with a known advisory planted in a copy, naming it",
+    "[F19.AC9] [F22.AC1] fails on a crate with a known advisory planted in a copy, naming it",
     { timeout: DENY_TIMEOUT },
     () => {
       const metadata = workspaceMetadata();

@@ -21,7 +21,7 @@ ADR-0086, decided by the Product Owner on 2026-10-18 during F22's run and revise
 ## Tasks
 
 - [x] T1 — ADR-0086, the backlog of F22 rewritten on it (main thread, 2026-10-18; revised the same day)
-- [ ] T2 — `story-automerge.yml` by a merge commit into a feature branch and into `develop`, `worktree-new` from the feature branch, tests first (1 h)
-- [ ] T3 — The run skill, the worker brief, `project-rules`, `AGENTS.md`, `CLAUDE.md` and `docs/tooling/git-workflow.md` on ADR-0086 (1 h)
+- [x] T2 — `story-automerge.yml` by a merge commit into a feature branch and into `develop`, `worktree-new` from the feature branch, tests first (1 h)
+- [x] T3 — The run skill, the worker brief, `project-rules`, `AGENTS.md`, `CLAUDE.md` and `docs/tooling/git-workflow.md` on ADR-0086 (1 h)
 
 One task = one commit, referenced as `EN-122.T1` in the commit footer.

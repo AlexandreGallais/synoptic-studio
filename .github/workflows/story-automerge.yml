@@ -1,6 +1,6 @@
 # Autonomous runs (ADR-0028, ADR-0045, ADR-0086): merges, always by a merge commit, a pull request
 # labeled `autonomous` — a story into its feature branch (`feature/f22-…`), or into `develop` a
-# feature branch or a review (`…/rev-…`, ADR-0086, decision 8). Their checks ran
+# feature branch or a review (`…/rev-…`, ADR-0086, decision 4). Their checks ran
 # locally before the push (pre-push hook, `check:all`): no CI runs on them. Nothing reaches `main`
 # this way: the Product Owner merges it after each review. The agent never merges; removing the
 # label before the merge stops it.

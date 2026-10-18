@@ -51,7 +51,7 @@ List the sources and questions the next feature will need: they feed its researc
 
 ## H. Light evolvability check
 
-The six questions of the [evolvability review](../process/) in one line each (size, tools, fitness functions, patterns, agent configuration, process). What deserves action goes to the [improvement log](../process/improvements.md), treated at the epic retrospective (ADR-0023).
+The six questions of the [evolvability review](../process/) in one line each (size, tools, fitness functions, patterns, agent configuration, process). What deserves action goes to the [improvement log](../process/improvements.md), treated at the method's point of the next review, held at each return of the Product Owner (ADR-0086).
 
 ## Findings table (in the `AUD` story)
 
