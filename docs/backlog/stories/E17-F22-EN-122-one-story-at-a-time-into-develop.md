@@ -25,10 +25,3 @@ ADR-0086, decided by the Product Owner on 2026-10-18 during F22's run and revise
 - [ ] T3 — The run skill, the worker brief, `project-rules`, `AGENTS.md`, `CLAUDE.md` and `docs/tooling/git-workflow.md` on ADR-0086 (1 h)
 
 One task = one commit, referenced as `EN-122.T1` in the commit footer.
-
-## For the main thread
-
-### Journal
-
-- `#run` The Product Owner started an autonomous run on F22 (`/run F22`) on 2026-10-18: F22 set `in-progress`, its stories `ready`; F22 is a tooling feature, validated by the agent (ADR-0072).
-- `#decision` ADR-0086, decided by the Product Owner during the run, superseding ADR-0083 and parts of ADR-0084: the parallel work spent the week's usage too fast, in rebases and merges done again; so one agent at a time, in the background so that the chat stays free; a feature branch per feature from `develop`, every merge a merge commit (story → feature, feature → `develop`); a review at each return of the Product Owner, a feature under way finished first, then a `REV` from `develop` (naming, tool fixes, method, docs) and `develop` → `main`, which deploys the site only, epics losing their closing (EN-123); also superseding parts of ADR-0023, ADR-0049 and ADR-0085; the release made by a button of GitHub's Actions tab, its version from the tags, its notes the features' texts, `CHANGELOG.md` deleted. F22 rewritten: EN-122 first, then EN-116, EN-117 on the button, AUD-024, VAL-023, on `feature/f22-release-by-a-button`.
