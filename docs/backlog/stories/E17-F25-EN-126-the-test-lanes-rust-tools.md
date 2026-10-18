@@ -3,7 +3,7 @@ id: EN-126
 epic: E17
 feature: F25
 title: The test lane's Rust tools
-status: ready
+status: done
 points: 1
 ---
 
@@ -17,7 +17,7 @@ points: 1
 
 ## Tasks
 
-- [ ] T1 — The test of `ci.yml`, failing (main thread)
-- [ ] T2 — `ci.yml`'s two conditions (main thread)
+- [x] T1 — The test of `ci.yml`, failing (main thread)
+- [x] T2 — `ci.yml`'s two conditions (main thread)
 
 One task = one commit, referenced as `EN-126.T1` in the commit footer.

@@ -297,12 +297,21 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
     );
   });
 
-  it("[F19.AC9] fetches the advisory database in the CI's Rust lane before its scripts", () => {
+  it("[F19.AC9] [F25.AC1] fetches the advisory database in the lanes running cargo deny, before their scripts", () => {
     const workflow = readFileSync(join(ROOT, ".github", "workflows", "ci.yml"), "utf8");
 
-    // The Rust lane, the one running `cargo deny`, fetches it just before the lane's step (EN-124).
+    // `cargo deny` runs in the Rust lane and in the test lane, by `[F19.AC9]`'s advisories test
+    // (EN-126): both fetch the database just before the lane's step.
     expect(workflow).toMatch(
-      /- if: matrix\.scripts == 'check:rust'\n {8}run: cargo deny fetch db\n(?: {6}#.*\n)* {6}- run: for script in \$SCRIPTS; do npm run "\$script"; done\n/u,
+      /- if: matrix\.scripts == 'check:rust' \|\| matrix\.scripts == 'test'\n {8}run: cargo deny fetch db\n(?: {6}#.*\n)* {6}- run: for script in \$SCRIPTS; do npm run "\$script"; done\n/u,
+    );
+  });
+
+  it("[F25.AC1] installs cargo-deny on a missed tools key in the lanes running it", () => {
+    const workflow = readFileSync(join(ROOT, ".github", "workflows", "ci.yml"), "utf8");
+
+    expect(workflow).toMatch(
+      /- if: \(matrix\.scripts == 'check:rust' \|\| matrix\.scripts == 'test'\) && steps\.tools\.outputs\.cache-hit != 'true'\n {8}run: cargo install --locked /u,
     );
   });
 
