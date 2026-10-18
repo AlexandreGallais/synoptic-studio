@@ -3,7 +3,7 @@ id: AUD-031
 epic: E17
 feature: F29
 title: Audit F29
-status: ready
+status: done
 points: 1
 ---
 
