@@ -85,3 +85,52 @@ fn f21_ac9_a_git_dir_set_by_the_caller_does_not_reach_the_command() {
     // The decoy's config, which a leaked GIT_DIR would have made bare, is unchanged.
     assert_eq!(after, before);
 }
+
+/// The Rust files under a folder, its subfolders included.
+fn rust_files(folder: &std::path::Path) -> Vec<std::path::PathBuf> {
+    let mut found = Vec::new();
+
+    for entry in fs::read_dir(folder).into_iter().flatten().flatten() {
+        let path = entry.path();
+
+        if path.is_dir() {
+            found.extend(rust_files(&path));
+        } else if path.extension().is_some_and(|extension| extension == "rs") {
+            found.push(path);
+        }
+    }
+    found
+}
+
+#[test]
+fn f21_ac9_no_rust_test_starts_git_but_through_test_support() {
+    // A test's own Git command inherits the pre-push hook's `GIT_DIR` (EN-103): every test file
+    // starts Git through `test_support::command` (AUD-023). The needle is built in two parts, so
+    // that this file does not hold it.
+    let needle = ["Command::new(", "\"git\")"].concat();
+    let tools = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("..");
+    let mut test_files = Vec::new();
+
+    for tool in fs::read_dir(&tools).expect("tools/").flatten() {
+        test_files.extend(rust_files(&tool.path().join("tests")));
+    }
+    let direct: Vec<String> = test_files
+        .iter()
+        .filter(|path| {
+            fs::read_to_string(path)
+                .unwrap_or_default()
+                .split_whitespace()
+                .collect::<String>()
+                .contains(&needle)
+        })
+        .map(|path| path.display().to_string())
+        .collect();
+
+    // This very file is among those read, so the scan reaches the tests.
+    assert!(
+        test_files
+            .iter()
+            .any(|path| path.ends_with("test-support/tests/command.rs"))
+    );
+    assert_eq!(direct, [] as [String; 0]);
+}

@@ -8,3 +8,10 @@ pub mod report;
 pub mod stop;
 pub mod tally;
 pub mod totals;
+
+/// Whether a subcommand is a poll, never recorded as a use (EN-102): `status`, which the status
+/// line calls once a second during a run.
+#[must_use]
+pub fn is_poll(subcommand: &str) -> bool {
+    subcommand == "status"
+}

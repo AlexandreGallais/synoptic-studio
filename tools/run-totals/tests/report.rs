@@ -42,3 +42,13 @@ fn f20_ac4_shows_the_run_on_the_status_line() {
         "run 45 s · 0 tokens · week 34 % used"
     );
 }
+
+#[test]
+fn f21_ac7_records_every_subcommand_but_the_status_line_s_poll() {
+    // The status line calls `status` once a second during a run: a poll, not recorded (EN-102);
+    // `start`, `end` and `should-stop` are uses (AUD-023: tested by its function, not its text).
+    assert!(run_totals::is_poll("status"));
+    for subcommand in ["start", "end", "should-stop", ""] {
+        assert!(!run_totals::is_poll(subcommand), "{subcommand}");
+    }
+}

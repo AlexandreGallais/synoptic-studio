@@ -45,7 +45,7 @@ fn f21_ac6_passes_an_entry_that_follows_every_rule_it_reads() {
 
 /// Each case breaks one rule of the valid changelog: what replaces what, the version of
 /// `package.json`, and the finding expected.
-const CASES: [(&str, &str, &str, &str); 18] = [
+const CASES: [(&str, &str, &str, &str); 19] = [
     (
         "# Changelog\n",
         "# Changes\n",
@@ -103,6 +103,13 @@ const CASES: [(&str, &str, &str, &str); 18] = [
     (
         "### Fixed\n\n- Fix a hue ([#8](https://x/8))\n",
         "### Fixed\n\n- Fix a hue ([#8](https://x/8))\n\n### Added\n\n- Add y ([#7](https://x/7))\n",
+        "0.3.0",
+        "20: the groups come once each, in the order Changed, Added, Removed, Fixed",
+    ),
+    // A group repeated is out of order too, its index no greater than the one before (AUD-023).
+    (
+        "### Fixed\n\n- Fix a hue ([#8](https://x/8))\n",
+        "### Fixed\n\n- Fix a hue ([#8](https://x/8))\n\n### Fixed\n\n- Fix b ([#7](https://x/7))\n",
         "0.3.0",
         "20: the groups come once each, in the order Changed, Added, Removed, Fixed",
     ),

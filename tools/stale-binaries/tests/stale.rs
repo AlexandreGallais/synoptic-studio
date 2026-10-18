@@ -121,6 +121,44 @@ fn f21_ac1_names_each_binary_older_than_its_sources_and_each_missing_one() {
 }
 
 #[test]
+fn names_the_newest_source_and_reads_only_the_listed_ones() {
+    // `g`, built at 20, lists two sources, written at 10 and 25: the newest, `b.rs`, makes it
+    // stale (the oldest would not); `new.rs`, at 60, is listed by no dep-info: no line for it.
+    let root = std::env::temp_dir().join(format!("stale-binaries-newest-{}", std::process::id()));
+    let release = root.join("target/release");
+    let (a, b) = (root.join("tools/g/src/a.rs"), root.join("tools/g/src/b.rs"));
+
+    let _ = fs::remove_dir_all(&root);
+    file(
+        &root.join("tools/g/Cargo.toml"),
+        "[package]\nname = \"g\"\n",
+        0,
+    );
+    file(&root.join("tools/g/src/main.rs"), "fn main() {}\n", 0);
+    file(&a, "", 10);
+    file(&b, "", 25);
+    file(&root.join("tools/g/src/new.rs"), "", 60);
+    file(&release.join("g"), "", 20);
+    file(
+        &release.join("g.d"),
+        &format!(
+            "{}: {} {}\n",
+            release.join("g").display(),
+            a.display(),
+            b.display()
+        ),
+        20,
+    );
+    assert_eq!(
+        stale_binaries(&root),
+        ["target/release/g is older than tools/g/src/b.rs"]
+    );
+    file(&b, "", 15);
+    assert_eq!(stale_binaries(&root), [] as [String; 0]);
+    let _ = fs::remove_dir_all(&root);
+}
+
+#[test]
 fn fails_naming_the_stale_binaries_and_passes_once_they_are_rebuilt() {
     let root = workspace("binary");
     let run = || {

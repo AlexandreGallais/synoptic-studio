@@ -8,6 +8,13 @@ use crate::guard::is_space;
 /// Age after which a running call's file is left over from an interrupted or denied call.
 pub const STALE_MS: u128 = 86_400_000;
 
+/// Whether a running call's file of that age, in milliseconds, is left over: older than
+/// [`STALE_MS`], a day, the day itself not.
+#[must_use]
+pub fn is_stale(age_ms: u128) -> bool {
+    age_ms > STALE_MS
+}
+
 /// A row of a feature's story table.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct StoryRow {

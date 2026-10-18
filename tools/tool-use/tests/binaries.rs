@@ -46,19 +46,51 @@ fn binaries() -> Vec<(String, PathBuf)> {
     found
 }
 
+/// Whether a binary's source calls `tool_use::run` or `run_or_poll` under its name, in its code,
+/// however the formatter breaks its lines: a comment naming the call does not count (AUD-023).
+fn calls_run(source: &str, name: &str) -> bool {
+    let code: String = source
+        .lines()
+        .map(|line| line.split_once("//").map_or(line, |(code, _)| code))
+        .flat_map(str::chars)
+        .filter(|character| !character.is_whitespace())
+        .collect();
+
+    code.contains(&format!("tool_use::run(\"{name}\","))
+        || code.contains(&format!("tool_use::run_or_poll(\"{name}\","))
+}
+
+#[test]
+fn reads_the_call_in_the_code_never_in_a_comment() {
+    assert!(calls_run(
+        "fn main() {\n    tool_use::run(\"page\", \"\", work)\n}",
+        "page"
+    ));
+    assert!(!calls_run(
+        "// tool_use::run(\"page\", \"\", work)\nfn main() {}",
+        "page"
+    ));
+    assert!(!calls_run(
+        "fn main() {} // tool_use::run(\"page\",",
+        "page"
+    ));
+    assert!(!calls_run("tool_use::run(\"pages\", \"\", work)", "page"));
+    assert!(calls_run(
+        "tool_use::run_or_poll(\n    \"page\",\n    \"\",",
+        "page"
+    ));
+}
+
 #[test]
 fn f21_ac7_every_binary_of_the_workspace_records_its_use_under_its_name() {
     let binaries = binaries();
-    // The 18 binaries of 2026-10-18: a crate's binary is never lost from the count unseen.
-    assert!(binaries.len() >= 18, "{binaries:?}");
+    // The 42 binaries of 2026-10-18 (AUD-023): one added or lost changes the count, which is then
+    // written again here.
+    assert_eq!(binaries.len(), 42, "{binaries:?}");
 
     let missing: Vec<String> = binaries
         .iter()
-        .filter(|(name, path)| {
-            let source = fs::read_to_string(path).expect("binary source");
-            !source.contains(&format!("tool_use::run(\"{name}\","))
-                && !source.contains(&format!("tool_use::run_or_poll(\"{name}\","))
-        })
+        .filter(|(name, path)| !calls_run(&fs::read_to_string(path).expect("binary source"), name))
         .map(|(name, path)| format!("{name} ({})", path.display()))
         .collect();
 

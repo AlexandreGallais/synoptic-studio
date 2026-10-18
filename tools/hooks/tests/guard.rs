@@ -569,6 +569,32 @@ fn lets_through_what_it_cannot_judge() {
 }
 
 #[test]
+fn a_debug_build_of_a_tool_records_no_use_in_the_checkout_it_runs_in() {
+    // `tool_use::run` records nothing in a debug build (EN-102): a test of a binary, run inside a
+    // checkout, never writes its `.git/metrics` (verifier, AUD-023).
+    let folder = std::env::temp_dir().join(format!("guard-bash-uses-{}", std::process::id()));
+
+    let _ = fs::remove_dir_all(&folder);
+    fs::create_dir_all(folder.join(".git")).expect(".git");
+    let mut child = clean(env!("CARGO_BIN_EXE_guard-bash"))
+        .current_dir(&folder)
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .expect("guard-bash runs");
+
+    child
+        .stdin
+        .take()
+        .expect("stdin")
+        .write_all(b"{\"tool_input\":{\"command\":\"ls\"}}")
+        .expect("written");
+    assert!(child.wait_with_output().expect("ends").status.success());
+    assert!(!folder.join(".git/metrics/tool-uses.jsonl").exists());
+    let _ = fs::remove_dir_all(&folder);
+}
+
+#[test]
 fn prints_the_denial_as_the_typescript_hook_did() {
     let output = hook("gh pr merge 1", Path::new("/"));
 
