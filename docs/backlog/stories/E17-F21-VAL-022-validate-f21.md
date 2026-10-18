@@ -23,9 +23,9 @@ F21 is a tooling feature: the agent validates it on its demo page and checklist,
 One task = one commit, referenced as `VAL-022.Tn`.
 
 - [x] T1 — Each criterion of F21 proven again, what was seen recorded; F21.AC9 worded as AUD-023 left it (1 h)
-- [ ] T2 — F21's lines in E17's checklist, `?checklist=E17`, each tried (1 h)
-- [ ] T3 — The demo page, `docs/guide/f21-agent-tools-in-rust.md` (1 h)
-- [ ] T4 — The result of the validation recorded (0.5 h)
+- [x] T2 — F21's lines in E17's checklist, `?checklist=E17`, each tried (1 h)
+- [x] T3 — The demo page, `docs/guide/f21-agent-tools-in-rust.md` (1 h)
+- [x] T4 — The result of the validation recorded (0.5 h)
 
 ## Criteria proven again (2026-10-18)
 
@@ -45,7 +45,35 @@ On this Mac (Apple M1 Pro), Claude Code 2.1.302, in the worktree of `feat/val-02
 
 The whole workspace, `cargo test -q --locked --workspace`: 1,554 tests passed, none failed. The 16 TypeScript tests tagged `[F21.ACn]` passed. Run with `--release`, `f21_ac2_reports_the_main_checkouts_work_from_a_worktree_its_findings_included` fails: a release build of `metrics` records its own use in the test's repository, so its second report holds one row more under Tools than its first; `check:all` runs the tests in a debug build (`rust:coverage`), which records nothing (AUD-023, verifier 9), and passes. A row for the improvement log, below.
 
+`check:all` on the branch after T2, `npm run check:all`: every check passed in 74.9 s (load 6 to 16), `test` 52.0 s, `docs:build` 59.2 s, `check:rust` 74.6 s, against 170 to 217 s at E17's start.
+
+## F21's lines in E17's checklist
+
+Drafted by `target/release/val-prepare . F21`, then written as 12 lines (`playground/checklists/epic-17-f21-lines.ts`, `?checklist=E17`), each tried here on 2026-10-18 with the output it names: ten commands run in this worktree, the guard's two answers seen on this story's own calls (a `git log … | head -3` after the brief's `cd` let through, a `git status; ls` refused with `A worktree refuses a chained Git command`), and the release drafted in a scratch clone of `develop` with this branch's binary, since `develop` holds no release tool until F21 is merged. Five lines carry F21's decisions to confirm; the sixth, the story worker kept on Opus, is F20's line 2 already. The page's test lists the 48 lines of E17 and names each command, output and decision of F21's; a line changed from `57 line(s) drafted` to `58 line(s) drafted` and `Decision to confirm (EN-102)` to `Decision (EN-102)` made two of its cases fail. `val-prepare` wrote the barrel's new line last, and the first `npm run fix` turned `export type * from "./checklist-line"` into `export *`: set back by hand.
+
+## Decisions of the validation (2026-10-18)
+
+- **Validated by the agent**: F21 is a tooling feature, so the agent validates it without waiting for the Product Owner, who may try the lines that concern them (ADR-0072, decided on 2026-10-17). The pull request into `develop` is the main thread's.
+- **F21.AC9 worded as its check now is**: AUD-023 extended the `.git/config` check to `[url]`, `[include]`, `[includeIf]` and `[extensions]` (`6e093809`) and left the criterion's new wording to the main thread, which asked this story to apply it.
+- **The status line read as held at 23 ms**: EN-104's 10 ms was measured with no run open; with a run open the line adds `run-totals status`, 15 ms, still 2.3 % of a core against 24.5 % before.
+- **The six decisions to confirm** are shown on the demo page and in the checklist: `AGENT_LIBRARY_FILE` (ADR-0077), the binaries by their path (ADR-0078), the release branch from `develop` (ADR-0079), one Git command through read-only filters (EN-104), `run-totals status` not recorded (EN-102), the story worker on Opus (EN-066).
+- **The release tool's publication not tried**: `release publish` runs on `main` after a merge; 0.3.0 will be its first run, its time read then (EN-112).
+
+## Result of the validation (2026-10-18)
+
+| Line | Seen by | Result |
+| --- | --- | --- |
+| 1 to 12 | the VAL worker | as written, each tried on this Mac; the decisions of lines 1, 2, 3, 5 and 10 left to the Product Owner |
+
 ## For the main thread
+
+Rule-docs: none affected, a tooling validation, no rule of `docs/domain/` changed.
+
+The `done` commit, made by this worker as the main thread asked, sets VAL-022 and F21 `done` and updates F21's line of the State table in `AGENTS.md`; the journal entry below and the improvement row are moved by `story:finish`.
+
+### Journal
+
+- `#run` VAL-022: F21 validated by the agent (ADR-0072): its nine criteria proven again (1,554 Rust tests, 16 TypeScript tests tagged `[F21.ACn]`), F21.AC9 worded as AUD-023 extended its check, 12 lines in E17's checklist, the demo page `docs/guide/f21-agent-tools-in-rust.md`. `guard-bash` 58.8 → 3.0 ms, the status line 180 → 23 ms with a run open (a quarter of a core → 2.3 %), the library's server start 86 → 3.9 ms, `metrics` 9.4 → 0.51 s, the secret scan 970 → 112 ms, a commit's hooks 716 → 356 ms, `check:all` 170–217 s at E17's start → 74.9 s, dev packages 38 → 13; the notes of 0.2.0 from 163 change lines to 14. Six decisions for the Product Owner to confirm: `AGENT_LIBRARY_FILE` (ADR-0077), the binaries by their path (ADR-0078), the release branch from `develop` (ADR-0079), one Git command through read-only filters (EN-104), `run-totals status` not recorded (EN-102), the story worker on Opus (EN-066).
 
 ### Improvements
 
