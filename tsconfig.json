@@ -5,7 +5,7 @@
   "compilerOptions": {
     // Target and modules
     "target": "es2025",
-    "lib": ["es2025", "esnext.temporal", "dom"],
+    "lib": ["es2025", "dom"],
     "module": "esnext",
     "moduleResolution": "bundler",
     "moduleDetection": "force",
@@ -13,7 +13,7 @@
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "resolveJsonModule": true,
-    // Node.js runs the hooks and scripts as they are (type stripping): relative imports name the .ts file.
+    // Node.js runs `scripts/default-font-metrics.ts` as it is (type stripping): relative imports name the .ts file.
     "allowImportingTsExtensions": true,
     "types": ["node", "vite/client"],
 

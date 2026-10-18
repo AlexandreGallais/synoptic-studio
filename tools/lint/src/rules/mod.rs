@@ -102,15 +102,14 @@ mod tests {
     use crate::scopes::linted_by;
 
     /// One path of each scope: the functional core, a barrel, the DOM layers, the playground, the
-    /// documentation's theme, a hook, a script, a test and a root configuration.
-    const PATHS: [&str; 11] = [
+    /// documentation's theme, a script, a test and a root configuration.
+    const PATHS: [&str; 10] = [
         "src/math/a.ts",
         "src/math/a/index.ts",
         "src/render/a.ts",
         "playground/a/b.ts",
         "playground/a/index.ts",
         "docs/.vitepress/theme/a.ts",
-        ".claude/hooks/a.ts",
         "scripts/a.ts",
         "scripts/a/b.ts",
         "src/math/a.test.ts",

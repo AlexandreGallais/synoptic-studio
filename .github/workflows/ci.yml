@@ -29,7 +29,6 @@ env:
 jobs:
   quality:
     name: Format, lint, secrets, types, tests, audit, versions, docs, build
-    if: ${{ !startsWith(github.head_ref, 'release-please--') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -93,7 +92,7 @@ jobs:
 
   history:
     name: Commit messages and branch name
-    if: ${{ github.event_name == 'pull_request' && !startsWith(github.head_ref, 'release-please--') }}
+    if: ${{ github.event_name == 'pull_request' }}
     needs: quality
     runs-on: ubuntu-latest
     steps:
@@ -115,7 +114,7 @@ jobs:
 
   dependencies:
     name: Dependency review
-    if: ${{ github.event_name == 'pull_request' && !startsWith(github.head_ref, 'release-please--') }}
+    if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
