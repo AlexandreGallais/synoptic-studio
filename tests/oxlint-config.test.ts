@@ -138,9 +138,12 @@ describe("the last Unicorn rules (EN-095)", () => {
   });
 });
 
-/** The files that ran ESLint or configured it, read as text. */
-const LINT_RUNNERS: readonly string[] = ["package.json", ".lintstagedrc.json"].map((path) =>
-  readFileSync(join(ROOT, path), "utf8"),
+/**
+ * The files that ran ESLint or configure what runs oxlint, read as text: the scripts and the
+ * pre-commit hook's tasks (EN-108).
+ */
+const LINT_RUNNERS: readonly string[] = ["package.json", "tools/git-hooks/src/staged.rs"].map(
+  (path) => readFileSync(join(ROOT, path), "utf8"),
 );
 
 describe("ESLint out (EN-085)", () => {
@@ -248,14 +251,22 @@ describe("no spread in a fold (EN-061), oxlint's `oxc/no-accumulating-spread` si
 /** The scripts of `package.json`. */
 const SCRIPTS = propertyOf(parsed(LINT_RUNNERS[0] ?? ""), "scripts");
 
-/** The commands lint-staged runs on a TypeScript file. */
-const STAGED_TYPESCRIPT = itemsOf(propertyOf(parsed(LINT_RUNNERS[1] ?? ""), "*.ts"));
+/** The oxlint command of the pre-commit hook, its options read from the `OXLINT` array of its tasks. */
+const STAGED_OXLINT = `oxlint ${(
+  /const OXLINT: \[&str; \d+\] = \[(?<options>[^\]]*)\]/u.exec(LINT_RUNNERS[1] ?? "")?.groups?.[
+    "options"
+  ] ?? ""
+)
+  .split(",")
+  .map((option) => option.trim().replaceAll('"', ""))
+  .filter((option) => option !== "")
+  .join(" ")}`;
 
-/** Every oxlint command the repository runs: `lint`, `fix` and lint-staged's. */
+/** Every oxlint command the repository runs: `lint`, `fix` and the pre-commit hook's. */
 const OXLINT_COMMANDS: readonly string[] = [
   String(propertyOf(SCRIPTS, "lint")),
   String(propertyOf(SCRIPTS, "fix")),
-  ...STAGED_TYPESCRIPT.map(String),
+  STAGED_OXLINT,
 ].flatMap((command) => command.split(" && ").filter((part) => part.startsWith("oxlint ")));
 
 /**

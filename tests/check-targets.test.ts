@@ -182,10 +182,11 @@ describe("check tools given explicit targets (EN-045)", () => {
   });
 
   it("[F19.AC5] formats with the formatter only, staged files included, never Prettier", () => {
-    const staged = readFileSync(join(ROOT, ".lintstagedrc.json"), "utf8");
+    // The pre-commit hook's tasks, `tools/git-hooks/src/staged.rs`, are tested by their crate.
+    const staged = readFileSync(join(ROOT, "tools", "git-hooks", "src", "staged.rs"), "utf8");
     const scripts = SCRIPTS.values().toArray().join("\n");
 
-    expect(staged).toContain(`"${FORMAT} --write"`);
+    expect(staged).toContain('krate: "format"');
     expect(`${staged}\n${scripts}`).not.toMatch(/\bprettier /u);
     expect(existsSync(join(ROOT, ".prettierrc.json"))).toBe(false);
   });
@@ -223,11 +224,9 @@ describe("check tools given explicit targets (EN-045)", () => {
 
   it("[F19.AC4] gives the project's linter every tracked Markdown page", () => {
     const pages = TRACKED.filter((path) => path.endsWith(".md") && !UNLINTED_PAGES.has(path));
-    const staged: unknown = JSON.parse(readFileSync(join(ROOT, ".lintstagedrc.json"), "utf8"));
 
     expect(pages.length).toBeGreaterThan(0);
     expect(leftOut(targetsOf("lint", PROJECT_LINT), pages)).toEqual([]);
-    expect(staged).toHaveProperty(["*.md"], [`${FORMAT} --write`, `${PROJECT_LINT} --fix`]);
   });
 
   it(

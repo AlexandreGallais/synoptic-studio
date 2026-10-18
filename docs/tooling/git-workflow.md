@@ -74,7 +74,7 @@ Conventional Commits (`REF-CONVENTIONAL-COMMITS`), checked by commitlint at each
 
 | Hook | Runs |
 | --- | --- |
-| `pre-commit` | `lint-staged` (`.lintstagedrc.json`): the formatter, oxlint and the project's linter with `--fix` on staged TypeScript and Markdown, the formatter on the other formats, secretlint on every staged file |
+| `pre-commit` | `git-hooks pre-commit`, lint-staged's runner ported to Rust (`tools/git-hooks/src/staged.rs`): the formatter, oxlint and the project's linter with `--fix` on staged TypeScript and Markdown, the formatter on the other formats, secretlint on every staged file; the fixes staged again, a partly staged file keeping its unstaged lines, everything put back from a backup stash when a command fails. Each command's output is printed only when it fails |
 | `commit-msg` | commitlint, then at a `done` commit the docs of a rule its story changes (`tools/rule-docs`) |
 | `pre-push` | no shared file on a worker's story branch (`tools/shared-files`, ADR-0065), the branch name, `npm run check:all`, then `npm run golden:check` when a golden file is written |
 

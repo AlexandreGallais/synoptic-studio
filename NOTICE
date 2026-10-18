@@ -30,3 +30,4 @@ of, the packages below, each under its licence; the full texts are in THIRD-PART
   Foundation and other contributors, <www.openjsf.org>
 - @babel/helper-validator-identifier 7.29.7, MIT: Copyright (c) 2014-present Sebastian McKenzie
   and other contributors
+- lint-staged 17.6.0, MIT: Copyright (c) 2016 Andrey Okonetchnikov
