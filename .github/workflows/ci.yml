@@ -3,7 +3,7 @@
 # `check:all` is a job of its own, in parallel, each its own check on the pull request (EN-124).
 # Its trigger is its only condition (ADR-0088): every job runs on every pull request into main,
 # each step of a lane chosen by a field of the lane's matrix entry (EN-133).
-name: CI
+name: Checks into main
 
 on:
   pull_request:

@@ -2,7 +2,7 @@
 id: F28
 epic: E17
 title: One workflow per purpose
-status: in-progress
+status: done
 ---
 
 # E17 · F28 — One workflow per purpose
@@ -27,7 +27,7 @@ In delivery order.
 | [EN-132](../stories/E17-F28-EN-132-the-site-the-release-and-the-caches-apart.md) | EN | The site, the release and the Rust caches apart | done |
 | [EN-133](../stories/E17-F28-EN-133-the-ci-into-main-its-checks-only.md) | EN | The CI into main, its checks only | done |
 | [AUD-030](../stories/E17-F28-AUD-030-audit-f28.md) | AUD | Audit F28 | done |
-| [VAL-029](../stories/E17-F28-VAL-029-validate-f28.md) | VAL | Validate F28 | ready |
+| [VAL-029](../stories/E17-F28-VAL-029-validate-f28.md) | VAL | Validate F28 | done |
 
 ## Feature plan
 
