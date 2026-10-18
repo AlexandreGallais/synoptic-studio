@@ -48,7 +48,3 @@ One task = one commit, referenced as `EN-110.Tn`.
 - `docs/tooling/versions-and-security.md`, named in Files, is not changed: it says nothing of the secret scan; `docs/tooling/ci.md`, `git-workflow.md`, `commands.md`, `agent-tools.md`, `dependencies.md` (its Security section, now empty, removed), `conventions/formatting.md` and `conventions/rules.md` are.
 - ADR-0041 and ADR-0044, accepted, still name secretlint and `.secretlintignore` as they were at the time: not rewritten.
 - `.secretlintignore` is renamed `.secret-scan-ignore` (same 12 paths); `.secretlintrc.json` is removed.
-
-### Journal
-
-- `#run` EN-110: the secret scan in Rust (`tools/secret-scan`), secretlint's 27 recommended rules and its comment filter, tested on the preset's 115 snapshots (111 run, 4 with an `allows` list not taken); SHA-1, SHA-2 and HMAC written from their RFCs rather than taken from RustCrypto; secretlint and its preset removed; `lint:secrets` 970 → 106 ms, one file 127 → 34 ms.
