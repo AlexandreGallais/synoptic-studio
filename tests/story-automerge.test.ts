@@ -59,19 +59,31 @@ type MergeRun = {
   readonly calls: readonly string[];
 };
 
+/**
+ * What the stub `gh` answers: the exit status of each `gh pr merge`, the state `gh pr view`
+ * prints at each call, in turn, nothing once they run out, and the exit status of
+ * `gh workflow run`.
+ */
+type GhStub = {
+  readonly mergeStatus: number;
+  readonly states: readonly string[];
+  readonly dispatchStatus: number;
+};
+
 /** The pull request the merge step is given. */
 const PR_URL = "https://github.com/o/r/pull/7";
 
 /**
  * Runs the merge step's script by Bash, `gh` and `sleep` replaced by stubs: `gh pr merge` exits
- * with the status given, `gh pr view` prints the next state of the list, each call is logged.
+ * with the status given, `gh pr view` prints the next state of the list, `gh workflow run` exits
+ * with its status, printing GitHub's refusal when it fails, each call is logged.
  *
  * @param base - the branch the pull request goes into
- * @param mergeStatus - the exit status of each `gh pr merge`
- * @param states - the state `gh pr view` prints at each call, in turn, nothing once they run out
+ * @param stub - what the stub `gh` answers
  * @returns the run's status, output and `gh` calls
  */
-function merge(base: string, mergeStatus: number, states: readonly string[]): MergeRun {
+function merge(base: string, stub: GhStub): MergeRun {
+  const { dispatchStatus, mergeStatus, states } = stub;
   const folder = mkdtempSync(join(tmpdir(), "story-automerge-"));
   const log = join(folder, "calls");
 
@@ -89,6 +101,10 @@ function merge(base: string, mergeStatus: number, states: readonly string[]): Me
       '  count=$(( $(cat "$folder/views" 2>/dev/null || echo 0) + 1 ))',
       '  echo "$count" > "$folder/views"',
       `  echo "${states.join(" ")}" | cut -d " " -f "$count"`,
+      "fi",
+      'if [ "$1 $2" = "workflow run" ]; then',
+      `  [ ${String(dispatchStatus)} -eq 0 ] || echo "could not find any workflows named $3" >&2`,
+      `  exit ${String(dispatchStatus)}`,
       "fi",
       "",
     ].join("\n"),
@@ -179,15 +195,46 @@ describe("the features' auto-merge starts the develop CI (ADR-0088, decision 5)"
 
   it("[F30.AC1] dispatches the develop CI once its merge into develop reads MERGED", () => {
     // Mergeable at once, merged by `--auto` (REF-GH-CLI-MERGE): one attempt, then the dispatch.
-    const run = merge("develop", 0, ["MERGED"]);
+    const run = merge("develop", { dispatchStatus: 0, mergeStatus: 0, states: ["MERGED"] });
 
     expect(run.status).toBe(0);
     expect(run.calls).toStrictEqual([...attempt, dispatch]);
+    expect(run.output).not.toContain("::warning");
+  });
+
+  it("[F30.AC1] warns naming the cause and passes when the dispatch is refused, the merge done", () => {
+    // GitHub dispatches a workflow only once its file is on the default branch, main
+    // (REF-GH-WORKFLOW-DISPATCH): until then `gh workflow run` fails after the merge.
+    const run = merge("develop", { dispatchStatus: 1, mergeStatus: 0, states: ["MERGED"] });
+
+    expect(run.status).toBe(0);
+    expect(run.calls).toStrictEqual([...attempt, dispatch]);
+    expect(run.output).toContain("could not find any workflows named develop-ci.yml");
+
+    expect(run.output).toMatch(
+      /^::warning::The develop CI was not dispatched: .*develop-ci\.yml is not yet on main, the default branch/mu,
+    );
+  });
+
+  it("[F30.AC1] still fails, dispatching nothing, when the merge is not done and the dispatch would be refused", () => {
+    const run = merge("develop", {
+      dispatchStatus: 1,
+      mergeStatus: 0,
+      states: ["OPEN", "OPEN", "OPEN", "OPEN", "OPEN"],
+    });
+
+    expect(run.status).toBe(1);
+    expect(run.calls).not.toContain(dispatch);
+    expect(run.output).not.toContain("::warning");
   });
 
   it("[F30.AC1] waits for the merge `--auto` only enabled, dispatching once", () => {
     // OPEN twice, the auto-merge enabled but not done: the third attempt reads MERGED, 3 × 2 calls.
-    const run = merge("develop", 0, ["OPEN", "OPEN", "MERGED"]);
+    const run = merge("develop", {
+      dispatchStatus: 0,
+      mergeStatus: 0,
+      states: ["OPEN", "OPEN", "MERGED"],
+    });
 
     expect(run.status).toBe(0);
     expect(run.calls).toStrictEqual([...attempt, ...attempt, ...attempt, dispatch]);
@@ -195,7 +242,7 @@ describe("the features' auto-merge starts the develop CI (ADR-0088, decision 5)"
 
   it("[F30.AC1] reads the state after a failing gh pr merge, the pull request merged meanwhile", () => {
     // `gh pr merge` refuses a pull request already merged: the state read decides.
-    const run = merge("develop", 1, ["OPEN", "MERGED"]);
+    const run = merge("develop", { dispatchStatus: 0, mergeStatus: 1, states: ["OPEN", "MERGED"] });
 
     expect(run.status).toBe(0);
     expect(run.calls).toStrictEqual([...attempt, ...attempt, dispatch]);
@@ -203,7 +250,11 @@ describe("the features' auto-merge starts the develop CI (ADR-0088, decision 5)"
 
   it("[F30.AC1] fails naming the pull request, dispatching nothing, when it is not merged after its retries", () => {
     // Five attempts, none reading MERGED, the last state empty: 5 × 2 calls and no dispatch.
-    const run = merge("develop", 0, ["OPEN", "OPEN", "OPEN", "OPEN"]);
+    const run = merge("develop", {
+      dispatchStatus: 0,
+      mergeStatus: 0,
+      states: ["OPEN", "OPEN", "OPEN", "OPEN"],
+    });
 
     expect(run.status).toBe(1);
     expect(run.calls).toStrictEqual(Array.from({ length: 5 }, () => attempt).flat());
@@ -211,7 +262,11 @@ describe("the features' auto-merge starts the develop CI (ADR-0088, decision 5)"
   });
 
   it("[F30.AC1] dispatches nothing after a merge into a feature branch", () => {
-    const run = merge("feature/f30-a-ci-on-develop-that-blocks-nothing", 0, ["MERGED"]);
+    const run = merge("feature/f30-a-ci-on-develop-that-blocks-nothing", {
+      dispatchStatus: 0,
+      mergeStatus: 0,
+      states: ["MERGED"],
+    });
 
     expect(run.status).toBe(0);
     expect(run.calls).toStrictEqual(attempt);
