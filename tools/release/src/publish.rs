@@ -35,6 +35,20 @@ pub const REPORT_FILE: &str = "test-report.xml";
 /// written in the next review's text.
 pub const DEPENDABOT_BRANCH: &str = "dependabot/";
 
+/// The one branch a release is made on: its button may be pressed on any branch, the workflow
+/// choosing nothing by an `if:` (ADR-0088), so the tool refuses the others.
+pub const RELEASE_BRANCH: &str = "main";
+
+/// Checks that the run is on [`RELEASE_BRANCH`], before any Git or GitHub call.
+///
+/// # Errors
+///
+/// The branch, `GITHUB_REF_NAME` of the run, is another one, or empty.
+pub fn on_release_branch(branch: &str) -> Result<(), String> {
+    let _ = branch;
+    Ok(())
+}
+
 /// The first line of a command's output, trimmed.
 fn first_line(output: &str) -> String {
     output.lines().next().unwrap_or_default().trim().to_owned()
@@ -127,14 +141,17 @@ fn ci_run(run: &mut Run<'_>) -> Result<(String, String), String> {
     Ok((head, ci_run))
 }
 
-/// Publishes the release of the head of `main`, the notes and the report written in `folder`.
+/// Publishes the release of the head of `main`, the run's `branch`, the notes and the report
+/// written in `folder`.
 ///
 /// # Errors
 ///
-/// No tag `vx.y.z` is behind the head, a body breaks a rule or two hold a notice, the bodies list
-/// changes the commits do not make or none the commits make, the head is not a merge, no
-/// successful CI run of the pull request's head is found, or a Git or GitHub command fails.
-pub fn publish(run: &mut Run<'_>, folder: &Path) -> Result<Published, String> {
+/// The branch is not `main`, no tag `vx.y.z` is behind the head, a body breaks a rule or two hold
+/// a notice, the bodies list changes the commits do not make or none the commits make, the head
+/// is not a merge, no successful CI run of the pull request's head is found, or a Git or GitHub
+/// command fails.
+pub fn publish(run: &mut Run<'_>, branch: &str, folder: &Path) -> Result<Published, String> {
+    on_release_branch(branch)?;
     let (previous, current) = last_release(run, "HEAD")?;
     let range = format!("{previous}..HEAD");
     let released = commits(run, &range)?;

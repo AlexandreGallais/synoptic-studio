@@ -100,7 +100,9 @@ fn check_text(args: &[String]) -> u8 {
 fn publish_release() -> u8 {
     let folder = std::env::temp_dir().join(format!("release-publish-{}", std::process::id()));
     let mut runner = run;
-    let published = publish(&mut runner, &folder);
+    // The branch the run is on, which GitHub sets in every job (`REF-GH-VARIABLES`).
+    let branch = std::env::var("GITHUB_REF_NAME").unwrap_or_default();
+    let published = publish(&mut runner, &branch, &folder);
     let _ = fs::remove_dir_all(&folder);
 
     match published {

@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
@@ -6,11 +6,29 @@ import { describe, expect, it } from "vitest";
 /** Root of the repository. */
 const ROOT = join(import.meta.dirname, "..");
 
-/** Text of the CI of the pull requests into main. */
-const CI = readFileSync(join(ROOT, ".github", "workflows", "ci.yml"), "utf8");
+/**
+ * Text of a workflow.
+ *
+ * @param file - its file name in `.github/workflows/`
+ * @returns its text, or an empty text when it is missing
+ */
+function workflowOf(file: string): string {
+  const path = join(ROOT, ".github", "workflows", file);
 
-/** Text of the release workflow, whose run on main saves the caches. */
-const RELEASE = readFileSync(join(ROOT, ".github", "workflows", "release.yml"), "utf8");
+  return existsSync(path) ? readFileSync(path, "utf8") : "";
+}
+
+/** Text of the CI of the pull requests into main. */
+const CI = workflowOf("ci.yml");
+
+/** Text of the Rust caches' workflow, whose run on a push to develop saves the caches. */
+const RUST_CACHES = workflowOf("rust-caches.yml");
+
+/** Text of the release's workflow, run by its button. */
+const RELEASE = workflowOf("release.yml");
+
+/** Text of the site's workflow, whose run on a push to main saves the build it compiled. */
+const SITE = workflowOf("site.yml");
 
 /** The manifest of the repository, parsed. */
 const MANIFEST: unknown = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8"));
@@ -78,7 +96,8 @@ function environmentOf(workflow: string, name: string): string {
 
 describe("the Rust caches of the CI (EN-111)", () => {
   const lanes = jobOf(CI, "lanes");
-  const warm = jobOf(RELEASE, "rust-cache");
+  const warm = jobOf(RUST_CACHES, "rust-caches");
+  const site = jobOf(SITE, "site");
 
   it("[F21.AC4] restores the toolchain, the cargo tools and the build in the CI, never saves them", () => {
     // A pull request's cache is scoped to its merge ref: only a push to develop or main saves
@@ -88,11 +107,11 @@ describe("the Rust caches of the CI (EN-111)", () => {
     expect(CI).not.toMatch(/uses: actions\/cache(?:\/save)?@/u);
   });
 
-  it("[F21.AC4] [F24.AC3] saves the same caches on a push to develop or main, under the same keys and paths", () => {
+  it("[F21.AC4] [F24.AC3] [F28.AC2] saves the same caches on a push to develop, under the same keys and paths", () => {
     // A pull request into main restores the caches of its head branch, develop, and of its base
-    // and default branch, main (REF-GH-CACHE).
-    expect(RELEASE).toContain("\non:\n  push:\n    branches: [develop, main]\n");
-    expect(warm).toContain("if: github.event_name == 'push'\n");
+    // and default branch, main, whose build the site's workflow saves (REF-GH-CACHE).
+    expect(RUST_CACHES).toContain("\non:\n  push:\n    branches: [develop]\n\n");
+    expect(warm).not.toContain("if:");
     expect(warm.match(/uses: actions\/cache@v\d+/gu)).toHaveLength(2);
     expect(cachesOf(warm)).toStrictEqual(cachesOf(lanes));
   });
@@ -116,8 +135,9 @@ describe("the Rust caches of the CI (EN-111)", () => {
     );
   });
 
-  it("[F21.AC4] starts each new key on develop and main from an empty build, never an older key's", () => {
+  it("[F21.AC4] [F28.AC2] starts each new key on develop and main from an empty build, never an older key's", () => {
     expect(warm).not.toContain("restore-keys");
+    expect(site).not.toContain("restore-keys");
   });
 
   it("[F21.AC4] installs the cargo tools only on a missed key, at the versions the scripts name", () => {
@@ -130,7 +150,8 @@ describe("the Rust caches of the CI (EN-111)", () => {
 
     expect(warm).toContain(`- if: steps.tools.outputs.cache-hit != 'true'\n        ${install}`);
 
-    for (const workflow of [CI, RELEASE]) {
+    // The site and the release key the tools' cache they restore on the same versions.
+    for (const workflow of [CI, RUST_CACHES, RELEASE, SITE]) {
       expect(SCRIPTS.get("rust:coverage")).toContain(
         `cargo-llvm-cov@${environmentOf(workflow, "CARGO_LLVM_COV_VERSION")} `,
       );
@@ -141,7 +162,7 @@ describe("the Rust caches of the CI (EN-111)", () => {
     }
   });
 
-  it("[F21.AC4] compiles on main what check:rust compiles, running no test", () => {
+  it("[F21.AC4] compiles on develop what check:rust compiles, running no test", () => {
     // Same commands and flags, so that the pull request compiles no dependency again.
     expect(warm).toContain("- run: npm run rust:build\n");
 
@@ -167,16 +188,29 @@ describe("the Rust caches of the CI (EN-111)", () => {
     );
   });
 
-  it("[F24.AC3] restores in the release job the caches the lanes and rust-cache save", () => {
-    expect(cachesOf(jobOf(RELEASE, "release"))).toStrictEqual(cachesOf(warm));
+  it("[F24.AC3] [F28.AC2] restores in the release job the caches the lanes and rust-caches save, restored only", () => {
+    const release = jobOf(RELEASE, "release");
+
+    expect(cachesOf(release)).toStrictEqual(cachesOf(warm));
+    expect(release.match(/uses: actions\/cache\/restore@v\d+/gu)).toHaveLength(2);
+    expect(RELEASE).not.toMatch(/uses: actions\/cache(?:\/save)?@/u);
   });
 
-  it("[F21.AC4] builds the site on main's caches, restored only", () => {
-    const site = jobOf(RELEASE, "docs");
-
+  it("[F21.AC4] [F28.AC2] builds the site on the caches, saving under main its build, never the tools", () => {
+    // The tools' key promises cargo-llvm-cov and cargo-deny, which the site never installs: it
+    // restores that cache only. Its build, saved by actions/cache on a missed key, is main's.
     expect(cachesOf(site)).toStrictEqual(cachesOf(warm));
-    expect(site.match(/uses: actions\/cache\/restore@v\d+/gu)).toHaveLength(2);
-    expect(site).not.toMatch(/uses: actions\/cache(?:\/save)?@/u);
+
+    expect(site).toContain(
+      "- uses: actions/cache/restore@v6\n        with:\n          path: |\n            ~/.rustup/toolchains/",
+    );
+
+    expect(site).toContain(
+      "- uses: actions/cache@v6\n        with:\n          path: |\n            ~/.cargo/registry/index/",
+    );
+
+    expect(site.match(/uses: actions\/cache(?:\/restore)?@v\d+/gu)).toHaveLength(2);
+    expect(site).not.toContain("cargo install");
   });
 
   it("[F21.AC4] checks the history with the lint lane's binary, building none", () => {
