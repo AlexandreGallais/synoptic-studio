@@ -23,7 +23,7 @@ In delivery order.
 
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
-| [EN-129](../stories/E17-F29-EN-129-timing-tests-that-hold-under-load.md) | EN | Timing tests that hold under load | ready |
+| [EN-129](../stories/E17-F29-EN-129-timing-tests-that-hold-under-load.md) | EN | Timing tests that hold under load | done |
 | [EN-130](../stories/E17-F29-EN-130-the-rust-lane-only-when-rust-changed.md) | EN | The Rust lane only when Rust changed, its coverage a lane | ready |
 | [EN-131](../stories/E17-F29-EN-131-binaries-rebuilt-after-a-pull.md) | EN | The binaries rebuilt after a pull | ready |
 | [AUD-031](../stories/E17-F29-AUD-031-audit-f29.md) | AUD | Audit F29 | ready |
