@@ -162,6 +162,15 @@ const CRATES = "every target's crates";
 /** Node.js with the npm packages, as a finding names them. */
 const NODE = "Node.js";
 
+/** The build of one release binary, `cargo build --release … -p <crate>`. */
+const BUILD_ONE = /\bcargo build --release\b.*?(?:-p|--package) (?<name>[\w-]+)/u;
+
+/** The steps that fetch what cargo reads offline, each by its command, with what it fetches. */
+const FETCHES: readonly (readonly [string, string])[] = [
+  ["cargo deny fetch db", DATABASE],
+  ["cargo fetch --locked", CRATES],
+];
+
 /** Every release binary, built by `npm run rust:build` or by `npm ci`'s `prepare`. */
 const EVERY_BINARY = "target/release/*";
 
@@ -170,6 +179,9 @@ type Upload = {
   readonly job: string;
   readonly path: string;
 };
+
+/** The cargo subcommands a job installs, each by `cargo install cargo-<subcommand>@<version>`. */
+const CARGO_TOOLS: readonly string[] = ["llvm-cov", "deny"];
 
 /** The cargo subcommands that read every crate of `Cargo.lock` offline (`REF-CARGO-FETCH`). */
 const OFFLINE_READERS: readonly string[] = ["deny", "metadata"];
@@ -449,7 +461,36 @@ function misplaced(
  * space, or an empty text when it runs none
  */
 function runOf(step: Step): string {
-  return step.text === "" ? `${String(STEP_KEY_COLUMN)}${BINARY_CALL.source}` : "";
+  const lines = step.text.split("\n");
+  const index = lines.findIndex((next) => next.trimStart().startsWith("run:"));
+
+  if (index === -1) {
+    return "";
+  }
+
+  const line = lines.at(index) ?? "";
+  // The step's first line lost its indentation to the split on `- `.
+  const column = index === 0 ? STEP_KEY_COLUMN : line.length - line.trimStart().length;
+
+  return blockOf(
+    line.trim().slice("run:".length).trim(),
+    continuedLines(lines, index, column).map((next) => next.trim()),
+  );
+}
+
+/**
+ * The value of a key, its block scalar read as YAML reads it.
+ *
+ * @param value - the text after the key
+ * @param block - the lines continuing it, without their indentation
+ * @returns the lines one per line after `|`, joined by a space after `>`, else the value itself
+ */
+function blockOf(value: string, block: readonly string[]): string {
+  if (value.startsWith("|")) {
+    return block.join("\n");
+  }
+
+  return value.startsWith(">") ? block.join(" ") : value;
 }
 
 /**
@@ -460,7 +501,26 @@ function runOf(step: Step): string {
  * @returns its value, or an empty text when the step gives none
  */
 function inputOf(step: Step, input: string): string {
-  return step.text === input ? input : "";
+  const prefix = `${" ".repeat(STEP_KEY_COLUMN + 2)}${input}: `;
+
+  return (
+    step.text
+      .split("\n")
+      .find((line) => line.startsWith(prefix))
+      ?.slice(prefix.length)
+      .trim() ?? ""
+  );
+}
+
+/**
+ * Whether a step runs an action.
+ *
+ * @param step - a step of a job
+ * @param action - the action's name, without its version
+ * @returns true when its `uses:` names it
+ */
+function isUse(step: Step, action: string): boolean {
+  return step.text.split("\n").some((line) => line.trim().startsWith(`uses: ${action}@`));
 }
 
 /**
@@ -470,7 +530,16 @@ function inputOf(step: Step, input: string): string {
  * @returns each artifact's job and path, by the artifact's name
  */
 function uploadsOf(jobs: ReadonlyMap<string, readonly string[]>): ReadonlyMap<string, Upload> {
-  return jobs.has("\0") ? new Map([["", { job: "", path: "" }]]) : new Map();
+  return new Map(
+    jobs.entries().flatMap(([job, lines]) =>
+      stepsOf(lines)
+        .filter((step) => isUse(step, "actions/upload-artifact"))
+        .map((step): [string, Upload] => [
+          inputOf(step, "name"),
+          { job, path: inputOf(step, "path") },
+        ]),
+    ),
+  );
 }
 
 /**
@@ -480,7 +549,14 @@ function uploadsOf(jobs: ReadonlyMap<string, readonly string[]>): ReadonlyMap<st
  * @returns their keys, none when it waits for no job
  */
 function waitsFor(job: readonly string[]): readonly string[] {
-  return job.includes("\0") ? [""] : [];
+  const needs = job.find((line) => line.startsWith("    needs: "))?.slice("    needs: ".length);
+
+  return needs === undefined
+    ? []
+    : needs
+        .replaceAll(/[[\]]/gu, "")
+        .split(",")
+        .map((key) => key.trim());
 }
 
 /**
@@ -492,7 +568,64 @@ function waitsFor(job: readonly string[]): readonly string[] {
  * @returns the tools' names, in the order of their kinds
  */
 function toolsCalled(commands: string): readonly string[] {
-  return commands === DENY_FETCH.source ? [DATABASE, CRATES, NODE, EVERY_BINARY] : [];
+  const calls = cargoCallsIn(commands);
+  const readers = cargoCallsIn(commands.replaceAll(DENY_FETCH, ""));
+  const binaries = commands.matchAll(BINARY_CALL).map((match) => match.groups?.["path"] ?? "");
+  const tools = [
+    ...CARGO_TOOLS.filter((tool) => calls.has(tool)).map((tool) => `cargo-${tool}`),
+    ...(readers.has("deny") ? [DATABASE] : []),
+    ...(OFFLINE_READERS.some((name) => readers.has(name)) ? [CRATES] : []),
+    ...(runsNodeIn(commands) ? [NODE] : []),
+    ...binaries,
+  ];
+
+  return [...new Set(tools)];
+}
+
+/**
+ * The path of the artifact a step downloads, when a job the step's job waits for uploads it from
+ * there: the folder downloaded into, then the artifact's name.
+ *
+ * @param step - a step of a job
+ * @param waits - the jobs its job waits for
+ * @param uploads - the artifacts the workflow's jobs upload, by name
+ * @returns that path, none when the step receives no such artifact
+ */
+function receivedBy(
+  step: Step,
+  waits: readonly string[],
+  uploads: ReadonlyMap<string, Upload>,
+): readonly string[] {
+  const name = inputOf(step, "name");
+  const upload = uploads.get(name);
+
+  if (upload === undefined || !isUse(step, "actions/download-artifact")) {
+    return [];
+  }
+
+  return waits.includes(upload.job) && upload.path === `${inputOf(step, "path")}/${name}`
+    ? [upload.path]
+    : [];
+}
+
+/**
+ * The tools a step installs: a cargo tool, the database, the crates, or release binaries.
+ *
+ * @param step - a step of a job
+ * @returns the tools' names, `target/release/*` for every release binary
+ */
+function installedBy(step: Step): readonly string[] {
+  const built = BUILD_ONE.exec(runOf(step))?.groups?.["name"];
+  const cargoTools = CARGO_TOOLS.filter(
+    (tool) => isRun(step, "cargo install ") && step.text.includes(`cargo-${tool}@`),
+  ).map((tool) => `cargo-${tool}`);
+  const fetched = FETCHES.filter(([command]) => isRun(step, command)).map(([, tool]) => tool);
+  const binaries = [
+    ...(buildsBinaries(step) ? [EVERY_BINARY] : []),
+    ...(built === undefined ? [] : [`target/release/${built}`]),
+  ];
+
+  return [...cargoTools, ...fetched, ...binaries];
 }
 
 /**
@@ -511,7 +644,20 @@ function toolsGiven(
   waits: readonly string[],
   uploads: ReadonlyMap<string, Upload>,
 ): ReadonlySet<string> {
-  return waits.includes("\0") && steps.length === uploads.size ? new Set([""]) : new Set();
+  const downloads = steps.flatMap((step, index) =>
+    receivedBy(step, waits, uploads).map((path) => ({ index, path })),
+  );
+  const executables = steps.flatMap((step, index) =>
+    downloads
+      .filter((received) => received.index < index && runOf(step) === `chmod +x ${received.path}`)
+      .map((received) => received.path),
+  );
+  const own = steps.flatMap((step) => installedBy(step));
+  const node =
+    steps.some((step) => isUse(step, "actions/setup-node")) &&
+    steps.some((step) => isRun(step, "npm ci"));
+
+  return new Set([...own, ...(node ? [NODE] : []), ...executables]);
 }
 
 /**
@@ -522,7 +668,27 @@ function toolsGiven(
  * @returns each as `<job>: <tool>`, once per job, in the order of the jobs and their steps
  */
 function missingTools(lines: readonly string[], skipped: readonly string[]): readonly string[] {
-  return lines.includes("\0") ? [...toolsGiven([], skipped, new Map())] : [];
+  const jobs = jobsOf(lines);
+  const uploads = uploadsOf(jobs);
+
+  return jobs
+    .entries()
+    .filter(([key]) => !skipped.includes(key))
+    .flatMap(([key, job]) => {
+      const steps = stepsOf(job);
+      const waits = waitsFor(job);
+      const missing = steps.flatMap((step, index) => {
+        const given = toolsGiven(steps.slice(0, index), waits, uploads);
+
+        return toolsCalled(commandsIn(runOf(step))).filter(
+          (tool) =>
+            !given.has(tool) && !(tool.startsWith("target/release/") && given.has(EVERY_BINARY)),
+        );
+      });
+
+      return [...new Set(missing)].map((tool) => `${key}: ${tool}`);
+    })
+    .toArray();
 }
 
 describe("one workflow per purpose (ADR-0088)", () => {
@@ -711,7 +877,7 @@ describe("the steps of the CI's lanes (EN-133)", () => {
   });
 
   it("[F28.AC3] installs each cargo tool only in the lanes that call it", () => {
-    for (const tool of ["llvm-cov", "deny"]) {
+    for (const tool of CARGO_TOOLS) {
       const installs = misplaced(
         (step) => isRun(step, "cargo install ") && step.text.includes(`cargo-${tool}@`),
         (entry) => cargoCallsOf(entry).has(tool),

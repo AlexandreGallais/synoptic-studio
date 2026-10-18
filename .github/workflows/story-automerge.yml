@@ -57,13 +57,16 @@ jobs:
         # reads its state (`REF-GH-CLI-PR-VIEW`). Merged into develop, it dispatches the develop CI
         # on develop, which this merge's push by the GITHUB_TOKEN does not start
         # (`REF-GH-TOKEN-TRIGGERS`, `REF-GH-CLI-WORKFLOW-RUN`, ADR-0088, decision 5); no merge, no
-        # dispatch. The base read here until EN-134 splits this workflow by its base.
+        # dispatch. A dispatch refused, as it is while develop-ci.yml is not on main, the default
+        # branch (`REF-GH-WORKFLOW-DISPATCH`), leaves a warning annotation and the run green, the
+        # merge being done (`REF-GH-WORKFLOW-COMMANDS`, EN-136). The base read here until EN-134
+        # splits this workflow by its base.
         run: |
           for attempt in 1 2 3 4 5; do
             gh pr merge "$PR_URL" --auto --merge || echo "Attempt $attempt: gh pr merge failed."
             if [ "$(gh pr view "$PR_URL" --json state --jq .state)" = MERGED ]; then
-              if [ "$BASE" = develop ]; then
-                gh workflow run develop-ci.yml --ref develop --repo "$GITHUB_REPOSITORY"
+              if [ "$BASE" = develop ] && ! gh workflow run develop-ci.yml --ref develop --repo "$GITHUB_REPOSITORY"; then
+                echo "::warning::The develop CI was not dispatched: GitHub refused the dispatch, as it does while develop-ci.yml is not yet on main, the default branch; $PR_URL is merged."
               fi
               exit 0
             fi
