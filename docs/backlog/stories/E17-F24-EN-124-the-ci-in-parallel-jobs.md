@@ -3,7 +3,7 @@ id: EN-124
 epic: E17
 feature: F24
 title: The CI in parallel jobs, its tests shown as they run
-status: ready
+status: done
 points: 3
 ---
 
