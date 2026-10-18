@@ -192,7 +192,7 @@ fn stop_with_children(child: &mut std::process::Child) {
     let _ = Command::new("kill")
         .args(group_kill_arguments(child.id()))
         .status();
-    #[cfg(not(unix))]
+    // The command itself too, should the group's signal not reach it.
     let _ = child.kill();
 }
 
@@ -200,8 +200,8 @@ fn stop_with_children(child: &mut std::process::Child) {
 /// negative id after `--`, since Linux's `kill` reads an argument starting with `-` before it as a
 /// signal (EN-127).
 #[cfg(unix)]
-fn group_kill_arguments(group: u32) -> Vec<String> {
-    vec!["-KILL".to_owned(), format!("-{group}")]
+fn group_kill_arguments(group: u32) -> [String; 3] {
+    ["-KILL".to_owned(), "--".to_owned(), format!("-{group}")]
 }
 
 /// The temporary copy, removed when dropped.
