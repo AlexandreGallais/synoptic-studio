@@ -1,5 +1,5 @@
 //! The `ignorePatterns` of `.oxfmtrc.json`, so that the table pass skips the files oxfmt skips
-//! (`CHANGELOG.md`, generated pages). Only plain paths are read: a name without `/` matches that
+//! (generated pages, data files). Only plain paths are read: a name without `/` matches that
 //! name at any depth, a path with `/` from the root; a glob is refused, never guessed.
 
 /// The strings of the `ignorePatterns` array of a configuration's text; none without the key.

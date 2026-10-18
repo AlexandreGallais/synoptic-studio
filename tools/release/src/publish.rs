@@ -1,24 +1,26 @@
-//! `release publish`, on the push of a release's merge into `main` (ADR-0079): the version of
-//! `package.json`, its entry checked, then the GitHub release `vx.y.z` made on the merge commit
-//! with the entry as its notes and the test report of the pull request's CI attached. It makes no
-//! commit: GitHub makes the tag with the release. Every Git and GitHub call goes through a [`Run`],
+//! `release publish`, by the button of `release.yml` on `main` (ADR-0086): the version from the
+//! last tag `vx.y.z` and the commits since (`REF-SEMVER`), its notes the bodies of the pull
+//! requests into `main` merged since that tag, each checked as `release check` does, then the
+//! GitHub release made on `main`'s head, which GitHub tags, the test report of the last pull
+//! request's CI attached. It makes no commit. Every Git and GitHub call goes through a [`Run`],
 //! so that a test gives the answers.
 
 use std::fs;
 use std::path::Path;
 
-use crate::changelog::notes;
+use crate::backlog::Backlog;
+use crate::body::{Text, joined, release_text, text};
 use crate::check::check;
-use crate::history::Run;
-use crate::manifest::{repository, version};
+use crate::draft::{bump, lines};
+use crate::history::{Run, commits, last_release, merged_pull_requests};
 
 /// What `release publish` did.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Published {
     /// The release of this tag was made.
     Released(String),
-    /// The tag's release already existed: nothing done.
-    Already(String),
+    /// No commit since this tag: nothing to release.
+    Nothing(String),
 }
 
 /// The name of the CI's artifact holding the test report (`ci.yml`, ADR-0027).
@@ -32,33 +34,39 @@ fn first_line(output: &str) -> String {
     output.lines().next().unwrap_or_default().trim().to_owned()
 }
 
-/// Publishes the release of the head of `main`, its files read under `root`, the notes and the
-/// report written in `folder`.
-///
-/// # Errors
-///
-/// A file cannot be read, the entry breaks a rule, the head is not a merge, no successful CI run of
-/// the pull request's head is found, or a Git or GitHub command fails.
-pub fn publish(root: &Path, run: &mut Run<'_>, folder: &Path) -> Result<Published, String> {
-    let read = |file: &str| {
-        fs::read_to_string(root.join(file)).map_err(|error| format!("{file}: {error}"))
-    };
-    let package = read("package.json")?;
-    let changelog = read("CHANGELOG.md")?;
-    let written = version(&package).ok_or("package.json holds no version".to_owned())?;
-    let address = repository(&package).ok_or("package.json names no repository url".to_owned())?;
-    let tag = format!("v{written}");
+/// The release text of each pull request, the latest first, each checked.
+fn texts(run: &mut Run<'_>, numbers: &[u32]) -> Result<Vec<(u32, Text)>, String> {
+    let mut read = Vec::new();
 
-    if let Some(finding) = check(&changelog, &address, written).first() {
-        return Err(format!(
-            "CHANGELOG.md:{}: {} (release check)",
-            finding.line, finding.message
-        ));
-    }
-    if run("gh", &["release", "view", &tag, "--json", "tagName"]).is_ok() {
-        return Ok(Published::Already(tag));
-    }
+    for &number in numbers {
+        let body = run(
+            "gh",
+            &[
+                "pr",
+                "view",
+                &number.to_string(),
+                "--json",
+                "body",
+                "--jq",
+                ".body",
+            ],
+        )?;
+        let released = release_text(&body);
 
+        if let Some(finding) = check(&released).first() {
+            return Err(format!(
+                "pull request #{number}:{}: {} (release check)",
+                finding.line, finding.message
+            ));
+        }
+        read.push((number, text(&released)));
+    }
+    Ok(read)
+}
+
+/// The run of `ci.yml` that passed on the head of the pull request `main`'s head merged, for its
+/// test report; `main`'s head and that run.
+fn ci_run(run: &mut Run<'_>) -> Result<(String, String), String> {
     let head = first_line(&run("git", &["rev-parse", "HEAD"])?);
     let pull_request_head = first_line(
         &run("git", &["rev-parse", "HEAD^2"])
@@ -89,13 +97,37 @@ pub fn publish(root: &Path, run: &mut Run<'_>, folder: &Path) -> Result<Publishe
             "no successful CI run of {pull_request_head}, the pull request's head: no test report"
         ));
     }
+    Ok((head, ci_run))
+}
 
-    let notes_text = notes(&changelog, written).unwrap_or_default();
+/// Publishes the release of the head of `main`, the notes and the report written in `folder`.
+///
+/// # Errors
+///
+/// No tag `vx.y.z` is behind the head, a body breaks a rule or two hold a notice, the head is not
+/// a merge, no successful CI run of the pull request's head is found, or a Git or GitHub command
+/// fails.
+pub fn publish(run: &mut Run<'_>, folder: &Path) -> Result<Published, String> {
+    let (previous, current) = last_release(run, "HEAD")?;
+    let range = format!("{previous}..HEAD");
+    let released = commits(run, &range)?;
+
+    if released.is_empty() {
+        return Ok(Published::Nothing(previous));
+    }
+
+    let version = current
+        .bumped(bump(&lines(&released, &Backlog::default())))
+        .to_string();
+    let tag = format!("v{version}");
+    let merged = merged_pull_requests(run, &range)?;
+    let notes = joined(&texts(run, &merged)?)?;
+    let (head, ci_run) = ci_run(run)?;
     let notes_file = folder.join("notes.md");
     let folder_text = folder.to_string_lossy().into_owned();
 
     fs::create_dir_all(folder).map_err(|error| format!("{folder_text}: {error}"))?;
-    fs::write(&notes_file, notes_text).map_err(|error| format!("notes.md: {error}"))?;
+    fs::write(&notes_file, notes).map_err(|error| format!("notes.md: {error}"))?;
     run(
         "gh",
         &[
@@ -117,7 +149,7 @@ pub fn publish(root: &Path, run: &mut Run<'_>, folder: &Path) -> Result<Publishe
             "--target",
             &head,
             "--title",
-            written,
+            &version,
             "--notes-file",
             &notes_file.to_string_lossy(),
             &folder.join(REPORT_FILE).to_string_lossy(),

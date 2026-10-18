@@ -19,9 +19,6 @@ const FORMAT = "cargo run --release -q -p format --";
 /** The command of the project's linter, run after oxlint (EN-075). */
 const PROJECT_LINT = "cargo run --release -q -p lint --";
 
-/** The Markdown pages the project's linter leaves out: the changelog, written by `release prepare` and checked by `release check`. */
-const UNLINTED_PAGES = new Set(["CHANGELOG.md"]);
-
 /** oxfmt, as npm installs it. */
 const OXFMT = join(ROOT, "node_modules", ".bin", "oxfmt");
 
@@ -222,7 +219,7 @@ describe("check tools given explicit targets (EN-045)", () => {
   });
 
   it("[F19.AC4] gives the project's linter every tracked Markdown page", () => {
-    const pages = TRACKED.filter((path) => path.endsWith(".md") && !UNLINTED_PAGES.has(path));
+    const pages = TRACKED.filter((path) => path.endsWith(".md"));
 
     expect(pages.length).toBeGreaterThan(0);
     expect(leftOut(targetsOf("lint", PROJECT_LINT), pages)).toEqual([]);

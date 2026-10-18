@@ -1,23 +1,25 @@
-//! `release <prepare|check|notes|publish>` from the repository's root (EN-112, ADR-0079):
+//! `release <notes|check|publish>` from the repository's root (ADR-0086):
 //!
-//! - `prepare [--date YYYY-MM-DD]` makes the branch `release/x.y.z` at the head of a clean
-//!   checkout and writes the version and the entry's draft, then lists the commits behind each line;
-//! - `check` checks the latest entry of `CHANGELOG.md` and the versions of the manifests;
-//! - `notes [x.y.z]` prints a version's entry without its heading, `package.json`'s by default;
-//! - `publish`, on `main` after a release's merge, makes its GitHub release with the entry and the
-//!   test report, and writes `released` and `tag` into `$GITHUB_OUTPUT` when the workflow sets it.
+//! - `notes [<base>]` prints the draft of the features' text from the commits `base` lacks,
+//!   `origin/main` by default, then, on the error output, the commits behind each line; it writes
+//!   no file and makes no branch;
+//! - `check <file>` checks a release text, the body of a pull request into `main`, up to its
+//!   first line `---`;
+//! - `publish`, by the button of `release.yml` on `main`, computes the version from the last tag,
+//!   makes the GitHub release on the head with the bodies of the pull requests merged since and
+//!   the test report, and does nothing without a commit since that tag.
 
-use std::fs::{self, OpenOptions};
-use std::io::Write as _;
+use std::fs;
 use std::path::Path;
 use std::process::{Command, ExitCode};
 
-use calendar::today;
-use release::changelog::notes;
+use release::body::release_text;
 use release::check::check;
-use release::manifest::{lock_versions, repository, version};
-use release::prepare::prepare;
+use release::feature_text::feature_text;
 use release::publish::{Published, publish};
+
+/// The base `release notes` drafts from when none is given: what `main` already holds.
+const DEFAULT_BASE: &str = "origin/main";
 
 /// A command run in the repository's root, for its output.
 fn run(program: &str, args: &[&str]) -> Result<String, String> {
@@ -37,156 +39,82 @@ fn run(program: &str, args: &[&str]) -> Result<String, String> {
     }
 }
 
-/// A file of the root, empty when it cannot be read.
-fn read(file: &str) -> String {
-    fs::read_to_string(file).unwrap_or_default()
-}
-
-/// `release prepare`: its exit code.
-fn prepare_release(args: &[String]) -> u8 {
-    let date = match args {
-        [] => today(),
-        [flag, date] if flag == "--date" => date.clone(),
+/// `release notes`: its exit code.
+fn print_notes(args: &[String]) -> u8 {
+    let base = match args {
+        [] => DEFAULT_BASE,
+        [base] => base.as_str(),
         _ => {
-            eprintln!("usage: release prepare [--date YYYY-MM-DD]");
+            eprintln!("usage: release notes [<base>]");
             return 2;
         }
     };
     let mut runner = run;
 
-    match run("git", &["status", "--porcelain", "--untracked-files=no"]) {
-        Ok(status) if status.trim().is_empty() => {}
-        Ok(_) => {
-            eprintln!("release prepare: the checkout has uncommitted changes");
-            return 1;
+    match feature_text(Path::new("."), &mut runner, base) {
+        Ok(drafted) => {
+            print!("{}", drafted.text);
+            eprint!("{}", drafted.hints);
+            eprintln!(
+                "{} line(s) drafted from the commits {base} lacks. Rewrite each `[draft]` line in \
+                 the imperative mood (docs/tooling/releases.md), then run `release check` on the \
+                 body.",
+                drafted.lines
+            );
+            0
         }
-        Err(error) => {
-            eprintln!("release prepare: {error}");
-            return 1;
-        }
-    }
-
-    let prepared = match prepare(Path::new("."), &mut runner, &date) {
-        Ok(prepared) => prepared,
         Err(message) => {
-            eprintln!("release prepare: {message}");
-            return 1;
-        }
-    };
-    let branch = format!("release/{}", prepared.version);
-
-    if let Err(error) = run("git", &["switch", "-c", &branch]) {
-        eprintln!("release prepare: {error}");
-        return 1;
-    }
-    for (file, text) in [
-        ("package.json", &prepared.package),
-        ("package-lock.json", &prepared.lock),
-        ("CHANGELOG.md", &prepared.changelog),
-    ] {
-        if let Err(error) = fs::write(file, text) {
-            eprintln!("release prepare: {file}: {error}");
-            return 1;
+            eprintln!("release notes: {message}");
+            1
         }
     }
-
-    print!("{}", prepared.hints);
-    println!(
-        "{} → {} on {branch}: {} line(s) drafted in CHANGELOG.md. Rewrite each `[draft]` line in \
-         the imperative mood (docs/tooling/releases.md), run `release check`, then commit \
-         `chore: release {}`.",
-        prepared.previous, prepared.version, prepared.lines, prepared.version
-    );
-    0
 }
 
 /// `release check`: its exit code.
-fn check_release() -> u8 {
-    let package = read("package.json");
-    let lock = read("package-lock.json");
-    let changelog = read("CHANGELOG.md");
-    let Some(address) = repository(&package) else {
-        eprintln!("release check: package.json names no repository url");
-        return 1;
+fn check_text(args: &[String]) -> u8 {
+    let [file] = args else {
+        eprintln!("usage: release check <file>");
+        return 2;
     };
-    let written = version(&package).unwrap_or_default();
-    let mut failed = false;
+    let body = match fs::read_to_string(file) {
+        Ok(body) => body,
+        Err(error) => {
+            eprintln!("release check: {file}: {error}");
+            return 1;
+        }
+    };
+    let findings = check(&release_text(&body));
 
-    for finding in check(&changelog, &address, written) {
-        eprintln!("CHANGELOG.md:{}: {}", finding.line, finding.message);
-        failed = true;
+    for finding in &findings {
+        eprintln!("{file}:{}: {}", finding.line, finding.message);
     }
-    let (top, root) = lock_versions(&lock);
-
-    if top != Some(written) || root != Some(written) {
-        eprintln!("package-lock.json: its two versions of the package must be {written}");
-        failed = true;
-    }
-    if failed {
-        1
-    } else {
-        println!("CHANGELOG.md: the entry of {written} follows the rules release check reads");
-        0
-    }
-}
-
-/// `release notes`: its exit code.
-fn print_notes(args: &[String]) -> u8 {
-    let package = read("package.json");
-    let wanted = args
-        .first()
-        .cloned()
-        .unwrap_or_else(|| version(&package).unwrap_or_default().to_owned());
-
-    if let Some(text) = notes(&read("CHANGELOG.md"), &wanted) {
-        print!("{text}");
+    if findings.is_empty() {
+        println!("{file}: the release text follows the rules release check reads");
         0
     } else {
-        eprintln!("release notes: CHANGELOG.md holds no entry of {wanted}");
         1
     }
-}
-
-/// Appends the outputs of the release to the file the workflow names, when it names one.
-fn write_outputs(released: bool, tag: &str) -> Result<(), String> {
-    let Some(file) = std::env::var_os("GITHUB_OUTPUT") else {
-        return Ok(());
-    };
-
-    OpenOptions::new()
-        .create(true)
-        .append(true)
-        .open(&file)
-        .and_then(|mut output| writeln!(output, "released={released}\ntag={tag}"))
-        .map_err(|error| format!("GITHUB_OUTPUT: {error}"))
 }
 
 /// `release publish`: its exit code.
 fn publish_release() -> u8 {
     let folder = std::env::temp_dir().join(format!("release-publish-{}", std::process::id()));
     let mut runner = run;
-    let published = publish(Path::new("."), &mut runner, &folder);
+    let published = publish(&mut runner, &folder);
     let _ = fs::remove_dir_all(&folder);
 
-    let (released, tag) = match published {
+    match published {
         Ok(Published::Released(tag)) => {
             println!(
-                "released {tag}, its notes the entry of CHANGELOG.md, the test report attached"
+                "released {tag}, its notes the bodies of the pull requests merged since the last \
+                 tag, the test report attached"
             );
-            (true, tag)
+            0
         }
-        Ok(Published::Already(tag)) => {
-            println!("{tag} is already released: nothing to do");
-            (false, tag)
+        Ok(Published::Nothing(tag)) => {
+            println!("no commit since {tag}: nothing to release");
+            0
         }
-        Err(message) => {
-            eprintln!("release publish: {message}");
-            return 1;
-        }
-    };
-
-    match write_outputs(released, &tag) {
-        Ok(()) => 0,
         Err(message) => {
             eprintln!("release publish: {message}");
             1
@@ -200,14 +128,11 @@ fn main() -> ExitCode {
     let rest = args.get(1..).unwrap_or_default().to_vec();
 
     tool_use::run("release", &subcommand, || match subcommand.as_str() {
-        "prepare" => prepare_release(&rest),
-        "check" => check_release(),
         "notes" => print_notes(&rest),
+        "check" => check_text(&rest),
         "publish" => publish_release(),
         _ => {
-            eprintln!(
-                "usage: release <prepare [--date YYYY-MM-DD] | check | notes [x.y.z] | publish>"
-            );
+            eprintln!("usage: release <notes [<base>] | check <file> | publish>");
             2
         }
     })

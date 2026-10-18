@@ -113,7 +113,7 @@ Stop when going on would mean deciding what belongs to someone else, or guessing
 
 - Commits follow Conventional Commits with a scope of the closed list `SCOPES` in `tools/git-hooks/src/message.rs` (`docs/process/` takes `docs(docs)`, a derivation `docs(geometry)`); the subject starts with a verb, since an id first (`F11 …`) is refused as sentence case; a body line starting with `word:` is read as a footer, so the colon goes later in the line.
 - A commit refused by a hook leaves its files staged: check `git status` before retrying.
-- A release is made by the Product Owner's merge of `develop` into `main` from 0.3.0 (ADR-0083, once EN-117 lands); until then it is prepared on `release/x.y.z` from `develop` by `target/release/release prepare` and published from `main` by `release publish` (ADR-0079, `docs/tooling/releases.md`); after it, bring `develop` up to `main` (`git merge --ff-only origin/main`, a merge if `develop` moved) and delete the release branch.
+- The pull request `develop` → `main` of a review has for body the features' text, drafted by `target/release/release notes` and checked by `target/release/release check <file>`; after its merge, bring `develop` up to `main` (`git merge --ff-only origin/main`, a merge if `develop` moved). A release is the Product Owner's button on `main`, `release publish` computing the version from the tags, with no commit (ADR-0086, `docs/tooling/releases.md`).
 - The release needs no personal token, `GITHUB_TOKEN` alone: remind the Product Owner to delete the secret `RELEASE_PLEASE_TOKEN` and its token on GitHub until they say it is done.
 
 ## Commands
