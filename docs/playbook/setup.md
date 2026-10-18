@@ -53,6 +53,17 @@ Copy before the first run with parallel workers:
 | the worker brief versioned in the run skill, naming the commands that fit a worktree | 549 compound commands refused in worktrees |
 | a register of exceptions to the rules, checked | each exception visible and justified |
 
+## Fast tools for the agent (E17)
+
+| Setting | Why |
+| --- | --- |
+| every tool around the library in Rust, called by its binary (`target/release/<binary>`), rebuilt after each sync and merge | 3 ms a hook against 50 to 150 ms through `cargo run` or `npm run` (ADR-0078) |
+| one linter (oxlint, then the project's rules in Rust on Oxc's crates) and one formatter, every rule triaged before it is enabled | `check:all` from 170–217 s to about 73 s; 38 dev packages to 13 |
+| a worker type with the project's rules preloaded, without `CLAUDE.md` | a story worker's first request from 38,897 to 10,562 tokens (EN-065) |
+| the Git sequences a worker repeats as one call each (`git-sequences sync`, `commit`) | Git calls per worker from a median of 12 to 4 |
+| one row or one section read by `page`, every page fetched through the library | `docs/references.md` read whole 121 times in three days before |
+| a tool that fails during a run written as a card, all fixed together at the epic's end | each fix during a run cost a worktree, a merge and a rebuild of every running story's binaries |
+
 ## Cases met in E01
 
 | Case | What the kit does |
@@ -66,3 +77,4 @@ Copy before the first run with parallel workers:
 | a computer frozen by parallel agents (E15) | the agent limit and the heavy lock in the tools |
 | merge conflicts on indexes and logs (E15) | shared files written at merge; generated indexes; unpadded tables |
 | a checklist of 50 lines (E15) | at most 12 lines per feature, each tried before the validation |
+| a CI red on the release's pull request only (E17) | the CI's last result read before a release |
