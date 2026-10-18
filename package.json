@@ -50,7 +50,7 @@
     "docs:build": "cargo run --release -q -p heavy-lock -- sh -c \"npm run docs:api && vitepress build docs\"",
     "docs:preview": "vitepress preview docs",
     "playground:build": "vite build --mode playground",
-    "metrics": "node --harmony-temporal scripts/metrics-report.ts",
+    "metrics": "cargo run --release -q -p metrics --bin metrics --",
     "metrics:session": "cargo run --release -q -p metrics --bin session-report --",
     "context:size": "cargo run --release -q -p hooks --bin context-size --",
     "page": "cargo run --release -q -p page --",

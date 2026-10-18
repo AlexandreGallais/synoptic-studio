@@ -18,25 +18,11 @@ use metrics::git::{common_dir, git};
 use metrics::session::{
     markdown_report, reported_events, session_figures, session_files, terminal_report,
 };
+use metrics::time::temporal_text;
 use metrics::turns::{render_turn, turn_record};
 use run_totals::marker::parse_run;
 use run_totals::report::report_table;
 use run_totals::totals::{count_run, projects_dir};
-use tool_use::iso_instant;
-
-/// An instant as Temporal writes it: `2026-10-18T09:00:00Z`, its milliseconds only when not 0 and
-/// without their trailing zeros (`.12Z`).
-fn temporal_text(epoch_ms: i64) -> String {
-    let full = iso_instant(epoch_ms);
-    let (seconds, fraction) = full.split_once('.').unwrap_or((&full, "000Z"));
-    let digits = fraction.trim_end_matches('Z').trim_end_matches('0');
-
-    if digits.is_empty() {
-        format!("{seconds}Z")
-    } else {
-        format!("{seconds}.{digits}Z")
-    }
-}
 
 /// The report of the open or last run, as `run-totals report` prints it.
 fn run_report(common: &std::path::Path, home: &std::path::Path) -> Result<String, String> {

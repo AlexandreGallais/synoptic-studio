@@ -12,11 +12,12 @@ use hooks::json::quote;
 use run_totals::tally::Tokens;
 use serde_json::Value;
 
+use crate::findings::Finding;
 use crate::json::Json;
 use crate::transcript::{Answer, Request, ToolUse, Transcript, read_chunk};
 
 /// The cache's first line: a cache written by another version of this reader is not read.
-const HEADER: &str = "{\"version\":1}";
+const HEADER: &str = "{\"version\":2}";
 
 /// The cache's file name, in `.git/metrics/`.
 pub const CACHE_FILE: &str = "transcripts-cache.jsonl";
@@ -56,7 +57,7 @@ pub fn render_entry(path: &str, transcript: &Transcript) -> String {
     let list = |items: Vec<String>| items.join(",");
 
     format!(
-        "{{\"path\":{},\"offset\":{},\"isWaiting\":{},\"turnStart\":{},\"requests\":[{}],\"uses\":[{}],\"answers\":[{}]}}",
+        "{{\"path\":{},\"offset\":{},\"isWaiting\":{},\"turnStart\":{},\"requests\":[{}],\"uses\":[{}],\"answers\":[{}],\"findings\":[{}]}}",
         quote(path),
         transcript.offset,
         transcript.is_waiting,
@@ -70,6 +71,19 @@ pub fn render_entry(path: &str, transcript: &Transcript) -> String {
                 .map(|(id, answer)| format!("[{},{},{}]", quote(id), answer.end, answer.is_ok))
                 .collect()
         ),
+        list(transcript.findings.iter().map(finding_json).collect()),
+    )
+}
+
+/// A finding written as an array: time, branch, kind, rule, count.
+fn finding_json(finding: &Finding) -> String {
+    format!(
+        "[{},{},{},{},{}]",
+        finding.time,
+        quote(&finding.branch),
+        quote(&finding.kind),
+        quote(&finding.rule),
+        finding.count
     )
 }
 
@@ -142,6 +156,22 @@ pub fn parse_entry(line: &str) -> Option<(String, Transcript)> {
             )
         })
         .collect();
+    let findings = json
+        .at("findings")
+        .items()
+        .iter()
+        .map(|item| {
+            let fields = item.items();
+
+            Finding {
+                time: whole_at(fields, 0),
+                branch: text_at(fields, 1),
+                kind: text_at(fields, 2),
+                rule: text_at(fields, 3),
+                count: whole_at(fields, 4),
+            }
+        })
+        .collect();
 
     Some((
         json.at("path").text().to_owned(),
@@ -152,6 +182,7 @@ pub fn parse_entry(line: &str) -> Option<(String, Transcript)> {
             answers,
             is_waiting: *json.at("isWaiting") != Value::Bool(false),
             turn_start: json.at("turnStart").whole(),
+            findings,
         },
     ))
 }

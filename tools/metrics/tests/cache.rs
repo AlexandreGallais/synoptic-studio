@@ -56,10 +56,10 @@ fn drops_a_cache_of_another_version() {
     let entry = render_entry("x", &Transcript::default());
 
     assert_eq!(
-        parse_cache(&format!("{{\"version\":1}}\n{entry}\n")).len(),
+        parse_cache(&format!("{{\"version\":2}}\n{entry}\n")).len(),
         1
     );
-    assert!(parse_cache(&format!("{{\"version\":0}}\n{entry}\n")).is_empty());
+    assert!(parse_cache(&format!("{{\"version\":1}}\n{entry}\n")).is_empty());
     assert!(parse_cache("").is_empty());
 }
 
@@ -76,7 +76,7 @@ fn reads_a_transcript_from_where_the_cache_left_it() {
     assert!(
         fs::read_to_string(&cache)
             .expect("cache written")
-            .starts_with("{\"version\":1}\n")
+            .starts_with("{\"version\":2}\n")
     );
 
     // The request goes on (its last line counts 9 written), its call is answered, a second one is
