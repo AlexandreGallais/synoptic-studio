@@ -44,7 +44,7 @@ Every dependency is code the project did not write and must trust, so each one i
 
 | Package | Why | Alternatives rejected |
 | --- | --- | --- |
-| `secretlint` | finds keys, tokens and passwords in any file, at commit, at push and in the CI | `gitleaks`: a Go binary outside npm |
+| `secretlint` | finds keys, tokens and passwords in any file, at commit, at push and in the CI; run by `lint:secrets` through `xargs` and by the pre-commit hook's Rust runner, which knip does not read (`knip.json`, `ignoreDependencies`) | `gitleaks`: a Go binary outside npm |
 | `@secretlint/secretlint-rule-preset-recommend` | secretlint's recommended rules | — |
 
 ### Maintenance
