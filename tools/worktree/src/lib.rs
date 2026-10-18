@@ -3,6 +3,8 @@
 //! GitHub. The topic comes from the story's file name, the branch type from the story's kind, the
 //! feature branch from the remote branches. What the tool runs is decided here, without Git.
 
+pub mod seed;
+
 use std::path::{Path, PathBuf};
 
 /// Folder of the worktrees, from the main checkout.
