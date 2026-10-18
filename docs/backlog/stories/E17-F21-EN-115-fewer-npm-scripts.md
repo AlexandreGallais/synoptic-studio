@@ -25,5 +25,58 @@ Decided on 2026-10-18: `package.json` held 52 scripts, of which the Product Owne
 One task = one commit, referenced as `EN-115.Tn`.
 
 - [x] T1 — The story file (15 min)
-- [ ] T2 — The inventory of the 52 scripts and their callers (30 min)
+- [x] T2 — The inventory of the 52 scripts and their callers (30 min)
 - [ ] T3 — The scripts without a caller removed; the code, the tests, the pages and the rules on the binaries; ADR-0082 (2 h)
+
+## Inventory
+
+Searched on 2026-10-18 in `package.json`, `.githooks/`, `.github/`, `.mcp.json`, `.claude/`, the sources of `tools/` (`check-all`'s `LANES` and `BEFORE_LANES`, `scripts::run_script`, the hooks' messages) and `tests/`: `npm run <name>`, `npm run --silent <name>`, and the name quoted in code. A mention in a page or a doc comment is no caller: it names the command for a reader, and is rewritten when the script goes.
+
+`check-all` runs its lanes' scripts by name, reading their commands from `package.json` and running them in a shell without npm, the heavy lock it holds taken off (`command_of`); `backlog-status` and `story-finish` run `backlog:index` the same way, and their tests give a temporary repository a `backlog:index` of its own. Those names are callers.
+
+### Kept
+
+| Script | Caller |
+| --- | --- |
+| `dev`, `build`, `preview`, `docs:dev`, `fix`, `test`, `check:all` | the Product Owner; `check:all` also the `pre-push` hook, `ci.yml`, `epic-check` and the pull request template; `build` also `ci.yml`; `test` also `check-all`'s `test` lane |
+| `prepare` | npm's lifecycle, at `npm install` and `npm ci` |
+| `rust:build` | `prepare`, `ci.yml`, `release.yml`, `check-all` before its lanes (`BEFORE_LANES`) |
+| `golden:check` | the `pre-push` hook, when the golden file is written |
+| `docs:build`, `playground:build` | `release.yml`; `check-all`'s docs lane |
+| `deps:audit` | `build`; `check-all`'s lane of the repository's checks |
+| `lint`, `format:check`, `lint:secrets`, `deps:unused`, `deps:outdated`, `check:rust` | `check-all`'s lanes |
+| `rust:advisories`, `rust:coverage`, `rust:fresh` | `check:rust` |
+| `docs:api` | `docs:dev`, `docs:build` |
+| `backlog:index` | `backlog-status` and `story-finish` (`scripts::run_script`) |
+| `story:finish` | the `check-handback` hook's message names it as the main thread's next command; it runs `story-finish` under the merge lock, and `.claude/settings.json` allows neither `target/release/story-finish` nor `heavy-lock`, which asks at each call (AUD-023) |
+| `mutate` | the audit skill; it runs `mutate` under the heavy lock, and neither its binary nor `heavy-lock` is allowed without asking |
+
+`story:finish` and `mutate` have no caller of the list the request names: they stay because calling their binary instead takes no lock, and calling it under `heavy-lock` asks the Product Owner each time; changing the permissions is not the agent's to do (For the main thread).
+
+### Removed
+
+| Script | Callers found | Called instead |
+| --- | --- | --- |
+| `check` | none: `check:all` runs the same checks in lanes | `npm run check:all` |
+| `test:watch` | none | `npx vitest` |
+| `typecheck` | none: `fix` and `lint` report the type errors (EN-091) | `npx tsc --noEmit` |
+| `format` | none: `fix` formats, then lints | `npm run fix` |
+| `docs:preview` | none | `npx vitepress preview docs` |
+| `metrics`, `metrics:session`, `activity` | none | `target/release/metrics`, `target/release/session-report`, `target/release/activity` |
+| `context:size` | none | `target/release/context-size` |
+| `page` | none | `target/release/page` |
+| `library` | none: `.mcp.json` starts `library-mcp` by Cargo | `target/release/library` |
+| `worktree:new` | none | `target/release/worktree-new` |
+| `git:sync`, `git:commit` | none | `target/release/git-sequences sync`, `commit` |
+| `run:start`, `run:end`, `run:should-stop` | none | `target/release/run-totals start`, `end`, `should-stop` |
+| `branches:clean` | none | `target/release/branches-clean` |
+| `records:save` | none | `target/release/records-save` |
+| `replace` | none | `target/release/replace` |
+| `golden:write` | none: `guard-bash` refuses it in a worktree, by its name | `npx vitest run tests/golden-results.test.ts --mode golden-write`, which `guard-bash` refuses in a worktree by its mode |
+| `backlog:status` | none | `target/release/backlog-status` |
+| `val:prepare` | none | `target/release/val-prepare .` |
+| `release:prepare` | none | `target/release/release prepare` |
+| `epic:check` | none | `target/release/epic-check` |
+| `font:metrics` | none | `node scripts/default-font-metrics.ts` |
+
+26 kept, 26 removed.
