@@ -75,6 +75,10 @@ jobs:
           path: target/release/git-hooks
           if-no-files-found: error
           retention-days: 1
+      # Every crate of Cargo.lock, for every target (`REF-CARGO-FETCH`): the build downloads only the
+      # host's, but `cargo metadata`, which cargo-deny and `[F19.AC9]` run offline, reads them all;
+      # a cache of an older Cargo.lock lacks the new ones (EN-116).
+      - run: cargo fetch --locked
       # The RustSec advisories, whose database is fetched here, the pre-push hook reading its local
       # copy offline.
       - run: cargo deny fetch db

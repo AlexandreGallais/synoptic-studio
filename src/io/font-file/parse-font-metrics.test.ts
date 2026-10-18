@@ -127,17 +127,23 @@ describe("parseFontMetrics (REF-OT-OTFF)", () => {
     expect(pairKerning(kerning, 65, 67)).toBe(-20);
   });
 
-  it("[F18.AC19] reads Inter Regular of the test fixtures as inter-metrics.json holds it", () => {
-    const regular = DEFAULT_FONT.faces.find((face) => face.weight === 400 && !face.isItalic);
+  it(
+    "[F18.AC19] reads Inter Regular of the test fixtures as inter-metrics.json holds it",
+    // Inter's tables read for every measured block: 0.8 s alone, 1.6 s with coverage, over 5 s in a
+    // loaded `check:all` (EN-116); 20 s holds it, as for the other tests reading Inter.
+    { timeout: 20_000 },
+    () => {
+      const regular = DEFAULT_FONT.faces.find((face) => face.weight === 400 && !face.isItalic);
 
-    // The same file, read for the same characters, gives the shipped metrics field for field; the
-    // face is looked for first, so that two missing values never compare equal.
-    expect(regular).toBeDefined();
+      // The same file, read for the same characters, gives the shipped metrics field for field;
+      // the face is looked for first, so that two missing values never compare equal.
+      expect(regular).toBeDefined();
 
-    expect(parseFontMetrics(interRegularFile(), blockCharacters(MEASURED_BLOCKS))).toEqual(
-      regular?.metrics,
-    );
-  });
+      expect(parseFontMetrics(interRegularFile(), blockCharacters(MEASURED_BLOCKS))).toEqual(
+        regular?.metrics,
+      );
+    },
+  );
 
   it("[F05.AC1] reads Inter Regular's advances and kerning pairs from its file", () => {
     const metrics = parseFontMetrics(interRegularFile(), HELLO_CHARACTERS);

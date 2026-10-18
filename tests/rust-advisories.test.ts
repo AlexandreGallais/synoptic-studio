@@ -113,17 +113,23 @@ function planted(metadata: Metadata): Metadata {
 }
 
 /**
- * The workspace's metadata, as cargo-deny reads it.
+ * The workspace's metadata, as cargo-deny reads it: offline, it needs every crate of `Cargo.lock`
+ * for every target downloaded, which `cargo fetch --locked` does (`REF-CARGO-FETCH`, EN-116).
  *
  * @returns `cargo metadata` parsed, offline and from `Cargo.lock`
+ * @throws Cargo's own message when `cargo metadata` fails, rather than a JSON parse error
  */
 function workspaceMetadata(): unknown {
-  return JSON.parse(
-    spawnSync("cargo", ["metadata", "--format-version", "1", "--locked", "--offline"], {
-      cwd: ROOT,
-      encoding: "utf8",
-    }).stdout,
-  );
+  const run = spawnSync("cargo", ["metadata", "--format-version", "1", "--locked", "--offline"], {
+    cwd: ROOT,
+    encoding: "utf8",
+  });
+
+  if (run.status !== 0) {
+    throw new Error(`cargo metadata failed (exit ${String(run.status)}): ${run.stderr}`);
+  }
+
+  return JSON.parse(run.stdout);
 }
 
 /**

@@ -7,7 +7,7 @@ Every check runs before the code leaves the machine; GitHub checks once more wha
 
 | Workflow | Job | When | Does |
 | --- | --- | --- | --- |
-| `ci.yml` | quality | pull request into `main`; on demand | restores the [Rust caches](#the-rust-build-and-its-caches), builds the release binaries once (`npm run rust:build`), fetches the RustSec database, runs `npm run check:all` ([commands](./commands.md#the-lanes-of-the-full-check)) then `npm run build`; keeps the JUnit test report and the `git-hooks` binary |
+| `ci.yml` | quality | pull request into `main`; on demand | restores the [Rust caches](#the-rust-build-and-its-caches), builds the release binaries once (`npm run rust:build`), fetches every crate of `Cargo.lock` for every target (`cargo fetch --locked`, which `cargo metadata` needs offline) and the RustSec database, runs `npm run check:all` ([commands](./commands.md#the-lanes-of-the-full-check)) then `npm run build`; keeps the JUnit test report and the `git-hooks` binary |
 | `ci.yml` | history | pull request into `main` | after the quality job, with its `git-hooks` binary: the branch name (`git-hooks branch --name`) and the message of every commit of the pull request (`git-hooks commits`, [commit messages](./git-workflow.md#commit-messages)) |
 | `ci.yml` | dependencies | pull request into `main` | GitHub's dependency review: a new vulnerable dependency fails |
 | `codeql.yml` | analyze | pull request into `main`, push to `main`, weekly | CodeQL's security and quality queries on the TypeScript; the push keeps the analysis pull requests are compared with (`REF-GH-CODEQL-TRIGGERS`) |

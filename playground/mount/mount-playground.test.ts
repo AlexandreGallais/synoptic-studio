@@ -73,143 +73,149 @@ describe("playground", () => {
     expect(readText("#effective")).toBe("");
   });
 
-  it("[F02.AC1] walks the steps of the guided test (F01, F02, F07, F03, F09, F08, F04, F06, then E01), each showing what it tells to look at", () => {
-    // "Previous" on the first step stays there and types its values again.
-    clickElement("guide-previous");
+  it(
+    "[F02.AC1] walks the steps of the guided test (F01, F02, F07, F03, F09, F08, F04, F06, then E01), each showing what it tells to look at",
+    // 72 steps drawn in happy-dom: 0.5 s alone, 0.7 s with coverage, 5.2 to 5.8 s on GitHub's
+    // runner in `check:all` (EN-116); 20 s holds it, as for the other long playground tests.
+    { timeout: 20_000 },
+    () => {
+      // "Previous" on the first step stays there and types its values again.
+      clickElement("guide-previous");
 
-    // Effective radius text expected at each step, as announced by the step (US-003 card).
-    const expected = [
-      "Effective radius: 10 (as requested)",
-      "Effective radius: 10 (as requested)",
-      "Effective radius: 12.5 (requested 100, reduced to fit)",
-      "Effective radius: 50 (as requested)",
-      "Effective radius: 50 (requested 1000, reduced to fit)",
-      "Effective radius: 50 (requested 100, reduced to fit)",
-      "Effective radius: 100 (as requested)",
-      "Effective radius: 0 (as requested)",
-      "",
-      // F02 (US-007 and US-008 cards).
-      "Effective radius: 0 (as requested)",
-      "Effective radius: 0 (as requested)",
-      "Effective radius: 0 (as requested)",
-      "Effective radius: 0 (as requested)",
-      "Effective radius: 43.30127 (requested 1000, reduced to fit)",
-      "Effective radius: 28.86751 (requested 1000, reduced to fit)",
-      "Effective radius: 10 (as requested)",
-      "",
-      "Effective radius: 10 (as requested)",
-      "Effective radius: 10 (as requested)",
-      // F07 (US-010 card).
-      "Effective radius: 0 (as requested)",
-      "Effective radius: 0 (as requested)",
-      "Effective radius: 0 (as requested)",
-      "Effective radius: 0 (as requested)",
-      "Effective radius: 10 (as requested)",
-      "Effective radius: 10 (as requested)",
-      "Effective radius: 10 (as requested)",
-      "Effective radius: 10 (as requested)",
-      "Effective radius: 10 (as requested)",
-      // F03 (US-012 and US-013 cards): each step starts afresh, without rounding.
-      "Effective radius: 0 (as requested)",
-      "Effective radius: 0 (as requested)",
-      "Effective radius: 0 (as requested)",
-      "Effective radius: 0 (as requested)",
-      "Effective radius: 0 (as requested)",
-      // F09 (US-017 card): at width or height 0 no corner can be rounded, so the radius stays
-      // shown as requested (Q17).
-      "Effective radius: 10 (as requested)",
-      "Effective radius: 10 (as requested)",
-      "Effective radius: 10 (as requested)",
-      "Effective radius: 10 (as requested)",
-      "Effective radius: 10 (as requested)",
-      // F08 (US-014, US-015 and US-016 cards): the sharp hexagon, then the rectangle rounded by 10;
-      // each step types its shape afresh, the clicks being the Product Owner's.
-      "Effective radius: 0 (as requested)",
-      "Effective radius: 0 (as requested)",
-      "Effective radius: 0 (as requested)",
-      "Effective radius: 10 (as requested)",
-      "Effective radius: 10 (as requested)",
-      "Effective radius: 10 (as requested)",
-      "Effective radius: 10 (as requested)",
-      "Effective radius: 0 (as requested)",
-      // F04 (US-018 and US-019 cards): each step starts straight, sharp; the angles are typed by
-      // the Product Owner.
-      ...Array.from({ length: 11 }, () => "Effective radius: 0 (as requested)"),
-      // F06 (US-021 card): sharp polygons, but the pentagon rounded by 1000, its corners clamped
-      // differently.
-      ...Array.from({ length: 3 }, () => "Effective radius: 0 (as requested)"),
-      "Effective radius: mixed, shown for each point in Points mode.",
-      ...Array.from({ length: 5 }, () => "Effective radius: 0 (as requested)"),
-      // The user test of E01 (REV-001), before the clicks and values the Product Owner adds.
-      "Effective radius: 12 (as requested)",
-      "Effective radius: 20 (requested 1000, reduced to fit)",
-      "Effective radius: 0 (as requested)",
-      "Effective radius: 0 (as requested)",
-      "Effective radius: 0 (as requested)",
-      "Effective radius: 50 (requested 1000, reduced to fit)",
-    ];
+      // Effective radius text expected at each step, as announced by the step (US-003 card).
+      const expected = [
+        "Effective radius: 10 (as requested)",
+        "Effective radius: 10 (as requested)",
+        "Effective radius: 12.5 (requested 100, reduced to fit)",
+        "Effective radius: 50 (as requested)",
+        "Effective radius: 50 (requested 1000, reduced to fit)",
+        "Effective radius: 50 (requested 100, reduced to fit)",
+        "Effective radius: 100 (as requested)",
+        "Effective radius: 0 (as requested)",
+        "",
+        // F02 (US-007 and US-008 cards).
+        "Effective radius: 0 (as requested)",
+        "Effective radius: 0 (as requested)",
+        "Effective radius: 0 (as requested)",
+        "Effective radius: 0 (as requested)",
+        "Effective radius: 43.30127 (requested 1000, reduced to fit)",
+        "Effective radius: 28.86751 (requested 1000, reduced to fit)",
+        "Effective radius: 10 (as requested)",
+        "",
+        "Effective radius: 10 (as requested)",
+        "Effective radius: 10 (as requested)",
+        // F07 (US-010 card).
+        "Effective radius: 0 (as requested)",
+        "Effective radius: 0 (as requested)",
+        "Effective radius: 0 (as requested)",
+        "Effective radius: 0 (as requested)",
+        "Effective radius: 10 (as requested)",
+        "Effective radius: 10 (as requested)",
+        "Effective radius: 10 (as requested)",
+        "Effective radius: 10 (as requested)",
+        "Effective radius: 10 (as requested)",
+        // F03 (US-012 and US-013 cards): each step starts afresh, without rounding.
+        "Effective radius: 0 (as requested)",
+        "Effective radius: 0 (as requested)",
+        "Effective radius: 0 (as requested)",
+        "Effective radius: 0 (as requested)",
+        "Effective radius: 0 (as requested)",
+        // F09 (US-017 card): at width or height 0 no corner can be rounded, so the radius stays
+        // shown as requested (Q17).
+        "Effective radius: 10 (as requested)",
+        "Effective radius: 10 (as requested)",
+        "Effective radius: 10 (as requested)",
+        "Effective radius: 10 (as requested)",
+        "Effective radius: 10 (as requested)",
+        // F08 (US-014, US-015 and US-016 cards): the sharp hexagon, then the rectangle rounded by 10;
+        // each step types its shape afresh, the clicks being the Product Owner's.
+        "Effective radius: 0 (as requested)",
+        "Effective radius: 0 (as requested)",
+        "Effective radius: 0 (as requested)",
+        "Effective radius: 10 (as requested)",
+        "Effective radius: 10 (as requested)",
+        "Effective radius: 10 (as requested)",
+        "Effective radius: 10 (as requested)",
+        "Effective radius: 0 (as requested)",
+        // F04 (US-018 and US-019 cards): each step starts straight, sharp; the angles are typed by
+        // the Product Owner.
+        ...Array.from({ length: 11 }, () => "Effective radius: 0 (as requested)"),
+        // F06 (US-021 card): sharp polygons, but the pentagon rounded by 1000, its corners clamped
+        // differently.
+        ...Array.from({ length: 3 }, () => "Effective radius: 0 (as requested)"),
+        "Effective radius: mixed, shown for each point in Points mode.",
+        ...Array.from({ length: 5 }, () => "Effective radius: 0 (as requested)"),
+        // The user test of E01 (REV-001), before the clicks and values the Product Owner adds.
+        "Effective radius: 12 (as requested)",
+        "Effective radius: 20 (requested 1000, reduced to fit)",
+        "Effective radius: 0 (as requested)",
+        "Effective radius: 0 (as requested)",
+        "Effective radius: 0 (as requested)",
+        "Effective radius: 50 (requested 1000, reduced to fit)",
+      ];
 
-    for (const [index, effective] of expected.entries()) {
-      expect(readText("#guide-number")).toBe(String(index + 1));
-      expect(readText("#effective")).toBe(effective);
-      clickElement("guide-next");
-    }
+      for (const [index, effective] of expected.entries()) {
+        expect(readText("#guide-number")).toBe(String(index + 1));
+        expect(readText("#effective")).toBe(effective);
+        clickElement("guide-next");
+      }
 
-    // Past the last step of E01, F12's first step (E14); back one, the stretched hexagon of E01,
-    // rounded, straight.
-    expect(readText("#guide-number")).toBe("73");
+      // Past the last step of E01, F12's first step (E14); back one, the stretched hexagon of E01,
+      // rounded, straight.
+      expect(readText("#guide-number")).toBe("73");
 
-    clickElement("guide-previous");
+      clickElement("guide-previous");
 
-    expect(readText("#guide-number")).toBe("72");
+      expect(readText("#guide-number")).toBe("72");
 
-    expect(readText("#path-data")).toBe(
-      "M92.04396 100 L67.95604 100 A50 50 0 0 1 31.16755 83.86159 A50 50 0 0 1 31.16755 16.13841 A50 50 0 0 1 67.95604 0 L92.04396 0 A50 50 0 0 1 128.83245 16.13841 A50 50 0 0 1 128.83245 83.86159 A50 50 0 0 1 92.04396 100 Z",
-    );
+      expect(readText("#path-data")).toBe(
+        "M92.04396 100 L67.95604 100 A50 50 0 0 1 31.16755 83.86159 A50 50 0 0 1 31.16755 16.13841 A50 50 0 0 1 67.95604 0 L92.04396 0 A50 50 0 0 1 128.83245 16.13841 A50 50 0 0 1 128.83245 83.86159 A50 50 0 0 1 92.04396 100 Z",
+      );
 
-    expect(readValue("angle")).toBe("0");
+      expect(readValue("angle")).toBe("0");
 
-    // The last step of F06: the stretched hexagon, straight.
-    clickTimes("guide-previous", 6);
+      // The last step of F06: the stretched hexagon, straight.
+      clickTimes("guide-previous", 6);
 
-    expect(readText("#guide-number")).toBe("66");
+      expect(readText("#guide-number")).toBe("66");
 
-    expect(readText("#path-data")).toBe(
-      "M77.42919 100 L22.57081 100 L0 50 L22.57081 0 L77.42919 0 L100 50 Z",
-    );
+      expect(readText("#path-data")).toBe(
+        "M77.42919 100 L22.57081 100 L0 50 L22.57081 0 L77.42919 0 L100 50 Z",
+      );
 
-    // The last step of F09: the 120 × 80 rectangle, a free shape.
-    clickTimes("guide-previous", 28);
+      // The last step of F09: the 120 × 80 rectangle, a free shape.
+      clickTimes("guide-previous", 28);
 
-    expect(readText("#guide-number")).toBe("38");
+      expect(readText("#guide-number")).toBe("38");
 
-    expect(readText("#path-data")).toBe(
-      "M10 0 L110 0 A10 10 0 0 1 120 10 L120 70 A10 10 0 0 1 110 80 L10 80 A10 10 0 0 1 0 70 L0 10 A10 10 0 0 1 10 0 Z",
-    );
+      expect(readText("#path-data")).toBe(
+        "M10 0 L110 0 A10 10 0 0 1 120 10 L120 70 A10 10 0 0 1 110 80 L10 80 A10 10 0 0 1 0 70 L0 10 A10 10 0 0 1 10 0 Z",
+      );
 
-    // The last step of F03: a rectangle 0 wide, not drawn.
-    clickTimes("guide-previous", 5);
+      // The last step of F03: a rectangle 0 wide, not drawn.
+      clickTimes("guide-previous", 5);
 
-    expect(readText("#guide-number")).toBe("33");
-    expect(readText("#path-data")).toBe("M0 0 L0 50 Z");
+      expect(readText("#guide-number")).toBe("33");
+      expect(readText("#path-data")).toBe("M0 0 L0 50 Z");
 
-    // The last step of F07: back to the rectangle, the anchor grid hidden.
-    clickTimes("guide-previous", 5);
+      // The last step of F07: back to the rectangle, the anchor grid hidden.
+      clickTimes("guide-previous", 5);
 
-    expect(readText("#guide-number")).toBe("28");
+      expect(readText("#guide-number")).toBe("28");
 
-    expect(readText("#path-data")).toBe(
-      "M10 0 L90 0 A10 10 0 0 1 100 10 L100 40 A10 10 0 0 1 90 50 L10 50 A10 10 0 0 1 0 40 L0 10 A10 10 0 0 1 10 0 Z",
-    );
+      expect(readText("#path-data")).toBe(
+        "M10 0 L90 0 A10 10 0 0 1 100 10 L100 40 A10 10 0 0 1 90 50 L10 50 A10 10 0 0 1 0 40 L0 10 A10 10 0 0 1 10 0 Z",
+      );
 
-    expect(document.querySelector("#anchor-field")?.hasAttribute("hidden")).toBe(true);
+      expect(document.querySelector("#anchor-field")?.hasAttribute("hidden")).toBe(true);
 
-    // The next tests start from the last step of F02: a rectangle, the anchor on the center.
-    clickTimes("guide-previous", 9);
+      // The next tests start from the last step of F02: a rectangle, the anchor on the center.
+      clickTimes("guide-previous", 9);
 
-    expect(readText("#guide-number")).toBe("19");
-    expect(readCheckedRadio("anchor")).toBe("mid mid");
-  });
+      expect(readText("#guide-number")).toBe("19");
+      expect(readCheckedRadio("anchor")).toBe("mid mid");
+    },
+  );
 
   it("[F02.AC4] stays on the rectangle after the steps of the F01 guided test", () => {
     clickElement("guide-previous");
