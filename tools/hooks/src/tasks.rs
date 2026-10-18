@@ -1,7 +1,7 @@
 //! Background tasks of a session, read from its transcript: which tool calls start one — a subagent,
 //! a monitor, a call run in the background, a message that resumes a subagent — and which lines end
 //! one: its notification, an error result when it was refused before it started, or a subagent's
-//! result when it ran in the foreground. Read by the status line and by `limit-agents`; ported from
+//! result when it ran in the foreground. Read by the status line and by `limit-agents`; rewritten from
 //! `.claude/hooks/status-tasks.ts` and `withTasks` of `status-tokens.ts` (EN-104), its only version.
 
 use crate::json::{self, Value, write};

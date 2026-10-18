@@ -1,7 +1,8 @@
 //! `git-sequences sync|commit` (`npm run git:sync`, `npm run git:commit`, EN-100): one call for a
 //! Git sequence the agent ran step by step, in the checkout it is started from. Each step's output
 //! is kept back and printed only when the step fails, then the sequence stops; on success one line
-//! says where the branch stands. `HUSKY` is removed from the steps' environment: the hooks run.
+//! says where the branch stands. `HUSKY` is removed from the steps' environment: the hooks run. A
+//! sync then rebuilds the release binaries of a checkout that has a Cargo workspace (ADR-0078).
 
 use std::env;
 use std::fs;
@@ -163,6 +164,31 @@ fn commit(
     Ok(format!("{} on {}{pushed}", head, branch_name(branch)))
 }
 
+/// Rebuilds the checkout's release binaries after a sync brought new sources: its hooks, its Git
+/// hooks and the agent call them by their path (ADR-0078). A checkout without a Cargo workspace
+/// has none; a failed build stops with Cargo's message.
+fn rebuild(top: &Path) -> Result<bool, String> {
+    if !top.join("Cargo.toml").is_file() {
+        return Ok(false);
+    }
+
+    let output = Command::new("cargo")
+        .args(["build", "--release", "--workspace", "--locked", "--quiet"])
+        .current_dir(top)
+        .stdin(Stdio::null())
+        .output()
+        .map_err(|error| format!("cargo: {error}"))?;
+
+    if output.status.success() {
+        Ok(true)
+    } else {
+        Err(format!(
+            "synced, but the rebuild of target/release failed (cargo build --release --workspace --locked):\n{}",
+            String::from_utf8_lossy(&output.stderr).trim()
+        ))
+    }
+}
+
 fn run(argv: &[String]) -> Result<String, String> {
     let request = parse(argv)?;
     let top = PathBuf::from(git_words(&["rev-parse", "--show-toplevel"])?);
@@ -171,7 +197,13 @@ fn run(argv: &[String]) -> Result<String, String> {
         .file_name()
         .map_or_else(String::new, |name| name.to_string_lossy().into_owned());
     let result = match &request {
-        Request::Sync { base } => sync(&branch, base.as_deref(), &top),
+        Request::Sync { base } => sync(&branch, base.as_deref(), &top).and_then(|line| {
+            Ok(if rebuild(&top)? {
+                format!("{line}; release binaries rebuilt")
+            } else {
+                line
+            })
+        }),
         Request::Commit {
             message,
             paths,

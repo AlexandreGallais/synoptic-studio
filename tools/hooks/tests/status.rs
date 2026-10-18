@@ -61,7 +61,7 @@ fn status() -> Status {
         run: String::new(),
         is_running_long: false,
         running: String::new(),
-        silent_ms: 1000.0,
+        silent_ms: 1000,
         step: String::new(),
         tally: empty_tally(),
     }
@@ -400,7 +400,7 @@ fn f18_ac9_shows_a_worker_in_the_background_and_its_duration_never_waiting_nor_y
 }
 
 /// A call running.
-fn call(agent: &str, description: &str, start: f64, summary: &str, tool: &str) -> RunningCall {
+fn call(agent: &str, description: &str, start: i64, summary: &str, tool: &str) -> RunningCall {
     RunningCall {
         agent: agent.into(),
         description: description.into(),
@@ -417,9 +417,9 @@ fn shows_each_background_task_a_subagent_with_the_call_it_makes_now() {
         task("b", Kind::Command, "Push", 60_000),
     ];
     let calls = [
-        call("auditor", "", 100.0, "src/a.ts", "Read"),
-        call("auditor", "List the files", 200.0, "", "Bash"),
-        call("main", "", 300.0, "", "Edit"),
+        call("auditor", "", 100, "src/a.ts", "Read"),
+        call("auditor", "List the files", 200, "", "Bash"),
+        call("main", "", 300, "", "Edit"),
     ];
 
     // 240 000 ms = 4 min; 180 000 ms = 3 min.
@@ -497,11 +497,14 @@ fn writes_the_cache_as_the_typescript_status_line_did_then_the_last_request_s_co
 
 #[test]
 fn writes_durations_in_seconds_minutes_then_hours() {
-    assert_eq!(short_duration(45_000.0), "45 s");
+    assert_eq!(short_duration(45_000), "45 s");
     // Rounded half up, as `Math.round`: 44.5 s is 45 s.
-    assert_eq!(short_duration(44_500.0), "45 s");
-    assert_eq!(short_duration(12.0 * 60_000.0), "12 min");
-    assert_eq!(short_duration(125.0 * 60_000.0), "2 h 05");
+    assert_eq!(short_duration(44_500), "45 s");
+    assert_eq!(short_duration(44_499), "44 s");
+    // Below zero, as `Math.round`: −1.5 s is −1 s.
+    assert_eq!(short_duration(-1500), "-1 s");
+    assert_eq!(short_duration(12 * 60_000), "12 min");
+    assert_eq!(short_duration(125 * 60_000), "2 h 05");
     assert_eq!(clock_duration(45_900), "45 s");
     assert_eq!(clock_duration(12 * 60_000 + 5000), "12 min 05 s");
     assert_eq!(clock_duration(125 * 60_000 + 9000), "2 h 05 min 09 s");
@@ -540,7 +543,7 @@ fn shows_the_place_and_step_the_turn_and_the_call_running() {
     let silent = status_text(&Status {
         is_running_long: true,
         running: "▶ Bash · Run the checks — 12 s".into(),
-        silent_ms: 180_000.0,
+        silent_ms: 180_000,
         ..base.clone()
     });
 
@@ -678,17 +681,14 @@ fn reads_back_a_call_starting_and_shows_the_oldest() {
 
     assert_eq!(
         read_running_call(&record),
-        call("main", "Run the checks", 1000.0, "npm run check", "Bash")
+        call("main", "Run the checks", 1000, "npm run check", "Bash")
     );
-    assert_eq!(
-        read_running_call(&Value::Null),
-        call("main", "", 0.0, "", "")
-    );
+    assert_eq!(read_running_call(&Value::Null), call("main", "", 0, "", ""));
     let calls = [
-        call("main", "", 5000.0, "ls", "Bash"),
-        call("main", "Run the checks", 1000.0, "npm run check", "Bash"),
+        call("main", "", 5000, "ls", "Bash"),
+        call("main", "Run the checks", 1000, "npm run check", "Bash"),
     ];
-    let seconds = |milliseconds: f64| format!("{} s", milliseconds / 1000.0);
+    let seconds = |milliseconds: i64| format!("{} s", milliseconds / 1000);
 
     assert_eq!(
         running_line(&calls, 13_000, seconds),

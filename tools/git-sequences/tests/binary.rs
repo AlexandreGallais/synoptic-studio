@@ -439,3 +439,76 @@ fn f21_ac6_names_the_uncommitted_files_that_stop_a_rebase() {
         "M README.md\nA  staged.md"
     );
 }
+
+/// Runs a sync with a `cargo` stub first on `PATH`, a shell script (Unix only) which logs its call
+/// and exits with `code`.
+#[cfg(unix)]
+fn sync_with_cargo(repos: &Repos, code: u8) -> (Output, String) {
+    let stubs = repos.root.join("stubs");
+    let log = repos.root.join("cargo.log");
+
+    write(
+        &stubs,
+        "cargo",
+        &format!(
+            "#!/bin/sh\necho \"$PWD $*\" >> \"{}\"\necho 'error: it broke' >&2\nexit {code}\n",
+            log.display()
+        ),
+    );
+    fs::set_permissions(
+        stubs.join("cargo"),
+        <fs::Permissions as std::os::unix::fs::PermissionsExt>::from_mode(0o755),
+    )
+    .expect("stub runs");
+    let path = format!(
+        "{}:{}",
+        stubs.display(),
+        env::var("PATH").unwrap_or_default()
+    );
+    let output = clean(env!("CARGO_BIN_EXE_git-sequences"), &repos.work)
+        .arg("sync")
+        .env("PATH", path)
+        .stdin(Stdio::null())
+        .output()
+        .expect("the tool runs");
+
+    (output, fs::read_to_string(log).unwrap_or_default())
+}
+
+#[cfg(unix)]
+#[test]
+fn rebuilds_the_release_binaries_of_a_cargo_workspace_after_a_sync() {
+    let repos = repos();
+
+    move_feature_on(&repos, "feature.md", "feature\n");
+    // Without a workspace, nothing is built.
+    let (output, calls) = sync_with_cargo(&repos, 0);
+
+    assert!(output.status.success(), "{}", stderr(&output));
+    assert_eq!(calls, "");
+    assert!(!stdout(&output).contains("rebuilt"));
+    // With one, its release binaries are, in the checkout's folder.
+    write(&repos.work, "Cargo.toml", "[workspace]\n");
+    let (output, calls) = sync_with_cargo(&repos, 0);
+    let work = fs::canonicalize(&repos.work).expect("work");
+
+    assert!(output.status.success(), "{}", stderr(&output));
+    assert_eq!(
+        calls,
+        format!(
+            "{} build --release --workspace --locked --quiet\n",
+            work.display()
+        )
+    );
+    assert!(
+        stdout(&output).ends_with("; release binaries rebuilt\n"),
+        "{}",
+        stdout(&output)
+    );
+    // A failed build stops with Cargo's message.
+    let (output, _) = sync_with_cargo(&repos, 1);
+
+    assert_eq!(output.status.code(), Some(1));
+    assert!(stderr(&output).contains("synced, but the rebuild of target/release failed"));
+    assert!(stderr(&output).contains("error: it broke"));
+}

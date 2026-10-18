@@ -122,4 +122,4 @@ Stop when going on would mean deciding what belongs to someone else, or guessing
 | `npm run check:all` | every check, what `pre-push` and the CI run |
 | `npm run library -- …` | the local library of sources: `search`, `get`, `read`, `list` |
 | `npm run metrics` | the agent's commands, time and tokens |
-| agent tools | `replace`, `backlog:status`, `worktree:new`, `git:sync`, `git:commit`, `story:finish`, `mutate`, `val:prepare`, `golden:*`, `activity`, `epic:check`, `context:size`, `page` (`docs/tooling/agent-tools.md`) |
+| agent tools | `replace`, `backlog:status`, `worktree:new`, `git:sync`, `git:commit`, `story:finish`, `mutate`, `val:prepare`, `golden:*`, `activity`, `epic:check`, `context:size`, `page` (`docs/tooling/agent-tools.md`); the agent calls each by its release binary from the checkout's root, `target/release/<binary>`, as that page maps the scripts (ADR-0078) |

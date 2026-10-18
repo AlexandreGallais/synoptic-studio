@@ -1,6 +1,6 @@
 //! What the `session-state` hook prints when a session starts (ADR-0021): the progress of each
 //! feature started, read from the story tables of the feature files, so that a new or compacted
-//! session starts from facts rather than from memory. Ported from `.claude/hooks/session-state.ts`
+//! session starts from facts rather than from memory. Rewritten from `.claude/hooks/session-state.ts`
 //! (EN-104).
 
 use crate::guard::is_space;
@@ -103,9 +103,16 @@ pub fn is_feature_file(name: &str) -> bool {
 }
 
 /// The text the hook prints: the branch, its uncommitted files and last commit, then each feature
-/// started, then the rule of ready stories.
+/// started, the release binaries older than their sources if any (ADR-0078), then the rule of
+/// ready stories.
 #[must_use]
-pub fn state_text(branch: &str, changed: usize, last_commit: &str, features: &[String]) -> String {
+pub fn state_text(
+    branch: &str,
+    changed: usize,
+    last_commit: &str,
+    features: &[String],
+    stale: &[String],
+) -> String {
     let mut lines = vec![
         "Project state (SessionStart hook, ADR-0021):".to_owned(),
         format!("- branch {branch}, {changed} uncommitted file(s), last commit: {last_commit}"),
@@ -115,6 +122,12 @@ pub fn state_text(branch: &str, changed: usize, last_commit: &str, features: &[S
         lines.push("- no feature started".to_owned());
     }
     lines.extend(features.iter().map(|line| format!("- {line}")));
+    if !stale.is_empty() {
+        lines.push(format!(
+            "- release binaries older than their sources, which the hooks run: {}; `npm run rust:build` rebuilds them",
+            stale.join("; ")
+        ));
+    }
     lines.push("- a story is implemented only when ready; the Product Owner's /run sets its scope ready (ADR-0045).".to_owned());
     lines.push(String::new());
     lines.join("\n")

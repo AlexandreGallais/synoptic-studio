@@ -12,10 +12,11 @@
 | `npm run fix` | the formatter, oxlint `--fix`, the project's linter `--fix`: **before each commit** |
 | `npm run check` | format, lint, secretlint, Vitest, `npm audit`, knip and `check:rust` one after the other, without the builds |
 | `npm run check:all` | `rust:build`, then the [five lanes](#the-lanes-of-the-full-check) at once: what the pre-push hook and the CI run; about 40 s on a code story, a minute with the docs build |
-| `npm run check:rust` | the Rust workspace: `cargo fmt --check`, Clippy, `rust:advisories`, `rust:coverage`, and a check for Windows without linking, so that a Unix-only call outside `cfg(unix)` fails on the Mac; warnings are errors (`.cargo/config.toml`) |
+| `npm run check:rust` | the Rust workspace: `cargo fmt --check`, Clippy, `rust:advisories`, `rust:coverage`, and a check for Windows without linking, so that a Unix-only call outside `cfg(unix)` fails on the Mac, then `rust:fresh`; warnings are errors (`.cargo/config.toml`) |
 | `npm run rust:advisories` | cargo-deny against the local copy of the RustSec database (`deny.toml`, `REF-CARGO-DENY-ADVISORIES`): unmaintained and yanked crates fail too; `cargo deny fetch db` refreshes the copy |
 | `npm run rust:coverage` | the workspace's tests under `cargo llvm-cov` (`REF-CARGO-LLVM-COV`), failing under the [floor](./agent-tools.md#rust) |
-| `npm run rust:build` | the Rust tools' release binaries into `target/release/`; run by `prepare` and `worktree:new`, so that the first `cargo run --release -q -p <crate>` of a script or hook is warm |
+| `npm run rust:build` | the Rust tools' release binaries into `target/release/`; run by `prepare` and `worktree:new`, and the same build by `git:sync` and `story:finish`: the hooks, the status line, the Git hooks and the agent call these binaries by their path (ADR-0078), and the first `cargo run --release -q -p <crate>` of a script is warm |
+| `npm run rust:fresh` | each release binary older than a file Cargo built it from, or missing, then exit 1 (`tools/stale-binaries/`, ADR-0078) |
 | `npm run deps:audit` | `npm audit`: any severity fails |
 | `npm run deps:outdated` | fails when a package is not on its latest version ([versions](./versions-and-security.md)) |
 | `npm run deps:unused` | knip: unused files, exports and dependencies (`knip.json`) |

@@ -1,3 +1,3 @@
 commitlint --edit "$1"
 # A done commit (`Closes:`) of a story that changes a rule brings the docs it touches (EN-059).
-if grep -q '^Closes:' "$1"; then cargo run --release -q -p rule-docs --bin check-rule-docs -- "$1"; fi
+if grep -q '^Closes:' "$1"; then target/release/check-rule-docs "$1"; fi
