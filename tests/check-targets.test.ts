@@ -295,9 +295,7 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
   it("[F19.AC9] fetches the advisory database in the CI before check:all", () => {
     const workflow = readFileSync(join(ROOT, ".github", "workflows", "ci.yml"), "utf8");
 
-    expect(workflow).toMatch(
-      /- run: cargo install --locked cargo-llvm-cov@0\.9\.1 cargo-deny@0\.20\.2\n {6}- run: cargo deny fetch db\n {6}- run: npm run check:all\n/u,
-    );
+    expect(workflow).toMatch(/- run: cargo deny fetch db\n {6}- run: npm run check:all\n/u);
   });
 
   it("[F19.AC9] runs the workspace's tests under a floor of lines and functions, failing aloud without the tool", () => {

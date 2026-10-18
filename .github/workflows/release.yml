@@ -11,7 +11,56 @@ permissions:
   contents: write
   pull-requests: write
 
+env:
+  # The cargo tools of the Rust checks, the same as ci.yml's (EN-069, EN-111).
+  CARGO_LLVM_COV_VERSION: 0.9.1
+  CARGO_DENY_VERSION: 0.20.2
+  # No incremental build: its state, kept for the workspace's own crates only, would grow the cache
+  # and never be reused, those crates being compiled again in each run.
+  CARGO_INCREMENTAL: 0
+
 jobs:
+  # On main: saves the Rust caches the next pull request into main restores (EN-111). A cache saved
+  # by a pull request's run is scoped to its merge ref and never restored by the next pull request;
+  # one saved on the default branch is restored by every run (`REF-GH-CACHE`). It builds what the
+  # CI's `check:all` compiles, with the same commands and flags, and checks nothing: the tests are
+  # compiled and listed, never run (ADR-0072: nothing is re-checked after the merge). Its keys and
+  # paths are ci.yml's. Without `restore-keys`, a new key starts from an empty target/, which so
+  # never keeps the artifacts of an older Cargo.lock.
+  rust-cache:
+    if: github.ref_name == 'main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+      - id: toolchain
+        run: echo "name=$(sed -n 's/^channel = "\(.*\)"$/\1/p' rust-toolchain.toml)-x86_64-unknown-linux-gnu" >> "$GITHUB_OUTPUT"
+      - id: tools
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.rustup/toolchains/${{ steps.toolchain.outputs.name }}
+            ~/.cargo/bin/cargo-llvm-cov
+            ~/.cargo/bin/cargo-deny
+          key: rust-tools-${{ runner.os }}-${{ hashFiles('rust-toolchain.toml') }}-cargo-llvm-cov-${{ env.CARGO_LLVM_COV_VERSION }}-cargo-deny-${{ env.CARGO_DENY_VERSION }}
+      - if: steps.tools.outputs.cache-hit != 'true'
+        run: cargo install --locked cargo-llvm-cov@${{ env.CARGO_LLVM_COV_VERSION }} cargo-deny@${{ env.CARGO_DENY_VERSION }}
+      - uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: rust-build-${{ runner.os }}-${{ hashFiles('rust-toolchain.toml', 'Cargo.lock') }}
+      # The compilations of `rust:build` and `check:rust` (package.json): the release binaries,
+      # Clippy, the tests under coverage, the Windows check.
+      - run: npm run rust:build
+      - run: cargo clippy --workspace --all-targets --locked --quiet
+      - run: cargo llvm-cov --workspace --locked --no-report -- --list
+      - run: cargo check --workspace --all-targets --locked --quiet --target x86_64-pc-windows-msvc
+
   # On develop: opens or updates the release pull request (`chore(develop): release x.y.z`), never a
   # release (`REF-RELEASE-PLEASE-UPGRADE`). The Product Owner merges it when they ask for a release,
   # before the pull request develop → main. Nothing opens while a merged one waits for its tag
