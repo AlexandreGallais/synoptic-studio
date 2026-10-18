@@ -27,7 +27,7 @@ features:
     details: Architecture Decision Records, the "why" of every structural choice.
     link: /adr/
   - title: Conventions
-    details: How code is written; almost every rule is enforced by ESLint.
+    details: How code is written; almost every rule is enforced by oxlint and the project's linter.
     link: /conventions/
   - title: Tooling
     details: Commands, dependencies, versions, Git workflow, this site.
