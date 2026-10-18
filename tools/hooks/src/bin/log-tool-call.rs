@@ -10,7 +10,8 @@ use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
 use calendar::now_ms;
-use hooks::git::{branch_of, checkout_of, hook_input};
+use git_repository::{branch_of, checkout_of};
+use hooks::git::hook_input;
 use hooks::json::{self, Value};
 use hooks::record::{CallContext, count, tool_call_record};
 

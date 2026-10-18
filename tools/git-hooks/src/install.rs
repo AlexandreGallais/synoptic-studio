@@ -9,6 +9,8 @@
 use std::path::Path;
 use std::process::Command;
 
+use git_repository::{Failure, stdout_of};
+
 /// The hooks folder, relative to a worktree's root.
 pub const HOOKS_FOLDER: &str = ".githooks";
 
@@ -23,18 +25,14 @@ pub enum Installed {
     NotARepository,
 }
 
-/// Output of a Git command run in `folder`, `None` when it fails.
+/// Output of a Git command run in `folder`, trimmed, `None` when it fails; an error when Git
+/// cannot start.
 fn git(folder: &Path, arguments: &[&str]) -> Result<Option<String>, String> {
-    let output = Command::new("git")
-        .args(arguments)
-        .current_dir(folder)
-        .output()
-        .map_err(|error| format!("git: {error}"))?;
-
-    Ok(output
-        .status
-        .success()
-        .then(|| String::from_utf8_lossy(&output.stdout).trim().to_owned()))
+    match stdout_of(Command::new("git").args(arguments).current_dir(folder)) {
+        Ok(output) => Ok(Some(output.trim().to_owned())),
+        Err(Failure::Exited { .. }) => Ok(None),
+        Err(failure @ Failure::NotStarted { .. }) => Err(failure.to_string()),
+    }
 }
 
 /// Sets `core.hooksPath` to [`HOOKS_FOLDER`] for the repository holding `folder`, unless it already

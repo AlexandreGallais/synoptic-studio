@@ -21,7 +21,7 @@ One task = one commit, referenced as `NAM-002.Tn`.
 
 - [x] T1 — The inventory: the calculations to name, the audit's findings, the times before (1 h)
 - [x] T2 — First pass: dates and times, the cooldown, the hash functions, named once each (3 h)
-- [ ] T3 — Second pass and the epic's full audit: what the first missed, the Git helpers, the merge of the parallel branches (2 h)
+- [x] T3 — Second pass and the epic's full audit: what the first missed, the Git helpers, the merge of the parallel branches (2 h)
 - [ ] T4 — Tooling and tests pass: claims proven twice, slow preparations, waits; the times after (2 h)
 
 ## No golden file
@@ -69,15 +69,18 @@ Each row is a calculation written bare, or more than once, in the code E17 wrote
 
 AUD-023's G left three findings to this story; the others come from reading E17's crates side by side.
 
-| Finding | Where |
-| --- | --- |
-| 25 `Command::new("git")` in 19 files, a dozen of them the same helper: its output, or its error output as the reason | `deps`, `format`, `git-hooks`, `heavy-lock`, `hooks`, `metrics`, `repo-tools`, `rule-docs`, `run-totals`, `secret-scan`, `shared-files`, `worktree` |
-| the checkout's Git folders found from the files Git writes, twice | `tool_use::checkout`, `hooks::git::checkout_of` |
-| `hooks::json` beside `serde_json` | every hook, `metrics`, `run-totals` (improvement log, AUD-023) |
-| the worktree's text matchers of `guard.rs` beside the word reader of `shell.rs` | `tools/hooks` |
-| two versions of Semantic Versioning: the dependency check's, with pre-releases, and the release tool's, without | `deps::version`, `release::version` |
-| two medians | `metrics::tables` (the mean of the middle two), `hooks::context` (the lower middle) |
-| the merge of E17's parallel branches | F18 to F21 |
+| Finding | Where | Done |
+| --- | --- | --- |
+| 25 `Command::new("git")` in 19 files, a dozen of them the same helper: its output, or its error output as the reason | `deps`, `format`, `git-hooks`, `heavy-lock`, `hooks`, `metrics`, `mutate`, `repo-tools`, `rule-docs`, `run-totals`, `secret-scan`, `shared-files`, `worktree` | merged (T3): `git_repository::stdout_of`, a crate of its own, takes the caller's command and gives its output or a `Failure` (not started, or exited with its words and error output); 17 helpers in 15 files call it, each keeping its own message and trim. Left with their own handling: `secret-scan`'s two (paths split from raw bytes at NUL; a child fed on its standard input), `git-sequences`' (its steps streamed, a message on standard input), `pre_commit`'s (a repository's own environment), `story_finish`'s step and status checks, `branches-clean`'s count and worktree removal (a status, or the error's first line as the reason kept) |
+| the checkout's Git folders found from the files Git writes, twice | `tool_use::checkout`, `hooks::git::checkout_of` | merged (T3): `git_repository::checkout_of`, with `branch_of`, `common_folder` and `lexical_join`, their tests moved from `hooks`; `tool_use::checkout` names the worktree from it. Its two tests' expected paths are now written joined, `main/.git` for `main/.git/worktrees/en-102/../..`: the same file, the line written there as before |
+| the Git common folder asked of Git by a hook and by a tool polled once a second | `limit-agents`, `run-totals` | read from Git's files, as the other hooks do (T3): `run-totals status` 15.1 → 4.9 ms, `limit-agents` 13.1 → 3.4 ms with its input piped (mean of 100 calls, twice, load average 2.8). `heavy-lock` and `metrics` keep `git rev-parse`: the lock's path is the one `GIT_DIR`, which a hook sets, and Git agree on |
+| `hooks::json` beside `serde_json` | every hook, `metrics`, `run-totals` | logged (AUD-023's row of the improvement log): every hook's input and output goes through it, and its `quote` and `number_text` write as `JSON.stringify` does, which `serde_json` does not for −0 and large numbers |
+| the worktree's text matchers of `guard.rs` beside the word reader of `shell.rs` | `tools/hooks` | logged (improvement row below): the guard decides what the agent may run, and AUD-023 tested it on 77 cases; moving its worktree forms onto the word reader changes what it refuses, a story of its own with that table |
+| two versions of Semantic Versioning: the dependency check's, with pre-releases, and the release tool's, without | `deps::version`, `release::version` | logged (improvement row below): one crate would make `release` depend on the dependency check's crate, or a third crate; `git_hooks::message::is_version` is a third reading, node-semver's `valid` as commitlint calls it, kept |
+| the story id of a branch read five ways | `shared_files::shared::story_of`, `worktree::story_of_branch`, `git_hooks::footer::story_of_branch`, `hooks::handback::story_of`, `hooks::status`'s prefixes | logged (improvement row below): they accept different branches (three digits or any, the types listed or any lowercase word), so one reader changes what each tool takes |
+| `SECOND_MS = 1000.0` declared in three modules of `metrics` | `format`, `watch`, `activity` | merged (T3): declared once in `metrics::format` |
+| two medians | `metrics::tables` (the mean of the middle two), `hooks::context` (the lower middle) | not a duplicate (Left inline) |
+| the merge of E17's parallel branches | F18 to F21 | checked (T3): no id written twice (`REF-*`, ADR numbers, story ids), no row twice in the journal, the improvement log or `docs/tooling/dependencies.md`, no heading twice in `AGENTS.md`; the test `f18_ac9_counts_a_subagent_resumed_by_a_message_until_its_notification` is in `hooks/tests/tasks.rs` and `hooks/tests/status.rs` (T4) |
 
 ## Times before
 

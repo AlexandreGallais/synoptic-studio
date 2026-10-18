@@ -8,6 +8,7 @@ publish.workspace = true
 
 [dependencies]
 calendar = { path = "../calendar" }
+git-repository = { path = "../git-repository" }
 hooks = { path = "../hooks" }
 oxc_allocator.workspace = true
 oxc_parser.workspace = true

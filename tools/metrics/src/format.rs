@@ -3,8 +3,9 @@
 
 pub use run_totals::report::grouped;
 
-/// Milliseconds in a second.
-const SECOND_MS: f64 = 1000.0;
+/// Milliseconds in a second, as a float: the reports' durations are JavaScript numbers. Declared
+/// once for the reports (NAM-002); `calendar::SECOND_MS` is the integer one.
+pub const SECOND_MS: f64 = 1000.0;
 
 /// Seconds in a minute.
 const MINUTE_SECONDS: f64 = 60.0;

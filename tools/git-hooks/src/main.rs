@@ -20,6 +20,7 @@ use git_hooks::install::{HOOKS_FOLDER, Installed, install};
 use git_hooks::message::{format_report, lint};
 use git_hooks::pre_commit::pre_commit;
 use git_hooks::staged::{parse_tasks, repository_tasks};
+use git_repository::stdout_of;
 
 /// The usage, printed on a call without a known command.
 const USAGE: &str = "usage: git-hooks install | pre-commit [--tasks <file>] | commit-msg <file> \
@@ -30,12 +31,7 @@ const COMMENT: &str = "#";
 
 /// A Git command's output, `None` when it fails.
 fn git(arguments: &[&str]) -> Option<String> {
-    Command::new("git")
-        .args(arguments)
-        .output()
-        .ok()
-        .filter(|output| output.status.success())
-        .map(|output| String::from_utf8_lossy(&output.stdout).into_owned())
+    stdout_of(Command::new("git").args(arguments)).ok()
 }
 
 /// Sets the hooks folder; the exit code.

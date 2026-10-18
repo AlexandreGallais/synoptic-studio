@@ -6,7 +6,7 @@
 
 use std::io::Write;
 
-use crate::format::{js_round, to_fixed};
+use crate::format::{SECOND_MS, js_round, to_fixed};
 use crate::transcript::is_js_space;
 
 /// What the watchdog knows of the output file.
@@ -39,9 +39,6 @@ pub struct WatchStep {
     /// The state after this look.
     pub watch: Watch,
 }
-
-/// Milliseconds in a second.
-const SECOND_MS: f64 = 1000.0;
 
 /// The last line of a text that is not blank, trimmed; empty for none.
 #[must_use]

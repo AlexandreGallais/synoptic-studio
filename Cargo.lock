@@ -168,6 +168,7 @@ name = "deps"
 version = "0.1.0"
 dependencies = [
  "calendar",
+ "git-repository",
  "hooks",
  "oxc_allocator",
  "oxc_parser",
@@ -253,6 +254,7 @@ checksum = "77ce24cb58228fbb8aa041425bb1050850ac19177686ea6e0f41a70416f56fdb"
 name = "format"
 version = "0.1.0"
 dependencies = [
+ "git-repository",
  "test-support",
  "tool-use",
 ]
@@ -360,10 +362,18 @@ dependencies = [
 name = "git-hooks"
 version = "0.1.0"
 dependencies = [
+ "git-repository",
  "regex",
  "shared-files",
  "test-support",
  "tool-use",
+]
+
+[[package]]
+name = "git-repository"
+version = "0.1.0"
+dependencies = [
+ "test-support",
 ]
 
 [[package]]
@@ -407,6 +417,7 @@ dependencies = [
 name = "heavy-lock"
 version = "0.1.0"
 dependencies = [
+ "git-repository",
  "test-support",
  "tool-use",
 ]
@@ -416,6 +427,7 @@ name = "hooks"
 version = "0.1.0"
 dependencies = [
  "calendar",
+ "git-repository",
  "stale-binaries",
  "test-support",
  "tool-use",
@@ -658,6 +670,7 @@ name = "metrics"
 version = "0.1.0"
 dependencies = [
  "calendar",
+ "git-repository",
  "hooks",
  "library",
  "run-totals",
@@ -670,6 +683,7 @@ dependencies = [
 name = "mutate"
 version = "0.1.0"
 dependencies = [
+ "git-repository",
  "test-support",
  "tool-use",
 ]
@@ -1165,6 +1179,7 @@ name = "repo-tools"
 version = "0.1.0"
 dependencies = [
  "calendar",
+ "git-repository",
  "hooks",
  "shared-files",
  "test-support",
@@ -1206,6 +1221,7 @@ dependencies = [
 name = "rule-docs"
 version = "0.1.0"
 dependencies = [
+ "git-repository",
  "test-support",
  "tool-use",
 ]
@@ -1215,6 +1231,7 @@ name = "run-totals"
 version = "0.1.0"
 dependencies = [
  "calendar",
+ "git-repository",
  "hooks",
  "test-support",
  "tool-use",
@@ -1354,6 +1371,7 @@ name = "shared-files"
 version = "0.1.0"
 dependencies = [
  "calendar",
+ "git-repository",
  "test-support",
  "tool-use",
 ]
@@ -1543,6 +1561,7 @@ name = "tool-use"
 version = "0.1.0"
 dependencies = [
  "calendar",
+ "git-repository",
 ]
 
 [[package]]
@@ -1751,6 +1770,7 @@ name = "worktree"
 version = "0.1.0"
 dependencies = [
  "git-hooks",
+ "git-repository",
  "test-support",
  "tool-use",
 ]

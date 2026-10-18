@@ -6,6 +6,7 @@
 use std::io::{self, Read};
 use std::process::{Command, ExitCode};
 
+use git_repository::stdout_of;
 use shared_files::padding::padding_only;
 use shared_files::shared::{Commit, refusal, shared_kind, worker_story};
 
@@ -14,17 +15,7 @@ const DELETED: char = '0';
 
 /// Output of a Git command.
 fn git(arguments: &[&str]) -> io::Result<String> {
-    let output = Command::new("git").args(arguments).output()?;
-
-    if !output.status.success() {
-        return Err(io::Error::other(format!(
-            "git {}: {}",
-            arguments.join(" "),
-            String::from_utf8_lossy(&output.stderr).trim()
-        )));
-    }
-
-    Ok(String::from_utf8_lossy(&output.stdout).into_owned())
+    stdout_of(Command::new("git").args(arguments)).map_err(io::Error::other)
 }
 
 /// Whether a commit changes a shared file only in the padding of its tables; false for a file it

@@ -6,6 +6,7 @@
 use std::collections::HashSet;
 use std::process::{Command, ExitCode, Stdio};
 
+use git_repository::{Failure, stdout_of};
 use repo_tools::branches_clean::{
     BranchFields, DEVELOP, Left, LocalBranch, base_of, is_in_use, read_branch, report,
     stale_branches, stale_worktrees, working_folders, worktrees_of,
@@ -13,17 +14,15 @@ use repo_tools::branches_clean::{
 
 /// The output of a Git command, its standard error shown; an error when it fails.
 fn git_text(words: &[&str]) -> Result<String, String> {
-    let output = Command::new("git")
-        .args(words)
-        .stdin(Stdio::null())
-        .stderr(Stdio::inherit())
-        .output()
-        .map_err(|error| format!("git: {error}"))?;
-
-    if output.status.success() {
-        Ok(String::from_utf8_lossy(&output.stdout).into_owned())
-    } else {
-        Err(format!("git {} failed", words.join(" ")))
+    match stdout_of(
+        Command::new("git")
+            .args(words)
+            .stdin(Stdio::null())
+            .stderr(Stdio::inherit()),
+    ) {
+        Ok(output) => Ok(output),
+        Err(failure @ Failure::NotStarted { .. }) => Err(failure.to_string()),
+        Err(Failure::Exited { words, .. }) => Err(format!("{words} failed")),
     }
 }
 

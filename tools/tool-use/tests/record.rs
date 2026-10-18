@@ -114,7 +114,8 @@ fn f21_ac7_writes_a_worktrees_use_in_the_main_checkout_naming_the_worktree() {
     assert_eq!(
         checkout(&worktree),
         Some(Checkout {
-            uses_file: git_dir.join("../..").join("metrics/tool-uses.jsonl"),
+            // `<git_dir>/../..`, joined without reading the disk (NAM-002).
+            uses_file: root.0.join("main/.git/metrics/tool-uses.jsonl"),
             worktree: "en-102".to_owned(),
         })
     );
@@ -142,9 +143,8 @@ fn a_relative_gitdir_and_a_submodule_without_commondir_are_read_too() {
     assert_eq!(
         checkout(&root.0.join("child")),
         Some(Checkout {
-            uses_file: root
-                .0
-                .join("child/../.git/modules/child/metrics/tool-uses.jsonl"),
+            // `child/../.git/modules/child`, joined without reading the disk (NAM-002).
+            uses_file: root.0.join(".git/modules/child/metrics/tool-uses.jsonl"),
             worktree: MAIN_CHECKOUT.to_owned(),
         })
     );

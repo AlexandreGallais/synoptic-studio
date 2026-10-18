@@ -10,6 +10,7 @@ use std::fs;
 use std::io;
 use std::process::{Command, ExitCode};
 
+use git_repository::stdout_of;
 use rule_docs::check::{closed_stories, docs_of, missing, none_affected, refusal, story_files};
 
 /// The folder of the story files.
@@ -17,17 +18,7 @@ const STORIES: &str = "docs/backlog/stories";
 
 /// Output of a Git command.
 fn git(arguments: &[&str]) -> io::Result<String> {
-    let output = Command::new("git").args(arguments).output()?;
-
-    if !output.status.success() {
-        return Err(io::Error::other(format!(
-            "git {}: {}",
-            arguments.join(" "),
-            String::from_utf8_lossy(&output.stderr).trim()
-        )));
-    }
-
-    Ok(String::from_utf8_lossy(&output.stdout).into_owned())
+    stdout_of(Command::new("git").args(arguments)).map_err(io::Error::other)
 }
 
 /// The files of a story's commits already made, none on a repository without a commit.

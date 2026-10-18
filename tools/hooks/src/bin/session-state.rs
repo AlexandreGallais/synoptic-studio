@@ -8,7 +8,8 @@ use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 use std::time::SystemTime;
 
-use hooks::git::{branch_of, checkout_of, git};
+use git_repository::{branch_of, checkout_of};
+use hooks::git::git;
 use hooks::session::{feature_line, is_feature_file, is_stale, state_text, story_rows};
 
 fn main() -> ExitCode {

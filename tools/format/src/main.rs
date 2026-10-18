@@ -16,6 +16,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use format::ignore::{is_ignored, patterns};
 use format::table::unpad;
 use format::targets::expand;
+use git_repository::{Failure, stdout_of};
 
 /// oxfmt's configuration, at the root.
 const CONFIG: &str = ".oxfmtrc.json";
@@ -71,26 +72,26 @@ fn root_files() -> io::Result<Vec<String>> {
 /// The files of the targets that oxfmt formats: tracked or new, not ignored by Git nor by
 /// `ignorePatterns`.
 fn listed_files(targets: &[String], ignored: &[String]) -> io::Result<Vec<String>> {
-    let output = Command::new("git")
-        .args([
-            "ls-files",
-            "-z",
-            "--cached",
-            "--others",
-            "--exclude-standard",
-            "--",
-        ])
-        .args(targets)
-        .output()?;
+    let listed = match stdout_of(
+        Command::new("git")
+            .args([
+                "ls-files",
+                "-z",
+                "--cached",
+                "--others",
+                "--exclude-standard",
+                "--",
+            ])
+            .args(targets),
+    ) {
+        Ok(listed) => listed,
+        Err(Failure::NotStarted { error, .. }) => return Err(error),
+        Err(Failure::Exited { error, .. }) => {
+            return Err(io::Error::other(format!("git ls-files: {error}")));
+        }
+    };
 
-    if !output.status.success() {
-        return Err(io::Error::other(format!(
-            "git ls-files: {}",
-            String::from_utf8_lossy(&output.stderr).trim()
-        )));
-    }
-
-    let mut files: Vec<String> = String::from_utf8_lossy(&output.stdout)
+    let mut files: Vec<String> = listed
         .split('\0')
         .filter(|path| !path.is_empty() && !is_ignored(path, ignored) && Path::new(path).is_file())
         .map(str::to_owned)

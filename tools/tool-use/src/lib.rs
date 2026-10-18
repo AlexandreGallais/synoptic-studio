@@ -126,33 +126,21 @@ pub fn append(file: &Path, line: &str) -> io::Result<()> {
         .write_all(line.as_bytes())
 }
 
-/// The checkout a folder belongs to: the nearest `.git` above it, a folder for the main checkout, a
-/// file `gitdir: <path>` for a linked worktree, whose `commondir` names the common folder. `None`
-/// outside a Git repository, or for a `.git` file that cannot be read.
+/// The checkout a folder belongs to, as `git_repository::checkout_of` reads it from the files Git
+/// writes: the main checkout's, or a linked worktree's, named after its Git folder; a submodule,
+/// whose Git folder is its own common folder, counts as a main checkout. `None` outside a Git
+/// repository, or for a `.git` file that cannot be read.
 #[must_use]
 pub fn checkout(folder: &Path) -> Option<Checkout> {
-    let dot_git = folder
-        .ancestors()
-        .map(|ancestor| ancestor.join(".git"))
-        .find(|candidate| candidate.exists())?;
-
-    let (common, worktree) = if dot_git.is_dir() {
-        (dot_git, MAIN_CHECKOUT.to_owned())
+    let found = git_repository::checkout_of(folder)?;
+    let worktree = if found.git_dir == found.common {
+        MAIN_CHECKOUT.to_owned()
     } else {
-        let text = fs::read_to_string(&dot_git).ok()?;
-        let git_dir = dot_git.parent()?.join(text.strip_prefix("gitdir:")?.trim());
-        // A submodule's Git folder has no `commondir`: it is its own common folder.
-        match fs::read_to_string(git_dir.join("commondir")) {
-            Ok(relative) => (
-                git_dir.join(relative.trim()),
-                git_dir.file_name()?.to_string_lossy().into_owned(),
-            ),
-            Err(_) => (git_dir, MAIN_CHECKOUT.to_owned()),
-        }
+        found.git_dir.file_name()?.to_string_lossy().into_owned()
     };
 
     Some(Checkout {
-        uses_file: common.join("metrics").join(USES_FILE),
+        uses_file: found.common.join("metrics").join(USES_FILE),
         worktree,
     })
 }

@@ -11,6 +11,7 @@ use std::process::{Command, ExitCode, Stdio};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use calendar::temporal_instant;
+use git_repository::{Failure, stdout_of};
 use hooks::pages::library_file;
 use repo_tools::records_save::{
     Kind, RecordCopy, copy_file, copy_folder, record_copies, records_folder,
@@ -18,22 +19,16 @@ use repo_tools::records_save::{
 
 /// Runs Git in a folder, its standard error shown; its trimmed output.
 fn git(cwd: &Path, words: &[&str]) -> Result<String, String> {
-    let output = Command::new("git")
-        .args(words)
-        .current_dir(cwd)
-        .stdin(Stdio::null())
-        .stderr(Stdio::inherit())
-        .output()
-        .map_err(|error| format!("git: {error}"))?;
-
-    if output.status.success() {
-        Ok(String::from_utf8_lossy(&output.stdout).trim().to_owned())
-    } else {
-        Err(format!(
-            "git {} failed in {}",
-            words.join(" "),
-            cwd.display()
-        ))
+    match stdout_of(
+        Command::new("git")
+            .args(words)
+            .current_dir(cwd)
+            .stdin(Stdio::null())
+            .stderr(Stdio::inherit()),
+    ) {
+        Ok(output) => Ok(output.trim().to_owned()),
+        Err(failure @ Failure::NotStarted { .. }) => Err(failure.to_string()),
+        Err(Failure::Exited { words, .. }) => Err(format!("{words} failed in {}", cwd.display())),
     }
 }
 

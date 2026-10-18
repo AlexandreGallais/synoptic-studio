@@ -8,6 +8,7 @@ publish.workspace = true
 
 [dependencies]
 calendar = { path = "../calendar" }
+git-repository = { path = "../git-repository" }
 
 [lints]
 workspace = true

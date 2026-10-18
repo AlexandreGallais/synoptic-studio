@@ -10,7 +10,7 @@
 //! or any other command chained after it by `;`, `&&` or `||`, is refused (EN-104, decided
 //! 2026-10-18).
 
-use std::path::{Component, Path, PathBuf};
+use git_repository::lexical_join;
 
 use crate::forbidden::{Arguments, Forbidden, abbreviates, invocations, reason};
 use crate::shell::{Simple, commands};
@@ -662,24 +662,6 @@ fn after_spaces_on_line(text: &str, at: usize) -> usize {
         .bytes()
         .take_while(|byte| matches!(byte, b' ' | b'\t'))
         .count()
-}
-
-/// A folder joined to the session's and normalized without reading the disk: `.` dropped, `..`
-/// taking off the folder before it.
-#[must_use]
-pub fn lexical_join(base: &str, folder: &str) -> String {
-    let mut path = PathBuf::new();
-
-    for component in Path::new(base).join(folder).components() {
-        match component {
-            Component::CurDir => {}
-            Component::ParentDir => {
-                path.pop();
-            }
-            other => path.push(other),
-        }
-    }
-    path.to_string_lossy().into_owned()
 }
 
 /// The reason for denying, in a worktree, a command Claude Code would refuse there: a Git command

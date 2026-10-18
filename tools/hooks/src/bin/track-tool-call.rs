@@ -7,7 +7,8 @@ use std::path::Path;
 use std::process::ExitCode;
 
 use calendar::now_ms;
-use hooks::git::{common_folder, hook_input};
+use git_repository::common_folder;
+use hooks::git::hook_input;
 use hooks::json::{Value, number_text, write};
 use hooks::record::running_call;
 

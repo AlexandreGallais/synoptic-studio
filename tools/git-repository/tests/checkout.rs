@@ -1,11 +1,12 @@
-//! Tests of a checkout read from the files Git writes (EN-104): the same folders and branch as Git
-//! gives, in the main checkout and in a linked worktree.
+//! Tests of a checkout read from the files Git writes (EN-104, moved from `hooks` at NAM-002): the
+//! same folders and branch as Git gives, in the main checkout and in a linked worktree; and of a
+//! Git command's output.
 
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-use hooks::git::{branch_of, checkout_of, common_folder};
+use git_repository::{Failure, branch_of, checkout_of, common_folder, lexical_join, stdout_of};
 
 /// A command without the `GIT_*` variables of the process running the tests: under the pre-push
 /// hook, `GIT_DIR` names the repository itself (`.claude/rules/tooling.md`); started through the
@@ -102,5 +103,68 @@ fn reads_the_folders_and_branch_git_gives_in_a_checkout_and_its_worktree() {
     // A `.git` file that names no folder is no checkout.
     fs::write(worktree.join(".git"), "nothing").expect("broken");
     assert_eq!(checkout_of(&worktree), None);
+    let _ = fs::remove_dir_all(&root);
+}
+
+#[test]
+fn joins_a_folder_without_reading_the_disk() {
+    assert_eq!(lexical_join("/a/b", "c/./d"), "/a/b/c/d");
+    assert_eq!(lexical_join("/a/b", "../../.."), "/");
+    assert_eq!(lexical_join("/a", "/x/y"), "/x/y");
+}
+
+#[test]
+fn gives_a_command_s_output_or_why_it_gave_none() {
+    let root = std::env::temp_dir().join(format!("git-output-{}", std::process::id()));
+
+    let _ = fs::remove_dir_all(&root);
+    fs::create_dir_all(&root).expect("folder");
+    // Its output, untrimmed.
+    assert!(
+        stdout_of(clean("git").arg("--version"))
+            .expect("git runs")
+            .starts_with("git version ")
+    );
+    assert!(
+        stdout_of(clean("git").arg("--version"))
+            .expect("git runs")
+            .ends_with('\n')
+    );
+    // Outside a repository, Git exits 128: its words and error output, trimmed.
+    let failed = stdout_of(
+        clean("git")
+            .args(["rev-parse", "--git-dir"])
+            .current_dir(&root)
+            .env("GIT_CEILING_DIRECTORIES", &root),
+    )
+    .expect_err("no repository");
+
+    match &failed {
+        Failure::Exited { words, error } => {
+            assert_eq!(words, "git rev-parse --git-dir");
+            assert!(error.starts_with("fatal: not a git repository"), "{error}");
+            assert!(!error.ends_with('\n'));
+        }
+        Failure::NotStarted { .. } => panic!("git started"),
+    }
+    assert!(
+        failed
+            .to_string()
+            .starts_with("git rev-parse --git-dir: fatal: not a git repository")
+    );
+    // A program that cannot start: its name and the system's error.
+    let missing = stdout_of(&mut test_support::command("no-such-program-of-nam-002"))
+        .expect_err("not started");
+
+    assert!(matches!(missing, Failure::NotStarted { .. }));
+    // The system's error is its source; Git's own exit has none.
+    assert!(std::error::Error::source(&missing).is_some());
+    assert!(std::error::Error::source(&failed).is_none());
+    assert!(
+        missing
+            .to_string()
+            .starts_with("no-such-program-of-nam-002: "),
+        "{missing}"
+    );
     let _ = fs::remove_dir_all(&root);
 }

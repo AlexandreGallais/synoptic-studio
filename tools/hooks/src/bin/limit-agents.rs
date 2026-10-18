@@ -6,24 +6,19 @@
 
 use std::fs;
 use std::io::{self, Read};
-use std::path::PathBuf;
-use std::process::Command;
+use std::path::{Path, PathBuf};
 
 use calendar::now_ms;
+use git_repository::common_folder;
 use hooks::json::{self, Value};
 use hooks::limit::{AGENT_LIMIT, deny_output, reaches_running, refusal, running_before};
 use hooks::tasks::{Task, cached_tasks, pending_after};
 
-/// The status line's cache in the Git common directory, when there is one.
+/// The status line's cache in the Git common directory, when there is one: read from the files Git
+/// writes, as the other hooks find it, rather than by starting Git (NAM-002).
 fn cache_file(cwd: &str) -> Option<PathBuf> {
-    let output = Command::new("git")
-        .args(["rev-parse", "--path-format=absolute", "--git-common-dir"])
-        .current_dir(if cwd.is_empty() { "." } else { cwd })
-        .output()
-        .ok()?;
-
-    output.status.success().then(|| {
-        PathBuf::from(String::from_utf8_lossy(&output.stdout).trim())
+    common_folder(Path::new(if cwd.is_empty() { "." } else { cwd })).map(|common| {
+        PathBuf::from(common)
             .join("metrics")
             .join("status-line-turn.json")
     })

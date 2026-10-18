@@ -12,6 +12,8 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use std::thread;
 use std::time::{Duration, Instant};
 
+use git_repository::stdout_of;
+
 use crate::mutations::{Kind, mutations, selected};
 
 /// The default test command, `{file}` standing for the mutated file.
@@ -151,22 +153,11 @@ fn isolated(program: impl AsRef<OsStr>, dir: &Path) -> Command {
     command
 }
 
-/// Output of a Git command run in `dir`, or its error output as the reason.
+/// Output of a Git command run in `dir`, trimmed, or its error output as the reason.
 fn git(dir: &Path, arguments: &[&str]) -> Result<String, String> {
-    let output = isolated("git", dir)
-        .args(arguments)
-        .output()
-        .map_err(|error| format!("git: {error}"))?;
-
-    if output.status.success() {
-        Ok(String::from_utf8_lossy(&output.stdout).trim().to_owned())
-    } else {
-        Err(format!(
-            "git {}: {}",
-            arguments.join(" "),
-            String::from_utf8_lossy(&output.stderr).trim()
-        ))
-    }
+    stdout_of(isolated("git", dir).args(arguments))
+        .map(|output| output.trim().to_owned())
+        .map_err(|failure| failure.to_string())
 }
 
 /// Links a folder at `link` to the folder `target`: a symbolic link (`std::os::unix::fs::symlink`).

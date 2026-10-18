@@ -10,7 +10,8 @@ use std::process::{Command, ExitCode, Stdio};
 use std::time::UNIX_EPOCH;
 
 use calendar::{SECOND_MS, now_ms};
-use hooks::git::{branch_of, checkout_of, hook_input};
+use git_repository::{branch_of, checkout_of};
+use hooks::git::hook_input;
 use hooks::guard::is_space;
 use hooks::json::{self, Value};
 use hooks::record::count;

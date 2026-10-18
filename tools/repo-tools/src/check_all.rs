@@ -15,6 +15,8 @@ use std::io;
 use std::path::Path;
 use std::process::Command;
 
+use git_repository::stdout_of;
+
 /// The lane of the documentation site and the playground built into it.
 pub const DOCS_LANE: &[&str] = &["docs:build", "playground:build"];
 
@@ -315,17 +317,8 @@ pub fn git_lines(root: &Path, arguments: &[&str]) -> io::Result<Vec<String>> {
         }
     }
 
-    let output = command.args(arguments).current_dir(root).output()?;
-
-    if !output.status.success() {
-        return Err(io::Error::other(format!(
-            "git {}: {}",
-            arguments.join(" "),
-            String::from_utf8_lossy(&output.stderr).trim()
-        )));
-    }
-
-    Ok(String::from_utf8_lossy(&output.stdout)
+    Ok(stdout_of(command.args(arguments).current_dir(root))
+        .map_err(io::Error::other)?
         .lines()
         .filter(|line| !line.is_empty())
         .map(str::to_owned)
