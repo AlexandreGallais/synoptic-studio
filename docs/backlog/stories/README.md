@@ -301,7 +301,7 @@
 | [EN-136](./E17-F30-EN-136-each-job-finds-its-tools.md) | F30 | Each CI job finds the tools its scripts call | done |
 | [AUD-032](./E17-F30-AUD-032-audit-f30.md) | F30 | Audit F30 | done |
 | [VAL-031](./E17-F30-VAL-031-validate-f30.md) | F30 | Validate F30 | done |
-| [EN-137](./E17-F23-EN-137-the-log-rows-in-the-done-commit.md) | F23 | The log rows and the cards in the done commit | ready |
+| [EN-137](./E17-F23-EN-137-the-log-rows-in-the-done-commit.md) | F23 | The log rows and the cards in the done commit | done |
 | [EN-118](./E17-F23-EN-118-a-story-outside-a-feature.md) | F23 | A story outside a feature, by the same tools | ready |
 | [AUD-025](./E17-F23-AUD-025-audit-f23.md) | F23 | Audit F23 | ready |
 | [VAL-024](./E17-F23-VAL-024-validate-f23.md) | F23 | Validate F23 | ready |

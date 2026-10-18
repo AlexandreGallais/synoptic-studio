@@ -3,7 +3,7 @@ id: EN-137
 epic: E17
 feature: F23
 title: The log rows and the cards in the done commit
-status: ready
+status: done
 points: 3
 ---
 
@@ -19,8 +19,8 @@ A commit `docs(docs): move the rows of … into the logs` sits between the story
 
 ## Tasks
 
-- [ ] T1 — The tests of `move-rows`, `story-finish`, `shared-files` and `tests/logs.test.ts` for each criterion, failing (1 h)
-- [ ] T2 — The rows and cards moved in the `done` commit, the pre-push and the docs of the run (2 h)
+- [x] T1 — The tests of `move-rows`, `story-finish`, `shared-files` and `tests/logs.test.ts` for each criterion, failing (1 h)
+- [x] T2 — The rows and cards moved in the `done` commit, the pre-push and the docs of the run (2 h)
 
 One task = one commit, referenced as `EN-137.T1` in the commit footer.
 

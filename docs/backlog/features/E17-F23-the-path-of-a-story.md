@@ -22,7 +22,7 @@ In delivery order.
 
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
-| [EN-137](../stories/E17-F23-EN-137-the-log-rows-in-the-done-commit.md) | EN | The log rows and the cards in the done commit | ready |
+| [EN-137](../stories/E17-F23-EN-137-the-log-rows-in-the-done-commit.md) | EN | The log rows and the cards in the done commit | done |
 | [EN-118](../stories/E17-F23-EN-118-a-story-outside-a-feature.md) | EN | A story outside a feature, by the same tools | ready |
 | [AUD-025](../stories/E17-F23-AUD-025-audit-f23.md) | AUD | Audit F23 | ready |
 | [VAL-024](../stories/E17-F23-VAL-024-validate-f23.md) | VAL | Validate F23 | ready |
