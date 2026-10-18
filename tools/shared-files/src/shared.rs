@@ -111,8 +111,9 @@ pub fn closes(commit: &Commit, story: &str) -> bool {
 }
 
 /// The shared files a commit of a worker's branch may not change: all of them, except, in the
-/// story's `done` commit, its status in the indexes and its feature's table and its rows and cards
-/// moved into the logs (ADR-0091), and a change that only pads or unpads tables.
+/// story's `done` commit, its status in the indexes and its feature's table and a log that only
+/// gains the rows and cards the commit removes from the story file (ADR-0091, AUD-025), and a
+/// change that only pads or unpads tables.
 #[must_use]
 pub fn refused_files(commit: &Commit, story: &str) -> Vec<String> {
     let done = closes(commit, story);
@@ -123,7 +124,8 @@ pub fn refused_files(commit: &Commit, story: &str) -> Vec<String> {
         .filter(|path| !commit.padded.contains(path))
         .filter(|path| match shared_kind(path) {
             None => false,
-            Some(Kind::Index | Kind::Feature | Kind::Log) => !done,
+            Some(Kind::Index | Kind::Feature) => !done,
+            Some(Kind::Log) => !(done && commit.moved.contains(path)),
             Some(Kind::Checklist) => true,
         })
         .cloned()
@@ -149,8 +151,9 @@ pub fn refusal(branch: &str, story: &str, commits: &[Commit]) -> String {
     format!(
         "pre-push: {branch} is {story}'s branch and edits shared files (ADR-0065):\n{}\n\
          Write their rows under `## For the main thread` in the story file instead; the main \
-         thread moves them into the logs in the story's done commit. Undo the change, e.g. `git restore --source=origin/<feature \
-         branch> -- <file>`, and commit.\n",
+         thread moves them into the logs in the story's done commit, which may add to a log only \
+         the rows it removes from the story file (`target/release/move-rows`). Undo the change, \
+         e.g. `git restore --source=origin/<feature branch> -- <file>`, and commit.\n",
         lines.join("\n")
     )
 }

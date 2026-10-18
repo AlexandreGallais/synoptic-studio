@@ -159,10 +159,25 @@ fn is_dated_card(line: &str) -> bool {
     line.strip_prefix(CARD).and_then(date_at_start).is_some()
 }
 
+/// Whether a heading under `### Incidents` is a card at another level, which the tool leaves and
+/// reports (AUD-025): a dated `## ` or `### ` heading, or any heading deeper than a card's.
+fn is_misplaced_card(line: &str) -> bool {
+    line.starts_with("#####")
+        || ["## ", "### "]
+            .iter()
+            .any(|level| line.strip_prefix(level).and_then(date_at_start).is_some())
+}
+
+/// Whether a line under an open card belongs to it: a bullet, or an indented line, a
+/// continuation or a nested bullet (AUD-025).
+fn is_card_line(line: &str) -> bool {
+    line.starts_with("- ") || line.starts_with(char::is_whitespace)
+}
+
 /// What a line under a log's heading is: a table log takes dated table rows, its header (a row
 /// followed by a separator) and separator dropped; the journal takes tagged bullets; the incidents
-/// log takes a dated card's heading and the bullets under it, `in_card` telling whether one is
-/// open.
+/// log takes a dated card's heading and the bullets and indented lines under it, `in_card`
+/// telling whether one is open.
 fn shape(place: Place, line: &str, next: Option<&str>, in_card: bool) -> Shape {
     let line = line.trim_end();
 
@@ -178,7 +193,7 @@ fn shape(place: Place, line: &str, next: Option<&str>, in_card: bool) -> Shape {
         }
         Place::Table if is_table_row(line) && is_dated(line) => Shape::Row,
         Place::NewestSection if is_tagged_bullet(line) => Shape::Row,
-        Place::Cards if is_dated_card(line) || (in_card && line.starts_with("- ")) => Shape::Row,
+        Place::Cards if is_dated_card(line) || (in_card && is_card_line(line)) => Shape::Row,
         _ => Shape::Other,
     }
 }
@@ -211,8 +226,11 @@ fn put_back<'a>(kept: &mut Vec<&'a str>, block: &mut Vec<&'a str>) {
 /// file without them: a heading whose lines all moved goes, and a section left empty too. A line
 /// that is not a row of its log stays under its heading, listed in [`Taken::left`]; a blank line,
 /// a placeholder (`- None.`) and a table's header and separator are dropped. Under `### Incidents`
-/// a `#### ` heading opens a card, taken with its bullets when it starts with a date, left with
-/// them otherwise. Other headings stay as they are.
+/// a `#### ` heading opens a card, taken with its bullets and indented lines when it starts with a
+/// date, left with them otherwise; a card at another level (a dated `## ` or `### ` heading, a
+/// heading deeper than `#### `) is left with the lines after it, `### Incidents` kept above them
+/// (AUD-025). Other headings stay as they are; the section ends at the next `## ` heading that is
+/// not dated, or a `# ` one.
 #[must_use]
 pub fn take_rows(story: &str) -> Taken {
     let lines: Vec<&str> = story.split('\n').collect();
@@ -225,7 +243,9 @@ pub fn take_rows(story: &str) -> Taken {
     };
     let end = lines[start + 1..]
         .iter()
-        .position(|line| line.starts_with("## ") || line.starts_with("# "))
+        .position(|line| {
+            (line.starts_with("## ") && heading_date(line).is_none()) || line.starts_with("# ")
+        })
         .map_or(lines.len(), |offset| start + 1 + offset);
     let body = &lines[start + 1..end];
     let mut kept: Vec<&str> = Vec::new();
@@ -237,8 +257,9 @@ pub fn take_rows(story: &str) -> Taken {
 
     for (index, line) in body.iter().enumerate() {
         let cards = current.is_some_and(|log| log.place == Place::Cards);
+        let misplaced = cards && is_misplaced_card(line);
 
-        if is_heading(line) && !(cards && line.starts_with(CARD)) {
+        if is_heading(line) && !(cards && line.starts_with(CARD)) && !misplaced {
             put_back(&mut kept, &mut block);
             in_card = false;
             current = LOGS
@@ -257,9 +278,13 @@ pub fn take_rows(story: &str) -> Taken {
             continue;
         };
 
-        let shape = shape(log.place, line, body.get(index + 1).copied(), in_card);
+        let shape = if misplaced {
+            Shape::Other
+        } else {
+            shape(log.place, line, body.get(index + 1).copied(), in_card)
+        };
 
-        if cards && line.starts_with(CARD) {
+        if cards && (misplaced || line.starts_with(CARD)) {
             in_card = shape == Shape::Row;
         }
         match shape {
@@ -319,9 +344,72 @@ pub struct Change<'a> {
 /// rewritten, is not.
 #[must_use]
 pub fn only_moved_rows(log: Log, log_change: Change, story_change: Change) -> bool {
-    let _ = (log, log_change, story_change);
+    let Some(added) = added_lines(log_change.before, log_change.after) else {
+        return false;
+    };
+    let mut moved = rows_of(log, story_change.before);
 
-    false
+    for row in rows_of(log, story_change.after) {
+        take_one(&mut moved, &row);
+    }
+
+    added.into_iter().all(|line| {
+        line.trim().is_empty()
+            || (log.place == Place::NewestSection && is_continued(line))
+            || story_line(log.place, line).is_some_and(|row| take_one(&mut moved, &row))
+    })
+}
+
+/// The lines added to a text, `None` when it lost or changed one: `before` is `after` with lines
+/// taken out, found in order, each kept line matched at its first occurrence.
+fn added_lines<'a>(before: &str, after: &'a str) -> Option<Vec<&'a str>> {
+    let mut old = before.split('\n').peekable();
+    let mut added = Vec::new();
+
+    for line in after.split('\n') {
+        if old.peek() == Some(&line) {
+            old.next();
+        } else {
+            added.push(line);
+        }
+    }
+
+    old.next().is_none().then_some(added)
+}
+
+/// The rows of a log a story file holds under `## For the main thread`.
+fn rows_of(log: Log, story: &str) -> Vec<String> {
+    take_rows(story)
+        .rows
+        .into_iter()
+        .find(|(known, _)| *known == log)
+        .map(|(_, rows)| rows)
+        .unwrap_or_default()
+}
+
+/// Takes one copy of a row out of a list; false when the list holds none.
+fn take_one(rows: &mut Vec<String>, row: &str) -> bool {
+    rows.iter()
+        .position(|known| known == row)
+        .map(|at| rows.remove(at))
+        .is_some()
+}
+
+/// Whether a line is the journal's heading of a section opened for today's rows.
+fn is_continued(line: &str) -> bool {
+    heading_date(line).is_some_and(|date| line == format!("## {date} — {CONTINUED}"))
+}
+
+/// A log's line as the story file wrote it: a card's `## ` heading was `#### `, any other heading
+/// in the incidents log none; the other lines as they are.
+fn story_line(place: Place, line: &str) -> Option<String> {
+    if place == Place::Cards && is_heading(line) {
+        return line
+            .strip_prefix("## ")
+            .map(|title| format!("{CARD}{title}"));
+    }
+
+    Some(line.to_owned())
 }
 
 /// The title of the journal's section opened for today's rows when the newest one is older.

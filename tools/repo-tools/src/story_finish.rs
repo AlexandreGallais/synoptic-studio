@@ -14,6 +14,7 @@ use std::path::Path;
 use std::process::{Command, Stdio};
 
 use git_repository::stdout_of;
+use shared_files::backlog::{STORIES, file_of};
 use shared_files::rows::take_rows;
 use shared_files::shared::story_of;
 use stale_binaries::RELEASE_BUILD;
@@ -22,9 +23,6 @@ use crate::backlog_status::{front_field, item_file, write_status};
 
 /// Readings of the pull request's state before giving up: three minutes, one each 10 s.
 pub const POLLS: u32 = 18;
-
-/// The folder of the story files.
-const STORIES: &str = "docs/backlog/stories";
 
 /// The generated stories index: a conflict there is left to the base, then written again.
 const STORIES_INDEX: &str = "docs/backlog/stories/README.md";
@@ -247,13 +245,17 @@ pub fn clean_up_plan(story: Story, here: &str, checkouts: &[Worktree]) -> CleanU
 }
 
 /// The rows and card lines a story file still holds for the logs, which its `done` commit moves
-/// (`move-rows`, ADR-0091): `story-finish` opens no pull request while there are some.
+/// (`move-rows`, ADR-0091), and the lines `move-rows` leaves under a log's heading, a card at
+/// another level among them (AUD-025): `story-finish` opens no pull request while there are some.
 #[must_use]
 pub fn rows_left(story: &str) -> usize {
-    take_rows(story)
+    let taken = take_rows(story);
+
+    taken
         .rows
         .iter()
-        .map(|(_, rows)| rows.len())
+        .chain(&taken.left)
+        .map(|(_, lines)| lines.len())
         .sum()
 }
 
@@ -262,33 +264,48 @@ pub fn rows_left(story: &str) -> usize {
 /// `None` when it holds none.
 #[must_use]
 pub fn story_refusal(path: &str, branch: &str, story: Result<&str, &str>) -> Option<String> {
-    let _ = (path, branch, story);
-
-    None
-}
-
-/// Why the story cannot be finished yet: its file, in the checkout, still holds rows for the logs
-/// that its `done` commit should have moved; `None` when it holds none, or the branch names no
-/// story file.
-#[must_use]
-pub fn rows_refusal(branch: &str, cwd: &Path) -> Option<String> {
-    let id = story_of(branch)?;
-    let file = item_file(cwd, &id);
-
-    if file.is_empty() {
-        return None;
-    }
-
-    let path = format!("{STORIES}/{file}");
-    let count = rows_left(&fs::read_to_string(cwd.join(&path)).ok()?);
+    let text = match story {
+        Ok(text) => text,
+        Err(error) => {
+            return Some(format!(
+                "{path} cannot be read at HEAD ({error}): its rows for the logs are unknown, \
+                 so the story is not finished (ADR-0091)"
+            ));
+        }
+    };
+    let count = rows_left(text);
 
     (count > 0).then(|| {
         format!(
-            "{path} still holds lines for the logs ({count}): move them into the done commit, \
-             `target/release/move-rows {branch}` then `git commit --amend --no-edit` of the files \
-             it prints, and run again (ADR-0091)"
+            "{path} still holds lines for the logs ({count}) at HEAD: make the done commit again \
+             (ADR-0091): `git reset --soft HEAD~1`, `target/release/move-rows {branch}`, the lines \
+             it names as left written as rows or moved out of their heading by hand, then \
+             `target/release/git-sequences commit -F <message file> --push-with-lease <the files \
+             it printed> docs/backlog`, and run again"
         )
     })
+}
+
+/// Why the story cannot be finished yet: its file, read at the head that is pushed (`git show
+/// HEAD:<path>`), still holds rows or lines for the logs, or cannot be read; `None` when it holds
+/// none, or the branch names no story file at the head (AUD-025).
+#[must_use]
+pub fn rows_refusal(branch: &str, cwd: &Path) -> Option<String> {
+    let id = story_of(branch)?;
+    let folder = format!("{STORIES}/");
+    let names: Vec<String> =
+        match run_words("git", &["ls-tree", "--name-only", "HEAD", &folder], cwd) {
+            Ok(listed) => listed
+                .lines()
+                .filter_map(|path| path.strip_prefix(&folder))
+                .map(str::to_owned)
+                .collect(),
+            Err(error) => return story_refusal(STORIES, branch, Err(&error)),
+        };
+    let path = format!("{folder}{}", file_of(&names, &id)?);
+    let story = run_words("git", &["show", &format!("HEAD:{path}")], cwd);
+
+    story_refusal(&path, branch, story.as_deref().map_err(String::as_str))
 }
 
 /// A step written as a command to type: `cd "<folder>" && <command> <arguments>`.
@@ -582,7 +599,7 @@ pub fn write_status_again(branch: &str, cwd: &Path) -> Result<Vec<String>, Strin
         return Ok(Vec::new());
     }
 
-    let story = fs::read_to_string(cwd.join("docs/backlog/stories").join(&file))
+    let story = fs::read_to_string(cwd.join(STORIES).join(&file))
         .map_err(|error| format!("{file}: {error}"))?;
     let status = front_field(&story, "status");
 

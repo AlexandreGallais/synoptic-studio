@@ -1,11 +1,13 @@
 //! A backlog item's status changed in the three places `backlog.test.ts` checks (RET-002, EN-103):
 //! the item's front matter, its folder's index and its parent's table — a story's feature (or its
-//! epic, for `NAM`, `REV` and `RET`), a feature's epic. The stories index is not edited but
+//! epic, for a `REV` or an epic's `SP`), a feature's epic. The stories index is not edited but
 //! generated again from the story files by `npm run backlog:index` (EN-049, ADR-0065).
 
 use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
+
+use shared_files::backlog::{file_of, names_in};
 
 use crate::scripts::run_script;
 
@@ -90,34 +92,6 @@ pub fn front_field(text: &str, key: &str) -> String {
         .map_or_else(String::new, |value| value.trim().to_owned())
 }
 
-/// Of a folder's file names, sorted, the first of an item: holding `-<id>-` or starting with
-/// `<id>-`; empty when none.
-#[must_use]
-pub fn file_of(names: &[String], id: &str) -> String {
-    let inside = format!("-{id}-");
-    let first = format!("{id}-");
-
-    names
-        .iter()
-        .find(|name| name.contains(&inside) || name.starts_with(&first))
-        .cloned()
-        .unwrap_or_default()
-}
-
-/// The sorted file names of a folder of the backlog.
-///
-/// # Errors
-/// When the folder cannot be read.
-pub fn names_in(folder: &Path) -> io::Result<Vec<String>> {
-    let mut names: Vec<String> = fs::read_dir(folder)?
-        .filter_map(Result::ok)
-        .map(|entry| entry.file_name().to_string_lossy().into_owned())
-        .collect();
-
-    names.sort();
-    Ok(names)
-}
-
 /// A file rewritten by a change of its text.
 ///
 /// # Errors
@@ -140,19 +114,20 @@ pub fn parent_of(backlog: &Path, folder: &str, text: &str) -> io::Result<PathBuf
     if folder == "stories" && !feature.is_empty() {
         let features = backlog.join("features");
 
-        return Ok(features.join(file_of(&names_in(&features)?, &feature)));
+        return Ok(features.join(file_of(&names_in(&features)?, &feature).unwrap_or_default()));
     }
 
     let epics = backlog.join("epics");
 
-    Ok(epics.join(file_of(&names_in(&epics)?, &front_field(text, "epic"))))
+    Ok(epics.join(file_of(&names_in(&epics)?, &front_field(text, "epic")).unwrap_or_default()))
 }
 
 /// The file of an item in the repository's backlog, empty when none.
 #[must_use]
 pub fn item_file(root: &Path, id: &str) -> String {
     names_in(&root.join("docs").join("backlog").join(folder_of(id)))
-        .map(|names| file_of(&names, id))
+        .ok()
+        .and_then(|names| file_of(&names, id))
         .unwrap_or_default()
 }
 
@@ -248,19 +223,8 @@ mod tests {
     }
 
     #[test]
-    fn reads_a_front_matter_field_and_finds_an_item_file() {
+    fn reads_a_front_matter_field() {
         assert_eq!(front_field("id: X\nfeature: F21 \n", "feature"), "F21");
         assert_eq!(front_field("id: X\n", "epic"), "");
-
-        let names = [
-            "E17-F21-EN-103-a.md".to_owned(),
-            "E17-F21-EN-1030-b.md".to_owned(),
-            "F21-x.md".to_owned(),
-        ];
-
-        assert_eq!(file_of(&names, "EN-103"), "E17-F21-EN-103-a.md");
-        assert_eq!(file_of(&names, "F21"), "E17-F21-EN-103-a.md");
-        assert_eq!(file_of(&names[1..], "F21"), "E17-F21-EN-1030-b.md");
-        assert_eq!(file_of(&names, "EN-9"), "");
     }
 }

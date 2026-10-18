@@ -63,6 +63,16 @@ function repeatedRows(text: string): readonly string[] {
 }
 
 /**
+ * The tool cards of the incidents log, each from its `## ` heading to the next one.
+ *
+ * @param text - the incidents log's content
+ * @returns each card's text, its heading first, in order
+ */
+function cardsOf(text: string): readonly string[] {
+  return text.split(/^(?=## )/mu).filter((card) => card.startsWith("## "));
+}
+
+/**
  * The tool cards written more than once, heading and bullets, each named once by its heading: two
  * cards may share a bullet (`- Instead: none`), never a whole card (AUD-025).
  *
@@ -70,7 +80,11 @@ function repeatedRows(text: string): readonly string[] {
  * @returns the headings of the repeated cards, in order of their first occurrence
  */
 function repeatedCards(text: string): readonly string[] {
-  return repeatedRows(text).filter((row) => row.startsWith("## "));
+  const cards = cardsOf(text);
+  const all = cards.map((card) => card.replaceAll(/\s+/gu, " ").trim());
+  const repeated = new Set(all.filter((card, index) => all.indexOf(card) !== index));
+
+  return [...repeated].map((card) => cards[all.indexOf(card)]?.split("\n", 1)[0] ?? card);
 }
 
 /** Each log's check of its repeats: the incidents log compares whole cards, the others rows. */
@@ -150,7 +164,7 @@ const CARD_PARTS: readonly { readonly label: RegExp; readonly part: string }[] =
  * @returns each incomplete card's heading and the parts it lacks, in order
  */
 function incompleteCards(text: string): readonly string[] {
-  const cards = text.split(/^(?=## )/mu).filter((card) => card.startsWith("## "));
+  const cards = cardsOf(text);
 
   return cards
     .map((card) => {
@@ -165,7 +179,7 @@ function incompleteCards(text: string): readonly string[] {
 
 /**
  * Each log's check of its shape: the two table logs hold one table, the journal tagged bullets,
- * the incidents log whole cards.
+ * the incidents log cards that each state their use, their failure and their workaround.
  */
 const STRAY: Readonly<Record<string, (text: string) => readonly string[]>> = {
   "docs/process/feedback.md": strayTableLines,
