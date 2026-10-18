@@ -122,25 +122,6 @@ pub fn copy_folder(from: &Path, to: &Path) -> io::Result<()> {
     Ok(())
 }
 
-/// An instant written as Temporal writes it, `2026-10-17T23:33:53.959648Z`: UTC, its fraction of
-/// a second without trailing zeros.
-#[must_use]
-pub fn instant(seconds: u64, nanoseconds: u32) -> String {
-    let days = i64::try_from(seconds / 86_400).unwrap_or(0);
-    let of_day = seconds % 86_400;
-    let fraction = format!("{nanoseconds:09}");
-    let fraction = fraction.trim_end_matches('0');
-
-    format!(
-        "{}T{:02}:{:02}:{:02}{}{fraction}Z",
-        shared_files::date::date_of_days(days),
-        of_day / 3600,
-        of_day % 3600 / 60,
-        of_day % 60,
-        if fraction.is_empty() { "" } else { "." }
-    )
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -198,17 +179,6 @@ mod tests {
                 },
             ]
         );
-    }
-
-    #[test]
-    fn writes_an_instant_as_temporal_does() {
-        // 1 792 108 800 s is 2026-10-16T00:00Z (20 742 days × 86 400 s).
-        assert_eq!(instant(1_792_108_800, 0), "2026-10-16T00:00:00Z");
-        assert_eq!(
-            instant(1_792_108_800 + 3_723, 959_648_000),
-            "2026-10-16T01:02:03.959648Z"
-        );
-        assert_eq!(instant(0, 5), "1970-01-01T00:00:00.000000005Z");
     }
 
     #[test]

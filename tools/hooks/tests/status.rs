@@ -10,10 +10,11 @@ use std::process::{Command, Output, Stdio};
 use hooks::json::{Value, parse, quote};
 use hooks::status::{
     RunningCall, Status, background_lines, background_text, clock_duration, grouped, is_run_open,
-    is_turn_done, place_of, read_running_call, running_line, session_snapshot, short_duration,
-    status_text, usage_snapshot,
+    is_turn_done, place_of, read_running_call, running_line, session_snapshot, status_text,
+    usage_snapshot,
 };
 use hooks::tasks::{Kind, Task};
+use hooks::time::short_duration;
 use hooks::tokens::{Tally, add_tokens, cache_json, cached_tally, empty_tally, turn_tokens};
 
 /// 2026-10-13T08:00:00Z, 08:03:00Z and 09:00:00Z in epoch milliseconds: 09:00 is 31 h 33 min 05 s
@@ -496,15 +497,7 @@ fn writes_the_cache_as_the_typescript_status_line_did_then_the_last_request_s_co
 }
 
 #[test]
-fn writes_durations_in_seconds_minutes_then_hours() {
-    assert_eq!(short_duration(45_000), "45 s");
-    // Rounded half up, as `Math.round`: 44.5 s is 45 s.
-    assert_eq!(short_duration(44_500), "45 s");
-    assert_eq!(short_duration(44_499), "44 s");
-    // Below zero, as `Math.round`: −1.5 s is −1 s.
-    assert_eq!(short_duration(-1500), "-1 s");
-    assert_eq!(short_duration(12 * 60_000), "12 min");
-    assert_eq!(short_duration(125 * 60_000), "2 h 05");
+fn writes_durations_to_the_second() {
     assert_eq!(clock_duration(45_900), "45 s");
     assert_eq!(clock_duration(12 * 60_000 + 5000), "12 min 05 s");
     assert_eq!(clock_duration(125 * 60_000 + 9000), "2 h 05 min 09 s");

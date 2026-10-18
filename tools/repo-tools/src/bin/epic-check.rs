@@ -13,8 +13,8 @@ use std::path::Path;
 use std::process::{Command, ExitCode};
 use std::time::SystemTime;
 
+use calendar::now_ms;
 use hooks::json::{Value, parse};
-use hooks::time::now_ms;
 use repo_tools::epic_check::{
     Finding, check_all_finding, failed_calls, left_branches, lost_calls, open_items, table,
 };

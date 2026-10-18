@@ -11,8 +11,8 @@ use std::fs::{self, OpenOptions};
 use std::io::Write as _;
 use std::path::Path;
 use std::process::{Command, ExitCode};
-use std::time::{SystemTime, UNIX_EPOCH};
 
+use calendar::today;
 use release::changelog::notes;
 use release::check::check;
 use release::manifest::{lock_versions, repository, version};
@@ -35,17 +35,6 @@ fn run(program: &str, args: &[&str]) -> Result<String, String> {
             String::from_utf8_lossy(&output.stderr).trim()
         ))
     }
-}
-
-/// Today's date in UTC, `YYYY-MM-DD`.
-fn today() -> String {
-    let seconds = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map_or(0, |elapsed| elapsed.as_secs());
-    let (year, month, day) =
-        tool_use::civil_from_days(i64::try_from(seconds / 86_400).unwrap_or(0));
-
-    format!("{year:04}-{month:02}-{day:02}")
 }
 
 /// A file of the root, empty when it cannot be read.

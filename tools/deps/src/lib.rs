@@ -15,7 +15,15 @@ pub mod unused;
 pub mod version;
 
 /// The cooldown: a version is taken once it is 7 days old (ADR-0038), in milliseconds.
-pub const COOLDOWN_MS: i64 = 7 * 86_400_000;
+pub const COOLDOWN_MS: i64 = 7 * calendar::DAY_MS;
+
+/// Whether a version published at `published_ms` is past the cooldown at `now_ms`: 7 days old or
+/// more, the seventh day included (`REF-NCU-COOLDOWN`). The one test of the cooldown, for npm,
+/// the crates, Node.js and the actions (NAM-002).
+#[must_use]
+pub fn is_past_cooldown(published_ms: i64, now_ms: i64) -> bool {
+    now_ms - published_ms >= COOLDOWN_MS
+}
 
 /// A pinned version behind the latest one old enough.
 #[derive(Debug, Clone, PartialEq, Eq)]

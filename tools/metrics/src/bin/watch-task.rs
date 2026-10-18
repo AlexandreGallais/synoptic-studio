@@ -12,7 +12,7 @@ use std::process::ExitCode;
 use std::thread;
 use std::time::Duration;
 
-use hooks::time::now_ms;
+use calendar::now_ms;
 use metrics::watch::{WatchRules, Watching, option, seconds_ms, watch_until};
 
 /// Seconds between two looks at the file.

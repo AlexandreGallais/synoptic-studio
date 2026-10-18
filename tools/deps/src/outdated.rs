@@ -158,14 +158,7 @@ pub fn read_pins(root: &Path) -> Pins {
 /// A date written `2026-10-11`, or `date unknown`.
 #[must_use]
 pub fn date(published_ms: Option<i64>) -> String {
-    published_ms.map_or_else(
-        || "date unknown".to_owned(),
-        |ms| {
-            let (year, month, day) = tool_use::civil_from_days(ms.div_euclid(86_400_000));
-
-            format!("{year}-{month:02}-{day:02}")
-        },
-    )
+    published_ms.map_or_else(|| "date unknown".to_owned(), calendar::iso_date)
 }
 
 /// The line of a version behind: `npm vite 8.3.4 → 8.4.0, 2026-10-01`.
@@ -326,7 +319,7 @@ fn action_report(
 
     for ((action, tag), answer) in firsts.iter().zip(network.github(&paths)) {
         match json(&answer).map(|commit| actions::commit_ms(&commit)) {
-            Ok(Some(ms)) if now_ms - ms < crate::COOLDOWN_MS => {}
+            Ok(Some(ms)) if !crate::is_past_cooldown(ms, now_ms) => {}
             Ok(published) => report.lines.push(format!(
                 "action {} v{} → v{} or later ({tag}), {}",
                 action.repository,

@@ -12,8 +12,8 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::{Command, ExitCode};
 
+use calendar::now_ms;
 use hooks::json::{Value, parse};
-use hooks::time::now_ms;
 use run_totals::marker::{Run, closed, opened, parse_run, render_run, whole};
 use run_totals::report::{report_table, status_text};
 use run_totals::stop::{parked_story, stop_text};

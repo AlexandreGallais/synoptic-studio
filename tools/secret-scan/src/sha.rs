@@ -2,7 +2,10 @@
 //! alone. Written from their standards rather than taken from a crate (EN-110, T1): SHA-1 from
 //! RFC 3174 (`REF-RFC-3174`), the SHA-2 functions from RFC 6234 (`REF-RFC-6234`), HMAC from
 //! RFC 2104 (`REF-RFC-2104`); tested on RFC 6234's own vectors. A message is whole bytes, so the
-//! padding appends the byte 0x80, zeros and the length in bits.
+//! padding appends the byte 0x80, zeros and the length in bits. Each function the standards name
+//! is a function of that name: `CH`, `MAJ`, `BSIG0`, `BSIG1`, `SSIG0`, `SSIG1` (NAM-002).
+
+use std::ops::{BitAnd, BitXor, Not};
 
 /// A hash function of the four.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -235,6 +238,65 @@ fn padded(message: &[u8], block: usize, length_len: usize) -> Vec<u8> {
     padded
 }
 
+/// `CH(x, y, z) = (x AND y) XOR ((NOT x) AND z)`, RFC 6234 sections 5.1 and 5.2: each bit of `y`
+/// where `x` is set, of `z` elsewhere; SHA-1's `f(t)` for t from 0 to 19 (RFC 3174 section 5),
+/// whose OR of the same two disjoint terms gives the same bits.
+fn ch<T>(x: T, y: T, z: T) -> T
+where
+    T: Copy + BitAnd<Output = T> + BitXor<Output = T> + Not<Output = T>,
+{
+    (x & y) ^ (!x & z)
+}
+
+/// `MAJ(x, y, z) = (x AND y) XOR (x AND z) XOR (y AND z)`, RFC 6234 sections 5.1 and 5.2: each bit
+/// set in two of the three words or more; SHA-1's `f(t)` for t from 40 to 59 (RFC 3174 section 5).
+fn maj<T>(x: T, y: T, z: T) -> T
+where
+    T: Copy + BitAnd<Output = T> + BitXor<Output = T>,
+{
+    (x & y) ^ (x & z) ^ (y & z)
+}
+
+/// SHA-256's `BSIG0(x) = ROTR^2(x) XOR ROTR^13(x) XOR ROTR^22(x)`, RFC 6234 section 5.1.
+fn bsig0_256(x: u32) -> u32 {
+    x.rotate_right(2) ^ x.rotate_right(13) ^ x.rotate_right(22)
+}
+
+/// SHA-256's `BSIG1(x) = ROTR^6(x) XOR ROTR^11(x) XOR ROTR^25(x)`, RFC 6234 section 5.1.
+fn bsig1_256(x: u32) -> u32 {
+    x.rotate_right(6) ^ x.rotate_right(11) ^ x.rotate_right(25)
+}
+
+/// SHA-256's `SSIG0(x) = ROTR^7(x) XOR ROTR^18(x) XOR SHR^3(x)`, RFC 6234 section 5.1.
+fn ssig0_256(x: u32) -> u32 {
+    x.rotate_right(7) ^ x.rotate_right(18) ^ (x >> 3)
+}
+
+/// SHA-256's `SSIG1(x) = ROTR^17(x) XOR ROTR^19(x) XOR SHR^10(x)`, RFC 6234 section 5.1.
+fn ssig1_256(x: u32) -> u32 {
+    x.rotate_right(17) ^ x.rotate_right(19) ^ (x >> 10)
+}
+
+/// SHA-512's `BSIG0(x) = ROTR^28(x) XOR ROTR^34(x) XOR ROTR^39(x)`, RFC 6234 section 5.2.
+fn bsig0_512(x: u64) -> u64 {
+    x.rotate_right(28) ^ x.rotate_right(34) ^ x.rotate_right(39)
+}
+
+/// SHA-512's `BSIG1(x) = ROTR^14(x) XOR ROTR^18(x) XOR ROTR^41(x)`, RFC 6234 section 5.2.
+fn bsig1_512(x: u64) -> u64 {
+    x.rotate_right(14) ^ x.rotate_right(18) ^ x.rotate_right(41)
+}
+
+/// SHA-512's `SSIG0(x) = ROTR^1(x) XOR ROTR^8(x) XOR SHR^7(x)`, RFC 6234 section 5.2.
+fn ssig0_512(x: u64) -> u64 {
+    x.rotate_right(1) ^ x.rotate_right(8) ^ (x >> 7)
+}
+
+/// SHA-512's `SSIG1(x) = ROTR^19(x) XOR ROTR^61(x) XOR SHR^6(x)`, RFC 6234 section 5.2.
+fn ssig1_512(x: u64) -> u64 {
+    x.rotate_right(19) ^ x.rotate_right(61) ^ (x >> 6)
+}
+
 /// SHA-1, RFC 3174 section 6.1.
 #[expect(
     clippy::many_single_char_names,
@@ -262,9 +324,9 @@ fn sha1(message: &[u8]) -> [u8; 20] {
 
         for (t, word) in w.iter().enumerate() {
             let (f, k) = match t {
-                0..=19 => ((b & c) | (!b & d), 0x5A82_7999),
+                0..=19 => (ch(b, c, d), 0x5A82_7999),
                 20..=39 => (b ^ c ^ d, 0x6ED9_EBA1),
-                40..=59 => ((b & c) | (b & d) | (c & d), 0x8F1B_BCDC),
+                40..=59 => (maj(b, c, d), 0x8F1B_BCDC),
                 _ => (b ^ c ^ d, 0xCA62_C1D6),
             };
             let temp = a
@@ -316,28 +378,21 @@ fn sha256(message: &[u8]) -> [u8; 32] {
             w[t] = u32::from_be_bytes(*word);
         }
         for t in 16..64 {
-            let s0 = w[t - 15].rotate_right(7) ^ w[t - 15].rotate_right(18) ^ (w[t - 15] >> 3);
-            let s1 = w[t - 2].rotate_right(17) ^ w[t - 2].rotate_right(19) ^ (w[t - 2] >> 10);
-
-            w[t] = s1
+            w[t] = ssig1_256(w[t - 2])
                 .wrapping_add(w[t - 7])
-                .wrapping_add(s0)
+                .wrapping_add(ssig0_256(w[t - 15]))
                 .wrapping_add(w[t - 16]);
         }
         let mut v = h;
 
         for t in 0..64 {
             let [a, b, c, d, e, f, g, hh] = v;
-            let big1 = e.rotate_right(6) ^ e.rotate_right(11) ^ e.rotate_right(25);
-            let ch = (e & f) ^ (!e & g);
             let t1 = hh
-                .wrapping_add(big1)
-                .wrapping_add(ch)
+                .wrapping_add(bsig1_256(e))
+                .wrapping_add(ch(e, f, g))
                 .wrapping_add(K256[t])
                 .wrapping_add(w[t]);
-            let big0 = a.rotate_right(2) ^ a.rotate_right(13) ^ a.rotate_right(22);
-            let maj = (a & b) ^ (a & c) ^ (b & c);
-            let t2 = big0.wrapping_add(maj);
+            let t2 = bsig0_256(a).wrapping_add(maj(a, b, c));
 
             v = [t1.wrapping_add(t2), a, b, c, d.wrapping_add(t1), e, f, g];
         }
@@ -392,28 +447,21 @@ fn sha512_family(message: &[u8], initial: [u64; 8]) -> [u8; 64] {
             w[t] = u64::from_be_bytes(*word);
         }
         for t in 16..80 {
-            let s0 = w[t - 15].rotate_right(1) ^ w[t - 15].rotate_right(8) ^ (w[t - 15] >> 7);
-            let s1 = w[t - 2].rotate_right(19) ^ w[t - 2].rotate_right(61) ^ (w[t - 2] >> 6);
-
-            w[t] = s1
+            w[t] = ssig1_512(w[t - 2])
                 .wrapping_add(w[t - 7])
-                .wrapping_add(s0)
+                .wrapping_add(ssig0_512(w[t - 15]))
                 .wrapping_add(w[t - 16]);
         }
         let mut v = h;
 
         for t in 0..80 {
             let [a, b, c, d, e, f, g, hh] = v;
-            let big1 = e.rotate_right(14) ^ e.rotate_right(18) ^ e.rotate_right(41);
-            let ch = (e & f) ^ (!e & g);
             let t1 = hh
-                .wrapping_add(big1)
-                .wrapping_add(ch)
+                .wrapping_add(bsig1_512(e))
+                .wrapping_add(ch(e, f, g))
                 .wrapping_add(K512[t])
                 .wrapping_add(w[t]);
-            let big0 = a.rotate_right(28) ^ a.rotate_right(34) ^ a.rotate_right(39);
-            let maj = (a & b) ^ (a & c) ^ (b & c);
-            let t2 = big0.wrapping_add(maj);
+            let t2 = bsig0_512(a).wrapping_add(maj(a, b, c));
 
             v = [t1.wrapping_add(t2), a, b, c, d.wrapping_add(t1), e, f, g];
         }
@@ -519,6 +567,43 @@ mod tests {
 
     /// RFC 6234 section 8.5, the HMAC tests 1 and 2: twenty bytes 0x0b over "Hi There", and the
     /// key "Jefe" over "what do ya want for nothing?".
+    #[test]
+    fn ch_chooses_and_maj_takes_the_majority_bit_by_bit() {
+        // x = 1100, y = 1010, z = 0110: CH takes y's 10 where x is set, z's 10 elsewhere → 1010;
+        // MAJ: 1000 ^ 0100 ^ 0010 = 1110, the bits set in two words or three.
+        assert_eq!(ch(0b1100_u32, 0b1010, 0b0110), 0b1010);
+        assert_eq!(maj(0b1100_u32, 0b1010, 0b0110), 0b1110);
+        assert_eq!(ch(u64::MAX, 7, 9), 7);
+        assert_eq!(maj(0_u64, u64::MAX, u64::MAX), u64::MAX);
+        // SHA-1's f(t) written with OR (RFC 3174 section 5) gives the same bits.
+        for (b, c, d) in [
+            (0x6745_2301_u32, 0xEFCD_AB89, 0x98BA_DCFE),
+            (u32::MAX, 0, 0x1234_5678),
+        ] {
+            assert_eq!(ch(b, c, d), (b & c) | (!b & d));
+            assert_eq!(maj(b, c, d), (b & c) | (b & d) | (c & d));
+        }
+    }
+
+    #[test]
+    fn the_sigma_functions_rotate_and_shift_as_rfc_6234_writes_them() {
+        // One bit set at 0: ROTR^n puts it at 32 − n (64 − n), SHR loses it.
+        assert_eq!(bsig0_256(1), (1 << 30) | (1 << 19) | (1 << 10));
+        assert_eq!(bsig1_256(1), (1 << 26) | (1 << 21) | (1 << 7));
+        assert_eq!(ssig0_256(1), (1 << 25) | (1 << 14));
+        assert_eq!(ssig1_256(1), (1 << 15) | (1 << 13));
+        // The highest bit, 31: SHR^3 puts it at 28, SHR^10 at 21.
+        assert_eq!(ssig0_256(1 << 31), (1 << 24) | (1 << 13) | (1 << 28));
+        assert_eq!(ssig1_256(1 << 31), (1 << 14) | (1 << 12) | (1 << 21));
+        assert_eq!(bsig0_512(1), (1 << 36) | (1 << 30) | (1 << 25));
+        assert_eq!(bsig1_512(1), (1 << 50) | (1 << 46) | (1 << 23));
+        assert_eq!(ssig0_512(1), (1 << 63) | (1 << 56));
+        assert_eq!(ssig1_512(1), (1 << 45) | (1 << 3));
+        // Bit 63: SHR^7 puts it at 56, SHR^6 at 57.
+        assert_eq!(ssig0_512(1 << 63), (1 << 62) | (1 << 55) | (1 << 56));
+        assert_eq!(ssig1_512(1 << 63), (1 << 44) | (1 << 2) | (1 << 57));
+    }
+
     #[test]
     fn hmac_gives_rfc_6234s_results() {
         let key = [0x0b; 20];

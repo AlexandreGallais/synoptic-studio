@@ -11,8 +11,8 @@ use crate::format::{duration_text, grouped};
 use crate::json::Json;
 use crate::session::SessionFigures;
 use crate::tables::{js_prefix, markdown_table};
-use crate::time::minute_text;
 use crate::transcript::upsert;
+use calendar::iso_minute;
 
 /// Characters of a session id shown.
 const SESSION_SHOWN: usize = 8;
@@ -119,7 +119,7 @@ pub fn turns_table(records: &[TurnRecord]) -> String {
             .iter()
             .map(|turn| {
                 vec![
-                    minute_text(turn.start),
+                    iso_minute(turn.start),
                     js_prefix(&turn.session, SESSION_SHOWN),
                     duration_text(turn.wall_ms),
                     duration_text(turn.active_ms),

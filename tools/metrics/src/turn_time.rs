@@ -8,7 +8,7 @@ use serde_json::Value;
 use crate::format::{format_duration, grouped, js_round};
 use crate::json::Json;
 use crate::tables::markdown_table;
-use crate::time::minute_text;
+use calendar::iso_minute;
 
 /// A main-agent call with its start, as the log holds it.
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
@@ -119,7 +119,7 @@ pub fn time_table(records: &[Value], latest: usize) -> String {
             let chars = time.chars_written as i64;
 
             vec![
-                minute_text(start_ms),
+                iso_minute(start_ms),
                 time.calls.to_string(),
                 format_duration(time.tool_ms),
                 format_duration(time.model_ms),

@@ -1,25 +1,7 @@
-//! Times of transcript lines: ISO 8601 instants to epoch milliseconds, standard library only.
+//! Times of transcript lines: ISO 8601 instants to epoch milliseconds, and durations written short,
+//! on the dates of `calendar`.
 
-use std::time::{SystemTime, UNIX_EPOCH};
-
-/// Milliseconds in a second, a minute, an hour and a day.
-const SECOND: i64 = 1000;
-const MINUTE: i64 = 60 * SECOND;
-const HOUR: i64 = 60 * MINUTE;
-const DAY: i64 = 24 * HOUR;
-
-/// Days from 1970-01-01 to a date of the proleptic Gregorian calendar (`REF-HINNANT-DATES`,
-/// `days_from_civil`).
-#[must_use]
-pub fn days_from_civil(year: i64, month: i64, day: i64) -> i64 {
-    let year = if month <= 2 { year - 1 } else { year };
-    let era = year.div_euclid(400);
-    let year_of_era = year - era * 400;
-    let day_of_year = (153 * (month + if month > 2 { -3 } else { 9 }) + 2) / 5 + day - 1;
-    let day_of_era = year_of_era * 365 + year_of_era / 4 - year_of_era / 100 + day_of_year;
-
-    era * 146_097 + day_of_era - 719_468
-}
+use calendar::{DAY_MS, MINUTE_MS, SECOND_MS, days_from_civil, duration_ms};
 
 /// Epoch milliseconds of a UTC instant written `2026-10-16T20:41:03.123Z`, 0 when it is not one.
 #[must_use]
@@ -36,32 +18,23 @@ pub fn epoch_ms(instant: &str) -> i64 {
             })?;
 
         Some(
-            days_from_civil(number(0..4)?, number(5..7)?, number(8..10)?) * DAY
-                + number(11..13)? * HOUR
-                + number(14..16)? * MINUTE
-                + number(17..19)? * SECOND
-                + fraction,
+            days_from_civil(number(0..4)?, number(5..7)?, number(8..10)?) * DAY_MS
+                + duration_ms(number(11..13)?, number(14..16)?, number(17..19)?, fraction),
         )
     })();
 
     parts.unwrap_or(0)
 }
 
-/// Epoch milliseconds now.
-#[must_use]
-pub fn now_ms() -> i64 {
-    SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map_or(0, |elapsed| i64::try_from(elapsed.as_millis()).unwrap_or(0))
-}
-
-/// A duration written short: `45 s`, `12 min`, `2 h 05`.
+/// A duration written short: `45 s`, `12 min` or `2 h 05`, as `Math.floor` and `Math.round` give:
+/// the minutes rounded down, the seconds to the nearest, a half up. The one copy of the hooks,
+/// the status line's and the run's (NAM-002).
 #[must_use]
 pub fn short_duration(milliseconds: i64) -> String {
-    let minutes = milliseconds / MINUTE;
+    let minutes = milliseconds.div_euclid(MINUTE_MS);
 
     if minutes < 1 {
-        format!("{} s", (milliseconds + SECOND / 2) / SECOND)
+        format!("{} s", (milliseconds + SECOND_MS / 2).div_euclid(SECOND_MS))
     } else if minutes < 60 {
         format!("{minutes} min")
     } else {

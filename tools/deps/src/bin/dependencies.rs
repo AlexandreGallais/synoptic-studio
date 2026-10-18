@@ -29,7 +29,7 @@ impl Network for Commands {
 /// `deps outdated`: the report, its exit code.
 fn check_outdated() -> u8 {
     let pins = outdated::read_pins(Path::new("."));
-    let report = outdated::outdated(&pins, &Commands, hooks::time::now_ms());
+    let report = outdated::outdated(&pins, &Commands, calendar::now_ms());
 
     for line in &report.lines {
         println!("{line}");

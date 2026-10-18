@@ -30,7 +30,7 @@ impl Place {
 
         let database = open_library(&folder.join("library.sqlite")).unwrap();
         let page = StoredPage {
-            fetched_at: hooks::time::now_ms(),
+            fetched_at: calendar::now_ms(),
             markdown: MARKDOWN.to_owned(),
             title: "Hooks".to_owned(),
             url: "https://x.org/h.md".to_owned(),

@@ -19,8 +19,8 @@ Before the review, go over the code E17 changed twice so that every calculation 
 
 One task = one commit, referenced as `NAM-002.Tn`.
 
-- [ ] T1 — The inventory: the calculations to name, the audit's findings, the times before (1 h)
-- [ ] T2 — First pass: dates and times, the cooldown, the hash functions, named once each (3 h)
+- [x] T1 — The inventory: the calculations to name, the audit's findings, the times before (1 h)
+- [x] T2 — First pass: dates and times, the cooldown, the hash functions, named once each (3 h)
 - [ ] T3 — Second pass and the epic's full audit: what the first missed, the Git helpers, the merge of the parallel branches (2 h)
 - [ ] T4 — Tooling and tests pass: claims proven twice, slow preparations, waits; the times after (2 h)
 
@@ -43,6 +43,27 @@ Each row is a calculation written bare, or more than once, in the code E17 wrote
 | `hooks::time`, `hooks::status` | `short_duration` written twice | once, in `hooks::time` | — |
 | `deps` | the cooldown written six times: `now − published ≥ COOLDOWN_MS`, or `<` | `is_past_cooldown` | `REF-NCU-COOLDOWN` |
 | `secret-scan::sha` | SHA-1's choice and majority, SHA-256's and SHA-512's `CH`, `MAJ`, `BSIG0`, `BSIG1`, `SSIG0`, `SSIG1` inline, the first two in three functions | `ch`, `maj`, `bsig0_256`… `ssig1_512` | `REF-RFC-6234` §5, `REF-RFC-3174` §5 |
+
+### What the first pass did
+
+- **`tools/calendar`**, a crate of its own, the standard library only, that `tool-use` and every crate with a date depend on: the four durations, `days_from_civil` and `civil_from_days` moved from `hooks` and `tool-use`, `is_leap`, `days_in_month`, `duration_ms`, `iso_date`, `iso_minute`, `iso_instant`, `temporal_instant` (`REF-TEMPORAL-INSTANT`, new, read through the library), `today` and `now_ms`. Removed: `shared_files::date`, `library::time::iso_date`, `metrics::time::{day_text, minute_text, temporal_text}`, `hooks::record::instant_text`, `repo_tools::epic_check::minute_of`, `repo_tools::records_save::instant`, `release`'s `today`, `deps::outdated::date`'s own formula, and the second `short_duration` of `hooks::status`.
+- **Their tests moved with them**, their cases unchanged, into `tools/calendar/tests/calendar.rs`: the dates of `shared-files`, the instants and the 1900–2200 sweep of `tool-use`, the days of `hooks`, the minute of `epic-check`, the Temporal instants of `hooks::record` and `records-save`. The sweep's oracle, a copy of `days_from_civil` in `tool-use`'s tests (AUD-023), is gone: both functions now live in one crate, and the sweep proves `civil_from_days` on its own (each day the next date) before it checks `days_from_civil` against it. New: a leap year, the days of each month, against the difference of two `days_from_civil` from 1600 to 2400, `duration_ms`, and `REF-TEMPORAL-INSTANT`'s own example.
+- **`deps::is_past_cooldown`**, its own test at exactly 7 days, broken once (`>=` → `>`) and seen failing; the six comparisons call it.
+- **`secret-scan::sha`**: `ch`, `maj` (shared by SHA-1, SHA-256 and SHA-512), `bsig0_256` to `ssig1_512`, each tested on a single bit and on RFC 6234's vectors; `ch` and a shift broken once each and seen failing.
+- `npm run mutate -- --all tools/calendar/src/lib.rs -- cargo test -q -p calendar`: 117 caught, 3 survived, all three a fallback no input reaches (a nanosecond count under 10⁹ that `u32::try_from` always takes, a clock before 1970).
+- One behaviour moved, below zero only: `run-totals` and the agent limit used the copy of `short_duration` that truncated, the status line the one that rounds as `Math.round` does; they now share the second. A duration they show is never negative but for a clock set back, where `−44.6 s` now reads `-45 s`, as the status line already wrote it.
+
+### Left inline, with their reason
+
+| Where | Calculation | Reason |
+| --- | --- | --- |
+| `heavy-lock` | `MINUTE`, `HOUR`, `DAY` in seconds | the lock's file writes its start in seconds, read back by older binaries in other worktrees: a change of unit is a change of format |
+| `hooks::session::STALE_MS`, `metrics::activity::RECENT_MS` | a day and an hour as `u128` | compared with `Duration::as_millis`; Clippy's pedantic casts refuse `DAY_MS as u128`, and `u128::from` is not `const` |
+| `metrics::format`, `metrics::watch`, `metrics::activity` | `SECOND_MS = 1000.0`, `MINUTE_SECONDS = 60.0` | floats of `Math.round` ports, whose `as f64` of the integer constants Clippy refuses |
+| `secret-scan::sha` | SHA-1's `f(t)` for t from 20 to 39 and 60 to 79, `b ^ c ^ d` | RFC 3174 names it only as `f(t)` of those steps, inline in its `match` |
+| `repo_tools::check_all::seconds` | `(ms + 50) / 100`, tenths rounded half up | named by its function, the one place it is written |
+| `hooks::context::median`, `metrics::tables::median` | two medians | not one calculation: the lower middle of whole token counts, as the TypeScript tool printed it, and the mean of the two middles of durations |
+| `hooks::time::epoch_ms`, `library::time::instant_ms`, `metrics::time::offset_instant_ms` | three readers of ISO 8601 | each accepts what its input writes (a transcript's `Z`, every form Temporal reads, Git's `%aI`); one reader would refuse or accept other texts. Their arithmetic is `calendar`'s |
 
 ## The epic's full audit
 

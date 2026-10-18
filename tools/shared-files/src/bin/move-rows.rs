@@ -14,7 +14,7 @@ use std::io;
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
-use shared_files::date::today;
+use calendar::today;
 use shared_files::rows::{insert_rows, take_rows};
 use shared_files::shared::story_of;
 

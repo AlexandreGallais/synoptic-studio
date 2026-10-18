@@ -1,16 +1,6 @@
 //! Tests of the transcript times.
 
-use hooks::time::{days_from_civil, epoch_ms, short_duration};
-
-#[test]
-fn counts_days_from_the_epoch() {
-    assert_eq!(days_from_civil(1970, 1, 1), 0);
-    // `date -u -j -f %Y-%m-%d 2000-03-01 +%s` ÷ 86 400 = 11 017.
-    assert_eq!(days_from_civil(2000, 3, 1), 11_017);
-    // 1 709 164 800 s ÷ 86 400 = 19 782: a leap day.
-    assert_eq!(days_from_civil(2024, 2, 29), 19_782);
-    assert_eq!(days_from_civil(1969, 12, 31), -1);
-}
+use hooks::time::{epoch_ms, short_duration};
 
 #[test]
 fn reads_an_instant_to_the_millisecond() {
@@ -35,8 +25,14 @@ fn reads_no_instant_from_anything_else() {
 }
 
 #[test]
-fn writes_durations_short() {
+fn writes_durations_in_seconds_minutes_then_hours() {
+    assert_eq!(short_duration(45_000), "45 s");
     assert_eq!(short_duration(44_600), "45 s");
+    // Rounded half up, as `Math.round`: 44.5 s is 45 s.
+    assert_eq!(short_duration(44_500), "45 s");
+    assert_eq!(short_duration(44_499), "44 s");
+    // Below zero, as `Math.round`: −1.5 s is −1 s.
+    assert_eq!(short_duration(-1500), "-1 s");
     assert_eq!(short_duration(720_000), "12 min");
     // 125 min = 2 h 05.
     assert_eq!(short_duration(7_500_000), "2 h 05");

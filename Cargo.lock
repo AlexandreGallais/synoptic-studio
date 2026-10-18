@@ -86,6 +86,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fc652a48c352aef3ea3aed32080501cf3ef6ed5da78602a020c991775b0aff04"
 
 [[package]]
+name = "calendar"
+version = "0.1.0"
+
+[[package]]
 name = "castaway"
 version = "0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -163,6 +167,7 @@ dependencies = [
 name = "deps"
 version = "0.1.0"
 dependencies = [
+ "calendar",
  "hooks",
  "oxc_allocator",
  "oxc_parser",
@@ -410,6 +415,7 @@ dependencies = [
 name = "hooks"
 version = "0.1.0"
 dependencies = [
+ "calendar",
  "stale-binaries",
  "test-support",
  "tool-use",
@@ -584,6 +590,7 @@ checksum = "ce5d3ddc6d3fa000eb1536d85e147bfe31aacaba692ed6a876f95cb7c855be78"
 name = "library"
 version = "0.1.0"
 dependencies = [
+ "calendar",
  "hooks",
  "rmcp",
  "rusqlite",
@@ -650,6 +657,7 @@ checksum = "cf8baf1c55e62ffcace7a9f06f4bd9cd3f0c4beb022d3b367256b91b87513d98"
 name = "metrics"
 version = "0.1.0"
 dependencies = [
+ "calendar",
  "hooks",
  "library",
  "run-totals",
@@ -1146,6 +1154,7 @@ checksum = "d6f6ff9a378485b298a5286656da665ba74413d36db0979633275d2e708145d4"
 name = "release"
 version = "0.1.0"
 dependencies = [
+ "calendar",
  "regex",
  "test-support",
  "tool-use",
@@ -1155,6 +1164,7 @@ dependencies = [
 name = "repo-tools"
 version = "0.1.0"
 dependencies = [
+ "calendar",
  "hooks",
  "shared-files",
  "test-support",
@@ -1204,6 +1214,7 @@ dependencies = [
 name = "run-totals"
 version = "0.1.0"
 dependencies = [
+ "calendar",
  "hooks",
  "test-support",
  "tool-use",
@@ -1342,6 +1353,7 @@ dependencies = [
 name = "shared-files"
 version = "0.1.0"
 dependencies = [
+ "calendar",
  "test-support",
  "tool-use",
 ]
@@ -1529,6 +1541,9 @@ dependencies = [
 [[package]]
 name = "tool-use"
 version = "0.1.0"
+dependencies = [
+ "calendar",
+]
 
 [[package]]
 name = "tracing"

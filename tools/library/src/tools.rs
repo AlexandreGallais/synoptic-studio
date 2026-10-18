@@ -3,7 +3,7 @@
 //! the use each records (`REF-MCP-TOOLS`). The answers are those `library-mcp.ts` gave, text for
 //! text, so that a session sees no change of server.
 
-use hooks::time::now_ms;
+use calendar::now_ms;
 use rusqlite::Connection;
 use rusqlite::types::Value as SqlValue;
 use serde_json::{Value, json};

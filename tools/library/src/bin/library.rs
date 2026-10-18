@@ -12,8 +12,9 @@
 use std::env;
 use std::process::ExitCode;
 
+use calendar::iso_date;
 use library::store::{library_file_of_process, list_pages, open_library};
-use library::time::{instant_ms, iso_date};
+use library::time::instant_ms;
 use library::tools::call_tool;
 use library::usage::{project_of, usage_report};
 use rusqlite::Connection;

@@ -15,16 +15,15 @@ use std::fs::{self, OpenOptions};
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
-use std::time::{Instant, SystemTime, UNIX_EPOCH};
+use std::time::Instant;
+
+use calendar::{iso_instant, now_ms};
 
 /// The file of the uses, in the Git common folder.
 const USES_FILE: &str = "tool-uses.jsonl";
 
 /// The worktree named for the main checkout, whose Git folder is not a linked worktree's.
 pub const MAIN_CHECKOUT: &str = "main";
-
-/// Milliseconds in a day.
-const DAY_MS: i64 = 86_400_000;
 
 /// One use of a tool, as its line holds it.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -85,7 +84,7 @@ pub fn run_in(
     is_poll: bool,
     work: impl FnOnce() -> u8,
 ) -> u8 {
-    let start_ms = epoch_ms_now();
+    let start_ms = now_ms();
     let clock = Instant::now();
     let exit_code = work();
     let duration_ms = u64::try_from(clock.elapsed().as_millis()).unwrap_or(u64::MAX);
@@ -195,51 +194,4 @@ pub fn json_string(text: &str) -> String {
     }
     quoted.push('"');
     quoted
-}
-
-/// A UTC instant written as ISO 8601 with milliseconds, `2026-10-16T00:00:00.123Z`, from epoch
-/// milliseconds; before 1970 too.
-#[must_use]
-pub fn iso_instant(epoch_ms: i64) -> String {
-    let days = epoch_ms.div_euclid(DAY_MS);
-    let in_day = epoch_ms.rem_euclid(DAY_MS);
-    let (year, month, day) = civil_from_days(days);
-
-    format!(
-        "{year:04}-{month:02}-{day:02}T{:02}:{:02}:{:02}.{:03}Z",
-        in_day / 3_600_000,
-        in_day / 60_000 % 60,
-        in_day / 1000 % 60,
-        in_day % 1000,
-    )
-}
-
-/// The date of the proleptic Gregorian calendar a number of days after 1970-01-01 falls on, as
-/// year, month and day (`REF-HINNANT-DATES`, `civil_from_days`, the inverse of `hooks`'
-/// `days_from_civil`); the one copy of the workspace.
-#[must_use]
-pub fn civil_from_days(days: i64) -> (i64, i64, i64) {
-    let shifted = days + 719_468;
-    let era = shifted.div_euclid(146_097);
-    let day_of_era = shifted - era * 146_097;
-    let year_of_era =
-        (day_of_era - day_of_era / 1460 + day_of_era / 36_524 - day_of_era / 146_096) / 365;
-    let day_of_year = day_of_era - (365 * year_of_era + year_of_era / 4 - year_of_era / 100);
-    let month_from_march = (5 * day_of_year + 2) / 153;
-    let day = day_of_year - (153 * month_from_march + 2) / 5 + 1;
-    let month = if month_from_march < 10 {
-        month_from_march + 3
-    } else {
-        month_from_march - 9
-    };
-    let year = year_of_era + era * 400 + i64::from(month <= 2);
-
-    (year, month, day)
-}
-
-/// Epoch milliseconds now, 0 for a clock before 1970.
-fn epoch_ms_now() -> i64 {
-    SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map_or(0, |elapsed| i64::try_from(elapsed.as_millis()).unwrap_or(0))
 }

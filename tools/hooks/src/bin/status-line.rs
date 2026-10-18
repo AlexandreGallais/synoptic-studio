@@ -9,15 +9,16 @@ use std::path::Path;
 use std::process::{Command, ExitCode, Stdio};
 use std::time::UNIX_EPOCH;
 
+use calendar::{SECOND_MS, now_ms};
 use hooks::git::{branch_of, checkout_of, hook_input};
 use hooks::guard::is_space;
 use hooks::json::{self, Value};
 use hooks::record::count;
 use hooks::status::{
     LONG_CALL_MS, RunningCall, Status, background_lines, is_run_open, is_turn_done, place_of,
-    read_running_call, running_line, session_snapshot, short_duration, status_text, usage_snapshot,
+    read_running_call, running_line, session_snapshot, status_text, usage_snapshot,
 };
-use hooks::time::now_ms;
+use hooks::time::short_duration;
 use hooks::tokens::turn_tokens;
 
 fn main() -> ExitCode {
@@ -100,9 +101,9 @@ fn silent_ms(transcript: &str, now: i64) -> i64 {
         .and_then(|modified| modified.duration_since(UNIX_EPOCH).ok());
 
     modified.map_or(0, |since| {
-        let seconds = i64::try_from(since.as_secs()).unwrap_or(i64::MAX / 1000);
+        let seconds = i64::try_from(since.as_secs()).unwrap_or(i64::MAX / SECOND_MS);
 
-        now - (seconds * 1000 + i64::from(since.subsec_nanos().div_ceil(1_000_000)))
+        now - (seconds * SECOND_MS + i64::from(since.subsec_nanos().div_ceil(1_000_000)))
     })
 }
 

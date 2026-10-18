@@ -9,10 +9,10 @@ use std::io::{self, Read};
 use std::path::PathBuf;
 use std::process::Command;
 
+use calendar::now_ms;
 use hooks::json::{self, Value};
 use hooks::limit::{AGENT_LIMIT, deny_output, reaches_running, refusal, running_before};
 use hooks::tasks::{Task, cached_tasks, pending_after};
-use hooks::time::now_ms;
 
 /// The status line's cache in the Git common directory, when there is one.
 fn cache_file(cwd: &str) -> Option<PathBuf> {

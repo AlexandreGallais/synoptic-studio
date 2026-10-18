@@ -9,10 +9,10 @@ use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
+use calendar::now_ms;
 use hooks::git::{branch_of, checkout_of, hook_input};
 use hooks::json::{self, Value};
 use hooks::record::{CallContext, count, tool_call_record};
-use hooks::time::now_ms;
 
 fn main() -> ExitCode {
     tool_use::run("log-tool-call", "", hook)

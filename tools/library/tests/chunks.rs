@@ -1,7 +1,8 @@
 //! Tests of the sections a page is cut into and of its freshness, on the cases of
 //! `library-chunks.test.ts` and the edges of the cut (EN-106).
 
-use library::chunks::{DAY_MS, PageAge, is_stale, page_chunks};
+use calendar::DAY_MS;
+use library::chunks::{PageAge, is_stale, page_chunks};
 
 /// Index and heading path of each chunk.
 fn headings(markdown: &str) -> Vec<(i64, String)> {

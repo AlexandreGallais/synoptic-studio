@@ -11,8 +11,8 @@ use std::thread;
 use std::time::{Duration, Instant};
 
 use tool_use::{
-    Checkout, MAIN_CHECKOUT, ToolUse, append, checkout, civil_from_days, iso_instant, json_line,
-    json_string, run, run_in, run_or_poll,
+    Checkout, MAIN_CHECKOUT, ToolUse, append, checkout, json_line, json_string, run, run_in,
+    run_or_poll,
 };
 
 /// Lines each of the two processes appends at once.
@@ -315,49 +315,4 @@ fn escapes_quotes_backslashes_and_control_characters() {
     assert_eq!(json_string(""), r#""""#);
     assert_eq!(json_string(r#"a"b\c"#), r#""a\"b\\c""#);
     assert_eq!(json_string("a\nb\rc\td\u{1}é"), r#""a\nb\rc\td\u0001é""#);
-}
-
-#[test]
-fn writes_instants_at_the_epoch_on_a_leap_day_and_before_1970() {
-    assert_eq!(iso_instant(0), "1970-01-01T00:00:00.000Z");
-    // 2024-02-29: 54 years of 365 days and the 13 leap days 1972 to 2020 give 2024-01-01 at day
-    // 19 723; then 31 + 28 days: 19 782 × 86 400 000 = 1 709 164 800 000 ms.
-    assert_eq!(iso_instant(1_709_164_800_000), "2024-02-29T00:00:00.000Z");
-    assert_eq!(iso_instant(-1), "1969-12-31T23:59:59.999Z");
-    // 2000-03-01, after the leap day of a year divisible by 400: day 11 017.
-    assert_eq!(civil_from_days(11_017), (2000, 3, 1));
-    assert_eq!(civil_from_days(11_016), (2000, 2, 29));
-}
-
-/// Days from 1970-01-01 to a date (H. Hinnant, `days_from_civil`, as `hooks` computes it).
-fn days_from_civil(year: i64, month: i64, day: i64) -> i64 {
-    let year = if month <= 2 { year - 1 } else { year };
-    let era = year.div_euclid(400);
-    let year_of_era = year - era * 400;
-    let day_of_year = (153 * (month + if month > 2 { -3 } else { 9 }) + 2) / 5 + day - 1;
-    let day_of_era = year_of_era * 365 + year_of_era / 4 - year_of_era / 100 + day_of_year;
-
-    era * 146_097 + day_of_era - 719_468
-}
-
-#[test]
-fn every_day_from_1900_to_2200_is_the_next_date_and_counts_back_to_its_number() {
-    // 1900-01-01 is day −25 567; each next day is the next date of the calendar.
-    let mut previous = civil_from_days(-25_567);
-    assert_eq!(previous, (1900, 1, 1));
-    for days in -25_566..84_000 {
-        let date = civil_from_days(days);
-        let next_in_month = (previous.0, previous.1, previous.2 + 1);
-        let next_month = if previous.1 == 12 {
-            (previous.0 + 1, 1, 1)
-        } else {
-            (previous.0, previous.1 + 1, 1)
-        };
-        assert!(
-            date == next_in_month || date == next_month,
-            "{previous:?} then {date:?}"
-        );
-        assert_eq!(days_from_civil(date.0, date.1, date.2), days);
-        previous = date;
-    }
 }

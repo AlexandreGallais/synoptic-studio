@@ -14,7 +14,7 @@ use library::pages::{
     page_from_response, request_headers, table_of_contents,
 };
 use library::store::{StoredPage, open_library, save_page};
-use library::time::{day_of, epoch_of, iso_date};
+use library::time::{day_of, epoch_of};
 use rusqlite::Connection;
 
 /// Markdown served for the tests.
@@ -84,7 +84,6 @@ fn a_day_is_written_from_epoch_milliseconds() {
     assert_eq!(day_of(1_760_000_000_000), "2025-10-09");
     assert_eq!(day_of(-1), "1969-12-31");
     assert_eq!(day_of(0), "not stated");
-    assert_eq!(iso_date(0), "1970-01-01");
 }
 
 #[test]
