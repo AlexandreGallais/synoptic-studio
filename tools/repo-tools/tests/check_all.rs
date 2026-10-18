@@ -780,6 +780,42 @@ fn f29_ac2_skips_the_rust_lanes_only_when_the_change_is_known_and_touches_none_o
 }
 
 #[test]
+fn f29_ac2_runs_every_lane_in_the_ci_even_with_a_base_known() {
+    let root = scratch("ci-known-base");
+    let origin = root.join("origin.git");
+    let folder = repository("ci-known-base-work", &[]);
+
+    git(
+        &root,
+        &["init", "-q", "--bare", origin.to_str().expect("path")],
+    );
+    git(&folder, &["add", "package.json"]);
+    git(&folder, &["commit", "-q", "-m", "start"]);
+    git(
+        &folder,
+        &["remote", "add", "origin", origin.to_str().expect("path")],
+    );
+    git(&folder, &["push", "-q", "origin", "HEAD:develop"]);
+    git(&folder, &["fetch", "-q", "origin"]);
+    git(&folder, &["switch", "-q", "-c", "docs/en-1-page"]);
+    // A story of docs alone: outside the CI it skips both Rust lanes (the test above).
+    fs::create_dir_all(folder.join("docs")).expect("folder");
+    fs::write(folder.join("docs/page.md"), "# Page\n").expect("page");
+
+    let output = check_all(&folder, true);
+    let text = stdout(&output);
+
+    fs::remove_dir_all(&root).expect("cleaned");
+    fs::remove_dir_all(&folder).expect("cleaned");
+    // In the CI the change is never read (AUD-031, F8): every lane runs, none said skipped.
+    assert!(output.status.success(), "{text}");
+    assert!(!text.contains("skipped"), "{text}");
+    for lane in LANES.iter().flat_map(|lane| lane.iter()) {
+        assert!(text.contains(&format!("✓ {lane} ")), "{lane}: {text}");
+    }
+}
+
+#[test]
 fn f29_ac2_skips_the_rust_lanes_for_a_story_that_changed_none_of_their_inputs() {
     let root = scratch("rust-skipped");
     let origin = root.join("origin.git");

@@ -407,6 +407,47 @@ fn f29_ac3_a_failed_build_is_printed_with_the_command_to_run_again() {
 }
 
 #[test]
+fn f29_ac3_exits_0_from_the_binary_after_a_failed_build() {
+    let repos = repos();
+
+    stub_cargo(&repos, &[], 101);
+    change_upstream(&repos, "tools/alpha/src/main.rs");
+    git(&repos, &repos.work, &["pull", "--quiet", "--ff-only"]);
+    fs::remove_file(repos.root.join("cargo.log")).unwrap();
+
+    // Git ignores a post hook's exit code: the binary run by hand, `ORIG_HEAD` still the head
+    // before the pull, shows its own (AUD-031, F7). `post-rewrite` reads its standard input.
+    let failure = "git-hooks: the pull is done, but the rebuild of target/release failed; run `npm run rust:build` again:\nerror: it broke\n";
+
+    for (hook, options, input) in [("post-merge", "0", ""), ("post-rewrite", "rebase", "a b\n")] {
+        let mut child = clean(&repos, env!("CARGO_BIN_EXE_git-hooks"), &repos.work)
+            .args([hook, options])
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
+            .spawn()
+            .unwrap();
+
+        std::io::Write::write_all(&mut child.stdin.take().unwrap(), input.as_bytes()).unwrap();
+
+        let output = child.wait_with_output().unwrap();
+
+        assert_eq!(
+            output.status.code(),
+            Some(0),
+            "{hook}: {}",
+            printed(&output)
+        );
+        assert_eq!(String::from_utf8_lossy(&output.stdout), "", "{hook}");
+        assert_eq!(String::from_utf8_lossy(&output.stderr), failure, "{hook}");
+    }
+    assert_eq!(
+        cargo_calls(&repos),
+        format!("{}{}", build_call(&repos), build_call(&repos))
+    );
+}
+
+#[test]
 fn an_amend_builds_nothing() {
     let repos = repos();
 
