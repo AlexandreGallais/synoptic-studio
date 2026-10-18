@@ -280,6 +280,10 @@
 | [EN-117](./E17-F22-EN-117-release-from-the-merge-into-main.md) | F22 | The release by a button, from the tags | done |
 | [AUD-024](./E17-F22-AUD-024-audit-f22.md) | F22 | Audit F22 | done |
 | [VAL-023](./E17-F22-VAL-023-validate-f22.md) | F22 | Validate F22 | done |
+| [EN-124](./E17-F24-EN-124-the-ci-in-parallel-jobs.md) | F24 | The CI in parallel jobs, its tests shown as they run | done |
+| [EN-125](./E17-F24-EN-125-the-rust-cache-from-develop.md) | F24 | The Rust cache saved from develop | done |
+| [AUD-026](./E17-F24-AUD-026-audit-f24.md) | F24 | Audit F24 | done |
+| [VAL-025](./E17-F24-VAL-025-validate-f24.md) | F24 | Validate F24 | done |
 | [NAM-002](./E17-NAM-002-naming-pass-e17.md) | E17 | Naming pass over the code of E17 | done |
 | [REV-004](./E17-REV-004-review-e17.md) | E17 | Review E17 with the Product Owner | done |
 | [RET-004](./E17-RET-004-retrospective-e17.md) | E17 | Retrospective of E17 | done |

@@ -297,10 +297,13 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
     );
   });
 
-  it("[F19.AC9] fetches the advisory database in the CI before check:all", () => {
+  it("[F19.AC9] fetches the advisory database in the CI's Rust lane before its scripts", () => {
     const workflow = readFileSync(join(ROOT, ".github", "workflows", "ci.yml"), "utf8");
 
-    expect(workflow).toMatch(/- run: cargo deny fetch db\n {6}- run: npm run check:all\n/u);
+    // The Rust lane, the one running `cargo deny`, fetches it just before the lane's step (EN-124).
+    expect(workflow).toMatch(
+      /- if: matrix\.scripts == 'check:rust'\n {8}run: cargo deny fetch db\n(?: {6}#.*\n)* {6}- run: for script in \$SCRIPTS; do npm run "\$script"; done\n/u,
+    );
   });
 
   it("[F19.AC9] runs the workspace's tests under a floor of lines and functions, failing aloud without the tool", () => {
