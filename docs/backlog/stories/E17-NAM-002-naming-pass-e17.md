@@ -2,7 +2,7 @@
 id: NAM-002
 epic: E17
 title: Naming pass over the code of E17
-status: ready
+status: done
 points: 2
 ---
 

@@ -81,6 +81,6 @@ After its last feature is validated (ADR-0023, ADR-0049, ADR-0064). F21's clean-
 
 | Story | Status |
 | --- | --- |
-| [NAM-002](../stories/E17-NAM-002-naming-pass-e17.md) — Naming pass over the code of E17 | ready |
+| [NAM-002](../stories/E17-NAM-002-naming-pass-e17.md) — Naming pass over the code of E17 | done |
 | [REV-004](../stories/E17-REV-004-review-e17.md) — Review E17 with the Product Owner | draft |
 | [RET-004](../stories/E17-RET-004-retrospective-e17.md) — Retrospective of E17 | draft |
