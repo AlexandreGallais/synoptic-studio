@@ -1,6 +1,7 @@
 //! `release publish`, by the button of `release.yml` on `main` (ADR-0086): the version from the
 //! last tag `vx.y.z` and the commits since (`REF-SEMVER`), its notes the bodies of the pull
-//! requests into `main` merged since that tag, each checked as `release check` does, then the
+//! requests into `main` merged since that tag but Dependabot's, each checked as `release check`
+//! does and all against the commits, then the
 //! GitHub release made on `main`'s head, which GitHub tags, the test report of the last pull
 //! request's CI attached. It makes no commit. Every Git and GitHub call goes through a [`Run`],
 //! so that a test gives the answers.
@@ -69,6 +70,27 @@ fn texts(run: &mut Run<'_>, numbers: &[u32]) -> Result<Vec<(u32, Text)>, String>
     Ok(read)
 }
 
+/// Checks that the texts agree with the commits (`docs/tooling/releases.md`, The version): a
+/// change listed only when a commit since the tag changes the library or the playground, and one
+/// listed at least when one does.
+fn agreeing(texts: &[(u32, Text)], user_visible: bool, tag: &str) -> Result<(), String> {
+    let listing = texts.iter().find(|(_, text)| !text.changes.is_empty());
+
+    match (listing, user_visible) {
+        (Some((number, _)), false) => Err(format!(
+            "pull request #{number} lists changes, but no commit since {tag} changes the library \
+             nor the playground: write the notice of no change in its body \
+             (docs/tooling/releases.md)"
+        )),
+        (None, true) => Err(format!(
+            "commits since {tag} change the library or the playground, but no pull request's \
+             body lists a change: write the features' texts in the review's body \
+             (docs/tooling/releases.md)"
+        )),
+        _ => Ok(()),
+    }
+}
+
 /// The run of `ci.yml` that passed on the head of the pull request `main`'s head merged, for its
 /// test report; `main`'s head and that run.
 fn ci_run(run: &mut Run<'_>) -> Result<(String, String), String> {
@@ -109,9 +131,9 @@ fn ci_run(run: &mut Run<'_>) -> Result<(String, String), String> {
 ///
 /// # Errors
 ///
-/// No tag `vx.y.z` is behind the head, a body breaks a rule or two hold a notice, the head is not
-/// a merge, no successful CI run of the pull request's head is found, or a Git or GitHub command
-/// fails.
+/// No tag `vx.y.z` is behind the head, a body breaks a rule or two hold a notice, the bodies list
+/// changes the commits do not make or none the commits make, the head is not a merge, no
+/// successful CI run of the pull request's head is found, or a Git or GitHub command fails.
 pub fn publish(run: &mut Run<'_>, folder: &Path) -> Result<Published, String> {
     let (previous, current) = last_release(run, "HEAD")?;
     let range = format!("{previous}..HEAD");
@@ -121,12 +143,18 @@ pub fn publish(run: &mut Run<'_>, folder: &Path) -> Result<Published, String> {
         return Ok(Published::Nothing(previous));
     }
 
-    let version = current
-        .bumped(bump(&lines(&released, &Backlog::default())))
-        .to_string();
+    let drafted = lines(&released, &Backlog::default());
+    let version = current.bumped(bump(&drafted)).to_string();
     let tag = format!("v{version}");
-    let merged = merged_pull_requests(run, &range)?;
-    let notes = joined(&texts(run, &merged)?)?;
+    let merged: Vec<u32> = merged_pull_requests(run, &range)?
+        .into_iter()
+        .filter(|(_, branch)| !branch.starts_with(DEPENDABOT_BRANCH))
+        .map(|(number, _)| number)
+        .collect();
+    let read = texts(run, &merged)?;
+
+    agreeing(&read, !drafted.is_empty(), &previous)?;
+    let notes = joined(&read)?;
     let (head, ci_run) = ci_run(run)?;
     let notes_file = folder.join("notes.md");
     let folder_text = folder.to_string_lossy().into_owned();
