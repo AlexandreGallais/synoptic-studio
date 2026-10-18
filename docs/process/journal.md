@@ -8,6 +8,7 @@ What each working session dealt with, in the agent's words: the Product Owner's 
 - `#run` At the run's start the pre-push `check:all` failed twice on its `test` lane under load and passed when run again unchanged; EN-116 then raised two timeouts it found on GitHub's runner.
 - `#decision` GitHub's `feature branches` ruleset set to merge commits only, without linear history, with the Product Owner's agreement (ADR-0086).
 - `#review` REV-006, the first review held at a return of the Product Owner (ADR-0086): F22's decisions confirmed; the log rows of a story to go into its `done` commit and F22's four tool cards added to F23; then `develop` → `main` for 0.3.0.
+- `#run` The Product Owner asked, at REV-006, for F24 before 0.3.0: the CI in parallel jobs, its tests shown as they run, the Rust cache saved from `develop`; the CI of #370 cancelled, to run again once F24 is in `develop`. F24 refined by the agent (EN-124, EN-125, AUD-026, VAL-025), set `in-progress`.
 
 ## 2026-10-18 — F20 validated and merged, F21 refined and researched
 
