@@ -31,9 +31,3 @@ Audited by the main thread (ADR-0086).
 | 2 | `kill`'s arguments: POSIX `kill` ends its options at `--`, a negative pid then naming a process group; procps reads an argument starting with `-` before `--` as a signal, which the hang of run 39138216016 shows | no finding; the proof on Linux is #370's `Rust` check |
 | 3 | The Unix branch and the other systems' twin paired (`[F19.AC10]`), Clippy clean for the Windows target | no finding |
 | 4 | A mutation's stop was tested only on macOS: no check ran the Rust tests on Linux before the CI of a pull request into `main` | a row for the next review |
-
-## For the main thread
-
-### Improvements
-
-| 2026-10-18 | AUD-028 | The Rust tests run on Linux only in the CI of a pull request into `main`: `stops_a_mutation_that_never_ends` hung there 46 min although it passed on every Mac push; a Linux run earlier (a scheduled job, or the cache job of `develop` running the tests) would have found it | tool |
