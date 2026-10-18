@@ -215,7 +215,7 @@ describe("the Rust caches of the CI (EN-111)", () => {
     const history = jobOf(CI, "history");
 
     expect(lanes).toContain(
-      "- run: npm ci\n      - if: matrix.git-hooks\n        uses: actions/upload-artifact@v7\n        with:\n          name: git-hooks\n          path: target/release/git-hooks\n",
+      "run: npm ci\n      - if: matrix.git-hooks\n        uses: actions/upload-artifact@v7\n        with:\n          name: git-hooks\n          path: target/release/git-hooks\n",
     );
 
     expect(history).toContain("needs: lanes\n");

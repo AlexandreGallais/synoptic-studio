@@ -260,16 +260,21 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
     );
   });
 
-  it("[F19.AC9] checks the whole Rust workspace in check:rust, its binaries built before the lanes", () => {
+  it("[F19.AC9] checks the whole Rust workspace in check:rust and rust:coverage, its binaries built before the lanes", () => {
+    // The tests under the coverage floor are a lane of their own since EN-130, `rust:coverage`
+    // (`[F29.AC2]` in tools/repo-tools/tests/check_all.rs).
     expect(SCRIPTS.get("check:rust")?.split(" && ")).toEqual([
       "cargo fmt --all --check",
       "cargo clippy --workspace --all-targets --locked --quiet",
       "npm run --silent rust:advisories",
-      "npm run --silent rust:coverage",
       "cargo check --workspace --all-targets --locked --quiet --target x86_64-pc-windows-msvc",
       // The release binaries the hooks and the agent call by their path, none older than its sources (ADR-0078).
       "npm run --silent rust:fresh",
     ]);
+
+    expect(SCRIPTS.get("rust:coverage")).toContain(
+      "cargo llvm-cov --workspace --locked --quiet --summary-only --fail-under-lines 93 --fail-under-functions 93",
+    );
   });
 
   it("fixes the Rust code in fix too: Clippy's fixes when a Rust file changed, then rustfmt (EN-113)", () => {
