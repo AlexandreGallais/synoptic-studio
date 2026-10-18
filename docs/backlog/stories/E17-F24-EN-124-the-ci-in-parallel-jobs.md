@@ -19,7 +19,7 @@ points: 3
 
 ## Tasks
 
-- [ ] T1 — The test that every lane of `check:all` is run by one job of `ci.yml`, failing (1 h)
+- [x] T1 — The test that every lane of `check:all` is run by one job of `ci.yml`, failing (1 h)
 - [ ] T2 — `ci.yml` in jobs, the reporter, `docs/tooling/ci.md`; the ruleset's required checks listed for the main thread (2 h)
 
 One task = one commit, referenced as `EN-124.T1` in the commit footer.

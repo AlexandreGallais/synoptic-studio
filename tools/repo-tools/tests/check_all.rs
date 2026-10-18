@@ -342,6 +342,162 @@ fn test_file_binaries() -> Vec<String> {
         .collect()
 }
 
+/// A workflow of this repository, by its file name in `.github/workflows/`.
+fn workflow(name: &str) -> String {
+    fs::read_to_string(root().join(".github").join("workflows").join(name)).expect("workflow")
+}
+
+/// The jobs of the CI's matrix (`ci.yml`, EN-124): each `- name:` of its `include:` list with the
+/// scripts of its `scripts:` line, in their order; the list ends at the first line indented less.
+fn matrix_jobs(text: &str) -> Vec<(String, Vec<String>)> {
+    let mut jobs: Vec<(String, Vec<String>)> = Vec::new();
+    let mut indent = None;
+
+    for line in text.lines() {
+        let trimmed = line.trim_start();
+        let depth = line.len() - trimmed.len();
+
+        if trimmed == "include:" {
+            indent = Some(depth);
+            continue;
+        }
+        let Some(list) = indent else { continue };
+
+        if trimmed.is_empty() || trimmed.starts_with('#') {
+            continue;
+        }
+        if depth <= list {
+            indent = None;
+        } else if let Some(name) = trimmed.strip_prefix("- name: ") {
+            jobs.push((name.to_owned(), Vec::new()));
+        } else if let (Some(scripts), Some(job)) =
+            (trimmed.strip_prefix("scripts: "), jobs.last_mut())
+        {
+            job.1 = scripts.split_whitespace().map(str::to_owned).collect();
+        }
+    }
+    jobs
+}
+
+/// The names of a workflow's jobs, a matrix job's `${{ matrix.name }}` read as its matrix's names.
+fn job_names(text: &str) -> Vec<String> {
+    text.lines()
+        .filter_map(|line| line.strip_prefix("    name: "))
+        .flat_map(|name| {
+            if name == "${{ matrix.name }}" {
+                matrix_jobs(text)
+                    .into_iter()
+                    .map(|(name, _)| name)
+                    .collect()
+            } else {
+                vec![name.to_owned()]
+            }
+        })
+        .collect()
+}
+
+/// The checks `main`'s ruleset requires, as `docs/tooling/ci.md` writes them: the names in code
+/// font after "require status checks" on the ruleset's row.
+fn required_checks(page: &str) -> Vec<String> {
+    let row = page
+        .lines()
+        .find(|line| line.trim_start().starts_with("| `main` | default branch |"))
+        .unwrap_or_default();
+    let checks = row
+        .split_once("require status checks")
+        .map_or("", |(_, rest)| rest);
+
+    checks
+        .split('`')
+        .skip(1)
+        .step_by(2)
+        .map(str::to_owned)
+        .collect()
+}
+
+#[test]
+fn f24_ac1_runs_each_lane_of_check_all_in_exactly_one_job_of_the_ci() {
+    let text = workflow("ci.yml");
+    let jobs = matrix_jobs(&text);
+    let starts_with = |scripts: &[String], lane: &[&str]| {
+        scripts.len() >= lane.len()
+            && scripts
+                .iter()
+                .zip(lane)
+                .all(|(script, name)| script == name)
+    };
+    let without_one_job: Vec<&[&str]> = LANES
+        .iter()
+        .copied()
+        .filter(|lane| {
+            jobs.iter()
+                .filter(|(_, scripts)| starts_with(scripts, lane))
+                .count()
+                != 1
+        })
+        .collect();
+    let run: Vec<&String> = jobs.iter().flat_map(|(_, scripts)| scripts).collect();
+    let twice: Vec<&str> = LANES
+        .iter()
+        .flat_map(|lane| lane.iter().copied())
+        .filter(|name| run.iter().filter(|script| *script == name).count() != 1)
+        .collect();
+
+    // One job per lane, starting with the lane's scripts in its order; a lane's script run by no
+    // other job; the build after the docs lane, as `check:all` and `npm run build` ran in turn.
+    assert_eq!(without_one_job, Vec::<&[&str]>::new());
+    assert_eq!(twice, Vec::<&str>::new());
+    assert_eq!(jobs.len(), LANES.len(), "{jobs:?}");
+    assert!(
+        jobs.iter()
+            .any(|(_, scripts)| scripts.last().is_some_and(|last| last == "build"))
+    );
+    // Each job a check of its own name, run to its end whichever other fails (`REF-GH-MATRIX`).
+    assert!(text.contains("\n    name: ${{ matrix.name }}\n"));
+    assert!(text.contains("\n      fail-fast: false\n"));
+    assert!(text.contains(
+        "- run: for script in $SCRIPTS; do npm run \"$script\"; done\n        env:\n          SCRIPTS: ${{ matrix.scripts }}\n"
+    ));
+}
+
+#[test]
+fn f24_ac1_reads_the_jobs_of_a_matrix_to_its_end() {
+    let text = "jobs:\n  lanes:\n    name: ${{ matrix.name }}\n    strategy:\n      matrix:\n        \
+                include:\n          # A comment.\n          - name: A\n            scripts: a b\n\n          \
+                - name: B\n            scripts: c\n    steps:\n      - name: x\n        scripts: d\n  \
+                other:\n    name: Other\n";
+
+    assert_eq!(
+        matrix_jobs(text),
+        [
+            ("A".to_owned(), vec!["a".to_owned(), "b".to_owned()]),
+            ("B".to_owned(), vec!["c".to_owned()])
+        ]
+    );
+    assert_eq!(job_names(text), ["A", "B", "Other"]);
+    assert_eq!(matrix_jobs("jobs:\n"), Vec::<(String, Vec<String>)>::new());
+    assert_eq!(
+        required_checks(
+            "   | `main` | default branch | none | merge method **Merge**, require status checks: `A`, `B` |"
+        ),
+        ["A", "B"]
+    );
+    assert_eq!(required_checks("| `develop` |"), Vec::<String>::new());
+}
+
+#[test]
+fn f24_ac3_requires_on_main_every_job_of_the_ci_and_codeql_by_its_name() {
+    let mut jobs = job_names(&workflow("ci.yml"));
+    let mut required =
+        required_checks(&fs::read_to_string(root().join("docs/tooling/ci.md")).expect("ci.md"));
+
+    jobs.extend(job_names(&workflow("codeql.yml")));
+    jobs.sort();
+    required.sort();
+    assert_eq!(required, jobs);
+    assert!(jobs.contains(&"Rust".to_owned()), "{jobs:?}");
+}
+
 #[test]
 fn runs_a_script_of_package_json_for_each_check_the_playground_after_the_site() {
     // `script_command` falls back on `npm run <name>`, which npm refuses without the script: a
