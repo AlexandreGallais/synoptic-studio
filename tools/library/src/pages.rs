@@ -129,11 +129,13 @@ pub fn request_headers(stored: &StoredPage) -> Vec<(&'static str, String)> {
     .collect()
 }
 
-/// The arguments of `curl` for a request: HTTP and HTTPS only, redirects followed, the body on
-/// the standard output and the response's facts after a mark on the error output.
+/// The arguments of `curl` for a request: no `~/.curlrc` read, which only a first `--disable`
+/// keeps out (`REF-CURL`, AUD-023), HTTP and HTTPS only, redirects followed, a minute at most, the
+/// body on the standard output and the response's facts after a mark on the error output.
 #[must_use]
 pub fn curl_arguments(url: &str, headers: &[(&'static str, String)]) -> Vec<String> {
     let mut arguments: Vec<String> = [
+        "--disable",
         "--silent",
         "--show-error",
         "--location",
@@ -144,6 +146,8 @@ pub fn curl_arguments(url: &str, headers: &[(&'static str, String)]) -> Vec<Stri
         "=http,https",
         "--proto-redir",
         "=http,https",
+        "--max-time",
+        "60",
         "--write-out",
     ]
     .iter()

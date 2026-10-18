@@ -50,6 +50,28 @@ pub fn answer_of(url: &str, write_out: &str, body: Option<String>) -> Answer {
     }
 }
 
+/// The options of `curl` before the addresses: no `~/.curlrc` read, which only a first
+/// `--disable` keeps out (`REF-CURL`, AUD-023), redirects followed, 32 requests at once, two
+/// retries, a minute at most each, what each answered written out.
+pub const CURL_OPTIONS: [&str; 16] = [
+    "--disable",
+    "--silent",
+    "--show-error",
+    "--location",
+    "--compressed",
+    "--parallel",
+    "--parallel-max",
+    "32",
+    "--retry",
+    "2",
+    "--max-time",
+    "60",
+    "--user-agent",
+    USER_AGENT,
+    "--write-out",
+    WRITE_OUT,
+];
+
 /// Every address, fetched by one `curl` process (`program`) in parallel; an answer per address,
 /// in their order.
 #[must_use]
@@ -64,23 +86,7 @@ pub fn urls(program: &str, addresses: &[String]) -> Vec<Answer> {
     }
     let mut command = Command::new(program);
 
-    command.args([
-        "--silent",
-        "--show-error",
-        "--location",
-        "--compressed",
-        "--parallel",
-        "--parallel-max",
-        "32",
-        "--retry",
-        "2",
-        "--max-time",
-        "60",
-        "--user-agent",
-        USER_AGENT,
-        "--write-out",
-        WRITE_OUT,
-    ]);
+    command.args(CURL_OPTIONS);
     for (index, address) in addresses.iter().enumerate() {
         command
             .arg(address)
