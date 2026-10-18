@@ -303,7 +303,7 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
     // `cargo deny` runs in the Rust lane and in the test lane, by `[F19.AC9]`'s advisories test
     // (EN-126): both fetch the database just before the lane's step.
     expect(workflow).toMatch(
-      /- if: matrix\.scripts == 'check:rust' \|\| matrix\.scripts == 'test'\n {8}run: cargo deny fetch db\n(?: {6}#.*\n)* {6}- run: for script in \$SCRIPTS; do npm run "\$script"; done\n/u,
+      /- if: matrix\.cargo-deny\n {8}run: cargo deny fetch db\n(?: {6}#.*\n)* {6}- run: for script in \$SCRIPTS; do npm run "\$script"; done\n/u,
     );
   });
 
@@ -311,7 +311,7 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
     const workflow = readFileSync(join(ROOT, ".github", "workflows", "ci.yml"), "utf8");
 
     expect(workflow).toMatch(
-      /- if: \(matrix\.scripts == 'check:rust' \|\| matrix\.scripts == 'test'\) && steps\.tools\.outputs\.cache-hit != 'true'\n {8}run: cargo install --locked /u,
+      /- if: matrix\.cargo-deny && steps\.tools\.outputs\.cache-hit != 'true'\n {8}run: cargo install --locked cargo-deny@/u,
     );
   });
 

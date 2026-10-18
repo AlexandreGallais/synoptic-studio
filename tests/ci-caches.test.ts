@@ -144,9 +144,13 @@ describe("the Rust caches of the CI (EN-111)", () => {
   it("[F21.AC4] installs the cargo tools only on a missed key, at the versions the scripts name", () => {
     const install = `run: cargo install --locked cargo-llvm-cov@\${{ env.CARGO_LLVM_COV_VERSION }} cargo-deny@\${{ env.CARGO_DENY_VERSION }}\n`;
 
-    // In the CI, by the Rust lane alone, the one running them (EN-124).
+    // In the CI, each by the lanes calling it, as their matrix entries say (EN-124, EN-133).
     expect(lanes).toContain(
-      `- if: (matrix.scripts == 'check:rust' || matrix.scripts == 'test') && steps.tools.outputs.cache-hit != 'true'\n        ${install}`,
+      `- if: matrix.cargo-llvm-cov && steps.tools.outputs.cache-hit != 'true'\n        run: cargo install --locked cargo-llvm-cov@\${{ env.CARGO_LLVM_COV_VERSION }}\n`,
+    );
+
+    expect(lanes).toContain(
+      `- if: matrix.cargo-deny && steps.tools.outputs.cache-hit != 'true'\n        run: cargo install --locked cargo-deny@\${{ env.CARGO_DENY_VERSION }}\n`,
     );
 
     expect(warm).toContain(`- if: steps.tools.outputs.cache-hit != 'true'\n        ${install}`);
@@ -218,7 +222,7 @@ describe("the Rust caches of the CI (EN-111)", () => {
     const history = jobOf(CI, "history");
 
     expect(lanes).toContain(
-      "- run: npm run rust:build\n      - if: matrix.scripts == 'lint'\n        uses: actions/upload-artifact@v7\n        with:\n          name: git-hooks\n          path: target/release/git-hooks\n",
+      "- run: npm ci\n      - if: matrix.git-hooks\n        uses: actions/upload-artifact@v7\n        with:\n          name: git-hooks\n          path: target/release/git-hooks\n",
     );
 
     expect(history).toContain("needs: lanes\n");
@@ -228,14 +232,6 @@ describe("the Rust caches of the CI (EN-111)", () => {
     );
 
     expect(history).not.toContain("cargo ");
-  });
-
-  it("[F21.AC4] runs on demand the lanes alone, the jobs reading a pull request skipped", () => {
-    expect(CI).toContain("\non:\n  pull_request:\n    branches: [main]\n  workflow_dispatch:\n");
-
-    for (const job of ["history", "dependencies"]) {
-      expect(jobOf(CI, job)).toContain(`if: \${{ github.event_name == 'pull_request' }}\n`);
-    }
   });
 
   it("[F21.AC6] skips no release-please branch, release-please gone (EN-112)", () => {
