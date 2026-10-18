@@ -253,7 +253,7 @@
 | [SP-023](./E17-F21-SP-023-research-f21.md) | F21 | Research for F21 | done |
 | [EN-102](./E17-F21-EN-102-each-tool-records-its-use.md) | F21 | Each tool of our own records its use | done |
 | [EN-103](./E17-F21-EN-103-backlog-and-repository-tools-in-rust.md) | F21 | The backlog and repository tools in Rust | done |
-| [EN-104](./E17-F21-EN-104-claude-code-hooks-in-rust.md) | F21 | The Claude Code hooks and the status line in Rust | ready |
+| [EN-104](./E17-F21-EN-104-claude-code-hooks-in-rust.md) | F21 | The Claude Code hooks and the status line in Rust | done |
 | [EN-105](./E17-F21-EN-105-one-row-or-section-of-a-page.md) | F21 | One row or one section of a repository page | done |
 | [EN-106](./E17-F21-EN-106-library-server-in-rust.md) | F21 | The library server and its command line in Rust on rmcp | done |
 | [EN-107](./E17-F21-EN-107-metrics-tools-in-rust.md) | F21 | The metrics tools in Rust | ready |

@@ -3,7 +3,7 @@ id: EN-104
 epic: E17
 feature: F21
 title: The Claude Code hooks and the status line in Rust
-status: ready
+status: done
 points: 5
 ---
 
