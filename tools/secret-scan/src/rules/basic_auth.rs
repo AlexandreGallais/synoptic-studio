@@ -37,7 +37,7 @@ const PLACEHOLDERS: [&str; 15] = [
 static URL: LazyLock<Pattern> = LazyLock::new(|| {
     Pattern::plain(&format!(
         "(?P<protocol>(?:https?|ftp|ftps))://(?P<user>[-a-zA-Z0-9_]{{1,256}}):(?P<password>[-a-zA-Z0-9_]{{1,256}})@[-a-zA-Z0-9%._+~#=]{{1,256}}\\.[a-zA-Z0-9()]{{1,6}}{BOUNDARY}"
-    ))
+    )).needing(&["://"])
 });
 
 /// The variable-like patterns, `${var}`, `{{var}}`, `{var}`, `%VAR%` and `$VAR`.

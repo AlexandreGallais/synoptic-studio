@@ -32,7 +32,7 @@ static ACCESS_KEY_ID: LazyLock<Pattern> = LazyLock::new(|| {
 static SECRET_ACCESS_KEY: LazyLock<Pattern> = LazyLock::new(|| {
     Pattern::plain(&format!(
         r#"["']?(?:AWS|aws|Aws)?_?(?:SECRET|secret|Secret)_?(?:ACCESS|access|Access)_?(?:KEY|key|Key)["']?[{SPACE}]*(?::|=>|=)[{SPACE}]*["']?(?P<key>[A-Za-z0-9/\+=]{{40}})["']?{BOUNDARY}"#
-    ))
+    )).needing(&["SECRET", "secret", "Secret"])
 });
 
 /// An account ID, twelve digits in three groups, after `AWS_ACCOUNT_ID` and `=`, `:` or `=>`.

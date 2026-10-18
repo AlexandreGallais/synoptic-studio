@@ -1,6 +1,7 @@
-//! The comment filter on the cases of `@secretlint/secretlint-rule-filter-comments` 13.0.7's own
-//! snapshots (`packages/@secretlint/secretlint-rule-filter-comments/test/snapshots/` at secretlint's
-//! tag `v13.0.7`), which test it with two pattern rules of their own, `SECRET <digit>` and
+//! The comment filter on the cases of its rule package's own snapshots, the filter being part of
+//! `@secretlint/secretlint-rule-preset-recommend` 13.0.7: in secretlint's repository at the tag
+//! `v13.0.7`, `packages/@secretlint/secretlint-rule-filter-comments/test/snapshots/`, which test it
+//! with two pattern rules of their own, `SECRET <digit>` and
 //! `SECRET <letter>`: here an npm access token stands for the first and a GitHub token for the
 //! second, rules of the preset, each built at run time so that no token is in the source. The
 //! expected lines are the snapshots'; the edges of the rule's arithmetic follow.

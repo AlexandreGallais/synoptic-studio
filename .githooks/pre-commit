@@ -1,6 +1,6 @@
 #!/bin/sh
 set -e
 . "$(dirname "$0")/tool.sh"
-# The formatter, oxlint, the project's linter and secretlint on the staged files, the fixes staged
+# The formatter, oxlint, the project's linter and the secret scan on the staged files, the fixes staged
 # again (`tools/git-hooks/src/staged.rs`).
 tool git-hooks git-hooks pre-commit

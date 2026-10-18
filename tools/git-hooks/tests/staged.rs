@@ -70,7 +70,7 @@ fn f21_ac4_plans_the_tasks_of_lint_staged_s_configuration() {
             ]),
             strings(&["format --write", "lint --fix"]),
             strings(&["format --write"]),
-            strings(&["secretlint"]),
+            strings(&["secret-scan"]),
         ]
     );
 }

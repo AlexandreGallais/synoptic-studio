@@ -9,6 +9,13 @@
 //!   end of the text: the leftmost-first match of the whole is JavaScript's backtracking match
 //!   followed by that character, so the match proper is read from the group `m`, and the next
 //!   search starts at its end.
+//!
+//! A pattern is compiled at its first search, and only once one of its needles is in the text: a
+//! literal every match holds, such as `ghp_`, so that a text holding none skips the pattern. The
+//! preset's patterns with counted repetitions up to 10,000 cost milliseconds to compile, which a
+//! commit of one file would pay for every pattern otherwise.
+
+use std::sync::OnceLock;
 
 use regex::{Captures, Regex};
 
@@ -17,11 +24,15 @@ use crate::js::{compile, is_letter};
 /// The name of the group holding the match proper, the look-ahead's character left out.
 const MATCH: &str = "m";
 
-/// A compiled pattern and its look-behind.
+/// A pattern, compiled when first needed, and its look-behind.
 #[derive(Debug)]
 pub struct Pattern {
     /// `(?P<m>…)` and, when the pattern has a look-ahead, `(?:[^…]|\z)`.
-    regex: Regex,
+    source: String,
+    /// The compiled pattern.
+    regex: OnceLock<Regex>,
+    /// Literals of which every match holds one; none for a pattern always searched.
+    needles: Vec<&'static str>,
     /// Whether a letter before the match refuses it, `(?<!\p{L})`.
     not_after_letter: bool,
 }
@@ -74,9 +85,24 @@ impl Pattern {
         let tail = ahead.map_or_else(String::new, |class| format!(r"(?:[^{class}]|\z)"));
 
         Self {
-            regex: compile(&format!("(?P<{MATCH}>{core}){tail}")),
+            source: format!("(?P<{MATCH}>{core}){tail}"),
+            regex: OnceLock::new(),
+            needles: Vec::new(),
             not_after_letter,
         }
+    }
+
+    /// The pattern, searched only in a text holding one of the needles, literals of which every
+    /// match holds one.
+    #[must_use]
+    pub fn needing(mut self, needles: &[&'static str]) -> Self {
+        self.needles = needles.to_vec();
+        self
+    }
+
+    /// The compiled pattern.
+    fn regex(&self) -> &Regex {
+        self.regex.get_or_init(|| compile(&self.source))
     }
 
     /// Every match in the text, as JavaScript's `matchAll` of the same pattern with the `g` flag
@@ -86,8 +112,13 @@ impl Pattern {
         let mut found = Vec::new();
         let mut from = 0;
 
+        if !self.needles.is_empty() && !self.needles.iter().any(|needle| text.contains(needle)) {
+            return found;
+        }
+        let regex = self.regex();
+
         while from <= text.len() {
-            let Some(captures) = self.regex.captures_at(text, from) else {
+            let Some(captures) = regex.captures_at(text, from) else {
                 break;
             };
             let Some((start, end)) = captures.name(MATCH).map(|m| (m.start(), m.end())) else {
@@ -180,6 +211,17 @@ mod tests {
         let found = Pattern::plain("x*").find_all("éa");
 
         assert_eq!(found.iter().map(|f| f.start).collect::<Vec<_>>(), [0, 2, 3]);
+    }
+
+    #[test]
+    fn a_text_without_a_needle_is_not_searched() {
+        // "ab" needs "a" or "b"; "xyz" holds neither, "xab" both, the match found.
+        let pattern = Pattern::plain("ab").needing(&["a", "b"]);
+
+        assert!(pattern.find_all("xyz").is_empty());
+        assert_eq!(pattern.find_all("xab")[0].start, 1);
+        assert!(pattern.regex.get().is_some());
+        assert!(Pattern::plain("q").needing(&["q"]).regex.get().is_none());
     }
 
     #[test]

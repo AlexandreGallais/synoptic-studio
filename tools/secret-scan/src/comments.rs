@@ -22,6 +22,7 @@ static COMMENT: LazyLock<Pattern> = LazyLock::new(|| {
     Pattern::plain(&format!(
         "(?P<type>secretlint-(?:disable-next-line|disable-line|disable|enable))(?P<options>{DOT}*)"
     ))
+    .needing(&["secretlint-"])
 });
 
 /// A JavaScript number of the rule: a UTF-16 index, `None` for `NaN`.

@@ -17,7 +17,7 @@ Every check runs before the code leaves the machine; GitHub checks once more wha
 | `story-automerge.yml` | merge | a pull request labelled `autonomous` | merges the owner's story pull requests into a feature branch, and into `develop` a feature validated from its `feat/val-` branch or an epic's `NAM`, `REV` or `RET` the Product Owner validated |
 
 - **A required check is skipped by its job's `if:`, never by the workflow's branch or path filter**: GitHub reports a job skipped by its condition as a success, but a workflow filtered out stays "Pending" and blocks the merge (`REF-GH-REQUIRED-CHECKS`). So a release pull request into `main` (ADR-0038's flow, kept for a rollback) skips every job of `ci.yml` and `codeql.yml` and still merges; release-please's pull request into `develop` runs no CI, its commit checked inside the next pull request into `main`.
-- **Secrets** are checked three times: secretlint on staged files at each commit, secretlint in `check:all`, and GitHub's secret scanning with push protection.
+- **Secrets** are checked three times: the secret scan (`tools/secret-scan`) on staged files at each commit, the same on every tracked file in `check:all`, and GitHub's secret scanning with push protection.
 - **Code hygiene** beyond formatting is the lint's job — no `console`, `debugger`, `TODO`, unused code, nor rule disabled without its reason ([lint](../conventions/lint.md)) — not a check of its own.
 
 ## Repository settings (done once, by the owner)

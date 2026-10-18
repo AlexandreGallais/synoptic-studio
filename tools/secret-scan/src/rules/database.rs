@@ -46,7 +46,7 @@ const PLACEHOLDERS: [&str; 23] = [
 fn uri(scheme: &str) -> Pattern {
     Pattern::plain(&format!(
         "(?i-u:{scheme})://(?:(?P<username>[^:/{SPACE}]{{1,100}}):(?P<password>[^@/{SPACE}]{{1,200}})@)?(?P<host>[^/{SPACE}?]{{1,100}})(?:/(?P<database>[^?{SPACE}]{{0,100}}))?(?:\\?(?P<options>[^{SPACE}]{{0,500}}))?"
-    ))
+    )).needing(&["://"])
 }
 
 /// The three URIs, in the rule's order, each with its message.

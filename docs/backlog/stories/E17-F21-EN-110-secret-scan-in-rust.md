@@ -31,9 +31,24 @@ Before and after on this Mac, 10 runs each: `lint:secrets` on every tracked file
 
 Before, measured by SP-023 (0025, Each tool's time before its port), medians: `lint:secrets` on every tracked file 911 ms (5 runs); `secretlint` on one file 123 ms (20 calls).
 
+Before and after, measured by EN-110 on 2026-10-18 back to back in this worktree, load 3.6 to 4.5, medians (a timer around each process, `perf_counter`): every tracked file, `git ls-files -z | xargs -0 secretlint --no-glob` **970 ms** (5 runs), `target/release/secret-scan` **106 ms** (5 runs), `npm run -s lint:secrets` through `cargo run` 271 ms (5 runs); one file, `secretlint --no-glob README.md` **127 ms** (10 calls), `target/release/secret-scan README.md`, as the pre-commit hook calls it, **34 ms** (10 calls). A pattern is compiled only when the text holds one of its literals (`pattern.rs`): before that, every pattern compiled at each call and one file took 70 ms. An earlier series under load 20 to 30 gave 998 and 135 ms against 135 and 34 ms.
+
+The findings are secretlint's: on a clone of the tree with the preset's 108 snapshot inputs added and tracked, secretlint and the scan report the same 112 findings, file, line, column, message id, rule and masked message alike; on the tree itself, none.
+
 ## Tasks
 
 One task = one commit, referenced as `EN-110.Tn`.
 
 - [ ] T1 — The preset's rules read at 13.0.7; each pattern carried with its cases and its source; the licence recorded (5 h)
 - [ ] T2 — The scan over tracked and staged files, the ignore file; the packages removed; docs; times measured (3 h)
+
+## For the main thread
+
+- Measures and the comparison with secretlint: above (Measures).
+- `docs/tooling/versions-and-security.md`, named in Files, is not changed: it says nothing of the secret scan; `docs/tooling/ci.md`, `git-workflow.md`, `commands.md`, `agent-tools.md`, `dependencies.md` (its Security section, now empty, removed), `conventions/formatting.md` and `conventions/rules.md` are.
+- ADR-0041 and ADR-0044, accepted, still name secretlint and `.secretlintignore` as they were at the time: not rewritten.
+- `.secretlintignore` is renamed `.secret-scan-ignore` (same 12 paths); `.secretlintrc.json` is removed.
+
+### Journal
+
+- `#run` EN-110: the secret scan in Rust (`tools/secret-scan`), secretlint's 27 recommended rules and its comment filter, tested on the preset's 115 snapshots (111 run, 4 with an `allows` list not taken); SHA-1, SHA-2 and HMAC written from their RFCs rather than taken from RustCrypto; secretlint and its preset removed; `lint:secrets` 970 → 106 ms, one file 127 → 34 ms.
