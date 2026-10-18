@@ -2,7 +2,7 @@
 id: F30
 epic: E17
 title: A CI on develop that blocks nothing
-status: ready
+status: in-progress
 ---
 
 # E17 · F30 — A CI on develop that blocks nothing
