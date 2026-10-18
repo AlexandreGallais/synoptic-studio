@@ -4,6 +4,7 @@
 //! checkout they are started from and stop at the first failing step with Git's own message. What
 //! they run is decided here, without Git.
 
+use git_hooks::branch::is_valid_branch;
 use worktree::{base_branch, branch_refusal, story_of_branch, story_of_file};
 
 /// The remote every sequence talks to.
@@ -120,19 +121,23 @@ pub enum Branch {
     Main,
     /// No branch checked out.
     Detached,
-    /// `<type>/<id>-<topic>`, a story's branch.
+    /// `<type>/<id>-<topic>`, a story's branch, or a name the pre-push refuses.
     Story(String),
     /// Any other branch: `develop`, `feature/f20-…`.
     Other(String),
 }
 
-/// The branch of `git rev-parse --abbrev-ref HEAD`.
+/// The branch of `git rev-parse --abbrev-ref HEAD`: a name the pre-push refuses is taken as a
+/// story branch, so that `sync` refuses it for its missing story id rather than fast-forwarding it
+/// as a shared one (AUD-025).
 #[must_use]
 pub fn branch_of(name: &str) -> Branch {
     match name.trim() {
         "main" => Branch::Main,
         "" | "HEAD" => Branch::Detached,
-        name if branch_refusal(name).is_none() => Branch::Story(name.to_owned()),
+        name if branch_refusal(name).is_none() || !is_valid_branch(name) => {
+            Branch::Story(name.to_owned())
+        }
         name => Branch::Other(name.to_owned()),
     }
 }

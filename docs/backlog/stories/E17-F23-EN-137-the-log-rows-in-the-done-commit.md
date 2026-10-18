@@ -3,7 +3,7 @@ id: EN-137
 epic: E17
 feature: F23
 title: The log rows and the cards in the done commit
-status: ready
+status: done
 points: 3
 ---
 
@@ -19,7 +19,13 @@ A commit `docs(docs): move the rows of … into the logs` sits between the story
 
 ## Tasks
 
-- [ ] T1 — The tests of `move-rows`, `story-finish`, `shared-files` and `tests/logs.test.ts` for each criterion, failing (1 h)
-- [ ] T2 — The rows and cards moved in the `done` commit, the pre-push and the docs of the run (2 h)
+- [x] T1 — The tests of `move-rows`, `story-finish`, `shared-files` and `tests/logs.test.ts` for each criterion, failing (1 h)
+- [x] T2 — The rows and cards moved in the `done` commit, the pre-push and the docs of the run (2 h)
 
 One task = one commit, referenced as `EN-137.T1` in the commit footer.
+
+## For the main thread
+
+- This story's own `done` commit is the first made by the new step: run `target/release/move-rows chore/en-137-the-log-rows-in-the-done-commit` before `backlog-status` (it prints nothing for this story, which holds no rows), then commit the files it prints with `docs/backlog`.
+- `docs/process/tool-incidents.md`, a shared file, still says in its opening paragraph "Written by the main thread at merge; a worker's card goes into its story file under `### Incidents`": to change in the `done` commit into "Moved by the main thread in the story's `done` commit (ADR-0091); a worker's card goes into its story file under `### Incidents`, its heading `#### <date> — <title>`".
+- `.claude/settings.json` allows no `target/release/move-rows`: each call of the new step asks for permission until a review adds it beside `backlog-status`, and `docs/tooling/agent-tools.md`'s list of the binaries the agent calls with it (left out here, since a worker does not change the permission settings).

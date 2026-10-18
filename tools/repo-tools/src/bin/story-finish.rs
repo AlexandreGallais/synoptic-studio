@@ -1,13 +1,16 @@
 //! `story-finish <base> <title> <body file>` (`npm run story:finish`, RET-002, ADR-0045, EN-051,
 //! EN-103), in the story's checkout once its branch is pushed, under the merge lock of
 //! `tools/heavy-lock/`: stories merge one at a time, the next one waiting, then rebasing on the
-//! updated base. Its pull request opened with the `autonomous` label, its merge by GitHub awaited
-//! for at most three minutes, then the base brought up to date where it is checked out, the rows the
-//! story file holds for the logs moved into them by `move-rows`, committed and pushed on the base,
-//! and the story's worktree and branch removed here and on GitHub. A rebase that met the status rows
-//! of another story's done commit writes the story's own again after it; a head that differs from
-//! its branch on GitHub is pushed with lease before the pull request. Run again after a stop, it
-//! reuses the story's pull request, and goes straight to the clean-up once merged (AUD-020).
+//! updated base. A story file still holding rows for the logs stops it first: its `done` commit
+//! moves them (`move-rows`, ADR-0091). Its pull request opened with the `autonomous` label, its
+//! merge by GitHub awaited for at most three minutes; a branch `story-automerge.yml` does not take,
+//! an epic's refinement `SP` into `develop`, opened without it, awaited by no one: it says at once
+//! that it waits for the Product Owner's merge (AUD-024, EN-118). Once merged, the base brought up
+//! to date where it is checked out, nothing committed on it, and the story's worktree and branch
+//! removed here and on GitHub. A rebase that met the status rows of another story's done commit writes the story's own
+//! again after it; a head that differs from its branch on GitHub is pushed with lease before the
+//! pull request. Run again after a stop, it reuses the story's pull request, and goes straight to
+//! the clean-up once merged (AUD-020).
 
 use std::env;
 use std::path::Path;
@@ -16,8 +19,8 @@ use std::thread;
 use std::time::Duration;
 
 use repo_tools::story_finish::{
-    Next, Rebase, Start, Story, clean_up, clean_up_plan, manual_steps, move_rows, needs_push,
-    next_step, push_with_lease, rebase_on_base, run_words, start_step, worktrees,
+    Merger, Next, Rebase, Start, Story, clean_up, clean_up_plan, manual_steps, merger, needs_push,
+    next_step, push_with_lease, rebase_on_base, rows_refusal, run_words, start_step, worktrees,
     write_status_again,
 };
 
@@ -115,31 +118,39 @@ fn finish(base: &str, title: &str, body: &str) -> Result<u8, String> {
     let start = start_step(&state);
 
     if start != Start::Clean {
+        if let Some(refusal) = rows_refusal(&branch, here) {
+            return Err(refusal);
+        }
         bring_up(base, &branch, here)?;
     }
 
+    let by = merger(base, &branch);
     let url = if start == Start::Create {
-        run_words(
-            "gh",
-            &[
-                "pr",
-                "create",
-                "--base",
-                base,
-                "--label",
-                "autonomous",
-                "--title",
-                title,
-                "--body-file",
-                body,
-            ],
-            here,
-        )?
+        let label: &[&str] = if by == Merger::GitHub {
+            &["--label", "autonomous"]
+        } else {
+            &[]
+        };
+        let words: Vec<&str> = ["pr", "create", "--base", base]
+            .into_iter()
+            .chain(label.iter().copied())
+            .chain(["--title", title, "--body-file", body])
+            .collect();
+
+        run_words("gh", &words, here)?
     } else {
         existing
     };
 
     println!("{url}");
+
+    if start != Start::Clean && by == Merger::ProductOwner {
+        println!(
+            "{branch} waits for the Product Owner's merge into {base}: `story-automerge.yml` does \
+             not take it (AUD-024); run again once merged, to clean up"
+        );
+        return Ok(0);
+    }
 
     let state = if start == Start::Clean {
         "MERGED".to_owned()
@@ -173,7 +184,7 @@ fn finish(base: &str, title: &str, body: &str) -> Result<u8, String> {
         &checkouts,
     );
 
-    match clean_up(&state, &plan, |cwd| move_rows(&branch, cwd)) {
+    match clean_up(&state, &plan) {
         Ok(true) => {
             println!("merged; {base} up to date, {branch} deleted here and on GitHub");
             Ok(0)
@@ -187,7 +198,7 @@ fn finish(base: &str, title: &str, body: &str) -> Result<u8, String> {
         Err(error) => {
             eprintln!(
                 "the clean-up stopped: {error}\nRun again from the worktree while it exists, or finish by hand, skipping the steps already done:\n{}",
-                manual_steps(&plan, &branch)
+                manual_steps(&plan)
             );
             Ok(1)
         }

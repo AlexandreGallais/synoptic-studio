@@ -1,38 +1,25 @@
-//! `move-rows <story branch>` (ADR-0065, decision 4; EN-050): run by `story:finish` from the
-//! repository's root once the story is merged and its base pulled. It moves the rows written under
-//! the known headings of the story file's `## For the main thread` into their logs, and prints each
-//! file it wrote, one per line: nothing when there were no rows. A log's rows are its own shape
-//! only — a dated table row for `improvements.md` and `feedback.md`, a bullet opening with its tag
-//! (``- `#run` …``) for the journal, under a section dated today, `## <today> — Run continued`,
-//! opened when its newest section is older (AUD-020); a placeholder (`- None.`), a table's header and its separator
-//! are dropped, and any other line is left in the story file and named on standard error, never
+//! `move-rows <story branch>` (ADR-0065, decision 4; EN-050; ADR-0091): run by the main thread
+//! from the root of the story's worktree before its `done` commit, which holds the files it
+//! prints. It moves the rows written under the known headings of the story file's `## For the
+//! main thread` into their logs, and prints each file it wrote, one per line: nothing when there
+//! were no rows. A log's rows are its own shape only — a dated table row for `improvements.md` and
+//! `feedback.md`, a bullet opening with its tag (``- `#run` …``) for the journal, under a section
+//! dated today, `## <today> — Run continued`, opened when its newest section is older (AUD-020),
+//! a card for `tool-incidents.md`, its dated `#### ` heading and its bullets, written at the log's
+//! end under `## ` (ADR-0085); a placeholder (`- None.`), a table's header and its separator are
+//! dropped, and any other line is left in the story file and named on standard error, never
 //! copied.
 
 use std::env;
 use std::fs;
 use std::io;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::process::ExitCode;
 
 use calendar::today;
+use shared_files::backlog::{STORIES, story_file};
 use shared_files::rows::{insert_rows, take_rows};
 use shared_files::shared::story_of;
-
-/// The folder of the story files.
-const STORIES: &str = "docs/backlog/stories";
-
-/// The story file of an id, `None` when there is none.
-fn story_file(story: &str) -> io::Result<Option<PathBuf>> {
-    let marker = format!("-{story}-");
-
-    Ok(fs::read_dir(STORIES)?
-        .filter_map(Result::ok)
-        .map(|entry| entry.path())
-        .find(|path| {
-            path.file_name()
-                .is_some_and(|name| name.to_string_lossy().contains(&marker))
-        }))
-}
 
 /// Moves the rows of a story file into their logs; the files written. Each line under a log's
 /// heading that is not one of its rows is left in the story file and named on standard error.
@@ -82,8 +69,11 @@ fn move_story_rows() -> u8 {
     let Some(story) = story_of(&branch) else {
         return 0;
     };
-    let result =
-        story_file(&story).and_then(|file| file.map_or(Ok(Vec::new()), |path| move_rows(&path)));
+    let result = story_file(Path::new("."), &story).and_then(|file| {
+        file.map_or(Ok(Vec::new()), |name| {
+            move_rows(&Path::new(STORIES).join(name))
+        })
+    });
 
     match result {
         Ok(written) => {

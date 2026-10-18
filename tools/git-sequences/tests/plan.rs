@@ -92,6 +92,11 @@ fn tells_main_a_story_branch_and_the_shared_ones_apart() {
         Branch::Other("feature/f20-a-context-diet".to_owned())
     );
     assert_eq!(branch_of("develop"), Branch::Other("develop".to_owned()));
+    // A name the pre-push refuses is no shared branch: `sync` refuses it, never fast-forwards it
+    // (AUD-025, the branch form of `git_hooks::branch`).
+    for name in ["chore/tidy-up", "docs/ret-005-retro", "scratch"] {
+        assert_eq!(branch_of(name), Branch::Story(name.to_owned()), "{name}");
+    }
 }
 
 #[test]

@@ -3,7 +3,7 @@ id: EN-118
 epic: E17
 feature: F23
 title: A story outside a feature, by the same tools
-status: ready
+status: done
 points: 3
 ---
 
@@ -19,7 +19,7 @@ From the cards C1, C3 and C4, the row I50 (RET-004), the cards of 2026-10-18 on 
 
 ## Tasks
 
-- [ ] T1 — Each criterion's tests in `tools/worktree`, `story-finish`, `tests/backlog.test.ts` and `tests/story-automerge.test.ts`, failing (1 h)
-- [ ] T2 — `worktree-new`, `story-finish` and the branch form, the run skill and `docs/tooling/git-workflow.md` (2 h)
+- [x] T1 — Each criterion's tests in `tools/worktree`, `story-finish`, `tests/backlog.test.ts` and `tests/story-automerge.test.ts`, failing (1 h)
+- [x] T2 — `worktree-new`, `story-finish` and the branch form, the run skill and `docs/tooling/git-workflow.md` (2 h)
 
 One task = one commit, referenced as `EN-118.T1` in the commit footer.

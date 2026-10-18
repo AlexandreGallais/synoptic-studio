@@ -1,6 +1,6 @@
 # ADR-0085 — A tool that fails is a card; tools change only at an epic's end
 
-**Status**: Accepted (Product Owner, 2026-10-18, the card rule during REV-004, its home at RET-004's P9). Amends ADR-0074: its "method and tools" point at each epic end reads every card first; ADR-0074's other decisions stand. Supersedes, in ADR-0072 (The run, decision 2), "a comment about tools … goes to another agent, on `develop`": such a comment becomes a card.
+**Status**: Accepted (Product Owner, 2026-10-18, the card rule during REV-004, its home at RET-004's P9). Amends ADR-0074: its "method and tools" point at each epic end reads every card first; ADR-0074's other decisions stand. Supersedes, in ADR-0072 (The run, decision 2), "a comment about tools … goes to another agent, on `develop`": such a comment becomes a card. In decision 2, "written by the main thread at merge" superseded by ADR-0091 (2026-10-19): a worker's cards are moved in its story's `done` commit.
 
 ## Context
 

@@ -29,7 +29,7 @@
 | [F26](./E17-F26-mutate-stops-on-linux.md) | E17 | The mutation runner stops a mutation on Linux | done |
 | [F27](./E17-F27-retired-scopes-in-history.md) | E17 | The history check reads the scopes a commit was written with | done |
 | [F28](./E17-F28-one-workflow-per-purpose.md) | E17 | One workflow per purpose | done |
-| [F23](./E17-F23-the-path-of-a-story.md) | E17 | The path of a story through the tools | ready |
+| [F23](./E17-F23-the-path-of-a-story.md) | E17 | The path of a story through the tools | done |
 | [F29](./E17-F29-local-checks-stable-and-fast.md) | E17 | The local checks stable and fast | done |
 | [F30](./E17-F30-a-ci-on-develop-that-blocks-nothing.md) | E17 | A CI on develop that blocks nothing | done |
 | [F31](./E17-F31-the-guard-and-the-agents-commands.md) | E17 | The guard and the agent's commands | ready |

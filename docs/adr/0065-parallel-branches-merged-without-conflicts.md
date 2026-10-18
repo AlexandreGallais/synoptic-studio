@@ -1,6 +1,6 @@
 # ADR-0065 — Parallel branches merged without conflicts on shared files
 
-**Status**: Accepted (Product Owner, 2026-10-16, at RET-003). Decision 1 superseded by ADR-0068 (2026-10-17): tables without padding moved to F19's formatter.
+**Status**: Accepted (Product Owner, 2026-10-16, at RET-003). Decision 1 superseded by ADR-0068 (2026-10-17): tables without padding moved to F19's formatter. In decision 4, "at merge" superseded for the logs by ADR-0091 (2026-10-19): a story's rows are moved into the logs in its `done` commit.
 
 ## Context
 

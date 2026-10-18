@@ -3,7 +3,7 @@ id: VAL-024
 epic: E17
 feature: F23
 title: Validate F23
-status: ready
+status: done
 points: 1
 ---
 
@@ -17,6 +17,10 @@ F23 is a tooling feature: the agent validates it on the graph of its own feature
 
 ## Tasks
 
-- [ ] T1 — Each criterion proven again, the demo page written (1 h)
+- [x] T1 — Each criterion proven again, the demo page written (1 h)
 
 One task = one commit, referenced as `VAL-024.T1`.
+
+## Result (2026-10-19)
+
+Validated by the agent (ADR-0072): F23's tagged tests pass; F23's own graph has nothing between its story bubbles; the demo page `docs/guide/f23-the-path-of-a-story.md`.

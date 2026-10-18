@@ -1,6 +1,6 @@
 # Tool incidents
 
-One card per time a tool failed or did not do what was needed: how it was used, why it failed, what was done instead (ADR-0085). A tool is never fixed during a feature's work: the cards are read at the next review, held at each return of the Product Owner, at its "method and tools" point, and the tools change in that review or in the stories it decides (ADR-0086). Written by the main thread at merge; a worker's card goes into its story file under `### Incidents`.
+One card per time a tool failed or did not do what was needed: how it was used, why it failed, what was done instead (ADR-0085). A tool is never fixed during a feature's work: the cards are read at the next review, held at each return of the Product Owner, at its "method and tools" point, and the tools change in that review or in the stories it decides (ADR-0086). Moved by the main thread in the story's `done` commit (ADR-0091); a worker's card goes into its story file under `### Incidents`, its heading `#### <date> — <title>`.
 
 The cards of E17 were decided at RET-004 ([record](./retrospectives/E17-retrospective.md), C1 to C9): their fixes are the stories of [F23](../backlog/features/E17-F23-the-path-of-a-story.md), moved into E17 and cut by theme on 2026-10-18 into F23, [F29](../backlog/features/E17-F29-local-checks-stable-and-fast.md), [F31](../backlog/features/E17-F31-the-guard-and-the-agents-commands.md), [F32](../backlog/features/E17-F32-reports-that-say-what-happened.md) and [F33](../backlog/features/E17-F33-the-checks-ret-004-listed.md) (SP-024), C3's auto-merge and C7 parked until the next review (ADR-0086).
 
@@ -80,3 +80,9 @@ The cards of E17 were decided at RET-004 ([record](./retrospectives/E17-retrospe
 - Used: `npm run fix` after VAL-023's checklist lines, as at VAL-022.
 - Failed: it rewrote `export type * from "./checklist-line"` into `export *` in `playground/checklists/index.ts`, a type-only re-export turned into a value one.
 - Instead: the line set back by hand; `tests/barrels.test.ts` passes.
+
+## 2026-10-19 — `mutate` on a Rust file, a number inside a comment
+
+- Used: `npm run mutate -- --all tools/worktree/src/lib.rs -- cargo test -q -p worktree`.
+- Failed: it changed `025` into `26` inside the doc comment `(AUD-025)` and reported it `SURVIVED`, a mutation of no code; its report of a Rust return also reads `→ undefined`.
+- Instead: the survivor read and recorded as a comment, no action.

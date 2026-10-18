@@ -490,6 +490,16 @@ function measuresOf(text: string): string {
   return /^## Measures\n(?<body>[\s\S]*?)(?=^## )/mu.exec(text)?.groups?.["body"] ?? "";
 }
 
+/**
+ * A story of E17 attached to its epic only, without a feature, as a story from `develop` is.
+ *
+ * @param id - its id, `REV-007`
+ * @returns the item, its file named after its epic and its id
+ */
+function attached(id: string): Item {
+  return { fields: { epic: "E17", id }, file: `E17-${id}-topic.md`, folder: "stories" };
+}
+
 /** The stories that rewrote the agent-facing pages as principles (F20, criterion 8). */
 const PRINCIPLE_REWRITES = ["EN-096", "EN-097", "EN-098", "EN-099"];
 
@@ -628,6 +638,22 @@ describe("backlog", () => {
       parentField(featureSpike),
       parentField(storyOf("EN-123")),
     ]).toEqual(["epic", "feature", "feature"]);
+  });
+
+  it("[F23.AC2] accepts a story attached to develop, a review or an epic's refinement spike, and no other story without a feature (C4)", () => {
+    const parents = { epic: idsOf("epics"), feature: idsOf("features") };
+
+    expect(
+      ["REV-007", "SP-030", "EN-114"].map((id) => {
+        const story = attached(id);
+
+        return [id, hasParent(story, parents), story.file.startsWith(expectedPrefix(story))];
+      }),
+    ).toEqual([
+      ["REV-007", true, true],
+      ["SP-030", true, true],
+      ["EN-114", false, true],
+    ]);
   });
 
   it("reads a return's review and a new closing by their ids", () => {

@@ -70,5 +70,5 @@ The agent chooses how it works and proposes changes to its own method and tools,
 
 | When | The agent | The Product Owner |
 | --- | --- | --- |
-| while working | writes each friction, error, slow step, or reading that suggests a faster, cheaper or healthier way to work, at once in the [improvement log](./improvements.md); a tool that fails is worked around and written as a card in [tool incidents](./tool-incidents.md); a worker writes its rows in its story file, under `## For the main thread` | — |
+| while working | writes each friction, error, slow step, or reading that suggests a faster, cheaper or healthier way to work, at once in the [improvement log](./improvements.md); a tool that fails is worked around and written as a card in [tool incidents](./tool-incidents.md); a worker writes its rows and its cards in its story file, under `## For the main thread`, moved into the logs in its `done` commit (ADR-0091) | — |
 | at each review, beside its naming pass | presents a **method and tools** point: the cards, what it wants to change in its own work, the backlog method included where it does not fit an agent, and methods or Rust tools to adopt, each with its evidence (metrics, incidents, sources); a tool that failed is fixed in that review | decides each proposal |

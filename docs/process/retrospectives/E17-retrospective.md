@@ -89,7 +89,7 @@ Every row of the improvement log (I1–I113, in the file's order on 2026-10-18),
 | Process lessons | I20, I27, I63, I64, I67, I70, I71 | closed: each is a rule or a habit already (`.claude/rules/tooling.md`, ADR-0070, the context diet of F20) | closed (P10) | — |
 | Done during E17 | I11, I14, I15, I18, I19, I21, I23–I26, I28–I31, I33, I34, I39, I45, I49, I52, I53, I57, I59, I61, I62, I65, I69, I73–I80, I84, I85, I94–I96, I98, I102, I113 | closed: each row names the story that settled it, or the tool it named is gone (ESLint, Prettier, release-please, npm scripts of EN-115); I62's Stryker issue 6210 still open on 2026-10-14, its row kept in `dependencies.md` | closed (P10) | — |
 | Method | the Product Owner's wishes a to d, the run's notes | P2 to P7 (§6) | adopted: P3 to P7 | ADR-0084, ADR-0085, `AGENTS.md`, the run skill, `docs/process/agile.md`, the backlog's templates |
-| Parked until RET-005 | story auto-merge into `develop` for agent stories (C3, C7); the permissions of the `story-finish` and `mutate` binaries; ADR-0082's option B; a configuration file for local paths such as the records' root | not proposed now (Product Owner, 2026-10-18) | parked | RET-005 |
+| Parked until the next review | story auto-merge into `develop` for agent stories (C3, C7); the permissions of the `story-finish` and `mutate` binaries; ADR-0082's option B; a configuration file for local paths such as the records' root | not proposed now (Product Owner, 2026-10-18) | parked | the next review (RET-005 removed by EN-123) |
 | Habits | F1–F6 | written as habits (§4), the rows leave the log | — | habits sheet |
 
 ## 3. What helped, what hurt
