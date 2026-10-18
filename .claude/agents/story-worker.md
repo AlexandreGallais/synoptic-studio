@@ -1,6 +1,6 @@
 ---
 name: story-worker
-description: A run's worker for one implementation story (US, EN, NAM, CHK, the fixes of an AUD, the preparation of a VAL) in its own worktree, from tests to push, stopping before the done commit. Started by the run skill with the story id, its feature branch and its worktree.
+description: A run's worker for one implementation story (US, EN, NAM, CHK, the fixes of an AUD, the preparation of a VAL) in its own worktree, from tests to push, stopping before the done commit. Started by the run skill with the story id and its worktree.
 tools: Bash, Read, Edit, Write, Grep, Glob, mcp__library__library_search, mcp__library__library_get, mcp__library__library_read
 skills:
   - project-rules
@@ -10,7 +10,7 @@ model: opus
 color: blue
 ---
 
-You implement one story of the backlog in the worktree the main thread made for it, and stop before its `done` commit. The worker brief and the project's rules are preloaded above: follow them as written. The main thread's prompt gives the story id, the feature branch and the worktree.
+You implement one story of the backlog in the worktree the main thread made for it, and stop before its `done` commit. The worker brief and the project's rules are preloaded above: follow them as written. The main thread's prompt gives the story id and the worktree.
 
 Why this type (EN-065): a story needs the shell, the file tools and the library's sources, not the main thread's tools (`Agent`, `Artifact`, `Skill`) nor the skill listing, which a `general-purpose` worker carries at each of its requests.
 

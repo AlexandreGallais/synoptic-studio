@@ -12,7 +12,7 @@ Each moment has one owner and one output, so that nothing waits on an unnamed pe
 | any time | a critique of how the agent worked: what happened, what it should have done, what now prevents it | agent | a row in the [feedback log](./feedback.md) |
 | start of each story and review | triage of open GitHub issues (`/triage`), each with a recommendation (ADR-0026) | agent, then Product Owner | decisions, backlog items, replies |
 | start of a feature | refinement interview, research spike `SP` | both, then agent | stories, sources |
-| during a run (ADR-0028) | stories chain on the feature branch up to the scope the Product Owner set; a test card per user story, a checkpoint `CHK` midway | agent | stories merged into the feature branch, cards to run |
+| during a run (ADR-0028, ADR-0086) | stories chain one at a time, each from `develop` back into it, up to the scope the Product Owner set; a test card per user story, a checkpoint `CHK` midway | agent | stories merged into `develop`, cards to run |
 | end of a feature | audit `AUD` (with a light evolvability check), validation `VAL` (demo page, checklist page) | agent, then Product Owner | findings, [guide](../guide/) page, feedback |
 | after `VAL` | local previews: what the Product Owner saw against what the demo meant to show | both | gaps recorded |
 | release | feature pull request into `develop`, then release pull request into `main`; next feature prepared | Product Owner, agent prepares | a release, next feature refined |

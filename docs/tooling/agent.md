@@ -27,7 +27,7 @@ flowchart LR
 | Skill | Does |
 | --- | --- |
 | `/story` | a story from branch to pull request |
-| `/run` | an autonomous run on the feature branch, up to the validation (ADR-0072) |
+| `/run` | an autonomous run, one story at a time from `develop` back into it, up to the scope set (ADR-0072, ADR-0086) |
 | `/spike` | a feature's research spike (ADR-0020) |
 | `/derivation` | a `DERIV-*` from read sources |
 | `/audit` | the feature audit with the reviewing agents |
@@ -124,7 +124,7 @@ The Product Owner may talk to a second session while a run works. Both share the
 3. **Tells the run**: `ListAgents`, then `SendMessage` with what changed, where and what it changes for the run. The run acts on the change once it reaches `develop`, never on the message alone.
 4. **Removes its worktree** once merged (`target/release/branches-clean`).
 
-Before each story the run merges `origin/develop` into the feature branch when `develop` changed `AGENTS.md`, `CLAUDE.md`, `.claude/`, `docs/domain/`, `docs/adr/`, `docs/backlog/` or `docs/conventions/`, in a worktree of that branch (never a force push on a feature branch), and follows the new versions from that story on; a change to the run's scope or stories is a stop.
+Before each story the run brings the main checkout's `develop` up to `origin/develop` when it changed `AGENTS.md`, `CLAUDE.md`, `.claude/`, `docs/domain/`, `docs/adr/`, `docs/backlog/` or `docs/conventions/`, and follows the new versions from that story on, each story starting from `origin/develop` (ADR-0086); a change to the run's scope or stories is a stop.
 
 ## Cloud agents and scheduled tasks
 

@@ -34,7 +34,7 @@ Each is a trap met in this repository's tooling, with the story that met it. The
 
 ## Git and the shell
 
-- The pre-push hook refuses a branch named outside `<type>/<id>-<topic>`, `feature/f<nn>-<topic>`, `main` and `develop`, so a worktree's own branch cannot be pushed (F14); a side branch carries its story's id (`docs/val-018-remarks`), or the story auto-merge refuses it.
+- The pre-push hook refuses a branch named outside `<type>/<id>-<topic>`, `main` and `develop` (and `feature/f<nn>-<topic>`, `release/x.y.z` of the flows before ADR-0086), so a worktree's own branch cannot be pushed (F14); a side branch carries its story's id (`docs/val-018-remarks`), or the story auto-merge refuses it.
 - A remote branch is deleted with `gh api -X DELETE repos/<owner>/<repo>/git/refs/heads/<branch>`: `git push --delete` runs the pre-push `check:all` each time.
 - The `guard-bash` hook skips the bodies of here-documents, which are data, and reads each command word by word as the shell does: a guarded command inside a quoted text goes through (`-m "… -n …"`), unless a shell runs that text (`bash -c`, `eval`, `$(…)`), whose commands are judged too (AUD-023).
 - The shell is zsh: an unquoted `$ids` of several lines is **one** word, so `for id in $ids` runs once (a cleanup loop sent malformed requests for 7 minutes, 2026-10-13). Read lines with `while read -r id; do …; done <<< "$ids"` in a `bash` script; never hide a loop's errors (`2>/dev/null`); a round that changes nothing ends the loop and prints the error.

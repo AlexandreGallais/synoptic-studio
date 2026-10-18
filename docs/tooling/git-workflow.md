@@ -2,47 +2,43 @@
 
 ## Branches and pull requests
 
-Git-flow with a release branch only for the release itself (ADR-0072, ADR-0079, `REF-GITFLOW`): each branch holds one kind of work, so that what reaches `main` has been through a feature's validation and a release.
+Two long-lived branches and one branch per story (ADR-0072, ADR-0086, `REF-GITFLOW`): every story starts from `develop` and returns to it, so that the history shows one loop per story, and `main` receives only whole features the Product Owner reviewed.
 
 | Branch | Holds | Receives | Checked by |
 | --- | --- | --- | --- |
-| `main` | released versions only | the pull request of a release branch, merged by the Product Owner; no push | the CI of the pull request (`ci.yml`) |
-| `develop` | validated features, tooling, docs | the agent's pushes (tooling, docs, backlog); validated features; `main` after a release | local Git hooks |
-| `feature/f<nn>-<topic>` | one feature while it is built | its stories' pull requests | local Git hooks |
+| `main` | the features the Product Owner reviewed | the pull request `develop` → `main` of a review, merged by the Product Owner; no push | the CI of the pull request (`ci.yml`) |
+| `develop` | integration: stories, tooling, docs | its stories' pull requests; the rows `story:finish` moves into the logs | local Git hooks |
 | `<type>/<story-id>-<topic>` | one story, one commit per task | the agent's commits | local Git hooks |
-| `release/x.y.z` | one release: its version and its changelog | the agent's commit `chore: release x.y.z` | local Git hooks; the CI of its pull request |
 
-- **A story** gets its branch and worktree from `target/release/worktree-new <ID>`, made from its feature branch on GitHub; the type is the Conventional Commits type of its main change. Each task is one commit, its id in a footer (`Refs: US-004.T2`). Once its Definition of Done is met, it goes into the feature branch by a **rebase merge**: in an autonomous run `npm run story:finish` pushes, opens the pull request labelled `autonomous`, waits for GitHub's merge and cleans up; outside a run the agent opens the pull request and the Product Owner merges it. No CI runs on it: the pre-push hook already ran `check:all`.
-- **A feature** joins `develop` from its `VAL` branch once the Product Owner said the validation is done (label `autonomous`), by a **merge commit**, so that it stays visible as one bridge in the history (`--no-ff`, `REF-GITFLOW`).
-- **A release** happens only when the Product Owner asks. The agent makes `release/x.y.z` from `develop` with `release prepare`, commits the version and the changelog there and opens its pull request into `main` ([releases](./releases.md)); the CI runs, and the Product Owner merges it by a **merge commit**, the only method `main` allows: a rebase would copy the commits under new hashes, and `develop` could no longer catch up with `main` by a fast-forward (`REF-GH-MERGE-METHODS`).
-- **After a release**, `develop` fast-forwards to `main`: `git merge --ff-only origin/main` on an up-to-date `develop`, then push (a plain merge if `develop` moved meanwhile); the release branch is deleted.
-- No long-lived branch other than `main`, `develop` and the current feature's; a release branch lives until its merge. The pre-push hook and the CI check the names by one pattern, `BRANCH_PATTERN` in `tools/git-hooks/src/branch.rs` (`git-hooks branch`); a release branch `release/x.y.z` and the bot's `dependabot/…` pass.
+- **A story** gets its branch and worktree from `target/release/worktree-new <ID>`, made from `origin/develop`, a story of a feature as an epic's own; the type is the Conventional Commits type of its main change. Each task is one commit, its id in a footer (`Refs: US-004.T2`). Once its Definition of Done is met, it goes into `develop` by a **merge commit**: in an autonomous run `npm run story:finish -- develop "<title>" <body file>` rebases it on `origin/develop`, pushes, opens the pull request labelled `autonomous`, waits for GitHub's merge (`story-automerge.yml`) and cleans up; outside a run the agent opens the pull request and the Product Owner merges it. No CI runs on it: the pre-push hook already ran `check:all`. One story at a time: no two story branches are open at once.
+- **A feature** is finished when its `VAL` merged into `develop`; no branch marks it. The run goes on with the next feature while the finished one waits for the Product Owner's review.
+- **A review** opens one pull request `develop` → `main`, only when `develop`'s head is a finished feature: a review asked while a feature is under way waits for that feature's end. It brings every feature finished since the last merge into `main`, its body their texts for the release; the CI runs, and the Product Owner merges it by a **merge commit**, the only method `main` allows: a rebase would copy the commits under new hashes (`REF-GH-MERGE-METHODS`). The push to `main` deploys the site and makes no release.
+- **A release** is a button once EN-117 lands: the Product Owner runs `release.yml` on `main` from GitHub's Actions tab, and `release publish` computes the version from the last tag and the commits since, tags `main`'s head and makes the GitHub release; nothing is committed ([releases](./releases.md)).
+- No long-lived branch other than `main` and `develop`. The pre-push hook and the CI check the names by one pattern, `BRANCH_PATTERN` in `tools/git-hooks/src/branch.rs` (`git-hooks branch`); `feature/f<nn>-<topic>` and `release/x.y.z`, of the flows before ADR-0086, still pass, and so does the bot's `dependabot/…`.
 
 ```mermaid
 gitGraph
-  commit id: "v0.1.0"
+  commit id: "v0.2.0"
   branch develop
   checkout develop
-  commit id: "docs"
-  branch feature/f14-curves
-  checkout feature/f14-curves
-  commit id: "US-022.T1"
-  commit id: "US-022.T2"
-  commit id: "EN-019.T1"
+  branch chore/en-122-topic
+  checkout chore/en-122-topic
+  commit id: "EN-122.T1"
+  commit id: "EN-122.T2"
   checkout develop
-  merge feature/f14-curves id: "F14 merged"
-  branch release/0.2.0
-  checkout release/0.2.0
-  commit id: "release 0.2.0"
+  merge chore/en-122-topic id: "EN-122 merged"
+  branch feat/val-023-validate
+  checkout feat/val-023-validate
+  commit id: "VAL-023 done"
+  checkout develop
+  merge feat/val-023-validate id: "F22 finished"
   checkout main
-  merge release/0.2.0 id: "release" tag: "v0.2.0"
-  checkout develop
-  merge main id: "caught up"
+  merge develop id: "F22 reviewed"
 ```
 
 ## After a merge
 
-`story:finish` removes its story's worktree and branches itself. After any other merge — a feature, a release, a story the Product Owner merged — `target/release/branches-clean` deletes the merged or gone local branches with their worktrees and prunes the remote references; `git branch -a` then shows only `main` and `develop`.
+`story:finish` removes its story's worktree and branches itself. After any other merge — a review, a story the Product Owner merged — `target/release/branches-clean` deletes the merged or gone local branches with their worktrees and prunes the remote references; `git branch -a` then shows only `main` and `develop`.
 
 ## Logs merged by union
 
@@ -66,7 +62,7 @@ Conventional Commits (`REF-CONVENTIONAL-COMMITS`), checked at each commit (`comm
 - Header, body and footer lines: 100 characters at most, a line holding a URL excepted. A breaking change: `feat(model)!: …` or a `BREAKING CHANGE:` footer.
 - A footer is a line starting with a token and `: ` (or ` #`): a body line starting with `word: ` ends the body. A missing blank line before the body or the footer is a warning only.
 - Merges, reverts, `fixup!`, `squash!` and `amend!` commits, versions and Dependabot's are not checked; the release commit `chore: release x.y.z` is checked as any other.
-- **On a story branch** (`<type>/<id>-<topic>`, `docs/` excepted), each commit carries `Refs: <ID>.T<n>` or `Closes: <ID>` with the branch's own id; the hook names the footer expected. A feature branch, `develop` and a `docs/` branch are not asked for one.
+- **On a story branch** (`<type>/<id>-<topic>`, `docs/` excepted), each commit carries `Refs: <ID>.T<n>` or `Closes: <ID>` with the branch's own id; the hook names the footer expected. `develop`, `main` and a `docs/` branch are not asked for one.
 
 | Footer | Meaning | Example |
 | --- | --- | --- |
