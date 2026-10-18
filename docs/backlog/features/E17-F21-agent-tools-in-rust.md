@@ -104,7 +104,7 @@ In delivery order. Stories stay `draft` until F21's `/run` sets them `ready`.
 | [EN-104](../stories/E17-F21-EN-104-claude-code-hooks-in-rust.md) | Enabler | The Claude Code hooks and the status line in Rust | done |
 | [EN-105](../stories/E17-F21-EN-105-one-row-or-section-of-a-page.md) | Enabler | One row or one section of a repository page | done |
 | [EN-106](../stories/E17-F21-EN-106-library-server-in-rust.md) | Enabler | The library server and its command line in Rust on rmcp | done |
-| [EN-107](../stories/E17-F21-EN-107-metrics-tools-in-rust.md) | Enabler | The metrics tools in Rust | ready |
+| [EN-107](../stories/E17-F21-EN-107-metrics-tools-in-rust.md) | Enabler | The metrics tools in Rust | done |
 | [CHK-022](../stories/E17-F21-CHK-022-checkpoint-f21.md) | Checkpoint | Checkpoint in the middle of F21 | ready |
 | [EN-108](../stories/E17-F21-EN-108-git-hooks-in-rust.md) | Enabler | The Git hooks in Rust, without husky, lint-staged, commitlint nor validate-branch-name | ready |
 | [EN-109](../stories/E17-F21-EN-109-dependency-checks-in-rust.md) | Enabler | The dependency checks in Rust, without npm-check-updates nor knip | ready |
