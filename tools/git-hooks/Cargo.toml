@@ -1,0 +1,16 @@
+[package]
+name = "git-hooks"
+version = "0.1.0"
+edition.workspace = true
+description = "The Git hooks and their checks, without husky, lint-staged, commitlint nor validate-branch-name (EN-108)"
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+tool-use = { path = "../tool-use" }
+
+[dev-dependencies]
+test-support = { path = "../test-support" }
+
+[lints]
+workspace = true

@@ -17,6 +17,7 @@
 | `npm run rust:coverage` | the workspace's tests under `cargo llvm-cov` (`REF-CARGO-LLVM-COV`), failing under the [floor](./agent-tools.md#rust) |
 | `npm run rust:build` | the Rust tools' release binaries into `target/release/`; run by `prepare` and `worktree:new`, and the same build by `git:sync` and `story:finish`: the hooks, the status line, the Git hooks and the agent call these binaries by their path (ADR-0078), and the first `cargo run --release -q -p <crate>` of a script is warm |
 | `npm run rust:fresh` | each release binary older than a file Cargo built it from, or missing, then exit 1 (`tools/stale-binaries/`, ADR-0078) |
+| `prepare` (run by `npm install`) | `rust:build`, then `target/release/git-hooks install`: the hooks folder `.githooks` set once ([Git workflow](./git-workflow.md#hooks-githooks)) |
 | `npm run deps:audit` | `npm audit`: any severity fails |
 | `npm run deps:outdated` | fails when a package is not on its latest version ([versions](./versions-and-security.md)) |
 | `npm run deps:unused` | knip: unused files, exports and dependencies (`knip.json`) |
