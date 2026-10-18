@@ -819,8 +819,11 @@ fn f29_ac2_skips_the_rust_lanes_for_a_story_that_changed_none_of_their_inputs() 
     assert!(text.starts_with(
         "- check:rust, rust:coverage skipped: nothing changed in their inputs against origin/develop\n"
     ), "{text}");
-    assert!(!text.contains("check:rust "), "{text}");
-    assert!(!text.contains("rust:coverage "), "{text}");
+    // Neither lane reported, passed nor failed.
+    for lane in ["check:rust", "rust:coverage"] {
+        assert!(!text.contains(&format!("✓ {lane} ")), "{text}");
+        assert!(!text.contains(&format!("✗ {lane} ")), "{text}");
+    }
     assert!(text.contains("✓ docs:build "), "{text}");
     assert_eq!(again.status.code(), Some(1), "{again_text}");
     assert!(again_text.contains("✗ check:rust "), "{again_text}");

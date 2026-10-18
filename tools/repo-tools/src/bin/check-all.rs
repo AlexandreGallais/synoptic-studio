@@ -1,10 +1,10 @@
 //! `check-all` (`npm run check:all`, RET-002, EN-103): every check of the repository in parallel
 //! lanes, run from the repository's root under the heavy lock `npm run check:all` takes. Each check
 //! prints a line with its time, a failed one its output after it; the last line says whether all
-//! passed. The release binaries are built first, alone; the docs lane runs only when the branch
-//! changed one of its inputs against its base (EN-085): the nearest of `develop` and the feature
-//! branches on GitHub for a story, `develop` for a feature; on `main`, `develop`, a detached head
-//! or in the CI every lane runs. `.git/config` of the main checkout is read before and after the
+//! passed. The release binaries are built first, alone; the docs lane, and the Rust lanes, run only
+//! when the branch changed one of their inputs against its base (EN-085, EN-130), each skipping
+//! said by a line: the nearest of `develop` and the feature branches on GitHub for a story,
+//! `develop` for a feature; on `main`, `develop`, a detached head or in the CI every lane runs. `.git/config` of the main checkout is read before and after the
 //! lanes: a lane that changed a line a test could break fails the run, its lines named, nothing
 //! restored (F21.AC9, EN-113).
 

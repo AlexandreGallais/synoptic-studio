@@ -1,7 +1,8 @@
 //! What `check:all` decides (RET-002, EN-085, EN-103): its lanes of npm scripts — in order within
 //! a lane, the lanes at the same time, so that the pre-push hook waits for the slowest lane instead
-//! of the sum — the docs lane left out when the branch changed none of its inputs against its base,
-//! a check's report line, and the lines of `.git/config` a lane added or removed.
+//! of the sum — the docs lane and the Rust lanes each left out when the branch changed none of their
+//! inputs against its base, a check's report line, and the lines of `.git/config` a lane added or
+//! removed.
 //!
 //! No release binary is written while the lanes run (EN-069's fix): `cargo run` copies its crate's
 //! binary into `target/release/` again even when it is up to date, removing it first, so a lane
@@ -20,9 +21,15 @@ use git_repository::stdout_of;
 /// The lane of the documentation site and the playground built into it.
 pub const DOCS_LANE: &[&str] = &["docs:build", "playground:build"];
 
-/// The lanes of the Rust workspace: rustfmt, Clippy, its advisories and the check for Windows,
-/// then its tests under the coverage floor, a lane of its own (EN-068, EN-069, EN-130).
-pub const RUST_LANES: &[&[&str]] = &[&["check:rust"]];
+/// The lane of the Rust workspace's checks: rustfmt, Clippy, its advisories, the check for Windows
+/// and the binaries' freshness (EN-068, EN-069).
+const RUST_CHECKS_LANE: &[&str] = &["check:rust"];
+
+/// The lane of the Rust workspace's tests under the coverage floor, beside its checks (EN-130).
+const RUST_COVERAGE_LANE: &[&str] = &["rust:coverage"];
+
+/// The lanes of the Rust workspace, left out when the branch changed none of their inputs.
+pub const RUST_LANES: &[&[&str]] = &[RUST_CHECKS_LANE, RUST_COVERAGE_LANE];
 
 /// Lanes of npm scripts: in order within a lane, the lanes at the same time.
 pub const LANES: &[&[&str]] = &[
@@ -36,8 +43,8 @@ pub const LANES: &[&[&str]] = &[
         "deps:unused",
         "deps:outdated",
     ],
-    // The Rust workspace: rustfmt, Clippy, its advisories, its tests (EN-068, EN-069).
-    &["check:rust"],
+    RUST_CHECKS_LANE,
+    RUST_COVERAGE_LANE,
 ];
 
 /// The check run alone before the lanes: the release binaries every lane's tools run from.
@@ -116,19 +123,33 @@ pub fn touches_site(paths: &[String]) -> bool {
 /// Whether changed files touch an input of the Rust lanes ([`RUST_INPUTS`]).
 #[must_use]
 pub fn touches_rust(paths: &[String]) -> bool {
-    let _ = (paths, RUST_INPUTS);
-
-    true
+    touches(paths, RUST_INPUTS)
 }
 
-/// The lanes to run: every lane, the docs lane left out when the change is known (`Some`) and
-/// touches none of its inputs.
+/// The groups of lanes a known change leaves out, each skipped whole: the docs lane when it
+/// touches none of the site's inputs, then the Rust lanes when it touches none of theirs.
+fn skipped_groups(paths: &[String]) -> Vec<&'static [&'static [&'static str]]> {
+    let mut groups: Vec<&'static [&'static [&'static str]]> = Vec::new();
+
+    if !touches_site(paths) {
+        groups.push(&[DOCS_LANE]);
+    }
+    if !touches_rust(paths) {
+        groups.push(RUST_LANES);
+    }
+    groups
+}
+
+/// The lanes to run: every lane, the docs lane and the Rust lanes left out when the change is
+/// known (`Some`) and touches none of their inputs.
 #[must_use]
 pub fn lanes_to_run(paths: Option<&[String]>) -> Vec<&'static [&'static str]> {
+    let skipped = paths.map(skipped_groups).unwrap_or_default();
+
     LANES
         .iter()
         .copied()
-        .filter(|lane| paths.is_none_or(touches_site) || *lane != DOCS_LANE)
+        .filter(|lane| !skipped.iter().any(|group| group.contains(lane)))
         .collect()
 }
 
@@ -193,14 +214,15 @@ pub fn report_of(name: &str, is_ok: bool, milliseconds: u128, output: &str) -> S
 /// lanes', against the base the change was read from.
 #[must_use]
 pub fn skipped_lines(paths: &[String], base: &str) -> Vec<String> {
-    if touches_site(paths) {
-        return Vec::new();
-    }
-
-    vec![format!(
-        "- {} skipped: nothing changed in their inputs against {base}",
-        DOCS_LANE.join(", ")
-    )]
+    skipped_groups(paths)
+        .iter()
+        .map(|group| {
+            format!(
+                "- {} skipped: nothing changed in their inputs against {base}",
+                group.concat().join(", ")
+            )
+        })
+        .collect()
 }
 
 /// The last line of `check:all`: passed, or failed naming the failed checks.
