@@ -3,7 +3,7 @@ id: EN-132
 epic: E17
 feature: F28
 title: The site, the release and the Rust caches apart
-status: ready
+status: done
 points: 3
 ---
 

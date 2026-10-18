@@ -25,7 +25,7 @@ In delivery order.
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
 | [SP-024](../stories/E17-F28-SP-024-the-tooling-features-of-2026-10-18.md) | SP | The tooling features of 2026-10-18 | done |
-| [EN-132](../stories/E17-F28-EN-132-the-site-the-release-and-the-caches-apart.md) | EN | The site, the release and the Rust caches apart | ready |
+| [EN-132](../stories/E17-F28-EN-132-the-site-the-release-and-the-caches-apart.md) | EN | The site, the release and the Rust caches apart | done |
 | [EN-133](../stories/E17-F28-EN-133-the-ci-into-main-its-checks-only.md) | EN | The CI into main, its checks only | ready |
 | [EN-134](../stories/E17-F28-EN-134-the-other-workflows-reviewed.md) | EN | The auto-merge per base and the other workflows reviewed | parked |
 | [AUD-030](../stories/E17-F28-AUD-030-audit-f28.md) | AUD | Audit F28 | ready |

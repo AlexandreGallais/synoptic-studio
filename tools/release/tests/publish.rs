@@ -112,7 +112,36 @@ const BODY_20: &str = "### Fixed\n\n- Refuse a NaN ([#11](https://github.com/o/r
 fn published(fake: &Fake, out: &Folder) -> Result<Published, String> {
     let mut run = |program: &str, args: &[&str]| fake.answer(program, args);
 
-    publish(&mut run, &out.0)
+    publish(&mut run, "main", &out.0)
+}
+
+#[test]
+fn f28_ac2_refuses_a_branch_other_than_main_and_makes_nothing() {
+    let out = folder("branch");
+    let fake = Fake::new(on_main("v0.2.0", &a_feature(), [BODY_21, BODY_20]));
+    let mut run = |program: &str, args: &[&str]| fake.answer(program, args);
+
+    // The button pressed on develop, then GITHUB_REF_NAME unset, as on a laptop: no call at all.
+    assert_eq!(
+        publish(&mut run, "develop", &out.0),
+        Err(
+            "the run is on the branch \"develop\", not \"main\": a release is made from main \
+             only, so press the button on main (GITHUB_REF_NAME)"
+                .to_owned()
+        )
+    );
+    assert_eq!(
+        publish(&mut run, "", &out.0),
+        Err(
+            "the run is on the branch \"\", not \"main\": a release is made from main only, so \
+             press the button on main (GITHUB_REF_NAME)"
+                .to_owned()
+        )
+    );
+    // A branch whose name holds main is not main.
+    assert!(publish(&mut run, "feature/main", &out.0).is_err());
+    assert!(fake.calls.borrow().is_empty(), "{:?}", fake.calls.borrow());
+    assert!(!out.0.exists());
 }
 
 #[test]
@@ -510,6 +539,7 @@ fn f22_ac2_publishes_from_the_binary_then_does_nothing_once_tagged() {
     let publish = || {
         test_support::command(env!("CARGO_BIN_EXE_release"))
             .arg("publish")
+            .env("GITHUB_REF_NAME", "main")
             .env("PATH", &path)
             .env("FAKE_GH_LOG", &log)
             .env("FAKE_GH_BODIES", &bodies)
@@ -556,4 +586,43 @@ fn f22_ac2_publishes_from_the_binary_then_does_nothing_once_tagged() {
         refused.starts_with("release publish: pull request #20:1: a notice is one sentence"),
         "{refused}"
     );
+}
+
+/// The binary pressed on `develop`: exit 1 naming the branch, no Git nor GitHub call, `gh` played
+/// by the fake whose log would hold any call.
+#[cfg(unix)]
+#[test]
+fn f28_ac2_exits_1_from_the_binary_on_a_branch_other_than_main() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let folder = folder("binary-branch");
+    let root = &folder.0;
+    let bin = root.join("bin");
+    let log = bin.join("gh.log");
+    fs::create_dir_all(&bin).unwrap();
+    fs::write(bin.join("gh"), FAKE_GH).unwrap();
+    fs::set_permissions(bin.join("gh"), fs::Permissions::from_mode(0o755)).unwrap();
+    let path = format!(
+        "{}:{}",
+        bin.display(),
+        std::env::var("PATH").unwrap_or_default()
+    );
+
+    let refused = test_support::command(env!("CARGO_BIN_EXE_release"))
+        .arg("publish")
+        .env("GITHUB_REF_NAME", "develop")
+        .env("PATH", &path)
+        .env("FAKE_GH_LOG", &log)
+        .current_dir(root)
+        .output()
+        .unwrap();
+
+    assert_eq!(refused.status.code(), Some(1));
+    assert_eq!(
+        String::from_utf8_lossy(&refused.stderr),
+        "release publish: the run is on the branch \"develop\", not \"main\": a release is made \
+         from main only, so press the button on main (GITHUB_REF_NAME)\n"
+    );
+    assert_eq!(String::from_utf8_lossy(&refused.stdout), "");
+    assert!(!log.exists());
 }
