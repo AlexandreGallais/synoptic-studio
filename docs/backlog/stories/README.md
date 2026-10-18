@@ -287,7 +287,7 @@
 | [EN-128](./E17-F27-EN-128-retired-scopes-in-history.md) | F27 | The history check reads the scopes a commit was written with | done |
 | [AUD-029](./E17-F27-AUD-029-audit-f27.md) | F27 | Audit F27 | done |
 | [VAL-028](./E17-F27-VAL-028-validate-f27.md) | F27 | Validate F27 | done |
-| [EN-129](./E17-F29-EN-129-timing-tests-that-hold-under-load.md) | F29 | Timing tests that hold under load | ready |
+| [EN-129](./E17-F29-EN-129-timing-tests-that-hold-under-load.md) | F29 | Timing tests that hold under load | done |
 | [EN-130](./E17-F29-EN-130-the-rust-lane-only-when-rust-changed.md) | F29 | The Rust lane only when Rust changed, its coverage a lane | ready |
 | [EN-131](./E17-F29-EN-131-binaries-rebuilt-after-a-pull.md) | F29 | The binaries rebuilt after a pull | ready |
 | [AUD-031](./E17-F29-AUD-031-audit-f29.md) | F29 | Audit F29 | ready |

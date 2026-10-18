@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest";
 /** Repository root. */
 const ROOT = join(import.meta.dirname, "..");
 
-/** Time limit of a test asking a tool about every tracked file: about 4.3 s alone (EN-054), seven times. */
+/** Time limit of a test asking a tool about every tracked file: its measure is beside it. */
 const WALK_TIMEOUT = 30_000;
 
 /** The start of a script run under the heavy lock (EN-047), a crate of the workspace (EN-068). */
@@ -227,6 +227,8 @@ describe("check tools given explicit targets (EN-045)", () => {
 
   it(
     "[F19.AC5] leaves no file that oxfmt formats out of the formatter's targets",
+    // alone: 458 ms, the median of 5 runs of its file (EN-129); 30 s, over 60 times it, holds the
+    // 4.3 s once seen alone (EN-054).
     { timeout: WALK_TIMEOUT },
     () => {
       const named = oxfmtCount(targetsOf("format:check", FORMAT));

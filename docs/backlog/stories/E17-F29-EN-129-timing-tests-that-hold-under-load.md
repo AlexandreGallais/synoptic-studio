@@ -3,7 +3,7 @@ id: EN-129
 epic: E17
 feature: F29
 title: Timing tests that hold under load
-status: ready
+status: done
 points: 2
 ---
 
