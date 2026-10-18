@@ -12,8 +12,8 @@ use std::path::Path;
 use std::process::{Command, ExitCode};
 
 use hooks::guard::{
-    denied_reason, entered, later_folders, missing_script, missing_script_reason, scripts_of,
-    worktree_reason,
+    denied_reason, entered, entered_worktree_reason, later_folders, missing_script,
+    missing_script_reason, scripts_of, worktree_reason,
 };
 use hooks::json;
 use hooks::limit::deny_output;
@@ -37,7 +37,7 @@ fn hook() -> u8 {
     let reason = denied_reason(command).map(str::to_owned).or_else(|| {
         let judged = entered(command, input.get("cwd").text());
 
-        worktree_reason(&judged.command, &judged.folder)
+        entered_worktree_reason(&judged)
             .or_else(|| {
                 later_folders(command, &judged.folder)
                     .iter()

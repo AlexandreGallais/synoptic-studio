@@ -3,6 +3,11 @@
 //! the `package.json` a command runs against. Rewritten from `.claude/hooks/guard-bash.ts` (EN-104),
 //! its regular expressions matched by hand, the standard library only: each matcher below names
 //! the expression it replaces, backtracking included where it changes the answer.
+//!
+//! After the brief's `cd "<worktree>" || exit <n>`, one Git command goes through, alone or piped
+//! into read-only filters (`head`, `tail`, `grep`, `wc`, `cut`, `sort`, `uniq`, `sed -n`, `awk`
+//! without `system` nor a redirection), with or without `2>&1`; a second Git command, or any other
+//! command chained after it by `;`, `&&` or `||`, is refused (EN-104, decided 2026-10-18).
 
 use std::path::{Component, Path, PathBuf};
 
@@ -211,28 +216,89 @@ fn body_end(text: &str, opening_end: usize, word: &str) -> Option<usize> {
 /// The segments of a shell command, split at `&&`, `||`, `;`, a pipe and a line feed, each trimmed.
 #[must_use]
 pub fn segments(command: &str) -> Vec<String> {
+    separated(command)
+        .into_iter()
+        .map(|(_, segment)| segment)
+        .collect()
+}
+
+/// The segments of a shell command, each with the separator before it, empty for the first:
+/// `&&`, `||`, `;`, `|` or a line feed.
+#[must_use]
+pub fn separated(command: &str) -> Vec<(&'static str, String)> {
     let mut pieces = Vec::new();
     let mut start = 0;
+    let mut before = "";
     let bytes = command.as_bytes();
     let mut at = 0;
 
     while at < bytes.len() {
-        let width = match (bytes[at], bytes.get(at + 1)) {
-            (b'&', Some(b'&')) | (b'|', Some(b'|')) => 2,
-            (b';' | b'|' | b'\n', _) => 1,
-            _ => 0,
+        let separator = match (bytes[at], bytes.get(at + 1)) {
+            (b'&', Some(b'&')) => "&&",
+            (b'|', Some(b'|')) => "||",
+            (b';', _) => ";",
+            (b'|', _) => "|",
+            (b'\n', _) => "\n",
+            _ => "",
         };
 
-        if width == 0 {
+        if separator.is_empty() {
             at += 1;
         } else {
-            pieces.push(command[start..at].trim_matches(is_space).to_owned());
-            at += width;
+            pieces.push((before, command[start..at].trim_matches(is_space).to_owned()));
+            at += separator.len();
             start = at;
+            before = separator;
         }
     }
-    pieces.push(command[start..].trim_matches(is_space).to_owned());
+    pieces.push((before, command[start..].trim_matches(is_space).to_owned()));
     pieces
+}
+
+/// The programs that only read what a Git command prints: a filter piped after it changes
+/// nothing (EN-104, decided 2026-10-18).
+const READ_ONLY_FILTERS: [&str; 7] = ["head", "tail", "grep", "wc", "cut", "sort", "uniq"];
+
+/// Whether a segment only filters what is piped into it: `head`, `tail`, `grep`, `wc`, `cut`,
+/// `sort`, `uniq`, `sed -n` without `-i`, `awk` without `system` nor a redirection; none writes a
+/// file (`>`), `2>&1` aside.
+#[must_use]
+pub fn is_read_only_filter(segment: &str) -> bool {
+    let text = segment.replace("2>&1", "");
+    let mut words = text.split(is_space).filter(|word| !word.is_empty());
+    let program = words.next().unwrap_or_default();
+    let rest: Vec<&str> = words.collect();
+
+    if text.contains('>') {
+        return false;
+    }
+    match program {
+        "sed" => rest.first() == Some(&"-n") && !rest.iter().any(|word| word.starts_with("-i")),
+        "awk" => !text.contains("system") && !text.contains("getline"),
+        _ => READ_ONLY_FILTERS.contains(&program),
+    }
+}
+
+/// Whether a command is one Git command, then only read-only filters piped after it, its own
+/// `2>&1` allowed: `git log --oneline | head -5`.
+#[must_use]
+pub fn is_git_read_through_filters(command: &str) -> bool {
+    let pieces = separated(&without_heredocs(command));
+    let Some(((_, first), filters)) = pieces.split_first() else {
+        return false;
+    };
+
+    runs_git_at_all(first)
+        && !first.replace("2>&1", "").contains('>')
+        && !filters.is_empty()
+        && filters
+            .iter()
+            .all(|(before, segment)| *before == "|" && is_read_only_filter(segment))
+}
+
+/// `^git\s`: a segment that runs Git.
+fn runs_git_at_all(segment: &str) -> bool {
+    segment.starts_with("git") && segment[3..].starts_with(is_space)
 }
 
 /// The positions a Git subcommand may start at after `git` and its global options (`-C <path>`,
@@ -514,6 +580,20 @@ pub struct Entered {
     pub folder: String,
     /// The command without its leading `cd "<folder>" || exit <n>`, else the whole command.
     pub command: String,
+    /// Whether the command opened with the brief's `cd "<folder>" || exit <n>`.
+    pub guarded: bool,
+}
+
+/// The reason for denying a command in the folder it entered: as [`worktree_reason`] gives it,
+/// except that after the brief's `cd "<worktree>" || exit <n>` one Git command piped into
+/// read-only filters goes through (`git log | head`, EN-104, decided 2026-10-18: a refusal costs a
+/// call); a second Git command or another command chained by `;`, `&&` or `||` is still refused.
+#[must_use]
+pub fn entered_worktree_reason(judged: &Entered) -> Option<String> {
+    if judged.guarded && is_git_read_through_filters(&judged.command) {
+        return None;
+    }
+    worktree_reason(&judged.command, &judged.folder)
 }
 
 /// The folder a command runs in: the one a leading `cd "<folder>"` enters, resolved against the
@@ -526,6 +606,7 @@ pub fn entered(command: &str, cwd: &str) -> Entered {
     let whole = Entered {
         folder: cwd.to_owned(),
         command: text.clone(),
+        guarded: false,
     };
     let start = after_spaces(&text, 0);
     let Some(target) = text[start..]
@@ -547,6 +628,7 @@ pub fn entered(command: &str, cwd: &str) -> Entered {
     Entered {
         folder: resolved,
         command: if guarded { rest } else { text },
+        guarded,
     }
 }
 
