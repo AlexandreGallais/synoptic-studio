@@ -3,7 +3,7 @@ id: VAL-028
 epic: E17
 feature: F27
 title: Validate F27
-status: ready
+status: done
 points: 1
 ---
 
@@ -17,6 +17,10 @@ F27 is a tooling fix: the agent validates it by #370's `Commit messages and bran
 
 ## Tasks
 
-- [ ] T1 — The check seen on #370 (main thread)
+- [x] T1 — The check seen on #370 (main thread)
 
 One task = one commit, referenced as `VAL-028.T1`.
+
+## Result (2026-10-18)
+
+Validated by the agent (ADR-0072): `f27_ac1` passes and the history check exits 0 on `main..develop`; #370's `Commit messages and branch name` check is the proof on GitHub's runner, read once F27 is in `develop`.

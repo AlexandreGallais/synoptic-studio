@@ -33,3 +33,7 @@ The first run of #370 with these jobs failed its `TypeScript tests` check: `[F19
 ## Fixed by F26
 
 The same run's `Rust` check never ended: `tools/mutate`'s test `stops_a_mutation_that_never_ends` waited 46 min, Linux's `kill` reading the process group's `-<pid>` as a signal. Since F26 (EN-127) the group comes after `--`, and the command itself is killed after it.
+
+## Fixed by F27
+
+With every lane green, the history check refused six F19 commits written with the scope `eslint`, valid then and removed by EN-085. Since F27 (EN-128) the history check accepts a retired scope (`RETIRED_SCOPES`), and the `commit-msg` hook still refuses it in a new commit.
