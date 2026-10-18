@@ -78,9 +78,6 @@
 | [EN-121](./E02-F23-EN-121-builds-lanes-and-checks.md) | F23 | Builds, lanes and the checks RET-004 listed | draft |
 | [AUD-025](./E02-F23-AUD-025-audit-f23.md) | F23 | Audit F23 | draft |
 | [VAL-024](./E02-F23-VAL-024-validate-f23.md) | F23 | Validate F23 | draft |
-| [NAM-003](./E02-NAM-003-naming-pass-e02.md) | E02 | Naming pass over the code of E02, and the tooling and tests pass | draft |
-| [REV-005](./E02-REV-005-review-e02.md) | E02 | Review E02 with the Product Owner | draft |
-| [RET-005](./E02-RET-005-retrospective-e02.md) | E02 | Retrospective of E02 | draft |
 | [SP-010](./E14-F11-SP-010-research-f11.md) | F11 | Research for F11: folder layouts and test placement | done |
 | [EN-020](./E14-F11-EN-020-property-tests.md) | F11 | Property tests for the nine functions without one | done |
 | [EN-021](./E14-F11-EN-021-shared-test-helpers.md) | F11 | Shared test helpers, one path writer, one pass per corner | done |
@@ -278,7 +275,7 @@
 | [AUD-023](./E17-F21-AUD-023-audit-f21.md) | F21 | Audit F21 | done |
 | [VAL-022](./E17-F21-VAL-022-validate-f21.md) | F21 | Validate F21 | done |
 | [EN-122](./E17-F22-EN-122-one-story-at-a-time-into-develop.md) | F22 | One story at a time into develop | done |
-| [EN-123](./E17-F22-EN-123-epics-without-a-closing.md) | F22 | Epics without a closing, a review at each return | ready |
+| [EN-123](./E17-F22-EN-123-epics-without-a-closing.md) | F22 | Epics without a closing, a review at each return | done |
 | [EN-116](./E17-F22-EN-116-ci-green-on-github-runners.md) | F22 | The CI's tests green on GitHub's runner | ready |
 | [EN-117](./E17-F22-EN-117-release-from-the-merge-into-main.md) | F22 | The release by a button, from the tags | ready |
 | [AUD-024](./E17-F22-AUD-024-audit-f22.md) | F22 | Audit F22 | ready |

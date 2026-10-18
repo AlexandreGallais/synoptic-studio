@@ -24,7 +24,7 @@ status: draft
 
 ## For the agent's work during E02
 
-- **The method of RET-004** (Product Owner, 2026-10-18, ADR-0084): features of 2 to 4 stories, one at a time, each researched before its refinement; per story `T1` the interface and its failing tests, `T2` the code; one loop per feature on `develop`'s line; two agents per story tried on two stories of the first library feature; researchers in parallel only on separate topics; a lighter main thread. Tools that fail are cards, fixed at E02's end (ADR-0085); F23 first fixes E17's.
+- **The method of RET-004 and ADR-0086** (Product Owner, 2026-10-18): features of 2 to 4 stories, one at a time, each refined before its stories; per story `T1` the interface and its failing tests, `T2` the code; one agent at a time, a fresh worker per story; a story merged into its feature and a feature into `develop` by merge commits; a review at each return of the Product Owner, no closing at E02's end. Tools that fail are cards, fixed at the next review; F23 first fixes E17's.
 - **Lighter context** (Product Owner, 2026-10-14, at RET-002): moved to E17, before E02, as its feature F20, a context diet (RET-003).
 - **The model chosen per task** (Product Owner, 2026-10-16, at RET-003): a lighter model for logs, backlog edits, merges and step texts; the strongest for mathematics, audits and research. Measured during E02: tokens per story against E15's 24 M.
 - **Checks by level** (ADR-0064): no independent review per story, a thorough audit per feature, a full audit beside the naming pass.
@@ -40,16 +40,6 @@ status: draft
 | Snapping | to refine |
 | Align and constant spacing | to refine |
 | History and navigation | to refine |
-
-## Closing
-
-After its last feature is validated (ADR-0023, ADR-0049, ADR-0064).
-
-| Story | Status |
-| --- | --- |
-| [NAM-003](../stories/E02-NAM-003-naming-pass-e02.md) — Naming pass over the code of E02 | draft |
-| [REV-005](../stories/E02-REV-005-review-e02.md) — Review E02 with the Product Owner | draft |
-| [RET-005](../stories/E02-RET-005-retrospective-e02.md) — Retrospective of E02 | draft |
 
 ## Ideas from the Product Owner (2026-10-11, refinement of F08)
 

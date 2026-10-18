@@ -3,7 +3,7 @@ id: EN-123
 epic: E17
 feature: F22
 title: Epics without a closing, a review at each return
-status: ready
+status: done
 points: 3
 ---
 
@@ -37,15 +37,3 @@ One task = one commit, referenced as `EN-123.T1` in the commit footer.
 
 | 2026-10-18 | EN-123 | Carried from RET-005, removed with E02's closing: the story auto-merge into `develop` for the agent's stories (cards C3, C7), the permissions of the `story-finish` and `mutate` binaries, ADR-0082's option B and a configuration file for local paths such as the records' root, all parked until the next review; ADR-0084's trial of two agents per story is superseded by ADR-0086's one agent at a time and needs no measure | process |
 | 2026-10-18 | EN-123 | A review held at a return is a story outside a feature, yet the backlog tools attach such a story to an epic: its file and its `epic` field name the epic of the first feature it reviews, a convention to confirm or replace at the next review (a review across two epics sits in one epic's Closing table) | process |
-
-### In the done commit
-
-E02's closing goes with ADR-0086, in shared files this branch may not change:
-
-- delete `docs/backlog/stories/E02-NAM-003-naming-pass-e02.md`, `docs/backlog/stories/E02-REV-005-review-e02.md` and `docs/backlog/stories/E02-RET-005-retrospective-e02.md`;
-- remove their three rows from `docs/backlog/stories/README.md` (or `npm run backlog:index` once the files are gone);
-- remove the **Closing** section of `docs/backlog/epics/E02-edit-shapes.md` (its sentence and its table of three rows); in the same file, the **Closure criteria** row may stay as the epic's goal, and the bullet "The method of RET-004" still names ADR-0084's two agents per story, superseded by ADR-0086.
-
-`tests/backlog.test.ts` passes before and after that removal: it refuses only a `NAM` above `NAM-003` and a `RET` above `RET-005`.
-
-`Rule-docs: none affected, no business rule changed: the story changes the method, the backlog and the agents' docs`.
