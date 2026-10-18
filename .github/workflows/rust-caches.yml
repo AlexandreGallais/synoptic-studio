@@ -1,13 +1,13 @@
-# The Rust caches of develop and main (docs/tooling/ci.md, ADR-0088): a push to either saves the
-# toolchain, the cargo tools and the Rust build under its branch, develop's for the next pull
-# request into main, main's for the site and the release, which restore them (EN-111, EN-125,
-# AUD-030). A merge by the auto-merge's token starts no run (`REF-GH-TOKEN-TRIGGERS`): only a
-# person's push to develop does, until F30's dispatch; a review's merge into main is one.
+# The Rust caches of main (docs/tooling/ci.md, ADR-0088): a push to main, a review's merge, saves
+# the toolchain, the cargo tools and the Rust build under main, for the site and the release, which
+# restore them (EN-111, EN-125, AUD-030). It checks nothing: the review's CI checked that code
+# before its merge (ADR-0072). Develop's caches are the develop CI's, saved after its tests
+# (develop-ci.yml, EN-135).
 name: Rust caches
 
 on:
   push:
-    branches: [develop, main]
+    branches: [main]
 
 permissions:
   contents: read

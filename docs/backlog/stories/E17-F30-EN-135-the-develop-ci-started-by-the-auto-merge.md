@@ -3,7 +3,7 @@ id: EN-135
 epic: E17
 feature: F30
 title: The develop CI, started by the auto-merge
-status: ready
+status: done
 points: 3
 ---
 
@@ -24,3 +24,9 @@ The Rust caches' workflow F28 leaves on a push to `develop` never runs after the
 - [ ] T2 — The `develop` CI from the Rust caches' workflow, the dispatch in the features' auto-merge, `docs/tooling/ci.md` (2 h)
 
 One task = one commit, referenced as `EN-135.T1` in the commit footer.
+
+## For the main thread
+
+### Journal
+
+- `#run` EN-135: the `develop` CI is `develop-ci.yml`, a workflow of its own (push to `develop`, `workflow_dispatch`), and `rust-caches.yml` keeps `main`'s caches alone, on a push to `main`: joined, one file would run the tests after each merge into `main` too, which ADR-0072 never re-checks, or choose by an `if:` on the branch that ADR-0088 forbids. Its job runs `check:rust` then `rust:coverage`, and saves the caches by `actions/cache/save` even after a failing step (`REF-GH-CACHE-SAVE`), so a red run on Linux leaves the review's CI warm; the auto-merge waits for `MERGED` (`REF-GH-CLI-PR-VIEW`), then dispatches into `develop` only, with `actions: write` added.
