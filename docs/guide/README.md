@@ -42,5 +42,6 @@ Written at the end of each feature (`VAL`, demo page) and of each epic (`REV`, e
 | [E01 — Drawing symbol shapes from numbers](./e01-draw-shapes.md) | the eight features of E01, the words, a user test crossing them, the decisions |
 | [E14 — Drawing curves with handles, ellipses and round shapes](./e14-draw-curves.md) | the four features of E14, the words, the walk-through of the review, the decisions |
 | [E15 — Placing text in symbols](./e15-place-text.md) | the five features of E15, the words, the tour of the review, the decisions, the direction to remove |
+| [E17 — Fast tooling with Oxc and Rust](./e17-fast-tooling-with-oxc-and-rust.md) | the four features of E17 with NAM-002, EN-114 and EN-115, the figures before and after, the words, a story's life as the user test, the decisions, the checklist run again, the questions of the review |
 
 Templates: `_feature-demo.md`, `_epic-report.md` (not published).
