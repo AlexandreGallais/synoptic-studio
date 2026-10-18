@@ -2,7 +2,7 @@
 id: RET-004
 epic: E17
 title: Retrospective of E17
-status: in-progress
+status: done
 points: 3
 ---
 
