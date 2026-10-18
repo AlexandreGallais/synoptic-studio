@@ -8,6 +8,10 @@ pub mod seed;
 
 use std::path::{Path, PathBuf};
 
+use git_hooks::branch::is_valid_branch;
+pub use shared_files::backlog::STORIES;
+use shared_files::backlog::{file_of, names_in};
+
 /// Folder of the worktrees, from the main checkout.
 pub const WORKTREES: &str = ".claude/worktrees";
 
@@ -88,20 +92,21 @@ pub fn story_of_file(id: &str, file: &str) -> Option<Story> {
     })
 }
 
-/// The branch type of a story's kind: `feat` for a user story, `chore` for an enabler, `docs`
-/// for research, checks and reports, `refactor` for a naming pass.
+/// The branch type of a story's kind: `feat` for a user story and a validation, `chore` for an
+/// enabler, `docs` for research, checks, audits and reviews; `None` for a kind the pre-push and the
+/// auto-merge refuse (`NAM` and `RET` since EN-123).
 #[must_use]
 pub fn branch_type(kind: &str) -> Option<&'static str> {
     match kind {
         "US" | "VAL" => Some("feat"),
         "EN" => Some("chore"),
-        "SP" | "CHK" | "AUD" | "REV" | "RET" => Some("docs"),
-        "NAM" => Some("refactor"),
+        "SP" | "CHK" | "AUD" | "REV" => Some("docs"),
         _ => None,
     }
 }
 
-/// Why a branch name is refused, `None` when it is a story branch the pre-push hook accepts.
+/// Why a branch name is refused, `None` when it is a story branch the pre-push hook accepts: the
+/// one branch form of `git_hooks::branch` (AUD-025), a type of [`BRANCH_TYPES`] before its `/`.
 #[must_use]
 pub fn branch_refusal(name: &str) -> Option<String> {
     if name.starts_with("origin/") || name.starts_with("refs/") {
@@ -110,18 +115,17 @@ pub fn branch_refusal(name: &str) -> Option<String> {
         ));
     }
 
-    let is_story_branch = name.split_once('/').is_some_and(|(kind, topic)| {
-        BRANCH_TYPES.contains(&kind)
-            && !topic.is_empty()
-            && topic.split('-').all(|word| {
-                !word.is_empty()
-                    && word
-                        .bytes()
-                        .all(|byte| byte.is_ascii_lowercase() || byte.is_ascii_digit())
-            })
-    });
+    let is_story_branch = is_valid_branch(name)
+        && name
+            .split_once('/')
+            .is_some_and(|(kind, _)| BRANCH_TYPES.contains(&kind));
 
-    (!is_story_branch).then(|| format!("`{name}` is not `<type>/<id>-<topic>` in kebab-case"))
+    (!is_story_branch).then(|| {
+        format!(
+            "`{name}` is not `<type>/<story-id>-<topic>` in kebab-case, a story id of a kind the \
+             pre-push accepts (docs/tooling/git-workflow.md)"
+        )
+    })
 }
 
 /// The feature branch on GitHub a story starts from.
@@ -180,9 +184,8 @@ pub fn story_on_branches(
     let found: Vec<(Story, &String)> = branch_files
         .iter()
         .filter_map(|(branch, files)| {
-            files
-                .iter()
-                .find_map(|file| story_of_file(id, file))
+            file_of(files, id)
+                .and_then(|file| story_of_file(id, &file))
                 .map(|story| (story, branch))
         })
         .collect();
@@ -213,10 +216,8 @@ pub fn story_on_branches(
 pub fn plan(request: &Request, exists: impl Fn(&Path) -> bool) -> Result<Plan, String> {
     let id = story_id(request.id)
         .ok_or_else(|| format!("`{}` is not a story id such as US-061", request.id))?;
-    let (story, holder) = if let Some(story) = request
-        .story_files
-        .iter()
-        .find_map(|file| story_of_file(&id, file))
+    let (story, holder) = if let Some(story) =
+        file_of(request.story_files, &id).and_then(|file| story_of_file(&id, &file))
     {
         (story, None)
     } else {
@@ -262,18 +263,13 @@ pub fn plan(request: &Request, exists: impl Fn(&Path) -> bool) -> Result<Plan, S
     Ok(Plan { dir, branch, base })
 }
 
-/// Folder of the story files, from a checkout's top.
-pub const STORIES: &str = "docs/backlog/stories";
-
-/// Names of the story files of a checkout, the only reading of the disk here: `worktree-new`,
-/// `git-sequences sync` and `check-handback` each list them (AUD-022).
+/// Names of the story files of a checkout, sorted, the only reading of the disk here:
+/// `worktree-new`, `git-sequences sync` and `check-handback` each list them (AUD-022), by the
+/// backlog's one finder (`shared_files::backlog`, AUD-025).
 ///
 /// # Errors
 ///
 /// When the folder cannot be read: a checkout without a backlog.
 pub fn story_files(top: &Path) -> std::io::Result<Vec<String>> {
-    Ok(std::fs::read_dir(top.join(STORIES))?
-        .filter_map(Result::ok)
-        .map(|entry| entry.file_name().to_string_lossy().into_owned())
-        .collect())
+    names_in(&top.join(STORIES))
 }

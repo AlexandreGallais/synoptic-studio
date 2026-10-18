@@ -63,6 +63,39 @@ function repeatedRows(text: string): readonly string[] {
 }
 
 /**
+ * The tool cards of the incidents log, each from its `## ` heading to the next one.
+ *
+ * @param text - the incidents log's content
+ * @returns each card's text, its heading first, in order
+ */
+function cardsOf(text: string): readonly string[] {
+  return text.split(/^(?=## )/mu).filter((card) => card.startsWith("## "));
+}
+
+/**
+ * The tool cards written more than once, heading and bullets, each named once by its heading: two
+ * cards may share a bullet (`- Instead: none`), never a whole card (AUD-025).
+ *
+ * @param text - the incidents log's content
+ * @returns the headings of the repeated cards, in order of their first occurrence
+ */
+function repeatedCards(text: string): readonly string[] {
+  const cards = cardsOf(text);
+  const all = cards.map((card) => card.replaceAll(/\s+/gu, " ").trim());
+  const repeated = new Set(all.filter((card, index) => all.indexOf(card) !== index));
+
+  return [...repeated].map((card) => cards[all.indexOf(card)]?.split("\n", 1)[0] ?? card);
+}
+
+/** Each log's check of its repeats: the incidents log compares whole cards, the others rows. */
+const REPEATED: Readonly<Record<string, (text: string) => readonly string[]>> = {
+  "docs/process/feedback.md": repeatedRows,
+  "docs/process/improvements.md": repeatedRows,
+  "docs/process/journal.md": repeatedRows,
+  "docs/process/tool-incidents.md": repeatedCards,
+};
+
+/**
  * The journal's session headings that do not start with a date.
  *
  * @param text - the journal's content
@@ -131,7 +164,7 @@ const CARD_PARTS: readonly { readonly label: RegExp; readonly part: string }[] =
  * @returns each incomplete card's heading and the parts it lacks, in order
  */
 function incompleteCards(text: string): readonly string[] {
-  const cards = text.split(/^(?=## )/mu).filter((card) => card.startsWith("## "));
+  const cards = cardsOf(text);
 
   return cards
     .map((card) => {
@@ -146,7 +179,7 @@ function incompleteCards(text: string): readonly string[] {
 
 /**
  * Each log's check of its shape: the two table logs hold one table, the journal tagged bullets,
- * the incidents log whole cards.
+ * the incidents log cards that each state their use, their failure and their workaround.
  */
 const STRAY: Readonly<Record<string, (text: string) => readonly string[]>> = {
   "docs/process/feedback.md": strayTableLines,
@@ -255,7 +288,28 @@ describe("append-only logs", () => {
   });
 
   it.each(LOGS)("[F18.AC4] keeps the rows of %s unique", (log) => {
-    expect(repeatedRows(logText(log))).toStrictEqual([]);
+    expect(REPEATED[log]?.(logText(log))).toStrictEqual([]);
+  });
+
+  it("[F23.AC1] names a card written twice, not a bullet two cards share", () => {
+    // Two cards sharing `- Instead: none`, then the first one again, its spaces changed.
+    const log = [
+      "# Tool incidents\n",
+      "## 2026-10-18 — a\n\n- Used: a\n- Failed: b\n- Instead: none\n",
+      "## 2026-10-18 — b\n\n- Used: c\n- Failed: d\n- Instead: none\n",
+      "## 2026-10-18 — a\n\n- Used:  a\n- Failed: b\n- Instead: none\n",
+    ].join("\n");
+
+    expect(repeatedCards(log)).toStrictEqual(["## 2026-10-18 — a"]);
+
+    expect(repeatedCards(log.split("\n## 2026-10-18 — a\n\n- Used:  a", 1)[0] ?? "")).toStrictEqual(
+      [],
+    );
+
+    // The same heading over other bullets is two cards.
+    expect(
+      repeatedCards("## 2026-10-18 — a\n\n- Used: a\n\n## 2026-10-18 — a\n\n- Used: b\n"),
+    ).toStrictEqual([]);
   });
 
   it.each(LOGS)("[F18.AC4] dates the entries of %s", (log) => {

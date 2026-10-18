@@ -303,7 +303,7 @@
 | [VAL-031](./E17-F30-VAL-031-validate-f30.md) | F30 | Validate F30 | done |
 | [EN-137](./E17-F23-EN-137-the-log-rows-in-the-done-commit.md) | F23 | The log rows and the cards in the done commit | done |
 | [EN-118](./E17-F23-EN-118-a-story-outside-a-feature.md) | F23 | A story outside a feature, by the same tools | done |
-| [AUD-025](./E17-F23-AUD-025-audit-f23.md) | F23 | Audit F23 | ready |
+| [AUD-025](./E17-F23-AUD-025-audit-f23.md) | F23 | Audit F23 | done |
 | [VAL-024](./E17-F23-VAL-024-validate-f23.md) | F23 | Validate F23 | ready |
 | [EN-119](./E17-F31-EN-119-the-guard-reads-by-words.md) | F31 | The guard reads a command by its words | ready |
 | [EN-138](./E17-F31-EN-138-replace-and-fix-do-what-they-say.md) | F31 | replace and npm run fix do what they say | ready |

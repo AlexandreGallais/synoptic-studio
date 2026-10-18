@@ -18,6 +18,7 @@ fn commit(message: &str, files: &[&str]) -> Commit {
         message: message.into(),
         files: files.iter().map(|&path| path.to_owned()).collect(),
         padded: Vec::new(),
+        moved: Vec::new(),
     }
 }
 
@@ -163,7 +164,7 @@ fn refuses_every_shared_file_in_a_task_commit() {
 
 #[test]
 fn f23_ac1_lets_the_done_commit_write_the_logs_but_not_a_checklist() {
-    let done = commit(
+    let mut done = commit(
         "docs(backlog): set EN-050 done\n\nCloses: EN-050\n",
         &[
             "docs/backlog/stories/E17-F18-EN-050-shared-files-written-at-merge.md",
@@ -178,9 +179,27 @@ fn f23_ac1_lets_the_done_commit_write_the_logs_but_not_a_checklist() {
 
     // The done commit sets the statuses and moves the story's rows and cards into the logs; a
     // checklist stays the main thread's, written at the feature's validation.
+    done.moved = [
+        "docs/process/improvements.md",
+        "docs/process/journal.md",
+        "docs/process/tool-incidents.md",
+    ]
+    .map(str::to_owned)
+    .to_vec();
     assert_eq!(
         refused_files(&done, "EN-050"),
         ["playground/checklists/epic-15-text-lines.ts"]
+    );
+
+    // [F23.AC1] a log the done commit changes otherwise than by the story's rows is refused
+    // (AUD-025): `improvements.md` is no longer among the moved ones.
+    done.moved.remove(0);
+    assert_eq!(
+        refused_files(&done, "EN-050"),
+        [
+            "playground/checklists/epic-15-text-lines.ts",
+            "docs/process/improvements.md"
+        ]
     );
 }
 
@@ -445,12 +464,28 @@ fn f23_ac1_refuses_a_log_in_a_task_commit_and_lets_through_the_done_commit_holdi
     );
     assert!(error.contains("done commit"), "{error}");
 
-    // The same row moved by the main thread in the story's done commit passes.
-    repository.git(&["reset", "--quiet", "--hard", "HEAD~1"]);
-    repository.write("docs/process/journal.md", "# Journal\n\n- `#run` a row\n");
+    // The same row, written by the worker in its story file, moved by the main thread in the
+    // story's done commit, passes.
+    let story = "docs/backlog/stories/E17-F23-EN-996-topic.md";
+    let header = "---\nid: EN-996\nstatus: ready\n---\n\n# EN-996\n";
 
-    let done = repository.commit("docs(backlog): set EN-996 done\n\nCloses: EN-996");
-    let output = repository.check("chore/en-996-topic", &done);
+    repository.git(&["reset", "--quiet", "--hard", "HEAD~1"]);
+    fs::create_dir_all(repository.work().join("docs/backlog/stories")).unwrap();
+    repository.write(
+        story,
+        &format!("{header}\n## For the main thread\n\n### Journal\n\n- `#run` a row\n"),
+    );
+    repository.commit("feat: a row for the journal\n\nRefs: EN-996.T2");
+
+    let task = repository.git(&["rev-parse", "HEAD"]);
+    let done = |journal: &str| {
+        repository.git(&["reset", "--quiet", "--hard", &task]);
+        repository.write(story, &header.replace("ready", "done"));
+        repository.write("docs/process/journal.md", journal);
+        repository.commit("docs(backlog): set EN-996 done\n\nCloses: EN-996")
+    };
+    let moved = done("# Journal\n\n- `#run` a row\n");
+    let output = repository.check("chore/en-996-topic", &moved);
 
     assert_eq!(
         output.status.code(),
@@ -458,4 +493,25 @@ fn f23_ac1_refuses_a_log_in_a_task_commit_and_lets_through_the_done_commit_holdi
         "{}",
         String::from_utf8_lossy(&output.stderr)
     );
+
+    // [F23.AC1] the done commit adding a row its story file did not hold, or deleting or
+    // rewriting a line of a log, is refused, naming the log (AUD-025).
+    for (name, journal) in [
+        (
+            "another row",
+            "# Journal\n\n- `#run` a row\n- `#run` not ours\n",
+        ),
+        ("a line deleted", "- `#run` a row\n"),
+        ("a line rewritten", "# The journal\n\n- `#run` a row\n"),
+    ] {
+        let hash = done(journal);
+        let output = repository.check("chore/en-996-topic", &hash);
+        let error = String::from_utf8_lossy(&output.stderr);
+
+        assert_eq!(output.status.code(), Some(1), "{name}: {error}");
+        assert!(
+            error.contains("  docs/process/journal.md (commit "),
+            "{name}: {error}"
+        );
+    }
 }

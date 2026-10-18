@@ -13,28 +13,13 @@
 use std::env;
 use std::fs;
 use std::io;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::process::ExitCode;
 
 use calendar::today;
+use shared_files::backlog::{STORIES, story_file};
 use shared_files::rows::{insert_rows, take_rows};
 use shared_files::shared::story_of;
-
-/// The folder of the story files.
-const STORIES: &str = "docs/backlog/stories";
-
-/// The story file of an id, `None` when there is none.
-fn story_file(story: &str) -> io::Result<Option<PathBuf>> {
-    let marker = format!("-{story}-");
-
-    Ok(fs::read_dir(STORIES)?
-        .filter_map(Result::ok)
-        .map(|entry| entry.path())
-        .find(|path| {
-            path.file_name()
-                .is_some_and(|name| name.to_string_lossy().contains(&marker))
-        }))
-}
 
 /// Moves the rows of a story file into their logs; the files written. Each line under a log's
 /// heading that is not one of its rows is left in the story file and named on standard error.
@@ -84,8 +69,11 @@ fn move_story_rows() -> u8 {
     let Some(story) = story_of(&branch) else {
         return 0;
     };
-    let result =
-        story_file(&story).and_then(|file| file.map_or(Ok(Vec::new()), |path| move_rows(&path)));
+    let result = story_file(Path::new("."), &story).and_then(|file| {
+        file.map_or(Ok(Vec::new()), |name| {
+            move_rows(&Path::new(STORIES).join(name))
+        })
+    });
 
     match result {
         Ok(written) => {
