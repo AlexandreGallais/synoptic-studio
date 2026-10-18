@@ -251,6 +251,59 @@ The "before" of every story of F21 (ADR-0069, decision 4), measured on 2026-10-1
 
 EN-102 has no "before": a use is not recorded today; its measure is the time one record adds.
 
+## Each tool's time before and after, at the checkpoint
+
+Gathered by CHK-022 on 2026-10-18 from the stories merged so far, each "after" as its story measured it (its file, Measures; `docs/tooling/agent-tools.md` for EN-103 and EN-105), medians in milliseconds. "Before" is this note's table above, then, where the story timed the TypeScript tool again on the same series, its own figure after a slash: the load differed between the series (2 to 33). "By path" is the release binary as the agent and the hooks call it (ADR-0078); "launcher" the call through `cargo run` or `npm run`, where the story timed it. The stories after the checkpoint (EN-108 to EN-112) add their rows.
+
+| Story | Tool, as called | Before | After, by path | After, launcher | Gain by path |
+| --- | --- | --- | --- | --- | --- |
+| EN-102 | `git-sequences`, `format` without arguments: the record of one use alone | 2.91, 2.75 | 3.08, 2.88 | — | 0.13 to 0.17 ms added per call |
+| EN-103 | `check-all`, its own work outside the lanes | — / 230 | 119 | — | ×1.9 |
+| EN-103 | `backlog-status SP-023 draft`, `backlog:index` and its formatter included | 355.2 / 327 | 172 | 153.5 more | ×1.9 |
+| EN-103 | `epic-check E16`, `check:all` a stub | — / 1,969 | 1,945 | — | the `gh` calls dominate |
+| EN-103 | `story-finish` up to its pull request, `gh` a stub | — / 150 | 107 | — | ×1.4 |
+| EN-103 | `replace`, a two-file edit | 60.8 / 99 | 7 | — | ×14 |
+| EN-103 | `branches-clean`, nothing to clean | 285.5 / 314 | 235 | — | ×1.3, `lsof` dominates |
+| EN-103 | `records-save`, nothing changed; with the library | 706.2 / 92; 186 | 16; 41 | — | ×5.8; ×4.5 |
+| EN-104 | `guard-bash`, before every Bash call | 56.1 / 58.8 | 2.9 | 46.9 | ×20 |
+| EN-104 | `track-tool-call`, before every call | 86.6 / 89.3 | 3.0 | 46.6 | ×30 |
+| EN-104 | `log-tool-call`, after every call | 105.5 / 106.1 | 3.0 | 46.9 | ×35 |
+| EN-104 | `session-state`, at each session start | 161.1 / 120.6 | 25.4 | 69.8 | ×4.7 |
+| EN-104 | the status line, through `sh -c` | 169.9 / 180.4 | 10.0 | 50.7 | ×18; 24.5 % of a core to 1.9 % |
+| EN-105 | one row of `docs/references.md`: `cat` of the page, then `page REF-CC-HOOKS` | 3.0 | 3.2 | about 160 more (`npm run -s`) | 1.2 % of the characters |
+| EN-106 | the server's start to its answer to `initialize` | 76.8 / 86.4 | 4.0 | 86.0 (`.mcp.json`, ADR-0078 decision 4) | ×22, once a session |
+| EN-106 | inside the server: `library_search`, `library_get`, `library_read` | 2.3, 14.3, 6.7 / 0.7, 7.2, 7.2 | 0.7, 6.6, 6.6 | — | SQLite's own time |
+| EN-106 | the command line's `search` to `stats` | 83 to 95 / 104 | 5.7 to 11.3 | 84.2 to 92.7 | ×9 to ×18 |
+| EN-107 | `metrics`, the transcripts' cache warm; cold | 8,197 / 9,402 | 463; 6,400 | — | ×20 |
+| EN-107 | `session-report --all` | 5,073 / 5,577 | 108 | — | ×52 |
+| EN-107 | `session-report`, the current turn | 5,940 / 10,069 | 100 | — | ×100 |
+| EN-107 | `session-report --run` | 18,680 (its cache built) / 107 | 15 | — | ×7 |
+| EN-107 | `activity` | 248.1 / 211 | 125 | 251 | ×1.7 |
+
+`turns.ts` has no command of its own any more: its record is written by `session-report`. `limit-agents` was already Rust (40.8 ms by its path): now called by its path, 39 ms median in the uses recorded below.
+
+### The uses recorded over the run so far
+
+`target/release/metrics`, its Tools section (EN-102), read on 2026-10-18 at about 02:40 local time: the whole record, 62,244 uses from EN-102's first at 01:04, `guard-bash` 59,881 of them. The slowest tools first, then those that failed; every other tool with a median under 200 ms and no failure. A use's duration is timed inside the binary, so it leaves out the process's start (about 2.7 ms by path, research note above).
+
+| Tool | Calls | Failed | Median | Slowest | Action, or the reason to leave it |
+| --- | --- | --- | --- | --- | --- |
+| `heavy-lock story:finish`, `story-finish` | 5, 3 | 0 | 1 min 48 s | 2 min 44 s | left: most of it is the wait for GitHub's merge, up to three minutes, and the base's rebuild |
+| `heavy-lock check:all`, `check-all` | 20, 12 | 5, 3 | 1 min 05 s | 1 min 53 s | left: the full check, timed against F20's end in CHK-022; its failures below |
+| `worktree-new` | 5 | 0 | 33.6 s | 35.5 s | an improvement row: the new worktree builds every release binary from nothing, where a copy of the main checkout's `target/release` (APFS `cp -c`) then an incremental build may take seconds |
+| `heavy-lock golden:check` | 15 | 0 | 12.1 s | 12.9 s | left: the library's 400 results computed again, the pre-push's own check |
+| `git-sequences commit` | 30 | 6 | 1.3 s | 1 min 55 s | left: three of the six are the pre-push's failed `check:all` on `--push`, three a refusal before staging (a message or a path); the median is the commit's own hooks |
+| `git-hooks commits` | 14 | 14 | 99 ms | 147 ms | left: EN-108's binary under work, its 14 failures one burst of 1.5 s in its worktree, its own trial |
+| `git-sequences sync` | 16 | 3 | 783 ms | 1.1 s | left: each stopped as it should, on uncommitted changes named (EN-103) |
+| `stale-binaries` | 12 | 2 | 5 ms | 6 ms | left: both in EN-104's worktree while it built the check, a stale binary found as meant |
+| `page` | 5 | 2 | 0 ms | 0 ms | left: nothing found exits 1 by design; one was a heading this checkpoint looked for in `docs/process/README.md` |
+| `library-mcp library_search` | 106 | 2 | 1 ms | 20 ms | left: both in EN-106's worktree, while it ported the server |
+| `lint --fix`, `replace`, `library nope` | 65, 46, 2 | 1, 1, 2 | 11 ms, 0 ms, 0 ms | 805 ms, 1 ms, 0 ms | left: a finding left to fix, a block refused, an unknown subcommand tried: each exit 1 by design |
+| `heavy-lock true` | 2 | 0 | 52.6 s | 55.2 s | left: a wait for the lock another worktree held; a `heavy-lock` use's time includes its wait |
+| `format --check`, `lint` | 21, 22 | 0 | 762 ms, 516 ms | 885 ms, 1.3 s | left: oxfmt and the project's linter on every target, the commit's and `check:all`'s own steps |
+
+The five failed `check:all` runs, one per story at its first push (EN-102, EN-103, EN-104, EN-106, EN-107), each cost a run of 70 to 113 s before the second; EN-107's were `deps:unused` and `test`: a module and two test lists its own port left naming `.claude/hooks`.
+
 ## Good release notes, read again
 
 The four sources EN-112 cites were read again in the library on 2026-10-18; every rule of EN-112's table is in them as cited. Two differences between them, which EN-112 settles by following Common Changelog, the stricter one, and saying so in `docs/tooling/releases.md`:
@@ -292,7 +345,7 @@ Release-please's 0.2.0 entry, counted again in `CHANGELOG.md`: 163 lines of chan
 
 ## For the Product Owner
 
-One question, written in EN-104, which waits for the answer:
+One question, written in EN-104; decided since by the agent under ADR-0069, option C, in ADR-0078 (2026-10-18), to be told to the Product Owner:
 
 **How are the Rust tools called?** Measured above: a binary by its path, 2.7 ms; through `cargo run`, 49.9 ms; through `npm run` and `cargo run`, 149 ms. ADR-0073, decision 1, says `cargo run --release -q -p <crate>`. Over the three days counted in F20's [research note 0024](./0024-f20-context-diet.md), the agent made at least 9,500 Bash calls (reads, searches and Git), and `guard-bash` runs before each one.
 

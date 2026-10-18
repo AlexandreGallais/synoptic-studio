@@ -21,7 +21,7 @@ The linters handle `noUnusedLocals`, `noUnusedParameters` and `noFallthroughCase
 
 ## Files
 
-- `tsconfig.json` only checks types (`noEmit`). It covers `src/`, `playground/`, `tests/`, `scripts/`, `.claude/hooks/`, `docs/.vitepress/` and the root files. A file outside its `include` is not type-checked, and the type-aware rules cannot read it: add it to `include`.
+- `tsconfig.json` only checks types (`noEmit`). It covers `src/`, `playground/`, `tests/`, `scripts/`, `docs/.vitepress/` and the root files. A file outside its `include` is not type-checked, and the type-aware rules cannot read it: add it to `include`.
 - The declarations in `dist/types/` are written by `tools/declarations`, one module at a time, from `src/` without its tests (Oxc's isolated declarations, ADR-0071). Each module must therefore state its own types: an exported function writes its return type, and an exported constant whose value is not a plain literal writes its type (`export const DEGREES_PER_HALF_TURN: number = DEGREES_PER_TURN / 2`).
 
 ## Rules that need types

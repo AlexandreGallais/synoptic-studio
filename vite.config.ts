@@ -49,7 +49,6 @@ const TEST_PROJECTS: readonly TestProjectInlineConfiguration[] = [
         "src/**/*.test.ts",
         "tests/*.test.ts",
         "docs/.vitepress/**/*.test.ts",
-        ".claude/hooks/*.test.ts",
         "scripts/*.test.ts",
       ],
       isolate: false,
