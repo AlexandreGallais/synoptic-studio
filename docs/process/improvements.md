@@ -46,3 +46,4 @@ Ideas, irritants and lessons, written when they happen by the agent — the Prod
 | 2026-10-18 | agent | `[F28.AC3]`'s `NODE_READERS` in `tests/workflows.test.ts` is kept by hand: a crate that starts reading `node_modules` is not found by itself; a list derived from the crates' sources would find it (EN-133) | tool |
 | 2026-10-18 | EN-130 | Narrow `[F19.AC9]`'s scan of the test files starting a release binary to `tests/` (the only folder holding one, `tests/declarations.test.ts`), so that `*.test.ts` leaves the Rust inputs and a library story skips the Rust lanes too | tool |
 | 2026-10-18 | EN-131 | `target/release/replace --help` prints `No edit block read` and `nothing written`, no usage: the worker used the Edit tool instead | tool |
+| 2026-10-18 | AUD-031 | A test of a Git post hook asserts the hook's own exit code and output, run by hand, besides Git's: Git ignores a post hook's code, so a test of the pull alone passes whatever the hook returns (F7) | process |

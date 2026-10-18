@@ -74,7 +74,3 @@ F30 runs the Rust tests on Linux in a `develop` CI. That CI sets `CI`, so `check
 - F1: `Rust coverage` joins the required checks of `main`'s ruleset (24687556) when F29 merges into `develop`; no file changes for it.
 - F29's criterion 1 names the timing tests of `src/` and `tests/`; since T1 `[F29.AC1]` reads `playground/` too (F4). The feature file is unchanged: widening the criterion's words to the three folders is the main thread's call.
 - `docs/domain/` is not affected: F29 is tooling. Footer `Rule-docs: none affected, a tooling feature, no business rule changed`.
-
-### Improvements
-
-| 2026-10-18 | AUD-031 | A test of a Git post hook asserts the hook's own exit code and output, run by hand, besides Git's: Git ignores a post hook's code, so a test of the pull alone passes whatever the hook returns (F7) | process |
