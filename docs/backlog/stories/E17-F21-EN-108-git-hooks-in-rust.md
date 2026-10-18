@@ -3,7 +3,7 @@ id: EN-108
 epic: E17
 feature: F21
 title: The Git hooks in Rust, without husky, lint-staged, commitlint nor validate-branch-name
-status: ready
+status: done
 points: 5
 ---
 
