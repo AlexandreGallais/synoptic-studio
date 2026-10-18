@@ -3,7 +3,7 @@ id: EN-130
 epic: E17
 feature: F29
 title: The Rust lane only when Rust changed, its coverage a lane
-status: ready
+status: done
 points: 2
 ---
 
