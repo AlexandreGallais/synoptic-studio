@@ -164,6 +164,10 @@ name = "deps"
 version = "0.1.0"
 dependencies = [
  "hooks",
+ "oxc_allocator",
+ "oxc_parser",
+ "oxc_span",
+ "oxc_syntax",
  "serde_json",
  "test-support",
  "tool-use",

@@ -82,12 +82,13 @@ The crates.io dependencies of the Rust tools: Oxc's (`REF-OXC-CRATE`, MIT), all 
 
 | Crate | Why | Alternatives rejected |
 | --- | --- | --- |
-| `oxc_parser` | reads TypeScript into an AST with its comments, for `tools/api-pages` and the project's linter `tools/lint` | `deno_doc` (`REF-DENO-DOC`): a second parser stack writing HTML or JSON; TypeDoc: needs TypeScript 6's API (`REF-TYPEDOC-TS7`) |
+| `oxc_parser` | reads TypeScript into an AST with its comments, for `tools/api-pages` and the project's linter `tools/lint`, and its module record for the unused-file and unused-export check of `tools/deps` (EN-109) | `deno_doc` (`REF-DENO-DOC`): a second parser stack writing HTML or JSON; TypeDoc: needs TypeScript 6's API (`REF-TYPEDOC-TS7`) |
 | `oxc_ast` | the AST's types | — (the parser's own) |
 | `oxc_ast_visit` | walks the AST in source order, entering and leaving each node, for the linter's measures and its rules that follow reads and `await`s | — (Oxc's own walker) |
 | `oxc_allocator` | the arena the parser builds the AST in | — (the parser's own) |
 | `oxc_semantic` | resolves each name to its symbol, so that a type parameter, an import and a global are told apart | resolving names by hand: misses shadowing and imports |
 | `oxc_span` | the source type and the spans that give each node its line | — (the parser's own) |
+| `oxc_syntax` | the types of the parser's module record — imports, exports, re-exports — that the unused-export check of `tools/deps` reads (EN-109); already in the lock under `oxc_parser`, at its version | `oxc_resolver` (`REF-OXC-RESOLVER`) for the paths: 59 crates more, where a path join resolves this tree's imports |
 | `oxc_isolated_declarations` | the library's declarations from each module alone, without a type checker, in `tools/declarations` (`REF-OXC-ISOLATED-DECLARATIONS`) | `tsc -p tsconfig.build.json`: a second compiler run; `oxc-transform` from npm: the same code behind a Node.js binding |
 | `oxc_codegen` | prints the declarations as `.d.ts` text, comments kept | — (Oxc's own printer) |
 | `markdown` | parses Markdown into an mdast tree with offsets, GFM and front matter, for the linter's Markdown rules: the Rust sibling of the parser `@eslint/markdown` used, so the same tree | `pulldown-cmark`: events, not a tree; `comrak`: seven required dependencies; a parser of our own: a project in itself |
