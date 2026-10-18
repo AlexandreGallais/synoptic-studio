@@ -7,7 +7,7 @@ use std::collections::HashMap;
 
 use release::backlog::{Backlog, Item, item};
 use release::body::{Text, joined, release_text, text, written};
-use release::commit::{Commit, header, merged_pull_request};
+use release::commit::{Commit, header, merged_branch, merged_pull_request};
 use release::draft::{
     Group, NO_CHANGE_NOTICE, bump, capitalised, group_of, hints, lines, references,
     text as draft_text, without_no_ops,
@@ -195,6 +195,27 @@ fn reads_the_story_the_break_the_revert_and_the_pull_requests() {
         None
     );
     assert_eq!(commit('a', "x", "", None).short(), "aaaaaaa");
+}
+
+#[test]
+fn reads_the_head_branch_of_a_merge_its_owner_left_out() {
+    assert_eq!(
+        merged_branch("Merge pull request #22 from o/dependabot/cargo/regex-1.11.1"),
+        Some("dependabot/cargo/regex-1.11.1".to_owned())
+    );
+    assert_eq!(
+        merged_branch("Merge pull request #195 from AlexandreGallais/develop"),
+        Some("develop".to_owned())
+    );
+    // No owner, a merge of a branch, a subject that only names one.
+    for subject in [
+        "Merge pull request #22 from develop",
+        "Merge pull request #22 from o/",
+        "Merge branch 'main' into develop",
+        "fix(io): Merge pull request #22 from o/develop",
+    ] {
+        assert_eq!(merged_branch(subject), None, "{subject}");
+    }
 }
 
 #[test]

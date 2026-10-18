@@ -29,6 +29,11 @@ pub const REPORT_ARTIFACT: &str = "test-report";
 /// The test report's file in that artifact.
 pub const REPORT_FILE: &str = "test-report.xml";
 
+/// The start of the head branch of Dependabot's pull requests: a security update merged into
+/// `main` (`docs/tooling/ci.md`), whose body is Dependabot's, not a release text; its change is
+/// written in the next review's text.
+pub const DEPENDABOT_BRANCH: &str = "dependabot/";
+
 /// The first line of a command's output, trimmed.
 fn first_line(output: &str) -> String {
     output.lines().next().unwrap_or_default().trim().to_owned()

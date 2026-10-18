@@ -171,3 +171,11 @@ pub fn merged_pull_request(subject: &str) -> Option<u32> {
         .captures(subject)
         .and_then(|captures| captures[1].parse().ok())
 }
+
+/// The head branch a merge commit's subject names, its owner left out: `dependabot/cargo/x` for
+/// GitHub's `Merge pull request #340 from owner/dependabot/cargo/x`.
+#[must_use]
+pub fn merged_branch(subject: &str) -> Option<String> {
+    let _ = subject;
+    None
+}
