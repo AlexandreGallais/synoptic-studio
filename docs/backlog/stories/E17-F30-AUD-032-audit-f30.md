@@ -19,7 +19,7 @@ Audit F30 following [audit.md](../../conventions/audit.md) (ADR-0020), the `audi
 
 - [x] T1 — The findings, and the tests of F1, F2, F3, F5 and F6, seen failing (1 h)
 - [x] T2 — The findings fixed, the criteria traced (1 h)
-- [ ] T3 — ADR-0090: the `develop` CI beside `rust-caches.yml` (30 min)
+- [x] T3 — ADR-0090: the `develop` CI beside `rust-caches.yml` (30 min)
 
 One task = one commit, referenced as `AUD-032.T1`.
 
@@ -49,3 +49,25 @@ Reviewed by the `auditor` alone (ADR-0086), each finding reproduced before it is
 | C10 | `[F30.AC1]` traced | caught | C5, C6 and F5's mutations | restored |
 | C11 | `[F30.AC2]` traced | caught | C2, C3 and C4 | restored |
 | C12 | F — `check:all` green on the head | run by the pre-push hook | the push of T3 | — |
+
+## G. Next feature
+
+F31 reads the agent's commands in a worktree. This audit met its case again: the guard refused `git status` chained to a read-only `sed` or `echo` by `;`, each run again alone. Sources: those of F31's incidents, already in `docs/process/tool-incidents.md`; none new from F30.
+
+## H. Light evolvability check
+
+- Size: `tests/workflows.test.ts` holds two checks of the workflows, the event's conditions and the tools of each job, with their readers; the tools' check may become a file of its own when it grows again.
+- Tools: none failed; the guard's refusal of a chained `git status` is F31's.
+- Fitness functions: `[F30.AC2]` now reads the lanes of a matrix and any cargo subcommand; the `develop` CI's saves, its absence of a concurrency group and the disabled auto-merge each have a test that fails on a mutation.
+- Patterns: a lane's scripts are read by one `scriptsRunBy`, for `[F28.AC3]` and `[F30.AC2]`.
+- Agent configuration: unchanged; nothing contradicts the workflows.
+- Process: three findings of the auditor (F1, F2, F3) were cases where a step fails on GitHub, which no local check runs: a workflow's failure paths are tested by reading their conditions, as `tests/ci-caches.test.ts` does.
+
+## For the main thread
+
+- F1: the tools are saved when the install's outcome is `success`, not "not `failure`": on a missed key the two agree, and `success` also refuses an install skipped after an earlier failure, which would save nothing whole.
+- F2: the build is saved when the outcome of `check:rust` is `success`, not when those of `npm ci` and `check:rust` are not `failure`: a failing `cargo fetch` or `cargo deny fetch db` skips `check:rust`, whose outcome is then `skipped`, and the build would have been saved without its compilations. A failing test still saves it, as decided.
+- F3: the auto-merge is disabled only into `develop`. Into a feature branch no `develop` CI follows the merge, and the agent never merges: a story's auto-merge disabled would wait for the Product Owner. A merge GitHub makes between the last state read and `--disable-auto` still starts no `develop` CI; whether `--disable-auto` then fails is not documented; its failure is printed and the step still fails.
+- F5: the test is in `tests/ci-caches.test.ts`, beside the `develop` CI's other `[F30.AC1]` tests of its job.
+- ADR-0090 was accepted by the agent, to be told to the Product Owner, as ADR-0089 was.
+- `docs/domain/` is not affected: F30 is tooling. Footer `Rule-docs: none affected, a tooling feature, no business rule changed`.
