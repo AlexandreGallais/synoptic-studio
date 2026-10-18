@@ -287,6 +287,9 @@
 | [EN-126](./E17-F25-EN-126-the-test-lanes-rust-tools.md) | F25 | The test lane's Rust tools | done |
 | [AUD-027](./E17-F25-AUD-027-audit-f25.md) | F25 | Audit F25 | done |
 | [VAL-026](./E17-F25-VAL-026-validate-f25.md) | F25 | Validate F25 | done |
+| [EN-127](./E17-F26-EN-127-mutate-stops-on-linux.md) | F26 | The mutation runner stops a mutation on Linux | ready |
+| [AUD-028](./E17-F26-AUD-028-audit-f26.md) | F26 | Audit F26 | ready |
+| [VAL-027](./E17-F26-VAL-027-validate-f26.md) | F26 | Validate F26 | ready |
 | [NAM-002](./E17-NAM-002-naming-pass-e17.md) | E17 | Naming pass over the code of E17 | done |
 | [REV-004](./E17-REV-004-review-e17.md) | E17 | Review E17 with the Product Owner | done |
 | [RET-004](./E17-RET-004-retrospective-e17.md) | E17 | Retrospective of E17 | done |
