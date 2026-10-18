@@ -1,6 +1,6 @@
 # ADR-0067 — The release pull request on `develop`, only the release on `main`
 
-**Status**: Accepted, decision 2 confirmed by the Product Owner at F18's validation (VAL-019, 2026-10-17). Accepted by the agent first (2026-10-17, EN-046, in the run of F18 the Product Owner started, from F18's first criterion asked on 2026-10-14). Supersedes, in ADR-0038: release-please's release pull request into `main`, which merged itself (points 1 and 5), and `develop` catching up with a release commit it lacked (point 7).
+**Status**: Accepted, decision 2 confirmed by the Product Owner at F18's validation (VAL-019, 2026-10-17). Accepted by the agent first (2026-10-17, EN-046, in the run of F18 the Product Owner started, from F18's first criterion asked on 2026-10-14). Supersedes, in ADR-0038: release-please's release pull request into `main`, which merged itself (points 1 and 5), and `develop` catching up with a release commit it lacked (point 7). Decisions 1 to 3 and 5 superseded by ADR-0079 (2026-10-18, EN-112): the release prepared on a release branch from `develop` by the project's own tool, release-please removed.
 
 ## Context
 

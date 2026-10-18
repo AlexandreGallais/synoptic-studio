@@ -71,7 +71,7 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0064](./0064-checks-by-level.md) | Checks by level: the story, the feature, the epic | Accepted, from E02 |
 | [0065](./0065-parallel-branches-merged-without-conflicts.md) | Parallel branches merged without conflicts on shared files | Accepted, decision 1 superseded by ADR-0068 |
 | [0066](./0066-a-register-of-exceptions.md) | A register of exceptions, and a byte buffer written once | Accepted |
-| [0067](./0067-release-pull-request-on-develop.md) | The release pull request on `develop`, only the release on `main` | Accepted, confirmed at VAL-019 |
+| [0067](./0067-release-pull-request-on-develop.md) | The release pull request on `develop`, only the release on `main` | Accepted, confirmed at VAL-019; decisions 1 to 3 and 5 superseded by 0079 |
 | [0068](./0068-tables-without-padding-moved-to-f19.md) | Tables without padding moved to F19's formatter | Accepted, confirmed at VAL-019 |
 | [0069](./0069-tooling-fast-for-the-agent.md) | Tooling as fast as it can be, for the agent | Accepted |
 | [0070](./0070-tests-without-over-testing.md) | Tests without over-testing: one claim, one place; slow preparation done once | Accepted |
@@ -83,3 +83,4 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0076](./0076-ported-tooling-code-under-its-licence.md) | Code ported into the tools under its licence, never into the library | Accepted |
 | [0077](./0077-the-library-server-in-rust-on-rmcp.md) | The library's server in Rust on rmcp, its file named by its own variable | Accepted |
 | [0078](./0078-the-agents-tools-called-by-their-binary.md) | The hooks, the Git hooks and the agent call the Rust tools by their binary's path | Accepted |
+| [0079](./0079-the-release-on-a-release-branch-by-our-own-tool.md) | The release prepared on a release branch from `develop`, published by our own tool | Accepted |
