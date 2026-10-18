@@ -22,11 +22,12 @@ const INDEXES: [&str; 3] = [
     "docs/backlog/epics/README.md",
 ];
 
-/// The logs.
-pub const LOGS: [&str; 3] = [
+/// The logs, the tool cards among them (ADR-0085).
+pub const LOGS: [&str; 4] = [
     "docs/process/journal.md",
     "docs/process/improvements.md",
     "docs/process/feedback.md",
+    "docs/process/tool-incidents.md",
 ];
 
 /// The story types a worker implements in a run (ADR-0063); the others are the main thread's.
@@ -107,8 +108,8 @@ pub fn closes(commit: &Commit, story: &str) -> bool {
 }
 
 /// The shared files a commit of a worker's branch may not change: all of them, except, in the
-/// story's `done` commit, its status in the indexes and its feature's table, and a change that
-/// only pads or unpads tables.
+/// story's `done` commit, its status in the indexes and its feature's table and its rows and cards
+/// moved into the logs (ADR-0091), and a change that only pads or unpads tables.
 #[must_use]
 pub fn refused_files(commit: &Commit, story: &str) -> Vec<String> {
     let done = closes(commit, story);
@@ -119,8 +120,8 @@ pub fn refused_files(commit: &Commit, story: &str) -> Vec<String> {
         .filter(|path| !commit.padded.contains(path))
         .filter(|path| match shared_kind(path) {
             None => false,
-            Some(Kind::Index | Kind::Feature) => !done,
-            Some(Kind::Log | Kind::Checklist) => true,
+            Some(Kind::Index | Kind::Feature | Kind::Log) => !done,
+            Some(Kind::Checklist) => true,
         })
         .cloned()
         .collect()
@@ -145,7 +146,7 @@ pub fn refusal(branch: &str, story: &str, commits: &[Commit]) -> String {
     format!(
         "pre-push: {branch} is {story}'s branch and edits shared files (ADR-0065):\n{}\n\
          Write their rows under `## For the main thread` in the story file instead; the main \
-         thread writes them at merge. Undo the change, e.g. `git restore --source=origin/<feature \
+         thread moves them into the logs in the story's done commit. Undo the change, e.g. `git restore --source=origin/<feature \
          branch> -- <file>`, and commit.\n",
         lines.join("\n")
     )

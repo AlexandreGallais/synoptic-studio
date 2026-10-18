@@ -1,11 +1,13 @@
-//! `move-rows <story branch>` (ADR-0065, decision 4; EN-050): run by `story:finish` from the
-//! repository's root once the story is merged and its base pulled. It moves the rows written under
-//! the known headings of the story file's `## For the main thread` into their logs, and prints each
-//! file it wrote, one per line: nothing when there were no rows. A log's rows are its own shape
-//! only — a dated table row for `improvements.md` and `feedback.md`, a bullet opening with its tag
-//! (``- `#run` …``) for the journal, under a section dated today, `## <today> — Run continued`,
-//! opened when its newest section is older (AUD-020); a placeholder (`- None.`), a table's header and its separator
-//! are dropped, and any other line is left in the story file and named on standard error, never
+//! `move-rows <story branch>` (ADR-0065, decision 4; EN-050; ADR-0091): run by the main thread
+//! from the root of the story's worktree before its `done` commit, which holds the files it
+//! prints. It moves the rows written under the known headings of the story file's `## For the
+//! main thread` into their logs, and prints each file it wrote, one per line: nothing when there
+//! were no rows. A log's rows are its own shape only — a dated table row for `improvements.md` and
+//! `feedback.md`, a bullet opening with its tag (``- `#run` …``) for the journal, under a section
+//! dated today, `## <today> — Run continued`, opened when its newest section is older (AUD-020),
+//! a card for `tool-incidents.md`, its dated `#### ` heading and its bullets, written at the log's
+//! end under `## ` (ADR-0085); a placeholder (`- None.`), a table's header and its separator are
+//! dropped, and any other line is left in the story file and named on standard error, never
 //! copied.
 
 use std::env;

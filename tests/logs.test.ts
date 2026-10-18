@@ -113,6 +113,16 @@ function untaggedBullets(text: string): readonly string[] {
 }
 
 /**
+ * The parts of a tool card, each found by the label opening one of its bullets, with an optional
+ * parenthesis before its colon (`- Used (found by AUD-024):`).
+ */
+const CARD_PARTS: readonly { readonly label: RegExp; readonly part: string }[] = [
+  { label: /^- (?:Used|Seen)(?: \([^)]*\))?:/u, part: "the use" },
+  { label: /^- (?:Failed|Fails|Seen)(?: \([^)]*\))?:/u, part: "the failure" },
+  { label: /^- Instead(?: \([^)]*\))?:/u, part: "the workaround" },
+];
+
+/**
  * The tool cards that lack a part (ADR-0085): each card, under its `## ` heading, states its use
  * (`- Used`) and its failure (`- Failed`, `- Fails`), or what was seen, both at once (`- Seen`),
  * and what was done instead (`- Instead`).
@@ -121,7 +131,17 @@ function untaggedBullets(text: string): readonly string[] {
  * @returns each incomplete card's heading and the parts it lacks, in order
  */
 function incompleteCards(text: string): readonly string[] {
-  return text.split("\n").filter((line) => line === "\n");
+  const cards = text.split(/^(?=## )/mu).filter((card) => card.startsWith("## "));
+
+  return cards
+    .map((card) => {
+      const lines = card.split("\n");
+      const lacks = CARD_PARTS.filter(({ label }) => lines.every((line) => !label.test(line)));
+
+      return { heading: lines[0] ?? "", lacks: lacks.map(({ part }) => part) };
+    })
+    .filter(({ lacks }) => lacks.length > 0)
+    .map(({ heading, lacks }) => `${heading}: lacks ${lacks.join(", ")}`);
 }
 
 /**

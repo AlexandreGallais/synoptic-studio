@@ -1,7 +1,8 @@
 //! `story-finish` run in repositories of its own (EN-103): a bare `origin`, a main checkout on the
 //! feature branch, each story in a linked worktree, as in a run. GitHub's command line and Cargo
 //! are stubs first on `PATH`: `gh pr create` merges by pushing the story onto its base, `cargo`
-//! moves rows when asked. Every command starts through `test_support::command`, without the
+//! records its calls, and would move a row if asked to run `move-rows`, which `story-finish` no
+//! longer does (ADR-0091). Every command starts through `test_support::command`, without the
 //! inherited `GIT_*` variables, its Git configuration a test file of its own.
 
 #![cfg(unix)]
@@ -36,7 +37,8 @@ case "$1 $2" in
 esac
 "#;
 
-/// Cargo: `move-rows` writes a row into the journal when `ROWS` is set and prints the file.
+/// Cargo: `move-rows` writes a row into the journal when `ROWS` is set and prints the file, so that
+/// a test sees a row moved after the merge.
 const CARGO: &str = r#"#!/bin/sh
 echo "$PWD $*" >> "$STUB_LOG"
 case "$*" in

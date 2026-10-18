@@ -69,7 +69,7 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0062](./0062-an-imported-font-follows-the-rules-of-an-installed-one.md) | An imported font follows the rules of an installed one | Accepted |
 | [0063](./0063-runs-with-a-limited-number-of-agents.md) | Runs with a limited number of agents, enforced by the tools | Superseded by ADR-0072 |
 | [0064](./0064-checks-by-level.md) | Checks by level: the story, the feature, the epic | Accepted, from E02 |
-| [0065](./0065-parallel-branches-merged-without-conflicts.md) | Parallel branches merged without conflicts on shared files | Accepted, decision 1 superseded by ADR-0068 |
+| [0065](./0065-parallel-branches-merged-without-conflicts.md) | Parallel branches merged without conflicts on shared files | Accepted, decision 1 superseded by ADR-0068; in decision 4, "at merge" for the logs superseded by 0091 (the `done` commit) |
 | [0066](./0066-a-register-of-exceptions.md) | A register of exceptions, and a byte buffer written once | Accepted |
 | [0067](./0067-release-pull-request-on-develop.md) | The release pull request on `develop`, only the release on `main` | Accepted, confirmed at VAL-019; decisions 1 to 3 and 5 superseded by 0079 |
 | [0068](./0068-tables-without-padding-moved-to-f19.md) | Tables without padding moved to F19's formatter | Accepted, confirmed at VAL-019 |
@@ -89,9 +89,10 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0082](./0082-npm-scripts-kept-for-a-person-or-a-caller.md) | The npm scripts kept for a person or a caller, the agent's tools by their binary only | Accepted |
 | [0083](./0083-the-release-made-by-the-merge-into-main-from-a-tag.md) | The release made by the merge into `main`: the version from the tags, no release branch nor version commit | Superseded by 0086 |
 | [0084](./0084-small-features-tests-first-and-a-linear-history.md) | Small features, tests first, a linear history, and agents that work apart | Accepted, from E02; in decision 3 its rebases and its `develop` → `main` at the epic's end, decision 4 and its parallel researchers superseded by 0086 |
-| [0085](./0085-tool-incident-cards-tools-changed-at-an-epics-end.md) | A tool that fails is a card; tools change only at an epic's end | Accepted; tools changed at each review since 0086 |
+| [0085](./0085-tool-incident-cards-tools-changed-at-an-epics-end.md) | A tool that fails is a card; tools change only at an epic's end | Accepted; tools changed at each review since 0086; the cards moved in the story's `done` commit since 0091 |
 | [0086](./0086-one-story-at-a-time-into-develop-the-release-by-a-button.md) | One story at a time, a merge commit for every merge, a review at each return, the release by a button | Accepted, implemented by EN-122, EN-117 and EN-123; its Consequences' `release prepare` was removed by EN-117, `release notes` drafting the text alone (AUD-024) |
 | [0087](./0087-the-ci-in-parallel-jobs-its-rust-cache-saved-from-develop.md) | The CI in parallel jobs, its Rust cache saved by a push to `develop` | Accepted, implemented by EN-124 and EN-125; decision 2 superseded by 0088; its count of the jobs corrected by 0089, six lanes |
 | [0088](./0088-one-workflow-per-purpose-the-ci-into-main-the-only-blocking-one.md) | One workflow per purpose, its trigger its only condition; the CI into `main` the only blocking one | Accepted, implemented by F28, F30 and F34; the Rust caches saved on `develop` and on `main` by `rust-caches.yml`, the site restoring them (AUD-030); its second consequence superseded by 0090, `develop`'s caches the `develop` CI's |
 | [0089](./0089-five-git-hooks-the-binaries-rebuilt-after-a-pull.md) | Five Git hooks, the release binaries rebuilt after a pull too | Accepted, implemented by EN-131 (AUD-031) |
 | [0090](./0090-the-develop-ci-beside-the-rust-caches-of-main.md) | The `develop` CI in its own workflow, beside the Rust caches of `main` | Accepted, implemented by EN-135 (AUD-032) |
+| [0091](./0091-a-storys-log-rows-and-cards-in-its-done-commit.md) | A story's log rows and cards moved in its `done` commit | Accepted, implemented by EN-137 |
