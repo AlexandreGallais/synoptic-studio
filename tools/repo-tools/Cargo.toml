@@ -11,6 +11,7 @@ calendar = { path = "../calendar" }
 git-repository = { path = "../git-repository" }
 hooks = { path = "../hooks" }
 shared-files = { path = "../shared-files" }
+stale-binaries = { path = "../stale-binaries" }
 tool-use = { path = "../tool-use" }
 
 [dev-dependencies]

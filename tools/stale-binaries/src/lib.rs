@@ -5,6 +5,10 @@
 //! `target/release/<binary>.d` — was written after it, or when it is missing. Read from the files
 //! alone, without Cargo, so that a hook can afford it; a file Cargo did not read, such as another
 //! binary's, never makes it stale.
+//!
+//! The Rust inputs ([`RUST_INPUTS`], EN-130) live here too: `check:all` skips its Rust lanes on a
+//! change that touches none, and the `post-merge` and `post-rewrite` hooks rebuild the binaries
+//! after a pull that touches one (EN-131).
 
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -150,4 +154,56 @@ pub fn stale_binaries(root: &Path) -> Vec<String> {
             )
         })
         .collect()
+}
+
+/// What the Rust lanes read: Cargo's inputs — the crates, a new one by its folder alone, the
+/// workspace's manifest and lock, the toolchain, Cargo's configuration and cargo-deny's — and the
+/// files of the repository the crates' tests read outside `tools/`, each named beside it.
+pub const RUST_INPUTS: &[&str] = &[
+    "tools/",
+    "Cargo.toml",
+    "Cargo.lock",
+    "rust-toolchain.toml",
+    ".cargo/",
+    "deny.toml",
+    // The lanes' scripts, read against `LANES` (`repo-tools`, `[F19.AC9]`, `[F24.AC1]`).
+    "package.json",
+    // The oxfmt the formatter's tests run, and its settings (`format`).
+    "package-lock.json",
+    ".oxfmtrc.json",
+    // The CI's matrix and the checks `main` requires, read against `LANES` (`[F24.AC1]`).
+    ".github/workflows/",
+    "docs/tooling/ci.md",
+    // The folders past the signal, read against the lint's settings (`lint`).
+    "docs/conventions/files.md",
+    // The hooks' settings, read against their binaries (`hooks`).
+    ".claude/settings.json",
+    // The playground's checklists, copied by `val-prepare`'s tests.
+    "playground/checklists/",
+    // The test files, read for the binaries they start (`repo-tools`, `[F19.AC9]`).
+    "*.test.ts",
+];
+
+/// Whether changed files touch one of the inputs: a file ending with its suffix (`*.test.ts`), in
+/// its folder (`docs/`), or the file itself.
+#[must_use]
+pub fn touches(paths: &[String], inputs: &[&str]) -> bool {
+    paths.iter().any(|path| {
+        inputs.iter().any(|input| {
+            if let Some(suffix) = input.strip_prefix('*') {
+                path.ends_with(suffix)
+            } else if input.ends_with('/') {
+                path.starts_with(input)
+            } else {
+                path == input
+            }
+        })
+    })
+}
+
+/// Whether changed files touch an input of the Rust lanes or of the release binaries
+/// ([`RUST_INPUTS`]).
+#[must_use]
+pub fn touches_rust(paths: &[String]) -> bool {
+    touches(paths, RUST_INPUTS)
 }

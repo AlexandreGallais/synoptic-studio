@@ -17,6 +17,8 @@ use std::path::Path;
 use std::process::Command;
 
 use git_repository::stdout_of;
+use stale_binaries::touches;
+pub use stale_binaries::touches_rust;
 
 /// The lane of the documentation site and the playground built into it.
 pub const DOCS_LANE: &[&str] = &["docs:build", "playground:build"];
@@ -69,61 +71,11 @@ const DOCS_INPUTS: &[&str] = &[
     "vite.config.ts",
 ];
 
-/// What the Rust lanes read: Cargo's inputs — the crates, a new one by its folder alone, the
-/// workspace's manifest and lock, the toolchain, Cargo's configuration and cargo-deny's — and the
-/// files of the repository the crates' tests read outside `tools/`, each named beside it.
-const RUST_INPUTS: &[&str] = &[
-    "tools/",
-    "Cargo.toml",
-    "Cargo.lock",
-    "rust-toolchain.toml",
-    ".cargo/",
-    "deny.toml",
-    // The lanes' scripts, read against `LANES` (`repo-tools`, `[F19.AC9]`, `[F24.AC1]`).
-    "package.json",
-    // The oxfmt the formatter's tests run, and its settings (`format`).
-    "package-lock.json",
-    ".oxfmtrc.json",
-    // The CI's matrix and the checks `main` requires, read against `LANES` (`[F24.AC1]`).
-    ".github/workflows/",
-    "docs/tooling/ci.md",
-    // The folders past the signal, read against the lint's settings (`lint`).
-    "docs/conventions/files.md",
-    // The hooks' settings, read against their binaries (`hooks`).
-    ".claude/settings.json",
-    // The playground's checklists, copied by `val-prepare`'s tests.
-    "playground/checklists/",
-    // The test files, read for the binaries they start (`repo-tools`, `[F19.AC9]`).
-    "*.test.ts",
-];
-
-/// Whether changed files touch one of the inputs: a file ending with its suffix (`*.test.ts`), in
-/// its folder (`docs/`), or the file itself.
-fn touches(paths: &[String], inputs: &[&str]) -> bool {
-    paths.iter().any(|path| {
-        inputs.iter().any(|input| {
-            if let Some(suffix) = input.strip_prefix('*') {
-                path.ends_with(suffix)
-            } else if input.ends_with('/') {
-                path.starts_with(input)
-            } else {
-                path == input
-            }
-        })
-    })
-}
-
 /// Whether changed files touch an input of the docs lane: a file in one of its folders, or one of
 /// its files.
 #[must_use]
 pub fn touches_site(paths: &[String]) -> bool {
     touches(paths, DOCS_INPUTS)
-}
-
-/// Whether changed files touch an input of the Rust lanes ([`RUST_INPUTS`]).
-#[must_use]
-pub fn touches_rust(paths: &[String]) -> bool {
-    touches(paths, RUST_INPUTS)
 }
 
 /// The groups of lanes a known change leaves out, each skipped whole: the docs lane when it

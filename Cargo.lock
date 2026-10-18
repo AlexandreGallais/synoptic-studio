@@ -365,6 +365,7 @@ dependencies = [
  "git-repository",
  "regex",
  "shared-files",
+ "stale-binaries",
  "test-support",
  "tool-use",
 ]
@@ -1181,6 +1182,7 @@ dependencies = [
  "git-repository",
  "hooks",
  "shared-files",
+ "stale-binaries",
  "test-support",
  "tool-use",
 ]
