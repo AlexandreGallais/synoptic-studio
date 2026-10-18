@@ -40,17 +40,6 @@ Every dependency is code the project did not write and must trust, so each one i
 | `vitepress` | Markdown documentation site on Vite (`REF-VITEPRESS`); 2.0 alpha because 1.6 bundles a vulnerable Vite 5 (ADR-0075) | Docusaurus: a React toolchain, no native PDF either |
 | `mermaid` | diagrams written as text, drawn by the site's theme and by GitHub (`REF-MERMAID`, `REF-GH-DIAGRAMS`) | `vitepress-plugin-mermaid`: VitePress 1 only; hand-drawn SVG: hard to keep up to date |
 
-### Git workflow
-
-| Package | Why | Alternatives rejected |
-| --- | --- | --- |
-| `husky` | installs the Git hooks (`.husky/`) on `npm install` | `lefthook`: equally good, less widespread |
-| `lint-staged` | runs the formatter, the linters and secretlint on staged files only (`.lintstagedrc.json`) | — |
-| `@commitlint/cli` | checks commit messages | — |
-| `@commitlint/config-conventional` | Conventional Commits rule set (`REF-CONVENTIONAL-COMMITS`) | — |
-| `@commitlint/types` | types of `commitlint.config.ts` | — |
-| `validate-branch-name` | checks the branch name before pushing | a home-made script |
-
 ### Security
 
 | Package | Why | Alternatives rejected |

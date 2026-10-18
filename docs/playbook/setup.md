@@ -11,7 +11,7 @@ Setting up a new project the way this one ended E01. In order; each step names t
 | 3 | Custom lint rules for the project's structure (one export per file, barrels, kinds, sources) | `tools/lint/` (a Rust linter on Oxc's crates, one module per rule) | ADR-0011, ADR-0012, ADR-0019 |
 | 4 | Vitest, 100 % coverage of the library, a floor for the demo app, property tests, fitness functions | `vite.config.ts`, `tests/` | ADR-0022 |
 | 5 | Dependencies: one documented row each, latest versions at least 7 days old, audit, knip | `tests/package.test.ts`, `.ncurc.cjs`, `knip.json`, `docs/tooling/dependencies.md` | supply chain, ADR-0038 |
-| 6 | Git hooks: lint-staged, commitlint with closed scopes and backlog footers, branch names, full check before push | `.husky/`, `.lintstagedrc.json`, `commitlint.config.ts`, `.validate-branch-namerc.json` | `docs/tooling/git-workflow.md` |
+| 6 | Git hooks: the staged files formatted and linted, Conventional Commits with closed scopes and the story's footer, branch names, full check before push | `.githooks/`, `tools/git-hooks/` (EN-108) | `docs/tooling/git-workflow.md` |
 | 7 | One CI, on the pull request into `main`; CodeQL; weekly link check | `.github/workflows/` | ADR-0038 |
 | 8 | Releases: release-please, test report attached, docs and demo published on release | `.github/workflows/release.yml`, `release-please-config.json` | `docs/tooling/releases.md` |
 | 9 | Documentation site: VitePress, API pages from the TSDoc (a Rust generator on Oxc's parser here, TypeDoc before EN-072), Mermaid diagrams | `docs/.vitepress/` | `docs/tooling/documentation-site.md` |

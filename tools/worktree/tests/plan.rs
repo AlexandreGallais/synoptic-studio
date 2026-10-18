@@ -219,7 +219,7 @@ fn git(dir: &Path, arguments: &[&str]) -> String {
     String::from_utf8_lossy(&output.stdout).trim().to_owned()
 }
 
-/// The repository's own `node_modules`, Husky in it: the tool runs the real one.
+/// The repository's own `node_modules`, which the tool links into each worktree.
 fn node_modules() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../../node_modules")
 }

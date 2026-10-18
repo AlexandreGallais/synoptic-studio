@@ -377,13 +377,23 @@ describe("the Rust tools run as crates of the workspace (EN-068)", () => {
   });
 
   it("[F21.AC1] calls the release binaries by their path from the Git hooks (ADR-0078)", () => {
-    const hooks = ["pre-push", "commit-msg"].map((hook) =>
-      readFileSync(join(ROOT, ".husky", hook), "utf8"),
+    const hooks = ["pre-commit", "pre-push", "commit-msg"].map((hook) =>
+      readFileSync(join(ROOT, ".githooks", hook), "utf8"),
     );
+    const tool = readFileSync(join(ROOT, ".githooks", "tool.sh"), "utf8");
 
-    expect(hooks[0]).toMatch(/^target\/release\/refuse-shared-files$/mu);
-    expect(hooks[1]).toContain('then target/release/check-rule-docs "$1"; fi');
+    // Each hook calls `tool <crate> <binary>`, which runs `target/release/<binary>`, and Cargo
+    // only when the binary is missing, a checkout not built yet (EN-108).
+    expect(hooks[0]).toMatch(/^tool git-hooks git-hooks pre-commit$/mu);
+    expect(hooks[1]).toMatch(/^tool shared-files refuse-shared-files$/mu);
+    expect(hooks[1]).toMatch(/^tool git-hooks git-hooks branch$/mu);
+    expect(hooks[2]).toMatch(/^tool git-hooks git-hooks commit-msg "\$1"$/mu);
+    expect(hooks[2]).toContain('then tool rule-docs check-rule-docs "$1"; fi');
     expect(hooks.join("\n")).not.toContain("cargo run");
+
+    expect(tool).toMatch(
+      /if \[ -x "target\/release\/\$binary" \]; then\n\s+"target\/release\/\$binary" "\$@"\n\s+else\n\s+cargo run --release -q -p "\$crate" --bin "\$binary" -- "\$@"/u,
+    );
   });
 
   it("[F19.AC9] builds the release binaries of the workspace from prepare", () => {

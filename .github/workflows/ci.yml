@@ -50,14 +50,11 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v7
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-      - run: npm ci
-      - run: npx validate-branch-name --test "${{ github.head_ref }}"
+      # The Rust checks of the Git hooks (EN-108): the branch name, then each commit's message.
+      - run: cargo build --release --locked -q -p git-hooks
+      - run: target/release/git-hooks branch --name "${{ github.head_ref }}"
       - run: >-
-          npx commitlint --verbose
+          target/release/git-hooks commits
           --from ${{ github.event.pull_request.base.sha }}
           --to ${{ github.event.pull_request.head.sha }}
 

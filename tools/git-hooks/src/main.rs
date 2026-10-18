@@ -7,12 +7,14 @@
 //! - `commit-msg <file>`: checks the message as commitlint did, then, on a story branch, its
 //!   `Refs:` or `Closes:` footer;
 //! - `commits --from <commit> --to <commit>`: checks the message of each commit of the range, as
-//!   `commitlint --from --to` did in the CI.
+//!   `commitlint --from --to` did in the CI;
+//! - `branch [--name <name>]`: checks the current branch's name, or the one given (the CI's).
 
 use std::env;
 use std::fs;
 use std::process::{Command, ExitCode};
 
+use git_hooks::branch::branch_refusal;
 use git_hooks::footer::footer_refusal;
 use git_hooks::install::{HOOKS_FOLDER, Installed, install};
 use git_hooks::message::{format_report, lint};
@@ -21,7 +23,7 @@ use git_hooks::staged::{parse_tasks, repository_tasks};
 
 /// The usage, printed on a call without a known command.
 const USAGE: &str = "usage: git-hooks install | pre-commit [--tasks <file>] | commit-msg <file> \
-                     | commits --from <commit> --to <commit>";
+                     | commits --from <commit> --to <commit> | branch [--name <name>]";
 
 /// Git's comment character when `core.commentChar` is not set.
 const COMMENT: &str = "#";
@@ -166,6 +168,30 @@ fn run_commits(options: &[String]) -> u8 {
     u8::from(refused > 0)
 }
 
+/// Checks the current branch's name, or the one given; the exit code.
+fn run_branch(options: &[String]) -> u8 {
+    let name = match options {
+        [] => git(&["symbolic-ref", "--short", "-q", "HEAD"]).map(|name| name.trim().to_owned()),
+        [flag, name] if flag == "--name" => Some(name.clone()),
+        _ => {
+            eprintln!("{USAGE}");
+            return 2;
+        }
+    };
+    let Some(name) = name else {
+        eprintln!("✖   no branch: HEAD is detached, or this is not a Git repository");
+        return 1;
+    };
+
+    match branch_refusal(&name) {
+        Some(refusal) => {
+            eprintln!("{refusal}");
+            1
+        }
+        None => 0,
+    }
+}
+
 fn main() -> ExitCode {
     let arguments: Vec<String> = env::args().skip(1).collect();
     let command = arguments.first().map_or("", String::as_str);
@@ -176,6 +202,7 @@ fn main() -> ExitCode {
         "pre-commit" => run_pre_commit(options),
         "commit-msg" => run_commit_msg(options),
         "commits" => run_commits(options),
+        "branch" => run_branch(options),
         _ => {
             eprintln!("{USAGE}");
             2

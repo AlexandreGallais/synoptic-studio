@@ -8,7 +8,7 @@ use std::path::{Path, PathBuf};
 /// Folder of the worktrees, from the main checkout.
 pub const WORKTREES: &str = ".claude/worktrees";
 
-/// Branch types the pre-push hook accepts (`.validate-branch-namerc.json`).
+/// Branch types the pre-push hook accepts (`tools/git-hooks/src/branch.rs`).
 const BRANCH_TYPES: [&str; 11] = [
     "feat", "fix", "docs", "refactor", "test", "chore", "build", "ci", "perf", "style", "revert",
 ];

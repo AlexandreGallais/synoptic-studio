@@ -15,7 +15,7 @@ Git-flow without release branches (ADR-0072, `REF-GITFLOW`): each branch holds o
 - **A feature** joins `develop` from its `VAL` branch once the Product Owner said the validation is done (label `autonomous`), by a **merge commit**, so that it stays visible as one bridge in the history (`--no-ff`, `REF-GITFLOW`).
 - **A release** happens only when the Product Owner asks. The Product Owner first merges release-please's pull request into `develop` ([releases](./releases.md)); the agent then opens `develop` into `main`, the CI runs, and the Product Owner merges it by a **merge commit**, the only method `main` allows: a rebase would copy the commits under new hashes and `develop` would stop being an ancestor of `main` (`REF-GH-MERGE-METHODS`).
 - **After a release**, `develop` fast-forwards to `main`: `git merge --ff-only origin/main` on an up-to-date `develop`, then push (a plain merge if `develop` moved meanwhile).
-- No long-lived branch other than `main`, `develop` and the current feature's. `validate-branch-name` checks the names (`.validate-branch-namerc.json`); the bots' `dependabot/…` and `release-please--…` pass.
+- No long-lived branch other than `main`, `develop` and the current feature's. The pre-push hook and the CI check the names by one pattern, `BRANCH_PATTERN` in `tools/git-hooks/src/branch.rs` (`git-hooks branch`); the bots' `dependabot/…` and `release-please--…` pass.
 
 ```mermaid
 gitGraph
@@ -80,6 +80,6 @@ Conventional Commits (`REF-CONVENTIONAL-COMMITS`), checked at each commit (`comm
 | --- | --- |
 | `pre-commit` | `git-hooks pre-commit`, lint-staged's runner ported to Rust (`tools/git-hooks/src/staged.rs`): the formatter, oxlint and the project's linter with `--fix` on staged TypeScript and Markdown, the formatter on the other formats, secretlint on every staged file; the fixes staged again, a partly staged file keeping its unstaged lines, everything put back from a backup stash when a command fails. Each command's output is printed only when it fails |
 | `commit-msg` | `git-hooks commit-msg`: the [message](#commit-messages), the comment lines of `core.commentChar` left out, and a story branch's footer; then at a `done` commit the docs of a rule its story changes (`tools/rule-docs`) |
-| `pre-push` | no shared file on a worker's story branch (`tools/shared-files`, ADR-0065), the branch name, `npm run check:all`, then `npm run golden:check` when a golden file is written |
+| `pre-push` | no shared file on a worker's story branch (`tools/shared-files`, ADR-0065), the [branch name](#branches-and-pull-requests) (`git-hooks branch`), `npm run check:all`, then `npm run golden:check` when a golden file is written |
 
 The hooks are short shell files, tracked, that call the release binaries by their path (`target/release/<binary>`), through `cargo run --release -q -p <crate>` when the binary is missing (`.githooks/tool.sh`). `npm install` installs them once (`prepare`, after the build): `git-hooks install` (`tools/git-hooks`) sets `core.hooksPath` to `.githooks`, relative, so each checkout and each linked worktree runs its own branch's hooks, with nothing written in it (EN-052, EN-108); `npm run worktree:new` sets it too when it is not. Hooks are never bypassed (`--no-verify`, `core.hooksPath` changed by hand): a hook that blocks legitimate work is changed, not skipped.
