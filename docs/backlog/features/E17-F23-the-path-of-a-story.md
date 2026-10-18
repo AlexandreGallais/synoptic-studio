@@ -2,7 +2,7 @@
 id: F23
 epic: E17
 title: The path of a story through the tools
-status: in-progress
+status: done
 ---
 
 # E17 · F23 — The path of a story through the tools
@@ -25,7 +25,7 @@ In delivery order.
 | [EN-137](../stories/E17-F23-EN-137-the-log-rows-in-the-done-commit.md) | EN | The log rows and the cards in the done commit | done |
 | [EN-118](../stories/E17-F23-EN-118-a-story-outside-a-feature.md) | EN | A story outside a feature, by the same tools | done |
 | [AUD-025](../stories/E17-F23-AUD-025-audit-f23.md) | AUD | Audit F23 | done |
-| [VAL-024](../stories/E17-F23-VAL-024-validate-f23.md) | VAL | Validate F23 | ready |
+| [VAL-024](../stories/E17-F23-VAL-024-validate-f23.md) | VAL | Validate F23 | done |
 
 ## Feature plan
 
