@@ -59,8 +59,3 @@ The evidence, on 2026-10-18, on a frozen copy of this session's transcripts (1.6
 - **Decisions taken**: the transcripts and logs parsed by `serde_json` rather than `hooks::json`, a fifth faster on 1.1 GB (4.5 s of CPU against 5.6 s), `serde_json` being already a workspace dependency; a cache of each transcript's events, `.git/metrics/transcripts-cache.jsonl` (31 MB for 1.6 GB), so that the reports read only the new lines; `turns` folded into `session-report` (the record) and `metrics` (the table), as it has no command; the library's report read through `tools/library`'s functions instead of a `cargo run`; the Findings section's forms and naming documented in `docs/tooling/metrics.md` (Findings); a hook's refusal named by Claude Code's `<event>:<tool>` and its reason, since the message does not name the hook's file.
 - **Not changed, to decide**: the command key keeps the script's rule, so `cd … || exit 9` counts as `exit` (8,270 calls, the first row of Commands by count): a row of the improvements below.
 - **Rule docs**: none affected, the story changes tools only.
-
-### Improvements
-
-| 2026-10-18 | EN-107 | `npm run metrics`' command key cuts at `\|\|`, so the brief's `cd "<worktree>" \|\| exit 9; …` counts as `exit`, 8,270 of the calls, the first row of Commands by count: skip an `exit` after `\|\|` to name the command that ran | tool |
-| 2026-10-18 | EN-107 | The Findings section of `npm run metrics` lists every rule met since E01, about 400 lines: a `--since` reading per epic, or a cut at a few findings, would shorten what the retrospective reads | tool |
