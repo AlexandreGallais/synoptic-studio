@@ -3,7 +3,7 @@ id: EN-131
 epic: E17
 feature: F29
 title: The binaries rebuilt after a pull
-status: ready
+status: done
 points: 2
 ---
 
