@@ -25,3 +25,7 @@ Open the checks of the pull request `develop` → `main`: five lane checks appea
 | 1. one job per lane, each a check | `f24_ac1_…` (3 Rust tests): every lane in exactly one job, `fail-fast: false`, `main`'s required checks equal the jobs' names | passed |
 | 2. tests file by file, failures annotated | `[F24.AC2]`: the reporters `default`, `github-actions` and `junit` in the CI | passed |
 | 3. the Rust cache from `develop`, its warm time | `[F24.AC3]`: saved on a push to `develop` and `main`, restored by key then prefix, the same in every job (`REF-GH-CACHE`); cold 26 min 07 s | the warm time pending: measured at #370's run on `develop`'s cache, written at the next review |
+
+## Fixed by F25
+
+The first run of #370 with these jobs failed its `TypeScript tests` check: `[F19.AC9]` runs `cargo deny` from the tests, and only the `Rust` job installed it and fetched the RustSec database. Since F25 (EN-126) the test job does both too.
