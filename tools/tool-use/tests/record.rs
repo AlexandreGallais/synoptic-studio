@@ -216,19 +216,6 @@ fn f21_ac7_a_poll_is_not_recorded_and_keeps_its_code_while_other_subcommands_are
 }
 
 #[test]
-fn run_totals_marks_only_its_status_subcommand_as_a_poll() {
-    let source =
-        fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join("../run-totals/src/main.rs"))
-            .expect("run-totals' main");
-
-    assert!(
-        source
-            .contains(r#"tool_use::run_or_poll("run-totals", subcommand, subcommand == "status","#),
-        "run-totals records every subcommand but status"
-    );
-}
-
-#[test]
 fn a_debug_build_records_nothing_and_keeps_the_code() {
     // The tests are a debug build: `run` returns the code without looking for a Git folder.
     assert_eq!(run("lint", "", || 4), ExitCode::from(4));

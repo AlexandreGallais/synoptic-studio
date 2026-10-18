@@ -6,7 +6,15 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::time::{Duration, SystemTime};
 
-use hooks::session::{StoryRow, feature_line, is_feature_file, state_text, story_rows};
+use hooks::session::{StoryRow, feature_line, is_feature_file, is_stale, state_text, story_rows};
+
+#[test]
+fn a_call_is_stale_only_past_one_day() {
+    // 86,400,000 ms is one day: a file written exactly a day ago stays, 1 ms more is removed.
+    assert!(!is_stale(86_400_000));
+    assert!(is_stale(86_400_001));
+    assert!(!is_stale(0));
+}
 
 /// Story table of a feature with one finished story out of three.
 const TABLE: &str = "| ID | Type | Title | Status |\n| --- | --- | --- | --- |\n| [EN-001](../stories/a.md) | Enabler | First | done |\n| [SP-001](../stories/b.md) | Spike | Research | draft |\n| [VAL-001](../stories/c.md) | Validation | Validate | draft |";

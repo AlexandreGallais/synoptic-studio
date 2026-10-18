@@ -9,7 +9,7 @@ use std::process::ExitCode;
 use std::time::SystemTime;
 
 use hooks::git::{branch_of, checkout_of, git};
-use hooks::session::{STALE_MS, feature_line, is_feature_file, state_text, story_rows};
+use hooks::session::{feature_line, is_feature_file, is_stale, state_text, story_rows};
 
 fn main() -> ExitCode {
     tool_use::run("session-state", "", hook)
@@ -25,7 +25,7 @@ fn root() -> Option<PathBuf> {
         .or_else(|| checkout_of(Path::new(".")).map(|checkout| checkout.top))
 }
 
-/// Removes the running files last written over `STALE_MS` ago: a call interrupted or denied never
+/// Removes the running files last written over a day ago (`is_stale`): a call interrupted or denied never
 /// reaches the `log-tool-call` hook, which removes its file.
 fn remove_stale_calls(folder: &Path, now: SystemTime) {
     for entry in fs::read_dir(folder).into_iter().flatten().flatten() {
@@ -35,7 +35,7 @@ fn remove_stale_calls(folder: &Path, now: SystemTime) {
             .ok()
             .and_then(|modified| now.duration_since(modified).ok());
 
-        if age.is_some_and(|age| age.as_millis() > STALE_MS) {
+        if age.is_some_and(|age| is_stale(age.as_millis())) {
             let _ = fs::remove_file(entry.path());
         }
     }

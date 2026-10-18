@@ -156,10 +156,12 @@ fn main() -> ExitCode {
     let words: Vec<String> = env::args().skip(1).collect();
     let subcommand = words.first().map_or("", String::as_str);
 
-    // The status line calls `status` once a second during a run: a poll, not recorded.
-    tool_use::run_or_poll("run-totals", subcommand, subcommand == "status", || {
-        answer(&words)
-    })
+    tool_use::run_or_poll(
+        "run-totals",
+        subcommand,
+        run_totals::is_poll(subcommand),
+        || answer(&words),
+    )
 }
 
 /// Answers the subcommand; its exit code.

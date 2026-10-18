@@ -383,6 +383,13 @@ fn bumps_by_the_lines_a_feature_then_a_patch() {
     assert_eq!(bump(&lines(&feat, &Backlog::default())), Bump::Minor);
     assert_eq!(bump(&lines(&fix, &Backlog::default())), Bump::Patch);
     assert_eq!(bump(&lines(&tooling, &Backlog::default())), Bump::Patch);
+    // A `feat` among fixes raises the minor version, whatever comes first (AUD-023).
+    let mixed = [
+        commit('a', "fix(model): x", "", None),
+        commit('b', "feat(render): y", "", None),
+    ];
+
+    assert_eq!(bump(&lines(&mixed, &Backlog::default())), Bump::Minor);
 }
 
 #[test]

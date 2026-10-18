@@ -261,6 +261,26 @@ fn f21_ac4_crates_take_the_latest_version_7_days_old() {
 }
 
 #[test]
+fn f21_ac4_a_crate_is_old_enough_at_exactly_7_days() {
+    let serde = crates::releases(&fixture("crates/serde_json"));
+    let syn = crates::releases(&fixture("crates/syn"));
+    // serde_json 1.0.154 was published at 2026-10-11T15:31:46Z: 7 days later to the millisecond
+    // it is taken (`>=`), 1 ms before it 1.0.153, of 14:19:32, is the greatest old enough.
+    let at = epoch_ms("2026-10-18T15:31:46Z");
+    let latest = |now_ms| {
+        crates::behind("serde_json", "1.0.152", &serde, now_ms).map(|behind| behind.latest)
+    };
+
+    assert_eq!(latest(at), Some("1.0.154".to_owned()));
+    assert_eq!(latest(at - 1), Some("1.0.153".to_owned()));
+    // syn 3.0.8, of 2026-10-11T16:12:28Z, is too new up to 1 ms before its 7 days (`<`).
+    let published = epoch_ms("2026-10-18T16:12:28Z");
+
+    assert_eq!(crates::too_new("syn", "3.0.8", &syn, published), None);
+    assert!(crates::too_new("syn", "3.0.8", &syn, published - 1).is_some());
+}
+
+#[test]
 fn f21_ac4_a_locked_crate_under_7_days_is_pinned_back() {
     let syn = crates::releases(&fixture("crates/syn"));
     let ident = crates::releases(&fixture("crates/unicode-ident"));
@@ -494,6 +514,30 @@ fn f21_ac4_lists_each_version_behind_with_its_date_and_exits_1() {
         }
     );
     assert_eq!(report.exit_code(), 1);
+}
+
+#[test]
+fn f21_ac4_an_action_s_next_major_is_listed_at_exactly_7_days() {
+    // actions/checkout v7.0.0's commit is of 2026-06-17T17:51:53Z: listed 7 days later to the
+    // millisecond, not 1 ms before (`<` keeps it in its cooldown).
+    let only_checkout = Pins {
+        npm: Vec::new(),
+        actions: vec![ActionUse {
+            repository: "actions/checkout".to_owned(),
+            major: 6,
+        }],
+        node: None,
+        crates: Vec::new(),
+        locked: Vec::new(),
+    };
+    let at = epoch_ms("2026-06-24T17:51:53Z");
+    let lines = |now_ms| outdated::outdated(&only_checkout, &Recorded::new(), now_ms).lines;
+
+    assert_eq!(
+        lines(at),
+        ["action actions/checkout v6 → v7 or later (v7.0.0), 2026-06-17"]
+    );
+    assert_eq!(lines(at - 1), [] as [String; 0]);
 }
 
 #[test]

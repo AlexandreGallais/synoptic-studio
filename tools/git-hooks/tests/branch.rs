@@ -89,8 +89,12 @@ fn f21_ac4_checks_the_current_branch_or_the_one_named() {
     let root = std::env::temp_dir().join(format!("git-hooks-branch-{}", std::process::id()));
     let _ = fs::remove_dir_all(&root);
     fs::create_dir_all(&root).unwrap();
+    // A home of its own and no system file: the user's Git configuration (a global
+    // `core.hooksPath`, a template folder) never reaches the test's repository (AUD-023).
     let git = |arguments: &[&str]| {
         let output = test_support::command("git")
+            .env("HOME", &root)
+            .env("GIT_CONFIG_NOSYSTEM", "1")
             .args([
                 "-c",
                 "commit.gpgsign=false",
