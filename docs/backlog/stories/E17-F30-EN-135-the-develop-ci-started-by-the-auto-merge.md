@@ -20,7 +20,7 @@ The Rust caches' workflow F28 leaves on a push to `develop` never runs after the
 
 ## Tasks
 
-- [ ] T1 — `[F30.AC1]` in `tests/workflows.test.ts` and `tests/ci-caches.test.ts`, failing (1 h)
-- [ ] T2 — The `develop` CI from the Rust caches' workflow, the dispatch in the features' auto-merge, `docs/tooling/ci.md` (2 h)
+- [x] T1 — `[F30.AC1]` in `tests/workflows.test.ts` and `tests/ci-caches.test.ts`, failing (1 h)
+- [x] T2 — The `develop` CI from the Rust caches' workflow, the dispatch in the features' auto-merge, `docs/tooling/ci.md` (2 h)
 
 One task = one commit, referenced as `EN-135.T1` in the commit footer.

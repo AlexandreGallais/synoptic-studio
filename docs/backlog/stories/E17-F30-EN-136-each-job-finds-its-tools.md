@@ -3,7 +3,7 @@ id: EN-136
 epic: E17
 feature: F30
 title: Each CI job finds the tools its scripts call
-status: ready
+status: done
 points: 2
 ---
 
@@ -20,7 +20,7 @@ F24 split `check:all`'s lanes into jobs and checked that each lane runs once, no
 
 ## Tasks
 
-- [ ] T1 — `[F30.AC2]` in `tests/workflows.test.ts`, the tools of the jobs `[F28.AC3]` does not read, the `git-hooks` artifact and Node.js, failing on a job lacking one (1 h)
-- [ ] T2 — The tools' table and the steps it asks for, `docs/tooling/ci.md` (1 h)
+- [x] T1 — `[F30.AC2]` in `tests/workflows.test.ts`, the tools of the jobs `[F28.AC3]` does not read, the `git-hooks` artifact and Node.js, failing on a job lacking one (1 h)
+- [x] T2 — The tools' table and the steps it asks for, `docs/tooling/ci.md` (1 h)
 
 One task = one commit, referenced as `EN-136.T1` in the commit footer.
