@@ -51,6 +51,7 @@ Between heavy commands, run single test files only (`npx vitest run <paths>`), n
 - **Push once the tasks are done**: `--push` on the last task's `target/release/git-sequences commit`, or `git push -u origin HEAD`. Never a force push; after a `git-sequences sync` that moved a pushed story branch, `--force-with-lease`.
 - **Stop before the pull request and the `done` commit**: the main thread makes that commit in the worktree, since it writes the shared files, then runs `story:finish`.
 - **A rule changed in `docs/domain/`** brings, in the story's tasks, the Q row of `docs/domain/README.md`, the decisions to confirm of its feature's `VAL` and its guide page; the `done` commit's hook refuses the story otherwise (`tools/rule-docs`, EN-059). A doc the change does not affect: say so in the report, with its reason, for the footer `Rule-docs: none affected, <why>`.
+- **A tool that fails or does not do what was needed** is worked around, never fixed in the story: the report names it, how it was used, why it failed and what was done instead, for the main thread's incident card (2026-10-18).
 - **A business question stops the story, not the run**: a rule missing, or code, domain and ADRs that contradict each other. Push what is done, then report the question, what was read and the options, without choosing; the main thread parks the story and goes on with independent work.
 
 ## Final report

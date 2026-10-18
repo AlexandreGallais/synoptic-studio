@@ -30,7 +30,7 @@ Scope: $ARGUMENTS.
 The chat belongs to the Product Owner (2026-10-12), who may write at any time; so the main thread only dispatches, and the work goes to subagents.
 
 - **Silent between tool calls**: the commits and the status line (`.git/metrics/step`, updated at each step) show the progress. The chat gets one line when a worker starts and when it ends, with an estimate of its duration; one summary at the stop; a question when one parks a story. Never "waiting for an agent" nor "message from the auditor".
-- **Each comment of the Product Owner acknowledged at once**, saying when it is handled: now, or once a named running agent has finished. A comment about tools, rules or configuration goes to another agent, on `develop`, in its own worktree, within the limit.
+- **Each comment of the Product Owner acknowledged at once**, saying when it is handled: now, or once a named running agent has finished. A comment about rules or configuration goes to another agent, on `develop`, in its own worktree, within the limit; a comment about a tool, and a tool that fails during the run, become a card in the tool incidents (how it was used, why it failed, what was done instead), worked around and never fixed during the epic's work: the cards are read at the epic's retrospective, which fixes the tools (2026-10-18).
 - **One worker per story**, an `Agent` call in the background, in a worktree made by `target/release/worktree-new <ID>`, of the type its task kind uses (EN-065):
 
   | Task | Agent type |
