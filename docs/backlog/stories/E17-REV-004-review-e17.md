@@ -155,15 +155,3 @@ Incident cards (tools are not fixed during the work, decided on 2026-10-18):
 `check:all` measured on `develop` at `e8f360ef` in this worktree: 112.6 s (`time` 115.3 s; the site built, the worktree's first run, load average 12 at its end), then 105.9 s inside `epic-check`.
 
 Rule-docs: none affected, a review of a tooling epic, no rule of `docs/domain/` changed.
-
-### Journal
-
-- `#run` REV-004: E17 reviewed with the Product Owner on 2026-10-18; the report `docs/guide/e17-fast-tooling-with-oxc-and-rust.md`. The checklist run again: 26 lines ok, 6 by their tests, 16 out of date since EN-115 or ADR-0079, kept as records. Closure: ESLint removed, `check:all` (median about 73 s) and tokens per agent input met; E17 closes at the publication of 0.3.0, after RET-004 weighs the tag idea. Next: RET-004, then E02.
-- `#decision` REV-004: confirmed ADR-0078, ADR-0077, the story worker on Opus, the guard's read-only filters (EN-104) and tooling features validated by the agent; told ADR-0080 to ADR-0082. The permissions for the `story-finish` and `mutate` binaries and the story auto-merge into `develop` parked until RET-005; tools are not fixed during an epic's features.
-
-### Improvements
-
-| 2026-10-18 | REV-004 | `epic-check` lists a `dropped` story among the backlog to look at: a story `dropped` or `done` is closed | tool |
-| 2026-10-18 | REV-004 | `session-report` rounds seconds to 60 without carrying the minute (`1617 min 60 s`): round the whole duration first | tool |
-| 2026-10-18 | REV-004 | The main checkout's release binaries are not rebuilt when `develop` is pulled after a merge made on GitHub: the hooks ran a `guard-bash` older than EN-115 | tool |
-| 2026-10-18 | REV-004 | E17's checklist and its test name 14 npm scripts EN-115 removed, `font:metrics` and release-please's pull request: rewrite them on the binaries and ADR-0079, or mark them as records | process |
