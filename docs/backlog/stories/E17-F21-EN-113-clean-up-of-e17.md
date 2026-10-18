@@ -103,7 +103,3 @@ F18's criterion 1, for the `done` commit (the pre-push hook refuses a feature fi
 T9 is not done: `deps:outdated` at 02:24 UTC on 2026-10-18 found every crate on its latest version at least 7 days old; `serde_json` 1.0.153 (2026-10-11 14:20 UTC) and 1.0.154 (15:32 UTC) fall due later that day. Their notes, read on GitHub's releases page: 1.0.153 reports invalid UTF-8 at the first bad byte (#1345); 1.0.154 supports `preserve_order` in `no_std` builds (#1333), a feature not used here. The bump is `Cargo.toml`'s `serde_json = "=1.0.154"`, `cargo update -p serde_json --precise 1.0.154`, and the row of `docs/tooling/dependencies.md` (Crates) without its sentence on 1.0.153 and 1.0.154.
 
 F21's criterion 9 says `check:all` fails "when a run changed `.git/config`"; since T3 it fails when a run changed a line a test could break (`[core]`, `[user]`, `[commit]`, the remotes' URLs). The feature file is shared: the criterion's wording is the main thread's to align, if it wants to.
-
-### Journal
-
-- `#tooling` EN-113: E17's clean-up found no TypeScript twin nor rewritten package left; it removed the `.claude/hooks` lint globs, release-please's branch conditions of the CI and the Temporal flag; `check:all` guards only the lines of `.git/config` a test could break; `guard-bash` reads quotes and no longer refuses `HUSKY=0`; ADR-0080 names `.githooks/`; `npm run fix` fixes the Rust code; `worktree:new` seeds its build from the main checkout's (34.3 s to 15.7 s); no personal data in a request; `check:all` 74.6 s warm against 170 to 217 s at E17's start.
