@@ -108,9 +108,11 @@ A tool is written when a retrospective's metrics show its signal — the hand wo
 | `api:diff` | the public exports before and after a change | a renamed export noticed late |
 | `svg:draw <shape.json>` | the SVG of a shape with its dashed box, for the guide's pictures | pictures written by hand from a probe |
 | `playground:probe <steps>` | runs guided steps without a browser and prints what each shows | probes written in the scratchpad |
-
 | `transcript:find <text>` | the transcript lines holding an id or a text, with their time and type | a stuck task found by `grep` in a 30 MB transcript |
 | a summary of OpenType and CSS Fonts | the fields the project uses, read once | OS/2 read 38 times, CSS Fonts 4 27 times in E15 |
+| `git-sequences state` | in a worktree, the branch, its base, `status --short`, `diff --stat` and the commits ahead, in one call | 176 refusals of chained Git commands, about half of them reads, in E17 (I93) |
+| `bench <command>` | N calls after a warm-up, median, mean and the load average, printed as a Markdown row | six F21 stories wrote the same timer script again (I100) |
+| a writer of tool incident cards | a dated card: the tool, how it was used, why it failed, what was done instead | nine cards written by hand on 2026-10-18, a few lines each: not worth a tool yet, a test of their format first (RET-004, P9) |
 
 ## Rust
 

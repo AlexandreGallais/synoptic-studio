@@ -7,7 +7,7 @@ flowchart LR
   subgraph feature [One feature]
     direction LR
     R[Refinement<br/>Product Owner and agent] --> SP[SP<br/>research spike]
-    SP --> ST[US · EN<br/>stories, CHK midway]
+    SP --> ST[US · EN<br/>2 to 4 stories, tests first]
     ST --> AUD[AUD<br/>independent audit]
     AUD --> VAL[VAL<br/>checklist, demo]
     VAL --> DEV[develop<br/>feature merged]
@@ -38,7 +38,7 @@ The type says **who can see the result**, not who wrote it or whether it is code
 | `US` | user story | a behavior a user sees in the playground or the tools; comes with a **test card** | the Product Owner, on the card, then at `VAL` |
 | `EN` | enabler | work no user sees: a geometric function and its derivation, a model change, tooling | the tests, the auditor |
 | `SP` | spike | answers: sources read, derivations, research requests, before any code | the stories it unblocks |
-| `CHK` | checkpoint | midway through a feature: docs and methods brought up to date, consistency checked | the agent |
+| `CHK` | checkpoint | midway through a feature of 5 stories or more (ADR-0084): docs and methods brought up to date, consistency checked | the agent |
 | `AUD` | audit | the feature re-checked by an independent reviewer: formulas, values, sources, duplicates | the `auditor` agent, then the Product Owner |
 | `VAL` | validation | the demo page and the checklist page; the Product Owner's validation recorded | the Product Owner |
 | `NAM` | naming pass | a whole-repository pass: every calculation a field names is a named function with its result unchanged bit for bit, then tooling and tests cleaned of duplicates, slow steps and waits, each timed before and after (ADR-0069, ADR-0070) | the `math-expert`, `auditor` and `verifier` agents |

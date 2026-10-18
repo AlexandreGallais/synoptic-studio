@@ -72,6 +72,15 @@
 | [VAL-009](./E01-F06-VAL-009-validate-stretched-polygon.md) | F06 | Validate F06 on the reference cases | done |
 | [REV-001](./E01-REV-001-review-e01.md) | E01 | Review E01 with the Product Owner | done |
 | [RET-001](./E01-RET-001-retrospective-e01.md) | E01 | Retrospective of E01 | done |
+| [EN-118](./E02-F23-EN-118-stories-outside-a-feature-and-the-cards.md) | F23 | Stories outside a feature, and the cards as a log | draft |
+| [EN-119](./E02-F23-EN-119-the-guard-in-a-worktree.md) | F23 | The guard in a worktree, and the feature rebased with lease | draft |
+| [EN-120](./E02-F23-EN-120-reports-that-say-what-happened.md) | F23 | Reports that say what happened | draft |
+| [EN-121](./E02-F23-EN-121-builds-lanes-and-checks.md) | F23 | Builds, lanes and the checks RET-004 listed | draft |
+| [AUD-025](./E02-F23-AUD-025-audit-f23.md) | F23 | Audit F23 | draft |
+| [VAL-024](./E02-F23-VAL-024-validate-f23.md) | F23 | Validate F23 | draft |
+| [NAM-003](./E02-NAM-003-naming-pass-e02.md) | E02 | Naming pass over the code of E02, and the tooling and tests pass | draft |
+| [REV-005](./E02-REV-005-review-e02.md) | E02 | Review E02 with the Product Owner | draft |
+| [RET-005](./E02-RET-005-retrospective-e02.md) | E02 | Retrospective of E02 | draft |
 | [SP-010](./E14-F11-SP-010-research-f11.md) | F11 | Research for F11: folder layouts and test placement | done |
 | [EN-020](./E14-F11-EN-020-property-tests.md) | F11 | Property tests for the nine functions without one | done |
 | [EN-021](./E14-F11-EN-021-shared-test-helpers.md) | F11 | Shared test helpers, one path writer, one pass per corner | done |
@@ -268,6 +277,10 @@
 | [EN-115](./E17-F21-EN-115-fewer-npm-scripts.md) | F21 | The npm scripts kept to what a person runs and what calls them | done |
 | [AUD-023](./E17-F21-AUD-023-audit-f21.md) | F21 | Audit F21 | done |
 | [VAL-022](./E17-F21-VAL-022-validate-f21.md) | F21 | Validate F21 | done |
+| [EN-116](./E17-F22-EN-116-ci-green-on-github-runners.md) | F22 | The CI's tests green on GitHub's runner | draft |
+| [EN-117](./E17-F22-EN-117-release-from-the-merge-into-main.md) | F22 | The release made by the merge into main, from the tags | draft |
+| [AUD-024](./E17-F22-AUD-024-audit-f22.md) | F22 | Audit F22 | draft |
+| [VAL-023](./E17-F22-VAL-023-validate-f22.md) | F22 | Validate F22 | draft |
 | [NAM-002](./E17-NAM-002-naming-pass-e17.md) | E17 | Naming pass over the code of E17 | done |
 | [REV-004](./E17-REV-004-review-e17.md) | E17 | Review E17 with the Product Owner | done |
-| [RET-004](./E17-RET-004-retrospective-e17.md) | E17 | Retrospective of E17 | draft |
+| [RET-004](./E17-RET-004-retrospective-e17.md) | E17 | Retrospective of E17 | done |

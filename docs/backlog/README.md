@@ -57,12 +57,12 @@ File names and titles carry the ancestry: `E01-F01-US-001-slug.md`, titled `E01 
 
 ## Feature frame (ADR-0020)
 
-Every feature is delivered in the same order, checked by `backlog.test.ts` (a feature with stories has at least one `SP`, one `CHK`, one `AUD` and one `VAL`):
+Every feature is delivered in the same order, checked by `backlog.test.ts` (a feature with stories has at least one `SP`, one `CHK`, one `AUD` and one `VAL`; from F22, ADR-0084, a feature holds 2 to 4 `US` or `EN` stories, one at a time, its research done before its refinement by a spike or by the retrospective that decided it, with one `AUD` and one `VAL`, and a `CHK` only from 5 stories):
 
 | Step | Story | Content |
 | --- | --- | --- |
 | 1 | `SP` research spike | sources, derivations and research requests for **all** the feature's stories, before any code ([research protocol](../research/) §8) |
-| 2 | `US`, `EN`, and a `CHK` checkpoint in the middle | implementation on the feature branch, one story per pull request, checked by the local Git hooks; in an authorized run they chain, and GitHub merges each one into the feature branch once it is labeled `autonomous` (ADR-0072) |
+| 2 | `US`, `EN`, and a `CHK` checkpoint in the middle (from 5 stories, ADR-0084) | implementation on the feature branch, one story per pull request, `T1` the interface and its failing tests, `T2` the code (ADR-0084), checked by the local Git hooks; in an authorized run they chain, and GitHub merges each one into the feature branch once it is labeled `autonomous` (ADR-0072) |
 | 3 | `AUD` audit | the feature in depth, the project in breadth ([audit.md](../conventions/audit.md)) |
 | 4 | `VAL` validation | plain-language demo page and checklist page; the Product Owner checks the feature's acceptance criteria |
 

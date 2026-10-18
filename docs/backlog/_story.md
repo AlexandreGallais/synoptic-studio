@@ -24,6 +24,7 @@ User stories only (ADR-0028): what the Product Owner runs in the playground, wit
 
 ## Tasks
 
-- [ ] T1 — Verb + precise object + verifiable result (2 h)
+- [ ] T1 — The interface (files, names, signatures, TSDoc) and its tests from the criteria, failing (1 h)
+- [ ] T2 — Verb + precise object + the tests of T1 passing (2 h)
 
 One task = one commit, referenced as `US-000.T1` in the commit footer.

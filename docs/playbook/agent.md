@@ -34,7 +34,7 @@ The agent designs, implements, tests and documents. The Product Owner sets prior
 
 ## Lessons from the Product Owner
 
-The Product Owner's critiques of E01, E14 and E15, written as habits: what the agent does in each situation.
+The Product Owner's critiques of E01, E14, E15 and E17, written as habits: what the agent does in each situation.
 
 | When the agent is about to… | Instead |
 | --- | --- |
@@ -66,3 +66,10 @@ The Product Owner's critiques of E01, E14 and E15, written as habits: what the a
 | run work in parallel | keep branches on separate files; merge one at a time; never edit shared indexes and logs from a story branch (E15, ADR-0065) |
 | explain a behaviour | give the situation as an example, in names or numbers: the default font missing, another chosen automatically, the one picked during the reading kept (E15) |
 | report a session's figures | report the whole session, with `--all`, at its end only (E15) |
+| start a worker on a new tool | say in its prompt that the tool is written in Rust (E17, ADR-0073) |
+| point a worker to its rules | name the files inside its own worktree: the main checkout stays on `develop`, older (E17) |
+| run a Git command in the background | start it inside the story's worktree and check the branch before it acts (E17) |
+| resolve a merge conflict | edit the conflicted file, then diff the result with the story's own version; never take a whole side (E17) |
+| pass values to a shell command | quote each value on its own; zsh does not split a variable into words (E17) |
+| build a view for the Product Owner | show a sample of it first, before the tool and the steps around it (E17) |
+| meet a tool that fails during a run | write a card (the use, the failure, what was done instead) and work around it; tools are fixed at the epic's end (E17) |

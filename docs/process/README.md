@@ -43,6 +43,7 @@ Asked in every `RET` and, lightly, in every `AUD`. The test for each question: d
 | --- | --- |
 | [agile.md](./agile.md) | levels, story types, who does what |
 | [improvements.md](./improvements.md) | improvement log, emptied by each retrospective |
+| [tool-incidents.md](./tool-incidents.md) | one card per tool that failed, read and fixed at the epic's end (ADR-0085) |
 | [feedback.md](./feedback.md) | critiques of the agent's work, turned into the playbook's sheet at each retrospective |
 | [retrospectives](./retrospectives/) | one record per retrospective |
 | [history.md](./history.md) | the commits before the restart at 0.1.0 |

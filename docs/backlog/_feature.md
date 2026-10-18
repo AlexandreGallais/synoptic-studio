@@ -9,6 +9,8 @@ status: draft
 
 **Benefit hypothesis**: what the user gains, stated so that it can be checked.
 
+Two to four `US` or `EN` stories, its research done before the refinement; a `CHK` only from five (ADR-0084).
+
 ## Acceptance criteria
 
 - …

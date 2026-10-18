@@ -23,6 +23,7 @@ How a run's worker works one story in its own worktree. The `story-worker` and `
 
 ## Work
 
+- **Tests first** (ADR-0084): `T1` the interface and its tests from the criteria, seen failing, which stands for breaking each new test once; `T2` the code; the pre-push `check:all` runs on the head.
 - **One commit per task**, footer `Refs: <ID>.Tn` and the attribution lines, the message in a file of the scratch folder or a here-document (`-F -`), made by `target/release/git-sequences commit`.
 - **Before each commit**: `npm run fix`, which reports the type errors with the lint (EN-091), and the touched tests (`npx vitest run <paths>`, `cargo test -p <crate>`).
 - **Edge cases and mutations** (ADR-0064): no review checks a story, so its worker writes the story's edge cases into its tests and breaks each new test once on purpose to see it fail.
@@ -51,6 +52,7 @@ Between heavy commands, run single test files only (`npx vitest run <paths>`), n
 - **Push once the tasks are done**: `--push` on the last task's `target/release/git-sequences commit`, or `git push -u origin HEAD`. Never a force push; after a `git-sequences sync` that moved a pushed story branch, `--force-with-lease`.
 - **Stop before the pull request and the `done` commit**: the main thread makes that commit in the worktree, since it writes the shared files, then runs `story:finish`.
 - **A rule changed in `docs/domain/`** brings, in the story's tasks, the Q row of `docs/domain/README.md`, the decisions to confirm of its feature's `VAL` and its guide page; the `done` commit's hook refuses the story otherwise (`tools/rule-docs`, EN-059). A doc the change does not affect: say so in the report, with its reason, for the footer `Rule-docs: none affected, <why>`.
+- **A tool that fails or does not do what was needed** is worked around, never fixed in the story: the report names it, how it was used, why it failed and what was done instead, for the main thread's incident card (2026-10-18).
 - **A business question stops the story, not the run**: a rule missing, or code, domain and ADRs that contradict each other. Push what is done, then report the question, what was read and the options, without choosing; the main thread parks the story and goes on with independent work.
 
 ## Final report

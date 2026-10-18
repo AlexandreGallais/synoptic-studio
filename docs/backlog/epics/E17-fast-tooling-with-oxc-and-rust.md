@@ -57,6 +57,7 @@ Ordered by the Product Owner at the refinement of 2026-10-16.
 | [F19](../features/E17-F19-oxc-and-rust-tools.md) — Checks on Oxc, TypeScript 7 and Rust | done |
 | [F20](../features/E17-F20-a-context-diet.md) — A context diet for every agent | done |
 | [F21](../features/E17-F21-agent-tools-in-rust.md) — Agent tools and the library server in Rust | done |
+| [F22](../features/E17-F22-the-release-from-the-merge-into-main.md) — The release made by the merge into main, its CI green (RET-004, 2026-10-18) | draft |
 
 F18 holds the stories decided at RET-003 (ADR-0063, ADR-0064, ADR-0065, ADR-0066), written then as F11 was at RET-001.
 
@@ -83,4 +84,4 @@ After its last feature is validated (ADR-0023, ADR-0049, ADR-0064). F21's clean-
 | --- | --- |
 | [NAM-002](../stories/E17-NAM-002-naming-pass-e17.md) — Naming pass over the code of E17 | done |
 | [REV-004](../stories/E17-REV-004-review-e17.md) — Review E17 with the Product Owner | done |
-| [RET-004](../stories/E17-RET-004-retrospective-e17.md) — Retrospective of E17 | draft |
+| [RET-004](../stories/E17-RET-004-retrospective-e17.md) — Retrospective of E17 | done |
