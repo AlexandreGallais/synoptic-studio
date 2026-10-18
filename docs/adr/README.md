@@ -45,10 +45,10 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0038](./0038-develop-branch-and-local-checks.md) | A `develop` branch, checks run locally, one CI on the pull request into `main` | Superseded by ADR-0072 |
 | [0039](./0039-local-source-library.md) | A local library of the sources read: SQLite full-text search behind an MCP server | Accepted, partly superseded by 0077 |
 | [0040](./0040-agents-md-for-any-agent.md) | `AGENTS.md` holds the rules for any coding agent | Accepted |
-| [0041](./0041-private-records-repository.md) | Private records in a sibling repository, saved by `npm run records:save` | Decision 1 superseded by ADR-0044 |
+| [0041](./0041-private-records-repository.md) | Private records in a sibling repository, saved by `npm run records:save` | Superseded by 0044, then 0081 |
 | [0042](./0042-folders-by-theme.md) | Folders by theme, 15 modules as a signal, a shape's type in its folder | Superseded by ADR-0043 |
 | [0043](./0043-folders-by-domain.md) | Folders by business domain, files and folders never side by side | Accepted |
-| [0044](./0044-records-inside-the-project.md) | The private records inside the project folder, ignored by Git | Accepted |
+| [0044](./0044-records-inside-the-project.md) | The private records inside the project folder, ignored by Git | Superseded by 0081 |
 | [0045](./0045-run-is-the-go-ahead.md) | `/run` is the go-ahead; validated features merge by themselves; releases when the Product Owner asks | Superseded by ADR-0072 |
 | [0046](./0046-cubic-sides-in-symbols.md) | Cubic Bézier sides in symbols, from points with handles | Accepted |
 | [0047](./0047-fillet-beside-a-curve.md) | A corner fillet beside a cubic side: tangent arc, the curve cut, a radius too large reduced | Accepted |
@@ -85,3 +85,4 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0078](./0078-the-agents-tools-called-by-their-binary.md) | The hooks, the Git hooks and the agent call the Rust tools by their binary's path | Accepted, its `.husky/` superseded by 0080 |
 | [0079](./0079-the-release-on-a-release-branch-by-our-own-tool.md) | The release prepared on a release branch from `develop`, published by our own tool | Accepted |
 | [0080](./0080-the-git-hooks-in-githooks-installed-by-our-own-tool.md) | The Git hooks in `.githooks/`, installed by `git-hooks install` | Accepted |
+| [0081](./0081-the-private-records-in-a-local-folder-shared-by-projects.md) | The private records in a local folder shared by every project, never sent | Accepted |

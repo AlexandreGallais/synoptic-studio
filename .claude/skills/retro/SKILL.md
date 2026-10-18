@@ -20,5 +20,5 @@ Retrospective: $ARGUMENTS. Decision: ADR-0023. Questions: `docs/process/README.m
 10. **The playbook** (`docs/playbook/`): new lessons with the check that prevents each, principles or setup steps changed, each rule linked to its source; `docs/playbook/setup.md` kept copy-ready (files to copy, cadences, references to read first, use cases met).
 11. **Prune the agent's configuration** (`AGENTS.md`, `CLAUDE.md`, rules, skills, agents): a repeated mistake gets a check, not a sentence. Every four to five epics, and at the project's end, question **every** rule against how the project went: harden by default, relax only with a reason (`docs/process/agile.md`).
 12. Branch, commits per task and pull request as for a story (`/story` steps 3 to 9).
-13. `target/release/records-save`: the epic's transcripts and metrics in the private records (ADR-0041, ADR-0044).
+13. `target/release/records-save`: the epic's transcripts and metrics in the private records, a local folder (ADR-0081).
 14. **Release, when the Product Owner asks** (ADR-0072, steps in `/run`, Validation, step 8): once the retrospective is merged, the pull request `develop` → `main`, title `chore(release): E<nn> — <epic>`, body the epic's features and changes; read its CI and CodeQL, fix a failure on `develop`. The Product Owner merges it with a merge commit; then `develop` is brought up to `main`.

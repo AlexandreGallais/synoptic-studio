@@ -1,8 +1,8 @@
-//! `records-save` (`npm run records:save`, ADR-0041, ADR-0044, EN-103), at the end of every session
-//! and at every retrospective: the metrics logs, this project's transcripts and the source library
-//! copied into the private records repository, committed, then pushed when it has a remote. A
-//! missing source is skipped; the library is copied consistently by SQLite's `VACUUM INTO`, even
-//! while the library server holds it open.
+//! `records-save` (`npm run records:save`, ADR-0081, EN-114), at the end of every session and at
+//! every retrospective: the metrics logs, this project's transcripts and the source library copied
+//! into `<AGENT_RECORDS_ROOT>/<project>`, a local folder outside the repository, never sent
+//! anywhere. A missing source is skipped; the library is copied consistently by SQLite's `VACUUM
+//! INTO`, even while the library server holds it open.
 
 use std::env;
 use std::fs;
@@ -14,7 +14,8 @@ use calendar::temporal_instant;
 use git_repository::{Failure, stdout_of};
 use hooks::pages::library_file;
 use repo_tools::records_save::{
-    Kind, RecordCopy, copy_file, copy_folder, record_copies, records_folder,
+    Kind, LAST_SAVE, ROOT_VARIABLE, RecordCopy, copy_file, copy_folder, project_name,
+    record_copies, records_folder,
 };
 
 /// Runs Git in a folder, its standard error shown; its trimmed output.
@@ -83,14 +84,18 @@ fn run() -> Result<(), String> {
     let main = Path::new(&common)
         .parent()
         .map_or_else(PathBuf::new, Path::to_path_buf);
-    let folder = records_folder(env::var("RECORDS_PATH").ok().as_deref(), &main);
+    // No remote: the project is named after its folder.
+    let origin = git(&main, &["config", "--get", "remote.origin.url"]).unwrap_or_default();
+    let root = env::var(ROOT_VARIABLE).ok();
+    let folder = records_folder(root.as_deref(), &project_name(&origin, &main))?;
 
-    if !folder.join(".git").exists() {
+    if let Some(root) = root.filter(|root| !Path::new(root).is_dir()) {
         return Err(format!(
-            "No records repository in {}: create it (git init) or set RECORDS_PATH.",
-            folder.display()
+            "The records' folder {root} does not exist: create it, or correct {ROOT_VARIABLE}."
         ));
     }
+
+    fs::create_dir_all(&folder).map_err(|error| format!("{}: {error}", folder.display()))?;
 
     let home = env::var("HOME").unwrap_or_default();
     let library =
@@ -102,29 +107,17 @@ fn run() -> Result<(), String> {
         println!("{} {}", if saved { "saved" } else { "missing" }, copy.to);
     }
 
-    git(&folder, &["add", "--all"])?;
-    if git(&folder, &["status", "--porcelain"])?.is_empty() {
-        println!("Nothing changed since the last save.");
-    } else {
-        let now = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap_or_default();
-        let message = format!(
-            "Save records {}",
-            temporal_instant(
-                i64::try_from(now.as_secs()).unwrap_or(0),
-                now.subsec_nanos()
-            )
-        );
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default();
+    let instant = temporal_instant(
+        i64::try_from(now.as_secs()).unwrap_or(0),
+        now.subsec_nanos(),
+    );
 
-        git(&folder, &["commit", "--quiet", "--message", &message])?;
-        println!("Committed in {}.", folder.display());
-    }
-
-    if !git(&folder, &["remote"])?.is_empty() {
-        git(&folder, &["push", "--quiet"])?;
-        println!("Pushed.");
-    }
+    fs::write(folder.join(LAST_SAVE), format!("{instant}\n"))
+        .map_err(|error| format!("{}: {error}", folder.join(LAST_SAVE).display()))?;
+    println!("Saved in {}.", folder.display());
     Ok(())
 }
 

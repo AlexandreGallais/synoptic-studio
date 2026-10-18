@@ -46,7 +46,6 @@
     "docs/.vitepress/cache",
     "docs/.vitepress/dist",
     "CHANGELOG.md",
-    "records",
     "src/model/font/inter-metrics.json",
     ".claude/worktrees",
     ".claude/settings.local.json",

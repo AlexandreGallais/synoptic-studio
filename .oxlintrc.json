@@ -20,7 +20,6 @@
     "docs/.vitepress/.temp/**",
     "CHANGELOG.md",
     ".claude/worktrees/**",
-    "records/**",
     "target/**",
     "**/*.{js,cjs,mjs}"
   ],

@@ -25,7 +25,7 @@
 | `npm run docs:api` | `docs/api/` from the TSDoc |
 | `npm run playground:build` | the playground, built into the site (`docs/.vitepress/dist/playground/`) |
 | `npm run branches:clean` | deletes the local branches merged into `develop` or gone from GitHub, with their worktrees, and reports what is left; never `main`, `develop`, the current branch, a story just started, nor a worktree holding changes or a running process (`branches-clean` of `tools/repo-tools/`, EN-103) |
-| `npm run records:save` | copies the metrics, the transcripts and the source library into the private records repository `records/` (ADR-0041, ADR-0044); at the end of each session and retrospective. A file whose copy already has its size and modification time is not copied again, so the transcripts' gigabytes are written once; the library, the file `AGENT_LIBRARY_FILE` names as for the `library` tools, is copied by the system's `sqlite3 -readonly … "VACUUM INTO …"`, whose bytes differ from Node.js's SQLite but not its rows (`records-save` of `tools/repo-tools/`, EN-103) |
+| `npm run records:save` | copies the metrics, the transcripts and the source library into `<AGENT_RECORDS_ROOT>/<project>`, a local folder outside the repository shared by every project, never sent (ADR-0081); at the end of each session and retrospective. A file whose copy already has its size and modification time is not copied again, so the transcripts' gigabytes are written once; the library, the file `AGENT_LIBRARY_FILE` names as for the `library` tools, is copied by the system's `sqlite3 -readonly … "VACUUM INTO …"`, whose bytes differ from Node.js's SQLite but not its rows (`records-save` of `tools/repo-tools/`, EN-103, EN-114) |
 | `npm run metrics`, `metrics:session` | the report of the agent's work, the session report ([metrics](./metrics.md)) |
 | `npm run library -- …` | the local source library ([sources](./sources.md)) |
 | `npm run font:metrics -- <folder>` | writes `src/model/font/inter-metrics.json` from Inter's static TrueType files unpacked in the folder, which the repository does not keep |
@@ -51,7 +51,7 @@ The base is the nearest of `origin/develop` and `origin/feature/*` for a story, 
 
 ## Explicit targets
 
-Every check tool is given the folders and files it checks by name — the scripts, the unused check's `PROJECT` (`tools/deps/src/unused.rs`), `tsconfig.json`'s `include`, Vitest's `include` and coverage — and never walks the repository from `.`. So the worktrees' copies in `.claude/worktrees/` and the generated folders (`records/`, `coverage/`, `dist/`, `target/`, `docs/api/`, VitePress's caches) stay out without each tool knowing them. A new tracked folder is added to the targets; `tests/check-targets.test.ts` fails until it is.
+Every check tool is given the folders and files it checks by name — the scripts, the unused check's `PROJECT` (`tools/deps/src/unused.rs`), `tsconfig.json`'s `include`, Vitest's `include` and coverage — and never walks the repository from `.`. So the worktrees' copies in `.claude/worktrees/` and the generated folders (`coverage/`, `dist/`, `target/`, `docs/api/`, VitePress's caches) stay out without each tool knowing them. A new tracked folder is added to the targets; `tests/check-targets.test.ts` fails until it is.
 
 ## Tests that run Git
 

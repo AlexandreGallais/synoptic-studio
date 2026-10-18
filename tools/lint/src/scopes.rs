@@ -5,7 +5,7 @@
 use crate::glob::matches_any;
 
 /// Generated, vendored or copied paths, never linted (once `eslint/settings/files.ts`).
-pub const IGNORED: [&str; 12] = [
+pub const IGNORED: [&str; 11] = [
     "dist/**",
     "coverage/**",
     "node_modules/**",
@@ -14,7 +14,6 @@ pub const IGNORED: [&str; 12] = [
     "docs/.vitepress/dist/**",
     "docs/.vitepress/.temp/**",
     ".claude/worktrees/**",
-    "records/**",
     "target/**",
     "tools/*/tests/fixtures/**",
     ".git/**",
