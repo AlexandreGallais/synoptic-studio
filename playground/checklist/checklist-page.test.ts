@@ -194,21 +194,22 @@ describe("[F17.AC8] E15's checklist (US-051)", () => {
   );
 });
 
-describe("[F18.AC12] [F19.AC8] E17's checklist on the page (VAL-019 to VAL-021)", () => {
-  it("lists F18's 12 lines, F19's 12, then F20's 12, one check box each, each with its own thing to try", () => {
+describe("[F18.AC12] [F19.AC8] E17's checklist on the page (VAL-019 to VAL-022)", () => {
+  it("lists F18's 12 lines, F19's 12, F20's 12, then F21's 12, one check box each, each with its own thing to try", () => {
     openServedPage("?checklist=E17");
 
     expect(readText("#checklist-name")).toBe("E17");
-    expect(readBoxes()).toHaveLength(36);
+    expect(readBoxes()).toHaveLength(48);
 
     const todos = new Set(EPIC_17_CHECKLIST.map((line) => line.todo));
 
-    expect(todos.size).toBe(36);
+    expect(todos.size).toBe(48);
 
     expect(EPIC_17_CHECKLIST.map((line) => line.feature)).toEqual([
       ...Array.from({ length: 12 }, () => "F18"),
       ...Array.from({ length: 12 }, () => "F19"),
       ...Array.from({ length: 12 }, () => "F20"),
+      ...Array.from({ length: 12 }, () => "F21"),
     ]);
   });
 
@@ -311,6 +312,52 @@ describe("E17's checklist, F20's lines (VAL-021)", () => {
     "names nothing of the progress page F20 dropped: %s",
     (word) => {
       expect(text).not.toContain(word);
+    },
+  );
+});
+
+describe("E17's checklist, F21's lines (VAL-022)", () => {
+  const text = EPIC_17_CHECKLIST.filter((line) => line.feature === "F21")
+    .map((line) => `${line.todo} ${line.see}`)
+    .join("\n");
+
+  it.each([
+    "ls .claude/hooks",
+    "target/release/<binary>",
+    "A worktree refuses a chained Git command",
+    "npm run metrics",
+    "no row for run-totals status",
+    "ls scripts",
+    "npm run -s library -- search fts5",
+    "devDependencies",
+    "npm run deps:unused",
+    "target/release/git-hooks commit-msg",
+    "subject may not be empty [subject-empty]",
+    "npm run -s lint:secrets",
+    "release-please",
+    "npm run release:prepare",
+    "57 line(s) drafted",
+    "npm run -s page -- REF-CC-HOOKS",
+    "npm run check:all",
+    "f21_ac9_",
+  ])("names the command or the output to see: %s", (option) => {
+    expect(text).toContain(option);
+  });
+
+  it.each([
+    "Decision to confirm (ADR-0078)",
+    "Decision to confirm (EN-104)",
+    "Decision to confirm (EN-102)",
+    "Decision to confirm (ADR-0077)",
+    "Decision to confirm (ADR-0079)",
+  ])("names the decision to confirm: %s", (line) => {
+    expect(text).toContain(line);
+  });
+
+  it.each(["husky install", "npx secretlint", "npx knip", "npx ncu", "node scripts/library"])(
+    "names no tool F21 removed: %s",
+    (tool) => {
+      expect(text).not.toContain(tool);
     },
   );
 });
