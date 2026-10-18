@@ -1,11 +1,14 @@
-//! `release <prepare|check|notes>` from the repository's root (EN-112, ADR-0079):
+//! `release <prepare|check|notes|publish>` from the repository's root (EN-112, ADR-0079):
 //!
 //! - `prepare [--date YYYY-MM-DD]` makes the branch `release/x.y.z` at the head of a clean
 //!   checkout and writes the version and the entry's draft, then lists the commits behind each line;
 //! - `check` checks the latest entry of `CHANGELOG.md` and the versions of the manifests;
-//! - `notes [x.y.z]` prints a version's entry without its heading, `package.json`'s by default.
+//! - `notes [x.y.z]` prints a version's entry without its heading, `package.json`'s by default;
+//! - `publish`, on `main` after a release's merge, makes its GitHub release with the entry and the
+//!   test report, and writes `released` and `tag` into `$GITHUB_OUTPUT` when the workflow sets it.
 
-use std::fs;
+use std::fs::{self, OpenOptions};
+use std::io::Write as _;
 use std::path::Path;
 use std::process::{Command, ExitCode};
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -14,6 +17,7 @@ use release::changelog::notes;
 use release::check::check;
 use release::manifest::{lock_versions, repository, version};
 use release::prepare::prepare;
+use release::publish::{Published, publish};
 
 /// A command run in the repository's root, for its output.
 fn run(program: &str, args: &[&str]) -> Result<String, String> {
@@ -154,6 +158,53 @@ fn print_notes(args: &[String]) -> u8 {
     }
 }
 
+/// Appends the outputs of the release to the file the workflow names, when it names one.
+fn write_outputs(released: bool, tag: &str) -> Result<(), String> {
+    let Some(file) = std::env::var_os("GITHUB_OUTPUT") else {
+        return Ok(());
+    };
+
+    OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(&file)
+        .and_then(|mut output| writeln!(output, "released={released}\ntag={tag}"))
+        .map_err(|error| format!("GITHUB_OUTPUT: {error}"))
+}
+
+/// `release publish`: its exit code.
+fn publish_release() -> u8 {
+    let folder = std::env::temp_dir().join(format!("release-publish-{}", std::process::id()));
+    let mut runner = run;
+    let published = publish(Path::new("."), &mut runner, &folder);
+    let _ = fs::remove_dir_all(&folder);
+
+    let (released, tag) = match published {
+        Ok(Published::Released(tag)) => {
+            println!(
+                "released {tag}, its notes the entry of CHANGELOG.md, the test report attached"
+            );
+            (true, tag)
+        }
+        Ok(Published::Already(tag)) => {
+            println!("{tag} is already released: nothing to do");
+            (false, tag)
+        }
+        Err(message) => {
+            eprintln!("release publish: {message}");
+            return 1;
+        }
+    };
+
+    match write_outputs(released, &tag) {
+        Ok(()) => 0,
+        Err(message) => {
+            eprintln!("release publish: {message}");
+            1
+        }
+    }
+}
+
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
     let subcommand = args.first().cloned().unwrap_or_default();
@@ -163,8 +214,11 @@ fn main() -> ExitCode {
         "prepare" => prepare_release(&rest),
         "check" => check_release(),
         "notes" => print_notes(&rest),
+        "publish" => publish_release(),
         _ => {
-            eprintln!("usage: release <prepare [--date YYYY-MM-DD] | check | notes [x.y.z]>");
+            eprintln!(
+                "usage: release <prepare [--date YYYY-MM-DD] | check | notes [x.y.z] | publish>"
+            );
             2
         }
     })
