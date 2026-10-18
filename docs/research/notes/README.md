@@ -30,3 +30,4 @@ Content: summary in our own words (no copy of source text), formulas, references
 | [0023](./0023-f19-oxc-and-rust-tools.md) | Sources of F19: oxlint and oxfmt tried on the repository, the rules left to rewrite, `check:all` by lane, hooks timed, the Rust workspace |
 | [0024](./0024-f20-context-diet.md) | Sources of F20: what a call costs, the prompt cache measured, workers from a digest, a model per agent, pushes, the progress page, the stop hook, a run's totals, shell or a tool of our own |
 | [0025](./0025-f21-agent-tools-in-rust.md) | Sources of F21: the crates of the Rust tools and the library server, the behaviour and licence of each package rewritten, each tool's time before its port, good release notes |
+| [0026](./0026-the-tooling-features-of-2026-10-18.md) | Sources of the tooling features of 2026-10-18: a workflow after each merge into `develop` though the auto-merge's token starts none, each workflow's use, the blocking CI measured |
