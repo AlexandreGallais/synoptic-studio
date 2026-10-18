@@ -62,6 +62,7 @@ Ordered by the Product Owner at the refinement of 2026-10-16.
 | [F25](../features/E17-F25-the-test-lanes-rust-tools.md) — The test lane's Rust tools (#370, 2026-10-18) | done |
 | [F26](../features/E17-F26-mutate-stops-on-linux.md) — The mutation runner stops a mutation on Linux (#370, 2026-10-18) | done |
 | [F27](../features/E17-F27-retired-scopes-in-history.md) — The history check reads the scopes a commit was written with (#370, 2026-10-18) | done |
+| [F28](../features/E17-F28-one-workflow-per-purpose.md) — One workflow per purpose (2026-10-18) | in-progress |
 
 F18 holds the stories decided at RET-003 (ADR-0063, ADR-0064, ADR-0065, ADR-0066), written then as F11 was at RET-001.
 

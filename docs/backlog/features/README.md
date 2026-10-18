@@ -28,4 +28,5 @@
 | [F25](./E17-F25-the-test-lanes-rust-tools.md) | E17 | The test lane's Rust tools | done |
 | [F26](./E17-F26-mutate-stops-on-linux.md) | E17 | The mutation runner stops a mutation on Linux | done |
 | [F27](./E17-F27-retired-scopes-in-history.md) | E17 | The history check reads the scopes a commit was written with | done |
+| [F28](./E17-F28-one-workflow-per-purpose.md) | E17 | One workflow per purpose | in-progress |
 | [F23](./E02-F23-e17s-tool-incidents-fixed.md) | E02 | E17's tool incidents fixed | draft |
