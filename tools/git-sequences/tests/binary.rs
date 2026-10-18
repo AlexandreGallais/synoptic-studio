@@ -43,7 +43,6 @@ fn git(dir: &Path, words: &[&str]) -> String {
 fn tool(dir: &Path, words: &[&str], input: &str) -> Output {
     let mut child = clean(env!("CARGO_BIN_EXE_git-sequences"), dir)
         .args(words)
-        .env("HUSKY", "0")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
@@ -356,14 +355,14 @@ fn stops_at_the_first_failing_step() {
 }
 
 #[test]
-fn runs_the_hooks_even_when_husky_is_switched_off() {
+fn runs_the_hooks_and_stops_on_their_failure() {
     let repos = repos();
 
-    // The hook fails and prints the HUSKY it sees: the tool runs with HUSKY=0.
+    // The hook fails: the commit stops with its message.
     write(
         &repos.work,
         ".git/hooks/pre-commit",
-        "#!/bin/sh\necho \"hook refuses, HUSKY=[$HUSKY]\" >&2\nexit 1\n",
+        "#!/bin/sh\necho \"hook refuses\" >&2\nexit 1\n",
     );
     let chmod = clean("chmod", &repos.work)
         .args(["+x", ".git/hooks/pre-commit"])
@@ -376,7 +375,7 @@ fn runs_the_hooks_even_when_husky_is_switched_off() {
 
     assert!(!output.status.success());
     assert!(
-        stderr(&output).contains("hook refuses, HUSKY=[]"),
+        stderr(&output).contains("hook refuses"),
         "{}",
         stderr(&output)
     );

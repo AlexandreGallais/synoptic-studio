@@ -8,7 +8,7 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, Output, Stdio};
 
 use hooks::guard::{
-    Entered, denied_reason, entered, entered_worktree_reason, is_full_vitest_run,
+    Entered, denied_reason, entered, entered_worktree_reason, every_segment, is_full_vitest_run,
     is_git_read_through_filters, is_read_only_filter, later_folders, lexical_join, missing_script,
     missing_script_reason, npm_script, scripts_of, segments, without_heredocs, worktree_reason,
     worktree_root,
@@ -38,11 +38,15 @@ fn denies_what_skips_a_check_or_loses_work() {
         "git -c user.name=x commit --no-verify",
         "git commit -nm \"x\"",
         "git commit -n -m \"x\"",
-        "HUSKY=0 git commit -m \"x\"",
-        "export HUSKY=0",
         "git config core.hooksPath /dev/null",
         "git -c core.hooksPath=/dev/null commit -m x",
-        "CI=1 HUSKY=0 git push",
+        // Any change of the hooks' folder: set, unset, by the newer `git config set` (EN-113).
+        "git config --unset core.hooksPath",
+        "git config --local core.hooksPath .husky",
+        "git config set core.hooksPath x",
+        "git config --get core.hooksPath x; git config core.hooksPath y",
+        // A command quoted for a shell is judged too.
+        "sh -c \"git status; git push -f\"",
         "cat > a.txt <<'EOF'\ntext\nEOF\ngh pr merge 21",
         "npx vitest run",
         "npx vitest run --coverage",
@@ -72,6 +76,15 @@ fn allows_the_commands_that_only_look_alike() {
         "git log -n 3",
         "sed -i '' 's/a/denies HUSKY=0 and core.hooksPath/' docs/tooling/agent.md",
         "git commit -m \"docs: explain why gh pr merge is denied\"",
+        // husky is gone: `HUSKY=0` switches nothing off (EN-113).
+        "HUSKY=0 git commit -m \"x\"",
+        // Reading the hooks' folder changes nothing.
+        "git config --get core.hooksPath",
+        "git config core.hooksPath",
+        "git config get core.hooksPath",
+        "git config --local --get core.hooksPath 2>&1",
+        "git config core.hooksPath 2>/dev/null",
+        "git config --show-origin --type=path --get-all core.hooksPath",
         "npm run check:all",
         "npx vitest run scripts/check-all.test.ts",
         "npx vitest run src/geometry --coverage",
@@ -93,8 +106,19 @@ fn names_each_reason() {
         denied_reason("git push -f").is_some_and(|reason| reason.contains("--force-with-lease"))
     );
     assert!(
-        denied_reason("HUSKY=0 git push").is_some_and(|reason| reason.contains("switched off"))
+        denied_reason("git config core.hooksPath x")
+            .is_some_and(|reason| reason.contains("switched off") && reason.contains(".githooks/"))
     );
+    // The messages name the Rust Git hooks, no longer the packages they replaced.
+    for reason in [
+        denied_reason("git commit -n"),
+        denied_reason("git config core.hooksPath x"),
+    ] {
+        assert!(
+            reason
+                .is_some_and(|text| !text.contains("lint-staged") && !text.contains("commitlint"))
+        );
+    }
     assert!(denied_reason("git commit -n").is_some_and(|reason| reason.contains("bypassed")));
     assert!(denied_reason("npx vitest").is_some_and(|reason| reason.contains("heavy lock")));
 }
@@ -110,10 +134,6 @@ fn matches_as_the_regular_expressions_did_on_their_edges() {
     // A quoted `-C` path holding a space, and the same path read as words.
     assert!(denied_reason("git -C 'a b' --no-pager push +x").is_some());
     assert!(denied_reason("git --git-dir=.git push --force").is_some());
-    // `HUSKY=0` after settings and `env`, never inside another word nor a value.
-    assert!(denied_reason("env A=1 B= HUSKY=0 npm test").is_some());
-    assert_eq!(denied_reason("echo HUSKY=0"), None);
-    assert_eq!(denied_reason("HUSKY=01 git push"), None);
     // `core.hooksPath` after `config` anywhere later, or after `-c`; not as `core.hooksPathX`.
     assert!(denied_reason("git --no-pager config --local core.hooksPath x").is_some());
     assert_eq!(denied_reason("git config core.hooksPathX x"), None);
@@ -156,6 +176,26 @@ fn splits_a_command_at_its_separators() {
     );
     assert_eq!(segments(""), [""]);
     assert_eq!(segments("a;"), ["a", ""]);
+}
+
+#[test]
+fn splits_nothing_inside_quotes_nor_at_an_escaped_separator() {
+    // A `|` in a pattern, `&&` in a double-quoted text, an escaped `|` (EN-113).
+    assert_eq!(
+        segments("grep -E 'a|b' x; echo \"c && d\" | e\\|f"),
+        ["grep -E 'a|b' x", "echo \"c && d\"", "e\\|f"]
+    );
+    // A double quote inside single quotes, an escaped quote inside double ones, a line feed
+    // inside quotes.
+    assert_eq!(
+        segments("a '\"' | b \"\\\" ;\" ; c 'x\ny'"),
+        ["a '\"'", "b \"\\\" ;\"", "c 'x\ny'"]
+    );
+    // An unclosed quote runs to the end.
+    assert_eq!(segments("echo 'a; b"), ["echo 'a; b"]);
+    // Every separator, quoted or not, for the guards, the quotes around each segment left out.
+    assert_eq!(every_segment("grep 'a|b'"), ["grep 'a", "b"]);
+    assert_eq!(every_segment("sh -c \"a; b\""), ["sh -c \"a", "b"]);
 }
 
 #[test]
@@ -202,6 +242,7 @@ fn allows_a_lone_git_command_in_a_worktree() {
         "git commit -F - <<'EOF'\nfix: x\n\ngit push && git log\nEOF",
         "npm run fix && npx tsc --noEmit",
         "ls docs; cat AGENTS.md",
+        "git log --format='%h|%s' -3",
     ] {
         assert_eq!(worktree_reason(command, WORKTREE), None, "{command}");
         assert_eq!(
@@ -572,6 +613,8 @@ fn f21_ac1_lets_one_git_command_read_through_filters_after_the_brief_s_cd() {
         "git diff --stat | sort | uniq -c | cut -c1-80",
         "git show HEAD | sed -n '1,20p'",
         "git log --format='%h %s' | awk '{print $1}'",
+        // A `|` inside quotes is no pipe (EN-113).
+        "git log --format='%h|%s' | grep -E 'fix|feat'",
     ] {
         assert_eq!(judge(rest), None, "{rest}");
     }

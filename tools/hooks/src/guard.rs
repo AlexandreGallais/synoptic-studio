@@ -19,11 +19,10 @@ pub const MERGE: &str =
     "Story pull requests are merged by the Product Owner, never by the agent (AGENTS.md, Never).";
 
 /// Why `--no-verify` is denied.
-pub const NO_VERIFY: &str =
-    "The Git hooks (lint-staged, commitlint, check:all) are never bypassed: fix the cause instead.";
+pub const NO_VERIFY: &str = "The Git hooks of .githooks/ (the staged files fixed and scanned, the commit message checked, check:all before a push) are never bypassed: fix the cause instead.";
 
 /// Why switching the Git hooks off is denied.
-pub const HOOKS_OFF: &str = "The Git hooks (lint-staged, commitlint, check:all) are never switched off: fix the cause instead.";
+pub const HOOKS_OFF: &str = "The Git hooks of .githooks/ (the staged files fixed and scanned, the commit message checked, check:all before a push) are never switched off: core.hooksPath stays as git-hooks install set it; fix the cause instead.";
 
 /// Why a force push is denied.
 pub const FORCE_PUSH: &str =
@@ -213,7 +212,8 @@ fn body_end(text: &str, opening_end: usize, word: &str) -> Option<usize> {
     }
 }
 
-/// The segments of a shell command, split at `&&`, `||`, `;`, a pipe and a line feed, each trimmed.
+/// The segments of a shell command, split at `&&`, `||`, `;`, a pipe and a line feed outside
+/// quotes, each trimmed.
 #[must_use]
 pub fn segments(command: &str) -> Vec<String> {
     separated(command)
@@ -223,17 +223,67 @@ pub fn segments(command: &str) -> Vec<String> {
 }
 
 /// The segments of a shell command, each with the separator before it, empty for the first:
-/// `&&`, `||`, `;`, `|` or a line feed.
+/// `&&`, `||`, `;`, `|` or a line feed, outside quotes as the shell reads them. A separator inside
+/// `'…'` or `"…"`, or escaped by a backslash outside single quotes, is text: `grep -E 'a|b'` is one
+/// segment (EN-113). An unclosed quote runs to the end.
 #[must_use]
 pub fn separated(command: &str) -> Vec<(&'static str, String)> {
+    split_at_separators(command, true)
+}
+
+/// The segments of a shell command split at every separator, quoted ones too: what a quoted text
+/// would run if a shell ran it (`sh -c "…; git push -f"`), which the guards of [`denied_reason`]
+/// read beside [`segments`]; each without the quotes around it, as the quoted shell reads it.
+#[must_use]
+pub fn every_segment(command: &str) -> Vec<String> {
+    split_at_separators(command, false)
+        .into_iter()
+        .map(|(_, segment)| {
+            segment
+                .trim_matches(|character: char| {
+                    is_space(character) || matches!(character, '"' | '\'')
+                })
+                .to_owned()
+        })
+        .collect()
+}
+
+/// The segments of a command with the separator before each, quotes read or not.
+fn split_at_separators(command: &str, quotes_read: bool) -> Vec<(&'static str, String)> {
     let mut pieces = Vec::new();
     let mut start = 0;
     let mut before = "";
     let bytes = command.as_bytes();
     let mut at = 0;
+    let mut quote: Option<u8> = None;
 
     while at < bytes.len() {
-        let separator = match (bytes[at], bytes.get(at + 1)) {
+        let byte = bytes[at];
+
+        if quotes_read {
+            match (quote, byte) {
+                (Some(b'\''), b'\'') | (Some(b'"'), b'"') => {
+                    quote = None;
+                    at += 1;
+                    continue;
+                }
+                (None | Some(b'"'), b'\\') => {
+                    at += 2;
+                    continue;
+                }
+                (None, b'\'' | b'"') => {
+                    quote = Some(byte);
+                    at += 1;
+                    continue;
+                }
+                (Some(_), _) => {
+                    at += 1;
+                    continue;
+                }
+                (None, _) => {}
+            }
+        }
+        let separator = match (byte, bytes.get(at + 1)) {
             (b'&', Some(b'&')) => "&&",
             (b'|', Some(b'|')) => "||",
             (b';', _) => ";",
@@ -419,41 +469,8 @@ fn forces_push(segment: &str) -> bool {
     })
 }
 
-/// `HUSKY=0` as a command's own setting, `^(?:export\s+|env\s+)?(?:\w+=\S*\s+)*HUSKY=0\b`, not
-/// as a word inside a quoted text or a file edit.
-fn sets_husky_off(segment: &str) -> bool {
-    let mut frontier = vec![0];
-
-    for prefix in ["export", "env"] {
-        if let Some(end) = segment
-            .strip_prefix(prefix)
-            .and_then(|_| after_some_spaces(segment, prefix.len()))
-        {
-            frontier.push(end);
-        }
-    }
-
-    while let Some(at) = frontier.pop() {
-        if starts_with_word(segment, at, "HUSKY=0") {
-            return true;
-        }
-        let name = segment.as_bytes()[at..]
-            .iter()
-            .take_while(|byte| is_word(**byte))
-            .count();
-
-        if name > 0 && segment[at + name..].starts_with('=') {
-            let value_end = after_non_spaces(segment, at + name + 1);
-
-            if let Some(next) = after_some_spaces(segment, value_end) {
-                frontier.push(next);
-            }
-        }
-    }
-    false
-}
-
-/// `core.hooksPath` set for a Git command: `^git\s.*(?:-c\s+|config\b.*\s)core\.hooksPath\b`.
+/// `core.hooksPath` set for a Git command: `^git\s.*(?:-c\s+|config\b.*\s)core\.hooksPath\b`,
+/// unless the `config` command only reads it ([`reads_config`]).
 fn sets_hooks_path(segment: &str) -> bool {
     let Some(space) = segment
         .strip_prefix("git")
@@ -462,7 +479,7 @@ fn sets_hooks_path(segment: &str) -> bool {
     else {
         return false;
     };
-    let hooks_path = |at: usize| starts_with_word(segment, at, "core.hooksPath");
+    let hooks_path = |at: usize| starts_with_word(segment, at, HOOKS_PATH);
 
     reached_by_any(segment, 3 + space.len_utf8())
         .into_iter()
@@ -472,10 +489,61 @@ fn sets_hooks_path(segment: &str) -> bool {
             let by_config = starts_with_word(segment, at, "config")
                 && after_any_then_space(segment, at + 6)
                     .into_iter()
-                    .any(hooks_path);
+                    .any(|key| hooks_path(key) && !reads_config(segment, at + 6, key));
 
             by_option || by_config
         })
+}
+
+/// The key the Git hooks' folder is set by.
+const HOOKS_PATH: &str = "core.hooksPath";
+
+/// The options of `git config` that only say where or how to read (EN-113).
+const CONFIG_READ_OPTIONS: [&str; 15] = [
+    "--get",
+    "--get-all",
+    "--get-regexp",
+    "get",
+    "--all",
+    "--local",
+    "--global",
+    "--system",
+    "--worktree",
+    "--show-origin",
+    "--show-scope",
+    "--null",
+    "-z",
+    "--includes",
+    "--no-includes",
+];
+
+/// Whether a `git config` whose options run from `from` to the key at `key` only reads the key:
+/// every option one of [`CONFIG_READ_OPTIONS`] or a `--type=`, `--default=` or `--file=`, and
+/// either a getter among them (`--get`, `get`) or no value after the key, a redirection aside
+/// (`git config core.hooksPath 2>&1`). `--unset`, `--add`, `set` or a value change it (EN-113).
+fn reads_config(segment: &str, from: usize, key: usize) -> bool {
+    let options: Vec<&str> = segment[from..key]
+        .split(is_space)
+        .filter(|word| !word.is_empty())
+        .collect();
+    let read_only = options.iter().all(|option| {
+        CONFIG_READ_OPTIONS.contains(option)
+            || ["--type=", "--default=", "--file="]
+                .iter()
+                .any(|prefix| option.starts_with(prefix))
+    });
+    let getter = options
+        .iter()
+        .any(|option| matches!(*option, "--get" | "--get-all" | "--get-regexp" | "get"));
+    let no_value = segment[key + HOOKS_PATH.len()..]
+        .split(is_space)
+        .filter(|word| !word.is_empty())
+        .all(|word| {
+            word.trim_start_matches(|digit: char| digit.is_ascii_digit())
+                .starts_with('>')
+        });
+
+    read_only && (getter || no_value)
 }
 
 /// `^gh\s+pr\s+merge\b`.
@@ -530,13 +598,17 @@ type Guard = (fn(&str) -> bool, &'static str);
 
 /// The reason for denying a shell command, if one of its segments is forbidden: the first guard
 /// matching, then a full Vitest run, which takes the heavy lock through `npm run test` (EN-047).
+/// The segments are read both as the shell splits them and split inside quotes too, so that a
+/// command quoted for `sh -c` is judged as well (EN-113).
 #[must_use]
 pub fn denied_reason(command: &str) -> Option<&'static str> {
-    let pieces = segments(&without_heredocs(command));
-    let guards: [Guard; 5] = [
+    let text = without_heredocs(command);
+    let mut pieces = segments(&text);
+
+    pieces.extend(every_segment(&text));
+    let guards: [Guard; 4] = [
         (merges, MERGE),
         (skips_hooks, NO_VERIFY),
-        (sets_husky_off, HOOKS_OFF),
         (sets_hooks_path, HOOKS_OFF),
         (forces_push, FORCE_PUSH),
     ];
