@@ -3,7 +3,7 @@ id: EN-110
 epic: E17
 feature: F21
 title: The secret scan in Rust, without secretlint
-status: ready
+status: done
 points: 3
 ---
 

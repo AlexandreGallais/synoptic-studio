@@ -108,7 +108,7 @@ In delivery order. Stories stay `draft` until F21's `/run` sets them `ready`.
 | [CHK-022](../stories/E17-F21-CHK-022-checkpoint-f21.md) | Checkpoint | Checkpoint in the middle of F21 | done |
 | [EN-108](../stories/E17-F21-EN-108-git-hooks-in-rust.md) | Enabler | The Git hooks in Rust, without husky, lint-staged, commitlint nor validate-branch-name | done |
 | [EN-109](../stories/E17-F21-EN-109-dependency-checks-in-rust.md) | Enabler | The dependency checks in Rust, without npm-check-updates nor knip | ready |
-| [EN-110](../stories/E17-F21-EN-110-secret-scan-in-rust.md) | Enabler | The secret scan in Rust, without secretlint | ready |
+| [EN-110](../stories/E17-F21-EN-110-secret-scan-in-rust.md) | Enabler | The secret scan in Rust, without secretlint | done |
 | [EN-111](../stories/E17-F21-EN-111-ci-on-the-rust-tools.md) | Enabler | The CI on the Rust tools, built and cached once | ready |
 | [EN-112](../stories/E17-F21-EN-112-release-tool-in-rust.md) | Enabler | The release made by our own tool, in place of release-please | ready |
 | [EN-113](../stories/E17-F21-EN-113-clean-up-of-e17.md) | Enabler | Clean-up of E17, every tool left unused removed | ready |
