@@ -277,10 +277,11 @@
 | [EN-115](./E17-F21-EN-115-fewer-npm-scripts.md) | F21 | The npm scripts kept to what a person runs and what calls them | done |
 | [AUD-023](./E17-F21-AUD-023-audit-f21.md) | F21 | Audit F21 | done |
 | [VAL-022](./E17-F21-VAL-022-validate-f21.md) | F21 | Validate F21 | done |
-| [EN-116](./E17-F22-EN-116-ci-green-on-github-runners.md) | F22 | The CI's tests green on GitHub's runner | draft |
-| [EN-117](./E17-F22-EN-117-release-from-the-merge-into-main.md) | F22 | The release made by the merge into main, from the tags | draft |
-| [AUD-024](./E17-F22-AUD-024-audit-f22.md) | F22 | Audit F22 | draft |
-| [VAL-023](./E17-F22-VAL-023-validate-f22.md) | F22 | Validate F22 | draft |
+| [EN-122](./E17-F22-EN-122-one-story-at-a-time-into-develop.md) | F22 | One story at a time into develop | done |
+| [EN-116](./E17-F22-EN-116-ci-green-on-github-runners.md) | F22 | The CI's tests green on GitHub's runner | ready |
+| [EN-117](./E17-F22-EN-117-release-from-the-merge-into-main.md) | F22 | The release by a button, from the tags | ready |
+| [AUD-024](./E17-F22-AUD-024-audit-f22.md) | F22 | Audit F22 | ready |
+| [VAL-023](./E17-F22-VAL-023-validate-f22.md) | F22 | Validate F22 | ready |
 | [NAM-002](./E17-NAM-002-naming-pass-e17.md) | E17 | Naming pass over the code of E17 | done |
 | [REV-004](./E17-REV-004-review-e17.md) | E17 | Review E17 with the Product Owner | done |
 | [RET-004](./E17-RET-004-retrospective-e17.md) | E17 | Retrospective of E17 | done |
