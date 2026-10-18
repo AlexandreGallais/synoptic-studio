@@ -3,7 +3,7 @@ id: SP-024
 epic: E17
 feature: F28
 title: The tooling features of 2026-10-18
-status: ready
+status: done
 points: 3
 ---
 
@@ -18,7 +18,7 @@ The Product Owner asked on 2026-10-18 for the tooling left after 0.3.0's merge t
 
 ## Tasks
 
-- [ ] T1 — The sources read, the research note (1 h)
-- [ ] T2 — The ADR, the features and their stories, F23 moved (2 h)
+- [x] T1 — The sources read, the research note (1 h)
+- [x] T2 — The ADR, the features and their stories, F23 moved (2 h)
 
 One task = one commit, referenced as `SP-024.T1` in the commit footer.

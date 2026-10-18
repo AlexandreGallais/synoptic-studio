@@ -76,7 +76,7 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0069](./0069-tooling-fast-for-the-agent.md) | Tooling as fast as it can be, for the agent | Accepted |
 | [0070](./0070-tests-without-over-testing.md) | Tests without over-testing: one claim, one place; slow preparation done once | Accepted |
 | [0071](./0071-type-errors-with-the-lint-declarations-by-oxc.md) | Type errors with the lint, declarations by Oxc | Accepted |
-| [0072](./0072-how-a-run-works.md) | How a run works: the go-ahead, the branches and merges, three agents and one heavy command | Accepted, its release lines superseded by 0079, its checkpoint per feature and its branch start in part by 0084 |
+| [0072](./0072-how-a-run-works.md) | How a run works: the go-ahead, the branches and merges, three agents and one heavy command | Accepted, its release lines superseded by 0079, its checkpoint per feature and its branch start in part by 0084, its "no workflow on `develop`" by 0087 and 0088 |
 | [0073](./0073-every-new-tool-in-rust.md) | Every new script, hook or agent tool written in Rust | Accepted, decision 1 partly superseded by 0078 |
 | [0074](./0074-the-agent-shapes-its-own-method-and-tools.md) | The agent shapes its own method and tools, the Product Owner decides | Accepted, amended by 0085 (the tool incident cards) |
 | [0075](./0075-the-toolchain-on-oxc.md) | The toolchain on Oxc: oxlint, the project's Rust linter, oxfmt and TypeScript 7 | Accepted |
@@ -91,4 +91,5 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0084](./0084-small-features-tests-first-and-a-linear-history.md) | Small features, tests first, a linear history, and agents that work apart | Accepted, from E02; in decision 3 its rebases and its `develop` → `main` at the epic's end, decision 4 and its parallel researchers superseded by 0086 |
 | [0085](./0085-tool-incident-cards-tools-changed-at-an-epics-end.md) | A tool that fails is a card; tools change only at an epic's end | Accepted; tools changed at each review since 0086 |
 | [0086](./0086-one-story-at-a-time-into-develop-the-release-by-a-button.md) | One story at a time, a merge commit for every merge, a review at each return, the release by a button | Accepted, implemented by EN-122, EN-117 and EN-123; its Consequences' `release prepare` was removed by EN-117, `release notes` drafting the text alone (AUD-024) |
-| [0087](./0087-the-ci-in-parallel-jobs-its-rust-cache-saved-from-develop.md) | The CI in parallel jobs, its Rust cache saved by a push to `develop` | Accepted, implemented by EN-124 and EN-125 |
+| [0087](./0087-the-ci-in-parallel-jobs-its-rust-cache-saved-from-develop.md) | The CI in parallel jobs, its Rust cache saved by a push to `develop` | Accepted, implemented by EN-124 and EN-125; decision 2 superseded by 0088 |
+| [0088](./0088-one-workflow-per-purpose-the-ci-into-main-the-only-blocking-one.md) | One workflow per purpose, its trigger its only condition; the CI into `main` the only blocking one | Accepted, implemented by F28 and F30 |
