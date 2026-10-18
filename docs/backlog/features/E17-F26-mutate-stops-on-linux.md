@@ -22,7 +22,7 @@ In delivery order.
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
 | [EN-127](../stories/E17-F26-EN-127-mutate-stops-on-linux.md) | EN | The mutation runner stops a mutation on Linux | done |
-| [AUD-028](../stories/E17-F26-AUD-028-audit-f26.md) | AUD | Audit F26 | ready |
+| [AUD-028](../stories/E17-F26-AUD-028-audit-f26.md) | AUD | Audit F26 | done |
 | [VAL-027](../stories/E17-F26-VAL-027-validate-f26.md) | VAL | Validate F26 | ready |
 
 ## Feature plan
