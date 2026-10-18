@@ -113,5 +113,6 @@ In delivery order. Stories stay `draft` until F21's `/run` sets them `ready`.
 | [EN-112](../stories/E17-F21-EN-112-release-tool-in-rust.md) | Enabler | The release made by our own tool, in place of release-please | done |
 | [EN-113](../stories/E17-F21-EN-113-clean-up-of-e17.md) | Enabler | Clean-up of E17, every tool left unused removed | done |
 | [EN-114](../stories/E17-F21-EN-114-records-kept-in-a-local-folder.md) | Enabler | The private records kept in a local folder shared by every project | done |
+| [EN-115](../stories/E17-F21-EN-115-fewer-npm-scripts.md) | Enabler | The npm scripts kept to what a person runs and what calls them | done |
 | [AUD-023](../stories/E17-F21-AUD-023-audit-f21.md) | Audit | Audit F21 | done |
 | [VAL-022](../stories/E17-F21-VAL-022-validate-f21.md) | Validation | Validate F21 | done |

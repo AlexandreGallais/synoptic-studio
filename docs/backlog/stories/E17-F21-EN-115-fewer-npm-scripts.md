@@ -3,7 +3,7 @@ id: EN-115
 epic: E17
 feature: F21
 title: The npm scripts kept to what a person runs and what calls them
-status: in-progress
+status: done
 points: 2
 ---
 
