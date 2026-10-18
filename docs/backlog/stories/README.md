@@ -294,7 +294,7 @@
 | [VAL-030](./E17-F29-VAL-030-validate-f29.md) | F29 | Validate F29 | ready |
 | [SP-024](./E17-F28-SP-024-the-tooling-features-of-2026-10-18.md) | F28 | The tooling features of 2026-10-18 | done |
 | [EN-132](./E17-F28-EN-132-the-site-the-release-and-the-caches-apart.md) | F28 | The site, the release and the Rust caches apart | done |
-| [EN-133](./E17-F28-EN-133-the-ci-into-main-its-checks-only.md) | F28 | The CI into main, its checks only | ready |
+| [EN-133](./E17-F28-EN-133-the-ci-into-main-its-checks-only.md) | F28 | The CI into main, its checks only | done |
 | [EN-134](./E17-F28-EN-134-the-other-workflows-reviewed.md) | F28 | The auto-merge per base and the other workflows reviewed | parked |
 | [AUD-030](./E17-F28-AUD-030-audit-f28.md) | F28 | Audit F28 | ready |
 | [VAL-029](./E17-F28-VAL-029-validate-f28.md) | F28 | Validate F28 | ready |
