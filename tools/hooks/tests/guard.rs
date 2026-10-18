@@ -548,7 +548,7 @@ fn lets_through_what_it_cannot_judge() {
     let output = hook("npm run anything", Path::new("/"));
 
     assert!(output.status.success() && output.stdout.is_empty());
-    // An input that is not JSON: exit 1, a hook error that lets the call through.
+    // An input that is not JSON: exit 1, a hook error, which `onFailure: block` makes block.
     let mut child = clean(env!("CARGO_BIN_EXE_guard-bash"))
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
