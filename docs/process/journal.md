@@ -8,6 +8,7 @@ What each working session dealt with, in the agent's words: the Product Owner's 
 - `#run` F20 merged into `develop` by PR #340 on 2026-10-18; F21's feature branch was created from `develop`.
 - `#run` F21 refined by the agent (as authorised on 2026-10-17) into stories EN-102 to EN-113 with SP-023, CHK-022, AUD-023 and VAL-022; the run goes on with F21.
 - `#tooling` SP-023: F21's crates chosen (`rmcp` 3.5.1, `rusqlite` 0.40.2 bundled except for Windows, `serde_json`, `regex`; `curl` instead of an HTTP crate, no `oxc_resolver`), each rewritten package's behaviour and licence read at its installed version, every tool timed before its port; the launcher (`cargo run`, `npm run`) costs more per call than Node.js. Decided by the agent under ADR-0069 (option C), to tell the Product Owner: the hooks, the status line, the Git hooks and the agent's own commands call `target/release/<binary>` directly, `npm run` kept for people; written in EN-104.
+- `#tooling` EN-104: every Claude Code hook and the status line run as Rust binaries by their path, 3 ms a hook instead of 59 to 106 ms, the status line 10 ms a refresh instead of 180 ms and 1.9 % of a core instead of 24.5 %; ADR-0078 has the hooks, the Git hooks and the agent call `target/release/<binary>`, rebuilt after `git:sync` and `story:finish`, and `rust:fresh` names a stale one.
 
 ## 2026-10-17 — F19 validated, F20 refined
 

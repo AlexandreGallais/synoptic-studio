@@ -69,7 +69,3 @@ One task = one commit, referenced as `EN-104.Tn`.
 - `.claude/hooks/status-json.ts` stays, with the folder's entries in `tsconfig.json`, `package.json`, `.oxlintrc.json`, `knip.json` and `tools/lint`: `scripts/activity.ts`, `metrics-time.ts` and `metrics-tools.ts`, EN-107's, import it. EN-107 or EN-113 removes it with them.
 - The agent's commands by path (ADR-0078) are named in the worker brief, the project rules, `AGENTS.md` and `docs/tooling/agent-tools.md`; the `run`, `story`, `audit` and `retro` skills and the `clerk` agent still write `npm run <script>`, which works, to change when each is next edited. `story-finish` still starts `move-rows` and `format` through `cargo run`, and `.mcp.json` the library's server (ADR-0078, decision 4).
 - `tools/test-support` was merged by EN-103 during this story: the hooks' new tests start their commands through `test_support::command`.
-
-### Journal
-
-- `#tooling` EN-104: every Claude Code hook and the status line run as Rust binaries by their path, 3 ms a hook instead of 59 to 106 ms, the status line 10 ms a refresh instead of 180 ms and 1.9 % of a core instead of 24.5 %; ADR-0078 has the hooks, the Git hooks and the agent call `target/release/<binary>`, rebuilt after `git:sync` and `story:finish`, and `rust:fresh` names a stale one.
