@@ -2,7 +2,7 @@
 id: REV-004
 epic: E17
 title: Review E17 with the Product Owner
-status: in-progress
+status: done
 points: 1
 ---
 
