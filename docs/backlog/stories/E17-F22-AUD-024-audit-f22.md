@@ -57,10 +57,3 @@ The `auditor` reviewed sections A to E alone, in the background (ADR-0086, decis
 | H, patterns | Dependabot recognized in two places (D) |  | nothing yet |
 | H, agent configuration | `AGENTS.md` and `CLAUDE.md` 158 lines together; the parallel reviewers of `/audit` and `/spike` (F-01, F-06) | `wc -l` | for the main thread, below |
 | H, process | tests and code in one commit twice in EN-122 (F-11); `mutate`'s Rust mutations lack the dropped `!` that three of T2's hand mutations needed |  | improvement log, below |
-
-## For the main thread
-
-### Improvements
-
-| 2026-10-18 | agent | Tests and code of one task in one commit, twice in EN-122.T2 (`2f662b57`, `ad1a1109`), against ADR-0084's tests first in their own commit: a point for the next review's method (AUD-024, F-11) | process |
-| 2026-10-18 | agent | `mutate` has no Rust mutation that drops a `!`: three of AUD-024's hand mutations on `release publish` were of that kind; the comment of `tools/git-hooks/src/message.rs:335` still names the release commit `chore: release x.y.z` (AUD-024) | tool |
