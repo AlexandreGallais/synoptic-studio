@@ -59,8 +59,11 @@ jobs:
         # (`REF-GH-TOKEN-TRIGGERS`, `REF-GH-CLI-WORKFLOW-RUN`, ADR-0088, decision 5); no merge, no
         # dispatch. A dispatch refused, as it is while develop-ci.yml is not on main, the default
         # branch (`REF-GH-WORKFLOW-DISPATCH`), leaves a warning annotation and the run green, the
-        # merge being done (`REF-GH-WORKFLOW-COMMANDS`, EN-136). The base read here until EN-134
-        # splits this workflow by its base.
+        # merge being done (`REF-GH-WORKFLOW-COMMANDS`, EN-136). Into develop, not merged after the
+        # attempts, the auto-merge `--auto` enabled is disabled before the step fails: GitHub's
+        # later merge would be the GITHUB_TOKEN's, starting no develop CI, and a person's merge
+        # pushes and starts it (AUD-032); into a feature branch, no develop CI follows, so the
+        # auto-merge is kept. The base read here until EN-134 splits this workflow by its base.
         run: |
           for attempt in 1 2 3 4 5; do
             gh pr merge "$PR_URL" --auto --merge || echo "Attempt $attempt: gh pr merge failed."
@@ -73,5 +76,10 @@ jobs:
             echo "Attempt $attempt: $PR_URL not merged yet."
             sleep 10
           done
+          if [ "$BASE" = develop ]; then
+            gh pr merge "$PR_URL" --disable-auto || echo "The auto-merge of $PR_URL could not be disabled."
+            echo "$PR_URL is not merged after 5 attempts: its auto-merge disabled, nothing dispatched; a person's merge starts the develop CI by its push." >&2
+            exit 1
+          fi
           echo "$PR_URL is not merged after 5 attempts: nothing dispatched." >&2
           exit 1

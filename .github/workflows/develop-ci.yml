@@ -37,7 +37,7 @@ jobs:
       - uses: actions/checkout@v7
       - id: toolchain
         run: echo "name=$(sed -n 's/^channel = "\(.*\)"$/\1/p' rust-toolchain.toml)-x86_64-unknown-linux-gnu" >> "$GITHUB_OUTPUT"
-      # Restored here and saved at the end, even after a failing script, by `actions/cache/save`
+      # Restored here and saved at the end, even after a failing test, by `actions/cache/save`
       # (`REF-GH-CACHE-RESTORE`, `REF-GH-CACHE-SAVE`): `actions/cache` saves only when every step
       # passed. The keys and paths are ci.yml's. Without `restore-keys`, a new key starts from an
       # empty target/, which so never keeps the artifacts of an older Cargo.lock.
@@ -50,6 +50,7 @@ jobs:
             ~/.cargo/bin/cargo-deny
           key: rust-tools-${{ runner.os }}-${{ hashFiles('rust-toolchain.toml') }}-cargo-llvm-cov-${{ env.CARGO_LLVM_COV_VERSION }}-cargo-deny-${{ env.CARGO_DENY_VERSION }}
       - if: steps.tools.outputs.cache-hit != 'true'
+        id: install
         run: cargo install --locked cargo-llvm-cov@${{ env.CARGO_LLVM_COV_VERSION }} cargo-deny@${{ env.CARGO_DENY_VERSION }}
       - id: build
         uses: actions/cache/restore@v6
@@ -73,15 +74,19 @@ jobs:
       # The RustSec database the advisories read offline (EN-126).
       - run: cargo deny fetch db
       # rustfmt, Clippy, the advisories, the check for Windows and the binaries' freshness.
-      - run: npm run check:rust
+      - id: checks
+        run: npm run check:rust
       # The workspace's tests under the coverage floor, run even after a failing check unless the
       # run is cancelled (`REF-GH-EXPRESSIONS`), so that their build is compiled and saved.
       - if: ${{ !cancelled() }}
         run: npm run rust:coverage
-      # Saved after a failing script too, never after a cancel, which could leave a build half
-      # made, nor on a key hit, which already holds a cache (`REF-GH-CACHE-SAVE`). Cargo.lock is
-      # read `--locked`, so the keys computed again are the ones restored.
-      - if: ${{ !cancelled() && steps.tools.outputs.cache-hit != 'true' }}
+      # Saved after a failing test too, never after a cancel, nor on a key hit, which already holds
+      # a cache (`REF-GH-CACHE-SAVE`). A saved cache never changes (`REF-GH-CACHE`), so nothing half
+      # made is saved: the tools only once installed, the build only once the checks passed, which
+      # means npm ci, the fetches and the install passed, a step after a failure being skipped
+      # (`REF-GH-EXPRESSIONS`, `REF-GH-CONTEXTS`). Cargo.lock is read `--locked`, so the keys
+      # computed again are the ones restored.
+      - if: ${{ !cancelled() && steps.tools.outputs.cache-hit != 'true' && steps.install.outcome == 'success' }}
         uses: actions/cache/save@v6
         with:
           path: |
@@ -89,7 +94,7 @@ jobs:
             ~/.cargo/bin/cargo-llvm-cov
             ~/.cargo/bin/cargo-deny
           key: rust-tools-${{ runner.os }}-${{ hashFiles('rust-toolchain.toml') }}-cargo-llvm-cov-${{ env.CARGO_LLVM_COV_VERSION }}-cargo-deny-${{ env.CARGO_DENY_VERSION }}
-      - if: ${{ !cancelled() && steps.build.outputs.cache-hit != 'true' }}
+      - if: ${{ !cancelled() && steps.build.outputs.cache-hit != 'true' && steps.checks.outcome == 'success' }}
         uses: actions/cache/save@v6
         with:
           path: |

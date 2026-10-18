@@ -246,7 +246,7 @@ const COMPONENTS: readonly string[] = (
  * @returns true when a step must install `cargo-<name>`
  */
 function isCargoTool(name: string, components: readonly string[]): boolean {
-  return BUILT_IN.has(name) && COMPONENT_OF.has(name) && components.includes("");
+  return !BUILT_IN.has(name) && !components.includes(COMPONENT_OF.get(name) ?? "");
 }
 
 /** The cargo subcommands that read every crate of `Cargo.lock` offline (`REF-CARGO-FETCH`). */
@@ -315,11 +315,15 @@ const LANES: readonly string[] = jobsOf(CI_KEPT).get("lanes") ?? [];
  * The entries of a job's matrix, each its fields by name.
  *
  * @param job - the job's lines
- * @returns each entry of its `include:` list, in order
+ * @returns each entry of its `include:` list, in order, none for a job without a matrix
  */
 function matrixOf(job: readonly string[]): readonly ReadonlyMap<string, string>[] {
   const start = job.findIndex((line) => line.trim() === "include:");
   const column = (job.at(start) ?? "").length - (job.at(start) ?? "").trimStart().length;
+
+  if (start === -1) {
+    return [];
+  }
 
   return continuedLines(job, start, column)
     .map((line) => line.trim())
@@ -428,16 +432,13 @@ function expanded(script: string): string {
 }
 
 /**
- * The commands a lane runs: its scripts expanded.
+ * The commands a lane runs: its scripts' loop, its scripts expanded.
  *
  * @param entry - the lane's matrix entry
- * @returns the commands of its scripts, one per line
+ * @returns the `npm run` of each script, then their commands, one per line
  */
 function commandsOf(entry: ReadonlyMap<string, string>): string {
-  return (entry.get("scripts") ?? "")
-    .split(" ")
-    .map((script) => expanded(script))
-    .join("\n");
+  return commandsIn(scriptsRunBy(entry));
 }
 
 /**
@@ -638,7 +639,7 @@ function toolsCalled(commands: string): readonly string[] {
   const readers = cargoCallsIn(commands.replaceAll(DENY_FETCH, ""));
   const binaries = commands.matchAll(BINARY_CALL).map((match) => match.groups?.["path"] ?? "");
   const tools = [
-    ...CARGO_TOOLS.filter((tool) => calls.has(tool)).map((tool) => `cargo-${tool}`),
+    ...[...calls].filter((name) => isCargoTool(name, COMPONENTS)).map((name) => `cargo-${name}`),
     ...(readers.has("deny") ? [DATABASE] : []),
     ...(OFFLINE_READERS.some((name) => readers.has(name)) ? [CRATES] : []),
     ...(runsNodeIn(commands) ? [NODE] : []),
@@ -675,6 +676,23 @@ function receivedBy(
 }
 
 /**
+ * The cargo tools a step installs, each by `cargo install … cargo-<subcommand>@<version>`.
+ *
+ * @param step - a step of a job
+ * @returns the tools' names, `cargo-<subcommand>`, none when the step runs no `cargo install`
+ */
+function cargoToolsInstalledBy(step: Step): readonly string[] {
+  if (!isRun(step, "cargo install ")) {
+    return [];
+  }
+
+  return runOf(step)
+    .matchAll(/\b(?<tool>cargo-[a-z][\w-]*)@/gu)
+    .map((match) => match.groups?.["tool"] ?? "")
+    .toArray();
+}
+
+/**
  * The tools a step installs: a cargo tool, the database, the crates, or release binaries.
  *
  * @param step - a step of a job
@@ -682,9 +700,7 @@ function receivedBy(
  */
 function installedBy(step: Step): readonly string[] {
   const built = BUILD_ONE.exec(runOf(step))?.groups?.["name"];
-  const cargoTools = CARGO_TOOLS.filter(
-    (tool) => isRun(step, "cargo install ") && step.text.includes(`cargo-${tool}@`),
-  ).map((tool) => `cargo-${tool}`);
+  const cargoTools = cargoToolsInstalledBy(step);
   const fetched = FETCHES.filter(([command]) => isRun(step, command)).map(([, tool]) => tool);
   const binaries = [
     ...(buildsBinaries(step) ? [EVERY_BINARY] : []),
@@ -750,7 +766,35 @@ type JobRun = {
  * @returns its runs, in its matrix's order
  */
 function runsOf(key: string, job: readonly string[]): readonly JobRun[] {
-  return job.slice(0, 0).map(() => ({ name: key, steps: [] }));
+  const steps = stepsOf(job);
+  const entries = matrixOf(job);
+
+  if (entries.length === 0) {
+    return [{ name: key, steps: steps.map((step) => ({ commands: runOf(step), step })) }];
+  }
+
+  return entries.map((entry) => ({
+    name: `${key} (${entry.get("name") ?? ""})`,
+    steps: steps
+      .filter((step) => runsIn(step, entry))
+      .map((step) => ({
+        commands: runOf(step) === SCRIPTS_LOOP ? scriptsRunBy(entry) : runOf(step),
+        step,
+      })),
+  }));
+}
+
+/**
+ * The commands a lane's scripts' loop runs: `npm run` of each of its scripts, in turn.
+ *
+ * @param entry - the lane's matrix entry
+ * @returns one `npm run <script>` per line
+ */
+function scriptsRunBy(entry: ReadonlyMap<string, string>): string {
+  return (entry.get("scripts") ?? "")
+    .split(" ")
+    .map((script) => `npm run ${script}`)
+    .join("\n");
 }
 
 /**
@@ -767,20 +811,25 @@ function missingTools(lines: readonly string[]): readonly string[] {
 
   return jobs
     .entries()
-    .flatMap(([key, job]) => {
-      const steps = stepsOf(job);
-      const waits = waitsFor(job);
-      const missing = steps.flatMap((step, index) => {
-        const given = toolsGiven(steps.slice(0, index), waits, uploads);
+    .flatMap(([key, job]) =>
+      runsOf(key, job).flatMap(({ name, steps }) => {
+        const waits = waitsFor(job);
+        const missing = steps.flatMap(({ commands }, index) => {
+          const given = toolsGiven(
+            steps.slice(0, index).map(({ step }) => step),
+            waits,
+            uploads,
+          );
 
-        return toolsCalled(commandsIn(runOf(step))).filter(
-          (tool) =>
-            !given.has(tool) && !(tool.startsWith("target/release/") && given.has(EVERY_BINARY)),
-        );
-      });
+          return toolsCalled(commandsIn(commands)).filter(
+            (tool) =>
+              !given.has(tool) && !(tool.startsWith("target/release/") && given.has(EVERY_BINARY)),
+          );
+        });
 
-      return [...new Set(missing)].map((tool) => `${key}: ${tool}`);
-    })
+        return [...new Set(missing)].map((tool) => `${name}: ${tool}`);
+      }),
+    )
     .toArray();
 }
 
@@ -1223,7 +1272,7 @@ describe("the tools of each job (EN-136)", () => {
     // Any cargo subcommand but Cargo's own and those of the pinned components (REF-CARGO-COMMANDS).
     expect(COMPONENTS).toStrictEqual(["rustfmt", "clippy", "llvm-tools"]);
     expect(toolsCalled("cargo nextest run && cargo build")).toStrictEqual(["cargo-nextest"]);
-    expect(toolsCalled("cargo fmt --check && cargo clippy && cargo metadata")).toStrictEqual([]);
+    expect(toolsCalled("cargo fmt --check && cargo clippy && cargo test")).toStrictEqual([]);
     expect(isCargoTool("fmt", ["clippy"])).toBe(true);
     expect(isCargoTool("fmt", COMPONENTS)).toBe(false);
     expect(isCargoTool("install", [])).toBe(false);
