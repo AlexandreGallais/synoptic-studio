@@ -25,4 +25,5 @@
 | [F21](./E17-F21-agent-tools-in-rust.md) | E17 | Agent tools and the library server in Rust | done |
 | [F22](./E17-F22-the-release-from-the-merge-into-main.md) | E17 | One story at a time, the release by a button, its CI green | done |
 | [F24](./E17-F24-the-ci-in-parallel-jobs.md) | E17 | The CI in parallel jobs, its tests shown as they run | done |
+| [F25](./E17-F25-the-test-lanes-rust-tools.md) | E17 | The test lane's Rust tools | in-progress |
 | [F23](./E02-F23-e17s-tool-incidents-fixed.md) | E02 | E17's tool incidents fixed | draft |

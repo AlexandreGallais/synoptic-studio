@@ -59,6 +59,7 @@ Ordered by the Product Owner at the refinement of 2026-10-16.
 | [F21](../features/E17-F21-agent-tools-in-rust.md) — Agent tools and the library server in Rust | done |
 | [F22](../features/E17-F22-the-release-from-the-merge-into-main.md) — One story at a time, the release by a button, its CI green (RET-004 and ADR-0086, 2026-10-18) | done |
 | [F24](../features/E17-F24-the-ci-in-parallel-jobs.md) — The CI in parallel jobs, its tests shown as they run (REV-006, 2026-10-18) | done |
+| [F25](../features/E17-F25-the-test-lanes-rust-tools.md) — The test lane's Rust tools (#370, 2026-10-18) | in-progress |
 
 F18 holds the stories decided at RET-003 (ADR-0063, ADR-0064, ADR-0065, ADR-0066), written then as F11 was at RET-001.
 

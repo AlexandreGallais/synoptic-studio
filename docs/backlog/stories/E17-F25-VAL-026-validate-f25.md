@@ -1,0 +1,22 @@
+---
+id: VAL-026
+epic: E17
+feature: F25
+title: Validate F25
+status: ready
+points: 1
+---
+
+# E17 · F25 · VAL-026 — Validate F25
+
+F25 is a tooling fix: the agent validates it by #370's `TypeScript tests` check (ADR-0072).
+
+## Acceptance criteria
+
+- Given #370's CI after F25's merge into `develop`, when it ends, then its `TypeScript tests` check passes.
+
+## Tasks
+
+- [ ] T1 — The check seen on #370 (main thread)
+
+One task = one commit, referenced as `VAL-026.T1`.
