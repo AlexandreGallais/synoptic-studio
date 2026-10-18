@@ -3,7 +3,7 @@ id: EN-126
 epic: E17
 feature: F25
 title: The test lane's Rust tools
-status: ready
+status: done
 points: 1
 ---
 
