@@ -45,3 +45,16 @@ The rules `release prepare` drafts by and `release check` checks, from the sourc
 | The version follows Semantic Versioning; before 1.0.0 a release raises the minor version for a feature or a breaking change | `REF-SEMVER` (Summary, FAQ) | — `release prepare` computes it |
 
 What release-please's 0.2.0 entry did against them, its 163 lines of changes in `CHANGELOG.md`: one line per commit, 29 under Features and 96 under Documentation; a feature's commits beside its own merge commit; the tooling's commits among the library's; scopes in bold instead of words; a commit referenced where a pull request exists; the breaking change in a block of its own, far from its group. GitHub's generated notes list the merged pull requests by label (`REF-GH-RELEASE-NOTES`): here stories and features, without what they change for a user.
+
+### How the draft is made
+
+`release prepare` (`tools/release/`) reads the commits since the last tag `vx.y.z` behind the head, each with the pull request that brought it (GitHub's merge commit `Merge pull request #n` on the first-parent line, or a squash merge's `(#n)`):
+
+- **kept**: `feat`, `fix`, `perf`, `refactor` and `revert` in a scope of the library or the playground (`geometry`, `interaction`, `io`, `math`, `model`, `playground`, `render`, `routing`) or without a scope; **left out**: `docs`, `test`, `chore`, `ci`, `build`, `style`, and the `tooling`, `ci`, `deps`, `docs`, `backlog` and `adr` scopes, and a revert with the commit it reverts when both are in the release;
+- **one line per story**, read from the commit's `Refs:` footer, titled by the story when it is a `US` or an `EN`, else by its oldest commit's description; a story's removals on a line of their own, so that a removal is always listed; a commit of no story is a line alone;
+- **its group**: `Removed` for a `feat` that starts with `remove` or `drop`, else `Added` when the line holds a `feat`, else `Fixed` when it holds a `fix`, else `Changed`; marked `**Breaking:**` when a commit has `!` or a `BREAKING CHANGE:` footer;
+- **the order**: the groups, then the breaking lines first, then by feature, the latest first, then the latest change first;
+- **its references**: its pull requests, else its commits, the best one alone beyond two (`REF-COMMON-CHANGELOG`, 2.4.2);
+- **the version**: a breaking line raises the minor version before 1.0.0 and the major one after, a `feat` the minor one, anything else the patch; a release whose commits are all left out is a patch whose entry holds only the notice `_No change to the library nor the playground: documentation and tooling only._`.
+
+It then prints, for each line, its group, feature, story and commits, the text of a breaking change with them. The agent rewrites each `[draft]` line from them in the imperative mood, as a user reads it, merges or splits lines that say one change or two, and runs `target/release/release check` until it passes.
