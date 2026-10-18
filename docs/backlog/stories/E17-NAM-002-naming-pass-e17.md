@@ -22,7 +22,7 @@ One task = one commit, referenced as `NAM-002.Tn`.
 - [x] T1 — The inventory: the calculations to name, the audit's findings, the times before (1 h)
 - [x] T2 — First pass: dates and times, the cooldown, the hash functions, named once each (3 h)
 - [x] T3 — Second pass and the epic's full audit: what the first missed, the Git helpers, the merge of the parallel branches (2 h)
-- [ ] T4 — Tooling and tests pass: claims proven twice, slow preparations, waits; the times after (2 h)
+- [x] T4 — Tooling and tests pass: claims proven twice, slow preparations, waits; the times after (2 h)
 
 ## No golden file
 
@@ -71,7 +71,7 @@ AUD-023's G left three findings to this story; the others come from reading E17'
 
 | Finding | Where | Done |
 | --- | --- | --- |
-| 25 `Command::new("git")` in 19 files, a dozen of them the same helper: its output, or its error output as the reason | `deps`, `format`, `git-hooks`, `heavy-lock`, `hooks`, `metrics`, `mutate`, `repo-tools`, `rule-docs`, `run-totals`, `secret-scan`, `shared-files`, `worktree` | merged (T3): `git_repository::stdout_of`, a crate of its own, takes the caller's command and gives its output or a `Failure` (not started, or exited with its words and error output); 17 helpers in 15 files call it, each keeping its own message and trim. Left with their own handling: `secret-scan`'s two (paths split from raw bytes at NUL; a child fed on its standard input), `git-sequences`' (its steps streamed, a message on standard input), `pre_commit`'s (a repository's own environment), `story_finish`'s step and status checks, `branches-clean`'s count and worktree removal (a status, or the error's first line as the reason kept) |
+| 25 `Command::new("git")` in 19 files, a dozen of them the same helper: its output, or its error output as the reason | `deps`, `format`, `git-hooks`, `heavy-lock`, `hooks`, `metrics`, `mutate`, `repo-tools`, `rule-docs`, `run-totals`, `secret-scan`, `shared-files`, `worktree` | merged (T3): `git_repository::stdout_of`, a crate of its own, takes the caller's command and gives its output or a `Failure` (not started, or exited with its words and error output); 15 helpers in 15 files call it, each keeping its own message and trim, and the three Git calls of `limit-agents` and `run-totals` are gone (below). Left with their own handling: `secret-scan`'s two (paths split from raw bytes at NUL; a child fed on its standard input), `git-sequences`' (its steps streamed, a message on standard input), `pre_commit`'s (a repository's own environment), `story_finish`'s step and status checks, `branches-clean`'s count and worktree removal (a status, or the error's first line as the reason kept) |
 | the checkout's Git folders found from the files Git writes, twice | `tool_use::checkout`, `hooks::git::checkout_of` | merged (T3): `git_repository::checkout_of`, with `branch_of`, `common_folder` and `lexical_join`, their tests moved from `hooks`; `tool_use::checkout` names the worktree from it. Its two tests' expected paths are now written joined, `main/.git` for `main/.git/worktrees/en-102/../..`: the same file, the line written there as before |
 | the Git common folder asked of Git by a hook and by a tool polled once a second | `limit-agents`, `run-totals` | read from Git's files, as the other hooks do (T3): `run-totals status` 15.1 → 4.9 ms, `limit-agents` 13.1 → 3.4 ms with its input piped (mean of 100 calls, twice, load average 2.8). `heavy-lock` and `metrics` keep `git rev-parse`: the lock's path is the one `GIT_DIR`, which a hook sets, and Git agree on |
 | `hooks::json` beside `serde_json` | every hook, `metrics`, `run-totals` | logged (AUD-023's row of the improvement log): every hook's input and output goes through it, and its `quote` and `number_text` write as `JSON.stringify` does, which `serde_json` does not for −0 and large numbers |
@@ -90,3 +90,52 @@ On this Mac, 2026-10-18, the worktree on `develop` at `695f3b62`, load average 3
 | --- | --- |
 | `npm run test` | 30.0 s (Vitest 29.6 s, 460 files, 3,315 tests) |
 | `npm run check:all` | 106.0 s (its report 103.3 s: `check:rust` 103.1, `test` 58.8, `lint` 23.7, the others in parallel) |
+
+## Times after
+
+The same Mac, the branch at T4 before its commit, `npm run test` then `check:all`, load average 3.9 to 4.4 at their start (18 at the end of `check:all`):
+
+| Command | Before | After |
+| --- | --- | --- |
+| `npm run test` | 30.0 s | 27.0 s (Vitest 26.6 s, 460 files, 3,317 tests: the two crates' membership tests added) |
+| `npm run check:all` | 106.0 s, the docs lane skipped | 83.9 s (its report 81.2 s: `check:rust` 80.9, `docs:build` 66.6, `test` 58.0, `lint` 7.5), the docs lane run since the story changed `docs/` |
+
+What this story's changes account for: at most 4 s of `check:rust`, the heavy lock's binary test (5.1 → 1.1 s), which runs beside the other tests; the rest of the difference is the load and Cargo's caches, not claimed. `check:rust` stays the longest lane (the improvement row on its split).
+
+## Tooling and tests pass
+
+| Item | Found | Done |
+| --- | --- | --- |
+| a claim proven twice | `f18_ac9_counts_a_subagent_resumed_by_a_message_until_its_notification` in `hooks/tests/tasks.rs` and in `hooks/tests/status.rs`: the resumed task's label, start and end, and a message only queued, asserted at both levels | the status test keeps what the tally adds, the turn kept open then done, as `f18_ac9_keeps_the_turn_open_while_a_resumed_subagent_runs`; the task's values stay `tasks.rs`' |
+| a claim proven twice | the dates of `shared-files`, the instants of `tool-use`, the days of `hooks`, the minute of `epic-check`, the Temporal instants of `hooks::record` and `records-save`, and two tests of `short_duration` | one test each in `tools/calendar` and `hooks/tests/time.rs` (T2), their cases kept |
+| a claim proven twice, the library's | the same title at two levels: `[F07.AC3]` in `fitInBox` and `regularPolygonContour`, `[F12.AC2]` in three files, `[F12.AC7]`, `[F14.AC2]`, `[F16.AC4]`, a slider's key in the model and the picker's panel | logged for E02's naming pass (improvement row below): code of `src/` and `playground/`, which E17 did not change, each to read against ADR-0070's levels |
+| a wait | `heavy-lock` looked at a held lock every 5 s: a waiting heavy command started up to 5 s after the lock freed, 2.5 s on average, and its binary's test waited the 5 s | each second (T4): the test 5.1 → 1.1 s; a look opens a file and tries its lock |
+| a wait | `story-finish` reads the pull request's state every 10 s, 5 s on average after GitHub merged it | logged: halving it doubles the `gh` calls of a merge, and the readings' count is pinned by its test at 18 |
+| a slow step | `check:rust` runs its steps one after the other: coverage 53.4 s, the Windows check 17.4, Clippy 11.2, rustfmt 0.9, the advisories 0.5, `rust:fresh` 0.7 — 84 s, the longest lane of `check:all` (103.1 s under the load of the other lanes) | logged: the coverage, in its own target folder, could run in a lane of its own beside the rest; F19.AC9 names one `rust` lane, so the split is a story's, its criterion reworded |
+| a slow step | the hooks and `run-totals status` started Git for the common folder | read from Git's files (T3): `run-totals status` 15.1 → 4.9 ms, `limit-agents` 13.1 → 3.4 ms |
+| slow tests, the library's | `parseFontFace` reads Inter's metrics three times in one test (4.9 s), `exactColorToHex`'s two sweeps (3.2 and 3.1 s), the F15 guided steps measuring with a second family (1.9 and 1.7 s) | logged for E02's naming pass, beside the claims above: their timeouts say why they are long |
+| shareable test code | 15 test files each write their own `git` helper: a test identity, `commit.gpgsign=false`, a home of its own, its output trimmed or its status asserted | logged: a `test_support::git` would hold the common part; each file's own configuration (`init.defaultBranch`, `core.hooksPath`, dates) makes it a story's |
+| VAL-022's improvement | `f21_ac2_reports_the_main_checkouts_work_from_a_worktree_its_findings_included` failed under `cargo test --release`: a release build records its own use, which the second report lists | fixed (T4): the record removed before the second report; seen failing under `--release` without it, passing in both profiles with it |
+
+`mutate` and the coverage floors show nothing escapes: `npm run mutate` caught every mutation of `tools/calendar` but three unreachable fallbacks, and the coverage of the workspace stays above its floor in `check:all` (below).
+
+## For the main thread
+
+Rule-docs: none affected, a naming pass over the tooling, no rule of `docs/domain/` changed.
+
+### Journal
+
+- `#run` VAL-022: F21 validated by the agent (ADR-0072): its nine criteria proven again (1,554 Rust tests, 16 TypeScript tests tagged `[F21.ACn]`), F21.AC9 worded as AUD-023 extended its check, 12 lines in E17's checklist, the demo page `docs/guide/f21-agent-tools-in-rust.md`. `guard-bash` 58.8 → 3.0 ms, the status line 180 → 23 ms with a run open (a quarter of a core → 2.3 %), the library's server start 86 → 3.9 ms, `metrics` 9.4 → 0.51 s, the secret scan 970 → 112 ms, a commit's hooks 716 → 356 ms, `check:all` 170–217 s at E17's start → 74.9 s, dev packages 38 → 13; the notes of 0.2.0 from 163 change lines to 14. Six decisions for the Product Owner to confirm: `AGENT_LIBRARY_FILE` (ADR-0077), the binaries by their path (ADR-0078), the release branch from `develop` (ADR-0079), one Git command through read-only filters (EN-104), `run-totals status` not recorded (EN-102), the story worker on Opus (EN-066).
+- `#tooling` NAM-002: E17's naming pass and full audit. Two crates hold what the tools wrote apart: `tools/calendar` (the dates of nine crates, `REF-HINNANT-DATES`, `REF-TEMPORAL-INSTANT`) and `tools/git-repository` (a checkout's folders from Git's files, a Git command's output, called by 15 helpers in 15 files); the cooldown and RFC 6234's functions named; `run-totals status` 15.1 → 4.9 ms and `limit-agents` 13.1 → 3.4 ms without starting Git; the heavy lock looks again each second instead of every 5 s; VAL-022's release-build test fixed. Left for later: the hooks' JSON reader, the guard's text matchers, two Semantic Versioning readers, five story-id readers, the `rust` lane's split, the library's claims tested at two levels.
+- `#run` The run authorised for F20, F21, then NAM-002 ended with NAM-002 brought to its review: E17's closing goes on with REV-004 and RET-004.
+
+### Improvements
+
+| 2026-10-18 | VAL-022 | `f21_ac2_reports_the_main_checkouts_work_from_a_worktree_its_findings_included` fails under `cargo test --release`, the way VAL-021 ran its tests, since a release build of `metrics` records its own use in the test's repository and its second report differs from its first; `check:all` runs a debug build and passes. Removing `tool-uses.jsonl` before the second report, or comparing all but its Tools section, would make the test hold in both profiles | tool |
+| 2026-10-18 | NAM-002 | The guard's worktree forms (`guard.rs`: `after_spaces`, `starts_with_word`, `cd_target`…) still match text, beside the word reader of `shell.rs` that AUD-023 gave the forbidden commands; moving them onto the reader changes what the guard refuses in a worktree, so it needs a story of its own with AUD-023's table of cases | tool |
+| 2026-10-18 | NAM-002 | Two readers of Semantic Versioning: `deps::version` (pre-releases, Cargo's compatibility) and `release::version` (`x.y.z` and its bump); one crate `semver` would serve both, the release tool refusing a pre-release as it does now | code |
+| 2026-10-18 | NAM-002 | The story id of a branch is read five ways (`shared_files::shared::story_of`, `worktree::story_of_branch`, `git_hooks::footer::story_of_branch`, `hooks::handback::story_of`, the status line's prefixes), which accept different branches (three digits or any, the types listed or any word): one reader, its accepted forms decided once | code |
+| 2026-10-18 | NAM-002 | `check:rust` runs the coverage (53 s), the Windows check (17 s) and Clippy (11 s) one after the other, the longest lane of `check:all`; the coverage, in its own target folder, could be a lane of its own, bringing the `rust` lane to about the coverage alone; F19.AC9 names one `rust` lane, so its wording changes with it | tool |
+| 2026-10-18 | NAM-002 | `story-finish` reads the pull request's state every 10 s, 5 s on average after GitHub merges it; every 5 s would halve that for twice the `gh` calls, its readings' count (18, tested) doubled with it | tool |
+| 2026-10-18 | NAM-002 | 15 Rust test files each write their own `git` helper (a test identity, `commit.gpgsign=false`, a home, the output trimmed or the status asserted): a `test_support::git` holding the common part, each file adding its own configuration | tool |
+| 2026-10-18 | NAM-002 | For E02's naming pass, the library's tests: the same criterion asserted at two levels (`[F07.AC3]` in `fitInBox` and `regularPolygonContour`, `[F12.AC2]` in three files, `[F12.AC7]`, `[F14.AC2]`, `[F16.AC4]`, a slider's key in the model and the picker's panel), each to read against ADR-0070's levels; and the slowest tests: `parseFontFace` reading Inter's metrics three times (4.9 s), `exactColorToHex`'s two sweeps (3.2 and 3.1 s), the F15 guided steps measuring with a second family (1.9 and 1.7 s) | code |

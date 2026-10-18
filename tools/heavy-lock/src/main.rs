@@ -13,8 +13,10 @@ use heavy_lock::{
     LockOwner, Request, command_name, lock_and_command, lock_file, now, owner_variable, run_locked,
 };
 
-/// Time between two looks at a lock held by another command.
-const POLL: Duration = Duration::from_secs(5);
+/// Time between two looks at a lock held by another command: a waiting command starts at most a
+/// second after the lock frees (5 s until NAM-002, ADR-0069); a look opens a file and tries its
+/// lock, nothing more.
+const POLL: Duration = Duration::from_secs(1);
 
 /// The Git common directory, shared by every worktree, as Git gives it: the lock's path must be
 /// the one every worktree and `GIT_DIR` set by a hook agree on (`REF-GIT-REV-PARSE`).

@@ -46,7 +46,10 @@ fn f21_ac2_reports_the_main_checkouts_work_from_a_worktree_its_findings_included
     assert!(text.contains("\n\n## Sources\n\n"));
     assert!(repo.join(".git/metrics/transcripts-cache.jsonl").is_file());
 
-    // Read again from the cache, the same report.
+    // Read again from the cache, the same report. A release build records its own use in the
+    // repository's `tool-uses.jsonl`, which the second report's Tools section would list: the
+    // record removed first, the test holds under `cargo test --release` too (VAL-022, NAM-002).
+    let _ = fs::remove_file(repo.join(".git/metrics/tool-uses.jsonl"));
     assert_eq!(stdout(&metrics(&worktree, &home, &[])), text);
     let _ = fs::remove_dir_all(&home);
 }
