@@ -1,8 +1,8 @@
 # Tool incidents
 
-One card per time a tool failed or did not do what was needed: how it was used, why it failed, what was done instead (ADR-0085). A tool is never fixed during an epic's work: the cards are read at the epic's retrospective, at its "method and tools" point, and the tools change in the stories it decides. Written by the main thread at merge; a worker's card goes into its story file under `### Incidents`.
+One card per time a tool failed or did not do what was needed: how it was used, why it failed, what was done instead (ADR-0085). A tool is never fixed during a feature's work: the cards are read at the next review, held at each return of the Product Owner, at its "method and tools" point, and the tools change in that review or in the stories it decides (ADR-0086). Written by the main thread at merge; a worker's card goes into its story file under `### Incidents`.
 
-The cards of E17 were decided at RET-004 ([record](./retrospectives/E17-retrospective.md), C1 to C9): their fixes are the stories of [F23](../backlog/features/E02-F23-e17s-tool-incidents-fixed.md), C3's auto-merge and C7 parked until RET-005.
+The cards of E17 were decided at RET-004 ([record](./retrospectives/E17-retrospective.md), C1 to C9): their fixes are the stories of [F23](../backlog/features/E02-F23-e17s-tool-incidents-fixed.md), C3's auto-merge and C7 parked until the next review (ADR-0086).
 
 ## 2026-10-18 — `worktree-new EN-114`
 
@@ -56,3 +56,27 @@ The cards of E17 were decided at RET-004 ([record](./retrospectives/E17-retrospe
 
 - Seen (REV-004): the main checkout's `target/release/guard-bash` predated EN-115: a PR merged on GitHub (#359) leaves the main checkout's binaries stale, since only `story-finish` and `git-sequences sync` rebuild them.
 - Instead: `npm run rust:build` in the main checkout.
+
+## 2026-10-18 — `replace` without an argument
+
+- Used: `target/release/replace` alone, to see its usage, by the main thread and by EN-117's worker.
+- Failed: it prints nothing and waits on its standard input until the call's 120 s timeout.
+- Instead: the Edit tool, or a short script for a multi-file change.
+
+## 2026-10-18 — `worktree-new` from the main checkout for a story only on its feature branch
+
+- Used: `target/release/worktree-new EN-123` in the main checkout, on `develop`, while EN-123's file was only on `feature/f22-release-by-a-button`.
+- Failed: `no file E…-EN-123-<topic>.md in docs/backlog/stories/`: it reads the story files of the checkout it runs in.
+- Instead: run from a worktree of the feature branch.
+
+## 2026-10-18 — `story-automerge.yml` for an epic's refinement `SP`
+
+- Used (found by AUD-024, not yet met in a run): an epic's refinement, an `SP` from `develop` (`/spike`, ADR-0086), finished by `story:finish develop …` with the `autonomous` label.
+- Fails: the workflow lets into `develop` only `feature/f<nn>-…` and `…/rev-<nnn>-…` heads (`.github/workflows/story-automerge.yml`, its branch check), so the `SP`'s pull request is refused and `story:finish` waits 3 minutes for a merge that never comes.
+- Instead: the spike and run skills say the Product Owner merges an epic's `SP`, its pull request opened by `gh pr create`; whether the auto-merge should take it is a question for the next review.
+
+## 2026-10-18 — `npm run fix` on a checklist barrel
+
+- Used: `npm run fix` after VAL-023's checklist lines, as at VAL-022.
+- Failed: it rewrote `export type * from "./checklist-line"` into `export *` in `playground/checklists/index.ts`, a type-only re-export turned into a value one.
+- Instead: the line set back by hand; `tests/barrels.test.ts` passes.

@@ -9,7 +9,7 @@ points: 3
 
 # E02 · F23 · EN-118 — Stories outside a feature, and the cards as a log
 
-From the cards C1, C3, C4 and C6 and the row I50 (RET-004), and ADR-0085's consequences. The story auto-merge into `develop` stays parked until RET-005.
+From the cards C1, C3, C4 and C6 and the row I50 (RET-004), and ADR-0085's consequences. The story auto-merge into `develop` stays parked until the next review (ADR-0086).
 
 ## Acceptance criteria
 

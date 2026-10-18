@@ -1,6 +1,6 @@
 # ADR-0083 — The release made by the merge into `main`: the version from the tags, no release branch nor version commit
 
-**Status**: Accepted (Product Owner, 2026-10-18, RET-004, option B of the retrospective's P2). Supersedes ADR-0079: its release branch, its commit `chore: release x.y.z` and the version and changelog committed before the merge. ADR-0079's decision 3 stays in substance: `release publish` makes the GitHub release on `main` with `GITHUB_TOKEN`, without a commit; and its decision 4, `develop` following `main` after a release. Implemented by [EN-117](../backlog/stories/E17-F22-EN-117-release-from-the-merge-into-main.md).
+**Status**: Superseded by ADR-0086 (2026-10-18, during F22's run: the merge into `main` deploys the site only, the release is a button). Accepted (Product Owner, 2026-10-18, RET-004, option B of the retrospective's P2). Supersedes ADR-0079: its release branch, its commit `chore: release x.y.z` and the version and changelog committed before the merge. ADR-0079's decision 3 stays in substance: `release publish` makes the GitHub release on `main` with `GITHUB_TOKEN`, without a commit; and its decision 4, `develop` following `main` after a release. Implemented by [EN-117](../backlog/stories/E17-F22-EN-117-release-from-the-merge-into-main.md).
 
 ## Context
 

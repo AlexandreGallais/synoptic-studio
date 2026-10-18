@@ -118,18 +118,19 @@ fn f19_ac5_check_refuses_an_unformatted_file_and_skips_ignored_pages() {
     let folder = repository("code");
     let code = folder.join("code.ts");
     let ignored = "| a | b |\n| ---- | - |\n";
+    // A generated page, under a path `.oxfmtrc.json` ignores (`CHANGELOG.md` was the root's one
+    // until EN-117 deleted it).
+    let page = folder.join("docs/api/page.md");
 
     fs::write(&code, "const  a = {b:1}\n").unwrap();
-    fs::write(folder.join("CHANGELOG.md"), ignored).unwrap();
+    fs::create_dir_all(page.parent().unwrap()).unwrap();
+    fs::write(&page, ignored).unwrap();
 
-    assert!(!format(&folder, &["--check", "*"]).status.success());
-    assert!(format(&folder, &["--write", "*"]).status.success());
+    assert!(!format(&folder, &["--check", "*", "docs"]).status.success());
+    assert!(format(&folder, &["--write", "*", "docs"]).status.success());
     assert_eq!(fs::read_to_string(&code).unwrap(), "const a = { b: 1 };\n");
-    assert_eq!(
-        fs::read_to_string(folder.join("CHANGELOG.md")).unwrap(),
-        ignored
-    );
-    assert!(format(&folder, &["--check", "*"]).status.success());
+    assert_eq!(fs::read_to_string(&page).unwrap(), ignored);
+    assert!(format(&folder, &["--check", "*", "docs"]).status.success());
     fs::remove_dir_all(&folder).unwrap();
 }
 

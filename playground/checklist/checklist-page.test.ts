@@ -194,22 +194,23 @@ describe("[F17.AC8] E15's checklist (US-051)", () => {
   );
 });
 
-describe("[F18.AC12] [F19.AC8] E17's checklist on the page (VAL-019 to VAL-022)", () => {
-  it("lists F18's 12 lines, F19's 12, F20's 12, then F21's 12, one check box each, each with its own thing to try", () => {
+describe("[F18.AC12] [F19.AC8] E17's checklist on the page (VAL-019 to VAL-023)", () => {
+  it("lists F18's 12 lines, F19's 12, F20's 12, F21's 12, then F22's 12, one check box each, each with its own thing to try", () => {
     openServedPage("?checklist=E17");
 
     expect(readText("#checklist-name")).toBe("E17");
-    expect(readBoxes()).toHaveLength(48);
+    expect(readBoxes()).toHaveLength(60);
 
     const todos = new Set(EPIC_17_CHECKLIST.map((line) => line.todo));
 
-    expect(todos.size).toBe(48);
+    expect(todos.size).toBe(60);
 
     expect(EPIC_17_CHECKLIST.map((line) => line.feature)).toEqual([
       ...Array.from({ length: 12 }, () => "F18"),
       ...Array.from({ length: 12 }, () => "F19"),
       ...Array.from({ length: 12 }, () => "F20"),
       ...Array.from({ length: 12 }, () => "F21"),
+      ...Array.from({ length: 12 }, () => "F22"),
     ]);
   });
 
@@ -358,6 +359,63 @@ describe("E17's checklist, F21's lines (VAL-022)", () => {
     "names no tool F21 removed: %s",
     (tool) => {
       expect(text).not.toContain(tool);
+    },
+  );
+});
+
+describe("E17's checklist, F22's lines (VAL-023)", () => {
+  const text = EPIC_17_CHECKLIST.filter((line) => line.feature === "F22")
+    .map((line) => `${line.todo} ${line.see}`)
+    .join("\n");
+
+  it.each([
+    "GITHUB_ACTIONS=true",
+    "TS2322",
+    "--format agent",
+    "cargo metadata failed (exit 101)",
+    "pull request develop → main",
+    "0.0.0-development",
+    "ls CHANGELOG.md",
+    "workflow_dispatch",
+    "target/release/release notes",
+    "57 lines",
+    "target/release/release check",
+    "no heading but its groups'",
+    "f22_ac3_",
+    "dependabot",
+    "Run workflow on main",
+    "v0.3.0 on main's head",
+    "--merge",
+    "One agent at a time",
+    "f22_ac4_",
+    "_review.md",
+    "F22.AC5",
+  ])("names the command or the output to see: %s", (option) => {
+    expect(text).toContain(option);
+  });
+
+  it.each([
+    "Decision to confirm (EN-116): the format named",
+    "Decision to confirm (EN-116): the CI fetches",
+    "Decision to confirm (EN-117): release prepare is gone",
+    "Decision to confirm (EN-117): a body's release text ends",
+    "Decision to confirm (EN-117): only the library's",
+    "Decision to confirm (AUD-024)",
+  ])("names the decision to confirm: %s", (line) => {
+    expect(text).toContain(line);
+  });
+
+  it.each(["pending until that review"])(
+    "leaves the runs only GitHub shows for the next review: %s",
+    (word) => {
+      expect(text.split(word)).toHaveLength(3);
+    },
+  );
+
+  it.each(["release:prepare", "release/0.3.0", "CHANGELOG.md:", "chore: release", "epic's end"])(
+    "names nothing of the flow F22 replaced: %s",
+    (word) => {
+      expect(text).not.toContain(word);
     },
   );
 });

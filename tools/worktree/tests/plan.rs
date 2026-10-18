@@ -95,7 +95,9 @@ fn refuses_a_remote_name_as_a_branch() {
 }
 
 #[test]
-fn starts_from_the_one_feature_branch_on_github() {
+fn f22_ac4_starts_from_the_one_feature_branch_on_github_a_review_from_develop() {
+    // [F22.AC4] A story of a feature starts from its feature branch, a `REV` from `develop`
+    // (ADR-0086).
     assert_eq!(
         base_branch(Some("F18"), &remotes()).as_deref(),
         Ok("origin/feature/f18-safe-and-cheap-parallel-run")

@@ -1,8 +1,8 @@
-# E00 — Retrospective
+# REV-000 — Retrospective
 
-**Dates**: YYYY-MM-DD. **Story**: RET-000. **Participants**: Product Owner, Claude Code.
+**Date**: YYYY-MM-DD. **Story**: REV-000, the method's part of the review. **Features reviewed**: F00 to F00. **Participants**: Product Owner, Claude Code.
 
-One paragraph: what the epic delivered and what the retrospective changed.
+One paragraph: what was delivered since the last merge into `main` and what the review changed.
 
 ## 1. Facts
 

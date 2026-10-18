@@ -21,8 +21,8 @@ A library of small named functions, each backed by a verified source, composed s
 | E01 shapes from numbers | delivered, RET-001 | rectangle, regular polygon, anchor, radius per corner, free shape, node editing, rotation, stretched polygon |
 | E14 curves | delivered, RET-002 | points with handles, the round shape as four cubic sides, every calculation named (ADR-0046 to ADR-0049) |
 | E15 text | delivered, RET-003 | font metrics from font files, a text in a box, colors, fonts embedded at export, the checklist page `?checklist=E15` (ADR-0052 to ADR-0062) |
-| E17 fast tooling, Oxc and Rust | in progress | F18 to F21 done: F18 and F19 validated (checks on Oxc, TypeScript 7 and Rust); F20 validated on 2026-10-18 (VAL-021: the context diet, a story worker's first request from 38,900 tokens to 10,600, the agent pages −20 %); F21 validated on 2026-10-18 (VAL-022: every tool of our own in Rust, a hook 3 ms instead of 59, `check:all` about 75 s, 13 dev packages, the release by our own tool); NAM-002, REV-004 and RET-004 done (ADR-0083 to ADR-0085); F22 next (the CI green, the release made by the merge into `main`), then 0.3.0, which closes E17 |
-| E02 edit shapes | next | F23 first, E17's tool incidents fixed; then small features under ADR-0084 |
+| E17 fast tooling, Oxc and Rust | in progress | F18 to F21 done: F18 and F19 validated (checks on Oxc, TypeScript 7 and Rust); F20 validated on 2026-10-18 (VAL-021: the context diet, a story worker's first request from 38,900 tokens to 10,600, the agent pages −20 %); F21 validated on 2026-10-18 (VAL-022: every tool of our own in Rust, a hook 3 ms instead of 59, `check:all` about 75 s, 13 dev packages, the release by our own tool); NAM-002, REV-004 and RET-004 done (ADR-0083 to ADR-0085); F22 done, validated by the agent on 2026-10-18 (VAL-023: the CI green on GitHub's runner, the release by a button from the tags, one story at a time, a review at each return, ADR-0086); 0.3.0 at the next review, its CI of `develop` → `main`, then the button |
+| E02 edit shapes | next | F23 next, E17's tool incidents fixed; then small features under ADR-0084 |
 
 **Scope** (ADR-0030): a finished free V1, then new features only in a paid pro edition. A request that looks pro: say so and ask; pro ideas go to `docs/domain/editions.md`. Only `ready` stories are implemented; the Product Owner's `/run` is the go-ahead, after which the agent sets its scope `ready` itself (ADR-0072).
 
@@ -72,19 +72,21 @@ Each is a step the project cannot take back cheaply; hooks refuse most of them, 
 - A runtime dependency (`dependencies` stays empty); a dev package or crate without its row in `docs/tooling/dependencies.md`, its release notes read and a version at least 7 days old.
 - A new script, hook or agent tool in TypeScript: every new one is a Rust crate of `tools/`, checked by `check:rust` (ADR-0073).
 - A lint rule disabled to make code pass: fix the code, or tell the Product Owner the rule is wrong.
-- An epic or feature set `ready` outside a `/run`; a pull request merged by the agent; a push to `main`; `--no-verify`; a force push without lease, or any force push on a feature branch but its rebase onto `develop` before its validation, with lease (ADR-0084).
-- A tool fixed during an epic's work: a tool that fails is worked around and written as a card in `docs/process/tool-incidents.md`, fixed at the epic's end (ADR-0085).
+- An epic or feature set `ready` outside a `/run`; a pull request merged by the agent; a push to `main`; `--no-verify`; a force push without lease, or any force push on a feature branch, `develop` or `main` (ADR-0086).
+- A tool fixed during a feature's work: a tool that fails is worked around and written as a card in `docs/process/tool-incidents.md`, fixed at the next review (ADR-0085, ADR-0086).
 
 ## Work
 
 | Level | Flow |
 | --- | --- |
-| Feature | 2 to 4 stories, one feature at a time: research before the refinement (`SP` spike) → `US` / `EN` stories (`CHK` midway from 5) → `AUD` audit → `VAL` checklist and demo page (ADR-0020, ADR-0084) |
-| Epic | its features → `NAM` naming pass over the whole code → `REV` review → `RET` retrospective, with the agent's method and tools (ADR-0023, ADR-0049, ADR-0074) |
-| Branch | `main` releases only; `develop` integration, nothing pushed to it while a feature is open; `feature/f<nn>-<topic>` from `develop` once the previous feature merged; `<type>/<id>-<topic>` per story from its feature (ADR-0072, ADR-0084) |
-| Merge | story → feature by rebase, by the Product Owner or, in a run, by GitHub; feature → `develop` by a merge commit once validated (a tooling feature validated by the agent); `develop` → `main` when the Product Owner asks, by them (ADR-0072) |
+| Feature | 2 to 4 stories of at most 3 tasks, one feature at a time: a short `SP` first on its branch when questions remain → `US` / `EN` stories → `AUD` audit → `VAL` checklist and demo page; a larger feature or story is not written: its split is proposed to the Product Owner, with an example (ADR-0020, ADR-0084, ADR-0086) |
+| Epic | a list of features grouped by theme, with no closing: its refinement an `SP` from `develop` (the Product Owner's account, the documentary research, the features cut); the naming pass, the review and the method at each review (ADR-0086) |
+| Branch | `main` the reviewed work; `develop` integration, nothing pushed to it while a feature is open; `feature/f<nn>-<topic>` from `develop` once the previous feature merged, deleted after its merge; `<type>/<id>-<topic>` per story from its feature, a `REV`'s from `develop` (ADR-0072, ADR-0084, ADR-0086) |
+| Merge | every merge a merge commit: story → feature, by the Product Owner or, in a run, by GitHub; feature → `develop` once validated (a tooling feature validated by the agent); `REV` → `develop`, then `develop` → `main` by the Product Owner, after each review (ADR-0086) |
+| Review | at each return of the Product Owner, once or twice a day: a feature under way is finished first, then a `REV` from `develop` holds the review of the features finished since the last merge into `main`, the naming pass over the code changed since then, the tool incident cards fixed, the method's improvements decided with the Product Owner and the docs brought up to date (ADR-0086) |
 | Story | `T1` the interface and its tests, failing, `T2` the code that passes them, one commit per task (`Refs: <ID>.Tn`), `done` in the last (`Closes: <ID>`), a test card for a `US`, a pull request into its feature (ADR-0084) |
-| Parallel work | at most three subagents and one heavy command at a time, the shared files written by the main thread at merge; researchers only on separate topics, a note each; two agents per story, tests and code, as a trial in E02 (ADR-0065, ADR-0072, ADR-0084) |
+| One agent at a time | one story at a time, a fresh worker for each in the background, never one agent chaining stories (its cost is its context re-read at each call, not its start); a review or a research alone too; one heavy command at a time; the shared files written by the main thread at merge (ADR-0065, ADR-0072, ADR-0086) |
+| Specialists | only where their independence pays: the `auditor`, and the `verifier` when tests need a second look, at a feature's audit; the `math-expert` and the `functional-analyst` only for a story holding mathematics or business rules to check, never by default; no agent for small tasks: the main thread writes the statuses, the journal, the `done` commits and the merges itself, the `clerk` unused (ADR-0086) |
 | Checks | local on work branches (`pre-push` runs `check:all`); one CI, on the pull request into `main`, never waited for elsewhere; checks by level, the depth in the feature's audit (ADR-0064, ADR-0072) |
 
 ## Definition of done
@@ -111,7 +113,7 @@ Stop when going on would mean deciding what belongs to someone else, or guessing
 
 - Commits follow Conventional Commits with a scope of the closed list `SCOPES` in `tools/git-hooks/src/message.rs` (`docs/process/` takes `docs(docs)`, a derivation `docs(geometry)`); the subject starts with a verb, since an id first (`F11 …`) is refused as sentence case; a body line starting with `word:` is read as a footer, so the colon goes later in the line.
 - A commit refused by a hook leaves its files staged: check `git status` before retrying.
-- A release is made by the Product Owner's merge of `develop` into `main` from 0.3.0 (ADR-0083, once EN-117 lands); until then it is prepared on `release/x.y.z` from `develop` by `target/release/release prepare` and published from `main` by `release publish` (ADR-0079, `docs/tooling/releases.md`); after it, bring `develop` up to `main` (`git merge --ff-only origin/main`, a merge if `develop` moved) and delete the release branch.
+- The pull request `develop` → `main` of a review has for body the features' text, drafted by `target/release/release notes` and checked by `target/release/release check <file>`; after its merge, bring `develop` up to `main` (`git merge --ff-only origin/main`, a merge if `develop` moved). A release is the Product Owner's button on `main`, `release publish` computing the version from the tags, with no commit (ADR-0086, `docs/tooling/releases.md`).
 - The release needs no personal token, `GITHUB_TOKEN` alone: remind the Product Owner to delete the secret `RELEASE_PLEASE_TOKEN` and its token on GitHub until they say it is done.
 
 ## Commands

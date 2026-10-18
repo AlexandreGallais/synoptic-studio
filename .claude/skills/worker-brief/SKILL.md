@@ -6,7 +6,7 @@ user-invocable: false
 
 # Worker brief (ADR-0072)
 
-How a run's worker works one story in its own worktree. The `story-worker` and `researcher` types start with this brief and `project-rules` preloaded, without `CLAUDE.md` nor `AGENTS.md` (EN-065); a `general-purpose` worker is given this file's path inside its worktree and reads `AGENTS.md` and `CLAUDE.md` too. The main thread's prompt names the story, its feature branch and its worktree.
+How a run's worker works one story in its own worktree. The `story-worker` and `researcher` types start with this brief and `project-rules` preloaded, without `CLAUDE.md` nor `AGENTS.md` (EN-065); a `general-purpose` worker is given this file's path inside its worktree and reads `AGENTS.md` and `CLAUDE.md` too. The main thread's prompt names the story, its feature branch and its worktree. A run works one story at a time, one worker for it, in the background (ADR-0086).
 
 ## Setup
 
@@ -32,7 +32,7 @@ How a run's worker works one story in its own worktree. The `story-worker` and `
 
 ## Shared files (ADR-0065)
 
-Several workers run at once, so the files every story touches are written only by the main thread, at merge: the indexes of `docs/backlog/`, the logs (`journal.md`, `improvements.md`, `feedback.md`), the feature file and the checklists (`playground/checklists/epic-*`). The pre-push hook refuses a branch that changes one and names it (EN-050).
+The files every story touches are written only by the main thread, at merge, so that a story's pull request never conflicts with the rows the main thread wrote meanwhile: the indexes of `docs/backlog/`, the logs (`journal.md`, `improvements.md`, `feedback.md`), the feature file and the checklists (`playground/checklists/epic-*`). The pre-push hook refuses a branch that changes one and names it (EN-050).
 
 A row meant for a log goes in the story file, under `## For the main thread`, beneath `### Journal`, `### Improvements` or `### Feedback`, written as the log writes it; `story:finish` moves it at merge:
 
@@ -52,8 +52,10 @@ Between heavy commands, run single test files only (`npx vitest run <paths>`), n
 - **Push once the tasks are done**: `--push` on the last task's `target/release/git-sequences commit`, or `git push -u origin HEAD`. Never a force push; after a `git-sequences sync` that moved a pushed story branch, `--force-with-lease`.
 - **Stop before the pull request and the `done` commit**: the main thread makes that commit in the worktree, since it writes the shared files, then runs `story:finish`.
 - **A rule changed in `docs/domain/`** brings, in the story's tasks, the Q row of `docs/domain/README.md`, the decisions to confirm of its feature's `VAL` and its guide page; the `done` commit's hook refuses the story otherwise (`tools/rule-docs`, EN-059). A doc the change does not affect: say so in the report, with its reason, for the footer `Rule-docs: none affected, <why>`.
-- **A tool that fails or does not do what was needed** is worked around, never fixed in the story: the report names it, how it was used, why it failed and what was done instead, for the main thread's incident card (2026-10-18).
+- **A tool that fails or does not do what was needed** is worked around, never fixed in the story: the report names it, how it was used, why it failed and what was done instead, for the main thread's incident card, fixed at the next review (ADR-0085, ADR-0086).
 - **A business question stops the story, not the run**: a rule missing, or code, domain and ADRs that contradict each other. Push what is done, then report the question, what was read and the options, without choosing; the main thread parks the story and goes on with independent work.
+- **One story, then the end**: a worker is started fresh for one story and never takes a second, since its cost is its context re-read at each call (ADR-0086); it starts no subagent, a specialist being the main thread's call where its independence pays.
+- **A story of more than 3 tasks, or a feature of more than 4 stories**, is not worked as written: report it with a proposed split and an example, for the Product Owner (ADR-0084, EN-123).
 
 ## Final report
 

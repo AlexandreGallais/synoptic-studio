@@ -83,6 +83,12 @@ static MERGED: LazyLock<Regex> = LazyLock::new(|| {
         .unwrap_or_else(|_| unreachable!("a valid pattern"))
 });
 
+/// The head GitHub's merge commit names, `owner/branch`: the branch after the owner's `/`.
+static MERGED_BRANCH: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"^Merge pull request #[0-9]+ from [^/\s]+/(\S+)$")
+        .unwrap_or_else(|_| unreachable!("a valid pattern"))
+});
+
 /// A subject's header, `None` for a subject outside Conventional Commits (`Revert "…"`).
 #[must_use]
 pub fn header(subject: &str) -> Option<Header> {
@@ -170,4 +176,13 @@ pub fn merged_pull_request(subject: &str) -> Option<u32> {
     MERGED
         .captures(subject)
         .and_then(|captures| captures[1].parse().ok())
+}
+
+/// The head branch a merge commit's subject names, its owner left out: `dependabot/cargo/x` for
+/// GitHub's `Merge pull request #340 from owner/dependabot/cargo/x`.
+#[must_use]
+pub fn merged_branch(subject: &str) -> Option<String> {
+    MERGED_BRANCH
+        .captures(subject)
+        .map(|captures| captures[1].to_owned())
 }

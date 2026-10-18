@@ -1,19 +1,18 @@
-//! Tests of the release's pure parts (EN-112, F21.AC6): the version and its bump, a commit read,
-//! the draft's lines, groups, order and references, the changelog written and read back, the
-//! manifests' versions. `f21_ac6_` marks a test proving the feature's criterion.
+//! Tests of the release's pure parts (EN-112, F21.AC6; EN-117, F22.AC2): the version and its
+//! bump, a commit read, the draft's lines, groups, order and references, the release text written,
+//! read and joined into a release's notes, the repository's address. `f21_ac6_` and `f22_ac2_`
+//! mark a test proving a feature's criterion.
 
 use std::collections::HashMap;
 
 use release::backlog::{Backlog, Item, item};
-use release::changelog::{HEADER, heading_version, notes, with_entry};
-use release::commit::{Commit, header, merged_pull_request};
+use release::body::{Text, joined, release_text, text, written};
+use release::commit::{Commit, header, merged_branch, merged_pull_request};
 use release::draft::{
-    Group, NO_CHANGE_NOTICE, bump, capitalised, entry, group_of, hints, lines, references,
-    without_no_ops,
+    Group, NO_CHANGE_NOTICE, bump, capitalised, group_of, hints, lines, references,
+    text as draft_text, without_no_ops,
 };
-use release::manifest::{
-    lock_versions, repository, version, with_lock_version, with_package_version,
-};
+use release::manifest::repository;
 use release::version::{Bump, Version};
 
 const REPO: &str = "https://github.com/o/r";
@@ -196,6 +195,27 @@ fn reads_the_story_the_break_the_revert_and_the_pull_requests() {
         None
     );
     assert_eq!(commit('a', "x", "", None).short(), "aaaaaaa");
+}
+
+#[test]
+fn reads_the_head_branch_of_a_merge_its_owner_left_out() {
+    assert_eq!(
+        merged_branch("Merge pull request #22 from o/dependabot/cargo/regex-1.11.1"),
+        Some("dependabot/cargo/regex-1.11.1".to_owned())
+    );
+    assert_eq!(
+        merged_branch("Merge pull request #195 from AlexandreGallais/develop"),
+        Some("develop".to_owned())
+    );
+    // No owner, a merge of a branch, a subject that only names one.
+    for subject in [
+        "Merge pull request #22 from develop",
+        "Merge pull request #22 from o/",
+        "Merge branch 'main' into develop",
+        "fix(io): Merge pull request #22 from o/develop",
+    ] {
+        assert_eq!(merged_branch(subject), None, "{subject}");
+    }
 }
 
 #[test]
@@ -439,14 +459,15 @@ fn f21_ac6_references_the_pull_request_else_the_commits_the_best_alone_beyond_tw
 }
 
 #[test]
-fn f21_ac6_writes_the_entry_groups_in_order_each_line_marked_as_drafted() {
+fn f22_ac2_drafts_the_text_groups_in_order_each_line_marked_without_a_heading() {
     let drafted = lines(&release_commits()[..6], &backlog());
     let pr = |number: u32| format!("([#{number}](https://github.com/o/r/pull/{number}))");
 
+    // No `## [x.y.z] - date`: the version is computed at the button, from the tags.
     assert_eq!(
-        entry("0.3.0", "2026-10-18", &drafted, REPO),
+        draft_text(&drafted, REPO),
         format!(
-            "## [0.3.0] - 2026-10-18\n\n### Changed\n\n\
+            "### Changed\n\n\
              - **Breaking:** [draft] The HTML layer withdrawn {}\n\n### Added\n\n\
              - [draft] The underline's and strike-through's colors {}\n\n### Removed\n\n\
              - [draft] Remove the HTML layer option {}\n",
@@ -455,10 +476,7 @@ fn f21_ac6_writes_the_entry_groups_in_order_each_line_marked_as_drafted() {
             pr(8)
         )
     );
-    assert_eq!(
-        entry("0.2.1", "2026-10-18", &[], REPO),
-        format!("## [0.2.1] - 2026-10-18\n\n{NO_CHANGE_NOTICE}\n")
-    );
+    assert_eq!(draft_text(&[], REPO), format!("{NO_CHANGE_NOTICE}\n"));
 }
 
 #[test]
@@ -508,86 +526,149 @@ fn reads_an_item_from_its_front_matter() {
     assert_eq!(item("---\ntitle: no id\n---\n"), None);
 }
 
-const OLD: &str = "# Changelog\n\n## [0.2.0](https://x/compare) (2026-10-14)\n\n### Features\n\n\
-* **model:** x ([abc](https://x))\n\n## 0.1.0 (2026-10-13)\n\nA base.\n";
-
 #[test]
-fn f21_ac6_writes_the_entry_first_the_header_again_its_link_at_the_end() {
-    let new = "## [0.3.0] - 2026-10-18\n\n### Added\n\n- Add x ([#1](https://x/1))\n";
-    let once = with_entry(OLD, new, "0.3.0", REPO);
+fn reads_the_repository_s_address_from_package_json() {
+    let package = "{\n  \"name\": \"editor\",\n  \"version\": \"0.0.0-development\",\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"git+https://github.com/o/r.git\"\n  }\n}\n";
 
-    assert_eq!(
-        once,
-        format!(
-            "{HEADER}\n{new}\n## [0.2.0](https://x/compare) (2026-10-14)\n\n### Features\n\n\
-             * **model:** x ([abc](https://x))\n\n## 0.1.0 (2026-10-13)\n\nA base.\n\n\
-             [0.3.0]: https://github.com/o/r/releases/tag/v0.3.0\n"
-        )
-    );
-    let next = "## [0.3.1] - 2026-10-19\n\n### Fixed\n\n- Fix y ([#2](https://x/2))\n";
-    let twice = with_entry(&once, next, "0.3.1", REPO);
-
-    assert!(twice.ends_with(
-        "A base.\n\n[0.3.1]: https://github.com/o/r/releases/tag/v0.3.1\n\
-         [0.3.0]: https://github.com/o/r/releases/tag/v0.3.0\n"
-    ));
-    assert!(twice.contains(&format!("{next}\n## [0.3.0] - 2026-10-18\n")));
-    assert_eq!(
-        with_entry("", new, "0.3.0", REPO),
-        format!("{HEADER}\n{new}\n[0.3.0]: https://github.com/o/r/releases/tag/v0.3.0\n")
-    );
-    assert!(with_entry(new, new, "0.3.0", REPO).contains(&format!("{new}\n{}", new.trim_end())));
-}
-
-#[test]
-fn reads_an_entry_s_version_and_notes_back() {
-    assert_eq!(heading_version("## [0.3.0] - 2026-10-18"), Some("0.3.0"));
-    assert_eq!(
-        heading_version("## [0.2.0](https://x) (2026-10-14)"),
-        Some("0.2.0")
-    );
-    assert_eq!(heading_version("## 0.1.0 (2026-10-13)"), Some("0.1.0"));
-    assert_eq!(heading_version("## Unreleased"), None);
-    assert_eq!(heading_version("# 0.1.0"), None);
-
-    let changelog = with_entry(
-        OLD,
-        "## [0.3.0] - 2026-10-18\n\n### Added\n\n- Add x (l)\n",
-        "0.3.0",
-        REPO,
-    );
-
-    assert_eq!(
-        notes(&changelog, "0.3.0").as_deref(),
-        Some("### Added\n\n- Add x (l)\n")
-    );
-    assert_eq!(notes(&changelog, "0.1.0").as_deref(), Some("A base.\n"));
-    assert_eq!(notes(&changelog, "0.4.0"), None);
-}
-
-const PACKAGE: &str = "{\n  \"name\": \"editor\",\n  \"version\": \"0.2.0\",\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"git+https://github.com/o/r.git\"\n  },\n  \"devDependencies\": {\n    \"x\": \"1.0.0\"\n  }\n}\n";
-
-const LOCK: &str = "{\n  \"name\": \"editor\",\n  \"version\": \"0.2.0\",\n  \"lockfileVersion\": 3,\n  \"packages\": {\n    \"\": {\n      \"name\": \"editor\",\n      \"version\": \"0.2.0\"\n    },\n    \"node_modules/x\": {\n      \"version\": \"0.2.0\"\n    }\n  }\n}\n";
-
-#[test]
-fn f21_ac6_sets_the_version_of_both_manifests_every_other_byte_kept() {
-    assert_eq!(version(PACKAGE), Some("0.2.0"));
-    assert_eq!(
-        with_package_version(PACKAGE, "0.3.0").unwrap(),
-        PACKAGE.replacen("0.2.0", "0.3.0", 1)
-    );
-    let lock = with_lock_version(LOCK, "0.3.0").unwrap();
-
-    // The top version and the root package's change; `node_modules/x`'s, equal by chance, stays.
-    assert_eq!(lock, LOCK.replacen("0.2.0", "0.3.0", 2));
-    assert_eq!(lock_versions(&lock), (Some("0.3.0"), Some("0.3.0")));
-    assert_eq!(lock_versions("{}"), (None, None));
-    assert_eq!(with_lock_version("{\"version\": \"1.0.0\"}", "1.1.0"), None);
-    assert_eq!(with_package_version("{}", "1.1.0"), None);
-    assert_eq!(repository(PACKAGE).as_deref(), Some(REPO));
+    assert_eq!(repository(package).as_deref(), Some(REPO));
     assert_eq!(
         repository("{\"repository\": {\"url\": \"https://github.com/o/r\"}}").as_deref(),
         Some(REPO)
     );
     assert_eq!(repository("{}"), None);
+}
+
+#[test]
+fn f22_ac2_reads_a_body_up_to_its_first_break_its_line_endings_made_unix() {
+    assert_eq!(
+        release_text("### Fixed\r\n\r\n- Fix x (l)\r\n\r\n---\r\n\r\n🤖 Generated\r\n"),
+        "### Fixed\n\n- Fix x (l)\n\n"
+    );
+    assert_eq!(
+        release_text("### Fixed\n\n- Fix x (l)\n"),
+        "### Fixed\n\n- Fix x (l)\n"
+    );
+    // A break is a line `---` alone, spaces after it allowed: `----` and `--- x` are text.
+    assert_eq!(
+        release_text("_a_\n----\n--- x\n---  \ny\n"),
+        "_a_\n----\n--- x\n"
+    );
+    assert_eq!(release_text("x"), "x\n");
+    assert_eq!(release_text("---\nx\n"), "");
+    assert_eq!(release_text(""), "");
+}
+
+/// A change of a group, as a text holds it.
+fn change(group: Group, line: &str) -> (Group, String) {
+    (group, line.to_owned())
+}
+
+#[test]
+fn writes_and_reads_a_text_its_notice_then_its_groups_in_order() {
+    let changes = [
+        change(Group::Changed, "**Breaking:** drop `f` (l)"),
+        change(Group::Added, "Add x (l)"),
+        change(Group::Fixed, "Fix z (l)"),
+        change(Group::Added, "Add y (l)"),
+    ];
+    let notice = "_Read the guide._";
+    // The groups in the order Changed, Added, Removed, Fixed, whatever the order given; a
+    // group's changes in theirs.
+    let expected = "_Read the guide._\n\n### Changed\n\n- **Breaking:** drop `f` (l)\n\n\
+                    ### Added\n\n- Add x (l)\n- Add y (l)\n\n### Fixed\n\n- Fix z (l)\n";
+
+    assert_eq!(written(Some(notice), &changes), expected);
+    assert_eq!(
+        text(expected),
+        Text {
+            notice: Some(notice.to_owned()),
+            changes: vec![
+                change(Group::Changed, "**Breaking:** drop `f` (l)"),
+                change(Group::Added, "Add x (l)"),
+                change(Group::Added, "Add y (l)"),
+                change(Group::Fixed, "Fix z (l)"),
+            ],
+        }
+    );
+    assert_eq!(written(Some(notice), &[]), "_Read the guide._\n");
+    assert_eq!(written(None, &changes[1..2]), "### Added\n\n- Add x (l)\n");
+    assert_eq!(written(None, &[]), "");
+    assert_eq!(text(""), Text::default());
+    assert_eq!(text("\n\n"), Text::default());
+}
+
+/// The texts of two pull requests: #21, the latest, then #20.
+fn two_texts() -> (Text, Text) {
+    (
+        text(
+            "### Changed\n\n- Refactor h (l21)\n\n### Added\n\n- Add b (l21)\n\n### Fixed\n\n- Fix c (l21)\n",
+        ),
+        text(
+            "### Changed\n\n- **Breaking:** rename g (l20)\n- Refactor d (l20)\n\n### Added\n\n- Add f (l20)\n",
+        ),
+    )
+}
+
+#[test]
+fn f22_ac2_joins_the_bodies_by_group_the_breaking_first_then_the_latest() {
+    let (latest, older) = two_texts();
+
+    // Changed: #20's breaking change first, then #21's line before #20's; Added likewise; Fixed
+    // from #21 alone.
+    assert_eq!(
+        joined(&[(21, latest), (20, older)]),
+        Ok("### Changed\n\n- **Breaking:** rename g (l20)\n- Refactor h (l21)\n- Refactor d (l20)\n\n\
+            ### Added\n\n- Add b (l21)\n- Add f (l20)\n\n### Fixed\n\n- Fix c (l21)\n"
+            .to_owned())
+    );
+}
+
+#[test]
+fn f22_ac3_joins_the_notices_the_one_of_no_change_only_without_a_change() {
+    let (latest, older) = two_texts();
+    let no_change = text(&format!("{NO_CHANGE_NOTICE}\n"));
+    let guide = |text: &Text| Text {
+        notice: Some("_Read the guide._".to_owned()),
+        ..text.clone()
+    };
+
+    // A pull request of tooling only beside one of changes: no notice.
+    assert_eq!(
+        joined(&[(21, no_change.clone()), (20, older.clone())]),
+        Ok(written(None, &older.changes))
+    );
+    // No change in any of them, or no pull request at all: the notice of no change.
+    let alone = format!("{NO_CHANGE_NOTICE}\n");
+    assert_eq!(
+        joined(&[(21, no_change.clone()), (20, no_change.clone())]),
+        Ok(alone.clone())
+    );
+    assert_eq!(joined(&[]), Ok(alone));
+    // A notice of its own is kept first, written once when two bodies hold the same.
+    let kept = joined(&[(21, guide(&latest)), (20, older.clone())]).unwrap();
+    assert!(
+        kept.starts_with("_Read the guide._\n\n### Changed\n\n- **Breaking:**"),
+        "{kept}"
+    );
+    assert_eq!(
+        joined(&[(21, guide(&latest)), (20, guide(&older))]),
+        Ok(kept)
+    );
+    assert_eq!(
+        joined(&[(21, guide(&Text::default()))]),
+        Ok("_Read the guide._\n".to_owned())
+    );
+    // Two notices of their own: the release would hold two.
+    let other = Text {
+        notice: Some("_Another._".to_owned()),
+        ..older
+    };
+    assert_eq!(
+        joined(&[(21, guide(&latest)), (20, other)]),
+        Err(
+            "pull requests #21 and #20 each hold a notice: a release holds one at most, so \
+             write it in one body"
+                .to_owned()
+        )
+    );
 }

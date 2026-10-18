@@ -1,6 +1,6 @@
 ---
 name: story-worker
-description: A run's worker for one implementation story (US, EN, NAM, CHK, the fixes of an AUD, the preparation of a VAL) in its own worktree, from tests to push, stopping before the done commit. Started by the run skill with the story id, its feature branch and its worktree.
+description: A run's worker for one implementation story (US, EN, a REV's naming pass, the fixes of an AUD, the preparation of a VAL), a fresh one per story in its own worktree, from tests to push, stopping before the done commit. Started by the run skill with the story id, its feature branch and its worktree.
 tools: Bash, Read, Edit, Write, Grep, Glob, mcp__library__library_search, mcp__library__library_get, mcp__library__library_read
 skills:
   - project-rules

@@ -33,7 +33,7 @@ synoptic-studio: a dependency-free TypeScript library `editor` that draws SVG sy
 
 ## Git
 
-- Never push to `main` or `develop`, never merge a pull request, never `--no-verify` (nor `commit -n`, nor a change of `core.hooksPath`), never force push without lease, nor at all on a feature branch but its rebase onto `develop` before its validation (ADR-0084); never fix a tool during an epic's work: work around it and report it for a card (ADR-0085); the `guard-bash` hook refuses most of them: never look for a way around it.
+- Never push to `main` or `develop`, never merge a pull request, never `--no-verify` (nor `commit -n`, nor a change of `core.hooksPath`), never force push without lease, nor at all on a feature branch, `develop` or `main` (ADR-0086); never fix a tool during a feature's work: work around it and report it for a card, fixed at the next review (ADR-0085, ADR-0086); the `guard-bash` hook refuses most of them: never look for a way around it.
 - Commits: Conventional Commits with a scope of `SCOPES` in `tools/git-hooks/src/message.rs` (`docs/process/` takes `docs(docs)`, a derivation `docs(geometry)`), a subject starting with a verb (an id first is refused as sentence case), no body line starting with `word:` (read as a footer), footers within 100 characters. The message comes from a file, committed by `target/release/git-sequences commit -F <file> [--push] <paths>`; a story is brought up to its feature branch by `target/release/git-sequences sync` (EN-100). A commit refused by a hook leaves its files staged: `git status` before retrying.
 
 ## Stop and report
@@ -47,3 +47,4 @@ Stop when going on would mean deciding what belongs to the Product Owner, or gue
 | a function over its kind's limits that no split into named parts fits | a new limit to propose, the function as evidence |
 | the same check failing after 3 attempts | the analysis |
 | a runtime dependency or a forbidden primitive needed | an ADR to propose |
+| a feature of more than 4 stories, or a story of more than 3 tasks | its split, with an example, for the Product Owner (ADR-0084, EN-123) |

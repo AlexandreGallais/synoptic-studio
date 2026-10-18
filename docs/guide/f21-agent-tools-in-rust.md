@@ -58,7 +58,7 @@ The notes of 0.2.0, drafted again by the tool and rewritten by the agent (EN-112
 | the tool's draft | 23: one per story, the tooling, tests and backlog left out | 34 | 302 |
 | the draft rewritten | 14: related stories merged, a change undone within the release dropped | 24 | 236 |
 
-The first lines of each, to compare (release-please's whole section is in `CHANGELOG.md`, ours in [EN-112](../backlog/stories/E17-F21-EN-112-release-tool-in-rust.md)):
+The first lines of each, to compare (release-please's whole section is in the GitHub release of 0.2.0, `CHANGELOG.md` being gone since EN-117, ours in [EN-112](../backlog/stories/E17-F21-EN-112-release-tool-in-rust.md)):
 
 | release-please's 0.2.0 | Ours |
 | --- | --- |

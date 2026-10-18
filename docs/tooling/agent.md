@@ -27,12 +27,12 @@ flowchart LR
 | Skill | Does |
 | --- | --- |
 | `/story` | a story from branch to pull request |
-| `/run` | an autonomous run on the feature branch, up to the validation (ADR-0072) |
-| `/spike` | a feature's research spike (ADR-0020) |
+| `/run` | an autonomous run on the feature branch, one story at a time, up to the scope set (ADR-0072, ADR-0086) |
+| `/spike` | an epic's refinement from `develop`, or a feature's short spike when questions remain (ADR-0020, ADR-0086) |
 | `/derivation` | a `DERIV-*` from read sources |
 | `/audit` | the feature audit with the reviewing agents |
-| `/review` | a feature's demo page and checklist; the epic review (ADR-0023) |
-| `/retro` | the epic retrospective (ADR-0023) |
+| `/review` | a feature's demo page and checklist; the review at each return of the Product Owner (ADR-0023, ADR-0086) |
+| `/retro` | the method's part of each review: tool cards, logs, playbook (ADR-0023, ADR-0086) |
 | `/triage` | open issues, each with a recommendation (ADR-0026) |
 | `project-rules` | the digest of `AGENTS.md` and `CLAUDE.md`, preloaded by every agent type started without them |
 | `worker-brief` | a run's worker brief (ADR-0072), preloaded by `story-worker` and `researcher`, read by path by a `general-purpose` worker |
@@ -43,10 +43,12 @@ flowchart LR
 
 | Agent type | Task kind | Tools | Preloaded |
 | --- | --- | --- | --- |
-| `story-worker` | `US`, `EN`, `NAM`, `CHK`, an `AUD`'s fixes, a `VAL`'s preparation | Bash, Read, Edit, Write, Grep, Glob, the library | `project-rules`, `worker-brief` |
+| `story-worker` | `US`, `EN`, a `REV`'s naming pass, an `AUD`'s fixes, a `VAL`'s preparation | Bash, Read, Edit, Write, Grep, Glob, the library | `project-rules`, `worker-brief` |
 | `researcher` | a research spike (`SP`) | the story worker's, `WebFetch`, `WebSearch` | `project-rules`, `worker-brief`, `spike` |
-| `clerk` | journal entries, log rows, backlog statuses, rebases and merges the main thread hands off | Bash, Read, Edit, Write, Grep, Glob | `project-rules` |
+| `clerk` | unused since ADR-0086: the main thread writes the statuses, the journal, the `done` commits and the merges itself; the file stays until a review removes it | Bash, Read, Edit, Write, Grep, Glob | `project-rules` |
 
+- **A fresh worker per story**, never one agent chaining stories: an agent's cost is its growing context re-read at each call, not its start (EN-122's worker ended near 255,000 tokens, a start costs about 10,600; ADR-0086).
+- **No agent for small tasks**: the main thread writes the statuses, the journal, the `done` commits and the merges itself (ADR-0086).
 - A task no type fits runs on `general-purpose`, given the brief's path inside its worktree.
 - A rule a typed worker misses goes into its brief or `project-rules`, not into every agent's context.
 - A story's merge and finish stay with the main thread (`story:finish`).
@@ -54,15 +56,15 @@ flowchart LR
 
 ## Expert agents
 
-Read-only reviewers in a fresh context, each with the documents it reads first (`REF-CC-SUBAGENTS`): the skills start them in the background and in parallel; they report and never edit, so that a review cannot change what it reviews. Those that read sources (`auditor`, `math-expert`, `functional-analyst`) have the library's tools and follow its protocol ([sources](./sources.md)): library first, the web only for a page it cannot read. Each starts like a worker, with `omitClaudeMd` and `project-rules` preloaded.
+Read-only reviewers in a fresh context, each with the documents it reads first (`REF-CC-SUBAGENTS`): the skills start them in the background, one at a time (ADR-0086), and only where their independence pays: the `auditor`, and the `verifier` when the tests need a second look, at a feature's audit; the `math-expert` and the `functional-analyst` only for mathematics or business rules to check, never by default; they report and never edit, so that a review cannot change what it reviews. Those that read sources (`auditor`, `math-expert`, `functional-analyst`) have the library's tools and follow its protocol ([sources](./sources.md)): library first, the web only for a page it cannot read. Each starts like a worker, with `omitClaudeMd` and `project-rules` preloaded.
 
 | Agent | Expert in | Started by |
 | --- | --- | --- |
 | `auditor` | refuting a feature: formulas, values, sources, copies | `/audit` (ADR-0064: no review per story) |
-| `math-expert` | plane geometry and floating-point numerics | `/spike`, `/derivation`, `/run` (math stories), `/audit` |
-| `verifier` | tests that would catch a wrong implementation | `/story` (test plan), `/run`, `/audit` |
-| `functional-analyst` | business rules, domain objects, refinement questions | `/spike`, a feature's refinement |
-| `doc-editor` | pages that scan: structure, words, no quotes | `/audit`, `/retro`, a docs pull request |
+| `math-expert` | plane geometry and floating-point numerics | only for a story or an audit holding mathematics to check: `/spike`, `/derivation`, `/run`, `/audit` |
+| `verifier` | tests that would catch a wrong implementation | `/audit`, when the tests need a second look |
+| `functional-analyst` | business rules, domain objects, refinement questions | only for a refinement or a story holding business rules to check |
+| `doc-editor` | pages that scan: structure, words, no quotes | `/audit`, when its pages need it |
 
 Agents to add when their epic comes:
 
@@ -78,7 +80,7 @@ Agents to add when their epic comes:
 
 | Agent type | Model | Why |
 | --- | --- | --- |
-| `clerk` | `sonnet` | copies given facts into set formats and follows the fixed steps of a merge or a rebase: nothing to derive or judge |
+| `clerk` | `sonnet` | unused since ADR-0086; copies given facts into set formats and follows the fixed steps of a merge or a rebase: nothing to derive or judge |
 | `story-worker` | `opus` | code, hand-computed tests and the docs of its rules; until one story on Sonnet, measured beside one on Opus, shows Sonnet does as well |
 | `researcher` | `opus` | judges what each source states; the feature is built from it |
 | `auditor` | `opus` | re-derives formulas and recomputes values; a weaker reviewer than the worker misses more |

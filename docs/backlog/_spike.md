@@ -9,7 +9,7 @@ points: 2
 
 # E00 · F00 · SP-000 — Research for F00
 
-Find, read and record the sources of every story of F00 before its implementation (ADR-0020, research protocol §8).
+Find, read and record the sources of every story of F00 before its implementation (ADR-0020, research protocol §8). A feature's spike is short, the first story of its feature branch, for the questions its refinement left (ADR-0086). An epic's refinement is a spike too, from `develop` and without a feature (`E00-SP-000-refine-e00.md`, no `feature` field): the Product Owner's account of what the epic describes, the documentary research on it, and its features cut, each of 2 to 4 stories.
 
 ## Acceptance criteria
 

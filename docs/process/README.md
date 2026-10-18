@@ -11,14 +11,15 @@ Each moment has one owner and one output, so that nothing waits on an unnamed pe
 | any time | an idea, an irritant or a lesson, written in neutral words | both | a row in the [improvement log](./improvements.md) |
 | any time | a critique of how the agent worked: what happened, what it should have done, what now prevents it | agent | a row in the [feedback log](./feedback.md) |
 | start of each story and review | triage of open GitHub issues (`/triage`), each with a recommendation (ADR-0026) | agent, then Product Owner | decisions, backlog items, replies |
-| start of a feature | refinement interview, research spike `SP` | both, then agent | stories, sources |
-| during a run (ADR-0028) | stories chain on the feature branch up to the scope the Product Owner set; a test card per user story, a checkpoint `CHK` midway | agent | stories merged into the feature branch, cards to run |
+| start of an epic | refinement: the Product Owner's account, the documentary research, the features cut, in an `SP` from `develop` (ADR-0086) | both, then agent | features, sources |
+| start of a feature | refinement interview; a short spike `SP` on its branch when questions remain | both, then agent | stories, sources |
+| during a run (ADR-0028) | stories follow one another on the feature branch up to the scope the Product Owner set, a fresh worker each; a test card per user story | agent | stories merged into the feature branch, cards to run |
 | end of a feature | audit `AUD` (with a light evolvability check), validation `VAL` (demo page, checklist page) | agent, then Product Owner | findings, [guide](../guide/) page, feedback |
 | after `VAL` | local previews: what the Product Owner saw against what the demo meant to show | both | gaps recorded |
-| release | feature pull request into `develop`, then release pull request into `main`; next feature prepared | Product Owner, agent prepares | a release, next feature refined |
-| end of an epic | review `REV` (report and user test), then retrospective `RET` (metrics, way of working, evolvability, playbook) | agent, then Product Owner | guide report, [retrospective record](./retrospectives/), ADRs, stories |
-| end of an epic, after `RET` | fresh research on practices for agent-built projects | agent | [playbook](../playbook/) and starter kit updated |
-| every 4 to 5 epics, end of project | review of every rule ([agile.md](./agile.md#cadences-beyond-the-epic)) | both | decisions, ADRs, a stricter configuration |
+| release | the Product Owner runs `release.yml` on `main` from the Actions tab, when they choose (ADR-0086) | Product Owner | a tag and a GitHub release |
+| each return of the Product Owner | a feature under way finished first, then the review `REV` from `develop`: the features finished since the last merge into `main`, the naming pass over the code changed since, the tool cards fixed, the method and the docs; then `develop` → `main` (ADR-0086) | agent, then Product Owner | [review record](./retrospectives/), ADRs, stories, a merge into `main` |
+| the review after an epic's last feature | fresh research on practices for agent-built projects | agent | [playbook](../playbook/) and starter kit updated |
+| every 4 to 5 epics, end of project | review of every rule ([agile.md](./agile.md#cadences)) | both | decisions, ADRs, a stricter configuration |
 
 ### A run stops only on one of four things (EN-086)
 
@@ -26,7 +27,7 @@ A run keeps working until the first of: the end of the scope the Product Owner s
 
 ## Evolvability review
 
-Asked in every `RET` and, lightly, in every `AUD`. The test for each question: does the answer change anything? It is "nothing yet", a story, or an ADR.
+Asked in every `REV`, when its span gives figures, and lightly in every `AUD`. The test for each question: does the answer change anything? It is "nothing yet", a story, or an ADR.
 
 | Question | Look at |
 | --- | --- |
@@ -42,10 +43,10 @@ Asked in every `RET` and, lightly, in every `AUD`. The test for each question: d
 | Page | Content |
 | --- | --- |
 | [agile.md](./agile.md) | levels, story types, who does what |
-| [improvements.md](./improvements.md) | improvement log, emptied by each retrospective |
-| [tool-incidents.md](./tool-incidents.md) | one card per tool that failed, read and fixed at the epic's end (ADR-0085) |
-| [feedback.md](./feedback.md) | critiques of the agent's work, turned into the playbook's sheet at each retrospective |
-| [retrospectives](./retrospectives/) | one record per retrospective |
+| [improvements.md](./improvements.md) | improvement log, emptied by each review |
+| [tool-incidents.md](./tool-incidents.md) | one card per tool that failed, read and fixed at the next review (ADR-0085, ADR-0086) |
+| [feedback.md](./feedback.md) | critiques of the agent's work, turned into the playbook's sheet at each review |
+| [retrospectives](./retrospectives/) | one record per epic retrospective up to E17, then per review |
 | [history.md](./history.md) | the commits before the restart at 0.1.0 |
 | [journal.md](./journal.md) | what each session dealt with, newest first (ADR-0024) |
 
@@ -62,4 +63,4 @@ The V-model is not this project's lifecycle (requirements grow feature by featur
 | test plan and test cases | [test strategy](../conventions/testing.md#test-strategy); tests tagged `[F01.ACn]` |
 | test report | JUnit report on each GitHub release |
 | traceability matrix | feature plans and test tags; generated page planned (E12) |
-| version description | `CHANGELOG.md`, GitHub releases |
+| version description | GitHub releases, their notes the bodies of the pull requests into `main` |

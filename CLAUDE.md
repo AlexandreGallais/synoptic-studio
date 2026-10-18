@@ -10,8 +10,9 @@ What only Claude Code uses; the rules above hold for every agent. Configuration:
 | --- | --- |
 | a story, a spike, an audit, a derivation | `/story`, `/spike`, `/audit`, `/derivation` |
 | a run of stories, only when the Product Owner starts one | `/run`, whose rules then hold for the main thread |
-| a demo, a review, a retrospective; GitHub issues | `/review` (VAL and REV), `/retro`; `/triage` |
-| a second opinion, in the background | the read-only agents `auditor`, `math-expert`, `verifier`, `functional-analyst`, `doc-editor` |
+| a demo, the review at each return; GitHub issues | `/review` (VAL and REV), `/retro` for its method part; `/triage` |
+| a story, in the background | a fresh `story-worker` per story, never one agent chaining stories: its cost is its context re-read at each call (ADR-0086) |
+| a second opinion, in the background, only where its independence pays | the read-only `auditor`, and the `verifier` when tests need a second look, at a feature's audit; `math-expert` and `functional-analyst` only for mathematics or business rules to check; `doc-editor` only when a feature changes many pages; each one alone. No agent for small tasks: the main thread writes the statuses, the journal, the `done` commits and the merges, the `clerk` unused (ADR-0086) |
 | a source | the `library` server: `library_search`, then `library_get` and `library_read`; `WebFetch` only for a page it cannot read |
 | a choice for the Product Owner | the questionnaire (AskUserQuestion): options with numeric examples, no drawing in characters, a last question left open for remarks |
 
@@ -19,7 +20,7 @@ What only Claude Code uses; the rules above hold for every agent. Configuration:
 
 - **Show where the work is**: the current step in one short French line in `.git/metrics/step`, shown by the status line under the epic, feature and story; `target/release/activity` for what a subagent or a background command does (`docs/tooling/metrics.md`).
 - **Never wait in the foreground**: a command expected to last over a minute runs with `run_in_background`, watched by Monitor with `watch-task` (`tools/metrics`: stall, end, time limit). A subagent's end arrives as a notification: never poll it with a loop, whose string may never appear. A call shown red on the status line has run over 5 minutes: look at it. Before a stop message, stop every background task still running.
-- **Parallel limits** (AGENTS.md, Work): the heavy commands take the lock `tools/heavy-lock` themselves, never by hand; the hook `limit-agents` refuses a fourth subagent, started by `Agent` or resumed by `SendMessage`, and `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` is 3 as a backup (EN-047, EN-063).
+- **One agent at a time** (AGENTS.md, Work, ADR-0086): one subagent runs at once, in the background, so that the chat stays free; the heavy commands take the lock `tools/heavy-lock` themselves, never by hand; the hook `limit-agents`, which refuses a fourth subagent started by `Agent` or resumed by `SendMessage`, and `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` at 3 stay as a backstop (EN-047, EN-063).
 - A worktree is made by `target/release/worktree-new <ID>` and named after its story, never left anonymous (EN-052).
 - **Chat messages** start with a marker, never in repository files: ✅ done, ⏳ in progress or waiting, ⚠️ attention, ❌ error, ❓ question, 🟢 understood or agreed, 🟠 my mistake or a correction, ▶️ next step. Explain a behaviour by the situation it covers, in names or numbers, never in the words of the code.
 - At a session's end only, the session report: `target/release/session-report --all --markdown` (without `--all` it counts the current turn only). Before a pause, log the session in `docs/process/journal.md`, then `target/release/records-save` (ADR-0081).

@@ -4,7 +4,7 @@
 
 use std::collections::HashMap;
 
-use crate::commit::{Commit, merged_pull_request};
+use crate::commit::{Commit, merged_branch, merged_pull_request};
 use crate::version::Version;
 
 /// A command run for its output: the program, its arguments; its standard output, or the error
@@ -51,6 +51,43 @@ fn records(output: &str) -> Vec<Vec<&str>> {
         .collect()
 }
 
+/// A pull request merged on the first-parent line: its number, its merge commit's two parents,
+/// the line it joined and its head, and its head branch, empty when the subject names none.
+type Merge = (u32, String, String, String);
+
+/// GitHub's merge commits on the first-parent line of a range, the latest first.
+fn merges(run: &mut Run<'_>, range: &str) -> Result<Vec<Merge>, String> {
+    let log = run(
+        "git",
+        &[
+            "log",
+            "--first-parent",
+            "--merges",
+            "--format=%H%x1f%P%x1f%s%x1e",
+            range,
+        ],
+    )?;
+
+    Ok(records(&log)
+        .into_iter()
+        .filter_map(|merge| {
+            let parents: Vec<&str> = merge.get(1)?.split(' ').collect();
+            let subject = merge.get(2)?;
+            let number = merged_pull_request(subject)?;
+            let [first, second, ..] = parents.as_slice() else {
+                return None;
+            };
+
+            Some((
+                number,
+                (*first).to_owned(),
+                (*second).to_owned(),
+                merged_branch(subject).unwrap_or_default(),
+            ))
+        })
+        .collect())
+}
+
 /// The commits of a range, the latest first, merges left out, each with its pull request.
 ///
 /// # Errors
@@ -61,28 +98,9 @@ pub fn commits(run: &mut Run<'_>, range: &str) -> Result<Vec<Commit>, String> {
         "git",
         &["log", "--no-merges", "--format=%H%x1f%s%x1f%b%x1e", range],
     )?;
-    let merges = run(
-        "git",
-        &[
-            "log",
-            "--first-parent",
-            "--merges",
-            "--format=%H%x1f%P%x1f%s%x1e",
-            range,
-        ],
-    )?;
     let mut pull_requests: HashMap<String, u32> = HashMap::new();
 
-    for merge in records(&merges) {
-        let (Some(parents), Some(subject)) = (merge.get(1), merge.get(2)) else {
-            continue;
-        };
-        let parents: Vec<&str> = parents.split(' ').collect();
-        let (Some(number), [first, second, ..]) =
-            (merged_pull_request(subject), parents.as_slice())
-        else {
-            continue;
-        };
+    for (number, first, second, _) in merges(run, range)? {
         let range = format!("{first}..{second}");
 
         for hash in run("git", &["rev-list", "--no-merges", &range])?.lines() {
@@ -104,5 +122,18 @@ pub fn commits(run: &mut Run<'_>, range: &str) -> Result<Vec<Commit>, String> {
             commit.pull_request = commit.pull_request.or(commit.squashed_pull_request());
             commit
         })
+        .collect())
+}
+
+/// The pull requests merged on the first-parent line of a range, the latest first, each with its
+/// head branch, empty when its subject names none: on `main`, those into `main` since a tag.
+///
+/// # Errors
+///
+/// A Git command failed.
+pub fn merged_pull_requests(run: &mut Run<'_>, range: &str) -> Result<Vec<(u32, String)>, String> {
+    Ok(merges(run, range)?
+        .into_iter()
+        .map(|(number, _, _, branch)| (number, branch))
         .collect())
 }
