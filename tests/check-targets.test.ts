@@ -366,8 +366,9 @@ describe("the Rust tools run as crates of the workspace (EN-068)", () => {
   it("[F19.AC9] runs each Rust tool of a script or a Git hook by its crate, never by its manifest", () => {
     const callers = [
       SCRIPTS.values().toArray().join("\n"),
-      readFileSync(join(ROOT, ".husky", "pre-push"), "utf8"),
-      readFileSync(join(ROOT, ".husky", "commit-msg"), "utf8"),
+      readFileSync(join(ROOT, ".githooks", "pre-push"), "utf8"),
+      readFileSync(join(ROOT, ".githooks", "tool.sh"), "utf8"),
+      readFileSync(join(ROOT, ".githooks", "commit-msg"), "utf8"),
     ].join("\n");
     const runs = callers.match(/cargo run(?:(?!cargo run)[^&;\n])*/gu) ?? [];
 
@@ -388,7 +389,7 @@ describe("the Rust tools run as crates of the workspace (EN-068)", () => {
 
   it("[F19.AC9] builds the release binaries of the workspace from prepare", () => {
     expect(SCRIPTS.get("rust:build")).toBe("cargo build --release --workspace --locked");
-    expect(SCRIPTS.get("prepare")).toBe("husky && npm run rust:build");
+    expect(SCRIPTS.get("prepare")).toBe("npm run rust:build && target/release/git-hooks install");
   });
 });
 

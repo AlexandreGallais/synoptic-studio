@@ -329,6 +329,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "git-hooks"
+version = "0.1.0"
+dependencies = [
+ "test-support",
+ "tool-use",
+]
+
+[[package]]
 name = "git-sequences"
 version = "0.1.0"
 dependencies = [
@@ -1654,6 +1662,7 @@ dependencies = [
 name = "worktree"
 version = "0.1.0"
 dependencies = [
+ "git-hooks",
  "test-support",
  "tool-use",
 ]

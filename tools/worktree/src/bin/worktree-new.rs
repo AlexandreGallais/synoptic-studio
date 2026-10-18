@@ -1,14 +1,15 @@
 //! `worktree-new <ID> [--type <type>]` (`npm run worktree:new -- US-061`): fetches GitHub, adds
 //! `.claude/worktrees/us-061` on `feat/us-061-<topic>` from the story's feature branch, and links
-//! the main checkout's `node_modules` into it, then installs Husky's hooks folder in every
-//! worktree that has none, so that a push runs the worktree's own `.husky/pre-push` (EN-052), and
+//! the main checkout's `node_modules` into it, then sets the hooks folder `.githooks` if it is not
+//! yet, relative so that a push runs the worktree's own `.githooks/pre-push` (EN-052, EN-108), and
 //! builds the release binaries of the Rust tools in the new worktree (EN-068).
 
 use std::env;
 use std::path::{Path, PathBuf};
 use std::process::{Command, ExitCode};
 
-use worktree::{Plan, Request, plan, worktrees_without_hooks};
+use git_hooks::install::install;
+use worktree::{Plan, Request, plan};
 
 /// Output of a Git command, or its error output as the reason.
 fn git(arguments: &[&str]) -> Result<String, String> {
@@ -81,32 +82,6 @@ fn create(plan: &Plan, main: &Path) -> Result<(), String> {
     Ok(())
 }
 
-/// Runs Husky in each worktree without its hooks folder, as `npm run prepare` does in a clone.
-fn install_hooks(main: &Path) -> Result<(), String> {
-    let husky = main.join("node_modules/.bin/husky");
-
-    if !husky.exists() {
-        return Ok(());
-    }
-
-    let porcelain = git(&["worktree", "list", "--porcelain"])?;
-
-    for dir in worktrees_without_hooks(&porcelain, Path::exists) {
-        let output = Command::new(&husky)
-            .current_dir(&dir)
-            .output()
-            .map_err(|error| format!("husky: {error}"))?;
-        // Husky exits with 0 and prints its reason when it fails.
-        let reason = String::from_utf8_lossy(&output.stdout).trim().to_owned();
-
-        if !output.status.success() || !reason.is_empty() {
-            return Err(format!("husky in {}: {reason}", dir.display()));
-        }
-    }
-
-    Ok(())
-}
-
 /// Builds the release binaries of the Rust tools in a new worktree holding the Cargo workspace, as
 /// `npm run prepare` does in a clone: its scripts and hooks call `target/release/<tool>` (EN-068).
 fn build_tools(dir: &Path) -> Result<(), String> {
@@ -165,7 +140,8 @@ fn run(argv: &[String]) -> Result<Plan, String> {
     let plan = plan(&request, |path| path.symlink_metadata().is_ok())?;
 
     create(&plan, &main)?;
-    install_hooks(&main)?;
+    // The setting is the repository's, shared by every worktree: set once, as `prepare` does.
+    install(&plan.dir).map_err(|reason| format!("git-hooks install: {reason}"))?;
     build_tools(&plan.dir)?;
     Ok(plan)
 }

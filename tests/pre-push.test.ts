@@ -7,7 +7,7 @@ import { afterEach, describe, expect, it } from "vitest";
 
 /** The pre-push hook's line that runs the golden check. */
 const GOLDEN_LINE =
-  readFileSync(join(import.meta.dirname, "..", ".husky", "pre-push"), "utf8")
+  readFileSync(join(import.meta.dirname, "..", ".githooks", "pre-push"), "utf8")
     .split("\n")
     .find((line) => line.includes("golden:check")) ?? "";
 

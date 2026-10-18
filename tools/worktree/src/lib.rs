@@ -225,18 +225,3 @@ pub fn story_files(top: &Path) -> std::io::Result<Vec<String>> {
         .map(|entry| entry.file_name().to_string_lossy().into_owned())
         .collect())
 }
-
-/// Husky's hooks folder in a checkout: `core.hooksPath`, relative, names it in each worktree.
-pub const HOOKS: &str = ".husky/_";
-
-/// Worktrees without Husky's hooks folder, from `git worktree list --porcelain`: the folder is
-/// ignored by Git, so a new worktree has none and a push from it would run no hook of its own.
-#[must_use]
-pub fn worktrees_without_hooks(porcelain: &str, has_hooks: impl Fn(&Path) -> bool) -> Vec<PathBuf> {
-    porcelain
-        .lines()
-        .filter_map(|line| line.strip_prefix("worktree "))
-        .map(PathBuf::from)
-        .filter(|dir| !has_hooks(&dir.join(HOOKS)))
-        .collect()
-}

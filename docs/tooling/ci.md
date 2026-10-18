@@ -2,7 +2,7 @@
 
 Every check runs before the code leaves the machine; GitHub checks once more what reaches `main` (ADR-0072). A CI run per story would cost minutes of waiting for checks the pre-push hook already ran.
 
-- **Work branches** (stories, features, `develop`) are checked by the local Git hooks only ([Git workflow](./git-workflow.md#hooks-husky)): a push that fails them does not leave the machine. No workflow runs on them, and nobody waits for one.
+- **Work branches** (stories, features, `develop`) are checked by the local Git hooks only ([Git workflow](./git-workflow.md#hooks-githooks)): a push that fails them does not leave the machine. No workflow runs on them, and nobody waits for one.
 - **A release**, the pull request from `develop` into `main`, runs the CI below; the ruleset of `main` lets it merge only when every check is green. Nothing is checked again after the merge.
 
 | Workflow | Job | When | Does |

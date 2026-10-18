@@ -70,7 +70,7 @@ Conventional Commits (`REF-CONVENTIONAL-COMMITS`), checked by commitlint at each
 | `BREAKING CHANGE:` | an incompatible API change, described | `BREAKING CHANGE: polygonToPathData takes a Contour` |
 | `Co-Authored-By:` | a co-author | on commits written by Claude Code |
 
-## Hooks (`.husky/`)
+## Hooks (`.githooks/`)
 
 | Hook | Runs |
 | --- | --- |
@@ -78,4 +78,4 @@ Conventional Commits (`REF-CONVENTIONAL-COMMITS`), checked by commitlint at each
 | `commit-msg` | commitlint, then at a `done` commit the docs of a rule its story changes (`tools/rule-docs`) |
 | `pre-push` | no shared file on a worker's story branch (`tools/shared-files`, ADR-0065), the branch name, `npm run check:all`, then `npm run golden:check` when a golden file is written |
 
-`npm install` installs them (`prepare`): Husky writes `.husky/_` and names it as the hooks path, relative, so each checkout runs its own branch's hooks. A worktree needs its own `.husky/_`, which `npm run worktree:new` writes (`npx husky` inside a worktree made by hand); otherwise a push from it runs the main checkout's hooks. Hooks are never bypassed (`--no-verify`, `HUSKY=0`): a hook that blocks legitimate work is changed, not skipped.
+The hooks are short shell files, tracked, that call the release binaries by their path (`target/release/<binary>`), through `cargo run --release -q -p <crate>` when the binary is missing (`.githooks/tool.sh`). `npm install` installs them once (`prepare`, after the build): `git-hooks install` (`tools/git-hooks`) sets `core.hooksPath` to `.githooks`, relative, so each checkout and each linked worktree runs its own branch's hooks, with nothing written in it (EN-052, EN-108); `npm run worktree:new` sets it too when it is not. Hooks are never bypassed (`--no-verify`, `core.hooksPath` changed by hand): a hook that blocks legitimate work is changed, not skipped.
