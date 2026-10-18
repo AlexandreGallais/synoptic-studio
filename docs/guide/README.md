@@ -43,6 +43,7 @@ Written at the end of each feature (`VAL`, demo page) and of each epic (`REV`, e
 | [F24 — The CI in parallel jobs, its tests shown as they run](./f24-the-ci-in-parallel-jobs.md) | five lane checks in parallel, the tests file by file with their failures annotated, the Rust cache saved from `develop` in the background, the warm time pending |
 | [F28 — One workflow per purpose](./f28-one-workflow-per-purpose.md) | the Actions tab's workflows one per purpose, the site apart from the release, the CI into `main` with only the steps its lanes need |
 | [F29 — The local checks stable and fast](./f29-local-checks-stable-and-fast.md) | timing limits at four times their measure, the Rust lanes skipped without a Rust change, the binaries rebuilt after a pull |
+| [F30 — A CI on develop that blocks nothing](./f30-a-ci-on-develop-that-blocks-nothing.md) | the Rust tests on Linux and the caches after each merge into `develop`, dispatched by the auto-merge, blocking nothing |
 | [E01 — Drawing symbol shapes from numbers](./e01-draw-shapes.md) | the eight features of E01, the words, a user test crossing them, the decisions |
 | [E14 — Drawing curves with handles, ellipses and round shapes](./e14-draw-curves.md) | the four features of E14, the words, the walk-through of the review, the decisions |
 | [E15 — Placing text in symbols](./e15-place-text.md) | the five features of E15, the words, the tour of the review, the decisions, the direction to remove |
