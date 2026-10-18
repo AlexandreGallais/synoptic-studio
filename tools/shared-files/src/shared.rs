@@ -94,6 +94,9 @@ pub struct Commit {
     pub files: Vec<String>,
     /// The files among them whose change only pads or unpads their tables (`padding`).
     pub padded: Vec<String>,
+    /// The logs among them whose change only adds the rows and cards the commit removes from the
+    /// story file (`rows::only_moved_rows`), read for the story's `done` commit alone.
+    pub moved: Vec<String>,
 }
 
 /// Whether a commit is the story's `done` commit (`Closes: <ID>`), written by the main thread.

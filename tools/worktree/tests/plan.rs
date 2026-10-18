@@ -77,8 +77,34 @@ fn types_a_branch_by_the_story_kind() {
     assert_eq!(branch_type("US"), Some("feat"));
     assert_eq!(branch_type("EN"), Some("chore"));
     assert_eq!(branch_type("SP"), Some("docs"));
-    assert_eq!(branch_type("NAM"), Some("refactor"));
+    assert_eq!(branch_type("AUD"), Some("docs"));
+    assert_eq!(branch_type("VAL"), Some("feat"));
+    // No `NAM` nor `RET` story since EN-123: the pre-push refuses their branches (AUD-025).
+    assert_eq!(branch_type("NAM"), None);
+    assert_eq!(branch_type("RET"), None);
     assert_eq!(branch_type("XY"), None);
+}
+
+#[test]
+fn f23_ac2_refuses_the_branches_the_pre_push_refuses() {
+    // [F23.AC2] one branch form, the pre-push's (`git_hooks::branch`, AUD-025): a topic without
+    // a story id, or the id of a kind the auto-merge does not take, is refused here too.
+    for name in [
+        "docs/topic-only",
+        "fix/a-fix",
+        "chore/nam-003-naming",
+        "docs/ret-005-retro",
+        "chore/en-12-short-id",
+    ] {
+        assert!(branch_refusal(name).is_some(), "{name}");
+    }
+    for name in [
+        "docs/aud-025-audit-f23",
+        "chore/en-118-a-story",
+        "fix/us-061-x",
+    ] {
+        assert_eq!(branch_refusal(name), None, "{name}");
+    }
 }
 
 #[test]

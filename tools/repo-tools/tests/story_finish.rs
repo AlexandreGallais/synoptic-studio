@@ -552,6 +552,9 @@ fn f23_ac1_opens_no_pull_request_while_the_story_file_holds_rows() {
         &first,
         &["commit", "-q", "--amend", "--no-edit", "--", "docs"],
     );
+    // The rows removed from the working tree only: the head, which is pushed, still holds them
+    // (AUD-025).
+    fs::write(&file, &story).expect("story");
 
     let head = lab.git(&first, &["rev-parse", "HEAD"]);
     let finished = lab.finish(&first, &[]);

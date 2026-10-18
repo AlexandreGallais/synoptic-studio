@@ -51,6 +51,7 @@ fn new_commits(hash: &str) -> io::Result<Vec<Commit>> {
                 message: git(&["log", "-1", "--format=%B", commit])?,
                 files,
                 padded: padded_files,
+                moved: Vec::new(),
             })
         })
         .collect()

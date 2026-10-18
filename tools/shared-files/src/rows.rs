@@ -302,6 +302,28 @@ pub fn take_rows(story: &str) -> Taken {
     }
 }
 
+/// A file's text before a commit and after it.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct Change<'a> {
+    /// Its text in the commit's parent.
+    pub before: &'a str,
+    /// Its text in the commit.
+    pub after: &'a str,
+}
+
+/// Whether a `done` commit's change of a log only adds the rows and card lines the same commit
+/// removes from the story file (AUD-025): the log before is the log after with lines taken out,
+/// and each line taken out is blank, the journal's `## <date> — Run continued` heading, or one of
+/// that log's rows under `## For the main thread` before the commit and not after it, a card's
+/// `#### ` heading written `## `. Any other change, another story's row, a line deleted or
+/// rewritten, is not.
+#[must_use]
+pub fn only_moved_rows(log: Log, log_change: Change, story_change: Change) -> bool {
+    let _ = (log, log_change, story_change);
+
+    false
+}
+
 /// The title of the journal's section opened for today's rows when the newest one is older.
 pub const CONTINUED: &str = "Run continued";
 

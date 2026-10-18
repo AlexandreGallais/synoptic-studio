@@ -257,6 +257,16 @@ pub fn rows_left(story: &str) -> usize {
         .sum()
 }
 
+/// Why a story cannot be finished yet, from its file's text at the head, or the error reading it:
+/// the rows and lines for the logs it still holds, which its `done` commit, made again, moves;
+/// `None` when it holds none.
+#[must_use]
+pub fn story_refusal(path: &str, branch: &str, story: Result<&str, &str>) -> Option<String> {
+    let _ = (path, branch, story);
+
+    None
+}
+
 /// Why the story cannot be finished yet: its file, in the checkout, still holds rows for the logs
 /// that its `done` commit should have moved; `None` when it holds none, or the branch names no
 /// story file.
@@ -753,9 +763,45 @@ mod tests {
         // another shape are not rows (`move-rows` leaves them).
         let story = "# S\n\n## For the main thread\n\nA note.\n\n### Journal\n\n- `#run` a\n- `#open` b\n\n### Feedback\n\n- None.\n\n### Improvements\n\n- Not a row.\n\n### Incidents\n\n#### 2026-10-19 — a card\n\n- Used: c\n";
 
-        assert_eq!(rows_left(story), 4);
+        assert_eq!(rows_left(story), 5);
         assert_eq!(rows_left("# S\n\n## For the main thread\n\nA note.\n"), 0);
         assert_eq!(rows_left("# S\n"), 0);
+        // A card written at the wrong level moves nothing but its two lines are left: 2
+        // (AUD-025).
+        assert_eq!(
+            rows_left(
+                "# S\n\n## For the main thread\n\n### Incidents\n\n### 2026-10-19 — a card\n\n- Used: a\n"
+            ),
+            2
+        );
+    }
+
+    #[test]
+    fn f23_ac1_refuses_a_story_whose_file_holds_lines_or_cannot_be_read() {
+        let path = "docs/backlog/stories/E99-F99-EN-901-first.md";
+        let branch = "chore/en-901-first";
+        let rows = "# S\n\n## For the main thread\n\n### Journal\n\n- `#run` a\n";
+        let refusal = story_refusal(path, branch, Ok(rows)).unwrap_or_default();
+
+        // The done commit made again (ADR-0091): undone, the rows moved, committed and pushed by
+        // `git-sequences`, never amended (AUD-025).
+        for part in [
+            "docs/backlog/stories/E99-F99-EN-901-first.md still holds lines for the logs (1)",
+            "git reset --soft HEAD~1",
+            "target/release/move-rows chore/en-901-first",
+            "target/release/git-sequences commit -F",
+            "--push-with-lease",
+        ] {
+            assert!(refusal.contains(part), "{part}: {refusal}");
+        }
+        assert!(!refusal.contains("--amend"), "{refusal}");
+        assert_eq!(story_refusal(path, branch, Ok("# S\n")), None);
+
+        // A story file that cannot be read at the head is a refusal, never a pass.
+        let unread = story_refusal(path, branch, Err("fatal: bad object")).unwrap_or_default();
+
+        assert!(unread.contains(path), "{unread}");
+        assert!(unread.contains("fatal: bad object"), "{unread}");
     }
 
     #[test]

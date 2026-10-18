@@ -3,9 +3,11 @@
 //! that edits one is refused at push, except by the story's `done` commit, which the main thread
 //! makes (`shared`); the rows and cards a worker writes for a log in its story file are moved into
 //! that log by that `done` commit (`rows`), the journal's under a section dated today
-//! (`calendar::today`). A change that only pads or unpads a shared file's tables passes
-//! (`padding`, EN-073).
+//! (`calendar::today`), and the `done` commit may add to a log only those (AUD-025). A change that
+//! only pads or unpads a shared file's tables passes (`padding`, EN-073). A story's file is found
+//! by its id (`backlog`).
 
+pub mod backlog;
 pub mod padding;
 pub mod rows;
 pub mod shared;
