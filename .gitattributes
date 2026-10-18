@@ -1,5 +1,7 @@
-# Append-only logs: a merge keeps the lines both sides added, without conflict markers (ADR-0065,
-# REF-GIT-UNION); tests/logs.test.ts checks their rows stay unique and dated.
+# Append-only logs, the tool cards among them: a merge keeps the lines both sides added, without
+# conflict markers (ADR-0065, ADR-0085, REF-GIT-UNION); tests/logs.test.ts checks their rows stay
+# unique and dated, and the cards whole.
 docs/process/journal.md merge=union
 docs/process/improvements.md merge=union
 docs/process/feedback.md merge=union
+docs/process/tool-incidents.md merge=union

@@ -30,14 +30,15 @@ How a run's worker works one story in its own worktree. The `story-worker` and `
 - **Docs in the same task as the code** they describe: domain, derivations, references, playground.
 - **The current step**, one short line in French, goes to `.git/metrics/step` of the main checkout (`git rev-parse --git-common-dir` gives its folder): the status line shows it.
 
-## Shared files (ADR-0065)
+## Shared files (ADR-0065, ADR-0091)
 
-The files every story touches are written only by the main thread, at merge, so that a story's pull request never conflicts with the rows the main thread wrote meanwhile: the indexes of `docs/backlog/`, the logs (`journal.md`, `improvements.md`, `feedback.md`), the feature file and the checklists (`playground/checklists/epic-*`). The pre-push hook refuses a branch that changes one and names it (EN-050).
+The files every story touches are written only by the main thread, so that a story's pull request never conflicts with the rows the main thread wrote meanwhile: the indexes of `docs/backlog/`, the logs (`journal.md`, `improvements.md`, `feedback.md`, `tool-incidents.md`), the feature file and the checklists (`playground/checklists/epic-*`). The pre-push hook refuses a branch that changes one and names it (EN-050), except in the story's `done` commit, the main thread's.
 
-A row meant for a log goes in the story file, under `## For the main thread`, beneath `### Journal`, `### Improvements` or `### Feedback`, written as the log writes it; `story:finish` moves it at merge:
+A row meant for a log goes in the story file, under `## For the main thread`, beneath `### Journal`, `### Improvements`, `### Feedback` or `### Incidents`, written as the log writes it; `move-rows` moves it in the story's `done` commit:
 
 - under `### Journal`, a bullet opening with its tag: ``- `#run` EN-050: …``;
-- under `### Improvements` and `### Feedback`, a table row of the log's columns, its first cell the date (`| 2026-10-17 | EN-050 | … | tool |`), with no header nor separator.
+- under `### Improvements` and `### Feedback`, a table row of the log's columns, its first cell the date (`| 2026-10-17 | EN-050 | … | tool |`), with no header nor separator;
+- under `### Incidents`, a card for a tool that failed (ADR-0085): its heading `#### 2026-10-19 — <tool, and what for>`, then its bullets `- Used: …` (how it was used), `- Failed: …` (why it failed) and `- Instead: …` (what was done instead).
 
 Rows only, one per line, and no heading without rows (never `- None.`): any other line stays in the story file and is reported by `move-rows`. Anything else for the main thread goes in that section, outside those headings.
 

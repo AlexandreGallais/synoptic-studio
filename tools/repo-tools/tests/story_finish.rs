@@ -1,7 +1,8 @@
 //! `story-finish` run in repositories of its own (EN-103): a bare `origin`, a main checkout on the
 //! feature branch, each story in a linked worktree, as in a run. GitHub's command line and Cargo
 //! are stubs first on `PATH`: `gh pr create` merges by pushing the story onto its base, `cargo`
-//! moves rows when asked. Every command starts through `test_support::command`, without the
+//! records its calls, and would move a row if asked to run `move-rows`, which `story-finish` no
+//! longer does (ADR-0091). Every command starts through `test_support::command`, without the
 //! inherited `GIT_*` variables, its Git configuration a test file of its own.
 
 #![cfg(unix)]
@@ -36,7 +37,8 @@ case "$1 $2" in
 esac
 "#;
 
-/// Cargo: `move-rows` writes a row into the journal when `ROWS` is set and prints the file.
+/// Cargo: `move-rows` writes a row into the journal when `ROWS` is set and prints the file, so that
+/// a test sees a row moved after the merge.
 const CARGO: &str = r#"#!/bin/sh
 echo "$PWD $*" >> "$STUB_LOG"
 case "$*" in
@@ -429,13 +431,33 @@ fn f18_ac7_aborts_a_rebase_that_meets_a_conflict_outside_the_status_rows() {
 }
 
 #[test]
-fn f18_ac7_moves_the_rows_into_the_logs_and_commits_them_alone_on_the_base() {
+fn f23_ac1_pushes_no_commit_after_the_merge_the_rows_in_the_done_commit() {
     let lab = Lab::new("rows");
 
     lab.backlog();
 
     let first = lab.story(FIRST, "en-901");
     let main = lab.main();
+
+    // The main thread moved the story's row into the journal in its done commit.
+    fs::write(
+        first.join("docs/process/journal.md"),
+        "# Journal\n\n- `#run` a row\n",
+    )
+    .expect("journal");
+    lab.git(
+        &first,
+        &[
+            "commit",
+            "-q",
+            "--amend",
+            "--no-edit",
+            "--",
+            "docs/process/journal.md",
+        ],
+    );
+
+    let done = lab.git(&first, &["rev-parse", "HEAD"]);
 
     // The main thread's own work, staged in the main checkout.
     fs::write(main.join("draft.md"), "a draft\n").expect("draft");
@@ -446,41 +468,79 @@ fn f18_ac7_moves_the_rows_into_the_logs_and_commits_them_alone_on_the_base() {
     let calls = lab.calls();
 
     assert!(finished.status.success(), "{out}\n{err}");
-    assert!(
-        out.contains("base pushed, rows moved: docs/process/journal.md\n"),
-        "{out}"
+    assert!(!out.contains("rows moved"), "{out}");
+    // [F23.AC1] the base's head is the story's done commit, its row in it: no commit after it.
+    assert_eq!(
+        lab.git(&main, &["rev-parse", &format!("origin/{BASE}")]),
+        done
     );
     assert_eq!(
-        lab.git(
-            &main,
-            &[
-                "show",
-                "--name-only",
-                "--format=%s",
-                &format!("origin/{BASE}")
-            ]
-        ),
-        "docs(docs): move the rows of EN-901 into the logs\n\ndocs/process/journal.md"
+        lab.show(&format!("origin/{BASE}:docs/process/journal.md")),
+        "# Journal\n\n- `#run` a row"
+    );
+    assert!(
+        !calls.iter().any(|call| call.contains("move-rows")),
+        "{calls:?}"
     );
     assert_eq!(lab.git(&main, &["status", "--porcelain"]), "A  draft.md");
-    // `move-rows` and the formatter ran in the main checkout, the branch deleted from there.
+    // The base's release binaries rebuilt where it is checked out (ADR-0078), the branch deleted
+    // from there.
     let place = main.display().to_string();
 
     assert!(calls.contains(&format!(
-        "{place} run --release -q -p shared-files --bin move-rows -- {FIRST}"
-    )));
-    assert!(calls.contains(&format!(
-        "{place} run --release -q -p format -- --write docs/process/journal.md"
+        "{place} build --release --workspace --locked --quiet"
     )));
     assert!(calls.contains(&format!(
         "{place} api -X DELETE repos/owner/name/git/refs/heads/{FIRST}"
     )));
-    // The base's release binaries rebuilt where it is checked out (ADR-0078).
-    assert!(calls.contains(&format!(
-        "{place} build --release --workspace --locked --quiet"
-    )));
     assert_eq!(lab.git(&main, &["branch", "--list", FIRST]), "");
     assert_eq!(lab.git(&main, &["branch", "--show-current"]), BASE);
+}
+
+#[test]
+fn f23_ac1_opens_no_pull_request_while_the_story_file_holds_rows() {
+    let lab = Lab::new("left");
+
+    lab.backlog();
+
+    let first = lab.story(FIRST, "en-901");
+    let file = first.join("docs/backlog/stories/E99-F99-EN-901-first.md");
+    let story = fs::read_to_string(&file).expect("story");
+
+    // A done commit made without `move-rows`: the row is still in the story file.
+    fs::write(
+        &file,
+        format!("{story}\n## For the main thread\n\n### Journal\n\n- `#run` a row\n"),
+    )
+    .expect("story");
+    lab.git(
+        &first,
+        &["commit", "-q", "--amend", "--no-edit", "--", "docs"],
+    );
+
+    let head = lab.git(&first, &["rev-parse", "HEAD"]);
+    let finished = lab.finish(&first, &[]);
+    let (out, err) = text(&finished);
+
+    // [F23.AC1] it stops before pushing or opening anything, and names the command.
+    assert_eq!(finished.status.code(), Some(1), "{out}\n{err}");
+    assert!(
+        err.contains(
+            "docs/backlog/stories/E99-F99-EN-901-first.md still holds lines for the logs (1)"
+        ),
+        "{err}"
+    );
+    assert!(
+        err.contains(&format!("target/release/move-rows {FIRST}")),
+        "{err}"
+    );
+    assert!(!lab.calls().iter().any(|call| call.contains("pr create")));
+    assert_eq!(lab.git(&first, &["rev-parse", "HEAD"]), head);
+    assert_ne!(
+        lab.git(&first, &["rev-parse", &format!("origin/{FIRST}")]),
+        head
+    );
+    assert!(first.exists());
 }
 
 #[test]

@@ -38,6 +38,11 @@ fn names_every_kind_of_shared_file() {
     assert_eq!(shared_kind("docs/process/journal.md"), Some(Kind::Log));
     assert_eq!(shared_kind("docs/process/improvements.md"), Some(Kind::Log));
     assert_eq!(shared_kind("docs/process/feedback.md"), Some(Kind::Log));
+    // [F23.AC1] the tool cards are a log too (ADR-0085).
+    assert_eq!(
+        shared_kind("docs/process/tool-incidents.md"),
+        Some(Kind::Log)
+    );
     assert_eq!(
         shared_kind("docs/backlog/features/E17-F18-a-safe-and-cheap-parallel-run.md"),
         Some(Kind::Feature)
@@ -138,6 +143,7 @@ fn refuses_every_shared_file_in_a_task_commit() {
             "tools/shared-files/src/lib.rs",
             "docs/backlog/stories/README.md",
             "docs/process/journal.md",
+            "docs/process/tool-incidents.md",
             "docs/backlog/features/E17-F18-a-safe-and-cheap-parallel-run.md",
             "playground/checklists/epic-15-text-lines.ts",
         ],
@@ -148,6 +154,7 @@ fn refuses_every_shared_file_in_a_task_commit() {
         [
             "docs/backlog/stories/README.md",
             "docs/process/journal.md",
+            "docs/process/tool-incidents.md",
             "docs/backlog/features/E17-F18-a-safe-and-cheap-parallel-run.md",
             "playground/checklists/epic-15-text-lines.ts",
         ]
@@ -155,7 +162,7 @@ fn refuses_every_shared_file_in_a_task_commit() {
 }
 
 #[test]
-fn lets_the_done_commit_set_the_status_but_not_write_a_log() {
+fn f23_ac1_lets_the_done_commit_write_the_logs_but_not_a_checklist() {
     let done = commit(
         "docs(backlog): set EN-050 done\n\nCloses: EN-050\n",
         &[
@@ -164,16 +171,16 @@ fn lets_the_done_commit_set_the_status_but_not_write_a_log() {
             "docs/backlog/features/E17-F18-a-safe-and-cheap-parallel-run.md",
             "playground/checklists/epic-15-text-lines.ts",
             "docs/process/improvements.md",
+            "docs/process/journal.md",
+            "docs/process/tool-incidents.md",
         ],
     );
 
-    // The done commit sets statuses; a checklist, like a log, stays the main thread's.
+    // The done commit sets the statuses and moves the story's rows and cards into the logs; a
+    // checklist stays the main thread's, written at the feature's validation.
     assert_eq!(
         refused_files(&done, "EN-050"),
-        [
-            "playground/checklists/epic-15-text-lines.ts",
-            "docs/process/improvements.md"
-        ]
+        ["playground/checklists/epic-15-text-lines.ts"]
     );
 }
 
@@ -414,4 +421,41 @@ fn lets_through_a_log_unpadded_but_refuses_a_changed_or_added_row() {
         assert_eq!(output.status.code(), Some(1), "{name}: {error}");
         assert!(error.contains("docs/process/journal.md"), "{name}: {error}");
     }
+}
+
+#[test]
+fn f23_ac1_refuses_a_log_in_a_task_commit_and_lets_through_the_done_commit_holding_rows() {
+    let repository = Repository::new("done");
+
+    repository.git(&["switch", "--quiet", "-c", "chore/en-996-topic"]);
+    repository.write("README.md", "# Work, changed\n");
+    repository.commit("feat: a task\n\nRefs: EN-996.T1");
+    repository.write("docs/process/journal.md", "# Journal\n\n- `#run` a row\n");
+
+    let task = repository.commit("feat: a row in a task\n\nRefs: EN-996.T2");
+    let output = repository.check("chore/en-996-topic", &task);
+    let error = String::from_utf8_lossy(&output.stderr);
+
+    // [F23.AC1] a commit other than the done commit is refused, naming the log, and the message
+    // says where the rows go.
+    assert_eq!(output.status.code(), Some(1), "{error}");
+    assert!(
+        error.contains("  docs/process/journal.md (commit "),
+        "{error}"
+    );
+    assert!(error.contains("done commit"), "{error}");
+
+    // The same row moved by the main thread in the story's done commit passes.
+    repository.git(&["reset", "--quiet", "--hard", "HEAD~1"]);
+    repository.write("docs/process/journal.md", "# Journal\n\n- `#run` a row\n");
+
+    let done = repository.commit("docs(backlog): set EN-996 done\n\nCloses: EN-996");
+    let output = repository.check("chore/en-996-topic", &done);
+
+    assert_eq!(
+        output.status.code(),
+        Some(0),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
 }
