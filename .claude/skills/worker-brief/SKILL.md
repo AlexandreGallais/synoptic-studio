@@ -40,7 +40,7 @@ A row meant for a log goes in the story file, under `## For the main thread`, be
 - under `### Improvements` and `### Feedback`, a table row of the log's columns, its first cell the date (`| 2026-10-17 | EN-050 | … | tool |`), with no header nor separator;
 - under `### Incidents`, a card for a tool that failed (ADR-0085): its heading `#### 2026-10-19 — <tool, and what for>`, then its bullets `- Used: …` (how it was used), `- Failed: …` (why it failed) and `- Instead: …` (what was done instead).
 
-Rows only, one per line, and no heading without rows (never `- None.`): any other line stays in the story file and is reported by `move-rows`. Anything else for the main thread goes in that section, outside those headings.
+Rows only, one per line, and no heading without rows (never `- None.`): any other line stays in the story file, is reported by `move-rows` and stops `story:finish` (AUD-025). A card is `#### <date> — <title>` and its bullets, a continuation indented under its bullet. Anything else for the main thread goes in that section, outside those headings.
 
 ## Heavy commands (ADR-0072)
 
