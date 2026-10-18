@@ -28,7 +28,6 @@ pub const LANES: &[&[&str]] = &[
         "lint:secrets",
         "deps:audit",
         "deps:unused",
-        "deps:tools",
         "deps:outdated",
     ],
     // The Rust workspace: rustfmt, Clippy, its advisories, its tests (EN-068, EN-069).

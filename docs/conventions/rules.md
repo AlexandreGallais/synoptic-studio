@@ -224,7 +224,7 @@ Measured on real edits: the last 500 changes of a TypeScript file in the history
 | `metrics`, `metrics:session`, `activity`, `records:save` | the agent's own metrics | — | kept: the retrospective reads them; F21 carries them |
 | `replace`, `backlog:status`, `backlog:index`, `story:finish`, `val:prepare`, `worktree:new`, `branches:clean`, `epic:check` | the agent's tools (`agent-tools.md`) | — | kept: each does in one command what was written by hand; F21 carries the TypeScript ones |
 | `golden:write`, `golden:check`, `mutate` | refactors and mutation checks | — | kept |
-| `deps:audit`, `deps:outdated`, `deps:tools`, `deps:unused` | dependencies | — | kept: AGENTS.md's 7-day rule and the empty `dependencies` |
+| `deps:audit`, `deps:outdated`, `deps:unused` | dependencies | — | kept: AGENTS.md's 7-day rule and the empty `dependencies` |
 | `font:metrics`, `docs:api`, `build`, `playground:build` | builds | — | kept |
 | `heavy-lock` on heavy commands | one heavy command at a time | — | kept: ADR-0072 |
 

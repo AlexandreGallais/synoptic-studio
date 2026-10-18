@@ -35,6 +35,15 @@ Before and after on this Mac, 10 runs each: `deps:outdated` and `deps:tools` tog
 
 Before, measured by SP-023 (0025, Each tool's time before its port), medians of 5 runs: `ncu` 2.14 s and `tool-versions.ts` 0.78 s, network included; `knip` 0.60 s.
 
+Measured by EN-109 on 2026-10-18 between 03:19 and 03:40 UTC, medians of 5 runs (a timer around each process, load average 2.8 to 3.4), the same tree, before the packages were removed:
+
+| Check | Before | After | The network's share |
+| --- | --- | --- | --- |
+| versions | `ncu` 1.91 s, then `tool-versions.ts` 0.78 s: 2.69 s in the lane | `dependencies outdated` 1.48 s, with the crates of `Cargo.lock` besides | `curl` alone on the same 180 addresses 1.27 s (the 17 npm packages 1.48 s alone, `vite`'s 39 MB of metadata the longest; the 163 crates of the index 0.81 s; Node.js's index 0.16 s); `gh api` 0.51 s a call, all at once, during `curl` |
+| unused | `knip` 0.56 s | `dependencies unused` 0.12 s | none |
+
+The versions check is bound by the npm registry: `ncu` downloads the same full metadata, so the gain is Node.js's start, `tool-versions.ts`'s run after it, and the answers read on every core. The first `dependencies unused` took 0.46 s: each import was resolved again at every name a barrel passed on; the resolutions are now made once per import, and the files parsed on every core.
+
 ## Tasks
 
 One task = one commit, referenced as `EN-109.Tn`.

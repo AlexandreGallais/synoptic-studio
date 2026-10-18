@@ -60,14 +60,8 @@ const HAPPY_DOM: &str = "@vitest-environment happy-dom";
 
 /// Dev packages never reported, each with its reason, as `knip.json`'s `ignoreDependencies` held
 /// them: `fast-check`, the peer of `@fast-check/vitest` that the tests import it through; `oxfmt`,
-/// run by `tools/format`; `secretlint` and its preset, run by the Git hooks' Rust runner and
-/// through `xargs`.
-pub const IGNORED: &[&str] = &[
-    "@secretlint/secretlint-rule-preset-recommend",
-    "fast-check",
-    "oxfmt",
-    "secretlint",
-];
+/// run by `tools/format`.
+pub const IGNORED: &[&str] = &["fast-check", "oxfmt"];
 
 /// One finding: what, and where (`file:line:column`).
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
@@ -244,17 +238,36 @@ fn words(text: &str) -> impl Iterator<Item = &str> {
     .map(|word| word.trim_start_matches("./"))
 }
 
-/// The modules of the project's files, by path; a file Oxc cannot parse is an empty module.
+/// The modules of the project's files, by path, read on every core; a file Oxc cannot parse is an
+/// empty module.
 fn read_modules(tree: &Tree) -> HashMap<String, (String, Module)> {
-    tree.files
-        .iter()
-        .map(|path| {
-            let text = fs::read_to_string(tree.root.join(path)).unwrap_or_default();
-            let module = modules::read(&text).unwrap_or_default();
+    let threads = std::thread::available_parallelism().map_or(1, std::num::NonZero::get);
+    let size = tree.files.len().div_ceil(threads).max(1);
 
-            (path.clone(), (text, module))
-        })
-        .collect()
+    std::thread::scope(|scope| {
+        let handles: Vec<_> = tree
+            .files
+            .chunks(size)
+            .map(|chunk| {
+                scope.spawn(move || {
+                    chunk
+                        .iter()
+                        .map(|path| {
+                            let text = fs::read_to_string(tree.root.join(path)).unwrap_or_default();
+                            let module = modules::read(&text).unwrap_or_default();
+
+                            (path.clone(), (text, module))
+                        })
+                        .collect::<Vec<_>>()
+                })
+            })
+            .collect();
+
+        handles
+            .into_iter()
+            .flat_map(|handle| handle.join().unwrap_or_default())
+            .collect()
+    })
 }
 
 /// The texts of the script files, the files of a listed folder included, sorted.
@@ -336,17 +349,50 @@ fn entries(tree: &Tree, scripts: &[(String, String)]) -> BTreeSet<String> {
 struct Graph<'a> {
     modules: &'a HashMap<String, (String, Module)>,
     root: &'a Path,
+    /// Each relative specifier of each file, resolved once: the file system is asked once per
+    /// import, not at each name a barrel passes on.
+    targets: HashMap<(String, String), Option<String>>,
     used: BTreeSet<(String, String)>,
     all_used: BTreeSet<String>,
 }
 
-impl Graph<'_> {
+impl<'a> Graph<'a> {
+    /// The graph of the modules, every relative specifier resolved.
+    fn new(modules: &'a HashMap<String, (String, Module)>, root: &'a Path) -> Self {
+        let targets = modules
+            .iter()
+            .flat_map(|(file, (_, module))| {
+                module
+                    .imports
+                    .iter()
+                    .filter(|import| is_relative(&import.specifier))
+                    .map(move |import| (file.clone(), import.specifier.clone()))
+            })
+            .collect::<BTreeSet<_>>()
+            .into_iter()
+            .map(|(file, specifier)| {
+                let target =
+                    resolve(root, &file, &specifier).filter(|path| modules.contains_key(path));
+
+                ((file, specifier), target)
+            })
+            .collect();
+
+        Self {
+            modules,
+            root,
+            targets,
+            used: BTreeSet::new(),
+            all_used: BTreeSet::new(),
+        }
+    }
+
     /// The project file an import of `from` names, when it names one.
     fn target(&self, from: &str, specifier: &str) -> Option<String> {
-        if !is_relative(specifier) {
-            return None;
-        }
-        resolve(self.root, from, specifier).filter(|path| self.modules.contains_key(path))
+        self.targets
+            .get(&(from.to_owned(), specifier.to_owned()))
+            .cloned()
+            .flatten()
     }
 
     /// Marks an export of a file used, following its re-exports and `export *`.
@@ -632,12 +678,7 @@ pub fn check(tree: &Tree) -> Findings {
     let modules = read_modules(tree);
     let scripts = script_texts(&tree.root);
     let entries = entries(tree, &scripts);
-    let mut graph = Graph {
-        modules: &modules,
-        root: &tree.root,
-        used: BTreeSet::new(),
-        all_used: BTreeSet::new(),
-    };
+    let mut graph = Graph::new(&modules, &tree.root);
     let reached = reached(&graph, &entries);
     let mut findings = Findings {
         files: tree

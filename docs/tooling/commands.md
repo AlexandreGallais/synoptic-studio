@@ -10,7 +10,7 @@
 | `npm run format` / `format:check` | the formatter, `tools/format`: oxfmt, then Markdown tables without padding (ADR-0068); `format:check` changes nothing |
 | `npm run typecheck` | `tsc --noEmit` (TypeScript 7); outside `check` and `check:all`, where the lint reports the same errors |
 | `npm run fix` | the formatter, oxlint `--fix`, the project's linter `--fix`: **before each commit** |
-| `npm run check` | format, lint, the secret scan, Vitest, `npm audit`, knip and `check:rust` one after the other, without the builds |
+| `npm run check` | format, lint, the secret scan, Vitest, `npm audit`, `deps:unused` and `check:rust` one after the other, without the builds |
 | `npm run check:all` | `rust:build`, then the [five lanes](#the-lanes-of-the-full-check) at once: what the pre-push hook and the CI run; about 40 s on a code story, a minute with the docs build |
 | `npm run check:rust` | the Rust workspace: `cargo fmt --check`, Clippy, `rust:advisories`, `rust:coverage`, and a check for Windows without linking, so that a Unix-only call outside `cfg(unix)` fails on the Mac, then `rust:fresh`; warnings are errors (`.cargo/config.toml`) |
 | `npm run rust:advisories` | cargo-deny against the local copy of the RustSec database (`deny.toml`, `REF-CARGO-DENY-ADVISORIES`): unmaintained and yanked crates fail too; `cargo deny fetch db` refreshes the copy |
@@ -19,9 +19,8 @@
 | `npm run rust:fresh` | each release binary older than a file Cargo built it from, or missing, then exit 1 (`tools/stale-binaries/`, ADR-0078) |
 | `prepare` (run by `npm install`) | `rust:build`, then `target/release/git-hooks install`: the hooks folder `.githooks` set once ([Git workflow](./git-workflow.md#hooks-githooks)) |
 | `npm run deps:audit` | `npm audit`: any severity fails |
-| `npm run deps:outdated` | fails when a package is not on its latest version ([versions](./versions-and-security.md)) |
-| `npm run deps:unused` | knip: unused files, exports and dependencies (`knip.json`) |
-| `npm run deps:tools` | fails when a GitHub Action is not on its latest major, or `.nvmrc` not on the latest Node.js LTS |
+| `npm run deps:outdated` | lists each npm package, GitHub Action, Node.js major and crate behind its latest version at least 7 days old, and each locked crate under 7 days, then exits 1; exits 2 naming a source that does not answer (`dependencies outdated` of `tools/deps/`, [versions](./versions-and-security.md)) |
+| `npm run deps:unused` | the unused files, exports, exported types and dev packages, the unlisted packages and the unresolved imports, then exits 1 (`dependencies unused` of `tools/deps/`, on Oxc's parser, in place of knip, EN-109) |
 | `npm run docs:dev` / `docs:build` / `docs:preview` | the documentation site, its API pages written first ([documentation site](./documentation-site.md)) |
 | `npm run docs:api` | `docs/api/` from the TSDoc |
 | `npm run playground:build` | the playground, built into the site (`docs/.vitepress/dist/playground/`) |
@@ -43,7 +42,7 @@
 | lint | `lint` | never |
 | test | `test` | never |
 | docs | `docs:build`, then `playground:build` | the branch changed nothing the site is built from against its base — `docs/`, `src/`, `playground/`, `tools/api-pages/`, `Cargo.toml`, `Cargo.lock`, `rust-toolchain.toml`, `package.json`, `package-lock.json`, `vite.config.ts` — committed or not, a moved file counting under its old path too |
-| checks | `format:check`, `lint:secrets`, `deps:audit`, `deps:unused`, `deps:tools`, `deps:outdated` | never |
+| checks | `format:check`, `lint:secrets`, `deps:audit`, `deps:unused`, `deps:outdated` | never |
 | rust | `check:rust` | never |
 
 The base is the nearest of `origin/develop` and `origin/feature/*` for a story, `origin/develop` for a feature. When the base is unclear — `main`, `develop`, a detached head, the CI, a Git error — every lane runs: skipping is allowed only when it is certain the lane has nothing to check. A line says when the docs lane is skipped. The lanes run inside `check:all`'s heavy lock, and no release binary is built once they start: two lanes starting the same binary while `cargo run` rewrites it fail with `could not execute process`.
@@ -52,7 +51,7 @@ The base is the nearest of `origin/develop` and `origin/feature/*` for a story, 
 
 ## Explicit targets
 
-Every check tool is given the folders and files it checks by name — the scripts, `knip.json`'s `project`, `tsconfig.json`'s `include`, Vitest's `include` and coverage — and never walks the repository from `.`. So the worktrees' copies in `.claude/worktrees/` and the generated folders (`records/`, `coverage/`, `dist/`, `target/`, `docs/api/`, VitePress's caches) stay out without each tool knowing them. A new tracked folder is added to the targets; `tests/check-targets.test.ts` fails until it is.
+Every check tool is given the folders and files it checks by name — the scripts, the unused check's `PROJECT` (`tools/deps/src/unused.rs`), `tsconfig.json`'s `include`, Vitest's `include` and coverage — and never walks the repository from `.`. So the worktrees' copies in `.claude/worktrees/` and the generated folders (`records/`, `coverage/`, `dist/`, `target/`, `docs/api/`, VitePress's caches) stay out without each tool knowing them. A new tracked folder is added to the targets; `tests/check-targets.test.ts` fails until it is.
 
 ## Tests that run Git
 

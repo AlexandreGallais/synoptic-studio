@@ -332,15 +332,7 @@ fn runs_every_check_of_check_the_playground_after_the_site() {
         .skip(1)
         .filter_map(|rest| rest.split_whitespace().next())
         .map(str::to_owned)
-        .chain(
-            [
-                "deps:outdated",
-                "deps:tools",
-                "docs:build",
-                "playground:build",
-            ]
-            .map(str::to_owned),
-        )
+        .chain(["deps:outdated", "docs:build", "playground:build"].map(str::to_owned))
         .collect();
     let mut lanes: Vec<String> = LANES
         .iter()
