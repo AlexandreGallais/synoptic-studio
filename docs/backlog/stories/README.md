@@ -295,7 +295,6 @@
 | [SP-024](./E17-F28-SP-024-the-tooling-features-of-2026-10-18.md) | F28 | The tooling features of 2026-10-18 | done |
 | [EN-132](./E17-F28-EN-132-the-site-the-release-and-the-caches-apart.md) | F28 | The site, the release and the Rust caches apart | done |
 | [EN-133](./E17-F28-EN-133-the-ci-into-main-its-checks-only.md) | F28 | The CI into main, its checks only | done |
-| [EN-134](./E17-F28-EN-134-the-other-workflows-reviewed.md) | F28 | The auto-merge per base and the other workflows reviewed | parked |
 | [AUD-030](./E17-F28-AUD-030-audit-f28.md) | F28 | Audit F28 | ready |
 | [VAL-029](./E17-F28-VAL-029-validate-f28.md) | F28 | Validate F28 | ready |
 | [EN-135](./E17-F30-EN-135-the-develop-ci-started-by-the-auto-merge.md) | F30 | The develop CI, started by the auto-merge | ready |
@@ -319,6 +318,9 @@
 | [EN-141](./E17-F33-EN-141-a-bench-binary.md) | F33 | A bench binary for the stories' measures | ready |
 | [AUD-035](./E17-F33-AUD-035-audit-f33.md) | F33 | Audit F33 | ready |
 | [VAL-034](./E17-F33-VAL-034-validate-f33.md) | F33 | Validate F33 | ready |
+| [EN-134](./E17-F34-EN-134-the-other-workflows-reviewed.md) | F34 | The auto-merge per base and the other workflows reviewed | parked |
+| [AUD-036](./E17-F34-AUD-036-audit-f34.md) | F34 | Audit F34 | ready |
+| [VAL-035](./E17-F34-VAL-035-validate-f34.md) | F34 | Validate F34 | ready |
 | [NAM-002](./E17-NAM-002-naming-pass-e17.md) | E17 | Naming pass over the code of E17 | done |
 | [REV-004](./E17-REV-004-review-e17.md) | E17 | Review E17 with the Product Owner | done |
 | [RET-004](./E17-RET-004-retrospective-e17.md) | E17 | Retrospective of E17 | done |

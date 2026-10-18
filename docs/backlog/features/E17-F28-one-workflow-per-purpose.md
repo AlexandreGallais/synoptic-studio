@@ -13,10 +13,9 @@ Decided by the Product Owner on 2026-10-18, after 0.3.0's merge into `main`: the
 
 ## Acceptance criteria
 
-1. Each workflow of `.github/workflows/` holds one purpose, named for it in its file name, its `name:` and its first comment; its trigger is the only condition that chooses whether it runs and which of its jobs run, no `if:` reading the event or a branch (ADR-0088, decision 2) (EN-132, EN-133, EN-134).
+1. Each workflow of `.github/workflows/` holds one purpose, named for it in its file name, its `name:` and its first comment; its trigger is the only condition that chooses whether it runs and which of its jobs run, no `if:` reading the event or a branch (ADR-0088, decision 2), `story-automerge.yml` left to F34 (EN-132, EN-133).
 2. The site's deployment, on a push to `main`, and the release, by its button alone, are two workflows; the release refuses a branch other than `main` by its tool; the Rust caches are saved by a workflow of their own on a push to `develop`, and `main`'s by the site's build (EN-132).
 3. The CI of the pull requests into `main` runs only on them, and each of its steps is needed by a script of its job's lane; the time of each job before and after is written in `docs/tooling/ci.md` (EN-133).
-4. `story-automerge.yml` is two workflows, one per base, each one run per pull request; `external-prs.yml`, `links.yml` and `codeql.yml` are kept, changed or removed as the Product Owner decided on SP-024's proposal (EN-134).
 
 ## Stories
 
@@ -27,7 +26,6 @@ In delivery order.
 | [SP-024](../stories/E17-F28-SP-024-the-tooling-features-of-2026-10-18.md) | SP | The tooling features of 2026-10-18 | done |
 | [EN-132](../stories/E17-F28-EN-132-the-site-the-release-and-the-caches-apart.md) | EN | The site, the release and the Rust caches apart | done |
 | [EN-133](../stories/E17-F28-EN-133-the-ci-into-main-its-checks-only.md) | EN | The CI into main, its checks only | done |
-| [EN-134](../stories/E17-F28-EN-134-the-other-workflows-reviewed.md) | EN | The auto-merge per base and the other workflows reviewed | parked |
 | [AUD-030](../stories/E17-F28-AUD-030-audit-f28.md) | AUD | Audit F28 | ready |
 | [VAL-029](../stories/E17-F28-VAL-029-validate-f28.md) | VAL | Validate F28 | ready |
 
@@ -35,7 +33,6 @@ In delivery order.
 
 | Acceptance criterion | Realized by | Verified by |
 | --- | --- | --- |
-| 1 | EN-132, EN-133, EN-134 | AUD-030, VAL-029 |
+| 1 | EN-132, EN-133 | AUD-030, VAL-029 |
 | 2 | EN-132 | AUD-030, VAL-029 |
 | 3 | EN-133 | AUD-030, VAL-029 |
-| 4 | EN-134 | AUD-030, VAL-029 |

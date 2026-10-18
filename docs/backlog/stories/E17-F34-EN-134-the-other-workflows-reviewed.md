@@ -1,13 +1,13 @@
 ---
 id: EN-134
 epic: E17
-feature: F28
+feature: F34
 title: The auto-merge per base and the other workflows reviewed
 status: parked
 points: 2
 ---
 
-# E17 · F28 · EN-134 — The auto-merge per base and the other workflows reviewed
+# E17 · F34 · EN-134 — The auto-merge per base and the other workflows reviewed
 
 `story-automerge.yml` runs on every pull request, its job choosing by the base branch in its `if:` and its script choosing again (`if [ "$BASE" = develop ]`); a pull request opened with its label starts it twice, `opened` and `labeled` (173 runs merged, 25 skipped, 2 failed among its last 200). `external-prs.yml` ran 200 times, all skipped: no outsider ever opened a pull request, the setting _Collaborators only_ keeping them out (`REF-GH-PR-ACCESS`). `links.yml` checks the outside links, which rot without a change of ours; CodeQL analyses the TypeScript and could analyse the Rust and the workflows (`REF-GH-CODEQL-TRIGGERS`). Research note 0026, §2.
 

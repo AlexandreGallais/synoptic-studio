@@ -35,3 +35,4 @@
 | [F31](./E17-F31-the-guard-and-the-agents-commands.md) | E17 | The guard and the agent's commands | ready |
 | [F32](./E17-F32-reports-that-say-what-happened.md) | E17 | Reports that say what happened | ready |
 | [F33](./E17-F33-the-checks-ret-004-listed.md) | E17 | The checks RET-004 listed | ready |
+| [F34](./E17-F34-the-use-of-each-workflow.md) | E17 | The use of each workflow | ready |
