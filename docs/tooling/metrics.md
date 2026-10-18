@@ -186,10 +186,10 @@ The metrics' tools read the transcripts as `run-totals` does: each transcript fr
 
 ## Watching a long task
 
-A command expected to last more than a minute runs in the background (`run_in_background`), never behind a waiting loop, so that the agent stays free and the wait costs no tokens. Claude Code's Monitor watches it with `scripts/watch-task.ts`, which prints a line only when the task needs a look:
+A command expected to last more than a minute runs in the background (`run_in_background`), never behind a waiting loop, so that the agent stays free and the wait costs no tokens. Claude Code's Monitor watches it with the binary `watch-task` of `tools/metrics` (EN-107, the lines of `watch-task.ts` unchanged), which prints a line only when the task needs a look:
 
 ```sh
-node --harmony-temporal scripts/watch-task.ts <output file> --stall 120 --until "done" --max 1800
+cargo run --release -q -p metrics --bin watch-task -- <output file> --stall 120 --until "done" --max 1800
 ```
 
 | Line printed | When |

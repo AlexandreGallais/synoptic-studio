@@ -76,7 +76,7 @@
     "backlog:index": "cargo run --release -q -p backlog-index -- docs/backlog && cargo run --release -q -p format -- --write docs/backlog/stories/README.md",
     "story:finish": "cargo run --release -q -p heavy-lock -- --lock merge cargo run --release -q -p repo-tools --bin story-finish --",
     "val:prepare": "cargo run --release -q -p val-prepare -- .",
-    "activity": "node --harmony-temporal scripts/activity.ts",
+    "activity": "cargo run --release -q -p metrics --bin activity --",
     "epic:check": "cargo run --release -q -p repo-tools --bin epic-check --",
     "font:metrics": "node scripts/default-font-metrics.ts"
   },
