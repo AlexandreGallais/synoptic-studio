@@ -386,10 +386,7 @@ fn f21_ac4_ignores_the_messages_commitlint_ignores() {
         "Auto-merged develop into master",
         "Merge remote-tracking branch",
         "Merged PR 123: Description here",
-        // The project's own: release-please's release commits of either branch (ADR-0067, the
-        // case `tests/release-flow.test.ts` held) and Dependabot's.
-        "chore(develop): release 0.3.0",
-        "chore(main): release 0.2.0",
+        // The project's own: Dependabot's.
         "build(deps): bump x\n\nSigned-off-by: dependabot[bot] <support@github.com>",
     ] {
         assert!(is_ignored(message), "{message:?}");
@@ -401,12 +398,20 @@ fn f21_ac4_ignores_the_messages_commitlint_ignores() {
         "foo bar Merge branch xxx",
         "foo bar Merge tag '1.1.1'",
         "chore(feature): release 0.3.0",
+        // release-please's release commits, let through until EN-112 removed it, and the release
+        // commit of `tools/release`, checked as any other.
+        "chore(develop): release 0.3.0",
+        "chore(main): release 0.2.0",
+        "chore: release 0.3.0",
         "chore(develop): released by hand",
         "feat(develop): release 0.3.0",
         "chore: 01.0.0",
     ] {
         assert!(!is_ignored(message), "{message:?}");
     }
+    // The release commit passes every rule: a type, a subject in lower case (EN-112).
+    assert_eq!(errors("chore: release 0.3.0"), Vec::<&str>::new());
+    assert_eq!(errors("chore(develop): release 0.3.0"), ["scope-enum"]);
 }
 
 #[test]

@@ -59,9 +59,10 @@ static REFS: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(r"(?m)^Refs: ([A-Z]+-[0-9]+)").unwrap_or_else(|_| unreachable!("a valid pattern"))
 });
 
-/// The footer of a breaking change, with its text.
+/// The footer of a breaking change, with its text down to a blank line, the next footer
+/// (`Refs: `) or the end: a footer's text may go on over several lines (Conventional Commits).
 static BREAKING: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"(?m)^BREAKING[ -]CHANGE: (.+)$")
+    Regex::new(r"(?ms)^BREAKING[ -]CHANGE: (.+?)(?:\n\n|\n[A-Za-z-]+: |\n[A-Za-z-]+ #|\z)")
         .unwrap_or_else(|_| unreachable!("a valid pattern"))
 });
 
@@ -124,7 +125,7 @@ impl Commit {
     pub fn breaking(&self) -> Option<String> {
         BREAKING
             .captures(&self.body)
-            .map(|captures| captures[1].trim().to_owned())
+            .map(|captures| captures[1].split_whitespace().collect::<Vec<_>>().join(" "))
             .or_else(|| {
                 self.header()
                     .filter(|header| header.bang)

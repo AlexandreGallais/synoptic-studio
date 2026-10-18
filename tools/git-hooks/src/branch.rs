@@ -8,9 +8,10 @@ use std::sync::LazyLock;
 use regex::Regex;
 
 /// The branches the repository accepts: `main`, `develop`, `feature/f<nn>-<topic>`,
-/// `<type>/<topic>` in kebab case, and the bots' `dependabot/…` and `release-please--…`. Written
-/// as JavaScript read it: its `.` stops at every line terminator.
-pub const BRANCH_PATTERN: &str = r"^(main|develop|feature/f[0-9]{2}-[a-z0-9]+(-[a-z0-9]+)*|(feat|fix|docs|refactor|test|chore|build|ci|perf|style|revert)/[a-z0-9]+(-[a-z0-9]+)*|dependabot/[^\n\r\x{2028}\x{2029}]+|release-please--[^\n\r\x{2028}\x{2029}]+)$";
+/// `<type>/<topic>` in kebab case, a release branch `release/x.y.z` (ADR-0079), and the bot's
+/// `dependabot/…`; release-please's `release-please--…` no longer since EN-112. Written as
+/// JavaScript read it: its `.` stops at every line terminator.
+pub const BRANCH_PATTERN: &str = r"^(main|develop|feature/f[0-9]{2}-[a-z0-9]+(-[a-z0-9]+)*|(feat|fix|docs|refactor|test|chore|build|ci|perf|style|revert)/[a-z0-9]+(-[a-z0-9]+)*|release/(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)|dependabot/[^\n\r\x{2028}\x{2029}]+)$";
 
 /// The pattern, compiled once.
 static BRANCH: LazyLock<Regex> = LazyLock::new(|| {
@@ -29,7 +30,7 @@ pub fn branch_refusal(name: &str) -> Option<String> {
     (!is_valid_branch(name)).then(|| {
         format!(
             "✖   branch name \"{name}\" refused: it must be `main`, `develop`, \
-             `feature/f01-<kebab-case-topic>` or `<type>/<kebab-case-topic>` \
+             `feature/f01-<kebab-case-topic>`, `<type>/<kebab-case-topic>` or `release/x.y.z` \
              (docs/tooling/git-workflow.md); pattern {BRANCH_PATTERN}"
         )
     })

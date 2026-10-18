@@ -107,10 +107,6 @@ static VERSION: LazyLock<Regex> = LazyLock::new(|| {
         r"^v?{number}\.{number}\.{number}(?:-{identifier}(?:\.{identifier})*)?(?:\+[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*)?$"
     ))
 });
-/// A release-please commit, whose scope is the release pull request's branch.
-static RELEASE: LazyLock<Regex> =
-    LazyLock::new(|| pattern(r"^chore\((?:develop|main)\): release "));
-
 /// The length of a text as JavaScript counts it, in UTF-16 units.
 fn length(text: &str) -> usize {
     text.encode_utf16().count()
@@ -335,15 +331,15 @@ fn is_version_commit(message: &str) -> bool {
     is_version(stripped.trim_matches(is_js_space))
 }
 
-/// Whether commitlint skips a message: its default ignores, then the project's (release-please's
-/// release commits, Dependabot's), the message's end trimmed first.
+/// Whether commitlint skips a message: its default ignores, then the project's (Dependabot's; the
+/// release commit `chore: release x.y.z` of `tools/release` is checked as any other, EN-112), the
+/// message's end trimmed first.
 #[must_use]
 pub fn is_ignored(message: &str) -> bool {
     let message = message.trim_end_matches(is_js_space);
 
     IGNORED.iter().any(|ignored| ignored.is_match(message))
         || is_version_commit(message)
-        || RELEASE.is_match(message)
         || message.contains("Signed-off-by: dependabot[bot]")
 }
 

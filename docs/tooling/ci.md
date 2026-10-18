@@ -17,7 +17,7 @@ Every check runs before the code leaves the machine; GitHub checks once more wha
 | `external-prs.yml` | close | a pull request opened by an outsider | closes it with a pointer to the issue forms (ADR-0026); never checks out its code |
 | `story-automerge.yml` | merge | a pull request labelled `autonomous` | merges the owner's story pull requests into a feature branch, and into `develop` a feature validated from its `feat/val-` branch or an epic's `NAM`, `REV` or `RET` the Product Owner validated |
 
-- **A required check is skipped by its job's `if:`, never by the workflow's branch or path filter**: GitHub reports a job skipped by its condition as a success, but a workflow filtered out stays "Pending" and blocks the merge (`REF-GH-REQUIRED-CHECKS`). So a release pull request into `main` (ADR-0038's flow, kept for a rollback) skips every job of `ci.yml` and `codeql.yml` and still merges; release-please's pull request into `develop` runs no CI, its commit checked inside the next pull request into `main`.
+- **A required check is skipped by its job's `if:`, never by the workflow's branch or path filter**: GitHub reports a job skipped by its condition as a success, but a workflow filtered out stays "Pending" and blocks the merge (`REF-GH-REQUIRED-CHECKS`). So release-please's branches `release-please--…` skipped every job of `ci.yml` and `codeql.yml` by their `if:` and still merged; no such branch is made since EN-112, and a release branch's pull request runs every job (ADR-0079).
 - **Secrets** are checked three times: the secret scan (`tools/secret-scan`) on staged files at each commit, the same on every tracked file in `check:all`, and GitHub's secret scanning with push protection.
 - **Code hygiene** beyond formatting is the lint's job — no `console`, `debugger`, `TODO`, unused code, nor rule disabled without its reason ([lint](../conventions/lint.md)) — not a check of its own.
 
@@ -42,10 +42,10 @@ The checks, the hooks and the docs' generators are Rust binaries of the workspac
 All under the repository page → **Settings**.
 
 1. **General → Pull Requests**: check **Allow merge commits** (features into `develop`, `develop` into `main`) and **Allow rebase merging** (stories into features); uncheck _Allow squash merging_; check **Automatically delete head branches**, **Always suggest updating pull request branches** and **Allow auto-merge**. **Features → Pull requests**: _Collaborators only_ (ADR-0026).
-2. **Actions → General → Workflow permissions**: keep _Read repository contents and packages permissions_ (each workflow declares its own); check **Allow GitHub Actions to create and approve pull requests** (release-please).
+2. **Actions → General → Workflow permissions**: keep _Read repository contents and packages permissions_ (each workflow declares its own); **Allow GitHub Actions to create and approve pull requests**, checked for release-please, is no longer needed: no workflow opens a pull request since EN-112, and the Product Owner may uncheck it.
 3. **Pages → Build and deployment → Source**: **GitHub Actions**.
 4. **Advanced Security**: enable **Dependency graph**, **Dependabot alerts**, **Dependabot security updates**, **Secret Protection** with **Push protection**. Leave CodeQL's _Default setup_ **off**: `codeql.yml` is the advanced setup, and both would conflict.
-5. **Default branch**: `main` (release-please, CodeQL's baseline, the public page).
+5. **Default branch**: `main` (the release, CodeQL's baseline, the caches, the public page).
 6. **Rules → Rulesets** (ADR-0072):
 
    | Ruleset | Target | Bypass | Rules |

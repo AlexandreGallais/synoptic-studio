@@ -289,7 +289,7 @@ pass refactor/en-026-ways-kept-at-validation
 pass refactor/en-028-name-math-and-geometry
 pass refactor/en-029-name-model-and-playground
 pass refactor/en-030-second-pass
-pass release-please--branches--main--components--editor
+fail release-please--branches--main--components--editor
 pass test/en-020-property-tests
 pass test/en-054-timing-tests-under-load
 pass test/en-062-inter-as-a-test-font
