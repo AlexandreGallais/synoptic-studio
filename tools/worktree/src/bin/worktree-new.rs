@@ -1,5 +1,5 @@
 //! `worktree-new <ID> [--type <type>]` (`target/release/worktree-new US-061`): fetches GitHub, adds
-//! `.claude/worktrees/us-061` on `feat/us-061-<topic>` from the story's feature branch, and links
+//! `.claude/worktrees/us-061` on `feat/us-061-<topic>` from `origin/develop` (ADR-0086), and links
 //! the main checkout's `node_modules` into it, then sets the hooks folder `.githooks` if it is not
 //! yet, relative so that a push runs the worktree's own `.githooks/pre-push` (EN-052, EN-108), and
 //! builds the release binaries of the Rust tools in the new worktree (EN-068), from a copy of the
@@ -113,20 +113,11 @@ fn run(argv: &[String]) -> Result<Plan, String> {
 
     git(&["fetch", "--quiet", "origin"])?;
 
-    let remote_branches: Vec<String> = git(&[
-        "for-each-ref",
-        "--format=%(refname:short)",
-        "refs/remotes/origin/feature/",
-    ])?
-    .lines()
-    .map(str::to_owned)
-    .collect();
     let files = story_files(&top)?;
     let request = Request {
         id,
         branch_type,
         story_files: &files,
-        remote_branches: &remote_branches,
         main: &main,
     };
     let plan = plan(&request, |path| path.symlink_metadata().is_ok())?;

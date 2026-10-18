@@ -4,7 +4,7 @@
 //! checkout they are started from and stop at the first failing step with Git's own message. What
 //! they run is decided here, without Git.
 
-use worktree::{base_branch, branch_refusal, story_of_branch, story_of_file};
+use worktree::{BASE, branch_refusal};
 
 /// The remote every sequence talks to.
 pub const REMOTE: &str = "origin";
@@ -37,7 +37,7 @@ pub enum Source {
 pub enum Request {
     /// `sync [--base <ref>]`: fetch, then bring the branch up to date with its base.
     Sync {
-        /// A base typed instead of the story's feature branch.
+        /// A base typed instead of `origin/develop`.
         base: Option<String>,
     },
     /// `commit -F <file|-> [--push|--push-with-lease] [--] <path>…`.
@@ -122,7 +122,7 @@ pub enum Branch {
     Detached,
     /// `<type>/<id>-<topic>`, a story's branch.
     Story(String),
-    /// Any other branch: `develop`, `feature/f20-…`.
+    /// Any other branch: `develop`, a `feature/f20-…` branch left from before ADR-0086.
     Other(String),
 }
 
@@ -140,24 +140,19 @@ pub fn branch_of(name: &str) -> Branch {
 /// How `git-sequences sync` brings a branch up to date after the fetch.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Target {
-    /// A story branch rebased on its base, `origin/feature/f20-…`.
+    /// A story branch rebased on its base, `origin/develop`.
     Rebase(String),
     /// Any other branch moved forward to its upstream, never rebased: it is shared.
     FastForward,
 }
 
-/// The target of `git-sequences sync` on a branch.
+/// The target of `git-sequences sync` on a branch: a story branch is rebased on `origin/develop`,
+/// every story's base (ADR-0086), unless a base is typed.
 ///
 /// # Errors
 ///
-/// On `main` or a detached head; a base typed on a branch that is not a story's; a story branch
-/// whose story file or feature branch is not found.
-pub fn sync_target(
-    branch: &Branch,
-    base: Option<&str>,
-    story_files: &[String],
-    remote_branches: &[String],
-) -> Result<Target, String> {
+/// On `main` or a detached head; a base typed on a branch that is not a story's.
+pub fn sync_target(branch: &Branch, base: Option<&str>) -> Result<Target, String> {
     match (branch, base) {
         (Branch::Main, _) => {
             Err("`main` takes releases only: git-sequences sync never touches it".into())
@@ -168,24 +163,12 @@ pub fn sync_target(
         )),
         (Branch::Other(_), None) => Ok(Target::FastForward),
         (Branch::Story(_), Some(base)) => Ok(Target::Rebase(base.to_owned())),
-        (Branch::Story(name), None) => {
-            let id = story_of_branch(name)
-                .ok_or_else(|| format!("`{name}` names no story id such as en-100"))?;
-            let story = story_files
-                .iter()
-                .find_map(|file| story_of_file(&id, file))
-                .ok_or_else(|| {
-                    format!("no file `E…-{id}-<topic>.md` in docs/backlog/stories/: give --base")
-                })?;
-
-            base_branch(story.feature.as_deref(), remote_branches).map(Target::Rebase)
-        }
+        (Branch::Story(_), None) => Ok(Target::Rebase(BASE.to_owned())),
     }
 }
 
 /// Why `git-sequences commit` refuses to run on a branch, `None` when it may: never on `main` nor a detached
-/// head, never a push of `develop`, never a force push of a shared branch. A feature branch is
-/// pushed: the main thread writes the shared files of a merge there.
+/// head, never a push of `develop`, never a force push of a shared branch.
 #[must_use]
 pub fn commit_refusal(branch: &Branch, push: Push) -> Option<String> {
     match (branch, push) {

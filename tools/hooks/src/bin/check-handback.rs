@@ -36,7 +36,7 @@ fn branch(worktree: &Path, folder: &str) -> Option<(String, Branch, Option<Strin
     let base = story.as_deref().and_then(|story| {
         let files = worktree::story_files(worktree).unwrap_or_default();
 
-        base_of(story, &files, &refs.remote_branches)
+        base_of(story, &files)
     });
     let commits = match &base {
         Some(base) => git(
@@ -88,7 +88,7 @@ fn answer(input: &Value) -> Option<String> {
         return None;
     }
 
-    let (story, branch, feature) = branch(&worktree, id)?;
+    let (story, branch, base) = branch(&worktree, id)?;
     let tool_input = input.get("tool_input");
     let items = missing(&branch, tool_input.get("message").text());
 
@@ -97,7 +97,7 @@ fn answer(input: &Value) -> Option<String> {
     }
 
     let head = branch.head.get(..7).unwrap_or(&branch.head);
-    let line = finish_line(&story, &branch.name, head, feature.as_deref(), &items);
+    let line = finish_line(&story, &branch.name, head, base.as_deref(), &items);
 
     Some(allow_output(tool_input, &line))
 }

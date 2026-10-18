@@ -61,11 +61,6 @@ fn git_words(words: &[&str]) -> Result<String, String> {
     git(&step, None)
 }
 
-/// Names of the story files of the checkout, none when it has no backlog.
-fn story_files(top: &Path) -> Vec<String> {
-    worktree::story_files(top).unwrap_or_default()
-}
-
 /// The message of a commit, from its file or the standard input.
 fn read_message(source: &Source) -> Result<String, String> {
     let text = match source {
@@ -94,23 +89,11 @@ fn branch_name(branch: &Branch) -> &str {
     }
 }
 
-fn sync(branch: &Branch, base: Option<&str>, top: &Path) -> Result<String, String> {
-    // Refused before the fetch: nothing runs on `main` or a detached head.
-    if matches!(branch, Branch::Main | Branch::Detached) {
-        sync_target(branch, base, &[], &[])?;
-    }
+fn sync(branch: &Branch, base: Option<&str>) -> Result<String, String> {
+    // Decided before the fetch: nothing runs on `main` or a detached head.
+    let target = sync_target(branch, base)?;
 
     git(&fetch_step(), None)?;
-
-    let remotes: Vec<String> = git_words(&[
-        "for-each-ref",
-        "--format=%(refname:short)",
-        "refs/remotes/origin/",
-    ])?
-    .lines()
-    .map(str::to_owned)
-    .collect();
-    let target = sync_target(branch, base, &story_files(top), &remotes)?;
 
     if let Some(refusal) =
         changes_refusal(branch_name(branch), &target, &git(&changes_step(), None)?)
@@ -196,7 +179,7 @@ fn run(argv: &[String]) -> Result<String, String> {
         .file_name()
         .map_or_else(String::new, |name| name.to_string_lossy().into_owned());
     let result = match &request {
-        Request::Sync { base } => sync(&branch, base.as_deref(), &top).and_then(|line| {
+        Request::Sync { base } => sync(&branch, base.as_deref()).and_then(|line| {
             Ok(if rebuild(&top)? {
                 format!("{line}; release binaries rebuilt")
             } else {

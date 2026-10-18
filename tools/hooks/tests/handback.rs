@@ -84,39 +84,30 @@ fn names_the_story_by_its_branch_then_its_folder() {
 }
 
 #[test]
-fn counts_from_the_feature_branch_or_develop_never_the_whole_history() {
+fn f22_ac4_counts_from_develop_never_the_whole_history() {
+    // [F22.AC4] A story of a feature and an epic's own story both count from `origin/develop`, no
+    // feature branch looked for (ADR-0086).
     let files = [
         "README.md".to_owned(),
         "E17-F20-EN-088-a-hook.md".to_owned(),
         "E17-REV-009-review-e17.md".to_owned(),
     ];
-    // `f2-b` listed before `f20-a`: the prefix `feature/f20-` keeps them apart.
-    let remotes = [
-        "origin/develop".to_owned(),
-        "origin/feature/f2-b".to_owned(),
-        "origin/feature/f20-a".to_owned(),
-    ];
 
+    assert_eq!(base_of("EN-088", &files).as_deref(), Some("origin/develop"));
     assert_eq!(
-        base_of("EN-088", &files, &remotes).as_deref(),
-        Some("origin/feature/f20-a")
-    );
-    assert_eq!(
-        base_of("REV-009", &files, &remotes).as_deref(),
+        base_of("REV-009", &files).as_deref(),
         Some("origin/develop")
     );
-    // No story file, or no feature branch on origin: no base.
-    assert_eq!(base_of("EN-089", &files, &remotes), None);
-    assert_eq!(base_of("EN-088", &files, &remotes[..2]), None);
+    // No story file: no base.
+    assert_eq!(base_of("EN-089", &files), None);
 }
 
 #[test]
-fn reads_the_branch_its_copy_and_the_remote_branches_from_one_listing() {
-    let listing = "  1111 refs/heads/feature/f20-a-diet\n\
+fn reads_the_branch_its_head_and_its_copy_from_one_listing() {
+    let listing = "  1111 refs/heads/develop\n\
                    * 2222 refs/heads/chore/en-123-a-topic\n\
                    \u{20} 3333 refs/remotes/origin/chore/en-123-a-topic\n\
-                   \u{20} 4444 refs/remotes/origin/feature/f2-other\n\
-                   \u{20} 1111 refs/remotes/origin/feature/f20-a-diet";
+                   \u{20} 1111 refs/remotes/origin/develop";
 
     assert_eq!(
         read_refs(listing),
@@ -124,11 +115,6 @@ fn reads_the_branch_its_copy_and_the_remote_branches_from_one_listing() {
             name: "chore/en-123-a-topic".into(),
             head: "2222".into(),
             remote: Some("3333".into()),
-            remote_branches: vec![
-                "origin/chore/en-123-a-topic".into(),
-                "origin/feature/f2-other".into(),
-                "origin/feature/f20-a-diet".into(),
-            ],
         })
     );
     // Never pushed; a detached head names no branch.
@@ -242,10 +228,10 @@ fn words_the_refusal_and_the_line_for_the_main_thread() {
             "EN-123",
             "chore/en-123-a-topic",
             "abcdef1",
-            Some("feature/f20-a-diet"),
+            Some("develop"),
             &[]
         ),
-        "check-handback: EN-123 on `chore/en-123-a-topic` pushed at abcdef1; next: `npm run story:finish -- feature/f20-a-diet`."
+        "check-handback: EN-123 on `chore/en-123-a-topic` pushed at abcdef1; next: `npm run story:finish -- develop`."
     );
     assert_eq!(
         finish_line("EN-123", "b", "abcdef1", None, &items),
@@ -303,7 +289,7 @@ fn git(folder: &Path, arguments: &[&str]) -> String {
         .to_owned()
 }
 
-/// A project with a remote, a feature branch and a story's worktree of one commit, not pushed.
+/// A project with a remote, `develop` and a story's worktree of one commit, not pushed.
 fn project(root: &Path) -> std::path::PathBuf {
     project_in(root, "en-123")
 }
@@ -315,7 +301,7 @@ fn project_in(root: &Path, folder: &str) -> std::path::PathBuf {
 
     fs::create_dir_all(&worktree).expect("folders");
     git(root, &["init", "-q", "--bare", "remote.git"]);
-    git(&worktree, &["init", "-q", "-b", "feature/f20-a-diet"]);
+    git(&worktree, &["init", "-q", "-b", "develop"]);
     for (key, value) in [
         ("user.name", "t"),
         ("user.email", "t@t"),
@@ -328,7 +314,7 @@ fn project_in(root: &Path, folder: &str) -> std::path::PathBuf {
         &["remote", "add", "origin", &remote.display().to_string()],
     );
     git(&worktree, &["commit", "-q", "--allow-empty", "-m", "start"]);
-    git(&worktree, &["push", "-q", "origin", "feature/f20-a-diet"]);
+    git(&worktree, &["push", "-q", "origin", "develop"]);
     git(&worktree, &["switch", "-q", "-c", "chore/en-123-a-topic"]);
     fs::create_dir_all(worktree.join("docs/backlog/stories")).expect("stories");
     fs::write(
@@ -440,7 +426,7 @@ fn f20_ac3_the_hook_refuses_once_then_lets_through_and_names_story_finish() {
     assert_eq!(
         message,
         format!(
-            "check-handback: EN-123 on `chore/en-123-a-topic` pushed at {head}; next: `npm run story:finish -- feature/f20-a-diet`.\n\nCommits: {head}"
+            "check-handback: EN-123 on `chore/en-123-a-topic` pushed at {head}; next: `npm run story:finish -- develop`.\n\nCommits: {head}"
         )
     );
 
@@ -520,12 +506,12 @@ fn the_hook_reads_the_story_from_the_branch_when_the_folder_is_named_otherwise()
         &format!("Commits: {head}"),
     ));
 
-    // The feature branch's own commit `start` is not the story's: nothing to name but `head`.
+    // `develop`'s own commit `start` is not the story's: nothing to name but `head`.
     assert_eq!(through.get("permissionDecision").text(), "allow");
     assert_eq!(
         through.get("updatedInput").get("message").text(),
         format!(
-            "check-handback: EN-123 on `chore/en-123-a-topic` pushed at {head}; next: `npm run story:finish -- feature/f20-a-diet`.\n\nCommits: {head}"
+            "check-handback: EN-123 on `chore/en-123-a-topic` pushed at {head}; next: `npm run story:finish -- develop`.\n\nCommits: {head}"
         )
     );
     fs::remove_dir_all(&root).expect("cleaned");

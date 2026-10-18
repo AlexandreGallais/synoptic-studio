@@ -11,23 +11,6 @@ fn words(line: &str) -> Vec<String> {
 
 const STORY: &str = "chore/en-100-git-sequences-as-rust-commands";
 
-fn files() -> Vec<String> {
-    vec![
-        "README.md".to_owned(),
-        "E17-F20-EN-100-git-sequences-as-rust-commands.md".to_owned(),
-        "E15-REV-003-review-e15.md".to_owned(),
-    ]
-}
-
-fn remotes() -> Vec<String> {
-    vec![
-        "origin/develop".to_owned(),
-        "origin/main".to_owned(),
-        "origin/feature/f20-a-context-diet".to_owned(),
-        "origin/chore/en-100-git-sequences-as-rust-commands".to_owned(),
-    ]
-}
-
 #[test]
 fn parses_a_sync_with_or_without_its_base() {
     assert_eq!(parse(&words("sync")), Ok(Request::Sync { base: None }));
@@ -95,59 +78,38 @@ fn tells_main_a_story_branch_and_the_shared_ones_apart() {
 }
 
 #[test]
-fn rebases_a_story_on_its_feature_branch() {
-    // [EN-100.AC1] the feature branch of F20, found from the story file named by the branch.
-    assert_eq!(
-        sync_target(&branch_of(STORY), None, &files(), &remotes()),
-        Ok(Target::Rebase(
-            "origin/feature/f20-a-context-diet".to_owned()
-        ))
-    );
-    // An epic's story starts from develop.
-    assert_eq!(
-        sync_target(
-            &branch_of("docs/rev-003-review-e15"),
-            None,
-            &files(),
-            &remotes()
-        ),
-        Ok(Target::Rebase("origin/develop".to_owned()))
-    );
+fn f22_ac4_rebases_every_story_on_develop() {
+    // [F22.AC4] A story of a feature and an epic's own story both start from `develop` and are
+    // rebased on it (ADR-0086); its story file is not needed.
+    for story in [STORY, "docs/rev-003-review-e15", "chore/en-101-other"] {
+        assert_eq!(
+            sync_target(&branch_of(story), None),
+            Ok(Target::Rebase("origin/develop".to_owned())),
+            "{story}"
+        );
+    }
     // A base typed wins.
     assert_eq!(
-        sync_target(&branch_of(STORY), Some("origin/develop"), &[], &[]),
-        Ok(Target::Rebase("origin/develop".to_owned()))
+        sync_target(&branch_of(STORY), Some("origin/main")),
+        Ok(Target::Rebase("origin/main".to_owned()))
     );
 }
 
 #[test]
 fn moves_a_shared_branch_forward_and_never_rebases_it() {
-    let feature = branch_of("feature/f20-a-context-diet");
+    let develop = branch_of("develop");
 
-    assert_eq!(
-        sync_target(&feature, None, &files(), &remotes()),
-        Ok(Target::FastForward)
-    );
+    assert_eq!(sync_target(&develop, None), Ok(Target::FastForward));
     assert!(
-        sync_target(&feature, Some("origin/develop"), &files(), &remotes())
+        sync_target(&develop, Some("origin/main"))
             .is_err_and(|reason| reason.contains("never rebased"))
     );
 }
 
 #[test]
-fn refuses_to_sync_main_a_detached_head_or_a_story_without_base() {
-    assert!(
-        sync_target(&Branch::Main, None, &files(), &remotes())
-            .is_err_and(|reason| reason.contains("main"))
-    );
-    assert!(sync_target(&Branch::Detached, None, &files(), &remotes()).is_err());
-    // No story file, no feature branch on GitHub, no id in the branch name.
-    assert!(
-        sync_target(&branch_of("chore/en-101-other"), None, &files(), &remotes())
-            .is_err_and(|reason| reason.contains("EN-101"))
-    );
-    assert!(sync_target(&branch_of(STORY), None, &files(), &[]).is_err());
-    assert!(sync_target(&branch_of("chore/tidy-up"), None, &files(), &remotes()).is_err());
+fn refuses_to_sync_main_or_a_detached_head() {
+    assert!(sync_target(&Branch::Main, None).is_err_and(|reason| reason.contains("main")));
+    assert!(sync_target(&Branch::Detached, None).is_err());
 }
 
 #[test]

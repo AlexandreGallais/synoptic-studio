@@ -6,8 +6,7 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, Output};
 
 use worktree::{
-    Request, base_branch, branch_refusal, branch_type, plan, story_id, story_of_branch,
-    story_of_file,
+    BASE, Request, branch_refusal, branch_type, plan, story_id, story_of_branch, story_of_file,
 };
 
 const FILE: &str = "E17-F18-US-061-font-list-held-while-the-default-font-is-read.md";
@@ -18,14 +17,6 @@ fn files() -> Vec<String> {
         "E17-F18-EN-052-worktrees-named-after-their-story.md".to_owned(),
         FILE.to_owned(),
         "E15-REV-003-review-e15.md".to_owned(),
-    ]
-}
-
-fn remotes() -> Vec<String> {
-    vec![
-        "origin/develop".to_owned(),
-        "origin/feature/f17-text-fixes".to_owned(),
-        "origin/feature/f18-safe-and-cheap-parallel-run".to_owned(),
     ]
 }
 
@@ -95,31 +86,12 @@ fn refuses_a_remote_name_as_a_branch() {
 }
 
 #[test]
-fn starts_from_the_one_feature_branch_on_github() {
-    assert_eq!(
-        base_branch(Some("F18"), &remotes()).as_deref(),
-        Ok("origin/feature/f18-safe-and-cheap-parallel-run")
-    );
-    assert_eq!(
-        base_branch(None, &remotes()).as_deref(),
-        Ok("origin/develop")
-    );
-    assert!(base_branch(Some("F19"), &remotes()).is_err());
-
-    let twice = [remotes(), vec!["origin/feature/f18-old".to_owned()]].concat();
-
-    assert!(base_branch(Some("F18"), &twice).is_err());
-}
-
-#[test]
 fn plans_the_worktree_of_a_story() {
     let files = files();
-    let remotes = remotes();
     let request = Request {
         id: "us-061",
         branch_type: None,
         story_files: &files,
-        remote_branches: &remotes,
         main: Path::new("/work/repo"),
     };
     let made = plan(&request, |_| false).expect("a plan");
@@ -132,7 +104,7 @@ fn plans_the_worktree_of_a_story() {
         made.branch,
         "feat/us-061-font-list-held-while-the-default-font-is-read"
     );
-    assert_eq!(made.base, "origin/feature/f18-safe-and-cheap-parallel-run");
+    assert_eq!(made.base, "origin/develop");
 
     let typed = Request {
         id: "EN-052",
@@ -147,14 +119,36 @@ fn plans_the_worktree_of_a_story() {
 }
 
 #[test]
+fn f22_ac4_starts_every_story_from_develop() {
+    // [F22.AC4] A story of a feature and an epic's own story both start from `origin/develop`:
+    // no feature branch (ADR-0086).
+    let files = files();
+    let base = |id: &str| {
+        plan(
+            &Request {
+                id,
+                branch_type: None,
+                story_files: &files,
+                main: Path::new("/work/repo"),
+            },
+            |_| false,
+        )
+        .map(|made| made.base)
+    };
+
+    assert_eq!(BASE, "origin/develop");
+    assert_eq!(base("US-061").as_deref(), Ok(BASE));
+    assert_eq!(base("EN-052").as_deref(), Ok(BASE));
+    assert_eq!(base("REV-003").as_deref(), Ok(BASE));
+}
+
+#[test]
 fn refuses_what_it_cannot_make() {
     let files = files();
-    let remotes = remotes();
     let request = Request {
         id: "US-061",
         branch_type: None,
         story_files: &files,
-        remote_branches: &remotes,
         main: Path::new("/work/repo"),
     };
     let refusal = |request: &Request| plan(request, |_| false).expect_err("a refusal");
@@ -184,13 +178,6 @@ fn refuses_what_it_cannot_make() {
             ..request
         })
         .contains("not a branch type")
-    );
-    assert!(
-        refusal(&Request {
-            remote_branches: &[],
-            ..request
-        })
-        .contains("on GitHub")
     );
 }
 
@@ -236,7 +223,7 @@ fn write_hook(path: &Path, name: &str) {
 }
 
 /// A main checkout with a story file, `node_modules` and a `pre-push` hook naming its checkout,
-/// its remote holding the feature branch.
+/// its remote holding `develop` and, behind it, a feature branch of the former flow.
 fn repository(name: &str) -> PathBuf {
     repository_with(name, &[])
 }
@@ -290,6 +277,12 @@ fn repository_with(name: &str, files: &[(&str, &str)]) -> PathBuf {
             "develop:feature/f18-safe-and-cheap-parallel-run",
         ],
     );
+    // `develop` past the feature branch, so that a worktree made from the latter is told apart.
+    git(
+        &main,
+        &["commit", "--quiet", "--allow-empty", "-m", "chore: more"],
+    );
+    git(&main, &["push", "--quiet", "origin", "develop"]);
     main
 }
 
@@ -302,7 +295,8 @@ fn worktree_new(dir: &Path, id: &str) -> Output {
 
 #[test]
 fn f18_ac8_makes_a_worktree_named_after_its_story() {
-    // [F18.AC8] `worktree-new US-061` gives `.claude/worktrees/us-061` on the story's branch.
+    // [F18.AC8] `worktree-new US-061` gives `.claude/worktrees/us-061` on the story's branch;
+    // [F22.AC4] made from `origin/develop`, not from its feature's branch still on the remote.
     let main = repository("named");
     let made = worktree_new(&main, "US-061");
     let dir = main.join(".claude/worktrees/us-061");
@@ -313,6 +307,10 @@ fn f18_ac8_makes_a_worktree_named_after_its_story() {
         "feat/us-061-font-list-held-while-the-default-font-is-read"
     );
     assert_eq!(
+        git(&dir, &["rev-parse", "HEAD"]),
+        git(&main, &["rev-parse", "origin/develop"])
+    );
+    assert_ne!(
         git(&dir, &["rev-parse", "HEAD"]),
         git(
             &main,
