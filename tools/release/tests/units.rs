@@ -161,6 +161,14 @@ fn reads_the_story_the_break_the_revert_and_the_pull_requests() {
             .as_deref(),
         Some("y")
     );
+    // A footer over two lines, as dc83b1b wrote it, read whole down to the next footer.
+    let long = "B.\n\nBREAKING CHANGE: `f` is removed;\n`g(a, b)` takes angles.\nRefs: EN-021.T3\n";
+    assert_eq!(
+        commit('a', "refactor(geometry)!: x", long, None)
+            .breaking()
+            .as_deref(),
+        Some("`f` is removed; `g(a, b)` takes angles.")
+    );
     assert_eq!(
         commit('a', "fix(io): x", "no footer", None).breaking(),
         None

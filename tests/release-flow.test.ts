@@ -54,7 +54,7 @@ describe("release flow (ADR-0079)", () => {
     expect(job).toContain("if: needs.release.outputs.released == 'true'");
   });
 
-  it("[F21.AC6] uses no release-please, no personal token, and merges or commits nothing", () => {
+  it("[F18.AC1] [F21.AC6] only releases on main: no release-please, no personal token, no merge, no commit", () => {
     expect(WORKFLOW).not.toMatch(/release-please|secrets\.|gh pr merge|git commit|git push/u);
   });
 });

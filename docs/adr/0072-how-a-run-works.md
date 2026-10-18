@@ -1,6 +1,6 @@
 # ADR-0072 — How a run works: the go-ahead, the branches and merges, three agents and one heavy command
 
-**Status**: Accepted (Product Owner, 2026-10-17, review of the ADRs, EN-094). Supersedes ADR-0028, ADR-0038, ADR-0045 and ADR-0063, and ADR-0050's decisions 2 and 3: it gathers what stands of them, as practised in F19's run, with the decisions of 2026-10-17. ADR-0064 (checks by level), ADR-0065 (shared files) and ADR-0067 (the release pull request on `develop`) stand beside it.
+**Status**: Accepted (Product Owner, 2026-10-17, review of the ADRs, EN-094). Supersedes ADR-0028, ADR-0038, ADR-0045 and ADR-0063, and ADR-0050's decisions 2 and 3: it gathers what stands of them, as practised in F19's run, with the decisions of 2026-10-17. ADR-0064 (checks by level), ADR-0065 (shared files) and ADR-0067 (the release pull request on `develop`) stand beside it. Its release lines, which restate ADR-0067 (Decision, the release pull request into `develop`; the table's release row), superseded by ADR-0079 (2026-10-18, EN-112): a release branch from `develop`, published by the project's own tool.
 
 ## Context
 

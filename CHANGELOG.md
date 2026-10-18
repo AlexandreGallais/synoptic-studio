@@ -1,5 +1,7 @@
 # Changelog
 
+The notable changes of each version of the library `editor` and its playground, the latest first, written as [Common Changelog](https://common-changelog.org/) asks; the versions follow [Semantic Versioning](https://semver.org/).
+
 ## [0.2.0](https://github.com/AlexandreGallais/synoptic-studio/compare/v0.1.0...v0.2.0) (2026-10-14)
 
 

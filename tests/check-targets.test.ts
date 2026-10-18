@@ -19,7 +19,7 @@ const FORMAT = "cargo run --release -q -p format --";
 /** The command of the project's linter, run after oxlint (EN-075). */
 const PROJECT_LINT = "cargo run --release -q -p lint --";
 
-/** The Markdown pages the project's linter leaves out: the changelog, written by release-please. */
+/** The Markdown pages the project's linter leaves out: the changelog, written by `release prepare` and checked by `release check`. */
 const UNLINTED_PAGES = new Set(["CHANGELOG.md"]);
 
 /** oxfmt, as npm installs it. */
