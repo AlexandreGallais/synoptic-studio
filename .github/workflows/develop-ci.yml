@@ -1,0 +1,105 @@
+# The develop CI (docs/tooling/ci.md, ADR-0088, decisions 4 and 5): after each pull request merged
+# into develop, the Rust checks and tests on Linux, then the Rust caches saved under develop, the
+# scope the review's pull request into main restores first (`REF-GH-CACHE`). A person's merge
+# starts it by its push; the features' auto-merge, whose push by the GITHUB_TOKEN starts no run,
+# by a dispatch once its merge is done (`REF-GH-TOKEN-TRIGGERS`, story-automerge.yml). It blocks
+# nothing: no ruleset requires it, nothing waits for it, and a red run says what the review's CI
+# will meet. A dispatch runs only once this file is on main (`REF-GH-WORKFLOW-DISPATCH`).
+name: Develop CI
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  # The cargo tools of the Rust checks, the same as ci.yml's (EN-069, EN-111).
+  CARGO_LLVM_COV_VERSION: 0.9.1
+  CARGO_DENY_VERSION: 0.20.2
+  # No incremental build: its state, kept for the workspace's own crates only, would grow the cache
+  # and never be reused, those crates being compiled again in each run.
+  CARGO_INCREMENTAL: 0
+
+jobs:
+  # The Rust and Rust coverage lanes of ci.yml in one job, their scripts in turn, so that one build
+  # serves both and is saved whole. Its name is none of the checks main's ruleset requires: its run
+  # is on develop's head, the review's head commit, and a job name shared across workflows makes
+  # a required check ambiguous (`REF-GH-PROTECTED-BRANCHES`).
+  rust:
+    name: Rust tests and caches
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+      - id: toolchain
+        run: echo "name=$(sed -n 's/^channel = "\(.*\)"$/\1/p' rust-toolchain.toml)-x86_64-unknown-linux-gnu" >> "$GITHUB_OUTPUT"
+      # Restored here and saved at the end, even after a failing test, by `actions/cache/save`
+      # (`REF-GH-CACHE-RESTORE`, `REF-GH-CACHE-SAVE`): `actions/cache` saves only when every step
+      # passed. The keys and paths are ci.yml's. Without `restore-keys`, a new key starts from an
+      # empty target/, which so never keeps the artifacts of an older Cargo.lock.
+      - id: tools
+        uses: actions/cache/restore@v6
+        with:
+          path: |
+            ~/.rustup/toolchains/${{ steps.toolchain.outputs.name }}
+            ~/.cargo/bin/cargo-llvm-cov
+            ~/.cargo/bin/cargo-deny
+          key: rust-tools-${{ runner.os }}-${{ hashFiles('rust-toolchain.toml') }}-cargo-llvm-cov-${{ env.CARGO_LLVM_COV_VERSION }}-cargo-deny-${{ env.CARGO_DENY_VERSION }}
+      - if: steps.tools.outputs.cache-hit != 'true'
+        id: install
+        run: cargo install --locked cargo-llvm-cov@${{ env.CARGO_LLVM_COV_VERSION }} cargo-deny@${{ env.CARGO_DENY_VERSION }}
+      - id: build
+        uses: actions/cache/restore@v6
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: rust-build-${{ runner.os }}-${{ hashFiles('rust-toolchain.toml', 'Cargo.lock') }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      # The npm packages: their `prepare` builds the release binaries `rust:fresh` reads, and the
+      # formatter's tests, run under coverage, run the project's oxfmt.
+      - run: npm ci
+      # Every crate of Cargo.lock for every target, not the host's alone, which the build fetches:
+      # `cargo deny --offline` reads them all, and the registry saved holds them (EN-116).
+      - run: cargo fetch --locked
+      # The RustSec database the advisories read offline (EN-126).
+      - run: cargo deny fetch db
+      # rustfmt, Clippy, the advisories, the check for Windows and the binaries' freshness.
+      - id: checks
+        run: npm run check:rust
+      # The workspace's tests under the coverage floor, run even after a failing check unless the
+      # run is cancelled (`REF-GH-EXPRESSIONS`), so that their build is compiled and saved.
+      - if: ${{ !cancelled() }}
+        run: npm run rust:coverage
+      # Saved after a failing test too, never after a cancel, nor on a key hit, which already holds
+      # a cache (`REF-GH-CACHE-SAVE`). A saved cache never changes (`REF-GH-CACHE`), so nothing half
+      # made is saved: the tools only once installed, the build only once the checks passed, which
+      # means npm ci, the fetches and the install passed, a step after a failure being skipped
+      # (`REF-GH-EXPRESSIONS`, `REF-GH-CONTEXTS`). Cargo.lock is read `--locked`, so the keys
+      # computed again are the ones restored.
+      - if: ${{ !cancelled() && steps.tools.outputs.cache-hit != 'true' && steps.install.outcome == 'success' }}
+        uses: actions/cache/save@v6
+        with:
+          path: |
+            ~/.rustup/toolchains/${{ steps.toolchain.outputs.name }}
+            ~/.cargo/bin/cargo-llvm-cov
+            ~/.cargo/bin/cargo-deny
+          key: rust-tools-${{ runner.os }}-${{ hashFiles('rust-toolchain.toml') }}-cargo-llvm-cov-${{ env.CARGO_LLVM_COV_VERSION }}-cargo-deny-${{ env.CARGO_DENY_VERSION }}
+      - if: ${{ !cancelled() && steps.build.outputs.cache-hit != 'true' && steps.checks.outcome == 'success' }}
+        uses: actions/cache/save@v6
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: rust-build-${{ runner.os }}-${{ hashFiles('rust-toolchain.toml', 'Cargo.lock') }}
