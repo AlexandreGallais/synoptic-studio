@@ -27,7 +27,7 @@ function scriptOf(name: string): string {
 }
 
 describe("type errors with the lint (EN-091)", () => {
-  it("[F19.AC6] reports a planted type error as tsc does, with its code and place", () => {
+  it("[F19.AC6] [F22.AC1] reports a planted type error as tsc does, with its code and place", () => {
     const folder = mkdtempSync(join(tmpdir(), "en-091-"));
 
     writeFileSync(

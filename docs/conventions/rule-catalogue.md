@@ -1,6 +1,6 @@
 # Rule catalogue
 
-Lint and format rules worth turning on in some kind of project, sorted into categories, so that the "method and tools" point of an epic's end (ADR-0074) or a new project's start can switch whole categories on from what is built and with which technology. **On paper only**: nothing on this page is enabled by it; this repository's own choice is [rules](./rules.md). Asked by the Product Owner on 2026-10-17 (EN-093).
+Lint and format rules worth turning on in some kind of project, sorted into categories, so that the "method and tools" point of a review (ADR-0074, held at each return of the Product Owner since ADR-0086) or a new project's start can switch whole categories on from what is built and with which technology. **On paper only**: nothing on this page is enabled by it; this repository's own choice is [rules](./rules.md). Asked by the Product Owner on 2026-10-17 (EN-093).
 
 Each row names a category, the rules it holds and why they serve the agent's own work: a bug found by a check in under a second rather than by a test, a review or a person; a form chosen once, so that code is written and read without a choice; a context kept whole. A rule that only guards what a kept rule or the language already forbids is listed at the end with a word.
 

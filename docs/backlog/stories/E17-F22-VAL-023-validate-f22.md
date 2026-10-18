@@ -9,7 +9,9 @@ points: 1
 
 # E17 · F22 · VAL-023 — Validate F22
 
-F22 is a tooling feature: the agent validates it on its demo page and checklist, and opens its pull request into `develop` without waiting (ADR-0072); then the Product Owner merges `develop` into `main` for 0.3.0, the first release made by ADR-0083's flow, and E17 closes.
+F22 is a tooling feature: the agent validates it on its demo page and checklist, and opens its pull request into `develop` without waiting (ADR-0072); then the Product Owner merges `develop` into `main` and publishes 0.3.0 by the button, the first release made by ADR-0086's flow, and E17 closes.
+
+Two halves of F22's criteria no test of the repository can prove, left to this validation by AUD-024 (F-05): AC1's CI run on GitHub's runner, the green CI of `develop` → `main` its evidence; and AC4's rules on the docs, the run skill, the worker brief, `project-rules`, `AGENTS.md` and `docs/tooling/git-workflow.md` read again and shown to describe one agent at a time and a merge commit for every merge.
 
 ## Acceptance criteria
 

@@ -21,7 +21,7 @@ ADR-0086, decided by the Product Owner on 2026-10-18 during F22's run: an epic i
 
 ## Tasks
 
-- [ ] T1 — `tests/backlog.test.ts` on the new shape, failing: no closing per epic, a feature of at most 4 stories, a story of at most 3 tasks (1 h)
-- [ ] T2 — The templates, E02's closing stories removed, the skills, `docs/process/agile.md`, `AGENTS.md`, `project-rules`, the worker brief and `docs/tooling/ci.md` (2 h)
+- [x] T1 — `tests/backlog.test.ts` on the new shape, failing: no closing per epic, a feature of at most 4 stories, a story of at most 3 tasks (1 h)
+- [x] T2 — The templates, E02's closing stories removed, the skills, `docs/process/agile.md`, `AGENTS.md`, `project-rules`, the worker brief and `docs/tooling/ci.md` (2 h)
 
 One task = one commit, referenced as `EN-123.T1` in the commit footer.
