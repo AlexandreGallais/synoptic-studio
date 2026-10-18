@@ -292,10 +292,10 @@
 | [EN-131](./E17-F29-EN-131-binaries-rebuilt-after-a-pull.md) | F29 | The binaries rebuilt after a pull | ready |
 | [AUD-031](./E17-F29-AUD-031-audit-f29.md) | F29 | Audit F29 | ready |
 | [VAL-030](./E17-F29-VAL-030-validate-f29.md) | F29 | Validate F29 | ready |
-| [SP-024](./E17-F28-SP-024-the-tooling-features-of-2026-10-18.md) | F28 | The tooling features of 2026-10-18 | ready |
+| [SP-024](./E17-F28-SP-024-the-tooling-features-of-2026-10-18.md) | F28 | The tooling features of 2026-10-18 | done |
 | [EN-132](./E17-F28-EN-132-the-site-the-release-and-the-caches-apart.md) | F28 | The site, the release and the Rust caches apart | ready |
 | [EN-133](./E17-F28-EN-133-the-ci-into-main-its-checks-only.md) | F28 | The CI into main, its checks only | ready |
-| [EN-134](./E17-F28-EN-134-the-other-workflows-reviewed.md) | F28 | The auto-merge per base and the other workflows reviewed | ready |
+| [EN-134](./E17-F28-EN-134-the-other-workflows-reviewed.md) | F28 | The auto-merge per base and the other workflows reviewed | parked |
 | [AUD-030](./E17-F28-AUD-030-audit-f28.md) | F28 | Audit F28 | ready |
 | [VAL-029](./E17-F28-VAL-029-validate-f28.md) | F28 | Validate F28 | ready |
 | [EN-135](./E17-F30-EN-135-the-develop-ci-started-by-the-auto-merge.md) | F30 | The develop CI, started by the auto-merge | ready |

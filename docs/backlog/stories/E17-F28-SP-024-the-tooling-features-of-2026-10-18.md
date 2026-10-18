@@ -3,7 +3,7 @@ id: SP-024
 epic: E17
 feature: F28
 title: The tooling features of 2026-10-18
-status: ready
+status: done
 points: 3
 ---
 
