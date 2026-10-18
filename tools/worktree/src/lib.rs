@@ -1,7 +1,8 @@
 //! A worktree named after its story (EN-052, `docs/tooling/agent-tools.md`): `US-061` gets
 //! `.claude/worktrees/us-061` on the branch `feat/us-061-<topic>`, made from its feature branch on
 //! GitHub. The topic comes from the story's file name, the branch type from the story's kind, the
-//! feature branch from the remote branches. What the tool runs is decided here, without Git.
+//! feature branch from the remote branches; a story whose file the checkout lacks, from the one
+//! feature branch of `origin` holding it (EN-118). What the tool runs is decided here, without Git.
 
 pub mod seed;
 
@@ -159,24 +160,70 @@ pub struct Request<'a> {
     pub story_files: &'a [String],
     /// Remote branches, `origin/feature/f18-<topic>`.
     pub remote_branches: &'a [String],
+    /// Each feature branch of `origin` with the names of its story files (`git ls-tree`), where a
+    /// story missing from the checkout is looked for: the main checkout on `develop` lacks the
+    /// stories written on a feature branch.
+    pub branch_files: &'a [(String, Vec<String>)],
     /// The main checkout, parent of the Git common directory.
     pub main: &'a Path,
+}
+
+/// The story of `id` on the one feature branch of `origin` holding its file, and that branch.
+///
+/// # Errors
+///
+/// When no branch holds its file, or several do, naming them.
+pub fn story_on_branches(
+    id: &str,
+    branch_files: &[(String, Vec<String>)],
+) -> Result<(Story, String), String> {
+    let found: Vec<(Story, &String)> = branch_files
+        .iter()
+        .filter_map(|(branch, files)| {
+            files
+                .iter()
+                .find_map(|file| story_of_file(id, file))
+                .map(|story| (story, branch))
+        })
+        .collect();
+
+    match found.as_slice() {
+        [(story, branch)] => Ok((story.clone(), (*branch).clone())),
+        [] => Err(format!(
+            "no file `E…-{id}-<topic>.md` in docs/backlog/stories/ nor on a feature branch of origin"
+        )),
+        several => Err(format!(
+            "`{id}` is on several feature branches of origin: {}: keep its file on one",
+            several
+                .iter()
+                .map(|(_, branch)| branch.as_str())
+                .collect::<Vec<_>>()
+                .join(", ")
+        )),
+    }
 }
 
 /// The worktree, branch and base of a story, or why it cannot be made.
 ///
 /// # Errors
 ///
-/// A malformed id, a story without its file, a branch type unknown, a branch name refused, a base
-/// branch not found, or a worktree folder already there.
+/// A malformed id, a story whose file neither the checkout nor one feature branch holds, a branch
+/// type unknown, a branch name refused, a base branch not found, or a worktree folder already
+/// there.
 pub fn plan(request: &Request, exists: impl Fn(&Path) -> bool) -> Result<Plan, String> {
     let id = story_id(request.id)
         .ok_or_else(|| format!("`{}` is not a story id such as US-061", request.id))?;
-    let story = request
+    let (story, holder) = if let Some(story) = request
         .story_files
         .iter()
         .find_map(|file| story_of_file(&id, file))
-        .ok_or_else(|| format!("no file `E…-{id}-<topic>.md` in docs/backlog/stories/"))?;
+    {
+        (story, None)
+    } else {
+        let (story, branch) = story_on_branches(&id, request.branch_files)?;
+
+        (story, Some(branch))
+    };
     let kind = match request.branch_type {
         Some(kind) if BRANCH_TYPES.contains(&kind) => kind,
         Some(kind) => {
@@ -199,7 +246,10 @@ pub fn plan(request: &Request, exists: impl Fn(&Path) -> bool) -> Result<Plan, S
         return Err(reason);
     }
 
-    let base = base_branch(story.feature.as_deref(), request.remote_branches)?;
+    let base = match holder {
+        Some(branch) => branch,
+        None => base_branch(story.feature.as_deref(), request.remote_branches)?,
+    };
     let dir = request.main.join(WORKTREES).join(&lower);
 
     if exists(&dir) {

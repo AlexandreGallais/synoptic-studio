@@ -3,9 +3,11 @@
 //! `tools/heavy-lock/`: stories merge one at a time, the next one waiting, then rebasing on the
 //! updated base. A story file still holding rows for the logs stops it first: its `done` commit
 //! moves them (`move-rows`, ADR-0091). Its pull request opened with the `autonomous` label, its
-//! merge by GitHub awaited for at most three minutes, then the base brought up to date where it is
-//! checked out, nothing committed on it, and the story's worktree and branch removed here and on
-//! GitHub. A rebase that met the status rows of another story's done commit writes the story's own
+//! merge by GitHub awaited for at most three minutes; a branch `story-automerge.yml` does not take,
+//! an epic's refinement `SP` into `develop`, opened without it, awaited by no one: it says at once
+//! that it waits for the Product Owner's merge (AUD-024, EN-118). Once merged, the base brought up
+//! to date where it is checked out, nothing committed on it, and the story's worktree and branch
+//! removed here and on GitHub. A rebase that met the status rows of another story's done commit writes the story's own
 //! again after it; a head that differs from its branch on GitHub is pushed with lease before the
 //! pull request. Run again after a stop, it reuses the story's pull request, and goes straight to
 //! the clean-up once merged (AUD-020).
@@ -17,8 +19,8 @@ use std::thread;
 use std::time::Duration;
 
 use repo_tools::story_finish::{
-    Next, Rebase, Start, Story, clean_up, clean_up_plan, manual_steps, needs_push, next_step,
-    push_with_lease, rebase_on_base, rows_refusal, run_words, start_step, worktrees,
+    Merger, Next, Rebase, Start, Story, clean_up, clean_up_plan, manual_steps, merger, needs_push,
+    next_step, push_with_lease, rebase_on_base, rows_refusal, run_words, start_step, worktrees,
     write_status_again,
 };
 
@@ -122,28 +124,33 @@ fn finish(base: &str, title: &str, body: &str) -> Result<u8, String> {
         bring_up(base, &branch, here)?;
     }
 
+    let by = merger(base, &branch);
     let url = if start == Start::Create {
-        run_words(
-            "gh",
-            &[
-                "pr",
-                "create",
-                "--base",
-                base,
-                "--label",
-                "autonomous",
-                "--title",
-                title,
-                "--body-file",
-                body,
-            ],
-            here,
-        )?
+        let label: &[&str] = if by == Merger::GitHub {
+            &["--label", "autonomous"]
+        } else {
+            &[]
+        };
+        let words: Vec<&str> = ["pr", "create", "--base", base]
+            .into_iter()
+            .chain(label.iter().copied())
+            .chain(["--title", title, "--body-file", body])
+            .collect();
+
+        run_words("gh", &words, here)?
     } else {
         existing
     };
 
     println!("{url}");
+
+    if start != Start::Clean && by == Merger::ProductOwner {
+        println!(
+            "{branch} waits for the Product Owner's merge into {base}: `story-automerge.yml` does \
+             not take it (AUD-024); run again once merged, to clean up"
+        );
+        return Ok(0);
+    }
 
     let state = if start == Start::Clean {
         "MERGED".to_owned()

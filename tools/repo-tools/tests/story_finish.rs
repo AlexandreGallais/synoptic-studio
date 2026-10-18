@@ -230,13 +230,48 @@ impl Lab {
         );
     }
 
+    /// A story attached to `develop`, a `REV` or an epic's `SP`: the main checkout on `develop`,
+    /// as in a run, the story's worktree made from it with one task pushed.
+    fn develop_story(&self, branch: &str, id: &str) -> PathBuf {
+        let folder = self.worktree(id);
+        let main = self.main();
+
+        self.git(&main, &["switch", "-q", "-c", "develop", "main"]);
+        self.git(&main, &["push", "-q", "-u", "origin", "develop"]);
+        self.git(
+            &main,
+            &[
+                "worktree",
+                "add",
+                "-q",
+                "-b",
+                branch,
+                folder.to_str().expect("path"),
+                "develop",
+            ],
+        );
+        fs::write(folder.join(format!("{id}.txt")), "work\n").expect("work");
+        self.git(&folder, &["add", "."]);
+        self.git(
+            &folder,
+            &["commit", "-q", "-m", &format!("docs: work of {id}")],
+        );
+        self.git(&folder, &["push", "-q", "-u", "origin", branch]);
+        folder
+    }
+
     /// `story-finish` run in a folder, with the stubs' answers given.
     fn finish(&self, folder: &Path, answers: &[(&str, &str)]) -> Output {
+        self.finish_into(folder, BASE, answers)
+    }
+
+    /// `story-finish` into a base, run in a folder, with the stubs' answers given.
+    fn finish_into(&self, folder: &Path, base: &str, answers: &[(&str, &str)]) -> Output {
         let body = self.root.join("body.md");
 
         fs::write(&body, "A body.\n").expect("body");
         self.command(env!("CARGO_BIN_EXE_story-finish"), folder)
-            .args([BASE, "A title", body.to_str().expect("path")])
+            .args([base, "A title", body.to_str().expect("path")])
             .envs(answers.iter().copied())
             .output()
             .expect("story-finish")
@@ -621,6 +656,116 @@ fn f18_ac7_deletes_the_branch_from_the_main_checkout_when_the_base_is_checked_ou
         "{} api -X DELETE repos/owner/name/git/refs/heads/{FIRST}",
         main.display()
     )));
+}
+
+#[test]
+fn f23_ac2_labels_a_review_into_develop_and_awaits_its_merge() {
+    // [F23.AC2] A `REV` from `develop`: its pull request labelled `autonomous`, GitHub's merge
+    // awaited, then the clean-up, as for any story.
+    let lab = Lab::new("review");
+    let branch = "docs/rev-906-review";
+
+    lab.backlog();
+
+    let review = lab.develop_story(branch, "rev-906");
+    let finished = lab.finish_into(&review, "develop", &[]);
+    let (out, err) = text(&finished);
+    let calls = lab.calls();
+
+    assert!(finished.status.success(), "{out}\n{err}");
+    assert_eq!(
+        out,
+        format!(
+            "https://github.com/owner/name/pull/1\nmerged; develop up to date, {branch} deleted here and on GitHub\n"
+        )
+    );
+    assert!(
+        calls
+            .iter()
+            .any(|call| call.contains(" pr create --base develop --label autonomous ")),
+        "{calls:?}"
+    );
+    assert!(
+        calls
+            .iter()
+            .any(|call| call.contains(" pr view https://github.com/owner/name/pull/1 ")),
+        "{calls:?}"
+    );
+    assert!(!review.exists());
+}
+
+#[test]
+fn f23_ac2_leaves_an_epics_spike_to_the_product_owners_merge_without_waiting() {
+    // [F23.AC2] An epic's refinement `SP` into `develop`: opened without the label, which
+    // `story-automerge.yml` would refuse, and never awaited; run again, it waits no more, and
+    // cleans up once the Product Owner merged it.
+    let lab = Lab::new("spike");
+    let branch = "docs/sp-930-refinement-of-e99";
+    let waits = format!(
+        "{branch} waits for the Product Owner's merge into develop: `story-automerge.yml` does \
+         not take it (AUD-024); run again once merged, to clean up\n"
+    );
+
+    lab.backlog();
+
+    let spike = lab.develop_story(branch, "sp-930");
+    let opened = lab.finish_into(&spike, "develop", &[("GH_STATE", "OPEN")]);
+    let (out, err) = text(&opened);
+    let calls = lab.calls();
+
+    assert!(opened.status.success(), "{out}\n{err}");
+    assert_eq!(
+        out,
+        format!("https://github.com/owner/name/pull/1\n{waits}")
+    );
+    assert!(
+        calls.iter().any(|call| call.ends_with(&format!(
+            " pr create --base develop --title A title --body-file {}",
+            lab.root.join("body.md").display()
+        ))),
+        "{calls:?}"
+    );
+    assert!(
+        !calls.iter().any(|call| call.contains(" pr view https://")),
+        "{calls:?}"
+    );
+    assert!(spike.exists());
+
+    // Run again while it is open: nothing opened, nothing awaited.
+    let again = lab.finish_into(
+        &spike,
+        "develop",
+        &[("GH_STATE", "OPEN"), ("GH_EXISTING", "OPEN")],
+    );
+    let (out, err) = text(&again);
+    let calls = lab.calls();
+
+    assert!(again.status.success(), "{out}\n{err}");
+    assert_eq!(
+        out,
+        format!("https://github.com/owner/name/pull/1\n{waits}")
+    );
+    assert!(
+        !calls
+            .iter()
+            .any(|call| call.contains(" pr create") || call.contains(" pr view https://")),
+        "{calls:?}"
+    );
+
+    // Merged by the Product Owner: the clean-up.
+    lab.git(&spike, &["push", "-q", "origin", "HEAD:develop"]);
+
+    let merged = lab.finish_into(&spike, "develop", &[("GH_EXISTING", "MERGED")]);
+    let (out, err) = text(&merged);
+
+    assert!(merged.status.success(), "{out}\n{err}");
+    assert!(
+        out.ends_with(&format!(
+            "merged; develop up to date, {branch} deleted here and on GitHub\n"
+        )),
+        "{out}"
+    );
+    assert!(!spike.exists());
 }
 
 #[test]
