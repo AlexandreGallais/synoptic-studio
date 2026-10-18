@@ -3,7 +3,7 @@ id: EN-125
 epic: E17
 feature: F24
 title: The Rust cache saved from develop
-status: ready
+status: done
 points: 2
 ---
 
