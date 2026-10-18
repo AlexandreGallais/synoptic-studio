@@ -13,7 +13,7 @@ Decided by the Product Owner on 2026-10-18 at REV-006, while the CI of #370 ran:
 
 ## Acceptance criteria
 
-1. The CI of a pull request into `main` runs its lanes as parallel jobs, each its own check on the pull request: format and lint, secrets and dependencies, types and TypeScript tests, Rust, docs and build; a lane failing leaves the others' results, and the main protection names the checks it requires (EN-124).
+1. The CI of a pull request into `main` runs its lanes as parallel jobs, one job per lane of `check:all`, each its own check on the pull request: `Lint and types`, `TypeScript tests`, `Docs, playground and build`, `Format, secrets and dependencies`, `Rust`; a lane failing leaves the others' results, and the main protection names the checks it requires (EN-124).
 2. The TypeScript tests report file by file as they run, and a failing test is annotated on the pull request at its line (EN-124).
 3. The Rust lane restores a cache saved by a push to `develop` or `main`, so that a pull request into `main` compiles only what changed; its time with a warm cache is measured and written (EN-125).
 
@@ -23,7 +23,7 @@ In delivery order.
 
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
-| [EN-124](../stories/E17-F24-EN-124-the-ci-in-parallel-jobs.md) | EN | The CI in parallel jobs, its tests shown as they run | ready |
+| [EN-124](../stories/E17-F24-EN-124-the-ci-in-parallel-jobs.md) | EN | The CI in parallel jobs, its tests shown as they run | done |
 | [EN-125](../stories/E17-F24-EN-125-the-rust-cache-from-develop.md) | EN | The Rust cache saved from develop | ready |
 | [AUD-026](../stories/E17-F24-AUD-026-audit-f24.md) | AUD | Audit F24 | ready |
 | [VAL-025](../stories/E17-F24-VAL-025-validate-f24.md) | VAL | Validate F24 | ready |

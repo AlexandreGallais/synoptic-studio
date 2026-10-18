@@ -1,8 +1,8 @@
 # Quality gate of the pull requests into main: the only CI run (ADR-0038, docs/tooling/ci.md).
-# Work branches (stories, features, develop) are checked locally by the Git hooks. On the release
-# pull request every job is skipped by its `if:`, which GitHub reports as a success. Run by hand on
-# a branch (`workflow_dispatch`), it times the quality job alone, cold or on the caches (EN-111): the
-# jobs that read a pull request are skipped.
+# Work branches (stories, features, develop) are checked locally by the Git hooks. Each lane of
+# `check:all` is a job of its own, in parallel, each its own check on the pull request (EN-124).
+# Run by hand on a branch (`workflow_dispatch`), it times the lanes alone, cold or on the caches
+# (EN-111): the jobs that read a pull request are skipped.
 name: CI
 
 on:
@@ -27,9 +27,26 @@ env:
   CARGO_INCREMENTAL: 0
 
 jobs:
-  quality:
-    name: Format, lint, secrets, types, tests, audit, versions, docs, build
+  lanes:
+    name: ${{ matrix.name }}
     runs-on: ubuntu-latest
+    strategy:
+      # Each lane runs to its end, whichever other fails (`REF-GH-JOB-PERMISSIONS`).
+      fail-fast: false
+      # The lanes of `check:all` (tools/repo-tools/src/check_all.rs), each its scripts in order; the
+      # library's build after the docs lane. One job per lane, as `[F24.AC1]` checks.
+      matrix:
+        include:
+          - name: Lint and types
+            scripts: lint
+          - name: TypeScript tests
+            scripts: test
+          - name: Docs, playground and build
+            scripts: docs:build playground:build build
+          - name: Format, secrets and dependencies
+            scripts: format:check lint:secrets deps:audit deps:unused deps:outdated
+          - name: Rust
+            scripts: check:rust
     steps:
       - uses: actions/checkout@v7
       # The caches are restored, never saved: a pull request's cache is scoped to its merge ref, so
@@ -38,7 +55,7 @@ jobs:
       - id: toolchain
         run: echo "name=$(sed -n 's/^channel = "\(.*\)"$/\1/p' rust-toolchain.toml)-x86_64-unknown-linux-gnu" >> "$GITHUB_OUTPUT"
       # The pinned toolchain, its Windows target and components, and the cargo tools: installed only
-      # when a key changes (`REF-GH-CACHE-RESTORE`).
+      # when a key changes (`REF-GH-CACHE-RESTORE`), by the Rust lane alone, which runs them.
       - id: tools
         uses: actions/cache/restore@v6
         with:
@@ -47,7 +64,7 @@ jobs:
             ~/.cargo/bin/cargo-llvm-cov
             ~/.cargo/bin/cargo-deny
           key: rust-tools-${{ runner.os }}-${{ hashFiles('rust-toolchain.toml') }}-cargo-llvm-cov-${{ env.CARGO_LLVM_COV_VERSION }}-cargo-deny-${{ env.CARGO_DENY_VERSION }}
-      - if: steps.tools.outputs.cache-hit != 'true'
+      - if: matrix.scripts == 'check:rust' && steps.tools.outputs.cache-hit != 'true'
         run: cargo install --locked cargo-llvm-cov@${{ env.CARGO_LLVM_COV_VERSION }} cargo-deny@${{ env.CARGO_DENY_VERSION }}
       # The crates downloaded and the workspace's build: its dependencies compiled once per
       # Cargo.lock and toolchain, the workspace's own crates again (their checkout is newer).
@@ -65,11 +82,12 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      # The release binaries, built once in their own step so that its log names every crate
-      # compiled; `check:all` builds them first again, now up to date.
+      # The release binaries every lane's tools run from, built in their own step so that its log
+      # names every crate compiled.
       - run: npm run rust:build
-      # The history job's binary, from this build rather than one of its own.
-      - uses: actions/upload-artifact@v7
+      # The history job's binary, from the lint lane's build.
+      - if: matrix.scripts == 'lint'
+        uses: actions/upload-artifact@v7
         with:
           name: git-hooks
           path: target/release/git-hooks
@@ -81,14 +99,18 @@ jobs:
       - run: cargo fetch --locked
       # The RustSec advisories, whose database is fetched here, the pre-push hook reading its local
       # copy offline.
-      - run: cargo deny fetch db
-      - run: npm run check:all
+      - if: matrix.scripts == 'check:rust'
+        run: cargo deny fetch db
+      # The lane's scripts in turn, the first failing one ending the job; their output as it comes,
+      # the tests file by file, a failing test annotated at its line (`REF-VITEST-REPORTERS`).
+      - run: for script in $SCRIPTS; do npm run "$script"; done
         env:
+          SCRIPTS: ${{ matrix.scripts }}
           GITHUB_TOKEN: ${{ github.token }}
           # Test report of the version, attached to its GitHub release by release.yml (ADR-0027).
           VITEST_JUNIT: test-report.xml
-      - run: npm run build
-      - uses: actions/upload-artifact@v7
+      - if: matrix.scripts == 'test'
+        uses: actions/upload-artifact@v7
         with:
           name: test-report
           path: test-report.xml
@@ -97,13 +119,13 @@ jobs:
   history:
     name: Commit messages and branch name
     if: ${{ github.event_name == 'pull_request' }}
-    needs: quality
+    needs: lanes
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      # The Rust checks of the Git hooks (EN-108), the binary the quality job built: the branch name,
+      # The Rust checks of the Git hooks (EN-108), the binary the lint lane built: the branch name,
       # then each commit's message. An artifact keeps no file mode (`REF-GH-ARTIFACT-MODES`).
       - uses: actions/download-artifact@v8
         with:
