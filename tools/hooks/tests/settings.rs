@@ -69,3 +69,53 @@ fn f21_ac1_every_hook_and_the_status_line_call_a_hooks_binary_by_its_path() {
         "\"$(git rev-parse --show-toplevel)/target/release/status-line\""
     );
 }
+
+/// The release binaries allowed without a prompt, each by name and, for a binary that also
+/// publishes or deletes, by its subcommand (AUD-023): `heavy-lock` runs any command given after it,
+/// `branches-clean` deletes branches and worktrees, `git-hooks install` sets the hooks folder and
+/// `release prepare` makes a release branch, so each of them asks.
+const ALLOWED_BINARIES: [&str; 20] = [
+    "activity",
+    "backlog-status",
+    "context-size",
+    "dependencies outdated",
+    "dependencies unused",
+    "epic-check",
+    "git-sequences commit",
+    "git-sequences sync",
+    "library",
+    "metrics",
+    "page",
+    "records-save",
+    "release check",
+    "release notes",
+    "replace",
+    "run-totals",
+    "session-report",
+    "stale-binaries",
+    "val-prepare",
+    "worktree-new",
+];
+
+#[test]
+fn the_release_binaries_are_allowed_by_name_never_by_a_wildcard() {
+    let settings =
+        parse(&fs::read_to_string(root().join(".claude/settings.json")).expect("settings"))
+            .expect("JSON");
+    let mut allowed: Vec<&str> = settings
+        .get("permissions")
+        .get("allow")
+        .items()
+        .iter()
+        .map(Value::text)
+        .filter(|rule| rule.contains("target/release/"))
+        .collect();
+    let mut expected: Vec<String> = ALLOWED_BINARIES
+        .iter()
+        .map(|name| format!("Bash(target/release/{name} *)"))
+        .collect();
+
+    allowed.sort_unstable();
+    expected.sort();
+    assert_eq!(allowed, expected);
+}

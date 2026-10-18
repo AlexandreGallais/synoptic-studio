@@ -28,7 +28,7 @@
 
 ### The binaries the agent calls
 
-The agent calls a tool by its release binary, from the root of its checkout, rather than through `npm run` and `cargo run`, which cost about 150 ms before the tool's first line (ADR-0078, research note 0025): a Bash call of a worker is `cd "<worktree>" || exit 9` then the binary. `npm run` stays the form for people, and for the scripts that compose several tools under a lock: `check:all`, `story:finish`, `mutate`, `golden:*`, `backlog:index`, `fix`, `test`. A binary is rebuilt at `prepare`, after `git:sync` and after `story:finish`; `npm run rust:fresh` names a stale one.
+The agent calls a tool by its release binary, from the root of its checkout, rather than through `npm run` and `cargo run`, which cost about 150 ms before the tool's first line (ADR-0078, research note 0025): a Bash call of a worker is `cd "<worktree>" || exit 9` then the binary. `npm run` stays the form for people, and for the scripts that compose several tools under a lock: `check:all`, `story:finish`, `mutate`, `golden:*`, `backlog:index`, `fix`, `test`. A binary is rebuilt at `prepare`, after `git:sync` and after `story:finish`; `npm run rust:fresh` names a stale one. `.claude/settings.json` allows each binary of the table below by its name, and by its subcommand for `git-sequences`, `dependencies` and `release` (`check`, `notes`), never `target/release/*`: `heavy-lock` runs any command given after it, past every permission rule, `branches-clean` deletes branches, `git-hooks install` sets the hooks folder and `release prepare` makes a release branch, so each of them asks (AUD-023, `tools/hooks/tests/settings.rs`).
 
 | Script | The agent's call |
 | --- | --- |
