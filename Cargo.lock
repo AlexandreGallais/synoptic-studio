@@ -618,6 +618,7 @@ name = "metrics"
 version = "0.1.0"
 dependencies = [
  "hooks",
+ "library",
  "run-totals",
  "serde_json",
  "test-support",

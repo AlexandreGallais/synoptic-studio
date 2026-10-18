@@ -2,9 +2,20 @@
 //! current turn is saved as one line of `.git/metrics/turns.jsonl`, and the metrics report lists
 //! them all, so that a retrospective compares the turns of an epic.
 
-use hooks::json::quote;
+use std::collections::HashMap;
 
+use hooks::json::quote;
+use serde_json::Value;
+
+use crate::format::{duration_text, grouped};
+use crate::json::Json;
 use crate::session::SessionFigures;
+use crate::tables::{js_prefix, markdown_table};
+use crate::time::minute_text;
+use crate::transcript::upsert;
+
+/// Characters of a session id shown.
+const SESSION_SHOWN: usize = 8;
 
 /// One turn of work, as saved.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
@@ -59,5 +70,66 @@ pub fn render_turn(turn: &TurnRecord) -> String {
         turn.start,
         turn.tokens,
         turn.wall_ms
+    )
+}
+
+/// A saved turn read back, a missing number read as 0 and a missing session as empty.
+#[must_use]
+pub fn read_turn(record: &Value) -> TurnRecord {
+    TurnRecord {
+        active_ms: record.at("activeMs").whole(),
+        calls: record.at("calls").whole(),
+        commits: record.at("commits").whole(),
+        failures: record.at("failures").whole(),
+        output_tokens: record.at("outputTokens").whole(),
+        session: record.at("session").text().to_owned(),
+        start: record.at("start").whole(),
+        tokens: record.at("tokens").whole(),
+        wall_ms: record.at("wallMs").whole(),
+    }
+}
+
+/// The table of the turns saved, oldest first; a turn saved twice keeps its last figures where
+/// it first came: start, session, duration, active time, tokens, written, calls, failed, commits.
+#[must_use]
+pub fn turns_table(records: &[TurnRecord]) -> String {
+    let mut places: HashMap<String, usize> = HashMap::new();
+    let mut turns: Vec<&TurnRecord> = Vec::new();
+
+    for record in records {
+        let key = format!("{} {}", record.session, record.start);
+
+        upsert(&mut turns, &mut places, &key, record);
+    }
+    turns.sort_by_key(|turn| turn.start);
+
+    markdown_table(
+        &[
+            "Started (UTC)",
+            "Session",
+            "Duration",
+            "Active",
+            "Tokens",
+            "Written",
+            "Calls",
+            "Failed",
+            "Commits",
+        ],
+        &turns
+            .iter()
+            .map(|turn| {
+                vec![
+                    minute_text(turn.start),
+                    js_prefix(&turn.session, SESSION_SHOWN),
+                    duration_text(turn.wall_ms),
+                    duration_text(turn.active_ms),
+                    grouped(turn.tokens),
+                    grouped(turn.output_tokens),
+                    turn.calls.to_string(),
+                    turn.failures.to_string(),
+                    turn.commits.to_string(),
+                ]
+            })
+            .collect::<Vec<_>>(),
     )
 }

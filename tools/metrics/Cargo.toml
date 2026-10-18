@@ -8,6 +8,7 @@ publish.workspace = true
 
 [dependencies]
 hooks = { path = "../hooks" }
+library = { path = "../library" }
 run-totals = { path = "../run-totals" }
 serde_json.workspace = true
 tool-use = { path = "../tool-use" }

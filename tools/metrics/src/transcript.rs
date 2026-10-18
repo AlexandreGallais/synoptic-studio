@@ -7,11 +7,13 @@
 //! hundreds of megabytes is read once and then from where it stopped (the cache, `cache.rs`).
 
 use std::collections::HashMap;
+use std::hash::BuildHasher;
 
 use hooks::time::epoch_ms;
 use run_totals::tally::Tokens;
 use serde_json::Value;
 
+use crate::findings::{Finding, result_findings};
 use crate::json::Json;
 
 /// The tokens of a request's `usage`, by kind.
@@ -104,6 +106,8 @@ pub struct Transcript {
     /// When the current turn started: the first prompt after the agent last ended its turn; 0
     /// without a prompt.
     pub turn_start: i64,
+    /// The rules' findings met in its tool results, in order.
+    pub findings: Vec<Finding>,
 }
 
 impl Default for Transcript {
@@ -115,6 +119,7 @@ impl Default for Transcript {
             answers: Vec::new(),
             is_waiting: true,
             turn_start: 0,
+            findings: Vec::new(),
         }
     }
 }
@@ -158,7 +163,8 @@ const SUBJECT_KEYS: [&str; 7] = [
 
 /// Whether a character is white space for JavaScript's `\s`: Unicode's white space and the byte
 /// order mark, without the next-line control `U+0085`.
-fn is_js_space(character: char) -> bool {
+#[must_use]
+pub fn is_js_space(character: char) -> bool {
     (character.is_whitespace() && character != '\u{85}') || character == '\u{feff}'
 }
 
@@ -215,6 +221,22 @@ fn is_prompt(line: &Value) -> bool {
 struct Places {
     requests: HashMap<String, usize>,
     answers: HashMap<String, usize>,
+    /// The tool of each call asked, by its id.
+    tools: HashMap<String, String>,
+}
+
+/// The text of a tool result: its content, a string or the texts of its blocks.
+fn result_text(block: &Value) -> String {
+    match block.at("content") {
+        Value::String(text) => text.clone(),
+        content => content
+            .items()
+            .iter()
+            .filter(|item| item.at("type").text() == "text")
+            .map(|item| item.at("text").text())
+            .collect::<Vec<_>>()
+            .join("\n"),
+    }
 }
 
 /// The transcript once one parsed line, with its time, is read.
@@ -254,14 +276,17 @@ fn read_line(
             .iter()
             .filter(|block| block.at("type").text() == "tool_use")
         {
-            transcript.uses.push(ToolUse {
+            let asked = ToolUse {
                 id: block.at("id").text().to_owned(),
                 tool: block.at("name").text().to_owned(),
                 summary: call_summary(block.at("input")),
                 branch: branch.to_owned(),
                 session: session.to_owned(),
                 start: time,
-            });
+            };
+
+            places.tools.insert(asked.id.clone(), asked.tool.clone());
+            transcript.uses.push(asked);
         }
     }
 
@@ -274,7 +299,19 @@ fn read_line(
             end: time,
             is_ok: *block.at("is_error") != Value::Bool(true),
         };
+        let is_shell = places.tools.get(id).is_some_and(|tool| tool == "Bash");
 
+        transcript.findings.extend(
+            result_findings(&result_text(block), !answer.is_ok, is_shell)
+                .into_iter()
+                .map(|(kind, rule, count)| Finding {
+                    time,
+                    branch: branch.to_owned(),
+                    kind,
+                    rule,
+                    count,
+                }),
+        );
         upsert(
             &mut transcript.answers,
             &mut places.answers,
@@ -288,7 +325,12 @@ fn read_line(
 
 /// An item put in its list: in place of the one of the same id, kept where that one came first,
 /// else at the end.
-fn upsert<T>(list: &mut Vec<T>, places: &mut HashMap<String, usize>, id: &str, item: T) {
+pub fn upsert<T, S: BuildHasher>(
+    list: &mut Vec<T>,
+    places: &mut HashMap<String, usize, S>,
+    id: &str,
+    item: T,
+) {
     if let Some(&at) = places.get(id) {
         list[at] = item;
     } else {
@@ -315,6 +357,11 @@ pub fn read_chunk(transcript: Transcript, chunk: &str) -> Transcript {
             .iter()
             .enumerate()
             .map(|(at, (id, _))| (id.clone(), at))
+            .collect(),
+        tools: transcript
+            .uses
+            .iter()
+            .map(|asked| (asked.id.clone(), asked.tool.clone()))
             .collect(),
     };
     let mut next = Transcript {

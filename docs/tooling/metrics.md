@@ -70,11 +70,28 @@ Each tool of our own records its own use (EN-102), whoever calls it — the agen
 | Where the time of the latest turns went | the main agent's tools running, the model between two calls, the characters written |
 | The agent's tools | each tool of [the agent's tools](./agent-tools.md) run through npm, from the hook's log: count, total, median, longest, failed |
 | Tools | each Rust tool of the workspace by tool and subcommand, from [its own record](#the-uses-of-each-tool), whoever called it: calls, failed (an exit code other than 0), median, slowest |
+| Findings | each rule's findings met in the tool results, per epic ([below](#findings)) |
 
 - **Active time** adds the gaps between moments of work, each capped at 5 minutes, so that a pause, a night or a wait for the Product Owner is not counted as work.
 - A moment belongs to the story of its branch, and to that story's first task commit made after it; work after the last task commit shows as `<story> (no task commit)`.
 - **Output tokens** are those the model wrote; **all tokens** add input, cache writes and cache reads, which dominate.
 - **Failed** counts the calls that ended in an error: a failing check, a refused commit, a denied command.
+
+It is the binary `metrics` of `tools/metrics` (EN-107): on this session's transcripts and logs, its output is the TypeScript report's, the Findings section added, but for one row of the Tools section, `library stats`, which the script ran as a command, recording one use more, where the binary reads the library in its own process. Measured on 1.6 GB of transcripts (2026-10-18): 6.4 s without the cache, then 0.5 s, against 8.2 s for `metrics-report.ts` ([research note 0025](../research/notes/0025-f21-agent-tools-in-rust.md#the-tools-story-by-story)).
+
+### Findings
+
+The count EN-093 made by hand for [every rule and why](../conventions/rules.md) (Friction), made at each report: a rule's findings are its work and its cost, and the next review of the rules reads them here.
+
+| Kind | Read from | Rule named |
+| --- | --- | --- |
+| `hook` | an error result opening `<event>:<tool> hook error: `, any tool | the event and tool, then the reason up to its first `: ` or `. ` (`PreToolUse:Bash: A worktree refuses a chained Git command`) |
+| `lint` | a line of a shell command's output: ESLint's `  12:5  error  Message  rule`, oxlint's `path:1:2: error plugin(rule):` or `× plugin(rule):`, the project linter's `path:1:2 plugin/rule`, markdownlint's `path:1:2 error MD013/line-length` | oxlint's as `.oxlintrc.json` names them (`unicorn/no-null`, `typescript/no-explicit-any`, `id-length`); the others as their linter writes them, so ESLint's era keeps `@typescript-eslint/…` and `local/…` |
+| `type` | `error TS2322:` in a shell command's output | the code |
+| `clippy` | Clippy's link `…/rust-clippy/…/index.html#<lint>` | `clippy::<lint>` |
+| `check` | `check:all`'s line `✗ <check> <seconds> s` | the check |
+
+A result counts each rule once per line that reports it; a result's epic is that of its branch's story or feature, from the backlog's file names, else the branch itself (`develop`, `HEAD`). Lines without a time are left out, as everywhere in the report. The findings are kept in the transcripts' cache with the rest.
 
 ## Status line
 
@@ -151,7 +168,7 @@ It is the binary `session-report` of `tools/metrics` (EN-107), the tokens per mo
 
 ## Reading the transcripts
 
-The metrics' tools read the transcripts as `run-totals` does: each transcript from the byte offset reached last time, its complete lines only. `.git/metrics/transcripts-cache.jsonl` keeps, per transcript, the offset and what was read before it — each request with its last line's model, tokens, time, branch and session; each tool call asked; each result with its time and outcome; whether the agent waits for a prompt, and when the current turn started — so that a report reads only what was written since. A transcript shorter than its offset was rewritten and is read again from its start; a cache of another version is dropped and rebuilt. The file is written aside and renamed, so a report reading it meanwhile sees a whole one.
+The metrics' tools read the transcripts as `run-totals` does: each transcript from the byte offset reached last time, its complete lines only. `.git/metrics/transcripts-cache.jsonl` keeps, per transcript, the offset and what was read before it — each request with its last line's model, tokens, time, branch and session; each tool call asked; each result with its time and outcome; the rules' [findings](#findings); whether the agent waits for a prompt, and when the current turn started — so that a report reads only what was written since. A transcript shorter than its offset was rewritten and is read again from its start; a cache of another version is dropped and rebuilt. The file is written aside and renamed, so a report reading it meanwhile sees a whole one.
 
 - **A request is counted once**, by its message id, with the values of its last line: a subagent's lines carry a growing `output_tokens`, the last line the final count (EN-092's measure).
 - **A call is counted once answered**, from its request's time to its result's; a later result of the same call replaces the first.
@@ -190,4 +207,4 @@ A long task writes one progress line per step, and stops itself when a step chan
 - Claude Code deletes transcripts older than `cleanupPeriodDays`: `.claude/settings.json` sets it to 3650, so that every retrospective reads its epic's tokens.
 - `.git/metrics/` lives in this clone only; `npm run records:save` keeps a copy of it, the transcripts and the library in the private records (ADR-0041, ADR-0044), from which a new machine restores them.
 - Tokens are counted per model request, not per command: a command costs the request that wrote it and the one that read its result.
-- Temporal is behind `--harmony-temporal` in Node.js 24: the hook command, `npm run metrics` and Vitest pass it.
+- Temporal is behind `--harmony-temporal` in Node.js 24: the hook command and Vitest pass it.

@@ -1,0 +1,75 @@
+//! Tests of the report's statistics and tables: the cases of `scripts/metrics-tables.test.ts`.
+
+use metrics::tables::{TimedCall, call_stats, command_key, js_prefix, markdown_table, median};
+
+#[test]
+fn names_a_command_by_its_words_without_directory_change_variables_flags_or_quotes() {
+    assert_eq!(
+        command_key("cd \"/repo\" && npm run check:all 2>&1 | tail"),
+        "npm run check:all"
+    );
+    assert_eq!(command_key("S=/tmp/x; git commit -q -m 'x'"), "git commit");
+    assert_eq!(command_key("gh pr checks 12 --watch"), "gh pr checks");
+    assert_eq!(command_key("npm install -D eslint"), "npm install");
+    assert_eq!(command_key("grep -n foo bar.ts"), "grep");
+    // `||` cuts too: the brief's `cd … || exit 9` names `exit`, as the TypeScript report did.
+    assert_eq!(command_key("cd \"/w\" || exit 9; ls"), "exit");
+    assert_eq!(command_key("npm"), "npm");
+}
+
+#[test]
+fn is_empty_when_nothing_runs() {
+    assert_eq!(command_key("cd \"/repo\""), "");
+    assert_eq!(command_key(""), "");
+}
+
+#[test]
+fn takes_the_middle_value_or_the_mean_of_the_two_middle_ones() {
+    assert!((median(&[5.0, 1.0, 3.0]) - 3.0).abs() < f64::EPSILON);
+    // Sorted 1, 2, 4, 9: (2 + 4) / 2 = 3.
+    assert!((median(&[9.0, 1.0, 4.0, 2.0]) - 3.0).abs() < f64::EPSILON);
+    assert!(median(&[]).abs() < f64::EPSILON);
+}
+
+#[test]
+fn counts_sums_and_ranks_the_calls_of_each_group() {
+    let call = |duration_ms: f64, is_ok: bool, summary: &str| TimedCall {
+        duration_ms,
+        is_ok,
+        summary: summary.to_owned(),
+    };
+    let calls = [
+        call(1000.0, true, "npm run check"),
+        call(3000.0, false, "npm run check"),
+        call(200.0, true, "ls"),
+    ];
+    let stats = call_stats(&calls, |call| command_key(&call.summary));
+
+    // npm run check: 1 000 and 3 000, median 2 000, total 4 000, one failure; then ls.
+    assert_eq!(stats.len(), 2);
+    assert_eq!(
+        (stats[0].key.as_str(), stats[0].count, stats[0].failures),
+        ("npm run check", 2, 1)
+    );
+    assert!((stats[0].median_ms - 2000.0).abs() < f64::EPSILON);
+    assert!((stats[0].total_ms - 4000.0).abs() < f64::EPSILON);
+    assert!((stats[0].max_ms - 3000.0).abs() < f64::EPSILON);
+    assert_eq!((stats[1].key.as_str(), stats[1].count), ("ls", 1));
+}
+
+#[test]
+fn writes_a_header_row_a_separator_and_escapes_pipes() {
+    assert_eq!(
+        markdown_table(&["A", "B"], &[vec!["x | y".to_owned(), "1".to_owned()]]),
+        "| A | B |\n| --- | --- |\n| x \\| y | 1 |"
+    );
+}
+
+#[test]
+fn cuts_a_text_in_utf16_units_as_javascript_does() {
+    assert_eq!(js_prefix("abcdef", 3), "abc");
+    assert_eq!(js_prefix("ab", 8), "ab");
+    // `é` is one unit; `😀` two, so a cut after one of them leaves a replacement character.
+    assert_eq!(js_prefix("é😀x", 2), "é\u{fffd}");
+    assert_eq!(js_prefix("é😀x", 3), "é😀");
+}

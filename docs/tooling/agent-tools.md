@@ -125,7 +125,7 @@ A tool is written when a retrospective's metrics show its signal — the hand wo
 | `worktree` | `worktree:new` | a story's worktree with `node_modules`, Husky and the release binaries |
 | `git-sequences` | `git:sync`, `git:commit` | the frequent Git sequences in one call each |
 | `run-totals` | `run:start`, `run:end`, `run:should-stop`, `metrics:session -- --run`, the status line | a run's marker, duration and tokens, counted incrementally; whether it stops at the week's limit |
-| `metrics` | `metrics:session` (`session-report`) | the metrics of the agent's work, the transcripts read incrementally ([metrics](./metrics.md#reading-the-transcripts)) |
+| `metrics` | `metrics` (`metrics`), `metrics:session` (`session-report`) | the metrics of the agent's work, the rules' findings per epic included, the transcripts read incrementally ([metrics](./metrics.md#reading-the-transcripts)) |
 | `val-prepare` | `val:prepare` | a feature's checklist lines |
 | `page` | `page` | one row or one section of a repository page, by its id or its heading ([above](#tools)) |
 | `mutate` | `mutate` | the mutations in a copy of the repository |
