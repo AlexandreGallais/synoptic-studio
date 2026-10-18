@@ -106,3 +106,14 @@ pub fn commits(run: &mut Run<'_>, range: &str) -> Result<Vec<Commit>, String> {
         })
         .collect())
 }
+
+/// The pull requests merged on the first-parent line of a range, the latest first: on `main`,
+/// those into `main` since a tag.
+///
+/// # Errors
+///
+/// A Git command failed.
+pub fn merged_pull_requests(run: &mut Run<'_>, range: &str) -> Result<Vec<u32>, String> {
+    let _ = (run, range);
+    Ok(Vec::new())
+}

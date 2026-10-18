@@ -2,12 +2,11 @@
 name = "release"
 version = "0.1.0"
 edition.workspace = true
-description = "The release: the version, the changelog's entry, its check and the GitHub release (EN-112)"
+description = "The release by a button: the features' text, its check, the version from the tags and the GitHub release (EN-112, EN-117)"
 license.workspace = true
 publish.workspace = true
 
 [dependencies]
-calendar = { path = "../calendar" }
 regex = { workspace = true }
 tool-use = { path = "../tool-use" }
 

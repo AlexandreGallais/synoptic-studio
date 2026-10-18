@@ -1,17 +1,17 @@
-//! The release, in place of release-please (EN-112, ADR-0079, `docs/tooling/releases.md`): the
-//! version from the commits since the last tag (`REF-SEMVER`), `package.json`, `package-lock.json`
-//! and the draft of the changelog's entry written by one command, the entry checked against the
-//! rules of good release notes (`REF-COMMON-CHANGELOG`, `REF-KEEP-A-CHANGELOG`), read back for the
-//! pull request into `main`, and published as the GitHub release after its merge. Nothing of
-//! release-please is ported.
+//! The release by a button (ADR-0086, `docs/tooling/releases.md`), after the project's own tool
+//! of EN-112: the features' text drafted from the commits for the pull request into `main`, that
+//! text checked against the rules of good release notes (`REF-COMMON-CHANGELOG`,
+//! `REF-KEEP-A-CHANGELOG`), and, by the button of `release.yml`, the version computed from the
+//! last tag and the commits since (`REF-SEMVER`) and the GitHub release made, its notes the bodies
+//! of the pull requests into `main` merged since that tag. No file holds the version: the tags do.
 
 pub mod backlog;
-pub mod changelog;
+pub mod body;
 pub mod check;
 pub mod commit;
 pub mod draft;
+pub mod feature_text;
 pub mod history;
 pub mod manifest;
-pub mod prepare;
 pub mod publish;
 pub mod version;

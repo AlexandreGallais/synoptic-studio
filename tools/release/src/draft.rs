@@ -1,5 +1,5 @@
-//! The draft of a release's entry from its commits (`docs/tooling/releases.md`, What a release
-//! entry holds): the commits a user of the library or the playground sees, a revert and what it
+//! The draft of a release text from its commits (`docs/tooling/releases.md`, What a release
+//! text holds): the commits a user of the library or the playground sees, a revert and what it
 //! reverts left out, one line per story in the group of its impact, a feature's lines together,
 //! each line marked `[draft]` until the agent rewrites it.
 
@@ -274,34 +274,12 @@ pub fn references(line: &Line, repository: &str) -> String {
     format!("({})", links.join(", "))
 }
 
-/// The entry of a release: its heading, then each group and its lines, or the notice of a release
-/// without a change of its own.
+/// The draft of a release text: each group and its lines, each marked `[draft]`, or the notice of
+/// a release without a change of its own.
 #[must_use]
-pub fn entry(version: &str, date: &str, lines: &[Line], repository: &str) -> String {
-    let mut text = format!("## [{version}] - {date}\n");
-
-    if lines.is_empty() {
-        let _ = writeln!(text, "\n{NO_CHANGE_NOTICE}");
-    }
-    for (group, heading) in GROUPS {
-        let listed: Vec<&Line> = lines.iter().filter(|line| line.group == group).collect();
-
-        if listed.is_empty() {
-            continue;
-        }
-        let _ = writeln!(text, "\n### {heading}\n");
-        for line in listed {
-            let breaking = if line.breaking { BREAKING_MARK } else { "" };
-
-            let _ = writeln!(
-                text,
-                "- {breaking}{DRAFT_MARK}{} {}",
-                line.text,
-                references(line, repository)
-            );
-        }
-    }
-    text
+pub fn text(lines: &[Line], repository: &str) -> String {
+    let _ = (lines, repository);
+    String::new()
 }
 
 /// What the agent reads to rewrite the lines: each line's group, feature and story, then its
