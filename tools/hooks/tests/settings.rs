@@ -119,3 +119,34 @@ fn the_release_binaries_are_allowed_by_name_never_by_a_wildcard() {
     expected.sort();
     assert_eq!(allowed, expected);
 }
+
+#[test]
+fn the_guard_that_cannot_run_blocks_the_shell_command() {
+    let settings =
+        parse(&fs::read_to_string(root().join(".claude/settings.json")).expect("settings"))
+            .expect("JSON");
+    let mut failing_closed = Vec::new();
+
+    // A missing or crashing binary is a non-blocking error, its call let through, unless the
+    // handler's `onFailure` says `block` (`REF-CC-HOOKS`, AUD-023): only the guard does, the other
+    // hooks letting a call through when they fail, so that their own failure never blocks work.
+    for (_, entries) in match settings.get("hooks") {
+        Value::Object(events) => events.clone(),
+        _ => Vec::new(),
+    } {
+        for handler in entries
+            .items()
+            .iter()
+            .flat_map(|entry| entry.get("hooks").items())
+        {
+            if !handler.get("onFailure").text().is_empty() {
+                assert_eq!(handler.get("onFailure").text(), "block");
+                failing_closed.push(handler.get("command").text().to_owned());
+            }
+        }
+    }
+    assert_eq!(
+        failing_closed,
+        ["${CLAUDE_PROJECT_DIR}/target/release/guard-bash"]
+    );
+}

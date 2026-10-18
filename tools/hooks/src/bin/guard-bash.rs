@@ -4,8 +4,8 @@
 //! in that folder: a story's worktree refuses a Git command chained with another, the brief's
 //! `cd "<worktree>" || exit 9` aside, and a script missing from that folder's `package.json` is
 //! refused with the rebase that brings it. Input: the hook JSON on stdin; output: a deny decision
-//! on stdout, or nothing to let the call proceed. An input that is not JSON exits 1, a hook error
-//! that lets the call through, as the TypeScript hook did.
+//! on stdout, or nothing to let the call proceed. An input that is not JSON exits 1, a hook error,
+//! which blocks the call since its handler sets `onFailure` to `block` (AUD-023).
 
 use std::fs;
 use std::io::{self, Read};
