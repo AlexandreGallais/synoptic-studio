@@ -9,6 +9,7 @@ publish.workspace = true
 [dependencies]
 git-repository = { path = "../git-repository" }
 git-hooks = { path = "../git-hooks" }
+stale-binaries = { path = "../stale-binaries" }
 tool-use = { path = "../tool-use" }
 
 [dev-dependencies]

@@ -14,6 +14,7 @@ use git_sequences::{
     Branch, Request, Source, Target, branch_of, changes_refusal, changes_step, commit_refusal,
     commit_steps, fetch_step, message_refusal, parse, sync_steps, sync_target,
 };
+use stale_binaries::RELEASE_BUILD;
 
 /// Runs one Git step, the text given on its standard input; its output, or Git's own message.
 fn git(step: &[String], input: Option<&str>) -> Result<String, String> {
@@ -172,7 +173,7 @@ fn rebuild(top: &Path) -> Result<bool, String> {
     }
 
     let output = Command::new("cargo")
-        .args(["build", "--release", "--workspace", "--locked", "--quiet"])
+        .args(RELEASE_BUILD)
         .current_dir(top)
         .stdin(Stdio::null())
         .output()

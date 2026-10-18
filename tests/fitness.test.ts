@@ -386,8 +386,11 @@ const TEST_OPENING = /^\s*(?:it|test|describe)\b[\w.]*\(/u;
 /** How many times its duration alone a limit is at least (`.claude/rules/tooling.md`). */
 const LIMIT_FACTOR = 4;
 
-/** Limits of `src/` and `tests/` at EN-129: the check may never read fewer (an empty list passes). */
-const LIMITS_AT_EN_129 = 17;
+/**
+ * Limits of `src/`, `tests/` and `playground/` at AUD-031, 17 of EN-129 and 4 of the playground:
+ * the check may never read fewer (an empty list passes).
+ */
+const LIMITS_AT_AUD_031 = 21;
 
 /** A per-test limit of a test file, with what its comment says. */
 type TimingLimit = {
@@ -397,12 +400,13 @@ type TimingLimit = {
 };
 
 /**
- * Text of every test file of `src/` and `tests/`.
+ * Text of every test file of `src/`, `tests/` and `playground/`, the three folders holding a
+ * per-test limit (AUD-031).
  *
  * @returns path from the repository root, and text, of each file
  */
 function timedTestFiles(): readonly { readonly path: string; readonly text: string }[] {
-  return ["src", "tests"].flatMap((root) =>
+  return ["src", "tests", "playground"].flatMap((root) =>
     readdirSync(join(ROOT, root), { recursive: true })
       .map(String)
       .filter((name) => name.endsWith(".test.ts"))
@@ -489,14 +493,71 @@ function limitFault(timing: TimingLimit): string | undefined {
     : undefined;
 }
 
+/**
+ * A per-test limit of a made-up test file, written so that this file's own scan reads none.
+ *
+ * @param written - what follows `timeout:`
+ * @returns `{ timeout: <written> }`
+ */
+function limit(written: string): string {
+  return `{ timeout: ${written} }`;
+}
+
 describe("the timing tests (EN-129)", () => {
   const limits = timedTestFiles().flatMap(({ path, text }) => timingLimits(path, text));
 
-  it("reads every limit of src and tests, not an empty list", () => {
-    expect(limits.length).toBeGreaterThanOrEqual(LIMITS_AT_EN_129);
+  it("reads every limit of src, tests and playground, not an empty list", () => {
+    expect(limits.length).toBeGreaterThanOrEqual(LIMITS_AT_AUD_031);
   });
 
   it("[F29.AC1] gives every limit its measure alone, the limit at least four times it", () => {
     expect(limits.map((timing) => limitFault(timing)).filter(Boolean)).toEqual([]);
+  });
+
+  // A made-up test file (AUD-031, F3): the limits of the repository all hold, so only this one
+  // shows each fault found, and a factor other than four failing.
+  const madeUp = [
+    "const LONG = 1_200;",
+    "",
+    'describe("a suite", () => {',
+    "  // alone: 100 ms, three times it.",
+    `  it("is under four times", () => {}, ${limit("300")});`,
+    "",
+    `  it("has no measure", () => {}, ${limit("500")});`,
+    "",
+    "  // alone: 300 ms, four times it.",
+    `  it("holds at four times exactly", () => {}, ${limit("LONG")});`,
+    "",
+    "  // alone: 300 ms.",
+    `  it("reads a constant the file lacks", () => {}, ${limit("MISSING")});`,
+    "",
+    "  // alone: 1 000 ms, a constant at 1.2 times it.",
+    `  it("reads a constant under four times", () => {}, ${limit("LONG")});`,
+    "});",
+  ].join("\n");
+
+  it("[F29.AC1] reads each limit of a made-up file with its value and its measure", () => {
+    // Lines 5, 7, 10, 13 and 16; `LONG` is 1 200 ms, `MISSING` declared nowhere.
+    expect(timingLimits("tests/made-up.test.ts", madeUp)).toEqual([
+      { at: "tests/made-up.test.ts:5", limit: 300, measure: 100 },
+      { at: "tests/made-up.test.ts:7", limit: 500, measure: undefined },
+      { at: "tests/made-up.test.ts:10", limit: 1200, measure: 300 },
+      { at: "tests/made-up.test.ts:13", limit: undefined, measure: 300 },
+      { at: "tests/made-up.test.ts:16", limit: 1200, measure: 1000 },
+    ]);
+  });
+
+  it("[F29.AC1] names the file and the line of each fault of a made-up file", () => {
+    // 300 < 4 × 100 = 400; 500 without a measure; 1 200 = 4 × 300 holds; MISSING unread;
+    // 1 200 < 4 × 1 000 = 4 000.
+    expect(
+      timingLimits("tests/made-up.test.ts", madeUp).map((timing) => limitFault(timing)),
+    ).toEqual([
+      "tests/made-up.test.ts:5: 300 ms, under four times 100 ms alone",
+      'tests/made-up.test.ts:7: a limit of 500 ms without its "alone: … ms"',
+      undefined,
+      "tests/made-up.test.ts:13: a limit that is no number nor constant of the file",
+      "tests/made-up.test.ts:16: 1200 ms, under four times 1000 ms alone",
+    ]);
   });
 });

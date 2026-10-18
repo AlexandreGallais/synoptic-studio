@@ -381,6 +381,7 @@ dependencies = [
 name = "git-sequences"
 version = "0.1.0"
 dependencies = [
+ "stale-binaries",
  "test-support",
  "tool-use",
  "worktree",
@@ -1772,6 +1773,7 @@ version = "0.1.0"
 dependencies = [
  "git-hooks",
  "git-repository",
+ "stale-binaries",
  "test-support",
  "tool-use",
 ]

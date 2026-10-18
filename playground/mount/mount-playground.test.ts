@@ -75,8 +75,9 @@ describe("playground", () => {
 
   it(
     "[F02.AC1] [F22.AC1] walks the steps of the guided test (F01, F02, F07, F03, F09, F08, F04, F06, then E01), each showing what it tells to look at",
-    // 72 steps drawn in happy-dom: 0.5 s alone, 0.7 s with coverage, 5.2 to 5.8 s on GitHub's
-    // runner in `check:all` (EN-116); 20 s holds it, as for the other long playground tests.
+    // 72 steps drawn in happy-dom. alone: 421 ms, the median of 5 runs of its file (AUD-031); 0.7 s
+    // with coverage, 5.2 to 5.8 s on GitHub's runner in `check:all` (EN-116); 20 s, 47 times it,
+    // holds them.
     { timeout: 20_000 },
     () => {
       // "Previous" on the first step stays there and types its values again.

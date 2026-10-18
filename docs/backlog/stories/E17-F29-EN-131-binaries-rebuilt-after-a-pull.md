@@ -19,8 +19,8 @@ A pull request merged on GitHub leaves the main checkout's release binaries olde
 
 ## Tasks
 
-- [ ] T1 — The `post-merge` and `post-rewrite` hooks of `tools/git-hooks`, their tests failing (1 h)
-- [ ] T2 — The hooks in `.githooks/`, set by `git-hooks install`, `docs/tooling/git-workflow.md` updated (1 h)
+- [x] T1 — The `post-merge` and `post-rewrite` hooks of `tools/git-hooks`, their tests failing (1 h)
+- [x] T2 — The hooks in `.githooks/`, set by `git-hooks install`, `docs/tooling/git-workflow.md` updated (1 h)
 
 One task = one commit, referenced as `EN-131.T1` in the commit footer.
 

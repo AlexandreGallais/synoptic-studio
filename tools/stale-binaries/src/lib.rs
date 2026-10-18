@@ -100,11 +100,29 @@ pub fn dep_info_files(text: &str) -> Vec<PathBuf> {
         .collect()
 }
 
+/// Cargo's arguments rebuilding a checkout's release binaries: `npm run rust:build`'s build, quiet,
+/// as `git-sequences sync`, `story-finish`, `worktree-new` and the post hooks run it (ADR-0078).
+pub const RELEASE_BUILD: [&str; 5] = ["build", "--release", "--workspace", "--locked", "--quiet"];
+
 /// When a file was last written, `None` when it is missing.
 fn written(path: &Path) -> Option<SystemTime> {
     fs::metadata(path)
         .and_then(|metadata| metadata.modified())
         .ok()
+}
+
+/// When the release binary `binary` of the checkout at `root` was last written, `None` when it is
+/// missing: `target/release/<binary>`, with the platform's suffix.
+#[must_use]
+pub fn binary_written(root: &Path, binary: &str) -> Option<SystemTime> {
+    written(&release_binary(root, binary))
+}
+
+/// The path of a release binary of the checkout at `root`.
+fn release_binary(root: &Path, binary: &str) -> PathBuf {
+    root.join("target")
+        .join("release")
+        .join(format!("{binary}{}", std::env::consts::EXE_SUFFIX))
 }
 
 /// Why a binary is stale, given when it was built and its newest source with its time; `None`
@@ -133,7 +151,6 @@ pub fn stale_binaries(root: &Path) -> Vec<String> {
     binaries(root)
         .iter()
         .filter_map(|binary| {
-            let file = release.join(format!("{binary}{}", std::env::consts::EXE_SUFFIX));
             let sources = fs::read_to_string(release.join(format!("{binary}.d")))
                 .map(|text| dep_info_files(&text))
                 .unwrap_or_default();
@@ -149,7 +166,7 @@ pub fn stale_binaries(root: &Path) -> Vec<String> {
 
             verdict(
                 binary,
-                written(&file),
+                binary_written(root, binary),
                 newest.as_ref().map(|(path, time)| (path.as_str(), *time)),
             )
         })
