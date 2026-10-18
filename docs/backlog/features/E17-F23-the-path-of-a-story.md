@@ -2,7 +2,7 @@
 id: F23
 epic: E17
 title: The path of a story through the tools
-status: ready
+status: in-progress
 ---
 
 # E17 · F23 — The path of a story through the tools
