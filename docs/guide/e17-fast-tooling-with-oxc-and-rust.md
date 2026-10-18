@@ -97,18 +97,18 @@ A story's life crosses all four features. This review's own story, REV-004, walk
 
 ## Limits and next epic
 
-- E17's checklist (`?checklist=E17`) was validated before EN-115: 14 of its 48 lines name an npm script EN-115 removed, and a few name figures or tools that changed since (Review, below).
-- The release tool has not published yet: 0.3.0 will be its first run on `main`.
+- E17's checklist (`?checklist=E17`) is kept as validated: 14 of its 48 lines name an npm script and one names release-please's pull request, as they were when tried; EN-115 later moved those tools to their binaries, `target/release/<binary>`, listed in [the agent's tools](../tooling/agent-tools.md) (ADR-0082).
+- The release tool has not published yet: 0.3.0 will be its first run on `main`, after the retrospective (Review, below).
 - `check:rust` is the longest lane of `check:all`: its coverage could run in a lane of its own (an improvement row of NAM-002).
-- Left for later with their reason: the hooks' own JSON reader, the guard's text matchers, two readers of version numbers, five readers of a story id, the library's claims tested at two levels (NAM-002).
+- Left for later with their reason: the hooks' own JSON reader, the guard's text matchers, two readers of version numbers, five readers of a story id, the library's claims tested at two levels (NAM-002). They wait, with this review's findings, for the tools point at an epic's end.
 - Vitest, Vite and VitePress stay JavaScript, by decision; `oxlint-tsgolint` is written in Go.
 - Next: the retrospective of E17 (RET-004), then E02, editing shapes with precision.
 
 ## Review
 
-To be held with the Product Owner (`REV-004`, started on 2026-10-18). The agent's rerun of the checklist and the questions come first; the answers are recorded here in neutral words.
+Held with the Product Owner on 2026-10-18 (`REV-004`): the agent ran the checklist again first, then the Product Owner answered the questions it prepared.
 
-**The checklist run again by the agent** on `develop`, 2026-10-18, line by line in [REV-004](../backlog/stories/E17-REV-004-review-e17.md), section E17's checklist run again: every tool works and every check is green, and no tool was changed during the review.
+**The checklist run again by the agent** on `develop`, line by line in [REV-004](../backlog/stories/E17-REV-004-review-e17.md), section E17's checklist run again: every tool works and every check is green; no tool was changed during the review.
 
 | Result | Lines |
 | --- | --- |
@@ -117,23 +117,28 @@ To be held with the Product Owner (`REV-004`, started on 2026-10-18). The agent'
 | an npm script EN-115 removed: the binary works, the line names the old command | 14, and one expecting the removed `font:metrics` |
 | obsolete | 1: release-please's pull request, replaced by ADR-0079 |
 
-Also found: `epic-check` takes a dropped story for one to look at; `session-report` writes `1617 min 60 s`; the main checkout's hooks ran binaries built before EN-115's merge; `check:all` took 112.6 s and 105.9 s in this review's runs, the site built and the machine loaded, its median over 64 runs being 73 s.
+Also found: `epic-check` takes a dropped story for one to look at; `session-report` writes `1617 min 60 s`; the main checkout's hooks ran binaries built before EN-115's merge; `check:all` took 112.6 s and 105.9 s in this review's runs, the site built and the machine loaded, and 82.3 s at its push.
 
-**The closure criteria**, as the agent reads them before the session:
+**The answers.**
+
+| Question | Answer (Product Owner, 2026-10-18) |
+| --- | --- |
+| `check:all` against the 70 to 90 s target | met: its median, about 73 s, is within the target; the runs of 106 to 113 s come from the load |
+| the closing release | after RET-004, which weighs the Product Owner's idea of a tag that creates the version without a new commit; 0.3.0 is then published with the flow chosen, and E17 closes at that publication. ADR-0079 stands until then |
+| the next epic | E02, editing shapes with precision, after RET-004 |
+| NAM-002's logged tooling items and this review's findings | they wait for the tools point at an epic's end: tools are not fixed during an epic's features |
+| anything built that was not meant | nothing; no remark on the report; the records' private GitHub repository is left for the Product Owner to delete |
+| the decisions to confirm | confirmed: the tools called by their binary's path (ADR-0078), the story worker on Opus (EN-066), `AGENT_LIBRARY_FILE` (ADR-0077), one Git command let through when followed by read-only filters (EN-104), a tooling feature validated by the agent (ADR-0072); told: ADR-0080, ADR-0081, ADR-0082 |
+| the permissions for the `story-finish` and `mutate` binaries, and the story auto-merge into `develop` | parked until RET-005, the next epic's retrospective |
+| E17's checklist lines naming removed scripts | kept as records of what was validated, with the note under Limits; the checklist and its test unchanged (the agent's decision) |
+
+**Closure criteria.**
 
 | Criterion | Met? | Evidence |
 | --- | --- | --- |
 | ESLint and its plugins removed | met | no ESLint package nor configuration left; its 854 rules accounted for (ADR-0075) |
-| `check:all` under the duration set at the refinement, about 70 to 90 s most of the time | met most of the time, to confirm | 74.6 s (EN-113), 74.9 s (VAL-022), 83.9 s with the site built (NAM-002), a median of 73 s over 64 runs; 112.6 s and 105.9 s in this review's runs, the site built and the machine loaded |
+| `check:all` under the duration set at the refinement, about 70 to 90 s most of the time | met | a median of about 73 s over the recorded runs; 74.6 s (EN-113), 74.9 s (VAL-022), 83.9 s with the site built (NAM-002), 82.3 s at this review's push |
 | tokens per agent input measured lower | met | a story worker's first request 38,897 → 10,562 tokens; a spike 38,339 → 11,971; an audit 15,477 → 8,505 (VAL-021) |
-| the release that closes the epic, with the flow of EN-046 | not met | no release since 0.2.0; EN-046's flow was replaced by ADR-0079, whose tool drafts 0.3.0 but has not published yet |
+| the release that closes the epic | not yet | 0.3.0, published after RET-004 with the flow it chooses; E17 closes then |
 
-**Open questions for the session:**
-
-1. Is `check:all` at a median of 73 s, and 106 to 113 s on a loaded machine with the site built, the criterion met?
-2. Is the closing release 0.3.0, made with ADR-0079's flow instead of EN-046's, and does E17 close once it is published, or before?
-3. The decisions the agent took, to keep or refuse: the tools called by their binary (ADR-0078), the release branch (ADR-0079), the Git hooks in `.githooks/` (ADR-0080), 26 npm scripts with `story:finish` and `mutate` kept (ADR-0082); and those left to confirm by VAL-021 and VAL-022: `AGENT_LIBRARY_FILE` (ADR-0077), one Git command through read-only filters (EN-104), `run-totals status` not recorded (EN-102), the story worker on Opus (EN-066).
-4. Was anything built that was not meant? The progress page was built, then dropped (EN-087); the records' private GitHub repository waits to be deleted (EN-114).
-5. E17's checklist: rewrite its 16 out-of-date lines on the binaries, or keep the validated lines as records with a note?
-6. Two permissions only you set: the binaries of `story:finish` and `mutate` allowed, so that their scripts can go (ADR-0082); the story auto-merge for a tooling story outside a feature.
-7. Is E02, editing shapes with precision, still the next epic after the retrospective, and do NAM-002's logged tooling items wait for a later tooling pass, or come first?
+The retrospective of E17 (RET-004) follows.

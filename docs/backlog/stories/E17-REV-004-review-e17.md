@@ -21,7 +21,7 @@ One task = one commit, referenced as `REV-004.Tn`.
 - [x] T1 — The epic's report, `docs/guide/e17-fast-tooling-with-oxc-and-rust.md`, listed in the guide's index (1 h)
 - [x] T2 — E17's checklist run again by the agent on `develop`, line by line (1 h)
 - [x] T3 — The questions for the Product Owner: the closure criteria, what was built, the next epic (30 min)
-- [ ] T4 — Session with the Product Owner: their answers recorded, the backlog adjusted (1 h)
+- [x] T4 — Session with the Product Owner: their answers recorded, the backlog adjusted (1 h)
 
 ## E17's checklist run again (2026-10-18)
 
@@ -105,7 +105,7 @@ Each of the 48 lines of `?checklist=E17` run by the agent on `develop` at `e8f36
 
 ## Questions for the Product Owner
 
-Open until the session (T4); the epic's report holds the same list.
+Asked before the session (T4); answered on 2026-10-18 (Result, below).
 
 ### The closure criteria
 
@@ -126,6 +126,23 @@ Open until the session (T4); the epic's report holds the same list.
 6. Permissions only the Product Owner sets: allowing `target/release/story-finish` and `mutate`, so that their scripts can go (ADR-0082); the story auto-merge for a tooling story outside a feature (EN-115's feedback row).
 7. Is E02, editing shapes with precision, still the next epic after RET-004, and do NAM-002's logged tooling items (the `rust` lane's split, the guard's matchers, the hooks' JSON reader, the version and story-id readers) wait for a later tooling pass, or come first?
 
+## Result (2026-10-18)
+
+The Product Owner answered the review on 2026-10-18; each answer is in the [E17 report](../../guide/e17-fast-tooling-with-oxc-and-rust.md), Review.
+
+- **`check:all`**: the criterion is met; its median, about 73 s, is within the 70 to 90 s target, and the runs of 106 to 113 s come from the load.
+- **The closing release**: after RET-004, which weighs the Product Owner's idea of a tag that creates the version without a new commit; 0.3.0 is then published with the flow chosen, and E17 closes at that publication. ADR-0079 stands until then.
+- **Next epic**: E02, editing shapes with precision, after RET-004.
+- **Tooling items**: NAM-002's logged items and this review's incident cards wait for the tools point at an epic's end; tools are not fixed during an epic's features (decided on 2026-10-18).
+- **What was built**: nothing built that was not meant; no remark on the report. The records' private GitHub repository is left for the Product Owner to delete.
+- **Decisions confirmed** the same day: the tools called by their binary's path (ADR-0078), the story worker on Opus (EN-066), `AGENT_LIBRARY_FILE` (ADR-0077), one Git command let through when followed by read-only filters (EN-104), a tooling feature validated by the agent (ADR-0072). Told: ADR-0080, ADR-0081, ADR-0082.
+- **Permissions parked** until RET-005, the next epic's retrospective: the `story-finish` and `mutate` binaries allowed, and the story auto-merge into `develop` for a tooling story outside a feature.
+- **E17's checklist**: the 16 lines naming removed scripts or release-please stay as records of what was validated; the report notes that EN-115 moved those tools to their binaries. The checklist and its test are unchanged (the agent's decision).
+
+**Closure criteria**: three met (ESLint removed, `check:all`, tokens per agent input); the closing release follows RET-004, and E17 closes at its publication.
+
+**Backlog changes**: none in this story. RET-004 weighs the tag idea and the release flow; RET-005 takes up the parked permissions.
+
 ## For the main thread
 
 Incident cards (tools are not fixed during the work, decided on 2026-10-18):
@@ -138,6 +155,11 @@ Incident cards (tools are not fixed during the work, decided on 2026-10-18):
 `check:all` measured on `develop` at `e8f360ef` in this worktree: 112.6 s (`time` 115.3 s; the site built, the worktree's first run, load average 12 at its end), then 105.9 s inside `epic-check`.
 
 Rule-docs: none affected, a review of a tooling epic, no rule of `docs/domain/` changed.
+
+### Journal
+
+- `#run` REV-004: E17 reviewed with the Product Owner on 2026-10-18; the report `docs/guide/e17-fast-tooling-with-oxc-and-rust.md`. The checklist run again: 26 lines ok, 6 by their tests, 16 out of date since EN-115 or ADR-0079, kept as records. Closure: ESLint removed, `check:all` (median about 73 s) and tokens per agent input met; E17 closes at the publication of 0.3.0, after RET-004 weighs the tag idea. Next: RET-004, then E02.
+- `#decision` REV-004: confirmed ADR-0078, ADR-0077, the story worker on Opus, the guard's read-only filters (EN-104) and tooling features validated by the agent; told ADR-0080 to ADR-0082. The permissions for the `story-finish` and `mutate` binaries and the story auto-merge into `develop` parked until RET-005; tools are not fixed during an epic's features.
 
 ### Improvements
 
