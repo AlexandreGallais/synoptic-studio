@@ -5,7 +5,8 @@
 //! changed one of its inputs against its base (EN-085): the nearest of `develop` and the feature
 //! branches on GitHub for a story, `develop` for a feature; on `main`, `develop`, a detached head
 //! or in the CI every lane runs. `.git/config` of the main checkout is read before and after the
-//! lanes: a lane that changed it fails the run, its lines named, nothing restored (F21.AC9).
+//! lanes: a lane that changed a line a test could break fails the run, its lines named, nothing
+//! restored (F21.AC9, EN-113).
 
 use std::env;
 use std::fs;

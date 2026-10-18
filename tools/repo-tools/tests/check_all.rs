@@ -159,7 +159,7 @@ fn starts_no_lane_when_the_release_build_fails() {
 
 #[test]
 fn f21_ac9_fails_naming_the_lines_a_lane_wrote_into_git_config_and_restores_nothing() {
-    let folder = repository("config", &[("lint", "git config --local test.planted yes")]);
+    let folder = repository("config", &[("lint", "git config --local core.planted yes")]);
     let config = folder.join(".git/config");
     let before = fs::read_to_string(&config).expect("config");
     let output = check_all(&folder, true);
@@ -172,13 +172,36 @@ fn f21_ac9_fails_naming_the_lines_a_lane_wrote_into_git_config_and_restores_noth
     assert!(text.contains("✓ lint "), "{text}");
     assert!(
         text.contains(&format!(
-            "✗ {} changed while the checks ran, restored nothing:\n+ [test]\n+ \tplanted = yes\n",
+            "✗ {} changed while the checks ran, restored nothing:\n+ \tplanted = yes\n",
             config.display()
         )),
         "{text}"
     );
     assert!(text.trim_end().ends_with(" s: .git/config"), "{text}");
-    assert_eq!(after, format!("{before}[test]\n\tplanted = yes\n"));
+    assert_eq!(after.replace("\tplanted = yes\n", ""), before);
+}
+
+#[test]
+fn f21_ac9_passes_when_a_lane_only_tracks_a_branch_in_git_config() {
+    // What a parallel worktree's `git push -u` writes into the common `.git/config` (CHK-022).
+    let folder = repository(
+        "tracked",
+        &[(
+            "lint",
+            "git config --local branch.x.remote origin && git config --local branch.x.merge refs/heads/x",
+        )],
+    );
+    let output = check_all(&folder, true);
+    let text = stdout(&output);
+    let after = fs::read_to_string(folder.join(".git/config")).expect("config");
+
+    fs::remove_dir_all(&folder).expect("cleaned");
+    assert!(output.status.success(), "{text}");
+    assert!(
+        after.contains("[branch \"x\"]\n\tremote = origin\n"),
+        "{after}"
+    );
+    assert!(!text.contains(".git/config"), "{text}");
 }
 
 #[test]
