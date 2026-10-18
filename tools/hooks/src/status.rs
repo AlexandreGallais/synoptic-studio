@@ -2,16 +2,16 @@
 //! stands (epic, feature, story, step); the current turn, from the person's prompt (active or
 //! silent, time, exact tokens), the run's duration and tokens while a `/run` is open (EN-092), how
 //! full the conversation memory is and the model; the tool call running, if any; one line per
-//! background task. Ported from `.claude/hooks/status-line.ts`, `status-place.ts`, `status-run.ts`
+//! background task. Rewritten from `.claude/hooks/status-line.ts`, `status-place.ts`, `status-run.ts`
 //! and `status-usage.ts` (EN-104), the same text byte for byte.
 
 use crate::json::{self, Value, number_text, quote};
-use crate::record::{count, js_prefix, text_or};
+use crate::record::{js_prefix, text_or};
 use crate::tasks::{Kind, Task};
-use crate::tokens::Tally;
+use crate::tokens::{Tally, whole};
 
 /// Silence after which the session is shown as silent (2 minutes).
-const IDLE_MS: f64 = 120_000.0;
+const IDLE_MS: i64 = 120_000;
 
 /// A call running longer than this, milliseconds, is shown in red: look at what it does.
 pub const LONG_CALL_MS: i64 = 300_000;
@@ -32,21 +32,18 @@ const YELLOW: &str = "\u{1b}[33m";
 /// The story ids as they appear in branch names.
 const STORY_PREFIXES: [&str; 9] = ["us", "en", "sp", "chk", "aud", "val", "nam", "rev", "ret"];
 
-/// A duration written short: `45 s`, `12 min` or `2 h 05`, as `Math.floor` and `Math.round` give.
+/// A duration written short: `45 s`, `12 min` or `2 h 05`, as `Math.floor` and `Math.round` give:
+/// the minutes rounded down, the seconds to the nearest, a half up.
 #[must_use]
-pub fn short_duration(milliseconds: f64) -> String {
-    let minutes = (milliseconds / 1000.0 / 60.0).floor();
+pub fn short_duration(milliseconds: i64) -> String {
+    let minutes = milliseconds.div_euclid(60_000);
 
-    if minutes < 1.0 {
-        format!("{} s", number_text((milliseconds / 1000.0 + 0.5).floor()))
-    } else if minutes < 60.0 {
-        format!("{} min", number_text(minutes))
+    if minutes < 1 {
+        format!("{} s", (milliseconds + 500).div_euclid(1000))
+    } else if minutes < 60 {
+        format!("{minutes} min")
     } else {
-        format!(
-            "{} h {:0>2}",
-            number_text((minutes / 60.0).floor()),
-            number_text(minutes % 60.0)
-        )
+        format!("{} h {:02}", minutes / 60, minutes % 60)
     }
 }
 
@@ -132,7 +129,7 @@ pub struct Status {
     /// Line of the tool call running, possibly empty.
     pub running: String,
     /// Time since the transcript last changed.
-    pub silent_ms: f64,
+    pub silent_ms: i64,
     /// What the agent says it is doing, possibly empty.
     pub step: String,
     /// Exact tokens of the session.
@@ -142,7 +139,7 @@ pub struct Status {
 /// Activity, in four states: the agent works on the main thread (with or without tasks in the
 /// background), or its turn is over and only background tasks run (the chat is free for the
 /// person's messages); a working agent silent for a while is shown as such.
-fn activity(silent_ms: f64, tally: &Tally) -> String {
+fn activity(silent_ms: i64, tally: &Tally) -> String {
     let background = background_text(tally);
 
     if !background.is_empty() && tally.is_waiting {
@@ -379,7 +376,8 @@ pub struct RunningCall {
     /// Who runs it: `main`, or the type of the subagent.
     pub agent: String,
     pub description: String,
-    pub start: f64,
+    /// When it started, epoch milliseconds, a whole number as the hook writes it.
+    pub start: i64,
     pub summary: String,
     pub tool: String,
 }
@@ -390,7 +388,7 @@ pub fn read_running_call(record: &Value) -> RunningCall {
     RunningCall {
         agent: text_or(record, "agent", "main").to_owned(),
         description: record.get("description").text().to_owned(),
-        start: count(record, "start"),
+        start: whole(record, "start"),
         summary: record.get("summary").text().to_owned(),
         tool: record.get("tool").text().to_owned(),
     }
@@ -411,7 +409,7 @@ fn call_text(call: &RunningCall) -> String {
 /// The line of the oldest call still running, `▶ Bash · Run the checks — 12 s`, empty when
 /// nothing runs.
 #[must_use]
-pub fn running_line(calls: &[RunningCall], now: i64, duration: fn(f64) -> String) -> String {
+pub fn running_line(calls: &[RunningCall], now: i64, duration: fn(i64) -> String) -> String {
     let oldest = calls.iter().reduce(|oldest, call| {
         if call.start < oldest.start {
             call
@@ -420,13 +418,8 @@ pub fn running_line(calls: &[RunningCall], now: i64, duration: fn(f64) -> String
         }
     });
 
-    #[allow(clippy::cast_precision_loss)]
     oldest.map_or_else(String::new, |call| {
-        format!(
-            "▶ {} — {}",
-            call_text(call),
-            duration(now as f64 - call.start)
-        )
+        format!("▶ {} — {}", call_text(call), duration(now - call.start))
     })
 }
 
@@ -438,7 +431,7 @@ pub fn background_lines(
     tasks: &[Task],
     calls: &[RunningCall],
     now: i64,
-    duration: fn(f64) -> String,
+    duration: fn(i64) -> String,
 ) -> Vec<String> {
     tasks
         .iter()
@@ -458,14 +451,11 @@ pub fn background_lines(
             let doing =
                 current.map_or_else(String::new, |call| format!(" · now {}", call_text(call)));
 
-            #[allow(clippy::cast_precision_loss)]
-            let elapsed = (now - task.start) as f64;
-
             format!(
                 "↳ {} {} — {}{doing}",
                 task.kind.name(),
                 task.label,
-                duration(elapsed)
+                duration(now - task.start)
             )
         })
         .collect()
@@ -486,17 +476,12 @@ fn usage_window(limits: &Value, key: &str) -> Option<String> {
     let window = limits.get(key);
 
     match (window.get("used_percentage"), window.get("resets_at")) {
-        (Value::Number(used), Value::Number(resets)) => {
-            // Seconds since the epoch, a whole number.
-            #[allow(clippy::cast_possible_truncation)]
-            let resets_ms = (resets * 1000.0) as i64;
-
-            Some(format!(
-                "{{\"resetsAt\":\"{}\",\"usedPercent\":{}}}",
-                crate::record::instant_text(resets_ms),
-                number_text(*used)
-            ))
-        }
+        // Seconds since the epoch, a whole number.
+        (Value::Number(used), Value::Number(_)) => Some(format!(
+            "{{\"resetsAt\":\"{}\",\"usedPercent\":{}}}",
+            crate::record::instant_text(whole(window, "resets_at") * 1000),
+            number_text(*used)
+        )),
         _ => None,
     }
 }

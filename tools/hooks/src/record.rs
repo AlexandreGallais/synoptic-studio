@@ -1,13 +1,14 @@
 //! What the `track-tool-call` and `log-tool-call` hooks write of a tool call (RET-001,
 //! `docs/tooling/metrics.md`): the call starting, read by the status line, and one line per call
 //! ended in `.git/metrics/tool-calls.jsonl`, with the session's state the status line last saw.
-//! Ported from `.claude/hooks/log-tool-call.ts` and `status-place.ts` (EN-104): the same fields in
+//! Rewritten from `.claude/hooks/log-tool-call.ts` and `status-place.ts` (EN-104): the same fields in
 //! the same order, written as `JSON.stringify` writes them.
 
 use std::path::{Component, Path, PathBuf};
 
 use crate::guard::is_space;
 use crate::json::{Value, js_length, number_text, quote, write};
+use crate::tokens::whole;
 
 /// Longest summary kept for one call: a long heredoc is cut, its length is kept.
 pub const SUMMARY_LENGTH: usize = 300;
@@ -191,13 +192,10 @@ pub struct CallContext {
 /// tokens of the turn, memory, background tasks, all 0 when the snapshot is missing.
 #[must_use]
 pub fn session_moment(snapshot: &Value, time: i64) -> String {
-    let turn_start = count(snapshot, "turnStart");
-    let taken = count(snapshot, "time");
-    #[allow(clippy::cast_precision_loss)]
-    let now = time as f64;
-    let since = |moment: f64| {
-        if moment == 0.0 { 0.0 } else { now - moment }
-    };
+    // Its times are whole numbers, as the status line writes them.
+    let turn_start = whole(snapshot, "turnStart");
+    let taken = whole(snapshot, "time");
+    let since = |moment: i64| if moment == 0 { 0 } else { time - moment };
 
     format!(
         "\"contextPercent\":{},\"model\":{},\"pendingAgents\":{},\"pendingCommands\":{},\"snapshotAgeMs\":{},\"turnElapsedMs\":{},\"turnOutputTokens\":{},\"turnStart\":{},\"turnTokens\":{}",
@@ -205,10 +203,10 @@ pub fn session_moment(snapshot: &Value, time: i64) -> String {
         quote(snapshot.get("model").text()),
         number_text(count(snapshot, "pendingAgents")),
         number_text(count(snapshot, "pendingCommands")),
-        number_text(since(taken)),
-        number_text(since(turn_start)),
+        since(taken),
+        since(turn_start),
         number_text(count(snapshot, "turnOutputTokens")),
-        number_text(turn_start),
+        turn_start,
         number_text(count(snapshot, "turnTokens")),
     )
 }

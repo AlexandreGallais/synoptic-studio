@@ -448,14 +448,12 @@ fn the_settings_run_the_hook_on_every_web_fetch_and_every_command_naming_curl_or
 
     for entry in settings.get("hooks").get("PreToolUse").items() {
         for handler in entry.get("hooks").items() {
-            let args: Vec<&str> = handler
-                .get("args")
-                .items()
-                .iter()
-                .map(hooks::json::Value::text)
-                .collect();
-
-            if args.contains(&"library-pages") {
+            // The binary called by its path (ADR-0078).
+            if handler
+                .get("command")
+                .text()
+                .ends_with("/target/release/library-pages")
+            {
                 runs.push(format!(
                     "{} {} {}",
                     entry.get("matcher").text(),

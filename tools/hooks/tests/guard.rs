@@ -216,9 +216,9 @@ fn names_the_rust_command_of_a_frequent_git_sequence() {
     let sync = worktree_reason("git fetch origin; git rebase origin/develop", WORKTREE)
         .unwrap_or_default();
 
-    assert!(commit.ends_with(" Or in one call: `npm run git:commit -- -F <message file> [--push] <paths>` stages, commits and pushes."));
+    assert!(commit.ends_with(" Or in one call: `target/release/git-sequences commit -F <message file> [--push] <paths>` stages, commits and pushes."));
     assert!(sync.ends_with(
-        " Or in one call: `npm run git:sync` fetches and rebases the story on its feature branch."
+        " Or in one call: `target/release/git-sequences sync` fetches and rebases the story on its feature branch."
     ));
     assert!(
         !worktree_reason("git log --oneline | head -5", WORKTREE)
@@ -229,7 +229,7 @@ fn names_the_rust_command_of_a_frequent_git_sequence() {
     assert!(
         worktree_reason("git pull; git push", WORKTREE)
             .unwrap_or_default()
-            .contains("pushes; `npm run git:sync`")
+            .contains("pushes; `target/release/git-sequences sync`")
     );
 }
 
@@ -237,6 +237,7 @@ fn names_the_rust_command_of_a_frequent_git_sequence() {
 fn allows_the_rust_command_of_a_git_sequence_in_a_worktree() {
     for command in [
         "cd \"/work/SVG editor/.claude/worktrees/us-061\" || exit 9; npm run git:sync",
+        "cd \"/work/SVG editor/.claude/worktrees/us-061\" || exit 9; target/release/git-sequences sync",
         "cd \"/work/SVG editor/.claude/worktrees/us-061\" || exit 9\nnpm run git:commit -- -F - --push a.md <<'EOF'\nchore(tooling): x\n\nRefs: EN-100.T1\nEOF",
     ] {
         assert_eq!(denied_reason(command), None);

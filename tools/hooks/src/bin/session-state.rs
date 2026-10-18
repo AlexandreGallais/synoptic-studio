@@ -47,7 +47,10 @@ fn hook() -> u8 {
         return 1;
     };
     let Some(checkout) = checkout_of(&root) else {
-        eprintln!("session-state: {} is not in a Git repository", root.display());
+        eprintln!(
+            "session-state: {} is not in a Git repository",
+            root.display()
+        );
         return 1;
     };
 
@@ -89,6 +92,15 @@ fn hook() -> u8 {
         })
         .collect();
 
-    print!("{}", state_text(&branch, changed, &last, &features));
+    print!(
+        "{}",
+        state_text(
+            &branch,
+            changed,
+            &last,
+            &features,
+            &stale_binaries::stale_binaries(&root)
+        )
+    );
     0
 }

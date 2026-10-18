@@ -1,6 +1,6 @@
 //! The shell guard (ADR-0021), the `guard-bash` hook's judgement: the commands the project forbids
 //! whatever the instructions say, the forms a story's worktree refuses, and a script missing from
-//! the `package.json` a command runs against. Ported from `.claude/hooks/guard-bash.ts` (EN-104),
+//! the `package.json` a command runs against. Rewritten from `.claude/hooks/guard-bash.ts` (EN-104),
 //! its regular expressions matched by hand, the standard library only: each matcher below names
 //! the expression it replaces, backtracking included where it changes the answer.
 
@@ -701,8 +701,8 @@ fn runs_git(segment: &str, subcommands: &[&str]) -> bool {
 
 /// The hint for a Git command chained with another in a worktree: `cd` into the worktree first,
 /// since a subagent's calls start in the main checkout, then the Git command alone (AUD-020); and
-/// the Rust command running the sequence in one call (EN-100). `None` when no Git command is
-/// chained.
+/// the Rust command running the sequence in one call (EN-100), by its binary's path (ADR-0078).
+/// `None` when no Git command is chained.
 fn chained_git_hint(pieces: &[String], root: &str) -> Option<String> {
     let git_command = pieces
         .iter()
@@ -715,11 +715,11 @@ fn chained_git_hint(pieces: &[String], root: &str) -> Option<String> {
     let sequences: [(&[&str], &str); 2] = [
         (
             &["add", "commit", "push"],
-            "`npm run git:commit -- -F <message file> [--push] <paths>` stages, commits and pushes",
+            "`target/release/git-sequences commit -F <message file> [--push] <paths>` stages, commits and pushes",
         ),
         (
             &["fetch", "rebase", "pull"],
-            "`npm run git:sync` fetches and rebases the story on its feature branch",
+            "`target/release/git-sequences sync` fetches and rebases the story on its feature branch",
         ),
     ];
     let hints: Vec<&str> = sequences

@@ -201,6 +201,15 @@ pub fn clean_up_plan(story: Story, here: &str, checkouts: &[Worktree]) -> CleanU
             &format!("origin/{}", story.base),
         ],
     ));
+    // The base's checkout rebuilds its release binaries, which its hooks and the agent call by
+    // their path (ADR-0078); a worktree switched to the base is removed, so nothing is built there.
+    if place != here || here == main {
+        update.push(Step::new(
+            "cargo",
+            place,
+            &["build", "--release", "--workspace", "--locked", "--quiet"],
+        ));
+    }
     if here != main {
         remove.push(Step::new("git", main, &["worktree", "remove", here]));
     }
@@ -745,6 +754,7 @@ mod tests {
             [
                 format!("cd \"{here}\" && git fetch --quiet --prune origin"),
                 format!("cd \"/repo\" && git merge --ff-only --quiet origin/{BASE}"),
+                "cd \"/repo\" && cargo build --release --workspace --locked --quiet".to_owned(),
                 format!(
                     "cd \"/repo\" && cargo run --release -q -p shared-files --bin move-rows -- {STORY}"
                 ),
@@ -813,6 +823,11 @@ mod tests {
                         "/repo",
                         &["merge", "--ff-only", "--quiet", "origin/feature/f99-topic"]
                     ),
+                    step(
+                        "cargo",
+                        "/repo",
+                        &["build", "--release", "--workspace", "--locked", "--quiet"]
+                    ),
                 ],
             }
         );
@@ -869,7 +884,7 @@ mod tests {
                 .iter()
                 .map(|step| step.options[0].as_str())
                 .collect::<Vec<_>>(),
-            ["fetch", "switch", "merge"]
+            ["fetch", "switch", "merge", "build"]
         );
         assert_eq!(
             plan.remove,

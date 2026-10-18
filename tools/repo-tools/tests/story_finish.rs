@@ -475,6 +475,10 @@ fn f18_ac7_moves_the_rows_into_the_logs_and_commits_them_alone_on_the_base() {
     assert!(calls.contains(&format!(
         "{place} api -X DELETE repos/owner/name/git/refs/heads/{FIRST}"
     )));
+    // The base's release binaries rebuilt where it is checked out (ADR-0078).
+    assert!(calls.contains(&format!(
+        "{place} build --release --workspace --locked --quiet"
+    )));
     assert_eq!(lab.git(&main, &["branch", "--list", FIRST]), "");
     assert_eq!(lab.git(&main, &["branch", "--show-current"]), BASE);
 }

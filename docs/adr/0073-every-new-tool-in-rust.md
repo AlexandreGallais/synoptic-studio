@@ -1,6 +1,6 @@
 # ADR-0073 — Every new script, hook or agent tool written in Rust
 
-**Status**: Accepted (Product Owner, decided 2026-10-16 for E17, recorded on 2026-10-17 at the review of the ADRs, EN-094). Supersedes ADR-0050's decision 1 (the agent's tools written in TypeScript).
+**Status**: Accepted (Product Owner, decided 2026-10-16 for E17, recorded on 2026-10-17 at the review of the ADRs, EN-094). Supersedes ADR-0050's decision 1 (the agent's tools written in TypeScript). Decision 1 partly superseded by ADR-0078 (2026-10-18): the hooks, the status line, the Git hooks and the agent's own commands call `target/release/<binary>` by its path.
 
 ## Context
 

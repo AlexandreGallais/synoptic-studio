@@ -12,18 +12,18 @@ How a run's worker works one story in its own worktree. The `story-worker` and `
 
 1. **Work only inside the worktree.** The main thread made it with `npm run worktree:new -- <ID>`: `.claude/worktrees/<id>`, on the story's branch from the feature branch, with its own hooks. The main checkout stays on `develop` during a run, so a page read there may be older: read every rule from the worktree.
 2. **Every Bash call starts with `cd "<worktree>" || exit 9`**: a subagent's calls start in the main checkout whatever its prompt says, and files once landed there (EN-049). Write and Edit take absolute paths inside the worktree; never `git -C`; never a file outside the worktree.
-3. **One Git command per call**, never chained to another by `&&`, `;` or a pipe: Claude Code refuses compound commands in a worktree. The frequent sequences are one command each (EN-100): `npm run git:sync` fetches and rebases the story on its feature branch; `npm run git:commit -- -F <message file|-> [--push] <paths>` stages the files named, commits and pushes, and stops at the first failing step with Git's message. Start with `npm run git:sync`.
+3. **One Git command per call**, never chained to another by `&&`, `;` or a pipe: Claude Code refuses compound commands in a worktree. The frequent sequences are one command each (EN-100), called by their binary from the worktree's root (ADR-0078): `target/release/git-sequences sync` fetches, rebases the story on its feature branch and rebuilds the release binaries; `target/release/git-sequences commit -F <message file|-> [--push] <paths>` stages the files named, commits and pushes, and stops at the first failing step with Git's message. Start with `target/release/git-sequences sync`. Every agent tool is called so, as `docs/tooling/agent-tools.md` maps its script (The binaries the agent calls); `npm run` stays for people.
 4. A scratch folder of its own: `<scratchpad>/<story id>-<role>`.
 
 ## Read first
 
-- The story, its feature, and what they cite: ADRs, derivations, domain sections, `REF-*` rows. A row or a section is read with `npm run -s page -- [<file>] <id or heading>` rather than `Read` of its whole page: `REF-CC-HOOKS` prints 2,335 characters of the 198,307 of `docs/references.md` (EN-105); `Read` stays for a page read whole or to edit.
+- The story, its feature, and what they cite: ADRs, derivations, domain sections, `REF-*` rows. A row or a section is read with `target/release/page [<file>] <id or heading>` rather than `Read` of its whole page: `REF-CC-HOOKS` prints 2,335 characters of the 198,307 of `docs/references.md` (EN-105); `Read` stays for a page read whole or to edit.
 - The rules of the area the story touches: `.claude/rules/library.md` (`src/`, `playground/`), `.claude/rules/docs.md` (Markdown), `.claude/rules/tooling.md` (tooling, tests, `tools/`). A worktree subagent does not load them by itself.
 - `docs/conventions/README.md` and the pages it lists for what the story touches.
 
 ## Work
 
-- **One commit per task**, footer `Refs: <ID>.Tn` and the attribution lines, the message in a file of the scratch folder or a here-document (`-F -`), made by `npm run git:commit`.
+- **One commit per task**, footer `Refs: <ID>.Tn` and the attribution lines, the message in a file of the scratch folder or a here-document (`-F -`), made by `target/release/git-sequences commit`.
 - **Before each commit**: `npm run fix`, which reports the type errors with the lint (EN-091), and the touched tests (`npx vitest run <paths>`, `cargo test -p <crate>`).
 - **Edge cases and mutations** (ADR-0064): no review checks a story, so its worker writes the story's edge cases into its tests and breaks each new test once on purpose to see it fail.
 - **Docs in the same task as the code** they describe: domain, derivations, references, playground.
@@ -48,7 +48,7 @@ Between heavy commands, run single test files only (`npx vitest run <paths>`), n
 
 ## Limits
 
-- **Push once the tasks are done**: `--push` on the last task's `npm run git:commit`, or `git push -u origin HEAD`. Never a force push; after a `git:sync` that moved a pushed story branch, `--force-with-lease`.
+- **Push once the tasks are done**: `--push` on the last task's `target/release/git-sequences commit`, or `git push -u origin HEAD`. Never a force push; after a `git:sync` that moved a pushed story branch, `--force-with-lease`.
 - **Stop before the pull request and the `done` commit**: the main thread makes that commit in the worktree, since it writes the shared files, then runs `story:finish`.
 - **A rule changed in `docs/domain/`** brings, in the story's tasks, the Q row of `docs/domain/README.md`, the decisions to confirm of its feature's `VAL` and its guide page; the `done` commit's hook refuses the story otherwise (`tools/rule-docs`, EN-059). A doc the change does not affect: say so in the report, with its reason, for the footer `Rule-docs: none affected, <why>`.
 - **A business question stops the story, not the run**: a rule missing, or code, domain and ADRs that contradict each other. Push what is done, then report the question, what was read and the options, without choosing; the main thread parks the story and goes on with independent work.

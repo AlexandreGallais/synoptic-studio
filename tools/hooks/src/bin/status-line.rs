@@ -63,15 +63,15 @@ fn running_calls(folder: &Path) -> Vec<(String, RunningCall)> {
         .collect()
 }
 
-/// The open run's part of the line, counted by the Rust tool `run-totals` (EN-092); run only while
-/// a run is open; empty when the tool fails.
+/// The open run's part of the line, counted by the Rust tool `run-totals` (EN-092), its release
+/// binary called by its path (ADR-0078); run only while a run is open; empty when it fails.
 fn run_part(root: &Path, marker: &str) -> String {
     if !is_run_open(marker) {
         return String::new();
     }
 
-    Command::new("cargo")
-        .args(["run", "--release", "-q", "-p", "run-totals", "--", "status"])
+    Command::new(root.join("target").join("release").join("run-totals"))
+        .arg("status")
         .current_dir(root)
         .stdin(Stdio::null())
         .stderr(Stdio::null())
@@ -86,8 +86,10 @@ fn run_part(root: &Path, marker: &str) -> String {
         .unwrap_or_default()
 }
 
-/// Milliseconds since a file last changed, as Node.js's `mtimeMs` counts them; 0 when it is missing.
-fn silent_ms(transcript: &str, now: i64) -> f64 {
+/// Milliseconds since a file last changed, 0 when it is missing: Node.js's `mtimeMs` holds a
+/// fraction, rounded up here, which leaves the comparison with 2 minutes and the minutes shown as
+/// they were.
+fn silent_ms(transcript: &str, now: i64) -> i64 {
     let modified = (!transcript.is_empty())
         .then(|| {
             fs::metadata(transcript)
@@ -97,9 +99,10 @@ fn silent_ms(transcript: &str, now: i64) -> f64 {
         .flatten()
         .and_then(|modified| modified.duration_since(UNIX_EPOCH).ok());
 
-    #[allow(clippy::cast_precision_loss)]
-    modified.map_or(0.0, |since| {
-        now as f64 - (since.as_secs() as f64 * 1000.0 + f64::from(since.subsec_nanos()) / 1e6)
+    modified.map_or(0, |since| {
+        let seconds = i64::try_from(since.as_secs()).unwrap_or(i64::MAX / 1000);
+
+        now - (seconds * 1000 + i64::from(since.subsec_nanos().div_ceil(1_000_000)))
     })
 }
 
@@ -139,8 +142,7 @@ fn draw() -> u8 {
     }
     // A main call started before the turn never finished (an interrupted turn): its file is
     // removed; a subagent's call may outlive the turn that launched the subagent.
-    #[allow(clippy::cast_precision_loss)]
-    let turn_start = tally.start as f64;
+    let turn_start = tally.start;
 
     for (name, call) in running_calls(&running) {
         if call.agent == "main" && call.start < turn_start {
@@ -169,10 +171,7 @@ fn draw() -> u8 {
     } else {
         now - tally.start
     };
-    #[allow(clippy::cast_precision_loss)]
-    let is_running_long = calls
-        .iter()
-        .any(|call| now as f64 - call.start > LONG_CALL_MS as f64);
+    let is_running_long = calls.iter().any(|call| now - call.start > LONG_CALL_MS);
     let status = Status {
         background: background_lines(&tally.pending, &all, now, short_duration),
         context_percent: count(input.get("context_window"), "used_percentage"),

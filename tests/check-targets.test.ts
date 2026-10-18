@@ -270,6 +270,8 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
       "npm run --silent rust:advisories",
       "npm run --silent rust:coverage",
       "cargo check --workspace --all-targets --locked --quiet --target x86_64-pc-windows-msvc",
+      // The release binaries the hooks and the agent call by their path, none older than its sources (ADR-0078).
+      "npm run --silent rust:fresh",
     ]);
   });
 
@@ -372,6 +374,16 @@ describe("the Rust tools run as crates of the workspace (EN-068)", () => {
     expect(runs.length).toBeGreaterThan(0);
     expect(runs.filter((run) => !run.startsWith("cargo run --release -q -p "))).toEqual([]);
     expect(callers).not.toMatch(/manifest-path/u);
+  });
+
+  it("[F21.AC1] calls the release binaries by their path from the Git hooks (ADR-0078)", () => {
+    const hooks = ["pre-push", "commit-msg"].map((hook) =>
+      readFileSync(join(ROOT, ".husky", hook), "utf8"),
+    );
+
+    expect(hooks[0]).toMatch(/^target\/release\/refuse-shared-files$/mu);
+    expect(hooks[1]).toContain('then target/release/check-rule-docs "$1"; fi');
+    expect(hooks.join("\n")).not.toContain("cargo run");
   });
 
   it("[F19.AC9] builds the release binaries of the workspace from prepare", () => {

@@ -1,7 +1,7 @@
 //! Exact tokens of the current turn for the status line (`docs/tooling/metrics.md`): from the
 //! person's prompt to the agent's last answer, like the session report, and the background tasks
 //! the agent waits for. Summed from the transcript incrementally, a small cache in the Git folder
-//! keeping the byte offset already read. Ported from `.claude/hooks/status-tokens.ts` (EN-104).
+//! keeping the byte offset already read. Rewritten from `.claude/hooks/status-tokens.ts` (EN-104).
 //!
 //! A request is counted once, from its last line: a subagent's transcript repeats a request's
 //! usage on each of its lines with a growing `output_tokens` (EN-092's note), so a line of the

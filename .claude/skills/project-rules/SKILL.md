@@ -18,9 +18,9 @@ synoptic-studio: a dependency-free TypeScript library `editor` that draws SVG sy
 - **Never quote the Product Owner**: a decision is written in neutral English, with its reason and date (`docs/conventions/writing.md`). **No personal information** about them: the repository is public.
 - **Every business rule lives in `docs/domain/`**, changed in the same commit as the code; a rule missing or ambiguous is a stop, never an invention.
 - A structural decision is a new ADR; an accepted ADR is superseded, never rewritten.
-- **Never invent a reference**: cite only what was read (a `REF-*` row of `docs/references.md`, `[verified]`, read alone with `npm run -s page -- REF-…`); otherwise a derivation (`docs/derivations/`) or a research request. Sources come through the `library` server (`library_search`, `library_get`, `library_read`), which keeps each page read; the web only for a page it cannot read; how many sources a claim needs: `docs/research/README.md` §2.
+- **Never invent a reference**: cite only what was read (a `REF-*` row of `docs/references.md`, `[verified]`, read alone with `target/release/page REF-…`); otherwise a derivation (`docs/derivations/`) or a research request. Sources come through the `library` server (`library_search`, `library_get`, `library_read`), which keeps each page read; the web only for a page it cannot read; how many sources a claim needs: `docs/research/README.md` §2.
 - **A rule earns its place**: it stays only if it makes the code or the docs more correct or more uniform (`docs/conventions/writing.md`, Writing a rule).
-- Use the repository's tools rather than ad-hoc scripts (`docs/tooling/agent-tools.md`): `npm run replace` or the Edit tool for edits across files, never a Python edit script; `npm run -s page -- [<file>] <id or heading>` rather than `Read` for one row or one section of a long page; `backlog:status`, `context:size`.
+- Use the repository's tools rather than ad-hoc scripts (`docs/tooling/agent-tools.md`), each called by its binary from the checkout's root, `target/release/<binary>`, as its table maps the scripts (ADR-0078): `target/release/replace` or the Edit tool for edits across files, never a Python edit script; `target/release/page [<file>] <id or heading>` rather than `Read` for one row or one section of a long page; `backlog-status`, `context-size`.
 
 ## Code
 
@@ -34,7 +34,7 @@ synoptic-studio: a dependency-free TypeScript library `editor` that draws SVG sy
 ## Git
 
 - Never push to `main` or `develop`, never merge a pull request, never `--no-verify` (nor `commit -n`, `HUSKY=0`), never force push without lease, nor at all on a feature branch; the `guard-bash` hook refuses most of them: never look for a way around it.
-- Commits: Conventional Commits with a scope of `commitlint.config.ts` (`docs/process/` takes `docs(docs)`, a derivation `docs(geometry)`), a subject starting with a verb (an id first is refused as sentence case), no body line starting with `word:` (read as a footer), footers within 100 characters. The message comes from a file, committed by `npm run git:commit -- -F <file> [--push] <paths>`; a story is brought up to its feature branch by `npm run git:sync` (EN-100). A commit refused by a hook leaves its files staged: `git status` before retrying.
+- Commits: Conventional Commits with a scope of `commitlint.config.ts` (`docs/process/` takes `docs(docs)`, a derivation `docs(geometry)`), a subject starting with a verb (an id first is refused as sentence case), no body line starting with `word:` (read as a footer), footers within 100 characters. The message comes from a file, committed by `target/release/git-sequences commit -F <file> [--push] <paths>`; a story is brought up to its feature branch by `target/release/git-sequences sync` (EN-100). A commit refused by a hook leaves its files staged: `git status` before retrying.
 
 ## Stop and report
 
