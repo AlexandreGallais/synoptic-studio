@@ -18,6 +18,6 @@ points: 1
 ## Tasks
 
 - [x] T1 — The test of `ci.yml`, failing (main thread)
-- [ ] T2 — `ci.yml`'s two conditions (main thread)
+- [x] T2 — `ci.yml`'s two conditions (main thread)
 
 One task = one commit, referenced as `EN-126.T1` in the commit footer.

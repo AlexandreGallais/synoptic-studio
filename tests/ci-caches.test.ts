@@ -125,7 +125,7 @@ describe("the Rust caches of the CI (EN-111)", () => {
 
     // In the CI, by the Rust lane alone, the one running them (EN-124).
     expect(lanes).toContain(
-      `- if: matrix.scripts == 'check:rust' && steps.tools.outputs.cache-hit != 'true'\n        ${install}`,
+      `- if: (matrix.scripts == 'check:rust' || matrix.scripts == 'test') && steps.tools.outputs.cache-hit != 'true'\n        ${install}`,
     );
 
     expect(warm).toContain(`- if: steps.tools.outputs.cache-hit != 'true'\n        ${install}`);
