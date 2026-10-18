@@ -106,7 +106,7 @@ In delivery order. Stories stay `draft` until F21's `/run` sets them `ready`.
 | [EN-106](../stories/E17-F21-EN-106-library-server-in-rust.md) | Enabler | The library server and its command line in Rust on rmcp | done |
 | [EN-107](../stories/E17-F21-EN-107-metrics-tools-in-rust.md) | Enabler | The metrics tools in Rust | done |
 | [CHK-022](../stories/E17-F21-CHK-022-checkpoint-f21.md) | Checkpoint | Checkpoint in the middle of F21 | ready |
-| [EN-108](../stories/E17-F21-EN-108-git-hooks-in-rust.md) | Enabler | The Git hooks in Rust, without husky, lint-staged, commitlint nor validate-branch-name | ready |
+| [EN-108](../stories/E17-F21-EN-108-git-hooks-in-rust.md) | Enabler | The Git hooks in Rust, without husky, lint-staged, commitlint nor validate-branch-name | done |
 | [EN-109](../stories/E17-F21-EN-109-dependency-checks-in-rust.md) | Enabler | The dependency checks in Rust, without npm-check-updates nor knip | ready |
 | [EN-110](../stories/E17-F21-EN-110-secret-scan-in-rust.md) | Enabler | The secret scan in Rust, without secretlint | ready |
 | [EN-111](../stories/E17-F21-EN-111-ci-on-the-rust-tools.md) | Enabler | The CI on the Rust tools, built and cached once | ready |
