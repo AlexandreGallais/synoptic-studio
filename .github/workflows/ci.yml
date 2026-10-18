@@ -14,6 +14,15 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  # The cargo tools of the Rust checks (EN-069), the versions of docs/tooling/dependencies.md; the
+  # same in release.yml, whose run on main saves the caches this workflow restores (EN-111).
+  CARGO_LLVM_COV_VERSION: 0.9.1
+  CARGO_DENY_VERSION: 0.20.2
+  # No incremental build: its state, kept for the workspace's own crates only, would grow the cache
+  # and never be reused, those crates being compiled again in each run.
+  CARGO_INCREMENTAL: 0
+
 jobs:
   quality:
     name: Format, lint, secrets, types, tests, audit, versions, docs, build
@@ -21,14 +30,44 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      # The caches are restored, never saved: a pull request's cache is scoped to its merge ref, so
+      # the next pull request would never restore it (`REF-GH-CACHE`); the run on main of
+      # release.yml saves them, and every pull request restores those. Their keys are release.yml's.
+      - id: toolchain
+        run: echo "name=$(sed -n 's/^channel = "\(.*\)"$/\1/p' rust-toolchain.toml)-x86_64-unknown-linux-gnu" >> "$GITHUB_OUTPUT"
+      # The pinned toolchain, its Windows target and components, and the cargo tools: installed only
+      # when a key changes (`REF-GH-CACHE-RESTORE`).
+      - id: tools
+        uses: actions/cache/restore@v6
+        with:
+          path: |
+            ~/.rustup/toolchains/${{ steps.toolchain.outputs.name }}
+            ~/.cargo/bin/cargo-llvm-cov
+            ~/.cargo/bin/cargo-deny
+          key: rust-tools-${{ runner.os }}-${{ hashFiles('rust-toolchain.toml') }}-cargo-llvm-cov-${{ env.CARGO_LLVM_COV_VERSION }}-cargo-deny-${{ env.CARGO_DENY_VERSION }}
+      - if: steps.tools.outputs.cache-hit != 'true'
+        run: cargo install --locked cargo-llvm-cov@${{ env.CARGO_LLVM_COV_VERSION }} cargo-deny@${{ env.CARGO_DENY_VERSION }}
+      # The crates downloaded and the workspace's build: its dependencies compiled once per
+      # Cargo.lock and toolchain, the workspace's own crates again (their checkout is newer).
+      - uses: actions/cache/restore@v6
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: rust-build-${{ runner.os }}-${{ hashFiles('rust-toolchain.toml', 'Cargo.lock') }}
+          restore-keys: rust-build-${{ runner.os }}-
       - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      # The Rust checks' tools (EN-069): the coverage floor and the RustSec advisories, whose
-      # database is fetched here, the pre-push hook reading its local copy offline.
-      - run: cargo install --locked cargo-llvm-cov@0.9.1 cargo-deny@0.20.2
+      # The release binaries, built once in their own step so that its log names every crate
+      # compiled; `check:all` builds them first again, now up to date.
+      - run: npm run rust:build
+      # The RustSec advisories, whose database is fetched here, the pre-push hook reading its local
+      # copy offline.
       - run: cargo deny fetch db
       - run: npm run check:all
         env:
