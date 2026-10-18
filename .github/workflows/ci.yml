@@ -57,7 +57,7 @@ jobs:
       - id: toolchain
         run: echo "name=$(sed -n 's/^channel = "\(.*\)"$/\1/p' rust-toolchain.toml)-x86_64-unknown-linux-gnu" >> "$GITHUB_OUTPUT"
       # The pinned toolchain, its Windows target and components, and the cargo tools: installed only
-      # when a key changes (`REF-GH-CACHE-RESTORE`), by the Rust lane alone, which runs them.
+      # when a key changes (`REF-GH-CACHE-RESTORE`), by the lanes running them: Rust, and the tests' cargo deny.
       - id: tools
         uses: actions/cache/restore@v6
         with:
@@ -66,7 +66,7 @@ jobs:
             ~/.cargo/bin/cargo-llvm-cov
             ~/.cargo/bin/cargo-deny
           key: rust-tools-${{ runner.os }}-${{ hashFiles('rust-toolchain.toml') }}-cargo-llvm-cov-${{ env.CARGO_LLVM_COV_VERSION }}-cargo-deny-${{ env.CARGO_DENY_VERSION }}
-      - if: matrix.scripts == 'check:rust' && steps.tools.outputs.cache-hit != 'true'
+      - if: (matrix.scripts == 'check:rust' || matrix.scripts == 'test') && steps.tools.outputs.cache-hit != 'true'
         run: cargo install --locked cargo-llvm-cov@${{ env.CARGO_LLVM_COV_VERSION }} cargo-deny@${{ env.CARGO_DENY_VERSION }}
       # The crates downloaded and the workspace's build: its dependencies compiled once per
       # Cargo.lock and toolchain, the workspace's own crates again (their checkout is newer).
@@ -100,8 +100,8 @@ jobs:
       # a cache of an older Cargo.lock lacks the new ones (EN-116).
       - run: cargo fetch --locked
       # The RustSec advisories, whose database is fetched here, the pre-push hook reading its local
-      # copy offline.
-      - if: matrix.scripts == 'check:rust'
+      # copy offline: by the Rust lane and the test lane, whose `[F19.AC9]` runs cargo deny (EN-126).
+      - if: matrix.scripts == 'check:rust' || matrix.scripts == 'test'
         run: cargo deny fetch db
       # The lane's scripts in turn, the first failing one ending the job; their output as it comes,
       # the tests file by file, a failing test annotated at its line (`REF-VITEST-REPORTERS`).
