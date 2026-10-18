@@ -287,7 +287,7 @@ describe("the Rust caches of the CI (EN-111)", () => {
       /^ {4}name: (?<name>.+)$/mu.exec(jobOf(DEVELOP_CI, "rust"))?.groups?.["name"] ?? "";
 
     // Its run is on develop's head, the review's head commit: a job named as a required check
-    // would report under that check's name on the review (REF-GH-REQUIRED-CHECKS).
+    // would make that check ambiguous on the review (REF-GH-PROTECTED-BRANCHES).
     expect(name).not.toBe("");
     expect(MAIN_RULESET).toContain("`Rust coverage`");
     expect(MAIN_RULESET).not.toContain(`\`${name}\``);
