@@ -48,6 +48,7 @@ Written at the end of each feature (`VAL`, demo page) and of each epic (`REV`, e
 | [F31 — The guard and the agent's commands](./f31-the-guard-and-the-agents-commands.md) | the guard reading by words, two ways past it closed, writes outside a worktree refused, `git-sequences state`, `replace`'s usage, a types-only barrel line kept |
 | [F32 — Reports that say what happened](./f32-reports-that-say-what-happened.md) | ended agents no longer shown running, the command after `\|\| exit 9` named, a session's tokens by model, `epic-check` on the CI into `main`, durations rounded, struck criteria left out |
 | [F33 — The checks RET-004 listed](./f33-the-checks-ret-004-listed.md) | the coverage floor at 95 %, `typeCheck` in oxlint's configuration, the cargo tools' versions, one anchor per heading, the notes `move-rows` leaves, a `bench` binary judged by the guard |
+| [F34 — The use of each workflow](./f34-the-use-of-each-workflow.md) | the auto-merge split by base, the outside pull requests' workflow removed, CodeQL on the workflows, the link check kept |
 | [E01 — Drawing symbol shapes from numbers](./e01-draw-shapes.md) | the eight features of E01, the words, a user test crossing them, the decisions |
 | [E14 — Drawing curves with handles, ellipses and round shapes](./e14-draw-curves.md) | the four features of E14, the words, the walk-through of the review, the decisions |
 | [E15 — Placing text in symbols](./e15-place-text.md) | the five features of E15, the words, the tour of the review, the decisions, the direction to remove |
