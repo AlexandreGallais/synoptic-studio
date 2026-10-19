@@ -19,7 +19,7 @@ Audit F33 following [audit.md](../../conventions/audit.md) (ADR-0020), the `audi
 
 - [x] T1 — The findings and the tests of their fixes, seen failing; the mutations of the criteria's tests (1 h)
 - [x] T2 — The findings fixed: `guard-bash` through cargo's global options and `r` first, then `git-sequences commit`'s hook notes, `local/anchor-slugs`' ids and exemptions, one `median`, the cargo tools' pins, with the pages that describe them (2 h)
-- [ ] T3 — ADR-0093 for the editor's TypeScript, the type check's pages, and a binary that runs a command guarded before it is built, in the run skill and the worker brief (1 h)
+- [x] T3 — ADR-0093 for the editor's TypeScript, the type check's pages, and a binary that runs a command guarded before it is built, in the run skill and the worker brief (1 h)
 
 One task = one commit, referenced as `AUD-035.T1`.
 
@@ -49,3 +49,29 @@ Reviewed by the `auditor` alone (ADR-0086), read-only; each finding reproduced b
 | C7 | A4 — `bench`: the last failing status kept rather than the first | caught | `f33_ac3_exits_with_the_first_failing_status_its_median_of_the_passing_runs` | restored |
 | C8 | A5 — properties: F33 adds no `math` nor `geometry` function | no finding | `src/` unchanged | — |
 | C9 | A4 — T2's fixes: `cargo_run_arguments` without `r`, without `+<toolchain>`, or without `--config` taking a value; the hooks' notes printed only when empty; the line reference read lower-cased, `#top` not exempt, another page's ids not read; the median's whole mean rounded up, its decimal mean the greater value; a yanked tool pin left unreported | caught, each; the release `guard-bash` rebuilt in the worktree denies `cargo r -q -p heavy-lock -- gh pr merge 3` and `cargo +stable run -p bench -- --runs 1 -- gh pr merge 3`, and lets `cargo --config k=v r -p heavy-lock -- true` through | `f33_ac3_refuses_every_listed_refusal_run_through_cargo_s_global_options_and_its_alias`, `f33_ac2_prints_what_the_hooks_write_when_the_commit_succeeds`, `f33_ac2_accepts_a_link_whose_heading_has_one_anchor`, `f33_ac2_accepts_a_custom_or_an_html_id_of_another_page`, `tools/tool-use/tests/median.rs`, `f33_ac1_a_tool_pinned_too_new_yanked_or_missing_is_listed_as_a_locked_crate_is` | restored |
+| C10 | B — the sources F33's fixes cite | `REF-CARGO-CLI` read through the library on 2026-10-19 (`cargo(1)` and Configuration, `[alias]`) and added; `REF-CARGO-REGISTRY-INDEX` and `REF-TS7-VSCODE` read again by `page` | `docs/references.md` | — |
+| C11 | `[F33.AC1]` traced | caught | F7, F11, C1, C2 | restored |
+| C12 | `[F33.AC2]` traced | caught | F3 to F5, F10, C3 to C6 | restored |
+| C13 | `[F33.AC3]` traced | caught | F1, F6, C7 | restored |
+| C14 | F — `check:all` green on the head | run by the pre-push hook | the push of T3 | — |
+
+## G. Next feature
+
+F33 closes RET-004's list of checks. What its fixes leave unread, each said where it is written: an alias of `run` set in a Cargo configuration (`[alias]`, `CARGO_ALIAS_<NAME>`, `--config alias.<name>=…`) is not read by `guard-bash`, as a Git alias set earlier is not (`docs/tooling/agent.md`); a heading's custom `{#id}` is accepted on another page as on its own, though GitHub does not read it, the repository holding none on 2026-10-19. No source is needed beyond those read here.
+
+## H. Light evolvability check
+
+- Size: `forbidden.rs` gained `cargo_run_arguments`; `anchor_slugs.rs` lost its own slugging; three `median`s became one.
+- Tools: none failed; a `replace` block run in a loop split its old text at an `=` it held, written then as one block each.
+- Fitness functions: each finding fixed has a test that failed before its fix, and each fix a mutation caught.
+- Patterns: a page's ids read by one function for both link rules; one median; a tool pin judged as a locked crate.
+- Agent configuration: the run skill and the worker brief order a wrapper's guard before its binary (F2).
+- Process: F1 came from reading every way a program names its subcommand, and F4 from writing the case the finding said untested, which showed the exemption had never held; the next audit of a reader of commands or links does both.
+
+## For the main thread
+
+- F1 holds for the main checkout only once its `guard-bash` is rebuilt from this branch, or from `develop` once F33 reaches it; until then `cargo r -p heavy-lock -- …` goes through there. `.claude/settings.json` is unchanged.
+- F2's process sends the worker back after the guard's task and asks the main thread to copy the worktree's `guard-bash` over the main checkout's, then to start a second worker for the rest of the story: one more worker than ADR-0086's one per story, for that kind of story only.
+- F6 changes `context-size`'s median per type for an even count: the mean of the two middle ones rounded down, where it took the lower one (7 and 9 give 8, no longer 7).
+- F7: `deps:outdated` now also lists a cargo tool pinned under 7 days old, yanked or missing from the index; the pins of 2026-10-19 (cargo-llvm-cov 0.9.1 of 2026-09-06, cargo-deny 0.20.2 of 2026-07-09) give no line.
+- `docs/domain/` is not affected: F33 is tooling. Footer `Rule-docs: none affected, a tooling feature, no business rule changed`.

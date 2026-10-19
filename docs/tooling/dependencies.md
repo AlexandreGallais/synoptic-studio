@@ -16,7 +16,7 @@ Every dependency is code the project did not write and must trust, so each one i
 
 | Package | Why | Alternatives rejected |
 | --- | --- | --- |
-| `typescript` | TypeScript 7, the native compiler (`REF-TS7-ANNOUNCEMENT`): its checker runs under oxlint's `--type-check` and as `npx tsc --noEmit`; no tool of the repository imports its API, which 7.0 lacks (ADR-0075) | TypeScript 6's `tsc`: about 4.3 s against 0.9 s on this tree |
+| `typescript` | TypeScript 7, the native compiler (`REF-TS7-ANNOUNCEMENT`): its checker runs under oxlint's type check, `typeCheck` in the `options` of `.oxlintrc.json` (EN-121), and as `npx tsc --noEmit`; no tool of the repository imports its API, which 7.0 lacks (ADR-0075) | TypeScript 6's `tsc`: about 4.3 s against 0.9 s on this tree |
 | `@types/node` | Node.js types for the tooling | — |
 | `vite` | development server of the playground and library build (ADR-0009, ADR-0075) | — |
 | `vitest` | tests, sharing Vite's configuration and transforms | Jest: a separate transform pipeline |
