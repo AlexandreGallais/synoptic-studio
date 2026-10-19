@@ -363,7 +363,11 @@ pub fn place_of(branch: &str, files: &[String]) -> String {
 pub struct RunningCall {
     /// Who runs it: `main`, or the type of the subagent.
     pub agent: String,
+    /// The subagent's id, empty for the main agent and in a file written before EN-120.
+    pub agent_id: String,
     pub description: String,
+    /// The session's id, empty in a file written before EN-120.
+    pub session: String,
     /// When it started, epoch milliseconds, a whole number as the hook writes it.
     pub start: i64,
     pub summary: String,
@@ -375,11 +379,22 @@ pub struct RunningCall {
 pub fn read_running_call(record: &Value) -> RunningCall {
     RunningCall {
         agent: text_or(record, "agent", "main").to_owned(),
+        agent_id: String::new(),
         description: record.get("description").text().to_owned(),
+        session: String::new(),
         start: whole(record, "start"),
         summary: record.get("summary").text().to_owned(),
         tool: record.get("tool").text().to_owned(),
     }
+}
+
+/// The files of the calls left by subagents that ended (EN-120): a subagent's call of this session,
+/// or of a file that names none, started before every subagent still running started, so that no
+/// subagent running can have made it; the main agent's calls are never among them.
+#[must_use]
+pub fn ended_calls(calls: &[(String, RunningCall)], tasks: &[Task], session: &str) -> Vec<String> {
+    let _ = (calls, tasks, session);
+    Vec::new()
 }
 
 /// A call in a few words, its tool and its description or the start of its command:

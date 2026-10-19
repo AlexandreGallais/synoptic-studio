@@ -88,6 +88,10 @@ pub struct Events {
     pub requests: Vec<Request>,
     /// The answered calls, in the order they were asked.
     pub calls: Vec<Call>,
+    /// The tokens of each model that Claude Code counted for the sessions (`modelUsage`, EN-120),
+    /// in the order each model first came; none when a session's count is missing or older than
+    /// its last request.
+    pub model_usage: Vec<(String, Tokens)>,
 }
 
 /// What a transcript holds, read up to `offset`.
@@ -108,6 +112,9 @@ pub struct Transcript {
     pub turn_start: i64,
     /// The rules' findings met in its tool results, in order.
     pub findings: Vec<Finding>,
+    /// The tokens of each model of its last `cost-state` line, the session's since it started;
+    /// none without one, or once a request came after it (EN-120).
+    pub model_usage: Vec<(String, Tokens)>,
 }
 
 impl Default for Transcript {
@@ -120,6 +127,7 @@ impl Default for Transcript {
             is_waiting: true,
             turn_start: 0,
             findings: Vec::new(),
+            model_usage: Vec::new(),
         }
     }
 }
@@ -146,8 +154,19 @@ impl Transcript {
                     })
                 })
                 .collect(),
+            model_usage: Vec::new(),
         }
     }
+}
+
+/// The tokens of each model a `cost-state` line holds (`modelUsage`, seen 2026-10-19 in 14 sessions'
+/// transcripts): Claude Code's count for the whole session, its subagents' included, written when
+/// the session is left and again, grown, when a resumed one is; by kind, `thinkingTokens` left out;
+/// none for another line.
+#[must_use]
+pub fn model_usage(line: &Value) -> Vec<(String, Tokens)> {
+    let _ = line;
+    Vec::new()
 }
 
 /// Input keys naming what a tool acted on, in order of preference.

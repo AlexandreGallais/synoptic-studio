@@ -12,15 +12,32 @@ fn names_a_command_by_its_words_without_directory_change_variables_flags_or_quot
     assert_eq!(command_key("gh pr checks 12 --watch"), "gh pr checks");
     assert_eq!(command_key("npm install -D eslint"), "npm install");
     assert_eq!(command_key("grep -n foo bar.ts"), "grep");
-    // `||` cuts too: the brief's `cd … || exit 9` names `exit`, as the TypeScript report did.
-    assert_eq!(command_key("cd \"/w\" || exit 9; ls"), "exit");
     assert_eq!(command_key("npm"), "npm");
+}
+
+#[test]
+fn f32_ac1_names_the_command_after_the_brief_s_cd_or_exit() {
+    // RET-004 (I91): `exit` was the first command by count, 10,573 calls, every worker's call
+    // opening with `cd "<worktree>" || exit 9`; the `exit` after `||` runs only when the `cd`
+    // fails, so the command named is the one after it, behind a `;` or a line break.
+    assert_eq!(command_key("cd \"/w\" || exit 9; ls"), "ls");
+    assert_eq!(
+        command_key("cd \"/w\" || exit 9\ntarget/release/git-sequences sync"),
+        "target/release/git-sequences"
+    );
+    assert_eq!(command_key("cd \"/w\" || exit 9;git status"), "git status");
+    // A command before `||` is the one named, whatever follows it.
+    assert_eq!(command_key("make || exit 1"), "make");
+    // An `exit` that is not after `||` is a command that runs.
+    assert_eq!(command_key("exit 3"), "exit");
+    assert_eq!(command_key("cd /w; exit 3"), "exit");
 }
 
 #[test]
 fn is_empty_when_nothing_runs() {
     assert_eq!(command_key("cd \"/repo\""), "");
     assert_eq!(command_key(""), "");
+    assert_eq!(command_key("cd \"/w\" || exit 9"), "");
 }
 
 #[test]

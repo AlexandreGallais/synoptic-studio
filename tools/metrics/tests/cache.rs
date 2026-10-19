@@ -52,14 +52,28 @@ fn writes_a_transcript_and_reads_it_back_the_same() {
 }
 
 #[test]
+fn f32_ac1_keeps_a_session_s_count_of_each_model() {
+    let count = r#"{"type":"cost-state","modelUsage":{"claude-sonnet-5-5":{"inputTokens":1,"outputTokens":2,"cacheReadInputTokens":3,"cacheCreationInputTokens":4}}}"#;
+    let transcript = read_chunk(
+        Transcript::default(),
+        &format!("{}{count}\n", line("m1", 5)),
+    );
+    let entry = render_entry("x", &transcript);
+
+    assert_eq!(transcript.model_usage.len(), 1);
+    assert_eq!(parse_entry(&entry), Some(("x".to_owned(), transcript)));
+}
+
+#[test]
 fn drops_a_cache_of_another_version() {
     let entry = render_entry("x", &Transcript::default());
 
     assert_eq!(
-        parse_cache(&format!("{{\"version\":2}}\n{entry}\n")).len(),
+        parse_cache(&format!("{{\"version\":3}}\n{entry}\n")).len(),
         1
     );
-    assert!(parse_cache(&format!("{{\"version\":1}}\n{entry}\n")).is_empty());
+    // Version 2 kept no `cost-state` line it had read past (EN-120): read again.
+    assert!(parse_cache(&format!("{{\"version\":2}}\n{entry}\n")).is_empty());
     assert!(parse_cache("").is_empty());
 }
 
@@ -76,7 +90,7 @@ fn reads_a_transcript_from_where_the_cache_left_it() {
     assert!(
         fs::read_to_string(&cache)
             .expect("cache written")
-            .starts_with("{\"version\":2}\n")
+            .starts_with("{\"version\":3}\n")
     );
 
     // The request goes on (its last line counts 9 written), its call is answered, a second one is

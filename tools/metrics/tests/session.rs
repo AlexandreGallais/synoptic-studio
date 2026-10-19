@@ -46,6 +46,7 @@ fn events() -> Events {
                 is_ok: false,
             },
         }],
+        model_usage: Vec::new(),
     }
 }
 
@@ -101,6 +102,7 @@ fn names_a_request_without_a_model_and_leaves_out_a_model_without_tokens() {
                 request("m2", "<synthetic>", 60_000, [0, 0, 0, 0]),
             ],
             calls: Vec::new(),
+            model_usage: Vec::new(),
         },
         Vec::new(),
     );
@@ -226,5 +228,58 @@ fn saves_a_turn_its_tokens_summed_its_keys_in_the_saved_order() {
     assert_eq!(
         render_turn(&record),
         "{\"activeMs\":360000,\"calls\":1,\"commits\":2,\"failures\":1,\"outputTokens\":75,\"session\":\"168220a7-35a5\",\"start\":1792139400000,\"tokens\":3279,\"wallMs\":600000}\n"
+    );
+}
+
+/// Session 48a404b1 of 2026-10-15 cut down: the main agent's Opus request, then Claude Code's count
+/// of the session (`cost-state`), Sonnet's as written, Opus's made small; a Sonnet subagent's
+/// request with the tokens its transcript holds for all its requests (98 input, 657 written,
+/// 1 315 508 read from the cache, 84 759 written to it).
+fn sonnet_session() -> [Transcript; 2] {
+    let main = [
+        r#"{"type": "user", "timestamp": "2026-10-15T08:00:00Z", "message": {"content": "run"}}"#.to_owned(),
+        r#"{"type": "assistant", "sessionId": "s", "timestamp": "2026-10-15T08:01:00Z", "message": {"id": "o1", "model": "claude-opus-5-5", "stop_reason": "end_turn", "usage": {"input_tokens": 1, "output_tokens": 10}}}"#.to_owned(),
+        r#"{"type":"cost-state","sessionId":"s","startTime":1792183009097,"modelUsage":{"claude-opus-5-5":{"inputTokens":3,"outputTokens":40,"thinkingTokens":7,"cacheReadInputTokens":900,"cacheCreationInputTokens":57},"claude-sonnet-5-5":{"inputTokens":4451,"outputTokens":23875,"thinkingTokens":2823,"cacheReadInputTokens":1693941,"cacheCreationInputTokens":92320}}}"#.to_owned(),
+        String::new(),
+    ]
+    .join("\n");
+    let subagent = r#"{"type": "assistant", "sessionId": "s", "timestamp": "2026-10-15T08:00:30Z", "message": {"id": "s1", "model": "claude-sonnet-5-5", "stop_reason": "tool_use", "usage": {"input_tokens": 98, "output_tokens": 657, "cache_read_input_tokens": 1315508, "cache_creation_input_tokens": 84759}}}"#.to_owned() + "\n";
+
+    [
+        read_chunk(Transcript::default(), &main),
+        read_chunk(Transcript::default(), &subagent),
+    ]
+}
+
+#[test]
+fn f32_ac1_counts_a_sonnet_subagent_s_tokens_from_the_session_s_model_usage() {
+    let figures = session_figures(&reported_events(&sonnet_session(), true), Vec::new());
+
+    // CHK-021 (I83): the transcripts held 657 tokens written by Sonnet where Claude Code counted
+    // 23 875. Sonnet: 4 451 + 92 320 + 1 693 941 + 23 875 = 1 814 587; Opus: 3 + 57 + 900 + 40 =
+    // 1 000; in all 1 815 587, of which 23 875 + 40 = 23 915 written.
+    assert_eq!(
+        figures.tokens_by_model,
+        [
+            ("claude-sonnet-5-5".to_owned(), 1_814_587),
+            ("claude-opus-5-5".to_owned(), 1000)
+        ]
+    );
+    assert_eq!(figures.tokens.total(), 1_815_587);
+    assert_eq!(figures.tokens.output, 23_915);
+    assert_eq!(figures.requests, 2);
+}
+
+#[test]
+fn f32_ac1_counts_a_turn_from_its_requests_since_the_session_s_count_cannot_be_cut() {
+    let figures = session_figures(&reported_events(&sonnet_session(), false), Vec::new());
+
+    // The turn from 08:00:00: Sonnet 98 + 657 + 1 315 508 + 84 759 = 1 401 022; Opus 1 + 10 = 11.
+    assert_eq!(
+        figures.tokens_by_model,
+        [
+            ("claude-sonnet-5-5".to_owned(), 1_401_022),
+            ("claude-opus-5-5".to_owned(), 11)
+        ]
     );
 }

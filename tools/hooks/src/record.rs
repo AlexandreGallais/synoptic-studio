@@ -157,8 +157,16 @@ pub fn tool_summary(tool: &str, input: &Value, cwd: &str) -> String {
     }
 }
 
+/// Whether a running call's record is of the subagent `agent_id`, which has ended (`SubagentStop`,
+/// EN-120): its `agentId` is that id, never empty.
+#[must_use]
+pub fn is_call_of(record: &Value, agent_id: &str) -> bool {
+    let _ = (record, agent_id);
+    false
+}
+
 /// The call starting, as the `track-tool-call` hook writes it for the status line:
-/// `{"agent":…,"description":…,"start":…,"summary":…,"tool":…}`.
+/// `{"agent":…,"agentId":…,"description":…,"session":…,"start":…,"summary":…,"tool":…}`.
 #[must_use]
 pub fn running_call(input: &Value, start: i64) -> String {
     let tool = input.get("tool_name").text();

@@ -70,6 +70,25 @@ fn f21_ac1_every_hook_and_the_status_line_call_a_hooks_binary_by_its_path() {
     );
 }
 
+#[test]
+fn f32_ac1_runs_log_tool_call_when_any_subagent_stops() {
+    let settings =
+        parse(&fs::read_to_string(root().join(".claude/settings.json")).expect("settings"))
+            .expect("JSON");
+    let entries = settings.get("hooks").get("SubagentStop").items();
+    let handlers: Vec<&Value> = entries
+        .iter()
+        .filter(|entry| matches!(entry.get("matcher").text(), "" | "*"))
+        .flat_map(|entry| entry.get("hooks").items())
+        .collect();
+
+    // Every agent type, in the background, as on `PostToolUse`.
+    assert!(handlers.iter().any(|handler| {
+        handler.get("command").text() == "${CLAUDE_PROJECT_DIR}/target/release/log-tool-call"
+            && handler.get("async") == &Value::Bool(true)
+    }));
+}
+
 /// The release binaries allowed without a prompt, each by name and, for a binary that also
 /// publishes or deletes, by its subcommand (AUD-023): `heavy-lock` runs any command given after it,
 /// `branches-clean` deletes branches and worktrees, `git-hooks install` sets the hooks folder and

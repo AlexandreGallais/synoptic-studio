@@ -183,6 +183,7 @@ pub fn parse_entry(line: &str) -> Option<(String, Transcript)> {
             is_waiting: *json.at("isWaiting") != Value::Bool(false),
             turn_start: json.at("turnStart").whole(),
             findings,
+            model_usage: Vec::new(),
         },
     ))
 }

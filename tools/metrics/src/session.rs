@@ -307,5 +307,6 @@ pub fn reported_events(transcripts: &[Transcript], is_all: bool) -> Events {
             .into_iter()
             .filter(|call| call.asked.start >= from)
             .collect(),
+        model_usage: Vec::new(),
     }
 }

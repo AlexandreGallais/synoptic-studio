@@ -19,7 +19,7 @@ From the card C5 and the rows I83, I91 and I92 (RET-004). Moved from F23 on 2026
 
 ## Tasks
 
-- [ ] T1 — Each criterion's tests in `tools/hooks` and `tools/metrics`, from the recorded cases, failing (1 h)
+- [x] T1 — Each criterion's tests in `tools/hooks` and `tools/metrics`, from the recorded cases, failing (1 h)
 - [ ] T2 — The status line and `metrics` fixed, `docs/tooling/metrics.md` (2 h)
 
 One task = one commit, referenced as `EN-120.T1` in the commit footer.

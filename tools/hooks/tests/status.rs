@@ -9,9 +9,9 @@ use std::process::{Command, Output, Stdio};
 
 use hooks::json::{Value, parse, quote};
 use hooks::status::{
-    RunningCall, Status, background_lines, background_text, clock_duration, grouped, is_run_open,
-    is_turn_done, place_of, read_running_call, running_line, session_snapshot, status_text,
-    usage_snapshot,
+    RunningCall, Status, background_lines, background_text, clock_duration, ended_calls, grouped,
+    is_run_open, is_turn_done, place_of, read_running_call, running_line, session_snapshot,
+    status_text, usage_snapshot,
 };
 use hooks::tasks::{Kind, Task};
 use hooks::time::short_duration;
@@ -379,7 +379,9 @@ fn f18_ac9_shows_a_worker_in_the_background_and_its_duration_never_waiting_nor_y
 fn call(agent: &str, description: &str, start: i64, summary: &str, tool: &str) -> RunningCall {
     RunningCall {
         agent: agent.into(),
+        agent_id: String::new(),
         description: description.into(),
+        session: String::new(),
         start,
         summary: summary.into(),
         tool: tool.into(),
@@ -667,6 +669,79 @@ fn reads_back_a_call_starting_and_shows_the_oldest() {
         "▶ Bash · ls — 1 s"
     );
     assert_eq!(running_line(&[], 0, seconds), "");
+}
+
+#[test]
+fn f32_ac1_reads_back_the_subagent_and_the_session_of_a_call() {
+    let record = parse(
+        r#"{"agent":"story-worker","agentId":"a1","description":"","session":"s","start":7,"summary":"ls","tool":"Bash"}"#,
+    )
+    .expect("JSON");
+
+    assert_eq!(
+        read_running_call(&record),
+        RunningCall {
+            agent_id: "a1".into(),
+            session: "s".into(),
+            ..call("story-worker", "", 7, "ls", "Bash")
+        }
+    );
+}
+
+/// A call of a subagent of session `s`, its file named after its id.
+fn of_agent(name: &str, agent: &str, start: i64, session: &str) -> (String, RunningCall) {
+    (
+        format!("{name}.json"),
+        RunningCall {
+            agent_id: format!("id-{name}"),
+            session: session.into(),
+            ..call(agent, "", start, "git log", "Bash")
+        },
+    )
+}
+
+#[test]
+fn f32_ac1_finds_the_calls_left_by_subagents_that_ended() {
+    // 2026-10-18: no agent ran, yet 169 files of `story-worker` calls stayed in `running/`, the
+    // latest shown as a story worker running for 9 min 20 (C5). Here one subagent runs, launched at
+    // 1 000; calls of ended subagents started at 100 and 900, one of them in a file older than
+    // EN-120 (no session); one of this subagent at 1 500; one of another session at 200; the main
+    // agent's at 50.
+    let tasks = [
+        task("a", Kind::Agent, "story-worker: EN-120", 1000),
+        task("b", Kind::Command, "Push", 10),
+    ];
+    let calls = [
+        of_agent("old", "story-worker", 100, "s"),
+        of_agent("legacy", "story-worker", 900, ""),
+        of_agent("live", "story-worker", 1500, "s"),
+        of_agent("other", "story-worker", 200, "t"),
+        ("main.json".to_owned(), call("main", "", 50, "ls", "Bash")),
+    ];
+
+    assert_eq!(
+        ended_calls(&calls, &tasks, "s"),
+        ["old.json", "legacy.json"]
+    );
+    // No subagent runs: every subagent call of the session has ended; a command is no subagent.
+    assert_eq!(
+        ended_calls(&calls, &tasks[1..], "s"),
+        ["old.json", "legacy.json", "live.json"]
+    );
+    // Launched exactly when the call started: the call may be its, it is kept.
+    assert_eq!(
+        ended_calls(&calls[2..3], &[task("c", Kind::Agent, "x", 1500)], "s"),
+        [] as [&str; 0]
+    );
+    // A resumed subagent counts as running from its resume.
+    assert_eq!(
+        ended_calls(
+            &calls,
+            &[task("r", Kind::Agent, "resumed: EN-120", 950)],
+            "s"
+        ),
+        ["old.json", "legacy.json"]
+    );
 }
 
 #[test]
