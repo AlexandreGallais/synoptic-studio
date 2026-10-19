@@ -310,7 +310,7 @@
 | [AUD-033](./E17-F31-AUD-033-audit-f31.md) | F31 | Audit F31 | done |
 | [VAL-032](./E17-F31-VAL-032-validate-f31.md) | F31 | Validate F31 | done |
 | [EN-120](./E17-F32-EN-120-the-status-line-and-metrics.md) | F32 | The status line and metrics say what ran | done |
-| [EN-139](./E17-F32-EN-139-the-checks-and-reports-of-a-review.md) | F32 | The reports of a review say what happened | ready |
+| [EN-139](./E17-F32-EN-139-the-checks-and-reports-of-a-review.md) | F32 | The reports of a review say what happened | done |
 | [AUD-034](./E17-F32-AUD-034-audit-f32.md) | F32 | Audit F32 | ready |
 | [VAL-033](./E17-F32-VAL-033-validate-f32.md) | F32 | Validate F32 | ready |
 | [EN-121](./E17-F33-EN-121-floors-and-versions-checked.md) | F33 | The floors, versions and paths checked | ready |
