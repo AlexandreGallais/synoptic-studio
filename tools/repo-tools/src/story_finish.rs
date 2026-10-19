@@ -104,6 +104,15 @@ pub fn merger(base: &str, branch: &str) -> Merger {
     }
 }
 
+/// The auto-merge workflow a pull request into a base starts, as its trigger's `branches` filter
+/// chooses it (EN-134): `feature-automerge.yml` into `develop`, `story-automerge.yml` otherwise,
+/// the one into a feature branch; its runs are what a merge not done is read from.
+#[must_use]
+pub fn auto_merge_of(base: &str) -> &'static str {
+    let _ = base;
+    "story-automerge.yml"
+}
+
 /// A checkout of the repository: the main one or a linked worktree.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Worktree {
@@ -741,6 +750,13 @@ mod tests {
         assert_eq!(merger("develop", "fix/tidy-up"), Merger::ProductOwner);
         // Nothing reaches `main` by the auto-merge.
         assert_eq!(merger("main", "chore/en-118-x"), Merger::ProductOwner);
+    }
+
+    #[test]
+    fn f34_ac1_names_the_auto_merge_each_base_starts() {
+        // [F34.AC1] A feature or a review into `develop`, a story into its feature branch.
+        assert_eq!(auto_merge_of("develop"), "feature-automerge.yml");
+        assert_eq!(auto_merge_of(BASE), "story-automerge.yml");
     }
 
     #[test]
