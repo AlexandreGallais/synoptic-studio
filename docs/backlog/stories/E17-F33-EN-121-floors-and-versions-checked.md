@@ -3,7 +3,7 @@ id: EN-121
 epic: E17
 feature: F33
 title: The floors, versions and paths checked
-status: ready
+status: done
 points: 2
 ---
 
