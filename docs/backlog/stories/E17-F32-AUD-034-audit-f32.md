@@ -3,7 +3,7 @@ id: AUD-034
 epic: E17
 feature: F32
 title: Audit F32
-status: ready
+status: done
 points: 1
 ---
 
@@ -69,12 +69,3 @@ F32's reports now read Claude Code's count where a session has one; what they st
 - F3 changes what the status line removes: a file written before EN-120 names no subagent id, so the status line no longer removes it; the hook `session-state` does, a day after its call started. A session started with `--agent` no longer has its calls removed while they run.
 - F1: the Sessions table groups by the whole session id, no longer by its date and first 8 characters, so two sessions sharing both would now be two rows.
 - `docs/domain/` is not affected: F32 is tooling. Footer `Rule-docs: none affected, a tooling feature, no business rule changed`.
-
-### Journal
-
-- `#run` AUD-034: F32 audited by the `auditor` alone, eight findings reproduced and fixed: `metrics`' Sessions table counts a session from Claude Code's `modelUsage` when it started in the period, the other tables from the requests; `val-prepare` leaves out a criterion only when struck as a whole; the status line keeps the calls of a subagent a message resumes and of a session started with `--agent`, and shows 59.5 s as `1 min`; both criteria traced, each test broken once.
-
-### Improvements
-
-| 2026-10-19 | AUD-034 | A hand mutation that leaves a variable or a function unused stops the build, a warning being denied, and reads as a survivor when only the tests' lines are read (met again after AUD-033): `mutate` could write Rust mutations that compile, or report a build error apart from a survivor | tool |
-| 2026-10-19 | AUD-034 | The status line no longer removes a running file written before EN-120 (no subagent id), so such a file stays in `running/` until `session-state` removes it a day after its call started, and may show as the current call of a running subagent of its type | tool |

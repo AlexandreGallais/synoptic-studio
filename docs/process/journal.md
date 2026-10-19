@@ -5,6 +5,7 @@ What each working session dealt with, in the agent's words: the Product Owner's 
 ## 2026-10-19 — Run continued
 
 - `#run` EN-120: the status line drops the calls of ended subagents (removed on `SubagentStop` by `log-tool-call`, and by the status line once no running subagent can have made them); `metrics` names the command after `|| exit 9`; `session-report --all` reads each model's tokens from the session's `modelUsage`. The 174 files then in `running/` were all calls refused by `guard-bash` in subagents, never logged; the Findings were already cut by `--since` since EN-107.
+- `#run` AUD-034: F32 audited by the `auditor` alone, eight findings reproduced and fixed: `metrics`' Sessions table counts a session from Claude Code's `modelUsage` when it started in the period, the other tables from the requests; `val-prepare` leaves out a criterion only when struck as a whole; the status line keeps the calls of a subagent a message resumes and of a session started with `--agent`, and shows 59.5 s as `1 min`; both criteria traced, each test broken once.
 
 ## 2026-10-18 — The tooling features after 0.3.0's merge
 
