@@ -1,7 +1,7 @@
 //! Tests of the transcripts' reader (EN-107): the cases of `scripts/metrics-events.test.ts`, then
 //! the incremental reading.
 
-use metrics::transcript::{Transcript, all_events, call_summary, read_chunk};
+use metrics::transcript::{Transcript, all_events, call_summary, model_usage, read_chunk};
 use run_totals::tally::Tokens;
 
 /// 2026-10-12T10:00:01Z: 20 738 days after 1970-01-01, plus 10 h and 1 s.
@@ -175,4 +175,74 @@ fn keeps_the_order_of_the_transcripts() {
             .collect::<Vec<_>>(),
         ["msg_1", "msg_0"]
     );
+}
+
+/// The last `cost-state` line of session 48a404b1 (2026-10-15), its Haiku and Sonnet counts as
+/// written, its Opus count made small; Sonnet's output given.
+fn cost_state(sonnet_output: i64) -> String {
+    format!(
+        r#"{{"type":"cost-state","sessionId":"48a404b1","totalCostUSD":1359.66,"startTime":1792183009097,"modelUsage":{{"claude-haiku-5-5":{{"inputTokens":593913,"outputTokens":65138,"thinkingTokens":41688,"cacheReadInputTokens":114212,"cacheCreationInputTokens":123371,"webSearchRequests":6,"costUSD":0.16}},"claude-opus-5-5":{{"inputTokens":1,"outputTokens":2,"thinkingTokens":9,"cacheReadInputTokens":3,"cacheCreationInputTokens":4,"webSearchRequests":0,"costUSD":1.0}},"claude-sonnet-5-5":{{"inputTokens":4451,"outputTokens":{sonnet_output},"thinkingTokens":2823,"cacheReadInputTokens":1693941,"cacheCreationInputTokens":92320,"webSearchRequests":0,"costUSD":0.64}}}},"hasUnknownModelCost":false}}"#
+    )
+}
+
+/// Tokens by kind: input, cache written, cache read, output.
+fn tokens(input: i64, cache_write: i64, cache_read: i64, output: i64) -> Tokens {
+    Tokens {
+        input,
+        cache_write,
+        cache_read,
+        output,
+    }
+}
+
+#[test]
+fn f32_ac1_reads_the_tokens_of_each_model_from_a_cost_state_line() {
+    let line: serde_json::Value = serde_json::from_str(&cost_state(23_875)).expect("JSON");
+
+    // `thinkingTokens` left out: Opus 1 + 4 + 3 + 2, never 9 more.
+    assert_eq!(
+        model_usage(&line),
+        [
+            (
+                "claude-haiku-5-5".to_owned(),
+                tokens(593_913, 123_371, 114_212, 65_138)
+            ),
+            ("claude-opus-5-5".to_owned(), tokens(1, 4, 3, 2)),
+            (
+                "claude-sonnet-5-5".to_owned(),
+                tokens(4451, 92_320, 1_693_941, 23_875)
+            ),
+        ]
+    );
+    let request: serde_json::Value =
+        serde_json::from_str(r#"{"type":"assistant","modelUsage":{"x":{"inputTokens":1}}}"#)
+            .expect("JSON");
+
+    assert_eq!(model_usage(&request), []);
+}
+
+#[test]
+fn f32_ac1_keeps_the_last_count_of_a_session_unless_a_request_came_after_it() {
+    let request = r#"{"type":"assistant","timestamp":"2026-10-15T10:00:00Z","message":{"id":"m","model":"claude-opus-5-5","usage":{"output_tokens":5}}}"#;
+    // The count has no time, yet is read; a later one replaces it.
+    let left = read_chunk(
+        Transcript::default(),
+        &format!("{request}\n{}\n{}\n", cost_state(10), cost_state(23_875)),
+    );
+
+    assert_eq!(left.model_usage.len(), 3);
+    assert_eq!(left.model_usage[2].1.output, 23_875);
+    assert_eq!(left.requests.len(), 1);
+    // Resumed, the session made a request its count does not hold yet: no count.
+    let resumed = read_chunk(left.clone(), &format!("{request}\n"));
+
+    assert_eq!(resumed.model_usage, []);
+    // The events carry it, summed per model over the transcripts.
+    let events = all_events(&[left.clone(), Transcript::default(), left]);
+
+    assert_eq!(
+        events.model_usage[1],
+        ("claude-opus-5-5".to_owned(), tokens(2, 8, 6, 4))
+    );
+    assert_eq!(events.model_usage.len(), 3);
 }

@@ -13,6 +13,7 @@ Measure first, then make each epic faster than the last (Product Owner, RET-001)
 | `.git/metrics/turns.jsonl` | `target/release/session-report` without `--all` | one line per turn: start, session, duration, active time, tokens, calls, failures, commits |
 | `.git/metrics/transcripts-cache.jsonl` | the metrics' Rust tools (`tools/metrics`, EN-107) | each transcript's events as last read and the offset reached ([reading the transcripts](#reading-the-transcripts)) |
 | `.git/metrics/usage.json` | the status line, at each refresh | the subscription's usage ([status line](#status-line)) |
+| `.git/metrics/running/<call id>.json` | the hook `track-tool-call`, when a call starts | the calls running, read by the status line ([the calls running](#the-calls-running)) |
 | `~/.local/share/agent-library/library.sqlite` | the source library ([sources](./sources.md)) | the pages read, their sections, every search and read with its project |
 
 `.git/metrics/` is never committed, is shared by every worktree, and outlives the transcripts. The hook's durations are exact: Claude Code measures the tool's run, permission prompts left out (`duration_ms`, `REF-CC-HOOKS`). For a call made before the hook existed, the report estimates the duration from the request to the result, which also counts the time spent writing the command.
@@ -54,7 +55,7 @@ Each tool of our own records its own use (EN-102), whoever calls it — the agen
 
 ## The report
 
-`target/release/metrics` prints a Markdown report; `--since <day>` keeps only what happened from that day on, 00:00 UTC. It reads the main checkout's transcripts, also when run in a worktree.
+`target/release/metrics` prints a Markdown report; `--since <day>` keeps only what happened from that day on, 00:00 UTC, its findings included. It reads the main checkout's transcripts, also when run in a worktree.
 
 | Section | What it shows |
 | --- | --- |
@@ -72,6 +73,7 @@ Each tool of our own records its own use (EN-102), whoever calls it — the agen
 | Tools | each Rust tool of the workspace by tool and subcommand, from [its own record](#the-uses-of-each-tool), whoever called it: calls, failed (an exit code other than 0), median, slowest |
 | Findings | each rule's findings met in the tool results, per epic ([below](#findings)) |
 
+- **A command is named** by the first part of it that runs something, between `&&`, `||`, `;` and line breaks, without its directory change, variables, flags and arguments: `npm run check:all`, `git commit`. An `exit` after `||` is left out, since it runs only when the command before it failed, so the brief's `cd "<worktree>" || exit 9; …` names the command after it, where `exit` was the first command by count at RET-004, 10,573 calls (EN-120).
 - **Active time** adds the gaps between moments of work, each capped at 5 minutes, so that a pause, a night or a wait for the Product Owner is not counted as work.
 - A moment belongs to the story of its branch, and to that story's first task commit made after it; work after the last task commit shows as `<story> (no task commit)`.
 - **Output tokens** are those the model wrote; **all tokens** add input, cache writes and cache reads, which dominate.
@@ -130,6 +132,21 @@ The tokens are summed incrementally (`.git/metrics/status-line-turn.json` keeps 
 
 At each refresh it also writes the subscription's usage to `.git/metrics/usage.json`, for a run to stop before the weekly limit: `sevenDay` and `fiveHour`, each with `usedPercent` and `resetsAt`, and `time`, when it was read. Claude Code sends these windows to Pro and Max subscribers only, after the session's first answer (`rate_limits`, `REF-CC-STATUSLINE`); a missing window is left out, and without either the last file is kept. No hook receives them.
 
+### The calls running
+
+The hook `track-tool-call` writes each call starting to `.git/metrics/running/<call id>.json`, with who makes it (`main` or the subagent's type, and the subagent's id) and its session; the call's end removes it. Some calls never end that way, and each is removed by what sees it over (EN-120):
+
+| A call | Removed by |
+| --- | --- |
+| ended, its `PostToolUse` or `PostToolUseFailure` run | the hook `log-tool-call` |
+| of the main agent, its result in the transcript but no end recorded (a scheduled wake-up) | the status line, at its next refresh |
+| of the main agent, started before the turn (an interrupted turn) | the status line |
+| left running for a day | the hook `session-state`, when a session starts |
+| of a subagent that stopped: a call refused by a `PreToolUse` hook gets no `PostToolUse` | the hook `log-tool-call` on `SubagentStop`, every file of that subagent's id |
+| of a subagent, started before every subagent still running started, so none of them made it | the status line, for its own session's calls and for a file of before EN-120, which names no session |
+
+On 2026-10-18 the status line showed a story worker running for 9 min 20 while no agent ran: 169 files of calls `guard-bash` had refused, which nothing removed (C5).
+
 ## A run's totals
 
 A turn restarts at each message, so a run's totals count from its start to its end instead, whatever happens between:
@@ -164,11 +181,13 @@ target/release/session-report                     # the current turn only, saved
 
 One row: duration (wall and active), tokens, tokens per model (`opus-5-5 2,580,122,562 · haiku-5-5 237,698`), the part written, tool calls and failures, commits (listed up to eight); the subagents count with the session. A report of the current turn is also saved in `.git/metrics/turns.jsonl`, which the **Turns** section lists for a retrospective to compare. A session id as argument (its first characters suffice) reports that session instead of the one changed last.
 
+With `--all`, the tokens, by kind and per model, are Claude Code's own count of the session, its subagents' included, when its transcript holds one: the `modelUsage` of its last `cost-state` line, written when a session is left and again, grown, when a resumed one is (seen 2026-10-19 in 14 transcripts), `thinkingTokens` left out. A Sonnet subagent's transcript holds a small part of what it wrote: 657 tokens written where Claude Code counted 23,875, in session `48a404b1` (CHK-021, EN-120). Without such a line, or once a request came after it, the tokens are the requests' sums; and a turn alone is always counted from its requests, since the session's count cannot be cut to a turn.
+
 It is the binary `session-report` of `tools/metrics` (EN-107), the tokens per model included (EN-066's `model-tokens.ts` folded in), and reads the main checkout's transcripts from a worktree too: `scripts/session-report.ts` took the transcripts' folder from the folder it ran in, and failed in a worktree.
 
 ## Reading the transcripts
 
-The metrics' tools read the transcripts as `run-totals` does: each transcript from the byte offset reached last time, its complete lines only. `.git/metrics/transcripts-cache.jsonl` keeps, per transcript, the offset and what was read before it — each request with its last line's model, tokens, time, branch and session; each tool call asked; each result with its time and outcome; the rules' [findings](#findings); whether the agent waits for a prompt, and when the current turn started — so that a report reads only what was written since. A transcript shorter than its offset was rewritten and is read again from its start; a cache of another version is dropped and rebuilt. The file is written aside and renamed, so a report reading it meanwhile sees a whole one.
+The metrics' tools read the transcripts as `run-totals` does: each transcript from the byte offset reached last time, its complete lines only. `.git/metrics/transcripts-cache.jsonl` keeps, per transcript, the offset and what was read before it — each request with its last line's model, tokens, time, branch and session; each tool call asked; each result with its time and outcome; the rules' [findings](#findings); whether the agent waits for a prompt, and when the current turn started; the session's count of each model's tokens ([session report](#session-report)) — so that a report reads only what was written since. A transcript shorter than its offset was rewritten and is read again from its start; a cache of another version is dropped and rebuilt. The file is written aside and renamed, so a report reading it meanwhile sees a whole one.
 
 - **A request is counted once**, by its message id, with the values of its last line: a subagent's lines carry a growing `output_tokens`, the last line the final count (EN-092's measure).
 - **A call is counted once answered**, from its request's time to its result's; a later result of the same call replaces the first.

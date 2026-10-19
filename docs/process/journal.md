@@ -2,6 +2,10 @@
 
 What each working session dealt with, in the agent's words: the Product Owner's requests in neutral words, decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`).
 
+## 2026-10-19 — Run continued
+
+- `#run` EN-120: the status line drops the calls of ended subagents (removed on `SubagentStop` by `log-tool-call`, and by the status line once no running subagent can have made them); `metrics` names the command after `|| exit 9`; `session-report --all` reads each model's tokens from the session's `modelUsage`. The 174 files then in `running/` were all calls refused by `guard-bash` in subagents, never logged; the Findings were already cut by `--since` since EN-107.
+
 ## 2026-10-18 — The tooling features after 0.3.0's merge
 
 - `#run` After REV-006 and the merge of #370 into `main`, the Product Owner asked for F24 to F27 (the CI in jobs, the test lane's tools, the mutation runner on Linux, retired scopes in the history check), then for the tooling left to be cut into small features by real theme, done now in E17 until the week's 90 %, without questions: SP-024 writes them. Their rule: one workflow per purpose, its trigger its only condition; workflows on `develop` never blocking; the review and the method's work at the session's end, before the merge into `main`.

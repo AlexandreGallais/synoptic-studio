@@ -47,16 +47,32 @@ const GAP: usize = 4;
 /// Commits listed by name in a report; beyond, only their count.
 const COMMITS_LISTED: usize = 8;
 
+/// The tokens each model used, by kind: Claude Code's count of the session when the events hold
+/// it, else each request's, in the order they came.
+fn counted_usage(events: &Events) -> Vec<(String, Tokens)> {
+    if events.model_usage.is_empty() {
+        events
+            .requests
+            .iter()
+            .map(|request| (request.model.clone(), request.tokens))
+            .collect()
+    } else {
+        events.model_usage.clone()
+    }
+}
+
 /// Tokens of every kind per model that answered, the most first, a model without tokens left
-/// out; models of equal tokens in the order they first answered.
+/// out; models of equal tokens in the order they first answered. Claude Code's count of the
+/// session when the events hold it (EN-120), else the requests' sums: a Sonnet subagent's
+/// transcript holds a small part of what it wrote (CHK-021).
 #[must_use]
 pub fn tokens_by_model(events: &Events) -> Vec<(String, i64)> {
     let mut totals: Vec<(String, i64)> = Vec::new();
 
-    for request in &events.requests {
-        match totals.iter_mut().find(|(model, _)| *model == request.model) {
-            Some((_, total)) => *total += request.tokens.total(),
-            None => totals.push((request.model.clone(), request.tokens.total())),
+    for (model, tokens) in counted_usage(events) {
+        match totals.iter_mut().find(|(known, _)| *known == model) {
+            Some((_, total)) => *total += tokens.total(),
+            None => totals.push((model, tokens.total())),
         }
     }
 
@@ -106,10 +122,9 @@ pub fn session_figures(events: &Events, commits: Vec<String>) -> SessionFigures 
     SessionFigures {
         active_ms: active_ms(&times),
         wall_ms,
-        tokens: events
-            .requests
+        tokens: counted_usage(events)
             .iter()
-            .fold(Tokens::default(), |sum, request| sum.plus(&request.tokens)),
+            .fold(Tokens::default(), |sum, (_, tokens)| sum.plus(tokens)),
         tokens_by_model: tokens_by_model(events),
         requests: events.requests.len(),
         calls: events.calls.len(),
@@ -307,5 +322,11 @@ pub fn reported_events(transcripts: &[Transcript], is_all: bool) -> Events {
             .into_iter()
             .filter(|call| call.asked.start >= from)
             .collect(),
+        // The session's count holds every turn: a turn alone counts its requests.
+        model_usage: if is_all {
+            events.model_usage
+        } else {
+            Vec::new()
+        },
     }
 }

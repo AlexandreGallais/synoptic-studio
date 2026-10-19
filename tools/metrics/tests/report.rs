@@ -140,6 +140,21 @@ fn f18_ac11_keeps_what_happened_from_the_since_day_on() {
 }
 
 #[test]
+fn f32_ac1_cuts_the_findings_to_the_period_as_it_cuts_the_totals() {
+    // 2026-10-12T10:00:45Z: 2026-10-13T00:00Z, 1 791 849 600 000, less 13 h 59 min 15 s
+    // (50 355 000 ms); after the lint's findings at 10:00:30, before the hook's refusal at 10:01:00.
+    let report = metrics_report(&inputs(1_791_799_245_000), &HashMap::new());
+    let findings = &sections(&report)["Findings"];
+
+    assert!(!findings.contains("local/kind-limits"));
+    assert!(findings.contains(
+        "| hook | `PreToolUse:Bash: A worktree refuses a chained Git command` | 1 | E17 1 |"
+    ));
+    // The totals alike: both requests, at 10:00:00 and 10:00:40, and their calls left out.
+    assert!(report.contains("0 model requests, 0 tool calls"));
+}
+
+#[test]
 fn lists_the_transcripts_breadth_first_each_folders_names_sorted() {
     let root = env::temp_dir().join(format!("metrics-files-{}", std::process::id()));
 
