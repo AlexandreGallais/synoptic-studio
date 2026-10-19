@@ -3,7 +3,7 @@ id: AUD-033
 epic: E17
 feature: F31
 title: Audit F31
-status: ready
+status: done
 points: 1
 ---
 
@@ -77,8 +77,3 @@ The guard now reads here-documents and folders as the shell does; what it still 
 - F7: the barrels hold `export type *` because oxlint's `typescript/consistent-type-exports` asks for it, and `oxlint --fix` writes it (checked on `src/math/vector/index.ts`, restored); ADR-0092 was accepted by the agent, to be told to the Product Owner, as ADR-0091 was. The auditor's "10 barrels" are 37 in `src/` and 11 in `playground/`.
 - F13: `CLAUDE.md`'s guard line was left as it is: it lists what the guard denies, which this audit did not change in kind.
 - `docs/domain/` is not affected: F31 is tooling. Footer `Rule-docs: none affected, a tooling feature, no business rule changed`.
-
-### Improvements
-
-| 2026-10-19 | AUD-033 | `guard-bash`'s `spans()` does not know comments: a quote inside a comment can merge segments, so a chained Git command may slip past the worktree's chain check (the refusals `CLAUDE.md` lists do not depend on it); fixing it lets through some lines refused today, to weigh at the next review | tool |
-| 2026-10-19 | AUD-033 | Stricter since AUD-033: `cd "<worktree>" && git push` from the main checkout is refused (a `cd` joined by `&&` may fail), only the brief's `cd "<folder>" \|\| exit 9` entering a folder for certain; a push naming no destination outside a repository refused (`UNKNOWN_PUSH`) | tool |
