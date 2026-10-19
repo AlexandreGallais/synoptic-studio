@@ -86,3 +86,9 @@ The cards of E17 were decided at RET-004 ([record](./retrospectives/E17-retrospe
 - Used: `npm run mutate -- --all tools/worktree/src/lib.rs -- cargo test -q -p worktree`.
 - Failed: it changed `025` into `26` inside the doc comment `(AUD-025)` and reported it `SURVIVED`, a mutation of no code; its report of a Rust return also reads `→ undefined`.
 - Instead: the survivor read and recorded as a comment, no action.
+
+## 2026-10-19 — `guard-bash`, a `$'…'` text holding `\'`
+
+- Used: a loop over the story's cases written as `$'…\'EOF\'…'` texts, after the brief's `cd`, to probe the release binary.
+- Failed: the separator reader closed the quote at `\'`, read the rest as commands and refused a chained Git command where none was.
+- Instead: the cases written to a JSON file and read with `jq`; the reader fixed in EN-119.T2, a backslash escaping inside `$'…'`.

@@ -35,6 +35,7 @@ The agent calls a tool by its release binary, from the root of its checkout, rat
 - `target/release/backlog-status <ID> <status>`
 - `target/release/worktree-new <ID>`
 - `target/release/git-sequences sync`, `target/release/git-sequences commit -F <file> [--push] <paths>`
+- `target/release/git-sequences state`
 - `target/release/run-totals start`, `end`, `should-stop`
 - `target/release/context-size <folder>…`
 - `target/release/page [<file>] <id or heading>`

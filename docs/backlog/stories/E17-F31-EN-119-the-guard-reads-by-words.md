@@ -3,7 +3,7 @@ id: EN-119
 epic: E17
 feature: F31
 title: The guard reads a command by its words
-status: ready
+status: done
 points: 3
 ---
 
@@ -35,11 +35,3 @@ The configuration the story needs, left to the main thread: a subagent does not 
 - `AGENTS.md`, the agent tools row: `git-sequences state` after `git-sequences commit`.
 - `CLAUDE.md`, the `guard-bash` sentence: add "and the heavy lock taken by hand (`mkdir …/heavy.lock`)" to what it denies.
 - `.claude/rules/tooling.md`, the `guard-bash` bullet: add "In a worktree, after the brief's `cd`, a chain of Git reads goes through, a Python program writing a file is refused; on `Write` and `Edit`, a worker is refused a file outside its prompt's worktree (EN-119)."
-
-### Incidents
-
-#### 2026-10-19 — `guard-bash`, a `$'…'` text holding `\'`
-
-- Used: a loop over the story's cases written as `$'…\'EOF\'…'` texts, after the brief's `cd`, to probe the release binary.
-- Failed: the separator reader closed the quote at `\'`, read the rest as commands and refused a chained Git command where none was.
-- Instead: the cases written to a JSON file and read with `jq`; the reader fixed in EN-119.T2, a backslash escaping inside `$'…'`.
