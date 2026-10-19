@@ -835,15 +835,17 @@ fn draws_the_status_line_and_writes_its_files() {
 
     fs::create_dir_all(metrics.join("running")).expect("running");
     fs::write(metrics.join("step"), "  EN-104 · T3\n").expect("step");
-    // A main call started before the turn, one in it, a subagent's, a file being written.
-    for (name, start, agent) in [
-        ("old", AT_0800 - 1, "main"),
-        ("now", AT_0800 + 1, "main"),
-        ("sub", 1, "auditor"),
+    // A main call started before the turn, one in it, a subagent's while none runs, one of another
+    // session's subagent, a file being written.
+    for (name, start, agent, session) in [
+        ("old", AT_0800 - 1, "main", ""),
+        ("now", AT_0800 + 1, "main", ""),
+        ("sub", 1, "auditor", ""),
+        ("other", 1, "auditor", "t"),
     ] {
         fs::write(
             metrics.join(format!("running/{name}.json")),
-            format!(r#"{{"agent":"{agent}","description":"","start":{start},"summary":"{name}","tool":"Bash"}}"#),
+            format!(r#"{{"agent":"{agent}","description":"","session":"{session}","start":{start},"summary":"{name}","tool":"Bash"}}"#),
         )
         .expect("running file");
     }
@@ -880,7 +882,8 @@ fn draws_the_status_line_and_writes_its_files() {
     assert!(lines[2].contains("▶ Bash · now — "), "{shown}");
     assert_eq!(lines.len(), 3);
     assert!(!metrics.join("running/old.json").exists());
-    assert!(metrics.join("running/sub.json").exists());
+    assert!(!metrics.join("running/sub.json").exists());
+    assert!(metrics.join("running/other.json").exists());
     let snapshot =
         parse(&fs::read_to_string(metrics.join("now.json")).expect("now")).expect("JSON");
 

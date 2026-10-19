@@ -379,9 +379,9 @@ pub struct RunningCall {
 pub fn read_running_call(record: &Value) -> RunningCall {
     RunningCall {
         agent: text_or(record, "agent", "main").to_owned(),
-        agent_id: String::new(),
+        agent_id: record.get("agentId").text().to_owned(),
         description: record.get("description").text().to_owned(),
-        session: String::new(),
+        session: record.get("session").text().to_owned(),
         start: whole(record, "start"),
         summary: record.get("summary").text().to_owned(),
         tool: record.get("tool").text().to_owned(),
@@ -393,8 +393,22 @@ pub fn read_running_call(record: &Value) -> RunningCall {
 /// subagent running can have made it; the main agent's calls are never among them.
 #[must_use]
 pub fn ended_calls(calls: &[(String, RunningCall)], tasks: &[Task], session: &str) -> Vec<String> {
-    let _ = (calls, tasks, session);
-    Vec::new()
+    let first_running = tasks
+        .iter()
+        .filter(|task| task.kind == Kind::Agent)
+        .map(|task| task.start)
+        .min()
+        .unwrap_or(i64::MAX);
+
+    calls
+        .iter()
+        .filter(|(_, call)| {
+            call.agent != "main"
+                && (call.session.is_empty() || call.session == session)
+                && call.start < first_running
+        })
+        .map(|(name, _)| name.clone())
+        .collect()
 }
 
 /// A call in a few words, its tool and its description or the start of its command:

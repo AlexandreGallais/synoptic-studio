@@ -87,15 +87,25 @@ fn segment_key(segment: &str) -> String {
 }
 
 /// What a shell command runs, without its directory change, variables, flags and arguments: the
-/// first segment between `&&`, `||`, `;` and line breaks that runs something.
+/// first segment between `&&`, `||`, `;` and line breaks that runs something, an `exit` after `||`
+/// left out, since it runs only when the command before it fails: the brief's
+/// `cd "<worktree>" || exit 9` names the command after it (EN-120).
 #[must_use]
 pub fn command_key(command: &str) -> String {
     command
         .replace("&&", "\n")
-        .replace("||", "\n")
+        .replace("||", "\n\u{0}")
         .replace(';', "\n")
         .split('\n')
-        .map(|segment| segment_key(segment.trim_matches(crate::transcript::is_js_space)))
+        .filter_map(|segment| {
+            let (is_after_or, text) = match segment.strip_prefix('\u{0}') {
+                Some(rest) => (true, rest),
+                None => (false, segment),
+            };
+            let key = segment_key(text.trim_matches(crate::transcript::is_js_space));
+
+            (!(is_after_or && key == "exit")).then_some(key)
+        })
         .find(|key| !key.is_empty())
         .unwrap_or_default()
 }

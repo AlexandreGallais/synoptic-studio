@@ -161,8 +161,7 @@ pub fn tool_summary(tool: &str, input: &Value, cwd: &str) -> String {
 /// EN-120): its `agentId` is that id, never empty.
 #[must_use]
 pub fn is_call_of(record: &Value, agent_id: &str) -> bool {
-    let _ = (record, agent_id);
-    false
+    !agent_id.is_empty() && record.get("agentId").text() == agent_id
 }
 
 /// The call starting, as the `track-tool-call` hook writes it for the status line:
@@ -173,9 +172,11 @@ pub fn running_call(input: &Value, start: i64) -> String {
     let tool_input = input.get("tool_input");
 
     format!(
-        "{{\"agent\":{},\"description\":{},\"start\":{start},\"summary\":{},\"tool\":{}}}",
+        "{{\"agent\":{},\"agentId\":{},\"description\":{},\"session\":{},\"start\":{start},\"summary\":{},\"tool\":{}}}",
         quote(text_or(input, "agent_type", "main")),
+        quote(input.get("agent_id").text()),
         quote(tool_input.get("description").text()),
+        quote(input.get("session_id").text()),
         quote(&tool_summary(tool, tool_input, input.get("cwd").text())),
         quote(tool),
     )

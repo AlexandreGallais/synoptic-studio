@@ -1,7 +1,8 @@
 //! What the transcripts held when last read (EN-107), kept in `.git/metrics/transcripts-cache.jsonl`
 //! so that the next report reads only what was written since, as `run-totals` keeps its counts
-//! (EN-092): one line per transcript, its offset and its events. A transcript shorter than its
-//! offset was rewritten, and is read again from its start; a cache of another version is dropped.
+//! (EN-092): one line per transcript, its offset, its events and the session's count of each
+//! model's tokens (EN-120). A transcript shorter than its offset was rewritten, and is read again
+//! from its start; a cache of another version is dropped.
 
 use std::collections::HashMap;
 use std::fs::{self, File};
@@ -17,7 +18,7 @@ use crate::json::Json;
 use crate::transcript::{Answer, Request, ToolUse, Transcript, read_chunk};
 
 /// The cache's first line: a cache written by another version of this reader is not read.
-const HEADER: &str = "{\"version\":2}";
+const HEADER: &str = "{\"version\":3}";
 
 /// The cache's file name, in `.git/metrics/`.
 pub const CACHE_FILE: &str = "transcripts-cache.jsonl";
@@ -57,7 +58,7 @@ pub fn render_entry(path: &str, transcript: &Transcript) -> String {
     let list = |items: Vec<String>| items.join(",");
 
     format!(
-        "{{\"path\":{},\"offset\":{},\"isWaiting\":{},\"turnStart\":{},\"requests\":[{}],\"uses\":[{}],\"answers\":[{}],\"findings\":[{}]}}",
+        "{{\"path\":{},\"offset\":{},\"isWaiting\":{},\"turnStart\":{},\"requests\":[{}],\"uses\":[{}],\"answers\":[{}],\"findings\":[{}],\"modelUsage\":[{}]}}",
         quote(path),
         transcript.offset,
         transcript.is_waiting,
@@ -72,6 +73,20 @@ pub fn render_entry(path: &str, transcript: &Transcript) -> String {
                 .collect()
         ),
         list(transcript.findings.iter().map(finding_json).collect()),
+        list(
+            transcript
+                .model_usage
+                .iter()
+                .map(|(model, tokens)| format!(
+                    "[{},{},{},{},{}]",
+                    quote(model),
+                    tokens.input,
+                    tokens.cache_write,
+                    tokens.cache_read,
+                    tokens.output
+                ))
+                .collect()
+        ),
     )
 }
 
@@ -183,7 +198,24 @@ pub fn parse_entry(line: &str) -> Option<(String, Transcript)> {
             is_waiting: *json.at("isWaiting") != Value::Bool(false),
             turn_start: json.at("turnStart").whole(),
             findings,
-            model_usage: Vec::new(),
+            model_usage: json
+                .at("modelUsage")
+                .items()
+                .iter()
+                .map(|item| {
+                    let fields = item.items();
+
+                    (
+                        text_at(fields, 0),
+                        Tokens {
+                            input: whole_at(fields, 1),
+                            cache_write: whole_at(fields, 2),
+                            cache_read: whole_at(fields, 3),
+                            output: whole_at(fields, 4),
+                        },
+                    )
+                })
+                .collect(),
         },
     ))
 }
