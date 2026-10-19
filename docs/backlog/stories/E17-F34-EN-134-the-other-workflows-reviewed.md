@@ -3,7 +3,7 @@ id: EN-134
 epic: E17
 feature: F34
 title: The auto-merge per base and the other workflows reviewed
-status: ready
+status: done
 points: 2
 ---
 

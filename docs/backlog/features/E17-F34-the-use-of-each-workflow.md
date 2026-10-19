@@ -21,7 +21,7 @@ In delivery order.
 
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
-| [EN-134](../stories/E17-F34-EN-134-the-other-workflows-reviewed.md) | EN | The auto-merge per base and the other workflows reviewed | ready |
+| [EN-134](../stories/E17-F34-EN-134-the-other-workflows-reviewed.md) | EN | The auto-merge per base and the other workflows reviewed | done |
 | [AUD-036](../stories/E17-F34-AUD-036-audit-f34.md) | AUD | Audit F34 | ready |
 | [VAL-035](../stories/E17-F34-VAL-035-validate-f34.md) | VAL | Validate F34 | ready |
 
