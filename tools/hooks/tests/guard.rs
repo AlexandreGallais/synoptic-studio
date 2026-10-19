@@ -8,8 +8,8 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, Output, Stdio};
 
 use hooks::guard::{
-    Entered, FORCE_PUSH, HOOKS_OFF, MERGE, NO_VERIFY, PROTECTED_PUSH, UNKNOWN_PUSH, denied_reason,
-    denied_reason_on, entered, entered_worktree_reason, is_full_vitest_run,
+    Entered, FORCE_PUSH, HAND_LOCK, HOOKS_OFF, MERGE, NO_VERIFY, PROTECTED_PUSH, UNKNOWN_PUSH,
+    denied_reason, denied_reason_on, entered, entered_worktree_reason, is_full_vitest_run,
     is_git_read_through_filters, is_read_only_filter, later_folders, missing_script,
     missing_script_reason, npm_script, scripts_of, segments, shell_reason, without_heredocs,
     worktree_reason,
@@ -798,7 +798,7 @@ fn tells_a_read_only_filter() {
 
 /// The cases of AUD-023's review, each with the reason expected, `None` for a command that goes
 /// through: forms that passed the text matchers, and commands they refused for a text.
-const AUDIT_CASES: [(&str, Option<&str>); 109] = [
+const AUDIT_CASES: [(&str, Option<&str>); 115] = [
     // A force push, its option bundled, quoted, after a global option, an assignment, a wrapper,
     // in a subshell, a substitution, a `-c` text, an `eval`, or across a line continuation.
     ("git push -uf origin x", Some(FORCE_PUSH)),
@@ -842,6 +842,15 @@ const AUDIT_CASES: [(&str, Option<&str>); 109] = [
         "cargo run -q -p heavy-lock -- --lock merge git push -f",
         Some(FORCE_PUSH),
     ),
+    // `bench` runs the command after its `--runs <count> --` (EN-141).
+    (
+        "target/release/bench --runs 1 -- git push -f",
+        Some(FORCE_PUSH),
+    ),
+    (
+        "cargo run --release -q -p bench -- --runs 5 -- git push -f",
+        Some(FORCE_PUSH),
+    ),
     ("git -c alias.p=push p -f", Some(FORCE_PUSH)),
     ("git -c 'alias.p=!git push -f' p", Some(FORCE_PUSH)),
     // The hooks skipped: quoted, abbreviated, by a merge.
@@ -881,6 +890,10 @@ const AUDIT_CASES: [(&str, Option<&str>); 109] = [
     ("command gh pr merge 3", Some(MERGE)),
     ("gh pr -R o/r merge 3", Some(MERGE)),
     ("target/release/heavy-lock gh pr merge 3", Some(MERGE)),
+    (
+        "./target/release/bench --runs 3 -- gh pr merge 3",
+        Some(MERGE),
+    ),
     ("gh api -X PUT repos/o/r/pulls/3/merge", Some(MERGE)),
     // A push to `main` or `develop`, named, deleted, by pattern, or all branches.
     ("git push origin HEAD:develop", Some(PROTECTED_PUSH)),
@@ -894,6 +907,10 @@ const AUDIT_CASES: [(&str, Option<&str>); 109] = [
     ),
     ("git push origin :", Some(PROTECTED_PUSH)),
     ("git push --all origin", Some(PROTECTED_PUSH)),
+    (
+        "target/release/bench --runs 1 -- git push origin develop",
+        Some(PROTECTED_PUSH),
+    ),
     // A here-document is opened by an unquoted `<<` outside a comment, its body read from the end
     // of its logical line; a shell reading its input runs what it is fed (AUD-033).
     ("echo '<<EOF'\ngit push -f\nEOF", Some(FORCE_PUSH)),
@@ -940,6 +957,8 @@ const AUDIT_CASES: [(&str, Option<&str>); 109] = [
     ("git push --force-with-lease origin docs/aud-023-x", None),
     ("git push -u origin feature/f21-agent-tools-in-rust", None),
     ("git push origin docs/aud-023-x:docs/aud-023-x", None),
+    ("target/release/bench --runs 5 -- true", None),
+    ("bench --runs 1 -- git push origin docs/aud-023-x", None),
     // A here-document's body is data unless a shell reads it: quoted, in a substitution inside
     // quotes, two on a line, its substitutions harmless (AUD-033).
     (
@@ -958,6 +977,44 @@ const AUDIT_CASES: [(&str, Option<&str>); 109] = [
 fn judges_each_case_of_the_audit_word_by_word() {
     for (command, expected) in AUDIT_CASES {
         assert_eq!(denied_reason(command), expected, "{command}");
+    }
+}
+
+/// Every refusal `CLAUDE.md` lists (Guards), with its reason.
+const LISTED_REFUSALS: [(&str, &str); 9] = [
+    ("gh pr merge 3", MERGE),
+    ("git commit --no-verify -m x", NO_VERIFY),
+    ("git commit -n -m x", NO_VERIFY),
+    ("git config core.hooksPath /tmp", HOOKS_OFF),
+    ("git push -f origin x", FORCE_PUSH),
+    ("git push origin +x", FORCE_PUSH),
+    ("git push origin develop", PROTECTED_PUSH),
+    ("git push origin main", PROTECTED_PUSH),
+    ("mkdir .git/heavy.lock", HAND_LOCK),
+];
+
+#[test]
+fn refuses_every_listed_refusal_run_by_bench_in_every_spelling_of_its_path() {
+    // `bench` runs any command given after its `--runs <count> --` (EN-141): the guard reads that
+    // command as it reads `heavy-lock`'s, however `bench` is called.
+    for spelling in [
+        "target/release/bench --runs 1 --",
+        "./target/release/bench --runs 5 --",
+        "\"/work/SVG editor/target/release/bench\" --runs 2 --",
+        "bench --runs 1 --",
+        "bench --",
+        "cargo run --release -q -p bench -- --runs 1 --",
+        "cargo run -p bench -- --runs 3 --",
+        "cargo run -q -p bench --bin bench -- --runs 1 --",
+    ] {
+        for (command, reason) in LISTED_REFUSALS {
+            let line = format!("{spelling} {command}");
+
+            assert_eq!(denied_reason(command), Some(reason), "{command}");
+            assert_eq!(denied_reason(&line), Some(reason), "{line}");
+        }
+        let harmless = format!("{spelling} true");
+        assert_eq!(denied_reason(&harmless), None, "{harmless}");
     }
 }
 
