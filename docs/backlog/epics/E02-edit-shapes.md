@@ -39,7 +39,7 @@ Ordered by the agent at SP-025 (2026-10-19), each needing the one before it. A f
 
 | Story | Status |
 | --- | --- |
-| [SP-025](../stories/E02-SP-025-cut-the-editing-work-into-small-features.md) — Cut the editing work into small features | in-progress |
+| [SP-025](../stories/E02-SP-025-cut-the-editing-work-into-small-features.md) — Cut the editing work into small features | done |
 
 ## Working method for E02 and the epics cut from it
 

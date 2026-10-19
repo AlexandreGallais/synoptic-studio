@@ -2,7 +2,7 @@
 id: SP-025
 epic: E02
 title: Cut the editing work into small features
-status: in-progress
+status: done
 points: 2
 ---
 
