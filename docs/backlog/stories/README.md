@@ -72,6 +72,7 @@
 | [VAL-009](./E01-F06-VAL-009-validate-stretched-polygon.md) | F06 | Validate F06 on the reference cases | done |
 | [REV-001](./E01-REV-001-review-e01.md) | E01 | Review E01 with the Product Owner | done |
 | [RET-001](./E01-RET-001-retrospective-e01.md) | E01 | Retrospective of E01 | done |
+| [SP-025](./E02-SP-025-cut-the-editing-work-into-small-features.md) | E02 | Cut the editing work into small features | done |
 | [SP-010](./E14-F11-SP-010-research-f11.md) | F11 | Research for F11: folder layouts and test placement | done |
 | [EN-020](./E14-F11-EN-020-property-tests.md) | F11 | Property tests for the nine functions without one | done |
 | [EN-021](./E14-F11-EN-021-shared-test-helpers.md) | F11 | Shared test helpers, one path writer, one pass per corner | done |

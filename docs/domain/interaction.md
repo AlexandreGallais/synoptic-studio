@@ -33,7 +33,7 @@ No pen tool and no freehand drawing (see `shapes.md` §3).
 - Selection of one or several vertices, on the drawing or in the list: click selects one; Shift + click or Ctrl + click (Cmd on macOS) on the drawing adds / removes; in the list, Shift + click selects a range and Ctrl + click (Cmd) adds / removes, as in any list (Product Owner, 2026-10-11). A range starts at the last row or handle clicked without Shift, and replaces the selection; with no start yet, Shift + click acts as a plain click (agent's choice, note 0006).
 - The radius field applies to the selected vertices; it shows their common radius or Mixed, and is disabled when none is selected. The selection is cleared when the number of corners of a polygon is typed or when Shape mode is chosen (agent's choice, note 0006). In the playground the points have a radius field of their own, for the selected vertices, while the shape's radius field stays shown in both modes and rounds every vertex (Product Owner, VAL-005).
 - **Moving a vertex** (F08):
-  - typed x and y, integers, negative allowed; dragged in the editor applications (E02);
+  - typed x and y, integers, negative allowed; dragged in the editor applications (E18);
   - each vertex keeps its number wherever it moves; the start of Q11 holds at creation only (Product Owner, 2026-10-11);
   - a coordinate typed is an integer, the other keeps its value; the free shape keeps its fractions through every edit (Q27, Q28, ADR-0033, ADR-0034);
   - in the playground, the fields under the list of points apply on Enter or when leaving the field, so that a minus sign or an emptied field moves nothing; a typed width or height must be an integer, and the fractional size a conversion leaves stays until retyped (US-014).
