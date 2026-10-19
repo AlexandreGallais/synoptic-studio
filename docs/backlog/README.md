@@ -10,7 +10,7 @@ The structure is **checked by a test** (`backlog.test.ts`): unique IDs, valid st
 
 | Done | Now | Next | Then |
 | --- | --- | --- | --- |
-| E01 — draw symbol shapes, E14 — curves, E15 — text, each with its retrospective | E17's refinement — fast tooling with Oxc and Rust, in two rounds | E17's stories, then the release of 0.3 (#259) | E02 |
+| E01 — draw symbol shapes, E14 — curves, E15 — text, E17 — fast tooling, its features F18 to F34 reviewed at REV-007 | E02's cut into small features (SP-025, 2026-10-19) | E02 — select and move shapes on one drawing | E18 — transform shapes by hand, E19 — snap, align and distribute |
 
 The full order of the epics is the Product Owner's, in [epics](./epics/); each epic orders its features, each feature its stories.
 

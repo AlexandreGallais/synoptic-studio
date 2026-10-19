@@ -127,7 +127,7 @@ Storing the value (Q8, settled):
 
 ### Rectangle
 
-- The rectangle is a **free shape** of 4 points made by the rectangle tool (Product Owner, 2026-10-11, F09): underneath, a rectangle is always a free shape. Width and height of any free shape stretch its points, the top-left of its box fixed; a rectangle stays a rectangle; stretching is without loss (0 then back gives the same shape). The eight handles of the box, the opposite side fixed as in Inkscape, come with E02.
+- The rectangle is a **free shape** of 4 points made by the rectangle tool (Product Owner, 2026-10-11, F09): underneath, a rectangle is always a free shape. Width and height of any free shape stretch its points, the top-left of its box fixed; a rectangle stays a rectangle; stretching is without loss (0 then back gives the same shape). The eight handles of the box, the opposite side fixed as in Inkscape, come with E18.
 
 - Model (ADR-0032, ADR-0033) — a **free shape** stores:
   - its **corners**, each a point in the shape's own box, its radius (integer ≥ 0) and its **handles** (F12, ADR-0046, "Points with handles" above); at least 3 corners, spanning a box of positive width and height (contour order Q11);
@@ -413,7 +413,7 @@ F14, `DERIV-text-box`; decided at F05's refinement, rounds 1 and 2; the rules ma
 F15, decided at F05's refinement, round 2; the rules marked "confirmed at VAL-017" were read from it by the agent at SP-018, 2026-10-15, confirmed at VAL-017; research note 0020.
 
 - **Sources**: the designer imports a TrueType or OpenType file (`.ttf`, `.otf`), or, in Chrome and Edge, chooses a font installed on the computer after a click and the browser's permission (`REF-WICG-LOCAL-FONT-ACCESS`):
-  - both are read by the same reader, from the file's bytes, once, into the metrics F05 reads, and kept with the file (confirmed at VAL-017: kept for the session; across sessions with the editor's files, E02);
+  - both are read by the same reader, from the file's bytes, once, into the metrics F05 reads, and kept with the file (confirmed at VAL-017: kept for the session; across sessions with the editor's files, E11);
   - an installed family read ahead keeps its metrics alone until it is chosen (US-053, provisional, below).
 - **Font list**: the editor's font field is a **list of the families it can measure**, not a name typed: the default Inter, the fonts imported and the installed fonts read with the browser's permission (Product Owner, 2026-10-15, US-036):
   - the weight list shows the faces of the family chosen only; the size of a text is computed with the metrics of the font selected, never with Inter's alone;
@@ -488,7 +488,7 @@ A click lists the installed families after the browser's `local-fonts` permissio
 - **Imported faces** — **Settled** (Product Owner, 2026-10-16, ADR-0062, refining ADR-0061, which let such a file be imported unjudged):
   - a face imported with **Import a font** follows the same rules, refused when it lacks a basic Latin letter or its `fsType` forbids embedding it, said why, the other faces of a collection kept;
   - for example `Apple Color Emoji.ttc: Apple Color Emoji 400 refused, it lacks letters of the basic Latin alphabet (A to Z, a to z).` and `Locked.ttf: Locked 400 refused, its fsType forbids embedding it in an exported SVG.`;
-  - whether a font that cannot be embedded may one day be exported once the designer confirms it is left to the epic on ease of use (E02).
+  - whether a font that cannot be embedded may one day be exported once the designer confirms it is left to the epic on ease of use (E20).
 
 #### Embedded fonts
 
@@ -535,7 +535,7 @@ Settled with the Product Owner (2026-10-10, refining F07): a box that places the
 ### Out of scope (symbols)
 
 - **Pen** and **freeform drawing** in the Symbol Editor: contrary to the "logical" principle.
-- Bézier curves other than the cubic sides from handles (ADR-0046); Figma's **Bend** tool dragged on the drawing (E02).
+- Bézier curves other than the cubic sides from handles (ADR-0046); Figma's **Bend** tool dragged on the drawing (E18).
 - **Corner smoothing** (Figma squircle smoothing): produces Béziers.
 
 Static drawings of the View Editor follow other rules (§8).
