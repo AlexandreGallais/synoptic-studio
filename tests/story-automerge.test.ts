@@ -213,7 +213,7 @@ function triggerInto(branches: string): string {
 
 describe("the auto-merge per base (ADR-0086, ADR-0088)", () => {
   it("[F22.AC4] [F34.AC1] merges a story into a feature branch, and a feature or a review into develop, by their two workflows", () => {
-    expect(STORIES).toContain(triggerInto("['feature/**']"));
+    expect(STORIES).toContain(triggerInto('["feature/**"]'));
     expect(FEATURES).toContain(triggerInto("[develop]"));
     expect(STORIES).toMatch(/^name: Story auto-merge$/mu);
     expect(FEATURES).toMatch(/^name: Feature auto-merge$/mu);

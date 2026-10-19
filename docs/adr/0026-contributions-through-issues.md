@@ -1,6 +1,6 @@
 # ADR-0026 — Contributions through issues only; the agent writes every change
 
-**Status**: Accepted
+**Status**: Accepted. In decision 1, its second barrier, the workflow `external-prs.yml`, superseded by ADR-0094 (2026-10-18): the setting _Collaborators only_ is the one barrier.
 
 ## Context
 

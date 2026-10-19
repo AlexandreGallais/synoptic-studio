@@ -5,8 +5,8 @@
 //! are left to the base and the rows written again after it, the push with lease of a head that
 //! differs from its remote's. The story's rows for the logs are in its `done` commit (ADR-0091):
 //! a story file still holding some stops it before its pull request, and nothing is committed on
-//! the base after the merge. Who merges, GitHub or the Product Owner, as `story-automerge.yml`
-//! takes the branch into its base (EN-118).
+//! the base after the merge. Who merges, GitHub or the Product Owner, as the auto-merge of its
+//! base, `story-automerge.yml` or `feature-automerge.yml`, takes the branch (EN-118, EN-134).
 
 use std::fs;
 use std::io::{self, Write};
@@ -75,14 +75,14 @@ pub fn next_step(state: &str, readings: u32) -> Next {
 /// Who merges a story's pull request.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Merger {
-    /// `story-automerge.yml`, once the pull request is labelled `autonomous`: awaited.
+    /// The auto-merge of its base, once the pull request is labelled `autonomous`: awaited.
     GitHub,
     /// The Product Owner: opened without the label, never awaited (AUD-024).
     ProductOwner,
 }
 
-/// Who merges a story branch into its base, as `story-automerge.yml` lets it through: into a
-/// feature branch a `US`, `EN`, `SP`, `CHK`, `AUD` or `VAL`, into `develop` a `REV`; anything else,
+/// Who merges a story branch into its base, as the auto-merge of that base lets it through: into
+/// a feature branch a `US`, `EN`, `SP`, `CHK`, `AUD` or `VAL`, into `develop` a `REV`; anything else,
 /// an epic's refinement `SP` into `develop` first, is the Product Owner's.
 #[must_use]
 pub fn merger(base: &str, branch: &str) -> Merger {
@@ -109,8 +109,11 @@ pub fn merger(base: &str, branch: &str) -> Merger {
 /// the one into a feature branch; its runs are what a merge not done is read from.
 #[must_use]
 pub fn auto_merge_of(base: &str) -> &'static str {
-    let _ = base;
-    "story-automerge.yml"
+    if base == "develop" {
+        "feature-automerge.yml"
+    } else {
+        "story-automerge.yml"
+    }
 }
 
 /// A checkout of the repository: the main one or a linked worktree.

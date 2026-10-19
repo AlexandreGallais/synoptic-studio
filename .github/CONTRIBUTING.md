@@ -10,6 +10,6 @@ Thank you for your interest. This project is built in an unusual way: a coding a
 
 ## No pull requests
 
-This repository is an experiment of agent-only development: every change is written by its coding agent and reviewed by the owner. **Pull requests from outside contributors are closed automatically** (ADR-0026); please open an issue instead — it is read, checked against the documentation and answered.
+This repository is an experiment of agent-only development: every change is written by its coding agent and reviewed by the owner. **Only collaborators can open a pull request** (ADR-0026, ADR-0094); please open an issue instead — it is read, checked against the documentation and answered.
 
 By opening an issue, you agree that your input may be used under the [Apache License 2.0](../LICENSE) and that you follow the [code of conduct](./CODE_OF_CONDUCT.md).
