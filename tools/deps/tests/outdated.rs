@@ -463,6 +463,11 @@ fn f33_ac1_reads_the_tools_of_each_cargo_install_line() {
                 tool("cargo-deny", "0.20.1", "p"),
             ],
         ),
+        // A short option before the tools, as a long one (AUD-035).
+        (
+            "cargo install -q --locked cargo-deny@0.20.2",
+            vec![tool("cargo-deny", "0.20.2", "p")],
+        ),
         // An expression of a workflow, a placeholder of a page, a tool without a version.
         (
             "cargo install --locked cargo-llvm-cov@${{ env.CARGO_LLVM_COV_VERSION }}",
@@ -562,7 +567,72 @@ fn f33_ac1_a_tool_behind_is_listed_once_its_release_is_7_days_old() {
             "tool cargo-llvm-cov 0.9.0 → 0.9.1, 2026-09-06",
         ]
     );
-    assert_eq!(lines(at - 1), disagreement);
+    // 1 ms before, 0.9.0 is not behind, and the 0.9.1 of package.json is too new (AUD-035, F7).
+    assert_eq!(
+        lines(at - 1),
+        [
+            disagreement[0],
+            disagreement[1],
+            "tool cargo-llvm-cov 0.9.1, 2026-09-06, under 7 days: 0.9.0",
+        ]
+    );
+}
+
+#[test]
+fn f33_ac1_a_tool_pinned_too_new_yanked_or_missing_is_listed_as_a_locked_crate_is() {
+    // On 2026-09-08 cargo-llvm-cov 0.9.1, of 2026-09-06T16:20:49Z, is under 7 days old and 0.9.0,
+    // of 2026-08-16, is the greatest compatible version old enough; a cargo-deny whose 0.20.2 is
+    // yanked goes back to 0.20.1; 0.9.9 is in no index (AUD-035, F7). Each version is written in
+    // the CI and in its row, so no place disagrees.
+    let at = epoch_ms("2026-09-08T00:00:00Z");
+    let mut network = Recorded::new();
+
+    network.answers.insert(
+        "https://index.crates.io/ca/rg/cargo-deny".to_owned(),
+        [
+            r#"{"name":"cargo-deny","vers":"0.20.1","yanked":false,"pubtime":"2026-07-09T17:53:05Z"}"#,
+            r#"{"name":"cargo-deny","vers":"0.20.2","yanked":true,"pubtime":"2026-07-09T17:58:09Z"}"#,
+        ]
+        .join("\n"),
+    );
+    let lines = |name: &str, version: &str| {
+        let pins = Pins {
+            tools: vec![
+                tool(name, version, ".github/workflows/ci.yml"),
+                tool(name, version, DEPENDENCIES_PAGE),
+            ],
+            ..Pins::default()
+        };
+
+        outdated::outdated(&pins, &network, at).lines
+    };
+
+    assert_eq!(
+        lines("cargo-llvm-cov", "0.9.1"),
+        ["tool cargo-llvm-cov 0.9.1, 2026-09-06, under 7 days: 0.9.0"]
+    );
+    assert_eq!(
+        lines("cargo-deny", "0.20.2"),
+        ["tool cargo-deny 0.20.2 yanked: 0.20.1"]
+    );
+    assert_eq!(
+        lines("cargo-llvm-cov", "0.9.9"),
+        ["tool cargo-llvm-cov 0.9.9 not in the crates.io index"]
+    );
+    // 7 days after its release, to the millisecond, 0.9.1 is old enough.
+    let pins = Pins {
+        tools: vec![
+            tool("cargo-llvm-cov", "0.9.1", ".github/workflows/ci.yml"),
+            tool("cargo-llvm-cov", "0.9.1", DEPENDENCIES_PAGE),
+        ],
+        ..Pins::default()
+    };
+    let old_enough = epoch_ms("2026-09-13T16:20:49Z");
+
+    assert_eq!(
+        outdated::outdated(&pins, &network, old_enough).lines,
+        Vec::<String>::new()
+    );
 }
 
 // --- The check, from the files to the report ---

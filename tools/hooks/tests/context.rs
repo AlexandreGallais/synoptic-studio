@@ -3,7 +3,7 @@
 use std::fs;
 use std::process::Command;
 
-use hooks::context::{Start, first_request, median, page_tokens, pages_table, tables};
+use hooks::context::{Start, first_request, page_tokens, pages_table, tables};
 use hooks::json::parse;
 
 /// A transcript as Claude Code writes one: the task, the attachments, then the first answer.
@@ -71,16 +71,6 @@ fn reads_nothing_before_the_first_answer() {
 }
 
 #[test]
-fn takes_the_lower_middle_as_median() {
-    assert_eq!(median(&[]), 0);
-    assert_eq!(median(&[7]), 7);
-    // 3 values: the middle one once sorted.
-    assert_eq!(median(&[30, 10, 20]), 20);
-    // 4 values: the lower of the two middles.
-    assert_eq!(median(&[40, 10, 30, 20]), 20);
-}
-
-#[test]
 fn lists_each_agent_then_each_type() {
     let start = |agent_type: &str, tokens| Start {
         agent_type: agent_type.into(),
@@ -93,9 +83,10 @@ fn lists_each_agent_then_each_type() {
     let text = tables(&[start("worker", 9), start("auditor", 4), start("worker", 7)]);
 
     assert!(text.contains("| worker | a \\| b | 9 |  | 0 | 3 |\n"));
-    assert!(text.contains("| auditor | 1 | 4 |\n| worker | 2 | 7 |\n"));
+    // The workers' median, `tool_use::median`: (7 + 9) / 2 = 8 (AUD-035, F6).
+    assert!(text.contains("| auditor | 1 | 4 |\n| worker | 2 | 8 |\n"));
     // One row per type, never one per agent.
-    assert_eq!(text.matches("| worker | 2 | 7 |").count(), 1);
+    assert_eq!(text.matches("| worker | 2 | 8 |").count(), 1);
 }
 
 #[test]

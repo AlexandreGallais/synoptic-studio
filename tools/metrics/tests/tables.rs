@@ -1,6 +1,6 @@
 //! Tests of the report's statistics and tables: the cases of `scripts/metrics-tables.test.ts`.
 
-use metrics::tables::{TimedCall, call_stats, command_key, js_prefix, markdown_table, median};
+use metrics::tables::{TimedCall, call_stats, command_key, js_prefix, markdown_table};
 
 #[test]
 fn names_a_command_by_its_words_without_directory_change_variables_flags_or_quotes() {
@@ -38,14 +38,6 @@ fn is_empty_when_nothing_runs() {
     assert_eq!(command_key("cd \"/repo\""), "");
     assert_eq!(command_key(""), "");
     assert_eq!(command_key("cd \"/w\" || exit 9"), "");
-}
-
-#[test]
-fn takes_the_middle_value_or_the_mean_of_the_two_middle_ones() {
-    assert!((median(&[5.0, 1.0, 3.0]) - 3.0).abs() < f64::EPSILON);
-    // Sorted 1, 2, 4, 9: (2 + 4) / 2 = 3.
-    assert!((median(&[9.0, 1.0, 4.0, 2.0]) - 3.0).abs() < f64::EPSILON);
-    assert!(median(&[]).abs() < f64::EPSILON);
 }
 
 #[test]

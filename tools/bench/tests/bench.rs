@@ -4,7 +4,7 @@
 
 use std::cell::Cell;
 
-use bench::{Line, Request, Run, bench, load_average, median, milliseconds, parse};
+use bench::{Line, Request, Run, bench, load_average, milliseconds, parse};
 
 /// The arguments, as owned strings.
 fn arguments(words: &[&str]) -> Vec<String> {
@@ -91,21 +91,6 @@ fn refuses_a_call_without_a_count_of_at_least_one_or_a_command() {
             "{words:?}: {parsed:?}"
         );
     }
-}
-
-#[test]
-fn takes_the_middle_duration_or_the_mean_of_the_two_middle_ones() {
-    assert_eq!(median(&[]), None);
-    assert_eq!(median(&[7]), Some(7));
-    // Sorted 1, 3, 5: the middle one.
-    assert_eq!(median(&[5, 1, 3]), Some(3));
-    // Sorted 1, 2, 3, 4: (2 + 3) / 2 = 2.5, rounded down to 2.
-    assert_eq!(median(&[4, 1, 3, 2]), Some(2));
-    // Sorted 2, 6: (2 + 6) / 2 = 4.
-    assert_eq!(median(&[6, 2]), Some(4));
-    // Two of the largest: their mean, without overflowing their sum.
-    assert_eq!(median(&[u64::MAX, u64::MAX]), Some(u64::MAX));
-    assert_eq!(median(&[u64::MAX - 1, u64::MAX]), Some(u64::MAX - 1));
 }
 
 #[test]

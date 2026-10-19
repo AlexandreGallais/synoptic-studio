@@ -110,23 +110,6 @@ pub fn command_key(command: &str) -> String {
         .unwrap_or_default()
 }
 
-/// The median of numbers in any order: the middle one, the mean of the two middle ones for an
-/// even count, 0 for none.
-#[must_use]
-pub fn median(values: &[f64]) -> f64 {
-    let mut sorted = values.to_vec();
-
-    sorted.sort_by(f64::total_cmp);
-
-    let middle = sorted.len() / 2;
-
-    match sorted.len() {
-        0 => 0.0,
-        length if length % 2 == 1 => sorted[middle],
-        _ => f64::midpoint(sorted[middle - 1], sorted[middle]),
-    }
-}
-
 /// Statistics of calls grouped by a key, in the order each group first came.
 pub fn call_stats<K: Fn(&TimedCall) -> String>(calls: &[TimedCall], key_of: K) -> Vec<CallStats> {
     group_by(calls, key_of)
@@ -139,7 +122,7 @@ pub fn call_stats<K: Fn(&TimedCall) -> String>(calls: &[TimedCall], key_of: K) -
                 count: group.len(),
                 failures: group.iter().filter(|call| !call.is_ok).count(),
                 max_ms: durations.iter().copied().fold(0.0, f64::max),
-                median_ms: median(&durations),
+                median_ms: tool_use::median(&durations).unwrap_or(0.0),
                 total_ms: durations.iter().sum(),
             }
         })

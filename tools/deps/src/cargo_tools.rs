@@ -3,7 +3,8 @@
 //! are written — the `CARGO_<TOOL>_VERSION` of each workflow's `env`, the
 //! `cargo install --locked <tool>@<version>` lines of `package.json`, the workflows and
 //! `docs/tooling/`, and the rows of `docs/tooling/dependencies.md`, Rust tools — then held to one
-//! version per tool, its row there, and its latest release on crates.io 7 days old.
+//! version per tool, its row there, a version of the index neither yanked nor under 7 days old,
+//! and its latest release on crates.io 7 days old (`REF-CARGO-REGISTRY-INDEX`).
 
 use std::collections::{BTreeMap, BTreeSet};
 

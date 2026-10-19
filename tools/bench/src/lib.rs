@@ -85,23 +85,6 @@ pub fn parse(arguments: &[String]) -> Result<Request, String> {
     })
 }
 
-/// The median of durations: the middle one, or the mean of the two middle ones rounded down;
-/// `None` for none.
-#[must_use]
-pub fn median(values: &[u64]) -> Option<u64> {
-    let mut sorted = values.to_vec();
-    let middle = values.len() / 2;
-
-    sorted.sort_unstable();
-    if values.len() % 2 == 1 {
-        return sorted.get(middle).copied();
-    }
-    // `low + (high - low) / 2` rather than `(low + high) / 2`, which overflows near `u64::MAX`.
-    let low = sorted.get(middle.checked_sub(1)?)?;
-    let high = sorted.get(middle)?;
-    Some(low + (high - low) / 2)
-}
-
 /// A duration in microseconds, written in whole milliseconds rounded to the nearest: `210 ms`.
 #[must_use]
 pub fn milliseconds(micros: u64) -> String {
@@ -180,7 +163,7 @@ pub fn bench(
 
     print(Line::Out(format!(
         "median: {} {over}",
-        milliseconds(median(&passing).unwrap_or_default())
+        milliseconds(tool_use::median(&passing).unwrap_or_default())
     )));
     print(Line::Out(format!("load average after: {}", load())));
     first_failure

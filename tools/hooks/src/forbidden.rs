@@ -1,6 +1,6 @@
 //! The commands the project forbids, read word by word (AUD-023): every simple command of a line,
 //! its substitutions' and subshells' included ([`crate::shell`]), then the command each wrapper
-//! runs (`env`, `command`, `sudo`, `heavy-lock`, `bench`, `cargo run … --`, `bash -c`, `eval`, `xargs`,
+//! runs (`env`, `command`, `sudo`, `heavy-lock`, `bench`, `cargo [options] run|r … --`, `bash -c`, `eval`, `xargs`,
 //! `find -exec` and the like), each judged as Git or `gh` would read it: bundled short options
 //! (`-uf`), a long option by any unique prefix (`--no-veri`, `REF-GITCLI`), configuration keys
 //! without case (`core.hookspath`, `REF-GIT-HOOKS-PATH`), the destination of each refspec of a
@@ -181,11 +181,15 @@ fn unwrap(
                 unwrap(inner, assignments.clone(), depth + 1, found);
             }
         }
-        // `cargo run … -- <arguments>`: the arguments are a command for `heavy-lock`, its
-        // `--lock <name>` first, or for `bench`, after its `--runs <count> --` (EN-141).
-        "cargo" if rest.first().is_some_and(|word| word == "run") => {
-            if let Some(dashes) = rest.iter().position(|word| word == "--") {
-                let inner = after_options(&rest[dashes + 1..], &["--lock", "--runs"]);
+        // `cargo [options] run … -- <arguments>`: the arguments are a command for `heavy-lock`,
+        // its `--lock <name>` first, or for `bench`, after its `--runs <count> --` (EN-141).
+        "cargo" => {
+            let Some(run) = cargo_run_arguments(rest) else {
+                return;
+            };
+
+            if let Some(dashes) = run.iter().position(|word| word == "--") {
+                let inner = after_options(&run[dashes + 1..], &["--lock", "--runs"]);
 
                 unwrap(inner, assignments, depth + 1, found);
             }
@@ -203,6 +207,33 @@ fn unwrap(
             }
         }
     }
+}
+
+/// Cargo's global options that take the next word as their value (`REF-CARGO-CLI`).
+const CARGO_VALUED: [&str; 4] = ["--config", "-Z", "-C", "--color"];
+
+/// The arguments of a `cargo` whose subcommand is `run` or its built-in alias `r`, after cargo's
+/// global options (`REF-CARGO-CLI`): `+<toolchain>` and every word opening with `-`, the next one
+/// too after `--config`, `-Z`, `-C` or `--color` written apart (AUD-035, F1). `None` for another
+/// subcommand. An alias of `run` set in a Cargo configuration is not read, as a Git alias written
+/// earlier by `git config` is not.
+fn cargo_run_arguments(words: &[String]) -> Option<&[String]> {
+    let mut at = 0;
+
+    while let Some(word) = words.get(at) {
+        if !word.starts_with(['-', '+']) || word == "-" || word == "--" {
+            break;
+        }
+        at += if CARGO_VALUED.contains(&word.as_str()) {
+            2
+        } else {
+            1
+        };
+    }
+    words
+        .get(at)
+        .filter(|subcommand| matches!(subcommand.as_str(), "run" | "r"))
+        .map(|_| &words[at + 1..])
 }
 
 /// The options taking a value of a program that runs the command after its options, `None` for

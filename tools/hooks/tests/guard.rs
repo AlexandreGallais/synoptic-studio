@@ -1019,6 +1019,55 @@ fn refuses_every_listed_refusal_run_by_bench_in_every_spelling_of_its_path() {
 }
 
 #[test]
+fn f33_ac3_refuses_every_listed_refusal_run_through_cargo_s_global_options_and_its_alias() {
+    // Cargo reads its global options before the subcommand, and `r` is `run`'s alias
+    // (`REF-CARGO-CLI`): `heavy-lock` and `bench` run the same command however `cargo` is called
+    // (AUD-035, F1). Every global option, with its value glued or apart, then `run` or `r`.
+    let globals = [
+        "",
+        "+stable ",
+        "-q ",
+        "-v ",
+        "-vv ",
+        "--quiet ",
+        "--verbose ",
+        "--locked --offline --frozen ",
+        "--config k=v ",
+        "--config=k=v ",
+        "-Z x ",
+        "-Zx ",
+        "-C /tmp ",
+        "-C/tmp ",
+        "--color never ",
+        "--color=never ",
+        "+stable -q --config k=v -Zx ",
+    ];
+    let wrappers = [
+        "-p heavy-lock --",
+        "-q -p heavy-lock -- --lock merge",
+        "--release -q -p bench -- --runs 1 --",
+    ];
+
+    for global in globals {
+        for subcommand in ["run", "r"] {
+            for wrapper in wrappers {
+                let spelling = format!("cargo {global}{subcommand} {wrapper}");
+
+                for (command, reason) in LISTED_REFUSALS {
+                    let line = format!("{spelling} {command}");
+
+                    assert_eq!(denied_reason(&line), Some(reason), "{line}");
+                }
+                let harmless = format!("{spelling} true");
+                assert_eq!(denied_reason(&harmless), None, "{harmless}");
+            }
+        }
+    }
+    // Another subcommand runs no command of its arguments.
+    assert_eq!(denied_reason("cargo -q build -- git push -f"), None);
+}
+
+#[test]
 fn f31_ac1_judges_each_case_of_the_audit_alike_after_the_brief_s_cd_into_a_worktree() {
     // The guard's worktree forms read by words (EN-119) change nothing of what it forbids: each
     // case gives the same answer typed after `cd "<worktree>" || exit 9` from the main checkout.
