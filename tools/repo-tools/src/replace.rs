@@ -17,6 +17,39 @@
 //! but blank lines refuses the whole input, and so does a text holding a line `<<<` or `>>>`: a
 //! block that lost its `@@` or its `>>>` swallowed or left out its neighbour (F20's run).
 
+/// What `replace` prints when it is called without its blocks: on standard output for `--help`, on
+/// standard error otherwise (EN-138).
+pub const USAGE: &str = "usage: target/release/replace < <blocks>, or target/release/replace --help
+Exact text replacements in several files at once, read on standard input, each block:
+  @@ path/to/file
+  <<<
+  old text
+  ===
+  new text
+  >>>
+Nothing is written unless every block is read and every old text is found exactly once.";
+
+/// What a call of `replace` does.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Call {
+    /// Print [`USAGE`] and exit with this code.
+    Usage(u8),
+    /// Read the blocks on standard input.
+    Blocks,
+}
+
+/// What a call does, from its arguments and whether its standard input is a terminal: the usage
+/// and 0 for `--help` or `-h`; the usage and 2 for any other argument, or none with a terminal for
+/// input, which would wait for blocks nobody types (EN-138); otherwise the blocks read.
+#[must_use]
+pub fn call(arguments: &[String], input_is_terminal: bool) -> Call {
+    match arguments {
+        [only] if only == "--help" || only == "-h" => Call::Usage(0),
+        [] if !input_is_terminal => Call::Blocks,
+        _ => Call::Usage(2),
+    }
+}
+
 /// One replacement in one file.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Edit {
@@ -158,6 +191,29 @@ mod tests {
             previous: previous.to_owned(),
             next: next.to_owned(),
         }
+    }
+
+    fn arguments(words: &[&str]) -> Vec<String> {
+        words.iter().map(|word| (*word).to_owned()).collect()
+    }
+
+    #[test]
+    fn f31_ac2_prints_its_usage_rather_than_wait_on_a_terminal() {
+        // No argument, a terminal for input: the card's call, which waited 120 s for blocks.
+        assert_eq!(call(&[], true), Call::Usage(2));
+        // No argument, blocks on a pipe: read as before.
+        assert_eq!(call(&[], false), Call::Blocks);
+        // `--help` and `-h`, a terminal or a pipe: the usage, exit 0.
+        for input_is_terminal in [true, false] {
+            assert_eq!(
+                call(&arguments(&["--help"]), input_is_terminal),
+                Call::Usage(0)
+            );
+            assert_eq!(call(&arguments(&["-h"]), input_is_terminal), Call::Usage(0));
+        }
+        // Any other argument: `replace` takes none, the usage and exit 2, even on a pipe.
+        assert_eq!(call(&arguments(&["edits.txt"]), false), Call::Usage(2));
+        assert_eq!(call(&arguments(&["--help", "x"]), false), Call::Usage(2));
     }
 
     #[test]

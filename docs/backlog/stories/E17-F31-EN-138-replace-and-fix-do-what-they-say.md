@@ -3,7 +3,7 @@ id: EN-138
 epic: E17
 feature: F31
 title: replace and npm run fix do what they say
-status: ready
+status: done
 points: 2
 ---
 
@@ -18,7 +18,7 @@ Two cards written during F22 ([tool incidents](../../process/tool-incidents.md),
 
 ## Tasks
 
-- [ ] T1 — The tests of both cards, the rewriting rule found, failing (1 h)
-- [ ] T2 — `replace`'s usage, the rule set or fixed, `docs/tooling/agent-tools.md` (1 h)
+- [x] T1 — The tests of both cards, the rewriting rule found, failing (1 h)
+- [x] T2 — `replace`'s usage, the rule set or fixed, `docs/tooling/agent-tools.md` (1 h)
 
 One task = one commit, referenced as `EN-138.T1` in the commit footer.
