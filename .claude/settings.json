@@ -38,8 +38,7 @@
       "Bash(gh run view*)",
       "mcp__library__library_search",
       "mcp__library__library_get",
-      "mcp__library__library_read",
-      "Bash(npm run library *)"
+      "mcp__library__library_read"
     ]
   },
   "hooks": {
