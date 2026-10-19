@@ -5,7 +5,7 @@ One way to import a thing, written by the autofix, so that an import is never a 
 ## A barrel per folder (ADR-0012)
 
 - Every code folder holds an `index.ts` (`local/folder-has-index`).
-- A barrel holds only `export * from "./module";` lines, one per module and subfolder, sorted (`local/barrel-exports`). It is autofixed: create a file, then run `npm run fix`.
+- A barrel holds only `export * from "./module";` lines, one per module and subfolder, sorted (`local/barrel-exports`). It is autofixed: create a file, then run `npm run fix`, which keeps a line written `export type * from "./module";` as it is (EN-138).
 - Not barrels: tests are never exported, `playground/index.ts` is the playground's entry point (each of its subfolders has a barrel), and `tests/index.ts` gathers the shared test fixtures.
 
 ## Canonical path (`local/canonical-import-path`, autofixed)

@@ -1,6 +1,6 @@
 //! `local/barrel-exports`: a folder's `index.ts` only re-exports, `export * from "./x";`, every
 //! module and barrelled sub-folder of its folder, sorted (ADR-0012). Autofixed: the barrel is
-//! written again from the folder.
+//! written again from the folder, a line written `export type * from "./x";` kept so (EN-138).
 
 use std::cmp::Ordering;
 
@@ -83,12 +83,16 @@ impl Rule for BarrelExports {
 
     fn check_file(&self, source: &Source, findings: &mut Vec<Finding>) {
         let mut actual = Vec::new();
+        let mut types_only = Vec::new();
         for statement in &source.program.body {
             match statement {
                 Statement::ExportAllDeclaration(export)
                     if export.exported.is_none() && export.source.value.starts_with("./") =>
                 {
                     actual.push(export.source.value.as_str());
+                    if export.export_kind.is_type() {
+                        types_only.push(export.source.value.as_str());
+                    }
                 }
                 _ => {
                     findings.push(
@@ -108,7 +112,12 @@ impl Rule for BarrelExports {
             return;
         }
         let text = expected.iter().fold(String::new(), |text, specifier| {
-            text + "export * from \"" + specifier + "\";\n"
+            let kind = if types_only.contains(&specifier.as_str()) {
+                "export type * from \""
+            } else {
+                "export * from \""
+            };
+            text + kind + specifier + "\";\n"
         });
         let fix = Fix {
             start: 0,

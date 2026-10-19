@@ -43,8 +43,11 @@ pub enum Call {
 /// input, which would wait for blocks nobody types (EN-138); otherwise the blocks read.
 #[must_use]
 pub fn call(arguments: &[String], input_is_terminal: bool) -> Call {
-    let _ = (arguments, input_is_terminal);
-    Call::Blocks
+    match arguments {
+        [only] if only == "--help" || only == "-h" => Call::Usage(0),
+        [] if !input_is_terminal => Call::Blocks,
+        _ => Call::Usage(2),
+    }
 }
 
 /// One replacement in one file.
