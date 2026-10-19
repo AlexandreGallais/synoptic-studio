@@ -177,7 +177,7 @@ fn keeps_the_order_of_the_transcripts() {
     );
 }
 
-/// The last `cost-state` line of session 48a404b1 (2026-10-15), its Haiku and Sonnet counts as
+/// The last `cost-state` line of session 48a404b1 (2026-10-16), its Haiku and Sonnet counts as
 /// written, its Opus count made small; Sonnet's output given.
 fn cost_state(sonnet_output: i64) -> String {
     format!(

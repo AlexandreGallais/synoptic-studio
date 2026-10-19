@@ -177,6 +177,11 @@ fn f32_ac1_counts_a_session_s_tokens_from_its_model_usage_in_the_sessions_table(
     // The tables cut by time keep the requests: the count is the session's, not a story's.
     assert!(shown["Features"].contains("| F21 | 1 min 00 s | 15 | 1,015 | 2 |"));
     assert!(shown["Stories and branches"].contains("| EN-107 | 1 min 00 s | 15 | 1,015 |"));
+    // Without a count, the session's requests.
+    assert!(
+        sections(&metrics_report(&inputs(0), &HashMap::new()))["Sessions"]
+            .contains("| 2026-10-12 s1 | 1 min 00 s | 15 | 1,015 | 2 |")
+    );
 
     // From 2026-10-12T10:00:20Z, 1 791 849 600 000 less 13 h 59 min 40 s (50 380 000 ms): the
     // session started before, so its count cannot be cut; m2's 5 tokens written, from 10:00:40 to

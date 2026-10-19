@@ -874,7 +874,9 @@ mod tests {
 
     #[test]
     fn f32_ac2_reports_the_failed_jobs_of_the_last_pull_request_into_main() {
-        // #259, develop → main, closed 2026-10-18: CI failed three tests' job, CodeQL its analysis.
+        // #259, develop → main, closed 2026-10-18, its checks made up for the case: one of each
+        // conclusion that fails a job, beside one passed and one skipped; #259 itself failed one
+        // CI job, CodeQL passing.
         let out = pull_request(&[
             run("CI", "Lint and types", "COMPLETED", "SUCCESS"),
             run("CI", "TypeScript tests", "COMPLETED", "FAILURE"),

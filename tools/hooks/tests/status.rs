@@ -868,16 +868,16 @@ fn draws_the_status_line_and_writes_its_files() {
     fs::create_dir_all(metrics.join("running")).expect("running");
     fs::write(metrics.join("step"), "  EN-104 · T3\n").expect("step");
     // A main call started before the turn, one in it, a subagent's while none runs, one of another
-    // session's subagent, a file being written.
-    for (name, start, agent, session) in [
-        ("old", AT_0800 - 1, "main", ""),
-        ("now", AT_0800 + 1, "main", ""),
-        ("sub", 1, "auditor", ""),
-        ("other", 1, "auditor", "t"),
+    // session's subagent, a file being written; the session's id is empty, as the input names none.
+    for (name, start, agent, id, session) in [
+        ("old", AT_0800 - 1, "main", "", ""),
+        ("now", AT_0800 + 1, "main", "", ""),
+        ("sub", 1, "auditor", "a1", ""),
+        ("other", 1, "auditor", "a2", "t"),
     ] {
         fs::write(
             metrics.join(format!("running/{name}.json")),
-            format!(r#"{{"agent":"{agent}","description":"","session":"{session}","start":{start},"summary":"{name}","tool":"Bash"}}"#),
+            format!(r#"{{"agent":"{agent}","agentId":"{id}","description":"","session":"{session}","start":{start},"summary":"{name}","tool":"Bash"}}"#),
         )
         .expect("running file");
     }

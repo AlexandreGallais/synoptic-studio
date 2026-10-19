@@ -18,7 +18,7 @@ Audit F32 following [audit.md](../../conventions/audit.md) (ADR-0020), the `audi
 ## Tasks
 
 - [x] T1 — The findings and the tests of their fixes, seen failing; the mutations of the criteria's tests (1 h)
-- [ ] T2 — The findings fixed: `metrics`' Sessions table, `val-prepare`'s struck criterion, the status line's ended calls and its seconds, `tokens_by_model`, two test comments, `docs/tooling/metrics.md` and `agent-tools.md` (2 h)
+- [x] T2 — The findings fixed: `metrics`' Sessions table, `val-prepare`'s struck criterion, the status line's ended calls and its seconds, `tokens_by_model`, two test comments, `docs/tooling/metrics.md` and `agent-tools.md` (2 h)
 
 One task = one commit, referenced as `AUD-034.T1`.
 
@@ -44,3 +44,37 @@ Reviewed by the `auditor` alone (ADR-0086), read-only; each finding reproduced b
 | C6 | A4 — `epic_check.rs`: a `dropped` story left open | caught | `f32_ac2_counts_a_dropped_story_as_closed` | restored |
 | C7 | A4 — `context.rs`, `page_tokens`: rounded down | caught | `f32_ac2_counts_a_page_tokens_at_the_ratio_measured` | restored |
 | C8 | A5 — properties: F32 adds no `math` nor `geometry` function | no finding | `src/` unchanged | — |
+| C9 | A4 — T2's fixes: `counted_sessions` with its period, its empty count or its first request taken as the last; the Sessions row's tokens from the output; `is_struck` without its sentence end, or with one alone; `ended_calls` without the `Message` tasks, or a subagent told by its type; `short_duration`'s unit from the milliseconds, its minutes without their floor of 1; `tokens_by_model` keeping a model without tokens | caught, each, once the Sessions test had a session without a count | `f32_ac1_counts_a_session_s_tokens_from_its_model_usage_in_the_sessions_table`, `f32_ac2_refuses_a_feature_whose_criteria_are_all_struck_and_counts_only_those_standing`, `f32_ac1_keeps_the_calls_of_a_subagent_a_message_resumes_and_of_an_agent_session`, `chooses_the_unit_from_the_seconds_rounded_as_shown`, `names_a_request_without_a_model_and_leaves_out_a_model_without_tokens` | restored |
+| C10 | B — the facts F32's tests cite | #259's checks read again through `gh pr view 259` (F5); session `48a404b1`'s date from its `startTime` (F5); F32 adds no `REF-*` row | `docs/references.md` unchanged | — |
+| C11 | C, D — no third-party code; the per-model sum now one function (F7) | no other finding | `tools/metrics/src/session.rs` | — |
+| C12 | `[F32.AC1]` traced | caught | F1, F3, F4, C2 to C4, C9 | restored |
+| C13 | `[F32.AC2]` traced | caught | F2, F6, C5 to C7, C9 | restored |
+| C14 | F — `check:all` green on the head | run by the pre-push hook | the push of T2 | — |
+
+## G. Next feature
+
+F32's reports now read Claude Code's count where a session has one; what they still cannot read is said in `docs/tooling/metrics.md`: a session started in a worktree keeps its transcripts under another project folder, and the count of a session cannot be cut by time nor by branch. No source is needed beyond those read here.
+
+## H. Light evolvability check
+
+- Size: `report.rs` gained `counted_sessions`; `ended_calls` and `is_struck` stay small.
+- Tools: none failed; two hand mutations first "survived" because a variable or a function left unused stops the build, a warning being denied, as AUD-033 met: a mutation is written to compile, and the build's errors are read.
+- Fitness functions: each finding has a test that failed before its fix.
+- Patterns: one per-model sum (`summed_usage`), one rule for a duration's unit in both `format_duration` and `short_duration`.
+- Agent configuration: unchanged.
+- Process: findings 1 and 3 were found by reading a criterion's words against every table and every kind of agent; the next audit of a report does the same.
+
+## For the main thread
+
+- F3 changes what the status line removes: a file written before EN-120 names no subagent id, so the status line no longer removes it; the hook `session-state` does, a day after its call started. A session started with `--agent` no longer has its calls removed while they run.
+- F1: the Sessions table groups by the whole session id, no longer by its date and first 8 characters, so two sessions sharing both would now be two rows.
+- `docs/domain/` is not affected: F32 is tooling. Footer `Rule-docs: none affected, a tooling feature, no business rule changed`.
+
+### Journal
+
+- `#run` AUD-034: F32 audited by the `auditor` alone, eight findings reproduced and fixed: `metrics`' Sessions table counts a session from Claude Code's `modelUsage` when it started in the period, the other tables from the requests; `val-prepare` leaves out a criterion only when struck as a whole; the status line keeps the calls of a subagent a message resumes and of a session started with `--agent`, and shows 59.5 s as `1 min`; both criteria traced, each test broken once.
+
+### Improvements
+
+| 2026-10-19 | AUD-034 | A hand mutation that leaves a variable or a function unused stops the build, a warning being denied, and reads as a survivor when only the tests' lines are read (met again after AUD-033): `mutate` could write Rust mutations that compile, or report a build error apart from a survivor | tool |
+| 2026-10-19 | AUD-034 | The status line no longer removes a running file written before EN-120 (no subagent id), so such a file stays in `running/` until `session-state` removes it a day after its call started, and may show as the current call of a running subagent of its type | tool |

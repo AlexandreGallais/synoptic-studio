@@ -231,7 +231,7 @@ fn saves_a_turn_its_tokens_summed_its_keys_in_the_saved_order() {
     );
 }
 
-/// Session 48a404b1 of 2026-10-15 cut down: the main agent's Opus request, then Claude Code's count
+/// Session 48a404b1 of 2026-10-16 cut down: the main agent's Opus request, then Claude Code's count
 /// of the session (`cost-state`), Sonnet's as written, Opus's made small; a Sonnet subagent's
 /// request with the tokens its transcript holds for all its requests (98 input, 657 written,
 /// 1 315 508 read from the cache, 84 759 written to it).
