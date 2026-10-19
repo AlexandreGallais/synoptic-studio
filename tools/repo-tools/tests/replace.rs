@@ -143,3 +143,17 @@ fn f31_ac2_refuses_an_argument_with_its_usage_and_exits_2() {
     assert_eq!(output.stdout, b"");
     assert!(String::from_utf8_lossy(&output.stderr).starts_with("usage: target/release/replace"));
 }
+
+#[test]
+fn f31_ac2_ends_at_once_on_a_closed_input_without_an_argument() {
+    // The agent's Bash tool gives no terminal: called alone, `replace` reads a closed input and
+    // ends at once, saying it read no block (AUD-033).
+    let output = replace_with(&[]);
+
+    assert_eq!(output.status.code(), Some(1));
+    assert_eq!(output.stdout, b"");
+    assert_eq!(
+        String::from_utf8_lossy(&output.stderr),
+        "no edit block read\nnothing written\n"
+    );
+}

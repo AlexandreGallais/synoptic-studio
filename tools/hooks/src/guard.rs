@@ -14,9 +14,14 @@
 use git_repository::lexical_join;
 
 use crate::forbidden::{
-    Arguments, Forbidden, abbreviates, git_line, invocations, is_assignment, program_name, reason,
+    Arguments, Forbidden, abbreviates, first_forbidden, git_line, invocations, is_assignment,
+    program_name,
 };
+use crate::place::BranchOf;
 use crate::shell::{Simple, commands};
+use crate::worktrees::worktree_root;
+
+pub use crate::heredoc::{heredoc_bodies, without_heredocs};
 
 /// Why a full Vitest run is denied.
 pub const FULL_VITEST: &str = "A full Vitest run takes the heavy lock: run `npm run test`, or name the test files (ADR-0063).";
@@ -37,6 +42,10 @@ pub const FORCE_PUSH: &str =
 
 /// Why a push to `main` or `develop` is denied.
 pub const PROTECTED_PUSH: &str = "main and develop are never pushed by the agent: a story's branch is pushed, and its pull request merges it (AGENTS.md, Never).";
+
+/// Why a push naming no destination is denied where the guard cannot read the branch it updates
+/// (AUD-033).
+pub const UNKNOWN_PUSH: &str = "A push naming no destination updates the current branch of the repository it runs against, which this command hides from the guard (a `cd` it cannot follow, a folder named by a variable, `env -C`, a `GIT_DIR` set apart, or a folder whose branch cannot be read): run `cd \"<folder>\" || exit 9`, then the push alone, or name its destination (`git push -u origin HEAD:<branch>`).";
 
 /// Why taking the heavy lock by hand is denied (EN-119).
 pub const HAND_LOCK: &str = "`.git/heavy.lock` is taken by the heavy commands themselves (EN-047): run `git push`, `npm run check:all`, `npm run test` or the other heavy command as it is, in the background when it may last; a lock taken by hand makes a `git push` inside it wait forever for its own pre-push.";
@@ -63,9 +72,6 @@ const VITEST_VALUED: [&str; 12] = [
     "-t",
 ];
 
-/// The folder of a story's worktree inside a path (EN-052).
-const WORKTREES: &str = "/.claude/worktrees/";
-
 /// The scripts npm runs without a `package.json` entry (`npm run env`).
 const NPM_OWN_SCRIPTS: [&str; 1] = ["env"];
 
@@ -81,12 +87,12 @@ fn is_line_break(character: char) -> bool {
 }
 
 /// JavaScript's `\w` without the `i` flag: an ASCII letter, digit or underscore.
-fn is_word(byte: u8) -> bool {
+pub(crate) fn is_word(byte: u8) -> bool {
     byte.is_ascii_alphanumeric() || byte == b'_'
 }
 
 /// The end of `\s*` from `at`.
-fn after_spaces(text: &str, at: usize) -> usize {
+pub(crate) fn after_spaces(text: &str, at: usize) -> usize {
     text[at..]
         .char_indices()
         .find(|(_, character)| !is_space(*character))
@@ -98,125 +104,6 @@ fn after_some_spaces(text: &str, at: usize) -> Option<usize> {
     let end = after_spaces(text, at);
 
     (end > at).then_some(end)
-}
-
-/// The shell command without the bodies of its here-documents: their lines are data written to a
-/// file or a pipe (a commit message, a test case), never run. Each `<<WORD … WORD` body is removed,
-/// the line opening it kept, as `/(<<-?\s*(['"]?)(\w+)\2[^\n]*)\n[\s\S]*?\n\s*\3(?=\n|$)/gu`
-/// replaced by its first group, the word read as the shell reads it (EN-119): quoted, any
-/// characters but its quote and a line feed (`'END-OF-MESSAGE'`); unquoted, `\w`, `-` and `.`.
-#[must_use]
-pub fn without_heredocs(command: &str) -> String {
-    let mut kept = String::with_capacity(command.len());
-    let mut at = 0;
-
-    while at < command.len() {
-        if let Some(heredoc) = heredoc_at(command, at) {
-            kept.push_str(&command[at..heredoc.opening_end]);
-            at = heredoc.end;
-        } else {
-            let character = command[at..].chars().next().unwrap_or_default();
-
-            kept.push(character);
-            at += character.len_utf8();
-        }
-    }
-    kept
-}
-
-/// The bodies of a command's here-documents, as [`without_heredocs`] finds them: the lines
-/// between each opening line and the line of its word.
-#[must_use]
-pub fn heredoc_bodies(command: &str) -> Vec<&str> {
-    let mut bodies = Vec::new();
-    let mut at = 0;
-
-    while at < command.len() {
-        if let Some(heredoc) = heredoc_at(command, at) {
-            bodies.push(&command[heredoc.opening_end + 1..heredoc.body_end]);
-            at = heredoc.end;
-        } else {
-            at += command[at..].chars().next().map_or(1, char::len_utf8);
-        }
-    }
-    bodies
-}
-
-/// Where a here-document lies in a command.
-struct Heredoc {
-    /// The line feed ending its opening line.
-    opening_end: usize,
-    /// The line feed before the line of its word.
-    body_end: usize,
-    /// The end of that word.
-    end: usize,
-}
-
-/// Whether a byte may be part of an unquoted here-document word.
-fn is_heredoc_word(byte: u8) -> bool {
-    is_word(byte) || matches!(byte, b'-' | b'.')
-}
-
-/// A here-document opening at `at`, `None` when none starts there.
-fn heredoc_at(text: &str, at: usize) -> Option<Heredoc> {
-    // `<<<` is a here-string, its word on the same line.
-    if !text[at..].starts_with("<<") || text[at + 2..].starts_with('<') || text[..at].ends_with('<')
-    {
-        return None;
-    }
-    let mut after = at + 2;
-
-    if text[after..].starts_with('-') {
-        after += 1;
-    }
-    after = after_spaces(text, after);
-
-    let quote = match text.as_bytes().get(after) {
-        Some(byte @ (b'\'' | b'"')) => Some(*byte),
-        _ => None,
-    };
-    let word_start = after + usize::from(quote.is_some());
-    let longest = text.as_bytes()[word_start..]
-        .iter()
-        .take_while(|byte| match quote {
-            Some(quote) => **byte != quote && **byte != b'\n',
-            None => is_heredoc_word(**byte),
-        })
-        .count();
-
-    // `\w+` gives back characters when the rest fails: a shorter word is tried in turn.
-    (1..=longest).rev().find_map(|length| {
-        let word_end = word_start + length;
-        let opened = match quote {
-            Some(byte) => (text.as_bytes().get(word_end) == Some(&byte)).then_some(word_end + 1)?,
-            None => word_end,
-        };
-        let opening_end = text[opened..].find('\n').map(|index| opened + index)?;
-
-        body_end(text, opening_end, &text[word_start..word_end]).map(|(body_end, end)| Heredoc {
-            opening_end,
-            body_end,
-            end,
-        })
-    })
-}
-
-/// The end of a here-document's body: the first `\n\s*WORD` after its opening line, followed by a
-/// line feed or the end of the text; its line feed and the end of the word.
-fn body_end(text: &str, opening_end: usize, word: &str) -> Option<(usize, usize)> {
-    let mut search = opening_end + 1;
-
-    loop {
-        let line_feed = search + text.get(search..)?.find('\n')?;
-        let start = after_spaces(text, line_feed + 1);
-        let end = start + word.len();
-
-        if text[start..].starts_with(word) && matches!(text.as_bytes().get(end), None | Some(b'\n'))
-        {
-            return Some((line_feed, end));
-        }
-        search = line_feed + 1;
-    }
 }
 
 /// The segments of a shell command, split at `&&`, `||`, `;`, a pipe and a line feed outside
@@ -630,26 +517,26 @@ pub fn forbidden_text(forbidden: Forbidden) -> &'static str {
         Forbidden::ForcePush => FORCE_PUSH,
         Forbidden::ProtectedPush => PROTECTED_PUSH,
         Forbidden::HandLock => HAND_LOCK,
+        Forbidden::UnknownPlace => UNKNOWN_PUSH,
     }
 }
 
-/// The reason for denying a shell command, the current branch unknown: see [`denied_reason_on`].
+/// The reason for denying a shell command, every branch read empty: see [`denied_reason_on`].
 #[must_use]
 pub fn denied_reason(command: &str) -> Option<&'static str> {
-    denied_reason_on(command, &String::new)
+    denied_reason_on(command, "", &|_| Some(String::new()))
 }
 
-/// The reason for denying a shell command: the first command it runs that is forbidden, every
-/// simple command and the command each wrapper runs read word by word (AUD-023,
-/// [`crate::forbidden`]), then a full Vitest run, which takes the heavy lock through `npm run test`
-/// (EN-047). `branch` gives the current branch, asked only for a push naming no destination.
+/// The reason for denying a shell command run from `cwd`: the first command it runs that is
+/// forbidden, every simple command and the command each wrapper runs read word by word (AUD-023,
+/// [`crate::forbidden::first_forbidden`]), then a full Vitest run, which takes the heavy lock
+/// through `npm run test` (EN-047). `branch` gives the current branch of a repository, asked only
+/// for a push naming no destination, in each folder that push may run in (AUD-033).
 #[must_use]
-pub fn denied_reason_on(command: &str, branch: &dyn Fn() -> String) -> Option<&'static str> {
+pub fn denied_reason_on(command: &str, cwd: &str, branch: BranchOf) -> Option<&'static str> {
     let found = invocations(&without_heredocs(command));
 
-    found
-        .iter()
-        .find_map(|invocation| reason(invocation, branch))
+    first_forbidden(command, &Some(vec![cwd.to_owned()]), branch)
         .map(forbidden_text)
         .or_else(|| {
             found
@@ -663,10 +550,10 @@ pub fn denied_reason_on(command: &str, branch: &dyn Fn() -> String) -> Option<&'
 /// forbidden command ([`denied_reason_on`]), then the forms of the worktree it enters by a leading
 /// `cd` ([`entered_worktree_reason`]), then those of a worktree a later `cd` enters.
 #[must_use]
-pub fn shell_reason(command: &str, cwd: &str, branch: &dyn Fn() -> String) -> Option<String> {
+pub fn shell_reason(command: &str, cwd: &str, branch: BranchOf) -> Option<String> {
     let judged = entered(command, cwd);
 
-    denied_reason_on(command, branch)
+    denied_reason_on(command, cwd, branch)
         .map(str::to_owned)
         .or_else(|| {
             entered_worktree_reason(&judged).or_else(|| {
@@ -755,26 +642,6 @@ fn top_level_arguments(text: &str) -> Vec<&str> {
     }
     parts.push(text[start..].trim());
     parts
-}
-
-/// The worktree a folder is inside (EN-052), its root:
-/// `^(?<root>.*\/\.claude\/worktrees\/[^/]+)(?:\/|$)`, the last such folder of the path.
-#[must_use]
-pub fn worktree_root(folder: &str) -> Option<&str> {
-    let before_break = folder.find(is_line_break).unwrap_or(folder.len());
-
-    folder
-        .match_indices(WORKTREES)
-        .filter(|(index, _)| *index <= before_break)
-        .map(|(index, _)| index + WORKTREES.len())
-        .filter_map(|start| {
-            let end = folder[start..]
-                .find('/')
-                .map_or(folder.len(), |at| start + at);
-
-            (end > start).then(|| &folder[..end])
-        })
-        .last()
 }
 
 /// A command as the guard judges it: the folder it runs in and the part judged there.

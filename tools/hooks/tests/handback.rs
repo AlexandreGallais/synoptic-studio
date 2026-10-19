@@ -7,9 +7,10 @@ use std::process::{Command, Stdio};
 
 use hooks::handback::{
     Branch, Commit, LISTED_COMMITS, Refs, agent_transcript, allow_output, base_of,
-    earlier_handbacks, finish_line, is_checked, missing, read_refs, refusal, story_of, worktree_id,
+    earlier_handbacks, finish_line, is_checked, missing, read_refs, refusal, story_of,
 };
 use hooks::json::{parse, quote, write};
+use hooks::worktrees::{prompt_worktree, worktree_id};
 
 /// A branch with one commit, its head and its copy on `origin`.
 fn branch(head: &str, remote: Option<&str>) -> Branch {
@@ -556,4 +557,28 @@ fn the_hook_checks_no_commit_naming_without_a_base() {
         )
     );
     fs::remove_dir_all(&root).expect("cleaned");
+}
+
+#[test]
+fn f31_ac1_reads_a_worker_s_worktree_from_the_brief_s_cd() {
+    // The brief's line, as the transcript's JSON escapes it, after another worktree named first
+    // (AUD-033): the first such line names the worker's worktree.
+    let transcript = r#"{"content":"Unlike `/r/.claude/worktrees/en-2`, this one.\nEach call starts with `cd \"/r/SVG editor/.claude/worktrees/en-1\" || exit 9`, never `cd \"/r/.claude/worktrees/en-3\" || exit 9`."}"#;
+
+    assert_eq!(prompt_worktree(transcript), Some("en-1"));
+    assert_eq!(
+        prompt_worktree("see .claude/worktrees/en-2\ncd \"/r/.claude/worktrees/en-1\" || exit 9"),
+        Some("en-1")
+    );
+    // No brief's line, or a `cd` without its `|| exit`: the first worktree named.
+    assert_eq!(
+        prompt_worktree("Worktree: `/r/.claude/worktrees/en-2`."),
+        Some("en-2")
+    );
+    assert_eq!(
+        prompt_worktree("/r/.claude/worktrees/en-2, cd \"/r/.claude/worktrees/en-1\" && ls"),
+        Some("en-2")
+    );
+    assert_eq!(prompt_worktree("cd \"/r/other\" || exit 9"), None);
+    assert_eq!(prompt_worktree("nothing"), None);
 }

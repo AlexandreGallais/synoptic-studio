@@ -10,6 +10,7 @@
 //! runs a command of its own (`node -e`, `python -c`), a script file, an alias written earlier by
 //! `git config` are not read.
 
+use crate::place::{BranchOf, Folders, repositories};
 use crate::shell::{Simple, commands};
 
 /// One command a line runs, a wrapper's looked through: the assignments before it, then its words.
@@ -19,6 +20,10 @@ pub struct Invocation {
     pub assignments: Vec<String>,
     /// The program and its arguments, unquoted.
     pub words: Vec<String>,
+    /// The redirections of the simple command it is, or that its wrapper is: `<<<text`, `>out`.
+    pub redirections: Vec<String>,
+    /// The byte of the line its simple command starts at; a quoted command's is its wrapper's.
+    pub at: usize,
 }
 
 /// How deep wrappers and quoted commands are looked through.
@@ -115,6 +120,7 @@ fn unwrap(
             found.push(Invocation {
                 assignments,
                 words: Vec::new(),
+                ..Invocation::default()
             });
         }
         return;
@@ -124,6 +130,7 @@ fn unwrap(
     found.push(Invocation {
         assignments: assignments.clone(),
         words: words[at..].to_vec(),
+        ..Invocation::default()
     });
     match program {
         "env" => unwrap_env(rest, assignments, depth, found),
@@ -134,6 +141,7 @@ fn unwrap(
                 .cloned()
                 .collect(),
             words: Vec::new(),
+            ..Invocation::default()
         }),
         "bash" | "sh" | "zsh" | "dash" | "ksh" => {
             if let Some(text) = shell_text(rest) {
@@ -459,11 +467,21 @@ pub fn git_line(words: &[String]) -> GitLine {
 }
 
 /// Why a Git command is forbidden: it skips the hooks, switches them off, forces a push or pushes
-/// to a protected branch; `branch` gives the current branch, which a push without a destination
-/// updates.
+/// to a protected branch; `branch` gives the current branch of each repository it may run
+/// against, from the `folders` it may run in, which a push without a destination updates.
 #[must_use]
-pub fn git_reason(words: &[String], branch: &dyn Fn() -> String) -> Option<Forbidden> {
+pub fn git_reason(
+    invocation: &Invocation,
+    folders: &Folders,
+    branch: BranchOf,
+) -> Option<Forbidden> {
+    let words = &invocation.words;
     let line = git_line(words);
+    let current = || {
+        repositories(words, &invocation.assignments, folders)
+            .and_then(|found| found.first().and_then(branch))
+            .unwrap_or_default()
+    };
 
     if line
         .settings
@@ -473,9 +491,7 @@ pub fn git_reason(words: &[String], branch: &dyn Fn() -> String) -> Option<Forbi
         return Some(Forbidden::HooksOff);
     }
     if !line.shell_alias.is_empty() {
-        return invocations(&line.shell_alias)
-            .iter()
-            .find_map(|invocation| reason(invocation, branch));
+        return first_forbidden(&line.shell_alias, folders, branch);
     }
     match line.subcommand.as_str() {
         "commit" => {
@@ -515,7 +531,7 @@ pub fn git_reason(words: &[String], branch: &dyn Fn() -> String) -> Option<Forbi
         )
         .has_long("--no-verify")
         .then_some(Forbidden::NoVerify),
-        "push" => push_reason(&line.arguments, branch),
+        "push" => push_reason(&line.arguments, &current),
         "config" => config_sets_hooks_path(&line.arguments).then_some(Forbidden::HooksOff),
         _ => None,
     }
@@ -634,6 +650,9 @@ pub enum Forbidden {
     ProtectedPush,
     /// The heavy lock, `.git/heavy.lock`, taken by hand (EN-047, EN-119).
     HandLock,
+    /// A push naming no destination, run where the guard cannot read the branch it updates
+    /// (AUD-033).
+    UnknownPlace,
 }
 
 /// Whether a `gh` command merges a pull request: `gh pr merge`, `pr`'s `-R <repository>` before
@@ -664,14 +683,28 @@ fn gh_merges(words: &[String]) -> bool {
     }
 }
 
-/// Why one command is forbidden, if it is.
+/// The first forbidden command of a line, its here-documents left out, the line starting in
+/// `folders`: each command judged in the folders the part of the line holding it may run in
+/// ([`crate::place::walk`]), then the text a shell reads from its input, a here-document's, a
+/// here-string's or what is piped into it, and the commands an unquoted here-document's
+/// substitutions run.
 #[must_use]
-pub fn reason(invocation: &Invocation, branch: &dyn Fn() -> String) -> Option<Forbidden> {
+pub fn first_forbidden(line: &str, folders: &Folders, branch: BranchOf) -> Option<Forbidden> {
+    let text = crate::guard::without_heredocs(line);
+
+    invocations(&text)
+        .iter()
+        .find_map(|invocation| reason(invocation, folders, branch))
+}
+
+/// Why one command is forbidden, if it is, run in `folders`.
+#[must_use]
+pub fn reason(invocation: &Invocation, folders: &Folders, branch: BranchOf) -> Option<Forbidden> {
     if sets_hooks_path_by_environment(&invocation.assignments) {
         return Some(Forbidden::HooksOff);
     }
     match invocation.words.first().map(|word| program_name(word)) {
-        Some("git") => git_reason(&invocation.words, branch),
+        Some("git") => git_reason(invocation, folders, branch),
         Some("gh") => gh_merges(&invocation.words).then_some(Forbidden::Merge),
         Some("mkdir") => makes_heavy_lock(&invocation.words).then_some(Forbidden::HandLock),
         _ => None,
