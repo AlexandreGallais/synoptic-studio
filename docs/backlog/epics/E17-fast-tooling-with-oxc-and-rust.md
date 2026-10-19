@@ -100,3 +100,4 @@ After its last feature is validated (ADR-0023, ADR-0049, ADR-0064). F21's clean-
 | [REV-004](../stories/E17-REV-004-review-e17.md) — Review E17 with the Product Owner | done |
 | [RET-004](../stories/E17-RET-004-retrospective-e17.md) — Retrospective of E17 | done |
 | [REV-006](../stories/E17-REV-006-review-2026-10-18.md) — Review of 2026-10-18, F22 | done |
+| [REV-007](../stories/E17-REV-007-review-2026-10-19.md) — Review of 2026-10-19, F23 to F34 | done |
