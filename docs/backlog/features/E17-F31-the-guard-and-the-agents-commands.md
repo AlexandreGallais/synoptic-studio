@@ -2,7 +2,7 @@
 id: F31
 epic: E17
 title: The guard and the agent's commands
-status: in-progress
+status: done
 ---
 
 # E17 · F31 — The guard and the agent's commands
@@ -25,7 +25,7 @@ In delivery order.
 | [EN-119](../stories/E17-F31-EN-119-the-guard-reads-by-words.md) | EN | The guard reads a command by its words | done |
 | [EN-138](../stories/E17-F31-EN-138-replace-and-fix-do-what-they-say.md) | EN | replace and npm run fix do what they say | done |
 | [AUD-033](../stories/E17-F31-AUD-033-audit-f31.md) | AUD | Audit F31 | done |
-| [VAL-032](../stories/E17-F31-VAL-032-validate-f31.md) | VAL | Validate F31 | ready |
+| [VAL-032](../stories/E17-F31-VAL-032-validate-f31.md) | VAL | Validate F31 | done |
 
 ## Feature plan
 
