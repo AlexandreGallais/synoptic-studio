@@ -118,6 +118,7 @@ fn f31_ac1_tells_a_git_command_that_only_reads() {
         "git diff --ext-diff",
         "git grep --open-files-in-pager=vi x",
         "git grep -Ovi x",
+        "gitk log",
         "ls -la",
     ] {
         assert!(
@@ -160,8 +161,18 @@ fn f31_ac1_reads_quotes_and_here_documents_as_the_shell_does() {
         heredoc_bodies("cat <<'EOF'\na\nb\nEOF\nls <<-X\n\tc\n\tX"),
         ["a\nb", "\tc"]
     );
+    // A word with a hyphen or a dot, quoted or not; `<<<` is a here-string, no here-document.
     assert_eq!(heredoc_bodies("cat <<'A-B'\nx\nA-B"), ["x"]);
+    assert_eq!(heredoc_bodies("cat <<A-B.c\nx\nA-B.c"), ["x"]);
+    assert_eq!(heredoc_bodies("cat <<<A\nx\nA"), [] as [&str; 0]);
     assert_eq!(heredoc_bodies("echo '<<EOF'"), [] as [&str; 0]);
+    // After the brief's `cd`, a pipe or a background job is no separator it allows.
+    for rest in ["| git log | head", "& git log | head"] {
+        let line = format!("cd \"{WORKTREE}\" || exit 9 {rest}");
+        let branch = String::new;
+
+        assert!(shell_reason(&line, MAIN, &branch).is_some(), "{rest}");
+    }
 }
 
 #[test]
@@ -223,6 +234,8 @@ fn f31_ac1_refuses_a_python_script_writing_a_file_in_a_worktree() {
         "python3 --version",
         // A script file is not read.
         "python3 scratch/sum.py",
+        // With `-c`, a here-document is the program's input, not its text.
+        "python3 -c 'import sys; print(sys.stdin.read())' <<'EOF'\nf.write(x)\nEOF",
         "git commit -m \"fix: open('a', 'w')\"",
     ] {
         assert_eq!(worktree_reason(command, WORKTREE), None, "{command}");
@@ -295,7 +308,9 @@ fn f31_ac1_refuses_a_worker_s_write_into_the_main_checkout_naming_its_worktree_s
         "/tmp/scratch/a.md",
         "/p2/a.md",
         "/p/.git/metrics/step",
+        // A relative path is not the tools' and is not read against `/`.
         "docs/a.md",
+        "p/docs/a.md",
     ] {
         assert_eq!(misplaced_write(file, "/p", "en-1"), None, "{file}");
     }
@@ -325,18 +340,22 @@ fn session(name: &str) -> Session {
     fs::create_dir_all(project.join(".claude/worktrees/en-1")).expect("worktree");
     fs::create_dir_all(&agents).expect("agents");
     fs::write(&transcript, "").expect("transcript");
-    let prompt = format!(
-        "Story EN-1. Worktree: `{}/.claude/worktrees/en-1`.",
-        project.display()
-    );
-    fs::write(
-        agents.join("agent-a1.jsonl"),
-        format!(
-            "{{\"type\":\"user\",\"message\":{{\"role\":\"user\",\"content\":{}}}}}\n",
-            quote(&prompt)
-        ),
-    )
-    .expect("agent transcript");
+    // `a1`'s worktree is on disk, `a3`'s was removed.
+    for (agent, worktree) in [("a1", "en-1"), ("a3", "en-9")] {
+        let prompt = format!(
+            "Story {worktree}. Worktree: `{}/.claude/worktrees/{worktree}`.",
+            project.display()
+        );
+
+        fs::write(
+            agents.join(format!("agent-{agent}.jsonl")),
+            format!(
+                "{{\"type\":\"user\",\"message\":{{\"role\":\"user\",\"content\":{}}}}}\n",
+                quote(&prompt)
+            ),
+        )
+        .expect("agent transcript");
+    }
     Session {
         root,
         project,
@@ -401,11 +420,20 @@ fn f31_ac1_the_hook_refuses_a_worker_s_write_into_the_main_checkout() {
 
         assert_eq!(own.stdout, [] as [u8; 0]);
     }
-    // The main thread, an agent that only reads, or a worker whose prompt names no worktree.
+    // A notebook, by its own key.
+    let notebook = format!(
+        "\"tool_name\":\"NotebookEdit\",{worker}\"tool_input\":{{\"notebook_path\":{}}}",
+        quote(&main_file.to_string_lossy())
+    );
+
+    assert!(String::from_utf8_lossy(&hook(&session, &notebook).stdout).contains("deny"));
+    // The main thread, an agent that only reads, a worker without transcript, or one whose
+    // prompt's worktree is gone.
     for agent in [
         "",
         "\"agent_id\":\"a1\",\"agent_type\":\"Explore\",",
         "\"agent_id\":\"a2\",\"agent_type\":\"story-worker\",",
+        "\"agent_id\":\"a3\",\"agent_type\":\"story-worker\",",
     ] {
         let output = hook(&session, &write_call("Write", agent, &main_file));
 

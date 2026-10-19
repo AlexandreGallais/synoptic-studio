@@ -44,7 +44,8 @@ pub fn invocations(line: &str) -> Vec<Invocation> {
 }
 
 /// Whether a word is a shell assignment, `NAME=value`.
-fn is_assignment(word: &str) -> bool {
+#[must_use]
+pub fn is_assignment(word: &str) -> bool {
     word.split_once('=').is_some_and(|(name, _)| {
         name.starts_with(|first: char| first.is_ascii_alphabetic() || first == '_')
             && name
@@ -672,6 +673,18 @@ pub fn reason(invocation: &Invocation, branch: &dyn Fn() -> String) -> Option<Fo
     match invocation.words.first().map(|word| program_name(word)) {
         Some("git") => git_reason(&invocation.words, branch),
         Some("gh") => gh_merges(&invocation.words).then_some(Forbidden::Merge),
+        Some("mkdir") => makes_heavy_lock(&invocation.words).then_some(Forbidden::HandLock),
         _ => None,
     }
+}
+
+/// The folder of the heavy lock (EN-047), which only the heavy commands make.
+const HEAVY_LOCK: &str = "heavy.lock";
+
+/// Whether a `mkdir` makes the heavy lock: one of its operands a folder named `heavy.lock`, a
+/// trailing `/` allowed (EN-119, I22).
+fn makes_heavy_lock(words: &[String]) -> bool {
+    words.iter().skip(1).any(|word| {
+        !word.starts_with('-') && program_name(word.trim_end_matches('/')) == HEAVY_LOCK
+    })
 }

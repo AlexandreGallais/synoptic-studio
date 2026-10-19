@@ -171,8 +171,13 @@ fn removes_the_bodies_of_here_documents_only() {
 fn splits_a_command_at_its_separators() {
     assert_eq!(
         segments("a && b || c; d | e\n f & g"),
-        ["a", "b", "c", "d", "e", "f & g"]
+        ["a", "b", "c", "d", "e", "f", "g"]
     );
+    // In `$'…'` a backslash escapes the quote (EN-119); in `'…'` it does not.
+    assert_eq!(segments(r"echo $'a\'b; c' ; d"), [r"echo $'a\'b; c'", "d"]);
+    assert_eq!(segments(r"echo 'a\'; b"), [r"echo 'a\'", "b"]);
+    // A job sent to the background is a separator too (EN-119), never a redirection's `&`.
+    assert_eq!(segments("a 2>&1 &>x >&2 & b"), ["a 2>&1 &>x >&2", "b"]);
     assert_eq!(segments(""), [""]);
     assert_eq!(segments("a;"), ["a", ""]);
 }
@@ -370,11 +375,19 @@ fn f21_ac1_judges_the_command_in_the_folder_a_leading_cd_enters() {
         WORKTREE
     );
     assert_eq!(entered("cd ~/x && ls", MAIN).folder, MAIN);
-    // Not a `cd` of one folder: `cdx`, `cd` alone, an unclosed quote, a word glued to the quote.
+    // Not a `cd` of one folder: `cdx`, `cd` alone, two folders, a substitution.
     assert_eq!(entered("cdx /a && ls", MAIN).folder, MAIN);
     assert_eq!(entered("cd", MAIN).folder, MAIN);
-    assert_eq!(entered("cd \"/a && ls", MAIN).folder, MAIN);
-    assert_eq!(entered("cd \"/a\"b && ls", MAIN).folder, MAIN);
+    assert_eq!(entered("cd /a /b && ls", MAIN).folder, MAIN);
+    assert_eq!(entered("cd \"$(pwd)/x\" && ls", MAIN).folder, MAIN);
+    // Its words read as the shell reads them (EN-119): a word glued to the quote is one word, an
+    // unclosed quote runs to the end.
+    assert_eq!(entered("cd \"/a\"b && ls", MAIN).folder, "/ab");
+    assert_eq!(entered("cd \"/a && ls", MAIN).folder, "/a && ls");
+    assert_eq!(
+        entered("cd /work/SVG\\ editor/.claude/worktrees/us-061 && ls", MAIN).folder,
+        WORKTREE
+    );
 }
 
 #[test]
@@ -648,6 +661,9 @@ fn f21_ac1_lets_one_git_command_read_through_filters_after_the_brief_s_cd() {
         "git log --format='%h %s' | awk '{print $1}'",
         // A `|` inside quotes is no pipe (EN-113).
         "git log --format='%h|%s' | grep -E 'fix|feat'",
+        // Since EN-119, a chain of Git reads, each piped or not.
+        "git log | head; git status",
+        "git log | head && git status",
     ] {
         assert_eq!(judge(rest), None, "{rest}");
     }
@@ -657,8 +673,7 @@ fn f21_ac1_lets_one_git_command_read_through_filters_after_the_brief_s_cd() {
         "git log && wc -l x",
         "git status && ls",
         "git status || ls",
-        "git log | head; git status",
-        "git log | head && git status",
+        "git push | head; git status",
         "git log | git status",
         "git log | tee out.txt",
         "git log | head > out.txt",
