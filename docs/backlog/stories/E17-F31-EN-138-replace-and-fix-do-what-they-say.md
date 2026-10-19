@@ -18,7 +18,13 @@ Two cards written during F22 ([tool incidents](../../process/tool-incidents.md),
 
 ## Tasks
 
-- [ ] T1 — The tests of both cards, the rewriting rule found, failing (1 h)
-- [ ] T2 — `replace`'s usage, the rule set or fixed, `docs/tooling/agent-tools.md` (1 h)
+- [x] T1 — The tests of both cards, the rewriting rule found, failing (1 h)
+- [x] T2 — `replace`'s usage, the rule set or fixed, `docs/tooling/agent-tools.md` (1 h)
 
 One task = one commit, referenced as `EN-138.T1` in the commit footer.
+
+## For the main thread
+
+### Improvements
+
+| 2026-10-19 | EN-138 | ADR-0012 says a barrel holds only `export * from "./x";`, while `local/barrel-exports` accepts and now keeps `export type * from "./x";`: a superseding ADR, or the rule narrowed, to decide at the next review; and `replace` called with an input pipe never closed still waits, since nothing tells it from a slow writer (only `--help` helps) | tool |
