@@ -15,12 +15,6 @@ const FILES: readonly string[] = readdirSync(WORKFLOWS)
   .toSorted((left, right) => left.localeCompare(right));
 
 /**
- * The workflows that still choose a job by the event or a branch, until the story that changes
- * them: `story-automerge.yml` by EN-134 (ADR-0088).
- */
-const EXCEPTIONS: readonly string[] = ["story-automerge.yml"];
-
-/**
  * The contexts that name the event or a branch (`REF-GH-CONTEXTS`), which a condition may not
  * read (ADR-0088, decision 2), written by property dereference: the event's name, the run's ref,
  * its name and its type, a pull request's branches, and any ref or branch of the event's payload
@@ -834,12 +828,12 @@ function missingTools(lines: readonly string[]): readonly string[] {
 }
 
 describe("one workflow per purpose (ADR-0088)", () => {
-  it("[F28.AC1] chooses no job nor step by the event or a branch, its trigger the only condition", () => {
-    const findings = FILES.filter((file) => !EXCEPTIONS.includes(file)).flatMap((file) =>
-      findingsOf(file),
-    );
+  it("[F28.AC1] [F34.AC1] chooses no job nor step by the event or a branch, its trigger the only condition, in every workflow", () => {
+    // No exception left since the auto-merge was split by its base (EN-134).
+    const findings = FILES.flatMap((file) => findingsOf(file));
 
     expect(findings).toStrictEqual([]);
+    expect(FILES).toContain("story-automerge.yml");
   });
 
   it("[F28.AC1] reads every context naming the event or a branch, by either syntax and in any case", () => {
@@ -878,15 +872,6 @@ describe("one workflow per purpose (ADR-0088)", () => {
     expect(kept.filter((condition) => readsEventOrBranch(condition))).toStrictEqual([]);
   });
 
-  it("[F28.AC1] lists as exceptions only workflows that still choose by the event or a branch", () => {
-    // A file listed that no longer breaks the rule, or no longer exists, leaves the list.
-    const kept = EXCEPTIONS.filter(
-      (file) => !FILES.includes(file) || findingsOf(file).length === 0,
-    );
-
-    expect(kept).toStrictEqual([]);
-  });
-
   it("[F28.AC1] says each workflow's purpose in its first comment and its name", () => {
     const unnamed = FILES.filter((file) => {
       const text = readFileSync(join(WORKFLOWS, file), "utf8");
@@ -903,6 +888,56 @@ describe("one workflow per purpose (ADR-0088)", () => {
     // Its jobs run on every pull request into main, the ruleset requiring each by its name.
     expect(text).toContain("\non:\n  pull_request:\n    branches: [main]\n\npermissions:\n");
     expect(CI.filter((line) => line.startsWith("    if:"))).toStrictEqual([]);
+  });
+});
+
+describe("each workflow's use, as decided on 2026-10-18 (EN-134)", () => {
+  /** The ruleset row of `main` in the CI's page, which lists its required checks. */
+  const mainRuleset =
+    readFileSync(join(ROOT, "docs", "tooling", "ci.md"), "utf8")
+      .split("\n")
+      .find((line) => line.includes("| `main` | default branch |")) ?? "";
+
+  it("[F34.AC1] keeps the workflows the project uses, the closing of outside pull requests removed (ADR-0094)", () => {
+    // The repository's setting "Collaborators only" keeps outsiders out (REF-GH-PR-ACCESS): the
+    // 200 last runs of external-prs.yml were all skipped (research note 0026, §2).
+    expect(FILES).toStrictEqual([
+      "ci.yml",
+      "codeql.yml",
+      DEVELOP_CI,
+      "feature-automerge.yml",
+      "links.yml",
+      "release.yml",
+      "rust-caches.yml",
+      "site.yml",
+      "story-automerge.yml",
+    ]);
+
+    expect(readFileSync(join(ROOT, ".github", "CONTRIBUTING.md"), "utf8")).not.toContain(
+      "closed automatically",
+    );
+  });
+
+  it("[F34.AC1] analyses the TypeScript and the workflows in the one job main requires, Analyze", () => {
+    const codeql = readFileSync(join(WORKFLOWS, "codeql.yml"), "utf8");
+
+    expect(codeql).toContain("\n    name: Analyze\n");
+    expect(codeql).toContain("\n          languages: javascript-typescript, actions\n");
+    // A matrix would name each job `Analyze (<language>)`, a check main's ruleset does not require.
+    expect(codeql).not.toContain("matrix");
+    expect(mainRuleset).toContain("`Analyze`");
+  });
+
+  it("[F34.AC1] checks the links weekly and by hand, blocking nothing", () => {
+    const links = readFileSync(join(WORKFLOWS, "links.yml"), "utf8");
+
+    expect(links).toContain(
+      '\non:\n  schedule:\n    - cron: "0 7 * * 1"\n  workflow_dispatch:\n\npermissions:\n',
+    );
+
+    expect(links).toContain("\n    name: Link check\n");
+    expect(mainRuleset).toContain("`Analyze`");
+    expect(mainRuleset).not.toContain("`Link check`");
   });
 });
 

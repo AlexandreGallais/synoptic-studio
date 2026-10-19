@@ -3,7 +3,7 @@
 //! `tools/heavy-lock/`: stories merge one at a time, the next one waiting, then rebasing on the
 //! updated base. A story file still holding rows for the logs stops it first: its `done` commit
 //! moves them (`move-rows`, ADR-0091). Its pull request opened with the `autonomous` label, its
-//! merge by GitHub awaited for at most three minutes; a branch `story-automerge.yml` does not take,
+//! merge by GitHub awaited for at most three minutes; a branch the auto-merge of its base does not take,
 //! an epic's refinement `SP` into `develop`, opened without it, awaited by no one: it says at once
 //! that it waits for the Product Owner's merge (AUD-024, EN-118). Once merged, the base brought up
 //! to date where it is checked out, nothing committed on it, and the story's worktree and branch
@@ -19,9 +19,9 @@ use std::thread;
 use std::time::Duration;
 
 use repo_tools::story_finish::{
-    Merger, Next, Rebase, Start, Story, clean_up, clean_up_plan, manual_steps, merger, needs_push,
-    next_step, push_with_lease, rebase_on_base, rows_refusal, run_words, start_step, worktrees,
-    write_status_again,
+    Merger, Next, Rebase, Start, Story, auto_merge_of, clean_up, clean_up_plan, manual_steps,
+    merger, needs_push, next_step, push_with_lease, rebase_on_base, rows_refusal, run_words,
+    start_step, worktrees, write_status_again,
 };
 
 /// Time between two readings of the pull request's state.
@@ -125,6 +125,7 @@ fn finish(base: &str, title: &str, body: &str) -> Result<u8, String> {
     }
 
     let by = merger(base, &branch);
+    let workflow = auto_merge_of(base);
     let url = if start == Start::Create {
         let label: &[&str] = if by == Merger::GitHub {
             &["--label", "autonomous"]
@@ -146,7 +147,7 @@ fn finish(base: &str, title: &str, body: &str) -> Result<u8, String> {
 
     if start != Start::Clean && by == Merger::ProductOwner {
         println!(
-            "{branch} waits for the Product Owner's merge into {base}: `story-automerge.yml` does \
+            "{branch} waits for the Product Owner's merge into {base}: `{workflow}` does \
              not take it (AUD-024); run again once merged, to clean up"
         );
         return Ok(0);
@@ -191,7 +192,7 @@ fn finish(base: &str, title: &str, body: &str) -> Result<u8, String> {
         }
         Ok(false) => {
             eprintln!(
-                "{state} after 3 min, {branch} kept: read gh run list --workflow story-automerge.yml --limit 1, then run again: it reuses the pull request"
+                "{state} after 3 min, {branch} kept: read gh run list --workflow {workflow} --limit 1, then run again: it reuses the pull request"
             );
             Ok(1)
         }

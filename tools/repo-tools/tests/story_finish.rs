@@ -700,12 +700,12 @@ fn f23_ac2_labels_a_review_into_develop_and_awaits_its_merge() {
 #[test]
 fn f23_ac2_leaves_an_epics_spike_to_the_product_owners_merge_without_waiting() {
     // [F23.AC2] An epic's refinement `SP` into `develop`: opened without the label, which
-    // `story-automerge.yml` would refuse, and never awaited; run again, it waits no more, and
+    // `feature-automerge.yml` would refuse, and never awaited; run again, it waits no more, and
     // cleans up once the Product Owner merged it.
     let lab = Lab::new("spike");
     let branch = "docs/sp-930-refinement-of-e99";
     let waits = format!(
-        "{branch} waits for the Product Owner's merge into develop: `story-automerge.yml` does \
+        "{branch} waits for the Product Owner's merge into develop: `feature-automerge.yml` does \
          not take it (AUD-024); run again once merged, to clean up\n"
     );
 

@@ -2,7 +2,7 @@
 # into develop, the Rust checks and tests on Linux, then the Rust caches saved under develop, the
 # scope the review's pull request into main restores first (`REF-GH-CACHE`). A person's merge
 # starts it by its push; the features' auto-merge, whose push by the GITHUB_TOKEN starts no run,
-# by a dispatch once its merge is done (`REF-GH-TOKEN-TRIGGERS`, story-automerge.yml). It blocks
+# by a dispatch once its merge is done (`REF-GH-TOKEN-TRIGGERS`, feature-automerge.yml). It blocks
 # nothing: no ruleset requires it, nothing waits for it, and a red run says what the review's CI
 # will meet. A dispatch runs only once this file is on main (`REF-GH-WORKFLOW-DISPATCH`).
 name: Develop CI
