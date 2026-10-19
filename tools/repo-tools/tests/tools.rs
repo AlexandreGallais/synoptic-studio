@@ -100,7 +100,9 @@ fn f18_ac11_epic_check_prints_its_table_and_fails_on_a_finding() {
             ),
             (
                 "gh",
-                "#!/bin/sh\ncase \"$1\" in pr) echo '#7 a pull request' ;; issue) echo 0 ;; api) exit 1 ;; esac\n",
+                "#!/bin/sh\ncase \"$1 $3\" in \
+                 'pr --base') echo '[{\"number\":9,\"title\":\"Release\",\"statusCheckRollup\":[{\"name\":\"Rust\",\"workflowName\":\"CI\",\"status\":\"COMPLETED\",\"conclusion\":\"FAILURE\"}]}]' ;; \
+                 pr*) echo '#7 a pull request' ;; issue*) echo 0 ;; api*) exit 1 ;; esac\n",
             ),
         ],
     );
@@ -116,6 +118,11 @@ fn f18_ac11_epic_check_prints_its_table_and_fails_on_a_finding() {
     fs::write(
         repo.join("docs/backlog/stories/E99-F99-EN-2-b.md"),
         "status: ready\n",
+    )
+    .expect("story");
+    fs::write(
+        repo.join("docs/backlog/stories/E99-F99-EN-3-c.md"),
+        "status: dropped\n",
     )
     .expect("story");
     lab.git(&repo, &["init", "-q"]);
@@ -157,18 +164,24 @@ fn f18_ac11_epic_check_prints_its_table_and_fails_on_a_finding() {
     assert!(lines[6].starts_with(
         "| code scanning alerts open (GitHub, Security) | **to look at** | Error: Command failed: gh api repos/"
     ));
+    // The last pull request into main, its failed job named (I110).
     assert_eq!(
         lines[7],
+        "| CI of the last pull request into main | **to look at** | #9 Release: failed, 1 of 1 jobs: CI / Rust |"
+    );
+    assert_eq!(
+        lines[8],
         "| calls failed during the epic (2 % at most) | ok | 0 of 1; apart: 0 refused by the worktree isolation |"
     );
     // The running call's file was just written: not lost.
-    assert!(lines[8].ends_with("| ok | none |"), "{}", lines[8]);
+    assert!(lines[9].ends_with("| ok | none |"), "{}", lines[9]);
+    // EN-3, dropped, is closed (I110).
     assert_eq!(
-        lines[9],
+        lines[10],
         "| backlog of E99 | **to look at** | E99-F99-EN-2-b |"
     );
     assert!(
-        lines[10]
+        lines[11]
             .starts_with("| private records | **to look at** | AGENT_RECORDS_ROOT is not set: ")
     );
     assert_eq!(

@@ -3,6 +3,8 @@
 //! `.git/metrics/tool-calls.jsonl` — what ran, who ran it, when it started and ended, the size of
 //! what it read and returned, whether it failed, and the session's state at that moment as the
 //! status line last saw it — then removes the call's running file. `target/release/metrics` reads it.
+//! On `SubagentStop`, of any agent type, it removes the running files the subagent left and logs
+//! nothing (EN-120).
 
 use std::fs::{self, OpenOptions};
 use std::io::Write;
@@ -13,7 +15,7 @@ use calendar::now_ms;
 use git_repository::{branch_of, checkout_of};
 use hooks::git::hook_input;
 use hooks::json::{self, Value};
-use hooks::record::{CallContext, count, tool_call_record};
+use hooks::record::{CallContext, count, is_call_of, tool_call_record};
 
 fn main() -> ExitCode {
     tool_use::run("log-tool-call", "", hook)
@@ -27,7 +29,18 @@ fn json_of(path: &Path) -> Value {
         .unwrap_or(Value::Null)
 }
 
-/// Appends the call's record; exits 1 when the input is not JSON. Outside a repository, nothing.
+/// Removes the running files of a subagent that stopped: a call refused before it ran, or cut by
+/// the subagent's end, gets no `PostToolUse` to remove its file (EN-120).
+fn remove_calls_of(running: &Path, agent_id: &str) {
+    for entry in fs::read_dir(running).into_iter().flatten().flatten() {
+        if is_call_of(&json_of(&entry.path()), agent_id) {
+            let _ = fs::remove_file(entry.path());
+        }
+    }
+}
+
+/// Appends the call's record, or on a subagent's stop removes its calls still shown running;
+/// exits 1 when the input is not JSON. Outside a repository, nothing.
 fn hook() -> u8 {
     let Some(input) = hook_input("log-tool-call") else {
         return 1;
@@ -40,6 +53,11 @@ fn hook() -> u8 {
         return 0;
     };
     let folder = checkout.common.join("metrics");
+
+    if input.get("hook_event_name").text() == "SubagentStop" {
+        remove_calls_of(&folder.join("running"), input.get("agent_id").text());
+        return 0;
+    }
     let running = folder
         .join("running")
         .join(format!("{}.json", input.get("tool_use_id").text()));

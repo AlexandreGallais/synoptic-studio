@@ -33,6 +33,6 @@
 | [F29](./E17-F29-local-checks-stable-and-fast.md) | E17 | The local checks stable and fast | done |
 | [F30](./E17-F30-a-ci-on-develop-that-blocks-nothing.md) | E17 | A CI on develop that blocks nothing | done |
 | [F31](./E17-F31-the-guard-and-the-agents-commands.md) | E17 | The guard and the agent's commands | done |
-| [F32](./E17-F32-reports-that-say-what-happened.md) | E17 | Reports that say what happened | ready |
+| [F32](./E17-F32-reports-that-say-what-happened.md) | E17 | Reports that say what happened | done |
 | [F33](./E17-F33-the-checks-ret-004-listed.md) | E17 | The checks RET-004 listed | ready |
 | [F34](./E17-F34-the-use-of-each-workflow.md) | E17 | The use of each workflow | ready |

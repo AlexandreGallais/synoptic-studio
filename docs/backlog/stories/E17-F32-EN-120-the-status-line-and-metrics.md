@@ -3,7 +3,7 @@ id: EN-120
 epic: E17
 feature: F32
 title: The status line and metrics say what ran
-status: ready
+status: done
 points: 2
 ---
 
@@ -19,7 +19,13 @@ From the card C5 and the rows I83, I91 and I92 (RET-004). Moved from F23 on 2026
 
 ## Tasks
 
-- [ ] T1 — Each criterion's tests in `tools/hooks` and `tools/metrics`, from the recorded cases, failing (1 h)
-- [ ] T2 — The status line and `metrics` fixed, `docs/tooling/metrics.md` (2 h)
+- [x] T1 — Each criterion's tests in `tools/hooks` and `tools/metrics`, from the recorded cases, failing (1 h)
+- [x] T2 — The status line and `metrics` fixed, `docs/tooling/metrics.md` (2 h)
 
 One task = one commit, referenced as `EN-120.T1` in the commit footer.
+
+## For the main thread
+
+Rule-docs: none affected, a tooling story: no rule of `docs/domain/` changes.
+
+The `SubagentStop` hook takes effect in a session started after `.claude/settings.json` is merged and the release binaries rebuilt; the status line's own cleanup removes, at its first refresh, the files left before EN-120 (no session named) once no subagent older than them runs.

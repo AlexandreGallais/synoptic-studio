@@ -8,7 +8,8 @@ use std::process::{Command, Output, Stdio};
 
 use hooks::json::{Value, js_length, number_text, parse, quote, write};
 use hooks::record::{
-    CallContext, js_prefix, relative, running_call, session_moment, tool_call_record, tool_summary,
+    CallContext, is_call_of, js_prefix, relative, running_call, session_moment, tool_call_record,
+    tool_summary,
 };
 
 /// Fields of a hook input for a shell command that succeeded, as documented by `REF-CC-HOOKS`.
@@ -237,8 +238,39 @@ fn records_a_call_starting_as_the_status_line_reads_it() {
 
     assert_eq!(
         running_call(&start, 1000),
-        r#"{"agent":"main","description":"Run the checks","start":1000,"summary":"npm run check","tool":"Bash"}"#
+        r#"{"agent":"main","agentId":"","description":"Run the checks","session":"","start":1000,"summary":"npm run check","tool":"Bash"}"#
     );
+}
+
+#[test]
+fn f32_ac1_records_the_subagent_and_the_session_of_a_call_starting() {
+    // The call EN-119's worker made at 2026-10-18T23:59:34Z, refused by `guard-bash`: no
+    // `PostToolUse` came, and its file stayed in `running/` (C5).
+    let start = input(
+        r#""tool_name": "Bash", "agent_id": "a119885dcbc2e3522", "agent_type": "story-worker", "session_id": "e149182b", "tool_input": {"command": "git log -3", "description": "Read tool incidents file"}"#,
+    );
+
+    assert_eq!(
+        running_call(&start, 1_792_367_974_686),
+        r#"{"agent":"story-worker","agentId":"a119885dcbc2e3522","description":"Read tool incidents file","session":"e149182b","start":1792367974686,"summary":"git log -3","tool":"Bash"}"#
+    );
+}
+
+#[test]
+fn f32_ac1_tells_the_calls_of_an_ended_subagent_by_its_id() {
+    let record = parse(r#"{"agent":"story-worker","agentId":"a1","start":5}"#).expect("JSON");
+
+    assert!(is_call_of(&record, "a1"));
+    assert!(!is_call_of(&record, "a2"));
+    // The main agent's call, and a file written before EN-120, name no subagent: never one's.
+    assert!(!is_call_of(
+        &parse(r#"{"agent":"main","agentId":""}"#).expect("JSON"),
+        ""
+    ));
+    assert!(!is_call_of(
+        &parse(r#"{"agent":"story-worker"}"#).expect("JSON"),
+        ""
+    ));
 }
 
 /// A command without the `GIT_*` variables of the process running the tests: under the pre-push
@@ -325,6 +357,48 @@ fn tracks_a_call_then_logs_it_and_removes_its_running_file() {
     assert_eq!(record.get("model").text(), "Opus 5.5");
     assert_eq!(record.get("startedAt"), started.get("start"));
     assert!(!metrics.join("running/toolu_9.json").exists());
+    let _ = fs::remove_dir_all(&root);
+}
+
+#[test]
+fn f32_ac1_removes_the_running_files_of_a_subagent_when_it_stops() {
+    let root = repository("stop");
+    let metrics = root.join(".git/metrics");
+    let start = |id: &str, agent: &str| {
+        format!(
+            "{{\"tool_name\":\"Bash\",\"tool_use_id\":\"{id}\",\"agent_id\":\"{agent}\",\"agent_type\":\"story-worker\",\"session_id\":\"s\",\"cwd\":{},\"tool_input\":{{\"command\":\"git log\"}}}}",
+            quote(&root.to_string_lossy())
+        )
+    };
+
+    // Two calls of `a1`, refused before they ran so that no `PostToolUse` removed them, and one of
+    // `a2`, still running.
+    for (id, agent) in [("toolu_1", "a1"), ("toolu_2", "a1"), ("toolu_3", "a2")] {
+        assert!(
+            run(
+                env!("CARGO_BIN_EXE_track-tool-call"),
+                &root,
+                &start(id, agent)
+            )
+            .status
+            .success()
+        );
+    }
+    let stop = format!(
+        "{{\"hook_event_name\":\"SubagentStop\",\"session_id\":\"s\",\"agent_id\":\"a1\",\"agent_type\":\"story-worker\",\"cwd\":{}}}",
+        quote(&root.to_string_lossy())
+    );
+
+    assert!(
+        run(env!("CARGO_BIN_EXE_log-tool-call"), &root, &stop)
+            .status
+            .success()
+    );
+    assert!(!metrics.join("running/toolu_1.json").exists());
+    assert!(!metrics.join("running/toolu_2.json").exists());
+    assert!(metrics.join("running/toolu_3.json").exists());
+    // A subagent's end is no tool call: nothing logged.
+    assert!(!metrics.join("tool-calls.jsonl").exists());
     let _ = fs::remove_dir_all(&root);
 }
 

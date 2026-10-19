@@ -16,8 +16,8 @@ use hooks::guard::is_space;
 use hooks::json::{self, Value};
 use hooks::record::count;
 use hooks::status::{
-    LONG_CALL_MS, RunningCall, Status, background_lines, is_run_open, is_turn_done, place_of,
-    read_running_call, running_line, session_snapshot, status_text, usage_snapshot,
+    LONG_CALL_MS, RunningCall, Status, background_lines, ended_calls, is_run_open, is_turn_done,
+    place_of, read_running_call, running_line, session_snapshot, status_text, usage_snapshot,
 };
 use hooks::time::short_duration;
 use hooks::tokens::turn_tokens;
@@ -143,11 +143,14 @@ fn draw() -> u8 {
         let _ = fs::remove_file(running.join(format!("{id}.json")));
     }
     // A main call started before the turn never finished (an interrupted turn): its file is
-    // removed; a subagent's call may outlive the turn that launched the subagent.
+    // removed; a subagent's call may outlive the turn that launched the subagent, but not the
+    // subagent itself: one that no subagent still running can have made is removed (EN-120).
     let turn_start = tally.start;
+    let left = running_calls(&running);
+    let ended = ended_calls(&left, &tally.pending, input.get("session_id").text());
 
-    for (name, call) in running_calls(&running) {
-        if call.agent == "main" && call.start < turn_start {
+    for (name, call) in &left {
+        if (call.agent == "main" && call.start < turn_start) || ended.contains(name) {
             let _ = fs::remove_file(running.join(name));
         }
     }

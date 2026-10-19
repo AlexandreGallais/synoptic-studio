@@ -88,6 +88,9 @@ pub struct Events {
     pub requests: Vec<Request>,
     /// The answered calls, in the order they were asked.
     pub calls: Vec<Call>,
+    /// The tokens of each model that Claude Code counted for the sessions (`modelUsage`, EN-120),
+    /// summed over the transcripts whose count is up to date, each model where it first came.
+    pub model_usage: Vec<(String, Tokens)>,
 }
 
 /// What a transcript holds, read up to `offset`.
@@ -108,6 +111,9 @@ pub struct Transcript {
     pub turn_start: i64,
     /// The rules' findings met in its tool results, in order.
     pub findings: Vec<Finding>,
+    /// The tokens of each model of its last `cost-state` line, the session's since it started;
+    /// none without one, or once a request came after it (EN-120).
+    pub model_usage: Vec<(String, Tokens)>,
 }
 
 impl Default for Transcript {
@@ -120,6 +126,7 @@ impl Default for Transcript {
             is_waiting: true,
             turn_start: 0,
             findings: Vec::new(),
+            model_usage: Vec::new(),
         }
     }
 }
@@ -146,8 +153,54 @@ impl Transcript {
                     })
                 })
                 .collect(),
+            model_usage: self.model_usage.clone(),
         }
     }
+}
+
+/// The tokens of each model a `cost-state` line holds (`modelUsage`, seen 2026-10-19 in 14 sessions'
+/// transcripts): Claude Code's count for the whole session, its subagents' included, written when
+/// the session is left and again, grown, when a resumed one is; by kind, `thinkingTokens` left out;
+/// the models by their ids' order; none for another line.
+#[must_use]
+pub fn model_usage(line: &Value) -> Vec<(String, Tokens)> {
+    if line.at("type").text() != "cost-state" {
+        return Vec::new();
+    }
+
+    match line.at("modelUsage") {
+        Value::Object(models) => models
+            .iter()
+            .map(|(model, usage)| {
+                (
+                    model.clone(),
+                    Tokens {
+                        input: usage.at("inputTokens").whole(),
+                        cache_write: usage.at("cacheCreationInputTokens").whole(),
+                        cache_read: usage.at("cacheReadInputTokens").whole(),
+                        output: usage.at("outputTokens").whole(),
+                    },
+                )
+            })
+            .collect(),
+        _ => Vec::new(),
+    }
+}
+
+/// Tokens per model summed, each model where it first came.
+#[must_use]
+pub fn summed_usage<'a, I: IntoIterator<Item = &'a (String, Tokens)>>(
+    usages: I,
+) -> Vec<(String, Tokens)> {
+    let mut sums: Vec<(String, Tokens)> = Vec::new();
+
+    for (model, tokens) in usages {
+        match sums.iter_mut().find(|(known, _)| known == model) {
+            Some((_, sum)) => *sum = sum.plus(tokens),
+            None => sums.push((model.clone(), *tokens)),
+        }
+    }
+    sums
 }
 
 /// Input keys naming what a tool acted on, in order of preference.
@@ -378,8 +431,16 @@ pub fn read_chunk(transcript: Transcript, chunk: &str) -> Transcript {
         };
         let stamp = json.at("timestamp").text();
 
+        // The session's count has no time; a request after it makes it out of date.
+        if json.at("type").text() == "cost-state" {
+            next.model_usage = model_usage(&json);
+            continue;
+        }
         if stamp.is_empty() {
             continue;
+        }
+        if json.at("type").text() == "assistant" {
+            next.model_usage.clear();
         }
         let time = epoch_ms(stamp);
 
@@ -398,6 +459,7 @@ pub fn all_events(transcripts: &[Transcript]) -> Events {
         .fold(Events::default(), |mut all, events| {
             all.requests.extend(events.requests);
             all.calls.extend(events.calls);
+            all.model_usage = summed_usage(all.model_usage.iter().chain(&events.model_usage));
             all
         })
 }

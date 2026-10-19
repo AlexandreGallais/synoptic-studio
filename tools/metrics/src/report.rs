@@ -8,6 +8,7 @@ use std::collections::{HashMap, VecDeque};
 use std::hash::BuildHasher;
 use std::path::{Path, PathBuf};
 
+use run_totals::tally::Tokens;
 use serde_json::Value;
 
 use crate::findings::findings_table;
@@ -229,7 +230,42 @@ fn command_sections(calls: &[Timed<'_>]) -> Vec<String> {
     ]
 }
 
-/// The sections about units of work: sessions, features, stories and branches, tasks.
+/// The tokens Claude Code counted for each session (`modelUsage`, EN-120), its transcripts' counts
+/// summed, a transcript's session being its requests'; only for a session whose first request
+/// came in the period, since the count holds the whole session and cannot be cut (AUD-034).
+#[must_use]
+pub fn counted_sessions(transcripts: &[Transcript], since: i64) -> HashMap<String, Tokens> {
+    let mut firsts: HashMap<&str, i64> = HashMap::new();
+    let mut counts: HashMap<String, Tokens> = HashMap::new();
+
+    for transcript in transcripts {
+        for request in &transcript.requests {
+            let first = firsts.entry(&request.session).or_insert(request.time);
+
+            *first = (*first).min(request.time);
+        }
+        if let Some(request) = transcript.requests.first() {
+            let count = counts.entry(request.session.clone()).or_default();
+
+            *count = transcript
+                .model_usage
+                .iter()
+                .fold(*count, |sum, (_, tokens)| sum.plus(tokens));
+        }
+    }
+
+    counts.retain(|session, count| {
+        count.total() > 0
+            && firsts
+                .get(session.as_str())
+                .is_some_and(|first| *first >= since)
+    });
+    counts
+}
+
+/// The sections about units of work: sessions, features, stories and branches, tasks. A session's
+/// tokens are Claude Code's count when [`counted_sessions`] holds it, the requests' otherwise; the
+/// other units' are always the requests', a count being the session's, not a story's.
 fn work_sections(
     moments: &[Moment],
     inputs: &ReportInputs,
@@ -237,23 +273,34 @@ fn work_sections(
 ) -> Vec<String> {
     let commits = task_commits(&inputs.log);
     let by_unit = commits_by_unit(&commits);
+    let counted = counted_sessions(&inputs.transcripts, inputs.since);
     let mut starts: HashMap<&str, i64> = HashMap::new();
 
     for moment in moments {
         starts.entry(&moment.session).or_insert(moment.time);
     }
 
-    let session_key = |moment: &Moment| {
-        format!(
-            "{} {}",
-            iso_date(starts.get(moment.session.as_str()).copied().unwrap_or(0)),
-            js_prefix(&moment.session, SESSION_SHOWN)
-        )
-    };
+    let sessions: Vec<WorkStats> = work_stats(moments, |moment| moment.session.clone())
+        .into_iter()
+        .map(|stats| {
+            let count = counted.get(&stats.key);
+
+            WorkStats {
+                key: format!(
+                    "{} {}",
+                    iso_date(starts.get(stats.key.as_str()).copied().unwrap_or(0)),
+                    js_prefix(&stats.key, SESSION_SHOWN)
+                ),
+                output_tokens: count.map_or(stats.output_tokens, |tokens| tokens.output),
+                tokens: count.map_or(stats.tokens, Tokens::total),
+                ..stats
+            }
+        })
+        .collect();
 
     vec![
         "## Sessions".to_owned(),
-        work_table("Started, session", work_stats(moments, session_key)),
+        work_table("Started, session", sessions),
         "## Features".to_owned(),
         work_table(
             "Feature",

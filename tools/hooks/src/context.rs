@@ -148,3 +148,41 @@ pub fn tables(starts: &[Start]) -> String {
     }
     text
 }
+
+/// Characters per hundred tokens of a page a worker loads: 2.30 characters per token, measured by
+/// EN-097 on 2026-10-17 from the growth of its requests' input (170,731 characters, 74,118 tokens
+/// of Markdown with code and tables), the ratio EN-098 and EN-099 measured their pages with.
+pub const CHARACTERS_PER_HUNDRED_TOKENS: usize = 230;
+
+/// The tokens a page costs a worker that loads it: its characters at 2.30 per token, rounded half
+/// up (I72).
+#[must_use]
+pub fn page_tokens(characters: usize) -> usize {
+    (characters * 100 + CHARACTERS_PER_HUNDRED_TOKENS / 2) / CHARACTERS_PER_HUNDRED_TOKENS
+}
+
+/// One row per file named, its characters and tokens, then their total, as a Markdown table:
+/// each file's path and text.
+#[must_use]
+pub fn pages_table(pages: &[(String, String)]) -> String {
+    let mut text = format!(
+        "| File | Characters | Tokens, at {}.{:02} characters per token |\n| --- | --- | --- |\n",
+        CHARACTERS_PER_HUNDRED_TOKENS / 100,
+        CHARACTERS_PER_HUNDRED_TOKENS % 100
+    );
+    let mut total = 0;
+
+    for (path, page) in pages {
+        let characters = page.chars().count();
+
+        total += characters;
+        let _ = writeln!(
+            text,
+            "| {} | {characters} | {} |",
+            path.replace('|', "\\|"),
+            page_tokens(characters)
+        );
+    }
+    let _ = writeln!(text, "| Total | {total} | {} |", page_tokens(total));
+    text
+}
