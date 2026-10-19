@@ -2,8 +2,9 @@
 //! whatever the instructions say, read word by word ([`crate::forbidden`], AUD-023), the forms a
 //! story's worktree refuses, and a script missing from the `package.json` a command runs against.
 //! The worktree's forms read each segment word by word too (EN-119), the segments split by
-//! [`separated`] outside quotes; the here-documents are found as `.claude/hooks/guard-bash.ts`
-//! found them (EN-104), their word read as the shell reads it.
+//! [`separated`] outside quotes; the here-documents are read as the shell reads them
+//! ([`crate::heredoc`], AUD-033), and a push naming no destination is judged in the folders it
+//! may run in ([`crate::place`], AUD-033).
 //!
 //! After the brief's `cd "<worktree>" || exit <n>`, a chain of Git commands that only read goes
 //! through ([`is_read_only_git`], EN-119), as does one Git command of any kind (EN-104), each alone
@@ -14,9 +15,14 @@
 use git_repository::lexical_join;
 
 use crate::forbidden::{
-    Arguments, Forbidden, abbreviates, git_line, invocations, is_assignment, program_name, reason,
+    Arguments, Forbidden, Invocation, abbreviates, first_forbidden, git_line, invocations,
+    is_assignment, program_name,
 };
+use crate::place::BranchOf;
 use crate::shell::{Simple, commands};
+use crate::worktrees::worktree_root;
+
+pub use crate::heredoc::{heredoc_bodies, without_heredocs};
 
 /// Why a full Vitest run is denied.
 pub const FULL_VITEST: &str = "A full Vitest run takes the heavy lock: run `npm run test`, or name the test files (ADR-0063).";
@@ -37,6 +43,10 @@ pub const FORCE_PUSH: &str =
 
 /// Why a push to `main` or `develop` is denied.
 pub const PROTECTED_PUSH: &str = "main and develop are never pushed by the agent: a story's branch is pushed, and its pull request merges it (AGENTS.md, Never).";
+
+/// Why a push naming no destination is denied where the guard cannot read the branch it updates
+/// (AUD-033).
+pub const UNKNOWN_PUSH: &str = "A push naming no destination updates the current branch of the repository it runs against, which this command hides from the guard (a `cd` it cannot follow, a folder named by a variable, `env -C`, a `GIT_DIR` set apart, or a folder whose branch cannot be read): run `cd \"<folder>\" || exit 9`, then the push alone, or name its destination (`git push -u origin HEAD:<branch>`).";
 
 /// Why taking the heavy lock by hand is denied (EN-119).
 pub const HAND_LOCK: &str = "`.git/heavy.lock` is taken by the heavy commands themselves (EN-047): run `git push`, `npm run check:all`, `npm run test` or the other heavy command as it is, in the background when it may last; a lock taken by hand makes a `git push` inside it wait forever for its own pre-push.";
@@ -63,9 +73,6 @@ const VITEST_VALUED: [&str; 12] = [
     "-t",
 ];
 
-/// The folder of a story's worktree inside a path (EN-052).
-const WORKTREES: &str = "/.claude/worktrees/";
-
 /// The scripts npm runs without a `package.json` entry (`npm run env`).
 const NPM_OWN_SCRIPTS: [&str; 1] = ["env"];
 
@@ -78,11 +85,6 @@ pub fn is_space(character: char) -> bool {
 /// The characters `.` does not match in a JavaScript regular expression.
 fn is_line_break(character: char) -> bool {
     matches!(character, '\n' | '\r' | '\u{2028}' | '\u{2029}')
-}
-
-/// JavaScript's `\w` without the `i` flag: an ASCII letter, digit or underscore.
-fn is_word(byte: u8) -> bool {
-    byte.is_ascii_alphanumeric() || byte == b'_'
 }
 
 /// The end of `\s*` from `at`.
@@ -98,125 +100,6 @@ fn after_some_spaces(text: &str, at: usize) -> Option<usize> {
     let end = after_spaces(text, at);
 
     (end > at).then_some(end)
-}
-
-/// The shell command without the bodies of its here-documents: their lines are data written to a
-/// file or a pipe (a commit message, a test case), never run. Each `<<WORD … WORD` body is removed,
-/// the line opening it kept, as `/(<<-?\s*(['"]?)(\w+)\2[^\n]*)\n[\s\S]*?\n\s*\3(?=\n|$)/gu`
-/// replaced by its first group, the word read as the shell reads it (EN-119): quoted, any
-/// characters but its quote and a line feed (`'END-OF-MESSAGE'`); unquoted, `\w`, `-` and `.`.
-#[must_use]
-pub fn without_heredocs(command: &str) -> String {
-    let mut kept = String::with_capacity(command.len());
-    let mut at = 0;
-
-    while at < command.len() {
-        if let Some(heredoc) = heredoc_at(command, at) {
-            kept.push_str(&command[at..heredoc.opening_end]);
-            at = heredoc.end;
-        } else {
-            let character = command[at..].chars().next().unwrap_or_default();
-
-            kept.push(character);
-            at += character.len_utf8();
-        }
-    }
-    kept
-}
-
-/// The bodies of a command's here-documents, as [`without_heredocs`] finds them: the lines
-/// between each opening line and the line of its word.
-#[must_use]
-pub fn heredoc_bodies(command: &str) -> Vec<&str> {
-    let mut bodies = Vec::new();
-    let mut at = 0;
-
-    while at < command.len() {
-        if let Some(heredoc) = heredoc_at(command, at) {
-            bodies.push(&command[heredoc.opening_end + 1..heredoc.body_end]);
-            at = heredoc.end;
-        } else {
-            at += command[at..].chars().next().map_or(1, char::len_utf8);
-        }
-    }
-    bodies
-}
-
-/// Where a here-document lies in a command.
-struct Heredoc {
-    /// The line feed ending its opening line.
-    opening_end: usize,
-    /// The line feed before the line of its word.
-    body_end: usize,
-    /// The end of that word.
-    end: usize,
-}
-
-/// Whether a byte may be part of an unquoted here-document word.
-fn is_heredoc_word(byte: u8) -> bool {
-    is_word(byte) || matches!(byte, b'-' | b'.')
-}
-
-/// A here-document opening at `at`, `None` when none starts there.
-fn heredoc_at(text: &str, at: usize) -> Option<Heredoc> {
-    // `<<<` is a here-string, its word on the same line.
-    if !text[at..].starts_with("<<") || text[at + 2..].starts_with('<') || text[..at].ends_with('<')
-    {
-        return None;
-    }
-    let mut after = at + 2;
-
-    if text[after..].starts_with('-') {
-        after += 1;
-    }
-    after = after_spaces(text, after);
-
-    let quote = match text.as_bytes().get(after) {
-        Some(byte @ (b'\'' | b'"')) => Some(*byte),
-        _ => None,
-    };
-    let word_start = after + usize::from(quote.is_some());
-    let longest = text.as_bytes()[word_start..]
-        .iter()
-        .take_while(|byte| match quote {
-            Some(quote) => **byte != quote && **byte != b'\n',
-            None => is_heredoc_word(**byte),
-        })
-        .count();
-
-    // `\w+` gives back characters when the rest fails: a shorter word is tried in turn.
-    (1..=longest).rev().find_map(|length| {
-        let word_end = word_start + length;
-        let opened = match quote {
-            Some(byte) => (text.as_bytes().get(word_end) == Some(&byte)).then_some(word_end + 1)?,
-            None => word_end,
-        };
-        let opening_end = text[opened..].find('\n').map(|index| opened + index)?;
-
-        body_end(text, opening_end, &text[word_start..word_end]).map(|(body_end, end)| Heredoc {
-            opening_end,
-            body_end,
-            end,
-        })
-    })
-}
-
-/// The end of a here-document's body: the first `\n\s*WORD` after its opening line, followed by a
-/// line feed or the end of the text; its line feed and the end of the word.
-fn body_end(text: &str, opening_end: usize, word: &str) -> Option<(usize, usize)> {
-    let mut search = opening_end + 1;
-
-    loop {
-        let line_feed = search + text.get(search..)?.find('\n')?;
-        let start = after_spaces(text, line_feed + 1);
-        let end = start + word.len();
-
-        if text[start..].starts_with(word) && matches!(text.as_bytes().get(end), None | Some(b'\n'))
-        {
-            return Some((line_feed, end));
-        }
-        search = line_feed + 1;
-    }
 }
 
 /// The segments of a shell command, split at `&&`, `||`, `;`, a pipe and a line feed outside
@@ -249,7 +132,7 @@ pub fn separated(command: &str) -> Vec<(&'static str, String)> {
 
 /// The segments of [`separated`] as byte ranges of the command, untrimmed, each with the
 /// separator before it.
-fn spans(command: &str) -> Vec<(&'static str, usize, usize)> {
+pub(crate) fn spans(command: &str) -> Vec<(&'static str, usize, usize)> {
     let mut pieces = Vec::new();
     let mut start = 0;
     let mut before = "";
@@ -383,7 +266,10 @@ const BRANCH_LISTING: [&str; 11] = [
     "--no-color",
 ];
 
-/// Git's options that write a file or run a program, read by any unique prefix (`REF-GITCLI`).
+/// Git's options that write a file or run a program, read by any unique prefix (`REF-GITCLI`):
+/// `--output=<file>` writes the output "to a specific file instead of stdout" (`REF-GIT-DIFF`,
+/// `REF-GIT-LOG`), `--ext-diff` allows "an external diff helper to be executed", and `grep`'s
+/// `-O` and `--open-files-in-pager` open the matching files in a pager (`REF-GIT-GREP`).
 const GIT_WRITING_OPTIONS: [&str; 3] = ["--output", "--ext-diff", "--open-files-in-pager"];
 
 /// Whether the words of a Git command only read the repository: no option before its subcommand,
@@ -437,7 +323,9 @@ const READ_ONLY_FILTERS: [&str; 5] = ["head", "tail", "grep", "wc", "cut"];
 
 /// The Git subcommands that only read the repository, which a chain after the brief's `cd` may
 /// join (EN-119): the reads the transcripts chain most (`status`, `diff`, `show`, `log`, I93) and
-/// the plumbing that prints a reference or an object.
+/// the plumbing that prints a reference or an object. `diff` shows changes, `log` "shows the
+/// commit logs" and `grep` looks for patterns in the tracked files (`REF-GIT-DIFF`, `REF-GIT-LOG`,
+/// `REF-GIT-GREP`), none writing but by the options of [`GIT_WRITING_OPTIONS`].
 pub const READ_ONLY_GIT: [&str; 15] = [
     "blame",
     "branch",
@@ -630,26 +518,26 @@ pub fn forbidden_text(forbidden: Forbidden) -> &'static str {
         Forbidden::ForcePush => FORCE_PUSH,
         Forbidden::ProtectedPush => PROTECTED_PUSH,
         Forbidden::HandLock => HAND_LOCK,
+        Forbidden::UnknownPlace => UNKNOWN_PUSH,
     }
 }
 
-/// The reason for denying a shell command, the current branch unknown: see [`denied_reason_on`].
+/// The reason for denying a shell command, every branch read empty: see [`denied_reason_on`].
 #[must_use]
 pub fn denied_reason(command: &str) -> Option<&'static str> {
-    denied_reason_on(command, &String::new)
+    denied_reason_on(command, "", &|_| Some(String::new()))
 }
 
-/// The reason for denying a shell command: the first command it runs that is forbidden, every
-/// simple command and the command each wrapper runs read word by word (AUD-023,
-/// [`crate::forbidden`]), then a full Vitest run, which takes the heavy lock through `npm run test`
-/// (EN-047). `branch` gives the current branch, asked only for a push naming no destination.
+/// The reason for denying a shell command run from `cwd`: the first command it runs that is
+/// forbidden, every simple command and the command each wrapper runs read word by word (AUD-023,
+/// [`crate::forbidden::first_forbidden`]), then a full Vitest run, which takes the heavy lock
+/// through `npm run test` (EN-047). `branch` gives the current branch of a repository, asked only
+/// for a push naming no destination, in each folder that push may run in (AUD-033).
 #[must_use]
-pub fn denied_reason_on(command: &str, branch: &dyn Fn() -> String) -> Option<&'static str> {
+pub fn denied_reason_on(command: &str, cwd: &str, branch: BranchOf) -> Option<&'static str> {
     let found = invocations(&without_heredocs(command));
 
-    found
-        .iter()
-        .find_map(|invocation| reason(invocation, branch))
+    first_forbidden(command, &Some(vec![cwd.to_owned()]), branch)
         .map(forbidden_text)
         .or_else(|| {
             found
@@ -663,10 +551,10 @@ pub fn denied_reason_on(command: &str, branch: &dyn Fn() -> String) -> Option<&'
 /// forbidden command ([`denied_reason_on`]), then the forms of the worktree it enters by a leading
 /// `cd` ([`entered_worktree_reason`]), then those of a worktree a later `cd` enters.
 #[must_use]
-pub fn shell_reason(command: &str, cwd: &str, branch: &dyn Fn() -> String) -> Option<String> {
+pub fn shell_reason(command: &str, cwd: &str, branch: BranchOf) -> Option<String> {
     let judged = entered(command, cwd);
 
-    denied_reason_on(command, branch)
+    denied_reason_on(command, cwd, branch)
         .map(str::to_owned)
         .or_else(|| {
             entered_worktree_reason(&judged).or_else(|| {
@@ -677,10 +565,9 @@ pub fn shell_reason(command: &str, cwd: &str, branch: &dyn Fn() -> String) -> Op
         })
 }
 
-/// The calls by which a Python program writes, moves or removes a file (EN-119).
-const PYTHON_WRITES: [&str; 14] = [
-    ".write(",
-    ".writelines(",
+/// The calls by which a Python program writes, moves or removes a file (EN-119), or runs a program
+/// or a text that may (AUD-033); `shutil` by its functions that write, `.write(` read apart.
+const PYTHON_WRITES: [&str; 25] = [
     "write_text(",
     "write_bytes(",
     ".touch(",
@@ -691,33 +578,82 @@ const PYTHON_WRITES: [&str; 14] = [
     ".mkdir(",
     "os.makedirs(",
     "json.dump(",
-    "shutil.",
+    "shutil.copy",
+    "shutil.move(",
+    "shutil.rmtree(",
+    "shutil.make_archive(",
+    "shutil.unpack_archive(",
+    "shutil.chown(",
     "inplace=",
+    "os.system(",
+    "os.popen(",
+    "os.exec",
+    "os.spawn",
+    "os.posix_spawn",
+    "pty.spawn(",
+    "subprocess",
+    "exec(",
 ];
 
-/// Whether a Python program's text writes a file (EN-119): a call of [`PYTHON_WRITES`] (`.write(`,
-/// `write_text(`, `os.replace(`, `shutil.`, `fileinput`'s `inplace=`…), or an `open(` given a
-/// quoted mode holding `w`, `a`, `x` or `+`. A script read from a file is not read.
+/// The streams a `.write(` may print to without writing a file.
+const PYTHON_STREAMS: [&str; 2] = ["sys.stdout", "sys.stderr"];
+
+/// Whether a Python program's text writes a file (EN-119): a call of [`PYTHON_WRITES`]
+/// (`write_text(`, `os.replace(`, `shutil.copy`, `fileinput`'s `inplace=`, `os.system(`,
+/// `subprocess`, `exec(`…), a `.write(` or `.writelines(` on anything but `sys.stdout` or
+/// `sys.stderr`, an `open(` given a quoted mode holding `w`, `a`, `x` or `+` (its first argument
+/// for a method, `Path.open(mode)`, `REF-PYTHON-PATHLIB`), or an `os.open(` given flags other
+/// than `O_RDONLY` (AUD-033). A script read from a file is not read.
 #[must_use]
 pub fn python_writes(code: &str) -> bool {
+    let writes_to_a_file = [".write(", ".writelines("].iter().any(|call| {
+        code.match_indices(call).any(|(at, _)| {
+            !PYTHON_STREAMS
+                .iter()
+                .any(|stream| code[..at].ends_with(stream))
+        })
+    });
+
     PYTHON_WRITES.iter().any(|call| code.contains(call))
-        || code
-            .match_indices("open(")
-            .any(|(at, call)| opens_to_write(&code[at + call.len()..]))
+        || writes_to_a_file
+        || code.match_indices("open(").any(|(at, call)| {
+            let arguments = &code[at + call.len()..];
+            let before = &code[..at];
+
+            if before.ends_with("os.") {
+                opens_flags_to_write(arguments)
+            } else if before.ends_with('.') {
+                opens_to_write(arguments, &[0, 1])
+            } else {
+                opens_to_write(arguments, &[1])
+            }
+        })
+}
+
+/// Whether the arguments of an `os.open(` give flags other than reading only: its second argument
+/// is not `os.O_RDONLY`, `O_RDONLY` nor `0`.
+fn opens_flags_to_write(arguments: &str) -> bool {
+    top_level_arguments(arguments)
+        .get(1)
+        .is_some_and(|flags| !matches!(*flags, "os.O_RDONLY" | "O_RDONLY" | "0"))
 }
 
 /// Whether the arguments of an `open(` call, from after its parenthesis, give a mode that writes:
-/// its second argument or its `mode=`, a quoted string of `r`, `w`, `a`, `x`, `b`, `t` and `+`
-/// holding one of `w`, `a`, `x`, `+`.
-fn opens_to_write(arguments: &str) -> bool {
+/// one of its arguments at `positions` or its `mode=`, a quoted string of `r`, `w`, `a`, `x`, `b`,
+/// `t` and `+` holding one of `w`, `a`, `x`, `+`.
+fn opens_to_write(arguments: &str, positions: &[usize]) -> bool {
     let parts = top_level_arguments(arguments);
-    let positional = parts.get(1).filter(|part| !part.contains('='));
+    let positional = positions
+        .iter()
+        .filter_map(|position| parts.get(*position))
+        .filter(|part| !part.contains('='))
+        .copied();
     let keyword = parts
         .iter()
         .find_map(|part| part.strip_prefix("mode").map(str::trim_start))
         .and_then(|rest| rest.strip_prefix('='));
 
-    positional.copied().into_iter().chain(keyword).any(|mode| {
+    positional.chain(keyword).any(|mode| {
         let mode = mode.trim();
         let text = ["'", "\""]
             .iter()
@@ -755,26 +691,6 @@ fn top_level_arguments(text: &str) -> Vec<&str> {
     }
     parts.push(text[start..].trim());
     parts
-}
-
-/// The worktree a folder is inside (EN-052), its root:
-/// `^(?<root>.*\/\.claude\/worktrees\/[^/]+)(?:\/|$)`, the last such folder of the path.
-#[must_use]
-pub fn worktree_root(folder: &str) -> Option<&str> {
-    let before_break = folder.find(is_line_break).unwrap_or(folder.len());
-
-    folder
-        .match_indices(WORKTREES)
-        .filter(|(index, _)| *index <= before_break)
-        .map(|(index, _)| index + WORKTREES.len())
-        .filter_map(|start| {
-            let end = folder[start..]
-                .find('/')
-                .map_or(folder.len(), |at| start + at);
-
-            (end > start).then(|| &folder[..end])
-        })
-        .last()
 }
 
 /// A command as the guard judges it: the folder it runs in and the part judged there.
@@ -846,7 +762,7 @@ pub fn entered(command: &str, cwd: &str) -> Entered {
 /// The folder a segment `cd <folder>` enters, its one word unquoted, and whether it is known before
 /// the shell runs: not when a variable, a substitution or a `~` gives it. `None` for any other
 /// segment.
-fn cd_folder(segment: &str) -> Option<(String, bool)> {
+pub(crate) fn cd_folder(segment: &str) -> Option<(String, bool)> {
     let simples = commands(segment);
     let [simple] = simples.as_slice() else {
         return None;
@@ -860,7 +776,7 @@ fn cd_folder(segment: &str) -> Option<(String, bool)> {
 }
 
 /// Whether a segment is `exit` or `exit <n>`, alone.
-fn is_exit(segment: &str) -> bool {
+pub(crate) fn is_exit(segment: &str) -> bool {
     matches!(commands(segment).as_slice(), [simple] if simple.redirections.is_empty()
         && matches!(simple.words.as_slice(), [exit] if exit == "exit")
             | matches!(simple.words.as_slice(), [exit, code] if exit == "exit" && !code.is_empty() && code.bytes().all(|byte| byte.is_ascii_digit())))
@@ -902,13 +818,40 @@ pub fn worktree_reason(command: &str, folder: &str) -> Option<String> {
     if simples.iter().any(writes_golden) {
         return Some(GOLDEN_WRITE.to_owned());
     }
-    if simples
+    let found = invocations(&without_heredocs(command));
+    let python = found.iter().any(|invocation| {
+        invocation
+            .words
+            .first()
+            .is_some_and(|program| is_python(program))
+    });
+
+    if found
         .iter()
-        .any(|simple| python_writes_file(simple, command))
+        .any(|invocation| python_writes_file(invocation, command))
+        || (python && found.iter().any(tees_a_file))
     {
         return Some(PYTHON_WRITE.to_owned());
     }
     chained_git_hint(&pieces, root)
+}
+
+/// Whether a command is a `tee` writing a file: an operand other than `-`, `/dev/null`,
+/// `/dev/stdout` and `/dev/stderr` (AUD-033).
+fn tees_a_file(invocation: &Invocation) -> bool {
+    invocation
+        .words
+        .split_first()
+        .is_some_and(|(program, operands)| {
+            program_name(program) == "tee"
+                && operands.iter().any(|operand| {
+                    !operand.starts_with('-')
+                        && !matches!(
+                            operand.as_str(),
+                            "/dev/null" | "/dev/stdout" | "/dev/stderr"
+                        )
+                })
+        })
 }
 
 /// Whether a simple command runs Vitest's mode `golden-write` (`--mode golden-write` or
@@ -920,6 +863,59 @@ fn writes_golden(simple: &Simple) -> bool {
         || words
             .windows(2)
             .any(|pair| pair[0] == "--mode" && pair[1] == "golden-write")
+}
+
+/// Where a Python program's text comes from (`REF-PYTHON-CMDLINE`).
+enum PythonProgram<'a> {
+    /// The text of `-c`, glued to it (`-ccode`, `-Ic`) or the next word.
+    Inline(&'a str),
+    /// Its standard input: no script, `-`, or `/dev/stdin`.
+    Input,
+    /// A script file or a module, which the guard does not read.
+    Elsewhere,
+}
+
+/// The program a Python command line runs, its options read as Python reads them: short ones
+/// bundled (`-Ic`), `-W` and `-X` taking a value, the first of `-c`, `-m`, `-` or a script ending
+/// the options.
+fn python_program(arguments: &[String]) -> PythonProgram<'_> {
+    let mut at = 0;
+
+    while let Some(word) = arguments.get(at) {
+        at += 1;
+        if word == "-" {
+            return PythonProgram::Input;
+        }
+        if word.starts_with("--") {
+            continue;
+        }
+        let Some(letters) = word.strip_prefix('-') else {
+            return if matches!(word.as_str(), "/dev/stdin" | "/dev/fd/0") {
+                PythonProgram::Input
+            } else {
+                PythonProgram::Elsewhere
+            };
+        };
+        for (index, letter) in letters.char_indices() {
+            let rest = &letters[index + letter.len_utf8()..];
+
+            match letter {
+                'c' if rest.is_empty() => {
+                    return arguments
+                        .get(at)
+                        .map_or(PythonProgram::Input, |code| PythonProgram::Inline(code));
+                }
+                'c' => return PythonProgram::Inline(rest),
+                'm' => return PythonProgram::Elsewhere,
+                'W' | 'X' => {
+                    at += usize::from(rest.is_empty());
+                    break;
+                }
+                _ => {}
+            }
+        }
+    }
+    PythonProgram::Input
 }
 
 /// The words of a simple command from its program on, the assignments before it skipped.
@@ -944,19 +940,19 @@ fn is_python(word: &str) -> bool {
         })
 }
 
-/// Whether a simple command runs Python writing a file: its output redirected to a file other than
-/// `/dev/null`, or its program text writing one ([`python_writes`]), given by `-c`, by a
-/// here-string, or by a here-document of `command` when it reads its program from its input.
-fn python_writes_file(simple: &Simple, command: &str) -> bool {
-    let words = program_words(simple);
-    let Some((program, arguments)) = words.split_first() else {
+/// Whether a command runs Python writing a file, a wrapper's looked through (AUD-033): its output
+/// redirected to a file other than `/dev/null`, or its program text writing one
+/// ([`python_writes`]), given by `-c`, or by a here-string or a here-document of `command` when it
+/// reads its program from its input.
+fn python_writes_file(invocation: &Invocation, command: &str) -> bool {
+    let Some((program, arguments)) = invocation.words.split_first() else {
         return false;
     };
 
     if !is_python(program) {
         return false;
     }
-    let redirects_output = simple.redirections.iter().any(|redirection| {
+    let redirects_output = invocation.redirections.iter().any(|redirection| {
         let operator = redirection.trim_start_matches(|digit: char| digit.is_ascii_digit());
         let target = operator.trim_start_matches(['&', '>', '|']);
 
@@ -964,29 +960,20 @@ fn python_writes_file(simple: &Simple, command: &str) -> bool {
             && !operator.starts_with(">&")
             && target != "/dev/null"
     });
-    let inline = arguments
-        .iter()
-        .position(|word| word == "-c")
-        .and_then(|at| arguments.get(at + 1));
-    // No script, nor `-c` text, given as an operand (`-` alone is an option here): the program
-    // comes from its input.
-    let reads_input = arguments.iter().all(|word| word.starts_with('-'));
-    let here_strings = simple
+    let here_strings = invocation
         .redirections
         .iter()
         .filter_map(|redirection| redirection.strip_prefix("<<<"));
-    let fed: Vec<&str> = if reads_input {
-        heredoc_bodies(command)
-            .into_iter()
-            .chain(here_strings)
-            .collect()
-    } else {
-        Vec::new()
-    };
 
     redirects_output
-        || inline.is_some_and(|code| python_writes(code))
-        || fed.iter().any(|code| python_writes(code))
+        || match python_program(arguments) {
+            PythonProgram::Inline(code) => python_writes(code),
+            PythonProgram::Input => heredoc_bodies(command)
+                .into_iter()
+                .chain(here_strings)
+                .any(python_writes),
+            PythonProgram::Elsewhere => false,
+        }
 }
 
 /// The program a segment runs, its assignments skipped, and the subcommand of a Git one: `None`

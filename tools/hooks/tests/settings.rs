@@ -121,33 +121,59 @@ fn the_release_binaries_are_allowed_by_name_never_by_a_wildcard() {
     assert_eq!(allowed, expected);
 }
 
-#[test]
-fn the_guard_that_cannot_run_blocks_the_shell_command() {
-    let settings =
-        parse(&fs::read_to_string(root().join(".claude/settings.json")).expect("settings"))
-            .expect("JSON");
+/// The matchers of the `PreToolUse` entries whose handler runs `guard-bash` failing closed, and
+/// every handler of the settings with an `onFailure`, by command.
+fn closed_guards(settings: &Value) -> (Vec<String>, Vec<String>) {
+    let mut guarded = Vec::new();
     let mut failing_closed = Vec::new();
 
-    // A missing or crashing binary is a non-blocking error, its call let through, unless the
-    // handler's `onFailure` says `block` (`REF-CC-HOOKS`, AUD-023): only the guard does, the other
-    // hooks letting a call through when they fail, so that their own failure never blocks work.
-    for (_, entries) in match settings.get("hooks") {
+    for (event, entries) in match settings.get("hooks") {
         Value::Object(events) => events.clone(),
         _ => Vec::new(),
     } {
-        for handler in entries
-            .items()
-            .iter()
-            .flat_map(|entry| entry.get("hooks").items())
-        {
-            if !handler.get("onFailure").text().is_empty() {
-                assert_eq!(handler.get("onFailure").text(), "block");
-                failing_closed.push(handler.get("command").text().to_owned());
+        for entry in entries.items() {
+            for handler in entry.get("hooks").items() {
+                let command = handler.get("command").text();
+
+                if !handler.get("onFailure").text().is_empty() {
+                    failing_closed.push(format!("{command} {}", handler.get("onFailure").text()));
+                }
+                if event == "PreToolUse"
+                    && command == "${CLAUDE_PROJECT_DIR}/target/release/guard-bash"
+                    && handler.get("onFailure").text() == "block"
+                {
+                    guarded.push(entry.get("matcher").text().to_owned());
+                }
             }
         }
     }
+    guarded.sort();
+    (guarded, failing_closed)
+}
+
+#[test]
+fn the_guard_that_cannot_run_blocks_the_shell_command_and_the_write() {
+    let settings =
+        parse(&fs::read_to_string(root().join(".claude/settings.json")).expect("settings"))
+            .expect("JSON");
+    let block = "${CLAUDE_PROJECT_DIR}/target/release/guard-bash block";
+
+    // A missing or crashing binary is a non-blocking error, its call let through, unless the
+    // handler's `onFailure` says `block` (`REF-CC-HOOKS`, AUD-023): only the guard does, on the
+    // shell and on the writes (AUD-033), the other hooks letting a call through when they fail,
+    // so that their own failure never blocks work.
     assert_eq!(
-        failing_closed,
-        ["${CLAUDE_PROJECT_DIR}/target/release/guard-bash"]
+        closed_guards(&settings),
+        (
+            vec!["Bash".to_owned(), "Write|Edit|NotebookEdit".to_owned()],
+            vec![block.to_owned(), block.to_owned()]
+        )
     );
+    // The writes' entry removed, or its `onFailure` dropped: the check sees it.
+    let without_writes = parse(
+        r#"{"hooks":{"PreToolUse":[{"matcher":"Bash","hooks":[{"command":"${CLAUDE_PROJECT_DIR}/target/release/guard-bash","onFailure":"block"}]},{"matcher":"Write|Edit|NotebookEdit","hooks":[{"command":"${CLAUDE_PROJECT_DIR}/target/release/guard-bash"}]}]}}"#,
+    )
+    .expect("JSON");
+
+    assert_eq!(closed_guards(&without_writes).0, ["Bash"]);
 }

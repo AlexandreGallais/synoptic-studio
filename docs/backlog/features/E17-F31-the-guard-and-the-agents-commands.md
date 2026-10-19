@@ -14,7 +14,7 @@ Cut on 2026-10-18 by the Product Owner from E17's tool incidents (SP-024): EN-11
 ## Acceptance criteria
 
 1. In a worktree, the guard reads a command by its words: a read-only chain, a multi-line commit message and a URL go through; `mkdir …heavy.lock`, a `python3` writing a file and a worker's write into the main checkout are refused; `git-sequences state` gives a worktree's state in one call (EN-119).
-2. `replace` without input prints its usage and ends at once, and `npm run fix` keeps a type-only re-export (`export type * from …`) as it is (EN-138).
+2. `replace` called alone with a terminal for input, with `--help` or with an argument prints its usage and ends at once; called alone with a closed input, as the agent's Bash tool gives it, it ends at once with `no edit block read`; and `npm run fix` keeps a type-only re-export (`export type * from …`) as it is (EN-138; worded so by AUD-033, F6).
 
 ## Stories
 
@@ -24,7 +24,7 @@ In delivery order.
 | --- | --- | --- | --- |
 | [EN-119](../stories/E17-F31-EN-119-the-guard-reads-by-words.md) | EN | The guard reads a command by its words | done |
 | [EN-138](../stories/E17-F31-EN-138-replace-and-fix-do-what-they-say.md) | EN | replace and npm run fix do what they say | done |
-| [AUD-033](../stories/E17-F31-AUD-033-audit-f31.md) | AUD | Audit F31 | ready |
+| [AUD-033](../stories/E17-F31-AUD-033-audit-f31.md) | AUD | Audit F31 | done |
 | [VAL-032](../stories/E17-F31-VAL-032-validate-f31.md) | VAL | Validate F31 | ready |
 
 ## Feature plan

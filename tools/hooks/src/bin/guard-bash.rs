@@ -1,25 +1,30 @@
 //! `PreToolUse` hook on `Bash` (ADR-0021, EN-104): denies the shell commands the project forbids,
 //! whatever the instructions say (`hooks::guard`), a push naming no destination judged by the
-//! current branch of the folder it runs in. A command opening with `cd "<folder>"` is judged
-//! in that folder: a story's worktree refuses a Git command chained with another, the brief's
-//! `cd "<worktree>" || exit 9` followed by Git reads aside (EN-119), and a script missing from that
-//! folder's `package.json` is refused with the rebase that brings it. Run on `Write`, `Edit` and
-//! `NotebookEdit` too, it refuses a worker's write outside the worktree its prompt names
-//! (`hooks::written`, EN-119). Input: the hook JSON on stdin; output: a deny decision on stdout,
-//! or nothing to let the call proceed. An input that is not JSON exits 1, a hook error, which
-//! blocks the call since its handler sets `onFailure` to `block` (AUD-023).
+//! current branch of each repository it may run against (`hooks::place`, AUD-033). A command
+//! opening with `cd "<folder>"` is judged in that folder: a story's worktree refuses a Git command
+//! chained with another, the brief's `cd "<worktree>" || exit 9` followed by Git reads aside
+//! (EN-119), and a script missing from that folder's `package.json` is refused with the rebase
+//! that brings it. Run on `Write`, `Edit` and `NotebookEdit` too, it refuses a worker's write
+//! outside the worktree its prompt names (`hooks::written`, EN-119). Input: the hook JSON on
+//! stdin; output: a deny decision on stdout, or nothing to let the call proceed. An input that is
+//! not JSON exits 1, a hook error, which blocks the call since both its handlers, the shell's and
+//! the writes', set `onFailure` to `block` (AUD-023, AUD-033).
 
 use std::fs::{self, File};
 use std::io::{self, BufRead, BufReader, Read};
 use std::path::Path;
 use std::process::ExitCode;
 
+use worktree::WORKTREES;
+
 use hooks::git::git;
 use hooks::guard::{missing_script, missing_script_reason, scripts_of, shell_reason};
-use hooks::handback::{agent_transcript, is_checked, worktree_id};
+use hooks::handback::{agent_transcript, is_checked};
 use hooks::json::{self, Value};
 use hooks::limit::deny_output;
-use hooks::written::misplaced_write;
+use hooks::place::Repository;
+use hooks::worktrees::prompt_worktree;
+use hooks::written::{as_seen_from, misplaced_write};
 
 /// The lines of a worker's transcript read for its worktree: its prompt opens it.
 const PROMPT_LINES: usize = 20;
@@ -54,9 +59,16 @@ fn hook() -> u8 {
 fn shell_refusal(input: &Value) -> Option<String> {
     let command = input.get("tool_input").get("command").text();
     let judged = hooks::guard::entered(command, input.get("cwd").text());
-    // A push naming no destination updates the current branch of the folder it runs in.
-    let branch =
-        || git(Path::new(&judged.folder), &["branch", "--show-current"]).unwrap_or_default();
+    // A push naming no destination updates the current branch of the repository it runs against.
+    let branch = |repository: &Repository| {
+        let mut arguments = Vec::new();
+
+        if let Some(git_dir) = &repository.git_dir {
+            arguments.extend(["--git-dir", git_dir.as_str()]);
+        }
+        arguments.extend(["branch", "--show-current"]);
+        git(Path::new(&repository.folder), &arguments)
+    };
 
     shell_reason(command, input.get("cwd").text(), &branch)
         .or_else(|| missing_script_refusal(&judged.command, &judged.folder))
@@ -80,22 +92,20 @@ fn write_refusal(input: &Value) -> Option<String> {
         agent_id,
     ))
     .ok()?;
-    let worktree = BufReader::new(transcript)
+    let prompt = BufReader::new(transcript)
         .lines()
         .take(PROMPT_LINES)
         .map_while(Result::ok)
-        .find_map(|line| worktree_id(&line).map(str::to_owned))?;
+        .collect::<Vec<_>>()
+        .join("\n");
+    let worktree = prompt_worktree(&prompt)?;
     let project =
         std::env::var("CLAUDE_PROJECT_DIR").unwrap_or_else(|_| input.get("cwd").text().to_owned());
 
-    if !Path::new(&project)
-        .join(".claude/worktrees")
-        .join(&worktree)
-        .is_dir()
-    {
+    if !Path::new(&project).join(WORKTREES).join(worktree).is_dir() {
         return None;
     }
-    misplaced_write(file, &project, &worktree)
+    misplaced_write(&as_seen_from(file, &project), &project, worktree)
 }
 
 /// The refusal of a script missing from the `package.json` npm would read in a folder, the nearest

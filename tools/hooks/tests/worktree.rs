@@ -13,6 +13,7 @@ use hooks::guard::{
 };
 use hooks::json::quote;
 use hooks::pages::page_of_command;
+use hooks::place::Repository;
 use hooks::written::misplaced_write;
 
 /// A story's worktree, as a worker's Bash calls see it.
@@ -26,7 +27,7 @@ const CHAINED: &str = "A worktree refuses a chained Git command";
 
 /// The guard's answer to a command typed after the brief's `cd`, from the main checkout.
 fn after_the_brief(rest: &str) -> Option<String> {
-    let branch = || "chore/en-119-the-guard-reads-by-words".to_owned();
+    let branch = |_: &Repository| Some("chore/en-119-the-guard-reads-by-words".to_owned());
 
     shell_reason(
         &format!("cd \"{WORKTREE}\" || exit 9; {rest}"),
@@ -169,7 +170,7 @@ fn f31_ac1_reads_quotes_and_here_documents_as_the_shell_does() {
     // After the brief's `cd`, a pipe or a background job is no separator it allows.
     for rest in ["| git log | head", "& git log | head"] {
         let line = format!("cd \"{WORKTREE}\" || exit 9 {rest}");
-        let branch = String::new;
+        let branch = |_: &Repository| Some(String::new());
 
         assert!(shell_reason(&line, MAIN, &branch).is_some(), "{rest}");
     }
@@ -184,6 +185,15 @@ fn f31_ac1_refuses_a_heavy_lock_taken_by_hand_naming_the_command_to_run() {
         "bash -c 'mkdir .git/heavy.lock'",
         "mkdir \"$(git rev-parse --git-common-dir)/heavy.lock\"",
         "mkdir x .git/heavy.lock/",
+        // By `install -d`, or a folder under `.git` named by a variable or a pattern (AUD-033).
+        "install -d .git/heavy.lock",
+        "install -m 755 -d \"/work/SVG editor/.git/heavy.lock\"",
+        "install --directory .git/heavy.lock",
+        "mkdir .git/$LOCK",
+        "mkdir \"$GIT/.git/${NAME}\"",
+        "mkdir .git/heavy.*",
+        "mkdir -p ../../.git/heavy.lo?k",
+        "mkdir .git/[h]eavy.lock",
     ] {
         assert_eq!(denied_reason(command), Some(HAND_LOCK), "{command}");
     }
@@ -195,6 +205,10 @@ fn f31_ac1_refuses_a_heavy_lock_taken_by_hand_naming_the_command_to_run() {
         "rmdir .git/heavy.lock",
         "echo mkdir .git/heavy.lock",
         "cat .git/heavy.lock/pid",
+        "install -m 644 a.txt b.txt",
+        "install -d build/out",
+        "mkdir \"$TMPDIR/x\"",
+        "mkdir .git/metrics/x",
     ] {
         assert_eq!(denied_reason(command), None, "{command}");
     }
@@ -211,6 +225,21 @@ fn f31_ac1_refuses_a_python_script_writing_a_file_in_a_worktree() {
         "/usr/bin/python3.12 -c \"import os; os.replace('a', 'b')\"",
         "python -c \"import shutil; shutil.copy('a', 'b')\"",
         "python3 <<< \"open('x', 'wb')\"",
+        // AUD-033: a path's `.open(mode)`, `os.open` to write, a program run, a wrapper, bundled
+        // options, a script read from its input, its output written by `tee`.
+        "python3 -c \"from pathlib import Path\nwith Path('a').open('w') as f: print(1, file=f)\"",
+        "python3 -c \"import os; os.close(os.open('a', os.O_WRONLY | os.O_CREAT))\"",
+        "python3 -c \"import os; os.system('touch a')\"",
+        "python3 -c \"import subprocess; subprocess.run(['touch', 'a'])\"",
+        "python3 -c \"exec(bytes.fromhex('6f').decode())\"",
+        "env python3 -c \"open('a', 'w')\"",
+        "timeout 5 python3 -c \"open('a', 'w')\"",
+        "bash -c 'python3 -c \"open(1, 2) or open(\\\"a\\\", \\\"w\\\")\"'",
+        "python3 -Ic \"open('a', 'w')\"",
+        "python3 -I -c \"open('a', 'w')\"",
+        "python3 /dev/stdin <<'EOF'\nopen('a', 'w')\nEOF",
+        "python3 -c 'print(1)' | tee out.txt",
+        "python3 -c 'print(1)' 2>&1 | tee -a out.txt",
     ] {
         assert_eq!(
             worktree_reason(command, WORKTREE).as_deref(),
@@ -237,6 +266,12 @@ fn f31_ac1_refuses_a_python_script_writing_a_file_in_a_worktree() {
         // With `-c`, a here-document is the program's input, not its text.
         "python3 -c 'import sys; print(sys.stdin.read())' <<'EOF'\nf.write(x)\nEOF",
         "git commit -m \"fix: open('a', 'w')\"",
+        // AUD-033: what prints, or only looks a program up.
+        "python3 -c \"import sys; sys.stdout.write('x')\"",
+        "python3 -c \"import shutil; print(shutil.which('git'))\"",
+        "python3 -c \"from pathlib import Path; print(Path('a').open().read())\"",
+        "python3 -c 'print(1)' | tee /dev/null",
+        "python3 -m json.tool x.json",
     ] {
         assert_eq!(worktree_reason(command, WORKTREE), None, "{command}");
     }
@@ -265,6 +300,18 @@ fn f31_ac1_tells_a_python_text_that_writes_a_file() {
         "open(a, 'r+')",
         "open(a, mode='wb', encoding='utf-8')",
         "open(join(a, 'b'), 'w')",
+        "Path(a).open('w')",
+        "p.open(mode='a')",
+        "(d / 'x').open('x')",
+        "io.open(a, 'w')",
+        "os.open(a, os.O_WRONLY)",
+        "os.open(a, 1)",
+        "os.system('x')",
+        "os.popen('x')",
+        "subprocess.run(x)",
+        "exec(x)",
+        "shutil.copytree(a, b)",
+        "shutil.move(a, b)",
     ] {
         assert!(python_writes(code), "{code}");
     }
@@ -278,6 +325,14 @@ fn f31_ac1_tells_a_python_text_that_writes_a_file() {
         "text.replace('a', 'b')",
         "json.dumps(x)",
         "sys.stdout.flush()",
+        "sys.stdout.write(x)",
+        "sys.stderr.write(x)",
+        "shutil.which('git')",
+        "shutil.disk_usage('/')",
+        "Path(a).open()",
+        "Path(a).open('r')",
+        "io.open(a)",
+        "os.open(a, os.O_RDONLY)",
     ] {
         assert!(!python_writes(code), "{code}");
     }
@@ -439,5 +494,81 @@ fn f31_ac1_the_hook_refuses_a_worker_s_write_into_the_main_checkout() {
 
         assert!(output.status.success());
         assert_eq!(output.stdout, [] as [u8; 0], "{agent}");
+    }
+}
+
+/// Adds to a session the worker `agent`, started by `prompt`.
+fn worker(session: &Session, agent: &str, prompt: &str) {
+    fs::write(
+        session
+            .root
+            .join(format!("session/subagents/agent-{agent}.jsonl")),
+        format!(
+            "{{\"type\":\"user\",\"message\":{{\"role\":\"user\",\"content\":{}}}}}\n",
+            quote(prompt)
+        ),
+    )
+    .expect("agent transcript");
+}
+
+/// Whether the hook refuses the worker `agent` a `Write` of `file`.
+fn refused(session: &Session, agent: &str, file: &Path) -> bool {
+    let caller = format!("\"agent_id\":\"{agent}\",\"agent_type\":\"story-worker\",");
+
+    String::from_utf8_lossy(&hook(session, &write_call("Write", &caller, file)).stdout)
+        .contains("\"permissionDecision\":\"deny\"")
+}
+
+#[test]
+fn f31_ac1_the_hook_reads_the_worktree_of_the_brief_s_cd_line() {
+    // The prompt names another worktree before the brief's line (AUD-033): its worktree is the
+    // one the `cd … || exit 9` enters.
+    let session = session("brief");
+    let project = session.project.display().to_string();
+
+    fs::create_dir_all(session.project.join(".claude/worktrees/en-2")).expect("en-2");
+    worker(
+        &session,
+        "a4",
+        &format!(
+            "Unlike `{project}/.claude/worktrees/en-2`, work here.\nEvery Bash call starts with `cd \"{project}/.claude/worktrees/en-1\" || exit 9`."
+        ),
+    );
+    assert!(!refused(
+        &session,
+        "a4",
+        &session.project.join(".claude/worktrees/en-1/docs/a.md")
+    ));
+    assert!(refused(
+        &session,
+        "a4",
+        &session.project.join(".claude/worktrees/en-2/docs/a.md")
+    ));
+}
+
+#[test]
+#[cfg(unix)]
+fn f31_ac1_the_hook_resolves_a_link_or_a_case_before_it_compares() {
+    // The file system's path, not the written one (AUD-033): a symbolic link into the main
+    // checkout, and the project's folder in another case where the file system ignores case.
+    let session = session("resolved");
+    let link = session.root.join("link");
+
+    std::os::unix::fs::symlink(&session.project, &link).expect("link");
+    assert!(refused(&session, "a1", &link.join("docs/a.md")));
+    assert!(!refused(
+        &session,
+        "a1",
+        &link.join(".claude/worktrees/en-1/docs/a.md")
+    ));
+    let upper = session.root.join("PROJECT");
+
+    if upper.is_dir() {
+        assert!(refused(&session, "a1", &upper.join("docs/a.md")));
+        assert!(!refused(
+            &session,
+            "a1",
+            &upper.join(".claude/worktrees/en-1/docs/a.md")
+        ));
     }
 }
