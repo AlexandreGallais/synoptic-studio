@@ -334,7 +334,11 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
     );
   });
 
-  it("[F33.AC1] gives the floor of 95 % in the pages that name it", () => {
+  it("[F33.AC1] gives the floor of 95 % in the rules and the pages that name it", () => {
+    expect(readFileSync(join(ROOT, ".claude/rules/tooling.md"), "utf8")).toContain(
+      "`rust:coverage` (95 % of lines and functions covered)",
+    );
+
     const coverageRow =
       readFileSync(join(ROOT, "docs/tooling/commands.md"), "utf8")
         .split("\n")
