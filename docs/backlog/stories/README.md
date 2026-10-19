@@ -312,7 +312,7 @@
 | [EN-120](./E17-F32-EN-120-the-status-line-and-metrics.md) | F32 | The status line and metrics say what ran | done |
 | [EN-139](./E17-F32-EN-139-the-checks-and-reports-of-a-review.md) | F32 | The reports of a review say what happened | done |
 | [AUD-034](./E17-F32-AUD-034-audit-f32.md) | F32 | Audit F32 | done |
-| [VAL-033](./E17-F32-VAL-033-validate-f32.md) | F32 | Validate F32 | ready |
+| [VAL-033](./E17-F32-VAL-033-validate-f32.md) | F32 | Validate F32 | done |
 | [EN-121](./E17-F33-EN-121-floors-and-versions-checked.md) | F33 | The floors, versions and paths checked | ready |
 | [EN-140](./E17-F33-EN-140-anchors-rows-and-agent-pages-checked.md) | F33 | The anchors, the rows and the agent pages checked | ready |
 | [EN-141](./E17-F33-EN-141-a-bench-binary.md) | F33 | A bench binary for the stories' measures | ready |
