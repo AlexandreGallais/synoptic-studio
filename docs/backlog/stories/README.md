@@ -325,3 +325,4 @@
 | [REV-004](./E17-REV-004-review-e17.md) | E17 | Review E17 with the Product Owner | done |
 | [RET-004](./E17-RET-004-retrospective-e17.md) | E17 | Retrospective of E17 | done |
 | [REV-006](./E17-REV-006-review-2026-10-18.md) | E17 | Review of 2026-10-18, F22 | done |
+| [REV-007](./E17-REV-007-review-2026-10-19.md) | E17 | Review of 2026-10-19, F23 to F34 | done |
