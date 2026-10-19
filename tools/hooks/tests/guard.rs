@@ -11,8 +11,8 @@ use hooks::guard::{
     Entered, FORCE_PUSH, HOOKS_OFF, MERGE, NO_VERIFY, PROTECTED_PUSH, denied_reason,
     denied_reason_on, entered, entered_worktree_reason, is_full_vitest_run,
     is_git_read_through_filters, is_read_only_filter, later_folders, missing_script,
-    missing_script_reason, npm_script, scripts_of, segments, without_heredocs, worktree_reason,
-    worktree_root,
+    missing_script_reason, npm_script, scripts_of, segments, shell_reason, without_heredocs,
+    worktree_reason, worktree_root,
 };
 use hooks::json::quote;
 
@@ -618,7 +618,7 @@ fn prints_the_denial_as_the_typescript_hook_did() {
     ));
     let output = hook(
         &format!(
-            "cd \"{}\" || exit 9; git status; git log",
+            "cd \"{}\" || exit 9; git status; git commit -m x",
             worktree.display()
         ),
         Path::new("/"),
@@ -857,6 +857,23 @@ const AUDIT_CASES: [(&str, Option<&str>); 77] = [
 fn judges_each_case_of_the_audit_word_by_word() {
     for (command, expected) in AUDIT_CASES {
         assert_eq!(denied_reason(command), expected, "{command}");
+    }
+}
+
+#[test]
+fn f31_ac1_judges_each_case_of_the_audit_alike_after_the_brief_s_cd_into_a_worktree() {
+    // The guard's worktree forms read by words (EN-119) change nothing of what it forbids: each
+    // case gives the same answer typed after `cd "<worktree>" || exit 9` from the main checkout.
+    let branch = || "chore/en-119-the-guard-reads-by-words".to_owned();
+
+    for (command, expected) in AUDIT_CASES {
+        let line = format!("cd \"{WORKTREE}\" || exit 9; {command}");
+
+        assert_eq!(
+            shell_reason(&line, MAIN, &branch),
+            expected.map(str::to_owned),
+            "{command}"
+        );
     }
 }
 

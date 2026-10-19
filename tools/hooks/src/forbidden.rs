@@ -631,6 +631,8 @@ pub enum Forbidden {
     ForcePush,
     /// A push to `main` or `develop`.
     ProtectedPush,
+    /// The heavy lock, `.git/heavy.lock`, taken by hand (EN-047, EN-119).
+    HandLock,
 }
 
 /// Whether a `gh` command merges a pull request: `gh pr merge`, `pr`'s `-R <repository>` before

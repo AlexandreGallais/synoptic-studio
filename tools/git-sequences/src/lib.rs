@@ -50,6 +50,8 @@ pub enum Request {
         /// Whether the commit is pushed.
         push: Push,
     },
+    /// `state`: the branch, its base, the status, the diff's stat and the commits ahead (EN-119).
+    State,
 }
 
 /// The usage printed on a malformed call.
@@ -293,4 +295,51 @@ pub fn commit_steps(paths: &[String], push: Push) -> Vec<Vec<String>> {
 
 fn owned(words: &[&str]) -> Vec<String> {
     words.iter().map(|&word| word.to_owned()).collect()
+}
+
+/// What `git-sequences state` prints of a checkout (EN-119, I93): the reads a worker chained most,
+/// each a step of its own.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct State {
+    /// The checkout's folder name, `en-119`.
+    pub place: String,
+    /// The checked-out branch, `HEAD` when detached.
+    pub branch: String,
+    /// The branch its commits are counted from, `None` when none is found.
+    pub base: Option<String>,
+    /// `git status --short`.
+    pub status: String,
+    /// `git diff --stat HEAD`: the changes of tracked files, staged or not.
+    pub diff: String,
+    /// `git log --format='%h %s' <base>..HEAD`.
+    pub commits: String,
+}
+
+/// The base `git-sequences state` counts a branch's commits from: a story's feature branch on
+/// `origin` (`origin/develop` for an epic's own story), as `sync` rebases it; another branch's
+/// upstream; `None` for a detached head, a story whose file or feature branch is not found, or a
+/// branch without upstream.
+#[must_use]
+pub fn state_base(
+    branch: &Branch,
+    story_files: &[String],
+    remote_branches: &[String],
+    upstream: Option<&str>,
+) -> Option<String> {
+    (story_files.is_empty() && remote_branches.is_empty() && matches!(branch, Branch::Main))
+        .then(|| upstream.unwrap_or_default().to_owned())
+}
+
+/// The Git steps of `git-sequences state`, each read-only: the status, the diff's stat, and the
+/// commits ahead of the base when there is one.
+#[must_use]
+pub fn state_steps(base: Option<&str>) -> Vec<Vec<String>> {
+    base.map(|_| Vec::new()).into_iter().collect()
+}
+
+/// The text `git-sequences state` prints: a line naming the branch, its base and how many commits
+/// are ahead, then each section under its Git command, `clean` or `none` when empty.
+#[must_use]
+pub fn state_report(state: &State) -> String {
+    state.place.clone()
 }

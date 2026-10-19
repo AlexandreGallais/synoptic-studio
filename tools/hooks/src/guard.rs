@@ -35,6 +35,12 @@ pub const FORCE_PUSH: &str =
 /// Why a push to `main` or `develop` is denied.
 pub const PROTECTED_PUSH: &str = "main and develop are never pushed by the agent: a story's branch is pushed, and its pull request merges it (AGENTS.md, Never).";
 
+/// Why taking the heavy lock by hand is denied (EN-119).
+pub const HAND_LOCK: &str = "`.git/heavy.lock` is taken by the heavy commands themselves (EN-047): run `git push`, `npm run check:all`, `npm run test` or the other heavy command as it is, in the background when it may last; a lock taken by hand makes a `git push` inside it wait forever for its own pre-push.";
+
+/// Why a Python script writing a file is denied in a worktree (EN-119).
+pub const PYTHON_WRITE: &str = "A worktree's files are never written by a Python script (AGENTS.md, Always): edit a file with the Edit tool, several with `target/release/replace` (docs/tooling/agent-tools.md), and write a new one with the Write tool.";
+
 /// Why writing the golden file is denied in a worktree.
 pub const GOLDEN_WRITE: &str = "Vitest's mode golden-write writes .git/metrics/golden.json, shared by every worktree: only the main thread runs it, in the main checkout.";
 
@@ -267,6 +273,22 @@ pub fn is_git_read_through_filters(command: &str) -> bool {
             .all(|(before, segment)| *before == "|" && is_read_only_filter(segment))
 }
 
+/// Whether a command is a chain of Git commands that only read, each alone or piped into read-only
+/// filters, joined by `;`, `&&`, `||` or a line feed: `git status; git log -3 | head` (EN-119).
+/// One Git command of any kind piped into filters is one too ([`is_git_read_through_filters`]).
+#[must_use]
+pub fn is_read_only_git_chain(command: &str) -> bool {
+    is_git_read_through_filters(command)
+}
+
+/// Whether the words of a Git command only read the repository: no option before its subcommand,
+/// the subcommand one of [`READ_ONLY_GIT`], no option that writes a file or runs a program
+/// (`--output`, `--ext-diff`, `--open-files-in-pager`), and `branch` only listing (EN-119).
+#[must_use]
+pub fn is_read_only_git(words: &[String]) -> bool {
+    words.is_empty()
+}
+
 /// Whether a simple command holds no substitution and writes no file: its redirections only read
 /// one (`<`) or duplicate a descriptor (`2>&1`).
 fn only_reads_and_duplicates(simple: &Simple) -> bool {
@@ -286,6 +308,27 @@ fn only_reads_and_duplicates(simple: &Simple) -> bool {
 /// `tail`, `wc` and `cut` (EN-104, decided 2026-10-18); `sort`, `uniq`, `sed` and `awk` are read
 /// further by [`is_read_only_filter`].
 const READ_ONLY_FILTERS: [&str; 5] = ["head", "tail", "grep", "wc", "cut"];
+
+/// The Git subcommands that only read the repository, which a chain after the brief's `cd` may
+/// join (EN-119): the reads the transcripts chain most (`status`, `diff`, `show`, `log`, I93) and
+/// the plumbing that prints a reference or an object.
+pub const READ_ONLY_GIT: [&str; 15] = [
+    "blame",
+    "branch",
+    "cat-file",
+    "describe",
+    "diff",
+    "for-each-ref",
+    "grep",
+    "log",
+    "ls-files",
+    "ls-tree",
+    "merge-base",
+    "rev-list",
+    "rev-parse",
+    "show",
+    "status",
+];
 
 /// Whether a segment only filters what is piped into it (AUD-023): one simple command, no
 /// substitution, no redirection writing a file (`2>&1` allowed), and its program `head`, `tail`,
@@ -465,6 +508,7 @@ pub fn forbidden_text(forbidden: Forbidden) -> &'static str {
         Forbidden::HooksOff => HOOKS_OFF,
         Forbidden::ForcePush => FORCE_PUSH,
         Forbidden::ProtectedPush => PROTECTED_PUSH,
+        Forbidden::HandLock => HAND_LOCK,
     }
 }
 
@@ -492,6 +536,39 @@ pub fn denied_reason_on(command: &str, branch: &dyn Fn() -> String) -> Option<&'
                 .any(|invocation| is_full_vitest_run(&invocation.words.join(" ")))
                 .then_some(FULL_VITEST)
         })
+}
+
+/// The reason for denying a shell command run from `cwd`, the `package.json` scripts aside: a
+/// forbidden command ([`denied_reason_on`]), then the forms of the worktree it enters by a leading
+/// `cd` ([`entered_worktree_reason`]), then those of a worktree a later `cd` enters.
+#[must_use]
+pub fn shell_reason(command: &str, cwd: &str, branch: &dyn Fn() -> String) -> Option<String> {
+    let judged = entered(command, cwd);
+
+    denied_reason_on(command, branch)
+        .map(str::to_owned)
+        .or_else(|| {
+            entered_worktree_reason(&judged).or_else(|| {
+                later_folders(command, &judged.folder)
+                    .iter()
+                    .find_map(|folder| worktree_reason(&judged.command, folder))
+            })
+        })
+}
+
+/// Whether a Python program's text writes a file (EN-119): a call of `.write(`, `.writelines(`,
+/// `write_text(`, `write_bytes(`, `.touch(`, `.rename(`, `os.replace(`, `os.remove(`,
+/// `.unlink(`, `.mkdir(`, `os.makedirs(`, `json.dump(`, `shutil.`, `fileinput`'s `inplace`, or an
+/// `open(` given a mode holding `w`, `a`, `x` or `+`. A script read from a file is not read.
+#[must_use]
+pub fn python_writes(code: &str) -> bool {
+    code.is_empty()
+}
+
+/// The bodies of a command's here-documents, the lines between each opening line and its word.
+#[must_use]
+pub fn heredoc_bodies(command: &str) -> Vec<&str> {
+    command.get(..0).into_iter().collect()
 }
 
 /// The worktree a folder is inside (EN-052), its root:

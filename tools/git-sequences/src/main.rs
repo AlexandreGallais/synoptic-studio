@@ -11,8 +11,8 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, ExitCode, Stdio};
 
 use git_sequences::{
-    Branch, Request, Source, Target, branch_of, changes_refusal, changes_step, commit_refusal,
-    commit_steps, fetch_step, message_refusal, parse, sync_steps, sync_target,
+    Branch, Request, Source, Target, USAGE, branch_of, changes_refusal, changes_step,
+    commit_refusal, commit_steps, fetch_step, message_refusal, parse, sync_steps, sync_target,
 };
 use stale_binaries::RELEASE_BUILD;
 
@@ -209,6 +209,7 @@ fn run(argv: &[String]) -> Result<String, String> {
             paths,
             push,
         } => commit(&branch, message, paths, *push),
+        Request::State => Err(USAGE.to_owned()),
     }?;
 
     Ok(format!("{place}: {result}"))
