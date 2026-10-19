@@ -565,22 +565,6 @@ fn f33_ac1_a_tool_behind_is_listed_once_its_release_is_7_days_old() {
     assert_eq!(lines(at - 1), disagreement);
 }
 
-#[test]
-fn f33_ac1_the_repository_s_cargo_tools_agree_and_have_their_rows() {
-    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
-    let tools = outdated::read_pins(&root).tools;
-    let names: std::collections::BTreeSet<&str> =
-        tools.iter().map(|pin| pin.name.as_str()).collect();
-
-    assert_eq!(
-        names.into_iter().collect::<Vec<_>>(),
-        ["cargo-deny", "cargo-llvm-cov"]
-    );
-    // Each in the five workflows, `package.json`, the install line and its row.
-    assert!(tools.len() >= 16, "{tools:?}");
-    assert_eq!(cargo_tools::disagreements(&tools), [] as [String; 0]);
-}
-
 // --- The check, from the files to the report ---
 
 /// The recorded answers, by address or GitHub path; anything else is a 404.

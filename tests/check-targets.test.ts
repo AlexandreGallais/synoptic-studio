@@ -334,7 +334,7 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
     );
   });
 
-  it("[F33.AC1] gives the floor of 95 % in the rules and the pages that name it", () => {
+  it("[F33.AC1] gives the floor of 95 % in the pages that name it", () => {
     const coverageRow =
       readFileSync(join(ROOT, "docs/tooling/commands.md"), "utf8")
         .split("\n")
@@ -343,10 +343,6 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
       readFileSync(join(ROOT, "docs/tooling/agent-tools.md"), "utf8")
         .split("\n")
         .find((line) => line.startsWith("- **Coverage**: `npm run rust:coverage`")) ?? "";
-
-    expect(readFileSync(join(ROOT, ".claude/rules/tooling.md"), "utf8")).toContain(
-      "`rust:coverage` (95 % of lines and functions covered)",
-    );
 
     expect(coverageRow).toContain("95 % of lines or of functions");
     expect(coverageBullet).toContain("fails under 95 % of lines or of functions");

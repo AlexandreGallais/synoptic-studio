@@ -53,5 +53,5 @@ svg.append(createPathElement(document, pathData));
 ## Format on save
 
 - **WebStorm and IntelliJ** (`.idea/`, in the repository): the Oxc plugin from the JetBrains Marketplace formats with oxfmt and shows oxlint's findings. The editor alone pads tables; the pre-commit hook unpads them at the commit.
-- **VS Code** (`.vscode/`): the recommended extensions are `oxc.oxc-vscode` and `editorconfig.editorconfig`; `formatOnSave`, then `source.fixAll.oxc`.
+- **VS Code** (`.vscode/`): the recommended extensions are `oxc.oxc-vscode`, `editorconfig.editorconfig` and TypeScript 7's `TypeScriptTeam.native-preview`; `formatOnSave`, then `source.fixAll.oxc`; `js/ts.experimental.useTsgo` on, and `js/ts.tsdk.path` set to the installed TypeScript 7, `./node_modules/typescript` (`REF-TS7-VSCODE`, `tests/typescript-7.test.ts`, EN-121).
 - On save, unused imports disappear and mixed imports split into `import` and `import type`. Import paths and barrels are fixed by `npm run fix` (`local/canonical-import-path`, `local/barrel-exports`).

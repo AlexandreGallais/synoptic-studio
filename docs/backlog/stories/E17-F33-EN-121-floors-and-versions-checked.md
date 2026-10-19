@@ -20,7 +20,14 @@ From RET-004's "Checks to add" (I37, I54, I55, I56, I58, I60, I81, I99, P8). Mov
 
 ## Tasks
 
-- [ ] T1 — Each criterion's test, failing (1 h)
-- [ ] T2 — The floor, the configuration, the versions' check and the path, the docs (2 h)
+- [x] T1 — Each criterion's test, failing (1 h)
+- [x] T2 — The floor, the configuration, the versions' check and the path, the docs (2 h)
 
 One task = one commit, referenced as `EN-121.T1` in the commit footer.
+
+## For the main thread
+
+- The floor holds on today's code: `cargo llvm-cov --workspace --summary-only` on 2026-10-19, before the story, gave 95.30 % of lines and 96.47 % of functions (TOTAL row), so 95 % of both, as RET-004 set it.
+- `.claude/rules/tooling.md` is left to the main thread, as an instruction file a worker does not change on an agent's request; the first criterion asks it to say 95 %. Its bullet "Every new script, hook or agent tool is a Rust crate of `tools/`" to read "… and `rust:coverage` (95 % of lines and functions covered). …"; and its bullet "A new dev package needs its row …" to end "… a GitHub Action, a Node.js bump, a crate, `Cargo.lock`'s included, and a cargo tool of the Rust checks are checked by `npm run deps:outdated` too; a cargo tool's version changes in every place it is written at once, its row included (EN-121)." Then, in `tests/check-targets.test.ts`, the test `[F33.AC1] gives the floor of 95 % in the pages that name it` takes back the rules: its title "… in the rules and the pages that name it", and `expect(readFileSync(join(ROOT, ".claude/rules/tooling.md"), "utf8")).toContain("`rust:coverage` (95 % of lines and functions covered)");` before its other assertions.
+- ADR-0075 (accepted) says `.vscode/settings.json` no longer points VS Code at `node_modules/typescript/lib`, which holds no `tsserver.js`. The story now sets the TypeScript 7 extension's own settings, `js/ts.experimental.useTsgo` and `js/ts.tsdk.path` to `./node_modules/typescript` (`REF-TS7-VSCODE`), and recommends `TypeScriptTeam.native-preview`: a different setting for the reason the ADR gives, so the ADR is left as it is.
+- Rule-docs: none affected, a tooling story that changes no rule of `docs/domain/`.

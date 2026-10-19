@@ -1,8 +1,9 @@
 //! `deps outdated`: every version the repository pins against its latest version at least 7 days
 //! old (ADR-0038) — the npm packages of `package.json`, the GitHub Actions of the workflows,
-//! Node.js's major in `.nvmrc`, the crates of `[workspace.dependencies]` — and every crate of
-//! `Cargo.lock` published less than 7 days ago, which Cargo picks by itself (research note 0025,
-//! The crates, checked). One line per finding, with the version and its date.
+//! Node.js's major in `.nvmrc`, the crates of `[workspace.dependencies]`, the cargo tools the Rust
+//! checks install (EN-121) — and every crate of `Cargo.lock` published less than 7 days ago, which
+//! Cargo picks by itself (research note 0025, The crates, checked). One line per finding, with the
+//! version and its date, and one per cargo tool whose places disagree.
 
 use std::collections::BTreeSet;
 use std::fs;
@@ -10,7 +11,8 @@ use std::path::Path;
 use std::thread;
 
 use crate::actions::{self, ActionUse};
-use crate::cargo_tools::ToolPin;
+use crate::cargo_tools::{self, DEPENDENCIES_PAGE, ToolPin};
+use crate::crates::Release;
 use crate::fetch::Answer;
 use crate::{Behind, crates, node, npm};
 
@@ -129,21 +131,54 @@ pub fn locked_pins(lock: &str) -> Vec<(String, String)> {
         .collect()
 }
 
+/// The `.yml` or `.md` files of a folder of a checkout, sorted; none when it is missing.
+fn files_of(root: &Path, folder: &str, extension: &str) -> Vec<std::path::PathBuf> {
+    let mut files: Vec<_> = fs::read_dir(root.join(folder))
+        .map(|entries| {
+            entries
+                .filter_map(|entry| entry.ok().map(|entry| entry.path()))
+                .filter(|path| path.extension().is_some_and(|found| found == extension))
+                .collect()
+        })
+        .unwrap_or_default();
+
+    files.sort();
+    files
+}
+
+/// The cargo tools' versions of a checkout: the workflows' `env` and install lines, those of
+/// `package.json` and `docs/tooling/`, and the Rust tools rows; sorted, each once.
+fn tool_pins(root: &Path, workflows: &[std::path::PathBuf]) -> Vec<ToolPin> {
+    let place = |path: &Path| {
+        path.strip_prefix(root)
+            .unwrap_or(path)
+            .to_string_lossy()
+            .into_owned()
+    };
+    let read = |path: &Path| fs::read_to_string(path).unwrap_or_default();
+    let mut pins: BTreeSet<ToolPin> = BTreeSet::new();
+
+    for path in workflows {
+        pins.extend(cargo_tools::env_pins(&read(path), &place(path)));
+    }
+    for path in workflows
+        .iter()
+        .cloned()
+        .chain([root.join("package.json")])
+        .chain(files_of(root, "docs/tooling", "md"))
+    {
+        pins.extend(cargo_tools::install_pins(&read(&path), &place(&path)));
+    }
+    pins.extend(cargo_tools::row_pins(&read(&root.join(DEPENDENCIES_PAGE))));
+    pins.into_iter().collect()
+}
+
 /// What a checkout pins, read from its files; a file missing pins nothing.
 #[must_use]
 pub fn read_pins(root: &Path) -> Pins {
     let read = |path: &str| fs::read_to_string(root.join(path)).unwrap_or_default();
     let package = serde_json::from_str(&read("package.json")).unwrap_or_default();
-    let mut workflows: Vec<_> = fs::read_dir(root.join(".github/workflows"))
-        .map(|entries| {
-            entries
-                .filter_map(|entry| entry.ok().map(|entry| entry.path()))
-                .filter(|path| path.extension().is_some_and(|extension| extension == "yml"))
-                .collect()
-        })
-        .unwrap_or_default();
-
-    workflows.sort();
+    let workflows = files_of(root, ".github/workflows", "yml");
     let actions: BTreeSet<ActionUse> = workflows
         .iter()
         .flat_map(|path| actions::uses(&fs::read_to_string(path).unwrap_or_default()))
@@ -155,7 +190,7 @@ pub fn read_pins(root: &Path) -> Pins {
         node: read(".nvmrc").trim().trim_start_matches('v').parse().ok(),
         crates: crate_pins(&read("Cargo.toml")),
         locked: locked_pins(&read("Cargo.lock")),
-        tools: Vec::new(),
+        tools: tool_pins(root, &workflows),
     }
 }
 
@@ -290,6 +325,29 @@ fn crate_report(
             ));
         }
     }
+    tool_report(&pins.tools, releases_of, now_ms, report);
+}
+
+/// The cargo tools' lines: their places that disagree, then each version behind, as a crate's.
+fn tool_report<'a>(
+    tools: &[ToolPin],
+    releases_of: impl Fn(&str) -> Option<&'a Vec<Release>>,
+    now_ms: i64,
+    report: &mut Report,
+) {
+    let versions: BTreeSet<(&str, &str)> = tools
+        .iter()
+        .map(|pin| (pin.name.as_str(), pin.version.as_str()))
+        .collect();
+
+    report.lines.extend(cargo_tools::disagreements(tools));
+    for (name, current) in versions {
+        if let Some(behind) =
+            releases_of(name).and_then(|r| crates::behind(name, current, r, now_ms))
+        {
+            report.lines.push(behind_line("tool", &behind));
+        }
+    }
 }
 
 /// The actions' lines and failures: a next major whose first tag is 7 days old.
@@ -346,6 +404,7 @@ pub fn outdated(pins: &Pins, network: &impl Network, now_ms: i64) -> Report {
         .iter()
         .chain(&pins.locked)
         .map(|(name, _)| name.clone())
+        .chain(pins.tools.iter().map(|pin| pin.name.clone()))
         .collect::<BTreeSet<_>>()
         .into_iter()
         .collect();
