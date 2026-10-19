@@ -9,7 +9,7 @@ use std::time::SystemTime;
 use run_totals::tally::Tokens;
 
 use crate::format::{duration_text, grouped};
-use crate::transcript::{Events, Transcript, all_events};
+use crate::transcript::{Events, Transcript, all_events, summed_usage};
 use crate::work::active_ms;
 
 /// Figures of one session.
@@ -67,16 +67,12 @@ fn counted_usage(events: &Events) -> Vec<(String, Tokens)> {
 /// transcript holds a small part of what it wrote (CHK-021).
 #[must_use]
 pub fn tokens_by_model(events: &Events) -> Vec<(String, i64)> {
-    let mut totals: Vec<(String, i64)> = Vec::new();
+    let mut totals: Vec<(String, i64)> = summed_usage(&counted_usage(events))
+        .into_iter()
+        .map(|(model, tokens)| (model, tokens.total()))
+        .filter(|(_, total)| *total > 0)
+        .collect();
 
-    for (model, tokens) in counted_usage(events) {
-        match totals.iter_mut().find(|(known, _)| *known == model) {
-            Some((_, total)) => *total += tokens.total(),
-            None => totals.push((model, tokens.total())),
-        }
-    }
-
-    totals.retain(|(_, total)| *total > 0);
     totals.sort_by_key(|(_, total)| std::cmp::Reverse(*total));
     totals
 }

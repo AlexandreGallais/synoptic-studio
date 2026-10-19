@@ -389,13 +389,15 @@ pub fn read_running_call(record: &Value) -> RunningCall {
 }
 
 /// The files of the calls left by subagents that ended (EN-120): a subagent's call of this session,
-/// or of a file that names none, started before every subagent still running started, so that no
-/// subagent running can have made it; the main agent's calls are never among them.
+/// started before every subagent still running started, so that no subagent running can have made
+/// it; a subagent a message resumes runs from that message (AUD-034). A call is a subagent's only
+/// when its file names a subagent id: a session started with `--agent` writes its type without
+/// one, and so did every call before EN-120, left to `session-state` after a day.
 #[must_use]
 pub fn ended_calls(calls: &[(String, RunningCall)], tasks: &[Task], session: &str) -> Vec<String> {
     let first_running = tasks
         .iter()
-        .filter(|task| task.kind == Kind::Agent)
+        .filter(|task| matches!(task.kind, Kind::Agent | Kind::Message))
         .map(|task| task.start)
         .min()
         .unwrap_or(i64::MAX);
@@ -403,9 +405,7 @@ pub fn ended_calls(calls: &[(String, RunningCall)], tasks: &[Task], session: &st
     calls
         .iter()
         .filter(|(_, call)| {
-            call.agent != "main"
-                && (call.session.is_empty() || call.session == session)
-                && call.start < first_running
+            !call.agent_id.is_empty() && call.session == session && call.start < first_running
         })
         .map(|(name, _)| name.clone())
         .collect()

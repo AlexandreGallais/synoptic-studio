@@ -366,6 +366,23 @@ fn f32_ac2_refuses_a_feature_whose_criteria_are_all_struck_and_counts_only_those
 
     assert_eq!(parse_feature(inside).unwrap().criteria.len(), 1);
 
+    // F18's criterion 1 as its file writes it: its first half struck, its second standing.
+    let half = "---\nid: F18\nepic: E17\ntitle: T\n---\n\n## Acceptance criteria\n\n\
+        1. ~~Release pull request on `develop`~~, only the release on `main`. The first half superseded on 2026-10-18.\n\
+        2. ~~A struck start~~ and the rest.\n\
+        3. ~~Struck~~. Dropped on 2026-10-17.\n\
+        4. ~~Struck, never closed.\n";
+
+    assert_eq!(
+        parse_feature(half)
+            .unwrap()
+            .criteria
+            .iter()
+            .map(|criterion| criterion.number)
+            .collect::<Vec<_>>(),
+        [1, 2, 4]
+    );
+
     let root = repository("struck", &[]);
 
     fs::write(

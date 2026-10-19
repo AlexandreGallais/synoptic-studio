@@ -704,29 +704,25 @@ fn of_agent(name: &str, agent: &str, start: i64, session: &str) -> (String, Runn
 fn f32_ac1_finds_the_calls_left_by_subagents_that_ended() {
     // 2026-10-18: no agent ran, yet 169 files of `story-worker` calls stayed in `running/`, the
     // latest shown as a story worker running for 9 min 20 (C5). Here one subagent runs, launched at
-    // 1 000; calls of ended subagents started at 100 and 900, one of them in a file older than
-    // EN-120 (no session); one of this subagent at 1 500; one of another session at 200; the main
-    // agent's at 50.
+    // 1 000; calls of ended subagents started at 100 and 900; one of this subagent at 1 500; one of
+    // another session at 200; the main agent's at 50.
     let tasks = [
         task("a", Kind::Agent, "story-worker: EN-120", 1000),
         task("b", Kind::Command, "Push", 10),
     ];
     let calls = [
         of_agent("old", "story-worker", 100, "s"),
-        of_agent("legacy", "story-worker", 900, ""),
+        of_agent("ended", "story-worker", 900, "s"),
         of_agent("live", "story-worker", 1500, "s"),
         of_agent("other", "story-worker", 200, "t"),
         ("main.json".to_owned(), call("main", "", 50, "ls", "Bash")),
     ];
 
-    assert_eq!(
-        ended_calls(&calls, &tasks, "s"),
-        ["old.json", "legacy.json"]
-    );
+    assert_eq!(ended_calls(&calls, &tasks, "s"), ["old.json", "ended.json"]);
     // No subagent runs: every subagent call of the session has ended; a command is no subagent.
     assert_eq!(
         ended_calls(&calls, &tasks[1..], "s"),
-        ["old.json", "legacy.json", "live.json"]
+        ["old.json", "ended.json", "live.json"]
     );
     // Launched exactly when the call started: the call may be its, it is kept.
     assert_eq!(
@@ -740,8 +736,44 @@ fn f32_ac1_finds_the_calls_left_by_subagents_that_ended() {
             &[task("r", Kind::Agent, "resumed: EN-120", 950)],
             "s"
         ),
-        ["old.json", "legacy.json"]
+        ["old.json", "ended.json"]
     );
+}
+
+#[test]
+fn f32_ac1_keeps_the_calls_of_a_subagent_a_message_resumes_and_of_an_agent_session() {
+    // AUD-034: a subagent stopped at 950 and resumed by `SendMessage` at 960, its result still to
+    // come, makes a call at 970: the message is a task running from 960, so that call stays.
+    let resumed = [
+        of_agent("old", "story-worker", 100, "s"),
+        of_agent("resumed", "story-worker", 970, "s"),
+    ];
+
+    assert_eq!(
+        ended_calls(
+            &resumed,
+            &[task("m", Kind::Message, "message: EN-120", 960)],
+            "s"
+        ),
+        ["old.json"]
+    );
+    // A session started with `--agent` writes its type and no subagent id: the main agent's calls,
+    // never a subagent's; and so is a file written before EN-120, with neither id nor session.
+    let main = [
+        (
+            "agent-session.json".to_owned(),
+            RunningCall {
+                session: "s".into(),
+                ..call("story-worker", "", 50, "ls", "Bash")
+            },
+        ),
+        (
+            "legacy.json".to_owned(),
+            call("story-worker", "", 60, "ls", "Bash"),
+        ),
+    ];
+
+    assert_eq!(ended_calls(&main, &[], "s"), [] as [&str; 0]);
 }
 
 #[test]
@@ -836,16 +868,16 @@ fn draws_the_status_line_and_writes_its_files() {
     fs::create_dir_all(metrics.join("running")).expect("running");
     fs::write(metrics.join("step"), "  EN-104 · T3\n").expect("step");
     // A main call started before the turn, one in it, a subagent's while none runs, one of another
-    // session's subagent, a file being written.
-    for (name, start, agent, session) in [
-        ("old", AT_0800 - 1, "main", ""),
-        ("now", AT_0800 + 1, "main", ""),
-        ("sub", 1, "auditor", ""),
-        ("other", 1, "auditor", "t"),
+    // session's subagent, a file being written; the session's id is empty, as the input names none.
+    for (name, start, agent, id, session) in [
+        ("old", AT_0800 - 1, "main", "", ""),
+        ("now", AT_0800 + 1, "main", "", ""),
+        ("sub", 1, "auditor", "a1", ""),
+        ("other", 1, "auditor", "a2", "t"),
     ] {
         fs::write(
             metrics.join(format!("running/{name}.json")),
-            format!(r#"{{"agent":"{agent}","description":"","session":"{session}","start":{start},"summary":"{name}","tool":"Bash"}}"#),
+            format!(r#"{{"agent":"{agent}","agentId":"{id}","description":"","session":"{session}","start":{start},"summary":"{name}","tool":"Bash"}}"#),
         )
         .expect("running file");
     }

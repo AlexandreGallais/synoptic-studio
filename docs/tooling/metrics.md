@@ -62,7 +62,7 @@ Each tool of our own records its own use (EN-102), whoever calls it — the agen
 | Commands by count | shell commands grouped by what they run: count, total, median, longest, failed |
 | Commands by total time | the same groups, by total time: where waiting goes |
 | Slowest calls | the 20 longest tool calls, with their branch |
-| Sessions | each session: active time, tokens, tool calls, failures |
+| Sessions | each session: active time, tokens (Claude Code's count when the session has one), tool calls, failures |
 | Features | the same totals per feature |
 | Stories and branches | per story, feature branch or other branch |
 | Tasks, by commit | per task commit, with its short hash: `git show <hash>` says why a task was slow |
@@ -77,6 +77,7 @@ Each tool of our own records its own use (EN-102), whoever calls it — the agen
 - **Active time** adds the gaps between moments of work, each capped at 5 minutes, so that a pause, a night or a wait for the Product Owner is not counted as work.
 - A moment belongs to the story of its branch, and to that story's first task commit made after it; work after the last task commit shows as `<story> (no task commit)`.
 - **Output tokens** are those the model wrote; **all tokens** add input, cache writes and cache reads, which dominate.
+- **A session's tokens** are Claude Code's count of it, its subagents' included, when its transcripts hold one (`modelUsage`, as in [the session report](#session-report)) and its first request came in the period: a Sonnet subagent's transcript holds a small part of what it wrote (CHK-021). Otherwise, and for the features, stories and tasks, they are the requests' sums: the count holds the whole session and cannot be cut by time nor by branch (AUD-034).
 - **Failed** counts the calls that ended in an error: a failing check, a refused commit, a denied command.
 
 It is the binary `metrics` of `tools/metrics` (EN-107): on this session's transcripts and logs, its output is the TypeScript report's, the Findings section added, but for one row of the Tools section, `library stats`, which the script ran as a command, recording one use more, where the binary reads the library in its own process. Measured on 1.6 GB of transcripts (2026-10-18): 6.4 s without the cache, then 0.5 s, against 8.2 s for `metrics-report.ts` ([research note 0025](../research/notes/0025-f21-agent-tools-in-rust.md#the-tools-story-by-story)).
@@ -143,7 +144,9 @@ The hook `track-tool-call` writes each call starting to `.git/metrics/running/<c
 | of the main agent, started before the turn (an interrupted turn) | the status line |
 | left running for a day | the hook `session-state`, when a session starts |
 | of a subagent that stopped: a call refused by a `PreToolUse` hook gets no `PostToolUse` | the hook `log-tool-call` on `SubagentStop`, every file of that subagent's id |
-| of a subagent, started before every subagent still running started, so none of them made it | the status line, for its own session's calls and for a file of before EN-120, which names no session |
+| of a subagent, its id recorded, started before every subagent still running started, so none of them made it | the status line, for its own session's calls; a subagent a message resumes runs from that message; a session started with `--agent` records its type without a subagent id, so its calls are never taken for a subagent's (AUD-034) |
+
+A background task older than 3 hours is taken as lost, its end never arrived (`LOST_TASK_MS`, `tools/hooks/src/tasks.rs`): a subagent running longer is no longer counted as running, and the status line removes its calls.
 
 On 2026-10-18 the status line showed a story worker running for 9 min 20 while no agent ran: 169 files of calls `guard-bash` had refused, which nothing removed (C5).
 

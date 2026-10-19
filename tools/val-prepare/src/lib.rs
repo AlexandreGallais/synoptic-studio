@@ -59,6 +59,9 @@ const CHECKLISTS: &str = "playground/checklists";
 /// Markdown's strikethrough, opening a criterion dropped from its feature.
 const STRUCK: &str = "~~";
 
+/// The marks that end a sentence.
+const SENTENCE_ENDS: [char; 3] = ['.', '!', '?'];
+
 /// A feature id from the argument, in either case: `f18` gives `F18`.
 #[must_use]
 pub fn feature_id(argument: &str) -> Option<String> {
@@ -83,6 +86,23 @@ fn field(text: &str, key: &str) -> Option<String> {
         .map(|(_, value)| value.trim().trim_matches('"').to_owned())
 }
 
+/// Whether a criterion is struck through as a whole: its text opens with a struck span, closed,
+/// that nothing follows but a new sentence (`~~…~~ Dropped on …`, `~~…~~. Dropped …`); F18's
+/// `~~Release pull request on develop~~, only the release on main.` stands, its second half kept
+/// (AUD-034).
+fn is_struck(text: &str) -> bool {
+    let Some((span, rest)) = text
+        .strip_prefix(STRUCK)
+        .and_then(|inner| inner.split_once(STRUCK))
+    else {
+        return false;
+    };
+    let after_stop = rest.trim_start_matches(SENTENCE_ENDS);
+    let is_stopped = span.ends_with(SENTENCE_ENDS) || after_stop.len() < rest.len();
+
+    rest.trim().is_empty() || (is_stopped && after_stop.starts_with(char::is_whitespace))
+}
+
 /// The numbered items of the `## Acceptance criteria` section with their numbers, a criterion
 /// struck through (`5. ~~…~~ Dropped on …`) left out (I88).
 fn criteria(text: &str) -> Vec<Criterion> {
@@ -96,7 +116,7 @@ fn criteria(text: &str) -> Vec<Criterion> {
 
             (!number.is_empty()
                 && number.bytes().all(|byte| byte.is_ascii_digit())
-                && !text.starts_with(STRUCK))
+                && !is_struck(text))
             .then(|| number.parse().ok())
             .flatten()
             .map(|number| Criterion {
