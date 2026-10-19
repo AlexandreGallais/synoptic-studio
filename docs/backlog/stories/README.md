@@ -319,7 +319,7 @@
 | [AUD-035](./E17-F33-AUD-035-audit-f33.md) | F33 | Audit F33 | done |
 | [VAL-034](./E17-F33-VAL-034-validate-f33.md) | F33 | Validate F33 | done |
 | [EN-134](./E17-F34-EN-134-the-other-workflows-reviewed.md) | F34 | The auto-merge per base and the other workflows reviewed | done |
-| [AUD-036](./E17-F34-AUD-036-audit-f34.md) | F34 | Audit F34 | ready |
+| [AUD-036](./E17-F34-AUD-036-audit-f34.md) | F34 | Audit F34 | done |
 | [VAL-035](./E17-F34-VAL-035-validate-f34.md) | F34 | Validate F34 | ready |
 | [NAM-002](./E17-NAM-002-naming-pass-e17.md) | E17 | Naming pass over the code of E17 | done |
 | [REV-004](./E17-REV-004-review-e17.md) | E17 | Review E17 with the Product Owner | done |
